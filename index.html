@@ -326,30 +326,40 @@ function boardKey(first, last, nameMap) {
 
 function headerIndex(header) {
   var idx = {};
-  header.forEach(function (h, i) { idx[String(h).trim().toLowerCase()] = i; });
+  header.forEach(function (h, i) {
+    idx[String(h).replace(/^\uFEFF/, "").trim().toLowerCase()] = i;
+  });
   return idx;
 }
 
 /**
  * Parse a projections CSV into [{id, name, norm, proj}].
  * ETR Battle Royale (NFL): reads Player, Proj, id. Its ADP and Rank are ignored on purpose.
+ * ETR Weekly (NFL): reads Player and Half PPR Proj, the scoring Underdog actually uses.
+ *   It carries no id and covers the whole league, so it matches by name and most of its
+ *   rows belong to players who are not on the chosen slate.
  * CFF (CFB): reads PLAYER NAME, FPNTS.
  */
 function parseProjections(text) {
   var rows = parseCsv(text);
   if (!rows.length) return { error: "empty file", entries: [] };
   var idx = headerIndex(rows[0]);
-  var format, nameCol, projCol, idCol = null, sport;
+  var format, nameCol, projCol, idCol = null, sport, dedupe = false;
 
   if (idx["fpnts"] != null && idx["player name"] != null) {
     format = "CFF"; sport = "cfb"; nameCol = idx["player name"]; projCol = idx["fpnts"];
+  } else if (idx["half ppr proj"] != null && idx["player"] != null) {
+    format = "ETR Weekly"; sport = "nfl";
+    nameCol = idx["player"]; projCol = idx["half ppr proj"];
+    dedupe = true;
   } else if (idx["proj"] != null && idx["player"] != null) {
     format = "ETR Battle Royale"; sport = "nfl"; nameCol = idx["player"]; projCol = idx["proj"];
     if (idx["id"] != null) idCol = idx["id"];
   } else {
     return {
-      error: "unrecognized columns. Expected an ETR Battle Royale export (Player, Proj, id) " +
-             "or a CFF export (PLAYER NAME, FPNTS). Found: " + rows[0].join(", "),
+      error: "unrecognized projection file. Expected an ETR Battle Royale export " +
+             "(Player, Proj, id), an ETR weekly export (Player, Half PPR Proj), or a CFF " +
+             "export (PLAYER NAME, FPNTS). Found: " + rows[0].join(", "),
       entries: []
     };
   }
@@ -369,7 +379,19 @@ function parseProjections(text) {
       proj: proj
     });
   }
+  if (dedupe) entries = keepHighestPerName(entries);
   return { format: format, sport: sport, entries: entries, skipped: skipped, error: null };
+}
+
+/** One row per player: where a name repeats, the higher projection wins. */
+function keepHighestPerName(entries) {
+  var at = {}, out = [];
+  entries.forEach(function (e) {
+    var seen = at[e.norm];
+    if (seen == null) { at[e.norm] = out.length; out.push(e); return; }
+    if (e.proj > out[seen].proj) out[seen] = e;
+  });
+  return out;
 }
 
 /**
@@ -490,7 +512,7 @@ var state = {
   newIds: {},          // player_id -> true, new since the saved order
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
-  projMeta: null,      // {file, format, matchedById, matchedByName, unmatched, at}
+  projMeta: null,      // {file, format, matchedById, matchedByName, missing, boardTotal, at}
   nameMaps: { nfl: {}, cfb: {} },
   view: "order",
   search: "",
@@ -583,16 +605,19 @@ function applyStoredProjections() {
   var s = state.slate;
   var stored = load(K.proj(s.sport), null);
   if (!stored || !stored.entries || !stored.entries.length) {
-    state.proj = {}; state.projMeta = null; renderUnmatched(); return;
+    state.proj = {}; state.projMeta = null; renderMissingProjections(); return;
   }
   var joined = joinProjections(s.players, stored.entries, state.nameMaps[s.sport] || {});
   state.proj = joined.values;
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
     matchedById: joined.matchedById, matchedByName: joined.matchedByName,
-    unmatched: joined.unmatched
+    boardTotal: s.players.length,
+    missing: s.players
+      .filter(function (p) { return joined.values[p.player_id] == null; })
+      .map(function (p) { return p.first_name + " " + p.last_name; })
   };
-  renderUnmatched();
+  renderMissingProjections();
 }
 
 function handleProjectionFile(file) {
@@ -613,8 +638,9 @@ function handleProjectionFile(file) {
     applyStoredProjections();
     var m = state.projMeta;
     setStatus("Read " + parsed.entries.length + " " + parsed.format + " rows from " + file.name +
-              ". Matched " + (m.matchedById + m.matchedByName) + " players (" + m.matchedById +
-              " by id, " + m.matchedByName + " by name)." +
+              ". " + (m.boardTotal - m.missing.length) + " of " + m.boardTotal +
+              " board players now carry a projection (" + m.matchedById + " matched by id, " +
+              m.matchedByName + " by name)." +
               (parsed.skipped ? " Skipped " + parsed.skipped + " rows with no numeric projection." : ""));
     render();
   };
@@ -661,19 +687,21 @@ function renderMeta(rec) {
   }
 }
 
-function renderUnmatched() {
+/* The panel reports board players still lacking a number, not the file rows that went
+   unused: a league-wide weekly export leaves hundreds of rows unused by design. */
+function renderMissingProjections() {
   var el = $("unmatched");
   el.innerHTML = "";
   var m = state.projMeta;
-  if (!m || !m.unmatched.length) return;
+  if (!m || !m.missing.length) return;
   var d = document.createElement("div");
   d.className = "notice warn";
-  d.innerHTML = "<b>" + m.unmatched.length + " projection row" +
-                (m.unmatched.length === 1 ? "" : "s") + " did not match a player on this slate.</b> " +
-                "They carry no projection here. Add an alias to the name map if one should have matched.";
+  d.innerHTML = "<b>" + m.missing.length + " of " + m.boardTotal +
+                " board players have no projection.</b> " +
+                "Add an alias to the name map if one of them should have matched.";
   var names = document.createElement("div");
   names.className = "names";
-  names.textContent = m.unmatched.join(" · ");
+  names.textContent = m.missing.join(" · ");
   d.appendChild(names);
   el.appendChild(d);
 }
@@ -822,7 +850,7 @@ function renderFoot(shown) {
   var bits = [shown + " of " + state.order.length + " shown"];
   if (m) {
     bits.push("projections from " + m.file + " (" + m.format + "), " +
-              (m.matchedById + m.matchedByName) + " matched, " + m.unmatched.length + " unmatched");
+              (m.boardTotal - m.missing.length) + " of " + m.boardTotal + " board players covered");
   } else {
     bits.push("no projections uploaded for " + state.slate.sport.toUpperCase());
   }
@@ -1008,6 +1036,13 @@ var FIXTURE_ETR =
   '"Player","Position","Team","Opponent","Rank","ADP","Proj","Ceiling","Pos Rank","Optimal Rate","Optimal IF QB Optimal","Optimal IF Opp QB Optimal","Top 5 At Pos Rate","Own %","id"\n' +
   '"Jahmyr Gibbs","RB","DET","NO","1","1.0","21.2","35.3","RB01","26.3%","25.2%","30.0%","48.3%","100.0%","cff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7"\n' +
   '"Amon-Ra St. Brown","WR","DET","NO","3","3.8","15.9","27.4","WR02","16.6%","44.2%","16.7%","30.7%","100.0%","c2514e1c-2fc1-4fc7-ac51-5d2a68d9af45"\n';
+// ETR's league-wide weekly export: BOM on the first header cell, CRLF endings, and a
+// Half PPR Proj column. The third row repeats a name on purpose to pin the higher-wins rule.
+var FIXTURE_WEEKLY =
+  '\uFEFF"Player","Pos","Team","Opp","DK Proj","FD Proj","FFPC Proj","Standard Proj","Half PPR Proj","Full PPR Proj","DK Ceiling","FD Ceiling","Slate"\r\n' +
+  '"Jahmyr Gibbs","RB","DET","NO","24.6","22.4","23.5","19.2","21.3","23.4","40.4","37.8","Main"\r\n' +
+  '"Puka Nacua","WR","LA","SF","22.3","18.5","21.0","13.5","17.2","21.0","36.9","31.6","Thursday"\r\n' +
+  '"Jahmyr Gibbs","RB","DET","NO","24.6","22.4","23.5","19.2","18.9","23.4","40.4","37.8","Thursday"\r\n';
 var FIXTURE_CFF =
   "RANK,PLAYER NAME,POS,STATUS,TEAM,CONF,OPP,PAYDS,PATD,RUYDS,RUTD,REC,REYDS,RETD,FPNTS,DK $,FD $\n" +
   "59,Liam Szarka,QB,,AirForce,MWC,N Dakota St,84.0,0.4,79.0,1.5,,,,21.9,7800,\n" +
@@ -1023,6 +1058,20 @@ function brrSelfTest() {
   ok("etr reads Proj not ADP", etr.entries[0].proj === 21.2);
   ok("etr id", etr.entries[0].id === "cff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7");
   ok("etr suffix/punctuation", etr.entries[1].norm === "amon ra st brown");
+
+  var wk = parseProjections(FIXTURE_WEEKLY);
+  ok("weekly detected", wk.format === "ETR Weekly" && wk.sport === "nfl");
+  ok("weekly BOM stripped", wk.entries.length === 2);
+  ok("weekly reads Half PPR, not DK/FD/Standard", wk.entries[0].proj === 21.3);
+  ok("weekly has no id", wk.entries[0].id === null);
+  ok("weekly duplicate keeps the higher", wk.entries[0].name === "Jahmyr Gibbs" && wk.entries[0].proj === 21.3);
+  ok("weekly second row", wk.entries[1].name === "Puka Nacua" && wk.entries[1].proj === 17.2);
+  var wkJoin = joinProjections(
+    [{ appearance_id: "aa", player_id: "pp", first_name: "Puka", last_name: "Nacua", adp: 5 }],
+    wk.entries, {});
+  ok("weekly joins by name only", wkJoin.values.pp === 17.2 && wkJoin.matchedById === 0);
+  ok("unrecognized file is reported", /unrecognized projection file/.test(
+    parseProjections("Name,Points\nA,1\n").error || ""));
 
   var cff = parseProjections(FIXTURE_CFF);
   ok("cff sport", cff.sport === "cfb");
