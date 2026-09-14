@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battle Royale Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #f3f5f7;
+    --surface: #ffffff;
+    --surface-2: #eaeef2;
+    --ink: #161a20;
+    --muted: #616c7a;
+    --line: #dce1e8;
+    --line-strong: #c3ccd6;
+    --accent: #1d4f91;
+    --accent-ink: #ffffff;
+    --up: #10704a;
+    --up-bg: #e2f1ea;
+    --down: #ac2b1c;
+    --down-bg: #fbe7e3;
+    --new: #8a5a06;
+    --new-bg: #fbf0d8;
+    --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1115;
+      --surface: #151a20;
+      --surface-2: #1b222a;
+      --ink: #e5eaf0;
+      --muted: #909cab;
+      --line: #252d36;
+      --line-strong: #37414d;
+      --accent: #7aa9db;
+      --accent-ink: #0d1115;
+      --up: #4dc48d;
+      --up-bg: #122c20;
+      --down: #f08a7e;
+      --down-bg: #341813;
+      --new: #dfb765;
+      --new-bg: #2d2413;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1115;
+    --surface: #151a20;
+    --surface-2: #1b222a;
+    --ink: #e5eaf0;
+    --muted: #909cab;
+    --line: #252d36;
+    --line-strong: #37414d;
+    --accent: #7aa9db;
+    --accent-ink: #0d1115;
+    --up: #4dc48d;
+    --up-bg: #122c20;
+    --down: #f08a7e;
+    --down-bg: #341813;
+    --new: #dfb765;
+    --new-bg: #2d2413;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  .shell { max-width: 1040px; margin: 0 auto; padding: 0 16px; padding-block: 0 64px; }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding-block: 14px 0;
+  }
+  .mast-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h1 {
+    font-size: 19px; font-weight: 700; letter-spacing: -.015em; margin: 0;
+    white-space: nowrap;
+  }
+  .mast-meta {
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    display: flex; gap: 14px; flex-wrap: wrap; margin-left: auto;
+  }
+  .mast-meta b { font-weight: 500; color: var(--ink); }
+
+  .controls {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding-block: 12px;
+  }
+  .grow { flex: 1 1 180px; min-width: 150px; }
+
+  label.field { display: flex; flex-direction: column; gap: 3px; }
+  .field-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  select, input[type="search"] {
+    font-family: var(--sans); font-size: 14px; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line-strong);
+    border-radius: 7px; padding: 7px 9px; width: 100%; height: 34px;
+  }
+  input[type="search"] { -webkit-appearance: none; }
+  select:focus-visible, input:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 1px;
+  }
+
+  button {
+    font-family: var(--sans); font-size: 13.5px; font-weight: 500;
+    border-radius: 7px; border: 1px solid var(--line-strong);
+    background: var(--surface); color: var(--ink);
+    padding: 7px 13px; height: 34px; cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .5; cursor: default; }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  button.primary:hover:not(:disabled) { filter: brightness(1.1); }
+
+  .chips { display: flex; gap: 5px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+    padding: 5px 9px; height: 28px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--muted);
+    cursor: pointer;
+  }
+  .chip[aria-pressed="true"] {
+    background: var(--accent); border-color: var(--accent); color: var(--accent-ink);
+  }
+
+  /* ---------- notices ---------- */
+  .notice {
+    font-size: 13.5px; border-radius: 8px; padding: 9px 12px; margin-bottom: 10px;
+    border: 1px solid var(--line); background: var(--surface);
+  }
+  .notice.warn { background: var(--new-bg); border-color: var(--new); color: var(--new); }
+  .notice.bad { background: var(--down-bg); border-color: var(--down); color: var(--down); }
+  .notice b { font-weight: 600; }
+  .notice .names {
+    font-family: var(--mono); font-size: 12px; margin-top: 5px;
+    max-height: 104px; overflow-y: auto; line-height: 1.6;
+  }
+  #status:empty, #unmatched:empty, #baselineNote:empty { display: none; }
+
+  /* ---------- board ---------- */
+  /* No overflow clipping here: an overflow value would make .board the sticky scroll
+     container and push the sticky header down instead of pinning it to the viewport. */
+  .board { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  .row {
+    display: grid;
+    grid-template-columns: 26px 40px 62px minmax(0, 1fr) 66px 66px;
+    align-items: center; gap: 10px;
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .row:last-child { border-bottom: 0; }
+  #rows .row:last-child { border-radius: 0 0 9px 9px; }
+  .head {
+    background: var(--surface-2); position: sticky; top: var(--mast-h, 150px); z-index: 20;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); padding-block: 8px;
+    border-radius: 9px 9px 0 0;
+  }
+  .head button {
+    all: unset; cursor: pointer; font: inherit; letter-spacing: inherit;
+    text-transform: inherit; color: inherit;
+  }
+  .head button:hover { color: var(--ink); }
+  .head button[aria-sort="true"] { color: var(--accent); font-weight: 600; }
+  .head .r { text-align: right; }
+
+  .handle {
+    color: var(--muted); cursor: grab; user-select: none; text-align: center;
+    font-size: 15px; line-height: 1;
+  }
+  .row[draggable="false"] .handle { opacity: .28; cursor: default; }
+  .row.dragging { opacity: .4; }
+  .row.drop-before { box-shadow: inset 0 2px 0 0 var(--accent); }
+  .row.drop-after { box-shadow: inset 0 -2px 0 0 var(--accent); }
+
+  .rank { font-family: var(--mono); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+  .move { font-family: var(--mono); font-size: 11.5px; font-weight: 500; white-space: nowrap; }
+  .move.up { color: var(--up); }
+  .move.down { color: var(--down); }
+  .move.flat, .move.none { color: var(--muted); }
+
+  .who { min-width: 0; display: flex; align-items: baseline; gap: 8px; }
+  .name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .tag {
+    font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; padding: 2px 6px; border-radius: 4px;
+    background: var(--new-bg); color: var(--new); white-space: nowrap;
+  }
+  .row.is-new { background: color-mix(in srgb, var(--new-bg) 45%, var(--surface)); }
+  .num { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; text-align: right; }
+  .num.dim { color: var(--muted); }
+
+  .empty { padding: 28px 14px; text-align: center; color: var(--muted); font-size: 14px; }
+  .footnote { color: var(--muted); font-size: 12.5px; margin-top: 12px; }
+  .footnote code { font-family: var(--mono); font-size: 11.5px; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (max-width: 620px) {
+    .row { grid-template-columns: 22px 32px 54px minmax(0, 1fr) 54px 54px; gap: 7px; padding: 7px 9px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="masthead">
+    <div class="mast-row">
+      <h1>Battle Royale Board</h1>
+      <div class="mast-meta" id="meta"></div>
+    </div>
+    <div class="controls">
+      <label class="field grow" style="flex-basis:230px">
+        <span class="field-label">Slate</span>
+        <select id="slate"></select>
+      </label>
+      <label class="field grow">
+        <span class="field-label">Search</span>
+        <input type="search" id="search" placeholder="name" autocomplete="off">
+      </label>
+      <label class="field">
+        <span class="field-label">View</span>
+        <select id="view">
+          <option value="order">My order (drag)</option>
+          <option value="adp">Sort by ADP</option>
+          <option value="proj">Sort by projection</option>
+          <option value="name">Sort by name</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Projections</span>
+        <input type="file" id="proj" accept=".csv,text/csv" class="vh">
+        <button type="button" id="projBtn">Upload CSV</button>
+      </label>
+      <label class="field">
+        <span class="field-label">Underdog</span>
+        <button type="button" id="export" class="primary">Export ranking</button>
+      </label>
+    </div>
+    <div class="controls" style="padding-top:0">
+      <div class="chips" id="positions"></div>
+    </div>
+  </div>
+
+  <div id="status"></div>
+  <div id="baselineNote"></div>
+  <div id="unmatched"></div>
+
+  <div class="board">
+    <div class="row head">
+      <span></span>
+      <span class="r">#</span>
+      <span>Move</span>
+      <span>Player</span>
+      <span class="r"><button type="button" data-sort="adp">ADP</button></span>
+      <span class="r"><button type="button" data-sort="proj">Proj</button></span>
+    </div>
+    <div id="rows"><div class="empty">Loading the mirror&hellip;</div></div>
+  </div>
+
+  <p class="footnote" id="foot"></p>
+</div>
+
+<script>
+"use strict";
+
+// ==== PURE LOGIC START (no DOM; mirrored by the self-test at the bottom) ====
+
+var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
+
+/** RFC-4180-ish CSV parser: quoted fields, embedded commas/newlines, doubled quotes. */
+function parseCsv(text) {
+  var rows = [], row = [], field = "", inQuotes = false, i = 0;
+  text = String(text).replace(/^﻿/, "");
+  while (i < text.length) {
+    var c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
+        inQuotes = false; i++; continue;
+      }
+      field += c; i++; continue;
+    }
+    if (c === '"') { inQuotes = true; i++; continue; }
+    if (c === ",") { row.push(field); field = ""; i++; continue; }
+    if (c === "\r") { i++; continue; }
+    if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+    field += c; i++;
+  }
+  row.push(field);
+  rows.push(row);
+  return rows.filter(function (r) { return r.length > 1 || (r[0] || "").trim() !== ""; });
+}
+
+/** Strip suffixes and punctuation so two spellings of one player collide. */
+function normName(s) {
+  return String(s == null ? "" : s)
+    .toLowerCase()
+    .replace(/[‘’'`.]/g, "")
+    .replace(/[-‐-―]/g, " ")
+    .replace(/\b(jr|sr|ii|iii|iv|v)\b/g, " ")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Board-side key: apply the sport's Underdog -> projection-source alias, then normalize. */
+function boardKey(first, last, nameMap) {
+  var full = ((first || "") + " " + (last || "")).replace(/\s+/g, " ").trim();
+  var mapped = (nameMap && nameMap[full]) || full;
+  return normName(mapped);
+}
+
+function headerIndex(header) {
+  var idx = {};
+  header.forEach(function (h, i) { idx[String(h).trim().toLowerCase()] = i; });
+  return idx;
+}
+
+/**
+ * Parse a projections CSV into [{id, name, norm, proj}].
+ * ETR Battle Royale (NFL): reads Player, Proj, id. Its ADP and Rank are ignored on purpose.
+ * CFF (CFB): reads PLAYER NAME, FPNTS.
+ */
+function parseProjections(text) {
+  var rows = parseCsv(text);
+  if (!rows.length) return { error: "empty file", entries: [] };
+  var idx = headerIndex(rows[0]);
+  var format, nameCol, projCol, idCol = null, sport;
+
+  if (idx["fpnts"] != null && idx["player name"] != null) {
+    format = "CFF"; sport = "cfb"; nameCol = idx["player name"]; projCol = idx["fpnts"];
+  } else if (idx["proj"] != null && idx["player"] != null) {
+    format = "ETR Battle Royale"; sport = "nfl"; nameCol = idx["player"]; projCol = idx["proj"];
+    if (idx["id"] != null) idCol = idx["id"];
+  } else {
+    return {
+      error: "unrecognized columns. Expected an ETR Battle Royale export (Player, Proj, id) " +
+             "or a CFF export (PLAYER NAME, FPNTS). Found: " + rows[0].join(", "),
+      entries: []
+    };
+  }
+
+  var entries = [], skipped = 0;
+  for (var r = 1; r < rows.length; r++) {
+    var row = rows[r];
+    var name = (row[nameCol] || "").trim();
+    if (!name) { continue; }
+    var raw = (row[projCol] || "").trim().replace(/[$,]/g, "");
+    var proj = raw === "" ? NaN : Number(raw);
+    if (!isFinite(proj)) { skipped++; continue; }
+    entries.push({
+      id: idCol == null ? null : (row[idCol] || "").trim() || null,
+      name: name,
+      norm: normName(name),
+      proj: proj
+    });
+  }
+  return { format: format, sport: sport, entries: entries, skipped: skipped, error: null };
+}
+
+/**
+ * Join parsed projections to the slate.
+ * Ids are tried against appearance_id first, then player_id (an ETR file carries one or
+ * the other depending on the export), then the normalized name.
+ */
+function joinProjections(players, entries, nameMap) {
+  var byApp = {}, byPid = {}, byName = {};
+  players.forEach(function (p) {
+    byApp[p.appearance_id] = p;
+    byPid[p.player_id] = p;
+    var k = boardKey(p.first_name, p.last_name, nameMap);
+    if (!byName[k]) byName[k] = [];
+    byName[k].push(p);
+  });
+
+  var values = {}, matchedById = 0, matchedByName = 0, unmatched = [];
+  entries.forEach(function (e) {
+    var hit = null, viaId = false;
+    if (e.id && byApp[e.id]) { hit = byApp[e.id]; viaId = true; }
+    else if (e.id && byPid[e.id]) { hit = byPid[e.id]; viaId = true; }
+    else if (byName[e.norm] && byName[e.norm].length === 1) { hit = byName[e.norm][0]; }
+    if (!hit) { unmatched.push(e.name); return; }
+    if (values[hit.player_id] == null) { viaId ? matchedById++ : matchedByName++; }
+    values[hit.player_id] = e.proj;
+  });
+  return { values: values, matchedById: matchedById, matchedByName: matchedByName, unmatched: unmatched };
+}
+
+/**
+ * Apply a saved player_id order to a freshly fetched slate.
+ * Known players keep their saved sequence, departed players drop out, and players new to
+ * the slate land at the bottom flagged so they get placed deliberately.
+ */
+function reconcileOrder(players, savedOrder) {
+  var byPid = {};
+  players.forEach(function (p) { byPid[p.player_id] = p; });
+  if (!savedOrder || !savedOrder.length) {
+    var sorted = players.slice().sort(function (a, b) { return a.adp - b.adp; });
+    return { order: sorted.map(function (p) { return p.player_id; }), newIds: [], dropped: [] };
+  }
+  var seen = {}, order = [], dropped = [];
+  savedOrder.forEach(function (pid) {
+    if (seen[pid]) return;
+    seen[pid] = 1;
+    if (byPid[pid]) order.push(pid); else dropped.push(pid);
+  });
+  var fresh = players
+    .filter(function (p) { return !seen[p.player_id]; })
+    .sort(function (a, b) { return a.adp - b.adp; })
+    .map(function (p) { return p.player_id; });
+  return { order: order.concat(fresh), newIds: fresh, dropped: dropped };
+}
+
+/** Move one player directly before or after another inside the full order. */
+function moveWithin(order, dragId, targetId, before) {
+  if (dragId === targetId) return order.slice();
+  var out = order.filter(function (p) { return p !== dragId; });
+  var at = out.indexOf(targetId);
+  if (at < 0) return order.slice();
+  out.splice(before ? at : at + 1, 0, dragId);
+  return out;
+}
+
+/** ADP movement since the last export. Lower ADP means the field is taking him earlier. */
+function movement(baseline, playerId, adp) {
+  if (!baseline) return { kind: "nobase" };
+  var was = baseline[playerId];
+  if (was == null) return { kind: "unseen" };
+  var delta = was - adp;
+  if (Math.abs(delta) < 0.05) return { kind: "flat", delta: 0 };
+  return { kind: delta > 0 ? "up" : "down", delta: Math.abs(delta) };
+}
+
+/** The upload file: one lowercase `id` header, then appearance ids, nothing else. */
+function buildExportCsv(order, byPid) {
+  var lines = ["id"], missing = [];
+  order.forEach(function (pid) {
+    var p = byPid[pid];
+    if (!p) { missing.push(pid); return; }
+    lines.push(p.appearance_id);
+  });
+  return { csv: lines.join("\n") + "\n", rows: lines.length - 1, missing: missing };
+}
+
+function baselineFrom(order, byPid) {
+  var out = {};
+  order.forEach(function (pid) { if (byPid[pid]) out[pid] = byPid[pid].adp; });
+  return out;
+}
+
+// ==== PURE LOGIC END ====
+
+// ---------------------------------------------------------------- storage
+var K = {
+  order: function (label) { return "brr:order:" + label; },
+  baseline: function (label) { return "brr:baseline:" + label; },
+  proj: function (sport) { return "brr:proj:" + sport; },
+  slate: "brr:slate"
+};
+function load(key, fallback) {
+  try {
+    var raw = localStorage.getItem(key);
+    return raw == null ? fallback : JSON.parse(raw);
+  } catch (e) { return fallback; }
+}
+function save(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+  catch (e) { setStatus("Could not save to this browser's storage: " + e.message, "bad"); return false; }
+}
+
+// ---------------------------------------------------------------- state
+var state = {
+  data: null,          // latest.json
+  slate: null,         // chosen slate object
+  order: [],           // player_id list, full board
+  newIds: {},          // player_id -> true, new since the saved order
+  baseline: null,      // player_id -> adp at last export
+  proj: {},            // player_id -> projection, for the current slate
+  projMeta: null,      // {file, format, matchedById, matchedByName, unmatched, at}
+  nameMaps: { nfl: {}, cfb: {} },
+  view: "order",
+  search: "",
+  position: "ALL"
+};
+
+var $ = function (id) { return document.getElementById(id); };
+
+function setStatus(msg, kind) {
+  var el = $("status");
+  el.innerHTML = "";
+  if (!msg) return;
+  var d = document.createElement("div");
+  d.className = "notice" + (kind ? " " + kind : "");
+  d.textContent = msg;
+  el.appendChild(d);
+}
+
+// ---------------------------------------------------------------- fetching
+function mirrorUrl(file) { return MIRROR + file + "?t=" + Date.now(); }
+
+async function fetchJson(file) {
+  var r = await fetch(mirrorUrl(file), { cache: "no-store" });
+  if (!r.ok) throw new Error(file + ": HTTP " + r.status);
+  return r.json();
+}
+
+async function loadMirror() {
+  var data = await fetchJson("latest.json");
+  if (!data || !Array.isArray(data.slates)) throw new Error("latest.json has no slates array");
+  return data;
+}
+
+async function loadNameMaps() {
+  var pairs = [["nfl", "nfl_name_map.json"], ["cfb", "cfb_name_map.json"]];
+  await Promise.all(pairs.map(async function (pair) {
+    try {
+      var m = await fetchJson(pair[1]);
+      delete m._comment;
+      state.nameMaps[pair[0]] = m;
+    } catch (e) { state.nameMaps[pair[0]] = {}; }
+  }));
+}
+
+// ---------------------------------------------------------------- slate wiring
+function slateLabel(s) {
+  return s.sport.toUpperCase() + " · " + (s.title || s.label);
+}
+
+function fillSlatePicker() {
+  var sel = $("slate");
+  sel.innerHTML = "";
+  state.data.slates.forEach(function (s, i) {
+    var o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = slateLabel(s);
+    sel.appendChild(o);
+  });
+  var want = load(K.slate, null);
+  var found = state.data.slates.findIndex(function (s) { return s.label === want; });
+  sel.value = String(found >= 0 ? found : 0);
+}
+
+function byPidMap(slate) {
+  var m = {};
+  slate.players.forEach(function (p) { m[p.player_id] = p; });
+  return m;
+}
+
+function selectSlate(index) {
+  var s = state.data.slates[index];
+  if (!s) return;
+  state.slate = s;
+  save(K.slate, s.label);
+
+  var rec = reconcileOrder(s.players, load(K.order(s.label), null));
+  state.order = rec.order;
+  state.newIds = {};
+  rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
+  state.baseline = load(K.baseline(s.label), null);
+
+  applyStoredProjections();
+  renderPositions();
+  renderMeta(rec);
+  render();
+}
+
+// ---------------------------------------------------------------- projections
+function applyStoredProjections() {
+  var s = state.slate;
+  var stored = load(K.proj(s.sport), null);
+  if (!stored || !stored.entries || !stored.entries.length) {
+    state.proj = {}; state.projMeta = null; renderUnmatched(); return;
+  }
+  var joined = joinProjections(s.players, stored.entries, state.nameMaps[s.sport] || {});
+  state.proj = joined.values;
+  state.projMeta = {
+    file: stored.file, format: stored.format, at: stored.at,
+    matchedById: joined.matchedById, matchedByName: joined.matchedByName,
+    unmatched: joined.unmatched
+  };
+  renderUnmatched();
+}
+
+function handleProjectionFile(file) {
+  var reader = new FileReader();
+  reader.onload = function () {
+    var parsed = parseProjections(String(reader.result));
+    if (parsed.error) { setStatus(file.name + ": " + parsed.error, "bad"); return; }
+    if (!parsed.entries.length) { setStatus(file.name + ": no rows with a numeric projection.", "bad"); return; }
+    save(K.proj(parsed.sport), {
+      file: file.name, format: parsed.format, at: new Date().toISOString(), entries: parsed.entries
+    });
+    if (parsed.sport !== state.slate.sport) {
+      setStatus("Read " + parsed.entries.length + " " + parsed.format + " rows and saved them for " +
+                parsed.sport.toUpperCase() + ". The board is on a " + state.slate.sport.toUpperCase() +
+                " slate, so switch slates to see them.", "warn");
+      return;
+    }
+    applyStoredProjections();
+    var m = state.projMeta;
+    setStatus("Read " + parsed.entries.length + " " + parsed.format + " rows from " + file.name +
+              ". Matched " + (m.matchedById + m.matchedByName) + " players (" + m.matchedById +
+              " by id, " + m.matchedByName + " by name)." +
+              (parsed.skipped ? " Skipped " + parsed.skipped + " rows with no numeric projection." : ""));
+    render();
+  };
+  reader.onerror = function () { setStatus("Could not read " + file.name + ".", "bad"); };
+  reader.readAsText(file);
+}
+
+// ---------------------------------------------------------------- render
+function renderMeta(rec) {
+  var s = state.slate, d = state.data;
+  var cutoff = new Date(s.cutoff);
+  var parts = [
+    "<span>mirror <b>" + d.generated_at + "</b></span>",
+    "<span>slate closes <b>" + cutoff.toLocaleString([], {
+      weekday: "short", hour: "numeric", minute: "2-digit"
+    }) + "</b></span>",
+    "<span><b>" + s.players.length + "</b> priced</span>"
+  ];
+  $("meta").innerHTML = parts.join("");
+
+  var notes = [];
+  if (rec && rec.newIds.length) {
+    notes.push(rec.newIds.length + " player" + (rec.newIds.length === 1 ? "" : "s") +
+               " new to this slate since your saved order, flagged at the bottom.");
+  }
+  if (rec && rec.dropped.length) {
+    notes.push(rec.dropped.length + " player" + (rec.dropped.length === 1 ? "" : "s") +
+               " from your saved order are no longer on the slate and were removed.");
+  }
+  var nb = $("baselineNote");
+  nb.innerHTML = "";
+  if (!state.baseline) {
+    var d1 = document.createElement("div");
+    d1.className = "notice";
+    d1.innerHTML = "<b>No baseline yet</b> for " + slateLabel(s) +
+                   ". Movement arrows start after your first export.";
+    nb.appendChild(d1);
+  }
+  if (notes.length) {
+    var d2 = document.createElement("div");
+    d2.className = "notice warn";
+    d2.textContent = notes.join(" ");
+    nb.appendChild(d2);
+  }
+}
+
+function renderUnmatched() {
+  var el = $("unmatched");
+  el.innerHTML = "";
+  var m = state.projMeta;
+  if (!m || !m.unmatched.length) return;
+  var d = document.createElement("div");
+  d.className = "notice warn";
+  d.innerHTML = "<b>" + m.unmatched.length + " projection row" +
+                (m.unmatched.length === 1 ? "" : "s") + " did not match a player on this slate.</b> " +
+                "They carry no projection here. Add an alias to the name map if one should have matched.";
+  var names = document.createElement("div");
+  names.className = "names";
+  names.textContent = m.unmatched.join(" · ");
+  d.appendChild(names);
+  el.appendChild(d);
+}
+
+function renderPositions() {
+  var seen = [];
+  state.slate.players.forEach(function (p) {
+    if (p.position && seen.indexOf(p.position) < 0) seen.push(p.position);
+  });
+  seen.sort();
+  if (seen.indexOf(state.position) < 0) state.position = "ALL";
+  var box = $("positions");
+  box.innerHTML = "";
+  ["ALL"].concat(seen).forEach(function (pos) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.textContent = pos === "ALL" ? "All" : pos;
+    b.setAttribute("aria-pressed", String(state.position === pos));
+    b.addEventListener("click", function () {
+      state.position = pos;
+      renderPositions();
+      render();
+    });
+    box.appendChild(b);
+  });
+}
+
+function visibleRows() {
+  var byPid = byPidMap(state.slate);
+  var list = state.order.map(function (pid, i) {
+    var p = byPid[pid];
+    return p ? { p: p, rank: i + 1 } : null;
+  }).filter(Boolean);
+
+  var q = state.search.trim().toLowerCase();
+  if (q) {
+    list = list.filter(function (r) {
+      return (r.p.first_name + " " + r.p.last_name).toLowerCase().indexOf(q) >= 0;
+    });
+  }
+  if (state.position !== "ALL") {
+    list = list.filter(function (r) { return r.p.position === state.position; });
+  }
+  if (state.view === "adp") {
+    list = list.slice().sort(function (a, b) { return a.p.adp - b.p.adp; });
+  } else if (state.view === "name") {
+    list = list.slice().sort(function (a, b) {
+      return (a.p.last_name + a.p.first_name).localeCompare(b.p.last_name + b.p.first_name);
+    });
+  } else if (state.view === "proj") {
+    list = list.slice().sort(function (a, b) {
+      var x = state.proj[a.p.player_id], y = state.proj[b.p.player_id];
+      if (x == null && y == null) return a.p.adp - b.p.adp;
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return y - x;
+    });
+  }
+  return list;
+}
+
+var MOVE_TEXT = {
+  up: function (d) { return "▲ " + d.toFixed(1); },
+  down: function (d) { return "▼ " + d.toFixed(1); },
+  flat: function () { return "–"; },
+  unseen: function () { return "new"; },
+  nobase: function () { return "–"; }
+};
+
+function render() {
+  var rows = visibleRows();
+  var host = $("rows");
+  host.innerHTML = "";
+  var dragging = state.view === "order";
+
+  if (!rows.length) {
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = "No players match this search and position filter.";
+    host.appendChild(e);
+    renderFoot(0);
+    return;
+  }
+
+  var frag = document.createDocumentFragment();
+  rows.forEach(function (r) {
+    var p = r.p;
+    var el = document.createElement("div");
+    el.className = "row" + (state.newIds[p.player_id] ? " is-new" : "");
+    el.dataset.pid = p.player_id;
+    el.draggable = dragging;
+
+    var handle = document.createElement("span");
+    handle.className = "handle";
+    handle.textContent = "∷";
+    handle.title = dragging ? "Drag to reorder" : "Switch the view to My order to drag";
+
+    var rank = document.createElement("span");
+    rank.className = "rank";
+    rank.textContent = r.rank;
+
+    var mv = movement(state.baseline, p.player_id, p.adp);
+    var move = document.createElement("span");
+    move.className = "move " + (mv.kind === "unseen" ? "none" : mv.kind === "nobase" ? "none" : mv.kind);
+    move.textContent = MOVE_TEXT[mv.kind](mv.delta);
+    move.title = mv.kind === "nobase" ? "No baseline yet for this slate"
+      : mv.kind === "unseen" ? "Not in your last export"
+      : mv.kind === "flat" ? "ADP unchanged since your last export"
+      : "ADP moved " + mv.delta.toFixed(1) + " " + (mv.kind === "up" ? "earlier" : "later") + " since your last export";
+
+    var who = document.createElement("span");
+    who.className = "who";
+    var name = document.createElement("span");
+    name.className = "name";
+    name.textContent = p.first_name + " " + p.last_name;
+    var sub = document.createElement("span");
+    sub.className = "sub";
+    sub.textContent = (p.team || "—") + " · " + (p.position || "—");
+    who.append(name, sub);
+    if (state.newIds[p.player_id]) {
+      var tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = "new";
+      who.appendChild(tag);
+    }
+
+    var adp = document.createElement("span");
+    adp.className = "num";
+    adp.textContent = p.adp.toFixed(1);
+
+    var pr = document.createElement("span");
+    var v = state.proj[p.player_id];
+    pr.className = "num" + (v == null ? " dim" : "");
+    pr.textContent = v == null ? "–" : v.toFixed(1);
+
+    el.append(handle, rank, move, who, adp, pr);
+    frag.appendChild(el);
+  });
+  host.appendChild(frag);
+  renderFoot(rows.length);
+}
+
+function renderFoot(shown) {
+  var m = state.projMeta;
+  var bits = [shown + " of " + state.order.length + " shown"];
+  if (m) {
+    bits.push("projections from " + m.file + " (" + m.format + "), " +
+              (m.matchedById + m.matchedByName) + " matched, " + m.unmatched.length + " unmatched");
+  } else {
+    bits.push("no projections uploaded for " + state.slate.sport.toUpperCase());
+  }
+  if (state.view !== "order") bits.push("dragging is off while sorted");
+  bits.push("order and baselines live in this browser only");
+  $("foot").textContent = bits.join(" · ");
+}
+
+// ---------------------------------------------------------------- drag
+var dragPid = null, dropTarget = null, dropBefore = true;
+
+function clearDropMarks() {
+  Array.prototype.forEach.call(document.querySelectorAll(".row.drop-before,.row.drop-after"), function (el) {
+    el.classList.remove("drop-before", "drop-after");
+  });
+}
+
+document.addEventListener("dragstart", function (e) {
+  var row = e.target.closest ? e.target.closest(".row[data-pid]") : null;
+  if (!row || state.view !== "order") return;
+  dragPid = row.dataset.pid;
+  row.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+  try { e.dataTransfer.setData("text/plain", dragPid); } catch (err) { /* Safari */ }
+});
+
+document.addEventListener("dragover", function (e) {
+  if (!dragPid) return;
+  var row = e.target.closest ? e.target.closest(".row[data-pid]") : null;
+  if (!row || row.dataset.pid === dragPid) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+  var box = row.getBoundingClientRect();
+  var before = (e.clientY - box.top) < box.height / 2;
+  if (dropTarget !== row || dropBefore !== before) {
+    clearDropMarks();
+    dropTarget = row;
+    dropBefore = before;
+    row.classList.add(before ? "drop-before" : "drop-after");
+  }
+});
+
+document.addEventListener("drop", function (e) {
+  if (!dragPid || !dropTarget) return;
+  e.preventDefault();
+  var targetPid = dropTarget.dataset.pid;
+  state.order = moveWithin(state.order, dragPid, targetPid, dropBefore);
+  delete state.newIds[dragPid];
+  save(K.order(state.slate.label), state.order);
+  finishDrag();
+  render();
+});
+
+document.addEventListener("dragend", finishDrag);
+
+function finishDrag() {
+  clearDropMarks();
+  Array.prototype.forEach.call(document.querySelectorAll(".row.dragging"), function (el) {
+    el.classList.remove("dragging");
+  });
+  dragPid = null; dropTarget = null;
+}
+
+// ---------------------------------------------------------------- export
+async function doExport() {
+  var btn = $("export");
+  btn.disabled = true;
+  var label = state.slate.label;
+  try {
+    var fresh = await loadMirror();
+    var slate = fresh.slates.filter(function (s) { return s.label === label; })[0];
+    if (!slate) {
+      setStatus("The mirror no longer carries a live " + label + " slate, so there are no current " +
+                "ids to export. Reload to see what is live.", "bad");
+      return;
+    }
+    var changed = slate.slate_id !== state.slate.slate_id;
+    var byPid = byPidMap(slate);
+    var rec = reconcileOrder(slate.players, state.order);
+    var built = buildExportCsv(rec.order, byPid);
+    if (!built.rows) { setStatus("Nothing to export: no players from your order are on the slate.", "bad"); return; }
+
+    var blob = new Blob([built.csv], { type: "text/csv" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = label + "_" + slate.slate_id.slice(0, 8) + ".csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+
+    save(K.baseline(label), baselineFrom(rec.order, byPid));
+    state.baseline = load(K.baseline(label), null);
+    state.data = fresh;
+    state.slate = slate;
+    state.order = rec.order;
+    state.newIds = {};
+    rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
+    applyStoredProjections();
+    renderPositions();
+    renderMeta(null);
+    render();
+
+    var msg = "Exported " + built.rows + " appearance ids in your order. Movement arrows now measure from here.";
+    if (built.missing.length) {
+      msg += " " + built.missing.length + " player" + (built.missing.length === 1 ? "" : "s") +
+             " in your order are no longer on the slate and were left out.";
+    }
+    if (changed) msg += " The mirror had refreshed to a newer slate, so the board reloaded onto it.";
+    setStatus(msg, changed || built.missing.length ? "warn" : null);
+  } catch (err) {
+    setStatus("Export failed: " + err.message + ". Nothing was saved as a baseline.", "bad");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ---------------------------------------------------------------- boot
+$("slate").addEventListener("change", function (e) { selectSlate(Number(e.target.value)); });
+$("search").addEventListener("input", function (e) { state.search = e.target.value; render(); });
+$("view").addEventListener("change", function (e) { state.view = e.target.value; render(); syncSortHeads(); });
+$("projBtn").addEventListener("click", function () { $("proj").click(); });
+$("proj").addEventListener("change", function (e) {
+  if (e.target.files && e.target.files[0]) handleProjectionFile(e.target.files[0]);
+  e.target.value = "";
+});
+$("export").addEventListener("click", doExport);
+Array.prototype.forEach.call(document.querySelectorAll(".head button[data-sort]"), function (b) {
+  b.addEventListener("click", function () {
+    state.view = state.view === b.dataset.sort ? "order" : b.dataset.sort;
+    $("view").value = state.view;
+    syncSortHeads();
+    render();
+  });
+});
+function syncSortHeads() {
+  Array.prototype.forEach.call(document.querySelectorAll(".head button[data-sort]"), function (b) {
+    b.setAttribute("aria-sort", String(state.view === b.dataset.sort));
+  });
+}
+
+// The column header sticks directly under the masthead, whose height changes when the
+// controls wrap, so measure it rather than hard-coding an offset.
+function syncMastHeight() {
+  var m = document.querySelector(".masthead");
+  if (m) document.documentElement.style.setProperty("--mast-h", m.getBoundingClientRect().height + "px");
+}
+window.addEventListener("resize", syncMastHeight);
+if (typeof ResizeObserver !== "undefined") {
+  new ResizeObserver(syncMastHeight).observe(document.querySelector(".masthead"));
+}
+syncMastHeight();
+
+(async function boot() {
+  try {
+    await loadNameMaps();
+    state.data = await loadMirror();
+    if (!state.data.slates.length) {
+      $("rows").innerHTML = "";
+      var e = document.createElement("div");
+      e.className = "empty";
+      e.textContent = "The mirror has no live slates right now. It refills when the next slate opens.";
+      $("rows").appendChild(e);
+      return;
+    }
+    fillSlatePicker();
+    syncSortHeads();
+    selectSlate(Number($("slate").value));
+  } catch (err) {
+    $("rows").innerHTML = "";
+    var f = document.createElement("div");
+    f.className = "empty";
+    f.textContent = "Could not load the ADP mirror: " + err.message;
+    $("rows").appendChild(f);
+    setStatus("The board could not reach " + MIRROR + "latest.json.", "bad");
+  }
+})();
+
+// ---------------------------------------------------------------- test fixture
+// Two real rows per format, kept so the parser can be checked without a file on hand.
+// Run brrSelfTest() in the browser console; it touches nothing on the page.
+var FIXTURE_ETR =
+  '"Player","Position","Team","Opponent","Rank","ADP","Proj","Ceiling","Pos Rank","Optimal Rate","Optimal IF QB Optimal","Optimal IF Opp QB Optimal","Top 5 At Pos Rate","Own %","id"\n' +
+  '"Jahmyr Gibbs","RB","DET","NO","1","1.0","21.2","35.3","RB01","26.3%","25.2%","30.0%","48.3%","100.0%","cff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7"\n' +
+  '"Amon-Ra St. Brown","WR","DET","NO","3","3.8","15.9","27.4","WR02","16.6%","44.2%","16.7%","30.7%","100.0%","c2514e1c-2fc1-4fc7-ac51-5d2a68d9af45"\n';
+var FIXTURE_CFF =
+  "RANK,PLAYER NAME,POS,STATUS,TEAM,CONF,OPP,PAYDS,PATD,RUYDS,RUTD,REC,REYDS,RETD,FPNTS,DK $,FD $\n" +
+  "59,Liam Szarka,QB,,AirForce,MWC,N Dakota St,84.0,0.4,79.0,1.5,,,,21.9,7800,\n" +
+  "490,Owen Allen,RB,,AirForce,MWC,N Dakota St,,,55.0,0.6,0.0,0.0,0.0,9.1,4900,\n";
+
+function brrSelfTest() {
+  var fails = [];
+  function ok(label, cond) { if (!cond) fails.push(label); }
+
+  var etr = parseProjections(FIXTURE_ETR);
+  ok("etr sport", etr.sport === "nfl");
+  ok("etr rows", etr.entries.length === 2);
+  ok("etr reads Proj not ADP", etr.entries[0].proj === 21.2);
+  ok("etr id", etr.entries[0].id === "cff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7");
+  ok("etr suffix/punctuation", etr.entries[1].norm === "amon ra st brown");
+
+  var cff = parseProjections(FIXTURE_CFF);
+  ok("cff sport", cff.sport === "cfb");
+  ok("cff reads FPNTS", cff.entries[0].proj === 21.9 && cff.entries[1].proj === 9.1);
+
+  var players = [
+    { appearance_id: "a1", player_id: "p1", first_name: "Jahmyr", last_name: "Gibbs", team: "DET", position: "RB", adp: 1.3 },
+    { appearance_id: "a2", player_id: "p2", first_name: "Amon-Ra", last_name: "St. Brown", team: "DET", position: "WR", adp: 3.9 },
+    { appearance_id: "a3", player_id: "p3", first_name: "Rueben", last_name: "Owens", team: "TEX", position: "RB", adp: 40.2 }
+  ];
+  var j = joinProjections(players, etr.entries, {});
+  ok("join by name", j.values.p1 === 21.2 && j.values.p2 === 15.9);
+  ok("join unmatched empty", j.unmatched.length === 0);
+
+  var byId = joinProjections(
+    [{ appearance_id: "cff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7", player_id: "px", first_name: "J", last_name: "G", adp: 1 }],
+    [etr.entries[0]], {});
+  ok("join by appearance id", byId.matchedById === 1);
+
+  var aliased = joinProjections(
+    [{ appearance_id: "a9", player_id: "p9", first_name: "Rueben", last_name: "Owens", adp: 9 }],
+    [{ id: null, name: "Rueben Owens II", norm: normName("Rueben Owens II"), proj: 7.5 }],
+    { "Rueben Owens": "Rueben Owens II" });
+  ok("name map alias", aliased.values.p9 === 7.5);
+
+  var rec = reconcileOrder(players, ["p3", "pGONE", "p1"]);
+  ok("saved order kept", rec.order[0] === "p3" && rec.order[1] === "p1");
+  ok("new appended", rec.order[2] === "p2" && rec.newIds[0] === "p2");
+  ok("dropped reported", rec.dropped.length === 1 && rec.dropped[0] === "pGONE");
+  ok("no saved order sorts by adp", reconcileOrder(players, null).order.join() === "p1,p2,p3");
+
+  ok("move before", moveWithin(["a", "b", "c"], "c", "a", true).join() === "c,a,b");
+  ok("move after", moveWithin(["a", "b", "c"], "a", "c", false).join() === "b,c,a");
+
+  ok("movement up", movement({ p1: 2.4 }, "p1", 1.3).kind === "up");
+  ok("movement down", movement({ p1: 1.0 }, "p1", 1.3).kind === "down");
+  ok("movement flat", movement({ p1: 1.3 }, "p1", 1.3).kind === "flat");
+  ok("movement unseen", movement({}, "p1", 1.3).kind === "unseen");
+  ok("movement nobase", movement(null, "p1", 1.3).kind === "nobase");
+
+  var byPid = {}; players.forEach(function (p) { byPid[p.player_id] = p; });
+  var ex = buildExportCsv(["p2", "p1", "gone"], byPid);
+  ok("export csv", ex.csv === "id\na2\na1\n");
+  ok("export missing", ex.missing.length === 1);
+  ok("baseline", baselineFrom(["p1"], byPid).p1 === 1.3);
+
+  if (fails.length) { console.error("brrSelfTest FAILED: " + fails.join(", ")); return false; }
+  console.log("brrSelfTest passed");
+  return true;
+}
+if (typeof window !== "undefined") window.brrSelfTest = brrSelfTest;
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    parseCsv: parseCsv, normName: normName, boardKey: boardKey, parseProjections: parseProjections,
+    joinProjections: joinProjections, reconcileOrder: reconcileOrder, moveWithin: moveWithin,
+    movement: movement, buildExportCsv: buildExportCsv, baselineFrom: baselineFrom,
+    brrSelfTest: brrSelfTest
+  };
+}
+</script>
+</body>
+</html>
