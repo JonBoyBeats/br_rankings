@@ -903,8 +903,8 @@ function renderMeta(rec) {
     var d1 = document.createElement("div");
     d1.className = "notice";
     d1.innerHTML = "<b>No movement baseline yet</b> for " + slateLabel(s) +
-                   ". The week's reference locks at 6pm Pacific on Wednesday, when ETR's " +
-                   "projections land, and this slate had no ADP before the last one.";
+                   ". The reference locks at 6pm Pacific on Monday and again on Wednesday, " +
+                   "when ETR's projections land, and this slate had no ADP before the last one.";
     nb.appendChild(d1);
   }
   if (notes.length) {
@@ -1059,11 +1059,11 @@ function render() {
     ind.className = "ind " + mv.kind;
     ind.textContent = MOVE_GLYPH[mv.kind](mv.level);
     ind.title = mv.kind === "nobase" ? "No baseline yet for this slate"
-      : mv.kind === "unseen" ? "Not priced when the week locked"
+      : mv.kind === "unseen" ? "Not priced when the reference locked"
       : mv.kind === "flat" ? "ADP " + mv.was.toFixed(1) + " \u2192 " + p.adp.toFixed(1) +
-        ", inside this week's " + moveBands(mv.was).single.toFixed(1) + " pick band"
+        ", inside its " + moveBands(mv.was).single.toFixed(1) + " pick band"
       : "ADP " + mv.was.toFixed(1) + " \u2192 " + p.adp.toFixed(1) + ", " + mv.delta.toFixed(1) +
-        " picks " + (mv.kind === "up" ? "earlier" : "later") + " since the week locked";
+        " picks " + (mv.kind === "up" ? "earlier" : "later") + " since the reference locked";
     var adpVal = document.createElement("span");
     adpVal.textContent = p.adp.toFixed(1);
     var adp = document.createElement("span");
