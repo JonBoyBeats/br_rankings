@@ -385,6 +385,11 @@ var BUILDER_BLOCKS = ["RB", "WR", "TE", "QB"];
    Resulting fire rate, rounds one through five, single chevrons: 13-30% at a one day
    gap, 25-50% over three days. Round six stays quiet at 4-7% because those players
    genuinely do not move. Edit freely. */
+/* A player with no ADP at the reference was, in effect, sitting past the last pick of
+   a 36 pick board. Treating him as a 36 rather than as unmeasurable means the jump that
+   got him priced shows up as the move it was. */
+var UNPRICED_ADP = 36;
+
 var MOVE_COEF = 0.55;        // one chevron at MOVE_COEF * sqrt(adp) picks
 var MOVE_DOUBLE_X = 2.5;     // two chevrons at this multiple of that
 var MOVE_DOUBLE_CAP = 6.0;   // ...but never asking for more picks than the board holds
@@ -657,17 +662,20 @@ function placeAt(order, pid, targetPid) {
 /** ADP movement since the last export. Lower ADP means the field is taking him earlier. */
 function movement(baseline, playerId, adp) {
   if (!baseline) return { kind: "nobase" };
-  var was = baseline[playerId];
-  if (was == null) return { kind: "unseen" };
+  var was = baseline[playerId], assumed = false;
+  if (was == null) { was = UNPRICED_ADP; assumed = true; }
   var delta = was - adp;                       // positive: ADP fell, the field takes him earlier
   var size = Math.abs(delta);
-  var band = moveBands(was);                   // scaled by where he sat when the week locked
-  if (size < band.single) return { kind: "flat", delta: size, level: 0, was: was };
+  var band = moveBands(was);                   // scaled by where he sat at the reference
+  if (size < band.single) {
+    return { kind: "flat", delta: size, level: 0, was: was, assumed: assumed };
+  }
   return {
     kind: delta > 0 ? "up" : "down",
     delta: size,
     level: size >= band["double"] ? 2 : 1,
-    was: was
+    was: was,
+    assumed: assumed
   };
 }
 
@@ -997,7 +1005,6 @@ var MOVE_GLYPH = {
   up: function (level) { return level === 2 ? "▲▲" : "▲"; },
   down: function (level) { return level === 2 ? "▼▼" : "▼"; },
   flat: function () { return "–"; },
-  unseen: function () { return "·"; },
   nobase: function () { return ""; }
 };
 
@@ -1058,11 +1065,13 @@ function render() {
     var ind = document.createElement("span");
     ind.className = "ind " + mv.kind;
     ind.textContent = MOVE_GLYPH[mv.kind](mv.level);
+    var from = mv.assumed
+      ? "Unpriced at the reference, so counted as " + UNPRICED_ADP + ".0"
+      : "ADP " + (mv.was == null ? "" : mv.was.toFixed(1));
     ind.title = mv.kind === "nobase" ? "No baseline yet for this slate"
-      : mv.kind === "unseen" ? "Not priced when the reference locked"
-      : mv.kind === "flat" ? "ADP " + mv.was.toFixed(1) + " \u2192 " + p.adp.toFixed(1) +
+      : mv.kind === "flat" ? from + " \u2192 " + p.adp.toFixed(1) +
         ", inside its " + moveBands(mv.was).single.toFixed(1) + " pick band"
-      : "ADP " + mv.was.toFixed(1) + " \u2192 " + p.adp.toFixed(1) + ", " + mv.delta.toFixed(1) +
+      : from + " \u2192 " + p.adp.toFixed(1) + ", " + mv.delta.toFixed(1) +
         " picks " + (mv.kind === "up" ? "earlier" : "later") + " since the reference locked";
     var adpVal = document.createElement("span");
     adpVal.textContent = p.adp.toFixed(1);
@@ -1502,8 +1511,17 @@ function brrSelfTest() {
      movement({ p1: 4.0 }, "p1", 7.2).kind === "down");
   ok("a deep player needs the cap, not a multiple",
      movement({ p1: 34.0 }, "p1", 27.5).level === 2);
-  ok("movement unseen", movement({}, "p1", 1.3).kind === "unseen");
   ok("movement nobase", movement(null, "p1", 1.3).kind === "nobase");
+
+  // a player who had no ADP at the reference is measured from the end of the board
+  var fresh = movement({ other: 4 }, "p1", 22.5);
+  ok("unpriced is counted from the last pick", fresh.was === UNPRICED_ADP && fresh.assumed === true);
+  ok("unpriced that got drafted early reads as a move up",
+     fresh.kind === "up" && fresh.level === 2);
+  ok("unpriced still sitting at the end stays flat",
+     movement({ other: 4 }, "p1", 35.0).kind === "flat");
+  ok("a real reference is not marked assumed",
+     movement({ p1: 4.0 }, "p1", 2.0).assumed === false);
 
   var byPid = {}; players.forEach(function (p) { byPid[p.player_id] = p; });
   var ex = buildExportCsv(["p2", "p1", "gone"], byPid);
