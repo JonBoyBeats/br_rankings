@@ -142,9 +142,20 @@
 
   /* ---------- notices ---------- */
   .notice {
-    font-size: 13.5px; border-radius: 8px; padding: 9px 12px; margin-bottom: 10px;
+    position: relative;
+    font-size: 13.5px; border-radius: 8px; padding: 9px 34px 9px 12px; margin-bottom: 10px;
     border: 1px solid var(--line); background: var(--surface);
   }
+  /* Dismissal is for this showing only: the notice returns next time it has something
+     to say, which is why nothing about it is remembered. */
+  .notice-x {
+    position: absolute; top: 5px; right: 5px;
+    width: 24px; height: 24px; padding: 0; line-height: 22px; text-align: center;
+    font-size: 16px; font-family: var(--sans);
+    background: transparent; border: 0; border-radius: 6px;
+    color: inherit; opacity: .55; cursor: pointer;
+  }
+  .notice-x:hover { opacity: 1; background: rgba(255, 255, 255, .09); }
   .notice.warn { background: var(--new-bg); border-color: var(--new); color: var(--new); }
   .notice.bad { background: var(--down-bg); border-color: var(--down); color: var(--down); }
   .notice b { font-weight: 600; }
@@ -1039,6 +1050,21 @@ var state = {
 
 var $ = function (id) { return document.getElementById(id); };
 
+/** Add a dismiss button to a notice. Closing it removes that showing, nothing more. */
+function closable(el) {
+  var x = document.createElement("button");
+  x.type = "button";
+  x.className = "notice-x";
+  x.setAttribute("aria-label", "Dismiss this message");
+  x.title = "Dismiss";
+  x.textContent = "\u00d7";
+  x.addEventListener("click", function () {
+    if (el.parentNode) el.parentNode.removeChild(el);
+  });
+  el.appendChild(x);
+  return el;
+}
+
 function setStatus(msg, kind) {
   var el = $("status");
   el.innerHTML = "";
@@ -1046,7 +1072,7 @@ function setStatus(msg, kind) {
   var d = document.createElement("div");
   d.className = "notice" + (kind ? " " + kind : "");
   d.textContent = msg;
-  el.appendChild(d);
+  el.appendChild(closable(d));
 }
 
 // ---------------------------------------------------------------- fetching
@@ -1215,22 +1241,26 @@ function ingestProjections(text, sourceName, pasted) {
 }
 
 // ---------------------------------------------------------------- render
+/* Every time on the board reads as a day and a Pacific clock time, whatever zone the
+   device is in, because the week's reference points are defined in Pacific. */
+function whenPT(iso) {
+  var d = new Date(String(iso).replace(
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, "$1-$2-$3T$4:$5:$6Z"));
+  if (isNaN(d.getTime())) return String(iso);
+  return d.toLocaleString("en-US", {
+    weekday: "short", hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles"
+  }).replace(",", "") + " PT";
+}
+
 function renderMeta(rec) {
   var s = state.slate, d = state.data;
-  var cutoff = new Date(s.cutoff);
   var parts = [
-    "<span>mirror <b>" + d.generated_at + "</b></span>",
-    "<span>slate closes <b>" + cutoff.toLocaleString([], {
-      weekday: "short", hour: "numeric", minute: "2-digit"
-    }) + "</b></span>",
+    "<span>mirror <b>" + whenPT(d.generated_at) + "</b></span>",
+    "<span>slate closes <b>" + whenPT(s.cutoff) + "</b></span>",
     "<span><b>" + s.players.length + "</b> priced</span>"
   ];
   if (s.baseline && s.baseline.captured_at) {
-    parts.splice(2, 0, "<span>moves vs <b>" +
-      new Date(s.baseline.captured_at.replace(
-        /^(\d{4})-(\d{2})-(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, "$1-$2-$3T$4:$5:$6Z"))
-        .toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" }) +
-      "</b></span>");
+    parts.splice(2, 0, "<span>moves vs <b>" + whenPT(s.baseline.captured_at) + "</b></span>");
   }
   $("meta").innerHTML = parts.join("");
 
@@ -1251,13 +1281,13 @@ function renderMeta(rec) {
     d1.innerHTML = "<b>No movement baseline yet</b> for " + slateLabel(s) +
                    ". The reference locks at 6pm Pacific on Monday and again on Wednesday, " +
                    "when ETR's projections land, and this slate had no ADP before the last one.";
-    nb.appendChild(d1);
+    nb.appendChild(closable(d1));
   }
   if (notes.length) {
     var d2 = document.createElement("div");
     d2.className = "notice warn";
     d2.textContent = notes.join(" ");
-    nb.appendChild(d2);
+    nb.appendChild(closable(d2));
   }
 }
 
@@ -1277,7 +1307,7 @@ function renderMissingProjections() {
   names.className = "names";
   names.textContent = m.missing.join(" · ");
   d.appendChild(names);
-  el.appendChild(d);
+  el.appendChild(closable(d));
 }
 
 function renderPositions() {
