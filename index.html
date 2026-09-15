@@ -160,7 +160,7 @@
   .board { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
   .row {
     display: grid;
-    grid-template-columns: 26px 40px minmax(0, 1fr) 78px 100px;
+    grid-template-columns: 26px 40px minmax(0, 1fr) 76px 94px 56px;
     align-items: center; gap: 10px;
     padding: 7px 12px;
     border-bottom: 1px solid var(--line);
@@ -213,6 +213,7 @@
   .dash { width: 7px; height: 1.5px; background: currentColor; }
 
   .num.proj { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 3px; }
+  .num.vorp { font-weight: 600; }
   .pdelta {
     font-family: var(--mono); font-size: 10px; font-weight: 500;
     text-align: right; white-space: nowrap; color: var(--muted);
@@ -269,9 +270,11 @@
     .dock .field-label { display: none; }
 
     /* Every fixed column gives up what it can spare; the name cell takes all of it. */
-    .row { grid-template-columns: 14px 24px minmax(0, 1fr) 56px 62px; gap: 5px; padding: 6px 8px; }
-    .num.proj { grid-template-columns: 26px 1fr; gap: 2px; }
+    .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 54px 32px; gap: 4px; padding: 6px 6px; }
+    .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
+    .num.proj { grid-template-columns: 24px 1fr; gap: 2px; }
     .pdelta { font-size: 9.5px; }
+    .num.vorp { font-size: 11px; }
     .head { font-size: 9px; letter-spacing: .06em; padding-block: 6px; }
     .handle { font-size: 13px; }
     .rank { font-size: 11.5px; }
@@ -308,6 +311,7 @@
           <option value="order">My order (drag)</option>
           <option value="adp">Sort by ADP</option>
           <option value="proj">Sort by projection</option>
+          <option value="vorp">Sort by VORP</option>
           <option value="name">Sort by name</option>
         </select>
       </label>
@@ -385,6 +389,8 @@
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
       <span class="r"><button type="button" data-sort="proj"
         title="A quarter of the median plus three quarters of the ceiling">Proj</button></span>
+      <span class="r"><button type="button" data-sort="vorp"
+        title="Projection less the replacement level at that position">VORP</button></span>
     </div>
     <div id="rows"><div class="empty">Loading the mirror&hellip;</div></div>
   </div>
@@ -714,6 +720,99 @@ function blendProjection(median, ceiling) {
   return (1 - PROJ_CEILING_WEIGHT) * median + PROJ_CEILING_WEIGHT * ceiling;
 }
 
+/* ---- value over replacement ----------------------------------------------------
+   Replacement is not the Nth man at a position, which one odd projection can swing.
+   It is the median of a short window of the last players a draft actually reaches,
+   ranked by the blended projection rather than by ADP, because ADP saturates at 36
+   and cannot order the tail where replacement lives.
+
+   Each window is a rank range. If a real cliff appears at or past the start of that
+   range, the window ends at the cliff instead, which is what stops a tier like
+   Montgomery and Hubbard from dragging the running back line down. */
+var VORP_WINDOWS = { QB: [8, 11], RB: [10, 13], WR: [12, 15], TE: [5, 8] };
+
+/* Backs and receivers also compete for the same flex seats, so they carry a second
+   comparison against the combined pool, weighted against the positional one. */
+var VORP_FLEX_POSITIONS = ["RB", "WR"];
+var VORP_FLEX_WINDOW = [20, 28];
+var VORP_FLEX_WEIGHT = 0.33;
+
+/* A gap counts as a cliff only if it is this large and this many times the typical
+   gap inside the window. Only a cliff falling INSIDE the window matters: it means the
+   back of the window sits below a drop and would drag the level down. A cliff above or
+   below the window changes nothing, because the window is already on one side of it. */
+var VORP_CLIFF_POINTS = 1.5;
+var VORP_CLIFF_MULTIPLE = 3;
+
+function median(sorted) {
+  if (!sorted.length) return null;
+  var mid = Math.floor(sorted.length / 2);
+  var asc = sorted.slice().sort(function (a, b) { return a - b; });
+  return asc.length % 2 ? asc[mid] : (asc[mid - 1] + asc[mid]) / 2;
+}
+
+/**
+ * `values` is every projection at a position, highest first. `win` is a 1-based rank
+ * range. Returns the replacement level and which ranks produced it.
+ */
+function replacementLevel(values, win) {
+  var n = values.length;
+  if (n < 2) return null;
+  var size = win[1] - win[0] + 1;
+  var end = Math.min(n, win[1]), viaCliff = false;
+
+  var gaps = [];
+  for (var i = win[0]; i < end; i++) gaps.push({ at: i, gap: values[i - 1] - values[i] });
+  if (gaps.length) {
+    var typical = median(gaps.map(function (g) { return g.gap; }));
+    var biggest = gaps.reduce(function (m, g) { return g.gap > m.gap ? g : m; });
+    if (biggest.gap >= VORP_CLIFF_POINTS &&
+        biggest.gap >= VORP_CLIFF_MULTIPLE * Math.max(typical, 0.05)) {
+      end = biggest.at;
+      viaCliff = true;
+    }
+  }
+  var start = Math.max(1, end - size + 1);
+  return { level: median(values.slice(start - 1, end)), from: start, to: end, viaCliff: viaCliff };
+}
+
+/**
+ * Value over replacement for every player carrying a projection.
+ * `rows` is [{player_id, position, proj}]. Flex positions blend two comparisons.
+ */
+function computeVorp(rows) {
+  var byPos = {}, vorp = {}, levels = {};
+  rows.forEach(function (r) {
+    if (r.proj == null || !r.position) return;
+    (byPos[r.position] = byPos[r.position] || []).push(r.proj);
+  });
+  Object.keys(byPos).forEach(function (pos) {
+    byPos[pos].sort(function (a, b) { return b - a; });
+    var win = VORP_WINDOWS[pos];
+    levels[pos] = win ? replacementLevel(byPos[pos], win) : null;
+  });
+
+  var flexValues = [];
+  VORP_FLEX_POSITIONS.forEach(function (pos) {
+    flexValues = flexValues.concat(byPos[pos] || []);
+  });
+  flexValues.sort(function (a, b) { return b - a; });
+  levels.FLEX = flexValues.length ? replacementLevel(flexValues, VORP_FLEX_WINDOW) : null;
+
+  rows.forEach(function (r) {
+    if (r.proj == null) return;
+    var pos = levels[r.position];
+    if (!pos || pos.level == null) return;
+    var value = r.proj - pos.level;
+    if (VORP_FLEX_POSITIONS.indexOf(r.position) >= 0 && levels.FLEX && levels.FLEX.level != null) {
+      value = (1 - VORP_FLEX_WEIGHT) * value +
+              VORP_FLEX_WEIGHT * (r.proj - levels.FLEX.level);
+    }
+    vorp[r.player_id] = value;
+  });
+  return { vorp: vorp, levels: levels };
+}
+
 /* The smallest projection change worth showing, in fantasy points. Flat rather than
    scaled, because projection changes barely scale with a player's level: on ETR's own
    release-to-final pair for week one the median change was 0.0 to 0.2 points at every
@@ -914,6 +1013,8 @@ var state = {
   proj: {},            // player_id -> projection, for the current slate
   projPrev: {},        // the same from the previous upload, for the change marker
   projParts: {},       // player_id -> {median, ceiling} behind the blended number
+  vorp: {},            // player_id -> value over replacement
+  vorpLevels: {},      // position -> the replacement level and the ranks behind it
   projMeta: null,      // {file, format, matchedById, matchedByName, missing, boardTotal, at}
   nameMaps: { nfl: {}, cfb: {} },
   view: "order",
@@ -1013,7 +1114,8 @@ function applyStoredProjections() {
   state.projPrev = {};
   state.projParts = {};
   if (!stored || !stored.entries || !stored.entries.length) {
-    state.proj = {}; state.projMeta = null; renderMissingProjections(); syncBuilderButtons(); return;
+    state.proj = {}; state.projMeta = null; state.vorp = {}; state.vorpLevels = {};
+    renderMissingProjections(); syncBuilderButtons(); return;
   }
   var map = state.nameMaps[s.sport] || {};
   var joined = joinProjections(s.players, stored.entries, map);
@@ -1022,6 +1124,12 @@ function applyStoredProjections() {
   }
   state.proj = joined.values;
   state.projParts = joined.parts;
+  var computed = computeVorp(s.players.map(function (pl) {
+    return { player_id: pl.player_id, position: pl.position,
+             proj: joined.values[pl.player_id] == null ? null : joined.values[pl.player_id] };
+  }));
+  state.vorp = computed.vorp;
+  state.vorpLevels = computed.levels;
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
     prevFile: store.previous ? store.previous.file : null,
@@ -1198,6 +1306,14 @@ function visibleRows() {
     list = list.slice().sort(function (a, b) {
       return (a.p.last_name + a.p.first_name).localeCompare(b.p.last_name + b.p.first_name);
     });
+  } else if (state.view === "vorp") {
+    list = list.slice().sort(function (a, b) {
+      var x = state.vorp[a.p.player_id], y = state.vorp[b.p.player_id];
+      if (x == null && y == null) return a.p.adp - b.p.adp;
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return y - x;
+    });
   } else if (state.view === "proj") {
     list = list.slice().sort(function (a, b) {
       var x = state.proj[a.p.player_id], y = state.proj[b.p.player_id];
@@ -1212,6 +1328,9 @@ function visibleRows() {
 
 function render() {
   var rows = visibleRows();
+  state.vorpTop = Object.keys(state.vorp).reduce(function (m, k) {
+    return Math.max(m, state.vorp[k]);
+  }, 0) || 1;
   var host = $("rows");
   host.innerHTML = "";
   var dragging = state.view === "order";
@@ -1315,11 +1434,41 @@ function render() {
     pr.className = "num proj" + (v == null ? " dim" : "");
     pr.append(pd, pval);
 
-    el.append(handle, rank, who, adp, pr);
+    var vv = state.vorp[p.player_id];
+    var vo = document.createElement("span");
+    vo.className = "num vorp";
+    vo.textContent = vv == null ? "" : (vv > 0 ? "+" : vv < 0 ? "\u2212" : "") + Math.abs(vv).toFixed(1);
+    if (vv != null) {
+      vo.style.color = vorpColor(vv);
+      var lvl = state.vorpLevels[p.position];
+      if (lvl && lvl.level != null) {
+        vo.title = "Replacement at " + p.position + " is " + lvl.level.toFixed(1) +
+          ", the median of ranks " + lvl.from + " to " + lvl.to +
+          (lvl.viaCliff ? ", shortened by a cliff" : "") +
+          (VORP_FLEX_POSITIONS.indexOf(p.position) >= 0 && state.vorpLevels.FLEX &&
+           state.vorpLevels.FLEX.level != null
+            ? ". Blended " + Math.round((1 - VORP_FLEX_WEIGHT) * 100) + "/" +
+              Math.round(VORP_FLEX_WEIGHT * 100) + " with the flex pool at " +
+              state.vorpLevels.FLEX.level.toFixed(1)
+            : "");
+      }
+    }
+
+    el.append(handle, rank, who, adp, pr, vo);
     frag.appendChild(el);
   });
   host.appendChild(frag);
   renderFoot(rows.length);
+}
+
+/* Gold deepens with the value; at or below replacement it fades to the muted grey. */
+function vorpColor(v) {
+  var top = state.vorpTop || 1;
+  var t = Math.max(0, Math.min(1, v / top));
+  var from = [139, 148, 164], to = [240, 193, 75];
+  return "rgb(" + from.map(function (c, i) {
+    return Math.round(c + (to[i] - c) * t);
+  }).join(",") + ")";
 }
 
 function renderFoot(shown) {
@@ -1964,6 +2113,46 @@ function brrSelfTest() {
   ok("place from above takes that rank", placeAt(["a", "b", "c", "d"], "a", "c").join() === "b,c,a,d");
   ok("place on self does nothing", placeAt(["a", "b"], "a", "a").join() === "a,b");
   ok("place keeps the whole board", placeAt(["a", "b", "c"], "a", "c").length === 3);
+  // ---- value over replacement
+  ok("median of an odd list", median([3, 1, 2]) === 2);
+  ok("median of an even list", median([4, 1, 2, 3]) === 2.5);
+  var smooth = [30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13];
+  var r = replacementLevel(smooth, [10, 13]);
+  ok("a smooth curve uses the stated window",
+     r.from === 10 && r.to === 13 && r.viaCliff === false && r.level === 19.5);
+  var cliffy = [30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 12, 11, 10, 9, 8, 7, 6];
+  var rc = replacementLevel(cliffy, [10, 13]);
+  ok("a cliff inside the window pulls the window up to it",
+     rc.viaCliff === true && rc.to === 11 && rc.from === 8);
+  var earlyCliff = [40, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6];
+  ok("a cliff above the window is ignored", replacementLevel(earlyCliff, [10, 13]).viaCliff === false);
+  var lateCliff = smooth.slice(0, 14).concat([5, 4, 3, 2]);
+  ok("a cliff below the window is ignored too, the window is already clear of it",
+     replacementLevel(lateCliff, [10, 13]).viaCliff === false &&
+     replacementLevel(lateCliff, [10, 13]).to === 13);
+  ok("too few players means no level", replacementLevel([5], [10, 13]) === null);
+
+  var rows = [];
+  for (var vi = 0; vi < 20; vi++) rows.push({ player_id: "rb" + vi, position: "RB", proj: 30 - vi });
+  for (var wi = 0; wi < 20; wi++) rows.push({ player_id: "wr" + wi, position: "WR", proj: 29 - wi });
+  for (var qi = 0; qi < 20; qi++) rows.push({ player_id: "qb" + qi, position: "QB", proj: 28 - qi });
+  for (var ti = 0; ti < 20; ti++) rows.push({ player_id: "te" + ti, position: "TE", proj: 18 - ti });
+  var cv = computeVorp(rows);
+  ok("every projected player gets a value", Object.keys(cv.vorp).length === rows.length);
+  ok("each position has a replacement level",
+     cv.levels.RB.level != null && cv.levels.WR.level != null &&
+     cv.levels.QB.level != null && cv.levels.TE.level != null && cv.levels.FLEX.level != null);
+  ok("the best back beats the replacement back", cv.vorp.rb0 > 0);
+  ok("a quarterback is measured only against quarterbacks",
+     Math.abs(cv.vorp.qb0 - (28 - cv.levels.QB.level)) < 1e-9);
+  ok("a tight end is measured only against tight ends",
+     Math.abs(cv.vorp.te0 - (18 - cv.levels.TE.level)) < 1e-9);
+  ok("a back carries the flex comparison at its weight",
+     Math.abs(cv.vorp.rb0 - ((1 - VORP_FLEX_WEIGHT) * (30 - cv.levels.RB.level) +
+       VORP_FLEX_WEIGHT * (30 - cv.levels.FLEX.level))) < 1e-9);
+  ok("a player without a projection gets no value",
+     computeVorp([{ player_id: "x", position: "RB", proj: null }]).vorp.x === undefined);
+
   // ---- projection movement and the two-generation store
   ok("projection rounding tick is nothing", projMovement(12.0, 12.1).kind === "flat");
   ok("projection up carries a signed delta", projMovement(12.0, 12.3).kind === "up" &&
