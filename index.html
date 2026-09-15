@@ -197,12 +197,20 @@
   /* The marker sits in its own fixed track inside the ADP cell, so the numbers stay
      flush right and scan as a column whatever each player's marker is. */
   .num.adp { display: grid; grid-template-columns: 19px 1fr; align-items: center; gap: 3px; }
-  .ind {
-    font-size: 9px; line-height: 1; letter-spacing: -0.5px;
-    text-align: center; color: var(--muted);
-  }
+  /* Drawn rather than typed: a stack of three glyphs would depend on the font having
+     a line chevron, and these nest cleanly at any size. */
+  .ind { display: flex; flex-direction: column; align-items: center; color: var(--muted); }
   .ind.up { color: var(--up); }
   .ind.down { color: var(--down); }
+  .chev {
+    width: 5px; height: 5px;
+    border-top: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
+    margin-bottom: -1.5px;
+  }
+  .ind.up .chev { transform: rotate(-45deg); }
+  .ind.down .chev { transform: rotate(135deg); }
+  .dash { width: 7px; height: 1.5px; background: currentColor; }
 
   .who { min-width: 0; display: flex; align-items: baseline; gap: 8px; }
   .name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -375,28 +383,27 @@ var BUILDER_CAPS = { RB: 12, WR: 15, TE: 8, QB: 12 };
 /* The order the curated blocks are laid out in. */
 var BUILDER_BLOCKS = ["RB", "WR", "TE", "QB"];
 
-/* How big a move has to be before it earns a chevron, as a function of where the
-   player sits. Fitted to the archive's own snapshots across nine slates: a player's
-   typical week rises from about 0.3 picks at the top of round one to 3 or 4 by round
-   five, so a fixed threshold either shouts in the middle rounds or goes silent at the
-   top. The square root tracks that rise without running away: the double threshold is
-   capped because a 36 pick board cannot deliver a ten pick move.
+/* Three tiers of movement: moved at all, moved meaningfully, moved a lot. Each is a
+   number of picks scaled by where the player sat at the reference, because a player's
+   own typical week scales the same way. Fitted to the archive across nine slates,
+   where movement rises from about 0.3 picks at the top of round one to 3 or 4 by round
+   five; a flat threshold either shouts in the middle rounds or goes silent at the top.
+   The last tier is capped because a 36 pick board cannot deliver more.
 
-   Resulting fire rate, rounds one through five, single chevrons: 13-30% at a one day
-   gap, 25-50% over three days. Round six stays quiet at 4-7% because those players
-   genuinely do not move. Edit freely. */
+   The first tier sits well clear of the 0.1 rounding step at every depth, so a board
+   that merely re-rounded never lights up. Resulting shares: at a one day gap 21% one
+   chevron, 13% two, 4% three; over three days 16 / 19 / 8. Edit freely. */
+var MOVE_TIERS = [0.20, 0.55, 1.375];   // picks = coefficient * sqrt(adp at the reference)
+var MOVE_TIER_CAP = 6.0;
+
 /* A player with no ADP at the reference was, in effect, sitting past the last pick of
    a 36 pick board. Treating him as a 36 rather than as unmeasurable means the jump that
    got him priced shows up as the move it was. */
 var UNPRICED_ADP = 36;
 
-var MOVE_COEF = 0.55;        // one chevron at MOVE_COEF * sqrt(adp) picks
-var MOVE_DOUBLE_X = 2.5;     // two chevrons at this multiple of that
-var MOVE_DOUBLE_CAP = 6.0;   // ...but never asking for more picks than the board holds
-
 function moveBands(adp) {
-  var single = MOVE_COEF * Math.sqrt(Math.max(adp, 0.1));
-  return { single: single, "double": Math.min(MOVE_DOUBLE_X * single, MOVE_DOUBLE_CAP) };
+  var root = Math.sqrt(Math.max(adp, 0.1));
+  return MOVE_TIERS.map(function (c) { return Math.min(c * root, MOVE_TIER_CAP); });
 }
 
 /**
@@ -667,13 +674,15 @@ function movement(baseline, playerId, adp) {
   var delta = was - adp;                       // positive: ADP fell, the field takes him earlier
   var size = Math.abs(delta);
   var band = moveBands(was);                   // scaled by where he sat at the reference
-  if (size < band.single) {
+  var level = 0;
+  for (var i = 0; i < band.length; i++) { if (size >= band[i]) level = i + 1; }
+  if (level === 0) {
     return { kind: "flat", delta: size, level: 0, was: was, assumed: assumed };
   }
   return {
     kind: delta > 0 ? "up" : "down",
     delta: size,
-    level: size >= band["double"] ? 2 : 1,
+    level: level,
     was: was,
     assumed: assumed
   };
@@ -1000,14 +1009,6 @@ function visibleRows() {
   return list;
 }
 
-/* One chevron past the single band for that player's price, two past the double. */
-var MOVE_GLYPH = {
-  up: function (level) { return level === 2 ? "▲▲" : "▲"; },
-  down: function (level) { return level === 2 ? "▼▼" : "▼"; },
-  flat: function () { return "–"; },
-  nobase: function () { return ""; }
-};
-
 function render() {
   var rows = visibleRows();
   var host = $("rows");
@@ -1064,13 +1065,19 @@ function render() {
     var mv = movement(state.baseline, p.player_id, p.adp);
     var ind = document.createElement("span");
     ind.className = "ind " + mv.kind;
-    ind.textContent = MOVE_GLYPH[mv.kind](mv.level);
+    if (mv.kind === "flat") {
+      ind.appendChild(document.createElement("span")).className = "dash";
+    } else if (mv.kind !== "nobase") {
+      for (var c = 0; c < mv.level; c++) {
+        ind.appendChild(document.createElement("span")).className = "chev";
+      }
+    }
     var from = mv.assumed
       ? "Unpriced at the reference, so counted as " + UNPRICED_ADP + ".0"
       : "ADP " + (mv.was == null ? "" : mv.was.toFixed(1));
     ind.title = mv.kind === "nobase" ? "No baseline yet for this slate"
       : mv.kind === "flat" ? from + " \u2192 " + p.adp.toFixed(1) +
-        ", inside its " + moveBands(mv.was).single.toFixed(1) + " pick band"
+        ", inside its " + moveBands(mv.was)[0].toFixed(1) + " pick band"
       : from + " \u2192 " + p.adp.toFixed(1) + ", " + mv.delta.toFixed(1) +
         " picks " + (mv.kind === "up" ? "earlier" : "later") + " since the reference locked";
     var adpVal = document.createElement("span");
@@ -1496,28 +1503,31 @@ function brrSelfTest() {
   ok("movement flat", movement({ p1: 1.3 }, "p1", 1.3).kind === "flat");
   ok("movement reports where it came from", movement({ p1: 9.0 }, "p1", 4.5).was === 9.0);
 
-  // the band widens with depth, so the same move means different things
-  ok("bands widen with depth", moveBands(4).single < moveBands(25).single);
-  ok("double band is capped", moveBands(36)["double"] === MOVE_DOUBLE_CAP);
-  ok("double band is a multiple below the cap",
-     Math.abs(moveBands(4)["double"] - MOVE_DOUBLE_X * moveBands(4).single) < 1e-9);
-  ok("two picks is a move in round one", movement({ p1: 4.0 }, "p1", 2.0).level === 1);
-  ok("two picks is noise in round five", movement({ p1: 25.0 }, "p1", 23.0).kind === "flat");
-  ok("a small move under the band stays flat",
-     movement({ p1: 4.0 }, "p1", 3.4).kind === "flat");
-  ok("two chevrons up", movement({ p1: 4.0 }, "p1", 0.8).level === 2 &&
+  // the bands widen with depth, so the same move means different things
+  ok("bands rise through the tiers",
+     moveBands(9)[0] < moveBands(9)[1] && moveBands(9)[1] < moveBands(9)[2]);
+  ok("bands widen with depth", moveBands(4)[0] < moveBands(25)[0]);
+  ok("the top tier is capped", moveBands(36)[2] === MOVE_TIER_CAP);
+  ok("a rounding step never lights the first tier",
+     movement({ p1: 1.0 }, "p1", 1.1).kind === "flat" &&
+     movement({ p1: 12.0 }, "p1", 12.1).kind === "flat");
+  ok("one chevron once it has moved at all", movement({ p1: 4.0 }, "p1", 3.5).level === 1);
+  ok("two picks is a real move in round one", movement({ p1: 4.0 }, "p1", 2.0).level === 2);
+  ok("the same two picks is only a nudge in round five",
+     movement({ p1: 25.0 }, "p1", 23.0).level === 1);
+  ok("three chevrons up", movement({ p1: 4.0 }, "p1", 0.8).level === 3 &&
      movement({ p1: 4.0 }, "p1", 0.8).kind === "up");
-  ok("two chevrons down too", movement({ p1: 4.0 }, "p1", 7.2).level === 2 &&
+  ok("three chevrons down too", movement({ p1: 4.0 }, "p1", 7.2).level === 3 &&
      movement({ p1: 4.0 }, "p1", 7.2).kind === "down");
-  ok("a deep player needs the cap, not a multiple",
-     movement({ p1: 34.0 }, "p1", 27.5).level === 2);
+  ok("a deep player reaches the top tier at the cap",
+     movement({ p1: 34.0 }, "p1", 27.5).level === 3);
   ok("movement nobase", movement(null, "p1", 1.3).kind === "nobase");
 
   // a player who had no ADP at the reference is measured from the end of the board
   var fresh = movement({ other: 4 }, "p1", 22.5);
   ok("unpriced is counted from the last pick", fresh.was === UNPRICED_ADP && fresh.assumed === true);
   ok("unpriced that got drafted early reads as a move up",
-     fresh.kind === "up" && fresh.level === 2);
+     fresh.kind === "up" && fresh.level === 3);
   ok("unpriced still sitting at the end stays flat",
      movement({ other: 4 }, "p1", 35.0).kind === "flat");
   ok("a real reference is not marked assumed",
