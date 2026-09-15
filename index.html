@@ -74,6 +74,14 @@
   }
   .grow { flex: 1 1 180px; min-width: 150px; }
 
+  /* The dock pins under the masthead on a wide screen and at the very top on a phone,
+     where --mast-h is set to zero and the masthead scrolls away. */
+  .dock {
+    position: sticky; top: var(--mast-h, 0px); z-index: 25;
+    background: var(--bg); border-bottom: 1px solid var(--line);
+    padding-block: 10px;
+  }
+
   label.field { display: flex; flex-direction: column; gap: 3px; }
   .field-label {
     font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
@@ -160,7 +168,8 @@
   .row:last-child { border-bottom: 0; }
   #rows .row:last-child { border-radius: 0 0 9px 9px; }
   .head {
-    background: var(--surface-2); position: sticky; top: var(--mast-h, 150px); z-index: 20;
+    background: var(--surface-2); position: sticky; z-index: 20;
+    top: calc(var(--mast-h, 0px) + var(--dock-h, 0px));
     font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
     text-transform: uppercase; color: var(--muted); padding-block: 8px;
     border-radius: 9px 9px 0 0;
@@ -210,7 +219,25 @@
   .footnote code { font-family: var(--mono); font-size: 11.5px; }
   .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   @media (max-width: 620px) {
-    .row { grid-template-columns: 22px 32px 54px minmax(0, 1fr) 54px 54px; gap: 7px; padding: 7px 9px; }
+    /* Everything above the dock scrolls off, so the board can reach the top of the screen. */
+    .masthead { position: static; }
+    .shell { padding: 0 10px; }
+    .dock { padding-block: 8px; }
+    .dock .field-label { display: none; }
+
+    /* Every fixed column gives up what it can spare; the name cell takes all of it. */
+    .row { grid-template-columns: 14px 24px 38px minmax(0, 1fr) 40px 40px; gap: 5px; padding: 6px 8px; }
+    .head { font-size: 9px; letter-spacing: .06em; padding-block: 6px; }
+    .handle { font-size: 13px; }
+    .rank { font-size: 11.5px; }
+    .move { font-size: 10.5px; }
+    .num { font-size: 11.5px; }
+    .name { font-size: 13.5px; }
+    .sub { font-size: 9.5px; }
+    .who { gap: 5px; }
+    .pos { font-size: 9px; padding: 1px 4px; letter-spacing: .04em; }
+    .tag { font-size: 9px; padding: 1px 4px; }
+    h1 { font-size: 17px; }
   }
 </style>
 </head>
@@ -247,22 +274,27 @@
           <button type="button" id="buildProj">Builder (Proj)</button>
         </span>
       </label>
-      <label class="field">
-        <span class="field-label">Projections</span>
-        <span class="pair">
-          <input type="file" id="proj" accept=".csv,.tsv,.txt,text/csv" class="vh">
-          <button type="button" id="projBtn">Upload CSV</button>
-          <button type="button" id="pasteBtn" aria-expanded="false">Paste</button>
-        </span>
-      </label>
-      <label class="field">
-        <span class="field-label">Underdog</span>
-        <button type="button" id="export" class="primary">Export ranking</button>
-      </label>
     </div>
     <div class="controls" style="padding-top:0">
       <div class="chips" id="positions"></div>
     </div>
+  </div>
+
+  <!-- Sibling of the masthead, not a child: a sticky element only stays pinned while its
+       own container is on screen, so this row has to sit outside the part that scrolls away. -->
+  <div class="controls dock">
+    <label class="field">
+      <span class="field-label">Projections</span>
+      <span class="pair">
+        <input type="file" id="proj" accept=".csv,.tsv,.txt,text/csv" class="vh">
+        <button type="button" id="projBtn">Upload CSV</button>
+        <button type="button" id="pasteBtn" aria-expanded="false">Paste</button>
+      </span>
+    </label>
+    <label class="field">
+      <span class="field-label">Underdog</span>
+      <button type="button" id="export" class="primary">Export ranking</button>
+    </label>
   </div>
 
   <div id="pastePanel" class="paste" hidden>
@@ -1127,7 +1159,7 @@ $("pasteBtn").addEventListener("click", function () {
   panel.hidden = !open;
   this.setAttribute("aria-expanded", String(open));
   if (open) $("pasteBox").focus();
-  syncMastHeight();
+  syncStickyOffsets();
 });
 $("pasteLoad").addEventListener("click", function () {
   ingestProjections($("pasteBox").value, "pasted text", true);
@@ -1150,17 +1182,26 @@ function syncSortHeads() {
   });
 }
 
-// The column header sticks directly under the masthead, whose height changes when the
-// controls wrap, so measure it rather than hard-coding an offset.
-function syncMastHeight() {
-  var m = document.querySelector(".masthead");
-  if (m) document.documentElement.style.setProperty("--mast-h", m.getBoundingClientRect().height + "px");
+// The sticky stack is measured, not hard-coded: both rows change height when the controls
+// wrap. On a phone the masthead is not sticky at all, so it contributes nothing.
+var PHONE = window.matchMedia("(max-width: 620px)");
+function syncStickyOffsets() {
+  var mast = document.querySelector(".masthead");
+  var dock = document.querySelector(".dock");
+  var mastH = PHONE.matches || !mast ? 0 : mast.getBoundingClientRect().height;
+  var dockH = dock ? dock.getBoundingClientRect().height : 0;
+  var root = document.documentElement.style;
+  root.setProperty("--mast-h", mastH + "px");
+  root.setProperty("--dock-h", dockH + "px");
 }
-window.addEventListener("resize", syncMastHeight);
+window.addEventListener("resize", syncStickyOffsets);
+if (PHONE.addEventListener) PHONE.addEventListener("change", syncStickyOffsets);
 if (typeof ResizeObserver !== "undefined") {
-  new ResizeObserver(syncMastHeight).observe(document.querySelector(".masthead"));
+  var ro = new ResizeObserver(syncStickyOffsets);
+  ro.observe(document.querySelector(".masthead"));
+  ro.observe(document.querySelector(".dock"));
 }
-syncMastHeight();
+syncStickyOffsets();
 
 (async function boot() {
   try {
