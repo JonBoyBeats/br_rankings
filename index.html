@@ -699,8 +699,10 @@ var PROJ_CEILING_WEIGHT = 0.75;
    scaled by this to stand in for the Underdog ceiling until the Battle Royale file
    lands on Thursday with the real one. Measured on week one's 150 players that
    carried both, the true ratio ran 0.903 at the median, 0.875 to 0.923 across the
-   middle half, so 0.85 reads about half a point low on the blended number. */
-var UD_CEILING_FACTOR = 0.85;
+   middle half. Matching it matters on Thursday: a factor that is off by five points
+   shifts every blended number by about half a point when the Battle Royale file
+   replaces the weekly one, which the change column would report as real movement. */
+var UD_CEILING_FACTOR = 0.90;
 
 /** A quarter median, three quarters ceiling. Without a ceiling the median stands alone. */
 function blendProjection(median, ceiling) {
