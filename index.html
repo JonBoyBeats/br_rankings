@@ -214,6 +214,28 @@
   .num { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; text-align: right; }
   .num.dim { color: var(--muted); }
 
+  .row.lifted { background: var(--new-bg); box-shadow: inset 3px 0 0 0 var(--accent); }
+  .row.lifted .name { font-weight: 600; }
+
+  /* Fixed rather than inline in the row: the nudge buttons must stay under the thumb
+     while the lifted row moves a slot at a time. It exists only while lifting. */
+  .liftbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    background: var(--surface-2); border-top: 1px solid var(--line-strong);
+  }
+  .liftbar-who { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+  .liftbar-name {
+    font-weight: 600; font-size: 14px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .liftbar .hint { font-size: 11.5px; }
+  .liftbar button { height: 40px; min-width: 46px; font-size: 15px; }
+  /* Keep the last rows reachable above the bar. */
+  body.lifting .shell { padding-bottom: 120px; }
+
   .empty { padding: 28px 14px; text-align: center; color: var(--muted); font-size: 14px; }
   .footnote { color: var(--muted); font-size: 12.5px; margin-top: 12px; }
   .footnote code { font-family: var(--mono); font-size: 11.5px; }
@@ -324,6 +346,18 @@
   </div>
 
   <p class="footnote" id="foot"></p>
+</div>
+
+<div class="liftbar" id="liftbar" hidden>
+  <span class="liftbar-who">
+    <span class="liftbar-name" id="liftName"></span>
+    <span class="hint">Tap a player to move here</span>
+  </span>
+  <span class="pair">
+    <button type="button" id="liftUp" aria-label="Move up one slot">&#9650;</button>
+    <button type="button" id="liftDown" aria-label="Move down one slot">&#9660;</button>
+  </span>
+  <button type="button" id="liftDone" class="primary">Done</button>
 </div>
 
 <script>
@@ -575,6 +609,29 @@ function moveWithin(order, dragId, targetId, before) {
   return out;
 }
 
+/** Nudge one player up or down by whole slots, clamped at the ends. */
+function moveBy(order, pid, delta) {
+  var from = order.indexOf(pid);
+  if (from < 0) return order.slice();
+  var to = Math.max(0, Math.min(order.length - 1, from + delta));
+  if (to === from) return order.slice();
+  var out = order.slice();
+  out.splice(from, 1);
+  out.splice(to, 0, pid);
+  return out;
+}
+
+/**
+ * Drop a lifted player onto the rank a tapped player currently holds: coming from
+ * below he takes that slot and pushes the target down, coming from above he lands
+ * directly after him. Either way he ends up at the rank that was tapped.
+ */
+function placeAt(order, pid, targetPid) {
+  var from = order.indexOf(pid), to = order.indexOf(targetPid);
+  if (pid === targetPid || from < 0 || to < 0) return order.slice();
+  return moveWithin(order, pid, targetPid, from > to);
+}
+
 /** ADP movement since the last export. Lower ADP means the field is taking him earlier. */
 function movement(baseline, playerId, adp) {
   if (!baseline) return { kind: "nobase" };
@@ -629,6 +686,7 @@ var state = {
   order: [],           // player_id list, full board
   newIds: {},          // player_id -> true, new since the saved order
   curatedCount: null,  // rows above the Builder's depth tail, for the divider only
+  liftedPid: null,     // the player picked up by tap, waiting for somewhere to land
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
   projMeta: null,      // {file, format, matchedById, matchedByName, missing, boardTotal, at}
@@ -713,6 +771,8 @@ function selectSlate(index) {
   rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
   state.baseline = load(K.baseline(s.label), null);
   state.curatedCount = null;
+  state.liftedPid = null;
+  renderLiftBar();
 
   applyStoredProjections();
   renderPositions();
@@ -929,7 +989,8 @@ function render() {
     var p = r.p;
     var el = document.createElement("div");
     el.className = "row" + (state.newIds[p.player_id] ? " is-new" : "") +
-                   (state.curatedCount && r.rank === state.curatedCount ? " curated-end" : "");
+                   (state.curatedCount && r.rank === state.curatedCount ? " curated-end" : "") +
+                   (state.liftedPid === p.player_id ? " lifted" : "");
     el.dataset.pid = p.player_id;
     el.draggable = dragging;
 
@@ -1021,6 +1082,8 @@ function applyBuilder(metric) {
   state.order = built.order;
   state.curatedCount = built.curatedCount;
   state.newIds = {};
+  state.liftedPid = null;
+  renderLiftBar();
   save(K.order(label), state.order);
   state.view = "order";
   $("view").value = "order";
@@ -1081,12 +1144,72 @@ document.addEventListener("drop", function (e) {
 document.addEventListener("dragend", finishDrag);
 
 function finishDrag() {
+  lastDragEnd = Date.now();
   clearDropMarks();
   Array.prototype.forEach.call(document.querySelectorAll(".row.dragging"), function (el) {
     el.classList.remove("dragging");
   });
   dragPid = null; dropTarget = null;
 }
+
+// ---------------------------------------------------------------- lift and place
+/* Touch devices never fire the HTML5 drag events, so reordering on a phone is two
+   taps: one to lift a player, one on the rank he should take. The bar adds single
+   slot nudges for fine work. */
+var lastDragEnd = 0;
+
+function liftedPlayer() {
+  if (!state.liftedPid || !state.slate) return null;
+  return byPidMap(state.slate)[state.liftedPid] || null;
+}
+
+function renderLiftBar() {
+  var bar = $("liftbar"), who = liftedPlayer();
+  bar.hidden = !who;
+  document.body.classList.toggle("lifting", !!who);
+  if (who) $("liftName").textContent = who.first_name + " " + who.last_name;
+}
+
+function setLifted(pid) {
+  state.liftedPid = pid || null;
+  renderLiftBar();
+  render();
+}
+
+function commitOrder() {
+  save(K.order(state.slate.label), state.order);
+  state.curatedCount = null;
+}
+
+function nudgeLifted(delta) {
+  if (!state.liftedPid) return;
+  state.order = moveBy(state.order, state.liftedPid, delta);
+  delete state.newIds[state.liftedPid];
+  commitOrder();
+  render();
+}
+
+document.addEventListener("click", function (e) {
+  if (e.target.closest && e.target.closest("#liftbar")) return;
+  var row = e.target.closest ? e.target.closest(".row[data-pid]") : null;
+  if (!row || state.view !== "order") return;
+  if (Date.now() - lastDragEnd < 400) return;   // a finished drag, not a tap
+  var pid = row.dataset.pid;
+  if (!state.liftedPid) { setLifted(pid); return; }
+  if (state.liftedPid === pid) { setLifted(null); return; }
+  state.order = placeAt(state.order, state.liftedPid, pid);
+  delete state.newIds[state.liftedPid];
+  commitOrder();
+  setLifted(null);
+});
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape" && state.liftedPid) setLifted(null);
+});
+
+$("liftUp").addEventListener("click", function () { nudgeLifted(-1); });
+$("liftDown").addEventListener("click", function () { nudgeLifted(1); });
+$("liftDone").addEventListener("click", function () { setLifted(null); });
 
 // ---------------------------------------------------------------- export
 async function doExport() {
@@ -1145,7 +1268,13 @@ async function doExport() {
 // ---------------------------------------------------------------- boot
 $("slate").addEventListener("change", function (e) { selectSlate(Number(e.target.value)); });
 $("search").addEventListener("input", function (e) { state.search = e.target.value; render(); });
-$("view").addEventListener("change", function (e) { state.view = e.target.value; render(); syncSortHeads(); });
+$("view").addEventListener("change", function (e) {
+  state.view = e.target.value;
+  if (state.view !== "order") state.liftedPid = null;
+  renderLiftBar();
+  render();
+  syncSortHeads();
+});
 $("projBtn").addEventListener("click", function () { $("proj").click(); });
 $("proj").addEventListener("change", function (e) {
   if (e.target.files && e.target.files[0]) handleProjectionFile(e.target.files[0]);
@@ -1308,6 +1437,15 @@ function brrSelfTest() {
   ok("dropped reported", rec.dropped.length === 1 && rec.dropped[0] === "pGONE");
   ok("no saved order sorts by adp", reconcileOrder(players, null).order.join() === "p1,p2,p3");
 
+  ok("nudge up", moveBy(["a", "b", "c", "d"], "c", -1).join() === "a,c,b,d");
+  ok("nudge down", moveBy(["a", "b", "c", "d"], "b", 1).join() === "a,c,b,d");
+  ok("nudge clamps at the top", moveBy(["a", "b"], "a", -1).join() === "a,b");
+  ok("nudge clamps at the bottom", moveBy(["a", "b"], "b", 1).join() === "a,b");
+  ok("nudge of an absent player is a no-op", moveBy(["a", "b"], "zz", -1).join() === "a,b");
+  ok("place from below takes that rank", placeAt(["a", "b", "c", "d"], "d", "b").join() === "a,d,b,c");
+  ok("place from above takes that rank", placeAt(["a", "b", "c", "d"], "a", "c").join() === "b,c,a,d");
+  ok("place on self does nothing", placeAt(["a", "b"], "a", "a").join() === "a,b");
+  ok("place keeps the whole board", placeAt(["a", "b", "c"], "a", "c").length === 3);
   ok("move before", moveWithin(["a", "b", "c"], "c", "a", true).join() === "c,a,b");
   ok("move after", moveWithin(["a", "b", "c"], "a", "c", false).join() === "b,c,a");
 
