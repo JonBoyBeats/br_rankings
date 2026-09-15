@@ -609,7 +609,10 @@ function joinProjections(players, entries, nameMap) {
     if (!hit) { unmatched.push(e.name); return; }
     if (values[hit.player_id] == null) { viaId ? matchedById++ : matchedByName++; }
     values[hit.player_id] = e.proj;
-    parts[hit.player_id] = { median: e.median, ceiling: e.ceiling };
+    parts[hit.player_id] = {
+      median: typeof e.median === "number" ? e.median : e.proj,
+      ceiling: typeof e.ceiling === "number" ? e.ceiling : null
+    };
   });
   return { values: values, parts: parts, matchedById: matchedById,
            matchedByName: matchedByName, unmatched: unmatched };
@@ -732,10 +735,19 @@ function projMovement(was, now) {
    the board can show what changed. Re-uploading the same file does not rotate, which
    would otherwise wipe the comparison. */
 
+/* Uploads parsed before the ceiling blend existed hold raw medians, and comparing one
+   against a blended number would invent a change of several points. They are dropped
+   rather than mixed; the next upload starts a clean comparison. */
+var PROJ_BLEND_VERSION = 1;
+
+function blendAware(gen) {
+  return gen && gen.blend === PROJ_BLEND_VERSION ? gen : null;
+}
+
 function normalizeProjStore(raw) {
   if (!raw) return { current: null, previous: null };
-  if (raw.entries) return { current: raw, previous: null };   // the older single-generation shape
-  return { current: raw.current || null, previous: raw.previous || null };
+  if (raw.entries) return { current: blendAware(raw), previous: null };   // the older single-generation shape
+  return { current: blendAware(raw.current), previous: blendAware(raw.previous) };
 }
 
 function rotateProjStore(store, upload) {
@@ -1049,7 +1061,7 @@ function ingestProjections(text, sourceName, pasted) {
     var parsed = parseProjections(String(text));
     if (parsed.error) { fail(parsed.error); return; }
     if (!parsed.entries.length) { fail("no rows with a numeric projection."); return; }
-    var upload = { file: sourceName, format: parsed.format,
+    var upload = { file: sourceName, format: parsed.format, blend: PROJ_BLEND_VERSION,
                    at: new Date().toISOString(), entries: parsed.entries };
     save(K.proj(parsed.sport),
          rotateProjStore(normalizeProjStore(load(K.proj(parsed.sport), null)), upload));
@@ -1293,8 +1305,8 @@ function render() {
     var pval = document.createElement("span");
     pval.textContent = v == null ? "–" : v.toFixed(1);
     var parts = state.projParts[p.player_id];
-    if (v != null && parts) {
-      pval.title = parts.ceiling == null
+    if (v != null && parts && typeof parts.median === "number") {
+      pval.title = typeof parts.ceiling !== "number"
         ? "Median " + parts.median.toFixed(1) + ", no ceiling published for this sport"
         : Math.round((1 - PROJ_CEILING_WEIGHT) * 100) + "% of median " + parts.median.toFixed(1) +
           " plus " + Math.round(PROJ_CEILING_WEIGHT * 100) + "% of ceiling " + parts.ceiling.toFixed(1);
@@ -1807,28 +1819,41 @@ if (typeof ResizeObserver !== "undefined") {
 }
 syncStickyOffsets();
 
+function bootFailed(where, err) {
+  $("rows").innerHTML = "";
+  var f = document.createElement("div");
+  f.className = "empty";
+  f.textContent = where + ": " + err.message;
+  $("rows").appendChild(f);
+}
+
 (async function boot() {
+  /* The fetch and the render fail for different reasons, and saying the mirror is
+     unreachable when it is not sends you looking in the wrong place. */
   try {
     await loadNameMaps();
     state.data = await loadMirror();
-    if (!state.data.slates.length) {
-      $("rows").innerHTML = "";
-      var e = document.createElement("div");
-      e.className = "empty";
-      e.textContent = "The mirror has no live slates right now. It refills when the next slate opens.";
-      $("rows").appendChild(e);
-      return;
-    }
+  } catch (err) {
+    bootFailed("Could not load the ADP mirror", err);
+    setStatus("The board could not reach " + MIRROR + "latest.json.", "bad");
+    return;
+  }
+  if (!state.data.slates.length) {
+    $("rows").innerHTML = "";
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = "The mirror has no live slates right now. It refills when the next slate opens.";
+    $("rows").appendChild(e);
+    return;
+  }
+  try {
     fillSlatePicker();
     syncSortHeads();
     selectSlate(Number($("slate").value));
   } catch (err) {
-    $("rows").innerHTML = "";
-    var f = document.createElement("div");
-    f.className = "empty";
-    f.textContent = "Could not load the ADP mirror: " + err.message;
-    $("rows").appendChild(f);
-    setStatus("The board could not reach " + MIRROR + "latest.json.", "bad");
+    bootFailed("The ADP loaded but the board could not draw it", err);
+    setStatus("The board hit an error drawing this slate: " + err.message +
+              ". The mirror itself loaded fine.", "bad");
   }
 })();
 
@@ -1948,20 +1973,33 @@ function brrSelfTest() {
   ok("no previous projection means no marker", projMovement(null, 12.0).kind === "nobase" &&
      projMovement(12.0, null).kind === "nobase");
 
-  var up1 = { file: "a.csv", format: "ETR Weekly", at: "t1", entries: [{ norm: "x", proj: 1 }] };
-  var up2 = { file: "b.csv", format: "ETR Weekly", at: "t2", entries: [{ norm: "x", proj: 2 }] };
+  var up1 = { file: "a.csv", format: "ETR Weekly", at: "t1", blend: PROJ_BLEND_VERSION,
+              entries: [{ norm: "x", median: 1, ceiling: null, proj: 1 }] };
+  var up2 = { file: "b.csv", format: "ETR Weekly", at: "t2", blend: PROJ_BLEND_VERSION,
+              entries: [{ norm: "x", median: 2, ceiling: null, proj: 2 }] };
   var st = normalizeProjStore(null);
   ok("an empty store has neither generation", st.current === null && st.previous === null);
   st = rotateProjStore(st, up1);
   ok("the first upload has nothing to compare against", st.current === up1 && st.previous === null);
   st = rotateProjStore(st, up2);
   ok("a new upload pushes the old one back", st.current === up2 && st.previous === up1);
-  var same = { file: "b-again.csv", format: "ETR Weekly", at: "t3", entries: [{ norm: "x", proj: 2 }] };
+  var same = { file: "b-again.csv", format: "ETR Weekly", at: "t3", blend: PROJ_BLEND_VERSION,
+               entries: [{ norm: "x", median: 2, ceiling: null, proj: 2 }] };
   st = rotateProjStore(st, same);
   ok("re-uploading the same numbers keeps the comparison",
      st.current === same && st.previous === up1);
   ok("the older single-generation shape still loads",
      normalizeProjStore(up1).current === up1 && normalizeProjStore(up1).previous === null);
+  // a store written before the blend existed must not be compared against blended numbers
+  var preBlend = { file: "old.csv", format: "ETR Weekly", at: "t0", entries: [{ norm: "x", proj: 9 }] };
+  ok("pre-blend uploads are dropped, not mixed",
+     normalizeProjStore(preBlend).current === null &&
+     normalizeProjStore({ current: preBlend, previous: preBlend }).current === null);
+  ok("an entry with no median still joins from proj alone", (function () {
+     var j = joinProjections(
+       [{ appearance_id: "a", player_id: "p", first_name: "A", last_name: "B", adp: 1 }],
+       [{ id: null, name: "A B", norm: normName("A B"), proj: 9 }], {});
+     return j.values.p === 9 && j.parts.p.median === 9 && j.parts.p.ceiling === null; })());
 
   // ---- saved boards
   ok("empty state parses back", parseSavedState(JSON.stringify(emptySavedState())) !== null);
