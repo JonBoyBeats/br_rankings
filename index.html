@@ -8,63 +8,37 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
+  /* One committed dark theme, sampled from the Underdog draft board: monochrome
+     chrome so the only colour on screen is positional, which is what makes the
+     board scan. Active states are a white edge, never a coloured accent. */
   :root {
-    --bg: #f3f5f7;
-    --surface: #ffffff;
-    --surface-2: #eaeef2;
-    --ink: #161a20;
-    --muted: #616c7a;
-    --line: #dce1e8;
-    --line-strong: #c3ccd6;
-    --accent: #1d4f91;
-    --accent-ink: #ffffff;
-    --up: #10704a;
-    --up-bg: #e2f1ea;
-    --down: #ac2b1c;
-    --down-bg: #fbe7e3;
-    --new: #8a5a06;
-    --new-bg: #fbf0d8;
+    color-scheme: dark;
+    --bg: #080b11;
+    --surface: #12151c;
+    --surface-2: #161a22;
+    --input: #0d1017;
+    --ink: #ffffff;
+    --muted: #8b94a4;
+    --line: #1c212c;
+    --line-strong: #2a3140;
+    --accent: #ffffff;
+    --accent-ink: #080b11;
+    --up: #4dc48d;
+    --down: #f08a7e;
+    --new: #a7b0be;
+    --new-bg: #1b202a;
+    --neutral-pill: #2a3140;
+    --qb: #8b4bb3;
+    --rb: #479580;
+    --wr: #d6843b;
+    --te: #437fb5;
     --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0d1115;
-      --surface: #151a20;
-      --surface-2: #1b222a;
-      --ink: #e5eaf0;
-      --muted: #909cab;
-      --line: #252d36;
-      --line-strong: #37414d;
-      --accent: #7aa9db;
-      --accent-ink: #0d1115;
-      --up: #4dc48d;
-      --up-bg: #122c20;
-      --down: #f08a7e;
-      --down-bg: #341813;
-      --new: #dfb765;
-      --new-bg: #2d2413;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #0d1115;
-    --surface: #151a20;
-    --surface-2: #1b222a;
-    --ink: #e5eaf0;
-    --muted: #909cab;
-    --line: #252d36;
-    --line-strong: #37414d;
-    --accent: #7aa9db;
-    --accent-ink: #0d1115;
-    --up: #4dc48d;
-    --up-bg: #122c20;
-    --down: #f08a7e;
-    --down-bg: #341813;
-    --new: #dfb765;
-    --new-bg: #2d2413;
-  }
 
   * { box-sizing: border-box; }
+  /* A class that sets display would otherwise outrank the browser's [hidden] rule. */
+  [hidden] { display: none !important; }
   html, body { margin: 0; }
   body {
     background: var(--bg);
@@ -105,13 +79,13 @@
     font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
     text-transform: uppercase; color: var(--muted);
   }
-  select, input[type="search"] {
+  select, input[type="search"], textarea {
     font-family: var(--sans); font-size: 14px; color: var(--ink);
-    background: var(--surface); border: 1px solid var(--line-strong);
+    background: var(--input); border: 1px solid var(--line-strong);
     border-radius: 7px; padding: 7px 9px; width: 100%; height: 34px;
   }
   input[type="search"] { -webkit-appearance: none; }
-  select:focus-visible, input:focus-visible, button:focus-visible {
+  select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-visible {
     outline: 2px solid var(--accent); outline-offset: 1px;
   }
 
@@ -128,14 +102,35 @@
 
   .chips { display: flex; gap: 5px; flex-wrap: wrap; }
   .chip {
-    font-family: var(--mono); font-size: 11.5px; font-weight: 500;
-    padding: 5px 9px; height: 28px; border-radius: 999px;
-    border: 1px solid var(--line-strong); background: var(--surface); color: var(--muted);
+    font-family: var(--mono); font-size: 11.5px; font-weight: 600;
+    padding: 5px 10px; height: 28px; border-radius: 999px;
+    border: 1.5px solid transparent; background: var(--neutral-pill); color: #ffffff;
     cursor: pointer;
   }
-  .chip[aria-pressed="true"] {
-    background: var(--accent); border-color: var(--accent); color: var(--accent-ink);
+  /* Selection is a white rim; the pill keeps its position colour either way. */
+  .chip[aria-pressed="true"] { border-color: #ffffff; }
+
+  .pos {
+    font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .06em;
+    padding: 2px 6px; border-radius: 4px; color: #ffffff; background: var(--neutral-pill);
+    white-space: nowrap;
   }
+  /* Declared after .pos and .chip so a position colour wins on both. An unknown
+     position matches none of these and keeps the neutral pill. */
+  .pos-QB { background: var(--qb); }
+  .pos-RB { background: var(--rb); }
+  .pos-WR { background: var(--wr); }
+  .pos-TE { background: var(--te); }
+
+  .pair { display: flex; gap: 6px; }
+  .paste {
+    display: flex; flex-direction: column; gap: 6px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; padding: 12px; margin-bottom: 10px;
+  }
+  .paste textarea { width: 100%; resize: vertical; font-family: var(--mono); font-size: 12px; height: auto; }
+  .paste-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .hint { color: var(--muted); font-size: 12.5px; }
 
   /* ---------- notices ---------- */
   .notice {
@@ -175,7 +170,9 @@
     text-transform: inherit; color: inherit;
   }
   .head button:hover { color: var(--ink); }
-  .head button[aria-sort="true"] { color: var(--accent); font-weight: 600; }
+  .head button[aria-sort="true"] {
+    color: var(--ink); font-weight: 600; text-decoration: underline; text-underline-offset: 3px;
+  }
   .head .r { text-align: right; }
 
   .handle {
@@ -199,8 +196,11 @@
   .tag {
     font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .06em;
     text-transform: uppercase; padding: 2px 6px; border-radius: 4px;
-    background: var(--new-bg); color: var(--new); white-space: nowrap;
+    background: var(--neutral-pill); color: var(--ink); white-space: nowrap;
   }
+  /* Presentational only: marks where a Builder's curated blocks end. It is an
+     ordinary row, so dragging across and past it behaves like anywhere else. */
+  .curated-end { border-bottom: 2px solid var(--line-strong); }
   .row.is-new { background: color-mix(in srgb, var(--new-bg) 45%, var(--surface)); }
   .num { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; text-align: right; }
   .num.dim { color: var(--muted); }
@@ -241,9 +241,19 @@
         </select>
       </label>
       <label class="field">
+        <span class="field-label">Seed order</span>
+        <span class="pair">
+          <button type="button" id="buildAdp">Builder (ADP)</button>
+          <button type="button" id="buildProj">Builder (Proj)</button>
+        </span>
+      </label>
+      <label class="field">
         <span class="field-label">Projections</span>
-        <input type="file" id="proj" accept=".csv,text/csv" class="vh">
-        <button type="button" id="projBtn">Upload CSV</button>
+        <span class="pair">
+          <input type="file" id="proj" accept=".csv,.tsv,.txt,text/csv" class="vh">
+          <button type="button" id="projBtn">Upload CSV</button>
+          <button type="button" id="pasteBtn" aria-expanded="false">Paste</button>
+        </span>
       </label>
       <label class="field">
         <span class="field-label">Underdog</span>
@@ -252,6 +262,16 @@
     </div>
     <div class="controls" style="padding-top:0">
       <div class="chips" id="positions"></div>
+    </div>
+  </div>
+
+  <div id="pastePanel" class="paste" hidden>
+    <label class="field-label" for="pasteBox">Paste an ETR or CFF block, header row included</label>
+    <textarea id="pasteBox" rows="4" spellcheck="false"
+      placeholder="Player&#9;Position&#9;Team&#9;...&#9;Proj&#9;...&#9;id"></textarea>
+    <div class="paste-actions">
+      <button type="button" id="pasteLoad" class="primary">Load</button>
+      <span class="hint">Tab or comma separated. Pasting loads it straight away.</span>
     </div>
   </div>
 
@@ -281,8 +301,23 @@
 
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 
-/** RFC-4180-ish CSV parser: quoted fields, embedded commas/newlines, doubled quotes. */
-function parseCsv(text) {
+/* How many of each position the Builders put in the curated top. Edit freely. */
+var BUILDER_CAPS = { RB: 12, WR: 15, TE: 8, QB: 12 };
+/* The order the curated blocks are laid out in. */
+var BUILDER_BLOCKS = ["RB", "WR", "TE", "QB"];
+
+/**
+ * Header-line delimiter sniff: a tab wins over a comma, since ETR's board copies out
+ * tab separated while its downloads are comma separated.
+ */
+function sniffDelimiter(text) {
+  var head = String(text).replace(/^\uFEFF/, "").split(/\r?\n/)[0] || "";
+  return head.indexOf("\t") >= 0 ? "\t" : ",";
+}
+
+/** RFC-4180-ish parser: quoted fields, embedded delimiters/newlines, doubled quotes. */
+function parseCsv(text, delim) {
+  delim = delim || ",";
   var rows = [], row = [], field = "", inQuotes = false, i = 0;
   text = String(text).replace(/^﻿/, "");
   while (i < text.length) {
@@ -295,7 +330,7 @@ function parseCsv(text) {
       field += c; i++; continue;
     }
     if (c === '"') { inQuotes = true; i++; continue; }
-    if (c === ",") { row.push(field); field = ""; i++; continue; }
+    if (c === delim) { row.push(field); field = ""; i++; continue; }
     if (c === "\r") { i++; continue; }
     if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
     field += c; i++;
@@ -341,7 +376,7 @@ function headerIndex(header) {
  * CFF (CFB): reads PLAYER NAME, FPNTS.
  */
 function parseProjections(text) {
-  var rows = parseCsv(text);
+  var rows = parseCsv(text, sniffDelimiter(text));
   if (!rows.length) return { error: "empty file", entries: [] };
   var idx = headerIndex(rows[0]);
   var format, nameCol, projCol, idCol = null, sport, dedupe = false;
@@ -447,6 +482,57 @@ function reconcileOrder(players, savedOrder) {
   return { order: order.concat(fresh), newIds: fresh, dropped: dropped };
 }
 
+/**
+ * Seed a working order from positional blocks: RB, WR, TE and QB blocks up to each
+ * cap, then every remaining player below in one flat depth tail. Nobody is dropped,
+ * so the export stays a complete board. A player at an unexpected position (the stray
+ * FB the feed occasionally carries) never enters a block and lands in the tail.
+ *
+ * metric "adp"  — lowest ADP first, ties broken by the higher projection.
+ * metric "proj" — highest projection first, players without one last, ties by ADP.
+ */
+function buildBlockOrder(players, metric, projValues, caps) {
+  caps = caps || BUILDER_CAPS;
+  projValues = projValues || {};
+
+  function projOf(p) {
+    var v = projValues[p.player_id];
+    return typeof v === "number" && isFinite(v) ? v : null;
+  }
+  function compare(a, b) {
+    var pa = projOf(a), pb = projOf(b);
+    if (metric === "proj") {
+      if (pa == null && pb == null) return a.adp - b.adp;
+      if (pa == null) return 1;
+      if (pb == null) return -1;
+      if (pb !== pa) return pb - pa;
+      return a.adp - b.adp;
+    }
+    if (a.adp !== b.adp) return a.adp - b.adp;
+    if (pa == null && pb == null) return 0;
+    if (pa == null) return 1;
+    if (pb == null) return -1;
+    return pb - pa;
+  }
+
+  var taken = {}, curated = [], blocks = {};
+  BUILDER_BLOCKS.forEach(function (pos) {
+    var picked = players
+      .filter(function (p) { return p.position === pos; })
+      .sort(compare)
+      .slice(0, caps[pos] || 0);
+    blocks[pos] = picked.length;
+    picked.forEach(function (p) { taken[p.player_id] = 1; curated.push(p.player_id); });
+  });
+
+  var tail = players
+    .filter(function (p) { return !taken[p.player_id]; })
+    .sort(compare)
+    .map(function (p) { return p.player_id; });
+
+  return { order: curated.concat(tail), curatedCount: curated.length, blocks: blocks };
+}
+
 /** Move one player directly before or after another inside the full order. */
 function moveWithin(order, dragId, targetId, before) {
   if (dragId === targetId) return order.slice();
@@ -510,6 +596,7 @@ var state = {
   slate: null,         // chosen slate object
   order: [],           // player_id list, full board
   newIds: {},          // player_id -> true, new since the saved order
+  curatedCount: null,  // rows above the Builder's depth tail, for the divider only
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
   projMeta: null,      // {file, format, matchedById, matchedByName, missing, boardTotal, at}
@@ -593,6 +680,7 @@ function selectSlate(index) {
   state.newIds = {};
   rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
   state.baseline = load(K.baseline(s.label), null);
+  state.curatedCount = null;
 
   applyStoredProjections();
   renderPositions();
@@ -605,7 +693,7 @@ function applyStoredProjections() {
   var s = state.slate;
   var stored = load(K.proj(s.sport), null);
   if (!stored || !stored.entries || !stored.entries.length) {
-    state.proj = {}; state.projMeta = null; renderMissingProjections(); return;
+    state.proj = {}; state.projMeta = null; renderMissingProjections(); syncBuilderButtons(); return;
   }
   var joined = joinProjections(s.players, stored.entries, state.nameMaps[s.sport] || {});
   state.proj = joined.values;
@@ -618,16 +706,35 @@ function applyStoredProjections() {
       .map(function (p) { return p.first_name + " " + p.last_name; })
   };
   renderMissingProjections();
+  syncBuilderButtons();
 }
 
 function handleProjectionFile(file) {
   var reader = new FileReader();
-  reader.onload = function () {
-    var parsed = parseProjections(String(reader.result));
-    if (parsed.error) { setStatus(file.name + ": " + parsed.error, "bad"); return; }
-    if (!parsed.entries.length) { setStatus(file.name + ": no rows with a numeric projection.", "bad"); return; }
+  reader.onload = function () { ingestProjections(String(reader.result), file.name, false); };
+  reader.onerror = function () { setStatus("Could not read " + file.name + ".", "bad"); };
+  reader.readAsText(file);
+}
+
+/**
+ * The single projection pipeline. A pasted block and an uploaded file differ only in
+ * where the text came from and how a failure reads; parsing, joining, caching and
+ * reporting are the same code either way.
+ */
+function ingestProjections(text, sourceName, pasted) {
+  function fail(msg) {
+    setStatus(pasted
+      ? "Couldn't read pasted projections \u2014 expected an ETR or CFF export. " +
+        msg.replace(/^unrecognized projection file\. /, "")
+      : sourceName + ": " + msg, "bad");
+  }
+  if (!String(text).trim()) { fail("nothing to read."); return; }
+  {
+    var parsed = parseProjections(String(text));
+    if (parsed.error) { fail(parsed.error); return; }
+    if (!parsed.entries.length) { fail("no rows with a numeric projection."); return; }
     save(K.proj(parsed.sport), {
-      file: file.name, format: parsed.format, at: new Date().toISOString(), entries: parsed.entries
+      file: sourceName, format: parsed.format, at: new Date().toISOString(), entries: parsed.entries
     });
     if (parsed.sport !== state.slate.sport) {
       setStatus("Read " + parsed.entries.length + " " + parsed.format + " rows and saved them for " +
@@ -637,15 +744,13 @@ function handleProjectionFile(file) {
     }
     applyStoredProjections();
     var m = state.projMeta;
-    setStatus("Read " + parsed.entries.length + " " + parsed.format + " rows from " + file.name +
+    setStatus("Read " + parsed.entries.length + " " + parsed.format + " rows from " + sourceName +
               ". " + (m.boardTotal - m.missing.length) + " of " + m.boardTotal +
               " board players now carry a projection (" + m.matchedById + " matched by id, " +
               m.matchedByName + " by name)." +
               (parsed.skipped ? " Skipped " + parsed.skipped + " rows with no numeric projection." : ""));
     render();
-  };
-  reader.onerror = function () { setStatus("Could not read " + file.name + ".", "bad"); };
-  reader.readAsText(file);
+  }
 }
 
 // ---------------------------------------------------------------- render
@@ -718,7 +823,7 @@ function renderPositions() {
   ["ALL"].concat(seen).forEach(function (pos) {
     var b = document.createElement("button");
     b.type = "button";
-    b.className = "chip";
+    b.className = "chip" + (pos === "ALL" ? "" : " pos-" + pos);
     b.textContent = pos === "ALL" ? "All" : pos;
     b.setAttribute("aria-pressed", String(state.position === pos));
     b.addEventListener("click", function () {
@@ -791,7 +896,8 @@ function render() {
   rows.forEach(function (r) {
     var p = r.p;
     var el = document.createElement("div");
-    el.className = "row" + (state.newIds[p.player_id] ? " is-new" : "");
+    el.className = "row" + (state.newIds[p.player_id] ? " is-new" : "") +
+                   (state.curatedCount && r.rank === state.curatedCount ? " curated-end" : "");
     el.dataset.pid = p.player_id;
     el.draggable = dragging;
 
@@ -818,10 +924,13 @@ function render() {
     var name = document.createElement("span");
     name.className = "name";
     name.textContent = p.first_name + " " + p.last_name;
+    var pos = document.createElement("span");
+    pos.className = "pos" + (p.position ? " pos-" + p.position : "");
+    pos.textContent = p.position || "—";
     var sub = document.createElement("span");
     sub.className = "sub";
-    sub.textContent = (p.team || "—") + " · " + (p.position || "—");
-    who.append(name, sub);
+    sub.textContent = p.team || "—";
+    who.append(name, pos, sub);
     if (state.newIds[p.player_id]) {
       var tag = document.createElement("span");
       tag.className = "tag";
@@ -857,6 +966,38 @@ function renderFoot(shown) {
   if (state.view !== "order") bits.push("dragging is off while sorted");
   bits.push("order and baselines live in this browser only");
   $("foot").textContent = bits.join(" · ");
+}
+
+// ---------------------------------------------------------------- builders
+function syncBuilderButtons() {
+  var b = $("buildProj");
+  if (!b) return;
+  var ready = Object.keys(state.proj).length > 0;
+  b.disabled = !ready;
+  b.title = ready
+    ? "Seed the order from positional blocks, best projection first"
+    : "Load projections first";
+}
+
+function applyBuilder(metric) {
+  var label = state.slate.label;
+  if (load(K.order(label), null) &&
+      !window.confirm("This replaces your current order for " + slateLabel(state.slate) + ". Continue?")) {
+    return;
+  }
+  var built = buildBlockOrder(state.slate.players, metric, state.proj, BUILDER_CAPS);
+  state.order = built.order;
+  state.curatedCount = built.curatedCount;
+  state.newIds = {};
+  save(K.order(label), state.order);
+  state.view = "order";
+  $("view").value = "order";
+  syncSortHeads();
+  render();
+  var shape = BUILDER_BLOCKS.map(function (pos) { return built.blocks[pos] + " " + pos; }).join(", ");
+  setStatus("Seeded your order by " + (metric === "proj" ? "projection" : "ADP") + ": " + shape +
+            " on top, then " + (state.order.length - built.curatedCount) +
+            " more below the line. Drag from here; nothing was dropped.");
 }
 
 // ---------------------------------------------------------------- drag
@@ -899,6 +1040,7 @@ document.addEventListener("drop", function (e) {
   var targetPid = dropTarget.dataset.pid;
   state.order = moveWithin(state.order, dragPid, targetPid, dropBefore);
   delete state.newIds[dragPid];
+  state.curatedCount = null;
   save(K.order(state.slate.label), state.order);
   finishDrag();
   render();
@@ -978,6 +1120,22 @@ $("proj").addEventListener("change", function (e) {
   e.target.value = "";
 });
 $("export").addEventListener("click", doExport);
+$("buildAdp").addEventListener("click", function () { applyBuilder("adp"); });
+$("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
+$("pasteBtn").addEventListener("click", function () {
+  var panel = $("pastePanel"), open = panel.hidden;
+  panel.hidden = !open;
+  this.setAttribute("aria-expanded", String(open));
+  if (open) $("pasteBox").focus();
+  syncMastHeight();
+});
+$("pasteLoad").addEventListener("click", function () {
+  ingestProjections($("pasteBox").value, "pasted text", true);
+});
+$("pasteBox").addEventListener("paste", function () {
+  var box = this;
+  setTimeout(function () { ingestProjections(box.value, "pasted text", true); }, 0);
+});
 Array.prototype.forEach.call(document.querySelectorAll(".head button[data-sort]"), function (b) {
   b.addEventListener("click", function () {
     state.view = state.view === b.dataset.sort ? "order" : b.dataset.sort;
@@ -1043,6 +1201,12 @@ var FIXTURE_WEEKLY =
   '"Jahmyr Gibbs","RB","DET","NO","24.6","22.4","23.5","19.2","21.3","23.4","40.4","37.8","Main"\r\n' +
   '"Puka Nacua","WR","LA","SF","22.3","18.5","21.0","13.5","17.2","21.0","36.9","31.6","Thursday"\r\n' +
   '"Jahmyr Gibbs","RB","DET","NO","24.6","22.4","23.5","19.2","18.9","23.4","40.4","37.8","Thursday"\r\n';
+// The same two Battle Royale rows as they arrive from a copy-paste: tab separated,
+// unquoted. Everything downstream must treat them exactly like the comma version.
+var FIXTURE_ETR_TSV =
+  "Player\tPosition\tTeam\tOpponent\tRank\tADP\tProj\tCeiling\tPos Rank\tid\n" +
+  "Jahmyr Gibbs\tRB\tDET\tNO\t1\t1.0\t21.2\t35.3\tRB01\tcff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7\n" +
+  "Amon-Ra St. Brown\tWR\tDET\tNO\t3\t3.8\t15.9\t27.4\tWR02\tc2514e1c-2fc1-4fc7-ac51-5d2a68d9af45\n";
 var FIXTURE_CFF =
   "RANK,PLAYER NAME,POS,STATUS,TEAM,CONF,OPP,PAYDS,PATD,RUYDS,RUTD,REC,REYDS,RETD,FPNTS,DK $,FD $\n" +
   "59,Liam Szarka,QB,,AirForce,MWC,N Dakota St,84.0,0.4,79.0,1.5,,,,21.9,7800,\n" +
@@ -1117,6 +1281,60 @@ function brrSelfTest() {
   ok("export csv", ex.csv === "id\na2\na1\n");
   ok("export missing", ex.missing.length === 1);
   ok("baseline", baselineFrom(["p1"], byPid).p1 === 1.3);
+
+  // ---- pasted (tab separated) input reaches the same result as the file
+  var tsv = parseProjections(FIXTURE_ETR_TSV);
+  ok("tsv delimiter sniffed", sniffDelimiter(FIXTURE_ETR_TSV) === "\t" && sniffDelimiter(FIXTURE_ETR) === ",");
+  ok("tsv detected as BR", tsv.format === "ETR Battle Royale" && tsv.sport === "nfl");
+  ok("tsv matches the csv rows",
+     JSON.stringify(tsv.entries) === JSON.stringify(etr.entries));
+  ok("garbage paste is refused", !!parseProjections("just some words\nand another line\n").error);
+
+  // ---- builders
+  var roster = [], projs = {};
+  function add(id, position, adp, proj) {
+    roster.push({ appearance_id: "app-" + id, player_id: id, first_name: "P", last_name: id,
+                  position: position, adp: adp });
+    if (proj != null) projs[id] = proj;
+  }
+  for (var i = 0; i < 20; i++) add("rb" + i, "RB", 10 + i, 20 - i);
+  for (var w = 0; w < 20; w++) add("wr" + w, "WR", 100 + w, 19 - w);
+  for (var t = 0; t < 3; t++) add("te" + t, "TE", 200 + t, 9 - t);
+  for (var q = 0; q < 2; q++) add("qb" + q, "QB", 300 + q, 18 - q);
+  add("fb0", "FB", 400, 1);            // stray position: tail only, never a block
+  add("rbX", "RB", 5, null);           // best ADP, no projection
+
+  var byAdp = buildBlockOrder(roster, "adp", projs, BUILDER_CAPS);
+  ok("adp builder keeps everyone", byAdp.order.length === roster.length &&
+     new Set(byAdp.order).size === roster.length);
+  ok("adp builder caps", byAdp.blocks.RB === 12 && byAdp.blocks.WR === 15 &&
+     byAdp.blocks.TE === 3 && byAdp.blocks.QB === 2);
+  ok("adp builder curated count", byAdp.curatedCount === 32);
+  ok("adp builder block order", byAdp.order[0] === "rbX" && byAdp.order[12].indexOf("wr") === 0 &&
+     byAdp.order[27].indexOf("te") === 0 && byAdp.order[30].indexOf("qb") === 0);
+  var rbBlock = byAdp.order.slice(0, 12).map(function (id) {
+    return roster.filter(function (r) { return r.player_id === id; })[0].adp; });
+  ok("adp block ascending", rbBlock.every(function (v, i) { return i === 0 || rbBlock[i - 1] <= v; }));
+  var tailAdp = byAdp.order.slice(32).map(function (id) {
+    return roster.filter(function (r) { return r.player_id === id; })[0].adp; });
+  ok("adp tail ascending", tailAdp.every(function (v, i) { return i === 0 || tailAdp[i - 1] <= v; }));
+  ok("stray position sits in the tail", byAdp.order.indexOf("fb0") >= byAdp.curatedCount);
+
+  var byProj = buildBlockOrder(roster, "proj", projs, BUILDER_CAPS);
+  ok("proj builder keeps everyone", byProj.order.length === roster.length);
+  ok("proj builder leads with the best projection", byProj.order[0] === "rb0");
+  ok("no-projection player never in the curated top",
+     byProj.order.indexOf("rbX") >= byProj.curatedCount);
+  ok("proj tail puts the projectionless last",
+     byProj.order[byProj.order.length - 1] === "rbX");
+  var rbProj = byProj.order.slice(0, 12).map(function (id) { return projs[id]; });
+  ok("proj block descending", rbProj.every(function (v, i) { return i === 0 || rbProj[i - 1] >= v; }));
+
+  var builtExport = buildExportCsv(byAdp.order, (function () {
+    var m = {}; roster.forEach(function (r) { m[r.player_id] = r; }); return m; })());
+  ok("export after a builder is the full board",
+     builtExport.rows === roster.length && builtExport.missing.length === 0 &&
+     builtExport.csv.split("\n")[0] === "id");
 
   if (fails.length) { console.error("brrSelfTest FAILED: " + fails.join(", ")); return false; }
   console.log("brrSelfTest passed");
