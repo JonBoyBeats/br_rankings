@@ -326,9 +326,31 @@
       </span>
     </label>
     <label class="field">
+      <span class="field-label">Saved</span>
+      <button type="button" id="syncBtn" aria-expanded="false">Sync</button>
+    </label>
+    <label class="field">
       <span class="field-label">Underdog</span>
       <button type="button" id="export" class="primary">Export ranking</button>
     </label>
+  </div>
+
+  <div id="syncPanel" class="paste" hidden>
+    <div class="hint" id="syncStatus">Checking&hellip;</div>
+    <div class="paste-actions" id="syncActions" hidden>
+      <button type="button" id="syncSave" class="primary">Save this slate</button>
+      <button type="button" id="syncLoad">Load saved</button>
+      <button type="button" id="syncForget">Disconnect</button>
+    </div>
+    <div id="syncConnectRow" hidden>
+      <label class="field-label" for="syncToken">GitHub token, gist scope only</label>
+      <input type="password" id="syncToken" autocomplete="off" spellcheck="false"
+        placeholder="ghp_&hellip;">
+      <div class="paste-actions" style="margin-top:6px">
+        <button type="button" id="syncConnect" class="primary">Connect</button>
+        <span class="hint">Stored in this browser only. It reaches a private gist and nothing else.</span>
+      </div>
+    </div>
   </div>
 
   <div id="pastePanel" class="paste" hidden>
@@ -633,6 +655,63 @@ function buildBlockOrder(players, metric, projValues, caps) {
   return { order: curated.concat(tail), curatedCount: curated.length, blocks: blocks };
 }
 
+/* ---- saved boards -------------------------------------------------------------
+   One document, one entry per slate label, held in a private gist so any device
+   holding the token can pick up the last save. Only player ids travel: appearance
+   ids reset every week, and the board reconciles a changed player set on load. */
+
+var SAVED_VERSION = 1;
+
+function emptySavedState() { return { version: SAVED_VERSION, slates: {} }; }
+
+function parseSavedState(text) {
+  var doc;
+  try { doc = JSON.parse(text); } catch (e) { return null; }
+  if (!doc || typeof doc !== "object") return null;
+  if (!doc.slates || typeof doc.slates !== "object") return null;
+  return doc;
+}
+
+/** Replace one slate's entry, leaving every other device's slates untouched. */
+function putSavedSlate(doc, label, entry) {
+  var out = { version: SAVED_VERSION, slates: {} };
+  var src = (doc && doc.slates) || {};
+  Object.keys(src).forEach(function (k) { out.slates[k] = src[k]; });
+  out.slates[label] = entry;
+  return out;
+}
+
+function playerCount(n) { return n + (n === 1 ? " player" : " players"); }
+
+function savedEntry(order, slateId, device, nowIso) {
+  return { order: order.slice(), slate_id: slateId, device: device,
+           saved_at: nowIso, count: order.length };
+}
+
+/** Plain-language age, for "saved 2 hours ago from iPhone". */
+function describeAge(iso, nowMs) {
+  var t = Date.parse(iso);
+  if (!isFinite(t)) return "at an unknown time";
+  var mins = Math.round((nowMs - t) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return mins + (mins === 1 ? " minute" : " minutes") + " ago";
+  var hrs = Math.round(mins / 60);
+  if (hrs < 24) return hrs + (hrs === 1 ? " hour" : " hours") + " ago";
+  var days = Math.round(hrs / 24);
+  return days + (days === 1 ? " day" : " days") + " ago";
+}
+
+/** A short name for this device, so a save says where it came from. */
+function deviceName(ua) {
+  ua = String(ua || "");
+  var m = ua.match(/(Firefox|Edg|OPR|Chrome|Safari)\//);
+  var browser = m ? m[1].replace("Edg", "Edge").replace("OPR", "Opera") : "browser";
+  var os = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad"
+    : /Android/.test(ua) ? "Android" : /Macintosh|Mac OS/.test(ua) ? "Mac"
+    : /Windows/.test(ua) ? "Windows" : /Linux/.test(ua) ? "Linux" : "device";
+  return os + " " + browser;
+}
+
 /** Move one player directly before or after another inside the full order. */
 function moveWithin(order, dragId, targetId, before) {
   if (dragId === targetId) return order.slice();
@@ -706,7 +785,10 @@ function buildExportCsv(order, byPid) {
 var K = {
   order: function (label) { return "brr:order:" + label; },
   proj: function (sport) { return "brr:proj:" + sport; },
-  slate: "brr:slate"
+  slate: "brr:slate",
+  token: "brr:gh:token",
+  gist: "brr:gh:gist",
+  device: "brr:device"
 };
 function load(key, fallback) {
   try {
@@ -1262,6 +1344,176 @@ $("liftUp").addEventListener("click", function () { nudgeLifted(-1); });
 $("liftDown").addEventListener("click", function () { nudgeLifted(1); });
 $("liftDone").addEventListener("click", function () { setLifted(null); });
 
+// ---------------------------------------------------------------- saved boards
+/* A private gist holds one order per slate. The token never leaves this browser and
+   never appears in a status line; it is sent only to api.github.com. */
+var GH = "https://api.github.com";
+var GIST_FILE = "br_rankings.json";
+var GIST_DESC = "br_rankings saved boards";
+
+function myDevice() {
+  var d = load(K.device, null);
+  if (!d) { d = deviceName(navigator.userAgent); save(K.device, d); }
+  return d;
+}
+function connected() { return !!load(K.token, null); }
+
+async function gh(path, opts) {
+  var token = load(K.token, null);
+  if (!token) throw new Error("not connected");
+  opts = opts || {};
+  var headers = {
+    "Authorization": "Bearer " + token,
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+  if (opts.body) headers["Content-Type"] = "application/json";
+  var r;
+  try {
+    r = await fetch(GH + path, { method: opts.method || "GET", headers: headers, body: opts.body });
+  } catch (e) {
+    throw new Error("could not reach GitHub. The board still works offline.");
+  }
+  if (r.status === 401) throw new Error("GitHub rejected the token. It needs the gist scope.");
+  if (r.status === 403) throw new Error("GitHub refused the request. Check the token has the gist scope.");
+  if (!r.ok) throw new Error("GitHub returned HTTP " + r.status + ".");
+  return r.json();
+}
+
+/** Find this app's gist among the account's, so a second device needs only the token. */
+async function findGist() {
+  var list = await gh("/gists?per_page=100");
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].files && list[i].files[GIST_FILE]) return list[i].id;
+  }
+  return null;
+}
+
+async function readSaved() {
+  var id = load(K.gist, null);
+  if (!id) { id = await findGist(); if (id) save(K.gist, id); }
+  if (!id) return { id: null, doc: emptySavedState() };
+  var g = await gh("/gists/" + id);
+  var f = g.files && g.files[GIST_FILE];
+  return { id: id, doc: (f && parseSavedState(f.content)) || emptySavedState() };
+}
+
+async function writeSaved(doc, id) {
+  var body = { description: GIST_DESC, files: {} };
+  body.files[GIST_FILE] = { content: JSON.stringify(doc, null, 1) };
+  if (id) return gh("/gists/" + id, { method: "PATCH", body: JSON.stringify(body) });
+  body["public"] = false;
+  var g = await gh("/gists", { method: "POST", body: JSON.stringify(body) });
+  save(K.gist, g.id);
+  return g;
+}
+
+function renderSync(text) {
+  $("syncStatus").textContent = text;
+  $("syncActions").hidden = !connected();
+  $("syncConnectRow").hidden = connected();
+  syncStickyOffsets();
+}
+
+async function refreshSyncStatus() {
+  if (!connected()) {
+    renderSync("Not connected. Paste a GitHub token below and this device can save and " +
+               "load boards from a private gist.");
+    return;
+  }
+  renderSync("Checking the gist\u2026");
+  try {
+    var cur = await readSaved();
+    var labels = Object.keys(cur.doc.slates);
+    var mine = cur.doc.slates[state.slate ? state.slate.label : ""];
+    var bits = mine
+      ? "This slate: saved " + describeAge(mine.saved_at, Date.now()) + " from " +
+        mine.device + ", " + playerCount(mine.count) + "."
+      : "Nothing saved for this slate yet.";
+    renderSync(bits + (labels.length ? " Saved slates: " + labels.join(", ") + "." : "") +
+               " This device is " + myDevice() + ".");
+  } catch (e) {
+    renderSync(e.message);
+  }
+}
+
+async function syncSave() {
+  var btn = $("syncSave"); btn.disabled = true;
+  try {
+    var label = state.slate.label;
+    var cur = await readSaved();
+    var prior = cur.doc.slates[label];
+    if (prior && prior.device !== myDevice() &&
+        !window.confirm(prior.device + " saved this slate " + describeAge(prior.saved_at, Date.now()) +
+                        " with " + playerCount(prior.count) + ". Replace it with this board?")) {
+      renderSync("Left the saved board alone.");
+      return;
+    }
+    var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString());
+    await writeSaved(putSavedSlate(cur.doc, label, entry), cur.id);
+    renderSync("Saved " + playerCount(entry.count) + " for " + slateLabel(state.slate) +
+               ". Any device with the token can load it.");
+  } catch (e) {
+    renderSync("Could not save: " + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function syncLoad() {
+  var btn = $("syncLoad"); btn.disabled = true;
+  try {
+    var cur = await readSaved();
+    var entry = cur.doc.slates[state.slate.label];
+    if (!entry) { renderSync("Nothing saved for " + slateLabel(state.slate) + " yet."); return; }
+    if (!window.confirm("Replace your order with the board saved " +
+                        describeAge(entry.saved_at, Date.now()) + " from " + entry.device +
+                        " (" + playerCount(entry.count) + ")?")) {
+      renderSync("Kept the board on this device.");
+      return;
+    }
+    var rec = reconcileOrder(state.slate.players, entry.order);
+    state.order = rec.order;
+    state.newIds = {};
+    rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
+    state.curatedCount = null;
+    state.liftedPid = null;
+    renderLiftBar();
+    save(K.order(state.slate.label), state.order);
+    render();
+    renderSync("Loaded the board from " + entry.device + "." +
+               (rec.dropped.length ? " " + rec.dropped.length + " of its players are no longer on the slate." : "") +
+               (rec.newIds.length ? " " + rec.newIds.length + " new since then are flagged at the bottom." : ""));
+  } catch (e) {
+    renderSync("Could not load: " + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function syncConnect() {
+  var field = $("syncToken");
+  var token = field.value.trim();
+  if (!token) { renderSync("Paste a token first."); return; }
+  save(K.token, token);
+  field.value = "";
+  renderSync("Checking the token\u2026");
+  try {
+    await readSaved();
+    await refreshSyncStatus();
+  } catch (e) {
+    localStorage.removeItem(K.token);
+    renderSync(e.message);
+    $("syncConnectRow").hidden = false;
+    $("syncActions").hidden = true;
+  }
+}
+
+function syncForget() {
+  try { localStorage.removeItem(K.token); localStorage.removeItem(K.gist); } catch (e) { /* ignore */ }
+  renderSync("Disconnected. The token is gone from this browser; the gist itself is untouched.");
+}
+
 // ---------------------------------------------------------------- export
 async function doExport() {
   var btn = $("export");
@@ -1342,6 +1594,17 @@ $("pasteBtn").addEventListener("click", function () {
 $("pasteLoad").addEventListener("click", function () {
   ingestProjections($("pasteBox").value, "pasted text", true);
 });
+$("syncBtn").addEventListener("click", function () {
+  var panel = $("syncPanel"), open = panel.hidden;
+  panel.hidden = !open;
+  this.setAttribute("aria-expanded", String(open));
+  syncStickyOffsets();
+  if (open) refreshSyncStatus();
+});
+$("syncSave").addEventListener("click", syncSave);
+$("syncLoad").addEventListener("click", syncLoad);
+$("syncForget").addEventListener("click", syncForget);
+$("syncConnect").addEventListener("click", syncConnect);
 $("pasteBox").addEventListener("paste", function () {
   var box = this;
   setTimeout(function () { ingestProjections(box.value, "pasted text", true); }, 0);
@@ -1495,6 +1758,40 @@ function brrSelfTest() {
   ok("place from above takes that rank", placeAt(["a", "b", "c", "d"], "a", "c").join() === "b,c,a,d");
   ok("place on self does nothing", placeAt(["a", "b"], "a", "a").join() === "a,b");
   ok("place keeps the whole board", placeAt(["a", "b", "c"], "a", "c").length === 3);
+  // ---- saved boards
+  ok("empty state parses back", parseSavedState(JSON.stringify(emptySavedState())) !== null);
+  ok("junk state is refused", parseSavedState("not json") === null &&
+     parseSavedState('{"nope":1}') === null);
+  var doc = putSavedSlate(emptySavedState(), "nfl_main",
+    savedEntry(["a", "b"], "s1", "Mac Chrome", "2026-09-15T12:00:00Z"));
+  doc = putSavedSlate(doc, "nfl_late",
+    savedEntry(["c"], "s2", "iPhone Safari", "2026-09-15T13:00:00Z"));
+  ok("a save keeps the other slates", Object.keys(doc.slates).length === 2);
+  doc = putSavedSlate(doc, "nfl_main",
+    savedEntry(["b", "a"], "s1", "Windows Edge", "2026-09-15T14:00:00Z"));
+  ok("a re-save replaces only its own slate",
+     doc.slates.nfl_main.order.join() === "b,a" && doc.slates.nfl_late.order.join() === "c");
+  ok("an entry records where and when",
+     doc.slates.nfl_main.device === "Windows Edge" && doc.slates.nfl_main.count === 2);
+  ok("the order is copied, not referenced", (function () {
+     var src = ["x", "y"], e = savedEntry(src, "s", "d", "2026-01-01T00:00:00Z");
+     src.push("z"); return e.order.length === 2; })());
+
+  var now = Date.parse("2026-09-15T12:00:00Z");
+  ok("one player reads as singular", playerCount(1) === "1 player" && playerCount(2) === "2 players");
+  ok("age just now", describeAge("2026-09-15T11:59:40Z", now) === "just now");
+  ok("age minutes", describeAge("2026-09-15T11:30:00Z", now) === "30 minutes ago");
+  ok("age hours", describeAge("2026-09-15T09:00:00Z", now) === "3 hours ago");
+  ok("age days", describeAge("2026-09-13T12:00:00Z", now) === "2 days ago");
+  ok("age of nonsense", describeAge("whenever", now) === "at an unknown time");
+
+  ok("device name from a phone",
+     deviceName("Mozilla/5.0 (iPhone; CPU iPhone OS 18_0) AppleWebKit/605.1 Version/18.0 Safari/604.1")
+     === "iPhone Safari");
+  ok("device name from a laptop",
+     deviceName("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140.0 Safari/537.36")
+     === "Mac Chrome");
+
   ok("move before", moveWithin(["a", "b", "c"], "c", "a", true).join() === "c,a,b");
   ok("move after", moveWithin(["a", "b", "c"], "a", "c", false).join() === "b,c,a");
 
