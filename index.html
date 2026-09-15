@@ -375,14 +375,24 @@ var BUILDER_CAPS = { RB: 12, WR: 15, TE: 8, QB: 12 };
 /* The order the curated blocks are laid out in. */
 var BUILDER_BLOCKS = ["RB", "WR", "TE", "QB"];
 
-/* ADP movement bands, in draft picks, measured on the archive's own snapshots across
-   nine slates. The board is a 36 pick ladder, so a pick is a pick wherever you sit:
-   these are absolute, not percentages. A percentage band fires on the 0.1 rounding
-   step at the top of the board (2.0 -> 1.9 reads as 5%) while ignoring a four pick
-   slide in the late rounds. At a one day gap these light roughly 63% flat, 29% one
-   chevron, 8% two; over three days, 58 / 27 / 15. Edit freely. */
-var ADP_MOVE_SINGLE = 1.0;
-var ADP_MOVE_DOUBLE = 4.0;
+/* How big a move has to be before it earns a chevron, as a function of where the
+   player sits. Fitted to the archive's own snapshots across nine slates: a player's
+   typical week rises from about 0.3 picks at the top of round one to 3 or 4 by round
+   five, so a fixed threshold either shouts in the middle rounds or goes silent at the
+   top. The square root tracks that rise without running away: the double threshold is
+   capped because a 36 pick board cannot deliver a ten pick move.
+
+   Resulting fire rate, rounds one through five, single chevrons: 13-30% at a one day
+   gap, 25-50% over three days. Round six stays quiet at 4-7% because those players
+   genuinely do not move. Edit freely. */
+var MOVE_COEF = 0.55;        // one chevron at MOVE_COEF * sqrt(adp) picks
+var MOVE_DOUBLE_X = 2.5;     // two chevrons at this multiple of that
+var MOVE_DOUBLE_CAP = 6.0;   // ...but never asking for more picks than the board holds
+
+function moveBands(adp) {
+  var single = MOVE_COEF * Math.sqrt(Math.max(adp, 0.1));
+  return { single: single, "double": Math.min(MOVE_DOUBLE_X * single, MOVE_DOUBLE_CAP) };
+}
 
 /**
  * Header-line delimiter sniff: a tab wins over a comma, since ETR's board copies out
@@ -651,11 +661,12 @@ function movement(baseline, playerId, adp) {
   if (was == null) return { kind: "unseen" };
   var delta = was - adp;                       // positive: ADP fell, the field takes him earlier
   var size = Math.abs(delta);
-  if (size < ADP_MOVE_SINGLE) return { kind: "flat", delta: size, level: 0, was: was };
+  var band = moveBands(was);                   // scaled by where he sat when the week locked
+  if (size < band.single) return { kind: "flat", delta: size, level: 0, was: was };
   return {
     kind: delta > 0 ? "up" : "down",
     delta: size,
-    level: size >= ADP_MOVE_DOUBLE ? 2 : 1,
+    level: size >= band["double"] ? 2 : 1,
     was: was
   };
 }
@@ -671,18 +682,12 @@ function buildExportCsv(order, byPid) {
   return { csv: lines.join("\n") + "\n", rows: lines.length - 1, missing: missing };
 }
 
-function baselineFrom(order, byPid) {
-  var out = {};
-  order.forEach(function (pid) { if (byPid[pid]) out[pid] = byPid[pid].adp; });
-  return out;
-}
 
 // ==== PURE LOGIC END ====
 
 // ---------------------------------------------------------------- storage
 var K = {
   order: function (label) { return "brr:order:" + label; },
-  baseline: function (label) { return "brr:baseline:" + label; },
   proj: function (sport) { return "brr:proj:" + sport; },
   slate: "brr:slate"
 };
@@ -787,7 +792,7 @@ function selectSlate(index) {
   state.order = rec.order;
   state.newIds = {};
   rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
-  state.baseline = load(K.baseline(s.label), null);
+  state.baseline = (s.baseline && s.baseline.adp) || null;
   state.curatedCount = null;
   state.liftedPid = null;
   renderLiftBar();
@@ -874,6 +879,13 @@ function renderMeta(rec) {
     }) + "</b></span>",
     "<span><b>" + s.players.length + "</b> priced</span>"
   ];
+  if (s.baseline && s.baseline.captured_at) {
+    parts.splice(2, 0, "<span>moves vs <b>" +
+      new Date(s.baseline.captured_at.replace(
+        /^(\d{4})-(\d{2})-(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, "$1-$2-$3T$4:$5:$6Z"))
+        .toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" }) +
+      "</b></span>");
+  }
   $("meta").innerHTML = parts.join("");
 
   var notes = [];
@@ -890,8 +902,9 @@ function renderMeta(rec) {
   if (!state.baseline) {
     var d1 = document.createElement("div");
     d1.className = "notice";
-    d1.innerHTML = "<b>No baseline yet</b> for " + slateLabel(s) +
-                   ". Movement arrows start after your first export.";
+    d1.innerHTML = "<b>No movement baseline yet</b> for " + slateLabel(s) +
+                   ". The week's reference locks at 6pm Pacific on Wednesday, when ETR's " +
+                   "projections land, and this slate had no ADP before the last one.";
     nb.appendChild(d1);
   }
   if (notes.length) {
@@ -979,7 +992,7 @@ function visibleRows() {
   return list;
 }
 
-/* One chevron past ADP_MOVE_SINGLE, two past ADP_MOVE_DOUBLE. */
+/* One chevron past the single band for that player's price, two past the double. */
 var MOVE_GLYPH = {
   up: function (level) { return level === 2 ? "▲▲" : "▲"; },
   down: function (level) { return level === 2 ? "▼▼" : "▼"; },
@@ -1046,10 +1059,11 @@ function render() {
     ind.className = "ind " + mv.kind;
     ind.textContent = MOVE_GLYPH[mv.kind](mv.level);
     ind.title = mv.kind === "nobase" ? "No baseline yet for this slate"
-      : mv.kind === "unseen" ? "Not in your last export"
-      : mv.kind === "flat" ? "ADP within " + ADP_MOVE_SINGLE.toFixed(1) + " of your last export"
+      : mv.kind === "unseen" ? "Not priced when the week locked"
+      : mv.kind === "flat" ? "ADP " + mv.was.toFixed(1) + " \u2192 " + p.adp.toFixed(1) +
+        ", inside this week's " + moveBands(mv.was).single.toFixed(1) + " pick band"
       : "ADP " + mv.was.toFixed(1) + " \u2192 " + p.adp.toFixed(1) + ", " + mv.delta.toFixed(1) +
-        " picks " + (mv.kind === "up" ? "earlier" : "later") + " since your last export";
+        " picks " + (mv.kind === "up" ? "earlier" : "later") + " since the week locked";
     var adpVal = document.createElement("span");
     adpVal.textContent = p.adp.toFixed(1);
     var adp = document.createElement("span");
@@ -1260,8 +1274,6 @@ async function doExport() {
     document.body.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
 
-    save(K.baseline(label), baselineFrom(rec.order, byPid));
-    state.baseline = load(K.baseline(label), null);
     state.data = fresh;
     state.slate = slate;
     state.order = rec.order;
@@ -1272,7 +1284,7 @@ async function doExport() {
     renderMeta(null);
     render();
 
-    var msg = "Exported " + built.rows + " appearance ids in your order. Movement arrows now measure from here.";
+    var msg = "Exported " + built.rows + " appearance ids in your order.";
     if (built.missing.length) {
       msg += " " + built.missing.length + " player" + (built.missing.length === 1 ? "" : "s") +
              " in your order are no longer on the slate and were left out.";
@@ -1473,15 +1485,23 @@ function brrSelfTest() {
   ok("movement up", movement({ p1: 3.4 }, "p1", 1.3).kind === "up");
   ok("movement down", movement({ p1: 1.0 }, "p1", 3.3).kind === "down");
   ok("movement flat", movement({ p1: 1.3 }, "p1", 1.3).kind === "flat");
-  ok("a move under the single band stays flat",
-     movement({ p1: 2.0 }, "p1", 1.2).kind === "flat");
-  ok("one chevron at the single band",
-     movement({ p1: 2.4 }, "p1", 1.3).level === 1);
-  ok("two chevrons at the double band",
-     movement({ p1: 9.0 }, "p1", 4.5).level === 2 && movement({ p1: 9.0 }, "p1", 4.5).kind === "up");
-  ok("two chevrons downward too",
-     movement({ p1: 4.5 }, "p1", 9.0).level === 2 && movement({ p1: 4.5 }, "p1", 9.0).kind === "down");
   ok("movement reports where it came from", movement({ p1: 9.0 }, "p1", 4.5).was === 9.0);
+
+  // the band widens with depth, so the same move means different things
+  ok("bands widen with depth", moveBands(4).single < moveBands(25).single);
+  ok("double band is capped", moveBands(36)["double"] === MOVE_DOUBLE_CAP);
+  ok("double band is a multiple below the cap",
+     Math.abs(moveBands(4)["double"] - MOVE_DOUBLE_X * moveBands(4).single) < 1e-9);
+  ok("two picks is a move in round one", movement({ p1: 4.0 }, "p1", 2.0).level === 1);
+  ok("two picks is noise in round five", movement({ p1: 25.0 }, "p1", 23.0).kind === "flat");
+  ok("a small move under the band stays flat",
+     movement({ p1: 4.0 }, "p1", 3.4).kind === "flat");
+  ok("two chevrons up", movement({ p1: 4.0 }, "p1", 0.8).level === 2 &&
+     movement({ p1: 4.0 }, "p1", 0.8).kind === "up");
+  ok("two chevrons down too", movement({ p1: 4.0 }, "p1", 7.2).level === 2 &&
+     movement({ p1: 4.0 }, "p1", 7.2).kind === "down");
+  ok("a deep player needs the cap, not a multiple",
+     movement({ p1: 34.0 }, "p1", 27.5).level === 2);
   ok("movement unseen", movement({}, "p1", 1.3).kind === "unseen");
   ok("movement nobase", movement(null, "p1", 1.3).kind === "nobase");
 
@@ -1489,7 +1509,6 @@ function brrSelfTest() {
   var ex = buildExportCsv(["p2", "p1", "gone"], byPid);
   ok("export csv", ex.csv === "id\na2\na1\n");
   ok("export missing", ex.missing.length === 1);
-  ok("baseline", baselineFrom(["p1"], byPid).p1 === 1.3);
 
   // ---- pasted (tab separated) input reaches the same result as the file
   var tsv = parseProjections(FIXTURE_ETR_TSV);
@@ -1554,7 +1573,7 @@ if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     parseCsv: parseCsv, normName: normName, boardKey: boardKey, parseProjections: parseProjections,
     joinProjections: joinProjections, reconcileOrder: reconcileOrder, moveWithin: moveWithin,
-    movement: movement, buildExportCsv: buildExportCsv, baselineFrom: baselineFrom,
+    movement: movement, buildExportCsv: buildExportCsv,
     brrSelfTest: brrSelfTest
   };
 }
