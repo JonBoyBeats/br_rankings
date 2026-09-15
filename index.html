@@ -729,13 +729,25 @@ function blendProjection(median, ceiling) {
    Each window is a rank range. If a real cliff appears at or past the start of that
    range, the window ends at the cliff instead, which is what stops a tier like
    Montgomery and Hubbard from dragging the running back line down. */
-var VORP_WINDOWS = { QB: [8, 11], RB: [10, 13], WR: [12, 15], TE: [5, 8] };
+var VORP_WINDOWS = {
+  nfl: { QB: [8, 11], RB: [10, 13], WR: [12, 15], TE: [5, 8] },
+  cfb: { QB: [6, 9], RB: [11, 14], WR: [12, 15], TE: [4, 7] }
+};
 
 /* Backs and receivers also compete for the same flex seats, so they carry a second
-   comparison against the combined pool, weighted against the positional one. */
+   comparison against the combined pool, weighted against the positional one. Tight
+   ends are deliberately left out of that pool. */
 var VORP_FLEX_POSITIONS = ["RB", "WR"];
-var VORP_FLEX_WINDOW = [20, 28];
+var VORP_FLEX_WINDOW = { nfl: [20, 28], cfb: [18, 26] };
 var VORP_FLEX_WEIGHT = 0.33;
+
+/* A player the source projects at nothing is not playing, so he cannot be anyone's
+   replacement. He still gets his own value, which is simply a long way below. */
+var VORP_MIN_PROJ = 1.0;
+
+/* Slates that carry the column. The midweek college boards are small and shaped
+   differently, so they are left out until their windows are worked out. */
+var VORP_SLATES = ["nfl_early", "nfl_main", "nfl_late", "cfb_sat_main", "cfb_sat_late"];
 
 /* A gap counts as a cliff only if it is this large and this many times the typical
    gap inside the window. Only a cliff falling INSIDE the window matters: it means the
@@ -780,16 +792,19 @@ function replacementLevel(values, win) {
  * Value over replacement for every player carrying a projection.
  * `rows` is [{player_id, position, proj}]. Flex positions blend two comparisons.
  */
-function computeVorp(rows) {
+function computeVorp(rows, sport) {
+  var windows = VORP_WINDOWS[sport] || VORP_WINDOWS.nfl;
+  var flexWin = VORP_FLEX_WINDOW[sport] || VORP_FLEX_WINDOW.nfl;
   var byPos = {}, vorp = {}, levels = {};
+
   rows.forEach(function (r) {
     if (r.proj == null || !r.position) return;
+    if (r.proj < VORP_MIN_PROJ) return;              // not playing; cannot be a replacement
     (byPos[r.position] = byPos[r.position] || []).push(r.proj);
   });
   Object.keys(byPos).forEach(function (pos) {
     byPos[pos].sort(function (a, b) { return b - a; });
-    var win = VORP_WINDOWS[pos];
-    levels[pos] = win ? replacementLevel(byPos[pos], win) : null;
+    levels[pos] = windows[pos] ? replacementLevel(byPos[pos], windows[pos]) : null;
   });
 
   var flexValues = [];
@@ -797,7 +812,7 @@ function computeVorp(rows) {
     flexValues = flexValues.concat(byPos[pos] || []);
   });
   flexValues.sort(function (a, b) { return b - a; });
-  levels.FLEX = flexValues.length ? replacementLevel(flexValues, VORP_FLEX_WINDOW) : null;
+  levels.FLEX = flexValues.length ? replacementLevel(flexValues, flexWin) : null;
 
   rows.forEach(function (r) {
     if (r.proj == null) return;
@@ -1124,12 +1139,17 @@ function applyStoredProjections() {
   }
   state.proj = joined.values;
   state.projParts = joined.parts;
-  var computed = computeVorp(s.players.map(function (pl) {
-    return { player_id: pl.player_id, position: pl.position,
-             proj: joined.values[pl.player_id] == null ? null : joined.values[pl.player_id] };
-  }));
-  state.vorp = computed.vorp;
-  state.vorpLevels = computed.levels;
+  if (VORP_SLATES.indexOf(s.label) >= 0) {
+    var computed = computeVorp(s.players.map(function (pl) {
+      return { player_id: pl.player_id, position: pl.position,
+               proj: joined.values[pl.player_id] == null ? null : joined.values[pl.player_id] };
+    }), s.sport);
+    state.vorp = computed.vorp;
+    state.vorpLevels = computed.levels;
+  } else {
+    state.vorp = {};
+    state.vorpLevels = {};
+  }
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
     prevFile: store.previous ? store.previous.file : null,
@@ -1479,6 +1499,9 @@ function renderFoot(shown) {
               (m.boardTotal - m.missing.length) + " of " + m.boardTotal + " board players covered");
   } else {
     bits.push("no projections uploaded for " + state.slate.sport.toUpperCase());
+  }
+  if (VORP_SLATES.indexOf(state.slate.label) < 0) {
+    bits.push("VORP is off for this slate");
   }
   if (state.view !== "order") bits.push("dragging is off while sorted");
   bits.push("order and baselines live in this browser only");
@@ -2137,7 +2160,7 @@ function brrSelfTest() {
   for (var wi = 0; wi < 20; wi++) rows.push({ player_id: "wr" + wi, position: "WR", proj: 29 - wi });
   for (var qi = 0; qi < 20; qi++) rows.push({ player_id: "qb" + qi, position: "QB", proj: 28 - qi });
   for (var ti = 0; ti < 20; ti++) rows.push({ player_id: "te" + ti, position: "TE", proj: 18 - ti });
-  var cv = computeVorp(rows);
+  var cv = computeVorp(rows, "nfl");
   ok("every projected player gets a value", Object.keys(cv.vorp).length === rows.length);
   ok("each position has a replacement level",
      cv.levels.RB.level != null && cv.levels.WR.level != null &&
@@ -2151,7 +2174,17 @@ function brrSelfTest() {
      Math.abs(cv.vorp.rb0 - ((1 - VORP_FLEX_WEIGHT) * (30 - cv.levels.RB.level) +
        VORP_FLEX_WEIGHT * (30 - cv.levels.FLEX.level))) < 1e-9);
   ok("a player without a projection gets no value",
-     computeVorp([{ player_id: "x", position: "RB", proj: null }]).vorp.x === undefined);
+     computeVorp([{ player_id: "x", position: "RB", proj: null }], "nfl").vorp.x === undefined);
+  // a projection of nothing means a player who is not playing
+  var withZeros = rows.concat([
+    { player_id: "rbZ", position: "RB", proj: 0 },
+    { player_id: "rbZ2", position: "RB", proj: 0.4 }]);
+  ok("players projected at nothing do not set the level",
+     computeVorp(withZeros, "nfl").levels.RB.level === cv.levels.RB.level);
+  ok("but they still get their own value, a long way below",
+     computeVorp(withZeros, "nfl").vorp.rbZ < 0);
+  ok("college uses its own windows",
+     computeVorp(rows, "cfb").levels.QB.from === VORP_WINDOWS.cfb.QB[0]);
 
   // ---- projection movement and the two-generation store
   ok("projection rounding tick is nothing", projMovement(12.0, 12.1).kind === "flat");
