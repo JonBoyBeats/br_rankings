@@ -160,7 +160,7 @@
   .board { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
   .row {
     display: grid;
-    grid-template-columns: 26px 40px 62px minmax(0, 1fr) 66px 66px;
+    grid-template-columns: 26px 40px minmax(0, 1fr) 78px 66px;
     align-items: center; gap: 10px;
     padding: 7px 12px;
     border-bottom: 1px solid var(--line);
@@ -194,10 +194,15 @@
   .row.drop-after { box-shadow: inset 0 -2px 0 0 var(--accent); }
 
   .rank { font-family: var(--mono); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
-  .move { font-family: var(--mono); font-size: 11.5px; font-weight: 500; white-space: nowrap; }
-  .move.up { color: var(--up); }
-  .move.down { color: var(--down); }
-  .move.flat, .move.none { color: var(--muted); }
+  /* The marker sits in its own fixed track inside the ADP cell, so the numbers stay
+     flush right and scan as a column whatever each player's marker is. */
+  .num.adp { display: grid; grid-template-columns: 19px 1fr; align-items: center; gap: 3px; }
+  .ind {
+    font-size: 9px; line-height: 1; letter-spacing: -0.5px;
+    text-align: center; color: var(--muted);
+  }
+  .ind.up { color: var(--up); }
+  .ind.down { color: var(--down); }
 
   .who { min-width: 0; display: flex; align-items: baseline; gap: 8px; }
   .name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -248,11 +253,10 @@
     .dock .field-label { display: none; }
 
     /* Every fixed column gives up what it can spare; the name cell takes all of it. */
-    .row { grid-template-columns: 14px 24px 38px minmax(0, 1fr) 40px 40px; gap: 5px; padding: 6px 8px; }
+    .row { grid-template-columns: 14px 24px minmax(0, 1fr) 56px 40px; gap: 5px; padding: 6px 8px; }
     .head { font-size: 9px; letter-spacing: .06em; padding-block: 6px; }
     .handle { font-size: 13px; }
     .rank { font-size: 11.5px; }
-    .move { font-size: 10.5px; }
     .num { font-size: 11.5px; }
     .name { font-size: 13.5px; }
     .sub { font-size: 9.5px; }
@@ -337,7 +341,6 @@
     <div class="row head">
       <span></span>
       <span class="r">#</span>
-      <span>Move</span>
       <span>Player</span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
       <span class="r"><button type="button" data-sort="proj">Proj</button></span>
@@ -371,6 +374,15 @@ var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/"
 var BUILDER_CAPS = { RB: 12, WR: 15, TE: 8, QB: 12 };
 /* The order the curated blocks are laid out in. */
 var BUILDER_BLOCKS = ["RB", "WR", "TE", "QB"];
+
+/* ADP movement bands, in draft picks, measured on the archive's own snapshots across
+   nine slates. The board is a 36 pick ladder, so a pick is a pick wherever you sit:
+   these are absolute, not percentages. A percentage band fires on the 0.1 rounding
+   step at the top of the board (2.0 -> 1.9 reads as 5%) while ignoring a four pick
+   slide in the late rounds. At a one day gap these light roughly 63% flat, 29% one
+   chevron, 8% two; over three days, 58 / 27 / 15. Edit freely. */
+var ADP_MOVE_SINGLE = 1.0;
+var ADP_MOVE_DOUBLE = 4.0;
 
 /**
  * Header-line delimiter sniff: a tab wins over a comma, since ETR's board copies out
@@ -637,9 +649,15 @@ function movement(baseline, playerId, adp) {
   if (!baseline) return { kind: "nobase" };
   var was = baseline[playerId];
   if (was == null) return { kind: "unseen" };
-  var delta = was - adp;
-  if (Math.abs(delta) < 0.05) return { kind: "flat", delta: 0 };
-  return { kind: delta > 0 ? "up" : "down", delta: Math.abs(delta) };
+  var delta = was - adp;                       // positive: ADP fell, the field takes him earlier
+  var size = Math.abs(delta);
+  if (size < ADP_MOVE_SINGLE) return { kind: "flat", delta: size, level: 0, was: was };
+  return {
+    kind: delta > 0 ? "up" : "down",
+    delta: size,
+    level: size >= ADP_MOVE_DOUBLE ? 2 : 1,
+    was: was
+  };
 }
 
 /** The upload file: one lowercase `id` header, then appearance ids, nothing else. */
@@ -961,12 +979,13 @@ function visibleRows() {
   return list;
 }
 
-var MOVE_TEXT = {
-  up: function (d) { return "▲ " + d.toFixed(1); },
-  down: function (d) { return "▼ " + d.toFixed(1); },
+/* One chevron past ADP_MOVE_SINGLE, two past ADP_MOVE_DOUBLE. */
+var MOVE_GLYPH = {
+  up: function (level) { return level === 2 ? "▲▲" : "▲"; },
+  down: function (level) { return level === 2 ? "▼▼" : "▼"; },
   flat: function () { return "–"; },
-  unseen: function () { return "new"; },
-  nobase: function () { return "–"; }
+  unseen: function () { return "·"; },
+  nobase: function () { return ""; }
 };
 
 function render() {
@@ -1003,15 +1022,6 @@ function render() {
     rank.className = "rank";
     rank.textContent = r.rank;
 
-    var mv = movement(state.baseline, p.player_id, p.adp);
-    var move = document.createElement("span");
-    move.className = "move " + (mv.kind === "unseen" ? "none" : mv.kind === "nobase" ? "none" : mv.kind);
-    move.textContent = MOVE_TEXT[mv.kind](mv.delta);
-    move.title = mv.kind === "nobase" ? "No baseline yet for this slate"
-      : mv.kind === "unseen" ? "Not in your last export"
-      : mv.kind === "flat" ? "ADP unchanged since your last export"
-      : "ADP moved " + mv.delta.toFixed(1) + " " + (mv.kind === "up" ? "earlier" : "later") + " since your last export";
-
     var who = document.createElement("span");
     who.className = "who";
     var name = document.createElement("span");
@@ -1031,16 +1041,27 @@ function render() {
       who.appendChild(tag);
     }
 
+    var mv = movement(state.baseline, p.player_id, p.adp);
+    var ind = document.createElement("span");
+    ind.className = "ind " + mv.kind;
+    ind.textContent = MOVE_GLYPH[mv.kind](mv.level);
+    ind.title = mv.kind === "nobase" ? "No baseline yet for this slate"
+      : mv.kind === "unseen" ? "Not in your last export"
+      : mv.kind === "flat" ? "ADP within " + ADP_MOVE_SINGLE.toFixed(1) + " of your last export"
+      : "ADP " + mv.was.toFixed(1) + " \u2192 " + p.adp.toFixed(1) + ", " + mv.delta.toFixed(1) +
+        " picks " + (mv.kind === "up" ? "earlier" : "later") + " since your last export";
+    var adpVal = document.createElement("span");
+    adpVal.textContent = p.adp.toFixed(1);
     var adp = document.createElement("span");
-    adp.className = "num";
-    adp.textContent = p.adp.toFixed(1);
+    adp.className = "num adp";
+    adp.append(ind, adpVal);
 
     var pr = document.createElement("span");
     var v = state.proj[p.player_id];
     pr.className = "num" + (v == null ? " dim" : "");
     pr.textContent = v == null ? "–" : v.toFixed(1);
 
-    el.append(handle, rank, move, who, adp, pr);
+    el.append(handle, rank, who, adp, pr);
     frag.appendChild(el);
   });
   host.appendChild(frag);
@@ -1449,9 +1470,18 @@ function brrSelfTest() {
   ok("move before", moveWithin(["a", "b", "c"], "c", "a", true).join() === "c,a,b");
   ok("move after", moveWithin(["a", "b", "c"], "a", "c", false).join() === "b,c,a");
 
-  ok("movement up", movement({ p1: 2.4 }, "p1", 1.3).kind === "up");
-  ok("movement down", movement({ p1: 1.0 }, "p1", 1.3).kind === "down");
+  ok("movement up", movement({ p1: 3.4 }, "p1", 1.3).kind === "up");
+  ok("movement down", movement({ p1: 1.0 }, "p1", 3.3).kind === "down");
   ok("movement flat", movement({ p1: 1.3 }, "p1", 1.3).kind === "flat");
+  ok("a move under the single band stays flat",
+     movement({ p1: 2.0 }, "p1", 1.2).kind === "flat");
+  ok("one chevron at the single band",
+     movement({ p1: 2.4 }, "p1", 1.3).level === 1);
+  ok("two chevrons at the double band",
+     movement({ p1: 9.0 }, "p1", 4.5).level === 2 && movement({ p1: 9.0 }, "p1", 4.5).kind === "up");
+  ok("two chevrons downward too",
+     movement({ p1: 4.5 }, "p1", 9.0).level === 2 && movement({ p1: 4.5 }, "p1", 9.0).kind === "down");
+  ok("movement reports where it came from", movement({ p1: 9.0 }, "p1", 4.5).was === 9.0);
   ok("movement unseen", movement({}, "p1", 1.3).kind === "unseen");
   ok("movement nobase", movement(null, "p1", 1.3).kind === "nobase");
 
