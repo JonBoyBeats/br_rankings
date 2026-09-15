@@ -160,7 +160,7 @@
   .board { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
   .row {
     display: grid;
-    grid-template-columns: 26px 40px minmax(0, 1fr) 78px 66px;
+    grid-template-columns: 26px 40px minmax(0, 1fr) 78px 100px;
     align-items: center; gap: 10px;
     padding: 7px 12px;
     border-bottom: 1px solid var(--line);
@@ -212,6 +212,14 @@
   .ind.down .chev { transform: rotate(135deg); }
   .dash { width: 7px; height: 1.5px; background: currentColor; }
 
+  .num.proj { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 3px; }
+  .pdelta {
+    font-family: var(--mono); font-size: 10px; font-weight: 500;
+    text-align: right; white-space: nowrap; color: var(--muted);
+  }
+  .pdelta.up { color: var(--up); }
+  .pdelta.down { color: var(--down); }
+
   .who { min-width: 0; display: flex; align-items: baseline; gap: 8px; }
   .name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sub { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
@@ -261,7 +269,9 @@
     .dock .field-label { display: none; }
 
     /* Every fixed column gives up what it can spare; the name cell takes all of it. */
-    .row { grid-template-columns: 14px 24px minmax(0, 1fr) 56px 40px; gap: 5px; padding: 6px 8px; }
+    .row { grid-template-columns: 14px 24px minmax(0, 1fr) 56px 62px; gap: 5px; padding: 6px 8px; }
+    .num.proj { grid-template-columns: 26px 1fr; gap: 2px; }
+    .pdelta { font-size: 9.5px; }
     .head { font-size: 9px; letter-spacing: .06em; padding-block: 6px; }
     .handle { font-size: 13px; }
     .rank { font-size: 11.5px; }
@@ -655,6 +665,39 @@ function buildBlockOrder(players, metric, projValues, caps) {
   return { order: curated.concat(tail), curatedCount: curated.length, blocks: blocks };
 }
 
+/* The smallest projection change worth showing, in fantasy points. Flat rather than
+   scaled, because projection changes barely scale with a player's level: on ETR's own
+   release-to-final pair for week one the median change was 0.0 to 0.2 points at every
+   tier from 0 to 30. This clears the 0.1 the source publishes to, so a rounding tick
+   never shows. Among board players that pair moved 35% of them past this line. Set it
+   to 0 to show every change. */
+var PROJ_MIN = 0.25;
+
+/** Projection change since the previous upload. Up means the number went up. */
+function projMovement(was, now) {
+  if (was == null || now == null) return { kind: "nobase" };
+  var delta = now - was;
+  if (Math.abs(delta) < PROJ_MIN) return { kind: "flat", delta: 0, was: was };
+  return { kind: delta > 0 ? "up" : "down", delta: delta, was: was };
+}
+
+/* ---- projection store ----------------------------------------------------------
+   Two generations per sport: whatever was uploaded last, and the one before it, so
+   the board can show what changed. Re-uploading the same file does not rotate, which
+   would otherwise wipe the comparison. */
+
+function normalizeProjStore(raw) {
+  if (!raw) return { current: null, previous: null };
+  if (raw.entries) return { current: raw, previous: null };   // the older single-generation shape
+  return { current: raw.current || null, previous: raw.previous || null };
+}
+
+function rotateProjStore(store, upload) {
+  var cur = store.current;
+  var unchanged = !!cur && JSON.stringify(cur.entries) === JSON.stringify(upload.entries);
+  return { current: upload, previous: unchanged ? store.previous : (cur || store.previous || null) };
+}
+
 /* ---- saved boards -------------------------------------------------------------
    One document, one entry per slate label, held in a private gist so any device
    holding the token can pick up the last save. Only player ids travel: appearance
@@ -811,6 +854,7 @@ var state = {
   liftedPid: null,     // the player picked up by tap, waiting for somewhere to land
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
+  projPrev: {},        // the same from the previous upload, for the change marker
   projMeta: null,      // {file, format, matchedById, matchedByName, missing, boardTotal, at}
   nameMaps: { nfl: {}, cfb: {} },
   view: "order",
@@ -905,14 +949,22 @@ function selectSlate(index) {
 // ---------------------------------------------------------------- projections
 function applyStoredProjections() {
   var s = state.slate;
-  var stored = load(K.proj(s.sport), null);
+  var store = normalizeProjStore(load(K.proj(s.sport), null));
+  var stored = store.current;
+  state.projPrev = {};
   if (!stored || !stored.entries || !stored.entries.length) {
     state.proj = {}; state.projMeta = null; renderMissingProjections(); syncBuilderButtons(); return;
   }
-  var joined = joinProjections(s.players, stored.entries, state.nameMaps[s.sport] || {});
+  var map = state.nameMaps[s.sport] || {};
+  var joined = joinProjections(s.players, stored.entries, map);
+  if (store.previous && store.previous.entries) {
+    state.projPrev = joinProjections(s.players, store.previous.entries, map).values;
+  }
   state.proj = joined.values;
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
+    prevFile: store.previous ? store.previous.file : null,
+    prevAt: store.previous ? store.previous.at : null,
     matchedById: joined.matchedById, matchedByName: joined.matchedByName,
     boardTotal: s.players.length,
     missing: s.players
@@ -947,9 +999,10 @@ function ingestProjections(text, sourceName, pasted) {
     var parsed = parseProjections(String(text));
     if (parsed.error) { fail(parsed.error); return; }
     if (!parsed.entries.length) { fail("no rows with a numeric projection."); return; }
-    save(K.proj(parsed.sport), {
-      file: sourceName, format: parsed.format, at: new Date().toISOString(), entries: parsed.entries
-    });
+    var upload = { file: sourceName, format: parsed.format,
+                   at: new Date().toISOString(), entries: parsed.entries };
+    save(K.proj(parsed.sport),
+         rotateProjStore(normalizeProjStore(load(K.proj(parsed.sport), null)), upload));
     if (parsed.sport !== state.slate.sport) {
       setStatus("Read " + parsed.entries.length + " " + parsed.format + " rows and saved them for " +
                 parsed.sport.toUpperCase() + ". The board is on a " + state.slate.sport.toUpperCase() +
@@ -1168,10 +1221,22 @@ function render() {
     adp.className = "num adp";
     adp.append(ind, adpVal);
 
-    var pr = document.createElement("span");
     var v = state.proj[p.player_id];
-    pr.className = "num" + (v == null ? " dim" : "");
-    pr.textContent = v == null ? "–" : v.toFixed(1);
+    var pv = projMovement(state.projPrev[p.player_id], v);
+    var pd = document.createElement("span");
+    pd.className = "pdelta " + pv.kind;
+    pd.textContent = (pv.kind === "up" || pv.kind === "down")
+      ? (pv.delta > 0 ? "+" : "−") + Math.abs(pv.delta).toFixed(1) : "";
+    if (pv.kind === "up" || pv.kind === "down") {
+      pd.title = "Projection " + pv.was.toFixed(1) + " → " + v.toFixed(1) +
+                 " since the previous upload" +
+                 (state.projMeta && state.projMeta.prevFile ? " (" + state.projMeta.prevFile + ")" : "");
+    }
+    var pval = document.createElement("span");
+    pval.textContent = v == null ? "–" : v.toFixed(1);
+    var pr = document.createElement("span");
+    pr.className = "num proj" + (v == null ? " dim" : "");
+    pr.append(pd, pval);
 
     el.append(handle, rank, who, adp, pr);
     frag.appendChild(el);
@@ -1350,6 +1415,9 @@ $("liftDone").addEventListener("click", function () { setLifted(null); });
 var GH = "https://api.github.com";
 var GIST_FILE = "br_rankings.json";
 var GIST_DESC = "br_rankings saved boards";
+var GIST_MAX = 900000;   // a gist file over 1MB comes back truncated, so stay well under
+
+function projFile(sport) { return "br_projections_" + sport + ".json"; }
 
 function myDevice() {
   var d = load(K.device, null);
@@ -1392,15 +1460,16 @@ async function findGist() {
 async function readSaved() {
   var id = load(K.gist, null);
   if (!id) { id = await findGist(); if (id) save(K.gist, id); }
-  if (!id) return { id: null, doc: emptySavedState() };
+  if (!id) return { id: null, doc: emptySavedState(), files: {} };
   var g = await gh("/gists/" + id);
-  var f = g.files && g.files[GIST_FILE];
-  return { id: id, doc: (f && parseSavedState(f.content)) || emptySavedState() };
+  var files = g.files || {};
+  var f = files[GIST_FILE];
+  return { id: id, doc: (f && parseSavedState(f.content)) || emptySavedState(), files: files };
 }
 
-async function writeSaved(doc, id) {
-  var body = { description: GIST_DESC, files: {} };
-  body.files[GIST_FILE] = { content: JSON.stringify(doc, null, 1) };
+/** PATCH only the files we are changing; a gist leaves the rest alone. */
+async function writeFiles(files, id) {
+  var body = { description: GIST_DESC, files: files };
   if (id) return gh("/gists/" + id, { method: "PATCH", body: JSON.stringify(body) });
   body["public"] = false;
   var g = await gh("/gists", { method: "POST", body: JSON.stringify(body) });
@@ -1450,9 +1519,24 @@ async function syncSave() {
       return;
     }
     var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString());
-    await writeSaved(putSavedSlate(cur.doc, label, entry), cur.id);
-    renderSync("Saved " + playerCount(entry.count) + " for " + slateLabel(state.slate) +
-               ". Any device with the token can load it.");
+    var files = {};
+    files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
+
+    var sport = state.slate.sport;
+    var store = normalizeProjStore(load(K.proj(sport), null));
+    var note = "";
+    if (store.current && store.current.entries) {
+      var payload = JSON.stringify(store);
+      if (payload.length > GIST_MAX) {
+        note = " Projections were too big to sync (" + Math.round(payload.length / 1000) + "kB).";
+      } else {
+        files[projFile(sport)] = { content: payload };
+        note = " Projections from " + store.current.file + " went with it.";
+      }
+    }
+    await writeFiles(files, cur.id);
+    renderSync("Saved " + playerCount(entry.count) + " for " + slateLabel(state.slate) + "." + note +
+               " Any device with the token can load it.");
   } catch (e) {
     renderSync("Could not save: " + e.message);
   } finally {
@@ -1480,8 +1564,22 @@ async function syncLoad() {
     state.liftedPid = null;
     renderLiftBar();
     save(K.order(state.slate.label), state.order);
+
+    var sport = state.slate.sport;
+    var pf = cur.files[projFile(sport)];
+    var note = "";
+    if (pf && !pf.truncated) {
+      var remote = normalizeProjStore(JSON.parse(pf.content));
+      if (remote.current && remote.current.entries) {
+        save(K.proj(sport), remote);
+        applyStoredProjections();
+        note = " Projections from " + remote.current.file + " came with it.";
+      }
+    } else if (pf) {
+      note = " Its projections were too big to read back.";
+    }
     render();
-    renderSync("Loaded the board from " + entry.device + "." +
+    renderSync("Loaded the board from " + entry.device + "." + note +
                (rec.dropped.length ? " " + rec.dropped.length + " of its players are no longer on the slate." : "") +
                (rec.newIds.length ? " " + rec.newIds.length + " new since then are flagged at the bottom." : ""));
   } catch (e) {
@@ -1758,6 +1856,30 @@ function brrSelfTest() {
   ok("place from above takes that rank", placeAt(["a", "b", "c", "d"], "a", "c").join() === "b,c,a,d");
   ok("place on self does nothing", placeAt(["a", "b"], "a", "a").join() === "a,b");
   ok("place keeps the whole board", placeAt(["a", "b", "c"], "a", "c").length === 3);
+  // ---- projection movement and the two-generation store
+  ok("projection rounding tick is nothing", projMovement(12.0, 12.1).kind === "flat");
+  ok("projection up carries a signed delta", projMovement(12.0, 12.3).kind === "up" &&
+     Math.abs(projMovement(12.0, 12.3).delta - 0.3) < 1e-9);
+  ok("projection down is negative", projMovement(12.0, 11.1).kind === "down" &&
+     Math.abs(projMovement(12.0, 11.1).delta + 0.9) < 1e-9);
+  ok("no previous projection means no marker", projMovement(null, 12.0).kind === "nobase" &&
+     projMovement(12.0, null).kind === "nobase");
+
+  var up1 = { file: "a.csv", format: "ETR Weekly", at: "t1", entries: [{ norm: "x", proj: 1 }] };
+  var up2 = { file: "b.csv", format: "ETR Weekly", at: "t2", entries: [{ norm: "x", proj: 2 }] };
+  var st = normalizeProjStore(null);
+  ok("an empty store has neither generation", st.current === null && st.previous === null);
+  st = rotateProjStore(st, up1);
+  ok("the first upload has nothing to compare against", st.current === up1 && st.previous === null);
+  st = rotateProjStore(st, up2);
+  ok("a new upload pushes the old one back", st.current === up2 && st.previous === up1);
+  var same = { file: "b-again.csv", format: "ETR Weekly", at: "t3", entries: [{ norm: "x", proj: 2 }] };
+  st = rotateProjStore(st, same);
+  ok("re-uploading the same numbers keeps the comparison",
+     st.current === same && st.previous === up1);
+  ok("the older single-generation shape still loads",
+     normalizeProjStore(up1).current === up1 && normalizeProjStore(up1).previous === null);
+
   // ---- saved boards
   ok("empty state parses back", parseSavedState(JSON.stringify(emptySavedState())) !== null);
   ok("junk state is refused", parseSavedState("not json") === null &&
