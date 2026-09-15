@@ -383,7 +383,8 @@
       <span class="r">#</span>
       <span>Player</span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
-      <span class="r"><button type="button" data-sort="proj">Proj</button></span>
+      <span class="r"><button type="button" data-sort="proj"
+        title="A quarter of the median plus three quarters of the ceiling">Proj</button></span>
     </div>
     <div id="rows"><div class="empty">Loading the mirror&hellip;</div></div>
   </div>
@@ -512,16 +513,23 @@ function parseProjections(text) {
   if (!rows.length) return { error: "empty file", entries: [] };
   var idx = headerIndex(rows[0]);
   var format, nameCol, projCol, idCol = null, sport, dedupe = false;
+  var ceilCols = null, ceilScale = 1;
 
   if (idx["fpnts"] != null && idx["player name"] != null) {
+    // College carries no ceiling, so the blend falls back to the median.
     format = "CFF"; sport = "cfb"; nameCol = idx["player name"]; projCol = idx["fpnts"];
   } else if (idx["half ppr proj"] != null && idx["player"] != null) {
     format = "ETR Weekly"; sport = "nfl";
     nameCol = idx["player"]; projCol = idx["half ppr proj"];
     dedupe = true;
+    if (idx["dk ceiling"] != null && idx["fd ceiling"] != null) {
+      ceilCols = [idx["dk ceiling"], idx["fd ceiling"]];
+      ceilScale = UD_CEILING_FACTOR;          // stand in for the Underdog ceiling
+    }
   } else if (idx["proj"] != null && idx["player"] != null) {
     format = "ETR Battle Royale"; sport = "nfl"; nameCol = idx["player"]; projCol = idx["proj"];
     if (idx["id"] != null) idCol = idx["id"];
+    if (idx["ceiling"] != null) ceilCols = [idx["ceiling"]];   // already Underdog's own
   } else {
     return {
       error: "unrecognized projection file. Expected an ETR Battle Royale export " +
@@ -537,13 +545,29 @@ function parseProjections(text) {
     var name = (row[nameCol] || "").trim();
     if (!name) { continue; }
     var raw = (row[projCol] || "").trim().replace(/[$,]/g, "");
-    var proj = raw === "" ? NaN : Number(raw);
-    if (!isFinite(proj)) { skipped++; continue; }
+    var median = raw === "" ? NaN : Number(raw);
+    if (!isFinite(median)) { skipped++; continue; }
+
+    var ceiling = null;
+    if (ceilCols) {
+      var parts = [], ok = true;
+      for (var c = 0; c < ceilCols.length; c++) {
+        var cv = Number((row[ceilCols[c]] || "").trim().replace(/[$,]/g, ""));
+        if (!isFinite(cv) || (row[ceilCols[c]] || "").trim() === "") { ok = false; break; }
+        parts.push(cv);
+      }
+      if (ok && parts.length) {
+        ceiling = (parts.reduce(function (a, x) { return a + x; }, 0) / parts.length) * ceilScale;
+      }
+    }
+
     entries.push({
       id: idCol == null ? null : (row[idCol] || "").trim() || null,
       name: name,
       norm: normName(name),
-      proj: proj
+      median: median,
+      ceiling: ceiling,
+      proj: blendProjection(median, ceiling)
     });
   }
   if (dedupe) entries = keepHighestPerName(entries);
@@ -576,7 +600,7 @@ function joinProjections(players, entries, nameMap) {
     byName[k].push(p);
   });
 
-  var values = {}, matchedById = 0, matchedByName = 0, unmatched = [];
+  var values = {}, parts = {}, matchedById = 0, matchedByName = 0, unmatched = [];
   entries.forEach(function (e) {
     var hit = null, viaId = false;
     if (e.id && byApp[e.id]) { hit = byApp[e.id]; viaId = true; }
@@ -585,8 +609,10 @@ function joinProjections(players, entries, nameMap) {
     if (!hit) { unmatched.push(e.name); return; }
     if (values[hit.player_id] == null) { viaId ? matchedById++ : matchedByName++; }
     values[hit.player_id] = e.proj;
+    parts[hit.player_id] = { median: e.median, ceiling: e.ceiling };
   });
-  return { values: values, matchedById: matchedById, matchedByName: matchedByName, unmatched: unmatched };
+  return { values: values, parts: parts, matchedById: matchedById,
+           matchedByName: matchedByName, unmatched: unmatched };
 }
 
 /**
@@ -663,6 +689,24 @@ function buildBlockOrder(players, metric, projValues, caps) {
     .map(function (p) { return p.player_id; });
 
   return { order: curated.concat(tail), curatedCount: curated.length, blocks: blocks };
+}
+
+/* The projection shown on the board is a blend, not a raw median: mostly ceiling,
+   with a quarter of the median. */
+var PROJ_CEILING_WEIGHT = 0.75;
+
+/* ETR's weekly file carries DK and FD ceilings, not Underdog's. Their average is
+   scaled by this to stand in for the Underdog ceiling until the Battle Royale file
+   lands on Thursday with the real one. Measured on week one's 150 players that
+   carried both, the true ratio ran 0.903 at the median, 0.875 to 0.923 across the
+   middle half, so 0.85 reads about half a point low on the blended number. */
+var UD_CEILING_FACTOR = 0.85;
+
+/** A quarter median, three quarters ceiling. Without a ceiling the median stands alone. */
+function blendProjection(median, ceiling) {
+  if (median == null) return null;
+  if (ceiling == null) return median;
+  return (1 - PROJ_CEILING_WEIGHT) * median + PROJ_CEILING_WEIGHT * ceiling;
 }
 
 /* The smallest projection change worth showing, in fantasy points. Flat rather than
@@ -855,6 +899,7 @@ var state = {
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
   projPrev: {},        // the same from the previous upload, for the change marker
+  projParts: {},       // player_id -> {median, ceiling} behind the blended number
   projMeta: null,      // {file, format, matchedById, matchedByName, missing, boardTotal, at}
   nameMaps: { nfl: {}, cfb: {} },
   view: "order",
@@ -952,6 +997,7 @@ function applyStoredProjections() {
   var store = normalizeProjStore(load(K.proj(s.sport), null));
   var stored = store.current;
   state.projPrev = {};
+  state.projParts = {};
   if (!stored || !stored.entries || !stored.entries.length) {
     state.proj = {}; state.projMeta = null; renderMissingProjections(); syncBuilderButtons(); return;
   }
@@ -961,10 +1007,12 @@ function applyStoredProjections() {
     state.projPrev = joinProjections(s.players, store.previous.entries, map).values;
   }
   state.proj = joined.values;
+  state.projParts = joined.parts;
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
     prevFile: store.previous ? store.previous.file : null,
     prevAt: store.previous ? store.previous.at : null,
+    prevFormat: store.previous ? store.previous.format : null,
     matchedById: joined.matchedById, matchedByName: joined.matchedByName,
     boardTotal: s.players.length,
     missing: s.players
@@ -1015,7 +1063,11 @@ function ingestProjections(text, sourceName, pasted) {
               ". " + (m.boardTotal - m.missing.length) + " of " + m.boardTotal +
               " board players now carry a projection (" + m.matchedById + " matched by id, " +
               m.matchedByName + " by name)." +
-              (parsed.skipped ? " Skipped " + parsed.skipped + " rows with no numeric projection." : ""));
+              (parsed.skipped ? " Skipped " + parsed.skipped + " rows with no numeric projection." : "") +
+              (m.prevFormat && m.prevFormat !== m.format
+                ? " The previous upload was in " + m.prevFormat + " format, so the change column " +
+                  "also reflects the ceiling changing source."
+                : ""));
     render();
   }
 }
@@ -1228,12 +1280,23 @@ function render() {
     pd.textContent = (pv.kind === "up" || pv.kind === "down")
       ? (pv.delta > 0 ? "+" : "−") + Math.abs(pv.delta).toFixed(1) : "";
     if (pv.kind === "up" || pv.kind === "down") {
+      var meta = state.projMeta || {};
       pd.title = "Projection " + pv.was.toFixed(1) + " → " + v.toFixed(1) +
-                 " since the previous upload" +
-                 (state.projMeta && state.projMeta.prevFile ? " (" + state.projMeta.prevFile + ")" : "");
+                 " since the previous upload" + (meta.prevFile ? " (" + meta.prevFile + ")" : "") +
+                 (meta.prevFormat && meta.prevFormat !== meta.format
+                   ? ". Those came from the " + meta.prevFormat + " file and these from the " +
+                     meta.format + " file, so part of this is the ceiling changing source."
+                   : "");
     }
     var pval = document.createElement("span");
     pval.textContent = v == null ? "–" : v.toFixed(1);
+    var parts = state.projParts[p.player_id];
+    if (v != null && parts) {
+      pval.title = parts.ceiling == null
+        ? "Median " + parts.median.toFixed(1) + ", no ceiling published for this sport"
+        : Math.round((1 - PROJ_CEILING_WEIGHT) * 100) + "% of median " + parts.median.toFixed(1) +
+          " plus " + Math.round(PROJ_CEILING_WEIGHT * 100) + "% of ceiling " + parts.ceiling.toFixed(1);
+    }
     var pr = document.createElement("span");
     pr.className = "num proj" + (v == null ? " dim" : "");
     pr.append(pd, pval);
@@ -1799,27 +1862,42 @@ function brrSelfTest() {
   var etr = parseProjections(FIXTURE_ETR);
   ok("etr sport", etr.sport === "nfl");
   ok("etr rows", etr.entries.length === 2);
-  ok("etr reads Proj not ADP", etr.entries[0].proj === 21.2);
+  ok("etr reads Proj as the median, not ADP", etr.entries[0].median === 21.2);
+  ok("etr uses Underdog's own ceiling unscaled", etr.entries[0].ceiling === 35.3);
+  ok("etr blends the same way",
+     Math.abs(etr.entries[0].proj - (0.25 * 21.2 + 0.75 * 35.3)) < 1e-9);
   ok("etr id", etr.entries[0].id === "cff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7");
   ok("etr suffix/punctuation", etr.entries[1].norm === "amon ra st brown");
 
   var wk = parseProjections(FIXTURE_WEEKLY);
   ok("weekly detected", wk.format === "ETR Weekly" && wk.sport === "nfl");
   ok("weekly BOM stripped", wk.entries.length === 2);
-  ok("weekly reads Half PPR, not DK/FD/Standard", wk.entries[0].proj === 21.3);
+  ok("weekly reads Half PPR as the median, not DK/FD/Standard", wk.entries[0].median === 21.3);
+  ok("weekly scales the DK and FD ceilings for Underdog",
+     Math.abs(wk.entries[0].ceiling - ((40.4 + 37.8) / 2) * UD_CEILING_FACTOR) < 1e-9);
+  ok("weekly blends a quarter median with three quarters ceiling",
+     Math.abs(wk.entries[0].proj -
+       (0.25 * 21.3 + 0.75 * ((40.4 + 37.8) / 2) * UD_CEILING_FACTOR)) < 1e-9);
   ok("weekly has no id", wk.entries[0].id === null);
-  ok("weekly duplicate keeps the higher", wk.entries[0].name === "Jahmyr Gibbs" && wk.entries[0].proj === 21.3);
-  ok("weekly second row", wk.entries[1].name === "Puka Nacua" && wk.entries[1].proj === 17.2);
+  ok("weekly duplicate keeps the higher", wk.entries[0].name === "Jahmyr Gibbs" && wk.entries[0].median === 21.3);
+  ok("weekly second row", wk.entries[1].name === "Puka Nacua" && wk.entries[1].median === 17.2);
   var wkJoin = joinProjections(
     [{ appearance_id: "aa", player_id: "pp", first_name: "Puka", last_name: "Nacua", adp: 5 }],
     wk.entries, {});
-  ok("weekly joins by name only", wkJoin.values.pp === 17.2 && wkJoin.matchedById === 0);
+  ok("weekly joins by name only",
+     Math.abs(wkJoin.values.pp - blendProjection(17.2, ((36.9 + 31.6) / 2) * UD_CEILING_FACTOR)) < 1e-9 &&
+     wkJoin.matchedById === 0);
   ok("unrecognized file is reported", /unrecognized projection file/.test(
     parseProjections("Name,Points\nA,1\n").error || ""));
 
   var cff = parseProjections(FIXTURE_CFF);
   ok("cff sport", cff.sport === "cfb");
-  ok("cff reads FPNTS", cff.entries[0].proj === 21.9 && cff.entries[1].proj === 9.1);
+  ok("cff reads FPNTS", cff.entries[0].median === 21.9 && cff.entries[1].median === 9.1);
+  ok("college has no ceiling, so the median stands alone",
+     cff.entries[0].ceiling === null && cff.entries[0].proj === 21.9);
+  ok("a blend without a ceiling is just the median", blendProjection(10, null) === 10);
+  ok("a blend with one is weighted", Math.abs(blendProjection(10, 20) - 17.5) < 1e-9);
+  ok("no median means no number", blendProjection(null, 20) === null);
 
   var players = [
     { appearance_id: "a1", player_id: "p1", first_name: "Jahmyr", last_name: "Gibbs", team: "DET", position: "RB", adp: 1.3 },
@@ -1827,7 +1905,9 @@ function brrSelfTest() {
     { appearance_id: "a3", player_id: "p3", first_name: "Rueben", last_name: "Owens", team: "TEX", position: "RB", adp: 40.2 }
   ];
   var j = joinProjections(players, etr.entries, {});
-  ok("join by name", j.values.p1 === 21.2 && j.values.p2 === 15.9);
+  ok("join by name", Math.abs(j.values.p1 - (0.25 * 21.2 + 0.75 * 35.3)) < 1e-9);
+  ok("the join carries the pieces behind the number",
+     j.parts.p1.median === 21.2 && j.parts.p1.ceiling === 35.3);
   ok("join unmatched empty", j.unmatched.length === 0);
 
   var byId = joinProjections(
@@ -1837,7 +1917,8 @@ function brrSelfTest() {
 
   var aliased = joinProjections(
     [{ appearance_id: "a9", player_id: "p9", first_name: "Rueben", last_name: "Owens", adp: 9 }],
-    [{ id: null, name: "Rueben Owens II", norm: normName("Rueben Owens II"), proj: 7.5 }],
+    [{ id: null, name: "Rueben Owens II", norm: normName("Rueben Owens II"),
+       median: 7.5, ceiling: null, proj: 7.5 }],
     { "Rueben Owens": "Rueben Owens II" });
   ok("name map alias", aliased.values.p9 === 7.5);
 
