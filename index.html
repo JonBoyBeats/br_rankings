@@ -975,9 +975,11 @@ function putSavedSlate(doc, label, entry) {
 
 function playerCount(n) { return n + (n === 1 ? " player" : " players"); }
 
-function savedEntry(order, slateId, device, nowIso) {
-  return { order: order.slice(), slate_id: slateId, device: device,
-           saved_at: nowIso, count: order.length };
+function savedEntry(order, slateId, device, nowIso, windows) {
+  var e = { order: order.slice(), slate_id: slateId, device: device,
+            saved_at: nowIso, count: order.length };
+  if (windows && Object.keys(windows).length) e.windows = windows;
+  return e;
 }
 
 /** Plain-language age, for "saved 2 hours ago from iPhone". */
@@ -1978,7 +1980,8 @@ async function syncSave() {
       renderSync("Left the saved board alone.");
       return;
     }
-    var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString());
+    var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString(),
+                           load(K.vorpWin(label), null));
     var files = {};
     files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
 
@@ -1996,6 +1999,7 @@ async function syncSave() {
     }
     await writeFiles(files, cur.id);
     renderSync("Saved " + playerCount(entry.count) + " for " + slateLabel(state.slate) + "." + note +
+               (entry.windows ? " Your replacement ranks went too." : "") +
                " Any device with the token can load it.");
   } catch (e) {
     renderSync("Could not save: " + e.message);
@@ -2025,6 +2029,12 @@ async function syncLoad() {
     renderLiftBar();
     save(K.order(state.slate.label), state.order);
 
+    var ranks = "";
+    if (entry.windows && typeof entry.windows === "object") {
+      save(K.vorpWin(state.slate.label), entry.windows);
+      ranks = " Its replacement ranks came with it.";
+    }
+
     var sport = state.slate.sport;
     var pf = cur.files[projFile(sport)];
     var note = "";
@@ -2038,8 +2048,10 @@ async function syncLoad() {
     } else if (pf) {
       note = " Its projections were too big to read back.";
     }
+    recomputeVorp();
     render();
-    renderSync("Loaded the board from " + entry.device + "." + note +
+    if (!$("vorpPanel").hidden) renderVorpPanel();
+    renderSync("Loaded the board from " + entry.device + "." + note + ranks +
                (rec.dropped.length ? " " + rec.dropped.length + " of its players are no longer on the slate." : "") +
                (rec.newIds.length ? " " + rec.newIds.length + " new since then are flagged at the bottom." : ""));
   } catch (e) {
@@ -2478,6 +2490,14 @@ function brrSelfTest() {
      doc.slates.nfl_main.order.join() === "b,a" && doc.slates.nfl_late.order.join() === "c");
   ok("an entry records where and when",
      doc.slates.nfl_main.device === "Windows Edge" && doc.slates.nfl_main.count === 2);
+  ok("an entry carries typed ranks when there are any",
+     savedEntry(["a"], "s", "d", "t", { RB: [4, 7] }).windows.RB.join() === "4,7");
+  ok("and stays clean when there are none",
+     savedEntry(["a"], "s", "d", "t").windows === undefined &&
+     savedEntry(["a"], "s", "d", "t", {}).windows === undefined);
+  ok("ranks from a gist are still validated on the way in",
+     mergeWindows(defaultWindows("nfl"), savedEntry(["a"], "s", "d", "t",
+       { RB: [9, 2] }).windows).RB.join() === VORP_WINDOWS.nfl.RB.join());
   ok("the order is copied, not referenced", (function () {
      var src = ["x", "y"], e = savedEntry(src, "s", "d", "2026-01-01T00:00:00Z");
      src.push("z"); return e.order.length === 2; })());
