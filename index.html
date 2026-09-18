@@ -137,6 +137,26 @@
     border-radius: 10px; padding: 12px; margin-bottom: 10px;
   }
   .paste textarea { width: 100%; resize: vertical; font-family: var(--mono); font-size: 12px; height: auto; }
+
+  .vorp-row {
+    display: grid; grid-template-columns: 46px 56px 56px minmax(0, 1fr);
+    gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line);
+  }
+  .vorp-row:first-child { border-top: 0; }
+  .vorp-row .vp {
+    font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .06em;
+  }
+  .vorp-row input {
+    height: 30px; padding: 4px 6px; text-align: center;
+    font-family: var(--mono); font-size: 13px;
+  }
+  .vorp-row .lvl { font-family: var(--mono); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .vorp-row .lvl b { color: var(--gold, #f0c14b); font-weight: 600; }
+  .vorp-members {
+    grid-column: 1 / -1; font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); line-height: 1.5;
+  }
+  .vorp-members em { color: var(--ink); font-style: normal; }
   .paste-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .hint { color: var(--muted); font-size: 12.5px; }
 
@@ -279,6 +299,10 @@
     .shell { padding: 0 10px; }
     .dock { padding-block: 8px; }
     .dock .field-label { display: none; }
+    /* Five buttons only fit one line with the longer labels trimmed; wrapping the
+       dock would cost pinned height on every screen. */
+    .dock .wide { display: none; }
+    .dock button { padding: 7px 10px; }
 
     /* Every fixed column gives up what it can spare; the name cell takes all of it. */
     .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 54px 32px; gap: 4px; padding: 6px 6px; }
@@ -346,9 +370,13 @@
       <span class="field-label">Projections</span>
       <span class="pair">
         <input type="file" id="proj" accept=".csv,.tsv,.txt,text/csv" class="vh">
-        <button type="button" id="projBtn">Upload CSV</button>
+        <button type="button" id="projBtn">Upload<span class="wide"> CSV</span></button>
         <button type="button" id="pasteBtn" aria-expanded="false">Paste</button>
       </span>
+    </label>
+    <label class="field">
+      <span class="field-label">Replacement</span>
+      <button type="button" id="vorpBtn" aria-expanded="false">VORP</button>
     </label>
     <label class="field">
       <span class="field-label">Saved</span>
@@ -356,8 +384,18 @@
     </label>
     <label class="field">
       <span class="field-label">Underdog</span>
-      <button type="button" id="export" class="primary">Export ranking</button>
+      <button type="button" id="export" class="primary">Export<span class="wide"> ranking</span></button>
     </label>
+  </div>
+
+  <div id="vorpPanel" class="paste" hidden>
+    <div class="hint" id="vorpIntro"></div>
+    <div id="vorpRows"></div>
+    <div class="paste-actions">
+      <button type="button" id="vorpReset">Reset to defaults</button>
+      <span class="hint">Replacement is the median of the ranks you set, by projection.
+        Flex is the combined RB and WR pool, so its ranks run deeper.</span>
+    </div>
   </div>
 
   <div id="syncPanel" class="paste" hidden>
@@ -756,9 +794,38 @@ var VORP_FLEX_WEIGHT = 0.33;
    replacement. He still gets his own value, which is simply a long way below. */
 var VORP_MIN_PROJ = 1.0;
 
-/* Slates that carry the column. The midweek college boards are small and shaped
-   differently, so they are left out until their windows are worked out. */
-var VORP_SLATES = ["nfl_early", "nfl_main", "nfl_late", "cfb_sat_main", "cfb_sat_late"];
+/* Every slate carries the column. The ranges below are only a starting point: each
+   slate keeps its own once you set them, which is what lets a small midweek board
+   work without anyone inventing a rule for it. */
+var VORP_POSITIONS = ["QB", "RB", "WR", "TE", "FLEX"];
+
+function defaultWindows(sport) {
+  var base = VORP_WINDOWS[sport] || VORP_WINDOWS.nfl;
+  var out = {};
+  Object.keys(base).forEach(function (k) { out[k] = base[k].slice(); });
+  out.FLEX = (VORP_FLEX_WINDOW[sport] || VORP_FLEX_WINDOW.nfl).slice();
+  return out;
+}
+
+/** A pair of ranks, or null if it is not one. Guards whatever gets typed in. */
+function cleanWindow(v) {
+  if (!v || v.length !== 2) return null;
+  var a = Math.round(Number(v[0])), b = Math.round(Number(v[1]));
+  if (!isFinite(a) || !isFinite(b) || a < 1 || b < a) return null;
+  return [a, b];
+}
+
+function mergeWindows(base, override) {
+  var out = {};
+  Object.keys(base).forEach(function (k) { out[k] = base[k].slice(); });
+  if (override) {
+    Object.keys(override).forEach(function (k) {
+      var v = cleanWindow(override[k]);
+      if (v && out[k]) out[k] = v;
+    });
+  }
+  return out;
+}
 
 /* A gap counts as a cliff only if it is this large and this many times the typical
    gap inside the window. Only a cliff falling INSIDE the window matters: it means the
@@ -803,9 +870,8 @@ function replacementLevel(values, win) {
  * Value over replacement for every player carrying a projection.
  * `rows` is [{player_id, position, proj}]. Flex positions blend two comparisons.
  */
-function computeVorp(rows, sport) {
-  var windows = VORP_WINDOWS[sport] || VORP_WINDOWS.nfl;
-  var flexWin = VORP_FLEX_WINDOW[sport] || VORP_FLEX_WINDOW.nfl;
+function computeVorp(rows, windows) {
+  var flexWin = windows.FLEX;
   var byPos = {}, vorp = {}, levels = {};
 
   rows.forEach(function (r) {
@@ -1011,6 +1077,7 @@ function buildExportCsv(order, byPid) {
 var K = {
   order: function (label) { return "brr:order:" + label; },
   proj: function (sport) { return "brr:proj:" + sport; },
+  vorpWin: function (label) { return "brr:vorpwin:" + label; },
   slate: "brr:slate",
   token: "brr:gh:token",
   gist: "brr:gh:gist",
@@ -1145,6 +1212,7 @@ function selectSlate(index) {
   renderPositions();
   renderMeta(rec);
   render();
+  if (!$("vorpPanel").hidden) renderVorpPanel();
 }
 
 // ---------------------------------------------------------------- projections
@@ -1156,7 +1224,7 @@ function applyStoredProjections() {
   state.projParts = {};
   if (!stored || !stored.entries || !stored.entries.length) {
     state.proj = {}; state.projMeta = null; state.vorp = {}; state.vorpLevels = {};
-    renderMissingProjections(); syncBuilderButtons(); return;
+    renderMissingProjections(); syncBuilderButtons(); renderVorpPanel(); return;
   }
   var map = state.nameMaps[s.sport] || {};
   var joined = joinProjections(s.players, stored.entries, map);
@@ -1165,17 +1233,7 @@ function applyStoredProjections() {
   }
   state.proj = joined.values;
   state.projParts = joined.parts;
-  if (VORP_SLATES.indexOf(s.label) >= 0) {
-    var computed = computeVorp(s.players.map(function (pl) {
-      return { player_id: pl.player_id, position: pl.position,
-               proj: joined.values[pl.player_id] == null ? null : joined.values[pl.player_id] };
-    }), s.sport);
-    state.vorp = computed.vorp;
-    state.vorpLevels = computed.levels;
-  } else {
-    state.vorp = {};
-    state.vorpLevels = {};
-  }
+  recomputeVorp();
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
     prevFile: store.previous ? store.previous.file : null,
@@ -1238,6 +1296,24 @@ function ingestProjections(text, sourceName, pasted) {
                 : ""));
     render();
   }
+}
+
+/** The ranges in force for this slate: the sport's defaults, then anything set here. */
+function slateWindows() {
+  if (!state.slate) return defaultWindows("nfl");
+  return mergeWindows(defaultWindows(state.slate.sport),
+                      load(K.vorpWin(state.slate.label), null));
+}
+
+function recomputeVorp() {
+  var s = state.slate;
+  if (!s) { state.vorp = {}; state.vorpLevels = {}; return; }
+  var computed = computeVorp(s.players.map(function (pl) {
+    return { player_id: pl.player_id, position: pl.position,
+             proj: state.proj[pl.player_id] == null ? null : state.proj[pl.player_id] };
+  }), slateWindows());
+  state.vorp = computed.vorp;
+  state.vorpLevels = computed.levels;
 }
 
 // ---------------------------------------------------------------- render
@@ -1530,9 +1606,6 @@ function renderFoot(shown) {
   } else {
     bits.push("no projections uploaded for " + state.slate.sport.toUpperCase());
   }
-  if (VORP_SLATES.indexOf(state.slate.label) < 0) {
-    bits.push("VORP is off for this slate");
-  }
   if (state.view !== "order") bits.push("dragging is off while sorted");
   bits.push("order and baselines live in this browser only");
   $("foot").textContent = bits.join(" · ");
@@ -1687,6 +1760,114 @@ document.addEventListener("keydown", function (e) {
 $("liftUp").addEventListener("click", function () { nudgeLifted(-1); });
 $("liftDown").addEventListener("click", function () { nudgeLifted(1); });
 $("liftDone").addEventListener("click", function () { setLifted(null); });
+
+// ---------------------------------------------------------------- replacement ranges
+/* The panel shows each range, what it currently resolves to, and who is sitting in
+   it, so the falloff can be eyeballed here rather than by scrolling the board. */
+
+function positionPool(pos) {
+  var s = state.slate;
+  if (!s) return [];
+  var wanted = pos === "FLEX" ? VORP_FLEX_POSITIONS : [pos];
+  return s.players
+    .filter(function (p) {
+      return wanted.indexOf(p.position) >= 0 &&
+             state.proj[p.player_id] != null && state.proj[p.player_id] >= VORP_MIN_PROJ;
+    })
+    .map(function (p) { return { name: p.last_name, v: state.proj[p.player_id] }; })
+    .sort(function (a, b) { return b.v - a.v; });
+}
+
+function describeWindow(pos, win) {
+  var pool = positionPool(pos);
+  if (!pool.length) return { level: null, text: "no projections loaded" };
+  var lvl = state.vorpLevels[pos];
+  var from = lvl ? lvl.from : win[0], to = lvl ? lvl.to : win[1];
+  var names = pool.slice(from - 1, to).map(function (p, i) {
+    return "<em>" + (from + i) + ". " + p.name + "</em> " + p.v.toFixed(1);
+  });
+  var next = pool[to];
+  var tail = next ? "  \u2192 next is " + next.name + " " + next.v.toFixed(1) +
+    " (" + (pool[to - 1] ? (pool[to - 1].v - next.v).toFixed(1) : "?") + " below)" : "";
+  return {
+    level: lvl && lvl.level != null ? lvl.level : null,
+    shortened: !!(lvl && lvl.viaCliff),
+    text: (names.length ? names.join(" \u00b7 ") : "nobody in that range") + tail,
+    pool: pool.length
+  };
+}
+
+function renderVorpPanel() {
+  var host = $("vorpRows");
+  if (!host) return;
+  host.innerHTML = "";
+  if (!state.slate) return;
+  $("vorpIntro").textContent = "Ranks for " + slateLabel(state.slate) +
+    ". Each slate keeps its own, so a short board can have its own ranges.";
+
+  var win = slateWindows();
+  var stored = load(K.vorpWin(state.slate.label), null) || {};
+
+  VORP_POSITIONS.forEach(function (pos) {
+    var row = document.createElement("div");
+    row.className = "vorp-row";
+
+    var tag = document.createElement("span");
+    tag.className = "vp" + (pos === "FLEX" ? "" : " pos pos-" + pos);
+    tag.textContent = pos;
+
+    var a = document.createElement("input");
+    var b = document.createElement("input");
+    [a, b].forEach(function (inp, i) {
+      inp.type = "number";
+      inp.min = "1";
+      inp.inputMode = "numeric";
+      inp.value = win[pos][i];
+      inp.setAttribute("aria-label", pos + (i ? " last rank" : " first rank"));
+    });
+
+    var lvl = document.createElement("span");
+    lvl.className = "lvl";
+    var members = document.createElement("div");
+    members.className = "vorp-members";
+
+    function paint() {
+      var d = describeWindow(pos, win[pos]);
+      lvl.innerHTML = d.level == null ? "&mdash;"
+        : "<b>" + d.level.toFixed(1) + "</b>" + (d.shortened ? " cliff" : "");
+      members.innerHTML = d.text;
+    }
+
+    function commit() {
+      var v = cleanWindow([a.value, b.value]);
+      if (!v) { paint(); return; }
+      stored[pos] = v;
+      win[pos] = v;
+      save(K.vorpWin(state.slate.label), stored);
+      recomputeVorp();
+      render();
+      VORP_POSITIONS.forEach(function (k) { if (painters[k]) painters[k](); });
+    }
+
+    a.addEventListener("change", commit);
+    b.addEventListener("change", commit);
+    painters[pos] = paint;
+
+    row.append(tag, a, b, lvl, members);
+    host.appendChild(row);
+    paint();
+  });
+}
+
+var painters = {};
+
+function resetVorpWindows() {
+  if (!state.slate) return;
+  try { localStorage.removeItem(K.vorpWin(state.slate.label)); } catch (e) { /* ignore */ }
+  recomputeVorp();
+  render();
+  renderVorpPanel();
+}
 
 // ---------------------------------------------------------------- saved boards
 /* A private gist holds one order per slate. The token never leaves this browser and
@@ -1971,6 +2152,14 @@ $("pasteBtn").addEventListener("click", function () {
 $("pasteLoad").addEventListener("click", function () {
   ingestProjections($("pasteBox").value, "pasted text", true);
 });
+$("vorpBtn").addEventListener("click", function () {
+  var panel = $("vorpPanel"), open = panel.hidden;
+  panel.hidden = !open;
+  this.setAttribute("aria-expanded", String(open));
+  syncStickyOffsets();
+  if (open) renderVorpPanel();
+});
+$("vorpReset").addEventListener("click", resetVorpWindows);
 $("syncBtn").addEventListener("click", function () {
   var panel = $("syncPanel"), open = panel.hidden;
   panel.hidden = !open;
@@ -2190,7 +2379,7 @@ function brrSelfTest() {
   for (var wi = 0; wi < 20; wi++) rows.push({ player_id: "wr" + wi, position: "WR", proj: 29 - wi });
   for (var qi = 0; qi < 20; qi++) rows.push({ player_id: "qb" + qi, position: "QB", proj: 28 - qi });
   for (var ti = 0; ti < 20; ti++) rows.push({ player_id: "te" + ti, position: "TE", proj: 18 - ti });
-  var cv = computeVorp(rows, "nfl");
+  var cv = computeVorp(rows, defaultWindows("nfl"));
   ok("every projected player gets a value", Object.keys(cv.vorp).length === rows.length);
   ok("each position has a replacement level",
      cv.levels.RB.level != null && cv.levels.WR.level != null &&
@@ -2204,17 +2393,38 @@ function brrSelfTest() {
      Math.abs(cv.vorp.rb0 - ((1 - VORP_FLEX_WEIGHT) * (30 - cv.levels.RB.level) +
        VORP_FLEX_WEIGHT * (30 - cv.levels.FLEX.level))) < 1e-9);
   ok("a player without a projection gets no value",
-     computeVorp([{ player_id: "x", position: "RB", proj: null }], "nfl").vorp.x === undefined);
+     computeVorp([{ player_id: "x", position: "RB", proj: null }], defaultWindows("nfl")).vorp.x === undefined);
   // a projection of nothing means a player who is not playing
   var withZeros = rows.concat([
     { player_id: "rbZ", position: "RB", proj: 0 },
     { player_id: "rbZ2", position: "RB", proj: 0.4 }]);
   ok("players projected at nothing do not set the level",
-     computeVorp(withZeros, "nfl").levels.RB.level === cv.levels.RB.level);
+     computeVorp(withZeros, defaultWindows("nfl")).levels.RB.level === cv.levels.RB.level);
   ok("but they still get their own value, a long way below",
-     computeVorp(withZeros, "nfl").vorp.rbZ < 0);
-  ok("college uses its own windows",
-     computeVorp(rows, "cfb").levels.QB.from === VORP_WINDOWS.cfb.QB[0]);
+     computeVorp(withZeros, defaultWindows("nfl")).vorp.rbZ < 0);
+  ok("college uses its own defaults",
+     computeVorp(rows, defaultWindows("cfb")).levels.QB.from === VORP_WINDOWS.cfb.QB[0]);
+
+  // ranges typed in for one slate
+  ok("a default set carries flex too", defaultWindows("nfl").FLEX.length === 2);
+  ok("editing defaults does not leak between calls", (function () {
+     var d = defaultWindows("nfl"); d.QB[0] = 99;
+     return defaultWindows("nfl").QB[0] !== 99; })());
+  ok("a typed range replaces the default",
+     mergeWindows(defaultWindows("nfl"), { RB: [4, 7] }).RB.join() === "4,7");
+  ok("an untouched position keeps its default",
+     mergeWindows(defaultWindows("nfl"), { RB: [4, 7] }).WR.join() ===
+     VORP_WINDOWS.nfl.WR.join());
+  ok("nonsense is ignored rather than applied",
+     mergeWindows(defaultWindows("nfl"), { RB: [9, 2] }).RB.join() === VORP_WINDOWS.nfl.RB.join() &&
+     mergeWindows(defaultWindows("nfl"), { RB: ["", "x"] }).RB.join() === VORP_WINDOWS.nfl.RB.join());
+  ok("a position that does not exist is not invented",
+     mergeWindows(defaultWindows("nfl"), { ZZ: [1, 2] }).ZZ === undefined);
+  ok("ranks are whole numbers", cleanWindow([2.4, 7.6]).join() === "2,8");
+  ok("a range must start at one or later", cleanWindow([0, 5]) === null);
+  ok("typed ranges change the level",
+     computeVorp(rows, mergeWindows(defaultWindows("nfl"), { RB: [3, 6] })).levels.RB.level >
+     computeVorp(rows, defaultWindows("nfl")).levels.RB.level);
 
   // ---- projection movement and the two-generation store
   ok("projection rounding tick is nothing", projMovement(12.0, 12.1).kind === "flat");
