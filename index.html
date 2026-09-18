@@ -157,6 +157,9 @@
     color: var(--muted); line-height: 1.5;
   }
   .vorp-members em { color: var(--ink); font-style: normal; }
+  /* Ownership rides beside each name so a range full of players nobody drafts is
+     obvious here, where the range is set, rather than only on the board. */
+  .vorp-members i { color: var(--accent); font-style: normal; }
   .paste-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .hint { color: var(--muted); font-size: 12.5px; }
 
@@ -245,6 +248,15 @@
 
   .num.proj { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 3px; }
   .num.vorp { font-weight: 600; }
+  /* Ownership earns a column only when a file carrying it is loaded. Without one the
+     row keeps exactly the widths it had, which matters most on a phone. */
+  .num.own { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .num.own i { font-style: normal; opacity: .55; }
+  .own-col { display: none; }
+  .board.has-own .own-col { display: block; }
+  .board.has-own .row {
+    grid-template-columns: 26px 40px minmax(0, 1fr) 76px 44px 94px 56px;
+  }
   .pdelta {
     font-family: var(--mono); font-size: 10px; font-weight: 500;
     text-align: right; white-space: nowrap; color: var(--muted);
@@ -306,6 +318,10 @@
 
     /* Every fixed column gives up what it can spare; the name cell takes all of it. */
     .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 54px 32px; gap: 4px; padding: 6px 6px; }
+    /* The column header already says Own, so the sign is what gives way first and the
+       name cell keeps the width. */
+    .board.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 22px 54px 32px; }
+    .num.own i { display: none; }
     .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
     .num.proj { grid-template-columns: 24px 1fr; gap: 2px; }
     .pdelta { font-size: 9.5px; }
@@ -346,6 +362,7 @@
           <option value="order">My order (drag)</option>
           <option value="adp">Sort by ADP</option>
           <option value="proj">Sort by projection</option>
+          <option value="own">Sort by ownership</option>
           <option value="vorp">Sort by VORP</option>
           <option value="name">Sort by name</option>
         </select>
@@ -392,9 +409,10 @@
     <div class="hint" id="vorpIntro"></div>
     <div id="vorpRows"></div>
     <div class="paste-actions">
+      <button type="button" id="vorpAuto">Auto</button>
       <button type="button" id="vorpReset">Reset to defaults</button>
-      <span class="hint">Replacement is the median of the ranks you set, by projection.
-        Flex is the combined RB and WR pool, so its ranks run deeper.</span>
+      <span class="hint" id="vorpAutoNote">Replacement is the median of the ranks you set,
+        by projection. Flex is the combined RB and WR pool, so its ranks run deeper.</span>
     </div>
   </div>
 
@@ -436,6 +454,8 @@
       <span class="r">#</span>
       <span>Player</span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
+      <span class="r own-col"><button type="button" data-sort="own"
+        title="Share of drafts the projection file expects this player to appear in">Own</button></span>
       <span class="r"><button type="button" data-sort="proj"
         title="A quarter of the median plus three quarters of the ceiling">Proj</button></span>
       <span class="r"><button type="button" data-sort="vorp"
@@ -557,18 +577,32 @@ function headerIndex(header) {
 
 /**
  * Parse a projections CSV into [{id, name, norm, proj}].
- * ETR Battle Royale (NFL): reads Player, Proj, id. Its ADP and Rank are ignored on purpose.
+ * ETR Battle Royale (NFL): reads Player, Proj, Ceiling, Own % and id. Its ADP and Rank
+ *   are ignored on purpose -- the board takes ADP live from the mirror. Own % is the
+ *   share of drafts the player appears in, which is what the Auto button needs to find
+ *   the last bodies a draft actually reaches.
  * ETR Weekly (NFL): reads Player and Half PPR Proj, the scoring Underdog actually uses.
  *   It carries no id and covers the whole league, so it matches by name and most of its
  *   rows belong to players who are not on the chosen slate.
  * CFF (CFB): reads PLAYER NAME, FPNTS.
  */
+/** A published share as a 0-1 fraction. Accepts "82.0%", "82" and "0.82"; null if absent. */
+function parseShare(raw) {
+  var t = String(raw == null ? "" : raw).trim();
+  if (t === "") return null;
+  var pct = t.indexOf("%") >= 0;
+  var n = Number(t.replace(/[%,\s]/g, ""));
+  if (!isFinite(n) || n < 0) return null;
+  if (pct || n > 1) n = n / 100;
+  return n > 1 ? 1 : n;
+}
+
 function parseProjections(text) {
   var rows = parseCsv(text, sniffDelimiter(text));
   if (!rows.length) return { error: "empty file", entries: [] };
   var idx = headerIndex(rows[0]);
   var format, nameCol, projCol, idCol = null, sport, dedupe = false;
-  var ceilCols = null, ceilScale = 1;
+  var ceilCols = null, ceilScale = 1, ownCol = null;
 
   if (idx["fpnts"] != null && idx["player name"] != null) {
     // College carries no ceiling, so the blend falls back to the median.
@@ -585,6 +619,7 @@ function parseProjections(text) {
     format = "ETR Battle Royale"; sport = "nfl"; nameCol = idx["player"]; projCol = idx["proj"];
     if (idx["id"] != null) idCol = idx["id"];
     if (idx["ceiling"] != null) ceilCols = [idx["ceiling"]];   // already Underdog's own
+    if (idx["own %"] != null) ownCol = idx["own %"];
   } else {
     return {
       error: "unrecognized projection file. Expected an ETR Battle Royale export " +
@@ -622,6 +657,7 @@ function parseProjections(text) {
       norm: normName(name),
       median: median,
       ceiling: ceiling,
+      own: ownCol == null ? null : parseShare(row[ownCol]),
       proj: blendProjection(median, ceiling)
     });
   }
@@ -666,7 +702,8 @@ function joinProjections(players, entries, nameMap) {
     values[hit.player_id] = e.proj;
     parts[hit.player_id] = {
       median: typeof e.median === "number" ? e.median : e.proj,
-      ceiling: typeof e.ceiling === "number" ? e.ceiling : null
+      ceiling: typeof e.ceiling === "number" ? e.ceiling : null,
+      own: typeof e.own === "number" ? e.own : null
     };
   });
   return { values: values, parts: parts, matchedById: matchedById,
@@ -864,6 +901,52 @@ function replacementLevel(values, win) {
   }
   var start = Math.max(1, end - size + 1);
   return { level: median(values.slice(start - 1, end)), from: start, to: end, viaCliff: viaCliff };
+}
+
+/* ---- ranges from ownership ------------------------------------------------------
+   A projection file that publishes ownership makes the ranges measurable rather than
+   eyeballed. Ownership is the share of drafts a player appears in, so summing it down
+   a position gives how many of that position a draft actually takes, and walking that
+   sum back from the bottom gives the ranks holding the last bodies reached. Those
+   ranks are what replacement means, so that is what Auto writes.
+
+   The span is deliberately wider than one player: a single name at the edge is one
+   projection away from moving the whole line. */
+var VORP_AUTO_SPAN = 1.5;    // expected drafted bodies the window should cover
+var VORP_AUTO_EDGE = 0.25;   // trailing capital too thin to count as reached
+
+/**
+ * `pool` is [{proj, own}] at one position, highest projection first. Returns the rank
+ * range covering the last VORP_AUTO_SPAN expected-drafted bodies, or null when the
+ * pool is too short or the file published no ownership for it.
+ */
+function autoWindow(pool) {
+  var total = 0, i;
+  if (pool.length < 2) return null;
+  for (i = 0; i < pool.length; i++) {
+    if (typeof pool[i].own !== "number") return null;   // all or nothing, never partial
+    total += pool[i].own;
+  }
+  if (total <= VORP_AUTO_EDGE) return null;             // nobody here gets drafted
+  var lo = null, hi = null, cum = 0;
+  for (i = 0; i < pool.length; i++) {
+    cum += pool[i].own;
+    if (lo === null && cum >= total - VORP_AUTO_EDGE - VORP_AUTO_SPAN) lo = i + 1;
+    if (cum >= total - VORP_AUTO_EDGE) { hi = i + 1; break; }
+  }
+  if (hi === null) hi = pool.length;
+  if (lo === null || lo > hi) lo = hi;
+  return [lo, hi];
+}
+
+/** Every position's auto range at once. Positions without ownership are left out. */
+function autoWindows(pools) {
+  var out = {};
+  Object.keys(pools).forEach(function (pos) {
+    var w = autoWindow(pools[pos]);
+    if (w) out[pos] = w;
+  });
+  return out;
 }
 
 /**
@@ -1107,7 +1190,8 @@ var state = {
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
   projPrev: {},        // the same from the previous upload, for the change marker
-  projParts: {},       // player_id -> {median, ceiling} behind the blended number
+  projParts: {},       // player_id -> {median, ceiling, own} behind the blended number
+  hasOwn: false,       // the loaded file publishes ownership, so the column earns its width
   vorp: {},            // player_id -> value over replacement
   vorpLevels: {},      // position -> the replacement level and the ranks behind it
   projMeta: null,      // {file, format, matchedById, matchedByName, missing, boardTotal, at}
@@ -1224,6 +1308,7 @@ function applyStoredProjections() {
   var stored = store.current;
   state.projPrev = {};
   state.projParts = {};
+  state.hasOwn = false;
   if (!stored || !stored.entries || !stored.entries.length) {
     state.proj = {}; state.projMeta = null; state.vorp = {}; state.vorpLevels = {};
     renderMissingProjections(); syncBuilderButtons(); renderVorpPanel(); return;
@@ -1235,6 +1320,9 @@ function applyStoredProjections() {
   }
   state.proj = joined.values;
   state.projParts = joined.parts;
+  state.hasOwn = Object.keys(joined.parts).some(function (k) {
+    return typeof joined.parts[k].own === "number";
+  });
   recomputeVorp();
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
@@ -1442,6 +1530,16 @@ function visibleRows() {
       if (y == null) return -1;
       return y - x;
     });
+  } else if (state.view === "own") {
+    list = list.slice().sort(function (a, b) {
+      var pa = state.projParts[a.p.player_id], pb = state.projParts[b.p.player_id];
+      var x = pa && typeof pa.own === "number" ? pa.own : null;
+      var y = pb && typeof pb.own === "number" ? pb.own : null;
+      if (x == null && y == null) return a.p.adp - b.p.adp;
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return y - x;
+    });
   } else if (state.view === "proj") {
     list = list.slice().sort(function (a, b) {
       var x = state.proj[a.p.player_id], y = state.proj[b.p.player_id];
@@ -1456,6 +1554,8 @@ function visibleRows() {
 
 function render() {
   var rows = visibleRows();
+  var board = document.querySelector(".board");
+  if (board) board.classList.toggle("has-own", !!state.hasOwn);
   state.vorpTop = Object.keys(state.vorp).reduce(function (m, k) {
     return Math.max(m, state.vorp[k]);
   }, 0) || 1;
@@ -1562,6 +1662,19 @@ function render() {
     pr.className = "num proj" + (v == null ? " dim" : "");
     pr.append(pd, pval);
 
+    var ownCell = null;
+    if (state.hasOwn) {
+      var op = parts && typeof parts.own === "number" ? parts.own : null;
+      ownCell = document.createElement("span");
+      ownCell.className = "num own own-col" + (op == null ? " dim" : "");
+      ownCell.textContent = op == null ? "\u2013" : String(Math.round(op * 100));
+      if (op != null) ownCell.appendChild(document.createElement("i")).textContent = "%";
+      if (op != null) {
+        ownCell.title = "Appears in about " + Math.round(op * 100) +
+          "% of drafts, per the projection file";
+      }
+    }
+
     var vv = state.vorp[p.player_id];
     var vo = document.createElement("span");
     vo.className = "num vorp";
@@ -1582,7 +1695,8 @@ function render() {
       }
     }
 
-    el.append(handle, rank, who, adp, pr, vo);
+    if (ownCell) el.append(handle, rank, who, adp, ownCell, pr, vo);
+    else el.append(handle, rank, who, adp, pr, vo);
     frag.appendChild(el);
   });
   host.appendChild(frag);
@@ -1776,7 +1890,11 @@ function positionPool(pos) {
       return wanted.indexOf(p.position) >= 0 &&
              state.proj[p.player_id] != null && state.proj[p.player_id] >= VORP_MIN_PROJ;
     })
-    .map(function (p) { return { name: p.last_name, v: state.proj[p.player_id] }; })
+    .map(function (p) {
+      var parts = state.projParts[p.player_id];
+      return { name: p.last_name, v: state.proj[p.player_id],
+               own: parts && typeof parts.own === "number" ? parts.own : null };
+    })
     .sort(function (a, b) { return b.v - a.v; });
 }
 
@@ -1786,7 +1904,8 @@ function describeWindow(pos, win) {
   var lvl = state.vorpLevels[pos];
   var from = lvl ? lvl.from : win[0], to = lvl ? lvl.to : win[1];
   var names = pool.slice(from - 1, to).map(function (p, i) {
-    return "<em>" + (from + i) + ". " + p.name + "</em> " + p.v.toFixed(1);
+    return "<em>" + (from + i) + ". " + p.name + "</em> " + p.v.toFixed(1) +
+      (typeof p.own === "number" ? " <i>" + Math.round(p.own * 100) + "%</i>" : "");
   });
   var next = pool[to];
   var tail = next ? "  \u2192 next is " + next.name + " " + next.v.toFixed(1) +
@@ -1863,8 +1982,38 @@ function renderVorpPanel() {
 
 var painters = {};
 
+/* Auto reads the ranges off ownership and writes them in, leaving them editable. It
+   stays available, so tinkering is never a one-way door. */
+function applyAutoWindows() {
+  if (!state.slate) return;
+  var pools = {};
+  VORP_POSITIONS.forEach(function (pos) { pools[pos] = positionPool(pos); });
+  var auto = autoWindows(pools);
+  var got = Object.keys(auto);
+  if (!got.length) {
+    setAutoNote("No ownership in the loaded projections. Upload an ETR Battle Royale " +
+                "file, which publishes Own %, and Auto can set these for you.");
+    return;
+  }
+  var stored = load(K.vorpWin(state.slate.label), null) || {};
+  got.forEach(function (pos) { stored[pos] = auto[pos]; });
+  save(K.vorpWin(state.slate.label), stored);
+  recomputeVorp();
+  render();
+  renderVorpPanel();
+  setAutoNote("Set from ownership: the last " + VORP_AUTO_SPAN + " players a draft " +
+              "reaches at each position. Edit any of them; Auto puts them back.");
+}
+
+function setAutoNote(text) {
+  var el = $("vorpAutoNote");
+  if (el) el.textContent = text;
+}
+
 function resetVorpWindows() {
   if (!state.slate) return;
+  setAutoNote("Replacement is the median of the ranks you set, by projection. " +
+              "Flex is the combined RB and WR pool, so its ranks run deeper.");
   try { localStorage.removeItem(K.vorpWin(state.slate.label)); } catch (e) { /* ignore */ }
   recomputeVorp();
   render();
@@ -2171,6 +2320,7 @@ $("vorpBtn").addEventListener("click", function () {
   syncStickyOffsets();
   if (open) renderVorpPanel();
 });
+$("vorpAuto").addEventListener("click", applyAutoWindows);
 $("vorpReset").addEventListener("click", resetVorpWindows);
 $("syncBtn").addEventListener("click", function () {
   var panel = $("syncPanel"), open = panel.hidden;
@@ -2277,9 +2427,15 @@ var FIXTURE_WEEKLY =
 // The same two Battle Royale rows as they arrive from a copy-paste: tab separated,
 // unquoted. Everything downstream must treat them exactly like the comma version.
 var FIXTURE_ETR_TSV =
-  "Player\tPosition\tTeam\tOpponent\tRank\tADP\tProj\tCeiling\tPos Rank\tid\n" +
-  "Jahmyr Gibbs\tRB\tDET\tNO\t1\t1.0\t21.2\t35.3\tRB01\tcff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7\n" +
-  "Amon-Ra St. Brown\tWR\tDET\tNO\t3\t3.8\t15.9\t27.4\tWR02\tc2514e1c-2fc1-4fc7-ac51-5d2a68d9af45\n";
+  "Player\tPosition\tTeam\tOpponent\tRank\tADP\tProj\tCeiling\tPos Rank\tOwn %\tid\n" +
+  "Jahmyr Gibbs\tRB\tDET\tNO\t1\t1.0\t21.2\t35.3\tRB01\t100.0%\tcff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7\n" +
+  "Amon-Ra St. Brown\tWR\tDET\tNO\t3\t3.8\t15.9\t27.4\tWR02\t100.0%\tc2514e1c-2fc1-4fc7-ac51-5d2a68d9af45\n";
+// The same paste with the ownership column dropped, which is what a partial copy looks
+// like. It must still parse; it only costs the Auto button.
+var FIXTURE_ETR_NO_OWN =
+  "Player\tProj\tCeiling\tid\n" +
+  "Jahmyr Gibbs\t21.2\t35.3\tcff4c4b5-b12e-4989-b7d8-8d8c89ccb3a7\n" +
+  "Amon-Ra St. Brown\t15.9\t27.4\tc2514e1c-2fc1-4fc7-ac51-5d2a68d9af45\n";
 var FIXTURE_CFF =
   "RANK,PLAYER NAME,POS,STATUS,TEAM,CONF,OPP,PAYDS,PATD,RUYDS,RUTD,REC,REYDS,RETD,FPNTS,DK $,FD $\n" +
   "59,Liam Szarka,QB,,AirForce,MWC,N Dakota St,84.0,0.4,79.0,1.5,,,,21.9,7800,\n" +
@@ -2385,6 +2541,34 @@ function brrSelfTest() {
      replacementLevel(lateCliff, [10, 13]).viaCliff === false &&
      replacementLevel(lateCliff, [10, 13]).to === 13);
   ok("too few players means no level", replacementLevel([5], [10, 13]) === null);
+
+  // ---- ownership and the ranges it produces ----
+  ok("etr reads Own % as a fraction", etr.entries[0].own === 1);
+  ok("a paste without Own % carries none",
+     parseProjections(FIXTURE_ETR_NO_OWN).entries[0].own === null);
+  ok("the weekly export carries no ownership",
+     parseProjections(FIXTURE_WEEKLY).entries[0].own === null);
+  ok("shares parse in every published shape",
+     parseShare("82.0%") === 0.82 && parseShare("82") === 0.82 &&
+     parseShare("0.82") === 0.82 && parseShare("") === null && parseShare("n/a") === null);
+
+  /* Six drafted bodies spread over ten players: the last 1.5 of that capital sits in
+     ranks 5 to 7, and rank 8 down is the 0.25 edge that no draft really reaches. */
+  var ownPool = [1, 1, 1, 1, 0.8, 0.6, 0.45, 0.1, 0.05, 0].map(function (o, i) {
+    return { proj: 30 - i, own: o };
+  });
+  var aw = autoWindow(ownPool);
+  ok("auto window covers the last bodies a draft reaches", aw[0] === 5 && aw[1] === 7);
+  ok("auto window needs ownership on every player",
+     autoWindow([{ proj: 9, own: 1 }, { proj: 8, own: null }]) === null);
+  ok("auto window needs a pool", autoWindow([{ proj: 9, own: 1 }]) === null);
+  ok("a position nobody drafts gets no window",
+     autoWindow([{ proj: 9, own: 0 }, { proj: 8, own: 0 }]) === null);
+  ok("auto windows skip the positions without ownership",
+     JSON.stringify(autoWindows({ RB: ownPool, WR: [{ proj: 5, own: null }, { proj: 4, own: null }] }))
+       === '{"RB":[5,7]}');
+  ok("an auto window is a window the manual path accepts",
+     JSON.stringify(cleanWindow(aw)) === JSON.stringify(aw));
 
   var rows = [];
   for (var vi = 0; vi < 20; vi++) rows.push({ player_id: "rb" + vi, position: "RB", proj: 30 - vi });
