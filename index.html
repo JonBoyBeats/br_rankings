@@ -274,7 +274,11 @@
   }
   /* Presentational only: marks where a Builder's curated blocks end. It is an
      ordinary row, so dragging across and past it behaves like anywhere else. */
-  .curated-end { border-bottom: 2px solid var(--line-strong); }
+  /* The line is a real edge, not a hint: what is under it is not your order. */
+  .curated-end { border-bottom: 2px solid var(--accent); }
+  .row.below .rank, .row.below .name { color: var(--muted); }
+  .row.below .handle { opacity: .28; }
+  #cut { width: 62px; }
   .row.is-new { background: color-mix(in srgb, var(--new-bg) 45%, var(--surface)); }
   .num { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; text-align: right; }
   .num.dim { color: var(--muted); }
@@ -366,6 +370,11 @@
           <option value="vorp">Sort by VORP</option>
           <option value="name">Sort by name</option>
         </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Ranked</span>
+        <input type="number" id="cut" min="0" step="1" inputmode="numeric"
+               title="How many players are ranked. Below this the board sorts itself by projection, and only those above it are exported.">
       </label>
       <label class="field">
         <span class="field-label">Seed order</span>
@@ -939,6 +948,53 @@ function autoWindow(pool) {
   return [lo, hi];
 }
 
+/**
+ * Ownership implied by ADP alone, for the slates that publish none -- early in the
+ * week before the Battle Royale file lands, and college all season.
+ *
+ * Underdog censors ADP at the last pick of the draft, so the cap IS the pick count:
+ * every slate in the archive, college and pro alike, tops out at 36.0. A player
+ * priced below the cap is one the field reaches some share of the time, and that
+ * share falls as he approaches it. The only free parameter is the slope, and it is
+ * not guessed: it is solved so the slate's implied ownership sums to the slate's own
+ * pick count, which makes this self-calibrating and slate-size agnostic.
+ *
+ * Checked against a week that did publish ownership, the replacement levels this
+ * produces land within 0.6 of the published-ownership ones at every position, and
+ * on quarterbacks it agrees exactly.
+ */
+function impliedOwnership(rows) {
+  var cap = 0, i, priced = [];
+  for (i = 0; i < rows.length; i++) {
+    var a = rows[i].adp;
+    if (typeof a !== "number" || !isFinite(a)) continue;
+    priced.push(rows[i]);
+    if (a > cap) cap = a;
+  }
+  if (!(cap > 0) || priced.length < 2) return null;
+  function total(k) {
+    var t = 0;
+    for (var j = 0; j < priced.length; j++) {
+      t += Math.min(1, Math.max(0, k * (cap - priced[j].adp)));
+    }
+    return t;
+  }
+  // Everyone at the cap carries no signal, and a slate too short to fill a draft
+  // cannot be solved: in both the sum never reaches the pick count at any slope.
+  var lo = 0, hi = 1;
+  while (total(hi) < cap && hi < 1e6) hi *= 2;
+  if (total(hi) < cap) return null;
+  for (i = 0; i < 80; i++) {
+    var mid = (lo + hi) / 2;
+    if (total(mid) < cap) lo = mid; else hi = mid;
+  }
+  var k = (lo + hi) / 2, own = {};
+  priced.forEach(function (r) {
+    own[r.player_id] = Math.min(1, Math.max(0, k * (cap - r.adp)));
+  });
+  return { own: own, cap: cap };
+}
+
 /** Every position's auto range at once. Positions without ownership are left out. */
 function autoWindows(pools) {
   var out = {};
@@ -1058,10 +1114,12 @@ function putSavedSlate(doc, label, entry) {
 
 function playerCount(n) { return n + (n === 1 ? " player" : " players"); }
 
-function savedEntry(order, slateId, device, nowIso, windows) {
+function savedEntry(order, slateId, device, nowIso, windows, cut) {
   var e = { order: order.slice(), slate_id: slateId, device: device,
             saved_at: nowIso, count: order.length };
   if (windows && Object.keys(windows).length) e.windows = windows;
+  var at = clampCut(cut, order.length);
+  if (at != null) e.cut = at;
   return e;
 }
 
@@ -1144,6 +1202,91 @@ function movement(baseline, playerId, adp) {
   };
 }
 
+/* ---- the line ------------------------------------------------------------------
+   A board is two different things stacked. Above the line is a ranking: your order,
+   held exactly as you left it, and the only part Underdog is given. Below it is not a
+   ranking at all, it is a queue sorted by projection, which re-sorts itself whenever a
+   new projection file lands so nothing down there ever needs dragging.
+
+   The line is a count of the ranked players. A builder sets it to the size of the
+   blocks it seeded; dragging across it moves it by one; it can be typed. */
+
+/** A line clamped to something the order can actually hold. null if it is not a number. */
+function clampCut(cut, len) {
+  // Number(null) and Number("") are both 0, which would turn "no line" into a line
+  // at the very top and hide the whole board below it.
+  if (cut == null || String(cut).trim() === "") return null;
+  var n = Math.round(Number(cut));
+  if (!isFinite(n)) return null;
+  return Math.max(0, Math.min(len, n));
+}
+
+/**
+ * Sort everything below the line: highest projection first, players without one last,
+ * ties by ADP. Running this after every upload is what keeps the tail current.
+ */
+function resortTail(order, cut, byPid, projValues) {
+  var at = clampCut(cut, order.length);
+  if (at == null || at >= order.length) return order.slice();
+  projValues = projValues || {};
+  function projOf(pid) {
+    var v = projValues[pid];
+    return typeof v === "number" && isFinite(v) ? v : null;
+  }
+  function adpOf(pid) {
+    var p = byPid[pid];
+    return p && typeof p.adp === "number" ? p.adp : Infinity;
+  }
+  var tail = order.slice(at).sort(function (a, b) {
+    var pa = projOf(a), pb = projOf(b);
+    if (pa == null && pb == null) return adpOf(a) - adpOf(b);
+    if (pa == null) return 1;
+    if (pb == null) return -1;
+    if (pb !== pa) return pb - pa;
+    return adpOf(a) - adpOf(b);
+  });
+  return order.slice(0, at).concat(tail);
+}
+
+/**
+ * Where the line ends up after a move. A player dropped at or above it joins the
+ * ranking and the line grows by one; one dropped below it leaves and the line shrinks.
+ * A move that both starts and ends below the line is refused, because the tail sorts
+ * itself by projection and the drop would snap straight back.
+ */
+function moveAcrossCut(order, cut, pid, nextOrder) {
+  var at = clampCut(cut, order.length);
+  var from = order.indexOf(pid), to = nextOrder.indexOf(pid);
+  if (at == null || from < 0 || to < 0) {
+    return { order: nextOrder, cut: cut, moved: true, refused: false };
+  }
+  if (from >= at && to > at) {
+    return { order: order.slice(), cut: at, moved: false, refused: true };
+  }
+  var next = at;
+  if (from >= at) next = at + 1;          // to <= at: promoted into the ranking
+  else if (to >= at) next = at - 1;       // dropped out of it
+  return { order: nextOrder, cut: clampCut(next, nextOrder.length), moved: true, refused: false };
+}
+
+/**
+ * The line carried onto a reconciled order. It counts how many of the ranked players
+ * survived the refresh, so a departed player shrinks the ranking instead of quietly
+ * pulling a tail player above the line.
+ */
+function reconcileCut(savedOrder, cut, onSlate) {
+  var at = clampCut(cut, (savedOrder || []).length);
+  if (at == null || !savedOrder) return null;
+  var kept = 0, seen = {};
+  for (var i = 0; i < savedOrder.length && i < at; i++) {
+    var pid = savedOrder[i];
+    if (seen[pid]) continue;
+    seen[pid] = 1;
+    if (onSlate[pid]) kept++;
+  }
+  return kept;
+}
+
 /** The upload file: one lowercase `id` header, then appearance ids, nothing else. */
 function buildExportCsv(order, byPid) {
   var lines = ["id"], missing = [];
@@ -1163,6 +1306,7 @@ var K = {
   order: function (label) { return "brr:order:" + label; },
   proj: function (sport) { return "brr:proj:" + sport; },
   vorpWin: function (label) { return "brr:vorpwin:" + label; },
+  cut: function (label) { return "brr:cut:" + label; },
   slate: "brr:slate",
   token: "brr:gh:token",
   gist: "brr:gh:gist",
@@ -1185,7 +1329,7 @@ var state = {
   slate: null,         // chosen slate object
   order: [],           // player_id list, full board
   newIds: {},          // player_id -> true, new since the saved order
-  curatedCount: null,  // rows above the Builder's depth tail, for the divider only
+  cut: null,           // how many players are ranked; below this the board sorts itself
   liftedPid: null,     // the player picked up by tap, waiting for somewhere to land
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
@@ -1285,23 +1429,37 @@ function selectSlate(index) {
   state.slate = s;
   save(K.slate, s.label);
 
-  var rec = reconcileOrder(s.players, load(K.order(s.label), null));
+  var saved = load(K.order(s.label), null);
+  var rec = reconcileOrder(s.players, saved);
   state.order = rec.order;
   state.newIds = {};
   rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
   state.baseline = (s.baseline && s.baseline.adp) || null;
-  state.curatedCount = null;
+  var onSlate = {};
+  s.players.forEach(function (p) { onSlate[p.player_id] = 1; });
+  state.cut = saved ? reconcileCut(saved, load(K.cut(s.label), null), onSlate) : null;
   state.liftedPid = null;
   renderLiftBar();
 
   applyStoredProjections();
   renderPositions();
   renderMeta(rec);
+  syncCutField();
   render();
   if (!$("vorpPanel").hidden) renderVorpPanel();
 }
 
 // ---------------------------------------------------------------- projections
+/* The tail is sorted, not ranked, so every new projection re-orders it in place. */
+function sortBelowLine() {
+  if (!state.slate || state.cut == null) return;
+  var byPid = byPidMap(state.slate);
+  var next = resortTail(state.order, state.cut, byPid, state.proj);
+  if (next.join() === state.order.join()) return;
+  state.order = next;
+  save(K.order(state.slate.label), state.order);
+}
+
 function applyStoredProjections() {
   var s = state.slate;
   var store = normalizeProjStore(load(K.proj(s.sport), null));
@@ -1323,6 +1481,7 @@ function applyStoredProjections() {
   state.hasOwn = Object.keys(joined.parts).some(function (k) {
     return typeof joined.parts[k].own === "number";
   });
+  sortBelowLine();
   recomputeVorp();
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
@@ -1433,7 +1592,8 @@ function renderMeta(rec) {
   var notes = [];
   if (rec && rec.newIds.length) {
     notes.push(rec.newIds.length + " player" + (rec.newIds.length === 1 ? "" : "s") +
-               " new to this slate since your saved order, flagged at the bottom.");
+               " new to this slate since your saved order, flagged" +
+               (state.cut == null ? " at the bottom." : " below the line."));
   }
   if (rec && rec.dropped.length) {
     notes.push(rec.dropped.length + " player" + (rec.dropped.length === 1 ? "" : "s") +
@@ -1556,6 +1716,8 @@ function render() {
   var rows = visibleRows();
   var board = document.querySelector(".board");
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
+  /* The line only means anything against your own order; every other view is a sort. */
+  var atLine = state.cut != null && state.view === "order";
   state.vorpTop = Object.keys(state.vorp).reduce(function (m, k) {
     return Math.max(m, state.vorp[k]);
   }, 0) || 1;
@@ -1577,7 +1739,8 @@ function render() {
     var p = r.p;
     var el = document.createElement("div");
     el.className = "row" + (state.newIds[p.player_id] ? " is-new" : "") +
-                   (state.curatedCount && r.rank === state.curatedCount ? " curated-end" : "") +
+                   (atLine && r.rank === state.cut ? " curated-end" : "") +
+                   (atLine && r.rank > state.cut ? " below" : "") +
                    (state.liftedPid === p.player_id ? " lifted" : "");
     el.dataset.pid = p.player_id;
     el.draggable = dragging;
@@ -1746,19 +1909,20 @@ function applyBuilder(metric) {
   }
   var built = buildBlockOrder(state.slate.players, metric, state.proj, BUILDER_CAPS);
   state.order = built.order;
-  state.curatedCount = built.curatedCount;
+  state.cut = built.curatedCount;
   state.newIds = {};
   state.liftedPid = null;
   renderLiftBar();
-  save(K.order(label), state.order);
+  saveBoard();
   state.view = "order";
   $("view").value = "order";
   syncSortHeads();
   render();
   var shape = BUILDER_BLOCKS.map(function (pos) { return built.blocks[pos] + " " + pos; }).join(", ");
   setStatus("Seeded your order by " + (metric === "proj" ? "projection" : "ADP") + ": " + shape +
-            " on top, then " + (state.order.length - built.curatedCount) +
-            " more below the line. Drag from here; nothing was dropped.");
+            " on top, so the line sits at " + built.curatedCount + ". The " +
+            (state.order.length - built.curatedCount) + " below it sort themselves by " +
+            "projection and only those above it are exported. Nothing was dropped.");
 }
 
 // ---------------------------------------------------------------- drag
@@ -1799,10 +1963,18 @@ document.addEventListener("drop", function (e) {
   if (!dragPid || !dropTarget) return;
   e.preventDefault();
   var targetPid = dropTarget.dataset.pid;
-  state.order = moveWithin(state.order, dragPid, targetPid, dropBefore);
+  var res = moveAcrossCut(state.order, state.cut, dragPid,
+                          moveWithin(state.order, dragPid, targetPid, dropBefore));
+  if (res.refused) {
+    finishDrag();
+    setStatus("Below the line the board sorts itself by projection, so that move would " +
+              "not have stuck. Drop him above the line to rank him.");
+    return;
+  }
+  state.order = res.order;
+  state.cut = res.cut;
   delete state.newIds[dragPid];
-  state.curatedCount = null;
-  save(K.order(state.slate.label), state.order);
+  saveBoard();
   finishDrag();
   render();
 });
@@ -1842,16 +2014,43 @@ function setLifted(pid) {
   render();
 }
 
-function commitOrder() {
-  save(K.order(state.slate.label), state.order);
-  state.curatedCount = null;
+/* The field mirrors the line wherever the line changes: a builder, a drag across it,
+   a board loaded from the gist. */
+function syncCutField() {
+  var el = $("cut");
+  if (!el) return;
+  el.max = state.order.length;
+  el.value = state.cut == null ? "" : state.cut;
+  el.placeholder = state.cut == null ? "all" : "";
 }
+
+function setCut(next) {
+  var at = clampCut(next, state.order.length);
+  state.cut = at;
+  if (at != null) state.order = resortTail(state.order, at, byPidMap(state.slate), state.proj);
+  saveBoard();
+  render();
+}
+
+function saveBoard() {
+  var label = state.slate.label;
+  save(K.order(label), state.order);
+  if (state.cut == null) { try { localStorage.removeItem(K.cut(label)); } catch (e) { /* ignore */ } }
+  else save(K.cut(label), state.cut);
+  syncCutField();
+}
+
+function commitOrder() { saveBoard(); }
 
 function nudgeLifted(delta) {
   if (!state.liftedPid) return;
-  state.order = moveBy(state.order, state.liftedPid, delta);
+  var res = moveAcrossCut(state.order, state.cut, state.liftedPid,
+                          moveBy(state.order, state.liftedPid, delta));
+  if (res.refused) return;               // already at the top of the sorted tail
+  state.order = res.order;
+  state.cut = res.cut;
   delete state.newIds[state.liftedPid];
-  commitOrder();
+  saveBoard();
   render();
 }
 
@@ -1863,9 +2062,18 @@ document.addEventListener("click", function (e) {
   var pid = row.dataset.pid;
   if (!state.liftedPid) { setLifted(pid); return; }
   if (state.liftedPid === pid) { setLifted(null); return; }
-  state.order = placeAt(state.order, state.liftedPid, pid);
+  var res = moveAcrossCut(state.order, state.cut, state.liftedPid,
+                          placeAt(state.order, state.liftedPid, pid));
+  if (res.refused) {
+    setStatus("Below the line the board sorts itself by projection. Tap a rank above " +
+              "the line to move him into your ranking.");
+    setLifted(null);
+    return;
+  }
+  state.order = res.order;
+  state.cut = res.cut;
   delete state.newIds[state.liftedPid];
-  commitOrder();
+  saveBoard();
   setLifted(null);
 });
 
@@ -1881,7 +2089,7 @@ $("liftDone").addEventListener("click", function () { setLifted(null); });
 /* The panel shows each range, what it currently resolves to, and who is sitting in
    it, so the falloff can be eyeballed here rather than by scrolling the board. */
 
-function positionPool(pos) {
+function positionPool(pos, ownMap) {
   var s = state.slate;
   if (!s) return [];
   var wanted = pos === "FLEX" ? VORP_FLEX_POSITIONS : [pos];
@@ -1892,14 +2100,27 @@ function positionPool(pos) {
     })
     .map(function (p) {
       var parts = state.projParts[p.player_id];
+      var own = ownMap ? ownMap[p.player_id]
+                       : (parts && typeof parts.own === "number" ? parts.own : null);
       return { name: p.last_name, v: state.proj[p.player_id],
-               own: parts && typeof parts.own === "number" ? parts.own : null };
+               own: typeof own === "number" ? own : null };
     })
     .sort(function (a, b) { return b.v - a.v; });
 }
 
-function describeWindow(pos, win) {
-  var pool = positionPool(pos);
+/**
+ * Where Auto's ownership comes from for this slate: the loaded file when it publishes
+ * a column, otherwise ADP. Returns null only when neither is usable.
+ */
+function ownershipSource() {
+  if (!state.slate) return null;
+  if (state.hasOwn) return { map: null, source: "published" };
+  var imp = impliedOwnership(state.slate.players);
+  return imp ? { map: imp.own, source: "adp", cap: imp.cap } : null;
+}
+
+function describeWindow(pos, win, ownMap) {
+  var pool = positionPool(pos, ownMap);
   if (!pool.length) return { level: null, text: "no projections loaded" };
   var lvl = state.vorpLevels[pos];
   var from = lvl ? lvl.from : win[0], to = lvl ? lvl.to : win[1];
@@ -1928,6 +2149,8 @@ function renderVorpPanel() {
 
   var win = slateWindows();
   var stored = load(K.vorpWin(state.slate.label), null) || {};
+  var src = ownershipSource();
+  var panelOwn = src ? src.map : null;
 
   VORP_POSITIONS.forEach(function (pos) {
     var row = document.createElement("div");
@@ -1953,7 +2176,7 @@ function renderVorpPanel() {
     members.className = "vorp-members";
 
     function paint() {
-      var d = describeWindow(pos, win[pos]);
+      var d = describeWindow(pos, win[pos], panelOwn);
       lvl.innerHTML = d.level == null ? "&mdash;"
         : "<b>" + d.level.toFixed(1) + "</b>" + (d.shortened ? " cliff" : "");
       members.innerHTML = d.text;
@@ -1986,13 +2209,14 @@ var painters = {};
    stays available, so tinkering is never a one-way door. */
 function applyAutoWindows() {
   if (!state.slate) return;
+  var src = ownershipSource();
   var pools = {};
-  VORP_POSITIONS.forEach(function (pos) { pools[pos] = positionPool(pos); });
+  VORP_POSITIONS.forEach(function (pos) { pools[pos] = positionPool(pos, src && src.map); });
   var auto = autoWindows(pools);
   var got = Object.keys(auto);
   if (!got.length) {
-    setAutoNote("No ownership in the loaded projections. Upload an ETR Battle Royale " +
-                "file, which publishes Own %, and Auto can set these for you.");
+    setAutoNote("Auto needs either a projection file that publishes Own % or an ADP " +
+                "spread to read the draft off, and this slate has neither yet.");
     return;
   }
   var stored = load(K.vorpWin(state.slate.label), null) || {};
@@ -2001,8 +2225,13 @@ function applyAutoWindows() {
   recomputeVorp();
   render();
   renderVorpPanel();
-  setAutoNote("Set from ownership: the last " + VORP_AUTO_SPAN + " players a draft " +
-              "reaches at each position. Edit any of them; Auto puts them back.");
+  setAutoNote("Set from " + (src && src.source === "adp"
+                ? "ADP: with no ownership published yet, the share of drafts each player " +
+                  "is reached in is read off the " + (src.cap || UNPRICED_ADP) +
+                  "-pick ADP scale"
+                : "the ownership published with your projections") +
+              " \u2014 the last " + VORP_AUTO_SPAN + " players a draft reaches at each " +
+              "position. Edit any of them; Auto puts them back.");
 }
 
 function setAutoNote(text) {
@@ -2130,7 +2359,7 @@ async function syncSave() {
       return;
     }
     var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString(),
-                           load(K.vorpWin(label), null));
+                           load(K.vorpWin(label), null), state.cut);
     var files = {};
     files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
 
@@ -2173,15 +2402,17 @@ async function syncLoad() {
     state.order = rec.order;
     state.newIds = {};
     rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
-    state.curatedCount = null;
+    var onSlate = {};
+    state.slate.players.forEach(function (p) { onSlate[p.player_id] = 1; });
+    state.cut = entry.cut == null ? null : reconcileCut(entry.order, entry.cut, onSlate);
     state.liftedPid = null;
     renderLiftBar();
-    save(K.order(state.slate.label), state.order);
+    saveBoard();
 
-    var ranks = "";
+    var ranks = state.cut == null ? "" : " Its line came with it, at " + state.cut + ".";
     if (entry.windows && typeof entry.windows === "object") {
       save(K.vorpWin(state.slate.label), entry.windows);
-      ranks = " Its replacement ranks came with it.";
+      ranks += " Its replacement ranks came with it.";
     }
 
     var sport = state.slate.sport;
@@ -2249,8 +2480,18 @@ async function doExport() {
     var changed = slate.slate_id !== state.slate.slate_id;
     var byPid = byPidMap(slate);
     var rec = reconcileOrder(slate.players, state.order);
-    var built = buildExportCsv(rec.order, byPid);
-    if (!built.rows) { setStatus("Nothing to export: no players from your order are on the slate.", "bad"); return; }
+    var onSlate = {};
+    slate.players.forEach(function (p) { onSlate[p.player_id] = 1; });
+    var exportCut = state.cut == null ? null : reconcileCut(state.order, state.cut, onSlate);
+    var ranked = exportCut == null ? rec.order : rec.order.slice(0, exportCut);
+    var built = buildExportCsv(ranked, byPid);
+    if (!built.rows) {
+      setStatus(exportCut === 0
+        ? "Nothing to export: your line is at 0, so no player is ranked. Raise it, or " +
+          "seed an order with a builder."
+        : "Nothing to export: no players from your order are on the slate.", "bad");
+      return;
+    }
 
     var blob = new Blob([built.csv], { type: "text/csv" });
     var a = document.createElement("a");
@@ -2264,6 +2505,7 @@ async function doExport() {
     state.data = fresh;
     state.slate = slate;
     state.order = rec.order;
+    state.cut = exportCut;
     state.newIds = {};
     rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
     applyStoredProjections();
@@ -2271,7 +2513,10 @@ async function doExport() {
     renderMeta(null);
     render();
 
-    var msg = "Exported " + built.rows + " appearance ids in your order.";
+    var msg = "Exported " + built.rows + " appearance ids in your order" +
+              (exportCut == null ? "."
+                : ", everything above the line. The " + (rec.order.length - exportCut) +
+                  " below it were left out.");
     if (built.missing.length) {
       msg += " " + built.missing.length + " player" + (built.missing.length === 1 ? "" : "s") +
              " in your order are no longer on the slate and were left out.";
@@ -2319,6 +2564,20 @@ $("vorpBtn").addEventListener("click", function () {
   this.setAttribute("aria-expanded", String(open));
   syncStickyOffsets();
   if (open) renderVorpPanel();
+});
+$("cut").addEventListener("change", function () {
+  if (!state.slate) return;
+  if (this.value.trim() === "") {              // cleared: the whole board is your order again
+    state.cut = null;
+    saveBoard();
+    render();
+    return;
+  }
+  setCut(this.value);
+  setStatus(state.cut === 0
+    ? "The line is at 0, so nothing is ranked and an export would be empty."
+    : state.cut + " ranked, " + (state.order.length - state.cut) +
+      " below the line sorting themselves by projection.");
 });
 $("vorpAuto").addEventListener("click", applyAutoWindows);
 $("vorpReset").addEventListener("click", resetVorpWindows);
@@ -2523,6 +2782,64 @@ function brrSelfTest() {
   ok("place from above takes that rank", placeAt(["a", "b", "c", "d"], "a", "c").join() === "b,c,a,d");
   ok("place on self does nothing", placeAt(["a", "b"], "a", "a").join() === "a,b");
   ok("place keeps the whole board", placeAt(["a", "b", "c"], "a", "c").length === 3);
+
+  // ---- the line ----
+  var lineBy = { a: { adp: 1 }, b: { adp: 2 }, c: { adp: 3 }, d: { adp: 4 }, e: { adp: 5 } };
+  var lineOrder = ["a", "b", "c", "d", "e"];
+  var lineProj = { a: 10, b: 9, c: 3, d: 8, e: 5 };
+  ok("the tail sorts by projection and the head is untouched",
+     resortTail(lineOrder, 2, lineBy, lineProj).join() === "a,b,d,e,c");
+  ok("a player without a projection sits at the very bottom",
+     resortTail(lineOrder, 2, lineBy, { d: 8, e: 5 }).join() === "a,b,d,e,c");
+  ok("no projections at all falls back to ADP",
+     resortTail(lineOrder, 1, lineBy, {}).join() === "a,b,c,d,e");
+  ok("a line past the end leaves the order alone",
+     resortTail(lineOrder, 9, lineBy, lineProj).join() === "a,b,c,d,e");
+  ok("a line of 0 sorts the whole board",
+     resortTail(lineOrder, 0, lineBy, lineProj).join() === "a,b,d,e,c");
+
+  ok("cut clamps into the board", clampCut(-4, 5) === 0 && clampCut(99, 5) === 5 &&
+     clampCut("3", 5) === 3 && clampCut("x", 5) === null && clampCut(null, 5) === null);
+
+  /* Promoting: dropped at or above the line, the line grows by one. */
+  var up = moveAcrossCut(lineOrder, 2, "d", moveWithin(lineOrder, "d", "b", true));
+  ok("promoting a tail player moves the line down one", up.cut === 3 && up.order.join() === "a,d,b,c,e");
+  var edge = moveAcrossCut(lineOrder, 2, "e", moveWithin(lineOrder, "e", "b", false));
+  ok("dropped onto the line itself he joins the ranking",
+     edge.cut === 3 && edge.order.join() === "a,b,e,c,d");
+  /* Demoting: dropped below the line, the line shrinks. */
+  var down = moveAcrossCut(lineOrder, 2, "a", moveWithin(lineOrder, "a", "c", false));
+  ok("demoting a ranked player lifts the line one", down.cut === 1 && down.order.join() === "b,c,a,d,e");
+  /* Inside the head the line does not move; inside the tail the move is refused. */
+  var within = moveAcrossCut(lineOrder, 2, "a", moveWithin(lineOrder, "a", "b", false));
+  ok("reordering inside the ranking leaves the line alone",
+     within.cut === 2 && within.order.join() === "b,a,c,d,e");
+  var tail = moveAcrossCut(lineOrder, 2, "e", moveWithin(lineOrder, "e", "d", false));
+  ok("a move that starts and ends below the line is refused",
+     tail.refused === true && tail.moved === false && tail.order.join() === "a,b,c,d,e");
+  ok("with no line set every move is allowed",
+     moveAcrossCut(lineOrder, null, "e", moveWithin(lineOrder, "e", "d", false)).moved === true);
+
+  /* A departed ranked player shrinks the ranking rather than promoting a tail player. */
+  var onSlate = { a: 1, c: 1, d: 1, e: 1 };          // b left the slate
+  ok("the line counts the ranked players that survived",
+     reconcileCut(lineOrder, 2, onSlate) === 1);
+  ok("a refresh that loses nobody keeps the line",
+     reconcileCut(lineOrder, 2, { a: 1, b: 1, c: 1, d: 1, e: 1 }) === 2);
+  ok("no line stays no line across a refresh", reconcileCut(lineOrder, null, onSlate) === null);
+  ok("a duplicated id is not counted twice",
+     reconcileCut(["a", "a", "b", "c"], 3, { a: 1, b: 1, c: 1 }) === 2);
+
+  /* The export is the ranking, nothing below it. */
+  var exBy = { a: { appearance_id: "A" }, b: { appearance_id: "B" }, c: { appearance_id: "C" } };
+  ok("the export stops at the line",
+     buildExportCsv(["a", "b", "c"].slice(0, 2), exBy).csv === "id\nA\nB\n");
+
+  ok("the line rides a saved board", savedEntry(["a", "b", "c"], "s", "d", "t", null, 2).cut === 2);
+  ok("no line means no cut on the saved board",
+     savedEntry(["a", "b"], "s", "d", "t").cut === undefined);
+  ok("a saved line is clamped to the board it travels with",
+     savedEntry(["a", "b"], "s", "d", "t", null, 99).cut === 2);
   // ---- value over replacement
   ok("median of an odd list", median([3, 1, 2]) === 2);
   ok("median of an even list", median([4, 1, 2, 3]) === 2.5);
@@ -2569,6 +2886,39 @@ function brrSelfTest() {
        === '{"RB":[5,7]}');
   ok("an auto window is a window the manual path accepts",
      JSON.stringify(cleanWindow(aw)) === JSON.stringify(aw));
+
+  // ---- ownership implied by ADP, for the slates that publish none ----
+  var slate36 = [];
+  for (var q = 0; q < 60; q++) slate36.push({ player_id: "s" + q, adp: Math.min(36, 1 + q * 0.7) });
+  var imp = impliedOwnership(slate36);
+  ok("implied ownership finds the censor cap", imp.cap === 36);
+  var impSum = Object.keys(imp.own).reduce(function (t, k) { return t + imp.own[k]; }, 0);
+  ok("implied ownership sums to the slate's own pick count", Math.abs(impSum - 36) < 1e-6);
+  ok("implied ownership is a share", Object.keys(imp.own).every(function (k) {
+    return imp.own[k] >= 0 && imp.own[k] <= 1;
+  }));
+  ok("the earliest pick is owned outright and the cap owns nothing",
+     imp.own.s0 === 1 && imp.own["s" + (slate36.length - 1)] === 0);
+  ok("implied ownership never rises with ADP", slate36.every(function (r, i) {
+    return i === 0 || imp.own[r.player_id] <= imp.own[slate36[i - 1].player_id] + 1e-12;
+  }));
+  /* A 24-pick slate must solve to 24, not to 36: the cap is read off the slate. */
+  var slate24 = [];
+  for (q = 0; q < 40; q++) slate24.push({ player_id: "t" + q, adp: Math.min(24, 1 + q * 0.7) });
+  var imp24 = impliedOwnership(slate24);
+  ok("a shorter draft solves to its own cap", imp24.cap === 24 &&
+     Math.abs(Object.keys(imp24.own).reduce(function (t, k) { return t + imp24.own[k]; }, 0) - 24) < 1e-6);
+  ok("a slate too short to fill its draft is refused",
+     impliedOwnership([{ player_id: "a", adp: 1 }, { player_id: "b", adp: 36 }]) === null);
+  ok("a slate with everyone at the cap is refused",
+     impliedOwnership([{ player_id: "a", adp: 36 }, { player_id: "b", adp: 36 }]) === null);
+  ok("unpriced players are ignored rather than crashing",
+     impliedOwnership(slate36.concat([{ player_id: "z", adp: null }])).own.z === undefined);
+  /* The whole point: an implied pool drives the same window machinery. */
+  ok("an implied pool produces a window",
+     autoWindow(slate36.slice(0, 20).map(function (r, i) {
+       return { proj: 30 - i, own: imp.own[r.player_id] };
+     })) !== null);
 
   var rows = [];
   for (var vi = 0; vi < 20; vi++) rows.push({ player_id: "rb" + vi, position: "RB", proj: 30 - vi });
