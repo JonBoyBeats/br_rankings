@@ -275,6 +275,20 @@
   /* Presentational only: marks where a Builder's curated blocks end. It is an
      ordinary row, so dragging across and past it behaves like anywhere else. */
   /* The line is a real edge, not a hint: what is under it is not your order. */
+  /* Search results for players who are draftable but not on the board yet. */
+  #poolHits {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 9px;
+    padding: 9px 12px; margin-bottom: 10px; font-size: 12.5px; color: var(--muted);
+  }
+  #poolHits button {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px;
+    font: inherit; cursor: pointer;
+  }
+  #poolHits button:hover { border-color: var(--accent); }
+  #poolHits .pos { font-size: 9px; padding: 1px 4px; letter-spacing: .04em; }
   .curated-end { border-bottom: 2px solid var(--accent); }
   .row.below .rank, .row.below .name { color: var(--muted); }
   .row.below .handle { opacity: .28; }
@@ -456,6 +470,7 @@
   <div id="status"></div>
   <div id="baselineNote"></div>
   <div id="unmatched"></div>
+  <div id="poolHits" hidden></div>
 
   <div class="board">
     <div class="row head">
@@ -728,7 +743,7 @@ function reconcileOrder(players, savedOrder) {
   var byPid = {};
   players.forEach(function (p) { byPid[p.player_id] = p; });
   if (!savedOrder || !savedOrder.length) {
-    var sorted = players.slice().sort(function (a, b) { return a.adp - b.adp; });
+    var sorted = players.slice().sort(function (a, b) { return adpKey(a) - adpKey(b); });
     return { order: sorted.map(function (p) { return p.player_id; }), newIds: [], dropped: [] };
   }
   var seen = {}, order = [], dropped = [];
@@ -739,7 +754,7 @@ function reconcileOrder(players, savedOrder) {
   });
   var fresh = players
     .filter(function (p) { return !seen[p.player_id]; })
-    .sort(function (a, b) { return a.adp - b.adp; })
+    .sort(function (a, b) { return adpKey(a) - adpKey(b); })
     .map(function (p) { return p.player_id; });
   return { order: order.concat(fresh), newIds: fresh, dropped: dropped };
 }
@@ -764,13 +779,13 @@ function buildBlockOrder(players, metric, projValues, caps) {
   function compare(a, b) {
     var pa = projOf(a), pb = projOf(b);
     if (metric === "proj") {
-      if (pa == null && pb == null) return a.adp - b.adp;
+      if (pa == null && pb == null) return adpKey(a) - adpKey(b);
       if (pa == null) return 1;
       if (pb == null) return -1;
       if (pb !== pa) return pb - pa;
-      return a.adp - b.adp;
+      return adpKey(a) - adpKey(b);
     }
-    if (a.adp !== b.adp) return a.adp - b.adp;
+    if (adpKey(a) !== adpKey(b)) return adpKey(a) - adpKey(b);
     if (pa == null && pb == null) return 0;
     if (pa == null) return 1;
     if (pb == null) return -1;
@@ -901,8 +916,18 @@ function replacementLevel(values, win) {
   for (var i = win[0]; i < end; i++) gaps.push({ at: i, gap: values[i - 1] - values[i] });
   if (gaps.length) {
     var typical = median(gaps.map(function (g) { return g.gap; }));
-    var biggest = gaps.reduce(function (m, g) { return g.gap > m.gap ? g : m; });
-    if (biggest.gap >= VORP_CLIFF_POINTS &&
+    /* The gap at the window's own first rank is the step INTO the window, not a drop
+       inside it. Cutting there ends the window where it was asked to begin, and the
+       size-preserving slide below then lands it entirely on the players above -- so
+       replacement comes back measured off the starters. That is how quarterback
+       replacement on a six-entry slate came out as the median of the top five
+       quarterbacks, which is better than four of the six a draft actually takes.
+       Typical is still measured across the whole window; only where we may cut moves. */
+    var inside = gaps.filter(function (g) { return g.at > win[0]; });
+    var biggest = inside.length
+      ? inside.reduce(function (m, g) { return g.gap > m.gap ? g : m; })
+      : null;
+    if (biggest && biggest.gap >= VORP_CLIFF_POINTS &&
         biggest.gap >= VORP_CLIFF_MULTIPLE * Math.max(typical, 0.05)) {
       end = biggest.at;
       viaCliff = true;
@@ -1287,6 +1312,57 @@ function reconcileCut(savedOrder, cut, onSlate) {
   return kept;
 }
 
+/* ---- the unpriced ---------------------------------------------------------------
+   A slate prices about a hundred players and carries eight hundred more who are just
+   as draftable: a real appearance id, no ADP yet. The field's boards are built off
+   ADP and autopick follows it, so those players are close to invisible -- which is
+   exactly why they are worth seeing. The mirror publishes them in a per-slate pool
+   file the board fetches only when it needs them. */
+
+/** An unpriced player carries no ADP at all; every ADP path has to survive that. */
+function hasAdp(p) {
+  return p && typeof p.adp === "number" && isFinite(p.adp);
+}
+
+/** Sort key for a player who may have no ADP: the unpriced sort last. */
+function adpKey(p) {
+  return hasAdp(p) ? p.adp : Infinity;
+}
+
+/**
+ * Which pool players are worth putting on the board unasked. A player projecting
+ * above his position's replacement would beat the man you are otherwise forced to
+ * start, so he earns a row; everyone else stays out of the way. `levels` is what
+ * computeVorp already worked out, so this moves with the board rather than against
+ * a number typed in once.
+ */
+function worthSurfacing(pool, projValues, levels) {
+  var out = [];
+  pool.forEach(function (p) {
+    var v = projValues[p.player_id];
+    var lvl = levels[p.position];
+    if (typeof v !== "number" || !isFinite(v)) return;
+    if (!lvl || lvl.level == null) return;
+    if (v >= lvl.level) out.push(p);
+  });
+  return out.sort(function (a, b) {
+    return (projValues[b.player_id] || 0) - (projValues[a.player_id] || 0);
+  });
+}
+
+/** Name search over a pool, for the add box. Returns at most `limit` matches. */
+function searchPool(pool, query, limit) {
+  var q = String(query || "").trim().toLowerCase();
+  if (q.length < 2) return [];
+  var out = [];
+  for (var i = 0; i < pool.length && out.length < (limit || 8); i++) {
+    var p = pool[i];
+    var name = ((p.first_name || "") + " " + (p.last_name || "")).trim().toLowerCase();
+    if (name.indexOf(q) >= 0) out.push(p);
+  }
+  return out;
+}
+
 /** The upload file: one lowercase `id` header, then appearance ids, nothing else. */
 function buildExportCsv(order, byPid) {
   var lines = ["id"], missing = [];
@@ -1307,6 +1383,7 @@ var K = {
   proj: function (sport) { return "brr:proj:" + sport; },
   vorpWin: function (label) { return "brr:vorpwin:" + label; },
   cut: function (label) { return "brr:cut:" + label; },
+  added: function (label) { return "brr:added:" + label; },
   slate: "brr:slate",
   token: "brr:gh:token",
   gist: "brr:gh:gist",
@@ -1330,6 +1407,8 @@ var state = {
   order: [],           // player_id list, full board
   newIds: {},          // player_id -> true, new since the saved order
   cut: null,           // how many players are ranked; below this the board sorts itself
+  pool: null,          // the slate's unpriced but draftable players, fetched on demand
+  added: {},           // pool player_ids pulled onto the board, kept per slate
   liftedPid: null,     // the player picked up by tap, waiting for somewhere to land
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
@@ -1429,6 +1508,20 @@ function selectSlate(index) {
   state.slate = s;
   save(K.slate, s.label);
 
+  state.pool = null;
+  state.added = {};
+  var keep = load(K.added(s.label), null) || [];
+  if (keep.length && s.pool) {
+    // Bring back the pool players this slate already had, so a refresh does not
+    // silently drop them out from under a saved order.
+    loadPool(s).then(function (pool) {
+      var want = {};
+      keep.forEach(function (id) { want[id] = 1; });
+      var back = pool.players.filter(function (p) { return want[p.player_id]; });
+      if (back.length && state.slate && state.slate.label === s.label) addFromPool(back);
+    });
+  }
+
   var saved = load(K.order(s.label), null);
   var rec = reconcileOrder(s.players, saved);
   state.order = rec.order;
@@ -1446,10 +1539,48 @@ function selectSlate(index) {
   renderMeta(rec);
   syncCutField();
   render();
+  renderPoolHits();
   if (!$("vorpPanel").hidden) renderVorpPanel();
 }
 
 // ---------------------------------------------------------------- projections
+/* The unpriced pool is a few hundred KB, so it is fetched once per slate and only when
+   something actually needs it: a projection upload, or someone typing in the search box.
+   A slate with no pool file (an older mirror) simply has nothing to add. */
+function loadPool(slate) {
+  if (state.pool && state.pool.slate_id === slate.slate_id) return Promise.resolve(state.pool);
+  if (!slate.pool) { state.pool = { slate_id: slate.slate_id, players: [] }; return Promise.resolve(state.pool); }
+  return fetch(MIRROR + slate.pool, { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (doc) {
+      state.pool = { slate_id: slate.slate_id, players: doc.players || [] };
+      return state.pool;
+    })
+    .catch(function (e) {
+      state.pool = { slate_id: slate.slate_id, players: [], error: e.message };
+      return state.pool;
+    });
+}
+
+/** Put a pool player on the board, below the line where the tail sorts him by projection. */
+function addFromPool(players) {
+  if (!players.length || !state.slate) return 0;
+  var have = {};
+  state.slate.players.forEach(function (p) { have[p.player_id] = 1; });
+  var fresh = players.filter(function (p) { return !have[p.player_id]; });
+  if (!fresh.length) return 0;
+  state.slate.players = state.slate.players.concat(fresh);
+  fresh.forEach(function (p) {
+    state.order.push(p.player_id);
+    state.added[p.player_id] = 1;
+  });
+  save(K.added(state.slate.label), Object.keys(state.added));
+  applyStoredProjections();          // re-joins projections and re-sorts below the line
+  renderPositions();
+  render();
+  return fresh.length;
+}
+
 /* The tail is sorted, not ranked, so every new projection re-orders it in place. */
 function sortBelowLine() {
   if (!state.slate || state.cut == null) return;
@@ -1544,7 +1675,87 @@ function ingestProjections(text, sourceName, pasted) {
                   "also reflects the ceiling changing source."
                 : ""));
     render();
+    surfaceUnpriced();
   }
+}
+
+/**
+ * Pull in the unpriced players this projection file says are worth a look: anyone
+ * projecting at or above his position's replacement level. The bar moves with the
+ * board rather than being a number typed in once, and it stays tight -- on the college
+ * slate it surfaces a handful out of eight hundred.
+ */
+function surfaceUnpriced() {
+  var s = state.slate;
+  if (!s || !s.pool) return;
+  loadPool(s).then(function (pool) {
+    if (!state.slate || state.slate.label !== s.label || !pool.players.length) return;
+    var have = {};
+    state.slate.players.forEach(function (p) { have[p.player_id] = 1; });
+    var candidates = pool.players.filter(function (p) { return !have[p.player_id]; });
+    if (!candidates.length) return;
+
+    // Join this slate's projections onto the candidates, exactly as the board does.
+    var store = normalizeProjStore(load(K.proj(s.sport), null));
+    if (!store.current || !store.current.entries) return;
+    var joined = joinProjections(candidates, store.current.entries, state.nameMaps[s.sport] || {});
+    var worth = worthSurfacing(candidates, joined.values, state.vorpLevels);
+    if (!worth.length) return;
+    var n = addFromPool(worth);
+    if (!n) return;
+    setStatus(appendStatus() + " Added " + n + " unpriced " +
+              (n === 1 ? "player" : "players") + " projecting above replacement: " +
+              worth.slice(0, 6).map(function (p) { return p.last_name; }).join(", ") +
+              (worth.length > 6 ? " and " + (worth.length - 6) + " more" : "") +
+              ". They sit below the line.");
+  });
+}
+
+/**
+ * Anyone matching the search who is draftable but not on the board. The search box
+ * already filters the board; this says what the board does not have, and offers it.
+ */
+function renderPoolHits() {
+  var host = $("poolHits");
+  if (!host) return;
+  var s = state.slate, q = state.search.trim();
+  if (!s || !s.pool || q.length < 2) { host.hidden = true; host.innerHTML = ""; return; }
+  loadPool(s).then(function (pool) {
+    if (!state.slate || state.slate.label !== s.label) return;
+    if (state.search.trim() !== q) return;            // the box moved on while we fetched
+    var have = {};
+    state.slate.players.forEach(function (p) { have[p.player_id] = 1; });
+    var hits = searchPool(pool.players, q, 8).filter(function (p) { return !have[p.player_id]; });
+    host.innerHTML = "";
+    if (!hits.length) { host.hidden = true; return; }
+    host.hidden = false;
+    host.appendChild(document.createElement("span")).textContent =
+      "Not on your board \u2014 draftable, no ADP yet:";
+    hits.forEach(function (p) {
+      var b = document.createElement("button");
+      b.type = "button";
+      var tag = document.createElement("span");
+      tag.className = "pos" + (p.position ? " pos-" + p.position : "");
+      tag.textContent = p.position || "\u2014";
+      b.append(tag, document.createTextNode(
+        ((p.first_name || "") + " " + (p.last_name || "")).trim() +
+        (p.team ? " \u00b7 " + p.team : "")));
+      b.addEventListener("click", function () {
+        if (addFromPool([p])) {
+          setStatus("Added " + ((p.first_name || "") + " " + (p.last_name || "")).trim() +
+                    " below the line. He has no ADP, so nothing drafting off ADP will see him.");
+          renderPoolHits();
+        }
+      });
+      host.appendChild(b);
+    });
+  });
+}
+
+/** Whatever the status line already says, so a later note can append rather than replace. */
+function appendStatus() {
+  var el = $("status");
+  return el ? el.textContent.replace(/\u00d7$/, "").trim() : "";
 }
 
 /** The ranges in force for this slate: the sport's defaults, then anything set here. */
@@ -1677,7 +1888,7 @@ function visibleRows() {
     list = list.filter(function (r) { return r.p.position === state.position; });
   }
   if (state.view === "adp") {
-    list = list.slice().sort(function (a, b) { return a.p.adp - b.p.adp; });
+    list = list.slice().sort(function (a, b) { return adpKey(a.p) - adpKey(b.p); });
   } else if (state.view === "name") {
     list = list.slice().sort(function (a, b) {
       return (a.p.last_name + a.p.first_name).localeCompare(b.p.last_name + b.p.first_name);
@@ -1685,7 +1896,7 @@ function visibleRows() {
   } else if (state.view === "vorp") {
     list = list.slice().sort(function (a, b) {
       var x = state.vorp[a.p.player_id], y = state.vorp[b.p.player_id];
-      if (x == null && y == null) return a.p.adp - b.p.adp;
+      if (x == null && y == null) return adpKey(a.p) - adpKey(b.p);
       if (x == null) return 1;
       if (y == null) return -1;
       return y - x;
@@ -1695,7 +1906,7 @@ function visibleRows() {
       var pa = state.projParts[a.p.player_id], pb = state.projParts[b.p.player_id];
       var x = pa && typeof pa.own === "number" ? pa.own : null;
       var y = pb && typeof pb.own === "number" ? pb.own : null;
-      if (x == null && y == null) return a.p.adp - b.p.adp;
+      if (x == null && y == null) return adpKey(a.p) - adpKey(b.p);
       if (x == null) return 1;
       if (y == null) return -1;
       return y - x;
@@ -1703,7 +1914,7 @@ function visibleRows() {
   } else if (state.view === "proj") {
     list = list.slice().sort(function (a, b) {
       var x = state.proj[a.p.player_id], y = state.proj[b.p.player_id];
-      if (x == null && y == null) return a.p.adp - b.p.adp;
+      if (x == null && y == null) return adpKey(a.p) - adpKey(b.p);
       if (x == null) return 1;
       if (y == null) return -1;
       return y - x;
@@ -1773,7 +1984,7 @@ function render() {
       who.appendChild(tag);
     }
 
-    var mv = movement(state.baseline, p.player_id, p.adp);
+    var mv = hasAdp(p) ? movement(state.baseline, p.player_id, p.adp) : { kind: "nobase" };
     var ind = document.createElement("span");
     ind.className = "ind " + mv.kind;
     if (mv.kind === "flat") {
@@ -1786,15 +1997,16 @@ function render() {
     var from = mv.assumed
       ? "Unpriced at the reference, so counted as " + UNPRICED_ADP + ".0"
       : "ADP " + (mv.was == null ? "" : mv.was.toFixed(1));
-    ind.title = mv.kind === "nobase" ? "No baseline yet for this slate"
+    ind.title = !hasAdp(p) ? "Not priced yet: draftable, but the field has no ADP on him"
+      : mv.kind === "nobase" ? "No baseline yet for this slate"
       : mv.kind === "flat" ? from + " \u2192 " + p.adp.toFixed(1) +
         ", inside its " + moveBands(mv.was)[0].toFixed(1) + " pick band"
       : from + " \u2192 " + p.adp.toFixed(1) + ", " + mv.delta.toFixed(1) +
         " picks " + (mv.kind === "up" ? "earlier" : "later") + " since the reference locked";
     var adpVal = document.createElement("span");
-    adpVal.textContent = p.adp.toFixed(1);
+    adpVal.textContent = hasAdp(p) ? p.adp.toFixed(1) : "\u2013";
     var adp = document.createElement("span");
-    adp.className = "num adp";
+    adp.className = "num adp" + (hasAdp(p) ? "" : " dim");
     adp.append(ind, adpVal);
 
     var v = state.proj[p.player_id];
@@ -2190,6 +2402,7 @@ function renderVorpPanel() {
       save(K.vorpWin(state.slate.label), stored);
       recomputeVorp();
       render();
+      surfaceUnpriced();
       VORP_POSITIONS.forEach(function (k) { if (painters[k]) painters[k](); });
     }
 
@@ -2225,6 +2438,7 @@ function applyAutoWindows() {
   recomputeVorp();
   render();
   renderVorpPanel();
+  surfaceUnpriced();          // the bar just moved, so re-check who clears it
   setAutoNote("Set from " + (src && src.source === "adp"
                 ? "ADP: with no ownership published yet, the share of drafts each player " +
                   "is reached in is read off the " + (src.cap || UNPRICED_ADP) +
@@ -2532,7 +2746,11 @@ async function doExport() {
 
 // ---------------------------------------------------------------- boot
 $("slate").addEventListener("change", function (e) { selectSlate(Number(e.target.value)); });
-$("search").addEventListener("input", function (e) { state.search = e.target.value; render(); });
+$("search").addEventListener("input", function (e) {
+  state.search = e.target.value;
+  render();
+  renderPoolHits();
+});
 $("view").addEventListener("change", function (e) {
   state.view = e.target.value;
   if (state.view !== "order") state.liftedPid = null;
@@ -2858,6 +3076,17 @@ function brrSelfTest() {
      replacementLevel(lateCliff, [10, 13]).viaCliff === false &&
      replacementLevel(lateCliff, [10, 13]).to === 13);
   ok("too few players means no level", replacementLevel([5], [10, 13]) === null);
+  /* The real quarterback pool from a six-entry college slate. Ownership puts the
+     window at 5-10; the only big gap is the 1.5 between QB5 and QB6, which is the
+     step into the window. Cutting there used to slide the window onto ranks 1-5 and
+     report the median of the top five as replacement -- better than four of the six
+     quarterbacks a draft takes. It must sit at QB6 instead. */
+  var qbs = [28.4, 26.7, 25.9, 25.8, 24.0, 22.5, 22.3, 22.3, 21.3, 21.0, 20.3, 20.0, 19.5, 18.3, 13.9];
+  var rq = replacementLevel(qbs, [5, 10]);
+  ok("a gap at the window's first rank is not a cliff inside it",
+     rq.viaCliff === false && rq.from === 5 && rq.to === 10 && rq.level === 22.3);
+  ok("replacement for a required slot lands on the last one a draft takes",
+     rq.level < qbs[4] && rq.level >= qbs[7]);
 
   // ---- ownership and the ranges it produces ----
   ok("etr reads Own % as a fraction", etr.entries[0].own === 1);
@@ -2884,6 +3113,34 @@ function brrSelfTest() {
   ok("auto windows skip the positions without ownership",
      JSON.stringify(autoWindows({ RB: ownPool, WR: [{ proj: 5, own: null }, { proj: 4, own: null }] }))
        === '{"RB":[5,7]}');
+  // ---- the unpriced pool ----
+  ok("a priced player has an ADP and an unpriced one does not",
+     hasAdp({ adp: 12.5 }) === true && hasAdp({ adp: null }) === false &&
+     hasAdp({}) === false && hasAdp({ adp: NaN }) === false);
+  ok("the unpriced sort last", adpKey({ adp: 3 }) === 3 && adpKey({ adp: null }) === Infinity);
+  var poolRows = [
+    { player_id: "u1", first_name: "Jayden", last_name: "McGowan", position: "WR" },
+    { player_id: "u2", first_name: "Micah", last_name: "Gilbert", position: "WR" },
+    { player_id: "u3", first_name: "Deep", last_name: "Bench", position: "WR" },
+    { player_id: "u4", first_name: "No", last_name: "Projection", position: "RB" }
+  ];
+  var projOf = { u1: 14.1, u2: 13.4, u3: 4.0 };
+  var lv = { WR: { level: 13.0 }, RB: { level: 9.6 } };
+  var worth = worthSurfacing(poolRows, projOf, lv);
+  ok("only the unpriced above replacement are surfaced, best first",
+     worth.length === 2 && worth[0].player_id === "u1" && worth[1].player_id === "u2");
+  ok("a player with no projection is never surfaced",
+     worthSurfacing(poolRows, projOf, lv).every(function (p) { return p.player_id !== "u4"; }));
+  ok("a position with no replacement level surfaces nobody",
+     worthSurfacing(poolRows, projOf, { WR: null, RB: null }).length === 0);
+  ok("exactly at replacement still counts",
+     worthSurfacing([poolRows[0]], { u1: 13.0 }, lv).length === 1);
+  ok("search needs two characters", searchPool(poolRows, "M", 8).length === 0);
+  ok("search matches first or last name, case-insensitively",
+     searchPool(poolRows, "mcgow", 8)[0].player_id === "u1" &&
+     searchPool(poolRows, "micah", 8)[0].player_id === "u2");
+  ok("search is capped", searchPool(poolRows, "e", 2).length <= 2);
+
   ok("an auto window is a window the manual path accepts",
      JSON.stringify(cleanWindow(aw)) === JSON.stringify(aw));
 
