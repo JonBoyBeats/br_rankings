@@ -24,6 +24,12 @@ implied total and spread, weighted by how much each moved that position's next-g
 scoring 2017-2025, then ranked 1-32 for the week: Elite 1-6, Great 7-12, Average 13-24,
 Tough 25-32.
 
+Workload Score: expected half-PPR points next game (and per game over the next 3), from a
+linear model per position on the inputs above, fitted and tested in the nfl_tails repo
+(research/workload/score_fit.py) and carried here as scripts/score_model.json. The drawer
+splits it into baseline (production) + role + matchup, the last two relative to average.
+p50/p80/p85 are the outcome percentiles players at that score level actually posted.
+
 Usage: python3 scripts/build_workload.py [--data DIR]   (DIR caches the downloads)"""
 import glob, json, os, re, sys, time, urllib.request
 import numpy as np, pandas as pd
@@ -82,6 +88,9 @@ POSITIONS = {
 }
 FPD_DIR = os.path.join(os.path.dirname(OUT), 'fpd')
 FPD_TEAM = {'ARZ': 'ARI', 'BLT': 'BAL', 'CLV': 'CLE', 'HST': 'HOU'}
+SCORE = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'score_model.json')))
+PROD, MATCH = {'xfp16', 'xfp4', 'fp16', 'fp4'}, {'opp_allowed', 'imp_tot', 'spread'}
+SCORE_RANKS = {'RB': [6, 12, 24], 'WR': [8, 18, 36], 'TE': [3, 6, 12]}
 MATCHUP_TIERS = [(6, 'Elite'), (12, 'Great'), (24, 'Average'), (32, 'Tough')]
 TEAM_FIX = {'OAK': 'LV', 'SD': 'LAC', 'STL': 'LA', 'LAR': 'LA', 'JAC': 'JAX', 'WSH': 'WAS', 'LVR': 'LV'}
 
@@ -267,7 +276,14 @@ def main():
             for k in ('route', 'fr'):
                 v = [x[k] for x in vals if x[k] is not None]
                 mean16[k] = round(sum(v) / len(v), 3) if v else None
+        last = d.iloc[-1].to_dict()
+        lastrole = {**role(last, pos), **rec(last)}
+        l16role = {**role(l16[sums].fillna(0).sum().to_dict(), pos), **mean16}
+        x = {'fp16': float(l16.fp.mean()), 'xfp16': float(x16.mean()) if len(x16) else None,
+             'fp4': float(d.tail(4).fp.mean()), 'xfp4': float(d.tail(4).xfp.dropna().mean()) if d.tail(4).xfp.notna().any() else None,
+             **{k + '1': v for k, v in lastrole.items()}, **{k + '16': v for k, v in l16role.items()}}
         rows.append({
+            '_x': x,
             'id': pid, 'name': info.display_name.get(pid, pid), 'pos': pos, 'team': now_team,
             'rookie': bool(info.rookie_season.get(pid) == season),
             'new_team': bool((l16.team != now_team).any()),
@@ -302,10 +318,35 @@ def main():
                                          'implied_total': round(float(r.implied_total), 1), 'spread': round(float(r.spread), 1),
                                          'opp_allowed': round(float(r.opp_allowed), 1), 'kickoff': r.kickoff}
 
+    # Workload Score, for everyone with a game next week
+    for r in rows:
+        x, m, sm = r.pop('_x'), matchups[r['pos']].get(r['team']), SCORE[r['pos']]
+        if not m: continue
+        x.update(opp_allowed=m['opp_allowed'], imp_tot=m['implied_total'], spread=m['spread'])
+        vals = [sm['fill'][f] if x.get(f) is None or pd.isna(x.get(f)) else x[f] for f in sm['features']]
+        parts = {'baseline': sm['intercept'], 'role': 0.0, 'matchup': 0.0}
+        for f, c, v in zip(sm['features'], sm['coef'], vals):
+            if f in PROD: parts['baseline'] += c * v
+            else:
+                grp = 'matchup' if f in MATCH else 'role'
+                parts['baseline'] += c * sm['mean'][f]; parts[grp] += c * (v - sm['mean'][f])
+        nxt = sum(parts.values())
+        n3 = sm['next3_intercept'] + sum(c * v for c, v in zip(sm['next3_coef'], vals))
+        q = np.array(sm['quantiles'])
+        off = {k: float(np.interp(nxt, q[:, 0], q[:, i] - q[:, 0])) for i, k in ((1, 'p50'), (2, 'p80'), (3, 'p85'))}
+        r['score'] = {'next': round(nxt, 1), 'next3': round(n3, 1), **{k: round(max(0.0, nxt + v), 1) for k, v in off.items()},
+                      'parts': {k: round(v, 1) for k, v in parts.items()}}
+    for pos in POSITIONS:
+        ranked = sorted((r for r in rows if r['pos'] == pos and 'score' in r), key=lambda r: -r['score']['next'])
+        for i, r in enumerate(ranked, 1):
+            r['score']['rank'] = i
+            r['score']['tier'] = 3 - sum(i > cap for cap in SCORE_RANKS[pos])
+
     doc = {'season': season, 'through_week': through, 'next_week': through + 1,
            'built': time.strftime('%Y-%m-%dT%H:%MZ', time.gmtime()),
            'positions': {p: {k: v for k, v in c.items()} for p, c in POSITIONS.items()},
            'matchups': matchups,
+           'score_model': {p: {'features': m['features'], 'metrics': m['metrics']} for p, m in SCORE.items()},
            'players': sorted(rows, key=lambda r: -(r['l4']['xfp'] or 0))}
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, 'w') as f: json.dump(doc, f, separators=(',', ':'))

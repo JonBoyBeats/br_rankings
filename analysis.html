@@ -102,8 +102,8 @@
   /* One grid for header and rows so every cell lines up with its column label. */
   .row {
     display: grid;
-    grid-template-columns: 40px minmax(150px, 1fr) repeat(4, var(--grp)) var(--base) var(--base) 104px;
-    --grp: 164px; --base: 76px;
+    grid-template-columns: 40px minmax(130px, 200px) repeat(4, minmax(84px, 1fr)) var(--base) var(--base) 62px 100px;
+    --base: 76px;
     align-items: center; gap: 10px; padding: 6px 12px; border-bottom: 1px solid var(--line);
   }
   .row:last-child { border-bottom: 0; }
@@ -165,6 +165,12 @@
   .cell.blank { background: transparent; }
   .head .grp { text-align: center; }
 
+  /* Workload score: expected points next game, coloured by its rank at the position. */
+  .sc { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .sc .cell { min-width: 48px; font-size: 12px; }
+  .sc .cell.thin { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .55); background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(0, 0, 0, .18) 4px 6px); }
+  .sc .vs { font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.1; }
+  .sc .vs.up { color: var(--up); } .sc .vs.down { color: var(--down); }
   .mu { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
   .mu .cell { padding: 0 6px; min-width: 56px; font-size: 10.5px; letter-spacing: .03em; }
 
@@ -202,23 +208,24 @@
   /* Narrower screens drop the numbers inside the game cells first; the tier colour
      carries the read and the drawer has every number. */
   @media (max-width: 1180px) {
-    .row { --grp: 128px; --base: 62px; gap: 8px; }
+    .row { --base: 62px; gap: 8px; }
     .grp { padding: 2px; gap: 2px; }
     .cell { font-size: 10px; }
     .grp:not(.base) .cell:not(.l16) { font-size: 0; }
   }
   /* A phone gets two lines per player: who and the matchup, then the colour strips. */
-  @media (max-width: 760px) {
+  @media (max-width: 880px) {
     .shell { padding: 0 10px 48px; }
     .row {
-      --grp: 1fr; --base: 1fr;
-      grid-template-columns: 34px minmax(0, 1fr) auto;
-      grid-template-areas: "rank who mu" "strip strip strip";
+      --base: 1fr;
+      grid-template-columns: 34px minmax(0, 1fr) auto auto;
+      grid-template-areas: "rank who sc mu" "strip strip strip strip";
       gap: 6px 8px; padding: 8px;
     }
     .row > .rank { grid-area: rank; }
     .row > .who { grid-area: who; }
     .row > .mu { grid-area: mu; }
+    .row > .sc { grid-area: sc; }
     .row > .strip { grid-area: strip; display: grid; grid-template-columns: repeat(4, 1fr) .5fr .5fr; gap: 6px; }
     .strip .grp { gap: 2px; }
     .strip .cell { height: 14px; line-height: 14px; border-radius: 3px; font-size: 0 !important; }
@@ -283,6 +290,8 @@
         <span class="field-label">Sort</span>
         <select id="sort">
           <option value="board" id="sortBoard" hidden>Board order</option>
+          <option value="score">Workload score</option>
+          <option value="vsproj">Score vs your projection</option>
           <option value="xfp4">XFP, last 4</option>
           <option value="xfp16">XFP, last 16</option>
           <option value="fp4">FP, last 4</option>
@@ -290,7 +299,6 @@
           <option value="snap1">Snap % (RB) · Route %, last game</option>
           <option value="role">Role change (last game vs L16)</option>
           <option value="matchup">Matchup</option>
-          <option value="split">Sources split first</option>
           <option value="team">Team</option>
           <option value="name">Name</option>
         </select>
@@ -368,12 +376,7 @@ function takesFor(all, key, recapWeek, previewWeek) {
   function of(kind, wk) {
     return { week: wk, list: mine.filter(function (t) { return t.kind === kind && t.week === wk; }) };
   }
-  var perf = of("performance", recapWeek), match = of("matchup", previewWeek);
-  var tiers = perf.list.map(function (t) { return TIER_INDEX[t.usage_tier]; }).filter(function (x) { return x != null; });
-  var ups = perf.list.filter(function (t) { return t.trend === "↑"; }).length;
-  var downs = perf.list.filter(function (t) { return t.trend === "↓"; }).length;
-  var spread = tiers.length ? Math.max.apply(null, tiers) - Math.min.apply(null, tiers) : 0;
-  return { perf: perf, match: match, split: tiers.length >= 2 && (spread >= 1 || (ups > 0 && downs > 0)) };
+  return { perf: of("performance", recapWeek), match: of("matchup", previewWeek) };
 }
 
 /* The board's own order rules, copied so a drag here lands exactly as it would there. */
@@ -419,7 +422,7 @@ function fullOrder(slatePlayers, saved) {
 var state = {
   data: null, takes: [], sources: {}, positions: {}, matchups: {},
   scope: "all", pos: "", slateLabel: null, slates: [], nameMap: {}, pool: {},
-  search: "", team: "", sort: "xfp4", depth: true, open: {}
+  search: "", team: "", sort: "score", depth: true, open: {}, proj: {}, projPct: 85, projUsual: {}
 };
 var $ = function (id) { return document.getElementById(id); };
 function load(key, fallback) {
@@ -574,7 +577,8 @@ function visible() {
     snap1: function (p) { return -last(p, roleKey(p)); },
     role: function (p) { return -Math.abs(roleSwing(p)); },
     matchup: mu,
-    split: function (p) { var t = p._takes; return (t && t.split ? 0 : 1) * 1000 - (p.l4.xfp || 0); }
+    score: function (p) { return p.score ? -p.score.next : 99; },
+    vsproj: function (p) { var v = vsProj(p); return v == null ? 99 : -v.delta; }
   }[state.sort];
   if (state.sort === "name") list.sort(function (a, b) { return a.p.name.localeCompare(b.p.name); });
   else if (state.sort === "team") list.sort(function (a, b) { return a.p.team.localeCompare(b.p.team) || (b.p.l4.xfp || 0) - (a.p.l4.xfp || 0); });
@@ -621,6 +625,77 @@ function baseGroup(p, stat, label) {
   return g;
 }
 
+/** The score, and under it how far it sits from your own projection (same blend). */
+function scoreCell(p) {
+  var w = document.createElement("span");
+  w.className = "sc";
+  var sc = p.score;
+  if (!sc) { w.appendChild(cell(null, null, function () { return "–"; })); return w; }
+  var thin = p.l16_games < 4;
+  w.appendChild(cell(sc.next, sc.tier, pts, thin ? "thin" : null,
+    "Expected " + sc.next.toFixed(1) + " half-PPR next game · " + p.pos + sc.rank + " this week" +
+    (thin ? " · only " + p.l16_games + " game" + (p.l16_games === 1 ? "" : "s") + " of data, so lean on it lightly" : "")));
+  var v = vsProj(p);
+  if (v) {
+    var d = document.createElement("span");
+    d.className = "vs" + (v.delta >= 1 ? " up" : v.delta <= -1 ? " down" : "");
+    d.textContent = (v.delta > 0 ? "+" : "") + v.delta.toFixed(1);
+    d.title = "Workload blend " + v.ours.toFixed(1) + " vs your projection " + v.theirs.toFixed(1) + " (25% median + 75% ceiling on both sides): " +
+      (v.raw > 0 ? "+" : "") + v.raw.toFixed(1) + ", against a usual " + (v.usual > 0 ? "+" : "") + v.usual.toFixed(1) + " for " + p.pos + "s";
+    w.appendChild(d);
+  }
+  return w;
+}
+
+/**
+ * Your board projection for a player and ours on the same footing: 25% median + 75%
+ * ceiling, with our ceiling at whichever percentile (80th or 85th) your ceilings sit
+ * closest to across the players both sides cover.
+ */
+function vsProj(p) {
+  var e = state.proj[normName(p.name)];
+  if (!e || !p.score) return null;
+  var ceil = state.projPct === 80 ? p.score.p80 : p.score.p85;
+  var ours = 0.25 * p.score.p50 + 0.75 * ceil, raw = ours - e.proj, usual = state.projUsual[p.pos] || 0;
+  return { ours: ours, theirs: e.proj, raw: raw, usual: usual, delta: raw - usual, median: e.median, ceiling: e.ceiling };
+}
+
+function loadProjections() {
+  var raw = load("brr:proj:nfl", null);
+  var gen = raw && (raw.entries ? raw : raw.current);
+  state.proj = {}; state.projMeta = null; state.projUsual = {};
+  if (!gen || !gen.entries) return;
+  gen.entries.forEach(function (e) {
+    if (typeof e.median !== "number") return;
+    var ceiling = typeof e.ceiling === "number" ? e.ceiling : null;
+    var proj = typeof e.proj === "number" ? e.proj : ceiling == null ? e.median : 0.25 * e.median + 0.75 * ceiling;
+    state.proj[normName(e.name)] = { median: e.median, ceiling: ceiling, proj: proj };
+  });
+  // which of our percentiles your ceilings look like, by the ceiling-to-median ratio
+  var theirs = [], r80 = [], r85 = [];
+  state.data.players.forEach(function (p) {
+    var e = state.proj[normName(p.name)];
+    if (!e || e.ceiling == null || !p.score || !(e.median > 3) || !(p.score.p50 > 3)) return;
+    theirs.push(e.ceiling / e.median); r80.push(p.score.p80 / p.score.p50); r85.push(p.score.p85 / p.score.p50);
+  });
+  var avg = function (a) { return a.reduce(function (s, x) { return s + x; }, 0) / a.length; };
+  if (theirs.length) state.projPct = Math.abs(avg(r80) - avg(theirs)) < Math.abs(avg(r85) - avg(theirs)) ? 80 : 85;
+  // the usual gap at each position, so the number shown is relative: + means the workload
+  // likes him more than your projection does, compared with how the two usually line up
+  state.projUsual = {};
+  POS_ORDER.forEach(function (pos) {
+    var gaps = [];
+    state.data.players.forEach(function (p) {
+      if (p.pos !== pos) return;
+      var v = vsProj(p);
+      if (v) gaps.push(v.raw);
+    });
+    gaps.sort(function (a, b) { return a - b; });
+    state.projUsual[pos] = gaps.length ? gaps[Math.floor(gaps.length / 2)] : 0;
+  });
+  state.projMeta = { file: gen.file || null, at: gen.at || null, matched: theirs.length };
+}
+
 function muCell(p) {
   var m = matchupOf(p);
   var w = document.createElement("span");
@@ -657,6 +732,7 @@ function renderHead() {
   });
   h += '<span style="text-align:center">XFP<span class="sub">L16 ¦ L4</span></span>' +
        '<span style="text-align:center">FP<span class="sub">L16 ¦ L4</span></span>' +
+       '<span style="text-align:center" title="Workload score: expected half-PPR next game. Under it, the gap to your projection.">Score<span class="sub">next game</span></span>' +
        '<span>Matchup<span class="sub">Week ' + state.data.next_week + '</span></span>';
   $("head").innerHTML = h;
   $("phoneKey").innerHTML = labels.map(function (l) { return "<span>" + l.replace(/ %| \(RB\)/g, "") + "</span>"; }).join("") + "<span>XFP</span><span>FP</span>";
@@ -728,17 +804,6 @@ function playerRow(r, i, drag) {
   var n = document.createElement("span"); n.className = "name"; n.textContent = p.name;
   var tm = document.createElement("span"); tm.className = "team"; tm.textContent = p.team + (state.pos ? "" : " · " + p.pos);
   who.append(n, tm);
-  var sw = roleSwing(p);
-  function tag(text, cls, title) {
-    var t = document.createElement("span"); t.className = "tag" + (cls ? " " + cls : ""); t.textContent = text;
-    if (title) t.title = title; who.appendChild(t);
-  }
-  var swWhat = p.pos === "RB" ? "snap" : "route";
-  if (sw >= ROLE_SWING) tag("Role ↑", "up", "Last game's " + swWhat + " share was " + Math.round(sw * 100) + " points above his 16-game rate");
-  if (sw <= -ROLE_SWING) tag("Role ↓", "down", "Last game's " + swWhat + " share was " + Math.round(-sw * 100) + " points below his 16-game rate");
-  if (p.rookie) tag("Rookie", null, "No NFL baseline before this season");
-  else if (p.new_team) tag("New team", null, "Part of the 16-game window was with another team");
-  if (p._takes && p._takes.split) tag("Split", "split", "The sources disagree on this role");
 
   var strip = document.createElement("span");
   strip.className = "strip";
@@ -746,7 +811,7 @@ function playerRow(r, i, drag) {
   strip.appendChild(baseGroup(p, "xfp", "Expected points"));
   strip.appendChild(baseGroup(p, "fp", "Fantasy points"));
 
-  el.append(rank, who, strip, muCell(p));
+  el.append(rank, who, strip, scoreCell(p), muCell(p));
   return el;
 }
 
@@ -773,6 +838,28 @@ function drawer(p) {
   });
   tbl.innerHTML = head + body;
   d.appendChild(tbl);
+
+  // the score: what it expects, what it is made of, and how it sits against your projection
+  if (p.score) {
+    var sc = p.score, hs = document.createElement("h3");
+    hs.innerHTML = "Workload score <small>Week " + state.data.next_week + "</small>";
+    d.appendChild(hs);
+    var sign = function (v) { return (v >= 0 ? "+ " : "− ") + Math.abs(v).toFixed(1); };
+    var lines = [
+      "<b>" + sc.next.toFixed(1) + "</b> expected half-PPR · " + p.pos + sc.rank + " this week · next 3 games: " + sc.next3.toFixed(1) + " a game",
+      "= " + sc.parts.baseline.toFixed(1) + " baseline " + sign(sc.parts.role) + " role " + sign(sc.parts.matchup) + " matchup",
+      "Players at this score posted: median " + sc.p50.toFixed(1) + " · 80th percentile " + sc.p80.toFixed(1) + " · 85th " + sc.p85.toFixed(1)
+    ];
+    var v = vsProj(p);
+    if (v) lines.push("Your projection: median " + v.median.toFixed(1) + (v.ceiling != null ? " · ceiling " + v.ceiling.toFixed(1) : "") +
+      " · blend " + v.theirs.toFixed(1) + ". Workload blend " + v.ours.toFixed(1) + " (ceiling at our " + state.projPct + "th): " +
+      (v.raw > 0 ? "+" : "") + v.raw.toFixed(1) + ", where " + p.pos + "s usually sit at " + (v.usual > 0 ? "+" : "") + v.usual.toFixed(1) +
+      " → <b>" + (v.delta > 0 ? "+" : "") + v.delta.toFixed(1) + "</b> relative");
+    if (p.l16_games < 4) lines.push("Only " + p.l16_games + " game" + (p.l16_games === 1 ? "" : "s") + " of data, so lean on it lightly.");
+    var box = document.createElement("div"); box.className = "model";
+    box.innerHTML = lines.join("<br>");
+    d.appendChild(box);
+  }
 
   var cols = document.createElement("div");
   cols.className = "cols";
@@ -855,6 +942,10 @@ function renderFoot(n) {
     "Game cells are coloured against single games, the L16 cell against 16-game averages, so each colour means " +
     "where he'd rank at his position for that window. XFP = expected half-PPR points for the looks he got. " +
     "Matchup ranks all 32 teams per position on opponent points allowed to it (last 8), implied total and spread. " +
+    "Score = expected half-PPR next game from these same numbers, weights fit on past seasons and tested on 2024–25, where it " +
+    "ordered each week's players a bit better than FP over the last 16 alone; its colour is the player's rank at his position this week. " +
+    "The number under it compares the workload blend (25% median + 75% ceiling) with your projection's, relative to the usual gap " +
+    "at the position: + means the workload likes him more than your projection does. " +
     "Data built " + d.built.replace("T", " ").replace("Z", " UTC") + " from nflverse; route % and first-read % from Fantasy Points Data.";
 }
 
@@ -874,8 +965,8 @@ function setScope(scope) {
   $("slateField").hidden = scope !== "slate";
   $("depthField").hidden = scope === "slate";
   $("sortBoard").hidden = scope !== "slate";
-  if (scope === "slate" && state.sort === "xfp4" && !load("brr:analysis:sort", null)) state.sort = "board";
-  if (scope !== "slate" && state.sort === "board") state.sort = "xfp4";
+  if (scope === "slate" && state.sort === "score" && !load("brr:analysis:sort", null)) state.sort = "board";
+  if (scope !== "slate" && state.sort === "board") state.sort = "score";
   $("sort").value = state.sort;
   var s = currentSlate();
   if (scope === "slate" && s) loadAdded(s).then(render);
@@ -971,7 +1062,9 @@ $("rows").addEventListener("keydown", function (e) {
 });
 /* The board open in another tab writes the same keys; follow its moves. */
 window.addEventListener("storage", function (e) {
-  if (!state.data || !e.key || !state.slateLabel) return;
+  if (!state.data || !e.key) return;
+  if (e.key === "brr:proj:nfl") { loadProjections(); render(); return; }
+  if (!state.slateLabel) return;
   var s = currentSlate();
   if (e.key === "brr:added:" + state.slateLabel && s) { delete state.pool[s.label]; loadAdded(s).then(render); return; }
   if (e.key === "brr:order:" + state.slateLabel || e.key === "brr:cut:" + state.slateLabel) render();
@@ -994,6 +1087,7 @@ window.addEventListener("storage", function (e) {
   var teams = Array.from(new Set(state.data.players.map(function (p) { return p.team; }))).sort();
   teams.forEach(function (t) { var o = document.createElement("option"); o.value = t; o.textContent = t; $("team").appendChild(o); });
   renderMeta();
+  loadProjections();
   await loadSlates();
   state.sort = load("brr:analysis:sort", null) || state.sort;
   var pos = load("brr:analysis:pos", "");
