@@ -287,7 +287,7 @@
           <option value="xfp16">XFP, last 16</option>
           <option value="fp4">FP, last 4</option>
           <option value="share16">Usage (RB) · Target % (WR/TE), L16</option>
-          <option value="snap1">Snap %, last game</option>
+          <option value="snap1">Snap % (RB) · Route %, last game</option>
           <option value="role">Role change (last game vs L16)</option>
           <option value="matchup">Matchup</option>
           <option value="split">Sources split first</option>
@@ -346,11 +346,12 @@ function tierOf(v, cuts) {
 function pct(v) { return v == null ? "–" : String(Math.round(v * 100)); }
 function pts(v) { return v == null ? "–" : v.toFixed(1); }
 
-/** Role change: last game's snap share against the 16-game rate. */
+/** Role change: last game's snap share (RB) or route share (WR/TE) against the 16-game rate. */
+function roleKey(p) { return p.pos === "RB" ? "snap" : "route"; }
 function roleSwing(p) {
-  var g = p.games[p.games.length - 1];
-  if (!g || g.snap == null || p.l16.snap == null || p.l16_games < 4) return 0;
-  return g.snap - p.l16.snap;
+  var g = p.games[p.games.length - 1], k = roleKey(p);
+  if (!g || g[k] == null || p.l16[k] == null || p.l16_games < 4) return 0;
+  return g[k] - p.l16[k];
 }
 
 function relevant(p) {
@@ -569,7 +570,7 @@ function visible() {
     xfp16: function (p) { return -(p.l16.xfp || 0); },
     fp4: function (p) { return -(p.l4.fp || 0); },
     share16: function (p) { return -(p.l16[p.pos === "RB" ? "usage" : "tgt"] || 0); },
-    snap1: function (p) { return -last(p, "snap"); },
+    snap1: function (p) { return -last(p, roleKey(p)); },
     role: function (p) { return -Math.abs(roleSwing(p)); },
     matchup: mu,
     split: function (p) { var t = p._takes; return (t && t.split ? 0 : 1) * 1000 - (p.l4.xfp || 0); }
@@ -633,7 +634,7 @@ function muCell(p) {
   return w;
 }
 
-/** Column labels for whichever positions are showing, e.g. "Carry % · Target %" for all. */
+/** Column labels for whichever positions are showing, e.g. "Carry % (RB) · Target %" for all. */
 function statLabels() {
   return [0, 1, 2, 3].map(function (i) {
     var seen = [];
@@ -641,19 +642,23 @@ function statLabels() {
       var st = state.positions[x].stats[i];
       if (seen.indexOf(st[1]) < 0) seen.push(st[1]);
     });
-    return seen.join(" · ");
+    return seen.map(function (l, j) { return seen.length > 1 && j === 0 ? l + " (RB)" : l; }).join(" · ");
   });
 }
 
 function renderHead() {
   var labels = statLabels();
   var h = '<span></span><span>Player</span>';
-  labels.forEach(function (l) { h += '<span class="grp-label" style="text-align:center">' + l + '<span class="sub">L16 ¦ last 4</span></span>'; });
+  // break between labels, never inside one ("Air yd %" stays whole)
+  labels.forEach(function (l) {
+    var parts = l.split(" · ").map(function (x) { return '<span style="white-space:nowrap">' + x + "</span>"; }).join(" · ");
+    h += '<span class="grp-label" style="text-align:center">' + parts + '<span class="sub">L16 ¦ last 4</span></span>';
+  });
   h += '<span style="text-align:center">XFP<span class="sub">L16 ¦ L4</span></span>' +
        '<span style="text-align:center">FP<span class="sub">L16 ¦ L4</span></span>' +
        '<span>Matchup<span class="sub">Week ' + state.data.next_week + '</span></span>';
   $("head").innerHTML = h;
-  $("phoneKey").innerHTML = labels.map(function (l) { return "<span>" + l.replace(/ %/g, "") + "</span>"; }).join("") + "<span>XFP</span><span>FP</span>";
+  $("phoneKey").innerHTML = labels.map(function (l) { return "<span>" + l.replace(/ %| \(RB\)/g, "") + "</span>"; }).join("") + "<span>XFP</span><span>FP</span>";
   var lg = "";
   var ranges = function (t) { return shownPositions().map(function (x) { return state.positions[x].tiers[t]; }).join(" · "); };
   [3, 2, 1, 0].forEach(function (t) { lg += '<span><i style="background:var(--t' + t + ')"></i>' + TIER_NAMES[t] + " · " + ranges(t) + "</span>"; });
@@ -727,8 +732,9 @@ function playerRow(r, i, drag) {
     var t = document.createElement("span"); t.className = "tag" + (cls ? " " + cls : ""); t.textContent = text;
     if (title) t.title = title; who.appendChild(t);
   }
-  if (sw >= ROLE_SWING) tag("Role ↑", "up", "Last game's snap share was " + Math.round(sw * 100) + " points above his 16-game rate");
-  if (sw <= -ROLE_SWING) tag("Role ↓", "down", "Last game's snap share was " + Math.round(-sw * 100) + " points below his 16-game rate");
+  var swWhat = p.pos === "RB" ? "snap" : "route";
+  if (sw >= ROLE_SWING) tag("Role ↑", "up", "Last game's " + swWhat + " share was " + Math.round(sw * 100) + " points above his 16-game rate");
+  if (sw <= -ROLE_SWING) tag("Role ↓", "down", "Last game's " + swWhat + " share was " + Math.round(-sw * 100) + " points below his 16-game rate");
   if (p.rookie) tag("Rookie", null, "No NFL baseline before this season");
   else if (p.new_team) tag("New team", null, "Part of the 16-game window was with another team");
   if (p._takes && p._takes.split) tag("Split", "split", "The sources disagree on this role");
@@ -848,7 +854,7 @@ function renderFoot(n) {
     "Game cells are coloured against single games, the L16 cell against 16-game averages, so each colour means " +
     "where he'd rank at his position for that window. XFP = expected half-PPR points for the looks he got. " +
     "Matchup ranks all 32 teams per position on opponent points allowed to it (last 8), implied total and spread. " +
-    "Data built " + d.built.replace("T", " ").replace("Z", " UTC") + " from nflverse.";
+    "Data built " + d.built.replace("T", " ").replace("Z", " UTC") + " from nflverse; route % and first-read % from Fantasy Points Data.";
 }
 
 function renderMeta() {

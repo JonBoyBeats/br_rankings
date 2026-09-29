@@ -9,8 +9,11 @@ rec .5, rush/rec yd .1, TD 6, pass yd .04, pass TD 4, INT -1, fumble lost -2, 2p
 Role, per game (every share is of the player's own team in that game):
   RB      snap % = offensive snaps · carry % = carries · usage = targets + carries
           RZ %   = targets + carries inside the 20
-  WR, TE  snap % = offensive snaps · target % = targets · air yd % = air yards on targets
-          RZ tgt % = targets inside the 20
+  WR, TE  route % = routes run / team dropbacks · target % = targets
+          first-read % = first-read targets / the team's · air yd % = air yards on targets
+Route % and first-read % are Fantasy Points Data's: this season from the weekly exports in
+analysis/fpd/<season>/, last season from analysis/fpd/history_<season>.csv (derived from
+their weekly routes and first-read counts). Their L16 is the mean of the per-game values.
 Windows: L16 is the last 16 games across seasons, as ratio-of-sums; the per-game cells
 are this season's last 4 games; L4 (baseline only) is the mean of those same games.
 Tiers are where each position's cutoff ranks landed each week, 2021-2025:
@@ -22,7 +25,7 @@ scoring 2017-2025, then ranked 1-32 for the week: Elite 1-6, Great 7-12, Average
 Tough 25-32.
 
 Usage: python3 scripts/build_workload.py [--data DIR]   (DIR caches the downloads)"""
-import json, os, sys, time, urllib.request
+import glob, json, os, re, sys, time, urllib.request
 import numpy as np, pandas as pd
 
 NV = 'https://github.com/nflverse/nflverse-data/releases/download'
@@ -49,34 +52,36 @@ POSITIONS = {
         'matchup_w': {'opp_allowed': 0.101, 'implied_total': 0.108, 'spread': 0.020},
     },
     'WR': {
-        'stats': [['snap', 'Snap %', 'Share of team offensive snaps'],
+        'stats': [['route', 'Route %', 'Routes run as a share of team dropbacks'],
                   ['tgt', 'Target %', 'Share of team targets'],
-                  ['ay', 'Air yd %', 'Share of team air yards on targets'],
-                  ['rztgt', 'RZ tgt %', 'Share of team targets inside the 20']],
+                  ['fr', '1st read %', 'Share of the team\'s first-read targets'],
+                  ['ay', 'Air yd %', 'Share of team air yards on targets']],
         'tiers': ['WR37+', 'WR19–36', 'WR9–18', 'WR1–8'],
-        'cuts': {'snap': {'game': [.950, .899, .814], 'l16': [.887, .837, .762]},
+        'cuts': {'route': {'game': [.931, .886, .806], 'l16': [.884, .841, .768]},
                  'tgt': {'game': [.324, .265, .200], 'l16': [.274, .241, .187]},
+                 'fr': {'game': [.400, .315, .227], 'l16': [.341, .289, .222]},
                  'ay': {'game': [.496, .390, .279], 'l16': [.386, .329, .261]},
-                 'rztgt': {'game': [.500, .333, .200], 'l16': [.286, .234, .178]},
                  'xfp': {'l4': [13.9, 11.4, 8.7], 'l16': [13.2, 11.1, 9.0]},
                  'fp': {'l4': [15.0, 12.0, 8.7], 'l16': [13.9, 11.4, 8.9]}},
         'matchup_w': {'opp_allowed': 0.007, 'implied_total': 0.130, 'spread': -0.032},
     },
     'TE': {
-        'stats': [['snap', 'Snap %', 'Share of team offensive snaps'],
+        'stats': [['route', 'Route %', 'Routes run as a share of team dropbacks'],
                   ['tgt', 'Target %', 'Share of team targets'],
-                  ['ay', 'Air yd %', 'Share of team air yards on targets'],
-                  ['rztgt', 'RZ tgt %', 'Share of team targets inside the 20']],
+                  ['fr', '1st read %', 'Share of the team\'s first-read targets'],
+                  ['ay', 'Air yd %', 'Share of team air yards on targets']],
         'tiers': ['TE13+', 'TE7–12', 'TE4–6', 'TE1–3'],
-        'cuts': {'snap': {'game': [.946, .891, .796], 'l16': [.870, .826, .744]},
+        'cuts': {'route': {'game': [.853, .800, .721], 'l16': [.788, .739, .685]},
                  'tgt': {'game': [.275, .230, .181], 'l16': [.223, .196, .163]},
+                 'fr': {'game': [.316, .267, .192], 'l16': [.260, .219, .170]},
                  'ay': {'game': [.303, .240, .170], 'l16': [.229, .187, .143]},
-                 'rztgt': {'game': [.500, .400, .250], 'l16': [.272, .241, .186]},
                  'xfp': {'l4': [11.2, 9.5, 7.5], 'l16': [10.4, 8.8, 7.2]},
                  'fp': {'l4': [12.6, 10.0, 7.8], 'l16': [11.1, 9.3, 7.3]}},
         'matchup_w': {'opp_allowed': 0.069, 'implied_total': 0.090, 'spread': 0.0},
     },
 }
+FPD_DIR = os.path.join(os.path.dirname(OUT), 'fpd')
+FPD_TEAM = {'ARZ': 'ARI', 'BLT': 'BAL', 'CLV': 'CLE', 'HST': 'HOU'}
 MATCHUP_TIERS = [(6, 'Elite'), (12, 'Great'), (24, 'Average'), (32, 'Tough')]
 TEAM_FIX = {'OAK': 'LV', 'SD': 'LAC', 'STL': 'LA', 'LAR': 'LA', 'JAC': 'JAX', 'WSH': 'WAS', 'LVR': 'LV'}
 
@@ -149,6 +154,35 @@ def load_season(y):
     return pl, team, st, sn, tm_snaps, ep
 
 
+def norm(s):
+    s = re.sub(r"[.'’]", '', str(s).lower())
+    return ' '.join(re.sub(r'\b(jr|sr|ii|iii|iv|v)\b', ' ', s).replace('-', ' ').split())
+
+
+def fpd_season(season, D):
+    """{(player_id, season, week): {'route': x, 'fr': y}} from this season's Fantasy Points exports.
+    A week the export covers counts as 0 for a WR/TE who played it but isn't listed."""
+    ids = D[D.season == season].drop_duplicates('player_id')
+    by_name_team = {(norm(n), t): pid for n, t, pid in zip(ids.name, ids.team, ids.player_id)}
+    names = ids.assign(n=ids.name.map(norm)).groupby('n').player_id.agg(list)
+    out, covered, missed = {}, {}, []
+    for key, pattern in (('route', '*rte_pct*.csv'), ('fr', '*first_read_pct*.csv')):
+        files = sorted(glob.glob(os.path.join(FPD_DIR, str(season), pattern)))
+        if not files: continue
+        f = pd.read_csv(files[-1], header=1)
+        f = f[f.Rank.astype(str).str.isdigit()]
+        weeks = [c for c in f.columns if c.isdigit() and pd.to_numeric(f[c], errors='coerce').notna().any()]
+        covered[key] = {int(w) for w in weeks}
+        for r in f.to_dict('records'):
+            n, t = norm(r['Name']), FPD_TEAM.get(r['Team'], r['Team'])
+            pid = by_name_team.get((n, t)) or (names[n][0] if n in names.index and len(names[n]) == 1 else None)
+            if pid is None: missed.append(r['Name']); continue
+            for w in weeks:
+                v = pd.to_numeric(r[w], errors='coerce')
+                if pd.notna(v): out.setdefault((pid, season, int(w)), {})[key] = round(float(v) / 100, 3)
+    return out, covered, sorted(set(missed))
+
+
 def ratio(num, den):
     return None if pd.isna(den) or den <= 0 or pd.isna(num) else round(float(num / den), 3)
 
@@ -160,8 +194,7 @@ def role(r, pos):
         base.update(carry=ratio(r['car'], r['tm_car']), usage=ratio(r['tgt'] + r['car'], r['tm_tgt'] + r['tm_car']),
                     rz=ratio(r['rztgt'] + r['rzcar'], r['tm_rztgt'] + r['tm_rzcar']))
     else:
-        base.update(tgt=ratio(r['tgt'], r['tm_tgt']), ay=ratio(r['ay'], r['tm_ay']) if r['tm_ay'] > 0 else None,
-                    rztgt=ratio(r['rztgt'], r['tm_rztgt']))
+        base.update(tgt=ratio(r['tgt'], r['tm_tgt']), ay=ratio(r['ay'], r['tm_ay']) if r['tm_ay'] > 0 else None)
     return base
 
 
@@ -187,6 +220,28 @@ def main():
     num = ['offense_snaps', 'tgt', 'car', 'rztgt', 'rzcar', 'ay', 'fp']
     D[num] = D[num].fillna(0)
     D = D.sort_values(['player_id', 'season', 'week'])
+    D['name'] = D.player_id.map(info.display_name)
+
+    # route % and first-read %: last season from the derived history, this season from the exports
+    fpd, covered, missed = fpd_season(season, D)
+    hist = os.path.join(FPD_DIR, f'history_{season - 1}.csv')
+    if os.path.exists(hist):
+        for r in pd.read_csv(hist).to_dict('records'):
+            fpd[(r['player_id'], int(r['season']), int(r['week']))] = {k: (None if pd.isna(r[k]) else r[k]) for k in ('route', 'fr')}
+        covered_prev = True
+    else:
+        covered_prev = False
+
+    def receiving(r):
+        got = fpd.get((r['player_id'], int(r['season']), int(r['week'])), {})
+        out = {}
+        for k in ('route', 'fr'):
+            v = got.get(k)
+            if v is None:   # listed nowhere for a week the data covers: no routes / no first reads
+                cov = covered_prev if r['season'] < season else int(r['week']) in covered.get(k, ())
+                v = 0.0 if cov else None
+            out[k] = v
+        return out
 
     # the defense side: half-PPR points each defense allowed to each position, last 8 games
     allowed = D.groupby(['game_id', 'season', 'week', 'opp', 'pos']).fp.sum().reset_index().sort_values(['season', 'week'])
@@ -201,16 +256,23 @@ def main():
         l16, last4 = d.tail(16), cur.tail(4)
         now_team = cur.team.iloc[-1]
         games = []
+        rec = lambda r: receiving(r) if pos != 'RB' else {}
         for r in last4.to_dict('records'):
-            games.append({'wk': int(r['week']), 'opp': r['opp'], **role(r, pos),
+            games.append({'wk': int(r['week']), 'opp': r['opp'], **role(r, pos), **rec(r),
                           'xfp': None if pd.isna(r['xfp']) else round(float(r['xfp']), 1), 'fp': round(float(r['fp']), 1)})
         x16, x4 = l16.xfp.dropna(), last4.xfp.dropna()
+        mean16 = {}
+        if pos != 'RB':
+            vals = [receiving(r) for r in l16.to_dict('records')]
+            for k in ('route', 'fr'):
+                v = [x[k] for x in vals if x[k] is not None]
+                mean16[k] = round(sum(v) / len(v), 3) if v else None
         rows.append({
             'id': pid, 'name': info.display_name.get(pid, pid), 'pos': pos, 'team': now_team,
             'rookie': bool(info.rookie_season.get(pid) == season),
             'new_team': bool((l16.team != now_team).any()),
             'l16_games': int(len(l16)),
-            'l16': {**role(l16[sums].fillna(0).sum().to_dict(), pos),
+            'l16': {**role(l16[sums].fillna(0).sum().to_dict(), pos), **mean16,
                     'xfp': round(float(x16.mean()), 1) if len(x16) else None, 'fp': round(float(l16.fp.mean()), 1)},
             'l4': {'xfp': round(float(x4.mean()), 1) if len(x4) else None, 'fp': round(float(last4.fp.mean()), 1)},
             'games': games,
@@ -248,6 +310,7 @@ def main():
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, 'w') as f: json.dump(doc, f, separators=(',', ':'))
     counts = pd.Series([r['pos'] for r in rows]).value_counts().to_dict()
+    if missed: print(f'Fantasy Points names not matched ({len(missed)}):', ', '.join(missed[:40]))
     print(f'{counts} players, {season} through week {through}, week-{through + 1} matchups for {len(M) // 2 if len(M) else 0} games -> analysis/workload.json')
 
 
