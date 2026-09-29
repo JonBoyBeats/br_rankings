@@ -1328,6 +1328,19 @@ function reconcileCut(savedOrder, cut, onSlate) {
    exactly why they are worth seeing. The mirror publishes them in a per-slate pool
    file the board fetches only when it needs them. */
 
+/**
+ * A saved order and line re-applied once the pool players it ranked are back on the
+ * slate: they keep their slots, and the line still counts them.
+ */
+function placeAdded(players, savedOrder, savedCut) {
+  var onSlate = {};
+  players.forEach(function (p) { onSlate[p.player_id] = 1; });
+  return {
+    order: reconcileOrder(players, savedOrder).order,
+    cut: reconcileCut(savedOrder, savedCut, onSlate)
+  };
+}
+
 /** An unpriced player carries no ADP at all; every ADP path has to survive that. */
 function hasAdp(p) {
   return p && typeof p.adp === "number" && isFinite(p.adp);
@@ -1519,19 +1532,22 @@ function selectSlate(index) {
 
   state.pool = null;
   state.added = {};
+  var saved = load(K.order(s.label), null);
+  var savedCut = load(K.cut(s.label), null);
   var keep = load(K.added(s.label), null) || [];
   if (keep.length && s.pool) {
-    // Bring back the pool players this slate already had, so a refresh does not
-    // silently drop them out from under a saved order.
+    // Bring back the pool players this slate already had, at the ranks the saved
+    // order gave them, so a refresh does not drop them to the bottom.
     loadPool(s).then(function (pool) {
       var want = {};
       keep.forEach(function (id) { want[id] = 1; });
       var back = pool.players.filter(function (p) { return want[p.player_id]; });
-      if (back.length && state.slate && state.slate.label === s.label) addFromPool(back);
+      if (back.length && state.slate && state.slate.label === s.label) {
+        addFromPool(back, saved ? { order: saved, cut: savedCut } : null);
+      }
     });
   }
 
-  var saved = load(K.order(s.label), null);
   var rec = reconcileOrder(s.players, saved);
   state.order = rec.order;
   state.newIds = {};
@@ -1539,7 +1555,7 @@ function selectSlate(index) {
   state.baseline = (s.baseline && s.baseline.adp) || null;
   var onSlate = {};
   s.players.forEach(function (p) { onSlate[p.player_id] = 1; });
-  state.cut = saved ? reconcileCut(saved, load(K.cut(s.label), null), onSlate) : null;
+  state.cut = saved ? reconcileCut(saved, savedCut, onSlate) : null;
   state.liftedPid = null;
   renderLiftBar();
 
@@ -1571,20 +1587,29 @@ function loadPool(slate) {
     });
 }
 
-/** Put a pool player on the board, below the line where the tail sorts him by projection. */
-function addFromPool(players) {
+/**
+ * Put pool players on the board, below the line where the tail sorts them by projection.
+ * `restore` ({order, cut} as saved) instead puts players coming back after a reload
+ * where that saved order had them.
+ */
+function addFromPool(players, restore) {
   if (!players.length || !state.slate) return 0;
   var have = {};
   state.slate.players.forEach(function (p) { have[p.player_id] = 1; });
   var fresh = players.filter(function (p) { return !have[p.player_id]; });
   if (!fresh.length) return 0;
   state.slate.players = state.slate.players.concat(fresh);
-  fresh.forEach(function (p) {
-    state.order.push(p.player_id);
-    state.added[p.player_id] = 1;
-  });
+  fresh.forEach(function (p) { state.added[p.player_id] = 1; });
+  if (restore) {
+    var back = placeAdded(state.slate.players, restore.order, restore.cut);
+    state.order = back.order;
+    state.cut = back.cut;
+  } else {
+    fresh.forEach(function (p) { state.order.push(p.player_id); });
+  }
   save(K.added(state.slate.label), Object.keys(state.added));
   applyStoredProjections();          // re-joins projections and re-sorts below the line
+  if (restore) saveBoard();
   renderPositions();
   render();
   return fresh.length;
@@ -2850,6 +2875,13 @@ function syncStickyOffsets() {
   root.setProperty("--dock-h", dockH + "px");
 }
 window.addEventListener("resize", syncStickyOffsets);
+/* The Analysis page open in another tab reorders this same board; pick its moves up. */
+window.addEventListener("storage", function (e) {
+  if (!state.slate || !e.key) return;
+  var label = state.slate.label;
+  if (e.key !== K.order(label) && e.key !== K.cut(label)) return;
+  selectSlate(state.data.slates.indexOf(state.slate));
+});
 if (PHONE.addEventListener) PHONE.addEventListener("change", syncStickyOffsets);
 if (typeof ResizeObserver !== "undefined") {
   var ro = new ResizeObserver(syncStickyOffsets);
@@ -2999,6 +3031,9 @@ function brrSelfTest() {
   ok("new appended", rec.order[2] === "p2" && rec.newIds[0] === "p2");
   ok("dropped reported", rec.dropped.length === 1 && rec.dropped[0] === "pGONE");
   ok("no saved order sorts by adp", reconcileOrder(players, null).order.join() === "p1,p2,p3");
+  var placed = placeAdded(players.concat([{ player_id: "pPOOL" }]), ["p3", "pPOOL", "p1", "p2"], 2);
+  ok("pool player keeps his saved rank", placed.order.join() === "p3,pPOOL,p1,p2");
+  ok("pool player still counts toward the line", placed.cut === 2);
 
   ok("nudge up", moveBy(["a", "b", "c", "d"], "c", -1).join() === "a,c,b,d");
   ok("nudge down", moveBy(["a", "b", "c", "d"], "b", 1).join() === "a,c,b,d");
