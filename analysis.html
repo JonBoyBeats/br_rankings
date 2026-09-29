@@ -359,15 +359,16 @@ function relevant(p) {
   return (p.l4.xfp || 0) >= DEPTH_XFP || (g && (g.snap || 0) >= DEPTH_SNAP);
 }
 
-/** The latest week of each kind of take for one player, and whether the recaps disagree. */
-function takesFor(all, key) {
+/**
+ * One player's takes for the current weeks only: recaps of the last week played and
+ * previews of the next one. Nothing older carries over; a source that skipped him is absent.
+ */
+function takesFor(all, key, recapWeek, previewWeek) {
   var mine = all.filter(function (t) { return t._key === key; });
-  function latest(kind) {
-    var k = mine.filter(function (t) { return t.kind === kind; });
-    var wk = k.reduce(function (m, t) { return Math.max(m, t.week); }, 0);
-    return { week: wk, list: k.filter(function (t) { return t.week === wk; }) };
+  function of(kind, wk) {
+    return { week: wk, list: mine.filter(function (t) { return t.kind === kind && t.week === wk; }) };
   }
-  var perf = latest("performance"), match = latest("matchup");
+  var perf = of("performance", recapWeek), match = of("matchup", previewWeek);
   var tiers = perf.list.map(function (t) { return TIER_INDEX[t.usage_tier]; }).filter(function (x) { return x != null; });
   var ups = perf.list.filter(function (t) { return t.trend === "↑"; }).length;
   var downs = perf.list.filter(function (t) { return t.trend === "↓"; }).length;
@@ -779,14 +780,14 @@ function drawer(p) {
 
   // performance: what the sources said about the game that was played
   var hp = document.createElement("h3");
-  hp.innerHTML = "Performance" + (t && t.perf.week ? " <small>Week " + t.perf.week + " recaps</small>" : "");
+  hp.innerHTML = "Performance <small>Week " + state.data.through_week + " recaps</small>";
   left.appendChild(hp);
   if (t && t.perf.list.length) {
     var ul = document.createElement("ul"); ul.className = "takes";
     t.perf.list.forEach(function (k) { ul.appendChild(takeItem(k, "performance")); });
     left.appendChild(ul);
   } else {
-    left.appendChild(note("No source wrote about him in the latest recaps."));
+    left.appendChild(note("No source wrote about him in the Week " + state.data.through_week + " recaps."));
   }
 
   // matchup: our read of the coming game, then what the previews said
@@ -803,13 +804,13 @@ function drawer(p) {
   right.appendChild(mod);
   if (t && t.match.list.length) {
     var hw = document.createElement("h3");
-    hw.innerHTML = "Previews <small>Week " + t.match.week + (t.match.week < state.data.next_week ? ", already played" : "") + "</small>";
+    hw.innerHTML = "Previews <small>Week " + t.match.week + "</small>";
     right.appendChild(hw);
     var ul2 = document.createElement("ul"); ul2.className = "takes";
     t.match.list.forEach(function (k) { ul2.appendChild(takeItem(k, "matchup")); });
     right.appendChild(ul2);
   } else {
-    right.appendChild(note("No previews for him yet."));
+    right.appendChild(note("No Week " + state.data.next_week + " previews for him yet."));
   }
   cols.append(left, right);
   d.appendChild(cols);
@@ -985,7 +986,7 @@ window.addEventListener("storage", function (e) {
     state.sources = got[1].sources || {};
     state.takes = (got[1].takes || []).filter(function (t) { return t.season === state.data.season; });
     state.takes.forEach(function (t) { t._key = normName(t.player); });
-    state.data.players.forEach(function (p) { p._takes = takesFor(state.takes, normName(p.name)); });
+    state.data.players.forEach(function (p) { p._takes = takesFor(state.takes, normName(p.name), state.data.through_week, state.data.next_week); });
   } catch (err) {
     $("rows").innerHTML = '<div class="empty">Could not load the workload data: ' + err.message + "</div>";
     return;
