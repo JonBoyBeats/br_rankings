@@ -1,0 +1,32 @@
+name: Refresh RB analysis
+on:
+  schedule:
+    # UTC. Tuesday and Wednesday after Monday night (nflverse and expected points land
+    # overnight), and Saturday for the week's lines.
+    - cron: '0 14 * * 2'
+    - cron: '0 14 * * 3'
+    - cron: '0 15 * * 6'
+  push:
+    branches: [main]
+    paths: ['analysis/takes/**', 'scripts/build_rb_analysis.py', 'scripts/build_takes.py']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: analysis
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install pandas pyarrow numpy
+      - run: python3 scripts/build_rb_analysis.py
+      - run: python3 scripts/build_takes.py
+      - run: |
+          git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
+          git add analysis/rb.json analysis/takes.json
+          git diff --cached --quiet || git commit -m "analysis: refresh RB workload $(date -u +%Y-%m-%dT%H:%M)"
+          git push

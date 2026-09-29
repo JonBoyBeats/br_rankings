@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RB Workload</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* Same committed dark theme as the board. The only new colour here is the four tiers,
+     so a row reads left to right as one story: role, what the role produced, the spot. */
+  :root {
+    color-scheme: dark;
+    --bg: #080b11;
+    --surface: #12151c;
+    --surface-2: #161a22;
+    --input: #0d1017;
+    --ink: #ffffff;
+    --muted: #8b94a4;
+    --line: #1c212c;
+    --line-strong: #2a3140;
+    --accent: #ffffff;
+    --new: #a7b0be;
+    --new-bg: #1b202a;
+    --neutral-pill: #2a3140;
+    --rb: #479580;
+    --up: #4dc48d;
+    --down: #f08a7e;
+    /* Tiers: RB1-6, RB7-12, RB13-24, everything after. */
+    --t3: #13703a;  --t3-ink: #ffffff;
+    --t2: #58c07a;  --t2-ink: #06180d;
+    --t1: #e0b43a;  --t1-ink: #1d1503;
+    --t0: #b9443b;  --t0-ink: #ffffff;
+    --tnone: #1a1e27;
+    --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: var(--sans);
+    font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased;
+  }
+  .shell { max-width: 1240px; margin: 0 auto; padding: 0 16px 64px; }
+
+  /* ---------- masthead ---------- */
+  .masthead { background: var(--bg); border-bottom: 1px solid var(--line); padding-block: 14px 0; }
+  .mast-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 19px; font-weight: 700; letter-spacing: -.015em; margin: 0; white-space: nowrap; }
+  .mast-meta {
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    display: flex; gap: 14px; flex-wrap: wrap; margin-left: auto;
+  }
+  .mast-meta b { font-weight: 500; color: var(--ink); }
+  .views { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; }
+  .views a {
+    font-size: 12.5px; font-weight: 600; padding: 5px 12px; color: var(--muted); text-decoration: none;
+  }
+  .views a[aria-current="page"] { background: var(--accent); color: var(--bg); }
+  .views a:not([aria-current]):hover { color: var(--ink); }
+
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; padding-block: 12px; }
+  .grow { flex: 1 1 160px; min-width: 130px; }
+  label.field { display: flex; flex-direction: column; gap: 3px; }
+  .field-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  select, input[type="search"] {
+    font-family: var(--sans); font-size: 14px; color: var(--ink);
+    background: var(--input); border: 1px solid var(--line-strong);
+    border-radius: 7px; padding: 7px 9px; width: 100%; height: 34px;
+  }
+  input[type="search"] { -webkit-appearance: none; }
+  select:focus-visible, input:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 1px;
+  }
+  .seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 7px; overflow: hidden; height: 34px; }
+  .seg button {
+    all: unset; cursor: pointer; font-size: 13.5px; font-weight: 500; padding: 0 13px;
+    display: flex; align-items: center; color: var(--muted); background: var(--surface);
+  }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+  .check { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); height: 34px; cursor: pointer; }
+
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--muted); padding-bottom: 12px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .legend-note { font-style: normal; }
+  .legend-note b { color: var(--ink); font-weight: 500; }
+
+  .notice {
+    font-size: 13.5px; border-radius: 8px; padding: 9px 12px; margin-bottom: 10px;
+    border: 1px solid var(--new); background: var(--new-bg); color: var(--new);
+  }
+  .notice:empty { display: none; }
+
+  /* ---------- table ---------- */
+  .board { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  /* One grid for header and rows so every cell lines up with its column label. */
+  .row {
+    display: grid;
+    grid-template-columns: 26px minmax(150px, 1fr) repeat(4, var(--grp)) var(--base) var(--base) 104px;
+    --grp: 164px; --base: 72px;
+    align-items: center; gap: 8px; padding: 6px 12px; border-bottom: 1px solid var(--line);
+  }
+  .row:last-child { border-bottom: 0; }
+  .head {
+    background: var(--surface-2); position: sticky; top: 0; z-index: 5;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); padding-block: 8px; border-radius: 9px 9px 0 0; align-items: end;
+  }
+  .head .sub { display: block; font-size: 9px; letter-spacing: .04em; text-transform: none; opacity: .8; margin-top: 2px; }
+  .player-row { cursor: pointer; }
+  .player-row:hover { background: color-mix(in srgb, var(--surface-2) 70%, var(--surface)); }
+  .player-row[aria-expanded="true"] { background: var(--surface-2); border-bottom-color: transparent; }
+
+  .rank { font-family: var(--mono); font-size: 12.5px; font-weight: 600; color: var(--muted); text-align: right; }
+  .who { min-width: 0; display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+  .name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .team { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .tag {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    padding: 1px 5px; border-radius: 4px; background: var(--neutral-pill); color: var(--ink); white-space: nowrap;
+  }
+  .tag.up { background: color-mix(in srgb, var(--up) 22%, transparent); color: var(--up); }
+  .tag.down { background: color-mix(in srgb, var(--down) 22%, transparent); color: var(--down); }
+  .tag.split { background: color-mix(in srgb, var(--t1) 22%, transparent); color: var(--t1); }
+
+  /* A group is the 16-game cell, a hairline, then up to four games, oldest to newest. */
+  .grp { display: grid; grid-template-columns: 1fr 1px repeat(4, 1fr); gap: 3px; align-items: center; }
+  .grp.base { grid-template-columns: 1fr 1px 1fr; }
+  .grp .div { width: 1px; height: 18px; background: var(--line-strong); justify-self: center; }
+  .cell {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+    text-align: center; border-radius: 4px; height: 24px; line-height: 24px; background: var(--tnone); color: var(--muted);
+  }
+  .cell.t3 { background: var(--t3); color: var(--t3-ink); }
+  .cell.t2 { background: var(--t2); color: var(--t2-ink); }
+  .cell.t1 { background: var(--t1); color: var(--t1-ink); }
+  .cell.t0 { background: var(--t0); color: var(--t0-ink); }
+  .cell.l16 { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .28); }
+  .cell.blank { background: transparent; }
+  .head .grp { text-align: center; }
+
+  .mu { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .mu .cell { padding: 0 6px; min-width: 56px; font-size: 10.5px; letter-spacing: .03em; }
+
+  /* ---------- drawer ---------- */
+  .drawer { background: var(--surface-2); border-bottom: 1px solid var(--line); padding: 4px 16px 16px 50px; }
+  .drawer h3 {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 14px 0 6px; font-weight: 600;
+  }
+  .drawer h3 small { text-transform: none; letter-spacing: 0; font-weight: 400; opacity: .8; }
+  .log { border-collapse: collapse; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .log th { font-weight: 500; color: var(--muted); text-align: right; padding: 3px 9px; font-size: 10.5px; }
+  .log td { text-align: right; padding: 3px 9px; border-top: 1px solid var(--line); }
+  .log th:first-child, .log td:first-child { text-align: left; }
+  .log td.t3, .log td.t2, .log td.t1, .log td.t0 { font-weight: 600; }
+  .log td.t3 { color: #5fd88d; } .log td.t2 { color: #9ae6b4; } .log td.t1 { color: #f1cf6b; } .log td.t0 { color: #f39b92; }
+  .takes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .takes li { font-size: 13.5px; line-height: 1.4; }
+  .takes .src { font-weight: 600; margin-right: 6px; }
+  .takes .ev { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+  .takes .norm { display: inline-flex; gap: 5px; align-items: center; margin-left: 6px; white-space: nowrap; }
+  .takes .norm .cell { display: inline-block; height: 18px; line-height: 18px; padding: 0 6px; font-size: 10px; letter-spacing: .04em; }
+  .takes .job { font-family: var(--mono); font-size: 10.5px; color: var(--ink); text-transform: uppercase; letter-spacing: .04em; }
+  .takes .stance { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+  .takes .blurb { display: block; color: var(--muted); margin-top: 1px; }
+  .model { font-size: 13.5px; margin-bottom: 8px; }
+  .model b { font-weight: 600; }
+  .consensus { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .consensus b { color: var(--ink); font-weight: 600; }
+  .none { color: var(--muted); font-size: 13px; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 28px; }
+
+  .empty { padding: 28px 14px; text-align: center; color: var(--muted); font-size: 14px; }
+  .footnote { color: var(--muted); font-size: 12.5px; margin-top: 12px; line-height: 1.6; }
+
+  /* Narrower screens drop the numbers inside the game cells first; the tier colour
+     carries the read and the drawer has every number. */
+  @media (max-width: 1180px) {
+    .row { --grp: 128px; --base: 62px; gap: 8px; }
+    .cell { font-size: 10px; }
+    .grp:not(.base) .cell:not(.l16) { font-size: 0; }
+  }
+  /* A phone gets two lines per player: who and the matchup, then the colour strips. */
+  @media (max-width: 760px) {
+    .shell { padding: 0 10px 48px; }
+    .row {
+      --grp: 1fr; --base: 1fr;
+      grid-template-columns: 22px minmax(0, 1fr) auto;
+      grid-template-areas: "rank who mu" "strip strip strip";
+      gap: 6px 8px; padding: 8px;
+    }
+    .row > .rank { grid-area: rank; }
+    .row > .who { grid-area: who; }
+    .row > .mu { grid-area: mu; }
+    .row > .strip { grid-area: strip; display: grid; grid-template-columns: repeat(4, 1fr) .5fr .5fr; gap: 6px; }
+    .strip .grp { gap: 2px; }
+    .strip .cell { height: 14px; line-height: 14px; border-radius: 3px; font-size: 0 !important; }
+    .grp .div { height: 12px; }
+    .head { display: none; }
+    .phone-key { display: grid !important; }
+    .drawer { padding: 4px 10px 14px; }
+    .cols { grid-template-columns: 1fr; }
+    .log { font-size: 11px; }
+    .log th, .log td { padding: 3px 5px; }
+    .mast-meta { margin-left: 0; }
+  }
+  .strip { display: contents; }
+  .phone-key {
+    display: none; grid-template-columns: repeat(4, 1fr) .5fr .5fr; gap: 6px;
+    font-family: var(--mono); font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+    padding: 8px 8px 0 38px;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="masthead">
+    <div class="mast-row">
+      <h1>RB Workload</h1>
+      <nav class="views" aria-label="Pages">
+        <a href="./">Board</a>
+        <a href="analysis.html" aria-current="page">Analysis</a>
+      </nav>
+      <div class="mast-meta" id="meta"></div>
+    </div>
+    <div class="controls">
+      <label class="field">
+        <span class="field-label">Show</span>
+        <span class="seg" role="group" aria-label="Which players">
+          <button type="button" id="scopeSlate" aria-pressed="false">This slate</button>
+          <button type="button" id="scopeAll" aria-pressed="true">All RBs</button>
+        </span>
+      </label>
+      <label class="field" id="slateField" hidden>
+        <span class="field-label">Slate</span>
+        <select id="slate"></select>
+      </label>
+      <label class="field grow">
+        <span class="field-label">Search</span>
+        <input type="search" id="search" placeholder="name" autocomplete="off">
+      </label>
+      <label class="field">
+        <span class="field-label">Team</span>
+        <select id="team"><option value="">All teams</option></select>
+      </label>
+      <label class="field">
+        <span class="field-label">Sort</span>
+        <select id="sort">
+          <option value="board" id="sortBoard" hidden>Board order</option>
+          <option value="xfp4">XFP, last 4</option>
+          <option value="xfp16">XFP, last 16</option>
+          <option value="fp4">FP, last 4</option>
+          <option value="usage16">Usage, last 16</option>
+          <option value="snap1">Snap %, last game</option>
+          <option value="role">Role change (last game vs L16)</option>
+          <option value="matchup">Matchup</option>
+          <option value="split">Sources split first</option>
+          <option value="team">Team</option>
+          <option value="name">Name</option>
+        </select>
+      </label>
+      <label class="check" id="depthField"><input type="checkbox" id="depth" checked> Hide deep backups</label>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--t3)"></i>Elite · RB1–6</span>
+      <span><i style="background:var(--t2)"></i>Great · RB7–12</span>
+      <span><i style="background:var(--t1)"></i>Average · RB13–24</span>
+      <span><i style="background:var(--t0)"></i>Replacement · RB25+</span>
+      <em class="legend-note">Each stat: <b>L16</b> (outlined) ¦ last 4 games, oldest → newest. Tap a player for the numbers and sources.</em>
+    </div>
+  </div>
+
+  <div class="notice" id="notice"></div>
+
+  <div class="board">
+    <div class="row head" id="head">
+      <span></span>
+      <span>Player</span>
+      <span class="grp-label" style="text-align:center">Snap %<span class="sub">L16 ¦ last 4</span></span>
+      <span class="grp-label" style="text-align:center">Carry %<span class="sub">L16 ¦ last 4</span></span>
+      <span class="grp-label" style="text-align:center" title="Targets + carries as a share of the team's">Usage<span class="sub">L16 ¦ last 4</span></span>
+      <span class="grp-label" style="text-align:center">RZ %<span class="sub">L16 ¦ last 4</span></span>
+      <span style="text-align:center">XFP<span class="sub">L16 ¦ L4</span></span>
+      <span style="text-align:center">FP<span class="sub">L16 ¦ L4</span></span>
+      <span>Matchup<span class="sub" id="muWeek">next game</span></span>
+    </div>
+    <div class="phone-key" aria-hidden="true"><span>Snap</span><span>Carry</span><span>Usage</span><span>RZ</span><span>XFP</span><span>FP</span></div>
+    <div id="rows"><div class="empty">Loading&hellip;</div></div>
+  </div>
+
+  <p class="footnote" id="foot"></p>
+</div>
+
+<script>
+"use strict";
+
+// ==== PURE LOGIC START (no DOM) ====
+var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
+var TIER_NAMES = ["Replacement", "Average", "Great", "Elite"];
+var TIER_RANGE = ["RB25+", "RB13–24", "RB7–12", "RB1–6"];
+var TIER_INDEX = { Replacement: 0, Average: 1, Great: 2, Elite: 3, Tough: 0 };
+var ROLE_STATS = [["snap", "Snap %"], ["carry", "Carry %"], ["usage", "Usage"], ["rz", "RZ %"]];
+/* A last-game snap share this far off the 16-game rate is a role change worth a label:
+   about half of such a jump carries into the next game, a big points game carries almost none. */
+var ROLE_SWING = 0.15;
+/* "Deep backup": no real share of the work lately. */
+var DEPTH_XFP = 4, DEPTH_SNAP = 0.25;
+
+/** Strip suffixes and punctuation so two spellings of one player collide (same as the board). */
+function normName(s) {
+  return String(s == null ? "" : s)
+    .toLowerCase()
+    .replace(/[‘’'`.]/g, "")
+    .replace(/[-‐-―]/g, " ")
+    .replace(/\b(jr|sr|ii|iii|iv|v)\b/g, " ")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Tier index 0..3 against [elite, great, average] lines; null when there is no value. */
+function tierOf(v, cuts) {
+  if (v == null || !cuts) return null;
+  return v >= cuts[0] ? 3 : v >= cuts[1] ? 2 : v >= cuts[2] ? 1 : 0;
+}
+
+function pct(v) { return v == null ? "–" : String(Math.round(v * 100)); }
+function pts(v) { return v == null ? "–" : v.toFixed(1); }
+
+/** Role change: last game's snap share against the 16-game rate. */
+function roleSwing(p) {
+  var g = p.games[p.games.length - 1];
+  if (!g || g.snap == null || p.l16.snap == null || p.l16_games < 4) return 0;
+  return g.snap - p.l16.snap;
+}
+
+function relevant(p) {
+  var g = p.games[p.games.length - 1];
+  return (p.l4.xfp || 0) >= DEPTH_XFP || (g && (g.snap || 0) >= DEPTH_SNAP);
+}
+
+/** The latest week of each kind of take for one player, plus a read on whether sources agree. */
+function takesFor(all, key) {
+  var mine = all.filter(function (t) { return t._key === key; });
+  function latest(kind) {
+    var k = mine.filter(function (t) { return t.kind === kind; });
+    var wk = k.reduce(function (m, t) { return Math.max(m, t.week); }, 0);
+    return { week: wk, list: k.filter(function (t) { return t.week === wk; }) };
+  }
+  var perf = latest("performance"), match = latest("matchup");
+  var tiers = perf.list.map(function (t) { return TIER_INDEX[t.usage_tier]; }).filter(function (x) { return x != null; });
+  var ups = perf.list.filter(function (t) { return t.trend === "↑"; }).length;
+  var downs = perf.list.filter(function (t) { return t.trend === "↓"; }).length;
+  var spread = tiers.length ? Math.max.apply(null, tiers) - Math.min.apply(null, tiers) : 0;
+  var jobs = {};
+  perf.list.forEach(function (t) {
+    var j = String(t.job || "").replace(/\s*\(.*\)\s*/, "").trim();
+    if (j) jobs[j] = (jobs[j] || 0) + 1;
+  });
+  return {
+    perf: perf, match: match, jobs: jobs, ups: ups, downs: downs,
+    split: tiers.length >= 2 && (spread >= 1 || (ups > 0 && downs > 0))
+  };
+}
+// ==== PURE LOGIC END ====
+
+var state = {
+  data: null, takes: [], sources: {}, matchups: {}, cuts: {},
+  scope: "all", slateLabel: null, slates: [], nameMap: {},
+  search: "", team: "", sort: "xfp4", depth: true, open: {}
+};
+var $ = function (id) { return document.getElementById(id); };
+function load(key, fallback) {
+  try { var raw = localStorage.getItem(key); return raw == null ? fallback : JSON.parse(raw); }
+  catch (e) { return fallback; }
+}
+function save(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* private window */ } }
+
+async function getJson(url) {
+  var r = await fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "t=" + Date.now(), { cache: "no-store" });
+  if (!r.ok) throw new Error(url + ": HTTP " + r.status);
+  return r.json();
+}
+
+// ---------------------------------------------------------------- slate
+/* The slate view reads what the board already keeps in this browser: which slate is
+   picked and your drag order. Nothing is written back to the board. */
+async function loadSlates() {
+  try {
+    var latest = await getJson(MIRROR + "latest.json");
+    state.slates = (latest.slates || []).filter(function (s) { return s.sport === "nfl"; });
+    try { var m = await getJson(MIRROR + "nfl_name_map.json"); delete m._comment; state.nameMap = m; } catch (e) { state.nameMap = {}; }
+  } catch (e) { state.slates = []; }
+  var sel = $("slate");
+  sel.innerHTML = "";
+  state.slates.forEach(function (s) {
+    var o = document.createElement("option");
+    o.value = s.label; o.textContent = s.title || s.label;
+    sel.appendChild(o);
+  });
+  var want = load("brr:slate", null);
+  var hit = state.slates.find(function (s) { return s.label === want; }) || state.slates[0];
+  state.slateLabel = hit ? hit.label : null;
+  if (hit) sel.value = hit.label;
+}
+
+/** Slate RBs in board order, each joined to its analysis row by name (then last name + team). */
+function slateRows() {
+  var s = state.slates.find(function (x) { return x.label === state.slateLabel; });
+  if (!s) return { rows: [], missing: [] };
+  var order = load("brr:order:" + s.label, null) || [];
+  var at = {};
+  order.forEach(function (pid, i) { at[pid] = i; });
+  var rbs = s.players.filter(function (p) { return p.position === "RB"; });
+  rbs.sort(function (a, b) {
+    var x = at[a.player_id], y = at[b.player_id];
+    if (x != null && y != null) return x - y;
+    if (x != null) return -1;
+    if (y != null) return 1;
+    return (a.adp || 999) - (b.adp || 999);
+  });
+  var byName = {}, byLast = {};
+  state.data.players.forEach(function (p) {
+    byName[normName(p.name)] = p;
+    var parts = normName(p.name).split(" ");
+    byLast[parts[parts.length - 1] + "|" + p.team] = p;
+  });
+  var rows = [], missing = [];
+  rbs.forEach(function (u) {
+    var full = (u.first_name + " " + u.last_name).replace(/\s+/g, " ").trim();
+    var key = normName(state.nameMap[full] || full);
+    var p = byName[key] || byLast[normName(u.last_name).split(" ").pop() + "|" + u.team];
+    if (p) rows.push({ p: p, rank: (at[u.player_id] != null ? at[u.player_id] + 1 : null) });
+    else missing.push(full);
+  });
+  return { rows: rows, missing: missing };
+}
+
+// ---------------------------------------------------------------- rows
+function visible() {
+  var list, missing = [];
+  if (state.scope === "slate") {
+    var got = slateRows();
+    list = got.rows; missing = got.missing;
+  } else {
+    list = state.data.players.map(function (p) { return { p: p, rank: null }; });
+    if (state.depth) list = list.filter(function (r) { return relevant(r.p); });
+  }
+  var q = normName(state.search);
+  if (q) list = list.filter(function (r) { return normName(r.p.name).indexOf(q) >= 0; });
+  if (state.team) list = list.filter(function (r) { return r.p.team === state.team; });
+
+  var mu = function (p) { var m = state.matchups[p.team]; return m ? m.rank : 99; };
+  var last = function (p, k) { var g = p.games[p.games.length - 1]; return g && g[k] != null ? g[k] : -1; };
+  var by = {
+    xfp4: function (p) { return -(p.l4.xfp || 0); },
+    xfp16: function (p) { return -(p.l16.xfp || 0); },
+    fp4: function (p) { return -(p.l4.fp || 0); },
+    usage16: function (p) { return -(p.l16.usage || 0); },
+    snap1: function (p) { return -last(p, "snap"); },
+    role: function (p) { return -Math.abs(roleSwing(p)); },
+    matchup: mu,
+    split: function (p) { var t = p._takes; return (t && t.split ? 0 : 1) * 1000 - (p.l4.xfp || 0); }
+  }[state.sort];
+  if (state.sort === "name") list.sort(function (a, b) { return a.p.name.localeCompare(b.p.name); });
+  else if (state.sort === "team") list.sort(function (a, b) { return a.p.team.localeCompare(b.p.team) || (b.p.l4.xfp || 0) - (a.p.l4.xfp || 0); });
+  else if (by) list.sort(function (a, b) { return by(a.p) - by(b.p); });
+  return { list: list, missing: missing };
+}
+
+function cell(v, t, fmt, extra, title) {
+  var c = document.createElement("span");
+  c.className = "cell" + (t == null ? "" : " t" + t) + (extra ? " " + extra : "");
+  c.textContent = fmt(v);
+  if (title) c.title = title;
+  return c;
+}
+
+function roleGroup(p, stat, label) {
+  var cuts = state.cuts[stat];
+  var g = document.createElement("span");
+  g.className = "grp";
+  var t16 = tierOf(p.l16[stat], cuts.l16);
+  g.appendChild(cell(p.l16[stat], t16, pct, "l16",
+    label + ", last " + p.l16_games + " games: " + pct(p.l16[stat]) + (t16 == null ? "" : " · " + TIER_NAMES[t16] + " (" + TIER_RANGE[t16] + " level)")));
+  g.appendChild(document.createElement("span")).className = "div";
+  var games = p.games.slice(-4);
+  for (var i = 0; i < 4; i++) {
+    var gm = games[i - (4 - games.length)];
+    if (!gm) { g.appendChild(cell(null, null, function () { return ""; }, "blank")); continue; }
+    var t = tierOf(gm[stat], cuts.game);
+    g.appendChild(cell(gm[stat], t, pct, null,
+      "Wk " + gm.wk + " vs " + gm.opp + " · " + label + " " + pct(gm[stat]) +
+      (t == null ? (stat === "rz" ? " · no team red-zone plays" : "") : " · " + TIER_NAMES[t])));
+  }
+  return g;
+}
+
+function baseGroup(p, stat, label) {
+  var cuts = state.cuts[stat];
+  var g = document.createElement("span");
+  g.className = "grp base";
+  var a = tierOf(p.l16[stat], cuts.l16), b = tierOf(p.l4[stat], cuts.l4);
+  g.appendChild(cell(p.l16[stat], a, pts, "l16", label + " per game, last " + p.l16_games + " games" + (a == null ? "" : " · " + TIER_NAMES[a])));
+  g.appendChild(document.createElement("span")).className = "div";
+  g.appendChild(cell(p.l4[stat], b, pts, null, label + " per game, last " + p.games.length + " this season" + (b == null ? "" : " · " + TIER_NAMES[b])));
+  return g;
+}
+
+function muCell(p) {
+  var m = state.matchups[p.team];
+  var w = document.createElement("span");
+  w.className = "mu";
+  if (!m) { w.textContent = "Bye"; return w; }
+  var t = 3 - ["Elite", "Great", "Average", "Tough"].indexOf(m.tier);
+  var c = cell(null, t, function () { return m.tier === "Average" ? "Avg" : m.tier; }, null,
+    "Week " + state.data.next_week + (m.home ? " vs " : " @ ") + m.opp + ": #" + m.rank + " of 32 for RBs");
+  var o = document.createElement("span");
+  o.textContent = (m.home ? "" : "@") + m.opp;
+  w.append(c, o);
+  return w;
+}
+
+function render() {
+  var got = visible();
+  var host = $("rows");
+  host.innerHTML = "";
+  $("notice").textContent = "";
+  if (state.scope === "slate") {
+    if (!state.slates.length) $("notice").textContent = "Couldn't reach the board's slate mirror, so there's no slate to show. All RBs still works.";
+    else if (got.missing.length) $("notice").textContent = got.missing.length + " slate RB" + (got.missing.length === 1 ? " has" : "s have") +
+      " no workload data (no 2026 snaps, or a name spelled differently): " + got.missing.join(", ");
+  }
+  if (!got.list.length) {
+    host.innerHTML = '<div class="empty">No running backs match these filters.</div>';
+    renderFoot(0);
+    return;
+  }
+  var frag = document.createDocumentFragment();
+  got.list.forEach(function (r, i) { frag.appendChild(playerRow(r, i)); if (state.open[r.p.id]) frag.appendChild(drawer(r.p)); });
+  host.appendChild(frag);
+  renderFoot(got.list.length);
+}
+
+function playerRow(r, i) {
+  var p = r.p;
+  var el = document.createElement("div");
+  el.className = "row player-row";
+  el.tabIndex = 0;
+  el.setAttribute("role", "button");
+  el.setAttribute("aria-expanded", String(!!state.open[p.id]));
+  el.dataset.id = p.id;
+
+  var rank = document.createElement("span");
+  rank.className = "rank";
+  rank.textContent = r.rank != null ? r.rank : i + 1;
+  rank.title = r.rank != null ? "Your board rank" : "Row number";
+
+  var who = document.createElement("span");
+  who.className = "who";
+  var n = document.createElement("span"); n.className = "name"; n.textContent = p.name;
+  var tm = document.createElement("span"); tm.className = "team"; tm.textContent = p.team;
+  who.append(n, tm);
+  var sw = roleSwing(p);
+  function tag(text, cls, title) {
+    var t = document.createElement("span"); t.className = "tag" + (cls ? " " + cls : ""); t.textContent = text;
+    if (title) t.title = title; who.appendChild(t);
+  }
+  if (sw >= ROLE_SWING) tag("Role ↑", "up", "Last game's snap share was " + Math.round(sw * 100) + " points above his 16-game rate");
+  if (sw <= -ROLE_SWING) tag("Role ↓", "down", "Last game's snap share was " + Math.round(-sw * 100) + " points below his 16-game rate");
+  if (p.rookie) tag("Rookie", null, "No NFL baseline before this season");
+  else if (p.new_team) tag("New team", null, "Part of the 16-game window was with another team");
+  if (p._takes && p._takes.split) tag("Split", "split", "The sources disagree on this role");
+
+  var strip = document.createElement("span");
+  strip.className = "strip";
+  ROLE_STATS.forEach(function (s) { strip.appendChild(roleGroup(p, s[0], s[1])); });
+  strip.appendChild(baseGroup(p, "xfp", "Expected points"));
+  strip.appendChild(baseGroup(p, "fp", "Fantasy points"));
+
+  el.append(rank, who, strip, muCell(p));
+  return el;
+}
+
+function drawer(p) {
+  var d = document.createElement("div");
+  d.className = "drawer";
+  var t = p._takes;
+
+  // game log with every number the colours stand for
+  var h = document.createElement("h3");
+  h.innerHTML = "Game log <small>half-PPR</small>";
+  d.appendChild(h);
+  var tbl = document.createElement("table");
+  tbl.className = "log";
+  var head = "<tr><th>Games</th><th>Snap</th><th>Carry</th><th>Usage</th><th>RZ</th><th>XFP</th><th>FP</th></tr>";
+  var body = "";
+  function td(v, fmt, cuts) { var tt = tierOf(v, cuts); return "<td" + (tt == null ? "" : ' class="t' + tt + '"') + ">" + fmt(v) + "</td>"; }
+  var c = state.cuts;
+  body += "<tr><td>Last " + p.l16_games + "</td>" + td(p.l16.snap, pct, c.snap.l16) + td(p.l16.carry, pct, c.carry.l16) +
+          td(p.l16.usage, pct, c.usage.l16) + td(p.l16.rz, pct, c.rz.l16) + td(p.l16.xfp, pts, c.xfp.l16) + td(p.l16.fp, pts, c.fp.l16) + "</tr>";
+  p.games.slice().reverse().forEach(function (g) {
+    body += "<tr><td>Wk " + g.wk + " " + g.opp + "</td>" + td(g.snap, pct, c.snap.game) + td(g.carry, pct, c.carry.game) +
+            td(g.usage, pct, c.usage.game) + td(g.rz, pct, c.rz.game) + "<td>" + pts(g.xfp) + "</td><td>" + pts(g.fp) + "</td></tr>";
+  });
+  tbl.innerHTML = head + body;
+  d.appendChild(tbl);
+
+  var cols = document.createElement("div");
+  cols.className = "cols";
+  var left = document.createElement("div"), right = document.createElement("div");
+
+  // performance: what the sources said about the game that was played
+  var hp = document.createElement("h3");
+  hp.innerHTML = "Performance" + (t && t.perf.week ? " <small>Week " + t.perf.week + " recaps</small>" : "");
+  left.appendChild(hp);
+  if (t && t.perf.list.length) {
+    var ul = document.createElement("ul"); ul.className = "takes";
+    t.perf.list.forEach(function (k) { ul.appendChild(takeItem(k, "performance")); });
+    left.appendChild(ul);
+    var jobs = Object.keys(t.jobs).sort(function (a, b) { return t.jobs[b] - t.jobs[a]; });
+    var cons = document.createElement("div"); cons.className = "consensus";
+    cons.innerHTML = "Job: <b>" + jobs.map(function (j) { return j + (t.jobs[j] > 1 ? " ×" + t.jobs[j] : ""); }).join(", ") + "</b>" +
+      " · trend " + t.ups + "↑ " + t.downs + "↓" + (t.split ? " · <b>sources split</b>" : " · sources agree");
+    left.appendChild(cons);
+  } else {
+    left.appendChild(note("No source wrote about him in the latest recaps."));
+  }
+
+  // matchup: our read of the coming game, then what the previews said
+  var m = state.matchups[p.team];
+  var hm = document.createElement("h3");
+  hm.innerHTML = "Matchup <small>Week " + state.data.next_week + "</small>";
+  right.appendChild(hm);
+  var mod = document.createElement("div"); mod.className = "model";
+  if (m) {
+    mod.innerHTML = "<b>" + m.tier + "</b> · #" + m.rank + " of 32 for RBs · " + (m.home ? "vs " : "@ ") + m.opp +
+      " · implied " + m.implied_total.toFixed(1) + " · " + (m.spread > 0 ? "favored by " + m.spread : m.spread < 0 ? "underdog by " + (-m.spread) : "pick'em") +
+      " · " + m.opp + " has allowed " + m.opp_rb_allowed.toFixed(1) + " half-PPR pts/game to RBs over its last 8";
+  } else mod.textContent = "On bye in Week " + state.data.next_week + ".";
+  right.appendChild(mod);
+  if (t && t.match.list.length) {
+    var hw = document.createElement("h3");
+    hw.innerHTML = "Previews <small>Week " + t.match.week + (t.match.week < state.data.next_week ? ", already played" : "") + "</small>";
+    right.appendChild(hw);
+    var ul2 = document.createElement("ul"); ul2.className = "takes";
+    t.match.list.forEach(function (k) { ul2.appendChild(takeItem(k, "matchup")); });
+    right.appendChild(ul2);
+  } else {
+    right.appendChild(note("No previews for him yet."));
+  }
+  cols.append(left, right);
+  d.appendChild(cols);
+  return d;
+}
+
+function note(text) { var n = document.createElement("div"); n.className = "none"; n.textContent = text; return n; }
+
+function takeItem(k, kind) {
+  var li = document.createElement("li");
+  var s = document.createElement("span"); s.className = "src"; s.textContent = k.source;
+  s.title = state.sources[k.source] || k.source;
+  li.appendChild(s);
+  if (kind === "performance" && k.evidence) {
+    var ev = document.createElement("span"); ev.className = "ev"; ev.textContent = k.evidence; li.appendChild(ev);
+  }
+  if (kind === "matchup" && k.opp) {
+    var op = document.createElement("span"); op.className = "ev"; op.textContent = k.opp; li.appendChild(op);
+  }
+  var norm = document.createElement("span"); norm.className = "norm";
+  if (k.job) { var j = document.createElement("span"); j.className = "job"; j.textContent = k.job; norm.appendChild(j); }
+  var tierName = kind === "performance" ? k.usage_tier : k.outlook_tier;
+  if (tierName) {
+    var ti = TIER_INDEX[tierName];
+    var c = cell(null, ti, function () { return (tierName + (kind === "performance" ? " usage" : " outlook")).toUpperCase(); });
+    norm.appendChild(c);
+  }
+  if (k.trend) { var tr = document.createElement("span"); tr.className = "job"; tr.textContent = k.trend; norm.appendChild(tr); }
+  if (k.stance) { var st = document.createElement("span"); st.className = "stance"; st.textContent = k.stance; norm.appendChild(st); }
+  li.appendChild(norm);
+  if (k.blurb) { var b = document.createElement("span"); b.className = "blurb"; b.textContent = k.blurb; li.appendChild(b); }
+  return li;
+}
+
+function renderFoot(n) {
+  var d = state.data;
+  $("foot").innerHTML = n + " shown. Role: snap % = share of team offensive snaps · carry % = share of team carries · " +
+    "usage = targets + carries as a share of the team's · RZ % = share of the team's red-zone targets and carries. " +
+    "Game cells are coloured against single games, the L16 cell against 16-game averages, so each colour means " +
+    "where he'd rank among RBs for that window. XFP = expected half-PPR points for the touches he got. " +
+    "Matchup ranks all 32 teams on opponent RB points allowed (last 8), implied total and spread. " +
+    "Data built " + d.built.replace("T", " ").replace("Z", " UTC") + " from nflverse.";
+}
+
+function renderMeta() {
+  var d = state.data;
+  $("meta").innerHTML = "<span><b>" + d.season + "</b> through Week <b>" + d.through_week + "</b></span>" +
+    "<span>matchups Week <b>" + d.next_week + "</b></span><span><b>" + d.players.length + "</b> RBs</span>";
+  $("muWeek").textContent = "Week " + d.next_week;
+}
+
+function setScope(scope) {
+  state.scope = scope;
+  save("brr:analysis:scope", scope);
+  $("scopeSlate").setAttribute("aria-pressed", String(scope === "slate"));
+  $("scopeAll").setAttribute("aria-pressed", String(scope === "all"));
+  $("slateField").hidden = scope !== "slate";
+  $("depthField").hidden = scope === "slate";
+  $("sortBoard").hidden = scope !== "slate";
+  if (scope === "slate" && state.sort === "xfp4" && !load("brr:analysis:sort", null)) state.sort = "board";
+  if (scope !== "slate" && state.sort === "board") state.sort = "xfp4";
+  $("sort").value = state.sort;
+  render();
+}
+
+// ---------------------------------------------------------------- boot
+$("scopeSlate").addEventListener("click", function () { setScope("slate"); });
+$("scopeAll").addEventListener("click", function () { setScope("all"); });
+$("slate").addEventListener("change", function (e) { state.slateLabel = e.target.value; render(); });
+$("search").addEventListener("input", function (e) { state.search = e.target.value; render(); });
+$("team").addEventListener("change", function (e) { state.team = e.target.value; render(); });
+$("sort").addEventListener("change", function (e) { state.sort = e.target.value; save("brr:analysis:sort", state.sort); render(); });
+$("depth").addEventListener("change", function (e) { state.depth = e.target.checked; render(); });
+function toggle(el) {
+  var id = el.dataset.id;
+  state.open[id] = !state.open[id];
+  render();
+}
+$("rows").addEventListener("click", function (e) {
+  var row = e.target.closest(".player-row");
+  if (row) toggle(row);
+});
+$("rows").addEventListener("keydown", function (e) {
+  var row = e.target.closest(".player-row");
+  if (row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(row); }
+});
+
+(async function boot() {
+  try {
+    var got = await Promise.all([getJson("analysis/rb.json"), getJson("analysis/takes.json").catch(function () { return { takes: [], sources: {} }; })]);
+    state.data = got[0];
+    state.cuts = state.data.cuts;
+    state.matchups = state.data.matchups || {};
+    state.sources = got[1].sources || {};
+    state.takes = (got[1].takes || []).filter(function (t) { return t.season === state.data.season; });
+    state.takes.forEach(function (t) { t._key = normName(t.player); });
+    state.data.players.forEach(function (p) { p._takes = takesFor(state.takes, normName(p.name)); });
+  } catch (err) {
+    $("rows").innerHTML = '<div class="empty">Could not load the workload data: ' + err.message + "</div>";
+    return;
+  }
+  var teams = Array.from(new Set(state.data.players.map(function (p) { return p.team; }))).sort();
+  teams.forEach(function (t) { var o = document.createElement("option"); o.value = t; o.textContent = t; $("team").appendChild(o); });
+  renderMeta();
+  await loadSlates();
+  state.sort = load("brr:analysis:sort", null) || state.sort;
+  var scope = load("brr:analysis:scope", null) || (state.slates.length ? "slate" : "all");
+  setScope(scope === "slate" && state.slates.length ? "slate" : "all");
+})();
+</script>
+</body>
+</html>

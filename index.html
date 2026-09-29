@@ -67,6 +67,11 @@
     display: flex; gap: 14px; flex-wrap: wrap; margin-left: auto;
   }
   .mast-meta b { font-weight: 500; color: var(--ink); }
+  /* Board and Analysis are two pages of one site; this is the switch between them. */
+  .views { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; align-self: center; }
+  .views a { font-size: 12.5px; font-weight: 600; padding: 5px 12px; color: var(--muted); text-decoration: none; }
+  .views a[aria-current="page"] { background: var(--accent); color: var(--bg); }
+  .views a:not([aria-current]):hover { color: var(--ink); }
 
   .controls {
     display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
@@ -363,6 +368,10 @@
   <div class="masthead">
     <div class="mast-row">
       <h1>Battle Royale Board</h1>
+      <nav class="views" aria-label="Pages">
+        <a href="./" aria-current="page">Board</a>
+        <a href="analysis.html">Analysis</a>
+      </nav>
       <div class="mast-meta" id="meta"></div>
     </div>
     <div class="controls">
