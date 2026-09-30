@@ -83,6 +83,11 @@
     display: flex; align-items: center; color: var(--muted); background: var(--surface);
   }
   .seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+  .openall {
+    all: unset; cursor: pointer; height: 34px; padding: 0 12px; border-radius: 7px; font-size: 13px;
+    border: 1px solid var(--line-strong); color: var(--muted); background: var(--surface);
+  }
+  .openall:hover { color: var(--ink); }
   .check { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); height: 34px; cursor: pointer; }
 
   .legend { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--muted); padding-bottom: 12px; }
@@ -315,6 +320,7 @@
           <option value="name">Name</option>
         </select>
       </label>
+      <button type="button" id="openAll" class="openall">Expand all</button>
       <label class="check" id="depthField"><input type="checkbox" id="depth" checked> Hide deep backups</label>
     </div>
     <div class="legend" id="legend"></div>
@@ -822,6 +828,7 @@ function render() {
   });
   host.appendChild(frag);
   renderFoot(got.list.length);
+  syncOpenAll();
 }
 
 function playerRow(r, i, drag) {
@@ -980,6 +987,11 @@ function takeItem(k, kind) {
   return li;
 }
 
+function syncOpenAll() {
+  var any = Object.keys(state.open).some(function (k) { return state.open[k]; });
+  $("openAll").textContent = any ? "Collapse all" : "Expand all";
+}
+
 function renderFoot(n) {
   var d = state.data;
   var seen = {}, defs = [];
@@ -1085,6 +1097,12 @@ $("slate").addEventListener("change", function (e) {
 $("search").addEventListener("input", function (e) { state.search = e.target.value; render(); });
 $("team").addEventListener("change", function (e) { state.team = e.target.value; render(); });
 $("sort").addEventListener("change", function (e) { state.sort = e.target.value; save("brr:analysis:sort", state.sort); render(); });
+$("openAll").addEventListener("click", function () {
+  var any = Object.keys(state.open).some(function (k) { return state.open[k]; });
+  state.open = {};
+  if (!any) visible().list.forEach(function (r) { state.open[r.p.id] = true; });
+  render();
+});
 $("depth").addEventListener("change", function (e) { state.depth = e.target.checked; render(); });
 function toggle(el) {
   var id = el.dataset.id;

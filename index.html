@@ -296,6 +296,11 @@
     color: var(--muted); border: 1px solid var(--line-strong); align-self: center;
   }
   .cfbx.has-note { color: var(--ink); border-color: var(--accent); }
+  .cfball {
+    all: unset; cursor: pointer; margin-left: 8px; padding: 1px 6px; border-radius: 4px;
+    border: 1px solid var(--line-strong); color: var(--muted); font-size: 9.5px; letter-spacing: .06em;
+  }
+  .cfball:hover { color: var(--ink); }
   .cfbx:focus-visible { outline: 2px solid var(--accent); }
   .board.cfb .num.score b { min-width: 44px; }
   .cfbpanel {
@@ -391,6 +396,7 @@
   }
   .liftbar .hint { font-size: 11.5px; }
   .liftbar button { height: 40px; min-width: 46px; font-size: 15px; }
+  .liftbar button:disabled { opacity: .35; cursor: default; }
   /* Keep the last rows reachable above the bar. */
   body.lifting .shell { padding-bottom: 120px; }
 
@@ -563,7 +569,7 @@
     <div class="row head">
       <span></span>
       <span class="r">#</span>
-      <span>Player</span>
+      <span>Player <button type="button" id="cfbAll" class="cfball" hidden>expand all</button></span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
       <span style="text-align:center" id="scoreHead" title="Workload score from the Analysis page: expected half-PPR next game">Score</span>
       <span class="r own-col"><button type="button" data-sort="own"
@@ -587,6 +593,12 @@
   <span class="pair">
     <button type="button" id="liftUp" aria-label="Move up one slot">&#9650;</button>
     <button type="button" id="liftDown" aria-label="Move down one slot">&#9660;</button>
+  </span>
+  <span class="pair">
+    <button type="button" id="liftPlus" aria-label="Rank him under the last ranked player at his position"
+      title="Rank him: under the last ranked player at his position">+</button>
+    <button type="button" id="liftMinus" aria-label="Drop him below the line"
+      title="Drop him below the line">&minus;</button>
   </span>
   <button type="button" id="liftDone" class="primary">Done</button>
 </div>
@@ -1338,6 +1350,36 @@ function clampCut(cut, len) {
  * Sort everything below the line: highest projection first, players without one last,
  * ties by ADP. Running this after every upload is what keeps the tail current.
  */
+/**
+ * "−": take a ranked player out of the ranking. He leaves the ranked block and the line
+ * moves up one; the caller re-sorts the tail so he lands at his projection. null when
+ * there is no line or he is already below it.
+ */
+function dropBelowLine(order, cut, pid) {
+  var at = clampCut(cut, order.length), from = order.indexOf(pid);
+  if (at == null || from < 0 || from >= at) return null;
+  var out = order.filter(function (x) { return x !== pid; });
+  out.splice(at - 1, 0, pid);
+  return { order: out, cut: at - 1 };
+}
+
+/**
+ * "+": bring a player from below the line into the ranking, directly under the last ranked
+ * player at his position (or at the end of the ranking if none is ranked yet). The line
+ * grows by one. null when there is no line or he is already ranked.
+ */
+function rankAtPosition(order, cut, pid, posOf) {
+  var at = clampCut(cut, order.length), from = order.indexOf(pid);
+  if (at == null || from < 0 || from < at) return null;
+  var out = order.filter(function (x) { return x !== pid; });
+  var pos = posOf(pid), insert = at;
+  for (var i = at - 1; i >= 0; i--) {
+    if (posOf(out[i]) === pos) { insert = i + 1; break; }
+  }
+  out.splice(insert, 0, pid);
+  return { order: out, cut: at + 1 };
+}
+
 function resortTail(order, cut, byPid, projValues) {
   var at = clampCut(cut, order.length);
   if (at == null || at >= order.length) return order.slice();
@@ -2347,6 +2389,9 @@ function render() {
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
   $("scoreHead").textContent = isCfb ? "Opp" : "Score";
+  $("cfbAll").hidden = !isCfb || !state.cfbIndex;
+  var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
+  $("cfbAll").textContent = anyOpen ? "collapse all" : "expand all";
   $("scoreHead").title = isCfb ? "This week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
@@ -2647,6 +2692,27 @@ function renderLiftBar() {
   bar.hidden = !who;
   document.body.classList.toggle("lifting", !!who);
   if (who) $("liftName").textContent = who.first_name + " " + who.last_name;
+  if (who) {
+    var at = state.order.indexOf(state.liftedPid), ranked = state.cut != null && at < state.cut;
+    $("liftPlus").disabled = state.cut == null || ranked;
+    $("liftMinus").disabled = state.cut == null || !ranked;
+  }
+}
+
+/** + / − on the lifted player, then the tail re-sorts by projection as it always does. */
+function jumpLifted(kind) {
+  var pid = state.liftedPid;
+  if (!pid) return;
+  var byPid = byPidMap(state.slate);
+  var res = kind === "plus"
+    ? rankAtPosition(state.order, state.cut, pid, function (id) { return byPid[id] && byPid[id].position; })
+    : dropBelowLine(state.order, state.cut, pid);
+  if (!res) return;
+  state.order = resortTail(res.order, res.cut, byPid, state.proj);
+  state.cut = res.cut;
+  delete state.newIds[pid];
+  saveBoard();
+  setLifted(null);
 }
 
 function setLifted(pid) {
@@ -2725,6 +2791,15 @@ document.addEventListener("keydown", function (e) {
 $("liftUp").addEventListener("click", function () { nudgeLifted(-1); });
 $("liftDown").addEventListener("click", function () { nudgeLifted(1); });
 $("liftDone").addEventListener("click", function () { setLifted(null); });
+$("liftPlus").addEventListener("click", function () { jumpLifted("plus"); });
+$("cfbAll").addEventListener("click", function (e) {
+  e.stopPropagation();
+  var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
+  state.cfbOpen = {};
+  if (!anyOpen) visibleRows().forEach(function (r) { if (cfbFor(r.p)) state.cfbOpen[r.p.player_id] = true; });
+  render();
+});
+$("liftMinus").addEventListener("click", function () { jumpLifted("minus"); });
 
 // ---------------------------------------------------------------- replacement ranges
 /* The panel shows each range, what it currently resolves to, and who is sitting in
@@ -3433,6 +3508,18 @@ function brrSelfTest() {
   ok("pool player still counts toward the line", placed.cut === 2);
 
   ok("nudge up", moveBy(["a", "b", "c", "d"], "c", -1).join() === "a,c,b,d");
+  var posOfT = function (id) { return { r1: "RB", w1: "WR", r2: "RB", w2: "WR", r3: "RB", t1: "TE" }[id]; };
+  var dr = dropBelowLine(["r1", "w1", "r2", "w2", "r3"], 3, "w1");
+  ok("minus drops a ranked player to the top of the tail", dr && dr.order.join() === "r1,r2,w1,w2,r3" && dr.cut === 2);
+  ok("minus does nothing below the line", dropBelowLine(["r1", "w1", "r2", "w2"], 2, "w2") === null);
+  ok("minus needs a line", dropBelowLine(["r1", "w1"], null, "r1") === null);
+  var up = rankAtPosition(["r1", "w1", "r2", "w2", "r3"], 3, "r3", posOfT);
+  ok("plus ranks him under the last ranked at his position", up && up.order.join() === "r1,w1,r2,r3,w2" && up.cut === 4);
+  var up2 = rankAtPosition(["r1", "w1", "r2", "w2", "r3"], 2, "r3", posOfT);
+  ok("plus lands under the last ranked RB, ahead of other positions", up2 && up2.order.join() === "r1,r3,w1,r2,w2" && up2.cut === 3);
+  var up3 = rankAtPosition(["r1", "w1", "t1"], 2, "t1", posOfT);
+  ok("plus with none ranked at his position goes to the end of the ranking", up3 && up3.order.join() === "r1,w1,t1" && up3.cut === 3);
+  ok("plus does nothing for a ranked player", rankAtPosition(["r1", "w1", "t1"], 2, "w1", posOfT) === null);
   ok("nudge down", moveBy(["a", "b", "c", "d"], "b", 1).join() === "a,c,b,d");
   ok("nudge clamps at the top", moveBy(["a", "b"], "a", -1).join() === "a,b");
   ok("nudge clamps at the bottom", moveBy(["a", "b"], "b", 1).join() === "a,b");
