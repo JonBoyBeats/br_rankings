@@ -298,6 +298,11 @@
   .cfbx.has-note { color: var(--ink); border-color: var(--accent); }
   .cfbx:focus-visible { outline: 2px solid var(--accent); }
   .board.cfb .num.score b { min-width: 44px; }
+  /* College: the rough Score, then the opponent, side by side (stacked on a phone). */
+  .board.cfb .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 100px 94px 56px; }
+  .board.cfb.has-own .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 100px 44px 94px 56px; }
+  .board.cfb .num.score { display: flex; gap: 4px; justify-content: center; align-items: center; }
+  .board.cfb .num.score b.sc { min-width: 30px; }
   .cfbpanel {
     padding: 10px 12px 14px 78px; border-bottom: 1px solid var(--line); background: var(--surface-2);
     font-size: 13px; line-height: 1.45; display: flex; flex-direction: column; gap: 10px;
@@ -419,6 +424,8 @@
     .board.cfb .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 54px 32px; }
     .board.cfb.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 22px 54px 32px; }
     .board.cfb .num.score b { min-width: 40px; font-size: 10px; }
+    .board.cfb .num.score { flex-direction: column; gap: 2px; }
+    .board.cfb .num.score b.sc { min-width: 40px; }
     .cfbpanel { padding: 8px 8px 12px; font-size: 12.5px; }
     .cfbgrid { gap: 6px; }
     .cfbgrid .g { padding: 3px 4px 5px; }
@@ -2221,6 +2228,16 @@ function cfbOppCell(p, cf) {
   c.className = "num score";
   if (!cf || !cf.m) return c;
   var d = cfbDef(cf, p.position), m = cf.m;
+  var sc = cf.w && cf.w.m && cf.w.m.score;
+  if (sc != null) {
+    var s = document.createElement("b"), t0 = cfbTier(sc, ((state.cfb.cuts || {})[cf.w.pos] || {}).score);
+    s.className = "sc" + (t0 == null ? "" : " t" + t0);
+    s.textContent = String(Math.round(sc));
+    s.title = "Score (rough): expected " + sc.toFixed(1) + " half-PPR this week, from his half-PPR per game and share of team " +
+      (p.position === "WR" || p.position === "TE" ? "catches" : "carries") + " so far, plus his team's implied total and spread" +
+      (t0 == null ? "" : " · " + CFB_TIER[t0] + " among " + cf.w.pos + "s this week");
+    c.appendChild(s);
+  }
   var b = document.createElement("b");
   var t = d ? ["Tough", "Average", "Great", "Elite"].indexOf(d.tier) : -1;
   b.className = t < 0 ? "" : "t" + t;
@@ -2387,11 +2404,11 @@ function render() {
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
-  $("scoreHead").textContent = isCfb ? "Opp" : "Score";
+  $("scoreHead").textContent = isCfb ? "Score · Opp" : "Score";
   $("cfbAllField").hidden = !isCfb || !state.cfbIndex;
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
-  $("scoreHead").title = isCfb ? "This week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
+  $("scoreHead").title = isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
   var atLine = state.cut != null && state.view === "order";

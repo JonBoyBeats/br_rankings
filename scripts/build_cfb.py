@@ -18,6 +18,12 @@ writer covers; source notes (analysis/cfb/takes/) are layered on top by the page
             stingiest, is cut into quarters: Tough, Average, Great, Elite. Stuff rate and line
             yards ride along for the run.
   volume    his team's plays per game and pass rate
+  score     a rough Workload Score: expected half-PPR this week, a straight-line fit per
+            position of each game's points on what was known before it (his half-PPR per game
+            and share of team carries or catches in the games he'd played, his team's implied
+            total and spread), trained on last season's games plus this season's finished ones,
+            refit every run. Past weeks' box scores, lines and last season's positions are
+            cached like the box scores, so the backfill is a one-time cost of about 35 calls.
   tiers     every per-player number is placed against qualified FBS players at his position
             this season (RB 20+ carries, WR/TE 6+ catches, QB 40+ attempts): top 15% Elite,
             next 25% Great, next 30% Average, the rest Low. Single games against single games.
@@ -121,6 +127,122 @@ def week_boxes(season, wk):
     return out
 
 
+def line_book(l):
+    books = l.get('lines') or []
+    return next((b for b in books if (b.get('provider') or '').lower() == 'consensus'), None) or \
+           next((b for b in books if b.get('spread') is not None), None)
+
+
+def team_lines(rows):
+    """{team: (implied total, spread with + = favored)} from a /lines response."""
+    out = {}
+    for l in rows:
+        book = line_book(l) or {}
+        spread, total = num(book.get('spread')), num(pick(book, 'overUnder', 'over_under'))
+        if spread is None or total is None: continue
+        for tm, fav in ((pick(l, 'homeTeam', 'home_team'), -spread), (pick(l, 'awayTeam', 'away_team'), spread)):
+            out[tm] = (round((total + fav) / 2, 1), fav)
+    return out
+
+
+def cached(name, fetch):
+    path = os.path.join(CACHE, name)
+    if os.path.exists(path) and not FIXTURE:
+        with open(path) as f: return json.load(f)
+    data = fetch()
+    if not FIXTURE:
+        os.makedirs(CACHE, exist_ok=True)
+        with open(path, 'w') as f: json.dump(data, f, separators=(',', ':'))
+    return data
+
+
+def week_lines(season, wk):
+    return cached(f'{season}_w{wk:02d}_lines.json',
+                  lambda: team_lines(get('/lines', year=season, week=wk, seasonType='regular')))
+
+
+def solve(A, b):
+    """Gaussian elimination with partial pivoting: A x = b."""
+    n = len(b); M = [row[:] + [b[i]] for i, row in enumerate(A)]
+    for c in range(n):
+        piv = max(range(c, n), key=lambda r: abs(M[r][c])); M[c], M[piv] = M[piv], M[c]
+        if abs(M[c][c]) < 1e-12: return None
+        for r in range(n):
+            if r != c:
+                f = M[r][c] / M[c][c]
+                M[r] = [x - f * y for x, y in zip(M[r], M[c])]
+    return [M[i][n] / M[i][i] for i in range(n)]
+
+
+def ols(X, y):
+    k = len(X[0]) + 1
+    A = [[0.0] * k for _ in range(k)]; b = [0.0] * k
+    for xs, t in zip(X, y):
+        v = [1.0] + list(xs)
+        for i in range(k):
+            b[i] += v[i] * t
+            for j in range(k): A[i][j] += v[i] * v[j]
+    return solve(A, b)
+
+
+def corr(a, b):
+    n = len(a); ma, mb = sum(a) / n, sum(b) / n
+    sab = sum((x - ma) * (y - mb) for x, y in zip(a, b))
+    sa = sum((x - ma) ** 2 for x in a) ** .5; sb = sum((y - mb) ** 2 for y in b) ** .5
+    return sab / (sa * sb) if sa and sb else None
+
+
+SCORE_FEATURES = ['fp_prior', 'share_prior', 'implied', 'spread']
+
+
+def score_rows(boxes, lines, pos_of):
+    """One row per player-game with at least one earlier game that season: what was known before
+    it, and the half-PPR he scored. boxes/lines/pos_of are keyed by season."""
+    rows = []
+    for season, bx in boxes.items():
+        games = {}
+        for b in bx:
+            for pid, pl in b['players'].items():
+                pos = pos_of[season].get(pid)
+                if pos in POSITIONS: games.setdefault(pid, []).append((b, pl, pos))
+        for pid, gl in games.items():
+            gl.sort(key=lambda x: x[0]['week'])
+            fps, own, tot = [], 0.0, 0.0
+            for b, pl, pos in gl:
+                k = 'rec' if pos in ('WR', 'TE') else 'car'
+                ln = lines.get((season, b['week']), {}).get(b['team'])
+                if fps and ln:
+                    fp_prior = sum(fps) / len(fps)
+                    if fp_prior >= 3:
+                        rows.append({'season': season, 'pos': pos, 'fp': pl['fp'], 'fp_prior': fp_prior,
+                                     'share_prior': own / tot if tot else 0.0, 'implied': ln[0], 'spread': ln[1]})
+                fps.append(pl['fp']); own += pl.get(k, 0); tot += b[k]
+    return rows
+
+
+def fit_scores(rows, season):
+    """Per position: fit on everything; report how last season's fit ranks this season's games."""
+    fits = {}
+    for pos in sorted(POSITIONS):
+        rs = [r for r in rows if r['pos'] == pos]
+        if len(rs) < 50: continue
+        X = lambda rr, f=SCORE_FEATURES: [[r[k] for k in f] for r in rr]
+        coef = ols(X(rs), [r['fp'] for r in rs])
+        if not coef: continue
+        fit = {'coef': dict(zip(['const'] + SCORE_FEATURES, [round(c, 4) for c in coef])), 'rows': len(rs)}
+        tr, te = [r for r in rs if r['season'] < season], [r for r in rs if r['season'] == season]
+        if len(tr) >= 50 and len(te) >= 30:
+            ct, cb = ols(X(tr), [r['fp'] for r in tr]), ols(X(tr, ['fp_prior']), [r['fp'] for r in tr])
+            if ct and cb:
+                p = [ct[0] + sum(c * v for c, v in zip(ct[1:], x)) for x in X(te)]
+                p0 = [cb[0] + cb[1] * r['fp_prior'] for r in te]
+                y = [r['fp'] for r in te]
+                fit['check'] = {'games': len(te), 'r': round(corr(p, y), 3), 'r_fp_only': round(corr(p0, y), 3)}
+        fits[pos] = fit
+        print(f'score {pos}: {fit}')
+    return fits
+
+
 def season_and_week(now):
     season = now.year if now.month >= 7 else now.year - 1
     cal = get('/calendar', year=season)
@@ -147,9 +269,7 @@ def main():
     games = [g for g in get('/games', year=season, week=week, seasonType='regular', classification='fbs')]
     lines = {}
     for l in get('/lines', year=season, week=week, seasonType='regular'):
-        books = l.get('lines') or []
-        book = next((b for b in books if (b.get('provider') or '').lower() == 'consensus'), None) or \
-               next((b for b in books if b.get('spread') is not None), None)
+        book = line_book(l)
         if book: lines[(pick(l, 'homeTeam', 'home_team'), pick(l, 'awayTeam', 'away_team'))] = book
 
     # ---- defenses: EPA (PPA) allowed per rush and per pass, garbage time excluded
@@ -241,7 +361,9 @@ def main():
             players[key] = {'id': key, 'name': name, 'team': team, 'abbr': abbr.get(team, team), 'pos': pos}
         elif pos and not players[key].get('pos'): players[key]['pos'] = pos
         return players[key]
+    pos_now = {}
     for u in get('/player/usage', year=season, excludeGarbageTime='true'):
+        if u.get('position'): pos_now[str(u.get('id'))] = u['position']
         if u.get('team') not in playing: continue
         p = rec(u.get('id'), u.get('name'), u['team'], u.get('position'))
         us = u.get('usage') or {}
@@ -321,12 +443,42 @@ def main():
     cuts = {pos: {k: cuts_of(v) for k, v in d.items()} for pos, d in pool.items()}
     for pos, d in game_pool.items():
         for k, v in d.items(): cuts.setdefault(pos, {})[k + '_g'] = cuts_of(v)
+    # ---- the rough Workload Score: last season plus this season's finished weeks
+    prev = season - 1
+    all_boxes, all_lines = {season: boxes, prev: []}, {}
+    for wk in range(1, 17):
+        try: all_boxes[prev] += week_boxes(prev, wk)
+        except Exception as e: print(f'{prev} week {wk} box scores unavailable: {e!r}')
+    for s, top in ((prev, 16), (season, week - 1)):
+        for wk in range(1, top + 1):
+            try: all_lines[(s, wk)] = {t: tuple(v) for t, v in week_lines(s, wk).items()}
+            except Exception as e: print(f'{s} week {wk} lines unavailable: {e!r}')
+    try:
+        pos_prev = cached(f'{prev}_positions.json', lambda: {str(u.get('id')): u.get('position')
+                          for u in get('/player/usage', year=prev) if u.get('position')})
+    except Exception as e:
+        print('last season positions unavailable:', e); pos_prev = {}
+    fits = fit_scores(score_rows(all_boxes, all_lines, {season: pos_now, prev: pos_prev}), season)
+    imp_mean = sum(v[0] for d in all_lines.values() for v in d.values()) / max(1, sum(len(d) for d in all_lines.values()))
+    score_pool = {}
+    for p in out:
+        f, fp = fits.get(p['pos']), p['m'].get('fp_pg')
+        if not f or fp is None: continue
+        mu = matchups.get(p['team']) or {}
+        share = p['m'].get('rec_sh' if p['pos'] in ('WR', 'TE') else 'rush_sh') or 0.0
+        x = {'fp_prior': fp, 'share_prior': share,
+             'implied': mu.get('implied') if mu.get('implied') is not None else imp_mean,
+             'spread': mu.get('spread') if mu.get('spread') is not None else 0.0}
+        p['m']['score'] = round(max(0.0, f['coef']['const'] + sum(f['coef'][k] * x[k] for k in SCORE_FEATURES)), 2)
+        if qual[p['pos']](p): score_pool.setdefault(p['pos'], []).append(p['m']['score'])
+    for pos, v in score_pool.items(): cuts.setdefault(pos, {})['score'] = cuts_of(v)
+
     implied = [m['implied'] for m in matchups.values() if m['implied'] is not None]
     plays = [m['volume']['plays_pg'] for m in matchups.values() if m.get('volume')]
     team_cuts = {'implied': cuts_of(implied), 'plays_pg': cuts_of(plays)}
 
     doc = {'season': season, 'week': week, 'built': now.strftime('%Y-%m-%dT%H:%MZ'),
-           'matchups': matchups, 'cuts': cuts, 'team_cuts': team_cuts, 'players': out}
+           'matchups': matchups, 'cuts': cuts, 'team_cuts': team_cuts, 'score_fit': fits, 'players': out}
     with open(OUT, 'w') as f: json.dump(doc, f, separators=(',', ':'))
     lined = sum(1 for m in matchups.values() if m['spread'] is not None)
     print(f'{season} week {week}: {len(games)} FBS games ({lined // 2} with lines), {len(out)} players, '
