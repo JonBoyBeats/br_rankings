@@ -287,6 +287,7 @@
   }
   .inj.d { background: #e07b3a; color: #1d0e03; }
   .inj.o { background: var(--t0); color: var(--t0-ink); }
+  .inj.p { background: #2a3140; color: #c9d1dc; }
   .pdelta {
     font-family: var(--mono); font-size: 10px; font-weight: 500;
     text-align: right; white-space: nowrap; color: var(--muted);
@@ -2024,7 +2025,7 @@ function injuryTag(status) {
   var short = { Q: "Q", D: "D", O: "O", P: "P", I: "IR" }[k] || t;
   if (/^ir|reserve/i.test(t)) short = "IR";
   var el = document.createElement("span");
-  el.className = "inj" + (k === "D" ? " d" : (k === "O" || short === "IR" || /^sus|^pup|^nfi/i.test(t)) ? " o" : "");
+  el.className = "inj" + (k === "P" ? " p" : k === "D" ? " d" : (k === "O" || short === "IR" || /^sus|^pup|^nfi/i.test(t)) ? " o" : "");
   el.textContent = short;
   el.title = "Underdog: " + t;
   return el;

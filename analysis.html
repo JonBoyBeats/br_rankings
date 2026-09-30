@@ -172,6 +172,7 @@
   }
   .inj.d { background: #e07b3a; color: #1d0e03; }
   .inj.o { background: var(--t0); color: var(--t0-ink); }
+  .inj.p { background: #2a3140; color: #c9d1dc; }
   .sc { display: flex; flex-direction: column; align-items: center; gap: 1px; }
   .sc .cell { min-width: 48px; font-size: 12px; }
   .sc .cell.thin { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .55); background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(0, 0, 0, .18) 4px 6px); }
@@ -492,7 +493,7 @@ function injuryTag(status) {
   var short = { Q: "Q", D: "D", O: "O", P: "P" }[k] || t;
   if (/^ir|reserve/i.test(t)) short = "IR";
   var el = document.createElement("span");
-  el.className = "inj" + (k === "D" ? " d" : (k === "O" || short === "IR" || /^sus|^pup|^nfi/i.test(t)) ? " o" : "");
+  el.className = "inj" + (k === "P" ? " p" : k === "D" ? " d" : (k === "O" || short === "IR" || /^sus|^pup|^nfi/i.test(t)) ? " o" : "");
   el.textContent = short;
   el.title = "Underdog: " + t;
   return el;
