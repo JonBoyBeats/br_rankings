@@ -28,6 +28,12 @@ implied total and spread, weighted by how much each moved that position's next-g
 scoring 2017-2025, then ranked 1-32 for the week: Elite 1-6, Great 7-12, Average 13-24,
 Tough 25-32.
 
+QB (light, for the page's game view): carry % = share of team carries (designed runs and
+scrambles) · RZ carry % = share of team carries inside the 20, plus XFP and FP. No Workload
+Score. Tiers are where QB ranks 3 / 6 / 12 land, worked out each run from the two seasons
+loaded (single games: the mean across weeks of each rank's value); matchups rank by the
+implied total alone, the one input with an obvious sign for a QB.
+
 Workload Score: expected half-PPR points next game (and per game over the next 3), from a
 linear model per position on the inputs above, fitted and tested in the nfl_tails repo
 (research/workload/score_fit.py) and carried here as scripts/score_model.json. The drawer
@@ -90,6 +96,11 @@ POSITIONS = {
         'matchup_w': {'opp_allowed': 0.069, 'implied_total': 0.090, 'spread': 0.0},
     },
 }
+QB = {'stats': [['carry', 'Carry %', 'Share of team carries: designed runs and scrambles'],
+                 ['rz', 'RZ carry %', 'Share of team carries inside the 20']],
+      'tiers': ['QB13+', 'QB7–12', 'QB4–6', 'QB1–3'],
+      'matchup_w': {'implied_total': 1.0}}
+QB_RANKS = [3, 6, 12]
 FPD_DIR = os.path.join(os.path.dirname(OUT), 'fpd')
 FPD_TEAM = {'ARZ': 'ARI', 'BLT': 'BAL', 'CLV': 'CLE', 'HST': 'HOU'}
 SCORE = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'score_model.json')))
@@ -203,7 +214,9 @@ def ratio(num, den):
 def role(r, pos):
     """The four role stats for one game, or for a window of summed games."""
     base = {'snap': ratio(r['offense_snaps'], r['tm_snaps'])}
-    if pos == 'RB':
+    if pos == 'QB':
+        base.update(carry=ratio(r['car'], r['tm_car']), rz=ratio(r['rzcar'], r['tm_rzcar']))
+    elif pos == 'RB':
         base.update(carry=ratio(r['car'], r['tm_car']), usage=ratio(r['tgt'] + r['car'], r['tm_tgt'] + r['tm_car']),
                     rz=ratio(r['rztgt'] + r['rzcar'], r['tm_rztgt'] + r['tm_rzcar']))
     else:
@@ -223,7 +236,7 @@ def main():
     info = players.set_index('gsis_id')
     base = pd.concat([sn[sn.offense_snaps > 0][['game_id', 'team', 'player_id']], pl[['game_id', 'team', 'player_id']]]).drop_duplicates()
     base['pos'] = base.player_id.map(info.position)
-    base = base[base.pos.isin(POSITIONS)]
+    base = base[base.pos.isin(list(POSITIONS) + ['QB'])]
     g = sched[['game_id', 'season', 'week', 'home_team', 'away_team']]
     D = (base.merge(g, on='game_id').merge(sn, on=['game_id', 'team', 'player_id'], how='left')
              .merge(tm_snaps, on=['game_id', 'team'], how='left').merge(pl, on=['game_id', 'team', 'player_id'], how='left')
@@ -269,13 +282,13 @@ def main():
         l16, last4 = d.tail(16), cur.tail(4)
         now_team = cur.team.iloc[-1]
         games = []
-        rec = lambda r: receiving(r) if pos != 'RB' else {}
+        rec = lambda r: receiving(r) if pos in ('WR', 'TE') else {}
         for r in last4.to_dict('records'):
             games.append({'wk': int(r['week']), 'opp': r['opp'], **role(r, pos), **rec(r),
                           'xfp': None if pd.isna(r['xfp']) else round(float(r['xfp']), 1), 'fp': round(float(r['fp']), 1)})
         x16, x4 = l16.xfp.dropna(), last4.xfp.dropna()
         mean16 = {}
-        if pos != 'RB':
+        if pos in ('WR', 'TE'):
             vals = [receiving(r) for r in l16.to_dict('records')]
             for k in ('route', 'fr'):
                 v = [x[k] for x in vals if x[k] is not None]
@@ -307,10 +320,10 @@ def main():
             implied = (r.total_line + spread) / 2 if pd.notna(r.total_line) else np.nan
             sides.append({'team': tm, 'opp': op, 'home': home, 'implied_total': implied, 'spread': spread, 'kickoff': str(r.gameday)})
     M = pd.DataFrame(sides)
-    matchups = {pos: {} for pos in POSITIONS}
+    matchups = {pos: {} for pos in list(POSITIONS) + ['QB']}
     if len(M):
         M = M.fillna({'implied_total': M.implied_total.mean(), 'spread': 0})
-        for pos, cfg in POSITIONS.items():
+        for pos, cfg in list(POSITIONS.items()) + [('QB', QB)]:
             P = M.copy()
             P['opp_allowed'] = [float(opp_allowed.get((o, pos), np.nan)) for o in P.opp]
             P['opp_allowed'] = P.opp_allowed.fillna(P.opp_allowed.mean())
@@ -324,8 +337,8 @@ def main():
 
     # Workload Score, for everyone with a game next week
     for r in rows:
-        x, m, sm = r.pop('_x'), matchups[r['pos']].get(r['team']), SCORE[r['pos']]
-        if not m: continue
+        x, m, sm = r.pop('_x'), matchups[r['pos']].get(r['team']), SCORE.get(r['pos'])
+        if not m or not sm: continue
         x.update(opp_allowed=m['opp_allowed'], imp_tot=m['implied_total'], spread=m['spread'])
         vals = [sm['fill'][f] if x.get(f) is None or pd.isna(x.get(f)) else x[f] for f in sm['features']]
         parts = {'baseline': sm['intercept'], 'role': 0.0, 'matchup': 0.0}
@@ -346,9 +359,27 @@ def main():
             r['score']['rank'] = i
             r['score']['tier'] = 3 - sum(i > cap for cap in SCORE_RANKS[pos])
 
+    # QB tiers: where QB ranks 3 / 6 / 12 land
+    qb_rows = [r for r in rows if r['pos'] == 'QB']
+    def at_ranks(vals):
+        v = sorted((x for x in vals if x is not None), reverse=True)
+        return [round(float(v[min(k, len(v)) - 1]), 3) for k in QB_RANKS] if len(v) >= QB_RANKS[-1] else None
+    Q = D[D.pos == 'QB'].copy()
+    Q['carry'] = Q.car / Q.tm_car.where(Q.tm_car > 0)
+    Q['rz'] = Q.rzcar / Q.tm_rzcar.where(Q.tm_rzcar > 0)
+    game_cut = lambda k: [round(float(x), 3) for x in np.mean([at_ranks(w[k].dropna().tolist()) for _, w in Q.groupby(['season', 'week'])
+                                                             if at_ranks(w[k].dropna().tolist())], axis=0)]
+    full = [r for r in qb_rows if r['l16_games'] >= 4]
+    qcfg = {'stats': QB['stats'], 'tiers': QB['tiers'],
+            'cuts': {'carry': {'game': game_cut('carry'), 'l16': at_ranks([r['l16'].get('carry') for r in full])},
+                     'rz': {'game': game_cut('rz'), 'l16': at_ranks([r['l16'].get('rz') for r in full])},
+                     'xfp': {'l4': at_ranks([r['l4']['xfp'] for r in qb_rows]), 'l16': at_ranks([r['l16']['xfp'] for r in full])},
+                     'fp': {'l4': at_ranks([r['l4']['fp'] for r in qb_rows]), 'l16': at_ranks([r['l16']['fp'] for r in full])}}}
+    print('QB cuts:', qcfg['cuts'])
+
     doc = {'season': season, 'through_week': through, 'next_week': through + 1,
            'built': time.strftime('%Y-%m-%dT%H:%MZ', time.gmtime()),
-           'positions': {p: {k: v for k, v in c.items()} for p, c in POSITIONS.items()},
+           'positions': {**{p: {k: v for k, v in c.items()} for p, c in POSITIONS.items()}, 'QB': qcfg},
            'matchups': matchups,
            'score_model': {p: {'features': m['features'], 'metrics': m['metrics']} for p, m in SCORE.items()},
            'players': sorted(rows, key=lambda r: -(r['l4']['xfp'] or 0))}

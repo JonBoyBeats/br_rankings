@@ -138,6 +138,13 @@
     font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
     padding: 5px 12px; border-bottom: 1px solid var(--line); border-top: 2px dashed var(--line-strong); background: var(--bg);
   }
+  /* Game view: one header per team, then its QB, RB1-2, WR1-3 and TE. */
+  .team-row {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 8px 12px;
+    border-bottom: 1px solid var(--line); border-top: 2px solid var(--line-strong); background: var(--bg);
+  }
+  .team-row b { font-size: 15px; }
+  .team-row span { font-family: var(--mono); font-size: 11px; color: var(--muted); }
   .who { min-width: 0; display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
   .name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .team { font-family: var(--mono); font-size: 11px; color: var(--muted); }
@@ -303,6 +310,10 @@
         <select id="team"><option value="">All teams</option></select>
       </label>
       <label class="field">
+        <span class="field-label">Game</span>
+        <select id="game"><option value="">All games</option></select>
+      </label>
+      <label class="field">
         <span class="field-label">Sort</span>
         <select id="sort">
           <option value="board" id="sortBoard" hidden>Board order</option>
@@ -441,7 +452,7 @@ function fullOrder(slatePlayers, saved) {
 var state = {
   data: null, takes: [], sources: {}, positions: {}, matchups: {},
   scope: "all", pos: "", slateLabel: null, slates: [], nameMap: {}, pool: {},
-  search: "", team: "", sort: "score", depth: true, open: {}, proj: {}, projPct: 85, projUsual: {}
+  search: "", team: "", game: "", sort: "score", depth: true, open: {}, proj: {}, projPct: 85, projUsual: {}
 };
 var $ = function (id) { return document.getElementById(id); };
 function load(key, fallback) {
@@ -457,7 +468,7 @@ async function getJson(url) {
 }
 
 function cfg(p) { return state.positions[p.pos]; }
-function shownPositions() { return state.pos ? [state.pos] : POS_ORDER; }
+function shownPositions() { return state.game ? POS_ORDER.concat("QB") : state.pos ? [state.pos] : POS_ORDER; }
 function matchupOf(p) { var m = state.matchups[p.pos]; return m ? m[p.team] : null; }
 
 // ---------------------------------------------------------------- slate
@@ -597,10 +608,39 @@ function flash(text) {
   setTimeout(function () { if (Date.now() >= flashUntil) render(); }, 4600);
 }
 
-function draggable() { return state.scope === "slate" && state.sort === "board"; }
+function draggable() { return state.scope === "slate" && state.sort === "board" && !state.game; }
 
 // ---------------------------------------------------------------- rows
+/** Out for the week by Underdog's designation (O, IR, suspended, PUP, NFI). */
+function isOut(p) {
+  var ud = udFor(p), t = ud && ud.injury ? String(ud.injury).trim() : "";
+  return /^(o|ir|reserve|sus|pup|nfi)/i.test(t);
+}
+
+/* Game view slots, in study order. RBs and WRs rank by Workload Score (XFP over the last 4
+   without one); the QB is whoever took the snaps in the team's latest game. */
+var GAME_SLOTS = [["QB", 1], ["RB", 2], ["WR", 3], ["TE", 1]];
+function gameRows() {
+  var sides = state.game.split("@"), list = [];
+  sides.forEach(function (team) {
+    GAME_SLOTS.forEach(function (sl) {
+      var pos = sl[0];
+      var mine = state.data.players.filter(function (p) { return p.team === team && p.pos === pos && !isOut(p); });
+      var lastWk = function (p) { var g = p.games[p.games.length - 1]; return g ? g.wk : 0; };
+      var lastSnap = function (p) { var g = p.games[p.games.length - 1]; return g && g.snap != null ? g.snap : 0; };
+      mine.sort(pos === "QB"
+        ? function (a, b) { return lastWk(b) - lastWk(a) || lastSnap(b) - lastSnap(a); }
+        : function (a, b) { return (b.score ? b.score.next : -1) - (a.score ? a.score.next : -1) || (b.l4.xfp || 0) - (a.l4.xfp || 0); });
+      mine.slice(0, sl[1]).forEach(function (p, i) {
+        list.push({ p: p, idx: null, slot: pos + (sl[1] > 1 ? i + 1 : ""), side: team });
+      });
+    });
+  });
+  return { list: list, missing: [], cut: null };
+}
+
 function visible() {
+  if (state.game) return gameRows();
   var list, missing = [], cut = null;
   if (state.scope === "slate") {
     var got = slateRows();
@@ -765,12 +805,15 @@ function muCell(p) {
 /** Column labels for whichever positions are showing, e.g. "Carry % (RB) · Target %" for all. */
 function statLabels() {
   return [0, 1, 2, 3].map(function (i) {
-    var seen = [];
+    var seen = [], by = {};
     shownPositions().forEach(function (x) {
-      var st = state.positions[x].stats[i];
-      if (seen.indexOf(st[1]) < 0) seen.push(st[1]);
+      var st = state.positions[x] && state.positions[x].stats[i];
+      if (!st) return;
+      if (seen.indexOf(st[1]) < 0) { seen.push(st[1]); by[st[1]] = []; }
+      by[st[1]].push(x);
     });
-    return seen.map(function (l, j) { return seen.length > 1 && j === 0 ? l + " (RB)" : l; }).join(" · ");
+    // mixed positions: tag every label the pass catchers don't share, e.g. "Snap % (RB)"
+    return seen.map(function (l) { return seen.length > 1 && by[l].indexOf("WR") < 0 ? l + " (" + by[l].join("/") + ")" : l; }).join(" · ");
   });
 }
 
@@ -787,7 +830,7 @@ function renderHead() {
        '<span style="text-align:center" title="Workload score: expected half-PPR next game. Under it, the gap to your projection.">Score<span class="sub">next game</span></span>' +
        '<span>Matchup<span class="sub">Week ' + state.data.next_week + '</span></span>';
   $("head").innerHTML = h;
-  $("phoneKey").innerHTML = labels.map(function (l) { return "<span>" + l.replace(/ %| \(RB\)/g, "").replace("Air yd", "AY") + "</span>"; }).join("") + "<span>XFP</span><span>FP</span>";
+  $("phoneKey").innerHTML = labels.map(function (l) { return "<span>" + l.replace(/ %| \([A-Z/]+\)/g, "").replace("Air yd", "AY") + "</span>"; }).join("") + "<span>XFP</span><span>FP</span>";
   var lg = "";
   var ranges = function (t) { return shownPositions().map(function (x) { return state.positions[x].tiers[t]; }).join(" · "); };
   [3, 2, 1, 0].forEach(function (t) { lg += '<span><i style="background:var(--t' + t + ')"></i>' + TIER_NAMES[t] + " · " + ranges(t) + "</span>"; });
@@ -807,6 +850,8 @@ function render() {
     else if (got.missing.length) $("notice").textContent = got.missing.length + " slate player" + (got.missing.length === 1 ? " has" : "s have") +
       " no workload data (no " + state.data.season + " snaps, or a name spelled differently): " + got.missing.join(", ");
   }
+  if (state.game) $("notice").textContent = "Game view: each team's QB, top two RBs, top three WRs and top TE by Workload Score, " +
+    "skipping anyone Underdog lists as out. The other filters wait until you pick All games.";
   if (flashMsg && Date.now() < flashUntil) $("notice").textContent = flashMsg;
   if (!got.list.length) {
     host.innerHTML = '<div class="empty">No players match these filters.</div>';
@@ -823,6 +868,7 @@ function render() {
       ln.textContent = "The line · below it the board sorts by projection";
       frag.appendChild(ln);
     }
+    if (r.side && (i === 0 || got.list[i - 1].side !== r.side)) frag.appendChild(teamRow(r.side));
     frag.appendChild(playerRow(r, i, drag));
     if (state.open[r.p.id]) frag.appendChild(drawer(r.p));
   });
@@ -849,7 +895,7 @@ function playerRow(r, i, drag) {
     gr.setAttribute("aria-label", "Move " + p.name + " (arrow keys)");
     rank.appendChild(gr);
   }
-  rank.appendChild(document.createTextNode(r.idx != null ? r.idx + 1 : i + 1));
+  if (!r.slot) rank.appendChild(document.createTextNode(r.idx != null ? r.idx + 1 : i + 1));
   rank.title = r.idx != null ? "Your board rank" : "Row number";
 
   var who = document.createElement("span");
@@ -857,7 +903,7 @@ function playerRow(r, i, drag) {
   var n = document.createElement("span"); n.className = "name"; n.textContent = p.name;
   var ud = udFor(p);
   var tm = document.createElement("span"); tm.className = "team";
-  tm.textContent = p.team + (state.pos ? "" : " · " + p.pos) + (ud && ud.adp != null ? " · ADP " + ud.adp.toFixed(1) : "");
+  tm.textContent = p.team + (r.slot ? " · " + r.slot : state.pos ? "" : " · " + p.pos) + (ud && ud.adp != null ? " · ADP " + ud.adp.toFixed(1) : "");
   who.append(n, tm);
   var inj = ud && injuryTag(ud.injury);
   if (inj) who.appendChild(inj);
@@ -865,10 +911,27 @@ function playerRow(r, i, drag) {
   var strip = document.createElement("span");
   strip.className = "strip";
   cfg(p).stats.forEach(function (s) { strip.appendChild(roleGroup(p, s[0], s[1])); });
+  for (var k = cfg(p).stats.length; k < 4; k++) strip.appendChild(document.createElement("span"));   // QB: two stats
   strip.appendChild(baseGroup(p, "xfp", "Expected points"));
   strip.appendChild(baseGroup(p, "fp", "Fantasy points"));
 
   el.append(rank, who, strip, scoreCell(p), muCell(p));
+  return el;
+}
+
+/** Game view: the team, its opponent and its line. */
+function teamRow(team) {
+  var el = document.createElement("div");
+  el.className = "team-row";
+  var m = (state.matchups.RB || {})[team];
+  var b = document.createElement("b"); b.textContent = team;
+  el.appendChild(b);
+  if (m) {
+    var s = document.createElement("span");
+    s.textContent = (m.home ? "vs " : "@ ") + m.opp + " · implied " + m.implied_total.toFixed(1) + " · " +
+      (m.spread > 0 ? "favored by " + m.spread : m.spread < 0 ? "underdog by " + (-m.spread) : "pick'em");
+    el.appendChild(s);
+  }
   return el;
 }
 
@@ -1096,6 +1159,7 @@ $("slate").addEventListener("change", function (e) {
 });
 $("search").addEventListener("input", function (e) { state.search = e.target.value; render(); });
 $("team").addEventListener("change", function (e) { state.team = e.target.value; render(); });
+$("game").addEventListener("change", function (e) { state.game = e.target.value; state.open = {}; render(); });
 $("sort").addEventListener("change", function (e) { state.sort = e.target.value; save("brr:analysis:sort", state.sort); render(); });
 $("openAll").addEventListener("click", function () {
   var any = Object.keys(state.open).some(function (k) { return state.open[k]; });
@@ -1154,6 +1218,17 @@ window.addEventListener("storage", function (e) {
   }
   var teams = Array.from(new Set(state.data.players.map(function (p) { return p.team; }))).sort();
   teams.forEach(function (t) { var o = document.createElement("option"); o.value = t; o.textContent = t; $("team").appendChild(o); });
+  // next week's games, away @ home, in kickoff order
+  var mu = state.matchups.RB || {}, games = [];
+  Object.keys(mu).forEach(function (t) { if (mu[t].home) games.push({ away: mu[t].opp, home: t, at: mu[t].kickoff || "" }); });
+  games.sort(function (a, b) { return a.at.localeCompare(b.at) || a.away.localeCompare(b.away); });
+  games.forEach(function (g) {
+    var o = document.createElement("option");
+    o.value = g.away + "@" + g.home;
+    var d = g.at ? new Date(g.at + "T12:00:00") : null;
+    o.textContent = g.away + " @ " + g.home + (d && !isNaN(d) ? " · " + d.toLocaleDateString(undefined, { weekday: "short" }) : "");
+    $("game").appendChild(o);
+  });
   renderMeta();
   loadProjections();
   await loadSlates();
