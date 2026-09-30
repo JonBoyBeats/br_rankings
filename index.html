@@ -3212,6 +3212,17 @@ async function doExport() {
       return;
     }
     var changed = slate.slate_id !== state.slate.slate_id;
+    // The mirror lists only priced players; the ones added from the unpriced pool come
+    // back from the pool file, or they would drop out of the export and off the board.
+    var addedIds = Object.keys(state.added), lostAdded = 0;
+    if (addedIds.length) {
+      var pool = await loadPool(slate), have = {}, want = {};
+      slate.players.forEach(function (p) { have[p.player_id] = 1; });
+      addedIds.forEach(function (id) { want[id] = 1; });
+      var back = pool.players.filter(function (p) { return want[p.player_id] && !have[p.player_id]; });
+      lostAdded = addedIds.filter(function (id) { return !have[id]; }).length - back.length;
+      slate = Object.assign({}, slate, { players: slate.players.concat(back) });
+    }
     var byPid = byPidMap(slate);
     var rec = reconcileOrder(slate.players, state.order);
     var onSlate = {};
@@ -3255,8 +3266,12 @@ async function doExport() {
       msg += " " + built.missing.length + " player" + (built.missing.length === 1 ? "" : "s") +
              " in your order are no longer on the slate and were left out.";
     }
+    if (lostAdded > 0) {
+      msg += " " + lostAdded + " player" + (lostAdded === 1 ? "" : "s") + " you added could not be found in the slate's " +
+             "unpriced pool and were left out.";
+    }
     if (changed) msg += " The mirror had refreshed to a newer slate, so the board reloaded onto it.";
-    setStatus(msg, changed || built.missing.length ? "warn" : null);
+    setStatus(msg, changed || built.missing.length || lostAdded > 0 ? "warn" : null);
   } catch (err) {
     setStatus("Export failed: " + err.message + ". Nothing was saved as a baseline.", "bad");
   } finally {
