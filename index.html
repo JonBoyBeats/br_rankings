@@ -2122,6 +2122,12 @@ function cfbFor(p) {
   var takes = state.cfbTakes.filter(function (t) {
     return normName(t.player) === boardKey(p.first_name, p.last_name, state.nameMaps.cfb);
   });
+  // until a pass-catcher write-up lands, WR/TE rows carry their quarterback's note for context
+  if (p.position === "WR" || p.position === "TE") {
+    state.cfbTakes.forEach(function (t) {
+      if (t.pos === "QB" && t.team === p.team) takes.push(Object.assign({ _via: true }, t));
+    });
+  }
   if (!hit && !takes.length) return null;
   var m = hit && state.cfb.matchups[hit.team];
   return { w: hit, m: m || null, takes: takes };
@@ -2151,7 +2157,8 @@ function cfbWho(who, p, cf) {
   }
   var b = document.createElement("button");
   b.type = "button";
-  b.className = "cfbx" + (cf.takes.length ? " has-note" : "");
+  var own = cf.takes.filter(function (t) { return !t._via; });
+  b.className = "cfbx" + (own.length ? " has-note" : "");
   b.textContent = state.cfbOpen[p.player_id] ? "▴" : "▾";
   b.title = cf.takes.length ? "Details and " + cf.takes.map(function (t) { return t.source; }).join(", ") + "'s note" : "Details";
   b.addEventListener("click", function (e) {
@@ -2302,8 +2309,8 @@ function cfbPanel(p, cf) {
 
   cf.takes.forEach(function (t) {
     var n = document.createElement("div"); n.className = "note";
-    var tags = [t.role, t.rush_share ? t.rush_share + "% rush share" : null, t.workload, t.status].filter(Boolean).join(" · ");
-    n.innerHTML = "<div class=\"top\"><b>" + esc(t.source) + "</b>" + (t.verdict ? " <span class=\"verdict v-" + esc(t.verdict.toLowerCase()) + "\">" + esc(t.verdict) + "</span>" : "") +
+    var tags = [t.role, t.rush_share ? t.rush_share + "% rush share" : null, t.workload, t.stack, t.status].filter(Boolean).join(" · ");
+    n.innerHTML = "<div class=\"top\"><b>" + esc(t.source) + "</b>" + (t._via ? " <span class=\"lbl\">on his QB, " + esc(t.player) + "</span>" : "") + (t.verdict ? " <span class=\"verdict v-" + esc(t.verdict.toLowerCase()) + "\">" + esc(t.verdict) + "</span>" : "") +
       (tags ? " <span class=\"lbl\">" + esc(tags) + "</span>" : "") + "</div>" +
       (t.evidence || t.matchup ? "<div class=\"ev\">" + esc([t.evidence, t.matchup].filter(Boolean).join(" · ")) + "</div>" : "") +
       (t.note ? "<div>" + esc(t.note) + "</div>" : "");
