@@ -299,13 +299,39 @@
   .cfbx:focus-visible { outline: 2px solid var(--accent); }
   .board.cfb .num.score b { min-width: 44px; }
   .cfbpanel {
-    padding: 8px 12px 12px 78px; border-bottom: 1px solid var(--line); background: var(--surface-2);
-    font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 3px;
+    padding: 10px 12px 14px 78px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+    font-size: 13px; line-height: 1.45; display: flex; flex-direction: column; gap: 10px;
   }
-  .cfbpanel .lbl { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-right: 8px; text-transform: uppercase; letter-spacing: .04em; }
-  .cfbpanel .note { margin-top: 6px; }
+  /* Colour cells, the same scale as the Analysis page: Elite / Great / Average / Low. */
+  .cfbpanel .cell, .who .share .cell {
+    display: inline-block; min-width: 30px; height: 22px; line-height: 22px; padding: 0 4px; text-align: center;
+    font-family: var(--mono); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+    border-radius: 4px; background: #1a1e27; color: var(--muted);
+  }
+  .who .share .cell { height: 18px; line-height: 18px; min-width: 0; font-size: 10.5px; }
+  .who .share { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .cfbpanel .cell.t3, .who .share .cell.t3 { background: var(--t3); color: var(--t3-ink); }
+  .cfbpanel .cell.t2, .who .share .cell.t2 { background: var(--t2); color: var(--t2-ink); }
+  .cfbpanel .cell.t1, .who .share .cell.t1 { background: var(--t1); color: var(--t1-ink); }
+  .cfbpanel .cell.t0, .who .share .cell.t0 { background: var(--t0); color: var(--t0-ink); }
+  .cfbpanel .cell.l16 { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .28); }
+  .cfbpanel .cell.blank { background: transparent; }
+  .cfbpanel .cell.text { color: var(--ink); background: transparent; box-shadow: inset 0 0 0 1px var(--line-strong); }
+  .cfbgrid { display: flex; flex-wrap: wrap; gap: 8px 10px; }
+  .cfbgrid .g { background: #0c0f15; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px 6px; }
+  .cfbgrid .gl { font-family: var(--mono); font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; white-space: nowrap; }
+  .cfbgrid .gl small { text-transform: none; letter-spacing: 0; opacity: .75; margin-left: 5px; }
+  .cfbgrid .gc { display: flex; gap: 3px; align-items: center; }
+  .cfbgrid .div { width: 1px; height: 16px; background: var(--line-strong); margin: 0 2px; }
+  .cfbpanel .fine { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .cfbpanel .note .top { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+  .cfbpanel .lbl { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
   .cfbpanel .ev { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
-  .cfbpanel .verdict { font-family: var(--mono); font-size: 10px; padding: 1px 5px; border-radius: 4px; background: var(--neutral-pill, #2a3140); }
+  .cfbpanel .verdict { font-family: var(--mono); font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--neutral-pill, #2a3140); }
+  .cfbpanel .verdict.v-great { background: var(--t3); color: var(--t3-ink); }
+  .cfbpanel .verdict.v-good { background: var(--t2); color: var(--t2-ink); }
+  .cfbpanel .verdict.v-gpp, .cfbpanel .verdict.v-stack, .cfbpanel .verdict.v-conditional { background: var(--t1); color: var(--t1-ink); }
+  .cfbpanel .verdict.v-pass { background: var(--t0); color: var(--t0-ink); }
   .pdelta {
     font-family: var(--mono); font-size: 10px; font-weight: 500;
     text-align: right; white-space: nowrap; color: var(--muted);
@@ -392,7 +418,9 @@
     .board.cfb .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 54px 32px; }
     .board.cfb.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 22px 54px 32px; }
     .board.cfb .num.score b { min-width: 40px; font-size: 10px; }
-    .cfbpanel { padding: 8px 10px 12px; font-size: 12.5px; }
+    .cfbpanel { padding: 8px 8px 12px; font-size: 12.5px; }
+    .cfbgrid { gap: 6px; }
+    .cfbgrid .g { padding: 3px 4px 5px; }
     .board.cfb .who .share { display: none; }       /* the name keeps the room; the dropdown has it */
     .num.own i { display: none; }
     .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
@@ -2103,18 +2131,23 @@ function pctOf(v) { return v == null ? "–" : Math.round(v * 100) + "%"; }
 
 /** On the name line: his share of the team's work, and a toggle for the dropdown. */
 function cfbWho(who, p, cf) {
-  var u = cf.w && cf.w.usage;
-  if (u) {
-    var passer = p.position === "WR" || p.position === "TE";
-    var sh = document.createElement("span");
-    sh.className = "sub share";
-    sh.textContent = passer ? pctOf(u.pass) + " pass" : pctOf(u.rush) + " rush";
-    var lg = cf.w.last && cf.w.last[cf.w.last.length - 1];
-    var lv = lg && (passer ? lg.rec_sh : lg.rush_sh), sv = passer ? u.pass : u.rush;
-    if (lv != null && sv != null && Math.abs(lv - sv) >= 0.10) sh.textContent += " · last " + pctOf(lv);
-    sh.title = "Share of his team's " + (passer ? "pass plays" : "rushes") + " he was involved in this season (garbage time excluded); " +
-      pctOf(u.overall) + " of all plays";
-    who.appendChild(sh);
+  var mm = cf.w && cf.w.m;
+  if (mm) {
+    var passer = p.position === "WR" || p.position === "TE", k = passer ? "rec_sh" : "rush_sh";
+    var cuts = ((state.cfb.cuts || {})[cf.w.pos || p.position] || {});
+    if (mm[k] != null) {
+      var sh = document.createElement("span");
+      sh.className = "share";
+      var c = cfbCell(mm[k], cfbTier(mm[k], cuts[k]), cfbFmt(mm[k], "pct") + "%");
+      var lg = cf.w.last && cf.w.last[cf.w.last.length - 1], lv = lg && lg[k];
+      sh.append(c, document.createTextNode(passer ? " catch" : " rush"));
+      if (lv != null && Math.abs(lv - mm[k]) >= 0.10) {
+        sh.appendChild(document.createTextNode(" · last "));
+        sh.appendChild(cfbCell(lv, cfbTier(lv, cuts[k + "_g"]), cfbFmt(lv, "pct") + "%"));
+      }
+      sh.title = "Share of his team's " + (passer ? "catches" : "carries") + " this season" + (lv != null ? "; last game " + cfbFmt(lv, "pct") + "%" : "");
+      who.appendChild(sh);
+    }
   }
   var b = document.createElement("button");
   b.type = "button";
@@ -2151,45 +2184,127 @@ function cfbOppCell(p, cf) {
   return c;
 }
 
+/* What each position's dropdown shows, left to right by importance: [metric, label, format, has game cells]. */
+var CFB_GROUPS = {
+  RB: [["rush_sh", "Rush share", "pct", "rush_sh"], ["rec_sh", "Catch share", "pct", "rec_sh"], ["touch_pg", "Touches/g", "n0"],
+       ["ypc", "YPC", "n1"], ["td_pg", "TD/g", "n1"]],
+  WR: [["rec_sh", "Catch share", "pct", "rec_sh"], ["pass_use", "Pass-play share", "pct"], ["rec_pg", "Rec/g", "n1"],
+       ["yds_pg", "Rec yds/g", "n0"], ["td_pg", "TD/g", "n1"]],
+  QB: [["rush_sh", "Rush share", "pct", "rush_sh"], ["pass_yds_pg", "Pass yds/g", "n0"], ["pass_td_pg", "Pass TD/g", "n1"],
+       ["rush_yds_pg", "Rush yds/g", "n0"]]
+};
+CFB_GROUPS.TE = CFB_GROUPS.WR;
+var CFB_TIER = ["Low", "Average", "Great", "Elite"];
+
+function cfbTier(v, cuts) {
+  if (v == null || !cuts) return null;
+  return v >= cuts[0] ? 3 : v >= cuts[1] ? 2 : v >= cuts[2] ? 1 : 0;
+}
+function cfbFmt(v, f) {
+  if (v == null) return "–";
+  return f === "pct" ? String(Math.round(v * 100)) : f === "n1" ? v.toFixed(1) : String(Math.round(v));
+}
+function cfbCell(v, t, text, extra, title) {
+  var c = document.createElement("span");
+  c.className = "cell" + (t == null ? "" : " t" + t) + (extra ? " " + extra : "");
+  c.textContent = text;
+  if (title) c.title = title;
+  return c;
+}
+function cfbGroup(label, sub, cells) {
+  var g = document.createElement("div"); g.className = "g";
+  var l = document.createElement("div"); l.className = "gl"; l.textContent = label;
+  if (sub) { var s = document.createElement("small"); s.textContent = sub; l.appendChild(s); }
+  var c = document.createElement("div"); c.className = "gc";
+  cells.forEach(function (x) { c.appendChild(x); });
+  g.append(l, c);
+  return g;
+}
+
+/**
+ * The dropdown: colour first, numbers second. Every cell is placed against qualified FBS
+ * players at his position (games against games), so a glance says how much better one
+ * player's role and spot are than another's; the fine print underneath has the raw lines.
+ */
 function cfbPanel(p, cf) {
   var d = document.createElement("div");
   d.className = "cfbpanel";
-  var w = cf.w, m = cf.m, lines = [];
-  function line(label, html) { lines.push("<div><span class=\"lbl\">" + label + "</span>" + html + "</div>"); }
-  function n0(v) { return v == null ? "–" : String(Math.round(v)); }
+  var w = cf.w, m = cf.m, doc = state.cfb || {};
+  var pos = (w && w.pos) || p.position, cuts = (doc.cuts || {})[pos] || {};
+
   if (w) {
-    var u = w.usage || {}, r = w.rush || {}, rc = w.rec || {}, ps = w.pass || {}, g = w.games || null;
-    line("Usage", pctOf(u.rush) + " of team rushes · " + pctOf(u.pass) + " of pass plays · " + pctOf(u.overall) + " of all plays");
-    if (r.car) line("Rushing", n0(r.car) + " car" + (g ? " (" + (r.car / g).toFixed(1) + "/g)" : "") + " · " + n0(r.yds) + " yds · " +
-      (r.ypc != null ? r.ypc.toFixed(1) : "–") + " ypc · " + n0(r.td) + " TD");
-    if (rc.rec) line("Receiving", n0(rc.rec) + " rec · " + n0(rc.yds) + " yds · " + n0(rc.td) + " TD");
-    if (w.last && w.last.length) line("Last " + w.last.length, w.last.slice().reverse().map(function (g) {
-      return "Wk" + g.wk + " " + (g.home ? "" : "@") + g.opp + ": " + n0(g.car) + " car (" + pctOf(g.rush_sh) + ")" +
-        (g.rec ? ", " + n0(g.rec) + " rec (" + pctOf(g.rec_sh) + ")" : "");
-    }).join(" · "));
-    if (ps.att) line("Passing", n0(ps.cmp) + "/" + n0(ps.att) + " · " + n0(ps.yds) + " yds · " + n0(ps.td) + " TD · " + n0(ps.int) + " INT");
+    var grid = document.createElement("div"); grid.className = "cfbgrid";
+    (CFB_GROUPS[pos] || CFB_GROUPS.RB).forEach(function (spec) {
+      var k = spec[0], v = (w.m || {})[k], t = cfbTier(v, cuts[k]);
+      var cells = [cfbCell(v, t, cfbFmt(v, spec[2]), "l16", spec[1] + ", season: " + cfbFmt(v, spec[2]) + (spec[2] === "pct" ? "%" : "") +
+        (t == null ? "" : " · " + CFB_TIER[t] + " for a " + pos))];
+      if (spec[3]) {
+        var games = w.last || [];
+        cells.push(Object.assign(document.createElement("span"), { className: "div" }));
+        for (var i = 0; i < 3; i++) {
+          var gm = games[i - (3 - games.length)];
+          if (!gm) { cells.push(cfbCell(null, null, "", "blank")); continue; }
+          var gv = gm[spec[3]], gt = cfbTier(gv, cuts[spec[3] + "_g"]);
+          cells.push(cfbCell(gv, gt, cfbFmt(gv, "pct"), null, "Wk" + gm.wk + " " + (gm.home ? "vs " : "@ ") + gm.opp + ": " +
+            (spec[3] === "rush_sh" ? gm.car + " car" : gm.rec + " rec") + " (" + cfbFmt(gv, "pct") + "%)" + (gt == null ? "" : " · " + CFB_TIER[gt])));
+        }
+      }
+      grid.appendChild(cfbGroup(spec[1], spec[3] ? "season ¦ last 3" : "season", cells));
+    });
+    d.appendChild(grid);
+  }
+
+  if (m) {
+    var tc = doc.team_cuts || {}, rd = m.opp_run_d, pd = m.opp_pass_d;
+    var dt = function (x) { return x ? ["Tough", "Average", "Great", "Elite"].indexOf(x.tier) : null; };
+    var mg = document.createElement("div"); mg.className = "cfbgrid";
+    mg.appendChild(cfbGroup("Implied", "team total", [cfbCell(m.implied, cfbTier(m.implied, tc.implied), m.implied == null ? "–" : String(Math.round(m.implied)), null,
+      m.total != null ? "Total " + m.total : "No line yet")]));
+    mg.appendChild(cfbGroup("Line", m.home ? "home" : m.neutral ? "neutral" : "road", [cfbCell(null, null,
+      m.spread == null ? "–" : m.spread > 0 ? "−" + m.spread : m.spread < 0 ? "+" + (-m.spread) : "PK", "text",
+      m.spread == null ? "No line yet" : m.spread > 0 ? "Favored by " + m.spread : m.spread < 0 ? "Underdog by " + (-m.spread) : "Pick'em")]));
+    mg.appendChild(cfbGroup("Opp run D", m.opp_abbr, [cfbCell(null, dt(rd), rd ? "#" + rd.rank : "–", null,
+      rd ? m.opp + " run D #" + rd.rank + " of " + rd.of + " by EPA allowed (" + rd.tier + ")" : "")]));
+    mg.appendChild(cfbGroup("Opp pass D", m.opp_abbr, [cfbCell(null, dt(pd), pd ? "#" + pd.rank : "–", null,
+      pd ? m.opp + " pass D #" + pd.rank + " of " + pd.of + " by EPA allowed (" + pd.tier + ")" : "")]));
+    var pl = m.volume && m.volume.plays_pg;
+    mg.appendChild(cfbGroup("Plays/g", w ? w.abbr : "team", [cfbCell(pl, cfbTier(pl, tc.plays_pg), pl == null ? "–" : String(Math.round(pl)), null,
+      m.volume ? Math.round(m.volume.pass_rate * 100) + "% pass" : "")]));
+    d.appendChild(mg);
+  }
+
+  // the raw lines, in small print, for when the colours need a second look
+  var fine = [];
+  if (w) {
+    var r = w.rush || {}, rc = w.rec || {}, ps = w.pass || {}, u = w.usage || {};
+    if (ps.att) fine.push(Math.round(ps.cmp) + "/" + Math.round(ps.att) + ", " + Math.round(ps.yds) + " pass yds, " + Math.round(ps.td) + " TD, " + Math.round(ps.int) + " INT");
+    if (r.car) fine.push(Math.round(r.car) + " car, " + Math.round(r.yds) + " yds, " + (r.ypc != null ? r.ypc.toFixed(1) : "–") + " ypc, " + Math.round(r.td) + " TD");
+    if (rc.rec) fine.push(Math.round(rc.rec) + "-" + Math.round(rc.yds) + "-" + Math.round(rc.td) + " receiving");
+    if (u.overall != null) fine.push(pctOf(u.overall) + " of all plays (no garbage time)");
   }
   if (m) {
-    var rd = m.opp_run_d, pd = m.opp_pass_d;
-    line("Matchup", (m.home ? "vs " : m.neutral ? "vs " : "@ ") + m.opp +
-      (m.spread != null ? " · " + (m.spread > 0 ? "favored by " + m.spread : m.spread < 0 ? "underdog by " + (-m.spread) : "pick'em") : " · no line yet") +
-      (m.total != null ? " · total " + m.total : "") + (m.implied != null ? " · implied <b>" + m.implied + "</b>" : "") +
-      (m.volume ? " · " + (w ? w.abbr : "team") + " runs " + Math.round(m.volume.plays_pg) + " plays/g, " + pctOf(m.volume.pass_rate) + " pass" : ""));
-    line("Opp. run D", rd ? "#" + rd.rank + " of " + rd.of + " by EPA allowed (" + rd.tier + ")" +
-      (rd.ypc != null ? " · " + rd.ypc.toFixed(1) + " ypc allowed (#" + rd.ypc_rank + ")" : "") +
-      (rd.stuff != null ? " · stuff rate " + pctOf(rd.stuff) : "") + (rd.line_yds != null ? " · line yds " + rd.line_yds.toFixed(2) : "") : "–");
-    line("Opp. pass D", (pd ? "#" + pd.rank + " of " + pd.of + " by EPA allowed (" + pd.tier + ")" : "–") +
-      (m.opp_sp_d_rank ? " · SP+ defense #" + m.opp_sp_d_rank : ""));
+    var rd2 = m.opp_run_d;
+    fine.push((m.home ? "vs " : "@ ") + m.opp + (m.total != null ? ", total " + m.total : ""));
+    if (rd2) fine.push(m.opp_abbr + " allows " + (rd2.ypc != null ? rd2.ypc.toFixed(1) + " ypc (#" + rd2.ypc_rank + ")" : "–") +
+      (rd2.stuff != null ? ", stuffs " + pctOf(rd2.stuff) : "") + (rd2.line_yds != null ? ", " + rd2.line_yds.toFixed(2) + " line yds" : ""));
+    if (m.opp_sp_d_rank) fine.push("SP+ defense #" + m.opp_sp_d_rank);
+    if (m.volume) fine.push((w ? w.abbr : "team") + " passes " + pctOf(m.volume.pass_rate));
   }
+  if (fine.length) {
+    var f = document.createElement("div"); f.className = "fine"; f.textContent = fine.join(" · ");
+    d.appendChild(f);
+  }
+
   cf.takes.forEach(function (t) {
+    var n = document.createElement("div"); n.className = "note";
     var tags = [t.role, t.rush_share ? t.rush_share + "% rush share" : null, t.workload, t.status].filter(Boolean).join(" · ");
-    lines.push("<div class=\"note\"><b>" + esc(t.source) + "</b>" + (t.verdict ? " <span class=\"verdict\">" + esc(t.verdict) + "</span>" : "") +
-      (tags ? " <span class=\"lbl\">" + esc(tags) + "</span>" : "") +
-      (t.evidence ? "<div class=\"ev\">" + esc(t.evidence) + (t.matchup ? " · " + esc(t.matchup) : "") + "</div>" : t.matchup ? "<div class=\"ev\">" + esc(t.matchup) + "</div>" : "") +
-      (t.note ? "<div>" + esc(t.note) + "</div>" : "") + "</div>");
+    n.innerHTML = "<div class=\"top\"><b>" + esc(t.source) + "</b>" + (t.verdict ? " <span class=\"verdict v-" + esc(t.verdict.toLowerCase()) + "\">" + esc(t.verdict) + "</span>" : "") +
+      (tags ? " <span class=\"lbl\">" + esc(tags) + "</span>" : "") + "</div>" +
+      (t.evidence || t.matchup ? "<div class=\"ev\">" + esc([t.evidence, t.matchup].filter(Boolean).join(" · ")) + "</div>" : "") +
+      (t.note ? "<div>" + esc(t.note) + "</div>" : "");
+    d.appendChild(n);
   });
-  if (!lines.length) lines.push("<div class=\"lbl\">No college data for him yet.</div>");
-  d.innerHTML = lines.join("");
+  if (!w && !m && !cf.takes.length) d.textContent = "No college data for him yet.";
   d.addEventListener("click", function (e) { e.stopPropagation(); });
   return d;
 }
