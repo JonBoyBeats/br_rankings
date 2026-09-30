@@ -276,8 +276,8 @@ def main():
         for b in by_team.get(p['team'], [])[-4:]:
             me = b['players'].get(str(p['id'])) or next((v for v in b['players'].values() if v.get('name') == p['name']), {})
             last.append({'wk': b['week'], 'opp': abbr.get(b['opp'], b['opp']), 'home': b['home'],
-                         'car': me.get('car', 0), 'rush_sh': round(me.get('car', 0) / b['car'], 3) if b['car'] else None,
-                         'rec': me.get('rec', 0), 'rec_sh': round(me.get('rec', 0) / b['rec'], 3) if b['rec'] else None,
+                         'car': me.get('car', 0), 'rush_sh': round(me.get('car', 0) / b['car'], 3) if b['car'] and me else None,
+                         'rec': me.get('rec', 0), 'rec_sh': round(me.get('rec', 0) / b['rec'], 3) if b['rec'] and me else None,
                          'fp': me.get('fp') if me else None})       # None = not in the box score (didn't play)
         if last: p['last'] = last
         if 'rece' in p: p['rec'] = p.pop('rece')
@@ -295,6 +295,7 @@ def main():
         team_games = by_team.get(p['team'], [])
         mine = [(b, b['players'].get(str(p['id'])) or next((v for v in b['players'].values() if v.get('name') == p['name']), {}))
                 for b in team_games]
+        mine = [(b, mm) for b, mm in mine if mm]        # games he played: a missed game isn't a 0% share
         car, tcar = sum(m.get('car', 0) for b, m in mine), sum(b['car'] for b, m in mine)
         rec, trec = sum(m.get('rec', 0) for b, m in mine), sum(b['rec'] for b, m in mine)
         g = p.get('games') or len(team_games) or None
