@@ -10,9 +10,12 @@ writer covers; source notes (analysis/cfb/takes/) are layered on top by the page
   last 3    his last three games: carries and share of team carries, catches and share of
             team catches (box scores; finished weeks are cached in analysis/cfb/cache/)
   matchup   this week's opponent, spread, total and implied team total for EVERY FBS game,
-            plus the opponent's defense against the run and the pass: EPA per play allowed,
-            ranked 1 (stingiest) to N, cut into quarters: Tough, Average, Great, Elite; for the
-            run also yards per carry allowed (ranked), stuff rate and line yards
+            plus the opponent's defense against the run and the pass, each a BLEND of three
+            ranks so one noisy early-season number can't flip it: EPA per play allowed (garbage
+            time excluded), yards per carry / per pass attempt allowed, and SP+ defense
+            (opponent-adjusted, leans on its preseason prior early). The blended rank, 1 =
+            stingiest, is cut into quarters: Tough, Average, Great, Elite. Stuff rate and line
+            yards ride along for the run.
   volume    his team's plays per game and pass rate
   tiers     every per-player number is placed against qualified FBS players at his position
             this season (RB 20+ carries, WR/TE 6+ catches, QB 40+ attempts): top 15% Elite,
@@ -172,6 +175,28 @@ def main():
         if t in ypc_allowed: d['ypc'], d['ypc_rank'] = round(ypc_allowed[t], 2), ypc_rank[t]
         for k in ('stuff', 'line_yds'):
             if d[k] is not None: d[k] = round(d[k], 3)
+
+    # yards per pass attempt allowed, then blend each side's three ranks into one
+    ypa_allowed = {}
+    for t in teams:
+        y, a = stat(t, 'netPassingYardsOpponent'), stat(t, 'passAttemptsOpponent')
+        if y is not None and a: ypa_allowed[t] = y / a
+    ypa_rank = {t: i + 1 for i, t in enumerate(sorted(ypa_allowed, key=lambda t: ypa_allowed[t]))}
+    for t, d in pass_d.items():
+        if t in ypa_allowed: d['ypa'], d['ypa_rank'] = round(ypa_allowed[t], 2), ypa_rank[t]
+    def blend(side, yard_rank):
+        mean = {}
+        for t, d in side.items():
+            d['epa_rank'] = d['rank']
+            d['sp_rank'] = sp.get(t)
+            parts = [r for r in (d['epa_rank'], d.get(yard_rank), sp.get(t)) if r]
+            mean[t] = sum(parts) / len(parts)
+        order = sorted(mean, key=lambda t: (mean[t], side[t]['epa_rank']))
+        n = len(order)
+        for i, t in enumerate(order):
+            side[t]['rank'], side[t]['tier'] = i + 1, TIERS[min(3, i * 4 // n)]
+    blend(run_d, 'ypc_rank')
+    blend(pass_d, 'ypa_rank')
 
     matchups = {}
     for g in games:

@@ -2177,7 +2177,7 @@ function cfbOppCell(p, cf) {
   var t = d ? ["Tough", "Average", "Great", "Elite"].indexOf(d.tier) : -1;
   b.className = t < 0 ? "" : "t" + t;
   b.textContent = (m.home || m.neutral ? "" : "@") + m.opp_abbr;
-  b.title = (m.home ? "vs " : "@ ") + m.opp + (d ? " · " + (p.position === "WR" || p.position === "TE" ? "pass" : "run") + " D #" + d.rank + " of " + d.of + " (" + d.tier + ")" : "") +
+  b.title = (m.home ? "vs " : "@ ") + m.opp + (d ? " · " + (p.position === "WR" || p.position === "TE" ? "pass" : "run") + " D #" + d.rank + " of " + d.of + " (" + d.tier + ", blended)" : "") +
     (m.spread != null ? " · " + (m.spread > 0 ? "favored by " + m.spread : m.spread < 0 ? "underdog by " + (-m.spread) : "pick'em") : "") +
     (m.implied != null ? " · implied " + m.implied : "");
   c.appendChild(b);
@@ -2263,10 +2263,14 @@ function cfbPanel(p, cf) {
     mg.appendChild(cfbGroup("Line", m.home ? "home" : m.neutral ? "neutral" : "road", [cfbCell(null, null,
       m.spread == null ? "–" : m.spread > 0 ? "−" + m.spread : m.spread < 0 ? "+" + (-m.spread) : "PK", "text",
       m.spread == null ? "No line yet" : m.spread > 0 ? "Favored by " + m.spread : m.spread < 0 ? "Underdog by " + (-m.spread) : "Pick'em")]));
+    var parts = function (x, yard, yl) {
+      return x ? " (" + x.tier + "): blend of EPA allowed #" + x.epa_rank + (x[yard] ? ", " + yl + " #" + x[yard] : "") +
+        (x.sp_rank ? ", SP+ defense #" + x.sp_rank : "") : "";
+    };
     mg.appendChild(cfbGroup("Opp run D", m.opp_abbr, [cfbCell(null, dt(rd), rd ? "#" + rd.rank : "–", null,
-      rd ? m.opp + " run D #" + rd.rank + " of " + rd.of + " by EPA allowed (" + rd.tier + ")" : "")]));
+      rd ? m.opp + " run D #" + rd.rank + " of " + rd.of + parts(rd, "ypc_rank", "ypc allowed") : "")]));
     mg.appendChild(cfbGroup("Opp pass D", m.opp_abbr, [cfbCell(null, dt(pd), pd ? "#" + pd.rank : "–", null,
-      pd ? m.opp + " pass D #" + pd.rank + " of " + pd.of + " by EPA allowed (" + pd.tier + ")" : "")]));
+      pd ? m.opp + " pass D #" + pd.rank + " of " + pd.of + parts(pd, "ypa_rank", "yds/att allowed") : "")]));
     var pl = m.volume && m.volume.plays_pg;
     mg.appendChild(cfbGroup("Plays/g", w ? w.abbr : "team", [cfbCell(pl, cfbTier(pl, tc.plays_pg), pl == null ? "–" : String(Math.round(pl)), null,
       m.volume ? Math.round(m.volume.pass_rate * 100) + "% pass" : "")]));
@@ -2285,9 +2289,10 @@ function cfbPanel(p, cf) {
   if (m) {
     var rd2 = m.opp_run_d;
     fine.push((m.home ? "vs " : "@ ") + m.opp + (m.total != null ? ", total " + m.total : ""));
-    if (rd2) fine.push(m.opp_abbr + " allows " + (rd2.ypc != null ? rd2.ypc.toFixed(1) + " ypc (#" + rd2.ypc_rank + ")" : "–") +
-      (rd2.stuff != null ? ", stuffs " + pctOf(rd2.stuff) : "") + (rd2.line_yds != null ? ", " + rd2.line_yds.toFixed(2) + " line yds" : ""));
-    if (m.opp_sp_d_rank) fine.push("SP+ defense #" + m.opp_sp_d_rank);
+    if (rd2) fine.push(m.opp_abbr + " run D: EPA #" + (rd2.epa_rank || rd2.rank) + ", " + (rd2.ypc != null ? rd2.ypc.toFixed(1) + " ypc (#" + rd2.ypc_rank + ")" : "ypc –") +
+      (rd2.sp_rank ? ", SP+ D #" + rd2.sp_rank : "") + (rd2.stuff != null ? ", stuffs " + pctOf(rd2.stuff) : "") + (rd2.line_yds != null ? ", " + rd2.line_yds.toFixed(2) + " line yds" : ""));
+    var pd2 = m.opp_pass_d;
+    if (pd2) fine.push("pass D: EPA #" + (pd2.epa_rank || pd2.rank) + (pd2.ypa != null ? ", " + pd2.ypa.toFixed(1) + " yds/att (#" + pd2.ypa_rank + ")" : ""));
     if (m.volume) fine.push((w ? w.abbr : "team") + " passes " + pctOf(m.volume.pass_rate));
   }
   if (fine.length) {
