@@ -24,6 +24,11 @@
     --accent: #ffffff;
     --accent-ink: #080b11;
     --up: #4dc48d;
+    /* Workload score tiers, the same four as the Analysis page. */
+    --t3: #13703a;  --t3-ink: #ffffff;
+    --t2: #58c07a;  --t2-ink: #06180d;
+    --t1: #e0b43a;  --t1-ink: #1d1503;
+    --t0: #b9443b;  --t0-ink: #ffffff;
     --down: #f08a7e;
     --new: #a7b0be;
     --new-bg: #1b202a;
@@ -199,7 +204,7 @@
   .board { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
   .row {
     display: grid;
-    grid-template-columns: 26px 40px minmax(0, 1fr) 76px 94px 56px;
+    grid-template-columns: 26px 40px minmax(0, 1fr) 76px 50px 94px 56px;
     align-items: center; gap: 10px;
     padding: 7px 12px;
     border-bottom: 1px solid var(--line);
@@ -260,8 +265,28 @@
   .own-col { display: none; }
   .board.has-own .own-col { display: block; }
   .board.has-own .row {
-    grid-template-columns: 26px 40px minmax(0, 1fr) 76px 44px 94px 56px;
+    grid-template-columns: 26px 40px minmax(0, 1fr) 76px 50px 44px 94px 56px;
   }
+  /* Workload score from the Analysis page: expected half-PPR next game, coloured by its
+     rank at the position this week. Hatched = under four games of data. */
+  .num.score { text-align: center; }
+  .num.score b {
+    display: inline-block; min-width: 38px; padding: 2px 4px; border-radius: 4px;
+    font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums;
+  }
+  .num.score b.t3 { background: var(--t3); color: var(--t3-ink); }
+  .num.score b.t2 { background: var(--t2); color: var(--t2-ink); }
+  .num.score b.t1 { background: var(--t1); color: var(--t1-ink); }
+  .num.score b.t0 { background: var(--t0); color: var(--t0-ink); }
+  .num.score b.thin { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .55);
+    background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(0, 0, 0, .18) 4px 6px); }
+  /* Underdog's injury designation, next to the name. */
+  .inj {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 700; padding: 1px 4px; border-radius: 4px;
+    background: var(--t1); color: var(--t1-ink); white-space: nowrap;
+  }
+  .inj.d { background: #e07b3a; color: #1d0e03; }
+  .inj.o { background: var(--t0); color: var(--t0-ink); }
   .pdelta {
     font-family: var(--mono); font-size: 10px; font-weight: 500;
     text-align: right; white-space: nowrap; color: var(--muted);
@@ -340,10 +365,11 @@
     .dock button { padding: 7px 10px; }
 
     /* Every fixed column gives up what it can spare; the name cell takes all of it. */
-    .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 54px 32px; gap: 4px; padding: 6px 6px; }
+    .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 36px 54px 32px; gap: 4px; padding: 6px 6px; }
     /* The column header already says Own, so the sign is what gives way first and the
        name cell keeps the width. */
-    .board.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 22px 54px 32px; }
+    .board.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 36px 22px 54px 32px; }
+    .num.score b { min-width: 32px; padding: 2px 2px; font-size: 10.5px; }
     .num.own i { display: none; }
     .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
     .num.proj { grid-template-columns: 24px 1fr; gap: 2px; }
@@ -487,6 +513,7 @@
       <span class="r">#</span>
       <span>Player</span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
+      <span style="text-align:center" title="Workload score from the Analysis page: expected half-PPR next game">Score</span>
       <span class="r own-col"><button type="button" data-sort="own"
         title="Share of drafts the projection file expects this player to appear in">Own</button></span>
       <span class="r"><button type="button" data-sort="proj"
@@ -1424,6 +1451,7 @@ function save(key, value) {
 
 // ---------------------------------------------------------------- state
 var state = {
+  workload: {},
   data: null,          // latest.json
   slate: null,         // chosen slate object
   order: [],           // player_id list, full board
@@ -1957,6 +1985,51 @@ function visibleRows() {
   return list;
 }
 
+/* ---- workload score --------------------------------------------------------------
+   The Analysis page publishes analysis/workload.json next to this page; the board shows
+   its score for the same player, joined by name and position, coloured the same way. */
+function loadWorkload() {
+  return fetch("analysis/workload.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (doc) {
+      state.workload = {};
+      (doc.players || []).forEach(function (w) {
+        if (w.score) state.workload[normName(w.name) + "|" + w.pos] = { s: w.score, games: w.l16_games, pos: w.pos, week: doc.next_week };
+      });
+    })
+    .catch(function () { state.workload = {}; });
+}
+
+function scoreCell(p) {
+  var c = document.createElement("span");
+  c.className = "num score";
+  var sport = state.slate && state.slate.sport;
+  var w = sport === "nfl" && state.workload
+    ? state.workload[boardKey(p.first_name, p.last_name, state.nameMaps.nfl) + "|" + p.position] : null;
+  if (!w) return c;
+  var b = document.createElement("b");
+  var thin = w.games < 4;
+  b.className = "t" + w.s.tier + (thin ? " thin" : "");
+  b.textContent = w.s.next.toFixed(1);
+  b.title = "Workload score: expected " + w.s.next.toFixed(1) + " half-PPR in Week " + w.week + " · " + w.pos + w.s.rank +
+    (thin ? " · only " + w.games + " game" + (w.games === 1 ? "" : "s") + " of data" : "");
+  c.appendChild(b);
+  return c;
+}
+
+/** Underdog's designation, when the mirror carries one: Q, D, O and anything else as sent. */
+function injuryTag(status) {
+  if (!status) return null;
+  var t = String(status).trim(), k = t.charAt(0).toUpperCase();
+  var short = { Q: "Q", D: "D", O: "O", P: "P", I: "IR" }[k] || t;
+  if (/^ir|reserve/i.test(t)) short = "IR";
+  var el = document.createElement("span");
+  el.className = "inj" + (k === "D" ? " d" : (k === "O" || short === "IR" || /^sus|^pup|^nfi/i.test(t)) ? " o" : "");
+  el.textContent = short;
+  el.title = "Underdog: " + t;
+  return el;
+}
+
 function render() {
   var rows = visibleRows();
   var board = document.querySelector(".board");
@@ -2011,6 +2084,8 @@ function render() {
     sub.className = "sub";
     sub.textContent = p.team || "—";
     who.append(name, pos, sub);
+    var inj = injuryTag(p.injury);
+    if (inj) who.appendChild(inj);
     if (state.newIds[p.player_id]) {
       var tag = document.createElement("span");
       tag.className = "tag";
@@ -2104,8 +2179,9 @@ function render() {
       }
     }
 
-    if (ownCell) el.append(handle, rank, who, adp, ownCell, pr, vo);
-    else el.append(handle, rank, who, adp, pr, vo);
+    var sc = scoreCell(p);
+    if (ownCell) el.append(handle, rank, who, adp, sc, ownCell, pr, vo);
+    else el.append(handle, rank, who, adp, sc, pr, vo);
     frag.appendChild(el);
   });
   host.appendChild(frag);
@@ -2904,6 +2980,7 @@ function bootFailed(where, err) {
   try {
     await loadNameMaps();
     state.data = await loadMirror();
+    loadWorkload().then(function () { if (state.slate) render(); });
   } catch (err) {
     bootFailed("Could not load the ADP mirror", err);
     setStatus("The board could not reach " + MIRROR + "latest.json.", "bad");

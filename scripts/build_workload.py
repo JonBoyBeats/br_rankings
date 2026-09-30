@@ -16,6 +16,10 @@ analysis/fpd/<season>/, last season from analysis/fpd/history_<season>.csv (deri
 their weekly routes and first-read counts). Their L16 is the mean of the per-game values.
 Windows: L16 is the last 16 games across seasons, as ratio-of-sums; the per-game cells
 are this season's last 4 games; L4 (baseline only) is the mean of those same games.
+Stats run left to right by importance, so ties break on the left: RB snap, carry, usage,
+RZ (snap and carry are the role inputs the Workload Score keeps); WR/TE target % (the
+strongest single role stat for next-game points), route % (the best early read on a role
+change), first-read %, air yards %.
 Tiers are where each position's cutoff ranks landed each week, 2021-2025:
   RB 6 / 12 / 24 · WR 8 / 18 / 36 · TE 3 / 6 / 12.
 
@@ -58,8 +62,8 @@ POSITIONS = {
         'matchup_w': {'opp_allowed': 0.101, 'implied_total': 0.108, 'spread': 0.020},
     },
     'WR': {
-        'stats': [['route', 'Route %', 'Routes run as a share of team dropbacks'],
-                  ['tgt', 'Target %', 'Share of team targets'],
+        'stats': [['tgt', 'Target %', 'Share of team targets'],
+                  ['route', 'Route %', 'Routes run as a share of team dropbacks'],
                   ['fr', '1st read %', 'Share of the team\'s first-read targets'],
                   ['ay', 'Air yd %', 'Share of team air yards on targets']],
         'tiers': ['WR37+', 'WR19–36', 'WR9–18', 'WR1–8'],
@@ -72,8 +76,8 @@ POSITIONS = {
         'matchup_w': {'opp_allowed': 0.007, 'implied_total': 0.130, 'spread': -0.032},
     },
     'TE': {
-        'stats': [['route', 'Route %', 'Routes run as a share of team dropbacks'],
-                  ['tgt', 'Target %', 'Share of team targets'],
+        'stats': [['tgt', 'Target %', 'Share of team targets'],
+                  ['route', 'Route %', 'Routes run as a share of team dropbacks'],
                   ['fr', '1st read %', 'Share of the team\'s first-read targets'],
                   ['ay', 'Air yd %', 'Share of team air yards on targets']],
         'tiers': ['TE13+', 'TE7–12', 'TE4–6', 'TE1–3'],

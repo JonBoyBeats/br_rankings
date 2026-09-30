@@ -166,6 +166,12 @@
   .head .grp { text-align: center; }
 
   /* Workload score: expected points next game, coloured by its rank at the position. */
+  .inj {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 700; padding: 1px 4px; border-radius: 4px;
+    background: var(--t1); color: var(--t1-ink); white-space: nowrap; align-self: center;
+  }
+  .inj.d { background: #e07b3a; color: #1d0e03; }
+  .inj.o { background: var(--t0); color: var(--t0-ink); }
   .sc { display: flex; flex-direction: column; align-items: center; gap: 1px; }
   .sc .cell { min-width: 48px; font-size: 12px; }
   .sc .cell.thin { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .55); background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(0, 0, 0, .18) 4px 6px); }
@@ -225,7 +231,7 @@
     .row > .rank { grid-area: rank; }
     .row > .who { grid-area: who; }
     .row > .mu { grid-area: mu; }
-    .row > .sc { grid-area: sc; }
+    .row > .sc { grid-area: sc; flex-direction: column-reverse; }
     .row > .strip { grid-area: strip; display: grid; grid-template-columns: repeat(4, 1fr) .5fr .5fr; gap: 6px; }
     .strip .grp { gap: 2px; }
     .strip .cell { height: 14px; line-height: 14px; border-radius: 3px; font-size: 0 !important; }
@@ -292,6 +298,7 @@
           <option value="board" id="sortBoard" hidden>Board order</option>
           <option value="score">Workload score</option>
           <option value="vsproj">Score vs your projection</option>
+          <option value="adp">Underdog ADP</option>
           <option value="xfp4">XFP, last 4</option>
           <option value="xfp16">XFP, last 16</option>
           <option value="fp4">FP, last 4</option>
@@ -463,6 +470,34 @@ async function loadSlates() {
   if (hit) sel.value = hit.label;
 }
 
+/** Underdog's ADP and injury designation for a player, from the slate picked above. */
+var udCache = { label: null, map: {} };
+function udFor(p) {
+  var s = currentSlate();
+  if (!s) return null;
+  if (udCache.label !== s.label) {
+    udCache = { label: s.label, map: {} };
+    slatePlayers(s).forEach(function (u) {
+      var full = (u.first_name + " " + u.last_name).replace(/\s+/g, " ").trim();
+      udCache.map[normName(state.nameMap[full] || full) + "|" + u.position] = { adp: typeof u.adp === "number" ? u.adp : null, injury: u.injury || null };
+    });
+  }
+  return udCache.map[normName(p.name) + "|" + p.pos] || null;
+}
+
+/** Underdog's designation, when the mirror carries one: Q, D, O and anything else as sent. */
+function injuryTag(status) {
+  if (!status) return null;
+  var t = String(status).trim(), k = t.charAt(0).toUpperCase();
+  var short = { Q: "Q", D: "D", O: "O", P: "P" }[k] || t;
+  if (/^ir|reserve/i.test(t)) short = "IR";
+  var el = document.createElement("span");
+  el.className = "inj" + (k === "D" ? " d" : (k === "O" || short === "IR" || /^sus|^pup|^nfi/i.test(t)) ? " o" : "");
+  el.textContent = short;
+  el.title = "Underdog: " + t;
+  return el;
+}
+
 function currentSlate() { return state.slates.find(function (x) { return x.label === state.slateLabel; }); }
 
 /** Pool players the board added to this slate, fetched once so they show here too. */
@@ -472,6 +507,7 @@ async function loadAdded(s) {
   try {
     var doc = await getJson(MIRROR + s.pool);
     state.pool[s.label] = doc.players || [];
+    udCache.label = null;
   } catch (e) { state.pool[s.label] = []; }
 }
 
@@ -578,6 +614,7 @@ function visible() {
     role: function (p) { return -Math.abs(roleSwing(p)); },
     matchup: mu,
     score: function (p) { return p.score ? -p.score.next : 99; },
+    adp: function (p) { var u = udFor(p); return u && u.adp != null ? u.adp : 999; },
     vsproj: function (p) { var v = vsProj(p); return v == null ? 99 : -v.delta; }
   }[state.sort];
   if (state.sort === "name") list.sort(function (a, b) { return a.p.name.localeCompare(b.p.name); });
@@ -636,6 +673,9 @@ function scoreCell(p) {
     "Expected " + sc.next.toFixed(1) + " half-PPR next game · " + p.pos + sc.rank + " this week" +
     (thin ? " · only " + p.l16_games + " game" + (p.l16_games === 1 ? "" : "s") + " of data, so lean on it lightly" : "")));
   var v = vsProj(p);
+  if (!v && state.projMeta) {           // keep the row's height, so every score lines up
+    var gap = document.createElement("span"); gap.className = "vs"; gap.innerHTML = "&nbsp;"; w.appendChild(gap);
+  }
   if (v) {
     var d = document.createElement("span");
     d.className = "vs" + (v.delta >= 1 ? " up" : v.delta <= -1 ? " down" : "");
@@ -735,7 +775,7 @@ function renderHead() {
        '<span style="text-align:center" title="Workload score: expected half-PPR next game. Under it, the gap to your projection.">Score<span class="sub">next game</span></span>' +
        '<span>Matchup<span class="sub">Week ' + state.data.next_week + '</span></span>';
   $("head").innerHTML = h;
-  $("phoneKey").innerHTML = labels.map(function (l) { return "<span>" + l.replace(/ %| \(RB\)/g, "") + "</span>"; }).join("") + "<span>XFP</span><span>FP</span>";
+  $("phoneKey").innerHTML = labels.map(function (l) { return "<span>" + l.replace(/ %| \(RB\)/g, "").replace("Air yd", "AY") + "</span>"; }).join("") + "<span>XFP</span><span>FP</span>";
   var lg = "";
   var ranges = function (t) { return shownPositions().map(function (x) { return state.positions[x].tiers[t]; }).join(" · "); };
   [3, 2, 1, 0].forEach(function (t) { lg += '<span><i style="background:var(--t' + t + ')"></i>' + TIER_NAMES[t] + " · " + ranges(t) + "</span>"; });
@@ -802,8 +842,12 @@ function playerRow(r, i, drag) {
   var who = document.createElement("span");
   who.className = "who";
   var n = document.createElement("span"); n.className = "name"; n.textContent = p.name;
-  var tm = document.createElement("span"); tm.className = "team"; tm.textContent = p.team + (state.pos ? "" : " · " + p.pos);
+  var ud = udFor(p);
+  var tm = document.createElement("span"); tm.className = "team";
+  tm.textContent = p.team + (state.pos ? "" : " · " + p.pos) + (ud && ud.adp != null ? " · ADP " + ud.adp.toFixed(1) : "");
   who.append(n, tm);
+  var inj = ud && injuryTag(ud.injury);
+  if (inj) who.appendChild(inj);
 
   var strip = document.createElement("span");
   strip.className = "strip";
@@ -1066,7 +1110,7 @@ window.addEventListener("storage", function (e) {
   if (e.key === "brr:proj:nfl") { loadProjections(); render(); return; }
   if (!state.slateLabel) return;
   var s = currentSlate();
-  if (e.key === "brr:added:" + state.slateLabel && s) { delete state.pool[s.label]; loadAdded(s).then(render); return; }
+  if (e.key === "brr:added:" + state.slateLabel && s) { delete state.pool[s.label]; udCache.label = null; loadAdded(s).then(render); return; }
   if (e.key === "brr:order:" + state.slateLabel || e.key === "brr:cut:" + state.slateLabel) render();
 });
 
