@@ -7,9 +7,13 @@ writer covers; source notes (analysis/cfb/takes/) are layered on top by the page
             overall, rush (share of team rushes) and pass (share of team pass plays)
   rushing   carries, yards, TDs, yards per carry · receiving: catches, yards, TDs
   passing   (QBs) completions, attempts, yards, TDs, INTs
+  last 3    his last three games: carries and share of team carries, catches and share of
+            team catches (box scores; finished weeks are cached in analysis/cfb/cache/)
   matchup   this week's opponent, spread, total and implied team total for EVERY FBS game,
             plus the opponent's defense against the run and the pass: EPA per play allowed,
-            ranked 1 (stingiest) to N, cut into quarters: Tough, Average, Great, Elite
+            ranked 1 (stingiest) to N, cut into quarters: Tough, Average, Great, Elite; for the
+            run also yards per carry allowed (ranked), stuff rate and line yards
+  volume    his team's plays per game and pass rate
 
 Season = the current college season; week = the next week with games still to play.
 About a dozen API calls a run, well inside the free tier.
@@ -21,6 +25,7 @@ from datetime import datetime, timezone
 
 API = 'https://api.collegefootballdata.com'
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'analysis', 'cfb.json')
+CACHE = os.path.join(os.path.dirname(OUT), 'cfb', 'cache')
 FIXTURE = sys.argv[sys.argv.index('--fixture') + 1] if '--fixture' in sys.argv else None
 POSITIONS = {'QB', 'RB', 'WR', 'TE'}
 TIERS = ['Tough', 'Average', 'Great', 'Elite']      # by the opponent's defensive rank, best defense first
@@ -28,7 +33,8 @@ TIERS = ['Tough', 'Average', 'Great', 'Elite']      # by the opponent's defensiv
 
 def get(path, **params):
     if FIXTURE:
-        name = path.strip('/').replace('/', '_') + ('_' + params['category'] if 'category' in params else '')
+        name = path.strip('/').replace('/', '_') + ''.join('_' + str(params[k]) for k in ('week', 'category') if k in params and path == '/games/players') \
+            + ('_' + params['category'] if 'category' in params and path != '/games/players' else '')
         with open(os.path.join(FIXTURE, name + '.json')) as f:
             return json.load(f)
     url = API + path + ('?' + urllib.parse.urlencode(params) if params else '')
@@ -56,6 +62,38 @@ def pick(d, *keys):
     for k in keys:
         if isinstance(d, dict) and d.get(k) is not None: return d[k]
     return None
+
+
+def week_boxes(season, wk):
+    """One finished week's box scores, reduced to carries and catches per player per game.
+    Cached on disk: a finished week never changes, so each costs two API calls once."""
+    path = os.path.join(CACHE, f'{season}_w{wk:02d}.json')
+    if os.path.exists(path) and not FIXTURE:
+        with open(path) as f: return json.load(f)
+    games = {}
+    for cat, stat in (('rushing', 'CAR'), ('receiving', 'REC')):
+        for g in get('/games/players', year=season, week=wk, seasonType='regular', category=cat):
+            teams = g.get('teams') or []
+            names = [pick(t, 'team', 'school') for t in teams]
+            for t in teams:
+                tm = pick(t, 'team', 'school')
+                row = games.setdefault(f"{g.get('id')}|{tm}", {'week': wk, 'team': tm,
+                                       'opp': next((n for n in names if n != tm), None), 'home': t.get('homeAway') == 'home',
+                                       'car': 0, 'rec': 0, 'players': {}})
+                for c in t.get('categories') or []:
+                    if (c.get('name') or '').lower() != cat: continue
+                    for ty in c.get('types') or []:
+                        if (ty.get('name') or '').upper() != stat: continue
+                        for a in ty.get('athletes') or []:
+                            v = num(a.get('stat')) or 0
+                            row['car' if stat == 'CAR' else 'rec'] += v
+                            pl = row['players'].setdefault(str(a.get('id')), {'name': a.get('name')})
+                            pl['car' if stat == 'CAR' else 'rec'] = v
+    out = list(games.values())
+    if not FIXTURE:
+        os.makedirs(CACHE, exist_ok=True)
+        with open(path, 'w') as f: json.dump(out, f, separators=(',', ':'))
+    return out
 
 
 def season_and_week(now):
@@ -104,6 +142,33 @@ def main():
     except Exception as e:
         print('ratings/sp unavailable:', e); sp = {}
 
+    team_stats = {}
+    for s in get('/stats/season', year=season):
+        team_stats.setdefault(s.get('team'), {})[s.get('statName')] = num(s.get('statValue'))
+    names = sorted({k for v in team_stats.values() for k in v})
+    print('team stat names:', ', '.join(names))
+    def stat(team, *keys):
+        for k in keys:
+            v = team_stats.get(team, {}).get(k)
+            if v is not None: return v
+    def volume(team):
+        g, ra, pa = stat(team, 'games'), stat(team, 'rushingAttempts'), stat(team, 'passAttempts')
+        if not g or ra is None or pa is None: return None
+        return {'plays_pg': round((ra + pa) / g, 1), 'pass_rate': round(pa / (ra + pa), 3)}
+    # yards per carry allowed, if CFBD carries the opponent side of the team stats
+    ypc_allowed = {}
+    for t in teams:
+        y, a = stat(t, 'rushingYardsOpponent', 'opponentRushingYards'), stat(t, 'rushingAttemptsOpponent', 'opponentRushingAttempts')
+        if y is not None and a: ypc_allowed[t] = y / a
+    ypc_rank = {t: i + 1 for i, t in enumerate(sorted(ypc_allowed, key=lambda t: ypc_allowed[t]))}
+    for t, d in run_d.items():
+        dfn = (adv.get(t) or {}).get('defense') or {}
+        d['stuff'] = num(pick(dfn, 'stuffRate', 'stuff_rate'))
+        d['line_yds'] = num(pick(dfn, 'lineYards', 'line_yards'))
+        if t in ypc_allowed: d['ypc'], d['ypc_rank'] = round(ypc_allowed[t], 2), ypc_rank[t]
+        for k in ('stuff', 'line_yds'):
+            if d[k] is not None: d[k] = round(d[k], 3)
+
     matchups = {}
     for g in games:
         home, away = pick(g, 'homeTeam', 'home_team'), pick(g, 'awayTeam', 'away_team')
@@ -117,7 +182,8 @@ def main():
                             'neutral': bool(pick(g, 'neutralSite', 'neutral_site')),
                             'kickoff': pick(g, 'startDate', 'start_date'),
                             'spread': fav, 'total': total, 'implied': implied,
-                            'opp_run_d': run_d.get(op), 'opp_pass_d': pass_d.get(op), 'opp_sp_d_rank': sp.get(op)}
+                            'opp_run_d': run_d.get(op), 'opp_pass_d': pass_d.get(op), 'opp_sp_d_rank': sp.get(op),
+                            'volume': volume(tm)}
 
     # ---- players: usage plus counting stats, for every team playing this week
     playing = set(matchups)
@@ -140,9 +206,17 @@ def main():
             if s.get('team') not in playing or s.get('statType') not in keys: continue
             p = rec(pick(s, 'playerId', 'player_id'), s.get('player'), s['team'], s.get('position'))
             p.setdefault(cat[:4], {})[keys[s['statType']]] = num(s.get('stat'))
-    games_played = {}
-    for s in get('/stats/season', year=season):
-        if s.get('statName') == 'games' and s.get('team') in playing: games_played[s['team']] = num(s.get('statValue'))
+    games_played = {t: stat(t, 'games') for t in playing}
+
+    # ---- last three games: share of team carries and catches, from box scores
+    boxes = []
+    for wk in range(1, week):
+        try: boxes += week_boxes(season, wk)
+        except Exception as e: print(f'week {wk} box scores unavailable: {e!r}')
+    by_team = {}
+    for b in boxes:
+        if b['team'] in playing: by_team.setdefault(b['team'], []).append(b)
+    for t in by_team: by_team[t].sort(key=lambda b: b['week'])
 
     out = []
     for p in players.values():
@@ -151,6 +225,13 @@ def main():
         if not (us.get('overall', 0) >= 0.02 or ru.get('car', 0) >= 5 or re_.get('rec', 0) >= 3 or p.get('pass', {}).get('att', 0) >= 10):
             continue
         p['games'] = games_played.get(p['team'])
+        last = []
+        for b in by_team.get(p['team'], [])[-3:]:
+            me = b['players'].get(str(p['id'])) or next((v for v in b['players'].values() if v.get('name') == p['name']), {})
+            last.append({'wk': b['week'], 'opp': abbr.get(b['opp'], b['opp']), 'home': b['home'],
+                         'car': me.get('car', 0), 'rush_sh': round(me.get('car', 0) / b['car'], 3) if b['car'] else None,
+                         'rec': me.get('rec', 0), 'rec_sh': round(me.get('rec', 0) / b['rec'], 3) if b['rec'] else None})
+        if last: p['last'] = last
         if 'rece' in p: p['rec'] = p.pop('rece')
         out.append(p)
     out.sort(key=lambda p: (-(p.get('usage', {}).get('overall') or 0)))

@@ -2059,9 +2059,12 @@ function loadCfb() {
     .then(function (got) {
       state.cfb = got[0];
       state.cfbIndex = {};
+      state.cfbByLast = {};
       if (state.cfb) state.cfb.players.forEach(function (w) {
         var k = normName(w.name);
         (state.cfbIndex[k] = state.cfbIndex[k] || []).push(w);
+        var parts = k.split(" "), lk = parts[parts.length - 1] + "|" + w.abbr;
+        (state.cfbByLast[lk] = state.cfbByLast[lk] || []).push(w);
       });
       // only the latest week's notes; nothing older carries over
       var takes = got[1].takes || [], wk = state.cfb ? state.cfb.week : null;
@@ -2070,13 +2073,24 @@ function loadCfb() {
     });
 }
 
-/** The CFBD player for a slate player: by name, then team when a name is shared. */
+/**
+ * The CFBD player for a slate player: by full name (team breaks a tie), then by last word
+ * of the name plus team, which catches Matt/Matthew and a hyphenated new surname.
+ */
 function cfbFor(p) {
   if (!state.cfbIndex) return null;
-  var list = state.cfbIndex[boardKey(p.first_name, p.last_name, state.nameMaps.cfb)] || [];
+  var key = boardKey(p.first_name, p.last_name, state.nameMaps.cfb);
+  var list = state.cfbIndex[key] || [];
   var team = CFB_TEAM_ALIAS[p.team] || p.team;
-  var hit = list.length === 1 ? list[0]
-    : list.filter(function (w) { return w.abbr === team || w.abbr === p.team; })[0] || null;
+  var onTeam = function (w) { return w.abbr === team || w.abbr === p.team; };
+  var hit = list.length === 1 ? list[0] : list.filter(onTeam)[0] || null;
+  if (!hit) {
+    var parts = key.split(" "), last = parts[parts.length - 1], first = parts[0];
+    var cands = (state.cfbByLast[last + "|" + team] || []).concat(team !== p.team ? state.cfbByLast[last + "|" + p.team] || [] : [])
+      .filter(function (w) { return !w.pos || w.pos === p.position; });
+    var sameFirst = cands.filter(function (w) { var f = normName(w.name).split(" ")[0]; return f.indexOf(first.slice(0, 3)) === 0 || first.indexOf(f.slice(0, 3)) === 0; });
+    hit = sameFirst.length === 1 ? sameFirst[0] : cands.length === 1 ? cands[0] : null;
+  }
   var takes = state.cfbTakes.filter(function (t) {
     return normName(t.player) === boardKey(p.first_name, p.last_name, state.nameMaps.cfb);
   });
@@ -2095,6 +2109,9 @@ function cfbWho(who, p, cf) {
     var sh = document.createElement("span");
     sh.className = "sub share";
     sh.textContent = passer ? pctOf(u.pass) + " pass" : pctOf(u.rush) + " rush";
+    var lg = cf.w.last && cf.w.last[cf.w.last.length - 1];
+    var lv = lg && (passer ? lg.rec_sh : lg.rush_sh), sv = passer ? u.pass : u.rush;
+    if (lv != null && sv != null && Math.abs(lv - sv) >= 0.10) sh.textContent += " · last " + pctOf(lv);
     sh.title = "Share of his team's " + (passer ? "pass plays" : "rushes") + " he was involved in this season (garbage time excluded); " +
       pctOf(u.overall) + " of all plays";
     who.appendChild(sh);
@@ -2146,15 +2163,23 @@ function cfbPanel(p, cf) {
     if (r.car) line("Rushing", n0(r.car) + " car" + (g ? " (" + (r.car / g).toFixed(1) + "/g)" : "") + " · " + n0(r.yds) + " yds · " +
       (r.ypc != null ? r.ypc.toFixed(1) : "–") + " ypc · " + n0(r.td) + " TD");
     if (rc.rec) line("Receiving", n0(rc.rec) + " rec · " + n0(rc.yds) + " yds · " + n0(rc.td) + " TD");
+    if (w.last && w.last.length) line("Last " + w.last.length, w.last.slice().reverse().map(function (g) {
+      return "Wk" + g.wk + " " + (g.home ? "" : "@") + g.opp + ": " + n0(g.car) + " car (" + pctOf(g.rush_sh) + ")" +
+        (g.rec ? ", " + n0(g.rec) + " rec (" + pctOf(g.rec_sh) + ")" : "");
+    }).join(" · "));
     if (ps.att) line("Passing", n0(ps.cmp) + "/" + n0(ps.att) + " · " + n0(ps.yds) + " yds · " + n0(ps.td) + " TD · " + n0(ps.int) + " INT");
   }
   if (m) {
     var rd = m.opp_run_d, pd = m.opp_pass_d;
     line("Matchup", (m.home ? "vs " : m.neutral ? "vs " : "@ ") + m.opp +
       (m.spread != null ? " · " + (m.spread > 0 ? "favored by " + m.spread : m.spread < 0 ? "underdog by " + (-m.spread) : "pick'em") : " · no line yet") +
-      (m.total != null ? " · total " + m.total : "") + (m.implied != null ? " · implied <b>" + m.implied + "</b>" : ""));
-    line("Opp. defense", (rd ? "run #" + rd.rank + " (" + rd.tier + ")" : "run –") + " · " + (pd ? "pass #" + pd.rank + " (" + pd.tier + ")" : "pass –") +
-      (rd ? " of " + rd.of + ", by EPA allowed per play" : "") + (m.opp_sp_d_rank ? " · SP+ defense #" + m.opp_sp_d_rank : ""));
+      (m.total != null ? " · total " + m.total : "") + (m.implied != null ? " · implied <b>" + m.implied + "</b>" : "") +
+      (m.volume ? " · " + (w ? w.abbr : "team") + " runs " + Math.round(m.volume.plays_pg) + " plays/g, " + pctOf(m.volume.pass_rate) + " pass" : ""));
+    line("Opp. run D", rd ? "#" + rd.rank + " of " + rd.of + " by EPA allowed (" + rd.tier + ")" +
+      (rd.ypc != null ? " · " + rd.ypc.toFixed(1) + " ypc allowed (#" + rd.ypc_rank + ")" : "") +
+      (rd.stuff != null ? " · stuff rate " + pctOf(rd.stuff) : "") + (rd.line_yds != null ? " · line yds " + rd.line_yds.toFixed(2) : "") : "–");
+    line("Opp. pass D", (pd ? "#" + pd.rank + " of " + pd.of + " by EPA allowed (" + pd.tier + ")" : "–") +
+      (m.opp_sp_d_rank ? " · SP+ defense #" + m.opp_sp_d_rank : ""));
   }
   cf.takes.forEach(function (t) {
     var tags = [t.role, t.rush_share ? t.rush_share + "% rush share" : null, t.workload, t.status].filter(Boolean).join(" · ");
