@@ -288,6 +288,24 @@
   .inj.d { background: #e07b3a; color: #1d0e03; }
   .inj.o { background: var(--t0); color: var(--t0-ink); }
   .inj.p { background: #2a3140; color: #c9d1dc; }
+  /* College: share of the team's work on the name line, a dropdown toggle, and the
+     opponent (coloured by how soft its defense is) where NFL shows the Score. */
+  .who .share { font-variant-numeric: tabular-nums; }
+  .cfbx {
+    all: unset; cursor: pointer; font-size: 11px; line-height: 1; padding: 2px 5px; border-radius: 4px;
+    color: var(--muted); border: 1px solid var(--line-strong); align-self: center;
+  }
+  .cfbx.has-note { color: var(--ink); border-color: var(--accent); }
+  .cfbx:focus-visible { outline: 2px solid var(--accent); }
+  .board.cfb .num.score b { min-width: 44px; }
+  .cfbpanel {
+    padding: 8px 12px 12px 78px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+    font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 3px;
+  }
+  .cfbpanel .lbl { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-right: 8px; text-transform: uppercase; letter-spacing: .04em; }
+  .cfbpanel .note { margin-top: 6px; }
+  .cfbpanel .ev { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  .cfbpanel .verdict { font-family: var(--mono); font-size: 10px; padding: 1px 5px; border-radius: 4px; background: var(--neutral-pill, #2a3140); }
   .pdelta {
     font-family: var(--mono); font-size: 10px; font-weight: 500;
     text-align: right; white-space: nowrap; color: var(--muted);
@@ -371,6 +389,11 @@
        name cell keeps the width. */
     .board.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 36px 22px 54px 32px; }
     .num.score b { min-width: 32px; padding: 2px 2px; font-size: 10.5px; }
+    .board.cfb .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 54px 32px; }
+    .board.cfb.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 22px 54px 32px; }
+    .board.cfb .num.score b { min-width: 40px; font-size: 10px; }
+    .cfbpanel { padding: 8px 10px 12px; font-size: 12.5px; }
+    .board.cfb .who .share { display: none; }       /* the name keeps the room; the dropdown has it */
     .num.own i { display: none; }
     .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
     .num.proj { grid-template-columns: 24px 1fr; gap: 2px; }
@@ -514,7 +537,7 @@
       <span class="r">#</span>
       <span>Player</span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
-      <span style="text-align:center" title="Workload score from the Analysis page: expected half-PPR next game">Score</span>
+      <span style="text-align:center" id="scoreHead" title="Workload score from the Analysis page: expected half-PPR next game">Score</span>
       <span class="r own-col"><button type="button" data-sort="own"
         title="Share of drafts the projection file expects this player to appear in">Own</button></span>
       <span class="r"><button type="button" data-sort="proj"
@@ -1453,6 +1476,7 @@ function save(key, value) {
 // ---------------------------------------------------------------- state
 var state = {
   workload: {},
+  cfb: null, cfbTakes: [], cfbOpen: {},
   data: null,          // latest.json
   slate: null,         // chosen slate object
   order: [],           // player_id list, full board
@@ -2018,6 +2042,137 @@ function scoreCell(p) {
   return c;
 }
 
+/* ---- college ---------------------------------------------------------------------
+   A CFB slate gets a baseline for every player from collegefootballdata (built into
+   analysis/cfb.json): usage, counting stats and this week's matchup with lines. Source
+   notes from analysis/cfb_takes.json sit on top in the row's dropdown. */
+var CFB_TEAM_ALIAS = { BAMA: "ALA", MIZZ: "MIZ", SCAR: "SC" };   // Underdog code -> CFBD code where they differ
+
+function loadCfb() {
+  function get(url) {
+    return fetch(url + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status); return r.json();
+    });
+  }
+  return Promise.all([get("analysis/cfb.json").catch(function () { return null; }),
+                      get("analysis/cfb_takes.json").catch(function () { return { takes: [] }; })])
+    .then(function (got) {
+      state.cfb = got[0];
+      state.cfbIndex = {};
+      if (state.cfb) state.cfb.players.forEach(function (w) {
+        var k = normName(w.name);
+        (state.cfbIndex[k] = state.cfbIndex[k] || []).push(w);
+      });
+      // only the latest week's notes; nothing older carries over
+      var takes = got[1].takes || [], wk = state.cfb ? state.cfb.week : null;
+      if (wk == null) wk = takes.reduce(function (m, t) { return Math.max(m, t.week); }, 0);
+      state.cfbTakes = takes.filter(function (t) { return t.week === wk && (!state.cfb || t.season === state.cfb.season); });
+    });
+}
+
+/** The CFBD player for a slate player: by name, then team when a name is shared. */
+function cfbFor(p) {
+  if (!state.cfbIndex) return null;
+  var list = state.cfbIndex[boardKey(p.first_name, p.last_name, state.nameMaps.cfb)] || [];
+  var team = CFB_TEAM_ALIAS[p.team] || p.team;
+  var hit = list.length === 1 ? list[0]
+    : list.filter(function (w) { return w.abbr === team || w.abbr === p.team; })[0] || null;
+  var takes = state.cfbTakes.filter(function (t) {
+    return normName(t.player) === boardKey(p.first_name, p.last_name, state.nameMaps.cfb);
+  });
+  if (!hit && !takes.length) return null;
+  var m = hit && state.cfb.matchups[hit.team];
+  return { w: hit, m: m || null, takes: takes };
+}
+
+function pctOf(v) { return v == null ? "–" : Math.round(v * 100) + "%"; }
+
+/** On the name line: his share of the team's work, and a toggle for the dropdown. */
+function cfbWho(who, p, cf) {
+  var u = cf.w && cf.w.usage;
+  if (u) {
+    var passer = p.position === "WR" || p.position === "TE";
+    var sh = document.createElement("span");
+    sh.className = "sub share";
+    sh.textContent = passer ? pctOf(u.pass) + " pass" : pctOf(u.rush) + " rush";
+    sh.title = "Share of his team's " + (passer ? "pass plays" : "rushes") + " he was involved in this season (garbage time excluded); " +
+      pctOf(u.overall) + " of all plays";
+    who.appendChild(sh);
+  }
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "cfbx" + (cf.takes.length ? " has-note" : "");
+  b.textContent = state.cfbOpen[p.player_id] ? "▴" : "▾";
+  b.title = cf.takes.length ? "Details and " + cf.takes.map(function (t) { return t.source; }).join(", ") + "'s note" : "Details";
+  b.addEventListener("click", function (e) {
+    e.stopPropagation();                      // a tap on the row lifts it; this only opens the details
+    state.cfbOpen[p.player_id] = !state.cfbOpen[p.player_id];
+    render();
+  });
+  who.appendChild(b);
+}
+
+function cfbDef(cf, pos) {
+  if (!cf || !cf.m) return null;
+  return pos === "WR" || pos === "TE" ? cf.m.opp_pass_d : cf.m.opp_run_d;
+}
+
+/** The opponent, coloured by how soft its defense is for this position. */
+function cfbOppCell(p, cf) {
+  var c = document.createElement("span");
+  c.className = "num score";
+  if (!cf || !cf.m) return c;
+  var d = cfbDef(cf, p.position), m = cf.m;
+  var b = document.createElement("b");
+  var t = d ? ["Tough", "Average", "Great", "Elite"].indexOf(d.tier) : -1;
+  b.className = t < 0 ? "" : "t" + t;
+  b.textContent = (m.home || m.neutral ? "" : "@") + m.opp_abbr;
+  b.title = (m.home ? "vs " : "@ ") + m.opp + (d ? " · " + (p.position === "WR" || p.position === "TE" ? "pass" : "run") + " D #" + d.rank + " of " + d.of + " (" + d.tier + ")" : "") +
+    (m.spread != null ? " · " + (m.spread > 0 ? "favored by " + m.spread : m.spread < 0 ? "underdog by " + (-m.spread) : "pick'em") : "") +
+    (m.implied != null ? " · implied " + m.implied : "");
+  c.appendChild(b);
+  return c;
+}
+
+function cfbPanel(p, cf) {
+  var d = document.createElement("div");
+  d.className = "cfbpanel";
+  var w = cf.w, m = cf.m, lines = [];
+  function line(label, html) { lines.push("<div><span class=\"lbl\">" + label + "</span>" + html + "</div>"); }
+  function n0(v) { return v == null ? "–" : String(Math.round(v)); }
+  if (w) {
+    var u = w.usage || {}, r = w.rush || {}, rc = w.rec || {}, ps = w.pass || {}, g = w.games || null;
+    line("Usage", pctOf(u.rush) + " of team rushes · " + pctOf(u.pass) + " of pass plays · " + pctOf(u.overall) + " of all plays");
+    if (r.car) line("Rushing", n0(r.car) + " car" + (g ? " (" + (r.car / g).toFixed(1) + "/g)" : "") + " · " + n0(r.yds) + " yds · " +
+      (r.ypc != null ? r.ypc.toFixed(1) : "–") + " ypc · " + n0(r.td) + " TD");
+    if (rc.rec) line("Receiving", n0(rc.rec) + " rec · " + n0(rc.yds) + " yds · " + n0(rc.td) + " TD");
+    if (ps.att) line("Passing", n0(ps.cmp) + "/" + n0(ps.att) + " · " + n0(ps.yds) + " yds · " + n0(ps.td) + " TD · " + n0(ps.int) + " INT");
+  }
+  if (m) {
+    var rd = m.opp_run_d, pd = m.opp_pass_d;
+    line("Matchup", (m.home ? "vs " : m.neutral ? "vs " : "@ ") + m.opp +
+      (m.spread != null ? " · " + (m.spread > 0 ? "favored by " + m.spread : m.spread < 0 ? "underdog by " + (-m.spread) : "pick'em") : " · no line yet") +
+      (m.total != null ? " · total " + m.total : "") + (m.implied != null ? " · implied <b>" + m.implied + "</b>" : ""));
+    line("Opp. defense", (rd ? "run #" + rd.rank + " (" + rd.tier + ")" : "run –") + " · " + (pd ? "pass #" + pd.rank + " (" + pd.tier + ")" : "pass –") +
+      (rd ? " of " + rd.of + ", by EPA allowed per play" : "") + (m.opp_sp_d_rank ? " · SP+ defense #" + m.opp_sp_d_rank : ""));
+  }
+  cf.takes.forEach(function (t) {
+    var tags = [t.role, t.rush_share ? t.rush_share + "% rush share" : null, t.workload, t.status].filter(Boolean).join(" · ");
+    lines.push("<div class=\"note\"><b>" + esc(t.source) + "</b>" + (t.verdict ? " <span class=\"verdict\">" + esc(t.verdict) + "</span>" : "") +
+      (tags ? " <span class=\"lbl\">" + esc(tags) + "</span>" : "") +
+      (t.evidence ? "<div class=\"ev\">" + esc(t.evidence) + (t.matchup ? " · " + esc(t.matchup) : "") + "</div>" : t.matchup ? "<div class=\"ev\">" + esc(t.matchup) + "</div>" : "") +
+      (t.note ? "<div>" + esc(t.note) + "</div>" : "") + "</div>");
+  });
+  if (!lines.length) lines.push("<div class=\"lbl\">No college data for him yet.</div>");
+  d.innerHTML = lines.join("");
+  d.addEventListener("click", function (e) { e.stopPropagation(); });
+  return d;
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+}
+
 /** Underdog's designation, when the mirror carries one: Q, D, O and anything else as sent. */
 function injuryTag(status) {
   if (!status) return null;
@@ -2035,6 +2190,11 @@ function render() {
   var rows = visibleRows();
   var board = document.querySelector(".board");
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
+  var isCfb = !!(state.slate && state.slate.sport === "cfb");
+  if (board) board.classList.toggle("cfb", isCfb);
+  $("scoreHead").textContent = isCfb ? "Opp" : "Score";
+  $("scoreHead").title = isCfb ? "This week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
+                               : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
   var atLine = state.cut != null && state.view === "order";
   state.vorpTop = Object.keys(state.vorp).reduce(function (m, k) {
@@ -2085,6 +2245,8 @@ function render() {
     sub.className = "sub";
     sub.textContent = p.team || "—";
     who.append(name, pos, sub);
+    var cf = state.slate.sport === "cfb" ? cfbFor(p) : null;
+    if (cf) cfbWho(who, p, cf);
     var inj = injuryTag(p.injury);
     if (inj) who.appendChild(inj);
     if (state.newIds[p.player_id]) {
@@ -2181,10 +2343,11 @@ function render() {
       }
     }
 
-    var sc = scoreCell(p);
+    var sc = state.slate.sport === "cfb" ? cfbOppCell(p, cf) : scoreCell(p);
     if (ownCell) el.append(handle, rank, who, adp, sc, ownCell, pr, vo);
     else el.append(handle, rank, who, adp, sc, pr, vo);
     frag.appendChild(el);
+    if (cf && state.cfbOpen[p.player_id]) frag.appendChild(cfbPanel(p, cf));
   });
   host.appendChild(frag);
   renderFoot(rows.length);
@@ -2983,6 +3146,7 @@ function bootFailed(where, err) {
     await loadNameMaps();
     state.data = await loadMirror();
     loadWorkload().then(function () { if (state.slate) render(); });
+    loadCfb().then(function () { if (state.slate && state.slate.sport === "cfb") render(); });
   } catch (err) {
     bootFailed("Could not load the ADP mirror", err);
     setStatus("The board could not reach " + MIRROR + "latest.json.", "bad");

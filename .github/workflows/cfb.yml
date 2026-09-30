@@ -1,0 +1,36 @@
+name: Refresh college baseline
+on:
+  schedule:
+    # UTC, daily: lines move all week and the Saturday slate needs the latest.
+    - cron: '20 13 * * *'
+  push:
+    branches: [main]
+    paths: ['analysis/cfb/takes/**', 'scripts/build_cfb.py']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: analysis
+  cancel-in-progress: false
+env:
+  CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}   # repository secret; the build is skipped without it
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - name: Build college baseline (collegefootballdata.com)
+        if: env.CFBD_API_KEY != ''
+        run: python3 scripts/build_cfb.py
+      - name: No API key yet
+        if: env.CFBD_API_KEY == ''
+        run: echo "::warning::CFBD_API_KEY secret not set; college baseline not rebuilt"
+      - run: python3 scripts/build_takes.py
+      - run: |
+          git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
+          git add analysis/takes.json analysis/cfb_takes.json
+          [ -f analysis/cfb.json ] && git add analysis/cfb.json
+          git diff --cached --quiet || git commit -m "analysis: refresh college $(date -u +%Y-%m-%dT%H:%M)"
+          git pull --rebase -q origin main && git push
