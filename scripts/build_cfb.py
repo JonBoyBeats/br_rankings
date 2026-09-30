@@ -14,6 +14,10 @@ writer covers; source notes (analysis/cfb/takes/) are layered on top by the page
             ranked 1 (stingiest) to N, cut into quarters: Tough, Average, Great, Elite; for the
             run also yards per carry allowed (ranked), stuff rate and line yards
   volume    his team's plays per game and pass rate
+  tiers     every per-player number is placed against qualified FBS players at his position
+            this season (RB 20+ carries, WR/TE 6+ catches, QB 40+ attempts): top 15% Elite,
+            next 25% Great, next 30% Average, the rest Low. Single games against single games.
+            Implied totals and plays per game are placed against the other teams the same way.
 
 Season = the current college season; week = the next week with games still to play.
 About a dozen API calls a run, well inside the free tier.
@@ -236,8 +240,45 @@ def main():
         out.append(p)
     out.sort(key=lambda p: (-(p.get('usage', {}).get('overall') or 0)))
 
+    # ---- per-player numbers and where they sit at the position
+    qual = {'RB': lambda p: (p.get('rush') or {}).get('car', 0) >= 20,
+            'WR': lambda p: (p.get('rec') or {}).get('rec', 0) >= 6,
+            'TE': lambda p: (p.get('rec') or {}).get('rec', 0) >= 6,
+            'QB': lambda p: (p.get('pass') or {}).get('att', 0) >= 40}
+    pool, game_pool = {}, {}
+    for p in out:
+        ru, rc, ps, us = p.get('rush') or {}, p.get('rec') or {}, p.get('pass') or {}, p.get('usage') or {}
+        team_games = by_team.get(p['team'], [])
+        mine = [(b, b['players'].get(str(p['id'])) or next((v for v in b['players'].values() if v.get('name') == p['name']), {}))
+                for b in team_games]
+        car, tcar = sum(m.get('car', 0) for b, m in mine), sum(b['car'] for b, m in mine)
+        rec, trec = sum(m.get('rec', 0) for b, m in mine), sum(b['rec'] for b, m in mine)
+        g = p.get('games') or len(team_games) or None
+        per = lambda v: None if v is None or not g else v / g
+        m = {'rush_sh': car / tcar if tcar else None, 'rec_sh': rec / trec if trec else None,
+             'pass_use': us.get('pass'), 'touch_pg': per(ru.get('car', 0) + rc.get('rec', 0)),
+             'ypc': ru.get('ypc') if ru.get('car', 0) >= 10 else None,
+             'td_pg': per(ru.get('td', 0) + rc.get('td', 0)), 'rec_pg': per(rc.get('rec', 0)), 'yds_pg': per(rc.get('yds', 0)),
+             'pass_yds_pg': per(ps.get('yds')), 'pass_td_pg': per(ps.get('td')), 'rush_yds_pg': per(ru.get('yds', 0))}
+        p['m'] = {k: round(v, 3) for k, v in m.items() if v is not None}
+        if qual[p['pos']](p):
+            for k, v in p['m'].items(): pool.setdefault(p['pos'], {}).setdefault(k, []).append(v)
+            for b, mm in mine:
+                for k, tot, v in (('rush_sh', b['car'], mm.get('car', 0)), ('rec_sh', b['rec'], mm.get('rec', 0))):
+                    if tot: game_pool.setdefault(p['pos'], {}).setdefault(k, []).append(v / tot)
+    def cuts_of(vals):
+        v = sorted(vals)
+        at = lambda q: round(v[min(len(v) - 1, int(q * len(v)))], 3)
+        return [at(.85), at(.60), at(.30)] if len(v) >= 8 else None
+    cuts = {pos: {k: cuts_of(v) for k, v in d.items()} for pos, d in pool.items()}
+    for pos, d in game_pool.items():
+        for k, v in d.items(): cuts.setdefault(pos, {})[k + '_g'] = cuts_of(v)
+    implied = [m['implied'] for m in matchups.values() if m['implied'] is not None]
+    plays = [m['volume']['plays_pg'] for m in matchups.values() if m.get('volume')]
+    team_cuts = {'implied': cuts_of(implied), 'plays_pg': cuts_of(plays)}
+
     doc = {'season': season, 'week': week, 'built': now.strftime('%Y-%m-%dT%H:%MZ'),
-           'matchups': matchups, 'players': out}
+           'matchups': matchups, 'cuts': cuts, 'team_cuts': team_cuts, 'players': out}
     with open(OUT, 'w') as f: json.dump(doc, f, separators=(',', ':'))
     lined = sum(1 for m in matchups.values() if m['spread'] is not None)
     print(f'{season} week {week}: {len(games)} FBS games ({lined // 2} with lines), {len(out)} players, '
