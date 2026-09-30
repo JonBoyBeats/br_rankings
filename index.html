@@ -296,11 +296,6 @@
     color: var(--muted); border: 1px solid var(--line-strong); align-self: center;
   }
   .cfbx.has-note { color: var(--ink); border-color: var(--accent); }
-  .cfball {
-    all: unset; cursor: pointer; margin-left: 8px; padding: 1px 6px; border-radius: 4px;
-    border: 1px solid var(--line-strong); color: var(--muted); font-size: 9.5px; letter-spacing: .06em;
-  }
-  .cfball:hover { color: var(--ink); }
   .cfbx:focus-visible { outline: 2px solid var(--accent); }
   .board.cfb .num.score b { min-width: 44px; }
   .cfbpanel {
@@ -515,6 +510,10 @@
       <span class="field-label">Saved</span>
       <button type="button" id="syncBtn" aria-expanded="false">Sync</button>
     </label>
+    <label class="field" id="cfbAllField" hidden>
+      <span class="field-label">Notes</span>
+      <button type="button" id="cfbAll">Expand all</button>
+    </label>
     <label class="field">
       <span class="field-label">Underdog</span>
       <button type="button" id="export" class="primary">Export<span class="wide"> ranking</span></button>
@@ -569,7 +568,7 @@
     <div class="row head">
       <span></span>
       <span class="r">#</span>
-      <span>Player <button type="button" id="cfbAll" class="cfball" hidden>expand all</button></span>
+      <span>Player</span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
       <span style="text-align:center" id="scoreHead" title="Workload score from the Analysis page: expected half-PPR next game">Score</span>
       <span class="r own-col"><button type="button" data-sort="own"
@@ -2389,9 +2388,9 @@ function render() {
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
   $("scoreHead").textContent = isCfb ? "Opp" : "Score";
-  $("cfbAll").hidden = !isCfb || !state.cfbIndex;
+  $("cfbAllField").hidden = !isCfb || !state.cfbIndex;
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
-  $("cfbAll").textContent = anyOpen ? "collapse all" : "expand all";
+  $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").title = isCfb ? "This week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
