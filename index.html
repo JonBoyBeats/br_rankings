@@ -2011,7 +2011,7 @@ function scoreCell(p) {
   var b = document.createElement("b");
   var thin = w.games < 4;
   b.className = "t" + w.s.tier + (thin ? " thin" : "");
-  b.textContent = w.s.next.toFixed(1);
+  b.textContent = String(Math.round(w.s.next));
   b.title = "Workload score: expected " + w.s.next.toFixed(1) + " half-PPR in Week " + w.week + " · " + w.pos + w.s.rank +
     (thin ? " · only " + w.games + " game" + (w.games === 1 ? "" : "s") + " of data" : "");
   c.appendChild(b);
@@ -2135,7 +2135,7 @@ function render() {
                    : "");
     }
     var pval = document.createElement("span");
-    pval.textContent = v == null ? "–" : v.toFixed(1);
+    pval.textContent = v == null ? "–" : String(Math.round(v));       // whole points: decimals only look like an edge
     var parts = state.projParts[p.player_id];
     if (v != null && parts && typeof parts.median === "number") {
       pval.title = typeof parts.ceiling !== "number"
@@ -2163,7 +2163,8 @@ function render() {
     var vv = state.vorp[p.player_id];
     var vo = document.createElement("span");
     vo.className = "num vorp";
-    vo.textContent = vv == null ? "" : (vv > 0 ? "+" : vv < 0 ? "\u2212" : "") + Math.abs(vv).toFixed(1);
+    var vr = vv == null ? null : Math.round(vv);
+    vo.textContent = vr == null ? "" : (vr > 0 ? "+" : vr < 0 ? "\u2212" : "") + Math.abs(vr);
     if (vv != null) {
       vo.style.color = vorpColor(vv);
       var lvl = state.vorpLevels[p.position];

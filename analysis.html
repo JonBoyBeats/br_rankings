@@ -102,7 +102,7 @@
   /* One grid for header and rows so every cell lines up with its column label. */
   .row {
     display: grid;
-    grid-template-columns: 40px minmax(130px, 200px) repeat(4, minmax(84px, 1fr)) var(--base) var(--base) 62px 100px;
+    grid-template-columns: 40px minmax(130px, 200px) repeat(4, minmax(84px, 1fr)) var(--base) var(--base) 70px 100px;
     --base: 76px;
     align-items: center; gap: 10px; padding: 6px 12px; border-bottom: 1px solid var(--line);
   }
@@ -173,8 +173,11 @@
   .inj.d { background: #e07b3a; color: #1d0e03; }
   .inj.o { background: var(--t0); color: var(--t0-ink); }
   .inj.p { background: #2a3140; color: #c9d1dc; }
-  .sc { display: flex; flex-direction: column; align-items: center; gap: 1px; }
-  .sc .cell { min-width: 48px; font-size: 12px; }
+  /* Desktop: the gap to your projection sits beside the score, so the score stays centred
+     in the row like every other cell. A phone stacks it above (see below). */
+  .sc { display: flex; flex-direction: row; align-items: center; gap: 5px; }
+  .sc .cell { min-width: 34px; font-size: 12px; }
+  .sc .vs { min-width: 28px; }
   .sc .cell.thin { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .55); background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(0, 0, 0, .18) 4px 6px); }
   .sc .vs { font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.1; }
   .sc .vs.up { color: var(--up); } .sc .vs.down { color: var(--down); }
@@ -232,7 +235,8 @@
     .row > .rank { grid-area: rank; }
     .row > .who { grid-area: who; }
     .row > .mu { grid-area: mu; }
-    .row > .sc { grid-area: sc; flex-direction: column-reverse; }
+    .row > .sc { grid-area: sc; flex-direction: column-reverse; gap: 1px; }
+    .row > .sc .vs { min-width: 0; }
     .row > .strip { grid-area: strip; display: grid; grid-template-columns: repeat(4, 1fr) .5fr .5fr; gap: 6px; }
     .strip .grp { gap: 2px; }
     .strip .cell { height: 14px; line-height: 14px; border-radius: 3px; font-size: 0 !important; }
@@ -360,7 +364,8 @@ function tierOf(v, cuts) {
 }
 
 function pct(v) { return v == null ? "–" : String(Math.round(v * 100)); }
-function pts(v) { return v == null ? "–" : v.toFixed(1); }
+/* Points show whole: players this close shouldn't look separated by decimals. */
+function pts(v) { return v == null ? "–" : String(Math.round(v)); }
 
 /** Role change: last game's snap share (RB) or route share (WR/TE) against the 16-game rate. */
 function roleKey(p) { return p.pos === "RB" ? "snap" : "route"; }
@@ -671,7 +676,7 @@ function scoreCell(p) {
   if (!sc) { w.appendChild(cell(null, null, function () { return "–"; })); return w; }
   var thin = p.l16_games < 4;
   w.appendChild(cell(sc.next, sc.tier, pts, thin ? "thin" : null,
-    "Expected " + sc.next.toFixed(1) + " half-PPR next game · " + p.pos + sc.rank + " this week" +
+    "Expected " + Math.round(sc.next) + " half-PPR next game · " + p.pos + sc.rank + " this week" +
     (thin ? " · only " + p.l16_games + " game" + (p.l16_games === 1 ? "" : "s") + " of data, so lean on it lightly" : "")));
   var v = vsProj(p);
   if (!v && state.projMeta) {           // keep the row's height, so every score lines up
@@ -891,13 +896,13 @@ function drawer(p) {
     d.appendChild(hs);
     var sign = function (v) { return (v >= 0 ? "+ " : "− ") + Math.abs(v).toFixed(1); };
     var lines = [
-      "<b>" + sc.next.toFixed(1) + "</b> expected half-PPR · " + p.pos + sc.rank + " this week · next 3 games: " + sc.next3.toFixed(1) + " a game",
+      "<b>" + Math.round(sc.next) + "</b> expected half-PPR · " + p.pos + sc.rank + " this week · next 3 games: " + Math.round(sc.next3) + " a game",
       "= " + sc.parts.baseline.toFixed(1) + " baseline " + sign(sc.parts.role) + " role " + sign(sc.parts.matchup) + " matchup",
-      "Players at this score posted: median " + sc.p50.toFixed(1) + " · 80th percentile " + sc.p80.toFixed(1) + " · 85th " + sc.p85.toFixed(1)
+      "Players at this score posted: median " + Math.round(sc.p50) + " · 80th percentile " + Math.round(sc.p80) + " · 85th " + Math.round(sc.p85)
     ];
     var v = vsProj(p);
-    if (v) lines.push("Your projection: median " + v.median.toFixed(1) + (v.ceiling != null ? " · ceiling " + v.ceiling.toFixed(1) : "") +
-      " · blend " + v.theirs.toFixed(1) + ". Workload blend " + v.ours.toFixed(1) + " (ceiling at our " + state.projPct + "th): " +
+    if (v) lines.push("Your projection: median " + Math.round(v.median) + (v.ceiling != null ? " · ceiling " + Math.round(v.ceiling) : "") +
+      " · blend " + Math.round(v.theirs) + ". Workload blend " + Math.round(v.ours) + " (ceiling at our " + state.projPct + "th): " +
       (v.raw > 0 ? "+" : "") + v.raw.toFixed(1) + ", where " + p.pos + "s usually sit at " + (v.usual > 0 ? "+" : "") + v.usual.toFixed(1) +
       " → <b>" + (v.delta > 0 ? "+" : "") + v.delta.toFixed(1) + "</b> relative");
     if (p.l16_games < 4) lines.push("Only " + p.l16_games + " game" + (p.l16_games === 1 ? "" : "s") + " of data, so lean on it lightly.");
