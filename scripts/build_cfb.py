@@ -7,8 +7,9 @@ writer covers; source notes (analysis/cfb/takes/) are layered on top by the page
             overall, rush (share of team rushes) and pass (share of team pass plays)
   rushing   carries, yards, TDs, yards per carry · receiving: catches, yards, TDs
   passing   (QBs) completions, attempts, yards, TDs, INTs
-  last 3    his last three games: carries and share of team carries, catches and share of
-            team catches (box scores; finished weeks are cached in analysis/cfb/cache/)
+  last 4    his last four games: carries and share of team carries, catches and share of
+            team catches, and half-PPR points (Underdog scoring) from the box score
+            (finished weeks are cached in analysis/cfb/cache/, one call a week)
   matchup   this week's opponent, spread, total and implied team total for EVERY FBS game,
             plus the opponent's defense against the run and the pass, each a BLEND of three
             ranks so one noisy early-season number can't flip it: EPA per play allowed (garbage
@@ -71,32 +72,49 @@ def pick(d, *keys):
     return None
 
 
+# box-score fields kept per player per game: (category, stat) -> key
+BOX = {('rushing', 'CAR'): 'car', ('rushing', 'YDS'): 'rush_yds', ('rushing', 'TD'): 'rush_td',
+       ('receiving', 'REC'): 'rec', ('receiving', 'YDS'): 'rec_yds', ('receiving', 'TD'): 'rec_td',
+       ('passing', 'YDS'): 'pass_yds', ('passing', 'TD'): 'pass_td', ('passing', 'INT'): 'int',
+       ('fumbles', 'LOST'): 'fum_lost'}
+
+
+def half_ppr(g):
+    """Underdog half-PPR, the NFL side's scoring: pass yd .04, pass TD 4, INT -1, rush/rec yd .1,
+    TD 6, catch .5, fumble lost -2."""
+    z = lambda k: g.get(k) or 0
+    return round(z('pass_yds') * .04 + z('pass_td') * 4 - z('int') + (z('rush_yds') + z('rec_yds')) * .1
+                 + (z('rush_td') + z('rec_td')) * 6 + z('rec') * .5 - 2 * z('fum_lost'), 1)
+
+
 def week_boxes(season, wk):
-    """One finished week's box scores, reduced to carries and catches per player per game.
-    Cached on disk: a finished week never changes, so each costs two API calls once."""
-    path = os.path.join(CACHE, f'{season}_w{wk:02d}.json')
+    """One finished week's box scores: each player's line per game, with team carry and catch
+    totals for shares. Cached on disk: a finished week never changes, so it costs one call once."""
+    path = os.path.join(CACHE, f'{season}_w{wk:02d}_v2.json')
     if os.path.exists(path) and not FIXTURE:
         with open(path) as f: return json.load(f)
     games = {}
-    for cat, stat in (('rushing', 'CAR'), ('receiving', 'REC')):
-        for g in get('/games/players', year=season, week=wk, seasonType='regular', category=cat):
-            teams = g.get('teams') or []
-            names = [pick(t, 'team', 'school') for t in teams]
-            for t in teams:
-                tm = pick(t, 'team', 'school')
-                row = games.setdefault(f"{g.get('id')}|{tm}", {'week': wk, 'team': tm,
-                                       'opp': next((n for n in names if n != tm), None), 'home': t.get('homeAway') == 'home',
-                                       'car': 0, 'rec': 0, 'players': {}})
-                for c in t.get('categories') or []:
-                    if (c.get('name') or '').lower() != cat: continue
-                    for ty in c.get('types') or []:
-                        if (ty.get('name') or '').upper() != stat: continue
-                        for a in ty.get('athletes') or []:
-                            v = num(a.get('stat')) or 0
-                            row['car' if stat == 'CAR' else 'rec'] += v
-                            pl = row['players'].setdefault(str(a.get('id')), {'name': a.get('name')})
-                            pl['car' if stat == 'CAR' else 'rec'] = v
+    for g in get('/games/players', year=season, week=wk, seasonType='regular'):
+        teams = g.get('teams') or []
+        names = [pick(t, 'team', 'school') for t in teams]
+        for t in teams:
+            tm = pick(t, 'team', 'school')
+            row = games.setdefault(f"{g.get('id')}|{tm}", {'week': wk, 'team': tm,
+                                   'opp': next((n for n in names if n != tm), None), 'home': t.get('homeAway') == 'home',
+                                   'car': 0, 'rec': 0, 'players': {}})
+            for c in t.get('categories') or []:
+                cat = (c.get('name') or '').lower()
+                for ty in c.get('types') or []:
+                    key = BOX.get((cat, (ty.get('name') or '').upper()))
+                    if not key: continue
+                    for a in ty.get('athletes') or []:
+                        v = num(a.get('stat')) or 0
+                        if key in ('car', 'rec'): row[key] += v
+                        pl = row['players'].setdefault(str(a.get('id')), {'name': a.get('name')})
+                        pl[key] = v
     out = list(games.values())
+    for row in out:
+        for pl in row['players'].values(): pl['fp'] = half_ppr(pl)
     if not FIXTURE:
         os.makedirs(CACHE, exist_ok=True)
         with open(path, 'w') as f: json.dump(out, f, separators=(',', ':'))
@@ -255,11 +273,12 @@ def main():
             continue
         p['games'] = games_played.get(p['team'])
         last = []
-        for b in by_team.get(p['team'], [])[-3:]:
+        for b in by_team.get(p['team'], [])[-4:]:
             me = b['players'].get(str(p['id'])) or next((v for v in b['players'].values() if v.get('name') == p['name']), {})
             last.append({'wk': b['week'], 'opp': abbr.get(b['opp'], b['opp']), 'home': b['home'],
                          'car': me.get('car', 0), 'rush_sh': round(me.get('car', 0) / b['car'], 3) if b['car'] else None,
-                         'rec': me.get('rec', 0), 'rec_sh': round(me.get('rec', 0) / b['rec'], 3) if b['rec'] else None})
+                         'rec': me.get('rec', 0), 'rec_sh': round(me.get('rec', 0) / b['rec'], 3) if b['rec'] else None,
+                         'fp': me.get('fp') if me else None})       # None = not in the box score (didn't play)
         if last: p['last'] = last
         if 'rece' in p: p['rec'] = p.pop('rece')
         out.append(p)
@@ -285,12 +304,15 @@ def main():
              'ypc': ru.get('ypc') if ru.get('car', 0) >= 10 else None,
              'td_pg': per(ru.get('td', 0) + rc.get('td', 0)), 'rec_pg': per(rc.get('rec', 0)), 'yds_pg': per(rc.get('yds', 0)),
              'pass_yds_pg': per(ps.get('yds')), 'pass_td_pg': per(ps.get('td')), 'rush_yds_pg': per(ru.get('yds', 0))}
+        played = [mm['fp'] for b, mm in mine if mm and mm.get('fp') is not None]
+        if played: m['fp_pg'] = sum(played) / len(played)
         p['m'] = {k: round(v, 3) for k, v in m.items() if v is not None}
         if qual[p['pos']](p):
             for k, v in p['m'].items(): pool.setdefault(p['pos'], {}).setdefault(k, []).append(v)
             for b, mm in mine:
                 for k, tot, v in (('rush_sh', b['car'], mm.get('car', 0)), ('rec_sh', b['rec'], mm.get('rec', 0))):
                     if tot: game_pool.setdefault(p['pos'], {}).setdefault(k, []).append(v / tot)
+                if mm and mm.get('fp') is not None: game_pool.setdefault(p['pos'], {}).setdefault('fp', []).append(mm['fp'])
     def cuts_of(vals):
         v = sorted(vals)
         at = lambda q: round(v[min(len(v) - 1, int(q * len(v)))], 3)

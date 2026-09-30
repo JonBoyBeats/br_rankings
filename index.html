@@ -2194,11 +2194,11 @@ function cfbOppCell(p, cf) {
 /* What each position's dropdown shows, left to right by importance: [metric, label, format, has game cells]. */
 var CFB_GROUPS = {
   RB: [["rush_sh", "Rush share", "pct", "rush_sh"], ["rec_sh", "Catch share", "pct", "rec_sh"], ["touch_pg", "Touches/g", "n0"],
-       ["ypc", "YPC", "n1"], ["td_pg", "TD/g", "n1"]],
+       ["ypc", "YPC", "n1"], ["td_pg", "TD/g", "n1"], ["fp_pg", "Half-PPR", "n0", "fp"]],
   WR: [["rec_sh", "Catch share", "pct", "rec_sh"], ["pass_use", "Pass-play share", "pct"], ["rec_pg", "Rec/g", "n1"],
-       ["yds_pg", "Rec yds/g", "n0"], ["td_pg", "TD/g", "n1"]],
+       ["yds_pg", "Rec yds/g", "n0"], ["td_pg", "TD/g", "n1"], ["fp_pg", "Half-PPR", "n0", "fp"]],
   QB: [["rush_sh", "Rush share", "pct", "rush_sh"], ["pass_yds_pg", "Pass yds/g", "n0"], ["pass_td_pg", "Pass TD/g", "n1"],
-       ["rush_yds_pg", "Rush yds/g", "n0"]]
+       ["rush_yds_pg", "Rush yds/g", "n0"], ["fp_pg", "Half-PPR", "n0", "fp"]]
 };
 CFB_GROUPS.TE = CFB_GROUPS.WR;
 var CFB_TIER = ["Low", "Average", "Great", "Elite"];
@@ -2248,15 +2248,17 @@ function cfbPanel(p, cf) {
       if (spec[3]) {
         var games = w.last || [];
         cells.push(Object.assign(document.createElement("span"), { className: "div" }));
-        for (var i = 0; i < 3; i++) {
-          var gm = games[i - (3 - games.length)];
+        for (var i = 0; i < 4; i++) {
+          var gm = games[i - (4 - games.length)];
           if (!gm) { cells.push(cfbCell(null, null, "", "blank")); continue; }
-          var gv = gm[spec[3]], gt = cfbTier(gv, cuts[spec[3] + "_g"]);
-          cells.push(cfbCell(gv, gt, cfbFmt(gv, "pct"), null, "Wk" + gm.wk + " " + (gm.home ? "vs " : "@ ") + gm.opp + ": " +
-            (spec[3] === "rush_sh" ? gm.car + " car" : gm.rec + " rec") + " (" + cfbFmt(gv, "pct") + "%)" + (gt == null ? "" : " · " + CFB_TIER[gt])));
+          var gv = gm[spec[3]], gt = cfbTier(gv, cuts[spec[3] + "_g"]), isFp = spec[3] === "fp";
+          var gtxt = gv == null ? "–" : isFp ? String(Math.round(gv)) : cfbFmt(gv, "pct");
+          cells.push(cfbCell(gv, gt, gtxt, null, "Wk" + gm.wk + " " + (gm.home ? "vs " : "@ ") + gm.opp + ": " +
+            (isFp ? (gv == null ? "didn't play" : gv.toFixed(1) + " half-PPR") :
+             (spec[3] === "rush_sh" ? gm.car + " car" : gm.rec + " rec") + " (" + cfbFmt(gv, "pct") + "%)") + (gt == null ? "" : " · " + CFB_TIER[gt])));
         }
       }
-      grid.appendChild(cfbGroup(spec[1], spec[3] ? "season ¦ last 3" : "season", cells));
+      grid.appendChild(cfbGroup(spec[1], spec[3] ? (spec[3] === "fp" ? "per game ¦ last 4" : "season ¦ last 4") : "season", cells));
     });
     d.appendChild(grid);
   }
