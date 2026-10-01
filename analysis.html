@@ -596,6 +596,7 @@ function commitMove(pid, targetPid, before) {
     return;
   }
   save("brr:order:" + s.label, res.order);
+  save("brr:mod:" + s.label, new Date().toISOString());        // the board's auto-sync reads this as an edit
   if (res.cut == null) { try { localStorage.removeItem("brr:cut:" + s.label); } catch (e) { /* ignore */ } }
   else save("brr:cut:" + s.label, res.cut);
   render();

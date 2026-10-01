@@ -1533,6 +1533,9 @@ var K = {
   vorpWin: function (label) { return "brr:vorpwin:" + label; },
   cut: function (label) { return "brr:cut:" + label; },
   added: function (label) { return "brr:added:" + label; },
+  mod: function (label) { return "brr:mod:" + label; },              // when this device last changed the board
+  synced: function (label) { return "brr:synced:" + label; },        // saved_at of the gist entry last pushed or pulled
+  syncedSig: function (label) { return "brr:syncsig:" + label; },    // the board as it stood right after that sync
   slate: "brr:slate",
   token: "brr:gh:token",
   gist: "brr:gh:gist",
@@ -1545,8 +1548,10 @@ function load(key, fallback) {
   } catch (e) { return fallback; }
 }
 function save(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+  try { localStorage.setItem(key, JSON.stringify(value)); }
   catch (e) { setStatus("Could not save to this browser's storage: " + e.message, "bad"); return false; }
+  markLocal(key);
+  return true;
 }
 
 // ---------------------------------------------------------------- state
@@ -1672,7 +1677,8 @@ function selectSlate(index) {
       keep.forEach(function (id) { want[id] = 1; });
       var back = pool.players.filter(function (p) { return want[p.player_id]; });
       if (back.length && state.slate && state.slate.label === s.label) {
-        addFromPool(back, saved ? { order: saved, cut: savedCut } : null);
+        syncApplying = true;            // putting back what was already saved isn't an edit
+        try { addFromPool(back, saved ? { order: saved, cut: savedCut } : null); } finally { syncApplying = false; }
       }
     });
   }
@@ -1695,6 +1701,7 @@ function selectSlate(index) {
   render();
   renderPoolHits();
   if (!$("vorpPanel").hidden) renderVorpPanel();
+  scheduleSync(1200);
 }
 
 // ---------------------------------------------------------------- projections
@@ -3012,7 +3019,7 @@ async function gh(path, opts) {
   if (opts.body) headers["Content-Type"] = "application/json";
   var r;
   try {
-    r = await fetch(GH + path, { method: opts.method || "GET", headers: headers, body: opts.body });
+    r = await fetch(GH + path, { method: opts.method || "GET", headers: headers, body: opts.body, cache: "no-store" });
   } catch (e) {
     throw new Error("could not reach GitHub. The board still works offline.");
   }
@@ -3060,8 +3067,8 @@ function renderSync(text) {
 
 async function refreshSyncStatus() {
   if (!connected()) {
-    renderSync("Not connected. Paste a GitHub token below and this device can save and " +
-               "load boards from a private gist.");
+    renderSync("Not connected. Paste a GitHub token below and this device keeps its boards in step with " +
+               "your other devices through a private gist.");
     return;
   }
   renderSync("Checking the gist\u2026");
@@ -3073,8 +3080,9 @@ async function refreshSyncStatus() {
       ? "This slate: saved " + describeAge(mine.saved_at, Date.now()) + " from " +
         mine.device + ", " + playerCount(mine.count) + "."
       : "Nothing saved for this slate yet.";
-    renderSync(bits + (labels.length ? " Saved slates: " + labels.join(", ") + "." : "") +
-               " This device is " + myDevice() + ".");
+    renderSync("Auto-sync is on: edits save a couple of seconds after you make them, and opening or returning " +
+               "to the board picks up the newest one from any device. " + bits +
+               (labels.length ? " Saved slates: " + labels.join(", ") + "." : "") + " This device is " + myDevice() + ".");
   } catch (e) {
     renderSync(e.message);
   }
@@ -3110,6 +3118,8 @@ async function syncSave() {
       }
     }
     await writeFiles(files, cur.id);
+    rawSave(K.synced(label), entry.saved_at);
+    rawSave(K.syncedSig(label), boardSig());
     renderSync("Saved " + playerCount(entry.count) + " for " + slateLabel(state.slate) + "." + note +
                (entry.windows ? " Your replacement ranks went too." : "") +
                " Any device with the token can load it.");
@@ -3118,6 +3128,42 @@ async function syncSave() {
   } finally {
     btn.disabled = false;
   }
+}
+
+/** Put a saved board on this device: order, line and replacement ranks. */
+async function applyEntry(entry) {
+  // Players the saving device added from the unpriced pool come back from the pool
+  // file first; the slate lists only priced players, so they would read as gone.
+  var have = {}, want = {}, wanted = 0;
+  state.slate.players.forEach(function (p) { have[p.player_id] = 1; });
+  entry.order.forEach(function (pid) { if (!have[pid]) { want[pid] = 1; wanted++; } });
+  if (wanted) {
+    var pool = await loadPool(state.slate);
+    var back = pool.players.filter(function (p) { return want[p.player_id] && !have[p.player_id]; });
+    if (back.length) {
+      state.slate.players = state.slate.players.concat(back);
+      back.forEach(function (p) { state.added[p.player_id] = 1; });
+      save(K.added(state.slate.label), Object.keys(state.added));
+      renderPositions();
+    }
+  }
+  var rec = reconcileOrder(state.slate.players, entry.order);
+  state.order = rec.order;
+  state.newIds = {};
+  rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
+  var onSlate = {};
+  state.slate.players.forEach(function (p) { onSlate[p.player_id] = 1; });
+  state.cut = entry.cut == null ? null : reconcileCut(entry.order, entry.cut, onSlate);
+  state.liftedPid = null;
+  renderLiftBar();
+  saveBoard();
+
+  var ranks = state.cut == null ? "" : " Its line came with it, at " + state.cut + ".";
+  if (entry.windows && typeof entry.windows === "object") {
+    save(K.vorpWin(state.slate.label), entry.windows);
+    ranks += " Its replacement ranks came with it.";
+  }
+  return { rec: rec, ranks: ranks };
 }
 
 async function syncLoad() {
@@ -3132,37 +3178,12 @@ async function syncLoad() {
       renderSync("Kept the board on this device.");
       return;
     }
-    // Players the saving device added from the unpriced pool come back from the pool
-    // file first; the slate lists only priced players, so they would read as gone.
-    var have = {}, want = {}, wanted = 0;
-    state.slate.players.forEach(function (p) { have[p.player_id] = 1; });
-    entry.order.forEach(function (pid) { if (!have[pid]) { want[pid] = 1; wanted++; } });
-    if (wanted) {
-      var pool = await loadPool(state.slate);
-      var back = pool.players.filter(function (p) { return want[p.player_id] && !have[p.player_id]; });
-      if (back.length) {
-        state.slate.players = state.slate.players.concat(back);
-        back.forEach(function (p) { state.added[p.player_id] = 1; });
-        save(K.added(state.slate.label), Object.keys(state.added));
-        renderPositions();
-      }
-    }
-    var rec = reconcileOrder(state.slate.players, entry.order);
-    state.order = rec.order;
-    state.newIds = {};
-    rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
-    var onSlate = {};
-    state.slate.players.forEach(function (p) { onSlate[p.player_id] = 1; });
-    state.cut = entry.cut == null ? null : reconcileCut(entry.order, entry.cut, onSlate);
-    state.liftedPid = null;
-    renderLiftBar();
-    saveBoard();
-
-    var ranks = state.cut == null ? "" : " Its line came with it, at " + state.cut + ".";
-    if (entry.windows && typeof entry.windows === "object") {
-      save(K.vorpWin(state.slate.label), entry.windows);
-      ranks += " Its replacement ranks came with it.";
-    }
+    syncApplying = true;
+    var got;
+    try { got = await applyEntry(entry); } finally { syncApplying = false; }
+    var rec = got.rec, ranks = got.ranks;
+    rawSave(K.synced(state.slate.label), entry.saved_at);
+    rawSave(K.syncedSig(state.slate.label), boardSig());
 
     var sport = state.slate.sport;
     var pf = cur.files[projFile(sport)];
@@ -3207,6 +3228,122 @@ async function syncConnect() {
     $("syncActions").hidden = true;
   }
 }
+
+/* ---- auto-sync ------------------------------------------------------------------
+   With a token on this device, the board keeps itself in step with the gist: a change
+   goes up a couple of seconds after the last edit, and opening or returning to the page
+   brings down whatever another device saved since. "Changed" means the board differs
+   from how it stood right after the last sync, so the board's own re-saves on load don't
+   count; when both sides changed, the later edit wins. Projections ride along, newest
+   upload wins. */
+var syncTimer = null, syncBusy = false, syncApplying = false;
+
+function rawSave(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* ignore */ } }
+function isoMs(iso) { var t = Date.parse(iso); return isFinite(t) ? t : 0; }
+/** The ranked part of a board (all of it without a line): the part a first sync compares. */
+function rankedSig(order, cut) { return JSON.stringify(cut == null ? [order, null] : [order.slice(0, cut), cut]); }
+function boardSig() {
+  return JSON.stringify([state.order, state.cut == null ? null : state.cut, load(K.vorpWin(state.slate.label), null) || null]);
+}
+
+/** Every save funnels through here: a board or projection write schedules a sync. */
+function markLocal(key) {
+  if (syncApplying || typeof state === "undefined" || !state.slate) return;
+  var label = state.slate.label;
+  if (key === K.order(label) || key === K.cut(label) || key === K.added(label) || key === K.vorpWin(label)) {
+    rawSave(K.mod(label), new Date().toISOString());
+    scheduleSync(2000);
+  } else if (key === K.proj(state.slate.sport)) {
+    scheduleSync(2000);
+  }
+}
+
+function scheduleSync(ms) {
+  if (!connected()) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(autoSync, ms);
+}
+
+async function autoSync() {
+  clearTimeout(syncTimer); syncTimer = null;
+  if (!connected() || !state.slate) return;
+  if (syncBusy) { scheduleSync(1500); return; }
+  syncBusy = true;
+  var label = state.slate.label, sport = state.slate.sport;
+  try {
+    var cur = await readSaved();
+    if (!state.slate || state.slate.label !== label) return;
+    var remote = cur.doc.slates[label] || null;
+    var syncedSig = load(K.syncedSig(label), null);
+    var hasLocal = load(K.order(label), null) != null;
+    var take = false, push = false;
+    if (syncedSig == null) {
+      // first sync for this slate on this device
+      if (!remote) push = hasLocal;
+      else if (!hasLocal || rankedSig(remote.order, remote.cut) === rankedSig(state.order, state.cut)) take = true;
+      else take = window.confirm("Auto-sync: " + remote.device + " saved a board for " + slateLabel(state.slate) + " " +
+                                 describeAge(remote.saved_at, Date.now()) + " (" + playerCount(remote.count) + "), and this " +
+                                 "device has its own. OK uses the saved one here; Cancel keeps this device's board and " +
+                                 "sends it to your other devices.");
+      push = push || (!take && hasLocal);
+    } else {
+      var localChanged = boardSig() !== syncedSig;
+      var remoteChanged = !!remote && remote.saved_at !== load(K.synced(label), null);
+      if (remoteChanged && localChanged) take = isoMs(remote.saved_at) > isoMs(load(K.mod(label), null));
+      else take = remoteChanged;
+      push = localChanged && !take;
+    }
+
+    var files = {}, msg = "";
+    if (take) {
+      syncApplying = true;
+      try { await applyEntry(remote); } finally { syncApplying = false; }
+      rawSave(K.synced(label), remote.saved_at);
+      msg = "Synced your board from " + remote.device + " (saved " + describeAge(remote.saved_at, Date.now()) + ").";
+    } else if (push) {
+      var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
+                             load(K.vorpWin(label), null), state.cut);
+      files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
+    }
+
+    // projections: the newer upload wins
+    var pf = cur.files[projFile(sport)];
+    var remoteP = pf && !pf.truncated && pf.content ? normalizeProjStore(JSON.parse(pf.content)) : null;
+    var localP = normalizeProjStore(load(K.proj(sport), null));
+    var ra = remoteP && remoteP.current ? isoMs(remoteP.current.at) : 0, la = localP.current ? isoMs(localP.current.at) : 0;
+    if (ra > la) {
+      syncApplying = true;
+      try { save(K.proj(sport), remoteP); applyStoredProjections(); } finally { syncApplying = false; }
+      msg += (msg ? " " : "Synced. ") + "Projections from " + remoteP.current.file + " came from your other device.";
+    } else if (la > ra) {
+      var payload = JSON.stringify(localP);
+      if (payload.length <= GIST_MAX) files[projFile(sport)] = { content: payload };
+    }
+
+    if (take) rawSave(K.syncedSig(label), boardSig());      // after any re-sort the projections caused
+    if (Object.keys(files).length) {
+      await writeFiles(files, cur.id);
+      if (entry) { rawSave(K.synced(label), entry.saved_at); rawSave(K.syncedSig(label), boardSig()); }
+    }
+    if (take || ra > la) {
+      recomputeVorp();
+      render();
+      if (!$("vorpPanel").hidden) renderVorpPanel();
+      setStatus(msg);
+    }
+  } catch (e) {
+    if (!$("syncPanel").hidden) renderSync("Auto-sync: " + e.message);
+  } finally {
+    syncBusy = false;
+  }
+}
+
+/* Coming back to the page pulls; leaving it sends anything still waiting. */
+document.addEventListener("visibilitychange", function () {
+  if (!state.slate || !connected()) return;
+  if (document.visibilityState === "visible") autoSync();
+  else if (syncTimer) autoSync();
+});
 
 function syncForget() {
   try { localStorage.removeItem(K.token); localStorage.removeItem(K.gist); } catch (e) { /* ignore */ }
