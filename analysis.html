@@ -292,6 +292,7 @@
         <span class="field-label">Position</span>
         <span class="seg" role="group" aria-label="Position" id="posSeg">
           <button type="button" data-pos="" aria-pressed="true">All</button>
+          <button type="button" data-pos="QB" aria-pressed="false">QB</button>
           <button type="button" data-pos="RB" aria-pressed="false">RB</button>
           <button type="button" data-pos="WR" aria-pressed="false">WR</button>
           <button type="button" data-pos="TE" aria-pressed="false">TE</button>
@@ -323,8 +324,8 @@
           <option value="xfp4">XFP, last 4</option>
           <option value="xfp16">XFP, last 16</option>
           <option value="fp4">FP, last 4</option>
-          <option value="share16">Usage (RB) · Target % (WR/TE), L16</option>
-          <option value="snap1">Snap % (RB) · Route %, last game</option>
+          <option value="share16">XFP share (QB) · Usage (RB) · Target % (WR/TE), L16</option>
+          <option value="snap1">Snap % (QB/RB) · Route %, last game</option>
           <option value="role">Role change (last game vs L16)</option>
           <option value="matchup">Matchup</option>
           <option value="team">Team</option>
@@ -355,7 +356,7 @@
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var TIER_NAMES = ["Replacement", "Average", "Great", "Elite"];
 var TIER_INDEX = { Replacement: 0, Average: 1, Great: 2, Elite: 3, Tough: 0 };
-var POS_ORDER = ["RB", "WR", "TE"];
+var POS_ORDER = ["QB", "RB", "WR", "TE"];
 /* A last-game snap share this far off the 16-game rate is a role change worth a label:
    about half of such a jump carries into the next game, a big points game carries almost none. */
 var ROLE_SWING = 0.15;
@@ -383,9 +384,11 @@ function tierOf(v, cuts) {
 function pct(v) { return v == null ? "–" : String(Math.round(v * 100)); }
 /* Points show whole: players this close shouldn't look separated by decimals. */
 function pts(v) { return v == null ? "–" : String(Math.round(v)); }
+/* A role stat is a share unless its config marks it a count ("n"), like QB dropbacks. */
+function statFmt(s) { return s && s[3] === "n" ? pts : pct; }
 
 /** Role change: last game's snap share (RB) or route share (WR/TE) against the 16-game rate. */
-function roleKey(p) { return p.pos === "RB" ? "snap" : "route"; }
+function roleKey(p) { return p.pos === "WR" || p.pos === "TE" ? "route" : "snap"; }
 function roleSwing(p) {
   var g = p.games[p.games.length - 1], k = roleKey(p);
   if (!g || g[k] == null || p.l16[k] == null || p.l16_games < 4) return 0;
@@ -468,7 +471,7 @@ async function getJson(url) {
 }
 
 function cfg(p) { return state.positions[p.pos]; }
-function shownPositions() { return state.game ? POS_ORDER.concat("QB") : state.pos ? [state.pos] : POS_ORDER; }
+function shownPositions() { return state.game ? POS_ORDER : state.pos ? [state.pos] : POS_ORDER; }
 function matchupOf(p) { var m = state.matchups[p.pos]; return m ? m[p.team] : null; }
 
 // ---------------------------------------------------------------- slate
@@ -661,7 +664,7 @@ function visible() {
     xfp4: function (p) { return -(p.l4.xfp || 0); },
     xfp16: function (p) { return -(p.l16.xfp || 0); },
     fp4: function (p) { return -(p.l4.fp || 0); },
-    share16: function (p) { return -(p.l16[p.pos === "RB" ? "usage" : "tgt"] || 0); },
+    share16: function (p) { return -(p.l16[{ QB: "xfpsh", RB: "usage" }[p.pos] || "tgt"] || 0); },
     snap1: function (p) { return -last(p, roleKey(p)); },
     role: function (p) { return -Math.abs(roleSwing(p)); },
     matchup: mu,
@@ -683,21 +686,21 @@ function cell(v, t, fmt, extra, title) {
   return c;
 }
 
-function roleGroup(p, stat, label) {
-  var c = cfg(p), cuts = c.cuts[stat];
+function roleGroup(p, stat, label, fmt) {
+  var c = cfg(p), cuts = c.cuts[stat], f = fmt || pct;
   var g = document.createElement("span");
   g.className = "grp";
   var t16 = tierOf(p.l16[stat], cuts.l16);
-  g.appendChild(cell(p.l16[stat], t16, pct, "l16",
-    label + ", last " + p.l16_games + " games: " + pct(p.l16[stat]) + (t16 == null ? "" : " · " + TIER_NAMES[t16] + " (" + c.tiers[t16] + " level)")));
+  g.appendChild(cell(p.l16[stat], t16, f, "l16",
+    label + ", last " + p.l16_games + " games: " + f(p.l16[stat]) + (t16 == null ? "" : " · " + TIER_NAMES[t16] + " (" + c.tiers[t16] + " level)")));
   g.appendChild(document.createElement("span")).className = "div";
   var games = p.games.slice(-4);
   for (var i = 0; i < 4; i++) {
     var gm = games[i - (4 - games.length)];
     if (!gm) { g.appendChild(cell(null, null, function () { return ""; }, "blank")); continue; }
     var t = tierOf(gm[stat], cuts.game);
-    g.appendChild(cell(gm[stat], t, pct, null,
-      "Wk " + gm.wk + " vs " + gm.opp + " · " + label + " " + pct(gm[stat]) +
+    g.appendChild(cell(gm[stat], t, f, null,
+      "Wk " + gm.wk + " vs " + gm.opp + " · " + label + " " + f(gm[stat]) +
       (t == null ? (/rz/.test(stat) ? " · no team red-zone plays" : "") : " · " + TIER_NAMES[t])));
   }
   return g;
@@ -910,7 +913,7 @@ function playerRow(r, i, drag) {
 
   var strip = document.createElement("span");
   strip.className = "strip";
-  cfg(p).stats.forEach(function (s) { strip.appendChild(roleGroup(p, s[0], s[1])); });
+  cfg(p).stats.forEach(function (s) { strip.appendChild(roleGroup(p, s[0], s[1], statFmt(s))); });
   for (var k = cfg(p).stats.length; k < 4; k++) strip.appendChild(document.createElement("span"));   // QB: two stats
   strip.appendChild(baseGroup(p, "xfp", "Expected points"));
   strip.appendChild(baseGroup(p, "fp", "Fantasy points"));
@@ -949,11 +952,11 @@ function drawer(p) {
   var head = "<tr><th>Games</th>" + c.stats.map(function (s) { return "<th>" + s[1].replace(/ %$/, "") + "</th>"; }).join("") + "<th>XFP</th><th>FP</th></tr>";
   function td(v, fmt, cuts) { var tt = tierOf(v, cuts); return "<td" + (tt == null ? "" : ' class="t' + tt + '"') + ">" + fmt(v) + "</td>"; }
   var body = "<tr><td>Last " + p.l16_games + "</td>" +
-    c.stats.map(function (s) { return td(p.l16[s[0]], pct, c.cuts[s[0]].l16); }).join("") +
+    c.stats.map(function (s) { return td(p.l16[s[0]], statFmt(s), c.cuts[s[0]].l16); }).join("") +
     td(p.l16.xfp, pts, c.cuts.xfp.l16) + td(p.l16.fp, pts, c.cuts.fp.l16) + "</tr>";
   p.games.slice().reverse().forEach(function (g) {
     body += "<tr><td>Wk " + g.wk + " " + g.opp + "</td>" +
-      c.stats.map(function (s) { return td(g[s[0]], pct, c.cuts[s[0]].game); }).join("") +
+      c.stats.map(function (s) { return td(g[s[0]], statFmt(s), c.cuts[s[0]].game); }).join("") +
       "<td>" + pts(g.xfp) + "</td><td>" + pts(g.fp) + "</td></tr>";
   });
   tbl.innerHTML = head + body;
