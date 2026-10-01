@@ -2170,8 +2170,8 @@ function cfbFor(p) {
   var takes = state.cfbTakes.filter(function (t) {
     return normName(t.player) === boardKey(p.first_name, p.last_name, state.nameMaps.cfb);
   });
-  // until a pass-catcher write-up lands, WR/TE rows carry their quarterback's note for context
-  if (p.position === "WR" || p.position === "TE") {
+  // a pass catcher the write-ups skipped carries his quarterback's note for context
+  if ((p.position === "WR" || p.position === "TE") && !takes.length) {
     state.cfbTakes.forEach(function (t) {
       if (t.pos === "QB" && t.team === p.team) takes.push(Object.assign({ _via: true }, t));
     });
