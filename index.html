@@ -3132,6 +3132,21 @@ async function syncLoad() {
       renderSync("Kept the board on this device.");
       return;
     }
+    // Players the saving device added from the unpriced pool come back from the pool
+    // file first; the slate lists only priced players, so they would read as gone.
+    var have = {}, want = {}, wanted = 0;
+    state.slate.players.forEach(function (p) { have[p.player_id] = 1; });
+    entry.order.forEach(function (pid) { if (!have[pid]) { want[pid] = 1; wanted++; } });
+    if (wanted) {
+      var pool = await loadPool(state.slate);
+      var back = pool.players.filter(function (p) { return want[p.player_id] && !have[p.player_id]; });
+      if (back.length) {
+        state.slate.players = state.slate.players.concat(back);
+        back.forEach(function (p) { state.added[p.player_id] = 1; });
+        save(K.added(state.slate.label), Object.keys(state.added));
+        renderPositions();
+      }
+    }
     var rec = reconcileOrder(state.slate.players, entry.order);
     state.order = rec.order;
     state.newIds = {};
