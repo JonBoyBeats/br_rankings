@@ -944,9 +944,14 @@ function drawer(p) {
   var t = p._takes, c = cfg(p);
 
   // game log with every number the colours stand for
+  // game log on the left, the score beside it (stacked on a phone)
+  var top = document.createElement("div"); top.className = "cols";
+  var logCol = document.createElement("div"), scoreCol = document.createElement("div");
+  top.append(logCol, scoreCol);
+  d.appendChild(top);
   var h = document.createElement("h3");
   h.innerHTML = "Game log <small>half-PPR</small>";
-  d.appendChild(h);
+  logCol.appendChild(h);
   var tbl = document.createElement("table");
   tbl.className = "log";
   var head = "<tr><th>Games</th>" + c.stats.map(function (s) { return "<th>" + s[1].replace(/ %$/, "") + "</th>"; }).join("") + "<th>XFP</th><th>FP</th></tr>";
@@ -960,13 +965,13 @@ function drawer(p) {
       "<td>" + pts(g.xfp) + "</td><td>" + pts(g.fp) + "</td></tr>";
   });
   tbl.innerHTML = head + body;
-  d.appendChild(tbl);
+  logCol.appendChild(tbl);
 
   // the score: what it expects, what it is made of, and how it sits against your projection
   if (p.score) {
     var sc = p.score, hs = document.createElement("h3");
     hs.innerHTML = "Workload score <small>Week " + state.data.next_week + "</small>";
-    d.appendChild(hs);
+    scoreCol.appendChild(hs);
     var sign = function (v) { return (v >= 0 ? "+ " : "− ") + Math.abs(v).toFixed(1); };
     var lines = [
       "<b>" + Math.round(sc.next) + "</b> expected half-PPR · " + p.pos + sc.rank + " this week · next 3 games: " + Math.round(sc.next3) + " a game",
@@ -981,7 +986,7 @@ function drawer(p) {
     if (p.l16_games < 4) lines.push("Only " + p.l16_games + " game" + (p.l16_games === 1 ? "" : "s") + " of data, so lean on it lightly.");
     var box = document.createElement("div"); box.className = "model";
     box.innerHTML = lines.join("<br>");
-    d.appendChild(box);
+    scoreCol.appendChild(box);
   }
 
   var cols = document.createElement("div");
