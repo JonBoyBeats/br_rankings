@@ -13,6 +13,7 @@ SOURCES = {
     'FP': 'Fantasy Points, The Everything Report (Heath & Barfield)',
     'ETR': 'Establish the Run, Strength in Numbers (Jack Miller)',
     'Kerrane': 'Pat Kerrane, Legendary Upside Walkthrough',
+    'Silva': 'Evan Silva, Matchups',
 }
 takes = []
 for path in sorted(glob.glob(os.path.join(HERE, 'takes', '*.csv'))):
