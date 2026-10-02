@@ -18,6 +18,13 @@ writer covers; source notes (analysis/cfb/takes/) are layered on top by the page
             stingiest, is cut into quarters: Tough, Average, Great, Elite. Stuff rate and line
             yards ride along for the run.
   volume    his team's plays per game and pass rate
+  left early  a game where his usage fell below half his previous games' (share of team touches
+            for an RB, of team catches for a WR/TE, half-PPR for a QB; real roles only) and he then
+            missed the team's next game: usually an injury, sometimes a benching. CFBD has no
+            snap counts or injury reports, so this is the box-score version, and it can't mark the
+            latest week until the next game is played. Unlike the NFL page these games stay in
+            the averages and the score: on 2025-26, keeping them predicted the return game best,
+            and even then players came back below their prediction.
   score     a rough Workload Score: expected half-PPR this week, a straight-line fit per
             position of each game's points on what was known before it (his half-PPR per game
             and share of team carries or catches in the games he'd played, his team's implied
@@ -243,6 +250,32 @@ def fit_scores(rows, season):
     return fits
 
 
+EXIT_FLOOR = {'QB': 10.0, 'RB': .15, 'WR': .12, 'TE': .12}   # a real role: QB half-PPR, else share
+EXIT_CUT = {'QB': .4, 'RB': .5, 'WR': .5, 'TE': .5}
+
+
+def left_early(by_team, pos_of):
+    """(player id, week) of games he left early: see "left early" above."""
+    out = set()
+    for gl in by_team.values():
+        hist = {}
+        for i, b in enumerate(gl):
+            nxt = gl[i + 1] if i + 1 < len(gl) else None
+            for pid, pl in b['players'].items():
+                pos = pos_of.get(pid)
+                if pos not in EXIT_FLOOR: continue
+                if pos == 'QB': u = pl.get('fp') or 0
+                elif pos == 'RB': t = b['car'] + b['rec']; u = (pl.get('car', 0) + pl.get('rec', 0)) / t if t else 0
+                else: u = pl.get('rec', 0) / b['rec'] if b['rec'] else 0
+                prev = hist.setdefault(pid, [])[-4:]
+                if len(prev) >= 2 and nxt is not None:
+                    base = sum(prev) / len(prev)
+                    if base >= EXIT_FLOOR[pos] and u < EXIT_CUT[pos] * base and pid not in nxt['players']:
+                        out.add((pid, b['week']))
+                hist[pid].append(u)
+    return out
+
+
 def season_and_week(now):
     season = now.year if now.month >= 7 else now.year - 1
     cal = get('/calendar', year=season)
@@ -386,6 +419,7 @@ def main():
     for b in boxes:
         if b['team'] in playing: by_team.setdefault(b['team'], []).append(b)
     for t in by_team: by_team[t].sort(key=lambda b: b['week'])
+    exits = left_early(by_team, pos_now)
 
     out = []
     for p in players.values():
@@ -401,6 +435,7 @@ def main():
                          'car': me.get('car', 0), 'rush_sh': round(me.get('car', 0) / b['car'], 3) if b['car'] and me else None,
                          'rec': me.get('rec', 0), 'rec_sh': round(me.get('rec', 0) / b['rec'], 3) if b['rec'] and me else None,
                          'fp': me.get('fp') if me else None})       # None = not in the box score (didn't play)
+            if (str(p['id']), b['week']) in exits: last[-1]['left'] = True
         if last: p['last'] = last
         if 'rece' in p: p['rec'] = p.pop('rece')
         out.append(p)

@@ -319,6 +319,7 @@
   .cfbpanel .cell.t2, .who .share .cell.t2 { background: var(--t2); color: var(--t2-ink); }
   .cfbpanel .cell.t1, .who .share .cell.t1 { background: var(--t1); color: var(--t1-ink); }
   .cfbpanel .cell.t0, .who .share .cell.t0 { background: var(--t0); color: var(--t0-ink); }
+  .cfbpanel .cell.hurt { background-image: repeating-linear-gradient(135deg, rgba(0, 0, 0, .45) 0 3px, transparent 3px 7px); }
   .cfbpanel .cell.l16 { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .28); }
   .cfbpanel .cell.blank { background: transparent; }
   .cfbpanel .cell.text { color: var(--ink); background: transparent; box-shadow: inset 0 0 0 1px var(--line-strong); }
@@ -2318,9 +2319,10 @@ function cfbPanel(p, cf) {
           if (!gm) { cells.push(cfbCell(null, null, "", "blank")); continue; }
           var gv = gm[spec[3]], gt = cfbTier(gv, cuts[spec[3] + "_g"]), isFp = spec[3] === "fp";
           var gtxt = gv == null ? "–" : isFp ? String(Math.round(gv)) : cfbFmt(gv, "pct");
-          cells.push(cfbCell(gv, gt, gtxt, null, "Wk" + gm.wk + " " + (gm.home ? "vs " : "@ ") + gm.opp + ": " +
+          cells.push(cfbCell(gv, gt, gtxt, gm.left ? "hurt" : null, "Wk" + gm.wk + " " + (gm.home ? "vs " : "@ ") + gm.opp + ": " +
             (isFp ? (gv == null ? "didn't play" : gv.toFixed(1) + " half-PPR") :
-             (spec[3] === "rush_sh" ? gm.car + " car" : gm.rec + " rec") + " (" + cfbFmt(gv, "pct") + "%)") + (gt == null ? "" : " · " + CFB_TIER[gt])));
+             (spec[3] === "rush_sh" ? gm.car + " car" : gm.rec + " rec") + " (" + cfbFmt(gv, "pct") + "%)") + (gt == null ? "" : " · " + CFB_TIER[gt]) +
+            (gm.left ? " · left early and missed the next game (usually an injury); still counted, since in college these games predicted the return better than skipping them" : "")));
         }
       }
       grid.appendChild(cfbGroup(spec[1], spec[3] ? (spec[3] === "fp" ? "per game ¦ last 4" : "season ¦ last 4") : "season", cells));
