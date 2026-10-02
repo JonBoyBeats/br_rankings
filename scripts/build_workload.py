@@ -32,6 +32,14 @@ implied total and spread, weighted by how much each moved that position's next-g
 scoring 2017-2025, then ranked 1-32 for the week: Elite 1-6, Great 7-12, Average 13-24,
 Tough 25-32.
 
+Left injured: a game where the play-by-play says he "was injured during the play" and his
+snap share fell below 80% of his previous 4 games, or his snap share fell below half of it
+and the next week's injury report has him limited, out of practice or with a game status.
+Those games stay in the last-4 cells (hatched on the page) but are left out of the L16 and
+L4 averages; the Score averages the prediction with and without them, which on 2021-25 was
+better calibrated than either (skipping alone over-predicted the next game by 2-3 points,
+since players often return limited; research/workload/README.md, section 9).
+
 Workload Score: expected half-PPR points next game (and per game over the next 3), from a
 linear model per position on the inputs above, fitted and tested in the nfl_tails repo
 (research/workload/score_fit.py) and carried here as scripts/score_model.json. The drawer
@@ -143,10 +151,44 @@ def schedule():
     return sched, season, through
 
 
+INJ_RX = re.compile(r"\b([A-Z]{2,3})-(\d{1,2})-[A-Z][^ ]*? was injured during the play")
+
+
+def left_injured(D, ment, season):
+    """(player_id, season, week) of games he left injured; see the docstring for the rule."""
+    ros, rep = [], []
+    for y in (season - 1, season):
+        try: ros.append(fetch(f'{NV}/weekly_rosters/roster_weekly_{y}.parquet', f'roster_weekly_{y}.parquet'))
+        except Exception as e: print(f'weekly rosters {y} unavailable: {e!r}')
+        try: rep.append(fetch(f'{NV}/injuries/injuries_{y}.parquet', f'injuries_{y}.parquet'))
+        except Exception as e: print(f'injury reports {y} unavailable: {e!r}')
+    d = D[['player_id', 'game_id', 'season', 'week', 'team', 'offense_snaps', 'tm_snaps']].copy()
+    d['share'] = d.offense_snaps / d.tm_snaps.where(d.tm_snaps > 0)
+    d['base'] = d.groupby('player_id').share.transform(lambda s: s.shift(1).rolling(4, min_periods=2).mean())
+    d['mention'] = False
+    if ros and len(ment):
+        R = pd.concat(ros).dropna(subset=['jersey_number', 'gsis_id'])
+        R = R.assign(team=R.team.replace(TEAM_FIX), jersey=R.jersey_number.astype(int))
+        g = D[['game_id', 'season', 'week']].drop_duplicates()
+        m = (ment.merge(g, on='game_id').merge(R[['season', 'week', 'team', 'jersey', 'gsis_id']].drop_duplicates(['season', 'week', 'team', 'jersey']),
+                                               on=['season', 'week', 'team', 'jersey']))
+        d['mention'] = pd.MultiIndex.from_frame(d[['game_id', 'player_id']]).isin(pd.MultiIndex.from_frame(m[['game_id', 'gsis_id']]))
+    d['report'] = False
+    if rep:
+        I = pd.concat(rep)
+        I = I[I.practice_status.fillna('').str.contains('Did Not|Limited') | I.report_status.fillna('').isin(['Out', 'Doubtful', 'Questionable'])]
+        x = d[['player_id', 'season', 'week']].merge(I[['season', 'week', 'gsis_id']].rename(columns={'gsis_id': 'player_id', 'week': 'rweek'}),
+                                                     on=['player_id', 'season'])
+        x = x[(x.rweek > x.week) & (x.rweek <= x.week + 2)][['player_id', 'season', 'week']].drop_duplicates()
+        d['report'] = pd.MultiIndex.from_frame(d[['player_id', 'season', 'week']]).isin(pd.MultiIndex.from_frame(x))
+    flag = (d.mention & (d.share < 0.8 * d.base)) | (d.report & (d.share < 0.5 * d.base))
+    return set(map(tuple, d[flag][['player_id', 'season', 'week']].itertuples(index=False)))
+
+
 def load_season(y):
     cols = ['game_id', 'season_type', 'posteam', 'play_type', 'qb_kneel', 'qb_spike', 'two_point_attempt',
             'receiver_player_id', 'rusher_player_id', 'pass_attempt', 'rush_attempt', 'yardline_100', 'air_yards',
-            'qb_dropback', 'passer_player_id', 'yards_gained']
+            'qb_dropback', 'passer_player_id', 'yards_gained', 'desc']
     p = fetch(f'{NV}/pbp/play_by_play_{y}.parquet', f'pbp_{y}.parquet')[cols]
     p = p[(p.season_type == 'REG') & p.posteam.notna()].copy()
     p['posteam'] = p.posteam.replace(TEAM_FIX)
@@ -185,7 +227,10 @@ def load_season(y):
         ep = ep[['game_id', 'player_id', 'xfp']]
     except Exception:
         ep = pd.DataFrame(columns=['game_id', 'player_id', 'xfp'])   # expected points not published yet
-    return pl, team, st, sn, tm_snaps, ep
+    hurt = p[p.desc.str.contains('was injured during the play', na=False)]
+    ment = pd.DataFrame([(r.game_id, TEAM_FIX.get(tm, tm), int(num)) for r in hurt.itertuples() for tm, num in INJ_RX.findall(r.desc)],
+                        columns=['game_id', 'team', 'jersey']).drop_duplicates()
+    return pl, team, st, sn, tm_snaps, ep, ment
 
 
 def norm(s):
@@ -239,7 +284,7 @@ def main():
     sched, season, through = schedule()
     players = fetch(f'{NV}/players/players.parquet', 'players.parquet')
     parts = [load_season(y) for y in (season - 1, season)]
-    pl, team, st, sn, tm_snaps, ep = [pd.concat(x, ignore_index=True) for x in zip(*parts)]
+    pl, team, st, sn, tm_snaps, ep, ment = [pd.concat(x, ignore_index=True) for x in zip(*parts)]
 
     sn = sn.merge(players[['gsis_id', 'pfr_id']].dropna(), left_on='pfr_player_id', right_on='pfr_id', how='inner')
     sn = sn.rename(columns={'gsis_id': 'player_id'}).groupby(['game_id', 'team', 'player_id'], as_index=False).offense_snaps.max()
@@ -288,41 +333,58 @@ def main():
     rows = []
     sums = ['offense_snaps', 'tm_snaps', 'tgt', 'car', 'rztgt', 'rzcar', 'ay', 'tm_tgt', 'tm_car', 'tm_rztgt', 'tm_rzcar', 'tm_ay',
             'rushyd', 'tm_rushyd', 'dropbacks', 'xfp', 'tm_xfp']
+    hurt = left_injured(D, ment, season)
+    print(f'left injured: {len(hurt)} player-games')
     for pid, d in D.groupby('player_id'):
         cur = d[d.season == season]
         if cur.empty: continue
         pos = cur.pos.iloc[-1]
-        l16, last4 = d.tail(16), cur.tail(4)
         now_team = cur.team.iloc[-1]
-        games = []
         rec = lambda r: receiving(r) if pos in ('WR', 'TE') else {}
+        inj = [(pid, int(s_), int(w)) in hurt for s_, w in zip(d.season, d.week)]
+        well = d[[not f for f in inj]]
+        if well.empty: well = d                        # nothing but injury exits: use them rather than nothing
+
+        def window(h):
+            """Averages and Score inputs over a game history h (all games, or the healthy ones)."""
+            l16 = h.tail(16)
+            x16 = l16.xfp.dropna()
+            mean16 = {}
+            if pos in ('WR', 'TE'):
+                vals = [receiving(r) for r in l16.to_dict('records')]
+                for k in ('route', 'fr'):
+                    v = [x[k] for x in vals if x[k] is not None]
+                    mean16[k] = round(sum(v) / len(v), 3) if v else None
+            if pos == 'QB': mean16['db'] = round(float(l16.dropbacks.mean()), 1)
+            last = h.iloc[-1].to_dict()
+            lastrole = {**role(last, pos), **rec(last)}
+            l16role = {**role(l16[sums].fillna(0).sum().to_dict(), pos), **mean16}
+            x = {'fp16': float(l16.fp.mean()), 'xfp16': float(x16.mean()) if len(x16) else None,
+                 'fp4': float(h.tail(4).fp.mean()), 'xfp4': float(h.tail(4).xfp.dropna().mean()) if h.tail(4).xfp.notna().any() else None,
+                 **{k + '1': v for k, v in lastrole.items()}, **{k + '16': v for k, v in l16role.items()},
+                 'poe1': float(last['fp'] - last['xfp']) if pd.notna(last['xfp']) else None}
+            return l16, x16, l16role, x
+
+        l16, x16, l16role, x_well = window(well)
+        x_all = window(d)[3] if len(well) < len(d) else None
+        games = []
+        last4 = cur.tail(4)
         for r in last4.to_dict('records'):
-            games.append({'wk': int(r['week']), 'opp': r['opp'], **role(r, pos), **rec(r),
-                          'xfp': None if pd.isna(r['xfp']) else round(float(r['xfp']), 1), 'fp': round(float(r['fp']), 1)})
-        x16, x4 = l16.xfp.dropna(), last4.xfp.dropna()
-        mean16 = {}
-        if pos in ('WR', 'TE'):
-            vals = [receiving(r) for r in l16.to_dict('records')]
-            for k in ('route', 'fr'):
-                v = [x[k] for x in vals if x[k] is not None]
-                mean16[k] = round(sum(v) / len(v), 3) if v else None
-        last = d.iloc[-1].to_dict()
-        lastrole = {**role(last, pos), **rec(last)}
-        if pos == 'QB': mean16['db'] = round(float(l16.dropbacks.mean()), 1)
-        l16role = {**role(l16[sums].fillna(0).sum().to_dict(), pos), **mean16}
-        x = {'fp16': float(l16.fp.mean()), 'xfp16': float(x16.mean()) if len(x16) else None,
-             'fp4': float(d.tail(4).fp.mean()), 'xfp4': float(d.tail(4).xfp.dropna().mean()) if d.tail(4).xfp.notna().any() else None,
-             **{k + '1': v for k, v in lastrole.items()}, **{k + '16': v for k, v in l16role.items()},
-             'poe1': float(last['fp'] - last['xfp']) if pd.notna(last['xfp']) else None}
+            g = {'wk': int(r['week']), 'opp': r['opp'], **role(r, pos), **rec(r),
+                 'xfp': None if pd.isna(r['xfp']) else round(float(r['xfp']), 1), 'fp': round(float(r['fp']), 1)}
+            if (pid, int(r['season']), int(r['week'])) in hurt: g['inj'] = True
+            games.append(g)
+        well4 = last4[[(pid, int(s_), int(w)) not in hurt for s_, w in zip(last4.season, last4.week)]]
+        if well4.empty: well4 = last4
+        x4 = well4.xfp.dropna()
         rows.append({
-            '_x': x,
+            '_x': x_well, '_x_all': x_all,
             'id': pid, 'name': info.display_name.get(pid, pid), 'pos': pos, 'team': now_team,
             'rookie': bool(info.rookie_season.get(pid) == season),
             'new_team': bool((l16.team != now_team).any()),
             'l16_games': int(len(l16)),
-            'l16': {**role(l16[sums].fillna(0).sum().to_dict(), pos), **mean16,
-                    'xfp': round(float(x16.mean()), 1) if len(x16) else None, 'fp': round(float(l16.fp.mean()), 1)},
-            'l4': {'xfp': round(float(x4.mean()), 1) if len(x4) else None, 'fp': round(float(last4.fp.mean()), 1)},
+            'l16': {**l16role, 'xfp': round(float(x16.mean()), 1) if len(x16) else None, 'fp': round(float(l16.fp.mean()), 1)},
+            'l4': {'xfp': round(float(x4.mean()), 1) if len(x4) else None, 'fp': round(float(well4.fp.mean()), 1)},
             'games': games,
         })
 
@@ -351,10 +413,7 @@ def main():
                                          'opp_allowed': round(float(r.opp_allowed), 1), 'kickoff': r.kickoff}
 
     # Workload Score, for everyone with a game next week
-    for r in rows:
-        x, m, sm = r.pop('_x'), matchups[r['pos']].get(r['team']), SCORE.get(r['pos'])
-        if not m or not sm: continue
-        x.update(opp_allowed=m['opp_allowed'], imp_tot=m['implied_total'], spread=m['spread'])
+    def predict(x, sm):
         vals = [sm['fill'][f] if x.get(f) is None or pd.isna(x.get(f)) else x[f] for f in sm['features']]
         parts = {'baseline': sm['intercept'], 'role': 0.0, 'matchup': 0.0}
         for f, c, v in zip(sm['features'], sm['coef'], vals):
@@ -362,12 +421,23 @@ def main():
             else:
                 grp = 'matchup' if f in MATCH else 'role'
                 parts['baseline'] += c * sm['mean'][f]; parts[grp] += c * (v - sm['mean'][f])
+        return parts, sm['next3_intercept'] + sum(c * v for c, v in zip(sm['next3_coef'], vals))
+
+    for r in rows:
+        x, x_all, m, sm = r.pop('_x'), r.pop('_x_all'), matchups[r['pos']].get(r['team']), SCORE.get(r['pos'])
+        if not m or not sm: continue
+        ctx = dict(opp_allowed=m['opp_allowed'], imp_tot=m['implied_total'], spread=m['spread'])
+        parts, n3 = predict({**x, **ctx}, sm)
+        if x_all is not None:                          # an injury exit in the window: halfway between
+            parts_all, n3_all = predict({**x_all, **ctx}, sm)
+            parts = {k: (v + parts_all[k]) / 2 for k, v in parts.items()}
+            n3 = (n3 + n3_all) / 2
         nxt = sum(parts.values())
-        n3 = sm['next3_intercept'] + sum(c * v for c, v in zip(sm['next3_coef'], vals))
         q = np.array(sm['quantiles'])
         off = {k: float(np.interp(nxt, q[:, 0], q[:, i] - q[:, 0])) for i, k in ((1, 'p50'), (2, 'p80'), (3, 'p85'))}
         r['score'] = {'next': round(nxt, 1), 'next3': round(n3, 1), **{k: round(max(0.0, nxt + v), 1) for k, v in off.items()},
                       'parts': {k: round(v, 1) for k, v in parts.items()}}
+        if x_all is not None: r['score']['inj_blend'] = True
     for pos in POSITIONS:
         ranked = sorted((r for r in rows if r['pos'] == pos and 'score' in r), key=lambda r: -r['score']['next'])
         for i, r in enumerate(ranked, 1):
