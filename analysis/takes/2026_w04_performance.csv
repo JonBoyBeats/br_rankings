@@ -246,3 +246,80 @@ ETR,4,Brycen Tremayne,CAR,Full-time,Replacement,↑,,"92% snaps (WR high), 3 tgt
 ETR,4,Tetairoa McMillan,CAR,Alpha,Elite,↑,,14/192/2 on 16 tgts (39%),Consolidated targets without Coker; CAR has a Week 5 bye.
 ETR,4,Chuba Hubbard,CAR,Workhorse,Elite,↑,,"84% snaps, 24 routes/45 db, 20 carries (Dillon 5) for 122 yds and 2 TD",An absurd role without Brooks; a must-start regardless of matchup.
 ETR,4,A.J. Dillon,CAR,Handcuff,Replacement,→,,5 carries,Well behind Hubbard.
+FP,4,Kyren Williams,LA,Workhorse,Elite,↑,,"22.7 FPG on 19.7 XFP/G; 15.2% TS (7.9% in 2025), 55.7% routes, 26% TPRR; 9 of 9 bfield opps inside the 10","Receiving role is genuinely bigger (likely Stafford checking down more); some RZ regression coming, but a ~top-10 RB rest of season."
+FP,4,Zay Flowers,BAL,Alpha,Elite,↓,Hold,21.1 XFP per 4 quarters with Lamar (WR4 pace); 67.9% slot rate (34.7% in 2025),"Top-6 WR ROS role, but Lamar's ankle (likely out Wk5) and Huntley mean a high-end WR2 through October; ride it out."
+FP,4,Lamar Jackson,BAL,Starter,,↓,,sprained ankle; likely misses Wk5,Expect a step back in efficiency and rushing for 3-4 weeks after he returns.
+FP,4,Tyler Huntley,BAL,Starter,,→,,Flowers 46.5 YPG in 2 Huntley games,A low-end QB2 vs ATL if he starts.
+FP,4,Trevor Lawrence,JAX,Starter,,→,,"QB8 FP/DB but QB20 XFP/G; JAX 26th PROE, 30th plays/g; no more than 29 att","Playing well, but JAX leads so often (78% of snaps) the volume isn't fantasy-friendly."
+FP,4,Brenton Strange,JAX,Receiving TE,Average,↑,,Wk4 the one viable JAX pass catcher,Low-volume offense supports about one pass catcher a week; it was Strange's turn vs CIN.
+FP,4,Parker Washington,JAX,Alpha,Great,↑,,PHI allows 6th-most YPG to slot WRs,Set up for a bounceback in London.
+FP,4,Jayden Daniels,WAS,Starter,,↑,,12-100 rushing in 6 quarters; QB6 FPG since 2023,Expected to practice in full and start Week 5 vs NYG after the elbow dislocation.
+FP,4,Jalen Hurts,PHI,Starter,,↓,,"QB14 FPG on QB9 XFP/G; QB24 ANY/A, QB28 CPOE",Slow start and a crumbling line; a fringe top-12 QB ROS with an easier Weeks 6-9.
+FP,4,Brock Purdy,SF,Starter,,↑,,QB2 (25.4 FPG); 1st in EPA/DB and ANY/A,The QB2 rest of season with Lamar hurt.
+FP,4,Drake Maye,NE,Starter,,↑,,"28.2 FP (Wk4 QB1), 55 scramble yds; first game without a TWP since the 2025 Wild Card",A borderline QB1 vs LV with an easier schedule and A.J. Brown coming back.
+FP,4,Daniel Jones,IND,Starter,,↓,,"bottom-8 ANY/A, EPA/DB, CPOE; deep-throw rate 4.5% (9.6% in 2025)",Poor play and no Pierce have deflated this passing game.
+FP,4,Jalon Daniels,TB,Starter,,↓,,"4.6 aDOT, 0 throws 20+ yds, 7.4% TWP rate",Struggled in his debut; TB's passing game isn't usable until Mayfield returns (2-5 weeks).
+FP,4,Bhayshul Tuten,JAX,Lead,Average,↑,,"57.4% snaps, 40.7% routes, 22.3% team XFP (career highs); 10 of 17 RZ opps last 3 wks",Playing great with two TDs called back; a top-15 RB ROS.
+FP,4,D'Andre Swift,CHI,Lead,Average,↓,,"15-12 carries, 15.3-14.2 XFP lead before his fumble; didn't play after","Usual ~60/40 split until the fumble; still preferred ROS, but treat both as ~top-20 vs GB."
+FP,4,Kyle Monangai,CHI,Committee,Great,↑,,"after the fumble: 75.7% snaps, 54.5% routes, 77% bfield XFP; 30 carries, 28.0 FP, 29.7 XFP",Could flip this backfield or get it close to 50/50; day-to-day with a thumb injury.
+FP,4,Jeremiyah Love,ARI,Lead,Average,↓,,"46% snaps (63%), 23.1% routes (38.9%), 8.1 XFP (22.8); Allgeier took all 7 inside-10 snaps","Back to a 50/50 committee with odd postgame vibes and ankle discomfort; a fringe top-14 RB ROS, mid RB2 vs DET."
+FP,4,Tyler Allgeier,ARI,Committee,Average,↑,,"68% of inside-10 snaps, 3 of 8 bfield opps there",Got the only inside-10 touch in Week 4.
+FP,4,Ashton Jeanty,LV,Workhorse,Elite,→,,"53.8% routes, 15.4% TS, 18.0 XFP; 15-9 carries over Washington",Game-script-proof role intact; still a top-7 RB ROS.
+FP,4,Mike Washington Jr.,LV,Committee,Replacement,→,,both RZ carries (-3 yds); 9 snaps to Jeanty's 40 after that,Spells Jeanty on the ground occasionally.
+FP,4,Braelon Allen,NYJ,Workhorse,Elite,↑,,"93.8% snaps, 66.7% routes; Davis 0 touches; NYJ ran 32 plays",Elite role without Hall; a top-16 option vs CLE.
+FP,4,David Montgomery,HOU,Committee,Replacement,↓,,perfect 50/50 drive split with Marks (2 of 3 drives Wks 1-3),Looks pretty over; both backs are shaky FLEX options vs TEN.
+FP,4,Woody Marks,HOU,Committee,Replacement,↑,,50/50 drive split; scored after Montgomery's 2 snaps,Equal (un)valuable with Montgomery.
+FP,4,Cam Skattebo,NYG,Lead,Average,↓,Sell,"52% carries, 56% snaps, 55% XFP before Harris' fumble; 91% snaps after",The box score overstates his role; sell at anything near fringe top-30 value.
+FP,4,Najee Harris,NYG,Committee,Replacement,→,,"3 of 5 RZ carries before his fumble, plus the 2-pt handoff",Had a real early role until the fumble.
+FP,4,Will Shipley,PHI,Lead,Average,↑,Add,38.4% routes (bfield high); ~60% opp share expected,"Top waiver add with Bigsby on IR and Saquon week-to-week; RB2/RB3 borderline, keep bids under ~20% FAAB."
+FP,4,Tank Bigsby,PHI,Committee,,↓,,IR,Going on IR.
+FP,4,Saquon Barkley,PHI,Workhorse,,↓,,"hamstring, week-to-week",Week-to-week with a hamstring injury.
+FP,4,Bucky Irving,TB,Lead,Average,↓,,"0 tgts, 40% of RZ carries Wk4; 50% bfield XFP last 2 (72% Wks 1-2); 7.0 FPG on 10.4 XFP/G since pitch-count comment",No better than a fringe top-30 RB while Mayfield is out.
+FP,4,Sean Tucker,TB,Short-yardage,Replacement,↑,,1 carry inside the 10 (same as Irving),Back as a goal-line nuisance.
+FP,4,Ollie Gordon II,MIA,Lead,Average,↑,Sell,"64% bfield carries, 11.8% TS, 18.0 FP on only 8.1 XFP; MIA 37 plays",Sell high; borderline top-30 RB vs CIN in the league's worst RB offense.
+FP,4,RJ Harvey,DEN,Committee,Average,↑,,23.8% TS; 20.2% season TS (RB high); 12.9 XFP/G (RB21); 7 carries,A PPR role in a broken offense; low-end RB2 for now.
+FP,4,Jonah Coleman,DEN,Contingent,,→,,IR,A good stash; likely a big factor on the ground when he's back.
+FP,4,Keaton Mitchell,LAC,Committee,Average,↑,,"38% snaps, 43% bfield XFP, 18.8% TS; 10 carries",Leads an ugly three-way split; FLEX at best.
+FP,4,Omarion Hampton,LAC,Committee,Replacement,↓,,"32% snaps, 33% XFP; 2 of 3 opps inside the 10","Goal-line role, but a tough upcoming schedule; FLEX unless the split changes."
+FP,4,Kimani Vidal,LAC,Committee,Replacement,→,,3 more snaps and routes than Hampton,Part of the three-way split.
+FP,4,Emanuel Wilson,SEA,Lead,Great,↑,Sell,"75% carry share, both carries inside the 10",A game-script-dependent ~top-20 RB until Charbonnet returns (Wk6-7); shop him if you don't need him.
+FP,4,George Holani,SEA,Passing-down,Replacement,→,,3rd downs and change of pace,Won't matter when Seattle leads.
+FP,4,Jaylen Warren,PIT,Workhorse,Elite,↑,,"97% snaps (89% Wk3); 18.1 FPG on 14.1 XFP/G w/o Dowdle; top-4 MTF/A, YACO/A",Playing incredibly; a top-18 RB ROS if he keeps a clear lead role.
+FP,4,Chase Brown,CIN,Workhorse,Great,↑,,22.2% TS after Chase left; 21.6 XFP (top-6); RB11 XFP/G (16.9),Game-script and matchup proof; a solid RB1 and top-3 vs MIA.
+FP,4,Tony Pollard,TEN,Lead,Average,↑,,"23.1 XFP (top-5 Wk4), 14.1 XFP/G (RB18); -4.5 FPOE","Positive regression could make him a low-end RB2, but don't start or buy him vs HOU."
+FP,4,Aaron Jones,MIN,Workhorse,Great,→,,16.5 XFP/G (RB12) w/o Mason; -2.6 FPOE,"At least one more bellcow week vs the Saints, who allow the most RB FPG."
+FP,4,Alvin Kamara,NO,Committee,Average,→,,no NO RB over 41% snaps; 6+ tgts in 2 of 3 games,The most usable Saints back while Etienne is out.
+FP,4,Brian Robinson Jr.,ATL,Handcuff,Replacement,→,,"27.9% snaps, 0 of 4 inside-10 carries when ATL isn't up big","A good handcuff, not real standalone value."
+FP,4,Puka Nacua,LA,Alpha,Elite,↑,,"91% routes, 9/125 + rush TD; 27% TS vs Adams' 19% together; WR1 FPG since 2025",No restrictions; could out-score JSN and Chase ROS.
+FP,4,Davante Adams,LA,Alpha,Average,↓,,10.4 XFP/G with Nacua,"Borderline top-24 WR with Puka, top-3 when Puka sits."
+FP,4,Nico Collins,HOU,Alpha,Elite,↑,,18.6 XFP/G (12.9 in 2025); 3.0+ YPRR,On track for a career year; the WR7 ROS.
+FP,4,Chris Olave,NO,Alpha,Elite,↑,,"46 tgts (tied for lead); WR5 FPG; NO 3rd pass rate, 1st pace",A locked-in top-6 WR ROS with rookie Jordyn Tyson (an elite stash) weeks away.
+FP,4,Devaughn Vele,NO,Starter,Average,→,,top-20 WR in tgts/g and XFP/G,An underrated WR3/FLEX while Tyson is out.
+FP,4,CeeDee Lamb,DAL,Alpha,Elite,↑,,41.3 FP; WR1 XFP/G; 0.42 XFP per team play (1st),Absolutely dominating.
+FP,4,George Pickens,DAL,Starter,Average,↓,,"41 routes, 3 tgts; WR31 XFP/G; -1.8 FPOE","Technically buy-low, but Lamb's role is far more valuable."
+FP,4,Ja'Marr Chase,CIN,Alpha,,↓,,concussion; questionable Wk5,Must clear protocol; CIN has a Week 6 bye.
+FP,4,Tee Higgins,CIN,Alpha,,↓,,adductor; likely out 1-2 games,In serious jeopardy of missing time.
+FP,4,Dohnte Meyers,CIN,Starter,Average,↑,,"91% routes (team high), 7/62 on 9 tgts",WR3/FLEX vs MIA if Chase and Higgins are out.
+FP,4,Mike Evans,SF,Alpha,Great,↑,Buy,"27% TS (season high) through cracked ribs; 0.32 TPRR (WR4), 2.80 YPRR",Commanding the ball; spike weeks are coming. Trade for him.
+FP,4,Michael Wilson,ARI,Alpha,Great,↑,,"94% routes (WR1), WR5 tgts, WR7 XFP/G; 1 more first-read tgt than McBride","A top-18 WR ROS, maybe higher."
+FP,4,Malik Nabers,NYG,Alpha,Great,↑,,6/112/1; NYG -7.5% PROE in Winston starts,"A borderline top-12 WR while Winston starts, with WAS and NO next."
+FP,4,Rashee Rice,KC,Starter,,↓,,hamstring after 6 snaps; ~WR33 XFP/G in 3 full games,Could miss games; looking like a bust in a more balanced KC offense.
+FP,4,Carnell Tate,TEN,Alpha,Average,↑,,"9/145 on 12 tgts; 27% TS, 50% air yds; 12.2 XFP/G (WR29)","Hogging the volume, but Ward's play makes him a boom-or-bust WR3."
+FP,4,Stefon Diggs,WAS,Alpha,Great,↑,,"23.5% TS, 16 XFP/G in Daniels' 2 starts",A strong WR2 with McLaurin unlikely to play.
+FP,4,Antonio Williams,WAS,Starter,Average,↑,,"73% routes (co-led), 7 tgts",An interesting WR3/FLEX while McLaurin is out.
+FP,4,Justin Jefferson,MIN,Alpha,,↓,,ankle; questionable Wk5,Day-to-day; MIN has a Week 6 bye.
+FP,4,Romeo Doubs,NE,Starter,Average,↑,,"8 tgts (team high), 26.1 XFP, 6/58/2",A low-end WR3/FLEX with Hollins hurt.
+FP,4,Jaylen Waddle,DEN,Starter,Average,↓,,WR35 XFP/G; 19% TS (2nd to Harvey),Bad volume and shaky Nix play; fringe top-24 WR.
+FP,4,DK Metcalf,PIT,Alpha,Average,→,,5/115; WR21 XFP vs WR35 FPG,"Good volume, consistently underperforms it."
+FP,4,Michael Pittman Jr.,PIT,Starter,Replacement,↓,,12 tgts on 90 routes (0.13 TPRR vs 0.25 base),Barely practiced with Rodgers and it shows.
+FP,4,Chris Godwin,TB,Starter,Replacement,↓,,9.8 XFP,TB's passing game isn't usable until Mayfield returns.
+FP,4,Emeka Egbuka,TB,Starter,Replacement,↓,,6.6 XFP,TB's passing game isn't usable until Mayfield returns.
+FP,4,Makai Lemon,PHI,Rotational,Replacement,↓,Drop,15 tgts for 65 yds; 5 tgts Wk4 w/o Smith,Shouldn't be on 10- or 12-team redraft rosters.
+FP,4,George Kittle,SF,Receiving TE,Elite,↑,,TE3 (16.1 FPG); 89% and 85% routes last 2; 2.87 YPRR,Fully ramped up and a league winner.
+FP,4,Isaiah Likely,NYG,Receiving TE,Great,↑,,"30% TS (team high), 81% routes (TE4), 13.9 XFP/G (TE5)","No worse than TE9 ROS, with WAS and NO next."
+FP,4,Michael Mayer,LV,Full-time,Average,↑,,"w/ Bowers: 14.1% TS, 75.3% routes, 14.2 FPG, 10.7 XFP/G",A borderline TE1 ROS.
+FP,4,Mike Gesicki,CIN,Receiving TE,Average,↑,,11.1 FPG on 10.4 XFP/G; 10.6 FPG in 7 games w/o Higgins,The top TE streamer vs MIA.
+FP,4,Dalton Kincaid,BUF,Receiving TE,Average,↓,,42.9% routes (season low); 8.5% TS last 2 (23.3% Wks 1-2),"Coaches say they'll get him more routes; up-and-down, better in pass-leaning plans like vs LA."
+FP,4,Tucker Kraft,GB,Receiving TE,Great,↑,,"6/42/1, 21.1 XFP; 25.3% first-read share",The breakout came; a top-8 TE ROS.
+FP,4,T.J. Hockenson,MIN,Receiving TE,Average,↑,,"35.1% TS, 13/119; 23.5% first-read share",Role worth watching if Jefferson misses more.
+FP,4,Sam LaPorta,DET,Receiving TE,Great,↑,,22.4 FP on 20.6 XFP; 31% first-read share; 75%+ routes 4 straight; TE4 XFP/G,"The TE4 ROS behind Bowers, McBride and Kittle."
