@@ -1480,20 +1480,15 @@ function adpKey(p) {
 }
 
 /**
- * Which pool players are worth putting on the board unasked. A player projecting
- * above his position's replacement would beat the man you are otherwise forced to
- * start, so he earns a row; everyone else stays out of the way. `levels` is what
- * computeVorp already worked out, so this moves with the board rather than against
- * a number typed in once.
+ * Which pool players to put on the board unasked: everyone your projection file gives
+ * a positive projection, so the board holds every player with an ADP or a projection.
+ * They land below the line, where the tail sorts by projection.
  */
-function worthSurfacing(pool, projValues, levels) {
+function worthSurfacing(pool, projValues) {
   var out = [];
   pool.forEach(function (p) {
     var v = projValues[p.player_id];
-    var lvl = levels[p.position];
-    if (typeof v !== "number" || !isFinite(v)) return;
-    if (!lvl || lvl.level == null) return;
-    if (v >= lvl.level) out.push(p);
+    if (typeof v === "number" && isFinite(v) && v > 0) out.push(p);
   });
   return out.sort(function (a, b) {
     return (projValues[b.player_id] || 0) - (projValues[a.player_id] || 0);
@@ -1702,6 +1697,7 @@ function selectSlate(index) {
   render();
   renderPoolHits();
   if (!$("vorpPanel").hidden) renderVorpPanel();
+  surfaceUnpriced(true);
   scheduleSync(1200);
 }
 
@@ -1850,13 +1846,9 @@ function ingestProjections(text, sourceName, pasted) {
   }
 }
 
-/**
- * Pull in the unpriced players this projection file says are worth a look: anyone
- * projecting at or above his position's replacement level. The bar moves with the
- * board rather than being a number typed in once, and it stays tight -- on the college
- * slate it surfaces a handful out of eight hundred.
- */
-function surfaceUnpriced() {
+/** Pull in every unpriced player this projection file projects (see worthSurfacing).
+ *  `onLoad`: filling in on page load isn't an edit, so auto-sync doesn't treat it as one. */
+function surfaceUnpriced(onLoad) {
   var s = state.slate;
   if (!s || !s.pool) return;
   loadPool(s).then(function (pool) {
@@ -1870,12 +1862,14 @@ function surfaceUnpriced() {
     var store = normalizeProjStore(load(K.proj(s.sport), null));
     if (!store.current || !store.current.entries) return;
     var joined = joinProjections(candidates, store.current.entries, state.nameMaps[s.sport] || {});
-    var worth = worthSurfacing(candidates, joined.values, state.vorpLevels);
+    var worth = worthSurfacing(candidates, joined.values);
     if (!worth.length) return;
-    var n = addFromPool(worth);
-    if (!n) return;
+    if (onLoad) syncApplying = true;
+    var n;
+    try { n = addFromPool(worth); } finally { syncApplying = false; }
+    if (!n || onLoad) return;
     setStatus(appendStatus() + " Added " + n + " unpriced " +
-              (n === 1 ? "player" : "players") + " projecting above replacement: " +
+              (n === 1 ? "player" : "players") + " with a projection: " +
               worth.slice(0, 6).map(function (p) { return p.last_name; }).join(", ") +
               (worth.length > 6 ? " and " + (worth.length - 6) + " more" : "") +
               ". They sit below the line.");
@@ -3838,16 +3832,13 @@ function brrSelfTest() {
     { player_id: "u4", first_name: "No", last_name: "Projection", position: "RB" }
   ];
   var projOf = { u1: 14.1, u2: 13.4, u3: 4.0 };
-  var lv = { WR: { level: 13.0 }, RB: { level: 9.6 } };
-  var worth = worthSurfacing(poolRows, projOf, lv);
-  ok("only the unpriced above replacement are surfaced, best first",
-     worth.length === 2 && worth[0].player_id === "u1" && worth[1].player_id === "u2");
+  var worth = worthSurfacing(poolRows, projOf);
+  ok("every unpriced player with a projection is surfaced, best first",
+     worth.length === 3 && worth[0].player_id === "u1" && worth[2].player_id === "u3");
   ok("a player with no projection is never surfaced",
-     worthSurfacing(poolRows, projOf, lv).every(function (p) { return p.player_id !== "u4"; }));
-  ok("a position with no replacement level surfaces nobody",
-     worthSurfacing(poolRows, projOf, { WR: null, RB: null }).length === 0);
-  ok("exactly at replacement still counts",
-     worthSurfacing([poolRows[0]], { u1: 13.0 }, lv).length === 1);
+     worth.every(function (p) { return p.player_id !== "u4"; }));
+  ok("a zero projection is not surfaced",
+     worthSurfacing([poolRows[0]], { u1: 0 }).length === 0);
   ok("search needs two characters", searchPool(poolRows, "M", 8).length === 0);
   ok("search matches first or last name, case-insensitively",
      searchPool(poolRows, "mcgow", 8)[0].player_id === "u1" &&
