@@ -303,8 +303,8 @@
   .board.cfb .num.score { display: flex; gap: 4px; justify-content: center; align-items: center; }
   .board.cfb .num.score b.sc { min-width: 30px; }
   .cfbpanel {
-    padding: 10px 12px 14px 78px; border-bottom: 1px solid var(--line); background: var(--surface-2);
-    font-size: 13px; line-height: 1.45; display: flex; flex-direction: column; gap: 10px;
+    padding: 8px 12px 12px 70px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+    font-size: 13px; line-height: 1.45; display: flex; flex-direction: column; gap: 8px;
   }
   /* Colour cells, the same scale as the Analysis page: Elite / Great / Average / Low. */
   .cfbpanel .cell, .cfbstrip .cell {
@@ -334,8 +334,8 @@
   .cfbpanel .cell.l16, .cfbstrip .cell.l16 { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .28); }
   .cfbpanel .cell.blank, .cfbstrip .cell.blank { background: transparent; }
   .cfbpanel .cell.text { color: var(--ink); background: transparent; box-shadow: inset 0 0 0 1px var(--line-strong); }
-  .cfbgrid { display: flex; flex-wrap: wrap; gap: 8px 10px; }
-  .cfbgrid .g { background: #0c0f15; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px 6px; }
+  .cfbgrid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cfbgrid .g { background: #0c0f15; border: 1px solid var(--line); border-radius: 6px; padding: 3px 5px 4px; }
   .cfbgrid .gl { font-family: var(--mono); font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; white-space: nowrap; }
   .cfbgrid .gl small { text-transform: none; letter-spacing: 0; opacity: .75; margin-left: 5px; }
   .cfbgrid .gc { display: flex; gap: 3px; align-items: center; }
@@ -2334,8 +2334,9 @@ function cfbPanel(p, cf) {
   var w = cf.w, m = cf.m, doc = state.cfb || {};
   var pos = (w && w.pos) || p.position, cuts = (doc.cuts || {})[pos] || {};
 
+  var grid = null;
   if (w) {
-    var grid = document.createElement("div"); grid.className = "cfbgrid";
+    grid = document.createElement("div"); grid.className = "cfbgrid";
     (CFB_GROUPS[pos] || CFB_GROUPS.RB).slice(CFB_STRIP).forEach(function (spec) { grid.appendChild(cfbSpecGroup(spec, w, pos, cuts)); });
     d.appendChild(grid);
   }
@@ -2343,7 +2344,7 @@ function cfbPanel(p, cf) {
   if (m) {
     var tc = doc.team_cuts || {}, rd = m.opp_run_d, pd = m.opp_pass_d;
     var dt = function (x) { return x ? ["Tough", "Average", "Great", "Elite"].indexOf(x.tier) : null; };
-    var mg = document.createElement("div"); mg.className = "cfbgrid";
+    var mg = grid || document.createElement("div"); mg.className = "cfbgrid";   // his stats and the matchup on one line
     mg.appendChild(cfbGroup("Implied", "team total", [cfbCell(m.implied, cfbTier(m.implied, tc.implied), m.implied == null ? "–" : String(Math.round(m.implied)), null,
       m.total != null ? "Total " + m.total : "No line yet")]));
     mg.appendChild(cfbGroup("Line", m.home ? "home" : m.neutral ? "neutral" : "road", [cfbCell(null, null,
@@ -2360,7 +2361,7 @@ function cfbPanel(p, cf) {
     var pl = m.volume && m.volume.plays_pg;
     mg.appendChild(cfbGroup("Plays/g", w ? w.abbr : "team", [cfbCell(pl, cfbTier(pl, tc.plays_pg), pl == null ? "–" : String(Math.round(pl)), null,
       m.volume ? Math.round(m.volume.pass_rate * 100) + "% pass" : "")]));
-    d.appendChild(mg);
+    if (!grid) d.appendChild(mg);
   }
 
   // the raw lines, in small print, for when the colours need a second look
