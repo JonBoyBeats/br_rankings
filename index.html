@@ -298,8 +298,8 @@
   .cfbx:focus-visible { outline: 2px solid var(--accent); }
   .board.cfb .num.score b { min-width: 44px; }
   /* College: the rough Score, then the opponent, side by side (stacked on a phone). */
-  .board.cfb .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 100px 94px 56px; }
-  .board.cfb.has-own .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 100px 44px 94px 56px; }
+  .board.cfb .row { grid-template-columns: 18px 26px minmax(0, 1fr) 60px 96px 84px 48px; }
+  .board.cfb.has-own .row { grid-template-columns: 18px 26px minmax(0, 1fr) 60px 96px 44px 84px 48px; }
   .board.cfb .num.score { display: flex; gap: 4px; justify-content: center; align-items: center; }
   .board.cfb .num.score b.sc { min-width: 30px; }
   .cfbpanel {
@@ -312,10 +312,20 @@
     font-family: var(--mono); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;
     border-radius: 4px; background: #1a1e27; color: var(--muted);
   }
-  .cfbstrip { grid-column: 3 / -1; gap: 6px; margin-top: 2px; }
-  .cfbstrip .g { padding: 3px 5px 4px; }
-  .cfbstrip .gl { margin-bottom: 2px; }
-  .cfbstrip .cell { height: 18px; line-height: 18px; min-width: 24px; font-size: 10.5px; }
+  .cfbstrip { display: flex; align-items: center; gap: 8px; }
+  .cfbstrip .g { display: flex; align-items: center; gap: 4px; }
+  .cfbstrip .gl { font-family: var(--mono); font-size: 9px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .cfbstrip .gc { display: flex; gap: 2px; align-items: center; }
+  .cfbstrip .div { width: 1px; height: 12px; background: var(--line-strong); margin: 0 1px; }
+  .cfbstrip .cell { height: 18px; line-height: 18px; min-width: 20px; padding: 0 2px; font-size: 10px; }
+  .cfbstrip.inl { margin-left: auto; flex-shrink: 0; padding-left: 6px; }
+  .cfbstrip.own { display: none; }
+  .board.cfb .row { gap: 8px; padding-inline: 10px; }
+  /* Narrower than the full-width board, the name line has no room: it gets its own line. */
+  @media (max-width: 1071px) {
+    .cfbstrip.inl { display: none; }
+    .cfbstrip.own { display: flex; flex-wrap: wrap; grid-column: 3 / -1; gap: 4px 10px; margin-top: 1px; }
+  }
   .cfbpanel .cell.t3, .cfbstrip .cell.t3 { background: var(--t3); color: var(--t3-ink); }
   .cfbpanel .cell.t2, .cfbstrip .cell.t2 { background: var(--t2); color: var(--t2-ink); }
   .cfbpanel .cell.t1, .cfbstrip .cell.t1 { background: var(--t1); color: var(--t1-ink); }
@@ -424,6 +434,7 @@
     .board.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 36px 22px 54px 32px; }
     .num.score b { min-width: 32px; padding: 2px 2px; font-size: 10.5px; }
     .board.cfb .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 54px 32px; }
+    .board.cfb .row { gap: 4px; padding-inline: 6px; }
     .board.cfb.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 22px 54px 32px; }
     .board.cfb .num.score b { min-width: 40px; font-size: 10px; }
     .board.cfb .num.score { flex-direction: column; gap: 2px; }
@@ -431,10 +442,9 @@
     .cfbpanel { padding: 8px 8px 12px; font-size: 12.5px; }
     .cfbgrid { gap: 6px; }
     .cfbgrid .g { padding: 3px 4px 5px; }
-    .cfbstrip { grid-column: 1 / -1; gap: 4px; }    /* the whole row width, wrapping if it must */
-    .cfbstrip .g { padding: 2px 4px 3px; }
-    .cfbstrip .cell { min-width: 20px; padding: 0 2px; }
-    .cfbstrip .gl small { display: none; }             /* the outlined first cell is the season */
+    .cfbstrip.own { grid-column: 1 / -1; gap: 4px 6px; }   /* a phone gives it the whole row width */
+    .cfbstrip .g { gap: 3px; }
+    .cfbstrip .cell { min-width: 19px; padding: 0 1px; }
     .num.own i { display: none; }
     .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
     .num.proj { grid-template-columns: 24px 1fr; gap: 2px; }
@@ -2249,6 +2259,8 @@ var CFB_GROUPS = {
 };
 CFB_GROUPS.TE = CFB_GROUPS.WR;
 var CFB_STRIP = 3;
+var CFB_SHORT = { "Rush share": "Rush", "Catch share": "Catch", "Touches/g": "Touch/g", "Pass-play share": "Pass plays",
+                  "Rec/g": "Rec/g", "Pass yds/g": "Pass yds", "Pass TD/g": "Pass TD" };
 var CFB_TIER = ["Low", "Average", "Great", "Elite"];
 
 function cfbTier(v, cuts) {
@@ -2267,7 +2279,7 @@ function cfbCell(v, t, text, extra, title) {
   return c;
 }
 /** One stat group: the season cell, then (for share and points) his last four games. */
-function cfbSpecGroup(spec, w, pos, cuts) {
+function cfbSpecGroup(spec, w, pos, cuts, short) {
   var k = spec[0], v = (w.m || {})[k], t = cfbTier(v, cuts[k]);
   var cells = [cfbCell(v, t, cfbFmt(v, spec[2]), "l16", spec[1] + ", season: " + cfbFmt(v, spec[2]) + (spec[2] === "pct" ? "%" : "") +
     (t == null ? "" : " · " + CFB_TIER[t] + " for a " + pos))];
@@ -2285,15 +2297,19 @@ function cfbSpecGroup(spec, w, pos, cuts) {
         (gm.left ? " · left early and missed the next game (usually an injury); still counted, since in college these games predicted the return better than skipping them" : "")));
     }
   }
+  if (short) return cfbGroup(CFB_SHORT[spec[1]] || spec[1], null, cells);
   return cfbGroup(spec[1], spec[3] ? (spec[3] === "fp" ? "per game ¦ last 4" : "season ¦ last 4") : "season", cells);
 }
 
-/** On the row, visible collapsed: his role at a glance (share of the team's work and touches). */
-function cfbStrip(p, cf) {
+/**
+ * On the row, visible collapsed: his role at a glance (share of the team's work and touches).
+ * Built twice: on the name line for a wide screen, and as its own line under it for a phone.
+ */
+function cfbStrip(p, cf, inline) {
   var w = cf.w, pos = w.pos || p.position, cuts = ((state.cfb || {}).cuts || {})[pos] || {};
   var s = document.createElement("div");
-  s.className = "cfbstrip cfbgrid";
-  (CFB_GROUPS[pos] || CFB_GROUPS.RB).slice(0, CFB_STRIP).forEach(function (spec) { s.appendChild(cfbSpecGroup(spec, w, pos, cuts)); });
+  s.className = "cfbstrip " + (inline ? "inl" : "own");
+  (CFB_GROUPS[pos] || CFB_GROUPS.RB).slice(0, CFB_STRIP).forEach(function (spec) { s.appendChild(cfbSpecGroup(spec, w, pos, cuts, true)); });
   return s;
 }
 
@@ -2473,6 +2489,7 @@ function render() {
       tag.textContent = "new";
       who.appendChild(tag);
     }
+    if (cf && cf.w) who.appendChild(cfbStrip(p, cf, true));
 
     var mv = hasAdp(p) ? movement(state.baseline, p.player_id, p.adp) : { kind: "nobase" };
     var ind = document.createElement("span");
@@ -2564,7 +2581,7 @@ function render() {
     var sc = state.slate.sport === "cfb" ? cfbOppCell(p, cf) : scoreCell(p);
     if (ownCell) el.append(handle, rank, who, adp, sc, ownCell, pr, vo);
     else el.append(handle, rank, who, adp, sc, pr, vo);
-    if (cf && cf.w) el.appendChild(cfbStrip(p, cf));
+    if (cf && cf.w) el.appendChild(cfbStrip(p, cf, false));
     frag.appendChild(el);
     if (cf && state.cfbOpen[p.player_id]) frag.appendChild(cfbPanel(p, cf));
   });
