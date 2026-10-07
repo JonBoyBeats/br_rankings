@@ -288,9 +288,8 @@
   .inj.d { background: #e07b3a; color: #1d0e03; }
   .inj.o { background: var(--t0); color: var(--t0-ink); }
   .inj.p { background: #2a3140; color: #c9d1dc; }
-  /* College: share of the team's work on the name line, a dropdown toggle, and the
+  /* College: a dropdown toggle on the name line, his role strip under it, and the
      opponent (coloured by how soft its defense is) where NFL shows the Score. */
-  .who .share { font-variant-numeric: tabular-nums; }
   .cfbx {
     all: unset; cursor: pointer; font-size: 11px; line-height: 1; padding: 2px 5px; border-radius: 4px;
     color: var(--muted); border: 1px solid var(--line-strong); align-self: center;
@@ -308,20 +307,22 @@
     font-size: 13px; line-height: 1.45; display: flex; flex-direction: column; gap: 10px;
   }
   /* Colour cells, the same scale as the Analysis page: Elite / Great / Average / Low. */
-  .cfbpanel .cell, .who .share .cell {
+  .cfbpanel .cell, .cfbstrip .cell {
     display: inline-block; min-width: 30px; height: 22px; line-height: 22px; padding: 0 4px; text-align: center;
     font-family: var(--mono); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;
     border-radius: 4px; background: #1a1e27; color: var(--muted);
   }
-  .who .share .cell { height: 18px; line-height: 18px; min-width: 0; font-size: 10.5px; }
-  .who .share { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
-  .cfbpanel .cell.t3, .who .share .cell.t3 { background: var(--t3); color: var(--t3-ink); }
-  .cfbpanel .cell.t2, .who .share .cell.t2 { background: var(--t2); color: var(--t2-ink); }
-  .cfbpanel .cell.t1, .who .share .cell.t1 { background: var(--t1); color: var(--t1-ink); }
-  .cfbpanel .cell.t0, .who .share .cell.t0 { background: var(--t0); color: var(--t0-ink); }
-  .cfbpanel .cell.hurt { background-image: repeating-linear-gradient(135deg, rgba(0, 0, 0, .45) 0 3px, transparent 3px 7px); }
-  .cfbpanel .cell.l16 { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .28); }
-  .cfbpanel .cell.blank { background: transparent; }
+  .cfbstrip { grid-column: 3 / -1; gap: 6px; margin-top: 2px; }
+  .cfbstrip .g { padding: 3px 5px 4px; }
+  .cfbstrip .gl { margin-bottom: 2px; }
+  .cfbstrip .cell { height: 18px; line-height: 18px; min-width: 24px; font-size: 10.5px; }
+  .cfbpanel .cell.t3, .cfbstrip .cell.t3 { background: var(--t3); color: var(--t3-ink); }
+  .cfbpanel .cell.t2, .cfbstrip .cell.t2 { background: var(--t2); color: var(--t2-ink); }
+  .cfbpanel .cell.t1, .cfbstrip .cell.t1 { background: var(--t1); color: var(--t1-ink); }
+  .cfbpanel .cell.t0, .cfbstrip .cell.t0 { background: var(--t0); color: var(--t0-ink); }
+  .cfbstrip .cell.hurt, .cfbpanel .cell.hurt { background-image: repeating-linear-gradient(135deg, rgba(0, 0, 0, .45) 0 3px, transparent 3px 7px); }
+  .cfbpanel .cell.l16, .cfbstrip .cell.l16 { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .28); }
+  .cfbpanel .cell.blank, .cfbstrip .cell.blank { background: transparent; }
   .cfbpanel .cell.text { color: var(--ink); background: transparent; box-shadow: inset 0 0 0 1px var(--line-strong); }
   .cfbgrid { display: flex; flex-wrap: wrap; gap: 8px 10px; }
   .cfbgrid .g { background: #0c0f15; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px 6px; }
@@ -430,7 +431,10 @@
     .cfbpanel { padding: 8px 8px 12px; font-size: 12.5px; }
     .cfbgrid { gap: 6px; }
     .cfbgrid .g { padding: 3px 4px 5px; }
-    .board.cfb .who .share { display: none; }       /* the name keeps the room; the dropdown has it */
+    .cfbstrip { grid-column: 1 / -1; gap: 4px; }    /* the whole row width, wrapping if it must */
+    .cfbstrip .g { padding: 2px 4px 3px; }
+    .cfbstrip .cell { min-width: 20px; padding: 0 2px; }
+    .cfbstrip .gl small { display: none; }             /* the outlined first cell is the season */
     .num.own i { display: none; }
     .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
     .num.proj { grid-template-columns: 24px 1fr; gap: 2px; }
@@ -2187,24 +2191,6 @@ function pctOf(v) { return v == null ? "–" : Math.round(v * 100) + "%"; }
 
 /** On the name line: his share of the team's work, and a toggle for the dropdown. */
 function cfbWho(who, p, cf) {
-  var mm = cf.w && cf.w.m;
-  if (mm) {
-    var passer = p.position === "WR" || p.position === "TE", k = passer ? "rec_sh" : "rush_sh";
-    var cuts = ((state.cfb.cuts || {})[cf.w.pos || p.position] || {});
-    if (mm[k] != null) {
-      var sh = document.createElement("span");
-      sh.className = "share";
-      var c = cfbCell(mm[k], cfbTier(mm[k], cuts[k]), cfbFmt(mm[k], "pct") + "%");
-      var lg = cf.w.last && cf.w.last[cf.w.last.length - 1], lv = lg && lg[k];
-      sh.append(c, document.createTextNode(passer ? " catch" : " rush"));
-      if (lv != null && Math.abs(lv - mm[k]) >= 0.10) {
-        sh.appendChild(document.createTextNode(" · last "));
-        sh.appendChild(cfbCell(lv, cfbTier(lv, cuts[k + "_g"]), cfbFmt(lv, "pct") + "%"));
-      }
-      sh.title = "Share of his team's " + (passer ? "catches" : "carries") + " this season" + (lv != null ? "; last game " + cfbFmt(lv, "pct") + "%" : "");
-      who.appendChild(sh);
-    }
-  }
   var b = document.createElement("button");
   b.type = "button";
   var own = cf.takes.filter(function (t) { return !t._via; });
@@ -2251,7 +2237,8 @@ function cfbOppCell(p, cf) {
   return c;
 }
 
-/* What each position's dropdown shows, left to right by importance: [metric, label, format, has game cells]. */
+/* What each position shows, left to right by importance: [metric, label, format, has game cells].
+   The first CFB_STRIP groups sit on the row itself; the rest are in the dropdown. */
 var CFB_GROUPS = {
   RB: [["rush_sh", "Rush share", "pct", "rush_sh"], ["rec_sh", "Catch share", "pct", "rec_sh"], ["touch_pg", "Touches/g", "n0"],
        ["ypc", "YPC", "n1"], ["td_pg", "TD/g", "n1"], ["fp_pg", "Half-PPR", "n0", "fp"]],
@@ -2261,6 +2248,7 @@ var CFB_GROUPS = {
        ["rush_yds_pg", "Rush yds/g", "n0"], ["fp_pg", "Half-PPR", "n0", "fp"]]
 };
 CFB_GROUPS.TE = CFB_GROUPS.WR;
+var CFB_STRIP = 3;
 var CFB_TIER = ["Low", "Average", "Great", "Elite"];
 
 function cfbTier(v, cuts) {
@@ -2278,6 +2266,37 @@ function cfbCell(v, t, text, extra, title) {
   if (title) c.title = title;
   return c;
 }
+/** One stat group: the season cell, then (for share and points) his last four games. */
+function cfbSpecGroup(spec, w, pos, cuts) {
+  var k = spec[0], v = (w.m || {})[k], t = cfbTier(v, cuts[k]);
+  var cells = [cfbCell(v, t, cfbFmt(v, spec[2]), "l16", spec[1] + ", season: " + cfbFmt(v, spec[2]) + (spec[2] === "pct" ? "%" : "") +
+    (t == null ? "" : " · " + CFB_TIER[t] + " for a " + pos))];
+  if (spec[3]) {
+    var games = w.last || [];
+    cells.push(Object.assign(document.createElement("span"), { className: "div" }));
+    for (var i = 0; i < 4; i++) {
+      var gm = games[i - (4 - games.length)];
+      if (!gm) { cells.push(cfbCell(null, null, "", "blank")); continue; }
+      var gv = gm[spec[3]], gt = cfbTier(gv, cuts[spec[3] + "_g"]), isFp = spec[3] === "fp";
+      var gtxt = gv == null ? "–" : isFp ? String(Math.round(gv)) : cfbFmt(gv, "pct");
+      cells.push(cfbCell(gv, gt, gtxt, gm.left ? "hurt" : null, "Wk" + gm.wk + " " + (gm.home ? "vs " : "@ ") + gm.opp + ": " +
+        (isFp ? (gv == null ? "didn't play" : gv.toFixed(1) + " half-PPR") :
+         (spec[3] === "rush_sh" ? gm.car + " car" : gm.rec + " rec") + " (" + cfbFmt(gv, "pct") + "%)") + (gt == null ? "" : " · " + CFB_TIER[gt]) +
+        (gm.left ? " · left early and missed the next game (usually an injury); still counted, since in college these games predicted the return better than skipping them" : "")));
+    }
+  }
+  return cfbGroup(spec[1], spec[3] ? (spec[3] === "fp" ? "per game ¦ last 4" : "season ¦ last 4") : "season", cells);
+}
+
+/** On the row, visible collapsed: his role at a glance (share of the team's work and touches). */
+function cfbStrip(p, cf) {
+  var w = cf.w, pos = w.pos || p.position, cuts = ((state.cfb || {}).cuts || {})[pos] || {};
+  var s = document.createElement("div");
+  s.className = "cfbstrip cfbgrid";
+  (CFB_GROUPS[pos] || CFB_GROUPS.RB).slice(0, CFB_STRIP).forEach(function (spec) { s.appendChild(cfbSpecGroup(spec, w, pos, cuts)); });
+  return s;
+}
+
 function cfbGroup(label, sub, cells) {
   var g = document.createElement("div"); g.className = "g";
   var l = document.createElement("div"); l.className = "gl"; l.textContent = label;
@@ -2301,26 +2320,7 @@ function cfbPanel(p, cf) {
 
   if (w) {
     var grid = document.createElement("div"); grid.className = "cfbgrid";
-    (CFB_GROUPS[pos] || CFB_GROUPS.RB).forEach(function (spec) {
-      var k = spec[0], v = (w.m || {})[k], t = cfbTier(v, cuts[k]);
-      var cells = [cfbCell(v, t, cfbFmt(v, spec[2]), "l16", spec[1] + ", season: " + cfbFmt(v, spec[2]) + (spec[2] === "pct" ? "%" : "") +
-        (t == null ? "" : " · " + CFB_TIER[t] + " for a " + pos))];
-      if (spec[3]) {
-        var games = w.last || [];
-        cells.push(Object.assign(document.createElement("span"), { className: "div" }));
-        for (var i = 0; i < 4; i++) {
-          var gm = games[i - (4 - games.length)];
-          if (!gm) { cells.push(cfbCell(null, null, "", "blank")); continue; }
-          var gv = gm[spec[3]], gt = cfbTier(gv, cuts[spec[3] + "_g"]), isFp = spec[3] === "fp";
-          var gtxt = gv == null ? "–" : isFp ? String(Math.round(gv)) : cfbFmt(gv, "pct");
-          cells.push(cfbCell(gv, gt, gtxt, gm.left ? "hurt" : null, "Wk" + gm.wk + " " + (gm.home ? "vs " : "@ ") + gm.opp + ": " +
-            (isFp ? (gv == null ? "didn't play" : gv.toFixed(1) + " half-PPR") :
-             (spec[3] === "rush_sh" ? gm.car + " car" : gm.rec + " rec") + " (" + cfbFmt(gv, "pct") + "%)") + (gt == null ? "" : " · " + CFB_TIER[gt]) +
-            (gm.left ? " · left early and missed the next game (usually an injury); still counted, since in college these games predicted the return better than skipping them" : "")));
-        }
-      }
-      grid.appendChild(cfbGroup(spec[1], spec[3] ? (spec[3] === "fp" ? "per game ¦ last 4" : "season ¦ last 4") : "season", cells));
-    });
+    (CFB_GROUPS[pos] || CFB_GROUPS.RB).slice(CFB_STRIP).forEach(function (spec) { grid.appendChild(cfbSpecGroup(spec, w, pos, cuts)); });
     d.appendChild(grid);
   }
 
@@ -2564,6 +2564,7 @@ function render() {
     var sc = state.slate.sport === "cfb" ? cfbOppCell(p, cf) : scoreCell(p);
     if (ownCell) el.append(handle, rank, who, adp, sc, ownCell, pr, vo);
     else el.append(handle, rank, who, adp, sc, pr, vo);
+    if (cf && cf.w) el.appendChild(cfbStrip(p, cf));
     frag.appendChild(el);
     if (cf && state.cfbOpen[p.player_id]) frag.appendChild(cfbPanel(p, cf));
   });
