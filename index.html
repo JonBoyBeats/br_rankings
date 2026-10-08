@@ -540,6 +540,11 @@
       <span class="field-label">Underdog</span>
       <button type="button" id="export" class="primary">Export<span class="wide"> ranking</span></button>
     </label>
+    <div class="field">
+      <span class="field-label">Restore</span>
+      <button type="button" id="importBtn" title="Put an exported ranking back on the board">Import</button>
+      <input type="file" id="importFile" accept=".csv,text/csv" hidden>
+    </div>
   </div>
 
   <div id="vorpPanel" class="paste" hidden>
@@ -1533,6 +1538,20 @@ function buildExportCsv(order, byPid) {
   return { csv: lines.join("\n") + "\n", rows: lines.length - 1, missing: missing };
 }
 
+/** Read an exported ranking back: its appearance ids, in order, as player ids. */
+function parseExportCsv(text, players) {
+  var byApp = {};
+  players.forEach(function (p) { if (p.appearance_id) byApp[p.appearance_id] = p.player_id; });
+  var seen = {}, ranked = [], unknown = [];
+  String(text || "").split(/\r?\n/).forEach(function (line) {
+    var a = line.split(",")[0].trim().replace(/^"|"$/g, "");
+    if (!a || a.toLowerCase() === "id") return;
+    var pid = byApp[a];
+    if (!pid) { unknown.push(a); return; }
+    if (!seen[pid]) { seen[pid] = 1; ranked.push(pid); }
+  });
+  return { ranked: ranked, unknown: unknown };
+}
 
 // ==== PURE LOGIC END ====
 
@@ -3446,6 +3465,50 @@ async function doExport() {
   }
 }
 
+/**
+ * Put an exported ranking back: its players go on top in its order, the line sits under
+ * them, and everyone else follows as they were. Auto-sync then sends it to other devices.
+ */
+async function doImport(file) {
+  try {
+    var text = await file.text();
+    var pool = await loadPool(state.slate);
+    var res = parseExportCsv(text, state.slate.players.concat(pool.players));
+    if (!res.ranked.length) {
+      setStatus("None of the ids in " + file.name + " are on " + slateLabel(state.slate) +
+                ". It may be an export from a different slate.", "bad");
+      return;
+    }
+    if (!window.confirm("Replace your order with the " + res.ranked.length + " players ranked in " + file.name +
+                        "? They go on top in that order with your line under them.")) return;
+    var have = {}, need = {};
+    state.slate.players.forEach(function (p) { have[p.player_id] = 1; });
+    res.ranked.forEach(function (pid) { if (!have[pid]) need[pid] = 1; });
+    var back = pool.players.filter(function (p) { return need[p.player_id]; });
+    if (back.length) {
+      state.slate.players = state.slate.players.concat(back);
+      back.forEach(function (p) { state.added[p.player_id] = 1; });
+      save(K.added(state.slate.label), Object.keys(state.added));
+      renderPositions();
+    }
+    var rec = reconcileOrder(state.slate.players, res.ranked.concat(state.order));
+    state.order = rec.order;
+    state.cut = res.ranked.length;
+    state.newIds = {};
+    state.liftedPid = null;
+    renderLiftBar();
+    saveBoard();
+    recomputeVorp();
+    render();
+    setStatus("Imported " + res.ranked.length + " players from " + file.name + "; the line is under them." +
+              (res.unknown.length ? " " + res.unknown.length + " id" + (res.unknown.length === 1 ? " is" : "s are") +
+                " no longer on the slate and were skipped." : "") +
+              (connected() ? " Auto-sync will send it to your other devices." : ""), res.unknown.length ? "warn" : null);
+  } catch (err) {
+    setStatus("Import failed: " + err.message, "bad");
+  }
+}
+
 // ---------------------------------------------------------------- boot
 $("slate").addEventListener("change", function (e) { selectSlate(Number(e.target.value)); });
 $("search").addEventListener("input", function (e) {
@@ -3466,6 +3529,8 @@ $("proj").addEventListener("change", function (e) {
   e.target.value = "";
 });
 $("export").addEventListener("click", doExport);
+$("importBtn").addEventListener("click", function () { $("importFile").value = ""; $("importFile").click(); });
+$("importFile").addEventListener("change", function (e) { if (e.target.files[0]) doImport(e.target.files[0]); });
 $("buildAdp").addEventListener("click", function () { applyBuilder("adp"); });
 $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
 $("pasteBtn").addEventListener("click", function () {
@@ -4073,6 +4138,8 @@ function brrSelfTest() {
   var ex = buildExportCsv(["p2", "p1", "gone"], byPid);
   ok("export csv", ex.csv === "id\na2\na1\n");
   ok("export missing", ex.missing.length === 1);
+  var im = parseExportCsv("id\r\na2\r\nzz\r\na1\r\na2\r\n", players);
+  ok("import reads an export back in order", im.ranked.join() === "p2,p1" && im.unknown.join() === "zz");
 
   // ---- pasted (tab separated) input reaches the same result as the file
   var tsv = parseProjections(FIXTURE_ETR_TSV);
