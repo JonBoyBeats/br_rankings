@@ -3140,7 +3140,8 @@ async function refreshSyncStatus() {
         mine.device + ", " + playerCount(mine.count) + "."
       : "Nothing saved for this slate yet.";
     renderSync("Auto-sync is on: edits save a couple of seconds after you make them, and opening or returning " +
-               "to the board picks up the newest one from any device. " + bits +
+               "to the board (or a check every minute while it's open) picks up the newest one from any device. " +
+               "If two devices both changed this slate, it asks which board to keep. " + bits +
                (labels.length ? " Saved slates: " + labels.join(", ") + "." : "") + " This device is " + myDevice() + ".");
   } catch (e) {
     renderSync(e.message);
@@ -3291,11 +3292,14 @@ async function syncConnect() {
 /* ---- auto-sync ------------------------------------------------------------------
    With a token on this device, the board keeps itself in step with the gist: a change
    goes up a couple of seconds after the last edit, and opening or returning to the page
-   brings down whatever another device saved since. "Changed" means the board differs
-   from how it stood right after the last sync, so the board's own re-saves on load don't
-   count; when both sides changed, the later edit wins. Projections ride along, newest
-   upload wins. */
+   brings down whatever another device saved since; so does clicking back into the window,
+   and a check every minute while the tab is showing, so a tab left open on another screen
+   never sits on a stale board. "Changed" means the board differs from how it stood right
+   after the last sync, so the board's own re-saves on load don't count. When both sides
+   changed it asks which board to keep (a tab being hidden can't ask, so it waits until
+   you're back). Projections ride along, newest upload wins. */
 var syncTimer = null, syncBusy = false, syncApplying = false;
+var SYNC_POLL_MS = 60000;
 
 function rawSave(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* ignore */ } }
 function isoMs(iso) { var t = Date.parse(iso); return isFinite(t) ? t : 0; }
@@ -3323,7 +3327,8 @@ function scheduleSync(ms) {
   syncTimer = setTimeout(autoSync, ms);
 }
 
-async function autoSync() {
+/** quiet: the tab is going away and can't show a question, so a conflict waits. */
+async function autoSync(quiet) {
   clearTimeout(syncTimer); syncTimer = null;
   if (!connected() || !state.slate) return;
   if (syncBusy) { scheduleSync(1500); return; }
@@ -3348,9 +3353,15 @@ async function autoSync() {
     } else {
       var localChanged = boardSig() !== syncedSig;
       var remoteChanged = !!remote && remote.saved_at !== load(K.synced(label), null);
-      if (remoteChanged && localChanged) take = isoMs(remote.saved_at) > isoMs(load(K.mod(label), null));
-      else take = remoteChanged;
-      push = localChanged && !take;
+      var wait = false;
+      if (remoteChanged && localChanged) {
+        if (quiet) wait = true;
+        else take = window.confirm("Auto-sync: " + remote.device + " saved a different board for " + slateLabel(state.slate) + " " +
+                                   describeAge(remote.saved_at, Date.now()) + " (" + playerCount(remote.count) + "), and this " +
+                                   "device has changes since it last synced. OK uses " + remote.device + "'s board here; Cancel keeps " +
+                                   "this device's board and sends it to your other devices.");
+      } else take = remoteChanged;
+      push = localChanged && !take && !wait;
     }
 
     var files = {}, msg = "";
@@ -3401,8 +3412,15 @@ async function autoSync() {
 document.addEventListener("visibilitychange", function () {
   if (!state.slate || !connected()) return;
   if (document.visibilityState === "visible") autoSync();
-  else if (syncTimer) autoSync();
+  else if (syncTimer) autoSync(true);
 });
+window.addEventListener("focus", function () {
+  if (state.slate && connected() && !syncTimer) autoSync();
+});
+function syncPoll() {
+  if (state.slate && connected() && document.visibilityState === "visible" && !syncBusy && !syncTimer) autoSync();
+}
+setInterval(syncPoll, SYNC_POLL_MS);
 
 /* ---- history: every save is a gist revision, so an older board is a tap away ---- */
 async function syncHistory() {
