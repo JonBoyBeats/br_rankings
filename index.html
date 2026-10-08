@@ -171,6 +171,11 @@
      obvious here, where the range is set, rather than only on the board. */
   .vorp-members i { color: var(--accent); font-style: normal; }
   .paste-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .hist { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .hist .hrow { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; }
+  .hist .hrow.now { border-color: var(--accent); }
+  .hist .htxt { flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.4; }
+  .hist .htop { color: var(--muted); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hint { color: var(--muted); font-size: 12.5px; }
 
   /* ---------- notices ---------- */
@@ -563,8 +568,10 @@
     <div class="paste-actions" id="syncActions" hidden>
       <button type="button" id="syncSave" class="primary">Save this slate</button>
       <button type="button" id="syncLoad">Load saved</button>
+      <button type="button" id="syncHistory">History</button>
       <button type="button" id="syncForget">Disconnect</button>
     </div>
+    <div id="syncHistoryList" class="hist" hidden></div>
     <div id="syncConnectRow" hidden>
       <label class="field-label" for="syncToken">GitHub token, gist scope only</label>
       <input type="password" id="syncToken" autocomplete="off" spellcheck="false"
@@ -1252,6 +1259,23 @@ function parseSavedState(text) {
   if (!doc || typeof doc !== "object") return null;
   if (!doc.slates || typeof doc.slates !== "object") return null;
   return doc;
+}
+
+/**
+ * The different boards saved for one slate across the gist's revisions, newest first.
+ * A board pushed again unchanged shows once, at its newest save.
+ */
+function slateHistory(docs, label) {
+  var seen = {}, out = [];
+  docs.forEach(function (doc) {
+    var e = doc && doc.slates && doc.slates[label];
+    if (!e || !Array.isArray(e.order)) return;
+    var sig = JSON.stringify([e.order, e.cut == null ? null : e.cut]);
+    if (seen[sig]) return;
+    seen[sig] = 1;
+    out.push(e);
+  });
+  return out;
 }
 
 /** Replace one slate's entry, leaving every other device's slates untouched. */
@@ -3100,6 +3124,7 @@ function renderSync(text) {
 }
 
 async function refreshSyncStatus() {
+  $("syncHistoryList").hidden = true;
   if (!connected()) {
     renderSync("Not connected. Paste a GitHub token below and this device keeps its boards in step with " +
                "your other devices through a private gist.");
@@ -3379,8 +3404,70 @@ document.addEventListener("visibilitychange", function () {
   else if (syncTimer) autoSync();
 });
 
+/* ---- history: every save is a gist revision, so an older board is a tap away ---- */
+async function syncHistory() {
+  var btn = $("syncHistory"), box = $("syncHistoryList");
+  btn.disabled = true;
+  try {
+    var id = load(K.gist, null) || (await readSaved()).id;
+    if (!id) { renderSync("Nothing has been saved yet, so there is no history."); return; }
+    renderSync("Reading your saved history\u2026");
+    var revs = await gh("/gists/" + id + "/commits?per_page=30");
+    var docs = await Promise.all(revs.map(function (r) {
+      return gh("/gists/" + id + "/" + r.version).then(function (g) {
+        var f = g.files && g.files[GIST_FILE];
+        return f && !f.truncated && f.content ? parseSavedState(f.content) : null;
+      }).catch(function () { return null; });
+    }));
+    var label = state.slate.label, list = slateHistory(docs, label);
+    if (!list.length) { renderSync("No saved boards for " + slateLabel(state.slate) + " in the last " + revs.length + " saves."); box.hidden = true; return; }
+    var names = {};
+    state.slate.players.concat((state.pool && state.pool.players) || []).forEach(function (p) { names[p.player_id] = p.first_name + " " + p.last_name; });
+    var mine = JSON.stringify([state.order, state.cut == null ? null : state.cut]);
+    box.innerHTML = "";
+    list.forEach(function (e) {
+      var row = document.createElement("div");
+      var now = JSON.stringify([e.order, e.cut == null ? null : e.cut]) === mine;
+      row.className = "hrow" + (now ? " now" : "");
+      var t = document.createElement("div"); t.className = "htxt";
+      var head = document.createElement("div");
+      head.textContent = "Saved " + describeAge(e.saved_at, Date.now()) + " from " + e.device + " \u00b7 " + playerCount(e.order.length) +
+        (e.cut != null ? " \u00b7 line at " + e.cut : "") + (now ? " \u00b7 on this board now" : "");
+      var top = document.createElement("div"); top.className = "htop";
+      top.textContent = e.order.slice(0, 6).map(function (pid, i) { return (i + 1) + ". " + (names[pid] || "?"); }).join("  ");
+      t.append(head, top);
+      var b = document.createElement("button"); b.type = "button"; b.textContent = "Load"; b.disabled = now;
+      b.addEventListener("click", function () { loadHistoryEntry(e); });
+      row.append(t, b);
+      box.appendChild(row);
+    });
+    box.hidden = false;
+    renderSync(list.length + " different board" + (list.length === 1 ? "" : "s") + " saved for " + slateLabel(state.slate) +
+               " in the last " + revs.length + " saves, newest first. Load one to put it back; auto-sync then sends it to your other devices.");
+  } catch (e) {
+    renderSync("Could not read the history: " + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function loadHistoryEntry(entry) {
+  if (!window.confirm("Replace your order with the board saved " + describeAge(entry.saved_at, Date.now()) + " from " +
+                      entry.device + " (" + playerCount(entry.order.length) + ")?")) return;
+  // applied as an edit on this device, so auto-sync sends it out as the newest board
+  var got = await applyEntry(entry);
+  recomputeVorp();
+  render();
+  if (!$("vorpPanel").hidden) renderVorpPanel();
+  $("syncHistoryList").hidden = true;
+  renderSync("Put back the board saved " + describeAge(entry.saved_at, Date.now()) + " from " + entry.device + "." + got.ranks +
+             (got.rec.dropped.length ? " " + got.rec.dropped.length + " of its players are no longer on the slate." : "") +
+             " Auto-sync is sending it to your other devices.");
+}
+
 function syncForget() {
   try { localStorage.removeItem(K.token); localStorage.removeItem(K.gist); } catch (e) { /* ignore */ }
+  $("syncHistoryList").hidden = true;
   renderSync("Disconnected. The token is gone from this browser; the gist itself is untouched.");
 }
 
@@ -3576,6 +3663,7 @@ $("syncBtn").addEventListener("click", function () {
 $("syncSave").addEventListener("click", syncSave);
 $("syncLoad").addEventListener("click", syncLoad);
 $("syncForget").addEventListener("click", syncForget);
+$("syncHistory").addEventListener("click", syncHistory);
 $("syncConnect").addEventListener("click", syncConnect);
 $("pasteBox").addEventListener("paste", function () {
   var box = this;
@@ -4056,6 +4144,10 @@ function brrSelfTest() {
 
   // ---- saved boards
   ok("empty state parses back", parseSavedState(JSON.stringify(emptySavedState())) !== null);
+  var hA = { slates: { s: { order: ["p1", "p2"], cut: 1, saved_at: "b" } } }, hB = { slates: { s: { order: ["p1", "p2"], cut: 1, saved_at: "a" } } },
+      hC = { slates: { s: { order: ["p2", "p1"], saved_at: "c" }, t: { order: ["x"] } } };
+  var hist = slateHistory([hC, hA, null, hB, { slates: {} }], "s");
+  ok("history keeps each distinct board once, newest first", hist.length === 2 && hist[0].saved_at === "c" && hist[1].saved_at === "b");
   ok("junk state is refused", parseSavedState("not json") === null &&
      parseSavedState('{"nope":1}') === null);
   var doc = putSavedSlate(emptySavedState(), "nfl_main",
