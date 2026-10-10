@@ -1,0 +1,403 @@
+source,week,player,team,opp,outlook_tier,stance,blurb
+Kerrane,5,Kirk Cousins,LV,@NE,,,"QB12 in EPA/game, QB8 in success rate after a poor Week 1; run-first but with 5% PROE on 1st-and-10; NE has pushed every opponent to a negative PROE, though play action could open shots"
+Kerrane,5,Ashton Jeanty,LV,@NE,Great,Start,"Grip on carries slipping (Washington 35% last week), but 17% target share rebounded and he saw 18.3 expected points; as a 3.5-point dog he should get passing volume; RB1"
+Kerrane,5,Mike Washington Jr.,LV,@NE,Replacement,,Season-high 35% carry share; explosive but inconsistent and a zero as a receiver; a medium-term threat to Jeanty
+Kerrane,5,Brock Bowers,LV,@NE,Elite,Start,"9% inline, 48% wide, 43% slot vs KC; a true chess piece with a 94th-percentile open score; elite TE1"
+Kerrane,5,Michael Mayer,LV,@NE,Replacement,,Full-time role since Bowers returned (75% route floor) with Nailor concussed and Bech on IR; TE2
+Kerrane,5,Tre Tucker,LV,@NE,Replacement,,"The only full-time LV WR, but route participation is low; more interesting if Gonzalez sits; WR5"
+Kerrane,5,Drake Maye,NE,LV,,,"Boom/bust profile: low first-read rate, long time to throw, 10.0 aDOT, 15% deep rate, lots of scrambling (135 rush yds, 2nd among QBs); LV gets quick pressure but is weak vs the run"
+Kerrane,5,TreVeyon Henderson,NE,LV,Replacement,,"Has led Stevenson in carry share every game together but trails badly in passing work; low-end RB1 if Stevenson (limited Thursday) sits, RB3 if he plays"
+Kerrane,5,Rhamondre Stevenson,NE,LV,Replacement,,"Injured late vs BUF, limited Thursday; dominates routes and targets when active, which keeps both backs at RB3 if he plays"
+Kerrane,5,Romeo Doubs,NE,LV,Replacement,,"Season-low 69% routes but two TDs; part-time, boom/bust outside role, though with season highs in first-read rate and TPRR; Hollins (calf) out; WR4"
+Kerrane,5,Hunter Henry,NE,LV,Replacement,,Raridon's return unlocked 12 personnel rather than replacing him; coming off his best game; high-end TE2
+Kerrane,5,Efton Chism III,NE,LV,Replacement,,Took Douglas' playing time and caught the game-winning TD last week
+Kerrane,5,Tyson Bagent,CHI,@GB,,,59% success rate (QB4) vs NYJ in a -7% PROE game plan; makes plays out of structure more than Keenum; GB's pass defense is worse than the numbers
+Kerrane,5,Kyle Monangai,CHI,@GB,Replacement,,"Nearly 30 PPR on an elite workload after Swift's fumble, but little receiving work and dealing with turf toe; RB3 if he plays"
+Kerrane,5,D'Andre Swift,CHI,@GB,Average,Start,"The more versatile back (32.4 PPR in Week 1); GB's run D should give volume; low-end RB2 with Monangai active, RB1 if Monangai sits"
+Kerrane,5,Luther Burden,CHI,@GB,Average,Start,"Elite 27% TPRR and a strong connection with Bagent, but a specialized screen-heavy role peaking at 77% routes; high-end WR3"
+Kerrane,5,Rome Odunze,CHI,@GB,Replacement,,"Full-time and coming off his best game, but an unimpressive target rate and open score; WR4"
+Kerrane,5,Kalif Raymond,CHI,@GB,Replacement,Upside,Stepped back in playing time and involvement but still in the dart-throw mix
+Kerrane,5,Colston Loveland,CHI,@GB,Great,Start,"Game plan built around him last week with an elite target rate, even if 11.7 PPR was a letdown; Johnson making him a priority is bullish; TE1"
+Kerrane,5,Jordan Love,GB,CHI,,,"QB26 in EPA/game, QB33 in success rate; playing as a pure point guard (fast time to throw, high first-read rate) behind the league's worst pass protection vs a CHI defense that blitzes and pressures"
+Kerrane,5,Christian Watson,GB,CHI,Average,Start,"Biggest games so far, but route participation has dropped two weeks running; tough matchup and volume concerns; low-end WR2"
+Kerrane,5,Matthew Golden,GB,CHI,Average,Start,Consistently involved deep downfield; the best bet for a big play; low-end WR2
+Kerrane,5,Tucker Kraft,GB,CHI,Great,Start,Elite 30% TPRR on a 1.4 aDOT last week; trending up in his return; TE1
+Kerrane,5,Kaleb Johnson,GB,CHI,Replacement,,Early-down back with Brooks (ankle) out but inefficient and at risk of being phased out as a dog; RB5
+Kerrane,5,MarShawn Lloyd,GB,CHI,Replacement,,"The passing-down back with Brooks out, but an even worse rusher than Johnson; PPR RB4"
+Kerrane,5,David Montgomery,HOU,@TEN,Replacement,,"Very inefficient and losing passing work to Marks, but still the lead runner; TEN is a massive run funnel and HOU is a 7.5-point favorite; high-end RB3"
+Kerrane,5,Woody Marks,HOU,@TEN,Replacement,,Slightly more efficient than Montgomery but rarely targeted; RB4
+Kerrane,5,Nico Collins,HOU,@TEN,Elite,Start,Far and away HOU's best receiver and an elite field stretcher who just powered Stroud's best game; TEN is worse vs the pass than the run; WR1
+Kerrane,5,Kayshon Boutte,HOU,@TEN,Replacement,Upside,The best bet for routes behind Collins
+Kerrane,5,Jaylin Noel,HOU,@TEN,Replacement,,"Took a step forward as Hutchinson's time fell; one to watch, with Tank Dell close to returning"
+Kerrane,5,Dalton Schultz,HOU,@TEN,Replacement,,"Quiet since Week 2 with his worst efficiency last week, but HOU should pass efficiently here; high-end TE2"
+Kerrane,5,Carnell Tate,TEN,HOU,Average,Start,"A genuine breakout, but added to the injury report Thursday (back) and HOU's defense has held every QB under a 44th-percentile success rate; low ceiling/low floor; high-end WR3 if healthy"
+Kerrane,5,Wan'Dale Robinson,TEN,HOU,Replacement,,"Season-low 69% routes; WR5 with Tate active, WR3 range if Tate sits"
+Kerrane,5,Tony Pollard,TEN,HOU,Replacement,,Dominating carries and running well by RYOE (4.6 ypc) but no TDs; tough matchup; RB3
+Kerrane,5,Elic Ayomanor,TEN,HOU,Replacement,Sit,Route share dropped and he's in a split with Ridley; off the fantasy radar
+Kerrane,5,Calvin Ridley,TEN,HOU,Replacement,Sit,Rebounded from 28% routes but in a split with Ayomanor; off the fantasy radar
+Kerrane,5,Gunnar Helm,TEN,HOU,Replacement,Sit,Part-time role; not fantasy-relevant right now
+Kerrane,5,Joe Burrow,CIN,@MIA,,,"5.6 EPA/game, 49% success rate; CIN leads the NFL with a 6% PROE and kept passing without Chase; MIA has a weak pass rush and poor coverage"
+Kerrane,5,Ja'Marr Chase,CIN,@MIA,Elite,Start,Back at practice in full pads Thursday and could clear the protocol by Saturday; if he plays he's an elite WR1
+Kerrane,5,Tee Higgins,CIN,@MIA,Replacement,Sit,Adductor strain with back-to-back DNPs; looks unlikely to play after carrying the offense last week
+Kerrane,5,Dohnte Meyers,CIN,@MIA,Replacement,Upside,"Operated as the secondary WR without Chase; a dart throw with just Higgins out, WR3 if both sit"
+Kerrane,5,Mike Gesicki,CIN,@MIA,Replacement,,"Functionally a slot WR who picks up target slack; high-end TE2 if Chase plays, TE1 if he misses"
+Kerrane,5,Chase Brown,CIN,@MIA,Great,Start,"Inefficient runner but the clear-cut starter in a strong offense; low-end RB1 if Chase plays, locked-in RB1 if not"
+Kerrane,5,Malik Willis,MIA,CIN,,,"Deep-pass rate leads the league and he scrambles, but he's been one of the worst QBs; an easier matchup than last week"
+Kerrane,5,Chris Bell,MIA,CIN,Replacement,,Profiles as MIA's No. 1 and primary deep threat with Caleb Douglas likely out again; WR5
+Kerrane,5,Malik Washington,MIA,CIN,Replacement,,Consistently strong target rate and route participation; a 29% target share can't be ignored; WR4
+Kerrane,5,Ollie Gordon II,MIA,CIN,Replacement,,The two-down lead runner and a boom/bust breakaway back; RB3
+Kerrane,5,Greg Dulcich,MIA,CIN,Replacement,Sit,No targets and 50% routes last week; doesn't need to be rostered
+Kerrane,5,Kyler Murray,MIN,@NO,,,"QB38 in EPA/game, QB40 in success rate; 45% first-read rate and missing LT Darrisaw and LG Jackson; NO's pass D is soft but its run D just became a funnel"
+Kerrane,5,Justin Jefferson,MIN,@NO,Great,Start,"Targeting a return, but the Beckham signing hints he may not be ready and he could be limited; low-end WR1"
+Kerrane,5,Jordan Addison,MIN,@NO,Replacement,,"Double-covered at 37% by MIA and now has a minor hamstring issue; WR2 if Jefferson sits, WR4 if he plays"
+Kerrane,5,T.J. Hockenson,MIN,@NO,Replacement,,Stepped up with less defensive attention; high-end TE2 with upside depending on Jefferson and Addison
+Kerrane,5,Aaron Jones,MIN,@NO,Great,Start,Increasingly valuable workloads with Mason on IR; NO's run D was gashed by ATL; low-end RB1
+Kerrane,5,Tyler Shough,NO,MIN,,,"Leads the NFL in expected points per game on volume (69.4% pass rate, fastest pace), but MIN's Flores defense blitzes at 67.9% and is the most effective unit in the NFL"
+Kerrane,5,Chris Olave,NO,MIN,Great,Start,"Added to the injury report Thursday (foot); 23% first-read rate, 29% target share and a 30% TPRR on quick throws; low-end WR1 if he plays"
+Kerrane,5,Devaughn Vele,NO,MIN,Replacement,,"Per-game numbers driven by NO's dropback volume, which could take a hit here; WR5 with Olave, WR3 mix if Olave sits"
+Kerrane,5,Juwan Johnson,NO,MIN,Replacement,,Stronger per-route numbers than Vele; high-end TE2 with upside depending on Olave
+Kerrane,5,Alvin Kamara,NO,MIN,Replacement,,22.8 PPR last week but not dominating touches and running very inefficiently vs an excellent run D; PPR scam RB3
+Kerrane,5,Kendre Miller,NO,MIN,Replacement,Sit,In a split with Kamara and terrible this year; very little value in this matchup
+Kerrane,5,Deshaun Watson,CLE,@NYJ,,,"Three solid games since Week 1 (QB17 EPA/game, QB13 success rate); CLE now pass-first (2% PROE) with pace; the Jets are vulnerable through the air"
+Kerrane,5,KC Concepcion,CLE,@NYJ,Average,Start,Up to 100% routes and leads CLE with a 23% target share; the most consistent target earner; WR3
+Kerrane,5,Denzel Boston,CLE,@NYJ,Replacement,,Primary deep threat (18.0 aDOT) who also earns targets at varied depths; looks like a major hit; WR4
+Kerrane,5,Harold Fannin Jr.,CLE,@NYJ,Great,Start,"Target share above Boston's and more playing time, though the rookies add target competition; TE1 in a good matchup"
+Kerrane,5,Quinshon Judkins,CLE,@NYJ,Average,Start,Best game of the season on a strong receiving role; Monken wants his best receivers on the field; RB2
+Kerrane,5,Jerry Jeudy,CLE,@NYJ,Replacement,Sit,Reportedly could be had before the trade deadline
+Kerrane,5,Garrett Wilson,NYJ,CLE,Great,Start,CLE plays man at the highest rate and Wilson has a 38% TPRR and 3.95 YPRR vs man; CLE unlikely to double him enough; low-end WR1
+Kerrane,5,Kenyon Sadiq,NYJ,CLE,Average,Start,A zero last week but a very strong first-read target rate; the second-best Jets playmaker with Mitchell and Hall out; low floor; low-end TE1
+Kerrane,5,Isaiah Williams,NYJ,CLE,Replacement,Sit,"Efficient last week as the No. 2 WR, but a weak season-long profile in a slow, balanced offense"
+Kerrane,5,Braelon Allen,NYJ,CLE,Average,Start,Literally the Jets' only runner last week and more efficient than Hall; CLE's run D is weak and just lost a DL; high-end RB2
+Kerrane,5,Daniel Jones,IND,@PIT,,,"QB35 in EPA/game, QB31 in success rate; the Colts are avoiding featuring him; PIT's pass D is worse than it looks"
+Kerrane,5,Jonathan Taylor,IND,@PIT,Great,Start,"Inefficient by RYOE and losing some work to McGowan, but the Colts need him going; RB1"
+Kerrane,5,Seth McGowan,IND,@PIT,Replacement,,Mixing in more over the last couple of games
+Kerrane,5,Josh Downs,IND,@PIT,Average,Start,"Forgotten in London, but a strong bounceback candidate; faces Jalen Ramsey, who's playing through a broken wrist; low-end WR2"
+Kerrane,5,Keenan Allen,IND,@PIT,Replacement,,Likely back from his groin injury but ranks dead last in open score; WR5
+Kerrane,5,Laquon Treadwell,IND,@PIT,Replacement,Upside,"The main downfield WR, which isn't a fantasy-friendly role; a dart throw even if Allen sits"
+Kerrane,5,Tyler Warren,IND,@PIT,Great,Start,"2.3 aDOT and 11th-percentile open score, a symptom of losing Pierce's verticality; TD-dependent, but a 23% target share; TE1"
+Kerrane,5,Aaron Rodgers,PIT,IND,,,Much more efficient the last two games and still aggressive downfield; PIT's 70% pass rate leads the NFL; IND's pass D isn't as good as last week looked
+Kerrane,5,Jaylen Warren,PIT,IND,Average,Start,"Elite efficiency on workhorse volume, but Dowdle is back at practice and the near-every-snap role will change; RB2, RB1 if Dowdle sits"
+Kerrane,5,DK Metcalf,PIT,IND,Average,Start,Rekindling his connection with Rodgers; Pittman (foot) out makes him the go-to outside WR vs Gardner and Ward; high-end WR3
+Kerrane,5,Roman Wilson,PIT,IND,Replacement,,"Likely the primary slot WR with the best matchup (Walley, CB91); efficient in a limited role and should get more routes; WR5"
+Kerrane,5,Germie Bernard,PIT,IND,Replacement,Upside,Likely the secondary outside WR with Pittman out
+Kerrane,5,Pat Freiermuth,PIT,IND,Replacement,,Strong route participation and on the field far more than Washington; low-end TE2
+Kerrane,5,Darnell Washington,PIT,IND,Replacement,,"More efficient per route and heavily involved in the red zone, but far fewer snaps than Freiermuth"
+Kerrane,5,Jameis Winston,NYG,@WAS,,,"Solid efficiency vs ARI eases the McCarthy risk; NYG is run-heavy (-9.8% PROE) and very slow, likely sticking with a plan that's 2-0"
+Kerrane,5,Cam Skattebo,NYG,@WAS,Average,Start,"The early-down hammer, but his target share swung from 13-19% to 3% last week; RB2"
+Kerrane,5,Malik Nabers,NYG,@WAS,Great,Start,Best game of the season and back to 90%+ routes despite shoulder pain; high-end WR2
+Kerrane,5,Malachi Fields,NYG,@WAS,Replacement,Upside,"Best game of the season, earning all his targets outside the first read"
+Kerrane,5,Isaiah Likely,NYG,@WAS,Great,Start,Leads all TEs with a 31% target share but only 1.81 YPRR; expect fewer targets but better per-target efficiency; TE1
+Kerrane,5,Jayden Daniels,WAS,NYG,,,Back three weeks after the elbow dislocation; an easy return vs a NYG pass rush now without Brian Burns
+Kerrane,5,Stefon Diggs,WAS,NYG,Replacement,,Back-to-back DNPs and looks likely to miss; WR2 if weekend reports are positive
+Kerrane,5,Terry McLaurin,WAS,NYG,Replacement,Sit,Set to miss a second game with a hamstring injury
+Kerrane,5,Antonio Williams,WAS,NYG,Average,Start,"Ran more routes than Burks and earned targets at a much higher rate; WR3 with Diggs out, WR5 if Diggs plays"
+Kerrane,5,Treylon Burks,WAS,NYG,Replacement,Upside,In a McLaurin-adjacent part-time deep role; scored last week
+Kerrane,5,Chig Okonkwo,WAS,NYG,Replacement,,Part-time in his return; route participation remains a concern; TE2
+Kerrane,5,Jacory Croskey-Merritt,WAS,NYG,Replacement,,Second-lowest carry share of the year with Ekeler mixing in and Rachaad White back at practice; RB4
+Kerrane,5,Bo Nix,DEN,@LAC,,,"QB28 in EPA/game, QB30 in success rate; Sean Payton retaking play calling could make DEN more aggressive"
+Kerrane,5,J.K. Dobbins,DEN,@LAC,Replacement,,Re-established as the lead runner but uninvolved as a receiver and not running well; RB3
+Kerrane,5,RJ Harvey,DEN,@LAC,Replacement,,A true receiving weapon who posted a season-high carry share last week; high-end RB3
+Kerrane,5,Jaylen Waddle,DEN,@LAC,Average,Start,"Team leader in target and air-yard share, running cold on efficiency; Payton calling plays is most bullish for him; WR2"
+Kerrane,5,Courtland Sutton,DEN,@LAC,Replacement,,"Struggling to get open, though Bryant's absence could consolidate looks; WR5"
+Kerrane,5,Marvin Mims Jr.,DEN,@LAC,Replacement,Upside,Looks like the more direct replacement for Pat Bryant's role
+Kerrane,5,Evan Engram,DEN,@LAC,Replacement,Sit,"Could pick up some of Bryant's looks, but mostly an unexciting bet on route volume"
+Kerrane,5,Justin Herbert,LAC,DEN,,,"QB37 in EPA/game, QB34 in success rate; now missing LT Slater, RT Alt and G Penning against Zach Allen and Nik Bonitto; holds the ball and struggles on first-read throws"
+Kerrane,5,Tre Harris,LAC,DEN,Replacement,,Season-high 91% routes; clearly better than Johnston; WR4 if McConkey sits
+Kerrane,5,Quentin Johnston,LAC,DEN,Replacement,,Terrible open score and a weak target rate; becoming less of a priority; WR5
+Kerrane,5,Ladd McConkey,LAC,DEN,Replacement,Sit,"LAC's lone playmaker, but aggravated his foot and looks likely to miss"
+Kerrane,5,Oronde Gadsden II,LAC,DEN,Replacement,,"Picked up slack on shallow targets, maybe part of a quick-game plan; route share still unideal; TE2"
+Kerrane,5,Omarion Hampton,LAC,DEN,Replacement,,Losing control of the backfield but involved enough to hurt everyone else; RB4
+Kerrane,5,Keaton Mitchell,LAC,DEN,Replacement,,Steady rushing share but less efficient than Hampton; RB4 as a bet on a growing role
+Kerrane,5,Kimani Vidal,LAC,DEN,Replacement,,Stepped into a larger role last week
+Kerrane,5,Jared Goff,DET,@ARI,,,Three strong games (QB5 EPA/game); ARI is atrocious in coverage and may lose DT Walker Nolan; 54.5 total
+Kerrane,5,Amon-Ra St. Brown,DET,@ARI,Elite,Start,"Cooled off, but underlying target numbers remain elite in a pristine No. 1 WR setup; elite WR1"
+Kerrane,5,Jameson Williams,DET,@ARI,Average,Start,Getting open downfield (encouraging open score); a strong spike-week candidate; WR3
+Kerrane,5,Isaac TeSlaa,DET,@ARI,Replacement,Upside,Entrenched as the No. 3 WR and productive the last two weeks
+Kerrane,5,Sam LaPorta,DET,@ARI,Elite,Start,Coming off his strongest game; a very strong TE profile; high-end TE1
+Kerrane,5,Jahmyr Gibbs,DET,@ARI,Elite,Start,A strong runner who has truly excelled as a receiver; the strongest bet at the position
+Kerrane,5,Jacoby Brissett,ARI,DET,,,"Worst EPA of Week 4 (-13.8); quick first-read formula vs DET's league-leading quick pressure, without LT Paris Johnson (season); DET's secondary is a mess"
+Kerrane,5,Jeremiyah Love,ARI,DET,Average,Start,Ankle injury and asked coaches to play others; a consistent runner but hard to trust for volume; low-end RB2
+Kerrane,5,Tyler Allgeier,ARI,DET,Replacement,,"Led the backfield in snaps, but an unimpressive profile and little receiving; RB4"
+Kerrane,5,Trey McBride,ARI,DET,Elite,Start,Leads ARI with a 31% target share in a game with high-scoring upside; elite TE1
+Kerrane,5,Michael Wilson,ARI,DET,Great,Start,Underlying numbers now rival McBride's as a co-No. 1; high-end WR2
+Kerrane,5,Marvin Harrison Jr.,ARI,DET,Replacement,Upside,"Scored, but awful in the underlying numbers; the definition of a sacrificial X"
+Kerrane,5,Brock Purdy,SF,@SEA,,,"Leads the NFL in EPA/game and QB3 in success rate, helped by soft matchups; SEA is an elite pass and run defense"
+Kerrane,5,Mike Evans,SF,@SEA,Average,Start,"Best open score in the NFL with a 13.4 aDOT, playing through a ribs injury; a brutal matchup; low-end WR2"
+Kerrane,5,Deebo Samuel,SF,@SEA,Replacement,,Back in a hybrid role and interesting as a satellite RB with SF's WR depth thin; WR4
+Kerrane,5,George Kittle,SF,@SEA,Elite,Start,"88% routes; defying age and injury; the matchup hurts, but high-end TE1"
+Kerrane,5,Christian McCaffrey,SF,@SEA,Elite,Start,"Carry share fell to 43%, but the receiving role is very reliable and SF leans pass; high-end RB1"
+Kerrane,5,Kaelon Black,SF,@SEA,Replacement,Sit,Role has dropped off since Week 1 and he's run poorly; off the fantasy radar
+Kerrane,5,Sam Darnold,SEA,SF,,,Struggled vs LAC but a 51% success rate; a positive regression candidate vs an SF pass rush without Bosa
+Kerrane,5,Jaxon Smith-Njigba,SEA,SF,Elite,Start,An elite route runner and the engine of the offense; volume is the only concern vs a run-funnel SF D; elite WR1
+Kerrane,5,Rashid Shaheed,SEA,SF,Replacement,Upside,"Rushing TD saved his day, but an unimpressive receiving profile"
+Kerrane,5,Cooper Kupp,SEA,SF,Replacement,Upside,An unimpressive receiving profile
+Kerrane,5,AJ Barner,SEA,SF,Replacement,,"Arguably the No. 2 target with Darnold back, but in a JSN-centric scheme; TE2"
+Kerrane,5,Emanuel Wilson,SEA,SF,Average,Start,Consolidating rushing volume with Price on IR and Charbonnet not back; Holani is mostly a snap eater; volume-based RB2
+Kerrane,5,George Holani,SEA,SF,Replacement,Sit,Mostly just a snap eater behind Wilson
+Gretch,5,Dallas Goedert,PHI,@JAX,,Start-lean,Should be back with no injury designation; startable depending on your other TE options
+Gretch,5,Dontayvion Wicks,PHI,@JAX,,Borderline,"Trickier with Smith out, but he'd understand playing him"
+Gretch,5,Makai Lemon,PHI,@JAX,,Borderline,"Trickier with Smith out, but he'd understand playing him"
+Gretch,5,Darius Cooper,PHI,@JAX,,Sit,"Probably not one to chase, though he could factor in again in an annoying way"
+Gretch,5,Will Shipley,PHI,@JAX,,Volatile,"Classic input-volatility play: projects as the top option, but practice-squad call-up Pierce could out-carry him; big dog with OL issues vs a strong JAX D, though JAX allows the 2nd-most RB receptions; playing him in at least one spot"
+Gretch,5,Bhayshul Tuten,JAX,PHI,,Start,Sets up nicely as a big favorite
+Gretch,5,Parker Washington,JAX,PHI,,Start,Happy to play him despite the down Week 4
+Gretch,5,Jakobi Meyers,JAX,PHI,,Borderline,"Not input volatility, just an uncertain play; a lot of mouths to feed"
+Gretch,5,Brenton Strange,JAX,PHI,,Borderline,"Not input volatility, just an uncertain play; a lot of mouths to feed"
+Gretch,5,Ja'Marr Chase,CIN,@MIA,,Start,Practiced and appears likely to clear the protocol; expects something like 20 Chase targets as CIN coasts
+Gretch,5,Tee Higgins,CIN,@MIA,,Start-lean,"Questionable with a history of leaving games early; still starting him without good alternatives, but health is a fair reason to sit him if it's close"
+Gretch,5,Dohnte Meyers,CIN,@MIA,,Sit,"Was playing the Chase role; a nice start if Chase sat, not if only Higgins does"
+Gretch,5,Mike Gesicki,CIN,@MIA,,Borderline,"Has tended to benefit most when Higgins is out, bringing a vertical element; not a clean play"
+Gretch,5,Chase Brown,CIN,@MIA,,Start,Expects a lot of Brown as CIN coasts against an inferior opponent
+Gretch,5,Malik Washington,MIA,CIN,,Borderline,"Douglas out again; things may be concentrated enough to dabble, in a bad offensive environment"
+Gretch,5,Chris Bell,MIA,CIN,,Borderline,One of MIA's main receiving weapons with Douglas out; dabble-able in a bad environment
+Gretch,5,Ollie Gordon II,MIA,CIN,,Borderline,Presumably the clear lead back now (Wright questionable); dabble-able in a bad environment
+Gretch,5,Ashton Jeanty,LV,@NE,,Start,Questionable after missing Friday: either it was maintenance and he's fine (play him without qualms) or he's inactive
+Gretch,5,Mike Washington Jr.,LV,@NE,,Volatile,"A very viable spot start if Jeanty sits: good fit for a strong run scheme, plus athleticism; some floor concern"
+Gretch,5,Kirk Cousins,LV,@NE,,Start,Streamable with both of NE's top corners out
+Gretch,5,Brock Bowers,LV,@NE,,Start,"An obvious start, as always"
+Gretch,5,Tre Tucker,LV,@NE,,Borderline,Could be considered with NE's top corners out; the ancillary Raiders are always a headache
+Gretch,5,Michael Mayer,LV,@NE,,Borderline,Could be considered with NE's top corners out
+Gretch,5,Romeo Doubs,NE,LV,,Borderline,"Decently viable with Hollins out, but he's still Romeo Doubs"
+Gretch,5,Hunter Henry,NE,LV,,Borderline,"Maybe playable, but this is off one good Maye bounceback and the passing game isn't fixed"
+Gretch,5,TreVeyon Henderson,NE,LV,,Borderline,"A bit of a bump with Stevenson questionable (though Stevenson says he's ready); not impressed with his Year 2, but starting him in one spot for the explosive upside"
+Gretch,5,Justin Jefferson,MIN,@NO,,Start,Questionable and decided on gameday; an active Jefferson is a start
+Gretch,5,Jordan Addison,MIN,@NO,,Sit,Questionable; a possibility in a stretch but probably a sit if you have good alternatives
+Gretch,5,T.J. Hockenson,MIN,@NO,,Start,A pretty solid start either way after last week and how Murray played
+Gretch,5,Aaron Jones,MIN,@NO,,Start,"Performing well in a favorable run scheme; NO just got gashed by ATL, so MIN may go heavy on the ground"
+Gretch,5,Alvin Kamara,NO,MIN,,Sit,"DNP-LP-LP with a back injury; older, could get reinjured and isn't efficient; quite concerning"
+Gretch,5,Kendre Miller,NO,MIN,,Volatile,"Not a great start vs a tough MIN run D, but there's volatility with Kamara hurt"
+Gretch,5,Chris Olave,NO,MIN,,Start,You're playing Olave
+Gretch,5,Juwan Johnson,NO,MIN,,Volatile,"Interesting, but this game may not be as fun as it should be vs MIN's blitzing defense"
+Gretch,5,Quinshon Judkins,CLE,@NYJ,,Start,"What CHI did on the ground to NYJ last week speaks well for him; favorable matchup, though rain and a sub-40 total"
+Gretch,5,Braelon Allen,NYJ,CLE,,Start,A straightforward option with Hall still out
+Gretch,5,Garrett Wilson,NYJ,CLE,,Start,A straightforward option with Mitchell still out
+Gretch,5,Kenyon Sadiq,NYJ,CLE,,Start,A very solid play despite last week's goose egg; wasn't on the injury report all week
+Gretch,5,Josh Downs,IND,@PIT,,Borderline,"Projects solidly, but it's tough on the road a week after London; he's Gretch's tough sit in one deep league"
+Gretch,5,Tyler Warren,IND,@PIT,,Start-lean,Projects solidly; not out on him
+Gretch,5,Keenan Allen,IND,@PIT,,,Full practice Friday; likely to return
+Gretch,5,Roman Wilson,PIT,IND,,Volatile,Intriguing with Pittman out after some solid moments
+Gretch,5,DK Metcalf,PIT,IND,,Start,A strong play
+Gretch,5,Jaylen Warren,PIT,IND,,Start,Should keep rolling
+Gretch,5,Rico Dowdle,PIT,IND,,Sit,Questionable and tough to play even if active
+Gretch,5,Pat Freiermuth,PIT,IND,,Borderline,"Cutting him in spots, but it wouldn't shock him if he's decent in this matchup"
+Gretch,5,Nico Collins,HOU,@TEN,,Start,Obviously playing him
+Gretch,5,David Montgomery,HOU,@TEN,,Borderline,"A TD favorite, so a good game is possible; low total, weather and overmatched lines"
+Gretch,5,Dalton Schultz,HOU,@TEN,,Borderline,On the fence; would probably prefer not to
+Gretch,5,Carnell Tate,TEN,HOU,,Sit,"Would avoid the Titans; back tightness this week makes an early exit plausible, though he's declared good to go"
+Gretch,5,Malik Nabers,NYG,@WAS,,Start,A great play again in a soft matchup; knee soreness looks like managed load
+Gretch,5,Isaiah Likely,NYG,@WAS,,Start,A solid play; limited some but no designation
+Gretch,5,Cam Skattebo,NYG,@WAS,,Start,A solid play; limited some but no designation
+Gretch,5,Antonio Williams,WAS,NYG,,Volatile,A major input-volatility upside swing: his usage overlaps Diggs' (out) and he's looked good; has a floor too; Gretch is playing him as a last flex in one league
+Gretch,5,Terry McLaurin,WAS,NYG,,Start-lean,Questionable; a solid play if active with Daniels back
+Gretch,5,Austin Ekeler,WAS,NYG,,Volatile,Looked great last week; holding him to see if he's used more than expected with White back
+Gretch,5,Jacory Croskey-Merritt,WAS,NYG,,Sit,Hard to play right now in a volatile backfield
+Gretch,5,Rachaad White,WAS,NYG,,Sit,"Back, but hard to play in a volatile backfield"
+Gretch,5,D'Andre Swift,CHI,@GB,,Start,Right back in the fold as a clear lead back with Monangai out
+Gretch,5,Luther Burden,CHI,@GB,,Start-lean,The most trustworthy of the main Bears receiving weapons
+Gretch,5,Colston Loveland,CHI,@GB,,Borderline,Doesn't have a good read on him; likely in a lineup anyway due to weak alternatives
+Gretch,5,Rome Odunze,CHI,@GB,,Borderline,Doesn't have a good read on him; likely in a lineup anyway due to weak alternatives
+Gretch,5,MarShawn Lloyd,GB,CHI,,Volatile,Should be used some in the passing game with Brooks out; a desperation PPR consideration
+Gretch,5,Kaleb Johnson,GB,CHI,,Sit,Basically cut him; relies on rushing efficiency and TDs that haven't come
+Gretch,5,Christian Watson,GB,CHI,,Start,Likely a solid option over most alternatives; GB's offense has to flow through its three main pass catchers
+Gretch,5,Matthew Golden,GB,CHI,,Start,Likely a solid option over most alternatives
+Gretch,5,Tucker Kraft,GB,CHI,,Start,Likely a solid option over most alternatives
+Gretch,5,RJ Harvey,DEN,@LAC,,Start,"A very solid PPR option: an intentional early-down role in Payton's offense plus green-zone usage, not just receptions"
+Gretch,5,Jaylen Waddle,DEN,@LAC,,Start,A good play with Bryant out
+Gretch,5,Courtland Sutton,DEN,@LAC,,Sit,Still pretty skeptical
+Gretch,5,J.K. Dobbins,DEN,@LAC,,Sit,Still pretty skeptical
+Gretch,5,Bo Nix,DEN,@LAC,,,Payton retakes play calling; doesn't think Nix is as bad as he's played
+Gretch,5,Omarion Hampton,LAC,DEN,,Borderline,Usable in a pinch
+Gretch,5,Keaton Mitchell,LAC,DEN,,Borderline,Usable in a pinch
+Gretch,5,Tre Harris,LAC,DEN,,Borderline,Might be the last man standing with Johnston out and McConkey questionable
+Gretch,5,Oronde Gadsden II,LAC,DEN,,Borderline,Might be the last man standing in the passing game
+Gretch,5,Ladd McConkey,LAC,DEN,,Sit,Questionable after missing practice all week
+Gretch,5,Trey McBride,ARI,DET,,Start,A strong play
+Gretch,5,Michael Wilson,ARI,DET,,Start,A strong play
+Gretch,5,Jeremiyah Love,ARI,DET,,Start-lean,"LP-LP-FP with no designation; willing to play him as if good to go, though Allgeier should be very involved"
+Gretch,5,Tyler Allgeier,ARI,DET,,Volatile,Played great last week and should be very involved
+Gretch,5,Kendrick Bourne,ARI,DET,,Volatile,A potential deep-league stash with Harrison inactive and being traded
+Gretch,5,Marvin Harrison Jr.,ARI,DET,,Sit,Inactive and set to be traded
+Gretch,5,Emanuel Wilson,SEA,SF,,Start,A very solid play with Holani questionable and not very good
+Gretch,5,Mike Evans,SF,@SEA,,Start,No designation and seems fine playing through the rib issue
+Gretch,5,Deebo Samuel,SF,@SEA,,Borderline,Not obvious either way; depends on alternatives
+Gretch,5,Brock Purdy,SF,@SEA,,Start-lean,"Scoring well enough to play over most streamers, though a road game in Seattle could knock him down"
+Gretch,5,Zay Flowers,BAL,@ATL,,Start-lean,Questionable but seems likely to go; still a good enough play with Huntley
+Gretch,5,Derrick Henry,BAL,@ATL,,Start,Still a good enough play with Huntley
+Gretch,5,Bijan Robinson,ATL,BAL,,Start,A star RB in a low-pass-rate game
+Gretch,5,Drake London,ATL,BAL,,Start,The one key guy to play in ATL's passing game
+Gretch,5,DJ Moore,BUF,@LA,,Sit,Returned to practice in a red jersey but has left two of four games early; couldn't risk it
+Gretch,5,Dalton Kincaid,BUF,@LA,,Start-lean,Fine playing him and trusting BUF to get his role sorted
+Gretch,5,Khalil Shakir,BUF,@LA,,Borderline,"Tricky, but playable if needed given Moore's injury"
+Gretch,5,Keon Coleman,BUF,@LA,,Volatile,"Not sure about starting him, but interesting to roster and watch"
+Gretch,5,Puka Nacua,LA,BUF,,Start,Play him
+Gretch,5,Kyren Williams,LA,BUF,,Start,Play him
+Gretch,5,Davante Adams,LA,BUF,,Start,Play him; probably no other Rams
+Silva,5,Jalon Daniels,TB,@DAL,Replacement,,"QB19 in his first start; usable in 2QB leagues vs a Swiss-cheese DAL pass D (71.3% comp, 8.4 YPA allowed). Prediction: Cowboys 35, Bucs 17"
+Silva,5,Bucky Irving,TB,@DAL,Average,Start,"Too good a matchup to bench, but hasn't played a snap inside the 10 since Week 1, lost a goal-line carry to Tucker and wasn't targeted"
+Silva,5,Chris Godwin,TB,@DAL,Replacement,Sit,No Bucs pass catcher is viable with Daniels; Godwin's playmaking appears gone (career-low 8.9 YPC)
+Silva,5,Emeka Egbuka,TB,@DAL,Replacement,Sit,Barely producing with Mayfield and a worse bet with Daniels; Mayfield could return Week 6
+Silva,5,Cade Otton,TB,@DAL,Replacement,Sit,Leads TB in yards on Daniels' throws (37); a DFS dart only
+Silva,5,Dak Prescott,DAL,TB,Elite,Start,"Should rip through TB from a clean pocket: 6th-lowest pressure rate despite heavy blitzing, and FS Winfield out"
+Silva,5,Javonte Williams,DAL,TB,Great,Start,19.3 touches/game on 75% snaps and tied for the NFL lead in carries inside the 5; TB allows the 3rd-most RB receptions
+Silva,5,CeeDee Lamb,DAL,TB,Elite,Start,Fully healthy and moved into the slot on 40% of snaps vs HOU (17/189/1); can have unstoppable games when Dak is cooking
+Silva,5,George Pickens,DAL,TB,Great,Start,The squeaky wheel after creating space for Lamb; a big box score is imminent vs the Winfield-less Bucs
+Silva,5,Ryan Flournoy,DAL,TB,Replacement,,Often a sacrificial role but 72% of snaps; a one-game DFS option
+Silva,5,Jake Ferguson,DAL,TB,Replacement,,3.8 targets/game; a TD-or-bust TE2
+Silva,5,Jalen Hurts,PHI,@JAX,Replacement,Sit,"OL gutted (Jurgens traded, Lane Johnson retired); droppable for a streamer in 10-team leagues. Prediction: Jaguars 31, Eagles 14"
+Silva,5,Will Shipley,PHI,@JAX,Average,Start,Leads the backfield in routes; JAX allows 47.9 RB receiving yards/game (31st); a clean RB2 with only Pierce behind him
+Silva,5,Dallas Goedert,PHI,@JAX,Average,,Expected back; if he's at full strength his range includes leading PHI in receiving vs a pass-funnel JAX D (8.4 YPA)
+Silva,5,Darius Cooper,PHI,@JAX,Replacement,,"Team-high 28% target share last week, but only a 7.5% route share when Goedert has played"
+Silva,5,Dontayvion Wicks,PHI,@JAX,Replacement,,"The least volatile flex of the group with 73% routes from out wide, where JAX allows the 6th-most points"
+Silva,5,Makai Lemon,PHI,@JAX,Replacement,,All his 10+ yard targets came after Goedert's injury; could be minimized if Ertz overlaps with Goedert
+Silva,5,Trevor Lawrence,JAX,PHI,Average,,Hasn't thrown 30 passes in a game; high floor (51% of drives score) but a questionable ceiling; Fangio stumped him last time
+Silva,5,Bhayshul Tuten,JAX,PHI,Average,Start,Season-high 76% of backfield touches last week; an RB2 in a tough spot on volume
+Silva,5,Parker Washington,JAX,PHI,Great,Start,Leads JAX in slot routes vs a PHI D allowing the most slot points; arguably the last week to buy low
+Silva,5,Jakobi Meyers,JAX,PHI,Average,,Up to a 23.5% target share as Lawrence's second option; WR3
+Silva,5,Brian Thomas Jr.,JAX,PHI,Replacement,Sit,Splitting outside routes with Cameron vs shutdown CB Quinyon Mitchell
+Silva,5,Brenton Strange,JAX,PHI,Replacement,Sit,Fadeable: only 9.2% of fantasy points vs PHI have come from TEs
+Silva,5,Tyson Bagent,CHI,@GB,Replacement,,"An efficient executor vs NYJ with two INTs negated by flags; expect a run-heavy plan; low-end QB2. Prediction: Packers 24, Bears 21"
+Silva,5,D'Andre Swift,CHI,@GB,Average,Start,Betting on a bounce-back as the focal point vs a GB D that allowed the most RB points before losing LB Edgerrin Cooper
+Silva,5,Kyle Monangai,CHI,@GB,Average,,RB2-worthy if medically cleared from the thumb injury
+Silva,5,Luther Burden,CHI,@GB,Average,Start,7 of 10 for 95 yards from Bagent; topped 60 yards in three of four games; every-week WR3
+Silva,5,Colston Loveland,CHI,@GB,Great,Start,Led Bears non-QBs in snaps and targets; Cooper's loss hurts GB's TE coverage; back to a confident top-10 TE1
+Silva,5,Rome Odunze,CHI,@GB,Average,,Emerged with Bagent; boom-bust WR3 who improves if GB CB Cisse (neck) sits
+Silva,5,Kalif Raymond,CHI,@GB,Replacement,Sit,The fifth option with a backup QB
+Silva,5,Jordan Love,GB,CHI,Average,,Multiple TD passes in every game and 6th in attempts; not buying CHI's soft-schedule defensive surge; upside QB2
+Silva,5,Kaleb Johnson,GB,CHI,Replacement,Sit,No interest in GB running backs until further notice
+Silva,5,MarShawn Lloyd,GB,CHI,Replacement,Sit,No interest in GB running backs until further notice
+Silva,5,Matthew Golden,GB,CHI,Great,Start,"Team leader in targets and air-yard share (41%), running 87% of routes outside where CHI is most burnable"
+Silva,5,Christian Watson,GB,CHI,Great,Start,"Leads GB in catches, yards, TDs and first downs; every-week WR2 (4.7/80/1.0 over his last six)"
+Silva,5,Tucker Kraft,GB,CHI,Great,Start,"Some drops, but best game of the year and 88% of snaps the last three weeks; confident TE1"
+Silva,5,C.J. Stroud,HOU,@TEN,Replacement,,"TEN allows the 3rd-fewest QB points and can't force a shootout; uninspiring QB2. Prediction: Texans 20, Titans 13"
+Silva,5,Woody Marks,HOU,@TEN,Replacement,,Has clearly outplayed Montgomery and is cutting into scoring-position work; expects him to take the lead soon; poor flex for now
+Silva,5,David Montgomery,HOU,@TEN,Replacement,Sit,2.7 YPC with five forced missed tackles on 47 carries; near-equal timeshare; poor flex
+Silva,5,Nico Collins,HOU,@TEN,Elite,Start,"85/1,310/9 over his last 17 games; top-10 receiver when healthy"
+Silva,5,Jaylin Noel,HOU,@TEN,Replacement,,Added a speedy downfield element but 62% of snaps; a deeper-league stash
+Silva,5,Dalton Schultz,HOU,@TEN,Replacement,,"Production disappears with Collins active (2/9, 4/35, 3/19)"
+Silva,5,Cam Ward,TEN,HOU,Replacement,Sit,"Played his best game and still finished QB17; would rather start the HOU D/ST, especially with DeMeco Ryans calling the defense"
+Silva,5,Tony Pollard,TEN,HOU,Replacement,Sit,Sharing with Spears on Week 5's lowest team total (TEN 13.8 ppg); pass
+Silva,5,Carnell Tate,TEN,HOU,Average,,15/203 on 21 targets the last two weeks vs underperforming HOU corners; has earned boom-bust WR3 treatment
+Silva,5,Wan'Dale Robinson,TEN,HOU,Replacement,,The only other regular target; hasn't cleared 60 yards in a game
+Silva,5,Joe Burrow,CIN,@MIA,Great,Start,"Likely has Chase and Higgins (both full Friday) vs a MIA D allowing a league-high 78% completion rate; his most efficient start yet. Prediction: Bengals 27, Dolphins 10"
+Silva,5,Chase Brown,CIN,@MIA,Great,Start,19.8 touches/game on 72% snaps; only NO and GB allow more RB points than MIA; a breakthrough week and a screaming buy-low
+Silva,5,Tee Higgins,CIN,@MIA,Great,Start,"7th in catches, 4th in receiving yards; the groin never seemed serious; upside WR2"
+Silva,5,Ja'Marr Chase,CIN,@MIA,Elite,Start,19 of his last 24 targets for 200 yards and 3 TDs before the concussion; no one in MIA's secondary can cover him
+Silva,5,Dohnte Meyers,CIN,@MIA,Replacement,,Explosive CFL product; an intriguing DFS play only if Chase or Higgins sat
+Silva,5,Mike Gesicki,CIN,@MIA,Replacement,,A revenge game; his projection would skyrocket if Chase or Higgins missed
+Silva,5,Malik Willis,MIA,CIN,Replacement,Sit,"Finishes of QB13, QB23, QB25, QB33"
+Silva,5,Ollie Gordon II,MIA,CIN,Replacement,,"Fool's gold: the 53-yard run was fluky, only 10 more snaps than Wright, and MIA claimed Kaytron Allen; TD-or-bust flex on the league's lowest-scoring offense"
+Silva,5,Malik Washington,MIA,CIN,Replacement,,"Leads MIA in targets, catches, yards and first downs by wide margins, but CIN is tough on WRs; unreliable WR4/flex"
+Silva,5,Kirk Cousins,LV,@NE,Great,Start,"Leads the NFL in TD passes (unsustainable 7.6% TD rate) vs a NE D missing both starting outside corners; very streamable QB1. Prediction: Raiders 27, Patriots 23"
+Silva,5,Mike Washington Jr.,LV,@NE,Average,Start,"If Jeanty sits, takes over as the lead back with 4.33 speed (24/120/1 so far) vs a NE D allowing 4.5 YPC to RBs; locked-and-loaded upside RB2"
+Silva,5,Ashton Jeanty,LV,@NE,,,"Ankle, questionable and likely to miss"
+Silva,5,Brock Bowers,LV,@NE,Elite,Start,"NE plans to move 5-foot-8 slot CB Marcus Jones outside, a massive mismatch; fantasy's top TE1 play this week"
+Silva,5,Michael Mayer,LV,@NE,Average,Start,85% of snaps as the every-down TE with Bowers playing WR; a quality if low-end TE1
+Silva,5,Tre Tucker,LV,@NE,Replacement,,Effectively the No. 2 WR and No. 4 option; always a deep threat; boom-bust WR4/flex
+Silva,5,Drake Maye,NE,LV,Great,Start,"LV ranks 2nd in pressure rate and NE's LT is struggling, but Maye's dual-threat skills make him a QB1 in a game that could get high-scoring"
+Silva,5,Rhamondre Stevenson,NE,LV,Replacement,,"Expected to play through the knee, likely restoring a near 50/50 split; ho-hum flex"
+Silva,5,TreVeyon Henderson,NE,LV,Replacement,,Near 50/50 committee with Stevenson; ho-hum flex
+Silva,5,Romeo Doubs,NE,LV,Average,Start,12 of 17 for 203 yards and 2 TDs over the last three weeks and the stand-in No. 1 with Hollins out; at worst an enticing WR3
+Silva,5,Demario Douglas,NE,LV,Replacement,Sit,Part of an annoying four-man rotation behind Doubs
+Silva,5,Hunter Henry,NE,LV,Replacement,,No TD in seven straight games; TD-or-bust TE2
+Silva,5,Kyler Murray,MIN,@NO,Replacement,Sit,"Shaky and barely running; without LT Darrisaw and LG Jackson; the Saints D/ST is a realistic streamer. Prediction: Saints 17, Vikings 16"
+Silva,5,Aaron Jones,MIN,@NO,Average,Start,22-24 touches the last three weeks on 73-81% snaps; no defense has allowed more RB points than NO; upside RB2
+Silva,5,Justin Jefferson,MIN,@NO,Elite,Start,An eruption candidate in his return; a Louisiana native and LSU alum playing in the Superdome
+Silva,5,Jordan Addison,MIN,@NO,Replacement,,Jefferson's return plus a hamstring pull make him a low-floor WR4/flex
+Silva,5,T.J. Hockenson,MIN,@NO,Replacement,,Don't expect a repeat with Jefferson back; still fringe TE1/2 vs a NO D allowing the 5th-most TE yards
+Silva,5,Tyler Shough,NO,MIN,Replacement,Sit,"MIN's D leads the NFL in pressure rate and sacks with league lows in completion rate and passer rating; even as a Shough fan, going with streamers"
+Silva,5,Alvin Kamara,NO,MIN,Replacement,,The fantasy case is purely depth chart with Etienne on IR; a desperate flex in a tough draw
+Silva,5,Chris Olave,NO,MIN,Elite,Start,"First in targets, second in catches and receiving yards; matchup-agnostic WR1"
+Silva,5,Devaughn Vele,NO,MIN,Replacement,,A rock-solid possession receiver who hasn't reached 70 yards; low-ceiling WR3/flex
+Silva,5,Juwan Johnson,NO,MIN,Replacement,Sit,Unusually down on him: Flores' blitz scheme forces TEs to stay in and block
+Silva,5,Deshaun Watson,CLE,@NYJ,Replacement,Sit,"Rain and wind likely and only MIN has allowed fewer QB points than NYJ. Prediction: Jets 21, Browns 20"
+Silva,5,Quinshon Judkins,CLE,@NYJ,Average,Start,Touches up 17 > 20 > 23 with 4.7 targets/game vs a NYJ front allowing the 4th-most RB points; underrated RB2
+Silva,5,KC Concepcion,CLE,@NYJ,Average,Start,9 and 8 targets on 86-92% snaps the last two weeks; a high-volume every-down player
+Silva,5,Harold Fannin Jr.,CLE,@NYJ,Great,Start,86% of snaps in a chain-moving role; top-10 TE1 the last three weeks
+Silva,5,Denzel Boston,CLE,@NYJ,Average,,"11th in receiving yards and every-week WR3 consideration, but a 17.5 aDOT is hurt by rain and wind"
+Silva,5,Geno Smith,NYJ,CLE,Replacement,Sit,"CLE is without DTs Graham and Hall, but weather and his production keep him out of streamer talk"
+Silva,5,Braelon Allen,NYJ,CLE,Average,Start,"100% of RB touches last week with Hall out; CLE has allowed zero RB TDs, bound to regress; confident RB2 (bet his anytime TD)"
+Silva,5,Garrett Wilson,NYJ,CLE,Great,Start,CLE plays man and single-high at the NFL's highest rate; a rock-solid WR2
+Silva,5,Kenyon Sadiq,NYJ,CLE,Replacement,,"Mason Taylor's return may cut his usage, but CLE allows the 8th-most TE catches; low-floor fringe TE1/2"
+Silva,5,Isaiah Williams,NYJ,CLE,Replacement,Sit,Three targets or fewer in three of four games
+Silva,5,Daniel Jones,IND,@PIT,Replacement,Sit,"Severe rest disadvantage after London, uncomfortable post-Achilles and likely without C Bortolini; teeing up the PIT D/ST. Prediction: Steelers 24, Colts 20"
+Silva,5,Jonathan Taylor,IND,@PIT,Elite,Start,"The centerpiece every week (24 touches, 105.5 yards/game) vs a Harmon-less PIT D allowing the 8th-most RB points"
+Silva,5,Josh Downs,IND,@PIT,Average,Start,"Leads IND in targets, yards and first-down catches and benefits if IND trails; rock-solid PPR WR3"
+Silva,5,Tyler Warren,IND,@PIT,Great,Start,"4th among TEs in targets, 2nd in catches; top-10 TE1 on volume despite a 1.7 aDOT"
+Silva,5,Keenan Allen,IND,@PIT,Replacement,Sit,Already looking washed and returning from a groin injury
+Silva,5,Aaron Rodgers,PIT,IND,Replacement,,QB16 so far; a 2QB start vs an IND D that gives clean pockets and allows 8.1 YPA
+Silva,5,Jaylen Warren,PIT,IND,Average,Start,4th in YPC and receiving yards among RBs; superior to the returning Dowdle; high-end RB2 in a plus draw
+Silva,5,Rico Dowdle,PIT,IND,Replacement,Sit,Back from his toe injury but best suited for breather duties
+Silva,5,DK Metcalf,PIT,IND,Great,Start,Set up to smash: Gardner is struggling vs vertical routes and IND allows the 7th-most WR yards
+Silva,5,Roman Wilson,PIT,IND,Replacement,,Pittman out indefinitely; Rodgers' preferred target between Wilson and Bernard; WR4/flex viable
+Silva,5,Pat Freiermuth,PIT,IND,Replacement,,4-5 targets every week; a TD-reliant TE1/2 streamer
+Silva,5,Darnell Washington,PIT,IND,Replacement,Sit,2-5 targets a week; hardly a reliable fantasy factor
+Silva,5,Michael Pittman Jr.,PIT,IND,Replacement,Sit,Out indefinitely (foot); a drop in 12-team leagues
+Silva,5,Jameis Winston,NYG,@WAS,Replacement,,"NYG wants run-heavy keepaway; boom-bust QB2 whose outlook drops if Nabers sits. Prediction: Commanders 23, Giants 21"
+Silva,5,Cam Skattebo,NYG,@WAS,Average,Start,"Touches of 18, 16, 23, 19 with Harris fumbling and Singletary scratched; a surefire RB2"
+Silva,5,Isaiah Likely,NYG,@WAS,Great,Start,Leads Winston's targets (26); a sneaky eruption candidate with Nabers less than 100%
+Silva,5,Malik Nabers,NYG,@WAS,Great,Start,"Subluxed shoulder and knee soreness, but too talented in too good a matchup to sit if active"
+Silva,5,Malachi Fields,NYG,@WAS,Replacement,,Hasn't topped 52 yards; would get a bump if Nabers sat
+Silva,5,Jayden Daniels,WAS,NYG,Great,Start,"Back from the elbow with RG Cosmi back too, vs a NYG D with league-low sacks and pressure; boom-bust QB1"
+Silva,5,Jacory Croskey-Merritt,WAS,NYG,Replacement,Sit,WAS used four backs last week; an obvious backfield to avoid
+Silva,5,Austin Ekeler,WAS,NYG,Replacement,Sit,Part of a value-draining four-back rotation
+Silva,5,Antonio Williams,WAS,NYG,Average,,Led WAS wideouts in playing time without McLaurin and drew 8 targets; a potential breakout with Diggs likely out
+Silva,5,Terry McLaurin,WAS,NYG,Average,,Should play with Daniels back; atop Silva's guessed WR hierarchy
+Silva,5,Chig Okonkwo,WAS,NYG,Replacement,,"58% snaps in his return, likely ticking up; NYG allows the 6th-most TE catches; TE1/2 sleeper if a WR sits"
+Silva,5,Stefon Diggs,WAS,NYG,Replacement,Sit,Unlikely to play (hamstring)
+Silva,5,Bo Nix,DEN,@LAC,Replacement,,"QB20 and a checkdown machine (4.6 aDOT last week) who's stopped running; Payton retakes play calling. Prediction: Chargers 21, Broncos 20"
+Silva,5,RJ Harvey,DEN,@LAC,Average,,"4th among RBs in catches, but hasn't topped 51% snaps in a fantasy-unfriendly three-way RBBC"
+Silva,5,J.K. Dobbins,DEN,@LAC,Replacement,Sit,Part of a three-way committee
+Silva,5,Jaylen Waddle,DEN,@LAC,Average,Start,"Payton should force-feed the player DEN paid 1st- and 3rd-round picks for, with Bryant out and Sutton unable to separate"
+Silva,5,Courtland Sutton,DEN,@LAC,Replacement,Sit,9 of 22 on Nix's throws; hasn't topped 53 yards in eight straight games
+Silva,5,Evan Engram,DEN,@LAC,Replacement,Sit,Six catches through four games
+Silva,5,Justin Herbert,LAC,DEN,Replacement,Sit,"Without LT Slater and RT Alt, with LG depth gone too; DEN's front should tee off; 3rd-most sacks taken"
+Silva,5,Omarion Hampton,LAC,DEN,Replacement,Sit,"Hampton, Mitchell and Vidal each played exactly 25 snaps and Harbaugh says the committee stays; avoid"
+Silva,5,Keaton Mitchell,LAC,DEN,Replacement,Sit,An even three-way committee; avoid
+Silva,5,Kimani Vidal,LAC,DEN,Replacement,Sit,An even three-way committee; avoid
+Silva,5,Tre Harris,LAC,DEN,Average,Start,Cleared 60 yards in consecutive games; a compelling sleeper vs a DEN back end missing Surtain and maybe Moss
+Silva,5,Ladd McConkey,LAC,DEN,Replacement,,Aggravated the foot and has reached 50% snaps once
+Silva,5,Quentin Johnston,LAC,DEN,Replacement,Sit,Arguably the worst starting receiver in the league
+Silva,5,Oronde Gadsden II,LAC,DEN,Replacement,Sit,Kolar's return to practice bodes poorly for his playing time
+Silva,5,Jared Goff,DET,@ARI,Elite,Start,"2nd in passing yards and 3rd in TD passes with clean pockets vs an ARI D allowing the 2nd-highest passer rating; 54.5 total. Prediction: Lions 35, Cardinals 24"
+Silva,5,Jahmyr Gibbs,DET,@ARI,Elite,Start,Defies matchups; leads the NFL in touches and all-purpose TDs
+Silva,5,Amon-Ra St. Brown,DET,@ARI,Elite,Start,"Used like JSN; WRs have feasted on ARI (JSN 9/155/3, Nabers 6/112/1)"
+Silva,5,Sam LaPorta,DET,@ARI,Elite,Start,A shoo-in top-six TE1; Kittle (6/82/2) and Likely (7/66/0) produced vs ARI
+Silva,5,Jameson Williams,DET,@ARI,Great,Start,"ARI allows the 9th-most 20+ yard catches, his bread and butter; every-week WR2"
+Silva,5,Isaac TeSlaa,DET,@ARI,Replacement,,"68% snaps, 5.3 targets and 62.3 yards over the last three; WR4/flex for bye weeks with contingent value"
+Silva,5,Jacoby Brissett,ARI,DET,Average,Start,"Lost LT Paris Johnson and RG Adams, but DET ranks last in EPA/drive, success rate and explosive plays allowed; riding him as a starter"
+Silva,5,Jeremiyah Love,ARI,DET,Average,Start,Expect him to lead the backfield unless ARI falls far behind; DET is last in rushing success rate allowed
+Silva,5,Trey McBride,ARI,DET,Elite,Start,Every-week starter in an incredibly favorable spot
+Silva,5,Michael Wilson,ARI,DET,Great,Start,Joined McBride as an every-week starter as ARI's tree condenses
+Silva,5,Kendrick Bourne,ARI,DET,Replacement,,Takes over in two-WR sets if Harrison is traded; could have useful weeks later
+Silva,5,Marvin Harrison Jr.,ARI,DET,Replacement,Sit,Being shopped ahead of the deadline
+Silva,5,Brock Purdy,SF,@SEA,Average,,"SF scored 6, 3, 17, 17, 36 vs Macdonald's Seattle and lost FB Juszczyk; downgraded to fringe QB1/2. Prediction: Seahawks 27, 49ers 17"
+Silva,5,Christian McCaffrey,SF,@SEA,Elite,Start,Expects the near-full CMC experience given the opponent; SEA allows the 4th-most RB receptions
+Silva,5,Mike Evans,SF,@SEA,Average,,"17 of 24 for 213 and 2 TDs from Purdy, 16 of 17 catches for first downs; temper expectations vs a SEA D allowing the 2nd-fewest WR points"
+Silva,5,George Kittle,SF,@SEA,Elite,Start,Matchup-agnostic top-five TE1
+Silva,5,Deebo Samuel,SF,@SEA,Replacement,,"7, 4, 2, 8 touches, but enough red-zone calls to be a TD-reliant WR3/flex"
+Silva,5,Sam Darnold,SEA,SF,Average,Start,SF has the 5th-lowest pressure rate and no Bosa; thinks Darnold can outplay Purdy
+Silva,5,Emanuel Wilson,SEA,SF,Average,Start,"24 touches on 60% snaps, well ahead of Holani, and 8th in carries inside the 10; RBs average 143.5 scrimmage yards vs SF; upside RB2"
+Silva,5,Jaxon Smith-Njigba,SEA,SF,Elite,Start,The lone fantasy-playable Seahawk and always a top-three WR1; can go off here
+Silva,5,Tyler Huntley,BAL,@ATL,Replacement,,"ATL pressures 43% of dropbacks without blitzing; 16 carries in two games last year give a desperate floor. Prediction: Falcons 24, Ravens 20"
+Silva,5,Derrick Henry,BAL,@ATL,Average,Start,39/90 since BAL lost its backup C; ATL allows the lowest rate of 10+ yard runs; start for volume with a doubtful ceiling
+Silva,5,Zay Flowers,BAL,@ATL,Great,Start,Targeted on 33% of Huntley's passes; ATL allows 10.4 weekly targets to WR1s; a matchup-based top-12 play
+Silva,5,Mark Andrews,BAL,@ATL,Replacement,,Season-high 73% route share and Smythe's Achilles tear opens more snaps; ATL has allowed a TE1 score in three of four; viable streamer
+Silva,5,Devontez Walker,BAL,@ATL,Replacement,,Out-routed Bateman from 2-WR sets; cheap showdown points
+Silva,5,Bijan Robinson,ATL,BAL,Elite,Start,ATL's outside zone runs vs a BAL D that allows the 2nd-highest rate of explosive gains on them
+Silva,5,Brian Robinson Jr.,ATL,BAL,Replacement,,Far more game-script-dependent than Bijan; volatile RB3
+Silva,5,Michael Penix Jr.,ATL,BAL,Replacement,,Sharing plays from the back seat in the league's most run-heavy offense
+Silva,5,Drake London,ATL,BAL,Elite,Start,Leads the NFL in target share (36.7%) and YPRR (6.9) since Penix took over; BAL allows 108 yards/game to WR1s
+Silva,5,Jahan Dotson,ATL,BAL,Replacement,,De facto WR2 with a 16.8 aDOT; live in showdown
+Silva,5,Kyle Pitts,ATL,BAL,Replacement,Sit,BAL has yet to allow a TE1 score; a foolhardy streamer
+Silva,5,Josh Allen,BUF,@LA,Elite,Start,"Posted the century's best QB fantasy game the last time he faced Shula at SoFi; LA has been beatable. Prediction: Rams 38, Bills 35"
+Silva,5,James Cook,BUF,@LA,Average,Start,"Start him everywhere, but back-to-back season-low touch shares and Ty Johnson has the better route share; questionable ceiling vs a stout LA run D"
+Silva,5,Keon Coleman,BUF,@LA,Replacement,,"30.4% target share without Moore, but vs softer outside matchups; flex-able if Moore is out"
+Silva,5,Dalton Kincaid,BUF,@LA,Average,Start,Brady blamed himself for Kincaid's low routes; expects the pendulum to swing back toward him
+Silva,5,Khalil Shakir,BUF,@LA,Average,,5.4 aDOT gives a voluminous WR3 floor
+Silva,5,Josh Palmer,BUF,@LA,Replacement,,Ran a route on 88% of dropbacks in the second half without Moore; Monday salary relief
+Silva,5,Matthew Stafford,LA,BUF,Great,Start,BUF's secondary has allowed the 6th-most points per dropback; an easy top-12 play
+Silva,5,Kyren Williams,LA,BUF,Elite,Start,Committee reps are gone (81% and 75% of backfield touches) and BUF leaks 7.5 targets/game to RBs; don't overthink him
+Silva,5,Blake Corum,LA,BUF,Replacement,Sit,Muted behind Kyren
+Silva,5,Puka Nacua,LA,BUF,Elite,Start,Targeted on 30% of routes when healthy vs a BUF D that gives WR1s double-digit targets
+Silva,5,Davante Adams,LA,BUF,Average,,"Only 5.6 and 7.2 PPR with Puka active, but multiple scores in range in a punch-for-punch game"
+Silva,5,Tyler Higbee,LA,BUF,Replacement,Sit,Parkinson's return could take his routes; BUF holds TEs to the fewest yards per target
