@@ -145,8 +145,10 @@ def schedule():
     sched = sched[sched.game_type == 'REG'].copy()
     for c in ['home_team', 'away_team']: sched[c] = sched[c].replace(TEAM_FIX)
     season = int(sched[sched.result.notna()].season.max())
-    # a week counts as played once every game in it is; a Thursday opener doesn't move it
-    done = sched[sched.season == season].groupby('week').result.apply(lambda r: r.notna().all())
+    # a week counts as played once every game in it is, except a Monday night game, so the page can
+    # turn over on Monday (the Tuesday run picks that game up); a Thursday opener doesn't move it
+    s = sched[sched.season == season]
+    done = s[s.weekday != 'Monday'].groupby('week').result.apply(lambda r: r.notna().all())
     through = int(done[done].index.max()) if done.any() else 0
     return sched, season, through
 
@@ -358,6 +360,10 @@ def main():
             if pos == 'QB': mean16['db'] = round(float(l16.dropbacks.mean()), 1)
             last = h.iloc[-1].to_dict()
             lastrole = {**role(last, pos), **rec(last)}
+            if pos in ('WR', 'TE'):           # an export not yet out for his latest game: his latest that has one
+                for k in ('route', 'fr'):
+                    if lastrole.get(k) is None:
+                        lastrole[k] = next((x[k] for x in reversed(vals) if x[k] is not None), None)
             l16role = {**role(l16[sums].fillna(0).sum().to_dict(), pos), **mean16}
             x = {'fp16': float(l16.fp.mean()), 'xfp16': float(x16.mean()) if len(x16) else None,
                  'fp4': float(h.tail(4).fp.mean()), 'xfp4': float(h.tail(4).xfp.dropna().mean()) if h.tail(4).xfp.notna().any() else None,
