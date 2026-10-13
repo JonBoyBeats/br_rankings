@@ -120,6 +120,7 @@ FPD_DIR = os.path.join(os.path.dirname(OUT), 'fpd')
 FPD_TEAM = {'ARZ': 'ARI', 'BLT': 'BAL', 'CLV': 'CLE', 'HST': 'HOU'}
 SCORE = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'score_model.json')))
 PROD, MATCH = {'xfp16', 'xfp4', 'fp16', 'fp4', 'poe1'}, {'opp_allowed', 'imp_tot', 'spread'}
+CEIL_PCT = 80
 SCORE_RANKS = {'QB': [3, 6, 12], 'RB': [6, 12, 24], 'WR': [8, 18, 36], 'TE': [3, 6, 12]}
 MATCHUP_TIERS = [(6, 'Elite'), (12, 'Great'), (24, 'Average'), (32, 'Tough')]
 TEAM_FIX = {'OAK': 'LV', 'SD': 'LAC', 'STL': 'LA', 'LAR': 'LA', 'JAC': 'JAX', 'WSH': 'WAS', 'LVR': 'LV'}
@@ -443,6 +444,9 @@ def main():
         off = {k: float(np.interp(nxt, q[:, 0], q[:, i] - q[:, 0])) for i, k in ((1, 'p50'), (2, 'p80'), (3, 'p85'))}
         r['score'] = {'next': round(nxt, 1), 'next3': round(n3, 1), **{k: round(max(0.0, nxt + v), 1) for k, v in off.items()},
                       'parts': {k: round(v, 1) for k, v in parts.items()}}
+        # the number the pages print: a quarter median, three quarters ceiling, the board's own
+        # projection blend; ETR's ceilings line up with our 80th percentile, so that's the ceiling
+        r['score']['blend'] = round(.25 * r['score']['p50'] + .75 * r['score'][f'p{CEIL_PCT}'], 1)
         if x_all is not None: r['score']['inj_blend'] = True
     for pos in POSITIONS:
         ranked = sorted((r for r in rows if r['pos'] == pos and 'score' in r), key=lambda r: -r['score']['next'])

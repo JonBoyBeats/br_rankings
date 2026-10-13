@@ -2170,8 +2170,10 @@ function scoreCell(p) {
   var b = document.createElement("b");
   var thin = w.games < 4;
   b.className = "t" + w.s.tier + (thin ? " thin" : "");
-  b.textContent = String(Math.round(w.s.next));
-  b.title = "Workload score: expected " + w.s.next.toFixed(1) + " half-PPR in Week " + w.week + " · " + w.pos + w.s.rank +
+  var bl = w.s.blend != null ? w.s.blend : 0.25 * w.s.p50 + 0.75 * w.s.p80;
+  b.textContent = String(Math.round(bl));
+  b.title = "Workload score " + Math.round(bl) + " in Week " + w.week + " (25% median + 75% ceiling; expected " + w.s.next.toFixed(1) + " half-PPR) · " + w.pos + w.s.rank +
+    " · role " + (w.s.parts.role >= 0 ? "+" : "") + w.s.parts.role.toFixed(1) + ", matchup " + (w.s.parts.matchup >= 0 ? "+" : "") + w.s.parts.matchup.toFixed(1) +
     (thin ? " · only " + w.games + " game" + (w.games === 1 ? "" : "s") + " of data" : "");
   c.appendChild(b);
   return c;
