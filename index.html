@@ -604,7 +604,8 @@
       <span class="r">#</span>
       <span>Player</span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
-      <span style="text-align:center" id="scoreHead" title="Workload score from the Analysis page: expected half-PPR next game">Score</span>
+      <span style="text-align:center"><button type="button" data-sort="score" id="scoreHead"
+        title="Workload score from the Analysis page: expected half-PPR next game">Score</button></span>
       <span class="r own-col"><button type="button" data-sort="own"
         title="Share of drafts the projection file expects this player to appear in">Own</button></span>
       <span class="r"><button type="button" data-sort="proj"
@@ -1590,6 +1591,7 @@ var K = {
   synced: function (label) { return "brr:synced:" + label; },        // saved_at of the gist entry last pushed or pulled
   syncedSig: function (label) { return "brr:syncsig:" + label; },    // the board as it stood right after that sync
   slate: "brr:slate",
+  tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
   gist: "brr:gh:gist",
   device: "brr:device"
@@ -1629,6 +1631,7 @@ var state = {
   projMeta: null,      // {file, format, matchedById, matchedByName, missing, boardTotal, at}
   nameMaps: { nfl: {}, cfb: {} },
   view: "order",
+  tailSort: "proj",    // proj | score | vorp: what sorts the players below the line
   search: "",
   position: "ALL"
 };
@@ -1805,11 +1808,21 @@ function addFromPool(players, restore) {
   return fresh.length;
 }
 
+/* The numbers the tail sorts by: projection (the default), the score chip, or VORP. */
+function tailValues() {
+  if (state.tailSort === "vorp") return state.vorp;
+  if (state.tailSort !== "score" || !state.slate) return state.proj;
+  var values = {};
+  state.slate.players.forEach(function (p) { var v = scoreValueFor(p); if (v != null) values[p.player_id] = v; });
+  return values;
+}
+var TAIL_NAMES = { proj: "projection", score: "score", vorp: "VORP" };
+
 /* The tail is sorted, not ranked, so every new projection re-orders it in place. */
 function sortBelowLine() {
   if (!state.slate || state.cut == null) return;
   var byPid = byPidMap(state.slate);
-  var next = resortTail(state.order, state.cut, byPid, state.proj);
+  var next = resortTail(state.order, state.cut, byPid, tailValues());
   if (next.join() === state.order.join()) return;
   state.order = next;
   save(K.order(state.slate.label), state.order);
@@ -1836,8 +1849,8 @@ function applyStoredProjections() {
   state.hasOwn = Object.keys(joined.parts).some(function (k) {
     return typeof joined.parts[k].own === "number";
   });
-  sortBelowLine();
   recomputeVorp();
+  sortBelowLine();
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
     prevFile: store.previous ? store.previous.file : null,
@@ -2699,7 +2712,7 @@ function applyBuilder(metric) {
     if (!Object.keys(values).length) { setStatus("No Workload scores for this slate yet, so there's nothing to seed from.", "warn"); return; }
   }
   var built = buildBlockOrder(state.slate.players, metric === "score" ? "proj" : metric, values, BUILDER_CAPS);
-  state.order = built.order;
+  state.order = resortTail(built.order, built.curatedCount, byPidMap(state.slate), tailValues());
   state.cut = built.curatedCount;
   state.newIds = {};
   state.liftedPid = null;
@@ -2713,7 +2726,7 @@ function applyBuilder(metric) {
   setStatus("Seeded your order by " + (metric === "proj" ? "projection" : metric === "score" ? "score" : "ADP") + ": " + shape +
             " on top, so the line sits at " + built.curatedCount + ". The " +
             (state.order.length - built.curatedCount) + " below it sort themselves by " +
-            "projection and only those above it are exported. Nothing was dropped.");
+            TAIL_NAMES[state.tailSort] + " and only those above it are exported. Nothing was dropped.");
 }
 
 // ---------------------------------------------------------------- drag
@@ -2813,7 +2826,7 @@ function jumpLifted(kind) {
     ? rankAtPosition(state.order, state.cut, pid, function (id) { return byPid[id] && byPid[id].position; })
     : dropBelowLine(state.order, state.cut, pid);
   if (!res) return;
-  state.order = resortTail(res.order, res.cut, byPid, state.proj);
+  state.order = resortTail(res.order, res.cut, byPid, tailValues());
   state.cut = res.cut;
   delete state.newIds[pid];
   saveBoard();
@@ -2839,7 +2852,7 @@ function syncCutField() {
 function setCut(next) {
   var at = clampCut(next, state.order.length);
   state.cut = at;
-  if (at != null) state.order = resortTail(state.order, at, byPidMap(state.slate), state.proj);
+  if (at != null) state.order = resortTail(state.order, at, byPidMap(state.slate), tailValues());
   saveBoard();
   render();
 }
@@ -3010,6 +3023,7 @@ function renderVorpPanel() {
       win[pos] = v;
       save(K.vorpWin(state.slate.label), stored);
       recomputeVorp();
+      sortBelowLine();
       render();
       surfaceUnpriced();
       VORP_POSITIONS.forEach(function (k) { if (painters[k]) painters[k](); });
@@ -3045,6 +3059,7 @@ function applyAutoWindows() {
   got.forEach(function (pos) { stored[pos] = auto[pos]; });
   save(K.vorpWin(state.slate.label), stored);
   recomputeVorp();
+  sortBelowLine();
   render();
   renderVorpPanel();
   surfaceUnpriced();          // the bar just moved, so re-check who clears it
@@ -3068,6 +3083,7 @@ function resetVorpWindows() {
               "Flex is the combined RB and WR pool, so its ranks run deeper.");
   try { localStorage.removeItem(K.vorpWin(state.slate.label)); } catch (e) { /* ignore */ }
   recomputeVorp();
+  sortBelowLine();
   render();
   renderVorpPanel();
 }
@@ -3713,7 +3729,17 @@ $("pasteBox").addEventListener("paste", function () {
 });
 Array.prototype.forEach.call(document.querySelectorAll(".head button[data-sort]"), function (b) {
   b.addEventListener("click", function () {
-    state.view = state.view === b.dataset.sort ? "order" : b.dataset.sort;
+    var k = b.dataset.sort;
+    if (TAIL_NAMES[k]) {                 // Score, Proj, VORP: sort the players below the line
+      state.tailSort = k;
+      save(K.tailSort, k);
+      state.view = "order";
+      sortBelowLine();
+      setStatus(state.cut == null ? "Set a line and the players below it will sort by " + TAIL_NAMES[k] + "."
+                                  : "Below the line now sorts by " + TAIL_NAMES[k] + ".");
+    } else {
+      state.view = state.view === k ? "order" : k;
+    }
     $("view").value = state.view;
     syncSortHeads();
     render();
@@ -3721,7 +3747,8 @@ Array.prototype.forEach.call(document.querySelectorAll(".head button[data-sort]"
 });
 function syncSortHeads() {
   Array.prototype.forEach.call(document.querySelectorAll(".head button[data-sort]"), function (b) {
-    b.setAttribute("aria-sort", String(state.view === b.dataset.sort));
+    var k = b.dataset.sort;
+    b.setAttribute("aria-sort", String(state.view === k || (state.view === "order" && state.tailSort === k)));
   });
 }
 
@@ -3767,8 +3794,8 @@ function bootFailed(where, err) {
   try {
     await loadNameMaps();
     state.data = await loadMirror();
-    loadWorkload().then(function () { if (state.slate) render(); });
-    loadCfb().then(function () { if (state.slate && state.slate.sport === "cfb") render(); });
+    loadWorkload().then(function () { if (state.slate) { sortBelowLine(); render(); } });
+    loadCfb().then(function () { if (state.slate && state.slate.sport === "cfb") { sortBelowLine(); render(); } });
   } catch (err) {
     bootFailed("Could not load the ADP mirror", err);
     setStatus("The board could not reach " + MIRROR + "latest.json.", "bad");
@@ -3783,6 +3810,8 @@ function bootFailed(where, err) {
     return;
   }
   try {
+    var ts = load(K.tailSort, "proj");
+    if (TAIL_NAMES[ts]) state.tailSort = ts;
     fillSlatePicker();
     syncSortHeads();
     selectSlate(Number($("slate").value));
