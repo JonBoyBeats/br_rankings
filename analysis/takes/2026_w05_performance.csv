@@ -101,3 +101,86 @@ Gretch,5,Tucker Kraft,GB,Receiving TE,Average,→,,5-5-64 on 26 air yds,"Still s
 Gretch,5,Colston Loveland,CHI,Receiving TE,Replacement,↓,,5-2-19,"Such a bummer, but should turn for the better at some point."
 Gretch,5,Rome Odunze,CHI,Starter,Average,→,,"9 tgt, 101 air yds",Had the most receiving volume in a rough offense.
 Gretch,5,Tyson Bagent,CHI,Starter,,↓,,2 INTs; Keenum took over in the 4th,"CHI needs Caleb Williams back, which seems likely this week."
+ETR,5,Bucky Irving,TB,Workhorse,Great,↑,,21 of 30 RB carries for 165 yds; 5-yd rec TD and 2-yd rush TD,Got goal-line work a week after Tucker's; not drawing dead for short yardage. RBs drew 7 of Daniels' 25 targets.
+ETR,5,Sean Tucker,TB,Short-yardage,Replacement,↓,,Irving handled the goal-line chances,Short-yardage work may vary week to week.
+ETR,5,Jake Ferguson,DAL,Receiving TE,Average,↑,,"83% snaps, 31 routes/42 db (season highs)","Watch whether the role drops after multiple drops, including one that cost DAL late."
+ETR,5,Javonte Williams,DAL,Workhorse,Great,↑,,"85% snaps (season high), 12 of 13 RB carries; Goodson 3 snaps",A full workload in negative script.
+ETR,5,Dallas Goedert,PHI,Receiving TE,Average,↑,,"69% snaps, 29 routes/43 db, 9 tgt (22.5%), 38 yds",Volume should be solid even in an awful passing game; Ertz ran 5 routes.
+ETR,5,Will Shipley,PHI,Committee,Replacement,↓,,"Started, scored early, left in the first half",His injury could open the pass-down role for Saquon when he's back.
+ETR,5,Dameon Pierce,PHI,Committee,Replacement,↑,,"Full workload after Shipley left: 11-14, 24 routes/43 db, 5 tgt (2 for -2)",Expect a big workload in Week 6 if Saquon and Shipley both miss.
+ETR,5,Bhayshul Tuten,JAX,Lead,Great,↑,,22 of 24 RB carries; 3 tgt on 39 att; Allen 11 of 13 3rd downs,"Clearly separated as the lead runner, though C-Rod still gets up-the-gut GL carries; every-week starter."
+ETR,5,Chris Rodriguez Jr.,JAX,Short-yardage,Replacement,→,,A goal-line carry; nearly another on a direct snap,JAX still prefers him on up-the-gut goal-line runs.
+ETR,5,Aaron Jones,MIN,Workhorse,Elite,→,,"87% snaps, all 25 RB carries, 27 routes/39 db, 3 tgt","A dominant role in his final game without Mason, who returns after the Week 6 bye."
+ETR,5,Justin Jefferson,MIN,Alpha,Elite,↑,,"89% snaps, 38 routes/39 db; 7-6-79 (team highs)",A full role in his return.
+ETR,5,Tai Felton,MIN,Rotational,Replacement,→,,Out-routed Myles Price 34-9,The clear outside WR3.
+ETR,5,Gavin Bartholomew,MIN,Part-time,Replacement,↑,,"Out-routed Yurosek 25-11, 6 tgt",The clear TE1 with Hockenson concussed early.
+ETR,5,Juwan Johnson,NO,Receiving TE,Average,↓,,Fant out-snapped him 30-29 (Johnson led routes 18-9),Not a three-down role with Fant healthy; a sell candidate with Jordyn Tyson's return coming.
+ETR,5,Kendre Miller,NO,Committee,Replacement,↑,,"Out-snapped Kamara 14-12, out-carried him 10-3; 10-30-1",Unclear if it's Kamara's ineffectiveness or his back injury; watch the injury report.
+ETR,5,Alvin Kamara,NO,Committee,Replacement,↓,,"12 snaps, 3 carries; limited all week (back)",Has struggled with efficiency; an illness also went through the team.
+ETR,5,CJ Donaldson,NO,Passing-down,Replacement,→,,"19 snaps (backfield high), 4 carries (season high)",Mainly a long-down-and-distance option.
+ETR,5,Kayshon Boutte,HOU,Starter,Replacement,↓,,"19 routes/36 db (52.8%, season low)",Hutchinson blocks better; shows his floor in positive script.
+ETR,5,Dalton Schultz,HOU,Receiving TE,Replacement,↓,,52% snaps,HOU often pulls him in 12 personnel; shows his floor in positive script.
+ETR,5,Woody Marks,HOU,Workhorse,Great,↑,,"Out-snapped Ogunbowale 56-1, 27 routes/36 db, all 19 non-Montgomery RB opps",A full workhorse after Montgomery left; viable on volume vs JAX if Montgomery misses.
+ETR,5,David Montgomery,HOU,Committee,,↓,,Left after nine snaps,Injured.
+ETR,5,Calvin Ridley,TEN,Rotational,Replacement,→,,Out-snapped Ayomanor 35-33,Neither is relevant in this passing offense.
+ETR,5,D'Andre Swift,CHI,Lead,Average,↑,,75.6% snaps through three quarters (69% max in Wks 1-4); 9-43-1,Not a total workhorse without Monangai; Roschon Johnson played non-negligible snaps.
+ETR,5,Roschon Johnson,CHI,Committee,Replacement,→,,"5-6 rushing; 7 tgt, 6 on the final two drives",Padded his numbers in garbage time.
+ETR,5,Pierre Strong,GB,Passing-down,Replacement,↑,,"7 of 10 3rd downs, all 2-minute snaps; out-routed Lloyd 15-10, out-targeted him 4-2",The pass-down back without Brooks.
+ETR,5,MarShawn Lloyd,GB,Committee,Average,↑,,"Out-snapped Strong only 27-25; 10 carries, 2 TD",The early-down back in a two-man backfield.
+ETR,5,Kaleb Johnson,GB,Committee,Replacement,↓,,"7-26, all in the 4th quarter",Appears buried after his goal-line fumble.
+ETR,5,Bo Melton,GB,Rotational,Replacement,↑,,"Out-routed Sturdivant 17-5, 4 tgt",The WR3 after Skyy Moore left early.
+ETR,5,Ollie Gordon II,MIA,Lead,Great,↑,,"65% snaps, 18 of 24 RB carries, 20 routes/34 db, 0 tgt",Has clearly earned the RB1 role in a brutal fantasy environment.
+ETR,5,Jaylen Wright,MIA,Committee,Replacement,↓,,9 snaps (questionable coming in),Matched by Carlos Washington's 9 snaps.
+ETR,5,Ja'Marr Chase,CIN,Alpha,Elite,→,,"32 routes/33 db, 10 tgt (31.3%); 6-77-1",No limitations after clearing the protocol.
+ETR,5,Tee Higgins,CIN,Alpha,Great,↓,,"69% snaps, 27 routes/33 db; 2-22 on 4 tgt","More limited (groin, neck); should be 100% after the bye."
+ETR,5,Chase Brown,CIN,Lead,Average,↓,,Out-carried by Perine 14-13 (13-39 vs 14-69); lost a fumble,"Given his inefficiency and last year's split, expects Perine involved more than managers want post-bye; heat or the fumble may have been factors."
+ETR,5,Samaje Perine,CIN,Committee,Average,↑,,"14-69, goal-line receiving TD; 3 first-quarter carries","Worked in before Brown's fumble, so not just a reaction to it."
+ETR,5,Ashton Jeanty,LV,Lead,Average,↓,,"53% snaps, 17 routes/40 db, 6 tgt (16.7%), 10 of 15 RB carries",Still the RB1 but less than 100% (plantar fasciitis); Laube on pass downs is a bad sign.
+ETR,5,Dylan Laube,LV,Passing-down,Replacement,↑,,8 of 11 3rd downs; out-carried Washington 4-1,Leapfrogged Washington for backup duties.
+ETR,5,Mike Washington Jr.,LV,Handcuff,Replacement,↓,,1 carry,"Still the handcuff, but his standalone value has seemingly evaporated."
+ETR,5,Cody White,LV,Starter,Replacement,→,,23 routes/40 db; 2-44 on 4 tgt,Filled in for the concussed Nailor.
+ETR,5,Rhamondre Stevenson,NE,Lead,Average,↑,,"71% snaps, 21 routes/38 db, 3 tgt; out-carried Kiner 13-6",A must-start if Henderson (ankle) misses.
+ETR,5,TreVeyon Henderson,NE,Committee,,↓,,Left with an ankle injury,Injured.
+ETR,5,Eli Raridon,NE,Part-time,Replacement,↑,,"57% snaps; out-targeted Henry 5-4, out-gained him 57-44",A legit TE split with Henry.
+ETR,5,Hunter Henry,NE,Receiving TE,Replacement,↓,,"Out-snapped Raridon only 97-87 over two weeks; 23 routes, TD",A legit TE split.
+ETR,5,Romeo Doubs,NE,Full-time,Replacement,↓,,"36 routes/38 db, 1-16 on 3 tgt",Quiet in a full-time role.
+ETR,5,Efton Chism III,NE,Starter,Replacement,↑,,28 routes; 5 rec (tied for team high),Thrust into Hollins' blocking-heavy role.
+ETR,5,Kyle Williams,NE,Rotational,Replacement,↑,,3-3-91-1 on 14 routes,The bright spot; watch for more of a split; A.J. Brown is eligible to return.
+ETR,5,Tim Patrick,NYJ,Starter,Replacement,↑,,"93% snaps, 34 routes/35 db; 2-26",Immediately took the WR2 job over Isaiah Williams off IR.
+ETR,5,Isaiah Williams,NYJ,Slot,Replacement,↓,,"29 routes, 30 of 43 snaps in the slot",Lost the WR2 job to Patrick.
+ETR,5,Braelon Allen,NYJ,Workhorse,Elite,↑,,"86% snaps, 26 routes/35 db; 24-116-1, +33 RYOE; 1/4 for 0 yds receiving",A better role than Breece's normal one; still a starter vs NE if Hall misses.
+ETR,5,Jerry Jeudy,CLE,Full-time,Replacement,→,,39 routes/44 db; 3-19 on 7 tgt,Back full-time with Concepcion concussed.
+ETR,5,Isaiah Bond,CLE,Rotational,Replacement,↑,,37 routes; 3-74 on 7 tgt (team-high yards),Stepped up as the WR3; could push Jeudy.
+ETR,5,KC Concepcion,CLE,Full-time,,↓,,Left early with a concussion,Injured.
+ETR,5,Kenyon Sadiq,NYJ,Part-time,Replacement,↓,,8 first-half snaps (Mason Taylor 15); 2-3 on 8 routes,Left with a concussion; NYJ isn't committed to him as a full-timer yet.
+ETR,5,Josh Downs,IND,Full-time,Average,→,,42 routes/45 db,Back in a full-time role.
+ETR,5,Keenan Allen,IND,Rotational,Replacement,↓,,28 routes,The clear WR3 behind Downs and Treadwell (37 routes).
+ETR,5,Jaylen Warren,PIT,Workhorse,Elite,↑,,"87% snaps, 27 routes/34 db, 15 of 16 RB carries; 15-101-1, 6-87-1",Earned a larger share with Dowdle due back; 2nd in RYOE/att; still a starter vs TB while the split forms.
+ETR,5,Germie Bernard,PIT,Starter,Average,↑,,6-80 on a team-high 9 tgt; playing ahead of Roman Wilson,Worth stashing; the runway is open with Pittman out.
+ETR,5,DK Metcalf,PIT,Alpha,Average,↓,,3-12,Remains the WR1 despite a quiet day.
+ETR,5,Roman Wilson,PIT,Rotational,,↓,,Hurt his hand late in the first half,Already playing behind Bernard.
+ETR,5,Tyrone Tracy Jr.,NYG,Passing-down,Replacement,↑,,Out-snapped Najee Harris 17-16; 3 carries,Continued to play on passing downs.
+ETR,5,Cam Skattebo,NYG,Lead,Average,→,,"63% snaps, 13 of 21 RB carries",The clear RB1.
+ETR,5,Terry McLaurin,WAS,Starter,Average,→,,"58% snaps, 28 routes/37 db, 4 tgt (16%)",Limited in his return; expect him full-go next week.
+ETR,5,Rachaad White,WAS,Passing-down,Replacement,↑,,All 9 3rd-down and all 10 2-minute snaps; 7 carries; out-snapped JCM 37-22,Immediately regained the pass-down role.
+ETR,5,Jacory Croskey-Merritt,WAS,Lead,Average,↑,,"11-82, the lead early-down back",Likely strengthened his early-down grip.
+ETR,5,Austin Ekeler,WAS,Committee,Replacement,↓,,6 snaps,Buried behind White.
+ETR,5,Jayden Daniels,WAS,Starter,,↑,,"9-103-2 rushing, 18.9% scramble rate",Ran freely despite a bulky elbow brace; the elbow still seems precarious.
+ETR,5,Tre Harris,LAC,Alpha,Average,↓,,4 tgt on 10 team attempts before a hamstring injury,Was the clear WR1 until he got hurt.
+ETR,5,Marquez Valdes-Scantling,LAC,Starter,Replacement,↑,,29 routes/33 db,One of the top two LAC WRs by default; what a mess.
+ETR,5,Charlie Kolar,LAC,Receiving TE,Replacement,↑,,"Out-snapped Gadsden 51-39, 4 tgt, 37 yds (team high)",Returned and took the larger TE share.
+ETR,5,Oronde Gadsden II,LAC,Part-time,Replacement,↓,,"25 routes, 1 tgt",Not used full-time even with every relevant WR out.
+ETR,5,Omarion Hampton,LAC,Committee,Replacement,↓,,"Out-carried Mitchell 14-6 but 14-33, 3 routes, 1 tgt","Regained the carries lead, the only good news; a brutal three-way split."
+ETR,5,Kimani Vidal,LAC,Committee,Replacement,↑,,8-57-1 including a 42-yd TD,By far the most effective LAC back.
+ETR,5,Keaton Mitchell,LAC,Committee,Replacement,↓,,"6 carries, 4 tgt",Part of a brutal three-way split.
+ETR,5,Troy Franklin,DEN,Rotational,Replacement,↑,,18 routes/29 db; 2-16,The Pat Bryant replacement.
+ETR,5,Jalen Brooks,ARI,Rotational,Replacement,↑,,"53% snaps, 33 routes/54 db",The primary Harrison replacement.
+ETR,5,Kendrick Bourne,ARI,Starter,Replacement,→,,5-70 on 8 tgt; 33 routes/54 db,Most productive Cardinal but no playing-time uptick without MHJ.
+ETR,5,Elijah Higgins,ARI,Part-time,Replacement,↑,,"53% snaps, 23 routes","ARI went heavier at TE without Harrison, a very Rams-like shift."
+ETR,5,Jeremiyah Love,ARI,Lead,Average,→,,"Out-carried Allgeier 12-3; 11 routes, 1 tgt",Still the clear primary ball carrier.
+ETR,5,Tyler Allgeier,ARI,Passing-down,Replacement,→,,"Out-routed Love 23-11, out-targeted him 2-1",Still the pass-down back.
+ETR,5,Mike Evans,SF,Alpha,Great,↑,,7-113-1 on 10 tgt (34.5%),"Most importantly, made it through the game."
+ETR,5,Brandin Cooks,SF,Rotational,Replacement,↑,,"13 routes, TD after Deebo and Cowing left",Could be SF's WR2 next week.
+ETR,5,Deebo Samuel,SF,Starter,,↓,,Left early (16 routes/34 db),Status to watch this week.
+ETR,5,Rashod Bateman,BAL,Starter,Average,↑,,Out-routed Walker 33-28; 5-62 on 6 tgt (team-high yds),Back to normal after Walker out-routed him in Week 4.
+ETR,5,Devontez Walker,BAL,Rotational,Replacement,→,,28 routes/37 db,Remained the clear WR3 despite Chris Moore's return.
