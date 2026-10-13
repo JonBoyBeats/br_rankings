@@ -508,7 +508,7 @@
       <label class="field">
         <span class="field-label">Seed order</span>
         <span class="pair">
-          <button type="button" id="buildAdp">Builder (ADP)</button>
+          <button type="button" id="buildScore" title="Seed the order from positional blocks, best Workload score first">Builder (Score)</button>
           <button type="button" id="buildProj">Builder (Proj)</button>
         </span>
       </label>
@@ -2160,12 +2160,28 @@ function loadWorkload() {
     .catch(function () { state.workload = {}; });
 }
 
+/** His Workload entry on an NFL slate, or null. */
+function workloadFor(p) {
+  var sport = state.slate && state.slate.sport;
+  return sport === "nfl" && state.workload
+    ? state.workload[boardKey(p.first_name, p.last_name, state.nameMaps.nfl) + "|" + p.position] || null : null;
+}
+
+/** The number the score chip shows: the NFL blend, or the rough college score. */
+function scoreValueFor(p) {
+  if (state.slate && state.slate.sport === "cfb") {
+    var cf = cfbFor(p), v = cf && cf.w && cf.w.m && cf.w.m.score;
+    return typeof v === "number" ? v : null;
+  }
+  var w = workloadFor(p);
+  if (!w) return null;
+  return w.s.blend != null ? w.s.blend : 0.25 * w.s.p50 + 0.75 * w.s.p80;
+}
+
 function scoreCell(p) {
   var c = document.createElement("span");
   c.className = "num score";
-  var sport = state.slate && state.slate.sport;
-  var w = sport === "nfl" && state.workload
-    ? state.workload[boardKey(p.first_name, p.last_name, state.nameMaps.nfl) + "|" + p.position] : null;
+  var w = workloadFor(p);
   if (!w) return c;
   var b = document.createElement("b");
   var thin = w.games < 4;
@@ -2676,7 +2692,13 @@ function applyBuilder(metric) {
       !window.confirm("This replaces your current order for " + slateLabel(state.slate) + ". Continue?")) {
     return;
   }
-  var built = buildBlockOrder(state.slate.players, metric, state.proj, BUILDER_CAPS);
+  var values = state.proj;
+  if (metric === "score") {                     // same blocks, best score first; no score sorts last
+    values = {};
+    state.slate.players.forEach(function (p) { var v = scoreValueFor(p); if (v != null) values[p.player_id] = v; });
+    if (!Object.keys(values).length) { setStatus("No Workload scores for this slate yet, so there's nothing to seed from.", "warn"); return; }
+  }
+  var built = buildBlockOrder(state.slate.players, metric === "score" ? "proj" : metric, values, BUILDER_CAPS);
   state.order = built.order;
   state.cut = built.curatedCount;
   state.newIds = {};
@@ -2688,7 +2710,7 @@ function applyBuilder(metric) {
   syncSortHeads();
   render();
   var shape = BUILDER_BLOCKS.map(function (pos) { return built.blocks[pos] + " " + pos; }).join(", ");
-  setStatus("Seeded your order by " + (metric === "proj" ? "projection" : "ADP") + ": " + shape +
+  setStatus("Seeded your order by " + (metric === "proj" ? "projection" : metric === "score" ? "score" : "ADP") + ": " + shape +
             " on top, so the line sits at " + built.curatedCount + ". The " +
             (state.order.length - built.curatedCount) + " below it sort themselves by " +
             "projection and only those above it are exported. Nothing was dropped.");
@@ -3638,7 +3660,7 @@ $("proj").addEventListener("change", function (e) {
 $("export").addEventListener("click", doExport);
 $("importBtn").addEventListener("click", function () { $("importFile").value = ""; $("importFile").click(); });
 $("importFile").addEventListener("change", function (e) { if (e.target.files[0]) doImport(e.target.files[0]); });
-$("buildAdp").addEventListener("click", function () { applyBuilder("adp"); });
+$("buildScore").addEventListener("click", function () { applyBuilder("score"); });
 $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
 $("pasteBtn").addEventListener("click", function () {
   var panel = $("pastePanel"), open = panel.hidden;
