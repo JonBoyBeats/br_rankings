@@ -263,6 +263,9 @@
 
   .num.proj { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 3px; }
   .num.vorp { font-weight: 600; }
+  /* College Proj where CFF and Fantasy Points are far apart. */
+  .num.proj .split { cursor: help; }
+  .num.proj .split i { font-style: normal; color: var(--t1); margin-left: 1px; font-size: .85em; }
   /* Ownership earns a column only when a file carrying it is loaded. Without one the
      row keeps exactly the widths it had, which matters most on a phone. */
   .num.own { color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -584,7 +587,7 @@
   </div>
 
   <div id="pastePanel" class="paste" hidden>
-    <label class="field-label" for="pasteBox">Paste an ETR or CFF block, header row included</label>
+    <label class="field-label" for="pasteBox">Paste an ETR, CFF or Fantasy Points block, header row included</label>
     <textarea id="pasteBox" rows="4" spellcheck="false"
       placeholder="Player&#9;Position&#9;Team&#9;...&#9;Proj&#9;...&#9;id"></textarea>
     <div class="paste-actions">
@@ -743,6 +746,7 @@ function headerIndex(header) {
  *   It carries no id and covers the whole league, so it matches by name and most of its
  *   rows belong to players who are not on the chosen slate.
  * CFF (CFB): reads PLAYER NAME, FPNTS.
+ * Fantasy Points (CFB): reads NAME, FPTS from the row under its banner row.
  */
 /** A published share as a 0-1 fraction. Accepts "82.0%", "82" and "0.82"; null if absent. */
 function parseShare(raw) {
@@ -755,16 +759,27 @@ function parseShare(raw) {
   return n > 1 ? 1 : n;
 }
 
+/* Fantasy Points lists some college players by legal name; these are the names CFF and
+   Underdog use. Add a pair when a Fantasy Points name misses a board player. */
+var FP_CFB_ALIASES = { "cedric baxter": "cj baxter", "daylan smothers": "hollywood smothers" };
+
 function parseProjections(text) {
   var rows = parseCsv(text, sniffDelimiter(text));
   if (!rows.length) return { error: "empty file", entries: [] };
-  var idx = headerIndex(rows[0]);
+  var head = 0, idx = headerIndex(rows[0]);
+  if (idx["name"] == null && rows.length > 1) {        // Fantasy Points: a banner row sits above the header
+    var under = headerIndex(rows[1]);
+    if (under["name"] != null && under["fpts"] != null) { head = 1; idx = under; }
+  }
   var format, nameCol, projCol, idCol = null, sport, dedupe = false;
-  var ceilCols = null, ceilScale = 1, ownCol = null;
+  var ceilCols = null, ceilScale = 1, ownCol = null, aliases = {};
 
   if (idx["fpnts"] != null && idx["player name"] != null) {
     // College carries no ceiling, so the blend falls back to the median.
     format = "CFF"; sport = "cfb"; nameCol = idx["player name"]; projCol = idx["fpnts"];
+  } else if (idx["fpts"] != null && idx["name"] != null) {
+    format = "Fantasy Points"; sport = "cfb"; nameCol = idx["name"]; projCol = idx["fpts"];
+    aliases = FP_CFB_ALIASES;
   } else if (idx["half ppr proj"] != null && idx["player"] != null) {
     format = "ETR Weekly"; sport = "nfl";
     nameCol = idx["player"]; projCol = idx["half ppr proj"];
@@ -781,14 +796,14 @@ function parseProjections(text) {
   } else {
     return {
       error: "unrecognized projection file. Expected an ETR Battle Royale export " +
-             "(Player, Proj, id), an ETR weekly export (Player, Half PPR Proj), or a CFF " +
-             "export (PLAYER NAME, FPNTS). Found: " + rows[0].join(", "),
+             "(Player, Proj, id), an ETR weekly export (Player, Half PPR Proj), a CFF " +
+             "export (PLAYER NAME, FPNTS) or a Fantasy Points college export (NAME, FPTS). Found: " + rows[0].join(", "),
       entries: []
     };
   }
 
   var entries = [], skipped = 0;
-  for (var r = 1; r < rows.length; r++) {
+  for (var r = head + 1; r < rows.length; r++) {
     var row = rows[r];
     var name = (row[nameCol] || "").trim();
     if (!name) { continue; }
@@ -812,7 +827,7 @@ function parseProjections(text) {
     entries.push({
       id: idCol == null ? null : (row[idCol] || "").trim() || null,
       name: name,
-      norm: normName(name),
+      norm: aliases[normName(name)] || normName(name),
       median: median,
       ceiling: ceiling,
       own: ownCol == null ? null : parseShare(row[ownCol]),
@@ -861,7 +876,8 @@ function joinProjections(players, entries, nameMap) {
     parts[hit.player_id] = {
       median: typeof e.median === "number" ? e.median : e.proj,
       ceiling: typeof e.ceiling === "number" ? e.ceiling : null,
-      own: typeof e.own === "number" ? e.own : null
+      own: typeof e.own === "number" ? e.own : null,
+      sources: e.sources || null
     };
   });
   return { values: values, parts: parts, matchedById: matchedById,
@@ -1234,9 +1250,51 @@ function blendAware(gen) {
 }
 
 function normalizeProjStore(raw) {
-  if (!raw) return { current: null, previous: null };
-  if (raw.entries) return { current: blendAware(raw), previous: null };   // the older single-generation shape
-  return { current: blendAware(raw.current), previous: blendAware(raw.previous) };
+  if (!raw) return { current: null, previous: null, sources: {} };
+  if (raw.entries) return { current: blendAware(raw), previous: null, sources: {} };   // the older single-generation shape
+  return { current: blendAware(raw.current), previous: blendAware(raw.previous), sources: raw.sources || {} };
+}
+
+/* College takes two sources, CFF and Fantasy Points. Proj is their average wherever both
+   project a player; where only one does, that one stands. An upload older than this is
+   last week's, so it is left out rather than averaged in. */
+var SOURCE_FRESH_DAYS = 5;
+/* Sources this far apart on a player usually disagree on whether he plays: worth a look. */
+var SOURCE_SPLIT_PTS = 4;
+
+function isSplit(src) {
+  var v = Object.keys(src).map(function (k) { return src[k]; });
+  return Math.max.apply(null, v) - Math.min.apply(null, v) >= SOURCE_SPLIT_PTS;
+}
+
+/** Board players whose sources split. */
+function splitCount() {
+  return Object.keys(state.projParts).filter(function (k) {
+    return state.projParts[k].sources && isSplit(state.projParts[k].sources);
+  }).length;
+}
+
+/** The fresh uploads averaged into one generation, or null when fewer than two are fresh. */
+function combineSources(sources, nowIso) {
+  var fresh = Object.keys(sources).sort().map(function (k) { return sources[k]; })
+    .filter(function (u) { return Date.parse(nowIso) - Date.parse(u.at) <= SOURCE_FRESH_DAYS * 864e5; });
+  if (fresh.length < 2) return null;
+  var by = {}, order = [];
+  fresh.forEach(function (u) {
+    u.entries.forEach(function (e) {
+      if (!by[e.norm]) { by[e.norm] = { name: e.name, vals: {} }; order.push(e.norm); }
+      if (by[e.norm].vals[u.format] == null) by[e.norm].vals[u.format] = e.median;   // a repeated name: first row wins
+    });
+  });
+  var entries = order.map(function (n) {
+    var vals = by[n].vals, ks = Object.keys(vals);
+    var m = ks.reduce(function (a, k) { return a + vals[k]; }, 0) / ks.length;
+    return { id: null, name: by[n].name, norm: n, median: m, ceiling: null, own: null,
+             proj: blendProjection(m, null), sources: ks.length > 1 ? vals : null };
+  });
+  return { file: fresh.map(function (u) { return u.file; }).join(" + "),
+           format: fresh.map(function (u) { return u.format; }).join(" + "),
+           blend: PROJ_BLEND_VERSION, at: nowIso, entries: entries };
 }
 
 function rotateProjStore(store, upload) {
@@ -1881,7 +1939,7 @@ function handleProjectionFile(file) {
 function ingestProjections(text, sourceName, pasted) {
   function fail(msg) {
     setStatus(pasted
-      ? "Couldn't read pasted projections \u2014 expected an ETR or CFF export. " +
+      ? "Couldn't read pasted projections \u2014 expected an ETR, CFF or Fantasy Points export. " +
         msg.replace(/^unrecognized projection file\. /, "")
       : sourceName + ": " + msg, "bad");
   }
@@ -1892,8 +1950,15 @@ function ingestProjections(text, sourceName, pasted) {
     if (!parsed.entries.length) { fail("no rows with a numeric projection."); return; }
     var upload = { file: sourceName, format: parsed.format, blend: PROJ_BLEND_VERSION,
                    at: new Date().toISOString(), entries: parsed.entries };
-    save(K.proj(parsed.sport),
-         rotateProjStore(normalizeProjStore(load(K.proj(parsed.sport), null)), upload));
+    var store = normalizeProjStore(load(K.proj(parsed.sport), null)), gen = upload, sources = null;
+    if (parsed.sport === "cfb") {
+      sources = Object.assign({}, store.sources);
+      sources[parsed.format] = upload;
+      gen = combineSources(sources, upload.at) || upload;
+    }
+    var next = rotateProjStore(store, gen);
+    if (sources) next.sources = sources;
+    save(K.proj(parsed.sport), next);
     if (parsed.sport !== state.slate.sport) {
       setStatus("Read " + parsed.entries.length + " " + parsed.format + " rows and saved them for " +
                 parsed.sport.toUpperCase() + ". The board is on a " + state.slate.sport.toUpperCase() +
@@ -1907,9 +1972,11 @@ function ingestProjections(text, sourceName, pasted) {
               " board players now carry a projection (" + m.matchedById + " matched by id, " +
               m.matchedByName + " by name)." +
               (parsed.skipped ? " Skipped " + parsed.skipped + " rows with no numeric projection." : "") +
+              (gen !== upload ? " Proj is now the average of " + gen.format + "; " + splitCount() +
+                " players differ by " + SOURCE_SPLIT_PTS + "+ points between them (marked \u2260)." : "") +
               (m.prevFormat && m.prevFormat !== m.format
                 ? " The previous upload was in " + m.prevFormat + " format, so the change column " +
-                  "also reflects the ceiling changing source."
+                  "also reflects the change of source."
                 : ""));
     render();
     surfaceUnpriced();
@@ -2603,13 +2670,21 @@ function render() {
                  " since the previous upload" + (meta.prevFile ? " (" + meta.prevFile + ")" : "") +
                  (meta.prevFormat && meta.prevFormat !== meta.format
                    ? ". Those came from the " + meta.prevFormat + " file and these from the " +
-                     meta.format + " file, so part of this is the ceiling changing source."
+                     meta.format + " file, so part of this is the change of source."
                    : "");
     }
     var pval = document.createElement("span");
     pval.textContent = v == null ? "–" : String(Math.round(v));       // whole points: decimals only look like an edge
     var parts = state.projParts[p.player_id];
-    if (v != null && parts && typeof parts.median === "number") {
+    if (v != null && parts && parts.sources) {
+      var src = parts.sources, sk = Object.keys(src);
+      pval.title = "Average of " + sk.map(function (k) { return k + " " + src[k].toFixed(1); }).join(" and ");
+      if (isSplit(src)) {
+        pval.title += ". They differ by " + SOURCE_SPLIT_PTS + "+ points, often over whether he plays: check the news";
+        pval.appendChild(document.createElement("i")).textContent = "\u2260";
+        pval.className = "split";
+      }
+    } else if (v != null && parts && typeof parts.median === "number") {
       pval.title = typeof parts.ceiling !== "number"
         ? "Median " + parts.median.toFixed(1) + ", no ceiling published for this sport"
         : Math.round((1 - PROJ_CEILING_WEIGHT) * 100) + "% of median " + parts.median.toFixed(1) +
@@ -3853,6 +3928,12 @@ var FIXTURE_CFF =
   "59,Liam Szarka,QB,,AirForce,MWC,N Dakota St,84.0,0.4,79.0,1.5,,,,21.9,7800,\n" +
   "490,Owen Allen,RB,,AirForce,MWC,N Dakota St,,,55.0,0.6,0.0,0.0,0.0,9.1,4900,\n";
 
+var FIXTURE_FP_CFB =
+  '\uFEFF"","","","","","Scoring","Projected Stats","","","","","","","","","","","","","",""\n' +
+  '"RANK","NAME","POS","TEAM","OPP","FPTS","PATT","PCMP","PYDS","PTD","PINT","RUATT","RUYDS","RUTD","TGT","REC","RECYDS","RECTD","FMB","SACK","SACKYDS"\n' +
+  '"1","Giovanni Lopez","QB","Wake Forest Demon Deacons","California Golden Bears","27.4","33.2","22.3","289","2","0.4","10.8","38","0.8","","","","","0","0.7","-3.9"\n' +
+  '"212","Cedric Baxter","RB","Kentucky Wildcats","Oklahoma Sooners","12.0","","","","","","14","60","0.6","2","1.5","10","0","0.1","",""\n';
+
 function brrSelfTest() {
   var fails = [];
   function ok(label, cond) { if (!cond) fails.push(label); }
@@ -3893,6 +3974,22 @@ function brrSelfTest() {
   ok("cff reads FPNTS", cff.entries[0].median === 21.9 && cff.entries[1].median === 9.1);
   ok("college has no ceiling, so the median stands alone",
      cff.entries[0].ceiling === null && cff.entries[0].proj === 21.9);
+  var fpc = parseProjections(FIXTURE_FP_CFB);
+  ok("fantasy points sport", fpc.sport === "cfb" && fpc.format === "Fantasy Points");
+  ok("fantasy points reads FPTS under the banner", fpc.entries.length === 2 && fpc.entries[0].median === 27.4);
+  ok("fantasy points legal name maps to the board name", fpc.entries[1].norm === "cj baxter");
+  var cffUp = { file: "c.csv", format: "CFF", at: "2026-10-15T10:00:00Z",
+                entries: [{ name: "A", norm: "a", median: 20 }, { name: "B", norm: "b", median: 9 }] };
+  var fpUp = { file: "f.csv", format: "Fantasy Points", at: "2026-10-15T12:00:00Z",
+               entries: [{ name: "A", norm: "a", median: 10 }, { name: "C", norm: "c", median: 5 }] };
+  var combo = combineSources({ "CFF": cffUp, "Fantasy Points": fpUp }, "2026-10-15T12:00:00Z");
+  var cA = combo && combo.entries.filter(function (e) { return e.norm === "a"; })[0];
+  ok("two fresh sources average", cA && cA.proj === 15 && cA.sources.CFF === 20 && cA.sources["Fantasy Points"] === 10);
+  ok("a player only one source has keeps that number", combo && combo.entries.filter(function (e) {
+    return e.norm === "b"; })[0].proj === 9 && combo.entries.length === 3);
+  ok("a split is flagged", isSplit(cA.sources) && !isSplit({ x: 10, y: 13 }));
+  ok("last week's source is left out",
+     combineSources({ "CFF": cffUp, "Fantasy Points": fpUp }, "2026-10-22T12:00:00Z") === null);
   ok("a blend without a ceiling is just the median", blendProjection(10, null) === 10);
   ok("a blend with one is weighted", Math.abs(blendProjection(10, 20) - 17.5) < 1e-9);
   ok("no median means no number", blendProjection(null, 20) === null);
