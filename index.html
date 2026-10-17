@@ -1648,6 +1648,7 @@ var K = {
   mod: function (label) { return "brr:mod:" + label; },              // when this device last changed the board
   synced: function (label) { return "brr:synced:" + label; },        // saved_at of the gist entry last pushed or pulled
   syncedSig: function (label) { return "brr:syncsig:" + label; },    // the board as it stood right after that sync
+  boardSlate: function (label) { return "brr:boardslate:" + label; },   // which week's slate this device's board is for
   slate: "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
@@ -1772,6 +1773,19 @@ function byPidMap(slate) {
   return m;
 }
 
+/* Labels repeat every week ("cfb_sat_main"), so a board kept under one can belong to an
+   earlier week's slate. Boards now carry the slate id they were made on. An older board
+   without one counts as earlier only when last changed over 7 days before this slate
+   locks: slates appear at most about 6.8 days ahead, so no edit to this one is that old. */
+var STALE_BOARD_DAYS = 7;
+function boardIsStale(savedSlateId, modIso, slate) {
+  if (savedSlateId) return savedSlateId !== slate.slate_id;
+  if (!modIso || !slate.cutoff) return false;
+  return Date.parse(slate.cutoff) - Date.parse(modIso) > STALE_BOARD_DAYS * 864e5;
+}
+/** A gist entry saved for an earlier week's slate under the same label. */
+function entryIsStale(entry, slate) { return !!entry && !!entry.slate_id && entry.slate_id !== slate.slate_id; }
+
 function selectSlate(index) {
   var s = state.data.slates[index];
   if (!s) return;
@@ -1780,6 +1794,19 @@ function selectSlate(index) {
 
   state.pool = null;
   state.added = {};
+  var staleNote = "";
+  if (load(K.order(s.label), null) != null &&
+      boardIsStale(load(K.boardSlate(s.label), null), load(K.mod(s.label), null), s)) {
+    // last week's board: start this slate fresh, and let sync treat this device as new to it
+    var when = load(K.mod(s.label), null);
+    [K.order, K.cut, K.added, K.mod, K.synced, K.syncedSig].forEach(function (k) {
+      try { localStorage.removeItem(k(s.label)); } catch (e) { /* ignore */ }
+    });
+    staleNote = "This device's " + slateLabel(s) + " board was from an earlier week's slate" +
+      (when ? " (last changed " + describeAge(when, Date.now()) + ")" : "") + ", so it starts fresh by ADP" +
+      (connected() ? ", and takes this week's board from your other device if you saved one there." : ". Connect Sync to pull the board you saved on another device.");
+  }
+  rawSave(K.boardSlate(s.label), s.slate_id);
   var saved = load(K.order(s.label), null);
   var savedCut = load(K.cut(s.label), null);
   var keep = load(K.added(s.label), null) || [];
@@ -1816,6 +1843,7 @@ function selectSlate(index) {
   renderPoolHits();
   if (!$("vorpPanel").hidden) renderVorpPanel();
   surfaceUnpriced(true);
+  if (staleNote) setStatus(staleNote, "warn");
   scheduleSync(1200);
 }
 
@@ -3250,6 +3278,7 @@ async function refreshSyncStatus() {
     var cur = await readSaved();
     var labels = Object.keys(cur.doc.slates);
     var mine = cur.doc.slates[state.slate ? state.slate.label : ""];
+    if (state.slate && entryIsStale(mine, state.slate)) mine = null;
     var bits = mine
       ? "This slate: saved " + describeAge(mine.saved_at, Date.now()) + " from " +
         mine.device + ", " + playerCount(mine.count) + "."
@@ -3347,6 +3376,11 @@ async function syncLoad() {
     var cur = await readSaved();
     var entry = cur.doc.slates[state.slate.label];
     if (!entry) { renderSync("Nothing saved for " + slateLabel(state.slate) + " yet."); return; }
+    if (entryIsStale(entry, state.slate)) {
+      renderSync("The board saved for " + slateLabel(state.slate) + " is from an earlier week's slate (saved " +
+                 describeAge(entry.saved_at, Date.now()) + "). Nothing is saved for this week's yet.");
+      return;
+    }
     if (!window.confirm("Replace your order with the board saved " +
                         describeAge(entry.saved_at, Date.now()) + " from " + entry.device +
                         " (" + playerCount(entry.count) + ")?")) {
@@ -3453,6 +3487,7 @@ async function autoSync(quiet) {
     var cur = await readSaved();
     if (!state.slate || state.slate.label !== label) return;
     var remote = cur.doc.slates[label] || null;
+    if (entryIsStale(remote, state.slate)) remote = null;      // saved for an earlier week's slate
     var syncedSig = load(K.syncedSig(label), null);
     var hasLocal = load(K.order(label), null) != null;
     var take = false, push = false;
@@ -3552,7 +3587,8 @@ async function syncHistory() {
         return f && !f.truncated && f.content ? parseSavedState(f.content) : null;
       }).catch(function () { return null; });
     }));
-    var label = state.slate.label, list = slateHistory(docs, label);
+    var label = state.slate.label, list = slateHistory(docs, label)
+      .filter(function (e) { return !entryIsStale(e, state.slate); });     // the label repeats weekly
     if (!list.length) { renderSync("No saved boards for " + slateLabel(state.slate) + " in the last " + revs.length + " saves."); box.hidden = true; return; }
     var names = {};
     state.slate.players.concat((state.pool && state.pool.players) || []).forEach(function (p) { names[p.player_id] = p.first_name + " " + p.last_name; });
@@ -3974,6 +4010,12 @@ function brrSelfTest() {
   ok("cff reads FPNTS", cff.entries[0].median === 21.9 && cff.entries[1].median === 9.1);
   ok("college has no ceiling, so the median stands alone",
      cff.entries[0].ceiling === null && cff.entries[0].proj === 21.9);
+  var wk = { slate_id: "new", cutoff: "2026-10-17T15:52:00Z" };
+  ok("a board tagged with another slate is stale", boardIsStale("old", null, wk) && !boardIsStale("new", "2026-09-01T00:00:00Z", wk));
+  ok("an untagged board weeks old is stale", boardIsStale(null, "2026-10-01T12:00:00Z", wk));
+  ok("an untagged board from this week is kept", !boardIsStale(null, "2026-10-11T00:00:00Z", wk) && !boardIsStale(null, null, wk));
+  ok("a gist entry for another slate is stale", entryIsStale({ slate_id: "old" }, wk) && !entryIsStale({ slate_id: "new" }, wk) &&
+     !entryIsStale({}, wk) && !entryIsStale(null, wk));
   var fpc = parseProjections(FIXTURE_FP_CFB);
   ok("fantasy points sport", fpc.sport === "cfb" && fpc.format === "Fantasy Points");
   ok("fantasy points reads FPTS under the banner", fpc.entries.length === 2 && fpc.entries[0].median === 27.4);
