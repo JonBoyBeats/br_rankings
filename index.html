@@ -147,6 +147,15 @@
   .pos-C { background: var(--big); }
   /* The NBA page (nba.html) is this board in NBA mode; football-only tools stay hidden. */
   html.nba .football-only { display: none !important; }
+  html:not(.nba) .nba-only { display: none !important; }
+  /* NBA tiers: a gap above each new tier, and the switch from ceiling to floor tiebreaks. */
+  html.nba .row.tier-start { border-top: 6px solid var(--bg); }
+  html.nba .row.switch-start { box-shadow: inset 0 2px 0 #c58b2b; }
+  html.nba .row.switch-start { position: relative; }
+  html.nba .row.switch-start::before {
+    content: "floor tiebreaks below"; position: absolute; top: -6px; right: 10px; padding: 0 5px;
+    font-family: var(--mono); font-size: 9px; line-height: 12px; color: #c58b2b; background: var(--bg);
+  }
 
   .pair { display: flex; gap: 6px; }
   .paste {
@@ -538,6 +547,14 @@
         <span class="pair">
           <button type="button" id="buildScore" title="Seed the order from positional blocks, best Workload score first">Builder (Score)</button>
           <button type="button" id="buildProj">Builder (Proj)</button>
+        </span>
+      </label>
+      <label class="field nba-only">
+        <span class="field-label">Tiers · floor from</span>
+        <span class="pair">
+          <button type="button" id="buildTiers" title="Order everyone by Proj in tiers: ties broken by usage (ceiling) above the switch, by steadiness (floor) below it">Build tiers</button>
+          <input type="number" id="switchAt" min="1" step="1" inputmode="numeric" style="width:58px"
+                 title="The rank where tiebreaks switch from ceiling to floor. Blank: found from the day's ADP">
         </span>
       </label>
     </div>
@@ -1859,6 +1876,8 @@ var K = {
   syncedSig: function (label) { return "brr:syncsig:" + label; },    // the board as it stood right after that sync
   boardSlate: function (label) { return "brr:boardslate:" + label; },   // which week's slate this device's board is for
   out: function (label) { return "brr:out:" + label; },             // NBA: players you've marked out tonight
+  switchAt: function (label) { return "brr:switch:" + label; },     // NBA: your rank for the ceiling-to-floor switch
+  built: function (label) { return "brr:built:" + label; },         // NBA: the order as Build tiers left it
   slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
@@ -2196,6 +2215,7 @@ function applyNbaProjections(store) {
   };
   renderMissingProjections();
   syncBuilderButtons();
+  syncSwitchField();
 }
 
 /** Mark a player out tonight, or back in. Marking him out sends him to the bottom of the board. */
@@ -2438,6 +2458,129 @@ function renderMeta(rec) {
 
 /* The panel reports board players still lacking a number, not the file rows that went
    unused: a league-wide weekly export leaves hundreds of rows unused by design. */
+/* ---- NBA tiers -----------------------------------------------------------------
+   The day's Proj splits into tiers wherever the gap to the next player is unusually
+   wide: NBA_TIER_GAP times the typical gap among the players a draft reaches, and never
+   under a point. Inside a tier that starts above the switch, players sort by usage
+   (possessions used per minute): at the same projection high users boom more often
+   (18% vs 15% of nights 10+ over) without busting more. Below it, by the steadiness of
+   their points per minute: the steadiest third busts less (20% vs 23% of nights 8+
+   under). Both measured at equal projection, fit on 2022-24 and held up in 2025-26. */
+var NBA_TIER_GAP = 1.8;
+
+function median(xs) {
+  var v = xs.slice().sort(function (a, b) { return a - b; }), n = v.length;
+  return n ? (n % 2 ? v[(n - 1) / 2] : (v[n / 2 - 1] + v[n / 2]) / 2) : null;
+}
+
+/** rows [{pid, proj, adp}] -> tiers, best first, each a list of rows in Proj order. */
+function nbaTiers(rows, draftSize) {
+  var r = rows.slice().sort(function (a, b) { return b.proj - a.proj; });
+  if (!r.length) return [];
+  var gaps = [];
+  for (var i = 0; i < Math.min(r.length - 1, (draftSize || 36) + 6); i++) gaps.push(r[i].proj - r[i + 1].proj);
+  var cut = Math.max(1, NBA_TIER_GAP * (median(gaps) || 0)), tiers = [[r[0]]];
+  for (var j = 1; j < r.length; j++) {
+    if (r[j - 1].proj - r[j].proj >= cut) tiers.push([]);
+    tiers[tiers.length - 1].push(r[j]);
+  }
+  return tiers;
+}
+
+/** The draft's size from the slate's ADP: Underdog caps ADP at the last pick (24 or 36). */
+function nbaDraftSize(players) {
+  var m = 0;
+  players.forEach(function (p) { if (hasAdp(p) && p.adp > m) m = p.adp; });
+  return m ? Math.round(m) : null;
+}
+
+/** Where the floor half begins: the first tier, after the first, mostly going in the last round. */
+function nbaAutoSwitch(tiers, draftSize) {
+  if (!draftSize) return null;
+  var lastRound = draftSize - draftSize / 6, rank = 1;
+  for (var t = 0; t < tiers.length; t++) {
+    var late = tiers[t].filter(function (x) { return x.adp != null && x.adp >= lastRound; }).length;
+    if (t > 0 && late * 2 >= tiers[t].length) return rank;
+    rank += tiers[t].length;
+  }
+  return null;
+}
+
+/** The built order: tiers in Proj order, each sorted by ceiling or floor by where it starts. */
+function nbaTierOrder(tiers, switchAt) {
+  var out = [], rank = 1;
+  function by(key, dir) {
+    return function (a, b) {
+      var x = a[key], y = b[key];
+      if (x == null && y == null) return b.proj - a.proj;
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return dir * (x - y) || b.proj - a.proj;
+    };
+  }
+  tiers.forEach(function (t) {
+    var floor = switchAt != null && rank >= switchAt;
+    t.slice().sort(floor ? by("sd", 1) : by("upm", -1)).forEach(function (x) { out.push(x.pid); });
+    rank += t.length;
+  });
+  return out;
+}
+
+/** This slate's tier rows from the board's Proj and the morning file's usage and swing. */
+function nbaTierRows() {
+  var s = state.slate, idx = state.nbaIdx || nbaIndex(null), map = state.nameMaps.nba || {}, rows = [];
+  s.players.forEach(function (p) {
+    var v = state.proj[p.player_id];
+    if (typeof v !== "number" || !isFinite(v)) return;
+    var r = idx.byKey[boardKey(p.first_name, p.last_name, map)] || {};
+    rows.push({ pid: p.player_id, proj: v, adp: hasAdp(p) ? p.adp : null,
+                upm: r.upm == null ? null : r.upm, sd: r.sd == null ? null : r.sd });
+  });
+  return rows;
+}
+
+function nbaSwitchFor(tiers) {
+  var mine = load(K.switchAt(state.slate.label), null);
+  return mine != null ? mine : nbaAutoSwitch(tiers, nbaDraftSize(state.slate.players));
+}
+
+function applyNbaTiers() {
+  var s = state.slate, rows = nbaTierRows();
+  if (!rows.length) { setStatus("No Proj on this slate yet, so there's nothing to tier.", "warn"); return; }
+  // Only ask when the order holds moves of yours since the last build.
+  var touched = load(K.order(s.label), null) && state.order.join() !== load(K.built(s.label), "");
+  if (touched && !window.confirm("This rebuilds your order for " + slateLabel(s) +
+                                 " and drops the moves you made since. Continue?")) { syncSwitchField(); return; }
+  var tiers = nbaTiers(rows, nbaDraftSize(s.players)), sw = nbaSwitchFor(tiers);
+  var built = nbaTierOrder(tiers, sw), inBuilt = {};
+  built.forEach(function (pid) { inBuilt[pid] = 1; });
+  var rest = state.order.filter(function (pid) { return !inBuilt[pid]; });   // no Proj, or out tonight
+  state.order = built.concat(rest);
+  state.cut = built.length;
+  save(K.built(s.label), state.order.join());
+  state.newIds = {};
+  state.liftedPid = null;
+  renderLiftBar();
+  saveBoard();
+  state.view = "order";
+  $("view").value = "order";
+  syncSortHeads();
+  syncSwitchField(tiers);
+  render();
+  setStatus("Built " + tiers.length + " tiers from Proj. Ties break by usage (ceiling) above rank " +
+            (sw == null ? "\u2013 (no late-round cluster found, so everywhere)" : sw + ", by steadiness (floor) from there down") +
+            ". " + built.length + " ranked; " + rest.length + " without a Proj or out sit below the line.");
+}
+
+function syncSwitchField(tiers) {
+  var el = $("switchAt");
+  if (!el || !state.slate) return;
+  var mine = load(K.switchAt(state.slate.label), null);
+  el.value = mine == null ? "" : mine;
+  var auto = nbaAutoSwitch(tiers || nbaTiers(nbaTierRows(), nbaDraftSize(state.slate.players)), nbaDraftSize(state.slate.players));
+  el.placeholder = auto == null ? "auto" : String(auto);
+}
+
 /* ---- NBA write-ups (analysis/nba_takes.json): that day's notes from each source. */
 var NBA_STANCE = { great: "pos", like: "pos", good: "lean", lean: "lean", bad: "neg", fade: "neg" };
 
@@ -2962,14 +3105,26 @@ function render() {
   }
 
   var frag = document.createDocumentFragment();
+  var tierOf = null, sw = null, prevPid = null;
+  if (SPORT_MODE === "nba" && state.view === "order" && !state.search.trim() && state.position === "ALL") {
+    var tiers = nbaTiers(nbaTierRows(), nbaDraftSize(state.slate.players));
+    tierOf = {};
+    tiers.forEach(function (t, i) { t.forEach(function (x) { tierOf[x.pid] = i; }); });
+    sw = nbaSwitchFor(tiers);
+  }
   rows.forEach(function (r) {
     var p = r.p;
+    var tierStart = tierOf && prevPid != null && tierOf[p.player_id] != null && tierOf[prevPid] != null &&
+                    tierOf[p.player_id] !== tierOf[prevPid] && (state.cut == null || r.rank <= state.cut);
+    prevPid = p.player_id;
     var el = document.createElement("div");
     el.className = "row" + (state.newIds[p.player_id] ? " is-new" : "") +
                    (atLine && r.rank === state.cut ? " curated-end" : "") +
                    (atLine && r.rank > state.cut ? " below" : "") +
                    (state.liftedPid === p.player_id ? " lifted" : "") +
-                   (state.nbaOutPids && state.nbaOutPids[p.player_id] ? " is-out" : "");
+                   (state.nbaOutPids && state.nbaOutPids[p.player_id] ? " is-out" : "") +
+                   (tierStart ? " tier-start" : "") +
+                   (tierOf && sw != null && r.rank === sw ? " switch-start" : "");
     el.dataset.pid = p.player_id;
     el.draggable = dragging;
 
@@ -4142,6 +4297,14 @@ $("importBtn").addEventListener("click", function () { $("importFile").value = "
 $("importFile").addEventListener("change", function (e) { if (e.target.files[0]) doImport(e.target.files[0]); });
 $("buildScore").addEventListener("click", function () { applyBuilder("score"); });
 $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
+$("buildTiers").addEventListener("click", function () { applyNbaTiers(); });
+$("switchAt").addEventListener("change", function () {
+  if (!state.slate) return;
+  var v = this.value.trim() === "" ? null : Math.max(1, Math.round(Number(this.value)));
+  if (v == null || !isFinite(v)) { try { localStorage.removeItem(K.switchAt(state.slate.label)); } catch (e) { /* ignore */ } }
+  else save(K.switchAt(state.slate.label), v);
+  applyNbaTiers();                            // moving the switch re-sorts the tiers it crosses
+});
 $("pasteBtn").addEventListener("click", function () {
   var panel = $("pastePanel"), open = panel.hidden;
   panel.hidden = !open;
@@ -4753,6 +4916,14 @@ function brrSelfTest() {
   var mv3 = nbaValues(mSlate.players, mSlate, etrStore, mIdx, [], {});
   ok("once ETR's file is in for the day, it stands, and only your outs move it",
      mv3.etrToday && !mv3.out["star guard"] && Math.abs(mv3.values.P - blendProjection(15, 25)) < 1e-9);
+  var tRows = [60, 52, 51.5, 45, 44.6, 44.2, 30, 29.5].map(function (v, i) {
+    return { pid: "t" + i, proj: v, adp: [1, 2, 3, 4, 5, 6, 23, 24][i], upm: [.5, .6, .7, .4, .8, .6, .3, .5][i], sd: [.3, .2, .4, .5, .3, .2, .6, .3][i] };
+  });
+  var tT = nbaTiers(tRows, 24);
+  ok("tiers split at the wide gaps", tT.map(function (t) { return t.length; }).join() === "1,2,3,2");
+  ok("the floor switch lands on the first tier going in the last round", nbaAutoSwitch(tT, 24) === 7 && nbaAutoSwitch(tT, null) === null);
+  ok("ties break by usage above the switch and by steadiness below it",
+     nbaTierOrder(tT, 7).join() === "t0,t2,t1,t4,t5,t3,t7,t6");
   ok("the older single-generation shape still loads",
      normalizeProjStore(up1).current === up1 && normalizeProjStore(up1).previous === null);
   // a store written before the blend existed must not be compared against blended numbers
