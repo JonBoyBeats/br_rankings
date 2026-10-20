@@ -157,8 +157,7 @@
            font-weight: 600; font-variant-numeric: tabular-nums; }
   .num.proj .gchip { min-width: 30px; justify-self: end; }
   html.nba .num.score b.gchip { min-width: 30px; padding: 2px 4px; }
-  /* NBA tiers: a gap above each new tier, and the switch from ceiling to floor tiebreaks. */
-  html.nba .row.tier-start { border-top: 6px solid var(--bg); }
+  /* NBA: the switch from ceiling to floor. */
   html.nba .row.switch-start { box-shadow: inset 0 2px 0 #c58b2b; }
   html.nba .row.switch-start { position: relative; }
   html.nba .row.switch-start::before {
@@ -562,11 +561,11 @@
         </span>
       </label>
       <label class="field nba-only">
-        <span class="field-label">Tiers · floor from</span>
+        <span class="field-label">Order · floor from</span>
         <span class="pair">
-          <button type="button" id="buildTiers" title="Order everyone by Proj in tiers: ties broken by usage (ceiling) above the switch, by steadiness (floor) below it">Build tiers</button>
+          <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
           <input type="number" id="switchAt" min="1" step="1" inputmode="numeric" style="width:58px"
-                 title="The rank where tiebreaks switch from ceiling to floor. Blank: found from the day's ADP">
+                 title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player, or none when there is one for every pick">
         </span>
       </label>
     </div>
@@ -2470,34 +2469,14 @@ function renderMeta(rec) {
 
 /* The panel reports board players still lacking a number, not the file rows that went
    unused: a league-wide weekly export leaves hundreds of rows unused by design. */
-/* ---- NBA tiers -----------------------------------------------------------------
-   The day's Proj splits into tiers wherever the gap to the next player is unusually
-   wide: NBA_TIER_GAP times the typical gap among the players a draft reaches, and never
-   under a point. Inside a tier that starts above the switch, players sort by usage
-   (possessions used per minute): at the same projection high users boom more often
-   (18% vs 15% of nights 10+ over) without busting more. Below it, by the steadiness of
-   their points per minute: the steadiest third busts less (20% vs 23% of nights 8+
-   under). Both measured at equal projection, fit on 2022-24 and held up in 2025-26. */
-var NBA_TIER_GAP = 1.8;
-
-function median(xs) {
-  var v = xs.slice().sort(function (a, b) { return a - b; }), n = v.length;
-  return n ? (n % 2 ? v[(n - 1) / 2] : (v[n / 2 - 1] + v[n / 2]) / 2) : null;
-}
-
-/** rows [{pid, proj, adp}] -> tiers, best first, each a list of rows in Proj order. */
-function nbaTiers(rows, draftSize) {
-  var r = rows.slice().sort(function (a, b) { return b.proj - a.proj; });
-  if (!r.length) return [];
-  var gaps = [];
-  for (var i = 0; i < Math.min(r.length - 1, (draftSize || 36) + 6); i++) gaps.push(r[i].proj - r[i + 1].proj);
-  var cut = Math.max(1, NBA_TIER_GAP * (median(gaps) || 0)), tiers = [[r[0]]];
-  for (var j = 1; j < r.length; j++) {
-    if (r[j - 1].proj - r[j].proj >= cut) tiers.push([]);
-    tiers[tiers.length - 1].push(r[j]);
-  }
-  return tiers;
-}
+/* ---- NBA: where floor starts to matter -----------------------------------------
+   Players who usually log 32+ minutes rarely dud (under half their projection on 6-7%
+   of nights), while every minute below that adds about a point of dud rate (14% at 24
+   minutes, 20% at 18); boom rates are the same at every level. So the amber line sits
+   right after the slate's last 32-minute player: above it every pick can be a secure
+   one and ceiling decides ties (Ceil); below it floor does (Flr). When the slate has at
+   least as many secure players as the draft has picks, there is no line. */
+var NBA_SECURE_MIN = 32;
 
 /** The draft's size from the slate's ADP: Underdog caps ADP at the last pick (24 or 36). */
 function nbaDraftSize(players) {
@@ -2506,36 +2485,10 @@ function nbaDraftSize(players) {
   return m ? Math.round(m) : null;
 }
 
-/** Where the floor half begins: the first tier, after the first, mostly going in the last round. */
-function nbaAutoSwitch(tiers, draftSize) {
-  if (!draftSize) return null;
-  var lastRound = draftSize - draftSize / 6, rank = 1;
-  for (var t = 0; t < tiers.length; t++) {
-    var late = tiers[t].filter(function (x) { return x.adp != null && x.adp >= lastRound; }).length;
-    if (t > 0 && late * 2 >= tiers[t].length) return rank;
-    rank += tiers[t].length;
-  }
-  return null;
-}
-
-/** The built order: tiers in Proj order, each sorted by ceiling or floor by where it starts. */
-function nbaTierOrder(tiers, switchAt) {
-  var out = [], rank = 1;
-  function by(key, dir) {
-    return function (a, b) {
-      var x = a[key], y = b[key];
-      if (x == null && y == null) return b.proj - a.proj;
-      if (x == null) return 1;
-      if (y == null) return -1;
-      return dir * (x - y) || b.proj - a.proj;
-    };
-  }
-  tiers.forEach(function (t) {
-    var floor = switchAt != null && rank >= switchAt;
-    t.slice().sort(floor ? by("sd", 1) : by("upm", -1)).forEach(function (x) { out.push(x.pid); });
-    rank += t.length;
-  });
-  return out;
+/** The rank where floor takes over, or null when the slate has a secure player for every pick. */
+function nbaAutoSwitch(secure, draftSize) {
+  if (!draftSize || secure >= draftSize) return null;
+  return secure + 1;
 }
 
 /** A green from pale to dark for a 0-1 rank, dark ink on the pale end and white on the dark. */
@@ -2549,7 +2502,7 @@ function greenChip(el, frac) {
 
 /** Each slate player's rank (0-1, 1 best) on Proj, usage and steadiness among those with a Proj. */
 function nbaPercentiles() {
-  var rows = nbaTierRows(), out = { proj: {}, upm: {}, sd: {}, rows: {} };
+  var rows = nbaStatRows(), out = { proj: {}, upm: {}, sd: {}, rows: {} };
   function rank(key, better) {
     var have = rows.filter(function (r) { return r[key] != null; });
     var vals = have.map(function (r) { return r[key]; }).sort(function (a, b) { return a - b; });
@@ -2584,35 +2537,41 @@ function nbaStatCell(p, pc) {
   return c;
 }
 
-/** This slate's tier rows from the board's Proj and the morning file's usage and swing. */
-function nbaTierRows() {
+/** This slate's players with a Proj, with the morning file's minutes, usage and swing. */
+function nbaStatRows() {
   var s = state.slate, idx = state.nbaIdx || nbaIndex(null), map = state.nameMaps.nba || {}, rows = [];
   s.players.forEach(function (p) {
     var v = state.proj[p.player_id];
     if (typeof v !== "number" || !isFinite(v)) return;
     var r = idx.byKey[boardKey(p.first_name, p.last_name, map)] || {};
-    rows.push({ pid: p.player_id, proj: v, adp: hasAdp(p) ? p.adp : null,
+    rows.push({ pid: p.player_id, proj: v, min: r.min == null ? null : r.min,
                 upm: r.upm == null ? null : r.upm, sd: r.sd == null ? null : r.sd });
   });
   return rows;
 }
 
-function nbaSwitchFor(tiers) {
-  var mine = load(K.switchAt(state.slate.label), null);
-  return mine != null ? mine : nbaAutoSwitch(tiers, nbaDraftSize(state.slate.players));
+/** The slate's own switch: right after its last secure player, if it runs out before the draft does. */
+function nbaSlateSwitch() {
+  var secure = nbaStatRows().filter(function (r) { return r.min != null && r.min >= NBA_SECURE_MIN; }).length;
+  return nbaAutoSwitch(secure, nbaDraftSize(state.slate.players));
 }
 
-function applyNbaTiers() {
-  var s = state.slate, rows = nbaTierRows();
-  if (!rows.length) { setStatus("No Proj on this slate yet, so there's nothing to tier.", "warn"); return; }
-  // Only ask when the order holds moves of yours since the last build.
+/** Your switch rank if you set one, else the slate's. */
+function nbaSwitch() {
+  var mine = load(K.switchAt(state.slate.label), null);
+  return mine != null ? mine : nbaSlateSwitch();
+}
+
+/** The quick morning order: everyone with a Proj, best first; no Proj or out below the line. */
+function applyNbaProjOrder() {
+  var s = state.slate, rows = nbaStatRows();
+  if (!rows.length) { setStatus("No Proj on this slate yet, so there's nothing to order.", "warn"); return; }
+  // Only ask when the order holds moves of yours since the last time this ran.
   var touched = load(K.order(s.label), null) && state.order.join() !== load(K.built(s.label), "");
-  if (touched && !window.confirm("This rebuilds your order for " + slateLabel(s) +
-                                 " and drops the moves you made since. Continue?")) { syncSwitchField(); return; }
-  var tiers = nbaTiers(rows, nbaDraftSize(s.players)), sw = nbaSwitchFor(tiers);
-  var built = nbaTierOrder(tiers, sw), inBuilt = {};
+  if (touched && !window.confirm("This reorders " + slateLabel(s) + " by Proj and drops the moves you made since. Continue?")) return;
+  var built = rows.sort(function (a, b) { return b.proj - a.proj; }).map(function (r) { return r.pid; }), inBuilt = {};
   built.forEach(function (pid) { inBuilt[pid] = 1; });
-  var rest = state.order.filter(function (pid) { return !inBuilt[pid]; });   // no Proj, or out tonight
+  var rest = state.order.filter(function (pid) { return !inBuilt[pid]; });
   state.order = built.concat(rest);
   state.cut = built.length;
   save(K.built(s.label), state.order.join());
@@ -2623,20 +2582,20 @@ function applyNbaTiers() {
   state.view = "order";
   $("view").value = "order";
   syncSortHeads();
-  syncSwitchField(tiers);
   render();
-  setStatus("Built " + tiers.length + " tiers from Proj. Ties break by usage (ceiling) above rank " +
-            (sw == null ? "\u2013 (no late-round cluster found, so everywhere)" : sw + ", by steadiness (floor) from there down") +
-            ". " + built.length + " ranked; " + rest.length + " without a Proj or out sit below the line.");
+  var sw = nbaSwitch();
+  setStatus("Ordered " + built.length + " by Proj" + (rest.length ? "; " + rest.length + " without a Proj or out sit below the line" : "") + ". " +
+            (sw == null ? "This slate has a " + NBA_SECURE_MIN + "-minute player for every pick, so lean on Ceil all the way down."
+                        : "Lean on Ceil above the amber line at rank " + sw + ", on Flr below it."));
 }
 
-function syncSwitchField(tiers) {
+function syncSwitchField() {
   var el = $("switchAt");
   if (!el || !state.slate) return;
   var mine = load(K.switchAt(state.slate.label), null);
   el.value = mine == null ? "" : mine;
-  var auto = nbaAutoSwitch(tiers || nbaTiers(nbaTierRows(), nbaDraftSize(state.slate.players)), nbaDraftSize(state.slate.players));
-  el.placeholder = auto == null ? "auto" : String(auto);
+  var auto = nbaSlateSwitch();
+  el.placeholder = auto == null ? "none" : String(auto);
 }
 
 /* ---- NBA write-ups (analysis/nba_takes.json): that day's notes from each source. */
@@ -3143,7 +3102,7 @@ function render() {
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
-  $("scoreHead").title = SPORT_MODE === "nba" ? "Tiebreaks, 0-99 on tonight's slate. Ceil: usage, for ties in the early tiers. Flr: steadiness, for ties below the switch"
+  $("scoreHead").title = SPORT_MODE === "nba" ? "Tiebreaks, 0-99 on tonight's slate. Ceil: usage, for ties above the amber line. Flr: steadiness, for ties below it"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
@@ -3165,26 +3124,19 @@ function render() {
   }
 
   var frag = document.createDocumentFragment();
-  var tierOf = null, sw = null, prevPid = null, pc = SPORT_MODE === "nba" ? nbaPercentiles() : null;
+  var sw = null, pc = SPORT_MODE === "nba" ? nbaPercentiles() : null;
   if (SPORT_MODE === "nba" && state.view === "order" && !state.search.trim() && state.position === "ALL") {
-    var tiers = nbaTiers(nbaTierRows(), nbaDraftSize(state.slate.players));
-    tierOf = {};
-    tiers.forEach(function (t, i) { t.forEach(function (x) { tierOf[x.pid] = i; }); });
-    sw = nbaSwitchFor(tiers);
+    sw = nbaSwitch();
   }
   rows.forEach(function (r) {
     var p = r.p;
-    var tierStart = tierOf && prevPid != null && tierOf[p.player_id] != null && tierOf[prevPid] != null &&
-                    tierOf[p.player_id] !== tierOf[prevPid] && (state.cut == null || r.rank <= state.cut);
-    prevPid = p.player_id;
     var el = document.createElement("div");
     el.className = "row" + (state.newIds[p.player_id] ? " is-new" : "") +
                    (atLine && r.rank === state.cut ? " curated-end" : "") +
                    (atLine && r.rank > state.cut ? " below" : "") +
                    (state.liftedPid === p.player_id ? " lifted" : "") +
                    (state.nbaOutPids && state.nbaOutPids[p.player_id] ? " is-out" : "") +
-                   (tierStart ? " tier-start" : "") +
-                   (tierOf && sw != null && r.rank === sw ? " switch-start" : "");
+                   (sw != null && r.rank === sw ? " switch-start" : "");
     el.dataset.pid = p.player_id;
     el.draggable = dragging;
 
@@ -4358,13 +4310,13 @@ $("importBtn").addEventListener("click", function () { $("importFile").value = "
 $("importFile").addEventListener("change", function (e) { if (e.target.files[0]) doImport(e.target.files[0]); });
 $("buildScore").addEventListener("click", function () { applyBuilder("score"); });
 $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
-$("buildTiers").addEventListener("click", function () { applyNbaTiers(); });
+$("buildTiers").addEventListener("click", function () { applyNbaProjOrder(); });
 $("switchAt").addEventListener("change", function () {
   if (!state.slate) return;
   var v = this.value.trim() === "" ? null : Math.max(1, Math.round(Number(this.value)));
   if (v == null || !isFinite(v)) { try { localStorage.removeItem(K.switchAt(state.slate.label)); } catch (e) { /* ignore */ } }
   else save(K.switchAt(state.slate.label), v);
-  applyNbaTiers();                            // moving the switch re-sorts the tiers it crosses
+  render();
 });
 $("pasteBtn").addEventListener("click", function () {
   var panel = $("pastePanel"), open = panel.hidden;
@@ -4977,14 +4929,10 @@ function brrSelfTest() {
   var mv3 = nbaValues(mSlate.players, mSlate, etrStore, mIdx, [], {});
   ok("once ETR's file is in for the day, it stands, and only your outs move it",
      mv3.etrToday && !mv3.out["star guard"] && Math.abs(mv3.values.P - blendProjection(15, 25)) < 1e-9);
-  var tRows = [60, 52, 51.5, 45, 44.6, 44.2, 30, 29.5].map(function (v, i) {
-    return { pid: "t" + i, proj: v, adp: [1, 2, 3, 4, 5, 6, 23, 24][i], upm: [.5, .6, .7, .4, .8, .6, .3, .5][i], sd: [.3, .2, .4, .5, .3, .2, .6, .3][i] };
-  });
-  var tT = nbaTiers(tRows, 24);
-  ok("tiers split at the wide gaps", tT.map(function (t) { return t.length; }).join() === "1,2,3,2");
-  ok("the floor switch lands on the first tier going in the last round", nbaAutoSwitch(tT, 24) === 7 && nbaAutoSwitch(tT, null) === null);
-  ok("ties break by usage above the switch and by steadiness below it",
-     nbaTierOrder(tT, 7).join() === "t0,t2,t1,t4,t5,t3,t7,t6");
+  ok("floor takes over right after the slate's last secure player",
+     nbaAutoSwitch(25, 36) === 26 && nbaAutoSwitch(36, 36) === null && nbaAutoSwitch(40, 36) === null && nbaAutoSwitch(10, null) === null);
+  ok("the draft size reads off the ADP cap",
+     nbaDraftSize([{ adp: 3 }, { adp: 35.6 }, { adp: null }]) === 36 && nbaDraftSize([]) === null);
   ok("the older single-generation shape still loads",
      normalizeProjStore(up1).current === up1 && normalizeProjStore(up1).previous === null);
   // a store written before the blend existed must not be compared against blended numbers
