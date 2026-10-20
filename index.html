@@ -148,6 +148,15 @@
   /* The NBA page (nba.html) is this board in NBA mode; football-only tools stay hidden. */
   html.nba .football-only { display: none !important; }
   html:not(.nba) .nba-only { display: none !important; }
+  /* NBA: no VORP column; its room goes to the Ceil and Flr tiebreak numbers. */
+  html.nba .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 76px 94px 0; }
+  html.nba #scoreHead { white-space: nowrap; }
+  html.nba .num.score { display: flex; gap: 4px; justify-content: center; }
+  /* Green by rank on tonight's slate, darkest for the best. */
+  .gchip { display: inline-block; min-width: 26px; padding: 2px 4px; border-radius: 4px; text-align: center;
+           font-weight: 600; font-variant-numeric: tabular-nums; }
+  .num.proj .gchip { min-width: 30px; justify-self: end; }
+  html.nba .num.score b.gchip { min-width: 30px; padding: 2px 4px; }
   /* NBA tiers: a gap above each new tier, and the switch from ceiling to floor tiebreaks. */
   html.nba .row.tier-start { border-top: 6px solid var(--bg); }
   html.nba .row.switch-start { box-shadow: inset 0 2px 0 #c58b2b; }
@@ -475,6 +484,9 @@
     .board.cfb .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 54px 32px; }
     .board.cfb .row { gap: 4px; padding-inline: 6px; }
     .board.cfb.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 22px 54px 32px; }
+    html.nba .row { grid-template-columns: 12px 22px minmax(0, 1fr) 46px 50px 46px 0; }
+    html.nba .num.score { gap: 2px; }
+    .gchip, html.nba .num.score b.gchip { min-width: 21px; padding: 2px 2px; font-size: 11px; }
     .board.cfb .num.score b { min-width: 40px; font-size: 10px; }
     .board.cfb .num.score { flex-direction: column; gap: 2px; }
     .board.cfb .num.score b.sc { min-width: 40px; }
@@ -2526,6 +2538,52 @@ function nbaTierOrder(tiers, switchAt) {
   return out;
 }
 
+/** A green from pale to dark for a 0-1 rank, dark ink on the pale end and white on the dark. */
+function greenChip(el, frac) {
+  var l = 80 - 56 * frac;
+  el.className = (el.className ? el.className + " " : "") + "gchip";
+  el.style.background = "hsl(145, 48%, " + l + "%)";
+  el.style.color = l < 50 ? "#ffffff" : "#06180d";
+  return el;
+}
+
+/** Each slate player's rank (0-1, 1 best) on Proj, usage and steadiness among those with a Proj. */
+function nbaPercentiles() {
+  var rows = nbaTierRows(), out = { proj: {}, upm: {}, sd: {}, rows: {} };
+  function rank(key, better) {
+    var have = rows.filter(function (r) { return r[key] != null; });
+    var vals = have.map(function (r) { return r[key]; }).sort(function (a, b) { return a - b; });
+    have.forEach(function (r) {
+      var below = 0;
+      while (below < vals.length && vals[below] < r[key]) below++;
+      var f = vals.length > 1 ? below / (vals.length - 1) : 1;
+      out[key][r.pid] = better > 0 ? f : 1 - f;
+    });
+  }
+  rank("proj", 1); rank("upm", 1); rank("sd", -1);
+  rows.forEach(function (r) { out.rows[r.pid] = r; });
+  return out;
+}
+
+/** The tiebreak numbers: Ceil (usage) and Flr (steadiness), each 0-99 on tonight's slate. */
+function nbaStatCell(p, pc) {
+  var c = document.createElement("span");
+  c.className = "num score";
+  var r = pc && pc.rows[p.player_id];
+  [["upm", "Ceil"], ["sd", "Flr"]].forEach(function (k) {
+    var b = document.createElement("b"), f = pc && pc[k[0]][p.player_id];
+    if (f == null) { b.textContent = "\u2013"; b.className = "gchip"; b.style.color = "var(--muted)"; c.appendChild(b); return; }
+    b.textContent = String(Math.min(99, Math.round(f * 100)));
+    b.title = k[0] === "upm"
+      ? "Ceil " + b.textContent + ": uses " + (r.upm * 36).toFixed(1) + " possessions per 36 minutes, more than " + b.textContent +
+        "% of tonight's slate. At the same Proj, high users boom more often (18% vs 15% of nights 10+ over) without busting more"
+      : "Flr " + b.textContent + ": his points per minute swing \u00b1" + r.sd.toFixed(2) + " game to game, steadier than " + b.textContent +
+        "% of tonight's slate. At the same Proj, the steadiest bust less often (20% vs 23% of nights 8+ under)";
+    c.appendChild(greenChip(b, f));
+  });
+  return c;
+}
+
 /** This slate's tier rows from the board's Proj and the morning file's usage and swing. */
 function nbaTierRows() {
   var s = state.slate, idx = state.nbaIdx || nbaIndex(null), map = state.nameMaps.nba || {}, rows = [];
@@ -3080,11 +3138,13 @@ function render() {
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
-  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "" : "Score";
+  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Ceil Flr" : "Score";
   $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && (state.nbaTakes || []).length);
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
-  $("scoreHead").title = isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
+  $("scoreHead").disabled = SPORT_MODE === "nba";
+  $("scoreHead").title = SPORT_MODE === "nba" ? "Tiebreaks, 0-99 on tonight's slate. Ceil: usage, for ties in the early tiers. Flr: steadiness, for ties below the switch"
+    : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
   var atLine = state.cut != null && state.view === "order";
@@ -3105,7 +3165,7 @@ function render() {
   }
 
   var frag = document.createDocumentFragment();
-  var tierOf = null, sw = null, prevPid = null;
+  var tierOf = null, sw = null, prevPid = null, pc = SPORT_MODE === "nba" ? nbaPercentiles() : null;
   if (SPORT_MODE === "nba" && state.view === "order" && !state.search.trim() && state.position === "ALL") {
     var tiers = nbaTiers(nbaTierRows(), nbaDraftSize(state.slate.players));
     tierOf = {};
@@ -3225,6 +3285,7 @@ function render() {
     }
     if (v != null && parts && parts.lineup && parts.lineup.length) pval.title += ". Tonight: " + parts.lineup.join(", ");
     if (state.nbaOutPids && state.nbaOutPids[p.player_id]) pval.textContent = "out";
+    else if (pc && pc.proj[p.player_id] != null) greenChip(pval, pc.proj[p.player_id]);
     var pr = document.createElement("span");
     pr.className = "num proj" + (v == null ? " dim" : "");
     pr.append(pd, pval);
@@ -3263,7 +3324,7 @@ function render() {
       }
     }
 
-    var sc = state.slate.sport === "cfb" ? cfbOppCell(p, cf) : scoreCell(p);
+    var sc = state.slate.sport === "cfb" ? cfbOppCell(p, cf) : pc ? nbaStatCell(p, pc) : scoreCell(p);
     if (ownCell) el.append(handle, rank, who, adp, sc, ownCell, pr, vo);
     else el.append(handle, rank, who, adp, sc, pr, vo);
     if (cf && cf.w) el.appendChild(cfbStrip(p, cf, false));
