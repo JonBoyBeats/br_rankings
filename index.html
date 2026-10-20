@@ -37,6 +37,9 @@
     --rb: #479580;
     --wr: #d6843b;
     --te: #437fb5;
+    --guard: #d6843b;   /* NBA: guards, wings and bigs share the football palette */
+    --wing: #479580;
+    --big: #437fb5;
     --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   }
@@ -139,6 +142,11 @@
   .pos-RB { background: var(--rb); }
   .pos-WR { background: var(--wr); }
   .pos-TE { background: var(--te); }
+  .pos-PG, .pos-SG, .pos-G { background: var(--guard); }
+  .pos-SF, .pos-PF, .pos-F { background: var(--wing); }
+  .pos-C { background: var(--big); }
+  /* The NBA page (nba.html) is this board in NBA mode; football-only tools stay hidden. */
+  html.nba .football-only { display: none !important; }
 
   .pair { display: flex; gap: 6px; }
   .paste {
@@ -479,7 +487,7 @@
       <h1>Battle Royale Board</h1>
       <nav class="views" aria-label="Pages">
         <a href="./" aria-current="page">Board</a>
-        <a href="analysis.html">Analysis</a>
+        <a href="analysis.html" class="football-only">Analysis</a>
       </nav>
       <div class="mast-meta" id="meta"></div>
     </div>
@@ -508,7 +516,7 @@
         <input type="number" id="cut" min="0" step="1" inputmode="numeric"
                title="How many players are ranked. Below this the board sorts itself by projection, and only those above it are exported.">
       </label>
-      <label class="field">
+      <label class="field football-only">
         <span class="field-label">Seed order</span>
         <span class="pair">
           <button type="button" id="buildScore" title="Seed the order from positional blocks, best Workload score first">Builder (Score)</button>
@@ -532,7 +540,7 @@
         <button type="button" id="pasteBtn" aria-expanded="false">Paste</button>
       </span>
     </label>
-    <label class="field">
+    <label class="field football-only">
       <span class="field-label">Replacement</span>
       <button type="button" id="vorpBtn" aria-expanded="false">VORP</button>
     </label>
@@ -646,6 +654,9 @@
 // ==== PURE LOGIC START (no DOM; mirrored by the self-test at the bottom) ====
 
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
+/* nba.html opens this board as index.html?sport=nba: same engine, the NBA mirror file. */
+var SPORT_MODE = /(?:^|[?&])sport=nba(?:&|$)/.test(location.search) ? "nba" : "football";
+if (SPORT_MODE === "nba") document.documentElement.classList.add("nba");
 
 /* How many of each position the Builders put in the curated top. Edit freely. */
 var BUILDER_CAPS = { RB: 12, WR: 15, TE: 8, QB: 12 };
@@ -1649,7 +1660,7 @@ var K = {
   synced: function (label) { return "brr:synced:" + label; },        // saved_at of the gist entry last pushed or pulled
   syncedSig: function (label) { return "brr:syncsig:" + label; },    // the board as it stood right after that sync
   boardSlate: function (label) { return "brr:boardslate:" + label; },   // which week's slate this device's board is for
-  slate: "brr:slate",
+  slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
   gist: "brr:gh:gist",
@@ -1732,13 +1743,15 @@ async function fetchJson(file) {
 }
 
 async function loadMirror() {
-  var data = await fetchJson("latest.json");
-  if (!data || !Array.isArray(data.slates)) throw new Error("latest.json has no slates array");
+  var file = SPORT_MODE === "nba" ? "nba_latest.json" : "latest.json";
+  var data = await fetchJson(file);
+  if (!data || !Array.isArray(data.slates)) throw new Error(file + " has no slates array");
   return data;
 }
 
 async function loadNameMaps() {
-  var pairs = [["nfl", "nfl_name_map.json"], ["cfb", "cfb_name_map.json"]];
+  var pairs = SPORT_MODE === "nba" ? [["nba", "nba_name_map.json"]]
+                                   : [["nfl", "nfl_name_map.json"], ["cfb", "cfb_name_map.json"]];
   await Promise.all(pairs.map(async function (pair) {
     try {
       var m = await fetchJson(pair[1]);
@@ -1974,6 +1987,8 @@ function ingestProjections(text, sourceName, pasted) {
   if (!String(text).trim()) { fail("nothing to read."); return; }
   {
     var parsed = parseProjections(String(text));
+    // An ETR file on the NBA page is NBA projections; the parser only knows football sports.
+    if (SPORT_MODE === "nba" && parsed.sport === "nfl") parsed.sport = "nba";
     if (parsed.error) { fail(parsed.error); return; }
     if (!parsed.entries.length) { fail("no rows with a numeric projection."); return; }
     var upload = { file: sourceName, format: parsed.format, blend: PROJ_BLEND_VERSION,
@@ -2146,8 +2161,10 @@ function renderMeta(rec) {
     var d1 = document.createElement("div");
     d1.className = "notice";
     d1.innerHTML = "<b>No movement baseline yet</b> for " + slateLabel(s) +
-                   ". The reference locks at 6pm Pacific on Monday and again on Wednesday, " +
-                   "when ETR's projections land, and this slate had no ADP before the last one.";
+                   (SPORT_MODE === "nba"
+                     ? ". The reference locks at 6am Pacific each day, and this slate had no ADP before today's."
+                     : ". The reference locks at 6pm Pacific on Monday and again on Wednesday, " +
+                       "when ETR's projections land, and this slate had no ADP before the last one.");
     nb.appendChild(closable(d1));
   }
   if (notes.length) {
@@ -2593,7 +2610,7 @@ function render() {
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
-  $("scoreHead").textContent = isCfb ? "Score · Opp" : "Score";
+  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "" : "Score";
   $("cfbAllField").hidden = !isCfb || !state.cfbIndex;
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
@@ -3900,13 +3917,20 @@ function bootFailed(where, err) {
 }
 
 (async function boot() {
+  if (SPORT_MODE === "nba") {
+    document.title = "NBA Board";
+    document.querySelector(".masthead h1").textContent = "NBA Board";
+    document.querySelector('.views a[aria-current="page"]').setAttribute("href", "nba.html");
+  }
   /* The fetch and the render fail for different reasons, and saying the mirror is
      unreachable when it is not sends you looking in the wrong place. */
   try {
     await loadNameMaps();
     state.data = await loadMirror();
-    loadWorkload().then(function () { if (state.slate) { sortBelowLine(); render(); } });
-    loadCfb().then(function () { if (state.slate && state.slate.sport === "cfb") { sortBelowLine(); render(); } });
+    if (SPORT_MODE !== "nba") {
+      loadWorkload().then(function () { if (state.slate) { sortBelowLine(); render(); } });
+      loadCfb().then(function () { if (state.slate && state.slate.sport === "cfb") { sortBelowLine(); render(); } });
+    }
   } catch (err) {
     bootFailed("Could not load the ADP mirror", err);
     setStatus("The board could not reach " + MIRROR + "latest.json.", "bad");
