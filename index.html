@@ -565,7 +565,7 @@
         <span class="pair">
           <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
           <input type="number" id="switchAt" min="1" step="1" inputmode="numeric" style="width:58px"
-                 title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player, or none when there is one for every pick">
+                 title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player (box-score minutes; once ETR's file is in, the minutes its projection implies), or none when there is one for every pick">
         </span>
       </label>
     </div>
@@ -2200,6 +2200,7 @@ function applyNbaProjections(store) {
   var idx = state.nbaIdx || nbaIndex(null);
   var res = nbaValues(s.players, s, store, idx, load(K.out(s.label), []), map);
   state.nbaOutPids = res.outPids;
+  state.nbaEtrToday = res.etrToday;
   state.proj = res.values;
   state.projParts = res.parts;
   state.hasOwn = false;
@@ -2475,7 +2476,13 @@ function renderMeta(rec) {
    minutes, 20% at 18); boom rates are the same at every level. So the amber line sits
    right after the slate's last 32-minute player: above it every pick can be a secure
    one and ceiling decides ties (Ceil); below it floor does (Flr). When the slate has at
-   least as many secure players as the draft has picks, there is no line. */
+   least as many secure players as the draft has picks, there is no line. Minutes are
+   the box scores' (last 10, last season filling in) until ETR's file is in for the day;
+   then they are what ETR implies: its projection over his points per minute, which
+   carries tonight's injuries and roles. ETR's projection is a median and runs about
+   10% under the box-score average (Oct 20: 0.90 for the typical rotation player), so
+   the implied minutes are scaled by that day's typical ratio among players who usually
+   play 20+: the level stays the box scores', and ETR decides who is above or below it. */
 var NBA_SECURE_MIN = 32;
 
 /** The draft's size from the slate's ADP: Underdog caps ADP at the last pick (24 or 36). */
@@ -2537,16 +2544,21 @@ function nbaStatCell(p, pc) {
   return c;
 }
 
-/** This slate's players with a Proj, with the morning file's minutes, usage and swing. */
+/** This slate's players with a Proj, with their minutes and the morning file's usage and swing. */
 function nbaStatRows() {
   var s = state.slate, idx = state.nbaIdx || nbaIndex(null), map = state.nameMaps.nba || {}, rows = [];
   s.players.forEach(function (p) {
     var v = state.proj[p.player_id];
     if (typeof v !== "number" || !isFinite(v)) return;
     var r = idx.byKey[boardKey(p.first_name, p.last_name, map)] || {};
-    rows.push({ pid: p.player_id, proj: v, min: r.min == null ? null : r.min,
+    var etr = state.nbaEtrToday && state.projParts[p.player_id];
+    var implied = etr && typeof etr.median === "number" && r.ppm > 0 && r.min != null ? etr.median / r.ppm : null;
+    rows.push({ pid: p.player_id, proj: v, min: r.min == null ? null : r.min, implied: implied,
                 upm: r.upm == null ? null : r.upm, sd: r.sd == null ? null : r.sd });
   });
+  var ratio = median(rows.filter(function (r) { return r.implied != null && r.min >= 20; })
+                        .map(function (r) { return r.implied / r.min; }));
+  if (ratio > 0) rows.forEach(function (r) { if (r.implied != null) r.min = r.implied / ratio; });
   return rows;
 }
 
