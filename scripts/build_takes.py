@@ -44,3 +44,19 @@ for path in sorted(glob.glob(os.path.join(HERE, 'cfb', 'takes', '*.csv'))):
 with open(os.path.join(HERE, 'cfb_takes.json'), 'w') as f:
     json.dump({'sources': CFB_SOURCES, 'takes': cfb}, f, separators=(',', ':'))
 print(f'{len(cfb)} college takes -> analysis/cfb_takes.json')
+
+# NBA: one CSV per day and source, <YYYY-MM-DD>_<source>.csv in analysis/nba/takes/
+# (the Pacific game day), shown in the Board's row dropdown on that day's NBA slates.
+NBA_SOURCES = {'Zakarian': 'Zakarian, Bagel with Locks (Underdog)', 'ETR': 'Establish the Run, NBA Matchups'}
+nba = []
+for path in sorted(glob.glob(os.path.join(HERE, 'nba', 'takes', '*.csv'))):
+    m = re.search(r'(\d{4}-\d{2}-\d{2})_[a-z_]+\.csv$', path)
+    if not m: continue
+    with open(path, newline='') as f:
+        for row in csv.DictReader(f):
+            row = {k: (v.strip() if isinstance(v, str) else v) for k, v in row.items() if v not in (None, '')}
+            row['date'] = m.group(1)
+            nba.append(row)
+with open(os.path.join(HERE, 'nba_takes.json'), 'w') as f:
+    json.dump({'sources': NBA_SOURCES, 'takes': nba}, f, separators=(',', ':'))
+print(f'{len(nba)} NBA takes -> analysis/nba_takes.json')

@@ -373,6 +373,12 @@
   .cfbpanel .verdict.v-good { background: var(--t2); color: var(--t2-ink); }
   .cfbpanel .verdict.v-gpp, .cfbpanel .verdict.v-stack, .cfbpanel .verdict.v-conditional { background: var(--t1); color: var(--t1-ink); }
   .cfbpanel .verdict.v-pass { background: var(--t0); color: var(--t0-ink); }
+  /* NBA write-ups: a letter per source on the name line, coloured by its stance. */
+  .stance { font-family: var(--mono); font-size: 9.5px; font-weight: 700; padding: 1px 4px; border-radius: 4px;
+            align-self: center; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line-strong); }
+  .stance.s-pos, .cfbpanel .verdict.v-like { background: var(--t3); color: var(--t3-ink); box-shadow: none; }
+  .stance.s-lean, .cfbpanel .verdict.v-lean { background: var(--t2); color: var(--t2-ink); box-shadow: none; }
+  .stance.s-neg, .cfbpanel .verdict.v-bad, .cfbpanel .verdict.v-fade { background: var(--t0); color: var(--t0-ink); box-shadow: none; }
   .pdelta {
     font-family: var(--mono); font-size: 10px; font-weight: 500;
     text-align: right; white-space: nowrap; color: var(--muted);
@@ -484,6 +490,9 @@
     .pos { font-size: 9px; padding: 1px 4px; letter-spacing: .04em; }
     .tag { font-size: 9px; padding: 1px 4px; }
     h1 { font-size: 17px; }
+    /* NBA rows carry more chips (write-ups, out); the name keeps its own line above them. */
+    html.nba .who { flex-wrap: wrap; row-gap: 3px; align-items: center; }
+    html.nba .name { flex-basis: 100%; }
   }
 </style>
 </head>
@@ -2429,6 +2438,47 @@ function renderMeta(rec) {
 
 /* The panel reports board players still lacking a number, not the file rows that went
    unused: a league-wide weekly export leaves hundreds of rows unused by design. */
+/* ---- NBA write-ups (analysis/nba_takes.json): that day's notes from each source. */
+var NBA_STANCE = { great: "pos", like: "pos", good: "lean", lean: "lean", bad: "neg", fade: "neg" };
+
+function loadNbaTakes() {
+  return fetch("analysis/nba_takes.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (d) { state.nbaTakes = d.takes || []; })
+    .catch(function () { state.nbaTakes = []; });
+}
+
+function nbaTakesFor(p) {
+  var day = pacificDay(state.slate.cutoff), key = boardKey(p.first_name, p.last_name, state.nameMaps.nba || {});
+  return (state.nbaTakes || []).filter(function (t) { return t.date === day && normName(t.player) === key; });
+}
+
+/** On the name line: a letter per source coloured by its stance, and the dropdown toggle. */
+function nbaWho(who, p, takes) {
+  takes.forEach(function (t) {
+    var c = document.createElement("span");
+    c.className = "stance s-" + (NBA_STANCE[String(t.stance || "").toLowerCase()] || "note");
+    c.textContent = t.source.charAt(0);
+    c.title = t.source + (t.stance ? ": " + t.stance : "") + (t.blurb ? ". " + t.blurb : "");
+    who.appendChild(c);
+  });
+  cfbWho(who, p, { takes: takes.map(function (t) { return { source: t.source }; }) });
+}
+
+function nbaPanel(takes) {
+  var d = document.createElement("div");
+  d.className = "cfbpanel";
+  takes.forEach(function (t) {
+    var n = document.createElement("div"); n.className = "note";
+    n.innerHTML = "<div class=\"top\"><b>" + esc(t.source) + "</b>" +
+      (t.stance ? " <span class=\"verdict v-" + esc(t.stance.toLowerCase()) + "\">" + esc(t.stance) + "</span>" : "") +
+      (t.tags ? " <span class=\"lbl\">" + esc(t.tags) + "</span>" : "") + "</div>" +
+      (t.blurb ? "<div>" + esc(t.blurb) + "</div>" : "");
+    d.appendChild(n);
+  });
+  return d;
+}
+
 function nbaOutButton(p) {
   var b = document.createElement("button"), why = state.nbaOutPids && state.nbaOutPids[p.player_id];
   b.type = "button";
@@ -2888,7 +2938,7 @@ function render() {
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
   $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "" : "Score";
-  $("cfbAllField").hidden = !isCfb || !state.cfbIndex;
+  $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && (state.nbaTakes || []).length);
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").title = isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
@@ -2948,6 +2998,8 @@ function render() {
     if (cf) cfbWho(who, p, cf);
     var inj = injuryTag(p.injury);
     if (inj) who.appendChild(inj);
+    var nt = SPORT_MODE === "nba" ? nbaTakesFor(p) : null;
+    if (nt && nt.length) nbaWho(who, p, nt);
     if (SPORT_MODE === "nba") who.appendChild(nbaOutButton(p));
     if (state.newIds[p.player_id]) {
       var tag = document.createElement("span");
@@ -3062,6 +3114,7 @@ function render() {
     if (cf && cf.w) el.appendChild(cfbStrip(p, cf, false));
     frag.appendChild(el);
     if (cf && state.cfbOpen[p.player_id]) frag.appendChild(cfbPanel(p, cf));
+    if (nt && nt.length && state.cfbOpen[p.player_id]) frag.appendChild(nbaPanel(nt));
   });
   host.appendChild(frag);
   renderFoot(rows.length);
@@ -3317,7 +3370,7 @@ $("cfbAll").addEventListener("click", function (e) {
   e.stopPropagation();
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   state.cfbOpen = {};
-  if (!anyOpen) visibleRows().forEach(function (r) { if (cfbFor(r.p)) state.cfbOpen[r.p.player_id] = true; });
+  if (!anyOpen) visibleRows().forEach(function (r) { if (SPORT_MODE === "nba" ? nbaTakesFor(r.p).length : cfbFor(r.p)) state.cfbOpen[r.p.player_id] = true; });
   render();
 });
 $("liftMinus").addEventListener("click", function () { jumpLifted("minus"); });
@@ -4215,6 +4268,7 @@ function bootFailed(where, err) {
     state.data = await loadMirror();
     if (SPORT_MODE === "nba") {
       state.nbaIdx = await fetchJson("nba_morning.json").then(nbaIndex).catch(function () { return null; });
+      loadNbaTakes().then(function () { if (state.slate) render(); });
     }
     if (SPORT_MODE !== "nba") {
       loadWorkload().then(function () { if (state.slate) { sortBelowLine(); render(); } });
