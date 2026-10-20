@@ -756,6 +756,7 @@ function headerIndex(header) {
  * ETR Weekly (NFL): reads Player and Half PPR Proj, the scoring Underdog actually uses.
  *   It carries no id and covers the whole league, so it matches by name and most of its
  *   rows belong to players who are not on the chosen slate.
+ * ETR NBA: reads Player, Projection, Ceiling and id (the Underdog appearance id).
  * CFF (CFB): reads PLAYER NAME, FPNTS.
  * Fantasy Points (CFB): reads NAME, FPTS from the row under its banner row.
  */
@@ -799,6 +800,10 @@ function parseProjections(text) {
       ceilCols = [idx["dk ceiling"], idx["fd ceiling"]];
       ceilScale = UD_CEILING_FACTOR;          // stand in for the Underdog ceiling
     }
+  } else if (idx["projection"] != null && idx["player"] != null) {
+    format = "ETR NBA"; sport = "nba"; nameCol = idx["player"]; projCol = idx["projection"];
+    if (idx["id"] != null) idCol = idx["id"];
+    if (idx["ceiling"] != null) ceilCols = [idx["ceiling"]];
   } else if (idx["proj"] != null && idx["player"] != null) {
     format = "ETR Battle Royale"; sport = "nfl"; nameCol = idx["player"]; projCol = idx["proj"];
     if (idx["id"] != null) idCol = idx["id"];
@@ -807,7 +812,8 @@ function parseProjections(text) {
   } else {
     return {
       error: "unrecognized projection file. Expected an ETR Battle Royale export " +
-             "(Player, Proj, id), an ETR weekly export (Player, Half PPR Proj), a CFF " +
+             "(Player, Proj, id), an ETR weekly export (Player, Half PPR Proj), an ETR NBA export " +
+             "(Player, Projection, Ceiling), a CFF " +
              "export (PLAYER NAME, FPNTS) or a Fantasy Points college export (NAME, FPTS). Found: " + rows[0].join(", "),
       entries: []
     };
@@ -1261,9 +1267,10 @@ function blendAware(gen) {
 }
 
 function normalizeProjStore(raw) {
-  if (!raw) return { current: null, previous: null, sources: {} };
-  if (raw.entries) return { current: blendAware(raw), previous: null, sources: {} };   // the older single-generation shape
-  return { current: blendAware(raw.current), previous: blendAware(raw.previous), sources: raw.sources || {} };
+  if (!raw) return { current: null, previous: null, sources: {}, history: {} };
+  if (raw.entries) return { current: blendAware(raw), previous: null, sources: {}, history: {} };   // the older single-generation shape
+  return { current: blendAware(raw.current), previous: blendAware(raw.previous), sources: raw.sources || {},
+           history: raw.history || {} };
 }
 
 /* College takes two sources, CFF and Fantasy Points. Proj is their average wherever both
@@ -1312,6 +1319,65 @@ function rotateProjStore(store, upload) {
   var cur = store.current;
   var unchanged = !!cur && JSON.stringify(cur.entries) === JSON.stringify(upload.entries);
   return { current: upload, previous: unchanged ? store.previous : (cur || store.previous || null) };
+}
+
+/* ---- NBA daily projections ---------------------------------------------------
+   ETR posts a file each day, sometimes one per slate. Files from the same Pacific day
+   merge into that day's generation, and every day's numbers are kept, so that before
+   the morning's file lands the board can show each player's average of his last ten. */
+var NBA_AVG_GAMES = 10;
+var NBA_KEEP_DAYS = 30;      // ten games take three weeks or so; this covers a missed stretch
+
+/** The Pacific calendar day of a timestamp, as YYYY-MM-DD. */
+function pacificDay(iso) {
+  return new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
+}
+
+/** The store after an NBA upload: same-day files merge, a new day rotates, history keeps every day. */
+function addNbaUpload(store, upload) {
+  var cur = store.current, day = pacificDay(upload.at), next;
+  if (cur && pacificDay(cur.at) === day) {
+    var fresh = {};
+    upload.entries.forEach(function (e) { fresh[e.norm] = 1; });
+    var files = cur.file.split(" + ");
+    if (files.indexOf(upload.file) < 0) files.push(upload.file);
+    var merged = Object.assign({}, upload, {
+      file: files.join(" + "),
+      entries: cur.entries.filter(function (e) { return !fresh[e.norm]; }).concat(upload.entries)
+    });
+    next = { current: merged, previous: store.previous };
+  } else {
+    next = rotateProjStore(store, upload);
+  }
+  var history = Object.assign({}, store.history), today = {};
+  next.current.entries.forEach(function (e) { today[e.norm] = [e.median, e.ceiling]; });
+  history[day] = today;
+  Object.keys(history).sort().reverse().slice(NBA_KEEP_DAYS).forEach(function (d) { delete history[d]; });
+  next.sources = {};
+  next.history = history;
+  return next;
+}
+
+/** Each player's average over his last NBA_AVG_GAMES days on file, as one generation. */
+function nbaAverage(history) {
+  var days = Object.keys(history).sort().reverse(), by = {}, order = [];
+  days.forEach(function (d) {
+    Object.keys(history[d]).forEach(function (n) {
+      if (!by[n]) { by[n] = { m: [], c: [] }; order.push(n); }
+      var v = history[d][n];
+      if (by[n].m.length >= NBA_AVG_GAMES) return;
+      by[n].m.push(v[0]);
+      if (typeof v[1] === "number") by[n].c.push(v[1]);
+    });
+  });
+  function mean(a) { return a.length ? a.reduce(function (x, y) { return x + y; }, 0) / a.length : null; }
+  var entries = order.map(function (n) {
+    var m = mean(by[n].m), c = mean(by[n].c);
+    return { id: null, name: n, norm: n, median: m, ceiling: c, own: null,
+             proj: blendProjection(m, c), games: by[n].m.length };
+  });
+  return { file: "average of the last " + NBA_AVG_GAMES + " ETR days", format: "ETR NBA average",
+           blend: PROJ_BLEND_VERSION, days: days.length, entries: entries };
 }
 
 /* ---- saved boards -------------------------------------------------------------
@@ -1930,7 +1996,11 @@ function sortBelowLine() {
 function applyStoredProjections() {
   var s = state.slate;
   var store = normalizeProjStore(load(K.proj(s.sport), null));
-  var stored = store.current;
+  var stored = store.current, previous = store.previous;
+  // Before the slate's own ETR file is in, each player shows his recent average instead.
+  var average = s.sport === "nba" && !!stored && pacificDay(stored.at) !== pacificDay(s.cutoff) &&
+                Object.keys(store.history).length > 0;
+  if (average) { stored = nbaAverage(store.history); previous = null; }
   state.projPrev = {};
   state.projParts = {};
   state.hasOwn = false;
@@ -1940,8 +2010,8 @@ function applyStoredProjections() {
   }
   var map = state.nameMaps[s.sport] || {};
   var joined = joinProjections(s.players, stored.entries, map);
-  if (store.previous && store.previous.entries) {
-    state.projPrev = joinProjections(s.players, store.previous.entries, map).values;
+  if (previous && previous.entries) {
+    state.projPrev = joinProjections(s.players, previous.entries, map).values;
   }
   state.proj = joined.values;
   state.projParts = joined.parts;
@@ -1952,9 +2022,10 @@ function applyStoredProjections() {
   sortBelowLine();
   state.projMeta = {
     file: stored.file, format: stored.format, at: stored.at,
-    prevFile: store.previous ? store.previous.file : null,
-    prevAt: store.previous ? store.previous.at : null,
-    prevFormat: store.previous ? store.previous.format : null,
+    average: average ? { days: stored.days, lastFile: store.current.file, lastAt: store.current.at } : null,
+    prevFile: previous ? previous.file : null,
+    prevAt: previous ? previous.at : null,
+    prevFormat: previous ? previous.format : null,
     matchedById: joined.matchedById, matchedByName: joined.matchedByName,
     boardTotal: s.players.length,
     missing: s.players
@@ -1999,7 +2070,7 @@ function ingestProjections(text, sourceName, pasted) {
       sources[parsed.format] = upload;
       gen = combineSources(sources, upload.at) || upload;
     }
-    var next = rotateProjStore(store, gen);
+    var next = parsed.sport === "nba" ? addNbaUpload(store, upload) : rotateProjStore(store, gen);
     if (sources) next.sources = sources;
     save(K.proj(parsed.sport), next);
     if (parsed.sport !== state.slate.sport) {
@@ -2181,6 +2252,14 @@ function renderMissingProjections() {
   var el = $("unmatched");
   el.innerHTML = "";
   var m = state.projMeta;
+  if (m && m.average) {
+    var a = document.createElement("div");
+    a.className = "notice";
+    a.innerHTML = "<b>Proj is each player's average of his last " + NBA_AVG_GAMES + " ETR projections</b> (" +
+                  m.average.days + (m.average.days === 1 ? " day" : " days") + " on file, newest " +
+                  whenPT(m.average.lastAt) + "). Upload today's ETR file to replace it.";
+    el.appendChild(closable(a));
+  }
   if (!m || !m.missing.length) return;
   var d = document.createElement("div");
   d.className = "notice warn";
@@ -3921,6 +4000,9 @@ function bootFailed(where, err) {
     document.title = "NBA Board";
     document.querySelector(".masthead h1").textContent = "NBA Board";
     document.querySelector('.views a[aria-current="page"]').setAttribute("href", "nba.html");
+    // Every NBA spot is a flex, so there is no replacement level to measure against.
+    document.querySelector('[data-sort="vorp"]').hidden = true;
+    document.querySelector('#view option[value="vorp"]').remove();
   }
   /* The fetch and the render fail for different reasons, and saying the mirror is
      unreachable when it is not sends you looking in the wrong place. */
@@ -4363,6 +4445,33 @@ function brrSelfTest() {
   st = rotateProjStore(st, same);
   ok("re-uploading the same numbers keeps the comparison",
      st.current === same && st.previous === up1);
+  var nbaCsv = '"Player","Team","Opp","Rank","ADP","Projection","Ceiling","id"\n' +
+               '"Victor Wembanyama","SAS","OKC","1","1.0","55.5","66.6","b316"\n';
+  var nbaP = parseProjections(nbaCsv);
+  ok("ETR NBA file reads with its ceiling and id",
+     nbaP.format === "ETR NBA" && nbaP.sport === "nba" && nbaP.entries[0].id === "b316" &&
+     Math.abs(nbaP.entries[0].proj - blendProjection(55.5, 66.6)) < 1e-9);
+  function nbaUp(file, at, rows) {
+    return { file: file, format: "ETR NBA", blend: PROJ_BLEND_VERSION, at: at,
+             entries: rows.map(function (r) { return { norm: r[0], name: r[0], median: r[1], ceiling: r[2], proj: blendProjection(r[1], r[2]) }; }) };
+  }
+  var ns = addNbaUpload(normalizeProjStore(null), nbaUp("main.csv", "2026-10-20T17:00:00Z", [["a", 10, 20], ["b", 30, 40]]));
+  ns = addNbaUpload(ns, nbaUp("late.csv", "2026-10-21T01:00:00Z", [["b", 32, 42], ["c", 5, 9]]));
+  ok("same Pacific day files merge, the later row winning",
+     ns.current.entries.length === 3 && ns.current.file === "main.csv + late.csv" && ns.previous === null &&
+     ns.current.entries.filter(function (e) { return e.norm === "b"; })[0].median === 32 &&
+     Object.keys(ns.history).join() === "2026-10-20");
+  ns = addNbaUpload(ns, nbaUp("next.csv", "2026-10-21T17:00:00Z", [["a", 14, 24]]));
+  ok("a new day rotates and keeps both days on file",
+     ns.current.file === "next.csv" && ns.previous.entries.length === 3 &&
+     Object.keys(ns.history).sort().join() === "2026-10-20,2026-10-21");
+  var avg = nbaAverage(ns.history), aOf = {};
+  avg.entries.forEach(function (e) { aOf[e.norm] = e; });
+  ok("the morning average runs over each player's own days",
+     aOf.a.median === 12 && aOf.a.ceiling === 22 && aOf.a.games === 2 && aOf.c.median === 5 && avg.days === 2);
+  var longH = {};
+  for (var dd = 1; dd <= 12; dd++) longH["2026-11-" + (dd < 10 ? "0" : "") + dd] = { a: [dd, null] };
+  ok("the average stops at the last " + NBA_AVG_GAMES + " days", nbaAverage(longH).entries[0].median === 7.5);
   ok("the older single-generation shape still loads",
      normalizeProjStore(up1).current === up1 && normalizeProjStore(up1).previous === null);
   // a store written before the blend existed must not be compared against blended numbers
