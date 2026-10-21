@@ -337,6 +337,9 @@
   .outx.on { background: var(--t0); color: var(--t0-ink); border-color: transparent; }
   .outx:focus-visible { outline: 2px solid var(--accent); }
   .row.is-out .name { text-decoration: line-through; color: var(--muted); }
+  .outback { all: unset; cursor: pointer; margin: 2px 6px 2px 0; padding: 2px 8px; border-radius: 6px; font-size: 12.5px;
+             border: 1px solid var(--line-strong); color: var(--ink); }
+  .outback:focus-visible { outline: 2px solid var(--accent); }
   .cfbx:focus-visible { outline: 2px solid var(--accent); }
   .board.cfb .num.score b { min-width: 44px; }
   /* College: the rough Score, then the opponent, side by side (stacked on a phone). */
@@ -1929,6 +1932,7 @@ var K = {
   syncedSig: function (label) { return "brr:syncsig:" + label; },    // the board as it stood right after that sync
   boardSlate: function (label) { return "brr:boardslate:" + label; },   // which week's slate this device's board is for
   out: function (label) { return "brr:out:" + label; },             // NBA: players you've marked out tonight
+  outFrom: function (label) { return "brr:outfrom:" + label; },     // NBA: the rank each one had when marked out
   switchAt: function (label) { return "brr:switch:" + label; },     // NBA: your rank for the ceiling-to-floor switch
   built: function (label) { return "brr:built:" + label; },         // NBA: the order as Build tiers left it
   slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
@@ -2280,23 +2284,48 @@ function applyNbaProjections(store) {
   syncSwitchField();
 }
 
-/** Mark a player out tonight, or back in. Marking him out sends him to the bottom of the board. */
-function toggleNbaOut(p) {
-  var label = state.slate.label, key = boardKey(p.first_name, p.last_name, state.nameMaps.nba || {});
-  var list = load(K.out(label), []), at = list.indexOf(key);
-  if (at >= 0) list.splice(at, 1); else list.push(key);
-  save(K.out(label), list);
-  if (at < 0) {
-    var i = state.order.indexOf(p.player_id);
-    if (i >= 0) {
-      state.order.splice(i, 1);
-      state.order.push(p.player_id);
-      if (state.cut != null && i < state.cut) state.cut--;
+/**
+ * Mark a player out tonight, or back in. Marking him out sends him to the bottom of the
+ * board and remembers his rank; bringing him back puts him at that rank again.
+ */
+function toggleNbaOut(p) { setNbaOut([p], !(state.nbaOutPids && state.nbaOutPids[p.player_id] === "you")); }
+
+function setNbaOut(players, out) {
+  var label = state.slate.label, map = state.nameMaps.nba || {};
+  var list = load(K.out(label), []), from = load(K.outFrom(label), {});
+  players.forEach(function (p) {
+    var key = boardKey(p.first_name, p.last_name, map), at = list.indexOf(key), i = state.order.indexOf(p.player_id);
+    if (out && at < 0) {
+      list.push(key);
+      if (i >= 0) {
+        from[key] = { rank: i, above: state.cut == null || i < state.cut };
+        state.order.splice(i, 1);
+        state.order.push(p.player_id);
+        if (state.cut != null && i < state.cut) state.cut--;
+      }
+    } else if (!out && at >= 0) {
+      list.splice(at, 1);
+      var was = from[key];
+      delete from[key];
+      if (was && i >= 0) {
+        state.order.splice(i, 1);
+        state.order.splice(Math.min(was.rank, state.order.length), 0, p.player_id);
+        if (was.above && state.cut != null) state.cut++;
+      }
     }
-  }
+  });
+  save(K.out(label), list);
+  save(K.outFrom(label), from);
   applyStoredProjections();
   saveBoard();
   render();
+}
+
+/** The players you've marked out, as slate players. */
+function nbaMarkedOut() {
+  var marked = {}, map = state.nameMaps.nba || {};
+  load(K.out(state.slate.label), []).forEach(function (k) { marked[k] = 1; });
+  return state.slate.players.filter(function (p) { return marked[boardKey(p.first_name, p.last_name, map)]; });
 }
 
 function handleProjectionFile(file) {
@@ -2775,6 +2804,27 @@ function nbaOutButton(p) {
 function renderMissingProjections() {
   var el = $("unmatched");
   el.innerHTML = "";
+  var gone = SPORT_MODE === "nba" && state.slate ? nbaMarkedOut() : [];
+  if (gone.length) {
+    var o = document.createElement("div");
+    o.className = "notice";
+    o.appendChild(document.createElement("b")).textContent = "You marked out: ";
+    gone.forEach(function (p) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "outback";
+      b.textContent = p.first_name + " " + p.last_name + " \u21a9";
+      b.title = "Bring him back in, at the rank he had";
+      b.addEventListener("click", function () { setNbaOut([p], false); });
+      o.appendChild(b);
+    });
+    if (gone.length > 1) {
+      var all = document.createElement("button");
+      all.type = "button"; all.className = "outback"; all.textContent = "Bring all back";
+      all.addEventListener("click", function () { setNbaOut(gone, false); });
+      o.appendChild(all);
+    }
+    el.appendChild(o);
+  }
   var m = state.projMeta;
   if (m && m.morning) {
     var a = document.createElement("div"), mo = m.morning;
@@ -2839,13 +2889,18 @@ function visibleRows() {
   if (state.position !== "ALL") {
     list = list.filter(function (r) { return r.p.position === state.position; });
   }
-  if (state.view === "adp") {
+  return sortRowsByView(list, state.view);
+}
+
+/** Rows ({p}) in the order a sorted view shows them; "order" leaves them as they are. */
+function sortRowsByView(list, view) {
+  if (view === "adp") {
     list = list.slice().sort(function (a, b) { return adpKey(a.p) - adpKey(b.p); });
-  } else if (state.view === "name") {
+  } else if (view === "name") {
     list = list.slice().sort(function (a, b) {
       return (a.p.last_name + a.p.first_name).localeCompare(b.p.last_name + b.p.first_name);
     });
-  } else if (state.view === "vorp") {
+  } else if (view === "vorp") {
     list = list.slice().sort(function (a, b) {
       var x = state.vorp[a.p.player_id], y = state.vorp[b.p.player_id];
       if (x == null && y == null) return adpKey(a.p) - adpKey(b.p);
@@ -2853,7 +2908,7 @@ function visibleRows() {
       if (y == null) return -1;
       return y - x;
     });
-  } else if (state.view === "own") {
+  } else if (view === "own") {
     list = list.slice().sort(function (a, b) {
       var pa = state.projParts[a.p.player_id], pb = state.projParts[b.p.player_id];
       var x = pa && typeof pa.own === "number" ? pa.own : null;
@@ -2863,7 +2918,7 @@ function visibleRows() {
       if (y == null) return -1;
       return y - x;
     });
-  } else if (state.view === "proj") {
+  } else if (view === "proj") {
     list = list.slice().sort(function (a, b) {
       var x = state.proj[a.p.player_id], y = state.proj[b.p.player_id];
       if (x == null && y == null) return adpKey(a.p) - adpKey(b.p);
@@ -4426,11 +4481,26 @@ async function doExport() {
       slate = Object.assign({}, slate, { players: slate.players.concat(back) });
     }
     var byPid = byPidMap(slate);
+    // Looking at a sorted view: export in that order if you say so, the same number of players.
+    var base = state.order, sortedAs = null;
+    if (state.view !== "order") {
+      var viewName = $("view").selectedOptions[0].textContent.replace(/^Sort by /, "");
+      if (window.confirm("You're looking at the board sorted by " + viewName + ". OK exports in that order; " +
+                         "Cancel exports your own order (My order).")) {
+        var cur = byPidMap(state.slate), outs = state.nbaOutPids || {};
+        base = sortRowsByView(state.order.map(function (pid) { return { p: cur[pid] }; })
+          .filter(function (r) { return r.p; }), state.view).map(function (r) { return r.p.player_id; });
+        base = base.filter(function (pid) { return !outs[pid]; }).concat(base.filter(function (pid) { return outs[pid]; }));
+        sortedAs = viewName;
+      }
+    }
     var rec = reconcileOrder(slate.players, state.order);
     var onSlate = {};
     slate.players.forEach(function (p) { onSlate[p.player_id] = 1; });
-    var exportCut = state.cut == null ? null : reconcileCut(state.order, state.cut, onSlate);
-    var ranked = exportCut == null ? rec.order : rec.order.slice(0, exportCut);
+    var ownCut = state.cut == null ? null : reconcileCut(state.order, state.cut, onSlate);
+    var exportCut = state.cut == null ? null : reconcileCut(base, state.cut, onSlate);
+    var exported = reconcileOrder(slate.players, base).order;
+    var ranked = exportCut == null ? exported : exported.slice(0, exportCut);
     var built = buildExportCsv(ranked, byPid);
     if (!built.rows) {
       setStatus(exportCut === 0
@@ -4452,7 +4522,7 @@ async function doExport() {
     state.data = fresh;
     state.slate = slate;
     state.order = rec.order;
-    state.cut = exportCut;
+    state.cut = ownCut;
     state.newIds = {};
     rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
     applyStoredProjections();
@@ -4460,8 +4530,9 @@ async function doExport() {
     renderMeta(null);
     render();
 
-    var msg = "Exported " + built.rows + " appearance ids in your order" +
+    var msg = "Exported " + built.rows + " appearance ids " + (sortedAs ? "sorted by " + sortedAs : "in your order") +
               (exportCut == null ? "."
+                : sortedAs ? ", the same number as your line. The other " + (exported.length - exportCut) + " were left out."
                 : ", everything above the line. The " + (rec.order.length - exportCut) +
                   " below it were left out.");
     if (built.missing.length) {
