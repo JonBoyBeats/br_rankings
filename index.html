@@ -641,6 +641,7 @@
         <span class="hint">Stored in this browser only. It reaches a private gist and nothing else.</span>
       </div>
     </div>
+    <div id="followRow" class="hint" style="margin-top:8px" hidden></div>
   </div>
 
   <div id="pastePanel" class="paste" hidden>
@@ -1932,6 +1933,7 @@ var K = {
   slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
+  follow: "brr:follow",                                             // a friend's gist whose projections this board follows
   gist: "brr:gh:gist",
   device: "brr:device"
 };
@@ -2127,6 +2129,7 @@ function selectSlate(index) {
   surfaceUnpriced(true);
   if (staleNote) setStatus(staleNote, "warn");
   scheduleSync(1200);
+  pullFollowed(true);
 }
 
 // ---------------------------------------------------------------- projections
@@ -3893,6 +3896,7 @@ function renderSync(text) {
   $("syncStatus").textContent = text;
   $("syncActions").hidden = !connected();
   $("syncConnectRow").hidden = connected();
+  renderFollow();
   syncStickyOffsets();
 }
 
@@ -4201,6 +4205,79 @@ function syncPoll() {
   if (state.slate && connected() && document.visibilityState === "visible" && !syncBusy && !syncTimer) autoSync();
 }
 setInterval(syncPoll, SYNC_POLL_MS);
+
+/* ---- following a friend's projections ------------------------------------------
+   A board opened with ?follow=<gist id> remembers that gist, and from then on reads its
+   projection file (no token: a secret gist is readable by anyone holding its id) when a
+   slate opens, when the page comes back into view and every few minutes, taking it
+   whenever it is newer than what this browser has. Only projections come across; the
+   order, the line, the out marks and the exports stay this browser's own. The owner's
+   board writes that file a few seconds after each upload, through its own Sync. */
+var FOLLOW_POLL_MS = 5 * 60 * 1000, followLast = 0;
+
+function followId() { return load(K.follow, null); }
+
+async function pullFollowed(quiet) {
+  var id = followId();
+  if (!id || !state.slate || id === load(K.gist, null)) return;
+  if (Date.now() - followLast < 60 * 1000) return;     // GitHub allows 60 unsigned reads an hour
+  followLast = Date.now();
+  var sport = state.slate.sport;
+  try {
+    var r = await fetch(GH + "/gists/" + id, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
+    if (!r.ok) throw new Error("GitHub returned HTTP " + r.status);
+    var f = ((await r.json()).files || {})[projFile(sport)];
+    if (!f) return;
+    var text = f.truncated ? await (await fetch(f.raw_url, { cache: "no-store" })).text() : f.content;
+    var remote = normalizeProjStore(JSON.parse(text)), local = normalizeProjStore(load(K.proj(sport), null));
+    var ra = remote.current ? isoMs(remote.current.at) : 0, la = local.current ? isoMs(local.current.at) : 0;
+    if (ra < la || (ra === la && JSON.stringify(remote) === JSON.stringify(local))) return;
+    syncApplying = true;
+    try { save(K.proj(sport), remote); } finally { syncApplying = false; }
+    if (!state.slate || state.slate.sport !== sport) return;
+    applyStoredProjections();
+    render();
+    if (!quiet || ra > la) setStatus("Projections updated from the board you follow" +
+                                     (remote.current ? " (" + remote.current.file + ", " + whenPT(remote.current.at) + ")" : "") + ".");
+  } catch (e) {
+    if (!quiet) setStatus("Couldn't read the followed board's projections: " + e.message, "warn");
+  }
+}
+
+function renderFollow() {
+  var el = $("followRow");
+  if (!el) return;
+  el.innerHTML = "";
+  var id = followId(), gist = load(K.gist, null);
+  if (id && id !== gist) {
+    el.appendChild(document.createTextNode("Projections follow a friend's board and update a few minutes after they upload. "));
+    var stop = document.createElement("button");
+    stop.type = "button"; stop.textContent = "Stop following";
+    stop.addEventListener("click", function () {
+      try { localStorage.removeItem(K.follow); } catch (e) { /* ignore */ }
+      renderFollow();
+      setStatus("Stopped following. Projections now come only from your own uploads.");
+    });
+    el.appendChild(stop);
+  } else if (connected() && gist) {
+    var dir = location.origin + location.pathname.replace(/[^/]*$/, "");
+    var link = dir + (SPORT_MODE === "nba" ? "nba.html" : "") + "?follow=" + gist;
+    el.appendChild(document.createTextNode("Share link for friends: their boards pick up your projections a few minutes after you upload; their ranks stay their own. "));
+    var copy = document.createElement("button");
+    copy.type = "button"; copy.textContent = "Copy link";
+    copy.addEventListener("click", function () {
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject())
+        .then(function () { copy.textContent = "Copied"; }, function () { window.prompt("Copy this link:", link); });
+    });
+    el.appendChild(copy);
+  }
+  el.hidden = !el.childNodes.length;
+}
+
+document.addEventListener("visibilitychange", function () {
+  if (document.visibilityState === "visible") pullFollowed(true);
+});
+setInterval(function () { if (document.visibilityState === "visible") pullFollowed(true); }, FOLLOW_POLL_MS);
 
 /* ---- history: every save is a gist revision, so an older board is a tap away ---- */
 async function syncHistory() {
@@ -4538,6 +4615,11 @@ function bootFailed(where, err) {
 }
 
 (async function boot() {
+  var fm = /[?&]follow=([0-9a-f]{20,40}|off)(?:&|$)/i.exec(location.search);
+  if (fm) {
+    if (fm[1].toLowerCase() === "off") { try { localStorage.removeItem(K.follow); } catch (e) { /* ignore */ } }
+    else save(K.follow, fm[1]);
+  }
   if (SPORT_MODE === "nba") {
     document.title = "NBA Board";
     document.querySelector(".masthead h1").textContent = "NBA Board";

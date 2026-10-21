@@ -3,5 +3,5 @@
 <title>NBA Board</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- The NBA board is the same board in NBA mode, so every fix reaches both sports. -->
-<script>location.replace("index.html?sport=nba" + location.hash);</script>
+<script>location.replace("index.html?sport=nba" + location.search.replace(/^\?/, "&") + location.hash);</script>
 <noscript><a href="index.html?sport=nba">Open the NBA board</a></noscript>
