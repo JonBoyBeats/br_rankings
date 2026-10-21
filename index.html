@@ -337,6 +337,12 @@
   .outx.on { background: var(--t0); color: var(--t0-ink); border-color: transparent; }
   .outx:focus-visible { outline: 2px solid var(--accent); }
   .row.is-out .name { text-decoration: line-through; color: var(--muted); }
+  /* NBA name line in fixed columns: name, team, injury, ETR, Zakarian, notes, out. */
+  html.nba .who.nbawho { display: grid; grid-template-columns: minmax(0, 1fr) 40px 22px 20px 20px 24px 24px;
+                         column-gap: 8px; align-items: center; }
+  html.nba .nbawho > * { justify-self: start; }
+  html.nba .nbawho .inj.p { background: #2f6fd6; color: #ffffff; }
+  html.nba .nbawho .inj.d { background: var(--t0); color: var(--t0-ink); }
   .outback { all: unset; cursor: pointer; margin: 2px 6px 2px 0; padding: 2px 8px; border-radius: 6px; font-size: 12.5px;
              border: 1px solid var(--line-strong); color: var(--ink); }
   .outback:focus-visible { outline: 2px solid var(--accent); }
@@ -515,8 +521,8 @@
     .tag { font-size: 9px; padding: 1px 4px; }
     h1 { font-size: 17px; }
     /* NBA rows carry more chips (write-ups, out); the name keeps its own line above them. */
-    html.nba .who { flex-wrap: wrap; row-gap: 3px; align-items: center; }
-    html.nba .name { flex-basis: 100%; }
+    html.nba .who.nbawho { grid-template-columns: 34px 20px 18px 18px 22px 22px minmax(0, 1fr); column-gap: 5px; row-gap: 3px; }
+    html.nba .nbawho .name { grid-column: 1 / -1; }
     .views a { padding: 5px 8px; font-size: 12px; }
   }
 </style>
@@ -2763,15 +2769,22 @@ function nbaTakesFor(p) {
 }
 
 /** On the name line: a letter per source coloured by its stance, and the dropdown toggle. */
+/** An empty cell that keeps a row's columns lined up with the rows around it. */
+function slot() { var e = document.createElement("span"); e.className = "slot"; return e; }
+
+/** The ETR and Zakarian letters, each in its own column (empty when that source said nothing), then the notes toggle. */
 function nbaWho(who, p, takes) {
-  takes.forEach(function (t) {
+  ["ETR", "Zakarian"].forEach(function (src) {
+    var t = takes.filter(function (x) { return x.source === src; })[0];
+    if (!t) { who.appendChild(slot()); return; }
     var c = document.createElement("span");
     c.className = "stance s-" + (NBA_STANCE[String(t.stance || "").toLowerCase()] || "note");
     c.textContent = t.source.charAt(0);
     c.title = t.source + (t.stance ? ": " + t.stance : "") + (t.blurb ? ". " + t.blurb : "");
     who.appendChild(c);
   });
-  cfbWho(who, p, { takes: takes.map(function (t) { return { source: t.source }; }) });
+  if (takes.length) cfbWho(who, p, { takes: takes.map(function (t) { return { source: t.source }; }) });
+  else who.appendChild(slot());
 }
 
 function nbaPanel(takes) {
@@ -3338,15 +3351,21 @@ function render() {
     var sub = document.createElement("span");
     sub.className = "sub";
     sub.textContent = p.team || "—";
-    who.append(name, pos, sub);
     var cf = state.slate.sport === "cfb" ? cfbFor(p) : null;
-    if (cf) cfbWho(who, p, cf);
-    var inj = injuryTag(p.injury);
-    if (inj) who.appendChild(inj);
     var nt = SPORT_MODE === "nba" ? nbaTakesFor(p) : null;
-    if (nt && nt.length) nbaWho(who, p, nt);
-    if (SPORT_MODE === "nba") who.appendChild(nbaOutButton(p));
-    if (state.newIds[p.player_id]) {
+    if (SPORT_MODE === "nba") {
+      // Straight columns: name, team, injury, ETR, Zakarian, notes, out. No position: every spot is a flex.
+      who.classList.add("nbawho");
+      who.append(name, sub, injuryTag(p.injury) || slot());
+      nbaWho(who, p, nt || []);
+      who.appendChild(nbaOutButton(p));
+    } else {
+      who.append(name, pos, sub);
+      if (cf) cfbWho(who, p, cf);
+      var inj = injuryTag(p.injury);
+      if (inj) who.appendChild(inj);
+    }
+    if (state.newIds[p.player_id] && SPORT_MODE !== "nba") {
       var tag = document.createElement("span");
       tag.className = "tag";
       tag.textContent = "new";
