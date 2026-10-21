@@ -513,6 +513,7 @@
     /* NBA rows carry more chips (write-ups, out); the name keeps its own line above them. */
     html.nba .who { flex-wrap: wrap; row-gap: 3px; align-items: center; }
     html.nba .name { flex-basis: 100%; }
+    .views a { padding: 5px 8px; font-size: 12px; }
   }
 </style>
 </head>
@@ -523,8 +524,11 @@
     <div class="mast-row">
       <h1>Battle Royale Board</h1>
       <nav class="views" aria-label="Pages">
-        <a href="./" aria-current="page">Board</a>
+        <a href="/">Home</a>
+        <a href="./" id="navNfl" aria-current="page">NFL</a>
         <a href="analysis.html" class="football-only">Analysis</a>
+        <a href="nba.html" id="navNba">NBA</a>
+        <a href="/survivor/">Survivor</a>
       </nav>
       <div class="mast-meta" id="meta"></div>
     </div>
@@ -4450,7 +4454,8 @@ function bootFailed(where, err) {
   if (SPORT_MODE === "nba") {
     document.title = "NBA Board";
     document.querySelector(".masthead h1").textContent = "NBA Board";
-    document.querySelector('.views a[aria-current="page"]').setAttribute("href", "nba.html");
+    $("navNfl").removeAttribute("aria-current");
+    $("navNba").setAttribute("aria-current", "page");
     // Every NBA spot is a flex, so there is no replacement level to measure against.
     document.querySelector('[data-sort="vorp"]').hidden = true;
     document.querySelector('#view option[value="vorp"]').remove();
