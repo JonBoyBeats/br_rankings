@@ -202,6 +202,7 @@
   .hist .htxt { flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.4; }
   .hist .htop { color: var(--muted); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hint { color: var(--muted); font-size: 12.5px; }
+  #syncStatus { white-space: pre-line; }
 
   /* ---------- notices ---------- */
   .notice {
@@ -1933,7 +1934,8 @@ var K = {
   slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
-  follow: "brr:follow",                                             // a friend's gist whose projections this board follows
+  follow: "brr:follow",
+  syncLog: "brr:synclog",                                           // when this device last synced, and how it went                                             // a friend's gist whose projections this board follows
   gist: "brr:gh:gist",
   device: "brr:device"
 };
@@ -2318,7 +2320,7 @@ function ingestProjections(text, sourceName, pasted) {
     if (SPORT_MODE === "nba" && parsed.sport === "nfl") parsed.sport = "nba";
     if (parsed.error) { fail(parsed.error); return; }
     if (!parsed.entries.length) { fail("no rows with a numeric projection."); return; }
-    var upload = { file: sourceName, format: parsed.format, blend: PROJ_BLEND_VERSION,
+    var upload = { file: sourceName, format: parsed.format, blend: PROJ_BLEND_VERSION, device: myDevice(),
                    at: new Date().toISOString(), entries: parsed.entries };
     var store = normalizeProjStore(load(K.proj(parsed.sport), null)), gen = upload, sources = null;
     if (parsed.sport === "cfb") {
@@ -3920,10 +3922,31 @@ async function refreshSyncStatus() {
     renderSync("Auto-sync is on: edits save a couple of seconds after you make them, and opening or returning " +
                "to the board (or a check every minute while it's open) picks up the newest one from any device. " +
                "If two devices both changed this slate, it asks which board to keep. " + bits +
-               (labels.length ? " Saved slates: " + labels.join(", ") + "." : "") + " This device is " + myDevice() + ".");
+               (labels.length ? " Saved slates: " + labels.join(", ") + "." : "") + "\n\n" + syncCheck(cur));
   } catch (e) {
     renderSync(e.message);
   }
+}
+
+/**
+ * One readout to compare across devices: which device and gist this is, when it last
+ * synced and how that went, and whether its projections match the gist's. Every device
+ * that reads the same gist id and the same projections is in step.
+ */
+function syncCheck(cur) {
+  var sport = state.slate ? state.slate.sport : "nfl", log = load(K.syncLog, null);
+  var pf = cur.files[projFile(sport)];
+  var remote = pf && !pf.truncated && pf.content ? normalizeProjStore(JSON.parse(pf.content)).current : null;
+  var local = normalizeProjStore(load(K.proj(sport), null)).current;
+  function desc(g) {
+    return g ? g.file + (g.device ? " from " + g.device : "") + ", " + whenPT(g.at) : "none";
+  }
+  var ra = remote ? isoMs(remote.at) : 0, la = local ? isoMs(local.at) : 0;
+  var verdict = ra === la ? "In step." : ra > la ? "This device is behind; pulling them now." : "This device is ahead; sending them now.";
+  if (ra !== la) scheduleSync(300);
+  return "Sync check \u2014 this device: " + myDevice() + ", gist \u2026" + String(cur.id || "none").slice(-6) +
+         ". Last sync here: " + (log ? describeAge(log.at, Date.now()) + (log.ok ? ", OK" : ", failed: " + log.err) : "not yet") +
+         ". " + sport.toUpperCase() + " projections here: " + desc(local) + ". In your gist: " + desc(remote) + ". " + verdict;
 }
 
 async function syncSave() {
@@ -4004,15 +4027,33 @@ async function applyEntry(entry) {
   return { rec: rec, ranks: ranks };
 }
 
+/* Take the gist's projections for this sport when they are newer than this device's (or
+   always, when `force`). Returns a sentence for the status line, or "". */
+function pullProjections(cur, sport, force) {
+  var pf = cur.files[projFile(sport)];
+  if (!pf) return "";
+  if (pf.truncated) return " Your saved projections were too big to read back.";
+  var remote = normalizeProjStore(JSON.parse(pf.content)), local = normalizeProjStore(load(K.proj(sport), null));
+  var ra = remote.current ? isoMs(remote.current.at) : 0, la = local.current ? isoMs(local.current.at) : 0;
+  if (!remote.current || !(ra > la || (force && ra && JSON.stringify(remote) !== JSON.stringify(local)))) return "";
+  syncApplying = true;
+  try { save(K.proj(sport), remote); } finally { syncApplying = false; }
+  if (state.slate && state.slate.sport === sport) applyStoredProjections();
+  return " Projections from " + remote.current.file + (remote.current.device ? " (" + remote.current.device + ")" : "") + " came across.";
+}
+
 async function syncLoad() {
   var btn = $("syncLoad"); btn.disabled = true;
   try {
     var cur = await readSaved();
+    // Projections come across whether or not a board order was ever saved for this slate.
+    var pnote = pullProjections(cur, state.slate.sport, true);
+    if (pnote) { recomputeVorp(); render(); }
     var entry = cur.doc.slates[state.slate.label];
-    if (!entry) { renderSync("Nothing saved for " + slateLabel(state.slate) + " yet."); return; }
+    if (!entry) { renderSync("No board order saved for " + slateLabel(state.slate) + " yet." + (pnote || " Projections were already in step.")); return; }
     if (entryIsStale(entry, state.slate)) {
       renderSync("The board saved for " + slateLabel(state.slate) + " is from an earlier week's slate (saved " +
-                 describeAge(entry.saved_at, Date.now()) + "). Nothing is saved for this week's yet.");
+                 describeAge(entry.saved_at, Date.now()) + "). Nothing is saved for this week's yet." + pnote);
       return;
     }
     if (!window.confirm("Replace your order with the board saved " +
@@ -4028,19 +4069,7 @@ async function syncLoad() {
     rawSave(K.synced(state.slate.label), entry.saved_at);
     rawSave(K.syncedSig(state.slate.label), boardSig());
 
-    var sport = state.slate.sport;
-    var pf = cur.files[projFile(sport)];
-    var note = "";
-    if (pf && !pf.truncated) {
-      var remote = normalizeProjStore(JSON.parse(pf.content));
-      if (remote.current && remote.current.entries) {
-        save(K.proj(sport), remote);
-        applyStoredProjections();
-        note = " Projections from " + remote.current.file + " came with it.";
-      }
-    } else if (pf) {
-      note = " Its projections were too big to read back.";
-    }
+    var note = pnote;
     recomputeVorp();
     render();
     if (!$("vorpPanel").hidden) renderVorpPanel();
@@ -4124,7 +4153,8 @@ async function autoSync(quiet) {
     if (entryIsStale(remote, state.slate)) remote = null;      // saved for an earlier week's slate
     var syncedSig = load(K.syncedSig(label), null);
     var hasLocal = load(K.order(label), null) != null;
-    var take = false, push = false;
+    var take = false, push = false, boardErr = null, entry = null;
+    try {                                                       // a board problem must not hold up the projections
     if (syncedSig == null) {
       // first sync for this slate on this device
       if (!remote) push = hasLocal;
@@ -4155,37 +4185,39 @@ async function autoSync(quiet) {
       rawSave(K.synced(label), remote.saved_at);
       msg = "Synced your board from " + remote.device + " (saved " + describeAge(remote.saved_at, Date.now()) + ").";
     } else if (push) {
-      var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
-                             load(K.vorpWin(label), null), state.cut);
+      entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
+                         load(K.vorpWin(label), null), state.cut);
       files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
     }
+    } catch (be) { boardErr = be; take = false; entry = null; files = {}; msg = ""; }
 
-    // projections: the newer upload wins
-    var pf = cur.files[projFile(sport)];
-    var remoteP = pf && !pf.truncated && pf.content ? normalizeProjStore(JSON.parse(pf.content)) : null;
-    var localP = normalizeProjStore(load(K.proj(sport), null));
-    var ra = remoteP && remoteP.current ? isoMs(remoteP.current.at) : 0, la = localP.current ? isoMs(localP.current.at) : 0;
-    if (ra > la) {
-      syncApplying = true;
-      try { save(K.proj(sport), remoteP); applyStoredProjections(); } finally { syncApplying = false; }
-      msg += (msg ? " " : "Synced. ") + "Projections from " + remoteP.current.file + " came from your other device.";
-    } else if (la > ra) {
-      var payload = JSON.stringify(localP);
-      if (payload.length <= GIST_MAX) files[projFile(sport)] = { content: payload };
-    }
+    // projections: the newer upload wins, either way
+    var pmsg = pullProjections(cur, sport, false);
+    if (!pmsg) {
+      var pf = cur.files[projFile(sport)], localP = normalizeProjStore(load(K.proj(sport), null));
+      var remoteP = pf && !pf.truncated && pf.content ? normalizeProjStore(JSON.parse(pf.content)) : null;
+      var ra = remoteP && remoteP.current ? isoMs(remoteP.current.at) : 0, la = localP.current ? isoMs(localP.current.at) : 0;
+      if (la > ra) {
+        var payload = JSON.stringify(localP);
+        if (payload.length <= GIST_MAX) files[projFile(sport)] = { content: payload };
+      }
+    } else msg += (msg ? "" : "Synced.") + pmsg;
 
     if (take) rawSave(K.syncedSig(label), boardSig());      // after any re-sort the projections caused
     if (Object.keys(files).length) {
       await writeFiles(files, cur.id);
       if (entry) { rawSave(K.synced(label), entry.saved_at); rawSave(K.syncedSig(label), boardSig()); }
     }
-    if (take || ra > la) {
+    if (take || pmsg) {
       recomputeVorp();
       render();
       if (!$("vorpPanel").hidden) renderVorpPanel();
       setStatus(msg);
     }
+    if (boardErr) throw boardErr;
+    rawSave(K.syncLog, { at: new Date().toISOString(), ok: true });
   } catch (e) {
+    rawSave(K.syncLog, { at: new Date().toISOString(), ok: false, err: e.message });
     if (!$("syncPanel").hidden) renderSync("Auto-sync: " + e.message);
   } finally {
     syncBusy = false;
@@ -4200,6 +4232,10 @@ document.addEventListener("visibilitychange", function () {
 });
 window.addEventListener("focus", function () {
   if (state.slate && connected() && !syncTimer) autoSync();
+});
+/* A phone restoring the page from memory fires neither focus nor a reload. */
+window.addEventListener("pageshow", function (e) {
+  if (e.persisted && state.slate && connected()) autoSync();
 });
 function syncPoll() {
   if (state.slate && connected() && document.visibilityState === "visible" && !syncBusy && !syncTimer) autoSync();
