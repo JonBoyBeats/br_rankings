@@ -1,0 +1,194 @@
+source,week,player,team,job,usage_tier,trend,stance,evidence,blurb
+Gretch,6,Jaylen Waddle,DEN,Alpha,Great,↑,Signal,"80% routes, 7 tgt, 29% TPRR, 0.70 WOPR","No. 1 WR numbers in theory, though he lists Waddle among his concerns in an offense that threw for 80 air yards."
+Gretch,6,RJ Harvey,DEN,Passing-down,Average,↑,Signal,"40% routes, 4 HVT; 56 yds on 9 touches","A solid day in a bad situation; should see more work. His in-season HVT target: the most obvious bench RB in fantasy, worth acquiring cheaply before Coleman returns."
+Gretch,6,Jaxon Smith-Njigba,SEA,Alpha,Elite,→,Signal,"16 tgt, 183 air yds on a bum ankle",Studs being studs.
+Gretch,6,Rashid Shaheed,SEA,Rotational,Average,↑,Signal,52% routes,"Looks more like a functional part of the offense, but a bet on role progression for now."
+Gretch,6,J.K. Dobbins,DEN,Lead,Average,↓,Noise,"17 carries, -24 RYOE",Flipped to Noise: this isn't sustainable and something's gotta give.
+Gretch,6,George Holani,SEA,Committee,Replacement,→,Noise,"56% snaps, TD; 5 touches",Comeback-mode work.
+Gretch,6,Emanuel Wilson,SEA,Committee,Average,↓,Noise,"14 carries, 33% snaps, -22 RYOE","Led the early-down touches, but the returning RBs get closer each week."
+Gretch,6,C.J. Stroud,HOU,Starter,,↑,,+1.8% PROE while leading; one bad end-zone INT,Balling: getting the ball where it needs to be with precision. The Texans are fun again.
+Gretch,6,Nico Collins,HOU,Alpha,Average,→,,5-3-74; diving deep catch,Still Stroud's favorite target; the passing game runs through him.
+Gretch,6,Jaylin Noel,HOU,Slot,Average,↑,Signal,4-4-107-1 on 60% routes,Has emerged as a real slot weapon and should keep producing in a supporting role; a waiver add.
+Gretch,6,Marvin Harrison Jr.,HOU,Rotational,Replacement,↑,Noise,"19% snaps, 23% routes, 50% TPRR (4 tgt on 8 routes)","The routes will rise and the TPRR fall; a good first sign, but the question is how fast the role grows in a crowded room, and the upside path likely means taking from Collins."
+Gretch,6,Dalton Schultz,HOU,Receiving TE,Replacement,↓,Signal,"51% routes (47% in Wk 5, 65%+ in Wks 1-4)","Noel in the slot and the better WRs leave less need for a receiving TE; just a streaming option, cuttable soon."
+Gretch,6,Foster Moreau,HOU,Rotational,Replacement,→,Noise,2-2-7-2 on 37% routes,Not actionable production.
+Gretch,6,Xavier Hutchinson,HOU,Rotational,Replacement,→,,40% routes; 3-2-10,One of the WRs who will give up routes to Harrison.
+Gretch,6,Kayshon Boutte,HOU,Rotational,Replacement,↓,,40% routes (season low); 3-2-16,Will give up routes as Harrison's role grows.
+Gretch,6,Woody Marks,HOU,Lead,Average,→,,"78% snaps; 15-56, -24 RYOE; the only GZT","An underwhelming lead back who needs all the work because he isn't efficient, but his TD equity seems fine."
+Gretch,6,Jawhar Jordan,HOU,Committee,Replacement,↑,,"6-43-1, +15 RYOE (25-yd TD)","A limited No. 2 who found space; slim and not explosive, so he only takes some rushing work."
+Gretch,6,Parker Washington,JAX,Alpha,Great,→,Noise,"11 tgt, 153 air yds, 4 catches; several near misses","The inefficiency is Noise, the targets and air yards are Signal. He's good."
+Gretch,6,Brenton Strange,JAX,Receiving TE,Average,↓,,56% routes (season low); 7-5-44,An odd dip given how good he's been; no injury reason seen.
+Gretch,6,Josh Cameron,JAX,Rotational,Replacement,↑,Noise,"50% snaps, 40% routes (season highs); 0 tgt",Got more work as Thomas faded.
+Gretch,6,Travis Hunter,JAX,Rotational,Replacement,↑,Noise,"16% routes, 57% TPRR; 4-4-59-1","Not sure what to expect, but more involvement is good with Thomas less involved."
+Gretch,6,Brian Thomas Jr.,JAX,Part-time,Replacement,↓,Signal,28% routes (season low); no second-half snaps; a drop,"Seemingly on the way out the door, almost forcing a trade."
+Gretch,6,Jakobi Meyers,JAX,Starter,Average,↑,,10-5-83,"Got going after Thomas was out; behind Washington in the pecking order, with Strange."
+Gretch,6,Bhayshul Tuten,JAX,Lead,Great,↑,Signal,24.7 PPR; 4-4-48-2; 58% routes (season high by 12 pts),Looked better than his statline and lost yardage and a TD to holds; kept the lead and plenty of TD equity.
+Gretch,6,Chris Rodriguez Jr.,JAX,Committee,Replacement,↑,Noise,"11-55; 3 GZT, none converted","Hot-hand work early, but Tuten retained the TD equity."
+Gretch,6,Trevor Lawrence,JAX,Starter,,→,,End-zone INT over the middle,End-zone interceptions have been an issue throughout his career.
+Gretch,6,D'Andre Swift,CHI,Lead,Great,↑,Signal,"8 HVT, 4 GZT (both second-most in Wk 6); 16-44-2, -35 RYOE",Poor efficiency didn't hold him back from a big day.
+Gretch,6,Roschon Johnson,CHI,Committee,Average,↑,Signal,"85 yds, TD; a lost fumble",Strong in the downhill Monangai role; the Bears' RB situation remains great.
+Gretch,6,Colston Loveland,CHI,Receiving TE,Great,↑,Signal,78% routes (most since Wk 1); 7-6-65-1; 3 GZT,"Early involvement, screens and varied usage; lost a TD running out of the window and a conversion to a ticky-tack OPI. An optimistic outlook."
+Gretch,6,Luther Burden III,CHI,Starter,Great,→,Noise,"44% routes, 44% TPRR; 8-8-95; team-high 0.61 WOPR",Lots of manufactured work; essentially gave up lower-impact routes.
+Gretch,6,Rome Odunze,CHI,Starter,Average,→,Noise,4-3-39; lost a catch to a hold,"Looked like a bigger part of the offense early; better in a more competitive, vertical game."
+Gretch,6,Caleb Williams,CHI,Starter,,→,Noise,3.9 aDOT; 141 team air yds,"Looked good in his return, in a game the Bears controlled."
+Gretch,6,Bijan Robinson,ATL,Workhorse,Average,↓,Noise,11 touches; 9-61,A slow game early; most of the Falcons' offense came in comeback mode on 50 plays.
+Gretch,6,Drake London,ATL,Alpha,Great,→,Noise,"10 tgt, 143 air yds, 0.73 WOPR; 4 catches",A tough game; drew a long DPI.
+Gretch,6,Kyle Pitts,ATL,Receiving TE,Average,↑,Noise,7-5-60-2; 54 of 60 yds and both TDs in the fourth quarter,"Comeback-mode production; he'd sell high, as Pitts isn't materially better than streamable TEs."
+Gretch,6,Jahan Dotson,ATL,Rotational,Replacement,→,,5-3-87-1,A back-shoulder TD on a nicely placed Penix ball.
+Gretch,6,Zachariah Branch,ATL,Rotational,Replacement,↑,,33% routes (season high); two lost fumbles on returns,Stayed involved after the fumbles.
+Gretch,6,Zay Flowers,BAL,Alpha,Elite,→,Signal,"36% target share, 0.77 WOPR; 11-6-66",A crucial part of the offense; they need Lamar back.
+Gretch,6,Ja'Kobi Lane,BAL,Starter,Average,↑,Noise,"58% routes, 23% TPRR; 5-4-40",Looked great in his first game back but may have been banged up; his role should expand right away with Bateman hurt.
+Gretch,6,Josh Cuevas,BAL,Receiving TE,Average,↑,,5-4-44-1,Far better than Andrews in this one.
+Gretch,6,Mark Andrews,BAL,Receiving TE,Replacement,↓,,3-1-4,Outplayed by the rookie Cuevas.
+Gretch,6,Rashod Bateman,BAL,Starter,Replacement,↓,,26% routes; shoulder injury,Lane should add work immediately.
+Gretch,6,Devontez Walker,BAL,Starter,Replacement,→,,"68% routes, 0 catches",Doubts the plan is for him to out-route Lane.
+Gretch,6,Derrick Henry,BAL,Workhorse,Average,↓,,17-58; a lost fumble; stuffed twice at the 1,Hasn't looked as good without Lamar.
+Gretch,6,Jaleel McLaughlin,CLE,Committee,Average,↑,Noise,"62% snaps, 57% routes; 9-41, 4-4-14","A solid day, but it depends on which RBs are active, and others should be ready next week."
+Gretch,6,Audric Estime,CLE,Committee,Replacement,→,,9-19-1,"Not good, but bigger, so he got the goal-line work."
+Gretch,6,Jerry Jeudy,CLE,Starter,Average,→,,4-4-69; set up the winning FG,The top pass-catcher in a bad offense.
+Gretch,6,Denzel Boston,CLE,Starter,Replacement,→,,5-1-15,Saw targets but did little.
+Gretch,6,KC Concepcion,CLE,Starter,Replacement,→,,6-4-37,Saw targets but did little.
+Gretch,6,Harold Fannin Jr.,CLE,Receiving TE,Replacement,↓,,3-1-9,Another very quiet day.
+Gretch,6,Deshaun Watson,CLE,Starter,,↓,Signal,"107 team yds through three quarters, 237 total; 5 sacks","Despite being 4-2, the Browns remain one of the worst offenses in the league."
+Gretch,6,Carnell Tate,TEN,Alpha,Elite,↑,Signal,"0.90 WOPR, 35% TPRR; 7-6-70-1","Dominated the passing game, showing solid growth; a solid option in a tough situation."
+Gretch,6,Wan'Dale Robinson,TEN,Starter,Replacement,→,,7-3-22,The only other Titan with more than two targets.
+Gretch,6,Tony Pollard,TEN,Lead,Average,→,,19-76; 0 HVT,"Runs fine, but no HVTs even in an expanded role."
+Gretch,6,Tyjae Spears,TEN,Passing-down,Replacement,↓,,2 touches; played through a Q tag,Limited.
+Gretch,6,Cam Ward,TEN,Starter,,↓,Noise,"11 completions on 22 att, 134 air yds; INT","Short fields in the second half, but also some offensive struggles on a week-low 45 plays."
+Gretch,6,Josh Downs,IND,Starter,Average,↓,Noise,8-4-40; drops and a deflected INT,Hard to call the lack of production Noise at this point; concentration and effort looked off.
+Gretch,6,Keenan Allen,IND,Starter,Average,↑,Signal,11-8-82,"Basically a TE sitting under coverage, but usable volume, and part of the problem for Downs."
+Gretch,6,Will Mallory,IND,Receiving TE,Average,↑,Noise,"68% routes, 6 tgt in the Warren role",Only notable if Warren misses more time.
+Gretch,6,Jonathan Taylor,IND,Workhorse,Great,→,,"21-94-1, 4-2-57; a lost fumble",Pretty great apart from the fumble.
+Gretch,6,Daniel Jones,IND,Starter,,→,,472 team air yds (Wk 6 high); a bad INT,"Pushing the ball again, with mixed results at best."
+Gretch,6,A.J. Brown,NE,Alpha,Elite,↑,Signal,"91% routes, 33% target share, 0.73 WOPR; 10-3-27 with drops","A clear buy: the passing game will flow through him, and the drops are Noise. Expects solid production heading into the Wk 11 bye."
+Gretch,6,DeMario Douglas,NE,Starter,Average,↑,Signal,74% routes (53% in Wk 5); 8-7-86-1; a lost fumble,A productive role player and a decent waiver add if Doubs misses time.
+Gretch,6,Romeo Doubs,NE,Starter,Replacement,↓,,1-1-42-1; hurt on the TD,Left early.
+Gretch,6,Kyle Williams,NE,Rotational,Replacement,↑,,57% routes (season high); 1-1-12,Played more but didn't do much.
+Gretch,6,Efton Chism III,NE,Rotational,Replacement,↓,,Lost all his routes with Brown back,
+Gretch,6,Hunter Henry,NE,Receiving TE,Average,→,,5-4-48-1,
+Gretch,6,Rhamondre Stevenson,NE,Committee,Replacement,↓,,14-36; 4 MTF,An up-and-down day; Kiner looked better late.
+Gretch,6,TreVeyon Henderson,NE,Committee,Replacement,→,,7-31; a fumble,The Pats run more with him in; they went right back to him after the fumble.
+Gretch,6,Corey Kiner,NE,Committee,Replacement,↑,Noise,11-57 in late hot-hand work,Ran well and could become a problem.
+Gretch,6,Braelon Allen,NYJ,Workhorse,Great,↑,Signal,"87% snaps; 17-78, +17 RYOE, 4 MTF",Another strong rushing day that further complicates Hall's return.
+Gretch,6,Omar Cooper Jr.,NYJ,Starter,Great,↑,Signal,"79% routes, 27% TPRR, 0.58 WOPR; 7-6-103-1 (another TD called back)","His top waiver add: looked awesome, and the opportunity working off Wilson is real, which Mitchell's return won't materially change."
+Gretch,6,Garrett Wilson,NYJ,Alpha,Great,→,Noise,6-4-44,A quiet day; Cooper's eruption should help him see better coverage.
+Gretch,6,Kenyon Sadiq,NYJ,Receiving TE,Replacement,↓,Signal,36% routes; 3-1-12,"A longer-term stash for now, cuttable in shallower leagues."
+Gretch,6,Mason Taylor,NYJ,Full-time,Average,↑,Signal,"61% routes, 6 tgt",A deep-league and TE-premium option; preferred as the better blocker.
+Gretch,6,Tim Patrick,NYJ,Rotational,Replacement,→,,A downfield-blocking OPI wiped out a TD,The Jets are playing the wrong players.
+Gretch,6,Malik Nabers,NYG,Alpha,Elite,↑,Signal,35 tgt over two weeks; 15-12-165,"Fully back to being a target monster, though the raw volume isn't sustainable."
+Gretch,6,Isaiah Likely,NYG,Receiving TE,Great,↑,Signal,11-6-99-1 on 92% routes,Another monster game; Nabers' presence lets him run free.
+Gretch,6,Cam Skattebo,NYG,Lead,Replacement,↓,Noise,"8% snaps, 4% routes, 0 touches","Lost work over fumbles; Harbaugh's comments suggest an overcorrection, and he expects Skattebo back in a lead role fairly quickly."
+Gretch,6,J.J. McCarthy,NYG,Starter,,↑,Noise,"11.6 YPA, 14.8 aDOT; a fluky 49-yd completion","Chunk passes against drop coverage in pure comeback mode; looked OK at times, but little suggests he deserves the rope he'll now get."
+Gretch,6,Jameis Winston,NYG,Starter,,↓,,"Took sacks early, then two INTs; benched in the fourth",
+Gretch,6,Tyrone Tracy Jr.,NYG,Passing-down,Replacement,↑,Noise,2 TD; -17 RYOE,"Played more, but mostly in comeback mode; a very complicated backfield."
+Gretch,6,Najee Harris,NYG,Committee,Replacement,↓,,Started; 4-2,"Looked bad, which spotlighted that he isn't the answer; good for Skattebo longer-term."
+Gretch,6,Devin Singletary,NYG,Passing-down,Replacement,→,,43% routes (most among NYG RBs),One of the pass-down backs who took over late.
+Gretch,6,Darnell Mooney,NYG,Starter,Replacement,↓,,Left with a neck injury before a catch,
+Gretch,6,Malachi Fields,NYG,Starter,Average,→,,88% routes; 8-2-19,Saw a bunch of targets but struggled.
+Gretch,6,Kendre Miller,NO,Lead,Average,↑,Signal,"20 carries, 3.5 YPC, -9 RYOE; green-zone work","Viewed as the primary ball-carrier, but wasn't efficient enough."
+Gretch,6,Alvin Kamara,NO,Committee,Replacement,→,Noise,31-yd screen TD; 7-34,Perfectly timed against a blitz; nothing repeatable.
+Gretch,6,CJ Donaldson,NO,Committee,Replacement,→,,+16 RYOE; fumbled late,No carries after the fumble.
+Gretch,6,Travis Etienne Jr.,NO,Lead,,,,,The Saints' backfield is set up for him to play as much as he can handle when he's ready.
+Gretch,6,Chris Olave,NO,Alpha,Average,→,,7-4-43-1,A fade TD in a low-volume game.
+Gretch,6,Juwan Johnson,NO,Receiving TE,Replacement,↓,Signal,"53% routes (season low), 0 catches","A concerning red flag in a positive-script, run-heavy game."
+Gretch,6,Tyler Shough,NO,Starter,,↓,Noise,"-9.9% PROE (Wk 6 low), 30 att","Playing through two broken bones in his non-throwing hand, which seems to drive the run-heaviness."
+Gretch,6,Jalen Coker,CAR,Alpha,Elite,↑,Signal,"13 tgt, 37% target share, 0.81 WOPR; 13-6-97",A classic two-No. 1s situation; his work can look more well-rounded than McMillan's.
+Gretch,6,Tetairoa McMillan,CAR,Alpha,Great,→,,"9-6-86, 103 air yds, 26% TPRR",A phenom who had a shot at a bigger day.
+Gretch,6,Chuba Hubbard,CAR,Workhorse,Elite,↑,Signal,"93% snaps, 69% routes; 28-120-1","A workhorse role, and he ran exceptionally well."
+Gretch,6,Darren Waller,CAR,Receiving TE,Replacement,↓,Signal,"43% routes (lowest since Wk 1), 0 catches","Lost work in a positive-script, run-heavy game."
+Gretch,6,Tommy Tremble,CAR,Receiving TE,Replacement,↑,Noise,48% routes (season high); 4-4-46-2,A rotational lead TE for years whose role has never consistently spiked.
+Gretch,6,Bryce Young,CAR,Starter,,↑,,"+5.5% PROE, 39 att",One of the more reliably fun offenses in the league.
+Gretch,6,Tanner McKee,PHI,Starter,,↑,Signal,"45 att, 358 air yds; 40+ att in all three NFL starts",A 6-6 pocket passer whose pass volume is a change from the Hurts offense; expects even more Eagles HVTs with him.
+Gretch,6,Jalen Hurts,PHI,Starter,,↓,,,Out after a blood clot; going to be fine.
+Gretch,6,Dameon Pierce,PHI,Workhorse,Great,↑,Signal,"97% snaps, 58% routes, 6 HVT; 12-35-1",A workhorse role with Barkley and others out.
+Gretch,6,DeVonta Smith,PHI,Alpha,Elite,↑,Signal,"42% TPRR, 179 air yds, 0.79 WOPR; 14-7-75-1",Came alive late and looks like he could get a lot of volume.
+Gretch,6,Makai Lemon,PHI,Starter,Replacement,→,Noise,92% routes; 6-3-19,Hold him: the offense should have more pass volume.
+Gretch,6,Dallas Goedert,PHI,Receiving TE,Average,→,,8-6-61,The most functional target early; young QBs tend to like their TEs.
+Gretch,6,Dontayvion Wicks,PHI,Starter,Replacement,↓,,4-2-24; banged up in the fourth,
+Gretch,6,DK Metcalf,PIT,Alpha,Elite,↑,Signal,15-11-93; 0.96 WOPR (Wk 6 high),"Finally a true No. 1 day, much of it underneath and late."
+Gretch,6,Germie Bernard,PIT,Starter,Great,↑,Signal,12-11-87-1; 1.8 aDOT,Racked up underneath volume; No. 2 on his waiver list despite a bad fourth-down decision.
+Gretch,6,Jaylen Warren,PIT,Lead,Great,→,Signal,"74% snaps, 42% routes, 16 touches; -14 RYOE, 4 MTF","Retained a clear lead role, especially on pass downs, though Dowdle could eventually play more."
+Gretch,6,Rico Dowdle,PIT,Committee,Replacement,↑,Noise,"29% snaps, 14% routes; +10 RYOE",First game back; probably won't get to 50/50 but can grow a bit.
+Gretch,6,Darnell Washington,PIT,Receiving TE,Average,→,,6-4-25-1,A heavy part of the red-zone plan and a reasonable TD bet most weeks.
+Gretch,6,Pat Freiermuth,PIT,Receiving TE,Replacement,→,,64% routes; 3-2-11,"Healthy enough to run routes, but quiet."
+Gretch,6,Aaron Rodgers,PIT,Starter,,↓,Noise,4.1 aDOT; 49 att in a trail script plus OT; an INT and a dropped pick-six,Still a checkdown artist; Week 1's downfield throwing was a mirage.
+Gretch,6,Emeka Egbuka,TB,Alpha,Elite,→,Signal,"16 tgt, 39% target share, 0.90 WOPR; 16-7-48-1 (3.0 YPT)","The clear No. 1, but the inefficiency is alarming: drops and near misses."
+Gretch,6,Ted Hurst,TB,Rotational,Average,↑,Signal,6 tgt on 56% routes; big late catches,"Keeps showing up in big spots, but still in a rotational role."
+Gretch,6,Bucky Irving,TB,Workhorse,Great,→,Noise,"82% snaps, 64% routes; 19-46, -24 RYOE",Uncharacteristically inefficient; the usage in a high-volume game was bullish.
+Gretch,6,Chris Godwin Jr.,TB,Starter,Average,→,,8-4-37; a third-down drop,
+Gretch,6,Cade Otton,TB,Receiving TE,Replacement,→,,2-1-4,Got the routes but did little.
+Gretch,6,Jalon Daniels,TB,Starter,,↓,Noise,5 sacks; a bad late INT; 73 team plays in OT,
+Gretch,6,Michael Wilson,ARI,Alpha,Great,→,Noise,"7-4-32; team-high 0.62 WOPR, 2 end-zone tgt",A weird game environment; very live for another 15-target game and should stay the key target.
+Gretch,6,Kendrick Bourne,ARI,Starter,Average,↑,Noise,"8-5-47, 38% TPRR, 31 air yds","Mostly underneath dump-offs, but notable that he can string together volume; back to optimistic on him as the third weapon."
+Gretch,6,Jalen Brooks,ARI,Rotational,Replacement,→,,3-2-30; a big catch set up the winning FG,
+Gretch,6,Trey McBride,ARI,Receiving TE,Great,→,,9-7-53,
+Gretch,6,Tyler Allgeier,ARI,Lead,Average,↓,Signal,"56% snaps, 46% routes; 18-38, -22 RYOE","Lost hot-hand work to Knight, which isn't ideal for when Love is back."
+Gretch,6,Bam Knight,ARI,Committee,Average,↑,,"15-80, +33 RYOE, 3 GZT",Hot-hand work cut into Allgeier's lead role; reads as a positive for Jeremiyah Love.
+Gretch,6,Jeremiyah Love,ARI,Lead,,,,,Knight's hot hand over Allgeier reads as a positive for him when he returns.
+Gretch,6,Jacoby Brissett,ARI,Starter,,↓,Noise,"-8.9% PROE, 186 team air yds; an early INT",A second straight week shaped by a weird game environment or defensive scheme.
+Gretch,6,Puka Nacua,LA,Alpha,Elite,→,,7-6-80; missed a wide-open 65-yd TD,"Quiet early, then got deep shots late."
+Gretch,6,Terrance Ferguson,LA,Receiving TE,,,Signal,On IR; 9 tgt back in Wk 2,His top lookahead TE stash with Adams out; could become the Isaiah Likely to Nacua's Nabers.
+Gretch,6,Konata Mumpfield,LA,Rotational,Replacement,↑,Signal,47% routes (most since Wk 3),"The best guess as next man up with Adams out; a decent add, though Atwell may rotate in."
+Gretch,6,Davante Adams,LA,Starter,Replacement,↓,,4-3-39; now out,
+Gretch,6,Colby Parkinson,LA,Receiving TE,Average,→,,6-5-31-1,Solidly involved early in 13 personnel.
+Gretch,6,Tyler Higbee,LA,Receiving TE,Replacement,→,,4-4-22; a costly late fumble,
+Gretch,6,Kyren Williams,LA,Lead,Great,→,,"71% snaps, 50% routes; 10-50, 6-3-17",Still a clear snap lead.
+Gretch,6,Blake Corum,LA,Committee,Replacement,↑,,11 touches to Kyren's 13; a receiving TD,Mostly positive variance.
+Gretch,6,Matthew Stafford,LA,Starter,,→,Noise,"-5.1% PROE, 157 team air yds",An extreme familiarity element against a former assistant; you want to be buying the Rams.
+Gretch,6,Kenneth Walker III,KC,Workhorse,Elite,↑,,"19-128-2; Wk 6 highs with 8 GZT, 7 MTF, +66 RYOE","The explosives feel almost inevitable, like Saquon in 2024; not selling."
+Gretch,6,Xavier Worthy,KC,Starter,Great,↑,Signal,"88% routes, 25% TPRR; 7-7-73","The best he's looked since late in his rookie year, but he left some production out there."
+Gretch,6,Jalen Royals,KC,Starter,Replacement,↑,Signal,"81% routes, 4 tgt","A big routes boost with Rice out; a deep-league add, probably just a watch-list guy for now."
+Gretch,6,Cyrus Allen,KC,Rotational,Replacement,→,,13% routes; 2-2-27,No post-bye bump.
+Gretch,6,Travis Kelce,KC,Receiving TE,Average,↓,Noise,63% routes,Rolled up on early and played hurt.
+Gretch,6,Emmett Johnson,KC,Committee,Replacement,→,,6 touches,Remains in a handcuff role.
+Gretch,6,Patrick Mahomes,KC,Starter,,→,Noise,108 team air yds; an end-zone INT,Controlled the game; pretty solid overall.
+Gretch,6,Omarion Hampton,LAC,Committee,Average,↑,Signal,"49% snaps; 7-18, 4-4-21","Back in a lead role going into the bye, a small positive with Mitchell phased out."
+Gretch,6,Kimani Vidal,LAC,Committee,Average,→,,"7-21, 4-3-19; -17 RYOE",Felt like the back they wanted on the field early.
+Gretch,6,Keaton Mitchell,LAC,Committee,Replacement,↓,,3 touches,The odd man out.
+Gretch,6,KeAndre Lambert-Smith,LAC,Starter,Average,↑,Signal,"80% routes, 9 tgt; 9-5-32",Looked like the primary receiver after McConkey left; unclear what that means after the bye.
+Gretch,6,Ladd McConkey,LAC,Alpha,Replacement,↓,Noise,1-1-17; concussion,Left early.
+Gretch,6,Quentin Johnston,LAC,Starter,Replacement,→,,3-1-57,"A bomb down to the 1, otherwise little."
+Gretch,6,Oronde Gadsden II,LAC,Receiving TE,Replacement,→,,55% routes; 5-3-17,Split routes with Kolar.
+Gretch,6,Justin Herbert,LAC,Starter,,↓,Noise,Under 50 yds on 6 first-half completions,"Expects a rethink over the bye that could change player usage, though not necessarily for the better."
+Gretch,6,James Cook,BUF,Workhorse,Great,↑,Signal,"22-95-1, +17 RYOE, 4 MTF; 3-3-58",The clear focal point after last week's fumbles.
+Gretch,6,Dalton Kincaid,BUF,Receiving TE,Average,↑,Signal,8-7-38 on 61% routes; a TD lost to a hold,Involved with more intent; he and Shakir work against each other.
+Gretch,6,Keon Coleman,BUF,Starter,Great,↑,Noise,86% routes (season high); 6-4-59-1,"Playing great, but hard to see it sticking when Moore returns."
+Gretch,6,Khalil Shakir,BUF,Starter,Average,→,,6-4-34-1,"A screen TD, otherwise not super involved."
+Gretch,6,Josh Palmer,BUF,Rotational,Replacement,↓,,19% routes; a drop,
+Gretch,6,Skyler Bell,BUF,Rotational,Replacement,→,,"47% routes, 0 catches",
+Gretch,6,Brock Bowers,LV,Receiving TE,Elite,→,Noise,"98% routes, 9 tgt, 115 air yds, 0.56 WOPR; 9-4-70; drew an end-zone DPI",A No. 1 WR having a slight down game; the clear featured weapon.
+Gretch,6,Michael Mayer,LV,Full-time,Average,↑,Signal,68% routes (48% in Wk 5); 9-7-95,Looks like a streamable TE working off Bowers.
+Gretch,6,Tre Tucker,LV,Starter,Average,↑,,7-5-97-2,Mostly late.
+Gretch,6,Jalen Nailor,LV,Starter,Replacement,↓,,4-1-9,Ran a lot of routes but was underwhelming.
+Gretch,6,Ashton Jeanty,LV,Workhorse,Average,→,Signal,"6 HVT, 19 air yds, a converted GZT, 58 total yds; -16 RYOE",An HVT-floor day with real intent behind the receiving usage; looked healthier.
+Gretch,6,Mike Washington,LV,Committee,Replacement,↑,,"9-43, +3 RYOE",Got more rushing chances.
+Gretch,6,Kirk Cousins,LV,Starter,,→,,351 air yds,Playing well; arm strength isn't the whole equation.
+Gretch,6,Matthew Golden,GB,Alpha,Elite,↑,Signal,"13 tgt, 203 air yds (Wk 6 high), 0.82 WOPR; 13-6-104-1; two dropped TDs",Keeps getting open and drawing big volume.
+Gretch,6,Christian Watson,GB,Starter,Great,→,Signal,"145 air yds, 18.1 aDOT; 8-3-64",Very involved downfield as the two main WRs dominate volume.
+Gretch,6,Tucker Kraft,GB,Receiving TE,Average,→,,8-5-37; 32 air yds,Mostly operated underneath.
+Gretch,6,Savion Williams,GB,Rotational,Replacement,→,,59% routes as the WR3,
+Gretch,6,Pierre Strong Jr.,GB,Committee,Average,↑,Noise,"7 HVT, -15 RYOE","Handled most of the work after Lloyd was banged up, and Jacobs is back."
+Gretch,6,MarShawn Lloyd,GB,Committee,Replacement,↓,Noise,41% snaps; -20 RYOE; a drop,"Banged up early and played through it, but Jacobs is back."
+Gretch,6,Kaleb Johnson,GB,Committee,Replacement,↓,,Late snaps only; missed a blitz pickup,
+Gretch,6,Jordan Love,GB,Starter,,→,Noise,"+3.0% PROE, 41 att, 387 air yds","Passing will remain a huge part of the offense, but likely with more rushing once Jacobs is back."
+Gretch,6,CeeDee Lamb,DAL,Alpha,Elite,→,,"18-9-70, 153 air yds",Racked up volume in comeback mode.
+Gretch,6,George Pickens,DAL,Alpha,Great,→,,"11-6-73, 115 air yds","Not his best, but the volume shows how good this offense is for fantasy."
+Gretch,6,Ryan Flournoy,DAL,Starter,Average,↑,Signal,9-7-40-1; 5.8 aDOT,"Seems to have taken over Ferguson's outlet role, with some volume upside."
+Gretch,6,Jake Ferguson,DAL,Receiving TE,Replacement,↓,,3-2-13,Flournoy has basically taken over his outlet role.
+Gretch,6,Javonte Williams,DAL,Lead,Average,→,,11-41-1,The HVT role remains solid; good at short-yardage rushing.
+Gretch,6,Tyler Goodson,DAL,Passing-down,Replacement,→,,5 touches; dropped a late TD,A backup staking a claim if Javonte misses time.
+Gretch,6,Christian McCaffrey,SF,Workhorse,Elite,↑,Signal,"85% snaps, 79% routes, 12 HVT (Wk 6 high); 16-64-2, 10-9-53",Ran well again and looks good despite a lost fumble.
+Gretch,6,George Kittle,SF,Receiving TE,Great,→,Signal,"0.60 WOPR, 3 end-zone tgt (tied for Wk 6 high); 8-5-69-1",The explosiveness remains evident.
+Gretch,6,Mike Evans,SF,Starter,Average,↓,Noise,41% routes; 5-3-94 before leaving,Was on his way to a big day but left before half; likely out a bit.
+Gretch,6,Jordan Watkins,SF,Starter,Replacement,↑,Noise,"85% routes (team high), 3% TPRR",The desperation play with Evans out; Shanahan roles can flip quickly.
+Gretch,6,Kaelon Black,SF,Committee,Replacement,→,,9 touches,Solid in his touches.
+Gretch,6,Brock Purdy,SF,Starter,,↑,,"17 of 21 completions to McCaffrey, Kittle and Evans",In complete control; elite.
+Gretch,6,Rachaad White,WAS,Workhorse,Great,↑,Signal,"71% snaps, 51% routes, 4 HVT; -16 RYOE","White's backfield for the next stretch with Croskey-Merritt on IR, though rushing efficiency limits the ceiling."
+Gretch,6,Austin Ekeler,WAS,Passing-down,Replacement,↓,,10% snaps,Not much optimism left.
+Gretch,6,Jeremy McNichols,WAS,Committee,Replacement,↑,,5-13; a 31-yd TD lost to a penalty,
+Gretch,6,Terry McLaurin,WAS,Alpha,Replacement,↓,,Torn patellar tendon; out for the season,
+Gretch,6,Stefon Diggs,WAS,Starter,Average,→,,7-6-44-1,Just OK and showing his age.
+Gretch,6,Chig Okonkwo,WAS,Receiving TE,Great,↑,Signal,84% routes (team high); 7-7-69,Could get a high target share for a TE with McLaurin out.
+Gretch,6,Antonio Williams,WAS,Starter,Average,↑,Signal,71% routes; 4-3-50,Will be relied on more with McLaurin out and has the most skill-based upside; a strong add.
+Gretch,6,Treylon Burks,WAS,Starter,Average,→,,6-4-66; banged up late,
+Gretch,6,Jayden Daniels,WAS,Starter,,→,,Lost his main pass-catcher early,Remains a really good passer; has to protect himself.
