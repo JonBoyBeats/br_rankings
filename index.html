@@ -1762,15 +1762,15 @@ function dropBelowLine(order, cut, pid) {
 
 /**
  * "+": bring a player from below the line into the ranking, directly under the last ranked
- * player at his position (or at the end of the ranking if none is ranked yet). The line
- * grows by one. null when there is no line or he is already ranked.
+ * player at his position (or at the end of the ranking if none is ranked yet, or with no
+ * posOf, as on NBA). The line grows by one. null when there is no line or he is already ranked.
  */
 function rankAtPosition(order, cut, pid, posOf) {
   var at = clampCut(cut, order.length), from = order.indexOf(pid);
   if (at == null || from < 0 || from < at) return null;
   var out = order.filter(function (x) { return x !== pid; });
-  var pos = posOf(pid), insert = at;
-  for (var i = at - 1; i >= 0; i--) {
+  var pos = posOf && posOf(pid), insert = at;
+  for (var i = at - 1; posOf && i >= 0; i--) {
     if (posOf(out[i]) === pos) { insert = i + 1; break; }
   }
   out.splice(insert, 0, pid);
@@ -2637,27 +2637,12 @@ function nbaChance(model, median, r) {
    median a Proj stands for is (Proj - 5.48) / 1.034. */
 function nbaMedianOf(proj) { return (proj - 0.75 * NBA_CEIL[1]) / (0.25 + 0.75 * NBA_CEIL[0]); }
 
-/**
- * How many players the shading counts: the draft plus a cushion, cut at the biggest
- * drop in Proj between ranks D+4 and 1.4 x D (40-50 on a 36-pick draft). `projs` is
- * sorted best first.
- */
-function nbaPoolSize(projs, draftSize) {
-  var d = draftSize || 36, lo = d + 4, hi = Math.min(Math.round(d * 1.4), projs.length - 1);
-  if (projs.length <= lo) return projs.length;
-  var best = lo, gap = -1;
-  for (var i = lo; i <= hi; i++) {
-    var g = projs[i - 1] - projs[i];
-    if (g > gap) { gap = g; best = i; }
-  }
-  return best;
-}
+var NBA_SHADE_TOP = 60;    // shading covers the top 60 by Proj
 
-/** Proj, Boom and Dud for the slate, with each one's shade (0-1, 1 best) inside the draft range. */
+/** Proj, Boom and Dud for the slate, with each one's shade (0-1, 1 best) among the top 60 by Proj. */
 function nbaShading() {
   var rows = nbaStatRows().sort(function (a, b) { return b.proj - a.proj; });
-  var n = nbaPoolSize(rows.map(function (r) { return r.proj; }), nbaDraftSize(state.slate.players));
-  var pool = rows.slice(0, n), out = { proj: {}, boom: {}, dud: {}, rows: {} };
+  var pool = rows.slice(0, NBA_SHADE_TOP), out = { proj: {}, boom: {}, dud: {}, rows: {} };
   rows.forEach(function (r) { out.rows[r.pid] = r; });
   function shade(key, better) {
     var vals = pool.filter(function (r) { return r[key] != null; }).map(function (r) { return r[key]; })
@@ -2687,7 +2672,7 @@ function nbaStatCell(p, sh) {
     b.title = k[0] === "boom"
       ? "Boom " + b.textContent + "%: his chance of a night 10+ over his projection. Rises with usage, rebounds and assists per minute, starting and swingy minutes"
       : "Dud " + b.textContent + "%: his chance of a night under half his projection. Rises with swingy minutes and scoring, a steals-and-blocks-heavy line and fouls; falls with starting";
-    if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside tonight's draft range, so not shaded"; c.appendChild(b); return; }
+    if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside the top " + NBA_SHADE_TOP + " by Proj, so not shaded"; c.appendChild(b); return; }
     c.appendChild(greenChip(b, f));
   });
   return c;
@@ -3301,7 +3286,7 @@ function render() {
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
-  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over his projection, for ties above the amber line. Dud: chance of a night under half of it, for ties below. Shaded within tonight's draft range only"
+  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over his projection, for ties above the amber line. Dud: chance of a night under half of it, for ties below. Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
@@ -3443,7 +3428,7 @@ function render() {
     if (v != null && parts && parts.lineup && parts.lineup.length) pval.title += ". Tonight: " + parts.lineup.join(", ");
     if (state.nbaOutPids && state.nbaOutPids[p.player_id]) pval.textContent = "out";
     else if (pc && pc.proj[p.player_id] != null) greenChip(pval, pc.proj[p.player_id]);
-    else if (pc && pc.rows[p.player_id]) pval.style.color = "var(--muted)";        // outside tonight's draft range
+    else if (pc && pc.rows[p.player_id]) pval.style.color = "var(--muted)";        // outside the top 60 by Proj
     var pr = document.createElement("span");
     pr.className = "num proj" + (v == null ? " dim" : "");
     pr.append(pd, pval);
@@ -3653,7 +3638,7 @@ function jumpLifted(kind) {
   if (!pid) return;
   var byPid = byPidMap(state.slate);
   var res = kind === "plus"
-    ? rankAtPosition(state.order, state.cut, pid, function (id) { return byPid[id] && byPid[id].position; })
+    ? rankAtPosition(state.order, state.cut, pid, SPORT_MODE === "nba" ? null : function (id) { return byPid[id] && byPid[id].position; })
     : dropBelowLine(state.order, state.cut, pid);
   if (!res) return;
   state.order = resortTail(res.order, res.cut, byPid, tailValues());
@@ -4973,6 +4958,8 @@ function brrSelfTest() {
   ok("plus lands under the last ranked RB, ahead of other positions", up2 && up2.order.join() === "r1,r3,w1,r2,w2" && up2.cut === 3);
   var up3 = rankAtPosition(["r1", "w1", "t1"], 2, "t1", posOfT);
   ok("plus with none ranked at his position goes to the end of the ranking", up3 && up3.order.join() === "r1,w1,t1" && up3.cut === 3);
+  var up4 = rankAtPosition(["r1", "w1", "r2", "w2", "r3"], 3, "r3", null);
+  ok("plus without positions goes to the end of the ranking", up4 && up4.order.join() === "r1,w1,r2,r3,w2" && up4.cut === 4);
   ok("plus does nothing for a ranked player", rankAtPosition(["r1", "w1", "t1"], 2, "w1", posOfT) === null);
   ok("nudge down", moveBy(["a", "b", "c", "d"], "b", 1).join() === "a,c,b,d");
   ok("nudge clamps at the top", moveBy(["a", "b"], "a", -1).join() === "a,b");
@@ -5293,9 +5280,6 @@ function brrSelfTest() {
      mv3.etrToday && !mv3.out["star guard"] && Math.abs(mv3.values.P - blendProjection(15, 25)) < 1e-9);
   ok("floor takes over right after the slate's last secure player",
      nbaAutoSwitch(25, 36) === 26 && nbaAutoSwitch(36, 36) === null && nbaAutoSwitch(40, 36) === null && nbaAutoSwitch(10, null) === null);
-  ok("the shading's range stops at the biggest Proj drop between D+4 and 1.4 x D",
-     nbaPoolSize([50, 48].concat(Array.apply(null, Array(60)).map(function (_, i) { return 40 - i * 0.3 - (i >= 41 ? 3 : 0); })), 36) === 43 &&
-     nbaPoolSize([30, 20, 10], 36) === 3);
   ok("a Proj maps back to the median it stands for", Math.abs(nbaMedianOf(blendProjection(30, NBA_CEIL[0] * 30 + NBA_CEIL[1])) - 30) < 1e-9);
   var avgRow = { upm: .45317, min_sd: 5.5352, min: 25.8957, apm: .1032, rpm: .18501, start: .54941, sd: .29972, fpm: .08369, spm: .0522, ppm: .3 };
   ok("Boom and Dud read sensibly: more usage booms more, starting duds less",
