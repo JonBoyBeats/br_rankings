@@ -1435,9 +1435,27 @@ function nbaBump(p, x) {
 
 function nbaBoxBlend(fp) { return blendProjection(fp, NBA_CEIL[0] * fp + NBA_CEIL[1]); }
 
+/* ETR's projection is a median; the box scores' minutes x points per minute is an
+   average, and runs higher: ETR came in at 0.90 of it on Oct 20 and 0.87 on Oct 21 (the
+   typical ratio among players who usually play 20+). So a box-score number is scaled by
+   that ratio before it is put on ETR's scale, measured off the ETR days on file once
+   there are enough of them. */
+var NBA_BOX_TO_ETR = 0.88;
+
+function nbaBoxScale(history, idx) {
+  var ratios = [];
+  Object.keys(history).forEach(function (d) {
+    Object.keys(history[d]).forEach(function (k) {
+      var r = idx.byKey[k], m = history[d][k][0];
+      if (r && r.min >= 20 && r.fp > 0 && typeof m === "number") ratios.push(m / r.fp);
+    });
+  });
+  return ratios.length >= 20 ? median(ratios) : NBA_BOX_TO_ETR;
+}
+
 /* ESPN's box scores use some legal names where Underdog and ETR use the familiar one.
    Add a pair when a board player is missing a morning Proj he should have. */
-var NBA_ESPN_ALIASES = { "miles mcbride": "deuce mcbride" };
+var NBA_ESPN_ALIASES = { "miles mcbride": "deuce mcbride", "herbert jones": "herb jones", "moritz wagner": "moe wagner" };
 
 /** The morning file indexed: rows by normalized name, and each team's core four. */
 function nbaIndex(doc) {
@@ -1520,7 +1538,7 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
   var cur = store.current, etrToday = !!cur && pacificDay(cur.at) === pacificDay(slate.cutoff);
   var out = nbaOuts(slate, idx, etrToday, marked, keyOf);
   var joined = etrToday ? joinProjections(players, cur.entries, nameMap) : null;
-  var values = {}, parts = {}, outPids = {}, byEtr = 0, byBox = 0;
+  var values = {}, parts = {}, outPids = {}, byEtr = 0, byBox = 0, scale = nbaBoxScale(store.history || {}, idx);
   players.forEach(function (p) {
     var k = keyOf(p), r = idx.byKey[k], base, part, boxWeight = 0;
     if (out[k]) { outPids[p.player_id] = out[k]; return; }
@@ -1531,11 +1549,12 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
     } else {
       var avg = nbaEtrAverage(k, r, idx, store.history);
       if (!avg && !r) return;
-      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores" : "";
+      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores (scaled \u00d7" +
+                        scale.toFixed(2) + " to ETR's level)" : "";
       var etrNote = avg ? "his last " + avg.days + " ETR projection" + (avg.days === 1 ? "" : "s") +
                           " (nights a core teammate sat taken out)" : "";
       boxWeight = !r ? 0 : !avg ? 1 : NBA_ETR_PRIOR_DAYS / (avg.days + NBA_ETR_PRIOR_DAYS);
-      base = (1 - boxWeight) * (avg ? avg.value : 0) + boxWeight * (r ? nbaBoxBlend(r.fp) : 0);
+      base = (1 - boxWeight) * (avg ? avg.value : 0) + boxWeight * (r ? nbaBoxBlend(scale * r.fp) : 0);
       if (avg) byEtr++; else byBox++;
       part = !avg ? { note: boxNote + ", on ETR's projection/ceiling scale", box: r }
            : !r ? { note: "Average of " + etrNote }
@@ -5003,11 +5022,17 @@ function brrSelfTest() {
     { player_id: "R", first_name: "Third", last_name: "One", team: "T", adp: 22 }] };
   var mv = nbaValues(mSlate.players, mSlate, normalizeProjStore(null), mIdx, [], {});
   ok("before ETR: an unpriced core player is out, and only the part not in his last 10 moves a teammate",
-     mv.out["star guard"] === "auto" && Math.abs(mv.values.P - (nbaBoxBlend(12) + 3.6 * 0.5)) < 1e-9 && mv.values.Q == null);
+     mv.out["star guard"] === "auto" && Math.abs(mv.values.P - (nbaBoxBlend(NBA_BOX_TO_ETR * 12) + 3.6 * 0.5)) < 1e-9 && mv.values.Q == null);
   var oneDay = { current: null, previous: null, history: { "2026-11-01": { "bench guard": [20, null], "star guard": [30, null] } } };
   var mv1 = nbaValues(mSlate.players, mSlate, oneDay, mIdx, [], {});
   ok("one day of ETR is half the morning number, and half of his last 10's absences still count",
-     Math.abs(mv1.values.P - (0.5 * 20 + 0.5 * nbaBoxBlend(12) + 3.6 * (1 - 0.5 * 0.5))) < 1e-9);
+     Math.abs(mv1.values.P - (0.5 * 20 + 0.5 * nbaBoxBlend(NBA_BOX_TO_ETR * 12) + 3.6 * (1 - 0.5 * 0.5))) < 1e-9);
+  ok("box scores scale to ETR's level: the default until 20 ETR player-days, then their typical ratio",
+     nbaBoxScale({}, mIdx) === NBA_BOX_TO_ETR && (function () {
+       var h = {}, ix = { byKey: {} };
+       for (var i = 0; i < 21; i++) { ix.byKey["p" + i] = { min: 30, fp: 40 }; h["p" + i] = [32, null]; }
+       return Math.abs(nbaBoxScale({ d: h }, ix) - 0.8) < 1e-9;
+     })());
   var mv2 = nbaValues(mSlate.players, mSlate, normalizeProjStore(null), mIdx, ["bench guard"], {});
   ok("a player you mark out has no Proj", mv2.outPids.P === "you" && mv2.values.P == null);
   var etrStore = { current: nbaUp("e.csv", "2026-11-02T18:00:00Z", [["bench guard", 15, 25]]), previous: null, history: {} };
