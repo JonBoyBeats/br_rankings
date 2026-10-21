@@ -148,7 +148,7 @@
   /* The NBA page (nba.html) is this board in NBA mode; football-only tools stay hidden. */
   html.nba .football-only { display: none !important; }
   html:not(.nba) .nba-only { display: none !important; }
-  /* NBA: no VORP column; its room goes to the Ceil and Flr tiebreak numbers. */
+  /* NBA: no VORP column; its room goes to the Boom and Dud tiebreak numbers. */
   html.nba .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 76px 94px 0; }
   html.nba #scoreHead { white-space: nowrap; }
   html.nba .num.score { display: flex; gap: 4px; justify-content: center; }
@@ -2485,7 +2485,7 @@ function renderMeta(rec) {
    of nights), while every minute below that adds about a point of dud rate (14% at 24
    minutes, 20% at 18); boom rates are the same at every level. So the amber line sits
    right after the slate's last 32-minute player: above it every pick can be a secure
-   one and ceiling decides ties (Ceil); below it floor does (Flr). When the slate has at
+   one and ceiling decides ties (Boom %); below it floor does (Dud %). When the slate has at
    least as many secure players as the draft has picks, there is no line. Minutes are
    the box scores' (last 10, last season filling in) until ETR's file is in for the day;
    then they are what ETR implies: its projection over his points per minute, which
@@ -2517,38 +2517,93 @@ function greenChip(el, frac) {
   return el;
 }
 
-/** Each slate player's rank (0-1, 1 best) on Proj, usage and steadiness among those with a Proj. */
-function nbaPercentiles() {
-  var rows = nbaStatRows(), out = { proj: {}, upm: {}, sd: {}, rows: {} };
-  function rank(key, better) {
-    var have = rows.filter(function (r) { return r[key] != null; });
-    var vals = have.map(function (r) { return r[key]; }).sort(function (a, b) { return a - b; });
-    have.forEach(function (r) {
+/* ---- Boom % and Dud % ---------------------------------------------------------
+   The chance, at his projection, of a night 10+ points over it (Boom) or under half of
+   it (Dud). Two logistic models fit on 2022-26 box scores (checked out of sample on
+   2025-26 after fitting 2022-24), holding fixed what a projection already knows (recent
+   minutes, matchup, pace, rest, home): only the shape of a player's range moves them.
+   Boom rises with usage, rebounds and assists per minute, starting and swingy minutes:
+   at the same projection the top fifth boomed on 20.5% of nights, the bottom 14.7%.
+   Dud rises with swingy minutes and points per minute, a steals-and-blocks-heavy line
+   and fouls, and falls with starting: 16.2% against 10.2%. Each term is
+   [average, spread, weight] on the stat's standardized scale. */
+var NBA_BOOM = { intercept: -1.631, terms: {
+  pred: [24.878, 10.1316, -0.3391], pred2: [7.2156, 6.0593, 0.0395], upm: [0.45317, 0.13162, 0.2226],
+  min_sd: [5.5352, 2.0778, 0.0835], min_l10: [25.8957, 6.8021, 0.1116], ast_pm: [0.1032, 0.05748, 0.0899],
+  reb_pm: [0.18501, 0.08241, 0.1546], starter_rate: [0.54941, 0.40795, 0.1208] } };
+var NBA_DUD = { intercept: -2.0965, terms: {
+  pred: [24.878, 10.1316, -0.5595], pred2: [7.2156, 6.0593, 0.058], starter_rate: [0.54941, 0.40795, -0.1348],
+  min_sd: [5.5352, 2.0778, 0.1285], ppm_sd: [0.29972, 0.0591, 0.0346], stk_share: [0.17411, 0.06268, 0.0598],
+  min_l10: [25.8957, 6.8021, -0.0295], foul_pm: [0.08369, 0.02624, 0.0134] } };
+
+/** A model's chance for one player: `median` is his projection, `r` his morning-file row. */
+function nbaChance(model, median, r) {
+  var x = { pred: median, pred2: median * median / 100, upm: r.upm, min_sd: r.min_sd, min_l10: r.min,
+            ast_pm: r.apm, reb_pm: r.rpm, starter_rate: r.start, ppm_sd: r.sd, foul_pm: r.fpm,
+            stk_share: r.spm != null && r.ppm > 0 ? r.spm / r.ppm : null };
+  var z = model.intercept;
+  Object.keys(model.terms).forEach(function (k) {
+    var t = model.terms[k], v = x[k];
+    if (typeof v === "number" && isFinite(v)) z += t[2] * (v - t[0]) / t[1];   // a missing stat sits at the average
+  });
+  return 1 / (1 + Math.exp(-z));
+}
+
+/* Proj is 25% median and 75% of a ceiling that runs 1.045 x median + 7.31, so the
+   median a Proj stands for is (Proj - 5.48) / 1.034. */
+function nbaMedianOf(proj) { return (proj - 0.75 * NBA_CEIL[1]) / (0.25 + 0.75 * NBA_CEIL[0]); }
+
+/**
+ * How many players the shading counts: the draft plus a cushion, cut at the biggest
+ * drop in Proj between ranks D+4 and 1.4 x D (40-50 on a 36-pick draft). `projs` is
+ * sorted best first.
+ */
+function nbaPoolSize(projs, draftSize) {
+  var d = draftSize || 36, lo = d + 4, hi = Math.min(Math.round(d * 1.4), projs.length - 1);
+  if (projs.length <= lo) return projs.length;
+  var best = lo, gap = -1;
+  for (var i = lo; i <= hi; i++) {
+    var g = projs[i - 1] - projs[i];
+    if (g > gap) { gap = g; best = i; }
+  }
+  return best;
+}
+
+/** Proj, Boom and Dud for the slate, with each one's shade (0-1, 1 best) inside the draft range. */
+function nbaShading() {
+  var rows = nbaStatRows().sort(function (a, b) { return b.proj - a.proj; });
+  var n = nbaPoolSize(rows.map(function (r) { return r.proj; }), nbaDraftSize(state.slate.players));
+  var pool = rows.slice(0, n), out = { proj: {}, boom: {}, dud: {}, rows: {} };
+  rows.forEach(function (r) { out.rows[r.pid] = r; });
+  function shade(key, better) {
+    var vals = pool.filter(function (r) { return r[key] != null; }).map(function (r) { return r[key]; })
+      .sort(function (a, b) { return a - b; });
+    pool.forEach(function (r) {
+      if (r[key] == null) return;
       var below = 0;
       while (below < vals.length && vals[below] < r[key]) below++;
       var f = vals.length > 1 ? below / (vals.length - 1) : 1;
       out[key][r.pid] = better > 0 ? f : 1 - f;
     });
   }
-  rank("proj", 1); rank("upm", 1); rank("sd", -1);
-  rows.forEach(function (r) { out.rows[r.pid] = r; });
+  shade("proj", 1); shade("boom", 1); shade("dud", -1);
   return out;
 }
 
-/** The tiebreak numbers: Ceil (usage) and Flr (steadiness), each 0-99 on tonight's slate. */
-function nbaStatCell(p, pc) {
+/** The tiebreak numbers: Boom % for ties above the amber line, Dud % below it. */
+function nbaStatCell(p, sh) {
   var c = document.createElement("span");
   c.className = "num score";
-  var r = pc && pc.rows[p.player_id];
-  [["upm", "Ceil"], ["sd", "Flr"]].forEach(function (k) {
-    var b = document.createElement("b"), f = pc && pc[k[0]][p.player_id];
-    if (f == null) { b.textContent = "\u2013"; b.className = "gchip"; b.style.color = "var(--muted)"; c.appendChild(b); return; }
-    b.textContent = String(Math.min(99, Math.round(f * 100)));
-    b.title = k[0] === "upm"
-      ? "Ceil " + b.textContent + ": uses " + (r.upm * 36).toFixed(1) + " possessions per 36 minutes, more than " + b.textContent +
-        "% of tonight's slate. At the same Proj, high users boom more often (18% vs 15% of nights 10+ over) without busting more"
-      : "Flr " + b.textContent + ": his points per minute swing \u00b1" + r.sd.toFixed(2) + " game to game, steadier than " + b.textContent +
-        "% of tonight's slate. At the same Proj, the steadiest bust less often (20% vs 23% of nights 8+ under)";
+  var r = sh && sh.rows[p.player_id];
+  [["boom", "Boom"], ["dud", "Dud"]].forEach(function (k) {
+    var b = document.createElement("b"), v = r && r[k[0]], f = sh && sh[k[0]][p.player_id];
+    b.className = "gchip";
+    if (v == null) { b.textContent = "\u2013"; b.style.color = "var(--muted)"; c.appendChild(b); return; }
+    b.textContent = String(Math.round(v * 100));
+    b.title = k[0] === "boom"
+      ? "Boom " + b.textContent + "%: his chance of a night 10+ over his projection. Rises with usage, rebounds and assists per minute, starting and swingy minutes"
+      : "Dud " + b.textContent + "%: his chance of a night under half his projection. Rises with swingy minutes and scoring, a steals-and-blocks-heavy line and fouls; falls with starting";
+    if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside tonight's draft range, so not shaded"; c.appendChild(b); return; }
     c.appendChild(greenChip(b, f));
   });
   return c;
@@ -2563,8 +2618,9 @@ function nbaStatRows() {
     var r = idx.byKey[boardKey(p.first_name, p.last_name, map)] || {};
     var etr = state.nbaEtrToday && state.projParts[p.player_id];
     var implied = etr && typeof etr.median === "number" && r.ppm > 0 && r.min != null ? etr.median / r.ppm : null;
+    var has = r.ppm != null, med = nbaMedianOf(v);
     rows.push({ pid: p.player_id, proj: v, min: r.min == null ? null : r.min, implied: implied,
-                upm: r.upm == null ? null : r.upm, sd: r.sd == null ? null : r.sd });
+                boom: has ? nbaChance(NBA_BOOM, med, r) : null, dud: has ? nbaChance(NBA_DUD, med, r) : null });
   });
   var ratio = median(rows.filter(function (r) { return r.implied != null && r.min >= 20; })
                         .map(function (r) { return r.implied / r.min; }));
@@ -2607,8 +2663,8 @@ function applyNbaProjOrder() {
   render();
   var sw = nbaSwitch();
   setStatus("Ordered " + built.length + " by Proj" + (rest.length ? "; " + rest.length + " without a Proj or out sit below the line" : "") + ". " +
-            (sw == null ? "This slate has a " + NBA_SECURE_MIN + "-minute player for every pick, so lean on Ceil all the way down."
-                        : "Lean on Ceil above the amber line at rank " + sw + ", on Flr below it."));
+            (sw == null ? "This slate has a " + NBA_SECURE_MIN + "-minute player for every pick, so lean on Boom all the way down."
+                        : "Lean on Boom above the amber line at rank " + sw + ", on Dud below it."));
 }
 
 function syncSwitchField() {
@@ -3119,12 +3175,12 @@ function render() {
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
-  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Ceil Flr" : "Score";
+  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud%" : "Score";
   $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && (state.nbaTakes || []).length);
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
-  $("scoreHead").title = SPORT_MODE === "nba" ? "Tiebreaks, 0-99 on tonight's slate. Ceil: usage, for ties above the amber line. Flr: steadiness, for ties below it"
+  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over his projection, for ties above the amber line. Dud: chance of a night under half of it, for ties below. Shaded within tonight's draft range only"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
@@ -3146,7 +3202,7 @@ function render() {
   }
 
   var frag = document.createDocumentFragment();
-  var sw = null, pc = SPORT_MODE === "nba" ? nbaPercentiles() : null;
+  var sw = null, pc = SPORT_MODE === "nba" ? nbaShading() : null;
   if (SPORT_MODE === "nba" && state.view === "order" && !state.search.trim() && state.position === "ALL") {
     sw = nbaSwitch();
   }
@@ -3260,6 +3316,7 @@ function render() {
     if (v != null && parts && parts.lineup && parts.lineup.length) pval.title += ". Tonight: " + parts.lineup.join(", ");
     if (state.nbaOutPids && state.nbaOutPids[p.player_id]) pval.textContent = "out";
     else if (pc && pc.proj[p.player_id] != null) greenChip(pval, pc.proj[p.player_id]);
+    else if (pc && pc.rows[p.player_id]) pval.style.color = "var(--muted)";        // outside tonight's draft range
     var pr = document.createElement("span");
     pr.className = "num proj" + (v == null ? " dim" : "");
     pr.append(pd, pval);
@@ -4959,6 +5016,15 @@ function brrSelfTest() {
      mv3.etrToday && !mv3.out["star guard"] && Math.abs(mv3.values.P - blendProjection(15, 25)) < 1e-9);
   ok("floor takes over right after the slate's last secure player",
      nbaAutoSwitch(25, 36) === 26 && nbaAutoSwitch(36, 36) === null && nbaAutoSwitch(40, 36) === null && nbaAutoSwitch(10, null) === null);
+  ok("the shading's range stops at the biggest Proj drop between D+4 and 1.4 x D",
+     nbaPoolSize([50, 48].concat(Array.apply(null, Array(60)).map(function (_, i) { return 40 - i * 0.3 - (i >= 41 ? 3 : 0); })), 36) === 43 &&
+     nbaPoolSize([30, 20, 10], 36) === 3);
+  ok("a Proj maps back to the median it stands for", Math.abs(nbaMedianOf(blendProjection(30, NBA_CEIL[0] * 30 + NBA_CEIL[1])) - 30) < 1e-9);
+  var avgRow = { upm: .45317, min_sd: 5.5352, min: 25.8957, apm: .1032, rpm: .18501, start: .54941, sd: .29972, fpm: .08369, spm: .0522, ppm: .3 };
+  ok("Boom and Dud read sensibly: more usage booms more, starting duds less",
+     nbaChance(NBA_BOOM, 25, Object.assign({}, avgRow, { upm: .6 })) > nbaChance(NBA_BOOM, 25, avgRow) &&
+     nbaChance(NBA_DUD, 25, Object.assign({}, avgRow, { start: 1 })) < nbaChance(NBA_DUD, 25, avgRow) &&
+     nbaChance(NBA_BOOM, 25, avgRow) > 0.1 && nbaChance(NBA_BOOM, 25, avgRow) < 0.25);
   ok("the draft size reads off the ADP cap",
      nbaDraftSize([{ adp: 3 }, { adp: 35.6 }, { adp: null }]) === 36 && nbaDraftSize([]) === null);
   ok("the older single-generation shape still loads",
