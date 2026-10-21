@@ -2135,6 +2135,7 @@ function selectSlate(index) {
   var onSlate = {};
   s.players.forEach(function (p) { onSlate[p.player_id] = 1; });
   state.cut = saved ? reconcileCut(saved, savedCut, onSlate) : null;
+  if (SPORT_MODE === "nba" && state.cut == null) state.cut = Math.min(NBA_DEFAULT_RANKED, state.order.length);
   state.liftedPid = null;
   renderLiftBar();
 
@@ -2201,12 +2202,17 @@ function addFromPool(players, restore) {
 /* The numbers the tail sorts by: projection (the default), the score chip, or VORP. */
 function tailValues() {
   if (state.tailSort === "vorp") return state.vorp;
+  if (state.tailSort === "adp" && state.slate) {        // earliest ADP first; unpriced last
+    var adp = {};
+    state.slate.players.forEach(function (p) { if (hasAdp(p)) adp[p.player_id] = -p.adp; });
+    return adp;
+  }
   if (state.tailSort !== "score" || !state.slate) return state.proj;
   var values = {};
   state.slate.players.forEach(function (p) { var v = scoreValueFor(p); if (v != null) values[p.player_id] = v; });
   return values;
 }
-var TAIL_NAMES = { proj: "projection", score: "score", vorp: "VORP" };
+var TAIL_NAMES = { proj: "projection", adp: "ADP", score: "score", vorp: "VORP" };
 
 /* The tail is sorted, not ranked, so every new projection re-orders it in place. */
 function sortBelowLine() {
@@ -2571,6 +2577,7 @@ function renderMeta(rec) {
    the implied minutes are scaled by that day's typical ratio among players who usually
    play 20+: the level stays the box scores', and ETR decides who is above or below it. */
 var NBA_SECURE_MIN = 32;
+var NBA_DEFAULT_RANKED = 44;    // a 36-pick draft plus the next tier you might reach
 
 /** The draft's size from the slate's ADP: Underdog caps ADP at the last pick (24 or 36). */
 function nbaDraftSize(players) {
@@ -2728,7 +2735,7 @@ function applyNbaProjOrder() {
   built.forEach(function (pid) { inBuilt[pid] = 1; });
   var rest = state.order.filter(function (pid) { return !inBuilt[pid]; });
   state.order = built.concat(rest);
-  state.cut = built.length;
+  state.cut = Math.min(state.cut != null ? state.cut : NBA_DEFAULT_RANKED, built.length);   // your line stays where it was
   save(K.built(s.label), state.order.join());
   state.newIds = {};
   state.liftedPid = null;
@@ -2739,7 +2746,8 @@ function applyNbaProjOrder() {
   syncSortHeads();
   render();
   var sw = nbaSwitch();
-  setStatus("Ordered " + built.length + " by Proj" + (rest.length ? "; " + rest.length + " without a Proj or out sit below the line" : "") + ". " +
+  setStatus("Ordered " + built.length + " by Proj; the top " + state.cut + " are ranked, above your line" +
+            (rest.length ? ", and " + rest.length + " without a Proj or out sit at the bottom" : "") + ". " +
             (sw == null ? "This slate has a " + NBA_SECURE_MIN + "-minute player for every pick, so lean on Boom all the way down."
                         : "Lean on Boom above the amber line at rank " + sw + ", on Dud below it."));
 }
@@ -4704,9 +4712,9 @@ $("pasteBox").addEventListener("paste", function () {
 Array.prototype.forEach.call(document.querySelectorAll(".head button[data-sort]"), function (b) {
   b.addEventListener("click", function () {
     var k = b.dataset.sort;
-    // Football: Score, Proj, VORP sort the players below the line. NBA: Proj sorts the
-    // whole view, like ADP, and a second tap goes back to your order.
-    if (TAIL_NAMES[k] && SPORT_MODE !== "nba") {
+    // A header (ADP, Score, Proj, VORP) sorts the players below the line; the View list
+    // above is where the whole board gets sorted.
+    if (TAIL_NAMES[k]) {
       state.tailSort = k;
       save(K.tailSort, k);
       state.view = "order";
