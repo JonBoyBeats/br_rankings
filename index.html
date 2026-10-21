@@ -578,6 +578,7 @@
         <span class="field-label">Order · floor from</span>
         <span class="pair">
           <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
+          <button type="button" id="copyMain" hidden title="Rank this slate's players exactly as your main slate ranks them, then fill in the rest">Copy main ranks</button>
           <input type="number" id="switchAt" min="1" step="1" inputmode="numeric" style="width:58px"
                  title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player (box-score minutes; once ETR's file is in, the minutes its projection implies), or none when there is one for every pick">
         </span>
@@ -2737,6 +2738,40 @@ function applyNbaProjOrder() {
                         : "Lean on Boom above the amber line at rank " + sw + ", on Dud below it."));
 }
 
+/** The same day's main slate, for a late (or other) NBA slate whose ranks can start from it. */
+function nbaMainSlate(s) {
+  if (SPORT_MODE !== "nba" || !s || /_main$/.test(s.label)) return null;
+  var label = s.label.replace(/_[^_]+$/, "_main");
+  return state.data.slates.filter(function (x) { return x.label === label; })[0] || null;
+}
+
+/** Your main slate's ranked players who are on this slate, in the same order, as this slate's ranking. */
+function copyMainRanks() {
+  var s = state.slate, main = nbaMainSlate(s);
+  if (!main) return;
+  var order = load(K.order(main.label), null), cut = load(K.cut(main.label), null);
+  if (!order || cut == null) { setStatus("Nothing ranked on " + slateLabel(main) + " yet to copy.", "warn"); return; }
+  var here = {};
+  state.order.forEach(function (pid) { here[pid] = 1; });
+  var ranked = order.slice(0, cut).filter(function (pid) { return here[pid]; }), inRanked = {};
+  if (!ranked.length) { setStatus("None of your ranked " + slateLabel(main) + " players are on this slate.", "warn"); return; }
+  if (load(K.order(s.label), null) && !window.confirm("This replaces your " + slateLabel(s) + " ranks with the " + ranked.length +
+      " of your main slate ranks who play on it. Continue?")) return;
+  ranked.forEach(function (pid) { inRanked[pid] = 1; });
+  state.order = resortTail(ranked.concat(state.order.filter(function (pid) { return !inRanked[pid]; })),
+                           ranked.length, byPidMap(s), tailValues());
+  state.cut = ranked.length;
+  state.newIds = {};
+  state.liftedPid = null;
+  renderLiftBar();
+  saveBoard();
+  state.view = "order";
+  $("view").value = "order";
+  syncSortHeads();
+  render();
+  setStatus("Copied " + ranked.length + " ranks from " + slateLabel(main) + ", in the same order. Everyone else is below the line; + or drag to fill in.");
+}
+
 function syncSwitchField() {
   var el = $("switchAt");
   if (!el || !state.slate) return;
@@ -3286,6 +3321,7 @@ function render() {
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
+  $("copyMain").hidden = !nbaMainSlate(state.slate);
   $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over his projection, for ties above the amber line. Dud: chance of a night under half of it, for ties below. Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
@@ -4638,6 +4674,7 @@ $("importFile").addEventListener("change", function (e) { if (e.target.files[0])
 $("buildScore").addEventListener("click", function () { applyBuilder("score"); });
 $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
 $("buildTiers").addEventListener("click", function () { applyNbaProjOrder(); });
+$("copyMain").addEventListener("click", function () { copyMainRanks(); });
 $("switchAt").addEventListener("change", function () {
   if (!state.slate) return;
   var v = this.value.trim() === "" ? null : Math.max(1, Math.round(Number(this.value)));
