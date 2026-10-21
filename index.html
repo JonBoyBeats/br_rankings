@@ -4680,7 +4680,9 @@ $("pasteBox").addEventListener("paste", function () {
 Array.prototype.forEach.call(document.querySelectorAll(".head button[data-sort]"), function (b) {
   b.addEventListener("click", function () {
     var k = b.dataset.sort;
-    if (TAIL_NAMES[k]) {                 // Score, Proj, VORP: sort the players below the line
+    // Football: Score, Proj, VORP sort the players below the line. NBA: Proj sorts the
+    // whole view, like ADP, and a second tap goes back to your order.
+    if (TAIL_NAMES[k] && SPORT_MODE !== "nba") {
       state.tailSort = k;
       save(K.tailSort, k);
       state.view = "order";
