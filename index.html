@@ -2111,6 +2111,11 @@ function selectSlate(index) {
   }
 
   var rec = reconcileOrder(s.players, saved);
+  if (keep.length) {                     // pool players coming back a moment later are not gone
+    var coming = {};
+    keep.forEach(function (id) { coming[id] = 1; });
+    rec.dropped = rec.dropped.filter(function (id) { return !coming[id]; });
+  }
   state.order = rec.order;
   state.newIds = {};
   rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
@@ -3880,6 +3885,18 @@ async function readSaved() {
   if (!id) return { id: null, doc: emptySavedState(), files: {} };
   var g = await gh("/gists/" + id);
   var files = g.files || {};
+  /* GitHub sends only so much of a gist per request: once the files together run past
+     about a megabyte, the later ones come back cut off ("truncated"). The ones this page
+     needs are then read whole from their raw address, which has no such cap. */
+  var need = [GIST_FILE].concat(state.slate ? [projFile(state.slate.sport)] : []);
+  await Promise.all(need.map(async function (name) {
+    var f0 = files[name];
+    if (!f0 || !f0.truncated || !f0.raw_url) return;
+    try {
+      var r = await fetch(f0.raw_url, { cache: "no-store" });
+      if (r.ok) files[name] = Object.assign({}, f0, { content: await r.text(), truncated: false });
+    } catch (e) { /* leave it marked truncated */ }
+  }));
   var f = files[GIST_FILE];
   return { id: id, doc: (f && parseSavedState(f.content)) || emptySavedState(), files: files };
 }
