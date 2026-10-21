@@ -338,7 +338,7 @@
   .outx:focus-visible { outline: 2px solid var(--accent); }
   .row.is-out .name { text-decoration: line-through; color: var(--muted); }
   /* NBA name line in fixed columns: name, team, injury, ETR, Zakarian, notes, out. */
-  html.nba .who.nbawho { display: grid; grid-template-columns: minmax(0, 1fr) 40px 22px 20px 20px 24px 24px;
+  html.nba .who.nbawho { display: grid; grid-template-columns: minmax(0, 210px) 40px 22px 20px 20px 24px 24px minmax(0, 1fr);
                          column-gap: 8px; align-items: center; }
   html.nba .nbawho > * { justify-self: start; }
   html.nba .nbawho .inj.p { background: #2f6fd6; color: #ffffff; }
@@ -583,7 +583,7 @@
         </span>
       </label>
     </div>
-    <div class="controls" style="padding-top:0">
+    <div class="controls football-only" style="padding-top:0">
       <div class="chips" id="positions"></div>
     </div>
   </div>
