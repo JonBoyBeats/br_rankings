@@ -1436,26 +1436,37 @@ function nbaBump(p, x) {
 function nbaBoxBlend(fp) { return blendProjection(fp, NBA_CEIL[0] * fp + NBA_CEIL[1]); }
 
 /* ETR's projection is a median; the box scores' minutes x points per minute is an
-   average, and runs higher: ETR came in at 0.90 of it on Oct 20 and 0.87 on Oct 21 (the
-   typical ratio among players who usually play 20+). So a box-score number is scaled by
-   that ratio before it is put on ETR's scale, measured off the ETR days on file once
-   there are enough of them. */
-var NBA_BOX_TO_ETR = 0.88;
+   average, and the gap grows down the board (bench players' medians sit furthest under
+   their averages). On Oct 20-21, among 265 players who usually play 15+, ETR's
+   projection ran 1.103 x the box-score number - 6.91, within a point at every level,
+   where one flat ratio was 2-3 points off at both ends. So a box-score number goes
+   through that line before it is put on ETR's scale, refit off the ETR days on file once
+   there are enough of them. [slope, intercept] */
+var NBA_BOX_TO_ETR = [1.103, -6.91];
 
 function nbaBoxScale(history, idx) {
-  var ratios = [];
+  var xs = [], ys = [];
   Object.keys(history).forEach(function (d) {
     Object.keys(history[d]).forEach(function (k) {
       var r = idx.byKey[k], m = history[d][k][0];
-      if (r && r.min >= 20 && r.fp > 0 && typeof m === "number") ratios.push(m / r.fp);
+      if (r && r.min >= 15 && r.fp > 0 && typeof m === "number") { xs.push(r.fp); ys.push(m); }
     });
   });
-  return ratios.length >= 20 ? median(ratios) : NBA_BOX_TO_ETR;
+  if (xs.length < 40) return NBA_BOX_TO_ETR;
+  var n = xs.length, mx = xs.reduce(function (a, v) { return a + v; }, 0) / n, my = ys.reduce(function (a, v) { return a + v; }, 0) / n;
+  var sxy = 0, sxx = 0;
+  for (var i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) * (xs[i] - mx); }
+  var a = sxx > 0 ? sxy / sxx : 1;
+  return [a, my - a * mx];
 }
+
+/** A box-score number on ETR's median scale. */
+function nbaBoxToEtr(fp, line) { return Math.max(0, line[0] * fp + line[1]); }
 
 /* ESPN's box scores use some legal names where Underdog and ETR use the familiar one.
    Add a pair when a board player is missing a morning Proj he should have. */
-var NBA_ESPN_ALIASES = { "miles mcbride": "deuce mcbride", "herbert jones": "herb jones", "moritz wagner": "moe wagner" };
+var NBA_ESPN_ALIASES = { "miles mcbride": "deuce mcbride", "herbert jones": "herb jones", "moritz wagner": "moe wagner",
+                         "luguentz dort": "lu dort" };
 
 /** The morning file indexed: rows by normalized name, and each team's core four. */
 function nbaIndex(doc) {
@@ -1549,12 +1560,12 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
     } else {
       var avg = nbaEtrAverage(k, r, idx, store.history);
       if (!avg && !r) return;
-      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores (scaled \u00d7" +
-                        scale.toFixed(2) + " to ETR's level)" : "";
+      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores, put on ETR's level (" +
+                        scale[0].toFixed(2) + " \u00d7 it " + (scale[1] < 0 ? "\u2212 " : "+ ") + Math.abs(scale[1]).toFixed(1) + ")" : "";
       var etrNote = avg ? "his last " + avg.days + " ETR projection" + (avg.days === 1 ? "" : "s") +
                           " (nights a core teammate sat taken out)" : "";
       boxWeight = !r ? 0 : !avg ? 1 : NBA_ETR_PRIOR_DAYS / (avg.days + NBA_ETR_PRIOR_DAYS);
-      base = (1 - boxWeight) * (avg ? avg.value : 0) + boxWeight * (r ? nbaBoxBlend(scale * r.fp) : 0);
+      base = (1 - boxWeight) * (avg ? avg.value : 0) + boxWeight * (r ? nbaBoxBlend(nbaBoxToEtr(r.fp, scale)) : 0);
       if (avg) byEtr++; else byBox++;
       part = !avg ? { note: boxNote + ", on ETR's projection/ceiling scale", box: r }
            : !r ? { note: "Average of " + etrNote }
@@ -5022,16 +5033,17 @@ function brrSelfTest() {
     { player_id: "R", first_name: "Third", last_name: "One", team: "T", adp: 22 }] };
   var mv = nbaValues(mSlate.players, mSlate, normalizeProjStore(null), mIdx, [], {});
   ok("before ETR: an unpriced core player is out, and only the part not in his last 10 moves a teammate",
-     mv.out["star guard"] === "auto" && Math.abs(mv.values.P - (nbaBoxBlend(NBA_BOX_TO_ETR * 12) + 3.6 * 0.5)) < 1e-9 && mv.values.Q == null);
+     mv.out["star guard"] === "auto" && Math.abs(mv.values.P - (nbaBoxBlend(nbaBoxToEtr(12, NBA_BOX_TO_ETR)) + 3.6 * 0.5)) < 1e-9 && mv.values.Q == null);
   var oneDay = { current: null, previous: null, history: { "2026-11-01": { "bench guard": [20, null], "star guard": [30, null] } } };
   var mv1 = nbaValues(mSlate.players, mSlate, oneDay, mIdx, [], {});
   ok("one day of ETR is half the morning number, and half of his last 10's absences still count",
-     Math.abs(mv1.values.P - (0.5 * 20 + 0.5 * nbaBoxBlend(NBA_BOX_TO_ETR * 12) + 3.6 * (1 - 0.5 * 0.5))) < 1e-9);
-  ok("box scores scale to ETR's level: the default until 20 ETR player-days, then their typical ratio",
+     Math.abs(mv1.values.P - (0.5 * 20 + 0.5 * nbaBoxBlend(nbaBoxToEtr(12, NBA_BOX_TO_ETR)) + 3.6 * (1 - 0.5 * 0.5))) < 1e-9);
+  ok("box scores go to ETR's level: the default line until 40 ETR player-days, then a refit",
      nbaBoxScale({}, mIdx) === NBA_BOX_TO_ETR && (function () {
        var h = {}, ix = { byKey: {} };
-       for (var i = 0; i < 21; i++) { ix.byKey["p" + i] = { min: 30, fp: 40 }; h["p" + i] = [32, null]; }
-       return Math.abs(nbaBoxScale({ d: h }, ix) - 0.8) < 1e-9;
+       for (var i = 0; i < 41; i++) { ix.byKey["p" + i] = { min: 30, fp: 10 + i }; h["p" + i] = [1.2 * (10 + i) - 5, null]; }
+       var l = nbaBoxScale({ d: h }, ix);
+       return Math.abs(l[0] - 1.2) < 1e-9 && Math.abs(l[1] + 5) < 1e-9 && nbaBoxToEtr(2, l) === 0;
      })());
   var mv2 = nbaValues(mSlate.players, mSlate, normalizeProjStore(null), mIdx, ["bench guard"], {});
   ok("a player you mark out has no Proj", mv2.outPids.P === "you" && mv2.values.P == null);
