@@ -1970,6 +1970,7 @@ var state = {
   liftedPid: null,     // the player picked up by tap, waiting for somewhere to land
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
+  closedNotices: {},   // notices you closed, by what they said: they stay closed until that changes
   projPrev: {},        // the same from the previous upload, for the change marker
   projParts: {},       // player_id -> {median, ceiling, own} behind the blended number
   hasOwn: false,       // the loaded file publishes ownership, so the column earns its width
@@ -1986,7 +1987,7 @@ var state = {
 var $ = function (id) { return document.getElementById(id); };
 
 /** Add a dismiss button to a notice. Closing it removes that showing, nothing more. */
-function closable(el) {
+function closable(el, onClose) {
   var x = document.createElement("button");
   x.type = "button";
   x.className = "notice-x";
@@ -1995,6 +1996,7 @@ function closable(el) {
   x.textContent = "\u00d7";
   x.addEventListener("click", function () {
     if (el.parentNode) el.parentNode.removeChild(el);
+    if (onClose) onClose();
   });
   el.appendChild(x);
   return el;
@@ -2242,7 +2244,7 @@ function applyStoredProjections() {
     matchedById: joined.matchedById, matchedByName: joined.matchedByName,
     boardTotal: s.players.length,
     missing: s.players
-      .filter(function (p) { return joined.values[p.player_id] == null; })
+      .filter(function (p) { return joined.values[p.player_id] == null && hasAdp(p); })   // undrafted and unprojected is fine
       .map(function (p) { return p.first_name + " " + p.last_name; })
   };
   renderMissingProjections();
@@ -2276,7 +2278,7 @@ function applyNbaProjections(store) {
     matchedById: j ? j.matchedById : 0, matchedByName: j ? j.matchedByName : res.byEtr + res.byBox,
     boardTotal: s.players.length,
     missing: s.players
-      .filter(function (p) { return res.values[p.player_id] == null && !res.outPids[p.player_id]; })
+      .filter(function (p) { return res.values[p.player_id] == null && !res.outPids[p.player_id] && hasAdp(p); })
       .map(function (p) { return p.first_name + " " + p.last_name; })
   };
   renderMissingProjections();
@@ -2826,7 +2828,8 @@ function renderMissingProjections() {
     el.appendChild(o);
   }
   var m = state.projMeta;
-  if (m && m.morning) {
+  var morningSig = m && m.morning ? "morning|" + state.slate.label + "|" + m.autoOut.join() : null;
+  if (m && m.morning && state.closedNotices[morningSig] !== true) {
     var a = document.createElement("div"), mo = m.morning;
     a.className = "notice";
     a.innerHTML = "<b>Morning Proj</b>: " + mo.etr + " players blend their ETR average with box scores, " + mo.box +
@@ -2834,9 +2837,11 @@ function renderMissingProjections() {
                   ", moved for who's out. Upload today's ETR file to replace it." +
                   (mo.hasBox ? "" : " The box-score file didn't load, so only players with ETR history have a number.") +
                   (m.autoOut.length ? "<div class=\"names\">Not priced, counted out: " + m.autoOut.join(" · ") + "</div>" : "");
-    el.appendChild(closable(a));
+    el.appendChild(closable(a, function () { state.closedNotices[morningSig] = true; }));
   }
   if (!m || !m.missing.length) return;
+  var missingSig = state.slate.label + "|" + m.missing.join();
+  if (state.closedNotices[missingSig] === true) return;
   var d = document.createElement("div");
   d.className = "notice warn";
   d.innerHTML = "<b>" + m.missing.length + " of " + m.boardTotal +
@@ -2846,7 +2851,7 @@ function renderMissingProjections() {
   names.className = "names";
   names.textContent = m.missing.join(" · ");
   d.appendChild(names);
-  el.appendChild(closable(d));
+  el.appendChild(closable(d, function () { state.closedNotices[missingSig] = true; }));
 }
 
 function renderPositions() {
