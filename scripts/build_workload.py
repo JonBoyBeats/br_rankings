@@ -247,6 +247,7 @@ def fpd_season(season, D):
     ids = D[D.season == season].drop_duplicates('player_id')
     by_name_team = {(norm(n), t): pid for n, t, pid in zip(ids.name, ids.team, ids.player_id)}
     names = ids.assign(n=ids.name.map(norm)).groupby('n').player_id.agg(list)
+    known = set(ids.player_id)
     out, covered, missed = {}, {}, []
     for key, pattern in (('route', '*rte_pct*.csv'), ('fr', '*first_read_pct*.csv')):
         files = sorted(glob.glob(os.path.join(FPD_DIR, str(season), pattern)))
@@ -257,7 +258,8 @@ def fpd_season(season, D):
         covered[key] = {int(w) for w in weeks}
         for r in f.to_dict('records'):
             n, t = norm(r['Name']), FPD_TEAM.get(r['Team'], r['Team'])
-            pid = by_name_team.get((n, t)) or (names[n][0] if n in names.index and len(names[n]) == 1 else None)
+            pid = r.get('player_id') if r.get('player_id') in known else None      # newer exports carry the gsis id
+            pid = pid or by_name_team.get((n, t)) or (names[n][0] if n in names.index and len(names[n]) == 1 else None)
             if pid is None: missed.append(r['Name']); continue
             for w in weeks:
                 v = pd.to_numeric(r[w], errors='coerce')
