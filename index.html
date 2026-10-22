@@ -2603,23 +2603,23 @@ function greenChip(el, frac) {
 }
 
 /* ---- Boom % and Dud % ---------------------------------------------------------
-   The chance, at his projection, of a night 10+ points over it (Boom) or under half of
-   it (Dud). Two logistic models fit on 2022-26 box scores (checked out of sample on
+   The chance, at his projection, of a night 10+ points over it (Boom) or 10+ under it
+   (Dud): points count the same whoever scores them. Two logistic models fit on 2022-26 box scores (checked out of sample on
    2025-26 after fitting 2022-24), holding fixed what a projection already knows (recent
    minutes, matchup, pace, rest, home): only the shape of a player's range moves them.
    Boom rises with usage, rebounds and assists per minute, starting and swingy minutes:
    at the same projection the top fifth boomed on 20.5% of nights, the bottom 14.7%.
-   Dud rises with swingy minutes and points per minute, a steals-and-blocks-heavy line
-   and fouls, and falls with starting: 16.2% against 10.2%. Each term is
+   Dud rises with swingy minutes, a steals-and-blocks-heavy line and fouls, and falls
+   with starting: 18.1% against 14.1%. Each term is
    [average, spread, weight] on the stat's standardized scale. */
 var NBA_BOOM = { intercept: -1.631, terms: {
   pred: [24.878, 10.1316, -0.3391], pred2: [7.2156, 6.0593, 0.0395], upm: [0.45317, 0.13162, 0.2226],
   min_sd: [5.5352, 2.0778, 0.0835], min_l10: [25.8957, 6.8021, 0.1116], ast_pm: [0.1032, 0.05748, 0.0899],
   reb_pm: [0.18501, 0.08241, 0.1546], starter_rate: [0.54941, 0.40795, 0.1208] } };
-var NBA_DUD = { intercept: -2.0965, terms: {
-  pred: [24.878, 10.1316, -0.5595], pred2: [7.2156, 6.0593, 0.058], starter_rate: [0.54941, 0.40795, -0.1348],
-  min_sd: [5.5352, 2.0778, 0.1285], ppm_sd: [0.29972, 0.0591, 0.0346], stk_share: [0.17411, 0.06268, 0.0598],
-  min_l10: [25.8957, 6.8021, -0.0295], foul_pm: [0.08369, 0.02624, 0.0134] } };
+var NBA_DUD = { intercept: -1.7472, terms: {
+  pred: [24.878, 10.1316, 0.9453], pred2: [7.2156, 6.0593, -0.5655], starter_rate: [0.54941, 0.40795, -0.1906],
+  min_sd: [5.5352, 2.0778, 0.0859], ppm_sd: [0.29972, 0.0591, 0.0391], stk_share: [0.17411, 0.06268, 0.0654],
+  min_l10: [25.8957, 6.8021, 0.0754], foul_pm: [0.08369, 0.02624, 0.0241] } };
 
 /** A model's chance for one player: `median` is his projection, `r` his morning-file row. */
 function nbaChance(model, median, r) {
@@ -2672,7 +2672,7 @@ function nbaStatCell(p, sh) {
     b.textContent = String(Math.round(v * 100));
     b.title = k[0] === "boom"
       ? "Boom " + b.textContent + "%: his chance of a night 10+ over his projection. Rises with usage, rebounds and assists per minute, starting and swingy minutes"
-      : "Dud " + b.textContent + "%: his chance of a night under half his projection. Rises with swingy minutes and scoring, a steals-and-blocks-heavy line and fouls; falls with starting";
+      : "Dud " + b.textContent + "%: his chance of a night 10+ under his projection. Rises with swingy minutes, a steals-and-blocks-heavy line and fouls; falls with starting";
     if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside the top " + NBA_SHADE_TOP + " by Proj, so not shaded"; c.appendChild(b); return; }
     c.appendChild(greenChip(b, f));
   });
@@ -3322,7 +3322,7 @@ function render() {
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
   $("copyMain").hidden = !nbaMainSlate(state.slate);
-  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over his projection, for ties above the amber line. Dud: chance of a night under half of it, for ties below. Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
+  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over his projection, for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
