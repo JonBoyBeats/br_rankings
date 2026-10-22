@@ -1478,7 +1478,7 @@ function nbaBoxToEtr(fp, line) { return Math.max(0, line[0] * fp + line[1]); }
 /* ESPN's box scores use some legal names where Underdog and ETR use the familiar one.
    Add a pair when a board player is missing a morning Proj he should have. */
 var NBA_ESPN_ALIASES = { "miles mcbride": "deuce mcbride", "herbert jones": "herb jones", "moritz wagner": "moe wagner",
-                         "luguentz dort": "lu dort" };
+                         "luguentz dort": "lu dort", "cameron johnson": "cam johnson" };
 
 /** The morning file indexed: rows by normalized name, and each team's core four. */
 function nbaIndex(doc) {
