@@ -202,6 +202,7 @@
   .hist .htxt { flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.4; }
   .hist .htop { color: var(--muted); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hint { color: var(--muted); font-size: 12.5px; }
+  #syncStatus { white-space: pre-line; }
 
   /* ---------- notices ---------- */
   .notice {
@@ -336,6 +337,15 @@
   .outx.on { background: var(--t0); color: var(--t0-ink); border-color: transparent; }
   .outx:focus-visible { outline: 2px solid var(--accent); }
   .row.is-out .name { text-decoration: line-through; color: var(--muted); }
+  /* NBA name line in fixed columns: name, injury, team, ETR, Zakarian, notes, out. */
+  html.nba .who.nbawho { display: grid; grid-template-columns: minmax(0, 210px) 22px 40px 20px 20px 24px 24px minmax(0, 1fr);
+                         column-gap: 8px; align-items: center; }
+  html.nba .nbawho > * { justify-self: start; }
+  html.nba .nbawho .inj.p { background: #2f6fd6; color: #ffffff; }
+  html.nba .nbawho .inj.d { background: var(--t0); color: var(--t0-ink); }
+  .outback { all: unset; cursor: pointer; margin: 2px 6px 2px 0; padding: 2px 8px; border-radius: 6px; font-size: 12.5px;
+             border: 1px solid var(--line-strong); color: var(--ink); }
+  .outback:focus-visible { outline: 2px solid var(--accent); }
   .cfbx:focus-visible { outline: 2px solid var(--accent); }
   .board.cfb .num.score b { min-width: 44px; }
   /* College: the rough Score, then the opponent, side by side (stacked on a phone). */
@@ -511,8 +521,8 @@
     .tag { font-size: 9px; padding: 1px 4px; }
     h1 { font-size: 17px; }
     /* NBA rows carry more chips (write-ups, out); the name keeps its own line above them. */
-    html.nba .who { flex-wrap: wrap; row-gap: 3px; align-items: center; }
-    html.nba .name { flex-basis: 100%; }
+    html.nba .who.nbawho { grid-template-columns: 20px 34px 18px 18px 22px 22px minmax(0, 1fr); column-gap: 5px; row-gap: 3px; }
+    html.nba .nbawho .name { grid-column: 1 / -1; }
     .views a { padding: 5px 8px; font-size: 12px; }
   }
 </style>
@@ -568,12 +578,13 @@
         <span class="field-label">Order · floor from</span>
         <span class="pair">
           <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
+          <button type="button" id="copyMain" hidden title="Rank this slate's players exactly as your main slate ranks them, then fill in the rest">Copy main ranks</button>
           <input type="number" id="switchAt" min="1" step="1" inputmode="numeric" style="width:58px"
                  title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player (box-score minutes; once ETR's file is in, the minutes its projection implies), or none when there is one for every pick">
         </span>
       </label>
     </div>
-    <div class="controls" style="padding-top:0">
+    <div class="controls football-only" style="padding-top:0">
       <div class="chips" id="positions"></div>
     </div>
   </div>
@@ -641,6 +652,7 @@
         <span class="hint">Stored in this browser only. It reaches a private gist and nothing else.</span>
       </div>
     </div>
+    <div id="followRow" class="hint" style="margin-top:8px" hidden></div>
   </div>
 
   <div id="pastePanel" class="paste" hidden>
@@ -1435,9 +1447,38 @@ function nbaBump(p, x) {
 
 function nbaBoxBlend(fp) { return blendProjection(fp, NBA_CEIL[0] * fp + NBA_CEIL[1]); }
 
+/* ETR's projection is a median; the box scores' minutes x points per minute is an
+   average, and the gap grows down the board (bench players' medians sit furthest under
+   their averages). On Oct 20-21, among 265 players who usually play 15+, ETR's
+   projection ran 1.103 x the box-score number - 6.91, within a point at every level,
+   where one flat ratio was 2-3 points off at both ends. So a box-score number goes
+   through that line before it is put on ETR's scale, refit off the ETR days on file once
+   there are enough of them. [slope, intercept] */
+var NBA_BOX_TO_ETR = [1.103, -6.91];
+
+function nbaBoxScale(history, idx) {
+  var xs = [], ys = [];
+  Object.keys(history).forEach(function (d) {
+    Object.keys(history[d]).forEach(function (k) {
+      var r = idx.byKey[k], m = history[d][k][0];
+      if (r && r.min >= 15 && r.fp > 0 && typeof m === "number") { xs.push(r.fp); ys.push(m); }
+    });
+  });
+  if (xs.length < 40) return NBA_BOX_TO_ETR;
+  var n = xs.length, mx = xs.reduce(function (a, v) { return a + v; }, 0) / n, my = ys.reduce(function (a, v) { return a + v; }, 0) / n;
+  var sxy = 0, sxx = 0;
+  for (var i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) * (xs[i] - mx); }
+  var a = sxx > 0 ? sxy / sxx : 1;
+  return [a, my - a * mx];
+}
+
+/** A box-score number on ETR's median scale. */
+function nbaBoxToEtr(fp, line) { return Math.max(0, line[0] * fp + line[1]); }
+
 /* ESPN's box scores use some legal names where Underdog and ETR use the familiar one.
    Add a pair when a board player is missing a morning Proj he should have. */
-var NBA_ESPN_ALIASES = { "miles mcbride": "deuce mcbride" };
+var NBA_ESPN_ALIASES = { "miles mcbride": "deuce mcbride", "herbert jones": "herb jones", "moritz wagner": "moe wagner",
+                         "luguentz dort": "lu dort" };
 
 /** The morning file indexed: rows by normalized name, and each team's core four. */
 function nbaIndex(doc) {
@@ -1520,7 +1561,7 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
   var cur = store.current, etrToday = !!cur && pacificDay(cur.at) === pacificDay(slate.cutoff);
   var out = nbaOuts(slate, idx, etrToday, marked, keyOf);
   var joined = etrToday ? joinProjections(players, cur.entries, nameMap) : null;
-  var values = {}, parts = {}, outPids = {}, byEtr = 0, byBox = 0;
+  var values = {}, parts = {}, outPids = {}, byEtr = 0, byBox = 0, scale = nbaBoxScale(store.history || {}, idx);
   players.forEach(function (p) {
     var k = keyOf(p), r = idx.byKey[k], base, part, boxWeight = 0;
     if (out[k]) { outPids[p.player_id] = out[k]; return; }
@@ -1531,11 +1572,12 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
     } else {
       var avg = nbaEtrAverage(k, r, idx, store.history);
       if (!avg && !r) return;
-      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores" : "";
+      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores, put on ETR's level (" +
+                        scale[0].toFixed(2) + " \u00d7 it " + (scale[1] < 0 ? "\u2212 " : "+ ") + Math.abs(scale[1]).toFixed(1) + ")" : "";
       var etrNote = avg ? "his last " + avg.days + " ETR projection" + (avg.days === 1 ? "" : "s") +
                           " (nights a core teammate sat taken out)" : "";
       boxWeight = !r ? 0 : !avg ? 1 : NBA_ETR_PRIOR_DAYS / (avg.days + NBA_ETR_PRIOR_DAYS);
-      base = (1 - boxWeight) * (avg ? avg.value : 0) + boxWeight * (r ? nbaBoxBlend(r.fp) : 0);
+      base = (1 - boxWeight) * (avg ? avg.value : 0) + boxWeight * (r ? nbaBoxBlend(nbaBoxToEtr(r.fp, scale)) : 0);
       if (avg) byEtr++; else byBox++;
       part = !avg ? { note: boxNote + ", on ETR's projection/ceiling scale", box: r }
            : !r ? { note: "Average of " + etrNote }
@@ -1721,15 +1763,15 @@ function dropBelowLine(order, cut, pid) {
 
 /**
  * "+": bring a player from below the line into the ranking, directly under the last ranked
- * player at his position (or at the end of the ranking if none is ranked yet). The line
- * grows by one. null when there is no line or he is already ranked.
+ * player at his position (or at the end of the ranking if none is ranked yet, or with no
+ * posOf, as on NBA). The line grows by one. null when there is no line or he is already ranked.
  */
 function rankAtPosition(order, cut, pid, posOf) {
   var at = clampCut(cut, order.length), from = order.indexOf(pid);
   if (at == null || from < 0 || from < at) return null;
   var out = order.filter(function (x) { return x !== pid; });
-  var pos = posOf(pid), insert = at;
-  for (var i = at - 1; i >= 0; i--) {
+  var pos = posOf && posOf(pid), insert = at;
+  for (var i = at - 1; posOf && i >= 0; i--) {
     if (posOf(out[i]) === pos) { insert = i + 1; break; }
   }
   out.splice(insert, 0, pid);
@@ -1897,11 +1939,14 @@ var K = {
   syncedSig: function (label) { return "brr:syncsig:" + label; },    // the board as it stood right after that sync
   boardSlate: function (label) { return "brr:boardslate:" + label; },   // which week's slate this device's board is for
   out: function (label) { return "brr:out:" + label; },             // NBA: players you've marked out tonight
+  outFrom: function (label) { return "brr:outfrom:" + label; },     // NBA: the rank each one had when marked out
   switchAt: function (label) { return "brr:switch:" + label; },     // NBA: your rank for the ceiling-to-floor switch
   built: function (label) { return "brr:built:" + label; },         // NBA: the order as Build tiers left it
   slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
+  follow: "brr:follow",
+  syncLog: "brr:synclog",                                           // when this device last synced, and how it went                                             // a friend's gist whose projections this board follows
   gist: "brr:gh:gist",
   device: "brr:device"
 };
@@ -1932,6 +1977,7 @@ var state = {
   liftedPid: null,     // the player picked up by tap, waiting for somewhere to land
   baseline: null,      // player_id -> adp at last export
   proj: {},            // player_id -> projection, for the current slate
+  closedNotices: {},   // notices you closed, by what they said: they stay closed until that changes
   projPrev: {},        // the same from the previous upload, for the change marker
   projParts: {},       // player_id -> {median, ceiling, own} behind the blended number
   hasOwn: false,       // the loaded file publishes ownership, so the column earns its width
@@ -1948,7 +1994,7 @@ var state = {
 var $ = function (id) { return document.getElementById(id); };
 
 /** Add a dismiss button to a notice. Closing it removes that showing, nothing more. */
-function closable(el) {
+function closable(el, onClose) {
   var x = document.createElement("button");
   x.type = "button";
   x.className = "notice-x";
@@ -1957,6 +2003,7 @@ function closable(el) {
   x.textContent = "\u00d7";
   x.addEventListener("click", function () {
     if (el.parentNode) el.parentNode.removeChild(el);
+    if (onClose) onClose();
   });
   el.appendChild(x);
   return el;
@@ -2077,6 +2124,11 @@ function selectSlate(index) {
   }
 
   var rec = reconcileOrder(s.players, saved);
+  if (keep.length) {                     // pool players coming back a moment later are not gone
+    var coming = {};
+    keep.forEach(function (id) { coming[id] = 1; });
+    rec.dropped = rec.dropped.filter(function (id) { return !coming[id]; });
+  }
   state.order = rec.order;
   state.newIds = {};
   rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
@@ -2084,6 +2136,7 @@ function selectSlate(index) {
   var onSlate = {};
   s.players.forEach(function (p) { onSlate[p.player_id] = 1; });
   state.cut = saved ? reconcileCut(saved, savedCut, onSlate) : null;
+  if (SPORT_MODE === "nba" && state.cut == null) state.cut = Math.min(NBA_DEFAULT_RANKED, state.order.length);
   state.liftedPid = null;
   renderLiftBar();
 
@@ -2097,6 +2150,7 @@ function selectSlate(index) {
   surfaceUnpriced(true);
   if (staleNote) setStatus(staleNote, "warn");
   scheduleSync(1200);
+  pullFollowed(true);
 }
 
 // ---------------------------------------------------------------- projections
@@ -2149,12 +2203,17 @@ function addFromPool(players, restore) {
 /* The numbers the tail sorts by: projection (the default), the score chip, or VORP. */
 function tailValues() {
   if (state.tailSort === "vorp") return state.vorp;
+  if (state.tailSort === "adp" && state.slate) {        // earliest ADP first; unpriced last
+    var adp = {};
+    state.slate.players.forEach(function (p) { if (hasAdp(p)) adp[p.player_id] = -p.adp; });
+    return adp;
+  }
   if (state.tailSort !== "score" || !state.slate) return state.proj;
   var values = {};
   state.slate.players.forEach(function (p) { var v = scoreValueFor(p); if (v != null) values[p.player_id] = v; });
   return values;
 }
-var TAIL_NAMES = { proj: "projection", score: "score", vorp: "VORP" };
+var TAIL_NAMES = { proj: "projection", adp: "ADP", score: "score", vorp: "VORP" };
 
 /* The tail is sorted, not ranked, so every new projection re-orders it in place. */
 function sortBelowLine() {
@@ -2198,7 +2257,7 @@ function applyStoredProjections() {
     matchedById: joined.matchedById, matchedByName: joined.matchedByName,
     boardTotal: s.players.length,
     missing: s.players
-      .filter(function (p) { return joined.values[p.player_id] == null; })
+      .filter(function (p) { return joined.values[p.player_id] == null && hasAdp(p); })   // undrafted and unprojected is fine
       .map(function (p) { return p.first_name + " " + p.last_name; })
   };
   renderMissingProjections();
@@ -2232,7 +2291,7 @@ function applyNbaProjections(store) {
     matchedById: j ? j.matchedById : 0, matchedByName: j ? j.matchedByName : res.byEtr + res.byBox,
     boardTotal: s.players.length,
     missing: s.players
-      .filter(function (p) { return res.values[p.player_id] == null && !res.outPids[p.player_id]; })
+      .filter(function (p) { return res.values[p.player_id] == null && !res.outPids[p.player_id] && hasAdp(p); })
       .map(function (p) { return p.first_name + " " + p.last_name; })
   };
   renderMissingProjections();
@@ -2240,23 +2299,48 @@ function applyNbaProjections(store) {
   syncSwitchField();
 }
 
-/** Mark a player out tonight, or back in. Marking him out sends him to the bottom of the board. */
-function toggleNbaOut(p) {
-  var label = state.slate.label, key = boardKey(p.first_name, p.last_name, state.nameMaps.nba || {});
-  var list = load(K.out(label), []), at = list.indexOf(key);
-  if (at >= 0) list.splice(at, 1); else list.push(key);
-  save(K.out(label), list);
-  if (at < 0) {
-    var i = state.order.indexOf(p.player_id);
-    if (i >= 0) {
-      state.order.splice(i, 1);
-      state.order.push(p.player_id);
-      if (state.cut != null && i < state.cut) state.cut--;
+/**
+ * Mark a player out tonight, or back in. Marking him out sends him to the bottom of the
+ * board and remembers his rank; bringing him back puts him at that rank again.
+ */
+function toggleNbaOut(p) { setNbaOut([p], !(state.nbaOutPids && state.nbaOutPids[p.player_id] === "you")); }
+
+function setNbaOut(players, out) {
+  var label = state.slate.label, map = state.nameMaps.nba || {};
+  var list = load(K.out(label), []), from = load(K.outFrom(label), {});
+  players.forEach(function (p) {
+    var key = boardKey(p.first_name, p.last_name, map), at = list.indexOf(key), i = state.order.indexOf(p.player_id);
+    if (out && at < 0) {
+      list.push(key);
+      if (i >= 0) {
+        from[key] = { rank: i, above: state.cut == null || i < state.cut };
+        state.order.splice(i, 1);
+        state.order.push(p.player_id);
+        if (state.cut != null && i < state.cut) state.cut--;
+      }
+    } else if (!out && at >= 0) {
+      list.splice(at, 1);
+      var was = from[key];
+      delete from[key];
+      if (was && i >= 0) {
+        state.order.splice(i, 1);
+        state.order.splice(Math.min(was.rank, state.order.length), 0, p.player_id);
+        if (was.above && state.cut != null) state.cut++;
+      }
     }
-  }
+  });
+  save(K.out(label), list);
+  save(K.outFrom(label), from);
   applyStoredProjections();
   saveBoard();
   render();
+}
+
+/** The players you've marked out, as slate players. */
+function nbaMarkedOut() {
+  var marked = {}, map = state.nameMaps.nba || {};
+  load(K.out(state.slate.label), []).forEach(function (k) { marked[k] = 1; });
+  return state.slate.players.filter(function (p) { return marked[boardKey(p.first_name, p.last_name, map)]; });
 }
 
 function handleProjectionFile(file) {
@@ -2285,7 +2369,7 @@ function ingestProjections(text, sourceName, pasted) {
     if (SPORT_MODE === "nba" && parsed.sport === "nfl") parsed.sport = "nba";
     if (parsed.error) { fail(parsed.error); return; }
     if (!parsed.entries.length) { fail("no rows with a numeric projection."); return; }
-    var upload = { file: sourceName, format: parsed.format, blend: PROJ_BLEND_VERSION,
+    var upload = { file: sourceName, format: parsed.format, blend: PROJ_BLEND_VERSION, device: myDevice(),
                    at: new Date().toISOString(), entries: parsed.entries };
     var store = normalizeProjStore(load(K.proj(parsed.sport), null)), gen = upload, sources = null;
     if (parsed.sport === "cfb") {
@@ -2494,6 +2578,7 @@ function renderMeta(rec) {
    the implied minutes are scaled by that day's typical ratio among players who usually
    play 20+: the level stays the box scores', and ETR decides who is above or below it. */
 var NBA_SECURE_MIN = 32;
+var NBA_DEFAULT_RANKED = 44;    // a 36-pick draft plus the next tier you might reach
 
 /** The draft's size from the slate's ADP: Underdog caps ADP at the last pick (24 or 36). */
 function nbaDraftSize(players) {
@@ -2518,23 +2603,23 @@ function greenChip(el, frac) {
 }
 
 /* ---- Boom % and Dud % ---------------------------------------------------------
-   The chance, at his projection, of a night 10+ points over it (Boom) or under half of
-   it (Dud). Two logistic models fit on 2022-26 box scores (checked out of sample on
+   The chance, at his projection, of a night 10+ points over it (Boom) or 10+ under it
+   (Dud): points count the same whoever scores them. Two logistic models fit on 2022-26 box scores (checked out of sample on
    2025-26 after fitting 2022-24), holding fixed what a projection already knows (recent
    minutes, matchup, pace, rest, home): only the shape of a player's range moves them.
    Boom rises with usage, rebounds and assists per minute, starting and swingy minutes:
    at the same projection the top fifth boomed on 20.5% of nights, the bottom 14.7%.
-   Dud rises with swingy minutes and points per minute, a steals-and-blocks-heavy line
-   and fouls, and falls with starting: 16.2% against 10.2%. Each term is
+   Dud rises with swingy minutes, a steals-and-blocks-heavy line and fouls, and falls
+   with starting: 18.1% against 14.1%. Each term is
    [average, spread, weight] on the stat's standardized scale. */
 var NBA_BOOM = { intercept: -1.631, terms: {
   pred: [24.878, 10.1316, -0.3391], pred2: [7.2156, 6.0593, 0.0395], upm: [0.45317, 0.13162, 0.2226],
   min_sd: [5.5352, 2.0778, 0.0835], min_l10: [25.8957, 6.8021, 0.1116], ast_pm: [0.1032, 0.05748, 0.0899],
   reb_pm: [0.18501, 0.08241, 0.1546], starter_rate: [0.54941, 0.40795, 0.1208] } };
-var NBA_DUD = { intercept: -2.0965, terms: {
-  pred: [24.878, 10.1316, -0.5595], pred2: [7.2156, 6.0593, 0.058], starter_rate: [0.54941, 0.40795, -0.1348],
-  min_sd: [5.5352, 2.0778, 0.1285], ppm_sd: [0.29972, 0.0591, 0.0346], stk_share: [0.17411, 0.06268, 0.0598],
-  min_l10: [25.8957, 6.8021, -0.0295], foul_pm: [0.08369, 0.02624, 0.0134] } };
+var NBA_DUD = { intercept: -1.7472, terms: {
+  pred: [24.878, 10.1316, 0.9453], pred2: [7.2156, 6.0593, -0.5655], starter_rate: [0.54941, 0.40795, -0.1906],
+  min_sd: [5.5352, 2.0778, 0.0859], ppm_sd: [0.29972, 0.0591, 0.0391], stk_share: [0.17411, 0.06268, 0.0654],
+  min_l10: [25.8957, 6.8021, 0.0754], foul_pm: [0.08369, 0.02624, 0.0241] } };
 
 /** A model's chance for one player: `median` is his projection, `r` his morning-file row. */
 function nbaChance(model, median, r) {
@@ -2553,27 +2638,12 @@ function nbaChance(model, median, r) {
    median a Proj stands for is (Proj - 5.48) / 1.034. */
 function nbaMedianOf(proj) { return (proj - 0.75 * NBA_CEIL[1]) / (0.25 + 0.75 * NBA_CEIL[0]); }
 
-/**
- * How many players the shading counts: the draft plus a cushion, cut at the biggest
- * drop in Proj between ranks D+4 and 1.4 x D (40-50 on a 36-pick draft). `projs` is
- * sorted best first.
- */
-function nbaPoolSize(projs, draftSize) {
-  var d = draftSize || 36, lo = d + 4, hi = Math.min(Math.round(d * 1.4), projs.length - 1);
-  if (projs.length <= lo) return projs.length;
-  var best = lo, gap = -1;
-  for (var i = lo; i <= hi; i++) {
-    var g = projs[i - 1] - projs[i];
-    if (g > gap) { gap = g; best = i; }
-  }
-  return best;
-}
+var NBA_SHADE_TOP = 60;    // shading covers the top 60 by Proj
 
-/** Proj, Boom and Dud for the slate, with each one's shade (0-1, 1 best) inside the draft range. */
+/** Proj, Boom and Dud for the slate, with each one's shade (0-1, 1 best) among the top 60 by Proj. */
 function nbaShading() {
   var rows = nbaStatRows().sort(function (a, b) { return b.proj - a.proj; });
-  var n = nbaPoolSize(rows.map(function (r) { return r.proj; }), nbaDraftSize(state.slate.players));
-  var pool = rows.slice(0, n), out = { proj: {}, boom: {}, dud: {}, rows: {} };
+  var pool = rows.slice(0, NBA_SHADE_TOP), out = { proj: {}, boom: {}, dud: {}, rows: {} };
   rows.forEach(function (r) { out.rows[r.pid] = r; });
   function shade(key, better) {
     var vals = pool.filter(function (r) { return r[key] != null; }).map(function (r) { return r[key]; })
@@ -2602,8 +2672,8 @@ function nbaStatCell(p, sh) {
     b.textContent = String(Math.round(v * 100));
     b.title = k[0] === "boom"
       ? "Boom " + b.textContent + "%: his chance of a night 10+ over his projection. Rises with usage, rebounds and assists per minute, starting and swingy minutes"
-      : "Dud " + b.textContent + "%: his chance of a night under half his projection. Rises with swingy minutes and scoring, a steals-and-blocks-heavy line and fouls; falls with starting";
-    if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside tonight's draft range, so not shaded"; c.appendChild(b); return; }
+      : "Dud " + b.textContent + "%: his chance of a night 10+ under his projection. Rises with swingy minutes, a steals-and-blocks-heavy line and fouls; falls with starting";
+    if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside the top " + NBA_SHADE_TOP + " by Proj, so not shaded"; c.appendChild(b); return; }
     c.appendChild(greenChip(b, f));
   });
   return c;
@@ -2651,7 +2721,7 @@ function applyNbaProjOrder() {
   built.forEach(function (pid) { inBuilt[pid] = 1; });
   var rest = state.order.filter(function (pid) { return !inBuilt[pid]; });
   state.order = built.concat(rest);
-  state.cut = built.length;
+  state.cut = Math.min(state.cut != null ? state.cut : NBA_DEFAULT_RANKED, built.length);   // your line stays where it was
   save(K.built(s.label), state.order.join());
   state.newIds = {};
   state.liftedPid = null;
@@ -2662,9 +2732,44 @@ function applyNbaProjOrder() {
   syncSortHeads();
   render();
   var sw = nbaSwitch();
-  setStatus("Ordered " + built.length + " by Proj" + (rest.length ? "; " + rest.length + " without a Proj or out sit below the line" : "") + ". " +
+  setStatus("Ordered " + built.length + " by Proj; the top " + state.cut + " are ranked, above your line" +
+            (rest.length ? ", and " + rest.length + " without a Proj or out sit at the bottom" : "") + ". " +
             (sw == null ? "This slate has a " + NBA_SECURE_MIN + "-minute player for every pick, so lean on Boom all the way down."
                         : "Lean on Boom above the amber line at rank " + sw + ", on Dud below it."));
+}
+
+/** The same day's main slate, for a late (or other) NBA slate whose ranks can start from it. */
+function nbaMainSlate(s) {
+  if (SPORT_MODE !== "nba" || !s || /_main$/.test(s.label)) return null;
+  var label = s.label.replace(/_[^_]+$/, "_main");
+  return state.data.slates.filter(function (x) { return x.label === label; })[0] || null;
+}
+
+/** Your main slate's ranked players who are on this slate, in the same order, as this slate's ranking. */
+function copyMainRanks() {
+  var s = state.slate, main = nbaMainSlate(s);
+  if (!main) return;
+  var order = load(K.order(main.label), null), cut = load(K.cut(main.label), null);
+  if (!order || cut == null) { setStatus("Nothing ranked on " + slateLabel(main) + " yet to copy.", "warn"); return; }
+  var here = {};
+  state.order.forEach(function (pid) { here[pid] = 1; });
+  var ranked = order.slice(0, cut).filter(function (pid) { return here[pid]; }), inRanked = {};
+  if (!ranked.length) { setStatus("None of your ranked " + slateLabel(main) + " players are on this slate.", "warn"); return; }
+  if (load(K.order(s.label), null) && !window.confirm("This replaces your " + slateLabel(s) + " ranks with the " + ranked.length +
+      " of your main slate ranks who play on it. Continue?")) return;
+  ranked.forEach(function (pid) { inRanked[pid] = 1; });
+  state.order = resortTail(ranked.concat(state.order.filter(function (pid) { return !inRanked[pid]; })),
+                           ranked.length, byPidMap(s), tailValues());
+  state.cut = ranked.length;
+  state.newIds = {};
+  state.liftedPid = null;
+  renderLiftBar();
+  saveBoard();
+  state.view = "order";
+  $("view").value = "order";
+  syncSortHeads();
+  render();
+  setStatus("Copied " + ranked.length + " ranks from " + slateLabel(main) + ", in the same order. Everyone else is below the line; + or drag to fill in.");
 }
 
 function syncSwitchField() {
@@ -2692,15 +2797,22 @@ function nbaTakesFor(p) {
 }
 
 /** On the name line: a letter per source coloured by its stance, and the dropdown toggle. */
+/** An empty cell that keeps a row's columns lined up with the rows around it. */
+function slot() { var e = document.createElement("span"); e.className = "slot"; return e; }
+
+/** The ETR and Zakarian letters, each in its own column (empty when that source said nothing), then the notes toggle. */
 function nbaWho(who, p, takes) {
-  takes.forEach(function (t) {
+  ["ETR", "Zakarian"].forEach(function (src) {
+    var t = takes.filter(function (x) { return x.source === src; })[0];
+    if (!t) { who.appendChild(slot()); return; }
     var c = document.createElement("span");
     c.className = "stance s-" + (NBA_STANCE[String(t.stance || "").toLowerCase()] || "note");
     c.textContent = t.source.charAt(0);
     c.title = t.source + (t.stance ? ": " + t.stance : "") + (t.blurb ? ". " + t.blurb : "");
     who.appendChild(c);
   });
-  cfbWho(who, p, { takes: takes.map(function (t) { return { source: t.source }; }) });
+  if (takes.length) cfbWho(who, p, { takes: takes.map(function (t) { return { source: t.source }; }) });
+  else who.appendChild(slot());
 }
 
 function nbaPanel(takes) {
@@ -2735,8 +2847,30 @@ function nbaOutButton(p) {
 function renderMissingProjections() {
   var el = $("unmatched");
   el.innerHTML = "";
+  var gone = SPORT_MODE === "nba" && state.slate ? nbaMarkedOut() : [];
+  if (gone.length) {
+    var o = document.createElement("div");
+    o.className = "notice";
+    o.appendChild(document.createElement("b")).textContent = "You marked out: ";
+    gone.forEach(function (p) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "outback";
+      b.textContent = p.first_name + " " + p.last_name + " \u21a9";
+      b.title = "Bring him back in, at the rank he had";
+      b.addEventListener("click", function () { setNbaOut([p], false); });
+      o.appendChild(b);
+    });
+    if (gone.length > 1) {
+      var all = document.createElement("button");
+      all.type = "button"; all.className = "outback"; all.textContent = "Bring all back";
+      all.addEventListener("click", function () { setNbaOut(gone, false); });
+      o.appendChild(all);
+    }
+    el.appendChild(o);
+  }
   var m = state.projMeta;
-  if (m && m.morning) {
+  var morningSig = m && m.morning ? "morning|" + state.slate.label + "|" + m.autoOut.join() : null;
+  if (m && m.morning && state.closedNotices[morningSig] !== true) {
     var a = document.createElement("div"), mo = m.morning;
     a.className = "notice";
     a.innerHTML = "<b>Morning Proj</b>: " + mo.etr + " players blend their ETR average with box scores, " + mo.box +
@@ -2744,9 +2878,11 @@ function renderMissingProjections() {
                   ", moved for who's out. Upload today's ETR file to replace it." +
                   (mo.hasBox ? "" : " The box-score file didn't load, so only players with ETR history have a number.") +
                   (m.autoOut.length ? "<div class=\"names\">Not priced, counted out: " + m.autoOut.join(" · ") + "</div>" : "");
-    el.appendChild(closable(a));
+    el.appendChild(closable(a, function () { state.closedNotices[morningSig] = true; }));
   }
   if (!m || !m.missing.length) return;
+  var missingSig = state.slate.label + "|" + m.missing.join();
+  if (state.closedNotices[missingSig] === true) return;
   var d = document.createElement("div");
   d.className = "notice warn";
   d.innerHTML = "<b>" + m.missing.length + " of " + m.boardTotal +
@@ -2756,7 +2892,7 @@ function renderMissingProjections() {
   names.className = "names";
   names.textContent = m.missing.join(" · ");
   d.appendChild(names);
-  el.appendChild(closable(d));
+  el.appendChild(closable(d, function () { state.closedNotices[missingSig] = true; }));
 }
 
 function renderPositions() {
@@ -2799,13 +2935,18 @@ function visibleRows() {
   if (state.position !== "ALL") {
     list = list.filter(function (r) { return r.p.position === state.position; });
   }
-  if (state.view === "adp") {
+  return sortRowsByView(list, state.view);
+}
+
+/** Rows ({p}) in the order a sorted view shows them; "order" leaves them as they are. */
+function sortRowsByView(list, view) {
+  if (view === "adp") {
     list = list.slice().sort(function (a, b) { return adpKey(a.p) - adpKey(b.p); });
-  } else if (state.view === "name") {
+  } else if (view === "name") {
     list = list.slice().sort(function (a, b) {
       return (a.p.last_name + a.p.first_name).localeCompare(b.p.last_name + b.p.first_name);
     });
-  } else if (state.view === "vorp") {
+  } else if (view === "vorp") {
     list = list.slice().sort(function (a, b) {
       var x = state.vorp[a.p.player_id], y = state.vorp[b.p.player_id];
       if (x == null && y == null) return adpKey(a.p) - adpKey(b.p);
@@ -2813,7 +2954,7 @@ function visibleRows() {
       if (y == null) return -1;
       return y - x;
     });
-  } else if (state.view === "own") {
+  } else if (view === "own") {
     list = list.slice().sort(function (a, b) {
       var pa = state.projParts[a.p.player_id], pb = state.projParts[b.p.player_id];
       var x = pa && typeof pa.own === "number" ? pa.own : null;
@@ -2823,7 +2964,7 @@ function visibleRows() {
       if (y == null) return -1;
       return y - x;
     });
-  } else if (state.view === "proj") {
+  } else if (view === "proj") {
     list = list.slice().sort(function (a, b) {
       var x = state.proj[a.p.player_id], y = state.proj[b.p.player_id];
       if (x == null && y == null) return adpKey(a.p) - adpKey(b.p);
@@ -3180,7 +3321,8 @@ function render() {
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
-  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over his projection, for ties above the amber line. Dud: chance of a night under half of it, for ties below. Shaded within tonight's draft range only"
+  $("copyMain").hidden = !nbaMainSlate(state.slate);
+  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over his projection, for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
@@ -3238,15 +3380,21 @@ function render() {
     var sub = document.createElement("span");
     sub.className = "sub";
     sub.textContent = p.team || "—";
-    who.append(name, pos, sub);
     var cf = state.slate.sport === "cfb" ? cfbFor(p) : null;
-    if (cf) cfbWho(who, p, cf);
-    var inj = injuryTag(p.injury);
-    if (inj) who.appendChild(inj);
     var nt = SPORT_MODE === "nba" ? nbaTakesFor(p) : null;
-    if (nt && nt.length) nbaWho(who, p, nt);
-    if (SPORT_MODE === "nba") who.appendChild(nbaOutButton(p));
-    if (state.newIds[p.player_id]) {
+    if (SPORT_MODE === "nba") {
+      // Straight columns: name, injury, team, ETR, Zakarian, notes, out. No position: every spot is a flex.
+      who.classList.add("nbawho");
+      who.append(name, injuryTag(p.injury) || slot(), sub);
+      nbaWho(who, p, nt || []);
+      who.appendChild(nbaOutButton(p));
+    } else {
+      who.append(name, pos, sub);
+      if (cf) cfbWho(who, p, cf);
+      var inj = injuryTag(p.injury);
+      if (inj) who.appendChild(inj);
+    }
+    if (state.newIds[p.player_id] && SPORT_MODE !== "nba") {
       var tag = document.createElement("span");
       tag.className = "tag";
       tag.textContent = "new";
@@ -3316,7 +3464,7 @@ function render() {
     if (v != null && parts && parts.lineup && parts.lineup.length) pval.title += ". Tonight: " + parts.lineup.join(", ");
     if (state.nbaOutPids && state.nbaOutPids[p.player_id]) pval.textContent = "out";
     else if (pc && pc.proj[p.player_id] != null) greenChip(pval, pc.proj[p.player_id]);
-    else if (pc && pc.rows[p.player_id]) pval.style.color = "var(--muted)";        // outside tonight's draft range
+    else if (pc && pc.rows[p.player_id]) pval.style.color = "var(--muted)";        // outside the top 60 by Proj
     var pr = document.createElement("span");
     pr.className = "num proj" + (v == null ? " dim" : "");
     pr.append(pd, pval);
@@ -3526,7 +3674,7 @@ function jumpLifted(kind) {
   if (!pid) return;
   var byPid = byPidMap(state.slate);
   var res = kind === "plus"
-    ? rankAtPosition(state.order, state.cut, pid, function (id) { return byPid[id] && byPid[id].position; })
+    ? rankAtPosition(state.order, state.cut, pid, SPORT_MODE === "nba" ? null : function (id) { return byPid[id] && byPid[id].position; })
     : dropBelowLine(state.order, state.cut, pid);
   if (!res) return;
   state.order = resortTail(res.order, res.cut, byPid, tailValues());
@@ -3845,6 +3993,18 @@ async function readSaved() {
   if (!id) return { id: null, doc: emptySavedState(), files: {} };
   var g = await gh("/gists/" + id);
   var files = g.files || {};
+  /* GitHub sends only so much of a gist per request: once the files together run past
+     about a megabyte, the later ones come back cut off ("truncated"). The ones this page
+     needs are then read whole from their raw address, which has no such cap. */
+  var need = [GIST_FILE].concat(state.slate ? [projFile(state.slate.sport)] : []);
+  await Promise.all(need.map(async function (name) {
+    var f0 = files[name];
+    if (!f0 || !f0.truncated || !f0.raw_url) return;
+    try {
+      var r = await fetch(f0.raw_url, { cache: "no-store" });
+      if (r.ok) files[name] = Object.assign({}, f0, { content: await r.text(), truncated: false });
+    } catch (e) { /* leave it marked truncated */ }
+  }));
   var f = files[GIST_FILE];
   return { id: id, doc: (f && parseSavedState(f.content)) || emptySavedState(), files: files };
 }
@@ -3863,6 +4023,7 @@ function renderSync(text) {
   $("syncStatus").textContent = text;
   $("syncActions").hidden = !connected();
   $("syncConnectRow").hidden = connected();
+  renderFollow();
   syncStickyOffsets();
 }
 
@@ -3886,10 +4047,31 @@ async function refreshSyncStatus() {
     renderSync("Auto-sync is on: edits save a couple of seconds after you make them, and opening or returning " +
                "to the board (or a check every minute while it's open) picks up the newest one from any device. " +
                "If two devices both changed this slate, it asks which board to keep. " + bits +
-               (labels.length ? " Saved slates: " + labels.join(", ") + "." : "") + " This device is " + myDevice() + ".");
+               (labels.length ? " Saved slates: " + labels.join(", ") + "." : "") + "\n\n" + syncCheck(cur));
   } catch (e) {
     renderSync(e.message);
   }
+}
+
+/**
+ * One readout to compare across devices: which device and gist this is, when it last
+ * synced and how that went, and whether its projections match the gist's. Every device
+ * that reads the same gist id and the same projections is in step.
+ */
+function syncCheck(cur) {
+  var sport = state.slate ? state.slate.sport : "nfl", log = load(K.syncLog, null);
+  var pf = cur.files[projFile(sport)];
+  var remote = pf && !pf.truncated && pf.content ? normalizeProjStore(JSON.parse(pf.content)).current : null;
+  var local = normalizeProjStore(load(K.proj(sport), null)).current;
+  function desc(g) {
+    return g ? g.file + (g.device ? " from " + g.device : "") + ", " + whenPT(g.at) : "none";
+  }
+  var ra = remote ? isoMs(remote.at) : 0, la = local ? isoMs(local.at) : 0;
+  var verdict = ra === la ? "In step." : ra > la ? "This device is behind; pulling them now." : "This device is ahead; sending them now.";
+  if (ra !== la) scheduleSync(300);
+  return "Sync check \u2014 this device: " + myDevice() + ", gist \u2026" + String(cur.id || "none").slice(-6) +
+         ". Last sync here: " + (log ? describeAge(log.at, Date.now()) + (log.ok ? ", OK" : ", failed: " + log.err) : "not yet") +
+         ". " + sport.toUpperCase() + " projections here: " + desc(local) + ". In your gist: " + desc(remote) + ". " + verdict;
 }
 
 async function syncSave() {
@@ -3970,15 +4152,33 @@ async function applyEntry(entry) {
   return { rec: rec, ranks: ranks };
 }
 
+/* Take the gist's projections for this sport when they are newer than this device's (or
+   always, when `force`). Returns a sentence for the status line, or "". */
+function pullProjections(cur, sport, force) {
+  var pf = cur.files[projFile(sport)];
+  if (!pf) return "";
+  if (pf.truncated) return " Your saved projections were too big to read back.";
+  var remote = normalizeProjStore(JSON.parse(pf.content)), local = normalizeProjStore(load(K.proj(sport), null));
+  var ra = remote.current ? isoMs(remote.current.at) : 0, la = local.current ? isoMs(local.current.at) : 0;
+  if (!remote.current || !(ra > la || (force && ra && JSON.stringify(remote) !== JSON.stringify(local)))) return "";
+  syncApplying = true;
+  try { save(K.proj(sport), remote); } finally { syncApplying = false; }
+  if (state.slate && state.slate.sport === sport) applyStoredProjections();
+  return " Projections from " + remote.current.file + (remote.current.device ? " (" + remote.current.device + ")" : "") + " came across.";
+}
+
 async function syncLoad() {
   var btn = $("syncLoad"); btn.disabled = true;
   try {
     var cur = await readSaved();
+    // Projections come across whether or not a board order was ever saved for this slate.
+    var pnote = pullProjections(cur, state.slate.sport, true);
+    if (pnote) { recomputeVorp(); render(); }
     var entry = cur.doc.slates[state.slate.label];
-    if (!entry) { renderSync("Nothing saved for " + slateLabel(state.slate) + " yet."); return; }
+    if (!entry) { renderSync("No board order saved for " + slateLabel(state.slate) + " yet." + (pnote || " Projections were already in step.")); return; }
     if (entryIsStale(entry, state.slate)) {
       renderSync("The board saved for " + slateLabel(state.slate) + " is from an earlier week's slate (saved " +
-                 describeAge(entry.saved_at, Date.now()) + "). Nothing is saved for this week's yet.");
+                 describeAge(entry.saved_at, Date.now()) + "). Nothing is saved for this week's yet." + pnote);
       return;
     }
     if (!window.confirm("Replace your order with the board saved " +
@@ -3994,19 +4194,7 @@ async function syncLoad() {
     rawSave(K.synced(state.slate.label), entry.saved_at);
     rawSave(K.syncedSig(state.slate.label), boardSig());
 
-    var sport = state.slate.sport;
-    var pf = cur.files[projFile(sport)];
-    var note = "";
-    if (pf && !pf.truncated) {
-      var remote = normalizeProjStore(JSON.parse(pf.content));
-      if (remote.current && remote.current.entries) {
-        save(K.proj(sport), remote);
-        applyStoredProjections();
-        note = " Projections from " + remote.current.file + " came with it.";
-      }
-    } else if (pf) {
-      note = " Its projections were too big to read back.";
-    }
+    var note = pnote;
     recomputeVorp();
     render();
     if (!$("vorpPanel").hidden) renderVorpPanel();
@@ -4090,7 +4278,8 @@ async function autoSync(quiet) {
     if (entryIsStale(remote, state.slate)) remote = null;      // saved for an earlier week's slate
     var syncedSig = load(K.syncedSig(label), null);
     var hasLocal = load(K.order(label), null) != null;
-    var take = false, push = false;
+    var take = false, push = false, boardErr = null, entry = null;
+    try {                                                       // a board problem must not hold up the projections
     if (syncedSig == null) {
       // first sync for this slate on this device
       if (!remote) push = hasLocal;
@@ -4121,37 +4310,39 @@ async function autoSync(quiet) {
       rawSave(K.synced(label), remote.saved_at);
       msg = "Synced your board from " + remote.device + " (saved " + describeAge(remote.saved_at, Date.now()) + ").";
     } else if (push) {
-      var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
-                             load(K.vorpWin(label), null), state.cut);
+      entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
+                         load(K.vorpWin(label), null), state.cut);
       files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
     }
+    } catch (be) { boardErr = be; take = false; entry = null; files = {}; msg = ""; }
 
-    // projections: the newer upload wins
-    var pf = cur.files[projFile(sport)];
-    var remoteP = pf && !pf.truncated && pf.content ? normalizeProjStore(JSON.parse(pf.content)) : null;
-    var localP = normalizeProjStore(load(K.proj(sport), null));
-    var ra = remoteP && remoteP.current ? isoMs(remoteP.current.at) : 0, la = localP.current ? isoMs(localP.current.at) : 0;
-    if (ra > la) {
-      syncApplying = true;
-      try { save(K.proj(sport), remoteP); applyStoredProjections(); } finally { syncApplying = false; }
-      msg += (msg ? " " : "Synced. ") + "Projections from " + remoteP.current.file + " came from your other device.";
-    } else if (la > ra) {
-      var payload = JSON.stringify(localP);
-      if (payload.length <= GIST_MAX) files[projFile(sport)] = { content: payload };
-    }
+    // projections: the newer upload wins, either way
+    var pmsg = pullProjections(cur, sport, false);
+    if (!pmsg) {
+      var pf = cur.files[projFile(sport)], localP = normalizeProjStore(load(K.proj(sport), null));
+      var remoteP = pf && !pf.truncated && pf.content ? normalizeProjStore(JSON.parse(pf.content)) : null;
+      var ra = remoteP && remoteP.current ? isoMs(remoteP.current.at) : 0, la = localP.current ? isoMs(localP.current.at) : 0;
+      if (la > ra) {
+        var payload = JSON.stringify(localP);
+        if (payload.length <= GIST_MAX) files[projFile(sport)] = { content: payload };
+      }
+    } else msg += (msg ? "" : "Synced.") + pmsg;
 
     if (take) rawSave(K.syncedSig(label), boardSig());      // after any re-sort the projections caused
     if (Object.keys(files).length) {
       await writeFiles(files, cur.id);
       if (entry) { rawSave(K.synced(label), entry.saved_at); rawSave(K.syncedSig(label), boardSig()); }
     }
-    if (take || ra > la) {
+    if (take || pmsg) {
       recomputeVorp();
       render();
       if (!$("vorpPanel").hidden) renderVorpPanel();
       setStatus(msg);
     }
+    if (boardErr) throw boardErr;
+    rawSave(K.syncLog, { at: new Date().toISOString(), ok: true });
   } catch (e) {
+    rawSave(K.syncLog, { at: new Date().toISOString(), ok: false, err: e.message });
     if (!$("syncPanel").hidden) renderSync("Auto-sync: " + e.message);
   } finally {
     syncBusy = false;
@@ -4167,10 +4358,87 @@ document.addEventListener("visibilitychange", function () {
 window.addEventListener("focus", function () {
   if (state.slate && connected() && !syncTimer) autoSync();
 });
+/* A phone restoring the page from memory fires neither focus nor a reload. */
+window.addEventListener("pageshow", function (e) {
+  if (e.persisted && state.slate && connected()) autoSync();
+});
 function syncPoll() {
   if (state.slate && connected() && document.visibilityState === "visible" && !syncBusy && !syncTimer) autoSync();
 }
 setInterval(syncPoll, SYNC_POLL_MS);
+
+/* ---- following a friend's projections ------------------------------------------
+   A board opened with ?follow=<gist id> remembers that gist, and from then on reads its
+   projection file (no token: a secret gist is readable by anyone holding its id) when a
+   slate opens, when the page comes back into view and every few minutes, taking it
+   whenever it is newer than what this browser has. Only projections come across; the
+   order, the line, the out marks and the exports stay this browser's own. The owner's
+   board writes that file a few seconds after each upload, through its own Sync. */
+var FOLLOW_POLL_MS = 5 * 60 * 1000, followLast = 0;
+
+function followId() { return load(K.follow, null); }
+
+async function pullFollowed(quiet) {
+  var id = followId();
+  if (!id || !state.slate || id === load(K.gist, null)) return;
+  if (Date.now() - followLast < 60 * 1000) return;     // GitHub allows 60 unsigned reads an hour
+  followLast = Date.now();
+  var sport = state.slate.sport;
+  try {
+    var r = await fetch(GH + "/gists/" + id, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
+    if (!r.ok) throw new Error("GitHub returned HTTP " + r.status);
+    var f = ((await r.json()).files || {})[projFile(sport)];
+    if (!f) return;
+    var text = f.truncated ? await (await fetch(f.raw_url, { cache: "no-store" })).text() : f.content;
+    var remote = normalizeProjStore(JSON.parse(text)), local = normalizeProjStore(load(K.proj(sport), null));
+    var ra = remote.current ? isoMs(remote.current.at) : 0, la = local.current ? isoMs(local.current.at) : 0;
+    if (ra < la || (ra === la && JSON.stringify(remote) === JSON.stringify(local))) return;
+    syncApplying = true;
+    try { save(K.proj(sport), remote); } finally { syncApplying = false; }
+    if (!state.slate || state.slate.sport !== sport) return;
+    applyStoredProjections();
+    render();
+    if (!quiet || ra > la) setStatus("Projections updated from the board you follow" +
+                                     (remote.current ? " (" + remote.current.file + ", " + whenPT(remote.current.at) + ")" : "") + ".");
+  } catch (e) {
+    if (!quiet) setStatus("Couldn't read the followed board's projections: " + e.message, "warn");
+  }
+}
+
+function renderFollow() {
+  var el = $("followRow");
+  if (!el) return;
+  el.innerHTML = "";
+  var id = followId(), gist = load(K.gist, null);
+  if (id && id !== gist) {
+    el.appendChild(document.createTextNode("Projections follow a friend's board and update a few minutes after they upload. "));
+    var stop = document.createElement("button");
+    stop.type = "button"; stop.textContent = "Stop following";
+    stop.addEventListener("click", function () {
+      try { localStorage.removeItem(K.follow); } catch (e) { /* ignore */ }
+      renderFollow();
+      setStatus("Stopped following. Projections now come only from your own uploads.");
+    });
+    el.appendChild(stop);
+  } else if (connected() && gist) {
+    var dir = location.origin + location.pathname.replace(/[^/]*$/, "");
+    var link = dir + (SPORT_MODE === "nba" ? "nba.html" : "") + "?follow=" + gist;
+    el.appendChild(document.createTextNode("Share link for friends: their boards pick up your projections a few minutes after you upload; their ranks stay their own. "));
+    var copy = document.createElement("button");
+    copy.type = "button"; copy.textContent = "Copy link";
+    copy.addEventListener("click", function () {
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject())
+        .then(function () { copy.textContent = "Copied"; }, function () { window.prompt("Copy this link:", link); });
+    });
+    el.appendChild(copy);
+  }
+  el.hidden = !el.childNodes.length;
+}
+
+document.addEventListener("visibilitychange", function () {
+  if (document.visibilityState === "visible") pullFollowed(true);
+});
+setInterval(function () { if (document.visibilityState === "visible") pullFollowed(true); }, FOLLOW_POLL_MS);
 
 /* ---- history: every save is a gist revision, so an older board is a tap away ---- */
 async function syncHistory() {
@@ -4266,11 +4534,26 @@ async function doExport() {
       slate = Object.assign({}, slate, { players: slate.players.concat(back) });
     }
     var byPid = byPidMap(slate);
+    // Looking at a sorted view: export in that order if you say so, the same number of players.
+    var base = state.order, sortedAs = null;
+    if (state.view !== "order") {
+      var viewName = $("view").selectedOptions[0].textContent.replace(/^Sort by /, "");
+      if (window.confirm("You're looking at the board sorted by " + viewName + ". OK exports in that order; " +
+                         "Cancel exports your own order (My order).")) {
+        var cur = byPidMap(state.slate), outs = state.nbaOutPids || {};
+        base = sortRowsByView(state.order.map(function (pid) { return { p: cur[pid] }; })
+          .filter(function (r) { return r.p; }), state.view).map(function (r) { return r.p.player_id; });
+        base = base.filter(function (pid) { return !outs[pid]; }).concat(base.filter(function (pid) { return outs[pid]; }));
+        sortedAs = viewName;
+      }
+    }
     var rec = reconcileOrder(slate.players, state.order);
     var onSlate = {};
     slate.players.forEach(function (p) { onSlate[p.player_id] = 1; });
-    var exportCut = state.cut == null ? null : reconcileCut(state.order, state.cut, onSlate);
-    var ranked = exportCut == null ? rec.order : rec.order.slice(0, exportCut);
+    var ownCut = state.cut == null ? null : reconcileCut(state.order, state.cut, onSlate);
+    var exportCut = state.cut == null ? null : reconcileCut(base, state.cut, onSlate);
+    var exported = reconcileOrder(slate.players, base).order;
+    var ranked = exportCut == null ? exported : exported.slice(0, exportCut);
     var built = buildExportCsv(ranked, byPid);
     if (!built.rows) {
       setStatus(exportCut === 0
@@ -4292,7 +4575,7 @@ async function doExport() {
     state.data = fresh;
     state.slate = slate;
     state.order = rec.order;
-    state.cut = exportCut;
+    state.cut = ownCut;
     state.newIds = {};
     rec.newIds.forEach(function (pid) { state.newIds[pid] = true; });
     applyStoredProjections();
@@ -4300,8 +4583,9 @@ async function doExport() {
     renderMeta(null);
     render();
 
-    var msg = "Exported " + built.rows + " appearance ids in your order" +
+    var msg = "Exported " + built.rows + " appearance ids " + (sortedAs ? "sorted by " + sortedAs : "in your order") +
               (exportCut == null ? "."
+                : sortedAs ? ", the same number as your line. The other " + (exported.length - exportCut) + " were left out."
                 : ", everything above the line. The " + (rec.order.length - exportCut) +
                   " below it were left out.");
     if (built.missing.length) {
@@ -4390,6 +4674,7 @@ $("importFile").addEventListener("change", function (e) { if (e.target.files[0])
 $("buildScore").addEventListener("click", function () { applyBuilder("score"); });
 $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
 $("buildTiers").addEventListener("click", function () { applyNbaProjOrder(); });
+$("copyMain").addEventListener("click", function () { copyMainRanks(); });
 $("switchAt").addEventListener("change", function () {
   if (!state.slate) return;
   var v = this.value.trim() === "" ? null : Math.max(1, Math.round(Number(this.value)));
@@ -4449,7 +4734,9 @@ $("pasteBox").addEventListener("paste", function () {
 Array.prototype.forEach.call(document.querySelectorAll(".head button[data-sort]"), function (b) {
   b.addEventListener("click", function () {
     var k = b.dataset.sort;
-    if (TAIL_NAMES[k]) {                 // Score, Proj, VORP: sort the players below the line
+    // A header (ADP, Score, Proj, VORP) sorts the players below the line; the View list
+    // above is where the whole board gets sorted.
+    if (TAIL_NAMES[k]) {
       state.tailSort = k;
       save(K.tailSort, k);
       state.view = "order";
@@ -4508,6 +4795,11 @@ function bootFailed(where, err) {
 }
 
 (async function boot() {
+  var fm = /[?&]follow=([0-9a-f]{20,40}|off)(?:&|$)/i.exec(location.search);
+  if (fm) {
+    if (fm[1].toLowerCase() === "off") { try { localStorage.removeItem(K.follow); } catch (e) { /* ignore */ } }
+    else save(K.follow, fm[1]);
+  }
   if (SPORT_MODE === "nba") {
     document.title = "NBA Board";
     document.querySelector(".masthead h1").textContent = "NBA Board";
@@ -4703,6 +4995,8 @@ function brrSelfTest() {
   ok("plus lands under the last ranked RB, ahead of other positions", up2 && up2.order.join() === "r1,r3,w1,r2,w2" && up2.cut === 3);
   var up3 = rankAtPosition(["r1", "w1", "t1"], 2, "t1", posOfT);
   ok("plus with none ranked at his position goes to the end of the ranking", up3 && up3.order.join() === "r1,w1,t1" && up3.cut === 3);
+  var up4 = rankAtPosition(["r1", "w1", "r2", "w2", "r3"], 3, "r3", null);
+  ok("plus without positions goes to the end of the ranking", up4 && up4.order.join() === "r1,w1,r2,r3,w2" && up4.cut === 4);
   ok("plus does nothing for a ranked player", rankAtPosition(["r1", "w1", "t1"], 2, "w1", posOfT) === null);
   ok("nudge down", moveBy(["a", "b", "c", "d"], "b", 1).join() === "a,c,b,d");
   ok("nudge clamps at the top", moveBy(["a", "b"], "a", -1).join() === "a,b");
@@ -5003,11 +5297,18 @@ function brrSelfTest() {
     { player_id: "R", first_name: "Third", last_name: "One", team: "T", adp: 22 }] };
   var mv = nbaValues(mSlate.players, mSlate, normalizeProjStore(null), mIdx, [], {});
   ok("before ETR: an unpriced core player is out, and only the part not in his last 10 moves a teammate",
-     mv.out["star guard"] === "auto" && Math.abs(mv.values.P - (nbaBoxBlend(12) + 3.6 * 0.5)) < 1e-9 && mv.values.Q == null);
+     mv.out["star guard"] === "auto" && Math.abs(mv.values.P - (nbaBoxBlend(nbaBoxToEtr(12, NBA_BOX_TO_ETR)) + 3.6 * 0.5)) < 1e-9 && mv.values.Q == null);
   var oneDay = { current: null, previous: null, history: { "2026-11-01": { "bench guard": [20, null], "star guard": [30, null] } } };
   var mv1 = nbaValues(mSlate.players, mSlate, oneDay, mIdx, [], {});
   ok("one day of ETR is half the morning number, and half of his last 10's absences still count",
-     Math.abs(mv1.values.P - (0.5 * 20 + 0.5 * nbaBoxBlend(12) + 3.6 * (1 - 0.5 * 0.5))) < 1e-9);
+     Math.abs(mv1.values.P - (0.5 * 20 + 0.5 * nbaBoxBlend(nbaBoxToEtr(12, NBA_BOX_TO_ETR)) + 3.6 * (1 - 0.5 * 0.5))) < 1e-9);
+  ok("box scores go to ETR's level: the default line until 40 ETR player-days, then a refit",
+     nbaBoxScale({}, mIdx) === NBA_BOX_TO_ETR && (function () {
+       var h = {}, ix = { byKey: {} };
+       for (var i = 0; i < 41; i++) { ix.byKey["p" + i] = { min: 30, fp: 10 + i }; h["p" + i] = [1.2 * (10 + i) - 5, null]; }
+       var l = nbaBoxScale({ d: h }, ix);
+       return Math.abs(l[0] - 1.2) < 1e-9 && Math.abs(l[1] + 5) < 1e-9 && nbaBoxToEtr(2, l) === 0;
+     })());
   var mv2 = nbaValues(mSlate.players, mSlate, normalizeProjStore(null), mIdx, ["bench guard"], {});
   ok("a player you mark out has no Proj", mv2.outPids.P === "you" && mv2.values.P == null);
   var etrStore = { current: nbaUp("e.csv", "2026-11-02T18:00:00Z", [["bench guard", 15, 25]]), previous: null, history: {} };
@@ -5016,9 +5317,6 @@ function brrSelfTest() {
      mv3.etrToday && !mv3.out["star guard"] && Math.abs(mv3.values.P - blendProjection(15, 25)) < 1e-9);
   ok("floor takes over right after the slate's last secure player",
      nbaAutoSwitch(25, 36) === 26 && nbaAutoSwitch(36, 36) === null && nbaAutoSwitch(40, 36) === null && nbaAutoSwitch(10, null) === null);
-  ok("the shading's range stops at the biggest Proj drop between D+4 and 1.4 x D",
-     nbaPoolSize([50, 48].concat(Array.apply(null, Array(60)).map(function (_, i) { return 40 - i * 0.3 - (i >= 41 ? 3 : 0); })), 36) === 43 &&
-     nbaPoolSize([30, 20, 10], 36) === 3);
   ok("a Proj maps back to the median it stands for", Math.abs(nbaMedianOf(blendProjection(30, NBA_CEIL[0] * 30 + NBA_CEIL[1])) - 30) < 1e-9);
   var avgRow = { upm: .45317, min_sd: 5.5352, min: 25.8957, apm: .1032, rpm: .18501, start: .54941, sd: .29972, fpm: .08369, spm: .0522, ppm: .3 };
   ok("Boom and Dud read sensibly: more usage booms more, starting duds less",
