@@ -168,6 +168,15 @@
   html.nba #scoreHead .opp-h::after { content: " \00b7  Opp"; }
   html.nba .num.score .opp { min-width: 44px; text-align: left; color: var(--muted); font-size: 11px; white-space: nowrap; align-self: center; }
   html.nba .num.score b.mchip::before { content: ""; position: absolute; left: -8px; top: 1px; bottom: 1px; width: 1px; background: rgba(255, 255, 255, .28); }
+  /* NBA tiers: a bar down the left of each tier's rows, a line and a tag where each starts. */
+  html.nba .row.tier { position: relative; }
+  html.nba .row.tier::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--tc); }
+  html.nba .row.tier-start { background-image: linear-gradient(var(--tc), var(--tc)); background-size: 100% 2px; background-repeat: no-repeat; }
+  .tiertag { position: absolute; left: 6px; top: -7px; z-index: 2; padding: 0 5px; border-radius: 3px; font-family: var(--mono);
+             font-size: 9px; line-height: 13px; font-weight: 700; user-select: none; }
+  .tiertag.drag { cursor: ns-resize; touch-action: none; }
+  .tiertag.t1 { top: 1px; }
+  #tiersBtn.on { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
   /* NBA: the switch from ceiling to floor. */
   html.nba .row.switch-start { box-shadow: inset 0 2px 0 #c58b2b; }
   html.nba .row.switch-start { position: relative; }
@@ -600,6 +609,7 @@
         <span class="field-label">Order · floor from</span>
         <span class="pair">
           <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
+          <button type="button" id="tiersBtn" aria-pressed="false" title="Show six tier lines over your order; drag a line's tag to move it">Tiers</button>
           <button type="button" id="copyMain" hidden title="Rank this slate's players exactly as your main slate ranks them, then fill in the rest">Copy main ranks</button>
           <input type="number" id="switchAt" min="1" step="1" inputmode="numeric" style="width:58px"
                  title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player (box-score minutes; once ETR's file is in, the minutes its projection implies), or none when there is one for every pick">
@@ -1677,10 +1687,11 @@ function putSavedSlate(doc, label, entry) {
 
 function playerCount(n) { return n + (n === 1 ? " player" : " players"); }
 
-function savedEntry(order, slateId, device, nowIso, windows, cut) {
+function savedEntry(order, slateId, device, nowIso, windows, cut, tiers) {
   var e = { order: order.slice(), slate_id: slateId, device: device,
             saved_at: nowIso, count: order.length };
   if (windows && Object.keys(windows).length) e.windows = windows;
+  if (tiers && Array.isArray(tiers.starts)) e.tiers = { on: !!tiers.on, starts: tiers.starts.slice() };
   var at = clampCut(cut, order.length);
   if (at != null) e.cut = at;
   return e;
@@ -1982,6 +1993,7 @@ var K = {
   outFrom: function (label) { return "brr:outfrom:" + label; },     // NBA: the rank each one had when marked out
   switchAt: function (label) { return "brr:switch:" + label; },     // NBA: your rank for the ceiling-to-floor switch
   built: function (label) { return "brr:built:" + label; },         // NBA: the order as Build tiers left it
+  tiers: function (label) { return "brr:tiers:" + label; },         // NBA: {on, starts}: where tiers 2-6 begin, by rank
   slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
@@ -2138,7 +2150,7 @@ function selectSlate(index) {
       boardIsStale(load(K.boardSlate(s.label), null), load(K.mod(s.label), null), s)) {
     // last week's board: start this slate fresh, and let sync treat this device as new to it
     var when = load(K.mod(s.label), null);
-    [K.order, K.cut, K.added, K.mod, K.synced, K.syncedSig].forEach(function (k) {
+    [K.order, K.cut, K.added, K.mod, K.synced, K.syncedSig, K.tiers].forEach(function (k) {
       try { localStorage.removeItem(k(s.label)); } catch (e) { /* ignore */ }
     });
     staleNote = "This device's " + slateLabel(s) + " board was from an earlier week's slate" +
@@ -2889,6 +2901,99 @@ function copyMainRanks() {
   setStatus("Copied " + ranked.length + " ranks from " + slateLabel(main) + ", in the same order. Everyone else is below the line; + or drag to fill in.");
 }
 
+/* ---- NBA tiers: a visual over your order. Six bands, dark blue (1) to light blue (6), each
+   starting at a rank you can drag; tier 6 runs to your Ranked line. They are positions, so a
+   player you drag across a line changes tier. */
+var NBA_TIER_COLORS = ["#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd"];
+
+/** Where tiers 2-6 start: even sixths of the ranked list, each moved to the biggest Proj drop within 2 ranks. */
+function nbaSeedTiers(order, cut, proj) {
+  var n = Math.max(6, Math.min(cut != null ? cut : NBA_DEFAULT_RANKED, order.length)), starts = [];
+  for (var j = 1; j < 6; j++) {
+    var target = Math.round(n * j / 6) + 1, lo = starts.length ? starts[starts.length - 1] + 1 : 2, best = Math.max(lo, target), drop = -Infinity;
+    for (var r = target - 2; r <= target + 2; r++) {
+      if (r < lo || r > n) continue;
+      var a = proj[order[r - 2]], b = proj[order[r - 1]];
+      var d = typeof a === "number" && typeof b === "number" ? a - b : -Infinity;
+      if (d > drop) { drop = d; best = r; }
+    }
+    starts.push(Math.min(best, n));
+  }
+  return starts;
+}
+
+/** 1-6 for a rank, or 0 past the last tier's end. */
+function nbaTierOf(rank, starts, end) {
+  if (rank > end) return 0;
+  var t = 1;
+  starts.forEach(function (st) { if (rank >= st) t++; });
+  return t;
+}
+
+/** The shown tiers, or null: on, NBA, your order, nothing filtered. */
+function nbaActiveTiers() {
+  if (SPORT_MODE !== "nba" || !state.slate || state.view !== "order" || state.search.trim() || state.position !== "ALL") return null;
+  var t = load(K.tiers(state.slate.label), null);
+  return t && t.on && Array.isArray(t.starts) && t.starts.length === 5 ? t : null;
+}
+
+function nbaTierEnd() { return state.cut != null ? state.cut : state.order.length; }
+
+/** Colour the rows already on screen for `starts` (also used while a line is being dragged). */
+function paintTiers(starts) {
+  var end = nbaTierEnd();
+  Array.prototype.forEach.call(document.querySelectorAll("#rows .row[data-pid]"), function (el) {
+    var rank = state.order.indexOf(el.dataset.pid) + 1, t = rank > 0 ? nbaTierOf(rank, starts, end) : 0;
+    el.classList.toggle("tier", t > 0);
+    el.classList.toggle("tier-start", t > 0 && rank === (t === 1 ? 1 : starts[t - 2]));
+    if (t) el.style.setProperty("--tc", NBA_TIER_COLORS[t - 1]); else el.style.removeProperty("--tc");
+  });
+}
+
+/** The tag on a tier's first row: tiers 2-6 drag up and down between their neighbours. */
+function tierTag(t, tiers) {
+  var tag = document.createElement("span");
+  tag.className = "tiertag";
+  tag.textContent = "T" + t;
+  tag.style.background = NBA_TIER_COLORS[t - 1];
+  tag.style.color = t >= 5 ? "#0b1a33" : "#ffffff";
+  if (t === 1) { tag.title = "Tier 1"; tag.classList.add("t1"); return tag; }
+  tag.title = "Tier " + t + ": drag up or down to move the line";
+  tag.classList.add("drag");
+  tag.addEventListener("pointerdown", function (e) {
+    e.preventDefault(); e.stopPropagation();
+    var j = t - 2, starts = tiers.starts.slice(), end = nbaTierEnd();
+    try { tag.setPointerCapture(e.pointerId); } catch (x) { /* ignore */ }
+    function move(ev) {
+      var hit = document.elementFromPoint(ev.clientX, ev.clientY), row = hit && hit.closest ? hit.closest(".row[data-pid]") : null;
+      if (!row) return;
+      var rank = state.order.indexOf(row.dataset.pid) + 1;
+      var lo = j === 0 ? 2 : starts[j - 1] + 1, hi = j === 4 ? end : starts[j + 1] - 1;
+      rank = Math.max(lo, Math.min(hi, rank));
+      if (rank !== starts[j]) { starts[j] = rank; paintTiers(starts); }
+    }
+    function up() {
+      tag.removeEventListener("pointermove", move); tag.removeEventListener("pointerup", up); tag.removeEventListener("pointercancel", up);
+      lastDragEnd = Date.now();
+      save(K.tiers(state.slate.label), { on: true, starts: starts });
+      render();
+    }
+    tag.addEventListener("pointermove", move); tag.addEventListener("pointerup", up); tag.addEventListener("pointercancel", up);
+  });
+  tag.addEventListener("click", function (e) { e.stopPropagation(); });
+  return tag;
+}
+
+function toggleTiers() {
+  var label = state.slate.label, t = load(K.tiers(label), null);
+  if (!t || !Array.isArray(t.starts)) t = { on: true, starts: nbaSeedTiers(state.order, state.cut, state.proj) };
+  else t = { on: !t.on, starts: t.starts };
+  save(K.tiers(label), t);
+  if (t.on && state.view !== "order") { state.view = "order"; $("view").value = "order"; syncSortHeads(); }
+  render();
+  if (t.on) setStatus("Tiers on: six bands over your order, tier 6 running to your line. Drag a line's tag (T2-T6) to move it.");
+}
+
 function syncSwitchField() {
   var el = $("switchAt");
   if (!el || !state.slate) return;
@@ -3473,7 +3578,12 @@ function render() {
   }
 
   var frag = document.createDocumentFragment();
-  var sw = null, pc = SPORT_MODE === "nba" ? nbaShading() : null;
+  var sw = null, pc = SPORT_MODE === "nba" ? nbaShading() : null, tiers = nbaActiveTiers(), tierEnd = nbaTierEnd();
+  if (SPORT_MODE === "nba") {
+    var tb = $("tiersBtn"), tt = state.slate && load(K.tiers(state.slate.label), null);
+    tb.setAttribute("aria-pressed", String(!!(tt && tt.on)));
+    tb.classList.toggle("on", !!(tt && tt.on));
+  }
   if (SPORT_MODE === "nba" && state.view === "order" && !state.search.trim() && state.position === "ALL") {
     sw = nbaSwitch();
   }
@@ -3488,6 +3598,12 @@ function render() {
                    (sw != null && r.rank === sw ? " switch-start" : "");
     el.dataset.pid = p.player_id;
     el.draggable = dragging;
+    var tier = tiers ? nbaTierOf(r.rank, tiers.starts, tierEnd) : 0;
+    if (tier) {
+      el.classList.add("tier");
+      el.style.setProperty("--tc", NBA_TIER_COLORS[tier - 1]);
+      if (r.rank === (tier === 1 ? 1 : tiers.starts[tier - 2])) { el.classList.add("tier-start"); el.appendChild(tierTag(tier, tiers)); }
+    }
 
     var handle = document.createElement("span");
     handle.className = "handle";
@@ -3875,6 +3991,7 @@ function nudgeLifted(delta) {
 
 document.addEventListener("click", function (e) {
   if (e.target.closest && e.target.closest("#liftbar")) return;
+  if (e.target.closest && e.target.closest(".tiertag")) return;
   var row = e.target.closest ? e.target.closest(".row[data-pid]") : null;
   if (!row || state.view !== "order") return;
   if (Date.now() - lastDragEnd < 400) return;   // a finished drag, not a tap
@@ -4230,7 +4347,7 @@ async function syncSave() {
       return;
     }
     var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString(),
-                           load(K.vorpWin(label), null), state.cut);
+                           load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null));
     var files = {};
     files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
 
@@ -4292,6 +4409,7 @@ async function applyEntry(entry) {
     save(K.vorpWin(state.slate.label), entry.windows);
     ranks += " Its replacement ranks came with it.";
   }
+  if (entry.tiers && Array.isArray(entry.tiers.starts)) save(K.tiers(state.slate.label), entry.tiers);
   return { rec: rec, ranks: ranks };
 }
 
@@ -4386,14 +4504,15 @@ function isoMs(iso) { var t = Date.parse(iso); return isFinite(t) ? t : 0; }
 /** The ranked part of a board (all of it without a line): the part a first sync compares. */
 function rankedSig(order, cut) { return JSON.stringify(cut == null ? [order, null] : [order.slice(0, cut), cut]); }
 function boardSig() {
-  return JSON.stringify([state.order, state.cut == null ? null : state.cut, load(K.vorpWin(state.slate.label), null) || null]);
+  return JSON.stringify([state.order, state.cut == null ? null : state.cut, load(K.vorpWin(state.slate.label), null) || null,
+                         load(K.tiers(state.slate.label), null) || null]);
 }
 
 /** Every save funnels through here: a board or projection write schedules a sync. */
 function markLocal(key) {
   if (syncApplying || typeof state === "undefined" || !state.slate) return;
   var label = state.slate.label;
-  if (key === K.order(label) || key === K.cut(label) || key === K.added(label) || key === K.vorpWin(label)) {
+  if (key === K.order(label) || key === K.cut(label) || key === K.added(label) || key === K.vorpWin(label) || key === K.tiers(label)) {
     rawSave(K.mod(label), new Date().toISOString());
     scheduleSync(2000);
   } else if (key === K.proj(state.slate.sport)) {
@@ -4454,7 +4573,7 @@ async function autoSync(quiet) {
       msg = "Synced your board from " + remote.device + " (saved " + describeAge(remote.saved_at, Date.now()) + ").";
     } else if (push) {
       entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
-                         load(K.vorpWin(label), null), state.cut);
+                         load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null));
       files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
     }
     } catch (be) { boardErr = be; take = false; entry = null; files = {}; msg = ""; }
@@ -4817,6 +4936,7 @@ $("importFile").addEventListener("change", function (e) { if (e.target.files[0])
 $("buildScore").addEventListener("click", function () { applyBuilder("score"); });
 $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
 $("buildTiers").addEventListener("click", function () { applyNbaProjOrder(); });
+$("tiersBtn").addEventListener("click", function () { toggleTiers(); });
 $("copyMain").addEventListener("click", function () { copyMainRanks(); });
 $("switchAt").addEventListener("change", function () {
   if (!state.slate) return;
@@ -5490,6 +5610,15 @@ function brrSelfTest() {
   var bars = nbaBars(barRows);
   ok("a slot's bar is the median of the 6 before and 6 after by ADP, himself left out, near the ends as many on the long side as the short but at least 3; no ADP takes the last 12 priced",
      bars.b0 === 40 && bars.b1 === 39 && bars.b2 === 38 && bars.b7 === 30 && bars.b13 === 22 && bars.free === 29);
+  var tOrder = [], tProj = {};
+  for (var ti = 0; ti < 44; ti++) { tOrder.push("t" + ti); tProj["t" + ti] = 60 - ti - (ti >= 8 ? 5 : 0); }   // a 5-point drop after rank 8
+  var seeded = nbaSeedTiers(tOrder, 44, tProj);
+  ok("tiers start near even sixths of the ranked list, moved onto the biggest Proj drop within 2",
+     seeded.length === 5 && seeded[0] === 9 && seeded.every(function (v, i) { return i === 0 || v > seeded[i - 1]; }) && seeded[4] <= 44);
+  ok("a rank's tier, and none past the line", nbaTierOf(1, [9, 16, 23, 30, 38], 44) === 1 && nbaTierOf(9, [9, 16, 23, 30, 38], 44) === 2 &&
+     nbaTierOf(44, [9, 16, 23, 30, 38], 44) === 6 && nbaTierOf(45, [9, 16, 23, 30, 38], 44) === 0);
+  ok("tiers ride a saved board", savedEntry(["a"], "s", "d", "t", null, 1, { on: true, starts: [2, 3, 4, 5, 6] }).tiers.starts.join() === "2,3,4,5,6" &&
+     savedEntry(["a"], "s", "d", "t").tiers === undefined);
   ok("the matchup note rounds to whole points and names the big parts",
      nbaMatchupNote([2.4, { p2: 1.3, ast: 0.6, reb: -0.2 }, "scoring wing"], false) ===
      "Matchup +2 (scoring wing vs this defense: twos +1, assists +1), in this number");
