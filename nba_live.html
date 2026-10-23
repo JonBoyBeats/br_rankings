@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NBA Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* The board's dark theme, trimmed to what this page draws. */
+  :root {
+    color-scheme: dark;
+    --bg: #080b11;
+    --surface: #12151c;
+    --surface-2: #161a22;
+    --input: #0d1017;
+    --ink: #ffffff;
+    --muted: #8b94a4;
+    --line: #1c212c;
+    --line-strong: #2a3140;
+    --accent: #ffffff;
+    --accent-ink: #080b11;
+    --live: #4dc48d;
+    --bad: #f08a7e;
+    --neutral-pill: #2a3140;
+    --guard: #d6843b;
+    --wing: #479580;
+    --big: #437fb5;
+    --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  .shell { max-width: 820px; margin: 0 auto; padding: 0 16px 64px; }
+
+  .masthead { position: sticky; top: 0; z-index: 30; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: 14px; }
+  .mast-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 19px; font-weight: 700; letter-spacing: -.015em; margin: 0; white-space: nowrap; }
+  .views { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; align-self: center; }
+  .views a { font-size: 12.5px; font-weight: 600; padding: 5px 12px; color: var(--muted); text-decoration: none; }
+  .views a[aria-current="page"] { background: var(--accent); color: var(--bg); }
+  .views a:not([aria-current]):hover { color: var(--ink); }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; padding-block: 12px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .grow { flex: 1 1 200px; min-width: 160px; }
+  .field-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  select { font-family: var(--sans); font-size: 14px; color: var(--ink); background: var(--input); border: 1px solid var(--line-strong); border-radius: 7px; padding: 7px 9px; width: 100%; height: 34px; }
+  button { font-family: var(--sans); font-size: 13.5px; font-weight: 500; border-radius: 7px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); padding: 7px 13px; height: 34px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .status { font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding-bottom: 10px; }
+  .status.bad { color: var(--bad); }
+
+  .head, .row { display: grid; grid-template-columns: 44px 34px minmax(0, 1fr) 74px 64px; gap: 10px; align-items: center; padding: 9px 4px; }
+  .head { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; }
+  .row { border-bottom: 1px solid var(--line); }
+  .r { text-align: right; }
+  .adp { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .expo { font-family: var(--mono); font-size: 11px; font-weight: 600; text-align: center; border-radius: 4px; padding: 2px 0; }
+  .who { min-width: 0; }
+  .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pos { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .06em; padding: 1px 5px; border-radius: 4px; background: var(--neutral-pill); margin-right: 6px; }
+  .pos-PG, .pos-SG, .pos-G { background: var(--guard); }
+  .pos-SF, .pos-PF, .pos-F { background: var(--wing); }
+  .pos-C { background: var(--big); }
+  .game { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+  .game.in { color: var(--live); }
+  .fp { font-family: var(--mono); font-size: 17px; font-weight: 600; text-align: right; }
+  .fp.none { color: var(--muted); font-weight: 400; font-size: 13px; }
+  .empty { color: var(--muted); padding: 24px 4px; }
+  /* No exposure loaded: the chip column goes. */
+  .list.no-expo .head, .list.no-expo .row { grid-template-columns: 44px minmax(0, 1fr) 74px 64px; }
+  .list.no-expo .expo, .list.no-expo .exph { display: none; }
+  @media (max-width: 520px) {
+    .head, .row { grid-template-columns: 36px 30px minmax(0, 1fr) 62px 52px; gap: 7px; }
+    .list.no-expo .head, .list.no-expo .row { grid-template-columns: 36px minmax(0, 1fr) 62px 52px; }
+    .fp { font-size: 15px; }
+    .sub { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="masthead">
+    <div class="mast-row">
+      <h1>NBA Live</h1>
+      <nav class="views" aria-label="Pages">
+        <a href="/">Home</a>
+        <a href="./">NFL</a>
+        <a href="nba.html">NBA</a>
+        <a href="nba_live.html" aria-current="page">Live</a>
+        <a href="/survivor/">Survivor</a>
+      </nav>
+    </div>
+    <div class="controls">
+      <label class="field grow">
+        <span class="field-label">Slate</span>
+        <select id="slate"></select>
+      </label>
+      <label class="field">
+        <span class="field-label">Sort</span>
+        <select id="sort">
+          <option value="adp">ADP</option>
+          <option value="fp">UD points</option>
+        </select>
+      </label>
+      <div class="field">
+        <span class="field-label">Exposure</span>
+        <span style="display:flex; gap:6px">
+          <button type="button" id="mine" aria-pressed="false" hidden title="Only players in at least one of your drafts">Mine only</button>
+          <button type="button" id="upload" title="Your Underdog exposure CSV for this slate">Upload</button>
+        </span>
+        <input type="file" id="file" accept=".csv,text/csv" hidden>
+      </div>
+      <div class="field">
+        <span class="field-label">&nbsp;</span>
+        <button type="button" id="refresh">Refresh</button>
+      </div>
+    </div>
+    <div class="status" id="status">Loading&hellip;</div>
+  </div>
+  <div class="list" id="list"></div>
+</div>
+<script>
+var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
+var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
+var EVERY = 60;   // seconds between pulls while the page is open; ESPN's box scores move about this often
+// ESPN's abbreviations -> the board's (the nightly job's map)
+var TEAM = { SA: "SAS", NY: "NYK", GS: "GSW", NO: "NOP", UTAH: "UTA", WSH: "WAS" };
+// ESPN's spelling -> Underdog's, as on the board
+var ESPN_ALIASES = { "miles mcbride": "deuce mcbride", "herbert jones": "herb jones", "moritz wagner": "moe wagner",
+                     "luguentz dort": "lu dort", "cameron johnson": "cam johnson" };
+var STAT = { MIN: "min", PTS: "pts", REB: "reb", AST: "ast", STL: "stl", BLK: "blk", TO: "tov",
+             minutes: "min", points: "pts", rebounds: "reb", assists: "ast", steals: "stl", blocks: "blk", turnovers: "tov" };
+
+var state = { slates: [], slate: null, sort: "adp", mine: false, games: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
+
+function $(id) { return document.getElementById(id); }
+function load(key, fallback) { try { var v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; } }
+function save(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} }
+function expoKey(label) { return "brr:expo:" + label; }   // the board's key, so an upload on either page shows on both
+
+function normName(s) {
+  return String(s == null ? "" : s).toLowerCase()
+    .replace(/[‘’'`.]/g, "").replace(/[-‐-―]/g, " ")
+    .replace(/\b(jr|sr|ii|iii|iv|v)\b/g, " ").replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ").trim();
+}
+function udPoints(s) { return Math.round((s.pts + 1.2 * s.reb + 1.5 * s.ast + 3 * (s.stl + s.blk) - s.tov) * 10) / 10; }
+function pt(d, opts) { return d.toLocaleString("en-US", Object.assign({ timeZone: "America/Los_Angeles" }, opts)); }
+
+/** The ET calendar day of the slate, which is the day ESPN files its games under. */
+function espnDate(iso) {
+  var p = new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/New_York" });   // YYYY-MM-DD
+  return p.replace(/-/g, "");
+}
+
+// ---------------------------------------------------------------- slates
+async function mirror(file) {
+  var r = await fetch(MIRROR + file + "?t=" + Date.now(), { cache: "no-store" });
+  if (!r.ok) throw new Error(file + ": HTTP " + r.status);
+  return r.json();
+}
+
+/** Tonight's slates: locked ones from nba_tonight.json, open ones from nba_latest.json. */
+async function loadSlates() {
+  var got = await Promise.all(["nba_tonight.json", "nba_latest.json"].map(function (f) {
+    return mirror(f).catch(function () { return { slates: [] }; });
+  }));
+  var seen = {}, now = Date.now(), out = [];
+  got[1].slates.concat(got[0].slates).forEach(function (s) {
+    var t = new Date(s.cutoff).getTime();
+    if (seen[s.slate_id] || !s.players.length || t < now - 20 * 3600e3 || t > now + 16 * 3600e3) return;
+    seen[s.slate_id] = 1;
+    out.push(s);
+  });
+  return out.sort(function (a, b) { return a.cutoff < b.cutoff ? -1 : 1; });
+}
+
+function fillSlates() {
+  var sel = $("slate"), keep = load("brr:live:slate", null), now = Date.now(), pick = 0;
+  sel.innerHTML = "";
+  state.slates.forEach(function (s, i) {
+    var o = document.createElement("option");
+    var locked = new Date(s.cutoff).getTime() <= now;
+    o.value = String(i);
+    o.textContent = (s.title || s.label).replace(/ Slate$/, "") + " · " + (locked ? "locked " : "locks ") + pt(new Date(s.cutoff), { hour: "numeric", minute: "2-digit" }) + " PT";
+    sel.appendChild(o);
+    if (locked) pick = i;                       // the last slate to lock is the one being played
+  });
+  state.slates.forEach(function (s, i) { if (s.label === keep) pick = i; });
+  sel.value = String(pick);
+  state.slate = state.slates[pick] || null;
+}
+
+// ---------------------------------------------------------------- ESPN
+async function espn(path) {
+  var r = await fetch(ESPN + path, { cache: "no-store" });
+  if (!r.ok) throw new Error("ESPN " + r.status);
+  return r.json();
+}
+
+function gameLabel(e) {
+  var st = e.status || {}, ty = st.type || {};
+  if (ty.state === "pre") return pt(new Date(e.date), { hour: "numeric", minute: "2-digit" });
+  if (ty.state === "post") return "Final";
+  if (ty.name === "STATUS_HALFTIME") return "Half";
+  var q = st.period > 4 ? "OT" + (st.period > 5 ? st.period - 4 : "") : "Q" + st.period;
+  if (ty.name === "STATUS_END_PERIOD" || st.displayClock === "0.0") return "End " + q;
+  return q + " " + st.displayClock;
+}
+
+function boxRows(summ) {
+  var out = [];
+  ((summ.boxscore || {}).players || []).forEach(function (t) {
+    var team = TEAM[t.team.abbreviation] || t.team.abbreviation, st = (t.statistics || [])[0] || {};
+    var keys = st.keys || st.labels || st.names || [];
+    (st.athletes || []).forEach(function (a) {
+      var s = { pts: 0, reb: 0, ast: 0, stl: 0, blk: 0, tov: 0, min: 0 };
+      (a.stats || []).forEach(function (v, i) { var k = STAT[keys[i]]; if (k) s[k] = parseFloat(String(v).split("-")[0]) || 0; });
+      var nm = normName(a.athlete.displayName);
+      out.push({ key: ESPN_ALIASES[nm] || nm, team: team, s: s, dnp: !!a.didNotPlay || !s.min });
+    });
+  });
+  return out;
+}
+
+/** One pull: the day's scoreboard, then a box score for every game under way or newly final. */
+async function pull() {
+  if (!state.slate || state.busy) return;
+  state.busy = true;
+  try {
+    var day = espnDate(state.slate.cutoff);
+    var board = await espn("/scoreboard?dates=" + day + "&limit=50");
+    var games = {}, todo = [];
+    (board.events || []).forEach(function (e) {
+      var g = { id: e.id, state: e.status.type.state, label: gameLabel(e) };
+      ((e.competitions || [])[0] || {}).competitors.forEach(function (c) { games[TEAM[c.team.abbreviation] || c.team.abbreviation] = g; });
+      if (g.state !== "pre" && !state.finals[e.id]) todo.push(g);
+    });
+    await Promise.all(todo.map(async function (g) {
+      state.box[g.id] = boxRows(await espn("/summary?event=" + g.id));
+      if (g.state === "post") state.finals[g.id] = true;     // a final box score doesn't change; stop asking
+    }));
+    state.games = games;
+    state.pulledAt = new Date();
+    state.error = null;
+  } catch (err) {
+    state.error = err;
+  } finally {
+    state.busy = false;
+  }
+  render();
+}
+
+// ---------------------------------------------------------------- exposure (the board's parser)
+function parseCsv(text) {
+  var rows = [], row = [], field = "", q = false, i = 0, d = String(text).split(/\r?\n/)[0].indexOf("\t") >= 0 ? "\t" : ",";
+  text = String(text).replace(/^﻿/, "");
+  while (i < text.length) {
+    var c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { field += '"'; i += 2; continue; } q = false; i++; continue; } field += c; i++; continue; }
+    if (c === '"') { q = true; i++; continue; }
+    if (c === d) { row.push(field); field = ""; i++; continue; }
+    if (c === "\r") { i++; continue; }
+    if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+    field += c; i++;
+  }
+  row.push(field); rows.push(row);
+  return rows.filter(function (r) { return r.length > 1 || (r[0] || "").trim() !== ""; });
+}
+
+function ingestExposure(text, fileName) {
+  var rows = parseCsv(text), h = rows[0].map(function (c) { return String(c).trim().toLowerCase(); });
+  var iApp = h.indexOf("appearance"), iDraft = h.indexOf("draft"), iF = h.indexOf("first name"), iL = h.indexOf("last name");
+  if (iApp < 0 || iDraft < 0) { setStatus(fileName + " isn't an Underdog exposure export (no Appearance and Draft columns).", true); return; }
+  var drafts = {}, byApp = {}, byName = {}, seen = {};
+  rows.slice(1).forEach(function (r) {
+    if (r.length < h.length / 2 || !r[iDraft]) return;
+    var dft = r[iDraft], app = r[iApp], nm = normName((r[iF] || "") + " " + (r[iL] || ""));
+    drafts[dft] = 1;
+    if (seen[dft + "|" + app]) return;
+    seen[dft + "|" + app] = 1;
+    byApp[app] = (byApp[app] || 0) + 1;
+    byName[nm] = (byName[nm] || 0) + 1;
+  });
+  var n = Object.keys(drafts).length, best = state.slate, bestHits = 0;
+  if (!n) { setStatus(fileName + ": no drafts in this file.", true); return; }
+  state.slates.forEach(function (sl) {
+    var hits = sl.players.filter(function (p) { return byApp[p.appearance_id]; }).length;
+    if (hits > bestHits) { best = sl; bestHits = hits; }
+  });
+  var counts = {};
+  best.players.forEach(function (p) {
+    var c = byApp[p.appearance_id] || byName[normName(p.first_name + " " + p.last_name)] || 0;
+    if (c) counts[p.player_id] = c;
+  });
+  save(expoKey(best.label), { file: fileName, at: new Date().toISOString(), drafts: n, counts: counts });
+  if (best !== state.slate) { state.slate = best; $("slate").value = String(state.slates.indexOf(best)); }
+  render();
+}
+
+/** The board's chip colour: red at 1 in 12 or less, white at 1 in 6, dark green at 2 in 6 or more. */
+function expoColor(f) {
+  function mix(a, b, t) { return a.map(function (v, i) { return Math.round(v + (b[i] - v) * t); }); }
+  var white = [255, 255, 255], green = [26, 92, 52], red = [198, 40, 40];
+  var c = f >= 1 / 6 ? mix(white, green, Math.min(1, (f - 1 / 6) * 6)) : mix(white, red, Math.min(1, (1 / 6 - f) * 12));
+  var lum = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2];
+  return { bg: "rgb(" + c.join(",") + ")", ink: lum < 140 ? "#ffffff" : "#111111" };
+}
+
+// ---------------------------------------------------------------- drawing
+function setStatus(msg, bad) { var el = $("status"); el.textContent = msg; el.classList.toggle("bad", !!bad); }
+
+function statLine(s) {
+  var bits = [s.pts + " pts", s.reb + " reb", s.ast + " ast"];
+  if (s.stl) bits.push(s.stl + " stl");
+  if (s.blk) bits.push(s.blk + " blk");
+  if (s.tov) bits.push(s.tov + " to");
+  return bits.join(", ") + " · " + s.min + " min";
+}
+
+function render() {
+  var sl = state.slate, host = $("list");
+  host.innerHTML = "";
+  if (!sl) { host.innerHTML = '<div class="empty">No NBA slate tonight in the mirror.</div>'; setStatus(""); return; }
+  var ex = load(expoKey(sl.label), null);
+  if (ex && !ex.drafts) ex = null;
+  host.classList.toggle("no-expo", !ex);
+  $("mine").hidden = !ex;
+  $("mine").setAttribute("aria-pressed", String(!!(ex && state.mine)));
+
+  // ESPN rows by name and team, then by name alone when only one player carries it
+  var byKey = {}, byName = {};
+  Object.keys(state.box).forEach(function (gid) {
+    state.box[gid].forEach(function (b) {
+      b.gid = gid;
+      byKey[b.key + "|" + b.team] = b;
+      byName[b.key] = byName[b.key] === undefined ? b : null;
+    });
+  });
+  var rows = sl.players.map(function (p) {
+    var k = normName(p.first_name + " " + p.last_name);
+    var b = byKey[k + "|" + p.team] || byName[k] || null, g = state.games[p.team] || null;
+    var fp = b && !b.dnp ? udPoints(b.s) : null;
+    return { p: p, b: b, g: g, fp: fp, n: ex ? ex.counts[p.player_id] || 0 : 0 };
+  });
+  if (ex && state.mine) rows = rows.filter(function (r) { return r.n; });
+  rows.sort(state.sort === "fp" ? function (a, b) { return (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp) || a.p.adp - b.p.adp; }
+                                : function (a, b) { return a.p.adp - b.p.adp; });
+
+  var head = document.createElement("div");
+  head.className = "head";
+  head.innerHTML = '<span class="r">ADP</span><span class="exph">Exp</span><span>Player</span><span class="r">Game</span><span class="r">UD pts</span>';
+  host.appendChild(head);
+  rows.forEach(function (r) {
+    var p = r.p, el = document.createElement("div");
+    el.className = "row";
+    var adp = document.createElement("span"); adp.className = "adp r"; adp.textContent = p.adp.toFixed(1); el.appendChild(adp);
+    var chip = document.createElement("span"); chip.className = "expo";
+    if (ex) {
+      var f = r.n / ex.drafts, c = expoColor(f);
+      chip.textContent = String(Math.round(f * 100));
+      chip.style.background = c.bg; chip.style.color = c.ink;
+      chip.title = "In " + r.n + " of your " + ex.drafts + " drafts";
+    }
+    el.appendChild(chip);
+    var who = document.createElement("div"); who.className = "who";
+    var nm = document.createElement("div"); nm.className = "name";
+    var pos = document.createElement("span"); pos.className = "pos" + (p.position ? " pos-" + p.position : ""); pos.textContent = p.position || "?";
+    nm.appendChild(pos); nm.appendChild(document.createTextNode(p.first_name + " " + p.last_name));
+    var sub = document.createElement("div"); sub.className = "sub";
+    sub.textContent = (p.team || "") + (r.b && !r.b.dnp ? " · " + statLine(r.b.s) : "");
+    who.appendChild(nm); who.appendChild(sub); el.appendChild(who);
+    var game = document.createElement("span"); game.className = "game" + (r.g && r.g.state === "in" ? " in" : "");
+    game.textContent = r.g ? r.g.label : "–";
+    el.appendChild(game);
+    var fp = document.createElement("span");
+    var dnp = r.g && r.g.state !== "pre" && state.box[r.g.id] && (!r.b || r.b.dnp);
+    fp.className = "fp" + (r.fp == null ? " none" : "");
+    fp.textContent = r.fp != null ? r.fp.toFixed(1) : dnp ? "DNP" : "–";
+    el.appendChild(fp);
+    host.appendChild(el);
+  });
+  if (!rows.length) host.insertAdjacentHTML("beforeend", '<div class="empty">None of your drafted players are on this slate.</div>');
+
+  var live = Object.keys(state.games).some(function (t) { return state.games[t].state === "in"; });
+  var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" +
+            (live ? " · refreshes every " + EVERY + "s while open" : "") : "Fetching ESPN…";
+  if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
+  else setStatus(msg);
+}
+
+// ---------------------------------------------------------------- wiring
+$("slate").addEventListener("change", function () {
+  state.slate = state.slates[Number(this.value)];
+  save("brr:live:slate", state.slate.label);
+  state.games = {}; state.box = {}; state.finals = {};
+  render(); pull();
+});
+$("sort").addEventListener("change", function () { state.sort = this.value; render(); });
+$("mine").addEventListener("click", function () { state.mine = !state.mine; render(); });
+$("refresh").addEventListener("click", pull);
+$("upload").addEventListener("click", function () { $("file").click(); });
+$("file").addEventListener("change", function () {
+  var f = this.files[0];
+  if (!f) return;
+  f.text().then(function (t) { ingestExposure(t, f.name); });
+  this.value = "";
+});
+/* Pull on a timer only while the tab is showing and a game hasn't finished; coming back to
+   the tab pulls straight away. */
+setInterval(function () {
+  var open = Object.keys(state.games).some(function (t) { return state.games[t].state !== "post"; });
+  if (!document.hidden && (open || !state.pulledAt)) pull();
+}, EVERY * 1000);
+document.addEventListener("visibilitychange", function () {
+  if (!document.hidden && state.pulledAt && Date.now() - state.pulledAt > EVERY * 500) pull();
+});
+
+(async function boot() {
+  try { state.slates = await loadSlates(); } catch (e) { setStatus("Couldn't reach the ADP mirror: " + e.message, true); return; }
+  fillSlates();
+  render();
+  pull();
+})();
+</script>
+</body>
+</html>
