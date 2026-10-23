@@ -23,10 +23,6 @@
     --accent-ink: #080b11;
     --live: #4dc48d;
     --bad: #f08a7e;
-    --neutral-pill: #2a3140;
-    --guard: #d6843b;
-    --wing: #479580;
-    --big: #437fb5;
     --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   }
@@ -68,10 +64,6 @@
   /* A tapped player's full line, under his row across every column. */
   .detail { grid-column: 1 / -1; font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding: 2px 0 5px; line-height: 1.5; }
   .detail b { color: var(--ink); font-weight: 600; }
-  .pos { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .06em; padding: 1px 5px; border-radius: 4px; background: var(--neutral-pill); margin-right: 6px; }
-  .pos-PG, .pos-SG, .pos-G { background: var(--guard); }
-  .pos-SF, .pos-PF, .pos-F { background: var(--wing); }
-  .pos-C { background: var(--big); }
   .game { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; white-space: nowrap; }
   .game.in { color: var(--live); }
   .fp { font-family: var(--mono); font-size: 15px; font-weight: 600; text-align: right; }
@@ -411,8 +403,7 @@ function render() {
     el.appendChild(chip);
     var who = document.createElement("div"); who.className = "who";
     var nm = document.createElement("div"); nm.className = "name";
-    var pos = document.createElement("span"); pos.className = "pos" + (p.position ? " pos-" + p.position : ""); pos.textContent = p.position || "?";
-    nm.appendChild(pos); nm.appendChild(document.createTextNode(p.first_name + " " + p.last_name));
+    nm.appendChild(document.createTextNode(p.first_name + " " + p.last_name));
     var tm = document.createElement("span"); tm.className = "tm"; tm.textContent = p.team || "";
     nm.appendChild(tm);
     who.appendChild(nm); el.appendChild(who);
