@@ -55,15 +55,19 @@
   .status { font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding-bottom: 10px; }
   .status.bad { color: var(--bad); }
 
-  .head, .row { display: grid; grid-template-columns: 44px 34px minmax(0, 1fr) 74px 64px; gap: 10px; align-items: center; padding: 4px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 44px 34px minmax(0, 1fr) 74px 64px; gap: 10px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; }
-  .row { border-bottom: 1px solid var(--line); }
+  .row { border-bottom: 1px solid var(--line); cursor: pointer; }
+  .row:hover, .row.open { background: var(--surface); }
   .r { text-align: right; }
   .adp { font-family: var(--mono); font-size: 13px; color: var(--muted); }
   .expo { font-family: var(--mono); font-size: 11px; font-weight: 600; text-align: center; border-radius: 4px; padding: 2px 0; }
   .who { min-width: 0; }
   .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tm { font-family: var(--mono); font-size: 10.5px; font-weight: 400; color: var(--muted); margin-left: 6px; }
+  /* A tapped player's full line, under his row across every column. */
+  .detail { grid-column: 1 / -1; font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding: 2px 0 5px; line-height: 1.5; }
+  .detail b { color: var(--ink); font-weight: 600; }
   .pos { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .06em; padding: 1px 5px; border-radius: 4px; background: var(--neutral-pill); margin-right: 6px; }
   .pos-PG, .pos-SG, .pos-G { background: var(--guard); }
   .pos-SF, .pos-PF, .pos-F { background: var(--wing); }
@@ -137,8 +141,12 @@ var ESPN_ALIASES = { "miles mcbride": "deuce mcbride", "herbert jones": "herb jo
                      "luguentz dort": "lu dort", "cameron johnson": "cam johnson" };
 var STAT = { MIN: "min", PTS: "pts", REB: "reb", AST: "ast", STL: "stl", BLK: "blk", TO: "tov",
              minutes: "min", points: "pts", rebounds: "reb", assists: "ast", steals: "stl", blocks: "blk", turnovers: "tov" };
+// the rest of the box line, kept as ESPN writes it, for a tapped player
+var EXTRA = { FG: "fg", "3PT": "fg3", FT: "ft", OREB: "oreb", PF: "pf", "+/-": "pm",
+              "fieldGoalsMade-fieldGoalsAttempted": "fg", "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3",
+              "freeThrowsMade-freeThrowsAttempted": "ft", offensiveRebounds: "oreb", fouls: "pf", plusMinus: "pm" };
 
-var state = { slates: [], slate: null, sort: "adp", mine: false, games: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
+var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, games: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
 
 function $(id) { return document.getElementById(id); }
 function load(key, fallback) { try { var v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; } }
@@ -222,9 +230,14 @@ function boxRows(summ) {
     var keys = st.keys || st.labels || st.names || [];
     (st.athletes || []).forEach(function (a) {
       var s = { pts: 0, reb: 0, ast: 0, stl: 0, blk: 0, tov: 0, min: 0 };
-      (a.stats || []).forEach(function (v, i) { var k = STAT[keys[i]]; if (k) s[k] = parseFloat(String(v).split("-")[0]) || 0; });
+      var x = {};
+      (a.stats || []).forEach(function (v, i) {
+        var k = STAT[keys[i]], e = EXTRA[keys[i]];
+        if (k) s[k] = parseFloat(String(v).split("-")[0]) || 0;
+        if (e) x[e] = String(v);
+      });
       var nm = normName(a.athlete.displayName);
-      out.push({ key: ESPN_ALIASES[nm] || nm, team: team, s: s, dnp: !!a.didNotPlay || !s.min });
+      out.push({ key: ESPN_ALIASES[nm] || nm, team: team, s: s, x: x, out: !!a.didNotPlay, dnp: !!a.didNotPlay || !s.min });
     });
   });
   return out;
@@ -239,8 +252,12 @@ async function pull() {
     var board = await espn("/scoreboard?dates=" + day + "&limit=50");
     var games = {}, todo = [];
     (board.events || []).forEach(function (e) {
-      var g = { id: e.id, state: e.status.type.state, label: gameLabel(e) };
-      ((e.competitions || [])[0] || {}).competitors.forEach(function (c) { games[TEAM[c.team.abbreviation] || c.team.abbreviation] = g; });
+      var g = { id: e.id, state: e.status.type.state, label: gameLabel(e), date: e.date, away: null, home: null };
+      ((e.competitions || [])[0] || {}).competitors.forEach(function (c) {
+        var t = TEAM[c.team.abbreviation] || c.team.abbreviation;
+        g[c.homeAway === "home" ? "home" : "away"] = t;
+        games[t] = g;
+      });
       if (g.state !== "pre" && !state.finals[e.id]) todo.push(g);
     });
     await Promise.all(todo.map(async function (g) {
@@ -317,12 +334,26 @@ function expoColor(f) {
 // ---------------------------------------------------------------- drawing
 function setStatus(msg, bad) { var el = $("status"); el.textContent = msg; el.classList.toggle("bad", !!bad); }
 
-function statLine(s) {
-  var bits = [s.pts + "p", s.reb + "r", s.ast + "a"];
-  if (s.stl) bits.push(s.stl + "s");
-  if (s.blk) bits.push(s.blk + "b");
-  if (s.tov) bits.push(s.tov + "to");
-  return bits.join(" ") + " · " + s.min + "m";
+/** A tapped player's line: the game, his box line, and how it adds up to his UD points. */
+function detailHtml(r) {
+  function esc(v) { return String(v).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  var g = r.g, p = r.p, bits = [];
+  var game = g ? (g.away + " at " + g.home + " · " + (g.state === "pre" ? "tips " + pt(new Date(g.date), { hour: "numeric", minute: "2-digit" }) + " PT" : g.label)) : "No game found for " + (p.team || "his team");
+  if (p.injury) game += " · listed " + p.injury;
+  bits.push(esc(game));
+  if (r.b && !r.b.dnp) {
+    var s = r.b.s, x = r.b.x;
+    bits.push("<b>" + s.pts + " pts</b>" + (x.fg ? " · " + esc(x.fg) + " FG" : "") + (x.fg3 ? " · " + esc(x.fg3) + " 3PT" : "") +
+              (x.ft ? " · " + esc(x.ft) + " FT" : "") + " · " + s.min + " min" + (x.pf ? " · " + esc(x.pf) + " PF" : "") +
+              (x.pm ? " · " + esc(/^[-0]/.test(x.pm) ? x.pm : "+" + x.pm) : ""));
+    bits.push("<b>" + s.reb + " reb</b>" + (x.oreb ? " (" + esc(x.oreb) + " off)" : "") + " · <b>" + s.ast + " ast</b> · " +
+              s.stl + " stl · " + s.blk + " blk · " + s.tov + " TO");
+    bits.push("UD: " + s.pts + " + " + (1.2 * s.reb).toFixed(1) + " reb + " + (1.5 * s.ast).toFixed(1) + " ast + " +
+              3 * (s.stl + s.blk) + " stl/blk − " + s.tov + " TO = <b>" + r.fp.toFixed(1) + "</b>");
+  } else if (g && g.state !== "pre") {
+    bits.push((r.b && r.b.out) || g.state === "post" ? "Did not play" : "Hasn't checked in yet");
+  }
+  return bits.join("<br>");
 }
 
 function render() {
@@ -374,9 +405,9 @@ function render() {
     var nm = document.createElement("div"); nm.className = "name";
     var pos = document.createElement("span"); pos.className = "pos" + (p.position ? " pos-" + p.position : ""); pos.textContent = p.position || "?";
     nm.appendChild(pos); nm.appendChild(document.createTextNode(p.first_name + " " + p.last_name));
-    var sub = document.createElement("div"); sub.className = "sub";
-    sub.textContent = (p.team || "") + (r.b && !r.b.dnp ? " · " + statLine(r.b.s) : "");
-    who.appendChild(nm); who.appendChild(sub); el.appendChild(who);
+    var tm = document.createElement("span"); tm.className = "tm"; tm.textContent = p.team || "";
+    nm.appendChild(tm);
+    who.appendChild(nm); el.appendChild(who);
     var game = document.createElement("span"); game.className = "game" + (r.g && r.g.state === "in" ? " in" : "");
     game.textContent = r.g ? r.g.label : "–";
     el.appendChild(game);
@@ -385,6 +416,12 @@ function render() {
     fp.className = "fp" + (r.fp == null ? " none" : "");
     fp.textContent = r.fp != null ? r.fp.toFixed(1) : dnp ? "DNP" : "–";
     el.appendChild(fp);
+    if (state.open[p.player_id]) {
+      el.classList.add("open");
+      var d = document.createElement("div"); d.className = "detail"; d.innerHTML = detailHtml(r);
+      el.appendChild(d);
+    }
+    el.addEventListener("click", function () { state.open[p.player_id] = !state.open[p.player_id]; render(); });
     host.appendChild(el);
   });
   if (!rows.length) host.insertAdjacentHTML("beforeend", '<div class="empty">None of your drafted players are on this slate.</div>');
