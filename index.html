@@ -149,7 +149,7 @@
   html.nba .football-only { display: none !important; }
   html:not(.nba) .nba-only { display: none !important; }
   /* NBA: no VORP column; its room goes to the Boom and Dud tiebreak numbers. */
-  html.nba .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 110px 94px 0; }
+  html.nba .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 122px 94px 0; }
   html.nba #scoreHead { white-space: nowrap; }
   html.nba .num.score { display: flex; gap: 4px; justify-content: center; }
   /* Green by rank on tonight's slate, darkest for the best. */
@@ -157,6 +157,9 @@
            font-weight: 600; font-variant-numeric: tabular-nums; }
   .num.proj .gchip { min-width: 30px; justify-self: end; }
   html.nba .num.score b.gchip { min-width: 30px; padding: 2px 4px; }
+  /* the matchup sits apart from Boom and Dud, behind a thin rule */
+  html.nba .num.score b.mchip { position: relative; margin-left: 12px; }
+  html.nba .num.score b.mchip::before { content: ""; position: absolute; left: -8px; top: 1px; bottom: 1px; width: 1px; background: rgba(255, 255, 255, .28); }
   /* NBA: the switch from ceiling to floor. */
   html.nba .row.switch-start { box-shadow: inset 0 2px 0 #c58b2b; }
   html.nba .row.switch-start { position: relative; }
@@ -493,7 +496,9 @@
     .board.cfb .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 54px 32px; }
     .board.cfb .row { gap: 4px; padding-inline: 6px; }
     .board.cfb.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 22px 54px 32px; }
-    html.nba .row { grid-template-columns: 12px 22px minmax(0, 1fr) 46px 72px 46px 0; }
+    html.nba .row { grid-template-columns: 12px 22px minmax(0, 1fr) 46px 80px 46px 0; }
+    html.nba .num.score b.mchip { margin-left: 8px; }
+    html.nba .num.score b.mchip::before { left: -5px; }
     html.nba .num.score { gap: 2px; }
     .gchip, html.nba .num.score b.gchip { min-width: 21px; padding: 2px 2px; font-size: 11px; }
     .board.cfb .num.score b { min-width: 40px; font-size: 10px; }
@@ -3388,7 +3393,7 @@ function render() {
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
-  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud% Mtch" : "Score";
+  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud% \u2502 Mtch" : "Score";
   $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && (state.nbaTakes || []).length);
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
