@@ -1,0 +1,52 @@
+{
+ "_comment": "Exposures read off the Underdog app's Exposure screen, by slate id: teams drafted and each player's exposure %. The Live page shows these when this device has no newer CSV upload for the slate.",
+ "slates": {
+  "3ab09833-0a30-4c44-91d3-bf1dae4cabdb": {
+   "label": "nba_fri_main",
+   "date": "2026-10-23",
+   "at": "2026-10-23T23:31:00Z",
+   "teams": 91,
+   "pct": {
+    "Lauri Markkanen": 37,
+    "Scottie Barnes": 34,
+    "Jayson Tatum": 32,
+    "Trae Young": 29,
+    "Cameron Boozer": 29,
+    "Ty Jerome": 27,
+    "Deni Avdija": 26,
+    "Austin Reaves": 24,
+    "Victor Wembanyama": 23,
+    "Anthony Davis": 20,
+    "Ivica Zubac": 20,
+    "Cade Cunningham": 19,
+    "LaMelo Ball": 19,
+    "Dejounte Murray": 19,
+    "Jalen Johnson": 18,
+    "Kawhi Leonard": 17,
+    "Luka Doncic": 17,
+    "Kevin Durant": 16,
+    "Paolo Banchero": 15,
+    "Pascal Siakam": 15,
+    "Stephen Curry": 13,
+    "Giannis Antetokounmpo": 13,
+    "Naz Reid": 12,
+    "Tyrese Haliburton": 12,
+    "Brandon Miller": 10,
+    "Darius Garland": 10,
+    "Trey Murphy III": 7,
+    "Walker Kessler": 7,
+    "Domantas Sabonis": 7,
+    "Cooper Flagg": 6,
+    "Franz Wagner": 5,
+    "Alperen Sengun": 5,
+    "Jalen Brunson": 4,
+    "Karl-Anthony Towns": 4,
+    "Anthony Edwards": 3,
+    "Stephon Castle": 2,
+    "Donovan Clingan": 2,
+    "Bam Adebayo": 2,
+    "Jaren Jackson Jr.": 1
+   }
+  }
+ }
+}

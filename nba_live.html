@@ -146,7 +146,7 @@ var EXTRA = { FG: "fg", "3PT": "fg3", FT: "ft",
               "fieldGoalsMade-fieldGoalsAttempted": "fg", "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3",
               "freeThrowsMade-freeThrowsAttempted": "ft" };
 
-var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, games: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
+var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, posted: {}, games: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
 
 function $(id) { return document.getElementById(id); }
 function load(key, fallback) { try { var v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; } }
@@ -357,8 +357,19 @@ function render() {
   var sl = state.slate, host = $("list");
   host.innerHTML = "";
   if (!sl) { host.innerHTML = '<div class="empty">No NBA slate tonight in the mirror.</div>'; setStatus(""); return; }
-  var ex = load(expoKey(sl.label), null);
+  /* Exposure: a CSV uploaded on this device, or the app's numbers posted to
+     analysis/nba/expo.json for this slate, whichever is newer. */
+  var ex = load(expoKey(sl.label), null), post = state.posted[sl.slate_id] || null, share = null, of = 0;
   if (ex && !ex.drafts) ex = null;
+  if (post && (!ex || post.at > ex.at)) {
+    var pct = {};
+    Object.keys(post.pct).forEach(function (k) { pct[normName(k)] = post.pct[k] / 100; });
+    share = function (p) { return pct[normName(p.first_name + " " + p.last_name)] || 0; };
+    of = post.teams; ex = post;
+  } else if (ex) {
+    share = function (p) { return (ex.counts[p.player_id] || 0) / ex.drafts; };
+    of = ex.drafts;
+  }
   host.classList.toggle("no-expo", !ex);
   $("mine").hidden = !ex;
   $("mine").setAttribute("aria-pressed", String(!!(ex && state.mine)));
@@ -376,9 +387,9 @@ function render() {
     var k = normName(p.first_name + " " + p.last_name);
     var b = byKey[k + "|" + p.team] || byName[k] || null, g = state.games[p.team] || null;
     var fp = b && !b.dnp ? udPoints(b.s) : null;
-    return { p: p, b: b, g: g, fp: fp, n: ex ? ex.counts[p.player_id] || 0 : 0 };
+    return { p: p, b: b, g: g, fp: fp, f: share ? share(p) : 0 };
   });
-  if (ex && state.mine) rows = rows.filter(function (r) { return r.n; });
+  if (ex && state.mine) rows = rows.filter(function (r) { return r.f; });
   rows.sort(state.sort === "fp" ? function (a, b) { return (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp) || a.p.adp - b.p.adp; }
                                 : function (a, b) { return a.p.adp - b.p.adp; });
 
@@ -392,10 +403,10 @@ function render() {
     var adp = document.createElement("span"); adp.className = "adp r"; adp.textContent = p.adp.toFixed(1); el.appendChild(adp);
     var chip = document.createElement("span"); chip.className = "expo";
     if (ex) {
-      var f = r.n / ex.drafts, c = expoColor(f);
-      chip.textContent = String(Math.round(f * 100));
+      var c = expoColor(r.f);
+      chip.textContent = String(Math.round(r.f * 100));
       chip.style.background = c.bg; chip.style.color = c.ink;
-      chip.title = "In " + r.n + " of your " + ex.drafts + " drafts";
+      chip.title = Math.round(r.f * 100) + "% of your " + of + " teams";
     }
     el.appendChild(chip);
     var who = document.createElement("div"); who.className = "who";
@@ -459,6 +470,8 @@ document.addEventListener("visibilitychange", function () {
 
 (async function boot() {
   try { state.slates = await loadSlates(); } catch (e) { setStatus("Couldn't reach the ADP mirror: " + e.message, true); return; }
+  state.posted = await fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { return d.slates || {}; }).catch(function () { return {}; });
   fillSlates();
   render();
   pull();
