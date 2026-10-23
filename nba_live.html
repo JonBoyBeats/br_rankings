@@ -142,9 +142,9 @@ var ESPN_ALIASES = { "miles mcbride": "deuce mcbride", "herbert jones": "herb jo
 var STAT = { MIN: "min", PTS: "pts", REB: "reb", AST: "ast", STL: "stl", BLK: "blk", TO: "tov",
              minutes: "min", points: "pts", rebounds: "reb", assists: "ast", steals: "stl", blocks: "blk", turnovers: "tov" };
 // the rest of the box line, kept as ESPN writes it, for a tapped player
-var EXTRA = { FG: "fg", "3PT": "fg3", FT: "ft", OREB: "oreb", PF: "pf", "+/-": "pm",
+var EXTRA = { FG: "fg", "3PT": "fg3", FT: "ft",
               "fieldGoalsMade-fieldGoalsAttempted": "fg", "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3",
-              "freeThrowsMade-freeThrowsAttempted": "ft", offensiveRebounds: "oreb", fouls: "pf", plusMinus: "pm" };
+              "freeThrowsMade-freeThrowsAttempted": "ft" };
 
 var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, games: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
 
@@ -334,24 +334,21 @@ function expoColor(f) {
 // ---------------------------------------------------------------- drawing
 function setStatus(msg, bad) { var el = $("status"); el.textContent = msg; el.classList.toggle("bad", !!bad); }
 
-/** A tapped player's line: the game, his box line, and how it adds up to his UD points. */
+/** A tapped player's box line in two lines; before he plays, his game instead. */
 function detailHtml(r) {
   function esc(v) { return String(v).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
   var g = r.g, p = r.p, bits = [];
   var game = g ? (g.away + " at " + g.home + " · " + (g.state === "pre" ? "tips " + pt(new Date(g.date), { hour: "numeric", minute: "2-digit" }) + " PT" : g.label)) : "No game found for " + (p.team || "his team");
   if (p.injury) game += " · listed " + p.injury;
-  bits.push(esc(game));
   if (r.b && !r.b.dnp) {
     var s = r.b.s, x = r.b.x;
     bits.push("<b>" + s.pts + " pts</b>" + (x.fg ? " · " + esc(x.fg) + " FG" : "") + (x.fg3 ? " · " + esc(x.fg3) + " 3PT" : "") +
-              (x.ft ? " · " + esc(x.ft) + " FT" : "") + " · " + s.min + " min" + (x.pf ? " · " + esc(x.pf) + " PF" : "") +
-              (x.pm ? " · " + esc(/^[-0]/.test(x.pm) ? x.pm : "+" + x.pm) : ""));
-    bits.push("<b>" + s.reb + " reb</b>" + (x.oreb ? " (" + esc(x.oreb) + " off)" : "") + " · <b>" + s.ast + " ast</b> · " +
+              (x.ft ? " · " + esc(x.ft) + " FT" : "") + " · " + s.min + " min");
+    bits.push("<b>" + s.reb + " reb</b> · <b>" + s.ast + " ast</b> · " +
               s.stl + " stl · " + s.blk + " blk · " + s.tov + " TO");
-    bits.push("UD: " + s.pts + " + " + (1.2 * s.reb).toFixed(1) + " reb + " + (1.5 * s.ast).toFixed(1) + " ast + " +
-              3 * (s.stl + s.blk) + " stl/blk − " + s.tov + " TO = <b>" + r.fp.toFixed(1) + "</b>");
-  } else if (g && g.state !== "pre") {
-    bits.push((r.b && r.b.out) || g.state === "post" ? "Did not play" : "Hasn't checked in yet");
+  } else {
+    bits.push(esc(game));
+    if (g && g.state !== "pre") bits.push((r.b && r.b.out) || g.state === "post" ? "Did not play" : "Hasn't checked in yet");
   }
   return bits.join("<br>");
 }
