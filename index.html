@@ -1594,7 +1594,10 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
     } else {
       var avg = nbaEtrAverage(k, r, idx, store.history);
       if (!avg && !r) return;
-      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores, put on ETR's level (" +
+      var crowdNote = r && r.crowd && Math.abs(r.crowd[1] - 1) >= 0.01
+        ? " (last season's part \u00d7" + r.crowd[1].toFixed(2) + ": this rotation uses " + Math.abs(Math.round(r.crowd[0] * 100)) + "% " +
+          (r.crowd[0] > 0 ? "more" : "less") + " of the ball than a normal one)" : "";
+      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores" + crowdNote + ", put on ETR's level (" +
                         scale[0].toFixed(2) + " \u00d7 it " + (scale[1] < 0 ? "\u2212 " : "+ ") + Math.abs(scale[1]).toFixed(1) + ")" : "";
       var etrNote = avg ? "his last " + avg.days + " ETR projection" + (avg.days === 1 ? "" : "s") +
                           " (nights a core teammate sat taken out)" : "";
