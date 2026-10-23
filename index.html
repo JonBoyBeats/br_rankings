@@ -290,7 +290,10 @@
 
   .rank { font-family: var(--mono); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
   /* your exposure, between the drag dots and the rank */
-  .board.has-expo .rank { display: flex; align-items: center; justify-content: flex-end; gap: 5px; }
+  .board.has-expo .rank, .board.has-expo .rankh { display: grid; grid-template-columns: 1fr 24px; align-items: center; }
+  .board.has-expo .rank b.expo, .board.has-expo .rankh .exph { justify-self: center; }
+  .rankh .exph { display: none; }
+  .board.has-expo .rankh .exph { display: inline; }
   .rank b.expo { min-width: 24px; padding: 1px 3px; border-radius: 4px; font-size: 10.5px; text-align: center; font-weight: 700; }
   html.nba .board.has-expo .row { grid-template-columns: 26px 66px minmax(0, 1fr) 76px 170px 94px 0; }
   html.nba .board.has-expo.etr2 .row { grid-template-columns: 26px 66px minmax(0, 1fr) 76px 170px 122px 0; }
@@ -549,7 +552,7 @@
     .head { font-size: 9px; letter-spacing: .06em; padding-block: 6px; }
     .handle { font-size: 13px; }
     .rank { font-size: 11.5px; }
-    .board.has-expo .rank { gap: 2px; }
+    .board.has-expo .rank, .board.has-expo .rankh { grid-template-columns: 1fr 17px; }
     .rank b.expo { min-width: 19px; padding: 1px 1px; font-size: 9.5px; }
     html.nba .board.has-expo .row { grid-template-columns: 12px 44px minmax(0, 1fr) 46px 80px 46px 0; }
     html.nba .board.has-expo.etr2 .row { grid-template-columns: 12px 44px minmax(0, 1fr) 46px 80px 64px 0; }
@@ -598,6 +601,7 @@
           <option value="adp">Sort by ADP</option>
           <option value="proj">Sort by projection</option>
           <option value="own">Sort by ownership</option>
+          <option value="expo">Sort by my exposure</option>
           <option value="vorp">Sort by VORP</option>
           <option value="name">Sort by name</option>
         </select>
@@ -714,7 +718,7 @@
   <div class="board">
     <div class="row head">
       <span></span>
-      <span class="r">#</span>
+      <span class="r rankh"><span class="exph">Exp</span><span>#</span></span>
       <span>Player</span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
       <span style="text-align:center"><button type="button" data-sort="score" id="scoreHead"
@@ -3254,6 +3258,12 @@ function sortRowsByView(list, view) {
       if (y == null) return -1;
       return y - x;
     });
+  } else if (view === "expo") {
+    var ex = (state.slate && load(K.expo(state.slate.label), null)) || { counts: {} };
+    list = list.slice().sort(function (a, b) {
+      var x = ex.counts[a.p.player_id] || 0, y = ex.counts[b.p.player_id] || 0;
+      return y - x || adpKey(a.p) - adpKey(b.p);
+    });
   } else if (view === "own") {
     list = list.slice().sort(function (a, b) {
       var pa = state.projParts[a.p.player_id], pb = state.projParts[b.p.player_id];
@@ -3617,7 +3627,10 @@ function render() {
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
   if (board) board.classList.toggle("etr2", !!state.nbaOurs);
-  if (board) board.classList.toggle("has-expo", !!(state.slate && load(K.expo(state.slate.label), null)));
+  var hasExpo = !!(state.slate && load(K.expo(state.slate.label), null));
+  if (board) board.classList.toggle("has-expo", hasExpo);
+  var expoOpt = document.querySelector('#view option[value="expo"]');
+  if (expoOpt) expoOpt.hidden = !hasExpo;
   var projHead = document.querySelector('.head button[data-sort="proj"]');
   if (projHead && SPORT_MODE === "nba") {
     projHead.textContent = state.nbaOurs ? "" : "Proj";
@@ -3694,8 +3707,7 @@ function render() {
     var rank = document.createElement("span");
     rank.className = "rank";
     rank.textContent = r.rank;
-    var ec = expo ? expoChip(p, expo) : null;
-    if (ec) rank.insertBefore(ec, rank.firstChild);
+    if (expo) rank.insertBefore(expoChip(p, expo) || document.createElement("span"), rank.firstChild);
 
     var who = document.createElement("span");
     who.className = "who";
