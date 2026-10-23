@@ -156,6 +156,12 @@
   .gchip { display: inline-block; min-width: 26px; padding: 2px 4px; border-radius: 4px; text-align: center;
            font-weight: 600; font-variant-numeric: tabular-nums; }
   .num.proj .gchip { min-width: 30px; justify-self: end; }
+  .num.proj.two { grid-template-columns: 30px 24px 1fr; }
+  .head .ph-long::after { content: "Ours \00b7  ETR"; }
+  .head .ph-short { display: none; }
+  .head .ph-short::after { content: "Us \00b7  ETR"; }
+  .num.proj .ours { color: var(--muted); text-align: right; font-size: 12px; }
+  html.nba .board.etr2 .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 170px 122px 0; }
   html.nba .num.score b.gchip { min-width: 30px; padding: 2px 4px; }
   /* the matchup sits apart from Boom and Dud, behind a thin rule */
   html.nba .num.score b.mchip { position: relative; margin-left: 12px; }
@@ -519,6 +525,11 @@
     .num.own i { display: none; }
     .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
     .num.proj { grid-template-columns: 24px 1fr; gap: 2px; }
+    .num.proj.two { grid-template-columns: 18px 20px 1fr; }
+    .head .ph-long { display: none; }
+    .head .ph-short { display: inline; }
+    .num.proj .ours { font-size: 10.5px; }
+    html.nba .board.etr2 .row { grid-template-columns: 12px 22px minmax(0, 1fr) 46px 80px 64px 0; }
     .pdelta { font-size: 9.5px; }
     .num.vorp { font-size: 11px; }
     .head { font-size: 9px; letter-spacing: .06em; padding-block: 6px; }
@@ -2297,6 +2308,14 @@ function applyNbaProjections(store) {
   var s = state.slate, map = state.nameMaps.nba || {};
   var idx = state.nbaIdx || nbaIndex(null);
   var res = nbaValues(s.players, s, store, idx, load(K.out(s.label), []), map);
+  // Once ETR's file is in, it drives the board; our morning number stays on screen beside it,
+  // worked out as if the file weren't in (today's ETR left out of the average too).
+  state.nbaOurs = null;
+  if (res.etrToday) {
+    var hist = Object.assign({}, store.history || {});
+    delete hist[pacificDay(s.cutoff)];
+    state.nbaOurs = nbaValues(s.players, s, { current: null, previous: null, history: hist }, idx, load(K.out(s.label), []), map).values;
+  }
   state.nbaOutPids = res.outPids;
   state.nbaEtrToday = res.etrToday;
   state.nbaScale = res.scale;
@@ -3414,6 +3433,17 @@ function render() {
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
+  if (board) board.classList.toggle("etr2", !!state.nbaOurs);
+  var projHead = document.querySelector('.head button[data-sort="proj"]');
+  if (projHead && SPORT_MODE === "nba") {
+    projHead.textContent = state.nbaOurs ? "" : "Proj";
+    if (state.nbaOurs) {
+      projHead.appendChild(document.createElement("span")).className = "ph-long";
+      projHead.appendChild(document.createElement("span")).className = "ph-short";
+    }
+    projHead.title = state.nbaOurs ? "Ours: our morning Proj, kept on screen. ETR: today's file, which drives sorting, Boom/Dud and the gradient"
+                                   : "A quarter of the median plus three quarters of the ceiling";
+  }
   $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud% \u2502 Mtch" : "Score";
   if (SPORT_MODE === "nba") $("scoreHead").appendChild(document.createElement("span")).className = "opp-h";
   $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && (state.nbaTakes || []).length);
@@ -3569,7 +3599,18 @@ function render() {
     else if (pc && pc.rows[p.player_id]) pval.style.color = "var(--muted)";        // outside the top 60 by Proj
     var pr = document.createElement("span");
     pr.className = "num proj" + (v == null ? " dim" : "");
-    pr.append(pd, pval);
+    if (state.nbaOurs) {
+      var ov = state.nbaOurs[p.player_id], ours = document.createElement("span");
+      ours.className = "ours";
+      ours.textContent = ov == null ? "\u2013" : String(Math.round(ov));
+      ours.title = ov == null ? "No morning Proj for him" : "Our morning Proj: " + Math.round(ov) +
+        (v != null ? ". ETR " + Math.round(v) + " (" + (v - ov >= 0 ? "+" : "\u2212") + Math.abs(Math.round(v - ov)) + ")" : "") +
+        ". ETR's number drives the board once its file is in";
+      pr.classList.add("two");
+      pr.append(pd, ours, pval);
+    } else {
+      pr.append(pd, pval);
+    }
 
     var ownCell = null;
     if (state.hasOwn) {
