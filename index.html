@@ -289,6 +289,11 @@
   .row.drop-after { box-shadow: inset 0 -2px 0 0 var(--accent); }
 
   .rank { font-family: var(--mono); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+  /* your exposure, between the drag dots and the rank */
+  .board.has-expo .rank { display: flex; align-items: center; justify-content: flex-end; gap: 5px; }
+  .rank b.expo { min-width: 24px; padding: 1px 3px; border-radius: 4px; font-size: 10.5px; text-align: center; font-weight: 700; }
+  html.nba .board.has-expo .row { grid-template-columns: 26px 66px minmax(0, 1fr) 76px 170px 94px 0; }
+  html.nba .board.has-expo.etr2 .row { grid-template-columns: 26px 66px minmax(0, 1fr) 76px 170px 122px 0; }
   /* The marker sits in its own fixed track inside the ADP cell, so the numbers stay
      flush right and scan as a column whatever each player's marker is. */
   .num.adp { display: grid; grid-template-columns: 19px 1fr; align-items: center; gap: 3px; }
@@ -544,6 +549,10 @@
     .head { font-size: 9px; letter-spacing: .06em; padding-block: 6px; }
     .handle { font-size: 13px; }
     .rank { font-size: 11.5px; }
+    .board.has-expo .rank { gap: 2px; }
+    .rank b.expo { min-width: 19px; padding: 1px 1px; font-size: 9.5px; }
+    html.nba .board.has-expo .row { grid-template-columns: 12px 44px minmax(0, 1fr) 46px 80px 46px 0; }
+    html.nba .board.has-expo.etr2 .row { grid-template-columns: 12px 44px minmax(0, 1fr) 46px 80px 64px 0; }
     .num { font-size: 11.5px; }
     .name { font-size: 13.5px; }
     .sub { font-size: 9.5px; }
@@ -628,7 +637,7 @@
       <span class="field-label">Projections</span>
       <span class="pair">
         <input type="file" id="proj" accept=".csv,.tsv,.txt,text/csv" class="vh">
-        <button type="button" id="projBtn">Upload<span class="wide"> CSV</span></button>
+        <button type="button" id="projBtn" title="A projection file (ETR and others), or an Underdog exposure export for your exposures">Upload<span class="wide"> CSV</span></button>
         <button type="button" id="pasteBtn" aria-expanded="false">Paste</button>
       </span>
     </label>
@@ -1993,7 +2002,8 @@ var K = {
   outFrom: function (label) { return "brr:outfrom:" + label; },     // NBA: the rank each one had when marked out
   switchAt: function (label) { return "brr:switch:" + label; },     // NBA: your rank for the ceiling-to-floor switch
   built: function (label) { return "brr:built:" + label; },         // NBA: the order as Build tiers left it
-  tiers: function (label) { return "brr:tiers:" + label; },         // NBA: {on, starts}: where tiers 2-6 begin, by rank
+  tiers: function (label) { return "brr:tiers:" + label; },
+  expo: function (label) { return "brr:expo:" + label; },           // your exposures from an Underdog export: {file, at, drafts, counts}         // NBA: {on, starts}: where tiers 2-6 begin, by rank
   slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
@@ -2406,9 +2416,77 @@ function nbaMarkedOut() {
 
 function handleProjectionFile(file) {
   var reader = new FileReader();
-  reader.onload = function () { ingestProjections(String(reader.result), file.name, false); };
+  reader.onload = function () {
+    var text = String(reader.result);
+    if (isExposureCsv(text)) ingestExposure(text, file.name); else ingestProjections(text, file.name, false);
+  };
   reader.onerror = function () { setStatus("Could not read " + file.name + ".", "bad"); };
   reader.readAsText(file);
+}
+
+/* ---- your exposures: Underdog's exposure export (one row per player you drafted) --------
+   Share of your drafts each player is in: 1 in 6 is even, 2 in 6 heavy, 1 in 12 light. */
+function isExposureCsv(text) {
+  var head = String(text).replace(/^\uFEFF/, "").split(/\r?\n/)[0] || "";
+  return /Picked At/i.test(head) && /Appearance/i.test(head) && /Draft Entry/i.test(head);
+}
+
+/** {drafts, byApp: {appearance: drafts he's in}, byName: {norm: drafts}} from the export. */
+function parseExposure(text) {
+  var rows = parseCsv(text, sniffDelimiter(text)), h = rows[0].map(function (c) { return String(c).trim().toLowerCase(); });
+  var col = function (n) { return h.indexOf(n); }, iApp = col("appearance"), iDraft = col("draft"), iF = col("first name"), iL = col("last name");
+  var drafts = {}, byApp = {}, byName = {}, seen = {};
+  rows.slice(1).forEach(function (r) {
+    if (r.length < h.length / 2 || !r[iDraft]) return;
+    var d = r[iDraft], app = r[iApp], nm = normName((r[iF] || "") + " " + (r[iL] || ""));
+    drafts[d] = 1;
+    if (seen[d + "|" + app]) return;                   // a player counts once per draft
+    seen[d + "|" + app] = 1;
+    byApp[app] = (byApp[app] || 0) + 1;
+    byName[nm] = (byName[nm] || 0) + 1;
+  });
+  return { drafts: Object.keys(drafts).length, byApp: byApp, byName: byName };
+}
+
+/** Match the export to the slate whose players it drafted, and keep each player's count there. */
+function ingestExposure(text, sourceName) {
+  var ex = parseExposure(text);
+  if (!ex.drafts) { setStatus(sourceName + ": no drafts in this exposure file.", "bad"); return; }
+  var best = null, bestHits = 0;
+  (state.data.slates || []).forEach(function (sl) {
+    var hits = sl.players.filter(function (p) { return ex.byApp[p.appearance_id]; }).length;
+    if (hits > bestHits) { best = sl; bestHits = hits; }
+  });
+  var sl = best || state.slate, counts = {};
+  sl.players.forEach(function (p) {
+    var n = ex.byApp[p.appearance_id] || ex.byName[normName(p.first_name + " " + p.last_name)] || 0;
+    if (n) counts[p.player_id] = n;
+  });
+  save(K.expo(sl.label), { file: sourceName, at: new Date().toISOString(), drafts: ex.drafts, counts: counts });
+  render();
+  setStatus("Exposures from " + ex.drafts + " draft" + (ex.drafts === 1 ? "" : "s") + " on " + slateLabel(sl) + ": " +
+            Object.keys(counts).length + " players. The chip by each rank is the share of your drafts he's in" +
+            (sl !== state.slate ? " (switch to that slate to see them)" : "") + ".");
+}
+
+/** The chip's colour: red at 1 in 12 or less, white at 1 in 6, dark green at 2 in 6 or more. */
+function expoColor(f) {
+  function mix(a, b, t) { return a.map(function (v, i) { return Math.round(v + (b[i] - v) * t); }); }
+  var white = [255, 255, 255], green = [26, 92, 52], red = [198, 40, 40];
+  var c = f >= 1 / 6 ? mix(white, green, Math.min(1, (f - 1 / 6) * 6)) : mix(white, red, Math.min(1, (1 / 6 - f) * 12));
+  var lum = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2];
+  return { bg: "rgb(" + c.join(",") + ")", ink: lum < 140 ? "#ffffff" : "#111111" };
+}
+
+function expoChip(p, ex) {
+  var n = ex.counts[p.player_id] || 0;
+  if (!n && !hasAdp(p)) return null;
+  var f = n / ex.drafts, c = expoColor(f), b = document.createElement("b");
+  b.className = "expo";
+  b.textContent = String(Math.round(f * 100));
+  b.style.background = c.bg; b.style.color = c.ink;
+  b.title = "In " + n + " of your " + ex.drafts + " drafts (" + Math.round(f * 100) + "%). Even is 1 in 6 (17%); 2 in 6 (33%) is heavy, 1 in 12 (8%) light";
+  return b;
 }
 
 /**
@@ -3539,6 +3617,7 @@ function render() {
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
   if (board) board.classList.toggle("etr2", !!state.nbaOurs);
+  if (board) board.classList.toggle("has-expo", !!(state.slate && load(K.expo(state.slate.label), null)));
   var projHead = document.querySelector('.head button[data-sort="proj"]');
   if (projHead && SPORT_MODE === "nba") {
     projHead.textContent = state.nbaOurs ? "" : "Proj";
@@ -3579,6 +3658,8 @@ function render() {
 
   var frag = document.createDocumentFragment();
   var sw = null, pc = SPORT_MODE === "nba" ? nbaShading() : null, tiers = nbaActiveTiers(), tierEnd = nbaTierEnd();
+  var expo = state.slate && load(K.expo(state.slate.label), null);
+  if (expo && !expo.drafts) expo = null;
   if (SPORT_MODE === "nba") {
     var tb = $("tiersBtn"), tt = state.slate && load(K.tiers(state.slate.label), null);
     tb.setAttribute("aria-pressed", String(!!(tt && tt.on)));
@@ -3613,6 +3694,8 @@ function render() {
     var rank = document.createElement("span");
     rank.className = "rank";
     rank.textContent = r.rank;
+    var ec = expo ? expoChip(p, expo) : null;
+    if (ec) rank.insertBefore(ec, rank.firstChild);
 
     var who = document.createElement("span");
     who.className = "who";
