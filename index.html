@@ -149,7 +149,7 @@
   html.nba .football-only { display: none !important; }
   html:not(.nba) .nba-only { display: none !important; }
   /* NBA: no VORP column; its room goes to the Boom and Dud tiebreak numbers. */
-  html.nba .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 76px 94px 0; }
+  html.nba .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 110px 94px 0; }
   html.nba #scoreHead { white-space: nowrap; }
   html.nba .num.score { display: flex; gap: 4px; justify-content: center; }
   /* Green by rank on tonight's slate, darkest for the best. */
@@ -493,7 +493,7 @@
     .board.cfb .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 54px 32px; }
     .board.cfb .row { gap: 4px; padding-inline: 6px; }
     .board.cfb.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 22px 54px 32px; }
-    html.nba .row { grid-template-columns: 12px 22px minmax(0, 1fr) 46px 50px 46px 0; }
+    html.nba .row { grid-template-columns: 12px 22px minmax(0, 1fr) 46px 72px 46px 0; }
     html.nba .num.score { gap: 2px; }
     .gchip, html.nba .num.score b.gchip { min-width: 21px; padding: 2px 2px; font-size: 11px; }
     .board.cfb .num.score b { min-width: 40px; font-size: 10px; }
@@ -1556,6 +1556,13 @@ function nbaOuts(slate, idx, etrToday, marked, keyOf) {
 }
 
 /** Proj for `players` on `slate`: ETR's file when it is in for the slate's day, else the morning numbers. */
+/* Stars sit in blowouts their team is winning: on 2021-26 closing spreads, a player who
+   usually logs 30+ minutes finished about a point under his projection when his team was
+   favored by 10 or more (2 minutes fewer), next to games within 9; the same held in
+   2025-26 when fit on 2021-25. Underdog stars made it back by scoring more per minute,
+   and no other role, coach or player pattern repeated from one stretch to the next. */
+var NBA_BLOWOUT = { minutes: 30, spread: -10, points: -1 };
+
 function nbaValues(players, slate, store, idx, marked, nameMap) {
   function keyOf(p) { return boardKey(p.first_name, p.last_name, nameMap); }
   var cur = store.current, etrToday = !!cur && pacificDay(cur.at) === pacificDay(slate.cutoff);
@@ -1566,6 +1573,8 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
   players.forEach(function (p) {
     var k = keyOf(p), r = idx.byKey[k], base, part, boxWeight = 0;
     var mt = r && r.mtch && r.mtch[day];             // [points, {category: points}, play style]: tonight's matchup
+    var line = r && ((state.nbaLines || {})[day] || {})[r.team];
+    var blow = r && line != null && r.min >= NBA_BLOWOUT.minutes && line <= NBA_BLOWOUT.spread ? NBA_BLOWOUT.points : 0;
     if (out[k]) { outPids[p.player_id] = out[k]; return; }
     if (etrToday) {
       if (joined.values[p.player_id] == null) return;
@@ -1574,13 +1583,15 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
     } else {
       var avg = nbaEtrAverage(k, r, idx, store.history);
       if (!avg && !r) return;
-      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores" +
-                        (mt ? ", " + (mt[0] < 0 ? "\u2212" : "+") + Math.abs(mt[0]).toFixed(1) + " for tonight's matchup" : "") + ", put on ETR's level (" +
+      var boxNote = r ? Math.round(r.min) + " min \u00d7 " + r.ppm.toFixed(2) + " pts/min from the box scores, put on ETR's level (" +
                         scale[0].toFixed(2) + " \u00d7 it " + (scale[1] < 0 ? "\u2212 " : "+ ") + Math.abs(scale[1]).toFixed(1) + ")" : "";
       var etrNote = avg ? "his last " + avg.days + " ETR projection" + (avg.days === 1 ? "" : "s") +
                           " (nights a core teammate sat taken out)" : "";
       boxWeight = !r ? 0 : !avg ? 1 : NBA_ETR_PRIOR_DAYS / (avg.days + NBA_ETR_PRIOR_DAYS);
-      base = (1 - boxWeight) * (avg ? avg.value : 0) + boxWeight * (r ? nbaBoxBlend(nbaBoxToEtr(r.fp + (mt ? mt[0] : 0), scale)) : 0);
+      base = (1 - boxWeight) * (avg ? avg.value : 0) + boxWeight * (r ? nbaBoxBlend(nbaBoxToEtr(r.fp, scale)) : 0);
+      // tonight's matchup and blowout risk count in full: the ETR nights averaged were other opponents
+      var tonight = (mt ? mt[0] : 0) + blow;
+      if (r && tonight) base += nbaBoxBlend(nbaBoxToEtr(r.fp + tonight, scale)) - nbaBoxBlend(nbaBoxToEtr(r.fp, scale));
       if (avg) byEtr++; else byBox++;
       part = !avg ? { note: boxNote + ", on ETR's projection/ceiling scale", box: r }
            : !r ? { note: "Average of " + etrNote }
@@ -1589,7 +1600,8 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
     }
     var lb = r ? nbaLineupBump(r, idx, out, boxWeight) : { add: 0, notes: [] };
     values[p.player_id] = base + lb.add;
-    parts[p.player_id] = Object.assign({}, part, { lineup: lb.notes, mtch: mt || null });
+    parts[p.player_id] = Object.assign({}, part, { lineup: lb.notes, mtch: mt || null, line: line == null ? null : line,
+                                                   blow: etrToday ? 0 : blow });
   });
   return { values: values, parts: parts, out: out, outPids: outPids, etrToday: etrToday,
            joined: joined, byEtr: byEtr, byBox: byBox, scale: scale };
@@ -2663,7 +2675,7 @@ var NBA_CAT_NAMES = { p3: "threes", p2: "twos", ft: "free throws", reb: "rebound
 
 /** "Matchup +2 (scoring wing vs this defense: twos +1, assists +1)" from the morning file's [points, parts, style]. */
 function nbaMatchupNote(m, etrToday) {
-  function sgn(v) { return (v < 0 ? "\u2212" : "+") + Math.abs(Math.round(v)); }
+  function sgn(v) { var n = Math.round(v); return n === 0 ? "0" : (n < 0 ? "\u2212" : "+") + Math.abs(n); }
   var parts = Object.keys(m[1]).filter(function (k) { return Math.abs(m[1][k]) >= 0.5; })
     .sort(function (a, b) { return Math.abs(m[1][b]) - Math.abs(m[1][a]); })
     .map(function (k) { return NBA_CAT_NAMES[k] + " " + sgn(m[1][k]); });
@@ -2713,7 +2725,23 @@ function nbaStatCell(p, sh) {
     if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside the top " + NBA_SHADE_TOP + " by Proj, so not shaded"; c.appendChild(b); return; }
     c.appendChild(greenChip(b, f));
   });
+  c.appendChild(nbaMatchupChip(state.projParts[p.player_id]));
   return c;
+}
+
+/** Tonight's matchup in whole points: green for a plus, red for a minus, deeper toward 4. */
+function nbaMatchupChip(parts) {
+  var b = document.createElement("b"), m = parts && parts.mtch;
+  b.className = "gchip mchip";
+  if (!m) { b.textContent = "\u2013"; b.style.color = "var(--muted)"; b.title = "No matchup for him tonight yet"; return b; }
+  var v = Math.round(m[0]), frac = Math.min(1, Math.abs(m[0]) / 4);
+  b.textContent = v > 0 ? "+" + v : v < 0 ? "\u2212" + Math.abs(v) : "0";
+  b.title = nbaMatchupNote(m, state.nbaEtrToday);
+  if (v === 0) { b.style.color = "var(--muted)"; return b; }
+  var l = 80 - 46 * frac;
+  b.style.background = "hsl(" + (v > 0 ? 145 : 0) + ", " + (v > 0 ? 48 : 62) + "%, " + l + "%)";
+  b.style.color = l < 50 ? "#ffffff" : v > 0 ? "#06180d" : "#2a0606";
+  return b;
 }
 
 /** This slate's players with a Proj, with their minutes and the morning file's usage and swing. */
@@ -3360,13 +3388,13 @@ function render() {
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
-  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud%" : "Score";
+  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud% Mtch" : "Score";
   $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && (state.nbaTakes || []).length);
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
   $("copyMain").hidden = !nbaMainSlate(state.slate);
-  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over the median projection of the 12 players drafted around him, for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
+  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over the median projection of the 12 players drafted around him, for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Mtch: tonight's matchup in points (hover for the breakdown). Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
@@ -3507,6 +3535,8 @@ function render() {
     }
     if (v != null && parts && parts.lineup && parts.lineup.length) pval.title += ". Tonight: " + parts.lineup.join(", ");
     if (v != null && parts && parts.mtch) pval.title += ". " + nbaMatchupNote(parts.mtch, state.nbaEtrToday);
+    if (v != null && parts && parts.blow) pval.title += ". \u22121 because his team is favored by " + Math.abs(parts.line) +
+                                                         " (stars sit in blowouts their team is winning)";
     if (state.nbaOutPids && state.nbaOutPids[p.player_id]) pval.textContent = "out";
     else if (pc && pc.proj[p.player_id] != null) greenChip(pval, pc.proj[p.player_id]);
     else if (pc && pc.rows[p.player_id]) pval.style.color = "var(--muted)";        // outside the top 60 by Proj
@@ -4861,6 +4891,7 @@ function bootFailed(where, err) {
     state.data = await loadMirror();
     if (SPORT_MODE === "nba") {
       state.nbaIdx = await fetchJson("nba_morning.json").then(nbaIndex).catch(function () { return null; });
+      state.nbaLines = await fetchJson("nba_odds.json").then(function (d) { return d.lines || {}; }).catch(function () { return {}; });
       loadNbaTakes().then(function () { if (state.slate) render(); });
     }
     if (SPORT_MODE !== "nba") {
@@ -5347,6 +5378,21 @@ function brrSelfTest() {
   var mv1 = nbaValues(mSlate.players, mSlate, oneDay, mIdx, [], {});
   ok("one day of ETR is half the morning number, and half of his last 10's absences still count",
      Math.abs(mv1.values.P - (0.5 * 20 + 0.5 * nbaBoxBlend(nbaBoxToEtr(12, NBA_BOX_TO_ETR)) + 3.6 * (1 - 0.5 * 0.5))) < 1e-9);
+  (function () {
+    var plain = { id: "s", name: "Star Two", team: "T", pos: "F", min: 34, ppm: 1.3, fp: 44, core: false, games: 5, out: {} };
+    var withM = Object.assign({}, plain, { mtch: { "2026-11-02": [2, { p2: 2 }, "scoring wing"] } });
+    var sl = { label: "nba_t", cutoff: "2026-11-02T23:00:00Z", players: [{ player_id: "S", first_name: "Star", last_name: "Two", team: "T", adp: 5 }] };
+    var h = { current: null, previous: null, history: { "2026-11-01": { "star two": [40, null] } } };
+    var keep = state.nbaLines;
+    state.nbaLines = {};
+    var a = nbaValues(sl.players, sl, h, nbaIndex({ players: [plain] }), [], {}).values.S;
+    state.nbaLines = { "2026-11-02": { T: -12 } };
+    var bv = nbaValues(sl.players, sl, h, nbaIndex({ players: [withM] }), [], {});
+    state.nbaLines = keep;
+    var want = nbaBoxBlend(nbaBoxToEtr(44 + 2 - 1, NBA_BOX_TO_ETR)) - nbaBoxBlend(nbaBoxToEtr(44, NBA_BOX_TO_ETR));
+    ok("tonight's matchup and a star's big-favorite point count in full, even with ETR days averaged in",
+       Math.abs(bv.values.S - a - want) < 1e-9 && bv.parts.S.blow === -1 && bv.parts.S.line === -12);
+  })();
   ok("box scores go to ETR's level: the default line until 40 ETR player-days, then a refit",
      nbaBoxScale({}, mIdx) === NBA_BOX_TO_ETR && (function () {
        var h = {}, ix = { byKey: {} };
