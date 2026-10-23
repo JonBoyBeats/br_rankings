@@ -55,32 +55,32 @@
   .status { font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding-bottom: 10px; }
   .status.bad { color: var(--bad); }
 
-  .head, .row { display: grid; grid-template-columns: 44px 34px minmax(0, 1fr) 74px 64px; gap: 10px; align-items: center; padding: 9px 4px; }
+  .head, .row { display: grid; grid-template-columns: 44px 34px minmax(0, 1fr) 74px 64px; gap: 10px; align-items: center; padding: 4px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; }
   .row { border-bottom: 1px solid var(--line); }
   .r { text-align: right; }
   .adp { font-family: var(--mono); font-size: 13px; color: var(--muted); }
   .expo { font-family: var(--mono); font-size: 11px; font-weight: 600; text-align: center; border-radius: 4px; padding: 2px 0; }
   .who { min-width: 0; }
-  .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sub { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .pos { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .06em; padding: 1px 5px; border-radius: 4px; background: var(--neutral-pill); margin-right: 6px; }
   .pos-PG, .pos-SG, .pos-G { background: var(--guard); }
   .pos-SF, .pos-PF, .pos-F { background: var(--wing); }
   .pos-C { background: var(--big); }
-  .game { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+  .game { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; white-space: nowrap; }
   .game.in { color: var(--live); }
-  .fp { font-family: var(--mono); font-size: 17px; font-weight: 600; text-align: right; }
+  .fp { font-family: var(--mono); font-size: 15px; font-weight: 600; text-align: right; }
   .fp.none { color: var(--muted); font-weight: 400; font-size: 13px; }
   .empty { color: var(--muted); padding: 24px 4px; }
   /* No exposure loaded: the chip column goes. */
   .list.no-expo .head, .list.no-expo .row { grid-template-columns: 44px minmax(0, 1fr) 74px 64px; }
   .list.no-expo .expo, .list.no-expo .exph { display: none; }
   @media (max-width: 520px) {
-    .head, .row { grid-template-columns: 36px 30px minmax(0, 1fr) 62px 52px; gap: 7px; }
-    .list.no-expo .head, .list.no-expo .row { grid-template-columns: 36px minmax(0, 1fr) 62px 52px; }
-    .fp { font-size: 15px; }
-    .sub { white-space: normal; }
+    .head, .row { grid-template-columns: 32px 28px minmax(0, 1fr) 52px 42px; gap: 6px; }
+    .list.no-expo .head, .list.no-expo .row { grid-template-columns: 32px minmax(0, 1fr) 52px 42px; }
+    .name { font-size: 13px; }
+    .fp { font-size: 14px; }
   }
 </style>
 </head>
@@ -318,11 +318,11 @@ function expoColor(f) {
 function setStatus(msg, bad) { var el = $("status"); el.textContent = msg; el.classList.toggle("bad", !!bad); }
 
 function statLine(s) {
-  var bits = [s.pts + " pts", s.reb + " reb", s.ast + " ast"];
-  if (s.stl) bits.push(s.stl + " stl");
-  if (s.blk) bits.push(s.blk + " blk");
-  if (s.tov) bits.push(s.tov + " to");
-  return bits.join(", ") + " · " + s.min + " min";
+  var bits = [s.pts + "p", s.reb + "r", s.ast + "a"];
+  if (s.stl) bits.push(s.stl + "s");
+  if (s.blk) bits.push(s.blk + "b");
+  if (s.tov) bits.push(s.tov + "to");
+  return bits.join(" ") + " · " + s.min + "m";
 }
 
 function render() {
