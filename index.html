@@ -501,6 +501,8 @@
   .footnote { color: var(--muted); font-size: 12.5px; margin-top: 12px; }
   .footnote code { font-family: var(--mono); font-size: 11.5px; }
   .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .phone-only { display: none; }
+  #liftOut.on { background: var(--t0); color: var(--t0-ink); border-color: transparent; }
   @media (max-width: 620px) {
     /* Everything above the dock scrolls off, so the board can reach the top of the screen. */
     .masthead { position: static; }
@@ -567,6 +569,37 @@
     html.nba .who.nbawho { grid-template-columns: 20px 34px 18px 18px 22px 22px minmax(0, 1fr); column-gap: 5px; row-gap: 3px; }
     html.nba .nbawho .name { grid-column: 1 / -1; }
     .views a { padding: 5px 8px; font-size: 12px; }
+
+    /* Tools: the order buttons and the whole dock fold away until the button opens them. */
+    .phone-only { display: inline-block; }
+    #toolsBtn { align-self: flex-end; }
+    html:not(.tools-open) .tool { display: none !important; }
+    /* Search, View and Ranked share one line. */
+    .controls { gap: 8px; padding-block: 8px; }
+    .controls .grow { min-width: 0; flex: 1 1 90px; }
+    .controls .grow:first-child { flex: 1 1 calc(100% - 100px); }
+    #view { width: 132px; }
+    #cut { width: 52px; }
+    /* Every sport: the first name as an initial, so the last name has the room.
+       NBA: one line a player, the team beside the name; the out
+       toggle and tonight's opponent move to the bar a tap brings up. */
+    html.nba .row { padding: 4px 6px; column-gap: 3px; }
+    html.nba .row, html.nba .board.etr2 .row { grid-template-columns: 10px 22px minmax(0, 1fr) 46px 80px 46px 0; }
+    html.nba .board.etr2 .row { grid-template-columns: 10px 22px minmax(0, 1fr) 46px 80px 64px 0; }
+    html.nba .board.has-expo .row { grid-template-columns: 10px 44px minmax(0, 1fr) 46px 80px 46px 0; }
+    html.nba .board.has-expo.etr2 .row { grid-template-columns: 10px 44px minmax(0, 1fr) 46px 80px 64px 0; }
+    /* the tap bar: who he is and tonight's game on one line, the buttons under it */
+    .liftbar { flex-wrap: wrap; row-gap: 8px; }
+    .liftbar-who { flex-basis: 100%; flex-direction: row; align-items: baseline; gap: 8px; }
+    .liftbar-name { flex: none; max-width: 62%; }
+    html.nba .who.nbawho { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; }
+    html.nba .nbawho > * { flex: none; }
+    html.nba .nbawho .name { flex: 0 1 auto; min-width: 0; }
+    html.nba .nbawho .slot, html.nba .nbawho .outx:not(.on) { display: none; }
+    .name .first { display: none; }
+    .name[data-i]::before { content: attr(data-i); }
+    html.nba .num.score { flex-wrap: nowrap; }
+    html.nba .num.score .opp { display: none; }
   }
 </style>
 </head>
@@ -591,6 +624,8 @@
         <span class="field-label">Slate</span>
         <select id="slate"></select>
       </label>
+      <button type="button" id="toolsBtn" class="phone-only" aria-expanded="false"
+              title="Show the order tools and the Upload, Sync and Export buttons">Tools</button>
       <label class="field grow">
         <span class="field-label">Search</span>
         <input type="search" id="search" placeholder="name" autocomplete="off">
@@ -612,14 +647,14 @@
         <input type="number" id="cut" min="0" step="1" inputmode="numeric"
                title="How many players are ranked. Below this the board sorts itself by projection, and only those above it are exported.">
       </label>
-      <label class="field football-only">
+      <label class="field football-only tool">
         <span class="field-label">Seed order</span>
         <span class="pair">
           <button type="button" id="buildScore" title="Seed the order from positional blocks, best Workload score first">Builder (Score)</button>
           <button type="button" id="buildProj">Builder (Proj)</button>
         </span>
       </label>
-      <label class="field nba-only">
+      <label class="field nba-only tool">
         <span class="field-label">Order · floor from</span>
         <span class="pair">
           <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
@@ -637,7 +672,7 @@
 
   <!-- Sibling of the masthead, not a child: a sticky element only stays pinned while its
        own container is on screen, so this row has to sit outside the part that scrolls away. -->
-  <div class="controls dock">
+  <div class="controls dock tool">
     <label class="field">
       <span class="field-label">Projections</span>
       <span class="pair">
@@ -740,8 +775,9 @@
 <div class="liftbar" id="liftbar" hidden>
   <span class="liftbar-who">
     <span class="liftbar-name" id="liftName"></span>
-    <span class="hint">Tap a player to move here</span>
+    <span class="hint"><span id="liftOpp"></span>Tap a player to move here</span>
   </span>
+  <button type="button" id="liftOut" class="nba-only" title="Mark him out tonight: he drops to the bottom and his teammates' Proj moves up">Out</button>
   <span class="pair">
     <button type="button" id="liftUp" aria-label="Move up one slot">&#9650;</button>
     <button type="button" id="liftDown" aria-label="Move down one slot">&#9660;</button>
@@ -3715,7 +3751,10 @@ function render() {
     who.className = "who";
     var name = document.createElement("span");
     name.className = "name";
-    name.textContent = p.first_name + " " + p.last_name;
+    name.appendChild(document.createElement("span")).className = "first";
+    name.firstChild.textContent = p.first_name;
+    name.appendChild(document.createTextNode(" " + p.last_name));
+    name.dataset.i = (p.first_name || "").charAt(0) + ".";
     var pos = document.createElement("span");
     pos.className = "pos" + (p.position ? " pos-" + p.position : "");
     pos.textContent = p.position || "—";
@@ -4017,6 +4056,14 @@ function renderLiftBar() {
   bar.hidden = !who;
   document.body.classList.toggle("lifting", !!who);
   if (who) $("liftName").textContent = who.first_name + " " + who.last_name;
+  if (who && SPORT_MODE === "nba") {
+    var why = state.nbaOutPids && state.nbaOutPids[who.player_id];
+    var g = ((state.nbaGames || {})[pacificDay(state.slate.cutoff)] || {})[who.team];
+    $("liftOpp").textContent = (who.team || "") + (g ? " " + g[1] + " " + g[0] : "") + " \u00b7 ";
+    $("liftOut").textContent = why ? "In" : "Out";
+    $("liftOut").disabled = why === "auto";
+    $("liftOut").classList.toggle("on", !!why);
+  }
   if (who) {
     var at = state.order.indexOf(state.liftedPid), ranked = state.cut != null && at < state.cut;
     $("liftPlus").disabled = state.cut == null || ranked;
@@ -4117,6 +4164,11 @@ document.addEventListener("keydown", function (e) {
 $("liftUp").addEventListener("click", function () { nudgeLifted(-1); });
 $("liftDown").addEventListener("click", function () { nudgeLifted(1); });
 $("liftDone").addEventListener("click", function () { setLifted(null); });
+$("liftOut").addEventListener("click", function () {
+  var p = liftedPlayer();
+  if (p) toggleNbaOut(p);
+  renderLiftBar();
+});
 $("liftPlus").addEventListener("click", function () { jumpLifted("plus"); });
 $("cfbAll").addEventListener("click", function (e) {
   e.stopPropagation();
@@ -5139,6 +5191,19 @@ window.addEventListener("storage", function (e) {
   selectSlate(state.data.slates.indexOf(state.slate));
 });
 if (PHONE.addEventListener) PHONE.addEventListener("change", syncStickyOffsets);
+/* Phones: the order tools and the dock stay folded away behind Tools until asked for. */
+function applyTools(open) {
+  document.documentElement.classList.toggle("tools-open", open);
+  $("toolsBtn").setAttribute("aria-expanded", String(open));
+  $("toolsBtn").textContent = open ? "Hide tools" : "Tools";
+  syncStickyOffsets();
+}
+applyTools(!!load("brr:tools", false));
+$("toolsBtn").addEventListener("click", function () {
+  var open = !document.documentElement.classList.contains("tools-open");
+  save("brr:tools", open);
+  applyTools(open);
+});
 if (typeof ResizeObserver !== "undefined") {
   var ro = new ResizeObserver(syncStickyOffsets);
   ro.observe(document.querySelector(".masthead"));
