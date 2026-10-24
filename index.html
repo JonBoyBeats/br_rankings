@@ -880,7 +880,8 @@ function parseShare(raw) {
 
 /* Fantasy Points lists some college players by legal name; these are the names CFF and
    Underdog use. Add a pair when a Fantasy Points name misses a board player. */
-var FP_CFB_ALIASES = { "cedric baxter": "cj baxter", "daylan smothers": "hollywood smothers" };
+var FP_CFB_ALIASES = { "cedric baxter": "cj baxter", "daylan smothers": "hollywood smothers", "cameron cook": "cam cook",
+                       "matthew fuller": "matt fuller", "javonnie gibson": "jv gibson", "hilton alexander": "deuce alexander" };
 
 function parseProjections(text) {
   var rows = parseCsv(text, sniffDelimiter(text));
