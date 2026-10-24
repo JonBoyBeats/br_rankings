@@ -55,6 +55,9 @@
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; }
   .row { border-bottom: 1px solid var(--line); cursor: pointer; }
   .row:hover, .row.open { background: var(--surface); }
+  /* On pace to beat the players around him: deeper green the further ahead. */
+  .row.good { background: rgba(46, 170, 104, var(--good)); }
+  .row.good .name, .row.good .fp { font-weight: 700; }
   .r { text-align: right; }
   .adp { font-family: var(--mono); font-size: 13px; color: var(--muted); }
   .expo { font-family: var(--mono); font-size: 11px; font-weight: 600; text-align: center; border-radius: 4px; padding: 2px 0; }
@@ -125,6 +128,11 @@
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
+/* Green rows: a player on pace to beat the players drafted around him. Pace is his points so
+   far plus his usual output (the nightly box-score file) for the share of the game left.
+   "Around him" is the HALF players either side by ADP, more in later rounds where picks are
+   closer together; the tint starts GOOD_FROM points over their median and is full at GOOD_FULL. */
+var HALF = [[24, 3], [48, 4], [72, 5], [Infinity, 6]], GOOD_FROM = 3, GOOD_FULL = 15;
 var EVERY = 60;   // seconds between pulls while the page is open; ESPN's box scores move about this often
 // ESPN's abbreviations -> the board's (the nightly job's map)
 var TEAM = { SA: "SAS", NY: "NYK", GS: "GSW", NO: "NOP", UTAH: "UTA", WSH: "WAS" };
@@ -138,7 +146,7 @@ var EXTRA = { FG: "fg", "3PT": "fg3", FT: "ft",
               "fieldGoalsMade-fieldGoalsAttempted": "fg", "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3",
               "freeThrowsMade-freeThrowsAttempted": "ft" };
 
-var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, posted: {}, games: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
+var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, posted: {}, proj: {}, games: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
 
 function $(id) { return document.getElementById(id); }
 function load(key, fallback) { try { var v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; } }
@@ -244,7 +252,8 @@ async function pull() {
     var board = await espn("/scoreboard?dates=" + day + "&limit=50");
     var games = {}, todo = [];
     (board.events || []).forEach(function (e) {
-      var g = { id: e.id, state: e.status.type.state, label: gameLabel(e), date: e.date, away: null, home: null };
+      var g = { id: e.id, state: e.status.type.state, label: gameLabel(e), date: e.date, away: null, home: null,
+                period: e.status.period, clock: e.status.displayClock };
       ((e.competitions || [])[0] || {}).competitors.forEach(function (c) {
         var t = TEAM[c.team.abbreviation] || c.team.abbreviation;
         g[c.homeAway === "home" ? "home" : "away"] = t;
@@ -326,6 +335,36 @@ function expoColor(f) {
 // ---------------------------------------------------------------- drawing
 function setStatus(msg, bad) { var el = $("status"); el.textContent = msg; el.classList.toggle("bad", !!bad); }
 
+/** How much of the game is played, 0 to 1; overtime counts as done. */
+function played(g) {
+  if (!g || g.state === "pre") return 0;
+  if (g.state === "post" || g.period > 4) return 1;
+  var c = String(g.clock || "0").split(":"), left = c.length > 1 ? +c[0] + c[1] / 60 : c[0] / 60;
+  return Math.min(1, ((g.period - 1) * 12 + 12 - (left || 0)) / 48);
+}
+
+/** Each row's pace, and how far it runs over the median pace of the players drafted around him. */
+function grade(rows) {
+  var byAdp = rows.slice().sort(function (a, b) { return a.p.adp - b.p.adp; });
+  byAdp.forEach(function (r) {
+    var f = played(r.g), proj = state.proj[normName(r.p.first_name + " " + r.p.last_name)];
+    r.played = f;
+    if (r.b && r.b.out) r.pace = 0;
+    else if (proj == null) r.pace = f >= 0.25 ? (r.fp || 0) / f : null;   // no usual output to lean on
+    else r.pace = (r.fp || 0) + (1 - f) * proj;
+  });
+  byAdp.forEach(function (r, i) {
+    var w = HALF.filter(function (h) { return i < h[0]; })[0][1];
+    var lo = Math.max(0, Math.min(i - w, byAdp.length - 1 - 2 * w)), near = [];
+    for (var j = lo; j <= Math.min(byAdp.length - 1, lo + 2 * w); j++) if (j !== i && byAdp[j].pace != null) near.push(byAdp[j].pace);
+    near.sort(function (a, b) { return a - b; });
+    r.med = near.length ? (near[(near.length - 1) >> 1] + near[near.length >> 1]) / 2 : null;
+    var over = r.pace != null && r.med != null && r.played > 0 ? r.pace - r.med : 0;
+    r.good = Math.max(0, Math.min(1, (over - GOOD_FROM) / (GOOD_FULL - GOOD_FROM)));
+    if (over > GOOD_FROM) r.good = Math.max(r.good, 0.05);
+  });
+}
+
 /** A tapped player's box line in two lines; before he plays, his game instead. */
 function detailHtml(r) {
   function esc(v) { return String(v).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
@@ -381,6 +420,7 @@ function render() {
     var fp = b && !b.dnp ? udPoints(b.s) : null;
     return { p: p, b: b, g: g, fp: fp, f: share ? share(p) : 0 };
   });
+  grade(rows);
   if (ex && state.mine) rows = rows.filter(function (r) { return r.f; });
   rows.sort(state.sort === "fp" ? function (a, b) { return (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp) || a.p.adp - b.p.adp; }
                                 : function (a, b) { return a.p.adp - b.p.adp; });
@@ -392,6 +432,11 @@ function render() {
   rows.forEach(function (r) {
     var p = r.p, el = document.createElement("div");
     el.className = "row";
+    if (r.good) {
+      el.classList.add("good");
+      el.style.setProperty("--good", (0.10 + 0.55 * r.good).toFixed(2));
+      el.title = "On pace for " + Math.round(r.pace) + "; the players drafted around him, " + Math.round(r.med);
+    }
     var adp = document.createElement("span"); adp.className = "adp r"; adp.textContent = p.adp.toFixed(1); el.appendChild(adp);
     var chip = document.createElement("span"); chip.className = "expo";
     if (ex) {
@@ -427,7 +472,7 @@ function render() {
 
   var live = Object.keys(state.games).some(function (t) { return state.games[t].state === "in"; });
   var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" +
-            (live ? " · refreshes every " + EVERY + "s while open" : "") : "Fetching ESPN…";
+            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · green: on pace to beat his ADP neighbours" : "Fetching ESPN…";
   if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
   else setStatus(msg);
 }
@@ -461,6 +506,10 @@ document.addEventListener("visibilitychange", function () {
 
 (async function boot() {
   try { state.slates = await loadSlates(); } catch (e) { setStatus("Couldn't reach the ADP mirror: " + e.message, true); return; }
+  mirror("nba_morning.json").then(function (d) {
+    (d.players || []).forEach(function (r) { var k = normName(r.name); state.proj[ESPN_ALIASES[k] || k] = r.fp; });
+    render();
+  }).catch(function () {});
   state.posted = await fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { return d.slates || {}; }).catch(function () { return {}; });
   fillSlates();
