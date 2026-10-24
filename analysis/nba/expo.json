@@ -47,6 +47,42 @@
     "Bam Adebayo": 2,
     "Jaren Jackson Jr.": 1
    }
+  },
+  "edeefa92-5338-4197-8723-aca1fa3ee52e": {
+   "label": "nba_sat_main",
+   "date": "2026-10-24",
+   "at": "2026-10-24T23:00:00Z",
+   "teams": 40,
+   "note": "Kyrie Irving (17%, out) swaps to Naji Marshall: 10% + 17%",
+   "pct": {
+    "James Harden": 57,
+    "Jamal Murray": 52,
+    "Caleb Wilson": 40,
+    "Devin Booker": 35,
+    "Josh Giddey": 35,
+    "Joel Embiid": 35,
+    "Day'Ron Sharpe": 32,
+    "Anthony Davis": 30,
+    "Norman Powell": 27,
+    "Stephon Castle": 27,
+    "Jalen Green": 25,
+    "Trae Young": 22,
+    "Nikola Jokic": 22,
+    "Victor Wembanyama": 17,
+    "Kyshawn George": 15,
+    "Jaylen Brown": 15,
+    "Alperen Sengun": 12,
+    "Dylan Harper": 12,
+    "Naji Marshall": 27,
+    "Yaxel Lendeborg": 10,
+    "Nickeil Alexander-Walker": 10,
+    "Kevin Durant": 10,
+    "Michael Porter Jr.": 10,
+    "Jalen Johnson": 7,
+    "Evan Mobley": 5,
+    "Tyrese Maxey": 2,
+    "Donovan Mitchell": 2
+   }
   }
  }
 }
