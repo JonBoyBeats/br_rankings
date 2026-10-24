@@ -365,7 +365,7 @@ function grade(rows) {
   });
 }
 
-/** A tapped player's box line in two lines; before he plays, his game instead. */
+/** A tapped player's box line in two lines (before he plays, his game instead), then his pace. */
 function detailHtml(r) {
   function esc(v) { return String(v).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
   var g = r.g, p = r.p, bits = [];
@@ -380,6 +380,11 @@ function detailHtml(r) {
   } else {
     bits.push(esc(game));
     if (g && g.state !== "pre") bits.push((r.b && r.b.out) || g.state === "post" ? "Did not play" : "Hasn't checked in yet");
+  }
+  if (r.pace != null && r.med != null && !(r.b && r.b.out)) {
+    var d = Math.round(r.pace) - Math.round(r.med);
+    bits.push((r.played >= 1 ? "Finished with " : r.played > 0 ? "On pace for " : "Usually ") + "<b>" + Math.round(r.pace) + "</b>" +
+              " · players around him " + Math.round(r.med) + " (" + (d > 0 ? "+" : d < 0 ? "\u2212" : "\u00b1") + Math.abs(d) + ")");
   }
   return bits.join("<br>");
 }
