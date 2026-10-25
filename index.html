@@ -365,6 +365,9 @@
   .outx.on { background: var(--t0); color: var(--t0-ink); border-color: transparent; }
   .outx:focus-visible { outline: 2px solid var(--accent); }
   .row.is-out .name { text-decoration: line-through; color: var(--muted); }
+  .row.outhead { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+                 color: var(--muted); background: var(--surface-2); padding-block: 6px; }
+  .row.outrow .num.dim { text-align: center; }
   /* NBA name line in fixed columns: name, injury, team, ETR, Zakarian, notes, out. */
   html.nba .who.nbawho { display: grid; grid-template-columns: minmax(0, 210px) 22px 40px 20px 20px 24px 24px minmax(0, 1fr);
                          column-gap: 8px; align-items: center; }
@@ -3915,8 +3918,52 @@ function render() {
     if (cf && state.cfbOpen[p.player_id]) frag.appendChild(cfbPanel(p, cf));
     if (nt && nt.length && state.cfbOpen[p.player_id]) frag.appendChild(nbaPanel(nt));
   });
+  nbaOutRows(frag);
   host.appendChild(frag);
   renderFoot(rows.length);
+}
+
+/**
+ * NBA: everyone Underdog has out tonight who isn't on the board, under it with no
+ * projection, most usual points first, so a star who's out is easy to spot.
+ */
+function nbaOutRows(frag) {
+  if (SPORT_MODE !== "nba" || !state.slate || state.search.trim()) return;
+  var on = {}, map = state.nameMaps.nba || {}, by = (state.nbaIdx && state.nbaIdx.byKey) || {};
+  state.slate.players.forEach(function (p) { on[p.player_id] = 1; });
+  var outs = (state.slate.tagged || []).filter(function (p) { return /^o/i.test(p.injury || "") && !on[p.player_id]; })
+    .map(function (p) { return { p: p, x: by[boardKey(p.first_name, p.last_name, map)] || null }; })
+    .sort(function (a, b) { return ((b.x && b.x.fp) || -1) - ((a.x && a.x.fp) || -1) || (a.p.last_name < b.p.last_name ? -1 : 1); });
+  if (!outs.length) return;
+  var h = document.createElement("div");
+  h.className = "row outhead";
+  h.textContent = "Out per Underdog \u00b7 " + outs.length + " \u00b7 most usual points first";
+  frag.appendChild(h);
+  outs.forEach(function (o) {
+    var p = o.p, x = o.x, el = document.createElement("div");
+    el.className = "row is-out outrow";
+    var who = document.createElement("span"), name = document.createElement("span"), sub = document.createElement("span");
+    who.className = "who";
+    name.className = "name";
+    name.appendChild(document.createElement("span")).className = "first";
+    name.firstChild.textContent = p.first_name;
+    name.appendChild(document.createTextNode(" " + p.last_name));
+    name.dataset.i = (p.first_name || "").charAt(0) + ".";
+    sub.className = "sub";
+    sub.textContent = p.team || (x && x.team) || "\u2014";
+    who.append(name, injuryTag(p.injury), sub);
+    var usual = document.createElement("span");
+    usual.className = "num dim";
+    usual.textContent = x && x.fp ? Math.round(x.fp) + "/g" : "";
+    usual.title = x ? "Usually " + x.fp.toFixed(1) + " UD points a game (" + Math.round(x.min) + " min, " + x.games + " games this season)"
+                    : "No box scores for him";
+    var pr = document.createElement("span");
+    pr.className = "num proj dim";
+    pr.textContent = "out";
+    el.append(document.createElement("span"), document.createElement("span"), who, document.createElement("span"), usual, pr,
+              document.createElement("span"));
+    frag.appendChild(el);
+  });
 }
 
 /* Gold deepens with the value; at or below replacement it fades to the muted grey. */
@@ -3933,7 +3980,7 @@ function renderFoot(shown) {
   var m = state.projMeta;
   var bits = [shown + " of " + state.order.length + " shown"];
   if (m) {
-    bits.push("projections from " + m.file + " (" + m.format + "), " +
+    bits.push((m.file ? "projections from " + m.file + " (" + m.format + ")" : "morning Proj") + ", " +
               (m.boardTotal - m.missing.length) + " of " + m.boardTotal + " board players covered");
   } else {
     bits.push("no projections uploaded for " + state.slate.sport.toUpperCase());
