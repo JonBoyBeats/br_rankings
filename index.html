@@ -1586,7 +1586,8 @@ function nbaLineupBump(r, idx, out, boxWeight) {
   var mates = (idx.core[r.team] || []).slice(), add = 0, notes = [];
   Object.keys(out).forEach(function (k) {
     var x = idx.byKey[k];
-    if (x && x.team === r.team && !x.core) mates.push(x);
+    // only players who've played for his team this season: anyone else's absence is already in the box scores
+    if (x && x.team && x.team === r.team && x.games > 0 && !x.core) mates.push(x);
   });
   mates.forEach(function (x) {
     if (x === r) return;
@@ -1623,6 +1624,10 @@ function nbaOuts(slate, idx, etrToday, marked, keyOf) {
   var out = {}, priced = {}, teams = {};
   (marked || []).forEach(function (k) { out[k] = "you"; });
   if (etrToday) return out;
+  // Anyone Underdog tags Out, priced or not (an Out player loses his ADP; the mirror lists those in "tagged").
+  (slate.players || []).concat(slate.tagged || []).forEach(function (p) {
+    if (/^o/i.test(p.injury || "") && !out[keyOf(p)]) out[keyOf(p)] = "ud";
+  });
   slate.players.forEach(function (p) {
     if (!hasAdp(p)) return;
     teams[p.team] = (teams[p.team] || 0) + 1;
@@ -2391,13 +2396,16 @@ function applyNbaProjections(store) {
   recomputeVorp();
   sortBelowLine();
   var cur = store.current, j = res.joined;
-  var autoOut = Object.keys(res.out).filter(function (k) { return res.out[k] === "auto"; })
-    .map(function (k) { return idx.byKey[k] ? idx.byKey[k].name : k; });
+  function outNames(why) {
+    return Object.keys(res.out).filter(function (k) { var x = idx.byKey[k]; return res.out[k] === why && x && x.team && x.games > 0; })
+      .map(function (k) { return idx.byKey[k].name + " " + idx.byKey[k].team; }).sort();
+  }
+  var autoOut = outNames("auto"), udOut = outNames("ud");
   state.projMeta = {
     file: res.etrToday ? cur.file : null, format: res.etrToday ? cur.format : "morning", at: res.etrToday ? cur.at : null,
     morning: res.etrToday ? null : { etr: res.byEtr, box: res.byBox, through: idx.through, hasBox: !!state.nbaIdx,
                                      lastAt: cur ? cur.at : null },
-    autoOut: autoOut,
+    autoOut: autoOut, udOut: udOut,
     prevFile: res.etrToday && store.previous ? store.previous.file : null,
     prevAt: res.etrToday && store.previous ? store.previous.at : null,
     prevFormat: res.etrToday && store.previous ? store.previous.format : null,
@@ -3211,7 +3219,7 @@ function renderMissingProjections() {
     el.appendChild(o);
   }
   var m = state.projMeta;
-  var morningSig = m && m.morning ? "morning|" + state.slate.label + "|" + m.autoOut.join() : null;
+  var morningSig = m && m.morning ? "morning|" + state.slate.label + "|" + m.autoOut.join() + "|" + m.udOut.join() : null;
   if (m && m.morning && state.closedNotices[morningSig] !== true) {
     var a = document.createElement("div"), mo = m.morning;
     a.className = "notice";
@@ -3219,7 +3227,8 @@ function renderMissingProjections() {
                   " from box scores alone" + (mo.through ? " (games through " + mo.through + ")" : "") +
                   ", moved for who's out. Upload today's ETR file to replace it." +
                   (mo.hasBox ? "" : " The box-score file didn't load, so only players with ETR history have a number.") +
-                  (m.autoOut.length ? "<div class=\"names\">Not priced, counted out: " + m.autoOut.join(" · ") + "</div>" : "");
+                  (m.udOut.length ? "<div class=\"names\">Underdog has out, teammates moved up: " + esc(m.udOut.join(" · ")) + "</div>" : "") +
+                  (m.autoOut.length ? "<div class=\"names\">Not priced, counted out: " + esc(m.autoOut.join(" · ")) + "</div>" : "");
     el.appendChild(closable(a, function () { state.closedNotices[morningSig] = true; }));
   }
   if (!m || !m.missing.length) return;
