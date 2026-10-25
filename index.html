@@ -2795,13 +2795,11 @@ function greenChip(el, frac) {
 }
 
 /* ---- Boom % and Dud % ---------------------------------------------------------
-   The chance of a night 10+ points over (Boom) or 10+ under (Dud) the bar for his draft
-   slot: the median projection of the 12 players drafted around him (6 before, 6 after
-   by ADP; near the top of the board as many after as there are before but at least 3,
-   so pick 1 is measured against picks 2-4 and pick 2 against picks 1 and 3-5, and the
-   first round isn't graded against weaker players only), not his own. Past ADP NBA_BAR_ADP_UNTIL
-   (and with no ADP) the bar is instead one for everyone: the median of the slate's 30th to 44th
-   best projections. So a better projection, matchup included, raises Boom and lowers
+   The chance of a night 10+ points over (Boom) or 10+ under (Dud) the bar for his spot:
+   the median projection of the 12 players around him in projection order (6 above, 6 below;
+   near the top as many below as there are above but at least 3, so the best projection is
+   measured against the 2nd to 4th and the 2nd against the 1st and 3rd to 5th), not his own.
+   So a better projection, matchup included, raises Boom and lowers
    Dud, and two players projected alike are told apart by the shape of their range.
    Two logistic models fit on 2024-26 box scores, the top 60 projections each night, with
    season points per game standing in for ADP. As a tiebreaker between two players within
@@ -2834,12 +2832,6 @@ function nbaChance(model, x, bar, r) {
   return 1 / (1 + Math.exp(-z));
 }
 
-/* Past the fourth round ADP stops meaning much: Underdog parks everyone nobody drafts at 36.0,
-   so measured by ADP a late player faced the undrafted filler and looked like a boom. From
-   here on (and with no ADP) everyone shares one bar: the median of the slate's 30th to 44th
-   best projections, the players the last rounds actually choose between. */
-var NBA_BAR_ADP_UNTIL = 24, NBA_LATE_BAR = [30, 44];
-
 /** The median x of the 6 before and 6 after position i, himself left out; near either end as
     many on the long side as on the short one, but at least 3. */
 function nbaWindowBar(list, i) {
@@ -2850,18 +2842,14 @@ function nbaWindowBar(list, i) {
 }
 
 /**
- * Each row's bar: through ADP NBA_BAR_ADP_UNTIL, the median projection of the 6 players before
- * and 6 after him by ADP, himself left out, so the top picks are not measured only against the
- * weaker players after them. Past it, and with no ADP, the median of the slate's NBA_LATE_BAR
- * projection ranks. `rows` carry pid, adp (or null) and x.
+ * Each row's bar: the median projection of the 6 players before and 6 after him in projection
+ * order, himself left out. Not ADP: past the fourth round it stops meaning much (Underdog
+ * parks everyone nobody drafts at 36.0), and a late player measured by it faced the undrafted
+ * filler. `rows` carry pid and x.
  */
 function nbaBars(rows) {
-  var priced = rows.filter(function (r) { return r.adp != null; }).sort(function (a, b) { return a.adp - b.adp; });
-  var byX = rows.map(function (r) { return r.x; }).sort(function (a, b) { return b - a; });
-  var late = byX.length ? median(byX.slice(Math.min(NBA_LATE_BAR[0], byX.length) - 1, NBA_LATE_BAR[1])) : null;
-  var out = {};
-  priced.forEach(function (r, i) { if (r.adp <= NBA_BAR_ADP_UNTIL) out[r.pid] = nbaWindowBar(priced, i); });
-  rows.forEach(function (r) { if (out[r.pid] == null) out[r.pid] = late != null ? late : r.x; });
+  var byX = rows.slice().sort(function (a, b) { return b.x - a.x; }), out = {};
+  byX.forEach(function (r, i) { out[r.pid] = nbaWindowBar(byX, i); });
   return out;
 }
 
@@ -2915,8 +2903,8 @@ function nbaStatCell(p, sh) {
     if (v == null) { b.textContent = "\u2013"; b.style.color = "var(--muted)"; c.appendChild(b); return; }
     b.textContent = String(Math.round(v * 100));
     b.title = k[0] === "boom"
-      ? "Boom " + b.textContent + "%: his chance of a night 10+ over the median projection of the 12 players around him by ADP (past pick " + NBA_BAR_ADP_UNTIL + ", of the slate's " + NBA_LATE_BAR.join("th to ") + "th best projections). Rises with his projection (matchup included), usage, rebounds and assists per minute and swingy minutes"
-      : "Dud " + b.textContent + "%: his chance of a night 10+ under the median projection of the 12 players around him by ADP (past pick " + NBA_BAR_ADP_UNTIL + ", of the slate's " + NBA_LATE_BAR.join("th to ") + "th best projections). Falls with his projection (matchup included) and with starting; rises with a steals-and-blocks-heavy line";
+      ? "Boom " + b.textContent + "%: his chance of a night 10+ over the median projection of the 12 players around him in projection order. Rises with his projection (matchup included), usage, rebounds and assists per minute and swingy minutes"
+      : "Dud " + b.textContent + "%: his chance of a night 10+ under the median projection of the 12 players around him in projection order. Falls with his projection (matchup included) and with starting; rises with a steals-and-blocks-heavy line";
     if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside the top " + NBA_SHADE_TOP + " by Proj, so not shaded"; c.appendChild(b); return; }
     c.appendChild(greenChip(b, f));
   });
@@ -3712,7 +3700,7 @@ function render() {
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
   $("copyMain").hidden = !nbaMainSlate(state.slate);
-  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over the median projection of the 12 players around him by ADP (past pick " + NBA_BAR_ADP_UNTIL + ", where ADP stops meaning much, of the slate's " + NBA_LATE_BAR.join("th to ") + "th best projections), for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Mtch: tonight's matchup in points (hover for the breakdown). Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
+  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over the median projection of the 12 players around him in projection order, for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Mtch: tonight's matchup in points (hover for the breakdown). Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
@@ -5837,17 +5825,10 @@ function brrSelfTest() {
      nbaChance(NBA_DUD, 30, 30, Object.assign({}, avgRow, { start: 1 })) < nbaChance(NBA_DUD, 30, 30, Object.assign({}, avgRow, { start: 0 })) &&
      nbaChance(NBA_BOOM, 34, 30, avgRow) > nbaChance(NBA_BOOM, 30, 30, avgRow) && nbaChance(NBA_DUD, 34, 30, avgRow) < nbaChance(NBA_DUD, 30, 30, avgRow) &&
      nbaChance(NBA_BOOM, 30, 30, avgRow) > 0.1 && nbaChance(NBA_BOOM, 30, 30, avgRow) < 0.3);
-  var barRows = [50, 45, 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18].map(function (x, i) { return { pid: "b" + i, adp: i + 1, x: x }; })
-    .concat([{ pid: "free", adp: null, x: 15 }]);
+  var barRows = [50, 45, 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18].map(function (x, i) { return { pid: "b" + i, adp: 14 - i, x: x }; });
   var bars = nbaBars(barRows);
-  ok("a slot's bar is the median of the 6 before and 6 after by ADP, himself left out, near the ends as many on the long side as the short but at least 3",
+  ok("a player's bar is the median of the 6 above and 6 below him by projection (ADP ignored), himself left out, near the ends as many on the long side as the short but at least 3",
      bars.b0 === 40 && bars.b1 === 39 && bars.b2 === 38 && bars.b7 === 30 && bars.b13 === 22);
-  var lateRows = [];
-  for (var li = 0; li < 50; li++) lateRows.push({ pid: "r" + li, adp: li + 1, x: 100 - li });
-  lateRows.push({ pid: "none", adp: null, x: 5 });
-  var lb = nbaBars(lateRows);
-  ok("past ADP 24, and with no ADP, everyone shares the median of the 30th to 44th best projections; earlier picks keep their ADP bar",
-     lb.r29 === 64 && lb.r49 === 64 && lb.none === 64 && lb.r9 === nbaWindowBar(lateRows.slice(0, 50), 9) && lb.r9 === 91);
   var tOrder = [], tProj = {};
   for (var ti = 0; ti < 44; ti++) { tOrder.push("t" + ti); tProj["t" + ti] = 60 - ti - (ti >= 8 ? 5 : 0); }   // a 5-point drop after rank 8
   var seeded = nbaSeedTiers(tOrder, 44, tProj);
