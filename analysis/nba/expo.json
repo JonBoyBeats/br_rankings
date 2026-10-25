@@ -83,6 +83,50 @@
     "Tyrese Maxey": 2,
     "Donovan Mitchell": 2
    }
+  },
+  "7bdb08cc-b0d1-4336-8cdd-5a14e0d22d1f": {
+   "label": "nba_sun_main",
+   "date": "2026-10-25",
+   "at": "2026-10-25T20:55:00Z",
+   "teams": 50,
+   "pct": {
+    "Darius Garland": 46,
+    "Immanuel Quickley": 42,
+    "Rudy Gobert": 32,
+    "Scottie Barnes": 30,
+    "RJ Barrett": 28,
+    "Darius Acuff Jr.": 28,
+    "Karl-Anthony Towns": 26,
+    "Kawhi Leonard": 24,
+    "Precious Achiuwa": 24,
+    "Cedric Coward": 24,
+    "Cameron Boozer": 24,
+    "LaMelo Ball": 24,
+    "Anthony Black": 22,
+    "Shai Gilgeous-Alexander": 22,
+    "Zach LaVine": 18,
+    "Cade Cunningham": 18,
+    "Ty Jerome": 18,
+    "Desmond Bane": 18,
+    "Jaylen Brown": 16,
+    "Paul Reed": 16,
+    "Domantas Sabonis": 14,
+    "LeBron James": 12,
+    "OG Anunoby": 10,
+    "Jalen Suggs": 8,
+    "Tyrese Maxey": 8,
+    "Franz Wagner": 8,
+    "Jalen Brunson": 6,
+    "Anthony Edwards": 6,
+    "John Collins": 4,
+    "Josh Hart": 4,
+    "Isaiah Hartenstein": 4,
+    "Daniss Jenkins": 4,
+    "Jaden McDaniels": 4,
+    "VJ Edgecombe": 4,
+    "Chet Holmgren": 2,
+    "Jalen Williams": 2
+   }
   }
  }
 }

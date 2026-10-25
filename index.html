@@ -2522,6 +2522,25 @@ function ingestExposure(text, sourceName) {
             (sl !== state.slate ? " (switch to that slate to see them)" : "") + ".");
 }
 
+/**
+ * Your exposures on this slate as {drafts, counts by player id}: an export uploaded on this
+ * device, or the numbers read off the Underdog app and posted to analysis/nba/expo.json for
+ * the slate (the app's Exposure screen has no export), whichever is newer.
+ */
+function slateExpo() {
+  if (!state.slate) return null;
+  var ex = load(K.expo(state.slate.label), null), post = (state.postedExpo || {})[state.slate.slate_id];
+  if (ex && !ex.drafts) ex = null;
+  if (!post || (ex && ex.at >= post.at)) return ex;
+  var pct = {}, counts = {};
+  Object.keys(post.pct).forEach(function (k) { pct[normName(k)] = post.pct[k]; });
+  state.slate.players.forEach(function (p) {
+    var v = pct[normName(p.first_name + " " + p.last_name)];
+    if (v) counts[p.player_id] = Math.round(v / 100 * post.teams);
+  });
+  return { file: "posted from the Underdog app", at: post.at, drafts: post.teams, counts: counts };
+}
+
 /** The chip's colour: red at 1 in 12 or less, white at 1 in 6, dark green at 2 in 6 or more. */
 function expoColor(f) {
   function mix(a, b, t) { return a.map(function (v, i) { return Math.round(v + (b[i] - v) * t); }); }
@@ -3319,7 +3338,7 @@ function sortRowsByView(list, view) {
       return y - x;
     });
   } else if (view === "expo") {
-    var ex = (state.slate && load(K.expo(state.slate.label), null)) || { counts: {} };
+    var ex = slateExpo() || { counts: {} };
     list = list.slice().sort(function (a, b) {
       var x = ex.counts[a.p.player_id] || 0, y = ex.counts[b.p.player_id] || 0;
       return y - x || adpKey(a.p) - adpKey(b.p);
@@ -3687,7 +3706,7 @@ function render() {
   var isCfb = !!(state.slate && state.slate.sport === "cfb");
   if (board) board.classList.toggle("cfb", isCfb);
   if (board) board.classList.toggle("etr2", !!state.nbaOurs);
-  var hasExpo = !!(state.slate && load(K.expo(state.slate.label), null));
+  var hasExpo = !!slateExpo();
   if (board) board.classList.toggle("has-expo", hasExpo);
   var expoOpt = document.querySelector('#view option[value="expo"]');
   if (expoOpt) expoOpt.hidden = !hasExpo;
@@ -3731,8 +3750,7 @@ function render() {
 
   var frag = document.createDocumentFragment();
   var sw = null, pc = SPORT_MODE === "nba" ? nbaShading() : null, tiers = nbaActiveTiers(), tierEnd = nbaTierEnd();
-  var expo = state.slate && load(K.expo(state.slate.label), null);
-  if (expo && !expo.drafts) expo = null;
+  var expo = slateExpo();
   if (SPORT_MODE === "nba") {
     var tb = $("tiersBtn"), tt = state.slate && load(K.tiers(state.slate.label), null);
     tb.setAttribute("aria-pressed", String(!!(tt && tt.on)));
@@ -5311,6 +5329,10 @@ function bootFailed(where, err) {
       state.nbaLines = odds.lines || {};
       state.nbaGames = odds.games || {};                   // {date: {team: [opponent, "vs" | "at"]}}
       loadNbaTakes().then(function () { if (state.slate) render(); });
+      fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : {}; })
+        .then(function (d) { state.postedExpo = d.slates || {}; if (state.slate) render(); })
+        .catch(function () {});
     }
     if (SPORT_MODE !== "nba") {
       loadWorkload().then(function () { if (state.slate) { sortBelowLine(); render(); } });
