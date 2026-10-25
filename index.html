@@ -2796,11 +2796,13 @@ function greenChip(el, frac) {
 
 /* ---- Boom % and Dud % ---------------------------------------------------------
    The chance of a night 10+ points over (Boom) or 10+ under (Dud) the bar for his spot:
-   the median projection of the 12 players around him in your order (6 above, 6 below; near
-   the top as many below as there are above but at least 3, so your 1st is measured against
-   your 2nd to 4th and your 2nd against your 1st and 3rd to 5th), not his own. Rows next to
-   each other share nearly the same 12, so among any few players in a row it says who's best;
-   a median, so one player dragged far from his projection doesn't move the bar around him.
+   what his spot on your board typically projects: at your rank k, the median of the slate's
+   projections ranked 6 above to 6 below k (near the top as many below as there are above but
+   at least 3), not his own and not whoever sits next to him. Rows next to each other get
+   nearly the same bar, so among any few players in a row it says who's best, and a player
+   you've moved is measured against what his new spot should produce. It comes from the
+   slate's projections, so moving one player moves only his own numbers: the players he
+   passes shift a spot, a few tenths of a point.
    So a better projection, matchup included, raises Boom and lowers
    Dud, and two players projected alike are told apart by the shape of their range.
    Two logistic models fit on 2024-26 box scores, the top 60 projections each night, with
@@ -2844,19 +2846,20 @@ function nbaWindowBar(list, i) {
 }
 
 /**
- * Each row's bar: the median projection of the 6 players above and 6 below him in `order`
- * (your board's player ids; anyone not in it after, best projection first), himself left out.
- * Your order whatever the view's sort, so sorting by ADP doesn't bring back the ADP-36 pile
- * (Underdog parks everyone nobody drafts at 36.0). `rows` carry pid and x.
+ * Each row's bar: what his spot in `order` (your board's player ids; anyone not in it after,
+ * best projection first) typically projects, the median of the slate's projections ranked 6
+ * above to 6 below that spot. Your order whatever the view's sort, so sorting by ADP doesn't
+ * bring back the ADP-36 pile (Underdog parks everyone nobody drafts at 36.0). `rows` carry pid and x.
  */
 function nbaBars(rows, order) {
   var at = {}, out = {};
   (order || []).forEach(function (pid, i) { at[pid] = i; });
+  var curve = rows.slice().sort(function (a, b) { return b.x - a.x; });     // the slate's projections, best first
   var list = rows.slice().sort(function (a, b) {
     var ia = at[a.pid], ib = at[b.pid];
     return ia == null && ib == null ? b.x - a.x : ia == null ? 1 : ib == null ? -1 : ia - ib;
   });
-  list.forEach(function (r, i) { out[r.pid] = nbaWindowBar(list, i); });
+  list.forEach(function (r, k) { out[r.pid] = nbaWindowBar(curve, k); });
   return out;
 }
 
@@ -2910,8 +2913,8 @@ function nbaStatCell(p, sh) {
     if (v == null) { b.textContent = "\u2013"; b.style.color = "var(--muted)"; c.appendChild(b); return; }
     b.textContent = String(Math.round(v * 100));
     b.title = k[0] === "boom"
-      ? "Boom " + b.textContent + "%: his chance of a night 10+ over the median projection of the 12 players around him in your order (6 above, 6 below). Rises with his projection (matchup included), usage, rebounds and assists per minute and swingy minutes"
-      : "Dud " + b.textContent + "%: his chance of a night 10+ under the median projection of the 12 players around him in your order (6 above, 6 below). Falls with his projection (matchup included) and with starting; rises with a steals-and-blocks-heavy line";
+      ? "Boom " + b.textContent + "%: his chance of a night 10+ over what his spot on your board typically projects (the median of the slate's projections ranked 6 above to 6 below it). Rises with his projection (matchup included), usage, rebounds and assists per minute and swingy minutes"
+      : "Dud " + b.textContent + "%: his chance of a night 10+ under what his spot on your board typically projects (the median of the slate's projections ranked 6 above to 6 below it). Falls with his projection (matchup included) and with starting; rises with a steals-and-blocks-heavy line";
     if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside the top " + NBA_SHADE_TOP + " by Proj, so not shaded"; c.appendChild(b); return; }
     c.appendChild(greenChip(b, f));
   });
@@ -3707,7 +3710,7 @@ function render() {
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
   $("copyMain").hidden = !nbaMainSlate(state.slate);
-  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over the median projection of the 12 players around him in your order (6 above, 6 below), for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Mtch: tonight's matchup in points (hover for the breakdown). Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
+  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over what his spot on your board typically projects (the median of the slate's projections ranked 6 above to 6 below it), for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Mtch: tonight's matchup in points (hover for the breakdown). Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
@@ -5838,7 +5841,8 @@ function brrSelfTest() {
      bars.b0 === 40 && bars.b1 === 39 && bars.b2 === 38 && bars.b7 === 30 && bars.b13 === 22);
   var ob = nbaBars([{ pid: "a", x: 30 }, { pid: "b", x: 50 }, { pid: "c", x: 10 }, { pid: "d", x: 20 }, { pid: "e", x: 40 }],
                    ["b", "a", "d", "c", "e"]);
-  ok("the window follows your order, not projection", ob.d === 35 && ob.b === 20);
+  ok("the bar is what his spot on your board typically projects, from the slate's projections, not his neighbours'",
+     ob.a === 25 && ob.d === 30 && ob.b === 30);
   var tOrder = [], tProj = {};
   for (var ti = 0; ti < 44; ti++) { tOrder.push("t" + ti); tProj["t" + ti] = 60 - ti - (ti >= 8 ? 5 : 0); }   // a 5-point drop after rank 8
   var seeded = nbaSeedTiers(tOrder, 44, tProj);
