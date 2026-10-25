@@ -129,13 +129,16 @@
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
-/* Green rows: the best of each round so far. A draft is TEAMS players x ROUNDS rounds, so a
-   player's round is his ADP in blocks of TEAMS, with everyone past the fifth round in the last.
-   Pace is his points so far plus his usual output (the nightly box-score file) for the share
-   of the game left. He's set against his round plus EDGE players either side of it: from
-   GOOD_FROM points over their median the row turns green, deepest for the round's best. */
-var TEAMS = 6, ROUNDS = 6, EDGE = 2, GOOD_FROM = 3;
-function roundOf(adp) { return Math.min(ROUNDS, Math.max(1, Math.ceil(adp / TEAMS))); }
+/* Green rows: the best of each round so far. A draft is TEAMS players x ROUNDS rounds of a
+   snake, so a player's round is his ADP rank in blocks of TEAMS, everyone past the fifth in
+   the last. Who actually goes in a round loosens as the draft goes on: the top 7 or so in the
+   first, 8 in the second, 9 in the third, 10 in the fourth and fifth, the rest in the sixth.
+   POOLS are those groups, by ADP rank, and a player is set against his round's. Pace is his
+   points so far plus his usual output (the nightly box-score file) for the share of the game
+   left; from GOOD_FROM points over the group's median the row turns green, deepest for its best. */
+var TEAMS = 6, ROUNDS = 6, GOOD_FROM = 3;
+var POOLS = [[1, 7], [6, 13], [12, 20], [17, 26], [23, 32], [29, Infinity]];   // ADP ranks, first and last
+function roundOf(rank) { return Math.min(ROUNDS, Math.ceil(rank / TEAMS)); }
 var EVERY = 60;   // seconds between pulls while the page is open; ESPN's box scores move about this often
 // ESPN's abbreviations -> the board's (the nightly job's map)
 var TEAM = { SA: "SAS", NY: "NYK", GS: "GSW", NO: "NOP", UTAH: "UTA", WSH: "WAS" };
@@ -356,11 +359,12 @@ function grade(rows) {
     else if (proj == null) r.pace = f >= 0.25 ? (r.fp || 0) / f : null;   // no usual output to lean on
     else r.pace = (r.fp || 0) + (1 - f) * proj;
   });
+  byAdp.forEach(function (r, i) { r.round = roundOf(i + 1); });
   for (var rd = 1; rd <= ROUNDS; rd++) {
     var idx = [];
-    byAdp.forEach(function (r, i) { r.round = roundOf(r.p.adp); if (r.round === rd) idx.push(i); });
+    byAdp.forEach(function (r, i) { if (r.round === rd) idx.push(i); });
     if (!idx.length) continue;
-    var near = byAdp.slice(Math.max(0, idx[0] - EDGE), idx[idx.length - 1] + 1 + EDGE)
+    var near = byAdp.slice(POOLS[rd - 1][0] - 1, POOLS[rd - 1][1])
       .map(function (r) { return r.pace; }).filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; });
     var med = near.length ? (near[(near.length - 1) >> 1] + near[near.length >> 1]) / 2 : null, best = near[near.length - 1];
     idx.forEach(function (i) {
