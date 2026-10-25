@@ -243,7 +243,7 @@ function boxRows(summ) {
         if (e) x[e] = String(v);
       });
       var nm = normName(a.athlete.displayName);
-      out.push({ key: ESPN_ALIASES[nm] || nm, team: team, s: s, x: x, out: !!a.didNotPlay, dnp: !!a.didNotPlay || !s.min });
+      out.push({ key: ESPN_ALIASES[nm] || nm, team: team, s: s, x: x, out: !!a.didNotPlay, has: (a.stats || []).length > 0 });
     });
   });
   return out;
@@ -381,7 +381,7 @@ function detailHtml(r) {
   var g = r.g, p = r.p, bits = [];
   var game = g ? (g.away + " at " + g.home + " · " + (g.state === "pre" ? "tips " + pt(new Date(g.date), { hour: "numeric", minute: "2-digit" }) + " PT" : g.label)) : "No game found for " + (p.team || "his team");
   if (p.injury) game += " · listed " + p.injury;
-  if (r.b && !r.b.dnp) {
+  if (r.fp != null) {
     var s = r.b.s, x = r.b.x;
     bits.push("<b>" + s.pts + " pts</b>" + (x.fg ? " · " + esc(x.fg) + " FG" : "") + (x.fg3 ? " · " + esc(x.fg3) + " 3PT" : "") +
               (x.ft ? " · " + esc(x.ft) + " FT" : "") + " · " + s.min + " min");
@@ -389,7 +389,7 @@ function detailHtml(r) {
               s.stl + " stl · " + s.blk + " blk · " + s.tov + " TO");
   } else {
     bits.push(esc(game));
-    if (g && g.state !== "pre") bits.push((r.b && r.b.out) || g.state === "post" ? "Did not play" : "Hasn't checked in yet");
+    if (g && g.state !== "pre") bits.push((r.b && r.b.out) || g.state === "post" ? "Did not play" : "No box score line for him yet");
   }
   if (r.pace != null && r.med != null && !(r.b && r.b.out)) {
     var d = Math.round(r.pace) - Math.round(r.med);
@@ -433,7 +433,9 @@ function render() {
   var rows = sl.players.map(function (p) {
     var k = normName(p.first_name + " " + p.last_name);
     var b = byKey[k + "|" + p.team] || byName[k] || null, g = state.games[p.team] || null;
-    var fp = b && !b.dnp ? udPoints(b.s) : null;
+    // Points once he has a box line: in a live game even before his first full minute (ESPN
+    // counts whole minutes, so everyone reads 0 at the tip); in a final one only if he played.
+    var fp = b && !b.out && b.has && (b.s.min > 0 || (g && g.state === "in")) ? udPoints(b.s) : null;
     return { p: p, b: b, g: g, fp: fp, f: share ? share(p) : 0 };
   });
   grade(rows);
@@ -481,7 +483,8 @@ function render() {
     game.textContent = r.g ? r.g.label : "–";
     el.appendChild(game);
     var fp = document.createElement("span");
-    var dnp = r.g && r.g.state !== "pre" && state.box[r.g.id] && (!r.b || r.b.dnp);
+    // DNP only when ESPN says so, or his game is over without a minute from him.
+    var dnp = r.g && r.g.state !== "pre" && ((r.b && r.b.out) || (r.g.state === "post" && state.box[r.g.id] && (!r.b || !r.b.s.min)));
     fp.className = "fp" + (r.fp == null ? " none" : "");
     fp.textContent = r.fp != null ? r.fp.toFixed(1) : dnp ? "DNP" : "–";
     el.appendChild(fp);
