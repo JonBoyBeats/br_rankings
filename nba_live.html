@@ -434,12 +434,12 @@ function render() {
   });
   grade(rows);
   if (ex && state.mine) rows = rows.filter(function (r) { return r.f; });
-  /* By ADP through the last pick of the draft; past it nobody's being drafted for a slot,
-     so the rest sort by points. */
+  /* By ADP up to the last pick of the draft. Underdog parks everyone nobody is drafting at
+     exactly that ADP (36.0), so from it on there's no order to keep: they sort by points. */
   var last = TEAMS * ROUNDS;
   function byFp(a, b) { return (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp) || a.p.adp - b.p.adp; }
   rows.sort(state.sort === "fp" ? byFp : function (a, b) {
-    var ta = a.p.adp > last, tb = b.p.adp > last;
+    var ta = a.p.adp >= last, tb = b.p.adp >= last;
     return ta !== tb ? (ta ? 1 : -1) : ta ? byFp(a, b) : a.p.adp - b.p.adp;
   });
 
