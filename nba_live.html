@@ -133,9 +133,12 @@ var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
    snake, so a player's round is his ADP rank in blocks of TEAMS, everyone past the fifth in
    the last. Who actually goes in a round loosens as the draft goes on: the top 7 or so in the
    first, 8 in the second, 9 in the third, 10 in the fourth and fifth, the rest in the sixth.
-   POOLS are those groups, by ADP rank, and a player is set against his round's. Pace is his
-   points so far plus his usual output (the nightly box-score file) for the share of the game
-   left; from GOOD_FROM points over the group's median the row turns green, deepest for its best. */
+   POOLS are those groups, by ADP rank, and a player is set against his round's. The green is
+   on what he's scored: his points so far against what the group usually scores by this point
+   of the game (its median usual output, from the nightly box-score file, times the share
+   played), so a higher projection alone never turns a row green at the tip. From GOOD_FROM
+   points ahead the row turns green, deepest for the group's furthest ahead. Pace (points so
+   far plus his own usual output for the rest) is still shown in the tap-open line. */
 var TEAMS = 6, ROUNDS = 6, GOOD_FROM = 3;
 var POOLS = [[1, 7], [6, 13], [12, 20], [17, 26], [23, 32], [29, Infinity]];   // ADP ranks, first and last
 function roundOf(rank) { return Math.min(ROUNDS, Math.ceil(rank / TEAMS)); }
@@ -364,13 +367,17 @@ function grade(rows) {
     var idx = [];
     byAdp.forEach(function (r, i) { if (r.round === rd) idx.push(i); });
     if (!idx.length) continue;
-    var near = byAdp.slice(POOLS[rd - 1][0] - 1, POOLS[rd - 1][1])
-      .map(function (r) { return r.pace; }).filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; });
-    var med = near.length ? (near[(near.length - 1) >> 1] + near[near.length >> 1]) / 2 : null, best = near[near.length - 1];
+    var pool = byAdp.slice(POOLS[rd - 1][0] - 1, POOLS[rd - 1][1]);
+    function mid(v) { v = v.filter(function (x) { return x != null; }).sort(function (a, b) { return a - b; });
+                      return v.length ? (v[(v.length - 1) >> 1] + v[v.length >> 1]) / 2 : null; }
+    var med = mid(pool.map(function (r) { return r.pace; })), best = Math.max.apply(null, pool.map(function (r) { return r.pace || 0; }));
+    var usual = mid(pool.map(function (r) { return state.proj[normName(r.p.first_name + " " + r.p.last_name)]; }));
+    function ahead(r) { return usual != null && r.played > 0 && r.fp != null && !(r.b && r.b.out) ? r.fp - r.played * usual : null; }
+    var top = Math.max.apply(null, pool.map(function (r) { return ahead(r) || 0; }));
     idx.forEach(function (i) {
-      var r = byAdp[i], over = r.pace != null && med != null && r.played > 0 ? r.pace - med : 0;
-      r.med = med; r.best = best;
-      r.good = over >= GOOD_FROM ? Math.max(0.05, over / (best - med)) : 0;
+      var r = byAdp[i], a = ahead(r);
+      r.med = med; r.best = best; r.ahead = a; r.usualNow = usual == null ? null : r.played * usual;
+      r.good = a != null && a >= GOOD_FROM ? Math.max(0.05, a / top) : 0;
     });
   }
 }
@@ -391,11 +398,10 @@ function detailHtml(r) {
     bits.push(esc(game));
     if (g && g.state !== "pre") bits.push((r.b && r.b.out) || g.state === "post" ? "Did not play" : "No box score line for him yet");
   }
-  if (r.pace != null && r.med != null && !(r.b && r.b.out)) {
-    var d = Math.round(r.pace) - Math.round(r.med);
+  if (r.pace != null && !(r.b && r.b.out)) {
+    var sign = function (v) { return (v > 0 ? "+" : v < 0 ? "\u2212" : "\u00b1") + Math.abs(v).toFixed(1); };
     bits.push((r.played >= 1 ? "Finished with " : r.played > 0 ? "On pace for " : "Usually ") + "<b>" + Math.round(r.pace) + "</b>" +
-              " · round " + r.round + " best " + Math.round(r.best) + ", median " + Math.round(r.med) +
-              " (" + (d > 0 ? "+" : d < 0 ? "\u2212" : "\u00b1") + Math.abs(d) + ")");
+              (r.ahead != null ? " · round " + r.round + " usually has " + r.usualNow.toFixed(1) + " by now (" + sign(r.ahead) + ")" : ""));
   }
   return bits.join("<br>");
 }
@@ -462,7 +468,7 @@ function render() {
     if (r.good) {
       el.classList.add("good");
       el.style.setProperty("--good", (0.10 + 0.55 * r.good).toFixed(2));
-      el.title = "On pace for " + Math.round(r.pace) + "; round " + r.round + " best " + Math.round(r.best) + ", median " + Math.round(r.med);
+      el.title = r.fp.toFixed(1) + " so far; his round usually has " + r.usualNow.toFixed(1) + " by now (" + (r.ahead >= 0 ? "+" : "") + r.ahead.toFixed(1) + ")";
     }
     var adp = document.createElement("span"); adp.className = "adp r"; adp.textContent = p.adp.toFixed(1); el.appendChild(adp);
     var chip = document.createElement("span"); chip.className = "expo";
@@ -500,7 +506,7 @@ function render() {
 
   var live = Object.keys(state.games).some(function (t) { return state.games[t].state === "in"; });
   var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" +
-            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · green: ahead in his round, darkest for the round's best" : "Fetching ESPN…";
+            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · green: scoring ahead of his round's usual so far, darkest for the round's furthest ahead" : "Fetching ESPN…";
   if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
   else setStatus(msg);
 }
