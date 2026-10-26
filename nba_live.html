@@ -144,10 +144,15 @@ var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
    35.7 for ranks 29-36, so any late pick having a normal night turned green). The green is
    on what he's scored: his points so far against what the group usually scores by this point
    of the game (its median usual output, from the nightly box-score file, times the share
-   played), so a higher projection alone never turns a row green at the tip. Each round's
-   leader on that count is dark green, and the rest are shaded by how far behind him they are,
-   fading to nothing at CLOSE points: four players within 2 of the leader look alike, and a
-   leader more than CLOSE ahead of everyone is his round's only green.
+   played), so a higher projection alone never turns a row green at the tip. To set players
+   against each other, each one whose game has started is tracking his points so far plus
+   the round's usual for the rest of his game; one whose game hasn't started is held at his
+   own usual output, so early in the night the first games' players are measured against
+   the projections of those still to play, and can't be green until they're on track to
+   beat them. Each round's leader on that count is dark green (no one, while it's a player
+   yet to start), and the rest are shaded by how far behind him they are, fading to nothing
+   at CLOSE points: four players within 2 of the leader look alike, and a leader more than
+   CLOSE ahead of everyone is his round's only green.
    Pace (points so far plus his own usual output for the rest) is still shown in the
    tap-open line. */
 var TEAMS = 6, ROUNDS = 6, CLOSE = 10;
@@ -386,12 +391,23 @@ function grade(rows) {
     var med = mid(pool.map(function (r) { return r.pace; })), best = Math.max.apply(null, pool.map(function (r) { return r.pace || 0; }));
     var usual = mid(pool.map(function (r) { return state.proj[normName(r.p.first_name + " " + r.p.last_name)]; }));
     function ahead(r) { return usual != null && r.played > 0 && r.fp != null && !(r.b && r.b.out) ? r.fp - r.played * usual : null; }
-    var mine = idx.map(function (i) { return ahead(byAdp[i]); }).filter(function (a) { return a != null; });
-    var lead = mine.length ? Math.max.apply(null, mine) : null;
+    function track(r) {
+      if (r.b && r.b.out) return null;
+      var a = ahead(r);
+      if (a != null) return a + usual;                       // started: points so far + the round's usual for the rest
+      return r.played > 0 ? null : state.proj[normName(r.p.first_name + " " + r.p.last_name)];   // not started: his usual
+    }
+    var lead = null;
     idx.forEach(function (i) {
-      var r = byAdp[i], a = ahead(r);
+      var r = byAdp[i], t = track(r);
+      r.track = t;
+      if (t != null && (lead == null || t > lead.track)) lead = r;
+    });
+    idx.forEach(function (i) {
+      var r = byAdp[i], a = ahead(r), gap = lead ? lead.track - r.track : null;
       r.med = med; r.best = best; r.ahead = a; r.usualNow = usual == null ? null : r.played * usual;
-      r.good = a == null ? 0 : lead - a < CLOSE ? 1 - (lead - a) / CLOSE : 0;
+      r.lead = lead; r.gap = gap;
+      r.good = a == null ? 0 : gap <= 0 ? 1 : gap < CLOSE ? 1 - gap / CLOSE : 0;   // only a started player turns green
     });
   }
 }
@@ -485,7 +501,10 @@ function render() {
       el.classList.add("good");
       if (r.good === 1) el.classList.add("lead");
       el.style.setProperty("--good", (0.10 + 0.55 * r.good).toFixed(2));
-      el.title = r.fp.toFixed(1) + " so far; his round usually has " + r.usualNow.toFixed(1) + " by now (" + (r.ahead >= 0 ? "+" : "") + r.ahead.toFixed(1) + ")";
+      el.title = r.fp.toFixed(1) + " so far, tracking " + r.track.toFixed(1) + (r.gap > 0
+        ? ", " + r.gap.toFixed(1) + " behind his round's best: " + r.lead.p.last_name + " (" + r.lead.track.toFixed(1) +
+          (r.lead.played > 0 ? ")" : ", his usual: not started)")
+        : ", his round's best");
     }
     var adp = document.createElement("span"); adp.className = "adp r"; adp.textContent = p.adp.toFixed(1); el.appendChild(adp);
     var chip = document.createElement("span"); chip.className = "expo";
@@ -523,7 +542,8 @@ function render() {
 
   var live = Object.keys(state.games).some(function (t) { return state.games[t].state === "in"; });
   var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" +
-            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · dark green: his round's leader against its usual so far; the rest greener the closer they are, none " + CLOSE + "+ points back" : "Fetching ESPN…";
+            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · dark green: his round's leader so far (players yet to start count at their usual" +
+            (state.projFrom ? ", ETR's median from " + state.projFrom : "") + "); the rest greener the closer they are, none " + CLOSE + "+ points back" : "Fetching ESPN…";
   if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
   else setStatus(msg);
 }
@@ -560,12 +580,21 @@ document.addEventListener("visibilitychange", function () {
   if (!document.hidden && state.pulledAt && Date.now() - state.pulledAt > EVERY * 500) pull();
 });
 
+/* A player's usual is ETR's median for tonight when today's ETR file was uploaded on the board
+   (this browser), not its 75/25 ceiling blend, which is for ranking upside; otherwise his
+   box-score usual (a few games in, Jokic's runs about 10 points over ETR's). */
+function etrUsual() {
+  var cur = (load("brr:proj:nba", null) || {}).current, day = { dateStyle: "short" };
+  if (!cur || !cur.entries || pt(new Date(cur.at), day) !== pt(new Date(), day)) return;
+  cur.entries.forEach(function (e) { if (typeof e.median === "number") state.proj[e.norm] = e.median; });
+  state.projFrom = cur.file;
+}
+
 (async function boot() {
   try { state.slates = await loadSlates(); } catch (e) { setStatus("Couldn't reach the ADP mirror: " + e.message, true); return; }
   mirror("nba_morning.json").then(function (d) {
     (d.players || []).forEach(function (r) { var k = normName(r.name); state.proj[ESPN_ALIASES[k] || k] = r.fp; });
-    render();
-  }).catch(function () {});
+  }).catch(function () {}).then(function () { etrUsual(); render(); });
   state.posted = await fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { return d.slates || {}; }).catch(function () { return {}; });
   fillSlates();
