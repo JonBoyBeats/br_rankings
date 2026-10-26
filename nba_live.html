@@ -137,15 +137,18 @@ var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
 /* Green rows: the best of each round so far. A draft is TEAMS players x ROUNDS rounds of a
    snake, so a player's round is his ADP rank in blocks of TEAMS, everyone past the fifth in
    the last. Who actually goes in a round loosens as the draft goes on: the top 7 or so in the
-   first, 8 in the second, 9 in the third, 10 in the fourth and fifth, the rest in the sixth.
-   POOLS are those groups, by ADP rank, and a player is set against his round's. The green is
+   first, 8 in the second, 9 in the third, 10 in the fourth and fifth, 12 in the sixth.
+   POOLS are those groups, by ADP rank, and a player is set against his round's; everyone
+   past the sixth's group (the undrafted pile) is held to the sixth round's bar, since a
+   pool of all of them would set it by bench players (Oct 26: 27.9 usual points against
+   35.7 for ranks 29-36, so any late pick having a normal night turned green). The green is
    on what he's scored: his points so far against what the group usually scores by this point
    of the game (its median usual output, from the nightly box-score file, times the share
    played), so a higher projection alone never turns a row green at the tip. From GOOD_FROM
    points ahead the row turns green, deepest for the group's furthest ahead. Pace (points so
    far plus his own usual output for the rest) is still shown in the tap-open line. */
 var TEAMS = 6, ROUNDS = 6, GOOD_FROM = 3;
-var POOLS = [[1, 7], [6, 13], [12, 20], [17, 26], [23, 32], [29, Infinity]];   // ADP ranks, first and last
+var POOLS = [[1, 7], [6, 13], [12, 20], [17, 26], [23, 32], [29, 40]];   // ADP ranks, first and last
 function roundOf(rank) { return Math.min(ROUNDS, Math.ceil(rank / TEAMS)); }
 var EVERY = 60;   // seconds between pulls while the page is open; ESPN's box scores move about this often
 // ESPN's abbreviations -> the board's (the nightly job's map)
@@ -380,7 +383,7 @@ function grade(rows) {
     var med = mid(pool.map(function (r) { return r.pace; })), best = Math.max.apply(null, pool.map(function (r) { return r.pace || 0; }));
     var usual = mid(pool.map(function (r) { return state.proj[normName(r.p.first_name + " " + r.p.last_name)]; }));
     function ahead(r) { return usual != null && r.played > 0 && r.fp != null && !(r.b && r.b.out) ? r.fp - r.played * usual : null; }
-    var top = Math.max.apply(null, pool.map(function (r) { return ahead(r) || 0; }));
+    var top = Math.max.apply(null, pool.concat(idx.map(function (i) { return byAdp[i]; })).map(function (r) { return ahead(r) || 0; }));
     idx.forEach(function (i) {
       var r = byAdp[i], a = ahead(r);
       r.med = med; r.best = best; r.ahead = a; r.usualNow = usual == null ? null : r.played * usual;
