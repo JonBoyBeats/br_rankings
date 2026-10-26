@@ -24,6 +24,7 @@
     --accent: #ffffff;
     --accent-ink: #080b11;
     --up: #4dc48d;
+    --mine: #5aa9ff;    /* NBA: what your out marks moved a teammate */
     /* Workload score tiers, the same four as the Analysis page. */
     --t3: #13703a;  --t3-ink: #ffffff;
     --t2: #58c07a;  --t2-ink: #06180d;
@@ -443,6 +444,7 @@
   }
   .pdelta.up { color: var(--up); }
   .pdelta.down { color: var(--down); }
+  .pdelta.mine { color: var(--mine); }
 
   .who { min-width: 0; display: flex; align-items: baseline; gap: 8px; }
   .name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1616,7 +1618,7 @@ function nbaIndex(doc) {
  * of his number is box scores: 0 for ETR alone, 1 for box scores alone.
  */
 function nbaLineupBump(r, idx, out, boxWeight) {
-  var mates = (idx.core[r.team] || []).slice(), add = 0, notes = [];
+  var mates = (idx.core[r.team] || []).slice(), add = 0, mine = 0, notes = [];
   Object.keys(out).forEach(function (k) {
     var x = idx.byKey[k];
     // only players who've played for his team this season: anyone else's absence is already in the box scores
@@ -1628,10 +1630,11 @@ function nbaLineupBump(r, idx, out, boxWeight) {
     var d = out[normName(x.name)] ? b * (1 - seen) : -b * seen;
     if (Math.abs(d) < 0.05) return;
     add += d;
+    if (out[normName(x.name)] === "you") mine += d;
     // his own split can say he does worse without a teammate, so an out can take points too
     notes.push(x.name + (out[normName(x.name)] ? " out " : " back ") + (d > 0 ? "+" : "\u2212") + Math.abs(d).toFixed(1));
   });
-  return { add: add, notes: notes };
+  return { add: add, mine: mine, notes: notes };
 }
 
 /** His last NBA_AVG_GAMES ETR days, each with that day's missing core teammates taken back out. */
@@ -1718,7 +1721,7 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
     }
     var lb = r ? nbaLineupBump(r, idx, out, boxWeight) : { add: 0, notes: [] };
     values[p.player_id] = base + lb.add;
-    parts[p.player_id] = Object.assign({}, part, { lineup: lb.notes, mtch: mt || null, line: line == null ? null : line,
+    parts[p.player_id] = Object.assign({}, part, { lineup: lb.notes, mine: lb.mine || 0, mtch: mt || null, line: line == null ? null : line,
                                                    blow: etrToday ? 0 : blow });
   });
   return { values: values, parts: parts, out: out, outPids: outPids, etrToday: etrToday,
@@ -3897,6 +3900,14 @@ function render() {
                      meta.format + " file, so part of this is the change of source."
                    : "");
     }
+    // a teammate you marked out: the slot shows what that moved him, in blue, and the upload change goes to the hover
+    var mineAdd = (state.projParts[p.player_id] || {}).mine;
+    if (v != null && mineAdd && Math.abs(mineAdd) >= 0.05) {
+      var upChange = pd.textContent ? ". Since the previous upload: " + pd.textContent + (pd.title ? " (" + pd.title + ")" : "") : "";
+      pd.className = "pdelta mine";
+      pd.textContent = (mineAdd > 0 ? "+" : "\u2212") + Math.abs(mineAdd).toFixed(1);
+      pd.title = "The players you marked out moved him " + pd.textContent + upChange;
+    }
     var pval = document.createElement("span");
     pval.textContent = v == null ? "–" : String(Math.round(v));       // whole points: decimals only look like an edge
     var parts = state.projParts[p.player_id];
@@ -5874,7 +5885,9 @@ function brrSelfTest() {
   var lbW = nbaLineupBump(Object.assign({}, rW, { wo: { x: [-6, 0] } }), { core: { T: [xS] }, byKey: {} }, (function () { var o = {}; o[normName(xS.name)] = "you"; return o; })(), 0);
   ok("his own split this season moves the bump by its weight, and a negative one reads as an out",
      Math.abs(nbaBump(rW, xS) - 3.6) < 1e-9 && Math.abs(nbaBump(Object.assign({}, rW, { wo: {} }), xS) - 2.7) < 1e-9 &&
-     Math.abs(lbW.add + 6) < 1e-9 && lbW.notes[0] === "Star Guard out \u22126.0");
+     Math.abs(lbW.add + 6) < 1e-9 && lbW.notes[0] === "Star Guard out \u22126.0" && Math.abs(lbW.mine + 6) < 1e-9);
+  var lbU = nbaLineupBump(Object.assign({}, rW, { wo: {} }), { core: { T: [xS] }, byKey: {} }, (function () { var o = {}; o[normName(xS.name)] = "ud"; return o; })(), 0);
+  ok("only the outs you mark count toward the blue marker", Math.abs(lbU.add - 2.7) < 1e-9 && lbU.mine === 0);
   var longH = {};
   for (var dd = 1; dd <= 12; dd++) longH["2026-11-" + (dd < 10 ? "0" : "") + dd] = { a: [dd, null] };
   ok("the ETR average runs over his last " + NBA_AVG_GAMES + " days, from the first",
