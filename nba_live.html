@@ -50,7 +50,10 @@
   button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .status { font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding-bottom: 10px; }
-  .status.bad { color: var(--bad); }
+  .status .bad { color: var(--bad); }
+  .fold { font-size: 11px; height: 22px; padding: 0 8px; margin-right: 8px; vertical-align: middle; }
+  html.folded .controls, html.folded .legend { display: none; }
+  html.folded .status { padding-top: 10px; }
 
   .head, .row { display: grid; grid-template-columns: 44px 34px minmax(0, 1fr) 74px 64px; gap: 10px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; }
@@ -127,7 +130,7 @@
         <button type="button" id="refresh">Refresh</button>
       </div>
     </div>
-    <div class="status" id="status">Loading&hellip;</div>
+    <div class="status"><button type="button" id="fold" class="fold" aria-expanded="true" title="Hide or show the controls and the colour key">Hide</button><span id="status">Loading&hellip;</span><span id="legend" class="legend"></span></div>
   </div>
   <div class="list" id="list"></div>
 </div>
@@ -360,7 +363,16 @@ function expoColor(f) {
 }
 
 // ---------------------------------------------------------------- drawing
-function setStatus(msg, bad) { var el = $("status"); el.textContent = msg; el.classList.toggle("bad", !!bad); }
+function setStatus(msg, bad, legend) {
+  var el = $("status"); el.textContent = msg; el.classList.toggle("bad", !!bad);
+  $("legend").textContent = legend || "";
+}
+function setFolded(on) {
+  document.documentElement.classList.toggle("folded", on);
+  $("fold").textContent = on ? "Show" : "Hide";
+  $("fold").setAttribute("aria-expanded", String(!on));
+  save("brr:live:folded", on);
+}
 
 /** How much of the game is played, 0 to 1; overtime counts as done. */
 function played(g) {
@@ -541,11 +553,12 @@ function render() {
   if (!rows.length) host.insertAdjacentHTML("beforeend", '<div class="empty">None of your drafted players are on this slate.</div>');
 
   var live = Object.keys(state.games).some(function (t) { return state.games[t].state === "in"; });
-  var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" +
-            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · dark green: his round's leader so far (players yet to start count at their usual" +
-            (state.projFrom ? ", ETR's median from " + state.projFrom : "") + "); the rest greener the closer they are, none " + CLOSE + "+ points back" : "Fetching ESPN…";
+  var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" : "Fetching ESPN…";
+  var legend = state.pulledAt ? (live ? " · refreshes every " + EVERY + "s while open" : "") +
+    " · dark green: his round's leader so far (players yet to start count at their usual" +
+    (state.projFrom ? ", ETR's median from today's file" : "") + "); the rest greener the closer they are, none " + CLOSE + "+ points back" : "";
   if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
-  else setStatus(msg);
+  else setStatus(msg, false, legend);
 }
 
 // ---------------------------------------------------------------- wiring
@@ -563,6 +576,8 @@ $("tail").addEventListener("change", function () {
 });
 $("mine").addEventListener("click", function () { state.mine = !state.mine; render(); });
 $("refresh").addEventListener("click", pull);
+$("fold").addEventListener("click", function () { setFolded(!document.documentElement.classList.contains("folded")); });
+setFolded(!!load("brr:live:folded", false));
 $("upload").addEventListener("click", function () { $("file").click(); });
 $("file").addEventListener("change", function () {
   var f = this.files[0];
