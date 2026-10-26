@@ -1734,6 +1734,16 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
   var cond = etrToday ? nbaConditionalEntries(store, pacificDay(slate.cutoff), out) : { entries: [], covered: {}, used: [] };
   var joined = etrToday ? joinProjections(players, cond.entries, nameMap) : null, etrTeams = {};
   if (etrToday) cond.entries.forEach(function (e) { if (e.team) etrTeams[e.team] = 1; });
+  if (etrToday) {
+    // someone you marked out whom ETR's file already leaves off (his team is in it, he isn't)
+    // is out in ETR's numbers already, so his absence isn't bumped a second time
+    var inFile = {};
+    cond.entries.forEach(function (e) { inFile[e.norm] = 1; });
+    Object.keys(out).forEach(function (k) {
+      var x = idx.byKey[k];
+      if (x && x.team && etrTeams[x.team] && !inFile[k] && !cond.covered[k]) cond.covered[k] = "ETR";
+    });
+  }
   var values = {}, parts = {}, outPids = {}, byEtr = 0, byBox = 0, scale = nbaBoxScale(store.history || {}, idx);
   var day = pacificDay(slate.cutoff);
   players.forEach(function (p) {
@@ -5952,6 +5962,12 @@ function brrSelfTest() {
   var ev = nbaValues(etrSlate.players, etrSlate, ts, nbaIndex(null), [], {});
   ok("with ETR's file in, a player it leaves off while it has his team is out; a team it doesn't cover says nothing",
      ev.outPids.K === "etr" && ev.values.C != null && ev.values.L != null && !ev.outPids.N && ev.values.N == null);
+  var tIdx = nbaIndex({ players: [
+    { id: "k", name: "Kawhi Leonard", team: "TOR", pos: "F", min: 34, fp: 45, core: true, games: 5, out: {} },
+    { id: "c", name: "Collin Murray-Boyles", team: "TOR", pos: "F", min: 22, fp: 20, core: true, games: 5, out: {} }] });
+  var tv0 = nbaValues(etrSlate.players, etrSlate, ts, tIdx, [], {}), tv1 = nbaValues(etrSlate.players, etrSlate, ts, tIdx, ["kawhi leonard"], {});
+  ok("marking out a player ETR's file already leaves off adds nothing to his teammates",
+     tv1.outPids.K === "you" && tv0.values.C != null && Math.abs(tv1.values.C - tv0.values.C) < 1e-9);
   ok("team codes read the same from any spelling", nbaTeamCode(" sa ") === "SAS" && nbaTeamCode("GSW") === "GSW" && nbaTeamCode("") === null);
   ns = addNbaUpload(ns, nbaUp("next.csv", "2026-10-21T17:00:00Z", [["a", 14, 24]]));
   ok("a new day rotates and keeps both days on file",
