@@ -145,13 +145,12 @@ var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
    on what he's scored: his points so far against what the group usually scores by this point
    of the game (its median usual output, from the nightly box-score file, times the share
    played), so a higher projection alone never turns a row green at the tip. Each round's
-   leader on that count is dark green, and the rest are shaded by how close they are to him
-   relative to his score: each one's points so far plus the round's usual for the rest of his
-   game, over the leader's. At 1 he's as green as the leader, at CLOSE or below not green, so
-   four players within 2 of a 40-point leader look alike and one 8 behind isn't green.
+   leader on that count is dark green, and the rest are shaded by how far behind him they are,
+   fading to nothing at CLOSE points: four players within 2 of the leader look alike, and a
+   leader more than CLOSE ahead of everyone is his round's only green.
    Pace (points so far plus his own usual output for the rest) is still shown in the
    tap-open line. */
-var TEAMS = 6, ROUNDS = 6, CLOSE = 0.8;
+var TEAMS = 6, ROUNDS = 6, CLOSE = 10;
 var POOLS = [[1, 7], [6, 13], [12, 20], [17, 26], [23, 32], [29, 40]];   // ADP ranks, first and last
 function roundOf(rank) { return Math.min(ROUNDS, Math.ceil(rank / TEAMS)); }
 var EVERY = 60;   // seconds between pulls while the page is open; ESPN's box scores move about this often
@@ -387,13 +386,12 @@ function grade(rows) {
     var med = mid(pool.map(function (r) { return r.pace; })), best = Math.max.apply(null, pool.map(function (r) { return r.pace || 0; }));
     var usual = mid(pool.map(function (r) { return state.proj[normName(r.p.first_name + " " + r.p.last_name)]; }));
     function ahead(r) { return usual != null && r.played > 0 && r.fp != null && !(r.b && r.b.out) ? r.fp - r.played * usual : null; }
-    // ahead + usual: his points so far plus the round's usual for the rest of his game
     var mine = idx.map(function (i) { return ahead(byAdp[i]); }).filter(function (a) { return a != null; });
-    var lead = mine.length ? Math.max.apply(null, mine) + usual : null;
+    var lead = mine.length ? Math.max.apply(null, mine) : null;
     idx.forEach(function (i) {
-      var r = byAdp[i], a = ahead(r), rel = a == null || !(lead > 0) ? 0 : (a + usual) / lead;
+      var r = byAdp[i], a = ahead(r);
       r.med = med; r.best = best; r.ahead = a; r.usualNow = usual == null ? null : r.played * usual;
-      r.good = rel >= 1 ? 1 : rel > CLOSE ? (rel - CLOSE) / (1 - CLOSE) : 0;
+      r.good = a == null ? 0 : lead - a < CLOSE ? 1 - (lead - a) / CLOSE : 0;
     });
   }
 }
@@ -525,7 +523,7 @@ function render() {
 
   var live = Object.keys(state.games).some(function (t) { return state.games[t].state === "in"; });
   var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" +
-            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · dark green: his round's leader against its usual so far; the closer the rest are to him, the greener" : "Fetching ESPN…";
+            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · dark green: his round's leader against its usual so far; the rest greener the closer they are, none " + CLOSE + "+ points back" : "Fetching ESPN…";
   if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
   else setStatus(msg);
 }
