@@ -1747,11 +1747,13 @@ function putSavedSlate(doc, label, entry) {
 
 function playerCount(n) { return n + (n === 1 ? " player" : " players"); }
 
-function savedEntry(order, slateId, device, nowIso, windows, cut, tiers) {
+function savedEntry(order, slateId, device, nowIso, windows, cut, tiers, outs) {
   var e = { order: order.slice(), slate_id: slateId, device: device,
             saved_at: nowIso, count: order.length };
   if (windows && Object.keys(windows).length) e.windows = windows;
   if (tiers && Array.isArray(tiers.starts)) e.tiers = { on: !!tiers.on, starts: tiers.starts.slice() };
+  // NBA: the players you've marked out ride along (an empty list too, so clearing them syncs)
+  if (outs && Array.isArray(outs.list)) e.outs = { list: outs.list.slice(), from: Object.assign({}, outs.from || {}) };
   var at = clampCut(cut, order.length);
   if (at != null) e.cut = at;
   return e;
@@ -4589,7 +4591,7 @@ async function syncSave() {
       return;
     }
     var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString(),
-                           load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null));
+                           load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label));
     var files = {};
     files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
 
@@ -4652,6 +4654,12 @@ async function applyEntry(entry) {
     ranks += " Its replacement ranks came with it.";
   }
   if (entry.tiers && Array.isArray(entry.tiers.starts)) save(K.tiers(state.slate.label), entry.tiers);
+  if (entry.outs && Array.isArray(entry.outs.list)) {
+    save(K.out(state.slate.label), entry.outs.list);
+    save(K.outFrom(state.slate.label), entry.outs.from || {});
+    if (SPORT_MODE === "nba") applyStoredProjections();      // their teammates' Proj moves with them
+    if (entry.outs.list.length) ranks += " Its out marks came with it.";
+  }
   return { rec: rec, ranks: ranks };
 }
 
@@ -4747,14 +4755,20 @@ function isoMs(iso) { var t = Date.parse(iso); return isFinite(t) ? t : 0; }
 function rankedSig(order, cut) { return JSON.stringify(cut == null ? [order, null] : [order.slice(0, cut), cut]); }
 function boardSig() {
   return JSON.stringify([state.order, state.cut == null ? null : state.cut, load(K.vorpWin(state.slate.label), null) || null,
-                         load(K.tiers(state.slate.label), null) || null]);
+                         load(K.tiers(state.slate.label), null) || null, load(K.out(state.slate.label), null) || null]);
+}
+
+/** NBA: your out marks for a saved board, or null off the NBA page. */
+function savedOuts(label) {
+  return SPORT_MODE === "nba" ? { list: load(K.out(label), []), from: load(K.outFrom(label), {}) } : null;
 }
 
 /** Every save funnels through here: a board or projection write schedules a sync. */
 function markLocal(key) {
   if (syncApplying || typeof state === "undefined" || !state.slate) return;
   var label = state.slate.label;
-  if (key === K.order(label) || key === K.cut(label) || key === K.added(label) || key === K.vorpWin(label) || key === K.tiers(label)) {
+  if (key === K.order(label) || key === K.cut(label) || key === K.added(label) || key === K.vorpWin(label) || key === K.tiers(label) ||
+      key === K.out(label) || key === K.outFrom(label)) {
     rawSave(K.mod(label), new Date().toISOString());
     scheduleSync(2000);
   } else if (key === K.proj(state.slate.sport)) {
@@ -4815,7 +4829,7 @@ async function autoSync(quiet) {
       msg = "Synced your board from " + remote.device + " (saved " + describeAge(remote.saved_at, Date.now()) + ").";
     } else if (push) {
       entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
-                         load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null));
+                         load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label));
       files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
     }
     } catch (be) { boardErr = be; take = false; entry = null; files = {}; msg = ""; }
@@ -5905,6 +5919,9 @@ function brrSelfTest() {
      nbaTierOf(44, [9, 16, 23, 30, 38], 44) === 6 && nbaTierOf(45, [9, 16, 23, 30, 38], 44) === 0);
   ok("tiers ride a saved board", savedEntry(["a"], "s", "d", "t", null, 1, { on: true, starts: [2, 3, 4, 5, 6] }).tiers.starts.join() === "2,3,4,5,6" &&
      savedEntry(["a"], "s", "d", "t").tiers === undefined);
+  ok("out marks ride a saved board, an empty list too",
+     savedEntry(["a"], "s", "d", "t", null, 1, null, { list: ["kawhi leonard"], from: { "kawhi leonard": { rank: 3, above: true } } }).outs.list.join() === "kawhi leonard" &&
+     savedEntry(["a"], "s", "d", "t", null, 1, null, { list: [] }).outs.list.length === 0 && savedEntry(["a"], "s", "d", "t").outs === undefined);
   ok("the matchup note rounds to whole points and names the big parts",
      nbaMatchupNote([2.4, { p2: 1.3, ast: 0.6, reb: -0.2 }, "scoring wing"], false) ===
      "Matchup +2 (scoring wing vs this defense: twos +1, assists +1), in this number");
