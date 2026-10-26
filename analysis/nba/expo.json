@@ -128,6 +128,53 @@
     "VJ Edgecombe": 2,
     "Chet Holmgren": 1
    }
+  },
+  "f7daa293-5f7b-4978-a7c0-b8f16dc818f2": {
+   "label": "nba_mon_main",
+   "date": "2026-10-26",
+   "at": "2026-10-26T22:48:00Z",
+   "teams": 100,
+   "pct": {
+    "Pascal Siakam": 32,
+    "Brandon Miller": 30,
+    "Alperen Sengun": 28,
+    "Tyler Herro": 26,
+    "Lauri Markkanen": 25,
+    "Anthony Davis": 25,
+    "Ty Jerome": 25,
+    "Cameron Boozer": 24,
+    "Jaren Jackson Jr.": 23,
+    "Giannis Antetokounmpo": 22,
+    "Keyonte George": 21,
+    "Paul George": 19,
+    "Jayson Tatum": 19,
+    "Jamal Murray": 18,
+    "Ajay Mitchell": 18,
+    "Tyrese Haliburton": 17,
+    "Donovan Mitchell": 17,
+    "James Harden": 16,
+    "Naz Reid": 16,
+    "Cooper Flagg": 16,
+    "Jalen Johnson": 15,
+    "Trae Young": 14,
+    "LaMelo Ball": 14,
+    "Stephen Curry": 13,
+    "Nikola Jokic": 12,
+    "Shai Gilgeous-Alexander": 10,
+    "Evan Mobley": 10,
+    "Devin Booker": 9,
+    "Anthony Edwards": 8,
+    "Kevin Durant": 8,
+    "Bam Adebayo": 8,
+    "Jaime Jaquez Jr.": 8,
+    "Yaxel Lendeborg": 4,
+    "Dennis Schroder": 4,
+    "Kyrie Irving": 3,
+    "Derrick White": 2,
+    "Amen Thompson": 1,
+    "Rudy Gobert": 1,
+    "Zach Edey": 1
+   }
   }
  }
 }
