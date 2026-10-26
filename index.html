@@ -1486,6 +1486,10 @@ function pacificDay(iso) {
 }
 
 /** The store after an NBA upload: same-day files merge, a new day rotates, history keeps every day. */
+function projNumbers(gen) {
+  return gen.entries.map(function (e) { return e.norm + ":" + e.median + ":" + e.ceiling; }).sort().join("|");
+}
+
 function addNbaUpload(store, upload) {
   var cur = store.current, day = pacificDay(upload.at), next;
   if (cur && pacificDay(cur.at) === day) {
@@ -1500,7 +1504,15 @@ function addNbaUpload(store, upload) {
       file: files.join(" + "),
       entries: cur.entries.filter(function (e) { return !fresh[e.norm] && !(e.team && covered[e.team]); }).concat(upload.entries)
     });
-    next = { current: merged, previous: store.previous };
+    // The change marker compares against the board as it stood before this file. A player
+    // the earlier files didn't have (a late-slate file's first upload) keeps the generation
+    // before; the same numbers again don't rotate, which would wipe the comparison.
+    var had = {};
+    cur.entries.forEach(function (e) { had[e.norm] = 1; });
+    var older = ((store.previous && store.previous.entries) || []).filter(function (e) { return !had[e.norm]; });
+    next = { current: merged,
+             previous: projNumbers(merged) === projNumbers(cur) ? store.previous
+                     : Object.assign({}, cur, { entries: cur.entries.concat(older) }) };
   } else {
     next = rotateProjStore(store, upload);
   }
@@ -5819,9 +5831,17 @@ function brrSelfTest() {
   var ns = addNbaUpload(normalizeProjStore(null), nbaUp("main.csv", "2026-10-20T17:00:00Z", [["a", 10, 20], ["b", 30, 40]]));
   ns = addNbaUpload(ns, nbaUp("late.csv", "2026-10-21T01:00:00Z", [["b", 32, 42], ["c", 5, 9]]));
   ok("same Pacific day files merge, the later row winning",
-     ns.current.entries.length === 3 && ns.current.file === "main.csv + late.csv" && ns.previous === null &&
+     ns.current.entries.length === 3 && ns.current.file === "main.csv + late.csv" &&
      ns.current.entries.filter(function (e) { return e.norm === "b"; })[0].median === 32 &&
      Object.keys(ns.history).join() === "2026-10-20");
+  var ys = addNbaUpload(normalizeProjStore(null), nbaUp("y.csv", "2026-10-19T17:00:00Z", [["a", 8, 18], ["c", 4, 8]]));
+  ys = addNbaUpload(ys, nbaUp("am.csv", "2026-10-20T16:00:00Z", [["a", 10, 20], ["b", 30, 40]]));
+  ys = addNbaUpload(ys, nbaUp("pm.csv", "2026-10-20T20:00:00Z", [["a", 12, 22], ["b", 30, 40], ["c", 5, 9]]));
+  var ysPrev = {};
+  ys.previous.entries.forEach(function (e) { ysPrev[e.norm] = e.median; });
+  var ysAgain = addNbaUpload(ys, nbaUp("pm.csv", "2026-10-20T21:00:00Z", [["a", 12, 22], ["b", 30, 40], ["c", 5, 9]]));
+  ok("a same-day file's change marker counts from the file before it, yesterday's only for a player that file lacked",
+     ys.previous.file === "am.csv" && ysPrev.a === 10 && ysPrev.b === 30 && ysPrev.c === 4 && ysAgain.previous === ys.previous);
   function nbaUpT(file, at, rows) {
     var u = nbaUp(file, at, rows);
     u.entries.forEach(function (e, i) { e.team = rows[i][3]; });
