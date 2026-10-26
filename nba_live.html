@@ -283,7 +283,8 @@ async function pull() {
     var games = {}, todo = [];
     (board.events || []).forEach(function (e) {
       var g = { id: e.id, state: e.status.type.state, label: gameLabel(e), date: e.date, away: null, home: null,
-                period: e.status.period, clock: e.status.displayClock };
+                period: e.status.period, clock: e.status.displayClock,
+                status: e.status.type.name };
       ((e.competitions || [])[0] || {}).competitors.forEach(function (c) {
         var t = TEAM[c.team.abbreviation] || c.team.abbreviation;
         g[c.homeAway === "home" ? "home" : "away"] = t;
@@ -378,6 +379,9 @@ function setFolded(on) {
 function played(g) {
   if (!g || g.state === "pre") return 0;
   if (g.state === "post" || g.period > 4) return 1;
+  // at a break the clock can already read the next quarter's 12:00: go by the status
+  if (g.status === "STATUS_HALFTIME") return 0.5;
+  if (g.status === "STATUS_END_PERIOD") return Math.min(1, g.period / 4);
   var c = String(g.clock || "0").split(":"), left = c.length > 1 ? +c[0] + c[1] / 60 : c[0] / 60;
   return Math.min(1, ((g.period - 1) * 12 + 12 - (left || 0)) / 48);
 }
