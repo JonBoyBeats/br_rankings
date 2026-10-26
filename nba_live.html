@@ -43,6 +43,7 @@
   .field { display: flex; flex-direction: column; gap: 4px; }
   .grow { flex: 1 1 200px; min-width: 160px; }
   .field-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  #tail { font-family: var(--mono); font-size: 14px; color: var(--ink); background: var(--input); border: 1px solid var(--line-strong); border-radius: 7px; padding: 7px 9px; width: 76px; height: 34px; }
   select { font-family: var(--sans); font-size: 14px; color: var(--ink); background: var(--input); border: 1px solid var(--line-strong); border-radius: 7px; padding: 7px 9px; width: 100%; height: 34px; }
   button { font-family: var(--sans); font-size: 13.5px; font-weight: 500; border-radius: 7px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); padding: 7px 13px; height: 34px; cursor: pointer; }
   button:hover:not(:disabled) { border-color: var(--accent); }
@@ -109,6 +110,10 @@
           <option value="fp">UD points</option>
         </select>
       </label>
+      <label class="field" title="From this ADP down, players sort by points instead of ADP (36 is where Underdog parks everyone undrafted)">
+        <span class="field-label">Points from ADP</span>
+        <input type="number" id="tail" step="0.1" min="1" max="36" inputmode="decimal">
+      </label>
       <div class="field">
         <span class="field-label">Exposure</span>
         <span style="display:flex; gap:6px">
@@ -160,6 +165,8 @@ var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, poste
 function $(id) { return document.getElementById(id); }
 function load(key, fallback) { try { var v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; } }
 function save(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} }
+/** The ADP from which this slate's rows sort by points: yours if set, else the last pick. */
+function tailFor(slate) { return (slate && load("brr:live:tail:" + slate.slate_id, null)) || TEAMS * ROUNDS; }
 function expoKey(label) { return "brr:expo:" + label; }   // the board's key, so an upload on either page shows on both
 
 function normName(s) {
@@ -447,8 +454,10 @@ function render() {
   grade(rows);
   if (ex && state.mine) rows = rows.filter(function (r) { return r.f; });
   /* By ADP up to the last pick of the draft. Underdog parks everyone nobody is drafting at
-     exactly that ADP (36.0), so from it on there's no order to keep: they sort by points. */
-  var last = TEAMS * ROUNDS;
+     exactly that ADP (36.0), so from it on there's no order to keep: they sort by points.
+     You can start that earlier per slate (Points from ADP). */
+  var last = tailFor(state.slate);
+  if (document.activeElement !== $("tail")) $("tail").value = last;
   function byFp(a, b) { return (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp) || a.p.adp - b.p.adp; }
   rows.sort(state.sort === "fp" ? byFp : function (a, b) {
     var ta = a.p.adp >= last, tb = b.p.adp >= last;
@@ -519,6 +528,11 @@ $("slate").addEventListener("change", function () {
   render(); pull();
 });
 $("sort").addEventListener("change", function () { state.sort = this.value; render(); });
+$("tail").addEventListener("change", function () {
+  var v = Number(this.value);
+  if (state.slate) save("brr:live:tail:" + state.slate.slate_id, isFinite(v) && v > 0 && v < TEAMS * ROUNDS ? v : null);
+  render();
+});
 $("mine").addEventListener("click", function () { state.mine = !state.mine; render(); });
 $("refresh").addEventListener("click", pull);
 $("upload").addEventListener("click", function () { $("file").click(); });
