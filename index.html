@@ -2561,7 +2561,14 @@ function setNbaOut(players, out) {
 function nbaMarkedOut() {
   var marked = {}, map = state.nameMaps.nba || {};
   load(K.out(state.slate.label), []).forEach(function (k) { marked[k] = 1; });
-  return state.slate.players.filter(function (p) { return marked[boardKey(p.first_name, p.last_name, map)]; });
+  // a player Underdog has since tagged Out leaves the board (no ADP), so look among those too,
+  // or his mark could never be taken back
+  return state.slate.players.concat(state.slate.tagged || []).filter(function (p) {
+    var k = boardKey(p.first_name, p.last_name, map);
+    if (!marked[k]) return false;
+    delete marked[k];
+    return true;
+  });
 }
 
 function handleProjectionFile(file) {
@@ -3365,7 +3372,8 @@ function renderMissingProjections() {
       var b = document.createElement("button");
       b.type = "button"; b.className = "outback";
       b.textContent = p.first_name + " " + p.last_name + " \u21a9";
-      b.title = "Bring him back in, at the rank he had";
+      b.title = /^o/i.test(p.injury || "") ? "Underdog has him out now too: tap to drop your mark"
+              : "Bring him back in, at the rank he had";
       b.addEventListener("click", function () { setNbaOut([p], false); });
       o.appendChild(b);
     });
