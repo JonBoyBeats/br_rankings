@@ -59,7 +59,7 @@
   /* Ahead of his round: deeper green the closer to the round's best. */
   .row.good { background: rgba(46, 170, 104, var(--good)); }
   .row.rstart { border-top: 2px solid var(--line-strong); }
-  .row.good .name, .row.good .fp { font-weight: 700; }
+  .row.lead .name, .row.lead .fp { font-weight: 700; }
   .r { text-align: right; }
   .adp { font-family: var(--mono); font-size: 13px; color: var(--muted); }
   .expo { font-family: var(--mono); font-size: 11px; font-weight: 600; text-align: center; border-radius: 4px; padding: 2px 0; }
@@ -144,10 +144,11 @@ var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
    35.7 for ranks 29-36, so any late pick having a normal night turned green). The green is
    on what he's scored: his points so far against what the group usually scores by this point
    of the game (its median usual output, from the nightly box-score file, times the share
-   played), so a higher projection alone never turns a row green at the tip. From GOOD_FROM
-   points ahead the row turns green, deepest for the group's furthest ahead. Pace (points so
-   far plus his own usual output for the rest) is still shown in the tap-open line. */
-var TEAMS = 6, ROUNDS = 6, GOOD_FROM = 3;
+   played), so a higher projection alone never turns a row green at the tip. Each round's
+   leader on that count is dark green, and anyone else in his round within CLOSE points of
+   him light green, paler the further back. Pace (points so far plus his own usual output for
+   the rest) is still shown in the tap-open line. */
+var TEAMS = 6, ROUNDS = 6, CLOSE = 6, LIGHT = 0.45;
 var POOLS = [[1, 7], [6, 13], [12, 20], [17, 26], [23, 32], [29, 40]];   // ADP ranks, first and last
 function roundOf(rank) { return Math.min(ROUNDS, Math.ceil(rank / TEAMS)); }
 var EVERY = 60;   // seconds between pulls while the page is open; ESPN's box scores move about this often
@@ -383,11 +384,12 @@ function grade(rows) {
     var med = mid(pool.map(function (r) { return r.pace; })), best = Math.max.apply(null, pool.map(function (r) { return r.pace || 0; }));
     var usual = mid(pool.map(function (r) { return state.proj[normName(r.p.first_name + " " + r.p.last_name)]; }));
     function ahead(r) { return usual != null && r.played > 0 && r.fp != null && !(r.b && r.b.out) ? r.fp - r.played * usual : null; }
-    var top = Math.max.apply(null, pool.concat(idx.map(function (i) { return byAdp[i]; })).map(function (r) { return ahead(r) || 0; }));
+    var mine = idx.map(function (i) { return ahead(byAdp[i]); }).filter(function (a) { return a != null; });
+    var lead = mine.length ? Math.max.apply(null, mine) : null;
     idx.forEach(function (i) {
       var r = byAdp[i], a = ahead(r);
       r.med = med; r.best = best; r.ahead = a; r.usualNow = usual == null ? null : r.played * usual;
-      r.good = a != null && a >= GOOD_FROM ? Math.max(0.05, a / top) : 0;
+      r.good = a == null ? 0 : a === lead ? 1 : lead - a < CLOSE ? LIGHT * (1 - (lead - a) / CLOSE) : 0;
     });
   }
 }
@@ -479,6 +481,7 @@ function render() {
     prevRound = r.round;
     if (r.good) {
       el.classList.add("good");
+      if (r.good === 1) el.classList.add("lead");
       el.style.setProperty("--good", (0.10 + 0.55 * r.good).toFixed(2));
       el.title = r.fp.toFixed(1) + " so far; his round usually has " + r.usualNow.toFixed(1) + " by now (" + (r.ahead >= 0 ? "+" : "") + r.ahead.toFixed(1) + ")";
     }
@@ -518,7 +521,7 @@ function render() {
 
   var live = Object.keys(state.games).some(function (t) { return state.games[t].state === "in"; });
   var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" +
-            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · green: scoring ahead of his round's usual so far, darkest for the round's furthest ahead" : "Fetching ESPN…";
+            (live ? " · refreshes every " + EVERY + "s while open" : "") + " · dark green: his round's leader against its usual so far; light green: within " + CLOSE + " points of him" : "Fetching ESPN…";
   if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
   else setStatus(msg);
 }
