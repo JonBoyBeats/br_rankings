@@ -1620,28 +1620,17 @@ function nbaEtrAverage(key, r, idx, history) {
 }
 
 /**
- * Who sits tonight: the ones you marked, and (before ETR's file) a core player who has
- * played this season but is not priced on a slate that prices his team.
+ * Who sits tonight: the ones you marked, and (before ETR's file) anyone Underdog tags Out.
+ * Not being priced says nothing: Underdog shows an ADP only once a player has been drafted
+ * enough, and on a morning most of the slate has none.
  */
 function nbaOuts(slate, idx, etrToday, marked, keyOf) {
-  var out = {}, priced = {}, teams = {};
+  var out = {};
   (marked || []).forEach(function (k) { out[k] = "you"; });
   if (etrToday) return out;
   // Anyone Underdog tags Out, priced or not (an Out player loses his ADP; the mirror lists those in "tagged").
   (slate.players || []).concat(slate.tagged || []).forEach(function (p) {
     if (/^o/i.test(p.injury || "") && !out[keyOf(p)]) out[keyOf(p)] = "ud";
-  });
-  slate.players.forEach(function (p) {
-    if (!hasAdp(p)) return;
-    teams[p.team] = (teams[p.team] || 0) + 1;
-    if (!/^o/i.test(p.injury || "")) priced[keyOf(p)] = 1;
-  });
-  Object.keys(idx.core).forEach(function (t) {
-    if ((teams[t] || 0) < 3) return;            // his team isn't priced yet, so his absence says nothing
-    idx.core[t].forEach(function (x) {
-      var k = normName(x.name);
-      if (x.games > 0 && !priced[k] && !out[k]) out[k] = "auto";
-    });
   });
   return out;
 }
@@ -2403,12 +2392,12 @@ function applyNbaProjections(store) {
     return Object.keys(res.out).filter(function (k) { var x = idx.byKey[k]; return res.out[k] === why && x && x.team && x.games > 0; })
       .map(function (k) { return idx.byKey[k].name + " " + idx.byKey[k].team; }).sort();
   }
-  var autoOut = outNames("auto"), udOut = outNames("ud");
+  var udOut = outNames("ud");
   state.projMeta = {
     file: res.etrToday ? cur.file : null, format: res.etrToday ? cur.format : "morning", at: res.etrToday ? cur.at : null,
     morning: res.etrToday ? null : { etr: res.byEtr, box: res.byBox, through: idx.through, hasBox: !!state.nbaIdx,
                                      lastAt: cur ? cur.at : null },
-    autoOut: autoOut, udOut: udOut,
+    udOut: udOut,
     prevFile: res.etrToday && store.previous ? store.previous.file : null,
     prevAt: res.etrToday && store.previous ? store.previous.at : null,
     prevFormat: res.etrToday && store.previous ? store.previous.format : null,
@@ -3216,12 +3205,12 @@ function nbaOutButton(p) {
   b.type = "button";
   b.className = "outx" + (why ? " on" : "");
   b.textContent = why ? "OUT" : "\u2298";
-  b.title = why === "auto" ? "Not priced on Underdog tonight, so counted out"
+  b.title = why === "ud" ? "Underdog has him out"
           : why ? "You marked him out. Tap to put him back in"
           : "Mark him out tonight: he drops to the bottom and his teammates' Proj moves up";
   b.addEventListener("click", function (e) {
     e.stopPropagation();                      // a tap on the row lifts it; this only toggles
-    if (why !== "auto") toggleNbaOut(p);
+    if (why !== "ud") toggleNbaOut(p);
   });
   return b;
 }
@@ -3251,7 +3240,7 @@ function renderMissingProjections() {
     el.appendChild(o);
   }
   var m = state.projMeta;
-  var morningSig = m && m.morning ? "morning|" + state.slate.label + "|" + m.autoOut.join() + "|" + m.udOut.join() : null;
+  var morningSig = m && m.morning ? "morning|" + state.slate.label + "|" + m.udOut.join() : null;
   if (m && m.morning && state.closedNotices[morningSig] !== true) {
     var a = document.createElement("div"), mo = m.morning;
     a.className = "notice";
@@ -3259,8 +3248,7 @@ function renderMissingProjections() {
                   " from box scores alone" + (mo.through ? " (games through " + mo.through + ")" : "") +
                   ", moved for who's out. Upload today's ETR file to replace it." +
                   (mo.hasBox ? "" : " The box-score file didn't load, so only players with ETR history have a number.") +
-                  (m.udOut.length ? "<div class=\"names\">Underdog has out, teammates moved up: " + esc(m.udOut.join(" · ")) + "</div>" : "") +
-                  (m.autoOut.length ? "<div class=\"names\">Not priced, counted out: " + esc(m.autoOut.join(" · ")) + "</div>" : "");
+                  (m.udOut.length ? "<div class=\"names\">Underdog has out, teammates moved up: " + esc(m.udOut.join(" · ")) + "</div>" : "");
     el.appendChild(closable(a, function () { state.closedNotices[morningSig] = true; }));
   }
   if (!m || !m.missing.length) return;
@@ -4145,7 +4133,7 @@ function renderLiftBar() {
     var g = ((state.nbaGames || {})[pacificDay(state.slate.cutoff)] || {})[who.team];
     $("liftOpp").textContent = (who.team || "") + (g ? " " + g[1] + " " + g[0] : "") + " \u00b7 ";
     $("liftOut").textContent = why ? "In" : "Out";
-    $("liftOut").disabled = why === "auto";
+    $("liftOut").disabled = why === "ud";
     $("liftOut").classList.toggle("on", !!why);
   }
   if (who) {
@@ -5810,10 +5798,13 @@ function brrSelfTest() {
   var mSlate = { label: "nba_t", cutoff: "2026-11-02T23:00:00Z", players: [
     { player_id: "P", first_name: "Bench", last_name: "Guard", team: "T", adp: 20 },
     { player_id: "Q", first_name: "Other", last_name: "One", team: "T", adp: 21 },
-    { player_id: "R", first_name: "Third", last_name: "One", team: "T", adp: 22 }] };
+    { player_id: "R", first_name: "Third", last_name: "One", team: "T", adp: 22 }],
+    tagged: [{ player_id: "S", first_name: "Star", last_name: "Guard", team: "T", injury: "Out" }] };
   var mv = nbaValues(mSlate.players, mSlate, normalizeProjStore(null), mIdx, [], {});
-  ok("before ETR: an unpriced core player is out, and only the part not in his last 10 moves a teammate",
-     mv.out["star guard"] === "auto" && Math.abs(mv.values.P - (nbaBoxBlend(nbaBoxToEtr(12, NBA_BOX_TO_ETR)) + 3.6 * 0.5)) < 1e-9 && mv.values.Q == null);
+  ok("unpriced alone isn't out: only Underdog's Out tag (or yours) counts",
+     !nbaValues(mSlate.players, Object.assign({}, mSlate, { tagged: [] }), normalizeProjStore(null), mIdx, [], {}).out["star guard"]);
+  ok("before ETR: a player Underdog has out moves his teammates, only the part not in their last 10",
+     mv.out["star guard"] === "ud" && Math.abs(mv.values.P - (nbaBoxBlend(nbaBoxToEtr(12, NBA_BOX_TO_ETR)) + 3.6 * 0.5)) < 1e-9 && mv.values.Q == null);
   var oneDay = { current: null, previous: null, history: { "2026-11-01": { "bench guard": [20, null], "star guard": [30, null] } } };
   var mv1 = nbaValues(mSlate.players, mSlate, oneDay, mIdx, [], {});
   ok("one day of ETR is half the morning number, and half of his last 10's absences still count",
