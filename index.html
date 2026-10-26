@@ -922,6 +922,10 @@ function parseShare(raw) {
 var FP_CFB_ALIASES = { "cedric baxter": "cj baxter", "daylan smothers": "hollywood smothers", "cameron cook": "cam cook",
                        "matthew fuller": "matt fuller", "javonnie gibson": "jv gibson", "hilton alexander": "deuce alexander" };
 
+/* Team codes as the board writes them (the nightly job's map, plus a few other spellings). */
+var NBA_TEAM_CODES = { SA: "SAS", NY: "NYK", GS: "GSW", NO: "NOP", UTAH: "UTA", WSH: "WAS", PHO: "PHX", BRK: "BKN", CHO: "CHA" };
+function nbaTeamCode(t) { t = String(t || "").trim().toUpperCase(); return t ? NBA_TEAM_CODES[t] || t : null; }
+
 function parseProjections(text) {
   var rows = parseCsv(text, sniffDelimiter(text));
   if (!rows.length) return { error: "empty file", entries: [] };
@@ -995,6 +999,7 @@ function parseProjections(text) {
       median: median,
       ceiling: ceiling,
       own: ownCol == null ? null : parseShare(row[ownCol]),
+      team: idx["team"] == null ? null : nbaTeamCode(row[idx["team"]]),
       proj: blendProjection(median, ceiling)
     });
   }
@@ -1484,13 +1489,16 @@ function pacificDay(iso) {
 function addNbaUpload(store, upload) {
   var cur = store.current, day = pacificDay(upload.at), next;
   if (cur && pacificDay(cur.at) === day) {
-    var fresh = {};
-    upload.entries.forEach(function (e) { fresh[e.norm] = 1; });
+    // A later file stands for every team it covers: a player it leaves off (ETR drops anyone
+    // ruled out) goes, rather than keeping his number from the earlier file. Teams it doesn't
+    // cover (a separate late-slate file) keep theirs.
+    var fresh = {}, covered = {};
+    upload.entries.forEach(function (e) { fresh[e.norm] = 1; if (e.team) covered[e.team] = 1; });
     var files = cur.file.split(" + ");
     if (files.indexOf(upload.file) < 0) files.push(upload.file);
     var merged = Object.assign({}, upload, {
       file: files.join(" + "),
-      entries: cur.entries.filter(function (e) { return !fresh[e.norm]; }).concat(upload.entries)
+      entries: cur.entries.filter(function (e) { return !fresh[e.norm] && !(e.team && covered[e.team]); }).concat(upload.entries)
     });
     next = { current: merged, previous: store.previous };
   } else {
@@ -1647,7 +1655,8 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
   function keyOf(p) { return boardKey(p.first_name, p.last_name, nameMap); }
   var cur = store.current, etrToday = !!cur && pacificDay(cur.at) === pacificDay(slate.cutoff);
   var out = nbaOuts(slate, idx, etrToday, marked, keyOf);
-  var joined = etrToday ? joinProjections(players, cur.entries, nameMap) : null;
+  var joined = etrToday ? joinProjections(players, cur.entries, nameMap) : null, etrTeams = {};
+  if (etrToday) cur.entries.forEach(function (e) { if (e.team) etrTeams[e.team] = 1; });
   var values = {}, parts = {}, outPids = {}, byEtr = 0, byBox = 0, scale = nbaBoxScale(store.history || {}, idx);
   var day = pacificDay(slate.cutoff);
   players.forEach(function (p) {
@@ -1657,7 +1666,10 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
     var blow = r && line != null && r.min >= NBA_BLOWOUT.minutes && line <= NBA_BLOWOUT.spread ? NBA_BLOWOUT.points : 0;
     if (out[k]) { outPids[p.player_id] = out[k]; return; }
     if (etrToday) {
-      if (joined.values[p.player_id] == null) return;
+      if (joined.values[p.player_id] == null) {
+        if (p.team && etrTeams[p.team]) outPids[p.player_id] = "etr";     // ETR's file has his team but not him: out
+        return;
+      }
       base = joined.values[p.player_id];
       part = joined.parts[p.player_id];
     } else {
@@ -2550,6 +2562,15 @@ function expoChip(p, ex) {
   return b;
 }
 
+/** After an NBA upload: the board players ETR's file now leaves off, marked out on the board. */
+function etrOutNote() {
+  if (SPORT_MODE !== "nba" || !state.nbaOutPids) return "";
+  var by = byPidMap(state.slate);
+  var gone = Object.keys(state.nbaOutPids).filter(function (pid) { return state.nbaOutPids[pid] === "etr" && by[pid] && hasAdp(by[pid]); })
+    .map(function (pid) { return by[pid].first_name + " " + by[pid].last_name; });
+  return gone.length ? " Not in this file, so out: " + gone.join(", ") + " (tap and \u2212 to drop below your line)." : "";
+}
+
 /**
  * The single projection pipeline. A pasted block and an uploaded file differ only in
  * where the text came from and how a failure reads; parsing, joining, caching and
@@ -2598,7 +2619,7 @@ function ingestProjections(text, sourceName, pasted) {
               (m.prevFormat && m.prevFormat !== m.format
                 ? " The previous upload was in " + m.prevFormat + " format, so the change column " +
                   "also reflects the change of source."
-                : ""));
+                : "") + etrOutNote());
     render();
     surfaceUnpriced();
   }
@@ -3205,12 +3226,12 @@ function nbaOutButton(p) {
   b.type = "button";
   b.className = "outx" + (why ? " on" : "");
   b.textContent = why ? "OUT" : "\u2298";
-  b.title = why === "ud" ? "Underdog has him out"
+  b.title = why === "ud" ? "Underdog has him out" : why === "etr" ? "Not in ETR's latest file, which has his team: out"
           : why ? "You marked him out. Tap to put him back in"
           : "Mark him out tonight: he drops to the bottom and his teammates' Proj moves up";
   b.addEventListener("click", function (e) {
     e.stopPropagation();                      // a tap on the row lifts it; this only toggles
-    if (why !== "ud") toggleNbaOut(p);
+    if (why !== "ud" && why !== "etr") toggleNbaOut(p);
   });
   return b;
 }
@@ -4133,7 +4154,7 @@ function renderLiftBar() {
     var g = ((state.nbaGames || {})[pacificDay(state.slate.cutoff)] || {})[who.team];
     $("liftOpp").textContent = (who.team || "") + (g ? " " + g[1] + " " + g[0] : "") + " \u00b7 ";
     $("liftOut").textContent = why ? "In" : "Out";
-    $("liftOut").disabled = why === "ud";
+    $("liftOut").disabled = why === "ud" || why === "etr";
     $("liftOut").classList.toggle("on", !!why);
   }
   if (who) {
@@ -5776,6 +5797,26 @@ function brrSelfTest() {
      ns.current.entries.length === 3 && ns.current.file === "main.csv + late.csv" && ns.previous === null &&
      ns.current.entries.filter(function (e) { return e.norm === "b"; })[0].median === 32 &&
      Object.keys(ns.history).join() === "2026-10-20");
+  function nbaUpT(file, at, rows) {
+    var u = nbaUp(file, at, rows);
+    u.entries.forEach(function (e, i) { e.team = rows[i][3]; });
+    return u;
+  }
+  var ts = addNbaUpload(normalizeProjStore(null), nbaUpT("am.csv", "2026-11-02T17:00:00Z",
+    [["kawhi leonard", 40, 50, "TOR"], ["collin murray boyles", 20, 30, "TOR"], ["luka doncic", 50, 60, "LAL"]]));
+  ts = addNbaUpload(ts, nbaUpT("pm.csv", "2026-11-02T22:00:00Z", [["collin murray boyles", 28, 38, "TOR"], ["x", 10, 15, "BOS"]]));
+  ok("a later same-day file stands for the teams it covers: a player it leaves off goes, other teams keep theirs",
+     ts.current.entries.map(function (e) { return e.norm; }).sort().join() === "collin murray boyles,luka doncic,x" &&
+     ts.current.entries.filter(function (e) { return e.norm === "collin murray boyles"; })[0].median === 28);
+  var etrSlate = { label: "nba_t", cutoff: "2026-11-02T23:00:00Z", players: [
+    { player_id: "K", first_name: "Kawhi", last_name: "Leonard", team: "TOR", adp: 10 },
+    { player_id: "C", first_name: "Collin", last_name: "Murray-Boyles", team: "TOR", adp: 30 },
+    { player_id: "L", first_name: "Luka", last_name: "Doncic", team: "LAL", adp: 1 },
+    { player_id: "N", first_name: "Nobody", last_name: "Here", team: "PHX", adp: 36 }] };
+  var ev = nbaValues(etrSlate.players, etrSlate, ts, nbaIndex(null), [], {});
+  ok("with ETR's file in, a player it leaves off while it has his team is out; a team it doesn't cover says nothing",
+     ev.outPids.K === "etr" && ev.values.C != null && ev.values.L != null && !ev.outPids.N && ev.values.N == null);
+  ok("team codes read the same from any spelling", nbaTeamCode(" sa ") === "SAS" && nbaTeamCode("GSW") === "GSW" && nbaTeamCode("") === null);
   ns = addNbaUpload(ns, nbaUp("next.csv", "2026-10-21T17:00:00Z", [["a", 14, 24]]));
   ok("a new day rotates and keeps both days on file",
      ns.current.file === "next.csv" && ns.previous.entries.length === 3 &&
