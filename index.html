@@ -905,6 +905,10 @@ function headerIndex(header) {
  *   It carries no id and covers the whole league, so it matches by name and most of its
  *   rows belong to players who are not on the chosen slate.
  * ETR NBA: reads Player, Projection, Ceiling and id (the Underdog appearance id).
+ * ETR NBA (FD): ETR's FanDuel export, the same scoring as Underdog's: Player, FPTS, Ceiling,
+ *   Team and Scenario. A player ruled out is listed at 0 rather than left off, so a 0 is
+ *   skipped (the board then reads him as out). Rows whose Scenario isn't "Default" are an
+ *   ETR conditional ("Ant OUT"), kept aside until you mark that player out.
  * CFF (CFB): reads PLAYER NAME, FPNTS.
  * Fantasy Points (CFB): reads NAME, FPTS from the row under its banner row.
  */
@@ -924,6 +928,9 @@ function parseShare(raw) {
 var FP_CFB_ALIASES = { "cedric baxter": "cj baxter", "daylan smothers": "hollywood smothers", "cameron cook": "cam cook",
                        "matthew fuller": "matt fuller", "javonnie gibson": "jv gibson", "hilton alexander": "deuce alexander" };
 
+/* ETR's FanDuel file spells some NBA names unlike Underdog; add a pair when one reads as out. */
+var ETR_FD_ALIASES = { "alexandre sarr": "alex sarr" };
+
 /* Team codes as the board writes them (the nightly job's map, plus a few other spellings). */
 var NBA_TEAM_CODES = { SA: "SAS", NY: "NYK", GS: "GSW", NO: "NOP", UTAH: "UTA", WSH: "WAS", PHO: "PHX", BRK: "BKN", CHO: "CHA" };
 function nbaTeamCode(t) { t = String(t || "").trim().toUpperCase(); return t ? NBA_TEAM_CODES[t] || t : null; }
@@ -939,7 +946,12 @@ function parseProjections(text) {
   var format, nameCol, projCol, idCol = null, sport, dedupe = false;
   var ceilCols = null, ceilScale = 1, ownCol = null, aliases = {};
 
-  if (idx["fpnts"] != null && idx["player name"] != null) {
+  var scenCol = null;
+  if (idx["fpts"] != null && idx["player"] != null && idx["scenario"] != null) {
+    format = "ETR NBA (FD)"; sport = "nba"; nameCol = idx["player"]; projCol = idx["fpts"]; scenCol = idx["scenario"];
+    aliases = ETR_FD_ALIASES;
+    if (idx["ceiling"] != null) ceilCols = [idx["ceiling"]];
+  } else if (idx["fpnts"] != null && idx["player name"] != null) {
     // College carries no ceiling, so the blend falls back to the median.
     format = "CFF"; sport = "cfb"; nameCol = idx["player name"]; projCol = idx["fpnts"];
   } else if (idx["fpts"] != null && idx["name"] != null) {
@@ -980,6 +992,7 @@ function parseProjections(text) {
     var raw = (row[projCol] || "").trim().replace(/[$,]/g, "");
     var median = raw === "" ? NaN : Number(raw);
     if (!isFinite(median)) { skipped++; continue; }
+    if (scenCol != null && median <= 0) continue;          // ETR lists a player ruled out at 0
 
     var ceiling = null;
     if (ceilCols) {
@@ -1004,6 +1017,8 @@ function parseProjections(text) {
       team: idx["team"] == null ? null : nbaTeamCode(row[idx["team"]]),
       proj: blendProjection(median, ceiling)
     });
+    var scen = scenCol == null ? "" : (row[scenCol] || "").trim();
+    if (scen && !/^default$/i.test(scen)) entries[entries.length - 1].scenario = scen;
   }
   if (dedupe) entries = keepHighestPerName(entries);
   return { format: format, sport: sport, entries: entries, skipped: skipped, error: null };
@@ -1424,7 +1439,7 @@ function normalizeProjStore(raw) {
   if (!raw) return { current: null, previous: null, sources: {}, history: {} };
   if (raw.entries) return { current: blendAware(raw), previous: null, sources: {}, history: {} };   // the older single-generation shape
   return { current: blendAware(raw.current), previous: blendAware(raw.previous), sources: raw.sources || {},
-           history: raw.history || {} };
+           history: raw.history || {}, conditionals: raw.conditionals || {} };
 }
 
 /* College takes two sources, CFF and Fantasy Points. Proj is their average wherever both
@@ -1524,7 +1539,43 @@ function addNbaUpload(store, upload) {
   Object.keys(history).sort().reverse().slice(NBA_KEEP_DAYS).forEach(function (d) { delete history[d]; });
   next.sources = {};
   next.history = history;
+  // ETR conditionals are for the day they came out
+  next.conditionals = cur && pacificDay(cur.at) === day ? store.conditionals || {} : {};
   return next;
+}
+
+/** Keep each ETR conditional in the upload ("Ant OUT": that team's rows if he sits), replacing one of the same name. */
+function addNbaConditionals(store, upload) {
+  var conds = Object.assign({}, store.conditionals || {});
+  upload.entries.forEach(function (e) {
+    if (!e.scenario) return;
+    if (!conds[e.scenario] || conds[e.scenario].at !== upload.at)
+      conds[e.scenario] = { label: e.scenario, file: upload.file, at: upload.at, entries: [] };
+    conds[e.scenario].entries.push(e);
+  });
+  return Object.assign({}, store, { conditionals: conds });
+}
+
+/**
+ * The ETR file with any conditional you've triggered swapped in. A conditional is for the
+ * players its team's rows leave off that the main file projects (Edwards, for "Ant OUT");
+ * once you mark all of them out, that team's rows come from it, and `covered` holds those
+ * players so their absence isn't bumped a second time.
+ */
+function nbaConditionalEntries(store, day, out) {
+  var entries = store.current.entries, covered = {}, used = [];
+  Object.keys(store.conditionals || {}).forEach(function (label) {
+    var c = store.conditionals[label];
+    if (pacificDay(c.at) !== day || !c.entries.length) return;
+    var teams = {}, has = {};
+    c.entries.forEach(function (e) { if (e.team) teams[e.team] = 1; has[e.norm] = 1; });
+    var sits = entries.filter(function (e) { return e.team && teams[e.team] && !has[e.norm]; });
+    if (!sits.length || !sits.every(function (e) { return out[e.norm]; })) return;
+    entries = entries.filter(function (e) { return !(e.team && teams[e.team]); }).concat(c.entries);
+    sits.forEach(function (e) { covered[e.norm] = label; });
+    used.push(label);
+  });
+  return { entries: entries, covered: covered, used: used };
 }
 
 /* ---- NBA morning Proj and who's out tonight ------------------------------------
@@ -1617,24 +1668,23 @@ function nbaIndex(doc) {
  * a core teammate back from a stretch out takes his share back. `boxWeight` is how much
  * of his number is box scores: 0 for ETR alone, 1 for box scores alone.
  */
-function nbaLineupBump(r, idx, out, boxWeight) {
-  var mates = (idx.core[r.team] || []).slice(), add = 0, mine = 0, notes = [];
+function nbaLineupBump(r, idx, out, boxWeight, covered) {
+  var mates = (idx.core[r.team] || []).slice(), add = 0, notes = [];
   Object.keys(out).forEach(function (k) {
     var x = idx.byKey[k];
     // only players who've played for his team this season: anyone else's absence is already in the box scores
     if (x && x.team && x.team === r.team && x.games > 0 && !x.core) mates.push(x);
   });
   mates.forEach(function (x) {
-    if (x === r) return;
+    if (x === r || (covered && covered[normName(x.name)])) return;
     var b = nbaBump(r, x), seen = boxWeight * ((r.out && r.out[x.id]) || 0);
     var d = out[normName(x.name)] ? b * (1 - seen) : -b * seen;
     if (Math.abs(d) < 0.05) return;
     add += d;
-    if (out[normName(x.name)] === "you") mine += d;
     // his own split can say he does worse without a teammate, so an out can take points too
     notes.push(x.name + (out[normName(x.name)] ? " out " : " back ") + (d > 0 ? "+" : "\u2212") + Math.abs(d).toFixed(1));
   });
-  return { add: add, mine: mine, notes: notes };
+  return { add: add, notes: notes };
 }
 
 /** His last NBA_AVG_GAMES ETR days, each with that day's missing core teammates taken back out. */
@@ -1681,8 +1731,9 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
   function keyOf(p) { return boardKey(p.first_name, p.last_name, nameMap); }
   var cur = store.current, etrToday = !!cur && pacificDay(cur.at) === pacificDay(slate.cutoff);
   var out = nbaOuts(slate, idx, etrToday, marked, keyOf);
-  var joined = etrToday ? joinProjections(players, cur.entries, nameMap) : null, etrTeams = {};
-  if (etrToday) cur.entries.forEach(function (e) { if (e.team) etrTeams[e.team] = 1; });
+  var cond = etrToday ? nbaConditionalEntries(store, pacificDay(slate.cutoff), out) : { entries: [], covered: {}, used: [] };
+  var joined = etrToday ? joinProjections(players, cond.entries, nameMap) : null, etrTeams = {};
+  if (etrToday) cond.entries.forEach(function (e) { if (e.team) etrTeams[e.team] = 1; });
   var values = {}, parts = {}, outPids = {}, byEtr = 0, byBox = 0, scale = nbaBoxScale(store.history || {}, idx);
   var day = pacificDay(slate.cutoff);
   players.forEach(function (p) {
@@ -1719,12 +1770,12 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
            : { note: Math.round(100 * (1 - boxWeight)) + "% average of " + etrNote + ", " +
                      Math.round(100 * boxWeight) + "% " + boxNote };
     }
-    var lb = r ? nbaLineupBump(r, idx, out, boxWeight) : { add: 0, notes: [] };
+    var lb = r ? nbaLineupBump(r, idx, out, boxWeight, cond.covered) : { add: 0, notes: [] };
     values[p.player_id] = base + lb.add;
-    parts[p.player_id] = Object.assign({}, part, { lineup: lb.notes, mine: lb.mine || 0, mtch: mt || null, line: line == null ? null : line,
+    parts[p.player_id] = Object.assign({}, part, { lineup: lb.notes, mtch: mt || null, line: line == null ? null : line,
                                                    blow: etrToday ? 0 : blow });
   });
-  return { values: values, parts: parts, out: out, outPids: outPids, etrToday: etrToday,
+  return { values: values, parts: parts, out: out, outPids: outPids, etrToday: etrToday, conditionals: cond.used,
            joined: joined, byEtr: byEtr, byBox: byBox, scale: scale };
 }
 
@@ -2417,6 +2468,13 @@ function applyNbaProjections(store) {
     delete hist[pacificDay(s.cutoff)];
     state.nbaOurs = nbaValues(s.players, s, { current: null, previous: null, history: hist }, idx, load(K.out(s.label), []), map).values;
   }
+  // what your out marks changed: the board with them against the board without them
+  var bare = nbaValues(s.players, s, store, idx, [], map).values;
+  state.nbaMine = {};
+  Object.keys(res.values).forEach(function (pid) {
+    if (bare[pid] != null && Math.abs(res.values[pid] - bare[pid]) >= 0.05) state.nbaMine[pid] = res.values[pid] - bare[pid];
+  });
+  state.nbaConditionals = res.conditionals;
   state.nbaOutPids = res.outPids;
   state.nbaEtrToday = res.etrToday;
   state.nbaScale = res.scale;
@@ -2626,7 +2684,14 @@ function ingestProjections(text, sourceName, pasted) {
       sources[parsed.format] = upload;
       gen = combineSources(sources, upload.at) || upload;
     }
-    var next = parsed.sport === "nba" ? addNbaUpload(store, upload) : rotateProjStore(store, gen);
+    var condRows = upload.entries.filter(function (e) { return e.scenario; }), next;
+    if (parsed.sport === "nba" && condRows.length) {
+      var mainRows = upload.entries.filter(function (e) { return !e.scenario; });
+      next = mainRows.length ? addNbaUpload(store, Object.assign({}, upload, { entries: mainRows })) : store;
+      next = addNbaConditionals(next, upload);
+    } else {
+      next = parsed.sport === "nba" ? addNbaUpload(store, upload) : rotateProjStore(store, gen);
+    }
     if (sources) next.sources = sources;
     save(K.proj(parsed.sport), next);
     if (parsed.sport !== state.slate.sport) {
@@ -2647,10 +2712,24 @@ function ingestProjections(text, sourceName, pasted) {
               (m.prevFormat && m.prevFormat !== m.format
                 ? " The previous upload was in " + m.prevFormat + " format, so the change column " +
                   "also reflects the change of source."
-                : "") + etrOutNote());
+                : "") + etrOutNote() + condNote(next, condRows));
     render();
     surfaceUnpriced();
   }
+}
+
+/** For an upload with ETR conditionals: which they are, and whom to mark out to use each. */
+function condNote(store, condRows) {
+  if (!condRows.length || !store.current) return "";
+  var labels = {};
+  condRows.forEach(function (e) { labels[e.scenario] = 1; });
+  return " Saved ETR conditional" + (Object.keys(labels).length > 1 ? "s" : "") + ": " + Object.keys(labels).map(function (label) {
+    var c = store.conditionals[label], teams = {}, has = {};
+    c.entries.forEach(function (e) { if (e.team) teams[e.team] = 1; has[e.norm] = 1; });
+    var sits = store.current.entries.filter(function (e) { return e.team && teams[e.team] && !has[e.norm]; })
+      .map(function (e) { return e.name; });
+    return label + (sits.length ? " (mark " + sits.join(" and ") + " out to use it)" : " (no player to mark: it matches the main file)");
+  }).join(", ") + ".";
 }
 
 /** Pull in every unpriced player this projection file projects (see worthSurfacing).
@@ -3901,12 +3980,13 @@ function render() {
                    : "");
     }
     // a teammate you marked out: the slot shows what that moved him, in blue, and the upload change goes to the hover
-    var mineAdd = (state.projParts[p.player_id] || {}).mine;
-    if (v != null && mineAdd && Math.abs(mineAdd) >= 0.05) {
+    var mineAdd = SPORT_MODE === "nba" ? (state.nbaMine || {})[p.player_id] : null;
+    if (v != null && mineAdd) {
       var upChange = pd.textContent ? ". Since the previous upload: " + pd.textContent + (pd.title ? " (" + pd.title + ")" : "") : "";
       pd.className = "pdelta mine";
       pd.textContent = (mineAdd > 0 ? "+" : "\u2212") + Math.abs(mineAdd).toFixed(1);
-      pd.title = "The players you marked out moved him " + pd.textContent + upChange;
+      pd.title = "The players you marked out moved him " + pd.textContent +
+                 ((state.nbaConditionals || []).length ? " (ETR's " + state.nbaConditionals.join(", ") + " numbers in use)" : "") + upChange;
     }
     var pval = document.createElement("span");
     pval.textContent = v == null ? "–" : String(Math.round(v));       // whole points: decimals only look like an edge
@@ -5885,9 +5965,27 @@ function brrSelfTest() {
   var lbW = nbaLineupBump(Object.assign({}, rW, { wo: { x: [-6, 0] } }), { core: { T: [xS] }, byKey: {} }, (function () { var o = {}; o[normName(xS.name)] = "you"; return o; })(), 0);
   ok("his own split this season moves the bump by its weight, and a negative one reads as an out",
      Math.abs(nbaBump(rW, xS) - 3.6) < 1e-9 && Math.abs(nbaBump(Object.assign({}, rW, { wo: {} }), xS) - 2.7) < 1e-9 &&
-     Math.abs(lbW.add + 6) < 1e-9 && lbW.notes[0] === "Star Guard out \u22126.0" && Math.abs(lbW.mine + 6) < 1e-9);
-  var lbU = nbaLineupBump(Object.assign({}, rW, { wo: {} }), { core: { T: [xS] }, byKey: {} }, (function () { var o = {}; o[normName(xS.name)] = "ud"; return o; })(), 0);
-  ok("only the outs you mark count toward the blue marker", Math.abs(lbU.add - 2.7) < 1e-9 && lbU.mine === 0);
+     Math.abs(lbW.add + 6) < 1e-9 && lbW.notes[0] === "Star Guard out \u22126.0");
+  var lbC = nbaLineupBump(Object.assign({}, rW, { wo: {} }), { core: { T: [xS] }, byKey: {} }, (function () { var o = {}; o[normName(xS.name)] = "you"; return o; })(), 0, { "star guard": "Ant OUT" });
+  ok("an absence an ETR conditional already holds isn't bumped again", lbC.add === 0 && !lbC.notes.length);
+  var fd = parseProjections('"Player","Pos","Team","Opp","Salary","FPTS","Value","Ceiling","ProjOwn","Site","Slate","Scenario"\n' +
+    '"Star Guard","SG","MIN","CLE","$9,100","37.1","1","46.8","3%","FD","MAIN","Default"\n' +
+    '"Bench Guard","SG","MIN","CLE","$5,200","22.4","1","30.4","1%","FD","MAIN","Default"\n' +
+    '"Hurt Guy","SG","MIN","CLE","$5,200","0.0","1","0.0","0%","FD","MAIN","Default"\n' +
+    '"Bench Guard","SG","MIN","CLE","$5,200","28.3","1","36.6","1%","FD","MAIN","Ant OUT"\n' +
+    '"Star Guard","SG","MIN","CLE","$9,100","0.0","1","0.0","3%","FD","MAIN","Ant OUT"\n');
+  ok("ETR's FanDuel file reads, skips its 0s and marks the conditional rows",
+     fd.format === "ETR NBA (FD)" && fd.sport === "nba" && fd.entries.length === 3 && fd.entries[2].scenario === "Ant OUT" &&
+     !fd.entries[0].scenario && fd.entries[0].team === "MIN");
+  var fdUp = { file: "fd.csv", format: fd.format, blend: PROJ_BLEND_VERSION, at: "2026-11-02T20:00:00Z", entries: fd.entries };
+  var fdStore = addNbaConditionals(addNbaUpload(normalizeProjStore(null), Object.assign({}, fdUp, {
+    entries: fd.entries.filter(function (e) { return !e.scenario; }) })), fdUp);
+  var c0 = nbaConditionalEntries(fdStore, "2026-11-02", {}), c1 = nbaConditionalEntries(fdStore, "2026-11-02", { "star guard": "you" });
+  var nextDay = addNbaUpload(fdStore, nbaUp("t.csv", "2026-11-03T20:00:00Z", [["a", 10, 20]]));
+  ok("a conditional waits until you mark its player out, then stands for his team, and lasts the day",
+     c0.used.length === 0 && c1.used.join() === "Ant OUT" && c1.covered["star guard"] === "Ant OUT" && c1.entries.length === 1 &&
+     c1.entries[0].median === 28.3 && Object.keys(normalizeProjStore(JSON.parse(JSON.stringify(fdStore))).conditionals).join() === "Ant OUT" &&
+     !Object.keys(nextDay.conditionals).length);
   var longH = {};
   for (var dd = 1; dd <= 12; dd++) longH["2026-11-" + (dd < 10 ? "0" : "") + dd] = { a: [dd, null] };
   ok("the ETR average runs over his last " + NBA_AVG_GAMES + " days, from the first",
