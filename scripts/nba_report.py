@@ -230,14 +230,14 @@ def call_rate(slates, bar, a, b):
     return (w / (w + l) if w + l else None), w + l
 
 
-def summary(last, upto, bar, title, clv_from, h2h):
+def summary(last, upto, bar, title, clv_from, h2h, clv_note):
     """Each source last night beside the season, then your board head to head against each straight order."""
     def res(x, s, k):
         r = results(x["rows"], bar, s)
         if not r:
             return None
         return {"rho": r["rho"], "picks": mean(r["picks"]), "late": mean(r["picks"][4:])}[k]
-    out = ["### " + title, "", "Each cell: last night (season). CLV: morning from your AM lock, ETR from its first upload, to lock.", "",
+    out = ["### " + title, "", "Each cell: last night (season). " + clv_note, "",
            "| Order | Rank corr | Round picks | Rounds 5-6 | Top-12 hits | CLV |", "|---|---|---|---|---|---|"]
     for s in bar["sources"]:
         def both(k, spec):
@@ -314,9 +314,11 @@ def pt(iso):
 def barbells(last, upto):
     a, p = AM["sources"], PM["sources"]
     out = summary(last, upto, AM, "Morning: your AM board, ours straight, ADP",
-                  {"am_rank": ("adp_am", a[0]), "ours_am": ("adp_am", a[1])}, [(a[0], a[1]), (a[0], a[2])])
+                  {"am_rank": ("adp_am", a[0]), "ours_am": ("adp_am", a[1])}, [(a[0], a[1]), (a[0], a[2])],
+                  "CLV: how ADP moved from your AM lock to lock.")
     out += summary(last, upto, PM, "Afternoon: your PM board, ETR straight, ours, ADP at lock",
-                   {"etr_last": ("adp_etr", Src("etr_first", "ETR first upload", True))}, [(p[0], p[1]), (p[0], p[2]), (p[0], p[3])])
+                   {"etr_last": ("adp_etr", Src("etr_first", "ETR first upload", True))}, [(p[0], p[1]), (p[0], p[2]), (p[0], p[3])],
+                   "CLV: how ADP moved toward ETR's first upload, from it to lock.")
     return out + ["**Blend (season)**", ""] + blend_lines(upto) + [""]
 
 
@@ -352,11 +354,12 @@ def main():
     out += ["## Last night and the season (%d slates since %s)" % (len(upto), upto[0]["date"]), ""] + barbells(last, upto)
     for s in last:
         rows = s["rows"]
-        rank_of = lambda col, rs: {id(r): i + 1 for i, r in enumerate(sorted((r for r in rs if r[col] is not None), key=lambda r: r[col]))}
+        rank_of = lambda col, rs: dict(zip(map(id, rs), ranks([r[col] for r in rs])))      # ties (the ADP 36 pile) share a rank
         am_p = [r for r in pool(rows, AM) if r["am_rank"] is not None and r["adp_am"] is not None]
         ra, rm = rank_of("adp_am", am_p), rank_of("am_rank", am_p)
         out += player_table(am_p, "Your biggest AM calls against ADP", [
-            ("Player", lambda r: r["name"]), ("ADP AM", lambda r: fmt(r["adp_am"], "%.1f")), ("Your rank", lambda r: "%d" % rm[id(r)]),
+            ("Player", lambda r: r["name"]), ("ADP AM", lambda r: fmt(r["adp_am"], "%.1f")), ("ADP rank", lambda r: "%.0f" % ra[id(r)]),
+            ("Your rank", lambda r: "%.0f" % rm[id(r)]),
             ("ADP at lock", lambda r: fmt(r["adp_close"], "%.1f")), ("Actual", lambda r: fmt(r["actual"], "%.1f")),
             ("Min (usual)", lambda r: "%s (%s)" % (fmt(r["min"], "%.0f"), fmt(r["usual_min"], "%.0f")))],
             lambda r: -abs(ra[id(r)] - rm[id(r)]), 8)
@@ -373,7 +376,8 @@ def main():
                 ("Ours", lambda r: fmt(r[oc], "%.1f")), ("ETR", lambda r: fmt(r["etr_last"], "%.1f")), ("Actual", lambda r: fmt(r["actual"], "%.1f")),
                 ("Min (usual)", lambda r: "%s (%s)" % (fmt(r["min"], "%.0f"), fmt(r["usual_min"], "%.0f"))),
                 ("Margin", lambda r: fmt(r["margin"], "%+.0f")), ("Tag", lambda r: r["injury"] or "")]
-        out += player_table(both, "Biggest projection misses (ours, %s)" % oc, cols, lambda r: -abs(r[oc] - r["actual"]), 8)
+        out += player_table(both, "Biggest projection misses (ours: %s)" % {"ours_pm": "Lock PM", "ours_am": "Lock AM", "ours_raw": "morning file"}[oc],
+                            cols, lambda r: -abs(r[oc] - r["actual"]), 8)
         out += player_table(both, "Biggest ours-vs-ETR splits", cols, lambda r: -abs(r[oc] - r["etr_last"]), 6)
     out += ["## By slate: was last night normal?", "",
             "Rank corr, and your head-to-head calls (how often your board was right where it disagreed).", "",
