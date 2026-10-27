@@ -175,6 +175,53 @@
     "Rudy Gobert": 1,
     "Zach Edey": 1
    }
+  },
+  "6576ce19-a7da-40bb-960a-ea1a857233ba": {
+   "label": "nba_tue_main",
+   "date": "2026-10-27",
+   "at": "2026-10-27T22:54:00Z",
+   "teams": 179,
+   "note": "One row about 20% looks cut off between the screenshots (between Queta 20% and Holiday 19%): the shares add to 580% of 600%. Zach LaVine isn't listed.",
+   "pct": {
+    "Derrick White": 41,
+    "Deni Avdija": 32,
+    "Paul Reed": 30,
+    "Paul George": 27,
+    "Ausar Thompson": 26,
+    "Ja Morant": 25,
+    "Day'Ron Sharpe": 24,
+    "Julius Randle": 24,
+    "Donovan Clingan": 23,
+    "Jayson Tatum": 23,
+    "Precious Achiuwa": 20,
+    "Neemias Queta": 20,
+    "Jrue Holiday": 19,
+    "Walker Kessler": 19,
+    "Michael Porter Jr.": 18,
+    "Austin Reaves": 17,
+    "Luka Doncic": 17,
+    "Karl-Anthony Towns": 15,
+    "Payton Pritchard": 14,
+    "Domantas Sabonis": 13,
+    "Stephon Castle": 12,
+    "Jalen Brunson": 12,
+    "Victor Wembanyama": 12,
+    "Dylan Harper": 12,
+    "OG Anunoby": 11,
+    "Cade Cunningham": 11,
+    "Toumani Camara": 11,
+    "De'Aaron Fox": 10,
+    "Daniss Jenkins": 8,
+    "Egor Demin": 8,
+    "Mikal Bridges": 7,
+    "Sandro Mamukelashvili": 6,
+    "John Collins": 5,
+    "Josh Hart": 3,
+    "Damian Lillard": 2,
+    "Darius Acuff Jr.": 2,
+    "Mitchell Robinson": 1,
+    "Matisse Thybulle": 0
+   }
   }
  }
 }
