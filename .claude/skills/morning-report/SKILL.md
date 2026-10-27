@@ -59,7 +59,8 @@ From last night's tables:
 - **Biggest projection misses** (ours off by 8+) and **biggest ours-vs-ETR splits** (4+ apart):
   the cause, and for a split who was closer.
 
-Give each one cause from this list, using only what is in that slate's CSV (minutes and usual
+Players who sat or left early aren't graded (the report lists them under "Not graded"), so they
+aren't written up or logged. Give each one cause from this list, using only what is in that slate's CSV (minutes and usual
 minutes, margin, injury tag at lock, the box line, and who else on his team sat):
 
 | cause | when | fixable |
@@ -67,7 +68,7 @@ minutes, margin, injury tag at lock, the box line, and who else on his team sat)
 | `minutes` | minutes far from his usual with no injury, blowout or teammate absence to explain it: his role was misread | yes |
 | `teammate-out` | a teammate sat and his number moved wrongly for it, in either direction | yes |
 | `blowout` | margin 15+ either way and his minutes cut short | partly (the spread was known) |
-| `news` | tagged at lock, scratched late (0 minutes), or left the game early | no |
+| `news` | tagged at lock, or news during the day changed his role | no |
 | `shooting` | normal minutes, points well off what his minutes would give | no |
 | `peripherals` | normal minutes and points, rebounds, assists or stocks well off | no |
 | `other` | none of the above fits; say what you see in `note` | ? |

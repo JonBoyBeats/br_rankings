@@ -5,8 +5,9 @@ Reads analysis/nba/daily/*.csv (scripts/nba_daily.py) and prints Markdown.
   Morning    your AM ranks and our Proj at Lock AM, against ADP at that moment
   Afternoon  your PM ranks, ETR's last upload and our Proj at Lock PM, against ADP at lock
 
-Each barbell scores the night's top 48 by its ADP plus anyone a source put in its top 48 (a
-player who sat counts as 0, as he does in a draft):
+Each barbell scores the night's top 48 by its ADP plus anyone a source put in its top 48. A
+player who didn't play, or who left early (see gone_early), isn't scored at all: there is
+nothing to learn from him.
 
   rank corr   how well the source's order matched what they scored
   top 12      how many of its top 12 finished top 12
@@ -26,6 +27,10 @@ from zoneinfo import ZoneInfo
 
 DAILY = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "daily")
 DEPTH, TOP, GAP = 48, 12, 3
+# Left early: a player who usually plays EARLY_USUAL+ minutes and got under half of them in a game
+# decided by less than EARLY_MARGIN. A starter cut that short in a close game is almost always hurt;
+# a bench player's short night is usually the rotation, which is worth learning from, so he stays.
+EARLY_USUAL, EARLY_MARGIN = 25, 15
 ROUNDS = [(1, 7), (6, 13), (12, 20), (17, 26), (23, 32), (29, 40)]   # ADP ranks per round, as on the Live page
 TEXT = ("date", "slate", "player_id", "name", "team", "pos", "injury")
 
@@ -73,9 +78,19 @@ PM = {"adp": "adp_close", "sources": [Src("pm_rank", "Your PM ranks", False), Sr
                                       Src("ours_pm", "Ours at Lock PM", True), Src("adp_close", "ADP at lock", False)]}
 
 
+def gone_early(r):
+    return ((r["usual_min"] or 0) >= EARLY_USUAL and r["min"] is not None and r["min"] < r["usual_min"] / 2
+            and (r["margin"] is None or abs(r["margin"]) < EARLY_MARGIN))
+
+
+def graded(r):
+    """He played, and didn't leave early."""
+    return r["actual"] is not None and (r["min"] or 0) > 0 and not gone_early(r)
+
+
 def pool(rows, bar):
-    """The barbell's top DEPTH by its ADP, plus each source's top DEPTH; with an ADP and a result."""
-    have = [r for r in rows if r[bar["adp"]] is not None and r["actual"] is not None]
+    """The barbell's top DEPTH by its ADP, plus each source's top DEPTH; who played and didn't leave early."""
+    have = [r for r in rows if r[bar["adp"]] is not None and graded(r)]
     keep = set()
     for s in bar["sources"]:
         k = s.key(rows)
@@ -197,7 +212,7 @@ def fmt(v, spec="%.2f"):
 
 def results_table(slates, bar):
     base = bar["sources"][-1]
-    out = ["| Source | Rank corr | vs %s | Top-12 hits | Round picks | Rounds 5-6 |" % base.label, "|---|---|---|---|---|---|"]
+    out = ["| Source | Rank corr | vs %s, same slates | Top-12 hits | Round picks | Rounds 5-6 |" % base.label, "|---|---|---|---|---|---|"]
     for s in bar["sources"]:
         got = [results(x["rows"], bar, s) for x in slates]
         if not any(got):
@@ -331,7 +346,9 @@ def main():
     for s in last:
         m = meta.get(s["file"], {})
         am, pm = m.get("am") or {}, m.get("pm") or {}
-        sat = [r for r in pool(s["rows"], PM) if r["min"] == 0]
+        top = [r for r in s["rows"] if (r["adp_close"] or r["adp_am"] or 99) <= DEPTH and r["actual"] is not None]
+        sat = [r for r in top if not (r["min"] or 0) > 0]
+        early = [r for r in top if (r["min"] or 0) > 0 and gone_early(r)]
         out += ["# NBA morning report: %s %s" % (s["date"], s["slate"].replace("nba_", "")), "",
                 "Times PT. Morning: %s %s (ADP from %s)%s. ETR: %s. Afternoon: %s %s%s. Lock %s." % (
                     am.get("from", "no board"), pt(am.get("at")), pt(m.get("adp_am_at")),
@@ -339,7 +356,9 @@ def main():
                     " and ".join(pt(x["at"]) for x in (m.get("etr_first"), m.get("etr_last")) if x) or "none on file",
                     pm.get("from", "no board"), pt(pm.get("at")), "" if pm.get("ours") else ", no ours at PM",
                     pt(m.get("lock"))),
-                "Sat (scored 0): %s." % (", ".join("%s (ADP %.0f)" % (r["name"], r["adp_close"]) for r in sat) or "nobody"), ""]
+                "Not graded: %s." % (", ".join(["%s (sat)" % r["name"] for r in sat] +
+                                               ["%s (left early, %.0f of his usual %.0f min)" % (r["name"], r["min"], r["usual_min"]) for r in early])
+                                     or "nobody"), ""]
     out += ["## Last night", ""] + barbells(last)
     for s in last:
         rows = s["rows"]
