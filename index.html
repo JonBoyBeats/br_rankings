@@ -388,6 +388,25 @@
   .sitx.hi { color: #ff6b5b; }
   .sitx:focus-visible { outline: 2px solid var(--accent); }
   .sitpanel { font-size: 12.5px; color: var(--muted); }
+  /* NBA: his last five games' minutes, Popcorn Machine style, in the row's dropdown. */
+  .minchart { display: flex; flex-direction: column; gap: 3px; max-width: 860px; }
+  .minchart .mhead { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+  .minchart .mhead span { text-transform: none; letter-spacing: 0; opacity: .8; }
+  .mrow { display: grid; grid-template-columns: 70px minmax(0, 1fr) 92px; gap: 8px; align-items: center;
+          font-family: var(--mono); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .mrow .mres, .mrow .mgame { white-space: nowrap; }
+  .mrow .mres { text-align: right; }
+  .mrow .mgame b { color: var(--ink); font-weight: 600; }
+  .mrow .mres b { color: var(--ink); font-weight: 700; }
+  .mtrack { position: relative; height: 22px; background: #10141b; border-radius: 3px; overflow: hidden; }
+  .mtrack svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .mq { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255, 255, 255, .1); }
+  .mst { position: absolute; top: 5px; height: 12px; border-radius: 2px; overflow: hidden; white-space: nowrap;
+         font-size: 9.5px; font-weight: 700; line-height: 12px; text-align: center; color: #0b0d12; }
+  .mst.pos { background: #5fbf7f; }
+  .mst.neg { background: #e0705f; }
+  .mst.even { background: #9aa3b2; }
+  .mrow.none .mtrack { opacity: .55; }
   .sitpanel b { color: var(--ink); }
   .outback { all: unset; cursor: pointer; margin: 2px 6px 2px 0; padding: 2px 8px; border-radius: 6px; font-size: 12.5px;
              border: 1px solid var(--line-strong); color: var(--ink); }
@@ -555,6 +574,7 @@
     .board.cfb .num.score { flex-direction: column; gap: 2px; }
     .board.cfb .num.score b.sc { min-width: 40px; }
     .cfbpanel { padding: 8px 8px 12px; font-size: 12.5px; }
+    .mrow { grid-template-columns: 66px minmax(0, 1fr) 66px; gap: 5px; font-size: 10px; }
     .cfbgrid { gap: 6px; }
     .cfbgrid .g { padding: 3px 4px 5px; }
     .cfbstrip.own { grid-column: 1 / -1; gap: 4px 6px; }   /* a phone gives it the whole row width */
@@ -3425,11 +3445,11 @@ function nbaWho(who, p, takes) {
     c.title = t.source + (t.stance ? ": " + t.stance : "") + (t.blurb ? ". " + t.blurb : "");
     who.appendChild(c);
   });
-  if (takes.length) cfbWho(who, p, { takes: takes.map(function (t) { return { source: t.source }; }) });
+  if (takes.length || nbaMinutesFor(p)) cfbWho(who, p, { takes: takes.map(function (t) { return { source: t.source }; }) });
   else who.appendChild(slot());
 }
 
-function nbaPanel(takes) {
+function nbaPanel(takes, mins) {
   var d = document.createElement("div");
   d.className = "cfbpanel";
   takes.forEach(function (t) {
@@ -3440,7 +3460,112 @@ function nbaPanel(takes) {
       (t.blurb ? "<div>" + esc(t.blurb) + "</div>" : "");
     d.appendChild(n);
   });
+  if (mins) d.appendChild(nbaMinutesChart(mins));
   return d;
+}
+
+/* ---- Minutes (mirror nba_minutes.json, from ESPN's play-by-play by scripts/nba_nightly.py) ----
+   His team's last five games, newest on top, Popcorn Machine style: each strip is one game from
+   tip to the final horn, shaded by his team's lead (green) or deficit (red); the bars are his
+   stretches on the floor, each with the score change while he was out there. */
+function nbaMinutesIndex(d) {
+  var by = {};
+  ((d && d.players) || []).forEach(function (r) {
+    var k = normName(r.name);
+    by[normName(NBA_ESPN_ALIASES[k] || r.name)] = r;
+  });
+  return { games: (d && d.games) || {}, byKey: by };
+}
+
+function nbaMinutesFor(p) {
+  var m = state.nbaMinutes;
+  return m ? m.byKey[boardKey(p.first_name, p.last_name, state.nameMaps.nba || {})] || null : null;
+}
+
+/** His team's margin at a moment of the game: the last score change at or before it. */
+function marginAt(flow, t) {
+  var m = 0;
+  for (var i = 0; i < flow.length && flow[i][0] <= t; i++) m = flow[i][1];
+  return m;
+}
+
+/** "Q2 4:12" for a moment of the game, seconds from tip; a stint's end at a break is the period it ends. */
+function gameClock(t, atEnd) {
+  var u = atEnd && t > 0 ? t - 0.5 : t;
+  var per = u < 2880 ? Math.floor(u / 720) + 1 : 5 + Math.floor((u - 2880) / 300);
+  var end = per <= 4 ? per * 720 : 2880 + (per - 4) * 300, left = Math.max(0, end - t);
+  return (per <= 4 ? "Q" + per : "OT" + (per - 4 > 1 ? per - 4 : "")) + " " +
+    Math.floor(left / 60) + ":" + String(Math.round(left % 60)).padStart(2, "0");
+}
+
+function nbaMinutesChart(m) {
+  var games = state.nbaMinutes.games, wrap = document.createElement("div");
+  wrap.className = "minchart";
+  var head = document.createElement("div");
+  head.className = "mhead";
+  head.innerHTML = "Minutes, last " + m.g.length + " <span>\u00b7 bars: on the floor, +/\u2212 while on \u00b7 shading: his team's lead</span>";
+  wrap.appendChild(head);
+  var top = 10;                                       // the lead scale: the biggest margin in these games, at least 10
+  m.g.forEach(function (e) {
+    var g = games[e[0]];
+    if (g) g.flow.forEach(function (f) { top = Math.max(top, Math.abs(f[1])); });
+  });
+  m.g.forEach(function (e) {
+    var g = games[e[0]];
+    if (!g) return;
+    var sign = g.home === m.team ? 1 : -1, opp = sign > 0 ? g.away : g.home, len = g.len || 2880;
+    var row = document.createElement("div");
+    row.className = "mrow" + (e.length === 4 ? "" : " none");
+    var lab = document.createElement("span");
+    lab.className = "mgame";
+    lab.innerHTML = "<b>" + (sign > 0 ? "v" : "@") + opp + "</b> " + esc(g.d.slice(5).replace("-", "/"));
+    var track = document.createElement("div");
+    track.className = "mtrack";
+    // his team's lead through the game, as a step line from the middle: up is ahead
+    var pts = ["M0 50"], last = 50;
+    g.flow.forEach(function (f) {
+      var x = (f[0] / len * 1000).toFixed(1), y = (50 - sign * f[1] / top * 48).toFixed(1);
+      pts.push("L" + x + " " + last, "L" + x + " " + y);
+      last = y;
+    });
+    pts.push("L1000 " + last, "L1000 50", "Z");
+    var gid = "mg" + e[0];
+    track.innerHTML = "<svg viewBox=\"0 0 1000 100\" preserveAspectRatio=\"none\" aria-hidden=\"true\">" +
+      "<defs><linearGradient id=\"" + gid + "\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"100\" gradientUnits=\"userSpaceOnUse\">" +
+      "<stop offset=\"0.5\" stop-color=\"rgba(95,191,127,.32)\"/><stop offset=\"0.5\" stop-color=\"rgba(224,112,95,.32)\"/></linearGradient></defs>" +
+      "<path d=\"" + pts.join(" ") + "\" fill=\"url(#" + gid + ")\"/></svg>";
+    for (var q = 720; q < len; q += q < 2880 ? 720 : 300) {
+      var ql = document.createElement("span");
+      ql.className = "mq";
+      ql.style.left = (q / len * 100) + "%";
+      track.appendChild(ql);
+    }
+    var res = document.createElement("span");
+    res.className = "mres";
+    var fin = sign * g.flow[g.flow.length - 1][1];
+    var wl = fin > 0 ? "W " + fin : fin < 0 ? "L " + -fin : "T";
+    if (e.length === 4) {
+      e[3].forEach(function (st) {
+        var pm = sign * (marginAt(g.flow, st[1]) - marginAt(g.flow, st[0]));
+        var b = document.createElement("span"), w = (st[1] - st[0]) / len * 100;
+        b.className = "mst " + (pm > 0 ? "pos" : pm < 0 ? "neg" : "even");
+        b.style.left = (st[0] / len * 100) + "%";
+        b.style.width = w + "%";
+        b.textContent = w >= 7 ? (pm > 0 ? "+" + pm : pm < 0 ? "\u2212" + -pm : "0") : "";
+        b.title = gameClock(st[0]) + " \u2192 " + gameClock(st[1], true) + " \u00b7 " +
+          ((st[1] - st[0]) / 60).toFixed(1) + " min \u00b7 " + (pm > 0 ? "+" : "") + pm;
+        track.appendChild(b);
+      });
+      res.innerHTML = (e[2] ? "S " : "") + "<b>" + Math.round(e[1]) + "m</b> \u00b7 " + wl;
+    } else {
+      var why = e.length === 2 ? (/COACH/.test(e[1]) ? "DNP-CD" : e[1] === "0 MIN" ? "0 min" : "DNP") : "Out";
+      res.innerHTML = "<b>" + why + "</b> \u00b7 " + wl;
+      if (e.length === 2) res.title = e[1];
+    }
+    row.append(lab, track, res);
+    wrap.appendChild(row);
+  });
+  return wrap;
 }
 
 /* ---- Sit chance (battle-royale-research scripts/sit_model.py, scored hourly by sit_live.py) -------
@@ -4249,7 +4374,8 @@ function render() {
     if (cf && cf.w) el.appendChild(cfbStrip(p, cf, false));
     frag.appendChild(el);
     if (cf && state.cfbOpen[p.player_id]) frag.appendChild(cfbPanel(p, cf));
-    if (nt && nt.length && state.cfbOpen[p.player_id]) frag.appendChild(nbaPanel(nt));
+    var mins = SPORT_MODE === "nba" ? nbaMinutesFor(p) : null;
+    if ((nt && nt.length || mins) && state.cfbOpen[p.player_id]) frag.appendChild(nbaPanel(nt || [], mins));
     if (SPORT_MODE === "nba" && state.sitOpen && state.sitOpen[p.player_id] && nbaSitFor(p)) frag.appendChild(nbaSitPanel(nbaSitFor(p)));
   });
   nbaOutRows(frag);
@@ -5652,6 +5778,7 @@ function bootFailed(where, err) {
       state.nbaGames = odds.games || {};                   // {date: {team: [opponent, "vs" | "at"]}}
       loadNbaTakes().then(function () { if (state.slate) render(); });
       fetchJson("nba_sit.json").then(function (d) { state.nbaSit = d; if (state.slate) render(); }).catch(function () {});
+      fetchJson("nba_minutes.json").then(function (d) { state.nbaMinutes = nbaMinutesIndex(d); if (state.slate) render(); }).catch(function () {});
       fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : {}; })
         .then(function (d) { state.postedExpo = d.slates || {}; if (state.slate) render(); })
@@ -6129,6 +6256,10 @@ function brrSelfTest() {
   ok("ETR's slate-wide early noise comes out as the median ratio; one real move doesn't shift it",
      Math.abs(etrNoiseScale(ns0, ns1) - 1 / 0.97) < 1e-9 && etrNoiseScale(ns1, ns1) === 1 &&
      etrNoiseScale(ns0.slice(0, 5), ns1.slice(0, 5)) === 1);
+  ok("the minutes chart's clock reads a moment of the game, a stint's end at a break as the period it ends",
+     gameClock(0) === "Q1 12:00" && gameClock(720, true) === "Q1 0:00" && gameClock(720) === "Q2 12:00" &&
+     gameClock(2880, true) === "Q4 0:00" && gameClock(3000) === "OT 3:00" && gameClock(3300) === "OT2 3:00" &&
+     marginAt([[0, 0], [30, 2], [90, -1]], 60) === 2 && marginAt([[0, 0], [30, 2], [90, -1]], 90) === -1);
   function nbaUpT(file, at, rows) {
     var u = nbaUp(file, at, rows);
     u.entries.forEach(function (e, i) { e.team = rows[i][3]; });
