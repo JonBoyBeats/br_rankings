@@ -34,7 +34,7 @@ DEPTH, TOP, GAP = 48, 12, 3
 EARLY_USUAL, EARLY_MARGIN = 25, 15
 # ADP ranks per round of a 6-team draft; the last runs to DEPTH, the late and undrafted pile you rank
 ROUNDS = [(1, 6), (7, 12), (13, 18), (19, 24), (25, 30), (31, DEPTH)]
-TEXT = ("date", "slate", "player_id", "name", "team", "pos", "injury")
+TEXT = ("date", "slate", "player_id", "name", "team", "pos", "injury", "opp", "fg", "fg3", "ft", "mtch_label", "mtch_cats")
 
 
 def num(v):

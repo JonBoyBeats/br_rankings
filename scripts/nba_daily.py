@@ -31,12 +31,17 @@ ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
 TEAM = {"SA": "SAS", "NY": "NYK", "GS": "GSW", "NO": "NOP", "UTAH": "UTA", "WSH": "WAS"}
 ESPN_ALIASES = {"miles mcbride": "deuce mcbride", "herbert jones": "herb jones", "moritz wagner": "moe wagner",
                 "luguentz dort": "lu dort", "cameron johnson": "cam johnson"}
-STAT = {"MIN": "min", "PTS": "pts", "REB": "reb", "AST": "ast", "STL": "stl", "BLK": "blk", "TO": "tov",
+STAT = {"MIN": "min", "PTS": "pts", "REB": "reb", "AST": "ast", "STL": "stl", "BLK": "blk", "TO": "tov", "PF": "pf",
         "minutes": "min", "points": "pts", "rebounds": "reb", "assists": "ast", "steals": "stl", "blocks": "blk",
-        "turnovers": "tov"}
+        "turnovers": "tov", "fouls": "pf"}
+# made-attempted, kept as ESPN writes them (as on the Live page)
+SHOT = {"FG": "fg", "3PT": "fg3", "FT": "ft", "fieldGoalsMade-fieldGoalsAttempted": "fg",
+        "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3", "freeThrowsMade-freeThrowsAttempted": "ft"}
 COLS = ["date", "slate", "player_id", "name", "team", "pos", "adp_am", "adp_etr", "adp_close", "injury", "usual_min",
         "am_rank", "ours_am", "pm_rank", "ours_pm", "ours_raw", "etr_first", "etr_last", "etr_median",
-        "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual", "margin"]
+        "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual", "margin",
+        # for the player-by-player notes (scripts/nba_ledger.py): his night and his usual per minute
+        "opp", "pf", "fg", "fg3", "ft", "pts_pm", "reb_pm", "ast_pm", "stk_pm", "fp_pm", "mtch", "mtch_label", "mtch_cats"]
 
 
 def norm_name(s):
@@ -238,9 +243,11 @@ def espn_box(lock):
             st = (t.get("statistics") or [{}])[0]
             keys = st.get("keys") or st.get("labels") or st.get("names") or []
             for a in st.get("athletes", []):
-                s = {"pts": 0.0, "reb": 0.0, "ast": 0.0, "stl": 0.0, "blk": 0.0, "tov": 0.0, "min": 0.0}
+                s = {"pts": 0.0, "reb": 0.0, "ast": 0.0, "stl": 0.0, "blk": 0.0, "tov": 0.0, "min": 0.0, "pf": 0.0}
                 for i, v in enumerate(a.get("stats") or []):
                     k = STAT.get(keys[i]) if i < len(keys) else None
+                    if i < len(keys) and keys[i] in SHOT:
+                        s[SHOT[keys[i]]] = str(v)
                     if k:
                         try:
                             s[k] = float(str(v).split("-")[0])
@@ -248,6 +255,7 @@ def espn_box(lock):
                             pass
                 nm = norm_name(a["athlete"]["displayName"])
                 s["margin"] = score.get(team, 0) - (opp[0] if opp else 0)
+                s["opp"] = next((k for k in score if k != team), "")
                 out[(ESPN_ALIASES.get(nm, nm), team)] = s
     return out
 
@@ -255,6 +263,10 @@ def espn_box(lock):
 # ---------------------------------------------------------------- one slate
 def r1(x):
     return "" if x is None else round(float(x), 1)
+
+
+def r3(x):
+    return "" if x is None else round(float(x), 4)
 
 
 def build(mirror, gist, slate, name_map):
@@ -296,8 +308,9 @@ def build(mirror, gist, slate, name_map):
         pid, key = p["player_id"], norm_name(p["first_name"] + " " + p["last_name"])
         b = box.get((key, p["team"])) or next((v for (k, _), v in box.items() if k == key), None)
         if b is None and p["team"] in played_teams:      # his team played without him: a zero for whoever drafted him
-            b = {"pts": 0.0, "reb": 0.0, "ast": 0.0, "stl": 0.0, "blk": 0.0, "tov": 0.0, "min": 0.0, "margin": None}
+            b = {"pts": 0.0, "reb": 0.0, "ast": 0.0, "stl": 0.0, "blk": 0.0, "tov": 0.0, "min": 0.0, "pf": 0.0, "margin": None}
         m = mfile.get((key, p["team"])) or next((v for (k, _), v in mfile.items() if k == key), None)
+        mt = ((m or {}).get("mtch") or {}).get(day)        # our matchup row for tonight: [points, {category: points}, label]
         rows.append({
             "date": day, "slate": slate["label"], "player_id": pid, "name": p["first_name"] + " " + p["last_name"],
             "team": p["team"], "pos": p.get("position") or "",
@@ -311,6 +324,12 @@ def build(mirror, gist, slate, name_map):
             "min": r1(b and b["min"]), "pts": r1(b and b["pts"]), "reb": r1(b and b["reb"]), "ast": r1(b and b["ast"]),
             "stl": r1(b and b["stl"]), "blk": r1(b and b["blk"]), "tov": r1(b and b["tov"]),
             "actual": ud_points(b) if b else "", "margin": r1(b and b["margin"]),
+            "opp": (b or {}).get("opp", ""), "pf": r1(b and b.get("pf")),
+            "fg": (b or {}).get("fg", ""), "fg3": (b or {}).get("fg3", ""), "ft": (b or {}).get("ft", ""),
+            "pts_pm": r3(m and m.get("upm")), "reb_pm": r3(m and m.get("rpm")), "ast_pm": r3(m and m.get("apm")),
+            "stk_pm": r3(m and m.get("spm")), "fp_pm": r3(m and m.get("ppm")),
+            "mtch": r1(mt[0]) if mt else "", "mtch_label": mt[2] if mt and len(mt) > 2 else "",
+            "mtch_cats": " ".join("%s%+.1f" % (k, v) for k, v in sorted(mt[1].items(), key=lambda x: -abs(x[1]))) if mt else "",
         })
     when = lambda x: {"at": x["at"], "from": x["source"], "ours": bool(x.get("ours"))} if x else None
     meta = {"lock": slate["lock"].isoformat(), "adp_am_at": s_am[0].isoformat() if s_am else None,

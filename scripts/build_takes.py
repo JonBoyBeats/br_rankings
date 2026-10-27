@@ -48,7 +48,8 @@ print(f'{len(cfb)} college takes -> analysis/cfb_takes.json')
 
 # NBA: one CSV per day and source, <YYYY-MM-DD>_<source>.csv in analysis/nba/takes/
 # (the Pacific game day), shown in the Board's row dropdown on that day's NBA slates.
-NBA_SOURCES = {'Zakarian': 'Zakarian, Bagel with Locks (Underdog)', 'ETR': 'Establish the Run, NBA Matchups'}
+NBA_SOURCES = {'Zakarian': 'Zakarian, Bagel with Locks (Underdog)', 'ETR': 'Establish the Run, NBA Matchups',
+               'Recent': 'Our ledger: his last 5 games against ETR, and why (scripts/nba_ledger.py)'}
 nba = []
 for path in sorted(glob.glob(os.path.join(HERE, 'nba', 'takes', '*.csv'))):
     m = re.search(r'(\d{4}-\d{2}-\d{2})_[a-z_]+\.csv$', path)
