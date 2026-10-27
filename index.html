@@ -3061,7 +3061,11 @@ function nbaStatCell(p, sh) {
   [["boom", "Boom"], ["dud", "Dud"]].forEach(function (k) {
     var b = document.createElement("b"), v = r && r[k[0]], f = sh && sh[k[0]][p.player_id];
     b.className = "gchip";
-    if (v == null) { b.textContent = "\u2013"; b.style.color = "var(--muted)"; c.appendChild(b); return; }
+    if (v == null) {
+      b.textContent = "\u2013"; b.style.color = "var(--muted)";
+      if (r && r.unused) b.title = "No Boom or Dud: he hasn't played in any of his team's " + r.r.tg + " games, and the models only know players who play";
+      c.appendChild(b); return;
+    }
     b.textContent = String(Math.round(v * 100));
     b.title = k[0] === "boom"
       ? "Boom " + b.textContent + "%: his chance of a night 10+ over the average of the median projection of the 12 players around him by ADP and of the 12 around him by projection. Rises with his projection (matchup included), usage, rebounds and assists per minute and swingy minutes"
@@ -3110,7 +3114,9 @@ function nbaStatRows() {
   });
   var bars = nbaBars(rows);
   rows.forEach(function (row) {
-    var has = row.r.ppm != null;
+    // the models only know players who play: none for one his team has gone 3+ games without using
+    row.unused = row.r.games === 0 && row.r.tg >= 3;
+    var has = row.r.ppm != null && !row.unused;
     row.bar = bars[row.pid];
     row.boom = has ? nbaChance(NBA_BOOM, row.x, row.bar, row.r) : null;
     row.dud = has ? nbaChance(NBA_DUD, row.x, row.bar, row.r) : null;
