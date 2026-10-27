@@ -31,6 +31,8 @@ LEDGER = os.path.join(HERE, "ledger.csv")
 WINDOW, SHOW_AT = 5, 3          # the Recent note: last 5 graded games, once there are 3
 NEAR = 6                        # within this many points of ETR is "in line"
 BIG = 4                         # a part this size (points) is worth naming
+MIN_OFF = 4                     # and minutes only when he played this many more or fewer than usual
+BOX_TO_ETR = [1.103, -6.91]     # a box-score average on ETR's median scale: the board's NBA_BOX_TO_ETR, refit by fit_scale()
 COLS = ["date", "slate", "player_id", "name", "team", "opp", "pos", "adp_close", "etr", "actual", "gap", "result",
         "min", "usual_min", "pf", "fg", "fg3", "ft", "pts", "reb", "ast", "stk", "tov",
         "c_proj", "c_min", "c_pts", "c_reb", "c_ast", "c_stk", "c_tov", "mtch_label", "mtch_cats",
@@ -47,18 +49,42 @@ def made(s):
         return None, None
 
 
+def usual_rate(r):
+    """His usual points a minute, built from his per-stat rates (turnovers being what the total leaves),
+    so the parts add up exactly; the file's total can run a little off their sum."""
+    tov_pm = max(0.0, r["pts_pm"] + 1.2 * r["reb_pm"] + 1.5 * r["ast_pm"] + r["stk_pm"] - r["fp_pm"])
+    return r["pts_pm"] + 1.2 * r["reb_pm"] + 1.5 * r["ast_pm"] + r["stk_pm"] - tov_pm
+
+
 def parts(r):
     """{part: points} for one player's night, or {} without his usual per-minute line."""
     u, m = r["usual_min"], r["min"]
     if not r["fp_pm"] or u is None or m is None:
         return {}
     tov_pm = max(0.0, r["pts_pm"] + 1.2 * r["reb_pm"] + 1.5 * r["ast_pm"] + r["stk_pm"] - r["fp_pm"])
-    out = {"min": (m - u) * r["fp_pm"], "pts": r["pts"] - r["pts_pm"] * m, "reb": 1.2 * (r["reb"] - r["reb_pm"] * m),
+    fp_pm = usual_rate(r)
+    out = {"min": (m - u) * fp_pm, "pts": r["pts"] - r["pts_pm"] * m, "reb": 1.2 * (r["reb"] - r["reb_pm"] * m),
            "ast": 1.5 * (r["ast"] - r["ast_pm"] * m), "stk": 3 * (r["stl"] + r["blk"]) - r["stk_pm"] * m,
            "tov": -(r["tov"] - tov_pm * m)}
     etr = r["etr_median"] if r["etr_median"] is not None else r["etr_last"]
-    out["proj"] = u * r["fp_pm"] - etr if etr is not None else 0.0
+    # ETR's number against his usual, both on ETR's (median) scale, so a median running below an
+    # average isn't read as ETR expecting less of him
+    out["proj"] = max(0.0, BOX_TO_ETR[0] * u * fp_pm + BOX_TO_ETR[1]) - etr if etr is not None else 0.0
     return out
+
+
+def fit_scale(slates):
+    """Refit the line on every 15+ minute player with both numbers on file, as the board does once it can."""
+    xs, ys = [], []
+    for x in slates:
+        for r in x["rows"]:
+            if r.get("fp_pm") and (r["usual_min"] or 0) >= 15 and r["etr_median"] is not None:
+                xs.append(r["usual_min"] * usual_rate(r))
+                ys.append(r["etr_median"])
+    if len(xs) >= 40:
+        mx, my = sum(xs) / len(xs), sum(ys) / len(ys)
+        a = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sum((x - mx) ** 2 for x in xs)
+        BOX_TO_ETR[:] = [a, my - a * mx]
 
 
 def tag_night(r, c):
@@ -66,13 +92,13 @@ def tag_night(r, c):
     out = []
     fgm, fga = made(r["fg"])
     for k, v in sorted(c.items(), key=lambda x: -abs(x[1])):
-        if abs(v) < BIG:
+        if abs(v) < BIG or (k == "min" and abs(r["min"] - r["usual_min"]) < MIN_OFF):
             continue
         m = r["min"]
         if k == "proj":
+            usual = max(0.0, BOX_TO_ETR[0] * r["usual_min"] * usual_rate(r) + BOX_TO_ETR[1])
             out.append(("ETR above his usual" if v < 0 else "ETR below his usual",
-                        "ETR had him %s his usual (%.0f vs %.0f)" % ("above" if v < 0 else "below",
-                                                                       r["usual_min"] * r["fp_pm"] - v, r["usual_min"] * r["fp_pm"])))
+                        "ETR had him %s his usual (%.0f vs %.0f)" % ("above" if v < 0 else "below", usual - v, usual)))
         elif k == "min":
             why = (" with %d fouls" % r["pf"] if v < 0 and (r["pf"] or 0) >= 5 else
                    " in a %d-point blowout" % abs(r["margin"]) if v < 0 and r["margin"] is not None and abs(r["margin"]) >= 15 else "")
@@ -86,9 +112,10 @@ def tag_night(r, c):
         elif k in ("reb", "ast"):
             name = {"reb": "rebounds", "ast": "assists"}[k]
             exp = r[k + "_pm"] * m
-            out.append(("%s %s" % (name, "up" if v > 0 else "down"), "%d %s (about %.0f usual for his minutes)" % (r[k], name[:3], exp)))
+            out.append(("%s %s" % (name, "up" if v > 0 else "down"), "%d %s (about %.0f usual for his minutes)" % (r[k], k, exp)))
         elif k == "stk":
-            out.append(("stocks up" if v > 0 else "stocks down", "%d stl + %d blk" % (r["stl"], r["blk"])))
+            out.append(("stocks up" if v > 0 else "stocks down",
+                        "%d stl + %d blk" % (r["stl"], r["blk"]) if r["stl"] + r["blk"] else "no steals or blocks"))
         elif k == "tov" and v < 0:
             out.append(("turnovers", "%d turnovers" % r["tov"]))
     return out[:3]
@@ -105,7 +132,7 @@ def night(r):
         row.update(result="sat", tags="", draft="Didn't play.")
         return row
     if not graded:
-        row.update(result="left early", tags="", draft="Left early: %d min of his usual %d (not graded)." % (r["min"], r["usual_min"]))
+        row.update(result="left early", tags="", draft="Left early: %d min of his usual %d." % (r["min"], r["usual_min"]))
         return row
     gap = r["actual"] - etr if etr is not None else None
     result = "in line" if gap is None or abs(gap) < NEAR else "over" if gap > 0 else "under"
@@ -114,7 +141,7 @@ def night(r):
     head = ("In line (%.1f vs ETR %.1f)" % (r["actual"], etr) if result == "in line" and etr is not None else
             "%s by %.0f (%.1f vs ETR %.1f)" % (result.capitalize(), abs(gap), r["actual"], etr) if etr is not None else "%.1f" % r["actual"])
     row.update(gap=round(gap, 1) if gap is not None else "", result=result, tags="; ".join(t for t, _ in tags),
-               draft=head + (": " + ", ".join(p for _, p in tags) if tags else "") + ".",
+               draft=head + (": " + ", ".join(p for _, p in (tags[:1] if result == "in line" else tags)) if tags else "") + ".",
                **{"c_" + k: round(v, 1) for k, v in c.items()})
     return row
 
@@ -133,6 +160,7 @@ def save_ledger(rows):
 
 def slate_rows(date):
     slates = rep.load()
+    fit_scale(slates)
     s = [x for x in slates if x["date"] == (date or slates[-1]["date"])]
     if not s:
         sys.exit("No slate on file for %s." % date)
@@ -191,7 +219,9 @@ def recent(ledger, date):
         tally = " · ".join("%d %s" % (count(x), x) for x in ("over", "in line", "under") if count(x))
         mins = [float(r["min"]) for r in rs]
         usual = float(rs[-1]["usual_min"] or 0)
-        bits = ["Last %d against ETR: %s." % (n, tally),
+        games = " · ".join("%s %s%s" % (r["date"][5:], r["result"], " (%s)" % r["tags"].replace("; ", ", ") if r["tags"] else "")
+                           for r in rs)
+        bits = ["Last %d against ETR: %s." % (n, tally), games + ".",
                 "Minutes %.0f a game (usual now %.0f)." % (sum(mins) / n, usual)]
         tags = defaultdict(int)
         for r in rs:
