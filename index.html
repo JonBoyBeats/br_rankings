@@ -3461,7 +3461,9 @@ function nbaSitPanel(x) {
   });
   var at = state.nbaSit.as_of_et ? " As of " + state.nbaSit.as_of_et + " ET (" + (state.nbaSit.model === "early" ? "morning" : "afternoon") + " model)." : "";
   d.innerHTML = "<b>Sits " + pct(x.p) + "</b> \u00b7 " + esc(NBA_SIT_LABEL[x.situation] || x.situation) +
-    (x.reason && x.reason !== "-" ? " (" + esc(x.reason) + ")" : "") + (steps.length ? ": " + steps.join(" \u00b7 ") : "") + "." + at;
+    (x.reason && x.reason !== "-" ? " (" + esc(x.reason) + ")" : "") +
+    (x.source === "underdog" ? " (Underdog's tag; not on the official report yet, so scored as tagged fresh today)" : "") +
+    (steps.length ? ": " + steps.join(" \u00b7 ") : "") + "." + at;
   return d;
 }
 
