@@ -13,6 +13,10 @@ Each row is a player on the slate, for the two halves of the day:
   actual     ESPN's box scores in Underdog points (the Live page's scoring); 0 for a player
              whose team played without him
 
+Beside it, <date>_box.csv: every rotation player (15+ minutes, usual or that night) in every
+game of the night, main slate or not, with his box line, usual rates, ETR and matchup row, for
+the player ledger (scripts/nba_ledger.py).
+
 ADP comes from the mirror's git history (nba_latest.json is committed every poll), the board
 and ETR from your gist's (a git clone of it). ours_*, etr_first and etr_last are on the board's
 Proj scale (median nudged toward ceiling); etr_median is ETR's own number.
@@ -20,6 +24,7 @@ Proj scale (median nudged toward ceiling); etr_median is ETR's own number.
   python3 scripts/nba_daily.py --mirror ../br-adp-mirror [--gist ../gist] [--since 2026-10-20] [--rebuild]
 """
 import argparse, csv, datetime as dt, json, os, re, subprocess, sys, unicodedata, urllib.request
+from collections import defaultdict
 from zoneinfo import ZoneInfo
 
 PT, ET, UTC = ZoneInfo("America/Los_Angeles"), ZoneInfo("America/New_York"), dt.timezone.utc
@@ -269,6 +274,43 @@ def r3(x):
     return "" if x is None else round(float(x), 4)
 
 
+BOX_COLS = ["date", "name", "team", "opp", "pos", "player_id", "adp_close", "min", "pts", "reb", "ast", "stl", "blk", "tov",
+            "pf", "fg", "fg3", "ft", "actual", "margin", "usual_min", "pts_pm", "reb_pm", "ast_pm", "stk_pm", "fp_pm",
+            "etr_median", "etr_last", "mtch", "mtch_label", "mtch_cats"]
+ROTATION_MIN = 15    # the box file keeps a player who usually plays this many minutes, or did tonight
+
+
+def box_rows(day, box, mfile, etr_entries, slate_rows):
+    """Every rotation player in every game of the night, main slate or not, for the player ledger."""
+    etr = defaultdict(list)
+    for e in etr_entries or []:
+        if not e.get("scenario"):
+            etr[e.get("norm")].append(e)
+    on_slate = {norm_name(r["name"]): r for r in slate_rows}
+    out = []
+    for (key, team), b in sorted(box.items()):
+        m = mfile.get((key, team)) or next((v for (k, _), v in mfile.items() if k == key), None)
+        if max((m or {}).get("min") or 0, b["min"]) < ROTATION_MIN:
+            continue
+        es = [e for e in etr.get(key, []) if e.get("team") in (None, "", team)] or etr.get(key, [])
+        e = es[0] if len(es) == 1 else None
+        mt = ((m or {}).get("mtch") or {}).get(day)
+        sr = on_slate.get(key) or {}
+        out.append({
+            "date": day, "name": (m or {}).get("name") or sr.get("name") or key.title(), "team": team, "opp": b.get("opp", ""),
+            "pos": (m or {}).get("pos") or sr.get("pos", ""), "player_id": sr.get("player_id", ""), "adp_close": sr.get("adp_close", ""),
+            "min": r1(b["min"]), "pts": r1(b["pts"]), "reb": r1(b["reb"]), "ast": r1(b["ast"]), "stl": r1(b["stl"]),
+            "blk": r1(b["blk"]), "tov": r1(b["tov"]), "pf": r1(b.get("pf")), "fg": b.get("fg", ""), "fg3": b.get("fg3", ""),
+            "ft": b.get("ft", ""), "actual": ud_points(b), "margin": r1(b.get("margin")), "usual_min": r1(m and m.get("min")),
+            "pts_pm": r3(m and m.get("upm")), "reb_pm": r3(m and m.get("rpm")), "ast_pm": r3(m and m.get("apm")),
+            "stk_pm": r3(m and m.get("spm")), "fp_pm": r3(m and m.get("ppm")),
+            "etr_median": r1(e.get("median")) if e else "", "etr_last": r1(e.get("proj")) if e else "",
+            "mtch": r1(mt[0]) if mt else "", "mtch_label": mt[2] if mt and len(mt) > 2 else "",
+            "mtch_cats": " ".join("%s%+.1f" % (k, v) for k, v in sorted(mt[1].items(), key=lambda x: -abs(x[1]))) if mt else "",
+        })
+    return out
+
+
 def build(mirror, gist, slate, name_map):
     snaps = [x for x in mirror.snapshots(slate) if x[0] < slate["lock"]]
     if not snaps:
@@ -338,7 +380,7 @@ def build(mirror, gist, slate, name_map):
             "etr_first": {"at": first["at"], "file": first.get("file")} if first else None,
             "etr_last": {"at": parts["etr_last"]["at"], "file": parts["etr_last"].get("file")} if parts.get("etr_last") else None,
             "am": when(am), "pm": when(pm), "gist": bool(gist)}
-    return rows, meta
+    return rows, meta, box_rows(day, box, mfile, parts["etr_last"]["entries"] if parts.get("etr_last") else None, rows)
 
 
 def main():
@@ -371,7 +413,11 @@ def main():
         got = build(mirror, gist, slate, name_map)
         if not got:
             continue
-        rows, meta = got
+        rows, meta, boxed = got
+        with open(path.replace("_main.csv", "_box.csv"), "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=BOX_COLS)
+            w.writeheader()
+            w.writerows(boxed)
         with open(path, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=COLS)
             w.writeheader()
