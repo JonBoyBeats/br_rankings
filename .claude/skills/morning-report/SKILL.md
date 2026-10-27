@@ -105,17 +105,55 @@ Add a dated section at the top of `analysis/nba/report/takeaways.md` (newest fir
 2-4 bullets on last night, any theme that crossed the bar above, and a change to try, but only
 when a theme supports it. Keep earlier sections as they are.
 
-## 7. Save
+## 7. Last night, player by player
 
-The session's files are gone when it ends, so commit the log and push it:
+A line on every graded player's night, kept in a running ledger. It is context only: it never
+feeds Proj, the ranks or the grading above.
 
 ```
-git add analysis/nba/report && git commit -m "NBA report: takeaways for <date>" && git push origin HEAD:main
+python3 scripts/nba_ledger.py draft
+```
+
+This writes the night to `analysis/nba/ledger.csv` and prints it in ADP order. Each row has
+the gap to ETR, tags for what moved (minutes, scoring, rebounds, assists, stocks, turnovers,
+or ETR's number against his usual) and a draft note built from the box score.
+
+Review the drafts and write each player's final note in the `note` column of that night's rows,
+as a one-liner a beat writer would give: what happened, and why when the data shows it.
+Examples: "In line.", "Foul trouble: 22 minutes with 5 fouls, cold 4-13.", "Assists way up
+(11), the way it has gone against CHA.", "Minutes cut to 24 in a close game: looks like a
+rotation call." Keep the tags as the script set them, so the ledger stays consistent night to
+night. Add matchup context only when `mtch_label`/`mtch_cats` or earlier ledger rows against the
+same team support it. Don't invent news: if short minutes have no visible cause, say "unclear".
+Then show it:
+
+```
+python3 scripts/nba_ledger.py print
+```
+
+## 8. Recent notes for today's board
+
+```
+python3 scripts/nba_ledger.py recent && python3 scripts/build_takes.py
+```
+
+This writes a Recent note (his last 5 graded games against ETR, minutes, any trend, and his last
+game's note) for every player with 3+, and rebuilds the board's notes so they show in the row
+dropdown under Expand all on today's slates.
+
+## 9. Save
+
+The session's files are gone when it ends, so commit and push everything:
+
+```
+git add analysis/nba/report analysis/nba/ledger.csv analysis/nba/takes analysis/nba_takes.json
+git commit -m "NBA report: takeaways and player notes for <date>" && git push origin HEAD:main
 ```
 
 ## In chat
 
 In this order, short and scannable: last night's morning and afternoon barbells, the same so
 far, your calls and our misses (one line each: player, cause, right or closer), themes,
-takeaways. Close with anything missing from
-the record (no ETR on file, no board number, unmatched box scores) so it can be fixed.
+takeaways, then last night player by player (the printed list) and any "against the same
+team" lines. Close with anything missing from the record (no ETR on file, no board number,
+unmatched box scores) so it can be fixed.
