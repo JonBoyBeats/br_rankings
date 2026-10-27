@@ -1528,6 +1528,21 @@ function projNumbers(gen) {
   return gen.entries.map(function (e) { return e.norm + ":" + e.median + ":" + e.ceiling; }).sort().join("|");
 }
 
+/* ETR's early files run the whole slate through one random scale; its afternoon file has none.
+   That scale is the median of new over old across the players both files have (most of them
+   didn't really move), so the change marker can take it out and show only real moves. */
+function etrNoiseScale(prevEntries, curEntries) {
+  var was = {}, ratios = [];
+  prevEntries.forEach(function (e) { was[e.norm] = e.median; });
+  curEntries.forEach(function (e) {
+    if (was[e.norm] >= 5 && e.median >= 5) ratios.push(e.median / was[e.norm]);
+  });
+  if (ratios.length < 10) return 1;
+  ratios.sort(function (a, b) { return a - b; });
+  var m = ratios.length >> 1;
+  return ratios.length % 2 ? ratios[m] : (ratios[m - 1] + ratios[m]) / 2;
+}
+
 function addNbaUpload(store, upload) {
   var cur = store.current, day = pacificDay(upload.at), next;
   if (cur && pacificDay(cur.at) === day) {
@@ -2557,13 +2572,18 @@ function applyNbaProjections(store) {
   state.nbaEtrToday = res.etrToday;
   state.nbaScale = res.scale;
   state.proj = res.values;
+  var cur = store.current;
   state.projParts = res.parts;
   state.hasOwn = false;
   state.projPrev = res.etrToday && store.previous && store.previous.entries
     ? joinProjections(s.players, store.previous.entries, map).values : {};
+  // an earlier file from today: take out its slate-wide noise before comparing
+  var prevScale = res.etrToday && store.previous && store.previous.entries &&
+    pacificDay(store.previous.at) === pacificDay(cur.at) ? etrNoiseScale(store.previous.entries, cur.entries) : 1;
+  Object.keys(state.projPrev).forEach(function (pid) { state.projPrev[pid] *= prevScale; });
   recomputeVorp();
   sortBelowLine();
-  var cur = store.current, j = res.joined;
+  var j = res.joined;
   function outNames(why) {
     return Object.keys(res.out).filter(function (k) { var x = idx.byKey[k]; return res.out[k] === why && x && x.team && x.games > 0; })
       .map(function (k) { return idx.byKey[k].name + " " + idx.byKey[k].team; }).sort();
@@ -2577,6 +2597,7 @@ function applyNbaProjections(store) {
     prevFile: res.etrToday && store.previous ? store.previous.file : null,
     prevAt: res.etrToday && store.previous ? store.previous.at : null,
     prevFormat: res.etrToday && store.previous ? store.previous.format : null,
+    prevScale: prevScale,
     matchedById: j ? j.matchedById : 0, matchedByName: j ? j.matchedByName : res.byEtr + res.byBox,
     boardTotal: s.players.length,
     missing: s.players
@@ -4131,6 +4152,9 @@ function render() {
                  (meta.prevFormat && meta.prevFormat !== meta.format
                    ? ". Those came from the " + meta.prevFormat + " file and these from the " +
                      meta.format + " file, so part of this is the change of source."
+                   : "") +
+                 (meta.prevScale && Math.abs(meta.prevScale - 1) >= 0.001
+                   ? ". That file ran \u00d7" + meta.prevScale.toFixed(3) + " slate-wide (ETR's early noise), taken out first"
                    : "");
     }
     // a teammate you marked out: the slot shows what that moved him, in blue, and the upload change goes to the hover
@@ -6093,6 +6117,16 @@ function brrSelfTest() {
   var ysAgain = addNbaUpload(ys, nbaUp("pm.csv", "2026-10-20T21:00:00Z", [["a", 12, 22], ["b", 30, 40], ["c", 5, 9]]));
   ok("a same-day file's change marker counts from the file before it, yesterday's only for a player that file lacked",
      ys.previous.file === "am.csv" && ysPrev.a === 10 && ysPrev.b === 30 && ysPrev.c === 4 && ysAgain.previous === ys.previous);
+  var noisy = [], clean = [];
+  for (var ni = 0; ni < 20; ni++) {
+    clean.push(["p" + ni, 20 + ni, 30 + ni]);
+    noisy.push(["p" + ni, (20 + ni) * 0.97, 30 + ni]);
+  }
+  clean[0] = ["p0", 26, 36];   // one real move
+  var ns0 = nbaUp("am.csv", "2026-10-20T16:00:00Z", noisy).entries, ns1 = nbaUp("pm.csv", "2026-10-20T22:00:00Z", clean).entries;
+  ok("ETR's slate-wide early noise comes out as the median ratio; one real move doesn't shift it",
+     Math.abs(etrNoiseScale(ns0, ns1) - 1 / 0.97) < 1e-9 && etrNoiseScale(ns1, ns1) === 1 &&
+     etrNoiseScale(ns0.slice(0, 5), ns1.slice(0, 5)) === 1);
   function nbaUpT(file, at, rows) {
     var u = nbaUp(file, at, rows);
     u.entries.forEach(function (e, i) { e.team = rows[i][3]; });
