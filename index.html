@@ -375,6 +375,15 @@
   html.nba .nbawho > * { justify-self: start; }
   html.nba .nbawho .inj.p { background: #2f6fd6; color: #ffffff; }
   html.nba .nbawho .inj.d { background: var(--t0); color: var(--t0-ink); }
+  /* NBA: the chance he sits tonight (mirror nba_sit.json), at the end of the name line; tap for why. */
+  .sitx { all: unset; cursor: pointer; font-family: var(--mono); font-size: 9.5px; font-weight: 700; line-height: 1;
+          padding: 2px 5px; border-radius: 4px; white-space: nowrap; align-self: center;
+          border: 1px solid rgba(240, 138, 126, .55); color: var(--down); }
+  .sitx.mid { background: rgba(224, 123, 58, .25); color: #f0a36e; border-color: transparent; }
+  .sitx.hi { background: var(--t0); color: var(--t0-ink); border-color: transparent; }
+  .sitx:focus-visible { outline: 2px solid var(--accent); }
+  .sitpanel { font-size: 12.5px; color: var(--muted); }
+  .sitpanel b { color: var(--ink); }
   .outback { all: unset; cursor: pointer; margin: 2px 6px 2px 0; padding: 2px 8px; border-radius: 6px; font-size: 12.5px;
              border: 1px solid var(--line-strong); color: var(--ink); }
   .outback:focus-visible { outline: 2px solid var(--accent); }
@@ -3406,6 +3415,56 @@ function nbaPanel(takes) {
   return d;
 }
 
+/* ---- Sit chance (battle-royale-research scripts/sit_model.py, scored hourly by sit_live.py) -------
+   The chance he sits tonight from the official injury report as it stands (and how his tag got
+   there), the night's schedule and spread, and his own history, fit on 2023-26: on 2025-26 a
+   prediction of 30% came in near 30%. Before noon ET it is the early model (your 3:45 AM PT
+   ranks), after it the 5 PM ET one (your 2 PM PT ranks). Shown for anyone tagged Probable,
+   Questionable or Doubtful, and for anyone else at NBA_SIT_SHOW or more. */
+var NBA_SIT_SHOW = 0.10;
+var NBA_SIT_LABEL = { none: "No tag", A: "Available", P: "Probable", Q_carried: "Q since last night", Q_new: "Q, added today",
+                      Q_down: "Q, downgraded from Probable", Q_up: "Q, upgraded from Doubtful/Out", D: "Doubtful" };
+
+/** His sit-chance row for this slate's day, if the board should show one. */
+function nbaSitFor(p) {
+  var d = state.nbaSit;
+  if (!d || !state.slate || d.date !== pacificDay(state.slate.cutoff)) return null;
+  if (state.nbaOutPids && state.nbaOutPids[p.player_id]) return null;
+  var plain = String((p.first_name || "") + " " + (p.last_name || "")).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  var x = d.players[boardKey(p.first_name, p.last_name, state.nameMaps.nba || {})] || d.players[normName(plain)];
+  if (!x || x.situation === "O") return null;
+  // "Available" isn't an Underdog tag: like no tag, only worth a chip at NBA_SIT_SHOW
+  return (x.situation !== "none" && x.situation !== "A") || x.p >= NBA_SIT_SHOW ? x : null;
+}
+
+function nbaSitChip(p, x) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "sitx" + (x.p >= 0.5 ? " hi" : x.p >= 0.2 ? " mid" : "");
+  b.textContent = Math.round(x.p * 100) + "%";
+  b.title = "Chance he sits tonight: " + Math.round(x.p * 100) + "% (" + (NBA_SIT_LABEL[x.situation] || x.situation) +
+            "). Tap for why";
+  b.addEventListener("click", function (e) {
+    e.stopPropagation();                      // a tap on the row lifts it; this only opens the why
+    state.sitOpen = state.sitOpen || {};
+    state.sitOpen[p.player_id] = !state.sitOpen[p.player_id];
+    render();
+  });
+  return b;
+}
+
+function nbaSitPanel(x) {
+  var d = document.createElement("div"), pct = function (v) { return Math.round(v * 100) + "%"; };
+  d.className = "cfbpanel sitpanel";
+  var steps = (x.steps || []).map(function (s, i) {
+    return i === 0 ? "starts at " + pct(s[1]) : esc(s[0]) + " \u2192 " + pct(s[1]);
+  });
+  var at = state.nbaSit.as_of_et ? " As of " + state.nbaSit.as_of_et + " ET (" + (state.nbaSit.model === "early" ? "morning" : "afternoon") + " model)." : "";
+  d.innerHTML = "<b>Sits " + pct(x.p) + "</b> \u00b7 " + esc(NBA_SIT_LABEL[x.situation] || x.situation) +
+    (x.reason && x.reason !== "-" ? " (" + esc(x.reason) + ")" : "") + (steps.length ? ": " + steps.join(" \u00b7 ") : "") + "." + at;
+  return d;
+}
+
 function nbaOutButton(p) {
   var b = document.createElement("button"), why = state.nbaOutPids && state.nbaOutPids[p.player_id];
   b.type = "button";
@@ -4005,6 +4064,8 @@ function render() {
       who.append(name, injuryTag(p.injury) || slot(), sub);
       nbaWho(who, p, nt || []);
       who.appendChild(nbaOutButton(p));
+      var sx = nbaSitFor(p);
+      if (sx) who.appendChild(nbaSitChip(p, sx));
     } else {
       who.append(name, pos, sub);
       if (cf) cfbWho(who, p, cf);
@@ -4150,6 +4211,7 @@ function render() {
     frag.appendChild(el);
     if (cf && state.cfbOpen[p.player_id]) frag.appendChild(cfbPanel(p, cf));
     if (nt && nt.length && state.cfbOpen[p.player_id]) frag.appendChild(nbaPanel(nt));
+    if (SPORT_MODE === "nba" && state.sitOpen && state.sitOpen[p.player_id] && nbaSitFor(p)) frag.appendChild(nbaSitPanel(nbaSitFor(p)));
   });
   nbaOutRows(frag);
   host.appendChild(frag);
@@ -5550,6 +5612,7 @@ function bootFailed(where, err) {
       state.nbaLines = odds.lines || {};
       state.nbaGames = odds.games || {};                   // {date: {team: [opponent, "vs" | "at"]}}
       loadNbaTakes().then(function () { if (state.slate) render(); });
+      fetchJson("nba_sit.json").then(function (d) { state.nbaSit = d; if (state.slate) render(); }).catch(function () {});
       fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : {}; })
         .then(function (d) { state.postedExpo = d.slates || {}; if (state.slate) render(); })
