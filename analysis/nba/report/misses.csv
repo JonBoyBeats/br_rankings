@@ -7,9 +7,9 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-10-26,nba_mon_main,Rudy Gobert,MIN,am_call,30.3,37.5,36.0,36.0,31.3,-2.0,minutes,yes,wrong,faded him in the AM (raised him by PM); 36 min against usual 31
 2026-10-26,nba_mon_main,Payton Pritchard,BOS,am_call,27.9,34.2,40.2,22.0,30.1,35.0,blowout,partly,right,"beat all 9; 28 pts in 22 min, game a 35-pt blowout"
 2026-10-26,nba_mon_main,Yaxel Lendeborg,GSW,am_call,37.5,38.9,54.4,31.0,34.0,20.0,peripherals,no,wrong,"faded him; 54.4 in 31 min (31 pts, 12 reb), beat 7 of 8 passed"
-2026-10-26,nba_mon_main,Ayo Dosunmu,MIN,pm_call,25.2,29.9,13.2,26.0,26.3,-2.0,teammate-out,yes,wrong,ranked 38 vs ETR 54; ETR notes had Edwards questionable with Dosunmu starting if he sat; Edwards played 41 min
+2026-10-26,nba_mon_main,Ayo Dosunmu,MIN,pm_call,25.2,29.9,13.2,26.0,26.3,-2.0,hedge,no,wrong,ranked 38 vs ETR 54; ETR notes had Edwards questionable with Dosunmu starting if he sat; Edwards played 41 min
 2026-10-26,nba_mon_main,Jaden McDaniels,MIN,pm_call,28.1,35.5,27.2,37.0,30.0,-2.0,minutes,yes,right,beat 7 of 11; 37 min against usual 30
-2026-10-26,nba_mon_main,LaMelo Ball,MIN,pm_call,31.2,42.6,16.0,31.0,23.0,-2.0,teammate-out,yes,wrong,"ranked 17 vs ETR 27; also an Edwards-out gainer in ETR notes; 11 pts, 7 tov"
+2026-10-26,nba_mon_main,LaMelo Ball,MIN,pm_call,31.2,42.6,16.0,31.0,23.0,-2.0,hedge,no,wrong,"ranked 17 vs ETR 27; also an Edwards-out gainer in ETR notes; 11 pts, 7 tov"
 2026-10-26,nba_mon_main,Caleb Wilson,CHI,pm_call,39.9,37.5,33.5,32.0,34.3,-35.0,other,?,wrong,faded below ETR; 33.5 in normal minutes
 2026-10-26,nba_mon_main,Fred VanVleet,HOU,pm_call,30.6,36.2,15.3,29.0,32.4,10.0,other,?,right,"faded; 15.3, beat 5 of 7"
 2026-10-26,nba_mon_main,Rudy Gobert,MIN,pm_call,30.3,37.5,36.0,36.0,31.3,-2.0,minutes,yes,right,raised over ETR; 36 min against usual 31

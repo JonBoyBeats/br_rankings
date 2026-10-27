@@ -71,6 +71,7 @@ minutes, margin, injury tag at lock, the box line, and who else on his team sat)
 | `news` | tagged at lock, or news during the day changed his role | no |
 | `shooting` | normal minutes, points well off what his minutes would give | no |
 | `peripherals` | normal minutes and points, rebounds, assists or stocks well off | no |
+| `hedge` | a call on a teammate's uncertain status (questionable at your PM lock). You update those live as news lands, after the PM lock, so it isn't a process miss: log it, but leave it out of themes and right/wrong counts | no |
 | `other` | none of the above fits; say what you see in `note` | ? |
 
 Where ETR was closer, note anything visible that ETR may have priced in and we didn't. Don't
