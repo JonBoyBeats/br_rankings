@@ -2,7 +2,7 @@
 
 Reads analysis/nba/daily/*.csv (scripts/nba_daily.py) and prints Markdown:
 
-  accuracy   among players priced at lock who played: rank correlation with what they scored,
+  accuracy   among the night's top 48 (by ADP at lock, or by any source) who played: rank correlation with what they scored,
              how many of the source's top 12 finished top 12, and for projections the average
              miss and bias (projection minus actual)
   CLV        players a source ranked 3+ spots ahead of (or behind) the 5am ADP: how often the
@@ -18,6 +18,9 @@ from zoneinfo import ZoneInfo
 
 DAILY = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "daily")
 TOP, GAP, MOVED = 12, 3, 0.5
+# Scored each night: the top DEPTH by ADP at lock, plus anyone a source put in its top DEPTH.
+# About what gets drafted (36) and ranked (44-48); the bench players below don't matter.
+DEPTH = 48
 SOURCES = [   # column, label, higher is better, a projection in points
     ("ours", "Ours (board)", True, True),
     ("ours_raw", "Ours (morning file)", True, True),
@@ -50,8 +53,18 @@ def load():
     return slates
 
 
+def scored(rows):
+    """Players priced at lock in the top DEPTH by ADP at lock or by any source."""
+    priced = [r for r in rows if r["adp_close"] is not None]
+    keep = set()
+    for col, _, higher, _ in SOURCES:
+        have = [r for r in priced if r[col] is not None]
+        keep.update(id(r) for r in sorted(have, key=lambda r: -r[col] if higher else r[col])[:DEPTH])
+    return [r for r in priced if id(r) in keep]
+
+
 def played(rows):
-    return [r for r in rows if r["adp_close"] is not None and r["actual"] is not None and (r["min"] or 0) > 0]
+    return [r for r in scored(rows) if r["actual"] is not None and (r["min"] or 0) > 0]
 
 
 def ranks(vals):
@@ -95,7 +108,7 @@ def accuracy(rows, col, higher):
 
 def clv(rows, col, higher):
     """[(gap direction, ADP move toward earlier)] for players the source ranked GAP+ spots off the 5am ADP."""
-    pool = [r for r in rows if r["adp_am"] is not None and r["adp_close"] is not None and r[col] is not None]
+    pool = [r for r in scored(rows) if r["adp_am"] is not None and r[col] is not None]
     if len(pool) < 3:
         return []
     src = ranks([-r[col] if higher else r[col] for r in pool])
@@ -237,12 +250,12 @@ def main():
     out = []
     for s in last:
         m = meta.get(s["file"], {})
-        pool = [r for r in s["rows"] if r["adp_close"] is not None]
+        pool = scored(s["rows"])
         sat = [r for r in pool if r["actual"] is not None and not (r["min"] or 0) > 0]
         unmatched = [r["name"] for r in pool if r["actual"] is None]
         out += ["# NBA morning report: %s %s" % (s["date"], s["slate"].replace("nba_", "")), "",
-                "%d priced at lock, %d played, %d sat%s." % (
-                    len(pool), len(played(s["rows"])), len(sat),
+                "%d scored (top %d by ADP at lock or by any source), %d played, %d sat%s." % (
+                    len(pool), DEPTH, len(played(s["rows"])), len(sat),
                     (": " + ", ".join("%s (ADP %.0f)" % (r["name"], r["adp_close"]) for r in sorted(sat, key=lambda r: r["adp_close"])[:6])) if sat else ""),
                 "Times PT. ADP %s and at lock %s (lock %s). ETR uploads %s. Ours from the board: %s. Final board saved %s." % (
                     pt(m.get("adp_am_at")), pt(m.get("adp_close_at")), pt(m.get("lock")),
