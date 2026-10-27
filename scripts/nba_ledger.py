@@ -8,11 +8,15 @@ Context only: nothing here feeds Proj, the ranks or the morning report's grading
            tags and a draft note. Writes analysis/nba/ledger.csv (a night's rows replace that
            night's, keeping any note already edited) and prints them.
   print    the night from the ledger, as edited: the newspaper.
-  recent   for today's slate (or --date): a Recent note on every player with 3+ graded games in
-           his last 5, to analysis/nba/takes/<date>_recent.csv, which the board shows in its
-           row dropdown (run scripts/build_takes.py after).
+  form     the facts behind each Recent note due a rewrite (every player who played last night
+           and has 3+ graded games): his last 5 against ETR, game by game, and his note so far.
+           The note itself, 2-3 sentences on his recent form against his projections, is
+           written by hand into analysis/nba/form.csv (player_id,name,team,through,blurb).
+  recent   for today's slate (or --date): each written note, tagged with his last-5 tally, to
+           analysis/nba/takes/<date>_recent.csv, which the board shows in its row dropdown
+           (run scripts/build_takes.py after).
 
-  python3 scripts/nba_ledger.py draft|print|recent [--date YYYY-MM-DD]
+  python3 scripts/nba_ledger.py draft|print|form|recent [--date YYYY-MM-DD]
 
 The split: his usual is his usual minutes times his usual per-minute line (the morning file on
 file that day). Actual minus usual is exactly the minutes part (minutes over or under his usual,
@@ -28,6 +32,7 @@ import nba_report as rep   # noqa: E402  the graded pool, so the ledger covers t
 
 HERE = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba")
 LEDGER = os.path.join(HERE, "ledger.csv")
+FORM = os.path.join(HERE, "form.csv")       # player_id,name,team,through,blurb: the written Recent note per player
 WINDOW, SHOW_AT = 5, 3          # the Recent note: last 5 graded games, once there are 3
 NEAR = 6                        # within this many points of ETR is "in line"
 BIG = 4                         # a part this size (points) is worth naming
@@ -204,45 +209,57 @@ def opponent_lines(ledger, upto):
     return out
 
 
-def recent(ledger, date):
+def windows(ledger, date):
+    """{player: his last WINDOW graded games before `date`}, for players with SHOW_AT or more."""
     by = defaultdict(list)
     for r in ledger:
         if r["graded"] == "1" and r["date"] < date:
             by[(r["player_id"], r["name"], r["team"])].append(r)
-    out = []
-    for (pid, name, team), rs in sorted(by.items(), key=lambda x: x[0][1]):
-        rs = sorted(rs, key=lambda r: r["date"])[-WINDOW:]
-        if len(rs) < SHOW_AT:
+    return {k: sorted(rs, key=lambda r: r["date"])[-WINDOW:] for k, rs in by.items() if len(rs) >= SHOW_AT}
+
+
+def tally(rs):
+    count = lambda res: sum(1 for r in rs if r["result"] == res)
+    return " · ".join("%d %s" % (count(x), x) for x in ("over", "in line", "under") if count(x))
+
+
+def load_form():
+    return {r["player_id"]: r for r in csv.DictReader(open(FORM))} if os.path.exists(FORM) else {}
+
+
+def form_sheet(ledger, date):
+    """The facts behind each Recent note due a rewrite: players whose last game is the newest night on file."""
+    newest = max(r["date"] for r in ledger if r["date"] < date)
+    form, out = load_form(), []
+    for (pid, name, team), rs in sorted(windows(ledger, date).items(), key=lambda x: float(x[1][-1]["adp_close"] or 99)):
+        if rs[-1]["date"] != newest:
             continue
-        n = len(rs)
-        count = lambda res: sum(1 for r in rs if r["result"] == res)
-        tally = " · ".join("%d %s" % (count(x), x) for x in ("over", "in line", "under") if count(x))
-        mins = [float(r["min"]) for r in rs]
-        usual = float(rs[-1]["usual_min"] or 0)
-        games = " · ".join("%s %s%s" % (r["date"][5:], r["result"], " (%s)" % r["tags"].replace("; ", ", ") if r["tags"] else "")
-                           for r in rs)
-        bits = ["Last %d against ETR: %s." % (n, tally), games + ".",
-                "Minutes %.0f a game (usual now %.0f)." % (sum(mins) / n, usual)]
-        tags = defaultdict(int)
+        mins = sum(float(r["min"]) for r in rs) / len(rs)
+        out += ["### %s %s · last %d against ETR: %s · %.0f min a game (usual %.0f)" % (
+            name, team, len(rs), tally(rs), mins, float(rs[-1]["usual_min"] or 0))]
         for r in rs:
-            for t in filter(None, (r["tags"] or "").split("; ")):
-                tags[t] += 1
-        sticky = [t for t in STICKY if tags[t] >= SHOW_AT]
-        if sticky:
-            bits.append("Trend: %s in %d of %d." % (" and ".join(sticky), max(tags[t] for t in sticky), n))
-        misses = [r for r in rs if r["result"] != "in line"]
-        if misses and all(set(filter(None, r["tags"].split("; "))) <= NOISE for r in misses):
-            bits.append("The misses were shooting or stocks swings with minutes steady: variance.")
-        last = rs[-1]
-        bits.append("Last game (%s vs %s): %s" % (last["date"][5:], last["opp"], last["note"] or last["draft"]))
-        out.append({"source": "Recent", "player": name, "team": team, "stance": "", "tags": "Last %d: %s" % (n, tally),
-                    "blurb": " ".join(bits)})
+            out.append("- %s vs %s: %s %s (%.1f vs ETR %s), %s min; %s. %s" % (
+                r["date"][5:], r["opp"], r["result"], "%+.0f" % float(r["gap"]) if r["gap"] else "", float(r["actual"]),
+                r["etr"] or "-", r["min"], r["tags"] or "no part 4+", r["note"] or r["draft"]))
+        if pid in form:
+            out.append("- written before (through %s): %s" % (form[pid]["through"], form[pid]["blurb"]))
+        out.append("")
+    return out
+
+
+def recent(ledger, date):
+    """Today's Recent notes: your written read of each player's recent form, tagged with his tally."""
+    form, out = load_form(), []
+    for (pid, name, team), rs in sorted(windows(ledger, date).items(), key=lambda x: x[0][1]):
+        if pid in form and form[pid]["blurb"]:
+            out.append({"source": "Recent", "player": name, "team": team, "stance": "",
+                        "tags": "Last %d: %s" % (len(rs), tally(rs)), "blurb": form[pid]["blurb"]})
     return out
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["draft", "print", "recent"])
+    ap.add_argument("cmd", choices=["draft", "print", "form", "recent"])
     ap.add_argument("--date", help="draft/print: the slate day (default the newest); recent: the day it is for (default today, PT)")
     a = ap.parse_args()
     ledger = load_ledger()
@@ -255,6 +272,10 @@ def main():
             w.writeheader()
             w.writerows(notes)
         print("%d Recent notes -> %s" % (len(notes), os.path.relpath(path)))
+        return
+    if a.cmd == "form":
+        day = a.date or dt.datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
+        print("\n".join(form_sheet(ledger, day)))
         return
     if a.cmd == "print":
         day = a.date or max(r["date"] for r in ledger)

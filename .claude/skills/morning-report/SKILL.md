@@ -134,19 +134,30 @@ python3 scripts/nba_ledger.py print
 ## 8. Recent notes for today's board
 
 ```
+python3 scripts/nba_ledger.py form
+```
+
+This lists every player who played last night and has 3+ graded games: his last 5 against ETR,
+game by game (result, minutes, what moved, that night's note), and his note so far. For each,
+write 2-3 sentences on his recent form against his projections into `analysis/nba/form.csv`
+(`player_id,name,team,through,blurb`; replace his row, `through` = his last game's date).
+Synthesize, don't list the games: is he beating or trailing ETR, and is the reason sticky
+(minutes, role, usage) or noise (shooting, stocks, a blowout)? Say what to expect if it holds.
+Only what the ledger shows; no guessing at news. Then:
+
+```
 python3 scripts/nba_ledger.py recent && python3 scripts/build_takes.py
 ```
 
-This writes a Recent note (his last 5 graded games against ETR, minutes, any trend, and his last
-game's note) for every player with 3+, and rebuilds the board's notes so they show in the row
-dropdown under Expand all on today's slates.
+This puts each written note, tagged with his last-5 tally, in the board's row dropdown under
+Expand all on today's slates. Players who didn't play last night keep the note they have.
 
 ## 9. Save
 
 The session's files are gone when it ends, so commit and push everything:
 
 ```
-git add analysis/nba/report analysis/nba/ledger.csv analysis/nba/takes analysis/nba_takes.json
+git add analysis/nba/report analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/nba_takes.json
 git commit -m "NBA report: takeaways and player notes for <date>" && git push origin HEAD:main
 ```
 
