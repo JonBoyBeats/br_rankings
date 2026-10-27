@@ -176,7 +176,8 @@ def acc_table(slate_groups):
         out.append("| %s | %d | %s | %d of %d | %s | %s |" % (
             label, n, fmt(sum(rho) / len(rho) if rho else None), sum(g["hit"] for g in got), sum(g["of"] for g in got),
             fmt(mae, "%.1f") if pts else "-", fmt(bias, "%+.1f") if pts else "-"))
-    return out
+    return out + ["", "The morning file is a plain average; ours (board) and ETR are on the board's scale, nudged toward "
+                  "ceiling. Compare the morning file by rank corr and top-12, not by its miss or bias."]
 
 
 def clv_table(slate_groups):
@@ -210,13 +211,11 @@ def blend_section(slates, label):
 
 
 def disagreements(slates, ours_col):
-    """When ours and ETR's last upload were 4+ apart: how often each was closer."""
+    """When ours (on ETR's scale, as in the blend) and ETR's last upload were 4+ apart: how often each was closer."""
     us = them = 0
-    for s in slates:
-        for r in played(s["rows"]):
-            if r[ours_col] is None or r["etr_last"] is None or abs(r[ours_col] - r["etr_last"]) < 4:
-                continue
-            if abs(r[ours_col] - r["actual"]) < abs(r["etr_last"] - r["actual"]):
+    for o, e, y in [t for g in (blend_rows(slates, ours_col) or []) for t in g]:
+        if abs(o - e) >= 4:
+            if abs(o - y) < abs(e - y):
                 us += 1
             else:
                 them += 1
@@ -280,7 +279,7 @@ def main():
     for col, name in (("ours", "Ours (board)"), ("ours_raw", "Ours (morning file)")):
         us, them = disagreements(upto, col)
         if us + them:
-            out.append("- When %s and ETR were 4+ points apart: ours closer %d times, ETR %d." % (name, us, them))
+            out.append("- When %s (on ETR's scale) and ETR were 4+ points apart: ours closer %d times, ETR %d." % (name, us, them))
     out += ["", "**By slate**", "", "| Slate | Played | Corr ours | Corr ETR last | Miss ours | Miss ETR last | CLV ours |", "|---|---|---|---|---|---|---|"]
     for s in upto:
         oc = "ours" if any(r["ours"] is not None for r in s["rows"]) else "ours_raw"
