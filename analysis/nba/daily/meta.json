@@ -2,17 +2,19 @@
  "2026-10-20_tue_main.csv": {
   "lock": "2026-10-20T18:52:00+00:00",
   "adp_am_at": "2026-10-20T17:35:51+00:00",
+  "adp_etr_at": null,
   "adp_close_at": "2026-10-20T18:37:22+00:00",
   "morning_through": null,
   "etr_first": null,
   "etr_last": null,
-  "ours_from_board": false,
-  "board_saved_at": null,
+  "am": null,
+  "pm": null,
   "gist": true
  },
  "2026-10-21_wed_main.csv": {
   "lock": "2026-10-21T22:52:00+00:00",
-  "adp_am_at": "2026-10-21T11:51:59+00:00",
+  "adp_am_at": "2026-10-21T10:37:26+00:00",
+  "adp_etr_at": "2026-10-21T15:37:23+00:00",
   "adp_close_at": "2026-10-21T22:37:27+00:00",
   "morning_through": "2026-10-20",
   "etr_first": {
@@ -23,13 +25,22 @@
    "at": "2026-10-21T19:02:38.961Z",
    "file": "Underdog NBA Daily Rankings (87).csv + Underdog NBA Daily Rankings (88).csv"
   },
-  "ours_from_board": false,
-  "board_saved_at": "2026-10-21T21:21:56.839Z",
+  "am": {
+   "at": "2026-10-21T10:48:30.850Z",
+   "from": "board before ETR",
+   "ours": false
+  },
+  "pm": {
+   "at": "2026-10-21T21:21:56.839Z",
+   "from": "board at lock",
+   "ours": false
+  },
   "gist": true
  },
  "2026-10-22_thu_main.csv": {
   "lock": "2026-10-22T22:52:00+00:00",
-  "adp_am_at": "2026-10-22T11:55:45+00:00",
+  "adp_am_at": "2026-10-22T15:38:16+00:00",
+  "adp_etr_at": "2026-10-22T15:38:16+00:00",
   "adp_close_at": "2026-10-22T22:37:01+00:00",
   "morning_through": "2026-10-21",
   "etr_first": {
@@ -40,13 +51,22 @@
    "at": "2026-10-22T20:49:53.632Z",
    "file": "Underdog NBA Daily Rankings (89).csv + Underdog NBA Daily Rankings (90).csv"
   },
-  "ours_from_board": false,
-  "board_saved_at": "2026-10-22T20:55:01.585Z",
+  "am": {
+   "at": "2026-10-22T16:34:38.663Z",
+   "from": "board before ETR",
+   "ours": false
+  },
+  "pm": {
+   "at": "2026-10-22T20:55:01.585Z",
+   "from": "board at lock",
+   "ours": false
+  },
   "gist": true
  },
  "2026-10-23_fri_main.csv": {
   "lock": "2026-10-23T22:52:00+00:00",
-  "adp_am_at": "2026-10-23T11:41:57+00:00",
+  "adp_am_at": "2026-10-23T15:23:59+00:00",
+  "adp_etr_at": "2026-10-23T15:23:59+00:00",
   "adp_close_at": "2026-10-23T22:23:53+00:00",
   "morning_through": "2026-10-22",
   "etr_first": {
@@ -57,13 +77,22 @@
    "at": "2026-10-23T20:12:44.770Z",
    "file": "Underdog NBA Daily Rankings (91).csv + Underdog NBA Daily Rankings (92).csv"
   },
-  "ours_from_board": false,
-  "board_saved_at": "2026-10-23T21:05:46.492Z",
+  "am": {
+   "at": "2026-10-23T15:49:02.988Z",
+   "from": "board before ETR",
+   "ours": false
+  },
+  "pm": {
+   "at": "2026-10-23T21:05:46.492Z",
+   "from": "board at lock",
+   "ours": false
+  },
   "gist": true
  },
  "2026-10-24_sat_main.csv": {
   "lock": "2026-10-24T23:22:00+00:00",
-  "adp_am_at": "2026-10-24T11:22:51+00:00",
+  "adp_am_at": "2026-10-24T16:22:51+00:00",
+  "adp_etr_at": "2026-10-24T19:23:16+00:00",
   "adp_close_at": "2026-10-24T23:17:01+00:00",
   "morning_through": "2026-10-23",
   "etr_first": {
@@ -74,13 +103,22 @@
    "at": "2026-10-24T21:58:19.607Z",
    "file": "Underdog NBA Daily Rankings (22).csv + pasted text"
   },
-  "ours_from_board": false,
-  "board_saved_at": "2026-10-24T21:58:10.254Z",
+  "am": {
+   "at": "2026-10-24T16:57:04.651Z",
+   "from": "board before ETR",
+   "ours": false
+  },
+  "pm": {
+   "at": "2026-10-24T21:58:10.254Z",
+   "from": "board at lock",
+   "ours": false
+  },
   "gist": true
  },
  "2026-10-25_sun_main.csv": {
   "lock": "2026-10-25T22:52:00+00:00",
-  "adp_am_at": "2026-10-25T11:33:23+00:00",
+  "adp_am_at": "2026-10-25T18:23:33+00:00",
+  "adp_etr_at": "2026-10-25T18:23:33+00:00",
   "adp_close_at": "2026-10-25T22:47:15+00:00",
   "morning_through": "2026-10-24",
   "etr_first": {
@@ -91,13 +129,22 @@
    "at": "2026-10-25T22:19:34.942Z",
    "file": "pasted text + Underdog NBA Daily Rankings (23).csv + Underdog NBA Daily Rankings (24).csv"
   },
-  "ours_from_board": false,
-  "board_saved_at": "2026-10-25T22:23:12.014Z",
+  "am": {
+   "at": "2026-10-25T19:13:27.818Z",
+   "from": "board before ETR",
+   "ours": false
+  },
+  "pm": {
+   "at": "2026-10-25T22:23:12.014Z",
+   "from": "board at lock",
+   "ours": false
+  },
   "gist": true
  },
  "2026-10-26_mon_main.csv": {
   "lock": "2026-10-26T22:52:00+00:00",
-  "adp_am_at": "2026-10-26T11:24:57+00:00",
+  "adp_am_at": "2026-10-26T13:06:44+00:00",
+  "adp_etr_at": "2026-10-26T15:27:01+00:00",
   "adp_close_at": "2026-10-26T22:23:35+00:00",
   "morning_through": "2026-10-25",
   "etr_first": {
@@ -108,8 +155,16 @@
    "at": "2026-10-26T21:07:15.828Z",
    "file": "Underdog NBA Daily Rankings (93).csv + Underdog NBA Daily Rankings (94).csv + Underdog NBA Daily Rankings (95).csv + FD NBA DFS Projections (2).csv + Underdog NBA Daily Rankings (96).csv + FD NBA DFS Projections (3).csv"
   },
-  "ours_from_board": false,
-  "board_saved_at": "2026-10-26T21:14:03.686Z",
+  "am": {
+   "at": "2026-10-26T13:20:45.703Z",
+   "from": "board before ETR",
+   "ours": false
+  },
+  "pm": {
+   "at": "2026-10-26T21:14:03.686Z",
+   "from": "board at lock",
+   "ours": false
+  },
   "gist": true
  }
 }
