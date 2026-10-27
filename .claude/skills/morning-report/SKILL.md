@@ -107,7 +107,8 @@ when a theme supports it. Keep earlier sections as they are.
 
 ## 7. Last night, player by player
 
-A line on every graded player's night, kept in a running ledger. It is context only: it never
+A line on every graded player's night (the newspaper), from a running ledger of every rotation
+player. It is context only: it never
 feeds Proj, the ranks or the grading above.
 
 ```
@@ -133,24 +134,28 @@ python3 scripts/nba_ledger.py print
 
 ## 8. Recent notes for today's board
 
+The ledger tracks every rotation player in every game (15+ minutes), not just the graded ones,
+so a team's 6th-8th men have history when a small or late slate lists them. Notes are due for
+everyone Underdog lists on today's slates, main and late, who has 3+ graded games and has
+played since his note. Get today's slates from the ADP mirror (a public repo), then list them:
+
 ```
-python3 scripts/nba_ledger.py form
+git clone -q --depth 1 https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror 2>/dev/null || git -C ../br-adp-mirror pull -q
+python3 scripts/nba_ledger.py form --slates ../br-adp-mirror/nba_latest.json
 ```
 
-This lists every player who played last night and has 3+ graded games: his last 5 against ETR,
-game by game (result, minutes, what moved, that night's note), and his note so far. For each,
-write 2-3 sentences on his recent form against his projections into `analysis/nba/form.csv`
-(`player_id,name,team,through,blurb`; replace his row, `through` = his last game's date).
-Synthesize, don't list the games: is he beating or trailing ETR, and is the reason sticky
-(minutes, role, usage) or noise (shooting, stocks, a blowout)? Say what to expect if it holds.
-Only what the ledger shows; no guessing at news. Then:
+For each player listed (his last 5 against ETR, game by game, and his note so far), write 2-3
+sentences on his recent form against his projections into `analysis/nba/form.csv`
+(`key,name,team,through,blurb`; replace his row, `key` as the sheet's name key, `through` = his
+last game's date). Synthesize, don't list the games: is he beating or trailing his number, and
+is the reason sticky (minutes, role, usage) or noise (shooting, stocks, a blowout)? Say what to
+expect if it holds. A game measured against "our usual" had no ETR number; say so if it
+matters. Only what the ledger shows; no guessing at news. Notes are matched by name, so one
+note serves the main and late slates. Then:
 
 ```
 python3 scripts/nba_ledger.py recent && python3 scripts/build_takes.py
 ```
-
-This puts each written note, tagged with his last-5 tally, in the board's row dropdown under
-Expand all on today's slates. Players who didn't play last night keep the note they have.
 
 ## 9. Save
 
