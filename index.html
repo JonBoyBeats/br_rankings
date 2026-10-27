@@ -694,6 +694,13 @@
       <span class="field-label">Saved</span>
       <button type="button" id="syncBtn" aria-expanded="false">Sync</button>
     </label>
+    <label class="field nba-only">
+      <span class="field-label">Lock</span>
+      <span class="pair">
+        <button type="button" id="lockAm" aria-pressed="false" title="Lock the board your morning drafts come off, for the morning report: your order and our Proj as they stand now">AM</button>
+        <button type="button" id="lockPm" aria-pressed="false" title="Lock the board you finish the day on, for the morning report: your order and our Proj as they stand now">PM</button>
+      </span>
+    </label>
     <label class="field" id="cfbAllField" hidden>
       <span class="field-label">Notes</span>
       <button type="button" id="cfbAll">Expand all</button>
@@ -1560,6 +1567,35 @@ function keepOurs(store) {
   return ours;
 }
 
+/* NBA: lock a board for the morning report. AM is the board your early drafts come off, PM
+   the one you finish the day on. Each keeps your order and our Proj as they stand when you
+   press it (once ETR's file is in, our number beside it) and rides with the saved board. */
+function slateLocks() {
+  var l = state.slate ? load(K.locks(state.slate.label), null) : null;
+  return l && l.slate_id === state.slate.slate_id ? l : { slate_id: state.slate ? state.slate.slate_id : null };
+}
+
+function lockBoard(which) {
+  var locks = slateLocks(), when = { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" };
+  if (locks[which] && !window.confirm("Replace your " + which.toUpperCase() + " lock from " +
+      new Date(locks[which].at).toLocaleTimeString("en-US", when) + " with the board as it is now?")) return;
+  var ours = state.nbaOurs || state.proj || {}, values = {};
+  Object.keys(ours).forEach(function (pid) { values[pid] = Math.round(ours[pid] * 10) / 10; });
+  locks[which] = { at: new Date().toISOString(), order: state.order.slice(), cut: state.cut == null ? null : state.cut, ours: values };
+  save(K.locks(state.slate.label), locks);
+  renderLocks();
+}
+
+function renderLocks() {
+  if (SPORT_MODE !== "nba" || !state.slate) return;
+  var locks = slateLocks(), when = { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" };
+  [["am", "lockAm"], ["pm", "lockPm"]].forEach(function (x) {
+    var l = locks[x[0]], b = $(x[1]);
+    b.textContent = x[0].toUpperCase() + (l ? " \u2713 " + new Date(l.at).toLocaleTimeString("en-US", when).replace(/ [AP]M$/, "") : "");
+    b.setAttribute("aria-pressed", l ? "true" : "false");
+  });
+}
+
 /** Keep each ETR conditional in the upload ("Ant OUT": that team's rows if he sits), replacing one of the same name. */
 function addNbaConditionals(store, upload) {
   var conds = Object.assign({}, store.conditionals || {});
@@ -1850,13 +1886,14 @@ function putSavedSlate(doc, label, entry) {
 
 function playerCount(n) { return n + (n === 1 ? " player" : " players"); }
 
-function savedEntry(order, slateId, device, nowIso, windows, cut, tiers, outs) {
+function savedEntry(order, slateId, device, nowIso, windows, cut, tiers, outs, locks) {
   var e = { order: order.slice(), slate_id: slateId, device: device,
             saved_at: nowIso, count: order.length };
   if (windows && Object.keys(windows).length) e.windows = windows;
   if (tiers && Array.isArray(tiers.starts)) e.tiers = { on: !!tiers.on, starts: tiers.starts.slice() };
   // NBA: the players you've marked out ride along (an empty list too, so clearing them syncs)
   if (outs && Array.isArray(outs.list)) e.outs = { list: outs.list.slice(), from: Object.assign({}, outs.from || {}) };
+  if (locks && (locks.am || locks.pm)) e.locks = locks;
   var at = clampCut(cut, order.length);
   if (at != null) e.cut = at;
   return e;
@@ -2159,6 +2196,7 @@ var K = {
   switchAt: function (label) { return "brr:switch:" + label; },     // NBA: your rank for the ceiling-to-floor switch
   built: function (label) { return "brr:built:" + label; },         // NBA: the order as Build tiers left it
   tiers: function (label) { return "brr:tiers:" + label; },
+  locks: function (label) { return "brr:locks:" + label; },         // NBA: {slate_id, am, pm}, your boards locked for the morning report
   expo: function (label) { return "brr:expo:" + label; },           // your exposures from an Underdog export: {file, at, drafts, counts}         // NBA: {on, starts}: where tiers 2-6 begin, by rank
   slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
@@ -3857,6 +3895,7 @@ function injuryTag(status) {
 }
 
 function render() {
+  renderLocks();
   var rows = visibleRows();
   var board = document.querySelector(".board");
   if (board) board.classList.toggle("has-own", !!state.hasOwn);
@@ -4746,7 +4785,7 @@ async function syncSave() {
       return;
     }
     var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString(),
-                           load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label));
+                           load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label), slateLocks());
     var files = {};
     files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
 
@@ -4809,6 +4848,7 @@ async function applyEntry(entry) {
     ranks += " Its replacement ranks came with it.";
   }
   if (entry.tiers && Array.isArray(entry.tiers.starts)) save(K.tiers(state.slate.label), entry.tiers);
+  if (entry.locks && entry.locks.slate_id === state.slate.slate_id) save(K.locks(state.slate.label), entry.locks);
   if (entry.outs && Array.isArray(entry.outs.list)) {
     save(K.out(state.slate.label), entry.outs.list);
     save(K.outFrom(state.slate.label), entry.outs.from || {});
@@ -4910,7 +4950,8 @@ function isoMs(iso) { var t = Date.parse(iso); return isFinite(t) ? t : 0; }
 function rankedSig(order, cut) { return JSON.stringify(cut == null ? [order, null] : [order.slice(0, cut), cut]); }
 function boardSig() {
   return JSON.stringify([state.order, state.cut == null ? null : state.cut, load(K.vorpWin(state.slate.label), null) || null,
-                         load(K.tiers(state.slate.label), null) || null, load(K.out(state.slate.label), null) || null]);
+                         load(K.tiers(state.slate.label), null) || null, load(K.out(state.slate.label), null) || null,
+                         load(K.locks(state.slate.label), null) || null]);
 }
 
 /** NBA: your out marks for a saved board, or null off the NBA page. */
@@ -4923,7 +4964,7 @@ function markLocal(key) {
   if (syncApplying || typeof state === "undefined" || !state.slate) return;
   var label = state.slate.label;
   if (key === K.order(label) || key === K.cut(label) || key === K.added(label) || key === K.vorpWin(label) || key === K.tiers(label) ||
-      key === K.out(label) || key === K.outFrom(label)) {
+      key === K.out(label) || key === K.outFrom(label) || key === K.locks(label)) {
     rawSave(K.mod(label), new Date().toISOString());
     scheduleSync(2000);
   } else if (key === K.proj(state.slate.sport)) {
@@ -4984,7 +5025,7 @@ async function autoSync(quiet) {
       msg = "Synced your board from " + remote.device + " (saved " + describeAge(remote.saved_at, Date.now()) + ").";
     } else if (push) {
       entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
-                         load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label));
+                         load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label), slateLocks());
       files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
     }
     } catch (be) { boardErr = be; take = false; entry = null; files = {}; msg = ""; }
@@ -5347,6 +5388,8 @@ $("importFile").addEventListener("change", function (e) { if (e.target.files[0])
 $("buildScore").addEventListener("click", function () { applyBuilder("score"); });
 $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
 $("buildTiers").addEventListener("click", function () { applyNbaProjOrder(); });
+$("lockAm").addEventListener("click", function () { lockBoard("am"); });
+$("lockPm").addEventListener("click", function () { lockBoard("pm"); });
 $("tiersBtn").addEventListener("click", function () { toggleTiers(); });
 $("copyMain").addEventListener("click", function () { copyMainRanks(); });
 $("switchAt").addEventListener("change", function () {
@@ -6116,6 +6159,8 @@ function brrSelfTest() {
   ok("out marks ride a saved board, an empty list too",
      savedEntry(["a"], "s", "d", "t", null, 1, null, { list: ["kawhi leonard"], from: { "kawhi leonard": { rank: 3, above: true } } }).outs.list.join() === "kawhi leonard" &&
      savedEntry(["a"], "s", "d", "t", null, 1, null, { list: [] }).outs.list.length === 0 && savedEntry(["a"], "s", "d", "t").outs === undefined);
+  ok("locks ride a saved board", savedEntry(["a"], "s", "d", "t", null, 1, null, null, { slate_id: "s", am: { order: ["a"] } }).locks.am.order[0] === "a" &&
+     savedEntry(["a"], "s", "d", "t", null, 1, null, null, { slate_id: "s" }).locks === undefined);
   ok("the matchup note rounds to whole points and names the big parts",
      nbaMatchupNote([2.4, { p2: 1.3, ast: 0.6, reb: -0.2 }, "scoring wing"], false) ===
      "Matchup +2 (scoring wing vs this defense: twos +1, assists +1), in this number");
