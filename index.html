@@ -1439,7 +1439,7 @@ function normalizeProjStore(raw) {
   if (!raw) return { current: null, previous: null, sources: {}, history: {} };
   if (raw.entries) return { current: blendAware(raw), previous: null, sources: {}, history: {} };   // the older single-generation shape
   return { current: blendAware(raw.current), previous: blendAware(raw.previous), sources: raw.sources || {},
-           history: raw.history || {}, conditionals: raw.conditionals || {} };
+           history: raw.history || {}, conditionals: raw.conditionals || {}, ours: raw.ours || {} };
 }
 
 /* College takes two sources, CFF and Fantasy Points. Proj is their average wherever both
@@ -1542,6 +1542,22 @@ function addNbaUpload(store, upload) {
   // ETR conditionals are for the day they came out
   next.conditionals = cur && pacificDay(cur.at) === day ? store.conditionals || {} : {};
   return next;
+}
+
+/* NBA: our Proj as the board showed it just before the day's first ETR file, by player_id,
+   one per slate and day ("2026-10-27 nba_tue_main"). The nightly job (scripts/nba_daily.py)
+   reads it from the gist to score ours against ETR. */
+var NBA_OURS_KEEP = 20;
+function keepOurs(store) {
+  var ours = Object.assign({}, store.ours), s = state.slate;
+  var key = s ? pacificDay(s.cutoff) + " " + s.label : null;
+  if (key && s.sport === "nba" && !state.nbaEtrToday && !ours[key]) {
+    var values = {};
+    Object.keys(state.proj || {}).forEach(function (pid) { values[pid] = Math.round(state.proj[pid] * 10) / 10; });
+    ours[key] = { at: new Date().toISOString(), values: values };
+  }
+  Object.keys(ours).sort().reverse().slice(NBA_OURS_KEEP).forEach(function (k) { delete ours[k]; });
+  return ours;
 }
 
 /** Keep each ETR conditional in the upload ("Ant OUT": that team's rows if he sits), replacing one of the same name. */
@@ -2710,6 +2726,7 @@ function ingestProjections(text, sourceName, pasted) {
       next = parsed.sport === "nba" ? addNbaUpload(store, upload) : rotateProjStore(store, gen);
     }
     if (sources) next.sources = sources;
+    if (parsed.sport === "nba") next.ours = keepOurs(store);
     save(K.proj(parsed.sport), next);
     if (parsed.sport !== state.slate.sport) {
       setStatus("Read " + parsed.entries.length + " " + parsed.format + " rows and saved them for " +

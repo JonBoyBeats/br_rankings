@@ -1,0 +1,38 @@
+name: NBA daily record
+on:
+  schedule:
+    # UTC: 2:17am PT in daylight time, 1:17am in standard. Every game is final by then.
+    - cron: '17 9 * * *'
+  workflow_dispatch:
+    inputs:
+      since: { description: 'Build from this Pacific day (YYYY-MM-DD); default three days back', required: false }
+      rebuild: { description: 'Rewrite slates already on file', type: boolean, default: false }
+permissions:
+  contents: write
+concurrency:
+  group: analysis
+  cancel-in-progress: false
+env:
+  GIST_ID: ${{ secrets.GIST_ID }}   # repository secret: your board's gist; without it, no ETR, our Proj or final ranks
+  SINCE: ${{ inputs.since }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - name: ADP mirror and gist history
+        run: |
+          FROM=$(date -u -d "${SINCE:-today} -7 days" +%F)
+          git clone -q --shallow-since="$FROM" https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror
+          if [ -n "$GIST_ID" ]; then git clone -q --shallow-since="$FROM" "https://gist.github.com/$GIST_ID.git" ../gist; fi
+      - run: |
+          python3 scripts/nba_daily.py --mirror ../br-adp-mirror \
+            $([ -d ../gist ] && echo --gist ../gist) \
+            ${SINCE:+--since "$SINCE"} ${{ inputs.rebuild && '--rebuild' || '' }}
+      - run: |
+          git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
+          git add analysis/nba/daily
+          git diff --cached --quiet || git commit -m "NBA daily: record through $(TZ=America/Los_Angeles date -d yesterday +%F)"
+          git pull --rebase -q origin main && git push
