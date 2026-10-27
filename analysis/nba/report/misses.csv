@@ -1,1 +1,31 @@
 date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixable,closer,note
+2026-10-26,nba_mon_main,Zach Edey,MEM,am_call,29.8,34.5,13.6,21.0,22.9,5.0,shooting,no,wrong,"up on ADP; 4 pts in his usual 21 min, beat 2 of 19 he jumped"
+2026-10-26,nba_mon_main,Cedric Coward,MEM,am_call,28.3,34.6,34.7,31.0,28.6,5.0,other,?,right,beat 9 of 11; 31 min (usual 29)
+2026-10-26,nba_mon_main,PJ Washington,DAL,am_call,30.9,36.2,39.8,41.0,33.3,4.0,minutes,yes,right,beat all 13; 41 min against usual 33
+2026-10-26,nba_mon_main,Kyshawn George,WAS,am_call,31.3,34.7,26.8,29.0,30.3,-7.0,other,?,right,push: 5 of 10
+2026-10-26,nba_mon_main,Jay Huff,IND,am_call,17.2,27.9,12.7,23.0,15.7,-8.0,other,?,right,"faded him; 12.7 pts, beat 0 of 7 passed"
+2026-10-26,nba_mon_main,Rudy Gobert,MIN,am_call,30.3,37.5,36.0,36.0,31.3,-2.0,minutes,yes,wrong,faded him in the AM (raised him by PM); 36 min against usual 31
+2026-10-26,nba_mon_main,Payton Pritchard,BOS,am_call,27.9,34.2,40.2,22.0,30.1,35.0,blowout,partly,right,"beat all 9; 28 pts in 22 min, game a 35-pt blowout"
+2026-10-26,nba_mon_main,Yaxel Lendeborg,GSW,am_call,37.5,38.9,54.4,31.0,34.0,20.0,peripherals,no,wrong,"faded him; 54.4 in 31 min (31 pts, 12 reb), beat 7 of 8 passed"
+2026-10-26,nba_mon_main,Ayo Dosunmu,MIN,pm_call,25.2,29.9,13.2,26.0,26.3,-2.0,teammate-out,yes,wrong,ranked 38 vs ETR 54; ETR notes had Edwards questionable with Dosunmu starting if he sat; Edwards played 41 min
+2026-10-26,nba_mon_main,Jaden McDaniels,MIN,pm_call,28.1,35.5,27.2,37.0,30.0,-2.0,minutes,yes,right,beat 7 of 11; 37 min against usual 30
+2026-10-26,nba_mon_main,LaMelo Ball,MIN,pm_call,31.2,42.6,16.0,31.0,23.0,-2.0,teammate-out,yes,wrong,"ranked 17 vs ETR 27; also an Edwards-out gainer in ETR notes; 11 pts, 7 tov"
+2026-10-26,nba_mon_main,Caleb Wilson,CHI,pm_call,39.9,37.5,33.5,32.0,34.3,-35.0,other,?,wrong,faded below ETR; 33.5 in normal minutes
+2026-10-26,nba_mon_main,Fred VanVleet,HOU,pm_call,30.6,36.2,15.3,29.0,32.4,10.0,other,?,right,"faded; 15.3, beat 5 of 7"
+2026-10-26,nba_mon_main,Rudy Gobert,MIN,pm_call,30.3,37.5,36.0,36.0,31.3,-2.0,minutes,yes,right,raised over ETR; 36 min against usual 31
+2026-10-26,nba_mon_main,Zach Edey,MEM,pm_call,29.8,34.5,13.6,21.0,22.9,5.0,shooting,no,wrong,"raised over ETR; 4 pts in normal minutes, beat 0 of 9"
+2026-10-26,nba_mon_main,Jamal Murray,DEN,pm_call,44.7,46.3,44.2,36.0,38.2,-20.0,other,?,right,push: 3 of 6
+2026-10-26,nba_mon_main,Cooper Flagg,DAL,miss,35.6,48.6,71.7,40.0,27.9,4.0,minutes,yes,etr,40 min against usual 28; 5 stl 3 blk; ours is the raw morning file
+2026-10-26,nba_mon_main,Anthony Edwards,MIN,miss,40.0,46.7,65.8,41.0,31.3,-2.0,minutes,yes,etr,"41 min against usual 31 (questionable in ETR notes, played full)"
+2026-10-26,nba_mon_main,Brandon Miller,CHA,miss,35.1,48.2,60.7,36.0,31.7,7.0,shooting,no,etr,39 pts in normal minutes
+2026-10-26,nba_mon_main,Alperen Sengun,HOU,miss,43.5,49.2,68.3,37.0,33.0,10.0,peripherals,no,etr,"6 stl, 9 ast in normal minutes"
+2026-10-26,nba_mon_main,Devin Booker,PHX,miss,39.8,43.3,15.9,34.0,32.5,-11.0,shooting,no,ours,3 pts in 34 min
+2026-10-26,nba_mon_main,Amen Thompson,HOU,miss,39.3,44.6,19.0,28.0,36.0,10.0,minutes,yes,ours,"28 min against usual 36, game not a blowout (+10)"
+2026-10-26,nba_mon_main,Dyson Daniels,ATL,miss,33.3,38.6,13.0,28.0,29.0,-10.0,shooting,no,ours,"4 pts, 0 reb in normal minutes"
+2026-10-26,nba_mon_main,Ty Jerome,MEM,miss,47.7,48.8,30.2,30.0,32.0,5.0,shooting,no,ours,15 pts in normal minutes
+2026-10-26,nba_mon_main,Giannis Antetokounmpo,MIA,split,47.8,62.4,60.3,39.0,29.3,-4.0,minutes,yes,etr,39 min against usual 29; ETR had the bigger role
+2026-10-26,nba_mon_main,Brandon Miller,CHA,split,35.1,48.2,60.7,36.0,31.7,7.0,shooting,no,etr,ETR 13 higher; 39 pts
+2026-10-26,nba_mon_main,Cooper Flagg,DAL,split,35.6,48.6,71.7,40.0,27.9,4.0,minutes,yes,etr,ETR had him near 40 min; our usual 28 is early-season
+2026-10-26,nba_mon_main,LaMelo Ball,MIN,split,31.2,42.6,16.0,31.0,23.0,-2.0,teammate-out,yes,ours,ETR 11 higher (Edwards-out gainer in its notes); Edwards played
+2026-10-26,nba_mon_main,Ajay Mitchell,OKC,split,25.3,36.0,41.9,25.0,24.7,11.0,teammate-out,yes,etr,"Chet Holmgren sat; ETR bumped him, the morning file had no bump"
+2026-10-26,nba_mon_main,Jay Huff,IND,split,17.2,27.9,12.7,23.0,15.7,-8.0,teammate-out,yes,ours,"Nembhard and Zubac sat; ETR bumped him 11, he scored 12.7"
