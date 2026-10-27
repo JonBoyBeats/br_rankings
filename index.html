@@ -369,18 +369,23 @@
   .row.outhead { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
                  color: var(--muted); background: var(--surface-2); padding-block: 6px; }
   .row.outrow .num.dim { text-align: center; }
-  /* NBA name line in fixed columns: name, injury, team, ETR, Zakarian, notes, out. */
-  html.nba .who.nbawho { display: grid; grid-template-columns: minmax(0, 210px) 22px 40px 20px 20px 24px 24px minmax(0, 1fr);
+  /* NBA name line in fixed columns: name, injury (and sit chance), team, ETR, Zakarian, notes, out. */
+  html.nba .who.nbawho { display: grid; grid-template-columns: minmax(0, 210px) 60px 40px 20px 20px 24px 24px minmax(0, 1fr);
                          column-gap: 8px; align-items: center; }
   html.nba .nbawho > * { justify-self: start; }
+  /* Narrower than the full-width board, the name gets its own line above the columns. */
+  @media (max-width: 1071px) {
+    html.nba .who.nbawho { grid-template-columns: 60px 40px 20px 20px 24px 24px minmax(0, 1fr); row-gap: 3px; }
+    html.nba .nbawho .name { grid-column: 1 / -1; }
+  }
   html.nba .nbawho .inj.p { background: #2f6fd6; color: #ffffff; }
   html.nba .nbawho .inj.d { background: var(--t0); color: var(--t0-ink); }
-  /* NBA: the chance he sits tonight (mirror nba_sit.json), at the end of the name line; tap for why. */
-  .sitx { all: unset; cursor: pointer; font-family: var(--mono); font-size: 9.5px; font-weight: 700; line-height: 1;
-          padding: 2px 5px; border-radius: 4px; white-space: nowrap; align-self: center;
-          border: 1px solid rgba(240, 138, 126, .55); color: var(--down); }
-  .sitx.mid { background: rgba(224, 123, 58, .25); color: #f0a36e; border-color: transparent; }
-  .sitx.hi { background: var(--t0); color: var(--t0-ink); border-color: transparent; }
+  /* NBA: the chance he sits tonight (mirror nba_sit.json), beside his injury tag; tap for why. */
+  .injcell { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .sitx { all: unset; cursor: pointer; font-family: var(--mono); font-size: 11.5px; font-weight: 700; line-height: 1;
+          white-space: nowrap; color: #d9b25f; }
+  .sitx.mid { color: #f0904a; }
+  .sitx.hi { color: #ff6b5b; }
   .sitx:focus-visible { outline: 2px solid var(--accent); }
   .sitpanel { font-size: 12.5px; color: var(--muted); }
   .sitpanel b { color: var(--ink); }
@@ -4063,11 +4068,17 @@ function render() {
     if (SPORT_MODE === "nba") {
       // Straight columns: name, injury, team, ETR, Zakarian, notes, out. No position: every spot is a flex.
       who.classList.add("nbawho");
-      who.append(name, injuryTag(p.injury) || slot(), sub);
+      // his injury tag and, beside it, the chance he sits tonight
+      var injEl = injuryTag(p.injury), sx = nbaSitFor(p), injCell = slot();
+      if (injEl || sx) {
+        injCell = document.createElement("span");
+        injCell.className = "injcell";
+        if (injEl) injCell.appendChild(injEl);
+        if (sx) injCell.appendChild(nbaSitChip(p, sx));
+      }
+      who.append(name, injCell, sub);
       nbaWho(who, p, nt || []);
       who.appendChild(nbaOutButton(p));
-      var sx = nbaSitFor(p);
-      if (sx) who.appendChild(nbaSitChip(p, sx));
     } else {
       who.append(name, pos, sub);
       if (cf) cfbWho(who, p, cf);
