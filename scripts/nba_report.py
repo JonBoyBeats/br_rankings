@@ -11,11 +11,12 @@ nothing to learn from him.
 
   rank corr   how well the source's order matched what they scored
   top 12      how many of its top 12 finished top 12
-  round picks its 2 favourites in each ADP round (the Live page's groups) against the round's
-              average, in points; rounds 5-6 apart, where finding the best late picks pays
+  round picks its 2 favourites in each ADP round (6 picks a round; the 6th runs to ADP rank 48)
+              against the round's average, in points; rounds 5-6 apart, where late picks pay
   CLV         size-weighted: how far a source sat from ADP against how far ADP then moved (a
               correlation; 0 is no signal), and picks moved its way on players 3+ spots off
-  calls       every pair two orders disagree on: how often each side was right
+  head to head every pair your order and a straight one (ours, ETR, ADP) disagree on: how
+              often yours was right. Over 50% and settled: your tweaks beat drafting off it alone
 
 Over several slates a difference carries an 80% range from resampling the slates; a range
 that spans 0 isn't settled yet.
@@ -31,7 +32,8 @@ DEPTH, TOP, GAP = 48, 12, 3
 # decided by less than EARLY_MARGIN. A starter cut that short in a close game is almost always hurt;
 # a bench player's short night is usually the rotation, which is worth learning from, so he stays.
 EARLY_USUAL, EARLY_MARGIN = 25, 15
-ROUNDS = [(1, 7), (6, 13), (12, 20), (17, 26), (23, 32), (29, 40)]   # ADP ranks per round, as on the Live page
+# ADP ranks per round of a 6-team draft; the last runs to DEPTH, the late and undrafted pile you rank
+ROUNDS = [(1, 6), (7, 12), (13, 18), (19, 24), (25, 30), (31, DEPTH)]
 TEXT = ("date", "slate", "player_id", "name", "team", "pos", "injury")
 
 
@@ -210,64 +212,54 @@ def fmt(v, spec="%.2f"):
     return "-" if v is None else spec % v
 
 
-def results_table(slates, bar):
-    base = bar["sources"][-1]
-    out = ["| Source | Rank corr | vs %s, same slates | Top-12 hits | Round picks | Rounds 5-6 |" % base.label, "|---|---|---|---|---|---|"]
+def season(slates, fn):
+    """fn per slate, averaged over the slates that have it."""
+    return mean([fn(x) for x in slates])
+
+
+def clv_sig(slates, bar, src, frm):
+    pairs = [q for x in slates for q in clv_pairs(x["rows"], bar, src, frm)]
+    return corr([g for g, _ in pairs], [m for _, m in pairs]) if len(pairs) >= 5 else None
+
+
+def call_rate(slates, bar, a, b):
+    w = l = 0
+    for x in slates:
+        ww, ll = calls(x["rows"], bar, a, b)
+        w, l = w + ww, l + ll
+    return (w / (w + l) if w + l else None), w + l
+
+
+def summary(last, upto, bar, title, clv_from, h2h):
+    """Each source last night beside the season, then your board head to head against each straight order."""
+    def res(x, s, k):
+        r = results(x["rows"], bar, s)
+        if not r:
+            return None
+        return {"rho": r["rho"], "picks": mean(r["picks"]), "late": mean(r["picks"][4:])}[k]
+    out = ["### " + title, "", "Each cell: last night (season). CLV: morning from your AM lock, ETR from its first upload, to lock.", "",
+           "| Order | Rank corr | Round picks | Rounds 5-6 | Top-12 hits | CLV |", "|---|---|---|---|---|---|"]
     for s in bar["sources"]:
-        got = [results(x["rows"], bar, s) for x in slates]
-        if not any(got):
-            out.append("| %s | - | - | - | - | - |" % s.label)
-            continue
-
-        def rho_of(xs):
-            return mean([(results(x["rows"], bar, s) or {}).get("rho") for x in xs])
-
-        def diff_of(xs):
-            ds = []
-            for x in xs:
-                a, b = results(x["rows"], bar, s), results(x["rows"], bar, base)
-                if a and b and a["rho"] is not None and b["rho"] is not None:
-                    ds.append(a["rho"] - b["rho"])
-            return mean(ds)
-        g = [x for x in got if x]
-        all_r = mean([mean(x["picks"]) for x in g])
-        late = mean([mean(x["picks"][4:]) for x in g])
-        d = None if s is base else diff_of(slates)
-        out.append("| %s | %s | %s | %d of %d | %s | %s |" % (
-            s.label, fmt(rho_of(slates)), "-" if s is base else fmt(d, "%+.2f") + rng(boot(slates, diff_of), "%+.2f"),
-            sum(x["hit"] for x in g), sum(x["of"] for x in g), fmt(all_r, "%+.1f"), fmt(late, "%+.1f")))
-    return out
-
-
-def clv_table(slates, rows_of):
-    out = ["| Source | From | Signal (corr) | Picks moved its way, 3+ spots off |", "|---|---|---|---|"]
-    for bar, s, frm, when in rows_of:
-        def sig(xs):
-            pairs = [q for x in xs for q in clv_pairs(x["rows"], bar, s, frm)]
-            return corr([g for g, _ in pairs], [m for _, m in pairs]) if len(pairs) >= 5 else None
-        pairs = [q for x in slates for q in clv_pairs(x["rows"], bar, s, frm)]
-        far = [(1 if g > 0 else -1) * m for g, m in pairs if abs(g) >= GAP]
-        out.append("| %s | %s | %s%s | %s |" % (s.label, when, fmt(sig(slates), "%+.2f"), rng(boot(slates, sig), "%+.2f"),
-                                              "%+.2f on %d players" % (mean(far), len(far)) if far else "-"))
-    return out
-
-
-def calls_table(slates, bar, pairs):
-    out = ["| Disagreement | Pairs | First side right | Range |", "|---|---|---|---|"]
-    for a, b in pairs:
-        def rate(xs):
-            w = l = 0
-            for x in xs:
-                ww, ll = calls(x["rows"], bar, a, b)
-                w, l = w + ww, l + ll
-            return w / (w + l) if w + l else None
-        w = l = 0
-        for x in slates:
-            ww, ll = calls(x["rows"], bar, a, b)
-            w, l = w + ww, l + ll
-        out.append("| %s vs %s | %d | %s | %s |" % (a.label, b.label, w + l, "%.0f%%" % (100 * w / (w + l)) if w + l else "-",
-                                                rng(boot(slates, rate), "%.2f").strip(" ()") or "-"))
-    return out
+        def both(k, spec):
+            return "%s (%s)" % (fmt(season(last, lambda x: res(x, s, k)), spec), fmt(season(upto, lambda x: res(x, s, k)), spec))
+        hits = lambda xs: [results(x["rows"], bar, s) for x in xs if results(x["rows"], bar, s)]
+        h1, h2 = hits(last), hits(upto)
+        frm, cs = clv_from.get(s.col, (None, None))
+        out.append("| %s | %s | %s | %s | %s | %s |" % (
+            s.label, both("rho", "%.2f"), both("picks", "%+.1f"), both("late", "%+.1f"),
+            "%d/%d (%d/%d)" % (sum(h["hit"] for h in h1), sum(h["of"] for h in h1), sum(h["hit"] for h in h2), sum(h["of"] for h in h2)) if h2 else "-",
+            "%s (%s)" % (fmt(clv_sig(last, bar, cs, frm), "%+.2f"), fmt(clv_sig(upto, bar, cs, frm), "%+.2f")) if frm else ""))
+    out += ["", "| Your board against | Last night | Season | Range | So far |", "|---|---|---|---|---|"]
+    for a, b in h2h:
+        r1, n1 = call_rate(last, bar, a, b)
+        r2, n2 = call_rate(upto, bar, a, b)
+        rg = boot(upto, lambda xs: call_rate(xs, bar, a, b)[0])
+        verdict = ("not enough slates" if not rg else "your board wins" if rg[0] > 0.5
+                   else "%s alone wins" % b.label if rg[1] < 0.5 else "too close to call")
+        out.append("| %s | %s | %s of %d pairs | %s | %s |" % (
+            b.label, "%.0f%%" % (100 * r1) if r1 is not None else "-", "%.0f%%" % (100 * r2) if r2 is not None else "-", n2,
+            "%.0f-%.0f%%" % (100 * rg[0], 100 * rg[1]) if rg else "-", verdict if r2 is not None else "-"))
+    return out + [""]
 
 
 def blend_lines(slates):
@@ -319,15 +311,13 @@ def pt(iso):
     return t.strftime("%I:%M%p").lstrip("0").lower()
 
 
-def barbells(slates):
-    out = ["### Morning", ""] + results_table(slates, AM) + [""]
-    out += clv_table(slates, [(AM, AM["sources"][0], "adp_am", "Lock AM"), (AM, AM["sources"][1], "adp_am", "Lock AM")]) + [""]
-    out += calls_table(slates, AM, [(AM["sources"][0], AM["sources"][2]), (AM["sources"][0], AM["sources"][1])]) + [""]
-    out += ["### Afternoon", ""] + results_table(slates, PM) + [""]
-    out += clv_table(slates, [(PM, Src("etr_first", "ETR first upload", True), "adp_etr", "its upload")]) + [""]
-    p = PM["sources"]
-    out += calls_table(slates, PM, [(p[0], p[1]), (p[0], p[3]), (p[2], p[1])]) + [""]
-    return out + blend_lines(slates) + [""]
+def barbells(last, upto):
+    a, p = AM["sources"], PM["sources"]
+    out = summary(last, upto, AM, "Morning: your AM board, ours straight, ADP",
+                  {"am_rank": ("adp_am", a[0]), "ours_am": ("adp_am", a[1])}, [(a[0], a[1]), (a[0], a[2])])
+    out += summary(last, upto, PM, "Afternoon: your PM board, ETR straight, ours, ADP at lock",
+                   {"etr_last": ("adp_etr", Src("etr_first", "ETR first upload", True))}, [(p[0], p[1]), (p[0], p[2]), (p[0], p[3])])
+    return out + ["**Blend (season)**", ""] + blend_lines(upto) + [""]
 
 
 def main():
@@ -359,7 +349,7 @@ def main():
                 "Not graded: %s." % (", ".join(["%s (sat)" % r["name"] for r in sat] +
                                                ["%s (left early, %.0f of his usual %.0f min)" % (r["name"], r["min"], r["usual_min"]) for r in early])
                                      or "nobody"), ""]
-    out += ["## Last night", ""] + barbells(last)
+    out += ["## Last night and the season (%d slates since %s)" % (len(upto), upto[0]["date"]), ""] + barbells(last, upto)
     for s in last:
         rows = s["rows"]
         rank_of = lambda col, rs: {id(r): i + 1 for i, r in enumerate(sorted((r for r in rs if r[col] is not None), key=lambda r: r[col]))}
@@ -385,11 +375,15 @@ def main():
                 ("Margin", lambda r: fmt(r["margin"], "%+.0f")), ("Tag", lambda r: r["injury"] or "")]
         out += player_table(both, "Biggest projection misses (ours, %s)" % oc, cols, lambda r: -abs(r[oc] - r["actual"]), 8)
         out += player_table(both, "Biggest ours-vs-ETR splits", cols, lambda r: -abs(r[oc] - r["etr_last"]), 6)
-    out += ["## Since %s: %d slates" % (upto[0]["date"], len(upto)), ""] + barbells(upto)
-    out += ["**By slate** (rank corr)", "", "| Slate | AM you | AM ADP | PM you | PM ETR | PM ADP |", "|---|---|---|---|---|---|"]
+    out += ["## By slate: was last night normal?", "",
+            "Rank corr, and your head-to-head calls (how often your board was right where it disagreed).", "",
+            "| Slate | AM you | AM ours | AM ADP | AM you vs ours | PM you | PM ETR | PM ADP | PM you vs ETR |",
+            "|---|---|---|---|---|---|---|---|---|"]
     for s in upto:
         f = lambda bar, i: fmt((results(s["rows"], bar, bar["sources"][i]) or {}).get("rho"))
-        out.append("| %s %s | %s | %s | %s | %s | %s |" % (s["date"], s["slate"].replace("nba_", ""), f(AM, 0), f(AM, 2), f(PM, 0), f(PM, 1), f(PM, 3)))
+        c = lambda bar, i, j: (lambda r: "%.0f%%" % (100 * r) if r is not None else "-")(call_rate([s], bar, bar["sources"][i], bar["sources"][j])[0])
+        out.append("| %s %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
+            s["date"], s["slate"].replace("nba_", ""), f(AM, 0), f(AM, 1), f(AM, 2), c(AM, 0, 1), f(PM, 0), f(PM, 1), f(PM, 3), c(PM, 0, 1)))
     out += ["", "Ours, ETR and the board are on the board's Proj scale; the morning file is a plain average, put on "
             "ETR's scale by a line fit wherever the two are blended."]
     print("\n".join(out))

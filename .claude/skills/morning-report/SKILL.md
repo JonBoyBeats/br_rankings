@@ -35,19 +35,20 @@ differently or recompute any of them. The report is in two halves, the way the d
   and our Proj at Lock PM, against ADP at lock. Do your tweaks beat ETR straight, and does our
   number deserve a share of the projection?
 
-Read them for the user in a few lines:
+Each barbell has two tables, every cell last night with the season beside it:
 
-- **Rank corr** and its difference from the barbell's ADP: who ordered the slate best.
-- **Round picks**: a source's two favourites in each ADP round against the round's average, in
-  points. **Rounds 5-6** separately: finding the best late picks is where a lot of drafts are won.
-- **CLV**: how far a source sat from ADP against how far ADP then moved, size-weighted (a
-  correlation; 0 is no signal). Morning: from Lock AM to lock. ETR: from its first upload to lock.
-- **Calls**: of the pairs of players two orders disagree on, how often the first was right.
-  Your AM ranks against ADP and against our raw order; your PM ranks against ETR and against ADP.
-  Over 50% means your moves are adding value.
+- **The orders**: rank corr (how well each order matched the finish), **round picks** (an
+  order's two favourites in each ADP round of 6 picks, the 6th running to ADP rank 48, against
+  that round's average, in points), **rounds 5-6** alone, top-12 hits, and CLV (morning from
+  your AM lock, ETR from its first upload, to lock; 0 is no signal).
+- **Your board against each straight order**: of the pairs of players your board and that
+  order disagree on, how often yours was right, last night and season, with a range and a
+  verdict. This answers the question the report is for: morning, should you draft off our
+  number (or ADP) alone? Afternoon, should you draft off ETR alone? "Your board wins" means keep
+  making your moves; "X alone wins" means stop; "too close to call" means not settled. Don't
+  recommend a change on anything but a settled verdict.
+- **By slate**: whether last night looked like the others or was an outlier.
 - **Blend**: the share of ours in a mix with ETR that missed least.
-- A cumulative difference shows an 80% range. A range that spans 0 (or 50% for calls, or most
-  of 0-100% for the blend) isn't settled: say so, and don't recommend a change on it.
 
 ## 3. Write up the calls and misses
 
