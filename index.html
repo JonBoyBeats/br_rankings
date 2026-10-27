@@ -3405,7 +3405,9 @@ function loadNbaTakes() {
 
 function nbaTakesFor(p) {
   var day = pacificDay(state.slate.cutoff), key = boardKey(p.first_name, p.last_name, state.nameMaps.nba || {});
-  return (state.nbaTakes || []).filter(function (t) { return t.date === day && normName(t.player) === key; });
+  var order = ["Recent", "ETR", "Zakarian"];   // the order the dropdown shows them in
+  return (state.nbaTakes || []).filter(function (t) { return t.date === day && normName(t.player) === key; })
+    .sort(function (a, b) { return (order.indexOf(a.source) + 1 || 99) - (order.indexOf(b.source) + 1 || 99); });
 }
 
 /** On the name line: a letter per source coloured by its stance, and the dropdown toggle. */
