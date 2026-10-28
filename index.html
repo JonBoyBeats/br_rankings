@@ -388,11 +388,16 @@
   .sitx.hi { color: #ff6b5b; }
   .sitx:focus-visible { outline: 2px solid var(--accent); }
   .sitpanel { font-size: 12.5px; color: var(--muted); }
-  /* NBA: his last five games' minutes, Popcorn Machine style, in the row's dropdown. */
+  /* NBA: his last five games' minutes, Popcorn Machine style, in the row's dropdown: beside the
+     notes on the full-width board, under them on anything narrower. */
+  .nbanotes { display: flex; flex-direction: column; gap: 8px; }
+  @media (min-width: 1072px) {
+    .cfbpanel.split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); column-gap: 24px; align-items: start; }
+  }
   .minchart { display: flex; flex-direction: column; gap: 3px; max-width: 860px; }
   .minchart .mhead { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
   .minchart .mhead span { text-transform: none; letter-spacing: 0; opacity: .8; }
-  .mrow { display: grid; grid-template-columns: 70px minmax(0, 1fr) 92px; gap: 8px; align-items: center;
+  .mrow { display: grid; grid-template-columns: 70px minmax(0, 1fr) 92px auto; gap: 8px; align-items: center;
           font-family: var(--mono); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .mrow .mres, .mrow .mgame { white-space: nowrap; }
   .mrow .mres { text-align: right; }
@@ -407,6 +412,10 @@
   .mst.neg { background: #e0705f; }
   .mst.even { background: #9aa3b2; }
   .mrow.none .mtrack { opacity: .55; }
+  /* his box line beside each game: points, rebounds, assists, steals, blocks, threes and field goals made-tried */
+  .mbox { display: grid; grid-template-columns: repeat(5, 2.4ch) 4.6ch 5.4ch; column-gap: 5px; text-align: right; color: var(--ink); }
+  .mlabels { font-size: 10px; margin-bottom: -2px; }
+  .mlabels .mbox { color: var(--muted); }
   .sitpanel b { color: var(--ink); }
   .outback { all: unset; cursor: pointer; margin: 2px 6px 2px 0; padding: 2px 8px; border-radius: 6px; font-size: 12.5px;
              border: 1px solid var(--line-strong); color: var(--ink); }
@@ -574,7 +583,9 @@
     .board.cfb .num.score { flex-direction: column; gap: 2px; }
     .board.cfb .num.score b.sc { min-width: 40px; }
     .cfbpanel { padding: 8px 8px 12px; font-size: 12.5px; }
-    .mrow { grid-template-columns: 66px minmax(0, 1fr) 66px; gap: 5px; font-size: 10px; }
+    .mrow { grid-template-columns: 66px minmax(0, 1fr) 66px; gap: 2px 5px; font-size: 10px; }
+    .mbox { grid-column: 2 / -1; justify-self: start; }
+    .mlabels > span:not(.mbox) { display: none; }
     .cfbgrid { gap: 6px; }
     .cfbgrid .g { padding: 3px 4px 5px; }
     .cfbstrip.own { grid-column: 1 / -1; gap: 4px 6px; }   /* a phone gives it the whole row width */
@@ -3450,16 +3461,18 @@ function nbaWho(who, p, takes) {
 }
 
 function nbaPanel(takes, mins) {
-  var d = document.createElement("div");
-  d.className = "cfbpanel";
+  var d = document.createElement("div"), notes = document.createElement("div");
+  d.className = "cfbpanel" + (takes.length && mins ? " split" : "");
+  notes.className = "nbanotes";
   takes.forEach(function (t) {
     var n = document.createElement("div"); n.className = "note";
     n.innerHTML = "<div class=\"top\"><b>" + esc(t.source) + "</b>" +
       (t.stance ? " <span class=\"verdict v-" + esc(t.stance.toLowerCase()) + "\">" + esc(t.stance) + "</span>" : "") +
       (t.tags ? " <span class=\"lbl\">" + esc(t.tags) + "</span>" : "") + "</div>" +
       (t.blurb ? "<div>" + esc(t.blurb) + "</div>" : "");
-    d.appendChild(n);
+    notes.appendChild(n);
   });
+  if (takes.length) d.appendChild(notes);
   if (mins) d.appendChild(nbaMinutesChart(mins));
   return d;
 }
@@ -3505,6 +3518,13 @@ function nbaMinutesChart(m) {
   head.className = "mhead";
   head.innerHTML = "Minutes, last " + m.g.length + " <span>\u00b7 bars: on the floor, +/\u2212 while on \u00b7 shading: his team's lead</span>";
   wrap.appendChild(head);
+  // the box line's column labels, over the games' box lines
+  var labels = document.createElement("div"), lb = document.createElement("span");
+  labels.className = "mrow mlabels";
+  lb.className = "mbox";
+  lb.innerHTML = ["P", "R", "A", "S", "B", "3P", "FG"].map(function (x) { return "<span>" + x + "</span>"; }).join("");
+  labels.append(document.createElement("span"), document.createElement("span"), document.createElement("span"), lb);
+  wrap.appendChild(labels);
   var top = 10;                                       // the lead scale: the biggest margin in these games, at least 10
   m.g.forEach(function (e) {
     var g = games[e[0]];
@@ -3515,7 +3535,7 @@ function nbaMinutesChart(m) {
     if (!g) return;
     var sign = g.home === m.team ? 1 : -1, opp = sign > 0 ? g.away : g.home, len = g.len || 2880;
     var row = document.createElement("div");
-    row.className = "mrow" + (e.length === 4 ? "" : " none");
+    row.className = "mrow" + (e.length >= 4 ? "" : " none");
     var lab = document.createElement("span");
     lab.className = "mgame";
     lab.innerHTML = "<b>" + (sign > 0 ? "v" : "@") + opp + "</b> " + esc(g.d.slice(5).replace("-", "/"));
@@ -3544,7 +3564,16 @@ function nbaMinutesChart(m) {
     res.className = "mres";
     var fin = sign * g.flow[g.flow.length - 1][1];
     var wl = fin > 0 ? "W " + fin : fin < 0 ? "L " + -fin : "T";
-    if (e.length === 4) {
+    var box = document.createElement("span");
+    box.className = "mbox";
+    if (e[4]) {
+      var x = e[4];
+      box.innerHTML = [x[0], x[1], x[2], x[3], x[4], x[5] + "-" + x[6], x[7] + "-" + x[8]]
+        .map(function (v) { return "<span>" + v + "</span>"; }).join("");
+      box.title = x[0] + " pts, " + x[1] + " reb, " + x[2] + " ast, " + x[3] + " stl, " + x[4] + " blk, " +
+        x[5] + " of " + x[6] + " threes, " + x[7] + " of " + x[8] + " from the field";
+    }
+    if (e.length >= 4) {
       e[3].forEach(function (st) {
         var pm = sign * (marginAt(g.flow, st[1]) - marginAt(g.flow, st[0]));
         var b = document.createElement("span"), w = (st[1] - st[0]) / len * 100;
@@ -3562,7 +3591,7 @@ function nbaMinutesChart(m) {
       res.innerHTML = "<b>" + why + "</b> \u00b7 " + wl;
       if (e.length === 2) res.title = e[1];
     }
-    row.append(lab, track, res);
+    row.append(lab, track, res, box);
     wrap.appendChild(row);
   });
   return wrap;
