@@ -2777,7 +2777,7 @@ function slateExpo() {
   Object.keys(post.pct).forEach(function (k) { pct[normName(k)] = post.pct[k]; });
   state.slate.players.forEach(function (p) {
     var v = pct[normName(p.first_name + " " + p.last_name)];
-    if (v) counts[p.player_id] = Math.round(v / 100 * post.teams);
+    if (v != null) counts[p.player_id] = Math.max(1, Math.round(v / 100 * post.teams));   // the app rounds down: on the list means in a draft
   });
   return { file: "posted from the Underdog app", at: post.at, drafts: post.teams, counts: counts };
 }

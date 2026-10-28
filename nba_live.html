@@ -479,7 +479,8 @@ function render() {
   if (ex && !ex.drafts) ex = null;
   if (post && (!ex || post.at > ex.at)) {
     var pct = {};
-    Object.keys(post.pct).forEach(function (k) { pct[normName(k)] = post.pct[k] / 100; });
+    // the app rounds down, so a player on the list at 0% is still in a draft
+    Object.keys(post.pct).forEach(function (k) { pct[normName(k)] = Math.max(post.pct[k] / 100, 1 / post.teams); });
     share = function (p) { return pct[normName(p.first_name + " " + p.last_name)] || 0; };
     of = post.teams; ex = post;
   } else if (ex) {
