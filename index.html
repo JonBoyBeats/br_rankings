@@ -369,6 +369,7 @@
   .row.outhead { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
                  color: var(--muted); background: var(--surface-2); padding-block: 6px; }
   .row.outrow .num.dim { text-align: center; }
+  .row.bagelhead { color: var(--ink); font-size: 11.5px; font-weight: 700; padding-top: 10px; border-top: 1px solid var(--line-strong); }
   /* NBA name line in fixed columns: name, injury (and sit chance), team, ETR, Zakarian, notes, out. */
   html.nba .who.nbawho { display: grid; grid-template-columns: minmax(0, 210px) 60px 40px 20px 20px 24px 24px minmax(0, 1fr);
                          column-gap: 8px; align-items: center; }
@@ -690,6 +691,8 @@
           <option value="expo">Sort by my exposure</option>
           <option value="vorp">Sort by VORP</option>
           <option value="name">Sort by name</option>
+          <option value="inj" class="nba-only">Injury tags only</option>
+          <option value="bagels" class="nba-only">Bagels (by game)</option>
         </select>
       </label>
       <label class="field">
@@ -3756,7 +3759,34 @@ function visibleRows() {
   if (state.position !== "ALL") {
     list = list.filter(function (r) { return r.p.position === state.position; });
   }
+  if (state.view === "inj") list = list.filter(function (r) { return nbaTagged(r.p); });
   return sortRowsByView(list, state.view);
+}
+
+/* NBA views for reading the day. Injury tags: anyone with an Underdog tag, on the official
+   report, or marked out (by you, ETR or Underdog), by ADP. Bagels: the day's games in ESPN's
+   order, home team then away, each team's players by ADP down to NBA_BAGELS_ADP and by Proj
+   (ETR's once it's in, the morning's before) after that: Expand all reads like a preview. */
+var NBA_BAGELS_ADP = 34;
+
+function nbaTagged(p) {
+  var x = nbaSitFor(p);
+  return !!(p.injury || (state.nbaOutPids && state.nbaOutPids[p.player_id]) ||
+            (x && x.situation !== "none" && x.situation !== "A"));
+}
+
+/** {team: place} in the slate day's games, ESPN's order, home team before away. */
+function nbaGameOrder() {
+  var g = (state.nbaGames || {})[state.slate ? pacificDay(state.slate.cutoff) : ""] || {}, at = {};
+  Object.keys(g).forEach(function (t, i) { at[t] = i; });
+  return at;
+}
+
+function bagelHead(team) {
+  var g = ((state.nbaGames || {})[pacificDay(state.slate.cutoff)] || {})[team], h = document.createElement("div");
+  h.className = "row outhead bagelhead";
+  h.textContent = team + (g ? " " + g[1] + " " + g[0] : "");
+  return h;
 }
 
 /** Rows ({p}) in the order a sorted view shows them; "order" leaves them as they are. */
@@ -3786,6 +3816,22 @@ function sortRowsByView(list, view) {
       var pa = state.projParts[a.p.player_id], pb = state.projParts[b.p.player_id];
       var x = pa && typeof pa.own === "number" ? pa.own : null;
       var y = pb && typeof pb.own === "number" ? pb.own : null;
+      if (x == null && y == null) return adpKey(a.p) - adpKey(b.p);
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return y - x;
+    });
+  } else if (view === "inj") {
+    list = list.slice().sort(function (a, b) { return adpKey(a.p) - adpKey(b.p); });
+  } else if (view === "bagels") {
+    var at = nbaGameOrder();
+    var late = function (p) { return hasAdp(p) && p.adp < NBA_BAGELS_ADP ? 0 : 1; };
+    list = list.slice().sort(function (a, b) {
+      var ta = at[a.p.team] == null ? 999 : at[a.p.team], tb = at[b.p.team] == null ? 999 : at[b.p.team];
+      if (ta !== tb) return ta - tb || String(a.p.team).localeCompare(String(b.p.team));
+      if (late(a.p) !== late(b.p)) return late(a.p) - late(b.p);
+      if (!late(a.p)) return adpKey(a.p) - adpKey(b.p);
+      var x = state.proj[a.p.player_id], y = state.proj[b.p.player_id];
       if (x == null && y == null) return adpKey(a.p) - adpKey(b.p);
       if (x == null) return 1;
       if (y == null) return -1;
@@ -4149,6 +4195,7 @@ function render() {
   if (board) board.classList.toggle("has-expo", hasExpo);
   var expoOpt = document.querySelector('#view option[value="expo"]');
   if (expoOpt) expoOpt.hidden = !hasExpo;
+  document.querySelectorAll("#view option.nba-only").forEach(function (o) { o.hidden = SPORT_MODE !== "nba"; });
   var projHead = document.querySelector('.head button[data-sort="proj"]');
   if (projHead && SPORT_MODE === "nba") {
     projHead.textContent = state.nbaOurs ? "" : "Proj";
@@ -4161,7 +4208,7 @@ function render() {
   }
   $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud% \u2502 Mtch" : "Score";
   if (SPORT_MODE === "nba") $("scoreHead").appendChild(document.createElement("span")).className = "opp-h";
-  $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && (state.nbaTakes || []).length);
+  $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && ((state.nbaTakes || []).length || state.nbaMinutes));
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = SPORT_MODE === "nba";
@@ -4198,8 +4245,10 @@ function render() {
   if (SPORT_MODE === "nba" && state.view === "order" && !state.search.trim() && state.position === "ALL") {
     sw = nbaSwitch();
   }
+  var lastTeam = null;
   rows.forEach(function (r) {
     var p = r.p;
+    if (state.view === "bagels" && p.team !== lastTeam) { lastTeam = p.team; frag.appendChild(bagelHead(p.team)); }
     var el = document.createElement("div");
     el.className = "row" + (state.newIds[p.player_id] ? " is-new" : "") +
                    (atLine && r.rank === state.cut ? " curated-end" : "") +
@@ -4719,7 +4768,7 @@ $("cfbAll").addEventListener("click", function (e) {
   e.stopPropagation();
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   state.cfbOpen = {};
-  if (!anyOpen) visibleRows().forEach(function (r) { if (SPORT_MODE === "nba" ? nbaTakesFor(r.p).length : cfbFor(r.p)) state.cfbOpen[r.p.player_id] = true; });
+  if (!anyOpen) visibleRows().forEach(function (r) { if (SPORT_MODE === "nba" ? nbaTakesFor(r.p).length || nbaMinutesFor(r.p) : cfbFor(r.p)) state.cfbOpen[r.p.player_id] = true; });
   render();
 });
 $("liftMinus").addEventListener("click", function () { jumpLifted("minus"); });
