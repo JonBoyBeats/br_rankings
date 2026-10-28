@@ -3,8 +3,12 @@ on:
   schedule:
     # UTC: 2:17am PT in daylight time, 1:17am in standard. Every game is final by then.
     - cron: '17 9 * * *'
+    # 8:17pm PT (7:17 in standard): tomorrow's Recent notes only, from every game already in, so the
+    # next day's slate has them the night before; the 2:17am run refreshes anyone who played tonight
+    - cron: '17 3 * * *'
   workflow_dispatch:
     inputs:
+      notes_for: { description: "Only write that day's Recent notes (YYYY-MM-DD), skipping the nightly record", required: false }
       since: { description: 'Build from this Pacific day (YYYY-MM-DD); default three days back', required: false }
       rebuild: { description: 'Rewrite slates already on file', type: boolean, default: false }
 permissions:
@@ -27,15 +31,20 @@ jobs:
           FROM=$(date -u -d "${SINCE:-today} -7 days" +%F)
           git clone -q --shallow-since="$FROM" https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror
           if [ -n "$GIST_ID" ]; then git clone -q --shallow-since="$FROM" "https://gist.github.com/$GIST_ID.git" ../gist; fi
-      - run: |
+      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for
+        run: |
           python3 scripts/nba_daily.py --mirror ../br-adp-mirror \
             $([ -d ../gist ] && echo --gist ../gist) \
             ${SINCE:+--since "$SINCE"} ${{ inputs.rebuild && '--rebuild' || '' }}
       # Today's Recent notes: last night into the ledger, a fresh note for everyone on today's
       # slates who has played since his last one, then the board's notes file
       - name: Recent notes
+        env:
+          NOTES_FOR: ${{ inputs.notes_for }}
+          EVENING: ${{ github.event.schedule == '17 3 * * *' }}
         run: |
-          python3 scripts/nba_ledger.py auto --slates ../br-adp-mirror/nba_latest.json
+          if [ "$EVENING" = true ]; then NOTES_FOR=$(TZ=America/Los_Angeles date -d tomorrow +%F); fi
+          python3 scripts/nba_ledger.py auto --slates ../br-adp-mirror/nba_latest.json ${NOTES_FOR:+--date "$NOTES_FOR"}
           python3 scripts/build_takes.py
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
