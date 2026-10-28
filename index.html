@@ -540,6 +540,8 @@
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .liftbar .hint { font-size: 11.5px; }
+  /* in a sorted view there's nothing to move: the bar is for marking him out */
+  .liftbar.sorted .pair { display: none; }
   .liftbar button { height: 40px; min-width: 46px; font-size: 15px; }
   .liftbar button:disabled { opacity: .35; cursor: default; }
   /* Keep the last rows reachable above the bar. */
@@ -835,7 +837,7 @@
 <div class="liftbar" id="liftbar" hidden>
   <span class="liftbar-who">
     <span class="liftbar-name" id="liftName"></span>
-    <span class="hint"><span id="liftOpp"></span>Tap a player to move here</span>
+    <span class="hint"><span id="liftOpp"></span><span id="liftHint">Tap a player to move here</span></span>
   </span>
   <button type="button" id="liftOut" class="nba-only" title="Mark him out tonight: he drops to the bottom and his teammates' Proj moves up">Out</button>
   <span class="pair">
@@ -3611,9 +3613,15 @@ var NBA_SIT_LABEL = { none: "No tag", A: "Available", P: "Probable", Q_carried: 
                       Q_down: "Q, downgraded from Probable", Q_up: "Q, upgraded from Doubtful/Out", D: "Doubtful" };
 
 /** His sit-chance row for this slate's day, if the board should show one. */
+/** The sit file's numbers for this slate's day: tonight's, or tomorrow's from the night before. */
+function nbaSitDay() {
+  var d = state.nbaSit, day = state.slate && pacificDay(state.slate.cutoff);
+  return !d || !day ? null : d.date === day ? d : (d.days || {})[day] || null;
+}
+
 function nbaSitFor(p) {
-  var d = state.nbaSit;
-  if (!d || !state.slate || d.date !== pacificDay(state.slate.cutoff)) return null;
+  var d = nbaSitDay();
+  if (!d) return null;
   if (state.nbaOutPids && state.nbaOutPids[p.player_id]) return null;
   var plain = String((p.first_name || "") + " " + (p.last_name || "")).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   var x = d.players[boardKey(p.first_name, p.last_name, state.nameMaps.nba || {})] || d.players[normName(plain)];
@@ -3644,7 +3652,9 @@ function nbaSitPanel(x) {
   var steps = (x.steps || []).map(function (s, i) {
     return i === 0 ? "starts at " + pct(s[1]) : esc(s[0]) + " \u2192 " + pct(s[1]);
   });
-  var at = state.nbaSit.as_of_et ? " As of " + state.nbaSit.as_of_et + " ET (" + (state.nbaSit.model === "early" ? "morning" : "afternoon") + " model)." : "";
+  var sd = nbaSitDay() || {};
+  var at = sd.as_of_et ? " As of " + sd.as_of_et + " ET" + (sd !== state.nbaSit ? " the night before" : "") +
+    " (" + (sd.model === "early" ? "morning" : "afternoon") + " model)." : "";
   d.innerHTML = "<b>Sits " + pct(x.p) + "</b> \u00b7 " + esc(NBA_SIT_LABEL[x.situation] || x.situation) +
     (x.reason && x.reason !== "-" ? " (" + esc(x.reason) + ")" : "") +
     (x.source === "underdog" ? " (Underdog's tag; not on the official report yet, so scored as tagged fresh today)" : "") +
@@ -4648,6 +4658,8 @@ function liftedPlayer() {
 function renderLiftBar() {
   var bar = $("liftbar"), who = liftedPlayer();
   bar.hidden = !who;
+  bar.classList.toggle("sorted", state.view !== "order");
+  $("liftHint").textContent = state.view !== "order" ? "Out carries to your order" : "Tap a player to move here";
   document.body.classList.toggle("lifting", !!who);
   if (who) $("liftName").textContent = who.first_name + " " + who.last_name;
   if (who && SPORT_MODE === "nba") {
@@ -4731,7 +4743,12 @@ document.addEventListener("click", function (e) {
   if (e.target.closest && e.target.closest("#liftbar")) return;
   if (e.target.closest && e.target.closest(".tiertag")) return;
   var row = e.target.closest ? e.target.closest(".row[data-pid]") : null;
-  if (!row || state.view !== "order") return;
+  if (!row) return;
+  // a sorted NBA view (Injury tags, Bagels...): a tap picks him for the bar's Out, nothing moves
+  if (state.view !== "order") {
+    if (SPORT_MODE === "nba") setLifted(state.liftedPid === row.dataset.pid ? null : row.dataset.pid);
+    return;
+  }
   if (Date.now() - lastDragEnd < 400) return;   // a finished drag, not a tap
   var pid = row.dataset.pid;
   if (!state.liftedPid) { setLifted(pid); return; }
