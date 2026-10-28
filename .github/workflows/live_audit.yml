@@ -1,0 +1,14 @@
+name: Live greens audit
+# Replays past nights through the Live page's green code whenever it changes (scripts/live_audit.js).
+on:
+  push:
+    paths: ['nba_live.html', 'scripts/live_audit.js', 'tests/live_audit/**']
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: node scripts/live_audit.js

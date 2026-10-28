@@ -153,9 +153,13 @@ var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
    own usual output, so early in the night the first games' players are measured against
    the projections of those still to play, and can't be green until they're on track to
    beat them. Each round's leader on that count is dark green (no one, while it's a player
-   yet to start), and the rest are shaded by how far behind him they are, fading to nothing
-   at CLOSE points: four players within 2 of the leader look alike, and a leader more than
-   CLOSE ahead of everyone is his round's only green.
+   yet to start). The rest are light green only if they're also ahead of the round's usual so
+   far, shaded by how far behind the leader they are, fading to nothing at CLOSE points by the
+   final horn and that times the share played before it (2.5 after a quarter, 5 at the half):
+   early on everyone's count is mostly the round's usual, so a fixed 10 caught the whole round.
+   A leader more than that ahead of everyone is his round's only green. Past the sixth round's
+   group (the undrafted pile, 40+ players) only a leader goes green. scripts/live_audit.js
+   replays past nights through this code and holds it to that (run it after changing it).
    Pace (points so far plus his own usual output for the rest) is still shown in the
    tap-open line. */
 var TEAMS = 6, ROUNDS = 6, CLOSE = 10;
@@ -423,7 +427,9 @@ function grade(rows) {
       var r = byAdp[i], a = ahead(r), gap = lead ? lead.track - r.track : null;
       r.med = med; r.best = best; r.ahead = a; r.usualNow = usual == null ? null : r.played * usual;
       r.lead = lead; r.gap = gap;
-      r.good = a == null ? 0 : gap <= 0 ? 1 : gap < CLOSE ? 1 - gap / CLOSE : 0;   // only a started player turns green
+      // only a started player turns green; light green only ahead of the round's usual, near the leader for this point of his game
+      var w = CLOSE * r.played;
+      r.good = a == null ? 0 : gap <= 0 ? 1 : a > 0 && gap < w && i < POOLS[ROUNDS - 1][1] ? 1 - gap / w : 0;
     });
   }
 }
@@ -560,7 +566,7 @@ function render() {
   var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" : "Fetching ESPN…";
   var legend = state.pulledAt ? (live ? " · refreshes every " + EVERY + "s while open" : "") +
     " · dark green: his round's leader so far (players yet to start count at their usual" +
-    (state.projFrom ? ", ETR's median from today's file" : "") + "); the rest greener the closer they are, none " + CLOSE + "+ points back" : "";
+    (state.projFrom ? ", ETR's median from today's file" : "") + "); light green: ahead of his round's usual and close behind, within " + CLOSE + " points at the final horn (5 at the half)" : "";
   if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
   else setStatus(msg, false, legend);
 }
