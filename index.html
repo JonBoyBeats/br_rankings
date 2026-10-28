@@ -1651,6 +1651,18 @@ function lockBoard(which) {
   renderLocks();
 }
 
+/** Before a save goes up, keep any lock another device already saved for this slate (the newer of
+    each), so a device that never saw the press can't wipe it. */
+function mergeLocks(remote) {
+  if (!remote || !remote.locks || remote.locks.slate_id !== state.slate.slate_id) return;
+  var mine = slateLocks(), changed = false;
+  ["am", "pm"].forEach(function (w) {
+    var r = remote.locks[w];
+    if (r && (!mine[w] || isoMs(r.at) > isoMs(mine[w].at))) { mine[w] = r; changed = true; }
+  });
+  if (changed) { mine.slate_id = state.slate.slate_id; rawSave(K.locks(state.slate.label), mine); renderLocks(); }
+}
+
 function renderLocks() {
   if (SPORT_MODE !== "nba" || !state.slate) return;
   var locks = slateLocks(), when = { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" };
@@ -5106,6 +5118,7 @@ async function syncSave() {
       renderSync("Left the saved board alone.");
       return;
     }
+    mergeLocks(prior);
     var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString(),
                            load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label), slateLocks());
     var files = {};
@@ -5346,6 +5359,7 @@ async function autoSync(quiet) {
       rawSave(K.synced(label), remote.saved_at);
       msg = "Synced your board from " + remote.device + " (saved " + describeAge(remote.saved_at, Date.now()) + ").";
     } else if (push) {
+      mergeLocks(remote);
       entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
                          load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label), slateLocks());
       files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
@@ -6497,6 +6511,14 @@ function brrSelfTest() {
   ok("out marks ride a saved board, an empty list too",
      savedEntry(["a"], "s", "d", "t", null, 1, null, { list: ["kawhi leonard"], from: { "kawhi leonard": { rank: 3, above: true } } }).outs.list.join() === "kawhi leonard" &&
      savedEntry(["a"], "s", "d", "t", null, 1, null, { list: [] }).outs.list.length === 0 && savedEntry(["a"], "s", "d", "t").outs === undefined);
+  var keepLabel = state.slate;
+  state.slate = { label: "__locktest", slate_id: "s" };
+  rawSave(K.locks("__locktest"), { slate_id: "s", am: { at: "2026-10-28T11:05:00Z", order: ["a"] } });
+  mergeLocks({ locks: { slate_id: "s", pm: { at: "2026-10-27T23:00:00Z", order: ["b"] }, am: { at: "2026-10-28T10:00:00Z", order: ["z"] } } });
+  var merged = load(K.locks("__locktest"), {});
+  ok("a lock another device saved survives this device's save", merged.pm && merged.pm.order[0] === "b" && merged.am.order[0] === "a");
+  try { localStorage.removeItem(K.locks("__locktest")); } catch (e) { /* ignore */ }
+  state.slate = keepLabel;
   ok("locks ride a saved board", savedEntry(["a"], "s", "d", "t", null, 1, null, null, { slate_id: "s", am: { order: ["a"] } }).locks.am.order[0] === "a" &&
      savedEntry(["a"], "s", "d", "t", null, 1, null, null, { slate_id: "s" }).locks === undefined);
   ok("the matchup note rounds to whole points and names the big parts",
