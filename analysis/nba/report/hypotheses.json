@@ -1,0 +1,11 @@
+{
+ "H1": {
+  "title": "Minutes trend: when his last 3 games averaged 4+ minutes off his usual, project him at his last-3 minutes",
+  "label": "input fix",
+  "status": "testing",
+  "opened": "2026-10-28",
+  "since": "2026-10-28",
+  "rule": "minutes_trend",
+  "notes": "From the misses log: calls leaning into a player running above his usual minutes went 6 of 7 (Oct 26-27), but that used the minutes he went on to play. This is the pre-tip version: recent minutes over the usual (the morning file's last 10). It can't fire until players have 5+ games, when the two differ"
+ }
+}

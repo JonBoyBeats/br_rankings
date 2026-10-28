@@ -105,6 +105,33 @@ Add a dated section at the top of `analysis/nba/report/takeaways.md` (newest fir
 2-4 bullets on last night, any theme that crossed the bar above, and a change to try, but only
 when a theme supports it. Keep earlier sections as they are.
 
+## 6b. Hypotheses: what we learned, tested before it goes in the model
+
+```
+python3 scripts/nba_hypotheses.py
+```
+
+Every candidate learning lives in `analysis/nba/report/hypotheses.json` and moves through
+watching → testing → adopted, or out as rejected / retired. Show the script's proposals in chat
+in a line each, and act on them only with the user's yes:
+
+- **New hypothesis**: when a theme from step 5 crosses its bar (3+ cases on 2+ slates), propose
+  it, with a label: `input fix` (how minutes or rates are computed), `situational` (a condition
+  known before tip, like a spread or a teammate out), or `matchup` (a check on our matchup
+  numbers). Noise (shooting, stocks, fouls) and your own drafting habits are never hypotheses;
+  the habits go in the takeaways. A hypothesis needs a rule that moves a player's projection
+  using only what was known before tip; without one it stays `watching`. With a yes, write the
+  rule as a function in `RULES` in `scripts/nba_hypotheses.py` and add its entry (opened today,
+  status `testing`). Keep about 5 open at most: test 30 ideas and one passes by luck.
+- **Adopt?** after its forward test (14 nights, 40+ players moved) beat the base model with a
+  range above zero. With a yes: status `adopted`, `since` today, and say where in the model it
+  has to be built (that's a separate change).
+- **Reject?** when it didn't beat the base model forward. Status `rejected`, with the date.
+- **Retire?** when an adopted rule stops beating the base model over its rolling 14 nights.
+  With a yes: status `retired`, and take it back out of the model, so nothing stale lingers.
+
+Never change a pass bar after the results are in.
+
 ## 7. Last night, player by player
 
 A line on every graded player's night (the newspaper), from a running ledger of every rotation
@@ -160,14 +187,14 @@ python3 scripts/nba_ledger.py write <file> && python3 scripts/build_takes.py
 The session's files are gone when it ends, so commit and push everything:
 
 ```
-git add analysis/nba/report analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/nba_takes.json
+git add analysis/nba/report analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/nba_takes.json scripts/nba_hypotheses.py
 git commit -m "NBA report: takeaways and player notes for <date>" && git push origin HEAD:main
 ```
 
 ## In chat
 
 In this order, short and scannable: last night's morning and afternoon barbells, the same so
-far, themes, takeaways, then last night player by player (the printed list) and any "against
+far, themes, takeaways, hypotheses (a line each, and any proposal), then last night player by player (the printed list) and any "against
 the same team" lines. The calls and misses from steps 3-4 are logged for the themes, not listed
 in chat. Close with anything missing from the record (no lock, no ETR on file, unmatched box
 scores, notes not written overnight) so it can be fixed.
