@@ -295,8 +295,8 @@ def form_sheet(ledger, date, slates_file):
     out.append("")
     for k, rs in sorted(due.items(), key=lambda x: (x[1][-1]["team"], -float(x[1][-1]["usual_min"] or 0))):
         mins = sum(float(r["min"]) for r in rs) / len(rs)
-        out += ["### %s %s · last %d: %s · %.0f min a game (usual %.0f)" % (
-            rs[-1]["name"], rs[-1]["team"], len(rs), tally(rs), mins, float(rs[-1]["usual_min"] or 0))]
+        out += ["### %s %s [key: %s] · last %d: %s · %.0f min a game (usual %.0f)" % (
+            rs[-1]["name"], rs[-1]["team"], k, len(rs), tally(rs), mins, float(rs[-1]["usual_min"] or 0))]
         for r in rs:
             out.append("- %s vs %s: %s %s (%.1f vs %s %s), %s min; %s. %s" % (
                 r["date"][5:], r["opp"], r["result"], "%+.0f" % float(r["gap"]) if r["gap"] else "", float(r["actual"]),

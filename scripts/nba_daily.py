@@ -172,15 +172,23 @@ def board_at(gist, version, slate):
 
 
 def find_locks(gist, slate):
-    """Your Lock AM / Lock PM for the slate, from the newest save of its board, whenever you pressed
-    them (a PM lock pressed after the slate locked still counts), and when that save was."""
+    """Your Lock AM / Lock PM for the slate, whenever you pressed them (a PM lock pressed after the
+    slate locked still counts): each from the newest save of its board that has it, since a save
+    from a device that never saw the press can leave it out. And when the newest save was."""
+    locks, newest = {}, None
     for t, version in reversed(gist.revs):
         if t < slate["lock"] - dt.timedelta(days=2):
             break
         b = board_at(gist, version, slate)
-        if b:
-            return b.get("locks") or {}, t
-    return {}, None
+        if not b:
+            continue
+        newest = newest or t
+        for which, lk in ((b.get("locks") or {}).items()):
+            if which in ("am", "pm") and which not in locks:
+                locks[which] = lk
+        if "am" in locks and "pm" in locks:
+            break
+    return locks, newest
 
 
 def lock_line(slate, locks, t):
