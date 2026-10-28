@@ -253,7 +253,7 @@ def summary(last, upto, bar, title, clv_from, h2h, clv_note):
     for a, b in h2h:
         r1, n1 = call_rate(last, bar, a, b)
         r2, n2 = call_rate(upto, bar, a, b)
-        rg = boot(upto, lambda xs: call_rate(xs, bar, a, b)[0])
+        rg = boot([x for x in upto if sum(calls(x["rows"], bar, a, b))], lambda xs: call_rate(xs, bar, a, b)[0])
         verdict = ("not enough slates" if not rg else "your board wins" if rg[0] > 0.5
                    else "%s alone wins" % b.label if rg[1] < 0.5 else "too close to call")
         out.append("| %s | %s | %s of %d pairs | %s | %s |" % (

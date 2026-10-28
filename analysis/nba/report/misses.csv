@@ -37,14 +37,6 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-10-27,nba_tue_main,Daniss Jenkins,DET,am_call,24.6,24.6,16.6,24.0,25.0,-14.0,shooting,no,push,faded; 3-10; beat 5 of 10
 2026-10-27,nba_tue_main,John Collins,DET,am_call,27.5,34.1,22.3,27.0,29.3,-14.0,peripherals,no,wrong,"faded; 2 pts on 1-4 but 9 reb, 3 stocks got him to 22; beat 4 of 7 he was put behind"
 2026-10-27,nba_tue_main,Day'Ron Sharpe,BKN,am_call,27.3,31.8,16.2,17.0,23.0,-1.0,minutes,yes,wrong,raised; 17 min against usual 23 in a 1-point game; beat 0 of 7
-2026-10-27,nba_tue_main,Daniss Jenkins,DET,pm_call,24.6,24.6,16.6,24.0,25.0,-14.0,shooting,no,wrong,raised over ETR; 3-10 in normal minutes; beat 2 of 9
-2026-10-27,nba_tue_main,Devin Vassell,SAS,pm_call,25.3,29.7,32.8,24.0,33.0,27.0,peripherals,no,wrong,faded below ETR; 24 min in a 27-point win yet 32.8 on 8 ast and 4-7 threes
-2026-10-27,nba_tue_main,Jrue Holiday,POR,pm_call,26.8,29.5,33.3,30.0,25.5,7.0,minutes,yes,right,"raised; 30 min against usual 26, 8-12; beat all 5"
-2026-10-27,nba_tue_main,Michael Porter Jr.,BKN,pm_call,35.3,37.8,47.4,40.0,29.3,-1.0,minutes,yes,right,"raised; 40 min against usual 29, 12 reb; beat all 4"
-2026-10-27,nba_tue_main,Zach LaVine,SAC,pm_call,35.1,35.0,28.1,31.0,37.7,-27.0,blowout,partly,push,raised; 31 min in a 27-point loss; 2 of 4
-2026-10-27,nba_tue_main,Dylan Harper,SAS,pm_call,32.2,38.0,34.2,30.0,32.0,27.0,blowout,partly,push,faded; 30 min in a 27-point win; 2 of 4
-2026-10-27,nba_tue_main,Derrick White,BOS,pm_call,31.0,38.6,29.5,33.0,29.0,1.0,shooting,no,right,"faded; 5-15, 1-7 from three; 3 of 4"
-2026-10-27,nba_tue_main,Julian Champagnie,SAS,pm_call,23.2,26.1,33.1,25.0,27.7,27.0,other,?,wrong,faded below ETR; 33.1 in 25 min; 1 of 4
 2026-10-27,nba_tue_main,Precious Achiuwa,SAC,miss,32.4,35.4,5.2,14.0,31.3,-27.0,blowout,partly,ours,14 min against usual 31 in a 27-point loss
 2026-10-27,nba_tue_main,De'Andre Hunter,SAC,miss,20.0,25.9,38.2,33.0,24.7,-27.0,blowout,partly,etr,"garbage-time minutes the other way: 33 against usual 25 in a 27-point loss, 5-9 from three"
 2026-10-27,nba_tue_main,Matisse Thybulle,LAL,miss,23.9,28.0,5.9,22.0,24.3,-7.0,peripherals,no,ours,"no stocks in 22 min, 2-5"
@@ -59,3 +51,11 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-10-27,nba_tue_main,Jalen Brunson,NYK,split,38.8,47.0,33.7,36.0,34.3,14.0,shooting,no,ours,"5-18, 0-5 from three"
 2026-10-27,nba_tue_main,Victor Wembanyama,SAS,split,54.8,62.8,65.0,27.0,31.7,27.0,peripherals,no,etr,7 stocks in 27 min of a 27-point win
 2026-10-27,nba_tue_main,Walker Kessler,LAL,split,37.2,44.9,27.6,33.0,31.0,-7.0,peripherals,no,ours,"0 ast, 4 tov, 8 reb (below his rate)"
+2026-10-27,nba_tue_main,Daniss Jenkins,DET,pm_call,24.3,24.6,16.6,24.0,25.0,-14.0,shooting,no,wrong,raised over ETR; 3-10 in normal minutes; beat 2 of 9 (Lock PM 2:41pm)
+2026-10-27,nba_tue_main,Devin Vassell,SAS,pm_call,30.0,29.7,32.8,24.0,33.0,27.0,peripherals,no,wrong,"faded below ETR; 8 ast, 4-7 threes in 24 minutes of a blowout; beat 2 of 7 (Lock PM 2:41pm)"
+2026-10-27,nba_tue_main,Derrick White,BOS,pm_call,39.6,38.6,29.5,33.0,29.0,1.0,shooting,no,right,"faded; 5-15, 1-7 from three; beat 4 of 5 (Lock PM 2:41pm)"
+2026-10-27,nba_tue_main,Jrue Holiday,POR,pm_call,30.3,29.5,33.3,30.0,25.5,7.0,minutes,yes,right,"raised; 30 min against usual 26, 8-12; beat 5 of 5 (Lock PM 2:41pm)"
+2026-10-27,nba_tue_main,Michael Porter Jr.,BKN,pm_call,37.3,37.8,47.4,40.0,29.3,-1.0,minutes,yes,right,"raised; 40 min against usual 29, 12 reb; beat 4 of 4 (Lock PM 2:41pm)"
+2026-10-27,nba_tue_main,De'Aaron Fox,SAS,pm_call,38.0,37.7,21.8,26.0,31.3,27.0,blowout,partly,wrong,"raised; 26 min in a 27-point win, no stocks; beat 0 of 3 (Lock PM 2:41pm)"
+2026-10-27,nba_tue_main,Zach LaVine,SAC,pm_call,36.6,35.0,28.1,31.0,37.7,-27.0,blowout,partly,wrong,raised; 31 min in a 27-point loss; beat 1 of 3 (Lock PM 2:41pm)
+2026-10-27,nba_tue_main,Paul Reed,DET,pm_call,31.8,37.7,44.3,26.0,22.0,-14.0,shooting,no,right,raised; 9-12 with 3 stocks in 26 min; beat 3 of 3 (Lock PM 2:41pm)

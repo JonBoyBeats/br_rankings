@@ -134,27 +134,25 @@ python3 scripts/nba_ledger.py print
 
 ## 8. Recent notes for today's board
 
-The ledger tracks every rotation player in every game (15+ minutes), not just the graded ones,
-so a team's 6th-8th men have history when a small or late slate lists them. Notes are due for
-everyone Underdog lists on today's slates, main and late, who has 3+ graded games and has
-played since his note. Get today's slates from the ADP mirror (a public repo), then list them:
+Notes are written overnight: the 2:17am task records last night and puts template ("auto")
+notes on the board, then the 2:47am task writes 2-3 sentences in this style for everyone due
+(a scheduled task named "NBA Recent notes: written in style"). Here, check it went in:
 
 ```
 git clone -q --depth 1 https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror 2>/dev/null || git -C ../br-adp-mirror pull -q
 python3 scripts/nba_ledger.py form --slates ../br-adp-mirror/nba_latest.json
 ```
 
-For each player listed (his last 5 against ETR, game by game, and his note so far), write 2-3
-sentences on his recent form against his projections into `analysis/nba/form.csv`
-(`key,name,team,through,blurb`; replace his row, `key` as the sheet's name key, `through` = his
-last game's date). Synthesize, don't list the games: is he beating or trailing his number, and
-is the reason sticky (minutes, role, usage) or noise (shooting, stocks, a blowout)? Say what to
-expect if it holds. A game measured against "our usual" had no ETR number; say so if it
-matters. Only what the ledger shows; no guessing at news. Notes are matched by name, so one
-note serves the main and late slates. Then:
+"0 notes due" means every player on today's slates (main and late) with 3+ graded games has a
+written note covering his last game. Otherwise write the ones listed: 2-3 sentences on his
+recent form against his projections. Synthesize, don't list the games: is he beating or
+trailing his number, and is the reason sticky (minutes, role, usage) or noise (shooting,
+stocks, a blowout)? Say what to expect if it holds. A game measured against "our usual" had no
+ETR number; say so if it matters. Only what the ledger shows; no guessing at news. Save them as
+a JSON file {key: note} (the key is in each player's header) and run:
 
 ```
-python3 scripts/nba_ledger.py recent && python3 scripts/build_takes.py
+python3 scripts/nba_ledger.py write <file> && python3 scripts/build_takes.py
 ```
 
 ## 9. Save
@@ -169,7 +167,7 @@ git commit -m "NBA report: takeaways and player notes for <date>" && git push or
 ## In chat
 
 In this order, short and scannable: last night's morning and afternoon barbells, the same so
-far, your calls and our misses (one line each: player, cause, right or closer), themes,
-takeaways, then last night player by player (the printed list) and any "against the same
-team" lines. Close with anything missing from the record (no ETR on file, no board number,
-unmatched box scores) so it can be fixed.
+far, themes, takeaways, then last night player by player (the printed list) and any "against
+the same team" lines. The calls and misses from steps 3-4 are logged for the themes, not listed
+in chat. Close with anything missing from the record (no lock, no ETR on file, unmatched box
+scores, notes not written overnight) so it can be fixed.
