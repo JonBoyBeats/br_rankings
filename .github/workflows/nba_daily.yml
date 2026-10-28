@@ -31,8 +31,14 @@ jobs:
           python3 scripts/nba_daily.py --mirror ../br-adp-mirror \
             $([ -d ../gist ] && echo --gist ../gist) \
             ${SINCE:+--since "$SINCE"} ${{ inputs.rebuild && '--rebuild' || '' }}
+      # Today's Recent notes: last night into the ledger, a fresh note for everyone on today's
+      # slates who has played since his last one, then the board's notes file
+      - name: Recent notes
+        run: |
+          python3 scripts/nba_ledger.py auto --slates ../br-adp-mirror/nba_latest.json
+          python3 scripts/build_takes.py
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
-          git add analysis/nba/daily
-          git diff --cached --quiet || git commit -m "NBA daily: record through $(TZ=America/Los_Angeles date -d yesterday +%F)"
+          git add analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json
+          git diff --cached --quiet || git commit -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           git pull --rebase -q origin main && git push

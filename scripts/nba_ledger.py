@@ -16,8 +16,11 @@ Context only: nothing here feeds Proj, the ranks or the morning report's grading
   recent   for today (or --date): each written note, tagged with his last-5 tally, to
            analysis/nba/takes/<date>_recent.csv, which the board shows in its row dropdown
            (run scripts/build_takes.py after).
+  auto     what the 2am job (nba_daily.yml) runs after the nightly record: drafts every night on file
+           that the ledger lacks, writes a note into form.csv for each player due one (auto_note()
+           below, from the same facts form prints), then recent.
 
-  python3 scripts/nba_ledger.py draft|print|form|recent [--date YYYY-MM-DD] [--slates nba_latest.json]
+  python3 scripts/nba_ledger.py draft|print|form|recent|auto [--date YYYY-MM-DD] [--slates nba_latest.json]
 
 The split: his usual is his usual minutes times his usual per-minute line (the morning file on
 file that day). Actual minus usual is exactly the minutes part (minutes over or under his usual,
@@ -259,18 +262,23 @@ def todays_keys(slates_file, date):
     return out
 
 
-def form_sheet(ledger, date, slates_file):
-    """The facts behind each Recent note due a rewrite: players on the day's slates (or, without the
-    slates, everyone who played last night) with 3+ graded games and a game since their note."""
-    form, out = load_form(), []
-    wins = windows(ledger, date)
+def due_notes(ledger, date, slates_file):
+    """{key: his window} for each Recent note due a rewrite: players on the day's slates (or, without
+    the slates, everyone who played last night) with 3+ graded games and a game since their note."""
+    form, wins = load_form(), windows(ledger, date)
     if slates_file:
         today = todays_keys(slates_file, date)
         due = {k: rs for k, rs in wins.items() if k in today}
     else:
         newest = max(r["date"] for r in ledger if r["date"] < date)
         due = {k: rs for k, rs in wins.items() if rs[-1]["date"] == newest}
-    due = {k: rs for k, rs in due.items() if not (k in form and form[k]["through"] >= rs[-1]["date"])}
+    return {k: rs for k, rs in due.items() if not (k in form and form[k]["through"] >= rs[-1]["date"])}
+
+
+def form_sheet(ledger, date, slates_file):
+    """The facts behind each Recent note due a rewrite (due_notes)."""
+    form, out = load_form(), []
+    due = due_notes(ledger, date, slates_file)
     out.append("%d notes due, %d teams" % (len(due), len({rs[-1]["team"] for rs in due.values()})))
     out.append("")
     for k, rs in sorted(due.items(), key=lambda x: (x[1][-1]["team"], -float(x[1][-1]["usual_min"] or 0))):
@@ -288,6 +296,104 @@ def form_sheet(ledger, date, slates_file):
     return out
 
 
+def _join(xs):
+    xs = [str(x) for x in xs]
+    return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " and " + xs[-1]
+
+
+# A part that keeps showing up in his window, as a sentence: (tag, {k: count, n: games, fg: shooting lines}).
+RECUR = {
+    "hot shooting": "Efficient shooting drove the good nights ({fg})",
+    "cold shooting": "Cold shooting drove the bad nights ({fg})",
+    "scoring up": "Scoring above his usual rate in {k} of {n}",
+    "scoring down": "Scoring below his usual rate in {k} of {n}",
+    "assists up": "Assists above his rate in {k} of {n}",
+    "assists down": "Assists below his rate in {k} of {n}",
+    "rebounds up": "Rebounding above his rate in {k} of {n}",
+    "rebounds down": "Rebounding below his rate in {k} of {n}",
+    "stocks up": "Steals and blocks have run hot ({k} of {n})",
+    "stocks down": "Steals and blocks have dried up ({k} of {n})",
+    "turnovers": "Turnovers have cost him in {k} of {n}",
+    "ETR above his usual": "ETR has had him above his usual, so it's already pricing a bigger role",
+    "ETR below his usual": "ETR has had him below his usual",
+}
+
+
+def auto_note(rs):
+    """2-3 sentences on his recent form against his projections, from his window's ledger rows: how
+    he's done against ETR, what his minutes say, and what keeps moving his number."""
+    n, res = len(rs), [r["result"] for r in rs]
+    gaps = [float(r["gap"] or 0) for r in rs]
+    ov, inl, un = res.count("over"), res.count("in line"), res.count("under")
+    off = lambda xs: _join(["%.0f" % abs(g) for g in xs])
+    if ov == n:
+        s1 = "Over ETR in all %d, by %s." % (n, off(gaps))
+    elif un == n:
+        s1 = "Under ETR in all %d, by %s." % (n, off(gaps))
+    elif inl == n:
+        s1 = "In line with ETR all %d games, never more than %.0f off." % (n, max(abs(g) for g in gaps))
+    elif un == 0:
+        s1 = "Never under: %d over and %d in line." % (ov, inl)
+    elif ov == 0:
+        s1 = "Never over: %d under and %d in line." % (un, inl)
+    elif un == 1 and ov >= n - 1:
+        s1 = "Mostly over: %d of %d, one under." % (ov, n)
+    elif ov == 1 and un >= n - 1:
+        s1 = "Mostly under: %d of %d, one over." % (un, n)
+    else:
+        s1 = "Mixed: " + _join(["%d %s" % (c, w) for c, w in ((ov, "over"), (inl, "in line"), (un, "under")) if c]) + "."
+    if 0 < ov < n and gaps[-1] == max(gaps) and gaps[-1] >= NEAR:
+        s1 = s1[:-1] + ", and the latest was his best (+%.0f)." % gaps[-1]
+    elif 0 < un < n and gaps[-1] == min(gaps) and gaps[-1] <= -NEAR:
+        s1 = s1[:-1] + ", and the latest was his worst (%.0f)." % gaps[-1]
+    mins = [int(round(float(r["min"]))) for r in rs]
+    usual = float(rs[-1]["usual_min"] or 0)
+    avg = sum(mins) / n
+    seq = ", ".join(map(str, mins[:-1])) + ", then " + str(mins[-1])
+    why = []                                              # a short night with a reason: a blowout, foul trouble
+    for r, m in zip(rs, mins):
+        if "blowout" in r["tags"] or "foul trouble" in r["tags"]:
+            d = r["draft"]
+            i = d.find(" in a ") if "blowout" in r["tags"] else d.find(" with ")
+            j = d.find(",", i) if d.find(",", i) > 0 else d.find(".", i + 6)
+            why.append("the %d came%s" % (m, d[i:j] if i > 0 else " in a blowout"))
+    if avg - usual >= 3:
+        s2 = "Minutes went %s against a usual %.0f, so the role is bigger than his average says" % (seq, usual)
+    elif usual - avg >= 3:
+        s2 = "Minutes went %s, under his usual %.0f" % (seq, usual)
+    elif max(mins) - min(mins) >= 10:
+        s2 = "Minutes swing (%d-%d) around a usual %.0f" % (min(mins), max(mins), usual)
+    elif max(mins) - min(mins) <= 5:
+        s2 = "Minutes steady at %s (usual %.0f)" % ("%d" % mins[0] if min(mins) == max(mins) else "%d-%d" % (min(mins), max(mins)), usual)
+    else:
+        s2 = "Minutes ran %d-%d (usual %.0f)" % (min(mins), max(mins), usual)
+    s2 += ("; " + "; ".join(why) + "." if why else ".")
+    count = defaultdict(list)
+    for r in rs:
+        for t in filter(None, (x.strip() for x in r["tags"].split(";"))):
+            count[t].append(r)
+    recur = sorted(((t, rows) for t, rows in count.items() if t in RECUR and len(rows) >= 2), key=lambda x: -len(x[1]))
+    if recur:
+        t, rows = recur[0]
+        s3 = RECUR[t].format(k=len(rows), n=n, fg=_join([r["fg"] for r in rows if r["fg"]])) + "."
+    else:
+        last = rs[-1]
+        detail = last["draft"].split(": ", 1)[1].rstrip(".") if ": " in last["draft"] else ""
+        s3 = ("Last time out against %s: %s." % (last["opp"], detail)) if detail and last["opp"] else ""
+    return " ".join(x for x in (s1, s2, s3) if x)
+
+
+def write_notes(due):
+    """Put an auto_note in form.csv for each player due one."""
+    form = load_form()
+    for k, rs in due.items():
+        form[k] = {"key": k, "name": rs[-1]["name"], "team": rs[-1]["team"], "through": rs[-1]["date"], "blurb": auto_note(rs)}
+    with open(FORM, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["key", "name", "team", "through", "blurb"])
+        w.writeheader()
+        w.writerows(sorted(form.values(), key=lambda r: (r["team"], r["key"])))
+
+
 def recent(ledger, date):
     """Today's Recent notes: your written read of each player's recent form, tagged with his tally."""
     form, out = load_form(), []
@@ -299,22 +405,54 @@ def recent(ledger, date):
     return out
 
 
+def draft(s, ledger):
+    """The ledger with slate `s`'s night (re)drafted from its box file, and that night's rows."""
+    in_report = report_keys(s["rows"])
+    kept = {key_of(r["name"]): r["note"] for r in ledger if r["date"] == s["date"] and r["note"]}
+    fresh = []
+    for b in load_box(s["date"]):
+        b["slate"] = s["slate"]
+        n = night(b)
+        n.update(note=kept.get(n["key"], ""), in_report=int(n["key"] in in_report))
+        fresh.append(n)
+    return [r for r in ledger if r["date"] != s["date"]] + fresh, fresh
+
+
+def write_recent(ledger, today):
+    notes = recent(ledger, today)
+    path = os.path.join(HERE, "takes", "%s_recent.csv" % today)
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["source", "player", "team", "stance", "tags", "blurb"])
+        w.writeheader()
+        w.writerows(notes)
+    print("%d Recent notes -> %s" % (len(notes), os.path.relpath(path)))
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["draft", "print", "form", "recent"])
+    ap.add_argument("cmd", choices=["draft", "print", "form", "recent", "auto"])
     ap.add_argument("--date", help="draft/print: the slate day (default the newest); form/recent: the day it is for (default today, PT)")
     ap.add_argument("--slates", help="form: the mirror's nba_latest.json, so notes are due for everyone on the day's slates")
     a = ap.parse_args()
     ledger = load_ledger()
     today = a.date or dt.datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
     if a.cmd == "recent":
-        notes = recent(ledger, today)
-        path = os.path.join(HERE, "takes", "%s_recent.csv" % today)
-        with open(path, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=["source", "player", "team", "stance", "tags", "blurb"])
-            w.writeheader()
-            w.writerows(notes)
-        print("%d Recent notes -> %s" % (len(notes), os.path.relpath(path)))
+        write_recent(ledger, today)
+        return
+    if a.cmd == "auto":
+        slates = rep.load()
+        fit_scale(slates)
+        newest = max((r["date"] for r in ledger), default="")
+        for s in slates:                                  # every night since the ledger's newest, a missed one too
+            if newest < s["date"] < today and glob.glob(os.path.join(rep.DAILY, "%s_*_box.csv" % s["date"])):
+                ledger, fresh = draft(s, ledger)
+                print("drafted %s: %d players" % (s["date"], len(fresh)))
+        save_ledger(ledger)
+        ledger = load_ledger()
+        due = due_notes(ledger, today, a.slates)
+        write_notes(due)
+        print("%d Recent notes written" % len(due))
+        write_recent(ledger, today)
         return
     if a.cmd == "form":
         print("\n".join(form_sheet(ledger, today, a.slates)))
@@ -328,17 +466,9 @@ def main():
     s = [x for x in slates if x["date"] == (a.date or slates[-1]["date"])]
     if not s:
         sys.exit("No slate on file for %s." % a.date)
-    s = s[0]
-    in_report = report_keys(s["rows"])
-    kept = {key_of(r["name"]): r["note"] for r in ledger if r["date"] == s["date"] and r["note"]}
-    fresh = []
-    for b in load_box(s["date"]):
-        b["slate"] = s["slate"]
-        n = night(b)
-        n.update(note=kept.get(n["key"], ""), in_report=int(n["key"] in in_report))
-        fresh.append(n)
-    ledger = [r for r in ledger if r["date"] != s["date"]] + fresh
+    ledger, fresh = draft(s[0], ledger)
     save_ledger(ledger)
+    s = s[0]
     opp = opponent_lines(load_ledger(), s["date"])
     print("\n".join(newspaper(fresh, s["date"]) + (["", "## Against the same team, lately", ""] + opp if opp else [])))
 
