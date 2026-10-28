@@ -2,6 +2,13 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-10-27 Tue main
+
+- Morning: no Lock AM again (8:06am board used). Your board (0.72) and ADP (0.70) were close on order; ADP's round picks won the night (+6.1 against your +1.8), most of it in rounds 5-6. Season verdict unchanged: your board beats our raw number (57%), too close to call against ADP (52%).
+- Afternoon: ETR edged your PM board again (0.70 to 0.67), and your calls against it went 42% for the second night running. Season: 49%, too close to call. The two costly fades were Vassell (scored 32.8 in 24 minutes of a blowout) and Champagnie; the raise on Jenkins went 3-10.
+- Early lean to watch, not yet a theme (2 slates): calls that leaned into a player running above his usual minutes went 6 of 7 (MPJ, Holiday, Robert Williams, McDaniels, PJ Washington, Gobert PM); "minutes" is the most common cause in the log (16 of 58).
+- Grimes has played 20 and 19 minutes the last two nights against a usual of 26.
+
 ## 2026-10-26 Mon main
 
 - Morning: your board (6:20am save, no Lock AM yet) ordered the slate the same as ADP (0.55 each) but picked better within rounds than our raw number (+8.1 against -2.0). Small morning CLV (+0.27); our morning file showed none (+0.02).
