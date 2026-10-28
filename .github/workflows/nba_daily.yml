@@ -1,4 +1,6 @@
 name: NBA daily record
+# Started at 2:17am and 8:17pm Pacific by a Claude scheduled task (GitHub's own cron runs hours
+# late here, or not at all); the schedule below is only a fallback. Running twice does no harm.
 on:
   schedule:
     # UTC: 2:17am PT in daylight time, 1:17am in standard. Every game is final by then.
@@ -8,6 +10,7 @@ on:
     - cron: '17 3 * * *'
   workflow_dispatch:
     inputs:
+      evening: { description: "The 8pm run: only tomorrow's Recent notes", type: boolean, default: false }
       notes_for: { description: "Only write that day's Recent notes (YYYY-MM-DD), skipping the nightly record", required: false }
       since: { description: 'Build from this Pacific day (YYYY-MM-DD); default three days back', required: false }
       rebuild: { description: 'Rewrite slates already on file', type: boolean, default: false }
@@ -31,7 +34,7 @@ jobs:
           FROM=$(date -u -d "${SINCE:-today} -7 days" +%F)
           git clone -q --shallow-since="$FROM" https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror
           if [ -n "$GIST_ID" ]; then git clone -q --shallow-since="$FROM" "https://gist.github.com/$GIST_ID.git" ../gist; fi
-      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for
+      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
         run: |
           python3 scripts/nba_daily.py --mirror ../br-adp-mirror \
             $([ -d ../gist ] && echo --gist ../gist) \
@@ -41,7 +44,7 @@ jobs:
       - name: Recent notes
         env:
           NOTES_FOR: ${{ inputs.notes_for }}
-          EVENING: ${{ github.event.schedule == '17 3 * * *' }}
+          EVENING: ${{ github.event.schedule == '17 3 * * *' || inputs.evening }}
         run: |
           if [ "$EVENING" = true ]; then NOTES_FOR=$(TZ=America/Los_Angeles date -d tomorrow +%F); fi
           python3 scripts/nba_ledger.py auto --slates ../br-adp-mirror/nba_latest.json ${NOTES_FOR:+--date "$NOTES_FOR"}
