@@ -241,10 +241,19 @@ function fillSlates() {
 }
 
 // ---------------------------------------------------------------- ESPN
+/** One ESPN call, tried again once after a short wait: on a big slate a minute's pull is a dozen
+    calls, and one of them now and then comes back an error or not at all. */
 async function espn(path) {
-  var r = await fetch(ESPN + path, { cache: "no-store" });
-  if (!r.ok) throw new Error("ESPN " + r.status);
-  return r.json();
+  for (var tries = 0; ; tries++) {
+    try {
+      var r = await fetch(ESPN + path, { cache: "no-store" });
+      if (!r.ok) throw new Error("ESPN " + r.status);
+      return await r.json();
+    } catch (err) {
+      if (tries >= 1) throw err;
+      await new Promise(function (ok) { setTimeout(ok, 1500); });
+    }
+  }
 }
 
 function gameLabel(e) {
@@ -296,10 +305,12 @@ async function pull() {
       });
       if (g.state !== "pre" && !state.finals[e.id]) todo.push(g);
     });
-    await Promise.all(todo.map(async function (g) {
+    // a game whose box score still doesn't come keeps its last one; the rest update
+    var got = await Promise.allSettled(todo.map(async function (g) {
       state.box[g.id] = boxRows(await espn("/summary?event=" + g.id));
       if (g.state === "post") state.finals[g.id] = true;     // a final box score doesn't change; stop asking
     }));
+    state.missed = got.filter(function (x) { return x.status === "rejected"; }).length;
     state.games = games;
     state.pulledAt = new Date();
     state.error = null;
@@ -567,6 +578,7 @@ function render() {
   var legend = state.pulledAt ? (live ? " · refreshes every " + EVERY + "s while open" : "") +
     " · dark green: his round's leader so far (players yet to start count at their usual" +
     (state.projFrom ? ", ETR's median from today's file" : "") + "); light green: ahead of his round's usual and close behind, within " + CLOSE + " points at the final horn (5 at the half)" : "";
+  if (state.missed && !state.error) msg += " · " + state.missed + " game" + (state.missed > 1 ? "s" : "") + " didn't update this time, showing the last score";
   if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
   else setStatus(msg, false, legend);
 }
