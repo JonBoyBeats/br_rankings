@@ -9,18 +9,20 @@ Context only: nothing here feeds Proj, the ranks or the morning report's grading
            keeping any note already edited) and prints the newspaper: the players the morning
            report grades, in ADP order.
   print    the newspaper from the ledger, as edited.
-  form     the facts behind each Recent note due a rewrite: every player on the day's slates
-           (--slates, the mirror's nba_latest.json; main and late) with 3+ graded games and a game
-           since his note. The note itself, 2-3 sentences on his recent form against his
-           projections, is written by hand into analysis/nba/form.csv (key,name,team,through,blurb).
-  recent   for today (or --date): each written note, tagged with his last-5 tally, to
+  form     the facts behind each Recent note due one written by hand: every player on the day's
+           slates (--slates, the mirror's nba_latest.json; main and late) with 3+ graded games whose
+           note is an auto note or older than his last game.
+  write    saves notes written by hand from a JSON file {key: note} (2-3 sentences on his recent
+           form against his projections; keys as form prints them) into analysis/nba/form.csv, then
+           recent. The 2am scheduled task writes them after the job's auto notes go in.
+  recent   for today (or --date): each player's note, tagged with his last-5 tally, to
            analysis/nba/takes/<date>_recent.csv, which the board shows in its row dropdown
            (run scripts/build_takes.py after).
   auto     what the 2am job (nba_daily.yml) runs after the nightly record: drafts every night on file
-           that the ledger lacks, writes a note into form.csv for each player due one (auto_note()
-           below, from the same facts form prints), then recent.
+           that the ledger lacks, writes an auto note (auto_note() below) for each player due one so
+           the board always has something, then recent. A current written note is never replaced.
 
-  python3 scripts/nba_ledger.py draft|print|form|recent|auto [--date YYYY-MM-DD] [--slates nba_latest.json]
+  python3 scripts/nba_ledger.py draft|print|form|write|recent|auto [file] [--date YYYY-MM-DD] [--slates nba_latest.json]
 
 The split: his usual is his usual minutes times his usual per-minute line (the morning file on
 file that day). Actual minus usual is exactly the minutes part (minutes over or under his usual,
@@ -37,7 +39,8 @@ import nba_report as rep   # noqa: E402  the graded pool: the newspaper covers t
 
 HERE = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba")
 LEDGER = os.path.join(HERE, "ledger.csv")
-FORM = os.path.join(HERE, "form.csv")       # key,name,team,through,blurb: the written Recent note per player
+FORM = os.path.join(HERE, "form.csv")       # key,name,team,through,by,blurb: the Recent note per player
+FORM_COLS = ["key", "name", "team", "through", "by", "blurb"]   # by: "auto" (auto_note) or "written" (by hand)
 WINDOW, SHOW_AT = 5, 3          # the Recent note: last 5 graded games, once there are 3
 NEAR = 6                        # within this many points of ETR is "in line"
 BIG = 4                         # a part this size (points) is worth naming
@@ -262,9 +265,17 @@ def todays_keys(slates_file, date):
     return out
 
 
-def due_notes(ledger, date, slates_file):
+def save_form(form):
+    with open(FORM, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=FORM_COLS)
+        w.writeheader()
+        w.writerows(sorted(({c: r.get(c, "") for c in FORM_COLS} for r in form.values()), key=lambda r: (r["team"], r["key"])))
+
+
+def due_notes(ledger, date, slates_file, written=False):
     """{key: his window} for each Recent note due a rewrite: players on the day's slates (or, without
-    the slates, everyone who played last night) with 3+ graded games and a game since their note."""
+    the slates, everyone who played last night) with 3+ graded games and a game since their note.
+    written: due a note written by hand, so an auto note covering his latest game is due too."""
     form, wins = load_form(), windows(ledger, date)
     if slates_file:
         today = todays_keys(slates_file, date)
@@ -272,13 +283,14 @@ def due_notes(ledger, date, slates_file):
     else:
         newest = max(r["date"] for r in ledger if r["date"] < date)
         due = {k: rs for k, rs in wins.items() if rs[-1]["date"] == newest}
-    return {k: rs for k, rs in due.items() if not (k in form and form[k]["through"] >= rs[-1]["date"])}
+    current = lambda k, rs: k in form and form[k]["through"] >= rs[-1]["date"] and (not written or form[k].get("by") == "written")
+    return {k: rs for k, rs in due.items() if not current(k, rs)}
 
 
 def form_sheet(ledger, date, slates_file):
-    """The facts behind each Recent note due a rewrite (due_notes)."""
+    """The facts behind each Recent note due a note written by hand (due_notes)."""
     form, out = load_form(), []
-    due = due_notes(ledger, date, slates_file)
+    due = due_notes(ledger, date, slates_file, written=True)
     out.append("%d notes due, %d teams" % (len(due), len({rs[-1]["team"] for rs in due.values()})))
     out.append("")
     for k, rs in sorted(due.items(), key=lambda x: (x[1][-1]["team"], -float(x[1][-1]["usual_min"] or 0))):
@@ -291,7 +303,8 @@ def form_sheet(ledger, date, slates_file):
                 "our usual" if r.get("etr_from") == "usual" else "ETR", r["etr"] or "-", r["min"], r["tags"] or "no part 4+",
                 r["note"] or r["draft"]))
         if k in form:
-            out.append("- written before (through %s): %s" % (form[k]["through"], form[k]["blurb"]))
+            out.append("- %s before (through %s): %s" % ("auto note" if form[k].get("by") != "written" else "written",
+                                                      form[k]["through"], form[k]["blurb"]))
         out.append("")
     return out
 
@@ -384,14 +397,26 @@ def auto_note(rs):
 
 
 def write_notes(due):
-    """Put an auto_note in form.csv for each player due one."""
+    """Put an auto_note in form.csv for each player due one: a stand-in until a written note replaces it."""
     form = load_form()
     for k, rs in due.items():
-        form[k] = {"key": k, "name": rs[-1]["name"], "team": rs[-1]["team"], "through": rs[-1]["date"], "blurb": auto_note(rs)}
-    with open(FORM, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=["key", "name", "team", "through", "blurb"])
-        w.writeheader()
-        w.writerows(sorted(form.values(), key=lambda r: (r["team"], r["key"])))
+        form[k] = {"key": k, "name": rs[-1]["name"], "team": rs[-1]["team"], "through": rs[-1]["date"], "by": "auto",
+                   "blurb": auto_note(rs)}
+    save_form(form)
+
+
+def write_written(ledger, date, path):
+    """Notes written by hand, from a JSON file {key: blurb} (keys as the form sheet prints them)."""
+    notes, wins, form = json.load(open(path)), windows(ledger, date), load_form()
+    unknown = [k for k in notes if k not in wins]
+    if unknown:
+        sys.exit("No 3-game window for: %s" % ", ".join(unknown))
+    for k, blurb in notes.items():
+        rs = wins[k]
+        form[k] = {"key": k, "name": rs[-1]["name"], "team": rs[-1]["team"], "through": rs[-1]["date"], "by": "written",
+                   "blurb": blurb.strip()}
+    save_form(form)
+    print("%d written notes saved" % len(notes))
 
 
 def recent(ledger, date):
@@ -430,7 +455,8 @@ def write_recent(ledger, today):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["draft", "print", "form", "recent", "auto"])
+    ap.add_argument("cmd", choices=["draft", "print", "form", "write", "recent", "auto"])
+    ap.add_argument("file", nargs="?", help="write: a JSON file of {key: note}")
     ap.add_argument("--date", help="draft/print: the slate day (default the newest); form/recent: the day it is for (default today, PT)")
     ap.add_argument("--slates", help="form: the mirror's nba_latest.json, so notes are due for everyone on the day's slates")
     a = ap.parse_args()
@@ -456,6 +482,10 @@ def main():
         return
     if a.cmd == "form":
         print("\n".join(form_sheet(ledger, today, a.slates)))
+        return
+    if a.cmd == "write":
+        write_written(ledger, today, a.file)
+        write_recent(ledger, today)
         return
     if a.cmd == "print":
         day = a.date or max(r["date"] for r in ledger)

@@ -171,6 +171,25 @@ def board_at(gist, version, slate):
     return b if b and b.get("slate_id") == slate["slate_id"] else None
 
 
+def find_locks(gist, slate):
+    """Your Lock AM / Lock PM for the slate, from the newest save of its board, whenever you pressed
+    them (a PM lock pressed after the slate locked still counts), and when that save was."""
+    for t, version in reversed(gist.revs):
+        if t < slate["lock"] - dt.timedelta(days=2):
+            break
+        b = board_at(gist, version, slate)
+        if b:
+            return b.get("locks") or {}, t
+    return {}, None
+
+
+def lock_line(slate, locks, t):
+    pt_time = lambda iso_s: iso(iso_s).astimezone(PT).strftime("%-I:%M%p").lower()
+    return "  %s: %s, %s%s" % (slate["label"], "Lock AM " + pt_time(locks["am"]["at"]) if locks.get("am") else "no Lock AM",
+                                "Lock PM " + pt_time(locks["pm"]["at"]) if locks.get("pm") else "no Lock PM",
+                                " (board saved %s)" % t.astimezone(PT).strftime("%b %-d %-I:%M%p").lower() if t else " (no saved board)")
+
+
 def gist_parts(gist, slate):
     """ETR's first and last upload of the lock day; your morning and afternoon boards (the Lock
     presses, else the board before ETR's first upload and the board at lock); our Proj at each."""
@@ -181,7 +200,8 @@ def gist_parts(gist, slate):
     last = revs[-1][1]
     out = {"etr_last": etr_day(gist.store(last), day), "etr_first": None}
     board = board_at(gist, last, slate)
-    locks = (board or {}).get("locks") or {}
+    locks, saved = find_locks(gist, slate)
+    print(lock_line(slate, locks, saved))
     # the day's first upload: the earliest revision whose projections are today's (later ones only add to them)
     first_i = None
     if out["etr_last"]:
@@ -426,6 +446,13 @@ def main():
         print("  wrote %s: %d players, %d played" % (name, len(rows), sum(1 for r in rows if r["min"] not in ("", 0))))
     with open(meta_path, "w") as f:
         json.dump(dict(sorted(allmeta.items())), f, indent=1)
+    if gist:                                              # the slates still to come today: are your locks in?
+        print("Today's locks:")
+        for s in json.load(open(os.path.join(a.mirror, "nba_latest.json"))).get("slates", []):
+            lock = iso(s["cutoff"])
+            if s["label"].endswith("_main") and lock > now and pacific_day(lock) == pacific_day(now):
+                print(lock_line({"label": s["label"], "slate_id": s["slate_id"], "lock": lock}, *find_locks(gist, {
+                    "label": s["label"], "slate_id": s["slate_id"], "lock": lock})))
 
 
 if __name__ == "__main__":
