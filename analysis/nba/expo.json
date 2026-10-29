@@ -274,6 +274,40 @@
     "Naz Reid": 0,
     "Bam Adebayo": 0
    }
+  },
+  "7474c0b6-3163-4efd-a520-0320c2596dd8": {
+   "label": "nba_thu_main",
+   "date": "2026-10-29",
+   "at": "2026-10-29T22:57:00Z",
+   "teams": 125,
+   "pct": {
+    "Cameron Boozer": 52,
+    "James Harden": 44,
+    "Ja Morant": 43,
+    "Nickeil Alexander-Walker": 40,
+    "Donovan Clingan": 39,
+    "Deni Avdija": 36,
+    "Derik Queen": 34,
+    "Jalen Johnson": 31,
+    "Evan Mobley": 29,
+    "Trey Murphy III": 25,
+    "Onyeka Okongwu": 24,
+    "Precious Achiuwa": 24,
+    "Ty Jerome": 24,
+    "Zach LaVine": 22,
+    "Domantas Sabonis": 20,
+    "Cedric Coward": 20,
+    "Darius Acuff Jr.": 17,
+    "Donovan Mitchell": 15,
+    "Dejounte Murray": 14,
+    "Zion Williamson": 12,
+    "Jarrett Allen": 7,
+    "Jeremiah Fears": 7,
+    "Dyson Daniels": 6,
+    "Damian Lillard": 5,
+    "Jrue Holiday": 1
+   },
+   "note": "Dejounte Murray (14%) shows the app's red O (out) tag at 3:57pm. The app rounds down, so shares add to 591% of 600%."
   }
  }
 }
