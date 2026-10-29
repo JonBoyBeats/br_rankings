@@ -8,6 +8,7 @@ Written by the morning report (/morning-report), newest first. Each section: las
 - Morning: your board beat our number again (56%; season 57%, settled) but lost to ADP (42%; season 50%, too close to call). Afternoon: 46% against ETR (season 49%), 42% against ADP.
 - Your fades are going badly: 4 right, 11 wrong across three slates (Curry, Caleb Wilson twice, Bam, Lendeborg this time), mostly players who then played more minutes than usual. Worth a look before fading someone whose role is growing; not yet a theme (3 slates).
 - First blend read with our board number (Lock PM, two slates, 110 players): 70% ours missed least (9.73 against 9.80 all ETR). Far too early; no range yet.
+- Boom vs ADP, Boom gap 4+: too early, morning and afternoon. Morning 58 moves (one night), the moved-up player won 36%; afternoon 314 moves, 47%. A real edge needs 500+ moves at 53%+ for two weeks running.
 
 ## 2026-10-27 Tue main
 
