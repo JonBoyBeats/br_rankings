@@ -233,8 +233,13 @@ function fillSlates() {
     o.value = String(i);
     o.textContent = (s.title || s.label).replace(/ Slate$/, "") + " · " + (locked ? "locked " : "locks ") + pt(new Date(s.cutoff), { hour: "numeric", minute: "2-digit" }) + " PT";
     sel.appendChild(o);
-    if (locked) pick = i;                       // the last slate to lock is the one being played
   });
+  /* Of the slates being played (locked), the one with your exposures (uploaded here or posted to
+     expo.json), else the main slate: a late slate's games are all on the main slate too. */
+  var mine = function (s) { var e = load(expoKey(s.label), null); return !!((e && e.drafts) || state.posted[s.slate_id]); };
+  var played = state.slates.filter(function (s) { return new Date(s.cutoff).getTime() <= now; });
+  var choose = played.filter(mine).pop() || played.filter(function (s) { return /_main$/.test(s.label); }).pop() || played.pop();
+  if (choose) pick = state.slates.indexOf(choose);
   state.slates.forEach(function (s, i) { if (s.label === keep) pick = i; });
   sel.value = String(pick);
   state.slate = state.slates[pick] || null;
