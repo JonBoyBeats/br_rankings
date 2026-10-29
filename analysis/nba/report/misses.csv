@@ -59,3 +59,33 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-10-27,nba_tue_main,De'Aaron Fox,SAS,pm_call,38.0,37.7,21.8,26.0,31.3,27.0,blowout,partly,wrong,"raised; 26 min in a 27-point win, no stocks; beat 0 of 3 (Lock PM 2:41pm)"
 2026-10-27,nba_tue_main,Zach LaVine,SAC,pm_call,36.6,35.0,28.1,31.0,37.7,-27.0,blowout,partly,wrong,raised; 31 min in a 27-point loss; beat 1 of 3 (Lock PM 2:41pm)
 2026-10-27,nba_tue_main,Paul Reed,DET,pm_call,31.8,37.7,44.3,26.0,22.0,-14.0,shooting,no,right,raised; 9-12 with 3 stocks in 26 min; beat 3 of 3 (Lock PM 2:41pm)
+2026-10-28,nba_wed_main,Yaxel Lendeborg,GSW,am_call,37.5,40.8,37.3,35.0,33.2,5.0,other,?,wrong,"faded below ADP (Q tag, played full); 37.3 in 35 min; beat 15 of 20 he was put behind"
+2026-10-28,nba_wed_main,Caleb Wilson,CHI,am_call,36.2,42.2,41.2,38.0,33.8,-6.0,minutes,yes,wrong,faded; 38 min against usual 34; beat 17 of 20
+2026-10-28,nba_wed_main,Paul Reed,DET,am_call,34.7,39.9,29.8,38.0,23.0,8.0,peripherals,no,right,"faded; 38 min but 0 ast, 4 reb; 12 of 18 right"
+2026-10-28,nba_wed_main,Isaiah Hartenstein,OKC,am_call,39.2,36.6,29.3,26.0,23.2,-24.0,blowout,partly,wrong,raised; 26 min in a 24-point loss; 3 of 14
+2026-10-28,nba_wed_main,Josh Hart,NYK,am_call,39.8,38.5,17.1,36.0,32.0,6.0,shooting,no,wrong,raised; 2 pts on 1-6 in 36 min; 1 of 11
+2026-10-28,nba_wed_main,OG Anunoby,NYK,am_call,39.7,40.0,30.7,31.0,34.2,6.0,peripherals,no,wrong,"raised; no stocks, 1 ast; 3 of 10"
+2026-10-28,nba_wed_main,Dylan Harper,SAS,am_call,39.2,39.7,34.0,37.0,31.5,6.0,shooting,no,wrong,raised; 4-17 in 37 min; 5 of 11
+2026-10-28,nba_wed_main,Ajay Mitchell,OKC,am_call,37.0,39.7,45.3,28.0,24.8,-24.0,news,no,wrong,"faded on his Q tag; played, 29 pts on 12-20; 2 of 15"
+2026-10-28,nba_wed_main,Isaiah Hartenstein,OKC,pm_call,39.2,36.6,29.3,26.0,23.2,-24.0,blowout,partly,wrong,raised over ETR; 26 min in a 24-point loss; 6 of 22
+2026-10-28,nba_wed_main,Kyrie Irving,DAL,pm_call,36.6,39.3,34.4,27.0,27.3,24.0,news,no,push,raised over ETR through his Q tag; 34.4 in 27 min; 10 of 20
+2026-10-28,nba_wed_main,Ayo Dosunmu,MIN,pm_call,33.2,37.4,38.6,32.0,26.2,-5.0,minutes,yes,right,raised over ETR; 32 min against usual 26 with Edwards out; 12 of 19
+2026-10-28,nba_wed_main,Trey Murphy III,NOP,pm_call,38.9,37.5,15.7,30.0,33.3,-13.0,shooting,no,wrong,raised over ETR; 6 pts on 2-7; 2 of 19
+2026-10-28,nba_wed_main,Bam Adebayo,MIA,pm_call,43.6,44.6,45.3,33.0,30.8,12.0,other,?,wrong,"faded below ETR; 24 pts, 9 reb in normal minutes; 1 of 13"
+2026-10-28,nba_wed_main,Stephen Curry,GSW,pm_call,39.8,43.3,66.6,32.0,26.0,5.0,minutes,yes,wrong,faded below ETR; 32 min against usual 26 and 44 pts (6-16 from three); 0 of 10
+2026-10-28,nba_wed_main,Caleb Wilson,CHI,pm_call,36.2,42.2,41.2,38.0,33.8,-6.0,minutes,yes,wrong,faded below ETR; 38 min against usual 34; 1 of 10
+2026-10-28,nba_wed_main,Immanuel Quickley,TOR,pm_call,38.9,40.1,35.1,29.0,28.3,30.0,shooting,no,wrong,raised over ETR; 5-15 in a 30-point win; 5 of 11
+2026-10-28,nba_wed_main,Shai Gilgeous-Alexander,OKC,miss,60.9,60.7,33.2,28.0,34.2,-24.0,blowout,partly,etr,28 min in a 24-point loss (ETR same number)
+2026-10-28,nba_wed_main,Rudy Gobert,MIN,miss,37.4,38.5,10.3,20.0,32.5,-5.0,minutes,yes,ours,"20 min against usual 32 in a 5-point game, 0-4: unclear"
+2026-10-28,nba_wed_main,Stephen Curry,GSW,miss,39.8,43.3,66.6,32.0,26.0,5.0,minutes,yes,etr,"32 min against usual 26, 44 pts on 6-16 threes"
+2026-10-28,nba_wed_main,LaMelo Ball,MIN,miss,48.0,47.9,21.8,28.0,25.0,-5.0,shooting,no,etr,"3-11, 6 tov, 5 fouls in 28 min"
+2026-10-28,nba_wed_main,Darius Garland,LAC,miss,44.3,48.6,20.7,26.0,35.0,-16.0,blowout,partly,ours,"26 min in a 16-point loss, 4-12, 5 tov"
+2026-10-28,nba_wed_main,Trey Murphy III,NOP,miss,38.9,37.5,15.7,30.0,33.3,-13.0,shooting,no,etr,2-7 in 30 min
+2026-10-28,nba_wed_main,Austin Reaves,LAL,miss,42.5,54.9,19.7,31.0,36.2,16.0,teammate-out,yes,ours,"Luka out: ETR bumped him to 54.9; 8 tov, 6-16 in a 16-point win"
+2026-10-28,nba_wed_main,Josh Hart,NYK,miss,39.8,38.5,17.1,36.0,32.0,6.0,shooting,no,etr,1-6 in 36 min
+2026-10-28,nba_wed_main,Austin Reaves,LAL,split,42.5,54.9,19.7,31.0,36.2,16.0,teammate-out,yes,ours,ETR priced Luka out (+12 over ours); it didn't pay
+2026-10-28,nba_wed_main,Caleb Wilson,CHI,split,36.2,42.2,41.2,38.0,33.8,-6.0,minutes,yes,etr,38 min against usual 34
+2026-10-28,nba_wed_main,Franz Wagner,ORL,split,43.0,48.2,26.3,34.0,33.0,-30.0,blowout,partly,ours,"30-point loss, 7 tov; ETR 5 higher"
+2026-10-28,nba_wed_main,Paul Reed,DET,split,34.7,39.9,29.8,38.0,23.0,8.0,peripherals,no,ours,"0 ast, 4 reb in 38 min"
+2026-10-28,nba_wed_main,Cooper Flagg,DAL,split,45.4,50.2,44.0,33.0,30.0,24.0,other,?,ours,44 in 33 min; ETR 5 higher
+2026-10-28,nba_wed_main,Jalen Johnson,ATL,split,51.9,56.5,42.3,36.0,32.8,-12.0,shooting,no,ours,4-12 but 11 ast; ETR 5 higher

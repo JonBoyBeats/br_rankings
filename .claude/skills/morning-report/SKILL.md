@@ -132,6 +132,30 @@ in a line each, and act on them only with the user's yes:
 
 Never change a pass bar after the results are in.
 
+## 6c. Boom vs ADP: is Boom a tiebreak worth using?
+
+Needs a full clone of the mirror (the script reads its history); if `../br-adp-mirror` is
+shallow, `git -C ../br-adp-mirror fetch -q --unshallow` first.
+
+```
+git clone -q https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror 2>/dev/null || git -C ../br-adp-mirror pull -q
+python3 scripts/nba_boom_ties.py --mirror ../br-adp-mirror
+```
+
+It regrades every night into `analysis/nba/boom_ties.csv`: on the main slate's top 60, pairs
+projected within 2 points where Boom would move a player past an earlier ADP, morning (our Proj at
+Lock AM and the morning ADP) and afternoon (ETR's median and closing ADP), split by a Boom gap
+under 4 and 4+. The morning side starts 2026-10-28, the first night our board-scale Proj is on
+file. In chat, a short "Boom vs ADP" section, every number as printed:
+
+- Last night: moves and how many the moved-up player won, morning and afternoon, under 4 and 4+.
+- Season: how often the moved-up player outscored the earlier ADP (50% is no better than ADP),
+  the average point difference, and his boom rate against the earlier ADP's.
+- One line: is Boom 4+ beating ADP yet, morning and afternoon separately? Call it a real edge
+  only when that cell has 500+ moves and has been at 53%+ for two weeks running (check the
+  season rate as of each night in `boom_ties.csv`); until then, "too early". Bank the same line
+  in that night's takeaways section.
+
 ## 7. Last night, player by player
 
 A line on every graded player's night (the newspaper), from a running ledger of every rotation
@@ -166,7 +190,7 @@ notes on the board, then the 2:47am task writes 2-3 sentences in this style for 
 (a scheduled task named "NBA Recent notes: written in style"). Here, check it went in:
 
 ```
-git clone -q --depth 1 https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror 2>/dev/null || git -C ../br-adp-mirror pull -q
+git clone -q https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror 2>/dev/null || git -C ../br-adp-mirror pull -q
 python3 scripts/nba_ledger.py form --slates ../br-adp-mirror/nba_latest.json
 ```
 
@@ -187,14 +211,14 @@ python3 scripts/nba_ledger.py write <file> && python3 scripts/build_takes.py
 The session's files are gone when it ends, so commit and push everything:
 
 ```
-git add analysis/nba/report analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/nba_takes.json scripts/nba_hypotheses.py
+git add analysis/nba/report analysis/nba/boom_ties.csv analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/nba_takes.json scripts/nba_hypotheses.py
 git commit -m "NBA report: takeaways and player notes for <date>" && git push origin HEAD:main
 ```
 
 ## In chat
 
 In this order, short and scannable: last night's morning and afternoon barbells, the same so
-far, themes, takeaways, hypotheses (a line each, and any proposal), then last night player by player (the printed list) and any "against
+far, themes, takeaways, hypotheses (a line each, and any proposal), Boom vs ADP, then last night player by player (the printed list) and any "against
 the same team" lines. The calls and misses from steps 3-4 are logged for the themes, not listed
 in chat. Close with anything missing from the record (no lock, no ETR on file, unmatched box
 scores, notes not written overnight) so it can be fixed.

@@ -2777,7 +2777,7 @@ function slateExpo() {
   Object.keys(post.pct).forEach(function (k) { pct[normName(k)] = post.pct[k]; });
   state.slate.players.forEach(function (p) {
     var v = pct[normName(p.first_name + " " + p.last_name)];
-    if (v) counts[p.player_id] = Math.round(v / 100 * post.teams);
+    if (v != null) counts[p.player_id] = Math.max(1, Math.round(v / 100 * post.teams));   // the app rounds down: on the list means in a draft
   });
   return { file: "posted from the Underdog app", at: post.at, drafts: post.teams, counts: counts };
 }
@@ -3102,8 +3102,13 @@ function greenChip(el, frac) {
    the time on 2025-26 (fit without it on 2023-25), where Boom and Dud measured against
    his own projection picked it about half the time. Boom also rises with usage,
    rebounds and assists per minute and swingy minutes; Dud with a steals-and-blocks-
-   heavy line and falls with starting. The projection and bar are on the box scores'
-   average scale (ETR's median put back through the box-to-ETR line). Each term is
+   heavy line and falls with starting. The projection and bar are his median (ETR's, or
+   the one our Proj stands for), which lands on what players score. Graded honestly
+   (only what was known before each game, 2024-26), within groups 2 points apart Boom
+   picked the one who boomed 53-55% of the time and Dud 51-52%; a player's own record
+   of big and bad nights, his game's total and its spread did no better than a coin
+   flip, and on 2026-27's first nights the earlier ADP has been the better first
+   tiebreak, in the morning most of all. Each term is
    [average, spread, weight] on the stat's standardized scale. */
 var NBA_BOOM = { intercept: -1.5397, terms: {
   gap: [0.18255, 3.29128, 0.4144], pred: [32.2159, 9.08914, -0.0376], pred2: [11.20472, 6.37822, -0.1579],
@@ -3246,9 +3251,11 @@ function nbaStatRows() {
     var r = idx.byKey[boardKey(p.first_name, p.last_name, map)] || {};
     var etr = state.nbaEtrToday && state.projParts[p.player_id];
     var implied = etr && typeof etr.median === "number" && r.ppm > 0 && r.min != null ? etr.median / r.ppm : null;
-    var line = state.nbaScale || NBA_BOX_TO_ETR;
+    // his median as is: on 2026-27 ETR's medians and ours have both landed on what players score
+    // (actual minus median -0.1 and -0.4); put through the box-to-ETR line they ran 3-4 points
+    // high, which showed too much Boom and too little Dud (18% vs 12% booms, 18% vs 26% duds)
     rows.push({ pid: p.player_id, proj: v, min: r.min == null ? null : r.min, implied: implied, r: r, adp: hasAdp(p) ? p.adp : null,
-                x: (nbaMedianOf(v) - line[1]) / line[0] });          // his median, back on the box scores' average scale
+                x: nbaMedianOf(v) });
   });
   var bars = nbaBars(rows);
   rows.forEach(function (row) {
