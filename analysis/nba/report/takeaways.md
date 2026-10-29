@@ -2,6 +2,13 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-10-28 Wed main
+
+- First night with both locks (AM 4:05am, PM 2:22pm). A chaotic big slate: every order correlated poorly (0.32-0.47), with blowouts (OKC, ORL, TOR) and late outs (Luka, Haliburton).
+- Morning: your board beat our number again (56%; season 57%, settled) but lost to ADP (42%; season 50%, too close to call). Afternoon: 46% against ETR (season 49%), 42% against ADP.
+- Your fades are going badly: 4 right, 11 wrong across three slates (Curry, Caleb Wilson twice, Bam, Lendeborg this time), mostly players who then played more minutes than usual. Worth a look before fading someone whose role is growing; not yet a theme (3 slates).
+- First blend read with our board number (Lock PM, two slates, 110 players): 70% ours missed least (9.73 against 9.80 all ETR). Far too early; no range yet.
+
 ## 2026-10-27 Tue main
 
 - Morning: no Lock AM again (8:06am board used). Your board (0.72) and ADP (0.70) were close on order; ADP's round picks won the night (+6.1 against your +1.8), most of it in rounds 5-6. Season verdict unchanged: your board beats our raw number (57%), too close to call against ADP (52%).
