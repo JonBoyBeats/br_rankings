@@ -47,6 +47,12 @@ Each barbell has two tables, every cell last night with the season beside it:
   number (or ADP) alone? Afternoon, should you draft off ETR alone? "Your board wins" means keep
   making your moves; "X alone wins" means stop; "too close to call" means not settled. Don't
   recommend a change on anything but a settled verdict.
+- **Ours vs ETR**: how our morning number (Lock AM; the morning file before the board kept it)
+  tracks ETR's first and last uploads, player by player (each number against its slate's average,
+  so ETR running high or shifting the whole slate doesn't count): rank corr, average gap, share
+  within 3 points, who was closer to the actual where we were 3+ apart, and, where ETR's first
+  upload started 3+ from ours, how often its last upload moved our way. ETR moves the market, so
+  this is how far off the market's number we are each morning and whether ETR comes to us.
 - **By slate**: whether last night looked like the others or was an outlier.
 - **Blend**: the share of ours in a mix with ETR that missed least.
 
@@ -218,7 +224,7 @@ git commit -m "NBA report: takeaways and player notes for <date>" && git push or
 ## In chat
 
 In this order, short and scannable: last night's morning and afternoon barbells, the same so
-far, themes, takeaways, hypotheses (a line each, and any proposal), Boom vs ADP, then last night player by player (the printed list) and any "against
+far, ours vs ETR, themes, takeaways, hypotheses (a line each, and any proposal), Boom vs ADP, then last night player by player (the printed list) and any "against
 the same team" lines. The calls and misses from steps 3-4 are logged for the themes, not listed
 in chat. Close with anything missing from the record (no lock, no ETR on file, unmatched box
 scores, notes not written overnight) so it can be fixed.

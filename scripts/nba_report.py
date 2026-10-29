@@ -296,6 +296,63 @@ def blend_lines(slates):
     return out
 
 
+ETRB = {"adp": "adp_close", "sources": [Src("ours_am", "Ours (morning)", True, "ours_raw"), Src("etr_first", "ETR first", True),
+                                        Src("etr_last", "ETR last", True)]}
+
+
+def ours_vs_etr(last, upto):
+    """How our morning number tracks ETR's first and last uploads: order, gap, whether ETR moved our way, and who was closer."""
+    raw = [r for x in upto for r in pool(x["rows"], ETRB) if r["ours_raw"] is not None and r["etr_first"] is not None and r["etr_last"] is not None]
+    xs, ys = [r["ours_raw"] for r in raw], [(r["etr_first"] + r["etr_last"]) / 2 for r in raw]
+    mx, my = mean(xs), mean(ys)
+    sxx = sum((v - mx) ** 2 for v in xs) if raw else 0
+    a = sum((v - mx) * (u - my) for v, u in zip(xs, ys)) / sxx if sxx else 1
+
+    def players(xs_):
+        out = []
+        for x in xs_:
+            c = ETRB["sources"][0].col_for(x["rows"])
+            rs = [r for r in pool(x["rows"], ETRB) if r[c] is not None and r["etr_first"] is not None and r["etr_last"] is not None]
+            ps = [(r[c] if c == "ours_am" else a * r[c] + my - a * mx, r["etr_first"], r["etr_last"], r["actual"]) for r in rs]
+            # each relative to its slate average, so a slate-wide shift (ETR running high, or moving the whole slate) isn't agreement or a miss
+            avg = [mean([p[i] for p in ps]) for i in range(4)]
+            out.append([tuple(p[i] - avg[i] for i in range(4)) for p in ps])
+        return out
+
+    def cell(xs_, f, spec):
+        return fmt(f(players(xs_)), spec)
+
+    def both(f, spec):
+        return "%s (%s)" % (cell(last, f, spec), cell(upto, f, spec))
+
+    flat = lambda gs: [p for g in gs for p in g]
+    rho = lambda i: lambda gs: mean([corr(ranks([p[0] for p in g]), ranks([p[i] for p in g])) for g in gs if len(g) >= 5])
+    gap = lambda i: lambda gs: mean([abs(p[0] - p[i]) for p in flat(gs)])
+    near = lambda i: lambda gs: (lambda f: 100 * sum(abs(p[0] - p[i]) < GAP for p in f) / len(f) if f else None)(flat(gs))
+    apart = lambda gs: [p for p in flat(gs) if abs(p[0] - p[1]) >= GAP]
+    toward = lambda gs: (lambda f: 100 * sum((p[2] - p[1]) * (p[0] - p[1]) > 0 for p in f) / len(f) if f else None)(apart(gs))
+    away = lambda gs: (lambda f: 100 * sum((p[2] - p[1]) * (p[0] - p[1]) < 0 for p in f) / len(f) if f else None)(apart(gs))
+    moved = lambda gs: mean([(p[2] - p[1]) * (1 if p[0] > p[1] else -1) for p in apart(gs)])
+    closer = lambda i: lambda gs: (lambda f: 100 * sum(abs(p[0] - p[3]) < abs(p[i] - p[3]) for p in f) / len(f) if f else None)(
+        [p for p in flat(gs) if abs(p[0] - p[i]) >= GAP])
+    miss = lambda i: lambda gs: mean([abs(p[i] - p[3]) for p in flat(gs)])
+    n_apart = lambda xs_: len(apart(players(xs_)))
+    return ["### Ours vs ETR: how our morning number tracks the market's projection", "",
+            "Ours: our Proj at Lock AM (before the board kept it, the morning file on ETR's scale). Each number is taken against its "
+            "slate's average, so ETR running high or moving the whole slate doesn't count; only player by player. "
+            "Each cell: last night (season).", "",
+            "| Ours against | Rank corr | Avg gap (pts) | Within %d pts | Ours closer to actual, where %d+ apart | Avg miss: ours / ETR |" % (GAP, GAP),
+            "|---|---|---|---|---|---|",
+            "| ETR first upload | %s | %s | %s | %s | %s / %s |" % (both(rho(1), "%.2f"), both(gap(1), "%.1f"), both(near(1), "%.0f%%"),
+                                                              both(closer(1), "%.0f%%"), both(miss(0), "%.1f"), both(miss(1), "%.1f")),
+            "| ETR last upload | %s | %s | %s | %s | %s / %s |" % (both(rho(2), "%.2f"), both(gap(2), "%.1f"), both(near(2), "%.0f%%"),
+                                                             both(closer(2), "%.0f%%"), both(miss(0), "%.1f"), both(miss(2), "%.1f")),
+            "",
+            "Where ETR's first upload started %d+ from ours (%d players last night, %d season), its last upload moved toward ours "
+            "%s, away %s; average move our way %s pts." % (GAP, n_apart(last), n_apart(upto), both(toward, "%.0f%%"), both(away, "%.0f%%"),
+                                                            both(moved, "%+.1f")), ""]
+
+
 def player_table(rows, title, cols, key, n):
     head = [c[0] for c in cols]
     out = ["**%s**" % title, "", "| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
@@ -319,6 +376,7 @@ def barbells(last, upto):
     out += summary(last, upto, PM, "Afternoon: your PM board, ETR straight, ours, ADP at lock",
                    {"etr_last": ("adp_etr", Src("etr_first", "ETR first upload", True))}, [(p[0], p[1]), (p[0], p[2]), (p[0], p[3])],
                    "CLV: how ADP moved toward ETR's first upload, from it to lock.")
+    out += ours_vs_etr(last, upto)
     return out + ["**Blend (season)**", ""] + blend_lines(upto) + [""]
 
 
