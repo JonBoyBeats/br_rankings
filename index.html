@@ -3504,7 +3504,8 @@ function nbaPanel(takes, mins) {
 /* ---- Minutes (mirror nba_minutes.json, from ESPN's play-by-play by scripts/nba_nightly.py) ----
    His team's last five games, newest on top, Popcorn Machine style: each strip is one game from
    tip to the final horn, shaded by his team's lead (green) or deficit (red); the bars are his
-   stretches on the floor, each with the score change while he was out there. */
+   stretches on the floor, each with his fantasy points a minute in it, green over his usual rate
+   and red under (hover: the clock, his points and his team's score change). */
 function nbaMinutesIndex(d) {
   var by = {};
   ((d && d.players) || []).forEach(function (r) {
@@ -3540,7 +3541,11 @@ function nbaMinutesChart(m) {
   wrap.className = "minchart";
   var head = document.createElement("div");
   head.className = "mhead";
-  head.innerHTML = "Minutes, last " + m.g.length + " <span>\u00b7 bars: on the floor, +/\u2212 while on \u00b7 shading: his team's lead</span>";
+  // his usual points a minute (the morning file's), to colour each stint's rate against
+  var nk = normName(m.name), mr = state.nbaIdx && state.nbaIdx.byKey[normName(NBA_ESPN_ALIASES[nk] || m.name)];
+  var usual = mr && mr.ppm > 0 ? mr.ppm : null;
+  head.innerHTML = "Minutes, last " + m.g.length + " <span>\u00b7 bars: on the floor, fantasy points a minute while on" +
+    (usual ? " (green over his usual " + usual.toFixed(2) + ", red under)" : "") + " \u00b7 shading: his team's lead</span>";
   wrap.appendChild(head);
   // the box line's column labels, over the games' box lines
   var labels = document.createElement("div"), lb = document.createElement("span");
@@ -3600,13 +3605,19 @@ function nbaMinutesChart(m) {
     if (e.length >= 4) {
       e[3].forEach(function (st) {
         var pm = sign * (marginAt(g.flow, st[1]) - marginAt(g.flow, st[0]));
-        var b = document.createElement("span"), w = (st[1] - st[0]) / len * 100;
-        b.className = "mst " + (pm > 0 ? "pos" : pm < 0 ? "neg" : "even");
+        var b = document.createElement("span"), w = (st[1] - st[0]) / len * 100, mins = (st[1] - st[0]) / 60;
+        // his fantasy points a minute in the stint (banked with it); against his usual rate, a short
+        // stint (under 3 minutes) stays grey: a bucket or two swings it
+        var fp = st.length > 2 ? st[2] : null, ppm = fp != null && mins > 0 ? fp / mins : null;
+        var vs = ppm == null || mins < 3 ? "even" : !usual ? (ppm >= 1 ? "pos" : "neg") :
+          ppm >= usual * 1.15 ? "pos" : ppm <= usual * 0.85 ? "neg" : "even";
+        b.className = "mst " + vs;
         b.style.left = (st[0] / len * 100) + "%";
         b.style.width = w + "%";
-        b.textContent = w >= 7 ? (pm > 0 ? "+" + pm : pm < 0 ? "\u2212" + -pm : "0") : "";
-        b.title = gameClock(st[0]) + " \u2192 " + gameClock(st[1], true) + " \u00b7 " +
-          ((st[1] - st[0]) / 60).toFixed(1) + " min \u00b7 " + (pm > 0 ? "+" : "") + pm;
+        b.textContent = w >= 7 && ppm != null ? ppm.toFixed(1) : "";
+        b.title = gameClock(st[0]) + " \u2192 " + gameClock(st[1], true) + " \u00b7 " + mins.toFixed(1) + " min" +
+          (fp != null ? " \u00b7 " + fp.toFixed(1) + " pts (" + (ppm || 0).toFixed(2) + " a minute)" : "") +
+          " \u00b7 team " + (pm > 0 ? "+" : pm < 0 ? "\u2212" : "") + Math.abs(pm);
         track.appendChild(b);
       });
       res.innerHTML = (e[2] ? "S " : "") + "<b>" + Math.round(e[1]) + "m</b> \u00b7 " + wl;
