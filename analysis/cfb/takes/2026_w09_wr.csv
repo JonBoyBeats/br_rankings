@@ -1,0 +1,70 @@
+source,week,pos,player,team,opp,role,rush_share,workload,verdict,stack,status,evidence,matchup,note
+Bauer,9,WR,Yamir Knight,SMU,@SYR,WR1; short (7.3 aDOT),,21.1% tgt share,Great,Preferred stack with Kevin Jennings,,"6.6 tgt, 5.3 rec, 62.3 yds, 0.29 TD per game; 2.61 YPRR","SYR 305.2 pass ypg, 7.4 YPA (63rd); SMU passes 47.9% (76th)",SMU's pass catchers are in a prime spot. Great play.
+Bauer,9,WR,Yannick Smith,SMU,@SYR,Short (8.4 aDOT),,13.8% tgt share,GPP,,,"5.0 tgt, 3.8 rec, 58.2 yds, 0.33 TD per game; 2.03 YPRR","SYR 305.2 pass ypg, 7.4 YPA (63rd)",Great GPP play.
+Bauer,9,WR,Jalen Cooper,SMU,@SYR,Deep (12.8 aDOT),,14.7% tgt share,Stack,,,2.11 YPRR,"SYR 305.2 pass ypg, 7.4 YPA (63rd)",Game stack play.
+Bauer,9,WR,Deuce Alexander,MISS,AUB,Alpha,,"23.9% tgt share, 29.6% air yd share (team high)",GPP,Preferred stack with Trinidad Chambliss,,"8.6 tgt, 6.1 rec, 87.1 yds, 0.71 TD per game; 2.63 YPRR","AUB 250.7 pass ypg (107th), 6.7 YPA (100th); MISS passes 55.7% (14th)",A true alpha. Great GPP play.
+Bauer,9,WR,Horatio Fields,MISS,AUB,2nd in routes (61.2%),,4.9 tgt per game,Stack,,,,"AUB 250.7 pass ypg (107th), 6.7 YPA (100th)",Game stack play.
+Bauer,9,WR,Traylon Ray,MISS,AUB,45.1% routes,,,Pass,,,,"AUB 250.7 pass ypg (107th), 6.7 YPA (100th)",Pass.
+Bauer,9,TE,Caleb Odom,MISS,AUB,TE,,"14.7% tgt share, 15.8% air yd share (2nd)",Great,,,"6.2 tgt, 4.3 rec, 54.3 yds, 0.33 TD per game; strong the last 3 wks","AUB 250.7 pass ypg (107th), 6.7 YPA (100th)",Great play.
+Bauer,9,WR,Talyn Taylor,UGA,vs FLA,WR,,13.4% tgt share; 76.5% routes in Wk 7,GPP,,,"3.6 tgt, 2.7 rec, 40.4 yds, 0.43 TD per game","FLA 272.8 pass ypg (122nd), 7.9 YPA (95th); UGA passes 45.7% (90th)",Led the team in routes with Dandridge in Wk 7. Good GPP play.
+Bauer,9,WR,London Humphreys,UGA,vs FLA,40.7% routes,,,Pass,,,,"FLA 272.8 pass ypg (122nd), 7.9 YPA (95th)",Pass.
+Bauer,9,WR,Sacovie White-Helton,UGA,vs FLA,33.9% routes,,9.6% tgt share,Stack,,,,"FLA 272.8 pass ypg (122nd), 7.9 YPA (95th)",Game stack play.
+Bauer,9,WR,Craig Dandridge,UGA,vs FLA,94.1% routes in Wk 7 (team high),,11.8% tgt share,Great,Preferred stack with Gunner Stockton,,"3.1 tgt, 2.4 rec, 44.3 yds, 0.14 TD per game","FLA 272.8 pass ypg (122nd), 7.9 YPA (95th)",Great play.
+Bauer,9,WR,Kyler Kasper,BYU,ASU,"WR1; deep (14.6 aDOT, team high)",,"27.8% tgt share, 46.4% air yd share",Great,Preferred stack with Bear Bachmeier,,"7.0 tgt, 3.7 rec, 53.3 yds, 0.57 TD per game; 2.38 YPRR","ASU 234.3 pass ypg (89th), 7.0 YPA (85th); BYU passes 45.1% (96th)",Great play.
+Bauer,9,WR,Legend Glasker,BYU,ASU,WR2,,19.3% tgt share,GPP,,,"4.9 tgt, 2.1 rec, 71.3 yds, 0.86 TD per game; 4.38 YPRR","ASU 234.3 pass ypg (89th), 7.0 YPA (85th)",Keeps making big plays on minimal opportunities. Great GPP play.
+Bauer,9,TE,Walker Lyons,BYU,ASU,TE,,"6, 6 and 4 tgt the last 3 wks",GPP,,,,"ASU 234.3 pass ypg (89th), 7.0 YPA (85th)",TD-or-bust GPP play.
+Bauer,9,WR,Carlos Hernandez,WAKE,UVA,Alpha,,"31.3% tgt share, 28.2% air yd share",Great,Preferred stack with Gio Lopez,Probable,"8.7 tgt, 7.0 rec, 102.9 yds, 0.57 TD per game; 3.85 YPRR","UVA 174.8 pass ypg (18th), 6.5 YPA (38th); WAKE passes 48.4% (72nd)",A true alpha; probable is great news. Great play.
+Bauer,9,TE,Jack Foley,WAKE,UVA,TE,,"4, 10 and 4 tgt the last 3 wks",Pass,,,,"UVA 174.8 pass ypg (18th), 6.5 YPA (38th)",Pass.
+Bauer,9,WR,Kam Shanks,WAKE,UVA,WR,,11.8% tgt share (3rd),Pass,,,,"UVA 174.8 pass ypg (18th), 6.5 YPA (38th)",Pass.
+Bauer,9,WR,Antonio Meeks,WAKE,UVA,2nd in routes (64.4%),,,Pass,,,,"UVA 174.8 pass ypg (18th), 6.5 YPA (38th)",Pass.
+Bauer,9,WR,Braden Pegan,UTAH,@CIN,WR1,,"25.9% tgt share, 37.7% air yd share",Great,Preferred stack with Devon Dampier,,"7.6 tgt, 4.9 rec, 65.6 yds, 1.0 TD per game","CIN 304.0 pass ypg (136th), 8.0 YPA (38th); UTAH passes 47.1% (79th)",The unquestioned WR1. Great play.
+Bauer,9,WR,Creed Whittemore,UTAH,@CIN,WR,,"6, 5 and 8 tgt the last 3 wks",Stack,,,,"CIN 304.0 pass ypg (136th), 8.0 YPA (38th)",Game stack play.
+Bauer,9,WR,Ricky Johnson,UTAH,@CIN,2nd in routes (77.1%),,3.7 tgt per game,Pass,,,,"CIN 304.0 pass ypg (136th), 8.0 YPA (38th)",Pass.
+Bauer,9,WR,Charlie Becker,IND,MINN,"WR1; deep (15.8 aDOT, team high)",,"35.1% tgt share, 45.2% air yd share",Great,,,"8.1 tgt, 5.3 rec, 90.8 yds, 1.0 TD per game; 3.54 YPRR","MINN 179.8 pass ypg (24th), 6.7 YPA (42nd); IND passes 44.3% (102nd)",He and Marsh combine for a 63.2% target share. Great play.
+Bauer,9,WR,Nick Marsh,IND,MINN,WR2,,"28.1% tgt share, 28.9% air yd share",GPP,,,"6.5 tgt, 4.3 rec, 76.4 yds, 0.88 TD per game","MINN 179.8 pass ypg (24th), 6.7 YPA (42nd)",Good GPP play.
+Bauer,9,WR,Kenny Johnson,TTU,ARIZ,"WR1; deep (13.2 aDOT, team high)",,"24.9% tgt share, 35.7% air yd share",Great,Preferred stack with Will Hammond,,"7.1 tgt, 4.4 rec, 71.3 yds, 0.14 TD per game; 2.39 YPRR","ARIZ 217.0 pass ypg (62nd), 6.5 YPA (36th); TTU passes 45.4% (94th)",Great play.
+Bauer,9,TE,Terrance Carter Jr.,TTU,ARIZ,TE,,,Stack,,,"4.8 tgt, 3.4 rec, 30.2 yds, 0.40 TD per game through 5 games","ARIZ 217.0 pass ypg (62nd), 6.5 YPA (36th)",Game stack play.
+Bauer,9,WR,Coy Eakin,TTU,ARIZ,WR2,,"15.9% tgt share, 19.2% air yd share",Stack,,,"4.6 tgt, 3.3 rec, 37.6 yds, 0.43 TD per game","ARIZ 217.0 pass ypg (62nd), 6.5 YPA (36th)",Game stack play.
+Bauer,9,WR,Jordan Dwyer,TCU,KU,WR1,,27.3% tgt share in Wk 8,Great,Preferred stack with Jaden Craig,,"9 tgt in Wk 7, 12 in Wk 8; 24.0 and 24.3 DK pts; no TDs yet","KU 187.0 pass ypg (30th), 7.0 YPA (53rd); TCU passes 53.3% (24th)","A true WR1 when healthy, in for a big finish. Great play."
+Bauer,9,WR,Ed Small,TCU,KU,WR,,22.6% tgt share (team high); 11.4% in Wk 8,Okay,,,"7.4 tgt, 5.4 rec, 73.0 yds per game","KU 187.0 pass ypg (30th), 7.0 YPA (53rd)",Expects his numbers to dip as Dwyer's climb. Okay play.
+Bauer,9,TE,Kari Ashley,TCU,KU,TE,,,GPP,,,"6.1 tgt, 5.0 rec, 72.9 yds, 0.57 TD per game","KU 187.0 pass ypg (30th), 7.0 YPA (53rd)",A breakout season continues. Good GPP play.
+Bauer,9,WR,Dakorien Moore,ORE,NW,WR1,,"22.6% tgt share, 30.9% air yd share",Pass,,,"7.7 tgt, 4.9 rec, 59.6 yds, 0.57 TD per game","NW 219.6 pass ypg (67th), 6.2 YPA (24th); ORE passes 54.9% (18th)",No faith in the ORE offense with Raiola under center. Pass.
+Bauer,9,WR,Evan Stewart,ORE,NW,WR,,,Pass,,Probable; sounds like he's back,"7.4 tgt, 5.4 rec, 70.2 yds, 0.80 TD per game; 2.17 YPRR (team high)","NW 219.6 pass ypg (67th), 6.2 YPA (24th)",Pass.
+Bauer,9,TE,Jamari Johnson,ORE,NW,TE,,,GPP,,,"6.4 tgt, 4.8 rec, 58.2 yds, 0.40 TD per game","NW 219.6 pass ypg (67th), 6.2 YPA (24th)",GPP play.
+Bauer,9,WR,Isaiah Mizell,ARIZ,@TTU,WR1,,,Great,Preferred stack with Noah Fifita,WR1 while Richardson and Hunter are out; watch the news,"39.3 DK pts vs WVU (Wk 6), 30.4 vs ISU (Wk 8)","TTU 290.7 pass ypg (134th), 7.4 YPA (59th); ARIZ passes 52.0% (34th)",Has stepped up with the WR injuries. Great play.
+Bauer,9,WR,Giovanni Richardson,ARIZ,@TTU,WR,,,,,Questionable; watch the news,,,
+Bauer,9,WR,Brandon Phelps,ARIZ,@TTU,WR,,"6 tgt in Wk 6, 7 in Wk 7; 76.9% and 76.5% routes",Stack,,Solid if Richardson and Hunter stay out,,"TTU 290.7 pass ypg (134th), 7.4 YPA (59th)",Good game stack play.
+Bauer,9,WR,Caleb Smith,ARIZ,@TTU,WR,,,Stack,,,,"TTU 290.7 pass ypg (134th), 7.4 YPA (59th)",Game stack play.
+Bauer,9,WR,Chris Hunter,ARIZ,@TTU,WR,,,,,Questionable; watch the news,,,
+Bauer,9,WR,Umari Hatcher,SYR,SMU,Alpha,,"30.8% tgt share, 40.9% air yd share",Great,Preferred stack with Steve Angeli,,"10.9 tgt, 7.7 rec, 126.7 yds, 1.14 TD per game; 3.44 YPRR (team high)","SMU 134.5 pass ypg (48th), 4.0 YPA (55th); SYR passes 50.6% (47th)",A true alpha. Great play.
+Bauer,9,WR,Calvin Russell III,SYR,SMU,WR2,,9 and 10 tgt the last 2 wks,Great,,,8-86-1 vs UNC (ACC Rookie of the Week),"SMU 134.5 pass ypg (48th), 4.0 YPA (55th)",A 5-star freshman. Great play.
+Bauer,9,WR,JV Gibson,CIN,UTAH,WR1,,"22.5% tgt share, 35.9% air yd share",GPP,Preferred stack with JC French IV,,"5.9 tgt, 4.1 rec, 55.0 yds, 0.57 TD per game; 2.04 YPRR (team high)","UTAH 241.7 pass ypg (96th), 6.3 YPA (28th); CIN passes 43.5% (109th)",Good GPP play.
+Bauer,9,WR,Isaiah Johnson,CIN,UTAH,WR2,,"18.7% tgt share, 21.0% air yd share",Stack,,,"4.9 tgt, 3.7 rec, 35.0 yds, 0.14 TD per game","UTAH 241.7 pass ypg (96th), 6.3 YPA (28th)",Game stack play.
+Bauer,9,WR,Isaiah Sategna III,OKLA,SCAR,Alpha,,"31.8% tgt share, 37.1% air yd share",Good,Preferred stack with John Mateer,,"8.7 tgt, 5.9 rec, 82.6 yds, 0.43 TD per game; 8-164-1 vs a depleted MSST","SCAR 229.5 pass ypg (81st), 7.5 YPA (55th); OKLA passes 48.7% (68th)",A clear alpha off his best game. Good play.
+Bauer,9,TE,Rocky Beers,OKLA,SCAR,TE,,,GPP,,,"5.4 tgt, 4.3 rec, 56.4 yds, 0.57 TD per game","SCAR 229.5 pass ypg (81st), 7.5 YPA (55th)",A solid season continues. Good GPP play.
+Bauer,9,WR,Vernell Brown III,FLA,vs UGA,WR,,20.5% tgt share in his first 4 games,Pass,,Probable; hasn't played since Wk 4,,"UGA 199.3 pass ypg (42nd), 6.1 YPA (18th); FLA passes 42.7% (113th)",His return spreads the targets out even more. Pass.
+Bauer,9,WR,Dallas Wilson,FLA,vs UGA,WR1,,"20.3% tgt share, 28.1% air yd share",GPP,,,"6.0 tgt, 4.1 rec, 57.6 yds, 0.57 TD per game","UGA 199.3 pass ypg (42nd), 6.1 YPA (18th)",His numbers may dip with Brown back. Okay GPP play.
+Bauer,9,WR,Bailey Stockton,FLA,vs UGA,WR,,16.9% tgt share,Pass,,Doubtful,,"UGA 199.3 pass ypg (42nd), 6.1 YPA (18th)",Pass.
+Bauer,9,WR,Griffin Wilde,NW,@ORE,Alpha; deep (12.6 aDOT),,"31.0% tgt share, 39.9% air yd share",Pass,,,"6.9 tgt, 5.6 rec, 87.9 yds, 0.57 TD per game; 3.15 YPRR","ORE 213.7 pass ypg (60th), 6.9 YPA (88th); NW passes 38.9% (130th)","An alpha on a team with an extremely low pass rate; the preferred stack with Chiles, but a pass."
+Bauer,9,TE,Luke Dehnicke,NW,@ORE,TE,,,Pass,,Probable; slated to return (out since Wk 4),3.20 YPRR through 4 games,"ORE 213.7 pass ypg (60th), 6.9 YPA (88th)",Pass.
+Bauer,9,WR,Drew Wagner,NW,@ORE,WR,,,Pass,,,,"ORE 213.7 pass ypg (60th), 6.9 YPA (88th)",Pass.
+Bauer,9,WR,Nik McMillan,KU,@TCU,WR1,,"22.7% tgt share, 30.6% air yd share",GPP,Preferred stack with Isaiah Marshall,,"6.3 tgt, 3.6 rec, 66.6 yds, 0.71 TD per game; a TD in 3 straight, 5 in 7 games","TCU 168.6 pass ypg (14th), 5.7 YPA (5th); KU passes 44.0% (105th)",GPP play.
+Bauer,9,WR,Cam Pickett,KU,@TCU,WR2,,19.1% tgt share; 31.25% since returning in Wk 5,GPP,,,"7.4 tgt, 4.2 rec, 42.0 yds per game; no TDs yet","TCU 168.6 pass ypg (14th), 5.7 YPA (5th)",GPP play.
+Bauer,9,WR,Keshaun Singleton,AUB,@MISS,WR1 (11.4 aDOT),,"28.4% tgt share, 36.6% air yd share",GPP,Preferred stack with Byrum Brown,,"8.7 tgt, 5.1 rec, 62.6 yds, 0.29 TD per game","MISS 233.0 pass ypg (86th), 7.4 YPA (64th); AUB passes 48.6% (69th)",The go-to guy in AUB's passing attack. Great GPP play.
+Bauer,9,WR,Chas Nimrod,AUB,@MISS,Short (8.7 aDOT),,"23.7% tgt share, 23.5% air yd share",GPP,,,"7.3 tgt, 4.7 rec, 48.6 yds, 0.43 TD per game","MISS 233.0 pass ypg (86th), 7.4 YPA (64th)",Good GPP play.
+Bauer,9,WR,Tony Diaz,IOWA,WIS,WR1,,"25.9% tgt share, 41.2% air yd share",Pass,,,"7.4 tgt, 4.1 rec, 55.1 yds per game; 44, 64, 44 and 24 yds the last 4; one TD (Wk 1); 4 tgt in each of the last 2","WIS 175.8 pass ypg (19th), 5.6 YPA (4th); IOWA passes 52.4% (33rd)",Has caught the disease of being an Iowa pass catcher. Pass.
+Bauer,9,WR,Reece Vander Zee,IOWA,WIS,WR,,,Pass,,,,"WIS 175.8 pass ypg (19th), 5.6 YPA (4th)",Pass.
+Bauer,9,WR,DJ Vonnahme,IOWA,WIS,WR,,,Pass,,,,"WIS 175.8 pass ypg (19th), 5.6 YPA (4th)",Pass.
+Bauer,9,WR,Mazeo Bennett Jr.,SCAR,@OKLA,Short (7.0 aDOT),,20.1% tgt share,GPP,,,"6.4 tgt, 4.4 rec, 46.3 yds, 0.43 TD per game","OKLA 151.3 pass ypg (5th), 6.5 YPA (35th); SCAR passes 50.1% (51st)",The lay-up target in the offense. Okay GPP play.
+Bauer,9,WR,Nyck Harbor,SCAR,@OKLA,WR,,,Pass,,,"5.4 tgt, 2.4 rec, 39.7 yds, 0.29 TD per game","OKLA 151.3 pass ypg (5th), 6.5 YPA (35th)",Pass.
+Bauer,9,WR,DJ Black,SCAR,@OKLA,WR2,,"5 tgt in Wk 6, 7 in Wk 8; 83.3% and 84.2% routes",Pass,,,,"OKLA 151.3 pass ypg (5th), 6.5 YPA (35th)",Pass.
+Bauer,9,WR,Da'Shawn Martin,UVA,@WAKE,WR,,,Pass,,,,"WAKE 230.1 pass ypg (83rd), 6.1 YPA (19th); UVA passes 41.8% (116th)",No interest in any UVA pass catcher.
+Bauer,9,WR,Kameron Courtney,UVA,@WAKE,WR,,,,,Questionable; day-to-day,,,
+Bauer,9,WR,Rico Flores Jr.,UVA,@WAKE,WR,,,,,OUT for the season,,,
+Bauer,9,WR,Reed Harris,ASU,@BYU,Alpha; deep (13.6 aDOT),,"32.9% tgt share, 51.4% air yd share",GPP,,,"10.7 tgt, 6.7 rec, 114.3 yds, 1.14 TD per game; 3.16 YPRR","BYU 214.8 pass ypg (63rd), 5.7 YPA (7th); ASU passes 52.8% (28th)",An incredible season; he and Miller combine for a 59.2% target share. GPP play.
+Bauer,9,WR,Omarion Miller,ASU,@BYU,WR2,,"26.3% tgt share, 21.7% air yd share",Stack,,,"8.6 tgt, 5.3 rec, 55.0 yds, 0.29 TD per game","BYU 214.8 pass ypg (63rd), 5.7 YPA (7th)",Game stack play.
+Bauer,9,WR,Tyrell Henry,WIS,@IOWA,WR,,,Pass,,,,"IOWA 214.5 pass ypg (61st), 6.4 YPA (112th); WIS passes 43.4% (110th)",Zero interest in any Badger pass catcher.
+Bauer,9,WR,Jacob Harris,WIS,@IOWA,WR,,,Pass,,,,"IOWA 214.5 pass ypg (61st), 6.4 YPA (112th)",Pass.
+Bauer,9,WR,Javon Tracy,MINN,@IND,WR1,,24.4% tgt share,Pass,,,"7.6 tgt, 5.6 rec, 60.0 yds, 0.14 TD per game; 2.25 YPRR (team high)","IND 212.7 pass ypg (57th), 9.0 YPA (15th); MINN passes 54.9% (17th)",Pass.
+Bauer,9,WR,Noah Jennings,MINN,@IND,WR1,,"24.4% tgt share, 37.1% air yd share (team high)",Pass,,,"7.6 tgt, 4.3 rec, 52.4 yds, 0.14 TD per game","IND 212.7 pass ypg (57th), 9.0 YPA (15th)",Pass.
+Bauer,9,WR,Jalen Smith,MINN,@IND,WR,,,Pass,,,,"IND 212.7 pass ypg (57th), 9.0 YPA (15th)",Pass.
