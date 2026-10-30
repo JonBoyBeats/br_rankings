@@ -398,11 +398,11 @@
   .minchart { display: flex; flex-direction: column; gap: 3px; max-width: 860px; }
   .minchart .mhead { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
   .minchart .mhead span { text-transform: none; letter-spacing: 0; opacity: .8; }
-  .mrow { display: grid; grid-template-columns: 62px minmax(0, 1fr) 42px auto; gap: 8px; align-items: center;
+  .mrow { display: grid; grid-template-columns: 62px minmax(0, 1fr) 46px auto; gap: 8px; align-items: center;
           font-family: var(--mono); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .mrow .mmin, .mrow .mgame { white-space: nowrap; }
   .mrow .mmin { text-align: right; color: var(--ink); }
-  .mrow .mmin i { font-style: normal; color: var(--muted); font-size: 9px; margin-right: 2px; }
+  .mrow .mmin i { font-style: normal; color: var(--muted); font-size: 9px; margin-right: 4px; }
   .mrow .mgame b { color: var(--ink); font-weight: 600; }
   .mrow .mgame .wl { font-size: 10px; }
   .mtrack { position: relative; height: 22px; background: #10141b; border-radius: 3px; overflow: hidden; }
@@ -416,7 +416,8 @@
   .mrow.none .mtrack { opacity: .55; }
   /* beside each game: his fantasy points and points a minute, then his box line (points, rebounds,
      assists, steals, blocks, threes and field goals made-tried), every column right-aligned to its label */
-  .mstats { display: grid; grid-template-columns: 4.4ch calc(4.4ch + 7px) repeat(5, 2ch) 4ch 5.4ch; column-gap: 6px;
+  /* fixed widths, so the smaller labels line up over the numbers */
+  .mstats { display: grid; grid-template-columns: 32px 41px repeat(5, 15px) 30px 38px; column-gap: 6px;
             text-align: right; color: var(--ink); white-space: nowrap; }
   .mstats .fp { font-weight: 700; }
   .mstats .ppm { padding-right: 6px; border-right: 1px solid var(--line-strong); }
@@ -3569,7 +3570,9 @@ function nbaMinutesChart(m) {
   wrap.appendChild(labels);
   if (mr && usual) {
     var ur = cell("mrow musual");
-    ur.append(cell("mgame", "Usual"), cell("mnote", "this season, last season mixed in early"),
+    var note = cell("mnote", "his average");
+    note.title = "As the morning Proj has it: this season, with last season mixed in until about game 10";
+    ur.append(cell("mgame", "Usual"), note,
               cell("mmin", mr.min != null ? Math.round(mr.min) + "m" : ""),
               statsRow([(mr.min * usual).toFixed(1), usual.toFixed(2)]));
     wrap.appendChild(ur);
