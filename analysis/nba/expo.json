@@ -322,27 +322,26 @@
     "Julius Randle": 27,
     "Scottie Barnes": 27,
     "Trae Young": 25,
+    "Andrew Nembhard": 24,
     "Jamal Murray": 23,
     "Anthony Davis": 22,
     "Karl-Anthony Towns": 22,
+    "Paul Reed": 22,
     "RJ Barrett": 20,
     "Giannis Antetokounmpo": 20,
-    "Andrew Nembhard": 19,
     "Jayson Tatum": 18,
     "Bam Adebayo": 18,
-    "Paul Reed": 18,
     "Luka Doncic": 18,
     "Cooper Flagg": 17,
     "Cade Cunningham": 16,
     "Jalen Brunson": 16,
+    "Immanuel Quickley": 15,
     "Nikola Jokic": 14,
     "Paul George": 13,
     "Tyrese Maxey": 13,
-    "Immanuel Quickley": 13,
     "Pascal Siakam": 12,
     "Austin Reaves": 12,
     "Ausar Thompson": 12,
-    "Alperen Sengun": 11,
     "Brandon Miller": 9,
     "Franz Wagner": 6,
     "Joel Embiid": 5,
@@ -352,7 +351,7 @@
     "Desmond Bane": 1,
     "Yaxel Lendeborg": 1
    },
-   "note": "Alperen Sengun (11%) shows the app's red O (out) tag at 3:51pm. The app rounds down, so shares add to 584% of 600%; the three screenshots overlap with no row missing."
+   "note": "After swaps: Alperen Sengun (11%, out) swapped, taking Andrew Nembhard from 19% to 24%, Paul Reed from 18% to 22% and Immanuel Quickley from 13% to 15%. The app rounds down, so shares add to under 600%."
   }
  }
 }
