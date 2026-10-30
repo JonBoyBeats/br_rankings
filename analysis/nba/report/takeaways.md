@@ -2,6 +2,13 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-10-29 Thu main
+
+- Your best morning yet (Lock AM 6:00am): your board beat ADP on 67% of disagreements (season 51%, still too close to call) and picked +19.6 in rounds 5-6. The call of the night was raising Fears (beat all 8 he passed) with Dejounte and Poole out.
+- Afternoon went to ETR: your PM board was right on only 33% of disagreements with it (season 48%, too close to call). The misses were fading players who got a teammate's minutes (Fears, Clingan with Robert Williams out) and raising Ja and Dame into a 21-point loss.
+- Fades remain the habit to watch: 7 right, 16 wrong across four slates (AM and PM), and 10 of the 16 wrong fades played above their usual minutes. Not a theme for the model; a drafting note.
+- Our morning number tracked ETR's first upload very closely (rank corr 0.98). Lock PM blend moved to 40% ours with a range of 0-90%: nothing settled. Boom 4+: too early, morning (89 moves, 45%) and afternoon (336 moves, 48%).
+
 ## 2026-10-28 Wed main
 
 - First night with both locks (AM 4:05am, PM 2:22pm). A chaotic big slate: every order correlated poorly (0.32-0.47), with blowouts (OKC, ORL, TOR) and late outs (Luka, Haliburton).

@@ -89,3 +89,30 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-10-28,nba_wed_main,Paul Reed,DET,split,34.7,39.9,29.8,38.0,23.0,8.0,peripherals,no,ours,"0 ast, 4 reb in 38 min"
 2026-10-28,nba_wed_main,Cooper Flagg,DAL,split,45.4,50.2,44.0,33.0,30.0,24.0,other,?,ours,44 in 33 min; ETR 5 higher
 2026-10-28,nba_wed_main,Jalen Johnson,ATL,split,51.9,56.5,42.3,36.0,32.8,-12.0,shooting,no,ours,4-12 but 11 ast; ETR 5 higher
+2026-10-29,nba_thu_main,Jeremiah Fears,NOP,am_call,29.9,37.8,66.1,29.0,23.0,12.0,teammate-out,yes,right,"raised; Dejounte and Poole out, 29 min (usual 23), 9-16; beat 8 of 8"
+2026-10-29,nba_thu_main,Toumani Camara,POR,am_call,30.1,30.8,26.9,26.0,24.7,-21.0,shooting,no,right,"raised; 26.9 in 26 min of a 21-pt loss, 3-8 from three; beat 4 of 5"
+2026-10-29,nba_thu_main,Jaylen Wells,MEM,am_call,24.4,26.3,11.2,25.0,29.0,21.0,blowout,partly,right,"faded; 25 min in a 21-pt win, 4-9; 5 of 7 right"
+2026-10-29,nba_thu_main,Scoot Henderson,POR,am_call,24.7,24.1,11.8,19.0,19.0,-21.0,blowout,partly,wrong,faded; 11.8 in 19 min of a 21-pt loss; 3 of 6 (even)
+2026-10-29,nba_thu_main,Zach LaVine,SAC,am_call,38.2,39.3,38.1,39.0,36.0,-12.0,minutes,yes,wrong,faded; 39 min against usual 36; beat 5 of 6 he was put behind
+2026-10-29,nba_thu_main,Peyton Watson,CLE,am_call,32.7,33.8,17.3,22.0,31.5,-3.0,other,?,right,"faded; foul trouble (5 fouls), 22 min, 1-8; 5 of 6 right"
+2026-10-29,nba_thu_main,Aaron Wiggins,ATL,am_call,27.5,29.8,34.9,24.0,26.8,3.0,shooting,no,right,"raised; 8-14, 4-7 from three; beat 2 of 2"
+2026-10-29,nba_thu_main,Kingston Flemings,ATL,pm_call,20.2,23.2,10.7,16.0,20.2,3.0,minutes,yes,wrong,"raised over ETR; 16 min (usual 20), 1-4; beat 2 of 8"
+2026-10-29,nba_thu_main,Trey Murphy III,NOP,pm_call,39.9,40.6,32.5,32.0,32.5,12.0,other,?,wrong,faded below ETR; 32.5 in normal 32 min; 2 of 5 right
+2026-10-29,nba_thu_main,Donovan Clingan,POR,pm_call,40.0,42.3,38.1,29.0,22.7,-21.0,teammate-out,yes,wrong,"faded below ETR; Robert Williams out, 29 min (usual 23); 1 of 5 right"
+2026-10-29,nba_thu_main,Jeremiah Fears,NOP,pm_call,29.9,37.8,66.1,29.0,23.0,12.0,teammate-out,yes,wrong,"faded below ETR; Dejounte out, 29 min, 66 FP; 0 of 5 right"
+2026-10-29,nba_thu_main,Ja Morant,POR,pm_call,40.7,39.3,19.9,23.0,27.0,-21.0,blowout,partly,wrong,raised over ETR; 23 min in a 21-pt loss; beat 0 of 3
+2026-10-29,nba_thu_main,Jarrett Allen,CLE,pm_call,36.0,36.2,30.1,30.0,28.0,-3.0,other,?,wrong,raised over ETR; 30.1 in 30 min; beat 2 of 4 (even)
+2026-10-29,nba_thu_main,Dyson Daniels,ATL,pm_call,38.1,39.4,21.7,32.0,28.6,3.0,shooting,no,right,faded below ETR; 2-8 in 32 min; 3 of 4 right
+2026-10-29,nba_thu_main,Damian Lillard,POR,pm_call,40.2,39.7,13.4,30.0,29.3,-21.0,shooting,no,wrong,"raised over ETR; 3-13, 1-9 from three in a 21-pt loss; beat 0 of 2"
+2026-10-29,nba_thu_main,Jeremiah Fears,NOP,miss,29.9,37.8,66.1,29.0,23.0,12.0,teammate-out,yes,etr,"ours 29.9, ETR 37.8 priced Dejounte and Poole out; 66.1 on 29 min"
+2026-10-29,nba_thu_main,Damian Lillard,POR,miss,40.2,39.7,13.4,30.0,29.3,-21.0,shooting,no,neither,"3-13, 1-9 from three in 30 min, 21-pt loss"
+2026-10-29,nba_thu_main,Ty Jerome,MEM,miss,45.7,46.4,19.9,24.0,31.5,21.0,blowout,partly,neither,"24 min (usual 32) in a 21-pt win, 3-12"
+2026-10-29,nba_thu_main,Scotty Pippen Jr.,MEM,miss,27.5,24.1,2.0,14.0,16.8,21.0,blowout,partly,etr,"14 min in a 21-pt win, 1 shot"
+2026-10-29,nba_thu_main,Malik Monk,SAC,miss,23.9,18.9,2.7,8.0,12.3,-12.0,minutes,yes,etr,8 min (usual 12); ETR had him 5 lower
+2026-10-29,nba_thu_main,Ja Morant,POR,miss,40.7,39.3,19.9,23.0,27.0,-21.0,blowout,partly,neither,23 min (usual 27) in a 21-pt loss
+2026-10-29,nba_thu_main,Darius Acuff Jr.,SAC,miss,39.1,42.2,59.2,41.0,35.2,-12.0,minutes,yes,etr,"41 min (usual 35), 13-26; ETR 3 higher"
+2026-10-29,nba_thu_main,Jerami Grant,MEM,miss,26.1,24.8,6.7,27.0,24.0,21.0,shooting,no,etr,"1-8 in 27 min (usual 24), 21-pt win"
+2026-10-29,nba_thu_main,Herb Jones,NOP,split,22.1,27.6,25.3,32.0,17.5,12.0,teammate-out,yes,etr,ETR 27.6 vs ours 22.1 with Dejounte out; 32 min (usual 18)
+2026-10-29,nba_thu_main,Isaiah Stewart,MEM,split,23.6,18.8,23.6,16.0,17.7,21.0,other,?,ours,ours 23.6 vs ETR 18.8; 23.6 on 7-10 in 16 min
+2026-10-29,nba_thu_main,Jalen Johnson,ATL,split,50.6,55.0,33.1,34.0,33.4,3.0,shooting,no,ours,ours 50.6 vs ETR 55.0; 33.1 on 7-16 in 34 min
+2026-10-29,nba_thu_main,Bennedict Mathurin,NOP,split,24.4,28.7,14.6,19.0,16.8,12.0,other,?,ours,ours 24.4 vs ETR 28.7 with Poole out; 14.6 in 19 min
