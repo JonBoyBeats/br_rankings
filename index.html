@@ -398,12 +398,13 @@
   .minchart { display: flex; flex-direction: column; gap: 3px; max-width: 860px; }
   .minchart .mhead { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
   .minchart .mhead span { text-transform: none; letter-spacing: 0; opacity: .8; }
-  .mrow { display: grid; grid-template-columns: 70px minmax(0, 1fr) 92px auto; gap: 8px; align-items: center;
+  .mrow { display: grid; grid-template-columns: 62px minmax(0, 1fr) 42px auto; gap: 8px; align-items: center;
           font-family: var(--mono); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .mrow .mres, .mrow .mgame { white-space: nowrap; }
-  .mrow .mres { text-align: right; }
+  .mrow .mmin, .mrow .mgame { white-space: nowrap; }
+  .mrow .mmin { text-align: right; color: var(--ink); }
+  .mrow .mmin i { font-style: normal; color: var(--muted); font-size: 9px; margin-right: 2px; }
   .mrow .mgame b { color: var(--ink); font-weight: 600; }
-  .mrow .mres b { color: var(--ink); font-weight: 700; }
+  .mrow .mgame .wl { font-size: 10px; }
   .mtrack { position: relative; height: 22px; background: #10141b; border-radius: 3px; overflow: hidden; }
   .mtrack svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .mq { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255, 255, 255, .1); }
@@ -413,10 +414,19 @@
   .mst.neg { background: #e0705f; }
   .mst.even { background: #9aa3b2; }
   .mrow.none .mtrack { opacity: .55; }
-  /* his box line beside each game: points, rebounds, assists, steals, blocks, threes and field goals made-tried */
-  .mbox { display: grid; grid-template-columns: repeat(5, 2.4ch) 4.6ch 5.4ch; column-gap: 5px; text-align: right; color: var(--ink); }
+  /* beside each game: his fantasy points and points a minute, then his box line (points, rebounds,
+     assists, steals, blocks, threes and field goals made-tried), every column right-aligned to its label */
+  .mstats { display: grid; grid-template-columns: 4.4ch calc(4.4ch + 7px) repeat(5, 2ch) 4ch 5.4ch; column-gap: 6px;
+            text-align: right; color: var(--ink); white-space: nowrap; }
+  .mstats .fp { font-weight: 700; }
+  .mstats .ppm { padding-right: 6px; border-right: 1px solid var(--line-strong); }
+  .mstats .ppm.up { color: #5fbf7f; }
+  .mstats .ppm.dn { color: #e0705f; }
   .mlabels { font-size: 10px; margin-bottom: -2px; }
-  .mlabels .mbox { color: var(--muted); }
+  .mlabels .mstats, .mlabels .mmin { color: var(--muted); }
+  .musual { font-weight: 700; color: var(--ink); padding-bottom: 3px; border-bottom: 1px solid var(--line); margin-bottom: 1px; }
+  .musual .mgame { color: var(--ink); }
+  .musual .mnote { font-size: 10px; font-weight: 400; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sitpanel b { color: var(--ink); }
   .outback { all: unset; cursor: pointer; margin: 2px 6px 2px 0; padding: 2px 8px; border-radius: 6px; font-size: 12.5px;
              border: 1px solid var(--line-strong); color: var(--ink); }
@@ -586,9 +596,9 @@
     .board.cfb .num.score { flex-direction: column; gap: 2px; }
     .board.cfb .num.score b.sc { min-width: 40px; }
     .cfbpanel { padding: 8px 8px 12px; font-size: 12.5px; }
-    .mrow { grid-template-columns: 66px minmax(0, 1fr) 66px; gap: 2px 5px; font-size: 10px; }
-    .mbox { grid-column: 2 / -1; justify-self: start; }
-    .mlabels > span:not(.mbox) { display: none; }
+    .mrow { grid-template-columns: 54px minmax(0, 1fr) 34px; gap: 2px 5px; font-size: 10px; }
+    .mstats { grid-column: 1 / -1; justify-self: start; column-gap: 5px; }
+    .mlabels > span:not(.mstats) { display: none; }
     .cfbgrid { gap: 6px; }
     .cfbgrid .g { padding: 3px 4px 5px; }
     .cfbstrip.own { grid-column: 1 / -1; gap: 4px 6px; }   /* a phone gives it the whole row width */
@@ -3547,13 +3557,23 @@ function nbaMinutesChart(m) {
   head.innerHTML = "Minutes, last " + m.g.length + " <span>\u00b7 bars: on the floor, fantasy points a minute while on" +
     (usual ? " (green over his usual " + usual.toFixed(2) + ", red under)" : "") + " \u00b7 shading: his team's lead</span>";
   wrap.appendChild(head);
-  // the box line's column labels, over the games' box lines
-  var labels = document.createElement("div"), lb = document.createElement("span");
-  labels.className = "mrow mlabels";
-  lb.className = "mbox";
-  lb.innerHTML = ["P", "R", "A", "S", "B", "3P", "FG"].map(function (x) { return "<span>" + x + "</span>"; }).join("");
-  labels.append(document.createElement("span"), document.createElement("span"), document.createElement("span"), lb);
+  function cell(cls, text) { var c = document.createElement("span"); if (cls) c.className = cls; if (text != null) c.textContent = text; return c; }
+  function statsRow(vals, cls) {                      // [fpts, ppm, p, r, a, s, b, 3p, fg]
+    var box = cell("mstats");
+    vals.forEach(function (v, i) { box.appendChild(cell(i === 0 ? "fp" : i === 1 ? "ppm" + (cls ? " " + cls : "") : "", v == null ? "" : v)); });
+    return box;
+  }
+  // column labels, then his usual: minutes, points and points a minute as the morning Proj has them
+  var labels = cell("mrow mlabels");
+  labels.append(cell(), cell(), cell("mmin", "MIN"), statsRow(["FPTS", "PPM", "P", "R", "A", "S", "B", "3P", "FG"]));
   wrap.appendChild(labels);
+  if (mr && usual) {
+    var ur = cell("mrow musual");
+    ur.append(cell("mgame", "Usual"), cell("mnote", "this season, last season mixed in early"),
+              cell("mmin", mr.min != null ? Math.round(mr.min) + "m" : ""),
+              statsRow([(mr.min * usual).toFixed(1), usual.toFixed(2)]));
+    wrap.appendChild(ur);
+  }
   var top = 10;                                       // the lead scale: the biggest margin in these games, at least 10
   m.g.forEach(function (e) {
     var g = games[e[0]];
@@ -3565,9 +3585,11 @@ function nbaMinutesChart(m) {
     var sign = g.home === m.team ? 1 : -1, opp = sign > 0 ? g.away : g.home, len = g.len || 2880;
     var row = document.createElement("div");
     row.className = "mrow" + (e.length >= 4 ? "" : " none");
+    var fin = sign * g.flow[g.flow.length - 1][1];
     var lab = document.createElement("span");
     lab.className = "mgame";
-    lab.innerHTML = "<b>" + (sign > 0 ? "v" : "@") + opp + "</b> " + esc(g.d.slice(5).replace("-", "/"));
+    lab.innerHTML = "<b>" + (sign > 0 ? "v" : "@") + opp + "</b> <span class=\"wl\">" + (fin > 0 ? "W" + fin : fin < 0 ? "L" + -fin : "T") + "</span>";
+    lab.title = g.d.slice(5).replace("-", "/") + ": " + (fin > 0 ? "won by " + fin : fin < 0 ? "lost by " + -fin : "tied");
     var track = document.createElement("div");
     track.className = "mtrack";
     // his team's lead through the game, as a step line from the middle: up is ahead
@@ -3589,17 +3611,17 @@ function nbaMinutesChart(m) {
       ql.style.left = (q / len * 100) + "%";
       track.appendChild(ql);
     }
-    var res = document.createElement("span");
-    res.className = "mres";
-    var fin = sign * g.flow[g.flow.length - 1][1];
-    var wl = fin > 0 ? "W " + fin : fin < 0 ? "L " + -fin : "T";
-    var box = document.createElement("span");
-    box.className = "mbox";
+    var res = cell("mmin"), box = cell("mstats");
     if (e[4]) {
-      var x = e[4];
-      box.innerHTML = [x[0], x[1], x[2], x[3], x[4], x[5] + "-" + x[6], x[7] + "-" + x[8]]
-        .map(function (v) { return "<span>" + v + "</span>"; }).join("");
-      box.title = x[0] + " pts, " + x[1] + " reb, " + x[2] + " ast, " + x[3] + " stl, " + x[4] + " blk, " +
+      // his points: banked with the game, else his stints' added up
+      var x = e[4], gfp = typeof e[5] === "number" ? e[5] :
+        e[3].length && e[3][0].length > 2 ? e[3].reduce(function (a, st) { return a + st[2]; }, 0) : null;
+      var gppm = gfp != null && e[1] > 0 ? gfp / e[1] : null;
+      var gvs = gppm == null || !usual ? "" : gppm >= usual * 1.15 ? "up" : gppm <= usual * 0.85 ? "dn" : "";
+      box = statsRow([gfp == null ? "" : gfp.toFixed(1), gppm == null ? "" : gppm.toFixed(2),
+                      x[0], x[1], x[2], x[3], x[4], x[5] + "-" + x[6], x[7] + "-" + x[8]], gvs);
+      box.title = (gfp != null ? gfp.toFixed(1) + " fantasy points, " + gppm.toFixed(2) + " a minute; " : "") +
+        x[0] + " pts, " + x[1] + " reb, " + x[2] + " ast, " + x[3] + " stl, " + x[4] + " blk, " +
         x[5] + " of " + x[6] + " threes, " + x[7] + " of " + x[8] + " from the field";
     }
     if (e.length >= 4) {
@@ -3614,17 +3636,18 @@ function nbaMinutesChart(m) {
         b.className = "mst " + vs;
         b.style.left = (st[0] / len * 100) + "%";
         b.style.width = w + "%";
-        b.textContent = w >= 7 && ppm != null ? ppm.toFixed(1) : "";
+        b.textContent = w >= 9 && mins >= 4 && ppm != null ? ppm.toFixed(1) : "";   // only where it fits
         b.title = gameClock(st[0]) + " \u2192 " + gameClock(st[1], true) + " \u00b7 " + mins.toFixed(1) + " min" +
           (fp != null ? " \u00b7 " + fp.toFixed(1) + " pts (" + (ppm || 0).toFixed(2) + " a minute)" : "") +
           " \u00b7 team " + (pm > 0 ? "+" : pm < 0 ? "\u2212" : "") + Math.abs(pm);
         track.appendChild(b);
       });
-      res.innerHTML = (e[2] ? "S " : "") + "<b>" + Math.round(e[1]) + "m</b> \u00b7 " + wl;
+      res.innerHTML = (e[2] ? "<i>S</i>" : "") + Math.round(e[1]) + "m";
+      res.title = e[2] ? "Started" : "Off the bench";
     } else {
       var why = e.length === 2 ? (/COACH/.test(e[1]) ? "DNP-CD" : e[1] === "0 MIN" ? "0 min" : "DNP") : "Out";
-      res.innerHTML = "<b>" + why + "</b> \u00b7 " + wl;
-      if (e.length === 2) res.title = e[1];
+      res.textContent = why;
+      res.title = e.length === 2 ? e[1] : "Not in the box score";
     }
     row.append(lab, track, res, box);
     wrap.appendChild(row);
