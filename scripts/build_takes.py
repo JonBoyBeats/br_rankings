@@ -15,6 +15,7 @@ SOURCES = {
     'Kerrane': 'Pat Kerrane, Legendary Upside Walkthrough',
     'Silva': 'Evan Silva, Matchups',
     'Heath': 'Ryan Heath, Advanced Matchups (Fantasy Points)',
+    'FP Trends': 'Fantasy Points, weekly matchup trends',
 }
 takes = []
 for path in sorted(glob.glob(os.path.join(HERE, 'takes', '*.csv'))):
