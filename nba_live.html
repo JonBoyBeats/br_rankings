@@ -111,6 +111,7 @@
         <select id="sort">
           <option value="adp">ADP</option>
           <option value="fp">UD points</option>
+          <option value="expo">Exposure</option>
         </select>
       </label>
       <label class="field" title="From this ADP down, players sort by points instead of ADP (36 is where Underdog parks everyone undrafted)">
@@ -493,6 +494,10 @@ function render() {
     of = ex.drafts;
   }
   host.classList.toggle("no-expo", !ex);
+  // Exposure sort needs exposures; without them it falls back to ADP (the choice is kept for the next slate)
+  var sortBy = state.sort === "expo" && !ex ? "adp" : state.sort;
+  $("sort").querySelector('option[value="expo"]').disabled = !ex;
+  $("sort").value = sortBy;
   $("mine").hidden = !ex;
   $("mine").setAttribute("aria-pressed", String(!!(ex && state.mine)));
 
@@ -521,7 +526,8 @@ function render() {
   var last = tailFor(state.slate);
   if (document.activeElement !== $("tail")) $("tail").value = last;
   function byFp(a, b) { return (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp) || a.p.adp - b.p.adp; }
-  rows.sort(state.sort === "fp" ? byFp : function (a, b) {
+  function byExpo(a, b) { return b.f - a.f || a.p.adp - b.p.adp; }
+  rows.sort(sortBy === "fp" ? byFp : sortBy === "expo" ? byExpo : function (a, b) {
     var ta = a.p.adp >= last, tb = b.p.adp >= last;
     return ta !== tb ? (ta ? 1 : -1) : ta ? byFp(a, b) : a.p.adp - b.p.adp;
   });
@@ -534,7 +540,7 @@ function render() {
   rows.forEach(function (r) {
     var p = r.p, el = document.createElement("div");
     el.className = "row";
-    if (state.sort === "adp" && prevRound != null && r.round !== prevRound) el.classList.add("rstart");
+    if (sortBy === "adp" && prevRound != null && r.round !== prevRound) el.classList.add("rstart");
     prevRound = r.round;
     if (r.good) {
       el.classList.add("good");
