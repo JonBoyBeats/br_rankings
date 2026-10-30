@@ -308,6 +308,51 @@
     "Jrue Holiday": 1
    },
    "note": "Dejounte Murray (14%) shows the app's red O (out) tag at 3:57pm. The app rounds down, so shares add to 591% of 600%."
+  },
+  "64162691-e518-40a7-8ffb-60ed3207e667": {
+   "label": "nba_fri_main",
+   "date": "2026-10-30",
+   "at": "2026-10-30T22:51:00Z",
+   "teams": 182,
+   "pct": {
+    "Devin Booker": 39,
+    "LaMelo Ball": 35,
+    "Amen Thompson": 29,
+    "Kevin Durant": 28,
+    "Julius Randle": 27,
+    "Scottie Barnes": 27,
+    "Trae Young": 25,
+    "Jamal Murray": 23,
+    "Anthony Davis": 22,
+    "Karl-Anthony Towns": 22,
+    "RJ Barrett": 20,
+    "Giannis Antetokounmpo": 20,
+    "Andrew Nembhard": 19,
+    "Jayson Tatum": 18,
+    "Bam Adebayo": 18,
+    "Paul Reed": 18,
+    "Luka Doncic": 18,
+    "Cooper Flagg": 17,
+    "Cade Cunningham": 16,
+    "Jalen Brunson": 16,
+    "Nikola Jokic": 14,
+    "Paul George": 13,
+    "Tyrese Maxey": 13,
+    "Immanuel Quickley": 13,
+    "Pascal Siakam": 12,
+    "Austin Reaves": 12,
+    "Ausar Thompson": 12,
+    "Alperen Sengun": 11,
+    "Brandon Miller": 9,
+    "Franz Wagner": 6,
+    "Joel Embiid": 5,
+    "Walker Kessler": 2,
+    "Darius Garland": 2,
+    "LeBron James": 1,
+    "Desmond Bane": 1,
+    "Yaxel Lendeborg": 1
+   },
+   "note": "Alperen Sengun (11%) shows the app's red O (out) tag at 3:51pm. The app rounds down, so shares add to 584% of 600%; the three screenshots overlap with no row missing."
   }
  }
 }
