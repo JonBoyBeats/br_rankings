@@ -15,7 +15,8 @@ Context only: nothing here feeds Proj, the ranks or the morning report's grading
   write    saves notes written by hand from a JSON file {key: note} (2-3 sentences on his recent
            form against his projections; keys as form prints them) into analysis/nba/form.csv, then
            recent. The 2am scheduled task writes them after the job's auto notes go in.
-  recent   for today (or --date): each player's note, tagged with his last-5 tally, to
+  recent   for today (or --date): each player's note, tagged with his last-5 tally (and his average
+           gap to ETR over them, for the board's form arrow), to
            analysis/nba/takes/<date>_recent.csv, which the board shows in its row dropdown
            (run scripts/build_takes.py after).
   auto     what the 2am job (nba_daily.yml) runs after the nightly record: drafts every night on file
@@ -419,6 +420,11 @@ def write_written(ledger, date, path):
     print("%d written notes saved" % len(notes))
 
 
+def avg(xs):
+    xs = [float(x) for x in xs if x != ""]
+    return round(sum(xs) / len(xs), 1) if xs else ""
+
+
 def recent(ledger, date):
     """Today's Recent notes: your written read of each player's recent form, tagged with his tally."""
     form, out = load_form(), []
@@ -426,7 +432,9 @@ def recent(ledger, date):
         if k in form and form[k]["blurb"]:
             name = rs[-1]["name"] if daily.norm_name(rs[-1]["name"]) == k else k.title()
             out.append({"source": "Recent", "player": name, "team": rs[-1]["team"], "stance": "",
-                        "tags": "Last %d: %s" % (len(rs), tally(rs)), "blurb": form[k]["blurb"]})
+                        "tags": "Last %d: %s" % (len(rs), tally(rs)), "blurb": form[k]["blurb"],
+                        # his average gap to ETR over those games, and ETR's average then: the board's form arrow
+                        "form": avg(r["gap"] for r in rs), "form_etr": avg(r["etr"] for r in rs)})
     return out
 
 
@@ -447,7 +455,7 @@ def write_recent(ledger, today):
     notes = recent(ledger, today)
     path = os.path.join(HERE, "takes", "%s_recent.csv" % today)
     with open(path, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=["source", "player", "team", "stance", "tags", "blurb"])
+        w = csv.DictWriter(f, fieldnames=["source", "player", "team", "stance", "tags", "blurb", "form", "form_etr"])
         w.writeheader()
         w.writerows(notes)
     print("%d Recent notes -> %s" % (len(notes), os.path.relpath(path)))

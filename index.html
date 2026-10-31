@@ -317,6 +317,9 @@
   .dash { width: 7px; height: 1.5px; background: currentColor; }
 
   .num.proj { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 3px; }
+  /* NBA: a last track for the Recent form arrow, kept even when empty so the numbers stay in a column */
+  .num.proj.fm { grid-template-columns: 30px 1fr 7px; }
+  .num.proj.two.fm { grid-template-columns: 30px 24px 1fr 7px; }
   .num.vorp { font-weight: 600; }
   /* College Proj where CFF and Fantasy Points are far apart. */
   .num.proj .split { cursor: help; }
@@ -584,7 +587,7 @@
     .board.cfb .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 54px 32px; }
     .board.cfb .row { gap: 4px; padding-inline: 6px; }
     .board.cfb.has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 48px 44px 22px 54px 32px; }
-    html.nba .row { grid-template-columns: 12px 22px minmax(0, 1fr) 46px 80px 46px 0; }
+    html.nba .row { grid-template-columns: 12px 22px minmax(0, 1fr) 37px 80px 55px 0; }
     /* phones: the opponent drops to a small line under the chips, so names keep their room */
     html.nba .num.score { flex-wrap: wrap; row-gap: 1px; }
     html.nba #scoreHead .opp-h { display: none; }
@@ -609,10 +612,16 @@
     .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
     .num.proj { grid-template-columns: 24px 1fr; gap: 2px; }
     .num.proj.two { grid-template-columns: 18px 20px 1fr; }
+    /* NBA phones: the ADP movement marker gives way to the form arrow beside Proj */
+    html.nba .num.adp { grid-template-columns: 1fr; }
+    html.nba .num.adp .ind { display: none; }
+    .num.proj.fm { grid-template-columns: 24px 1fr 7px; }
+    .num.proj .gchip { min-width: 21px; }
+    .num.proj.two.fm { grid-template-columns: 18px 20px 1fr 7px; }
     .head .ph-long { display: none; }
     .head .ph-short { display: inline; }
     .num.proj .ours { font-size: 10.5px; }
-    html.nba .board.etr2 .row { grid-template-columns: 12px 22px minmax(0, 1fr) 46px 80px 64px 0; }
+    html.nba .board.etr2 .row { grid-template-columns: 12px 22px minmax(0, 1fr) 37px 80px 73px 0; }
     .pdelta { font-size: 9.5px; }
     .num.vorp { font-size: 11px; }
     .head { font-size: 9px; letter-spacing: .06em; padding-block: 6px; }
@@ -620,8 +629,8 @@
     .rank { font-size: 11.5px; }
     .board.has-expo .rank, .board.has-expo .rankh { grid-template-columns: 1fr 17px; }
     .rank b.expo { min-width: 19px; padding: 1px 1px; font-size: 9.5px; }
-    html.nba .board.has-expo .row { grid-template-columns: 12px 44px minmax(0, 1fr) 46px 80px 46px 0; }
-    html.nba .board.has-expo.etr2 .row { grid-template-columns: 12px 44px minmax(0, 1fr) 46px 80px 64px 0; }
+    html.nba .board.has-expo .row { grid-template-columns: 12px 44px minmax(0, 1fr) 37px 80px 55px 0; }
+    html.nba .board.has-expo.etr2 .row { grid-template-columns: 12px 44px minmax(0, 1fr) 37px 80px 73px 0; }
     .num { font-size: 11.5px; }
     .name { font-size: 13.5px; }
     .sub { font-size: 9.5px; }
@@ -648,10 +657,10 @@
        NBA: one line a player, the team beside the name; the out
        toggle and tonight's opponent move to the bar a tap brings up. */
     html.nba .row { padding: 4px 6px; column-gap: 3px; }
-    html.nba .row, html.nba .board.etr2 .row { grid-template-columns: 10px 22px minmax(0, 1fr) 46px 80px 46px 0; }
-    html.nba .board.etr2 .row { grid-template-columns: 10px 22px minmax(0, 1fr) 46px 80px 64px 0; }
-    html.nba .board.has-expo .row { grid-template-columns: 10px 44px minmax(0, 1fr) 46px 80px 46px 0; }
-    html.nba .board.has-expo.etr2 .row { grid-template-columns: 10px 44px minmax(0, 1fr) 46px 80px 64px 0; }
+    html.nba .row, html.nba .board.etr2 .row { grid-template-columns: 10px 22px minmax(0, 1fr) 37px 80px 55px 0; }
+    html.nba .board.etr2 .row { grid-template-columns: 10px 22px minmax(0, 1fr) 37px 80px 73px 0; }
+    html.nba .board.has-expo .row { grid-template-columns: 10px 44px minmax(0, 1fr) 37px 80px 55px 0; }
+    html.nba .board.has-expo.etr2 .row { grid-template-columns: 10px 44px minmax(0, 1fr) 37px 80px 73px 0; }
     /* the tap bar: who he is and tonight's game on one line, the buttons under it */
     .liftbar { flex-wrap: wrap; row-gap: 8px; }
     .liftbar-who { flex-basis: 100%; flex-direction: row; align-items: baseline; gap: 8px; }
@@ -3495,6 +3504,25 @@ function nbaWho(who, p, takes) {
   else who.appendChild(slot());
 }
 
+/* Recent form beside Proj: his last-5 average against ETR, one chevron at NBA_FORM_PTS a game and
+   two at twice that. Form, not a pick: so far ETR has more than caught up on the hot ones. */
+var NBA_FORM_PTS = 4;
+
+function nbaFormArrow(takes, v) {
+  var t = takes.filter(function (x) { return x.source === "Recent"; })[0], f = t ? parseFloat(t.form) : NaN;
+  if (isNaN(f) || Math.abs(f) < NBA_FORM_PTS) return slot();
+  var el = document.createElement("span"), was = parseFloat(t.form_etr);
+  el.className = "ind fm " + (f > 0 ? "up" : "down");
+  for (var c = 0; c < (Math.abs(f) >= 2 * NBA_FORM_PTS ? 2 : 1); c++) el.appendChild(document.createElement("span")).className = "chev";
+  el.title = "Running " + (f > 0 ? "hot" : "cold") + ": " + (f > 0 ? "+" : "\u2212") + Math.abs(f).toFixed(1) +
+    " a game against ETR (" + t.tags + ")" +
+    (!isNaN(was) ? ". ETR averaged " + was.toFixed(1) + " in those games" +
+      (state.nbaEtrToday && v != null ? " and has him at " + v.toFixed(1) + " tonight" : "") : "") +
+    (f > 0 ? ". Form, not a pick: so far ETR has raised hot players about 3 and they've landed about 3 under its new number"
+           : ". Form, not a pick: so far cold players have landed right at ETR's next number");
+  return el;
+}
+
 function nbaPanel(takes, mins) {
   var d = document.createElement("div"), notes = document.createElement("div");
   d.className = "cfbpanel" + (takes.length && mins ? " split" : "");
@@ -4477,6 +4505,7 @@ function render() {
     } else {
       pr.append(pd, pval);
     }
+    if (SPORT_MODE === "nba") { pr.classList.add("fm"); pr.appendChild(nbaFormArrow(nt || [], v)); }
 
     var ownCell = null;
     if (state.hasOwn) {
