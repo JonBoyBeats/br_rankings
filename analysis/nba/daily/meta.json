@@ -244,5 +244,31 @@
    "ours": true
   },
   "gist": true
+ },
+ "2026-10-30_fri_main.csv": {
+  "lock": "2026-10-30T22:52:00+00:00",
+  "adp_am_at": "2026-10-30T13:24:28+00:00",
+  "adp_etr_at": "2026-10-30T16:49:42+00:00",
+  "adp_close_at": "2026-10-30T22:23:31+00:00",
+  "morning_through": "2026-10-29",
+  "etr_first": {
+   "at": "2026-10-30T17:18:08.910Z",
+   "file": "Underdog NBA Daily Rankings - 2026-10-30T101802.630.csv"
+  },
+  "etr_last": {
+   "at": "2026-10-30T21:18:37.706Z",
+   "file": "Underdog NBA Daily Rankings - 2026-10-30T101802.630.csv + Underdog NBA Daily Rankings - 2026-10-30T113026.829.csv + Underdog NBA Daily Rankings - 2026-10-30T141353.364.csv + FD NBA DFS Projections (4).csv + Underdog NBA Daily Rankings - 2026-10-30T141833.909.csv"
+  },
+  "am": {
+   "at": "2026-10-30T14:23:28.197Z",
+   "from": "Lock AM",
+   "ours": true
+  },
+  "pm": {
+   "at": "2026-10-30T21:22:54.035Z",
+   "from": "Lock PM",
+   "ours": true
+  },
+  "gist": true
  }
 }
