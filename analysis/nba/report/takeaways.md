@@ -2,6 +2,13 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-10-30 Fri main
+
+- A normal big slate (Lock AM 7:23am, Lock PM 2:22pm). Morning: your board edged ADP (56%; season 52%, too close to call) but split with our number (49%; season 56%, still your board wins). Raises on Naz (back from the benching), IQ, VanVleet and Ausar were right; the Caleb Wilson fade (6-11 from three) was the worst miss.
+- Afternoon: 46% against ETR (season 48%, too close to call). Your board against ADP at lock is now settled: your board wins (53%, range 50-56%). The HOU raises (Sengun questionable) and the LeBron fade (Jaylen Brown questionable) are logged as hedges.
+- Themes, first time with 5 slates: minutes misreads are the top fixable cause (32 cases, 24 above his usual), which H1 is testing. Blowouts are second among causes we can see coming (24 cases, every slate) and ours ran too high on 30 of 40 misses: a spread-based minutes trim is a candidate, but needs spreads on file before it can be tested.
+- Fades stay the drafting habit to watch: 10 right, 20 wrong, and 12 of the 20 wrong ones played above their usual minutes. Raises on players who then played above usual went 13-7. Boom 4+: too early, morning (134 moves, 43%) and afternoon (379 moves, 48%).
+
 ## 2026-10-29 Thu main
 
 - Your best morning yet (Lock AM 6:00am): your board beat ADP on 67% of disagreements (season 51%, still too close to call) and picked +19.6 in rounds 5-6. The call of the night was raising Fears (beat all 8 he passed) with Dejounte and Poole out.

@@ -116,3 +116,32 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-10-29,nba_thu_main,Isaiah Stewart,MEM,split,23.6,18.8,23.6,16.0,17.7,21.0,other,?,ours,ours 23.6 vs ETR 18.8; 23.6 on 7-10 in 16 min
 2026-10-29,nba_thu_main,Jalen Johnson,ATL,split,50.6,55.0,33.1,34.0,33.4,3.0,shooting,no,ours,ours 50.6 vs ETR 55.0; 33.1 on 7-16 in 34 min
 2026-10-29,nba_thu_main,Bennedict Mathurin,NOP,split,24.4,28.7,14.6,19.0,16.8,12.0,other,?,ours,ours 24.4 vs ETR 28.7 with Poole out; 14.6 in 19 min
+2026-10-30,nba_fri_main,Naz Reid,CHA,am_call,42.8,40.4,32.7,31.0,27.4,-16.0,minutes,yes,right,"raised; back from the benching, 31 min (usual 27), 11 reb 3 stl; beat 10 of 15"
+2026-10-30,nba_fri_main,Caleb Wilson,CHI,am_call,36.6,42.1,43.0,31.0,34.6,-14.0,shooting,no,wrong,faded; 6-11 from three in 31 min; 2 of 18 right
+2026-10-30,nba_fri_main,AJ Dybantsa,WAS,am_call,27.9,33.6,30.1,30.0,27.0,16.0,other,?,wrong,"faded; 30 min (usual 27), 17 and 8; 8 of 16 (even)"
+2026-10-30,nba_fri_main,Immanuel Quickley,TOR,am_call,39.7,41.8,36.2,37.0,28.5,-7.0,minutes,yes,right,raised; 37 min (usual 29); beat 10 of 14
+2026-10-30,nba_fri_main,Derrick White,BOS,am_call,40.6,40.1,22.4,26.0,30.0,14.0,other,?,wrong,raised; only 6 shots in 26 min of a 14-pt win; beat 4 of 14
+2026-10-30,nba_fri_main,Fred VanVleet,HOU,am_call,38.0,36.3,34.0,33.0,30.0,-5.0,teammate-out,yes,right,"raised; Sengun out, 33 min (usual 30); beat 9 of 14"
+2026-10-30,nba_fri_main,Ausar Thompson,DET,am_call,39.4,40.5,35.6,26.0,26.5,16.0,other,?,right,raised; 35.6 in 26 min of a 16-pt win; beat 9 of 13
+2026-10-30,nba_fri_main,Nikola Vucevic,ORL,am_call,18.7,19.9,4.2,6.0,10.0,7.0,minutes,yes,right,faded; 6 min (usual 10); 8 of 8 right
+2026-10-30,nba_fri_main,Darius Garland,LAC,pm_call,42.3,46.2,31.9,31.0,32.8,-26.0,blowout,partly,wrong,faded below ETR; 31.9 in 31 min of a 26-pt loss; 4 of 9 right
+2026-10-30,nba_fri_main,Paul Reed,DET,pm_call,40.8,46.1,19.3,31.0,26.0,16.0,peripherals,no,right,faded below ETR; 4 reb 1 ast in 31 min; 6 of 8 right
+2026-10-30,nba_fri_main,Jabari Smith Jr.,HOU,pm_call,35.2,33.8,28.6,35.0,34.4,-5.0,hedge,no,wrong,raised over ETR with Sengun questionable (sat); beat 4 of 8 (even)
+2026-10-30,nba_fri_main,Kevin Durant,HOU,pm_call,47.3,45.6,32.5,37.0,34.4,-5.0,hedge,no,wrong,raised over ETR with Sengun questionable (sat); 1 ast; beat 2 of 7
+2026-10-30,nba_fri_main,Franz Wagner,ORL,pm_call,43.2,48.7,47.5,39.0,33.2,7.0,minutes,yes,wrong,"faded below ETR; 39 min (usual 33), 11 ast; 2 of 6 right"
+2026-10-30,nba_fri_main,LeBron James,PHI,pm_call,40.1,45.2,46.8,34.0,33.2,5.0,hedge,no,wrong,faded below ETR with Jaylen Brown questionable (sat); 20-9-8; 1 of 6 right
+2026-10-30,nba_fri_main,Julius Randle,BKN,pm_call,41.1,42.9,24.1,25.0,35.2,-16.0,blowout,partly,wrong,"raised over ETR; 25 min (usual 35) in a 16-pt loss, 5 tov; beat 2 of 6"
+2026-10-30,nba_fri_main,Michael Porter Jr.,BKN,pm_call,40.0,42.2,24.9,26.0,32.0,-16.0,blowout,partly,right,faded below ETR; 26 min in a 16-pt loss; 5 of 5 right
+2026-10-30,nba_fri_main,Yaxel Lendeborg,GSW,miss,39.7,43.8,2.2,24.0,33.6,17.0,other,?,neither,"fouled out (6) in 24 min with 5 tov, 2.2 FP"
+2026-10-30,nba_fri_main,Cade Cunningham,DET,miss,57.7,54.7,31.0,28.0,34.6,16.0,blowout,partly,etr,"28 min (usual 35) in a 16-pt win, 4 fouls"
+2026-10-30,nba_fri_main,RJ Barrett,TOR,miss,43.2,43.5,18.1,34.0,31.0,-7.0,shooting,no,neither,"3-10, 5 tov in 34 min"
+2026-10-30,nba_fri_main,Jonathan Kuminga,MIN,miss,32.6,35.5,8.2,22.0,30.2,26.0,blowout,partly,neither,22 min (usual 30) in a 26-pt win
+2026-10-30,nba_fri_main,Paul Reed,DET,miss,40.8,46.1,19.3,31.0,26.0,16.0,peripherals,no,ours,4 reb 1 ast in 31 min; ETR 46.1 was higher
+2026-10-30,nba_fri_main,Pascal Siakam,IND,miss,48.1,48.1,28.0,29.0,32.2,-20.0,blowout,partly,neither,"29 min in a 20-pt loss, 5-17"
+2026-10-30,nba_fri_main,Nikola Jokic,DEN,miss,64.9,65.2,45.4,37.0,37.0,7.0,peripherals,no,neither,18-7-10 on 13 shots with 5 tov in 37 min
+2026-10-30,nba_fri_main,Derrick White,BOS,miss,40.6,40.1,22.4,26.0,30.0,14.0,other,?,neither,only 6 shots in 26 min of a 14-pt win
+2026-10-30,nba_fri_main,Joel Embiid,PHI,split,45.0,52.7,30.9,33.0,35.5,5.0,shooting,no,ours,ours 45.0 vs ETR 52.7; 3-12 in 33 min
+2026-10-30,nba_fri_main,AJ Dybantsa,WAS,split,27.9,33.6,30.1,30.0,27.0,16.0,other,?,ours,ours 27.9 vs ETR 33.6; 30.1 in 30 min
+2026-10-30,nba_fri_main,Franz Wagner,ORL,split,43.2,48.7,47.5,39.0,33.2,7.0,minutes,yes,etr,"ETR 48.7 vs ours 43.2; 39 min, 11 ast"
+2026-10-30,nba_fri_main,Caleb Wilson,CHI,split,36.6,42.1,43.0,31.0,34.6,-14.0,shooting,no,etr,ETR 42.1 vs ours 36.6; 6-11 from three
+2026-10-30,nba_fri_main,Tyrese Maxey,PHI,split,43.9,49.2,41.8,38.0,37.6,5.0,other,?,ours,ours 43.9 vs ETR 49.2; 41.8 in 38 min
