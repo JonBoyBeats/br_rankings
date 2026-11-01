@@ -7,5 +7,30 @@
   "since": "2026-10-28",
   "rule": "minutes_trend",
   "notes": "From the misses log: calls leaning into a player running above his usual minutes went 6 of 7 (Oct 26-27), but that used the minutes he went on to play. This is the pre-tip version: recent minutes over the usual (the morning file's last 10). It can't fire until players have 5+ games, when the two differ"
+ },
+ "H2": {
+  "title": "Blowout trim (the board's NBA_BLOWOUT): a 30+ minute player whose team is favored by 10+ projects 1 point lower",
+  "label": "situational",
+  "status": "adopted",
+  "opened": "2026-10-24",
+  "since": "2026-10-24",
+  "rule": "blowout_trim",
+  "notes": "Built into the board's morning Proj (off once ETR's file is in). Scored against the base plus the matchup term, as the board applies it. Re-run of the study (2023-26): favorite stars lose 1 min at 10-12.5 and 2.5-3 at 13+, mostly won back per minute; net of the opponent about -0.5/-1.0 at 10-12.5 and -0.9/-2.2 at 13+ (fit/test). See blowout_study.md"
+ },
+ "H3": {
+  "title": "Underdog bench: a player under 20 usual minutes whose team is a 10+ point underdog projects 2 points higher",
+  "label": "situational",
+  "status": "testing",
+  "opened": "2026-11-01",
+  "rule": "dog_bench",
+  "notes": "The most consistent effect in the blowout study: +1.4 to +3.3 FP and +2 to +3.5 min at 10+ (fit 2023-25 and test 2025-26); this season so far +2.5 against ETR (n 74). Scored against the base plus the matchup term"
+ },
+ "H4": {
+  "title": "Blowout slide: as H2, but -1 at 10-12.5 and -2 at 13+",
+  "label": "situational",
+  "status": "testing",
+  "opened": "2026-11-01",
+  "rule": "blowout_slide",
+  "notes": "The study's open question: net of the opponent the 13+ favorites ran -0.9 (fit) and -2.2 (test). Read against H2 on the same players; it only differs at 13+"
  }
 }

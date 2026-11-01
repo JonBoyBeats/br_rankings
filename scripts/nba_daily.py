@@ -10,6 +10,8 @@ Each row is a player on the slate, for the two halves of the day:
   afternoon  pm_rank and ours_pm: your order and our Proj when you pressed Lock PM (else the
              board saved at lock, and no ours_pm); adp_close: the last ADP before lock
   ours_raw   the mirror's nba_morning.json on file when ETR's first upload came in
+  spread     his team's line in the mirror's nba_odds.json as of lock (negative: favored), the
+             board's day-of snapshot; blank before 2026-10-23, when the mirror started keeping it
   actual     ESPN's box scores in Underdog points (the Live page's scoring); 0 for a player
              whose team played without him
 
@@ -46,7 +48,7 @@ COLS = ["date", "slate", "player_id", "name", "team", "pos", "adp_am", "adp_etr"
         "am_rank", "ours_am", "pm_rank", "ours_pm", "ours_raw", "etr_first", "etr_last", "etr_median",
         "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual", "margin",
         # for the player-by-player notes (scripts/nba_ledger.py): his night and his usual per minute
-        "opp", "pf", "fg", "fg3", "ft", "pts_pm", "reb_pm", "ast_pm", "stk_pm", "fp_pm", "mtch", "mtch_label", "mtch_cats"]
+        "opp", "pf", "fg", "fg3", "ft", "pts_pm", "reb_pm", "ast_pm", "stk_pm", "fp_pm", "mtch", "mtch_label", "mtch_cats", "spread"]
 
 
 def norm_name(s):
@@ -121,6 +123,11 @@ class Mirror:
                 if s["slate_id"] == slate["slate_id"] and isinstance(s.get("players"), list) and s["players"]:
                     seen[snap_time(s["snapshot_utc"])] = s["players"]
         return sorted(seen.items(), key=lambda x: x[0])
+
+    def lines_at(self, t, day):
+        """{team: spread} for the day's games, from nba_odds.json as it stood at t."""
+        v = self.versions("nba_odds.json", t - dt.timedelta(days=2), t)
+        return ((self.show(v[-1][1], "nba_odds.json").get("lines") or {}).get(day) or {}) if v else {}
 
     def morning_at(self, t):
         """nba_morning.json as it stood at t."""
@@ -304,11 +311,11 @@ def r3(x):
 
 BOX_COLS = ["date", "name", "team", "opp", "pos", "player_id", "adp_close", "min", "pts", "reb", "ast", "stl", "blk", "tov",
             "pf", "fg", "fg3", "ft", "actual", "margin", "usual_min", "pts_pm", "reb_pm", "ast_pm", "stk_pm", "fp_pm",
-            "etr_median", "etr_last", "mtch", "mtch_label", "mtch_cats"]
+            "etr_median", "etr_last", "mtch", "mtch_label", "mtch_cats", "spread"]
 ROTATION_MIN = 15    # the box file keeps a player who usually plays this many minutes, or did tonight
 
 
-def box_rows(day, box, mfile, etr_entries, slate_rows):
+def box_rows(day, box, mfile, etr_entries, slate_rows, line):
     """Every rotation player in every game of the night, main slate or not, for the player ledger."""
     etr = defaultdict(list)
     for e in etr_entries or []:
@@ -335,6 +342,7 @@ def box_rows(day, box, mfile, etr_entries, slate_rows):
             "etr_median": r1(e.get("median")) if e else "", "etr_last": r1(e.get("proj")) if e else "",
             "mtch": r1(mt[0]) if mt else "", "mtch_label": mt[2] if mt and len(mt) > 2 else "",
             "mtch_cats": " ".join("%s%+.1f" % (k, v) for k, v in sorted(mt[1].items(), key=lambda x: -abs(x[1]))) if mt else "",
+            "spread": r1(line.get(team)),
         })
     return out
 
@@ -372,6 +380,7 @@ def build(mirror, gist, slate, name_map):
         k = norm_name(r["name"])
         mfile[(ESPN_ALIASES.get(k, k), r.get("team"))] = r
     played_teams = {t for _, t in box}
+    line = mirror.lines_at(slate["lock"], day)
 
     rows = []
     for p in sorted(plist, key=lambda p: (adp_close.get(p["player_id"]) is None, adp_close.get(p["player_id"]) or 0)):
@@ -400,6 +409,7 @@ def build(mirror, gist, slate, name_map):
             "stk_pm": r3(m and m.get("spm")), "fp_pm": r3(m and m.get("ppm")),
             "mtch": r1(mt[0]) if mt else "", "mtch_label": mt[2] if mt and len(mt) > 2 else "",
             "mtch_cats": " ".join("%s%+.1f" % (k, v) for k, v in sorted(mt[1].items(), key=lambda x: -abs(x[1]))) if mt else "",
+            "spread": r1(line.get(p["team"])),
         })
     when = lambda x: {"at": x["at"], "from": x["source"], "ours": bool(x.get("ours"))} if x else None
     meta = {"lock": slate["lock"].isoformat(), "adp_am_at": s_am[0].isoformat() if s_am else None,
@@ -408,7 +418,7 @@ def build(mirror, gist, slate, name_map):
             "etr_first": {"at": first["at"], "file": first.get("file")} if first else None,
             "etr_last": {"at": parts["etr_last"]["at"], "file": parts["etr_last"].get("file")} if parts.get("etr_last") else None,
             "am": when(am), "pm": when(pm), "gist": bool(gist)}
-    return rows, meta, box_rows(day, box, mfile, parts["etr_last"]["entries"] if parts.get("etr_last") else None, rows)
+    return rows, meta, box_rows(day, box, mfile, parts["etr_last"]["entries"] if parts.get("etr_last") else None, rows, line)
 
 
 def main():

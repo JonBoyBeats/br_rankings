@@ -14,7 +14,9 @@ The registry is analysis/nba/report/hypotheses.json; each hypothesis moves throu
 
 A rule is scored on every graded rotation player it would have moved, hits and misses alike
 (the misses log alone would flatter it): how many points closer to his actual score it lands
-than the base projection, his usual minutes times his usual rate on ETR's scale. The 80% range
+than the base projection, his usual minutes times his usual rate on ETR's scale. A rule can name
+its own reference instead (the spread rules use the base plus tonight's matchup term, the way the
+board's morning Proj is built, since the blowout study found the effect net of the opponent). The 80% range
 comes from resampling nights. The script proposes; the status changes are the user's call,
 recorded in the JSON with the date.
 
@@ -39,9 +41,16 @@ def base(row, minutes=None):
     return max(0.0, L.BOX_TO_ETR[0] * m * L.usual_rate(row) + L.BOX_TO_ETR[1])
 
 
+def base_m(row):
+    """The base plus tonight's matchup term (the board's matchup row, in box-score points, on ETR's scale)."""
+    return base(row) + L.BOX_TO_ETR[0] * (row.get("mtch") or 0)
+
+
 # ---------------------------------------------------------------- rules
-# rule(row, past) -> (projection, tag) when the rule would move him, else None.
-# past: his earlier graded nights, oldest first. Only what was known before tip.
+# rule(row, past) -> (projection, tag[, reference]) when the rule would move him, else None.
+# The reference (default: base) is what the rule is scored against.
+# past: his earlier graded nights, oldest first. Only what was known before tip (spread: the
+# day-of line as of lock; see analysis/nba/report/blowout_study.md).
 
 def minutes_trend(row, past):
     """H1: when his last 3 games averaged 4+ minutes off his usual, project him at his last-3 minutes."""
@@ -53,7 +62,35 @@ def minutes_trend(row, past):
     return base(row, last3), "up" if last3 > row["usual_min"] else "down"
 
 
-RULES = {"minutes_trend": minutes_trend}
+def fav_star(row):
+    return row.get("spread") is not None and row["spread"] <= -10 and row["usual_min"] >= 30
+
+
+def blowout_trim(row, past):
+    """H2, the board's NBA_BLOWOUT: a 30+ minute player whose team is favored by 10+ loses a point."""
+    if not fav_star(row):
+        return None
+    ref = base_m(row)
+    return ref - 1, "fav 13+" if row["spread"] <= -13 else "fav 10-12.5", ref
+
+
+def blowout_slide(row, past):
+    """H4: the same, sliding: -1 at 10-12.5, -2 at 13+."""
+    if not fav_star(row):
+        return None
+    ref = base_m(row)
+    return ref - (2 if row["spread"] <= -13 else 1), "fav 13+" if row["spread"] <= -13 else "fav 10-12.5", ref
+
+
+def dog_bench(row, past):
+    """H3: a bench player (under 20 usual minutes) whose team is a 10+ point underdog gains 2 points."""
+    if row.get("spread") is None or row["spread"] < 10 or row["usual_min"] >= 20:
+        return None
+    ref = base_m(row)
+    return ref + 2, "dog 13+" if row["spread"] >= 13 else "dog 10-12.5", ref
+
+
+RULES = {"minutes_trend": minutes_trend, "blowout_trim": blowout_trim, "blowout_slide": blowout_slide, "dog_bench": dog_bench}
 
 
 # ---------------------------------------------------------------- scoring
@@ -79,8 +116,9 @@ def gains(rule, history, since=None, until=None):
             if rep.graded(r) and (since is None or date >= since) and (until is None or date < until):
                 got = rule(r, past[r["key"]])
                 if got:
-                    p1, tag = got
-                    out[date].append((abs(base(r) - r["actual"]) - abs(p1 - r["actual"]), tag))
+                    p1, tag = got[:2]
+                    ref = got[2] if len(got) > 2 else base(r)
+                    out[date].append((abs(ref - r["actual"]) - abs(p1 - r["actual"]), tag))
         for r in rows:
             if rep.graded(r):
                 past[r["key"]].append(r)
