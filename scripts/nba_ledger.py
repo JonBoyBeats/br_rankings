@@ -200,7 +200,7 @@ def load_box(date):
 
 def report_keys(rows):
     """The players the morning report covers: its graded pool, and the top players who sat or left early."""
-    graded = {key_of(r["name"]) for r in rep.pool(rows, rep.PM)}
+    graded = {key_of(r["name"]) for r in rep.pool(rows, rep.PM, late=False)}   # late news still gets its newspaper line
     rest = {key_of(r["name"]) for r in rows if (r["adp_close"] or r["adp_am"] or 99) <= rep.DEPTH and r["actual"] is not None
             and not rep.graded(r)}
     return graded | rest

@@ -18,6 +18,10 @@ nothing to learn from him.
   head to head every pair your order and a straight one (ours, ETR, ADP) disagree on: how
               often yours was right. Over 50% and settled: your tweaks beat drafting off it alone
 
+Late news: analysis/nba/report/late_news.json lists, per slate, the teams whose news broke
+after a lock (a starter ruled out late). Their players are left out of that half's grading, so
+the scramble around a late scratch doesn't count for or against anyone.
+
 Over several slates a difference carries an 80% range from resampling the slates; a range
 that spans 0 isn't settled yet.
 
@@ -27,6 +31,8 @@ import argparse, csv, datetime as dt, glob, json, os, random
 from zoneinfo import ZoneInfo
 
 DAILY = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "daily")
+LATE_FILE = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "report", "late_news.json")
+LATE = json.load(open(LATE_FILE)) if os.path.exists(LATE_FILE) else {}   # {date: {"am": [teams], "pm": [teams], "note": ...}}
 DEPTH, TOP, GAP = 48, 12, 3
 # Left early: a player who usually plays EARLY_USUAL+ minutes and got under half of them in a game
 # decided by less than EARLY_MARGIN. A starter cut that short in a close game is almost always hurt;
@@ -74,9 +80,9 @@ class Src:
         return lambda r: None if r[c] is None else (r[c] if self.higher else -r[c])
 
 
-AM = {"adp": "adp_am", "sources": [Src("am_rank", "Your AM ranks", False), Src("ours_am", "Ours at Lock AM", True, "ours_raw"),
+AM = {"adp": "adp_am", "half": "am", "sources": [Src("am_rank", "Your AM ranks", False), Src("ours_am", "Ours at Lock AM", True, "ours_raw"),
                                    Src("adp_am", "ADP at Lock AM", False)]}
-PM = {"adp": "adp_close", "sources": [Src("pm_rank", "Your PM ranks", False), Src("etr_last", "ETR last upload", True),
+PM = {"adp": "adp_close", "half": "pm", "sources": [Src("pm_rank", "Your PM ranks", False), Src("etr_last", "ETR last upload", True),
                                       Src("ours_pm", "Ours at Lock PM", True), Src("adp_close", "ADP at lock", False)]}
 
 
@@ -90,9 +96,11 @@ def graded(r):
     return r["actual"] is not None and (r["min"] or 0) > 0 and not gone_early(r)
 
 
-def pool(rows, bar):
-    """The barbell's top DEPTH by its ADP, plus each source's top DEPTH; who played and didn't leave early."""
-    have = [r for r in rows if r[bar["adp"]] is not None and graded(r)]
+def pool(rows, bar, late=True):
+    """The barbell's top DEPTH by its ADP, plus each source's top DEPTH; who played and didn't leave early,
+    and (late) wasn't on a team with late news for that half."""
+    skip = set(LATE.get(rows[0]["date"], {}).get(bar.get("half"), [])) if late and rows else set()
+    have = [r for r in rows if r[bar["adp"]] is not None and graded(r) and r["team"] not in skip]
     keep = set()
     for s in bar["sources"]:
         k = s.key(rows)
@@ -296,7 +304,7 @@ def blend_lines(slates):
     return out
 
 
-ETRB = {"adp": "adp_close", "sources": [Src("ours_am", "Ours (morning)", True, "ours_raw"), Src("etr_first", "ETR first", True),
+ETRB = {"adp": "adp_close", "half": "am", "sources": [Src("ours_am", "Ours (morning)", True, "ours_raw"), Src("etr_first", "ETR first", True),
                                         Src("etr_last", "ETR last", True)]}
 
 
@@ -408,7 +416,12 @@ def main():
                     pt(m.get("lock"))),
                 "Not graded: %s." % (", ".join(["%s (sat)" % r["name"] for r in sat] +
                                                ["%s (left early, %.0f of his usual %.0f min)" % (r["name"], r["min"], r["usual_min"]) for r in early])
-                                     or "nobody"), ""]
+                                     or "nobody")]
+        ln = LATE.get(s["date"], {})
+        if ln.get("am") or ln.get("pm"):
+            out.append("Late news, left out of grading: morning %s; afternoon %s.%s" % (
+                ", ".join(ln.get("am") or ["none"]), ", ".join(ln.get("pm") or ["none"]), " " + ln["note"] if ln.get("note") else ""))
+        out.append("")
     out += ["## Last night and the season (%d slates since %s)" % (len(upto), upto[0]["date"]), ""] + barbells(last, upto)
     for s in last:
         rows = s["rows"]

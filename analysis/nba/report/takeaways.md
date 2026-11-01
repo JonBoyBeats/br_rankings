@@ -2,6 +2,13 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-10-31 Sat main
+
+- Late-news night: Dejounte, Gobert, Jerome, Pippen and Post were ruled out after the PM lock (Jerome and Pippen were still in ETR's 3:26pm upload), and VanVleet and Sheppard after the AM lock. Those teams are left out of the grading (analysis/nba/report/late_news.json: morning HOU, MEM, MIN, NOP; afternoon MEM, MIN, NOP), so the scramble doesn't count for or against anyone.
+- On the rest of the slate your boards did well: AM beat ADP on 66% of disagreements and our number on 59%; PM beat ETR on 59% (season 48%, still too close to call). Raises on Ware, Mara and Harper were right; raises into blowouts (Wiggins, Ajay, Eason, LaVine) were wrong.
+- Blowouts are now a full theme: 37 cases on all 6 slates, 13 of the 16 blowout misses were 30+ minute starters, and your raises on players who ended up in a blowout went 1 right, 10 wrong. A spread-based minutes trim is proposed as a hypothesis (needs spreads on file). Fades still run 15 right, 22 wrong.
+- Boom 4+: too early, morning (204 moves, 43%) and afternoon (424 moves, 47%).
+
 ## 2026-10-30 Fri main
 
 - A normal big slate (Lock AM 7:23am, Lock PM 2:22pm). Morning: your board edged ADP (56%; season 52%, too close to call) but split with our number (49%; season 56%, still your board wins). Raises on Naz (back from the benching), IQ, VanVleet and Ausar were right; the Caleb Wilson fade (6-11 from three) was the worst miss.
