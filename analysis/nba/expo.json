@@ -352,6 +352,42 @@
     "Yaxel Lendeborg": 1
    },
    "note": "After swaps: Alperen Sengun (11%, out) swapped, taking Andrew Nembhard from 19% to 24%, Paul Reed from 18% to 22% and Immanuel Quickley from 13% to 15%. The app rounds down, so shares add to under 600%."
+  },
+  "96754d14-e84c-4987-8e3d-ef7d4f66d1df": {
+   "label": "nba_sun_main",
+   "date": "2026-11-01",
+   "at": "2026-11-01T21:47:00Z",
+   "teams": 40,
+   "pct": {
+    "Julius Randle": 52,
+    "De'Anthony Melton": 45,
+    "Andrew Nembhard": 40,
+    "Immanuel Quickley": 37,
+    "Kelly Oubre": 35,
+    "Darius Garland": 32,
+    "Luka Doncic": 30,
+    "Brandon Williams": 30,
+    "Day'Ron Sharpe": 30,
+    "Brandin Podziemski": 27,
+    "Kris Dunn": 25,
+    "RJ Barrett": 25,
+    "Pascal Siakam": 22,
+    "Austin Reaves": 22,
+    "Collin Murray-Boyles": 20,
+    "Nolan Traore": 20,
+    "Keaton Wagler": 20,
+    "Yaxel Lendeborg": 15,
+    "Scottie Barnes": 15,
+    "Isaiah Jackson": 12,
+    "Michael Porter Jr.": 12,
+    "Rui Hachimura": 10,
+    "Jay Huff": 7,
+    "Jarace Walker": 5,
+    "Gui Santos": 2,
+    "Obi Toppin": 2,
+    "Walker Kessler": 2
+   },
+   "note": "Obi Toppin (2%, one draft) shows the app's red O (out) tag at 1:47pm and is off the slate's player list. With 40 teams each draft is 2.5%; the shares map to 240 picks, so no row is missing."
   }
  }
 }
