@@ -2,6 +2,13 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-01 Sun main
+
+- Early three-game slate (lock 1:52pm), one ETR upload (12:57pm). Late news: Poeltl and Ziaire Williams sat after the PM lock, Toppin after the AM lock, so the morning is graded on BKN, GSW and LAC only (24 players) and the afternoon on four teams (33). Treat both halves as small.
+- Afternoon: your board beat ETR (57%; season 48%, too close to call) and ADP (57%; season 53%, your board wins). Morning: ADP won (your board 46%); the Brooklyn reads missed (Traore fade 0 of 6, Ellis raise 0 of 3) and the Gui Santos raise hit a 9-minute night on a probable tag.
+- The blend at Lock PM is now 0% ours with a range of 0-20%: on 291 players our number adds nothing to ETR's at lock. Not settled, but heading there.
+- Boom 4+: too early, morning (218 moves, 41%) and afternoon (442 moves, 46%).
+
 ## 2026-10-31 Sat main
 
 - Late-news night: Dejounte, Gobert, Jerome, Pippen and Post were ruled out after the PM lock (Jerome and Pippen were still in ETR's 3:26pm upload), and VanVleet and Sheppard after the AM lock. Those teams are left out of the grading (analysis/nba/report/late_news.json: morning HOU, MEM, MIN, NOP; afternoon MEM, MIN, NOP), so the scramble doesn't count for or against anyone.

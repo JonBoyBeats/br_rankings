@@ -174,3 +174,29 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-10-31,nba_sat_main,Tyrese Proctor,CLE,split,12.7,16.8,24.3,18.0,8.4,25.0,minutes,yes,etr,ETR 16.8 vs ours 12.7; 18 min (usual 8)
 2026-10-31,nba_sat_main,James Harden,CLE,split,46.8,43.2,31.7,26.0,35.0,25.0,blowout,partly,etr,ours 46.8 vs ETR 43.2; 26 min in a 25-pt win
 2026-10-31,nba_sat_main,Jaylin Williams,OKC,split,25.2,28.4,11.3,26.0,16.6,-21.0,shooting,no,ours,ours 25.2 vs ETR 28.4; 1-6 in 26 min
+2026-11-01,nba_sun_main,Nolan Traore,BKN,am_call,24.2,31.4,29.4,30.0,19.2,8.0,minutes,yes,wrong,"faded; 30 min (usual 19), 4-8 from three; 0 of 6 right"
+2026-11-01,nba_sun_main,Keon Ellis,BKN,am_call,29.3,25.7,5.9,20.0,25.0,8.0,shooting,no,wrong,raised; 0-5 in 20 min; beat 0 of 3
+2026-11-01,nba_sun_main,Gui Santos,GSW,am_call,32.3,28.8,11.1,9.0,22.4,12.0,other,?,wrong,"raised; probable at lock, only 9 min (usual 22): unclear; beat 0 of 5"
+2026-11-01,nba_sun_main,Isaiah Jackson,LAC,am_call,31.2,32.4,16.6,22.0,21.6,-12.0,shooting,no,right,faded; 2-7 in 22 min; 4 of 4 right
+2026-11-01,nba_sun_main,Brook Lopez,LAC,am_call,26.9,28.2,13.4,19.0,22.6,-12.0,other,?,right,"faded; 19 min, 3-8; 3 of 5 right"
+2026-11-01,nba_sun_main,Day'Ron Sharpe,BKN,am_call,37.4,34.7,34.6,26.0,22.0,8.0,minutes,yes,right,raised; 26 min (usual 22); beat 2 of 3
+2026-11-01,nba_sun_main,Kris Dunn,LAC,am_call,31.1,34.9,41.4,27.0,30.4,-12.0,peripherals,no,right,raised; 7 stocks again; beat 3 of 3
+2026-11-01,nba_sun_main,Derrick Jones Jr.,LAC,pm_call,29.1,30.0,16.9,28.0,29.0,-12.0,shooting,no,right,faded below ETR; 3-11 in 28 min; 4 of 7 right
+2026-11-01,nba_sun_main,Brook Lopez,LAC,pm_call,26.9,28.2,13.4,19.0,22.6,-12.0,other,?,right,"faded below ETR; 19 min, 3-8; 2 of 3 right"
+2026-11-01,nba_sun_main,Moe Wagner,BKN,pm_call,25.4,26.1,22.2,21.0,18.0,8.0,minutes,yes,right,raised over ETR; 21 min (usual 18); beat 3 of 3
+2026-11-01,nba_sun_main,Julius Randle,BKN,pm_call,44.6,44.7,37.0,37.0,33.2,8.0,shooting,no,wrong,raised over ETR; 5-15 with 5 fouls; beat 1 of 2 (even)
+2026-11-01,nba_sun_main,Chaney Johnson,BKN,pm_call,20.9,27.0,6.4,31.0,20.2,8.0,other,?,wrong,"raised over ETR; 31 min (usual 20) but 0-2, 6.4 FP; beat 0 of 2"
+2026-11-01,nba_sun_main,Keon Ellis,BKN,miss,29.3,25.7,5.9,20.0,25.0,8.0,shooting,no,etr,0-5 in 20 min (usual 25)
+2026-11-01,nba_sun_main,Jay Huff,IND,miss,28.4,29.7,6.6,17.0,14.0,-8.0,other,?,neither,"fouled out (6) in 17 min, 0-2"
+2026-11-01,nba_sun_main,Gui Santos,GSW,miss,32.3,28.8,11.1,9.0,22.4,12.0,other,?,etr,"probable at lock, only 9 min (usual 22): unclear"
+2026-11-01,nba_sun_main,Darius Garland,LAC,miss,45.4,46.9,25.5,33.0,32.4,-12.0,shooting,no,neither,"4-12, 1-7 from three in 33 min"
+2026-11-01,nba_sun_main,Pascal Siakam,IND,miss,47.7,49.6,30.5,36.0,31.7,-8.0,shooting,no,neither,"6-14, 0-2 in 36 min"
+2026-11-01,nba_sun_main,Gradey Dick,LAC,miss,17.7,17.0,1.2,3.0,16.0,-12.0,minutes,yes,neither,3 min (usual 16)
+2026-11-01,nba_sun_main,Kelly Oubre,IND,miss,32.6,30.6,17.9,20.0,23.8,-8.0,other,?,etr,"20 min (usual 24), 3-8"
+2026-11-01,nba_sun_main,Isaiah Jackson,LAC,miss,31.2,32.4,16.6,22.0,21.6,-12.0,shooting,no,neither,2-7 in 22 min
+2026-11-01,nba_sun_main,Nolan Traore,BKN,split,24.2,31.4,29.4,30.0,19.2,8.0,minutes,yes,etr,ETR 31.4 vs ours 24.2; 30 min (usual 19)
+2026-11-01,nba_sun_main,Chaney Johnson,BKN,split,20.9,27.0,6.4,31.0,20.2,8.0,other,?,ours,ours 20.9 vs ETR 27.0; 6.4 in 31 min
+2026-11-01,nba_sun_main,Charles Bassey,GSW,split,14.8,20.3,27.0,20.0,6.5,12.0,minutes,yes,etr,ETR 20.3 vs ours 14.8; 20 min (usual 6)
+2026-11-01,nba_sun_main,Graham Ike,GSW,split,17.3,12.5,4.4,6.0,10.6,12.0,minutes,yes,etr,ETR 12.5 vs ours 17.3; 6 min (usual 11)
+2026-11-01,nba_sun_main,Quenton Jackson,IND,split,29.2,24.5,18.6,24.0,19.3,-8.0,other,?,etr,ETR 24.5 vs ours 29.2; 18.6 in 24 min
+2026-11-01,nba_sun_main,Gary Payton II,GSW,split,16.8,21.5,12.4,15.0,12.7,12.0,other,?,ours,ours 16.8 vs ETR 21.5; 12.4 in 15 min
