@@ -11,7 +11,7 @@ estimated: a pod's 36 picks sorted by the ADP each was taken at.
             analysis/nba/contests/<date>_<contest id>.csv.gz, one row per team (a pod's teams together,
             picks in ADP-at-draft order), and a row per contest in contests.csv
   measures  for a night (--date, default every night on file): the measures below, printed and kept
-            in analysis/nba/contests/<date>_measures.json
+            in analysis/nba/contests/<date>_measures.json (with my teams one by one: picks, place, inferred draft time)
   seed      add contest ids (arguments) to seed.json, for contests the lobby never caught
 
   python3 scripts/nba_contests.py pull|measures|seed [ids...] --mirror ../br-adp-mirror [--date YYYY-MM-DD]
@@ -377,6 +377,10 @@ def measures(mirror, date):
                 sub = [t for t in mine if f(t)]
                 row["mine"][lab + "_teams"] = len(sub)
                 row["mine"][lab + "_tail10"] = round(sum(1 for t in sub if t["place"] <= math.ceil(len(ts) / 10)) / len(sub) / 0.1, 2) if sub else None
+        # my teams one by one, so the report can split them by my own lock times and read their tiers
+        row["my_teams"] = [{"place": t["place"], "points": t["points"], "payout": t["payout"], "draft_id": t["draft_id"],
+                            "picks": t["picks"], "drafted_at": times[id(t)].isoformat() if id(t) in times else None}
+                           for t in ts if t["username"] == ME]
         if row["uniqueness"]:
             row["uniqueness"]["top_pairs"] = [("%s + %s" % (names(a), names(b)), k) for (a, b), k in row["uniqueness"]["top_pairs"]]
             row["uniqueness"]["top_cores"] = [(" + ".join(names(p) for p in k), v) for k, v in row["uniqueness"]["top_cores"]]
