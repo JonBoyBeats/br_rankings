@@ -17,7 +17,9 @@ A rule is scored on every graded rotation player it would have moved, hits and m
 than the base projection, his usual minutes times his usual rate on ETR's scale. A rule can name
 its own reference instead (the spread rules use the base plus tonight's matchup term, the way the
 board's morning Proj is built, since the blowout study found the effect net of the opponent). The 80% range
-comes from resampling nights. The script proposes; the status changes are the user's call,
+comes from resampling nights. Adoption needs FORWARD_DAYS nights and MIN_N players, then a 90% range above 0
+and a gain that survives taking out any single player (bar raised 2026-11-02; stricter than the 80% range it
+replaced, so it can't help a rule already under test pass). The script proposes; the status changes are the user's call,
 recorded in the JSON with the date.
 
   python3 scripts/nba_hypotheses.py
@@ -118,7 +120,7 @@ def gains(rule, history, since=None, until=None):
                 if got:
                     p1, tag = got[:2]
                     ref = got[2] if len(got) > 2 else base(r)
-                    out[date].append((abs(ref - r["actual"]) - abs(p1 - r["actual"]), tag))
+                    out[date].append((abs(ref - r["actual"]) - abs(p1 - r["actual"]), tag, r["key"]))
         for r in rows:
             if rep.graded(r):
                 past[r["key"]].append(r)
@@ -126,22 +128,27 @@ def gains(rule, history, since=None, until=None):
 
 
 def summary(by_night):
-    flat = [g for gs in by_night.values() for g, _ in gs]
+    flat = [g for gs in by_night.values() for g, _, _ in gs]
     if not flat:
         return None
     nights_ = [gs for gs in by_night.values() if gs]
-    rng = None
+    rng = rng90 = None
     if len(nights_) >= 3:
         rnd = random.Random(7)
-        ms = sorted(sum(g for gs in s for g, _ in gs) / sum(len(gs) for gs in s)
+        ms = sorted(sum(g for gs in s for g, _, _ in gs) / sum(len(gs) for gs in s)
                     for s in ([rnd.choice(nights_) for _ in nights_] for _ in range(300)))
-        rng = (ms[30], ms[269])
+        rng, rng90 = (ms[30], ms[269]), (ms[15], ms[284])
     tags = defaultdict(list)
     for gs in by_night.values():
-        for g, t in gs:
+        for g, t, _ in gs:
             tags[t].append(g)
+    # the mean with each single player's nights taken out: a rule one player carries isn't a rule
+    keys = {k for gs in by_night.values() for _, _, k in gs}
+    drop = [(lambda f: sum(f) / len(f) if f else None)([g for gs in by_night.values() for g, _, k2 in gs if k2 != k]) for k in keys]
+    drop = [d for d in drop if d is not None]
     return {"n": len(flat), "nights": len(nights_), "mean": sum(flat) / len(flat), "closer": sum(1 for g in flat if g > 0) / len(flat),
-            "range": rng, "tags": {t: (len(v), sum(v) / len(v)) for t, v in tags.items()}}
+            "range": rng, "range90": rng90, "drop": (min(drop), max(drop)) if drop else None,
+            "tags": {t: (len(v), sum(v) / len(v)) for t, v in tags.items()}}
 
 
 def fmt(s):
@@ -164,8 +171,11 @@ def proposal(h, fwd, recheck):
         if days < FORWARD_DAYS or (fwd or {}).get("n", 0) < MIN_N:
             return "forward test: %d of %d nights, %d of %d players" % (days, FORWARD_DAYS, (fwd or {}).get("n", 0), MIN_N)
         lo, hi = fwd["range"] or (fwd["mean"], fwd["mean"])
-        if lo > 0:
+        lo90 = (fwd["range90"] or (fwd["mean"], fwd["mean"]))[0]
+        if lo90 > 0 and fwd["drop"] and fwd["drop"][0] > 0:
             return "**adopt?** beat the base model on its forward test"
+        if lo > 0:
+            return "inconclusive: the 80% range is above 0, but not the 90% range or with every single player taken out"
         if hi < 0 or fwd["mean"] <= 0:
             return "**reject?** didn't beat the base model forward"
         return "inconclusive: extend the forward test, or reject"

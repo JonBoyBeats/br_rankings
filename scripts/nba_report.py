@@ -211,13 +211,14 @@ def calls(rows, bar, a, b, cut="decision"):
 
 
 # ---------------------------------------------------------------- over slates
-def boot(slates, fn):
-    """80% range of fn over resampled slates, or None with fewer than 3."""
+def boot(slates, fn, level=0.8):
+    """The `level` range (80% unless asked) of fn over resampled slates, or None with fewer than 3."""
     if len(slates) < 3:
         return None
     rnd = random.Random(7)
-    vals = sorted(v for v in (fn([rnd.choice(slates) for _ in slates]) for _ in range(300)) if v is not None)
-    return (vals[len(vals) // 10], vals[len(vals) * 9 // 10]) if vals else None
+    vals = sorted(v for v in (fn([rnd.choice(slates) for _ in slates]) for _ in range(500)) if v is not None)
+    tail = int(len(vals) * (1 - level) / 2)
+    return (vals[tail], vals[len(vals) - 1 - tail]) if vals else None
 
 
 def rng(r, spec):
@@ -356,6 +357,7 @@ def short(name):
 
 # ---------------------------------------------------------------- tier rules
 TIER_NIGHTS = 14     # nights a tier needs before its verdict counts. Set 2026-11-02, before any result: don't move it.
+MIN_PAIRS = 30       # and pairs a comparison needs (with fewer the resampled ranges collapse). Set 2026-11-02, likewise.
 # Your rule for each tier, as written beside it on the board (NBA_TIER_NOTES in index.html): morning on our
 # Proj, afternoon on ETR. Each step is (key, within): order by the key, and when two players are within
 # `within` of each other on it, go to the next step. adp: earlier first, in picks. proj: higher first, in
@@ -418,7 +420,9 @@ def pair_pts(order, bar):
 
 @cached
 def tier_nights(rows, bar, half):
-    """{tier: {"rule"|"adp"|"proj"|"you": (pts, pairs), "off": (your right, pairs), "gap": [actual - proj]}} for one slate."""
+    """{tier: {"pairs": [(name x, name y, rule - ADP, rule - proj)], "off": [(name x, name y, you right)],
+    "gap": [actual - proj]}} for one slate, decision pairs only. A pair's value under an order is the actual
+    of the one it puts first minus the other's, so rule - ADP is what following the rule gained over ADP."""
     _, tcol, pcol, _ = TIER_HALVES[half]
     you = bar["sources"][0].col
     p = [r for r in pool(rows, bar) if r.get(tcol) is not None and r[pcol] is not None and r[you] is not None]
@@ -430,73 +434,102 @@ def tier_nights(rows, bar, half):
         q = [r for r in p if int(r[tcol]) == t]
         if len(q) < 2 or t not in TIER_RULES[half]:
             continue
-        vals = [(r, {"adp": None if r[bar["adp"]] is None else -r[bar["adp"]], "proj": float(int(r[pcol] + 0.5)), "projx": r[pcol],
-                     "boom": boom.get(id(r))}) for r in q]
-        rule = rule_order(vals, TIER_RULES[half][t][1])
-        mine = sorted(q, key=lambda r: r[you])
-        orders = {"rule": rule, "adp": rule_order(vals, [("adp", 0)]), "proj": rule_order(vals, [("projx", 0)]), "you": mine}
-        pos = {id(r): i for i, r in enumerate(rule)}
-        right = n = 0
-        for i in range(len(mine)):
-            for j in range(i + 1, len(mine)):
-                x, y = mine[i], mine[j]
-                if pos[id(x)] < pos[id(y)] or x["actual"] == y["actual"] or not is_decision(x, y, bar):
-                    continue                                  # the rule agrees with you, nobody was right, or not a decision
-                n += 1
-                right += x["actual"] > y["actual"]
-        out[t] = dict({k: pair_pts(o, bar) for k, o in orders.items()}, off=(right, n), gap=[r["actual"] - r[pcol] for r in q])
+        vals = [(r, {"adp": -r[bar["adp"]], "proj": float(int(r[pcol] + 0.5)), "projx": r[pcol], "boom": boom.get(id(r))}) for r in q]
+        pos = {k: {id(r): i for i, r in enumerate(o)} for k, o in (
+            ("rule", rule_order(vals, TIER_RULES[half][t][1])), ("adp", rule_order(vals, [("adp", 0)])),
+            ("proj", rule_order(vals, [("projx", 0)])), ("you", sorted(q, key=lambda r: r[you])))}
+        pairs, off = [], []
+        for i in range(len(q)):
+            for j in range(i + 1, len(q)):
+                x, y = q[i], q[j]
+                if not is_decision(x, y, bar) or x["actual"] == y["actual"]:
+                    continue
+                g = {k: (x["actual"] - y["actual"]) * (1 if ps[id(x)] < ps[id(y)] else -1) for k, ps in pos.items()}
+                pairs.append((x["name"], y["name"], g["rule"] - g["adp"], g["rule"] - g["proj"]))
+                if (pos["you"][id(x)] < pos["you"][id(y)]) != (pos["rule"][id(x)] < pos["rule"][id(y)]):
+                    off.append((x["name"], y["name"], g["you"] > 0))       # you broke the rule on this pair
+        out[t] = {"pairs": pairs, "off": off, "gap": [r["actual"] - r[pcol] for r in q]}
     return out
+
+
+def tier_stats(upto, half):
+    """Per tier: nights, and per comparison ("adp", "proj", "off") the season value, 80% and 90% ranges and the
+    drop-one-player range (the value with each single player's pairs taken out)."""
+    bar = TIER_HALVES[half][0]
+    per = {x["date"]: tier_nights(x["rows"], bar, half) for x in upto}
+    out = {}
+    for t in sorted({t for v in per.values() for t in v}):
+        ds = [d for d in per if t in per[d]]
+        for key, k, f in (("adp", 2, None), ("proj", 3, None), ("off", 2, "off")):
+            src = "off" if f else "pairs"
+            val = lambda xs, drop=None: mean([pr[k] for d in xs for pr in per[d][t][src] if drop not in pr[:2]])
+            names = {n for d in ds for pr in per[d][t][src] for n in pr[:2]}
+            v = val(ds)
+            out.setdefault(t, {"nights": ds, "per": per})[key] = {
+                "v": v, "r80": boot(ds, val), "r90": boot(ds, val, 0.9),
+                "drop": (min(val(ds, n) for n in names), max(val(ds, n) for n in names)) if names and v is not None else None,
+                "same": key != "off" and all(pr[k] == 0 for d in ds for pr in per[d][t][src]), "n": sum(len(per[d][t][src]) for d in ds)}
+    return out
+
+
+def tier_verdict(st, t, key, other_half, mid):
+    """"holds" / "loses" / None for one comparison, by the adoption bar: a 90% range clear of `mid`, or an 80% range
+    clear of it with the same direction in the other window or in 3+ tiers of this one; and no single player's pairs
+    able to flip it."""
+    c = st[t][key]
+    if c["same"] or c["v"] is None or not c["r80"] or c["n"] < MIN_PAIRS:
+        return None
+    for sign, word in ((1, "holds"), (-1, "loses")):
+        clear = lambda g: g and (g[0] - mid if sign > 0 else mid - g[1]) > 0
+        backed = clear(other_half.get(t, {}).get(key, {}).get("r80")) or sum(clear(st[u][key]["r80"]) for u in st if key in st[u]) >= 3
+        if clear(c["r90"]) or (clear(c["r80"]) and backed):
+            return word if c["drop"] and (c["drop"][0] - mid if sign > 0 else mid - c["drop"][1]) > 0 else "hangs on one player"
+    return None
 
 
 def tier_rule_lines(last, upto):
     """Per half, per tier: the rule against ADP and the projection straight, and your moves off the rule."""
     out = ["## Tier rules", "",
-           "Inside each tier at each lock, decision pairs only (ADP within %d picks): points per pair (the earlier one's actual "
-           "minus the later one's) for the rule against ADP and the projection straight, and where you broke the rule, how "
-           "often you were right. Each cell: last night · season (80%% range). Verdicts only after %d nights with the tier."
-           % (DECISION, TIER_NIGHTS), ""]
+           "Inside each tier at each lock, decision pairs only (ADP within %d picks): what following the rule gained per pair over "
+           "ADP and over the projection straight (a pair's value: the actual of the one an order puts first minus the other's), "
+           "and where you broke the rule, how often you were right. Each cell: last night · season (80%% range). A verdict "
+           "needs %d nights and %d pairs, then a 90%% range clear of 0 (or 80%% backed by the other window or 3+ "
+           "tiers), and no single player able to flip it." % (DECISION, TIER_NIGHTS, MIN_PAIRS), ""]
+    stats = {h: tier_stats(upto, h) for h in ("am", "pm")}
     for half in ("am", "pm"):
-        bar, _, _, pname = TIER_HALVES[half]
-        per = {x["date"]: tier_nights(x["rows"], bar, half) for x in upto}
-        tiers = sorted({t for v in per.values() for t in v})
-        if not tiers:
+        pname = TIER_HALVES[half][3]
+        st, other = stats[half], stats["pm" if half == "am" else "am"]
+        if not st:
             out += ["**%s**: no tier lines on a Lock %s yet." % ("Morning" if half == "am" else "Afternoon", half.upper()), ""]
             continue
         out += ["**%s (%s)**" % ("Morning" if half == "am" else "Afternoon", pname), "",
                 "| Tier | Rule | Nights | Rule vs ADP | Rule vs %s | Your moves off the rule | Actual - %s | Verdict |" % (pname, pname),
                 "|---|---|---|---|---|---|---|---|"]
-        for t in tiers:
-            ds = [d for d in per if t in per[d]]
+        for t in st:
+            ds, per = st[t]["nights"], st[t]["per"]
             lastd = [x["date"] for x in last if x["date"] in ds]
 
-            def diff(ds_, other):
-                a = sum(per[d][t]["rule"][0] for d in ds_); n = sum(per[d][t]["rule"][1] for d in ds_)
-                b = sum(per[d][t][other][0] for d in ds_)
-                return (a - b) / n if n else None
-
-            def off(ds_):
-                w = sum(per[d][t]["off"][0] for d in ds_); n = sum(per[d][t]["off"][1] for d in ds_)
-                return (w / n if n else None), n
-
-            def cell(other):
-                g = boot(ds, lambda xs: diff(xs, other))
-                return "%s · %s%s" % (fmt(diff(lastd, other), "%+.1f") if lastd else "-", fmt(diff(ds, other), "%+.1f"), rng(g, "%+.1f"))
-            r_last, n_last = off(lastd)
-            r_all, n_all = off(ds)
-            g_off = boot([d for d in ds if per[d][t]["off"][1]], lambda xs: off(xs)[0])
-            ga, gp = boot(ds, lambda xs: diff(xs, "adp")), boot(ds, lambda xs: diff(xs, "proj"))
+            def cell(key, k, scale=1, spec="%+.1f"):
+                c = st[t][key]
+                if c["same"]:
+                    return "same order"
+                lv = mean([pr[k] for d in lastd for pr in per[d][t]["off" if key == "off" else "pairs"]])
+                rg = c["r80"] and (scale * c["r80"][0], scale * c["r80"][1])
+                return "%s · %s%s%s" % (fmt(lv and scale * lv, spec) if lv is not None else "-", fmt(c["v"] and scale * c["v"], spec),
+                                        rng(rg, spec), " of %d" % c["n"] if key == "off" else "")
             if len(ds) < TIER_NIGHTS:
                 verdict = "too early (%d of %d)" % (len(ds), TIER_NIGHTS)
             else:
-                beats = [nm for nm, g in (("ADP", ga), (pname, gp)) if g and g[1] < 0]
-                verdict = ("%s beats the rule" % " and ".join(beats) if beats else
-                           "rule holds" if ga and gp and ga[0] > 0 and gp[0] > 0 else "too close to call")
-                if g_off and (g_off[0] > 0.5 or g_off[1] < 0.5):
-                    verdict += "; your moves %s" % ("win" if g_off[0] > 0.5 else "lose")
-            out.append("| T%d | %s | %d | %s | %s | %s · %s | %s | %s |" % (
-                t, TIER_RULES[half][t][0], len(ds), cell("adp"), cell("proj"),
-                "%s of %d" % (fmt(r_last and 100 * r_last, "%.0f%%"), n_last) if n_last else "-",
-                "%s of %d%s" % (fmt(r_all and 100 * r_all, "%.0f%%"), n_all, rng(g_off and (100 * g_off[0], 100 * g_off[1]), "%.0f%%")) if n_all else "-",
+                vs = {nm: tier_verdict(st, t, key, other, 0) for nm, key in (("ADP", "adp"), (pname, "proj"))}
+                vs = {nm: v for nm, v in vs.items() if not st[t]["adp" if nm == "ADP" else "proj"]["same"]}
+                lost = [nm for nm, v in vs.items() if v == "loses"]
+                verdict = ("%s beats the rule" % " and ".join(lost) if lost else "rule holds" if vs and all(v == "holds" for v in vs.values())
+                           else "hangs on one player" if "hangs on one player" in vs.values() else "too close to call")
+                mv = tier_verdict(st, t, "off", other, 0.5)
+                if mv in ("holds", "loses"):
+                    verdict += "; your moves %s" % ("win" if mv == "holds" else "lose")
+            out.append("| T%d | %s | %d | %s | %s | %s | %s | %s |" % (
+                t, TIER_RULES[half][t][0], len(ds), cell("adp", 2), cell("proj", 3), cell("off", 2, 100, "%.0f%%"),
                 fmt(mean([g for d in ds for g in per[d][t]["gap"]]), "%+.1f"), verdict))
         out.append("")
     if not MIRROR:

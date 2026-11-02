@@ -60,10 +60,13 @@ The report prints in the order it goes in chat:
   `NBA_TIER_NOTES` in index.html) against ADP and the half's projection straight, in points per
   pair (for every decision pair in the tier, the earlier one's actual minus the later one's); where you
   broke the rule (your Q-tag reads and gut calls), how often you were right; and how the tier
-  scored against its projection. A tier gets a verdict only after 14 nights (`TIER_NIGHTS`, set
-  before any result: never move it): "rule holds" (beats both, ranges above 0), "X beats the
-  rule" (a range below 0), else "too close to call", plus "your moves win/lose" when that range
-  clears 50%. Until then "too early": say so, and don't suggest changing a rule.
+  scored against its projection. A tier gets a verdict only after 14 nights and 30 pairs
+  (`TIER_NIGHTS`, `MIN_PAIRS`, set before any result: never move them). Then, because about 27
+  comparisons are under test at once, a comparison counts only with a 90% range clear of 0, or an
+  80% range backed by the same direction in the other window or in 3+ tiers, and only if no single
+  player's pairs can flip it ("hangs on one player" otherwise). Verdicts: "rule holds", "X beats
+  the rule", "too close to call", plus "your moves win/lose" on the same bar around 50%. Until
+  then "too early": say so, and don't suggest changing a rule.
 - **Ours vs ETR**: one line on how our number at Lock PM tracks ETR's last upload, the same window.
 - **For the log**: your biggest AM calls against ADP, PM calls against ETR, our biggest misses and
   splits, and the ADP movers season tally. These feed steps 3-5; they aren't shown in chat.
@@ -145,7 +148,7 @@ in a line each, and act on them only with the user's yes:
   rule as a function in `RULES` in `scripts/nba_hypotheses.py` and add its entry (opened today,
   status `testing`). Keep about 5 open at most: test 30 ideas and one passes by luck.
 - **Adopt?** after its forward test (14 nights, 40+ players moved) beat the base model with a
-  range above zero. With a yes: status `adopted`, `since` today, and say where in the model it
+  90% range above zero, and still beats it with any single player taken out. With a yes: status `adopted`, `since` today, and say where in the model it
   has to be built (that's a separate change).
 - **Reject?** when it didn't beat the base model forward. Status `rejected`, with the date.
 - **Retire?** when an adopted rule stops beating the base model over its rolling 14 nights.
