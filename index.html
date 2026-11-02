@@ -177,6 +177,11 @@
              font-size: 9px; line-height: 13px; font-weight: 700; user-select: none; }
   .tiertag.drag { cursor: ns-resize; touch-action: none; }
   .tiertag.t1 { top: 1px; }
+  .tiernote { position: absolute; left: 34px; top: -7px; z-index: 2; padding: 0 5px; border: 1px solid; border-radius: 3px;
+              background: var(--surface); color: var(--muted); font-family: var(--mono); font-size: 9px; line-height: 11px;
+              white-space: nowrap; pointer-events: none; user-select: none; }
+  .tiernote.t1 { top: 1px; }
+  html.nba .row.tier-first { padding-top: 16px; }   /* room for tier 1's note under the sticky header */
   #tiersBtn.on { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
   /* NBA: the switch from ceiling to floor. */
   html.nba .row.switch-start { box-shadow: inset 0 2px 0 #c58b2b; }
@@ -1667,7 +1672,7 @@ function lockBoard(which) {
   var ours = state.nbaOurs || state.proj || {}, values = {};
   Object.keys(ours).forEach(function (pid) { values[pid] = Math.round(ours[pid] * 10) / 10; });
   locks[which] = { at: new Date().toISOString(), order: state.order.slice(), cut: state.cut == null ? null : state.cut, ours: values };
-  var tiers = load(K.tiers(state.slate.label), null);   // your tier lines as they stood, for the morning report's by-tier grading
+  var tiers = loadTiers(state.slate.label);   // your tier lines as they stood, for the morning report's by-tier grading
   if (tiers && Array.isArray(tiers.starts)) locks[which].tiers = { on: !!tiers.on, starts: tiers.starts.slice() };
   save(K.locks(state.slate.label), locks);
   renderLocks();
@@ -2296,7 +2301,7 @@ var K = {
   built: function (label) { return "brr:built:" + label; },         // NBA: the order as Build tiers left it
   tiers: function (label) { return "brr:tiers:" + label; },
   locks: function (label) { return "brr:locks:" + label; },         // NBA: {slate_id, am, pm}, your boards locked for the morning report
-  expo: function (label) { return "brr:expo:" + label; },           // your exposures from an Underdog export: {file, at, drafts, counts}         // NBA: {on, starts}: where tiers 2-6 begin, by rank
+  expo: function (label) { return "brr:expo:" + label; },           // your exposures from an Underdog export: {file, at, drafts, counts}         // NBA: {on, starts}: where tiers 2-5 begin, by rank
   slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
@@ -3368,16 +3373,33 @@ function copyMainRanks() {
   setStatus("Copied " + ranked.length + " ranks from " + slateLabel(main) + ", in the same order. Everyone else is below the line; + or drag to fill in.");
 }
 
-/* ---- NBA tiers: a visual over your order. Six bands, dark blue (1) to light blue (6), each
-   starting at a rank you can drag; tier 6 runs to your Ranked line. Moving a player keeps
+/* ---- NBA tiers: a visual over your order. Five bands, dark blue (1) to light blue (5), each
+   starting at a rank you can drag; tier 5 runs to your Ranked line. Moving a player keeps
    everyone else in his tier: the lines shift around him (nbaTiersAfterMove). */
-var NBA_TIER_COLORS = ["#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd"];
+var NBA_TIERS = 5;
+var NBA_TIER_COLORS = ["#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa"];
+/* Your ordering rule for each tier, beside its tag: the morning (our Proj), then the afternoon (ETR).
+   (2: Boom) = within 2 picks, higher Boom first; (3: ADP) = within 3 points of Proj, by ADP. Edit freely. */
+var NBA_TIER_NOTES = [
+  "Elite \u2013 ADP (2: Boom) then ETR",
+  "Near Studs \u2013 ADP then ADP (1: ETR)",
+  "Middle \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
+  "\u201cThe Rest\u201d \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
+  "Sixth Round \u2013 Proj (3: ADP) then ETR"
+];
 
-/** Where tiers 2-6 start: even sixths of the ranked list, each moved to the biggest Proj drop within 2 ranks. */
+/** Your saved tiers, read as five: a board saved with six keeps its first five lines (tiers 5 and 6 merge). */
+function loadTiers(label) {
+  var t = load(K.tiers(label), null);
+  if (t && Array.isArray(t.starts) && t.starts.length > NBA_TIERS - 1) t = { on: t.on, starts: t.starts.slice(0, NBA_TIERS - 1) };
+  return t;
+}
+
+/** Where tiers 2-5 start: even fifths of the ranked list, each moved to the biggest Proj drop within 2 ranks. */
 function nbaSeedTiers(order, cut, proj) {
-  var n = Math.max(6, Math.min(cut != null ? cut : NBA_DEFAULT_RANKED, order.length)), starts = [];
-  for (var j = 1; j < 6; j++) {
-    var target = Math.round(n * j / 6) + 1, lo = starts.length ? starts[starts.length - 1] + 1 : 2, best = Math.max(lo, target), drop = -Infinity;
+  var n = Math.max(NBA_TIERS, Math.min(cut != null ? cut : NBA_DEFAULT_RANKED, order.length)), starts = [];
+  for (var j = 1; j < NBA_TIERS; j++) {
+    var target = Math.round(n * j / NBA_TIERS) + 1, lo = starts.length ? starts[starts.length - 1] + 1 : 2, best = Math.max(lo, target), drop = -Infinity;
     for (var r = target - 2; r <= target + 2; r++) {
       if (r < lo || r > n) continue;
       var a = proj[order[r - 2]], b = proj[order[r - 1]];
@@ -3389,7 +3411,7 @@ function nbaSeedTiers(order, cut, proj) {
   return starts;
 }
 
-/** 1-6 for a rank, or 0 past the last tier's end. */
+/** 1-5 for a rank, or 0 past the last tier's end. */
 function nbaTierOf(rank, starts, end) {
   if (rank > end) return 0;
   var t = 1;
@@ -3414,22 +3436,22 @@ function nbaTiersAfterMove(oldOrder, oldCut, newOrder, newCut, pid, targetPid, s
     if (t < last || t > last + 1) return starts.slice();   // out of order, a tier skipped, or 0 above the line
     if (t === last + 1) { next.push(i + 1); last = t; }
   }
-  return next.length === 5 ? next : starts.slice();
+  return next.length === starts.length ? next : starts.slice();
 }
 
 /** After a move on an NBA board with tiers on: save the tier lines that keep everyone in his tier. */
 function keepTierLines(oldOrder, oldCut, pid, targetPid) {
   if (SPORT_MODE !== "nba" || !state.slate) return;
-  var label = state.slate.label, t = load(K.tiers(label), null);
-  if (!t || !t.on || !Array.isArray(t.starts) || t.starts.length !== 5) return;
+  var label = state.slate.label, t = loadTiers(label);
+  if (!t || !t.on || !Array.isArray(t.starts) || t.starts.length !== NBA_TIERS - 1) return;
   save(K.tiers(label), { on: true, starts: nbaTiersAfterMove(oldOrder, oldCut, state.order, state.cut, pid, targetPid, t.starts) });
 }
 
 /** The shown tiers, or null: on, NBA, your order, nothing filtered. */
 function nbaActiveTiers() {
   if (SPORT_MODE !== "nba" || !state.slate || state.view !== "order" || state.search.trim() || state.position !== "ALL") return null;
-  var t = load(K.tiers(state.slate.label), null);
-  return t && t.on && Array.isArray(t.starts) && t.starts.length === 5 ? t : null;
+  var t = loadTiers(state.slate.label);
+  return t && t.on && Array.isArray(t.starts) && t.starts.length === NBA_TIERS - 1 ? t : null;
 }
 
 function nbaTierEnd() { return state.cut != null ? state.cut : state.order.length; }
@@ -3445,7 +3467,7 @@ function paintTiers(starts) {
   });
 }
 
-/** The tag on a tier's first row: tiers 2-6 drag up and down between their neighbours. */
+/** The tag on a tier's first row: tiers 2-5 drag up and down between their neighbours. */
 function tierTag(t, tiers) {
   var tag = document.createElement("span");
   tag.className = "tiertag";
@@ -3463,7 +3485,7 @@ function tierTag(t, tiers) {
       var hit = document.elementFromPoint(ev.clientX, ev.clientY), row = hit && hit.closest ? hit.closest(".row[data-pid]") : null;
       if (!row) return;
       var rank = state.order.indexOf(row.dataset.pid) + 1;
-      var lo = j === 0 ? 2 : starts[j - 1] + 1, hi = j === 4 ? end : starts[j + 1] - 1;
+      var lo = j === 0 ? 2 : starts[j - 1] + 1, hi = j === starts.length - 1 ? end : starts[j + 1] - 1;
       rank = Math.max(lo, Math.min(hi, rank));
       if (rank !== starts[j]) { starts[j] = rank; paintTiers(starts); }
     }
@@ -3479,14 +3501,23 @@ function tierTag(t, tiers) {
   return tag;
 }
 
+/** Your rule for the tier, in small type along its line. */
+function tierNote(t) {
+  var note = document.createElement("span");
+  note.className = "tiernote" + (t === 1 ? " t1" : "");
+  note.textContent = NBA_TIER_NOTES[t - 1] || "";
+  note.style.borderColor = NBA_TIER_COLORS[t - 1];
+  return note;
+}
+
 function toggleTiers() {
-  var label = state.slate.label, t = load(K.tiers(label), null);
+  var label = state.slate.label, t = loadTiers(label);
   if (!t || !Array.isArray(t.starts)) t = { on: true, starts: nbaSeedTiers(state.order, state.cut, state.proj) };
   else t = { on: !t.on, starts: t.starts };
   save(K.tiers(label), t);
   if (t.on && state.view !== "order") { state.view = "order"; $("view").value = "order"; syncSortHeads(); }
   render();
-  if (t.on) setStatus("Tiers on: six bands over your order, tier 6 running to your line. Drag a line's tag (T2-T6) to move it.");
+  if (t.on) setStatus("Tiers on: five bands over your order, tier 5 running to your line. Drag a line's tag (T2-T5) to move it.");
 }
 
 function syncSwitchField() {
@@ -4362,7 +4393,7 @@ function render() {
   var sw = null, pc = SPORT_MODE === "nba" ? nbaShading() : null, tiers = nbaActiveTiers(), tierEnd = nbaTierEnd();
   var expo = slateExpo();
   if (SPORT_MODE === "nba") {
-    var tb = $("tiersBtn"), tt = state.slate && load(K.tiers(state.slate.label), null);
+    var tb = $("tiersBtn"), tt = state.slate && loadTiers(state.slate.label);
     tb.setAttribute("aria-pressed", String(!!(tt && tt.on)));
     tb.classList.toggle("on", !!(tt && tt.on));
   }
@@ -4386,7 +4417,7 @@ function render() {
     if (tier) {
       el.classList.add("tier");
       el.style.setProperty("--tc", NBA_TIER_COLORS[tier - 1]);
-      if (r.rank === (tier === 1 ? 1 : tiers.starts[tier - 2])) { el.classList.add("tier-start"); el.appendChild(tierTag(tier, tiers)); }
+      if (r.rank === (tier === 1 ? 1 : tiers.starts[tier - 2])) { el.classList.add("tier-start"); el.appendChild(tierTag(tier, tiers)); el.appendChild(tierNote(tier)); if (tier === 1) el.classList.add("tier-first"); }
     }
 
     var handle = document.createElement("span");
@@ -5229,7 +5260,7 @@ async function syncSave() {
     }
     mergeLocks(prior);
     var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString(),
-                           load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label), slateLocks());
+                           load(K.vorpWin(label), null), state.cut, loadTiers(label), savedOuts(label), slateLocks());
     var files = {};
     files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
 
@@ -5394,7 +5425,7 @@ function isoMs(iso) { var t = Date.parse(iso); return isFinite(t) ? t : 0; }
 function rankedSig(order, cut) { return JSON.stringify(cut == null ? [order, null] : [order.slice(0, cut), cut]); }
 function boardSig() {
   return JSON.stringify([state.order, state.cut == null ? null : state.cut, load(K.vorpWin(state.slate.label), null) || null,
-                         load(K.tiers(state.slate.label), null) || null, load(K.out(state.slate.label), null) || null,
+                         loadTiers(state.slate.label) || null, load(K.out(state.slate.label), null) || null,
                          load(K.locks(state.slate.label), null) || null]);
 }
 
@@ -5470,7 +5501,7 @@ async function autoSync(quiet) {
     } else if (push) {
       mergeLocks(remote);
       entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
-                         load(K.vorpWin(label), null), state.cut, load(K.tiers(label), null), savedOuts(label), slateLocks());
+                         load(K.vorpWin(label), null), state.cut, loadTiers(label), savedOuts(label), slateLocks());
       files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
     }
     } catch (be) { boardErr = be; take = false; entry = null; files = {}; msg = ""; }
@@ -6611,8 +6642,8 @@ function brrSelfTest() {
   var tOrder = [], tProj = {};
   for (var ti = 0; ti < 44; ti++) { tOrder.push("t" + ti); tProj["t" + ti] = 60 - ti - (ti >= 8 ? 5 : 0); }   // a 5-point drop after rank 8
   var seeded = nbaSeedTiers(tOrder, 44, tProj);
-  ok("tiers start near even sixths of the ranked list, moved onto the biggest Proj drop within 2",
-     seeded.length === 5 && seeded[0] === 9 && seeded.every(function (v, i) { return i === 0 || v > seeded[i - 1]; }) && seeded[4] <= 44);
+  ok("tiers start near even fifths of the ranked list, moved onto the biggest Proj drop within 2",
+     seeded.length === 4 && seeded[0] === 9 && seeded.every(function (v, i) { return i === 0 || v > seeded[i - 1]; }) && seeded[3] <= 44);
   ok("a rank's tier, and none past the line", nbaTierOf(1, [9, 16, 23, 30, 38], 44) === 1 && nbaTierOf(9, [9, 16, 23, 30, 38], 44) === 2 &&
      nbaTierOf(44, [9, 16, 23, 30, 38], 44) === 6 && nbaTierOf(45, [9, 16, 23, 30, 38], 44) === 0);
   // tiers [a b][c d][e f][g h][i][j]

@@ -7,7 +7,7 @@ Each row is a player on the slate, for the two halves of the day:
              adp_am: ADP at that moment
   ETR        etr_first and etr_last: its first and last upload before lock; adp_etr: ADP when
              the first came in
-  tiers      am_tier and pm_tier: the tier (1-6) your board's tier lines put him in at each lock
+  tiers      am_tier and pm_tier: the tier (1-5) your board's tier lines put him in at each lock
              (blank past your line, or when the tiers weren't on)
   afternoon  pm_rank and ours_pm: your order and our Proj when you pressed Lock PM (else the
              board saved at lock, and no ours_pm); adp_close: the last ADP before lock
@@ -214,12 +214,14 @@ def tiers_near(gist, slate, at):
 
 
 def tier_of(order, tiers, cut=None):
-    """{player_id: tier 1-6} as the board draws them: tiers 2-6 start at tiers["starts"] (ranks),
-    the last running to your line (or the end of your order); none past it, or when tiers are off."""
-    if not tiers or not tiers.get("on") or len(tiers.get("starts") or []) != 5:
+    """{player_id: tier 1-5} as the board draws them: tiers 2-5 start at tiers["starts"] (ranks),
+    the last running to your line (or the end of your order); none past it, or when tiers are off.
+    Boards from before 2026-11-02 had six tiers; their sixth line is dropped, as the board now reads them."""
+    if not tiers or not tiers.get("on") or len(tiers.get("starts") or []) not in (4, 5):
         return {}
+    starts = tiers["starts"][:4]
     end = cut if cut is not None else len(order)
-    return {pid: 1 + sum(1 for s in tiers["starts"] if i + 1 >= s) for i, pid in enumerate(order) if i + 1 <= end}
+    return {pid: 1 + sum(1 for s in starts if i + 1 >= s) for i, pid in enumerate(order) if i + 1 <= end}
 
 
 def lock_line(slate, locks, t):
