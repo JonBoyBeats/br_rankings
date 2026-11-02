@@ -1,0 +1,13 @@
+{
+ "date": "2026-11-02",
+ "slate": "nba_mon_main",
+ "from": "your AM tiers as described in chat, locked as Lock AM",
+ "tiers": [
+  {"name": "Elite", "rule": "by your Proj", "players": ["Victor Wembanyama", "Luka Doncic", "Nikola Jokic", "Giannis Antetokounmpo"]},
+  {"name": "Near studs", "rule": "mostly ADP; last three by Boom", "players": ["Shai Gilgeous-Alexander", "Cooper Flagg", "Jayson Tatum", "Domantas Sabonis", "Cade Cunningham", "Anthony Davis", "Scottie Barnes", "Tyrese Maxey"]},
+  {"name": "Middle", "rule": "ADP, Q tags after the gap, then Proj/ADP", "players": ["Karl-Anthony Towns", "Franz Wagner", "Deni Avdija", "Jalen Brunson", "Alperen Sengun", "Jamal Murray", "Jalen Johnson", "Joel Embiid", "LaMelo Ball", "Trae Young", "Stephen Curry", "Donovan Mitchell"]},
+  {"name": "Young guys", "rule": "Proj/Boom, ADP", "players": ["Cameron Boozer", "Darius Acuff Jr.", "Brandon Miller", "Caleb Wilson", "Yaxel Lendeborg"]},
+  {"name": "Veterans", "rule": "your Boom/Dud read", "players": ["Jaylen Brown", "LeBron James", "Pascal Siakam", "Ty Jerome", "Bam Adebayo", "Austin Reaves", "Devin Booker"]},
+  {"name": "Best of the rest", "rule": "your Boom/Dud read", "players": ["Dejounte Murray", "Stephon Castle", "Lauri Markkanen", "Desmond Bane", "Zion Williamson", "Darius Garland", "RJ Barrett", "Walker Kessler", "Evan Mobley", "Dyson Daniels", "Kevin Durant"]}
+ ]
+}
