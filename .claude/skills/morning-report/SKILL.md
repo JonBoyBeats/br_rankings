@@ -87,6 +87,28 @@ previous month, and say whether any tier verdict differs on that month alone (Oc
 aren't February's). Same bar; nothing changes on the monthly read alone. Also rerun
 `python3 scripts/nba_residuals.py` (residual correlations for the contest work) and commit its file.
 
+## 2b. The field
+
+```
+python3 scripts/nba_field.py --mirror ../br-adp-mirror
+```
+
+The contests themselves: every team in every main-slate contest, pulled by the nightly run's
+Contests step (`scripts/nba_contests.py`, into `analysis/nba/contests/`), joined to the record's
+locked-board columns. If last night has no contests on file, say so (the Contests step may have
+failed: it runs after the record and doesn't stop the workflow). For the flagship contest (the most
+entries) and running over every night: cut lines; where drafted% leaves 100% and the 60-99.5% and
+10-60% players (priced players under 10% are news, not fades); the 5 most-owned pairs and 3 cores
+with turn-pair, same-position-teammate and opposing-stars flags; your tiers in the top 1% against
+the field; the field and you on players Questionable at Lock AM; your takes against the field; your
+uniqueness; your results (tail ratios, AM/PM by your own lock times); and what won (FPOE, breakers).
+
+Pick order isn't public, so rounds are estimates; draft times are the nearest hourly ADP snapshot.
+4-drafter slates are kept apart. Evidence rules as everywhere: structural rules (from drafted% and
+pair rates) can be proposed on logic, with their points cost per team and the uniqueness gained;
+outcome rules (anything about what wins) need pre-registration, resampling by night and a held-out
+stretch. The first weeks of results are noise: say so.
+
 ## 3. Write up the calls and misses
 
 From last night's tables:
@@ -236,12 +258,16 @@ In this order, short and scannable:
 2. **Tier rules**: the two tables, then one line on anything that stands out last night (a
    tier where the rule clearly beat or lost to ADP or the projection, or your moves off it).
    Until a tier has 14 nights, its verdict is "too early" and no rule changes are suggested.
-3. **Ours vs ETR**: the one line.
-4. **Hypotheses**: a line each, and any proposal (step 6b).
-5. **Themes and takeaways**: only a theme that crossed its bar; otherwise one line saying none did.
-6. **Last night, player by player**: only players whose ledger line carries a tag (the rest were
+3. **Ours vs ETR**: the one line, and the tag line.
+4. **Field**: your results (last night's contests and the running table), the cut lines (last
+   night and running), your tiers in the top 1%, the takes table, the Questionable table, then one
+   line each: where drafted% leaves 100% and any news players, the top 3 pairs with flags, your
+   uniqueness, what won.
+5. **Hypotheses**: a line each, and any proposal (step 6b).
+6. **Themes and takeaways**: only a theme that crossed its bar; otherwise one line saying none did.
+7. **Last night, player by player**: only players whose ledger line carries a tag (the rest were
    in line), plus any "against the same team" lines.
-7. **Missing**: anything missing from the record (no lock, no tier lines on a lock, no ETR on file,
-   unmatched box scores, notes not written overnight) so it can be fixed.
+8. **Missing**: anything missing from the record (no lock, no tier lines on a lock, no ETR on file,
+   unmatched box scores, notes not written overnight, no contests on file) so it can be fixed.
 
 The calls and misses from steps 3-4 are logged for the themes, not listed in chat.

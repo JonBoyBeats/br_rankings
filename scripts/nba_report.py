@@ -425,7 +425,8 @@ def pair_pts(order, bar):
 
 @cached
 def tier_nights(rows, bar, half):
-    """{tier: {"pairs": [(name x, name y, rule - ADP, rule - proj)], "off": [(name x, name y, you right)] (your takes:
+    """{tier: {"pairs": [(name x, name y, rule - ADP, rule - proj)], "off": [(the one you put first, the other, you right,
+    their ids)] (your takes:
     pairs where your order broke the rule and neither player carried an injury tag in that window),
     "gap": [actual - proj]}} for one slate, decision pairs only. A pair's value under an order is the actual
     of the one it puts first minus the other's, so rule - ADP is what following the rule gained over ADP."""
@@ -455,7 +456,8 @@ def tier_nights(rows, bar, half):
                 pairs.append((x["name"], y["name"], g["rule"] - g["adp"], g["rule"] - g["proj"]))
                 tagged = x.get(tag) or y.get(tag)                     # a Q-tag read, graded on its own, isn't a take
                 if not tagged and (pos["you"][id(x)] < pos["you"][id(y)]) != (pos["rule"][id(x)] < pos["rule"][id(y)]):
-                    off.append((x["name"], y["name"], g["you"] > 0))       # a take: you broke the rule on this pair
+                    up, down = (x, y) if pos["you"][id(x)] < pos["you"][id(y)] else (y, x)
+                    off.append((up["name"], down["name"], g["you"] > 0, up["player_id"], down["player_id"]))   # a take: the one you put first
         out[t] = {"pairs": pairs, "off": off, "gap": [r["actual"] - r[pcol] for r in q]}
     return out
 
