@@ -77,8 +77,9 @@ note the date in the takeaways: from then on its nights start over.
 The season is the slates with last night's pod size: 4-drafter small slates and 6-drafter ones are
 graded apart. Say which in the chat headline.
 
-Your moves off the rule are your takes (Q-tag reads, ETR show bumps, gut calls), graded as one
-category. Pre-registered 2026-11-02: if a PM tier's takes don't beat its rule (verdict "your moves
+Your moves off the rule on untagged players are your takes (ETR show bumps, notes, gut calls),
+graded as one category; moves on a player with an injury tag in that window are Q-tag reads, left
+out of the takes (the tag line covers them). Pre-registered 2026-11-02: if a PM tier's takes don't beat its rule (verdict "your moves
 win") by its 14th night, recommend stopping PM takes in that tier.
 
 Monthly: on the first report of each month, also run the report with `--since` the first of the

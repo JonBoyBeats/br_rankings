@@ -425,11 +425,13 @@ def pair_pts(order, bar):
 
 @cached
 def tier_nights(rows, bar, half):
-    """{tier: {"pairs": [(name x, name y, rule - ADP, rule - proj)], "off": [(name x, name y, you right)],
+    """{tier: {"pairs": [(name x, name y, rule - ADP, rule - proj)], "off": [(name x, name y, you right)] (your takes:
+    pairs where your order broke the rule and neither player carried an injury tag in that window),
     "gap": [actual - proj]}} for one slate, decision pairs only. A pair's value under an order is the actual
     of the one it puts first minus the other's, so rule - ADP is what following the rule gained over ADP."""
     _, tcol, pcol, _ = TIER_HALVES[half]
     you = bar["sources"][0].col
+    tag = "injury_am" if half == "am" else "injury"
     p = [r for r in pool(rows, bar) if r.get(tcol) is not None and r[pcol] is not None and r[you] is not None]
     if not p:
         return {}
@@ -451,8 +453,9 @@ def tier_nights(rows, bar, half):
                     continue
                 g = {k: (x["actual"] - y["actual"]) * (1 if ps[id(x)] < ps[id(y)] else -1) for k, ps in pos.items()}
                 pairs.append((x["name"], y["name"], g["rule"] - g["adp"], g["rule"] - g["proj"]))
-                if (pos["you"][id(x)] < pos["you"][id(y)]) != (pos["rule"][id(x)] < pos["rule"][id(y)]):
-                    off.append((x["name"], y["name"], g["you"] > 0))       # you broke the rule on this pair
+                tagged = x.get(tag) or y.get(tag)                     # a Q-tag read, graded on its own, isn't a take
+                if not tagged and (pos["you"][id(x)] < pos["you"][id(y)]) != (pos["rule"][id(x)] < pos["rule"][id(y)]):
+                    off.append((x["name"], y["name"], g["you"] > 0))       # a take: you broke the rule on this pair
         out[t] = {"pairs": pairs, "off": off, "gap": [r["actual"] - r[pcol] for r in q]}
     return out
 
@@ -508,7 +511,7 @@ def tier_rule_lines(last, upto):
             out += ["**%s**: no tier lines on a Lock %s yet." % ("Morning" if half == "am" else "Afternoon", half.upper()), ""]
             continue
         out += ["**%s (%s)**" % ("Morning" if half == "am" else "Afternoon", pname), "",
-                "| Tier | Rule | Nights | Rule vs ADP | Rule vs %s | Your moves off the rule | Actual - %s | Verdict |" % (pname, pname),
+                "| Tier | Rule | Nights | Rule vs ADP | Rule vs %s | Your takes (moves off the rule, no tag) | Actual - %s | Verdict |" % (pname, pname),
                 "|---|---|---|---|---|---|---|---|"]
         for t in st:
             ds, per = st[t]["nights"], st[t]["per"]
