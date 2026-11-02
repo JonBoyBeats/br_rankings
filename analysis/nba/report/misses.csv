@@ -200,3 +200,31 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-11-01,nba_sun_main,Graham Ike,GSW,split,17.3,12.5,4.4,6.0,10.6,12.0,minutes,yes,etr,ETR 12.5 vs ours 17.3; 6 min (usual 11)
 2026-11-01,nba_sun_main,Quenton Jackson,IND,split,29.2,24.5,18.6,24.0,19.3,-8.0,other,?,etr,ETR 24.5 vs ours 29.2; 18.6 in 24 min
 2026-11-01,nba_sun_main,Gary Payton II,GSW,split,16.8,21.5,12.4,15.0,12.7,12.0,other,?,ours,ours 16.8 vs ETR 21.5; 12.4 in 15 min
+2026-10-31,nba_sat_main,Jonathan Kuminga,MIN,am_call,32.5,34.0,33.7,40.0,28.8,-10.0,hedge,no,wrong,"faded; Gobert ruled out after the AM lock, 40 min (usual 29); 2 of 9 right"
+2026-10-31,nba_sat_main,Bruce Thornton,HOU,am_call,7.4,,6.2,6.0,1.8,21.0,hedge,no,right,faded; VanVleet and Sheppard out after the AM lock; 6 min; 6 of 7 right
+2026-10-31,nba_sat_main,Tari Eason,HOU,am_call,33.2,33.5,21.6,19.0,25.2,21.0,hedge,no,wrong,raised; VanVleet and Sheppard out after the AM lock; 19 min in a 21-pt win; beat 2 of 6
+2026-10-31,nba_sat_main,Alperen Sengun,HOU,am_call,47.5,48.1,41.3,33.0,30.3,21.0,hedge,no,wrong,faded; VanVleet and Sheppard out after the AM lock; 16-9-9; 0 of 4 right
+2026-10-31,nba_sat_main,LaMelo Ball,MIN,am_call,45.8,43.1,29.6,20.0,26.2,-10.0,hedge,no,right,faded; Gobert out after the AM lock; fouled out in 20 min; 2 of 4 (even)
+2026-10-31,nba_sat_main,Joan Beringer,MIN,pm_call,23.8,35.7,25.2,34.0,16.2,-10.0,hedge,no,wrong,"faded below ETR; Gobert ruled out after the PM lock, 34 min (usual 16); 7 of 18 right"
+2026-10-31,nba_sat_main,Jonathan Kuminga,MIN,pm_call,32.5,34.0,33.7,40.0,28.8,-10.0,hedge,no,wrong,"faded below ETR; Gobert out after the PM lock, 40 min; 2 of 6 right"
+2026-10-31,nba_sat_main,Jaden McDaniels,MIN,pm_call,37.1,39.7,31.1,39.0,32.5,-10.0,hedge,no,wrong,"faded below ETR; Gobert out after the PM lock, 39 min; 2 of 5 right"
+2026-10-31,nba_sat_main,Joan Beringer,MIN,split,23.8,35.7,25.2,34.0,16.2,-10.0,news,no,etr,ETR 35.7 (after Gobert's scratch) vs ours 23.8; 34 min
+2026-10-31,nba_sat_main,Bones Hyland,MIN,split,18.0,22.0,16.7,14.0,11.3,-10.0,news,no,ours,ours 18.0 vs ETR 22.0 with Gobert out; 16.7 in 14 min
+2026-10-31,nba_sat_main,Terrence Shannon Jr.,MIN,split,24.5,28.0,11.6,18.0,22.7,-10.0,news,no,ours,ours 24.5 vs ETR 28.0 with Gobert out; 1-8
+2026-10-31,nba_sat_main,LaMelo Ball,MIN,split,45.8,43.1,29.6,20.0,26.2,-10.0,other,?,etr,ETR 43.1 vs ours 45.8; fouled out in 20 min
+2026-11-01,nba_sun_main,Collin Murray-Boyles,TOR,am_call,34.2,29.5,17.1,20.0,19.0,-6.0,hedge,no,wrong,raised; Poeltl sat after the locks; 1-6; beat 4 of 10
+2026-11-01,nba_sun_main,Ja'Kobe Walter,TOR,am_call,26.6,28.4,23.8,33.0,27.6,-6.0,hedge,no,wrong,"faded; Poeltl sat after the locks, 33 min (usual 28); 2 of 7 right"
+2026-11-01,nba_sun_main,Kelly Oubre,IND,am_call,32.6,30.6,17.9,20.0,23.8,-8.0,hedge,no,wrong,"raised; Toppin out after the AM lock; 20 min, 3-8; beat 3 of 7"
+2026-11-01,nba_sun_main,Quentin Grimes,LAL,am_call,24.8,23.7,8.7,26.0,26.8,6.0,hedge,no,right,faded; Ziaire Williams sat after the locks; 7 points in 26 min; 3 of 5 right
+2026-11-01,nba_sun_main,Quenton Jackson,IND,am_call,29.2,24.5,18.6,24.0,19.3,-8.0,hedge,no,right,raised; Toppin out after the AM lock; 24 min; beat 2 of 3
+2026-11-01,nba_sun_main,Ja'Kobe Walter,TOR,pm_call,26.6,28.4,23.8,33.0,27.6,-6.0,hedge,no,wrong,"faded below ETR; Poeltl sat after the PM lock, 33 min; 0 of 4 right"
+2026-11-01,nba_sun_main,Sandro Mamukelashvili,LAL,pm_call,25.2,25.6,13.7,24.0,23.5,6.0,hedge,no,wrong,raised over ETR; Ziaire Williams sat after the PM lock; 1 rebound; beat 2 of 5
+2026-11-01,nba_sun_main,Matisse Thybulle,LAL,pm_call,24.8,27.7,23.9,25.0,25.2,6.0,hedge,no,wrong,faded below ETR; Ziaire Williams sat after the PM lock; 4 stocks; 0 of 4 right
+2026-11-01,nba_sun_main,Aaron Nesmith,IND,pm_call,30.9,28.4,20.6,30.0,21.6,-8.0,teammate-out,yes,right,"raised over ETR; Toppin out, 30 min (usual 22); beat 2 of 2"
+2026-11-01,nba_sun_main,Immanuel Quickley,TOR,pm_call,40.0,38.9,31.7,33.0,30.2,-6.0,hedge,no,wrong,raised over ETR; Poeltl sat after the PM lock; 3-13; beat 0 of 2
+2026-11-01,nba_sun_main,Luka Doncic,LAL,miss,60.0,64.9,83.0,35.0,35.8,6.0,shooting,no,etr,"45-15-6, 8-12 from three, 6 stocks"
+2026-11-01,nba_sun_main,Austin Reaves,LAL,miss,43.3,44.5,25.6,39.0,35.5,6.0,shooting,no,neither,"6-16, no stocks in 39 min"
+2026-11-01,nba_sun_main,Collin Murray-Boyles,TOR,miss,34.2,29.5,17.1,20.0,19.0,-6.0,shooting,no,etr,1-6 in 20 min with Poeltl out late
+2026-11-01,nba_sun_main,Quentin Grimes,LAL,miss,24.8,23.7,8.7,26.0,26.8,6.0,other,?,neither,"26 min, 7 points, 4 turnovers"
+2026-11-01,nba_sun_main,Luka Doncic,LAL,split,60.0,64.9,83.0,35.0,35.8,6.0,shooting,no,etr,ETR 64.9 vs ours 60.0; 83 FP
+2026-11-01,nba_sun_main,Collin Murray-Boyles,TOR,split,34.2,29.5,17.1,20.0,19.0,-6.0,shooting,no,etr,ours 34.2 vs ETR 29.5; 1-6

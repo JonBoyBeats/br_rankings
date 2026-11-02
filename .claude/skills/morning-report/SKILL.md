@@ -27,12 +27,15 @@ python3 scripts/nba_report.py
 
 Show its tables as printed.
 
-Late news first: if a player was ruled out after a lock (the report's "Not graded" list against the
-lock times; ETR's last upload still having him is a sure sign), add his team to
+Late news first: if a player who was being drafted (ADP in the first two-thirds of the draft: 24 or
+earlier on a 36-pick slate, 16 on a 24-pick one) was ruled out after a lock (the report's "Not
+graded" list against the lock times; ETR's last upload still having him is a sure sign), add his team to
 `analysis/nba/report/late_news.json` for that date, under `am` (news after Lock AM) and/or `pm`
 (after Lock PM), with a one-line note, and run the script again. Those teams' players are left out
 of that half's grading, and calls and misses on them aren't logged, so a late scratch and the
-boosts around it don't count for or against anyone. They still get their newspaper line. Every number comes from the script. Don't estimate, round
+boosts around it don't count for or against anyone. They still get their newspaper line. A late
+scratch who wasn't being drafted doesn't take his team out: it stays graded, and calls on his
+teammates are logged as `hedge`. Every number comes from the script. Don't estimate, round
 differently or recompute any of them. The report is in two halves, the way the day runs:
 
 - **Morning barbell**: the board your early drafts come off (Lock AM on the board, else the

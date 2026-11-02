@@ -1,28 +1,13 @@
 {
  "2026-10-31": {
   "am": [
-   "HOU",
    "MEM",
-   "MIN",
    "NOP"
   ],
   "pm": [
    "MEM",
-   "MIN",
    "NOP"
   ],
-  "note": "Dejounte Murray, Rudy Gobert, Ty Jerome, Scotty Pippen Jr. and Quinten Post were ruled out after the PM lock (12:46pm; Jerome and Pippen were still in ETR's 3:26pm upload). VanVleet and Sheppard were out after the AM lock (7:14am) but known by the PM lock."
- },
- "2026-11-01": {
-  "am": [
-   "IND",
-   "LAL",
-   "TOR"
-  ],
-  "pm": [
-   "LAL",
-   "TOR"
-  ],
-  "note": "Jakob Poeltl and Ziaire Williams sat after the PM lock (1:30pm; both still in ETR's 12:57pm upload). Obi Toppin was ruled out after the AM lock (10:22am) but known by the PM lock."
+  "note": "Dejounte Murray (ADP 16.8) and Ty Jerome (17.7) were ruled out after the PM lock (12:46pm; Jerome was still in ETR's 3:26pm upload). Gobert, VanVleet, Sheppard, Pippen and Post also sat but weren't being drafted early (ADP 34+ of 36), so MIN and HOU stay graded; calls on their teammates are logged as hedges."
  }
 }

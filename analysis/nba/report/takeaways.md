@@ -4,16 +4,16 @@ Written by the morning report (/morning-report), newest first. Each section: las
 
 ## 2026-11-01 Sun main
 
-- Early three-game slate (lock 1:52pm), one ETR upload (12:57pm). Late news: Poeltl and Ziaire Williams sat after the PM lock, Toppin after the AM lock, so the morning is graded on BKN, GSW and LAC only (24 players) and the afternoon on four teams (33). Treat both halves as small.
-- Afternoon: your board beat ETR (57%; season 48%, too close to call) and ADP (57%; season 53%, your board wins). Morning: ADP won (your board 46%); the Brooklyn reads missed (Traore fade 0 of 6, Ellis raise 0 of 3) and the Gui Santos raise hit a 9-minute night on a probable tag.
-- The blend at Lock PM is now 0% ours with a range of 0-20%: on 291 players our number adds nothing to ETR's at lock. Not settled, but heading there.
+- Early three-game slate (lock 1:52pm), one ETR upload (12:57pm). Poeltl and Ziaire Williams sat after the PM lock and Toppin after the AM lock, but none was being drafted early, so the whole slate is graded and calls on their teammates are logged as hedges (revised 11-02: late news only takes a team out when the scratch was drafted in the first two-thirds).
+- Morning: ADP beat your board (40%); the Brooklyn reads missed (Traore fade 0 of 6, Ellis raise 0 of 3) and the Gui Santos raise hit a 9-minute night on a probable tag. Afternoon: 47% against ETR and 44% against ADP. Season: your board against ADP at lock is back to too close to call (52%).
+- The blend at Lock PM is 0% ours: our number adds nothing to ETR's at lock so far. Not settled, but heading there.
 - Boom 4+: too early, morning (218 moves, 41%) and afternoon (442 moves, 46%).
 
 ## 2026-10-31 Sat main
 
-- Late-news night: Dejounte, Gobert, Jerome, Pippen and Post were ruled out after the PM lock (Jerome and Pippen were still in ETR's 3:26pm upload), and VanVleet and Sheppard after the AM lock. Those teams are left out of the grading (analysis/nba/report/late_news.json: morning HOU, MEM, MIN, NOP; afternoon MEM, MIN, NOP), so the scramble doesn't count for or against anyone.
-- On the rest of the slate your boards did well: AM beat ADP on 66% of disagreements and our number on 59%; PM beat ETR on 59% (season 48%, still too close to call). Raises on Ware, Mara and Harper were right; raises into blowouts (Wiggins, Ajay, Eason, LaVine) were wrong.
-- Blowouts are now a full theme: 37 cases on all 6 slates, 13 of the 16 blowout misses were 30+ minute starters, and your raises on players who ended up in a blowout went 1 right, 10 wrong. A spread-based minutes trim is proposed as a hypothesis (needs spreads on file). Fades still run 15 right, 22 wrong.
+- Late-news night. Dejounte (ADP 16.8) and Jerome (17.7) were ruled out after the PM lock, so NOP and MEM are left out of the grading (analysis/nba/report/late_news.json). Gobert, VanVleet and Sheppard also sat late but weren't drafted early, so MIN and HOU stay graded and the calls on their teammates (Kuminga, Beringer, McDaniels, Eason) are logged as hedges.
+- Your boards: AM beat ADP on 58% of disagreements and our number on 60%; PM split with ETR (51%) and lost to ADP (41%). Raises on Ware, Mara and Harper were right; raises into blowouts (Wiggins, Ajay, LaVine) were wrong.
+- Blowouts are now a full theme in the log (final margin 15+, known only afterward): 13 of the 16 blowout misses were 30+ minute starters, and raises on players who ended up in a blowout went 1 right, 10 wrong. The pre-game version is tested in H2-H4 (see blowout_study.md). Fades still run 15 right, 22 wrong.
 - Boom 4+: too early, morning (204 moves, 43%) and afternoon (424 moves, 47%).
 
 ## 2026-10-30 Fri main
