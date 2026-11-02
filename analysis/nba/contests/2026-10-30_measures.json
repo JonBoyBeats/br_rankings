@@ -233,14 +233,14 @@
      "drafted": 13.8
     },
     {
-     "player": "OG Anunoby",
-     "adp": 35.9,
-     "drafted": 3.5
-    },
-    {
      "player": "Ayo Dosunmu",
      "adp": 35.9,
      "drafted": 4.2
+    },
+    {
+     "player": "OG Anunoby",
+     "adp": 35.9,
+     "drafted": 3.5
     },
     {
      "player": "Naz Reid",
@@ -553,7 +553,7 @@
     },
     {
      "pair": "Brandon Miller + Yaxel Lendeborg",
-     "rounds": "2/3",
+     "rounds": "2/4",
      "share": 5.0,
      "lift": 2.08
     },
@@ -565,13 +565,13 @@
     },
     {
      "pair": "Brandon Miller + RJ Barrett",
-     "rounds": "2/5",
+     "rounds": "2/6",
      "share": 4.9,
      "lift": 2.09
     },
     {
      "pair": "Cooper Flagg + RJ Barrett",
-     "rounds": "1/5",
+     "rounds": "1/6",
      "share": 4.9,
      "lift": 2.05
     },
@@ -595,7 +595,7 @@
     },
     {
      "pair": "Yaxel Lendeborg + Caleb Wilson",
-     "rounds": "3/5",
+     "rounds": "4/5",
      "share": 4.7,
      "lift": 2.03
     },
@@ -674,6 +674,247 @@
      "share": 0.9
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Cooper Flagg (6) + Brandon Miller (7)",
+      "share": 6.1,
+      "lift": 2.56,
+      "top1": 0,
+      "avg_points": 230.7
+     },
+     {
+      "pair": "Cade Cunningham (5) + Joel Embiid (8)",
+      "share": 4.5,
+      "lift": 1.88,
+      "top1": 0,
+      "avg_points": 209.1
+     },
+     {
+      "pair": "Cade Cunningham (5) + Brandon Miller (7)",
+      "share": 4.2,
+      "lift": 1.76,
+      "top1": 0,
+      "avg_points": 206.3
+     },
+     {
+      "pair": "Cooper Flagg (6) + Joel Embiid (8)",
+      "share": 3.4,
+      "lift": 1.44,
+      "top1": 0,
+      "avg_points": 234.1
+     },
+     {
+      "pair": "Cade Cunningham (5) + Cooper Flagg (6)",
+      "share": 2.5,
+      "lift": 1.05,
+      "top1": 0,
+      "avg_points": 233.4
+     },
+     {
+      "pair": "Brandon Miller (7) + Joel Embiid (8)",
+      "share": 0.5,
+      "lift": 0.23,
+      "top1": 0,
+      "avg_points": 207.0
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 2626,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Jalen Brunson (14)",
+        "of_anchor": 11.6,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 236.7
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 8.4,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 237.3
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Tyrese Maxey (12)",
+        "of_anchor": 6.2,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 237.5
+       },
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 6.2,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 225.4
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 5.5,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 221.4
+       },
+       {
+        "combo": "Nikola Jokic + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 3.0,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 244.9
+       },
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Stephen Curry (18)",
+        "of_anchor": 2.6,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 244.9
+       },
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Kevin Durant (16)",
+        "of_anchor": 2.3,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 224.0
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 2626,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Tyrese Maxey (12) + Jalen Brunson (14)",
+        "of_anchor": 7.2,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 253.3
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 6.5,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 251.9
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Tyrese Maxey (12)",
+        "of_anchor": 5.4,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 248.6
+       },
+       {
+        "combo": "Luka Doncic + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 5.4,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 237.7
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 5.4,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 237.8
+       },
+       {
+        "combo": "Luka Doncic + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 254.6
+       },
+       {
+        "combo": "Luka Doncic + Anthony Davis (10) + Pascal Siakam (15)",
+        "of_anchor": 4.1,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 242.3
+       },
+       {
+        "combo": "Luka Doncic + Scottie Barnes (9) + Pascal Siakam (15)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 255.1
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 3,
+      "teams": 2626,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Pascal Siakam (15)",
+        "of_anchor": 8.5,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 252.4
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 15,
+        "avg_points": 267.3
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Scottie Barnes (9) + Pascal Siakam (15)",
+        "of_anchor": 5.5,
+        "share": 0.9,
+        "top1": 1,
+        "avg_points": 264.2
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Stephen Curry (18)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 11,
+        "avg_points": 271.7
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 245.2
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Kevin Durant (16)",
+        "of_anchor": 3.5,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 253.4
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 244.5
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 1,
+        "avg_points": 261.2
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": {
     "teams": 150,
     "share4_median": 0.6,
@@ -3287,14 +3528,14 @@
      "drafted": 0.6
     },
     {
-     "player": "Rudy Gobert",
-     "adp": 36.0,
-     "drafted": 2.1
-    },
-    {
      "player": "Dennis Schroder",
      "adp": 36.0,
      "drafted": 0.3
+    },
+    {
+     "player": "Rudy Gobert",
+     "adp": 36.0,
+     "drafted": 2.1
     },
     {
      "player": "VJ Edgecombe",
@@ -3387,12 +3628,12 @@
      "drafted": 0.2
     },
     {
-     "player": "Draymond Green",
+     "player": "Mikel Brown Jr.",
      "adp": 36.0,
      "drafted": 0.2
     },
     {
-     "player": "Mikel Brown Jr.",
+     "player": "Draymond Green",
      "adp": 36.0,
      "drafted": 0.2
     },
@@ -3540,7 +3781,7 @@
     },
     {
      "pair": "Brandon Miller + RJ Barrett",
-     "rounds": "2/5",
+     "rounds": "2/6",
      "share": 4.8,
      "lift": 2.01
     },
@@ -3576,7 +3817,7 @@
     },
     {
      "pair": "Cooper Flagg + RJ Barrett",
-     "rounds": "1/5",
+     "rounds": "1/6",
      "share": 4.6,
      "lift": 1.94
     }
@@ -3643,6 +3884,247 @@
      "share": 1.0
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Cooper Flagg (6) + Brandon Miller (7)",
+      "share": 5.8,
+      "lift": 2.42,
+      "top1": 0,
+      "avg_points": 234.8
+     },
+     {
+      "pair": "Cade Cunningham (5) + Joel Embiid (8)",
+      "share": 4.5,
+      "lift": 1.87,
+      "top1": 0,
+      "avg_points": 211.5
+     },
+     {
+      "pair": "Cade Cunningham (5) + Brandon Miller (7)",
+      "share": 4.3,
+      "lift": 1.79,
+      "top1": 0,
+      "avg_points": 211.1
+     },
+     {
+      "pair": "Cooper Flagg (6) + Joel Embiid (8)",
+      "share": 3.3,
+      "lift": 1.4,
+      "top1": 0,
+      "avg_points": 235.8
+     },
+     {
+      "pair": "Cade Cunningham (5) + Cooper Flagg (6)",
+      "share": 2.8,
+      "lift": 1.16,
+      "top1": 0,
+      "avg_points": 233.1
+     },
+     {
+      "pair": "Brandon Miller (7) + Joel Embiid (8)",
+      "share": 0.6,
+      "lift": 0.25,
+      "top1": 0,
+      "avg_points": 208.7
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 625,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Jalen Brunson (14)",
+        "of_anchor": 10.2,
+        "share": 1.7,
+        "top1": 0,
+        "avg_points": 234.7
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 8.2,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 238.3
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Tyrese Maxey (12)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 230.1
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 227.6
+       },
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 4.2,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 215.8
+       },
+       {
+        "combo": "Nikola Jokic + Scottie Barnes (9) + Tyrese Maxey (12)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 251.0
+       },
+       {
+        "combo": "Nikola Jokic + Scottie Barnes (9) + Karl-Anthony Towns (11)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 254.7
+       },
+       {
+        "combo": "Nikola Jokic + Jalen Brunson (14) + Pascal Siakam (15)",
+        "of_anchor": 3.0,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 222.9
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 625,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Tyrese Maxey (12) + Jalen Brunson (14)",
+        "of_anchor": 6.2,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 250.9
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 248.5
+       },
+       {
+        "combo": "Luka Doncic + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 251.2
+       },
+       {
+        "combo": "Luka Doncic + Anthony Davis (10) + Pascal Siakam (15)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 247.1
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 236.5
+       },
+       {
+        "combo": "Luka Doncic + Scottie Barnes (9) + Jalen Brunson (14)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 1,
+        "avg_points": 259.5
+       },
+       {
+        "combo": "Luka Doncic + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 3.5,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 231.9
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Tyrese Maxey (12)",
+        "of_anchor": 3.0,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 250.4
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 3,
+      "teams": 625,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Pascal Siakam (15)",
+        "of_anchor": 9.0,
+        "share": 1.5,
+        "top1": 0,
+        "avg_points": 253.3
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 5.1,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 242.4
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 4.5,
+        "share": 0.7,
+        "top1": 2,
+        "avg_points": 270.9
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 4.2,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 270.6
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Scottie Barnes (9) + Pascal Siakam (15)",
+        "of_anchor": 4.0,
+        "share": 0.7,
+        "top1": 1,
+        "avg_points": 257.5
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Kevin Durant (16)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 253.9
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Jamal Murray (17)",
+        "of_anchor": 3.0,
+        "share": 0.5,
+        "top1": 2,
+        "avg_points": 279.2
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Tyrese Maxey (12) + Jalen Brunson (14)",
+        "of_anchor": 2.9,
+        "share": 0.5,
+        "top1": 1,
+        "avg_points": 264.7
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": {
     "teams": 20,
     "share4_median": 0.6,
@@ -4587,6 +5069,247 @@
      "share": 1.0
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Cooper Flagg (6) + Brandon Miller (7)",
+      "share": 4.6,
+      "lift": 1.94,
+      "top1": 0,
+      "avg_points": 235.0
+     },
+     {
+      "pair": "Cade Cunningham (5) + Joel Embiid (8)",
+      "share": 3.9,
+      "lift": 1.64,
+      "top1": 0,
+      "avg_points": 209.0
+     },
+     {
+      "pair": "Cade Cunningham (5) + Cooper Flagg (6)",
+      "share": 3.5,
+      "lift": 1.49,
+      "top1": 0,
+      "avg_points": 241.8
+     },
+     {
+      "pair": "Cade Cunningham (5) + Brandon Miller (7)",
+      "share": 3.4,
+      "lift": 1.41,
+      "top1": 0,
+      "avg_points": 210.8
+     },
+     {
+      "pair": "Cooper Flagg (6) + Joel Embiid (8)",
+      "share": 3.3,
+      "lift": 1.38,
+      "top1": 0,
+      "avg_points": 233.7
+     },
+     {
+      "pair": "Brandon Miller (7) + Joel Embiid (8)",
+      "share": 1.2,
+      "lift": 0.48,
+      "top1": 0,
+      "avg_points": 210.7
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 188,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Jalen Brunson (14)",
+        "of_anchor": 13.3,
+        "share": 2.2,
+        "top1": 0,
+        "avg_points": 235.9
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 11.7,
+        "share": 2.0,
+        "top1": 0,
+        "avg_points": 237.2
+       },
+       {
+        "combo": "Nikola Jokic + Jalen Brunson (14) + Pascal Siakam (15)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 219.4
+       },
+       {
+        "combo": "Nikola Jokic + Anthony Davis (10) + Karl-Anthony Towns (11)",
+        "of_anchor": 4.8,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 232.5
+       },
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 4.8,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 230.0
+       },
+       {
+        "combo": "Nikola Jokic + Scottie Barnes (9) + Jalen Brunson (14)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 248.7
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Tyrese Maxey (12)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 233.9
+       },
+       {
+        "combo": "Nikola Jokic + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 2.7,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 236.6
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 188,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 6.4,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 235.9
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 6.4,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 237.4
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 6.4,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 249.8
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Tyrese Maxey (12)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 249.0
+       },
+       {
+        "combo": "Luka Doncic + Tyrese Maxey (12) + Jalen Brunson (14)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 254.3
+       },
+       {
+        "combo": "Luka Doncic + Anthony Davis (10) + Pascal Siakam (15)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 247.4
+       },
+       {
+        "combo": "Luka Doncic + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 254.7
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Stephen Curry (18)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 265.2
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 3,
+      "teams": 188,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 7.4,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 267.2
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 240.6
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Scottie Barnes (9) + Pascal Siakam (15)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 1,
+        "avg_points": 266.2
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Pascal Siakam (15)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 257.7
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 244.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Brandon Miller (7) + Jalen Brunson (14)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 246.9
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Brandon Miller (7) + Stephen Curry (18)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 252.7
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Scottie Barnes (9) + Jalen Brunson (14)",
+        "of_anchor": 2.7,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 271.0
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": {
     "teams": 12,
     "share4_median": 0.9,
@@ -5246,13 +5969,13 @@
     },
     {
      "pair": "Cade Cunningham + RJ Barrett",
-     "rounds": "1/5",
+     "rounds": "1/6",
      "share": 5.6,
      "lift": 2.33
     },
     {
      "pair": "Cade Cunningham + Yaxel Lendeborg",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 5.6,
      "lift": 2.33
     },
@@ -5355,6 +6078,247 @@
      "share": 1.4
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Cade Cunningham (5) + Brandon Miller (7)",
+      "share": 6.0,
+      "lift": 2.53,
+      "top1": 0,
+      "avg_points": 206.5
+     },
+     {
+      "pair": "Cooper Flagg (6) + Brandon Miller (7)",
+      "share": 5.6,
+      "lift": 2.33,
+      "top1": 0,
+      "avg_points": 239.3
+     },
+     {
+      "pair": "Cade Cunningham (5) + Joel Embiid (8)",
+      "share": 3.7,
+      "lift": 1.56,
+      "top1": 0,
+      "avg_points": 222.3
+     },
+     {
+      "pair": "Cooper Flagg (6) + Joel Embiid (8)",
+      "share": 3.2,
+      "lift": 1.36,
+      "top1": 0,
+      "avg_points": 251.4
+     },
+     {
+      "pair": "Cade Cunningham (5) + Cooper Flagg (6)",
+      "share": 0.9,
+      "lift": 0.39,
+      "top1": 0,
+      "avg_points": 251.2
+     },
+     {
+      "pair": "Brandon Miller (7) + Joel Embiid (8)",
+      "share": 0.5,
+      "lift": 0.19,
+      "top1": 0,
+      "avg_points": 257.3
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Scottie Barnes (9) + Tyrese Maxey (12)",
+        "of_anchor": 11.1,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 237.7
+       },
+       {
+        "combo": "Nikola Jokic + Jalen Brunson (14) + Pascal Siakam (15)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 221.4
+       },
+       {
+        "combo": "Nikola Jokic + Anthony Davis (10) + Karl-Anthony Towns (11)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 238.8
+       },
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Jalen Brunson (14)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 236.1
+       },
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 224.5
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 214.1
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 225.5
+       },
+       {
+        "combo": "Nikola Jokic + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 258.4
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Pascal Siakam (15)",
+        "of_anchor": 13.9,
+        "share": 2.3,
+        "top1": 0,
+        "avg_points": 232.4
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Tyrese Maxey (12)",
+        "of_anchor": 11.1,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 250.2
+       },
+       {
+        "combo": "Luka Doncic + Tyrese Maxey (12) + Stephen Curry (18)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 264.8
+       },
+       {
+        "combo": "Luka Doncic + Anthony Davis (10) + Pascal Siakam (15)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 241.2
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 249.1
+       },
+       {
+        "combo": "Luka Doncic + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 273.8
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Kevin Durant (16)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 211.0
+       },
+       {
+        "combo": "Luka Doncic + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 251.6
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 3,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Jalen Brunson (14)",
+        "of_anchor": 11.1,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 255.4
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Pascal Siakam (15)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 240.2
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Anthony Davis (10) + Stephen Curry (18)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 251.1
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Jalen Brunson (14) + Stephen Curry (18)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 275.6
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Scottie Barnes (9) + Pascal Siakam (15)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 1,
+        "avg_points": 284.0
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Joel Embiid (8) + Jalen Brunson (14)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 258.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Scottie Barnes (9) + Stephen Curry (18)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 265.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Pascal Siakam (15) + Stephen Curry (18)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 262.0
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": null,
    "draft_time": {
     "matched": 216,
@@ -5617,7 +6581,7 @@
    "pairs": [
     {
      "pair": "Luka Doncic + Yaxel Lendeborg",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 16.7,
      "lift": 7.0
     },
@@ -5694,13 +6658,13 @@
      "lift": 4.67
     },
     {
-     "pair": "Paul George + Darius Garland",
+     "pair": "Darius Garland + Paul George",
      "rounds": "6/6",
      "share": 8.3,
      "lift": 4.67
     },
     {
-     "pair": "Trae Young + Bam Adebayo",
+     "pair": "Bam Adebayo + Trae Young",
      "rounds": "4/4",
      "share": 8.3,
      "lift": 3.5
@@ -5755,7 +6719,7 @@
     },
     {
      "pair": "Jalen Brunson + Michael Porter Jr.",
-     "rounds": "3/4",
+     "rounds": "3/5",
      "share": 8.3,
      "lift": 3.5
     },
@@ -5828,6 +6792,135 @@
      "share": 4.2
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Cade Cunningham (5) + Joel Embiid (8)",
+      "share": 8.3,
+      "lift": 3.5,
+      "top1": 0,
+      "avg_points": 218.7
+     },
+     {
+      "pair": "Cade Cunningham (5) + Brandon Miller (7)",
+      "share": 4.2,
+      "lift": 1.75,
+      "top1": 0,
+      "avg_points": 188.8
+     },
+     {
+      "pair": "Cooper Flagg (6) + Brandon Miller (7)",
+      "share": 4.2,
+      "lift": 1.75,
+      "top1": 0,
+      "avg_points": 260.5
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 4,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Jalen Brunson (14)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 205.1
+       },
+       {
+        "combo": "Nikola Jokic + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 234.6
+       },
+       {
+        "combo": "Nikola Jokic + Karl-Anthony Towns (11) + Jalen Brunson (14)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 238.2
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 4,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Anthony Davis (10) + Pascal Siakam (15)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 198.8
+       },
+       {
+        "combo": "Luka Doncic + Karl-Anthony Towns (11) + Kevin Durant (16)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 212.1
+       },
+       {
+        "combo": "Luka Doncic + Scottie Barnes (9) + Karl-Anthony Towns (11)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 220.6
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 3,
+      "teams": 4,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Brandon Miller (7) + Jalen Brunson (14)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 271.3
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Brandon Miller (7) + Stephen Curry (18)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 271.3
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Jalen Brunson (14) + Stephen Curry (18)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 271.3
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Tyrese Maxey (12) + Pascal Siakam (15)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 252.9
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Brandon Miller (7) + Tyrese Maxey (12)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 253.7
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": null,
    "draft_time": {
     "matched": 24,

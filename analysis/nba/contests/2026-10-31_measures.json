@@ -53,12 +53,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Zion Williamson",
+     "player": "Alperen Sengun",
      "adp": 8.4,
      "drafted": 100.0
     },
     {
-     "player": "Alperen Sengun",
+     "player": "Zion Williamson",
      "adp": 8.4,
      "drafted": 100.0
     },
@@ -153,12 +153,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Cedric Coward",
+     "player": "Dyson Daniels",
      "adp": 27.9,
      "drafted": 100.0
     },
     {
-     "player": "Dyson Daniels",
+     "player": "Cedric Coward",
      "adp": 27.9,
      "drafted": 100.0
     },
@@ -444,13 +444,13 @@
     },
     {
      "pair": "Donovan Mitchell + Zach LaVine",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 5.1,
      "lift": 2.14
     },
     {
      "pair": "Evan Mobley + Zach LaVine",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 5.1,
      "lift": 2.13
     },
@@ -462,7 +462,7 @@
     },
     {
      "pair": "Victor Wembanyama + Jarrett Allen",
-     "rounds": "1/4",
+     "rounds": "1/5",
      "share": 4.8,
      "lift": 2.0
     },
@@ -474,7 +474,7 @@
     },
     {
      "pair": "Evan Mobley + Stephon Castle",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 4.8,
      "lift": 2.0
     },
@@ -540,19 +540,19 @@
     },
     {
      "pair": "Donovan Mitchell + Stephon Castle",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 4.4,
      "lift": 1.84
     },
     {
      "pair": "LaMelo Ball + Jarrett Allen",
-     "rounds": "2/4",
+     "rounds": "2/5",
      "share": 4.3,
      "lift": 1.82
     },
     {
      "pair": "Kevin Durant + Jarrett Allen",
-     "rounds": "2/4",
+     "rounds": "2/5",
      "share": 4.2,
      "lift": 1.78
     }
@@ -619,6 +619,247 @@
      "share": 0.8
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Evan Mobley (6) + Alperen Sengun (7)",
+      "share": 4.5,
+      "lift": 1.87,
+      "top1": 0,
+      "avg_points": 186.7
+     },
+     {
+      "pair": "Donovan Mitchell (5) + Evan Mobley (6)",
+      "share": 4.5,
+      "lift": 1.89,
+      "top1": 0,
+      "avg_points": 169.4
+     },
+     {
+      "pair": "Donovan Mitchell (5) + Zion Williamson (8)",
+      "share": 3.0,
+      "lift": 1.28,
+      "top1": 0,
+      "avg_points": 162.9
+     },
+     {
+      "pair": "Evan Mobley (6) + Zion Williamson (8)",
+      "share": 2.8,
+      "lift": 1.19,
+      "top1": 0,
+      "avg_points": 180.7
+     },
+     {
+      "pair": "Donovan Mitchell (5) + Alperen Sengun (7)",
+      "share": 2.7,
+      "lift": 1.12,
+      "top1": 0,
+      "avg_points": 171.6
+     },
+     {
+      "pair": "Alperen Sengun (7) + Zion Williamson (8)",
+      "share": 1.3,
+      "lift": 0.53,
+      "top1": 0,
+      "avg_points": 187.5
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Victor Wembanyama",
+      "adp_rank": 1,
+      "teams": 2118,
+      "combos": [
+       {
+        "combo": "Victor Wembanyama + Kevin Durant (12) + Amen Thompson (13)",
+        "of_anchor": 14.0,
+        "share": 2.3,
+        "top1": 6,
+        "avg_points": 219.6
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (11) + Kevin Durant (12)",
+        "of_anchor": 12.2,
+        "share": 2.0,
+        "top1": 24,
+        "avg_points": 232.5
+       },
+       {
+        "combo": "Victor Wembanyama + Kevin Durant (12) + James Harden (14)",
+        "of_anchor": 8.8,
+        "share": 1.5,
+        "top1": 12,
+        "avg_points": 232.3
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (11) + Amen Thompson (13)",
+        "of_anchor": 8.2,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 216.1
+       },
+       {
+        "combo": "Victor Wembanyama + Amen Thompson (13) + James Harden (14)",
+        "of_anchor": 4.5,
+        "share": 0.7,
+        "top1": 2,
+        "avg_points": 214.1
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (11) + James Harden (14)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 7,
+        "avg_points": 229.5
+       },
+       {
+        "combo": "Victor Wembanyama + Kevin Durant (12) + Ajay Mitchell (16)",
+        "of_anchor": 2.5,
+        "share": 0.4,
+        "top1": 1,
+        "avg_points": 224.9
+       },
+       {
+        "combo": "Victor Wembanyama + Amen Thompson (13) + Ajay Mitchell (16)",
+        "of_anchor": 2.1,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 203.2
+       }
+      ]
+     },
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 2,
+      "teams": 2118,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (11) + James Harden (14)",
+        "of_anchor": 7.2,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 187.9
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (11) + Kevin Durant (12)",
+        "of_anchor": 7.0,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 192.9
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (11) + Amen Thompson (13)",
+        "of_anchor": 5.8,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 172.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Kevin Durant (12) + Amen Thompson (13)",
+        "of_anchor": 5.1,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 177.0
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Amen Thompson (13) + James Harden (14)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 170.9
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Kevin Durant (12) + James Harden (14)",
+        "of_anchor": 4.2,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 194.0
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Darius Acuff Jr. (10) + James Harden (14)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 205.1
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Zion Williamson (8) + James Harden (14)",
+        "of_anchor": 2.7,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 191.7
+       }
+      ]
+     },
+     {
+      "anchor": "Jalen Johnson",
+      "adp_rank": 3,
+      "teams": 2118,
+      "combos": [
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Tyler Herro (15)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 187.0
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + James Harden (14)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 193.2
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Ajay Mitchell (16)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 185.7
+       },
+       {
+        "combo": "Jalen Johnson + Cameron Boozer (9) + Tyler Herro (15)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 175.5
+       },
+       {
+        "combo": "Jalen Johnson + Zion Williamson (8) + Tyler Herro (15)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 167.7
+       },
+       {
+        "combo": "Jalen Johnson + Zion Williamson (8) + Ajay Mitchell (16)",
+        "of_anchor": 3.1,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 171.2
+       },
+       {
+        "combo": "Jalen Johnson + Cameron Boozer (9) + James Harden (14)",
+        "of_anchor": 3.0,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 185.2
+       },
+       {
+        "combo": "Jalen Johnson + Zion Williamson (8) + James Harden (14)",
+        "of_anchor": 2.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 179.0
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": {
     "teams": 40,
     "share4_median": 0.5,
@@ -1364,12 +1605,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Zion Williamson",
+     "player": "Alperen Sengun",
      "adp": 8.4,
      "drafted": 100.0
     },
     {
-     "player": "Alperen Sengun",
+     "player": "Zion Williamson",
      "adp": 8.4,
      "drafted": 100.0
     },
@@ -1459,12 +1700,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Cedric Coward",
+     "player": "Dyson Daniels",
      "adp": 27.9,
      "drafted": 100.0
     },
     {
-     "player": "Dyson Daniels",
+     "player": "Cedric Coward",
      "adp": 27.9,
      "drafted": 100.0
     },
@@ -1631,31 +1872,31 @@
     },
     {
      "pair": "Victor Wembanyama + Jarrett Allen",
-     "rounds": "1/4",
+     "rounds": "1/5",
      "share": 6.0,
      "lift": 2.5
     },
     {
      "pair": "Evan Mobley + Stephon Castle",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 5.8,
      "lift": 2.42
     },
     {
      "pair": "Kevin Durant + Jarrett Allen",
-     "rounds": "2/4",
+     "rounds": "2/5",
      "share": 5.8,
      "lift": 2.42
     },
     {
      "pair": "Zion Williamson + Zach LaVine",
-     "rounds": "2/3",
+     "rounds": "2/4",
      "share": 5.5,
      "lift": 2.31
     },
     {
      "pair": "Donovan Mitchell + Stephon Castle",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 5.4,
      "lift": 2.27
     },
@@ -1709,7 +1950,7 @@
     },
     {
      "pair": "Evan Mobley + Zach LaVine",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 4.7,
      "lift": 1.96
     },
@@ -1727,7 +1968,7 @@
     },
     {
      "pair": "Donovan Mitchell + Zach LaVine",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 4.6,
      "lift": 1.92
     },
@@ -1830,6 +2071,247 @@
      "share": 0.7
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Donovan Mitchell (5) + Evan Mobley (6)",
+      "share": 4.2,
+      "lift": 1.77,
+      "top1": 0,
+      "avg_points": 167.4
+     },
+     {
+      "pair": "Donovan Mitchell (5) + Zion Williamson (8)",
+      "share": 3.2,
+      "lift": 1.35,
+      "top1": 0,
+      "avg_points": 154.1
+     },
+     {
+      "pair": "Evan Mobley (6) + Zion Williamson (8)",
+      "share": 2.8,
+      "lift": 1.19,
+      "top1": 0,
+      "avg_points": 177.6
+     },
+     {
+      "pair": "Evan Mobley (6) + Alperen Sengun (7)",
+      "share": 2.3,
+      "lift": 0.96,
+      "top1": 0,
+      "avg_points": 179.3
+     },
+     {
+      "pair": "Donovan Mitchell (5) + Alperen Sengun (7)",
+      "share": 1.9,
+      "lift": 0.81,
+      "top1": 0,
+      "avg_points": 167.3
+     },
+     {
+      "pair": "Alperen Sengun (7) + Zion Williamson (8)",
+      "share": 1.0,
+      "lift": 0.42,
+      "top1": 0,
+      "avg_points": 178.4
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Victor Wembanyama",
+      "adp_rank": 1,
+      "teams": 182,
+      "combos": [
+       {
+        "combo": "Victor Wembanyama + Kevin Durant (12) + Amen Thompson (13)",
+        "of_anchor": 11.0,
+        "share": 1.8,
+        "top1": 0,
+        "avg_points": 225.8
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (11) + Kevin Durant (12)",
+        "of_anchor": 6.6,
+        "share": 1.1,
+        "top1": 2,
+        "avg_points": 232.9
+       },
+       {
+        "combo": "Victor Wembanyama + Kevin Durant (12) + Ajay Mitchell (16)",
+        "of_anchor": 6.6,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 217.5
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (11) + Amen Thompson (13)",
+        "of_anchor": 6.6,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 212.6
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (11) + James Harden (14)",
+        "of_anchor": 5.5,
+        "share": 0.9,
+        "top1": 2,
+        "avg_points": 237.3
+       },
+       {
+        "combo": "Victor Wembanyama + Amen Thompson (13) + James Harden (14)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 213.1
+       },
+       {
+        "combo": "Victor Wembanyama + Kevin Durant (12) + James Harden (14)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 231.8
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (11) + Ajay Mitchell (16)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 218.9
+       }
+      ]
+     },
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 2,
+      "teams": 182,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (11) + James Harden (14)",
+        "of_anchor": 6.0,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 184.9
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (11) + Amen Thompson (13)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 184.1
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (11) + Kevin Durant (12)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 187.9
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Kevin Durant (12) + Amen Thompson (13)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 175.9
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Darius Acuff Jr. (10) + James Harden (14)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 203.8
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Amen Thompson (13) + James Harden (14)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 173.1
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Kevin Durant (12) + James Harden (14)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 202.1
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Alperen Sengun (7) + James Harden (14)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 204.5
+       }
+      ]
+     },
+     {
+      "anchor": "Jalen Johnson",
+      "adp_rank": 3,
+      "teams": 182,
+      "combos": [
+       {
+        "combo": "Jalen Johnson + Cameron Boozer (9) + Ajay Mitchell (16)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 175.5
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Tyler Herro (15)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 186.0
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Ajay Mitchell (16)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 181.7
+       },
+       {
+        "combo": "Jalen Johnson + Amen Thompson (13) + Ajay Mitchell (16)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 157.4
+       },
+       {
+        "combo": "Jalen Johnson + LaMelo Ball (11) + Tyler Herro (15)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 168.1
+       },
+       {
+        "combo": "Jalen Johnson + James Harden (14) + Tyler Herro (15)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 175.9
+       },
+       {
+        "combo": "Jalen Johnson + LaMelo Ball (11) + Amen Thompson (13)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 161.6
+       },
+       {
+        "combo": "Jalen Johnson + Alperen Sengun (7) + James Harden (14)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 195.2
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": null,
    "draft_time": {
     "matched": 1075,
@@ -1913,12 +2395,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Zion Williamson",
+     "player": "Alperen Sengun",
      "adp": 8.4,
      "drafted": 100.0
     },
     {
-     "player": "Alperen Sengun",
+     "player": "Zion Williamson",
      "adp": 8.4,
      "drafted": 100.0
     },
@@ -2008,12 +2490,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Cedric Coward",
+     "player": "Dyson Daniels",
      "adp": 27.9,
      "drafted": 100.0
     },
     {
-     "player": "Dyson Daniels",
+     "player": "Cedric Coward",
      "adp": 27.9,
      "drafted": 100.0
     },
@@ -2151,7 +2633,7 @@
     },
     {
      "pair": "Stephon Castle + Trey Murphy III",
-     "rounds": "3/5",
+     "rounds": "4/5",
      "share": 6.5,
      "lift": 2.72
     },
@@ -2175,7 +2657,7 @@
     },
     {
      "pair": "Evan Mobley + Zach LaVine",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 6.5,
      "lift": 2.72
     },
@@ -2187,7 +2669,7 @@
     },
     {
      "pair": "Onyeka Okongwu + Isaiah Hartenstein",
-     "rounds": "4/5",
+     "rounds": "4/6",
      "share": 6.0,
      "lift": 2.53
     },
@@ -2199,7 +2681,7 @@
     },
     {
      "pair": "LaMelo Ball + Jarrett Allen",
-     "rounds": "2/4",
+     "rounds": "2/5",
      "share": 6.0,
      "lift": 2.53
     },
@@ -2223,13 +2705,13 @@
     },
     {
      "pair": "Stephon Castle + Jonathan Kuminga",
-     "rounds": "3/5",
+     "rounds": "4/6",
      "share": 6.0,
      "lift": 2.68
     },
     {
      "pair": "Donovan Mitchell + Stephon Castle",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 6.0,
      "lift": 2.53
     },
@@ -2241,7 +2723,7 @@
     },
     {
      "pair": "Evan Mobley + Stephon Castle",
-     "rounds": "1/3",
+     "rounds": "1/4",
      "share": 5.6,
      "lift": 2.33
     },
@@ -2271,7 +2753,7 @@
     },
     {
      "pair": "Zach LaVine + Dyson Daniels",
-     "rounds": "3/5",
+     "rounds": "4/5",
      "share": 5.6,
      "lift": 2.33
     },
@@ -2344,6 +2826,247 @@
      "share": 1.4
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Evan Mobley (6) + Alperen Sengun (7)",
+      "share": 5.1,
+      "lift": 2.14,
+      "top1": 0,
+      "avg_points": 185.0
+     },
+     {
+      "pair": "Donovan Mitchell (5) + Evan Mobley (6)",
+      "share": 3.7,
+      "lift": 1.56,
+      "top1": 0,
+      "avg_points": 169.5
+     },
+     {
+      "pair": "Donovan Mitchell (5) + Alperen Sengun (7)",
+      "share": 3.2,
+      "lift": 1.36,
+      "top1": 0,
+      "avg_points": 172.0
+     },
+     {
+      "pair": "Evan Mobley (6) + Zion Williamson (8)",
+      "share": 2.3,
+      "lift": 0.97,
+      "top1": 0,
+      "avg_points": 162.5
+     },
+     {
+      "pair": "Donovan Mitchell (5) + Zion Williamson (8)",
+      "share": 1.9,
+      "lift": 0.78,
+      "top1": 0,
+      "avg_points": 166.9
+     },
+     {
+      "pair": "Alperen Sengun (7) + Zion Williamson (8)",
+      "share": 0.9,
+      "lift": 0.39,
+      "top1": 0,
+      "avg_points": 165.6
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Victor Wembanyama",
+      "adp_rank": 1,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Victor Wembanyama + Kevin Durant (12) + Amen Thompson (13)",
+        "of_anchor": 11.1,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 220.4
+       },
+       {
+        "combo": "Victor Wembanyama + Amen Thompson (13) + James Harden (14)",
+        "of_anchor": 11.1,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 218.5
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (11) + Kevin Durant (12)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 1,
+        "avg_points": 250.2
+       },
+       {
+        "combo": "Victor Wembanyama + Kevin Durant (12) + James Harden (14)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 237.8
+       },
+       {
+        "combo": "Victor Wembanyama + Amen Thompson (13) + Ajay Mitchell (16)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 225.2
+       },
+       {
+        "combo": "Victor Wembanyama + Zion Williamson (8) + LaMelo Ball (11)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 233.3
+       },
+       {
+        "combo": "Victor Wembanyama + Darius Acuff Jr. (10) + LaMelo Ball (11)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 237.0
+       },
+       {
+        "combo": "Victor Wembanyama + Alperen Sengun (7) + Kevin Durant (12)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 245.4
+       }
+      ]
+     },
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 2,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + Cameron Boozer (9) + LaMelo Ball (11)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 202.1
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Darius Acuff Jr. (10) + Ajay Mitchell (16)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 202.4
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (11) + Kevin Durant (12)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 206.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (11) + Amen Thompson (13)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 179.8
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Zion Williamson (8) + LaMelo Ball (11)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 187.2
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Cameron Boozer (9) + Amen Thompson (13)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 194.2
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Zion Williamson (8) + Amen Thompson (13)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 143.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Zion Williamson (8) + Tyler Herro (15)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 176.5
+       }
+      ]
+     },
+     {
+      "anchor": "Jalen Johnson",
+      "adp_rank": 3,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Jalen Johnson + LaMelo Ball (11) + Kevin Durant (12)",
+        "of_anchor": 11.1,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 175.5
+       },
+       {
+        "combo": "Jalen Johnson + Zion Williamson (8) + James Harden (14)",
+        "of_anchor": 11.1,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 166.8
+       },
+       {
+        "combo": "Jalen Johnson + Kevin Durant (12) + James Harden (14)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 171.4
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Ajay Mitchell (16)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 180.0
+       },
+       {
+        "combo": "Jalen Johnson + Zion Williamson (8) + Tyler Herro (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 184.4
+       },
+       {
+        "combo": "Jalen Johnson + Kevin Durant (12) + Amen Thompson (13)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 143.1
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Tyler Herro (15)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 169.4
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + James Harden (14)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 241.2
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": null,
    "draft_time": {
     "matched": 215,

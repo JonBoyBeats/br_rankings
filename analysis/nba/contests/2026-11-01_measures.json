@@ -509,6 +509,247 @@
      "share": 1.5
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     3,
+     6
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Julius Randle (4) + Michael Porter Jr. (5)",
+      "share": 7.7,
+      "lift": 1.41,
+      "top1": 3,
+      "avg_points": 194.0
+     },
+     {
+      "pair": "Pascal Siakam (3) + Yaxel Lendeborg (6)",
+      "share": 6.6,
+      "lift": 1.21,
+      "top1": 0,
+      "avg_points": 196.0
+     },
+     {
+      "pair": "Pascal Siakam (3) + Julius Randle (4)",
+      "share": 5.5,
+      "lift": 1.0,
+      "top1": 0,
+      "avg_points": 182.6
+     },
+     {
+      "pair": "Pascal Siakam (3) + Michael Porter Jr. (5)",
+      "share": 5.2,
+      "lift": 0.97,
+      "top1": 0,
+      "avg_points": 181.9
+     },
+     {
+      "pair": "Julius Randle (4) + Yaxel Lendeborg (6)",
+      "share": 4.6,
+      "lift": 0.84,
+      "top1": 1,
+      "avg_points": 208.8
+     },
+     {
+      "pair": "Michael Porter Jr. (5) + Yaxel Lendeborg (6)",
+      "share": 2.8,
+      "lift": 0.51,
+      "top1": 4,
+      "avg_points": 208.7
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 1,
+      "teams": 2291,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Austin Reaves (9) + Andrew Nembhard (10)",
+        "of_anchor": 16.7,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 222.7
+       },
+       {
+        "combo": "Luka Doncic + Walker Kessler (8) + Austin Reaves (9)",
+        "of_anchor": 15.0,
+        "share": 3.7,
+        "top1": 8,
+        "avg_points": 229.8
+       },
+       {
+        "combo": "Luka Doncic + Walker Kessler (8) + Andrew Nembhard (10)",
+        "of_anchor": 8.5,
+        "share": 2.1,
+        "top1": 5,
+        "avg_points": 236.8
+       },
+       {
+        "combo": "Luka Doncic + Darius Garland (7) + Austin Reaves (9)",
+        "of_anchor": 6.5,
+        "share": 1.6,
+        "top1": 0,
+        "avg_points": 213.1
+       },
+       {
+        "combo": "Luka Doncic + Darius Garland (7) + Andrew Nembhard (10)",
+        "of_anchor": 5.6,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 224.7
+       },
+       {
+        "combo": "Luka Doncic + Darius Garland (7) + Walker Kessler (8)",
+        "of_anchor": 5.3,
+        "share": 1.3,
+        "top1": 1,
+        "avg_points": 233.2
+       },
+       {
+        "combo": "Luka Doncic + Yaxel Lendeborg (6) + Austin Reaves (9)",
+        "of_anchor": 3.8,
+        "share": 0.9,
+        "top1": 8,
+        "avg_points": 240.2
+       },
+       {
+        "combo": "Luka Doncic + Austin Reaves (9) + RJ Barrett (11)",
+        "of_anchor": 3.7,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 223.6
+       }
+      ]
+     },
+     {
+      "anchor": "Scottie Barnes",
+      "adp_rank": 2,
+      "teams": 2291,
+      "combos": [
+       {
+        "combo": "Scottie Barnes + Darius Garland (7) + Andrew Nembhard (10)",
+        "of_anchor": 8.4,
+        "share": 2.1,
+        "top1": 0,
+        "avg_points": 184.7
+       },
+       {
+        "combo": "Scottie Barnes + Darius Garland (7) + Walker Kessler (8)",
+        "of_anchor": 7.3,
+        "share": 1.8,
+        "top1": 0,
+        "avg_points": 195.4
+       },
+       {
+        "combo": "Scottie Barnes + Michael Porter Jr. (5) + Andrew Nembhard (10)",
+        "of_anchor": 6.0,
+        "share": 1.5,
+        "top1": 0,
+        "avg_points": 194.7
+       },
+       {
+        "combo": "Scottie Barnes + Yaxel Lendeborg (6) + Andrew Nembhard (10)",
+        "of_anchor": 5.8,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 208.4
+       },
+       {
+        "combo": "Scottie Barnes + Darius Garland (7) + Austin Reaves (9)",
+        "of_anchor": 5.6,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 176.5
+       },
+       {
+        "combo": "Scottie Barnes + Walker Kessler (8) + Andrew Nembhard (10)",
+        "of_anchor": 5.3,
+        "share": 1.3,
+        "top1": 0,
+        "avg_points": 198.3
+       },
+       {
+        "combo": "Scottie Barnes + Yaxel Lendeborg (6) + Walker Kessler (8)",
+        "of_anchor": 5.2,
+        "share": 1.3,
+        "top1": 0,
+        "avg_points": 222.3
+       },
+       {
+        "combo": "Scottie Barnes + Austin Reaves (9) + Andrew Nembhard (10)",
+        "of_anchor": 4.5,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 180.1
+       }
+      ]
+     },
+     {
+      "anchor": "Pascal Siakam",
+      "adp_rank": 3,
+      "teams": 2291,
+      "combos": [
+       {
+        "combo": "Pascal Siakam + Yaxel Lendeborg (6) + RJ Barrett (11)",
+        "of_anchor": 12.3,
+        "share": 3.1,
+        "top1": 0,
+        "avg_points": 197.6
+       },
+       {
+        "combo": "Pascal Siakam + Michael Porter Jr. (5) + RJ Barrett (11)",
+        "of_anchor": 9.0,
+        "share": 2.2,
+        "top1": 0,
+        "avg_points": 182.8
+       },
+       {
+        "combo": "Pascal Siakam + Darius Garland (7) + RJ Barrett (11)",
+        "of_anchor": 7.2,
+        "share": 1.8,
+        "top1": 0,
+        "avg_points": 176.3
+       },
+       {
+        "combo": "Pascal Siakam + Michael Porter Jr. (5) + Brandin Podziemski (12)",
+        "of_anchor": 4.4,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 186.3
+       },
+       {
+        "combo": "Pascal Siakam + Yaxel Lendeborg (6) + Brandin Podziemski (12)",
+        "of_anchor": 4.2,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 199.5
+       },
+       {
+        "combo": "Pascal Siakam + Yaxel Lendeborg (6) + Andrew Nembhard (10)",
+        "of_anchor": 3.8,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 192.3
+       },
+       {
+        "combo": "Pascal Siakam + RJ Barrett (11) + Brandin Podziemski (12)",
+        "of_anchor": 3.4,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 196.9
+       },
+       {
+        "combo": "Pascal Siakam + Darius Garland (7) + Brandin Podziemski (12)",
+        "of_anchor": 3.0,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 177.8
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": {
     "teams": 40,
     "share4_median": 2.9,
@@ -1654,6 +1895,247 @@
      "share": 1.5
     }
    ],
+   "turns": {
+    "turn_1_2_ranks": [
+     3,
+     6
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Julius Randle (4) + Michael Porter Jr. (5)",
+      "share": 6.8,
+      "lift": 1.26,
+      "top1": 1,
+      "avg_points": 193.5
+     },
+     {
+      "pair": "Pascal Siakam (3) + Yaxel Lendeborg (6)",
+      "share": 5.8,
+      "lift": 1.06,
+      "top1": 0,
+      "avg_points": 194.6
+     },
+     {
+      "pair": "Pascal Siakam (3) + Julius Randle (4)",
+      "share": 5.4,
+      "lift": 1.0,
+      "top1": 0,
+      "avg_points": 182.5
+     },
+     {
+      "pair": "Pascal Siakam (3) + Michael Porter Jr. (5)",
+      "share": 5.0,
+      "lift": 0.91,
+      "top1": 0,
+      "avg_points": 176.8
+     },
+     {
+      "pair": "Julius Randle (4) + Yaxel Lendeborg (6)",
+      "share": 4.3,
+      "lift": 0.8,
+      "top1": 0,
+      "avg_points": 210.2
+     },
+     {
+      "pair": "Michael Porter Jr. (5) + Yaxel Lendeborg (6)",
+      "share": 2.6,
+      "lift": 0.47,
+      "top1": 1,
+      "avg_points": 208.7
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 1,
+      "teams": 282,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Walker Kessler (8) + Austin Reaves (9)",
+        "of_anchor": 17.7,
+        "share": 4.4,
+        "top1": 0,
+        "avg_points": 228.4
+       },
+       {
+        "combo": "Luka Doncic + Austin Reaves (9) + Andrew Nembhard (10)",
+        "of_anchor": 14.2,
+        "share": 3.5,
+        "top1": 0,
+        "avg_points": 222.2
+       },
+       {
+        "combo": "Luka Doncic + Walker Kessler (8) + Andrew Nembhard (10)",
+        "of_anchor": 6.7,
+        "share": 1.7,
+        "top1": 0,
+        "avg_points": 235.9
+       },
+       {
+        "combo": "Luka Doncic + Darius Garland (7) + Andrew Nembhard (10)",
+        "of_anchor": 6.0,
+        "share": 1.5,
+        "top1": 0,
+        "avg_points": 227.2
+       },
+       {
+        "combo": "Luka Doncic + Yaxel Lendeborg (6) + Austin Reaves (9)",
+        "of_anchor": 5.7,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 235.0
+       },
+       {
+        "combo": "Luka Doncic + Darius Garland (7) + Austin Reaves (9)",
+        "of_anchor": 4.6,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 217.1
+       },
+       {
+        "combo": "Luka Doncic + Michael Porter Jr. (5) + Austin Reaves (9)",
+        "of_anchor": 4.3,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 225.3
+       },
+       {
+        "combo": "Luka Doncic + Darius Garland (7) + Walker Kessler (8)",
+        "of_anchor": 4.3,
+        "share": 1.1,
+        "top1": 1,
+        "avg_points": 229.3
+       }
+      ]
+     },
+     {
+      "anchor": "Scottie Barnes",
+      "adp_rank": 2,
+      "teams": 282,
+      "combos": [
+       {
+        "combo": "Scottie Barnes + Darius Garland (7) + Andrew Nembhard (10)",
+        "of_anchor": 9.6,
+        "share": 2.4,
+        "top1": 0,
+        "avg_points": 186.4
+       },
+       {
+        "combo": "Scottie Barnes + Michael Porter Jr. (5) + Andrew Nembhard (10)",
+        "of_anchor": 7.4,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 200.9
+       },
+       {
+        "combo": "Scottie Barnes + Darius Garland (7) + Walker Kessler (8)",
+        "of_anchor": 6.0,
+        "share": 1.5,
+        "top1": 0,
+        "avg_points": 195.1
+       },
+       {
+        "combo": "Scottie Barnes + Michael Porter Jr. (5) + Walker Kessler (8)",
+        "of_anchor": 5.3,
+        "share": 1.3,
+        "top1": 0,
+        "avg_points": 201.5
+       },
+       {
+        "combo": "Scottie Barnes + Darius Garland (7) + RJ Barrett (11)",
+        "of_anchor": 5.3,
+        "share": 1.3,
+        "top1": 0,
+        "avg_points": 192.2
+       },
+       {
+        "combo": "Scottie Barnes + Yaxel Lendeborg (6) + Andrew Nembhard (10)",
+        "of_anchor": 5.0,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 214.4
+       },
+       {
+        "combo": "Scottie Barnes + Yaxel Lendeborg (6) + Walker Kessler (8)",
+        "of_anchor": 5.0,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 222.9
+       },
+       {
+        "combo": "Scottie Barnes + Darius Garland (7) + Austin Reaves (9)",
+        "of_anchor": 4.6,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 174.4
+       }
+      ]
+     },
+     {
+      "anchor": "Pascal Siakam",
+      "adp_rank": 3,
+      "teams": 282,
+      "combos": [
+       {
+        "combo": "Pascal Siakam + Yaxel Lendeborg (6) + RJ Barrett (11)",
+        "of_anchor": 8.9,
+        "share": 2.2,
+        "top1": 0,
+        "avg_points": 193.6
+       },
+       {
+        "combo": "Pascal Siakam + Darius Garland (7) + RJ Barrett (11)",
+        "of_anchor": 7.1,
+        "share": 1.8,
+        "top1": 0,
+        "avg_points": 168.3
+       },
+       {
+        "combo": "Pascal Siakam + Michael Porter Jr. (5) + RJ Barrett (11)",
+        "of_anchor": 7.1,
+        "share": 1.8,
+        "top1": 0,
+        "avg_points": 182.6
+       },
+       {
+        "combo": "Pascal Siakam + Yaxel Lendeborg (6) + Brandin Podziemski (12)",
+        "of_anchor": 5.7,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 199.6
+       },
+       {
+        "combo": "Pascal Siakam + Darius Garland (7) + Brandin Podziemski (12)",
+        "of_anchor": 5.3,
+        "share": 1.3,
+        "top1": 0,
+        "avg_points": 181.0
+       },
+       {
+        "combo": "Pascal Siakam + Michael Porter Jr. (5) + Andrew Nembhard (10)",
+        "of_anchor": 5.0,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 167.8
+       },
+       {
+        "combo": "Pascal Siakam + Austin Reaves (9) + RJ Barrett (11)",
+        "of_anchor": 4.3,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 174.1
+       },
+       {
+        "combo": "Pascal Siakam + Walker Kessler (8) + Brandin Podziemski (12)",
+        "of_anchor": 3.5,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 188.2
+       }
+      ]
+     }
+    ]
+   },
    "uniqueness": null,
    "draft_time": {
     "matched": 1116,

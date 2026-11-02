@@ -224,47 +224,74 @@ def drafted(teams, pod):
     return {p: k / n for p, k in c.items()}, n
 
 
-def est_rounds(teams, pod):
-    """{(draft id, player id): (estimated round, snake slot)}: the pod's picks in ADP-at-draft order, pod-size
-    picks a round, the slot running 1..pod in odd rounds and back in even ones."""
-    out, by = {}, defaultdict(list)
-    for t in teams:
-        for p, a in zip(t["picks"], t["adps"]):
-            by[t["draft_id"]].append((a if a is not None else 99.0, p))
-    for d, picks in by.items():
-        for i, (_, p) in enumerate(sorted(picks)):
-            r, k = i // pod + 1, i % pod
-            out[(d, p)] = (r, k + 1 if r % 2 else pod - k)
-    return out
+def day_ranks(info):
+    """{player id: rank by the night's closing ADP}: the order the slate was priced in at lock."""
+    priced = sorted((r["adp"], p) for p, r in info.items() if r["adp"] is not None)
+    return {p: i + 1 for i, (_, p) in enumerate(priced)}
 
 
-def pairs_and_cores(teams, pod, rounds, names):
-    """Pair share among teams, and its lift over a pod dealt at random: given both were drafted in a pod, the
-    chance they share a team if its picks went to teams at random is 5/(6*pod - 1). This doesn't rely on the
-    estimated pick order, so the snake's turns are part of the lift: a turn pair the field lands on often
-    shows well over 1. A snake-aware baseline waits on checking the estimated order against real drafts."""
-    n = len(teams)
-    share, both = Counter(), Counter()
-    by_pod, spots = defaultdict(list), defaultdict(Counter)
+def pair_counts(teams):
+    """(teams carrying each pair, pods drafting both) and the lift baseline: given both were drafted in a pod,
+    the chance they share a team if the pod's picks went to teams at random, 5/(6*pod - 1). Pick order isn't
+    public, so the snake's turns are part of the lift: a turn pair the field lands on often shows well over 1."""
+    share, both, by_pod = Counter(), Counter(), defaultdict(set)
     for t in teams:
-        for a, b in itertools.combinations(sorted(t["picks"]), 2):
-            share[(a, b)] += 1
-        by_pod[t["draft_id"]].extend(t["picks"])
-        for p in t["picks"]:
-            spots[p][rounds[(t["draft_id"], p)][0]] += 1
-    for d, ps in by_pod.items():
-        for a, b in itertools.combinations(sorted(set(ps)), 2):
-            both[(a, b)] += 1
-    together = 5 / (6 * pod - 1)
+        for k in itertools.combinations(sorted(t["picks"]), 2):
+            share[k] += 1
+        by_pod[t["draft_id"]].update(t["picks"])
+    for ps in by_pod.values():
+        for k in itertools.combinations(sorted(ps), 2):
+            both[k] += 1
+    return share, both
+
+
+def pairs_and_cores(teams, pod, rank, names, share, both):
+    n, together = len(teams), 5 / (6 * pod - 1)
+    rnd = lambda p: math.ceil(rank[p] / pod) if p in rank else 0
     pairs = []
     for k, v in share.most_common(400):
-        ra, rb = spots[k[0]].most_common(1)[0][0], spots[k[1]].most_common(1)[0][0]
-        a, b = (k if ra <= rb else (k[1], k[0]))
-        pairs.append({"pair": "%s + %s" % (names(a), names(b)), "rounds": "%d/%d" % (min(ra, rb), max(ra, rb)),
+        a, b = sorted(k, key=lambda p: rank.get(p, 999))
+        pairs.append({"pair": "%s + %s" % (names(a), names(b)), "rounds": "%s/%s" % (rnd(a) or "?", rnd(b) or "?"),
                       "share": pct(v / n), "lift": round(v / (both[k] * together), 2)})
     cores = Counter(tuple(sorted(t["picks"][:3])) for t in teams)
     core_rows = [{"core": " + ".join(names(p) for p in k), "share": pct(v / n)} for k, v in cores.most_common(15)]
     return pairs, core_rows
+
+
+def turns(teams, pod, rank, names, share, both):
+    """The turns, by the night's closing-ADP ranks (no pick order needed):
+    1/2 turn: pairs of players both ranked pod-1..pod+2 (5-8 in 6-person pods), the picks around the turn;
+    2/3 turn: for each of the top 3 by ADP, the two round 2-3 players (ranks pod+1..3*pod) his teams paired
+    him with. Each combo: share of teams (2/3: of the anchor's teams too), lift where it's a pair, how many
+    made the top 1%, and the teams' average points: a description of what happened, not a rule."""
+    n, together, cut = len(teams), 5 / (6 * pod - 1), math.ceil(len(teams) / 100)
+    def outcome(ts):
+        return {"top1": sum(1 for t in ts if t["place"] <= cut), "avg_points": round(sum(t["points"] for t in ts) / len(ts), 1)}
+    lo, hi = pod - 1, pod + 2
+    window = {p for p, r in rank.items() if lo <= r <= hi}
+    t12 = []
+    for k, v in share.items():
+        if k[0] in window and k[1] in window:
+            a, b = sorted(k, key=lambda p: rank[p])
+            ts = [t for t in teams if a in t["picks"] and b in t["picks"]]
+            t12.append(dict({"pair": "%s (%d) + %s (%d)" % (names(a), rank[a], names(b), rank[b]), "share": pct(v / n),
+                             "lift": round(v / (both[k] * together), 2)}, **outcome(ts)))
+    t12.sort(key=lambda r: -r["share"])
+    t23 = []
+    for anchor in sorted((p for p, r in rank.items() if r <= 3), key=lambda p: rank[p]):
+        ts = [t for t in teams if anchor in t["picks"]]
+        if not ts:
+            continue
+        combos = defaultdict(list)
+        for t in ts:
+            mid = sorted((p for p in t["picks"] if pod + 1 <= rank.get(p, 0) <= 3 * pod), key=lambda p: rank[p])
+            for k in itertools.combinations(mid, 2):
+                combos[k].append(t)
+        rows = [dict({"combo": "%s + %s (%d) + %s (%d)" % (names(anchor), names(a), rank[a], names(b), rank[b]),
+                      "of_anchor": pct(len(c) / len(ts)), "share": pct(len(c) / n)}, **outcome(c))
+                for (a, b), c in sorted(combos.items(), key=lambda x: -len(x[1]))[:8]]
+        t23.append({"anchor": names(anchor), "adp_rank": rank[anchor], "teams": len(ts), "combos": rows})
+    return {"turn_1_2_ranks": [lo, hi], "turn_1_2": t12[:12], "turn_2_3": t23}
 
 
 def uniqueness(teams):
@@ -324,6 +351,7 @@ def measures(mirror, date):
     label, slate_id = contests[0]["slate"], contests[0]["slate_id"]
     info = players_on(date, label)
     names = lambda p: info.get(p, {}).get("name") or p[:8]
+    rank = day_ranks(info)
     pod = int(contests[0]["pod_size"])
     means = band_means(pod)
     by_band = defaultdict(list)
@@ -349,8 +377,8 @@ def measures(mirror, date):
                        key=lambda r: r["adp"] if r["adp"] is not None else 999)
         # the first priced player the field left in some pods (under 10% reads as news: ruled out, not faded)
         below = next((r for r in curve if 10 <= r["drafted"] < 99.5 and r["adp"] is not None), None)
-        rounds = est_rounds(ts, pod)
-        pairs, cores = pairs_and_cores(ts, pod, rounds, names)
+        share, both = pair_counts(ts)
+        pairs, cores = pairs_and_cores(ts, pod, rank, names, share, both)
         top1 = [t for t in ts if t["place"] <= math.ceil(len(ts) / 100)]
         team_val = lambda t: (sum(fpoe(p) or 0 for p in t["picks"]), sum(breaker(p) for p in t["picks"]))
         times = draft_times(ts, snaps)
@@ -366,7 +394,7 @@ def measures(mirror, date):
                          "top1_fpoe": round(sum(team_val(t)[0] for t in top1) / len(top1), 1),
                          "field_breakers": round(sum(team_val(t)[1] for t in ts) / len(ts), 2),
                          "top1_breakers": round(sum(team_val(t)[1] for t in top1) / len(top1), 2)},
-               "pairs": pairs[:25], "cores": cores,
+               "pairs": pairs[:25], "cores": cores, "turns": turns(ts, pod, rank, names, share, both),
                "uniqueness": uniqueness(ts),
                "draft_time": {"matched": len(times), "am_share": pct(sum(1 for t in ts if am(t)) / max(1, len(times))),
                               "by_hour_pt": dict(sorted(hours.items()))},
@@ -404,6 +432,15 @@ def show(m):
         for p in c["pairs"][:6]:
             print("      %-44s r%s  %5.1f%%  x%s" % (p["pair"], p["rounds"], p["share"], p["lift"]))
         print("    cores: " + "; ".join("%s %.1f%%" % (r["core"], r["share"]) for r in c["cores"][:3]))
+        tn = c["turns"]
+        print("    1/2 turn (ADP ranks %d-%d):" % tuple(tn["turn_1_2_ranks"]))
+        for r in tn["turn_1_2"][:4]:
+            print("      %-44s %5.1f%%  x%-5s top1 %d  avg %.1f" % (r["pair"], r["share"], r["lift"], r["top1"], r["avg_points"]))
+        print("    2/3 turn (top-3 ADP with their round 2-3 pair):")
+        for an in tn["turn_2_3"]:
+            r = an["combos"][0] if an["combos"] else None
+            if r:
+                print("      %-52s %4.1f%% of his %d teams  top1 %d  avg %.1f" % (r["combo"], r["of_anchor"], an["teams"], r["top1"], r["avg_points"]))
         u = c["uniqueness"]
         if u:
             print("  5 my %d teams: median share of the field holding 4+ of my 6 %.2f%% (max %.2f%%); %d duplicated in the field, %d repeats of my own" % (
