@@ -7,6 +7,7 @@ Each row is a player on the slate, for the two halves of the day:
              adp_am: ADP at that moment
   ETR        etr_first and etr_last: its first and last upload before lock; adp_etr: ADP when
              the first came in
+  injury     his Underdog tag at lock; injury_am: his tag when the AM board locked
   tiers      am_tier and pm_tier: the tier (1-5) your board's tier lines put him in at each lock
              (blank past your line, or when the tiers weren't on)
   afternoon  pm_rank and ours_pm: your order and our Proj when you pressed Lock PM (else the
@@ -46,7 +47,7 @@ STAT = {"MIN": "min", "PTS": "pts", "REB": "reb", "AST": "ast", "STL": "stl", "B
 # made-attempted, kept as ESPN writes them (as on the Live page)
 SHOT = {"FG": "fg", "3PT": "fg3", "FT": "ft", "fieldGoalsMade-fieldGoalsAttempted": "fg",
         "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3", "freeThrowsMade-freeThrowsAttempted": "ft"}
-COLS = ["date", "slate", "player_id", "name", "team", "pos", "adp_am", "adp_etr", "adp_close", "injury", "usual_min",
+COLS = ["date", "slate", "player_id", "name", "team", "pos", "adp_am", "adp_etr", "adp_close", "injury", "injury_am", "usual_min",
         "am_rank", "ours_am", "pm_rank", "ours_pm", "ours_raw", "etr_first", "etr_last", "etr_median",
         "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual", "margin", "am_tier", "pm_tier",
         # for the player-by-player notes (scripts/nba_ledger.py): his night and his usual per minute
@@ -402,6 +403,7 @@ def build(mirror, gist, slate, name_map):
     plist = list(players.values())
     adp = lambda snap: {p["player_id"]: p.get("adp") for p in (snap[1] if snap else [])}
     adp_am, adp_etr, adp_close = adp(s_am), adp(s_etr), adp(close)
+    injury_am = {p["player_id"]: p.get("injury") or "" for p in (s_am[1] if s_am else [])}   # his tag when the AM board locked
     etr1 = join_etr(plist, first["entries"] if first else None, name_map)
     etr2 = join_etr(plist, parts["etr_last"]["entries"] if parts.get("etr_last") else None, name_map)
     rank = lambda b: {pid: i + 1 for i, pid in enumerate((b or {}).get("order", []))}
@@ -428,7 +430,7 @@ def build(mirror, gist, slate, name_map):
             "date": day, "slate": slate["label"], "player_id": pid, "name": p["first_name"] + " " + p["last_name"],
             "team": p["team"], "pos": p.get("position") or "",
             "adp_am": r1(adp_am.get(pid)), "adp_etr": r1(adp_etr.get(pid)), "adp_close": r1(adp_close.get(pid)),
-            "injury": p.get("injury") or "", "usual_min": r1(m and m.get("min")),
+            "injury": p.get("injury") or "", "injury_am": injury_am.get(pid, ""), "usual_min": r1(m and m.get("min")),
             "am_rank": am_rank.get(pid, ""), "ours_am": r1(ours_am.get(pid)),
             "pm_rank": pm_rank.get(pid, ""), "ours_pm": r1(ours_pm.get(pid)), "ours_raw": r1(m and m.get("fp")),
             "etr_first": r1(etr1[pid].get("proj")) if pid in etr1 else "",

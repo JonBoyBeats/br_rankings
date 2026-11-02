@@ -45,7 +45,7 @@ DECISION = 4         # picks: two players whose ADP at the window's lock is this
 # decided by less than EARLY_MARGIN. A starter cut that short in a close game is almost always hurt;
 # a bench player's short night is usually the rotation, which is worth learning from, so he stays.
 EARLY_USUAL, EARLY_MARGIN = 25, 15
-TEXT = ("date", "slate", "player_id", "name", "team", "pos", "injury", "opp", "fg", "fg3", "ft", "mtch_label", "mtch_cats")
+TEXT = ("date", "slate", "player_id", "name", "team", "pos", "injury", "injury_am", "opp", "fg", "fg3", "ft", "mtch_label", "mtch_cats")
 
 
 def num(v):
@@ -293,6 +293,23 @@ def ours_vs_etr(last, upto):
             "average miss ours %s, ETR %s." % (
                 both(rho(2), "%.2f"), GAP, both(near(2), "%.0f%%"), GAP, both(closer(2), "%.0f%%"), both(miss(0), "%.1f"),
                 both(miss(2), "%.1f")), ""]
+
+
+def tag_line(upto):
+    """How often a drafted player sat, by his Underdog tag when the AM board locked (season): the miss chance
+    behind how far to push a tagged player back in the morning."""
+    c = {}
+    for x in upto:
+        for r in x["rows"]:
+            if r["adp_am"] is None or "injury_am" not in r:
+                continue
+            k = r["injury_am"] or "no tag"
+            n, d = c.get(k, (0, 0))
+            c[k] = (n + 1, d + (not (r["min"] or 0) > 0))
+    if not c:
+        return []
+    return ["Sat, by tag at Lock AM (season, drafted players): " + "; ".join(
+        "%s %d of %d (%.0f%%)" % (k, d, n, 100 * d / n) for k, (n, d) in sorted(c.items(), key=lambda kv: -kv[1][0])) + ".", ""]
 
 
 MOVE = 1.0    # picks: an ADP move worth listing
@@ -546,7 +563,7 @@ def main():
                 ", ".join(ln.get("am") or ["none"]), ", ".join(ln.get("pm") or ["none"]), " " + ln["note"] if ln.get("note") else ""))
         out.append("")
     out += ["## Headline: your board against the straight orders (%d slates since %s)" % (len(upto), upto[0]["date"]), ""]
-    out += headlines(last, upto) + tier_rule_lines(last, upto) + ours_vs_etr(last, upto)
+    out += headlines(last, upto) + tier_rule_lines(last, upto) + ours_vs_etr(last, upto) + tag_line(upto)
     out += ["## For the log (misses.csv; not shown in chat)", ""]
     for s in last:
         rows = s["rows"]
