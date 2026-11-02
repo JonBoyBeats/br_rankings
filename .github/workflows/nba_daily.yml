@@ -39,6 +39,14 @@ jobs:
           python3 scripts/nba_daily.py --mirror ../br-adp-mirror \
             $([ -d ../gist ] && echo --gist ../gist) \
             ${SINCE:+--since "$SINCE"} ${{ inputs.rebuild && '--rebuild' || '' }}
+      # Every main-slate contest that has settled (contest ids from the ADP poller's lobby capture): each team's
+      # picks, place and payout, then the night's field measures. A failure here must not hold up the notes.
+      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
+        name: Contests
+        continue-on-error: true
+        run: |
+          python3 scripts/nba_contests.py pull --mirror ../br-adp-mirror
+          python3 scripts/nba_contests.py measures --mirror ../br-adp-mirror --date "$(TZ=America/Los_Angeles date -d yesterday +%F)"
       # Today's Recent notes: last night into the ledger, a fresh note for everyone on today's
       # slates who has played since his last one, then the board's notes file
       - name: Recent notes
@@ -51,6 +59,6 @@ jobs:
           python3 scripts/build_takes.py
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
-          git add analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json
+          git add analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests
           git diff --cached --quiet || git commit -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           git pull --rebase -q origin main && git push
