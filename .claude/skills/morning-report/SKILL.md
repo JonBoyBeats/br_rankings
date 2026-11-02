@@ -1,6 +1,6 @@
 ---
 name: morning-report
-description: NBA morning report. Scores the morning barbell (your AM board and our Proj against ADP) and the afternoon barbell (your PM board, ETR and our Proj against closing ADP) for last night's main slate and every slate so far; writes up your biggest calls and our misses and why; keeps the running log of causes and the themes in it. Use when asked for the morning report.
+description: NBA morning report. Scores your AM and PM boards against the straight orders (ours, ETR, ADP) and tests the ordering rule on each of your five tiers, for last night's main slate and every slate so far; writes up your biggest calls and our misses and why; keeps the running log of causes and the themes in it. Use when asked for the morning report.
 ---
 
 # NBA morning report
@@ -9,11 +9,19 @@ The nightly job (`.github/workflows/nba_daily.yml`, about 2am PT) writes one fil
 slate to `analysis/nba/daily/`. This report scores them and keeps a log of why we missed,
 so patterns show up over weeks rather than being remembered night to night.
 
+Its main job is the forward test of your tier rules: the five tiers you draw on the board each day,
+each ordered by the rule written beside its tag (morning on our Proj, afternoon on ETR). The rules
+came from the same 12 slates they were tuned on, so only nights after 2026-11-02 count for them.
+
 ## 1. Get the newest record
 
 ```
 git pull origin main
+git clone -q https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror 2>/dev/null || git -C ../br-adp-mirror pull -q
+git -C ../br-adp-mirror fetch -q --unshallow 2>/dev/null || true
 ```
+
+The tier rules use the board's Boom %, which reads the mirror's history: it must be a full clone.
 
 The newest file should be yesterday's main slate (`analysis/nba/daily/<date>_<day>_main.csv`).
 If it isn't there, say so first: the nightly run may have failed or not run yet (the
@@ -22,10 +30,8 @@ If it isn't there, say so first: the nightly run may have failed or not run yet 
 ## 2. The scores
 
 ```
-python3 scripts/nba_report.py
+python3 scripts/nba_report.py --mirror ../br-adp-mirror
 ```
-
-Show its tables as printed.
 
 Late news first: if a player who was being drafted (ADP in the first two-thirds of the draft: 24 or
 earlier on a 36-pick slate, 16 on a 24-pick one) was ruled out after a lock (the report's "Not
@@ -35,44 +41,33 @@ graded" list against the lock times; ETR's last upload still having him is a sur
 of that half's grading, and calls and misses on them aren't logged, so a late scratch and the
 boosts around it don't count for or against anyone. They still get their newspaper line. A late
 scratch who wasn't being drafted doesn't take his team out: it stays graded, and calls on his
-teammates are logged as `hedge`. Every number comes from the script. Don't estimate, round
-differently or recompute any of them. The report is in two halves, the way the day runs:
+teammates are logged as `hedge`.
 
-- **Morning barbell**: the board your early drafts come off (Lock AM on the board, else the
-  board saved before ETR's first upload) and our Proj then, against ADP at that moment. Did
-  the morning work beat just drafting ADP?
-- **Afternoon barbell**: your final board (Lock PM, else the board at lock), ETR's last upload
-  and our Proj at Lock PM, against ADP at lock. Do your tweaks beat ETR straight, and does our
-  number deserve a share of the projection?
+Every number comes from the script. Don't estimate, round differently or recompute any of them.
+The report prints in the order it goes in chat:
 
-Each barbell has two tables, every cell last night with the season beside it:
+- **Headline**: your board against each straight order. Morning: your AM board (Lock AM, else
+  the board saved before ETR's first upload) against our Proj and ADP then. Afternoon: your PM
+  board (Lock PM, else the board at lock) against ETR's last upload, our Proj and ADP at lock. Of
+  the pairs your board and that order disagree on, how often yours was right, last night and
+  season, with a range and a verdict. "Your board wins" means keep making your moves; "X alone
+  wins" means stop; "too close to call" means not settled.
+- **Tier rules**: the core. For each of your tiers at each lock (am_tier, pm_tier in the record),
+  the rule beside it on the board (`TIER_RULES` in `scripts/nba_report.py`, matching
+  `NBA_TIER_NOTES` in index.html) against ADP and the half's projection straight, in points per
+  pair (for every pair in the tier, the earlier one's actual minus the later one's); where you
+  broke the rule (your Q-tag reads and gut calls), how often you were right; and how the tier
+  scored against its projection. A tier gets a verdict only after 14 nights (`TIER_NIGHTS`, set
+  before any result: never move it): "rule holds" (beats both, ranges above 0), "X beats the
+  rule" (a range below 0), else "too close to call", plus "your moves win/lose" when that range
+  clears 50%. Until then "too early": say so, and don't suggest changing a rule.
+- **Ours vs ETR**: one line on how our morning number tracks ETR's last upload. It's the input to
+  every morning rule.
+- **For the log**: your biggest AM calls against ADP, PM calls against ETR, our biggest misses and
+  splits, and the ADP movers season tally. These feed steps 3-5; they aren't shown in chat.
 
-- **The orders**: rank corr (how well each order matched the finish), **round picks** (an
-  order's two favourites in each ADP round of 6 picks, the 6th running to ADP rank 48, against
-  that round's average, in points), **rounds 5-6** alone, top-12 hits, and CLV (morning from
-  your AM lock, ETR from its first upload, to lock; 0 is no signal).
-- **Your board against each straight order**: of the pairs of players your board and that
-  order disagree on, how often yours was right, last night and season, with a range and a
-  verdict. This answers the question the report is for: morning, should you draft off our
-  number (or ADP) alone? Afternoon, should you draft off ETR alone? "Your board wins" means keep
-  making your moves; "X alone wins" means stop; "too close to call" means not settled. Don't
-  recommend a change on anything but a settled verdict.
-- **Ours vs ETR**: how our morning number (Lock AM; the morning file before the board kept it)
-  tracks ETR's first and last uploads, player by player (each number against its slate's average,
-  so ETR running high or shifting the whole slate doesn't count): rank corr, average gap, share
-  within 3 points, who was closer to the actual where we were 3+ apart, and, where ETR's first
-  upload started 3+ from ours, how often its last upload moved our way. ETR moves the market, so
-  this is how far off the market's number we are each morning and whether ETR comes to us.
-- **By slate**: whether last night looked like the others or was an outlier.
-- **Your tiers**: the tier lines on your board at each lock (am_tier, pm_tier in the record): each
-  tier's players, ADP range, projection and actual, and inside each tier whose order was right on
-  the pairs it orders differently: yours, ADP's or the half's projection. This is Phase 1 of the
-  tier score (see analysis/nba/report/tiers/): collect, don't change rules off it yet.
-- **ADP movers**: players whose ADP moved a pick or more between ETR's first upload and lock with
-  no injury news on them or their team, and the season's tally against the players ADP left alone.
-  So far risers have done a little worse than the unmoved: a lean to not chase a late riser, to read
-  only once each side has 50+.
-- **Blend**: the share of ours in a mix with ETR that missed least.
+If you change a rule on the board's notes, change `TIER_RULES` to match (and the reverse), and
+note the date in the takeaways: from then on its nights start over.
 
 ## 3. Write up the calls and misses
 
@@ -156,30 +151,6 @@ in a line each, and act on them only with the user's yes:
 
 Never change a pass bar after the results are in.
 
-## 6c. Boom vs ADP: is Boom a tiebreak worth using?
-
-Needs a full clone of the mirror (the script reads its history); if `../br-adp-mirror` is
-shallow, `git -C ../br-adp-mirror fetch -q --unshallow` first.
-
-```
-git clone -q https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror 2>/dev/null || git -C ../br-adp-mirror pull -q
-python3 scripts/nba_boom_ties.py --mirror ../br-adp-mirror
-```
-
-It regrades every night into `analysis/nba/boom_ties.csv`: on the main slate's top 60, pairs
-projected within 2 points where Boom would move a player past an earlier ADP, morning (our Proj at
-Lock AM and the morning ADP) and afternoon (ETR's median and closing ADP), split by a Boom gap
-under 4 and 4+. The morning side starts 2026-10-28, the first night our board-scale Proj is on
-file. In chat, a short "Boom vs ADP" section, every number as printed:
-
-- Last night: moves and how many the moved-up player won, morning and afternoon, under 4 and 4+.
-- Season: how often the moved-up player outscored the earlier ADP (50% is no better than ADP),
-  the average point difference, and his boom rate against the earlier ADP's.
-- One line: is Boom 4+ beating ADP yet, morning and afternoon separately? Call it a real edge
-  only when that cell has 500+ moves and has been at 53%+ for two weeks running (check the
-  season rate as of each night in `boom_ties.csv`); until then, "too early". Bank the same line
-  in that night's takeaways section.
-
 ## 7. Last night, player by player
 
 A line on every graded player's night (the newspaper), from a running ledger of every rotation
@@ -235,14 +206,24 @@ python3 scripts/nba_ledger.py write <file> && python3 scripts/build_takes.py
 The session's files are gone when it ends, so commit and push everything:
 
 ```
-git add analysis/nba/report analysis/nba/boom_ties.csv analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/nba_takes.json scripts/nba_hypotheses.py
+git add analysis/nba/report analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/nba_takes.json scripts/nba_hypotheses.py
 git commit -m "NBA report: takeaways and player notes for <date>" && git push origin HEAD:main
 ```
 
 ## In chat
 
-In this order, short and scannable: last night's morning and afternoon barbells, the same so
-far, ours vs ETR, your tiers, ADP movers, themes, takeaways, hypotheses (a line each, and any proposal), Boom vs ADP, then last night player by player (the printed list) and any "against
-the same team" lines. The calls and misses from steps 3-4 are logged for the themes, not listed
-in chat. Close with anything missing from the record (no lock, no ETR on file, unmatched box
-scores, notes not written overnight) so it can be fixed.
+In this order, short and scannable:
+
+1. **Headline**: the morning and afternoon tables, with their verdicts.
+2. **Tier rules**: the two tables, then one line on anything that stands out last night (a
+   tier where the rule clearly beat or lost to ADP or the projection, or your moves off it).
+   Until a tier has 14 nights, its verdict is "too early" and no rule changes are suggested.
+3. **Ours vs ETR**: the one line.
+4. **Hypotheses**: a line each, and any proposal (step 6b).
+5. **Themes and takeaways**: only a theme that crossed its bar; otherwise one line saying none did.
+6. **Last night, player by player**: only players whose ledger line carries a tag (the rest were
+   in line), plus any "against the same team" lines.
+7. **Missing**: anything missing from the record (no lock, no tier lines on a lock, no ETR on file,
+   unmatched box scores, notes not written overnight) so it can be fixed.
+
+The calls and misses from steps 3-4 are logged for the themes, not listed in chat.
