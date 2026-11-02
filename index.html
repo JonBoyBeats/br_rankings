@@ -3369,8 +3369,8 @@ function copyMainRanks() {
 }
 
 /* ---- NBA tiers: a visual over your order. Six bands, dark blue (1) to light blue (6), each
-   starting at a rank you can drag; tier 6 runs to your Ranked line. They are positions, so a
-   player you drag across a line changes tier. */
+   starting at a rank you can drag; tier 6 runs to your Ranked line. Moving a player keeps
+   everyone else in his tier: the lines shift around him (nbaTiersAfterMove). */
 var NBA_TIER_COLORS = ["#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd"];
 
 /** Where tiers 2-6 start: even sixths of the ranked list, each moved to the biggest Proj drop within 2 ranks. */
@@ -3395,6 +3395,34 @@ function nbaTierOf(rank, starts, end) {
   var t = 1;
   starts.forEach(function (st) { if (rank >= st) t++; });
   return t;
+}
+
+/**
+ * Tier lines after a move, so tiers hold players rather than ranks: everyone keeps his tier
+ * and the moved player joins the tier of the row he was dropped on (dropped just above a
+ * line, he joins the tier above it and the line moves down one). Falls back to `starts`
+ * unchanged if a tier would be left empty.
+ */
+function nbaTiersAfterMove(oldOrder, oldCut, newOrder, newCut, pid, targetPid, starts) {
+  var oldEnd = oldCut != null ? oldCut : oldOrder.length, newEnd = newCut != null ? newCut : newOrder.length, tierOf = {};
+  oldOrder.forEach(function (p, i) { tierOf[p] = nbaTierOf(i + 1, starts, oldEnd); });
+  if (targetPid != null && tierOf[targetPid] != null) tierOf[pid] = tierOf[targetPid];
+  var next = [], last = 1;
+  for (var i = 0; i < newEnd && i < newOrder.length; i++) {
+    var t = tierOf[newOrder[i]];
+    if (i === 0 && t !== 1) return starts.slice();
+    if (t < last || t > last + 1) return starts.slice();   // out of order, a tier skipped, or 0 above the line
+    if (t === last + 1) { next.push(i + 1); last = t; }
+  }
+  return next.length === 5 ? next : starts.slice();
+}
+
+/** After a move on an NBA board with tiers on: save the tier lines that keep everyone in his tier. */
+function keepTierLines(oldOrder, oldCut, pid, targetPid) {
+  if (SPORT_MODE !== "nba" || !state.slate) return;
+  var label = state.slate.label, t = load(K.tiers(label), null);
+  if (!t || !t.on || !Array.isArray(t.starts) || t.starts.length !== 5) return;
+  save(K.tiers(label), { on: true, starts: nbaTiersAfterMove(oldOrder, oldCut, state.order, state.cut, pid, targetPid, t.starts) });
 }
 
 /** The shown tiers, or null: on, NBA, your order, nothing filtered. */
@@ -4704,6 +4732,7 @@ document.addEventListener("drop", function (e) {
   if (!dragPid || !dropTarget) return;
   e.preventDefault();
   var targetPid = dropTarget.dataset.pid;
+  var wasOrder = state.order, wasCut = state.cut;
   var res = moveAcrossCut(state.order, state.cut, dragPid,
                           moveWithin(state.order, dragPid, targetPid, dropBefore));
   if (res.refused) {
@@ -4714,6 +4743,7 @@ document.addEventListener("drop", function (e) {
   }
   state.order = res.order;
   state.cut = res.cut;
+  keepTierLines(wasOrder, wasCut, dragPid, targetPid);
   delete state.newIds[dragPid];
   saveBoard();
   finishDrag();
@@ -4816,11 +4846,13 @@ function commitOrder() { saveBoard(); }
 
 function nudgeLifted(delta) {
   if (!state.liftedPid) return;
+  var wasOrder = state.order, wasCut = state.cut, from = wasOrder.indexOf(state.liftedPid);
   var res = moveAcrossCut(state.order, state.cut, state.liftedPid,
                           moveBy(state.order, state.liftedPid, delta));
   if (res.refused) return;               // already at the top of the sorted tail
   state.order = res.order;
   state.cut = res.cut;
+  keepTierLines(wasOrder, wasCut, state.liftedPid, wasOrder[Math.max(0, Math.min(wasOrder.length - 1, from + delta))]);
   delete state.newIds[state.liftedPid];
   saveBoard();
   render();
@@ -4840,6 +4872,7 @@ document.addEventListener("click", function (e) {
   var pid = row.dataset.pid;
   if (!state.liftedPid) { setLifted(pid); return; }
   if (state.liftedPid === pid) { setLifted(null); return; }
+  var wasOrder = state.order, wasCut = state.cut;
   var res = moveAcrossCut(state.order, state.cut, state.liftedPid,
                           placeAt(state.order, state.liftedPid, pid));
   if (res.refused) {
@@ -4850,6 +4883,7 @@ document.addEventListener("click", function (e) {
   }
   state.order = res.order;
   state.cut = res.cut;
+  keepTierLines(wasOrder, wasCut, state.liftedPid, pid);
   delete state.newIds[state.liftedPid];
   saveBoard();
   setLifted(null);
@@ -6581,6 +6615,17 @@ function brrSelfTest() {
      seeded.length === 5 && seeded[0] === 9 && seeded.every(function (v, i) { return i === 0 || v > seeded[i - 1]; }) && seeded[4] <= 44);
   ok("a rank's tier, and none past the line", nbaTierOf(1, [9, 16, 23, 30, 38], 44) === 1 && nbaTierOf(9, [9, 16, 23, 30, 38], 44) === 2 &&
      nbaTierOf(44, [9, 16, 23, 30, 38], 44) === 6 && nbaTierOf(45, [9, 16, 23, 30, 38], 44) === 0);
+  // tiers [a b][c d][e f][g h][i][j]
+  var T10 = "abcdefghij".split(""), S10 = [3, 5, 7, 9, 10];
+  ok("a player pulled above a tier's last player joins that tier and nobody is pushed down",
+     nbaTiersAfterMove(T10, null, "abcgdefhij".split(""), null, "g", "d", S10).join() === "3,6,8,9,10");
+  ok("dropped just above a line he joins the tier over it, just below it the tier under it",
+     nbaTiersAfterMove(T10, null, "abcdgefhij".split(""), null, "g", "d", S10).join() === "3,6,8,9,10" &&
+     nbaTiersAfterMove(T10, null, "abcdgefhij".split(""), null, "g", "e", S10).join() === "3,5,8,9,10" &&
+     nbaTiersAfterMove(T10, null, "acdbefghij".split(""), null, "b", "d", S10).join() === "2,5,7,9,10" &&
+     nbaTiersAfterMove(T10, null, "acdbefghij".split(""), null, "b", "e", S10).join() === "2,4,7,9,10");
+  ok("a move that would empty a tier leaves the lines alone",
+     nbaTiersAfterMove(T10, null, "abgcdefhij".split(""), null, "g", "c", [3, 5, 7, 8, 10]).join() === "3,5,7,8,10");
   ok("tiers ride a saved board", savedEntry(["a"], "s", "d", "t", null, 1, { on: true, starts: [2, 3, 4, 5, 6] }).tiers.starts.join() === "2,3,4,5,6" &&
      savedEntry(["a"], "s", "d", "t").tiers === undefined);
   ok("out marks ride a saved board, an empty list too",
