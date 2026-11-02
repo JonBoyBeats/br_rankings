@@ -1667,6 +1667,8 @@ function lockBoard(which) {
   var ours = state.nbaOurs || state.proj || {}, values = {};
   Object.keys(ours).forEach(function (pid) { values[pid] = Math.round(ours[pid] * 10) / 10; });
   locks[which] = { at: new Date().toISOString(), order: state.order.slice(), cut: state.cut == null ? null : state.cut, ours: values };
+  var tiers = load(K.tiers(state.slate.label), null);   // your tier lines as they stood, for the morning report's by-tier grading
+  if (tiers && Array.isArray(tiers.starts)) locks[which].tiers = { on: !!tiers.on, starts: tiers.starts.slice() };
   save(K.locks(state.slate.label), locks);
   renderLocks();
 }

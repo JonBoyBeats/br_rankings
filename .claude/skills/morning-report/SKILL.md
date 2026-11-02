@@ -64,6 +64,10 @@ Each barbell has two tables, every cell last night with the season beside it:
   upload started 3+ from ours, how often its last upload moved our way. ETR moves the market, so
   this is how far off the market's number we are each morning and whether ETR comes to us.
 - **By slate**: whether last night looked like the others or was an outlier.
+- **Your tiers**: the tier lines on your board at each lock (am_tier, pm_tier in the record): each
+  tier's players, ADP range, projection and actual, and inside each tier whose order was right on
+  the pairs it orders differently: yours, ADP's or the half's projection. This is Phase 1 of the
+  tier score (see analysis/nba/report/tiers/): collect, don't change rules off it yet.
 - **Blend**: the share of ours in a mix with ETR that missed least.
 
 ## 3. Write up the calls and misses
@@ -234,7 +238,7 @@ git commit -m "NBA report: takeaways and player notes for <date>" && git push or
 ## In chat
 
 In this order, short and scannable: last night's morning and afternoon barbells, the same so
-far, ours vs ETR, themes, takeaways, hypotheses (a line each, and any proposal), Boom vs ADP, then last night player by player (the printed list) and any "against
+far, ours vs ETR, your tiers, themes, takeaways, hypotheses (a line each, and any proposal), Boom vs ADP, then last night player by player (the printed list) and any "against
 the same team" lines. The calls and misses from steps 3-4 are logged for the themes, not listed
 in chat. Close with anything missing from the record (no lock, no ETR on file, unmatched box
 scores, notes not written overnight) so it can be fixed.

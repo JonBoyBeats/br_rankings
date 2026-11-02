@@ -7,6 +7,8 @@ Each row is a player on the slate, for the two halves of the day:
              adp_am: ADP at that moment
   ETR        etr_first and etr_last: its first and last upload before lock; adp_etr: ADP when
              the first came in
+  tiers      am_tier and pm_tier: the tier (1-6) your board's tier lines put him in at each lock
+             (blank past your line, or when the tiers weren't on)
   afternoon  pm_rank and ours_pm: your order and our Proj when you pressed Lock PM (else the
              board saved at lock, and no ours_pm); adp_close: the last ADP before lock
   ours_raw   the mirror's nba_morning.json on file when ETR's first upload came in
@@ -46,7 +48,7 @@ SHOT = {"FG": "fg", "3PT": "fg3", "FT": "ft", "fieldGoalsMade-fieldGoalsAttempte
         "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3", "freeThrowsMade-freeThrowsAttempted": "ft"}
 COLS = ["date", "slate", "player_id", "name", "team", "pos", "adp_am", "adp_etr", "adp_close", "injury", "usual_min",
         "am_rank", "ours_am", "pm_rank", "ours_pm", "ours_raw", "etr_first", "etr_last", "etr_median",
-        "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual", "margin",
+        "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual", "margin", "am_tier", "pm_tier",
         # for the player-by-player notes (scripts/nba_ledger.py): his night and his usual per minute
         "opp", "pf", "fg", "fg3", "ft", "pts_pm", "reb_pm", "ast_pm", "stk_pm", "fp_pm", "mtch", "mtch_label", "mtch_cats", "spread"]
 
@@ -198,6 +200,28 @@ def find_locks(gist, slate):
     return locks, newest
 
 
+def tiers_near(gist, slate, at):
+    """Your tier lines on the board saved nearest after `at` (within 15 minutes), else just before it:
+    for a lock pressed before the board kept tiers with its locks."""
+    t0 = iso(at)
+    after = [r for r in gist.revs if t0 <= r[0] <= t0 + dt.timedelta(minutes=15)]
+    before = [r for r in gist.revs if r[0] < t0]
+    for _, version in after + list(reversed(before))[:1]:
+        b = board_at(gist, version, slate)
+        if b and isinstance(b.get("tiers"), dict) and isinstance(b["tiers"].get("starts"), list):
+            return b["tiers"]
+    return None
+
+
+def tier_of(order, tiers, cut=None):
+    """{player_id: tier 1-6} as the board draws them: tiers 2-6 start at tiers["starts"] (ranks),
+    the last running to your line (or the end of your order); none past it, or when tiers are off."""
+    if not tiers or not tiers.get("on") or len(tiers.get("starts") or []) != 5:
+        return {}
+    end = cut if cut is not None else len(order)
+    return {pid: 1 + sum(1 for s in tiers["starts"] if i + 1 >= s) for i, pid in enumerate(order) if i + 1 <= end}
+
+
 def lock_line(slate, locks, t):
     pt_time = lambda iso_s: iso(iso_s).astimezone(PT).strftime("%-I:%M%p").lower()
     return "  %s: %s, %s%s" % (slate["label"], "Lock AM " + pt_time(locks["am"]["at"]) if locks.get("am") else "no Lock AM",
@@ -229,6 +253,11 @@ def gist_parts(gist, slate):
                 lo = mid + 1
         first_i = lo
         out["etr_first"] = etr_day(gist.store(revs[lo][1]), day)
+    for which in ("am", "pm"):
+        if locks.get(which) and not locks[which].get("tiers"):
+            tn = tiers_near(gist, slate, locks[which]["at"])
+            if tn:
+                locks[which] = dict(locks[which], tiers=tn)
     if locks.get("am"):
         out["am"] = dict(locks["am"], source="Lock AM")
     else:
@@ -236,11 +265,12 @@ def gist_parts(gist, slate):
         pre = board_at(gist, revs[cut - 1][1], slate) if cut > 0 else None
         stash = gist.store(last)["ours"].get(day + " " + slate["label"])
         out["am"] = {"at": pre["saved_at"], "order": pre["order"], "ours": stash["values"] if stash else {},
-                     "source": "board before ETR"} if pre else None
+                     "cut": pre.get("cut"), "tiers": pre.get("tiers"), "source": "board before ETR"} if pre else None
     if locks.get("pm"):
         out["pm"] = dict(locks["pm"], source="Lock PM")
     else:
-        out["pm"] = {"at": board["saved_at"], "order": board["order"], "ours": {}, "source": "board at lock"} if board else None
+        out["pm"] = {"at": board["saved_at"], "order": board["order"], "ours": {}, "cut": board.get("cut"),
+                     "tiers": board.get("tiers"), "source": "board at lock"} if board else None
     return out
 
 
@@ -374,6 +404,8 @@ def build(mirror, gist, slate, name_map):
     etr2 = join_etr(plist, parts["etr_last"]["entries"] if parts.get("etr_last") else None, name_map)
     rank = lambda b: {pid: i + 1 for i, pid in enumerate((b or {}).get("order", []))}
     am_rank, pm_rank = rank(am), rank(pm)
+    tier = lambda b: tier_of((b or {}).get("order", []), (b or {}).get("tiers"), (b or {}).get("cut"))
+    am_tier, pm_tier = tier(am), tier(pm)
     ours_am, ours_pm = (am or {}).get("ours") or {}, (pm or {}).get("ours") or {}
     mfile = {}
     for r in (morning or {}).get("players", []):
@@ -403,6 +435,7 @@ def build(mirror, gist, slate, name_map):
             "min": r1(b and b["min"]), "pts": r1(b and b["pts"]), "reb": r1(b and b["reb"]), "ast": r1(b and b["ast"]),
             "stl": r1(b and b["stl"]), "blk": r1(b and b["blk"]), "tov": r1(b and b["tov"]),
             "actual": ud_points(b) if b else "", "margin": r1(b and b["margin"]),
+            "am_tier": am_tier.get(pid, ""), "pm_tier": pm_tier.get(pid, ""),
             "opp": (b or {}).get("opp", ""), "pf": r1(b and b.get("pf")),
             "fg": (b or {}).get("fg", ""), "fg3": (b or {}).get("fg3", ""), "ft": (b or {}).get("ft", ""),
             "pts_pm": r3(m and m.get("upm")), "reb_pm": r3(m and m.get("rpm")), "ast_pm": r3(m and m.get("apm")),
@@ -411,7 +444,8 @@ def build(mirror, gist, slate, name_map):
             "mtch_cats": " ".join("%s%+.1f" % (k, v) for k, v in sorted(mt[1].items(), key=lambda x: -abs(x[1]))) if mt else "",
             "spread": r1(line.get(p["team"])),
         })
-    when = lambda x: {"at": x["at"], "from": x["source"], "ours": bool(x.get("ours"))} if x else None
+    when = lambda x: {"at": x["at"], "from": x["source"], "ours": bool(x.get("ours")),
+                      "tiers": (x.get("tiers") or {}).get("starts") if (x.get("tiers") or {}).get("on") else None} if x else None
     meta = {"lock": slate["lock"].isoformat(), "adp_am_at": s_am[0].isoformat() if s_am else None,
             "adp_etr_at": s_etr[0].isoformat() if s_etr else None, "adp_close_at": close[0].isoformat(),
             "morning_through": (morning or {}).get("games_through"),

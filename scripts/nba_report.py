@@ -361,6 +361,49 @@ def ours_vs_etr(last, upto):
                                                             both(moved, "%+.1f")), ""]
 
 
+def short(name):
+    """A last name for a list: "Michael Porter Jr." reads Porter."""
+    parts = [w for w in name.split() if w.rstrip(".") not in ("Jr", "Sr", "II", "III", "IV")]
+    return parts[-1] if parts else name
+
+
+def tier_lines(rows):
+    """Your tiers at each lock (am_tier, pm_tier): how each tier scored, and inside each, whose order
+    was right on the pairs it orders differently from yours: ADP's, and the half's projection
+    (ours at Lock AM in the morning, ETR's last upload in the afternoon)."""
+    out = []
+    for half, bar, col, base, label in (("am", AM, "am_tier", "ours_am", "ours at Lock AM"), ("pm", PM, "pm_tier", "etr_last", "ETR")):
+        mine = bar["sources"][0].key(rows)
+        p = [r for r in pool(rows, bar) if r.get(col) not in (None, "")]
+        if not p:
+            continue
+        adp = bar["adp"]
+        out += ["**Your tiers, %s (graded players)**" % ("morning" if half == "am" else "afternoon"), "",
+                "| Tier | Players | ADP | Proj (%s) | Actual | Your order right | ADP right | Proj right |" % label,
+                "|---|---|---|---|---|---|---|---|"]
+        for t in sorted({int(r[col]) for r in p}):
+            q = [r for r in p if int(r[col]) == t]
+            def right(k):
+                w = l = 0
+                for i in range(len(q)):
+                    for j in range(i + 1, len(q)):
+                        x, y = q[i], q[j]
+                        a, b = k(x), k(y)
+                        if a is None or b is None or a == b or x["actual"] == y["actual"]:
+                            continue
+                        if (a > b) == (x["actual"] > y["actual"]): w += 1
+                        else: l += 1
+                return "%.0f%% of %d" % (100 * w / (w + l), w + l) if w + l else "-"
+            av = lambda k: mean([r[k] for r in q])
+            adps = [r[adp] for r in q if r[adp] is not None]
+            out.append("| T%d | %s | %s | %s | %s | %s | %s | %s |" % (
+                t, ", ".join(short(r["name"]) for r in sorted(q, key=lambda r: -mine(r) if mine(r) is not None else 0)),
+                "%.0f-%.0f" % (min(adps), max(adps)) if adps else "-", fmt(av(base), "%.1f"), fmt(av("actual"), "%.1f"),
+                right(mine), right(lambda r: None if r[adp] is None else -r[adp]), right(lambda r: r[base])))
+        out.append("")
+    return out
+
+
 def player_table(rows, title, cols, key, n):
     head = [c[0] for c in cols]
     out = ["**%s**" % title, "", "| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
@@ -450,6 +493,8 @@ def main():
         out += player_table(both, "Biggest projection misses (ours: %s)" % {"ours_pm": "Lock PM", "ours_am": "Lock AM", "ours_raw": "morning file"}[oc],
                             cols, lambda r: -abs(r[oc] - r["actual"]), 8)
         out += player_table(both, "Biggest ours-vs-ETR splits", cols, lambda r: -abs(r[oc] - r["etr_last"]), 6)
+    for s in last:
+        out += tier_lines(s["rows"])
     out += ["## By slate: was last night normal?", "",
             "Rank corr, and your head-to-head calls (how often your board was right where it disagreed).", "",
             "| Slate | AM you | AM ours | AM ADP | AM you vs ours | PM you | PM ETR | PM ADP | PM you vs ETR |",
