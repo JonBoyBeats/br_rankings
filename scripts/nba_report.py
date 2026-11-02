@@ -28,7 +28,12 @@ the scramble around a late scratch doesn't count for or against anyone.
 Over several slates a difference carries an 80% range from resampling the slates; a range that
 spans 0 isn't settled yet.
 
-  python3 scripts/nba_report.py [--date YYYY-MM-DD] [--mirror ../br-adp-mirror]
+The season is the slates with as many drafters per pod as last night's: 4-drafter small slates (24
+picks) and 6-drafter ones are graded apart. Ours vs ETR, the tag line and the movers use every slate.
+
+  python3 scripts/nba_report.py [--date YYYY-MM-DD] [--mirror ../br-adp-mirror] [--since YYYY-MM-DD]
+
+--since grades only the slates from that date: the monthly re-check of the tier rules.
 
 --mirror (a full clone of br-adp-mirror) gives the tier rules the board's Boom %, for the rules
 that use it; without it Boom is skipped and the rule falls to its next key.
@@ -562,6 +567,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", help="the slate day to report on (default: the newest on file)")
     ap.add_argument("--mirror", help="a full clone of br-adp-mirror, for Boom in the tier rules")
+    ap.add_argument("--since", help="grade only slates from this date (YYYY-MM-DD): the monthly re-check")
     a = ap.parse_args()
     global MIRROR
     MIRROR = a.mirror
@@ -571,7 +577,10 @@ def main():
         return
     day = a.date or slates[-1]["date"]
     last = [s for s in slates if s["date"] == day]
-    upto = [s for s in slates if s["date"] <= day]
+    # the season: slates with the same number of drafters as last night's (4-drafter small slates are graded apart)
+    pods = pod_size(last[0]["rows"]) if last else 6
+    every = [s for s in slates if s["date"] <= day and (not a.since or s["date"] >= a.since)]
+    upto = [s for s in every if pod_size(s["rows"]) == pods]
     meta = json.load(open(os.path.join(DAILY, "meta.json"))) if os.path.exists(os.path.join(DAILY, "meta.json")) else {}
     out = []
     for s in last:
@@ -595,8 +604,9 @@ def main():
             out.append("Late news, left out of grading: morning %s; afternoon %s.%s" % (
                 ", ".join(ln.get("am") or ["none"]), ", ".join(ln.get("pm") or ["none"]), " " + ln["note"] if ln.get("note") else ""))
         out.append("")
-    out += ["## Headline: your board against the straight orders (%d slates since %s)" % (len(upto), upto[0]["date"]), ""]
-    out += headlines(last, upto) + tier_rule_lines(last, upto) + ours_vs_etr(last, upto) + tag_line(upto)
+    out += ["## Headline: your board against the straight orders (%d %d-drafter slates since %s%s)" % (
+        len(upto), pods, upto[0]["date"], "; %d-drafter slates are graded apart" % (10 - pods)), ""]
+    out += headlines(last, upto) + tier_rule_lines(last, upto) + ours_vs_etr(last, every) + tag_line(every)   # projections and tags: every slate
     out += ["## For the log (misses.csv; not shown in chat)", ""]
     for s in last:
         rows = s["rows"]
@@ -625,7 +635,7 @@ def main():
         out += player_table(both, "Biggest projection misses (ours: %s)" % {"ours_pm": "Lock PM", "ours_am": "Lock AM", "ours_raw": "morning file"}[oc],
                             cols, lambda r: -abs(r[oc] - r["actual"]), 8)
         out += player_table(both, "Biggest ours-vs-ETR splits", cols, lambda r: -abs(r[oc] - r["etr_last"]), 6)
-    out += movers_line(upto)
+    out += movers_line(every)
     out += ["Ours, ETR and the board are on the board's Proj scale; the morning file is a plain average, put on "
             "ETR's scale by a line fit wherever the two are blended."]
     print("\n".join(out))

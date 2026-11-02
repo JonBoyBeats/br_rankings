@@ -74,6 +74,18 @@ The report prints in the order it goes in chat:
 If you change a rule on the board's notes, change `TIER_RULES` to match (and the reverse), and
 note the date in the takeaways: from then on its nights start over.
 
+The season is the slates with last night's pod size: 4-drafter small slates and 6-drafter ones are
+graded apart. Say which in the chat headline.
+
+Your moves off the rule are your takes (Q-tag reads, ETR show bumps, gut calls), graded as one
+category. Pre-registered 2026-11-02: if a PM tier's takes don't beat its rule (verdict "your moves
+win") by its 14th night, recommend stopping PM takes in that tier.
+
+Monthly: on the first report of each month, also run the report with `--since` the first of the
+previous month, and say whether any tier verdict differs on that month alone (October's rotations
+aren't February's). Same bar; nothing changes on the monthly read alone. Also rerun
+`python3 scripts/nba_residuals.py` (residual correlations for the contest work) and commit its file.
+
 ## 3. Write up the calls and misses
 
 From last night's tables:
