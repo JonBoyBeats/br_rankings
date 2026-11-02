@@ -68,6 +68,10 @@ Each barbell has two tables, every cell last night with the season beside it:
   tier's players, ADP range, projection and actual, and inside each tier whose order was right on
   the pairs it orders differently: yours, ADP's or the half's projection. This is Phase 1 of the
   tier score (see analysis/nba/report/tiers/): collect, don't change rules off it yet.
+- **ADP movers**: players whose ADP moved a pick or more between ETR's first upload and lock with
+  no injury news on them or their team, and the season's tally against the players ADP left alone.
+  So far risers have done a little worse than the unmoved: a lean to not chase a late riser, to read
+  only once each side has 50+.
 - **Blend**: the share of ours in a mix with ETR that missed least.
 
 ## 3. Write up the calls and misses
@@ -238,7 +242,7 @@ git commit -m "NBA report: takeaways and player notes for <date>" && git push or
 ## In chat
 
 In this order, short and scannable: last night's morning and afternoon barbells, the same so
-far, ours vs ETR, your tiers, themes, takeaways, hypotheses (a line each, and any proposal), Boom vs ADP, then last night player by player (the printed list) and any "against
+far, ours vs ETR, your tiers, ADP movers, themes, takeaways, hypotheses (a line each, and any proposal), Boom vs ADP, then last night player by player (the printed list) and any "against
 the same team" lines. The calls and misses from steps 3-4 are logged for the themes, not listed
 in chat. Close with anything missing from the record (no lock, no ETR on file, unmatched box
 scores, notes not written overnight) so it can be fixed.

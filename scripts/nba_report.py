@@ -361,6 +361,54 @@ def ours_vs_etr(last, upto):
                                                             both(moved, "%+.1f")), ""]
 
 
+MOVE = 1.0    # picks: an ADP move worth listing
+
+
+def adp_movers(rows, date):
+    """ADP's move from ETR's first upload to lock, for players with no news of their own: no injury
+    tag on him or his team, no regular (20+ usual minutes) of his sitting, his team not on the late-news
+    list. Everyone drafted at one end or the other; [(row, move in picks, + = rose)]."""
+    pile = max((r["adp_close"] or 0) for r in rows) or 0
+    late = set(LATE.get(date, {}).get("pm", []))
+    out_teams = {r["team"] for r in rows if r["actual"] is not None and (r["min"] or 0) == 0 and (r["usual_min"] or 0) >= 20}
+    tagged = {r["team"] for r in rows if r["injury"]}
+    out = []
+    for r in rows:
+        if r["adp_etr"] is None or r["adp_close"] is None or r["etr_last"] is None or not graded(r):
+            continue
+        if r["adp_etr"] >= pile and r["adp_close"] >= pile:
+            continue
+        if r["team"] in late or r["team"] in out_teams or r["team"] in tagged:
+            continue
+        out.append((r, r["adp_etr"] - r["adp_close"]))
+    return out
+
+
+def movers_lines(last, upto):
+    """The watch list: last night's movers, and the season's tally against the players ADP left alone."""
+    out = ["**ADP movers since ETR posted (no injury news on the player or his team)**", ""]
+    for s in last:
+        mv = sorted([m for m in adp_movers(s["rows"], s["date"]) if abs(m[1]) >= MOVE], key=lambda m: -m[1])
+        if not mv:
+            out += ["- Nobody moved %.0f+ picks." % MOVE, ""]
+            continue
+        out += ["| Player | ADP at ETR -> lock | ETR first -> last | Actual | Actual - ETR last |", "|---|---|---|---|---|"]
+        for r, m in mv:
+            out.append("| %s %s | %.1f -> %.1f (%s %.1f) | %s -> %.1f | %.1f | %+.1f |" % (
+                r["name"], r["team"], r["adp_etr"], r["adp_close"], "up" if m > 0 else "down", abs(m),
+                fmt(r["etr_first"], "%.1f"), r["etr_last"], r["actual"], r["actual"] - r["etr_last"]))
+        out.append("")
+    every = [(r, m) for x in upto for r, m in adp_movers(x["rows"], x["date"])]
+    flat = [r["actual"] - r["etr_last"] for r, m in every if abs(m) < MOVE]
+    up = [r["actual"] - r["etr_last"] for r, m in every if m >= MOVE]
+    down = [r["actual"] - r["etr_last"] for r, m in every if m <= -MOVE]
+    if flat:
+        line = lambda xs: "%d, %+.1f against the unmoved" % (len(xs), mean(xs) - mean(flat)) if xs else "none"
+        out += ["Season (actual against ETR's last number, next to the %d players ADP left within a pick): risers %s; fallers %s. "
+                "Read it as a lean only once each side has 50+." % (len(flat), line(up), line(down)), ""]
+    return out
+
+
 def short(name):
     """A last name for a list: "Michael Porter Jr." reads Porter."""
     parts = [w for w in name.split() if w.rstrip(".") not in ("Jr", "Sr", "II", "III", "IV")]
@@ -495,6 +543,7 @@ def main():
         out += player_table(both, "Biggest ours-vs-ETR splits", cols, lambda r: -abs(r[oc] - r["etr_last"]), 6)
     for s in last:
         out += tier_lines(s["rows"])
+    out += movers_lines(last, upto)
     out += ["## By slate: was last night normal?", "",
             "Rank corr, and your head-to-head calls (how often your board was right where it disagreed).", "",
             "| Slate | AM you | AM ours | AM ADP | AM you vs ours | PM you | PM ETR | PM ADP | PM you vs ETR |",
