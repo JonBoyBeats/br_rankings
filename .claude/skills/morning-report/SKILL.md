@@ -46,23 +46,25 @@ teammates are logged as `hedge`.
 Every number comes from the script. Don't estimate, round differently or recompute any of them.
 The report prints in the order it goes in chat:
 
-- **Headline**: your board against each straight order. Morning: your AM board (Lock AM, else
-  the board saved before ETR's first upload) against our Proj and ADP then. Afternoon: your PM
-  board (Lock PM, else the board at lock) against ETR's last upload, our Proj and ADP at lock. Of
-  the pairs your board and that order disagree on, how often yours was right, last night and
-  season, with a range and a verdict. "Your board wins" means keep making your moves; "X alone
+- **Headline**: your board against each straight order, each window graded only on what was known
+  in it. Morning: your AM board (Lock AM, else the board saved before ETR's first upload) against
+  our Proj and ADP then. Afternoon: your PM board (Lock PM, else the board at lock) against ETR's
+  last upload, our Proj and ADP at lock. Only decision pairs count (ADP within 4 picks at that
+  window's lock): of those your board and the order disagree on, how often yours was right, last
+  night and season, with a range and a verdict; beside it, on the pairs where exactly one player was
+  a breaker (90th percentile of his ADP round band that night), how often yours took the breaker,
+  and the old all-pairs rate for comparison. "Your board wins" means keep making your moves; "X alone
   wins" means stop; "too close to call" means not settled.
 - **Tier rules**: the core. For each of your tiers at each lock (am_tier, pm_tier in the record),
   the rule beside it on the board (`TIER_RULES` in `scripts/nba_report.py`, matching
   `NBA_TIER_NOTES` in index.html) against ADP and the half's projection straight, in points per
-  pair (for every pair in the tier, the earlier one's actual minus the later one's); where you
+  pair (for every decision pair in the tier, the earlier one's actual minus the later one's); where you
   broke the rule (your Q-tag reads and gut calls), how often you were right; and how the tier
   scored against its projection. A tier gets a verdict only after 14 nights (`TIER_NIGHTS`, set
   before any result: never move it): "rule holds" (beats both, ranges above 0), "X beats the
   rule" (a range below 0), else "too close to call", plus "your moves win/lose" when that range
   clears 50%. Until then "too early": say so, and don't suggest changing a rule.
-- **Ours vs ETR**: one line on how our morning number tracks ETR's last upload. It's the input to
-  every morning rule.
+- **Ours vs ETR**: one line on how our number at Lock PM tracks ETR's last upload, the same window.
 - **For the log**: your biggest AM calls against ADP, PM calls against ETR, our biggest misses and
   splits, and the ADP movers season tally. These feed steps 3-5; they aren't shown in chat.
 

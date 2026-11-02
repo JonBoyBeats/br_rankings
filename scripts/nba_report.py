@@ -4,13 +4,16 @@ slate and the season.
 Reads analysis/nba/daily/*.csv (scripts/nba_daily.py) and prints Markdown, in the order it goes
 in chat:
 
-  Headline     every pair your board and a straight order (ours, ETR, ADP) disagree on: how often
-               yours was right. Morning: your AM board against ours and ADP; afternoon: your PM
-               board against ETR, ours and ADP at lock. Over 50% and settled: your moves beat it.
+  Headline     every decision pair (ADP within DECISION picks at the window's lock) your board and a
+               straight order (ours, ETR, ADP) disagree on: how often yours was right; and, where
+               exactly one of the pair was a breaker (90th percentile of his ADP round band), how
+               often yours took him. Morning: your AM board against ours and ADP at Lock AM only;
+               afternoon: your PM board against ETR, ours and ADP at lock only. Each window is graded
+               only on what was known in it. Over 50% and settled: your moves beat it.
   Tier rules   inside each of your tiers (the board's tier lines at each lock), the rule written
                beside it on the board, against ADP and the half's projection straight, and whether
                your own moves off the rule paid. A verdict only after TIER_NIGHTS nights.
-  Ours vs ETR  how our morning number tracks ETR's first and last uploads.
+  Ours vs ETR  how our number at Lock PM tracks ETR's last upload (the same window).
   For the log  your biggest calls, our biggest misses and splits, the ADP movers tally: written up in
                misses.csv for the themes, not shown in chat.
 
@@ -30,13 +33,14 @@ spans 0 isn't settled yet.
 --mirror (a full clone of br-adp-mirror) gives the tier rules the board's Boom %, for the rules
 that use it; without it Boom is skipped and the rule falls to its next key.
 """
-import argparse, csv, datetime as dt, glob, json, os, random
+import argparse, csv, datetime as dt, glob, json, math, os, random
 from zoneinfo import ZoneInfo
 
 DAILY = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "daily")
 LATE_FILE = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "report", "late_news.json")
 LATE = json.load(open(LATE_FILE)) if os.path.exists(LATE_FILE) else {}   # {date: {"am": [teams], "pm": [teams], "note": ...}}
 DEPTH, GAP = 48, 3
+DECISION = 4         # picks: two players whose ADP at the window's lock is this close are a decision pair
 # Left early: a player who usually plays EARLY_USUAL+ minutes and got under half of them in a game
 # decided by less than EARLY_MARGIN. A starter cut that short in a close game is almost always hurt;
 # a bench player's short night is usually the rotation, which is worth learning from, so he stays.
@@ -150,11 +154,40 @@ def cached(fn):
     return wrap
 
 
+def is_decision(x, y, bar):
+    """A decision pair: ADP at the window's lock within DECISION picks. Only these are graded."""
+    return abs(x[bar["adp"]] - y[bar["adp"]]) <= DECISION
+
+
 @cached
-def calls(rows, bar, a, b):
-    """Pairs a and b order differently: (a right, b right)."""
+def breakers(rows, bar):
+    """ids of the night's breakers: FP at or above the 90th percentile (nearest rank) of the graded players in
+    his ADP round band (by the window's ADP: picks 1-6, 7-12, ... on a 6-drafter slate, 1-4, 5-8, ... on a
+    4-drafter one; everyone past the last round is one band)."""
+    p = sorted(pool(rows, bar), key=lambda r: r[bar["adp"]])
+    pod = pod_size(rows)
+    band = {}
+    for i, r in enumerate(p):
+        band.setdefault(min(i // pod, 6), []).append(r)
+    out = set()
+    for rs in band.values():
+        a = sorted(r["actual"] for r in rs)
+        out |= {id(r) for r in rs if r["actual"] >= a[math.ceil(0.9 * len(a)) - 1]}
+    return out
+
+
+def pod_size(rows):
+    """Drafters per pod: 4 on the 24-pick small slates, else 6."""
+    return 4 if max((r["adp_close"] or r["adp_am"] or 0) for r in rows) <= 28 else 6
+
+
+@cached
+def calls(rows, bar, a, b, cut="decision"):
+    """Pairs a and b order differently: (a right, b right). cut: "decision" (ADP within DECISION), "all", or
+    "breaker" (decision pairs where exactly one broke; right = took the breaker)."""
     ka, kb = a.key(rows), b.key(rows)
     p = [r for r in pool(rows, bar) if ka(r) is not None and kb(r) is not None]
+    brk = breakers(rows, bar) if cut == "breaker" else None
     win = lose = 0
     for i in range(len(p)):
         for j in range(i + 1, len(p)):
@@ -162,7 +195,15 @@ def calls(rows, bar, a, b):
             da, db = ka(x) - ka(y), kb(x) - kb(y)
             if da * db >= 0 or x["actual"] == y["actual"]:
                 continue
-            if (da > 0) == (x["actual"] > y["actual"]):
+            if cut != "all" and not is_decision(x, y, bar):
+                continue
+            if brk is not None:
+                if (id(x) in brk) == (id(y) in brk):
+                    continue
+                x_won = id(x) in brk
+            else:
+                x_won = x["actual"] > y["actual"]
+            if (da > 0) == x_won:
                 win += 1
             else:
                 lose += 1
@@ -187,50 +228,51 @@ def fmt(v, spec="%.2f"):
     return "-" if v is None else spec % v
 
 
-def call_rate(slates, bar, a, b):
+def call_rate(slates, bar, a, b, cut="decision"):
     w = l = 0
     for x in slates:
-        ww, ll = calls(x["rows"], bar, a, b)
+        ww, ll = calls(x["rows"], bar, a, b, cut)
         w, l = w + ww, l + ll
     return (w / (w + l) if w + l else None), w + l
 
 
 def headline(last, upto, bar, title, h2h):
-    """Your board head to head against each straight order: last night, the season, and a verdict."""
-    out = ["### " + title, "", "| Your board against | Last night | Season | Range | So far |", "|---|---|---|---|---|"]
+    """Your board head to head against each straight order on decision pairs: last night, the season, a verdict;
+    then on breakers (where exactly one of the pair broke), and on every pair, the old cut, for comparison."""
+    out = ["### " + title, "",
+           "| Your board against | Last night | Season | Range | So far | Breakers: you took the breaker | All pairs (old cut) |",
+           "|---|---|---|---|---|---|---|"]
+    pct = lambda r: "%.0f%%" % (100 * r) if r is not None else "-"
     for a, b in h2h:
         r1, n1 = call_rate(last, bar, a, b)
         r2, n2 = call_rate(upto, bar, a, b)
         rg = boot([x for x in upto if sum(calls(x["rows"], bar, a, b))], lambda xs: call_rate(xs, bar, a, b)[0])
         verdict = ("not enough slates" if not rg else "your board wins" if rg[0] > 0.5
                    else "%s alone wins" % b.label if rg[1] < 0.5 else "too close to call")
-        out.append("| %s | %s | %s of %d pairs | %s | %s |" % (
-            b.label, "%.0f%%" % (100 * r1) if r1 is not None else "-", "%.0f%%" % (100 * r2) if r2 is not None else "-", n2,
-            "%.0f-%.0f%%" % (100 * rg[0], 100 * rg[1]) if rg else "-", verdict if r2 is not None else "-"))
+        rb, nb = call_rate(upto, bar, a, b, "breaker")
+        gb = boot([x for x in upto if sum(calls(x["rows"], bar, a, b, "breaker"))], lambda xs: call_rate(xs, bar, a, b, "breaker")[0])
+        ra, na = call_rate(upto, bar, a, b, "all")
+        out.append("| %s | %s | %s of %d pairs | %s | %s | %s of %d%s | %s of %d |" % (
+            b.label, pct(r1), pct(r2), n2, "%.0f-%.0f%%" % (100 * rg[0], 100 * rg[1]) if rg else "-", verdict if r2 is not None else "-",
+            pct(rb), nb, " (%.0f-%.0f%%)" % (100 * gb[0], 100 * gb[1]) if gb else "", pct(ra), na))
     return out + [""]
 
 
-ETRB = {"adp": "adp_close", "half": "am", "sources": [Src("ours_am", "Ours (morning)", True, "ours_raw"), Src("etr_first", "ETR first", True),
-                                        Src("etr_last", "ETR last", True)]}
+ETRB = {"adp": "adp_close", "half": "pm", "sources": [Src("ours_pm", "Ours at Lock PM", True), Src("etr_last", "ETR last", True)]}
 
 
 def ours_vs_etr(last, upto):
-    """How our morning number tracks ETR's first and last uploads: order, gap, whether ETR moved our way, and who was closer."""
-    raw = [r for x in upto for r in pool(x["rows"], ETRB) if r["ours_raw"] is not None and r["etr_first"] is not None and r["etr_last"] is not None]
-    xs, ys = [r["ours_raw"] for r in raw], [(r["etr_first"] + r["etr_last"]) / 2 for r in raw]
-    mx, my = mean(xs), mean(ys)
-    sxx = sum((v - mx) ** 2 for v in xs) if raw else 0
-    a = sum((v - mx) * (u - my) for v, u in zip(xs, ys)) / sxx if sxx else 1
-
+    """How our number tracks ETR's in the same window (both at Lock PM): order, gap, and who was closer to the actual."""
     def players(xs_):
         out = []
         for x in xs_:
-            c = ETRB["sources"][0].col_for(x["rows"])
-            rs = [r for r in pool(x["rows"], ETRB) if r[c] is not None and r["etr_first"] is not None and r["etr_last"] is not None]
-            ps = [(r[c] if c == "ours_am" else a * r[c] + my - a * mx, r["etr_first"], r["etr_last"], r["actual"]) for r in rs]
+            rs = [r for r in pool(x["rows"], ETRB) if r["ours_pm"] is not None and r["etr_last"] is not None]
+            if not rs:
+                continue
+            ps = [(r["ours_pm"], None, r["etr_last"], r["actual"]) for r in rs]
             # each relative to its slate average, so a slate-wide shift (ETR running high, or moving the whole slate) isn't agreement or a miss
             avg = [mean([p[i] for p in ps]) for i in range(4)]
-            out.append([tuple(p[i] - avg[i] for i in range(4)) for p in ps])
+            out.append([tuple(None if p[i] is None else p[i] - avg[i] for i in range(4)) for p in ps])
         return out
 
     def cell(xs_, f, spec):
@@ -242,17 +284,15 @@ def ours_vs_etr(last, upto):
     flat = lambda gs: [p for g in gs for p in g]
     rho = lambda i: lambda gs: mean([corr(ranks([p[0] for p in g]), ranks([p[i] for p in g])) for g in gs if len(g) >= 5])
     near = lambda i: lambda gs: (lambda f: 100 * sum(abs(p[0] - p[i]) < GAP for p in f) / len(f) if f else None)(flat(gs))
-    apart = lambda gs: [p for p in flat(gs) if abs(p[0] - p[1]) >= GAP]
-    toward = lambda gs: (lambda f: 100 * sum((p[2] - p[1]) * (p[0] - p[1]) > 0 for p in f) / len(f) if f else None)(apart(gs))
     closer = lambda i: lambda gs: (lambda f: 100 * sum(abs(p[0] - p[3]) < abs(p[i] - p[3]) for p in f) / len(f) if f else None)(
         [p for p in flat(gs) if abs(p[0] - p[i]) >= GAP])
     miss = lambda i: lambda gs: mean([abs(p[i] - p[3]) for p in flat(gs)])
     return ["### Ours vs ETR", "",
-            "Our Proj at Lock AM against ETR's last upload, player by player (each taken against its slate's average). "
-            "Last night (season): rank corr %s; within %d pts %s; where %d+ apart ours was closer to the actual %s; "
-            "average miss ours %s, ETR %s. Where ETR's first upload started %d+ from ours, its last moved our way %s." % (
+            "Our Proj at Lock PM against ETR's last upload, the same window, player by player (each taken against its slate's "
+            "average). Last night (season): rank corr %s; within %d pts %s; where %d+ apart ours was closer to the actual %s; "
+            "average miss ours %s, ETR %s." % (
                 both(rho(2), "%.2f"), GAP, both(near(2), "%.0f%%"), GAP, both(closer(2), "%.0f%%"), both(miss(0), "%.1f"),
-                both(miss(2), "%.1f"), GAP, both(toward, "%.0f%%")), ""]
+                both(miss(2), "%.1f")), ""]
 
 
 MOVE = 1.0    # picks: an ADP move worth listing
@@ -348,10 +388,15 @@ def rule_order(players, steps):
     return [p[0] for p in sorted(players, key=functools.cmp_to_key(cmp))]
 
 
-def pair_pts(order):
-    """(sum over every pair of the earlier one's actual minus the later one's, pairs)."""
-    a = [r["actual"] for r in order]
-    return sum(a[i] - a[j] for i in range(len(a)) for j in range(i + 1, len(a))), len(a) * (len(a) - 1) // 2
+def pair_pts(order, bar):
+    """(sum over every decision pair of the earlier one's actual minus the later one's, pairs)."""
+    tot = n = 0
+    for i in range(len(order)):
+        for j in range(i + 1, len(order)):
+            if is_decision(order[i], order[j], bar):
+                tot += order[i]["actual"] - order[j]["actual"]
+                n += 1
+    return tot, n
 
 
 @cached
@@ -378,20 +423,21 @@ def tier_nights(rows, bar, half):
         for i in range(len(mine)):
             for j in range(i + 1, len(mine)):
                 x, y = mine[i], mine[j]
-                if pos[id(x)] < pos[id(y)] or x["actual"] == y["actual"]:
-                    continue                                  # the rule agrees with you, or nobody was right
+                if pos[id(x)] < pos[id(y)] or x["actual"] == y["actual"] or not is_decision(x, y, bar):
+                    continue                                  # the rule agrees with you, nobody was right, or not a decision
                 n += 1
                 right += x["actual"] > y["actual"]
-        out[t] = dict({k: pair_pts(o) for k, o in orders.items()}, off=(right, n), gap=[r["actual"] - r[pcol] for r in q])
+        out[t] = dict({k: pair_pts(o, bar) for k, o in orders.items()}, off=(right, n), gap=[r["actual"] - r[pcol] for r in q])
     return out
 
 
 def tier_rule_lines(last, upto):
     """Per half, per tier: the rule against ADP and the projection straight, and your moves off the rule."""
     out = ["## Tier rules", "",
-           "Inside each tier at each lock: points per pair (for every pair, the earlier one's actual minus the later one's) for "
-           "the rule against ADP and the projection straight, and where you broke the rule, how often you were right. "
-           "Each cell: last night · season (80%% range). Verdicts only after %d nights with the tier." % TIER_NIGHTS, ""]
+           "Inside each tier at each lock, decision pairs only (ADP within %d picks): points per pair (the earlier one's actual "
+           "minus the later one's) for the rule against ADP and the projection straight, and where you broke the rule, how "
+           "often you were right. Each cell: last night · season (80%% range). Verdicts only after %d nights with the tier."
+           % (DECISION, TIER_NIGHTS), ""]
     for half in ("am", "pm"):
         bar, _, _, pname = TIER_HALVES[half]
         per = {x["date"]: tier_nights(x["rows"], bar, half) for x in upto}
