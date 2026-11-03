@@ -2,6 +2,13 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-02 Mon main
+
+- First night with tier lines on both locks (Lock AM 8:24am, Lock PM 2:15pm), so the tier-rule forward test starts here (1 of 14 nights). Jalen Johnson (ADP 19.7, Questionable all day) was ruled out after the PM lock, so ATL is left out of both halves. The leaderboards show picks after swaps: the field had him on 0.3% of teams, you on none.
+- Morning: your board edged ADP (55%; season 54%, your board wins, range 51-57%) but trailed our number (46%; season 58%). Afternoon: 53% against ETR; with ATL out, the season is 47% (44-50%), back to too close to call. Your PM raises on Curry, Dosunmu (both on minutes above their usual), Caleb Wilson and Bam were right; the Brunson raise and the LaMelo fade on his Questionable tag (he played 33 and scored 34) were wrong. Season log of PM calls, hedges aside: 24 right, 30 wrong.
+- Blowouts again: SAS (-16.5) won by 22 with Wembanyama at 24 minutes, Fox 22 and Castle 26; Keyonte George played 22 in the loss; Embiid played 25 in a 19-point win. The log now has 22 blowout misses on 6 slates, ours too high on 21 of them, but only 5 had a 10+ spread before tip, so the spread rules (H2-H4) can only ever catch a slice. H2 still reads "retire?" at 8 nights (-0.13); hold for the full 14.
+- Field (first night joined to your tiers): 85 teams, median finish top 53%, top-10% tail 0.86 in the flagship. Noise for weeks yet.
+
 ## 2026-11-01 Sun main
 
 - Early three-game slate (lock 1:52pm), one ETR upload (12:57pm). Poeltl and Ziaire Williams sat after the PM lock and Toppin after the AM lock, but none was being drafted early, so the whole slate is graded and calls on their teammates are logged as hedges (revised 11-02: late news only takes a team out when the scratch was drafted in the first two-thirds).

@@ -228,3 +228,33 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-11-01,nba_sun_main,Quentin Grimes,LAL,miss,24.8,23.7,8.7,26.0,26.8,6.0,other,?,neither,"26 min, 7 points, 4 turnovers"
 2026-11-01,nba_sun_main,Luka Doncic,LAL,split,60.0,64.9,83.0,35.0,35.8,6.0,shooting,no,etr,ETR 64.9 vs ours 60.0; 83 FP
 2026-11-01,nba_sun_main,Collin Murray-Boyles,TOR,split,34.2,29.5,17.1,20.0,19.0,-6.0,shooting,no,etr,ours 34.2 vs ETR 29.5; 1-6
+2026-11-02,nba_mon_main,Lauri Markkanen,UTA,am_call,43.1,37.4,39.1,31,28.6,-22,other,?,right,"raised (36th vs ADP 51st); in line with ours, 22 pts 4-7 from three; the 14 passed averaged 31.8"
+2026-11-02,nba_mon_main,Norman Powell,CHI,am_call,34.2,36.2,27.6,29,30.0,-19,shooting,no,right,"faded (52nd vs ADP 40th); 5-13, no assists; the 13 who passed him averaged 31.2"
+2026-11-02,nba_mon_main,RJ Barrett,TOR,am_call,41.7,41.2,41.7,37,31.7,7,minutes,yes,right,"raised (40th vs ADP 51st); 37 min (usual 32), 26 pts; the 11 passed averaged 31.6"
+2026-11-02,nba_mon_main,Stephon Castle,SAS,am_call,43.5,41.0,31.0,26,29.3,22,blowout,partly,wrong,raised (35th vs ADP 46th); 26 min in a 22-point win (SAS -16.5); the 8 passed averaged 33.2
+2026-11-02,nba_mon_main,Evan Mobley,CLE,am_call,44.2,45.1,37.4,33,32.8,-5,other,?,right,"faded (42nd vs ADP 33rd); 37.4 in normal minutes, a hair under the 9 who passed him (37.5)"
+2026-11-02,nba_mon_main,Kevin Durant,HOU,am_call,41.6,42.4,25.1,33,33.7,16,peripherals,no,right,"faded (43rd vs ADP 34th); 5-6 but only 6 shots, 3 reb, 4 turnovers; the 9 who passed him averaged 37.5"
+2026-11-02,nba_mon_main,Caleb Wilson,CHI,am_call,40.2,44.5,48.4,34,34.0,-19,peripherals,no,wrong,"faded (27th vs ADP 19th); 4 steals, 4-9 from three in usual minutes; the 8 who passed him averaged 36.6"
+2026-11-02,nba_mon_main,Bam Adebayo,MIA,am_call,44.4,44.5,41.8,31,31.5,-21,peripherals,no,wrong,faded (33rd vs ADP 25th); 4 stocks in usual minutes; the 8 who passed him averaged 38.8
+2026-11-02,nba_mon_main,Jarace Walker,IND,pm_call,34.8,45.0,32.9,45,22.0,-4,hedge,no,right,"faded below ETR (50th vs ETR 32nd); Toppin and Oubre out after the PM lock, 45 min but 6-15; the 19 who passed him averaged 33.2"
+2026-11-02,nba_mon_main,Caleb Wilson,CHI,pm_call,40.2,44.5,48.4,34,34.0,-19,peripherals,no,right,"raised over ETR (21st vs 37th); 4 steals, 4-9 from three; the 16 passed averaged 36.2"
+2026-11-02,nba_mon_main,Jalen Brunson,NYK,pm_call,47.6,44.9,29.4,34,34.8,13,peripherals,no,wrong,"raised over ETR (19th vs 33rd); 2 rebounds, 6-16 in usual minutes; the 14 passed averaged 38.3"
+2026-11-02,nba_mon_main,LaMelo Ball,MIN,pm_call,48.9,46.8,45.7,33,25.3,12,news,no,wrong,"faded below ETR (34th vs 20th) on his Questionable tag; played 33 (usual 25), 34 pts; the 14 who passed him averaged 39.6"
+2026-11-02,nba_mon_main,Ayo Dosunmu,MIN,pm_call,35.8,38.8,49.4,37,29.3,12,minutes,yes,right,"raised over ETR (41st vs 54th); 37 min (usual 29), 12 reb 8 ast; the 13 passed averaged 32.6"
+2026-11-02,nba_mon_main,Quenton Jackson,IND,pm_call,29.1,44.6,45.9,35,20.0,-4,hedge,no,wrong,"faded below ETR (49th vs 36th); Toppin and Oubre out after the PM lock, 35 min (usual 20), 6 stocks; the 15 who passed him averaged 32.1"
+2026-11-02,nba_mon_main,Stephen Curry,GSW,pm_call,43.9,45.0,51.7,33,28.2,3,minutes,yes,right,"raised over ETR (20th vs 31st); 33 min (usual 28), 34 pts; the 12 passed averaged 37.6"
+2026-11-02,nba_mon_main,Bam Adebayo,MIA,pm_call,44.4,44.5,41.8,31,31.5,-21,peripherals,no,right,raised over ETR (27th vs 38th); 4 stocks; the 11 passed averaged 37.2
+2026-11-02,nba_mon_main,Domantas Sabonis,SAC,miss,53.2,50.2,22.4,31,37.2,15,blowout,partly,neither,"31 min (usual 37) in a 15-point win; only 4 shots, 4 fouls, 4 turnovers"
+2026-11-02,nba_mon_main,Victor Wembanyama,SAS,miss,67.9,66.0,39.7,24,32.5,22,blowout,partly,neither,"24 min (usual 32) in a 22-point win as a 16.5 favorite; 5-15, 5 turnovers"
+2026-11-02,nba_mon_main,Joel Embiid,PHI,miss,53.9,50.5,26.1,25,35.0,19,blowout,partly,neither,25 min (usual 35) in a 19-point win; Questionable at both locks
+2026-11-02,nba_mon_main,Keyonte George,UTA,miss,39.8,40.6,12.4,22,32.2,-22,blowout,partly,neither,"22 min (usual 32) in a 22-point loss as a 16.5 underdog; 3-12, no assists"
+2026-11-02,nba_mon_main,Brandon Miller,CHA,miss,44.5,44.2,23.2,31,34.1,-33,blowout,partly,neither,"31 min in a 33-point loss; 7-18, 1 rebound"
+2026-11-02,nba_mon_main,Cooper Flagg,DAL,miss,50.5,59.9,30.8,40,32.4,-15,shooting,no,ours,40 min (usual 32) but 3-19 from the field and 6 turnovers
+2026-11-02,nba_mon_main,De'Aaron Fox,SAS,miss,40.1,38.8,20.9,22,32.0,22,blowout,partly,neither,22 min (usual 32) in a 22-point win as a 16.5 favorite
+2026-11-02,nba_mon_main,Desmond Bane,ORL,miss,46.3,44.6,27.1,36,34.7,-9,peripherals,no,neither,"usual minutes and 20 pts, but 3 reb 3 ast and 4 turnovers"
+2026-11-02,nba_mon_main,Quenton Jackson,IND,split,29.1,44.6,45.9,35,20.0,-4,news,no,etr,ETR 44.6 (3:39pm) vs ours 29.1 at Lock PM: ETR's last came after Toppin and Oubre were out; 35 min
+2026-11-02,nba_mon_main,Jarace Walker,IND,split,34.8,45.0,32.9,45,22.0,-4,news,no,ours,ETR 45.0 vs ours 34.8: ETR's last came after more IND outs; 45 min but 6-15
+2026-11-02,nba_mon_main,Cooper Flagg,DAL,split,50.5,59.9,30.8,40,32.4,-15,shooting,no,ours,ETR 59.9 vs ours 50.5; 3-19
+2026-11-02,nba_mon_main,Paul Reed,DET,split,36.7,42.8,34.0,28,26.8,33,other,?,ours,"ETR 42.8 vs ours 36.7; usual minutes in a 33-point win, 11 pts on 6 shots"
+2026-11-02,nba_mon_main,Jaden McDaniels,MIN,split,38.8,44.8,22.7,29,33.4,12,shooting,no,ours,"ETR 44.8 vs ours 38.8; 29 min (usual 33), 5-14, no stocks"
+2026-11-02,nba_mon_main,Lauri Markkanen,UTA,split,43.1,37.4,39.1,31,28.6,-22,other,?,etr,"ours 43.1 vs ETR 37.4; ETR shaded a 16.5 underdog, he played 31 in a 22-point loss anyway"

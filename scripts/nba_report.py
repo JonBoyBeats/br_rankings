@@ -475,9 +475,10 @@ def tier_stats(upto, half):
             val = lambda xs, drop=None: mean([pr[k] for d in xs for pr in per[d][t][src] if drop not in pr[:2]])
             names = {n for d in ds for pr in per[d][t][src] for n in pr[:2]}
             v = val(ds)
+            drops = [x for x in (val(ds, n) for n in names) if x is not None]   # a player in every pair leaves nothing: skip him
             out.setdefault(t, {"nights": ds, "per": per})[key] = {
                 "v": v, "r80": boot(ds, val), "r90": boot(ds, val, 0.9),
-                "drop": (min(val(ds, n) for n in names), max(val(ds, n) for n in names)) if names and v is not None else None,
+                "drop": (min(drops), max(drops)) if drops and v is not None else None,
                 "same": key != "off" and all(pr[k] == 0 for d in ds for pr in per[d][t][src]), "n": sum(len(per[d][t][src]) for d in ds)}
     return out
 
