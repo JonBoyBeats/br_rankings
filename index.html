@@ -1975,6 +1975,8 @@ function cbbValues(players, slate, marked) {
            joined: null, byEtr: 0, byBox: n, scale: null };
 }
 
+function cbbOrdinal(n) { return n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th"); }
+
 function cbbSigned(v) { return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v); }
 
 /** How his Proj was put together, for the hover. */
@@ -1982,6 +1984,8 @@ function cbbNote(r) {
   var bits = [];
   if (r.src === "ud") bits.push("Underdog's projection: no college games yet");
   else bits.push(r.min.toFixed(1) + " min × " + r.ppm.toFixed(2) + " pts/min");
+  if (r.src === "miya" || r.src === "miya+ud") bits.push("no college season yet: minutes from his EvanMiya rank, points per minute from EvanMiya's projected rates" +
+                                                        (r.src === "miya+ud" ? ", averaged with Underdog's " + r.ud.toFixed(1) : ""));
   if (r.src === "ud+box") bits.push("his " + r.gp + " game" + (r.gp === 1 ? "" : "s") + " with Underdog's " + r.ud.toFixed(1) + " standing in for 3");
   if (r.prior) {
     var school = r.prior.replace(/^\S+ /, "").replace(/-/g, " ");
@@ -1992,7 +1996,10 @@ function cbbNote(r) {
   if (r.gp && r.src !== "ud+box") bits.push(r.gp + " game" + (r.gp === 1 ? "" : "s") + " this season");
   if (typeof r.crowd === "number" && r.crowd > 200) bits.push("crowded: his team's players averaged " + Math.round(r.crowd) + " minutes last season, so last season's minutes ×" + (200 / r.crowd).toFixed(2));
   if (typeof r.spread === "number") bits.push((r.home ? "vs " : "at ") + (r.opp || "?") + ", spread " + cbbSigned(r.spread) + (r.ou ? ", total " + r.ou : ""));
-  if (r.ud && r.src !== "ud") bits.push("Underdog " + r.ud.toFixed(1));
+  if (typeof r.miya_ppm === "number") bits.push("EvanMiya: BPR " + r.bpr.toFixed(1) + ", " + cbbOrdinal(r.bpr_rank) + " on his team, " +
+                                                r.miya_ppm.toFixed(2) + " pts/min projected" +
+                                                (typeof r.fp_base === "number" ? "; without EvanMiya " + r.fp_base.toFixed(1) : ""));
+  if (r.ud && r.src !== "ud" && r.src !== "miya+ud") bits.push("Underdog " + r.ud.toFixed(1));
   return bits.join(". ");
 }
 
