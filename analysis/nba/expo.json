@@ -404,7 +404,7 @@
     "Domantas Sabonis": 24,
     "LeBron James": 24,
     "Jayson Tatum": 24,
-    "Jalen Johnson": 23,
+    "Dyson Daniels": 24,
     "Caleb Wilson": 22,
     "Scottie Barnes": 20,
     "Austin Reaves": 20,
@@ -429,15 +429,14 @@
     "Nikola Jokic": 4,
     "Alperen Sengun": 4,
     "Karl-Anthony Towns": 4,
+    "Jarace Walker": 4,
     "Darius Garland": 3,
     "Jaylen Brown": 3,
-    "Pascal Siakam": 3,
     "Lauri Markkanen": 2,
-    "Dyson Daniels": 2,
     "Onyeka Okongwu": 1,
     "Dejounte Murray": 1
    },
-   "note": "Jalen Johnson (23%), Pascal Siakam (3%) and Dejounte Murray (1%) show the app's red O (out) tag at 3:42pm and are off the slate's player list. The app rounds shares down: they sum to 579 of 600, and the entry fees add up to six times the total, so no row is missing."
+   "note": "After swaps: Jalen Johnson (23%, out) and Pascal Siakam (3%, out) swapped, taking Dyson Daniels from 2% to 24% and adding Jarace Walker at 4%. Dejounte Murray (1%) still shows the app's red O (out) tag. The app rounds shares down, so they add to under 600%."
   }
  }
 }
