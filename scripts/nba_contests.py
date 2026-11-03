@@ -21,7 +21,7 @@ the pod size); top X% = rank <= ceil(X% of entries), never pooled across contest
 least the 90th percentile of the players in his ADP round band that night; FPOE = fantasy points over
 the average for his ADP round band across every night on file.
 """
-import argparse, csv, datetime as dt, glob, gzip, itertools, json, math, os, sys, time, urllib.request
+import argparse, csv, datetime as dt, glob, gzip, itertools, json, math, os, sys, time, urllib.error, urllib.request
 from collections import Counter, defaultdict
 from zoneinfo import ZoneInfo
 
@@ -50,8 +50,8 @@ def get(path):
             with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "br-rankings/1.0"}), timeout=30) as r:
                 return json.loads(r.read())
         except Exception as e:
-            if i == 3:
-                raise
+            if i == 3 or (isinstance(e, urllib.error.HTTPError) and 400 <= e.code < 500):
+                raise                                   # a 4xx won't change on a retry
             print("  retry %s: %r" % (path.split("?")[0], e), flush=True)
             time.sleep(3 * (i + 1))
 
@@ -146,8 +146,10 @@ def pull_contest(cid, slate, amap):
 
 def pull(mirror, days):
     os.makedirs(OUT, exist_ok=True)
-    have = {r["contest_id"] for r in load_contests()}
     rows = load_contests()
+    spath = os.path.join(OUT, "skipped.json")          # contests whose leaderboard isn't public (Underdog's admin promos)
+    skipped = json.load(open(spath)) if os.path.exists(spath) else {}
+    have = {r["contest_id"] for r in rows} | set(skipped)
     seed = json.load(open(os.path.join(OUT, "seed.json"))) if os.path.exists(os.path.join(OUT, "seed.json")) else []
     seed_by_slate = defaultdict(list)
     for cid in seed:
@@ -161,7 +163,17 @@ def pull(mirror, days):
         amap = appearance_map(mirror, slate)
         print("%s %s: %d contest(s) to pull" % (slate["label"], slate["lock"].isoformat(), len(todo)), flush=True)
         for cid in todo:
-            r = pull_contest(cid, slate, amap)
+            try:
+                r = pull_contest(cid, slate, amap)
+            except urllib.error.HTTPError as e:
+                if e.code in (401, 403):
+                    skipped[cid] = {"slate": slate["label"], "reason": "leaderboard not public (HTTP %d)" % e.code}
+                    json.dump(skipped, open(spath, "w"), indent=1, sort_keys=True)
+                print("  %s: HTTP %d, skipped" % (cid, e.code), flush=True)
+                continue
+            except Exception as e:                      # one contest failing must not cost the rest; next night retries it
+                print("  %s: %r, skipped for now" % (cid, e), flush=True)
+                continue
             if r:
                 rows.append(r)
                 save_contests(rows)
