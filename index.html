@@ -149,6 +149,7 @@
   /* The NBA page (nba.html) is this board in NBA mode; football-only tools stay hidden. */
   html.nba .football-only { display: none !important; }
   html:not(.nba) .nba-only { display: none !important; }
+  html.cbb .nba-data { display: none !important; }
   /* NBA: no VORP column; its room goes to the Boom and Dud tiebreak numbers. */
   html.nba .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 170px 94px 0; }
   html.nba #scoreHead { white-space: nowrap; }
@@ -692,7 +693,8 @@
         <a href="./" id="navNfl" aria-current="page">NFL</a>
         <a href="analysis.html" class="football-only">Analysis</a>
         <a href="nba.html" id="navNba">NBA</a>
-        <a href="nba_live.html" class="nba-only">Live</a>
+        <a href="cbb.html" id="navCbb">CBB</a>
+        <a href="nba_live.html" class="nba-only nba-data">Live</a>
         <a href="/survivor/">Survivor</a>
       </nav>
       <div class="mast-meta" id="meta"></div>
@@ -719,7 +721,7 @@
           <option value="vorp">Sort by VORP</option>
           <option value="name">Sort by name</option>
           <option value="inj" class="nba-only">Injury tags only</option>
-          <option value="bagels" class="nba-only">Bagels (by game)</option>
+          <option value="bagels" class="nba-only nba-data">Bagels (by game)</option>
         </select>
       </label>
       <label class="field">
@@ -740,7 +742,7 @@
           <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
           <button type="button" id="tiersBtn" aria-pressed="false" title="Show six tier lines over your order; drag a line's tag to move it">Tiers</button>
           <button type="button" id="copyMain" hidden title="Rank this slate's players exactly as your main slate ranks them, then fill in the rest">Copy main ranks</button>
-          <input type="number" id="switchAt" min="1" step="1" inputmode="numeric" style="width:58px"
+          <input type="number" id="switchAt" class="nba-data" min="1" step="1" inputmode="numeric" style="width:58px"
                  title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player (box-score minutes; once ETR's file is in, the minutes its projection implies), or none when there is one for every pick">
         </span>
       </label>
@@ -769,7 +771,7 @@
       <span class="field-label">Saved</span>
       <button type="button" id="syncBtn" aria-expanded="false">Sync</button>
     </label>
-    <label class="field nba-only">
+    <label class="field nba-only nba-data">
       <span class="field-label">Lock</span>
       <span class="pair">
         <button type="button" id="lockAm" aria-pressed="false" title="Lock the board your morning drafts come off, for the morning report: your order and our Proj as they stand now">AM</button>
@@ -885,8 +887,13 @@
 
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 /* nba.html opens this board as index.html?sport=nba: same engine, the NBA mirror file. */
-var SPORT_MODE = /(?:^|[?&])sport=nba(?:&|$)/.test(location.search) ? "nba" : "football";
-if (SPORT_MODE === "nba") document.documentElement.classList.add("nba");
+var SPORT_MODE = /(?:^|[?&])sport=nba(?:&|$)/.test(location.search) ? "nba"
+              : /(?:^|[?&])sport=cbb(?:&|$)/.test(location.search) ? "cbb" : "football";
+/* cbb.html opens this board as index.html?sport=cbb: the NBA board (order, tiers, out marks, sync,
+   export) run on our own college projections, without ETR or any of the NBA-only data. */
+var NBA_LIKE = SPORT_MODE === "nba" || SPORT_MODE === "cbb";
+if (NBA_LIKE) document.documentElement.classList.add("nba");
+if (SPORT_MODE === "cbb") document.documentElement.classList.add("cbb");
 
 /* How many of each position the Builders put in the curated top. Edit freely. */
 var BUILDER_CAPS = { RB: 12, WR: 15, TE: 8, QB: 12 };
@@ -1945,6 +1952,86 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
            joined: joined, byEtr: byEtr, byBox: byBox, scale: scale };
 }
 
+/* ---- college basketball --------------------------------------------------------
+   The CBB page's Proj is our own, from the mirror's cbb_morning.json (battle-royale-research,
+   scripts/cbb_nightly.py, rebuilt hourly while a slate is open): expected minutes x fantasy
+   points per minute, moved for tonight's spread and total. Last season carries over by
+   whether he stayed or transferred and how crowded his new team is; this season's games
+   take over as they come in; a freshman starts at Underdog's number. There is no ETR and no
+   lineup bump: marking a player out only takes him off the board. */
+function cbbValues(players, slate, marked) {
+  function keyOf(p) { return boardKey(p.first_name, p.last_name, {}); }
+  var rows = (state.cbbMorning && state.cbbMorning.players) || {}, out = nbaOuts(slate, null, false, marked, keyOf);
+  var values = {}, parts = {}, outPids = {}, n = 0;
+  players.forEach(function (p) {
+    if (out[keyOf(p)]) { outPids[p.player_id] = out[keyOf(p)]; return; }
+    var r = rows[p.player_id];
+    if (!r || typeof r.fp !== "number") return;
+    values[p.player_id] = r.fp;
+    parts[p.player_id] = { note: cbbNote(r), cbb: r };
+    n++;
+  });
+  return { values: values, parts: parts, out: out, outPids: outPids, etrToday: false, conditionals: [],
+           joined: null, byEtr: 0, byBox: n, scale: null };
+}
+
+function cbbSigned(v) { return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v); }
+
+/** How his Proj was put together, for the hover. */
+function cbbNote(r) {
+  var bits = [];
+  if (r.src === "ud") bits.push("Underdog's projection: no college games yet");
+  else bits.push(r.min.toFixed(1) + " min × " + r.ppm.toFixed(2) + " pts/min");
+  if (r.src === "ud+box") bits.push("his " + r.gp + " game" + (r.gp === 1 ? "" : "s") + " with Underdog's " + r.ud.toFixed(1) + " standing in for 3");
+  if (r.prior) {
+    var school = r.prior.replace(/^\S+ /, "").replace(/-/g, " ");
+    bits.push("last season " + r.last_min + " min at " + school +
+              (r.moved ? " (transferred" + (typeof r.jump === "number" ? ", to a team " + Math.abs(r.jump).toFixed(1) + " points " +
+                         (r.jump >= 0 ? "stronger" : "weaker") : "") + ")" : ""));
+  }
+  if (r.gp && r.src !== "ud+box") bits.push(r.gp + " game" + (r.gp === 1 ? "" : "s") + " this season");
+  if (typeof r.crowd === "number" && r.crowd > 200) bits.push("crowded: his team's players averaged " + Math.round(r.crowd) + " minutes last season, so last season's minutes ×" + (200 / r.crowd).toFixed(2));
+  if (typeof r.spread === "number") bits.push((r.home ? "vs " : "at ") + (r.opp || "?") + ", spread " + cbbSigned(r.spread) + (r.ou ? ", total " + r.ou : ""));
+  if (r.ud && r.src !== "ud") bits.push("Underdog " + r.ud.toFixed(1));
+  return bits.join(". ");
+}
+
+/** His game tonight as the lift bar shows it: [opponent, "vs" | "at"]. */
+function cbbGame(p) {
+  var r = state.cbbMorning && state.cbbMorning.players[p.player_id];
+  return r && r.opp ? [r.opp, r.home ? "vs" : "at"] : null;
+}
+
+/** Min, PPM, the spread and the opponent: what his Proj is made of. */
+function cbbStatCell(p) {
+  var c = document.createElement("span"), r = state.cbbMorning && state.cbbMorning.players[p.player_id];
+  c.className = "num score";
+  var out = state.nbaOutPids && state.nbaOutPids[p.player_id];
+  [["min", 10, 35, 0, "Expected minutes tonight"], ["ppm", 0.6, 1.2, 2, "Fantasy points per minute"]].forEach(function (k) {
+    var b = document.createElement("b"), v = r && !out && r.src !== "ud" ? r[k[0]] : null;
+    b.className = "gchip";
+    if (typeof v !== "number") { b.textContent = "–"; b.style.color = "var(--muted)"; c.appendChild(b); return; }
+    b.textContent = k[3] ? v.toFixed(k[3]).replace(/^0/, "") : String(Math.round(v));
+    b.title = k[4] + ": " + v.toFixed(k[3] || 1);
+    c.appendChild(greenChip(b, Math.max(0, Math.min(1, (v - k[1]) / (k[2] - k[1])))));
+  });
+  var l = document.createElement("b");
+  l.className = "gchip mchip";
+  l.style.color = "var(--muted)";
+  l.textContent = r && typeof r.spread === "number" ? cbbSigned(Math.round(r.spread)) : "–";
+  l.title = r && typeof r.spread === "number" ? "His team's spread " + cbbSigned(r.spread) + (r.ou ? ", total " + r.ou : "") +
+    ". Favored by 18+, starters sit in the second half and the bench plays more" : "No line for his game yet";
+  c.appendChild(l);
+  var g = cbbGame(p);
+  if (g) {
+    var o = c.appendChild(document.createElement("span"));
+    o.className = "opp";
+    o.textContent = g[1] + " " + g[0];
+    o.title = (g[1] === "vs" ? "Home against " : "Away at ") + g[0];
+  }
+  return c;
+}
+
 /* ---- saved boards -------------------------------------------------------------
    One document, one entry per slate label, held in a private gist so any device
    holding the token can pick up the last save. Only player ids travel: appearance
@@ -2302,7 +2389,7 @@ var K = {
   tiers: function (label) { return "brr:tiers:" + label; },
   locks: function (label) { return "brr:locks:" + label; },         // NBA: {slate_id, am, pm}, your boards locked for the morning report
   expo: function (label) { return "brr:expo:" + label; },           // your exposures from an Underdog export: {file, at, drafts, counts}         // NBA: {on, starts}: where tiers 2-5 begin, by rank
-  slate: SPORT_MODE === "nba" ? "brr:slate:nba" : "brr:slate",
+  slate: NBA_LIKE ? "brr:slate:" + SPORT_MODE : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
   token: "brr:gh:token",
   follow: "brr:follow",
@@ -2389,14 +2476,14 @@ async function fetchJson(file) {
 }
 
 async function loadMirror() {
-  var file = SPORT_MODE === "nba" ? "nba_latest.json" : "latest.json";
+  var file = NBA_LIKE ? SPORT_MODE + "_latest.json" : "latest.json";
   var data = await fetchJson(file);
   if (!data || !Array.isArray(data.slates)) throw new Error(file + " has no slates array");
   return data;
 }
 
 async function loadNameMaps() {
-  var pairs = SPORT_MODE === "nba" ? [["nba", "nba_name_map.json"]]
+  var pairs = SPORT_MODE === "nba" ? [["nba", "nba_name_map.json"]] : SPORT_MODE === "cbb" ? []
                                    : [["nfl", "nfl_name_map.json"], ["cfb", "cfb_name_map.json"]];
   await Promise.all(pairs.map(async function (pair) {
     try {
@@ -2496,7 +2583,7 @@ function selectSlate(index) {
   var onSlate = {};
   s.players.forEach(function (p) { onSlate[p.player_id] = 1; });
   state.cut = saved ? reconcileCut(saved, savedCut, onSlate) : null;
-  if (SPORT_MODE === "nba" && state.cut == null) state.cut = Math.min(NBA_DEFAULT_RANKED, state.order.length);
+  if (NBA_LIKE && state.cut == null) state.cut = Math.min(NBA_DEFAULT_RANKED, state.order.length);
   state.liftedPid = null;
   renderLiftBar();
 
@@ -2588,7 +2675,7 @@ function sortBelowLine() {
 function applyStoredProjections() {
   var s = state.slate;
   var store = normalizeProjStore(load(K.proj(s.sport), null));
-  if (s.sport === "nba") { applyNbaProjections(store); return; }
+  if (s.sport === "nba" || s.sport === "cbb") { applyNbaProjections(store); return; }
   var stored = store.current, previous = store.previous;
   state.projPrev = {};
   state.projParts = {};
@@ -2627,7 +2714,8 @@ function applyStoredProjections() {
 function applyNbaProjections(store) {
   var s = state.slate, map = state.nameMaps.nba || {};
   var idx = state.nbaIdx || nbaIndex(null);
-  var res = nbaValues(s.players, s, store, idx, load(K.out(s.label), []), map);
+  var res = s.sport === "cbb" ? cbbValues(s.players, s, load(K.out(s.label), []))
+                              : nbaValues(s.players, s, store, idx, load(K.out(s.label), []), map);
   // Once ETR's file is in, it drives the board; our morning number stays on screen beside it,
   // worked out as if the file weren't in (today's ETR left out of the average too).
   state.nbaOurs = null;
@@ -2637,7 +2725,7 @@ function applyNbaProjections(store) {
     state.nbaOurs = nbaValues(s.players, s, { current: null, previous: null, history: hist }, idx, load(K.out(s.label), []), map).values;
   }
   // what your out marks changed: the board with them against the board without them
-  var bare = nbaValues(s.players, s, store, idx, [], map).values;
+  var bare = (s.sport === "cbb" ? cbbValues(s.players, s, []) : nbaValues(s.players, s, store, idx, [], map)).values;
   state.nbaMine = {};
   Object.keys(res.values).forEach(function (pid) {
     if (bare[pid] != null && Math.abs(res.values[pid] - bare[pid]) >= 0.05) state.nbaMine[pid] = res.values[pid] - bare[pid];
@@ -2666,7 +2754,8 @@ function applyNbaProjections(store) {
   var udOut = outNames("ud");
   state.projMeta = {
     file: res.etrToday ? cur.file : null, format: res.etrToday ? cur.format : "morning", at: res.etrToday ? cur.at : null,
-    morning: res.etrToday ? null : { etr: res.byEtr, box: res.byBox, through: idx.through, hasBox: !!state.nbaIdx,
+    cbb: s.sport === "cbb" ? { n: res.byBox, at: state.cbbMorning && state.cbbMorning.generated_at } : null,
+    morning: res.etrToday || s.sport === "cbb" ? null : { etr: res.byEtr, box: res.byBox, through: idx.through, hasBox: !!state.nbaIdx,
                                      lastAt: cur ? cur.at : null },
     udOut: udOut,
     prevFile: res.etrToday && store.previous ? store.previous.file : null,
@@ -2928,7 +3017,9 @@ function surfaceUnpriced(onLoad) {
 
     // Join this slate's projections onto the candidates, exactly as the board does.
     var store = normalizeProjStore(load(K.proj(s.sport), null)), values;
-    if (s.sport === "nba") {
+    if (s.sport === "cbb") {
+      values = cbbValues(candidates, s, load(K.out(s.label), [])).values;
+    } else if (s.sport === "nba") {
       var nv = nbaValues(candidates, s, store, state.nbaIdx || nbaIndex(null), load(K.out(s.label), []), state.nameMaps.nba || {});
       values = {};
       Object.keys(nv.values).forEach(function (pid) {     // before ETR, only players who get real minutes
@@ -3058,8 +3149,9 @@ function renderMeta(rec) {
     var d1 = document.createElement("div");
     d1.className = "notice";
     d1.innerHTML = "<b>No movement baseline yet</b> for " + slateLabel(s) +
-                   (SPORT_MODE === "nba"
-                     ? ". The reference locks at 9am Pacific each day (when ETR posts), and this slate had no ADP before then."
+                   (NBA_LIKE
+                     ? ". The reference locks at 9am Pacific each day" + (SPORT_MODE === "nba" ? " (when ETR posts)" : "") +
+                       ", and this slate had no ADP before then."
                      : ". The reference locks at 6pm Pacific on Monday and again on Wednesday, " +
                        "when ETR's projections land, and this slate had no ADP before the last one.");
     nb.appendChild(closable(d1));
@@ -3332,16 +3424,16 @@ function applyNbaProjOrder() {
   $("view").value = "order";
   syncSortHeads();
   render();
-  var sw = nbaSwitch();
+  var sw = SPORT_MODE === "nba" ? nbaSwitch() : null;
   setStatus("Ordered " + built.length + " by Proj; the top " + state.cut + " are ranked, above your line" +
             (rest.length ? ", and " + rest.length + " without a Proj or out sit at the bottom" : "") + ". " +
-            (sw == null ? "This slate has a " + NBA_SECURE_MIN + "-minute player for every pick, so lean on Boom all the way down."
+            (SPORT_MODE !== "nba" ? "" : sw == null ? "This slate has a " + NBA_SECURE_MIN + "-minute player for every pick, so lean on Boom all the way down."
                         : "Lean on Boom above the amber line at rank " + sw + ", on Dud below it."));
 }
 
 /** The same day's main slate, for a late (or other) NBA slate whose ranks can start from it. */
 function nbaMainSlate(s) {
-  if (SPORT_MODE !== "nba" || !s || /_main$/.test(s.label)) return null;
+  if (!NBA_LIKE || !s || /_main$/.test(s.label)) return null;
   var label = s.label.replace(/_[^_]+$/, "_main");
   return state.data.slates.filter(function (x) { return x.label === label; })[0] || null;
 }
@@ -3441,7 +3533,7 @@ function nbaTiersAfterMove(oldOrder, oldCut, newOrder, newCut, pid, targetPid, s
 
 /** After a move on an NBA board with tiers on: save the tier lines that keep everyone in his tier. */
 function keepTierLines(oldOrder, oldCut, pid, targetPid) {
-  if (SPORT_MODE !== "nba" || !state.slate) return;
+  if (!NBA_LIKE || !state.slate) return;
   var label = state.slate.label, t = loadTiers(label);
   if (!t || !t.on || !Array.isArray(t.starts) || t.starts.length !== NBA_TIERS - 1) return;
   save(K.tiers(label), { on: true, starts: nbaTiersAfterMove(oldOrder, oldCut, state.order, state.cut, pid, targetPid, t.starts) });
@@ -3449,7 +3541,7 @@ function keepTierLines(oldOrder, oldCut, pid, targetPid) {
 
 /** The shown tiers, or null: on, NBA, your order, nothing filtered. */
 function nbaActiveTiers() {
-  if (SPORT_MODE !== "nba" || !state.slate || state.view !== "order" || state.search.trim() || state.position !== "ALL") return null;
+  if (!NBA_LIKE || !state.slate || state.view !== "order" || state.search.trim() || state.position !== "ALL") return null;
   var t = loadTiers(state.slate.label);
   return t && t.on && Array.isArray(t.starts) && t.starts.length === NBA_TIERS - 1 ? t : null;
 }
@@ -3505,7 +3597,7 @@ function tierTag(t, tiers) {
 function tierNote(t) {
   var note = document.createElement("span");
   note.className = "tiernote" + (t === 1 ? " t1" : "");
-  note.textContent = NBA_TIER_NOTES[t - 1] || "";
+  note.textContent = SPORT_MODE === "nba" ? NBA_TIER_NOTES[t - 1] || "" : "";
   note.style.borderColor = NBA_TIER_COLORS[t - 1];
   return note;
 }
@@ -3814,7 +3906,7 @@ function nbaOutButton(p) {
   b.textContent = why ? "OUT" : "\u2298";
   b.title = why === "ud" ? "Underdog has him out" : why === "etr" ? "Not in ETR's latest file, which has his team: out"
           : why ? "You marked him out. Tap to put him back in"
-          : "Mark him out tonight: he drops to the bottom and his teammates' Proj moves up";
+          : "Mark him out tonight: he drops to the bottom" + (SPORT_MODE === "nba" ? " and his teammates' Proj moves up" : "");
   b.addEventListener("click", function (e) {
     e.stopPropagation();                      // a tap on the row lifts it; this only toggles
     if (why !== "ud" && why !== "etr") toggleNbaOut(p);
@@ -3825,7 +3917,7 @@ function nbaOutButton(p) {
 function renderMissingProjections() {
   var el = $("unmatched");
   el.innerHTML = "";
-  var gone = SPORT_MODE === "nba" && state.slate ? nbaMarkedOut() : [];
+  var gone = NBA_LIKE && state.slate ? nbaMarkedOut() : [];
   if (gone.length) {
     var o = document.createElement("div");
     o.className = "notice";
@@ -3859,6 +3951,14 @@ function renderMissingProjections() {
                   (m.udOut.length ? "<div class=\"names\">Underdog has out, teammates moved up: " + esc(m.udOut.join(" · ")) + "</div>" : "");
     el.appendChild(closable(a, function () { state.closedNotices[morningSig] = true; }));
   }
+  if (m && m.cbb && state.closedNotices["cbb|" + state.slate.label] !== true) {
+    var cn = document.createElement("div");
+    cn.className = "notice";
+    cn.innerHTML = "<b>Our Proj</b> for " + m.cbb.n + " players" + (m.cbb.at ? " (built " + whenPT(m.cbb.at) + ")" : "") +
+                   ": expected minutes × points per minute, moved for tonight's spread and total. Hover a Proj for how it was put together." +
+                   (state.cbbMorning ? "" : " The projection file didn't load, so the board has no Proj.");
+    el.appendChild(closable(cn, function () { state.closedNotices["cbb|" + state.slate.label] = true; }));
+  }
   if (!m || !m.missing.length) return;
   var missingSig = state.slate.label + "|" + m.missing.join();
   if (state.closedNotices[missingSig] === true) return;
@@ -3866,7 +3966,8 @@ function renderMissingProjections() {
   d.className = "notice warn";
   d.innerHTML = "<b>" + m.missing.length + " of " + m.boardTotal +
                 " board players have no projection.</b> " +
-                "Add an alias to the name map if one of them should have matched.";
+                (SPORT_MODE === "cbb" ? "Freshmen with no college games and no Underdog number have none yet."
+                                      : "Add an alias to the name map if one of them should have matched.");
   var names = document.createElement("div");
   names.className = "names";
   names.textContent = m.missing.join(" · ");
@@ -4350,7 +4451,7 @@ function render() {
   if (board) board.classList.toggle("has-expo", hasExpo);
   var expoOpt = document.querySelector('#view option[value="expo"]');
   if (expoOpt) expoOpt.hidden = !hasExpo;
-  document.querySelectorAll("#view option.nba-only").forEach(function (o) { o.hidden = SPORT_MODE !== "nba"; });
+  document.querySelectorAll("#view option.nba-only").forEach(function (o) { o.hidden = !NBA_LIKE || (SPORT_MODE === "cbb" && o.classList.contains("nba-data")); });
   var projHead = document.querySelector('.head button[data-sort="proj"]');
   if (projHead && SPORT_MODE === "nba") {
     projHead.textContent = state.nbaOurs ? "" : "Proj";
@@ -4361,14 +4462,16 @@ function render() {
     projHead.title = state.nbaOurs ? "Ours: our morning Proj, kept on screen. ETR: today's file, which drives sorting, Boom/Dud and the gradient"
                                    : "A quarter of the median plus three quarters of the ceiling";
   }
-  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud% \u2502 Mtch" : "Score";
-  if (SPORT_MODE === "nba") $("scoreHead").appendChild(document.createElement("span")).className = "opp-h";
+  if (projHead && SPORT_MODE === "cbb") projHead.title = "Our projection: expected minutes \u00d7 points per minute, moved for tonight's spread and total";
+  $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud% \u2502 Mtch" : SPORT_MODE === "cbb" ? "Min PPM \u2502 Line" : "Score";
+  if (NBA_LIKE) $("scoreHead").appendChild(document.createElement("span")).className = "opp-h";
   $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && ((state.nbaTakes || []).length || state.nbaMinutes));
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
-  $("scoreHead").disabled = SPORT_MODE === "nba";
+  $("scoreHead").disabled = NBA_LIKE;
   $("copyMain").hidden = !nbaMainSlate(state.slate);
-  $("scoreHead").title = SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over the average of the median projection of the 12 players around him by ADP and of the 12 around him by projection, for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Mtch: tonight's matchup in points (hover for the breakdown). Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
+  $("scoreHead").title = SPORT_MODE === "cbb" ? "Min: his expected minutes tonight. PPM: his fantasy points per minute. Line: his team's spread (negative = favored). Shaded within the top " + NBA_SHADE_TOP + " by Proj"
+    : SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over the average of the median projection of the 12 players around him by ADP and of the 12 around him by projection, for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Mtch: tonight's matchup in points (hover for the breakdown). Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
     : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
                                : "Workload score from the Analysis page: expected half-PPR next game";
   /* The line only means anything against your own order; every other view is a sort. */
@@ -4392,7 +4495,7 @@ function render() {
   var frag = document.createDocumentFragment();
   var sw = null, pc = SPORT_MODE === "nba" ? nbaShading() : null, tiers = nbaActiveTiers(), tierEnd = nbaTierEnd();
   var expo = slateExpo();
-  if (SPORT_MODE === "nba") {
+  if (NBA_LIKE) {
     var tb = $("tiersBtn"), tt = state.slate && loadTiers(state.slate.label);
     tb.setAttribute("aria-pressed", String(!!(tt && tt.on)));
     tb.classList.toggle("on", !!(tt && tt.on));
@@ -4446,7 +4549,7 @@ function render() {
     sub.textContent = p.team || "—";
     var cf = state.slate.sport === "cfb" ? cfbFor(p) : null;
     var nt = SPORT_MODE === "nba" ? nbaTakesFor(p) : null;
-    if (SPORT_MODE === "nba") {
+    if (NBA_LIKE) {
       // Straight columns: name, injury, team, ETR, Zakarian, notes, out. No position: every spot is a flex.
       who.classList.add("nbawho");
       // his injury tag and, beside it, the chance he sits tonight
@@ -4466,7 +4569,7 @@ function render() {
       var inj = injuryTag(p.injury);
       if (inj) who.appendChild(inj);
     }
-    if (state.newIds[p.player_id] && SPORT_MODE !== "nba") {
+    if (state.newIds[p.player_id] && !NBA_LIKE) {
       var tag = document.createElement("span");
       tag.className = "tag";
       tag.textContent = "new";
@@ -4602,7 +4705,7 @@ function render() {
       }
     }
 
-    var sc = state.slate.sport === "cfb" ? cfbOppCell(p, cf) : pc ? nbaStatCell(p, pc) : scoreCell(p);
+    var sc = state.slate.sport === "cfb" ? cfbOppCell(p, cf) : SPORT_MODE === "cbb" ? cbbStatCell(p) : pc ? nbaStatCell(p, pc) : scoreCell(p);
     if (ownCell) el.append(handle, rank, who, adp, sc, ownCell, pr, vo);
     else el.append(handle, rank, who, adp, sc, pr, vo);
     if (cf && cf.w) el.appendChild(cfbStrip(p, cf, false));
@@ -4810,9 +4913,9 @@ function renderLiftBar() {
   $("liftHint").textContent = state.view !== "order" ? "Out carries to your order" : "Tap a player to move here";
   document.body.classList.toggle("lifting", !!who);
   if (who) $("liftName").textContent = who.first_name + " " + who.last_name;
-  if (who && SPORT_MODE === "nba") {
+  if (who && NBA_LIKE) {
     var why = state.nbaOutPids && state.nbaOutPids[who.player_id];
-    var g = ((state.nbaGames || {})[pacificDay(state.slate.cutoff)] || {})[who.team];
+    var g = SPORT_MODE === "cbb" ? cbbGame(who) : ((state.nbaGames || {})[pacificDay(state.slate.cutoff)] || {})[who.team];
     $("liftOpp").textContent = (who.team || "") + (g ? " " + g[1] + " " + g[0] : "") + " \u00b7 ";
     $("liftOut").textContent = why ? "In" : "Out";
     $("liftOut").disabled = why === "ud" || why === "etr";
@@ -4831,7 +4934,7 @@ function jumpLifted(kind) {
   if (!pid) return;
   var byPid = byPidMap(state.slate);
   var res = kind === "plus"
-    ? rankAtPosition(state.order, state.cut, pid, SPORT_MODE === "nba" ? null : function (id) { return byPid[id] && byPid[id].position; })
+    ? rankAtPosition(state.order, state.cut, pid, NBA_LIKE ? null : function (id) { return byPid[id] && byPid[id].position; })
     : dropBelowLine(state.order, state.cut, pid);
   if (!res) return;
   state.order = resortTail(res.order, res.cut, byPid, tailValues());
@@ -4896,7 +4999,7 @@ document.addEventListener("click", function (e) {
   if (!row) return;
   // a sorted NBA view (Injury tags, Bagels...): a tap picks him for the bar's Out, nothing moves
   if (state.view !== "order") {
-    if (SPORT_MODE === "nba") setLifted(state.liftedPid === row.dataset.pid ? null : row.dataset.pid);
+    if (NBA_LIKE) setLifted(state.liftedPid === row.dataset.pid ? null : row.dataset.pid);
     return;
   }
   if (Date.now() - lastDragEnd < 400) return;   // a finished drag, not a tap
@@ -5327,7 +5430,7 @@ async function applyEntry(entry) {
   if (entry.outs && Array.isArray(entry.outs.list)) {
     save(K.out(state.slate.label), entry.outs.list);
     save(K.outFrom(state.slate.label), entry.outs.from || {});
-    if (SPORT_MODE === "nba") applyStoredProjections();      // their teammates' Proj moves with them
+    if (NBA_LIKE) applyStoredProjections();      // their teammates' Proj moves with them
     if (entry.outs.list.length) ranks += " Its out marks came with it.";
   }
   return { rec: rec, ranks: ranks };
@@ -5431,7 +5534,7 @@ function boardSig() {
 
 /** NBA: your out marks for a saved board, or null off the NBA page. */
 function savedOuts(label) {
-  return SPORT_MODE === "nba" ? { list: load(K.out(label), []), from: load(K.outFrom(label), {}) } : null;
+  return NBA_LIKE ? { list: load(K.out(label), []), from: load(K.outFrom(label), {}) } : null;
 }
 
 /** Every save funnels through here: a board or projection write schedules a sync. */
@@ -5612,7 +5715,7 @@ function renderFollow() {
     el.appendChild(stop);
   } else if (connected() && gist) {
     var dir = location.origin + location.pathname.replace(/[^/]*$/, "");
-    var link = dir + (SPORT_MODE === "nba" ? "nba.html" : "") + "?follow=" + gist;
+    var link = dir + (NBA_LIKE ? SPORT_MODE + ".html" : "") + "?follow=" + gist;
     el.appendChild(document.createTextNode("Share link for friends: their boards pick up your projections a few minutes after you upload; their ranks stay their own. "));
     var copy = document.createElement("button");
     copy.type = "button"; copy.textContent = "Copy link";
@@ -6006,11 +6109,12 @@ function bootFailed(where, err) {
     if (fm[1].toLowerCase() === "off") { try { localStorage.removeItem(K.follow); } catch (e) { /* ignore */ } }
     else save(K.follow, fm[1]);
   }
-  if (SPORT_MODE === "nba") {
-    document.title = "NBA Board";
-    document.querySelector(".masthead h1").textContent = "NBA Board";
+  if (NBA_LIKE) {
+    var board = SPORT_MODE.toUpperCase() + " Board";
+    document.title = board;
+    document.querySelector(".masthead h1").textContent = board;
     $("navNfl").removeAttribute("aria-current");
-    $("navNba").setAttribute("aria-current", "page");
+    $(SPORT_MODE === "cbb" ? "navCbb" : "navNba").setAttribute("aria-current", "page");
     // Every NBA spot is a flex, so there is no replacement level to measure against.
     document.querySelector('[data-sort="vorp"]').hidden = true;
     document.querySelector('#view option[value="vorp"]').remove();
@@ -6033,7 +6137,10 @@ function bootFailed(where, err) {
         .then(function (d) { state.postedExpo = d.slates || {}; if (state.slate) render(); })
         .catch(function () {});
     }
-    if (SPORT_MODE !== "nba") {
+    if (SPORT_MODE === "cbb") {
+      state.cbbMorning = await fetchJson("cbb_morning.json").catch(function () { return null; });
+    }
+    if (SPORT_MODE === "football") {
       loadWorkload().then(function () { if (state.slate) { sortBelowLine(); render(); } });
       loadCfb().then(function () { if (state.slate && state.slate.sport === "cfb") { sortBelowLine(); render(); } });
     }
