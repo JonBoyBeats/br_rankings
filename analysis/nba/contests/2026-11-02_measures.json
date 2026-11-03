@@ -143,14 +143,14 @@
      "drafted": 100.0
     },
     {
-     "player": "Trae Young",
-     "adp": 26.5,
-     "drafted": 100.0
-    },
-    {
      "player": "Bam Adebayo",
      "adp": 26.5,
      "drafted": 99.2
+    },
+    {
+     "player": "Trae Young",
+     "adp": 26.5,
+     "drafted": 100.0
     },
     {
      "player": "Brandon Miller",
@@ -243,14 +243,14 @@
      "drafted": 6.9
     },
     {
-     "player": "Onyeka Okongwu",
-     "adp": 35.9,
-     "drafted": 11.1
-    },
-    {
      "player": "Dyson Daniels",
      "adp": 35.9,
      "drafted": 17.4
+    },
+    {
+     "player": "Onyeka Okongwu",
+     "adp": 35.9,
+     "drafted": 11.1
     },
     {
      "player": "Amen Thompson",
@@ -2315,14 +2315,14 @@
      "drafted": 100.0
     },
     {
-     "player": "Trae Young",
-     "adp": 26.5,
-     "drafted": 99.8
-    },
-    {
      "player": "Bam Adebayo",
      "adp": 26.5,
      "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 26.5,
+     "drafted": 99.8
     },
     {
      "player": "Brandon Miller",
@@ -2395,14 +2395,14 @@
      "drafted": 13.7
     },
     {
-     "player": "Ayo Dosunmu",
-     "adp": 35.8,
-     "drafted": 11.3
-    },
-    {
      "player": "Damian Lillard",
      "adp": 35.8,
      "drafted": 5.3
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 35.8,
+     "drafted": 11.3
     },
     {
      "player": "Jaden McDaniels",
@@ -2485,14 +2485,14 @@
      "drafted": 0.3
     },
     {
-     "player": "Immanuel Quickley",
-     "adp": 36.0,
-     "drafted": 2.1
-    },
-    {
      "player": "Paul Reed",
      "adp": 36.0,
      "drafted": 1.1
+    },
+    {
+     "player": "Immanuel Quickley",
+     "adp": 36.0,
+     "drafted": 2.1
     },
     {
      "player": "Lauri Markkanen",
@@ -2520,12 +2520,12 @@
      "drafted": 0.2
     },
     {
-     "player": "Buddy Hield",
+     "player": "Myles Turner",
      "adp": 36.0,
      "drafted": 0.2
     },
     {
-     "player": "Myles Turner",
+     "player": "Buddy Hield",
      "adp": 36.0,
      "drafted": 0.2
     },
@@ -3522,14 +3522,14 @@
      "drafted": 100.0
     },
     {
-     "player": "Trae Young",
-     "adp": 26.5,
-     "drafted": 99.5
-    },
-    {
      "player": "Bam Adebayo",
      "adp": 26.5,
      "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 26.5,
+     "drafted": 99.5
     },
     {
      "player": "Brandon Miller",
@@ -3712,12 +3712,12 @@
      "drafted": 2.7
     },
     {
-     "player": "Derik Queen",
+     "player": "VJ Edgecombe",
      "adp": 36.0,
      "drafted": 0.5
     },
     {
-     "player": "VJ Edgecombe",
+     "player": "Derik Queen",
      "adp": 36.0,
      "drafted": 0.5
     },
@@ -3772,14 +3772,14 @@
      "drafted": 0.5
     },
     {
-     "player": "Brook Lopez",
-     "adp": 36.0,
-     "drafted": 1.1
-    },
-    {
      "player": "Keldon Johnson",
      "adp": 36.0,
      "drafted": 0.5
+    },
+    {
+     "player": "Brook Lopez",
+     "adp": 36.0,
+     "drafted": 1.1
     },
     {
      "player": "Trey Murphy III",
@@ -4496,12 +4496,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Jayson Tatum",
+     "player": "Cade Cunningham",
      "adp": 7.7,
      "drafted": 100.0
     },
     {
-     "player": "Cade Cunningham",
+     "player": "Jayson Tatum",
      "adp": 7.7,
      "drafted": 100.0
     },
@@ -4586,12 +4586,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Trae Young",
+     "player": "Bam Adebayo",
      "adp": 26.5,
      "drafted": 100.0
     },
     {
-     "player": "Bam Adebayo",
+     "player": "Trae Young",
      "adp": 26.5,
      "drafted": 100.0
     },
@@ -4716,12 +4716,12 @@
      "drafted": 2.8
     },
     {
-     "player": "Stephon Castle",
+     "player": "Devin Vassell",
      "adp": 36.0,
      "drafted": 2.8
     },
     {
-     "player": "Devin Vassell",
+     "player": "Stephon Castle",
      "adp": 36.0,
      "drafted": 2.8
     },
@@ -5372,12 +5372,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Trae Young",
+     "player": "Bam Adebayo",
      "adp": 26.5,
      "drafted": 100.0
     },
     {
-     "player": "Bam Adebayo",
+     "player": "Trae Young",
      "adp": 26.5,
      "drafted": 100.0
     },
@@ -5442,14 +5442,14 @@
      "drafted": 75.0
     },
     {
-     "player": "Ajay Mitchell",
-     "adp": 35.9,
-     "drafted": 25.0
-    },
-    {
      "player": "Dyson Daniels",
      "adp": 35.9,
      "drafted": 50.0
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 35.9,
+     "drafted": 25.0
     }
    ],
    "first_below_100": {
