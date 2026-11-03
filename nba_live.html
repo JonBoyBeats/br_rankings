@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NBA Live</title>
+<title>Live</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -92,7 +92,7 @@
 <div class="shell">
   <div class="masthead">
     <div class="mast-row">
-      <h1>NBA Live</h1>
+      <h1>Live</h1>
       <nav class="views" aria-label="Pages">
         <a href="/">Home</a>
         <a href="./">NFL</a>
@@ -138,7 +138,11 @@
 </div>
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
-var ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
+/* NBA and college basketball slates side by side in the Slate list; each slate's sport picks its ESPN
+   feed, how its game clock reads (four 12-minute quarters, or two 20-minute halves) and its usual output. */
+var ESPN = { nba: "https://site.api.espn.com/apis/site/v2/sports/basketball/nba",
+             cbb: "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball" };
+var PERIODS = { nba: [4, 12], cbb: [2, 20] };      // periods in regulation, minutes each
 /* Green rows: the best of each round so far. A draft is TEAMS players x ROUNDS rounds of a
    snake, so a player's round is his ADP rank in blocks of TEAMS, everyone past the fifth in
    the last. Who actually goes in a round loosens as the draft goes on: the top 7 or so in the
@@ -180,7 +184,9 @@ var EXTRA = { FG: "fg", "3PT": "fg3", FT: "ft",
               "fieldGoalsMade-fieldGoalsAttempted": "fg", "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3",
               "freeThrowsMade-freeThrowsAttempted": "ft" };
 
-var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, posted: {}, proj: {}, games: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
+var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, posted: {}, proj: {}, projBy: { nba: {}, cbb: {} }, cbbRows: {},
+              games: {}, gamesById: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
+function sportOf(s) { return (s && s.sport) || "nba"; }
 
 function $(id) { return document.getElementById(id); }
 function load(key, fallback) { try { var v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; } }
@@ -211,13 +217,13 @@ async function mirror(file) {
   return r.json();
 }
 
-/** Tonight's slates: locked ones from nba_tonight.json, open ones from nba_latest.json. */
+/** Tonight's slates, NBA and college: locked ones from <sport>_tonight.json, open ones from <sport>_latest.json. */
 async function loadSlates() {
-  var got = await Promise.all(["nba_tonight.json", "nba_latest.json"].map(function (f) {
+  var got = await Promise.all(["nba_latest.json", "nba_tonight.json", "cbb_latest.json", "cbb_tonight.json"].map(function (f) {
     return mirror(f).catch(function () { return { slates: [] }; });
   }));
   var seen = {}, now = Date.now(), out = [];
-  got[1].slates.concat(got[0].slates).forEach(function (s) {
+  got.reduce(function (all, g) { return all.concat(g.slates || []); }, []).forEach(function (s) {
     var t = new Date(s.cutoff).getTime();
     if (seen[s.slate_id] || !s.players.length || t < now - 20 * 3600e3 || t > now + 16 * 3600e3) return;
     seen[s.slate_id] = 1;
@@ -233,7 +239,7 @@ function fillSlates() {
     var o = document.createElement("option");
     var locked = new Date(s.cutoff).getTime() <= now;
     o.value = String(i);
-    o.textContent = (s.title || s.label).replace(/ Slate$/, "") + " · " + (locked ? "locked " : "locks ") + pt(new Date(s.cutoff), { hour: "numeric", minute: "2-digit" }) + " PT";
+    o.textContent = sportOf(s).toUpperCase() + " · " + (s.title || s.label).replace(/ Slate$/, "") + " · " + (locked ? "locked " : "locks ") + pt(new Date(s.cutoff), { hour: "numeric", minute: "2-digit" }) + " PT";
     sel.appendChild(o);
   });
   /* Of the slates being played (locked), the one with your exposures (uploaded here or posted to
@@ -244,7 +250,13 @@ function fillSlates() {
   if (choose) pick = state.slates.indexOf(choose);
   state.slates.forEach(function (s, i) { if (s.label === keep) pick = i; });
   sel.value = String(pick);
-  state.slate = state.slates[pick] || null;
+  setSlate(state.slates[pick] || null);
+}
+
+/** Make a slate the one shown: its sport's usual output is what grade() reads. */
+function setSlate(s) {
+  state.slate = s;
+  state.proj = state.projBy[sportOf(s)] || {};
 }
 
 // ---------------------------------------------------------------- ESPN
@@ -253,7 +265,7 @@ function fillSlates() {
 async function espn(path) {
   for (var tries = 0; ; tries++) {
     try {
-      var r = await fetch(ESPN + path, { cache: "no-store" });
+      var r = await fetch(ESPN[sportOf(state.slate)] + path, { cache: "no-store" });
       if (!r.ok) throw new Error("ESPN " + r.status);
       return await r.json();
     } catch (err) {
@@ -263,12 +275,12 @@ async function espn(path) {
   }
 }
 
-function gameLabel(e) {
-  var st = e.status || {}, ty = st.type || {};
+function gameLabel(e, sport) {
+  var st = e.status || {}, ty = st.type || {}, n = PERIODS[sport || "nba"][0];
   if (ty.state === "pre") return pt(new Date(e.date), { hour: "numeric", minute: "2-digit" });
   if (ty.state === "post") return "Final";
   if (ty.name === "STATUS_HALFTIME") return "Half";
-  var q = st.period > 4 ? "OT" + (st.period > 5 ? st.period - 4 : "") : "Q" + st.period;
+  var q = st.period > n ? "OT" + (st.period > n + 1 ? st.period - n : "") : (n === 2 ? "H" : "Q") + st.period;
   if (ty.name === "STATUS_END_PERIOD" || st.displayClock === "0.0") return "End " + q;
   return q + " " + st.displayClock;
 }
@@ -276,7 +288,7 @@ function gameLabel(e) {
 function boxRows(summ) {
   var out = [];
   ((summ.boxscore || {}).players || []).forEach(function (t) {
-    var team = TEAM[t.team.abbreviation] || t.team.abbreviation, st = (t.statistics || [])[0] || {};
+    var team = (sportOf(state.slate) === "nba" && TEAM[t.team.abbreviation]) || t.team.abbreviation, st = (t.statistics || [])[0] || {};
     var keys = st.keys || st.labels || st.names || [];
     (st.athletes || []).forEach(function (a) {
       var s = { pts: 0, reb: 0, ast: 0, stl: 0, blk: 0, tov: 0, min: 0 };
@@ -287,8 +299,19 @@ function boxRows(summ) {
         if (e) x[e] = String(v);
       });
       var nm = normName(a.athlete.displayName);
-      out.push({ key: ESPN_ALIASES[nm] || nm, team: team, s: s, x: x, out: !!a.didNotPlay, has: (a.stats || []).length > 0 });
+      out.push({ key: ESPN_ALIASES[nm] || nm, id: String(a.athlete.id), team: team, s: s, x: x, out: !!a.didNotPlay, has: (a.stats || []).length > 0 });
     });
+  });
+  return out;
+}
+
+/** College: this slate's games, by ESPN game id and by opponent, from our projection file. */
+function slateEvents() {
+  var out = {};
+  state.slate.players.forEach(function (p) {
+    var r = state.cbbRows[p.player_id];
+    if (r && r.event) out[r.event] = 1;
+    if (r && r.opp) out[r.opp] = 1;
   });
   return out;
 }
@@ -298,19 +321,21 @@ async function pull() {
   if (!state.slate || state.busy) return;
   state.busy = true;
   try {
-    var day = espnDate(state.slate.cutoff);
-    var board = await espn("/scoreboard?dates=" + day + "&limit=50");
-    var games = {}, todo = [];
+    var day = espnDate(state.slate.cutoff), sport = sportOf(state.slate);
+    // college: every D1 game (ESPN lists only featured ones otherwise), box scores only for the slate's games
+    var board = await espn("/scoreboard?dates=" + day + (sport === "cbb" ? "&groups=50&limit=500" : "&limit=50"));
+    var games = {}, byId = {}, todo = [], mine = sport === "cbb" ? slateEvents() : null;
     (board.events || []).forEach(function (e) {
-      var g = { id: e.id, state: e.status.type.state, label: gameLabel(e), date: e.date, away: null, home: null,
+      var g = { id: e.id, state: e.status.type.state, label: gameLabel(e, sport), date: e.date, away: null, home: null,
                 period: e.status.period, clock: e.status.displayClock,
-                status: e.status.type.name };
+                status: e.status.type.name, periods: PERIODS[sport][0], len: PERIODS[sport][1] };
       ((e.competitions || [])[0] || {}).competitors.forEach(function (c) {
-        var t = TEAM[c.team.abbreviation] || c.team.abbreviation;
+        var t = (sport === "nba" && TEAM[c.team.abbreviation]) || c.team.abbreviation;
         g[c.homeAway === "home" ? "home" : "away"] = t;
         games[t] = g;
       });
-      if (g.state !== "pre" && !state.finals[e.id]) todo.push(g);
+      byId[e.id] = g;
+      if (g.state !== "pre" && !state.finals[e.id] && (!mine || mine[e.id] || mine[g.home] || mine[g.away])) todo.push(g);
     });
     // a game whose box score still doesn't come keeps its last one; the rest update
     var got = await Promise.allSettled(todo.map(async function (g) {
@@ -319,6 +344,7 @@ async function pull() {
     }));
     state.missed = got.filter(function (x) { return x.status === "rejected"; }).length;
     state.games = games;
+    state.gamesById = byId;
     state.pulledAt = new Date();
     state.error = null;
   } catch (err) {
@@ -400,12 +426,13 @@ function setFolded(on) {
 /** How much of the game is played, 0 to 1; overtime counts as done. */
 function played(g) {
   if (!g || g.state === "pre") return 0;
-  if (g.state === "post" || g.period > 4) return 1;
-  // at a break the clock can already read the next quarter's 12:00: go by the status
+  var n = g.periods || 4, len = g.len || 12;        // NBA's four 12-minute quarters unless the game says otherwise
+  if (g.state === "post" || g.period > n) return 1;
+  // at a break the clock can already read the next period's start: go by the status
   if (g.status === "STATUS_HALFTIME") return 0.5;
-  if (g.status === "STATUS_END_PERIOD") return Math.min(1, g.period / 4);
+  if (g.status === "STATUS_END_PERIOD") return Math.min(1, g.period / n);
   var c = String(g.clock || "0").split(":"), left = c.length > 1 ? +c[0] + c[1] / 60 : c[0] / 60;
-  return Math.min(1, ((g.period - 1) * 12 + 12 - (left || 0)) / 48);
+  return Math.min(1, ((g.period - 1) * len + len - (left || 0)) / (n * len));
 }
 
 /** Each row's pace, and how far it runs over the median pace of the players drafted around him. */
@@ -479,7 +506,7 @@ function detailHtml(r) {
 function render() {
   var sl = state.slate, host = $("list");
   host.innerHTML = "";
-  if (!sl) { host.innerHTML = '<div class="empty">No NBA slate tonight in the mirror.</div>'; setStatus(""); return; }
+  if (!sl) { host.innerHTML = '<div class="empty">No NBA or college slate tonight in the mirror.</div>'; setStatus(""); return; }
   /* Exposure: a CSV uploaded on this device, or the app's numbers posted to
      analysis/nba/expo.json for this slate, whichever is newer. */
   var ex = load(expoKey(sl.label), null), post = state.posted[sl.slate_id] || null, share = null, of = 0;
@@ -503,17 +530,20 @@ function render() {
   $("mine").setAttribute("aria-pressed", String(!!(ex && state.mine)));
 
   // ESPN rows by name and team, then by name alone when only one player carries it
-  var byKey = {}, byName = {};
+  // college: by ESPN's athlete and game ids from our projection file, since the two sites' team codes differ
+  var byKey = {}, byName = {}, byId = {}, cbb = sportOf(sl) === "cbb";
   Object.keys(state.box).forEach(function (gid) {
     state.box[gid].forEach(function (b) {
       b.gid = gid;
       byKey[b.key + "|" + b.team] = b;
       byName[b.key] = byName[b.key] === undefined ? b : null;
+      byId[b.id] = b;
     });
   });
   var rows = sl.players.map(function (p) {
-    var k = normName(p.first_name + " " + p.last_name);
-    var b = byKey[k + "|" + p.team] || byName[k] || null, g = state.games[p.team] || null;
+    var k = normName(p.first_name + " " + p.last_name), cr = cbb ? state.cbbRows[p.player_id] || {} : null;
+    var b = (cr && cr.espn && byId[String(cr.espn)]) || byKey[k + "|" + p.team] || byName[k] || null;
+    var g = cr ? state.gamesById[cr.event] || state.games[cr.opp] || null : state.games[p.team] || null;
     // Points once he has a box line: in a live game even before his first full minute (ESPN
     // counts whole minutes, so everyone reads 0 at the tip); in a final one only if he played.
     var fp = b && !b.out && b.has && (b.s.min > 0 || (g && g.state === "in")) ? udPoints(b.s) : null;
@@ -598,7 +628,7 @@ function render() {
 
 // ---------------------------------------------------------------- wiring
 $("slate").addEventListener("change", function () {
-  state.slate = state.slates[Number(this.value)];
+  setSlate(state.slates[Number(this.value)]);
   save("brr:live:slate", state.slate.label);
   state.games = {}; state.box = {}; state.finals = {};
   render(); pull();
@@ -636,15 +666,23 @@ document.addEventListener("visibilitychange", function () {
 function etrUsual() {
   var cur = (load("brr:proj:nba", null) || {}).current, day = { dateStyle: "short" };
   if (!cur || !cur.entries || pt(new Date(cur.at), day) !== pt(new Date(), day)) return;
-  cur.entries.forEach(function (e) { if (typeof e.median === "number") state.proj[e.norm] = e.median; });
+  cur.entries.forEach(function (e) { if (typeof e.median === "number") state.projBy.nba[e.norm] = e.median; });
   state.projFrom = cur.file;
 }
 
 (async function boot() {
   try { state.slates = await loadSlates(); } catch (e) { setStatus("Couldn't reach the ADP mirror: " + e.message, true); return; }
   mirror("nba_morning.json").then(function (d) {
-    (d.players || []).forEach(function (r) { var k = normName(r.name); state.proj[ESPN_ALIASES[k] || k] = r.fp; });
+    (d.players || []).forEach(function (r) { var k = normName(r.name); state.projBy.nba[ESPN_ALIASES[k] || k] = r.fp; });
   }).catch(function () {}).then(function () { etrUsual(); render(); });
+  // college: our projection is his usual; its rows also carry his ESPN athlete and game ids
+  mirror("cbb_morning.json").then(function (d) {
+    state.cbbRows = d.players || {};
+    Object.keys(state.cbbRows).forEach(function (pid) {
+      var r = state.cbbRows[pid];
+      if (r.status !== "Out" && typeof r.fp === "number") state.projBy.cbb[normName(r.name)] = r.fp;
+    });
+  }).catch(function () {}).then(function () { render(); if (sportOf(state.slate) === "cbb") pull(); });
   state.posted = await fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { return d.slates || {}; }).catch(function () { return {}; });
   fillSlates();
