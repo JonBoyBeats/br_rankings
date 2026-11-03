@@ -1966,6 +1966,7 @@ function cbbValues(players, slate, marked) {
   players.forEach(function (p) {
     if (out[keyOf(p)]) { outPids[p.player_id] = out[keyOf(p)]; return; }
     var r = rows[p.player_id];
+    if (r && r.status === "Out") { outPids[p.player_id] = "inj"; return; }      // EvanMiya's injury report (cbb/inputs/outs.csv)
     if (!r || typeof r.fp !== "number") return;
     values[p.player_id] = r.fp;
     parts[p.player_id] = { note: cbbNote(r), cbb: r };
@@ -3912,11 +3913,12 @@ function nbaOutButton(p) {
   b.className = "outx" + (why ? " on" : "");
   b.textContent = why ? "OUT" : "\u2298";
   b.title = why === "ud" ? "Underdog has him out" : why === "etr" ? "Not in ETR's latest file, which has his team: out"
+          : why === "inj" ? "EvanMiya's injury report has him out"
           : why ? "You marked him out. Tap to put him back in"
           : "Mark him out tonight: he drops to the bottom" + (SPORT_MODE === "nba" ? " and his teammates' Proj moves up" : "");
   b.addEventListener("click", function (e) {
     e.stopPropagation();                      // a tap on the row lifts it; this only toggles
-    if (why !== "ud" && why !== "etr") toggleNbaOut(p);
+    if (why !== "ud" && why !== "etr" && why !== "inj") toggleNbaOut(p);
   });
   return b;
 }
@@ -4925,7 +4927,7 @@ function renderLiftBar() {
     var g = SPORT_MODE === "cbb" ? cbbGame(who) : ((state.nbaGames || {})[pacificDay(state.slate.cutoff)] || {})[who.team];
     $("liftOpp").textContent = (who.team || "") + (g ? " " + g[1] + " " + g[0] : "") + " \u00b7 ";
     $("liftOut").textContent = why ? "In" : "Out";
-    $("liftOut").disabled = why === "ud" || why === "etr";
+    $("liftOut").disabled = why === "ud" || why === "etr" || why === "inj";
     $("liftOut").classList.toggle("on", !!why);
   }
   if (who) {
