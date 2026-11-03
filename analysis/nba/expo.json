@@ -437,6 +437,34 @@
     "Dejounte Murray": 1
    },
    "note": "After swaps: Jalen Johnson (23%, out) and Pascal Siakam (3%, out) swapped, taking Dyson Daniels from 2% to 24% and adding Jarace Walker at 4%. Dejounte Murray (1%) still shows the app's red O (out) tag. The app rounds shares down, so they add to under 600%."
+  },
+  "32474837-153c-41e6-8aec-92947af8fd78": {
+   "label": "cbb_tue_main",
+   "date": "2026-11-03",
+   "at": "2026-11-03T22:44:00Z",
+   "teams": 13,
+   "pct": {
+    "Chance Mallory": 61,
+    "Mo Dioubate": 61,
+    "Amari Allen": 61,
+    "Jeremiah Wilkinson": 53,
+    "Cam Manyawu": 53,
+    "Johann Grunloh": 46,
+    "Malachi Moreno": 38,
+    "Jordan Smith": 30,
+    "JT Rock": 30,
+    "Franck Kepnang": 30,
+    "Ousmane N’Diaye": 23,
+    "Thijs De Ridder": 23,
+    "Abdou Toure": 15,
+    "Drew Fielder": 15,
+    "Andrew McKeever": 15,
+    "Donovan Dent": 15,
+    "Brandon Garrison": 7,
+    "Saliou Niang": 7,
+    "Billy Richmond": 7
+   },
+   "note": "College basketball, read off the app's Exposure screen (two screenshots, 19 players, 78 picks = 13 teams x 6)."
   }
  }
 }
