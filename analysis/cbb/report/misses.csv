@@ -1,0 +1,35 @@
+date,slate,player,team,adp,ours,ours_wo_miya,ud,actual,min,min_proj,ppm,ppm_proj,spread,src,cause,fixable,note
+2026-11-03,cbb_tue_main,Donovan Dent,LSU,1.2,33.0,31.6,42.0,47.8,30.0,26.9,1.59,1.137,-27.5,box,peripherals,no,10 assists; 30 min where the blowout trim had 26.9
+2026-11-03,cbb_tue_main,Mo Dioubate,LSU,17.3,31.8,32.6,21.3,18.4,20.0,23.5,0.92,1.252,-27.5,box,peripherals,no,2 rebounds and 0 assists in 20 min
+2026-11-03,cbb_tue_main,Malachi Moreno,UK,9.7,30.6,31.7,25.8,21.0,20.0,23.1,1.05,1.227,-33.5,box,shooting,no,8 pts in 20 min; 10 rebounds held up
+2026-11-03,cbb_tue_main,Thijs De Ridder,UVA,7.5,29.4,29.8,27.2,45.3,27.0,24.5,1.68,1.113,-31.5,box,shooting,no,24 pts in 27 min
+2026-11-03,cbb_tue_main,Jeremiah Wilkinson,ARK,10.1,27.3,29.4,25.9,50.7,21.0,21.9,2.41,1.154,-41.5,box,shooting,no,23 pts and 5 steals in 21 min
+2026-11-03,cbb_tue_main,Abdou Toure,ARK,35.8,27.0,,,18.6,20.0,24.4,0.93,1.027,-41.5,miya,newcomer,yes,20 min against 24.4 from his EvanMiya rank (3rd)
+2026-11-03,cbb_tue_main,Juke Harris,TENN,2.2,26.4,25.4,37.2,14.8,26.0,22.6,0.57,1.085,-25.5,box,shooting,no,7 pts in 26 min
+2026-11-03,cbb_tue_main,Cam Manyawu,IOWA,35.3,25.9,24.4,19.0,15.6,12.0,21.7,1.3,1.14,-23.5,box,minutes,yes,"12 min against 21.7, no blowout or tag to explain it; unclear"
+2026-11-03,cbb_tue_main,Saliou Niang,LSU,36.0,24.7,,,55.3,23.0,24.4,2.4,0.94,-27.5,miya,newcomer,yes,minutes right (23); rate 2.40 a minute against EvanMiya's 0.94: 14/14/5 and 6 steals
+2026-11-03,cbb_tue_main,JT Rock,KSU,35.9,24.7,27.0,,1.2,3.0,21.0,0.4,1.192,-11.5,box,news,no,"3 minutes, no box line to explain it: sat or left early, unclear"
+2026-11-03,cbb_tue_main,Franck Kepnang,UK,25.3,23.8,23.7,22.5,10.6,13.0,19.7,0.82,1.122,-33.5,box,minutes,yes,13 min against 19.7; EvanMiya ranks him 7th on UK
+2026-11-03,cbb_tue_main,Alex Wilkins,UK,11.6,22.8,21.9,24.4,39.9,26.0,21.4,1.53,0.985,-33.5,box,peripherals,no,7 steals; also 26 min against 21.4 (the step-up cut was too much here)
+2026-11-03,cbb_tue_main,Justin McBride,UK,33.5,22.8,22.2,,8.9,16.0,20.0,0.56,1.057,-33.5,box,shooting,no,3 pts in 16 min
+2026-11-03,cbb_tue_main,Sam Lewis,UVA,28.3,22.6,22.9,16.9,37.3,27.0,24.8,1.38,0.845,-31.5,box,shooting,no,20 pts in 27 min
+2026-11-03,cbb_tue_main,Kalu Anya,UVA,,22.2,22.5,,6.7,15.0,22.3,0.45,0.923,-31.5,box,minutes,yes,15 min against 22.3; EvanMiya ranks him 6th
+2026-11-03,cbb_tue_main,Anderson Diaz,BAMA,,21.0,,,7.7,11.0,21.5,0.7,0.905,-27.5,miya,news,no,11 min; Questionable on EvanMiya's injury report
+2026-11-03,cbb_tue_main,Qayden Samuels,BAMA,34.8,21.0,,,29.9,21.0,19.6,1.42,0.993,-27.5,miya,newcomer,yes,"minutes right (21); 5 assists, 4 steals: rate 1.42 against 0.99"
+2026-11-03,cbb_tue_main,Isaia Howard,IOWA,36.0,20.6,19.6,8.7,5.6,13.0,21.0,0.43,0.937,-23.5,box,minutes,yes,13 min against 21.0; unclear
+2026-11-03,cbb_tue_main,Brandon Rechsteiner,KSU,25.0,19.9,20.1,21.0,28.9,34.0,26.7,0.85,0.753,-11.5,box,minutes,yes,34 min against 26.7 in a close game
+2026-11-03,cbb_tue_main,Evan Ramsey,WOF,,19.8,,,32.0,22.0,28.4,1.45,0.735,25.5,miya,newcomer,yes,"22 min against 28.4, but 10 rebounds: rate 1.45 against 0.73"
+2026-11-03,cbb_tue_main,Ethan Harris,IOWA,,19.2,,,0.0,3.0,18.2,0.0,1.008,-23.5,miya,newcomer,yes,3 min against 18.2 from his EvanMiya rank (8th)
+2026-11-03,cbb_tue_main,Jan Vide,UVA,25.7,18.5,17.1,18.1,5.9,7.0,20.9,0.84,0.819,-31.5,box,minutes,yes,"7 min against 20.9; transfer up 20.5 points, EvanMiya ranks him 8th"
+2026-11-03,cbb_tue_main,Reece Potter,UK,,18.5,19.2,,2.4,6.0,16.8,0.4,1.017,-33.5,box,minutes,yes,"6 min against 16.8; his last season was 2024-25, EvanMiya ranks him 13th"
+2026-11-03,cbb_tue_main,Takai Simpkins,LIP,35.5,18.4,17.4,,29.6,29.0,32.0,1.02,0.607,23.5,box,shooting,no,18 pts in 29 min
+2026-11-03,cbb_tue_main,Liam McChesney,MAN,,18.3,18.9,,4.0,11.0,28.4,0.36,0.683,33.5,box,minutes,yes,11 min against 28.4; unclear
+2026-11-03,cbb_tue_main,Braedan Lue,TENN,33.0,17.4,17.3,19.6,4.2,14.0,16.5,0.3,0.973,-25.5,box,shooting,no,2 pts in 14 min
+2026-11-03,cbb_tue_main,Christian Fermin,TENN,,17.4,18.0,,3.2,3.0,20.4,1.07,0.791,-25.5,box,minutes,yes,"3 min against 20.4; his last season was 2024-25, EvanMiya ranks him 12th"
+2026-11-03,cbb_tue_main,Dai Dai Ames II,TENN,12.5,17.4,16.9,23.0,8.7,20.0,19.9,0.43,0.808,-25.5,box,shooting,no,6 pts in 20 min
+2026-11-03,cbb_tue_main,Christian Harmon,UVA,34.8,17.3,17.3,,1.5,7.0,20.3,0.21,0.79,-31.5,box,minutes,yes,7 min against 20.3; unclear
+2026-11-03,cbb_tue_main,Nick Jones,UNO,35.7,17.0,16.3,,1.4,22.0,24.3,0.06,0.737,27.5,box,shooting,no,3 pts and 4 turnovers in 22 min
+2026-11-03,cbb_tue_main,DeWayne Brown,TENN,,15.9,16.0,,43.9,31.0,15.4,1.42,0.955,-25.5,box,minutes,yes,31 min against 15.4: Tennessee's crowding cut hit him hardest (x0.70) and Jalen Washington was out
+2026-11-03,cbb_tue_main,Montana Wheeler,KSU,35.9,15.7,16.0,15.9,3.5,17.0,22.0,0.21,0.721,-11.5,box,shooting,no,2 pts in 17 min
+2026-11-03,cbb_tue_main,Enel St. Bernard,SHSU,35.8,15.6,17.0,,33.1,29.0,19.2,1.14,0.86,27.5,box,minutes,yes,29 min against 19.2 as a 27.5-point underdog
+2026-11-03,cbb_tue_main,Elijah Gertrude,UVA,36.0,5.6,5.1,,26.8,15.0,6.9,1.79,0.756,-31.5,box,blowout,partly,15 min against 6.9: bench minutes in a 31.5-point favorite's rout
