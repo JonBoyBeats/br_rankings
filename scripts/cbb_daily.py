@@ -40,7 +40,7 @@ ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-ba
 MISS_PTS = 8                # a miss worth writing up: ours off by this many points
 SCORING = {"PTS": 1, "REB": 1.2, "AST": 1.5, "STL": 3, "BLK": 3, "TO": -1}
 COLS = ["date", "slate", "player_id", "name", "team", "adp_close", "src", "fp", "fp_base", "ud", "min_proj", "ppm_proj",
-        "miya_ppm", "bpr_rank", "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual"]
+        "miya_ppm", "bpr_rank", "missed", "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual"]
 
 
 def slates(mirror, since, until):
@@ -126,7 +126,7 @@ def build(mirror, slate):
                     "team": r.get("team"), "adp_close": adp.get(pid, ""), "src": r.get("src"), "fp": r.get("fp"),
                     "fp_base": r.get("fp_base", r.get("fp") if r.get("miya_ppm") is None else ""), "ud": r.get("ud") or "",
                     "min_proj": r.get("min", ""), "ppm_proj": r.get("ppm", ""), "miya_ppm": r.get("miya_ppm", ""),
-                    "bpr_rank": r.get("bpr_rank", ""), "spread": r.get("spread", ""), "ou": r.get("ou", ""), **a})
+                    "bpr_rank": r.get("bpr_rank", ""), "missed": r.get("missed", ""), "spread": r.get("spread", ""), "ou": r.get("ou", ""), **a})
     return out
 
 
@@ -214,6 +214,23 @@ def report(a):
         split("everyone", rs)
         split("drafted", [r for r in rs if r["adp_close"]])
         split("newcomers (EvanMiya / Underdog)", [r for r in rs if str(r["src"]).startswith(("miya", "ud"))])
+
+    # standing watches (2026-11-03 report): minutes by EvanMiya's rank on his team, players built from last
+    # season (the board's green chip is ranks 1-3); and players back from a missed season (MISSED_SEASON)
+    for title, rs in (("LAST NIGHT", night), ("SEASON", rows)):
+        box = [r for r in rs if r["src"] == "box" and num(r["min_proj"]) and num(r["min"]) is not None and not r.get("missed")]
+        line = []
+        for lo, hi in ((1, 3), (4, 7), (8, 99)):
+            v = [num(r["min"]) - num(r["min_proj"]) for r in box if r["bpr_rank"] and lo <= int(r["bpr_rank"]) <= hi]
+            if v:
+                line.append("ranks %d-%s n=%d %+.1f" % (lo, hi if hi < 99 else "+", len(v), S.mean(v)))
+        miss = [r for r in rs if r.get("missed") and num(r["min_proj"]) and num(r["min"]) is not None]
+        print("\nWatch, %s: minutes actual - projected by EvanMiya team rank (built from last season, DNPs as 0): %s" % (
+            title.lower(), "; ".join(line) or "none"))
+        if miss:
+            print("  back from a missed season: n=%d, minutes %+.1f (actual %.1f vs %.1f projected)" % (
+                len(miss), S.mean(num(r["min"]) - num(r["min_proj"]) for r in miss),
+                S.mean(num(r["min"]) for r in miss), S.mean(num(r["min_proj"]) for r in miss)))
 
     big = sorted((r for r in night if num(r["fp"]) is not None and num(r["min"]) and (r["adp_close"] or num(r["fp"]) >= 15)
                   and abs(num(r["fp"]) - num(r["actual"])) >= MISS_PTS), key=lambda r: -abs(num(r["fp"]) - num(r["actual"])))

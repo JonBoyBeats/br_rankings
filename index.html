@@ -1996,6 +1996,7 @@ function cbbNote(r) {
               (r.moved ? " (transferred" + (typeof r.jump === "number" ? ", to a team " + Math.abs(r.jump).toFixed(1) + " points " +
                          (r.jump >= 0 ? "stronger" : "weaker") : "") + ")" : ""));
   }
+  if (r.missed) bits.push("back from a missed season (last played " + r.missed + "): his minutes \u00d70.83, as such players' have run");
   if (r.gp && r.src !== "ud+box") bits.push(r.gp + " game" + (r.gp === 1 ? "" : "s") + " this season");
   if (typeof r.crowd === "number" && r.crowd > 200) bits.push("crowded: his team's players averaged " + Math.round(r.crowd) + " minutes last season, so last season's minutes ×" + (200 / r.crowd).toFixed(2));
   if (typeof r.spread === "number") bits.push((r.home ? "vs " : "at ") + (r.opp || "?") + ", spread " + cbbSigned(r.spread) + (r.ou ? ", total " + r.ou : ""));
@@ -2023,7 +2024,7 @@ var CBB_CORE_RANK = 3;
 
 function cbbCore(p) {
   var r = state.cbbMorning && state.cbbMorning.players[p.player_id];
-  return r && r.src === "box" && r.bpr_rank && r.bpr_rank <= CBB_CORE_RANK ? r : null;
+  return r && r.src === "box" && !r.missed && r.bpr_rank && r.bpr_rank <= CBB_CORE_RANK ? r : null;   // back from a missed season: not sure
 }
 
 /** The NBA row's three take columns on the CBB page: the newcomer flag, EvanMiya's top 3, then an empty one. */

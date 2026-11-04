@@ -97,6 +97,18 @@ can propose a model change, but say how to test it on past seasons first
 (`scripts/cbb_calibrate.py` in battle-royale-research has the 2024-25 and 2025-26 box scores), and
 make no change without the owner's yes.
 
+**Standing watches** (carried from the 2026-11-03 report; the script prints both under "Watch"):
+
+- **EvanMiya's top 3**: players built from last season whom EvanMiya ranks 1st-3rd on their team
+  played their projected minutes on the first night (+0.6) where ranks 4-7 came in 3-5 short. The
+  board marks the 1-3s with a green rank chip as our surer projections. Give the season line by
+  rank band each morning; once it has about 100 players a band, say whether it still holds. If
+  ranks 4-7 stay short, propose cutting their minutes, tested on past seasons first.
+- **Back from a missed season** (`MISSED_SEASON` in battle-royale-research `scripts/cbb_nightly.py`,
+  minutes x0.831 from 132 players on 2025-26): check their minutes still land near projected
+  (the season line under "back from a missed season"). The factor was measured, so leave it
+  alone unless the season line is clearly off with 30+ players.
+
 ## 6. The field
 
 ```
