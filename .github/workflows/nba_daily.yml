@@ -47,6 +47,14 @@ jobs:
         run: |
           python3 scripts/cbb_daily.py record --mirror ../br-adp-mirror ${SINCE:+--since "$SINCE"} ${{ inputs.rebuild && '--rebuild' || '' }}
           python3 scripts/cbb_daily.py report
+      # College contests: every settled tournament on last night's CBB main slate, then its field measures
+      # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.
+      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
+        name: CBB contests
+        continue-on-error: true
+        run: |
+          python3 scripts/nba_contests.py pull --sport cbb --mirror ../br-adp-mirror
+          python3 scripts/nba_contests.py measures --sport cbb --mirror ../br-adp-mirror --date "$(TZ=America/Los_Angeles date -d yesterday +%F)"
       # Every main-slate contest that has settled (contest ids from the ADP poller's lobby capture): each team's
       # picks, place and payout, then the night's field measures. A failure here must not hold up the notes.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
@@ -67,7 +75,7 @@ jobs:
           python3 scripts/build_takes.py
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
-          mkdir -p analysis/cbb/daily
-          git add analysis/cbb/daily analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests
+          mkdir -p analysis/cbb/daily analysis/cbb/contests
+          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests
           git diff --cached --quiet || git commit -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           git pull --rebase -q origin main && git push

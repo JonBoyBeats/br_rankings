@@ -1,4 +1,7 @@
-"""NBA contests: every team in every tournament on the night's main slate, and the field measures built on them.
+"""NBA (and college basketball) contests: every team in every tournament on the night's main slate, and the
+field measures built on them. --sport cbb does the same for the college main slate: cbb_latest.json for
+slates and contest ids, analysis/cbb/ for the files, and the college daily record (scripts/cbb_daily.py)
+for names, closing ADP and points.
 
 Underdog's leaderboards are public once a contest locks: each team's username, place, points,
 payout, its six picks and the ADP each pick was taken at, and the draft (pod) it came from.
@@ -14,7 +17,7 @@ estimated: a pod's 36 picks sorted by the ADP each was taken at.
             in analysis/nba/contests/<date>_measures.json (with my teams one by one: picks, place, inferred draft time)
   seed      add contest ids (arguments) to seed.json, for contests the lobby never caught
 
-  python3 scripts/nba_contests.py pull|measures|seed [ids...] --mirror ../br-adp-mirror [--date YYYY-MM-DD]
+  python3 scripts/nba_contests.py pull|measures|seed [ids...] --mirror ../br-adp-mirror [--date YYYY-MM-DD] [--sport cbb]
 
 Definitions (the shared spec): drafted% = pods a player was drafted in / pods (ownership is that over
 the pod size); top X% = rank <= ceil(X% of entries), never pooled across contests; a breaker scored at
@@ -31,6 +34,15 @@ import nba_daily as daily   # noqa: E402  the mirror's history and Pacific days,
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "analysis", "nba")
 OUT = os.path.join(HERE, "contests")
 DAILY = os.path.join(HERE, "daily")
+LATEST = "nba_latest.json"
+
+
+def use_sport(sport):
+    """Point the paths and the mirror's slates file at a sport (nba, the default, or cbb)."""
+    global HERE, OUT, DAILY, LATEST
+    HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "analysis", sport)
+    OUT, DAILY, LATEST = os.path.join(HERE, "contests"), os.path.join(HERE, "daily"), sport + "_latest.json"
+    daily.Mirror.latest = LATEST
 API = "https://api.underdogfantasy.com/v1"
 Q = "product=fantasy&product_experience_id=c7ade3c1-71ae-4593-a7e1-07f63c7e94ae&state_config_id=725014ef-3570-4e93-871d-d69674ab3521"
 ME = "jonboybeats"
@@ -65,8 +77,8 @@ def main_slates(mirror, days):
 def mirror_contests(mirror, slate):
     """{contest id: the lobby's record} for a slate, from every mirror version while it was open."""
     found = {}
-    for _, sha in mirror.versions("nba_latest.json", slate["lock"] - dt.timedelta(hours=48), slate["lock"]):
-        for s in mirror.show(sha, "nba_latest.json").get("slates", []):
+    for _, sha in mirror.versions(LATEST, slate["lock"] - dt.timedelta(hours=48), slate["lock"]):
+        for s in mirror.show(sha, LATEST).get("slates", []):
             if s["slate_id"] == slate["slate_id"]:
                 for c in s.get("contests") or []:
                     found[c["id"]] = c
@@ -76,8 +88,8 @@ def mirror_contests(mirror, slate):
 def appearance_map(mirror, slate):
     """{appearance id: player id} for a slate: its priced players and its pool file, every version."""
     out = {}
-    for _, sha in mirror.versions("nba_latest.json", slate["lock"] - dt.timedelta(hours=48), slate["lock"]):
-        for s in mirror.show(sha, "nba_latest.json").get("slates", []):
+    for _, sha in mirror.versions(LATEST, slate["lock"] - dt.timedelta(hours=48), slate["lock"]):
+        for s in mirror.show(sha, LATEST).get("slates", []):
             if s["slate_id"] != slate["slate_id"]:
                 continue
             for p in s.get("players") or []:
@@ -193,7 +205,7 @@ def load_night(date):
 
 
 def players_on(date, label):
-    path = os.path.join(DAILY, "%s_%s.csv" % (date, label.replace("nba_", "")))
+    path = os.path.join(DAILY, "%s_%s.csv" % (date, label.split("_", 1)[1]))
     out = {}
     if os.path.exists(path):
         for r in csv.DictReader(open(path)):
@@ -470,9 +482,11 @@ def main():
     ap.add_argument("cmd", choices=["pull", "measures", "seed"])
     ap.add_argument("ids", nargs="*")
     ap.add_argument("--mirror", default=os.path.join(HERE, "..", "..", "..", "br-adp-mirror"))
+    ap.add_argument("--sport", choices=["nba", "cbb"], default="nba")
     ap.add_argument("--days", type=int, default=3)
     ap.add_argument("--date")
     a = ap.parse_args()
+    use_sport(a.sport)
     os.makedirs(OUT, exist_ok=True)
     if a.cmd == "seed":
         path = os.path.join(OUT, "seed.json")

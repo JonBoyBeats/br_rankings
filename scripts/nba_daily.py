@@ -92,6 +92,8 @@ def fetch_json(url):
 
 # ---------------------------------------------------------------- the ADP mirror
 class Mirror:
+    latest = "nba_latest.json"      # the slates file main_slates and snapshots read (the contest script sets cbb_latest.json)
+
     def __init__(self, path):
         self.path, self.cache = path, {}
 
@@ -111,8 +113,8 @@ class Mirror:
     def main_slates(self, since, until):
         """Every main slate that locked in [since, until], by slate_id."""
         found = {}
-        for _, sha in self.versions("nba_latest.json", since - dt.timedelta(days=2), until):
-            for s in self.show(sha, "nba_latest.json").get("slates", []):
+        for _, sha in self.versions(self.latest, since - dt.timedelta(days=2), until):
+            for s in self.show(sha, self.latest).get("slates", []):
                 lock = iso(s["cutoff"])
                 if s["label"].endswith("_main") and since <= lock <= until:
                     found[s["slate_id"]] = {"slate_id": s["slate_id"], "label": s["label"], "lock": lock}
@@ -121,8 +123,8 @@ class Mirror:
     def snapshots(self, slate):
         """[(snapshot time, players)] while the slate was priced, oldest first."""
         seen = {}
-        for _, sha in self.versions("nba_latest.json", slate["lock"] - dt.timedelta(hours=48), slate["lock"]):
-            for s in self.show(sha, "nba_latest.json").get("slates", []):
+        for _, sha in self.versions(self.latest, slate["lock"] - dt.timedelta(hours=48), slate["lock"]):
+            for s in self.show(sha, self.latest).get("slates", []):
                 if s["slate_id"] == slate["slate_id"] and isinstance(s.get("players"), list) and s["players"]:
                     seen[snap_time(s["snapshot_utc"])] = s["players"]
         return sorted(seen.items(), key=lambda x: x[0])
