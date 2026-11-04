@@ -3318,6 +3318,19 @@ var NBA_DUD = { intercept: -1.5744, terms: {
   stk_share: [0.16086, 0.05588, 0.0888], min_l10: [29.90515, 5.11911, 0.0638], foul_pm: [0.07743, 0.02223, -0.0149] } };
 
 /** A model's chance for one player: `x` his projection and `bar` his slot's, on the box-score scale; `r` his morning row. */
+/* Peer breaks (the morning file's pbr: [breaks, games] over his last 40, a break being outscoring the 5 players
+   projected just above him and the 5 just below): on 2025-26, fit on 2023-25, his next break leaned with it, about
+   x1.16 on the odds per 10 points of history. Shrunk toward the 8.9% base over 10 games; under 8 games, nothing. */
+var NBA_PEER = { coef: 1.52, base: 0.089, shrink: 10, minGames: 8 };
+
+/** The shift on Boom's log-odds from his peer breaks (0 without enough games). */
+function nbaPeerShift(r) {
+  var b = r && r.pbr;
+  if (!b || b[1] < NBA_PEER.minGames) return 0;
+  var rate = (b[0] + NBA_PEER.base * NBA_PEER.shrink) / (b[1] + NBA_PEER.shrink);
+  return NBA_PEER.coef * (rate - NBA_PEER.base);
+}
+
 function nbaChance(model, x, bar, r) {
   var v = { gap: x - bar, pred: x, pred2: x * x / 100, upm: r.upm, min_sd: r.min_sd, min_l10: r.min,
             ast_pm: r.apm, reb_pm: r.rpm, starter_rate: r.start, ppm_sd: r.sd, foul_pm: r.fpm,
@@ -3411,6 +3424,9 @@ function nbaStatCell(p, sh) {
     b.title = k[0] === "boom"
       ? "Boom " + b.textContent + "%: his chance of a night 10+ over the average of the median projection of the 12 players around him by ADP and of the 12 around him by projection. Rises with his projection (matchup included), usage, rebounds and assists per minute and swingy minutes"
       : "Dud " + b.textContent + "%: his chance of a night 10+ under the average of the median projection of the 12 players around him by ADP and of the 12 around him by projection. Falls with his projection (matchup included) and with starting; rises with a steals-and-blocks-heavy line";
+    if (k[0] === "boom" && r.peer && Math.abs(r.peer.moved) >= 0.005)
+      b.title += ". Peer breaks: he outscored the 10 projected around him in " + r.peer.breaks + " of his last " + r.peer.games +
+                 " games, " + (r.peer.moved > 0 ? "+" : "\u2212") + Math.abs(Math.round(r.peer.moved * 100)) + " here";
     if (f == null) { b.style.color = "var(--muted)"; b.title += ". Outside the top " + NBA_SHADE_TOP + " by Proj, so not shaded"; c.appendChild(b); return; }
     c.appendChild(greenChip(b, f));
   });
@@ -3462,6 +3478,12 @@ function nbaStatRows() {
     var has = row.r.ppm != null && !row.unused;
     row.bar = bars[row.pid];
     row.boom = has ? nbaChance(NBA_BOOM, row.x, row.bar, row.r) : null;
+    var ps = has ? nbaPeerShift(row.r) : 0;
+    if (ps) {
+      var b0 = row.boom;
+      row.boom = 1 / (1 + Math.exp(-(Math.log(b0 / (1 - b0)) + ps)));
+      row.peer = { breaks: row.r.pbr[0], games: row.r.pbr[1], moved: row.boom - b0 };
+    }
     row.dud = has ? nbaChance(NBA_DUD, row.x, row.bar, row.r) : null;
   });
   var ratio = median(rows.filter(function (r) { return r.implied != null && r.min >= 20; })
@@ -6931,6 +6953,9 @@ function brrSelfTest() {
      nbaChance(NBA_DUD, 30, 30, Object.assign({}, avgRow, { start: 1 })) < nbaChance(NBA_DUD, 30, 30, Object.assign({}, avgRow, { start: 0 })) &&
      nbaChance(NBA_BOOM, 34, 30, avgRow) > nbaChance(NBA_BOOM, 30, 30, avgRow) && nbaChance(NBA_DUD, 34, 30, avgRow) < nbaChance(NBA_DUD, 30, 30, avgRow) &&
      nbaChance(NBA_BOOM, 30, 30, avgRow) > 0.1 && nbaChance(NBA_BOOM, 30, 30, avgRow) < 0.3);
+  ok("peer breaks nudge Boom: up for a frequent breaker, down for a rare one, nothing under 8 games",
+     nbaPeerShift({ pbr: [12, 40] }) > 0 && nbaPeerShift({ pbr: [0, 40] }) < 0 && nbaPeerShift({ pbr: [3, 5] }) === 0 &&
+     nbaPeerShift({ pbr: [12, 40] }) < 0.3);
   var barRows = [50, 45, 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18].map(function (x, i) { return { pid: "b" + i, adp: 14 - i, x: x }; });
   var bars = nbaBars(barRows);
   ok("the 12-player window: 6 above and 6 below, himself left out, near the ends as many on the long side as the short but at least 3",
