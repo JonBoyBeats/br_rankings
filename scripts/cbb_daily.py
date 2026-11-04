@@ -215,7 +215,8 @@ def report(a):
         split("drafted", [r for r in rs if r["adp_close"]])
         split("newcomers (EvanMiya / Underdog)", [r for r in rs if str(r["src"]).startswith(("miya", "ud"))])
 
-    # standing watches (2026-11-03 report): minutes by EvanMiya's rank on his team, players built from last
+    # standing watches (2026-11-03 report): minutes by EvanMiya's rank on his team (by total BPR on 11-03, by
+    # offensive BPR from 11-04: evanmiya.players), players built from last
     # season (the board's green chip is ranks 1-3); and players back from a missed season (MISSED_SEASON)
     for title, rs in (("LAST NIGHT", night), ("SEASON", rows)):
         box = [r for r in rs if r["src"] == "box" and num(r["min_proj"]) and num(r["min"]) is not None and not r.get("missed")]

@@ -2013,7 +2013,7 @@ function cbbNote(r) {
   if (r.gp && r.src !== "ud+box") bits.push(r.gp + " game" + (r.gp === 1 ? "" : "s") + " this season");
   if (typeof r.crowd === "number" && r.crowd > 200) bits.push("crowded: his team's players averaged " + Math.round(r.crowd) + " minutes last season, so last season's minutes ×" + (200 / r.crowd).toFixed(2));
   if (typeof r.spread === "number") bits.push((r.home ? "vs " : "at ") + (r.opp || "?") + ", spread " + cbbSigned(r.spread) + (r.ou ? ", total " + r.ou : ""));
-  if (typeof r.miya_ppm === "number") bits.push("EvanMiya: BPR " + r.bpr.toFixed(1) + ", " + cbbOrdinal(r.bpr_rank) + " on his team, " +
+  if (typeof r.miya_ppm === "number") bits.push("EvanMiya: BPR " + r.bpr.toFixed(1) + ", " + cbbOrdinal(r.bpr_rank) + " on his team by offense, " +
                                                 r.miya_ppm.toFixed(2) + " pts/min projected" +
                                                 (typeof r.fp_base === "number" ? "; without EvanMiya " + r.fp_base.toFixed(1) : ""));
   if (r.ud && r.src !== "ud" && r.src !== "miya+ud") bits.push("Underdog " + r.ud.toFixed(1));
@@ -2059,7 +2059,7 @@ function cbbWho(who, p) {
     var k = who.appendChild(document.createElement("span"));
     k.className = "stance s-core";
     k.textContent = String(core.bpr_rank);
-    k.title = "EvanMiya ranks him " + cbbOrdinal(core.bpr_rank) + " on his team. Players with a college season behind them " +
+    k.title = "EvanMiya ranks him " + cbbOrdinal(core.bpr_rank) + " on his team by offense. Players with a college season behind them " +
       "ranked 1st-3rd have played their projected minutes; 4th-7th have come in 3-5 minutes short. One of our surer " +
       "projections (checked night to night in the CBB morning report)";
   } else who.appendChild(slot());

@@ -100,6 +100,7 @@ make no change without the owner's yes.
 **Standing watches** (carried from the 2026-11-03 report; the script prints both under "Watch"):
 
 - **EvanMiya's top 3**: players built from last season whom EvanMiya ranks 1st-3rd on their team
+  (by offensive BPR from 2026-11-04; total BPR on 11-03, which mostly agrees)
   played their projected minutes on the first night (+0.6) where ranks 4-7 came in 3-5 short. The
   board marks the 1-3s with a green rank chip as our surer projections. Give the season line by
   rank band each morning; once it has about 100 players a band, say whether it still holds. If
