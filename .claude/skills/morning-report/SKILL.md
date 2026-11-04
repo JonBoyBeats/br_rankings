@@ -107,7 +107,7 @@ each night kept in `analysis/nba/report/forward_tests.json`): the turns' crowdin
 bump's calibration, the ownership tiebreak, your teams (breakers, low-drafted picks, turn combos), Q tags
 at Lock AM, and risers once the contest counts have two weeks. No verdict on the turns before 12-02.
 
-Weighing a finding: the user's years of drafting are the prior. One that matches what he has seen can be
+Weighing a finding: the user's years of drafting are the prior. One that matches what they have seen can be
 adopted now and tracked forward; one that contradicts it waits for more nights. Say which it is.
 
 Pick order isn't public, so rounds are estimates; draft times are the nearest hourly ADP snapshot.
