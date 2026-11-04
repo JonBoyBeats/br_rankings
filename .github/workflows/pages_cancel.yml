@@ -1,0 +1,22 @@
+name: Cancel a stuck Pages deployment
+
+# Run by hand when GitHub Pages refuses new deploys "due to in progress deployment. Please cancel <sha> first":
+# cancels that deployment (by its commit SHA) so the next build can deploy.
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "The stuck deployment's commit SHA (from the deploy error)"
+        required: true
+
+permissions:
+  pages: write
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel the deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/deployments/${{ inputs.sha }}/cancel" && echo "cancelled ${{ inputs.sha }}"
