@@ -2053,6 +2053,15 @@ function cbbWho(who, p) {
   who.appendChild(slot());
 }
 
+/** EvanMiya's Q (battle-royale-research cbb/inputs/outs.csv), when Underdog has no tag on him: he's projected as usual. */
+function cbbInjuryTag(p) {
+  var r = state.cbbMorning && state.cbbMorning.players[p.player_id];
+  if (!r || r.status !== "Questionable") return null;
+  var el = injuryTag("Questionable");
+  el.title = "EvanMiya's injury report: Questionable. Projected as usual";
+  return el;
+}
+
 /** His game tonight as the lift bar shows it: [opponent, "vs" | "at"]. */
 function cbbGame(p) {
   var r = state.cbbMorning && state.cbbMorning.players[p.player_id];
@@ -4612,6 +4621,7 @@ function render() {
       who.classList.add("nbawho");
       // his injury tag and, beside it, the chance he sits tonight
       var injEl = injuryTag(p.injury), sx = nbaSitFor(p), injCell = slot();
+      if (!injEl && SPORT_MODE === "cbb") injEl = cbbInjuryTag(p);
       if (injEl || sx) {
         injCell = document.createElement("span");
         injCell.className = "injcell";
