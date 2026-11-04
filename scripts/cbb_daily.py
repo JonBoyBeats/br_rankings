@@ -14,11 +14,13 @@ For every CBB slate that locked, each player our projection covered on its teams
             blocks 3, turnovers -1); 0 for a player whose team played without him
 
   python3 scripts/cbb_daily.py record --mirror ../br-adp-mirror [--since 2026-11-03] [--rebuild]
-  python3 scripts/cbb_daily.py report [--since 2026-11-03]
+  python3 scripts/cbb_daily.py report [--since 2026-11-03] [--date 2026-11-03]
 
-report grades every slate on file: mean error and bias of ours, ours without EvanMiya
-and Underdog's, on the players all three projected who played, overall, drafted only,
-and by src. EvanMiya's November trial is decided on it.
+report grades last night and every slate on file: mean error and bias of ours, ours
+without EvanMiya and Underdog's on the players who played, overall, drafted only and by
+src; where ours missed (minutes, and points per minute in the minutes played); and last
+night's misses of MISS_PTS+. EvanMiya's November trial is decided on it; the college
+morning report (.claude/skills/cbb-morning-report) reads it.
 """
 import argparse
 import csv
@@ -35,6 +37,7 @@ from nba_daily import ET, Mirror, UTC, at_pt, fetch_json, iso, pacific_day  # no
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "analysis", "cbb", "daily")
 ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball"
+MISS_PTS = 8                # a miss worth writing up: ours off by this many points
 SCORING = {"PTS": 1, "REB": 1.2, "AST": 1.5, "STL": 3, "BLK": 3, "TO": -1}
 COLS = ["date", "slate", "player_id", "name", "team", "adp_close", "src", "fp", "fp_base", "ud", "min_proj", "ppm_proj",
         "miya_ppm", "bpr_rank", "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual"]
@@ -167,7 +170,12 @@ def report(a):
         if not a.since or os.path.basename(f) >= a.since:
             rows += list(csv.DictReader(open(f)))
     nights = sorted({r["date"] for r in rows})
-    print("CBB record: %d player-nights, %d slate days (%s)" % (len(rows), len(nights), ", ".join(nights)))
+    if not nights:
+        print("CBB record: nothing on file yet")
+        return
+    last = a.date or nights[-1]
+    night = [r for r in rows if r["date"] == last]
+    print("CBB record: %d player-nights, %d slate days (%s); last night %s" % (len(rows), len(nights), ", ".join(nights), last))
 
     def grade(label, rs):
         rs = [dict(r, base=base(r)) for r in rs if num(r["min"]) and num(r["fp"]) is not None and num(r["ud"]) is not None]
@@ -181,17 +189,44 @@ def report(a):
             parts.append("%s %.2f (%+.2f)" % (name, S.mean(abs(e) for e in err), S.mean(err)))
         print("  %-34s n=%-4d mean error (bias): %s" % (label, len(rs), " | ".join(parts)))
 
-    print("Players who played, where ours and Underdog's both had a number (without EvanMiya: Underdog's for a newcomer it started):")
-    grade("everyone", rows)
-    grade("drafted (an ADP at lock)", [r for r in rows if r["adp_close"]])
-    by = defaultdict(list)
-    for r in rows:
-        by[r["src"]].append(r)
-    for k in sorted(by):
-        grade("built from: " + k, by[k])
-    dnp = [r for r in rows if not num(r["min"]) and r["adp_close"]]
+    def split(label, rs):
+        """Where ours missed: minutes, and points per minute in the minutes he played."""
+        rs = [r for r in rs if num(r["min"]) and num(r["min_proj"]) and num(r["ppm_proj"])]
+        if not rs:
+            return
+        dm = [num(r["min_proj"]) - num(r["min"]) for r in rs]
+        dp = [num(r["ppm_proj"]) - num(r["actual"]) / num(r["min"]) for r in rs]
+        print("  %-34s n=%-4d minutes off %.1f (bias %+.1f) | points/minute off %.2f (bias %+.2f), weighted by minutes %.2f" % (
+            label, len(rs), S.mean(map(abs, dm)), S.mean(dm), S.mean(map(abs, dp)), S.mean(dp),
+            sum(abs(d) * num(r["min"]) for d, r in zip(dp, rs)) / sum(num(r["min"]) for r in rs)))
+
+    for title, rs in (("LAST NIGHT (%s)" % last, night), ("SEASON (%d nights)" % len(nights), rows)):
+        print("\n%s. Players who played, where ours and Underdog's both had a number (without EvanMiya: Underdog's"
+              " for a newcomer it started):" % title)
+        grade("everyone", rs)
+        grade("drafted (an ADP at lock)", [r for r in rs if r["adp_close"]])
+        by = defaultdict(list)
+        for r in rs:
+            by[r["src"]].append(r)
+        for k in sorted(by):
+            grade("built from: " + k, by[k])
+        print("  Where ours missed, players who played:")
+        split("everyone", rs)
+        split("drafted", [r for r in rs if r["adp_close"]])
+        split("newcomers (EvanMiya / Underdog)", [r for r in rs if str(r["src"]).startswith(("miya", "ud"))])
+
+    big = sorted((r for r in night if num(r["fp"]) is not None and num(r["min"]) and (r["adp_close"] or num(r["fp"]) >= 15)
+                  and abs(num(r["fp"]) - num(r["actual"])) >= MISS_PTS), key=lambda r: -abs(num(r["fp"]) - num(r["actual"])))
+    print("\nLast night's misses of %d+ (drafted, or projected 15+), biggest first:" % MISS_PTS)
+    for r in big:
+        print("  %-24s %-5s ADP %-5s ours %5.1f%s UD %-5s actual %5.1f | min %4.1f vs %4.1f proj | pts/min %.2f vs %.2f | spread %s | %s" % (
+            r["name"], r["team"], r["adp_close"] or "-", num(r["fp"]),
+            " (w/o Miya %.1f)" % num(r["fp_base"]) if num(r["fp_base"]) is not None and num(r["fp_base"]) != num(r["fp"]) else "",
+            r["ud"] or "-", num(r["actual"]), num(r["min"]), num(r["min_proj"]) or 0,
+            num(r["actual"]) / num(r["min"]), num(r["ppm_proj"]) or 0, r["spread"] or "-", r["src"]))
+    dnp = [r for r in night if not num(r["min"]) and r["adp_close"]]
     if dnp:
-        print("Drafted and didn't play: " + ", ".join("%s %s (%s)" % (r["name"], r["team"], r["date"]) for r in dnp))
+        print("Drafted and didn't play last night: " + ", ".join("%s %s" % (r["name"], r["team"]) for r in dnp))
 
 
 def main():
@@ -203,6 +238,7 @@ def main():
     r.add_argument("--rebuild", action="store_true")
     p = sub.add_parser("report")
     p.add_argument("--since", help="YYYY-MM-DD: only slates from this day")
+    p.add_argument("--date", help="YYYY-MM-DD: the night to show as last night (default the newest on file)")
     a = ap.parse_args()
     return record(a) if a.cmd == "record" else report(a)
 
