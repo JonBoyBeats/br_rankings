@@ -1,4 +1,14 @@
 date,slate,slate_id,contest_id,title,description,max_entries,entries,pods,pod_size,cutoff,pulled_at
+2026-10-20,nba_tue_main,75eb5451-db07-4950-b6a1-224954aae4cd,7ecdeb37-7c5a-4be3-8d0e-558c916f6dfb,Tuesday Tip-Off,4 person drafts - $5k to first!,150,11252,2813,4,2026-10-20T18:47:00Z,2026-11-04T13:54:30+00:00
+2026-10-21,nba_wed_main,8a49dc16-6fac-4247-8d74-28f7471b9bec,baa7f610-d65f-4bdf-8784-0c1d1b583f62,Hump Day Hoops,6 person drafts - $8k to first!,150,16254,2709,6,2026-10-21T22:41:00Z,2026-11-04T14:00:23+00:00
+2026-10-22,nba_thu_main,1e6cd687-c32e-4ed4-9f8b-0c693bf94679,d8c02db3-a092-478a-b5f3-04e6a16be617,Thursday Night Hoops,4 person drafts - $7k to first!,150,15740,3935,4,2026-10-22T22:47:00Z,2026-11-04T14:05:59+00:00
+2026-10-23,nba_fri_main,3ab09833-0a30-4c44-91d3-bf1dae4cabdb,b5b78636-c920-4c94-bc70-96a0d22ddd1b,Fast Break Friday,6 person drafts - $7k to first!,150,15732,2622,6,2026-10-23T22:41:00Z,2026-11-04T14:11:49+00:00
+2026-10-24,nba_sat_main,edeefa92-5338-4197-8723-aca1fa3ee52e,c5bc5216-53c3-4a0b-91c2-da75c1062713,Saturday Slam,6 person drafts - $7k to first!,150,14574,2429,6,2026-10-24T23:11:00Z,2026-11-04T14:17:16+00:00
+2026-10-25,nba_sun_main,7bdb08cc-b0d1-4336-8cdd-5a14e0d22d1f,e2c04dd2-3d23-469e-b7d7-5800226f4176,Sunday Shootaround,6 person drafts - $5k to first!,150,11148,1858,6,2026-10-25T22:41:00Z,2026-11-04T14:20:56+00:00
+2026-10-26,nba_mon_main,f7daa293-5f7b-4978-a7c0-b8f16dc818f2,f1793e58-a479-4768-a21f-ed5b5f805e27,Monday Night Hoops,6 person drafts - $6k to first!,150,13530,2255,6,2026-10-26T22:41:00Z,2026-11-04T14:25:49+00:00
+2026-10-27,nba_tue_main,6576ce19-a7da-40bb-960a-ea1a857233ba,ee02e1f6-e5f4-4cdf-9a4d-1d65f0236943,Tuesday Tip-Off,6 person drafts - $7k to first!,150,15750,2625,6,2026-10-27T23:11:00Z,2026-11-04T14:31:32+00:00
+2026-10-28,nba_wed_main,b24e9106-ed3b-4691-8bcc-19546cc7ef5b,78a0720e-4a9f-42ec-83f4-8749b5348832,Hump Day Hoops,6 person drafts - $7k to first!,150,15750,2625,6,2026-10-28T22:41:00Z,2026-11-04T14:37:24+00:00
+2026-10-29,nba_thu_main,7474c0b6-3163-4efd-a520-0320c2596dd8,7f67e19c-f903-49ae-a1b1-73d3727d8610,Thursday Night Hoops,4 person drafts - $6k to first!,150,13556,3389,4,2026-10-29T23:47:00Z,2026-11-04T14:42:23+00:00
 2026-10-30,nba_fri_main,64162691-e518-40a7-8ffb-60ed3207e667,52b112fe-8c35-4d97-9427-d6b95edbbe5f,Fast Break Friday,6 person drafts - $7k to first!,150,15756,2626,6,2026-10-30T22:41:00Z,2026-11-02T22:06:14+00:00
 2026-10-30,nba_fri_main,64162691-e518-40a7-8ffb-60ed3207e667,8926e7dd-baeb-4f13-b87f-0c3361b025a2,Buzzer Beater,20 entry max - $1k to first!,20,3750,625,6,2026-10-30T22:41:00Z,2026-11-02T22:07:24+00:00
 2026-10-30,nba_fri_main,64162691-e518-40a7-8ffb-60ed3207e667,dba32bd1-8536-4775-a905-d0552356d285,The Layup Line,6 person drafts - $1k to first!,33,1128,188,6,2026-10-30T22:41:00Z,2026-11-02T22:07:46+00:00

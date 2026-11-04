@@ -1,0 +1,3174 @@
+{
+ "date": "2026-10-27",
+ "slate": "nba_tue_main",
+ "contests": [
+  {
+   "contest": "Tuesday Tip-Off",
+   "contest_id": "ee02e1f6-e5f4-4cdf-9a4d-1d65f0236943",
+   "entries": 15750,
+   "pods": 2625,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 15750,
+    "win": 266.2,
+    "median": 197.6,
+    "top1": 237.5,
+    "top1_over_median": 39.9,
+    "top5": 226.7,
+    "top5_over_median": 29.1,
+    "top10": 220.3,
+    "top10_over_median": 22.7,
+    "top20": 212.8,
+    "top20_over_median": 15.2
+   },
+   "drafted_curve": [
+    {
+     "player": "Luka Doncic",
+     "adp": 1.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Victor Wembanyama",
+     "adp": 1.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 3.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cade Cunningham",
+     "adp": 4.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Domantas Sabonis",
+     "adp": 5.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Karl-Anthony Towns",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Deni Avdija",
+     "adp": 7.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jalen Brunson",
+     "adp": 7.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Austin Reaves",
+     "adp": 8.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Walker Kessler",
+     "adp": 9.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Stephon Castle",
+     "adp": 11.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Damian Lillard",
+     "adp": 12.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Julius Randle",
+     "adp": 13.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Michael Porter Jr.",
+     "adp": 13.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "De'Aaron Fox",
+     "adp": 15.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Zach LaVine",
+     "adp": 16.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 17.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Darius Acuff Jr.",
+     "adp": 18.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 19.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Dylan Harper",
+     "adp": 19.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Derrick White",
+     "adp": 21.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ja Morant",
+     "adp": 22.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Josh Hart",
+     "adp": 22.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "OG Anunoby",
+     "adp": 23.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Donovan Clingan",
+     "adp": 25.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "John Collins",
+     "adp": 26.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Precious Achiuwa",
+     "adp": 26.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 27.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 29.8,
+     "drafted": 99.7
+    },
+    {
+     "player": "Devin Vassell",
+     "adp": 30.3,
+     "drafted": 99.5
+    },
+    {
+     "player": "Duncan Robinson",
+     "adp": 32.9,
+     "drafted": 83.0
+    },
+    {
+     "player": "Jrue Holiday",
+     "adp": 33.1,
+     "drafted": 88.0
+    },
+    {
+     "player": "Day'Ron Sharpe",
+     "adp": 33.5,
+     "drafted": 79.6
+    },
+    {
+     "player": "Toumani Camara",
+     "adp": 33.9,
+     "drafted": 77.6
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 34.1,
+     "drafted": 62.2
+    },
+    {
+     "player": "Neemias Queta",
+     "adp": 34.3,
+     "drafted": 65.9
+    },
+    {
+     "player": "Mikal Bridges",
+     "adp": 34.6,
+     "drafted": 55.1
+    },
+    {
+     "player": "Julian Champagnie",
+     "adp": 35.3,
+     "drafted": 32.7
+    },
+    {
+     "player": "Egor Demin",
+     "adp": 35.7,
+     "drafted": 14.5
+    },
+    {
+     "player": "Matisse Thybulle",
+     "adp": 35.8,
+     "drafted": 11.2
+    },
+    {
+     "player": "Mitchell Robinson",
+     "adp": 35.8,
+     "drafted": 10.0
+    },
+    {
+     "player": "Robert Williams",
+     "adp": 35.9,
+     "drafted": 4.2
+    },
+    {
+     "player": "Quentin Grimes",
+     "adp": 35.9,
+     "drafted": 2.7
+    },
+    {
+     "player": "Keldon Johnson",
+     "adp": 35.9,
+     "drafted": 2.4
+    },
+    {
+     "player": "Ziaire Williams",
+     "adp": 35.9,
+     "drafted": 3.5
+    },
+    {
+     "player": "Noah Clowney",
+     "adp": 36.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Sidy Cissoko",
+     "adp": 36.0,
+     "drafted": 0.8
+    },
+    {
+     "player": "Collin Sexton",
+     "adp": 36.0,
+     "drafted": 1.0
+    },
+    {
+     "player": "Ron Holland",
+     "adp": 36.0,
+     "drafted": 0.3
+    },
+    {
+     "player": "Sandro Mamukelashvili",
+     "adp": 36.0,
+     "drafted": 1.6
+    },
+    {
+     "player": "De'Andre Hunter",
+     "adp": 36.0,
+     "drafted": 1.1
+    },
+    {
+     "player": "Scoot Henderson",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Andre Drummond",
+     "adp": 36.0,
+     "drafted": 1.0
+    },
+    {
+     "player": "Luke Kornet",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Mikel Brown Jr.",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Luka Garza",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Jake LaRavia",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Landry Shamet",
+     "adp": 36.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Deuce McBride",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Keon Ellis",
+     "adp": 36.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "Kevin Huerter",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Moe Wagner",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Kevon Looney",
+     "adp": 36.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Josh Minott",
+     "adp": 36.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Malik Monk",
+     "adp": 36.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Jordan Walsh",
+     "adp": 36.0,
+     "drafted": 0.0
+    }
+   ],
+   "first_below_100": {
+    "player": "Duncan Robinson",
+    "adp": 32.9,
+    "drafted": 83.0
+   },
+   "drafted_bands": {
+    "99.5+": 30,
+    "60-99.5": 6,
+    "10-60": 5,
+    "<10": 25
+   },
+   "value": {
+    "field_fpoe": 0.8,
+    "top1_fpoe": 49.6,
+    "field_breakers": 2.21,
+    "top1_breakers": 4.15
+   },
+   "pairs": [
+    {
+     "pair": "Luka Doncic + OG Anunoby",
+     "rounds": "1/4",
+     "share": 7.8,
+     "lift": 3.3
+    },
+    {
+     "pair": "Luka Doncic + Damian Lillard",
+     "rounds": "1/2",
+     "share": 7.5,
+     "lift": 3.16
+    },
+    {
+     "pair": "Jayson Tatum + Walker Kessler",
+     "rounds": "1/2",
+     "share": 7.2,
+     "lift": 3.01
+    },
+    {
+     "pair": "Victor Wembanyama + Stephon Castle",
+     "rounds": "1/2",
+     "share": 7.0,
+     "lift": 2.93
+    },
+    {
+     "pair": "Luka Doncic + Stephon Castle",
+     "rounds": "1/2",
+     "share": 6.8,
+     "lift": 2.84
+    },
+    {
+     "pair": "Luka Doncic + Julius Randle",
+     "rounds": "1/3",
+     "share": 6.6,
+     "lift": 2.76
+    },
+    {
+     "pair": "Karl-Anthony Towns + Deni Avdija",
+     "rounds": "1/2",
+     "share": 6.4,
+     "lift": 2.71
+    },
+    {
+     "pair": "Damian Lillard + OG Anunoby",
+     "rounds": "2/4",
+     "share": 6.4,
+     "lift": 2.7
+    },
+    {
+     "pair": "Luka Doncic + Donovan Clingan",
+     "rounds": "1/5",
+     "share": 6.3,
+     "lift": 2.65
+    },
+    {
+     "pair": "Karl-Anthony Towns + Devin Vassell",
+     "rounds": "1/5",
+     "share": 6.2,
+     "lift": 2.6
+    },
+    {
+     "pair": "Karl-Anthony Towns + Dylan Harper",
+     "rounds": "1/4",
+     "share": 6.0,
+     "lift": 2.52
+    },
+    {
+     "pair": "Domantas Sabonis + Devin Vassell",
+     "rounds": "1/5",
+     "share": 5.9,
+     "lift": 2.48
+    },
+    {
+     "pair": "Cade Cunningham + Austin Reaves",
+     "rounds": "1/2",
+     "share": 5.8,
+     "lift": 2.45
+    },
+    {
+     "pair": "Deni Avdija + Ausar Thompson",
+     "rounds": "2/5",
+     "share": 5.8,
+     "lift": 2.44
+    },
+    {
+     "pair": "Victor Wembanyama + Julius Randle",
+     "rounds": "1/3",
+     "share": 5.7,
+     "lift": 2.39
+    },
+    {
+     "pair": "Karl-Anthony Towns + Darius Acuff Jr.",
+     "rounds": "1/3",
+     "share": 5.7,
+     "lift": 2.39
+    },
+    {
+     "pair": "Deni Avdija + Dylan Harper",
+     "rounds": "2/4",
+     "share": 5.6,
+     "lift": 2.35
+    },
+    {
+     "pair": "Victor Wembanyama + Damian Lillard",
+     "rounds": "1/2",
+     "share": 5.6,
+     "lift": 2.35
+    },
+    {
+     "pair": "Julius Randle + Donovan Clingan",
+     "rounds": "3/5",
+     "share": 5.5,
+     "lift": 2.32
+    },
+    {
+     "pair": "Deni Avdija + Paul Reed",
+     "rounds": "2/4",
+     "share": 5.4,
+     "lift": 2.25
+    },
+    {
+     "pair": "Damian Lillard + Donovan Clingan",
+     "rounds": "2/5",
+     "share": 5.4,
+     "lift": 2.25
+    },
+    {
+     "pair": "Domantas Sabonis + Darius Acuff Jr.",
+     "rounds": "1/3",
+     "share": 5.3,
+     "lift": 2.23
+    },
+    {
+     "pair": "Darius Acuff Jr. + Devin Vassell",
+     "rounds": "3/5",
+     "share": 5.3,
+     "lift": 2.24
+    },
+    {
+     "pair": "Stephon Castle + OG Anunoby",
+     "rounds": "2/4",
+     "share": 5.3,
+     "lift": 2.22
+    },
+    {
+     "pair": "Jalen Brunson + Ausar Thompson",
+     "rounds": "2/5",
+     "share": 5.3,
+     "lift": 2.22
+    }
+   ],
+   "cores": [
+    {
+     "core": "Luka Doncic + Damian Lillard + Julius Randle",
+     "share": 2.3
+    },
+    {
+     "core": "Luka Doncic + Damian Lillard + Stephon Castle",
+     "share": 1.8
+    },
+    {
+     "core": "Luka Doncic + Julius Randle + Stephon Castle",
+     "share": 1.8
+    },
+    {
+     "core": "Julius Randle + Stephon Castle + Victor Wembanyama",
+     "share": 1.7
+    },
+    {
+     "core": "Darius Acuff Jr. + Karl-Anthony Towns + Deni Avdija",
+     "share": 1.7
+    },
+    {
+     "core": "Cade Cunningham + De'Aaron Fox + Austin Reaves",
+     "share": 1.7
+    },
+    {
+     "core": "Michael Porter Jr. + Stephon Castle + Victor Wembanyama",
+     "share": 1.6
+    },
+    {
+     "core": "Luka Doncic + Damian Lillard + Michael Porter Jr.",
+     "share": 1.6
+    },
+    {
+     "core": "Jayson Tatum + Michael Porter Jr. + Walker Kessler",
+     "share": 1.6
+    },
+    {
+     "core": "Damian Lillard + Stephon Castle + Victor Wembanyama",
+     "share": 1.5
+    },
+    {
+     "core": "Jayson Tatum + Walker Kessler + De'Aaron Fox",
+     "share": 1.5
+    },
+    {
+     "core": "Luka Doncic + Michael Porter Jr. + Stephon Castle",
+     "share": 1.4
+    },
+    {
+     "core": "Zach LaVine + Cade Cunningham + Austin Reaves",
+     "share": 1.3
+    },
+    {
+     "core": "Damian Lillard + Julius Randle + Victor Wembanyama",
+     "share": 1.3
+    },
+    {
+     "core": "Karl-Anthony Towns + Paul Reed + Deni Avdija",
+     "share": 1.2
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Karl-Anthony Towns (6) + Deni Avdija (7)",
+      "share": 6.4,
+      "lift": 2.71,
+      "top1": 4,
+      "avg_points": 202.9
+     },
+     {
+      "pair": "Domantas Sabonis (5) + Jalen Brunson (8)",
+      "share": 4.5,
+      "lift": 1.89,
+      "top1": 0,
+      "avg_points": 192.0
+     },
+     {
+      "pair": "Domantas Sabonis (5) + Deni Avdija (7)",
+      "share": 4.4,
+      "lift": 1.86,
+      "top1": 1,
+      "avg_points": 199.8
+     },
+     {
+      "pair": "Karl-Anthony Towns (6) + Jalen Brunson (8)",
+      "share": 4.0,
+      "lift": 1.67,
+      "top1": 0,
+      "avg_points": 195.4
+     },
+     {
+      "pair": "Domantas Sabonis (5) + Karl-Anthony Towns (6)",
+      "share": 3.1,
+      "lift": 1.3,
+      "top1": 12,
+      "avg_points": 207.4
+     },
+     {
+      "pair": "Deni Avdija (7) + Jalen Brunson (8)",
+      "share": 1.7,
+      "lift": 0.73,
+      "top1": 0,
+      "avg_points": 187.7
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 1,
+      "teams": 2625,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Damian Lillard (12) + Julius Randle (13)",
+        "of_anchor": 14.1,
+        "share": 2.3,
+        "top1": 1,
+        "avg_points": 207.2
+       },
+       {
+        "combo": "Luka Doncic + Stephon Castle (11) + Damian Lillard (12)",
+        "of_anchor": 10.9,
+        "share": 1.8,
+        "top1": 0,
+        "avg_points": 194.7
+       },
+       {
+        "combo": "Luka Doncic + Stephon Castle (11) + Julius Randle (13)",
+        "of_anchor": 10.9,
+        "share": 1.8,
+        "top1": 1,
+        "avg_points": 204.4
+       },
+       {
+        "combo": "Luka Doncic + Damian Lillard (12) + Michael Porter Jr. (14)",
+        "of_anchor": 9.7,
+        "share": 1.6,
+        "top1": 4,
+        "avg_points": 213.1
+       },
+       {
+        "combo": "Luka Doncic + Stephon Castle (11) + Michael Porter Jr. (14)",
+        "of_anchor": 8.1,
+        "share": 1.4,
+        "top1": 1,
+        "avg_points": 209.3
+       },
+       {
+        "combo": "Luka Doncic + Julius Randle (13) + Michael Porter Jr. (14)",
+        "of_anchor": 6.5,
+        "share": 1.1,
+        "top1": 15,
+        "avg_points": 220.4
+       },
+       {
+        "combo": "Luka Doncic + Damian Lillard (12) + De'Aaron Fox (15)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 185.8
+       },
+       {
+        "combo": "Luka Doncic + Stephon Castle (11) + De'Aaron Fox (15)",
+        "of_anchor": 4.2,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 182.4
+       }
+      ]
+     },
+     {
+      "anchor": "Victor Wembanyama",
+      "adp_rank": 2,
+      "teams": 2625,
+      "combos": [
+       {
+        "combo": "Victor Wembanyama + Stephon Castle (11) + Julius Randle (13)",
+        "of_anchor": 10.4,
+        "share": 1.7,
+        "top1": 2,
+        "avg_points": 204.6
+       },
+       {
+        "combo": "Victor Wembanyama + Stephon Castle (11) + Michael Porter Jr. (14)",
+        "of_anchor": 9.8,
+        "share": 1.6,
+        "top1": 8,
+        "avg_points": 211.1
+       },
+       {
+        "combo": "Victor Wembanyama + Stephon Castle (11) + Damian Lillard (12)",
+        "of_anchor": 9.3,
+        "share": 1.5,
+        "top1": 0,
+        "avg_points": 195.5
+       },
+       {
+        "combo": "Victor Wembanyama + Damian Lillard (12) + Julius Randle (13)",
+        "of_anchor": 7.8,
+        "share": 1.3,
+        "top1": 1,
+        "avg_points": 207.2
+       },
+       {
+        "combo": "Victor Wembanyama + Damian Lillard (12) + Michael Porter Jr. (14)",
+        "of_anchor": 6.1,
+        "share": 1.0,
+        "top1": 10,
+        "avg_points": 215.0
+       },
+       {
+        "combo": "Victor Wembanyama + Stephon Castle (11) + De'Aaron Fox (15)",
+        "of_anchor": 5.0,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 185.4
+       },
+       {
+        "combo": "Victor Wembanyama + Julius Randle (13) + Michael Porter Jr. (14)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 24,
+        "avg_points": 223.9
+       },
+       {
+        "combo": "Victor Wembanyama + Walker Kessler (10) + Julius Randle (13)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 205.5
+       }
+      ]
+     },
+     {
+      "anchor": "Jayson Tatum",
+      "adp_rank": 3,
+      "teams": 2625,
+      "combos": [
+       {
+        "combo": "Jayson Tatum + Walker Kessler (10) + Michael Porter Jr. (14)",
+        "of_anchor": 9.4,
+        "share": 1.6,
+        "top1": 4,
+        "avg_points": 204.4
+       },
+       {
+        "combo": "Jayson Tatum + Walker Kessler (10) + De'Aaron Fox (15)",
+        "of_anchor": 9.1,
+        "share": 1.5,
+        "top1": 0,
+        "avg_points": 179.8
+       },
+       {
+        "combo": "Jayson Tatum + Walker Kessler (10) + Paul George (17)",
+        "of_anchor": 7.1,
+        "share": 1.2,
+        "top1": 1,
+        "avg_points": 199.4
+       },
+       {
+        "combo": "Jayson Tatum + Walker Kessler (10) + Julius Randle (13)",
+        "of_anchor": 6.6,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 200.2
+       },
+       {
+        "combo": "Jayson Tatum + Austin Reaves (9) + De'Aaron Fox (15)",
+        "of_anchor": 6.2,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 195.2
+       },
+       {
+        "combo": "Jayson Tatum + Austin Reaves (9) + Michael Porter Jr. (14)",
+        "of_anchor": 4.7,
+        "share": 0.8,
+        "top1": 9,
+        "avg_points": 219.3
+       },
+       {
+        "combo": "Jayson Tatum + Walker Kessler (10) + Zach LaVine (16)",
+        "of_anchor": 4.5,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 188.4
+       },
+       {
+        "combo": "Jayson Tatum + Austin Reaves (9) + Paul George (17)",
+        "of_anchor": 4.2,
+        "share": 0.7,
+        "top1": 7,
+        "avg_points": 213.9
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": {
+    "teams": 150,
+    "share4_median": 1.0,
+    "share4_max": 3.8,
+    "teams_with_dupes": 49,
+    "repeats_of_mine": 17,
+    "top_pairs": [
+     [
+      "Deni Avdija + Derrick White",
+      32
+     ],
+     [
+      "Paul Reed + Deni Avdija",
+      30
+     ],
+     [
+      "Deni Avdija + Ausar Thompson",
+      25
+     ],
+     [
+      "Derrick White + Ausar Thompson",
+      24
+     ],
+     [
+      "Derrick White + Day'Ron Sharpe",
+      24
+     ]
+    ],
+    "top_cores": [
+     [
+      "Karl-Anthony Towns + Paul Reed + Deni Avdija",
+      9
+     ],
+     [
+      "Deni Avdija + Derrick White + Jalen Brunson",
+      8
+     ],
+     [
+      "Julius Randle + Stephon Castle + Victor Wembanyama",
+      8
+     ],
+     [
+      "Luka Doncic + Michael Porter Jr. + Julius Randle",
+      8
+     ],
+     [
+      "Paul Reed + Deni Avdija + Domantas Sabonis",
+      7
+     ]
+    ]
+   },
+   "draft_time": {
+    "matched": 15750,
+    "am_share": 32.7,
+    "by_hour_pt": {
+     "00": 137,
+     "01": 173,
+     "02": 170,
+     "03": 171,
+     "04": 404,
+     "05": 433,
+     "06": 212,
+     "07": 813,
+     "08": 127,
+     "09": 778,
+     "10": 804,
+     "11": 923,
+     "12": 1342,
+     "13": 2083,
+     "14": 1556,
+     "15": 3977,
+     "17": 4,
+     "18": 9,
+     "19": 148,
+     "21": 536,
+     "22": 592,
+     "23": 358
+    }
+   },
+   "mine": {
+    "teams": 150,
+    "median_pct": 47.5,
+    "tail1": 0.67,
+    "tail5": 1.07,
+    "tail10": 1.13,
+    "tail20": 1.27,
+    "payout": 840.0,
+    "am_teams": 51,
+    "am_tail10": 1.18,
+    "pm_teams": 99,
+    "pm_tail10": 1.11
+   },
+   "my_teams": [
+    {
+     "place": 10915,
+     "points": 188.0,
+     "payout": 0.0,
+     "draft_id": "023aaaa4-de24-45e4-b3d4-5e781f503a4a",
+     "picks": [
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e"
+     ],
+     "drafted_at": "2026-10-27T06:23:39+00:00"
+    },
+    {
+     "place": 2369,
+     "points": 216.2,
+     "payout": 10.0,
+     "draft_id": "089ef075-d303-46cf-a0c6-f10d4a4b5904",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:55:41+00:00"
+    },
+    {
+     "place": 4226,
+     "points": 208.9,
+     "payout": 0.0,
+     "draft_id": "09e24fad-caed-4b72-8c4f-d5c1e45c5c09",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 11171,
+     "points": 187.2,
+     "payout": 0.0,
+     "draft_id": "0a03d907-2b21-4ec6-9c6d-3ae52b6d46cb",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 205,
+     "points": 235.7,
+     "payout": 25.0,
+     "draft_id": "0da43239-d2b0-499f-951b-84ab40066425",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 7563,
+     "points": 198.5,
+     "payout": 0.0,
+     "draft_id": "107d4812-85d8-49d2-a769-81c4730aca2e",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 14451,
+     "points": 171.0,
+     "payout": 0.0,
+     "draft_id": "118ad8b8-7a2f-47fb-8718-5dcc79f89438",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 6962,
+     "points": 200.4,
+     "payout": 0.0,
+     "draft_id": "1247325b-c211-44f9-8a6c-59ec355d9cd8",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 11624,
+     "points": 185.6,
+     "payout": 0.0,
+     "draft_id": "1247d3d4-884b-4be2-a56c-5a03eb373076",
+     "picks": [
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 10915,
+     "points": 188.0,
+     "payout": 0.0,
+     "draft_id": "124d8e46-4694-494e-aad9-f525528fc8a9",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 3248,
+     "points": 212.4,
+     "payout": 0.0,
+     "draft_id": "161355d5-c18f-40f2-a74b-174a39c6e02f",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 8415,
+     "points": 196.0,
+     "payout": 0.0,
+     "draft_id": "1709e1e9-f613-4544-a649-e68c2ab02b72",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 14127,
+     "points": 173.5,
+     "payout": 0.0,
+     "draft_id": "189eeb06-d845-4cb3-834d-362924f4b2df",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 6413,
+     "points": 202.1,
+     "payout": 0.0,
+     "draft_id": "18f5d416-5c0c-40d2-bc8e-d770ff3f1e6b",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 3616,
+     "points": 210.9,
+     "payout": 0.0,
+     "draft_id": "198e8c8e-0ad7-434b-9a08-898d9c917469",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 12462,
+     "points": 182.2,
+     "payout": 0.0,
+     "draft_id": "199acc46-6c31-4f25-8fa3-cd37dabe444f",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 1647,
+     "points": 219.9,
+     "payout": 10.0,
+     "draft_id": "1a621a95-8a06-4461-a3c9-7d7d2e168e27",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 1365,
+     "points": 221.7,
+     "payout": 10.0,
+     "draft_id": "1ba8fe5f-7a86-436a-b16e-03ab9e5963e1",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 4255,
+     "points": 208.8,
+     "payout": 0.0,
+     "draft_id": "1da4c5f7-baf2-43e0-9397-e758bb04f066",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T05:23:35+00:00"
+    },
+    {
+     "place": 12149,
+     "points": 183.5,
+     "payout": 0.0,
+     "draft_id": "1ecf824f-e430-4bb5-af16-7449d0cc54d0",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "823d4a1d-aef5-449c-8db6-fbd1e491e7ae",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 2088,
+     "points": 217.5,
+     "payout": 10.0,
+     "draft_id": "2028171b-d440-4e81-ab47-0537d5ee53bc",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 1127,
+     "points": 223.7,
+     "payout": 10.0,
+     "draft_id": "223b2554-7e7d-4de9-a9fe-c6b00f0a6339",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 14545,
+     "points": 170.3,
+     "payout": 0.0,
+     "draft_id": "236abb23-3135-4e7f-9944-5e94593fa15a",
+     "picks": [
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T15:14:28+00:00"
+    },
+    {
+     "place": 14280,
+     "points": 172.3,
+     "payout": 0.0,
+     "draft_id": "23ae223f-6b35-42ef-b781-43b64f8e27e8",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 877,
+     "points": 225.8,
+     "payout": 10.0,
+     "draft_id": "2498c951-0863-4cf3-94ce-5aa937888a0a",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 9908,
+     "points": 191.4,
+     "payout": 0.0,
+     "draft_id": "26730852-eed5-4629-a100-76f9f99cc668",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T10:23:40+00:00"
+    },
+    {
+     "place": 220,
+     "points": 235.4,
+     "payout": 25.0,
+     "draft_id": "28bf0615-d1a0-481a-8e3f-5a58e2086574",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 10531,
+     "points": 189.3,
+     "payout": 0.0,
+     "draft_id": "2cc20c94-a5d9-4aef-8d87-eb8c4b743843",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 442,
+     "points": 230.8,
+     "payout": 10.0,
+     "draft_id": "2dadb88e-ac0e-4bed-8800-95526171f35c",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 4979,
+     "points": 206.4,
+     "payout": 0.0,
+     "draft_id": "2db0d187-4102-4b3a-ad78-616156a6f779",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 12790,
+     "points": 180.8,
+     "payout": 0.0,
+     "draft_id": "30747d1a-24db-42ed-b1a0-547f6eb3cf3f",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:55:41+00:00"
+    },
+    {
+     "place": 11711,
+     "points": 185.3,
+     "payout": 0.0,
+     "draft_id": "315b436a-e1de-4d4d-8c19-083ffeb9c01d",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "823d4a1d-aef5-449c-8db6-fbd1e491e7ae",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 260,
+     "points": 234.3,
+     "payout": 20.0,
+     "draft_id": "3246d981-397e-46bf-b88d-301728020536",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 9869,
+     "points": 191.5,
+     "payout": 0.0,
+     "draft_id": "33a34a25-daed-4e32-97b0-010e4b935449",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 11171,
+     "points": 187.2,
+     "payout": 0.0,
+     "draft_id": "33fa07dc-d782-4386-891a-029acb554f9d",
+     "picks": [
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 2917,
+     "points": 213.7,
+     "payout": 0.0,
+     "draft_id": "35481c44-0849-4d98-863e-6905b9d52083",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 14545,
+     "points": 170.3,
+     "payout": 0.0,
+     "draft_id": "35b8aa94-1e67-429d-8dfe-9ff6f02c6fa6",
+     "picks": [
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T15:14:28+00:00"
+    },
+    {
+     "place": 3766,
+     "points": 210.5,
+     "payout": 0.0,
+     "draft_id": "361718f8-0ed9-48e2-82a8-705de1bb0c6b",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 12585,
+     "points": 181.7,
+     "payout": 0.0,
+     "draft_id": "37d7076c-9e62-4dc6-aa9d-fdda02ceccf1",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 6542,
+     "points": 201.7,
+     "payout": 0.0,
+     "draft_id": "3c2853d9-e2eb-4a1f-bf86-ebe08d5fd675",
+     "picks": [
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 2088,
+     "points": 217.5,
+     "payout": 10.0,
+     "draft_id": "3f19dbc8-543a-4f06-a627-0da2b40536e6",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 3261,
+     "points": 212.3,
+     "payout": 0.0,
+     "draft_id": "3f92d1ad-31cc-471a-b570-54e776e97561",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 7667,
+     "points": 198.2,
+     "payout": 0.0,
+     "draft_id": "41de3a50-efb4-4ae1-9357-68b29e5a56c3",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 9322,
+     "points": 193.2,
+     "payout": 0.0,
+     "draft_id": "41dfed99-d4b7-4fd1-84e3-dfc55a0b8e68",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 2917,
+     "points": 213.7,
+     "payout": 0.0,
+     "draft_id": "41f941eb-8ccf-40af-9f69-063f56fbf56d",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "5ed6b99c-35aa-4625-b569-b37de86e6ee8",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "06df3427-6b4f-4ca0-9a29-59a0ee3957f6",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 9908,
+     "points": 191.4,
+     "payout": 0.0,
+     "draft_id": "42d22b15-d08c-48ab-9e3c-5122197fc22d",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T05:23:35+00:00"
+    },
+    {
+     "place": 2392,
+     "points": 216.1,
+     "payout": 10.0,
+     "draft_id": "46df59bf-db5e-40c6-9294-39032dd53673",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 2997,
+     "points": 213.3,
+     "payout": 0.0,
+     "draft_id": "480fa97d-ccd4-4b59-89b3-e5aa96577f05",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 3217,
+     "points": 212.5,
+     "payout": 0.0,
+     "draft_id": "4908e337-4c9c-4a69-ab8f-b0d24d2b5405",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 6788,
+     "points": 200.9,
+     "payout": 0.0,
+     "draft_id": "4a70e5fc-d7b6-4dda-afdd-f36621b99ab3",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 12754,
+     "points": 181.0,
+     "payout": 0.0,
+     "draft_id": "4bf87fa9-c044-4569-86d7-0b93eb9a200e",
+     "picks": [
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 7077,
+     "points": 200.0,
+     "payout": 0.0,
+     "draft_id": "4f51d3a6-75d8-48da-ac23-1810afefcb3b",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 3375,
+     "points": 211.8,
+     "payout": 0.0,
+     "draft_id": "54eb853e-01d2-45a4-97de-a9b0733ec741",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 14892,
+     "points": 166.9,
+     "payout": 0.0,
+     "draft_id": "54fa22f6-8f63-4c1a-9512-b68304018bde",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T12:47:10+00:00"
+    },
+    {
+     "place": 3141,
+     "points": 212.8,
+     "payout": 0.0,
+     "draft_id": "562b41e5-57e8-49aa-bbf4-2a441a1927e3",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 1877,
+     "points": 218.6,
+     "payout": 10.0,
+     "draft_id": "56c27839-a579-468b-95a5-d1330b48151e",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 14014,
+     "points": 174.2,
+     "payout": 0.0,
+     "draft_id": "5909e0a7-3e5f-416d-90a9-06680c186a35",
+     "picks": [
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T06:23:39+00:00"
+    },
+    {
+     "place": 10062,
+     "points": 190.9,
+     "payout": 0.0,
+     "draft_id": "598c2c9e-1857-4a3c-a1b3-437b5417afad",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 2027,
+     "points": 217.8,
+     "payout": 10.0,
+     "draft_id": "5ae5becf-a7bb-4007-ab11-8b64a9f4fdbe",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 5046,
+     "points": 206.2,
+     "payout": 0.0,
+     "draft_id": "5be00cf6-947f-4b86-a29e-239ccca5a301",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 8102,
+     "points": 196.9,
+     "payout": 0.0,
+     "draft_id": "5bf38998-1568-47e2-94f9-c7d9fca5bf05",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T14:53:37+00:00"
+    },
+    {
+     "place": 6854,
+     "points": 200.7,
+     "payout": 0.0,
+     "draft_id": "5ea92e8d-d409-438a-8985-d30aef676d95",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 19,
+     "points": 249.7,
+     "payout": 500.0,
+     "draft_id": "6199119e-fade-45d1-91e3-ba834cf48ebb",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 9409,
+     "points": 192.9,
+     "payout": 0.0,
+     "draft_id": "63b30cf9-93a7-4fe1-a51d-0967ac17061c",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "06df3427-6b4f-4ca0-9a29-59a0ee3957f6",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 10915,
+     "points": 188.0,
+     "payout": 0.0,
+     "draft_id": "66a1ec1c-7dc9-40be-9eba-87c68a7e042f",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 7411,
+     "points": 199.0,
+     "payout": 0.0,
+     "draft_id": "67c430db-e0d7-4938-94c1-e20d2b0aa70e",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 6902,
+     "points": 200.6,
+     "payout": 0.0,
+     "draft_id": "6d92357e-2fd2-4cb1-9fd8-ff0d39520456",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:55:41+00:00"
+    },
+    {
+     "place": 10915,
+     "points": 188.0,
+     "payout": 0.0,
+     "draft_id": "717a301a-5665-4d29-b1ec-b4ad07be41bb",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T06:23:39+00:00"
+    },
+    {
+     "place": 11576,
+     "points": 185.8,
+     "payout": 0.0,
+     "draft_id": "7678be73-8168-4d7b-adf8-f9e49201614e",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 6728,
+     "points": 201.1,
+     "payout": 0.0,
+     "draft_id": "7889c53c-2d56-423a-8f46-0f24a9711f84",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 5046,
+     "points": 206.2,
+     "payout": 0.0,
+     "draft_id": "7916b67f-ec37-4b44-8a38-981f0272bf95",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T12:47:10+00:00"
+    },
+    {
+     "place": 5949,
+     "points": 203.4,
+     "payout": 0.0,
+     "draft_id": "794f76de-e270-480a-b4b5-c3ed8fe3dc42",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 8296,
+     "points": 196.3,
+     "payout": 0.0,
+     "draft_id": "7964e54d-03b1-4a80-8f19-7ecf7eeb6e78",
+     "picks": [
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:55:41+00:00"
+    },
+    {
+     "place": 12363,
+     "points": 182.6,
+     "payout": 0.0,
+     "draft_id": "798dfba2-bdee-45f2-a39b-4704c869160d",
+     "picks": [
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 2634,
+     "points": 214.8,
+     "payout": 0.0,
+     "draft_id": "7bd10e28-6387-4e59-bb4d-ca193dcb55a9",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 11352,
+     "points": 186.6,
+     "payout": 0.0,
+     "draft_id": "80a0eca1-795f-4dc9-b4e7-e5ca2d8e9203",
+     "picks": [
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 6931,
+     "points": 200.5,
+     "payout": 0.0,
+     "draft_id": "814c80bb-4d12-460a-86b0-a40dfc36d9ee",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 1877,
+     "points": 218.6,
+     "payout": 10.0,
+     "draft_id": "828a8505-4556-4c3e-9638-077214c3d23c",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:55:41+00:00"
+    },
+    {
+     "place": 13223,
+     "points": 178.8,
+     "payout": 0.0,
+     "draft_id": "82a6d03e-c37e-42dd-9a4a-32b010d7fde6",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T20:01:49+00:00"
+    },
+    {
+     "place": 12737,
+     "points": 181.1,
+     "payout": 0.0,
+     "draft_id": "8301835f-bb4a-4934-8b38-80ab9a88c22c",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "5ed6b99c-35aa-4625-b569-b37de86e6ee8",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T20:01:49+00:00"
+    },
+    {
+     "place": 5352,
+     "points": 205.2,
+     "payout": 0.0,
+     "draft_id": "86dca97b-c8e1-4db8-aeda-df9686140d43",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 8949,
+     "points": 194.3,
+     "payout": 0.0,
+     "draft_id": "896e6085-b57a-4b59-9eb4-52d353879d94",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:55:41+00:00"
+    },
+    {
+     "place": 7563,
+     "points": 198.5,
+     "payout": 0.0,
+     "draft_id": "8993e692-2586-4996-b188-f33dd053e41e",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T15:14:28+00:00"
+    },
+    {
+     "place": 877,
+     "points": 225.8,
+     "payout": 10.0,
+     "draft_id": "8b5536b6-f66d-4550-8d81-4288efa1c661",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T06:23:39+00:00"
+    },
+    {
+     "place": 2581,
+     "points": 215.1,
+     "payout": 0.0,
+     "draft_id": "8b77b99e-f91c-4f73-a9a1-6a7f1b59220c",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "823d4a1d-aef5-449c-8db6-fbd1e491e7ae",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 13724,
+     "points": 176.0,
+     "payout": 0.0,
+     "draft_id": "8c4d2d1c-e78f-45bb-8b9c-1a00bcb78720",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 6630,
+     "points": 201.4,
+     "payout": 0.0,
+     "draft_id": "8d23a002-d186-4fcb-a06c-1c1fba95fee1",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "5ed6b99c-35aa-4625-b569-b37de86e6ee8",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 13498,
+     "points": 177.3,
+     "payout": 0.0,
+     "draft_id": "8ddde895-0303-4179-b67e-0dd2f3e7348e",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "e4069d2d-31f6-48b7-9183-6f7790b6a427"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 1877,
+     "points": 218.6,
+     "payout": 10.0,
+     "draft_id": "8df60033-b682-4927-b857-3550a38832a0",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "5ed6b99c-35aa-4625-b569-b37de86e6ee8",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e"
+     ],
+     "drafted_at": "2026-10-27T14:53:37+00:00"
+    },
+    {
+     "place": 14140,
+     "points": 173.4,
+     "payout": 0.0,
+     "draft_id": "8f45d566-292b-4af4-adb8-023992022819",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 1959,
+     "points": 218.2,
+     "payout": 10.0,
+     "draft_id": "8f7e8091-ee3e-4e09-8f5b-4182d395a86c",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 3941,
+     "points": 209.9,
+     "payout": 0.0,
+     "draft_id": "8fe3392f-5f13-4ed7-9666-3a1444bbfd25",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "06df3427-6b4f-4ca0-9a29-59a0ee3957f6",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 3067,
+     "points": 213.1,
+     "payout": 0.0,
+     "draft_id": "920378d2-5fd0-4b3e-b3f2-5d6b2898e07c",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 4020,
+     "points": 209.7,
+     "payout": 0.0,
+     "draft_id": "923dafc3-2393-431e-8523-09a869e068ee",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 649,
+     "points": 227.8,
+     "payout": 10.0,
+     "draft_id": "93d219b3-f389-4df6-8808-49e72c991950",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 10029,
+     "points": 191.0,
+     "payout": 0.0,
+     "draft_id": "9438b31f-01d6-4010-9a72-730ef624f531",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T12:47:10+00:00"
+    },
+    {
+     "place": 9141,
+     "points": 193.7,
+     "payout": 0.0,
+     "draft_id": "959367b1-7164-42c7-a49c-6daffe976ca3",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "78c6b45f-5728-4f87-852f-67b4ec08dfc4"
+     ],
+     "drafted_at": "2026-10-27T14:53:37+00:00"
+    },
+    {
+     "place": 14545,
+     "points": 170.3,
+     "payout": 0.0,
+     "draft_id": "97e4be90-73b8-46bc-842f-11601dd3f281",
+     "picks": [
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T12:47:10+00:00"
+    },
+    {
+     "place": 3700,
+     "points": 210.7,
+     "payout": 0.0,
+     "draft_id": "981b2b2a-1cdb-451f-ae49-70cd60f9039d",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 8199,
+     "points": 196.6,
+     "payout": 0.0,
+     "draft_id": "987907cd-3ab0-4901-b987-8a6c470cdbb0",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 788,
+     "points": 226.7,
+     "payout": 10.0,
+     "draft_id": "9928a9b9-3577-4d45-ad49-06f41dd3846b",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 7380,
+     "points": 199.1,
+     "payout": 0.0,
+     "draft_id": "9bff1bbe-c5f0-444c-8c1d-b59729d50fcb",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "06df3427-6b4f-4ca0-9a29-59a0ee3957f6",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 3328,
+     "points": 212.0,
+     "payout": 0.0,
+     "draft_id": "9c8e1e7f-16f8-4d7f-abfb-d2a7b9bb8315",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 1201,
+     "points": 223.1,
+     "payout": 10.0,
+     "draft_id": "9e7c9ab4-29b0-45c5-8fae-811880fcfde6",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 10029,
+     "points": 191.0,
+     "payout": 0.0,
+     "draft_id": "a1e94082-5ab5-402f-96f3-a3256241d793",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T15:14:28+00:00"
+    },
+    {
+     "place": 11304,
+     "points": 186.8,
+     "payout": 0.0,
+     "draft_id": "a61accfb-97f7-4b19-80d6-bc8f4935a660",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T11:25:32+00:00"
+    },
+    {
+     "place": 6467,
+     "points": 201.9,
+     "payout": 0.0,
+     "draft_id": "a9c033dd-edd9-4b74-b8c1-60c8a3166707",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 6728,
+     "points": 201.1,
+     "payout": 0.0,
+     "draft_id": "ab18b7e2-9f49-4cbf-82e7-3b8553dd7f9b",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e"
+     ],
+     "drafted_at": "2026-10-27T06:23:39+00:00"
+    },
+    {
+     "place": 7478,
+     "points": 198.8,
+     "payout": 0.0,
+     "draft_id": "b330ae39-d978-45bc-98f5-f9c4b13e6bc1",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "4bc84c5d-8221-424b-a076-1cbd73f7b05a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 1291,
+     "points": 222.3,
+     "payout": 10.0,
+     "draft_id": "b3f8bc48-3531-4900-bcb8-27d81077c9b2",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 12613,
+     "points": 181.6,
+     "payout": 0.0,
+     "draft_id": "b4c83609-f0bc-408b-85f2-bdcf558a401c",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 1488,
+     "points": 220.8,
+     "payout": 10.0,
+     "draft_id": "b59691ba-b0d7-4b9c-a17c-86fd952c2aa1",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 11463,
+     "points": 186.2,
+     "payout": 0.0,
+     "draft_id": "b605f931-1a12-4f00-b98f-4ccb6694ddab",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 8169,
+     "points": 196.7,
+     "payout": 0.0,
+     "draft_id": "bc7a575a-b202-4e7e-9250-98fbc3f4ab03",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T09:02:13+00:00"
+    },
+    {
+     "place": 12336,
+     "points": 182.7,
+     "payout": 0.0,
+     "draft_id": "bcd0446c-7f28-4861-beec-894edc193fb4",
+     "picks": [
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 11304,
+     "points": 186.8,
+     "payout": 0.0,
+     "draft_id": "bd34ae06-bf25-4489-83f2-843ba2adcded",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T12:47:10+00:00"
+    },
+    {
+     "place": 2027,
+     "points": 217.8,
+     "payout": 10.0,
+     "draft_id": "bed29770-56c3-48c9-b579-1e79a8ef10b1",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 14014,
+     "points": 174.2,
+     "payout": 0.0,
+     "draft_id": "c12a260f-673d-4411-9df7-f94fbd5b0b54",
+     "picks": [
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T06:23:39+00:00"
+    },
+    {
+     "place": 12175,
+     "points": 183.4,
+     "payout": 0.0,
+     "draft_id": "c208275b-70a8-4223-b0be-2fff9fd201e7",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T15:14:28+00:00"
+    },
+    {
+     "place": 13160,
+     "points": 179.1,
+     "payout": 0.0,
+     "draft_id": "c2f9795f-ed50-41e9-9af6-a3da8a0fc300",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T12:47:10+00:00"
+    },
+    {
+     "place": 6570,
+     "points": 201.6,
+     "payout": 0.0,
+     "draft_id": "c6c81205-2037-4c0a-a583-c155ecb801cf",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "823d4a1d-aef5-449c-8db6-fbd1e491e7ae",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 13767,
+     "points": 175.7,
+     "payout": 0.0,
+     "draft_id": "c7138295-d4f2-4b31-bca4-dc21b80b1849",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 8662,
+     "points": 195.2,
+     "payout": 0.0,
+     "draft_id": "c78b3393-31ed-46fc-a36f-f6541e6dd3d7",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 592,
+     "points": 228.6,
+     "payout": 10.0,
+     "draft_id": "c9c3df8c-7fbb-4112-a4b2-08411b76e328",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 10760,
+     "points": 188.5,
+     "payout": 0.0,
+     "draft_id": "ce8cb757-96f2-4554-905e-367bf1507d24",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "06df3427-6b4f-4ca0-9a29-59a0ee3957f6",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 10685,
+     "points": 188.8,
+     "payout": 0.0,
+     "draft_id": "d1a2fa00-9c1a-4274-87c8-19a13f189f8f",
+     "picks": [
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T06:23:39+00:00"
+    },
+    {
+     "place": 8017,
+     "points": 197.2,
+     "payout": 0.0,
+     "draft_id": "d1b6b63f-55e0-48d9-a504-4d554cc7048c",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:55:41+00:00"
+    },
+    {
+     "place": 1348,
+     "points": 221.8,
+     "payout": 10.0,
+     "draft_id": "d5aa13a1-c24e-4a0a-b077-b477a0e5c05e",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ea2efcac-b586-471d-89df-f81bfe7472e4",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 2088,
+     "points": 217.5,
+     "payout": 10.0,
+     "draft_id": "d631984a-85c3-4f7e-8c13-54db105f51ec",
+     "picks": [
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 6369,
+     "points": 202.2,
+     "payout": 0.0,
+     "draft_id": "d8743e3a-4eb6-4cb4-8f38-3d05a12152f2",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T21:23:51+00:00"
+    },
+    {
+     "place": 4827,
+     "points": 206.9,
+     "payout": 0.0,
+     "draft_id": "d9abbac7-a7d4-455d-8ce6-c9ae35db1d17",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 13519,
+     "points": 177.2,
+     "payout": 0.0,
+     "draft_id": "dcb0d1b7-0ad0-4212-b996-24e35e864b9a",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T12:47:10+00:00"
+    },
+    {
+     "place": 4556,
+     "points": 207.7,
+     "payout": 0.0,
+     "draft_id": "de4938de-784c-4f2f-a92e-f4ff966d1f80",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 13287,
+     "points": 178.4,
+     "payout": 0.0,
+     "draft_id": "df515edf-aad5-4587-a44a-3c428dd1ef1a",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T12:47:10+00:00"
+    },
+    {
+     "place": 11929,
+     "points": 184.4,
+     "payout": 0.0,
+     "draft_id": "df708f30-b0eb-430b-95eb-f9c9e43c474b",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "823d4a1d-aef5-449c-8db6-fbd1e491e7ae",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 10123,
+     "points": 190.7,
+     "payout": 0.0,
+     "draft_id": "dff53238-8a53-417c-8eee-8be39e6a4f90",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 3217,
+     "points": 212.5,
+     "payout": 0.0,
+     "draft_id": "e01e9b12-e2c6-4f04-81b6-b1341e1f09ea",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 9261,
+     "points": 193.4,
+     "payout": 0.0,
+     "draft_id": "e150ad3a-a22b-4f55-99bc-0f256217bf10",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "d81bde0d-6f87-46b6-a6c3-9fb0eb352c67",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 8330,
+     "points": 196.2,
+     "payout": 0.0,
+     "draft_id": "e5a9dbbb-46e3-4a17-b6f1-12d73e78a9f2",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 2421,
+     "points": 215.9,
+     "payout": 10.0,
+     "draft_id": "e6949012-297f-41a0-bd7c-bf77bedc35a1",
+     "picks": [
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "9e719478-77ae-485a-912c-17dba230ed8a"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 12462,
+     "points": 182.2,
+     "payout": 0.0,
+     "draft_id": "e966277c-a316-4801-959c-d8551dcf656f",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e"
+     ],
+     "drafted_at": "2026-10-27T12:47:10+00:00"
+    },
+    {
+     "place": 2354,
+     "points": 216.3,
+     "payout": 10.0,
+     "draft_id": "e96eb470-d445-4d1f-9d64-dbfa7b0cda7e",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T14:53:37+00:00"
+    },
+    {
+     "place": 15372,
+     "points": 160.3,
+     "payout": 0.0,
+     "draft_id": "ec3b2341-0ca7-4f00-b9fd-e07b1bf3356d",
+     "picks": [
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T15:14:28+00:00"
+    },
+    {
+     "place": 8827,
+     "points": 194.7,
+     "payout": 0.0,
+     "draft_id": "ed5076a5-6518-40b4-9a74-3a3086a9ebfb",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "73a771f5-a6fe-4fd1-8917-23e89f6c4aaf",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 5112,
+     "points": 206.0,
+     "payout": 0.0,
+     "draft_id": "f1899885-a538-420e-9e58-ad04a99e3205",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 9356,
+     "points": 193.1,
+     "payout": 0.0,
+     "draft_id": "f51cdf66-3193-4c8d-a733-bc34ce1ce3bb",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:16:09+00:00"
+    },
+    {
+     "place": 7913,
+     "points": 197.5,
+     "payout": 0.0,
+     "draft_id": "f6688dfb-28bb-4117-afda-b48526a5baae",
+     "picks": [
+      "553255f7-79bb-4b22-a925-7384cc42ec27",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "b9cd2968-7ad3-4798-b7b3-c64ce5eee152"
+     ],
+     "drafted_at": "2026-10-27T20:56:01+00:00"
+    },
+    {
+     "place": 799,
+     "points": 226.6,
+     "payout": 10.0,
+     "draft_id": "f71be5a3-bdc3-4cb3-b785-86af23cc084b",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "9d687651-e23a-4817-91f5-148a95f4eaf9",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "06df3427-6b4f-4ca0-9a29-59a0ee3957f6",
+      "d1b1331c-7d12-481a-aab3-8903f7342e3b",
+      "46de5e24-3c33-4ed8-bf93-13cf4ed77705"
+     ],
+     "drafted_at": "2026-10-27T16:29:42+00:00"
+    },
+    {
+     "place": 11760,
+     "points": 185.1,
+     "payout": 0.0,
+     "draft_id": "f965dd54-ffeb-4dfe-b5f6-ae8627105e0b",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b863b59b-2841-42df-b869-299dd8d3e563",
+      "b56f125f-5890-4fcb-85a7-b023645fb1be",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "6e58e0ae-7bd4-485c-92f8-670715ab1996",
+      "4e362394-7dec-4301-907a-3cc7217768bf"
+     ],
+     "drafted_at": "2026-10-27T22:55:41+00:00"
+    },
+    {
+     "place": 12292,
+     "points": 182.9,
+     "payout": 0.0,
+     "draft_id": "ff0befa3-07fc-4a69-b001-9681ba9eafd9",
+     "picks": [
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "cbcf7977-934a-402a-bbdc-b7795400fcac",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "1137ff4c-2db0-43ff-a94c-daba4282b2b2",
+      "9e719478-77ae-485a-912c-17dba230ed8a",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-10-27T15:14:28+00:00"
+    }
+   ]
+  }
+ ]
+}
