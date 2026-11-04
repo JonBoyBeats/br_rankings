@@ -4,7 +4,7 @@
 
 - Accuracy on the 41 drafted players who played: ours 7.53 points off (bias +0.98), ours without EvanMiya 7.46,
   Underdog 7.62. Even with Underdog on night one; one night is noise.
-- Misses split evenly: 12 minutes, 13 rate (shooting / peripherals), 6 newcomer, 2 news, 1 blowout of 34.
+- Misses split evenly: of 34, 12 minutes, 14 rate (11 shooting, 3 peripherals), 5 newcomer, 2 news, 1 blowout.
   Newcomers' minutes ran high (+3.9 on average); their rates were right on average but swung both ways
   (Niang 55.3, Samuels 29.9 over; Toure, Ethan Harris under).
 - Watching (one night, not a theme yet): players built from last season played their projected minutes when
