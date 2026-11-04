@@ -151,7 +151,7 @@
   html:not(.nba) .nba-only { display: none !important; }
   html.cbb .nba-data { display: none !important; }
   /* NBA: no VORP column; its room goes to the Boom and Dud tiebreak numbers. */
-  html.nba .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 170px 94px 0; }
+  html.nba .row { grid-template-columns: 26px 40px minmax(0, 1fr) 96px 170px 94px 0; }
   html.nba #scoreHead { white-space: nowrap; }
   html.nba .num.score { display: flex; gap: 4px; justify-content: center; }
   /* Green by rank on tonight's slate, darkest for the best. */
@@ -163,7 +163,7 @@
   .head .ph-short { display: none; }
   .head .ph-short::after { content: "Us \00b7  ETR"; }
   .num.proj .ours { color: var(--muted); text-align: right; font-size: 12px; }
-  html.nba .board.etr2 .row { grid-template-columns: 26px 40px minmax(0, 1fr) 76px 170px 122px 0; }
+  html.nba .board.etr2 .row { grid-template-columns: 26px 40px minmax(0, 1fr) 96px 170px 122px 0; }
   html.nba .num.score b.gchip { min-width: 30px; padding: 2px 4px; }
   /* the matchup sits apart from Boom and Dud, behind a thin rule */
   html.nba .num.score b.mchip { position: relative; margin-left: 12px; }
@@ -302,11 +302,22 @@
   .rankh .exph { display: none; }
   .board.has-expo .rankh .exph { display: inline; }
   .rank b.expo { min-width: 24px; padding: 1px 3px; border-radius: 4px; font-size: 10.5px; text-align: center; font-weight: 700; }
-  html.nba .board.has-expo .row { grid-template-columns: 26px 66px minmax(0, 1fr) 76px 170px 94px 0; }
-  html.nba .board.has-expo.etr2 .row { grid-template-columns: 26px 66px minmax(0, 1fr) 76px 170px 122px 0; }
+  html.nba .board.has-expo .row { grid-template-columns: 26px 66px minmax(0, 1fr) 96px 170px 94px 0; }
+  html.nba .board.has-expo.etr2 .row { grid-template-columns: 26px 66px minmax(0, 1fr) 96px 170px 122px 0; }
   /* The marker sits in its own fixed track inside the ADP cell, so the numbers stay
      flush right and scan as a column whatever each player's marker is. */
   .num.adp { display: grid; grid-template-columns: 19px 1fr; align-items: center; gap: 3px; }
+  /* NBA: a last track for the projected drafted%, kept even when empty so the ADPs stay in a column */
+  html.nba .num.adp { grid-template-columns: 19px 1fr 22px; }
+  .num.adp .dpct { font-size: 9px; color: var(--muted); text-align: right; }
+  .combos { padding: 10px 14px 16px; font-family: var(--mono); font-size: 12px; max-width: 760px; }
+  .combos h3 { font-size: 13px; margin: 14px 0 2px; }
+  .combos .cnote { color: var(--muted); font-size: 11px; margin: 2px 0 6px; }
+  .combos table { border-collapse: collapse; width: 100%; }
+  .combos th, .combos td { text-align: left; padding: 3px 8px 3px 0; border-bottom: 1px solid var(--line); }
+  .combos th { color: var(--muted); font-weight: 500; font-size: 10.5px; }
+  .combos td:nth-child(2), .combos td:nth-child(3), .combos th:nth-child(2), .combos th:nth-child(3) { text-align: right; }
+  .combos tr.rare td { color: #5fbf7f; }
   /* Drawn rather than typed: a stack of three glyphs would depend on the font having
      a line chevron, and these nest cleanly at any size. */
   .ind { display: flex; flex-direction: column; align-items: center; color: var(--muted); }
@@ -623,6 +634,7 @@
     /* NBA phones: the ADP movement marker gives way to the form arrow beside Proj */
     html.nba .num.adp { grid-template-columns: 1fr; }
     html.nba .num.adp .ind { display: none; }
+    html.nba .num.adp .dpct { display: none; }
     .num.proj.fm { grid-template-columns: 24px 1fr 7px; }
     .num.proj .gchip { min-width: 21px; }
     .num.proj.two.fm { grid-template-columns: 18px 20px 1fr 7px; }
@@ -724,6 +736,7 @@
           <option value="name">Sort by name</option>
           <option value="inj" class="nba-only">Injury tags only</option>
           <option value="bagels" class="nba-only nba-data">Bagels (by game)</option>
+          <option value="combos" class="nba-only nba-data">Turn combos</option>
         </select>
       </label>
       <label class="field">
@@ -3690,6 +3703,97 @@ function syncSwitchField() {
 /* ---- NBA write-ups (analysis/nba_takes.json): that day's notes from each source. */
 var NBA_STANCE = { great: "pos", like: "pos", good: "lean", lean: "lean", bad: "neg", fade: "neg" };
 
+/* ---- The field (analysis/nba/contests/field_model.json, from every past main slate's flagship contest) ----
+   By pod size: the average drafted% at each closing-ADP rank, and the turns' combo shares by rank. Tonight's
+   ranks come from the current ADP, so the projections move with it. */
+function nbaPodSize(s) {
+  var big = ((s && s.contests) || []).filter(function (c) { return /person drafts/.test(c.description || ""); })
+    .sort(function (a, b) { return (b.entry_count || 0) - (a.entry_count || 0); })[0];
+  var m = big && /(\d+) person drafts/.exec(big.description);
+  if (m) return +m[1];
+  var teams = {};
+  ((s && s.players) || []).forEach(function (p) { if (p.team) teams[p.team] = 1; });
+  return Object.keys(teams).length <= 6 ? 4 : 6;         // 3 games or fewer: 4-person pods
+}
+
+function nbaAdpRanks(s) {
+  var out = {};
+  ((s && s.players) || []).filter(hasAdp).slice().sort(function (a, b) { return a.adp - b.adp; })
+    .forEach(function (p, i) { out[p.player_id] = i + 1; });
+  return out;
+}
+
+/** His projected drafted% (share of pods he's taken in) at his ADP rank, or null without the model. */
+function nbaDraftedPct(pid, ctx) {
+  var t = ctx && ctx.table, r = ctx && ctx.ranks[pid];
+  if (!t || !r) return null;
+  return r <= t.length ? t[r - 1] : 0;
+}
+
+function nbaFieldCtx() {
+  var f = state.nbaField, pod = nbaPodSize(state.slate);
+  return f && f.drafted && f.drafted[pod] ? { pod: pod, table: f.drafted[pod], ranks: nbaAdpRanks(state.slate), nights: f.nights[pod] } : null;
+}
+
+/** The turn combos view: for each of the top 3 by ADP, the round 2-3 pairs the field takes with him, and the
+    pairs at the 1/2 turn, each with its projected share and the pair's Proj. "Rarer" marks a combo within 2
+    points of the most-owned one's Proj at half its share or less. */
+function nbaCombosPanel() {
+  var d = document.createElement("div"), f = state.nbaField, pod = nbaPodSize(state.slate);
+  d.className = "combos";
+  if (!f || !f.turn23 || !f.turn23[pod]) {
+    d.textContent = "No contest history yet for " + pod + "-person pods.";
+    return d;
+  }
+  var ranks = nbaAdpRanks(state.slate), at = {}, byPid = byPidMap(state.slate);
+  Object.keys(ranks).forEach(function (pid) { at[ranks[pid]] = byPid[pid]; });
+  var nm = function (p) { return p ? p.first_name.charAt(0) + ". " + p.last_name : "?"; };
+  var pj = function (p) { return p && state.proj[p.player_id] != null ? state.proj[p.player_id] : null; };
+  function table(title, note, rows) {
+    var h = document.createElement("h3");
+    h.textContent = title;
+    var n = document.createElement("div");
+    n.className = "cnote";
+    n.textContent = note;
+    var t = document.createElement("table");
+    t.innerHTML = "<tr><th>Combo</th><th>Field</th><th>Proj</th><th></th></tr>";
+    var top = rows[0];
+    rows.forEach(function (r) {
+      var tr = t.insertRow(), rare = top && r !== top && r.proj != null && top.proj != null && r.proj >= top.proj - 2 && r.share <= top.share / 2;
+      tr.insertCell().textContent = r.label;
+      tr.insertCell().textContent = r.share.toFixed(1) + "%";
+      tr.insertCell().textContent = r.proj == null ? "\u2013" : r.proj.toFixed(1);
+      tr.insertCell().textContent = rare ? "rarer" : "";
+      if (rare) tr.className = "rare";
+    });
+    d.append(h, n, t);
+  }
+  [1, 2, 3].forEach(function (r) {
+    var anchor = at[r];
+    if (!anchor) return;
+    var rows = Object.keys(f.turn23[pod]).filter(function (k) { return k.indexOf(r + "|") === 0; }).map(function (k) {
+      var x = k.split("|"), a = at[+x[1]], b = at[+x[2]];
+      return { label: nm(a) + " (" + x[1] + ") + " + nm(b) + " (" + x[2] + ")", share: f.turn23[pod][k],
+               proj: pj(a) != null && pj(b) != null ? pj(a) + pj(b) : null };
+    }).sort(function (x, y) { return y.share - x.share; }).slice(0, 8);
+    if (rows.length) table("2/3 turn: " + nm(anchor) + " (ADP " + anchor.adp.toFixed(1) + ")",
+      "Share of his teams carrying each round 2-3 pair (ADP ranks), over " + f.nights[pod] + " past nights at this pod size.", rows);
+  });
+  var lo = pod - 1, hi = pod + 2;
+  var t12 = Object.keys(f.turn12[pod] || {}).map(function (k) {
+    var x = k.split("|"), a = at[+x[0]], b = at[+x[1]];
+    return { label: nm(a) + " (" + x[0] + ") + " + nm(b) + " (" + x[1] + ")", share: f.turn12[pod][k],
+             proj: pj(a) != null && pj(b) != null ? pj(a) + pj(b) : null };
+  }).sort(function (x, y) { return y.share - x.share; });
+  if (t12.length) table("1/2 turn: ADP ranks " + lo + "-" + hi, "Share of all teams carrying each pair.", t12);
+  var foot = document.createElement("div");
+  foot.className = "cnote";
+  foot.textContent = "So far (14 nights, Oct 20-Nov 2): at the 2/3 turn the most-owned combo finished top 1% 0.64% of the time vs 1.34% for other combos; " +
+    "at the 1/2 turn the opposite, 2.15% vs 0.50%. Neither is a rule yet. Ranks follow the current ADP.";
+  d.appendChild(foot);
+  return d;
+}
+
 function loadNbaTakes() {
   return fetch("analysis/nba_takes.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
@@ -4549,6 +4653,11 @@ function render() {
   var host = $("rows");
   host.innerHTML = "";
   var dragging = state.view === "order";
+  if (state.view === "combos" && SPORT_MODE === "nba") {
+    host.appendChild(nbaCombosPanel());
+    renderFoot(0);
+    return;
+  }
 
   if (!rows.length) {
     var e = document.createElement("div");
@@ -4562,6 +4671,7 @@ function render() {
   var frag = document.createDocumentFragment();
   var sw = null, pc = SPORT_MODE === "nba" ? nbaShading() : null, tiers = nbaActiveTiers(), tierEnd = nbaTierEnd();
   var expo = slateExpo();
+  var fieldCtx = SPORT_MODE === "nba" ? nbaFieldCtx() : null;
   if (NBA_LIKE) {
     var tb = $("tiersBtn"), tt = state.slate && loadTiers(state.slate.label);
     tb.setAttribute("aria-pressed", String(!!(tt && tt.on)));
@@ -4666,9 +4776,18 @@ function render() {
         " picks " + (mv.kind === "up" ? "earlier" : "later") + " since the reference locked";
     var adpVal = document.createElement("span");
     adpVal.textContent = hasAdp(p) ? p.adp.toFixed(1) : "\u2013";
+    // where the field stops taking him in every pod: his projected drafted% at this ADP rank, from past contests
+    var dpct = hasAdp(p) ? nbaDraftedPct(p.player_id, fieldCtx) : null, dEl = document.createElement("span");
+    dEl.className = "dpct";
+    if (dpct != null && dpct < 95) {
+      dEl.textContent = Math.round(dpct) + "%";
+      adpVal.title = "Projected drafted in " + Math.round(dpct) + "% of pods (ADP rank " + fieldCtx.ranks[p.player_id] +
+                     ", " + fieldCtx.pod + "-person pods, " + fieldCtx.nights + " past nights)";
+    }
     var adp = document.createElement("span");
     adp.className = "num adp" + (hasAdp(p) ? "" : " dim");
     adp.append(ind, adpVal);
+    if (SPORT_MODE === "nba") adp.appendChild(dEl);
 
     var v = state.proj[p.player_id];
     var pv = projMovement(state.projPrev[p.player_id], v);
@@ -6198,6 +6317,9 @@ function bootFailed(where, err) {
       state.nbaLines = odds.lines || {};
       state.nbaGames = odds.games || {};                   // {date: {team: [opponent, "vs" | "at"]}}
       loadNbaTakes().then(function () { if (state.slate) render(); });
+      fetch("analysis/nba/contests/field_model.json?t=" + Date.now(), { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { state.nbaField = d; if (state.slate) render(); }).catch(function () {});
       fetchJson("nba_sit.json").then(function (d) { state.nbaSit = d; if (state.slate) render(); }).catch(function () {});
       fetchJson("nba_minutes.json").then(function (d) { state.nbaMinutes = nbaMinutesIndex(d); if (state.slate) render(); }).catch(function () {});
       fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })

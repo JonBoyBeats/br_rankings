@@ -63,6 +63,7 @@ jobs:
         run: |
           python3 scripts/nba_contests.py pull --mirror ../br-adp-mirror
           python3 scripts/nba_contests.py measures --mirror ../br-adp-mirror --date "$(TZ=America/Los_Angeles date -d yesterday +%F)"
+          python3 scripts/nba_contests.py model
       # Today's Recent notes: last night into the ledger, a fresh note for everyone on today's
       # slates who has played since his last one, then the board's notes file
       - name: Recent notes

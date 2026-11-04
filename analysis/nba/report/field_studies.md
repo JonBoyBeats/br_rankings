@@ -5,11 +5,13 @@ nights. Descriptions of what happened, not rules; see the shared spec's evidence
 analyses run from the contest files, the daily records and the box archive (2023-24 on).
 
 ## 1. Peer-group breakers (3 seasons of box scores, fit on 2023-25, tested on 2025-26)
-Peer group: the 20 players projected around him that night (minutes x points a minute, known before the game).
-A breaker is his peer group's top 10%. His history: the share of his last 8-40 games he broke, shrunk toward 10%.
-- Players at a 20%+ history (about 5% of player-games) broke again 21.7% of the time; everyone else 9-11%
-  (base rate 10.4%). Test-season AUC 0.519 with volatility and projection alone, 0.554 with the history added.
-- Read: real and out of sample, concentrated in that top group. A candidate Boom bump for them.
+Peer group: the 5 players projected just above him and the 5 just below that night (minutes x points a minute,
+known before the game); he breaks when he outscores all 10. The night's top and bottom 5 aren't counted.
+- First pass, with one-sided peers at the top of the night, looked like a doubling (20%+ history: 21.7% next game
+  vs 10.4%); that was mostly the top players "breaking" against peers all projected below them.
+- Counted symmetrically: a mild lean, about x1.16 on the odds of his next break per 10 points of history
+  (held-out 2025-26: 7.9% at a 0-7% history, 9.3% at 10-16%, 13.0% at 16-20%; the 20%+ group is too small to read).
+- Now in the morning file as pbr [breaks, games] over his last 40; not in Boom.
 
 ## 2. Ownership vs projection (decision pairs: ADP within 4, ETR medians within 2, drafted% 10+ points apart)
 - 665 pairs over 13 nights (rounds 5+, where drafted% is under 100).
@@ -34,8 +36,9 @@ A breaker is his peer group's top 10%. His history: the share of his last 8-40 g
 - Questionable/Doubtful at the AM lock, then played: 17 players, +3.0 FP over their closing price (median +3.4),
   8 of 17 beat their round's 90th percentile (10% expected). Teams that drafted them nearer the morning price
   finished top 1% 1.27% of the time vs 0.81% for teams that took them later.
-- Q/D at the AM lock, then sat: 10 players; the field had almost none of them (16 teams in all): when one of these
-  sat, the news came before most drafts.
+- Q/D at the AM lock, then sat: 10 players. The leaderboards show almost none of them because Underdog swaps a
+  ruled-out player for the drafter's highest-ranked undrafted player: the team keeps a 6th-round-ish value in that
+  slot (worse on small slates). The swap can't be seen in the public data, so this cost isn't measured.
 - Read: small sample, but so far an early Q tag has not hurt; the ruled-in ones were value.
 
 ## Turns (from the contest measures)

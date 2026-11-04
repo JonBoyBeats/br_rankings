@@ -16,6 +16,7 @@ estimated: a pod's 36 picks sorted by the ADP each was taken at.
   measures  for a night (--date, default every night on file): the measures below, printed and kept
             in analysis/nba/contests/<date>_measures.json (with my teams one by one: picks, place, inferred draft time)
   seed      add contest ids (arguments) to seed.json, for contests the lobby never caught
+  model     field_model.json for the board: projected drafted% by ADP rank and the turns' combo shares
 
   python3 scripts/nba_contests.py pull|measures|seed [ids...] --mirror ../br-adp-mirror [--date YYYY-MM-DD] [--sport cbb]
 
@@ -210,7 +211,7 @@ def players_on(date, label):
     if os.path.exists(path):
         for r in csv.DictReader(open(path)):
             out[r["player_id"]] = {"name": r["name"], "team": r["team"], "adp": float(r["adp_close"]) if r["adp_close"] else None,
-                                   "fp": float(r["actual"]) if r["actual"] else None}
+                                   "fp": float(r["actual"]) if r["actual"] else None, "played": bool(r["min"] and float(r["min"]) > 0)}
     return out
 
 
@@ -477,9 +478,51 @@ def show(m):
                 r["teams"], r["median_pct"], r["tail1"], r["tail5"], r["tail10"], r["tail20"], r["am_teams"], r["am_tail10"], r["pm_teams"], r["pm_tail10"]))
 
 
+def field_model():
+    """analysis/nba/contests/field_model.json, for the board: from each night's flagship (its largest contest), by pod
+    size, the average drafted% at each closing-ADP rank, and the turns' combo shares by rank: 2/3 turn, the share of
+    a top-3 player's teams carrying each pair of round 2-3 ranks; 1/2 turn, the share of all teams carrying each pair
+    of ranks pod-1..pod+2. A night missing a combo counts as 0 for it."""
+    nights = defaultdict(list)
+    for date in sorted({c["date"] for c in load_contests()}):
+        contests, teams = load_night(date)
+        c = max(contests, key=lambda c: int(c["entries"]))
+        info = players_on(date, c["slate"])
+        if not info:
+            continue
+        nights[int(c["pod_size"])].append((date, teams[c["contest_id"]], day_ranks(info), info))
+    out = {"built": dt.date.today().isoformat(), "drafted": {}, "turn23": {}, "turn12": {}, "nights": {}}
+    for pod, ns in nights.items():
+        k = str(pod)
+        out["nights"][k] = len(ns)
+        by_rank, t23, t12 = defaultdict(list), defaultdict(float), defaultdict(float)
+        for date, ts, rank, info in ns:
+            d, _ = drafted(ts, pod)
+            for p, r in rank.items():
+                if info[p]["played"]:                   # a late scratch is swapped off every team: 0% drafted, by rule
+                    by_rank[r].append(d.get(p, 0))
+            for anchor in [p for p, r in rank.items() if r <= 3]:
+                mine = [t for t in ts if anchor in t["picks"]]
+                for t in mine:
+                    mid = sorted(rank[p] for p in t["picks"] if pod + 1 <= rank.get(p, 0) <= 3 * pod)
+                    for i, j in itertools.combinations(mid, 2):
+                        t23["%d|%d|%d" % (rank[anchor], i, j)] += 1 / len(mine) / len(ns)
+            lo, hi = pod - 1, pod + 2
+            for t in ts:
+                turn = sorted(rank[p] for p in t["picks"] if lo <= rank.get(p, 0) <= hi)
+                for i, j in itertools.combinations(turn, 2):
+                    t12["%d|%d" % (i, j)] += 1 / len(ts) / len(ns)
+        top = max(by_rank)
+        out["drafted"][k] = [round(100 * sum(by_rank[r]) / len(by_rank[r]), 1) if by_rank[r] else 0 for r in range(1, top + 1)]
+        out["turn23"][k] = {key: round(100 * v, 2) for key, v in t23.items() if v >= 0.002}
+        out["turn12"][k] = {key: round(100 * v, 2) for key, v in t12.items() if v >= 0.002}
+    json.dump(out, open(os.path.join(OUT, "field_model.json"), "w"), separators=(",", ":"))
+    print("field model: %s nights by pod size" % out["nights"])
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["pull", "measures", "seed"])
+    ap.add_argument("cmd", choices=["pull", "measures", "seed", "model"])
     ap.add_argument("ids", nargs="*")
     ap.add_argument("--mirror", default=os.path.join(HERE, "..", "..", "..", "br-adp-mirror"))
     ap.add_argument("--sport", choices=["nba", "cbb"], default="nba")
@@ -492,6 +535,9 @@ def main():
         path = os.path.join(OUT, "seed.json")
         seed = json.load(open(path)) if os.path.exists(path) else []
         json.dump(sorted(set(seed) | set(a.ids)), open(path, "w"), indent=1)
+        return
+    if a.cmd == "model":
+        field_model()
         return
     mirror = daily.Mirror(a.mirror)
     if a.cmd == "pull":
