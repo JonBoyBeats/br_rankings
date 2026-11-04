@@ -502,6 +502,7 @@
   .stance.s-lean, .cfbpanel .verdict.v-lean { background: var(--t2); color: var(--t2-ink); box-shadow: none; }
   .stance.s-neg, .cfbpanel .verdict.v-bad, .cfbpanel .verdict.v-fade { background: var(--t0); color: var(--t0-ink); box-shadow: none; }
   .stance.s-new { background: #c58b2b; color: #1a1205; box-shadow: none; }   /* CBB: a newcomer, projected from EvanMiya or Underdog */
+  .stance.s-core { background: var(--t3); color: var(--t3-ink); box-shadow: none; }   /* CBB: EvanMiya's top 3 on his team */
   .pdelta {
     font-family: var(--mono); font-size: 10px; font-weight: 500;
     text-align: right; white-space: nowrap; color: var(--muted);
@@ -2015,7 +2016,17 @@ function cbbNewcomer(p) {
   return r && /^(miya|ud)/.test(r.src || "") && (r.gp || 0) < CBB_NEW_GAMES ? r : null;
 }
 
-/** The NBA row's three take columns on the CBB page: the newcomer flag, then two empty ones. */
+/* A player with a college season behind him whom EvanMiya ranks 1st-3rd on his team: on the first
+   night (2026-11-03) these played their projected minutes (+0.6 a player), where ranks 4-7 came in
+   3-5 minutes short. Our surer projections, while the CBB morning report keeps checking it. */
+var CBB_CORE_RANK = 3;
+
+function cbbCore(p) {
+  var r = state.cbbMorning && state.cbbMorning.players[p.player_id];
+  return r && r.src === "box" && r.bpr_rank && r.bpr_rank <= CBB_CORE_RANK ? r : null;
+}
+
+/** The NBA row's three take columns on the CBB page: the newcomer flag, EvanMiya's top 3, then an empty one. */
 function cbbWho(who, p) {
   var r = cbbNewcomer(p);
   if (r) {
@@ -2029,7 +2040,15 @@ function cbbWho(who, p) {
       ". Not testable on past seasons, so treat it as rougher than the rest until he's played " + CBB_NEW_GAMES +
       " games (" + (r.gp || 0) + " so far)";
   } else who.appendChild(slot());
-  who.appendChild(slot());
+  var core = cbbCore(p);
+  if (core) {
+    var k = who.appendChild(document.createElement("span"));
+    k.className = "stance s-core";
+    k.textContent = String(core.bpr_rank);
+    k.title = "EvanMiya ranks him " + cbbOrdinal(core.bpr_rank) + " on his team. Players with a college season behind them " +
+      "ranked 1st-3rd have played their projected minutes; 4th-7th have come in 3-5 minutes short. One of our surer " +
+      "projections (checked night to night in the CBB morning report)";
+  } else who.appendChild(slot());
   who.appendChild(slot());
 }
 
