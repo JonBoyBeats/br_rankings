@@ -101,7 +101,14 @@ entries) and running over every night: cut lines; where drafted% leaves 100% and
 10-60% players (priced players under 10% are news, not fades); the 5 most-owned pairs and 3 cores
 with turn-pair, same-position-teammate and opposing-stars flags; your tiers in the top 1% against
 the field; the field and you on players Questionable at Lock AM; your takes against the field; your
-uniqueness; your results (tail ratios, AM/PM by your own lock times); and what won (FPOE, breakers).
+uniqueness; your results (tail ratios, AM/PM by your own lock times); what won (FPOE, breakers); and the
+contest side's forward tests (`scripts/nba_forward.py`, pre-registered 2026-11-04 for slates 11-05 to 12-02,
+each night kept in `analysis/nba/report/forward_tests.json`): the turns' crowding check, the Boom peer
+bump's calibration, the ownership tiebreak, your teams (breakers, low-drafted picks, turn combos), Q tags
+at Lock AM, and risers once the contest counts have two weeks. No verdict on the turns before 12-02.
+
+Weighing a finding: the user's years of drafting are the prior. One that matches what he has seen can be
+adopted now and tracked forward; one that contradicts it waits for more nights. Say which it is.
 
 Pick order isn't public, so rounds are estimates; draft times are the nearest hourly ADP snapshot.
 4-drafter slates are kept apart. Evidence rules as everywhere: structural rules (from drafted% and
@@ -262,7 +269,8 @@ In this order, short and scannable:
 4. **Field**: your results (last night's contests and the running table), the cut lines (last
    night and running), your tiers in the top 1%, the takes table, the Questionable table, then one
    line each: where drafted% leaves 100% and any news players, the top 3 pairs with flags, your
-   uniqueness, what won.
+   uniqueness, what won; then the forward tests, a line each (turns, Boom bump, ownership tiebreak,
+   your teams, Q tags).
 5. **Hypotheses**: a line each, and any proposal (step 6b).
 6. **Themes and takeaways**: only a theme that crossed its bar; otherwise one line saying none did.
 7. **Last night, player by player**: only players whose ledger line carries a tag (the rest were

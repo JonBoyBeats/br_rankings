@@ -20,6 +20,9 @@ For the night's flagship contest (the most entries), and running over every nigh
                   and PM teams split by your own lock times; running, with ranges from resampling nights
   9 Value         fantasy points over the ADP band average, and breakers, for the top 1% against the field: a
                   description of what won, not a rule
+ 10 Forward tests the contest side's pre-registered checks (scripts/nba_forward.py): the turns' crowding check,
+                  the Boom peer bump's calibration, the ownership tiebreak, your teams (breakers, low-drafted picks,
+                  turn combos), Q tags at Lock AM, and (later) risers
 
 Pick order isn't public, so rounds are estimated (see nba_contests.py); draft times are the nearest hourly ADP
 snapshot. 4-drafter small slates are kept apart in every running table. The first weeks are noise.
@@ -35,6 +38,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import nba_contests as C   # noqa: E402
 import nba_daily as D      # noqa: E402
 import nba_report as R     # noqa: E402
+import nba_forward as FWD  # noqa: E402
 
 GROUP = {"PG": "G", "SG": "G", "G": "G", "SF": "F", "PF": "F", "F": "F", "C": "C"}
 TURNS = ("1/2", "2/3")
@@ -356,6 +360,9 @@ def field(date, mirror=None):
     out += uniqueness(c, teams)
     out += results(dates, date)
     out += value(dates, date)
+    if by_id and FWD.FORWARD_FROM <= date <= FWD.FORWARD_TO:
+        FWD.record(date, FWD.night(date, teams, c["pod_size"], by_id, times, mirror))
+    out += FWD.lines(date, c["pod_size"])
     return out
 
 
