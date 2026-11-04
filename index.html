@@ -651,6 +651,9 @@
     .rank b.expo { min-width: 19px; padding: 1px 1px; font-size: 9.5px; }
     html.nba .board.has-expo .row { grid-template-columns: 12px 44px minmax(0, 1fr) 37px 80px 55px 0; }
     html.nba .board.has-expo.etr2 .row { grid-template-columns: 12px 44px minmax(0, 1fr) 37px 80px 73px 0; }
+    /* room for the name on a phone: the ETR/Zakarian chips go (the row's \25BE still opens their notes), and with
+       exposures showing, the team code too */
+    html.nba .who .stance, html.nba .board.has-expo .who .sub { display: none; }
     .num { font-size: 11.5px; }
     .name { font-size: 13.5px; }
     .sub { font-size: 9.5px; }
