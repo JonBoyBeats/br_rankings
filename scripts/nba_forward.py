@@ -14,12 +14,13 @@ contest each night, 4- and 6-drafter slates apart. Ranges come from resampling w
   2 Boom bump   the board's Boom with and without the peer-break bump (nbaPeerShift in index.html; pbr in the
                 morning file) for players it moved 2+ points, against the rest: predicted against the rate of
                 actual booms (a night 10+ over his bar, as the board defines Boom), on ETR's last number at lock.
-  3 Ownership   tied decision pairs (closing ADP within 4 picks, ETR medians within 2, drafted% 10+ apart; both
-  tiebreak      past round 4 by closing-ADP rank, played, and drafted in at least one pod, the undrafted pile
-                included): the lower- against the higher-drafted player on points, breaker rate, and the top-1%
-                rate of the teams carrying each. The contest side's study (field_studies.md) had the lower one
-                outscoring 47% on 665 pairs; this cut on Oct 28-Nov 2 gives 37%, so the two cuts differ somewhere
-                its write-up doesn't say. Fixed here before the window opens; confirm with the contest side.
+  3 Ownership   the contest side's study as run (scripts/nba_tiebreak_study.py: closing ADP within 4, ETR
+  tiebreak      medians within 2, drafted% 10+ points apart and both at least 2%). Graded on the top-1% rate of
+                the teams carrying the lower- against the higher-drafted player; who outscored is context only
+                (it swings 37-58% with the cut: about a coin flip). In sample both windows ran about +0.2
+                percentage points for the lower one, range touching zero. Bar, set 2026-11-04 before the window:
+                at its end, the lean holds if the 80% range of the difference is above zero (backed by the same
+                direction in sample), goes against it if below, else not settled.
   4 Your teams  breakers a team (yours, the top 1%, the field); picks drafted in under half the pods, a team (yours,
                 the field); and of your teams with a top-3 player and a round 2-3 pair, how many took his most-owned
                 pair, a rarer one (within 2 projected points of it at half its share or less) or another.
@@ -36,6 +37,7 @@ from collections import defaultdict
 sys.path.insert(0, os.path.dirname(__file__))
 import nba_contests as C   # noqa: E402
 import nba_report as R     # noqa: E402
+import nba_tiebreak_study as TB   # noqa: E402  the ownership tiebreak, the contest side's definition as run
 
 FORWARD_FROM, FORWARD_TO = "2026-11-05", "2026-12-02"
 STORE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "analysis", "nba", "report", "forward_tests.json")
@@ -117,21 +119,8 @@ def night(date, teams, pod, rows, times, mirror):
     # 2 Boom peer bump
     out["boom"] = boom_check(date, rows, mirror)
 
-    # 3 ownership tiebreak
-    ties = []
-    # players who sat are left out: Underdog swaps them, so they read as low-drafted zeros (as in the contest side's study)
-    ps = [p for p in priced if rank[p] > 4 * pod and own.get(p) and rows[p]["actual"] is not None and (rows[p]["min"] or 0) > 0
-          and rows[p]["etr_median"] is not None]
-    for i, a in enumerate(ps):
-        for b in ps[i + 1:]:
-            ra, rb = rows[a], rows[b]
-            if abs(ra["adp_close"] - rb["adp_close"]) > 4 or abs(ra["etr_median"] - rb["etr_median"]) > 2 or abs(own[a] - own[b]) < 10:
-                continue
-            lo, hi = (a, b) if own[a] < own[b] else (b, a)
-            carry = lambda p: [sum(1 for t in teams if p in t["picks"]), sum(1 for t in teams if p in t["picks"] and top(t))]
-            ties.append({"lower": rows[lo]["actual"], "higher": rows[hi]["actual"], "lower_brk": lo in brk, "higher_brk": hi in brk,
-                         "lower_teams": carry(lo), "higher_teams": carry(hi)})
-    out["ties"] = ties
+    # 3 ownership tiebreak: the contest side's study, as run (scripts/nba_tiebreak_study.py), so the definition is theirs
+    out["ties"] = TB.night_pairs(date)
 
     # 4 your teams
     mine = [t for t in teams if t["username"] == C.ME]
@@ -263,22 +252,27 @@ def lines(date, pod):
             line(moved), R.fmt(brier(moved, 0), "%.4f"), R.fmt(brier(moved, 1), "%.4f")),
                 "- The rest: %s." % line(rest), ""]
 
-    # 3 ownership tiebreak
-    ts = [(d, x) for d in ds for x in store[d]["ties"]]
-    out.append("**Ownership tiebreak: the lower- against the higher-drafted player in tied pairs (rounds 5+)**")
+    # 3 ownership tiebreak, graded on the top-1% rate of the teams carrying each (the points half isn't a finding)
+    ts = [x for d in ds for x in store[d]["ties"]]
+    out.append("**Ownership tiebreak: the lower- against the higher-drafted player in tied pairs**")
     out.append("")
     if not ts:
         out += ["No tied pairs yet.", ""]
     else:
-        top1 = lambda xs, side: ratio(sum(x[side + "_teams"][1] for _, x in xs), sum(x[side + "_teams"][0] for _, x in xs))
-        dif = lambda dd: (lambda xs: None if not xs or top1(xs, "lower") is None or top1(xs, "higher") is None else
-                          top1(xs, "lower") - top1(xs, "higher"))([(d, x) for d in dd for x in store[d]["ties"]])
-        g = boot(ds, dif)
-        out += ["%d pairs: the lower-drafted player outscored the higher %.0f%% of the time; breakers %.0f%% vs %.0f%%; top 1%% of teams "
-                "carrying him %s vs %s%s." % (
-                    len(ts), 100 * sum(x["lower"] > x["higher"] for _, x in ts) / len(ts),
-                    100 * sum(x["lower_brk"] for _, x in ts) / len(ts), 100 * sum(x["higher_brk"] for _, x in ts) / len(ts),
-                    pct(top1(ts, "lower")), pct(top1(ts, "higher")), " (80%% range of the difference: %+.2f to %+.2f percentage points)" % (100 * g[0], 100 * g[1]) if g else ""), ""]
+        def dif(dd):
+            xs = [x for d in dd for x in store[d]["ties"]]
+            lt, ln, ht, hn = (sum(x[k] for x in xs) for k in ("lo_t1", "lo_n", "hi_t1", "hi_n"))
+            return lt / ln - ht / hn if ln and hn else None
+        lt, ln, ht, hn = (sum(x[k] for x in ts) for k in ("lo_t1", "lo_n", "hi_t1", "hi_n"))
+        g80, g90 = boot(ds, dif), boot(ds, dif, 0.9)
+        verdict = ("verdict when the window ends" if date < FORWARD_TO else
+                   "the lean holds" if g80 and g80[0] > 0 else "against the lean" if g80 and g80[1] < 0 else "not settled")
+        out += ["%d pairs: teams carrying the lower-drafted player finished top 1%% %s, the higher %s (80%% range of the difference "
+                "%s); %s. Points, context only: the lower one outscored %.0f%%, breakers %.0f%% vs %.0f%%." % (
+                    len(ts), pct(ratio(lt, ln)), pct(ratio(ht, hn)),
+                    "%+.2f to %+.2f percentage points" % (100 * g80[0], 100 * g80[1]) if g80 else "from 3 nights", verdict,
+                    100 * sum(x["lo_wins"] for x in ts) / len(ts), 100 * sum(x["lo_brk"] for x in ts) / len(ts),
+                    100 * sum(x["hi_brk"] for x in ts) / len(ts)), ""]
 
     # 4 your teams
     agg = lambda path: [sum(store[d]["mine"][path[0]][path[1]][i] for d in ds) for i in (0, 1)]
