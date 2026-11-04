@@ -675,9 +675,11 @@ function etrUsual() {
   mirror("nba_morning.json").then(function (d) {
     (d.players || []).forEach(function (r) { var k = normName(r.name); state.projBy.nba[ESPN_ALIASES[k] || k] = r.fp; });
   }).catch(function () {}).then(function () { etrUsual(); render(); });
-  // college: our projection is his usual; its rows also carry his ESPN athlete and game ids
+  // college: our projection is his usual; its rows also carry his ESPN athlete and game ids. A slate
+  // that has locked keeps its rows as they stood at lock (locked), and they win for tonight's games.
   mirror("cbb_morning.json").then(function (d) {
-    state.cbbRows = d.players || {};
+    state.cbbRows = Object.assign.apply(null, [{}, d.players || {}].concat(
+      Object.keys(d.locked || {}).map(function (sid) { return d.locked[sid]; })));
     Object.keys(state.cbbRows).forEach(function (pid) {
       var r = state.cbbRows[pid];
       if (r.status !== "Out" && typeof r.fp === "number") state.projBy.cbb[normName(r.name)] = r.fp;
