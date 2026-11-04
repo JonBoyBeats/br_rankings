@@ -18,9 +18,10 @@ contest each night, 4- and 6-drafter slates apart. Ranges come from resampling w
   tiebreak      medians within 2, drafted% 10+ points apart and both at least 2%). Graded on the top-1% rate of
                 the teams carrying the lower- against the higher-drafted player; who outscored is context only
                 (it swings 37-58% with the cut: about a coin flip). In sample both windows ran about +0.2
-                percentage points for the lower one, range touching zero. Bar, set 2026-11-04 before the window:
-                at its end, the lean holds if the 80% range of the difference is above zero (backed by the same
-                direction in sample), goes against it if below, else not settled.
+                percentage points for the lower one, range touching zero. Adopted 2026-11-04 on the user's
+                experience (the afternoon T5 rule, "ETR (2: less drafted)"); this keeps running as its check.
+                Bar, set before the window: at its end, if the 80% range of the difference is below zero, take
+                it back out; above zero confirms it; otherwise it stays on the user's prior.
   4 Your teams  breakers a team (yours, the top 1%, the field); picks drafted in under half the pods, a team (yours,
                 the field); and of your teams with a top-3 player and a round 2-3 pair, how many took his most-owned
                 pair, a rarer one (within 2 projected points of it at half its share or less) or another.
@@ -265,8 +266,8 @@ def lines(date, pod):
             return lt / ln - ht / hn if ln and hn else None
         lt, ln, ht, hn = (sum(x[k] for x in ts) for k in ("lo_t1", "lo_n", "hi_t1", "hi_n"))
         g80, g90 = boot(ds, dif), boot(ds, dif, 0.9)
-        verdict = ("verdict when the window ends" if date < FORWARD_TO else
-                   "the lean holds" if g80 and g80[0] > 0 else "against the lean" if g80 and g80[1] < 0 else "not settled")
+        verdict = ("adopted 2026-11-04; checked when the window ends" if date < FORWARD_TO else
+                   "confirmed" if g80 and g80[0] > 0 else "take it back out" if g80 and g80[1] < 0 else "not settled: stays on your prior")
         out += ["%d pairs: teams carrying the lower-drafted player finished top 1%% %s, the higher %s (80%% range of the difference "
                 "%s); %s. Points, context only: the lower one outscored %.0f%%, breakers %.0f%% vs %.0f%%." % (
                     len(ts), pct(ratio(lt, ln)), pct(ratio(ht, hn)),

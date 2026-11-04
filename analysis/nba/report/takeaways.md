@@ -2,6 +2,11 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-04 Rule change
+
+- Adopted the ownership tiebreak on the user's experience (contest side's study, field_studies.md section 2): in the afternoon T5 rule, within 2 points of ETR and 4 picks of ADP, the player with the lower projected drafted% goes first when they're 10+ points apart (both at least 2%). The board's T5 note now reads "Sixth Round – Proj (3: ADP) then ETR (2: less drafted)". PM T5's nights start over from 2026-11-04 (RULE_SINCE in nba_report.py). The morning T5 rule is unchanged: the study defines a tie on ETR, and in the morning projected drafted% just follows ADP.
+- The forward test keeps running as the check (nba_forward.py, slates 11-05 to 12-02): take it back out if the 80% range of the top-1% difference ends below zero.
+
 ## 2026-11-02 Mon main
 
 - First night with tier lines on both locks (Lock AM 8:24am, Lock PM 2:15pm), so the tier-rule forward test starts here (1 of 14 nights). Jalen Johnson (ADP 19.7, Questionable all day) was ruled out after the PM lock, so ATL is left out of both halves. The leaderboards show picks after swaps: the field had him on 0.3% of teams, you on none.

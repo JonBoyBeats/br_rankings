@@ -3572,13 +3572,15 @@ function copyMainRanks() {
 var NBA_TIERS = 5;
 var NBA_TIER_COLORS = ["#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa"];
 /* Your ordering rule for each tier, beside its tag: the morning (our Proj), then the afternoon (ETR).
-   (2: Boom) = within 2 picks, higher Boom first; (3: ADP) = within 3 points of Proj, by ADP. Edit freely. */
+   (2: Boom) = within 2 picks, higher Boom first; (3: ADP) = within 3 points of Proj, by ADP. (2: less drafted) =
+   within 2 points of ETR and 4 picks of ADP, the lower projected drafted% first when they're 10+ points apart (the
+   ownership tiebreak, adopted 2026-11-04). Edit freely. */
 var NBA_TIER_NOTES = [
   "Elite \u2013 ADP (2: Boom) then ETR",
   "Near Studs \u2013 ADP then ADP (1: ETR)",
   "Middle \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
   "\u201cThe Rest\u201d \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
-  "Sixth Round \u2013 Proj (3: ADP) then ETR"
+  "Sixth Round \u2013 Proj (3: ADP) then ETR (2: less drafted)"
 ];
 
 /** Your saved tiers, read as five: a board saved with six keeps its first five lines (tiers 5 and 6 merge). */

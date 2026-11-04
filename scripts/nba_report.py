@@ -373,8 +373,23 @@ MIDDLE_PM = ("ETR (Tie: ADP -> Boom)", [("proj", 0), ("adp", 0), ("boom", 0)])
 TIER_RULES = {
     "am": {1: ("ADP (2: Boom)", [("adp", 2), ("boom", 0)]), 2: ("ADP", [("adp", 0)]), 3: MIDDLE_AM, 4: MIDDLE_AM, 5: MIDDLE_AM},
     "pm": {1: ("ETR", [("projx", 0)]), 2: ("ADP (1: ETR)", [("adp", 1), ("projx", 0)]), 3: MIDDLE_PM, 4: MIDDLE_PM,
-           5: ("ETR", [("projx", 0)])},
+           5: ("ETR (2: less drafted)", [("projx", 2), ("drafted", 10), ("projx", 0)])},
 }
+# The ownership tiebreak, adopted 2026-11-04 on the user's experience (the contest side's study, field_studies.md 2):
+# within 2 points of ETR and 4 picks of ADP, the one with the lower projected drafted% (10+ points apart, both at
+# least 2%) goes first. drafted: the board's projected drafted% for his closing-ADP rank (field_model.json).
+# A tier whose rule changed is graded only from that date (its earlier nights were under the old rule).
+RULE_SINCE = {("pm", 5): "2026-11-04"}
+FIELD_MODEL = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "contests", "field_model.json")
+
+
+def projected_drafted(rows, bar):
+    """{id(row): the board's projected drafted% for his closing-ADP rank}, from past flagships by pod size."""
+    if not os.path.exists(FIELD_MODEL):
+        return {}
+    curve = json.load(open(FIELD_MODEL))["drafted"].get(str(pod_size(rows)), [])
+    priced = sorted((r for r in rows if r[bar["adp"]] is not None), key=lambda r: r[bar["adp"]])
+    return {id(r): curve[i] for i, r in enumerate(priced) if i < len(curve)}
 TIER_HALVES = {"am": (AM, "am_tier", "ours_am", "Proj"), "pm": (PM, "pm_tier", "etr_last", "ETR")}
 MIRROR = None        # --mirror: a full clone of br-adp-mirror, for Boom
 
@@ -407,6 +422,8 @@ def rule_order(players, steps):
             a, b = x[1].get(key), y[1].get(key)
             if a is None or b is None or a == b or abs(a - b) <= within:
                 continue
+            if key == "drafted" and (abs(x[1]["adp"] - y[1]["adp"]) > 4 or min(-a, -b) < 2):
+                continue                                   # the ownership tiebreak: only within 4 picks, both 2%+
             return -1 if a > b else 1
         return 0
     return [p[0] for p in sorted(players, key=functools.cmp_to_key(cmp))]
@@ -437,12 +454,14 @@ def tier_nights(rows, bar, half):
     if not p:
         return {}
     boom = boom_of(rows, half)
+    drafted = projected_drafted(rows, bar)
     out = {}
     for t in sorted({int(r[tcol]) for r in p}):
         q = [r for r in p if int(r[tcol]) == t]
         if len(q) < 2 or t not in TIER_RULES[half]:
             continue
-        vals = [(r, {"adp": -r[bar["adp"]], "proj": float(int(r[pcol] + 0.5)), "projx": r[pcol], "boom": boom.get(id(r))}) for r in q]
+        vals = [(r, {"adp": -r[bar["adp"]], "proj": float(int(r[pcol] + 0.5)), "projx": r[pcol], "boom": boom.get(id(r)),
+                     "drafted": None if id(r) not in drafted else -drafted[id(r)]}) for r in q]
         pos = {k: {id(r): i for i, r in enumerate(o)} for k, o in (
             ("rule", rule_order(vals, TIER_RULES[half][t][1])), ("adp", rule_order(vals, [("adp", 0)])),
             ("proj", rule_order(vals, [("projx", 0)])), ("you", sorted(q, key=lambda r: r[you])))}
@@ -469,7 +488,9 @@ def tier_stats(upto, half):
     per = {x["date"]: tier_nights(x["rows"], bar, half) for x in upto}
     out = {}
     for t in sorted({t for v in per.values() for t in v}):
-        ds = [d for d in per if t in per[d]]
+        ds = [d for d in per if t in per[d] and d >= RULE_SINCE.get((half, t), "")]
+        if not ds:
+            continue
         for key, k, f in (("adp", 2, None), ("proj", 3, None), ("off", 2, "off")):
             src = "off" if f else "pairs"
             val = lambda xs, drop=None: mean([pr[k] for d in xs for pr in per[d][t][src] if drop not in pr[:2]])
