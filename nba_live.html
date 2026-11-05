@@ -123,6 +123,7 @@
         <span class="field-label">Exposure</span>
         <span style="display:flex; gap:6px">
           <button type="button" id="mine" aria-pressed="false" hidden title="Only players in at least one of your drafts">Mine only</button>
+          <button type="button" id="drafted" aria-pressed="true" hidden title="Only players the field drafted: in at least 1% of the biggest contest's pods">Drafted only</button>
           <button type="button" id="upload" title="Your Underdog exposure CSV for this slate">Upload</button>
         </span>
         <input type="file" id="file" accept=".csv,text/csv" hidden>
@@ -185,13 +186,63 @@ var EXTRA = { FG: "fg", "3PT": "fg3", FT: "ft",
               "freeThrowsMade-freeThrowsAttempted": "ft" };
 
 var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, posted: {}, proj: {}, projBy: { nba: {}, cbb: {} }, cbbRows: {},
-              games: {}, gamesById: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false };
+              games: {}, gamesById: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false,
+              field: {}, fieldBusy: {}, draftedOnly: load("brr:live:drafted", true) };
 function sportOf(s) { return (s && s.sport) || "nba"; }
 
 function $(id) { return document.getElementById(id); }
 function load(key, fallback) { try { var v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; } }
 function save(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} }
 /** The ADP from which this slate's rows sort by points: yours if set, else the last pick. */
+/* ---- The field: who the slate's biggest contest actually drafted. Underdog's leaderboard is public once the
+   contest locks (its drafts close a few minutes before the slate does), so from then on this reads every team
+   once, 50 a page and a few pages at a time, counts the pods each player went in, and keeps that on this device:
+   it can't change. A player ruled out late was swapped off every team, so he reads 0. */
+var UD = "https://api.underdogfantasy.com/v1/draft_pools/";
+var UDQ = "product=fantasy&product_experience_id=c7ade3c1-71ae-4593-a7e1-07f63c7e94ae&state_config_id=725014ef-3570-4e93-871d-d69674ab3521";
+var FIELD_MIN = 0.01;   // drafted in 1% of pods or more is "drafted"
+
+function flagship(s) {
+  return ((s && s.contests) || []).filter(function (c) { return /person drafts/.test(c.description || "") && !/Admin/.test(c.description); })
+    .sort(function (a, b) { return (b.entry_count || 0) - (a.entry_count || 0); })[0] || null;
+}
+
+async function loadField(s) {
+  var c = flagship(s);
+  if (!c || state.field[s.slate_id] || state.fieldBusy[c.id] || new Date(c.cutoff_at).getTime() > Date.now()) return;
+  var kept = load("brr:live:field:" + c.id, null);
+  if (kept) { state.field[s.slate_id] = kept; render(); return; }
+  state.fieldBusy[c.id] = true;
+  try {
+    var get = function (page) {
+      return fetch(UD + c.id + "/leaderboard?page=" + page + "&" + UDQ).then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status); return r.json();
+      });
+    };
+    var first = await get(1), pages = Math.ceil(first.meta.count / 50), entries = first.draft_pool_entries.slice();
+    for (var p = 2; p <= pages; p += 6) {
+      var batch = [];
+      for (var q = p; q < p + 6 && q <= pages; q++) batch.push(get(q));
+      (await Promise.all(batch)).forEach(function (d) { entries = entries.concat(d.draft_pool_entries); });
+    }
+    var pods = {}, inPod = {};
+    entries.forEach(function (e) {
+      pods[e.draft_id] = 1;
+      e.appearance_ids.forEach(function (a) { (inPod[a] = inPod[a] || {})[e.draft_id] = 1; });
+    });
+    var n = Object.keys(pods).length, pct = {};
+    Object.keys(inPod).forEach(function (a) { pct[a] = Object.keys(inPod[a]).length / n; });
+    var f = { contest: c.id, title: (c.title || "").trim(), entries: entries.length, pods: n, at: new Date().toISOString(), pct: pct };
+    state.field[s.slate_id] = f;
+    save("brr:live:field:" + c.id, f);
+  } catch (e) {
+    state.fieldError = e.message;
+  } finally {
+    state.fieldBusy[c.id] = false;
+  }
+  render();
+}
+
 function tailFor(slate) { return (slate && load("brr:live:tail:" + slate.slate_id, null)) || TEAMS * ROUNDS; }
 function expoKey(label) { return "brr:expo:" + label; }   // the board's key, so an upload on either page shows on both
 
@@ -319,6 +370,7 @@ function slateEvents() {
 /** One pull: the day's scoreboard, then a box score for every game under way or newly final. */
 async function pull() {
   if (!state.slate || state.busy) return;
+  loadField(state.slate);                 // once its contest has locked; a no-op after that
   state.busy = true;
   try {
     var day = espnDate(state.slate.cutoff), sport = sportOf(state.slate);
@@ -549,6 +601,12 @@ function render() {
     var fp = b && !b.out && b.has && (b.s.min > 0 || (g && g.state === "in")) ? udPoints(b.s) : null;
     return { p: p, b: b, g: g, fp: fp, f: share ? share(p) : 0 };
   });
+  // the field's picks: only players it drafted, before grading, so each round is judged against who was taken
+  var fld = state.field[sl.slate_id] || null;
+  $("drafted").hidden = !fld;
+  $("drafted").setAttribute("aria-pressed", String(!!(fld && state.draftedOnly)));
+  rows.forEach(function (r) { r.own = fld ? fld.pct[r.p.appearance_id] || 0 : null; });
+  if (fld && state.draftedOnly) rows = rows.filter(function (r) { return r.own >= FIELD_MIN; });
   grade(rows);
   if (ex && state.mine) rows = rows.filter(function (r) { return r.f; });
   /* By ADP up to the last pick of the draft. Underdog parks everyone nobody is drafting at
@@ -596,6 +654,12 @@ function render() {
     nm.appendChild(document.createTextNode(p.first_name + " " + p.last_name));
     var tm = document.createElement("span"); tm.className = "tm"; tm.textContent = p.team || "";
     nm.appendChild(tm);
+    if (r.own != null && r.own < 0.995) {
+      var dr = document.createElement("span"); dr.className = "tm";
+      dr.textContent = Math.round(r.own * 100) + "%";
+      dr.title = "In " + Math.round(r.own * 100) + "% of the " + fld.pods.toLocaleString() + " pods of " + fld.title;
+      nm.appendChild(dr);
+    }
     who.appendChild(nm); el.appendChild(who);
     var game = document.createElement("span"); game.className = "game" + (r.g && r.g.state === "in" ? " in" : "");
     game.textContent = r.g ? r.g.label : "–";
@@ -621,6 +685,8 @@ function render() {
   var legend = state.pulledAt ? (live ? " · refreshes every " + EVERY + "s while open" : "") +
     " · dark green: his round's leader so far (players yet to start count at their usual" +
     (state.projFrom ? ", ETR's median from today's file" : "") + "); light green: ahead of his round's usual and close behind, within " + CLOSE + " points at the final horn (5 at the half)" : "";
+  if (fld) msg += " · field: " + fld.title + ", " + fld.entries.toLocaleString() + " teams" + (state.draftedOnly ? ", drafted players only" : "");
+  else if (state.fieldError) msg += " · couldn't read the field (" + state.fieldError + ")";
   if (state.missed && !state.error) msg += " · " + state.missed + " game" + (state.missed > 1 ? "s" : "") + " didn't update this time, showing the last score";
   if (state.error) setStatus("ESPN didn't answer (" + state.error.message + "). ADP is still here; scores fill in once it does.", true);
   else setStatus(msg, false, legend);
@@ -640,6 +706,7 @@ $("tail").addEventListener("change", function () {
   render();
 });
 $("mine").addEventListener("click", function () { state.mine = !state.mine; render(); });
+$("drafted").addEventListener("click", function () { state.draftedOnly = !state.draftedOnly; save("brr:live:drafted", state.draftedOnly); render(); });
 $("refresh").addEventListener("click", pull);
 $("fold").addEventListener("click", function () { setFolded(!document.documentElement.classList.contains("folded")); });
 setFolded(!!load("brr:live:folded", false));
