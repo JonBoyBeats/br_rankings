@@ -80,20 +80,24 @@
   .fp.none { color: var(--muted); font-weight: 400; font-size: 13px; }
   .empty { color: var(--muted); padding: 24px 4px; }
   /* My lineups: chance, the six, points now, projected final */
-  .lu { display: grid; grid-template-columns: 54px minmax(0, 1fr) 54px 54px; gap: 8px; align-items: center; padding: 7px 4px;
-        border-bottom: 1px solid var(--line); cursor: pointer; }
+  .lu { display: grid; grid-template-columns: 40px minmax(0, 1fr) 38px 40px; gap: 6px; align-items: center; padding: 4px 2px;
+        border-bottom: 1px solid var(--line); }
   .lu.lhead { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; cursor: default; }
-  .lu .ch { font-family: var(--mono); font-size: 13px; font-weight: 700; text-align: center; border-radius: 4px; padding: 3px 0; }
-  .lu .six { font-size: 12.5px; line-height: 1.35; }
+  .lu .ch { font-family: var(--mono); font-size: 12px; font-weight: 700; text-align: center; border-radius: 4px; padding: 2px 0; }
+  .lu .six { font-size: 11px; line-height: 1.3; }
+  .lu .six .who { font-family: var(--mono); font-size: 10.5px; color: #f0c541; font-weight: 600; margin-right: 2px; }
+  .lu.lhead.mine { border-top: 2px solid var(--line-strong); margin-top: 6px; }
+  .lu.field { background: rgba(255, 255, 255, 0.03); }
   .lu .six span { white-space: nowrap; }
   .lu .six .done { color: var(--muted); }
   .lu .six .in { color: var(--live); }
-  .lu .n { font-family: var(--mono); font-size: 13px; text-align: right; }
+  .lu .n { font-family: var(--mono); font-size: 11.5px; text-align: right; }
+  .lu .n.pj { font-weight: 600; }
   .lu .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
-  .lsum { font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 8px 4px; line-height: 1.5; }
+  .lsum { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 6px 2px; line-height: 1.45; }
   .lu.gold { background: rgba(212, 168, 40, 0.16); box-shadow: inset 3px 0 0 #d4a828; }
-  .lu .chw { display: flex; flex-direction: column; gap: 3px; }
-  .lu .t10 { font-family: var(--mono); font-size: 9.5px; font-weight: 700; text-align: center; border-radius: 4px; padding: 1px 0;
+  .lu .chw { display: flex; flex-direction: column; gap: 2px; }
+  .lu .t10 { font-family: var(--mono); font-size: 8.5px; font-weight: 700; text-align: center; border-radius: 3px; padding: 0;
              background: #d4a828; color: #1a1400; }
   .lsum b { color: var(--ink); }
   /* No exposure loaded: the chip column goes. */
@@ -628,7 +632,20 @@ function simulate(fld, rowsByApp, mineIdx) {
     left[i] = true;
   });
   var nt = fld.teams.length / ROUNDS, cut1 = Math.ceil(nt / 100), tot = new Float64Array(nt), draw = new Float64Array(np);
-  var top1 = new Float64Array(mineIdx.length), top10 = new Float64Array(mineIdx.length), win = new Float64Array(mineIdx.length), cuts = [];
+  var expect = new Float64Array(nt), nowTot = new Float64Array(nt);   // each lineup's points so far and expected final
+  for (var t2 = 0; t2 < nt; t2++) {
+    var e = 0, n0 = 0;
+    for (var k2 = 0; k2 < ROUNDS; k2++) { var j2 = fld.teams[t2 * ROUNDS + k2]; if (j2 >= 0) { e += now[j2] + mean[j2]; n0 += now[j2]; } }
+    expect[t2] = e; nowTot[t2] = n0;
+  }
+  // the field's three best projected finals, tracked through the draws alongside mine
+  var topIdx = [];
+  for (var t3 = 0; t3 < nt; t3++) {
+    topIdx.push(t3); topIdx.sort(function (a, b) { return expect[b] - expect[a]; });
+    if (topIdx.length > 3) topIdx.pop();
+  }
+  var track = mineIdx.concat(topIdx), n = track.length;
+  var top1 = new Float64Array(n), top10 = new Float64Array(n), win = new Float64Array(n), cuts = [];
   for (var s = 0; s < SIMS; s++) {
     for (var i = 0; i < np; i++) draw[i] = now[i] + (left[i] ? Math.max(-now[i], mean[i] + sd[i] * normal()) : 0);
     for (var t = 0; t < nt; t++) {
@@ -638,18 +655,12 @@ function simulate(fld, rowsByApp, mineIdx) {
     }
     var sorted = tot.slice().sort(), line = sorted[nt - cut1], tenth = sorted[Math.max(0, nt - 10)], best = sorted[nt - 1];
     cuts.push(line);
-    mineIdx.forEach(function (t, m) { if (tot[t] >= line) top1[m]++; if (tot[t] >= tenth) top10[m]++; if (tot[t] >= best) win[m]++; });
-  }
-  var expect = new Float64Array(nt);                  // each lineup's expected final, for the table
-  for (var t2 = 0; t2 < nt; t2++) {
-    var e = 0, n0 = 0;
-    for (var k2 = 0; k2 < ROUNDS; k2++) { var j2 = fld.teams[t2 * ROUNDS + k2]; if (j2 >= 0) { e += now[j2] + mean[j2]; n0 += now[j2]; } }
-    expect[t2] = e; tot[t2] = n0;
+    track.forEach(function (t, m) { if (tot[t] >= line) top1[m]++; if (tot[t] >= tenth) top10[m]++; if (tot[t] >= best) win[m]++; });
   }
   cuts.sort(function (a, b) { return a - b; });
-  return { mine: mineIdx.map(function (t, m) {
-             return { t: t, top1: top1[m] / SIMS, top10: top10[m] / SIMS, win: win[m] / SIMS, now: tot[t], proj: expect[t] };
-           }).sort(function (a, b) { return b.top1 - a.top1 || b.top10 - a.top10 || b.proj - a.proj; }),
+  var row = function (t, m) { return { t: t, top1: top1[m] / SIMS, top10: top10[m] / SIMS, win: win[m] / SIMS, now: nowTot[t], proj: expect[t] }; };
+  return { mine: mineIdx.map(row).sort(function (a, b) { return b.top1 - a.top1 || b.top10 - a.top10 || b.proj - a.proj; }),
+           top: topIdx.map(function (t, i) { return row(t, mineIdx.length + i); }),
            line: cuts[cuts.length >> 1], nt: nt };
 }
 
@@ -676,9 +687,10 @@ function renderLineups(fld, rowsByApp) {
     ". Projected top-1% line <b>" + r.line.toFixed(1) + "</b>. Expected top-1% finishes <b>" + expTop.toFixed(1) + "</b> (" +
     (100 * expTop / r.mine.length).toFixed(1) + "% of yours, against 1% for a random lineup)." +
     (gold ? " <b>" + gold + "</b> live for the top 10 (gold)." : "") + "</div>");
-  host.insertAdjacentHTML("beforeend", '<div class="lu lhead"><span>Top 1%</span><span>Lineup</span><span class="n">Now</span><span class="n">Proj</span></div>');
-  r.mine.forEach(function (m) {
-    var el = document.createElement("div"); el.className = "lu" + (m.top10 >= TOP10_GOLD ? " gold" : "");
+  var lead = r.top[0], mineBest = r.mine.reduce(function (a, x) { return Math.max(a, x.proj); }, 0);
+  if (lead) host.lastChild.insertAdjacentHTML("beforeend", " Your best projected final is <b>" + (lead.proj - mineBest).toFixed(1) + "</b> behind the field's best.");
+  function row(m, user) {
+    var el = document.createElement("div"); el.className = "lu" + (m.top10 >= TOP10_GOLD ? " gold" : "") + (user ? " field" : "");
     var c = chanceColor(m.top1), ch = document.createElement("span");
     ch.className = "ch"; ch.style.background = c.bg; ch.style.color = c.ink;
     ch.textContent = m.top1 >= 0.995 ? "99+" : m.top1 > 0 && m.top1 < 0.01 ? "<1" : String(Math.round(m.top1 * 100));
@@ -700,12 +712,18 @@ function renderLineups(fld, rowsByApp) {
       parts.push('<span class="' + (pr && pr.b && pr.b.out ? "done" : f >= 1 ? "done" : f > 0 ? "in" : "") + '">' +
                  (pr ? pr.p.last_name : "?") + (pr && pr.fp != null ? " " + pr.fp.toFixed(0) : "") + "</span>");
     }
-    six.innerHTML = parts.join(" · ");
+    six.innerHTML = (user ? '<b class="who">' + user + "</b> " : "") + parts.join(" · ");
     var nw = document.createElement("span"); nw.className = "n"; nw.textContent = m.now.toFixed(1);
-    var pj = document.createElement("span"); pj.className = "n"; pj.textContent = m.proj.toFixed(1);
+    var pj = document.createElement("span"); pj.className = "n pj"; pj.textContent = m.proj.toFixed(1);
     el.append(cw, six, nw, pj);
     host.appendChild(el);
-  });
+  }
+  if (r.top.length) {
+    host.insertAdjacentHTML("beforeend", '<div class="lu lhead"><span>Top 1%</span><span>The field\'s best projected</span><span class="n">Now</span><span class="n">Proj</span></div>');
+    r.top.forEach(function (m) { row(m, fld.users[m.t] || "?"); });
+  }
+  host.insertAdjacentHTML("beforeend", '<div class="lu lhead mine"><span>Top 1%</span><span>' + ME + '</span><span class="n">Now</span><span class="n">Proj</span></div>');
+  r.mine.forEach(function (m) { row(m, null); });
 }
 
 function render() {
