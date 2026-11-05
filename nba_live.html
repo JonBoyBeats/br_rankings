@@ -100,6 +100,9 @@
   .lu .t10 { font-family: var(--mono); font-size: 8.5px; font-weight: 700; text-align: center; border-radius: 3px; padding: 0;
              background: #d4a828; color: #1a1400; }
   .lsum b { color: var(--ink); }
+  .pnl { font-family: var(--mono); font-size: 13px; padding: 6px 2px 8px; }
+  .pnl b.up { color: #5fbf7f; } .pnl b.dn { color: #e0705f; }
+  .pnl span { color: var(--muted); font-size: 11px; }
   /* No exposure loaded: the chip column goes. */
   .list.no-expo .head, .list.no-expo .row { grid-template-columns: 44px minmax(0, 1fr) 74px 64px; }
   .list.no-expo .expo, .list.no-expo .exph { display: none; }
@@ -151,6 +154,10 @@
         </span>
         <input type="file" id="file" accept=".csv,text/csv" hidden>
       </div>
+      <label class="field" title="What one entry in the biggest contest costs (Underdog's public data doesn't carry it), for My lineups' projected P/L. Kept on this device">
+        <span class="field-label">Entry $</span>
+        <input type="number" id="fee" min="0" step="1" inputmode="decimal" style="width:60px">
+      </label>
       <label class="field" title="The Underdog username whose lineups My lineups shows: yours, as the leaderboard spells it. Kept on this device">
         <span class="field-label">Username</span>
         <input type="text" id="me" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:130px">
@@ -230,6 +237,7 @@ function save(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } ca
    this waits until FIELD_AFTER minutes past the slate's first game, then reads every team once, 50 a page and a
    few pages at a time, and keeps them on this device. A player swapped off every team reads 0 drafted. */
 var FIELD_AFTER = 15;   // minutes after the first tip
+var FEE = load("brr:live:fee", 5);                 // one entry's cost in the biggest contest (the Entry $ box)
 var ME = load("brr:live:me", "jonboybeats");   // whose lineups My lineups shows: the Username box, kept on this device
 var UD = "https://api.underdogfantasy.com/v1/draft_pools/";
 var UDQ = "product=fantasy&product_experience_id=c7ade3c1-71ae-4593-a7e1-07f63c7e94ae&state_config_id=725014ef-3570-4e93-871d-d69674ab3521";
@@ -253,7 +261,7 @@ async function loadField(s) {
   if (!c || state.field[s.slate_id] || state.fieldBusy[c.id]) return;
   if (Date.now() < ready) { state.fieldWait = ready; return; }
   var kept = load("brr:live:field:" + c.id, null);
-  if (kept && kept.users && new Date(kept.at).getTime() >= ready) { state.field[s.slate_id] = kept; render(); return; }
+  if (kept && kept.payout && new Date(kept.at).getTime() >= ready) { state.field[s.slate_id] = kept; render(); return; }
   state.fieldBusy[c.id] = true;
   try {
     var get = function (page) {
@@ -268,6 +276,10 @@ async function loadField(s) {
       (await Promise.all(batch)).forEach(function (d) { entries = entries.concat(d.draft_pool_entries); });
     }
     var pods = {}, inPod = {}, apps = [], ix = {}, teams = [], users = [];
+    // what each place pays: the leaderboard's payout at each entry's place, in place order (ties share a prize, so the
+    // table keeps the pool's total)
+    var payout = entries.map(function (e) { return [e.place, +(e.payout || 0)]; })
+      .sort(function (a, b) { return a[0] - b[0]; }).map(function (x) { return x[1]; });
     entries.forEach(function (e, i) {
       pods[e.draft_id] = 1;
       e.appearance_ids.forEach(function (a) {
@@ -281,7 +293,7 @@ async function loadField(s) {
     var n = Object.keys(pods).length, pct = {};
     Object.keys(inPod).forEach(function (a) { pct[a] = Object.keys(inPod[a]).length / n; });
     var f = { contest: c.id, title: (c.title || "").trim(), entries: entries.length, pods: n, at: new Date().toISOString(),
-              pct: pct, apps: apps, teams: teams, users: users };
+              pct: pct, apps: apps, teams: teams, users: users, payout: payout };
     state.field[s.slate_id] = f;
     // one field kept at a time: a night's lineups are a few hundred KB
     try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf("brr:live:field:") === 0) localStorage.removeItem(k); }); } catch (e) {}
@@ -646,6 +658,12 @@ function simulate(fld, rowsByApp, mineIdx) {
   }
   var track = mineIdx.concat(topIdx), n = track.length;
   var top1 = new Float64Array(n), top10 = new Float64Array(n), win = new Float64Array(n), cuts = [];
+  var ev = new Float64Array(n), mineWon = [], pay = fld.payout || [];
+  function placeOf(sorted, x) {                       // 1 + how many lineups finished strictly above x
+    var lo = 0, hi = sorted.length;
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (sorted[mid] <= x) lo = mid + 1; else hi = mid; }
+    return sorted.length - lo + 1;
+  }
   for (var s = 0; s < SIMS; s++) {
     for (var i = 0; i < np; i++) draw[i] = now[i] + (left[i] ? Math.max(-now[i], mean[i] + sd[i] * normal()) : 0);
     for (var t = 0; t < nt; t++) {
@@ -655,13 +673,22 @@ function simulate(fld, rowsByApp, mineIdx) {
     }
     var sorted = tot.slice().sort(), line = sorted[nt - cut1], tenth = sorted[Math.max(0, nt - 10)], best = sorted[nt - 1];
     cuts.push(line);
-    track.forEach(function (t, m) { if (tot[t] >= line) top1[m]++; if (tot[t] >= tenth) top10[m]++; if (tot[t] >= best) win[m]++; });
+    var won = 0;
+    track.forEach(function (t, m) {
+      if (tot[t] >= line) top1[m]++; if (tot[t] >= tenth) top10[m]++; if (tot[t] >= best) win[m]++;
+      var w = pay[placeOf(sorted, tot[t]) - 1] || 0;
+      ev[m] += w;
+      if (m < mineIdx.length) won += w;
+    });
+    mineWon.push(won);
   }
   cuts.sort(function (a, b) { return a - b; });
-  var row = function (t, m) { return { t: t, top1: top1[m] / SIMS, top10: top10[m] / SIMS, win: win[m] / SIMS, now: nowTot[t], proj: expect[t] }; };
+  var row = function (t, m) { return { t: t, top1: top1[m] / SIMS, top10: top10[m] / SIMS, win: win[m] / SIMS, ev: ev[m] / SIMS, now: nowTot[t], proj: expect[t] }; };
+  mineWon.sort(function (a, b) { return a - b; });
   return { mine: mineIdx.map(row).sort(function (a, b) { return b.top1 - a.top1 || b.top10 - a.top10 || b.proj - a.proj; }),
            top: topIdx.map(function (t, i) { return row(t, mineIdx.length + i); }),
-           line: cuts[cuts.length >> 1], nt: nt };
+           line: cuts[cuts.length >> 1], nt: nt,
+           won: { mean: mineWon.reduce(function (a, x) { return a + x; }, 0) / SIMS, lo: mineWon[Math.floor(0.1 * SIMS)], hi: mineWon[Math.floor(0.9 * SIMS)] } };
 }
 
 function chanceColor(p) {
@@ -687,15 +714,23 @@ function renderLineups(fld, rowsByApp) {
     ". Projected top-1% line <b>" + r.line.toFixed(1) + "</b>. Expected top-1% finishes <b>" + expTop.toFixed(1) + "</b> (" +
     (100 * expTop / r.mine.length).toFixed(1) + "% of yours, against 1% for a random lineup)." +
     (gold ? " <b>" + gold + "</b> live for the top 10 (gold)." : "") + "</div>");
+  if (fld.payout) {
+    var cost = r.mine.length * FEE, sign = function (x) { return (x >= 0 ? "+$" : "\u2212$") + Math.abs(Math.round(x)).toLocaleString(); };
+    host.insertAdjacentHTML("beforeend", '<div class="pnl" title="Average winnings over ' + SIMS + ' runs of the rest of the night, each lineup paid by its place (the leaderboard\'s payout table), minus ' +
+      r.mine.length + " entries at $" + FEE + '. The range is the middle 80% of those runs">Proj P/L <b class="' + (r.won.mean >= cost ? "up" : "dn") + '">' + sign(r.won.mean - cost) +
+      "</b> <span>(" + sign(r.won.lo - cost) + " to " + sign(r.won.hi - cost) + ") · winnings $" + Math.round(r.won.mean).toLocaleString() +
+      " on " + r.mine.length + " \u00d7 $" + FEE + "</span></div>");
+  }
   var lead = r.top[0], mineBest = r.mine.reduce(function (a, x) { return Math.max(a, x.proj); }, 0);
-  if (lead) host.lastChild.insertAdjacentHTML("beforeend", " Your best projected final is <b>" + (lead.proj - mineBest).toFixed(1) + "</b> behind the field's best.");
+  if (lead) host.querySelector(".lsum").insertAdjacentHTML("beforeend", " Your best projected final is <b>" + (lead.proj - mineBest).toFixed(1) + "</b> behind the field's best.");
   function row(m, user) {
     var el = document.createElement("div"); el.className = "lu" + (m.top10 >= TOP10_GOLD ? " gold" : "") + (user ? " field" : "");
     var c = chanceColor(m.top1), ch = document.createElement("span");
     ch.className = "ch"; ch.style.background = c.bg; ch.style.color = c.ink;
     ch.textContent = m.top1 >= 0.995 ? "99+" : m.top1 > 0 && m.top1 < 0.01 ? "<1" : String(Math.round(m.top1 * 100));
     ch.title = Math.round(m.top1 * 100) + "% of " + SIMS + " runs of the rest of the night in the top 1%; top 10 in " +
-               (100 * m.top10).toFixed(1) + "%" + (m.win ? "; won " + (100 * m.win).toFixed(1) + "%" : "");
+               (100 * m.top10).toFixed(1) + "%" + (m.win ? "; won " + (100 * m.win).toFixed(1) + "%" : "") +
+               (fld.payout ? "; expected winnings $" + m.ev.toFixed(2) : "");
     var cw = document.createElement("span"); cw.className = "chw";
     cw.appendChild(ch);
     if (m.top10 >= TOP10_GOLD) {
@@ -887,6 +922,11 @@ $("tail").addEventListener("change", function () {
   render();
 });
 $("mine").addEventListener("click", function () { state.mine = !state.mine; render(); });
+$("fee").value = FEE;
+$("fee").addEventListener("change", function () {
+  var v = parseFloat(this.value);
+  FEE = isFinite(v) && v >= 0 ? v : 5; this.value = FEE; save("brr:live:fee", FEE); render();
+});
 $("me").value = ME;
 $("me").addEventListener("change", function () {
   ME = this.value.trim().toLowerCase(); this.value = ME;
