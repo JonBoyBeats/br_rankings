@@ -288,14 +288,14 @@
      "drafted": 3.1
     },
     {
-     "player": "Damian Lillard",
-     "adp": 35.9,
-     "drafted": 3.8
-    },
-    {
      "player": "Dylan Harper",
      "adp": 35.9,
      "drafted": 5.3
+    },
+    {
+     "player": "Damian Lillard",
+     "adp": 35.9,
+     "drafted": 3.8
     },
     {
      "player": "James Harden",
@@ -318,14 +318,14 @@
      "drafted": 2.2
     },
     {
-     "player": "De'Aaron Fox",
-     "adp": 36.0,
-     "drafted": 0.4
-    },
-    {
      "player": "OG Anunoby",
      "adp": 36.0,
      "drafted": 1.2
+    },
+    {
+     "player": "De'Aaron Fox",
+     "adp": 36.0,
+     "drafted": 0.4
     },
     {
      "player": "Isaiah Hartenstein",
@@ -348,14 +348,14 @@
      "drafted": 0.8
     },
     {
-     "player": "Jarrett Allen",
-     "adp": 36.0,
-     "drafted": 0.1
-    },
-    {
      "player": "Ausar Thompson",
      "adp": 36.0,
      "drafted": 0.2
+    },
+    {
+     "player": "Jarrett Allen",
+     "adp": 36.0,
+     "drafted": 0.1
     },
     {
      "player": "CJ McCollum",
@@ -2787,12 +2787,12 @@
      "drafted": 0.5
     },
     {
-     "player": "Jordan Clarkson",
+     "player": "Trevon Brazile",
      "adp": 36.0,
      "drafted": 0.2
     },
     {
-     "player": "Trevon Brazile",
+     "player": "Jordan Clarkson",
      "adp": 36.0,
      "drafted": 0.2
     },
@@ -2802,14 +2802,14 @@
      "drafted": 1.4
     },
     {
-     "player": "De'Aaron Fox",
-     "adp": 36.0,
-     "drafted": 0.5
-    },
-    {
      "player": "Tyler Herro",
      "adp": 36.0,
      "drafted": 1.4
+    },
+    {
+     "player": "De'Aaron Fox",
+     "adp": 36.0,
+     "drafted": 0.5
     },
     {
      "player": "Jrue Holiday",
@@ -2867,17 +2867,12 @@
      "drafted": 0.3
     },
     {
-     "player": "Kyshawn George",
-     "adp": 36.0,
-     "drafted": 0.5
-    },
-    {
      "player": "Kris Dunn",
      "adp": 36.0,
      "drafted": 0.2
     },
     {
-     "player": "Devin Vassell",
+     "player": "Kyshawn George",
      "adp": 36.0,
      "drafted": 0.5
     },
@@ -2885,6 +2880,11 @@
      "player": "Stephon Castle",
      "adp": 36.0,
      "drafted": 1.0
+    },
+    {
+     "player": "Devin Vassell",
+     "adp": 36.0,
+     "drafted": 0.5
     },
     {
      "player": "Darryn Peterson",
@@ -3697,14 +3697,14 @@
      "drafted": 2.1
     },
     {
-     "player": "Paul Reed",
-     "adp": 35.9,
-     "drafted": 6.4
-    },
-    {
      "player": "Damian Lillard",
      "adp": 35.9,
      "drafted": 3.2
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 35.9,
+     "drafted": 6.4
     },
     {
      "player": "James Harden",
@@ -3762,6 +3762,11 @@
      "drafted": 1.6
     },
     {
+     "player": "Josh Okogie",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
      "player": "Leonard Miller",
      "adp": 36.0,
      "drafted": 0.5
@@ -3773,11 +3778,6 @@
     },
     {
      "player": "Rocco Zikarsky",
-     "adp": 36.0,
-     "drafted": 0.5
-    },
-    {
-     "player": "Josh Okogie",
      "adp": 36.0,
      "drafted": 0.5
     },
@@ -3807,12 +3807,12 @@
      "drafted": 0.5
     },
     {
-     "player": "Christian Braun",
+     "player": "Isaiah Stewart",
      "adp": 36.0,
      "drafted": 0.5
     },
     {
-     "player": "Isaiah Stewart",
+     "player": "Christian Braun",
      "adp": 36.0,
      "drafted": 0.5
     },
@@ -4645,14 +4645,14 @@
      "drafted": 1.3
     },
     {
-     "player": "Ajay Mitchell",
-     "adp": 36.0,
-     "drafted": 1.3
-    },
-    {
      "player": "OG Anunoby",
      "adp": 36.0,
      "drafted": 2.7
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 36.0,
+     "drafted": 1.3
     },
     {
      "player": "Dyson Daniels",
@@ -4665,6 +4665,11 @@
      "drafted": 1.3
     },
     {
+     "player": "Payton Pritchard",
+     "adp": 36.0,
+     "drafted": 6.7
+    },
+    {
      "player": "AJ Dybantsa",
      "adp": 36.0,
      "drafted": 5.3
@@ -4673,11 +4678,6 @@
      "player": "Moussa Diabate",
      "adp": 36.0,
      "drafted": 1.3
-    },
-    {
-     "player": "Payton Pritchard",
-     "adp": 36.0,
-     "drafted": 6.7
     },
     {
      "player": "Jeremiah Fears",
