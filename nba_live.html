@@ -627,7 +627,7 @@ function detailHtml(r) {
    before the tip they still run high for the best lineups, so read them from the first quarter on. ETR's median as
    his usual (today's file uploaded on the board in this browser) made better chances than the morning's. */
 function spreadK(f) { return f <= 0.25 ? 3.0 : f >= 0.5 ? 2.0 : 3.0 - 4 * (f - 0.25); }
-var SIMS = 400;
+var SIMS = 1000;
 
 function normal() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
 
