@@ -361,5 +361,43 @@
    ]
   },
   "gist": true
+ },
+ "2026-11-04_wed_main.csv": {
+  "lock": "2026-11-04T23:52:00+00:00",
+  "adp_am_at": "2026-11-04T12:29:08+00:00",
+  "adp_etr_at": "2026-11-04T16:22:58+00:00",
+  "adp_close_at": "2026-11-04T23:41:22+00:00",
+  "morning_through": "2026-11-02",
+  "etr_first": {
+   "at": "2026-11-04T17:05:39.740Z",
+   "file": "Underdog NBA Daily Rankings (8) 2.csv"
+  },
+  "etr_last": {
+   "at": "2026-11-04T23:42:05.661Z",
+   "file": "Underdog NBA Daily Rankings (8) 2.csv + Underdog NBA Daily Rankings - 2026-11-04T110449.076.csv + Underdog NBA Daily Rankings - 2026-11-04T141200.957.csv + FD NBA DFS Projections (7).csv + pasted text"
+  },
+  "am": {
+   "at": "2026-11-04T12:32:51.487Z",
+   "from": "Lock AM",
+   "ours": true,
+   "tiers": [
+    5,
+    14,
+    21,
+    29
+   ]
+  },
+  "pm": {
+   "at": "2026-11-04T23:20:00.389Z",
+   "from": "Lock PM",
+   "ours": true,
+   "tiers": [
+    6,
+    19,
+    21,
+    29
+   ]
+  },
+  "gist": true
  }
 }

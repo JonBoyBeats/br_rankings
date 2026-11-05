@@ -1,6 +1,14 @@
 {
+ "1d088fe1-53a6-4c71-970f-b11a5f69d60a": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_wed_main"
+ },
  "4f882002-8260-427c-b6ba-97c1f097029d": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_mon_main"
+ },
+ "aa4b3c5b-ac98-4756-8c02-6a2075eb8e57": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_wed_main"
  }
 }
