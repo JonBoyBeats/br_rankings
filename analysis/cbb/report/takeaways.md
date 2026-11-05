@@ -9,8 +9,8 @@
   EvanMiya 6.11, Underdog 7.12. On the 20 players yesterday's spot check flagged (5+ apart), ours was closer
   16 times: Juzenas 34.7 (ours 26.6, Underdog 0.9 that morning), Stefonowicz 10.7 (19.4, 34.8), Joshua Dent
   30.4 (25.7, 11.5). Two nights; noise until ~300 graded player-games.
-- Misses: 15 (5 shooting, 4 minutes, 2 newcomer, 1 peripherals, 1 news, plus Berg and Indrusaitis on
-  big scoring nights). Log: 49 over 2 slates; too thin for themes (want ~5 slates).
+- Misses: 15: 7 shooting (Berg 51.2 and Indrusaitis 42.0 the biggest), 4 minutes, 2 newcomer, 1 peripherals,
+  1 news. Log: 49 over 2 slates; too thin for themes (want ~5 slates).
 - Watch, EvanMiya rank: ranks 4-7 short again (-3.6 last night, -3.9 on the season, n=74), 1-3 on target
   (+0.0, n=56). It has now repeated on 2 slates; keep watching to ~100 players a band before proposing a
   cut, and test it first (2024-25 ratings as the stand-in for preseason ones). Missed-season players:
