@@ -2,6 +2,13 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-04 Wed main
+
+- Second night with tier lines on both locks (Lock AM 4:32am, Lock PM 3:20pm) and the first under the afternoon T5 ownership tiebreak. Jalen Johnson (ADP 23.8) and Tatum (16.6), Questionable at Lock AM, were ruled out before Lock PM, so ATL and BOS are left out of the morning grading only.
+- Morning: your board beat our number (64%; season 59%) but lost to ADP (34%; season 52%, back to too close to call). The Kessler and Dosunmu fades and the Castle, Zubac and Amen raises went wrong; Ajay's raise (32 minutes with OKC short) was right. Afternoon: 55% against ETR (season 47%, too close); every one of the eight biggest PM calls went right, mostly raises on players who got extra minutes (Zion, Lauri, Clingan) and fades that played short (Pritchard).
+- Calls on players whose minutes ran away from their usual are now 24 right, 10 wrong across the log; 30 of the 34 played above their usual. H1 (the pre-tip minutes trend) still isn't beating the base forward (-0.26), so the edge is in reading the night's news, not last week's minutes.
+- Field: 90 teams in the flagship, top-1% tail 1.11 and top-10% 1.78 (AM teams 2.17, PM 1.00). Running on 6-drafter slates, 987 teams: top 10% 1.27 (1.14-1.43), top 1% 0.91. Wembanyama's 112.8 decided the top: 4.33 breakers a top-1% team vs 2.21 for the field.
+
 ## 2026-11-04 Rule change
 
 - Adopted the ownership tiebreak on the user's experience (contest side's study, field_studies.md section 2): in the afternoon T5 rule, within 2 points of ETR and 4 picks of ADP, the player with the lower projected drafted% goes first when they're 10+ points apart (both at least 2%). The board's T5 note now reads "Sixth Round – Proj (3: ADP) then ETR (2: less drafted)". PM T5's nights start over from 2026-11-04 (RULE_SINCE in nba_report.py). The morning T5 rule is unchanged: the study defines a tie on ETR, and in the morning projected drafted% just follows ADP.
