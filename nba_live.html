@@ -50,6 +50,8 @@
   button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .status { font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding-bottom: 10px; }
+  .viewbar { display: flex; gap: 6px; padding: 4px 0 8px; }
+  html.folded .viewbar { padding-top: 10px; }
   .status .bad { color: var(--bad); }
   .fold { font-size: 11px; height: 22px; padding: 0 8px; margin-right: 8px; vertical-align: middle; }
   html.folded .controls, html.folded .legend { display: none; }
@@ -89,6 +91,10 @@
   .lu .n { font-family: var(--mono); font-size: 13px; text-align: right; }
   .lu .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
   .lsum { font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 8px 4px; line-height: 1.5; }
+  .lu.gold { background: rgba(212, 168, 40, 0.16); box-shadow: inset 3px 0 0 #d4a828; }
+  .lu .chw { display: flex; flex-direction: column; gap: 3px; }
+  .lu .t10 { font-family: var(--mono); font-size: 9.5px; font-weight: 700; text-align: center; border-radius: 4px; padding: 1px 0;
+             background: #d4a828; color: #1a1400; }
   .lsum b { color: var(--ink); }
   /* No exposure loaded: the chip column goes. */
   .list.no-expo .head, .list.no-expo .row { grid-template-columns: 44px minmax(0, 1fr) 74px 64px; }
@@ -141,17 +147,18 @@
         </span>
         <input type="file" id="file" accept=".csv,text/csv" hidden>
       </div>
-      <div class="field" id="viewField" hidden>
-        <span class="field-label">View</span>
-        <span style="display:flex; gap:6px">
-          <button type="button" id="vPlayers" aria-pressed="true">Players</button>
-          <button type="button" id="vLineups" aria-pressed="false" title="Your lineups in the biggest contest, by their chance to finish top 1%">My lineups</button>
-        </span>
-      </div>
+      <label class="field" title="The Underdog username whose lineups My lineups shows: yours, as the leaderboard spells it. Kept on this device">
+        <span class="field-label">Username</span>
+        <input type="text" id="me" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:130px">
+      </label>
       <div class="field">
         <span class="field-label">&nbsp;</span>
         <button type="button" id="refresh">Refresh</button>
       </div>
+    </div>
+    <div class="viewbar" id="viewField" hidden>
+      <button type="button" id="vPlayers" aria-pressed="true">Players</button>
+      <button type="button" id="vLineups" aria-pressed="false" title="Your lineups in the biggest contest: their chance to finish top 1%, gold when live for the top 10">My lineups</button>
     </div>
     <div class="status"><button type="button" id="fold" class="fold" aria-expanded="true" title="Hide or show the controls and the colour key">Hide</button><span id="status">Loading&hellip;</span><span id="legend" class="legend"></span></div>
   </div>
@@ -205,7 +212,7 @@ var EXTRA = { FG: "fg", "3PT": "fg3", FT: "ft",
               "fieldGoalsMade-fieldGoalsAttempted": "fg", "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3",
               "freeThrowsMade-freeThrowsAttempted": "ft" };
 
-var state = { slates: [], slate: null, sort: "adp", mine: false, open: {}, posted: {}, proj: {}, projBy: { nba: {}, cbb: {} }, cbbRows: {},
+var state = { slates: [], slate: null, sort: load("brr:live:sort", "fp"), mine: false, open: {}, posted: {}, proj: {}, projBy: { nba: {}, cbb: {} }, cbbRows: {},
               games: {}, gamesById: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false,
               field: {}, fieldBusy: {}, draftedOnly: load("brr:live:drafted", true), view: load("brr:live:view", "players"), sim: null };
 function sportOf(s) { return (s && s.sport) || "nba"; }
@@ -219,7 +226,7 @@ function save(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } ca
    this waits until FIELD_AFTER minutes past the slate's first game, then reads every team once, 50 a page and a
    few pages at a time, and keeps them on this device. A player swapped off every team reads 0 drafted. */
 var FIELD_AFTER = 15;   // minutes after the first tip
-var ME = load("brr:live:me", "jonboybeats");   // your Underdog username, as the leaderboard shows it (lowercase)
+var ME = load("brr:live:me", "jonboybeats");   // whose lineups My lineups shows: the Username box, kept on this device
 var UD = "https://api.underdogfantasy.com/v1/draft_pools/";
 var UDQ = "product=fantasy&product_experience_id=c7ade3c1-71ae-4593-a7e1-07f63c7e94ae&state_config_id=725014ef-3570-4e93-871d-d69674ab3521";
 var FIELD_MIN = 0.01;   // drafted in 1% of pods or more is "drafted"
@@ -242,7 +249,7 @@ async function loadField(s) {
   if (!c || state.field[s.slate_id] || state.fieldBusy[c.id]) return;
   if (Date.now() < ready) { state.fieldWait = ready; return; }
   var kept = load("brr:live:field:" + c.id, null);
-  if (kept && kept.teams && new Date(kept.at).getTime() >= ready) { state.field[s.slate_id] = kept; render(); return; }
+  if (kept && kept.users && new Date(kept.at).getTime() >= ready) { state.field[s.slate_id] = kept; render(); return; }
   state.fieldBusy[c.id] = true;
   try {
     var get = function (page) {
@@ -256,7 +263,7 @@ async function loadField(s) {
       for (var q = p; q < p + 6 && q <= pages; q++) batch.push(get(q));
       (await Promise.all(batch)).forEach(function (d) { entries = entries.concat(d.draft_pool_entries); });
     }
-    var pods = {}, inPod = {}, apps = [], ix = {}, teams = [], mine = [];
+    var pods = {}, inPod = {}, apps = [], ix = {}, teams = [], users = [];
     entries.forEach(function (e, i) {
       pods[e.draft_id] = 1;
       e.appearance_ids.forEach(function (a) {
@@ -265,12 +272,12 @@ async function loadField(s) {
         teams.push(ix[a]);
       });
       for (var k = e.appearance_ids.length; k < ROUNDS; k++) teams.push(-1);   // a short team keeps its six slots
-      if ((e.username || "").toLowerCase() === ME) mine.push(i);
+      users.push((e.username || "").toLowerCase());
     });
     var n = Object.keys(pods).length, pct = {};
     Object.keys(inPod).forEach(function (a) { pct[a] = Object.keys(inPod[a]).length / n; });
     var f = { contest: c.id, title: (c.title || "").trim(), entries: entries.length, pods: n, at: new Date().toISOString(),
-              pct: pct, apps: apps, teams: teams, mine: mine };
+              pct: pct, apps: apps, teams: teams, users: users };
     state.field[s.slate_id] = f;
     // one field kept at a time: a night's lineups are a few hundred KB
     try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf("brr:live:field:") === 0) localStorage.removeItem(k); }); } catch (e) {}
@@ -596,16 +603,19 @@ function detailHtml(r) {
 }
 
 /* ---- My lineups: how live each is for the top 1%. Every lineup in the field is points so far plus what its players
-   have left: his usual for the minutes still to play (none if he's out or done), with a spread of 1.6 x the square
-   root of his usual, shrinking as his game runs (a 40-point usual: about 10). The rest of the night is drawn SIMS
-   times, the same draw for a player on every lineup, so lineups sharing players rise and fall together; each draw
-   ranks the whole field. Chance = the share of draws a lineup lands in the top 1%. Games' own swings (pace,
-   blowouts) aren't modelled, so the chances run a little narrow. */
+   have left: his usual for the minutes still to play (none if he's out or done), with a spread of K x the square
+   root of his usual x the square root of the game left. The rest of the night is drawn SIMS times, the same draw
+   for a player on every lineup, so lineups sharing players rise and fall together; each draw ranks the whole field.
+   Chance = the share of draws a lineup lands in the top 1%. K is spreadK(): replayed on 14 past flagships
+   (scripts/nba_live_calibration.py) the chances were right with K 3.0 until a quarter in and 2.0 from the half;
+   before the tip they still run high for the best lineups, so read them from the first quarter on. ETR's median as
+   his usual (today's file uploaded on the board in this browser) made better chances than the morning's. */
+function spreadK(f) { return f <= 0.25 ? 3.0 : f >= 0.5 ? 2.0 : 3.0 - 4 * (f - 0.25); }
 var SIMS = 400;
 
 function normal() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
 
-function simulate(fld, rowsByApp) {
+function simulate(fld, rowsByApp, mineIdx) {
   var np = fld.apps.length, now = new Float64Array(np), mean = new Float64Array(np), sd = new Float64Array(np), left = [];
   fld.apps.forEach(function (a, i) {
     var r = rowsByApp[a];
@@ -614,11 +624,11 @@ function simulate(fld, rowsByApp) {
     now[i] = r.fp || 0;
     if (out || f >= 1) return;
     mean[i] = (1 - f) * proj;
-    sd[i] = 1.6 * Math.sqrt(proj) * Math.sqrt(1 - f);
+    sd[i] = spreadK(f) * Math.sqrt(proj) * Math.sqrt(1 - f);
     left[i] = true;
   });
   var nt = fld.teams.length / ROUNDS, cut1 = Math.ceil(nt / 100), tot = new Float64Array(nt), draw = new Float64Array(np);
-  var top1 = new Float64Array(fld.mine.length), win = new Float64Array(fld.mine.length), cuts = [];
+  var top1 = new Float64Array(mineIdx.length), top10 = new Float64Array(mineIdx.length), win = new Float64Array(mineIdx.length), cuts = [];
   for (var s = 0; s < SIMS; s++) {
     for (var i = 0; i < np; i++) draw[i] = now[i] + (left[i] ? Math.max(-now[i], mean[i] + sd[i] * normal()) : 0);
     for (var t = 0; t < nt; t++) {
@@ -626,9 +636,9 @@ function simulate(fld, rowsByApp) {
       for (var k = 0; k < ROUNDS; k++) { var j = fld.teams[t * ROUNDS + k]; if (j >= 0) x += draw[j]; }
       tot[t] = x;
     }
-    var sorted = tot.slice().sort(), line = sorted[nt - cut1], best = sorted[nt - 1];
+    var sorted = tot.slice().sort(), line = sorted[nt - cut1], tenth = sorted[Math.max(0, nt - 10)], best = sorted[nt - 1];
     cuts.push(line);
-    fld.mine.forEach(function (t, m) { if (tot[t] >= line) top1[m]++; if (tot[t] >= best) win[m]++; });
+    mineIdx.forEach(function (t, m) { if (tot[t] >= line) top1[m]++; if (tot[t] >= tenth) top10[m]++; if (tot[t] >= best) win[m]++; });
   }
   var expect = new Float64Array(nt);                  // each lineup's expected final, for the table
   for (var t2 = 0; t2 < nt; t2++) {
@@ -637,9 +647,9 @@ function simulate(fld, rowsByApp) {
     expect[t2] = e; tot[t2] = n0;
   }
   cuts.sort(function (a, b) { return a - b; });
-  return { mine: fld.mine.map(function (t, m) {
-             return { t: t, top1: top1[m] / SIMS, win: win[m] / SIMS, now: tot[t], proj: expect[t] };
-           }).sort(function (a, b) { return b.top1 - a.top1 || b.proj - a.proj; }),
+  return { mine: mineIdx.map(function (t, m) {
+             return { t: t, top1: top1[m] / SIMS, top10: top10[m] / SIMS, win: win[m] / SIMS, now: tot[t], proj: expect[t] };
+           }).sort(function (a, b) { return b.top1 - a.top1 || b.top10 - a.top10 || b.proj - a.proj; }),
            line: cuts[cuts.length >> 1], nt: nt };
 }
 
@@ -651,22 +661,36 @@ function chanceColor(p) {
   return { bg: "transparent", ink: "var(--muted)" };
 }
 
+var TOP10_GOLD = 0.02;   // live for the top 10: in it in 2% of draws or more
+
 function renderLineups(fld, rowsByApp) {
-  var host = $("list");
-  if (!fld.mine.length) { host.innerHTML = '<div class="empty">None of the ' + fld.entries.toLocaleString() + " lineups in " + fld.title + " is under " + ME + ".</div>"; return; }
-  var key = fld.contest + "|" + (state.pulledAt || 0);
-  if (!state.sim || state.sim.key !== key) state.sim = { key: key, r: simulate(fld, rowsByApp) };
+  var host = $("list"), mineIdx = [];
+  fld.users.forEach(function (u, i) { if (u === ME) mineIdx.push(i); });
+  if (!ME) { host.innerHTML = '<div class="empty">Put your Underdog username in the Username box (Hide shows the controls).</div>'; return; }
+  if (!mineIdx.length) { host.innerHTML = '<div class="empty">None of the ' + fld.entries.toLocaleString() + " lineups in " + fld.title + " is under " + ME + ".</div>"; return; }
+  var key = fld.contest + "|" + ME + "|" + (state.pulledAt || 0);
+  if (!state.sim || state.sim.key !== key) state.sim = { key: key, r: simulate(fld, rowsByApp, mineIdx) };
   var r = state.sim.r, expTop = r.mine.reduce(function (a, x) { return a + x.top1; }, 0);
-  host.insertAdjacentHTML("beforeend", '<div class="lsum">' + fld.title + ": <b>" + r.mine.length + "</b> of your lineups in " + r.nt.toLocaleString() +
+  var gold = r.mine.filter(function (x) { return x.top10 >= TOP10_GOLD; }).length;
+  host.insertAdjacentHTML("beforeend", '<div class="lsum">' + fld.title + ": <b>" + r.mine.length + "</b> of " + ME + "'s lineups in " + r.nt.toLocaleString() +
     ". Projected top-1% line <b>" + r.line.toFixed(1) + "</b>. Expected top-1% finishes <b>" + expTop.toFixed(1) + "</b> (" +
-    (100 * expTop / r.mine.length).toFixed(1) + "% of yours, against 1% for a random lineup).</div>");
+    (100 * expTop / r.mine.length).toFixed(1) + "% of yours, against 1% for a random lineup)." +
+    (gold ? " <b>" + gold + "</b> live for the top 10 (gold)." : "") + "</div>");
   host.insertAdjacentHTML("beforeend", '<div class="lu lhead"><span>Top 1%</span><span>Lineup</span><span class="n">Now</span><span class="n">Proj</span></div>');
   r.mine.forEach(function (m) {
-    var el = document.createElement("div"); el.className = "lu";
+    var el = document.createElement("div"); el.className = "lu" + (m.top10 >= TOP10_GOLD ? " gold" : "");
     var c = chanceColor(m.top1), ch = document.createElement("span");
     ch.className = "ch"; ch.style.background = c.bg; ch.style.color = c.ink;
     ch.textContent = m.top1 >= 0.995 ? "99+" : m.top1 > 0 && m.top1 < 0.01 ? "<1" : String(Math.round(m.top1 * 100));
-    ch.title = Math.round(m.top1 * 100) + "% of " + SIMS + " runs of the rest of the night in the top 1%" + (m.win ? "; won " + Math.round(m.win * 100) + "%" : "");
+    ch.title = Math.round(m.top1 * 100) + "% of " + SIMS + " runs of the rest of the night in the top 1%; top 10 in " +
+               (100 * m.top10).toFixed(1) + "%" + (m.win ? "; won " + (100 * m.win).toFixed(1) + "%" : "");
+    var cw = document.createElement("span"); cw.className = "chw";
+    cw.appendChild(ch);
+    if (m.top10 >= TOP10_GOLD) {
+      var t10 = document.createElement("span"); t10.className = "t10";
+      t10.textContent = "T10 " + Math.round(m.top10 * 100) + "%";
+      cw.appendChild(t10);
+    }
     var six = document.createElement("div"); six.className = "six";
     var parts = [];
     for (var k = 0; k < ROUNDS; k++) {
@@ -679,7 +703,7 @@ function renderLineups(fld, rowsByApp) {
     six.innerHTML = parts.join(" · ");
     var nw = document.createElement("span"); nw.className = "n"; nw.textContent = m.now.toFixed(1);
     var pj = document.createElement("span"); pj.className = "n"; pj.textContent = m.proj.toFixed(1);
-    el.append(ch, six, nw, pj);
+    el.append(cw, six, nw, pj);
     host.appendChild(el);
   });
 }
@@ -733,8 +757,8 @@ function render() {
   // the field's picks: only players it drafted, before grading, so each round is judged against who was taken
   var fld = state.field[sl.slate_id] || null, rowsByApp = {};
   rows.forEach(function (r) { if (r.p.appearance_id) rowsByApp[r.p.appearance_id] = r; });
-  $("viewField").hidden = !(fld && fld.teams);
-  var lineups = !!(fld && fld.teams) && state.view === "lineups";
+  $("viewField").hidden = !(fld && fld.users);
+  var lineups = !!(fld && fld.users) && state.view === "lineups";
   $("vPlayers").setAttribute("aria-pressed", String(!lineups));
   $("vLineups").setAttribute("aria-pressed", String(lineups));
   $("drafted").hidden = !fld;
@@ -838,13 +862,18 @@ $("slate").addEventListener("change", function () {
   state.games = {}; state.box = {}; state.finals = {};
   render(); pull();
 });
-$("sort").addEventListener("change", function () { state.sort = this.value; render(); });
+$("sort").addEventListener("change", function () { state.sort = this.value; save("brr:live:sort", state.sort); render(); });
 $("tail").addEventListener("change", function () {
   var v = Number(this.value);
   if (state.slate) save("brr:live:tail:" + state.slate.slate_id, isFinite(v) && v > 0 && v < TEAMS * ROUNDS ? v : null);
   render();
 });
 $("mine").addEventListener("click", function () { state.mine = !state.mine; render(); });
+$("me").value = ME;
+$("me").addEventListener("change", function () {
+  ME = this.value.trim().toLowerCase(); this.value = ME;
+  save("brr:live:me", ME); state.sim = null; render();
+});
 $("vPlayers").addEventListener("click", function () { state.view = "players"; save("brr:live:view", state.view); render(); });
 $("vLineups").addEventListener("click", function () { state.view = "lineups"; save("brr:live:view", state.view); render(); });
 $("drafted").addEventListener("click", function () { state.draftedOnly = !state.draftedOnly; save("brr:live:drafted", state.draftedOnly); render(); });
