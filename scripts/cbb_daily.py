@@ -104,6 +104,8 @@ def build(mirror, slate):
     adp = {p["player_id"]: p["adp"] for p in s["players"]}
     teams = {p["team"] for p in s["players"]}
     rows = {pid: r for pid, r in morning["players"].items() if r.get("team") in teams}
+    if not teams and slate["slate_id"] in (morning.get("slates") or []):
+        rows = dict(morning["players"])     # a slate no one priced (no contest): every player we projected for it
     day = slate["lock"].astimezone(ET).date()
     need_scoreboard = any(not r.get("event") for r in rows.values())
     by_opp = events_by_opp(day) if need_scoreboard else {}
