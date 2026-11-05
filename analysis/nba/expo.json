@@ -469,35 +469,33 @@
   "b354c136-a09c-43f8-a21f-eb7c97cdb9a0": {
    "label": "nba_wed_main",
    "date": "2026-11-04",
-   "at": "2026-11-04T23:07:00Z",
+   "at": "2026-11-05T00:14:00Z",
    "teams": 90,
    "pct": {
+    "Julius Randle": 41,
     "Anthony Davis": 33,
     "Cameron Boozer": 33,
     "Brandon Miller": 32,
-    "Jalen Johnson": 30,
     "Victor Wembanyama": 30,
     "Jalen Brunson": 28,
     "Scottie Barnes": 27,
     "Cade Cunningham": 24,
     "Deni Avdija": 23,
+    "Paul George": 23,
     "Pascal Siakam": 22,
+    "Dejounte Murray": 20,
     "Ty Jerome": 20,
-    "Paul George": 20,
+    "LaMelo Ball": 18,
     "Cooper Flagg": 18,
     "Giannis Antetokounmpo": 16,
     "Joel Embiid": 15,
     "Caleb Wilson": 15,
-    "Dejounte Murray": 14,
-    "Jayson Tatum": 14,
     "Karl-Anthony Towns": 13,
     "Luka Doncic": 13,
-    "LaMelo Ball": 13,
     "Domantas Sabonis": 12,
     "Trae Young": 12,
     "Donovan Mitchell": 12,
     "Jamal Murray": 12,
-    "Julius Randle": 11,
     "Shai Gilgeous-Alexander": 10,
     "Darius Acuff Jr.": 10,
     "Tyrese Maxey": 8,
@@ -514,7 +512,7 @@
     "Keyonte George": 1,
     "Evan Mobley": 1
    },
-   "note": "Jalen Johnson (30%) and Jayson Tatum (14%) show the app's red O (out) tag at 3:07pm; Tatum is already off the slate's player list. Giannis has a P (probable) tag and Dejounte Murray an I. The app rounds shares down: they add to 585 of 600."
+   "note": "After swaps: Jalen Johnson (30%, out) and Jayson Tatum (14%, out) swapped, taking Julius Randle from 11% to 41%, Dejounte Murray from 14% to 20%, LaMelo Ball from 13% to 18% and Paul George from 20% to 23%. Evan Mobley (1%) is cut off at the bottom of the screenshot, kept from the 3:07pm list. The app rounds shares down, so they add to under 600%."
   }
  }
 }
