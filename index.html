@@ -1016,6 +1016,8 @@ function headerIndex(header) {
  *   Team and Scenario. A player ruled out is listed at 0 rather than left off, so a 0 is
  *   skipped (the board then reads him as out). Rows whose Scenario isn't "Default" are an
  *   ETR conditional ("Ant OUT"), kept aside until you mark that player out.
+ * ETR NBA (Full Day): the same file under ETR's newer header (Player, Team, FD Proj, FD
+ *   Ceiling, Scenario: one row per player, his team's scenario beside it), read the same way.
  * CFF (CFB): reads PLAYER NAME, FPNTS.
  * Fantasy Points (CFB): reads NAME, FPTS from the row under its banner row.
  */
@@ -1058,6 +1060,10 @@ function parseProjections(text) {
     format = "ETR NBA (FD)"; sport = "nba"; nameCol = idx["player"]; projCol = idx["fpts"]; scenCol = idx["scenario"];
     aliases = ETR_FD_ALIASES;
     if (idx["ceiling"] != null) ceilCols = [idx["ceiling"]];
+  } else if (idx["fd proj"] != null && idx["player"] != null && idx["scenario"] != null) {
+    format = "ETR NBA (Full Day)"; sport = "nba"; nameCol = idx["player"]; projCol = idx["fd proj"]; scenCol = idx["scenario"];
+    aliases = ETR_FD_ALIASES;
+    if (idx["fd ceiling"] != null) ceilCols = [idx["fd ceiling"]];
   } else if (idx["fpnts"] != null && idx["player name"] != null) {
     // College carries no ceiling, so the blend falls back to the median.
     format = "CFF"; sport = "cfb"; nameCol = idx["player name"]; projCol = idx["fpnts"];
@@ -1085,7 +1091,7 @@ function parseProjections(text) {
     return {
       error: "unrecognized projection file. Expected an ETR Battle Royale export " +
              "(Player, Proj, id), an ETR weekly export (Player, Half PPR Proj), an ETR NBA export " +
-             "(Player, Projection, Ceiling), a CFF " +
+             "(Player, Projection, Ceiling), an ETR NBA scenario file (Player, FD Proj, Scenario), a CFF " +
              "export (PLAYER NAME, FPNTS) or a Fantasy Points college export (NAME, FPTS). Found: " + rows[0].join(", "),
       entries: []
     };
@@ -1747,20 +1753,27 @@ function addNbaConditionals(store, upload) {
  * The ETR file with any conditional you've triggered swapped in. A conditional is for the
  * players its team's rows leave off that the main file projects (Edwards, for "Ant OUT");
  * once you mark all of them out, that team's rows come from it, and `covered` holds those
- * players so their absence isn't bumped a second time.
+ * players so their absence isn't bumped a second time. When several fit a team ("Barnes
+ * OUT", "Quickley OUT" and "Barnes & Quickley OUT" with both marked), the one that leaves
+ * off the most of them wins.
  */
 function nbaConditionalEntries(store, day, out) {
-  var entries = store.current.entries, covered = {}, used = [];
+  var main = store.current.entries, entries = main, covered = {}, used = [], fits = [], done = {};
   Object.keys(store.conditionals || {}).forEach(function (label) {
     var c = store.conditionals[label];
     if (pacificDay(c.at) !== day || !c.entries.length) return;
     var teams = {}, has = {};
     c.entries.forEach(function (e) { if (e.team) teams[e.team] = 1; has[e.norm] = 1; });
-    var sits = entries.filter(function (e) { return e.team && teams[e.team] && !has[e.norm]; });
-    if (!sits.length || !sits.every(function (e) { return out[e.norm]; })) return;
-    entries = entries.filter(function (e) { return !(e.team && teams[e.team]); }).concat(c.entries);
-    sits.forEach(function (e) { covered[e.norm] = label; });
-    used.push(label);
+    var sits = main.filter(function (e) { return e.team && teams[e.team] && !has[e.norm]; });
+    if (sits.length && sits.every(function (e) { return out[e.norm]; })) fits.push({ label: label, c: c, teams: teams, sits: sits });
+  });
+  fits.sort(function (a, b) { return b.sits.length - a.sits.length; });
+  fits.forEach(function (f) {
+    if (Object.keys(f.teams).some(function (t) { return done[t]; })) return;
+    entries = entries.filter(function (e) { return !(e.team && f.teams[e.team]); }).concat(f.c.entries);
+    f.sits.forEach(function (e) { covered[e.norm] = f.label; });
+    Object.keys(f.teams).forEach(function (t) { done[t] = 1; });
+    used.push(f.label);
   });
   return { entries: entries, covered: covered, used: used };
 }
@@ -3088,6 +3101,11 @@ function condNote(store, condRows) {
     c.entries.forEach(function (e) { if (e.team) teams[e.team] = 1; has[e.norm] = 1; });
     var sits = store.current.entries.filter(function (e) { return e.team && teams[e.team] && !has[e.norm]; })
       .map(function (e) { return e.name; });
+    var missing = Object.keys(teams).filter(function (t) {
+      return !store.current.entries.some(function (e) { return e.team === t; });
+    });
+    if (missing.length) return label + " (" + missing.join(", ") + " isn't in today's main ETR file: upload that first, or " +
+                               (missing.length > 1 ? "they stay" : "it stays") + " blank)";
     return label + (sits.length ? " (mark " + sits.join(" and ") + " out to use it)" : " (no player to mark: it matches the main file)");
   }).join(", ") + ".";
 }
@@ -7106,6 +7124,25 @@ function brrSelfTest() {
      c0.used.length === 0 && c1.used.join() === "Ant OUT" && c1.covered["star guard"] === "Ant OUT" && c1.entries.length === 1 &&
      c1.entries[0].median === 28.3 && Object.keys(normalizeProjStore(JSON.parse(JSON.stringify(fdStore))).conditionals).join() === "Ant OUT" &&
      !Object.keys(nextDay.conditionals).length);
+  var fdn = parseProjections('"Player","Team","Opp","DK Proj","FD Proj","Y Proj","DK Ceiling","FD Ceiling","Y Ceiling","Scenario"\n' +
+    '"Bench Guard","MIN","CLE","29.0","28.3","28.3","37.0","36.6","36.6","Ant OUT"\n' +
+    '"Star Guard","MIN","CLE","0.0","0.0","0.0","0.0","0.0","0.0","Ant OUT"\n' +
+    '"Other One","CLE","MIN","20.0","19.0","19.0","27.0","26.0","26.0","Default"\n');
+  ok("ETR's Full Day file reads FD Proj and FD Ceiling, skips its 0s and marks the scenario rows",
+     fdn.format === "ETR NBA (Full Day)" && fdn.entries.length === 2 && fdn.entries[0].scenario === "Ant OUT" &&
+     fdn.entries[0].median === 28.3 && fdn.entries[0].ceiling === 36.6 && !fdn.entries[1].scenario);
+  var tri = addNbaUpload(normalizeProjStore(null), nbaUp("m.csv", "2026-11-02T18:00:00Z", [["a", 30, 40], ["b", 30, 40], ["c", 20, 30]]));
+  tri.current.entries.forEach(function (e) { e.team = "T"; });
+  function triC(label, rows, at) {
+    return { file: label, at: at, entries: rows.map(function (r) { return { name: r[0], norm: r[0], median: r[1], ceiling: null, proj: r[1], team: "T", scenario: label }; }) };
+  }
+  tri = addNbaConditionals(tri, triC("a OUT", [["b", 33], ["c", 23]], "2026-11-02T19:00:00Z"));
+  tri = addNbaConditionals(tri, triC("b OUT", [["a", 33], ["c", 23]], "2026-11-02T19:05:00Z"));
+  tri = addNbaConditionals(tri, triC("a & b OUT", [["c", 28]], "2026-11-02T19:10:00Z"));
+  var tAB = nbaConditionalEntries(tri, "2026-11-02", { a: "you", b: "you" }), tA = nbaConditionalEntries(tri, "2026-11-02", { a: "you" });
+  ok("with several conditionals for a team, the one that leaves off the most of those marked out wins",
+     tAB.used.join() === "a & b OUT" && tAB.entries.length === 1 && tAB.entries[0].median === 28 && tAB.covered.a && tAB.covered.b &&
+     tA.used.join() === "a OUT" && tA.entries.length === 2);
   var longH = {};
   for (var dd = 1; dd <= 12; dd++) longH["2026-11-" + (dd < 10 ? "0" : "") + dd] = { a: [dd, null] };
   ok("the ETR average runs over his last " + NBA_AVG_GAMES + " days, from the first",
