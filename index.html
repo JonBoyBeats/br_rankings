@@ -1604,8 +1604,9 @@ function rotateProjStore(store, upload) {
 var NBA_AVG_GAMES = 10;
 /* A player with no last season on file (rookies, players back from overseas) averages only his
    last three: ETR has raised its rookies night after night, and on Oct 28 - Nov 5 a ten-night
-   average left them 2.2 points short of ETR's morning file against their ADP (last three: 1.4).
-   scripts/nba_etr_match.py follows it forward from Nov 7. */
+   average left them 2.9 points short of ETR's morning file against their ADP in the top 60 (last
+   three: 1.6). Players who changed teams or moved 5+ minutes didn't run short and a shorter
+   average didn't help them, so they keep ten. scripts/nba_etr_match.py follows it from Nov 7. */
 var NBA_AVG_GAMES_NEW = 3;
 var NBA_KEEP_DAYS = 30;      // ten games take three weeks or so; this covers a missed stretch
 
