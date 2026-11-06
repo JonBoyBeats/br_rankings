@@ -13,8 +13,9 @@ scales never need to agree. Then:
   rookies     players with no last season on file (the mirror's morning file has no crowd for them):
               ETR's value minus ours on average; the board averages their last 3 ETR nights from NEW_SINCE
 
-Only the top 10 rounds by morning ADP are graded (60 players on a 6-drafter slate, 40 on a 4-drafter one).
-By round (1-2, 3-6, 7-10: ADP order over the pod, 6 or 4 on a small slate) and overall, for the season and
+Only the top 10 rounds by morning ADP are graded (60 players on a 6-drafter slate, 40 on a 4-drafter one), in four
+groups: the elite (ETR's top 2 to 4 projections, cut at the biggest drop after the 2nd, 3rd or 4th), the rest under
+ADP 19, ADP 19-31, and ADP 32 on. By group and overall, for the season and
 the last 7 slates, then each slate, the latest slate's biggest misses and players missed the same way on
 3+ slates. Writes analysis/nba/report/etr_match.md. The 2:17am job runs it.
 
@@ -27,6 +28,7 @@ DAILY = os.path.join(HERE, "analysis", "nba", "daily")
 OUT = os.path.join(HERE, "analysis", "nba", "report", "etr_match.md")
 NEW_SINCE = "2026-11-07"      # first slate with the board's last-3 average for players with no last season
 DIR, BIG, TOP, ROUNDS = 2.0, 3.0, 5, 10
+GROUPS = ("elite", "to ADP 19", "ADP 19-31", "ADP 32+")
 
 
 def num(v):
@@ -54,12 +56,16 @@ def slates(rookies):
         rs.sort(key=lambda r: num(r["adp_am"]))
         pod = 6 if len(rs) >= 60 else 4
         vo, ve = value([num(r["ours_am"]) for r in rs]), value([num(r["etr_first"]) for r in rs])
+        best = sorted((num(r["etr_first"]) for r in rs), reverse=True)[:5]
+        gaps = [best[k - 1] - best[k] for k in (2, 3, 4)]
+        elite = best[1 + gaps.index(max(gaps))]                 # the lowest elite projection
         ps = []
         for i, r in enumerate(rs[:ROUNDS * pod]):      # values use the whole slate's neighbors; only the top 60 (40) graded
-            rd = i // pod + 1
+            rd, adp = i // pod + 1, num(r["adp_am"])
+            grp = GROUPS[0] if num(r["etr_first"]) >= elite else GROUPS[1] if adp < 19 else GROUPS[2] if adp < 32 else GROUPS[3]
             move = num(r["adp_am"]) - num(r["adp_close"]) if num(r["adp_close"]) is not None else None
-            ps.append({"date": r["date"], "name": r["name"], "team": r["team"], "rd": rd,
-                       "grp": "1-2" if rd <= 2 else "3-6" if rd <= 6 else "7-10", "ours": vo[i], "etr": ve[i], "move": move,
+            ps.append({"date": r["date"], "name": r["name"], "team": r["team"], "rd": rd, "adp": adp,
+                       "grp": grp, "ours": vo[i], "etr": ve[i], "move": move,
                        "rookie": r["name"] in rookies, "usual": r["usual_min"], "min": r["min"],
                        "tag": " / ".join(t for t in (r["injury_am"], r["injury"]) if t)})
         for k in sorted(range(len(ps)), key=lambda k: ps[k]["etr"])[-TOP:]:
@@ -120,13 +126,14 @@ def main():
     last7 = [p for _, ps in ss[-7:] for p in ps]
     L = ["# Our morning Proj vs ETR's first upload, against ADP", "",
          "Written nightly by scripts/nba_etr_match.py (its docstring has the definitions). Value = projection minus "
-         "the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's first file; the top 60 by ADP graded (40 on a 4-drafter slate). %d slates, "
+         "the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's first file; the top 60 by ADP graded (40 on a 4-drafter slate), "
+         "in four groups: the elite (ETR's top 2-4, cut at the biggest drop), the rest under ADP 19, ADP 19-31 and 32 on. %d slates, "
          "%s to %s. Rookie gap: ETR's value minus ours for players with no last season (+: we're lower); the board "
          "averages their last 3 ETR nights from %s." % (len(ss), ss[0][0], ss[-1][0], NEW_SINCE), ""]
     for title, ps in (("Season", allp), ("Last 7 slates", last7)):
         L += ["## " + title, "", HEAD]
-        for g in ("1-2", "3-6", "7-10"):
-            L.append(row("rounds " + g, measures([p for p in ps if p["grp"] == g])))
+        for g in GROUPS:
+            L.append(row(g, measures([p for p in ps if p["grp"] == g])))
         L += [row("**all**", measures(ps)), ""]
     before = [p for p in allp if p["rookie"] and p["date"] < NEW_SINCE]
     after = [p for p in allp if p["rookie"] and p["date"] >= NEW_SINCE]
@@ -139,9 +146,9 @@ def main():
     for d, ps in ss:
         L.append(row(d, measures(ps)))
     d, ps = ss[-1]
-    L += ["", "## Biggest misses, %s" % d, "", "| player | round | ours vs ADP | ETR vs ADP | usual min | min | tag |", "|---|---|---|---|---|---|---|"]
+    L += ["", "## Biggest misses, %s" % d, "", "| player | ADP | ours vs ADP | ETR vs ADP | usual min | min | tag |", "|---|---|---|---|---|---|---|"]
     for p in sorted(ps, key=lambda p: -abs(p["ours"] - p["etr"]))[:10]:
-        L.append("| %s %s%s | %d | %+.1f | %+.1f | %s | %s | %s |" % (p["name"], p["team"], " (rookie)" if p["rookie"] else "", p["rd"],
+        L.append("| %s %s%s | %.1f | %+.1f | %+.1f | %s | %s | %s |" % (p["name"], p["team"], " (rookie)" if p["rookie"] else "", p["adp"],
                                                                 p["ours"], p["etr"], p["usual"], p["min"], p["tag"]))
     rep = collections.defaultdict(list)
     for _, ps in ss[-10:]:

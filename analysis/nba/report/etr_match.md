@@ -1,23 +1,25 @@
 # Our morning Proj vs ETR's first upload, against ADP
 
-Written nightly by scripts/nba_etr_match.py (its docstring has the definitions). Value = projection minus the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's first file; the top 60 by ADP graded (40 on a 4-drafter slate). 8 slates, 2026-10-28 to 2026-11-05. Rookie gap: ETR's value minus ours for players with no last season (+: we're lower); the board averages their last 3 ETR nights from 2026-11-07.
+Written nightly by scripts/nba_etr_match.py (its docstring has the definitions). Value = projection minus the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's first file; the top 60 by ADP graded (40 on a 4-drafter slate), in four groups: the elite (ETR's top 2-4, cut at the biggest drop), the rest under ADP 19, ADP 19-31 and 32 on. 8 slates, 2026-10-28 to 2026-11-05. Rookie gap: ETR's value minus ours for players with no last season (+: we're lower); the board averages their last 3 ETR nights from 2026-11-07.
 
 ## Season
 
 | | players | corr | direction (ETR 2+ off ADP) | ETR's top 5 we had above | ETR's bottom 5 we had below | big misses (3+) | CLV ours / ETR | rookie gap (n) |
 |---|---|---|---|---|---|---|---|---|
-| rounds 1-2 | 84 | 0.82 | 45/47 (96%) | 11/11 (100%) | 8/8 (100%) | 21 (25%) | 0.22 / 0.39 | +1.9 (4) |
-| rounds 3-6 | 168 | 0.74 | 61/74 (82%) | 10/11 (91%) | 14/14 (100%) | 44 (26%) | 0.29 / 0.49 | +3.2 (14) |
-| rounds 7-10 | 168 | 0.83 | 79/90 (88%) | 16/18 (89%) | 18/18 (100%) | 36 (21%) | 0.35 / 0.39 | +2.5 (3) |
+| elite | 23 | 0.83 | 18/18 (100%) | 8/8 (100%) | - | 8 (35%) | 0.21 / 0.24 | - (0) |
+| to ADP 19 | 120 | 0.72 | 45/53 (85%) | 6/7 (86%) | 12/12 (100%) | 26 (22%) | 0.26 / 0.50 | +2.1 (7) |
+| ADP 19-31 | 134 | 0.73 | 59/69 (86%) | 14/15 (93%) | 14/14 (100%) | 37 (28%) | 0.29 / 0.44 | +3.7 (9) |
+| ADP 32+ | 143 | 0.85 | 63/71 (89%) | 9/10 (90%) | 14/14 (100%) | 30 (21%) | 0.14 / 0.19 | +2.5 (5) |
 | **all** | 420 | 0.80 | 185/211 (88%) | 37/40 (92%) | 40/40 (100%) | 101 (24%) | 0.22 / 0.33 | +2.9 (21) |
 
 ## Last 7 slates
 
 | | players | corr | direction (ETR 2+ off ADP) | ETR's top 5 we had above | ETR's bottom 5 we had below | big misses (3+) | CLV ours / ETR | rookie gap (n) |
 |---|---|---|---|---|---|---|---|---|
-| rounds 1-2 | 72 | 0.83 | 39/40 (98%) | 10/10 (100%) | 7/7 (100%) | 17 (24%) | 0.29 / 0.45 | +1.9 (4) |
-| rounds 3-6 | 144 | 0.76 | 52/63 (83%) | 9/10 (90%) | 12/12 (100%) | 37 (26%) | 0.31 / 0.52 | +3.3 (12) |
-| rounds 7-10 | 144 | 0.79 | 67/78 (86%) | 13/15 (87%) | 16/16 (100%) | 29 (20%) | 0.36 / 0.38 | +1.3 (2) |
+| elite | 20 | 0.87 | 15/15 (100%) | 7/7 (100%) | - | 6 (30%) | 0.22 / 0.25 | - (0) |
+| to ADP 19 | 105 | 0.72 | 41/48 (85%) | 5/6 (83%) | 11/11 (100%) | 24 (23%) | 0.27 / 0.52 | +2.1 (7) |
+| ADP 19-31 | 121 | 0.74 | 54/63 (86%) | 14/15 (93%) | 13/13 (100%) | 33 (27%) | 0.33 / 0.46 | +3.7 (9) |
+| ADP 32+ | 114 | 0.82 | 48/55 (87%) | 6/7 (86%) | 11/11 (100%) | 20 (18%) | 0.14 / 0.21 | +1.3 (2) |
 | **all** | 360 | 0.79 | 158/181 (87%) | 32/35 (91%) | 35/35 (100%) | 83 (23%) | 0.25 / 0.36 | +2.8 (18) |
 
 ## Rookies (no last season), before and after the last-3 average
@@ -42,18 +44,18 @@ Written nightly by scripts/nba_etr_match.py (its docstring has the definitions).
 
 ## Biggest misses, 2026-11-05
 
-| player | round | ours vs ADP | ETR vs ADP | usual min | min | tag |
+| player | ADP | ours vs ADP | ETR vs ADP | usual min | min | tag |
 |---|---|---|---|---|---|---|
-| Will Richard GSW | 10 | -2.4 | +5.9 | 17.9 | 16.0 |  |
-| Goga Bitadze ORL | 10 | +2.1 | -3.8 | 6.6 | 8.0 |  |
-| Jevon Carter ORL | 9 | -1.0 | -6.5 | 7.6 | 3.0 |  |
-| Anthony Black ORL | 3 | -2.1 | +2.3 | 28.0 | 31.0 |  |
-| Colin Castleton ORL | 10 | -5.3 | -9.4 | 1.6 | 2.0 |  |
-| Khaman Maluach PHX | 7 | +7.9 | +4.5 | 19.5 | 22.0 |  |
-| Bobby Portis MIA | 6 | +2.7 | -0.7 | 21.6 | 14.0 |  |
-| Stephen Curry GSW | 1 | -3.9 | -0.6 | 29.0 | 28.0 |  |
-| Jase Richardson ORL | 7 | +2.2 | +5.5 | 21.0 | 26.0 |  |
-| Giannis Antetokounmpo MIA | 1 | +15.4 | +12.2 | 33.0 | 31.0 |  |
+| Will Richard GSW | 24.0 | -2.4 | +5.9 | 17.9 | 16.0 |  |
+| Goga Bitadze ORL | 24.0 | +2.1 | -3.8 | 6.6 | 8.0 |  |
+| Jevon Carter ORL | 24.0 | -1.0 | -6.5 | 7.6 | 3.0 |  |
+| Anthony Black ORL | 9.9 | -2.1 | +2.3 | 28.0 | 31.0 |  |
+| Colin Castleton ORL | 24.0 | -5.3 | -9.4 | 1.6 | 2.0 |  |
+| Khaman Maluach PHX | 23.6 | +7.9 | +4.5 | 19.5 | 22.0 |  |
+| Bobby Portis MIA | 21.6 | +2.7 | -0.7 | 21.6 | 14.0 |  |
+| Stephen Curry GSW | 2.1 | -3.9 | -0.6 | 29.0 | 28.0 |  |
+| Jase Richardson ORL | 23.8 | +2.2 | +5.5 | 21.0 | 26.0 |  |
+| Giannis Antetokounmpo MIA | 1.1 | +15.4 | +12.2 | 33.0 | 31.0 |  |
 
 ## Missed the same way on 3+ of the last 10 slates
 
