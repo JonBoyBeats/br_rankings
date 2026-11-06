@@ -25,7 +25,7 @@
     --accent-ink: #080b11;
     --up: #4dc48d;
     --mine: #5aa9ff;    /* NBA: what your out marks moved a teammate */
-    /* Workload score tiers, the same four as the Analysis page. */
+    /* Score tiers, the same four as the Analysis page. */
     --t3: #13703a;  --t3-ink: #ffffff;
     --t2: #58c07a;  --t2-ink: #06180d;
     --t1: #e0b43a;  --t1-ink: #1d1503;
@@ -350,8 +350,8 @@
   .board.has-own .row {
     grid-template-columns: 26px 40px minmax(0, 1fr) 76px 50px 44px 94px 56px;
   }
-  /* Workload score from the Analysis page: expected half-PPR next game, coloured by its
-     rank at the position this week. Hatched = under four games of data. */
+  /* Usage score: share of the team's work, 0-100 against the position on this slate, coloured
+     by tier (top 15 / next 25 / next 30 / rest). Hatched = under four games of data. */
   .num.score { text-align: center; }
   .num.score b {
     display: inline-block; min-width: 38px; padding: 2px 4px; border-radius: 4px;
@@ -750,7 +750,7 @@
       <label class="field football-only tool">
         <span class="field-label">Seed order</span>
         <span class="pair">
-          <button type="button" id="buildScore" title="Seed the order from positional blocks, best Workload score first">Builder (Score)</button>
+          <button type="button" id="buildScore" title="Seed the order from positional blocks, best usage score first">Builder (Score)</button>
           <button type="button" id="buildProj">Builder (Proj)</button>
         </span>
       </label>
@@ -865,7 +865,7 @@
       <span>Player</span>
       <span class="r"><button type="button" data-sort="adp">ADP</button></span>
       <span style="text-align:center"><button type="button" data-sort="score" id="scoreHead"
-        title="Workload score from the Analysis page: expected half-PPR next game">Score</button></span>
+        title="Usage: his share of his team's work, 0-100 against his position on this slate">Score</button></span>
       <span class="r own-col"><button type="button" data-sort="own"
         title="Share of drafts the projection file expects this player to appear in">Own</button></span>
       <span class="r"><button type="button" data-sort="proj"
@@ -4310,16 +4310,18 @@ function sortRowsByView(list, view) {
   return list;
 }
 
-/* ---- workload score --------------------------------------------------------------
-   The Analysis page publishes analysis/workload.json next to this page; the board shows
-   its score for the same player, joined by name and position, coloured the same way. */
+/* ---- workload data ---------------------------------------------------------------
+   The Analysis page publishes analysis/workload.json next to this page; the board reads each
+   player's role shares from it, joined by name and position, for the usage score below. */
 function loadWorkload() {
   return fetch("analysis/workload.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
     .then(function (doc) {
       state.workload = {};
       (doc.players || []).forEach(function (w) {
-        if (w.score) state.workload[normName(w.name) + "|" + w.pos] = { s: w.score, games: w.l16_games, pos: w.pos, week: doc.next_week };
+        var mu = ((doc.matchups || {})[w.pos] || {})[w.team];
+        if (w.score) state.workload[normName(w.name) + "|" + w.pos] = { s: w.score, games: w.l16_games, pos: w.pos, week: doc.next_week,
+                                                                        l16: w.l16 || {}, imp: mu ? mu.implied_total : null };
       });
     })
     .catch(function () { state.workload = {}; });
@@ -4332,31 +4334,109 @@ function workloadFor(p) {
     ? state.workload[boardKey(p.first_name, p.last_name, state.nameMaps.nfl) + "|" + p.position] || null : null;
 }
 
-/** The number the score chip shows: the NFL blend, or the rough college score. */
+/* ---- Usage score: the chip, and the "score" sort ------------------------------------
+   A tiebreaker to read beside ETR, not a projection. It is each player's stable share of his
+   team's work, placed 0-100 against the other players at his position on this slate: every
+   input below is standardised across those players and the inputs are averaged equally (one
+   he has no value for is skipped), then the average is ranked, 100 = the most. NFL inputs are
+   last-16-game shares (healthy games, analysis/workload.json); college ones are season shares
+   (analysis/cfb.json). QBs add their team's implied total, the one matchup input that beat ETR
+   for QBs in both 2025 and 2026; no other matchup input is in it. Tested on 2025-26 against
+   ETR: it leaned the right way faintly at TE and QB, not at all at RB, and broke ETR near-ties
+   about half the time, so it is a lean, not a call. */
+var USAGE_INPUTS = {
+  nfl: { QB: [["xfpsh", "XFP share"], ["rushyd", "rush yd"], ["imp", "implied"]],
+         RB: [["snap", "snap"], ["carry", "carry"], ["usage", "usage"], ["rz", "RZ"]],
+         WR: [["tgt", "target"], ["route", "route"], ["fr", "1st read"], ["ay", "air yd"]],
+         TE: [["tgt", "target"], ["route", "route"], ["fr", "1st read"]] },
+  cfb: { QB: [["rush_sh", "rush share"], ["imp", "implied"]],
+         RB: [["overall", "play share"], ["rush_sh", "rush share"], ["rec_sh", "catch share"]],
+         WR: [["overall", "play share"], ["rec_sh", "catch share"], ["pass", "pass-play share"]],
+         TE: [["overall", "play share"], ["rec_sh", "catch share"], ["pass", "pass-play share"]] }
+};
+var USAGE_TIER_CUTS = [85, 60, 30];   // top 15 Elite, next 25 Great, next 30 Average, as the college tiers
+var usageMemo = null;
+
+/** His usage inputs on this slate's sport, {key: value}, or null when there is no data for him. */
+function usageInputsFor(p) {
+  var sport = state.slate && state.slate.sport, src;
+  if (sport === "nfl") {
+    var w = workloadFor(p);
+    if (!w) return null;
+    src = Object.assign({}, w.l16, { imp: w.imp });
+  } else if (sport === "cfb") {
+    var cf = cfbFor(p);
+    if (!cf || !cf.w) return null;
+    src = Object.assign({}, cf.w.usage || {}, cf.w.m || {}, { imp: cf.m ? cf.m.implied : null });
+  } else return null;
+  var spec = (USAGE_INPUTS[sport] || {})[p.position];
+  if (!spec) return null;
+  var out = {}, any = false;
+  spec.forEach(function (s) { var v = src[s[0]]; if (typeof v === "number" && isFinite(v)) { out[s[0]] = v; any = true; } });
+  return any ? out : null;
+}
+
+/** player_id -> {pct, of}: each slate player's usage percentile within his position. */
+function usageScores() {
+  var s = state.slate;
+  if (!s) return {};
+  if (usageMemo && usageMemo.slate === s && usageMemo.players === s.players && usageMemo.wl === state.workload && usageMemo.cfb === state.cfbIndex) return usageMemo.map;
+  var byPos = {}, map = {};
+  s.players.forEach(function (p) {
+    var x = usageInputsFor(p);
+    if (x) (byPos[p.position] = byPos[p.position] || []).push({ pid: p.player_id, x: x });
+  });
+  Object.keys(byPos).forEach(function (pos) {
+    var rows = byPos[pos], spec = (USAGE_INPUTS[s.sport] || {})[pos] || [];
+    spec.forEach(function (sp) {                    // standardise each input across the position's players
+      var v = rows.map(function (r) { return r.x[sp[0]]; }).filter(function (a) { return a != null; });
+      if (v.length < 2) return;
+      var mu = v.reduce(function (a, b) { return a + b; }, 0) / v.length;
+      var sd = Math.sqrt(v.reduce(function (a, b) { return a + (b - mu) * (b - mu); }, 0) / (v.length - 1));
+      rows.forEach(function (r) { if (r.x[sp[0]] != null && sd > 0) (r.z = r.z || []).push((r.x[sp[0]] - mu) / sd); });
+    });
+    rows = rows.filter(function (r) { return r.z && r.z.length; });
+    rows.forEach(function (r) { r.c = r.z.reduce(function (a, b) { return a + b; }, 0) / r.z.length; });
+    rows.forEach(function (r) {
+      var below = 0, tie = 0;
+      rows.forEach(function (o) { if (o !== r) { if (o.c < r.c) below++; else if (o.c === r.c) tie++; } });
+      map[r.pid] = { pct: rows.length > 1 ? Math.round(100 * (below + tie / 2) / (rows.length - 1)) : 50, of: rows.length, x: r.x };
+    });
+  });
+  usageMemo = { slate: s, players: s.players, wl: state.workload, cfb: state.cfbIndex, map: map };
+  return map;
+}
+
+/** The number the score chip shows and the score sort uses: his usage percentile. */
 function scoreValueFor(p) {
-  if (state.slate && state.slate.sport === "cfb") {
-    var cf = cfbFor(p), v = cf && cf.w && cf.w.m && cf.w.m.score;
-    return typeof v === "number" ? v : null;
-  }
-  var w = workloadFor(p);
-  if (!w) return null;
-  return w.s.blend != null ? w.s.blend : 0.25 * w.s.p50 + 0.75 * w.s.p80;
+  var u = usageScores()[p.player_id];
+  return u ? u.pct : null;
+}
+
+/** The usage chip: 0-100 against his position on this slate, coloured by tier. */
+function usageChip(p, cls) {
+  var u = usageScores()[p.player_id];
+  if (!u) return null;
+  var w = state.slate.sport === "nfl" ? workloadFor(p) : null, thin = w && w.games < 4;
+  var t = 3 - USAGE_TIER_CUTS.filter(function (c) { return u.pct < c; }).length;
+  var b = document.createElement("b");
+  b.className = (cls ? cls + " " : "") + "t" + t + (thin ? " thin" : "");
+  b.textContent = String(u.pct);
+  var spec = USAGE_INPUTS[state.slate.sport][p.position];
+  b.title = "Usage " + u.pct + ": more of his team's work than " + u.pct + "% of the " + u.of + " " + p.position + "s on this slate · " +
+    spec.filter(function (s) { return s[0] !== "imp" && u.x[s[0]] != null; }).map(function (s) {
+      return s[1] + " " + Math.round(u.x[s[0]] * 100) + "%";
+    }).join(", ") + (state.slate.sport === "nfl" ? " (last 16 games)" : " (season)") +
+    (u.x.imp != null ? ", team implied total " + u.x.imp.toFixed(1) + " this week" : "") +
+    " · a tiebreaker beside ETR, not a projection" + (thin ? " · only " + w.games + " game" + (w.games === 1 ? "" : "s") + " of data" : "");
+  return b;
 }
 
 function scoreCell(p) {
   var c = document.createElement("span");
   c.className = "num score";
-  var w = workloadFor(p);
-  if (!w) return c;
-  var b = document.createElement("b");
-  var thin = w.games < 4;
-  b.className = "t" + w.s.tier + (thin ? " thin" : "");
-  var bl = w.s.blend != null ? w.s.blend : 0.25 * w.s.p50 + 0.75 * w.s.p80;
-  b.textContent = String(Math.round(bl));
-  b.title = "Workload score " + Math.round(bl) + " in Week " + w.week + " (25% median + 75% ceiling; expected " + w.s.next.toFixed(1) + " half-PPR) · " + w.pos + w.s.rank +
-    " · role " + (w.s.parts.role >= 0 ? "+" : "") + w.s.parts.role.toFixed(1) + ", matchup " + (w.s.parts.matchup >= 0 ? "+" : "") + w.s.parts.matchup.toFixed(1) +
-    (thin ? " · only " + w.games + " game" + (w.games === 1 ? "" : "s") + " of data" : "");
-  c.appendChild(b);
+  var b = usageChip(p);
+  if (b) c.appendChild(b);
   return c;
 }
 
@@ -4452,16 +4532,8 @@ function cfbOppCell(p, cf) {
   c.className = "num score";
   if (!cf || !cf.m) return c;
   var d = cfbDef(cf, p.position), m = cf.m;
-  var sc = cf.w && cf.w.m && cf.w.m.score;
-  if (sc != null) {
-    var s = document.createElement("b"), t0 = cfbTier(sc, ((state.cfb.cuts || {})[cf.w.pos] || {}).score);
-    s.className = "sc" + (t0 == null ? "" : " t" + t0);
-    s.textContent = String(Math.round(sc));
-    s.title = "Score (rough): expected " + sc.toFixed(1) + " half-PPR this week, from his half-PPR per game and share of team " +
-      (p.position === "WR" || p.position === "TE" ? "catches" : "carries") + " so far, plus his team's implied total and spread" +
-      (t0 == null ? "" : " · " + CFB_TIER[t0] + " among " + cf.w.pos + "s this week");
-    c.appendChild(s);
-  }
+  var s = usageChip(p, "sc");
+  if (s) c.appendChild(s);
   var b = document.createElement("b");
   var t = d ? ["Tough", "Average", "Great", "Elite"].indexOf(d.tier) : -1;
   b.className = t < 0 ? "" : "t" + t;
@@ -4677,8 +4749,8 @@ function render() {
   $("copyMain").hidden = !nbaMainSlate(state.slate);
   $("scoreHead").title = SPORT_MODE === "cbb" ? "Min: his expected minutes tonight. PPM: his fantasy points per minute. Line: his team's spread (negative = favored). Shaded within the top " + NBA_SHADE_TOP + " by Proj"
     : SPORT_MODE === "nba" ? "Boom: chance of a night 10+ over the average of the median projection of the 12 players around him by ADP and of the 12 around him by projection, for ties above the amber line. Dud: chance of a night 10+ under it, for ties below. Mtch: tonight's matchup in points (hover for the breakdown). Shaded within the top " + NBA_SHADE_TOP + " by Proj only"
-    : isCfb ? "Rough score: expected half-PPR this week, coloured against the position. Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
-                               : "Workload score from the Analysis page: expected half-PPR next game";
+    : isCfb ? "Usage: his season share of his team's work, 0-100 against his position on this slate (a tiebreaker beside the projection, not a projection). Then this week's opponent, coloured by how soft its defense is for the position (run D for QB/RB, pass D for WR/TE)"
+                               : "Usage: his share of his team's work over the last 16 games, 0-100 against his position on this slate. A tiebreaker beside ETR, not a projection";
   /* The line only means anything against your own order; every other view is a sort. */
   var atLine = state.cut != null && state.view === "order";
   state.vorpTop = Object.keys(state.vorp).reduce(function (m, k) {
@@ -5029,7 +5101,7 @@ function applyBuilder(metric) {
   if (metric === "score") {                     // same blocks, best score first; no score sorts last
     values = {};
     state.slate.players.forEach(function (p) { var v = scoreValueFor(p); if (v != null) values[p.player_id] = v; });
-    if (!Object.keys(values).length) { setStatus("No Workload scores for this slate yet, so there's nothing to seed from.", "warn"); return; }
+    if (!Object.keys(values).length) { setStatus("No usage scores for this slate yet, so there's nothing to seed from.", "warn"); return; }
   }
   var built = buildBlockOrder(state.slate.players, metric === "score" ? "proj" : metric, values, BUILDER_CAPS);
   state.order = resortTail(built.order, built.curatedCount, byPidMap(state.slate), tailValues());
@@ -7175,6 +7247,31 @@ function brrSelfTest() {
   ok("export after a builder is the full board",
      builtExport.rows === roster.length && builtExport.missing.length === 0 &&
      builtExport.csv.split("\n")[0] === "id");
+
+  // usage score: per position, equal-weight standardised shares, ranked 0-100; QBs add implied total
+  var keep = { slate: state.slate, workload: state.workload, nameMaps: state.nameMaps };
+  try {
+    state.nameMaps = Object.assign({}, state.nameMaps, { nfl: {} });
+    state.workload = {
+      "te a|TE": { l16: { tgt: .25, route: .90, fr: .30 }, games: 16, imp: 20 },
+      "te b|TE": { l16: { tgt: .15, route: .60, fr: .15 }, games: 16, imp: 27 },
+      "te c|TE": { l16: { tgt: .20, route: .75 }, games: 2, imp: 22 },   // no first-read value: skipped, not zero
+      "qb a|QB": { l16: { xfpsh: .25, rushyd: .10 }, games: 16, imp: 28 },
+      "qb b|QB": { l16: { xfpsh: .25, rushyd: .10 }, games: 16, imp: 18 }
+    };
+    state.slate = { sport: "nfl", label: "t", players: ["te a", "te b", "te c", "qb a", "qb b", "k z"].map(function (n, i) {
+      return { player_id: "u" + i, first_name: n.split(" ")[0], last_name: n.split(" ")[1], position: n === "k z" ? "K" : n.slice(0, 2).toUpperCase() }; }) };
+    usageMemo = null;
+    var us = usageScores();
+    ok("usage: most usage is 100, least 0", us.u0.pct === 100 && us.u1.pct === 0 && us.u2.pct === 50 && us.u0.of === 3);
+    ok("usage: a missing input is skipped", us.u2.x.fr === undefined);
+    ok("usage: QB implied total breaks an even role", us.u3.pct === 100 && us.u4.pct === 0);
+    ok("usage: a position with no inputs gets no score", scoreValueFor(state.slate.players[5]) === null);
+    var chip = usageChip(state.slate.players[2]);
+    ok("usage chip: tier and thin mark", /\bt1\b/.test(chip.className) && /thin/.test(chip.className) && chip.textContent === "50");
+  } finally {
+    state.slate = keep.slate; state.workload = keep.workload; state.nameMaps = keep.nameMaps; usageMemo = null;
+  }
 
   if (fails.length) { console.error("brrSelfTest FAILED: " + fails.join(", ")); return false; }
   console.log("brrSelfTest passed");
