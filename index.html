@@ -4334,7 +4334,7 @@ function loadWorkload() {
         if (w.score) state.workload[normName(w.name) + "|" + w.pos] = { s: w.score, games: w.l16_games, pos: w.pos, week: doc.next_week,
                                                                         l16: w.l16 || {}, imp: mu ? mu.implied_total : null,
                                                                         name: w.name, team: w.team, l4: w.l4 || {}, log: w.games || [],
-                                                                        rookie: w.rookie, new_team: w.new_team, mu: mu || null,
+                                                                        rookie: w.rookie, new_team: w.new_team, mu: mu || null, ryoe: w.ryoe || null,
                                                                         takes: notes[normName(w.name)] || [] };
       });
     })
@@ -4756,6 +4756,22 @@ function nflStrip(w, inline) {
   return s;
 }
 
+function signed(v, dp) { return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v).toFixed(dp); }
+
+/** RB: rushing yards over expected this season (Next Gen Stats count only his 10+ carry games). */
+var RYOE_MIN_ATT = 30;
+function nflRyoeGroup(w) {
+  var y = w.ryoe, note = " Backs with poor RYOE have tended to lose carry share the next game; ETR mostly prices that " +
+    "(research C19). Next Gen Stats count only games with 10+ carries.";
+  if (!y) return cfbGroup("RYOE", "this season", [cfbCell(null, null, "\u2013", null, "No games with 10+ carries this season." + note)]);
+  var thin = y.att < RYOE_MIN_ATT, t = thin ? null : cfbTier(y.per, nflCuts("RB", "ryoe").season);
+  return cfbGroup("RYOE", "per carry ¦ total", [
+    cfbCell(y.per, t, signed(y.per, 1), thin ? null : "l16", "Rushing yards over expected: " + signed(y.per, 2) + " a carry on " + y.att +
+      " tracked carries" + (thin ? " (under " + RYOE_MIN_ATT + ", so no colour)" : t == null ? "" : " · " + NFL_TIER[t] + " among this season's RBs") + "." + note),
+    Object.assign(document.createElement("span"), { className: "div" }),
+    cfbCell(null, null, signed(y.tot, 0), "text", signed(y.tot, 0) + " rushing yards over expected this season, the running total Stealing Signals ranks.")]);
+}
+
 function nflPanel(p, w) {
   var d = document.createElement("div");
   d.className = "cfbpanel";
@@ -4768,6 +4784,7 @@ function nflPanel(p, w) {
       Object.assign(document.createElement("span"), { className: "div" }),
       cfbCell(c, tc, c == null ? "–" : String(Math.round(c)), null, b[2] + " per game, last 4 this season" + (tc == null ? "" : " · " + NFL_TIER[tc]))]));
   });
+  if (w.pos === "RB") grid.appendChild(nflRyoeGroup(w));
   var m = w.mu;
   if (m) {
     var mt = 3 - ["Elite", "Great", "Average", "Tough"].indexOf(m.tier);
@@ -4785,6 +4802,8 @@ function nflPanel(p, w) {
     return "Wk " + g.wk + " " + g.opp + " " + (g.fp == null ? "–" : g.fp.toFixed(1)) + (g.xfp != null ? " (XFP " + g.xfp.toFixed(1) + ")" : "") + (g.inj ? ", left injured" : "");
   });
   if (m) fine.push(m.opp + " allowed " + m.opp_allowed.toFixed(1) + " half-PPR a game to " + w.pos + "s, last 8");
+  if (w.ryoe) fine.push("RYOE " + signed(w.ryoe.per, 2) + " a carry, " + signed(w.ryoe.tot, 0) + " total, on " + w.ryoe.att +
+                        " carries in his " + w.ryoe.games + " game" + (w.ryoe.games === 1 ? "" : "s") + " with 10+ this season");
   if (w.rookie) fine.push("rookie");
   if (w.new_team) fine.push("new team within his last 16 games");
   if (w.games < 4) fine.push("only " + w.games + " game" + (w.games === 1 ? "" : "s") + " of data");
