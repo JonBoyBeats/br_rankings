@@ -4314,17 +4314,31 @@ function sortRowsByView(list, view) {
    The Analysis page publishes analysis/workload.json next to this page; the board reads each
    player's role shares from it, joined by name and position, for the usage score below. */
 function loadWorkload() {
-  return fetch("analysis/workload.json?t=" + Date.now(), { cache: "no-store" })
-    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-    .then(function (doc) {
+  function get(url) {
+    return fetch(url + "?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+  }
+  return Promise.all([get("analysis/workload.json"), get("analysis/takes.json").catch(function () { return { takes: [], sources: {} }; })])
+    .then(function (got) {
+      var doc = got[0], notes = {};
       state.workload = {};
+      state.workloadDoc = { through: doc.through_week, next: doc.next_week, positions: doc.positions || {}, matchups: doc.matchups || {},
+                            sources: got[1].sources || {} };
+      // only this week's notes: recaps of the last week played, previews of the next
+      (got[1].takes || []).forEach(function (t) {
+        if ((t.kind === "performance" && t.week === doc.through_week) || (t.kind === "matchup" && t.week === doc.next_week))
+          (notes[normName(t.player)] = notes[normName(t.player)] || []).push(t);
+      });
       (doc.players || []).forEach(function (w) {
         var mu = ((doc.matchups || {})[w.pos] || {})[w.team];
         if (w.score) state.workload[normName(w.name) + "|" + w.pos] = { s: w.score, games: w.l16_games, pos: w.pos, week: doc.next_week,
-                                                                        l16: w.l16 || {}, imp: mu ? mu.implied_total : null };
+                                                                        l16: w.l16 || {}, imp: mu ? mu.implied_total : null,
+                                                                        name: w.name, team: w.team, l4: w.l4 || {}, log: w.games || [],
+                                                                        rookie: w.rookie, new_team: w.new_team, mu: mu || null,
+                                                                        takes: notes[normName(w.name)] || [] };
       });
     })
-    .catch(function () { state.workload = {}; });
+    .catch(function () { state.workload = {}; state.workloadDoc = null; });
 }
 
 /** His Workload entry on an NFL slate, or null. */
@@ -4703,6 +4717,99 @@ function esc(s) {
   return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
 }
 
+/* ---- NFL dropdown: the Analysis page's player view, on the board ------------------------
+   Same layout as college. On the row: his first two role stats, each as his last-16 rate
+   (outlined) and his last four games. The toggle opens the rest: the other role stats,
+   expected and actual half-PPR (last 16 | last 4), this week's matchup and line, his last
+   four games in numbers, and the week's notes (analysis/takes.json). Hatched = a game he left
+   injured, shown but kept out of the averages. Colours are the Analysis page's tiers, each
+   cell against its own window (single games against single games). */
+var NFL_STRIP = 2;
+var NFL_TIER = ["Replacement", "Average", "Great", "Elite"];
+
+function nflStats(pos) { return ((state.workloadDoc.positions[pos] || {}).stats) || []; }
+function nflCuts(pos, k) { return (((state.workloadDoc.positions[pos] || {}).cuts) || {})[k] || {}; }
+function nflFmt(v, count) { return v == null ? "–" : count ? String(Math.round(v)) : String(Math.round(v * 100)); }
+
+/** One role stat: his last-16 rate, then his last four games. */
+function nflStatGroup(w, spec, short) {
+  var k = spec[0], count = spec[3] === "n", cuts = nflCuts(w.pos, k), v = w.l16[k], t = cfbTier(v, cuts.l16);
+  var cells = [cfbCell(v, t, nflFmt(v, count), "l16", spec[1] + ", last " + w.games + " games: " + nflFmt(v, count) +
+    (t == null ? "" : " · " + NFL_TIER[t]))];
+  cells.push(Object.assign(document.createElement("span"), { className: "div" }));
+  var log = w.log.slice(-4);
+  for (var i = 0; i < 4; i++) {
+    var gm = log[i - (4 - log.length)];
+    if (!gm) { cells.push(cfbCell(null, null, "", "blank")); continue; }
+    var gt = cfbTier(gm[k], cuts.game);
+    cells.push(cfbCell(gm[k], gt, nflFmt(gm[k], count), gm.inj ? "hurt" : null, "Wk " + gm.wk + " vs " + gm.opp + " · " + spec[1] + " " +
+      nflFmt(gm[k], count) + (gt == null ? "" : " · " + NFL_TIER[gt]) + (gm.inj ? " · left injured: not in the averages" : "")));
+  }
+  return cfbGroup(short ? spec[1].replace(/ %$/, "") : spec[1], short ? null : "last 16 ¦ last 4", cells);
+}
+
+/** Collapsed, on the row: his first two role stats. On the name line wide, its own line narrow. */
+function nflStrip(w, inline) {
+  var s = document.createElement("div");
+  s.className = "cfbstrip " + (inline ? "inl" : "own");
+  nflStats(w.pos).slice(0, NFL_STRIP).forEach(function (spec) { s.appendChild(nflStatGroup(w, spec, true)); });
+  return s;
+}
+
+function nflPanel(p, w) {
+  var d = document.createElement("div");
+  d.className = "cfbpanel";
+  var grid = document.createElement("div"); grid.className = "cfbgrid";
+  nflStats(w.pos).slice(NFL_STRIP).forEach(function (spec) { grid.appendChild(nflStatGroup(w, spec)); });
+  [["xfp", "XFP", "expected half-PPR"], ["fp", "Half-PPR", "scored"]].forEach(function (b) {
+    var cuts = nflCuts(w.pos, b[0]), a = w.l16[b[0]], c = w.l4[b[0]], ta = cfbTier(a, cuts.l16), tc = cfbTier(c, cuts.l4);
+    grid.appendChild(cfbGroup(b[1], "last 16 ¦ last 4", [
+      cfbCell(a, ta, a == null ? "–" : String(Math.round(a)), "l16", b[2] + " per game, last " + w.games + " games" + (ta == null ? "" : " · " + NFL_TIER[ta])),
+      Object.assign(document.createElement("span"), { className: "div" }),
+      cfbCell(c, tc, c == null ? "–" : String(Math.round(c)), null, b[2] + " per game, last 4 this season" + (tc == null ? "" : " · " + NFL_TIER[tc]))]));
+  });
+  var m = w.mu;
+  if (m) {
+    var mt = 3 - ["Elite", "Great", "Average", "Tough"].indexOf(m.tier);
+    grid.appendChild(cfbGroup("Matchup", (m.home ? "vs " : "@ ") + m.opp, [cfbCell(null, mt, "#" + m.rank, null,
+      m.tier + ": #" + m.rank + " of 32 for " + w.pos + "s, from points " + m.opp + " allowed to the position (last 8), implied total and spread")]));
+    grid.appendChild(cfbGroup("Implied", "team total", [cfbCell(null, null, m.implied_total.toFixed(1), "text")]));
+    grid.appendChild(cfbGroup("Line", m.home ? "home" : "road", [cfbCell(null, null,
+      m.spread > 0 ? "−" + m.spread : m.spread < 0 ? "+" + (-m.spread) : "PK", "text",
+      m.spread > 0 ? "Favored by " + m.spread : m.spread < 0 ? "Underdog by " + (-m.spread) : "Pick'em")]));
+  }
+  d.appendChild(grid);
+
+  // the raw lines, in small print: his last four games, then the matchup's
+  var fine = w.log.slice(-4).reverse().map(function (g) {
+    return "Wk " + g.wk + " " + g.opp + " " + (g.fp == null ? "–" : g.fp.toFixed(1)) + (g.xfp != null ? " (XFP " + g.xfp.toFixed(1) + ")" : "") + (g.inj ? ", left injured" : "");
+  });
+  if (m) fine.push(m.opp + " allowed " + m.opp_allowed.toFixed(1) + " half-PPR a game to " + w.pos + "s, last 8");
+  if (w.rookie) fine.push("rookie");
+  if (w.new_team) fine.push("new team within his last 16 games");
+  if (w.games < 4) fine.push("only " + w.games + " game" + (w.games === 1 ? "" : "s") + " of data");
+  var f = document.createElement("div"); f.className = "fine"; f.textContent = fine.join(" · ");
+  d.appendChild(f);
+
+  var doc = state.workloadDoc;
+  w.takes.slice().sort(function (a, b) { return a.kind === b.kind ? 0 : a.kind === "performance" ? -1 : 1; }).forEach(function (t) {
+    var recap = t.kind === "performance", tier = recap ? t.usage_tier : t.outlook_tier;
+    var tags = [t.job, tier ? tier + (recap ? " usage" : " outlook") : null, t.trend, t.stance].filter(Boolean).join(" · ");
+    var n = document.createElement("div"); n.className = "note";
+    n.innerHTML = "<div class=\"top\"><b title=\"" + esc(doc.sources[t.source] || t.source) + "\">" + esc(t.source) + "</b> <span class=\"lbl\">Wk " + t.week +
+      (recap ? " recap" : " preview") + (tags ? " · " + esc(tags) : "") + "</span></div>" +
+      (recap && t.evidence ? "<div class=\"ev\">" + esc(t.evidence) + "</div>" : "") + (t.blurb ? "<div>" + esc(t.blurb) + "</div>" : "");
+    d.appendChild(n);
+  });
+  if (!w.takes.length) {
+    var none = document.createElement("div"); none.className = "fine";
+    none.textContent = "No Week " + doc.through + " recaps or Week " + doc.next + " previews mention him.";
+    d.appendChild(none);
+  }
+  d.addEventListener("click", function (e) { e.stopPropagation(); });
+  return d;
+}
+
 /** Underdog's designation, when the mirror carries one: Q, D, O and anything else as sent. */
 function injuryTag(status) {
   if (!status) return null;
@@ -4742,7 +4849,7 @@ function render() {
   if (projHead && SPORT_MODE === "cbb") projHead.title = "Our projection: expected minutes \u00d7 points per minute, moved for tonight's spread and total";
   $("scoreHead").textContent = isCfb ? "Score · Opp" : SPORT_MODE === "nba" ? "Boom% Dud% \u2502 Mtch" : SPORT_MODE === "cbb" ? "Min PPM \u2502 Line" : "Score";
   if (NBA_LIKE) $("scoreHead").appendChild(document.createElement("span")).className = "opp-h";
-  $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(SPORT_MODE === "nba" && ((state.nbaTakes || []).length || state.nbaMinutes));
+  $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(state.slate && state.slate.sport === "nfl" && state.workloadDoc) && !(SPORT_MODE === "nba" && ((state.nbaTakes || []).length || state.nbaMinutes));
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
   $("scoreHead").disabled = NBA_LIKE;
@@ -4831,6 +4938,7 @@ function render() {
     sub.className = "sub";
     sub.textContent = p.team || "—";
     var cf = state.slate.sport === "cfb" ? cfbFor(p) : null;
+    var nw = state.slate.sport === "nfl" && state.workloadDoc ? workloadFor(p) : null;
     var nt = SPORT_MODE === "nba" ? nbaTakesFor(p) : null;
     if (NBA_LIKE) {
       // Straight columns: name, injury, team, ETR, Zakarian, notes, out. No position: every spot is a flex.
@@ -4850,6 +4958,7 @@ function render() {
     } else {
       who.append(name, pos, sub);
       if (cf) cfbWho(who, p, cf);
+      else if (nw) cfbWho(who, p, { takes: nw.takes });
       var inj = injuryTag(p.injury);
       if (inj) who.appendChild(inj);
     }
@@ -4860,6 +4969,7 @@ function render() {
       who.appendChild(tag);
     }
     if (cf && cf.w) who.appendChild(cfbStrip(p, cf, true));
+    if (nw) who.appendChild(nflStrip(nw, true));
 
     var mv = hasAdp(p) ? movement(state.baseline, p.player_id, p.adp) : { kind: "nobase" };
     var ind = document.createElement("span");
@@ -5002,8 +5112,10 @@ function render() {
     if (ownCell) el.append(handle, rank, who, adp, sc, ownCell, pr, vo);
     else el.append(handle, rank, who, adp, sc, pr, vo);
     if (cf && cf.w) el.appendChild(cfbStrip(p, cf, false));
+    if (nw) el.appendChild(nflStrip(nw, false));
     frag.appendChild(el);
     if (cf && state.cfbOpen[p.player_id]) frag.appendChild(cfbPanel(p, cf));
+    if (nw && state.cfbOpen[p.player_id]) frag.appendChild(nflPanel(p, nw));
     var mins = SPORT_MODE === "nba" ? nbaMinutesFor(p) : null;
     if ((nt && nt.length || mins) && state.cfbOpen[p.player_id]) frag.appendChild(nbaPanel(nt || [], mins));
     if (SPORT_MODE === "nba" && state.sitOpen && state.sitOpen[p.player_id] && nbaSitFor(p)) frag.appendChild(nbaSitPanel(nbaSitFor(p)));
@@ -5333,7 +5445,7 @@ $("cfbAll").addEventListener("click", function (e) {
   e.stopPropagation();
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
   state.cfbOpen = {};
-  if (!anyOpen) visibleRows().forEach(function (r) { if (SPORT_MODE === "nba" ? nbaTakesFor(r.p).length || nbaMinutesFor(r.p) : cfbFor(r.p)) state.cfbOpen[r.p.player_id] = true; });
+  if (!anyOpen) visibleRows().forEach(function (r) { if (SPORT_MODE === "nba" ? nbaTakesFor(r.p).length || nbaMinutesFor(r.p) : state.slate.sport === "nfl" ? workloadFor(r.p) : cfbFor(r.p)) state.cfbOpen[r.p.player_id] = true; });
   render();
 });
 $("liftMinus").addEventListener("click", function () { jumpLifted("minus"); });
