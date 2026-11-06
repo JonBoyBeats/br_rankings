@@ -284,3 +284,146 @@ Kerrane,9,Tory Horton,SEA,ARI,Replacement,Upside,The dedicated deep threat; slig
 Kerrane,9,AJ Barner,SEA,ARI,Replacement,,Locked into a full-time role but no real connection with either QB. A TE2.
 Kerrane,9,Jadarian Price,SEA,ARI,Replacement,,"The lead runner, which suits a game SEA should control, though he's run poorly. An RB3."
 Kerrane,9,Zach Charbonnet,SEA,ARI,Replacement,,The secondary back who led as a receiver. An RB4.
+FP Trends,9,Trevor Lawrence,JAX,@BAL,,,10-of-14 for 210 yds and 3 TDs vs IND; multiple TDs in five of seven. 9.97 YPA vs BAL's Cover 3/4.
+FP Trends,9,Parker Washington,JAX,@BAL,,,"One catch on 3 or fewer targets in two of his last four games; 3.04 YPRR vs Cover 3/4, and BAL allow the 9th-most yards to the slot."
+FP Trends,9,Jakobi Meyers,JAX,@BAL,,,Nursing hamstring and ankle injuries; 3 or fewer catches and 40 or fewer yds in five of seven.
+FP Trends,9,Brenton Strange,JAX,@BAL,,,"44+ yds four straight; 3.34 YPRR vs BAL's Cover 3/4, though BAL allow the 6th-fewest TE catches."
+FP Trends,9,Bhayshul Tuten,JAX,@BAL,,,"Season-best games back-to-back (29.9 FP last week), 4 TDs in two games; BAL allow the 2nd-fewest RB receiving yards."
+FP Trends,9,Joe Fagnano,BAL,JAX,,,Starts with Lamar (thumb) and Huntley (toe) out for the season; 10-of-21 for 91 yds and an INT last week. JAX allow the 5th-most passing YPG.
+FP Trends,9,Zay Flowers,BAL,JAX,,,0 catches on 4 targets with Fagnano after 5+ catches in his first six; JAX allow the 2nd-most WR receiving YPG.
+FP Trends,9,Derrick Henry,BAL,JAX,,,Under 60 scrimmage yds three straight; Hill out-snapped him and out-routed him 55% to 23%. JAX allow the fewest rushing YPG.
+FP Trends,9,Justice Hill,BAL,JAX,,,"3+ catches three straight, including 4-20 with Fagnano."
+FP Trends,9,Joe Burrow,CIN,vs ATL,,,Multiple TDs six straight and 4+ TD passes three straight; 42.5 FP last week. 8.48 YPA vs ATL's Cover 3/1.
+FP Trends,9,Ja'Marr Chase,CIN,vs ATL,,,"Season highs in targets (16), catches, yards and FP (31.1); a TD in his last five full games. ATL allow the 8th-most WR yards outside."
+FP Trends,9,Tee Higgins,CIN,vs ATL,,,10-155-2 for 37.5 FP; 90+ yds in five of six. 3.43 YPRR vs Cover 3/1.
+FP Trends,9,Mike Gesicki,CIN,vs ATL,,,A TD in six of seven as a part-timer; first in explosive catch rate among TEs.
+FP Trends,9,Chase Brown,CIN,vs ATL,,,"Under 56 rush yds four straight and no TD in six, but 3+ catches in six of seven; ATL allow the 7th-most rushing YPG."
+FP Trends,9,Michael Penix Jr.,ATL,vs CIN,,,2.1 FP with 4 INTs in the rain after 20.4+ FP back-to-back; CIN allow the 6th-most passing YPG.
+FP Trends,9,Drake London,ATL,vs CIN,,,12.2+ FP in all five Penix games before the rain; 3.60 YPRR vs CIN's Cover 1/3.
+FP Trends,9,Kyle Pitts,ATL,vs CIN,,,His TD streak ended in the rain; CIN allow the 2nd-most TE yards and catches.
+FP Trends,9,Bijan Robinson,ATL,vs CIN,,,No TD in four straight; 83% snaps with Brian Robinson out. 4th in YPC.
+FP Trends,9,Bo Nix,DEN,@CAR,,,Two of his three best fantasy games in the last two weeks; 31st in YPA. CAR play Cover 3/6 on 62.7%.
+FP Trends,9,Jaylen Waddle,DEN,@CAR,,,Over 40 yds just twice in eight; played through a chest injury on a 50% route share. CAR allow the 7th-most yards to outside WRs.
+FP Trends,9,Jonah Coleman,DEN,@CAR,,,"Atop the backfield with Harvey on IR: 68% snaps, 50% routes to Dobbins' 21% and 6%; a 21.7% explosive run rate and 3.23 YPRR."
+FP Trends,9,J.K. Dobbins,DEN,@CAR,,,7-13 with no target as the clear second fiddle.
+FP Trends,9,Bryce Young,CAR,DEN,,,19.8 FP total the last two weeks after 19.8+ in four of his first five; 35+ attempts in eight of nine.
+FP Trends,9,Tetairoa McMillan,CAR,DEN,,,10-98 over the last two weeks after 75+ yds in four of five.
+FP Trends,9,Jalen Coker,CAR,DEN,,,3 catches and a lost fumble over two games; DEN allow the 12th-fewest yards to the slot.
+FP Trends,9,Chuba Hubbard,CAR,DEN,,,"24.9 FP; 19+ carries and 110+ scrimmage yds in four of five, double-digit FP every game. DEN allow the 3rd-most RB receiving yards."
+FP Trends,9,Dak Prescott,DAL,@IND,,,Multiple scores back-to-back; first in pressure-to-sack rate. IND allow the 9th-most passing TDs.
+FP Trends,9,CeeDee Lamb,DAL,@IND,,,5+ catches and 12.8+ FP in seven of eight; 3rd in TPRR. IND allow the fewest yards to outside WRs.
+FP Trends,9,George Pickens,DAL,@IND,,,Played through shoulder and hamstring injuries (2-48); under 10 FP in four of eight.
+FP Trends,9,Ryan Flournoy,DAL,@IND,,,11+ FP four straight; IND allow the 6th-most yards to the slot.
+FP Trends,9,Javonte Williams,DAL,@IND,,,"25 touches back-to-back, but a season-low 6.7 FP; IND allow the 7th-most adjusted YBC/att."
+FP Trends,9,Daniel Jones,IND,DAL,,,One or fewer TDs and 15.8 or fewer FP in all eight games; benched in a 35-point loss.
+FP Trends,9,Josh Downs,IND,DAL,,,"His first TD of the season, but never over 14.2 FP; DAL allow the 2nd-most yards to the slot."
+FP Trends,9,Keenan Allen,IND,DAL,,,7-of-7 for 67; 5+ catches in five of seven as a Colt.
+FP Trends,9,Tyler Warren,IND,DAL,,,4-18 on 10 targets in his return; 4+ catches five straight but under 22 yds in half his games.
+FP Trends,9,Jonathan Taylor,IND,DAL,,,Possibly his last Colts game before the Nov. 10 deadline; a season-worst 7.7 FP with his third lost fumble. DAL allow the 6th-most rushing YPG.
+FP Trends,9,Geno Smith,NYJ,@KC,,,252+ pass yds three straight; 8.68 YPA vs KC's Cover 3/4.
+FP Trends,9,Garrett Wilson,NYJ,@KC,,,In the concussion protocol and in jeopardy of missing; 12 targets last week.
+FP Trends,9,Adonai Mitchell,NYJ,@KC,,,7-142-1 for 27.2 FP; 60+ yds in three of four. 3.03 YPRR vs Cover 3/4.
+FP Trends,9,Omar Cooper Jr.,NYJ,@KC,,,"No targets after back-to-back 115+ yard games, but a 74% route share; KC allow the 2nd-most catches to the slot."
+FP Trends,9,Breece Hall,NYJ,@KC,,,Hoping to return after five weeks out (quad).
+FP Trends,9,Braelon Allen,NYJ,@KC,,,104+ scrimmage yds and 19+ touches four straight; 2nd in success rate. KC allow the fewest adjusted YBC/att.
+FP Trends,9,Patrick Mahomes,KC,NYJ,,,321 yds and 3 TDs vs DEN; multiple TDs in all five games with Rice. NYJ have allowed 3+ TDs to QBs three straight.
+FP Trends,9,Rashee Rice,KC,NYJ,,,7-53-1 on 64% routes in his return; 53+ yds and 12.3+ FP his last three full games.
+FP Trends,9,Travis Kelce,KC,NYJ,,,59+ yds and 10.1+ FP in all four of Rice's full games; first in YAC per catch among TEs.
+FP Trends,9,Kenneth Walker III,KC,NYJ,,,22.1 FP total the last two weeks after 106-665-6 in his first five; 2nd in XFP/G.
+FP Trends,9,Jared Goff,DET,@MIA,,,A season-low 10 FP and his first INT vs MIN; MIA have allowed multiple TDs to QBs in six of seven.
+FP Trends,9,Amon-Ra St. Brown,DET,@MIA,,,"No TD in four straight (one overturned), but 11.9+ FP every game; MIA allow the 6th-most YPT to the slot."
+FP Trends,9,Jameson Williams,DET,@MIA,,,16.2+ FP four straight.
+FP Trends,9,Sam LaPorta,DET,@MIA,,,Quiet in two games since the bye (4-51); MIA allow the 3rd-most TE catches.
+FP Trends,9,Jahmyr Gibbs,DET,@MIA,,,23-153-1; 111+ scrimmage yds in six of seven. First in XFP/G and explosive run rate.
+FP Trends,9,Malik Willis,MIA,DET,,,15.6 FP and a season-low 1 carry vs NE after averaging 37.2 rush YPG; DET allow the most passing YPG and TDs.
+FP Trends,9,Malik Washington,MIA,DET,,,"3+ catches in all seven games, 11+ FP in four of five; DET allow the 4th-most yards to the slot."
+FP Trends,9,Caleb Douglas,MIA,DET,,,4-43 on an 81% route share; 2nd in YAC per catch among WRs.
+FP Trends,9,Greg Dulcich,MIA,DET,,,4+ catches and 37+ yds in four of five; DET allow the most TE yards and catches.
+FP Trends,9,Ollie Gordon II,MIA,DET,,,"No receiving yards in four straight, and his TD streak ended; still dominated Wright (83% snaps)."
+FP Trends,9,Shedeur Sanders,CLE,@NO,,,Expected to start with Watson in the concussion protocol; 14.6 FPG in six starts last year. NO play single-high at the 2nd-highest rate.
+FP Trends,9,Denzel Boston,CLE,@NO,,,"Under 10 FP and 38 yds three straight, despite 11 targets last week."
+FP Trends,9,KC Concepcion,CLE,@NO,,,Under 38 yds in five of seven; 3 targets last week.
+FP Trends,9,Harold Fannin Jr.,CLE,@NO,,,16-245 on 21 targets the last two weeks; 14.8 FPG in Sanders' starts last year. NO allow the 6th-most TE yards.
+FP Trends,9,Quinshon Judkins,CLE,@NO,,,Under 10 FP in five of seven; Sampson led in snaps (56% to 39%) and routes last week. NO allow the 2nd-most rushing YPG.
+FP Trends,9,Dylan Sampson,CLE,@NO,,,6-62 receiving in a 21-point loss.
+FP Trends,9,Tyler Shough,NO,CLE,,,"2+ TDs and 22.4+ FP in four of his first six, but trending down into the bye; CLE play the most man, where he averages 118.7 rating."
+FP Trends,9,Chris Olave,NO,CLE,,,Under 14.3 FP in his last three after 19.6+ in his first four; 4th in routes per game.
+FP Trends,9,Devaughn Vele,NO,CLE,,,The most affected by Jordyn Tyson's potential return.
+FP Trends,9,Juwan Johnson,NO,CLE,,,5-23 on 10 targets his last three games.
+FP Trends,9,Travis Etienne,NO,CLE,,,Set to return from IR (hamstring); 64% snaps and 77% of designed carries in his last game.
+FP Trends,9,J.J. McCarthy,NYG,@PHI,,,9.0 YPA in his first full start but lost 4 sneaks to Winston; 12.06 YPA vs Cover 3/6 in a small sample.
+FP Trends,9,Malik Nabers,NYG,@PHI,,,111+ yds and 18.1+ FP four straight before the bye.
+FP Trends,9,Isaiah Likely,NYG,@PHI,,,"His worst game (2-12) in McCarthy's first full start, but first in TPRR among TEs."
+FP Trends,9,Cam Skattebo,NYG,@PHI,,,Back atop the depth chart (17-124-1) but hurt his hamstring in OT; NYG released Najee Harris.
+FP Trends,9,Devin Singletary,NYG,@PHI,,,The game-winning OT TD; NYG's backfield is thin with Tracy and Skattebo hurt.
+FP Trends,9,Saquon Barkley,PHI,NYG,,,In a two-man committee with Mitchell (56% to 32% snaps); NYG allow the 6th-most adjusted YBC/att.
+FP Trends,9,Elijah Mitchell,PHI,NYG,,,Led Barkley in snaps and routes last week.
+FP Trends,9,DeVonta Smith,PHI,NYG,,,Has missed four of five games (hamstring).
+FP Trends,9,Makai Lemon,PHI,NYG,,,8+ targets and 57+ yds back-to-back without Smith; 98th in YPRR.
+FP Trends,9,Dallas Goedert,PHI,NYG,,,4-30 in a good matchup; 4+ catches in five of six.
+FP Trends,9,Matthew Stafford,LA,@WAS,,,Arm soreness; under 223 pass yds three straight after 317+ in four straight. WAS allow the 6th-most passing TDs.
+FP Trends,9,Puka Nacua,LA,@WAS,,,11-80-1 on 12 targets (48%); first in TPRR. WAS allow the 6th-most yards to outside WRs.
+FP Trends,9,Tyler Higbee,LA,@WAS,,,7-50 over three games; Ferguson is trending toward a return.
+FP Trends,9,Kyren Williams,LA,@WAS,,,12.9+ FP in seven of eight; led Corum in snaps (72% to 28%) and routes. First in success rate.
+FP Trends,9,Blake Corum,LA,@WAS,,,13.3+ FP four straight; first in EPA per attempt.
+FP Trends,9,Jayden Daniels,WAS,LA,,,Just 6-33 rushing the last two weeks after 21-203-2 to start; first in turnover-worthy throw rate (0%).
+FP Trends,9,Stefon Diggs,WAS,LA,,,A TD in four of six; between 33 and 55 yds every game.
+FP Trends,9,Antonio Williams,WAS,LA,,,Team highs in targets (7) and catches (5) last week.
+FP Trends,9,Treylon Burks,WAS,LA,,,66+ yds in both games since McLaurin's injury; 3rd in win rate.
+FP Trends,9,Chig Okonkwo,WAS,LA,,,2-32 with a lost fumble after back-to-back 60-yard games.
+FP Trends,9,Rachaad White,WAS,LA,,,"29.7 FP over two games without Croskey-Merritt, with McNichols now hurt; led Ekeler in snaps, carries and routes."
+FP Trends,9,C.J. Stroud,HOU,@LAC,,,16.5 FP in his last game; 2 TDs and 18.5+ FP in all four games with Collins. LAC allow the 5th-fewest passing YPG.
+FP Trends,9,Nico Collins,HOU,@LAC,,,Under 10.9 FP three straight before the bye.
+FP Trends,9,Dalton Schultz,HOU,@LAC,,,Double-digit FP just once and no TD in seven games.
+FP Trends,9,Woody Marks,HOU,@LAC,,,"15+ carries and 81+ scrimmage yds three straight before the bye; Montgomery expected back per Brolley, though Kerrane says he's ruled out."
+FP Trends,9,Justin Herbert,LAC,HOU,,,"One or fewer TD passes and an INT in every game, never over 14.3 FP; last in EPA/DB. HOU allow the 4th-most passing YPG."
+FP Trends,9,Ladd McConkey,LAC,HOU,,,A season-high 86 yds thanks to a Hail Mary catch; 2.89 YPRR vs HOU's Cover 3/1.
+FP Trends,9,Omarion Hampton,LAC,HOU,,,9-20 on a 31% snap share in a three-way mess with Vidal and Mitchell.
+FP Trends,9,Kirk Cousins,LV,@SF,,,A season-high 28.2 FP; multiple TD passes in seven of eight.
+FP Trends,9,Brock Bowers,LV,@SF,,,A season-high 28.2 FP; 70+ yds and 8+ targets in all six games.
+FP Trends,9,Michael Mayer,LV,@SF,,,Double-digit FP in four of six games with Bowers.
+FP Trends,9,Tre Tucker,LV,@SF,,,0 catches on 1 target as Bech returned to a WR committee.
+FP Trends,9,Mike Washington Jr.,LV,@SF,,,"Elevated to lead runner: 25-83, out-snapping Jeanty 63% to 37%. SF allow the most RB receiving yards."
+FP Trends,9,Ashton Jeanty,LV,@SF,,,"2-9 rushing and 3-64 receiving; 3+ catches every game, but last in YBC/att."
+FP Trends,9,Brock Purdy,SF,LV,,,His worst fantasy game with Watkins as his lead WR; 2nd in ANY/A. LV allow the 2nd-most passing TDs.
+FP Trends,9,Mike Evans,SF,LV,,,Hoping to return from the Achilles; 2nd in YPRR among WRs.
+FP Trends,9,George Kittle,SF,LV,,,Season highs without Evans and Samuel; 69+ yds and 15.8+ FP in five of six.
+FP Trends,9,Christian McCaffrey,SF,LV,,,16+ FP and a TD six straight; LV allow the most rushing YPG.
+FP Trends,9,Jordan Love,GB,@NE,,,"2+ TDs every game, his first 3-TD game last week; 6.45 YPA vs NE's Cover 3/1."
+FP Trends,9,Christian Watson,GB,@NE,,,Went to the hospital mid-game and still posted 8-113; 96+ yds in half his games.
+FP Trends,9,Matthew Golden,GB,@NE,,,6+ catches four straight and 9.8+ FP every game.
+FP Trends,9,Tucker Kraft,GB,@NE,,,His best game (17.3 FP); 4+ catches six straight.
+FP Trends,9,Josh Jacobs,GB,@NE,,,"5+ catches, a TD and 20.1+ FP in both games, despite 1.9 yards per touch last week."
+FP Trends,9,Drake Maye,NE,GB,,,"3+ TDs and 22.5+ FP five straight; first in CPOE. 8.80 YPA vs two-high, which GB play at the 2nd-highest rate."
+FP Trends,9,DeMario Douglas,NE,GB,,,"65+ yds, a TD and 16.6+ FP in three of four."
+FP Trends,9,Eli Raridon,NE,GB,,,Could see a bigger role if Henry (foot) misses time.
+FP Trends,9,Mack Hollins,NE,GB,,,Could return from his calf injury; 51+ yds in three of four before it.
+FP Trends,9,Rhamondre Stevenson,NE,GB,,,76% snaps with Henderson out; 3+ catches in six of eight.
+FP Trends,9,Gardner Minshew,ARI,@SEA,,,Replaced Brissett and went 17-of-23 for 3 TDs in 24 minutes; SEA allow the fewest passing YPG.
+FP Trends,9,Trey McBride,ARI,@SEA,,,"7+ catches and double-digit FP every game; 20.2 FPG with Brissett, who's no longer the starter."
+FP Trends,9,Michael Wilson,ARI,@SEA,,,Gutted through two broken ribs for 8-111-1 on 15 targets; first in routes per game.
+FP Trends,9,Tyler Allgeier,ARI,@SEA,,,"A potential bellcow with Love on IR and Knight concussed, after 36.1 FP; first in YACO/att."
+FP Trends,9,Drew Lock,SEA,ARI,,,Starts for Darnold (quad); torched ARI for 235 yds and 3 TDs in Wk 2.
+FP Trends,9,Jaxon Smith-Njigba,SEA,ARI,,,118+ scrimmage yds and 22.8+ FP in seven of eight; 9-155-3 with Lock vs ARI in Wk 2.
+FP Trends,9,Jadarian Price,SEA,ARI,,,"Led Charbonnet in snaps, carries and routes, but under 7.8 FP in all four career games."
+FP Trends,9,Zach Charbonnet,SEA,ARI,,,"6-23, 3-6 in his first game back from the ACL; his workload could grow."
+FP Trends,9,Baker Mayfield,TB,@CHI,,,14 attempts in two wins; never over 14.6 FP in five starts. CHI play Cover 3/1 on 53%.
+FP Trends,9,Emeka Egbuka,TB,@CHI,,,Missed two weeks (foot); double-digit FP in five of six.
+FP Trends,9,Bucky Irving,TB,@CHI,,,"21+ carries, 106+ rush yds and a TD in three of four, but no more than 12 receiving yds in seven straight."
+FP Trends,9,Kenny Gainwell,TB,@CHI,,,Season highs in carries and yards in back-to-back run-heavy scripts (25-140 last week).
+FP Trends,9,Caleb Williams,CHI,TB,,,The first QB to top 200 yds vs SEA; first in catchable throw rate. 8.18 YPA vs TB's Cover 3/4.
+FP Trends,9,Luther Burden III,CHI,TB,,,7-56-1 at SEA; 56+ yds in six of eight. 2.73 YPRR vs Cover 3/4.
+FP Trends,9,Rome Odunze,CHI,TB,,,"Double-digit FP back-to-back, still no TD; 4th in explosive catch rate."
+FP Trends,9,Colston Loveland,CHI,TB,,,"6+ catches, 65+ yds and 12.5+ FP three straight."
+FP Trends,9,D'Andre Swift,CHI,TB,,,"A TD, 73+ scrimmage yds and 17.3+ FP in four straight without Monangai, including 3 TDs last week."
+FP Trends,9,Josh Allen,BUF,@MIN,,,"2+ TDs every game and a rush TD in six of seven; MIN blitz at the highest rate, and he averages 8.66 YPA vs it. MIN allow the fewest passing TDs."
+FP Trends,9,DJ Moore,BUF,@MIN,,,"4+ catches, 67+ yds and 12.7+ FP in all three full games."
+FP Trends,9,Khalil Shakir,BUF,@MIN,,,11+ FP four straight; 3.63 YPRR vs the blitz.
+FP Trends,9,Dalton Kincaid,BUF,@MIN,,,"18+ FP for the third time; first in YPRR among TEs, but 26th in routes per game."
+FP Trends,9,James Cook,BUF,@MIN,,,"75+ rush yds, a TD and 16.3+ FP six straight; first in YBC/att."
+FP Trends,9,Kyler Murray,MIN,BUF,,,"His first multi-TD game, but exited with a hamstring injury; Carson Wentz would start if he sits."
+FP Trends,9,Justin Jefferson,MIN,BUF,,,Refused to talk to the media after 5-33-1; under 56 yds in four of six.
+FP Trends,9,Jordan Addison,MIN,BUF,,,Double-digit FP for just the second time; 9th in separation score.
+FP Trends,9,T.J. Hockenson,MIN,BUF,,,13.5+ FP in four of six full games; BUF allow the 4th-most TE yards.
+FP Trends,9,Jordan Mason,MIN,BUF,,,23-88 rushing and no catches in two games back; a backfield-low 28% snaps last week.
+FP Trends,9,Aaron Jones,MIN,BUF,,,"A backfield-high 38% snaps last week, with DeeJay Dallas also involved."
