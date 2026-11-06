@@ -171,6 +171,39 @@ Add a dated section at the top of `analysis/nba/report/takeaways.md` (newest fir
 2-4 bullets on last night, any theme that crossed the bar above, and a change to try, but only
 when a theme supports it. Keep earlier sections as they are.
 
+### Morning Proj vs ETR (one bullet in the takeaways)
+
+Read `analysis/nba/report/etr_match.md`. The 2:17am job rewrites it (`scripts/nba_etr_match.py`,
+whose docstring has the definitions). It scores our Lock AM Proj against ETR's first upload,
+both read against ADP: a player's value is his projection minus the average of the 6 players
+nearest him by morning ADP, so the two scales never need to match. Only slates where Lock AM came
+before ETR's first file are graded, top 60 by morning ADP (40 on 4-drafter nights). It is a
+scorecard for our morning number: it changes no grading and no rule.
+
+Add one bullet, "Morning Proj vs ETR", to the night's takeaways section:
+
+1. Last night's row in "By slate": direction, big misses, and anything unusual (a CLV gap, a
+   cluster of one team in the biggest misses).
+2. Name everyone on "Missed the same way on 3+ of the last 10 slates". That's where a
+   player-specific look pays off.
+3. Weekly, or when a group's direction or big-miss share moves 5+ points: compare Season against
+   Last 7 slates by group.
+
+Late news isn't the model's miss (a Questionable tag resolved after Lock AM, a rotation change):
+that's the Lock PM's job. Use the tag and minutes columns in "Biggest misses" to tell, and say so
+rather than counting it.
+
+Baseline (8 slates, 10-28 to 11-05): direction 88% (elite 100%, next 83%, middle 93%, 6th round
+on 86%); ETR's bottom 5 we had below 40 of 40, top 5 above 37 of 40; big misses 24%; CLV ours
+0.22 vs ETR 0.33, widest in next (0.22 vs 0.50); rookie gap +2.9.
+
+Rookie forward check: from the 11-07 slate the board averages a player with no last season over
+his last 3 ETR nights instead of 10. The replay on 10-28 to 11-05 cut the gap from +2.9 to +1.6,
+but on the same nights that showed the pattern. So "Rookies, before and after" is the check:
+report the "from 2026-11-07" row once it has 15+ entries, and if the gap hasn't come down by about
+11-21, flag it to take back out. Players who changed teams or moved 5+ minutes keep the 10-night
+average: tested, and a shorter one made them worse.
+
 ## 6b. Hypotheses: what we learned, tested before it goes in the model
 
 ```
@@ -273,6 +306,7 @@ In this order, short and scannable:
    your teams, Q tags).
 5. **Hypotheses**: a line each, and any proposal (step 6b).
 6. **Themes and takeaways**: only a theme that crossed its bar; otherwise one line saying none did.
+   Then the "Morning Proj vs ETR" bullet.
 7. **Last night, player by player**: only players whose ledger line carries a tag (the rest were
    in line), plus any "against the same team" lines.
 8. **Missing**: anything missing from the record (no lock, no tier lines on a lock, no ETR on file,

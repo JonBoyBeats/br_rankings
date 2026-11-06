@@ -9,6 +9,7 @@ Written by the morning report (/morning-report), newest first. Each section: las
 - Afternoon: 29% against ETR (small-slate season 41%, too close). Six of the eight biggest PM calls were one-spot swaps that went wrong: Curry over Franz (Franz had 15 assists), and the WCJ and Klay fades. Your board still beat ours (78%) and ADP (50%; season 59%, your board wins).
 - Theme: on players with usual minutes under 10, ETR was closer every time (9 of 9 rows, 3 slates; 7 of the 9 were last night). The ORL deep bench (Carter, Vucevic, Bitadze) had ours at 18-20 on 7-10 usual minutes. The direction is mixed, ours too high on 5 and too low on 4, so there's no rule to test yet. Watch whether ours runs high on deep-bench players again.
 - Field: 60 teams in Thursday Night Hoops (14,592 teams), top-1% tail 1.67 and top-10% 1.00. Top-1% teams had 4.97 breakers against 2.83 for the field; yours averaged 2.70.
+- Morning Proj vs ETR (etr_match.md): direction 80% (20 of 25; season 88%), big misses 11 of 40 (28%; season 24%), CLV even with ETR (0.30 vs 0.31; season 0.22 vs 0.33). Unusual: 5 of the 10 biggest misses were ORL, mostly deep bench (Bitadze, Carter, Castleton), the same group as the theme above. None carried a tag, so it isn't late news. Missed the same way on 3+ of the last 10 slates, ETR above ours each time: Caleb Wilson (a rookie, which the last-3 average from 11-07 targets), Darius Garland, Paul Reed. No group moved 5+ between the season and the last 7 slates.
 
 ## 2026-11-04 Wed main
 
