@@ -766,7 +766,8 @@ function render() {
   host.innerHTML = "";
   if (!sl) { host.innerHTML = '<div class="empty">No NBA or college slate tonight in the mirror.</div>'; setStatus(""); return; }
   /* Exposure: a CSV uploaded on this device, or the app's numbers posted to
-     analysis/nba/expo.json for this slate, whichever is newer. */
+     analysis/nba/expo.json for this slate, whichever is newer; with neither, your lineups in the biggest
+     contest once its field is read (that contest only, after Underdog's swaps). */
   var ex = load(expoKey(sl.label), null), post = state.posted[sl.slate_id] || null, share = null, of = 0;
   if (ex && !ex.drafts) ex = null;
   if (post && (!ex || post.at > ex.at)) {
@@ -774,10 +775,25 @@ function render() {
     // the app rounds down, so a player on the list at 0% is still in a draft
     Object.keys(post.pct).forEach(function (k) { pct[normName(k)] = Math.max(post.pct[k] / 100, 1 / post.teams); });
     share = function (p) { return pct[normName(p.first_name + " " + p.last_name)] || 0; };
-    of = post.teams; ex = post;
+    of = post.teams + " teams"; ex = post;
   } else if (ex) {
     share = function (p) { return (ex.counts[p.player_id] || 0) / ex.drafts; };
-    of = ex.drafts;
+    of = ex.drafts + " teams";
+  } else {
+    var fx = state.field[sl.slate_id] || null, cnt = {}, nMine = 0;
+    if (fx && fx.users) fx.users.forEach(function (u, i) {
+      if (u !== ME) return;
+      nMine++;
+      for (var k = 0; k < ROUNDS; k++) {
+        var j = fx.teams[i * ROUNDS + k];
+        if (j >= 0) cnt[fx.apps[j]] = (cnt[fx.apps[j]] || 0) + 1;
+      }
+    });
+    if (nMine) {
+      share = function (p) { return (cnt[p.appearance_id] || 0) / nMine; };
+      of = nMine + " teams in " + fx.title;
+      ex = { at: fx.at, drafts: nMine };
+    }
   }
   host.classList.toggle("no-expo", !ex);
   // Exposure sort needs exposures; without them it falls back to ADP (the choice is kept for the next slate)
@@ -860,7 +876,7 @@ function render() {
       var c = expoColor(r.f);
       chip.textContent = String(Math.round(r.f * 100));
       chip.style.background = c.bg; chip.style.color = c.ink;
-      chip.title = Math.round(r.f * 100) + "% of your " + of + " teams";
+      chip.title = Math.round(r.f * 100) + "% of your " + of;
     }
     el.appendChild(chip);
     var who = document.createElement("div"); who.className = "who";
