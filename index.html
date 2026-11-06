@@ -1602,6 +1602,11 @@ function rotateProjStore(store, upload) {
    merge into that day's generation, and every day's numbers are kept, so that before
    the morning's file lands the board can show each player's average of his last ten. */
 var NBA_AVG_GAMES = 10;
+/* A player with no last season on file (rookies, players back from overseas) averages only his
+   last three: ETR has raised its rookies night after night, and on Oct 28 - Nov 5 a ten-night
+   average left them 2.2 points short of ETR's morning file against their ADP (last three: 1.4).
+   scripts/nba_etr_match.py follows it forward from Nov 7. */
+var NBA_AVG_GAMES_NEW = 3;
 var NBA_KEEP_DAYS = 30;      // ten games take three weeks or so; this covers a missed stretch
 
 /** The Pacific calendar day of a timestamp, as YYYY-MM-DD. */
@@ -1868,10 +1873,11 @@ function nbaLineupBump(r, idx, out, boxWeight, covered) {
   return { add: add, notes: notes };
 }
 
-/** His last NBA_AVG_GAMES ETR days, each with that day's missing core teammates taken back out. */
+/** His last NBA_AVG_GAMES ETR days (NBA_AVG_GAMES_NEW with no last season), each with that day's
+    missing core teammates taken back out. */
 function nbaEtrAverage(key, r, idx, history) {
   var days = Object.keys(history).sort().reverse()
-    .filter(function (d) { return history[d][key]; }).slice(0, NBA_AVG_GAMES);
+    .filter(function (d) { return history[d][key]; }).slice(0, r && !r.crowd ? NBA_AVG_GAMES_NEW : NBA_AVG_GAMES);
   if (!days.length) return null;
   var sum = 0;
   days.forEach(function (d) {
@@ -6902,6 +6908,9 @@ function brrSelfTest() {
      nbaEtrAverage("a", null, nbaIndex(null), longH).value === 7.5 &&
      nbaEtrAverage("a", null, nbaIndex(null), { d1: { a: [5, null] } }).value === 5 &&
      nbaEtrAverage("b", null, nbaIndex(null), { d1: { a: [5, null] } }) === null);
+  ok("with no last season on file the ETR average runs over his last " + NBA_AVG_GAMES_NEW,
+     nbaEtrAverage("a", { team: "T", crowd: null }, nbaIndex(null), longH).value === 11 &&
+     nbaEtrAverage("a", { team: "T", crowd: [0, 1] }, nbaIndex(null), longH).value === 7.5);
   var pB = { id: "p", name: "Bench Guard", team: "T", pos: "G", min: 10, ppm: 1.2, fp: 12, core: false, games: 5, out: { x: 0.5 } };
   var mIdx = nbaIndex({ games_through: "2026-11-01", players: [xS, pB] });
   ok("a night the star sat is taken out of the ETR average",

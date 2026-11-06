@@ -39,6 +39,11 @@ jobs:
           python3 scripts/nba_daily.py --mirror ../br-adp-mirror \
             $([ -d ../gist ] && echo --gist ../gist) \
             ${SINCE:+--since "$SINCE"} ${{ inputs.rebuild && '--rebuild' || '' }}
+      # Our morning Proj against ETR's first upload, read against ADP (scripts/nba_etr_match.py)
+      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
+        name: ETR match
+        continue-on-error: true
+        run: python3 scripts/nba_etr_match.py --mirror ../br-adp-mirror > /dev/null
       # College basketball: every CBB slate's projection at lock against the box scores
       # (scripts/cbb_daily.py), then the running grade in the log. Must not hold up the NBA.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
@@ -79,6 +84,6 @@ jobs:
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
           mkdir -p analysis/cbb/daily analysis/cbb/contests
-          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests
+          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md
           git diff --cached --quiet || git commit -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           git pull --rebase -q origin main && git push
