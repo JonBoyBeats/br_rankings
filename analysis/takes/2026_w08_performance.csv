@@ -170,3 +170,156 @@ Gretch,8,Jadarian Price,SEA,Lead,Average,→,Noise,"48% snaps, 33% routes; 10-29
 Gretch,8,Jaxon Smith-Njigba,SEA,Alpha,Elite,→,,11-6-118-1; a 43-yd sluggo TD,Rare ball-in-hand skill is just the cherry on top.
 Gretch,8,Tory Horton,SEA,Starter,Replacement,↑,,6-3-26,The other contributor.
 Gretch,8,Sam Darnold,SEA,Starter,,↓,Noise,"70 pass yds to non-JSN targets; SEA 56 plays, -6.8% PROE",A streaky QB in a slump.
+FP,8,Zay Flowers,BAL,Alpha,Replacement,↓,Sell,"14.3% target share from Fagnano (29.8% in Wks 1-7), 0.00 YPRR; 7.84 YPRR with Lamar, 2.14 with Huntley",Would bench him for any reasonable top-30 option Thursday; a QB trade could salvage his top-12 upside.
+FP,8,Derrick Henry,BAL,Lead,Average,↓,,13.8 FPG in 18 losses since 2024 vs 21.2 in 24 wins; efficiency much worse without Lamar,BAL may be favored in only 2-3 more games; an RB2 almost no matter what BAL do.
+FP,8,Justice Hill,BAL,Passing-down,Replacement,↑,,Team-high 23.8% target share once Fagnano entered,
+FP,8,Joe Fagnano,BAL,Starter,,↓,,40.0 passer rating; couldn't deliver accurate passes past the line,Starts Thursday with Lamar out (possibly for the season) and Huntley out for weeks.
+FP,8,Trey McBride,ARI,Receiving TE,Elite,→,,21.1% target share from Minshew to Wilson's 36.8%,Minshew isn't a meaningful downgrade (33.7% of targets to TEs in 2024); a top-2 TE while he starts.
+FP,8,Michael Wilson,ARI,Alpha,Great,↑,Buy,WR11 in XFP/G (17.1); played through fractured ribs,"One of the most plausible positive regression candidates; a top-18 WR in theory, low-end WR2 for the next three tough matchups."
+FP,8,Gardner Minshew,ARI,Starter,,↑,,"+14.3 EPA in about 16 minutes, more than Brissett in any game in two years",Don't expect Carson Beck until December at the earliest.
+FP,8,Jacoby Brissett,ARI,Starter,,↓,,"Benched; -5.0 FP vs XFP (14.8 FPG on 19.8 XFP/G), 4th-worst FP/DB",
+FP,8,Bryce Young,CAR,Starter,,↓,,His two worst yardage totals and 11 sacks vs TB and GB,"Still a matchup-based streamer, but tough playoff matchups (PIT, SEA) loom."
+FP,8,Tetairoa McMillan,CAR,Alpha,Average,↓,,Young's slump,"Still a top-24 WR rest of season, but the playoff matchups are a concern."
+FP,8,Jalen Coker,CAR,Starter,Average,↓,,Young's slump,"Still a top-24 WR rest of season, but the playoff matchups are a concern."
+FP,8,Trevor Lawrence,JAX,Starter,,→,,0.62 FP/DB (2nd to Purdy) but a career-low 28.3 att/G; above-expectation pass rate just twice,JAX are so good it's nuking their passing game for fantasy; a soft month ahead keeps the volume down.
+FP,8,Jared Goff,DET,Starter,,→,Buy,DET -14% PROE vs MIN (11 personnel just 20%),A bounce-back is right around the corner; a top-10 QB vs MIA.
+FP,8,Matthew Stafford,LA,Starter,,↓,,"LA's two lowest pass rates (49%, 44%) with Adams out; 5% TD rate, 7.1 YPA",McVay is loading up on TEs and 15-18 touches each for Williams and Corum; Adams targets a Wk 12-13 return.
+FP,8,Kirk Cousins,LV,Starter,,↑,Add,"QB5 by FPG (20.6); 46, 41, 32 and 52 dropbacks in losses",About half of Yahoo leagues; the best QB streamer of the slate at SF.
+FP,8,Kyler Murray,MIN,Starter,,→,,200.8 pass YPG; MIN +0.5% PROE over three games,League-average play in a much more run-heavy offense.
+FP,8,Justin Jefferson,MIN,Alpha,Great,→,,29.1% target share in full games (~WR5),"A fringe top-12 WR; preferred to Flowers and Parker Washington, behind Watson, Olave and Higgins."
+FP,8,Baker Mayfield,TB,Starter,,→,,14 att in Wks 7-8,"The pass rate should rebound as 5.5-point dogs at CHI, though not into a pass-heavy offense."
+FP,8,Emeka Egbuka,TB,Alpha,Great,↑,,"37% target share, 48% first-read share, 18.7 XFP/G in his last two full games","Should dominate targets when healthy, in a low-volume offense."
+FP,8,Jaylen Warren,PIT,Lead,Great,→,,57.1% XFP share since Dowdle returned (fringe top-24); leads 29 RBs in YPC and RYOE/att,"PIT's backfield is 4th-worst in XFP/G, so he's just a top-15 RB unless he becomes more than the 1A."
+FP,8,Kenneth Walker III,KC,Workhorse,Great,→,,"11.1 FPG last two; usage unchanged (76.9% snaps, 74.1% XFP share)","Matchup-based; still the overall RB2, with three top-half matchups in his next four."
+FP,8,Tony Pollard,TEN,Workhorse,Elite,↓,,"+11.0 FPOE last two (-3.4 in the first six); 93.0% XFP share, 21.6 XFP/G","Doubts it lasts with Spears due back and JAX twice ahead; likely back to a low-end RB2, unless Daboll's no-huddle runs are a real cheat code."
+FP,8,Chase Brown,CIN,Lead,Great,↑,,"20.3 XFP, 83.0% XFP share, 18.8% target share (top-3 marks this year); a 20-yd TD called back",Cautiously optimistic; a top-12 RB going forward.
+FP,8,Jeremiyah Love,ARI,Lead,,↓,Buy,"9 of 11 carries, 68.4% snaps, 70.1% XFP share before a high-ankle sprain (IR)","Send offers on teams sure to make the playoffs; top-15 upside vs NYJ, NO and LV."
+FP,8,Bam Knight,ARI,Committee,,↓,,"Bellcow role in the 2nd quarter, then a concussion",
+FP,8,Tyler Allgeier,ARI,Workhorse,Elite,↑,,97% snaps and 100% of XFP in the 2nd half; 32.5 FP,Expect a big workload if Knight sits; a top-16 RB even at SEA.
+FP,8,Javonte Williams,DAL,Lead,Great,→,,6.7 FP on 20.0 XFP (3rd-best of his year); a goal-line fumble,Still 2nd in carries inside the 10; a top-10 RB.
+FP,8,Jordan Mason,MIN,Committee,Replacement,↓,,"49.1%, 55.9% and 39.7% XFP shares; 2.6% target share, 23.9% routes",Permission to stop caring; a low-end RB3 who needs a Jones injury.
+FP,8,Ashton Jeanty,LV,Passing-down,Average,↓,,2 of 27 RB carries; 48.1% routes,Gives him about 65% odds of half the carries in Wk 9; a FLEX-level bust if it sticks; only low-ball buy offers.
+FP,8,Mike Washington Jr.,LV,Lead,Average,↑,,"93% carry share; 0 MTF, 0 of 8 converted inside the 10",Delivered nothing LV weren't already getting from Jeanty.
+FP,8,Quinshon Judkins,CLE,Committee,Average,↓,Sell,Target shares of 2.8% and 4.9% and XFP shares of 59.0% and 56.4% with Sampson back,At best a borderline top-24 RB; keep trying to sell or include him in deals.
+FP,8,Dylan Sampson,CLE,Passing-down,Average,↑,,"47.7% routes, 11.7% target share, 9.2 XFP/G",A desperation FLEX in shootouts or negative scripts.
+FP,8,Jahmyr Gibbs,DET,Workhorse,Elite,→,,17 MTF (ties the FPD-era single-game record); 24.8 FP vs MIN,"The 1.01 by a mile, +5.4 FPG over the next RB."
+FP,8,Sione Vaki,DET,Committee,Replacement,↑,Add,"Season-high 11 carries, 31.9% XFP share; Campbell said he 'gained a lot of trust'",A handcuff on a high-value offense that should be universally rostered now.
+FP,8,Saquon Barkley,PHI,Lead,Average,↓,,32.4% snaps after one limited practice; both carries inside the 10,Wants to see a week after a full practice before giving up on top-18 upside.
+FP,8,Elijah Mitchell,PHI,Committee,Average,↑,Hold,"55.9% snaps, 49.4% XFP share, 12 more routes than Barkley",Worth a hold.
+FP,8,Bhayshul Tuten,JAX,Lead,Elite,↑,,72.3% XFP share excluding garbage time; 19.3 FPG last four; 1.4 screen targets/G (top-6),A top-10 RB going forward with a soft schedule and DAL and WAS in the playoffs.
+FP,8,Jonah Coleman,DEN,Lead,Great,↑,,"50.0% routes, 61% of carries (5 of 5 inside the 10), 21.9 XFP (3rd in Wk 8)",Took Harvey's whole role and more; already a top-18 RB rest of season.
+FP,8,J.K. Dobbins,DEN,Committee,Replacement,↓,,7-13; one snap in the 2nd half,Seems to have been shadow-realmed.
+FP,8,Rachaad White,WAS,Lead,Great,↑,,"60.6% XFP share last two, 77.0% after McNichols left; 2 of 3 carries inside the 10","A top-20 RB until Croskey-Merritt returns, and under the radar."
+FP,8,Jeremy McNichols,WAS,Committee,,↓,,Foot injury; expected to miss a few weeks,
+FP,8,Josh Jacobs,GB,Workhorse,Elite,↑,Buy,"70.1% snaps, 90.6% XFP share, 14.6% target share; all five carries inside the 10","A top-8 RB when on the field despite the legal situation; a logical buy for deep, strong teams."
+FP,8,D'Andre Swift,CHI,Workhorse,Elite,↑,,94% of 4th-quarter snaps; 21.8 FPG on 20.7 XFP/G without Monangai,"An RB1; preferred to Henry, Tuten and Kyren Williams."
+FP,8,Kyle Monangai,CHI,Committee,,,,Turf toe; no practice since the injury,Likely out at least one more week.
+FP,8,Jonathan Taylor,IND,Lead,Average,↓,,66.4% snaps last two amid trade rumors,A mid-range RB1 in most landing spots; stays top-12 if dealt anywhere.
+FP,8,Zach Charbonnet,SEA,Committee,Average,↑,,"53.3% XFP share; the only carry inside the 10, 4 of 5 red-zone opps","About 60/40 to outscore Price, but both are mid-range FLEX plays with a soft schedule."
+FP,8,Jadarian Price,SEA,Committee,Average,→,,"59% of carries, 48% snaps, 33.3% routes","If anyone takes over the backfield, more likely Price, though it's a long shot."
+FP,8,Christian Watson,GB,Alpha,Great,→,,WR6 by FPG; GB +7.5% PROE vs CAR,A low-end WR1 rest of season with GB's run game dormant.
+FP,8,Matthew Golden,GB,Alpha,Great,→,,WR13 by FPG,A low-end WR1 rest of season on huge passing volume.
+FP,8,DJ Moore,BUF,Alpha,Great,→,,"17.1 FPG in three full games; 27% target share, 42% air yds share; 3.23 YPRR; hyperextended his knee late but says he's OK","A borderline WR1 and top-15 rest of season; preferred to Wilson, Collins and McMillan."
+FP,8,Tee Higgins,CIN,Alpha,Elite,→,,19.9 FPG (WR5),No worse than WR8 rest of season.
+FP,8,Ja'Marr Chase,CIN,Alpha,Elite,→,,58 targets to Higgins' 45 in six full games together,The WR3 rest of season and still the focal point.
+FP,8,Garrett Wilson,NYJ,Alpha,Average,↓,,29 targets to Mitchell's 27 in four games together; 12.7 XFP/G to Mitchell's 16.5,A 1A/1B with Mitchell; a solid but disappointing lower-end WR2.
+FP,8,Adonai Mitchell,NYJ,Starter,Great,↑,,16.5 XFP/G with Wilson; back to 100% after a finger injury,In WR3/FLEX consideration every week.
+FP,8,Omar Cooper Jr.,NYJ,Starter,Replacement,↓,Hold,Targeted on 10% of routes the last two weeks,Still worth stashing in deeper leagues.
+FP,8,George Pickens,DAL,Starter,Average,↓,,2-48 on 3 tgt through shoulder and hamstring injuries; DAL's two lowest pass rates,A boom-or-bust mid-range WR2 vs IND and going forward.
+FP,8,Rashee Rice,KC,Alpha,Average,↓,Sell,17% target share in four full games; 14.1 FPG on 11.4 XFP/G; 0.41 XFP/RR (WR31),A regression candidate; he'd sell Rice for Mike Evans.
+FP,8,Mike Evans,SF,Alpha,Elite,↑,Buy,WR2 by XFP/RR (0.69),Worth the injury risk; a better range of outcomes than Rice.
+FP,8,DeVonta Smith,PHI,Alpha,Great,↑,,"29% target share, 0.57 XFP/RR, 17.3 FPG in four full games",A top-20 WR rest of season once healthy; preferred to Rice.
+FP,8,Makai Lemon,PHI,Starter,Average,↑,,13-124-1 last two weeks without Smith and Wicks,Has played well enough to push Wicks as the No. 2 behind Smith.
+FP,8,Drake London,ATL,Alpha,Elite,→,,1.6 FP in the rain,Should bounce back immediately in a Madrid shootout vs CIN.
+FP,8,Ladd McConkey,LAC,Alpha,Average,→,Sell,11.3 XFP/G in four full games; 54 yds on a Hail Mary,The offense is so non-functional he may not be usable; a fringe WR3 to sell for KC Concepcion or Jordyn Tyson.
+FP,8,Justin Herbert,LAC,Starter,,↓,,"-0.44 EPA/DB, his second-worst game",
+FP,8,Antonio Williams,WAS,Starter,Average,↑,Add,Co-led WAS in targets and first reads; 11.1 XFP,This week's top WR waiver claim (20-25% of FAAB); WAS have a positive PROE every game since Daniels returned.
+FP,8,Tyler Warren,IND,Receiving TE,Great,→,Buy,"10 targets, 4-18; TE4-5 in targets/G, routes and XFP/G",Buy low on teams weak at TE; Jones will keep peppering him with low-aDOT looks.
+FP,8,Colston Loveland,CHI,Receiving TE,Elite,↑,,"26% target share, 17.0 XFP/G, 20-199-2 last three","The TE3 rest of season behind Bowers and McBride, ahead of Kittle."
+FP,8,George Kittle,SF,Receiving TE,Great,↓,,"22% target share, 13.3 XFP/G","The TE4 behind Loveland, with Evans due back."
+FP,8,Harold Fannin Jr.,CLE,Receiving TE,Elite,↑,,"6-91 and 10-154; leads CLE in TPRR (0.28), first-read share (31%), XFP/G (16.6)","Fragile with strong target competition, but preferred to Warren, Kincaid and Kelce rest of season."
+FP,8,Dallas Goedert,PHI,Receiving TE,Replacement,↓,,58% routes with Stowers' debut; target shares of 17% and 12% even without Smith and Wicks,"Merely a low-end TE1, maybe optimistic."
+FP,8,Eli Stowers,PHI,Receiving TE,Replacement,↑,,Cutting into Goedert's routes,
+FP,8,Kyle Pitts,ATL,Receiving TE,Replacement,↓,Sell,"62% routes, 6.8 XFP/G (TE27); still 82% rostered on Yahoo","Prefers Strange, Goedert, Hockenson and Okonkwo; only a low-confidence streamer vs CIN."
+FP,8,Dalton Kincaid,BUF,Receiving TE,Great,→,,"24% TPRR (TE8), 0.52 XFP/RR (TE3), 2.75 YPRR (TE1); no 70% route game since Wk 9 of 2024",A fringe top-10 TE; top-8 with top-5 upside if his routes rise.
+FP,8,Gunnar Helm,TEN,Receiving TE,Average,↑,,"Career highs: 26.7% first-read share, 76 yds; 50% routes",Mostly a reminder that CIN are a defense to target with TEs.
+FP,8,Brevyn Spann-Ford,DAL,Receiving TE,Average,↑,Add,"Ferguson (ankle) could miss time and has 0.63 YPRR, dead last",A few FAAB dollars in TE-premium leagues.
+FP,8,Jake Ferguson,DAL,Receiving TE,Replacement,↓,,Ankle injury; 0.63 YPRR (dead last),In jeopardy of being benched.
+FP,8,Eli Raridon,NE,Receiving TE,Average,↑,Add,"82.4% routes after Henry left; 11th in YPRR (1.92), 7th in YPT, best rookie in all three",Worth a bid in deeper or TE-premium leagues; an intriguing DFS dart.
+FP,8,Greg Dulcich,MIA,Receiving TE,Average,↑,Add,"62.6% routes, 20.0% target share, 10.8 XFP/G last three",Probably the best seasonal TE streamer this week vs DET.
+ETR,8,Josh Jacobs,GB,Workhorse,Elite,↑,,"71% snaps, 15 routes/41 db; 21 of 25 RB carries; 6-6-13-1; most third downs","Back to being a workhorse when on the field, though more women have come forward with serious accusations."
+ETR,8,Pierre Strong,GB,Passing-down,Replacement,→,,Handled the 2-minute drill,
+ETR,8,J. Michael Sturdivant,GB,Rotational,Replacement,↑,,Out-routed Bo Melton while Watson was out,A little interesting.
+ETR,8,Christian Watson,GB,Alpha,Great,→,,"A brief hospital trip, then returned",Seemed fine.
+ETR,8,Chuba Hubbard,CAR,Workhorse,Elite,↑,,"25 routes/47 db; 8 tgt (19.5%, 2nd on CAR); 7.8% seasonal target share before",A clear every-down workhorse; expects better pass-catching volume than in Wks 1-7.
+ETR,8,Bucky Irving,TB,Lead,Great,→,,"27 carries to Gainwell's 25; TB 56 runs, 0 completions","The split has tightened, but 101 team carries in two weeks are extreme scripts; expect more normalcy, still run-first."
+ETR,8,Kenny Gainwell,TB,Committee,Average,↑,,25 carries; Tucker didn't play,
+ETR,8,DeeJay Dallas,MIN,Passing-down,Replacement,↑,,9 of 10 third-down snaps; out-snapped Mason 17-15,"Back in the Wk 1 third-down role, making a messy backfield muddier."
+ETR,8,Jordan Mason,MIN,Committee,Replacement,↓,,15 snaps; 8 of 14 RB carries for 20 yds,
+ETR,8,Aaron Jones,MIN,Committee,Replacement,→,,21 snaps; 7 routes (21.2%); both RB targets,
+ETR,8,Sione Vaki,DET,Committee,Replacement,↑,,11 carries to Gibbs' 23; opponents run a league-low -5.9% PROE vs MIN,"A beneficiary of DET's run-heavy plan vs Flores, and maybe a better pass protector."
+ETR,8,Jahmyr Gibbs,DET,Workhorse,Elite,→,,23-153-1,A huge day; expect him to consolidate carries in games with fewer total runs.
+ETR,8,Chimere Dike,TEN,Full-time,Average,↑,,"82% snaps, 40 routes",Tate's direct backup; expect the same rotation if Tate misses more time.
+ETR,8,Wan'Dale Robinson,TEN,Slot,Average,↑,,"94% snaps, 43 routes/46 db; 7-6-57-1",
+ETR,8,Elic Ayomanor,TEN,Rotational,Replacement,↓,,30 routes,Still splitting the second outside spot with Ridley.
+ETR,8,Calvin Ridley,TEN,Rotational,Replacement,→,,23 routes,
+ETR,8,Tony Pollard,TEN,Workhorse,Elite,→,,"82% snaps, 19 routes/46 db; all 21 RB carries; 21-117-2",Still a workhorse with Spears out despite trade rumors; Carter played some pass downs.
+ETR,8,Mike Gesicki,CIN,Receiving TE,Average,↑,,"Season-high 68% snaps, 39 routes/53 db; 6-4-76-1","Not every-down, but the role grew with All out for the year."
+ETR,8,DJ Moore,BUF,Alpha,Great,↑,,"66% snaps, team-high 34 routes; 7 tgt (20.6%); 7-4-82-1",Led BUF in routes and targets; belongs in all lineups going forward.
+ETR,8,Keon Coleman,BUF,Starter,Replacement,→,,"77% snaps, 27 routes/38 db",WR snaps concentrated on the top three with Palmer leaving early.
+ETR,8,Khalil Shakir,BUF,Slot,Average,→,,"67% snaps, 31 routes",
+ETR,8,Skyler Bell,BUF,Rotational,Replacement,,,Could factor in if Palmer misses time,
+ETR,8,Zay Flowers,BAL,Alpha,Replacement,↓,,0 catches on 5 tgt with Fagnano,
+ETR,8,Justice Hill,BAL,Passing-down,Average,↑,,8 of BAL's 10 RB targets (26 att); out-snapped Henry 25-23,RBs drew a big share of Fagnano's throws in negative script.
+ETR,8,Derrick Henry,BAL,Lead,Average,↓,,23 snaps,
+ETR,8,Brian Thomas Jr.,JAX,Rotational,Replacement,↑,,Out-routed Cameron 12-9 with Lawrence in; 2-1-12-1,Back as the clear WR3 at best; not totally buried while still a Jaguar.
+ETR,8,Josh Downs,IND,Slot,Replacement,→,,"75% snaps, 34 routes/37 db; 5-4-23-1",IND aren't easing him off despite his trade request.
+ETR,8,Keenan Allen,IND,Starter,Average,→,,Team-high 7 tgt on 24 routes (3rd),
+ETR,8,Jonathan Taylor,IND,Lead,Average,→,,"62% snaps, 25 routes/37 db; 8 carries to McGowan's 5",
+ETR,8,DJ Giddens,IND,Backup,Replacement,↑,,Last 8 snaps in garbage time,His first offensive snaps of the season.
+ETR,8,Tyler Warren,IND,Receiving TE,Great,↑,,Team-high 10 tgt (33.3%); 4-18,Could get incredible volume down the stretch if Downs is moved.
+ETR,8,Jeremiyah Love,ARI,Lead,,↓,,9 of 11 RB carries before reinjuring his ankle,Was immediately back as the clear lead.
+ETR,8,Bam Knight,ARI,Committee,,↓,,"80% of snaps in the 2nd quarter, then left",
+ETR,8,Tyler Allgeier,ARI,Workhorse,Elite,↑,,"11-147-1, 5-5-44-1 as ARI's lone RB","Could be a workhorse if Love and Knight sit, with Evan Hull likely the RB2."
+ETR,8,Brevyn Spann-Ford,DAL,Receiving TE,Average,↑,,"88% snaps, 28 routes/38 db; 5-4-31",At least mildly interesting if Ferguson misses time.
+ETR,8,Jake Ferguson,DAL,Receiving TE,,↓,,4 snaps (ankle),
+ETR,8,Michael Wilson,ARI,Alpha,Elite,↑,,Played through two broken ribs; 15-8-111-1 (32.6% TS),Locked in as the clear WR1.
+ETR,8,Kendrick Bourne,ARI,Slot,,↓,,Left early (high-ankle sprain),The primary slot when healthy.
+ETR,8,Reggie Virgil,ARI,Starter,Replacement,↑,,Out-routed Fehoko 27-12 before leaving late,"The WR3 when healthy, narrowly ahead of Fehoko."
+ETR,8,Simi Fehoko,ARI,Rotational,Replacement,↑,,12 routes,
+ETR,8,Adonai Mitchell,NYJ,Starter,Great,↑,,39 snaps; 9-7-142-1 (28.1% TS),Far more productive; may earn snaps at Cooper's expense.
+ETR,8,Omar Cooper Jr.,NYJ,Starter,Replacement,↓,,Out-snapped Mitchell 50-39 but 0 tgt,A sobering result after two 100-yard games.
+ETR,8,Tre Tucker,LV,Starter,Replacement,↓,,"54% snaps (WR high), 17 routes/27 db",Bech's return muddies the WR rotation.
+ETR,8,Jalen Nailor,LV,Starter,Replacement,→,,"18 routes, 46% snaps; 4-4-38-1",
+ETR,8,Jack Bech,LV,Rotational,Replacement,↑,,"40% snaps, 0 tgt in his return",
+ETR,8,Brock Bowers,LV,Receiving TE,Elite,→,,86% snaps,LV play two TEs most snaps (Mayer 79%).
+ETR,8,Michael Mayer,LV,Receiving TE,Average,→,,79% snaps,
+ETR,8,Mike Washington Jr.,LV,Lead,Average,↑,,Out-carried Jeanty 25-2; 3.3 YPC,"The clear RB1, possibly as punishment for Jeanty's comments; at least a chance he's preferred on early downs."
+ETR,8,Ashton Jeanty,LV,Passing-down,Average,↓,,14 routes/27 db; all 4 RB targets,Remained the pass-down back.
+ETR,8,Dylan Sampson,CLE,Passing-down,Average,↑,,"Out-snapped Judkins 39-27, out-routed him 28-9; 8-6-62",The clear pass-catching back.
+ETR,8,Quinshon Judkins,CLE,Lead,Replacement,↓,,11 of 12 RB carries,"The early-down bellcow, with a low floor in negative script."
+ETR,8,Quentin Johnston,LAC,Starter,Replacement,↑,,"Out-snapped Harris 50-31, out-routed him 30-20",Back in the WR2 seat for now.
+ETR,8,Tre Harris,LAC,Starter,Replacement,↓,,20 routes in his hamstring return,Watch whether his time rises.
+ETR,8,Oronde Gadsden II,LAC,Receiving TE,Replacement,↑,,Out-routed Kolar 21-17; 5-5-52,Has claimed a relevant spot in the rotation.
+ETR,8,Charlie Kolar,LAC,Receiving TE,Replacement,→,,Out-snapped Gadsden 38-29; 4 tgt,
+ETR,8,Max Klare,LA,Rotational,Replacement,↑,,"46% snaps, 4 routes with Parkinson out",Not a real pass catcher yet.
+ETR,8,Efton Chism III,NE,Starter,Replacement,↑,,88% snaps; 5-5-37 (25% TS),
+ETR,8,Kyle Williams,NE,Starter,Replacement,↑,,83% snaps; a 43-yd TD on his only target,
+ETR,8,DeMario Douglas,NE,Slot,Average,→,,"65% snaps, mostly slot; 15.4% seasonal target share","Slot-only caps his ceiling, but target competition is down."
+ETR,8,Eli Raridon,NE,Receiving TE,Average,↑,,"92% snaps, 20 routes/27 db after Henry left; 4-1-5",A legitimate fantasy option if Henry misses time.
+ETR,8,Hunter Henry,NE,Receiving TE,,↓,,13% snaps before a foot injury,
+ETR,8,Rhamondre Stevenson,NE,Workhorse,Great,↑,,"77% snaps, 17 routes/27 db; 19 of 28 RB carries",
+ETR,8,TreVeyon Henderson,NE,Committee,,↓,,Out; NE may try him at kick returner,Not great news for his offensive role.
+ETR,8,Corey Kiner,NE,Committee,Replacement,→,,"11 snaps, 7 carries",The RB2.
+ETR,8,Caleb Douglas,MIA,Starter,Average,↑,,"WR-high 86% snaps, 31 routes/36 db; 6 tgt (tied for team lead)",
+ETR,8,Jaylen Waddle,DEN,Alpha,Replacement,↓,,"45% snaps, 18 routes/34 db (chest)",Watch the injury report for his Wk 9 role.
+ETR,8,Jonah Coleman,DEN,Lead,Great,↑,,"66% snaps (90% in the 2nd half); 11 carries to Dobbins' 7; 17 routes/34 db, 5 tgt",A legitimate starter as the early-down back and clear pass-down leader with Harvey out.
+ETR,8,J.K. Dobbins,DEN,Committee,Replacement,↓,,"Started with the first 5 carries, then phased out","The second straight week, now in neutral script."
+ETR,8,Rashee Rice,KC,Alpha,Great,↑,,"57% snaps, 27 routes/44 db; team-high 8 tgt; 8-7-53-1",Limited in his return but still led the Chiefs in targets.
+ETR,8,Cyrus Allen,KC,Rotational,Replacement,↑,,22 routes (Armstrong and Royals 11 each),"Now the WR3, but not playing enough to matter."
+ETR,8,Emmett Johnson,KC,Passing-down,Replacement,→,,"19% snaps, 9 routes; 5-5-128-1",The role didn't change.
+ETR,8,Saquon Barkley,PHI,Lead,Replacement,↓,,13 carries to Mitchell's 11; out-routed 19-7,Tough to trust; clearly not 100%.
+ETR,8,Elijah Mitchell,PHI,Committee,Average,↑,,"57% snaps, 19 routes",
+ETR,8,Rachaad White,WAS,Lead,Average,→,,"Out-snapped Ekeler 28-20, routes 13-10; all 3 RB targets; 11 carries","Potentially a three-way split, and Ekeler is pushing for early-down work."
+ETR,8,Austin Ekeler,WAS,Committee,Replacement,↑,,"8 carries, 20 snaps",
+ETR,8,Jayden Daniels,WAS,Starter,,↓,,No designed carries since returning from his elbow injury,"3.1 designed carries/G as a rookie, 2.1 last year."
