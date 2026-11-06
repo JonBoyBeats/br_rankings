@@ -15,7 +15,8 @@ SOURCES = {
     'Kerrane': 'Pat Kerrane, Legendary Upside Walkthrough',
     'Silva': 'Evan Silva, Matchups',
     'Heath': 'Ryan Heath, Advanced Matchups (Fantasy Points)',
-    'FP Trends': 'Fantasy Points, weekly matchup trends',
+    'FP Trends': 'Tom Brolley, Game Hub (Fantasy Points)',
+    'Pace': 'Pat Thorman, Snaps & Pace (ETR): game-level pace notes, filed on each QB',
 }
 takes = []
 for path in sorted(glob.glob(os.path.join(HERE, 'takes', '*.csv'))):
