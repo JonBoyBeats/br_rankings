@@ -2,6 +2,14 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-05 Thu main
+
+- A three-game, 4-drafter slate (Lock AM 4:34am, Lock PM 3:21pm). It's graded with the four earlier small slates, apart from the 6-drafter slates. Fleming, Timme and Goodwin (PHX) and Donaldson (MIA) sat, all at ADP 24, so no team is left out.
+- Morning: your board beat ADP on 54% of decision pairs (season 53%, too close) and trailed our number on 40% (season 64%, your board still wins). The fades on Klay and Jovic and the GSW-bench raises (Niang, Payton) were right. The Bassey fade (3 blocks in 14 minutes) and the Horford raise were wrong.
+- Afternoon: 29% against ETR (small-slate season 41%, too close). Six of the eight biggest PM calls were one-spot swaps that went wrong: Curry over Franz (Franz had 15 assists), and the WCJ and Klay fades. Your board still beat ours (78%) and ADP (50%; season 59%, your board wins).
+- Theme: on players with usual minutes under 10, ETR was closer every time (9 of 9 rows, 3 slates; 7 of the 9 were last night). The ORL deep bench (Carter, Vucevic, Bitadze) had ours at 18-20 on 7-10 usual minutes. The direction is mixed, ours too high on 5 and too low on 4, so there's no rule to test yet. Watch whether ours runs high on deep-bench players again.
+- Field: 60 teams in Thursday Night Hoops (14,592 teams), top-1% tail 1.67 and top-10% 1.00. Top-1% teams had 4.97 breakers against 2.83 for the field; yours averaged 2.70.
+
 ## 2026-11-04 Wed main
 
 - Second night with tier lines on both locks (Lock AM 4:32am, Lock PM 3:20pm) and the first under the afternoon T5 ownership tiebreak. Jalen Johnson (ADP 23.8) and Tatum (16.6), Questionable at Lock AM, were ruled out before Lock PM, so ATL and BOS are left out of the morning grading only.

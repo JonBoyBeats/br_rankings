@@ -288,3 +288,33 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-11-04,nba_wed_main,Darius Acuff Jr.,SAC,split,41.5,46.1,45.6,42,36.6,-13,minutes,yes,etr,"ETR 46.1 vs ours 41.5; 42 min (usual 37), 12 assists"
 2026-11-04,nba_wed_main,Scottie Barnes,TOR,split,52.5,57.0,37.2,32,33.6,-19,peripherals,no,ours,ETR 57.0 vs ours 52.5; 5 turnovers in a 19-point loss
 2026-11-04,nba_wed_main,LaMelo Ball,MIN,split,47.8,43.3,36.4,31,26.2,10,peripherals,no,etr,ours 47.8 vs ETR 43.3; 7 turnovers
+2026-11-05,nba_thu_main,Charles Bassey,GSW,am_call,14.5,13.1,22.4,14,11.5,20,peripherals,no,wrong,faded (39th vs ADP 24th); 3 blocks and 7 rebounds in 14 min (usual 12); the 14 who passed him averaged 13.4
+2026-11-05,nba_thu_main,Georges Niang,GSW,am_call,23.9,21.1,23.3,22,19.9,20,other,?,right,"raised (25th vs ADP 39th); usual minutes, 5-8; the 4 passed averaged 16.4"
+2026-11-05,nba_thu_main,Klay Thompson,MIA,am_call,22.6,24.9,18.5,23,23.4,-20,shooting,no,right,"faded (28th vs ADP 15th); 3-10, no rebounds in a 20-point loss; a hair under the 10 who passed him (19.3)"
+2026-11-05,nba_thu_main,Nikola Jovic,MIA,am_call,15.3,10.1,5.5,12,9.1,-20,other,?,right,"faded (38th vs ADP 27th); 12 min, 0-2 with 1 point; the 9 who passed him averaged 12.5"
+2026-11-05,nba_thu_main,Jamal Cain,ORL,am_call,22.5,19.0,9.0,25,16.3,-13,minutes,yes,right,raised (29th vs ADP 39th); 25 min (usual 16) but 2-9; the 4 passed averaged 3.1
+2026-11-05,nba_thu_main,Gary Payton II,GSW,am_call,20.4,19.8,11.0,10,13.9,20,other,?,right,raised (30th vs ADP 39th); 3-3 in 10 min of a 20-point win; the 2 passed barely played (0.8)
+2026-11-05,nba_thu_main,Al Horford,GSW,am_call,25.6,23.7,15.5,18,18.7,20,peripherals,no,wrong,"raised (23rd vs ADP 30th); 3-3 but 5 rebounds, 1 assist, 4 fouls in 18 min; the 4 passed averaged 19.0"
+2026-11-05,nba_thu_main,Nick Richards,MIA,am_call,7.0,,0.0,1,1.1,-20,other,?,right,"faded (46th vs ADP 39th); 1 minute, deep bench"
+2026-11-05,nba_thu_main,Wendell Carter Jr.,ORL,pm_call,33.1,35.0,48.6,34,32.4,-13,shooting,no,wrong,faded below ETR (14th vs 12th); 27 and 13 on 10-12; the one who passed him scored 34.4
+2026-11-05,nba_thu_main,Klay Thompson,MIA,pm_call,22.6,24.9,18.5,23,23.4,-20,other,?,wrong,"faded below ETR (25th vs 23rd); 18.5 on 3-10, but the one who passed him (Portis) played 14 and scored 6"
+2026-11-05,nba_thu_main,De'Anthony Melton,GSW,pm_call,27.6,29.4,21.2,17,23.0,20,blowout,partly,wrong,raised over ETR (17th vs 19th); 17 min (usual 23) in a 20-point win; the 2 passed averaged 21.8
+2026-11-05,nba_thu_main,Al Horford,GSW,pm_call,25.6,23.7,15.5,18,18.7,20,peripherals,no,wrong,"raised over ETR (24th vs 26th); 5 rebounds, 1 assist, 4 fouls; the 2 passed averaged 22.2"
+2026-11-05,nba_thu_main,Stephen Curry,GSW,pm_call,46.4,48.9,39.2,28,29.0,20,other,?,wrong,raised over ETR (2nd vs 3rd) past Franz Wagner; 29 on 9-19 but Franz had 15 assists (53.1)
+2026-11-05,nba_thu_main,Franz Wagner,ORL,pm_call,48.4,49.3,53.1,38,35.7,-13,peripherals,no,wrong,faded below ETR (3rd vs 2nd) for Curry; 15 assists and 4 steals on 38 min (usual 36)
+2026-11-05,nba_thu_main,Miles Bridges,PHX,pm_call,37.2,37.5,46.1,31,32.8,13,other,?,right,raised over ETR (9th vs 10th) past Podziemski; 18-13-5 on 6-10 against 25.7
+2026-11-05,nba_thu_main,Brandin Podziemski,GSW,pm_call,38.6,37.9,25.7,32,33.5,20,shooting,no,right,faded below ETR (10th vs 9th) for Bridges; 3-8 on usual minutes
+2026-11-05,nba_thu_main,Giannis Antetokounmpo,MIA,miss,62.1,60.8,38.8,31,33.0,-20,peripherals,no,neither,"20-14-4 on 7-13 but no stocks, 4 turnovers, 31 min (usual 33) in a 20-point loss"
+2026-11-05,nba_thu_main,Bobby Portis,MIA,miss,28.7,24.8,6.0,14,21.6,-20,blowout,partly,etr,"14 min (usual 22) in a 20-point loss, 0-3"
+2026-11-05,nba_thu_main,Desmond Bane,ORL,miss,41.8,41.4,20.2,32,34.9,-13,shooting,no,neither,"usual minutes, 5-12 with no assists in a 13-point loss"
+2026-11-05,nba_thu_main,Jalen Green,PHX,miss,35.7,35.2,14.5,24,29.2,13,minutes,yes,neither,"24 min (usual 29) in a 13-point win, 3-7: unclear"
+2026-11-05,nba_thu_main,Nikola Vucevic,ORL,miss,20.2,17.7,0.0,4,9.6,-13,minutes,yes,etr,4 min (usual 10); ours 20.2 was twice what his usual minutes give
+2026-11-05,nba_thu_main,Jevon Carter,ORL,miss,19.0,10.2,0.0,3,7.6,-13,minutes,yes,etr,3 min (usual 8); ours 19.0 well above what his usual minutes give
+2026-11-05,nba_thu_main,Ryan Conwell,MIA,miss,8.6,16.3,26.2,30,5.2,-20,minutes,yes,etr,"30 min (usual 5) in a 20-point loss as Hardaway played 4: rotation change or garbage time, unclear"
+2026-11-05,nba_thu_main,Tim Hardaway Jr.,MIA,miss,19.0,15.6,1.5,4,17.0,-20,minutes,yes,etr,"4 min (usual 17), no injury tag: unclear"
+2026-11-05,nba_thu_main,Jevon Carter,ORL,split,19.0,10.2,0.0,3,7.6,-13,minutes,yes,etr,"ours 19.0 vs ETR 10.2; usual 8 min, played 3"
+2026-11-05,nba_thu_main,Will Richard,GSW,split,13.2,21.1,15.0,16,17.9,20,other,?,ours,"ETR 21.1 vs ours 13.2; usual minutes (16), 15 points: ETR high, unclear why"
+2026-11-05,nba_thu_main,Ryan Conwell,MIA,split,8.6,16.3,26.2,30,5.2,-20,minutes,yes,etr,ETR 16.3 vs ours 8.6; played 30 (usual 5): ETR saw more of a role
+2026-11-05,nba_thu_main,Goga Bitadze,ORL,split,18.5,11.0,9.0,8,6.6,-13,minutes,yes,etr,"ours 18.5 vs ETR 11.0; usual 7 min, played 8"
+2026-11-05,nba_thu_main,Nikola Jovic,MIA,split,15.3,10.1,5.5,12,9.1,-20,minutes,yes,etr,"ours 15.3 vs ETR 10.1; 12 min, 0-2"
+2026-11-05,nba_thu_main,Anthony Black,ORL,split,34.1,38.9,25.4,31,28.0,-13,peripherals,no,ours,"ETR 38.9 vs ours 34.1; 31 min, 3-8 with 5 turnovers"
