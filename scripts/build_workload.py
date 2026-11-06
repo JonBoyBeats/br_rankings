@@ -40,6 +40,12 @@ L4 averages; the Score averages the prediction with and without them, which on 2
 better calibrated than either (skipping alone over-predicted the next game by 2-3 points,
 since players often return limited; research/workload/README.md, section 9).
 
+RB rushing yards over expected (RYOE): this season's total and per carry, from nflverse's
+Next Gen Stats, which list a game only when he had 10+ carries; the board's RB dropdown shows
+it. Backs with poor RYOE tended to lose carry share the next game, though ETR mostly prices
+that (battle-royale-research, FINDINGS C19 addendum). Its tiers are where this season's RBs
+with 30+ tracked carries sit: top 15% / next 25% / next 30% / rest.
+
 Workload Score: expected half-PPR points next game (and per game over the next 3), from a
 linear model per position on the inputs above, fitted and tested in the nfl_tails repo
 (research/workload/score_fit.py) and carried here as scripts/score_model.json. The drawer
@@ -455,6 +461,21 @@ def main():
         for i, r in enumerate(ranked, 1):
             r['score']['rank'] = i
             r['score']['tier'] = 3 - sum(i > cap for cap in SCORE_RANKS[pos])
+
+    # RB rushing yards over expected this season (Next Gen Stats; see the docstring)
+    try:
+        n = fetch(f'{NV}/nextgen_stats/ngs_rushing.parquet', 'ngs_rushing.parquet')
+        n = n[(n.season == season) & (n.season_type == 'REG') & (n.week > 0) & (n.week <= through)]
+        g = n.groupby('player_gsis_id').agg(att=('rush_attempts', 'sum'), tot=('rush_yards_over_expected', 'sum'), games=('week', 'size'))
+        ryoe = {pid: {'att': int(x.att), 'tot': round(float(x.tot)), 'per': round(float(x.tot / x.att), 2), 'games': int(x.games)}
+                for pid, x in g.iterrows() if x.att > 0}
+        for r in rows:
+            if r['pos'] == 'RB' and r['id'] in ryoe: r['ryoe'] = ryoe[r['id']]
+        qual = [v['per'] for pid, v in ryoe.items() if v['att'] >= 30]
+        if qual: POSITIONS['RB']['cuts']['ryoe'] = {'season': [round(float(np.percentile(qual, q)), 2) for q in (85, 60, 30)]}
+        print(f'RYOE: {sum("ryoe" in r for r in rows)} RBs, {len(qual)} with 30+ tracked carries')
+    except Exception as e:
+        print(f'Next Gen rushing unavailable: {e!r}')
 
     doc = {'season': season, 'through_week': through, 'next_week': through + 1,
            'built': time.strftime('%Y-%m-%dT%H:%MZ', time.gmtime()),
