@@ -1,0 +1,5520 @@
+{
+ "date": "2026-11-06",
+ "slate": "nba_fri_main",
+ "contests": [
+  {
+   "contest": "Fast Break Friday",
+   "contest_id": "479b1779-3605-45c2-8763-b6663a4e8ea8",
+   "entries": 15756,
+   "pods": 2626,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 15756,
+    "win": 296.1,
+    "median": 219.8,
+    "top1": 268.4,
+    "top1_over_median": 48.6,
+    "top5": 255.6,
+    "top5_over_median": 35.8,
+    "top10": 248.1,
+    "top10_over_median": 28.3,
+    "top20": 238.5,
+    "top20_over_median": 18.7
+   },
+   "drafted_curve": [
+    {
+     "player": "Victor Wembanyama",
+     "adp": 1.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Luka Doncic",
+     "adp": 1.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Shai Gilgeous-Alexander",
+     "adp": 3.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 4.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 4.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Joel Embiid",
+     "adp": 7.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Tyrese Maxey",
+     "adp": 7.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Deni Avdija",
+     "adp": 9.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Domantas Sabonis",
+     "adp": 10.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Donovan Mitchell",
+     "adp": 11.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Scottie Barnes",
+     "adp": 14.3,
+     "drafted": 0.2
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 14.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaylen Brown",
+     "adp": 15.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Walker Kessler",
+     "adp": 16.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Evan Mobley",
+     "adp": 18.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 18.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "LeBron James",
+     "adp": 19.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Dejounte Murray",
+     "adp": 21.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Keyonte George",
+     "adp": 22.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Darius Acuff Jr.",
+     "adp": 22.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "RJ Barrett",
+     "adp": 24.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 24.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 26.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Lauri Markkanen",
+     "adp": 27.7,
+     "drafted": 99.9
+    },
+    {
+     "player": "James Harden",
+     "adp": 27.9,
+     "drafted": 99.6
+    },
+    {
+     "player": "Onyeka Okongwu",
+     "adp": 29.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ty Jerome",
+     "adp": 30.7,
+     "drafted": 99.5
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 31.3,
+     "drafted": 96.3
+    },
+    {
+     "player": "Damian Lillard",
+     "adp": 32.1,
+     "drafted": 92.0
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 32.4,
+     "drafted": 94.4
+    },
+    {
+     "player": "Austin Reaves",
+     "adp": 33.1,
+     "drafted": 95.6
+    },
+    {
+     "player": "Brandon Miller",
+     "adp": 34.0,
+     "drafted": 82.2
+    },
+    {
+     "player": "Donovan Clingan",
+     "adp": 34.4,
+     "drafted": 65.2
+    },
+    {
+     "player": "Dyson Daniels",
+     "adp": 34.6,
+     "drafted": 96.3
+    },
+    {
+     "player": "Nickeil Alexander-Walker",
+     "adp": 35.2,
+     "drafted": 75.2
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 35.3,
+     "drafted": 40.2
+    },
+    {
+     "player": "Immanuel Quickley",
+     "adp": 35.3,
+     "drafted": 0.0
+    },
+    {
+     "player": "Tyler Herro",
+     "adp": 35.5,
+     "drafted": 27.9
+    },
+    {
+     "player": "Dylan Harper",
+     "adp": 35.5,
+     "drafted": 16.9
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 35.7,
+     "drafted": 25.7
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 35.8,
+     "drafted": 19.8
+    },
+    {
+     "player": "Stephon Castle",
+     "adp": 35.8,
+     "drafted": 13.4
+    },
+    {
+     "player": "Naz Reid",
+     "adp": 35.8,
+     "drafted": 6.6
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 35.9,
+     "drafted": 17.1
+    },
+    {
+     "player": "De'Aaron Fox",
+     "adp": 35.9,
+     "drafted": 3.5
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 35.9,
+     "drafted": 9.0
+    },
+    {
+     "player": "Jonathan Kuminga",
+     "adp": 35.9,
+     "drafted": 2.7
+    },
+    {
+     "player": "Jrue Holiday",
+     "adp": 36.0,
+     "drafted": 0.3
+    },
+    {
+     "player": "Derrick White",
+     "adp": 36.0,
+     "drafted": 0.6
+    },
+    {
+     "player": "Collin Murray-Boyles",
+     "adp": 36.0,
+     "drafted": 6.1
+    },
+    {
+     "player": "CJ McCollum",
+     "adp": 36.0,
+     "drafted": 0.6
+    },
+    {
+     "player": "Jamal Shead",
+     "adp": 36.0,
+     "drafted": 2.7
+    },
+    {
+     "player": "Derik Queen",
+     "adp": 36.0,
+     "drafted": 1.5
+    },
+    {
+     "player": "Cedric Coward",
+     "adp": 36.0,
+     "drafted": 1.1
+    },
+    {
+     "player": "Kingston Flemings",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Rudy Gobert",
+     "adp": 36.0,
+     "drafted": 2.6
+    },
+    {
+     "player": "Myles Turner",
+     "adp": 36.0,
+     "drafted": 0.3
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Ja'Kobe Walter",
+     "adp": 36.0,
+     "drafted": 0.8
+    },
+    {
+     "player": "Trey Murphy III",
+     "adp": 36.0,
+     "drafted": 0.3
+    },
+    {
+     "player": "VJ Edgecombe",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Isaiah Hartenstein",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 36.0,
+     "drafted": 0.6
+    },
+    {
+     "player": "Darryn Peterson",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Zuby Ejiofor",
+     "adp": 36.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Ace Bailey",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Jaime Jaquez Jr.",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Devin Vassell",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Malik Monk",
+     "adp": 36.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Jeremiah Fears",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Zach LaVine",
+     "adp": 36.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Alex Caruso",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Kenrich Williams",
+     "adp": 36.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Aday Mara",
+     "adp": 36.0,
+     "drafted": 0.3
+    },
+    {
+     "player": "Jakob Poeltl",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "4b19c641",
+     "adp": null,
+     "drafted": 0.1
+    },
+    {
+     "player": "Anthony Davis",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "85d01ea5",
+     "adp": null,
+     "drafted": 0.0
+    },
+    {
+     "player": "Jalen Johnson",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "031f23d1",
+     "adp": null,
+     "drafted": 0.0
+    },
+    {
+     "player": "ee47b47b",
+     "adp": null,
+     "drafted": 0.0
+    }
+   ],
+   "first_below_100": {
+    "player": "Zion Williamson",
+    "adp": 31.3,
+    "drafted": 96.3
+   },
+   "drafted_bands": {
+    "99.5+": 27,
+    "60-99.5": 8,
+    "10-60": 7,
+    "<10": 41
+   },
+   "value": {
+    "field_fpoe": 29.1,
+    "top1_fpoe": 81.8,
+    "field_breakers": 1.95,
+    "top1_breakers": 4.08
+   },
+   "pairs": [
+    {
+     "pair": "Joel Embiid + Tyrese Maxey",
+     "rounds": "1/2",
+     "share": 5.4,
+     "lift": 2.28
+    },
+    {
+     "pair": "Luka Doncic + Donovan Mitchell",
+     "rounds": "1/2",
+     "share": 5.1,
+     "lift": 2.13
+    },
+    {
+     "pair": "Joel Embiid + Evan Mobley",
+     "rounds": "1/3",
+     "share": 5.1,
+     "lift": 2.12
+    },
+    {
+     "pair": "Victor Wembanyama + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 5.0,
+     "lift": 2.1
+    },
+    {
+     "pair": "Victor Wembanyama + Paul George",
+     "rounds": "1/4",
+     "share": 4.9,
+     "lift": 2.07
+    },
+    {
+     "pair": "Luka Doncic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 4.9,
+     "lift": 2.06
+    },
+    {
+     "pair": "Tyrese Maxey + Evan Mobley",
+     "rounds": "2/3",
+     "share": 4.9,
+     "lift": 2.05
+    },
+    {
+     "pair": "Luka Doncic + Paul George",
+     "rounds": "1/4",
+     "share": 4.5,
+     "lift": 1.87
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Domantas Sabonis",
+     "rounds": "1/2",
+     "share": 4.4,
+     "lift": 1.85
+    },
+    {
+     "pair": "Joel Embiid + LeBron James",
+     "rounds": "1/3",
+     "share": 4.4,
+     "lift": 1.85
+    },
+    {
+     "pair": "Kyrie Irving + Paul George",
+     "rounds": "2/4",
+     "share": 4.4,
+     "lift": 1.85
+    },
+    {
+     "pair": "Victor Wembanyama + Donovan Mitchell",
+     "rounds": "1/2",
+     "share": 4.4,
+     "lift": 1.84
+    },
+    {
+     "pair": "Tyrese Maxey + LeBron James",
+     "rounds": "2/3",
+     "share": 4.3,
+     "lift": 1.82
+    },
+    {
+     "pair": "Tyrese Maxey + Trae Young",
+     "rounds": "2/3",
+     "share": 4.2,
+     "lift": 1.77
+    },
+    {
+     "pair": "Jaylen Brown + Paul George",
+     "rounds": "3/4",
+     "share": 4.2,
+     "lift": 1.75
+    },
+    {
+     "pair": "Victor Wembanyama + Darius Acuff Jr.",
+     "rounds": "1/4",
+     "share": 4.1,
+     "lift": 1.7
+    },
+    {
+     "pair": "Victor Wembanyama + Cameron Boozer",
+     "rounds": "1/4",
+     "share": 4.0,
+     "lift": 1.68
+    },
+    {
+     "pair": "Luka Doncic + Cameron Boozer",
+     "rounds": "1/4",
+     "share": 3.9,
+     "lift": 1.65
+    },
+    {
+     "pair": "Tyrese Maxey + Ty Jerome",
+     "rounds": "2/5",
+     "share": 3.9,
+     "lift": 1.65
+    },
+    {
+     "pair": "Joel Embiid + Walker Kessler",
+     "rounds": "1/3",
+     "share": 3.9,
+     "lift": 1.64
+    },
+    {
+     "pair": "Cooper Flagg + Evan Mobley",
+     "rounds": "1/3",
+     "share": 3.9,
+     "lift": 1.63
+    },
+    {
+     "pair": "Joel Embiid + Trae Young",
+     "rounds": "1/3",
+     "share": 3.9,
+     "lift": 1.63
+    },
+    {
+     "pair": "Deni Avdija + LeBron James",
+     "rounds": "2/3",
+     "share": 3.8,
+     "lift": 1.62
+    },
+    {
+     "pair": "Victor Wembanyama + LaMelo Ball",
+     "rounds": "1/3",
+     "share": 3.8,
+     "lift": 1.61
+    },
+    {
+     "pair": "Jayson Tatum + LeBron James",
+     "rounds": "1/3",
+     "share": 3.8,
+     "lift": 1.6
+    }
+   ],
+   "cores": [
+    {
+     "core": "Joel Embiid + Tyrese Maxey + Evan Mobley",
+     "share": 1.4
+    },
+    {
+     "core": "Joel Embiid + Tyrese Maxey + Walker Kessler",
+     "share": 1.2
+    },
+    {
+     "core": "Kyrie Irving + Luka Doncic + Donovan Mitchell",
+     "share": 0.9
+    },
+    {
+     "core": "Kyrie Irving + Donovan Mitchell + Victor Wembanyama",
+     "share": 0.9
+    },
+    {
+     "core": "Kyrie Irving + LaMelo Ball + Victor Wembanyama",
+     "share": 0.8
+    },
+    {
+     "core": "Deni Avdija + Tyrese Maxey + Evan Mobley",
+     "share": 0.8
+    },
+    {
+     "core": "Luka Doncic + Jaylen Brown + Donovan Mitchell",
+     "share": 0.7
+    },
+    {
+     "core": "Joel Embiid + Trae Young + Tyrese Maxey",
+     "share": 0.7
+    },
+    {
+     "core": "Kyrie Irving + Luka Doncic + LaMelo Ball",
+     "share": 0.7
+    },
+    {
+     "core": "Tyrese Maxey + Walker Kessler + Cooper Flagg",
+     "share": 0.7
+    },
+    {
+     "core": "Deni Avdija + Cooper Flagg + Evan Mobley",
+     "share": 0.7
+    },
+    {
+     "core": "Jaylen Brown + Shai Gilgeous-Alexander + Domantas Sabonis",
+     "share": 0.7
+    },
+    {
+     "core": "Luka Doncic + Donovan Mitchell + LaMelo Ball",
+     "share": 0.7
+    },
+    {
+     "core": "Kyrie Irving + Jaylen Brown + Victor Wembanyama",
+     "share": 0.6
+    },
+    {
+     "core": "Jayson Tatum + Joel Embiid + Walker Kessler",
+     "share": 0.6
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Joel Embiid (6) + Tyrese Maxey (7)",
+      "share": 5.4,
+      "lift": 2.28,
+      "top1": 0,
+      "avg_points": 182.6
+     },
+     {
+      "pair": "Cooper Flagg (5) + Deni Avdija (8)",
+      "share": 3.5,
+      "lift": 1.48,
+      "top1": 3,
+      "avg_points": 234.3
+     },
+     {
+      "pair": "Cooper Flagg (5) + Joel Embiid (6)",
+      "share": 3.1,
+      "lift": 1.29,
+      "top1": 0,
+      "avg_points": 206.4
+     },
+     {
+      "pair": "Tyrese Maxey (7) + Deni Avdija (8)",
+      "share": 3.1,
+      "lift": 1.32,
+      "top1": 0,
+      "avg_points": 213.5
+     },
+     {
+      "pair": "Cooper Flagg (5) + Tyrese Maxey (7)",
+      "share": 2.7,
+      "lift": 1.13,
+      "top1": 0,
+      "avg_points": 215.6
+     },
+     {
+      "pair": "Joel Embiid (6) + Deni Avdija (8)",
+      "share": 1.2,
+      "lift": 0.51,
+      "top1": 0,
+      "avg_points": 202.1
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Victor Wembanyama",
+      "adp_rank": 1,
+      "teams": 2626,
+      "combos": [
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 5.1,
+        "share": 0.9,
+        "top1": 1,
+        "avg_points": 226.7
+       },
+       {
+        "combo": "Victor Wembanyama + Kyrie Irving (11) + LaMelo Ball (13)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 216.1
+       },
+       {
+        "combo": "Victor Wembanyama + Kyrie Irving (11) + Jaylen Brown (14)",
+        "of_anchor": 3.9,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 214.5
+       },
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + LaMelo Ball (13)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 4,
+        "avg_points": 238.9
+       },
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + Jaylen Brown (14)",
+        "of_anchor": 3.3,
+        "share": 0.6,
+        "top1": 1,
+        "avg_points": 231.5
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (13) + Trae Young (17)",
+        "of_anchor": 2.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 224.9
+       },
+       {
+        "combo": "Victor Wembanyama + Jaylen Brown (14) + Walker Kessler (15)",
+        "of_anchor": 2.7,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 218.2
+       },
+       {
+        "combo": "Victor Wembanyama + Domantas Sabonis (9) + Donovan Mitchell (10)",
+        "of_anchor": 2.7,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 230.1
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 2626,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 5,
+        "avg_points": 240.1
+       },
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + Jaylen Brown (14)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 5,
+        "avg_points": 245.6
+       },
+       {
+        "combo": "Luka Doncic + Kyrie Irving (11) + LaMelo Ball (13)",
+        "of_anchor": 4.0,
+        "share": 0.7,
+        "top1": 1,
+        "avg_points": 226.8
+       },
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + LaMelo Ball (13)",
+        "of_anchor": 3.9,
+        "share": 0.7,
+        "top1": 10,
+        "avg_points": 246.7
+       },
+       {
+        "combo": "Luka Doncic + Kyrie Irving (11) + Jaylen Brown (14)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 223.6
+       },
+       {
+        "combo": "Luka Doncic + Domantas Sabonis (9) + Kyrie Irving (11)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 1,
+        "avg_points": 225.1
+       },
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + Trae Young (17)",
+        "of_anchor": 2.7,
+        "share": 0.5,
+        "top1": 9,
+        "avg_points": 250.5
+       },
+       {
+        "combo": "Luka Doncic + Domantas Sabonis (9) + Donovan Mitchell (10)",
+        "of_anchor": 2.7,
+        "share": 0.5,
+        "top1": 3,
+        "avg_points": 243.6
+       }
+      ]
+     },
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 3,
+      "teams": 2626,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Jaylen Brown (14)",
+        "of_anchor": 4.0,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 204.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + LaMelo Ball (13)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 203.2
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + LaMelo Ball (13)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 221.8
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + Jaylen Brown (14)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 217.8
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Walker Kessler (15)",
+        "of_anchor": 2.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 205.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + LeBron James (18)",
+        "of_anchor": 2.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 200.5
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Trae Young (17)",
+        "of_anchor": 2.7,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 210.1
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Kyrie Irving (11)",
+        "of_anchor": 2.7,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 198.1
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": {
+    "teams": 80,
+    "share4_median": 0.4,
+    "share4_max": 1.1,
+    "teams_with_dupes": 3,
+    "repeats_of_mine": 2,
+    "top_pairs": [
+     [
+      "LaMelo Ball + Cameron Boozer",
+      13
+     ],
+     [
+      "Cameron Boozer + Dyson Daniels",
+      12
+     ],
+     [
+      "Nickeil Alexander-Walker + Cameron Boozer",
+      12
+     ],
+     [
+      "RJ Barrett + Dyson Daniels",
+      11
+     ],
+     [
+      "Kyrie Irving + Cameron Boozer",
+      10
+     ]
+    ],
+    "top_cores": [
+     [
+      "Deni Avdija + Tyrese Maxey + Evan Mobley",
+      3
+     ],
+     [
+      "Tyrese Maxey + Cooper Flagg + Evan Mobley",
+      3
+     ],
+     [
+      "Kyrie Irving + LaMelo Ball + Shai Gilgeous-Alexander",
+      3
+     ],
+     [
+      "Kyrie Irving + LaMelo Ball + Victor Wembanyama",
+      3
+     ],
+     [
+      "Jayson Tatum + Joel Embiid + LeBron James",
+      3
+     ]
+    ]
+   },
+   "draft_time": {
+    "matched": 15691,
+    "am_share": 37.2,
+    "by_hour_pt": {
+     "00": 200,
+     "01": 103,
+     "02": 130,
+     "03": 131,
+     "04": 247,
+     "05": 357,
+     "06": 506,
+     "07": 515,
+     "08": 898,
+     "09": 650,
+     "10": 1143,
+     "11": 950,
+     "12": 977,
+     "13": 1250,
+     "14": 2452,
+     "15": 3805,
+     "19": 1,
+     "20": 161,
+     "21": 244,
+     "22": 771,
+     "23": 200
+    }
+   },
+   "mine": {
+    "teams": 80,
+    "median_pct": 29.1,
+    "tail1": 2.5,
+    "tail5": 3.0,
+    "tail10": 2.62,
+    "tail20": 2.06,
+    "payout": 958.5,
+    "am_teams": 29,
+    "am_tail10": 2.41,
+    "pm_teams": 51,
+    "pm_tail10": 2.75
+   },
+   "my_teams": [
+    {
+     "place": 12932,
+     "points": 197.7,
+     "payout": 0.0,
+     "draft_id": "006f7fa3-490e-4416-b1b9-bf5b0c0416bc",
+     "picks": [
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "446ae12c-b571-45ea-a1ee-0afe159d53b8",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 2989,
+     "points": 239.3,
+     "payout": 0.0,
+     "draft_id": "06e2e50a-085c-4982-a242-3cc788911a9c",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 924,
+     "points": 253.8,
+     "payout": 10.0,
+     "draft_id": "0eee8bbc-e1c8-4c40-bbca-325bee2fc95c",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 12250,
+     "points": 201.6,
+     "payout": 0.0,
+     "draft_id": "0fe931df-a5f2-4b62-a5c7-063428b6e2af",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187"
+     ],
+     "drafted_at": "2026-11-06T12:23:43+00:00"
+    },
+    {
+     "place": 11245,
+     "points": 206.5,
+     "payout": 0.0,
+     "draft_id": "1005cfe0-5980-4488-899c-97e64bea2dfd",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "20cd7474-4651-4cff-81bc-939895c17f60",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 9332,
+     "points": 214.3,
+     "payout": 0.0,
+     "draft_id": "149a9d55-c2fd-41c0-b150-c97369a9154b",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 3172,
+     "points": 238.4,
+     "payout": 0.0,
+     "draft_id": "186649cf-23fb-461b-8287-6d33f1f19e03",
+     "picks": [
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 7484,
+     "points": 221.2,
+     "payout": 0.0,
+     "draft_id": "21c7a776-88e2-48c1-8c1e-66bba4c61dea",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "ecb83876-9303-4f2f-b504-4285e15fa660",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T15:23:16+00:00"
+    },
+    {
+     "place": 11610,
+     "points": 204.7,
+     "payout": 0.0,
+     "draft_id": "22669d49-2597-4be8-8d75-3e9986804621",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "794f5b4a-fc6c-4f3e-b386-246945335358",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T14:23:20+00:00"
+    },
+    {
+     "place": 10251,
+     "points": 210.6,
+     "payout": 0.0,
+     "draft_id": "23170ecb-6676-4613-963b-63e652398a1b",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 1134,
+     "points": 251.6,
+     "payout": 10.0,
+     "draft_id": "23926476-87d2-4cb2-b03a-9ea5cd9bc5d5",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 2757,
+     "points": 240.6,
+     "payout": 0.0,
+     "draft_id": "2aae34eb-61d7-48e2-b51e-b04986bbfa84",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f",
+      "a488038a-7548-46a6-bbf9-7ca1e409ed69"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 4974,
+     "points": 230.3,
+     "payout": 0.0,
+     "draft_id": "35f45df1-6cfb-4a53-80b8-3e26ffee2076",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "3917bf11-e61b-4727-8a5f-103b5866005d",
+      "a488038a-7548-46a6-bbf9-7ca1e409ed69"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 13901,
+     "points": 191.4,
+     "payout": 0.0,
+     "draft_id": "366d495c-b09d-41b3-973f-526f36dd4c92",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "20cd7474-4651-4cff-81bc-939895c17f60",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 4166,
+     "points": 233.9,
+     "payout": 0.0,
+     "draft_id": "367fc522-bcc5-4791-b408-6197f00f0e4d",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "3917bf11-e61b-4727-8a5f-103b5866005d",
+      "a488038a-7548-46a6-bbf9-7ca1e409ed69"
+     ],
+     "drafted_at": "2026-11-06T14:23:20+00:00"
+    },
+    {
+     "place": 3881,
+     "points": 235.1,
+     "payout": 0.0,
+     "draft_id": "3ea03aa4-e4af-4e91-8468-2ee9de171d66",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "025490f6-95d6-437e-926d-f99e80a23c58",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 437,
+     "points": 260.8,
+     "payout": 10.0,
+     "draft_id": "42468b3c-4eac-4a75-af1a-64bc801e39c2",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 7555,
+     "points": 221.0,
+     "payout": 0.0,
+     "draft_id": "4350ce9f-ca83-4b8d-b60e-192948f09cde",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 2967,
+     "points": 239.4,
+     "payout": 0.0,
+     "draft_id": "49eb059b-ec8b-4048-84bb-4b5aa5a16b9f",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 11,
+     "points": 281.5,
+     "payout": 600.0,
+     "draft_id": "4bbcfcea-644b-4f7e-8b03-36180134c4c6",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 408,
+     "points": 261.2,
+     "payout": 10.0,
+     "draft_id": "4e9b21f8-5337-4445-a8ec-6b7eb5b587b5",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "6aca4dc0-4521-444c-9cf8-e1736c04562d",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 4281,
+     "points": 233.4,
+     "payout": 0.0,
+     "draft_id": "5166e823-fb14-4b0f-81be-34df4fbfad0b",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 2795,
+     "points": 240.4,
+     "payout": 0.0,
+     "draft_id": "5794ab35-efb9-48d9-8eb4-8f56a7b26707",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 1496,
+     "points": 248.7,
+     "payout": 10.0,
+     "draft_id": "5bdad12b-a7b9-41c7-8a1c-e3e4bddecb66",
+     "picks": [
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 6965,
+     "points": 223.1,
+     "payout": 0.0,
+     "draft_id": "5d0c25d2-90c3-40ff-aaeb-b3ecefaa2e06",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 5031,
+     "points": 230.1,
+     "payout": 0.0,
+     "draft_id": "62493e36-e641-4acd-bf47-60ce98843146",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 6199,
+     "points": 225.7,
+     "payout": 0.0,
+     "draft_id": "66f977d9-3b4b-4110-8efe-947e035e1e7a",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "ecb83876-9303-4f2f-b504-4285e15fa660",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T14:23:20+00:00"
+    },
+    {
+     "place": 2309,
+     "points": 243.2,
+     "payout": 10.0,
+     "draft_id": "6b71afbd-70fb-432b-85b9-fd352220208f",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 3295,
+     "points": 237.8,
+     "payout": 0.0,
+     "draft_id": "74a76b30-930c-48f5-a9de-01bbcf8f2ec3",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "ecb83876-9303-4f2f-b504-4285e15fa660",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 12722,
+     "points": 198.8,
+     "payout": 0.0,
+     "draft_id": "77337cc7-96da-4702-8ecb-9de0c4794906",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 6889,
+     "points": 223.3,
+     "payout": 0.0,
+     "draft_id": "77dc9370-dbd1-4153-85e0-5fd793a7ab2a",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "3917bf11-e61b-4727-8a5f-103b5866005d",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 8958,
+     "points": 215.9,
+     "payout": 0.0,
+     "draft_id": "82d1b4f2-4d9a-4274-a851-d05394236490",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 2607,
+     "points": 241.4,
+     "payout": 0.0,
+     "draft_id": "84248df7-ab33-4b0f-8339-96cdd06eae28",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 355,
+     "points": 262.4,
+     "payout": 12.0,
+     "draft_id": "853c4b4b-1baf-438f-9188-7e60b69e9c29",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 1005,
+     "points": 252.8,
+     "payout": 10.0,
+     "draft_id": "8766ccc3-2212-40aa-9443-298f019a2467",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "025490f6-95d6-437e-926d-f99e80a23c58",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 12585,
+     "points": 199.6,
+     "payout": 0.0,
+     "draft_id": "8a563e43-d476-4742-9215-7d618b1600a9",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 13097,
+     "points": 196.8,
+     "payout": 0.0,
+     "draft_id": "8aa36d78-971e-4906-889c-acd749122378",
+     "picks": [
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 792,
+     "points": 255.5,
+     "payout": 10.0,
+     "draft_id": "8cf99d2d-3352-4d5d-a187-1228fb0e8429",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 2285,
+     "points": 243.4,
+     "payout": 10.0,
+     "draft_id": "922282e9-7aa7-4f8e-98de-ae9d0b68b48d",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 4578,
+     "points": 232.0,
+     "payout": 0.0,
+     "draft_id": "93d0b52a-4984-4dbe-914c-93be97e24966",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "3917bf11-e61b-4727-8a5f-103b5866005d",
+      "643fcf01-0598-4533-b0eb-e5c21d7ce74e"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 5004,
+     "points": 230.2,
+     "payout": 0.0,
+     "draft_id": "93ed9b9e-ce13-41bc-aff5-c5ceee4faa80",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 177,
+     "points": 267.6,
+     "payout": 30.0,
+     "draft_id": "94aba3ac-0ea1-4ec4-878a-e07fc79a6cd1",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 323,
+     "points": 263.1,
+     "payout": 15.0,
+     "draft_id": "9575414a-40ec-4521-ab82-55ab21a2ad53",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 2243,
+     "points": 243.6,
+     "payout": 10.0,
+     "draft_id": "96f15e11-72a3-4c10-8d48-dbd4f25c0cc2",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 15124,
+     "points": 177.6,
+     "payout": 0.0,
+     "draft_id": "9cae4fbb-171d-420b-bd45-07241ce46344",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "794f5b4a-fc6c-4f3e-b386-246945335358"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 7484,
+     "points": 221.2,
+     "payout": 0.0,
+     "draft_id": "9da6b642-204d-4713-a38d-e7384650e318",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 14426,
+     "points": 186.8,
+     "payout": 0.0,
+     "draft_id": "9e628937-2e11-467c-8cb6-33f925c4a3c1",
+     "picks": [
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "ecb83876-9303-4f2f-b504-4285e15fa660",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2"
+     ],
+     "drafted_at": "2026-11-06T14:23:20+00:00"
+    },
+    {
+     "place": 4974,
+     "points": 230.3,
+     "payout": 0.0,
+     "draft_id": "a48717dc-e226-4fa4-86ba-e32cceedd5a4",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 1810,
+     "points": 246.5,
+     "payout": 10.0,
+     "draft_id": "a54f2758-15e0-4ce1-9e25-6b36cca147a4",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 3110,
+     "points": 238.7,
+     "payout": 0.0,
+     "draft_id": "a6e19745-dee9-4667-9367-b1271fbd3130",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 809,
+     "points": 255.3,
+     "payout": 10.0,
+     "draft_id": "ac56edca-e6f1-429b-9133-3b7e62e9366e",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 5460,
+     "points": 228.3,
+     "payout": 0.0,
+     "draft_id": "b34c3009-cd06-4681-9114-de8cfa114ac9",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T14:23:20+00:00"
+    },
+    {
+     "place": 14044,
+     "points": 190.3,
+     "payout": 0.0,
+     "draft_id": "b3ed6263-3a97-4f72-8101-08434e2bde16",
+     "picks": [
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "025490f6-95d6-437e-926d-f99e80a23c58",
+      "b863b59b-2841-42df-b869-299dd8d3e563"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 9240,
+     "points": 214.7,
+     "payout": 0.0,
+     "draft_id": "b5294ecd-8822-4639-bc96-8904c51b20a6",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "025490f6-95d6-437e-926d-f99e80a23c58"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 610,
+     "points": 258.1,
+     "payout": 10.0,
+     "draft_id": "b66789e5-141f-4fa7-9fd5-0c33b142b1f5",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "025490f6-95d6-437e-926d-f99e80a23c58",
+      "23907bb6-4b50-4b28-9772-dc7a2a298250",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 11111,
+     "points": 207.1,
+     "payout": 0.0,
+     "draft_id": "ba01a778-f19f-42a0-84dd-2b5b60925307",
+     "picks": [
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 13008,
+     "points": 197.3,
+     "payout": 0.0,
+     "draft_id": "c47f1926-28f7-4872-8ae5-a4dcaab4f0bb",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "23f98978-87d4-4eff-acf2-bc9896ea8bb5",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "446ae12c-b571-45ea-a1ee-0afe159d53b8",
+      "794f5b4a-fc6c-4f3e-b386-246945335358",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 7747,
+     "points": 220.3,
+     "payout": 0.0,
+     "draft_id": "c4d865c4-d5ea-4c34-9c12-fe38e3df55e7",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 4421,
+     "points": 232.7,
+     "payout": 0.0,
+     "draft_id": "c54a7dc2-c855-4703-8675-b7fc42aded9e",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "3917bf11-e61b-4727-8a5f-103b5866005d",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 7016,
+     "points": 222.9,
+     "payout": 0.0,
+     "draft_id": "c7a83547-570b-4c6e-94ee-69b15541de73",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 370,
+     "points": 262.0,
+     "payout": 12.0,
+     "draft_id": "ca8f847f-023d-4104-86b0-8e4eeef05a77",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 1516,
+     "points": 248.6,
+     "payout": 10.0,
+     "draft_id": "cdaa7969-8c34-4db0-8b95-fda6bfb345b3",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "025490f6-95d6-437e-926d-f99e80a23c58",
+      "3917bf11-e61b-4727-8a5f-103b5866005d",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T14:23:20+00:00"
+    },
+    {
+     "place": 427,
+     "points": 260.9,
+     "payout": 10.0,
+     "draft_id": "d42af486-afc4-4acf-b196-711f5785233a",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "f4a5e437-76b9-4864-bbdf-ca4f71762c63"
+     ],
+     "drafted_at": "2026-11-06T12:23:43+00:00"
+    },
+    {
+     "place": 7824,
+     "points": 220.0,
+     "payout": 0.0,
+     "draft_id": "d470fbd3-3a3b-448e-8da8-89b80ad8265b",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "3917bf11-e61b-4727-8a5f-103b5866005d",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 417,
+     "points": 261.1,
+     "payout": 10.0,
+     "draft_id": "d771f33d-1cdb-431c-b12d-06c72baea6d8",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 964,
+     "points": 253.4,
+     "payout": 10.0,
+     "draft_id": "d7c66b96-a396-46c8-8897-2ac87a112e9b",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 8331,
+     "points": 218.2,
+     "payout": 0.0,
+     "draft_id": "d874b650-f557-4f01-9842-62acc6064ef4",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "6aca4dc0-4521-444c-9cf8-e1736c04562d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 8101,
+     "points": 219.0,
+     "payout": 0.0,
+     "draft_id": "d97ce026-fe94-482e-8f8e-e9eb5b12bf3b",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 802,
+     "points": 255.4,
+     "payout": 10.0,
+     "draft_id": "da2cd2dc-9af3-4637-b137-bec713cb1855",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "025490f6-95d6-437e-926d-f99e80a23c58",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 2072,
+     "points": 244.6,
+     "payout": 10.0,
+     "draft_id": "dba3b38b-a5b1-4982-a413-9d99af387d33",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 5075,
+     "points": 229.9,
+     "payout": 0.0,
+     "draft_id": "dc7a6731-daf0-49d5-98be-e0657d063ab3",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 14670,
+     "points": 184.1,
+     "payout": 0.0,
+     "draft_id": "df989e13-6fbb-40cc-b69f-220424df7d77",
+     "picks": [
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "794f5b4a-fc6c-4f3e-b386-246945335358",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T14:23:20+00:00"
+    },
+    {
+     "place": 273,
+     "points": 264.3,
+     "payout": 19.5,
+     "draft_id": "e1ad5e80-a313-4797-a5b1-60aca9964131",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "1464ff77-b5a1-4b13-9ef3-20ac265816a2",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 7631,
+     "points": 220.7,
+     "payout": 0.0,
+     "draft_id": "e31dbb34-df5c-49a9-a998-211a5741f813",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 6134,
+     "points": 225.9,
+     "payout": 0.0,
+     "draft_id": "e504b76a-d904-41da-bd3d-d84c3acf7627",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "794f5b4a-fc6c-4f3e-b386-246945335358",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T13:24:33+00:00"
+    },
+    {
+     "place": 13248,
+     "points": 195.8,
+     "payout": 0.0,
+     "draft_id": "e87f8013-95ce-4de6-9458-3c24daff4cf3",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "20cd7474-4651-4cff-81bc-939895c17f60",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 10439,
+     "points": 209.8,
+     "payout": 0.0,
+     "draft_id": "efc72b99-7a4f-4050-9f31-ccf16b8abcb5",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 2172,
+     "points": 244.0,
+     "payout": 10.0,
+     "draft_id": "f63d9cfc-6564-4ec1-8fdc-747ebadee9ca",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 93,
+     "points": 271.8,
+     "payout": 70.0,
+     "draft_id": "feb97061-730f-4f68-b9a0-a58050b64b95",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "3917bf11-e61b-4727-8a5f-103b5866005d"
+     ],
+     "drafted_at": "2026-11-06T14:23:20+00:00"
+    },
+    {
+     "place": 3172,
+     "points": 238.4,
+     "payout": 0.0,
+     "draft_id": "feee89ab-a0db-4c53-9229-08e5b82b3cb0",
+     "picks": [
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "3049edb3-278c-494d-a03d-bb1e9e7ebe4f"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    }
+   ]
+  },
+  {
+   "contest": "Buzzer Beater",
+   "contest_id": "c4c8d350-ce08-4c2d-883a-958e38e2bbb8",
+   "entries": 3756,
+   "pods": 626,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 3756,
+    "win": 283.2,
+    "median": 219.5,
+    "top1": 267.0,
+    "top1_over_median": 47.5,
+    "top5": 254.4,
+    "top5_over_median": 34.9,
+    "top10": 247.5,
+    "top10_over_median": 28.0,
+    "top20": 238.2,
+    "top20_over_median": 18.7
+   },
+   "drafted_curve": [
+    {
+     "player": "Victor Wembanyama",
+     "adp": 1.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Luka Doncic",
+     "adp": 1.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Shai Gilgeous-Alexander",
+     "adp": 3.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 4.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 4.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Joel Embiid",
+     "adp": 7.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Tyrese Maxey",
+     "adp": 7.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Deni Avdija",
+     "adp": 9.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Domantas Sabonis",
+     "adp": 10.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Donovan Mitchell",
+     "adp": 11.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 14.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaylen Brown",
+     "adp": 15.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Walker Kessler",
+     "adp": 16.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Evan Mobley",
+     "adp": 18.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 18.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "LeBron James",
+     "adp": 19.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Dejounte Murray",
+     "adp": 21.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Keyonte George",
+     "adp": 22.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Darius Acuff Jr.",
+     "adp": 22.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "RJ Barrett",
+     "adp": 24.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 24.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 26.3,
+     "drafted": 99.7
+    },
+    {
+     "player": "Lauri Markkanen",
+     "adp": 27.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "James Harden",
+     "adp": 27.9,
+     "drafted": 99.5
+    },
+    {
+     "player": "Onyeka Okongwu",
+     "adp": 29.6,
+     "drafted": 99.8
+    },
+    {
+     "player": "Ty Jerome",
+     "adp": 30.7,
+     "drafted": 99.2
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 31.3,
+     "drafted": 98.9
+    },
+    {
+     "player": "Damian Lillard",
+     "adp": 32.1,
+     "drafted": 97.4
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 32.4,
+     "drafted": 97.9
+    },
+    {
+     "player": "Austin Reaves",
+     "adp": 33.1,
+     "drafted": 96.5
+    },
+    {
+     "player": "Brandon Miller",
+     "adp": 34.0,
+     "drafted": 84.2
+    },
+    {
+     "player": "Donovan Clingan",
+     "adp": 34.4,
+     "drafted": 77.8
+    },
+    {
+     "player": "Dyson Daniels",
+     "adp": 34.6,
+     "drafted": 92.0
+    },
+    {
+     "player": "Nickeil Alexander-Walker",
+     "adp": 35.2,
+     "drafted": 71.4
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 35.3,
+     "drafted": 45.7
+    },
+    {
+     "player": "Tyler Herro",
+     "adp": 35.5,
+     "drafted": 24.1
+    },
+    {
+     "player": "Dylan Harper",
+     "adp": 35.5,
+     "drafted": 17.9
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 35.7,
+     "drafted": 19.8
+    },
+    {
+     "player": "Stephon Castle",
+     "adp": 35.8,
+     "drafted": 15.0
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 35.8,
+     "drafted": 15.8
+    },
+    {
+     "player": "Naz Reid",
+     "adp": 35.8,
+     "drafted": 5.9
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 35.9,
+     "drafted": 9.1
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 35.9,
+     "drafted": 10.5
+    },
+    {
+     "player": "De'Aaron Fox",
+     "adp": 35.9,
+     "drafted": 4.2
+    },
+    {
+     "player": "Jonathan Kuminga",
+     "adp": 35.9,
+     "drafted": 2.7
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 36.0,
+     "drafted": 0.8
+    },
+    {
+     "player": "Collin Murray-Boyles",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "CJ McCollum",
+     "adp": 36.0,
+     "drafted": 1.0
+    },
+    {
+     "player": "Jrue Holiday",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Rudy Gobert",
+     "adp": 36.0,
+     "drafted": 1.4
+    },
+    {
+     "player": "Derrick White",
+     "adp": 36.0,
+     "drafted": 0.6
+    },
+    {
+     "player": "Cedric Coward",
+     "adp": 36.0,
+     "drafted": 2.1
+    },
+    {
+     "player": "Isaiah Hartenstein",
+     "adp": 36.0,
+     "drafted": 0.6
+    },
+    {
+     "player": "Malik Monk",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Jamal Shead",
+     "adp": 36.0,
+     "drafted": 1.3
+    },
+    {
+     "player": "Derik Queen",
+     "adp": 36.0,
+     "drafted": 2.9
+    },
+    {
+     "player": "Myles Turner",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Neemias Queta",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Ace Bailey",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Jeremiah Fears",
+     "adp": 36.0,
+     "drafted": 1.0
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Zach LaVine",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Jamison Battle",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Aday Mara",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Zuby Ejiofor",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Devin Vassell",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "VJ Edgecombe",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Anthony Davis",
+     "adp": null,
+     "drafted": 0.3
+    }
+   ],
+   "first_below_100": {
+    "player": "Ty Jerome",
+    "adp": 30.7,
+    "drafted": 99.2
+   },
+   "drafted_bands": {
+    "99.5+": 26,
+    "60-99.5": 9,
+    "10-60": 7,
+    "<10": 28
+   },
+   "value": {
+    "field_fpoe": 28.5,
+    "top1_fpoe": 80.2,
+    "field_breakers": 1.92,
+    "top1_breakers": 3.95
+   },
+   "pairs": [
+    {
+     "pair": "Joel Embiid + Evan Mobley",
+     "rounds": "1/3",
+     "share": 5.4,
+     "lift": 2.28
+    },
+    {
+     "pair": "Victor Wembanyama + Paul George",
+     "rounds": "1/4",
+     "share": 5.2,
+     "lift": 2.19
+    },
+    {
+     "pair": "Victor Wembanyama + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 5.2,
+     "lift": 2.17
+    },
+    {
+     "pair": "Joel Embiid + Tyrese Maxey",
+     "rounds": "1/2",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Tyrese Maxey + Evan Mobley",
+     "rounds": "2/3",
+     "share": 5.0,
+     "lift": 2.09
+    },
+    {
+     "pair": "Victor Wembanyama + Donovan Mitchell",
+     "rounds": "1/2",
+     "share": 4.8,
+     "lift": 2.0
+    },
+    {
+     "pair": "Tyrese Maxey + Trae Young",
+     "rounds": "2/3",
+     "share": 4.7,
+     "lift": 1.99
+    },
+    {
+     "pair": "Luka Doncic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 4.5,
+     "lift": 1.88
+    },
+    {
+     "pair": "Victor Wembanyama + Darius Acuff Jr.",
+     "rounds": "1/4",
+     "share": 4.4,
+     "lift": 1.87
+    },
+    {
+     "pair": "Cooper Flagg + Evan Mobley",
+     "rounds": "1/3",
+     "share": 4.2,
+     "lift": 1.76
+    },
+    {
+     "pair": "Walker Kessler + Lauri Markkanen",
+     "rounds": "3/5",
+     "share": 4.1,
+     "lift": 1.73
+    },
+    {
+     "pair": "Luka Doncic + Donovan Mitchell",
+     "rounds": "1/2",
+     "share": 4.1,
+     "lift": 1.71
+    },
+    {
+     "pair": "Victor Wembanyama + Jaylen Brown",
+     "rounds": "1/3",
+     "share": 4.0,
+     "lift": 1.67
+    },
+    {
+     "pair": "Luka Doncic + Darius Acuff Jr.",
+     "rounds": "1/4",
+     "share": 4.0,
+     "lift": 1.67
+    },
+    {
+     "pair": "Donovan Mitchell + Darius Acuff Jr.",
+     "rounds": "2/4",
+     "share": 3.9,
+     "lift": 1.64
+    },
+    {
+     "pair": "Luka Doncic + Paul George",
+     "rounds": "1/4",
+     "share": 3.9,
+     "lift": 1.63
+    },
+    {
+     "pair": "Tyrese Maxey + Zion Williamson",
+     "rounds": "2/5",
+     "share": 3.9,
+     "lift": 1.65
+    },
+    {
+     "pair": "Victor Wembanyama + RJ Barrett",
+     "rounds": "1/4",
+     "share": 3.9,
+     "lift": 1.63
+    },
+    {
+     "pair": "Kyrie Irving + Paul George",
+     "rounds": "2/4",
+     "share": 3.9,
+     "lift": 1.63
+    },
+    {
+     "pair": "Joel Embiid + Walker Kessler",
+     "rounds": "1/3",
+     "share": 3.9,
+     "lift": 1.63
+    },
+    {
+     "pair": "Luka Doncic + Keyonte George",
+     "rounds": "1/4",
+     "share": 3.9,
+     "lift": 1.62
+    },
+    {
+     "pair": "Joel Embiid + LeBron James",
+     "rounds": "1/3",
+     "share": 3.9,
+     "lift": 1.62
+    },
+    {
+     "pair": "Tyrese Maxey + Walker Kessler",
+     "rounds": "2/3",
+     "share": 3.9,
+     "lift": 1.62
+    },
+    {
+     "pair": "Jaylen Brown + Paul George",
+     "rounds": "3/4",
+     "share": 3.8,
+     "lift": 1.61
+    },
+    {
+     "pair": "Donovan Mitchell + Paul George",
+     "rounds": "2/4",
+     "share": 3.8,
+     "lift": 1.61
+    }
+   ],
+   "cores": [
+    {
+     "core": "Joel Embiid + Tyrese Maxey + Evan Mobley",
+     "share": 1.4
+    },
+    {
+     "core": "Joel Embiid + Tyrese Maxey + Walker Kessler",
+     "share": 1.4
+    },
+    {
+     "core": "Kyrie Irving + Donovan Mitchell + Victor Wembanyama",
+     "share": 1.0
+    },
+    {
+     "core": "Kyrie Irving + Jaylen Brown + Victor Wembanyama",
+     "share": 0.8
+    },
+    {
+     "core": "LaMelo Ball + Shai Gilgeous-Alexander + Domantas Sabonis",
+     "share": 0.8
+    },
+    {
+     "core": "Joel Embiid + Cooper Flagg + LaMelo Ball",
+     "share": 0.7
+    },
+    {
+     "core": "Joel Embiid + Cooper Flagg + Evan Mobley",
+     "share": 0.7
+    },
+    {
+     "core": "Jayson Tatum + LaMelo Ball + Domantas Sabonis",
+     "share": 0.7
+    },
+    {
+     "core": "Jaylen Brown + Jayson Tatum + Domantas Sabonis",
+     "share": 0.7
+    },
+    {
+     "core": "Kyrie Irving + Luka Doncic + Donovan Mitchell",
+     "share": 0.6
+    },
+    {
+     "core": "Joel Embiid + Walker Kessler + Cooper Flagg",
+     "share": 0.6
+    },
+    {
+     "core": "Jaylen Brown + Donovan Mitchell + Victor Wembanyama",
+     "share": 0.6
+    },
+    {
+     "core": "Tyrese Maxey + Walker Kessler + Cooper Flagg",
+     "share": 0.6
+    },
+    {
+     "core": "Jaylen Brown + Shai Gilgeous-Alexander + Domantas Sabonis",
+     "share": 0.6
+    },
+    {
+     "core": "Kyrie Irving + Luka Doncic + Jaylen Brown",
+     "share": 0.6
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Joel Embiid (6) + Tyrese Maxey (7)",
+      "share": 5.1,
+      "lift": 2.14,
+      "top1": 0,
+      "avg_points": 184.0
+     },
+     {
+      "pair": "Cooper Flagg (5) + Joel Embiid (6)",
+      "share": 3.3,
+      "lift": 1.39,
+      "top1": 0,
+      "avg_points": 204.4
+     },
+     {
+      "pair": "Cooper Flagg (5) + Deni Avdija (8)",
+      "share": 3.1,
+      "lift": 1.29,
+      "top1": 0,
+      "avg_points": 233.0
+     },
+     {
+      "pair": "Cooper Flagg (5) + Tyrese Maxey (7)",
+      "share": 2.7,
+      "lift": 1.14,
+      "top1": 0,
+      "avg_points": 217.0
+     },
+     {
+      "pair": "Tyrese Maxey (7) + Deni Avdija (8)",
+      "share": 1.8,
+      "lift": 0.77,
+      "top1": 0,
+      "avg_points": 213.9
+     },
+     {
+      "pair": "Joel Embiid (6) + Deni Avdija (8)",
+      "share": 0.7,
+      "lift": 0.31,
+      "top1": 0,
+      "avg_points": 204.5
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Victor Wembanyama",
+      "adp_rank": 1,
+      "teams": 626,
+      "combos": [
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 6.2,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 223.4
+       },
+       {
+        "combo": "Victor Wembanyama + Kyrie Irving (11) + Jaylen Brown (14)",
+        "of_anchor": 4.8,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 214.6
+       },
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + Jaylen Brown (14)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 231.7
+       },
+       {
+        "combo": "Victor Wembanyama + Jaylen Brown (14) + Walker Kessler (15)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 219.2
+       },
+       {
+        "combo": "Victor Wembanyama + Domantas Sabonis (9) + Donovan Mitchell (10)",
+        "of_anchor": 3.5,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 233.6
+       },
+       {
+        "combo": "Victor Wembanyama + Kyrie Irving (11) + LaMelo Ball (13)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 210.9
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (13) + Jaylen Brown (14)",
+        "of_anchor": 2.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 216.2
+       },
+       {
+        "combo": "Victor Wembanyama + Deni Avdija (8) + Kyrie Irving (11)",
+        "of_anchor": 2.7,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 226.8
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 626,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 238.7
+       },
+       {
+        "combo": "Luka Doncic + Kyrie Irving (11) + Jaylen Brown (14)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 228.4
+       },
+       {
+        "combo": "Luka Doncic + Kyrie Irving (11) + LeBron James (18)",
+        "of_anchor": 3.0,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 219.6
+       },
+       {
+        "combo": "Luka Doncic + Domantas Sabonis (9) + Kyrie Irving (11)",
+        "of_anchor": 2.7,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 230.6
+       },
+       {
+        "combo": "Luka Doncic + Domantas Sabonis (9) + Donovan Mitchell (10)",
+        "of_anchor": 2.6,
+        "share": 0.4,
+        "top1": 1,
+        "avg_points": 239.9
+       },
+       {
+        "combo": "Luka Doncic + Kyrie Irving (11) + Walker Kessler (15)",
+        "of_anchor": 2.6,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 228.7
+       },
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + Jaylen Brown (14)",
+        "of_anchor": 2.6,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 246.2
+       },
+       {
+        "combo": "Luka Doncic + Deni Avdija (8) + Kyrie Irving (11)",
+        "of_anchor": 2.4,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 243.4
+       }
+      ]
+     },
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 3,
+      "teams": 626,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + LaMelo Ball (13)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 204.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Jaylen Brown (14)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 207.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + LaMelo Ball (13)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 212.9
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Kyrie Irving (11) + Jaylen Brown (14)",
+        "of_anchor": 3.0,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 198.0
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + LeBron James (18)",
+        "of_anchor": 2.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 208.5
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + LaMelo Ball (13)",
+        "of_anchor": 2.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 213.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + Walker Kessler (15)",
+        "of_anchor": 2.7,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 226.8
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Trae Young (17)",
+        "of_anchor": 2.7,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 202.0
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": {
+    "teams": 10,
+    "share4_median": 0.3,
+    "share4_max": 1.0,
+    "teams_with_dupes": 0,
+    "repeats_of_mine": 0,
+    "top_pairs": [
+     [
+      "Kyshawn George + Dyson Daniels",
+      5
+     ],
+     [
+      "Kyshawn George + Trae Young",
+      4
+     ],
+     [
+      "Trae Young + Dyson Daniels",
+      4
+     ],
+     [
+      "Kyshawn George + LeBron James",
+      3
+     ],
+     [
+      "Deni Avdija + Cooper Flagg",
+      3
+     ]
+    ],
+    "top_cores": [
+     [
+      "Deni Avdija + LeBron James + Cooper Flagg",
+      1
+     ],
+     [
+      "Kyrie Irving + LaMelo Ball + Victor Wembanyama",
+      1
+     ],
+     [
+      "Joel Embiid + Trae Young + Cooper Flagg",
+      1
+     ],
+     [
+      "Kyrie Irving + Luka Doncic + Trae Young",
+      1
+     ],
+     [
+      "Trae Young + Deni Avdija + Cooper Flagg",
+      1
+     ]
+    ]
+   },
+   "draft_time": {
+    "matched": 3735,
+    "am_share": 46.0,
+    "by_hour_pt": {
+     "00": 53,
+     "01": 52,
+     "02": 48,
+     "03": 37,
+     "04": 55,
+     "05": 81,
+     "06": 99,
+     "07": 208,
+     "08": 235,
+     "09": 215,
+     "10": 308,
+     "11": 327,
+     "12": 282,
+     "13": 394,
+     "14": 555,
+     "15": 334,
+     "20": 52,
+     "21": 116,
+     "22": 219,
+     "23": 65
+    }
+   },
+   "mine": {
+    "teams": 10,
+    "median_pct": 18.2,
+    "tail1": 10.0,
+    "tail5": 6.0,
+    "tail10": 4.0,
+    "tail20": 3.0,
+    "payout": 119.0,
+    "am_teams": 0,
+    "am_tail10": null,
+    "pm_teams": 10,
+    "pm_tail10": 4.0
+   },
+   "my_teams": [
+    {
+     "place": 94,
+     "points": 261.0,
+     "payout": 12.0,
+     "draft_id": "16b3adc1-da82-45d9-9387-87949a0b6b77",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T22:23:08+00:00"
+    },
+    {
+     "place": 3610,
+     "points": 177.4,
+     "payout": 0.0,
+     "draft_id": "6929dec4-3c2f-464f-9618-1ac54408930f",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "794f5b4a-fc6c-4f3e-b386-246945335358"
+     ],
+     "drafted_at": "2026-11-06T22:23:08+00:00"
+    },
+    {
+     "place": 991,
+     "points": 233.3,
+     "payout": 0.0,
+     "draft_id": "8ebb77c9-c9df-42e4-b8d9-f7825bad3211",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 10,
+     "points": 273.5,
+     "payout": 75.0,
+     "draft_id": "a8fc6465-c9d9-4616-ae04-ae986ca3fed3",
+     "picks": [
+      "1acc32d8-5c04-496b-a643-64df26aafc57",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "538deb89-cae1-4376-a228-56bea3c4fe3b",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 611,
+     "points": 241.1,
+     "payout": 6.0,
+     "draft_id": "b04fc795-42e4-4ff8-a4e6-b97bab17ddfa",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "f92516da-a360-48f9-8ee5-527bde656f42"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 164,
+     "points": 255.6,
+     "payout": 12.0,
+     "draft_id": "b1a416a3-5ab9-446e-8df9-80781c15c329",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    },
+    {
+     "place": 683,
+     "points": 239.7,
+     "payout": 6.0,
+     "draft_id": "b598c180-a827-4aaa-abdb-6c96dced80b8",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "c47d3b6a-9d07-48fc-9469-f8616d33b187",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T22:23:08+00:00"
+    },
+    {
+     "place": 2022,
+     "points": 217.2,
+     "payout": 0.0,
+     "draft_id": "c775b681-8a97-4380-9df6-6353f8c8dbd9",
+     "picks": [
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "73d4fb27-030d-4c2d-bcc7-ced393ef6322",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "5b7b59e1-102f-41a7-ac78-fc25a78cbee9",
+      "f92516da-a360-48f9-8ee5-527bde656f42",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T22:23:08+00:00"
+    },
+    {
+     "place": 1952,
+     "points": 218.3,
+     "payout": 0.0,
+     "draft_id": "daf2d8f0-b46f-4c24-90ad-2f2d48d6982b",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "3441daf3-fdb0-46ed-8caa-61335e90a18d",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T20:23:02+00:00"
+    },
+    {
+     "place": 307,
+     "points": 249.7,
+     "payout": 8.0,
+     "draft_id": "ea1d48af-f2cd-4a99-87c9-7a108b4af23e",
+     "picks": [
+      "dc71a323-ed03-4779-8fa1-1130280a6ef9",
+      "5b2ab3bd-8796-4500-ac13-662a6b057bd0",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "d584da6d-9411-4f1c-b278-89531cd7bc11",
+      "538a536e-a811-47fe-9a75-d180a620873e",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T23:11:03+00:00"
+    }
+   ]
+  },
+  {
+   "contest": "The Layup Line",
+   "contest_id": "9ef68244-b655-41e7-9850-3fdb6dd89a66",
+   "entries": 1128,
+   "pods": 188,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 1128,
+    "win": 286.7,
+    "median": 219.2,
+    "top1": 266.3,
+    "top1_over_median": 47.1,
+    "top5": 253.5,
+    "top5_over_median": 34.3,
+    "top10": 246.5,
+    "top10_over_median": 27.3,
+    "top20": 237.4,
+    "top20_over_median": 18.2
+   },
+   "drafted_curve": [
+    {
+     "player": "Victor Wembanyama",
+     "adp": 1.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Luka Doncic",
+     "adp": 1.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Shai Gilgeous-Alexander",
+     "adp": 3.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 4.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 4.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Joel Embiid",
+     "adp": 7.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Tyrese Maxey",
+     "adp": 7.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Deni Avdija",
+     "adp": 9.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Domantas Sabonis",
+     "adp": 10.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Donovan Mitchell",
+     "adp": 11.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 14.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaylen Brown",
+     "adp": 15.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Walker Kessler",
+     "adp": 16.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Evan Mobley",
+     "adp": 18.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 18.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "LeBron James",
+     "adp": 19.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Dejounte Murray",
+     "adp": 21.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Keyonte George",
+     "adp": 22.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Darius Acuff Jr.",
+     "adp": 22.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "RJ Barrett",
+     "adp": 24.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 24.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 26.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Lauri Markkanen",
+     "adp": 27.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "James Harden",
+     "adp": 27.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Onyeka Okongwu",
+     "adp": 29.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ty Jerome",
+     "adp": 30.7,
+     "drafted": 99.5
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 31.3,
+     "drafted": 98.4
+    },
+    {
+     "player": "Damian Lillard",
+     "adp": 32.1,
+     "drafted": 97.9
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 32.4,
+     "drafted": 97.9
+    },
+    {
+     "player": "Austin Reaves",
+     "adp": 33.1,
+     "drafted": 99.5
+    },
+    {
+     "player": "Brandon Miller",
+     "adp": 34.0,
+     "drafted": 89.4
+    },
+    {
+     "player": "Donovan Clingan",
+     "adp": 34.4,
+     "drafted": 68.1
+    },
+    {
+     "player": "Dyson Daniels",
+     "adp": 34.6,
+     "drafted": 95.7
+    },
+    {
+     "player": "Nickeil Alexander-Walker",
+     "adp": 35.2,
+     "drafted": 76.1
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 35.3,
+     "drafted": 40.4
+    },
+    {
+     "player": "Tyler Herro",
+     "adp": 35.5,
+     "drafted": 29.3
+    },
+    {
+     "player": "Dylan Harper",
+     "adp": 35.5,
+     "drafted": 12.2
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 35.7,
+     "drafted": 32.4
+    },
+    {
+     "player": "Stephon Castle",
+     "adp": 35.8,
+     "drafted": 14.9
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 35.8,
+     "drafted": 9.0
+    },
+    {
+     "player": "Naz Reid",
+     "adp": 35.8,
+     "drafted": 4.3
+    },
+    {
+     "player": "Jonathan Kuminga",
+     "adp": 35.9,
+     "drafted": 3.7
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 35.9,
+     "drafted": 5.3
+    },
+    {
+     "player": "De'Aaron Fox",
+     "adp": 35.9,
+     "drafted": 3.7
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 35.9,
+     "drafted": 5.3
+    },
+    {
+     "player": "Jamal Shead",
+     "adp": 36.0,
+     "drafted": 5.3
+    },
+    {
+     "player": "Isaiah Hartenstein",
+     "adp": 36.0,
+     "drafted": 2.1
+    },
+    {
+     "player": "Kasparas Jakucionis",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Cedric Coward",
+     "adp": 36.0,
+     "drafted": 1.6
+    },
+    {
+     "player": "Derik Queen",
+     "adp": 36.0,
+     "drafted": 2.1
+    },
+    {
+     "player": "Jeremiah Fears",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Rudy Gobert",
+     "adp": 36.0,
+     "drafted": 1.1
+    },
+    {
+     "player": "Quentin Grimes",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "VJ Edgecombe",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Trey Murphy III",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Kyle Kuzma",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Derrick White",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Alex Caruso",
+     "adp": 36.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Jalen Johnson",
+     "adp": null,
+     "drafted": 0.5
+    }
+   ],
+   "first_below_100": {
+    "player": "Zion Williamson",
+    "adp": 31.3,
+    "drafted": 98.4
+   },
+   "drafted_bands": {
+    "99.5+": 28,
+    "60-99.5": 7,
+    "10-60": 5,
+    "<10": 20
+   },
+   "value": {
+    "field_fpoe": 28.6,
+    "top1_fpoe": 80.7,
+    "field_breakers": 1.95,
+    "top1_breakers": 4.0
+   },
+   "pairs": [
+    {
+     "pair": "Victor Wembanyama + Donovan Mitchell",
+     "rounds": "1/2",
+     "share": 6.7,
+     "lift": 2.83
+    },
+    {
+     "pair": "Tyrese Maxey + Evan Mobley",
+     "rounds": "2/3",
+     "share": 6.3,
+     "lift": 2.64
+    },
+    {
+     "pair": "Joel Embiid + Evan Mobley",
+     "rounds": "1/3",
+     "share": 5.6,
+     "lift": 2.35
+    },
+    {
+     "pair": "Luka Doncic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 5.1,
+     "lift": 2.16
+    },
+    {
+     "pair": "Victor Wembanyama + Paul George",
+     "rounds": "1/4",
+     "share": 5.1,
+     "lift": 2.12
+    },
+    {
+     "pair": "Joel Embiid + Walker Kessler",
+     "rounds": "1/3",
+     "share": 5.0,
+     "lift": 2.09
+    },
+    {
+     "pair": "Tyrese Maxey + Trae Young",
+     "rounds": "2/3",
+     "share": 4.9,
+     "lift": 2.05
+    },
+    {
+     "pair": "Cooper Flagg + Walker Kessler",
+     "rounds": "1/3",
+     "share": 4.8,
+     "lift": 2.01
+    },
+    {
+     "pair": "Luka Doncic + Donovan Mitchell",
+     "rounds": "1/2",
+     "share": 4.6,
+     "lift": 1.94
+    },
+    {
+     "pair": "Domantas Sabonis + Keyonte George",
+     "rounds": "2/4",
+     "share": 4.6,
+     "lift": 1.94
+    },
+    {
+     "pair": "Cooper Flagg + Trae Young",
+     "rounds": "1/3",
+     "share": 4.6,
+     "lift": 1.94
+    },
+    {
+     "pair": "Joel Embiid + Onyeka Okongwu",
+     "rounds": "1/5",
+     "share": 4.6,
+     "lift": 1.94
+    },
+    {
+     "pair": "Evan Mobley + Onyeka Okongwu",
+     "rounds": "3/5",
+     "share": 4.5,
+     "lift": 1.9
+    },
+    {
+     "pair": "Victor Wembanyama + Keyonte George",
+     "rounds": "1/4",
+     "share": 4.5,
+     "lift": 1.9
+    },
+    {
+     "pair": "LeBron James + Austin Reaves",
+     "rounds": "3/6",
+     "share": 4.5,
+     "lift": 1.91
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Cameron Boozer",
+     "rounds": "1/4",
+     "share": 4.4,
+     "lift": 1.86
+    },
+    {
+     "pair": "Luka Doncic + Cameron Boozer",
+     "rounds": "1/4",
+     "share": 4.3,
+     "lift": 1.82
+    },
+    {
+     "pair": "Joel Embiid + Tyrese Maxey",
+     "rounds": "1/2",
+     "share": 4.3,
+     "lift": 1.82
+    },
+    {
+     "pair": "Kyrie Irving + Darius Acuff Jr.",
+     "rounds": "2/4",
+     "share": 4.3,
+     "lift": 1.79
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + LaMelo Ball",
+     "rounds": "1/3",
+     "share": 4.3,
+     "lift": 1.79
+    },
+    {
+     "pair": "Joel Embiid + Trae Young",
+     "rounds": "1/3",
+     "share": 4.3,
+     "lift": 1.79
+    },
+    {
+     "pair": "Kyrie Irving + Paul George",
+     "rounds": "2/4",
+     "share": 4.2,
+     "lift": 1.75
+    },
+    {
+     "pair": "Luka Doncic + Paul George",
+     "rounds": "1/4",
+     "share": 4.2,
+     "lift": 1.75
+    },
+    {
+     "pair": "Luka Doncic + Darius Acuff Jr.",
+     "rounds": "1/4",
+     "share": 4.2,
+     "lift": 1.75
+    },
+    {
+     "pair": "Jayson Tatum + Onyeka Okongwu",
+     "rounds": "1/5",
+     "share": 4.2,
+     "lift": 1.75
+    }
+   ],
+   "cores": [
+    {
+     "core": "Joel Embiid + Tyrese Maxey + Evan Mobley",
+     "share": 1.4
+    },
+    {
+     "core": "Joel Embiid + Tyrese Maxey + Walker Kessler",
+     "share": 1.3
+    },
+    {
+     "core": "Donovan Mitchell + Victor Wembanyama + Domantas Sabonis",
+     "share": 1.2
+    },
+    {
+     "core": "Kyrie Irving + Donovan Mitchell + Victor Wembanyama",
+     "share": 1.1
+    },
+    {
+     "core": "Trae Young + Deni Avdija + Tyrese Maxey",
+     "share": 0.9
+    },
+    {
+     "core": "Jayson Tatum + Tyrese Maxey + Evan Mobley",
+     "share": 0.9
+    },
+    {
+     "core": "Joel Embiid + Walker Kessler + Cooper Flagg",
+     "share": 0.8
+    },
+    {
+     "core": "Joel Embiid + Trae Young + Cooper Flagg",
+     "share": 0.7
+    },
+    {
+     "core": "Deni Avdija + Cooper Flagg + LaMelo Ball",
+     "share": 0.7
+    },
+    {
+     "core": "Luka Doncic + Jaylen Brown + Donovan Mitchell",
+     "share": 0.7
+    },
+    {
+     "core": "Keyonte George + Victor Wembanyama + Domantas Sabonis",
+     "share": 0.6
+    },
+    {
+     "core": "Jayson Tatum + Joel Embiid + Walker Kessler",
+     "share": 0.6
+    },
+    {
+     "core": "Kyrie Irving + Victor Wembanyama + Domantas Sabonis",
+     "share": 0.6
+    },
+    {
+     "core": "Kyrie Irving + Luka Doncic + Jaylen Brown",
+     "share": 0.6
+    },
+    {
+     "core": "Kyrie Irving + Luka Doncic + Donovan Mitchell",
+     "share": 0.6
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Joel Embiid (6) + Tyrese Maxey (7)",
+      "share": 4.3,
+      "lift": 1.82,
+      "top1": 0,
+      "avg_points": 182.0
+     },
+     {
+      "pair": "Cooper Flagg (5) + Joel Embiid (6)",
+      "share": 3.7,
+      "lift": 1.56,
+      "top1": 0,
+      "avg_points": 206.3
+     },
+     {
+      "pair": "Cooper Flagg (5) + Deni Avdija (8)",
+      "share": 3.1,
+      "lift": 1.3,
+      "top1": 1,
+      "avg_points": 234.5
+     },
+     {
+      "pair": "Tyrese Maxey (7) + Deni Avdija (8)",
+      "share": 3.0,
+      "lift": 1.27,
+      "top1": 0,
+      "avg_points": 214.1
+     },
+     {
+      "pair": "Cooper Flagg (5) + Tyrese Maxey (7)",
+      "share": 1.9,
+      "lift": 0.78,
+      "top1": 0,
+      "avg_points": 212.8
+     },
+     {
+      "pair": "Joel Embiid (6) + Deni Avdija (8)",
+      "share": 0.8,
+      "lift": 0.34,
+      "top1": 0,
+      "avg_points": 198.5
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Victor Wembanyama",
+      "adp_rank": 1,
+      "teams": 188,
+      "combos": [
+       {
+        "combo": "Victor Wembanyama + Domantas Sabonis (9) + Donovan Mitchell (10)",
+        "of_anchor": 7.4,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 227.7
+       },
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 6.4,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 226.7
+       },
+       {
+        "combo": "Victor Wembanyama + Domantas Sabonis (9) + Kyrie Irving (11)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 206.1
+       },
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + LaMelo Ball (13)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 235.6
+       },
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + Trae Young (17)",
+        "of_anchor": 2.7,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 234.6
+       },
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + Jaylen Brown (14)",
+        "of_anchor": 2.7,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 236.3
+       },
+       {
+        "combo": "Victor Wembanyama + Kyrie Irving (11) + Jaylen Brown (14)",
+        "of_anchor": 2.1,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 210.9
+       },
+       {
+        "combo": "Victor Wembanyama + Deni Avdija (8) + Kyrie Irving (11)",
+        "of_anchor": 2.1,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 221.8
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 188,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 4.8,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 237.6
+       },
+       {
+        "combo": "Luka Doncic + Kyrie Irving (11) + Jaylen Brown (14)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 223.2
+       },
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + Jaylen Brown (14)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 244.9
+       },
+       {
+        "combo": "Luka Doncic + Deni Avdija (8) + Jaylen Brown (14)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 241.5
+       },
+       {
+        "combo": "Luka Doncic + Deni Avdija (8) + Kyrie Irving (11)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 225.0
+       },
+       {
+        "combo": "Luka Doncic + Kyrie Irving (11) + LeBron James (18)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 217.4
+       },
+       {
+        "combo": "Luka Doncic + Domantas Sabonis (9) + Jaylen Brown (14)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 231.2
+       },
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + LaMelo Ball (13)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 1,
+        "avg_points": 244.0
+       }
+      ]
+     },
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 3,
+      "teams": 188,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Jaylen Brown (14)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 206.2
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + Jaylen Brown (14)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 217.8
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + Kyrie Irving (11)",
+        "of_anchor": 3.7,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 210.0
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Kyrie Irving (11) + Jaylen Brown (14)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 205.2
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + LaMelo Ball (13)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 219.8
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + Trae Young (17)",
+        "of_anchor": 3.2,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 217.6
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + LeBron James (18)",
+        "of_anchor": 2.7,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 210.3
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (13) + Evan Mobley (16)",
+        "of_anchor": 2.7,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 215.2
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": {
+    "teams": 2,
+    "share4_median": 0.9,
+    "share4_max": 0.9,
+    "teams_with_dupes": 0,
+    "repeats_of_mine": 0,
+    "top_pairs": [
+     [
+      "Kyshawn George + Donovan Mitchell",
+      1
+     ],
+     [
+      "Kyshawn George + Trae Young",
+      1
+     ],
+     [
+      "Kyshawn George + RJ Barrett",
+      1
+     ],
+     [
+      "Kyshawn George + Victor Wembanyama",
+      1
+     ],
+     [
+      "Kyshawn George + Cameron Boozer",
+      1
+     ]
+    ],
+    "top_cores": [
+     [
+      "Donovan Mitchell + Trae Young + Victor Wembanyama",
+      1
+     ],
+     [
+      "LaMelo Ball + Victor Wembanyama + Domantas Sabonis",
+      1
+     ]
+    ]
+   },
+   "draft_time": {
+    "matched": 1030,
+    "am_share": 51.9,
+    "by_hour_pt": {
+     "00": 18,
+     "01": 13,
+     "02": 11,
+     "03": 9,
+     "04": 10,
+     "05": 12,
+     "06": 32,
+     "07": 41,
+     "08": 74,
+     "09": 76,
+     "10": 132,
+     "11": 107,
+     "12": 103,
+     "13": 108,
+     "14": 165,
+     "15": 1,
+     "19": 35,
+     "20": 17,
+     "21": 1,
+     "22": 35,
+     "23": 30
+    }
+   },
+   "mine": {
+    "teams": 2,
+    "median_pct": 60.8,
+    "tail1": 0.0,
+    "tail5": 10.0,
+    "tail10": 5.0,
+    "tail20": 2.5,
+    "payout": 20.0,
+    "am_teams": 0,
+    "am_tail10": null,
+    "pm_teams": 2,
+    "pm_tail10": 5.0
+   },
+   "my_teams": [
+    {
+     "place": 41,
+     "points": 256.2,
+     "payout": 20.0,
+     "draft_id": "7dfd2629-c22f-48bb-934b-b86ca03d6d59",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "251127ed-be4a-4102-91f0-19678a44dcf5",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "81b32151-a7f8-4388-a18c-a2e96c1e8edd",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1"
+     ],
+     "drafted_at": "2026-11-06T22:23:08+00:00"
+    },
+    {
+     "place": 686,
+     "points": 213.7,
+     "payout": 0.0,
+     "draft_id": "9f4b1b37-9eb7-4387-8756-4ca2941db413",
+     "picks": [
+      "c0266623-325e-43a5-ac93-3def269a64ef",
+      "e8cd9da6-71e3-4555-afc9-bfa4a331f6f5",
+      "b78ba991-272a-438e-81d6-901d66c7e09a",
+      "20ac0001-bd5e-42f8-9b9c-c445e2ac326b",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "538a536e-a811-47fe-9a75-d180a620873e"
+     ],
+     "drafted_at": "2026-11-06T22:23:08+00:00"
+    }
+   ]
+  },
+  {
+   "contest": "The Crossover",
+   "contest_id": "269eff59-f45e-415f-a884-02f909487118",
+   "entries": 216,
+   "pods": 36,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 216,
+    "win": 269.2,
+    "median": 219.1,
+    "top1": 264.0,
+    "top1_over_median": 44.9,
+    "top5": 250.9,
+    "top5_over_median": 31.8,
+    "top10": 245.8,
+    "top10_over_median": 26.7,
+    "top20": 236.4,
+    "top20_over_median": 17.3
+   },
+   "drafted_curve": [
+    {
+     "player": "Victor Wembanyama",
+     "adp": 1.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Luka Doncic",
+     "adp": 1.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Shai Gilgeous-Alexander",
+     "adp": 3.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 4.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 4.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Joel Embiid",
+     "adp": 7.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Tyrese Maxey",
+     "adp": 7.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Deni Avdija",
+     "adp": 9.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Domantas Sabonis",
+     "adp": 10.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Donovan Mitchell",
+     "adp": 11.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 14.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaylen Brown",
+     "adp": 15.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Walker Kessler",
+     "adp": 16.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Evan Mobley",
+     "adp": 18.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 18.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "LeBron James",
+     "adp": 19.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Dejounte Murray",
+     "adp": 21.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Keyonte George",
+     "adp": 22.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Darius Acuff Jr.",
+     "adp": 22.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "RJ Barrett",
+     "adp": 24.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 24.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 26.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Lauri Markkanen",
+     "adp": 27.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "James Harden",
+     "adp": 27.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Onyeka Okongwu",
+     "adp": 29.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ty Jerome",
+     "adp": 30.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 31.3,
+     "drafted": 97.2
+    },
+    {
+     "player": "Damian Lillard",
+     "adp": 32.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 32.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Austin Reaves",
+     "adp": 33.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Brandon Miller",
+     "adp": 34.0,
+     "drafted": 91.7
+    },
+    {
+     "player": "Donovan Clingan",
+     "adp": 34.4,
+     "drafted": 61.1
+    },
+    {
+     "player": "Dyson Daniels",
+     "adp": 34.6,
+     "drafted": 97.2
+    },
+    {
+     "player": "Nickeil Alexander-Walker",
+     "adp": 35.2,
+     "drafted": 72.2
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 35.3,
+     "drafted": 36.1
+    },
+    {
+     "player": "Tyler Herro",
+     "adp": 35.5,
+     "drafted": 13.9
+    },
+    {
+     "player": "Dylan Harper",
+     "adp": 35.5,
+     "drafted": 16.7
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 35.7,
+     "drafted": 44.4
+    },
+    {
+     "player": "Stephon Castle",
+     "adp": 35.8,
+     "drafted": 22.2
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 35.8,
+     "drafted": 5.6
+    },
+    {
+     "player": "Naz Reid",
+     "adp": 35.8,
+     "drafted": 2.8
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 35.9,
+     "drafted": 5.6
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 35.9,
+     "drafted": 16.7
+    },
+    {
+     "player": "Jonathan Kuminga",
+     "adp": 35.9,
+     "drafted": 5.6
+    },
+    {
+     "player": "De'Aaron Fox",
+     "adp": 35.9,
+     "drafted": 2.8
+    },
+    {
+     "player": "Jamal Shead",
+     "adp": 36.0,
+     "drafted": 5.6
+    },
+    {
+     "player": "Myles Turner",
+     "adp": 36.0,
+     "drafted": 2.8
+    }
+   ],
+   "first_below_100": {
+    "player": "Zion Williamson",
+    "adp": 31.3,
+    "drafted": 97.2
+   },
+   "drafted_bands": {
+    "99.5+": 30,
+    "60-99.5": 5,
+    "10-60": 6,
+    "<10": 7
+   },
+   "value": {
+    "field_fpoe": 28.4,
+    "top1_fpoe": 77.0,
+    "field_breakers": 1.94,
+    "top1_breakers": 3.67
+   },
+   "pairs": [
+    {
+     "pair": "Tyrese Maxey + Trae Young",
+     "rounds": "2/3",
+     "share": 7.4,
+     "lift": 3.11
+    },
+    {
+     "pair": "Tyrese Maxey + Walker Kessler",
+     "rounds": "2/3",
+     "share": 6.5,
+     "lift": 2.72
+    },
+    {
+     "pair": "Luka Doncic + Donovan Mitchell",
+     "rounds": "1/2",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Victor Wembanyama + Paul George",
+     "rounds": "1/4",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Victor Wembanyama + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "LeBron James + Austin Reaves",
+     "rounds": "3/6",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Luka Doncic + RJ Barrett",
+     "rounds": "1/4",
+     "share": 5.6,
+     "lift": 2.33
+    },
+    {
+     "pair": "Tyrese Maxey + Ty Jerome",
+     "rounds": "2/5",
+     "share": 5.6,
+     "lift": 2.33
+    },
+    {
+     "pair": "Cooper Flagg + Trae Young",
+     "rounds": "1/3",
+     "share": 5.6,
+     "lift": 2.33
+    },
+    {
+     "pair": "Cooper Flagg + Evan Mobley",
+     "rounds": "1/3",
+     "share": 5.6,
+     "lift": 2.33
+    },
+    {
+     "pair": "Evan Mobley + Lauri Markkanen",
+     "rounds": "3/5",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Victor Wembanyama + LaMelo Ball",
+     "rounds": "1/3",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Keyonte George",
+     "rounds": "1/4",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Joel Embiid + Trae Young",
+     "rounds": "1/3",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Deni Avdija",
+     "rounds": "1/2",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Domantas Sabonis + Damian Lillard",
+     "rounds": "2/5",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Joel Embiid + Lauri Markkanen",
+     "rounds": "1/5",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Cooper Flagg + Lauri Markkanen",
+     "rounds": "1/5",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Jayson Tatum + Zion Williamson",
+     "rounds": "1/5",
+     "share": 5.1,
+     "lift": 2.2
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Donovan Mitchell",
+     "rounds": "1/2",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Victor Wembanyama + Keyonte George",
+     "rounds": "1/4",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Kyrie Irving + Ayo Dosunmu",
+     "rounds": "2/6",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Donovan Mitchell + Cameron Boozer",
+     "rounds": "2/4",
+     "share": 4.6,
+     "lift": 1.94
+    },
+    {
+     "pair": "Ty Jerome + Austin Reaves",
+     "rounds": "5/6",
+     "share": 4.6,
+     "lift": 1.94
+    },
+    {
+     "pair": "Kyrie Irving + Darius Acuff Jr.",
+     "rounds": "2/4",
+     "share": 4.6,
+     "lift": 1.94
+    }
+   ],
+   "cores": [
+    {
+     "core": "Joel Embiid + Cooper Flagg + Evan Mobley",
+     "share": 1.9
+    },
+    {
+     "core": "Joel Embiid + Tyrese Maxey + Walker Kessler",
+     "share": 1.9
+    },
+    {
+     "core": "Deni Avdija + Tyrese Maxey + Walker Kessler",
+     "share": 1.4
+    },
+    {
+     "core": "Kyrie Irving + Luka Doncic + Donovan Mitchell",
+     "share": 1.4
+    },
+    {
+     "core": "Tyrese Maxey + Walker Kessler + Cooper Flagg",
+     "share": 1.4
+    },
+    {
+     "core": "Kyrie Irving + Luka Doncic + Darius Acuff Jr.",
+     "share": 1.4
+    },
+    {
+     "core": "Luka Doncic + Donovan Mitchell + Domantas Sabonis",
+     "share": 1.4
+    },
+    {
+     "core": "Jaylen Brown + Tyrese Maxey + Cooper Flagg",
+     "share": 1.4
+    },
+    {
+     "core": "Kyrie Irving + Donovan Mitchell + Shai Gilgeous-Alexander",
+     "share": 1.4
+    },
+    {
+     "core": "Trae Young + Deni Avdija + Tyrese Maxey",
+     "share": 1.4
+    },
+    {
+     "core": "Donovan Mitchell + Deni Avdija + Shai Gilgeous-Alexander",
+     "share": 1.4
+    },
+    {
+     "core": "LaMelo Ball + Victor Wembanyama + Domantas Sabonis",
+     "share": 0.9
+    },
+    {
+     "core": "Jayson Tatum + Joel Embiid + LeBron James",
+     "share": 0.9
+    },
+    {
+     "core": "Deni Avdija + LaMelo Ball + Shai Gilgeous-Alexander",
+     "share": 0.9
+    },
+    {
+     "core": "Jaylen Brown + Joel Embiid + Tyrese Maxey",
+     "share": 0.9
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Tyrese Maxey (7) + Deni Avdija (8)",
+      "share": 4.2,
+      "lift": 1.75,
+      "top1": 0,
+      "avg_points": 213.6
+     },
+     {
+      "pair": "Cooper Flagg (5) + Tyrese Maxey (7)",
+      "share": 4.2,
+      "lift": 1.75,
+      "top1": 0,
+      "avg_points": 217.1
+     },
+     {
+      "pair": "Cooper Flagg (5) + Joel Embiid (6)",
+      "share": 4.2,
+      "lift": 1.75,
+      "top1": 0,
+      "avg_points": 205.0
+     },
+     {
+      "pair": "Joel Embiid (6) + Tyrese Maxey (7)",
+      "share": 4.2,
+      "lift": 1.75,
+      "top1": 0,
+      "avg_points": 184.9
+     },
+     {
+      "pair": "Cooper Flagg (5) + Deni Avdija (8)",
+      "share": 0.9,
+      "lift": 0.39,
+      "top1": 0,
+      "avg_points": 237.6
+     },
+     {
+      "pair": "Joel Embiid (6) + Deni Avdija (8)",
+      "share": 0.9,
+      "lift": 0.39,
+      "top1": 0,
+      "avg_points": 185.0
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Victor Wembanyama",
+      "adp_rank": 1,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Victor Wembanyama + Domantas Sabonis (9) + LaMelo Ball (13)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 225.4
+       },
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 225.8
+       },
+       {
+        "combo": "Victor Wembanyama + Jaylen Brown (14) + Walker Kessler (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 206.7
+       },
+       {
+        "combo": "Victor Wembanyama + Jaylen Brown (14) + LeBron James (18)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 204.7
+       },
+       {
+        "combo": "Victor Wembanyama + Kyrie Irving (11) + Jaylen Brown (14)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 212.9
+       },
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + LaMelo Ball (13)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 242.8
+       },
+       {
+        "combo": "Victor Wembanyama + Domantas Sabonis (9) + Kyrie Irving (11)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 207.7
+       },
+       {
+        "combo": "Victor Wembanyama + LaMelo Ball (13) + Trae Young (17)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 219.0
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 238.9
+       },
+       {
+        "combo": "Luka Doncic + Domantas Sabonis (9) + Donovan Mitchell (10)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 1,
+        "avg_points": 258.1
+       },
+       {
+        "combo": "Luka Doncic + Donovan Mitchell (10) + LaMelo Ball (13)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 211.1
+       },
+       {
+        "combo": "Luka Doncic + Domantas Sabonis (9) + Jaylen Brown (14)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 222.1
+       },
+       {
+        "combo": "Luka Doncic + Domantas Sabonis (9) + Kyrie Irving (11)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 246.6
+       },
+       {
+        "combo": "Luka Doncic + Domantas Sabonis (9) + LeBron James (18)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 222.8
+       },
+       {
+        "combo": "Luka Doncic + Kyrie Irving (11) + Evan Mobley (16)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 241.5
+       },
+       {
+        "combo": "Luka Doncic + Deni Avdija (8) + Donovan Mitchell (10)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 257.2
+       }
+      ]
+     },
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 3,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (13) + LeBron James (18)",
+        "of_anchor": 11.1,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 207.0
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + LeBron James (18)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 217.4
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + Trae Young (17)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 235.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + Evan Mobley (16)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 240.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Donovan Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 210.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + Donovan Mitchell (10)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 235.8
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + LaMelo Ball (13)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 217.1
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + Kyrie Irving (11)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 206.1
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 215,
+    "am_share": 57.2,
+    "by_hour_pt": {
+     "00": 6,
+     "06": 6,
+     "07": 6,
+     "08": 17,
+     "09": 19,
+     "10": 24,
+     "11": 45,
+     "12": 35,
+     "13": 27,
+     "21": 2,
+     "22": 28
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  },
+  {
+   "contest": "Pick & Roll",
+   "contest_id": "890ede11-ab83-411f-8200-d21184361711",
+   "entries": 24,
+   "pods": 4,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 24,
+    "win": 252.1,
+    "median": 219.9,
+    "top1": 252.1,
+    "top1_over_median": 32.2,
+    "top5": 245.1,
+    "top5_over_median": 25.2,
+    "top10": 241.6,
+    "top10_over_median": 21.7,
+    "top20": 238.5,
+    "top20_over_median": 18.6
+   },
+   "drafted_curve": [
+    {
+     "player": "Victor Wembanyama",
+     "adp": 1.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Luka Doncic",
+     "adp": 1.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Shai Gilgeous-Alexander",
+     "adp": 3.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 4.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 4.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Joel Embiid",
+     "adp": 7.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Tyrese Maxey",
+     "adp": 7.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Deni Avdija",
+     "adp": 9.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Domantas Sabonis",
+     "adp": 10.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Donovan Mitchell",
+     "adp": 11.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 14.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaylen Brown",
+     "adp": 15.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Walker Kessler",
+     "adp": 16.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Evan Mobley",
+     "adp": 18.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 18.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "LeBron James",
+     "adp": 19.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Dejounte Murray",
+     "adp": 21.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Keyonte George",
+     "adp": 22.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Darius Acuff Jr.",
+     "adp": 22.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "RJ Barrett",
+     "adp": 24.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 24.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 26.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Lauri Markkanen",
+     "adp": 27.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "James Harden",
+     "adp": 27.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Onyeka Okongwu",
+     "adp": 29.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ty Jerome",
+     "adp": 30.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 31.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Damian Lillard",
+     "adp": 32.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 32.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Austin Reaves",
+     "adp": 33.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Brandon Miller",
+     "adp": 34.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Donovan Clingan",
+     "adp": 34.4,
+     "drafted": 25.0
+    },
+    {
+     "player": "Dyson Daniels",
+     "adp": 34.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Nickeil Alexander-Walker",
+     "adp": 35.2,
+     "drafted": 75.0
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 35.3,
+     "drafted": 75.0
+    },
+    {
+     "player": "Dylan Harper",
+     "adp": 35.5,
+     "drafted": 25.0
+    },
+    {
+     "player": "Tyler Herro",
+     "adp": 35.5,
+     "drafted": 25.0
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 35.7,
+     "drafted": 50.0
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 35.8,
+     "drafted": 25.0
+    }
+   ],
+   "first_below_100": {
+    "player": "Donovan Clingan",
+    "adp": 34.4,
+    "drafted": 25.0
+   },
+   "drafted_bands": {
+    "99.5+": 33,
+    "60-99.5": 2,
+    "10-60": 5,
+    "<10": 0
+   },
+   "value": {
+    "field_fpoe": 29.5,
+    "top1_fpoe": 50.7,
+    "field_breakers": 2.0,
+    "top1_breakers": 4.0
+   },
+   "pairs": [
+    {
+     "pair": "Domantas Sabonis + Cameron Boozer",
+     "rounds": "2/4",
+     "share": 16.7,
+     "lift": 7.0
+    },
+    {
+     "pair": "Tyrese Maxey + Evan Mobley",
+     "rounds": "2/3",
+     "share": 16.7,
+     "lift": 7.0
+    },
+    {
+     "pair": "Joel Embiid + Walker Kessler",
+     "rounds": "1/3",
+     "share": 16.7,
+     "lift": 7.0
+    },
+    {
+     "pair": "Trae Young + Brandon Miller",
+     "rounds": "3/6",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Victor Wembanyama + Darius Acuff Jr.",
+     "rounds": "1/4",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Luka Doncic + Keyonte George",
+     "rounds": "1/4",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Kyrie Irving + Paul George",
+     "rounds": "2/4",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Paul George + Onyeka Okongwu",
+     "rounds": "4/5",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Donovan Mitchell + Brandon Miller",
+     "rounds": "2/6",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Jayson Tatum + Zion Williamson",
+     "rounds": "1/5",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Deni Avdija + Trae Young",
+     "rounds": "2/3",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Deni Avdija + Brandon Miller",
+     "rounds": "2/6",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Victor Wembanyama + Cameron Boozer",
+     "rounds": "1/4",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Victor Wembanyama + Domantas Sabonis",
+     "rounds": "1/2",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "LaMelo Ball + Dejounte Murray",
+     "rounds": "3/4",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "LaMelo Ball + Ajay Mitchell",
+     "rounds": "3/7",
+     "share": 8.3,
+     "lift": 4.67
+    },
+    {
+     "pair": "RJ Barrett + Ty Jerome",
+     "rounds": "4/5",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Ty Jerome + Dyson Daniels",
+     "rounds": "5/6",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Jaylen Brown + James Harden",
+     "rounds": "3/5",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Joel Embiid + James Harden",
+     "rounds": "1/5",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Cooper Flagg + Joel Embiid",
+     "rounds": "1/1",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Walker Kessler + James Harden",
+     "rounds": "3/5",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Cooper Flagg + James Harden",
+     "rounds": "1/5",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Cooper Flagg + Walker Kessler",
+     "rounds": "1/3",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Kyrie Irving + Onyeka Okongwu",
+     "rounds": "2/5",
+     "share": 8.3,
+     "lift": 3.5
+    }
+   ],
+   "cores": [
+    {
+     "core": "Joel Embiid + Tyrese Maxey + Walker Kessler",
+     "share": 8.3
+    },
+    {
+     "core": "Donovan Mitchell + Jayson Tatum + Deni Avdija",
+     "share": 4.2
+    },
+    {
+     "core": "Darius Acuff Jr. + Victor Wembanyama + Domantas Sabonis",
+     "share": 4.2
+    },
+    {
+     "core": "Luka Doncic + LeBron James + LaMelo Ball",
+     "share": 4.2
+    },
+    {
+     "core": "Tyrese Maxey + RJ Barrett + Evan Mobley",
+     "share": 4.2
+    },
+    {
+     "core": "Jaylen Brown + Joel Embiid + Cooper Flagg",
+     "share": 4.2
+    },
+    {
+     "core": "Kyrie Irving + Paul George + Shai Gilgeous-Alexander",
+     "share": 4.2
+    },
+    {
+     "core": "Luka Doncic + Donovan Mitchell + Darius Acuff Jr.",
+     "share": 4.2
+    },
+    {
+     "core": "Kyrie Irving + Trae Young + Cooper Flagg",
+     "share": 4.2
+    },
+    {
+     "core": "Victor Wembanyama + Cameron Boozer + Domantas Sabonis",
+     "share": 4.2
+    },
+    {
+     "core": "Deni Avdija + LaMelo Ball + Shai Gilgeous-Alexander",
+     "share": 4.2
+    },
+    {
+     "core": "Jaylen Brown + Jayson Tatum + LeBron James",
+     "share": 4.2
+    },
+    {
+     "core": "Luka Doncic + Keyonte George + Domantas Sabonis",
+     "share": 4.2
+    },
+    {
+     "core": "Jaylen Brown + Darius Acuff Jr. + Victor Wembanyama",
+     "share": 4.2
+    },
+    {
+     "core": "Kyrie Irving + Jayson Tatum + Tyrese Maxey",
+     "share": 4.2
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Cooper Flagg (5) + Joel Embiid (6)",
+      "share": 8.3,
+      "lift": 3.5,
+      "top1": 0,
+      "avg_points": 214.3
+     },
+     {
+      "pair": "Joel Embiid (6) + Tyrese Maxey (7)",
+      "share": 8.3,
+      "lift": 3.5,
+      "top1": 0,
+      "avg_points": 193.9
+     },
+     {
+      "pair": "Cooper Flagg (5) + Deni Avdija (8)",
+      "share": 4.2,
+      "lift": 1.75,
+      "top1": 0,
+      "avg_points": 214.7
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Victor Wembanyama",
+      "adp_rank": 1,
+      "teams": 4,
+      "combos": [
+       {
+        "combo": "Victor Wembanyama + Donovan Mitchell (10) + Jaylen Brown (14)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 1,
+        "avg_points": 252.1
+       }
+      ]
+     },
+     {
+      "anchor": "Luka Doncic",
+      "adp_rank": 2,
+      "teams": 4,
+      "combos": [
+       {
+        "combo": "Luka Doncic + LaMelo Ball (13) + LeBron James (18)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 219.6
+       }
+      ]
+     },
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 3,
+      "teams": 4,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + LaMelo Ball (13)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 221.4
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Deni Avdija (8) + Trae Young (17)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 183.5
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + LaMelo Ball (13)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 183.6
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Trae Young (17)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 183.6
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + LaMelo Ball (13) + Trae Young (17)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 183.6
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 23,
+    "am_share": 52.2,
+    "by_hour_pt": {
+     "09": 6,
+     "11": 6,
+     "12": 6,
+     "13": 5
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  }
+ ]
+}

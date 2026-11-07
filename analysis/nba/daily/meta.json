@@ -437,5 +437,43 @@
    ]
   },
   "gist": true
+ },
+ "2026-11-06_fri_main.csv": {
+  "lock": "2026-11-06T23:52:00+00:00",
+  "adp_am_at": "2026-11-06T13:24:33+00:00",
+  "adp_etr_at": "2026-11-06T16:46:44+00:00",
+  "adp_close_at": "2026-11-06T23:23:51+00:00",
+  "morning_through": "2026-11-05",
+  "etr_first": {
+   "at": "2026-11-06T17:03:35.151Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-06T090327.830.csv"
+  },
+  "etr_last": {
+   "at": "2026-11-06T22:02:54.847Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-06T090327.830.csv + Underdog NBA Daily Rankings - 2026-11-06T124527.544.csv + NBA Full Day Projections (1).csv + NBA Full Day Projections (2).csv + NBA Full Day Projections (3).csv + NBA Full Day Projections (4).csv + Underdog NBA Daily Rankings - 2026-11-06T140249.380.csv"
+  },
+  "am": {
+   "at": "2026-11-06T14:13:18.157Z",
+   "from": "Lock AM",
+   "ours": true,
+   "tiers": [
+    4,
+    15,
+    22,
+    29
+   ]
+  },
+  "pm": {
+   "at": "2026-11-06T22:36:54.462Z",
+   "from": "board at lock",
+   "ours": false,
+   "tiers": [
+    4,
+    15,
+    23,
+    28
+   ]
+  },
+  "gist": true
  }
 }

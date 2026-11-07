@@ -14,5 +14,9 @@
  "aa4b3c5b-ac98-4756-8c02-6a2075eb8e57": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_wed_main"
+ },
+ "af72932e-8d79-4c17-a602-fe04255d70ce": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_fri_main"
  }
 }
