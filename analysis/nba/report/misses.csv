@@ -318,3 +318,33 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-11-05,nba_thu_main,Goga Bitadze,ORL,split,18.5,11.0,9.0,8,6.6,-13,minutes,yes,etr,"ours 18.5 vs ETR 11.0; usual 7 min, played 8"
 2026-11-05,nba_thu_main,Nikola Jovic,MIA,split,15.3,10.1,5.5,12,9.1,-20,minutes,yes,etr,"ours 15.3 vs ETR 10.1; 12 min, 0-2"
 2026-11-05,nba_thu_main,Anthony Black,ORL,split,34.1,38.9,25.4,31,28.0,-13,peripherals,no,ours,"ETR 38.9 vs ours 34.1; 31 min, 3-8 with 5 turnovers"
+2026-11-06,nba_fri_main,Ayo Dosunmu,MIN,am_call,36.5,41.4,34.4,39,30.7,6,minutes,yes,wrong,"faded (43rd vs ADP 26th); 39 min (usual 31), 26 on 8-14; the 17 who passed him averaged 31.4"
+2026-11-06,nba_fri_main,Stephon Castle,SAS,am_call,41.6,41.3,32.1,28,29.6,15,other,?,wrong,raised (27th vs ADP 42nd); 19 and 7 in 28 min of a 15-point win; a hair under the 10 passed (33.6)
+2026-11-06,nba_fri_main,Isaiah Hartenstein,OKC,am_call,39.7,37.2,22.7,26,24.8,31,shooting,no,wrong,raised (30th vs ADP 42nd); 2 points on 1-4 with 6 rebounds; the 12 passed averaged 30.2
+2026-11-06,nba_fri_main,PJ Washington,DAL,am_call,37.9,36.0,40.7,33,34.9,12,shooting,no,right,raised (39th vs ADP 49th); 26 on 6-10 from three; the 8 passed averaged 22.6
+2026-11-06,nba_fri_main,Kasparas Jakucionis,MIL,am_call,21.1,21.6,8.0,10,21.1,-14,minutes,yes,right,faded (51st vs ADP 42nd); 10 min (usual 21) in a 14-point loss; the 23 who passed him averaged 23.3
+2026-11-06,nba_fri_main,Derrick White,BOS,am_call,37.3,35.4,31.3,25,30.8,39,other,?,right,raised (40th vs ADP 49th); 31.3 in 25 min of a 39-point win (4-6 from three); the 8 passed averaged 22.6
+2026-11-06,nba_fri_main,Rudy Gobert,MIN,am_call,39.0,39.0,24.2,25,30.5,6,minutes,yes,wrong,"raised (33rd vs ADP 42nd); 25 min (usual 30) in a 6-point game, no assists: unclear; the 6 passed averaged 31.3"
+2026-11-06,nba_fri_main,Malik Monk,SAC,am_call,22.0,29.3,20.5,18,16.1,-15,other,?,right,faded (50th vs ADP 42nd); 20.5 in 18 min; the 19 who passed him averaged 23.5
+2026-11-06,nba_fri_main,Lauri Markkanen,UTA,pm_call,43.9,41.2,33.1,34,30.4,-12,shooting,no,right,raised over ETR (17th vs 29th); 8-15 from three in 34 min (usual 30); the 12 passed averaged 30.1
+2026-11-06,nba_fri_main,Austin Reaves,LAL,pm_call,44.2,44.8,41.6,38,35.9,6,other,?,wrong,faded below ETR (24th vs 13th); 25 on 8-22 with 4 steals in 38 min; the 11 who passed him averaged 31.3
+2026-11-06,nba_fri_main,Jaylen Brown,PHI,pm_call,44.2,43.1,34.5,34,36.2,-24,other,?,right,raised over ETR (12th vs 22nd); 20-5-5 in 34 min of a 24-point loss; edged the 10 passed (32.0)
+2026-11-06,nba_fri_main,Isaiah Hartenstein,OKC,pm_call,39.7,37.2,22.7,26,24.8,31,shooting,no,wrong,raised over ETR (30th vs 40th); 2 points on 1-4; the 10 passed averaged 33.2
+2026-11-06,nba_fri_main,Ayo Dosunmu,MIN,pm_call,36.5,41.4,34.4,39,30.7,6,minutes,yes,wrong,faded below ETR (35th vs 27th); 39 min (usual 31); the 8 who passed him averaged 30.1
+2026-11-06,nba_fri_main,Kyrie Irving,DAL,pm_call,41.6,45.6,28.4,28,30.0,12,shooting,no,right,"faded below ETR (18th vs 11th); 7-20, 0-4 from three; the 7 who passed him averaged 34.0"
+2026-11-06,nba_fri_main,Jaden McDaniels,MIN,pm_call,39.9,42.4,44.7,40,33.3,6,minutes,yes,wrong,"faded below ETR (31st vs 24th); 40 min (usual 33), 23-6-5 with 3 stocks; the 7 who passed him averaged 27.6"
+2026-11-06,nba_fri_main,Ty Jerome,MEM,pm_call,45.1,44.0,27.9,28,30.9,-31,blowout,partly,right,faded below ETR (23rd vs 17th); 28 min in a 31-point loss; the 7 who passed him averaged 33.1
+2026-11-06,nba_fri_main,Joel Embiid,PHI,miss,47.3,46.3,19.9,25,33.3,-24,blowout,partly,neither,"25 min (usual 33) in a 24-point loss, 0-9"
+2026-11-06,nba_fri_main,Derik Queen,NOP,miss,35.0,32.8,8.3,10,24.1,-6,minutes,yes,etr,"10 min (usual 24) in a 6-point game, no tag: unclear"
+2026-11-06,nba_fri_main,Brandon Miller,CHA,miss,43.7,41.7,17.9,14,32.9,-39,blowout,partly,neither,14 min (usual 33) in a 39-point loss
+2026-11-06,nba_fri_main,Dejounte Murray,NOP,miss,41.2,44.2,19.4,35,31.3,-6,shooting,no,ours,"35 min (usual 31), 3-11"
+2026-11-06,nba_fri_main,Shai Gilgeous-Alexander,OKC,miss,61.4,60.6,39.6,30,33.8,31,blowout,partly,neither,"30 min (usual 34) in a 31-point win, 4 turnovers"
+2026-11-06,nba_fri_main,LeBron James,PHI,miss,43.4,44.7,23.9,32,33.0,-24,shooting,no,neither,"usual minutes, 3-12 with 6 turnovers in a 24-point loss"
+2026-11-06,nba_fri_main,Paul George,BOS,miss,40.5,42.4,21.5,22,31.6,39,blowout,partly,ours,"22 min (usual 32) in a 39-point win, 3-11"
+2026-11-06,nba_fri_main,Tyrese Maxey,PHI,miss,47.1,50.8,29.6,32,37.1,-24,blowout,partly,ours,"32 min (usual 37) in a 24-point loss, 5-15"
+2026-11-06,nba_fri_main,Malik Monk,SAC,split,22.0,29.3,20.5,18,16.1,-15,other,?,ours,"ETR 29.3 vs ours 22.0; 18 min, no rebounds: ETR high, unclear why"
+2026-11-06,nba_fri_main,Luka Doncic,LAL,split,63.0,68.7,66.5,38,35.6,6,shooting,no,etr,ETR 68.7 vs ours 63.0; 53 points on 17-33 in 38 min
+2026-11-06,nba_fri_main,Domantas Sabonis,SAC,split,49.8,44.9,34.9,31,36.1,-15,blowout,partly,etr,ours 49.8 vs ETR 44.9; 31 min (usual 36) in a 15-point loss
+2026-11-06,nba_fri_main,Ayo Dosunmu,MIN,split,36.5,41.4,34.4,39,30.7,6,minutes,yes,ours,ETR 41.4 vs ours 36.5; 39 min (usual 31) but ETR's number was richer still
+2026-11-06,nba_fri_main,Kyrie Irving,DAL,split,41.6,45.6,28.4,28,30.0,12,shooting,no,ours,ETR 45.6 vs ours 41.6; 7-20 in 28 min
+2026-11-06,nba_fri_main,Tyrese Maxey,PHI,split,47.1,50.8,29.6,32,37.1,-24,blowout,partly,ours,ETR 50.8 vs ours 47.1; 32 min in a 24-point loss

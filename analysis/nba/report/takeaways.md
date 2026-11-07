@@ -2,6 +2,15 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-06 Fri main
+
+- Late-news night with no Lock PM pressed (the 2:36pm board at lock stands in, so there's no ours at PM). Anthony Davis (ADP 8.7), Jalen Johnson (12.8) and Scottie Barnes (14.1), Questionable all day, sat. Davis and Johnson were still Questionable at 2:23pm and Out by 3:11pm, so WAS, ATL and TOR are left out of both halves (late_news.json). Quickley, Allen and Hunter also sat but weren't drafted early.
+- Morning: your board beat ADP on 65% of decision pairs (season 53%, too close) and trailed our number (42%; season 58%, your board wins). The PJ Washington and Derrick White raises and the Jakucionis fade were right. The Hartenstein and Gobert raises and the Ayo fade (39 minutes) were wrong.
+- Afternoon: 33% against ETR. On 6-drafter slates that settles it for the first time: ETR's last upload alone wins (47% of 746 pairs, 44-49%). The PM tier rules already follow ETR. What this says is that moves off ETR in the afternoon have cost you. Biggest wrong moves: the McDaniels and Ayo fades (40 and 39 minutes with MIN short), Hartenstein (2 points) and Reaves (4 steals). Afternoon T5 takes were 18% of 38 so far; the pre-registered check comes at that tier's 14th night.
+- Themes: fades on players who then played 4+ minutes above their usual are now 10 right, 19 wrong on 10 slates, and three more were added last night (Ayo twice, McDaniels). Minutes are known only after the game; the before-tip version is H1, now +0.27 (54% closer) at 8 of 14 nights. Blowouts: 29 misses on 9 slates, ours too high on 28. Five of last night's eight biggest misses came in the 24- and 39-point games (Embiid, Maxey, Miller, Paul George, SGA).
+- Field: your best night yet. 80 teams in Fast Break Friday (15,756), median finish top 29%, top-1% tail 2.50 and top-10% 2.62; Buzzer Beater 10 teams at a top-1% tail of 10.00. Running on 6-drafter slates, 1,079 teams: top 10% 1.40 (1.19-1.65), top 1% 1.11 (0.60-1.78). You faded the Questionable trio entirely (0 of 92 teams) while the field had each at 0.2%.
+- Morning Proj vs ETR (etr_match.md): direction 92% (24 of 26; season 88%), big misses 15 of 60 (25%; season 24%), CLV low for both (0.13 vs 0.16), rookie gap -0.8 (3 players). Jalen Johnson's miss was late news (Questionable, sat), not counted. Missed the same way on 3+ of the last 10 slates: ETR above ours on Caleb Wilson, Darius Garland, Paul Reed, Luka Doncic and Kyrie Irving; ours above ETR on Domantas Sabonis and LaMelo Ball. No group moved 5+ between the season and the last 7 slates.
+
 ## 2026-11-05 Thu main
 
 - A three-game, 4-drafter slate (Lock AM 4:34am, Lock PM 3:21pm). It's graded with the four earlier small slates, apart from the 6-drafter slates. Fleming, Timme and Goodwin (PHX) and Donaldson (MIA) sat, all at ADP 24, so no team is left out.
