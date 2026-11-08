@@ -475,5 +475,43 @@
    ]
   },
   "gist": true
+ },
+ "2026-11-07_sat_main.csv": {
+  "lock": "2026-11-08T00:22:00+00:00",
+  "adp_am_at": "2026-11-07T14:23:38+00:00",
+  "adp_etr_at": "2026-11-07T21:23:28+00:00",
+  "adp_close_at": "2026-11-07T23:55:34+00:00",
+  "morning_through": "2026-11-06",
+  "etr_first": {
+   "at": "2026-11-07T22:05:18.882Z",
+   "file": "pasted text"
+  },
+  "etr_last": {
+   "at": "2026-11-07T22:05:18.882Z",
+   "file": "pasted text"
+  },
+  "am": {
+   "at": "2026-11-07T14:25:25.780Z",
+   "from": "Lock AM",
+   "ours": true,
+   "tiers": [
+    3,
+    13,
+    22,
+    31
+   ]
+  },
+  "pm": {
+   "at": "2026-11-07T22:24:07.860Z",
+   "from": "board at lock",
+   "ours": false,
+   "tiers": [
+    3,
+    11,
+    22,
+    27
+   ]
+  },
+  "gist": true
  }
 }
