@@ -348,3 +348,33 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-11-06,nba_fri_main,Ayo Dosunmu,MIN,split,36.5,41.4,34.4,39,30.7,6,minutes,yes,ours,ETR 41.4 vs ours 36.5; 39 min (usual 31) but ETR's number was richer still
 2026-11-06,nba_fri_main,Kyrie Irving,DAL,split,41.6,45.6,28.4,28,30.0,12,shooting,no,ours,ETR 45.6 vs ours 41.6; 7-20 in 28 min
 2026-11-06,nba_fri_main,Tyrese Maxey,PHI,split,47.1,50.8,29.6,32,37.1,-24,blowout,partly,ours,ETR 50.8 vs ours 47.1; 32 min in a 24-point loss
+2026-11-07,nba_sat_main,Day'Ron Sharpe,BKN,am_call,34.2,33.4,42.5,32,23.1,-3,minutes,yes,right,raised (35th vs ADP 50th); 32 min (usual 23) with 13 assists; the 20 passed averaged 22.7
+2026-11-07,nba_sat_main,Fred VanVleet,HOU,am_call,34.4,33.8,26.6,31,26.2,-3,minutes,yes,right,"raised (37th vs ADP 50th); 31 min (usual 26), 4-9 from three; the 12 passed averaged 21.7"
+2026-11-07,nba_sat_main,Wendell Carter Jr.,ORL,am_call,34.1,36.1,36.2,40,32.6,-7,hedge,no,wrong,faded (39th vs ADP 29th); Bane sat after Lock AM and he played 40 min (usual 33); the 10 who passed him averaged 33.6
+2026-11-07,nba_sat_main,Gary Payton II,GSW,am_call,21.3,16.4,9.0,13,13.4,7,news,no,right,faded (51st vs ADP 42nd) on a Questionable tag; 9.0 in 13 min; the 13 who passed him averaged 23.6
+2026-11-07,nba_sat_main,Aday Mara,OKC,am_call,35.9,34.4,40.1,27,19.0,39,minutes,yes,right,"raised (33rd vs ADP 42nd); 27 min (usual 19), 8-10 with 3 blocks in a 39-point win; the 13 passed averaged 24.5"
+2026-11-07,nba_sat_main,Lu Dort,ATL,am_call,24.4,23.3,8.9,20,26.0,3,other,?,right,"faded (50th vs ADP 42nd); 5 fouls in 20 min, 1-6; the 9 who passed him averaged 24.7"
+2026-11-07,nba_sat_main,Onyeka Okongwu,ATL,am_call,38.5,40.0,37.9,30,29.5,3,news,no,wrong,faded (18th vs ADP 11th) with Jalen Johnson Questionable at Lock AM (he played); 37.9 with 4 blocks; the 7 who passed him averaged 36.4
+2026-11-07,nba_sat_main,Isaiah Hartenstein,OKC,am_call,40.5,37.4,33.8,18,24.9,39,blowout,partly,wrong,raised (27th vs ADP 34th); 14 rebounds but 18 min (usual 25) in a 39-point win; the 7 passed averaged 35.5
+2026-11-07,nba_sat_main,Miles Bridges,PHX,pm_call,35.3,37.2,38.5,31,32.6,3,other,?,right,raised over ETR (23rd vs 31st); 13-10-7; the 8 passed averaged 30.4
+2026-11-07,nba_sat_main,Yaxel Lendeborg,GSW,pm_call,43.2,42.2,40.1,37,31.7,7,minutes,yes,right,"raised over ETR (13th vs 18th); 37 min (usual 32), 9-15 with 3 blocks; the 5 passed averaged 32.8"
+2026-11-07,nba_sat_main,Anthony Black,ORL,pm_call,37.5,42.0,55.6,38,28.6,-7,teammate-out,yes,wrong,"faded below ETR (24th vs 19th) with Bane out; 38 min (usual 29), 7 stocks; the 5 who passed him averaged 34.0"
+2026-11-07,nba_sat_main,Jalen Johnson,ATL,pm_call,53.4,50.8,47.4,36,29.1,3,other,?,wrong,faded below ETR (9th vs 5th) back from his Questionable tag; 30 on 11-17 in 36 min; the 4 who passed him averaged 45.3
+2026-11-07,nba_sat_main,Nickeil Alexander-Walker,ATL,pm_call,40.0,39.4,24.1,31,30.6,3,shooting,no,wrong,raised over ETR (22nd vs 26th); 7-17 with 1 assist; the 4 passed averaged 33.8
+2026-11-07,nba_sat_main,Stephon Castle,SAS,pm_call,39.8,41.2,30.9,24,29.4,22,blowout,partly,right,faded below ETR (25th vs 21st); 24 min in a 22-point win; the 4 who passed him averaged 37.8
+2026-11-07,nba_sat_main,Dylan Harper,SAS,pm_call,37.6,40.4,27.9,28,32.3,22,blowout,partly,right,faded below ETR (26th vs 22nd); 28 min in a 22-point win; the 4 who passed him averaged 37.8
+2026-11-07,nba_sat_main,Onyeka Okongwu,ATL,pm_call,38.5,40.0,37.9,30,29.5,3,other,?,push,raised over ETR (21st vs 24th); 37.9 against the 3 passed at 38.1
+2026-11-07,nba_sat_main,Donovan Clingan,POR,miss,39.4,42.5,12.0,22,25.1,-22,blowout,partly,ours,"22 min (usual 25) in a 22-point loss as a 5.5 underdog, 0 stocks"
+2026-11-07,nba_sat_main,Deni Avdija,POR,miss,47.3,50.4,21.3,24,33.1,-22,blowout,partly,ours,24 min (usual 33) in a 22-point loss
+2026-11-07,nba_sat_main,Jrue Holiday,POR,miss,34.3,33.7,11.0,20,26.6,-22,blowout,partly,neither,"20 min (usual 27) in a 22-point loss, no rebounds or assists"
+2026-11-07,nba_sat_main,Toumani Camara,POR,miss,30.4,29.5,7.8,21,28.0,-22,blowout,partly,neither,"21 min (usual 28) in a 22-point loss, 2-7"
+2026-11-07,nba_sat_main,Ajay Mitchell,OKC,miss,40.8,41.6,18.8,22,27.8,39,blowout,partly,ours,"22 min (usual 28) in a 39-point win, 5-14"
+2026-11-07,nba_sat_main,Damian Lillard,POR,miss,39.7,39.0,19.5,20,30.6,-22,blowout,partly,neither,20 min (usual 31) in a 22-point loss
+2026-11-07,nba_sat_main,Alperen Sengun,HOU,miss,49.7,52.1,30.7,32,35.1,-3,shooting,no,ours,"usual minutes (32), 5-16 with no steals"
+2026-11-07,nba_sat_main,James Harden,CLE,miss,39.1,40.0,20.9,34,33.2,-12,shooting,no,ours,"usual minutes (34), 2-9"
+2026-11-07,nba_sat_main,Nolan Traore,BKN,split,25.0,30.5,34.2,23,22.1,-3,shooting,no,etr,ETR 30.5 vs ours 25.0; 8-10 with 4 steals on usual minutes
+2026-11-07,nba_sat_main,Gary Payton II,GSW,split,21.3,16.4,9.0,13,13.4,7,news,no,etr,"ours 21.3 vs ETR 16.4; Questionable at Lock AM, played 13"
+2026-11-07,nba_sat_main,CJ McCollum,ATL,split,34.5,29.8,27.3,21,26.2,3,minutes,yes,etr,ours 34.5 vs ETR 29.8; 21 min (usual 26) with Jalen Johnson back
+2026-11-07,nba_sat_main,Anthony Black,ORL,split,37.5,42.0,55.6,38,28.6,-7,teammate-out,yes,etr,"ETR 42.0 vs ours 37.5 (Lock AM, before Bane was ruled out); 38 min, 55.6"
+2026-11-07,nba_sat_main,Evan Mobley,CLE,split,41.7,44.9,27.3,33,32.8,-12,teammate-out,yes,ours,"ETR 44.9 vs ours 41.7 with Allen out; 5-11, no stocks"
+2026-11-07,nba_sat_main,Deni Avdija,POR,split,47.3,50.4,21.3,24,33.1,-22,blowout,partly,ours,ETR 50.4 vs ours 47.3; 24 min in a 22-point loss

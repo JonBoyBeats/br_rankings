@@ -2,6 +2,14 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-07 Sat main
+
+- Second night with no Lock PM pressed (the 2:24pm board at lock stands in), and ETR posted once (2:05pm). Anthony Davis (ADP 15.8 at lock, Questionable all day) sat, so WAS is left out of both halves. Bane (27.9, ruled out after Lock AM) and Allen (35.5) weren't drafted early, so ORL and CLE stay graded and the Wendell Carter fade is logged as a hedge.
+- Morning: your board beat ADP (61%; season 53%, 50-57%, still too close) and our number (55%; season 58%, your board wins). The raises on Sharpe (13 assists in 32 minutes), VanVleet and Mara, and the fades on Payton (Questionable) and Dort, were right. Afternoon: 80% against ETR, the best night yet, though ETR alone still wins the season (47%, 44-50%). Right: the Bridges and Lendeborg raises, and the Castle and Harper fades in the 22-point SAS win. Wrong: the Anthony Black fade (55.6 on 38 minutes with Bane out).
+- Themes (hedges left out): calls on players who then played 4+ minutes over their usual split by direction. Raises went 27 right, 4 wrong; fades went 8 right, 14 wrong, on 11 slates. Calls that ended in a blowout: raises 1 right, 13 wrong; fades 6 right, 3 wrong. Blowout misses are 35 on 10 slates, ours too high on 34. Last night's two were SAS by 22 over POR, the underdog by only 5.5, and OKC by 39. Margins like these weren't in the spread, so H2-H4 can't catch them. The minutes and blowouts are known only afterward. The habit to watch is fading a player whose role is growing.
+- Field: 40 teams in Saturday Slam (13,488), median finish top 49%; one team made the top 1% (tail 2.50), top-10% 0.50. Running on 6-drafter slates, 1,119 teams: top 10% 1.37 (1.17-1.61), top 1% 1.16. Ownership tiebreak forward: the lower-drafted player's teams reached the top 1% at 1.26%, against 0.78% (85 pairs, 3 nights).
+- Morning Proj vs ETR (etr_match.md): direction 94% (34 of 36; season 89%), big misses 14 of 60 (23%; season 24%), CLV close (0.34 vs 0.39). Jalen Johnson (Questionable) and Alvarado (sat) are late news, not counted. First night of the rookie last-3 average: 4 entries, gap +0.01 (before: +2.41); the read waits for 15. Missed the same way on 3+ of the last 10 slates, unchanged: ETR above ours on Caleb Wilson, Garland, Paul Reed, Luka and Kyrie; ours above on Sabonis and LaMelo. No group moved 5+ between the season and the last 7.
+
 ## 2026-11-06 Fri main
 
 - Late-news night with no Lock PM pressed (the 2:36pm board at lock stands in, so there's no ours at PM). Anthony Davis (ADP 8.7), Jalen Johnson (12.8) and Scottie Barnes (14.1), Questionable all day, sat. Davis and Johnson were still Questionable at 2:23pm and Out by 3:11pm, so WAS, ATL and TOR are left out of both halves (late_news.json). Quickley, Allen and Hunter also sat but weren't drafted early.
