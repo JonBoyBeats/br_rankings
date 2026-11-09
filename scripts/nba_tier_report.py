@@ -169,6 +169,9 @@ def health(mirror, today, latest):
                 extra = "; swaps from %s; %d Lock PM, %d export%s seen" % (hm(cuts["swaps_at"]), len(seen.get("pm", [])), len(seen.get("exp", [])),
                                                                      "" if len(seen.get("exp", [])) == 1 else "s")
             lines.append("- Lock %s: %s at %s%s" % (w.upper(), frm, hm(x.get("at")), extra))
+        on = m.get("on")
+        lines.append("- Overnight (drafts before 4:30am, kept out of the AM grades): %s" % (
+            "%d drafts from %s; %s at %s" % (on.get("drafts", 0), hm(on.get("first")), on.get("source"), hm(on.get("at"))) if on else "none"))
         lines.append("- ADP snapshots: AM board %s, closing %s (lock %s)" % (hm(m.get("adp_am_at")), hm(m.get("adp_close_at")), hm(m.get("lock"))))
     due = dt.datetime.fromisoformat(today + "T04:30:00").replace(tzinfo=PT)
     mo = mirror_first(mirror, "nba_morning.json", (dt.date.fromisoformat(today) - dt.timedelta(days=1)).isoformat(),
@@ -401,6 +404,36 @@ def tier_blocks(H, last, gname, tiers, shadow, reg, leans, hyp, money, money_tie
     return md + [""]
 
 
+def overnight(H):
+    """The overnight window on its own: your board saved before your first overnight draft against ADP then, on decision
+    pairs (ADP within 4, drafted players), each slot scored through his swap; positive: your board won."""
+    slot = {(r["date"], r["player_id"]): r["slot"] for r in H if r["window"] == "pm"}
+    meta = json.load(open(os.path.join(DAILY, "meta.json")))
+    per, teams, nights = collections.defaultdict(list), 0, 0
+    for name, m in sorted(meta.items()):
+        if not m.get("on"):
+            continue
+        teams += m["on"].get("drafts", 0)
+        nights += 1
+        rows = [r for r in csv.DictReader(open(os.path.join(DAILY, name))) if r.get("on_rank") and num(r.get("adp_on")) is not None
+                and (r["date"], r["player_id"]) in slot]
+        cap = 24 if max((num(r["adp_on"]) for r in rows), default=0) <= 28 else 36
+        rows = [r for r in rows if num(r["adp_on"]) < cap]
+        for i, a in enumerate(rows):
+            for b in rows[i + 1:]:
+                if abs(num(a["adp_on"]) - num(b["adp_on"])) > G.DECISION:
+                    continue
+                you, adpf = int(a["on_rank"]) < int(b["on_rank"]), num(a["adp_on"]) < num(b["adp_on"])
+                if you == adpf:
+                    continue
+                x, y = (a, b) if you else (b, a)
+                g = slot[(x["date"], x["player_id"])] - slot[(y["date"], y["player_id"])]
+                if g:
+                    per[name[:10]].append(g)
+    return ["**Overnight window** (drafts before 4:30am; kept out of the AM grades): %d nights, %d of your teams; your board "
+            "against ADP then: %s" % (nights, teams, G.fmt(G.verdict(per)) if per else "no board on file yet"), ""]
+
+
 def season_tables(H):
     md = []
     res = {x: G.grade(H, "6", x, "primary", [(n, t, None) for n, t in GROUPS]) for x in ("am", "pm")}
@@ -457,7 +490,7 @@ def main():
     md += playbook(a.mirror, H, reg, by_reg, money, leans, hyp, today)
     for gname, tiers in GROUPS:
         md += tier_blocks(H, last, gname, tiers, shadow, reg, leans, hyp, money, money_tiers)
-    md += ["## Season", ""] + season_tables(H)
+    md += ["## Season", ""] + overnight(H) + season_tables(H)
     md += ["", "**Adopted and rules** (leans.json; points status, money verdict). " + MONEY_NOTE]
     for x in leans["adopted"]:
         md.append("- %s, %s: %s" % (status[x["id"]], money(x.get("register")), x["statement"]))

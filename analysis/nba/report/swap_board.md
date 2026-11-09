@@ -12,8 +12,9 @@ Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). Excluded 
 | Field and you | T4 | 2854 | -1.0 | 66% |
 | Field and you | T5 | 1468 | -1.4 | 81% |
 | Field and you | all | 29323 | +1.7 | 65% |
-| Your teams | AM | 68 | +0.3 | 75% |
-| Your teams | PM | 87 | +0.3 | 80% |
+| Your teams | AM | 57 | +0.8 | 74% |
+| Your teams | OVERNIGHT | 29 | -2.6 | 93% |
+| Your teams | PM | 69 | +1.0 | 75% |
 | Your teams | all | 155 | +0.3 | 78% |
 
 ## b. Your swapped teams under three orders of near-ties (within 2 points on ETR's final)
@@ -28,7 +29,7 @@ Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). Excluded 
 
 Graded from your real swaps in the contest rosters (your Underdog app order, which the board never sees): analysis/nba/report/my_swaps.md. The replay of your saved order that used to stand here is superseded.
 
-Reading section a: points left on the table are the best option's score minus the swap's, so positive means the swap fell short. The field left +1.7 a swap; yours left +0.3 (AM +0.3, PM +0.3).
+Reading section a: points left on the table are the best option's score minus the swap's, so positive means the swap fell short. The field left +1.7 a swap; yours left +0.3 (AM +0.8, PM +1.0).
 
 ## Your live moves: board saves after the slate locked
 

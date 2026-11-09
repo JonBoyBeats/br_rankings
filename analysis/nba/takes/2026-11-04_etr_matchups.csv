@@ -1,89 +1,89 @@
-source,player,team,stance,tags,blurb
-ETR,Nickeil Alexander-Walker,ATL,Great,ATL 117.5,WAS allows the most wide-open 3PAs and gets beat on the ball; its 8th-ranked D has faced the softest schedule.
-ETR,CJ McCollum,ATL,Good,ATL 117.5,WAS allows the most wide-open 3PAs and gets beat on the ball; its 8th-ranked D has faced the softest schedule.
-ETR,Dyson Daniels,ATL,Good,ATL 117.5,WAS allows the most wide-open 3PAs and gets beat on the ball; its 8th-ranked D has faced the softest schedule.
-ETR,Jalen Johnson,ATL,Bad,ATL 117.5 · questionable,Questionable (ankle). WAS allows the most wide-open 3PAs and gets beat on the ball; its 8th-ranked D has faced the softest schedule.
-ETR,Anthony Davis,WAS,Great,WAS 115.5,ATL is one of the biggest rim funnels: bigs have been cooking them.
-ETR,Kyshawn George,WAS,Bad,WAS 115.5,ATL is one of the biggest rim funnels: bigs have been cooking them.
-ETR,AJ Dybantsa,WAS,Bad,WAS 115.5,ATL is one of the biggest rim funnels: bigs have been cooking them.
-ETR,Tyrese Maxey,PHI,Great,PHI 109.5,"DET is the league's best D, great on the ball; PHI will need jumpers. Maxey had 29/5/4 against them earlier."
-ETR,Joel Embiid,PHI,Good,PHI 109.5 · news,"Had a minutes limit last game (foot) and might again. DET is the league's best D, great on the ball."
-ETR,Jaylen Brown,PHI,Bad,PHI 109.5,"DET is the league's best D, great on the ball; Ausar Thompson likely guards him."
-ETR,Cade Cunningham,DET,Great,DET 110.5,"PHI is third in D (first in halfcourt) but vulnerable in transition and the paint. Cade had 26/8/8 against them earlier."
-ETR,Ausar Thompson,DET,Good,DET 110.5,PHI is third in D (first in halfcourt) but vulnerable in transition and the paint.
-ETR,Paul Reed,DET,Bad,DET 110.5,PHI is third in D (first in halfcourt) but vulnerable in transition and the paint.
-ETR,Naz Reid,CHA,Great,CHA 108.5,BKN gives up a lot of C&S threes. Reid went 20/11/7 against them.
-ETR,Grayson Allen,CHA,Great,CHA 108.5,BKN gives up a lot of C&S threes.
-ETR,Coby White,CHA,Bad,CHA 108.5 · probable,Probable (calf) with a minutes limit for a bit. BKN is one of the best at limiting PNR handlers.
-ETR,Julius Randle,BKN,Great,BKN 105.5,Randle put 33/8/7 on CHA. CHA turns it over at the league's highest rate; it's a bad-offense game.
-ETR,Michael Porter Jr.,BKN,Good,BKN 105.5,CHA turns it over at the league's highest rate; it's a bad-offense game.
-ETR,Mikel Brown Jr.,BKN,Good,BKN 105.5,CHA turns it over at the league's highest rate; it's a bad-offense game.
-ETR,Day'Ron Sharpe,BKN,Bad,BKN 105.5,CHA has a very good paint defense.
-ETR,Jayson Tatum,BOS,Great,BOS 117.5 · questionable,"Questionable (rest). MIL is 26th in D, killed on the ball and in transition, with Rollins now off the bench."
-ETR,Neemias Queta,BOS,Great,BOS 117.5,"MIL is 26th in D, killed on the ball and in transition; only garbage time slows BOS."
-ETR,Payton Pritchard,BOS,Good,BOS 117.5 · questionable,"Questionable (shoulder). MIL is 26th in D, killed on the ball and in transition."
-ETR,Jaime Jaquez Jr.,MIL,Good,MIL 105.5,BOS is elite at limiting paint scoring but gives up off-ball threes.
-ETR,Myles Turner,MIL,Bad,MIL 105.5,BOS is elite at limiting paint scoring.
-ETR,Kel'el Ware,MIL,Bad,MIL 105.5,BOS is elite at limiting paint scoring.
-ETR,Kyle Kuzma,MIL,Bad,MIL 105.5,BOS is elite at limiting paint scoring.
-ETR,Norman Powell,CHI,Great,CHI 110.5,NYK is 28th in halfcourt D and gets beat on C&S; a great environment if CHI hangs around.
-ETR,Caleb Wilson,CHI,Good,CHI 110.5,NYK is 28th in halfcourt D and gets beat on C&S.
-ETR,Jalen Smith,CHI,Bad,CHI 110.5 · probable,Probable (finger). NYK packs the paint.
-ETR,Jalen Brunson,NYK,Great,NYK 123.5,"CHI is 29th in D: destroyed on the boards and in transition, a huge rim funnel, worst-rebounding starting lineup."
-ETR,Karl-Anthony Towns,NYK,Great,NYK 123.5,"CHI is 29th in D: destroyed on the boards and in transition, a huge rim funnel, worst-rebounding starting lineup."
-ETR,OG Anunoby,NYK,Good,NYK 123.5,"CHI is 29th in D: destroyed on the boards and in transition, a huge rim funnel."
-ETR,Jaxson Hayes,UTA,Great,UTA 115.5,NOP has a horrific paint defense; UTA's offense hasn't gotten anything at the rim.
-ETR,Ace Bailey,UTA,Great,UTA 115.5,NOP has a horrific paint defense.
-ETR,Dejounte Murray,NOP,Great,NOP 119 · news,"UTA gets hammered by PNR handlers (most points by far). Fears could start over him; possible paternity leave."
-ETR,Trey Murphy III,NOP,Good,NOP 119 · probable,Probable (knee). UTA packs the paint and may leave shooters open.
-ETR,Herb Jones,NOP,Good,NOP 119,UTA packs the paint and may leave shooters open.
-ETR,Derik Queen,NOP,Bad,NOP 119,UTA packs the paint.
-ETR,Andrew Nembhard,IND,Great,IND 111.5,"MEM isn't great on the ball, with Edey in drop: an opening for IND's handlers. IND gets bodies back and may go deeper."
-ETR,Pascal Siakam,IND,Good,IND 111.5,"MEM isn't great on the ball, with Edey in drop. IND gets bodies back and may go deeper."
-ETR,Jay Huff,IND,Bad,IND 111.5,IND gets bodies back and may go deeper.
-ETR,Zach Edey,MEM,Great,MEM 118.5,"IND is one of the worst at limiting O-boards, below average on dunks/layups."
-ETR,Cameron Boozer,MEM,Good,MEM 118.5,"IND is one of the worst at limiting O-boards, below average on dunks/layups."
-ETR,Meleek Thomas,CLE,Great,CLE 112.5,"OKC gets killed off the ball (a ton of C&S allowed), protects the paint, mixes in zone."
-ETR,Donovan Mitchell,CLE,Good,CLE 112.5,"OKC gets killed off the ball (a ton of C&S allowed), protects the paint."
-ETR,Jarrett Allen,CLE,Bad,CLE 112.5,OKC protects the paint.
-ETR,Shai Gilgeous-Alexander,OKC,Great,OKC 115.5,"43 on 35 shots Monday; CLE should double him more. CLE is fifth in D, transition its weak spot."
-ETR,Isaiah Hartenstein,OKC,Good,OKC 115.5,"CLE is fifth in D, transition its weak spot."
-ETR,Ayo Dosunmu,MIN,Good,MIN 106.5,HOU limits spot-ups and controls tempo.
-ETR,LaMelo Ball,MIN,Bad,MIN 106.5,HOU limits spot-ups and controls tempo.
-ETR,Rudy Gobert,MIN,Bad,MIN 106.5,HOU rebounds well.
-ETR,Jabari Smith Jr.,HOU,Great,HOU 114.5,MIN gets beaten on the ball with so much drop; HOU's offense ranks first.
-ETR,Kevin Durant,HOU,Good,HOU 114.5,MIN gets beaten on the ball with so much drop; HOU's offense ranks first.
-ETR,Alperen Sengun,HOU,Bad,HOU 114.5,MIN rebounds extremely well.
-ETR,Immanuel Quickley,TOR,Great,TOR 113.5,"DEN struggles to limit off-ball scoring, lacks depth, isn't rebounding like usual."
-ETR,Collin Murray-Boyles,TOR,Good,TOR 113.5,"DEN struggles to limit off-ball scoring, lacks depth. CMB with the starters: 85.1 D rating in 31 minutes."
-ETR,Jakob Poeltl,TOR,Bad,TOR 113.5 · questionable,Questionable (shoulder).
-ETR,Nikola Jokic,DEN,Great,DEN 117.5,TOR isn't great in the paint; DEN should live on the two-man game.
-ETR,Aaron Gordon,DEN,Good,DEN 117.5,TOR isn't great in the paint.
-ETR,Jamal Murray,DEN,Bad,DEN 117.5,Scottie Barnes likely guards him; TOR has the size to bother the two-man game.
-ETR,Christian Braun,DEN,Bad,DEN 117.5,TOR allows the third-fewest transition points.
-ETR,Donovan Clingan,POR,Great,POR 115.5,"PHX is last in D, starters allowing 136.3 per 100; rebounding is its biggest issue and POR ranks first."
-ETR,Deni Avdija,POR,Great,POR 115.5,"PHX is last in D, starters allowing 136.3 per 100. POR won the opener 124-83."
-ETR,Damian Lillard,POR,Good,POR 115.5,"PHX is last in D, starters allowing 136.3 per 100."
-ETR,Toumani Camara,POR,Good,POR 115.5,"PHX is last in D, starters allowing 136.3 per 100."
-ETR,Khaman Maluach,PHX,Bad,PHX 112.5,POR ranks first in rebounding.
-ETR,Devin Booker,PHX,Bad,PHX 112.5,Toumani Camara on him again.
-ETR,Kyrie Irving,DAL,Good,DAL 108.5,SAS doesn't help off much and teams are hunting on-ball chances.
-ETR,Daniel Gafford,DAL,Bad,DAL 108.5,SAS should win big.
-ETR,P.J. Washington,DAL,Bad,DAL 108.5,SAS should win big.
-ETR,Victor Wembanyama,SAS,Great,SAS 120.5 · blowout,"DAL plays the most zone, has major rebounding issues, killed off the ball. ETR expects a big blowout."
-ETR,Stephon Castle,SAS,Great,SAS 120.5 · blowout,DAL gets killed off the ball with poor rotations. ETR expects a big blowout.
-ETR,Devin Vassell,SAS,Good,SAS 120.5 · blowout,DAL gets killed off the ball with poor rotations. ETR expects a big blowout.
-ETR,Dylan Harper,SAS,Good,SAS 120.5 · blowout,DAL gets killed off the ball with poor rotations. ETR expects a big blowout.
-ETR,Luka Doncic,LAL,Great,LAL 123.5,"SAC allows the most transition points, is below average on the ball and gets beat inside."
-ETR,Austin Reaves,LAL,Great,LAL 123.5,SAC is below average on the ball: more of a Reaves spot.
-ETR,Walker Kessler,LAL,Great,LAL 123.5,SAC gets beat a ton inside; Kessler against a struggling Sabonis.
-ETR,Zach LaVine,SAC,Good,SAC 111.5,LAL gives up a decent amount off the ball.
-ETR,Darius Acuff Jr.,SAC,Good,SAC 111.5,LAL gives up a decent amount off the ball.
-ETR,Domantas Sabonis,SAC,Bad,SAC 111.5,Struggling; LAL is up to 10th in halfcourt D.
-ETR,Giannis Antetokounmpo,MIA,Great,MIA 119.5 · probable,Probable (wrist). LAC allows the second-most points within five feet.
-ETR,Pelle Larsson,MIA,Great,MIA 119.5,LAC can't keep teams out of the paint; MIA keeps pushing the pace.
-ETR,Bam Adebayo,MIA,Good,MIA 119.5,LAC allows the second-most points within five feet.
-ETR,Davion Mitchell,MIA,Good,MIA 119.5,LAC can't keep teams out of the paint; MIA keeps pushing the pace.
-ETR,Darius Garland,LAC,Great,LAC 114.5 · b2b,"MIA is dead last in halfcourt D and gives up massive 3-point numbers. Lue will watch how he handles the B2B."
-ETR,Kris Dunn,LAC,Good,LAC 114.5 · b2b,MIA is dead last in halfcourt D. Lue said 30 minutes on a B2B was too much for him.
-ETR,Isaiah Jackson,LAC,Bad,LAC 114.5 · b2b,MIA is dead last in halfcourt D.
+source,player,team,stance,tags,blurb,at
+ETR,Nickeil Alexander-Walker,ATL,Great,ATL 117.5,WAS allows the most wide-open 3PAs and gets beat on the ball; its 8th-ranked D has faced the softest schedule.,2026-11-04T19:08:20+00:00
+ETR,CJ McCollum,ATL,Good,ATL 117.5,WAS allows the most wide-open 3PAs and gets beat on the ball; its 8th-ranked D has faced the softest schedule.,2026-11-04T19:08:20+00:00
+ETR,Dyson Daniels,ATL,Good,ATL 117.5,WAS allows the most wide-open 3PAs and gets beat on the ball; its 8th-ranked D has faced the softest schedule.,2026-11-04T19:08:20+00:00
+ETR,Jalen Johnson,ATL,Bad,ATL 117.5 · questionable,Questionable (ankle). WAS allows the most wide-open 3PAs and gets beat on the ball; its 8th-ranked D has faced the softest schedule.,2026-11-04T19:08:20+00:00
+ETR,Anthony Davis,WAS,Great,WAS 115.5,ATL is one of the biggest rim funnels: bigs have been cooking them.,2026-11-04T19:08:20+00:00
+ETR,Kyshawn George,WAS,Bad,WAS 115.5,ATL is one of the biggest rim funnels: bigs have been cooking them.,2026-11-04T19:08:20+00:00
+ETR,AJ Dybantsa,WAS,Bad,WAS 115.5,ATL is one of the biggest rim funnels: bigs have been cooking them.,2026-11-04T19:08:20+00:00
+ETR,Tyrese Maxey,PHI,Great,PHI 109.5,"DET is the league's best D, great on the ball; PHI will need jumpers. Maxey had 29/5/4 against them earlier.",2026-11-04T19:08:20+00:00
+ETR,Joel Embiid,PHI,Good,PHI 109.5 · news,"Had a minutes limit last game (foot) and might again. DET is the league's best D, great on the ball.",2026-11-04T19:08:20+00:00
+ETR,Jaylen Brown,PHI,Bad,PHI 109.5,"DET is the league's best D, great on the ball; Ausar Thompson likely guards him.",2026-11-04T19:08:20+00:00
+ETR,Cade Cunningham,DET,Great,DET 110.5,PHI is third in D (first in halfcourt) but vulnerable in transition and the paint. Cade had 26/8/8 against them earlier.,2026-11-04T19:08:20+00:00
+ETR,Ausar Thompson,DET,Good,DET 110.5,PHI is third in D (first in halfcourt) but vulnerable in transition and the paint.,2026-11-04T19:08:20+00:00
+ETR,Paul Reed,DET,Bad,DET 110.5,PHI is third in D (first in halfcourt) but vulnerable in transition and the paint.,2026-11-04T19:08:20+00:00
+ETR,Naz Reid,CHA,Great,CHA 108.5,BKN gives up a lot of C&S threes. Reid went 20/11/7 against them.,2026-11-04T19:08:20+00:00
+ETR,Grayson Allen,CHA,Great,CHA 108.5,BKN gives up a lot of C&S threes.,2026-11-04T19:08:20+00:00
+ETR,Coby White,CHA,Bad,CHA 108.5 · probable,Probable (calf) with a minutes limit for a bit. BKN is one of the best at limiting PNR handlers.,2026-11-04T19:08:20+00:00
+ETR,Julius Randle,BKN,Great,BKN 105.5,Randle put 33/8/7 on CHA. CHA turns it over at the league's highest rate; it's a bad-offense game.,2026-11-04T19:08:20+00:00
+ETR,Michael Porter Jr.,BKN,Good,BKN 105.5,CHA turns it over at the league's highest rate; it's a bad-offense game.,2026-11-04T19:08:20+00:00
+ETR,Mikel Brown Jr.,BKN,Good,BKN 105.5,CHA turns it over at the league's highest rate; it's a bad-offense game.,2026-11-04T19:08:20+00:00
+ETR,Day'Ron Sharpe,BKN,Bad,BKN 105.5,CHA has a very good paint defense.,2026-11-04T19:08:20+00:00
+ETR,Jayson Tatum,BOS,Great,BOS 117.5 · questionable,"Questionable (rest). MIL is 26th in D, killed on the ball and in transition, with Rollins now off the bench.",2026-11-04T19:08:20+00:00
+ETR,Neemias Queta,BOS,Great,BOS 117.5,"MIL is 26th in D, killed on the ball and in transition; only garbage time slows BOS.",2026-11-04T19:08:20+00:00
+ETR,Payton Pritchard,BOS,Good,BOS 117.5 · questionable,"Questionable (shoulder). MIL is 26th in D, killed on the ball and in transition.",2026-11-04T19:08:20+00:00
+ETR,Jaime Jaquez Jr.,MIL,Good,MIL 105.5,BOS is elite at limiting paint scoring but gives up off-ball threes.,2026-11-04T19:08:20+00:00
+ETR,Myles Turner,MIL,Bad,MIL 105.5,BOS is elite at limiting paint scoring.,2026-11-04T19:08:20+00:00
+ETR,Kel'el Ware,MIL,Bad,MIL 105.5,BOS is elite at limiting paint scoring.,2026-11-04T19:08:20+00:00
+ETR,Kyle Kuzma,MIL,Bad,MIL 105.5,BOS is elite at limiting paint scoring.,2026-11-04T19:08:20+00:00
+ETR,Norman Powell,CHI,Great,CHI 110.5,NYK is 28th in halfcourt D and gets beat on C&S; a great environment if CHI hangs around.,2026-11-04T19:08:20+00:00
+ETR,Caleb Wilson,CHI,Good,CHI 110.5,NYK is 28th in halfcourt D and gets beat on C&S.,2026-11-04T19:08:20+00:00
+ETR,Jalen Smith,CHI,Bad,CHI 110.5 · probable,Probable (finger). NYK packs the paint.,2026-11-04T19:08:20+00:00
+ETR,Jalen Brunson,NYK,Great,NYK 123.5,"CHI is 29th in D: destroyed on the boards and in transition, a huge rim funnel, worst-rebounding starting lineup.",2026-11-04T19:08:20+00:00
+ETR,Karl-Anthony Towns,NYK,Great,NYK 123.5,"CHI is 29th in D: destroyed on the boards and in transition, a huge rim funnel, worst-rebounding starting lineup.",2026-11-04T19:08:20+00:00
+ETR,OG Anunoby,NYK,Good,NYK 123.5,"CHI is 29th in D: destroyed on the boards and in transition, a huge rim funnel.",2026-11-04T19:08:20+00:00
+ETR,Jaxson Hayes,UTA,Great,UTA 115.5,NOP has a horrific paint defense; UTA's offense hasn't gotten anything at the rim.,2026-11-04T19:08:20+00:00
+ETR,Ace Bailey,UTA,Great,UTA 115.5,NOP has a horrific paint defense.,2026-11-04T19:08:20+00:00
+ETR,Dejounte Murray,NOP,Great,NOP 119 · news,UTA gets hammered by PNR handlers (most points by far). Fears could start over him; possible paternity leave.,2026-11-04T19:08:20+00:00
+ETR,Trey Murphy III,NOP,Good,NOP 119 · probable,Probable (knee). UTA packs the paint and may leave shooters open.,2026-11-04T19:08:20+00:00
+ETR,Herb Jones,NOP,Good,NOP 119,UTA packs the paint and may leave shooters open.,2026-11-04T19:08:20+00:00
+ETR,Derik Queen,NOP,Bad,NOP 119,UTA packs the paint.,2026-11-04T19:08:20+00:00
+ETR,Andrew Nembhard,IND,Great,IND 111.5,"MEM isn't great on the ball, with Edey in drop: an opening for IND's handlers. IND gets bodies back and may go deeper.",2026-11-04T19:08:20+00:00
+ETR,Pascal Siakam,IND,Good,IND 111.5,"MEM isn't great on the ball, with Edey in drop. IND gets bodies back and may go deeper.",2026-11-04T19:08:20+00:00
+ETR,Jay Huff,IND,Bad,IND 111.5,IND gets bodies back and may go deeper.,2026-11-04T19:08:20+00:00
+ETR,Zach Edey,MEM,Great,MEM 118.5,"IND is one of the worst at limiting O-boards, below average on dunks/layups.",2026-11-04T19:08:20+00:00
+ETR,Cameron Boozer,MEM,Good,MEM 118.5,"IND is one of the worst at limiting O-boards, below average on dunks/layups.",2026-11-04T19:08:20+00:00
+ETR,Meleek Thomas,CLE,Great,CLE 112.5,"OKC gets killed off the ball (a ton of C&S allowed), protects the paint, mixes in zone.",2026-11-04T19:08:20+00:00
+ETR,Donovan Mitchell,CLE,Good,CLE 112.5,"OKC gets killed off the ball (a ton of C&S allowed), protects the paint.",2026-11-04T19:08:20+00:00
+ETR,Jarrett Allen,CLE,Bad,CLE 112.5,OKC protects the paint.,2026-11-04T19:08:20+00:00
+ETR,Shai Gilgeous-Alexander,OKC,Great,OKC 115.5,"43 on 35 shots Monday; CLE should double him more. CLE is fifth in D, transition its weak spot.",2026-11-04T19:08:20+00:00
+ETR,Isaiah Hartenstein,OKC,Good,OKC 115.5,"CLE is fifth in D, transition its weak spot.",2026-11-04T19:08:20+00:00
+ETR,Ayo Dosunmu,MIN,Good,MIN 106.5,HOU limits spot-ups and controls tempo.,2026-11-04T19:08:20+00:00
+ETR,LaMelo Ball,MIN,Bad,MIN 106.5,HOU limits spot-ups and controls tempo.,2026-11-04T19:08:20+00:00
+ETR,Rudy Gobert,MIN,Bad,MIN 106.5,HOU rebounds well.,2026-11-04T19:08:20+00:00
+ETR,Jabari Smith Jr.,HOU,Great,HOU 114.5,MIN gets beaten on the ball with so much drop; HOU's offense ranks first.,2026-11-04T19:08:20+00:00
+ETR,Kevin Durant,HOU,Good,HOU 114.5,MIN gets beaten on the ball with so much drop; HOU's offense ranks first.,2026-11-04T19:08:20+00:00
+ETR,Alperen Sengun,HOU,Bad,HOU 114.5,MIN rebounds extremely well.,2026-11-04T19:08:20+00:00
+ETR,Immanuel Quickley,TOR,Great,TOR 113.5,"DEN struggles to limit off-ball scoring, lacks depth, isn't rebounding like usual.",2026-11-04T19:08:20+00:00
+ETR,Collin Murray-Boyles,TOR,Good,TOR 113.5,"DEN struggles to limit off-ball scoring, lacks depth. CMB with the starters: 85.1 D rating in 31 minutes.",2026-11-04T19:08:20+00:00
+ETR,Jakob Poeltl,TOR,Bad,TOR 113.5 · questionable,Questionable (shoulder).,2026-11-04T19:08:20+00:00
+ETR,Nikola Jokic,DEN,Great,DEN 117.5,TOR isn't great in the paint; DEN should live on the two-man game.,2026-11-04T19:08:20+00:00
+ETR,Aaron Gordon,DEN,Good,DEN 117.5,TOR isn't great in the paint.,2026-11-04T19:08:20+00:00
+ETR,Jamal Murray,DEN,Bad,DEN 117.5,Scottie Barnes likely guards him; TOR has the size to bother the two-man game.,2026-11-04T19:08:20+00:00
+ETR,Christian Braun,DEN,Bad,DEN 117.5,TOR allows the third-fewest transition points.,2026-11-04T19:08:20+00:00
+ETR,Donovan Clingan,POR,Great,POR 115.5,"PHX is last in D, starters allowing 136.3 per 100; rebounding is its biggest issue and POR ranks first.",2026-11-04T19:08:20+00:00
+ETR,Deni Avdija,POR,Great,POR 115.5,"PHX is last in D, starters allowing 136.3 per 100. POR won the opener 124-83.",2026-11-04T19:08:20+00:00
+ETR,Damian Lillard,POR,Good,POR 115.5,"PHX is last in D, starters allowing 136.3 per 100.",2026-11-04T19:08:20+00:00
+ETR,Toumani Camara,POR,Good,POR 115.5,"PHX is last in D, starters allowing 136.3 per 100.",2026-11-04T19:08:20+00:00
+ETR,Khaman Maluach,PHX,Bad,PHX 112.5,POR ranks first in rebounding.,2026-11-04T19:08:20+00:00
+ETR,Devin Booker,PHX,Bad,PHX 112.5,Toumani Camara on him again.,2026-11-04T19:08:20+00:00
+ETR,Kyrie Irving,DAL,Good,DAL 108.5,SAS doesn't help off much and teams are hunting on-ball chances.,2026-11-04T19:08:20+00:00
+ETR,Daniel Gafford,DAL,Bad,DAL 108.5,SAS should win big.,2026-11-04T19:08:20+00:00
+ETR,P.J. Washington,DAL,Bad,DAL 108.5,SAS should win big.,2026-11-04T19:08:20+00:00
+ETR,Victor Wembanyama,SAS,Great,SAS 120.5 · blowout,"DAL plays the most zone, has major rebounding issues, killed off the ball. ETR expects a big blowout.",2026-11-04T19:08:20+00:00
+ETR,Stephon Castle,SAS,Great,SAS 120.5 · blowout,DAL gets killed off the ball with poor rotations. ETR expects a big blowout.,2026-11-04T19:08:20+00:00
+ETR,Devin Vassell,SAS,Good,SAS 120.5 · blowout,DAL gets killed off the ball with poor rotations. ETR expects a big blowout.,2026-11-04T19:08:20+00:00
+ETR,Dylan Harper,SAS,Good,SAS 120.5 · blowout,DAL gets killed off the ball with poor rotations. ETR expects a big blowout.,2026-11-04T19:08:20+00:00
+ETR,Luka Doncic,LAL,Great,LAL 123.5,"SAC allows the most transition points, is below average on the ball and gets beat inside.",2026-11-04T19:08:20+00:00
+ETR,Austin Reaves,LAL,Great,LAL 123.5,SAC is below average on the ball: more of a Reaves spot.,2026-11-04T19:08:20+00:00
+ETR,Walker Kessler,LAL,Great,LAL 123.5,SAC gets beat a ton inside; Kessler against a struggling Sabonis.,2026-11-04T19:08:20+00:00
+ETR,Zach LaVine,SAC,Good,SAC 111.5,LAL gives up a decent amount off the ball.,2026-11-04T19:08:20+00:00
+ETR,Darius Acuff Jr.,SAC,Good,SAC 111.5,LAL gives up a decent amount off the ball.,2026-11-04T19:08:20+00:00
+ETR,Domantas Sabonis,SAC,Bad,SAC 111.5,Struggling; LAL is up to 10th in halfcourt D.,2026-11-04T19:08:20+00:00
+ETR,Giannis Antetokounmpo,MIA,Great,MIA 119.5 · probable,Probable (wrist). LAC allows the second-most points within five feet.,2026-11-04T19:08:20+00:00
+ETR,Pelle Larsson,MIA,Great,MIA 119.5,LAC can't keep teams out of the paint; MIA keeps pushing the pace.,2026-11-04T19:08:20+00:00
+ETR,Bam Adebayo,MIA,Good,MIA 119.5,LAC allows the second-most points within five feet.,2026-11-04T19:08:20+00:00
+ETR,Davion Mitchell,MIA,Good,MIA 119.5,LAC can't keep teams out of the paint; MIA keeps pushing the pace.,2026-11-04T19:08:20+00:00
+ETR,Darius Garland,LAC,Great,LAC 114.5 · b2b,MIA is dead last in halfcourt D and gives up massive 3-point numbers. Lue will watch how he handles the B2B.,2026-11-04T19:08:20+00:00
+ETR,Kris Dunn,LAC,Good,LAC 114.5 · b2b,MIA is dead last in halfcourt D. Lue said 30 minutes on a B2B was too much for him.,2026-11-04T19:08:20+00:00
+ETR,Isaiah Jackson,LAC,Bad,LAC 114.5 · b2b,MIA is dead last in halfcourt D.,2026-11-04T19:08:20+00:00

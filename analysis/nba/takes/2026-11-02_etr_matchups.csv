@@ -1,99 +1,99 @@
-source,player,team,stance,tags,blurb
-ETR,Shai Gilgeous-Alexander,OKC,Great,OKC 112,"OKC's defense has slipped: second-most spot-up points allowed, 28th in transition."
-ETR,Ajay Mitchell,OKC,Good,OKC 112,"OKC's defense has slipped: second-most spot-up points allowed, 28th in transition."
-ETR,Donovan Mitchell,CLE,Good,CLE 115.5,Cleveland should generate more from the outside.
-ETR,Jarrett Allen,CLE,Bad,CLE 115.5,Cleveland should generate more from the outside.
-ETR,Cade Cunningham,DET,Great,DET 107,Detroit ranks first in D rating and halfcourt D; Charlotte is last in O rating and second-slowest.
-ETR,Paul Reed,DET,Bad,DET 107,Detroit ranks first in D rating and halfcourt D; Charlotte is last in O rating and second-slowest.
-ETR,Naz Reid,CHA,Good,CHA 102.5,A grind for Charlotte to score.
-ETR,Brandon Miller,CHA,Bad,CHA 102.5,A grind for Charlotte to score.
-ETR,Jalen Johnson,ATL,Great,ATL 118 · questionable,Questionable (ankle). Strong pace-up environment; ATL first in O pace.
-ETR,Onyeka Okongwu,ATL,Good,ATL 118,Strong pace-up environment; ATL first in O pace.
-ETR,Karl-Anthony Towns,NYK,Great,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.
-ETR,OG Anunoby,NYK,Good,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.
-ETR,Josh Hart,NYK,Good,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.
-ETR,Jalen Brunson,NYK,Bad,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.
-ETR,Day'Ron Sharpe,BKN,Bad,BKN 103.5 · b2b,BKN offense 29th; on a B2B.
-ETR,Anthony Davis,WAS,Great,WAS 111,"ORL can't rebound, 25th in D rating, on a B2B."
-ETR,Trae Young,WAS,Good,WAS 111,"ORL can't rebound, 25th in D rating, on a B2B."
-ETR,AJ Dybantsa,WAS,Good,WAS 111,"ORL can't rebound, 25th in D rating, on a B2B."
-ETR,Franz Wagner,ORL,Good,ORL 113 · b2b,WAS allows the highest FG% at the rim.
-ETR,Joel Embiid,PHI,Great,PHI 125.5 · questionable,"Questionable (foot). CHI allows the most points, worst TRB%, fastest starting pace."
-ETR,Tyrese Maxey,PHI,Great,PHI 125.5,"CHI allows the most points, worst TRB%, fastest starting pace."
-ETR,LeBron James,PHI,Good,PHI 125.5,"CHI allows the most points, worst TRB%, fastest starting pace."
-ETR,Jaylen Brown,PHI,Good,PHI 125.5,"CHI allows the most points, worst TRB%, fastest starting pace."
-ETR,VJ Edgecombe,PHI,Good,PHI 125.5,"CHI allows the most points, worst TRB%, fastest starting pace."
-ETR,Caleb Wilson,CHI,Good,CHI 114,PHI has the second-ranked halfcourt D.
-ETR,Josh Giddey,CHI,Bad,CHI 114,PHI has the second-ranked halfcourt D.
-ETR,Cooper Flagg,DAL,Great,DAL 121.5,SAC allows the most paint points and a league-high 35.5 transition points.
-ETR,Kyrie Irving,DAL,Great,DAL 121.5 · questionable,Questionable (knee). SAC allows the most paint points and a league-high 35.5 transition points.
-ETR,Daniel Gafford,DAL,Great,DAL 121.5,SAC allows the most paint points and a league-high 35.5 transition points.
-ETR,Domantas Sabonis,SAC,Great,SAC 111,Garbage time is the only check on DAL.
-ETR,Darius Acuff Jr.,SAC,Good,SAC 111,Garbage time is the only check on DAL.
-ETR,Zach LaVine,SAC,Good,SAC 111 · questionable,Questionable (elbow). Garbage time is the only check on DAL.
-ETR,Precious Achiuwa,SAC,Good,SAC 111,Garbage time is the only check on DAL.
-ETR,De'Andre Hunter,SAC,Good,SAC 111,Garbage time is the only check on DAL.
-ETR,Cameron Boozer,MEM,Great,MEM 120.5,NOP allows a league-high 51.3 dunk/layup points; MEM leads the league in scoring.
-ETR,Dejounte Murray,NOP,Good,NOP 115,MEM protects the paint and allows the fewest C&S points.
-ETR,Jonathan Kuminga,MIN,Great,MIN 122,"MIL gets killed at the rim, third-most points allowed. Should be ugly."
-ETR,LaMelo Ball,MIN,Good,MIN 122,"MIL gets killed at the rim, third-most points allowed. Should be ugly."
-ETR,Ayo Dosunmu,MIN,Good,MIN 122,"MIL gets killed at the rim, third-most points allowed. Should be ugly."
-ETR,Myles Turner,MIL,Bad,MIL 111.5,MIN rebounds well and gets Gobert back.
-ETR,Tyler Herro,MIL,Bad,MIL 111.5,MIN rebounds well and gets Gobert back.
-ETR,Payton Pritchard,BOS,Great,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.
-ETR,Paul George,BOS,Good,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.
-ETR,Jayson Tatum,BOS,Bad,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.
-ETR,Kevin Durant,HOU,Great,HOU 112,HOU crushing in transition (1.39 PPP).
-ETR,Jabari Smith Jr.,HOU,Good,HOU 112,HOU crushing in transition (1.39 PPP).
-ETR,Alperen Sengun,HOU,Bad,HOU 112,HOU crushing in transition (1.39 PPP).
-ETR,De'Aaron Fox,SAS,Great,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.
-ETR,Dylan Harper,SAS,Great,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.
-ETR,Stephon Castle,SAS,Good,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.
-ETR,Victor Wembanyama,SAS,Good,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.
-ETR,Devin Vassell,SAS,Bad,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.
-ETR,Keyonte George,UTA,Bad,UTA 107.5,UTA has the lowest rim frequency on offense.
-ETR,Damian Lillard,POR,Great,POR 112.5,DEN gives up the seventh-most C&S points.
-ETR,Aaron Gordon,DEN,Great,DEN 117,POR has an excellent paint defense.
-ETR,Christian Braun,DEN,Good,DEN 117,POR has an excellent paint defense.
-ETR,Jamal Murray,DEN,Good,DEN 117,POR has an excellent paint defense.
-ETR,Nikola Jokic,DEN,Bad,DEN 117,POR has an excellent paint defense.
-ETR,Stephen Curry,GSW,Great,GSW 114.5 · b2b · news,Warriors on a B2B and may rest guys; Curry expected back. PHX defense dead last in nearly everything; starting unit -36.5 net.
-ETR,Brandon Williams,GSW,Great,GSW 114.5 · b2b,PHX defense dead last in nearly everything; starting unit -36.5 net.
-ETR,Yaxel Lendeborg,GSW,Great,GSW 114.5 · b2b,PHX defense dead last in nearly everything; starting unit -36.5 net.
-ETR,Devin Booker,PHX,Great,PHX 112,GSW on a B2B.
-ETR,Jalen Green,PHX,Good,PHX 112,GSW on a B2B.
-ETR,Collin Gillespie,PHX,Good,PHX 112,GSW on a B2B.
-ETR,Miles Bridges,PHX,Bad,PHX 112,GSW on a B2B.
-ETR,Scottie Barnes,TOR,Great,TOR 113 · b2b,LAC turns it over the most and allows the most points within five feet.
-ETR,Immanuel Quickley,TOR,Great,TOR 113 · b2b,LAC turns it over the most and allows the most points within five feet.
-ETR,Collin Murray-Boyles,TOR,Great,TOR 113 · b2b,LAC turns it over the most and allows the most points within five feet.
-ETR,RJ Barrett,TOR,Good,TOR 113 · b2b,LAC turns it over the most and allows the most points within five feet.
-ETR,Isaiah Jackson,LAC,Good,LAC 107.5 · b2b,TOR leads the NBA in transition points.
-ETR,Darius Garland,LAC,Bad,LAC 107.5 · b2b,TOR leads the NBA in transition points.
-ETR,Brook Lopez,LAC,Bad,LAC 107.5 · b2b,TOR leads the NBA in transition points.
-ETR,Giannis Antetokounmpo,MIA,Great,MIA 117.5,LAL struggles on D and on the boards; on a B2B.
-ETR,Davion Mitchell,MIA,Good,MIA 117.5,LAL struggles on D and on the boards; on a B2B.
-ETR,Pelle Larsson,MIA,Good,MIA 117.5,LAL struggles on D and on the boards; on a B2B.
-ETR,Bam Adebayo,MIA,Bad,MIA 117.5,LAL struggles on D and on the boards; on a B2B.
-ETR,Luka Doncic,LAL,Great,LAL 120 · b2b · news,Lakers on a back-to-back; he sat the last B2B. Miami plays a lot of drop. MIA plays too much drop.
-ETR,Austin Reaves,LAL,Good,LAL 120 · b2b,MIA plays too much drop.
-ETR,Walker Kessler,LAL,Bad,LAL 120 · b2b,MIA plays too much drop.
-ETR,Isaiah Hartenstein,OKC,Good,OKC 112,"OKC's defense has slipped: second-most spot-up points allowed, 28th in transition."
-ETR,Duncan Robinson,DET,Good,DET 107,Detroit ranks first in D rating and halfcourt D; Charlotte is last in O rating and second-slowest.
-ETR,John Collins,DET,Good,DET 107,Detroit ranks first in D rating and halfcourt D; Charlotte is last in O rating and second-slowest.
-ETR,Kelly Oubre,IND,Great,IND 114 · b2b,Indy gives up the fifth-most dunks/layups; ATL gets beat at the rim.
-ETR,Andrew Nembhard,IND,Good,IND 114 · b2b,Indy gives up the fifth-most dunks/layups; ATL gets beat at the rim.
-ETR,Pascal Siakam,IND,Bad,IND 114 · b2b,Indy gives up the fifth-most dunks/layups; ATL gets beat at the rim.
-ETR,Mikal Bridges,NYK,Good,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.
-ETR,Mikel Brown Jr.,BKN,Great,BKN 103.5 · b2b,BKN offense 29th; on a B2B. Mikel Brown Jr. back after resting yesterday.
-ETR,Jase Richardson,ORL,Great,ORL 113 · b2b,WAS allows the highest FG% at the rim.
-ETR,Zach Edey,MEM,Great,MEM 120.5,NOP allows a league-high 51.3 dunk/layup points; MEM leads the league in scoring.
-ETR,Cedric Coward,MEM,Good,MEM 120.5,NOP allows a league-high 51.3 dunk/layup points; MEM leads the league in scoring.
-ETR,Herb Jones,NOP,Good,NOP 115,MEM protects the paint and allows the fewest C&S points.
-ETR,Karlo Matkovic,NOP,Bad,NOP 115,MEM protects the paint and allows the fewest C&S points.
-ETR,Rudy Gobert,MIN,Great,MIN 122,"MIL gets killed at the rim, third-most points allowed. Gobert back."
-ETR,Neemias Queta,BOS,Bad,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.
-ETR,Derrick White,BOS,Bad,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.
-ETR,Darryn Peterson,UTA,Good,UTA 107.5,UTA has the lowest rim frequency on offense.
-ETR,Jaxson Hayes,UTA,Bad,UTA 107.5,UTA has the lowest rim frequency on offense.
-ETR,Ace Bailey,UTA,Bad,UTA 107.5,UTA has the lowest rim frequency on offense.
+source,player,team,stance,tags,blurb,at
+ETR,Shai Gilgeous-Alexander,OKC,Great,OKC 112,"OKC's defense has slipped: second-most spot-up points allowed, 28th in transition.",2026-11-02T18:56:00+00:00
+ETR,Ajay Mitchell,OKC,Good,OKC 112,"OKC's defense has slipped: second-most spot-up points allowed, 28th in transition.",2026-11-02T18:56:00+00:00
+ETR,Donovan Mitchell,CLE,Good,CLE 115.5,Cleveland should generate more from the outside.,2026-11-02T18:56:00+00:00
+ETR,Jarrett Allen,CLE,Bad,CLE 115.5,Cleveland should generate more from the outside.,2026-11-02T18:56:00+00:00
+ETR,Cade Cunningham,DET,Great,DET 107,Detroit ranks first in D rating and halfcourt D; Charlotte is last in O rating and second-slowest.,2026-11-02T18:56:00+00:00
+ETR,Paul Reed,DET,Bad,DET 107,Detroit ranks first in D rating and halfcourt D; Charlotte is last in O rating and second-slowest.,2026-11-02T18:56:00+00:00
+ETR,Naz Reid,CHA,Good,CHA 102.5,A grind for Charlotte to score.,2026-11-02T18:56:00+00:00
+ETR,Brandon Miller,CHA,Bad,CHA 102.5,A grind for Charlotte to score.,2026-11-02T18:56:00+00:00
+ETR,Jalen Johnson,ATL,Great,ATL 118 · questionable,Questionable (ankle). Strong pace-up environment; ATL first in O pace.,2026-11-02T18:56:00+00:00
+ETR,Onyeka Okongwu,ATL,Good,ATL 118,Strong pace-up environment; ATL first in O pace.,2026-11-02T18:56:00+00:00
+ETR,Karl-Anthony Towns,NYK,Great,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.,2026-11-02T18:56:00+00:00
+ETR,OG Anunoby,NYK,Good,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.,2026-11-02T18:56:00+00:00
+ETR,Josh Hart,NYK,Good,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.,2026-11-02T18:56:00+00:00
+ETR,Jalen Brunson,NYK,Bad,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.,2026-11-02T18:56:00+00:00
+ETR,Day'Ron Sharpe,BKN,Bad,BKN 103.5 · b2b,BKN offense 29th; on a B2B.,2026-11-02T18:56:00+00:00
+ETR,Anthony Davis,WAS,Great,WAS 111,"ORL can't rebound, 25th in D rating, on a B2B.",2026-11-02T18:56:00+00:00
+ETR,Trae Young,WAS,Good,WAS 111,"ORL can't rebound, 25th in D rating, on a B2B.",2026-11-02T18:56:00+00:00
+ETR,AJ Dybantsa,WAS,Good,WAS 111,"ORL can't rebound, 25th in D rating, on a B2B.",2026-11-02T18:56:00+00:00
+ETR,Franz Wagner,ORL,Good,ORL 113 · b2b,WAS allows the highest FG% at the rim.,2026-11-02T18:56:00+00:00
+ETR,Joel Embiid,PHI,Great,PHI 125.5 · questionable,"Questionable (foot). CHI allows the most points, worst TRB%, fastest starting pace.",2026-11-02T18:56:00+00:00
+ETR,Tyrese Maxey,PHI,Great,PHI 125.5,"CHI allows the most points, worst TRB%, fastest starting pace.",2026-11-02T18:56:00+00:00
+ETR,LeBron James,PHI,Good,PHI 125.5,"CHI allows the most points, worst TRB%, fastest starting pace.",2026-11-02T18:56:00+00:00
+ETR,Jaylen Brown,PHI,Good,PHI 125.5,"CHI allows the most points, worst TRB%, fastest starting pace.",2026-11-02T18:56:00+00:00
+ETR,VJ Edgecombe,PHI,Good,PHI 125.5,"CHI allows the most points, worst TRB%, fastest starting pace.",2026-11-02T18:56:00+00:00
+ETR,Caleb Wilson,CHI,Good,CHI 114,PHI has the second-ranked halfcourt D.,2026-11-02T18:56:00+00:00
+ETR,Josh Giddey,CHI,Bad,CHI 114,PHI has the second-ranked halfcourt D.,2026-11-02T18:56:00+00:00
+ETR,Cooper Flagg,DAL,Great,DAL 121.5,SAC allows the most paint points and a league-high 35.5 transition points.,2026-11-02T18:56:00+00:00
+ETR,Kyrie Irving,DAL,Great,DAL 121.5 · questionable,Questionable (knee). SAC allows the most paint points and a league-high 35.5 transition points.,2026-11-02T18:56:00+00:00
+ETR,Daniel Gafford,DAL,Great,DAL 121.5,SAC allows the most paint points and a league-high 35.5 transition points.,2026-11-02T18:56:00+00:00
+ETR,Domantas Sabonis,SAC,Great,SAC 111,Garbage time is the only check on DAL.,2026-11-02T18:56:00+00:00
+ETR,Darius Acuff Jr.,SAC,Good,SAC 111,Garbage time is the only check on DAL.,2026-11-02T18:56:00+00:00
+ETR,Zach LaVine,SAC,Good,SAC 111 · questionable,Questionable (elbow). Garbage time is the only check on DAL.,2026-11-02T18:56:00+00:00
+ETR,Precious Achiuwa,SAC,Good,SAC 111,Garbage time is the only check on DAL.,2026-11-02T18:56:00+00:00
+ETR,De'Andre Hunter,SAC,Good,SAC 111,Garbage time is the only check on DAL.,2026-11-02T18:56:00+00:00
+ETR,Cameron Boozer,MEM,Great,MEM 120.5,NOP allows a league-high 51.3 dunk/layup points; MEM leads the league in scoring.,2026-11-02T18:56:00+00:00
+ETR,Dejounte Murray,NOP,Good,NOP 115,MEM protects the paint and allows the fewest C&S points.,2026-11-02T18:56:00+00:00
+ETR,Jonathan Kuminga,MIN,Great,MIN 122,"MIL gets killed at the rim, third-most points allowed. Should be ugly.",2026-11-02T18:56:00+00:00
+ETR,LaMelo Ball,MIN,Good,MIN 122,"MIL gets killed at the rim, third-most points allowed. Should be ugly.",2026-11-02T18:56:00+00:00
+ETR,Ayo Dosunmu,MIN,Good,MIN 122,"MIL gets killed at the rim, third-most points allowed. Should be ugly.",2026-11-02T18:56:00+00:00
+ETR,Myles Turner,MIL,Bad,MIL 111.5,MIN rebounds well and gets Gobert back.,2026-11-02T18:56:00+00:00
+ETR,Tyler Herro,MIL,Bad,MIL 111.5,MIN rebounds well and gets Gobert back.,2026-11-02T18:56:00+00:00
+ETR,Payton Pritchard,BOS,Great,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.,2026-11-02T18:56:00+00:00
+ETR,Paul George,BOS,Good,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.,2026-11-02T18:56:00+00:00
+ETR,Jayson Tatum,BOS,Bad,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.,2026-11-02T18:56:00+00:00
+ETR,Kevin Durant,HOU,Great,HOU 112,HOU crushing in transition (1.39 PPP).,2026-11-02T18:56:00+00:00
+ETR,Jabari Smith Jr.,HOU,Good,HOU 112,HOU crushing in transition (1.39 PPP).,2026-11-02T18:56:00+00:00
+ETR,Alperen Sengun,HOU,Bad,HOU 112,HOU crushing in transition (1.39 PPP).,2026-11-02T18:56:00+00:00
+ETR,De'Aaron Fox,SAS,Great,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.,2026-11-02T18:56:00+00:00
+ETR,Dylan Harper,SAS,Great,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.,2026-11-02T18:56:00+00:00
+ETR,Stephon Castle,SAS,Good,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.,2026-11-02T18:56:00+00:00
+ETR,Victor Wembanyama,SAS,Good,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.,2026-11-02T18:56:00+00:00
+ETR,Devin Vassell,SAS,Bad,SAS 124,UTA is the biggest on-ball funnel (most PNR handler points allowed) but packs the paint.,2026-11-02T18:56:00+00:00
+ETR,Keyonte George,UTA,Bad,UTA 107.5,UTA has the lowest rim frequency on offense.,2026-11-02T18:56:00+00:00
+ETR,Damian Lillard,POR,Great,POR 112.5,DEN gives up the seventh-most C&S points.,2026-11-02T18:56:00+00:00
+ETR,Aaron Gordon,DEN,Great,DEN 117,POR has an excellent paint defense.,2026-11-02T18:56:00+00:00
+ETR,Christian Braun,DEN,Good,DEN 117,POR has an excellent paint defense.,2026-11-02T18:56:00+00:00
+ETR,Jamal Murray,DEN,Good,DEN 117,POR has an excellent paint defense.,2026-11-02T18:56:00+00:00
+ETR,Nikola Jokic,DEN,Bad,DEN 117,POR has an excellent paint defense.,2026-11-02T18:56:00+00:00
+ETR,Stephen Curry,GSW,Great,GSW 114.5 · b2b · news,Warriors on a B2B and may rest guys; Curry expected back. PHX defense dead last in nearly everything; starting unit -36.5 net.,2026-11-02T18:56:00+00:00
+ETR,Brandon Williams,GSW,Great,GSW 114.5 · b2b,PHX defense dead last in nearly everything; starting unit -36.5 net.,2026-11-02T18:56:00+00:00
+ETR,Yaxel Lendeborg,GSW,Great,GSW 114.5 · b2b,PHX defense dead last in nearly everything; starting unit -36.5 net.,2026-11-02T18:56:00+00:00
+ETR,Devin Booker,PHX,Great,PHX 112,GSW on a B2B.,2026-11-02T18:56:00+00:00
+ETR,Jalen Green,PHX,Good,PHX 112,GSW on a B2B.,2026-11-02T18:56:00+00:00
+ETR,Collin Gillespie,PHX,Good,PHX 112,GSW on a B2B.,2026-11-02T18:56:00+00:00
+ETR,Miles Bridges,PHX,Bad,PHX 112,GSW on a B2B.,2026-11-02T18:56:00+00:00
+ETR,Scottie Barnes,TOR,Great,TOR 113 · b2b,LAC turns it over the most and allows the most points within five feet.,2026-11-02T18:56:00+00:00
+ETR,Immanuel Quickley,TOR,Great,TOR 113 · b2b,LAC turns it over the most and allows the most points within five feet.,2026-11-02T18:56:00+00:00
+ETR,Collin Murray-Boyles,TOR,Great,TOR 113 · b2b,LAC turns it over the most and allows the most points within five feet.,2026-11-02T18:56:00+00:00
+ETR,RJ Barrett,TOR,Good,TOR 113 · b2b,LAC turns it over the most and allows the most points within five feet.,2026-11-02T18:56:00+00:00
+ETR,Isaiah Jackson,LAC,Good,LAC 107.5 · b2b,TOR leads the NBA in transition points.,2026-11-02T18:56:00+00:00
+ETR,Darius Garland,LAC,Bad,LAC 107.5 · b2b,TOR leads the NBA in transition points.,2026-11-02T18:56:00+00:00
+ETR,Brook Lopez,LAC,Bad,LAC 107.5 · b2b,TOR leads the NBA in transition points.,2026-11-02T18:56:00+00:00
+ETR,Giannis Antetokounmpo,MIA,Great,MIA 117.5,LAL struggles on D and on the boards; on a B2B.,2026-11-02T18:56:00+00:00
+ETR,Davion Mitchell,MIA,Good,MIA 117.5,LAL struggles on D and on the boards; on a B2B.,2026-11-02T18:56:00+00:00
+ETR,Pelle Larsson,MIA,Good,MIA 117.5,LAL struggles on D and on the boards; on a B2B.,2026-11-02T18:56:00+00:00
+ETR,Bam Adebayo,MIA,Bad,MIA 117.5,LAL struggles on D and on the boards; on a B2B.,2026-11-02T18:56:00+00:00
+ETR,Luka Doncic,LAL,Great,LAL 120 · b2b · news,Lakers on a back-to-back; he sat the last B2B. Miami plays a lot of drop. MIA plays too much drop.,2026-11-02T18:56:00+00:00
+ETR,Austin Reaves,LAL,Good,LAL 120 · b2b,MIA plays too much drop.,2026-11-02T18:56:00+00:00
+ETR,Walker Kessler,LAL,Bad,LAL 120 · b2b,MIA plays too much drop.,2026-11-02T18:56:00+00:00
+ETR,Isaiah Hartenstein,OKC,Good,OKC 112,"OKC's defense has slipped: second-most spot-up points allowed, 28th in transition.",2026-11-02T18:56:00+00:00
+ETR,Duncan Robinson,DET,Good,DET 107,Detroit ranks first in D rating and halfcourt D; Charlotte is last in O rating and second-slowest.,2026-11-02T18:56:00+00:00
+ETR,John Collins,DET,Good,DET 107,Detroit ranks first in D rating and halfcourt D; Charlotte is last in O rating and second-slowest.,2026-11-02T18:56:00+00:00
+ETR,Kelly Oubre,IND,Great,IND 114 · b2b,Indy gives up the fifth-most dunks/layups; ATL gets beat at the rim.,2026-11-02T18:56:00+00:00
+ETR,Andrew Nembhard,IND,Good,IND 114 · b2b,Indy gives up the fifth-most dunks/layups; ATL gets beat at the rim.,2026-11-02T18:56:00+00:00
+ETR,Pascal Siakam,IND,Bad,IND 114 · b2b,Indy gives up the fifth-most dunks/layups; ATL gets beat at the rim.,2026-11-02T18:56:00+00:00
+ETR,Mikal Bridges,NYK,Good,NYK 118,BKN allows the most cut points and second-most C&S threes: secondary Knicks in a great spot.,2026-11-02T18:56:00+00:00
+ETR,Mikel Brown Jr.,BKN,Great,BKN 103.5 · b2b,BKN offense 29th; on a B2B. Mikel Brown Jr. back after resting yesterday.,2026-11-02T18:56:00+00:00
+ETR,Jase Richardson,ORL,Great,ORL 113 · b2b,WAS allows the highest FG% at the rim.,2026-11-02T18:56:00+00:00
+ETR,Zach Edey,MEM,Great,MEM 120.5,NOP allows a league-high 51.3 dunk/layup points; MEM leads the league in scoring.,2026-11-02T18:56:00+00:00
+ETR,Cedric Coward,MEM,Good,MEM 120.5,NOP allows a league-high 51.3 dunk/layup points; MEM leads the league in scoring.,2026-11-02T18:56:00+00:00
+ETR,Herb Jones,NOP,Good,NOP 115,MEM protects the paint and allows the fewest C&S points.,2026-11-02T18:56:00+00:00
+ETR,Karlo Matkovic,NOP,Bad,NOP 115,MEM protects the paint and allows the fewest C&S points.,2026-11-02T18:56:00+00:00
+ETR,Rudy Gobert,MIN,Great,MIN 122,"MIL gets killed at the rim, third-most points allowed. Gobert back.",2026-11-02T18:56:00+00:00
+ETR,Neemias Queta,BOS,Bad,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.,2026-11-02T18:56:00+00:00
+ETR,Derrick White,BOS,Bad,BOS 107.5 · b2b,HOU leads the league in O rating; BOS on a road B2B.,2026-11-02T18:56:00+00:00
+ETR,Darryn Peterson,UTA,Good,UTA 107.5,UTA has the lowest rim frequency on offense.,2026-11-02T18:56:00+00:00
+ETR,Jaxson Hayes,UTA,Bad,UTA 107.5,UTA has the lowest rim frequency on offense.,2026-11-02T18:56:00+00:00
+ETR,Ace Bailey,UTA,Bad,UTA 107.5,UTA has the lowest rim frequency on offense.,2026-11-02T18:56:00+00:00

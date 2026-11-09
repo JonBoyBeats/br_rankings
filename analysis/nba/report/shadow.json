@@ -200,34 +200,6 @@
   }
  },
  {
-  "id": "T4-2",
-  "name": "T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",
-  "kind": "candidate",
-  "tiers": [
-   4
-  ],
-  "window": "am",
-  "drop_if": "no win",
-  "forward_from": "2026-11-10",
-  "forward_nights": 0,
-  "season": {
-   "n": 73,
-   "mean": 0.24644216077370684,
-   "lo": -2.500660455446843,
-   "hi": 3.246179896201674,
-   "label": "no lean",
-   "text": "+0.2 (-2.5 to +3.2), 73 pairs, no lean"
-  },
-  "forward": {
-   "n": 0,
-   "mean": null,
-   "lo": null,
-   "hi": null,
-   "label": "-",
-   "text": "none yet"
-  }
- },
- {
   "id": "T2-T4-1",
   "name": "T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",
   "kind": "candidate",
@@ -275,6 +247,38 @@
    "hi": -1.4737533622217014,
    "label": "LEAN - (RULE numbers, check pending)",
    "text": "-2.9 (-4.3 to -1.5), 546 pairs, LEAN - (RULE numbers, check pending)"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "Q-1",
+  "name": "Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",
+  "kind": "candidate",
+  "tiers": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "window": "am+pm",
+  "drop_if": "no win",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 19,
+   "mean": -8.476205249866187,
+   "lo": null,
+   "hi": null,
+   "label": "not enough yet (19)",
+   "text": "-8.5, not enough yet (19)"
   },
   "forward": {
    "n": 0,

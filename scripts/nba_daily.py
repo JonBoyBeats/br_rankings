@@ -49,6 +49,8 @@ MORNING_ADP_HOUR = 5     # PT
 ETR_FALLBACK_HOUR = 9    # PT: when no ETR came in, the morning file on file by then
 # The record of each window (2026-11-09): your manual locks; fallbacks only when you didn't lock, labelled "fallback".
 AM_UNTIL = 12            # PT: a draft before noon is an AM draft (nba_contests.AM_UNTIL)
+AM_FROM = (4, 30)        # PT: the AM window starts at 4:30am (today's inputs are due then); drafts before it, the night
+                         # before included, are the OVERNIGHT window: labelled, kept out of the AM grades
 AM_GRACE = dt.timedelta(minutes=30)       # draft times are the nearest hourly ADP snapshot: a Lock AM that much after counts
 SWAP_FALLBACK = dt.timedelta(minutes=20)  # swaps start at the first tip; without tip times, this long after the slate locks
 ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
@@ -69,6 +71,7 @@ COLS = ["date", "slate", "player_id", "name", "team", "pos", "adp_am", "adp_etr"
         "opp", "pf", "fg", "fg3", "ft", "pts_pm", "reb_pm", "ast_pm", "stk_pm", "fp_pm", "mtch", "mtch_label", "mtch_cats", "spread"]
 LADDER = ["a", "p", "c", "flag", "q", "play", "built", "src"]
 COLS += ["adp_pm", "injury_pm", "etr_pm", "play_am", "play_pm"]
+COLS += ["on_rank", "adp_on"]   # the overnight window: your board's order and ADP when your first overnight draft went in
 COLS += ["%s_%s" % (w, k) for w in ("am", "pm") for k in LADDER]
 
 
@@ -298,12 +301,19 @@ def lock_history(gist, slate):
     return {k: srt(v) for k, v in locks.items()}, srt(boards)
 
 
+def window_of(t, day):
+    """A draft's window for the slate's Pacific day: "overnight" before 4:30am (the night before included), "am" to
+    noon, "pm" after."""
+    start = at_pt(day, AM_FROM[0]) + dt.timedelta(minutes=AM_FROM[1])
+    return "overnight" if t < start else "am" if t < at_pt(day, AM_UNTIL) else "pm"
+
+
 def choose_boards(hist, boards, day, am_cut, close, swaps_at):
     """The record of each window. AM: the last Lock AM by am_cut (your first AM draft plus AM_GRACE, else noon); else
-    (fallback) the last board saved in the AM window by then, with its Tiers build if it had one. PM: the last Lock PM
+    (fallback) the last board saved in the AM window (from 4:30am) by then, with its Tiers build if it had one. PM: the last Lock PM
     before swaps (a re-lock after setting the swap order counts); else (fallback) the last export before contests close,
     else the last board saved before then. Each comes back with "source" saying which."""
-    start = at_pt(day, 0)
+    start = at_pt(day, AM_FROM[0]) + dt.timedelta(minutes=AM_FROM[1])
     am = [l for l in hist["am"] if iso(l["at"]) <= am_cut]
     if am:
         am_rec = dict(am[-1], source="Lock AM" + (" (last of %d)" % len(am) if len(am) > 1 else ""))
@@ -331,8 +341,9 @@ def choose_boards(hist, boards, day, am_cut, close, swaps_at):
     return am_rec, pm_rec
 
 
-def first_am_draft(slate, snaps):
-    """Your first AM draft of the slate's day (its nearest hourly ADP snapshot), from the pulled contests; None without."""
+def my_drafts(slate, snaps):
+    """{"am": first AM draft, "overnight": [overnight draft times]}: your teams' draft times (their nearest hourly ADP
+    snapshot) from the pulled contests, by window; the AM draft is the first at or after 4:30am."""
     try:
         import nba_contests as C
         day = pacific_day(slate["lock"])
@@ -341,9 +352,10 @@ def first_am_draft(slate, snaps):
         times = C.draft_times(mine, snaps)
     except Exception as e:                                   # no contests pulled yet: noon stands in
         print("  %s: no draft times (%s)" % (slate["label"], e))
-        return None
-    am = sorted(t for t in times.values() if pacific_day(t) == day and t.astimezone(PT).hour < AM_UNTIL)
-    return am[0] if am else None
+        return {"am": None, "overnight": []}
+    ts = sorted(times.values())
+    am = [t for t in ts if window_of(t, day) == "am"]
+    return {"am": am[0] if am else None, "overnight": [t for t in ts if window_of(t, day) == "overnight"]}
 
 
 def swaps_start(slate, snaps):
@@ -371,12 +383,19 @@ def gist_parts(gist, slate, snaps=None):
     out = {"etr_last": etr_day(gist.store(last), day), "etr_first": None}
     board = board_at(gist, last, slate)
     hist, boards = lock_history(gist, slate)
-    drafted = first_am_draft(slate, snaps or [])
+    mine = my_drafts(slate, snaps or [])
+    drafted = mine["am"]
     am_cut = min(drafted + AM_GRACE, at_pt(day, AM_UNTIL)) if drafted else at_pt(day, AM_UNTIL)
+    if mine["overnight"]:      # the overnight window: the last board saved before your first overnight draft
+        first_on = mine["overnight"][0]
+        bo = [b for b in boards if iso(b["saved_at"]) <= first_on + AM_GRACE]
+        out["on"] = {"at": bo[-1]["saved_at"], "order": bo[-1]["order"], "source": "overnight: last board saved before the first overnight draft",
+                     "drafts": len(mine["overnight"]), "first": first_on.isoformat()} if bo else \
+                    {"at": None, "order": [], "source": "overnight: no board saved before it", "drafts": len(mine["overnight"]), "first": first_on.isoformat()}
     swaps_at = swaps_start(slate, snaps or [])
     am_rec, pm_rec = choose_boards(hist, boards, day, am_cut, slate["lock"], swaps_at)
     locks = {k: v for k, v in (("am", am_rec), ("pm", pm_rec)) if v}
-    out["cuts"] = {"am_by": am_cut.isoformat(), "am_by_from": "first AM draft" if drafted else "noon (no AM draft found)",
+    out["cuts"] = {"am_by": am_cut.isoformat(), "am_by_from": "first AM draft (from 4:30am)" if drafted else "noon (no AM draft found)",
                    "close": slate["lock"].isoformat(), "swaps_at": swaps_at.isoformat(),
                    "seen": {k: [l["at"] for l in v] for k, v in hist.items()}}
     print("  %s: AM %s, PM %s" % (slate["label"], (am_rec or {}).get("source", "none"), (pm_rec or {}).get("source", "none")))
@@ -549,6 +568,9 @@ def build(mirror, gist, slate, name_map):
     etr2 = join_etr(plist, parts["etr_last"]["entries"] if parts.get("etr_last") else None, name_map)
     rank = lambda b: {pid: i + 1 for i, pid in enumerate((b or {}).get("order", []))}
     am_rank, pm_rank = rank(am), rank(pm)
+    on = parts.get("on")
+    on_rank = rank(on) if on and on.get("order") else {}
+    adp_on = adp(adp_at(snaps, iso(on["first"]))) if on else {}
     tier = lambda b: tier_of((b or {}).get("order", []), (b or {}).get("tiers"), (b or {}).get("cut"))
     am_tier, pm_tier = tier(am), tier(pm)
     ours_am, ours_pm = (am or {}).get("ours") or {}, (pm or {}).get("ours") or {}
@@ -596,6 +618,7 @@ def build(mirror, gist, slate, name_map):
             "mtch": r1(mt[0]) if mt else "", "mtch_label": mt[2] if mt and len(mt) > 2 else "",
             "mtch_cats": " ".join("%s%+.1f" % (k, v) for k, v in sorted(mt[1].items(), key=lambda x: -abs(x[1]))) if mt else "",
             "spread": r1(line.get(p["team"])),
+            "on_rank": on_rank.get(pid, ""), "adp_on": r1(adp_on.get(pid)) if on else "",
         })
         for w, b in (("am", am), ("pm", pm)):
             rows[-1].update({"%s_%s" % (w, k): v for k, v in ladder(b, pid).items()})
@@ -611,7 +634,8 @@ def build(mirror, gist, slate, name_map):
             "etr_last": {"at": parts["etr_last"]["at"], "file": parts["etr_last"].get("file")} if parts.get("etr_last") else None,
             "etr_pm": {"at": parts["etr_pm"]["at"], "file": parts["etr_pm"].get("file")} if parts.get("etr_pm") else None,
             "adp_pm_at": s_pm[0].isoformat() if s_pm else None,
-            "am": when(am), "pm": when(pm), "gist": bool(gist), "cuts": parts.get("cuts")}
+            "am": when(am), "pm": when(pm), "gist": bool(gist), "cuts": parts.get("cuts"),
+            "on": {k: v for k, v in (parts.get("on") or {}).items() if k != "order"} or None}
     return rows, meta, box_rows(day, box, mfile, parts["etr_last"]["entries"] if parts.get("etr_last") else None, rows, line)
 
 

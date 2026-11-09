@@ -27,6 +27,7 @@ import collections, csv, datetime as dt, glob, gzip, json, os, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import nba_swaps as S       # noqa: E402
+import nba_daily as D       # noqa: E402  the draft windows (overnight before 4:30am, AM to noon, PM)
 
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 NBA = os.path.join(HERE, "analysis", "nba")
@@ -130,7 +131,7 @@ def main():
             eff[("all", "all")].append(left)
             if c["username"] == ME:
                 w = my_times.get(c["draft_id"])
-                win = "AM" if w and (w - dt.timedelta(hours=8)).hour < AM_UNTIL else "PM" if w else "?"
+                win = D.window_of(w, day).upper() if w else "?"
                 eff[("mine", win)].append(left)
                 eff[("mine", "all")].append(left)
                 my_teams[c["draft_id"]].append((c, elig, st))

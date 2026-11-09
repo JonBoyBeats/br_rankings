@@ -36,6 +36,7 @@ import nba_tier_grade as G      # noqa: E402
 import nba_tier_history as T    # noqa: E402
 import nba_tier_rules as R      # noqa: E402
 import nba_money_points as MP   # noqa: E402  money's definitions
+import nba_q_lane as QL         # noqa: E402  the calibration of our chance he plays
 
 REP = G.REP
 FORWARD = "2026-11-10"
@@ -77,7 +78,7 @@ def tier_ideas():
         out.append({"id": h["id"], "name": "%s: %s" % (h["id"], h["idea"]), "window": h["window"], "tiers": tuple(h["tiers"]),
                     "kind": "candidate", "steps": [tuple(x) for x in t["steps"]] if t.get("steps") else None,
                     "pairwise": t.get("pairwise"), "flags": t.get("flags", "both"), "forward": h.get("forward_from", FORWARD),
-                    "drop_if": "no win"})
+                    "drop_if": "no win", "include_q": bool(t.get("include_q")), "cross": t.get("pairwise") == "qsplit"})
     return out
 
 
@@ -89,8 +90,26 @@ def pairwise(how, a, b, ctx):
         last = 5 * int(a["pod"])
         ben = lambda r: G.num(r["adp"]) is not None and G.num(r["adp"]) > last and r["team"] in ctx["tagged"]
         return a if ben(a) and not ben(b) else b if ben(b) and not ben(a) else None
+    if how == "qsplit":                    # Q-1: the Questionable push by flag, chance to play and tier
+        ka = (q_tier(a, ctx), int(a["built"]))
+        kb = (q_tier(b, ctx), int(b["built"]))
+        return None if ka == kb else (a if ka < kb else b)
     c = MP.cap_order(a, b)                 # cap: the combined tier's first; the projection tier's is the other
     return None if c is None else (b if c is a else a)
+
+
+def q_tier(r, ctx):
+    """Q-1's tier for ordering: for a player tagged Questionable at the window's record, VALUE or over 70% to play: no
+    push; T1-T2 and PRICEY or under 50%: two tiers back; else the current rule (AM no push, PM two back). Others: his tier."""
+    c = int(r["tier"])
+    if not QR.match(r["tag"] or ""):
+        return c
+    p = ctx["pcal"](float(r["play"]), True) if r["play"] != "" else None
+    if r["flag"] == "VALUE" or (p is not None and p > 0.70):
+        return c
+    if c <= 2 and (r["flag"] == "PRICEY" or (p is not None and p < 0.50)):
+        return min(5, c + 2)
+    return c if ctx["window"] == "am" else min(5, c + 2)
 
 
 def alt_order(its, steps, flags):
@@ -111,6 +130,9 @@ def main():
     for r in H:
         if QT.match(r["tag"] or ""):
             tagged[(r["date"], r["window"])].add(r["team"])
+    cal = [dict(p=float(r["play"]), y=int(r["played"]), tagged=bool(QT.match(r["tag"] or ""))) for r in H if r["play"] != "" and r["played"] != ""]
+    qa, qb, qc = QL.fit(cal)
+    pcal = lambda p, tagged: 1 / (1 + QL.math.exp(-(qa + qb * QL.logit(min(max(p, 0.005), 0.995)) + (qc if tagged else 0))))
     rows_out, res = [], {}
     for c in SWITCHES + tier_ideas():
         window, tier, kind, steps, flags = c["window"], c["tiers"], c["kind"], c.get("steps"), c["flags"]
@@ -120,11 +142,11 @@ def main():
         tiers = {str(t) for t in tier} if tier else {"1", "2", "3", "4", "5"}
         for r in H:
             if r["pod"] == "6" and r["window"] in window.split("+") and r["tier"] in tiers and r["built"] and \
-                    not (r["window"] == "pm" and QR.match(r["tag"] or "")) and (r["tier"] != "5" or (G.num(r["adp"]) is not None and G.num(r["adp"]) < G.cap(r))):
+                    (c.get("include_q") or not (r["window"] == "pm" and QR.match(r["tag"] or ""))) and (r["tier"] != "5" or (G.num(r["adp"]) is not None and G.num(r["adp"]) < G.cap(r))):
                 by_slate[(r["date"], r["window"])].append(r)
         for (d, w), rs in sorted(by_slate.items()):
             base = {r["player_id"]: int(r["built"]) for r in rs}
-            ctx = {"tagged": tagged[(d, w)]}
+            ctx = {"tagged": tagged[(d, w)], "window": w, "pcal": pcal}
             o = None
             if not c.get("pairwise"):
                 o = {}
@@ -133,7 +155,7 @@ def main():
             gains = []
             for i, a in enumerate(rs):
                 for b in rs[i + 1:]:
-                    if abs(G.adp(a) - G.adp(b)) > G.DECISION or a["slot"] == b["slot"] or (tier is not None and a["tier"] != b["tier"]):
+                    if abs(G.adp(a) - G.adp(b)) > G.DECISION or a["slot"] == b["slot"] or (tier is not None and not c.get("cross") and a["tier"] != b["tier"]):
                         continue
                     nb = base[a["player_id"]] < base[b["player_id"]]
                     if o is None:

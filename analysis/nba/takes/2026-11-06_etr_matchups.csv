@@ -1,79 +1,79 @@
-source,player,team,stance,tags,blurb
-ETR,Anthony Davis,WAS,Great,WAS 110.5 · questionable,"Questionable (ankle), tweaked it Wednesday but didn't sub out. 26/10/3 on ATL Wednesday; ATL is a huge rim funnel and gets killed on post-ups, cuts and roll-man scoring, his top three play types. Smash"
-ETR,Kyshawn George,WAS,Great,WAS 110.5,"Breakout (25/4/7); usage has held up with Trae and AD. Likely Flemings or McCollum on him; if AD is limited and Trae clamped, it filters to him"
-ETR,Trae Young,WAS,Good,WAS 110.5,"18/2/6 in 34 min with heavy Dyson Daniels on him Wednesday; still a massive handling role (3rd in touch time). Likely more Dyson, not a great spot"
-ETR,AJ Dybantsa,WAS,Note,WAS 110.5,"Solid usage, allowed to grab-and-go; slower pace and NAW both ways hurt. Some ceiling, but a lot has to break right"
-ETR,Nickeil Alexander-Walker,ATL,Great,ATL 117.5,"26 and 34 points his last two; tied to Jalen Johnson's status. Could go off again if JJ sits; likes him even if JJ plays"
-ETR,Dyson Daniels,ATL,Great,ATL 117.5,"Trae on him should help his offense; dead last in FG% above expectation, due for efficiency. Big game possible with Trae's turnovers"
-ETR,Jalen Johnson,ATL,Bad,ATL 117.5 · questionable,"Questionable (ankle), may miss another. 26.8 eFG% on jumpers, worst in the NBA; WAS protects the paint OK"
-ETR,Onyeka Okongwu,ATL,Bad,ATL 117.5 · if Johnson in,"14/16/4 last game but few touches; projection tied to Johnson. Not into him"
-ETR,Kingston Flemings,ATL,Note,ATL 117.5 · if starts,"Started for paint pressure (15 drives); may go back to the bench when Johnson returns. In play if he starts, but don't expect 14 points again"
-ETR,Jayson Tatum,BOS,Great,BOS 108,"Rested since Monday; CHA has horrible options for him and doesn't double much. Let-Tatum-beat-you plan: one of the best plays on the slate despite the pace"
-ETR,Derrick White,BOS,Good,BOS 108,"24/4/7 in 36 min Wednesday (Tatum out). Low pace and CHA's spot-up D hurt; better if Pritchard sits"
-ETR,Paul George,BOS,Note,BOS 108,"Assists up even with Tatum, a little hot on passing; still mostly off-ball. CHA doesn't give up spot-ups: doesn't love it"
-ETR,Payton Pritchard,BOS,Note,BOS 108 · questionable,"Questionable (eye), hit hard last game. Not the best spot anyway; if he sits, the BOS guards look better"
-ETR,Neemias Queta,BOS,Bad,BOS 108,"Easy fade against an elite rebounding team"
-ETR,Brandon Miller,CHA,Good,CHA 99.5,"Likely PG on him; very inefficient on jumpers and needs more interior scoring. BOS funnels shots where he likes them: big opportunity"
-ETR,Naz Reid,CHA,Note,CHA 99.5,"Usage should pop with Kon out, but BOS protects the paint and won't leave him open. Not excited"
-ETR,Coby White,CHA,Bad,CHA 99.5,"Said it'll take a while to get right; 18 min last game. Guess 22-24 min. Easy pass"
-ETR,Moussa Diabate,CHA,Bad,CHA 99.5 · questionable,Questionable (quad). Bad matchup
-ETR,Tyrese Maxey,PHI,Great,PHI 116,"CLE may have no answer (Meleek Thomas, whom SGA torched). 32/3/6 through Watson last game; Nurse should up his usage. Smash"
-ETR,Joel Embiid,PHI,Great,PHI 116 · if no Allen,"No limit Wednesday, more burst; Nurse keeps saying he's better. Big chance on the boards, more so if Allen sits; due on his jumper. Likes it a lot"
-ETR,Jaylen Brown,PHI,Good,PHI 116,"Best stat line Wednesday (30/7/1 in 37); getting blocked less, better shot profile. CLE doesn't have enough defenders"
-ETR,LeBron James,PHI,Good,PHI 116,"Homecoming; 20/8/5 in 32 MPG over his last four in CLE and not much usage. CLE has no forwards for him: could grind to a big night"
-ETR,Donovan Mitchell,CLE,Good,CLE 114.5,"Doubled more lately; PHI's halfcourt D is legit and it's a B2B. Elite in transition, PHI's weak spot. Likes him most on CLE"
-ETR,Evan Mobley,CLE,Note,CLE 114.5 · if Allen out,"Unclear until Allen's status. If Allen sits, way more screening actions vs a PHI team vulnerable at the rim: likes him a lot"
-ETR,James Harden,CLE,Bad,CLE 114.5,"Jaylen Brown on him; 16/3/5 in 33 last time, 83% jumpers. Not into it on a B2B"
-ETR,Shai Gilgeous-Alexander,OKC,Great,OKC 114,"MEM bleeds PNR-handler stuff and doubles are a weak spot too. 43%+ usage his last two, 29 drives a game over three. High hopes"
-ETR,Ajay Mitchell,OKC,Good,OKC 114,"25.6% usage Wednesday, 26.3% since the injuries; MEM lacks on-ball depth. Really good spot with McCain slumping"
-ETR,Isaiah Hartenstein,OKC,Bad,OKC 114,"MEM defends the paint and most of his minutes line up with Edey"
-ETR,Jared McCain,OKC,Note,OKC 114,"Should shoot out of the slump soon; may get a bunch of open looks. Sneaky upside. Stirtz likely starts"
-ETR,Cedric Coward,MEM,Good,MEM 109.5,"33 and 31 min his last two, the energy guy. Off-ball stuff should be there; in play"
-ETR,Cameron Boozer,MEM,Good,MEM 109.5,"Still missing a ton (34.5% on layups), can't keep happening. Likely Kenrich on him; if Jerome struggles, could be a big night"
-ETR,Ty Jerome,MEM,Note,MEM 109.5 · depends on starters,"OKC will likely press him; Caruso should see a lot of him. Doesn't like it if Caruso starts, and doesn't think it's good either way"
-ETR,Zach Edey,MEM,Bad,MEM 109.5,"Almost back to full minutes, but OKC's paint D should limit him in the post"
-ETR,Ayo Dosunmu,MIN,Great,MIN 117.5,"Playing a ton and attacking (17 paint shots vs HOU). NOP has no one to guard him in the paint"
-ETR,Jonathan Kuminga,MIN,Great,MIN 117.5,"Near lock to guard Zion; 4th in jumper eFG%. NOP was getting killed at the rim and should leave him open from deep"
-ETR,LaMelo Ball,MIN,Note,MIN 117.5,"Lots of Herb Jones, maybe Dejounte. Usage up to 29% since Ant went down, 31 and 33 min. Not ideal, but likely beats expectations"
-ETR,Jaden McDaniels,MIN,Good,MIN 117.5,"18/6/4 on a team-high 34.6 MPG over five; a little unlucky on jumpers. Fine, not exciting"
-ETR,Rudy Gobert,MIN,Good,MIN 117.5,"Monster on the boards but can't finish; NOP better on the boards lately makes him a tough click"
-ETR,Zion Williamson,NOP,Note,NOP 112,"More post-ups, fewest jumpers in the league, in better shape; 29 on a Gobert D last year. Kuminga's been great, but could see a strong Zion night"
-ETR,Dejounte Murray,NOP,Great,NOP 112 · if Fears off the bench,"45 min Wednesday (OT) but off-ball, 14.2% usage. Not exciting if he starts with Fears; ETR thinks Fears comes off the bench"
-ETR,Trey Murphy III,NOP,Bad,NOP 112 · probable,"Probable (knee), back from injury; MIN doesn't help off and McDaniels likely picks him up"
-ETR,Jeremiah Fears,NOP,Note,NOP 112,"Should come off the bench; last in defensive win probability added. Likely loses minutes in a matchup ETR doesn't love"
-ETR,Derik Queen,NOP,Bad,NOP 112,"Shouldn't see much Gobert, but small ball could keep his minutes down"
-ETR,Scottie Barnes,TOR,Great,TOR 119.5 · questionable,"Questionable (groin). Should demolish: Kuzma on him, MIL has no answer; MIL is bottom five on the ball, in transition and the paint"
-ETR,Immanuel Quickley,TOR,Great,TOR 119.5,"Role up all season (11.3 potential assists, team lead); likely Herro or Burries on him. ETR leans IQ over RJ as the second-best bet"
-ETR,RJ Barrett,TOR,Good,TOR 119.5,"Right behind Scottie on drives (14.4), 7th in FTA off drives. Only Jaquez on him: should crush"
-ETR,Collin Murray-Boyles,TOR,Note,TOR 119.5,"Started last game and stayed out of foul trouble; weaker matchup than his teammates but could get there on stocks"
-ETR,Tyler Herro,MIL,Bad,MIL 112,"Likely Scottie on him, who neutralizes lead guards; needs transition and handoffs, which TOR doesn't give up. Taking unders"
-ETR,Brayden Burries,MIL,Note,MIL 112,"Looked better in his second game; decent matchup with the pressure on Herro"
-ETR,Jaime Jaquez Jr.,MIL,Good,MIL 112,"Excellent TOR transition D hurts, but still used as a halfcourt piece; if things break right"
-ETR,Myles Turner,MIL,Note,MIL 112,"OK as a rim protector; the offense just isn't there"
-ETR,Cooper Flagg,DAL,Great,DAL 117,"12.0 potential assists, 5th in points off drives; UTA doesn't double and Ace can't guard him. Mega-smash"
-ETR,Kyrie Irving,DAL,Great,DAL 117,"Up to 36 min Wednesday; goes from tough matchups all year to one of the best. UTA allows a league-worst 23.8 PPG to PNR handlers"
-ETR,P.J. Washington,DAL,Good,DAL 117,"May play some center with UTA packing the paint; May plays him a ton"
-ETR,Daniel Gafford,DAL,Note,DAL 117,"Not the greatest matchup: fewer block chances and UTA clogs the paint"
-ETR,Keyonte George,UTA,Good,UTA 110.5,"101 touches Wednesday (OT boosted); tougher to command that role vs a DAL team that doubles, but UTA's broken offense may need him"
-ETR,Lauri Markkanen,UTA,Note,UTA 110.5,"Hardy says he's playing through a lot of pain and doesn't want to play him at C as much. Good matchup, but prefers healthy players"
-ETR,Ace Bailey,UTA,Great,UTA 110.5,"Will be left wide open and can hit the boards; guarding Flagg makes him a foul risk"
-ETR,Jaxson Hayes,UTA,Great,UTA 110.5,"Great matchup vs a team that can't rebound; more of him if Lauri plays less C"
-ETR,Darryn Peterson,UTA,Note,UTA 110.5,"Offense still isn't there, nothing easy; if DAL doubles Key, maybe he gets going. Has the PG2 role"
-ETR,Deni Avdija,POR,Great,POR 117.5,"Running the offense: 14.0 points on 24.3 drives over his last three. LaRavia on him and drop from Kessler. Turbo smash"
-ETR,Damian Lillard,POR,Good,POR 117.5,"More aggressive Wednesday; could be held in check by garbage time. Decent spot, prefers Deni by a lot"
-ETR,Toumani Camara,POR,Good,POR 117.5,"League-best 72.3 TS%, teams don't guard him; will guard Luka. May have enough ceiling if he avoids fouls"
-ETR,Donovan Clingan,POR,Note,POR 117.5,"Likes the matchup on the boards, but Luka may cut his minutes and Robert Williams could eat into him"
-ETR,Robert Williams,POR,Good,POR 117.5,Could eat into Clingan's minutes in this spot
-ETR,Jrue Holiday,POR,Good,POR 117.5,"Near lock to cut into Scoot; some interest"
-ETR,Scoot Henderson,POR,Bad,POR 117.5,"Jrue should cut into him severely; wouldn't play him"
-ETR,Luka Doncic,LAL,Note,LAL 121 · doesn't matter,"Nearly 40% usage and 70 TS%; Camara on him but POR takes away the paint, so massive usage in a big home game. OK playing him"
-ETR,Austin Reaves,LAL,Great,LAL 121,"Could get Scoot and Youngblood if Luka struggles; 3rd in TS% among high-usage players. Likes him a lot"
-ETR,Walker Kessler,LAL,Bad,LAL 121,"Needs paint touches (2nd in the NBA) and POR's paint D is very good. Easy pass"
-ETR,Victor Wembanyama,SAS,Great,SAS 122,"Feeling better after being sick; 29/10/2 with 7 stocks on SAC in 27 min last time. Scoring more in the paint; wants player of the week again"
-ETR,Stephon Castle,SAS,Great,SAS 122,"Shooting 39% (47% at the rim vs 64% last year): due for positive regression. SAC hid Sabonis on him; could turn it up"
-ETR,Dylan Harper,SAS,Good,SAS 122,"Usage has held up as a starter; 82.2% at the rim. Hunter and Acuff on him: chance to crush"
-ETR,De'Aaron Fox,SAS,Good,SAS 122,"Revenge game, but 11/4/6 in 26 min last time with LaVine on him; usage down to 19%. Not excited"
-ETR,Zach LaVine,SAC,Good,SAC 106.5,"64.2 TS% on 25.6% usage; 22/3/3 in 31 vs Fox last time. Maybe keeps SAC in it"
-ETR,De'Andre Hunter,SAC,Good,SAC 106.5,"More aggressive on offense per Christie, with a big defensive load"
-ETR,Domantas Sabonis,SAC,Bad,SAC 106.5,"Leads the NBA in paint touches, which doesn't suit facing Wemby. Not going there"
-ETR,Darius Acuff Jr.,SAC,Bad,SAC 106.5,"Role is out of this world (league-leading touch time), but 0.69 PPP as a PNR handler; Castle on him (19/3/5 last time). Doesn't like it"
+source,player,team,stance,tags,blurb,at
+ETR,Anthony Davis,WAS,Great,WAS 110.5 · questionable,"Questionable (ankle), tweaked it Wednesday but didn't sub out. 26/10/3 on ATL Wednesday; ATL is a huge rim funnel and gets killed on post-ups, cuts and roll-man scoring, his top three play types. Smash",2026-11-06T20:49:39+00:00
+ETR,Kyshawn George,WAS,Great,WAS 110.5,"Breakout (25/4/7); usage has held up with Trae and AD. Likely Flemings or McCollum on him; if AD is limited and Trae clamped, it filters to him",2026-11-06T20:49:39+00:00
+ETR,Trae Young,WAS,Good,WAS 110.5,"18/2/6 in 34 min with heavy Dyson Daniels on him Wednesday; still a massive handling role (3rd in touch time). Likely more Dyson, not a great spot",2026-11-06T20:49:39+00:00
+ETR,AJ Dybantsa,WAS,Note,WAS 110.5,"Solid usage, allowed to grab-and-go; slower pace and NAW both ways hurt. Some ceiling, but a lot has to break right",2026-11-06T20:49:39+00:00
+ETR,Nickeil Alexander-Walker,ATL,Great,ATL 117.5,26 and 34 points his last two; tied to Jalen Johnson's status. Could go off again if JJ sits; likes him even if JJ plays,2026-11-06T20:49:39+00:00
+ETR,Dyson Daniels,ATL,Great,ATL 117.5,"Trae on him should help his offense; dead last in FG% above expectation, due for efficiency. Big game possible with Trae's turnovers",2026-11-06T20:49:39+00:00
+ETR,Jalen Johnson,ATL,Bad,ATL 117.5 · questionable,"Questionable (ankle), may miss another. 26.8 eFG% on jumpers, worst in the NBA; WAS protects the paint OK",2026-11-06T20:49:39+00:00
+ETR,Onyeka Okongwu,ATL,Bad,ATL 117.5 · if Johnson in,14/16/4 last game but few touches; projection tied to Johnson. Not into him,2026-11-06T20:49:39+00:00
+ETR,Kingston Flemings,ATL,Note,ATL 117.5 · if starts,"Started for paint pressure (15 drives); may go back to the bench when Johnson returns. In play if he starts, but don't expect 14 points again",2026-11-06T20:49:39+00:00
+ETR,Jayson Tatum,BOS,Great,BOS 108,Rested since Monday; CHA has horrible options for him and doesn't double much. Let-Tatum-beat-you plan: one of the best plays on the slate despite the pace,2026-11-06T20:49:39+00:00
+ETR,Derrick White,BOS,Good,BOS 108,24/4/7 in 36 min Wednesday (Tatum out). Low pace and CHA's spot-up D hurt; better if Pritchard sits,2026-11-06T20:49:39+00:00
+ETR,Paul George,BOS,Note,BOS 108,"Assists up even with Tatum, a little hot on passing; still mostly off-ball. CHA doesn't give up spot-ups: doesn't love it",2026-11-06T20:49:39+00:00
+ETR,Payton Pritchard,BOS,Note,BOS 108 · questionable,"Questionable (eye), hit hard last game. Not the best spot anyway; if he sits, the BOS guards look better",2026-11-06T20:49:39+00:00
+ETR,Neemias Queta,BOS,Bad,BOS 108,Easy fade against an elite rebounding team,2026-11-06T20:49:39+00:00
+ETR,Brandon Miller,CHA,Good,CHA 99.5,Likely PG on him; very inefficient on jumpers and needs more interior scoring. BOS funnels shots where he likes them: big opportunity,2026-11-06T20:49:39+00:00
+ETR,Naz Reid,CHA,Note,CHA 99.5,"Usage should pop with Kon out, but BOS protects the paint and won't leave him open. Not excited",2026-11-06T20:49:39+00:00
+ETR,Coby White,CHA,Bad,CHA 99.5,Said it'll take a while to get right; 18 min last game. Guess 22-24 min. Easy pass,2026-11-06T20:49:39+00:00
+ETR,Moussa Diabate,CHA,Bad,CHA 99.5 · questionable,Questionable (quad). Bad matchup,2026-11-06T20:49:39+00:00
+ETR,Tyrese Maxey,PHI,Great,PHI 116,"CLE may have no answer (Meleek Thomas, whom SGA torched). 32/3/6 through Watson last game; Nurse should up his usage. Smash",2026-11-06T20:49:39+00:00
+ETR,Joel Embiid,PHI,Great,PHI 116 · if no Allen,"No limit Wednesday, more burst; Nurse keeps saying he's better. Big chance on the boards, more so if Allen sits; due on his jumper. Likes it a lot",2026-11-06T20:49:39+00:00
+ETR,Jaylen Brown,PHI,Good,PHI 116,"Best stat line Wednesday (30/7/1 in 37); getting blocked less, better shot profile. CLE doesn't have enough defenders",2026-11-06T20:49:39+00:00
+ETR,LeBron James,PHI,Good,PHI 116,Homecoming; 20/8/5 in 32 MPG over his last four in CLE and not much usage. CLE has no forwards for him: could grind to a big night,2026-11-06T20:49:39+00:00
+ETR,Donovan Mitchell,CLE,Good,CLE 114.5,"Doubled more lately; PHI's halfcourt D is legit and it's a B2B. Elite in transition, PHI's weak spot. Likes him most on CLE",2026-11-06T20:49:39+00:00
+ETR,Evan Mobley,CLE,Note,CLE 114.5 · if Allen out,"Unclear until Allen's status. If Allen sits, way more screening actions vs a PHI team vulnerable at the rim: likes him a lot",2026-11-06T20:49:39+00:00
+ETR,James Harden,CLE,Bad,CLE 114.5,"Jaylen Brown on him; 16/3/5 in 33 last time, 83% jumpers. Not into it on a B2B",2026-11-06T20:49:39+00:00
+ETR,Shai Gilgeous-Alexander,OKC,Great,OKC 114,"MEM bleeds PNR-handler stuff and doubles are a weak spot too. 43%+ usage his last two, 29 drives a game over three. High hopes",2026-11-06T20:49:39+00:00
+ETR,Ajay Mitchell,OKC,Good,OKC 114,"25.6% usage Wednesday, 26.3% since the injuries; MEM lacks on-ball depth. Really good spot with McCain slumping",2026-11-06T20:49:39+00:00
+ETR,Isaiah Hartenstein,OKC,Bad,OKC 114,MEM defends the paint and most of his minutes line up with Edey,2026-11-06T20:49:39+00:00
+ETR,Jared McCain,OKC,Note,OKC 114,Should shoot out of the slump soon; may get a bunch of open looks. Sneaky upside. Stirtz likely starts,2026-11-06T20:49:39+00:00
+ETR,Cedric Coward,MEM,Good,MEM 109.5,"33 and 31 min his last two, the energy guy. Off-ball stuff should be there; in play",2026-11-06T20:49:39+00:00
+ETR,Cameron Boozer,MEM,Good,MEM 109.5,"Still missing a ton (34.5% on layups), can't keep happening. Likely Kenrich on him; if Jerome struggles, could be a big night",2026-11-06T20:49:39+00:00
+ETR,Ty Jerome,MEM,Note,MEM 109.5 · depends on starters,"OKC will likely press him; Caruso should see a lot of him. Doesn't like it if Caruso starts, and doesn't think it's good either way",2026-11-06T20:49:39+00:00
+ETR,Zach Edey,MEM,Bad,MEM 109.5,"Almost back to full minutes, but OKC's paint D should limit him in the post",2026-11-06T20:49:39+00:00
+ETR,Ayo Dosunmu,MIN,Great,MIN 117.5,Playing a ton and attacking (17 paint shots vs HOU). NOP has no one to guard him in the paint,2026-11-06T20:49:39+00:00
+ETR,Jonathan Kuminga,MIN,Great,MIN 117.5,Near lock to guard Zion; 4th in jumper eFG%. NOP was getting killed at the rim and should leave him open from deep,2026-11-06T20:49:39+00:00
+ETR,LaMelo Ball,MIN,Note,MIN 117.5,"Lots of Herb Jones, maybe Dejounte. Usage up to 29% since Ant went down, 31 and 33 min. Not ideal, but likely beats expectations",2026-11-06T20:49:39+00:00
+ETR,Jaden McDaniels,MIN,Good,MIN 117.5,"18/6/4 on a team-high 34.6 MPG over five; a little unlucky on jumpers. Fine, not exciting",2026-11-06T20:49:39+00:00
+ETR,Rudy Gobert,MIN,Good,MIN 117.5,Monster on the boards but can't finish; NOP better on the boards lately makes him a tough click,2026-11-06T20:49:39+00:00
+ETR,Zion Williamson,NOP,Note,NOP 112,"More post-ups, fewest jumpers in the league, in better shape; 29 on a Gobert D last year. Kuminga's been great, but could see a strong Zion night",2026-11-06T20:49:39+00:00
+ETR,Dejounte Murray,NOP,Great,NOP 112 · if Fears off the bench,"45 min Wednesday (OT) but off-ball, 14.2% usage. Not exciting if he starts with Fears; ETR thinks Fears comes off the bench",2026-11-06T20:49:39+00:00
+ETR,Trey Murphy III,NOP,Bad,NOP 112 · probable,"Probable (knee), back from injury; MIN doesn't help off and McDaniels likely picks him up",2026-11-06T20:49:39+00:00
+ETR,Jeremiah Fears,NOP,Note,NOP 112,Should come off the bench; last in defensive win probability added. Likely loses minutes in a matchup ETR doesn't love,2026-11-06T20:49:39+00:00
+ETR,Derik Queen,NOP,Bad,NOP 112,"Shouldn't see much Gobert, but small ball could keep his minutes down",2026-11-06T20:49:39+00:00
+ETR,Scottie Barnes,TOR,Great,TOR 119.5 · questionable,"Questionable (groin). Should demolish: Kuzma on him, MIL has no answer; MIL is bottom five on the ball, in transition and the paint",2026-11-06T20:49:39+00:00
+ETR,Immanuel Quickley,TOR,Great,TOR 119.5,"Role up all season (11.3 potential assists, team lead); likely Herro or Burries on him. ETR leans IQ over RJ as the second-best bet",2026-11-06T20:49:39+00:00
+ETR,RJ Barrett,TOR,Good,TOR 119.5,"Right behind Scottie on drives (14.4), 7th in FTA off drives. Only Jaquez on him: should crush",2026-11-06T20:49:39+00:00
+ETR,Collin Murray-Boyles,TOR,Note,TOR 119.5,Started last game and stayed out of foul trouble; weaker matchup than his teammates but could get there on stocks,2026-11-06T20:49:39+00:00
+ETR,Tyler Herro,MIL,Bad,MIL 112,"Likely Scottie on him, who neutralizes lead guards; needs transition and handoffs, which TOR doesn't give up. Taking unders",2026-11-06T20:49:39+00:00
+ETR,Brayden Burries,MIL,Note,MIL 112,Looked better in his second game; decent matchup with the pressure on Herro,2026-11-06T20:49:39+00:00
+ETR,Jaime Jaquez Jr.,MIL,Good,MIL 112,"Excellent TOR transition D hurts, but still used as a halfcourt piece; if things break right",2026-11-06T20:49:39+00:00
+ETR,Myles Turner,MIL,Note,MIL 112,OK as a rim protector; the offense just isn't there,2026-11-06T20:49:39+00:00
+ETR,Cooper Flagg,DAL,Great,DAL 117,"12.0 potential assists, 5th in points off drives; UTA doesn't double and Ace can't guard him. Mega-smash",2026-11-06T20:49:39+00:00
+ETR,Kyrie Irving,DAL,Great,DAL 117,Up to 36 min Wednesday; goes from tough matchups all year to one of the best. UTA allows a league-worst 23.8 PPG to PNR handlers,2026-11-06T20:49:39+00:00
+ETR,P.J. Washington,DAL,Good,DAL 117,May play some center with UTA packing the paint; May plays him a ton,2026-11-06T20:49:39+00:00
+ETR,Daniel Gafford,DAL,Note,DAL 117,Not the greatest matchup: fewer block chances and UTA clogs the paint,2026-11-06T20:49:39+00:00
+ETR,Keyonte George,UTA,Good,UTA 110.5,"101 touches Wednesday (OT boosted); tougher to command that role vs a DAL team that doubles, but UTA's broken offense may need him",2026-11-06T20:49:39+00:00
+ETR,Lauri Markkanen,UTA,Note,UTA 110.5,"Hardy says he's playing through a lot of pain and doesn't want to play him at C as much. Good matchup, but prefers healthy players",2026-11-06T20:49:39+00:00
+ETR,Ace Bailey,UTA,Great,UTA 110.5,Will be left wide open and can hit the boards; guarding Flagg makes him a foul risk,2026-11-06T20:49:39+00:00
+ETR,Jaxson Hayes,UTA,Great,UTA 110.5,Great matchup vs a team that can't rebound; more of him if Lauri plays less C,2026-11-06T20:49:39+00:00
+ETR,Darryn Peterson,UTA,Note,UTA 110.5,"Offense still isn't there, nothing easy; if DAL doubles Key, maybe he gets going. Has the PG2 role",2026-11-06T20:49:39+00:00
+ETR,Deni Avdija,POR,Great,POR 117.5,Running the offense: 14.0 points on 24.3 drives over his last three. LaRavia on him and drop from Kessler. Turbo smash,2026-11-06T20:49:39+00:00
+ETR,Damian Lillard,POR,Good,POR 117.5,"More aggressive Wednesday; could be held in check by garbage time. Decent spot, prefers Deni by a lot",2026-11-06T20:49:39+00:00
+ETR,Toumani Camara,POR,Good,POR 117.5,"League-best 72.3 TS%, teams don't guard him; will guard Luka. May have enough ceiling if he avoids fouls",2026-11-06T20:49:39+00:00
+ETR,Donovan Clingan,POR,Note,POR 117.5,"Likes the matchup on the boards, but Luka may cut his minutes and Robert Williams could eat into him",2026-11-06T20:49:39+00:00
+ETR,Robert Williams,POR,Good,POR 117.5,Could eat into Clingan's minutes in this spot,2026-11-06T20:49:39+00:00
+ETR,Jrue Holiday,POR,Good,POR 117.5,Near lock to cut into Scoot; some interest,2026-11-06T20:49:39+00:00
+ETR,Scoot Henderson,POR,Bad,POR 117.5,Jrue should cut into him severely; wouldn't play him,2026-11-06T20:49:39+00:00
+ETR,Luka Doncic,LAL,Note,LAL 121 · doesn't matter,"Nearly 40% usage and 70 TS%; Camara on him but POR takes away the paint, so massive usage in a big home game. OK playing him",2026-11-06T20:49:39+00:00
+ETR,Austin Reaves,LAL,Great,LAL 121,Could get Scoot and Youngblood if Luka struggles; 3rd in TS% among high-usage players. Likes him a lot,2026-11-06T20:49:39+00:00
+ETR,Walker Kessler,LAL,Bad,LAL 121,Needs paint touches (2nd in the NBA) and POR's paint D is very good. Easy pass,2026-11-06T20:49:39+00:00
+ETR,Victor Wembanyama,SAS,Great,SAS 122,Feeling better after being sick; 29/10/2 with 7 stocks on SAC in 27 min last time. Scoring more in the paint; wants player of the week again,2026-11-06T20:49:39+00:00
+ETR,Stephon Castle,SAS,Great,SAS 122,Shooting 39% (47% at the rim vs 64% last year): due for positive regression. SAC hid Sabonis on him; could turn it up,2026-11-06T20:49:39+00:00
+ETR,Dylan Harper,SAS,Good,SAS 122,Usage has held up as a starter; 82.2% at the rim. Hunter and Acuff on him: chance to crush,2026-11-06T20:49:39+00:00
+ETR,De'Aaron Fox,SAS,Good,SAS 122,"Revenge game, but 11/4/6 in 26 min last time with LaVine on him; usage down to 19%. Not excited",2026-11-06T20:49:39+00:00
+ETR,Zach LaVine,SAC,Good,SAC 106.5,64.2 TS% on 25.6% usage; 22/3/3 in 31 vs Fox last time. Maybe keeps SAC in it,2026-11-06T20:49:39+00:00
+ETR,De'Andre Hunter,SAC,Good,SAC 106.5,"More aggressive on offense per Christie, with a big defensive load",2026-11-06T20:49:39+00:00
+ETR,Domantas Sabonis,SAC,Bad,SAC 106.5,"Leads the NBA in paint touches, which doesn't suit facing Wemby. Not going there",2026-11-06T20:49:39+00:00
+ETR,Darius Acuff Jr.,SAC,Bad,SAC 106.5,"Role is out of this world (league-leading touch time), but 0.69 PPP as a PNR handler; Castle on him (19/3/5 last time). Doesn't like it",2026-11-06T20:49:39+00:00

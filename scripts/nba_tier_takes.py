@@ -9,9 +9,11 @@ grade by pod size, window, AM sample and tier, with an 80% range from resampling
 
 Each take is credited to a source (2026-11-09):
   ETR / Bagel   your move matches a note that day from ETR (Gallagher's columns, <date>_etr_*.csv) or Zakarian (Bagel,
-                <date>_zakarian.csv) stamped before the window's record (a note with no time stamp counts for the whole
-                day): you moved up a player the note likes (Great, Good, Like, Lean) or moved down one it fades (Bad,
-                Fade); a plain Note credits no one; both: "Bagel+ETR"
+                <date>_zakarian.csv) stamped (`at`) before the window's record (the lock, or the save it fell back to)
+                and on the slate's own Pacific day: you moved up a player the note likes (Great, Good, Like, Lean) or
+                moved down one it fades (Bad, Fade); a plain Note, a note without a stamp, one stamped after the record
+                or one from an earlier day credits no one; both: "Bagel+ETR". Files before 2026-11-09 carry the time
+                they were first committed to the repo (no earlier than they were in hand)
   NEWS          else, either player's projection or his team's status changed since the last lock: PM, ETR moved 2+
                 points from its first upload to the PM record, or a tag on his team changed from the AM record to the
                 PM record; AM (no lock before it that day), our Proj at the AM record 2+ off the morning file, or a tag
@@ -58,6 +60,10 @@ def notes(d):
             for r in csv.DictReader(open(p)):
                 out[norm(r["player"])].append((src, iso(r["at"]) if r.get("at") else None, (r.get("stance") or "").strip().lower()))
     return out
+PT = __import__("zoneinfo").ZoneInfo("America/Los_Angeles")
+def in_time(t, d, at):
+    """A note counts for a take when stamped on the slate's Pacific day and before the window's record."""
+    return t is not None and at is not None and t.astimezone(PT).date().isoformat() == d and t <= at
 def record_at(d, w):
     m = next((v for k, v in meta.items() if k.startswith(d)), {})
     x = m.get(w) or {}
@@ -78,7 +84,7 @@ def source(d, w, a, b, nt):
     at = record_at(d, w)
     # a: the player you moved up; b: the one you moved down. Credit the sources whose note agrees with the move.
     got = sorted({src for r, want in ((a, LIKES), (b, FADES)) for src, t, st in nt.get(norm(r["name"]), [])
-                  if st in want and (t is None or at is None or t <= at)})
+                  if st in want and in_time(t, d, at)})
     if got:
         return "+".join(got)
     return "NEWS" if changed(d, w, a) or changed(d, w, b) else "OTHER"

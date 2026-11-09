@@ -111,20 +111,6 @@ date,comparison,kind,pairs,gain
 2026-11-06,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
 2026-11-07,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
 2026-11-08,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
-2026-10-21,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,3,18.8
-2026-10-23,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,4,27.5
-2026-10-24,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,3,-42.0
-2026-10-25,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,5,-55.9
-2026-10-26,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,8,-3.9
-2026-10-27,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,1,-6.9
-2026-10-28,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,6,29.5
-2026-10-30,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,3,37.7
-2026-10-31,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,3,26.0
-2026-11-02,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,13,-62.2
-2026-11-04,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,9,8.4
-2026-11-06,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,6,53.8
-2026-11-07,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,5,50.6
-2026-11-08,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,4,-63.5
 2026-10-21,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
 2026-10-21,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
 2026-10-23,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
@@ -167,3 +153,31 @@ date,comparison,kind,pairs,gain
 2026-11-06,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,20,217.4
 2026-11-07,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,62,-631.9
 2026-11-08,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,18,-42.8
+2026-10-21,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-21,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-23,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-23,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-24,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-24,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-25,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-25,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-26,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-26,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-27,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-27,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-28,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-28,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-30,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-30,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-10-31,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,3,-21.4
+2026-10-31,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-11-02,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-11-02,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,12,-117.2
+2026-11-04,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-11-04,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,3,-17.0
+2026-11-06,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-11-06,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-11-07,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-11-07,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,1,-5.5
+2026-11-08,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-11-08,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0

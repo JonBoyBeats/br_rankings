@@ -50,12 +50,14 @@ in the chat (see "In chat"). It writes `analysis/nba/report/today.md`. From the 
   tier (`money_tiers.json`, written by the contest side; "contest block pending" until it exists).
 - **Season** at the bottom: a table per tier and window, takes by source and tier, the adopted leans and rules.
 
-**The record of each window** (the daily record, `scripts/nba_daily.py`): your manual Lock AM and Lock PM. A Lock
-AM counts when pressed by your first AM draft (the contest rosters' draft time, plus half an hour since draft times
-are the nearest hourly ADP snapshot; noon PT when you drafted no AM teams). With more than one Lock PM, the last
-one before swaps (the slate's first tip) counts. Fallbacks only when you didn't lock, labelled "fallback" in the
-history and the report: AM, the last board saved (or Tiers build) in the AM window by then; PM, the last export
-before contests close, else the last board saved before then. Swaps are graded from the contest data (your real
+**The record of each window** (the daily record, `scripts/nba_daily.py`): your manual Lock AM and Lock PM. The AM
+window starts at 4:30am PT; drafts before then (the night before included) are the OVERNIGHT window, labelled, kept
+out of the AM grades and graded on their own (your board saved before your first overnight draft against ADP then;
+the report's season section). A Lock AM counts when pressed by your first draft at or after 4:30am (the contest
+rosters' draft time, plus half an hour since draft times are the nearest hourly ADP snapshot; noon PT when you drafted
+no AM teams). With more than one Lock PM, the last one before swaps (the slate's first tip) counts. Fallbacks only
+when you didn't lock, labelled "fallback" in the history and the report: AM, the last board saved (or Tiers build) in
+the AM window (from 4:30am) by then; PM, the last export before contests close, else the last board saved before then. Swaps are graded from the contest data (your real
 swaps and the inferred app order), never from a lock. Nights before 2026-11-10 carry the old fallbacks, labelled
 "fallback (old rule)".
 
@@ -63,7 +65,8 @@ swaps and the inferred app order), never from a lock. Nights before 2026-11-10 c
 `analysis/nba/takes/<date>_etr_matchups.csv` (or `_etr_top_plays.csv`) and `<date>_zakarian.csv` with an `at`
 column: when the column came out if the text says so, else when it was pasted (ISO time, like ETR's uploads).
 Then `python3 scripts/build_takes.py`. A take (your order against the button on a decision pair) is credited to
-ETR or Bagel only when your move matches their note, stamped before that window's record: you moved up a player the
+ETR or Bagel only when your move matches their note, stamped (`at`) on the slate's day and before that window's
+record (the lock, or the save it fell back to); a note from an earlier day never counts: you moved up a player the
 note likes (Great, Good, Like, Lean) or moved down one it fades (Bad, Fade); a plain Note credits no one. Else NEWS
 (his projection or his team's status changed since the last lock); else OTHER (`scripts/nba_tier_takes.py`).
 
