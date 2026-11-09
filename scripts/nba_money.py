@@ -1181,9 +1181,11 @@ def report(N, mirror):
     out += sp_out
     ap_out, cand = am_pm_section(N, dates)
     out += ap_out
+    c_out, cands = candidates_section(N, dates)
+    out += c_out
     out += field_out[:2] + turn_out + field_out[2:] + swap_split_section(N, dates)
     out += verdict_section(reg, sw, survived)
-    return out, {"reg": reg, "turns": turns, "field": field, "checked": checked, "survived": survived, "extra": extra, "split_res": split_res, "candidates": [cand]}
+    return out, {"reg": reg, "turns": turns, "field": field, "checked": checked, "survived": survived, "extra": extra, "split_res": split_res, "candidates": [cand] + cands}
 
 
 def main():
@@ -1772,6 +1774,147 @@ def am_pm_section(N, dates):
             "note": "A = my AM teams, B = my PM teams, same contest and price group; money_report.md section 3d. A candidate for the "
                     "Monday section, not a proposal."}
     return out, cand
+
+
+# ---------------------------------------------------------------- candidates asked 2026-11-09 (for 11-16)
+def morning_wo():
+    """{(name, team): {teammate's (name, team): his points with that teammate out minus with him in}} from the mirror's
+    current nba_morning.json (the season so far, not point in time)."""
+    path = os.path.join(HERE, "..", "br-adp-mirror", "nba_morning.json")
+    if not os.path.exists(path):
+        return {}
+    ps = json.load(open(path))["players"]
+    by_id = {p["id"]: p for p in ps}
+    out = {}
+    for p in ps:
+        out[(p["name"], p["team"])] = {(by_id[k]["name"], by_id[k]["team"]): v[0] for k, v in (p.get("wo") or {}).items() if k in by_id}
+    return out, {(p["name"], p["team"]): p.get("min") or 0 for p in ps}
+
+
+def candidate_cell(name, cs, dates):
+    ev = evaluate(cs, dates)
+    r = price_check(cs, dates)
+    a = (r["ev"] if r else ev)["field"]["all"]
+    return ("| %s | %s | %s | %s | %s |" % (name, cell(ev["field"]["all"]), "%+.1f / %+.1f" % (r["dec"], r["oth"]) if r else "-",
+                                          cell(a), r["verdict"] if r else verdict(ev)[0]),
+            {"test": name, "read": r["verdict"] if r else verdict(ev)[0], "lift": lift_of(ev, r)})
+
+
+def candidates_section(N, dates):
+    out = ["## 3e. Candidates for 11-16 (asked 2026-11-09; not proposals)", ""]
+    cands = []
+    head = ["| Test | Lift at 10% (80% range), at 1%; finish; teams, slates | Over price: the decision picks / the other picks (A-B) | Lift matched on the other picks' price | Verdict that survives |",
+            "|---|---|---|---|---|"]
+    # 1. positions
+    n = N[-1]
+    ex = []
+    for c in n["contests"]:
+        for t in n["teams"][c["contest_id"]]:
+            for x in teammate_pairs(n, t):
+                ra, rb = sorted((x[1], x[3]))
+                if x[4] and ra <= 3 and rb >= 4:
+                    a, b = n["rec"][x[0]], n["rec"][x[2]]
+                    k = tuple(sorted((a["name"], b["name"])))
+                    if k not in [e[0] for e in ex]:
+                        ex.append((k, "%s (%s, round %d) + %s (%s, round %d), %s" % (a["name"], a["pos"], x[1], b["name"], b["pos"], x[3], a["team"])))
+            if len(ex) >= 5:
+                break
+        if len(ex) >= 5:
+            break
+    wo, mins = morning_wo() or ({}, {})
+    def backup_pairs(n, t, rounds=None):
+        pod = t["contest"]["pod_size"]
+        ps = [(p, min(6, max(1, math.ceil(a / pod)))) for p, a in zip(t["paid_pid"], t["paid"]) if p and p in n["rec"] and a is not None]
+        out_ = set()
+        for i, (pa, ra) in enumerate(ps):
+            for pb, rb in ps[i + 1:]:
+                A, B = n["rec"][pa], n["rec"][pb]
+                if A["team"] != B["team"]:
+                    continue
+                for (s_, rs), (b_, rbk), S, Bk in (((pa, ra), (pb, rb), A, B), ((pb, rb), (pa, ra), B, A)):
+                    kS, kB = (S["name"], S["team"]), (Bk["name"], Bk["team"])
+                    if mins.get(kS, 0) >= 28 and wo.get(kB, {}).get(kS, 0) >= 4 and (rounds is None or (rs <= 3 and rbk >= 4)):
+                        out_ |= {s_, b_}
+        return out_
+    none = lambda n, t: not teammate_pairs(n, t)
+    out += ["### 1. Same-position teammates: source, examples, and starter/backup instead", "",
+            "Position: Underdog's own position on the slate (the record's `pos`), grouped G (PG, SG, G), F (SF, PF, F), C. Underdog "
+            "scores everyone as flex, so position matters here only as a stand-in for sharing minutes and touches. Five early/late "
+            "same-position pairs on %s's rosters:" % n["date"], ""] + ["- " + e[1] for e in ex[:5]] + [
+            "", "Starter and direct backup instead of position: the starter averages 28+ minutes; his backup scores 4+ more points "
+            "a game when the starter sits (the morning file's with/without splits, season to date, so not point in time). Against "
+            "teams with no two teammates:", ""] + head
+    for name, has in (("Same position, early + late (the approved card row)", teammate_test(True, "split")[0]),
+                      ("Starter + his backup, any rounds", lambda n, t: backup_pairs(n, t)),
+                      ("Starter early (rounds 1-3) + his backup late (rounds 4-6)", lambda n, t: backup_pairs(n, t, True))):
+        line, c = candidate_cell(name, hold_cases(N, ("am", "pm"), has, lambda n, t, h=has: bool(h(n, t)) or none(n, t)), dates)
+        out.append(line)
+        cands.append(dict(c, question="1. positions"))
+    # 2. fallers: the definitions in use
+    out += ["", "### 2. Fallers: the definitions behind card-fallers", "",
+            "Ranks are the night's closing-ADP order. 6-drafter pods (4-drafter in brackets):",
+            "- **1/2 turn** (picks 6-7, or 5 and 8 [3-4, or 3 and 6]): your first player is a top-4 [top-2] ADP rank and your second "
+            "is ranked 5-8 [3-6]. In the draft room: a top-4 [top-2] player still there at your turn pick; take him.",
+            "- **2/3 turn** (picks 12-13, or 11 and 14 [8-9, or 7 and 10]), for the 1.01 and 1.02 drafters: your second player is "
+            "ranked 9th or better [5th or better], 3+ ranks ahead of your turn pick; take him.",
+            "Measured against same-contest, same-price teams that took the ADP-order pair at that turn (the trusting teams); the "
+            "price-split check is in 3b. Fallers elsewhere in the draft: part 4 below.", ""]
+    # 3. exposure
+    def count_where(cond, k):
+        return lambda n, t: {p for p in drafted_by(t) if n["tiers"][t["window"]].get(p) and cond(n["tiers"][t["window"]][p])} \
+            if sum(1 for p in drafted_by(t) if n["tiers"][t["window"]].get(p) and cond(n["tiers"][t["window"]][p])) >= k else set()
+    t3v = lambda r: r["tier"] == "3" and r["flag"] == "VALUE"
+    t4p = lambda r: r["tier"] == "4" and r["flag"] == "PRICEY"
+    out += ["### 3. Exposure, not order: T3 VALUE and T4 PRICEY", "",
+            "Against same-contest, same-price teams without (at each team's draft window).", ""] + head
+    for name, has in (("2+ T3 VALUE players", count_where(t3v, 2)), ("1+ T3 VALUE player", count_where(t3v, 1)),
+                      ("A T4 PRICEY player", count_where(t4p, 1))):
+        line, c = candidate_cell(name, hold_cases(N, ("am", "pm"), has), dates)
+        out.append(line)
+        cands.append(dict(c, question="3. exposure"))
+    # 4. fallers in every round
+    def round_fallers(n, t, rd, explained):
+        """The team's k-th player by ADP paid is its round-k pick (a stand-in: pick order isn't public). A faller there was
+        paid an ADP 3+ picks before the round's first pick. Explained: tagged at the team's window, or his tag changed between
+        Lock AM and lock."""
+        pod = t["contest"]["pod_size"]
+        ps = sorted((a, p) for p, a, x in zip(t["paid_pid"], t["paid"], t["adps"]) if p and x is not None)
+        if len(ps) < rd:
+            return None, None
+        a, p = ps[rd - 1]
+        first = (rd - 1) * pod + 1
+        if a > first - 3:
+            return False, p
+        rec = n["rec"].get(p, {})
+        row = n["tiers"][t["window"]].get(p) or {}
+        exp = bool(row.get("tag")) or (rec.get("injury_am", "") != rec.get("injury", ""))
+        return (exp == explained), p
+    out += ["", "### 4. Fallers in every round", "",
+            "A team's k-th player by the ADP it paid stands for its round-k pick (pick order isn't public, so this is a lower "
+            "bound on the slide). A faller was paid an ADP 3+ picks before that round's first pick (round 3 on 6 drafters: ADP 10 "
+            "or better). Explained: tagged at the team's window, or his tag changed between Lock AM and lock. A: teams with that "
+            "faller in round k; B: teams whose round-k player wasn't a faller.", ""] + head
+    for rd in range(1, 7):
+        for explained in (False, True):
+            cs = []
+            for nn in N:
+                for ts in nn["teams"].values():
+                    for t in ts:
+                        if t["bin"] is None or t["window"] is None:
+                            continue
+                        f, p = round_fallers(nn, t, rd, explained)
+                        if f is None:
+                            continue
+                        g = "A" if f else ("B" if round_fallers(nn, t, rd, not explained)[0] is False else None)
+                        if g:
+                            cs.append((nn["date"], t["contest"]["contest_id"], t["bin"], g, t, {p}))
+            if not any(c[3] == "A" for c in cs):
+                out.append("| Round %d, %s | none | - | - | - |" % (rd, "explained" if explained else "nothing explains it"))
+                continue
+            line, c = candidate_cell("Round %d, %s" % (rd, "explained (tag or news)" if explained else "nothing explains it"), cs, dates)
+            out.append(line)
+            cands.append(dict(c, question="4. fallers by round"))
+    return out + [""], cands
 
 
 if __name__ == "__main__":
