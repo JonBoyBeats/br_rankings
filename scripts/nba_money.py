@@ -1195,6 +1195,8 @@ def main():
     ap.add_argument("--draft", action="store_true", help="an ad-hoc run (from chat): write money_report_draft.md only; the "
                     "published files belong to the nightly workflow")
     a = ap.parse_args()
+    global MIRROR_PATH
+    MIRROR_PATH = a.mirror
     N = load(a.mirror)
     out, parts = report(N, a.mirror)
     if a.draft:
@@ -1777,6 +1779,25 @@ def am_pm_section(N, dates):
 
 
 # ---------------------------------------------------------------- candidates asked 2026-11-09 (for 11-16)
+MIRROR_PATH = None
+
+
+def wo_at(n):
+    """The morning file's with/without splits and minutes as they stood at night n's lock, from the mirror's history:
+    ({(name, team): {teammate (name, team): points with him out minus in}}, {(name, team): minutes})."""
+    if not MIRROR_PATH:
+        return None
+    lock = min(F.iso(c["cutoff"]) for c in n["contests"])
+    m = D.Mirror(MIRROR_PATH)
+    vs = m.versions("nba_morning.json", lock - dt.timedelta(days=3), lock)
+    if not vs:
+        return None
+    ps = m.show(vs[-1][1], "nba_morning.json")["players"]
+    by_id = {p["id"]: p for p in ps}
+    wo = {(p["name"], p["team"]): {(by_id[k]["name"], by_id[k]["team"]): v[0] for k, v in (p.get("wo") or {}).items() if k in by_id} for p in ps}
+    return wo, {(p["name"], p["team"]): p.get("min") or 0 for p in ps}
+
+
 def morning_wo():
     """{(name, team): {teammate's (name, team): his points with that teammate out minus with him in}} from the mirror's
     current nba_morning.json (the season so far, not point in time)."""
@@ -1795,16 +1816,20 @@ def candidate_cell(name, cs, dates):
     ev = evaluate(cs, dates)
     r = price_check(cs, dates)
     a = (r["ev"] if r else ev)["field"]["all"]
-    return ("| %s | %s | %s | %s | %s |" % (name, cell(ev["field"]["all"]), "%+.1f / %+.1f" % (r["dec"], r["oth"]) if r else "-",
-                                          cell(a), r["verdict"] if r else verdict(ev)[0]),
-            {"test": name, "read": r["verdict"] if r else verdict(ev)[0], "lift": lift_of(ev, r)})
+    share = lambda x: "%+.1f (%.0f%%)" % (x, 100 * x / r["gap"]) if abs(r["gap"]) >= 0.5 else "%+.1f" % x
+    dec = ("%+.1f | %s | %s | %s" % (r["gap"], share(r["dec"]), share(r["oth"]), "%+.1f" % r["own"] if r["own"] is not None else "- (holding)")
+           if r else "- | - | - | -")
+    return ("| %s | %s | %s | %s | %s |" % (name, cell(ev["field"]["all"]), dec, cell(a), r["verdict"] if r else verdict(ev)[0]),
+            {"test": name, "read": r["verdict"] if r else verdict(ev)[0], "lift": lift_of(ev, r),
+             "decomposition": {"gap": round(r["gap"], 2), "decision_picks": round(r["dec"], 2), "other_picks": round(r["oth"], 2),
+                               "own_points": None if r["own"] is None else round(r["own"], 2)} if r else None})
 
 
 def candidates_section(N, dates):
     out = ["## 3e. Candidates for 11-16 (asked 2026-11-09; not proposals)", ""]
     cands = []
-    head = ["| Test | Lift at 10% (80% range), at 1%; finish; teams, slates | Over price: the decision picks / the other picks (A-B) | Lift matched on the other picks' price | Verdict that survives |",
-            "|---|---|---|---|---|"]
+    head = ["| Test | Lift at 10% (80% range), at 1%; finish; teams, slates | Gap over price (A-B) | From the decision pick(s) | From the other picks | Decision pick's own points (A-B) | Lift matched on the other picks' price | Verdict that survives |",
+            "|---|---|---|---|---|---|---|---|"]
     # 1. positions
     n = N[-1]
     ex = []
@@ -1821,8 +1846,10 @@ def candidates_section(N, dates):
                 break
         if len(ex) >= 5:
             break
-    wo, mins = morning_wo() or ({}, {})
     def backup_pairs(n, t, rounds=None):
+        if "_wo" not in n:
+            n["_wo"] = wo_at(n) or ({}, {})
+        wo, mins = n["_wo"]
         pod = t["contest"]["pod_size"]
         ps = [(p, min(6, max(1, math.ceil(a / pod)))) for p, a in zip(t["paid_pid"], t["paid"]) if p and p in n["rec"] and a is not None]
         out_ = set()
@@ -1842,8 +1869,9 @@ def candidates_section(N, dates):
             "scores everyone as flex, so position matters here only as a stand-in for sharing minutes and touches. Five early/late "
             "same-position pairs on %s's rosters:" % n["date"], ""] + ["- " + e[1] for e in ex[:5]] + [
             "", "Starter and direct backup instead of position: the starter averages 28+ minutes; his backup scores 4+ more points "
-            "a game when the starter sits (the morning file's with/without splits, season to date, so not point in time). Against "
-            "teams with no two teammates:", ""] + head
+            "a game when the starter sits. Both from the morning file as it stood at that night's lock (the mirror's history: "
+            "games through the night before, nothing later). The with/without splits start in the morning file around 10-29, so "
+            "earlier nights have no pairs. Against teams with no two teammates:", ""] + head
     for name, has in (("Same position, early + late (the approved card row)", teammate_test(True, "split")[0]),
                       ("Starter + his backup, any rounds", lambda n, t: backup_pairs(n, t)),
                       ("Starter early (rounds 1-3) + his backup late (rounds 4-6)", lambda n, t: backup_pairs(n, t, True))):
