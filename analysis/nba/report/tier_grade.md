@@ -13,7 +13,7 @@ Written by scripts/nba_tier_grade.py from tier_history.csv. Decision pairs (same
 | T3/T4 (middle) | 7 | -1.5 (-2.8 to +0.0), 67 pairs, LEAN -; 42% right; breaker 10 of 18 | +1.2 (-1.5 to +4.1), 141 pairs, no lean; 52% right; breaker 29 of 44 |
 | T3 | 7 | -2.5, not enough yet (26); 38% right; breaker 4 of 7 | -1.2, not enough yet (38); 53% right; breaker 9 of 13 |
 | T4 | 7 | -2.6, not enough yet (36); 39% right; breaker 5 of 10 | +1.0 (-2.0 to +4.2), 74 pairs, no lean; 54% right; breaker 16 of 23 |
-| T5 | 7 | +4.1 (-1.2 to +7.9), 100 pairs, LEAN +; 60% right; breaker 20 of 39 | -3.1 (-4.1 to -1.6), 364 pairs, RULE -; 42% right; breaker 57 of 136 |
+| T5 | 7 | +4.1 (-1.2 to +7.9), 100 pairs, LEAN +; 60% right; breaker 20 of 39 | -3.1 (-4.1 to -1.6), 364 pairs, LEAN - (RULE numbers, check pending); 42% right; breaker 57 of 136 |
 | Across T1/T2 | 7 | +13.1, not enough yet (2); 100% right | - |
 | Across T2/T3 | 7 | -5.5, not enough yet (7); 29% right; breaker 1 of 4 | -3.1, not enough yet (13); 46% right; breaker 2 of 7 |
 | Across T3/T4 | 7 | +12.1, not enough yet (5); 80% right; breaker 1 of 1 | +4.7, not enough yet (29); 48% right; breaker 4 of 8 |
@@ -28,7 +28,7 @@ Written by scripts/nba_tier_grade.py from tier_history.csv. Decision pairs (same
 | T3/T4 (middle) | +2.5 (-0.3 to +5.8), 167 pairs, LEAN + | -0.7 (-2.5 to +1.7), 198 pairs, no lean |
 | T3 | +3.2 (-3.2 to +8.2), 52 pairs, no lean | -2.6 (-6.7 to +2.6), 53 pairs, no lean |
 | T4 | +4.1 (+0.6 to +6.6), 73 pairs, LEAN + | +1.6 (-1.9 to +4.6), 85 pairs, no lean |
-| T5 | +4.5 (+2.9 to +6.6), 341 pairs, RULE + | - |
+| T5 | +4.5 (+2.9 to +6.6), 341 pairs, LEAN + (RULE numbers, check pending) | - |
 | Across T1/T2 | -18.6, not enough yet (7) | +2.6, not enough yet (11) |
 | Across T2/T3 | -2.1, not enough yet (15) | -1.4, not enough yet (28) |
 | Across T3/T4 | -1.2 (-7.4 to +6.0), 42 pairs, no lean | -2.2 (-7.4 to +3.2), 60 pairs, no lean |
@@ -51,7 +51,7 @@ Written by scripts/nba_tier_grade.py from tier_history.csv. Decision pairs (same
 |---|---|---|---|
 | T1 | 7 | -0.1, not enough yet (11); 55% right; breaker 1 of 3 | -5.5, not enough yet (5); 40% right; breaker 1 of 2 |
 | T2 | 7 | +4.2 (-0.1 to +7.6), 63 pairs, LEAN +; 60% right; breaker 16 of 25 | +1.5 (-0.9 to +3.3), 64 pairs, no lean; 56% right; breaker 16 of 18 |
-| T3/T4 (middle) | 7 | +4.3 (+2.7 to +6.2), 103 pairs, RULE +; 64% right; breaker 20 of 28 | -0.9 (-3.6 to +2.1), 114 pairs, no lean; 49% right; breaker 17 of 35 |
+| T3/T4 (middle) | 7 | +4.3 (+2.7 to +6.2), 103 pairs, LEAN + (RULE numbers, check pending); 64% right; breaker 20 of 28 | -0.9 (-3.6 to +2.1), 114 pairs, no lean; 49% right; breaker 17 of 35 |
 | T3 | 7 | +4.2 (+1.6 to +7.7), 41 pairs, LEAN +; 66% right; breaker 7 of 11 | +2.1, not enough yet (38); 61% right; breaker 8 of 11 |
 | T4 | 7 | +10.1, not enough yet (29); 72% right; breaker 10 of 13 | -0.3 (-3.8 to +2.8), 45 pairs, no lean; 44% right; breaker 8 of 17 |
 | T5 | 7 | -0.1 (-2.0 to +1.9), 259 pairs, no lean; 52% right; breaker 39 of 66 | +0.3 (-1.0 to +1.7), 421 pairs, no lean; 51% right; breaker 51 of 95 |
@@ -66,10 +66,10 @@ Written by scripts/nba_tier_grade.py from tier_history.csv. Decision pairs (same
 |---|---|---|
 | T1 | - | +0.2, not enough yet (22) |
 | T2 | - | -2.9 (-6.0 to +0.2), 69 pairs, LEAN - |
-| T3/T4 (middle) | -3.6 (-5.1 to -2.3), 122 pairs, RULE - | -1.1 (-4.0 to +1.5), 126 pairs, no lean |
+| T3/T4 (middle) | -3.6 (-5.1 to -2.3), 122 pairs, LEAN - (RULE numbers, check pending) | -1.1 (-4.0 to +1.5), 126 pairs, no lean |
 | T3 | +1.8, not enough yet (39) | -2.4, not enough yet (37) |
 | T4 | -7.2 (-10.5 to -3.9), 47 pairs, LEAN - | +0.6, not enough yet (34) |
-| T5 | +3.4 (+1.9 to +4.4), 241 pairs, RULE + | - |
+| T5 | +3.4 (+1.9 to +4.4), 241 pairs, LEAN + (RULE numbers, check pending) | - |
 | Across T1/T2 | - | -3.2, not enough yet (20) |
 | Across T2/T3 | +1.0, not enough yet (9) | -1.5, not enough yet (38) |
 | Across T3/T4 | -4.9, not enough yet (36) | -1.3 (-4.0 to +1.1), 55 pairs, no lean |
@@ -207,3 +207,19 @@ Written by scripts/nba_tier_grade.py from tier_history.csv. Decision pairs (same
 | T3/T4 | err 8.4, bias -5.4, rank corr 0.64 (4 slates) | err 7.6, bias -3.4, rank corr 0.41 (3 slates) | rank corr 0.41 (4 slates) |
 | T5 (priced) | err 10.8, bias -3.6, rank corr 0.21 (4 slates) | err 12.5, bias -3.6, rank corr 0.05 (3 slates) | rank corr 0.07 (4 slates) |
 
+## How many of these could be chance
+
+199 cells were graded (67 with 40+ pairs, so testable). The 80% LEAN bar means about 80% of resamples on one side, which a cell with no real effect clears about 40% of the time (|mean| at least 0.84 standard errors, either side). So with 67 testable cells, about 27 leans would appear by chance alone; 30 did. Treat any single lean as a candidate, and weigh the ones that repeat in both windows or across tiers.
+
+## The RULE bar, part by part
+
+| Cut | Tier | Test | Pairs | Label | Parts |
+|---|---|---|---|---|---|
+| 6-drafter AM, primary (Lock AM on our Proj, 10-28 on) | T5 | your board vs ADP | 364 | LEAN - (RULE numbers, check pending) | 80+ pairs: yes; 90% range clear of 0: yes; check slates: can't yet (7 slates, needs 14); drop one player: holds |
+| 6-drafter AM, primary (Lock AM on our Proj, 10-28 on) | T5 | VALUE flag | 341 | LEAN + (RULE numbers, check pending) | 80+ pairs: yes; 90% range clear of 0: yes; check slates: can't yet (6 slates, needs 14); drop one player: holds |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T3/T4 (middle) | your board vs Ours | 103 | LEAN + (RULE numbers, check pending) | 80+ pairs: yes; 90% range clear of 0: yes; check slates: can't yet (6 slates, needs 14); drop one player: holds |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T3/T4 (middle) | VALUE flag | 122 | LEAN - (RULE numbers, check pending) | 80+ pairs: yes; 90% range clear of 0: yes; check slates: can't yet (7 slates, needs 14); drop one player: holds |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T5 | VALUE flag | 241 | LEAN + (RULE numbers, check pending) | 80+ pairs: yes; 90% range clear of 0: yes; check slates: can't yet (6 slates, needs 14); drop one player: holds |
+| 6-drafter PM | T3/T4 (middle) | your board vs ADP | 243 | RULE + | 80+ pairs: yes; 90% range clear of 0: yes; check slates (last 5) same side: yes; drop one player: holds |
+| 6-drafter PM | T3 | your board vs ADP | 118 | RULE + | 80+ pairs: yes; 90% range clear of 0: yes; check slates (last 5) same side: yes; drop one player: holds |
+| 6-drafter PM | T5 | your board vs ADP | 728 | RULE - | 80+ pairs: yes; 90% range clear of 0: yes; check slates (last 5) same side: yes; drop one player: holds |

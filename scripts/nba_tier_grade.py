@@ -101,8 +101,14 @@ def pairs(rows, inside, across=None):
     return out
 
 
-def verdict(per, players=None):
-    """per: {slate: [values]} (positive = the thing graded wins). Returns (n, mean, lo80, hi80, label)."""
+CHECK_SLATES, CHECK_BEFORE = 5, 9     # a RULE is chosen on the slates before the last 5 (at least 9) and checked on those 5
+AUDIT = []                            # every cell graded: (cut, tier, test, n, label, the RULE bar part by part)
+
+
+def verdict(per, players=None, where=None):
+    """per: {slate: [values]} (positive = the thing graded wins). Returns (n, mean, lo80, hi80, label).
+    A cell that clears the RULE bar's own numbers (80+ pairs, a 90% range clear of zero) but can't be checked yet
+    (fewer than 14 slates: 9 to choose on, 5 to check) or fails the check or the drop-one-player test is a LEAN."""
     ds = sorted(per)
     allv = [v for d in ds for v in per[d]]
     n = len(allv)
@@ -110,6 +116,8 @@ def verdict(per, players=None):
         return 0, None, None, None, "-"
     mean = sum(allv) / n
     if n < 40:
+        if where:
+            AUDIT.append(where + (n, "not enough yet", ""))
         return n, mean, None, None, "not enough yet (%d)" % n
     rnd = random.Random(7)
     bs = []
@@ -122,21 +130,31 @@ def verdict(per, players=None):
     lo80, hi80, lo90, hi90 = q(0.1), q(0.9), q(0.05), q(0.95)
     side = 1 if mean > 0 else -1
     share = sum(1 for b in bs if b * side > 0) / len(bs)
-    label = "no lean"
+    label, audit = "no lean", ""
     if share >= 0.8:
         label = "LEAN " + ("+" if side > 0 else "-")
-    if n >= 80 and (lo90 > 0 or hi90 < 0) and len(ds) > 5:
-        early, late = [v for d in ds[:-5] for v in per[d]], [v for d in ds[-5:] for v in per[d]]
-        same = early and late and (sum(early) > 0) == (sum(late) > 0) == (side > 0)
-        flip = False
+    if n >= 80 and (lo90 > 0 or hi90 < 0):
+        parts = ["80+ pairs: yes", "90% range clear of 0: yes"]
+        if len(ds) >= CHECK_BEFORE + CHECK_SLATES:
+            early, late = [v for d in ds[:-CHECK_SLATES] for v in per[d]], [v for d in ds[-CHECK_SLATES:] for v in per[d]]
+            same = bool(early and late) and (sum(early) > 0) == (sum(late) > 0) == (side > 0)
+            parts.append("check slates (last %d) same side: %s" % (CHECK_SLATES, "yes" if same else "no"))
+        else:
+            same = None
+            parts.append("check slates: can't yet (%d slates, needs %d)" % (len(ds), CHECK_BEFORE + CHECK_SLATES))
+        flip = None
         if players:
-            for p, vals in players.items():
-                rest = n - len(vals)
-                if rest and ((sum(allv) - sum(vals)) / rest) * side <= 0:
-                    flip = True
-                    break
-        if same and not flip:
+            flip = next((p for p, vals in players.items() if n - len(vals) and
+                         ((sum(allv) - sum(vals)) / (n - len(vals))) * side <= 0), None)
+            parts.append("drop one player: %s" % ("flips without %s" % flip if flip else "holds"))
+        if same and players and not flip:
             label = "RULE " + ("+" if side > 0 else "-")
+        else:
+            label = "LEAN " + ("+" if side > 0 else "-") + " (RULE numbers, %s)" % (
+                "check pending" if same is None else "check failed" if not same else "one player flips it")
+        audit = "; ".join(parts)
+    if where:
+        AUDIT.append(where + (n, label, audit))
     return n, mean, lo80, hi80, label
 
 
@@ -270,7 +288,7 @@ def main():
         for gname, nights, h2h, hits, brk, _, _ in res:
             cells = []
             for s in srcs:
-                v = verdict(h2h[s][0], h2h[s][1])
+                v = verdict(h2h[s][0], h2h[s][1], (title, gname, "your board vs " + s))
                 right = "%.0f%% right" % (100 * hits[s][0] / hits[s][1]) if hits[s][1] else ""
                 b = "breaker %d of %d" % (brk[s][0], brk[s][1]) if brk[s][1] else ""
                 cells.append("; ".join(x for x in (fmt(v), right, b) if x and x != "-") or "-")
@@ -278,7 +296,8 @@ def main():
         out += ["", "### The flag test (positive: VALUE outscored its partners / PRICEY lagged them)", "",
                 "| Tier | VALUE | PRICEY |", "|---|---|---|"]
         for gname, nights, _, _, _, flags, fpl in res:
-            out.append("| %s | %s | %s |" % (gname, fmt(verdict(flags["VALUE"], fpl["VALUE"])), fmt(verdict(flags["PRICEY"], fpl["PRICEY"]))))
+            out.append("| %s | %s | %s |" % (gname, fmt(verdict(flags["VALUE"], fpl["VALUE"], (title, gname, "VALUE flag"))),
+                                             fmt(verdict(flags["PRICEY"], fpl["PRICEY"], (title, gname, "PRICEY flag")))))
         out += ["", "### Each source inside the tier (error = mean |actual - projection|; bias = actual - projection; rank correlation per slate, averaged)", "",
                 "| Tier | " + " | ".join(srcs) + " |", "|---|" + "---|" * len(srcs)]
         for gname, tiers in (("T1", {1}), ("T2", {2}), ("T3/T4", {3, 4}), ("T5 (priced)", {5})):
@@ -290,6 +309,16 @@ def main():
                              ("rank corr %.2f (%d slates)" % (cor, n) if cor is not None else "-"))
             out.append("| %s | %s |" % (gname, " | ".join(cells)))
         out.append("")
+    tested = [a for a in AUDIT if a[3] >= 40]
+    leans = [a for a in tested if a[4].startswith(("LEAN", "RULE"))]
+    out += ["## How many of these could be chance", "",
+            "%d cells were graded (%d with 40+ pairs, so testable). The 80%% LEAN bar means about 80%% of resamples on one "
+            "side, which a cell with no real effect clears about 40%% of the time (|mean| at least 0.84 standard errors, "
+            "either side). So with %d testable cells, about %d leans would appear by chance alone; %d did. Treat any single "
+            "lean as a candidate, and weigh the ones that repeat in both windows or across tiers." % (
+                len(AUDIT), len(tested), len(tested), round(0.4 * len(tested)), len(leans)), "",
+            "## The RULE bar, part by part", "", "| Cut | Tier | Test | Pairs | Label | Parts |", "|---|---|---|---|---|---|"]
+    out += ["| %s | %s | %s | %d | %s | %s |" % a for a in AUDIT if a[5]]
     open(OUT, "w").write("\n".join(out) + "\n")
     print("\n".join(out))
 

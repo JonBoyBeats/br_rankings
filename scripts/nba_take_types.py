@@ -7,9 +7,10 @@ moved up had a teammate tagged or out then), ownership order (the two within 2 p
 drafted first), or another read. Prints pairs, how often you were right and points per take, with an 80% range from
 resampling slates.
 
-  python3 scripts/nba_take_types.py [pod] [sample]
+  python3 scripts/nba_take_types.py [pod] [sample] [am|pm] [tiers, e.g. 5 or 34]
 """
-import csv,collections,random,glob,re
+import csv,collections,random,glob,re,sys
+WINDOW=sys.argv[3] if len(sys.argv)>3 else 'am'
 H=list(csv.DictReader(open('analysis/nba/report/tier_history.csv')))
 S=list(csv.DictReader(open('analysis/nba/report/swaps.csv')))
 f=lambda v: float(v) if v not in ('',None) else None
@@ -28,7 +29,7 @@ def slot(r):
 tagged_teams=collections.defaultdict(set)
 for p in glob.glob('analysis/nba/daily/*_main.csv'):
     for r in csv.DictReader(open(p)):
-        if re.match(r'^(q|d|g|o)', r['injury_am'] or '', re.I): tagged_teams[r['date']].add(r['team'])
+        if re.match(r'^(q|d|g|o)', r['injury_' + WINDOW] or '', re.I): tagged_teams[r['date']].add(r['team'])
 QT=re.compile(r'^(q|d|g)',re.I)
 def kind(a,b,d):
     if QT.match(b['tag'] or ''): return 'Q-tag push (tagged player moved down)'
@@ -39,9 +40,10 @@ def kind(a,b,d):
     return 'other read'
 import sys
 pod=sys.argv[1] if len(sys.argv)>1 else '6'; sample=sys.argv[2] if len(sys.argv)>2 else 'primary'
+tier=sys.argv[4] if len(sys.argv)>4 else '5'
 res=collections.defaultdict(lambda: collections.defaultdict(list)); ex=collections.defaultdict(list)
 for d in sorted({r['date'] for r in H}):
-    q=[r for r in H if r['date']==d and r['window']=='am' and r['pod']==pod and r['sample']==sample and r['tier']=='5'
+    q=[r for r in H if r['date']==d and r['window']==WINDOW and r['pod']==pod and r['sample']==sample and r['tier'] in tier
        and r['your_rank'] and r['built'] and r['actual']!='' and f(r['adp']) is not None and f(r['adp'])<(24 if pod=='4' else 36)]
     for i in range(len(q)):
         for j in range(i+1,len(q)):
@@ -54,7 +56,7 @@ for d in sorted({r['date'] for r in H}):
             if g==0: continue
             k=kind(a,b,d); res[k][d].append(g); ex[k].append((d,a['name'],b['name'],round(g,1)))
 rnd=random.Random(1)
-print('pod',pod,sample)
+print('pod',pod,WINDOW.upper(),sample,'tier',tier)
 print('| Type of move | Nights | Pairs | You right | Points per take | 80% range |')
 print('|---|---|---|---|---|---|')
 for k in sorted(res, key=lambda k:-sum(len(v) for v in res[k].values())):
