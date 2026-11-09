@@ -1177,11 +1177,13 @@ def report(N, mirror):
     out += reg_out + chk_out + sw_out
     r6_out, _ = round6_section(N, dates)
     out += r6_out
-    sp_out, extra = splits_section(N, dates)
+    sp_out, (extra, split_res) = splits_section(N, dates)
     out += sp_out
+    ap_out, cand = am_pm_section(N, dates)
+    out += ap_out
     out += field_out[:2] + turn_out + field_out[2:] + swap_split_section(N, dates)
     out += verdict_section(reg, sw, survived)
-    return out, {"reg": reg, "turns": turns, "field": field, "checked": checked, "survived": survived, "extra": extra}
+    return out, {"reg": reg, "turns": turns, "field": field, "checked": checked, "survived": survived, "extra": extra, "split_res": split_res, "candidates": [cand]}
 
 
 def main():
@@ -1200,6 +1202,7 @@ def main():
     open(os.path.join(REP, "money_report.md"), "w").write("\n".join(out) + "\n")
     tj = tiers_json(N, parts)
     tj["splits"] = parts["extra"]
+    tj["candidates"] = parts["candidates"]
     json.dump(tj, open(os.path.join(REP, "money_tiers.json"), "w"), indent=1)
     if a.proposals or dt.datetime.now(PT).weekday() == 0:             # Mondays (Pacific): the weekly verdict proposals
         json.dump(proposals(tj), open(os.path.join(REP, "money_proposals.json"), "w"), indent=1)
@@ -1463,7 +1466,11 @@ def tiers_json(N, parts):
                  "card-fallers": [("1/2", "fallers vs trust"), ("2/3", "fallers vs trust")]}
         if rid in cards:
             return [("%s turn" % k[0] if len(cards[rid]) > 1 else "", turns[k][0], turns[k][1], checked.get("turn %s: %s" % k)) for k in cards[rid] if k in turns]
-        stacks = {"card-same-position-teammates": "Same-position teammates", "card-opposing-stars": "Opposing stars (their team's top 2 by projection, same game)"}
+        for reg_id, split_id in REGISTERED_SPLITS.items():
+            if rid == reg_id and split_id in parts.get("split_res", {}):
+                ev, cs, chk = parts["split_res"][split_id]
+                return [("", ev, cs, chk)]
+        stacks = {"card-opposing-stars": "Opposing stars (their team's top 2 by projection, same game)"}
         if rid in stacks:
             k = ("stack", stacks[rid])
             return [("", field[k][0], field[k][1], checked.get("stack: " + stacks[rid]))] if k in field else []
@@ -1487,6 +1494,13 @@ def tiers_json(N, parts):
 
 
 # ---------------------------------------------------------------- Monday: the weekly verdict proposals
+# Approved 2026-11-09: these register rows are graded on a split from section 3c
+REGISTERED_SPLITS = {"card-same-position-teammates": "card-same-position-teammates:split"}
+# Held 2026-11-09 for a week: their reads moved with the rankings side's rebuilt inputs (lock rules, note timing). From
+# `until` on they come back as proposals only if they read the same as `read` (the 11-09 published run) on stable inputs.
+HOLDS = {k: {"since": "2026-11-09", "until": "2026-11-16", "read": v} for k, v in (
+    ("pricey-flags", "RULE for"), ("value-up-middle-t5", "RULE for"), ("am-t5-button-order", "LEAN for"),
+    ("am-t5-other-reads", "LEAN for"), ("q-class-x:FAIR", "LEAN against"))}
 VERDICTS = ("RULE for", "RULE against", "LEAN for", "LEAN against", "no lean", "not enough", "pending")
 
 
@@ -1509,12 +1523,20 @@ def proposals(tj):
     """Each register row (or split) whose verdict this run reads differently: register id, current MONEY verdict, the
     proposed verdict, the read, the reason. A row the register holds back until it has N slates ("re-read at N") isn't
     proposed before then. Proposals only: the register changes when the user approves."""
-    seen, out = set(), []
+    seen, out, held = set(), [], []
     for block in tj["tiers"].values():
         for x in block["decisions"]:
             if x["id"] in seen or not x["current"]:
                 continue
             seen.add(x["id"])
+            if x["id"] in HOLDS:
+                h = HOLDS[x["id"]]
+                if tj["generated"] < h["until"]:
+                    continue
+                if x["current"] != h["read"]:
+                    held.append({"id": x["id"], "held_read": h["read"], "this_read": x["current"],
+                                 "note": "held %s; read %s then and %s now, so not proposed" % (h["since"], h["read"], x["current"])})
+                    continue
             label = x["id"].split(":", 1)[1] if ":" in x["id"] else ""
             label = label.replace(" turn", "") if x["id"].startswith("card-fallers") else label
             have = register_verdict(x["verdict"], label)
@@ -1533,6 +1555,8 @@ def proposals(tj):
             else:
                 why = "the read has weakened"
             reason = "%s: the register says %s, this run reads %s" % (why, have or "nothing", x["current"])
+            if x["id"] in HOLDS:
+                reason += "; held %s on rebuilt inputs and reads the same on stable ones" % HOLDS[x["id"]]["since"]
             if lift:
                 reason += " (top-10%% lift %.2f%s on %d slates, %d teams%s)" % (
                     lift["lift10"], ", 80%% range %.2f-%.2f" % tuple(lift["range80"]) if lift["range80"] else "", lift["slates"], lift["teams"],
@@ -1540,6 +1564,8 @@ def proposals(tj):
             out.append({"id": x["id"], "current_money": x["verdict"], "proposed": x["current"], "read": {"lift": lift, "mine": x["mine"]},
                         "reason": reason})
     for x in tj.get("splits", []):          # new splits the user asked for: every one is proposed, with its read
+        if x["id"] in REGISTERED_SPLITS.values():
+            continue
         lift = x["lift"]
         out.append({"id": x["id"], "current_money": x["verdict"], "proposed": x["current"], "read": {"lift": lift, "mine": x["mine"]},
                     "reason": "new split (%s): this run reads %s%s" % (x["decision"], x["current"],
@@ -1550,7 +1576,7 @@ def proposals(tj):
                      "until the user approves it. Reads: money_report.md sections 3, 3b and 5. A change to the rankings side's "
                      "inputs (tier_history.csv: a rebuilt button) can move a read without the contests changing; check the "
                      "register's points side when that happens.",
-            "proposals": out}
+            "proposals": out, "held_not_proposed": held, "candidates": tj.get("candidates", [])}
 
 
 # ---------------------------------------------------------------- 2026-11-09: teammate splits and takes by source
@@ -1620,10 +1646,11 @@ def splits_section(N, dates):
            "the same comparison).", "",
            "| Test | Lift at 10% (80% range), at 1%; finish; teams, slates | Gap over price (A-B) | From the pair | From the other picks | Lift matched on the other picks' price | Verdict that survives |",
            "|---|---|---|---|---|---|---|"]
-    extra = []
+    extra, res = [], {}
     def row(name, rid, cs, extra_cols=""):
         ev = evaluate(cs, dates)
         r = price_check(cs, dates)
+        res[rid] = (ev, cs, r)
         share = lambda x: "%+.1f (%.0f%%)" % (x, 100 * x / r["gap"]) if r and abs(r["gap"]) >= 0.5 else ("%+.1f" % x if r else "-")
         out.append("| %s | %s | %s | %s | %s | %s | %s |%s" % (name, cell(ev["field"]["all"]), "%+.1f" % r["gap"] if r else "-",
                                                            share(r["dec"]) if r else "-", share(r["oth"]) if r else "-",
@@ -1653,7 +1680,72 @@ def splits_section(N, dates):
             out[-1] = out[-1] + " %d, %s | %s | %s |" % (ng, "%+.1f" % g if g is not None else "-",
                                                        "%.0f%% / %.0f%%" % (100 * st.mean(a for a, _ in dr), 100 * st.mean(b for _, b in dr)) if dr else "-",
                                                        "%.0f%%" % (100 * more) if more is not None else "-")
-    return out + [""], extra
+    return out + [""], (extra, res)
+
+
+# ---------------------------------------------------------------- candidate (asked 2026-11-09): my AM against my PM teams
+def am_pm_section(N, dates):
+    """My AM teams against my PM teams inside the same contest and price group (A = AM, B = PM), with the 80% range from
+    resampling slates, and what differs between them per team: flagged and tagged picks at the draft window, the window's
+    projected drafted% of the picks, uniqueness (the share of the contest sharing 4+ of the six; exact duplicates), price,
+    points over price and swaps. A candidate for the Monday section, not a proposal."""
+    mine = [(n, c, t) for n in N for c in n["contests"] for t in n["teams"][c["contest_id"]] if t["mine"] and t["window"] and t["bin"] is not None]
+    cs = [(n["date"], c["contest_id"], t["bin"], "A" if t["window"] == "am" else "B", t, set()) for n, c, t in mine]
+    ev5, ev10 = evaluate(cs, dates, "bin5")["field"]["all"], evaluate(cs, dates, "bin10")["field"]["all"]
+    # uniqueness, per contest
+    uniq = {}
+    for n in N:
+        for c in n["contests"]:
+            ts = n["teams"][c["contest_id"]]
+            mt = [t for t in ts if t["mine"]]
+            if not mt:
+                continue
+            idx = collections.defaultdict(list)
+            for i, t in enumerate(ts):
+                for p in t["picks"]:
+                    idx[p].append(i)
+            for t in mt:
+                k = collections.Counter(i for p in t["picks"] for i in idx[p])
+                share = sum(1 for i, v in k.items() if v >= 4 and ts[i] is not t)
+                dup = sum(1 for i, v in k.items() if v >= len(t["picks"]) and ts[i] is not t)
+                uniq[id(t)] = (share / max(1, len(ts) - 1), dup)
+    prof = {}
+    for w in ("am", "pm"):
+        ts = [(n, t) for n, c, t in mine if t["window"] == w]
+        a = collections.Counter()
+        for n, t in ts:
+            rows = n["tiers"][w]
+            rs = [rows[p] for p in drafted_by(t) if p in rows]
+            a["VALUE"] += sum(r["flag"] == "VALUE" for r in rs)
+            a["PRICEY"] += sum(r["flag"] == "PRICEY" for r in rs)
+            a["tagged"] += sum(r["tag"] in QRE for r in rs)
+            a["drafted"] += st.mean(num(r["drafted"]) or 0 for r in rs) if rs else 0
+            a["share4"] += uniq.get(id(t), (0, 0))[0]
+            a["dupe"] += uniq.get(id(t), (0, 0))[1] > 0
+            a["price"] += t["price"]
+            a["over"] += t["points"] - t["price"]
+            a["swaps"] += sum(1 for x in t["adps"] if x is None)
+            a["top10"] += t["top"][10]
+        prof[w] = (len(ts), a)
+    out = ["## 3d. Candidate: my AM teams against my PM teams (for the Monday section; not a proposal)", "",
+           "A = my AM teams, B = my PM teams, inside the same contest and price group. Raw: each window's top-10% rate over the "
+           "field's 10%. Then what differs, per team.", "",
+           "| | Teams | Raw top-10% | VALUE picks | PRICEY picks | Tagged picks | Projected drafted% of picks | Field sharing 4+ of 6 | Teams with an exact duplicate | Price | Points over price | Swaps |",
+           "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    for w in ("am", "pm"):
+        k, a = prof[w]
+        if k:
+            out.append("| %s | %d | %.2f | %.2f | %.2f | %.2f | %.0f%% | %.2f%% | %.0f%% | %.1f | %+.1f | %.2f |" % (
+                w.upper(), k, a["top10"] / k / 0.10, a["VALUE"] / k, a["PRICEY"] / k, a["tagged"] / k, a["drafted"] / k,
+                100 * a["share4"] / k, 100 * a["dupe"] / k, a["price"] / k, a["over"] / k, a["swaps"] / k))
+    out += ["", "Inside the same contest and price group, AM against PM: %s (five price groups); %s (ten)." % (cell(ev5), cell(ev10)), ""]
+    cand = {"id": "candidate: my AM teams against my PM teams", "read": {"five_groups": lift_of({"field": {"all": ev5}}) if ev5 else None,
+                                                                         "ten_groups": lift_of({"field": {"all": ev10}}) if ev10 else None},
+            "profile": {w: {k: round(v / prof[w][0], 3) for k, v in prof[w][1].items()} for w in prof if prof[w][0]},
+            "teams": {w: prof[w][0] for w in prof},
+            "note": "A = my AM teams, B = my PM teams, same contest and price group; money_report.md section 3d. A candidate for the "
+                    "Monday section, not a proposal."}
+    return out, cand
 
 
 if __name__ == "__main__":
