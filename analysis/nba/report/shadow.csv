@@ -69,3 +69,87 @@ date,comparison,kind,pairs,gain
 2026-11-06,AM T4 candidate: the leverage tiebreak,candidate,5,35.3
 2026-11-07,AM T4 candidate: the leverage tiebreak,candidate,5,50.6
 2026-11-08,AM T4 candidate: the leverage tiebreak,candidate,3,-43.4
+2026-10-21,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,23,-0.8
+2026-10-23,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,43,398.4
+2026-10-24,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,29,-118.7
+2026-10-25,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,24,162.8
+2026-10-26,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,29,-3.5
+2026-10-27,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,39,-145.0
+2026-10-28,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,36,-254.7
+2026-10-30,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,25,41.2
+2026-10-31,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,30,-326.7
+2026-11-02,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,10,-15.8
+2026-11-04,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,16,9.7
+2026-11-06,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,23,5.4
+2026-11-07,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,25,-129.9
+2026-11-08,"AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points",candidate,20,36.2
+2026-10-21,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,59,-340.8
+2026-10-23,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,38,289.4
+2026-10-24,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,52,128.9
+2026-10-25,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,28,121.2
+2026-10-26,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,29,-0.1
+2026-10-27,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,26,-56.9
+2026-10-28,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,44,-130.7
+2026-10-30,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,13,-11.3
+2026-10-31,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,32,-275.6
+2026-11-02,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,17,-145.5
+2026-11-04,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,40,40.7
+2026-11-06,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,35,57.6
+2026-11-07,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,12,-52.8
+2026-11-08,"PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points",candidate,41,94.6
+2026-10-21,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-23,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-24,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-25,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-26,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-27,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-28,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,1,-14.6
+2026-10-30,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-31,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-11-02,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,9,-10.2
+2026-11-04,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,3,-9.4
+2026-11-06,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-11-07,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-11-08,AM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-21,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-23,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,1,13.6
+2026-10-24,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-25,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-26,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-27,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-28,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-30,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-31,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-11-02,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,2,23.9
+2026-11-04,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-11-06,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,2,17.9
+2026-11-07,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-11-08,PM T2-T4 candidate: the less drafted within 2 projected points,candidate,0,0
+2026-10-21,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,3,9.9
+2026-10-21,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-17.2
+2026-10-23,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,2,-5.0
+2026-10-23,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,0,0
+2026-10-24,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,4.8
+2026-10-24,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,5,21.8
+2026-10-25,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,23.7
+2026-10-25,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,3,36.3
+2026-10-26,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-11.2
+2026-10-26,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,4,8.1
+2026-10-27,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,0,0
+2026-10-27,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,0,0
+2026-10-28,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,7.7
+2026-10-28,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,2,-30.6
+2026-10-30,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,18.4
+2026-10-30,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,3,13.6
+2026-10-31,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,8.3
+2026-10-31,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,3,-12.3
+2026-11-02,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-10.7
+2026-11-02,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,4,0.5
+2026-11-04,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-11.7
+2026-11-04,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,0,0
+2026-11-06,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,3,-36.7
+2026-11-06,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-13.4
+2026-11-07,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,3,41.8
+2026-11-07,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,5,-31.4
+2026-11-08,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,10.1
+2026-11-08,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-14.8

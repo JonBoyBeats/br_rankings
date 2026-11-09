@@ -111,6 +111,8 @@ Decision pairs (ADP within 4) that include a tagged player and that the variant 
 
 Each tier's average score (players who played, at the PM lock; T5 drafted only) against the average swap for players ruled out from that tier (credited swaps, weighted by teams). Priced up: at the PM lock every teammate projected for 20+ was already drafted inside ADP 30, so no cheap beneficiary was left for a swap; cheap: one was. Excluded from swap tests: 2026-11-01 (Obi Toppin (ADP 23.1) and Jakob Poeltl (23.4) both sat, 0.3 picks apart: ADP can't tell which one a swap replaced).
 
+Swaps in money (contest side, money_report.md "Swaps by the ruled-out player's tier", 2026-11-09, on the swap credits before the 11-09 re-credit): teams with a T1-T2 scratch reached the top 10% at 0.42 times the rate of same-price teams with no swap (finish 13.4 percentile points worse; 6,262 teams, 5 slates); T3-T5 scratches 0.79 (finish +4.2; 12,522 teams, 10 slates). The swap doesn't make the slot whole in money, least of all at the top. No rule change yet.
+
 | Tier (PM lock; AM if off the PM board) | Tier average | Out players (the real sample) | Swaps | Swap average (range by player) | Cost | Priced-up teammates: swaps, average | Cheap teammates: swaps, average |
 |---|---|---|---|---|---|---|---|
 | T1 | 52.2 | 1 (anecdote: under 5 players) | 1239 | 38.7 (38.7 to 38.7) | -13.6 | - | 1239, 38.7 |

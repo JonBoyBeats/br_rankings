@@ -349,6 +349,11 @@ def main():
             "players ruled out from that tier (credited swaps, weighted by teams). Priced up: at the PM lock every teammate "
             "projected for 20+ was already drafted inside ADP 30, so no cheap beneficiary was left for a swap; cheap: one was. "
             "Excluded from swap tests: " + "; ".join("%s (%s)" % kv for kv in sorted(SW.EXCLUDED.items())) + ".", "",
+            "Swaps in money (contest side, money_report.md \"Swaps by the ruled-out player's tier\", 2026-11-09, on the swap "
+            "credits before the 11-09 re-credit): teams with a T1-T2 scratch reached the top 10% at 0.42 times the rate of "
+            "same-price teams with no swap (finish 13.4 percentile points worse; 6,262 teams, 5 slates); T3-T5 scratches 0.79 "
+            "(finish +4.2; 12,522 teams, 10 slates). The swap doesn't make the slot whole in money, least of all at the top. "
+            "No rule change yet.", "",
             "| Tier (PM lock; AM if off the PM board) | Tier average | Out players (the real sample) | Swaps | Swap average (range by player) | Cost | Priced-up teammates: swaps, average | Cheap teammates: swaps, average |",
             "|---|---|---|---|---|---|---|---|"]
     tavg = {}
