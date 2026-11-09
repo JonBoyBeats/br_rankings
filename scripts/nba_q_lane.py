@@ -97,6 +97,32 @@ def resample_rate(per, rnd):
     return bs[len(bs) // 10], bs[len(bs) * 9 // 10]
 
 
+def x_values(H):
+    """{(date, window, player_id): X on the board's Proj scale} for every player tagged Q, D or GTD at a lock with our
+    chance on file: the calibrated chance x median + (1 - it) x S, as in main()."""
+    for r in H:
+        r.setdefault("med", B.median_of_proj(num(r["proj"])) if num(r["proj"]) is not None else None)
+    cal = [dict(p=float(r["play"]), y=int(r["played"]), tagged=bool(QT.match(r["tag"] or ""))) for r in H
+           if r["play"] != "" and r["played"] != ""]
+    a, b, c = fit(cal)
+    pcal = lambda p, tagged: 1 / (1 + math.exp(-(a + b * logit(p) + (c if tagged else 0))))
+    S = {}
+    for r in H:
+        if r["med"] is None or tag_type(r["tag"]) == "Out" or (num(r["drafted"]) is not None and num(r["drafted"]) >= 50):
+            continue
+        p = pcal(float(r["play"]), bool(QT.match(r["tag"] or ""))) if r["play"] != "" else (0.6 if QT.match(r["tag"] or "") else 0.97)
+        k = (r["date"], r["window"])
+        S[k] = max(S.get(k, 0), p * r["med"])
+    out = {}
+    for r in H:
+        k = (r["date"], r["window"])
+        if QT.match(r["tag"] or "") and r["med"] is not None and r["play"] != "" and k in S:
+            p = pcal(float(r["play"]), True)
+            x = p * r["med"] + (1 - p) * S[k]
+            out[(r["date"], r["window"], r["player_id"])] = x * (0.25 + 0.75 * B.CEIL[0]) + 0.75 * B.CEIL[1]
+    return out
+
+
 def main():
     H = G.load()
     rnd = random.Random(11)

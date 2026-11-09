@@ -3622,10 +3622,10 @@ var NBA_TIER_COLORS = ["#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa"];
    ownership tiebreak, adopted 2026-11-04). Edit freely. */
 var NBA_TIER_NOTES = [
   "Elite \u2013 ADP (2: Boom) then ETR",
-  "Stars \u2013 ADP then ADP (1: ETR)",
+  "Stars \u2013 ADP then ADP (2: ETR)",
   "Middle \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
-  "Middle \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
-  "The Rest \u2013 Proj (3: ADP), AM: keep the button\u2019s order \u2013 then ETR (ownership tiebreak paused 11-09)"
+  "Middle \u2013 Proj (2: less drafted, 3: ADP) then ADP (2: ETR)",
+  "The Rest \u2013 Proj (3: ADP), AM: keep the button\u2019s order \u2013 then ADP (ownership tiebreak paused)"
 ];
 
 /** Your saved tiers, read as five: a board saved with six keeps its first five lines (tiers 5 and 6 merge). */
@@ -3717,9 +3717,12 @@ var NBA_MIN_TIER = { 6: 4, 4: 3 };   // T2-T4 on each ladder hold at least this 
 var NBA_MIN_T1 = 2;                  // T1, the elite, at least 2
 var NBA_SMASH_PLAY = 0.7;
 var NBA_TIER_RULE_STEPS = {      // [key, within]: higher first; within that much, the next key decides
-  am: { 1: [["adp", 2], ["boom", 0]], 2: [["adp", 0]], 3: [["proj", 3], ["adp", 0]], 4: [["proj", 3], ["adp", 0]], 5: [["proj", 3], ["adp", 0]] },
-  pm: { 1: [["projx", 0]], 2: [["adp", 1], ["projx", 0]], 3: [["proj", 0], ["adp", 0], ["boom", 0]],
-        4: [["proj", 0], ["adp", 0], ["boom", 0]], 5: [["projx", 0]] }    // T5's ownership tiebreak paused 2026-11-09
+  // the switches step 6 adopted (2026-11-09, scripts/nba_tier_rules.py): AM T4 leverage (within 2 points the less drafted
+  // first), PM T2 and T4 ADP with ETR within 2 picks, PM T5 ADP (VALUE first, as everywhere)
+  am: { 1: [["adp", 2], ["boom", 0]], 2: [["adp", 0]], 3: [["proj", 3], ["adp", 0]],
+        4: [["projx", 2], ["drafted", 0], ["proj", 3], ["adp", 0]], 5: [["proj", 3], ["adp", 0]] },
+  pm: { 1: [["projx", 0]], 2: [["adp", 2], ["projx", 0]], 3: [["proj", 0], ["adp", 0], ["boom", 0]],
+        4: [["adp", 2], ["projx", 0]], 5: [["adp", 0]] }
 };
 var NBA_PM_Q_PUSH = 2;           // PM window: a Questionable player is ordered two tiers back (lean adopted 2026-11-09)
 

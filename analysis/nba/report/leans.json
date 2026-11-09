@@ -3,48 +3,133 @@
  "adopted": [
   {
    "id": "am-t5-button-order",
-   "tier": 5, "window": "am", "pod": 6,
+   "tier": 5,
+   "window": "am",
+   "pod": 6,
    "statement": "AM T5: the Tiers button's order is the default; your moves off it are logged as takes and graded.",
    "evidence": "Holds against ADP in both windows: your board against ADP in T5, AM primary -3.1 per pair (364 pairs, LEAN with the RULE numbers, check pending), PM -2.4 (728 pairs, RULE). Takes against the button, AM primary: -3.3 per take (285 pairs, 80% range -4.8 to -1.6).",
    "basis": "both windows",
-   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
    "drop_if": "AM T5 takes against the button turn positive over the 14 forward nights"
   },
   {
    "id": "value-up-middle-t5",
-   "tier": "3, 4, 5", "window": "both", "pod": 6,
+   "tier": "3, 4, 5",
+   "window": "both",
+   "pod": 6,
    "statement": "VALUE-flagged players go first in their tier (the button already sorts them there) in the middle and T5, both windows.",
    "evidence": "VALUE beat its pair partners: middle AM +2.5 (167 pairs), PM +2.7 (253); T4 AM +4.1 (73), PM +1.9 (102); T5 AM +4.5 (341, RULE numbers, check pending), PM +3.5 (512). Points per pair, swap rule.",
    "basis": "both windows",
-   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
    "drop_if": "VALUE stops beating its partners in either window over the 14 forward nights"
   },
   {
    "id": "pm-questionable-back-two",
-   "tier": "all", "window": "pm", "pod": 6,
+   "tier": "all",
+   "window": "pm",
+   "pod": 6,
    "statement": "PM window: a Questionable player is ordered two tiers back (the button's NBA_PM_Q_PUSH; the chip shows the tier he's ordered in).",
    "evidence": "Against the button's order on decision pairs involving him: +4.9 per pair (103 pairs, 80% range +2.1 to +8.4), RULE numbers, check pending. Back one tier +0.8 (66, no lean); ranking on X -0.7 (374, no lean).",
    "basis": "RULE numbers, check pending",
-   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
    "drop_if": "it flips over the 14 forward nights, or fails the check on the last 5 slates once there are 14"
   },
   {
    "id": "am-questionable-no-push",
-   "tier": "all", "window": "am", "pod": 6,
+   "tier": "all",
+   "window": "am",
+   "pod": 6,
    "statement": "AM window: no push for a Questionable player; keep the button's order (a scratch is swapped, and the swap scores about like a T3/T4 player).",
    "evidence": "No variant beat the button: back one tier -1.1 (89 pairs), back two +0.8 (119), rank on X -1.8 (262); none a lean. Swaps average about 33 points (swap value S about right, +1.0).",
    "basis": "no variant beats the default",
-   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
    "drop_if": "a push variant reaches a lean over the 14 forward nights"
   },
   {
    "id": "pm-t5-beneficiary-picks",
-   "tier": 5, "window": "pm", "pod": 6,
+   "tier": 5,
+   "window": "pm",
+   "pod": 6,
    "statement": "PM T5: keep making beneficiary picks (raising a player whose teammate is tagged or out).",
    "evidence": "PM T5 takes by type: beneficiary picks +3.5 per take (96 pairs, 61% right, 80% range +0.1 to +6.8).",
    "basis": "listed as a candidate before testing",
-   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
    "drop_if": "beneficiary takes in PM T5 turn negative over the 14 forward nights"
+  },
+  {
+   "id": "am-t4-leverage-tiebreak",
+   "tier": 4,
+   "window": "am",
+   "pod": 6,
+   "statement": "AM T4: within 2 projected points the less drafted first, then the rule (Proj, 3: ADP).",
+   "evidence": "Step 6, against the button: +2.8 per pair (45 pairs, 80% range +0.5 to +6.9). In the AM middle as a whole the leverage tiebreak was about free (+1.0, 53 pairs, no lean). A Boom tiebreak also leaned + in AM T4 (+2.3, 46 pairs); leverage scored more per pair (+2.36 against +2.10) and is the switch.",
+   "basis": "listed as a candidate before testing",
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
+   "drop_if": "it loses to the plain rule over the 14 forward nights"
+  },
+  {
+   "id": "pm-t2-adp-etr-2",
+   "tier": 2,
+   "window": "pm",
+   "pod": 6,
+   "statement": "PM T2: ADP, with ETR deciding within 2 picks (was within 1).",
+   "evidence": "Step 6, against the old rule ADP (1: ETR): +3.9 per pair (57 pairs, 80% range +0.6 to +7.2).",
+   "basis": "listed as a candidate before testing",
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
+   "drop_if": "it loses to ADP (1: ETR) over the 14 forward nights"
+  },
+  {
+   "id": "pm-t4-adp-etr-2",
+   "tier": 4,
+   "window": "pm",
+   "pod": 6,
+   "statement": "PM T4: ADP, with ETR deciding within 2 picks (was ETR, ties to ADP then Boom). The first rule to split T4 from T3.",
+   "evidence": "Step 6, against the old ETR rule: +3.1 per pair (57 pairs, 80% range +1.0 to +5.6); ADP straight +1.5 (108) and Projection with an ADP tiebreak +2.2 (93) leaned the same way. In PM T3 the ETR rule beat every alternative (ADP straight -6.7, 102 pairs). Open question: with the flags on, PM T4 scores -0.13 per pair; without them +1.21 (no flags beat flags +4.6, 40 pairs): the PRICEY flip again.",
+   "basis": "listed as a candidate before testing",
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
+   "drop_if": "it loses to the ETR rule over the 14 forward nights"
+  },
+  {
+   "id": "pm-t5-adp-value-up",
+   "tier": 5,
+   "window": "pm",
+   "pod": 6,
+   "statement": "PM T5: ADP straight, VALUE first (was ETR, with the ownership tiebreak).",
+   "evidence": "Step 6, against the old rule: T5 by ADP with VALUE moved up +2.3 per pair (560 pairs, 80% range +0.5 to +4.0): RULE, same side on the last 5 slates, drop one player holds. ADP straight +1.7 (641, lean).",
+   "basis": "RULE",
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
+   "drop_if": "it flips over the 14 forward nights"
+  },
+  {
+   "id": "keep-one-tier-cap",
+   "tier": "all",
+   "window": "both",
+   "pod": 6,
+   "statement": "Combine the ladders with the one-tier cap (current): not the full move to the projection tier, not no move.",
+   "evidence": "Step 6: full move to the projection tier lost to the cap in both windows, AM -4.3 (88 pairs, RULE numbers, check pending), PM -4.1 (240 pairs, RULE); no move AM -1.3 (61, no lean), PM +4.6 (29, not enough).",
+   "basis": "both windows",
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
+   "drop_if": "no move reaches a lean over the cap"
   }
  ],
  "paused": [
@@ -57,8 +142,16 @@
   }
  ],
  "rules": [
-  {"id": "pm-middle-board-vs-adp", "statement": "PM middle (T3/T4): your board beats ADP straight.", "evidence": "+2.7 per pair (243 pairs), RULE: 90% range clear, same side on the last 5 slates, drop one player holds. T3 alone +5.5 (118, RULE)."},
-  {"id": "pm-t5-board-vs-adp", "statement": "PM T5: ADP straight beats your board.", "evidence": "-2.4 per pair (728 pairs), RULE. Holds in AM too (-3.1, 364 pairs): the basis of am-t5-button-order."}
+  {
+   "id": "pm-middle-board-vs-adp",
+   "statement": "PM middle (T3/T4): your board beats ADP straight.",
+   "evidence": "+2.7 per pair (243 pairs), RULE: 90% range clear, same side on the last 5 slates, drop one player holds. T3 alone +5.5 (118, RULE)."
+  },
+  {
+   "id": "pm-t5-board-vs-adp",
+   "statement": "PM T5: ADP straight beats your board.",
+   "evidence": "-2.4 per pair (728 pairs), RULE. Holds in AM too (-3.1, 364 pairs): the basis of am-t5-button-order."
+  }
  ],
  "candidates": [
   "AM primary T2: your board beats our Proj (+5.6, 41 pairs)",
@@ -70,5 +163,13 @@
   "PM T3 VALUE (+6.6, 90 pairs, inside the adopted middle VALUE lean)",
   "Small slates: AM middle PRICEY lags (+6.8, 43); AM T5 VALUE (+2.3, 55)",
   "PM T2 other reads in your takes (+4.3, 51 pairs)"
- ]
+ ],
+ "kept": [
+  "AM T1 ADP (2: Boom), PM T1 ETR: T1 not enough yet (11 pairs at most against any alternative).",
+  "AM T2 ADP: projection straight -6.5 (51 pairs, lean against it), Boom tiebreak -4.2 (78, lean against).",
+  "AM middle Proj (3: ADP) in T3: nothing beat it (all under 40 pairs in T3 alone).",
+  "PM T3 ETR (ties ADP then Boom): every alternative lost (ADP straight -6.7, 102 pairs; Projection with an ADP tiebreak -6.9, 95, RULE against).",
+  "AM T5 the button's order (Proj, 3: ADP): ADP straight +0.6 (124, no lean), T5 by ADP with VALUE up -0.4 (63, no lean), projection straight -6.1 (220, against)."
+ ],
+ "leverage_t2_t4": "Step 6 answer: a leverage tiebreak (within 2 points, less drafted first) is about free in the AM middle (+1.0, 53 pairs, no lean) and wins in AM T4 (+2.8, adopted); in PM it costs points in the middle (-4.1 per pair, 123 pairs, RULE against) and T4 (-2.5, 64, lean against); T2 is thin both windows (AM -5.0 on 25 pairs, PM +2.6 on 41, no lean). So leverage belongs in the AM middle, not PM."
 }

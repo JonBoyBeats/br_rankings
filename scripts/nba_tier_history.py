@@ -30,10 +30,11 @@ LADDER = {6: [(2, 5, 4), (12, 18, 15), (19, 25, 22), (27, 33, 30)], 4: [(2, 4, 3
 SMASH_PLAY = 0.7
 Q_TAG = re.compile(r"^(q|d|g)", re.I)
 RULE_STEPS = {     # each tier's rule (index.html NBA_TIER_RULE_STEPS, nba_report.py TIER_RULES): (key, within), higher first
-    "am": {1: [("adp", 2), ("boom", 0)], 2: [("adp", 0)], 3: [("proj", 3), ("adp", 0)], 4: [("proj", 3), ("adp", 0)],
-           5: [("proj", 3), ("adp", 0)]},
-    "pm": {1: [("projx", 0)], 2: [("adp", 1), ("projx", 0)], 3: [("proj", 0), ("adp", 0), ("boom", 0)],
-           4: [("proj", 0), ("adp", 0), ("boom", 0)], 5: [("projx", 0)]},     # T5's ownership tiebreak paused 2026-11-09
+    # step 6's switches (2026-11-09): AM T4 leverage, PM T2 and T4 ADP (2: ETR), PM T5 ADP; T5's ownership tiebreak paused
+    "am": {1: [("adp", 2), ("boom", 0)], 2: [("adp", 0)], 3: [("proj", 3), ("adp", 0)],
+           4: [("projx", 2), ("drafted", 0), ("proj", 3), ("adp", 0)], 5: [("proj", 3), ("adp", 0)]},
+    "pm": {1: [("projx", 0)], 2: [("adp", 2), ("projx", 0)], 3: [("proj", 0), ("adp", 0), ("boom", 0)],
+           4: [("adp", 2), ("projx", 0)], 5: [("adp", 0)]},
 }
 PM_Q_PUSH = 2      # PM window: a Questionable player is ordered two tiers back (lean adopted 2026-11-09)
 FIELD_MODEL = os.path.join(HERE, "analysis", "nba", "contests", "field_model.json")
