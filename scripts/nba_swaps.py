@@ -71,7 +71,7 @@ def night(day):
     last_adp = lambda r: next((num(r.get(c)) for c in ("adp_close", "adp_pm", "adp_etr", "adp_am") if num(r.get(c)) is not None), None)
     out = {p: dict(r, adp_out=last_adp(r)) for p, r in rows.items() if r["min"] == "0.0" and r["team"] in played and last_adp(r) is not None}
     tip = tips(day)
-    swaps, unattributed, kept = collections.defaultdict(list), 0, collections.Counter()
+    swaps, unattributed, kept, credited = collections.defaultdict(list), 0, collections.Counter(), []
     for t in teams:
         picks = [(t["p%d" % i], num(t["adp%d" % i])) for i in range(1, 7) if t["p%d" % i]]
         sw = [p for p, a in picks if a is None]
@@ -94,9 +94,11 @@ def night(day):
             # swaps on one team each pairing is recorded only when the targets tip at the same time or it can't matter
             for o, s in zip(sorted(options, key=lambda o: out[o]["adp_out"]), sw):
                 swaps[o].append(s)
+                credited.append({"out": o, "swap": s, "draft_id": t["draft_id"], "contest_id": t["contest_id"],
+                                 "username": t["username"], "team": t})
         else:
             unattributed += len(sw)
-    return {"day": day, "rows": rows, "hist": hist, "teams": len(teams), "pods": len({t["draft_id"] for t in teams}),
+    return {"day": day, "rows": rows, "hist": hist, "teams": len(teams), "credited": credited, "all_teams": teams, "pods": len({t["draft_id"] for t in teams}),
             "contests": len(contests), "swaps": swaps, "unattributed": unattributed, "kept": kept, "out": out, "tip": tip,
             "n_swaps": sum(1 for t in teams for i in range(1, 7) if t["p%d" % i] and not t["adp%d" % i])}
 

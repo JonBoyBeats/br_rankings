@@ -178,6 +178,10 @@
              font-size: 9px; line-height: 13px; font-weight: 700; user-select: none; }
   .tiertag.drag { cursor: ns-resize; touch-action: none; }
   /* the Tiers button's read on a row: ADP and projection tier, its flag and, for a Q tag, its class */
+  #swapPanel { margin: 8px 0; padding: 8px 10px; border: 1px solid var(--line, #cbd5e1); border-radius: 6px; font-size: 13px; }
+  #swapPanel .swaphead { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  #swapPanel .swaplist { margin: 4px 0 6px 20px; padding: 0; }
+  #swapPanel .swapprev div { margin-top: 3px; }
   .tierinfo { display: inline-flex; gap: 3px; align-items: center; font-family: var(--mono); font-size: 10px; white-space: nowrap; }
   .tierinfo .tap { color: var(--muted); }
   .tierinfo b { padding: 0 3px; border-radius: 3px; font-weight: 600; }
@@ -770,6 +774,7 @@
         <span class="pair">
           <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
           <button type="button" id="tiersBtn" aria-pressed="false" title="Build the tiers from scratch: an ADP ladder and a projection ladder, lines at their biggest gaps, combined into five tiers with VALUE and PRICEY flags. Moves after it are logged as takes">Tiers</button>
+          <button type="button" id="swapBtn" class="nba-data" title="The swap board: your likely-undrafted swap targets in order, where your swaps would land, and a one-step reorder for after drafting">Swaps</button>
           <select id="tiersSrc" class="nba-data" title="The projection ladder's source: Auto is our Proj until ETR's file is in, then ETR"><option value="auto">Auto</option><option value="ours">Ours</option><option value="etr">ETR</option></select>
           <button type="button" id="copyMain" hidden title="Rank this slate's players exactly as your main slate ranks them, then fill in the rest">Copy main ranks</button>
           <input type="number" id="switchAt" class="nba-data" min="1" step="1" inputmode="numeric" style="width:58px"
@@ -885,6 +890,7 @@
       <span class="r"><button type="button" data-sort="vorp"
         title="Projection less the replacement level at that position">VORP</button></span>
     </div>
+    <div id="swapPanel" hidden></div>
     <div id="rows"><div class="empty">Loading the mirror&hellip;</div></div>
   </div>
 
@@ -2506,6 +2512,7 @@ var K = {
   tiers: function (label) { return "brr:tiers:" + label; },
   tierBuild: function (label) { return "brr:tierbuild:" + label; },  // NBA: the Tiers button's ladders, combined tiers and the moves since
   tierSrc: function (label) { return "brr:tiersrc:" + label; },      // NBA: which projection the Tiers button reads (auto, ours, etr)
+  swapMode: function (label) { return "brr:swapmode:" + label; },    // NBA: the swap board's near-tie order (low, proj, high)
   locks: function (label) { return "brr:locks:" + label; },         // NBA: {slate_id, am, pm}, your boards locked for the morning report
   expo: function (label) { return "brr:expo:" + label; },           // your exposures from an Underdog export: {file, at, drafts, counts}         // NBA: {on, starts}: where tiers 2-5 begin, by rank
   slate: NBA_LIKE ? "brr:slate:" + SPORT_MODE : "brr:slate",
@@ -3855,6 +3862,149 @@ function logTierMove(pid, from, to) {
 function tierBuildForLock() {
   var b = state.slate ? load(K.tierBuild(state.slate.label), null) : null;
   return b ? { at: b.at, window: b.window, source: b.source, pod: b.pod, lines: b.lines, players: b.players, order: b.order, moves: b.moves || [] } : null;
+}
+
+/* ---- The swap board (step 7): a drafted player ruled out before his game swaps to your highest-ranked player left
+   undrafted in that pod whose game hasn't started, by your rankings at swap time. So once you're done drafting, your
+   order is a swap order. This ranks everyone on expected points (our calibrated chance he plays x his median: a
+   Questionable player drops by his risk of sitting, a second swap risk), near-ties (within 2 points) by ownership:
+   lowest first concentrates your swaps on players the field doesn't have (leverage), highest first spreads them,
+   projection only ignores it. Backtest (scripts/nba_swap_board.py, 100 of your swaps over 9 nights): the three scored
+   within 0.5 points of each other; lowest first put 69% of a night's swaps on one target (field drafted 32%), highest
+   first 53% (76%). Later games aren't ranked ahead: a game that has started is skipped anyway, and putting a later game
+   first only changes which eligible player you get. NBA_SIT_CAL is the calibration of our miss chance
+   (scripts/nba_q_lane.py: our 70% for a tagged player played 62%). */
+var NBA_SIT_CAL = { a: 0.89, b: 0.81, tagged: -1.09 };
+var NBA_SWAP_TIE = 2;
+var NBA_SWAP_MODES = { low: "Leverage: least drafted first in near-ties", proj: "Projection only", high: "Spread: most drafted first in near-ties" };
+
+/** Our calibrated chance he plays tonight. */
+function nbaPlayChance(p) {
+  if (/^o/i.test(p.injury || "") || (state.nbaOutPids && state.nbaOutPids[p.player_id])) return 0;
+  var d = nbaSitDay(), x = null;
+  if (d) {
+    var plain = String((p.first_name || "") + " " + (p.last_name || "")).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    x = d.players[boardKey(p.first_name, p.last_name, state.nameMaps.nba || {})] || d.players[normName(plain)];
+  }
+  var miss = x && typeof x.p === "number" ? x.p : 0.02, play = Math.min(0.995, Math.max(0.005, 1 - miss));
+  var z = NBA_SIT_CAL.a + NBA_SIT_CAL.b * Math.log(play / (1 - play)) + (/^(q|d|g)/i.test(p.injury || "") ? NBA_SIT_CAL.tagged : 0);
+  return 1 / (1 + Math.exp(-z));
+}
+
+/** Everyone with a projection in swap order: [{p, ev, med, play, drafted}]. */
+function nbaSwapOrder(mode) {
+  var fieldCtx = nbaFieldCtx();
+  var rows = state.slate.players.filter(function (p) { return typeof state.proj[p.player_id] === "number"; }).map(function (p) {
+    var med = nbaMedianOf(state.proj[p.player_id]), play = nbaPlayChance(p);
+    var dr = hasAdp(p) ? nbaDraftedPct(p.player_id, fieldCtx) : 0;
+    return { p: p, med: med, play: play, ev: play * med, drafted: dr == null ? 0 : dr };
+  }).sort(function (a, b) { return b.ev - a.ev; });
+  if (mode === "proj") return rows;
+  var out = [], i = 0;
+  while (i < rows.length) {
+    var j = i;
+    while (j + 1 < rows.length && rows[i].ev - rows[j + 1].ev <= NBA_SWAP_TIE) j++;
+    var grp = rows.slice(i, j + 1).sort(function (a, b) { return mode === "low" ? a.drafted - b.drafted : b.drafted - a.drafted; });
+    out = out.concat(grp);
+    i = j + 1;
+  }
+  return out;
+}
+
+/** Where your swaps would land under an order: {pid: expected swaps}, from your exposures (counts per player) and each
+    held player's chance to sit. A pod's other drafters are unknown before lock, so each player ahead is skipped with
+    the chance the field drafts him (projected drafted%). */
+function nbaSwapLanding(order, expo) {
+  var land = {}, swaps = 0;
+  if (!expo || !expo.counts) return { land: land, swaps: 0 };
+  state.slate.players.forEach(function (o) {
+    var n = expo.counts[o.player_id];
+    if (!n) return;
+    var out = 1 - nbaPlayChance(o);
+    if (out < 0.02) return;
+    var reach = 1, k = 0;
+    for (var i = 0; i < order.length && reach > 0.001 && k < 60; i++) {
+      var r = order[i];
+      if (r.p.player_id === o.player_id || r.play < 0.05) continue;
+      k++;
+      var q = Math.min(0.99, (r.drafted || 0) / 100), here = reach * (1 - q) * n * out;
+      land[r.p.player_id] = (land[r.p.player_id] || 0) + here;
+      reach *= q;
+    }
+    swaps += n * out;
+  });
+  return { land: land, swaps: swaps };
+}
+
+function toggleSwapPanel() {
+  var el = $("swapPanel");
+  if (!el) return;
+  el.hidden = !el.hidden;
+  if (!el.hidden) renderSwapPanel();
+}
+
+function renderSwapPanel() {
+  var el = $("swapPanel");
+  if (!el || el.hidden || !state.slate) return;
+  var mode = load(K.swapMode(state.slate.label), "low"), order = nbaSwapOrder(mode), expo = slateExpo();
+  var locks = slateLocks(), last = (locks.pm || locks.am) ? (locks.pm || locks.am).order : null, lastRank = {};
+  (last || []).forEach(function (pid, i) { lastRank[pid] = i; });
+  el.innerHTML = "";
+  var head = document.createElement("div");
+  head.className = "swaphead";
+  var sel = document.createElement("select");
+  Object.keys(NBA_SWAP_MODES).forEach(function (k) { var o = document.createElement("option"); o.value = k; o.textContent = NBA_SWAP_MODES[k]; sel.appendChild(o); });
+  sel.value = mode;
+  sel.addEventListener("change", function () { save(K.swapMode(state.slate.label), sel.value); renderSwapPanel(); });
+  var apply = document.createElement("button");
+  apply.type = "button";
+  apply.textContent = "Apply to my board";
+  apply.title = "Reorder your whole board in this swap order. Do it once you're done drafting: from then on your order only picks swaps";
+  apply.addEventListener("click", function () {
+    if (!window.confirm("Reorder your whole board in this swap order? Use it once you're done drafting: after that, your rankings only choose swaps.")) return;
+    var o = nbaSwapOrder(mode).map(function (r) { return r.p.player_id; }), seen = {};
+    o.forEach(function (pid) { seen[pid] = 1; });
+    var moved = 0, was = state.order.slice();
+    state.order = o.concat(state.order.filter(function (pid) { return !seen[pid]; }));
+    state.order.forEach(function (pid, i) { if (was[i] !== pid) moved++; });
+    save(K.order(state.slate.label), state.order);
+    render(); renderSwapPanel();
+    setStatus("Swap order applied (" + NBA_SWAP_MODES[mode].toLowerCase() + "): " + moved + " ranks changed. Your board now picks swaps in this order.");
+  });
+  head.append(sel, apply);
+  el.appendChild(head);
+  var list = document.createElement("ol");
+  list.className = "swaplist";
+  order.filter(function (r) { return r.drafted < 50 && r.play >= 0.05; }).slice(0, 15).forEach(function (r) {
+    var li = document.createElement("li"), was = lastRank[r.p.player_id], now = state.order.indexOf(r.p.player_id);
+    li.textContent = r.p.first_name.charAt(0) + ". " + r.p.last_name + " " + (r.p.team || "") + " \u00b7 " + r.ev.toFixed(1) +
+      (r.play < 0.9 ? " (" + Math.round(r.play * 100) + "% to play)" : "") + " \u00b7 drafted " + Math.round(r.drafted) + "%" +
+      (was != null && now >= 0 && Math.abs(was - now) >= 3 ? " \u00b7 " + (now < was ? "\u2191" : "\u2193") + Math.abs(was - now) + " since your last lock" : "");
+    list.appendChild(li);
+  });
+  var cap = document.createElement("div");
+  cap.className = "hint";
+  cap.textContent = "Likely undrafted in a pod (projected drafted under 50%), in this swap order: expected points (calibrated chance he plays x median). Near-ties within " + NBA_SWAP_TIE + " points by ownership.";
+  el.append(cap, list);
+  var prev = document.createElement("div");
+  prev.className = "swapprev";
+  if (!expo) {
+    prev.textContent = "Exposure preview: upload or post your exposures to see where your swaps would land. (Your pods' other teams can't be pulled before lock, so the preview uses the field's drafted% as each pod's proxy.)";
+  } else {
+    var lines = ["Exposure preview (" + expo.drafts + " teams; each pod proxied by the field's drafted%):"];
+    ["low", "proj", "high"].forEach(function (m) {
+      var res = nbaSwapLanding(nbaSwapOrder(m), expo), top = Object.keys(res.land).sort(function (a, b) { return res.land[b] - res.land[a]; }).slice(0, 4);
+      var fc = nbaFieldCtx();
+      lines.push(NBA_SWAP_MODES[m].split(":")[0] + ": " + res.swaps.toFixed(1) + " expected swaps \u2192 " + top.map(function (pid) {
+        var p = state.slate.players.filter(function (x) { return x.player_id === pid; })[0], d = hasAdp(p) ? nbaDraftedPct(pid, fc) : 0;
+        var held = expo.counts[pid] || 0;
+        return p.last_name + " " + res.land[pid].toFixed(1) + " (with drafted " + Math.round((held + res.land[pid]) / expo.drafts * 100) + "% of your teams; field " + Math.round(d || 0) + "%)";
+      }).join(", "));
+    });
+    prev.innerHTML = "";
+    lines.forEach(function (t, i) { var d = document.createElement("div"); d.textContent = t; if (!i) d.className = "hint"; prev.appendChild(d); });
+  }
+  el.appendChild(prev);
 }
 
 /** A, P, flag and Q class for one row, or null without a build. */
@@ -6627,6 +6777,7 @@ $("buildTiers").addEventListener("click", function () { applyNbaProjOrder(); });
 $("lockAm").addEventListener("click", function () { lockBoard("am"); });
 $("lockPm").addEventListener("click", function () { lockBoard("pm"); });
 $("tiersBtn").addEventListener("click", function () { pressTiers(); });
+$("swapBtn").addEventListener("click", function () { toggleSwapPanel(); });
 $("tiersSrc").addEventListener("change", function () { save(K.tierSrc(state.slate.label), this.value); });
 $("copyMain").addEventListener("click", function () { copyMainRanks(); });
 $("switchAt").addEventListener("change", function () {
