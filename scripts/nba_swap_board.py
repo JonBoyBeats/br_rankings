@@ -205,15 +205,10 @@ def main():
         md.append("| %s | %d | %.1f | %d | %.0f%% | %.0f%% | %.0f%% |" % (
             names[h], len(v), sum(v) / len(v), len(nn), 100 * sum(x["top_share"] for x in nn) / len(nn),
             100 * sum(x["top_exposure"] for x in nn) / len(nn), sum(x["top_field"] for x in nn) / len(nn)))
-    md += ["", "## Your own order at swap time (the board's saved orders)", ""]
-    if mine_order:
-        md.append("%d of your swaps had a saved order in force: its pick scored %+.1f against the projection-only pick on "
-                  "average and %+.1f against the swap board's pick (leverage order on ETR's final); it named the swap Underdog made %d times (%.0f%%; the rest are the pod proxy and crediting noise). %d of %d swaps came after your last change that night." % (
-                      len(mine_order), sum(x[1] for x in mine_order) / len(mine_order), sum(x[3] for x in mine_order) / len(mine_order),
-                      sum(1 for x in mine_order if x[2]),
-                      100 * sum(1 for x in mine_order if x[2]) / len(mine_order), sum(after_last), len(after_last)))
-    else:
-        md.append("No saved orders on file yet for nights with your swaps (the record writes them from the gist).")
+    md += ["", "## Your own swaps", "", "Graded from your real swaps in the contest rosters (your Underdog app order, which the board "
+           "never sees): analysis/nba/report/my_swaps.md. The replay of your saved order that used to stand here is superseded.",
+           "", "Reading section a: points left on the table are the best option's score minus the swap's, so positive means the swap "
+           "fell short. The field left +0.8 a swap; your swaps came out ahead of ETR's final best by 0.8 (AM 0.4, PM 1.2)."]
     md += ["", "## Your live moves: board saves after the slate locked", "", "| Slate | Saves that day | After lock | Top-80 ranks moved by them |", "|---|---|---|---|"]
     md += ["| %s | %d | %d | %d |" % x for x in live]
     open(OUT, "w").write("\n".join(md) + "\n")

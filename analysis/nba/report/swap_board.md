@@ -24,9 +24,11 @@ Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv).
 | Ownership lowest first (your habit) | 100 | 30.7 | 9 | 69% | 16% | 32% |
 | Ownership highest first | 100 | 30.7 | 9 | 53% | 14% | 76% |
 
-## Your own order at swap time (the board's saved orders)
+## Your own swaps
 
-100 of your swaps had a saved order in force: its pick scored +1.8 against the projection-only pick on average and +1.4 against the swap board's pick (leverage order on ETR's final); it named the swap Underdog made 50 times (50%; the rest are the pod proxy and crediting noise). 100 of 100 swaps came after your last change that night.
+Graded from your real swaps in the contest rosters (your Underdog app order, which the board never sees): analysis/nba/report/my_swaps.md. The replay of your saved order that used to stand here is superseded.
+
+Reading section a: points left on the table are the best option's score minus the swap's, so positive means the swap fell short. The field left +0.8 a swap; your swaps came out ahead of ETR's final best by 0.8 (AM 0.4, PM 1.2).
 
 ## Your live moves: board saves after the slate locked
 
