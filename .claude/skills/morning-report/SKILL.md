@@ -90,22 +90,42 @@ aren't February's). Same bar; nothing changes on the monthly read alone. Also re
 ## 2b. The field
 
 ```
-python3 scripts/nba_field.py --mirror ../br-adp-mirror
+python3 scripts/nba_field.py --mirror ../br-adp-mirror --summary
 ```
 
 The contests themselves: every team in every main-slate contest, pulled by the nightly run's
-Contests step (`scripts/nba_contests.py`, into `analysis/nba/contests/`), joined to the record's
-locked-board columns. If last night has no contests on file, say so (the Contests step may have
-failed: it runs after the record and doesn't stop the workflow). For the flagship contest (the most
-entries) and running over every night: cut lines; where drafted% leaves 100% and the 60-99.5% and
-10-60% players (priced players under 10% are news, not fades); the 5 most-owned pairs and 3 cores
-with turn-pair, same-position-teammate and opposing-stars flags; your tiers in the top 1% against
-the field; the field and you on players Questionable at Lock AM; your takes against the field; your
-uniqueness; your results (tail ratios, AM/PM by your own lock times); what won (FPOE, breakers); and the
-contest side's forward tests (`scripts/nba_forward.py`, pre-registered 2026-11-04 for slates 11-05 to 12-02,
-each night kept in `analysis/nba/report/forward_tests.json`): the turns' crowding check, the Boom peer
-bump's calibration, the ownership tiebreak, your teams (breakers, low-drafted picks, turn combos), Q tags
-at Lock AM, and risers once the contest counts have two weeks. No verdict on the turns before 12-02.
+Contests step (`scripts/nba_contests.py`, into `analysis/nba/contests/`). The nightly job's Field step
+also writes the whole section, with every table, to `analysis/nba/report/field.md` and records the
+night's forward-test numbers (`analysis/nba/report/forward_tests.json`). If last night has no contests on
+file, say so (the Contests step may have failed: it doesn't stop the workflow).
+
+The morning report reads **only the contest summary** (`--summary`): about 6 lines.
+
+- **Your results**: your teams' tail ratios against the field (1.00 is the field's rate), 6- and 4-drafter
+  apart, with 80% ranges; AM against PM teams at the top 10%; last night's contests.
+- **Forward tests** (`scripts/nba_forward.py`, pre-registered 2026-11-04 for slates 11-05 to 12-02): the
+  less-drafted tiebreak (a rule in use), Questionable at Lock AM drafted before against after noon, the
+  most-owned turn combo against the rest, the Boom peer bump, risers. A line each. **Nothing is decided
+  before 12-02**: don't call a verdict, don't suggest a rule change from them before then.
+- **Last night, where it touched a rule**: your takes off the tier rules against the field, and the
+  players Questionable at Lock AM (played or sat, on how many of your teams).
+
+The full tables in `field.md` (cut lines, ownership, pairs and cores, tiers in the top 1%, uniqueness,
+what won) are reference: don't summarize them in the daily report. Open them only when the user asks
+about a night, or when a summary line needs explaining. "What won" (top teams had more breakers) is
+true by definition and never a takeaway.
+
+Weekly, on the first report of each week (Monday's, or the first after it): add one short "Contest
+week" bullet to the takeaways: each forward test's running number against last week's, and your results
+by pod size against last week's. Say only what moved; no verdicts before 12-02.
+
+On 12-02's report (the window's last night): give each forward test's verdict from `field.md`'s
+section 10 against its pre-registered bar, and for each rule it touches (the less-drafted tiebreak,
+early Q tags, the turn combos) what to keep, change or drop. The user decides.
+
+Studies the summary points to are in `analysis/nba/report/field_studies.md`. The 4-drafter AM tail
+(section 7, scripts/nba_ampm_study.py): on 2026-11-09, AM teams 0.77 at the top 10% against PM 1.74,
+with equal ETR value at lock, so no draft flaw showed; look again at 10 4-drafter nights.
 
 Weighing a finding: the user's years of drafting are the prior. One that matches what they have seen can be
 adopted now and tracked forward; one that contradicts it waits for more nights. Say which it is.
@@ -299,11 +319,8 @@ In this order, short and scannable:
    tier where the rule clearly beat or lost to ADP or the projection, or your moves off it).
    Until a tier has 14 nights, its verdict is "too early" and no rule changes are suggested.
 3. **Ours vs ETR**: the one line, and the tag line.
-4. **Field**: your results (last night's contests and the running table), the cut lines (last
-   night and running), your tiers in the top 1%, the takes table, the Questionable table, then one
-   line each: where drafted% leaves 100% and any news players, the top 3 pairs with flags, your
-   uniqueness, what won; then the forward tests, a line each (turns, Boom bump, ownership tiebreak,
-   your teams, Q tags).
+4. **Contests**: the contest summary as the script prints it (your results, the forward tests, last
+   night where it touched a rule), and nothing from the full tables unless the user asks.
 5. **Hypotheses**: a line each, and any proposal (step 6b).
 6. **Themes and takeaways**: only a theme that crossed its bar; otherwise one line saying none did.
    Then the "Morning Proj vs ETR" bullet.

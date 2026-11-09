@@ -47,3 +47,24 @@ known before the game); he breaks when he outscores all 10. The night's top and 
 - 1/2 turn: the opposite. The most-owned pair of ranks 5-8 finished top 1% 2.15% vs 0.50% for other pairs there
   (difference +0.2 to +2.9). Likely: the popular pair there is the two best players left; the others include reaches.
 - Read: no general "fade the popular combo" rule. Show combo ownership with its projection; test each turn forward.
+
+## 7. Your AM against PM teams (scripts/nba_ampm_study.py, run 2026-11-09)
+Every one of your teams on file, AM or PM by the lock nearest its draft time; per team over its six picks, by closing-ADP
+round band: ETR value (ETR's last number before lock over the band's average), FPOE (points over the band's average),
+ADP gained from the morning to lock.
+
+| Drafters | Window | Teams | Nights | Top 10% (x field) | Top 1% (x field) | ETR value | FPOE | ADP gained |
+|---|---|---|---|---|---|---|---|---|
+| 6 | AM | 447 | 13 | 1.43 | 1.12 | +12.3 | +17.3 | +1.9 |
+| 6 | PM | 712 | 14 | 1.32 | 1.12 | +12.0 | +17.0 | +2.1 |
+| 4 | AM | 52 | 4 | 0.77 | 0.00 | +13.6 | +13.2 | +0.9 |
+| 4 | PM | 172 | 5 | 1.74 | 1.16 | +12.4 | +23.0 | +0.6 |
+
+- 4-drafter AM teams were drafted as well as the PM ones on ETR's own numbers at lock (+13.6 vs +12.4) and gained
+  ADP by lock, but scored 10 points a team less against their bands. The gap ran the same way on all 4 nights
+  (FPOE AM/PM: 10-22 +7.5/+23.0, 10-29 +30.8/+33.1, 11-01 +4.6/+17.4, 11-05 +1.6/+9.5).
+- Read: no draft flaw shows. The picks were as good on the projection; they scored less. 52 teams on 4 nights, many
+  sharing players, so it is mostly a few players' nights. It stays in the morning report's contest summary (AM and PM
+  at the top 10%, by pod size); look again at 10 4-drafter nights. If the AM tail is still under 1.0 then with equal
+  ETR value, check what the AM teams share (the same few players, a stack) before calling it a habit.
+- 6-drafter: no gap (AM 1.43, PM 1.32 at the top 10%).

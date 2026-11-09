@@ -1,6 +1,11 @@
 """NBA Field: the morning report's section on the contests themselves (full fields, from scripts/nba_contests.py),
 joined to the nightly record's locked-board columns (analysis/nba/daily/<date>_<day>_main.csv).
 
+First a short contest summary, the only part the morning report reads every day: your results (tail ratios by pod
+size, AM against PM teams), the forward tests a line each, and last night only where it touched a rule (your takes
+against the field, players Questionable at Lock AM). The tables below it are reference. The nightly job writes the
+whole section to analysis/nba/report/field.md (--out); --summary prints only the summary.
+
 For the night's flagship contest (the most entries), and running over every night on file:
 
   1 Cut lines     the score it took to win and to reach the top 1/5/10/20%, the median, top 1% over the median
@@ -27,7 +32,7 @@ For the night's flagship contest (the most entries), and running over every nigh
 Pick order isn't public, so rounds are estimated (see nba_contests.py); draft times are the nearest hourly ADP
 snapshot. 4-drafter small slates are kept apart in every running table. The first weeks are noise.
 
-  python3 scripts/nba_field.py [--date YYYY-MM-DD] [--mirror ../br-adp-mirror]
+  python3 scripts/nba_field.py [--date YYYY-MM-DD] [--mirror ../br-adp-mirror] [--out FILE] [--summary]
 
 --mirror gives every field team its draft time, for part 4; without it every team is read with your PM tiers.
 """
@@ -210,10 +215,8 @@ def questionable(own, by_id, mine):
     return out + [""]
 
 
-def takes(s, own):
-    out = ["### 6. Your takes against the field", ""]
-    if not s:
-        return out + ["No record for this night.", ""]
+def take_rows(s, own):
+    """(rows, {(half, tier): [takes, with the field, against it, you right]}) for the night's takes."""
     rows = []
     for half in ("am", "pm"):
         bar = R.TIER_HALVES[half][0]
@@ -221,8 +224,6 @@ def takes(s, own):
             for up, down, right, pu, pd in v["off"]:
                 ru, rd = next(r for r in s["rows"] if r["player_id"] == pu), next(r for r in s["rows"] if r["player_id"] == pd)
                 rows.append((half.upper(), t, ru, rd, right, bar["adp"]))
-    if not rows:
-        return out + ["No takes on this night's locked boards (or no tier lines on them yet).", ""]
     def field_side(ru, rd, a):
         """+1: the field took the one you put first earlier (ADP, or drafted% when their ADPs are level), -1 later, 0 even."""
         if abs(ru[a] - rd[a]) > 0.05:
@@ -234,6 +235,16 @@ def takes(s, own):
         g = groups[(half, t)]
         side = field_side(ru, rd, a)
         g[0] += 1; g[1] += side > 0; g[2] += side < 0; g[3] += right
+    return rows, groups
+
+
+def takes(s, own):
+    out = ["### 6. Your takes against the field", ""]
+    if not s:
+        return out + ["No record for this night.", ""]
+    rows, groups = take_rows(s, own)
+    if not rows:
+        return out + ["No takes on this night's locked boards (or no tier lines on them yet).", ""]
     out += ["%d takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted%% when "
             "level)." % len(rows), "", "| Lock | Tier | Takes | With the field | Against it | You were right |", "|---|---|---|---|---|---|"]
     for (half, t), g in sorted(groups.items()):
@@ -294,14 +305,27 @@ def results(dates, date):
             len(sub("pm")), R.fmt(tails(sub("pm")).get(10), "%.2f")))
     out += ["", "**Running (every contest, by pod size)**", "",
             "| Drafters | Nights | Teams | Top 1% | Top 5% | Top 10% | Top 20% | AM top 10% | PM top 10% |", "|---|---|---|---|---|---|---|---|---|"]
+    per = running(dates)
+    for pod in sorted(per, reverse=True):
+        cell = per[pod]["cell"]
+        out.append("| %d | %d | %d | %s | %s | %s | %s | %s | %s |" % (
+            pod, per[pod]["nights"], per[pod]["teams"], cell(1), cell(5), cell(10), cell(20), cell(10, "am"), cell(10, "pm")))
+    if all(v["nights"] < 5 for v in per.values()):
+        out += ["", "Ranges (80%, resampling nights) appear from 5 nights."]
+    return out + [""]
+
+
+def running(dates):
+    """{pod size: {nights, teams, cell(X, window=None) -> "ratio (80% range)"}} for my teams over every night."""
     per = defaultdict(dict)       # pod size -> night -> [(place, entries, window)]
     for d in dates:
         for _, pod, n, mine in my_rows(d):
             per[pod].setdefault(d, []).extend((p, n, w) for p, w in mine)
-    rnd = random.Random(7)
-    for pod in sorted(per, reverse=True):
-        ds = sorted(per[pod])
-        def cell(x, w=None):
+    out = {}
+    for pod in per:
+        def cell(x, w=None, pod=pod):
+            rnd = random.Random(7)
+            ds = sorted(per[pod])
             f = lambda xs: tails([(p, n) for d in xs for p, n, ww in per[pod][d] if w in (None, ww)]).get(x)
             v = f(ds)
             if v is None:
@@ -310,11 +334,8 @@ def results(dates, date):
                 return "%.2f" % v
             bs = sorted(b for b in (f([rnd.choice(ds) for _ in ds]) for _ in range(500)) if b is not None)
             return "%.2f (%.2f-%.2f)" % (v, bs[len(bs) // 10], bs[len(bs) * 9 // 10])
-        out.append("| %d | %d | %d | %s | %s | %s | %s | %s | %s |" % (
-            pod, len(ds), sum(len(v) for v in per[pod].values()), cell(1), cell(5), cell(10), cell(20), cell(10, "am"), cell(10, "pm")))
-    if all(len(v) < 5 for v in per.values()):
-        out += ["", "Ranges (80%, resampling nights) appear from 5 nights."]
-    return out + [""]
+        out[pod] = {"nights": len(per[pod]), "teams": sum(len(v) for v in per[pod].values()), "cell": cell}
+    return out
 
 
 def value(dates, date):
@@ -328,6 +349,37 @@ def value(dates, date):
         out.append("| %s%s | %+.1f / %+.1f | %.2f / %.2f |" % ("**%s**" % d if d == date else d, "" if c["pod_size"] == 6 else " (4-drafter)",
                                                             v["top1_fpoe"], v["field_fpoe"], v["top1_breakers"], v["field_breakers"]))
     return out + [""]
+
+
+def summary(date, dates, c, s, own, by_id, mine):
+    """The morning report's contest block: your results, the forward tests a line each, and last night only where it
+    touched a rule (your takes against the field, players Questionable at Lock AM)."""
+    out = ["### Contest summary", ""]
+    per = running(dates)
+    for pod in sorted(per, reverse=True):
+        x = per[pod]
+        out.append("- Your results, %d-drafter (%d nights, %d teams; 1.00 is the field's rate): top 10%% %s, top 1%% %s; "
+                   "at the top 10%%, AM teams %s, PM teams %s." % (pod, x["nights"], x["teams"], x["cell"](10), x["cell"](1),
+                                                                  x["cell"](10, "am"), x["cell"](10, "pm")))
+    for name, pod, n, mine_rows in my_rows(date):
+        tl = tails([(p, n) for p, _ in mine_rows])
+        out.append("- Last night, %s (%d-drafter): %d teams, median finish top %.0f%%, top 10%% %.2f, top 1%% %.2f." % (
+            name, pod, len(mine_rows), 100 * sorted(p for p, _ in mine_rows)[len(mine_rows) // 2] / n, tl[10], tl[1]))
+    out += FWD.brief(date, c["pod_size"])
+    touch = []
+    if s:
+        rows, groups = take_rows(s, own)
+        if rows:
+            g = [sum(v[i] for v in groups.values()) for i in range(4)]
+            touch.append("your takes off the tier rules: %d, %d right; the field went your way on %d, against on %d" % (g[0], g[3], g[1], g[2]))
+    q = [r for r in by_id.values() if r.get("injury_am") in FWD.QTAGS]
+    if q:
+        touch.append("Questionable at Lock AM: " + ", ".join("%s (%s, on %d of your %d)" % (
+            r["name"], "played" if (r["min"] or 0) > 0 else "sat", sum(1 for t in mine if r["player_id"] in t["picks"]), len(mine))
+            for r in sorted(q, key=lambda r: r["adp_am"] if r["adp_am"] is not None else 99)))
+    if touch:
+        out.append("- Last night, where it touched a rule: " + "; ".join(touch) + ".")
+    return out + ["", "The full tables follow; the morning report reads only this block (the rest is reference).", ""]
 
 
 def field(date, mirror=None):
@@ -363,20 +415,28 @@ def field(date, mirror=None):
     if by_id and FWD.FORWARD_FROM <= date <= FWD.FORWARD_TO:
         FWD.record(date, FWD.night(date, teams, c["pod_size"], by_id, times, mirror))
     out += FWD.lines(date, c["pod_size"])
-    return out
+    return out[:2] + summary(date, dates, c, s, own, by_id, mine) + out[2:]
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", help="the night (default: the newest with contests on file)")
     ap.add_argument("--mirror", help="a clone of br-adp-mirror, for each field team's draft time (part 4)")
+    ap.add_argument("--out", help="also write the whole section to this file (the nightly job: analysis/nba/report/field.md)")
+    ap.add_argument("--summary", action="store_true", help="print only the contest summary")
     a = ap.parse_args()
     ds = nights()
     if not ds:
         print("No contests on file yet.")
         return
     R.MIRROR = a.mirror
-    print("\n".join(field(a.date or ds[-1], a.mirror)))
+    out = field(a.date or ds[-1], a.mirror)
+    if a.out:
+        open(a.out, "w").write("\n".join(out) + "\n")
+    if a.summary:
+        out = out[:out.index("The full tables follow; the morning report reads only this block (the rest is reference).")] \
+            if "### Contest summary" in out else out
+    print("\n".join(out))
 
 
 if __name__ == "__main__":

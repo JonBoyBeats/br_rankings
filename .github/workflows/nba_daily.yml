@@ -71,6 +71,14 @@ jobs:
           python3 scripts/nba_contests.py model
           # the Live page's lineup chances replayed on last night's flagship, against how they finished
           pip install -q numpy && python3 scripts/nba_live_calibration.py --mirror ../br-adp-mirror
+      # The morning report's Field section (scripts/nba_field.py): the contest summary on top, the full tables as
+      # reference, and last night's forward-test numbers into forward_tests.json. Boom reads the mirror's full history.
+      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
+        name: Field
+        continue-on-error: true
+        run: |
+          git -C ../br-adp-mirror fetch -q --unshallow || true
+          python3 scripts/nba_field.py --mirror ../br-adp-mirror --out analysis/nba/report/field.md > /dev/null
       # Today's Recent notes: last night into the ledger, a fresh note for everyone on today's
       # slates who has played since his last one, then the board's notes file
       - name: Recent notes
@@ -84,6 +92,6 @@ jobs:
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
           mkdir -p analysis/cbb/daily analysis/cbb/contests
-          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md
+          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json
           git diff --cached --quiet || git commit -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           git pull --rebase -q origin main && git push

@@ -199,7 +199,7 @@ def record(date, numbers):
 def lines(date, pod):
     """The forward tests, last night and running over the pre-registered window, for slates with this pod size."""
     store = load_store()
-    ds = sorted(d for d, v in store.items() if FORWARD_FROM <= d <= min(date, FORWARD_TO) and v["pod"] == pod)
+    ds = window_nights(store, date, pod)
     last = store.get(date) if date in ds else None
     out = ["### 10. Forward tests (pre-registered 2026-11-04; slates %s to %s, %d-drafter)" % (FORWARD_FROM, FORWARD_TO, pod), ""]
     if not ds:
@@ -212,22 +212,14 @@ def lines(date, pod):
             "| Turn | Cases | Top 1%: most-owned / rest | Points: most-owned - rest | Cases it outscored | On those: top 1% most-owned / rest | Crowding penalty? |",
             "|---|---|---|---|---|---|---|"]
     for k in ("2/3", "1/2"):
-        cases = lambda xs: [(d, c) for d in xs for c in store[d]["turns"][k]]
-        def rate(cs, side):
-            return ratio(sum(c[side][1] for _, c in cs), sum(c[side][0] for _, c in cs))
-        def pts(cs):
-            return [c["pop"][2] / c["pop"][0] - c["rest"][2] / c["rest"][0] for _, c in cs if c["pop"][0] and c["rest"][0]]
-        outscored = lambda cs: [(d, c) for d, c in cs if c["pop"][0] and c["rest"][0] and c["pop"][2] / c["pop"][0] > c["rest"][2] / c["rest"][0]]
-        cs = cases(ds)
-        if not cs:
+        t = turn_stats(store, ds, k)
+        if not t:
             continue
-        diff = lambda xs: (lambda o: None if not o or rate(o, "pop") is None or rate(o, "rest") is None else rate(o, "pop") - rate(o, "rest"))(outscored(cases(xs)))
-        g = boot(ds, diff, 0.9)
-        o = outscored(cs)
-        verdict = ("verdict when the window ends" if date < FORWARD_TO else "yes" if g and g[1] < 0 else "no")
+        verdict = ("verdict when the window ends" if date < FORWARD_TO else "yes" if t["g90"] and t["g90"][1] < 0 else "no")
+        g = t["g90"]
         out.append("| %s | %d | %s / %s | %+.1f | %d | %s / %s | %s%s |" % (
-            k, len(cs), pct(rate(cs, "pop")), pct(rate(cs, "rest")), sum(pts(cs)) / len(pts(cs)) if pts(cs) else 0, len(o),
-            pct(rate(o, "pop")) if o else "-", pct(rate(o, "rest")) if o else "-", verdict,
+            k, t["cases"], pct(t["pop"]), pct(t["rest"]), t["pts"], t["o_n"],
+            pct(t["o_pop"]) if t["o_n"] else "-", pct(t["o_rest"]) if t["o_n"] else "-", verdict,
             " (90%% range of the difference: %+.2f to %+.2f percentage points)" % (100 * g[0], 100 * g[1]) if g else ""))
     if last:
         out.append("")
@@ -260,12 +252,8 @@ def lines(date, pod):
     if not ts:
         out += ["No tied pairs yet.", ""]
     else:
-        def dif(dd):
-            xs = [x for d in dd for x in store[d]["ties"]]
-            lt, ln, ht, hn = (sum(x[k] for x in xs) for k in ("lo_t1", "lo_n", "hi_t1", "hi_n"))
-            return lt / ln - ht / hn if ln and hn else None
-        lt, ln, ht, hn = (sum(x[k] for x in ts) for k in ("lo_t1", "lo_n", "hi_t1", "hi_n"))
-        g80, g90 = boot(ds, dif), boot(ds, dif, 0.9)
+        t = tie_stats(store, ds)
+        lt, ln, ht, hn, g80 = t["lt"], t["ln"], t["ht"], t["hn"], t["g80"]
         verdict = ("adopted 2026-11-04; checked when the window ends" if date < FORWARD_TO else
                    "confirmed" if g80 and g80[0] > 0 else "take it back out" if g80 and g80[1] < 0 else "not settled: stays on your prior")
         out += ["%d pairs: teams carrying the lower-drafted player finished top 1%% %s, the higher %s (80%% range of the difference "
@@ -298,9 +286,8 @@ def lines(date, pod):
     if not qs:
         out += ["None yet.", ""]
     else:
-        pl = [x for _, x in qs if x["played"]]
-        e = [sum(x["early"][i] for _, x in qs) for i in (0, 1)]
-        l = [sum(x["late"][i] for _, x in qs) for i in (0, 1)]
+        q = q_stats(store, ds)
+        pl, e, l = q["played"], q["early"], q["late"]
         out += ["%d tagged: %d played (%s over their closing price on average), %d sat. Teams that drafted them before noon PT finished "
                 "top 1%% %s (%d teams), after noon %s (%d). Underdog swaps a ruled-out player, so the sat ones barely show in the "
                 "leaderboards." % (len(qs), len(pl), R.fmt(sum(x["value"] for x in pl if x["value"] is not None) / len(pl) if pl else None, "%+.1f"),
@@ -312,6 +299,74 @@ def lines(date, pod):
 
     out += ["**Risers**: waits on two weeks of the poller's hourly contest counts (logged from 2026-11-04).", ""]
     return out
+
+
+# ---------------------------------------------------------------- running numbers, for lines() and brief()
+def window_nights(store, date, pod):
+    return sorted(d for d, v in store.items() if FORWARD_FROM <= d <= min(date, FORWARD_TO) and v["pod"] == pod)
+
+
+def turn_stats(store, ds, k):
+    """The most-owned combo against the rest at turn k over nights ds, or None with no cases."""
+    cases = lambda xs: [(d, c) for d in xs for c in store[d]["turns"][k]]
+    def rate(cs, side):
+        return ratio(sum(c[side][1] for _, c in cs), sum(c[side][0] for _, c in cs))
+    def pts(cs):
+        return [c["pop"][2] / c["pop"][0] - c["rest"][2] / c["rest"][0] for _, c in cs if c["pop"][0] and c["rest"][0]]
+    outscored = lambda cs: [(d, c) for d, c in cs if c["pop"][0] and c["rest"][0] and c["pop"][2] / c["pop"][0] > c["rest"][2] / c["rest"][0]]
+    cs = cases(ds)
+    if not cs:
+        return None
+    diff = lambda xs: (lambda o: None if not o or rate(o, "pop") is None or rate(o, "rest") is None else rate(o, "pop") - rate(o, "rest"))(outscored(cases(xs)))
+    o = outscored(cs)
+    return {"cases": len(cs), "pop": rate(cs, "pop"), "rest": rate(cs, "rest"), "pts": sum(pts(cs)) / len(pts(cs)) if pts(cs) else 0,
+            "o_n": len(o), "o_pop": rate(o, "pop") if o else None, "o_rest": rate(o, "rest") if o else None, "g90": boot(ds, diff, 0.9)}
+
+
+def tie_stats(store, ds):
+    def dif(dd):
+        xs = [x for d in dd for x in store[d]["ties"]]
+        lt, ln, ht, hn = (sum(x[k] for x in xs) for k in ("lo_t1", "lo_n", "hi_t1", "hi_n"))
+        return lt / ln - ht / hn if ln and hn else None
+    ts = [x for d in ds for x in store[d]["ties"]]
+    lt, ln, ht, hn = (sum(x[k] for x in ts) for k in ("lo_t1", "lo_n", "hi_t1", "hi_n"))
+    return {"n": len(ts), "lt": lt, "ln": ln, "ht": ht, "hn": hn, "g80": boot(ds, dif)}
+
+
+def q_stats(store, ds):
+    qs = [(d, x) for d in ds for x in store[d]["q"]]
+    return {"n": len(qs), "played": [x for _, x in qs if x["played"]],
+            "early": [sum(x["early"][i] for _, x in qs) for i in (0, 1)], "late": [sum(x["late"][i] for _, x in qs) for i in (0, 1)]}
+
+
+def brief(date, pod):
+    """One line per forward test, for the morning report's contest summary."""
+    store = load_store()
+    ds = window_nights(store, date, pod)
+    if not ds:
+        return ["- Forward tests, %d-drafter: no nights in yet (the window runs %s to %s)." % (pod, FORWARD_FROM[5:], FORWARD_TO[5:])]
+    out = []
+    t = tie_stats(store, ds)
+    if t["n"]:
+        g = t["g80"]
+        out.append("  - Less-drafted tiebreak (in use): %d pairs; teams with the less-drafted player top 1%% %s vs %s%s." % (
+            t["n"], pct(ratio(t["lt"], t["ln"])), pct(ratio(t["ht"], t["hn"])),
+            " (80%% range of the difference: %+.2f to %+.2f points)" % (100 * g[0], 100 * g[1]) if g else ""))
+    q = q_stats(store, ds)
+    if q["n"]:
+        e, l = q["early"], q["late"]
+        out.append("  - Questionable at Lock AM: %d tagged, %d played; teams that drafted them before noon top 1%% %s (%d teams) vs after %s (%d)." % (
+            q["n"], len(q["played"]), pct(ratio(e[1], e[0])), e[0], pct(ratio(l[1], l[0])), l[0]))
+    tt = [(k, turn_stats(store, ds, k)) for k in ("2/3", "1/2")]
+    tt = [(k, x) for k, x in tt if x]
+    if tt:
+        out.append("  - Most-owned turn combo vs the rest, top 1%: " + "; ".join("%s turn %s vs %s (%d case%s)" % (k, pct(x["pop"]), pct(x["rest"]), x["cases"], "" if x["cases"] == 1 else "s")
+                                                                          for k, x in tt) + ".")
+    rowsb = [x for d in ds for x in (store[d]["boom"] or [])]
+    moved = [x for x in rowsb if abs(x[0] - x[1]) >= 0.02]
+    out.append("  - Boom peer bump: %d players moved 2+ points so far (too few to read); risers wait on two weeks of entry counts." % len(moved))
+    return ["- Forward tests, %d-drafter: %d night%s in of %s to %s; nothing is decided before %s." % (
+        pod, len(ds), "" if len(ds) == 1 else "s", FORWARD_FROM[5:], FORWARD_TO[5:], FORWARD_TO[5:])] + out
 
 
 def pct(v):
