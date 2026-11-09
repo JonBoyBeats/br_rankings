@@ -57,12 +57,18 @@ switches and leans alike, is provisional until its money verdict is in, and may 
 (`leans.json` "money_policy"; each entry's `register` field names its row). Say so wherever a rule's
 status is given. Points and money together:
 
+The money bar (the contest side uses the same): **MONEY LEAN** is at least 80% of slate resamples
+in the same direction on top-10% lift or average finish percentile, with enough teams in the cell;
+**MONEY RULE** is a 90% range above zero on the same reader, the same direction in the check slates.
+Money clears its bar at MONEY LEAN or better; to overturn a points RULE, money must reach MONEY RULE.
+The contest side's verdicts say LEAN or RULE and which reader they rest on; quote both.
+
 | Points | Money | Do |
 |---|---|---|
 | positive | positive | keep |
 | positive | pending | keep, provisionally |
-| positive | negative | drop only if money's evidence clears its own bar; otherwise keep |
-| negative | positive | keep only if money's evidence clears its own bar; otherwise drop |
+| positive | negative | drop only if money is at least a MONEY LEAN (a MONEY RULE when points is a RULE); otherwise keep |
+| negative | positive | keep only if money is at least a MONEY LEAN (a MONEY RULE when points is a RULE against it); otherwise drop |
 | negative | negative | drop |
 
 Every change still needs the user's yes.
