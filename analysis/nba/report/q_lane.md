@@ -91,12 +91,12 @@ Decision pairs (ADP within 4) that include a tagged player and that the variant 
 
 | Window | Tag | Back one tier | Back two tiers | Rank on X |
 |---|---|---|---|---|
-| AM | Questionable | -2.8 (-4.1 to -1.2), 89 pairs, LEAN - (RULE numbers, check pending) | -0.8 (-3.1 to +2.0), 119 pairs, no lean | -3.6 (-8.9 to +2.3), 235 pairs, no lean |
+| AM | Questionable | -2.6 (-3.9 to -0.7), 91 pairs, LEAN - (RULE numbers, check pending) | -0.7 (-2.9 to +2.2), 121 pairs, no lean | -3.6 (-8.7 to +2.3), 237 pairs, no lean |
 | AM | Doubtful | - | - | +10.4, not enough yet (27) |
-| AM | all tagged | -2.8 (-4.1 to -1.2), 89 pairs, LEAN - (RULE numbers, check pending) | -0.8 (-3.1 to +2.0), 119 pairs, no lean | -2.2 (-7.6 to +3.4), 262 pairs, no lean |
-| PM | Questionable | -4.3, not enough yet (32) | -0.0, not enough yet (9) | -1.3 (-5.9 to +3.8), 270 pairs, no lean |
+| AM | all tagged | -2.6 (-3.9 to -0.7), 91 pairs, LEAN - (RULE numbers, check pending) | -0.7 (-2.9 to +2.2), 121 pairs, no lean | -2.1 (-7.5 to +3.6), 264 pairs, no lean |
+| PM | Questionable | -2.0 (-5.3 to +1.9), 44 pairs, no lean | +2.3, not enough yet (21) | -1.1 (-5.6 to +3.8), 284 pairs, no lean |
 | PM | Doubtful | - | - | - |
-| PM | all tagged | -4.3, not enough yet (32) | -0.0, not enough yet (9) | -1.3 (-5.9 to +3.8), 270 pairs, no lean |
+| PM | all tagged | -2.0 (-5.3 to +1.9), 44 pairs, no lean | +2.3, not enough yet (21) | -1.1 (-5.6 to +3.8), 284 pairs, no lean |
 
 ## e. Beneficiaries: undrafted or T5 players with a teammate tagged at the AM lock
 

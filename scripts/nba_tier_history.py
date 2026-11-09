@@ -31,10 +31,11 @@ SMASH_PLAY = 0.7
 Q_TAG = re.compile(r"^(q|d|g)", re.I)
 RULE_STEPS = {     # each tier's rule (index.html NBA_TIER_RULE_STEPS, nba_report.py TIER_RULES): (key, within), higher first
     # step 6's switches (2026-11-09): PM T2 and T4 ADP (2: ETR), provisional; PM T5 ADP; T5's ownership tiebreak paused
+    # T5 both windows (2026-11-09, provisional; money RULE, the shadow decides): the less drafted within 2 projected points first
     "am": {1: [("adp", 2), ("boom", 0)], 2: [("adp", 0)], 3: [("proj", 3), ("adp", 0)],
-           4: [("proj", 3), ("adp", 0)], 5: [("proj", 3), ("adp", 0)]},
+           4: [("proj", 3), ("adp", 0)], 5: [("lev", 2), ("proj", 3), ("adp", 0)]},
     "pm": {1: [("projx", 0)], 2: [("adp", 2), ("projx", 0)], 3: [("proj", 0), ("adp", 0), ("boom", 0)],
-           4: [("adp", 2), ("projx", 0)], 5: [("adp", 0)]},
+           4: [("adp", 2), ("projx", 0)], 5: [("lev", 2), ("adp", 0)]},
 }
 PM_Q_PUSH = 2      # PM window: a Questionable player is ordered two tiers back (lean adopted 2026-11-09)
 FIELD_MODEL = os.path.join(HERE, "analysis", "nba", "contests", "field_model.json")
@@ -88,8 +89,38 @@ WINDOWS = {
 }
 
 
+LEV_GAP = 10       # the T5 less-drafted tiebreak: drafted% at least this far apart (index.html NBA_LEV_GAP)
+
+
+def lev_first(x, y, within):
+    """The T5 tiebreak (key "lev"): within `within` projected points, drafted% LEV_GAP+ apart, ADP within 4, both 2%+:
+    -1 if x (the less drafted) goes first, 1 if y, None where it doesn't apply. drafted is stored negative."""
+    a, b, pa, pb = x.get("drafted"), y.get("drafted"), x.get("projx"), y.get("projx")
+    if None in (a, b, pa, pb) or abs(pa - pb) > within or abs(a - b) < LEV_GAP or abs(x["adp"] - y["adp"]) > 4 or min(-a, -b) < 2:
+        return None
+    return -1 if a > b else 1
+
+
+def lev_pass(order, within):
+    """The rule's order with the T5 tiebreak: neighbours swapped while the lower one goes first by lev_first, until none
+    moves (index.html nbaRuleSort). It ends: each swap puts a less-drafted player ahead of a more-drafted one."""
+    out, moved = list(order), True
+    while moved:
+        moved = False
+        for j in range(len(out) - 1):
+            if lev_first(out[j], out[j + 1], within) == 1:
+                out[j], out[j + 1] = out[j + 1], out[j]
+                moved = True
+    return out
+
+
 def rule_sort(items, steps):
-    """The rule's order (nba_report.py rule_order): each step's key, higher first, unless within its margin."""
+    """The rule's order (nba_report.py rule_order): each step's key, higher first, unless within its margin. The T5
+    tiebreak ("lev") is applied after the rule's order (lev_pass)."""
+    lev = next((s for s in steps if s[0] == "lev"), None)
+    if lev:
+        return lev_pass(rule_sort(items, [s for s in steps if s[0] != "lev"]), lev[1])
+
     def cmp(x, y):
         for key, within in steps + [("projx", 0), ("adp", 0)]:
             a, b = x.get(key), y.get(key)

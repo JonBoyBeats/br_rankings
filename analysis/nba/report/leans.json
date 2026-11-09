@@ -142,18 +142,26 @@
    "forward_nights": 14,
    "drop_if": "no move reaches a lean over the cap",
    "register": "one-tier-cap"
-  }
- ],
- "paused": [
+  },
   {
-   "id": "ownership-tiebreak-t5",
-   "statement": "The ownership tiebreak in T5 draft rankings (less drafted first within about 2 points): the PM T5 rule's (2: less drafted), adopted 2026-11-04, and the same habit in AM.",
-   "evidence": "Costs points in both windows: AM T5 ownership-order takes -4.2 per take (112 pairs, 80% range -5.2 to -2.6), PM -6.6 (84 pairs, -9.4 to -2.3).",
-   "paused": "2026-11-09",
-   "status": "paused, under contest test: the contest side tests whether its leverage pays in money terms. Its use in swap ordering is decided by step 7's backtest.",
-   "shadow": "graded in shadow nightly: the old PM T5 rule ETR (2: less drafted) against the current switch"
+   "id": "t5-less-drafted-within-2",
+   "tier": 5,
+   "window": "both",
+   "pod": 6,
+   "statement": "T5, both windows: the tier's rule, VALUE first and PRICEY last, then the less drafted first within 2 projected points (drafted% 10+ apart, ADP within 4, both 2%+; the rule's order, then neighbours swapped). AM's rule is Proj (3: ADP); PM's base stays ADP, VALUE first.",
+   "evidence": "Money RULE for (contest side, after the price-split check): top-10% lift 1.19 (1.06-1.32), AM 1.16, PM 1.22, 17 slates; the gain is the less-drafted pick itself, which scores about the same as its partner (-0.4). Points on money's definition: every slate -0.5 per pair (1084, no lean); AM primary -3.7 (195, LEAN against, RULE numbers, check pending); PM -0.3 (577, no lean) (money_points.md). The button's realized order against the rule it amended, in sample: AM +5.0 per pair (105, RULE +), PM -2.8 (91, LEAN against, RULE numbers, check pending) (shadow.md).",
+   "basis": "money RULE",
+   "provisional": true,
+   "known_cost": "The AM points cost on money's definition (-3.7 per pair, AM primary, check pending) and the PM realized order's in-sample cost (-2.8 per pair, 91 pairs) are a known price for a money RULE, not a reason to drop it. Under money_policy a points RULE against would still need only a MONEY RULE to keep it, which it has.",
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
+   "drop_if": "it loses to the rule it amended over its 14 forward nights in the shadow (AM: Proj (3: ADP); PM: ADP), or its money verdict falls below MONEY LEAN",
+   "register": "ownership-tiebreak-t5",
+   "replaces": "am-t5-button-order amended (the button's order now includes the tiebreak); pm-t5-adp-value amended (ADP, VALUE first stays the base)"
   }
  ],
+ "paused": [],
  "rules": [
   {
    "id": "pm-middle-board-vs-adp",
@@ -188,5 +196,13 @@
   "PM T3 ETR (ties ADP then Boom): every alternative lost (ADP straight -6.7, 102 pairs; Projection with an ADP tiebreak -6.9, 95, RULE against).",
   "AM T5 the button's order (Proj, 3: ADP): ADP straight +0.6 (124, no lean), T5 by ADP with VALUE up -0.4 (63, no lean), projection straight -6.1 (220, against)."
  ],
- "leverage_t2_t4": "Step 6 answer: a leverage tiebreak (within 2 points, less drafted first) is about free in the AM middle (+1.0, 53 pairs, no lean) and wins in AM T4 (+2.8, adopted); in PM it costs points in the middle (-4.1 per pair, 123 pairs, RULE against) and T4 (-2.5, 64, lean against); T2 is thin both windows (AM -5.0 on 25 pairs, PM +2.6 on 41, no lean). So leverage belongs in the AM middle, not PM."
+ "leverage_t2_t4": "Step 6 answer: a leverage tiebreak (within 2 points, less drafted first) is about free in the AM middle (+1.0, 53 pairs, no lean) and wins in AM T4 (+2.8, adopted); in PM it costs points in the middle (-4.1 per pair, 123 pairs, RULE against) and T4 (-2.5, 64, lean against); T2 is thin both windows (AM -5.0 on 25 pairs, PM +2.6 on 41, no lean). So leverage belongs in the AM middle, not PM.",
+ "reinstated": [
+  {
+   "id": "ownership-tiebreak-t5",
+   "on": "2026-11-09",
+   "as": "t5-less-drafted-within-2",
+   "note": "Paused 2026-11-09 for costing points on your board's ownership moves; reinstated the same day on money's definition after the money RULE, provisional."
+  }
+ ]
 }

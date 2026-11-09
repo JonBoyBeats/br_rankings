@@ -372,15 +372,16 @@ MIDDLE_AM = ("Proj (3: ADP)", [("proj", 3), ("adp", 0)])
 MIDDLE_PM = ("ETR (Tie: ADP -> Boom)", [("proj", 0), ("adp", 0), ("boom", 0)])
 TIER_RULES = {      # index.html NBA_TIER_RULE_STEPS; step 6's switches adopted 2026-11-09 (scripts/nba_tier_rules.py)
     "am": {1: ("ADP (2: Boom)", [("adp", 2), ("boom", 0)]), 2: ("ADP", [("adp", 0)]), 3: MIDDLE_AM,
-           4: MIDDLE_AM, 5: MIDDLE_AM},
+           4: MIDDLE_AM, 5: ("Proj (3: ADP), less drafted within 2 pts", [("lev", 2), ("proj", 3), ("adp", 0)])},
     "pm": {1: ("ETR", [("projx", 0)]), 2: ("ADP (2: ETR)", [("adp", 2), ("projx", 0)]), 3: MIDDLE_PM,
            4: ("ADP (2: ETR)", [("adp", 2), ("projx", 0)]),
-           5: ("ADP", [("adp", 0)])},      # the ownership tiebreak (2: less drafted, 2026-11-04) paused 2026-11-09
+           5: ("ADP, less drafted within 2 pts", [("lev", 2), ("adp", 0)])},   # T5 tiebreak 2026-11-09, provisional
 }
 # The ownership tiebreak, adopted 2026-11-04 and paused 2026-11-09 in T5 (it cost points in both windows). drafted: the board's projected drafted%
 # for his closing-ADP rank (field_model.json). A tier whose rule changed is graded only from that date.
 # The AM T4 leverage tiebreak won step 6 (best of 8 candidates) but lost in PM T4: a candidate, not the rule.
-RULE_SINCE = {("pm", 5): "2026-11-10", ("pm", 2): "2026-11-10", ("pm", 4): "2026-11-10"}
+# T5 in both windows: the less drafted within 2 projected points first (provisional, 2026-11-09; money RULE for).
+RULE_SINCE = {("pm", 5): "2026-11-10", ("pm", 2): "2026-11-10", ("pm", 4): "2026-11-10", ("am", 5): "2026-11-10"}
 FIELD_MODEL = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "contests", "field_model.json")
 
 
@@ -414,6 +415,15 @@ def boom_of(rows, half):
     return {id(it["r"]): B.chance(B.BOOM, it["x"], bars[id(it)], it["m"]) for it in items}
 
 
+def lev_first(x, y, within, gap=10):
+    """The T5 tiebreak (nba_tier_history.lev_first, index.html nbaRuleSort "lev"): within `within` projected points, drafted%
+    gap+ apart, ADP within 4, both 2%+: -1 if x (the less drafted) goes first, 1 if y, None where it doesn't apply."""
+    a, b, pa, pb = x.get("drafted"), y.get("drafted"), x.get("projx"), y.get("projx")
+    if None in (a, b, pa, pb) or abs(pa - pb) > within or abs(a - b) < gap or abs(x["adp"] - y["adp"]) > 4 or min(-a, -b) < 2:
+        return None
+    return -1 if a > b else 1
+
+
 def rule_order(players, steps):
     """players ([(row, {key: value})]) in the rule's order."""
     import functools
@@ -427,6 +437,17 @@ def rule_order(players, steps):
                 continue                                   # the ownership tiebreak: only within 4 picks, both 2%+
             return -1 if a > b else 1
         return 0
+    lev = next((s for s in steps if s[0] == "lev"), None)
+    if lev:      # the T5 tiebreak after the rule's order: neighbours swapped while the lower one goes first (nba_tier_history.lev_pass)
+        by_row = {id(p[0]): p for p in players}
+        out, moved = [by_row[id(r)] for r in rule_order(players, [s for s in steps if s[0] != "lev"])], True
+        while moved:
+            moved = False
+            for j in range(len(out) - 1):
+                if lev_first(out[j][1], out[j + 1][1], lev[1]) == 1:
+                    out[j], out[j + 1] = out[j + 1], out[j]
+                    moved = True
+        return [p[0] for p in out]
     return [p[0] for p in sorted(players, key=functools.cmp_to_key(cmp))]
 
 

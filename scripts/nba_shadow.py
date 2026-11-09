@@ -8,9 +8,11 @@ From tier_history.csv (the button's order is its `built` rank), for each slate:
   PM T5   the switch ADP against the rule it replaced, ETR (2: less drafted): the paused ownership tiebreak
   PM T4   candidate: PRICEY-last off (VALUE first kept) against the button
   AM T4   candidate: the leverage tiebreak (within 2 projected points, less drafted first) against the button
-  T5      candidates from the contest side (2026-11-09; money RULE for the ownership tiebreak): the tier's rule, VALUE first,
-          then the less drafted first within 2 projected points (money's definition: drafted% 10+ apart, both 2%+), in
-          each window against the current rule (AM: the button's order; PM: ADP, VALUE first)
+  T5      the switch (2026-11-09, provisional; money RULE for the ownership tiebreak): the tier's rule, VALUE first, then
+          the less drafted first within 2 projected points (money's definition: drafted% 10+ apart, both 2%+), in each
+          window against the rule it amended (AM: Proj (3: ADP); PM: ADP). The AM points cost on the primary sample (-3.7
+          per pair on money's definition, check pending) is a known price for a money RULE, not a reason to drop it: the
+          switch is dropped only if it loses to the old rule over its 14 forward nights
   T2-T4   candidate: the same leverage tiebreak on money's definition, each window (money LEAN for)
   all     the one-tier cap (kept; money leans against): the projection tier's order where it and the combined tier's
           disagree, against the button
@@ -42,12 +44,12 @@ COMPARE = [
     # (name, window, tier, kind, steps or a function of the items, flags)
     ("PM T2: ADP (2: ETR) vs the old ADP (1: ETR)", "pm", 2, "switch", [("adp", 1), ("projx", 0)], "both"),
     ("PM T4: ADP (2: ETR) vs the old ETR rule", "pm", 4, "switch", [("proj", 0), ("adp", 0), ("boom", 0)], "both"),
-    ("PM T5: ADP vs the old ETR (2: less drafted), the paused ownership tiebreak", "pm", 5, "switch",
+    ("PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)", "pm", 5, "switch",
      [("projx", 2), ("drafted", 10), ("projx", 0)], "both"),
     ("PM T4 candidate: PRICEY-last off (VALUE first kept)", "pm", 4, "candidate", None, "value"),
     ("AM T4 candidate: the leverage tiebreak", "am", 4, "candidate", [("projx", 2), ("drafted", 0), ("proj", 3), ("adp", 0)], "both"),
-    ("AM T5 candidate: the button's order, VALUE first, then the less drafted within 2 projected points", "am", 5, "candidate", "lev", "both"),
-    ("PM T5 candidate: ADP, VALUE first, then the less drafted within 2 projected points", "pm", 5, "candidate", "lev", "both"),
+    ("AM T5: the less drafted within 2 pts vs the old Proj (3: ADP)", "am", 5, "switch", [("proj", 3), ("adp", 0)], "both"),
+    ("PM T5: the less drafted within 2 pts vs the old ADP", "pm", 5, "switch", [("adp", 0)], "both"),
     ("AM T2-T4 candidate: the less drafted within 2 projected points", "am", (2, 3, 4), "candidate", "lev", "both"),
     ("PM T2-T4 candidate: the less drafted within 2 projected points", "pm", (2, 3, 4), "candidate", "lev", "both"),
     ("All tiers, kept: the one-tier cap against the projection tier's order where they disagree", "am+pm", None, "cap", "cap", "both"),

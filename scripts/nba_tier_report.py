@@ -32,7 +32,16 @@ SWITCHES = [   # (tier, AM switch, PM switch, the decision_register.csv ids of t
     (2, "ADP", "ADP (2: ETR)", ["kept-am-t2", "pm-t2-adp-etr2"]),
     (3, "Proj (3: ADP)", "ETR (ties: ADP, Boom)", ["kept-am-middle", "kept-pm-t3"]),
     (4, "Proj (3: ADP)", "ADP (2: ETR)", ["kept-am-middle", "pm-t4-adp-etr2"]),
-    (5, "the button's order", "ADP", ["am-t5-button-order", "pm-t5-adp-value"]),
+    (5, "the button's order, then the less drafted within 2 pts", "ADP, then the less drafted within 2 pts",
+     ["am-t5-button-order", "pm-t5-adp-value"]),
+]
+TIEBREAKS = {5: "ownership-tiebreak-t5"}    # a provisional tiebreak on top of the tier's switches, by register id
+DRAFT_CARD = [   # in-draft rules, money-backed (contest side, 2026-11-09; register rows card-*); index.html #draftCard
+    ("2/3 turn: reach toward the higher projection", "card-turn23-reach-higher-proj"),
+    ("1/2 turn: don't reach unless a top player falls (reaching:", "card-turn12-reach"),
+    ("Fallers: always take them", "card-fallers"),
+    ("Avoid same-position teammates (holding them:", "card-same-position-teammates"),
+    ("Opposing stars from the same game: a plus", "card-opposing-stars"),
 ]
 MONEY_NOTE = ("Everything adopted or kept is provisional until its money verdict (top finishes and dollars, from the contest "
               "side: decision_register.csv) is in, and may be changed by it.")
@@ -134,7 +143,7 @@ def main():
     status = {x["id"]: ("provisional" if x.get("provisional") else "RULE" if x.get("basis") == "RULE" else "adopted") for x in leans["adopted"]}
     reg = {r["id"]: r for r in csv.DictReader(open(os.path.join(REP, "decision_register.csv")))}
     by_reg = {x["register"]: status[x["id"]] for x in leans["adopted"]}
-    money = lambda rid: "money " + ((reg.get(rid) or {}).get("money_verdict") or "pending")
+    money = lambda rid: "money " + ((reg.get(rid) or {}).get("money_verdict") or "pending").split(" (")[0]   # the verdict; the numbers are in the register
     pcal = calibrated_play(H)
     md = []
     # ---------------- today
@@ -174,9 +183,14 @@ def main():
                "## Today's decisions", "", MONEY_NOTE, "", "**Switches by tier** (AM window · PM window)"]
         for t, am, pm, ids in SWITCHES:
             st = "; ".join("%s %s, %s" % (w, by_reg.get(i, "kept"), money(i)) for w, i in zip(("AM", "PM"), ids))
+            if t in TIEBREAKS:
+                st += "; tiebreak %s, %s" % (by_reg.get(TIEBREAKS[t], "kept"), money(TIEBREAKS[t]))
             md.append("- T%d: AM %s · PM %s (%s)" % (t, am, pm, st))
         md += ["- Everywhere: VALUE first in the tier (adopted), PRICEY last; the one-tier cap (adopted); "
-               "PM Questionable two tiers back (adopted); AM Questionable no push (adopted). Ownership tiebreak in T5: paused.", ""]
+               "PM Questionable two tiers back (adopted); AM Questionable no push (adopted). T5: the less drafted first within 2 "
+               "projected points, both windows (provisional; its AM points cost is a known price for a money RULE).", ""]
+        md += ["**Draft card** (in-draft rules, money-backed; on the board under the controls)"] + [
+            "- %s %s)" % (txt, money(rid)) if txt.endswith(":") else "- %s (%s)" % (txt, money(rid)) for txt, rid in DRAFT_CARD] + [""]
         if pod == 4:
             md += ["Small slate: the switches above were chosen on 6-drafter slates; nothing is adopted for 4-drafter pods yet.", ""]
         tagged = sorted([r for r in pool if QT.match(r["tag"]) and r["adp"] is not None and r["adp"] < cap], key=adp)
@@ -236,7 +250,7 @@ def main():
     md += ["## Season", ""] + season_tables(H) + ["", "**Adopted and rules** (leans.json; points status, money verdict). " + MONEY_NOTE]
     for x in leans["adopted"]:
         md.append("- %s, %s: %s %s" % (status[x["id"]], money(x["register"]), x["statement"], "(" + x["evidence"].split(";")[0] + ")"))
-    md += ["", "**Paused**: " + "; ".join(x["statement"] for x in leans.get("paused", [])), "",
+    md += ["", "**Paused**: " + ("; ".join(x["statement"] for x in leans.get("paused", [])) or "none"), "",
            "Full tables: tier_grade.md (by tier and window), tier_rules.md, q_lane.md, swap_board.md, my_swaps.md, backtest_rest.md, "
            "decision_register.csv."]
     open(OUT, "w").write("\n".join(md) + "\n")
