@@ -4,89 +4,89 @@ Written by scripts/nba_tier_rules.py. Each candidate against the Tiers button's 
 
 ## 6-drafter AM, primary (7 nights)
 
-### T1 (the button's own: +6.21 per pair over 34 decision pairs)
+### T1 (the button's own: +8.07 per pair over 40 decision pairs)
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | -2.5, not enough yet (7) | +5.17 |  |
-| Projection straight | -2.1, not enough yet (5) | +5.59 |  |
-| ADP, projection tiebreak (2 picks) | -2.1, not enough yet (5) | +5.59 |  |
-| Projection, ADP tiebreak (3 points) | -0.1, not enough yet (6) | +6.17 |  |
-| The rule without the flags | same order | +6.21 |  |
-| Projection, Boom tiebreak (3 points) | +13.2, not enough yet (3) | +8.53 |  |
-| X for Q-tagged players | same order | +6.21 |  |
+| ADP straight | -13.6, not enough yet (11) | +0.61 |  |
+| Projection straight | -6.5, not enough yet (7) | +5.80 |  |
+| ADP, projection tiebreak (2 picks) | -6.5, not enough yet (7) | +5.80 |  |
+| Projection, ADP tiebreak (3 points) | -9.7, not enough yet (9) | +3.72 |  |
+| The rule without the flags | same order | +8.07 |  |
+| Projection, Boom tiebreak (3 points) | +13.2, not enough yet (3) | +10.05 |  |
+| X for Q-tagged players | same order | +8.07 |  |
 
-### T2 (the button's own: +1.92 per pair over 129 decision pairs)
-
-| Candidate | Against the button | Own points per pair | Policy |
-|---|---|---|---|
-| ADP straight | -5.7, not enough yet (14) | +0.68 |  |
-| Projection straight | -6.5 (-11.9 to -2.2), 41 pairs, LEAN - | -2.22 |  |
-| ADP, projection tiebreak (2 picks) | -4.9, not enough yet (26) | -0.07 |  |
-| Projection, ADP tiebreak (3 points) | -2.5, not enough yet (16) | +1.29 |  |
-| The rule without the flags | -5.7, not enough yet (14) | +0.68 |  |
-| Projection, Boom tiebreak (3 points) | -4.6 (-9.3 to -0.9), 54 pairs, LEAN - | -1.90 |  |
-| Leverage tiebreak (2 points, less drafted first) | -7.2, not enough yet (21) | -0.42 |  |
-| X for Q-tagged players | same order | +1.92 |  |
-
-### T3/T4 (middle) (the button's own: +1.17 per pair over 285 decision pairs)
+### T2 (the button's own: +2.83 per pair over 176 decision pairs)
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | -1.4 (-3.8 to +0.5), 87 pairs, no lean | +0.29 |  |
-| Projection straight | -0.6, not enough yet (33) | +1.04 |  |
-| ADP, projection tiebreak (2 picks) | +0.1 (-1.3 to +0.9), 61 pairs, no lean | +1.20 |  |
-| Projection, ADP tiebreak (3 points) | +1.0 (-2.4 to +5.3), 41 pairs, no lean | +1.47 |  |
-| The rule without the flags | +0.5, not enough yet (28) | +1.27 |  |
-| Projection, Boom tiebreak (3 points) | -0.8 (-2.6 to +1.3), 63 pairs, no lean | +0.80 |  |
-| Leverage tiebreak (2 points, less drafted first) | +0.8 (-2.0 to +4.5), 40 pairs, no lean | +1.41 |  |
-| X for Q-tagged players | -1.5, not enough yet (1) | +1.16 |  |
+| ADP straight | -7.9, not enough yet (18) | +1.22 |  |
+| Projection straight | -5.0 (-9.6 to -1.1), 52 pairs, LEAN - | -0.10 |  |
+| ADP, projection tiebreak (2 picks) | -5.1, not enough yet (35) | +0.79 |  |
+| Projection, ADP tiebreak (3 points) | +0.4, not enough yet (22) | +2.94 |  |
+| The rule without the flags | -7.9, not enough yet (18) | +1.22 |  |
+| Projection, Boom tiebreak (3 points) | -3.8 (-6.9 to -1.0), 77 pairs, LEAN - | -0.53 |  |
+| Leverage tiebreak (2 points, less drafted first) | -3.4, not enough yet (26) | +1.81 |  |
+| X for Q-tagged players | same order | +2.83 |  |
 
-### T3 (the button's own: +1.71 per pair over 84 decision pairs)
-
-| Candidate | Against the button | Own points per pair | Policy |
-|---|---|---|---|
-| ADP straight | -1.1, not enough yet (22) | +1.12 |  |
-| Projection straight | -1.5, not enough yet (11) | +1.31 |  |
-| ADP, projection tiebreak (2 picks) | -5.2, not enough yet (17) | -0.38 |  |
-| Projection, ADP tiebreak (3 points) | +7.2, not enough yet (8) | +3.09 |  |
-| The rule without the flags | +7.2, not enough yet (8) | +3.09 |  |
-| Projection, Boom tiebreak (3 points) | -0.6, not enough yet (24) | +1.38 |  |
-| Leverage tiebreak (2 points, less drafted first) | -9.3, not enough yet (7) | +0.17 |  |
-| X for Q-tagged players | -1.5, not enough yet (1) | +1.68 |  |
-
-### T4 (the button's own: +1.16 per pair over 139 decision pairs)
+### T3/T4 (middle) (the button's own: +1.27 per pair over 402 decision pairs)
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | -1.9 (-4.4 to +1.8), 55 pairs, no lean | -0.33 |  |
-| Projection straight | +2.1, not enough yet (19) | +1.73 |  |
-| ADP, projection tiebreak (2 picks) | -0.4 (-3.0 to +4.6), 44 pairs, no lean | +0.93 |  |
-| Projection, ADP tiebreak (3 points) | -2.2, not enough yet (20) | +0.51 |  |
-| The rule without the flags | -2.2, not enough yet (20) | +0.51 |  |
-| Projection, Boom tiebreak (3 points) | +1.0, not enough yet (35) | +1.67 |  |
-| Leverage tiebreak (2 points, less drafted first) | +3.0, not enough yet (33) | +2.56 |  |
-| X for Q-tagged players | same order | +1.16 |  |
+| ADP straight | -1.7 (-4.4 to +0.6), 127 pairs, LEAN - | +0.22 |  |
+| Projection straight | -0.5 (-2.3 to +1.7), 50 pairs, no lean | +1.15 |  |
+| ADP, projection tiebreak (2 picks) | +0.3 (-0.8 to +1.1), 90 pairs, no lean | +1.41 |  |
+| Projection, ADP tiebreak (3 points) | +0.5 (-3.0 to +4.1), 60 pairs, no lean | +1.42 |  |
+| The rule without the flags | +1.4 (-2.1 to +5.5), 42 pairs, no lean | +1.57 |  |
+| Projection, Boom tiebreak (3 points) | +0.3 (-1.8 to +2.6), 88 pairs, no lean | +1.39 |  |
+| Leverage tiebreak (2 points, less drafted first) | +1.1 (-1.2 to +4.1), 51 pairs, no lean | +1.54 |  |
+| X for Q-tagged players | -1.5, not enough yet (1) | +1.26 |  |
 
-### T5 (drafted) (the button's own: +6.30 per pair over 1328 decision pairs)
+### T3 (the button's own: -0.13 per pair over 127 decision pairs)
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | -0.1 (-3.5 to +2.2), 105 pairs, no lean | +6.28 |  |
-| Projection straight | -4.9 (-6.2 to -3.7), 159 pairs, LEAN - (RULE numbers, check pending) | +5.12 |  |
-| ADP, projection tiebreak (2 picks) | -4.7 (-6.6 to -3.1), 144 pairs, LEAN - (RULE numbers, check pending) | +5.27 |  |
-| Projection, ADP tiebreak (3 points) | -1.1 (-6.8 to +1.3), 61 pairs, no lean | +6.20 |  |
-| The rule without the flags | -0.2 (-5.4 to +2.2), 58 pairs, no lean | +6.28 |  |
-| Projection, Boom tiebreak (3 points) | -7.1 (-8.8 to -5.5), 331 pairs, LEAN - (RULE numbers, check pending) | +2.76 |  |
-| T5 by ADP, VALUE moved up | -0.9 (-6.0 to +2.6), 60 pairs, no lean | +6.22 |  |
-| X for Q-tagged players | +2.3, not enough yet (30) | +6.40 |  |
+| ADP straight | -0.5, not enough yet (38) | -0.42 |  |
+| Projection straight | -1.1, not enough yet (16) | -0.42 |  |
+| ADP, projection tiebreak (2 picks) | -3.2, not enough yet (27) | -1.47 |  |
+| Projection, ADP tiebreak (3 points) | +3.8, not enough yet (18) | +0.96 |  |
+| The rule without the flags | +3.8, not enough yet (18) | +0.96 |  |
+| Projection, Boom tiebreak (3 points) | +1.1, not enough yet (34) | +0.46 |  |
+| Leverage tiebreak (2 points, less drafted first) | -9.1, not enough yet (8) | -1.27 |  |
+| X for Q-tagged players | -1.5, not enough yet (1) | -0.15 |  |
+
+### T4 (the button's own: +0.72 per pair over 180 decision pairs)
+
+| Candidate | Against the button | Own points per pair | Policy |
+|---|---|---|---|
+| ADP straight | -1.0 (-3.8 to +2.3), 69 pairs, no lean | -0.07 |  |
+| Projection straight | +3.1, not enough yet (28) | +1.70 |  |
+| ADP, projection tiebreak (2 picks) | -0.1 (-2.3 to +3.4), 57 pairs, no lean | +0.64 |  |
+| Projection, ADP tiebreak (3 points) | -0.4, not enough yet (24) | +0.63 |  |
+| The rule without the flags | -0.4, not enough yet (24) | +0.63 |  |
+| Projection, Boom tiebreak (3 points) | +1.9 (+0.9 to +3.1), 46 pairs, LEAN + | +1.70 | eligible (listed before testing) |
+| Leverage tiebreak (2 points, less drafted first) | +3.0 (+0.1 to +7.5), 43 pairs, LEAN + | +2.15 | eligible (listed before testing) |
+| X for Q-tagged players | same order | +0.72 |  |
+
+### T5 (drafted) (the button's own: +6.03 per pair over 1834 decision pairs)
+
+| Candidate | Against the button | Own points per pair | Policy |
+|---|---|---|---|
+| ADP straight | +0.1 (-2.2 to +1.7), 165 pairs, no lean | +6.05 |  |
+| Projection straight | -5.4 (-6.5 to -4.2), 228 pairs, LEAN - (RULE numbers, check pending) | +4.68 |  |
+| ADP, projection tiebreak (2 picks) | -5.1 (-6.4 to -3.6), 218 pairs, LEAN - (RULE numbers, check pending) | +4.82 |  |
+| Projection, ADP tiebreak (3 points) | -1.6 (-5.6 to +0.7), 92 pairs, no lean | +5.87 |  |
+| The rule without the flags | -0.9 (-4.8 to +1.6), 88 pairs, no lean | +5.95 |  |
+| Projection, Boom tiebreak (3 points) | -5.1 (-7.3 to -3.0), 433 pairs, LEAN - (RULE numbers, check pending) | +3.63 |  |
+| T5 by ADP, VALUE moved up | -0.8 (-3.8 to +1.6), 97 pairs, no lean | +5.95 |  |
+| X for Q-tagged players | +1.3, not enough yet (33) | +6.08 |  |
 
 ### Combining the ladders (every decision pair, against the one-tier cap)
 
 | Version | Against the one-tier cap | Policy |
 |---|---|---|
-| No move (ADP tier, flags as tiebreaks) | -1.1 (-5.6 to +2.1), 56 pairs, no lean |  |
-| Full move to the projection tier | -3.8 (-5.6 to -2.8), 82 pairs, LEAN - (RULE numbers, check pending) |  |
+| No move (ADP tier, flags as tiebreaks) | -1.3 (-5.2 to +1.3), 83 pairs, no lean |  |
+| Full move to the projection tier | -4.6 (-7.4 to -2.4), 118 pairs, LEAN - (RULE numbers, check pending) |  |
 
 ## 6-drafter PM (14 nights)
 
@@ -126,7 +126,7 @@ Written by scripts/nba_tier_rules.py. Each candidate against the Tiers button's 
 | The rule without the flags | -1.2 (-3.1 to +1.2), 87 pairs, no lean | +1.30 |  |
 | Projection, Boom tiebreak (3 points) | -2.6 (-4.1 to -1.3), 225 pairs, RULE - | -0.23 |  |
 | Leverage tiebreak (2 points, less drafted first) | -4.0 (-6.0 to -2.0), 126 pairs, RULE - | +0.04 |  |
-| X for Q-tagged players | -3.6 (-5.3 to -1.4), 50 pairs, LEAN - | +1.06 |  |
+| X for Q-tagged players | -3.6 (-5.3 to -1.5), 50 pairs, LEAN - | +1.06 |  |
 
 ### T3 (the button's own: +4.88 per pair over 259 decision pairs)
 
@@ -154,18 +154,18 @@ Written by scripts/nba_tier_rules.py. Each candidate against the Tiers button's 
 | Leverage tiebreak (2 points, less drafted first) | -2.3 (-6.2 to +1.4), 67 pairs, no lean | -1.28 |  |
 | X for Q-tagged players | +4.0, not enough yet (12) | +0.20 |  |
 
-### T5 (drafted) (the button's own: +2.13 per pair over 2655 decision pairs)
+### T5 (drafted) (the button's own: +2.12 per pair over 2655 decision pairs)
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | +0.5 (-0.8 to +1.8), 189 pairs, no lean | +2.21 |  |
-| Projection straight | -1.9 (-3.4 to -0.2), 542 pairs, LEAN - | +1.36 |  |
-| ADP, projection tiebreak (2 picks) | -2.1 (-3.7 to -0.4), 500 pairs, RULE - | +1.35 |  |
-| Projection, ADP tiebreak (3 points) | -0.8 (-2.3 to +0.6), 284 pairs, no lean | +1.97 |  |
-| The rule without the flags | -0.2 (-2.2 to +1.5), 157 pairs, no lean | +2.11 |  |
-| Projection, Boom tiebreak (3 points) | -1.0 (-2.4 to +0.5), 917 pairs, no lean | +1.46 |  |
-| T5 by ADP, VALUE moved up | +2.8 (+1.1 to +4.8), 108 pairs, LEAN + (RULE numbers, check pending) | +2.37 | eligible (listed before testing); RULE numbers, check pending |
-| X for Q-tagged players | +9.5, not enough yet (10) | +2.21 |  |
+| ADP straight | +0.5 (-0.8 to +1.8), 189 pairs, no lean | +2.19 |  |
+| Projection straight | -1.9 (-3.4 to -0.2), 542 pairs, LEAN - | +1.34 |  |
+| ADP, projection tiebreak (2 picks) | -2.1 (-3.7 to -0.4), 500 pairs, RULE - | +1.34 |  |
+| Projection, ADP tiebreak (3 points) | -0.8 (-2.3 to +0.6), 284 pairs, no lean | +1.96 |  |
+| The rule without the flags | -0.2 (-2.2 to +1.5), 157 pairs, no lean | +2.09 |  |
+| Projection, Boom tiebreak (3 points) | -0.9 (-2.3 to +0.7), 917 pairs, no lean | +1.50 |  |
+| T5 by ADP, VALUE moved up | +2.8 (+1.1 to +4.8), 108 pairs, LEAN + (RULE numbers, check pending) | +2.35 | eligible (listed before testing); RULE numbers, check pending |
+| X for Q-tagged players | +9.5, not enough yet (10) | +2.19 |  |
 
 ### Combining the ladders (every decision pair, against the one-tier cap)
 
@@ -176,89 +176,89 @@ Written by scripts/nba_tier_rules.py. Each candidate against the Tiers button's 
 
 ## 6-drafter AM, secondary (context only)
 
-### T1 (the button's own: +4.15 per pair over 47 decision pairs)
+### T1 (the button's own: +3.72 per pair over 41 decision pairs)
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | -5.1, not enough yet (14) | +1.12 | context |
-| Projection straight | -0.3, not enough yet (4) | +4.09 | context |
-| ADP, projection tiebreak (2 picks) | -0.3, not enough yet (4) | +4.09 | context |
-| Projection, ADP tiebreak (3 points) | -1.3, not enough yet (10) | +3.61 | context |
-| The rule without the flags | -3.9, not enough yet (2) | +3.81 | context |
-| Projection, Boom tiebreak (3 points) | -3.3, not enough yet (3) | +3.73 | context |
-| X for Q-tagged players | same order | +4.15 | context |
+| ADP straight | +2.1, not enough yet (12) | +4.97 | context |
+| Projection straight | -0.3, not enough yet (4) | +3.66 | context |
+| ADP, projection tiebreak (2 picks) | -0.3, not enough yet (4) | +3.66 | context |
+| Projection, ADP tiebreak (3 points) | +4.3, not enough yet (9) | +5.62 | context |
+| The rule without the flags | -3.9, not enough yet (2) | +3.34 | context |
+| Projection, Boom tiebreak (3 points) | -3.3, not enough yet (3) | +3.24 | context |
+| X for Q-tagged players | same order | +3.72 | context |
 
-### T2 (the button's own: +1.33 per pair over 262 decision pairs)
-
-| Candidate | Against the button | Own points per pair | Policy |
-|---|---|---|---|
-| ADP straight | +1.7, not enough yet (37) | +1.81 | context |
-| Projection straight | -2.0 (-5.8 to +1.8), 52 pairs, no lean | +0.52 | context |
-| ADP, projection tiebreak (2 picks) | +0.6 (-3.5 to +5.1), 49 pairs, no lean | +1.54 | context |
-| Projection, ADP tiebreak (3 points) | +1.4, not enough yet (38) | +1.72 | context |
-| The rule without the flags | +1.7, not enough yet (37) | +1.81 | context |
-| Projection, Boom tiebreak (3 points) | +1.2 (-0.9 to +3.3), 82 pairs, no lean | +2.10 | context |
-| Leverage tiebreak (2 points, less drafted first) | +0.8, not enough yet (17) | +1.43 | context |
-| X for Q-tagged players | same order | +1.33 | context |
-
-### T3/T4 (middle) (the button's own: -0.85 per pair over 426 decision pairs)
+### T2 (the button's own: +0.87 per pair over 210 decision pairs)
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | +1.8 (+0.5 to +2.9), 121 pairs, LEAN + (RULE numbers, check pending) | +0.14 | context |
-| Projection straight | -5.4 (-8.1 to -3.0), 78 pairs, LEAN - | -2.84 | context |
-| ADP, projection tiebreak (2 picks) | -2.4 (-6.0 to +0.7), 98 pairs, LEAN - | -1.94 | context |
-| Projection, ADP tiebreak (3 points) | +1.0 (-3.8 to +5.4), 56 pairs, no lean | -0.58 | context |
-| The rule without the flags | +1.9 (-3.9 to +6.9), 43 pairs, no lean | -0.46 | context |
-| Projection, Boom tiebreak (3 points) | -2.5 (-4.7 to -0.3), 98 pairs, LEAN - | -2.00 | context |
-| Leverage tiebreak (2 points, less drafted first) | -0.3 (-3.3 to +2.8), 56 pairs, no lean | -0.94 | context |
-| X for Q-tagged players | +22.7, not enough yet (1) | -0.75 | context |
+| ADP straight | +4.1, not enough yet (31) | +2.07 | context |
+| Projection straight | -1.7 (-6.1 to +3.3), 42 pairs, no lean | +0.21 | context |
+| ADP, projection tiebreak (2 picks) | +2.2 (-2.3 to +7.4), 40 pairs, no lean | +1.70 | context |
+| Projection, ADP tiebreak (3 points) | +3.4, not enough yet (32) | +1.89 | context |
+| The rule without the flags | +4.1, not enough yet (31) | +2.07 | context |
+| Projection, Boom tiebreak (3 points) | +1.3 (-1.8 to +3.9), 66 pairs, no lean | +1.67 | context |
+| Leverage tiebreak (2 points, less drafted first) | +3.2, not enough yet (12) | +1.23 | context |
+| X for Q-tagged players | same order | +0.87 | context |
 
-### T3 (the button's own: -0.25 per pair over 150 decision pairs)
-
-| Candidate | Against the button | Own points per pair | Policy |
-|---|---|---|---|
-| ADP straight | -1.5 (-4.1 to +0.6), 46 pairs, LEAN - | -1.19 | context |
-| Projection straight | -3.7, not enough yet (24) | -1.45 | context |
-| ADP, projection tiebreak (2 picks) | -1.6, not enough yet (37) | -1.04 | context |
-| Projection, ADP tiebreak (3 points) | -1.0, not enough yet (23) | -0.56 | context |
-| The rule without the flags | -1.0, not enough yet (23) | -0.56 | context |
-| Projection, Boom tiebreak (3 points) | -4.8, not enough yet (39) | -2.76 | context |
-| Leverage tiebreak (2 points, less drafted first) | +3.8, not enough yet (16) | +0.56 | context |
-| X for Q-tagged players | +22.7, not enough yet (1) | +0.05 | context |
-
-### T4 (the button's own: -2.55 per pair over 157 decision pairs)
+### T3/T4 (middle) (the button's own: -0.53 per pair over 313 decision pairs)
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | +6.1 (+3.1 to +9.5), 48 pairs, LEAN + | +1.17 | context |
-| Projection straight | -3.8, not enough yet (36) | -4.30 | context |
-| ADP, projection tiebreak (2 picks) | -1.6 (-7.9 to +5.1), 40 pairs, no lean | -3.38 | context |
-| Projection, ADP tiebreak (3 points) | +5.3, not enough yet (20) | -1.20 | context |
-| The rule without the flags | +5.3, not enough yet (20) | -1.20 | context |
-| Projection, Boom tiebreak (3 points) | +0.6, not enough yet (36) | -2.27 | context |
-| Leverage tiebreak (2 points, less drafted first) | -2.0 (-5.9 to +1.3), 40 pairs, no lean | -3.57 | context |
-| X for Q-tagged players | same order | -2.55 | context |
+| ADP straight | +1.1 (-0.2 to +2.4), 88 pairs, LEAN + | +0.06 | context |
+| Projection straight | -8.2 (-10.5 to -6.2), 56 pairs, LEAN - | -3.48 | context |
+| ADP, projection tiebreak (2 picks) | -7.3 (-12.0 to -3.5), 64 pairs, LEAN - | -3.51 | context |
+| Projection, ADP tiebreak (3 points) | -2.8 (-8.1 to +1.4), 42 pairs, no lean | -1.29 | context |
+| The rule without the flags | -1.4, not enough yet (32) | -0.82 | context |
+| Projection, Boom tiebreak (3 points) | -4.6 (-6.0 to -3.2), 74 pairs, LEAN - | -2.69 | context |
+| Leverage tiebreak (2 points, less drafted first) | -2.7 (-5.1 to -0.1), 42 pairs, LEAN - | -1.26 | context |
+| X for Q-tagged players | same order | -0.53 | context |
 
-### T5 (drafted) (the button's own: +2.49 per pair over 1982 decision pairs)
+### T3 (the button's own: +0.59 per pair over 104 decision pairs)
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | +0.3 (-1.6 to +2.3), 254 pairs, no lean | +2.58 | context |
-| Projection straight | -0.9 (-3.4 to +1.5), 314 pairs, no lean | +2.20 | context |
-| ADP, projection tiebreak (2 picks) | -2.2 (-4.8 to +0.1), 270 pairs, LEAN - | +1.88 | context |
-| Projection, ADP tiebreak (3 points) | +1.2 (-0.4 to +2.7), 126 pairs, LEAN + | +2.64 | context |
-| The rule without the flags | +2.2 (+0.1 to +4.0), 100 pairs, LEAN + | +2.71 | context |
-| Projection, Boom tiebreak (3 points) | +0.2 (-1.3 to +1.7), 494 pairs, no lean | +2.58 | context |
-| T5 by ADP, VALUE moved up | +0.7 (-1.7 to +3.2), 191 pairs, no lean | +2.63 | context |
-| X for Q-tagged players | +3.6, not enough yet (33) | +2.61 | context |
+| ADP straight | -1.7, not enough yet (28) | -0.33 | context |
+| Projection straight | -6.3, not enough yet (22) | -2.09 | context |
+| ADP, projection tiebreak (2 picks) | -9.2, not enough yet (24) | -3.67 | context |
+| Projection, ADP tiebreak (3 points) | -5.8, not enough yet (16) | -1.20 | context |
+| The rule without the flags | -5.8, not enough yet (16) | -1.20 | context |
+| Projection, Boom tiebreak (3 points) | -6.0, not enough yet (32) | -3.11 | context |
+| Leverage tiebreak (2 points, less drafted first) | +0.8, not enough yet (14) | +0.82 | context |
+| X for Q-tagged players | same order | +0.59 | context |
+
+### T4 (the button's own: -2.36 per pair over 111 decision pairs)
+
+| Candidate | Against the button | Own points per pair | Policy |
+|---|---|---|---|
+| ADP straight | +5.3, not enough yet (36) | +1.08 | context |
+| Projection straight | -10.6, not enough yet (21) | -6.38 | context |
+| ADP, projection tiebreak (2 picks) | -5.1, not enough yet (24) | -4.58 | context |
+| Projection, ADP tiebreak (3 points) | +3.0, not enough yet (16) | -1.49 | context |
+| The rule without the flags | +3.0, not enough yet (16) | -1.49 | context |
+| Projection, Boom tiebreak (3 points) | -3.0, not enough yet (21) | -3.48 | context |
+| Leverage tiebreak (2 points, less drafted first) | -4.5, not enough yet (28) | -4.62 | context |
+| X for Q-tagged players | same order | -2.36 | context |
+
+### T5 (drafted) (the button's own: +1.17 per pair over 1420 decision pairs)
+
+| Candidate | Against the button | Own points per pair | Policy |
+|---|---|---|---|
+| ADP straight | -0.3 (-2.6 to +1.8), 202 pairs, no lean | +1.08 | context |
+| Projection straight | +1.2 (-0.6 to +3.3), 227 pairs, LEAN + | +1.56 | context |
+| ADP, projection tiebreak (2 picks) | -0.1 (-2.2 to +1.4), 185 pairs, no lean | +1.14 | context |
+| Projection, ADP tiebreak (3 points) | +0.7 (-1.2 to +2.6), 101 pairs, no lean | +1.26 | context |
+| The rule without the flags | +2.2 (-0.1 to +4.4), 79 pairs, LEAN + | +1.41 | context |
+| Projection, Boom tiebreak (3 points) | +0.0 (-1.5 to +2.0), 372 pairs, no lean | +1.18 | context |
+| T5 by ADP, VALUE moved up | -0.2 (-3.0 to +2.3), 157 pairs, no lean | +1.13 | context |
+| X for Q-tagged players | +2.0, not enough yet (32) | +1.26 | context |
 
 ### Combining the ladders (every decision pair, against the one-tier cap)
 
 | Version | Against the one-tier cap | Policy |
 |---|---|---|
-| No move (ADP tier, flags as tiebreaks) | +2.5 (+0.9 to +4.0), 89 pairs, LEAN + (RULE numbers, check pending) | context |
-| Full move to the projection tier | -1.1 (-3.9 to +1.4), 164 pairs, no lean | context |
+| No move (ADP tier, flags as tiebreaks) | +0.9 (-1.4 to +2.5), 68 pairs, no lean | context |
+| Full move to the projection tier | -0.1 (-3.0 to +2.4), 127 pairs, no lean | context |
 
 ## 4-drafter AM (small slates)
 
@@ -330,13 +330,13 @@ Written by scripts/nba_tier_rules.py. Each candidate against the Tiers button's 
 
 | Candidate | Against the button | Own points per pair | Policy |
 |---|---|---|---|
-| ADP straight | +4.4 (+1.2 to +8.9), 50 pairs, LEAN + | +4.55 | eligible (listed before testing) |
-| Projection straight | +6.8 (-0.8 to +16.4), 42 pairs, LEAN + | +5.10 | eligible (listed before testing) |
-| ADP, projection tiebreak (2 picks) | +5.5, not enough yet (39) | +4.50 |  |
-| Projection, ADP tiebreak (3 points) | +7.2, not enough yet (34) | +4.76 |  |
-| The rule without the flags | +10.8, not enough yet (16) | +4.15 |  |
-| Projection, Boom tiebreak (3 points) | +4.6 (+1.2 to +6.8), 49 pairs, LEAN + | +4.59 | eligible (listed before testing) |
-| T5 by ADP, VALUE moved up | +4.6, not enough yet (33) | +3.98 |  |
+| ADP straight | +4.5 (+1.1 to +9.2), 48 pairs, LEAN + | +4.50 | eligible (listed before testing) |
+| Projection straight | +6.6 (-0.8 to +15.9), 43 pairs, LEAN + | +5.10 | eligible (listed before testing) |
+| ADP, projection tiebreak (2 picks) | +5.4 (-1.0 to +13.2), 40 pairs, LEAN + | +4.50 | eligible (listed before testing) |
+| Projection, ADP tiebreak (3 points) | +7.4, not enough yet (33) | +4.76 |  |
+| The rule without the flags | +10.8, not enough yet (16) | +4.16 |  |
+| Projection, Boom tiebreak (3 points) | +4.5 (+1.1 to +6.8), 50 pairs, LEAN + | +4.59 | eligible (listed before testing) |
+| T5 by ADP, VALUE moved up | +4.8, not enough yet (31) | +3.94 |  |
 | X for Q-tagged players | same order | +2.69 |  |
 
 ### Combining the ladders (every decision pair, against the one-tier cap)
