@@ -27,6 +27,36 @@ The newest file should be yesterday's main slate (`analysis/nba/daily/<date>_<da
 If it isn't there, say so first: the nightly run may have failed or not run yet (the
 "NBA daily record" workflow). Then report on the newest slate on file.
 
+## 1b. The tier report (phone first)
+
+```
+python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror
+```
+
+It writes `analysis/nba/report/today.md` and is the top of the chat (see "In chat"). From the top:
+
+- **Today's decisions**, read from the mirror at report time (ADP now, the morning projection file):
+  each tier's switch for the AM and PM windows with its status from `leans.json` (adopted,
+  provisional, RULE), today's Q-tags with their tier move and calibrated chance to play, VALUE flags
+  in T3-T5, beneficiaries to watch, and the swap board reminder. It is a directional read: the
+  board's Proj isn't on the server, so the real build is the Tiers button.
+- **Shadow scoreboard**: each provisional switch against the rule it replaced, forward nights only
+  (from 2026-11-10; `shadow.md`).
+- **Last night by tier**: your board against the window's projection and ADP, the VALUE flag, the
+  scratches and what their swaps scored; then tier by tier (T1 the elite, Boom and ADP moves; T2
+  the Q lane and ADP drift; T3/T4 your takes; T5 drafted% and the swap targets) and late news by
+  tier.
+- **Season**: one table per tier and window, then the adopted leans and rules with their evidence.
+
+Every number comes from the script; don't recompute any of them.
+
+**Monthly re-check** (the first report of each month): rerun `nba_tier_grade.py`,
+`nba_tier_rules.py`, `nba_q_lane.py` and `nba_backtest_rest.py` and read each adopted lean, rule and
+provisional switch against the bar it was adopted on (LEAN: 40+ pairs, 80% of resamples; RULE: 80+
+pairs, a 90% range clear of zero, the check slates, the drop-one test). One that no longer clears it
+is proposed for demotion in chat, with the numbers, and changed only with the user's yes. Never move
+a bar after the results are in.
+
 ## 2. The scores
 
 ```
@@ -312,8 +342,11 @@ git commit -m "NBA report: takeaways and player notes for <date>" && git push or
 
 ## In chat
 
-In this order, short and scannable:
+In this order, short and scannable, built to read on a phone:
 
+0. **The tier report** (step 1b), as printed down through "Last night tier by tier": today's
+   decisions first, then the shadow scoreboard, then last night by tier. Its season tables go at the
+   very end of the chat, after item 8, not here.
 1. **Headline**: the morning and afternoon tables, with their verdicts.
 2. **Tier rules**: the two tables, then one line on anything that stands out last night (a
    tier where the rule clearly beat or lost to ADP or the projection, or your moves off it).
@@ -328,5 +361,8 @@ In this order, short and scannable:
    in line), plus any "against the same team" lines.
 8. **Missing**: anything missing from the record (no lock, no tier lines on a lock, no ETR on file,
    unmatched box scores, notes not written overnight, no contests on file) so it can be fixed.
+
+9. **Season by tier**: the tier report's season tables, and on the first report of the month the
+   re-check (step 1b).
 
 The calls and misses from steps 3-4 are logged for the themes, not listed in chat.
