@@ -46,3 +46,6 @@ date,slate,slate_id,contest_id,title,description,max_entries,entries,pods,pod_si
 2026-11-07,nba_sat_main,2bc7850e-93e7-4061-b7df-152611f21c40,73c05c98-570e-4954-9148-fdb522bc805a,The Layup Line,6 person drafts - $1k to first!,33,1128,188,6,2026-11-08T00:11:00Z,2026-11-08T10:21:42+00:00
 2026-11-07,nba_sat_main,2bc7850e-93e7-4061-b7df-152611f21c40,77ac7a98-06d7-4bb1-a9c1-e08839cdaf14,The Crossover,5 entry max - $2k to first!,5,216,36,6,2026-11-08T00:11:00Z,2026-11-08T10:21:45+00:00
 2026-11-07,nba_sat_main,2bc7850e-93e7-4061-b7df-152611f21c40,54bfd727-7abd-470d-aa47-1cac624200da,Pick & Roll,Single Entry - $1.5k to first!,1,24,4,6,2026-11-08T00:11:00Z,2026-11-08T10:18:53+00:00
+2026-11-08,nba_sun_main,50c5af29-421f-4d2f-8fd1-b3729a0b05b7,2635b111-dad8-424d-8c9d-f4132808e180,Sunday Shootaround,6 person drafts - $4k to first!,150,8946,1491,6,2026-11-08T23:41:00Z,2026-11-09T10:21:03+00:00
+2026-11-08,nba_sun_main,50c5af29-421f-4d2f-8fd1-b3729a0b05b7,834aba4c-e748-4858-9249-9f3fc00b4ba3,The Layup Line,6 person drafts - $1k to first!,33,1128,188,6,2026-11-08T23:41:00Z,2026-11-09T10:21:17+00:00
+2026-11-08,nba_sun_main,50c5af29-421f-4d2f-8fd1-b3729a0b05b7,d107f5b2-e93c-4c34-85b3-4229b91c0972,The Crossover,5 entry max - $2k to first!,5,216,36,6,2026-11-08T23:41:00Z,2026-11-09T10:21:20+00:00

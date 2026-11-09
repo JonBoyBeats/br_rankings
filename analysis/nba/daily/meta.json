@@ -513,5 +513,43 @@
    ]
   },
   "gist": true
+ },
+ "2026-11-08_sun_main.csv": {
+  "lock": "2026-11-08T23:52:00+00:00",
+  "adp_am_at": "2026-11-08T22:07:45+00:00",
+  "adp_etr_at": "2026-11-08T22:07:45+00:00",
+  "adp_close_at": "2026-11-08T23:22:52+00:00",
+  "morning_through": "2026-11-07",
+  "etr_first": {
+   "at": "2026-11-08T22:13:08.315Z",
+   "file": "pasted text"
+  },
+  "etr_last": {
+   "at": "2026-11-08T22:19:09.193Z",
+   "file": "pasted text"
+  },
+  "am": {
+   "at": "2026-11-08T22:13:01.457Z",
+   "from": "board before ETR",
+   "ours": true,
+   "tiers": [
+    4,
+    9,
+    22,
+    29
+   ]
+  },
+  "pm": {
+   "at": "2026-11-08T23:06:46.906Z",
+   "from": "board at lock",
+   "ours": false,
+   "tiers": [
+    4,
+    15,
+    23,
+    31
+   ]
+  },
+  "gist": true
  }
 }
