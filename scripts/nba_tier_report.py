@@ -329,8 +329,10 @@ def playbook(mirror, H, reg, by_reg, money, leans, hyp, today):
           for lab, prov in (("Adopted", False), ("Provisional", True)) if any(bool(x.get("provisional")) == prov for x in ad)]
     ch += ["Reinstated: " + ", ".join("%s (%s)" % (x["id"], x["on"]) for x in leans.get("reinstated", []) if x.get("on", "") >= week)] \
         if any(x.get("on", "") >= week for x in leans.get("reinstated", [])) else []
-    ih = [k for k, h in hyp.items() if h.get("written", "") >= week]
+    ih = [k for k, h in hyp.items() if h.get("written", "") >= week and h.get("status") == "testing"]
     ch += ["Ideas under test: " + ", ".join(ih)] if ih else []
+    gone = ["%s (%s)" % (k, h["status"]) for k, h in hyp.items() if h.get("closed", "") >= week]
+    ch += ["Ideas closed: " + ", ".join(gone)] if gone else []
     md += ["**Changes this week**"] + ["- " + c for c in ch] + ([] if ch else ["- none"]) + [""]
     return md
 

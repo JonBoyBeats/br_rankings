@@ -60,7 +60,8 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Adopted: AM T5: the button's order (your moves off it are takes), VALUE first in the tier (T3-T5), PM: a Questionable player two tiers back, AM: no push for a Questionable player, PM T5: beneficiary picks, PM T5: ADP, VALUE first, the one-tier cap
 - Provisional: PM T2: ADP (2: ETR), PM T4: ADP (2: ETR), T5: the less drafted within 2 pts
 - Reinstated: ownership-tiebreak-t5 (2026-11-09)
-- Ideas under test: T4-1, T4-2, T2-T4-1, T5-1, Q-1, T2-1
+- Ideas under test: T4-1, T2-T4-1, T5-1, Q-1, T2-1
+- Ideas closed: T4-2 (replaced)
 
 ## T1
 
