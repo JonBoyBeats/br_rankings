@@ -42,7 +42,7 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - 1/2 turn: don't reach unless a top player falls (reaching: money LEAN against)
 - Fallers: always take them (money RULE for at both turns)
 - Avoid same-position teammates (holding them: money RULE against)
-- Opposing stars from the same game: a plus (money LEAN for)
+- Opposing stars from the same game: a plus (money no lean)
 
 **Q-tags and their handling** (calibrated chance to play; AM: no push; PM: two tiers back)
 - Scottie Barnes TOR, Questionable, 69%: T2 · AM stays T2 · PM to T4
@@ -60,7 +60,7 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Adopted: AM T5: the button's order (your moves off it are takes), VALUE first in the tier (T3-T5), PM: a Questionable player two tiers back, AM: no push for a Questionable player, PM T5: beneficiary picks, PM T5: ADP, VALUE first, the one-tier cap
 - Provisional: PM T2: ADP (2: ETR), PM T4: ADP (2: ETR), T5: the less drafted within 2 pts
 - Reinstated: ownership-tiebreak-t5 (2026-11-09)
-- Ideas under test: T4-1, T4-2, T2-T4-1, T5-1, Q-1
+- Ideas under test: T4-1, T4-2, T2-T4-1, T5-1, Q-1, T2-1
 
 ## T1
 
@@ -109,6 +109,7 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - PM T2: ADP (2: ETR) vs the old ADP (1: ETR): 0/14 · season +4.1, not enough yet (37) · forward none yet · money no lean
 - T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+): 0/14 · season +1.9, not enough yet (19) · forward none yet · money LEAN for
 - Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -8.5, not enough yet (19) · forward none yet · money no lean
+- T2-1: T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season +0.1 (-1.6 to +1.9), 102 pairs, no lean · forward none yet · money RULE for
 
 **Worth a look**
 - Dejounte Murray: ours 42.6, actual 13.1, shooting: 28 min (usual 35) in a 16-point loss, 1-6
@@ -190,7 +191,7 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - provisional: T5: the less drafted within 2 pts · points money RULE · money RULE for
 
 **Testing** (forward nights of 14 · shadow · money)
-- AM T5: the less drafted within 2 pts vs the old Proj (3: ADP): 0/14 · season +1.5 (-0.5 to +3.9), 119 pairs, LEAN + · forward none yet · money RULE for
+- AM T5: the less drafted within 2 pts vs the old Proj (3: ADP): 0/14 · season +1.6 (-0.2 to +4.0), 123 pairs, LEAN + · forward none yet · money RULE for
 - PM T5: the less drafted within 2 pts vs the old ADP: 0/14 · season -2.9 (-5.1 to -0.8), 90 pairs, LEAN - (RULE numbers, check pending) · forward none yet · money RULE for
 - T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners: 0/14 · season -3.1 (-4.3 to -1.6), 553 pairs, LEAN - (RULE numbers, check pending) · forward none yet · money played: RULE for
 - Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -8.5, not enough yet (19) · forward none yet · money no lean

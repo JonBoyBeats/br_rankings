@@ -42,6 +42,7 @@ REP = G.REP
 FORWARD = "2026-11-10"
 HYP = os.path.join(REP, "hypotheses.json")
 MAX_TESTING = 3            # ideas under test per tier at once
+TURN12 = 9.5               # T2-1: the 1/2 turn, by the window's ADP
 QR = re.compile(r"^q", re.I)
 QT = re.compile(r"^(q|d|g)", re.I)
 # The switches in force that are still provisional, and the kept cap: each against the rule it replaced (positive = the
@@ -90,6 +91,17 @@ def pairwise(how, a, b, ctx):
         last = 5 * int(a["pod"])
         ben = lambda r: G.num(r["adp"]) is not None and G.num(r["adp"]) > last and r["team"] in ctx["tagged"]
         return a if ben(a) and not ben(b) else b if ben(b) and not ben(a) else None
+    if how == "turn12":                    # T2-1: ADP to the 1/2 turn (ADP 9.5), then the window's projection
+        if a["flag"] != b["flag"] or a["tier"] != b["tier"]:
+            return None
+        xa, xb = G.adp(a), G.adp(b)
+        ea, eb = xa <= TURN12, xb <= TURN12
+        if ea != eb:
+            return a if ea else b
+        if ea:
+            return None if xa == xb else (a if xa < xb else b)
+        pa, pb = G.num(a["proj"]), G.num(b["proj"])
+        return None if pa is None or pb is None or pa == pb else (a if pa > pb else b)
     if how == "qsplit":                    # Q-1: the Questionable push by flag, chance to play and tier
         ka = (q_tier(a, ctx), int(a["built"]))
         kb = (q_tier(b, ctx), int(b["built"]))

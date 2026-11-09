@@ -12,7 +12,7 @@
   "forward_nights": 0,
   "season": {
    "n": 37,
-   "mean": 4.101111263547816,
+   "mean": 4.101111263547813,
    "lo": null,
    "hi": null,
    "label": "not enough yet (37)",
@@ -68,9 +68,9 @@
   "forward_nights": 0,
   "season": {
    "n": 705,
-   "mean": 1.1175546026789298,
-   "lo": -0.5434825804595781,
-   "hi": 2.775498248080514,
+   "mean": 1.11755460267893,
+   "lo": -0.5434825804595792,
+   "hi": 2.775498248080518,
    "label": "no lean",
    "text": "+1.1 (-0.5 to +2.8), 705 pairs, no lean"
   },
@@ -95,12 +95,12 @@
   "forward_from": "2026-11-10",
   "forward_nights": 0,
   "season": {
-   "n": 119,
-   "mean": 1.49734650153786,
-   "lo": -0.4652662191894036,
-   "hi": 3.9112793650150492,
+   "n": 123,
+   "mean": 1.6291401112439456,
+   "lo": -0.24985207117495878,
+   "hi": 3.964571092982037,
    "label": "LEAN +",
-   "text": "+1.5 (-0.5 to +3.9), 119 pairs, LEAN +"
+   "text": "+1.6 (-0.2 to +4.0), 123 pairs, LEAN +"
   },
   "forward": {
    "n": 0,
@@ -126,7 +126,7 @@
    "n": 90,
    "mean": -2.8755555555555556,
    "lo": -5.143181818181817,
-   "hi": -0.7888888888888883,
+   "hi": -0.7888888888888889,
    "label": "LEAN - (RULE numbers, check pending)",
    "text": "-2.9 (-5.1 to -0.8), 90 pairs, LEAN - (RULE numbers, check pending)"
   },
@@ -156,9 +156,9 @@
   "forward_nights": 0,
   "season": {
    "n": 56,
-   "mean": -0.39594833092298637,
-   "lo": -2.670284913237858,
-   "hi": 1.7828865278547021,
+   "mean": -0.39594833092298626,
+   "lo": -2.6702849132378565,
+   "hi": 1.7828865278547017,
    "label": "no lean",
    "text": "-0.4 (-2.7 to +1.8), 56 pairs, no lean"
   },
@@ -242,9 +242,9 @@
   "forward_nights": 0,
   "season": {
    "n": 553,
-   "mean": -3.0550860080322217,
-   "lo": -4.3479646205527755,
-   "hi": -1.6243054848724683,
+   "mean": -3.055086008032219,
+   "lo": -4.34796462055278,
+   "hi": -1.6243054848724676,
    "label": "LEAN - (RULE numbers, check pending)",
    "text": "-3.1 (-4.3 to -1.6), 553 pairs, LEAN - (RULE numbers, check pending)"
   },
@@ -274,11 +274,39 @@
   "forward_nights": 0,
   "season": {
    "n": 19,
-   "mean": -8.476205249866185,
+   "mean": -8.476205249866187,
    "lo": null,
    "hi": null,
    "label": "not enough yet (19)",
    "text": "-8.5, not enough yet (19)"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "T2-1",
+  "name": "T2-1: T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",
+  "kind": "candidate",
+  "tiers": [
+   2
+  ],
+  "window": "am+pm",
+  "drop_if": "no win",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 102,
+   "mean": 0.09427814443228638,
+   "lo": -1.5885040856002495,
+   "hi": 1.8967032967032964,
+   "label": "no lean",
+   "text": "+0.1 (-1.6 to +1.9), 102 pairs, no lean"
   },
   "forward": {
    "n": 0,
