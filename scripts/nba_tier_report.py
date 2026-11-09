@@ -50,7 +50,8 @@ TIEBREAKS = {5: "ownership-tiebreak-t5"}    # a provisional tiebreak on top of t
 DRAFT_CARD = [   # in-draft rules, money-backed (contest side, 2026-11-09; register rows card-*); index.html #draftCard
     ("2/3 turn: reach toward the higher projection", "card-turn23-reach-higher-proj"),
     ("1/2 turn: don't reach unless a top player falls (reaching:", "card-turn12-reach"),
-    ("Fallers: always take them", "card-fallers"),
+    ("Fallers: at the 1/2 turn, a top-4 ADP player still there at picks 5-8; at the 2/3 turn (from the 1.01/1.02), a top-9 "
+     "player still there at picks 11-14 (4-person pods: top-2 / top-5). Take them.", "card-fallers"),
     ("Avoid same-position teammates (holding them:", "card-same-position-teammates"),
     ("Opposing stars from the same game: a plus", "card-opposing-stars"),
 ]
@@ -68,6 +69,7 @@ SHORT = {   # leans.json ids, as the phone shows them
 }
 SHADOW_REG = {"t5-less-drafted-am": "ownership-tiebreak-t5", "t5-less-drafted-pm": "ownership-tiebreak-t5",
               "pm-t5-vs-old-etr": "pm-t5-adp-value"}     # shadow.json ids whose money verdict sits on another register row
+DRAFT_NOTE = "Note: later rounds: a player well past his ADP through round 5 leans worth taking (candidate)"
 MONEY_NOTE = ("Everything adopted or kept is provisional until its money verdict (top finishes and dollars, from the contest "
               "side: decision_register.csv) is in, and may be changed by it.")
 
@@ -304,7 +306,7 @@ def playbook(mirror, H, reg, by_reg, money, leans, hyp, today):
         if pod == 4:
             md += ["Small slate: the switches were chosen on 6-drafter slates; nothing is adopted for 4-drafter pods yet.", ""]
         md += ["**Draft card**"] + ["- %s %s)" % (txt, money(rid)) if txt.endswith(":") else "- %s (%s)" % (txt, money(rid))
-                                    for txt, rid in DRAFT_CARD] + [""]
+                                    for txt, rid in DRAFT_CARD] + ["- " + DRAFT_NOTE, ""]
         tagged = sorted([r for r in pool if QT.match(r["tag"]) and r["adp"] is not None and r["adp"] < cap], key=adp)
         md.append("**Q-tags and their handling** (calibrated chance to play; AM: no push; PM: two tiers back)")
         md += ["- %s %s, %s, %d%%: T%d · AM stays T%d · PM to T%d" % (

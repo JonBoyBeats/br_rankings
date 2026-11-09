@@ -183,6 +183,7 @@
   #draftCard .dc-src { font-weight: 400; color: var(--muted); font-size: 12px; }
   #draftCard ul { margin: 6px 0 2px 18px; padding: 0; }
   #draftCard li { margin: 2px 0; }
+  #draftCard li.dc-note { color: var(--muted); }
   #draftCard li b { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--muted); }
   #swapPanel { margin: 8px 0; padding: 8px 10px; border: 1px solid var(--line, #cbd5e1); border-radius: 6px; font-size: 13px; }
   #swapPanel .swaphead { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
@@ -908,9 +909,11 @@
       <ul>
         <li>2/3 turn: reach toward the higher projection <b>RULE</b></li>
         <li>1/2 turn: don&rsquo;t reach unless a top player falls <b>LEAN</b></li>
-        <li>Fallers: always take them <b>RULE, both turns</b></li>
+        <li>Fallers: at the 1/2 turn, a top-4 ADP player still there at picks 5-8; at the 2/3 turn (from the 1.01/1.02),
+            a top-9 player still there at picks 11-14 (4-person pods: top-2 / top-5). Take them. <b>RULE, both turns</b></li>
         <li>Avoid same-position teammates <b>RULE against</b></li>
         <li>Opposing stars from the same game: a plus <b>LEAN</b></li>
+        <li class="dc-note">Note: later rounds: a player well past his ADP through round 5 leans worth taking <b>candidate</b></li>
       </ul>
     </details>
     <div id="swapPanel" hidden></div>

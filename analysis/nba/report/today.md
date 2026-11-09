@@ -10,7 +10,7 @@
 - Lock PM: fallback: last board saved before contests closed at 3:06pm; swaps from 4:00pm; 0 Lock PM, 0 exports seen
 - Overnight (drafts before 4:30am, kept out of the AM grades): none
 - ADP snapshots: AM board 3:23am, closing 3:22pm (lock 3:52pm)
-- Today's inputs: our Proj ready 9:23pm; chance to play ready 12:23am; Q-tags polled 12:23pm
+- Today's inputs: our Proj ready 9:23pm; chance to play ready 12:23am; Q-tags polled 1:23pm
 
 ## Monday proposals (today: decide)
 
@@ -40,9 +40,10 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 **Draft card**
 - 2/3 turn: reach toward the higher projection (money RULE for)
 - 1/2 turn: don't reach unless a top player falls (reaching: money LEAN against)
-- Fallers: always take them (money RULE for at both turns)
+- Fallers: at the 1/2 turn, a top-4 ADP player still there at picks 5-8; at the 2/3 turn (from the 1.01/1.02), a top-9 player still there at picks 11-14 (4-person pods: top-2 / top-5). Take them. (money RULE for at both turns)
 - Avoid same-position teammates (holding them: money RULE against)
 - Opposing stars from the same game: a plus (money no lean)
+- Note: later rounds: a player well past his ADP through round 5 leans worth taking (candidate)
 
 **Q-tags and their handling** (calibrated chance to play; AM: no push; PM: two tiers back)
 - Scottie Barnes TOR, Questionable, 69%: T2 · AM stays T2 · PM to T4
@@ -50,9 +51,9 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Austin Reaves LAL, Questionable, 42%: T2 · AM stays T2 · PM to T4
 - Immanuel Quickley TOR, Questionable, 61%: T5 · AM stays T5 · PM to T5
 
-**VALUE flags, T3-T5**: Jamal Murray (T3, ADP 19.9), Ty Jerome (T3, ADP 20.2), Trae Young (T4, ADP 26.1), Zion Williamson (T4, ADP 27.9), Miles Bridges (T5, ADP 29.9), Kyshawn George (T5, ADP 31.2), James Harden (T5, ADP 31.7), Dejounte Murray (T4, ADP 34.2)
+**VALUE flags, T3-T5**: Jamal Murray (T3, ADP 19.4), Ty Jerome (T3, ADP 20.2), Trae Young (T4, ADP 26.2), Zion Williamson (T4, ADP 27.7), Miles Bridges (T5, ADP 30.0), Kyshawn George (T5, ADP 31.1), James Harden (T5, ADP 31.9), Dejounte Murray (T4, ADP 34.1)
 
-**Beneficiaries to watch**: Immanuel Quickley (TOR, ADP 35.7) if Scottie Barnes sits; Jakob Poeltl (TOR, undrafted) if Scottie Barnes sits; Collin Murray-Boyles (TOR, undrafted) if Scottie Barnes sits; Jamal Shead (TOR, undrafted) if Scottie Barnes sits; Kyshawn George (WAS, ADP 31.2) if Anthony Davis sits; AJ Dybantsa (WAS, ADP 35.9) if Anthony Davis sits; Alex Sarr (WAS, ADP 35.9) if Anthony Davis sits; Matisse Thybulle (LAL, undrafted) if Austin Reaves sits
+**Beneficiaries to watch**: Immanuel Quickley (TOR, ADP 35.7) if Scottie Barnes sits; Jakob Poeltl (TOR, undrafted) if Scottie Barnes sits; Collin Murray-Boyles (TOR, undrafted) if Scottie Barnes sits; Jamal Shead (TOR, undrafted) if Scottie Barnes sits; Kyshawn George (WAS, ADP 31.1) if Anthony Davis sits; Alex Sarr (WAS, ADP 35.9) if Anthony Davis sits; AJ Dybantsa (WAS, ADP 35.9) if Anthony Davis sits; Matisse Thybulle (LAL, undrafted) if Austin Reaves sits
 
 **Swap board**: after drafting, open Swaps on the board (leverage is the default) and Apply, then your round-6 shuffle in the app. Swaps are graded from the contest data, not from any lock.
 
