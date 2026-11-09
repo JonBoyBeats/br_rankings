@@ -13,7 +13,7 @@ that ruled-out player's swap targets that night, else his own tip).
   graded           each real swap against the best available by ETR's final projection and against the swap board's
                    pick (ETR's final, near-ties within 2 points least drafted first): points per swap
 
-Small sample: your swaps so far are about 100 over 9 nights; every number says so. Writes analysis/nba/report/my_swaps.md.
+Small sample: every number gives its count of swaps. Writes analysis/nba/report/my_swaps.md.
 
   python3 scripts/nba_my_swaps.py
 """
@@ -90,8 +90,9 @@ def main():
                        "same": same, "with_saved": len(helped), "helped": helped, "vs_best": vs_best, "vs_board": vs_board,
                        "reorders": complete})
     md = ["# Your real swaps (from the contest rosters)", "",
-          "Written by scripts/nba_my_swaps.py. Small sample: about 100 swaps over 9 nights so far; read every number as "
-          "directional. Points: the real incoming player's score minus the other's (positive: your real swap was better).", "",
+          "Written by scripts/nba_my_swaps.py. Small sample: %d credited swaps over %d nights so far; read every number as "
+          "directional. Points: the real incoming player's score minus the other's (positive: your real swap was better)." % (
+              sum(x["credited"] for x in nights), len(nights)), "",
           "| Night | Your swaps | Credited | Inferred order: constraints (incoming players) | Saved order would have picked the same | App shuffle vs your saved order's pick | vs best by ETR final | vs the swap board's pick | Players your saved order had above the app's choice (avg) |",
           "|---|---|---|---|---|---|---|---|---|"]
     tot = collections.defaultdict(list)

@@ -208,7 +208,8 @@ def main():
     md += ["", "## Your own swaps", "", "Graded from your real swaps in the contest rosters (your Underdog app order, which the board "
            "never sees): analysis/nba/report/my_swaps.md. The replay of your saved order that used to stand here is superseded.",
            "", "Reading section a: points left on the table are the best option's score minus the swap's, so positive means the swap "
-           "fell short. The field left +0.8 a swap; your swaps came out ahead of ETR's final best by 0.8 (AM 0.4, PM 1.2)."]
+           "fell short. The field left %+.1f a swap; yours left %+.1f (AM %+.1f, PM %+.1f)." % tuple(
+               sum(eff[k]) / len(eff[k]) if eff[k] else 0 for k in (("all", "all"), ("mine", "all"), ("mine", "AM"), ("mine", "PM")))]
     md += ["", "## Your live moves: board saves after the slate locked", "", "| Slate | Saves that day | After lock | Top-80 ranks moved by them |", "|---|---|---|---|"]
     md += ["| %s | %d | %d | %d |" % x for x in live]
     open(OUT, "w").write("\n".join(md) + "\n")

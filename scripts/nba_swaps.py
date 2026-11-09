@@ -5,9 +5,13 @@ by the drafter's own rankings at swap time. The leaderboards (analysis/nba/conte
 show final rosters, and a swapped-in player carries no draft ADP: that blank is how a swap is found here.
 
 Each swap is credited to the ruled-out player it replaced: among the night's players who logged 0 minutes for a
-team that played, the one whose ADP round (his last ADP of the day: a player ruled out leaves ADP before lock; rounds of pod-size picks) is the round missing from that
-team's other five picks. A team missing two rounds with two candidates in them is credited both; a swap with no
-round match, or two candidates in the one missing round, stays unattributed.
+team that played, the one nearest in ADP to the team's missing slot. The slot is found by fitting the team's drafted
+picks to a snake draft (its seat and which rounds are missing, least total ADP distance); the candidate's distance is
+the nearest of his ADPs that day (AM, PM, ETR upload, close: a player's ADP at draft and at lock can sit in different
+rounds). Each ruled-out player is credited at most once per pod (he was drafted by one team there) and never when he is on a
+roster in that pod; the pod's matching with the least total distance is taken. A swap stays unattributed when no
+candidate is within a round (pod picks) of its slot, or another matching within a pick (MARGIN) of the best gives its
+team different players.
 
 Prints, for every night with contests on file: teams and swaps; ruled-out players still on a final roster (not
 swapped, so a real 0); when swaps happen (the swapped-in player's tip against the ruled-out player's); and for each
@@ -17,13 +21,14 @@ ruled-out player: how many swaps, where they landed, the swaps' points, his tier
 
   python3 scripts/nba_swaps.py
 """
-import collections, csv, datetime as dt, glob, gzip, json, math, os, urllib.request
+import collections, csv, datetime as dt, glob, gzip, itertools, json, math, os, urllib.request
 
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 NBA = os.path.join(HERE, "analysis", "nba")
 TIPS = os.path.join(NBA, "contests", "tips.json")
 OUT = os.path.join(NBA, "report", "swaps.csv")
 ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=%s"
+MARGIN = 1.0      # a credit needs its matching to beat, by this many picks, every matching that gives the team other players
 TEAM = {"SA": "SAS", "NY": "NYK", "GS": "GSW", "NO": "NOP", "UTAH": "UTA", "WSH": "WAS"}
 
 
@@ -52,6 +57,58 @@ def tips(day):
     return {k: dt.datetime.fromisoformat(v) for k, v in cache[day].items()}
 
 
+def snake(r, k, pod):
+    """Pick number of seat k (1..pod) in round r (1..6) of a snake draft."""
+    return (r - 1) * pod + k if r % 2 else r * pod - k + 1
+
+
+def slots(adps, nsw, pod):
+    """The missing slots' pick numbers: the seat and missing rounds that fit the drafted ADPs (sorted) best."""
+    best = None
+    for k in range(1, pod + 1):
+        for miss in itertools.combinations(range(1, 7), nsw):
+            rounds = [r for r in range(1, 7) if r not in miss][:len(adps)]
+            cost = sum(abs(a - snake(r, k, pod)) for a, r in zip(adps, rounds))
+            if best is None or cost < best[0]:
+                best = (cost, [snake(r, k, pod) for r in miss])
+    return best[1]
+
+
+def credit_pod(teams, pod, out):
+    """{draft_id: [ruled-out players]} for one pod's teams with swaps [(draft_id, drafted ADPs, n swaps)]: each team's
+    missing slots matched to the ruled-out players nearest in ADP, every player used once in the pod (he was drafted by
+    one team) and only within a round (pod picks) of the slot. The matching with the least total distance is taken; a
+    team is left out when it can't be matched in range, or when another matching within MARGIN picks of the best gives it
+    different players."""
+    dist = lambda o, x: min(abs(v - x) for v in out[o]["adps"])
+    opts = []
+    for did, adps, nsw in teams:
+        sl = slots(adps, nsw, pod)
+        near = sorted((o for o in out if all(dist(o, x) <= pod for x in sl)), key=lambda o: sum(dist(o, x) for x in sl))[:nsw + 3]
+        o = [(sum(dist(c, x) for c, x in zip(perm, sl)), perm) for perm in itertools.permutations(near, nsw)]
+        opts.append(o + [((pod + 1) * nsw, None)])            # unmatched costs more than any match in range
+    def search(bound):
+        """Every matching costing at most bound (None: find the cheapest), as (cost, [perm per team])."""
+        found, lim = [], [bound]
+        def go(i, used, cost, pick):
+            if lim[0] is not None and cost > lim[0]:
+                return
+            if i == len(teams):
+                if bound is None:
+                    lim[0] = cost
+                found.append((cost, list(pick)))
+                return
+            for c, perm in opts[i]:
+                if perm is None or not used & set(perm):
+                    go(i + 1, used | set(perm or ()), cost + c, pick + [perm])
+        go(0, frozenset(), 0, [])
+        return found
+    best = min(search(None), key=lambda x: x[0])
+    near_best = search(best[0] + MARGIN)
+    return {did: best[1][i] for i, (did, _, _) in enumerate(teams)
+            if best[1][i] is not None and all(set(m[i] or ()) == set(best[1][i]) for _, m in near_best)}
+
+
 def night(day):
     path = glob.glob(os.path.join(NBA, "daily", "%s_*_main.csv" % day))
     if not path:
@@ -66,38 +123,35 @@ def night(day):
     if not teams:
         return None
     pod = 4 if max((num(r["adp_close"]) or 0) for r in rows.values()) <= 28 else 6
-    rnd = lambda a: min(6, max(1, math.ceil(a / pod)))
     played = {r["team"] for r in rows.values() if num(r["min"])}
     last_adp = lambda r: next((num(r.get(c)) for c in ("adp_close", "adp_pm", "adp_etr", "adp_am") if num(r.get(c)) is not None), None)
-    out = {p: dict(r, adp_out=last_adp(r)) for p, r in rows.items() if r["min"] == "0.0" and r["team"] in played and last_adp(r) is not None}
+    day_adps = lambda r: [num(r.get(c)) for c in ("adp_am", "adp_pm", "adp_etr", "adp_close") if num(r.get(c)) is not None]
+    out = {p: dict(r, adp_out=last_adp(r), adps=day_adps(r)) for p, r in rows.items() if r["min"] == "0.0" and r["team"] in played and last_adp(r) is not None}
     tip = tips(day)
     swaps, unattributed, kept, credited = collections.defaultdict(list), 0, collections.Counter(), []
+    pods = collections.defaultdict(list)
     for t in teams:
-        picks = [(t["p%d" % i], num(t["adp%d" % i])) for i in range(1, 7) if t["p%d" % i]]
-        sw = [p for p, a in picks if a is None]
-        for p, a in picks:
-            if a is not None and p in out:
-                kept[p] += 1                       # a ruled-out player still on the final roster: not swapped
-        if not sw:
+        pods[t["draft_id"]].append(t)
+    for did, pts in pods.items():
+        roster = {t["p%d" % i] for t in pts for i in range(1, 7) if t["p%d" % i] and num(t["adp%d" % i]) is not None}
+        for p in roster & set(out):
+            kept[p] += 1                           # a ruled-out player still on a final roster: not swapped
+        need = {t["username"] + str(i): t for i, t in enumerate(pts) if any(t["p%d" % k] and num(t["adp%d" % k]) is None for k in range(1, 7))}
+        if not need:
             continue
-        have = collections.Counter(rnd(a) for _, a in picks if a is not None)
-        missing = [k for k in range(1, 7) if not have[k]]
-        cands = [o for o in out if rnd(out[o]["adp_out"]) in missing and o not in dict(picks)]
-        by_round = collections.defaultdict(list)
-        for o in cands:
-            by_round[rnd(out[o]["adp_out"])].append(o)
-        options = [v[0] for k, v in by_round.items() if len(v) == 1]
-        if len(sw) == 1 and len(cands) == 1:
-            options = cands
-        if len(options) == len(sw) and len(sw) <= len(missing):
-            # credit in order of ADP: the earliest out player to the earliest-tipping swap is arbitrary, so with two
-            # swaps on one team each pairing is recorded only when the targets tip at the same time or it can't matter
-            for o, s in zip(sorted(options, key=lambda o: out[o]["adp_out"]), sw):
-                swaps[o].append(s)
-                credited.append({"out": o, "swap": s, "draft_id": t["draft_id"], "contest_id": t["contest_id"],
+        cands = {o: r for o, r in out.items() if o not in roster}
+        got = credit_pod([(k, sorted(num(t["adp%d" % i]) for i in range(1, 7) if num(t["adp%d" % i]) is not None),
+                           sum(1 for i in range(1, 7) if t["p%d" % i] and num(t["adp%d" % i]) is None)) for k, t in need.items()], pod, cands)
+        for k, t in need.items():
+            sw = [t["p%d" % i] for i in range(1, 7) if t["p%d" % i] and num(t["adp%d" % i]) is None]
+            if k not in got:
+                unattributed += len(sw)
+                continue
+            # which out player went to which swapped-in pick on a two-swap team is arbitrary: paired in ADP order
+            for o, x in zip(sorted(got[k], key=lambda o: out[o]["adp_out"]), sw):
+                swaps[o].append(x)
+                credited.append({"out": o, "swap": x, "draft_id": t["draft_id"], "contest_id": t["contest_id"],
                                  "username": t["username"], "team": t})
-        else:
-            unattributed += len(sw)
     return {"day": day, "rows": rows, "hist": hist, "teams": len(teams), "credited": credited, "all_teams": teams, "pods": len({t["draft_id"] for t in teams}),
             "contests": len(contests), "swaps": swaps, "unattributed": unattributed, "kept": kept, "out": out, "tip": tip,
             "n_swaps": sum(1 for t in teams for i in range(1, 7) if t["p%d" % i] and not t["adp%d" % i])}
