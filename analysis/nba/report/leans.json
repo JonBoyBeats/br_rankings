@@ -1,0 +1,18 @@
+{
+ "about": "Leans and rules in force, each under forward test. LEAN: 40+ decision pairs and 80%+ of slate resamples one way; used as a tiebreak or default in its tier and window. RULE: 80+ pairs, a 90% range clear of zero, the same direction in the check slates and a drop-one-player check; may reorder players. Each is dropped if it flips direction over the 14 nights after adoption.",
+ "items": [
+  {
+   "id": "am-t5-button-order",
+   "level": "LEAN",
+   "tier": 5,
+   "window": "am",
+   "pod": 6,
+   "statement": "In the AM window, the Tiers button's T5 order is the default; your moves off it are logged as takes and graded.",
+   "evidence": "Takes history (scripts/nba_tier_takes.py), AM primary sample 2026-10-28 to 2026-11-07, 7 nights: 285 decision pairs, you right 42%, -3.3 points per take, 80% range -4.8 to -1.6 (resampling slates).",
+   "adopted": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "forward_nights": 14,
+   "drop_if": "the AM T5 takes' points per take turns positive over the 14 forward nights"
+  }
+ ]
+}

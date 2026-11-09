@@ -24,7 +24,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 DAILY = os.path.join(HERE, "analysis", "nba", "daily")
 OUT = os.path.join(HERE, "analysis", "nba", "report", "tier_history.csv")
-MIN_TIER = {6: 4, 4: 3}     # every tier on each ladder holds at least this many (2026-11-09)
+MIN_TIER = {6: 4, 4: 3}     # T2-T4 on each ladder hold at least this many (2026-11-09)
+MIN_T1 = 2                  # T1, the elite, at least 2
 LADDER = {6: [(2, 5, 4), (12, 18, 15), (19, 25, 22), (27, 33, 30)], 4: [(2, 4, 3), (8, 12, 10), (13, 17, 15), (18, 22, 20)]}
 SMASH_PLAY = 0.7
 Q_TAG = re.compile(r"^(q|d|g)", re.I)
@@ -50,11 +51,11 @@ def num(v):
 
 def lines(vals, spec, min_size, unconstrained=False):
     """The board's nbaLadderLines: per window, the rank k (a line ends a tier at k) with the biggest step
-    vals[k-1] -> vals[k], among the ranks that leave every tier at least min_size players (the next-biggest gap
-    when the biggest breaks that); ties go to the rank nearest the window's start. unconstrained: no minimum."""
+    vals[k-1] -> vals[k], among the ranks that leave T2-T4 at least min_size players and T1 at least MIN_T1 (the
+    next-biggest gap when the biggest breaks that); ties go to the rank nearest the window's start. unconstrained: no minimum."""
     out, prev, n = [], 0, len(vals)
     for j, (lo, hi, start) in enumerate(spec):
-        least = prev + (1 if unconstrained else min_size)
+        least = prev + (1 if unconstrained else MIN_T1 if j == 0 else min_size)
         most = n - 1 if unconstrained or j < len(spec) - 1 else n - min_size
         best, gap = None, -math.inf
         for k in range(max(lo, least), min(hi, most, n - 1) + 1):

@@ -1,15 +1,15 @@
 date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,p_tier,tier,flag,tag,q_class,play,exp_tier,actual,min,played,scratched,breaker,your_rank,your_tier,built,boom,drafted
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,1.4,49.1,ours_raw,1,1,1,,,,,,43.7,30.0,1,0,0,2,,2,0.329,100.0
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.7,56.9,ours_raw,1,1,1,,,,,,51.1,30.0,1,0,0,1,,1,0.513,100.0
-2026-10-21,nba_wed_main,6,am,secondary,board before ETR,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,3.2,46.7,ours_raw,1,1,1,,,,,,43.8,28.0,1,0,0,3,,3,0.31,100.0
+2026-10-21,nba_wed_main,6,am,secondary,board before ETR,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,3.2,46.7,ours_raw,1,2,1,PRICEY,,,,,43.8,28.0,1,0,0,3,,3,0.31,100.0
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,4.6,42.9,ours_raw,1,2,1,PRICEY,,,,,38.5,30.0,1,0,0,5,,4,0.197,100.0
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,5.2,42.6,ours_raw,1,2,1,PRICEY,,,,,66.5,33.0,1,0,1,4,,5,0.193,100.0
-2026-10-21,nba_wed_main,6,am,secondary,board before ETR,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,7.5,44.0,ours_raw,2,1,2,VALUE,,,,,60.4,34.0,1,0,1,7,,6,0.294,100.0
-2026-10-21,nba_wed_main,6,am,secondary,board before ETR,bf58d7e0-6504-4a83-ae63-c578f7701f86,Paolo Banchero,ORL,7.0,40.8,ours_raw,2,2,2,,,,,,55.4,41.0,1,0,0,6,,8,0.202,100.0
+2026-10-21,nba_wed_main,6,am,secondary,board before ETR,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,7.5,44.0,ours_raw,2,2,2,,,,,,60.4,34.0,1,0,1,7,,7,0.294,100.0
+2026-10-21,nba_wed_main,6,am,secondary,board before ETR,bf58d7e0-6504-4a83-ae63-c578f7701f86,Paolo Banchero,ORL,7.0,40.8,ours_raw,2,2,2,,,,,,55.4,41.0,1,0,0,6,,6,0.202,100.0
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,8.1,39.8,ours_raw,2,3,2,PRICEY,,,,,49.0,33.0,1,0,0,8,,10,0.219,100.0
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,8.0,36.4,ours_raw,2,4,3,PRICEY,,,,,47.6,34.0,1,0,0,15,,20,0.208,100.0
-2026-10-21,nba_wed_main,6,am,secondary,board before ETR,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,9.9,40.9,ours_raw,2,2,2,,,,,,36.7,26.0,1,0,0,10,,9,0.196,100.0
-2026-10-21,nba_wed_main,6,am,secondary,board before ETR,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,11.4,44.6,ours_raw,2,1,2,VALUE,,,,,48.2,24.0,1,0,0,9,,7,0.235,100.0
+2026-10-21,nba_wed_main,6,am,secondary,board before ETR,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,9.9,40.9,ours_raw,2,2,2,,,,,,36.7,26.0,1,0,0,10,,8,0.196,100.0
+2026-10-21,nba_wed_main,6,am,secondary,board before ETR,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,11.4,44.6,ours_raw,2,2,2,,,,,,48.2,24.0,1,0,0,9,,9,0.235,100.0
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,12.5,38.1,ours_raw,2,4,3,PRICEY,,,,,37.4,29.0,1,0,0,13,,21,0.21,100.0
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,8a6e8470-732e-49bc-9c14-cd7ac8b00a9c,Tyrese Haliburton,IND,13.3,,ours_raw,2,5,3,PRICEY,,,,,43.4,34.0,1,0,0,14,,22,,100.0
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,14.2,38.6,ours_raw,2,3,2,PRICEY,,,,,34.8,29.0,1,0,0,12,,11,0.196,100.0
@@ -100,15 +100,15 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-21,nba_wed_main,6,am,secondary,board before ETR,ae5692e5-6610-4414-a7bc-9e63432351f8,Isaiah Crawford,HOU,,4.7,ours_raw,5,5,5,,,,,,3.0,3.0,1,0,0,,,99,,
 2026-10-21,nba_wed_main,6,pm,primary,board at lock,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,1.4,58.9,etr,1,1,1,,,,,,43.7,30.0,1,0,0,2,,2,0.461,100.0
 2026-10-21,nba_wed_main,6,pm,primary,board at lock,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.6,60.9,etr,1,1,1,,,,,,51.1,30.0,1,0,0,1,,1,0.501,100.0
-2026-10-21,nba_wed_main,6,pm,primary,board at lock,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,3.2,49.0,etr,1,1,1,,,,,,43.8,28.0,1,0,0,3,,3,0.212,100.0
-2026-10-21,nba_wed_main,6,pm,primary,board at lock,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,4.8,46.7,etr,1,2,1,PRICEY,,,,,38.5,30.0,1,0,0,4,,5,0.185,100.0
-2026-10-21,nba_wed_main,6,pm,primary,board at lock,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,5.4,47.4,etr,1,2,1,PRICEY,,,,,66.5,33.0,1,0,1,6,,4,0.18,100.0
-2026-10-21,nba_wed_main,6,pm,primary,board at lock,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,6.2,50.2,etr,2,1,2,VALUE,,,,,60.4,34.0,1,0,0,5,,6,0.282,100.0
-2026-10-21,nba_wed_main,6,pm,primary,board at lock,bf58d7e0-6504-4a83-ae63-c578f7701f86,Paolo Banchero,ORL,7.2,45.2,etr,2,2,2,,,,,,55.4,41.0,1,0,1,8,,8,0.191,100.0
-2026-10-21,nba_wed_main,6,pm,primary,board at lock,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,8.3,45.4,etr,2,2,2,,,,,,49.0,33.0,1,0,0,9,,9,0.196,100.0
-2026-10-21,nba_wed_main,6,pm,primary,board at lock,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,8.9,44.4,etr,2,2,2,,,,,,47.6,34.0,1,0,0,12,,11,0.226,100.0
-2026-10-21,nba_wed_main,6,pm,primary,board at lock,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,9.6,47.5,etr,2,2,2,,,,,,36.7,26.0,1,0,0,7,,10,0.191,100.0
-2026-10-21,nba_wed_main,6,pm,primary,board at lock,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.9,48.7,etr,2,1,2,VALUE,,,,,48.2,24.0,1,0,0,10,,7,0.231,100.0
+2026-10-21,nba_wed_main,6,pm,primary,board at lock,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,3.2,49.0,etr,1,2,1,PRICEY,,,,,43.8,28.0,1,0,0,3,,3,0.212,100.0
+2026-10-21,nba_wed_main,6,pm,primary,board at lock,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,4.8,46.7,etr,2,2,2,,,,,,38.5,30.0,1,0,0,4,,6,0.185,100.0
+2026-10-21,nba_wed_main,6,pm,primary,board at lock,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,5.4,47.4,etr,2,2,2,,,,,,66.5,33.0,1,0,1,6,,5,0.18,100.0
+2026-10-21,nba_wed_main,6,pm,primary,board at lock,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,6.2,50.2,etr,2,2,2,,,,,,60.4,34.0,1,0,0,5,,4,0.282,100.0
+2026-10-21,nba_wed_main,6,pm,primary,board at lock,bf58d7e0-6504-4a83-ae63-c578f7701f86,Paolo Banchero,ORL,7.2,45.2,etr,2,2,2,,,,,,55.4,41.0,1,0,1,8,,7,0.191,100.0
+2026-10-21,nba_wed_main,6,pm,primary,board at lock,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,8.3,45.4,etr,2,2,2,,,,,,49.0,33.0,1,0,0,9,,8,0.196,100.0
+2026-10-21,nba_wed_main,6,pm,primary,board at lock,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,8.9,44.4,etr,2,2,2,,,,,,47.6,34.0,1,0,0,12,,10,0.226,100.0
+2026-10-21,nba_wed_main,6,pm,primary,board at lock,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,9.6,47.5,etr,2,2,2,,,,,,36.7,26.0,1,0,0,7,,9,0.191,100.0
+2026-10-21,nba_wed_main,6,pm,primary,board at lock,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.9,48.7,etr,2,2,2,,,,,,48.2,24.0,1,0,0,10,,11,0.231,100.0
 2026-10-21,nba_wed_main,6,pm,primary,board at lock,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,12.5,45.0,etr,2,2,2,,,,,,37.4,29.0,1,0,0,11,,12,0.213,100.0
 2026-10-21,nba_wed_main,6,pm,primary,board at lock,8a6e8470-732e-49bc-9c14-cd7ac8b00a9c,Tyrese Haliburton,IND,13.0,44.5,etr,2,2,2,,,,,,43.4,34.0,1,0,0,14,,13,0.153,100.0
 2026-10-21,nba_wed_main,6,pm,primary,board at lock,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,14.7,43.9,etr,3,2,3,VALUE,,,,,34.8,29.0,1,0,0,16,,16,0.186,100.0
@@ -200,8 +200,8 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-21,nba_wed_main,6,pm,primary,board at lock,45bd37c6-8a64-4240-9ae4-330d0ad4dc4e,Pelle Larsson,MIA,,24.7,etr,5,5,5,,,,,,17.6,24.0,1,0,0,130,,93,,
 2026-10-22,nba_thu_main,4,am,secondary,board before ETR,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,1.1,61.2,ours_raw,1,1,1,,,,,,32.9,35.0,1,0,0,1,,1,0.589,100.0
 2026-10-22,nba_thu_main,4,am,secondary,board before ETR,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,2.0,52.5,ours_raw,1,1,1,,,,,,26.9,35.0,1,0,0,2,,2,0.299,100.0
-2026-10-22,nba_thu_main,4,am,secondary,board before ETR,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,3.4,45.1,ours_raw,1,2,1,PRICEY,,,,,32.9,34.0,1,0,0,4,,4,0.174,100.0
-2026-10-22,nba_thu_main,4,am,secondary,board before ETR,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,4.0,49.1,ours_raw,1,1,1,,,,,,48.6,42.0,1,0,1,3,,3,0.26,100.0
+2026-10-22,nba_thu_main,4,am,secondary,board before ETR,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,3.4,45.1,ours_raw,2,2,2,,,,,,32.9,34.0,1,0,0,4,,4,0.174,100.0
+2026-10-22,nba_thu_main,4,am,secondary,board before ETR,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,4.0,49.1,ours_raw,2,1,2,VALUE,,,,,48.6,42.0,1,0,1,3,,3,0.26,100.0
 2026-10-22,nba_thu_main,4,am,secondary,board before ETR,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,5.2,42.7,ours_raw,2,2,2,,,,,,52.5,35.0,1,0,1,5,,5,0.174,100.0
 2026-10-22,nba_thu_main,4,am,secondary,board before ETR,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,6.1,44.2,ours_raw,2,2,2,,,,,,35.6,38.0,1,0,0,7,,6,0.248,100.0
 2026-10-22,nba_thu_main,4,am,secondary,board before ETR,89d805df-6a3e-40d1-bbf2-ed440e503310,Jamal Murray,DEN,7.3,42.1,ours_raw,2,2,2,,,,,,19.5,37.0,1,0,0,8,,7,0.189,100.0
@@ -244,8 +244,8 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-22,nba_thu_main,4,am,secondary,board before ETR,675c410d-f6d8-4cb7-bd11-aa0159e56c28,Cam Whitmore,DEN,,16.0,ours_raw,5,5,5,,,,,,0.0,0.0,0,1,0,34,,34,,
 2026-10-22,nba_thu_main,4,pm,primary,board at lock,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,1.1,59.2,etr,1,1,1,,,,,,32.9,35.0,1,0,0,1,,1,0.577,100.0
 2026-10-22,nba_thu_main,4,pm,primary,board at lock,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,2.0,54.1,etr,1,1,1,,,,,,26.9,35.0,1,0,0,2,,2,0.363,100.0
-2026-10-22,nba_thu_main,4,pm,primary,board at lock,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,3.3,48.0,etr,1,1,1,,,,,,32.9,34.0,1,0,0,3,,3,0.31,100.0
-2026-10-22,nba_thu_main,4,pm,primary,board at lock,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,4.0,43.4,etr,1,2,1,PRICEY,,,,,48.6,42.0,1,0,1,4,,4,0.17,100.0
+2026-10-22,nba_thu_main,4,pm,primary,board at lock,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,3.3,48.0,etr,2,2,2,,,,,,32.9,34.0,1,0,0,3,,3,0.31,100.0
+2026-10-22,nba_thu_main,4,pm,primary,board at lock,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,4.0,43.4,etr,2,2,2,,,,,,48.6,42.0,1,0,1,4,,4,0.17,100.0
 2026-10-22,nba_thu_main,4,pm,primary,board at lock,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,5.1,44.0,etr,2,2,2,,,,,,52.5,35.0,1,0,1,5,,5,0.186,100.0
 2026-10-22,nba_thu_main,4,pm,primary,board at lock,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,6.2,41.3,etr,2,2,2,,,,,,35.6,38.0,1,0,0,6,,6,0.219,100.0
 2026-10-22,nba_thu_main,4,pm,primary,board at lock,89d805df-6a3e-40d1-bbf2-ed440e503310,Jamal Murray,DEN,7.5,40.8,etr,2,2,2,,,,,,19.5,37.0,1,0,0,10,,9,0.176,100.0
@@ -289,13 +289,13 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-22,nba_thu_main,4,pm,primary,board at lock,675c410d-f6d8-4cb7-bd11-aa0159e56c28,Cam Whitmore,DEN,24.0,,etr,5,5,5,,,,,,0.0,0.0,0,1,0,45,,45,,0.3
 2026-10-23,nba_fri_main,6,am,secondary,board before ETR,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.2,54.3,ours_raw,1,1,1,,,,,,47.6,32.0,1,0,0,1,,1,0.405,100.0
 2026-10-23,nba_fri_main,6,am,secondary,board before ETR,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,2.0,54.7,ours_raw,1,1,1,,,,,,32.7,37.0,1,0,0,2,,2,0.397,100.0
-2026-10-23,nba_fri_main,6,am,secondary,board before ETR,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,3.1,48.0,ours_raw,1,1,1,,,,,,63.9,33.0,1,0,1,3,,3,0.27,100.0
-2026-10-23,nba_fri_main,6,am,secondary,board before ETR,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,4.9,47.4,ours_raw,1,1,1,,,,,,35.4,30.0,1,0,0,4,,4,0.265,100.0
-2026-10-23,nba_fri_main,6,am,secondary,board before ETR,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,5.8,40.8,ours_raw,2,2,2,,,,,,38.0,17.0,1,0,0,6,,6,0.171,100.0
-2026-10-23,nba_fri_main,6,am,secondary,board before ETR,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,5.9,45.2,ours_raw,2,2,2,,,,,,24.8,32.0,1,0,0,5,,7,0.257,100.0
-2026-10-23,nba_fri_main,6,am,secondary,board before ETR,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,7.2,44.6,ours_raw,2,2,2,,,,,,35.8,33.0,1,0,0,7,,8,0.195,100.0
-2026-10-23,nba_fri_main,6,am,secondary,board before ETR,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,7.4,44.6,ours_raw,2,2,2,,,,,,48.4,29.0,1,0,0,10,,9,0.265,100.0
-2026-10-23,nba_fri_main,6,am,secondary,board before ETR,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,9.0,46.6,ours_raw,2,1,2,VALUE,,,,,64.3,37.0,1,0,1,8,,5,0.261,100.0
+2026-10-23,nba_fri_main,6,am,secondary,board before ETR,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,3.1,48.0,ours_raw,1,2,1,PRICEY,,,,,63.9,33.0,1,0,1,3,,3,0.27,100.0
+2026-10-23,nba_fri_main,6,am,secondary,board before ETR,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,4.9,47.4,ours_raw,2,2,2,,,,,,35.4,30.0,1,0,0,4,,4,0.265,100.0
+2026-10-23,nba_fri_main,6,am,secondary,board before ETR,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,5.8,40.8,ours_raw,2,2,2,,,,,,38.0,17.0,1,0,0,6,,5,0.171,100.0
+2026-10-23,nba_fri_main,6,am,secondary,board before ETR,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,5.9,45.2,ours_raw,2,2,2,,,,,,24.8,32.0,1,0,0,5,,6,0.257,100.0
+2026-10-23,nba_fri_main,6,am,secondary,board before ETR,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,7.2,44.6,ours_raw,2,2,2,,,,,,35.8,33.0,1,0,0,7,,7,0.195,100.0
+2026-10-23,nba_fri_main,6,am,secondary,board before ETR,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,7.4,44.6,ours_raw,2,2,2,,,,,,48.4,29.0,1,0,0,10,,8,0.265,100.0
+2026-10-23,nba_fri_main,6,am,secondary,board before ETR,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,9.0,46.6,ours_raw,2,2,2,,,,,,64.3,37.0,1,0,1,8,,9,0.261,100.0
 2026-10-23,nba_fri_main,6,am,secondary,board before ETR,bf58d7e0-6504-4a83-ae63-c578f7701f86,Paolo Banchero,ORL,10.2,43.6,ours_raw,2,2,2,,,,,,29.7,26.0,1,0,0,9,,10,0.228,100.0
 2026-10-23,nba_fri_main,6,am,secondary,board before ETR,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,11.0,40.2,ours_raw,2,3,2,PRICEY,,,,,59.8,39.0,1,0,0,28,,13,0.235,100.0
 2026-10-23,nba_fri_main,6,am,secondary,board before ETR,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,12.2,43.4,ours_raw,2,2,2,,,,,,33.3,28.0,1,0,0,11,,11,0.23,100.0
@@ -386,12 +386,12 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-23,nba_fri_main,6,pm,primary,board at lock,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.2,63.6,etr,1,1,1,,,,,,47.6,32.0,1,0,0,1,1,1,0.257,100.0
 2026-10-23,nba_fri_main,6,pm,primary,board at lock,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,2.0,62.4,etr,1,1,1,,,,,,32.7,37.0,1,0,0,2,1,2,0.275,100.0
 2026-10-23,nba_fri_main,6,pm,primary,board at lock,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,3.0,60.5,etr,1,1,1,,,,,,63.9,33.0,1,0,1,3,1,3,0.299,100.0
-2026-10-23,nba_fri_main,6,pm,primary,board at lock,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,4.7,56.0,etr,1,1,1,,,,,,35.4,30.0,1,0,0,4,1,4,0.194,100.0
+2026-10-23,nba_fri_main,6,pm,primary,board at lock,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,4.7,56.0,etr,2,2,2,,,,,,35.4,30.0,1,0,0,4,1,4,0.194,100.0
 2026-10-23,nba_fri_main,6,pm,primary,board at lock,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,5.8,51.3,etr,2,2,2,,,,,,38.0,17.0,1,0,0,8,2,6,0.15,100.0
 2026-10-23,nba_fri_main,6,pm,primary,board at lock,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,5.9,53.6,etr,2,2,2,,,,,,24.8,32.0,1,0,0,5,1,5,0.252,100.0
-2026-10-23,nba_fri_main,6,pm,primary,board at lock,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,7.2,51.1,etr,2,2,2,,,,,,35.8,33.0,1,0,0,9,2,9,0.168,100.0
-2026-10-23,nba_fri_main,6,pm,primary,board at lock,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,7.9,51.3,etr,2,2,2,,,,,,48.4,29.0,1,0,0,7,2,8,0.227,100.0
-2026-10-23,nba_fri_main,6,pm,primary,board at lock,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,8.5,53.7,etr,2,2,2,,,,,,64.3,37.0,1,0,1,6,1,7,0.213,100.0
+2026-10-23,nba_fri_main,6,pm,primary,board at lock,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,7.2,51.1,etr,2,2,2,,,,,,35.8,33.0,1,0,0,9,2,8,0.168,100.0
+2026-10-23,nba_fri_main,6,pm,primary,board at lock,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,7.9,51.3,etr,2,2,2,,,,,,48.4,29.0,1,0,0,7,2,7,0.227,100.0
+2026-10-23,nba_fri_main,6,pm,primary,board at lock,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,8.5,53.7,etr,2,2,2,,,,,,64.3,37.0,1,0,1,6,1,9,0.213,100.0
 2026-10-23,nba_fri_main,6,pm,primary,board at lock,bf58d7e0-6504-4a83-ae63-c578f7701f86,Paolo Banchero,ORL,10.3,48.9,etr,2,2,2,,,,,,29.7,26.0,1,0,0,10,2,11,0.183,100.0
 2026-10-23,nba_fri_main,6,pm,primary,board at lock,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,10.8,50.4,etr,2,2,2,,,,,,59.8,39.0,1,0,0,12,2,10,0.231,100.0
 2026-10-23,nba_fri_main,6,pm,primary,board at lock,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,12.3,49.4,etr,2,2,2,,,,,,33.3,28.0,1,0,0,13,2,12,0.183,100.0
@@ -481,9 +481,9 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-23,nba_fri_main,6,pm,primary,board at lock,cb68fac9-c715-40b4-b97c-ffc6dc74c772,Jakob Poeltl,TOR,,31.4,etr,5,5,5,,,,,,24.8,27.0,1,0,0,89,,81,,
 2026-10-24,nba_sat_main,6,am,secondary,board before ETR,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,1.2,59.0,ours_raw,1,1,1,,,,,,77.0,44.0,1,0,1,2,,1,0.572,100.0
 2026-10-24,nba_sat_main,6,am,secondary,board before ETR,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.9,54.8,ours_raw,1,1,1,,,,,,47.4,29.0,1,0,0,1,,2,0.477,100.0
-2026-10-24,nba_sat_main,6,am,secondary,board before ETR,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,3.7,43.5,ours_raw,1,2,1,PRICEY,,,,,64.8,38.0,1,0,0,7,,4,0.213,100.0
-2026-10-24,nba_sat_main,6,am,secondary,board before ETR,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,3.9,47.5,ours_raw,1,1,1,,,,,,33.8,36.0,1,0,0,4,,3,0.248,100.0
-2026-10-24,nba_sat_main,6,am,secondary,board before ETR,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,5.1,44.1,ours_raw,2,1,2,VALUE,,,,,33.7,31.0,1,0,0,3,,5,0.244,100.0
+2026-10-24,nba_sat_main,6,am,secondary,board before ETR,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,3.7,43.5,ours_raw,2,2,2,,,,,,64.8,38.0,1,0,0,7,,3,0.213,100.0
+2026-10-24,nba_sat_main,6,am,secondary,board before ETR,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,3.9,47.5,ours_raw,2,2,2,,,,,,33.8,36.0,1,0,0,4,,4,0.248,100.0
+2026-10-24,nba_sat_main,6,am,secondary,board before ETR,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,5.1,44.1,ours_raw,2,2,2,,,,,,33.7,31.0,1,0,0,3,,5,0.244,100.0
 2026-10-24,nba_sat_main,6,am,secondary,board before ETR,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,6.1,43.6,ours_raw,2,2,2,,,,,,36.0,35.0,1,0,0,6,,6,0.2,100.0
 2026-10-24,nba_sat_main,6,am,secondary,board before ETR,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,7.1,43.8,ours_raw,2,2,2,,,,,,39.5,33.0,1,0,0,9,,7,0.237,100.0
 2026-10-24,nba_sat_main,6,am,secondary,board before ETR,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,8.5,41.9,ours_raw,2,2,2,,,,,,55.2,36.0,1,0,1,5,,8,0.215,100.0
@@ -568,19 +568,19 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-24,nba_sat_main,6,am,secondary,board before ETR,61577381-4073-475c-99ff-5edac21e64b4,Tyrese Proctor,CLE,36.0,7.7,ours_raw,5,5,5,,,,,,13.9,11.0,1,0,0,177,,86,0.145,0.6
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,1.2,68.7,etr,1,1,1,,,,,,77.0,44.0,1,0,1,1,1,1,0.547,100.0
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.9,64.6,etr,1,1,1,,,,,,47.4,29.0,1,0,0,2,1,2,0.408,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,3.8,52.1,etr,1,2,1,PRICEY,,,,,64.8,38.0,1,0,0,6,2,5,0.162,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,3.9,53.3,etr,1,1,1,,,,,,33.8,36.0,1,0,0,4,2,4,0.13,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,4.8,57.8,etr,1,1,1,,,,,,33.7,31.0,1,0,0,3,1,3,0.309,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,6.5,49.0,etr,2,2,2,,,,,,36.0,35.0,1,0,0,10,2,8,0.154,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,7.2,50.9,etr,2,2,2,,,,,,39.5,33.0,1,0,0,7,2,7,0.195,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,7.8,52.8,etr,2,1,2,VALUE,,,,,55.2,36.0,1,0,1,5,2,6,0.219,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,3.8,52.1,etr,2,2,2,,,,,,64.8,38.0,1,0,0,6,2,5,0.162,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,3.9,53.3,etr,2,2,2,,,,,,33.8,36.0,1,0,0,4,2,4,0.13,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,4.8,57.8,etr,2,2,2,,,,,,33.7,31.0,1,0,0,3,1,3,0.309,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,6.5,49.0,etr,2,2,2,,,,,,36.0,35.0,1,0,0,10,2,7,0.154,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,7.2,50.9,etr,2,2,2,,,,,,39.5,33.0,1,0,0,7,2,6,0.195,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,7.8,52.8,etr,2,2,2,,,,,,55.2,36.0,1,0,1,5,2,8,0.219,100.0
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,8.9,49.8,etr,2,2,2,,,,,,44.1,35.0,1,0,0,8,2,10,0.207,100.0
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,4bc97202-8305-42e7-b615-c0b8db8fef2a,Trae Young,WAS,9.8,50.0,etr,2,2,2,,,,,,41.3,34.0,1,0,0,9,2,9,0.18,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,d584da6d-9411-4f1c-b278-89531cd7bc11,Evan Mobley,CLE,12.6,45.8,etr,2,2,2,,,,,,52.0,35.0,1,0,0,15,3,15,0.16,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,33847d7f-1e1c-4dee-b08e-9809194e36e8,Amen Thompson,HOU,13.1,46.9,etr,2,2,2,,,,,,40.2,39.0,1,0,0,14,3,14,0.159,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,Kevin Durant,HOU,13.1,47.1,etr,2,2,2,,,,,,30.8,37.0,1,0,0,13,3,13,0.159,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,13.9,47.6,etr,2,2,2,,,,,,60.9,36.0,1,0,1,12,3,12,0.188,100.0
-2026-10-24,nba_sat_main,6,pm,primary,board at lock,89d805df-6a3e-40d1-bbf2-ed440e503310,Jamal Murray,DEN,14.5,47.8,etr,2,2,2,,,,,,60.6,43.0,1,0,0,11,3,11,0.19,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,d584da6d-9411-4f1c-b278-89531cd7bc11,Evan Mobley,CLE,12.6,45.8,etr,2,2,2,,,,,,52.0,35.0,1,0,0,15,3,14,0.16,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,33847d7f-1e1c-4dee-b08e-9809194e36e8,Amen Thompson,HOU,13.1,46.9,etr,2,2,2,,,,,,40.2,39.0,1,0,0,14,3,13,0.159,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,Kevin Durant,HOU,13.1,47.1,etr,2,2,2,,,,,,30.8,37.0,1,0,0,13,3,12,0.159,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,13.9,47.6,etr,2,2,2,,,,,,60.9,36.0,1,0,1,12,3,11,0.188,100.0
+2026-10-24,nba_sat_main,6,pm,primary,board at lock,89d805df-6a3e-40d1-bbf2-ed440e503310,Jamal Murray,DEN,14.5,47.8,etr,2,2,2,,,,,,60.6,43.0,1,0,0,11,3,15,0.19,100.0
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,b56f125f-5890-4fcb-85a7-b023645fb1be,Julius Randle,BKN,15.6,43.6,etr,2,3,2,PRICEY,,,,,33.7,35.0,1,0,0,19,4,16,0.188,100.0
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,56d72f51-4369-470a-b1f2-dc8cf32fa0f0,Tyler Herro,MIL,17.7,41.2,etr,3,4,3,PRICEY,,,,,21.7,31.0,1,0,0,24,4,21,0.162,100.0
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,20cd7474-4651-4cff-81bc-939895c17f60,Dejounte Murray,NOP,18.6,41.4,etr,3,4,3,PRICEY,,,,,45.2,35.0,1,0,0,23,4,22,0.163,100.0
@@ -648,10 +648,10 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,16f6eb0c-a2ee-409a-a5b8-f3b3ee997f0c,Chaney Johnson,BKN,,13.8,etr,5,5,5,,,,,,25.5,27.0,1,0,0,136,,79,,
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,98a202a3-2dc2-48d8-823f-fc75418767da,Carter Bryant,SAS,,15.3,etr,5,5,5,,,,,,5.2,10.0,1,0,0,131,,77,,
 2026-10-24,nba_sat_main,6,pm,primary,board at lock,61577381-4073-475c-99ff-5edac21e64b4,Tyrese Proctor,CLE,,12.9,etr,5,5,5,,,,,,13.9,11.0,1,0,0,138,,80,,
-2026-10-25,nba_sun_main,6,am,secondary,board before ETR,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,1.4,44.2,ours_raw,1,1,1,,,,,,40.5,35.0,1,0,0,1,,3,0.232,100.0
+2026-10-25,nba_sun_main,6,am,secondary,board before ETR,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,1.4,44.2,ours_raw,1,2,1,PRICEY,,,,,40.5,35.0,1,0,0,1,,4,0.232,100.0
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,2.0,50.7,ours_raw,1,1,1,,,,,,55.7,36.0,1,0,1,2,,1,0.302,100.0
-2026-10-25,nba_sun_main,6,am,secondary,board before ETR,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,3.1,45.3,ours_raw,1,1,1,,,,,,55.6,33.0,1,0,0,3,,2,0.273,100.0
-2026-10-25,nba_sun_main,6,am,secondary,board before ETR,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,4.3,46.6,ours_raw,1,1,1,,,,,,52.0,34.0,1,0,0,7,,4,0.227,100.0
+2026-10-25,nba_sun_main,6,am,secondary,board before ETR,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,3.1,45.3,ours_raw,1,2,1,PRICEY,,,,,55.6,33.0,1,0,0,3,,3,0.273,100.0
+2026-10-25,nba_sun_main,6,am,secondary,board before ETR,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,4.3,46.6,ours_raw,1,1,1,,,,,,52.0,34.0,1,0,0,7,,2,0.227,100.0
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,4.9,43.1,ours_raw,1,2,1,PRICEY,,,,,27.7,28.0,1,0,0,5,,5,0.191,100.0
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,6.2,41.9,ours_raw,2,2,2,,,,,,20.1,28.0,1,0,0,4,,6,0.203,100.0
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,7.3,43.1,ours_raw,2,2,2,,,,,,28.8,40.0,1,0,0,10,,7,0.229,100.0
@@ -723,12 +723,12 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.4,40.8,ours_raw,2,2,2,,,,,,0.0,0.0,0,1,0,8,,10,0.224,100.0
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,35.3,28.1,ours_raw,5,5,5,,,,,,0.0,0.0,0,1,0,45,,37,0.217,40.4
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,08d380dc-2126-4d28-bd52-f4237330473d,Jose Alvarado,NYK,36.0,14.3,ours_raw,5,5,5,,Questionable,FAIR,,,0.0,0.0,0,1,0,82,,69,0.174,0.2
-2026-10-25,nba_sun_main,6,pm,primary,board at lock,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,1.4,52.0,etr,1,1,1,,,,,,40.5,35.0,1,0,0,3,1,3,0.197,100.0
+2026-10-25,nba_sun_main,6,pm,primary,board at lock,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,1.4,52.0,etr,1,2,1,PRICEY,,,,,40.5,35.0,1,0,0,3,1,3,0.197,100.0
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,2.0,55.4,etr,1,1,1,,,,,,55.7,36.0,1,0,1,1,1,1,0.233,100.0
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,3.1,54.9,etr,1,1,1,,,,,,55.6,33.0,1,0,0,2,1,2,0.272,100.0
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,4.2,50.5,etr,1,2,1,PRICEY,,,,,52.0,34.0,1,0,0,6,1,4,0.15,100.0
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,4.9,50.4,etr,1,2,1,PRICEY,,,,,27.7,28.0,1,0,0,5,1,5,0.176,100.0
-2026-10-25,nba_sun_main,6,pm,primary,board at lock,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,6.4,51.9,etr,2,1,2,VALUE,,,,,20.1,28.0,1,0,0,4,1,6,0.208,100.0
+2026-10-25,nba_sun_main,6,pm,primary,board at lock,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,6.4,51.9,etr,2,2,2,,,,,,20.1,28.0,1,0,0,4,1,6,0.208,100.0
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,7.2,48.4,etr,2,2,2,,,,,,28.8,40.0,1,0,0,8,2,8,0.193,100.0
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,553255f7-79bb-4b22-a925-7384cc42ec27,Karl-Anthony Towns,NYK,7.8,48.5,etr,2,2,2,,,,,,46.8,33.0,1,0,0,7,1,7,0.217,100.0
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,cbcf7977-934a-402a-bbdc-b7795400fcac,Jalen Brunson,NYK,9.6,48.6,etr,2,2,2,,,,,,43.6,32.0,1,0,0,9,2,9,0.16,100.0
@@ -799,19 +799,19 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,,etr,5,5,5,,,,,,0.0,0.0,0,1,0,118,,55,,67.6
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,08d380dc-2126-4d28-bd52-f4237330473d,Jose Alvarado,NYK,36.0,19.8,etr,5,5,5,,Out,,,,0.0,0.0,0,1,0,81,,71,0.163,0.6
 2026-10-26,nba_mon_main,6,am,secondary,board before ETR,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,1.0,64.4,ours_raw,1,1,1,,,,,,54.9,35.0,1,0,0,1,1,1,0.636,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,2.2,47.8,ours_raw,1,1,1,,,,,,60.3,39.0,1,0,0,2,1,4,0.215,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,3.3,49.6,ours_raw,1,1,1,,,,,,39.4,28.0,1,0,0,3,1,3,0.252,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,2.2,47.8,ours_raw,1,2,1,PRICEY,,,,,60.3,39.0,1,0,0,2,1,5,0.215,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,3.3,49.6,ours_raw,1,2,1,PRICEY,,,,,39.4,28.0,1,0,0,3,1,4,0.252,100.0
 2026-10-26,nba_mon_main,6,am,secondary,board before ETR,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,4.3,51.9,ours_raw,1,1,1,,,,,,36.1,30.0,1,0,0,4,1,2,0.259,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,4.6,46.2,ours_raw,1,2,1,PRICEY,,,,,41.3,36.0,1,0,0,5,2,5,0.253,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,7.2,42.9,ours_raw,2,2,2,,,,,,44.0,36.0,1,0,0,6,2,8,0.246,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,6.8,43.5,ours_raw,2,2,2,,,,,,68.3,37.0,1,0,1,7,2,7,0.206,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,9.3,43.6,ours_raw,2,2,2,,,,,,48.5,38.0,1,0,0,13,3,9,0.189,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,8a6e8470-732e-49bc-9c14-cd7ac8b00a9c,Tyrese Haliburton,IND,12.4,41.0,ours_raw,2,2,2,,,,,,47.7,35.0,1,0,0,10,2,12,0.152,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,89d805df-6a3e-40d1-bbf2-ed440e503310,Jamal Murray,DEN,10.3,44.7,ours_raw,2,2,2,,,,,,44.2,36.0,1,0,0,9,2,10,0.192,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,8.7,40.0,ours_raw,2,3,2,PRICEY,,,,,65.8,41.0,1,0,1,8,2,13,0.168,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,4bc97202-8305-42e7-b615-c0b8db8fef2a,Trae Young,WAS,11.2,44.4,ours_raw,2,2,2,,,,,,42.2,38.0,1,0,0,14,3,11,0.218,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,c47d3b6a-9d07-48fc-9469-f8616d33b187,Ty Jerome,MEM,16.0,47.7,ours_raw,3,1,2,VALUE,,,,,30.2,30.0,1,0,0,11,2,6,0.262,100.0
-2026-10-26,nba_mon_main,6,am,secondary,board before ETR,33847d7f-1e1c-4dee-b08e-9809194e36e8,Amen Thompson,HOU,12.7,39.3,ours_raw,2,3,2,PRICEY,,,,,19.0,28.0,1,0,0,15,3,14,0.17,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,4.6,46.2,ours_raw,1,2,1,PRICEY,,,,,41.3,36.0,1,0,0,5,2,3,0.253,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,7.2,42.9,ours_raw,2,2,2,,,,,,44.0,36.0,1,0,0,6,2,7,0.246,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,6.8,43.5,ours_raw,2,2,2,,,,,,68.3,37.0,1,0,1,7,2,6,0.206,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,9.3,43.6,ours_raw,2,2,2,,,,,,48.5,38.0,1,0,0,13,3,8,0.189,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,8a6e8470-732e-49bc-9c14-cd7ac8b00a9c,Tyrese Haliburton,IND,12.4,41.0,ours_raw,2,2,2,,,,,,47.7,35.0,1,0,0,10,2,11,0.152,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,89d805df-6a3e-40d1-bbf2-ed440e503310,Jamal Murray,DEN,10.3,44.7,ours_raw,2,2,2,,,,,,44.2,36.0,1,0,0,9,2,9,0.192,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,5fa7968e-42e8-4645-b651-9a9393cae61d,Anthony Edwards,MIN,8.7,40.0,ours_raw,2,3,2,PRICEY,,,,,65.8,41.0,1,0,1,8,2,12,0.168,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,4bc97202-8305-42e7-b615-c0b8db8fef2a,Trae Young,WAS,11.2,44.4,ours_raw,2,2,2,,,,,,42.2,38.0,1,0,0,14,3,10,0.218,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,c47d3b6a-9d07-48fc-9469-f8616d33b187,Ty Jerome,MEM,16.0,47.7,ours_raw,3,2,3,VALUE,,,,,30.2,30.0,1,0,0,11,2,14,0.262,100.0
+2026-10-26,nba_mon_main,6,am,secondary,board before ETR,33847d7f-1e1c-4dee-b08e-9809194e36e8,Amen Thompson,HOU,12.7,39.3,ours_raw,2,3,2,PRICEY,,,,,19.0,28.0,1,0,0,15,3,13,0.17,100.0
 2026-10-26,nba_mon_main,6,am,secondary,board before ETR,794f5b4a-fc6c-4f3e-b386-246945335358,Brandon Miller,CHA,15.1,35.1,ours_raw,3,4,3,PRICEY,,,,,60.7,36.0,1,0,1,12,3,18,0.158,100.0
 2026-10-26,nba_mon_main,6,am,secondary,board before ETR,50e02dbc-3d90-4aa7-a733-ddc33730a9ae,Bam Adebayo,MIA,17.4,36.7,ours_raw,3,4,3,PRICEY,,,,,33.1,30.0,1,0,0,21,4,19,0.2,100.0
 2026-10-26,nba_mon_main,6,am,secondary,board before ETR,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,16.1,39.8,ours_raw,3,3,3,,,,,,15.9,34.0,1,0,0,16,3,16,0.209,100.0
@@ -994,9 +994,9 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-26,nba_mon_main,6,pm,primary,board at lock,c4e8c94e-8bb9-41aa-8cd1-4f40d344b75e,AJ Green,MIL,,16.0,etr,5,5,5,,,,,,15.3,20.0,1,0,0,161,,96,,
 2026-10-27,nba_tue_main,6,am,secondary,board before ETR,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.2,55.6,ours_raw,1,1,1,,,,,,61.5,37.0,1,0,0,1,1,2,0.422,100.0
 2026-10-27,nba_tue_main,6,am,secondary,board before ETR,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.9,54.8,ours_raw,1,1,1,,,,,,65.0,27.0,1,0,1,2,1,1,0.427,100.0
-2026-10-27,nba_tue_main,6,am,secondary,board before ETR,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,3.3,47.9,ours_raw,1,1,1,,,,,,61.0,42.0,1,0,0,3,1,3,0.258,100.0
-2026-10-27,nba_tue_main,6,am,secondary,board before ETR,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,4.0,46.5,ours_raw,1,1,1,,,,,,41.8,36.0,1,0,0,5,1,4,0.226,100.0
-2026-10-27,nba_tue_main,6,am,secondary,board before ETR,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,5.1,46.5,ours_raw,2,1,2,VALUE,,,,,46.8,37.0,1,0,0,4,1,5,0.311,100.0
+2026-10-27,nba_tue_main,6,am,secondary,board before ETR,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,3.3,47.9,ours_raw,2,2,2,,,,,,61.0,42.0,1,0,0,3,1,3,0.258,100.0
+2026-10-27,nba_tue_main,6,am,secondary,board before ETR,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,4.0,46.5,ours_raw,2,2,2,,,,,,41.8,36.0,1,0,0,5,1,4,0.226,100.0
+2026-10-27,nba_tue_main,6,am,secondary,board before ETR,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,5.1,46.5,ours_raw,2,2,2,,,,,,46.8,37.0,1,0,0,4,1,5,0.311,100.0
 2026-10-27,nba_tue_main,6,am,secondary,board before ETR,553255f7-79bb-4b22-a925-7384cc42ec27,Karl-Anthony Towns,NYK,6.2,41.3,ours_raw,2,2,2,,,,,,48.5,33.0,1,0,0,8,2,6,0.203,100.0
 2026-10-27,nba_tue_main,6,am,secondary,board before ETR,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,7.8,39.5,ours_raw,2,2,2,,,,,,41.3,33.0,1,0,1,6,2,8,0.261,100.0
 2026-10-27,nba_tue_main,6,am,secondary,board before ETR,cbcf7977-934a-402a-bbdc-b7795400fcac,Jalen Brunson,NYK,7.7,38.8,ours_raw,2,2,2,,,,,,33.7,36.0,1,0,0,7,2,7,0.181,100.0
@@ -1063,8 +1063,8 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-27,nba_tue_main,6,am,secondary,board before ETR,f2f859a6-4a5b-4d0c-b08c-6c97e099f83f,Mike Conley,BOS,,1.8,ours_raw,5,5,5,,,,,,0.0,0.0,0,1,0,96,,69,,
 2026-10-27,nba_tue_main,6,pm,primary,Lock PM,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.2,65.9,etr,1,1,1,,,,0.991,,61.5,37.0,1,0,0,1,1,1,0.443,100.0
 2026-10-27,nba_tue_main,6,pm,primary,Lock PM,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.9,62.8,etr,1,1,1,,,,0.995,,65.0,27.0,1,0,1,2,1,2,0.439,100.0
-2026-10-27,nba_tue_main,6,pm,primary,Lock PM,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,3.2,55.0,etr,1,1,1,,,,0.993,,61.0,42.0,1,0,0,3,1,3,0.29,100.0
-2026-10-27,nba_tue_main,6,pm,primary,Lock PM,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,4.0,50.8,etr,1,1,1,,,,0.989,,41.8,36.0,1,0,0,4,1,4,0.21,100.0
+2026-10-27,nba_tue_main,6,pm,primary,Lock PM,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,3.2,55.0,etr,1,2,1,PRICEY,,,0.993,,61.0,42.0,1,0,0,3,1,3,0.29,100.0
+2026-10-27,nba_tue_main,6,pm,primary,Lock PM,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,4.0,50.8,etr,1,2,1,PRICEY,,,0.989,,41.8,36.0,1,0,0,4,1,4,0.21,100.0
 2026-10-27,nba_tue_main,6,pm,primary,Lock PM,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,5.3,46.3,etr,2,2,2,,,,0.989,,46.8,37.0,1,0,0,7,2,6,0.219,100.0
 2026-10-27,nba_tue_main,6,pm,primary,Lock PM,553255f7-79bb-4b22-a925-7384cc42ec27,Karl-Anthony Towns,NYK,6.1,47.2,etr,2,2,2,,,,0.992,,48.5,33.0,1,0,0,6,2,5,0.218,100.0
 2026-10-27,nba_tue_main,6,pm,primary,Lock PM,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,7.2,47.9,etr,2,2,2,,,,0.989,,41.3,33.0,1,0,1,5,2,7,0.229,100.0
@@ -1377,8 +1377,8 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-28,nba_wed_main,6,pm,primary,Lock PM,4a87ae77-97db-4615-b9de-510f7f444658,Sam Merrill,CLE,,23.4,etr,5,5,5,,,,0.997,,13.7,20.0,1,0,0,154,,116,,
 2026-10-29,nba_thu_main,4,am,primary,Lock AM,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,1.2,51.6,ours,1,1,1,,,,0.984,,39.5,40.0,1,0,0,1,1,1,0.307,100.0
 2026-10-29,nba_thu_main,4,am,primary,Lock AM,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,2.0,50.6,ours,1,1,1,,,,0.886,,33.1,34.0,1,0,0,2,1,2,0.287,100.0
-2026-10-29,nba_thu_main,4,am,primary,Lock AM,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,3.3,47.5,ours,1,1,1,,,,0.905,,33.1,33.0,1,0,0,4,1,4,0.184,100.0
-2026-10-29,nba_thu_main,4,am,primary,Lock AM,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,4.1,48.0,ours,1,1,1,,,,0.991,,48.3,32.0,1,0,1,3,1,3,0.239,100.0
+2026-10-29,nba_thu_main,4,am,primary,Lock AM,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,3.3,47.5,ours,2,2,2,,,,0.905,,33.1,33.0,1,0,0,4,1,3,0.184,100.0
+2026-10-29,nba_thu_main,4,am,primary,Lock AM,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,4.1,48.0,ours,2,2,2,,,,0.991,,48.3,32.0,1,0,1,3,1,4,0.239,100.0
 2026-10-29,nba_thu_main,4,am,primary,Lock AM,d584da6d-9411-4f1c-b278-89531cd7bc11,Evan Mobley,CLE,5.2,45.5,ours,2,2,2,,,,0.95,,28.3,33.0,1,0,0,5,1,5,0.179,100.0
 2026-10-29,nba_thu_main,4,am,primary,Lock AM,c47d3b6a-9d07-48fc-9469-f8616d33b187,Ty Jerome,MEM,6.6,45.7,ours,2,2,2,,,,0.966,,19.9,24.0,1,0,0,6,1,6,0.183,100.0
 2026-10-29,nba_thu_main,4,am,primary,Lock AM,c311d754-8979-4374-a4af-af325e7b074a,Zion Williamson,NOP,8.3,40.3,ours,2,3,2,PRICEY,,,0.831,,47.2,31.0,1,0,1,12,2,9,0.14,100.0
@@ -1436,8 +1436,8 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-29,nba_thu_main,4,am,primary,Lock AM,d95349c6-05f3-4f0c-9af0-8c400ca8a72a,AJ Johnson,NOP,24.0,7.7,ours,5,5,5,,,,,,0.0,0.0,0,1,0,73,,56,0.079,2.1
 2026-10-29,nba_thu_main,4,pm,primary,Lock PM,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,1.3,52.7,etr,1,1,1,,,,0.997,,39.5,40.0,1,0,0,2,1,2,0.297,100.0
 2026-10-29,nba_thu_main,4,pm,primary,Lock PM,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,1.8,55.0,etr,1,1,1,,,,0.993,,33.1,34.0,1,0,0,1,1,1,0.338,100.0
-2026-10-29,nba_thu_main,4,pm,primary,Lock PM,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,3.4,47.6,etr,1,2,1,PRICEY,,,0.996,,33.1,33.0,1,0,0,4,1,4,0.158,100.0
-2026-10-29,nba_thu_main,4,pm,primary,Lock PM,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,3.8,49.8,etr,1,1,1,,,,0.997,,48.3,32.0,1,0,1,3,1,3,0.266,100.0
+2026-10-29,nba_thu_main,4,pm,primary,Lock PM,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,3.4,47.6,etr,2,2,2,,,,0.996,,33.1,33.0,1,0,0,4,1,4,0.158,100.0
+2026-10-29,nba_thu_main,4,pm,primary,Lock PM,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,3.8,49.8,etr,2,2,2,,,,0.997,,48.3,32.0,1,0,1,3,1,3,0.266,100.0
 2026-10-29,nba_thu_main,4,pm,primary,Lock PM,d584da6d-9411-4f1c-b278-89531cd7bc11,Evan Mobley,CLE,5.1,46.6,etr,2,2,2,,,,0.996,,28.3,33.0,1,0,0,5,1,5,0.17,100.0
 2026-10-29,nba_thu_main,4,pm,primary,Lock PM,c47d3b6a-9d07-48fc-9469-f8616d33b187,Ty Jerome,MEM,6.1,46.4,etr,2,2,2,,,,0.996,,19.9,24.0,1,0,0,6,1,6,0.197,100.0
 2026-10-29,nba_thu_main,4,pm,primary,Lock PM,c311d754-8979-4374-a4af-af325e7b074a,Zion Williamson,NOP,8.3,43.5,etr,2,2,2,,,,0.997,,47.2,31.0,1,0,1,8,2,7,0.141,100.0
@@ -1493,8 +1493,8 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-30,nba_fri_main,6,am,primary,Lock AM,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,1.3,64.9,ours,1,1,1,,,,0.991,,45.4,37.0,1,0,0,1,1,2,0.247,100.0
 2026-10-30,nba_fri_main,6,am,primary,Lock AM,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.9,63.1,ours,1,1,1,,,,0.902,,58.9,37.0,1,0,0,2,1,3,0.227,100.0
 2026-10-30,nba_fri_main,6,am,primary,Lock AM,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,3.0,63.1,ours,1,1,1,,,,0.985,,69.6,31.0,1,0,1,3,1,1,0.299,100.0
-2026-10-30,nba_fri_main,6,am,primary,Lock AM,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,4.2,58.7,ours,1,1,1,,,,0.983,,40.9,35.0,1,0,0,4,1,5,0.16,100.0
-2026-10-30,nba_fri_main,6,am,primary,Lock AM,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,5.2,56.9,ours,1,1,1,,,,0.99,,31.0,28.0,1,0,0,5,1,4,0.235,100.0
+2026-10-30,nba_fri_main,6,am,primary,Lock AM,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,4.2,58.7,ours,2,2,2,,,,0.983,,40.9,35.0,1,0,0,4,1,4,0.16,100.0
+2026-10-30,nba_fri_main,6,am,primary,Lock AM,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,5.2,56.9,ours,2,2,2,,,,0.99,,31.0,28.0,1,0,0,5,1,5,0.235,100.0
 2026-10-30,nba_fri_main,6,am,primary,Lock AM,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,6.3,46.9,ours,2,2,2,,,,0.981,,58.8,39.0,1,0,0,6,2,6,0.156,100.0
 2026-10-30,nba_fri_main,6,am,primary,Lock AM,794f5b4a-fc6c-4f3e-b386-246945335358,Brandon Miller,CHA,7.5,48.3,ours,2,2,2,,,,0.986,,34.4,37.0,1,0,0,10,2,7,0.157,100.0
 2026-10-30,nba_fri_main,6,am,primary,Lock AM,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,8.0,45.0,ours,2,3,2,PRICEY,,,0.953,,30.9,33.0,1,0,0,11,2,11,0.191,100.0
@@ -1586,8 +1586,8 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-30,nba_fri_main,6,pm,primary,Lock PM,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,1.2,65.2,etr,1,1,1,,,,0.997,,45.4,37.0,1,0,0,1,1,2,0.248,100.0
 2026-10-30,nba_fri_main,6,pm,primary,Lock PM,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,2.0,66.3,etr,1,1,1,,,,0.979,,58.9,37.0,1,0,0,2,1,1,0.226,100.0
 2026-10-30,nba_fri_main,6,pm,primary,Lock PM,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,3.0,64.4,etr,1,1,1,,,,0.997,,69.6,31.0,1,0,1,3,1,3,0.29,100.0
-2026-10-30,nba_fri_main,6,pm,primary,Lock PM,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,4.1,60.0,etr,1,1,1,,,,0.998,,40.9,35.0,1,0,0,4,1,4,0.185,100.0
-2026-10-30,nba_fri_main,6,pm,primary,Lock PM,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,5.1,54.7,etr,1,2,1,PRICEY,,,0.997,,31.0,28.0,1,0,0,5,2,5,0.165,100.0
+2026-10-30,nba_fri_main,6,pm,primary,Lock PM,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,4.1,60.0,etr,2,1,2,VALUE,,,0.998,,40.9,35.0,1,0,0,4,1,4,0.185,100.0
+2026-10-30,nba_fri_main,6,pm,primary,Lock PM,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,5.1,54.7,etr,2,2,2,,,,0.997,,31.0,28.0,1,0,0,5,2,5,0.165,100.0
 2026-10-30,nba_fri_main,6,pm,primary,Lock PM,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,6.2,51.9,etr,2,2,2,,,,0.996,,58.8,39.0,1,0,0,6,2,6,0.18,100.0
 2026-10-30,nba_fri_main,6,pm,primary,Lock PM,794f5b4a-fc6c-4f3e-b386-246945335358,Brandon Miller,CHA,7.7,49.6,etr,2,2,2,,,,0.996,,34.4,37.0,1,0,0,8,2,8,0.143,100.0
 2026-10-30,nba_fri_main,6,pm,primary,Lock PM,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,8.2,52.7,etr,2,2,2,,,,0.995,,30.9,33.0,1,0,0,9,2,7,0.214,100.0
@@ -1762,7 +1762,7 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-31,nba_sat_main,6,pm,primary,Lock PM,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.0,62.2,etr,1,1,1,,,,0.998,,75.4,34.0,1,0,1,1,1,1,0.36,100.0
 2026-10-31,nba_sat_main,6,pm,primary,Lock PM,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,2.3,55.2,etr,1,1,1,,,,0.995,,36.3,31.0,1,0,0,3,1,3,0.226,100.0
 2026-10-31,nba_sat_main,6,pm,primary,Lock PM,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,3.4,55.7,etr,1,1,1,,,,0.995,,26.4,28.0,1,0,0,2,1,2,0.287,100.0
-2026-10-31,nba_sat_main,6,pm,primary,Lock PM,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,3.4,50.3,etr,1,1,1,,,,0.997,,40.8,38.0,1,0,0,4,1,4,0.195,100.0
+2026-10-31,nba_sat_main,6,pm,primary,Lock PM,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,3.4,50.3,etr,1,2,1,PRICEY,,,0.997,,40.8,38.0,1,0,0,4,1,4,0.195,100.0
 2026-10-31,nba_sat_main,6,pm,primary,Lock PM,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,5.2,48.3,etr,2,2,2,,,,0.998,,22.3,24.0,1,0,0,5,2,5,0.169,100.0
 2026-10-31,nba_sat_main,6,pm,primary,Lock PM,d584da6d-9411-4f1c-b278-89531cd7bc11,Evan Mobley,CLE,7.0,46.2,etr,2,2,2,,,,0.998,,40.5,25.0,1,0,0,8,2,6,0.159,100.0
 2026-10-31,nba_sat_main,6,pm,primary,Lock PM,c311d754-8979-4374-a4af-af325e7b074a,Zion Williamson,NOP,8.2,42.1,etr,2,3,2,PRICEY,,,0.997,,34.2,30.0,1,0,0,10,2,13,0.119,100.0
@@ -1839,7 +1839,7 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-31,nba_sat_main,6,pm,primary,Lock PM,b34cb97e-7a7c-4ee5-b537-37e09f0d80e8,Brayden Burries,MIL,,20.3,etr,5,5,5,,,,,,22.1,21.0,1,0,0,77,,74,,
 2026-11-01,nba_sun_main,4,am,primary,Lock AM,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.0,60.0,ours,1,1,1,,,,0.997,,83.0,35.0,1,0,1,1,1,1,0.504,100.0
 2026-11-01,nba_sun_main,4,am,primary,Lock AM,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,2.2,51.6,ours,1,1,1,,,,0.997,,44.7,36.0,1,0,0,2,1,2,0.284,100.0
-2026-11-01,nba_sun_main,4,am,primary,Lock AM,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,2.9,48.2,ours,1,1,1,,,,0.996,,30.5,36.0,1,0,0,3,1,3,0.251,100.0
+2026-11-01,nba_sun_main,4,am,primary,Lock AM,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,2.9,48.2,ours,1,2,1,PRICEY,,,0.996,,30.5,36.0,1,0,0,3,1,3,0.251,100.0
 2026-11-01,nba_sun_main,4,am,primary,Lock AM,b56f125f-5890-4fcb-85a7-b023645fb1be,Julius Randle,BKN,4.9,44.6,ours,2,2,2,,,,0.997,,37.0,37.0,1,0,0,4,2,4,0.196,100.0
 2026-11-01,nba_sun_main,4,am,primary,Lock AM,9d687651-e23a-4817-91f5-148a95f4eaf9,Michael Porter Jr.,BKN,5.7,42.8,ours,2,2,2,,,,0.996,,37.3,36.0,1,0,0,7,2,5,0.183,100.0
 2026-11-01,nba_sun_main,4,am,primary,Lock AM,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,Yaxel Lendeborg,GSW,6.4,40.6,ours,2,2,2,,,,0.996,,51.8,34.0,1,0,1,8,2,6,0.177,100.0
@@ -1894,7 +1894,7 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-01,nba_sun_main,4,am,primary,Lock AM,c5cb8f24-c54f-4386-97ef-a8510a641efd,Jaden Bradley,TOR,,9.3,ours,5,5,5,,,,,,10.2,4.0,1,0,0,70,,54,,
 2026-11-01,nba_sun_main,4,pm,primary,Lock PM,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.0,64.9,etr,1,1,1,,,,0.997,,83.0,35.0,1,0,1,1,1,1,0.573,100.0
 2026-11-01,nba_sun_main,4,pm,primary,Lock PM,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,2.1,54.1,etr,1,1,1,,,,0.997,,44.7,36.0,1,0,0,2,1,2,0.306,100.0
-2026-11-01,nba_sun_main,4,pm,primary,Lock PM,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,3.0,49.6,etr,1,1,1,,,,0.996,,30.5,36.0,1,0,0,3,1,3,0.253,100.0
+2026-11-01,nba_sun_main,4,pm,primary,Lock PM,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,3.0,49.6,etr,1,2,1,PRICEY,,,0.996,,30.5,36.0,1,0,0,3,1,3,0.253,100.0
 2026-11-01,nba_sun_main,4,pm,primary,Lock PM,b56f125f-5890-4fcb-85a7-b023645fb1be,Julius Randle,BKN,4.8,44.7,etr,2,2,2,,,,0.997,,37.0,37.0,1,0,0,4,2,4,0.179,100.0
 2026-11-01,nba_sun_main,4,pm,primary,Lock PM,9d687651-e23a-4817-91f5-148a95f4eaf9,Michael Porter Jr.,BKN,5.8,44.0,etr,2,2,2,,,,0.996,,37.3,36.0,1,0,0,8,2,6,0.199,100.0
 2026-11-01,nba_sun_main,4,pm,primary,Lock PM,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,Yaxel Lendeborg,GSW,6.1,45.1,etr,2,2,2,,,,0.997,,51.8,34.0,1,0,1,6,2,5,0.193,100.0
@@ -2072,7 +2072,7 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-02,nba_mon_main,6,pm,primary,Lock PM,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,2.4,65.7,etr,1,1,1,,,,0.997,,61.8,36.0,1,0,0,3,1,3,0.285,100.0
 2026-11-02,nba_mon_main,6,pm,primary,Lock PM,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,3.1,67.5,etr,1,1,1,,,,0.995,,73.9,36.0,1,0,1,1,1,1,0.256,100.0
 2026-11-02,nba_mon_main,6,pm,primary,Lock PM,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,3.5,58.2,etr,1,2,1,PRICEY,,,0.995,,56.9,34.0,1,0,0,4,2,4,0.175,100.0
-2026-11-02,nba_mon_main,6,pm,primary,Lock PM,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,5.3,60.1,etr,2,1,2,VALUE,,,0.997,,30.8,40.0,1,0,0,5,2,5,0.168,100.0
+2026-11-02,nba_mon_main,6,pm,primary,Lock PM,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,5.3,60.1,etr,2,2,2,,,,0.997,,30.8,40.0,1,0,0,5,2,5,0.168,100.0
 2026-11-02,nba_mon_main,6,pm,primary,Lock PM,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,6.3,57.6,etr,2,2,2,,,,0.995,,66.6,39.0,1,0,0,6,2,6,0.162,100.0
 2026-11-02,nba_mon_main,6,pm,primary,Lock PM,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,7.6,53.7,etr,2,2,2,,,,0.997,,61.5,27.0,1,0,1,7,2,8,0.17,100.0
 2026-11-02,nba_mon_main,6,pm,primary,Lock PM,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,7.7,54.4,etr,2,2,2,,,,0.995,,37.7,32.0,1,0,0,8,2,7,0.191,100.0
@@ -2185,10 +2185,10 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-02,nba_mon_main,6,pm,primary,Lock PM,20cd7474-4651-4cff-81bc-939895c17f60,Dejounte Murray,NOP,35.7,43.2,etr,5,5,5,,Questionable,FAIR,0.501,5,0.0,0.0,0,1,0,41,5,37,0.187,13.6
 2026-11-02,nba_mon_main,6,pm,primary,Lock PM,c759c9df-9bf2-4e05-9497-6a5ba5694984,Rui Hachimura,LAC,36.0,,etr,5,5,5,,Out,,0.001,,0.0,0.0,0,1,0,342,,116,,0.1
 2026-11-04,nba_wed_main,6,am,primary,Lock AM,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.1,65.4,ours,1,1,1,,,,0.979,,61.3,35.0,1,0,0,1,1,2,0.247,100.0
-2026-11-04,nba_wed_main,6,am,primary,Lock AM,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,2.2,62.0,ours,1,1,1,,,,0.99,,67.5,30.0,1,0,0,3,1,4,0.212,100.0
+2026-11-04,nba_wed_main,6,am,primary,Lock AM,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,2.2,62.0,ours,1,1,1,,,,0.99,,67.5,30.0,1,0,0,3,1,3,0.212,100.0
 2026-11-04,nba_wed_main,6,am,primary,Lock AM,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,2.8,65.5,ours,1,1,1,,,,0.985,,112.8,34.0,1,0,1,2,1,1,0.271,100.0
-2026-11-04,nba_wed_main,6,am,primary,Lock AM,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,4.2,60.5,ours,1,1,1,,Probable,,0.906,,64.8,41.0,1,0,0,4,1,3,0.242,100.0
-2026-11-04,nba_wed_main,6,am,primary,Lock AM,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,5.0,56.5,ours,1,2,1,PRICEY,,,0.989,,57.8,35.0,1,0,0,5,2,5,0.152,100.0
+2026-11-04,nba_wed_main,6,am,primary,Lock AM,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,4.2,60.5,ours,2,1,2,VALUE,Probable,,0.906,,64.8,41.0,1,0,0,4,1,4,0.242,100.0
+2026-11-04,nba_wed_main,6,am,primary,Lock AM,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,5.0,56.5,ours,2,2,2,,,,0.989,,57.8,35.0,1,0,0,5,2,5,0.152,100.0
 2026-11-04,nba_wed_main,6,am,primary,Lock AM,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,6.1,53.6,ours,2,2,2,,,,0.988,,55.9,40.0,1,0,0,6,2,6,0.181,100.0
 2026-11-04,nba_wed_main,6,am,primary,Lock AM,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,7.7,49.3,ours,2,2,2,,,,0.988,,50.4,39.0,1,0,0,10,2,7,0.163,100.0
 2026-11-04,nba_wed_main,6,am,primary,Lock AM,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,8.3,50.6,ours,2,2,2,,,,0.981,,37.5,40.0,1,0,0,7,2,8,0.179,100.0
@@ -2310,8 +2310,8 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-04,nba_wed_main,6,pm,primary,Lock PM,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.2,67.2,etr,1,1,1,,,,0.998,,61.3,35.0,1,0,0,1,1,1,0.242,100.0
 2026-11-04,nba_wed_main,6,pm,primary,Lock PM,54a70cec-9c34-4113-bd3e-17b7531f06f5,Nikola Jokic,DEN,2.2,63.2,etr,1,1,1,,,,0.997,,67.5,30.0,1,0,0,3,1,3,0.197,100.0
 2026-11-04,nba_wed_main,6,pm,primary,Lock PM,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,2.8,64.2,etr,1,1,1,,,,0.998,,112.8,34.0,1,0,1,2,1,2,0.208,100.0
-2026-11-04,nba_wed_main,6,pm,primary,Lock PM,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,4.1,63.1,etr,1,1,1,,Probable,,0.961,,64.8,41.0,1,0,0,4,1,4,0.248,100.0
-2026-11-04,nba_wed_main,6,pm,primary,Lock PM,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,5.0,58.9,etr,1,2,1,PRICEY,,,0.996,,57.8,35.0,1,0,0,5,1,5,0.131,100.0
+2026-11-04,nba_wed_main,6,pm,primary,Lock PM,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,4.1,63.1,etr,2,1,2,VALUE,Probable,,0.961,,64.8,41.0,1,0,0,4,1,4,0.248,100.0
+2026-11-04,nba_wed_main,6,pm,primary,Lock PM,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,5.0,58.9,etr,2,2,2,,,,0.996,,57.8,35.0,1,0,0,5,1,5,0.131,100.0
 2026-11-04,nba_wed_main,6,pm,primary,Lock PM,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,Cade Cunningham,DET,6.2,54.7,etr,2,2,2,,,,0.997,,55.9,40.0,1,0,0,6,2,6,0.165,100.0
 2026-11-04,nba_wed_main,6,pm,primary,Lock PM,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,7.9,50.4,etr,2,2,2,,,,0.997,,50.4,39.0,1,0,0,9,2,9,0.152,100.0
 2026-11-04,nba_wed_main,6,pm,primary,Lock PM,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,8.6,50.5,etr,2,2,2,,,,0.997,,37.5,40.0,1,0,0,8,2,8,0.179,100.0
@@ -2431,9 +2431,9 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-04,nba_wed_main,6,pm,primary,Lock PM,dc4c1796-d0fb-4d20-aec2-cea4775ecace,Braden Smith,IND,36.0,,etr,5,5,5,,Questionable,FAIR,0.532,,27.7,24.0,1,0,0,333,,123,,0.6
 2026-11-04,nba_wed_main,6,pm,primary,Lock PM,46de5e24-3c33-4ed8-bf93-13cf4ed77705,Mikal Bridges,NYK,,30.6,etr,5,5,5,,,,0.997,,18.8,22.0,1,0,0,108,,96,,
 2026-11-05,nba_thu_main,4,am,primary,Lock AM,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,1.1,62.1,ours,1,1,1,,,,0.919,,38.8,31.0,1,0,0,1,1,1,0.649,100.0
-2026-11-05,nba_thu_main,4,am,primary,Lock AM,44a3785f-97ae-46c4-ab1e-3b9f8fb253c7,Stephen Curry,GSW,2.1,46.4,ours,1,1,1,,,,0.981,,39.2,28.0,1,0,0,2,2,3,0.181,100.0
+2026-11-05,nba_thu_main,4,am,primary,Lock AM,44a3785f-97ae-46c4-ab1e-3b9f8fb253c7,Stephen Curry,GSW,2.1,46.4,ours,1,2,1,PRICEY,,,0.981,,39.2,28.0,1,0,0,2,2,4,0.181,100.0
 2026-11-05,nba_thu_main,4,am,primary,Lock AM,ffad7c30-f8a5-4125-bbd3-34b4226aa611,Franz Wagner,ORL,3.4,48.4,ours,1,1,1,,,,0.987,,53.1,38.0,1,0,1,3,2,2,0.229,100.0
-2026-11-05,nba_thu_main,4,am,primary,Lock AM,50e02dbc-3d90-4aa7-a733-ddc33730a9ae,Bam Adebayo,MIA,3.7,45.4,ours,1,2,1,PRICEY,,,0.933,,36.0,33.0,1,0,0,4,2,4,0.193,100.0
+2026-11-05,nba_thu_main,4,am,primary,Lock AM,50e02dbc-3d90-4aa7-a733-ddc33730a9ae,Bam Adebayo,MIA,3.7,45.4,ours,1,2,1,PRICEY,,,0.933,,36.0,33.0,1,0,0,4,2,3,0.193,100.0
 2026-11-05,nba_thu_main,4,am,primary,Lock AM,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,5.4,45.3,ours,2,2,2,,,,0.943,,49.2,34.0,1,0,1,5,2,5,0.201,100.0
 2026-11-05,nba_thu_main,4,am,primary,Lock AM,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,Yaxel Lendeborg,GSW,5.8,42.2,ours,2,2,2,,,,0.986,,45.6,30.0,1,0,0,6,2,6,0.172,100.0
 2026-11-05,nba_thu_main,4,am,primary,Lock AM,c3904f81-1342-4717-a9b5-25d61359f247,Miles Bridges,PHX,7.4,36.8,ours,2,2,2,,,,0.954,,46.1,31.0,1,0,0,9,3,7,0.136,100.0
@@ -2533,13 +2533,13 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,3.0,61.4,ours,1,1,1,,,,0.99,,39.6,30.0,1,0,0,3,1,2,0.261,100.0
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,4.4,52.6,ours,1,2,1,PRICEY,,,0.92,,59.1,29.0,1,0,0,5,2,5,0.167,100.0
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,5.0,54.0,ours,1,2,1,PRICEY,,,0.986,,52.5,33.0,1,0,0,4,2,4,0.196,100.0
-2026-11-06,nba_fri_main,6,am,primary,Lock AM,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,6.8,47.3,ours,2,2,2,,,,0.952,,19.9,25.0,1,0,0,6,2,8,0.166,100.0
-2026-11-06,nba_fri_main,6,am,primary,Lock AM,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,7.8,47.1,ours,2,2,2,,,,0.985,,29.6,32.0,1,0,0,7,2,9,0.124,100.0
-2026-11-06,nba_fri_main,6,am,primary,Lock AM,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,11.8,47.5,ours,2,2,2,,,,0.99,,47.3,39.0,1,0,0,10,2,12,0.195,100.0
-2026-11-06,nba_fri_main,6,am,primary,Lock AM,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,9.2,49.8,ours,2,2,2,,,,0.977,,34.9,31.0,1,0,0,9,2,11,0.194,100.0
+2026-11-06,nba_fri_main,6,am,primary,Lock AM,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,6.8,47.3,ours,2,2,2,,,,0.952,,19.9,25.0,1,0,0,6,2,6,0.166,100.0
+2026-11-06,nba_fri_main,6,am,primary,Lock AM,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,7.8,47.1,ours,2,2,2,,,,0.985,,29.6,32.0,1,0,0,7,2,7,0.124,100.0
+2026-11-06,nba_fri_main,6,am,primary,Lock AM,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,11.8,47.5,ours,2,2,2,,,,0.99,,47.3,39.0,1,0,0,10,2,10,0.195,100.0
+2026-11-06,nba_fri_main,6,am,primary,Lock AM,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,9.2,49.8,ours,2,2,2,,,,0.977,,34.9,31.0,1,0,0,9,2,9,0.194,100.0
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,11.5,46.1,ours,2,3,2,PRICEY,,,0.976,,48.4,33.0,1,0,1,13,2,14,0.15,100.0
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,035ea519-23f8-4d07-80ab-75a3af09ef14,Kyrie Irving,DAL,11.8,41.6,ours,2,5,3,PRICEY,,,0.96,,28.4,28.0,1,0,0,18,3,18,0.163,100.0
-2026-11-06,nba_fri_main,6,am,primary,Lock AM,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.1,56.2,ours,2,1,2,VALUE,Questionable,TRAP,0.653,5,0.0,0.0,0,1,0,12,2,7,0.243,100.0
+2026-11-06,nba_fri_main,6,am,primary,Lock AM,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.1,56.2,ours,2,2,2,,Questionable,TRAP,0.653,5,0.0,0.0,0,1,0,12,2,12,0.243,100.0
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,15.6,49.2,ours,2,2,2,,,,0.98,,33.4,35.0,1,0,0,14,2,13,0.243,100.0
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,15.0,44.2,ours,2,3,2,PRICEY,,,0.98,,34.5,34.0,1,0,0,15,3,15,0.179,100.0
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,Walker Kessler,LAL,17.4,42.2,ours,3,5,4,PRICEY,,,0.951,,35.4,37.0,1,0,0,19,3,25,0.147,100.0
@@ -2612,8 +2612,8 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,ebef9cbb-5ba3-4862-a43f-f46f0935172f,De'Andre Hunter,SAC,,28.8,ours,5,5,5,,,,0.95,,0.0,0.0,0,1,0,93,,77,,
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,8e9726e9-ed27-4e4b-8c4a-9b7971094472,Payton Pritchard,BOS,,33.1,ours,5,5,5,,,,0.565,,27.7,23.0,1,0,0,73,,69,,
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,1dfe005c-d789-4db6-841e-16aac53c6124,Zuby Ejiofor,ATL,,12.0,ours,5,5,5,,,,,,25.5,15.0,1,0,0,196,,90,,
-2026-11-06,nba_fri_main,6,am,primary,Lock AM,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,8.7,53.1,ours,2,2,2,,Questionable,TRAP,0.636,5,0.0,0.0,0,1,0,8,2,10,0.202,100.0
-2026-11-06,nba_fri_main,6,am,primary,Lock AM,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,12.8,55.9,ours,2,1,2,VALUE,Questionable,TRAP,0.697,5,0.0,0.0,0,1,0,11,2,6,0.293,100.0
+2026-11-06,nba_fri_main,6,am,primary,Lock AM,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,8.7,53.1,ours,2,2,2,,Questionable,TRAP,0.636,5,0.0,0.0,0,1,0,8,2,8,0.202,100.0
+2026-11-06,nba_fri_main,6,am,primary,Lock AM,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,12.8,55.9,ours,2,2,2,,Questionable,TRAP,0.697,5,0.0,0.0,0,1,0,11,2,11,0.293,100.0
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,046c78d0-6297-436a-92ab-e50ef6fb2aeb,Aaron Wiggins,ATL,36.0,30.2,ours,5,5,5,,,,0.988,,26.3,29.0,1,0,0,87,,74,0.137,0.3
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,097f1a46-1671-4098-8e9c-de35784ee7fe,Branden Carlson,POR,36.0,11.9,ours,5,5,5,,,,,,0.0,0.0,0,1,0,197,,91,0.085,0.2
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,23f4ac18-0f31-4743-aac8-8447e3fd5941,Ousmane Dieng,MIL,36.0,12.6,ours,5,5,5,,,,,,0.0,0.0,0,1,0,190,,89,0.064,0.4
@@ -2621,16 +2621,16 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-06,nba_fri_main,6,am,primary,Lock AM,b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57,Sandro Mamukelashvili,LAL,36.0,26.4,ours,5,5,5,,Questionable,FAIR,0.593,5,18.1,20.0,1,0,0,109,,82,0.142,1.1
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.1,66.4,etr,1,1,1,,,,0.998,,52.8,26.0,1,0,0,1,1,2,0.345,100.0
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,1acc32d8-5c04-496b-a643-64df26aafc57,Luka Doncic,LAL,1.9,68.7,etr,1,1,1,,,,0.997,,66.5,38.0,1,0,1,2,1,1,0.362,100.0
-2026-11-06,nba_fri_main,6,pm,primary,board at lock,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,3.0,60.6,etr,1,1,1,,,,0.996,,39.6,30.0,1,0,0,3,1,3,0.223,100.0
+2026-11-06,nba_fri_main,6,pm,primary,board at lock,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,3.0,60.6,etr,1,2,1,PRICEY,,,0.996,,39.6,30.0,1,0,0,3,1,3,0.223,100.0
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,4.6,55.1,etr,1,2,1,PRICEY,,,0.982,,59.1,29.0,1,0,0,4,2,5,0.179,100.0
-2026-11-06,nba_fri_main,6,pm,primary,board at lock,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,4.7,56.2,etr,1,1,1,,,,0.997,,52.5,33.0,1,0,0,5,2,4,0.193,100.0
-2026-11-06,nba_fri_main,6,pm,primary,board at lock,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,7.0,46.3,etr,2,2,2,,,,0.995,,19.9,25.0,1,0,0,6,2,8,0.156,100.0
-2026-11-06,nba_fri_main,6,pm,primary,board at lock,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,7.2,50.8,etr,2,2,2,,,,0.997,,29.6,32.0,1,0,0,7,2,7,0.122,100.0
-2026-11-06,nba_fri_main,6,pm,primary,board at lock,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,9.6,50.7,etr,2,2,2,,,,0.996,,47.3,39.0,1,0,0,9,2,9,0.222,100.0
+2026-11-06,nba_fri_main,6,pm,primary,board at lock,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,4.7,56.2,etr,1,2,1,PRICEY,,,0.997,,52.5,33.0,1,0,0,5,2,4,0.193,100.0
+2026-11-06,nba_fri_main,6,pm,primary,board at lock,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,7.0,46.3,etr,2,2,2,,,,0.995,,19.9,25.0,1,0,0,6,2,7,0.156,100.0
+2026-11-06,nba_fri_main,6,pm,primary,board at lock,73d4fb27-030d-4c2d-bcc7-ced393ef6322,Tyrese Maxey,PHI,7.2,50.8,etr,2,2,2,,,,0.997,,29.6,32.0,1,0,0,7,2,6,0.122,100.0
+2026-11-06,nba_fri_main,6,pm,primary,board at lock,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,9.6,50.7,etr,2,2,2,,,,0.996,,47.3,39.0,1,0,0,9,2,8,0.222,100.0
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,10.2,44.9,etr,2,3,2,PRICEY,,,0.997,,34.9,31.0,1,0,0,8,2,14,0.187,100.0
-2026-11-06,nba_fri_main,6,pm,primary,board at lock,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,11.9,46.3,etr,2,2,2,,,,0.997,,48.4,33.0,1,0,1,10,2,11,0.179,100.0
-2026-11-06,nba_fri_main,6,pm,primary,board at lock,035ea519-23f8-4d07-80ab-75a3af09ef14,Kyrie Irving,DAL,12.4,45.6,etr,2,2,2,,Probable,,0.935,,28.4,28.0,1,0,0,21,3,12,0.196,100.0
-2026-11-06,nba_fri_main,6,pm,primary,board at lock,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,55.7,etr,2,1,2,VALUE,Questionable,TRAP,0.777,4,0.0,0.0,0,1,0,12,2,6,0.277,100.0
+2026-11-06,nba_fri_main,6,pm,primary,board at lock,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,11.9,46.3,etr,2,2,2,,,,0.997,,48.4,33.0,1,0,1,10,2,10,0.179,100.0
+2026-11-06,nba_fri_main,6,pm,primary,board at lock,035ea519-23f8-4d07-80ab-75a3af09ef14,Kyrie Irving,DAL,12.4,45.6,etr,2,2,2,,Probable,,0.935,,28.4,28.0,1,0,0,21,3,11,0.196,100.0
+2026-11-06,nba_fri_main,6,pm,primary,board at lock,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,55.7,etr,2,2,2,,Questionable,TRAP,0.777,4,0.0,0.0,0,1,0,12,2,12,0.277,100.0
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,15.2,47.3,etr,2,2,2,,,,0.997,,33.4,35.0,1,0,0,11,2,13,0.213,100.0
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,15.1,43.1,etr,2,4,3,PRICEY,,,0.997,,34.5,34.0,1,0,0,13,2,20,0.179,100.0
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,Walker Kessler,LAL,16.9,43.7,etr,3,4,3,PRICEY,,,0.968,,35.4,37.0,1,0,0,17,3,19,0.155,100.0
@@ -2703,7 +2703,7 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,ebef9cbb-5ba3-4862-a43f-f46f0935172f,De'Andre Hunter,SAC,36.0,28.0,etr,5,5,5,,Questionable,FAIR,0.125,5,0.0,0.0,0,1,0,89,,79,0.176,0.8
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,8e9726e9-ed27-4e4b-8c4a-9b7971094472,Payton Pritchard,BOS,36.0,30.0,etr,5,5,5,,,,0.984,,27.7,23.0,1,0,0,78,,77,0.153,0.4
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,1dfe005c-d789-4db6-841e-16aac53c6124,Zuby Ejiofor,ATL,,22.9,etr,5,5,5,,,,,,25.5,15.0,1,0,0,119,,86,,
-2026-11-06,nba_fri_main,6,pm,primary,board at lock,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,49.9,etr,2,2,2,,Questionable,TRAP,0.645,5,0.0,0.0,0,1,0,43,,10,0.199,100.0
+2026-11-06,nba_fri_main,6,pm,primary,board at lock,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,49.9,etr,2,2,2,,Questionable,TRAP,0.645,5,0.0,0.0,0,1,0,43,,9,0.199,100.0
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,12.9,,etr,2,5,3,PRICEY,Out,,0.001,,0.0,0.0,0,1,0,,,18,,100.0
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,046c78d0-6297-436a-92ab-e50ef6fb2aeb,Aaron Wiggins,ATL,,32.9,etr,5,5,5,,,,0.997,,26.3,29.0,1,0,0,65,,66,,
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,23f4ac18-0f31-4743-aac8-8447e3fd5941,Ousmane Dieng,MIL,,9.2,etr,5,5,5,,,,,,0.0,0.0,0,1,0,179,,90,,
@@ -2711,9 +2711,9 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-06,nba_fri_main,6,pm,primary,board at lock,b8ddf08b-4ac5-492d-8edb-b1aec0bd8c57,Sandro Mamukelashvili,LAL,,25.7,etr,5,5,5,,,,0.602,,18.1,20.0,1,0,0,102,,82,,
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.0,63.7,ours,1,1,1,,,,0.929,,45.9,24.0,1,0,0,1,1,1,0.523,100.0
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,2.2,62.3,ours,1,1,1,,,,0.952,,46.9,29.0,1,0,0,2,1,2,0.397,100.0
-2026-11-07,nba_sat_main,6,am,primary,Lock AM,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,3.0,49.7,ours,1,1,1,,,,0.989,,30.7,32.0,1,0,0,3,2,3,0.187,100.0
-2026-11-07,nba_sat_main,6,am,primary,Lock AM,553255f7-79bb-4b22-a925-7384cc42ec27,Karl-Anthony Towns,NYK,4.6,46.3,ours,1,2,1,PRICEY,,,0.987,,55.1,34.0,1,0,1,5,2,4,0.203,100.0
-2026-11-07,nba_sat_main,6,am,primary,Lock AM,ffad7c30-f8a5-4125-bbd3-34b4226aa611,Franz Wagner,ORL,5.2,49.4,ours,1,2,1,PRICEY,,,0.986,,53.7,40.0,1,0,0,4,2,5,0.196,100.0
+2026-11-07,nba_sat_main,6,am,primary,Lock AM,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,3.0,49.7,ours,1,2,1,PRICEY,,,0.989,,30.7,32.0,1,0,0,3,2,3,0.187,100.0
+2026-11-07,nba_sat_main,6,am,primary,Lock AM,553255f7-79bb-4b22-a925-7384cc42ec27,Karl-Anthony Towns,NYK,4.6,46.3,ours,2,2,2,,,,0.987,,55.1,34.0,1,0,1,5,2,4,0.203,100.0
+2026-11-07,nba_sat_main,6,am,primary,Lock AM,ffad7c30-f8a5-4125-bbd3-34b4226aa611,Franz Wagner,ORL,5.2,49.4,ours,2,2,2,,,,0.986,,53.7,40.0,1,0,0,4,2,5,0.196,100.0
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,cbcf7977-934a-402a-bbdc-b7795400fcac,Jalen Brunson,NYK,6.2,44.8,ours,2,2,2,,,,0.99,,50.7,34.0,1,0,0,6,2,6,0.148,100.0
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,44a3785f-97ae-46c4-ab1e-3b9f8fb253c7,Stephen Curry,GSW,7.1,44.7,ours,2,2,2,,,,0.981,,54.2,36.0,1,0,1,7,2,7,0.172,100.0
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,9.3,47.3,ours,2,2,2,,,,0.947,,21.3,24.0,1,0,0,8,2,9,0.241,100.0
@@ -2721,7 +2721,7 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,Yaxel Lendeborg,GSW,10.9,43.2,ours,2,2,2,,,,0.986,,40.1,37.0,1,0,0,11,2,10,0.185,100.0
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,12.9,43.6,ours,2,2,2,,,,0.985,,35.9,39.0,1,0,0,12,2,12,0.174,100.0
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,1464ff77-b5a1-4b13-9ef3-20ac265816a2,Onyeka Okongwu,ATL,11.7,38.5,ours,2,4,3,PRICEY,,,0.947,,37.9,30.0,1,0,0,20,3,22,0.134,100.0
-2026-11-07,nba_sat_main,6,am,primary,Lock AM,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,21.9,53.4,ours,4,1,3,VALUE,Questionable,TRAP,0.611,5,47.4,36.0,1,0,1,21,3,14,0.39,100.0
+2026-11-07,nba_sat_main,6,am,primary,Lock AM,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,21.9,53.4,ours,4,2,3,VALUE,Questionable,TRAP,0.611,5,47.4,36.0,1,0,1,21,3,14,0.39,100.0
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,4bc97202-8305-42e7-b615-c0b8db8fef2a,Trae Young,WAS,11.7,43.6,ours,2,2,2,,,,0.919,,16.5,28.0,1,0,0,10,2,11,0.17,100.0
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,16.3,49.4,ours,3,2,3,VALUE,Questionable,TRAP,0.566,5,0.0,0.0,0,1,0,16,3,15,0.286,100.0
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,d584da6d-9411-4f1c-b278-89531cd7bc11,Evan Mobley,CLE,18.2,41.7,ours,3,3,3,,,,0.94,,27.3,33.0,1,0,0,15,3,20,0.177,100.0
@@ -2795,18 +2795,18 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-07,nba_sat_main,6,am,primary,Lock AM,57c8297e-556b-4ca5-8a83-2671600d2b0b,Tre Johnson,WAS,,21.9,ours,5,5,5,,,,0.885,,10.5,28.0,1,0,0,90,,77,,
 2026-11-07,nba_sat_main,6,pm,primary,board at lock,c0266623-325e-43a5-ac93-3def269a64ef,Victor Wembanyama,SAS,1.0,65.7,etr,1,1,1,,,,0.996,,45.9,24.0,1,0,0,1,1,1,0.552,100.0
 2026-11-07,nba_sat_main,6,pm,primary,board at lock,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,2.1,60.2,etr,1,1,1,,,,0.996,,46.9,29.0,1,0,0,2,1,2,0.327,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,3.0,52.1,etr,1,1,1,,,,0.997,,30.7,32.0,1,0,0,3,2,3,0.216,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,553255f7-79bb-4b22-a925-7384cc42ec27,Karl-Anthony Towns,NYK,4.6,48.6,etr,1,2,1,PRICEY,,,0.997,,55.1,34.0,1,0,1,5,2,5,0.192,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,ffad7c30-f8a5-4125-bbd3-34b4226aa611,Franz Wagner,ORL,5.1,50.8,etr,1,1,1,,,,0.997,,53.7,40.0,1,0,0,4,2,4,0.174,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,cbcf7977-934a-402a-bbdc-b7795400fcac,Jalen Brunson,NYK,6.6,46.9,etr,2,2,2,,,,0.997,,50.7,34.0,1,0,0,7,2,9,0.141,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,44a3785f-97ae-46c4-ab1e-3b9f8fb253c7,Stephen Curry,GSW,7.5,47.6,etr,2,2,2,,,,0.996,,54.2,36.0,1,0,1,8,2,8,0.167,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,8.2,50.4,etr,2,2,2,,,,0.995,,21.3,24.0,1,0,0,6,2,7,0.241,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,9.1,45.2,etr,2,2,2,,,,0.996,,51.8,37.0,1,0,0,10,2,10,0.164,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,Yaxel Lendeborg,GSW,10.8,42.2,etr,2,3,2,PRICEY,,,0.997,,40.1,37.0,1,0,0,14,3,11,0.157,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,12.9,43.4,etr,2,3,2,PRICEY,,,0.997,,35.9,39.0,1,0,0,15,3,12,0.158,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,3.0,52.1,etr,1,2,1,PRICEY,,,0.997,,30.7,32.0,1,0,0,3,2,3,0.216,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,553255f7-79bb-4b22-a925-7384cc42ec27,Karl-Anthony Towns,NYK,4.6,48.6,etr,2,2,2,,,,0.997,,55.1,34.0,1,0,1,5,2,5,0.192,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,ffad7c30-f8a5-4125-bbd3-34b4226aa611,Franz Wagner,ORL,5.1,50.8,etr,2,2,2,,,,0.997,,53.7,40.0,1,0,0,4,2,4,0.174,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,cbcf7977-934a-402a-bbdc-b7795400fcac,Jalen Brunson,NYK,6.6,46.9,etr,2,2,2,,,,0.997,,50.7,34.0,1,0,0,7,2,8,0.141,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,44a3785f-97ae-46c4-ab1e-3b9f8fb253c7,Stephen Curry,GSW,7.5,47.6,etr,2,2,2,,,,0.996,,54.2,36.0,1,0,1,8,2,7,0.167,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,5b2ab3bd-8796-4500-ac13-662a6b057bd0,Deni Avdija,POR,8.2,50.4,etr,2,2,2,,,,0.995,,21.3,24.0,1,0,0,6,2,6,0.241,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,251127ed-be4a-4102-91f0-19678a44dcf5,Donovan Mitchell,CLE,9.1,45.2,etr,2,2,2,,,,0.996,,51.8,37.0,1,0,0,10,2,9,0.164,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,Yaxel Lendeborg,GSW,10.8,42.2,etr,2,3,2,PRICEY,,,0.997,,40.1,37.0,1,0,0,14,3,10,0.157,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,12.9,43.4,etr,2,3,2,PRICEY,,,0.997,,35.9,39.0,1,0,0,15,3,11,0.158,100.0
 2026-11-07,nba_sat_main,6,pm,primary,board at lock,1464ff77-b5a1-4b13-9ef3-20ac265816a2,Onyeka Okongwu,ATL,12.9,40.0,etr,2,4,3,PRICEY,,,0.997,,37.9,30.0,1,0,0,23,4,18,0.129,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,15.5,50.8,etr,3,1,2,VALUE,Probable,,0.975,,47.4,36.0,1,0,0,9,2,6,0.293,100.0
-2026-11-07,nba_sat_main,6,pm,primary,board at lock,4bc97202-8305-42e7-b615-c0b8db8fef2a,Trae Young,WAS,13.4,41.6,etr,2,3,2,PRICEY,,,0.996,,16.5,28.0,1,0,0,17,3,13,0.156,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,15.5,50.8,etr,3,2,3,VALUE,Probable,,0.975,,47.4,36.0,1,0,0,9,2,13,0.293,100.0
+2026-11-07,nba_sat_main,6,pm,primary,board at lock,4bc97202-8305-42e7-b615-c0b8db8fef2a,Trae Young,WAS,13.4,41.6,etr,2,3,2,PRICEY,,,0.996,,16.5,28.0,1,0,0,17,3,12,0.156,100.0
 2026-11-07,nba_sat_main,6,pm,primary,board at lock,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,16.2,46.5,etr,3,2,3,VALUE,Questionable,TRAP,0.665,5,0.0,0.0,0,1,0,13,3,14,0.261,100.0
 2026-11-07,nba_sat_main,6,pm,primary,board at lock,d584da6d-9411-4f1c-b278-89531cd7bc11,Evan Mobley,CLE,16.5,44.9,etr,3,2,3,VALUE,,,0.996,,27.3,33.0,1,0,0,11,3,15,0.2,100.0
 2026-11-07,nba_sat_main,6,pm,primary,board at lock,f92516da-a360-48f9-8ee5-527bde656f42,Dyson Daniels,ATL,16.0,40.2,etr,3,4,3,PRICEY,,,0.996,,50.5,31.0,1,0,1,22,4,19,0.138,100.0
@@ -2873,10 +2873,10 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-07,nba_sat_main,6,pm,primary,board at lock,4e867675-00ca-4c24-aba2-f5d002ea0474,Marcus Smart,HOU,,22.2,etr,5,5,5,,,,0.98,,6.4,20.0,1,0,0,80,,74,,
 2026-11-07,nba_sat_main,6,pm,primary,board at lock,57c8297e-556b-4ca5-8a83-2671600d2b0b,Tre Johnson,WAS,,18.6,etr,5,5,5,,,,0.987,,10.5,28.0,1,0,0,95,,76,,
 2026-11-08,nba_sun_main,6,am,secondary,board before ETR,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,1.0,61.5,ours,1,1,1,,,,0.997,,57.3,34.0,1,0,1,1,1,1,0.4,100.0
-2026-11-08,nba_sun_main,6,am,secondary,board before ETR,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,2.4,54.2,ours,1,1,1,,,,0.997,,49.0,28.0,1,0,0,3,1,3,0.211,100.0
+2026-11-08,nba_sun_main,6,am,secondary,board before ETR,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,2.4,54.2,ours,1,2,1,PRICEY,,,0.997,,49.0,28.0,1,0,0,3,1,3,0.211,100.0
 2026-11-08,nba_sun_main,6,am,secondary,board before ETR,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,2.8,57.5,ours,1,1,1,,,,0.997,,39.8,29.0,1,0,0,2,1,2,0.304,100.0
-2026-11-08,nba_sun_main,6,am,secondary,board before ETR,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.8,51.5,ours,1,1,1,,,,0.997,,0.0,0.0,0,1,0,5,2,4,0.181,100.0
-2026-11-08,nba_sun_main,6,am,secondary,board before ETR,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,5.3,50.6,ours,2,1,2,VALUE,,,0.998,,36.1,30.0,1,0,0,4,2,5,0.195,100.0
+2026-11-08,nba_sun_main,6,am,secondary,board before ETR,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.8,51.5,ours,2,2,2,,,,0.997,,0.0,0.0,0,1,0,5,2,4,0.181,100.0
+2026-11-08,nba_sun_main,6,am,secondary,board before ETR,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,5.3,50.6,ours,2,2,2,,,,0.998,,36.1,30.0,1,0,0,4,2,5,0.195,100.0
 2026-11-08,nba_sun_main,6,am,secondary,board before ETR,538deb89-cae1-4376-a228-56bea3c4fe3b,Darius Acuff Jr.,SAC,5.7,48.4,ours,2,2,2,,,,0.997,,51.0,39.0,1,0,0,6,2,6,0.177,100.0
 2026-11-08,nba_sun_main,6,am,secondary,board before ETR,50e02dbc-3d90-4aa7-a733-ddc33730a9ae,Bam Adebayo,MIA,6.3,45.6,ours,2,2,2,,,,0.998,,41.6,34.0,1,0,1,8,2,7,0.195,100.0
 2026-11-08,nba_sun_main,6,am,secondary,board before ETR,9d687651-e23a-4817-91f5-148a95f4eaf9,Michael Porter Jr.,BKN,8.9,42.0,ours,2,2,2,,,,0.996,,29.8,29.0,1,0,0,15,3,8,0.181,100.0
@@ -2955,9 +2955,9 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-11-08,nba_sun_main,6,pm,primary,board at lock,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,Giannis Antetokounmpo,MIA,1.0,63.3,etr,1,1,1,,,,0.997,,57.3,34.0,1,0,1,1,1,1,0.455,100.0
 2026-11-08,nba_sun_main,6,pm,primary,board at lock,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,2.4,53.7,etr,1,1,1,,,,0.997,,49.0,28.0,1,0,0,3,1,3,0.272,100.0
 2026-11-08,nba_sun_main,6,pm,primary,board at lock,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,2.8,56.1,etr,1,1,1,,,,0.998,,39.8,29.0,1,0,0,2,1,2,0.353,100.0
-2026-11-08,nba_sun_main,6,pm,primary,board at lock,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.8,44.7,etr,1,2,1,PRICEY,,,0.997,,0.0,0.0,0,1,0,6,2,4,0.166,100.0
-2026-11-08,nba_sun_main,6,pm,primary,board at lock,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,5.3,47.8,etr,2,1,2,VALUE,,,0.998,,36.1,30.0,1,0,0,4,2,5,0.177,100.0
-2026-11-08,nba_sun_main,6,pm,primary,board at lock,538deb89-cae1-4376-a228-56bea3c4fe3b,Darius Acuff Jr.,SAC,5.7,47.5,etr,2,1,2,VALUE,,,0.997,,51.0,39.0,1,0,0,5,2,6,0.206,100.0
+2026-11-08,nba_sun_main,6,pm,primary,board at lock,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.8,44.7,etr,2,2,2,,,,0.997,,0.0,0.0,0,1,0,6,2,6,0.166,100.0
+2026-11-08,nba_sun_main,6,pm,primary,board at lock,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,5.3,47.8,etr,2,2,2,,,,0.998,,36.1,30.0,1,0,0,4,2,4,0.177,100.0
+2026-11-08,nba_sun_main,6,pm,primary,board at lock,538deb89-cae1-4376-a228-56bea3c4fe3b,Darius Acuff Jr.,SAC,5.7,47.5,etr,2,2,2,,,,0.997,,51.0,39.0,1,0,0,5,2,5,0.206,100.0
 2026-11-08,nba_sun_main,6,pm,primary,board at lock,50e02dbc-3d90-4aa7-a733-ddc33730a9ae,Bam Adebayo,MIA,6.3,46.1,etr,2,2,2,,,,0.998,,41.6,34.0,1,0,1,7,2,7,0.216,100.0
 2026-11-08,nba_sun_main,6,pm,primary,board at lock,9d687651-e23a-4817-91f5-148a95f4eaf9,Michael Porter Jr.,BKN,8.9,42.0,etr,2,2,2,,,,0.996,,29.8,29.0,1,0,0,8,2,8,0.186,100.0
 2026-11-08,nba_sun_main,6,pm,primary,board at lock,c311d754-8979-4374-a4af-af325e7b074a,Zion Williamson,NOP,10.3,41.0,etr,2,2,2,,,,0.997,,30.8,31.0,1,0,0,15,3,10,0.14,100.0

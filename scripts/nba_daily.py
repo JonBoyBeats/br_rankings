@@ -25,6 +25,10 @@ Each row is a player on the slate, for the two halves of the day:
   actual     ESPN's box scores in Underdog points (the Live page's scoring); 0 for a player
              whose team played without him
 
+And <date>_<slate>_orders.json.gz: your board's order every time it was saved (the board pushes to your gist two
+seconds after each change, stamped with the change time), from the evening before through the last tip, so a swap
+can be graded against the order that chose it.
+
 Beside it, <date>_box.csv: every rotation player (15+ minutes, usual or that night) in every
 game of the night, main slate or not, with his box line, usual rates, ETR and matchup row, for
 the player ledger (scripts/nba_ledger.py).
@@ -35,7 +39,7 @@ Proj scale (median nudged toward ceiling); etr_median is ETR's own number.
 
   python3 scripts/nba_daily.py --mirror ../br-adp-mirror [--gist ../gist] [--since 2026-10-20] [--rebuild]
 """
-import argparse, csv, datetime as dt, json, os, re, subprocess, sys, unicodedata, urllib.request
+import argparse, csv, datetime as dt, gzip, json, os, re, subprocess, sys, unicodedata, urllib.request
 from collections import defaultdict
 from zoneinfo import ZoneInfo
 
@@ -244,6 +248,23 @@ def tier_of(order, tiers, cut=None):
     starts = tiers["starts"][:4]
     end = cut if cut is not None else len(order)
     return {pid: 1 + sum(1 for s in starts if i + 1 >= s) for i, pid in enumerate(order) if i + 1 <= end}
+
+
+def board_orders(gist, slate):
+    """[{"at": change time, "cut", "order"}]: each distinct board the gist saved for the slate from 36 hours before
+    lock to 8 hours after (the last tip), oldest first."""
+    out, seen = [], None
+    for t, version in gist.revs:
+        if t < slate["lock"] - dt.timedelta(hours=36) or t > slate["lock"] + dt.timedelta(hours=8):
+            continue
+        b = board_at(gist, version, slate)
+        if not b or not b.get("order"):
+            continue
+        sig = (tuple(b["order"]), b.get("cut"))
+        if sig != seen:
+            out.append({"at": b.get("saved_at") or t.isoformat(), "commit_at": t.isoformat(), "cut": b.get("cut"), "order": b["order"]})
+            seen = sig
+    return out
 
 
 def lock_line(slate, locks, t):
@@ -545,6 +566,11 @@ def main():
             w = csv.DictWriter(f, fieldnames=COLS)
             w.writeheader()
             w.writerows(rows)
+        if gist:
+            snaps = board_orders(gist, slate)
+            with gzip.open(path.replace("_main.csv", "_orders.json.gz"), "wt") as f:
+                json.dump(snaps, f, separators=(",", ":"))
+            meta["orders"] = len(snaps)
         allmeta[name] = meta
         print("  wrote %s: %d players, %d played" % (name, len(rows), sum(1 for r in rows if r["min"] not in ("", 0))))
     with open(meta_path, "w") as f:
