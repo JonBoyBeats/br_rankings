@@ -229,15 +229,26 @@ def money_proposals():
     doc = json.load(open(p))
     items = doc.get("proposals", []) if isinstance(doc, dict) else doc
     week = " (week of %s)" % doc["week"] if isinstance(doc, dict) and doc.get("week") else ""
-    out = []
+    out, new_splits = [], []
     for x in items:
-        if isinstance(x, dict):
-            head = x.get("id") or x.get("decision") or ""
-            body = x.get("proposal") or x.get("text") or x.get("summary") or ""
-            tail = "; ".join(str(x[k]) for k in ("money", "verdict", "evidence", "points") if x.get(k))
-            out.append("%s%s%s%s" % (head, ": " if head and body else "", body, " (%s)" % tail if tail else ""))
-        else:
+        if not isinstance(x, dict):
             out.append(str(x))
+            continue
+        head = x.get("id") or x.get("decision") or ""
+        lift = ((x.get("read") or {}).get("lift") or {})
+        rd = " (lift %.2f, %.2f-%.2f, %d slates)" % (lift["lift10"], *lift["range80"], lift.get("slates", 0)) \
+            if lift.get("lift10") is not None and lift.get("range80") else ""
+        if x.get("proposed"):
+            cur = (x.get("current_money") or "pending").split(" (")[0].split(";")[0]
+            if cur.startswith("none"):
+                new_splits.append("%s %s%s" % (head, x["proposed"], rd))
+            else:
+                out.append("%s: %s -> %s%s" % (head, cur, x["proposed"], rd))
+        else:
+            body = x.get("proposal") or x.get("text") or x.get("summary") or ""
+            out.append("%s%s%s" % (head, ": " if head and body else "", body))
+    if new_splits:
+        out.append("new splits: " + "; ".join(new_splits))
     return ["money%s: %s" % (week, o) for o in out] or ["no money proposals this week"]
 
 
@@ -392,15 +403,43 @@ def tier_blocks(H, last, gname, tiers, shadow, reg, leans, hyp, money, money_tie
         md.append("- misses not logged yet for %s (the skill's steps 3-4)" % last)
     # the contest side's block
     md += ["", "**Contest side**"]
-    blk = money_tiers.get(gname) if money_tiers else None
-    if blk is None:
+    # money_tiers.json "tiers": keyed by tier ("1".."5"; also "T1"-style or the group name); each a list of lines, or a
+    # dict with "lines", "exposure" (picks per team, yours against the field, by window), "drafted" (flagged and Q
+    # players' drafted%) and "decisions" (each with its "line")
+    keys = [str(t) for t in sorted(tiers)]
+    blks = [(k, (money_tiers.get(k) or money_tiers.get("T" + k))) for k in keys] if money_tiers else []
+    if money_tiers and not any(b for _, b in blks) and money_tiers.get(gname):
+        blks = [(gname, money_tiers[gname])]
+    blks = [(k, b) for k, b in blks if b]
+    if not blks:
         md.append("- contest block pending")
-    elif isinstance(blk, list):
-        md += ["- " + str(x) for x in blk]
-    elif isinstance(blk, dict):
-        md += ["- " + str(x) for x in blk.get("lines", [])] or ["- %s: %s" % (k, v) for k, v in blk.items()]
-    else:
-        md.append("- " + str(blk))
+    seen_dec = set()
+    for k, blk in blks:
+        tag = "T%s: " % k if len(blks) > 1 else ""
+        if isinstance(blk, list):
+            md += ["- " + tag + str(x) for x in blk]
+            continue
+        if not isinstance(blk, dict):
+            md.append("- " + tag + str(blk))
+            continue
+        md += ["- " + tag + str(x) for x in blk.get("lines", [])]
+        ex = blk.get("exposure") or {}
+        pt = ["%s %s, field %s (%d of your teams)" % (w.upper(), (e.get("picks_per_team") or {}).get("mine"),
+                                                   (e.get("picks_per_team") or {}).get("field"), e.get("my_teams") or 0)
+              for w, e in sorted(ex.items()) if e and e.get("my_teams")]
+        if pt:
+            md.append("- %sYour picks per team: %s" % (tag, "; ".join(pt)))
+        for w, groups in sorted((blk.get("drafted") or {}).items()):
+            got = ["%s %s" % (g, ", ".join("%s %.0f%%%s" % (x["name"], 100 * x["drafted"], "" if x.get("mine") is None else
+                                                          " (yours %.0f%%)" % (100 * x["mine"])) for x in v))
+                   for g, v in groups.items() if v]
+            if got:
+                md.append("- %s%s drafted: %s" % (tag, w.upper(), "; ".join(got)))
+        for x in blk.get("decisions") or []:
+            if x.get("id") in seen_dec:          # a decision shared by T3 and T4 shows once
+                continue
+            seen_dec.add(x.get("id"))
+            md.append("- %s" % (x.get("line") or "%s: %s" % (x.get("id"), x.get("current"))))
     return md + [""]
 
 

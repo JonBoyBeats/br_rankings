@@ -57,6 +57,6 @@
   "pm": [
    "SAC"
   ],
-  "note": "No Lock AM or Lock PM pressed: the morning is the 2:07pm board saved before ETR's 2:13pm upload, the afternoon the 3:06pm board at lock. Domantas Sabonis (ADP 4.9), untagged on the morning board and Questionable at lock, was in ETR's 2:19pm upload and sat: SAC out of both halves. Lauri Markkanen (22.9), Questionable on the morning board, was Out by lock and already off the 3:06pm board: UTA out of the morning only. Jovic, Bilodeau and Poole (36) also sat but weren't drafted early."
+  "note": "No Lock AM or Lock PM pressed: since the 11-09 rebuild the morning is the 5:04am board saved in the AM window (fallback), the afternoon the 3:06pm board saved before contests closed (fallback). Domantas Sabonis (ADP 4.9), untagged on the morning board and Questionable at lock, was in ETR's 2:19pm upload and sat: SAC out of both halves. Lauri Markkanen (22.9), Questionable on the morning board, was Out by lock and already off the 3:06pm board: UTA out of the morning only. Jovic, Bilodeau and Poole (36) also sat but weren't drafted early."
  }
 }

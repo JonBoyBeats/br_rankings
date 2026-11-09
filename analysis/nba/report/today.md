@@ -10,36 +10,18 @@
 - Lock PM: fallback: last board saved before contests closed at 3:06pm; swaps from 4:00pm; 0 Lock PM, 0 exports seen
 - Overnight (drafts before 4:30am, kept out of the AM grades): none
 - ADP snapshots: AM board 3:23am, closing 3:22pm (lock 3:52pm)
-- Today's inputs: our Proj ready 9:23pm; chance to play ready 12:23am; Q-tags polled 9:23am
+- Today's inputs: our Proj ready 9:23pm; chance to play ready 12:23am; Q-tags polled 12:23pm
 
 ## Monday proposals (today: decide)
 
 - points: none ripe
-- money: pricey-flags
-- money: value-up-middle-t5
-- money: am-t5-button-order
-- money: am-t5-other-reads
-- money: q-class-x:FAIR
-- money: card-opposing-stars
-- money: card-same-position-teammates:rounds 1-3
-- money: card-same-position-teammates:split
-- money: card-same-position-teammates:rounds 4-6
-- money: card-different-position-teammates
-- money: takes:ETR:pm
-- money: takes:ETR:both
-- money: takes:Bagel:pm
-- money: takes:Bagel:both
-- money: takes:Bagel+ETR:pm
-- money: takes:Bagel+ETR:both
-- money: takes:NEWS:am
-- money: takes:NEWS:pm
-- money: takes:NEWS:both
-- money: takes:OTHER:am
-- money: takes:OTHER:pm
-- money: takes:OTHER:both
-- money: takes:all:am
-- money: takes:all:pm
-- money: takes:all:both
+- money: pricey-flags: LEAN for overall -> RULE for (lift 1.19, 1.10-1.29, 17 slates)
+- money: value-up-middle-t5: LEAN for -> RULE for (lift 1.18, 1.05-1.32, 17 slates)
+- money: am-t5-button-order: no lean -> LEAN for (lift 1.14, 1.02-1.27, 14 slates)
+- money: am-t5-other-reads: RULE for -> LEAN for (lift 1.40, 1.11-1.78, 12 slates)
+- money: q-class-x:FAIR: no lean for FAIR -> LEAN against (lift 0.77, 0.63-0.97, 13 slates)
+- money: card-opposing-stars: LEAN for -> no lean (lift 1.05, 0.91-1.21, 17 slates)
+- money: new splits: card-same-position-teammates:rounds 1-3 no lean (lift 1.10, 0.60-1.59, 10 slates); card-same-position-teammates:split RULE against (lift 0.78, 0.70-0.87, 15 slates); card-same-position-teammates:rounds 4-6 LEAN for (lift 1.09, 0.96-1.24, 15 slates); card-different-position-teammates no lean (lift 1.02, 0.91-1.17, 15 slates); takes:ETR:pm no lean (lift 1.11, 0.75-1.56, 7 slates); takes:ETR:both no lean (lift 1.11, 0.75-1.56, 7 slates); takes:Bagel:pm no lean (lift 0.96, 0.76-1.28, 8 slates); takes:Bagel:both no lean (lift 0.96, 0.76-1.28, 8 slates); takes:Bagel+ETR:pm LEAN against (lift 0.89, 0.77-1.06, 8 slates); takes:Bagel+ETR:both LEAN against (lift 0.89, 0.77-1.06, 8 slates); takes:NEWS:am no lean (lift 1.09, 0.92-1.27, 12 slates); takes:NEWS:pm no lean (lift 0.98, 0.85-1.09, 16 slates); takes:NEWS:both no lean (lift 1.04, 0.94-1.13, 17 slates); takes:OTHER:am not enough; takes:OTHER:pm no lean (lift 0.92, 0.73-1.13, 12 slates); takes:OTHER:both no lean (lift 1.11, 0.83-1.37, 12 slates); takes:all:am LEAN for (lift 1.15, 0.97-1.34, 12 slates); takes:all:pm no lean (lift 0.98, 0.90-1.06, 17 slates); takes:all:both no lean (lift 1.03, 0.96-1.11, 17 slates)
 
 ## Today's playbook
 
@@ -63,17 +45,14 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Opposing stars from the same game: a plus (money LEAN for)
 
 **Q-tags and their handling** (calibrated chance to play; AM: no push; PM: two tiers back)
-- Luka Doncic LAL, Questionable, 79%: T1 · AM stays T1 · PM to T3
-- Nikola Jokic DEN, Questionable, 53%: T2 · AM stays T2 · PM to T4
 - Scottie Barnes TOR, Questionable, 69%: T2 · AM stays T2 · PM to T4
 - Anthony Davis WAS, Questionable, 55%: T2 · AM stays T2 · PM to T4
-- Jamal Murray DEN, Questionable, 40%: T3 · AM stays T3 · PM to T5
+- Austin Reaves LAL, Questionable, 42%: T2 · AM stays T2 · PM to T4
 - Immanuel Quickley TOR, Questionable, 61%: T5 · AM stays T5 · PM to T5
-- Jarrett Allen CLE, Questionable, 61%: T5 · AM stays T5 · PM to T5
 
-**VALUE flags, T3-T5**: Jamal Murray (T3, ADP 19.9), Ty Jerome (T3, ADP 20.9), Trae Young (T4, ADP 25.8), Zion Williamson (T4, ADP 28.1), James Harden (T5, ADP 31.0), Kyshawn George (T5, ADP 31.2), Dejounte Murray (T4, ADP 34.7)
+**VALUE flags, T3-T5**: Jamal Murray (T3, ADP 19.9), Ty Jerome (T3, ADP 20.2), Trae Young (T4, ADP 26.1), Zion Williamson (T4, ADP 27.9), Miles Bridges (T5, ADP 29.9), Kyshawn George (T5, ADP 31.2), James Harden (T5, ADP 31.7), Dejounte Murray (T4, ADP 34.2)
 
-**Beneficiaries to watch**: Matisse Thybulle (LAL, undrafted) if Luka Doncic sits; Quentin Grimes (LAL, undrafted) if Luka Doncic sits; Ziaire Williams (LAL, undrafted) if Luka Doncic sits; Aaron Gordon (DEN, undrafted) if Nikola Jokic sits; DeMar DeRozan (DEN, undrafted) if Nikola Jokic sits; Trevon Brazile (DEN, undrafted) if Nikola Jokic sits; Immanuel Quickley (TOR, ADP 35.8) if Scottie Barnes sits; Collin Murray-Boyles (TOR, undrafted) if Scottie Barnes sits
+**Beneficiaries to watch**: Immanuel Quickley (TOR, ADP 35.7) if Scottie Barnes sits; Jakob Poeltl (TOR, undrafted) if Scottie Barnes sits; Collin Murray-Boyles (TOR, undrafted) if Scottie Barnes sits; Jamal Shead (TOR, undrafted) if Scottie Barnes sits; Kyshawn George (WAS, ADP 31.2) if Anthony Davis sits; AJ Dybantsa (WAS, ADP 35.9) if Anthony Davis sits; Alex Sarr (WAS, ADP 35.9) if Anthony Davis sits; Matisse Thybulle (LAL, undrafted) if Austin Reaves sits
 
 **Swap board**: after drafting, open Swaps on the board (leverage is the default) and Apply, then your round-6 shuffle in the app. Swaps are graded from the contest data, not from any lock.
 
@@ -104,7 +83,12 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - no logged misses in this tier
 
 **Contest side**
-- contest block pending
+- Your picks per team: PM 0.42, field 0.5 (40 of your teams)
+- AM drafted: PRICEY Cooper Flagg 92%, Domantas Sabonis 77%
+- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)
+- pricey-flags:T1: RULE for; this run: RULE for; top-10% lift 1.93 (1.53-2.36); my teams there 1.77x at the top 10% (333 teams)
+- kept-am-t1: pending
+- kept-pm-t1: pending
 
 ## T2
 
@@ -132,7 +116,14 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Julius Randle: ours 43.4, actual 23.8, blowout: 30 min (usual 34) in a 37-point loss
 
 **Contest side**
-- contest block pending
+- Your picks per team: PM 2.65, field 2.47 (40 of your teams)
+- AM drafted: PRICEY Keyonte George 91%, Zion Williamson 94%, Kyrie Irving 92%, Jaden McDaniels 94%
+- PM drafted: PRICEY Tyler Herro 99% (yours 20%); Q Keyonte George 100% (yours 5%)
+- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)
+- leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.59 (1.32-2.13); my teams there 1.97x at the top 10% (71 teams)
+- pm-t2-adp-etr2: no lean; this run: no lean; top-10% lift 1.22 (0.88-1.66); my teams there 1.68x at the top 10% (376 teams)
+- pm-t2-other-reads: no lean; this run: no lean; top-10% lift 0.94 (0.79-1.10); my teams there 1.04x at the top 10% (451 teams)
+- kept-am-t2: pending
 
 ## T3/T4
 
@@ -164,7 +155,20 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Tyler Herro: ours 37.5, actual 16.2, blowout: 27 min (usual 31) in a 20-point loss as a 13.5 underdog, 5-12
 
 **Contest side**
-- contest block pending
+- T3: Your picks per team: PM 0.7, field 0.78 (40 of your teams)
+- T3: AM drafted: VALUE Dejounte Murray 92%, Lauri Markkanen 71%; PRICEY Ayo Dosunmu 94%, Tyler Herro 93%, Jonathan Kuminga 91%, Darryn Peterson 91%, Davion Mitchell 94%; Q Lauri Markkanen 71%
+- T3: PM drafted: PRICEY Jonathan Kuminga 100% (yours 0%), Darryn Peterson 100% (yours 0%); Q Lauri Markkanen 66% (yours 2%)
+- value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.32); my teams there 1.32x at the top 10% (998 teams)
+- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)
+- leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.59 (1.32-2.13); my teams there 1.97x at the top 10% (71 teams)
+- pm-middle-takes: no lean; this run: no lean; top-10% lift 1.03 (0.83-1.24); my teams there 1.39x at the top 10% (605 teams)
+- kept-am-middle: pending
+- kept-pm-t3: pending
+- T4: Your picks per team: PM 0.97, field 1.0 (40 of your teams)
+- T4: AM drafted: VALUE Rudy Gobert 94%, Derrick White 92%, Zach LaVine 91%; PRICEY Jeremiah Fears 94%, Rui Hachimura 93%
+- T4: PM drafted: VALUE Trey Murphy III 100% (yours 30%), Rudy Gobert 98% (yours 18%), Derrick White 99% (yours 12%), Zach LaVine 99% (yours 32%); PRICEY Rui Hachimura 98% (yours 0%), PJ Washington 99% (yours 5%)
+- pm-t4-pricey-last-off: no lean; this run: no lean; top-10% lift 1.11 (0.78-1.41); my teams there 1.69x at the top 10% (118 teams)
+- pm-t4-adp-etr2: no lean; this run: no lean; top-10% lift 0.89 (0.74-1.14); my teams there 0.96x at the top 10% (218 teams)
 
 ## T5
 
@@ -198,7 +202,20 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Derik Queen: ours 34.0, actual 20.5, shooting: ours 34.0 vs ETR 28.9; 1-5 with 4 turnovers
 
 **Contest side**
-- contest block pending
+- Your picks per team: PM 1.23, field 1.18 (40 of your teams)
+- AM drafted: VALUE Derik Queen 86%, Day'Ron Sharpe 84%, Payton Pritchard 44%
+- PM drafted: VALUE Day'Ron Sharpe 100% (yours 20%), Brook Lopez 89% (yours 18%); Q Mitchell Robinson 0% (yours 0%)
+- am-t5-button-order: no lean; this run: LEAN for; top-10% lift 1.14 (1.02-1.27); my teams there 1.51x at the top 10% (278 teams)
+- value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.32); my teams there 1.32x at the top 10% (998 teams)
+- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)
+- q-tag-pushes: no lean; this run: no lean; top-10% lift 1.08 (0.92-1.27); my teams there 1.55x at the top 10% (453 teams)
+- q-tag-raises: no lean; this run: no lean; top-10% lift 0.99 (0.83-1.20); my teams there 1.06x at the top 10% (180 teams)
+- beneficiary-round6:sat: played: RULE for; this run: no lean; top-10% lift 0.99 (0.80-1.31); my teams there 2.35x at the top 10% (34 teams)
+- beneficiary-round6:played: played: RULE for; this run: RULE for; top-10% lift 1.44 (1.14-2.11); my teams there 1.88x at the top 10% (16 teams)
+- pm-t5-beneficiary: no lean; this run: no lean; top-10% lift 1.12 (0.91-1.39); my teams there 1.79x at the top 10% (279 teams)
+- ownership-tiebreak-t5: RULE for; this run: RULE for; top-10% lift 1.18 (1.05-1.31); my teams there 1.41x at the top 10% (708 teams)
+- pm-t5-adp-value: LEAN against; this run: LEAN against; top-10% lift 0.81 (0.68-0.97); my teams there 1.61x at the top 10% (373 teams)
+- am-t5-other-reads: RULE for; this run: LEAN for; top-10% lift 1.40 (1.11-1.78); my teams there 1.54x at the top 10% (117 teams)
 
 ## Season
 
