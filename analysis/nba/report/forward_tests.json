@@ -2518,23 +2518,8 @@
     false
    ],
    [
-    0.1445,
-    0.1466,
-    false
-   ],
-   [
     0.1596,
     0.1596,
-    false
-   ],
-   [
-    0.1276,
-    0.1366,
-    false
-   ],
-   [
-    0.2149,
-    0.193,
     false
    ],
    [
@@ -2543,13 +2528,58 @@
     false
    ],
    [
+    0.1276,
+    0.1366,
+    false
+   ],
+   [
+    0.1445,
+    0.1466,
+    false
+   ],
+   [
+    0.2149,
+    0.193,
+    false
+   ],
+   [
     0.1388,
     0.1235,
     false
    ],
    [
+    0.1465,
+    0.1561,
+    false
+   ],
+   [
+    0.186,
+    0.1981,
+    true
+   ],
+   [
+    0.1472,
+    0.1528,
+    false
+   ],
+   [
     0.1691,
-    0.166,
+    0.163,
+    false
+   ],
+   [
+    0.1465,
+    0.1465,
+    false
+   ],
+   [
+    0.0538,
+    0.0579,
+    false
+   ],
+   [
+    0.2045,
+    0.2123,
     false
    ],
    [
@@ -2559,27 +2589,12 @@
    ],
    [
     0.1691,
-    0.163,
-    false
-   ],
-   [
-    0.186,
-    0.1981,
-    true
-   ],
-   [
-    0.1465,
-    0.1465,
+    0.166,
     false
    ],
    [
     0.1196,
     0.1247,
-    false
-   ],
-   [
-    0.1472,
-    0.1528,
     false
    ],
    [
@@ -2633,11 +2648,6 @@
     false
    ],
    [
-    0.2045,
-    0.2123,
-    false
-   ],
-   [
     0.165,
     0.1672,
     false
@@ -2660,16 +2670,6 @@
    [
     0.1436,
     0.1506,
-    false
-   ],
-   [
-    0.1465,
-    0.1561,
-    false
-   ],
-   [
-    0.0538,
-    0.0579,
     false
    ],
    [
@@ -2723,20 +2723,6 @@
   "q": [
    {
     "early": [
-     568,
-     16
-    ],
-    "late": [
-     923,
-     30
-    ],
-    "name": "Keyonte George",
-    "played": true,
-    "tag": "Questionable",
-    "value": 7.8
-   },
-   {
-    "early": [
      0,
      0
     ],
@@ -2748,20 +2734,6 @@
     "played": false,
     "tag": "Questionable",
     "value": null
-   },
-   {
-    "early": [
-     0,
-     0
-    ],
-    "late": [
-     3,
-     0
-    ],
-    "name": "Mitchell Robinson",
-    "played": true,
-    "tag": "Questionable",
-    "value": 13.2
    }
   ],
   "teams": 8946,
@@ -2832,9 +2804,9 @@
     "hi_n": 1470,
     "hi_t1": 1,
     "lo_brk": false,
-    "lo_n": 274,
+    "lo_n": 81,
     "lo_t1": 0,
-    "lo_wins": false
+    "lo_wins": true
    },
    {
     "date": "2026-11-08",
@@ -2852,9 +2824,9 @@
     "hi_n": 1470,
     "hi_t1": 1,
     "lo_brk": false,
-    "lo_n": 81,
+    "lo_n": 274,
     "lo_t1": 0,
-    "lo_wins": true
+    "lo_wins": false
    },
    {
     "date": "2026-11-08",
@@ -2911,28 +2883,8 @@
     "hi_brk": false,
     "hi_n": 1393,
     "hi_t1": 3,
-    "lo_brk": false,
-    "lo_n": 274,
-    "lo_t1": 0,
-    "lo_wins": false
-   },
-   {
-    "date": "2026-11-08",
-    "hi_brk": false,
-    "hi_n": 1393,
-    "hi_t1": 3,
     "lo_brk": true,
     "lo_n": 45,
-    "lo_t1": 0,
-    "lo_wins": true
-   },
-   {
-    "date": "2026-11-08",
-    "hi_brk": false,
-    "hi_n": 1393,
-    "hi_t1": 3,
-    "lo_brk": false,
-    "lo_n": 30,
     "lo_t1": 0,
     "lo_wins": true
    },
@@ -2951,8 +2903,28 @@
     "hi_brk": false,
     "hi_n": 1393,
     "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 274,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
     "lo_brk": true,
-    "lo_n": 48,
+    "lo_n": 30,
     "lo_t1": 1,
     "lo_wins": true
    },
@@ -2962,7 +2934,7 @@
     "hi_n": 1393,
     "hi_t1": 3,
     "lo_brk": true,
-    "lo_n": 30,
+    "lo_n": 48,
     "lo_t1": 1,
     "lo_wins": true
    },
@@ -3022,6 +2994,16 @@
     "hi_n": 1303,
     "hi_t1": 1,
     "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": false,
     "lo_n": 30,
     "lo_t1": 0,
     "lo_wins": true
@@ -3041,18 +3023,8 @@
     "hi_brk": false,
     "hi_n": 1303,
     "hi_t1": 1,
-    "lo_brk": false,
-    "lo_n": 81,
-    "lo_t1": 0,
-    "lo_wins": false
-   },
-   {
-    "date": "2026-11-08",
-    "hi_brk": false,
-    "hi_n": 1303,
-    "hi_t1": 1,
     "lo_brk": true,
-    "lo_n": 48,
+    "lo_n": 30,
     "lo_t1": 1,
     "lo_wins": true
    },
@@ -3062,7 +3034,7 @@
     "hi_n": 1303,
     "hi_t1": 1,
     "lo_brk": true,
-    "lo_n": 30,
+    "lo_n": 48,
     "lo_t1": 1,
     "lo_wins": true
    },
@@ -3152,6 +3124,16 @@
     "hi_n": 1128,
     "hi_t1": 3,
     "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": false,
     "lo_n": 30,
     "lo_t1": 0,
     "lo_wins": false
@@ -3171,18 +3153,8 @@
     "hi_brk": true,
     "hi_n": 1128,
     "hi_t1": 3,
-    "lo_brk": false,
-    "lo_n": 81,
-    "lo_t1": 0,
-    "lo_wins": false
-   },
-   {
-    "date": "2026-11-08",
-    "hi_brk": true,
-    "hi_n": 1128,
-    "hi_t1": 3,
     "lo_brk": true,
-    "lo_n": 48,
+    "lo_n": 30,
     "lo_t1": 1,
     "lo_wins": true
    },
@@ -3192,7 +3164,7 @@
     "hi_n": 1128,
     "hi_t1": 3,
     "lo_brk": true,
-    "lo_n": 30,
+    "lo_n": 48,
     "lo_t1": 1,
     "lo_wins": true
    },
@@ -3242,7 +3214,7 @@
     "hi_n": 995,
     "hi_t1": 0,
     "lo_brk": false,
-    "lo_n": 274,
+    "lo_n": 81,
     "lo_t1": 0,
     "lo_wins": true
    },
@@ -3252,7 +3224,7 @@
     "hi_n": 995,
     "hi_t1": 0,
     "lo_brk": false,
-    "lo_n": 81,
+    "lo_n": 274,
     "lo_t1": 0,
     "lo_wins": true
    },
@@ -3272,7 +3244,7 @@
     "hi_n": 606,
     "hi_t1": 6,
     "lo_brk": false,
-    "lo_n": 274,
+    "lo_n": 81,
     "lo_t1": 0,
     "lo_wins": false
    },
@@ -3292,7 +3264,7 @@
     "hi_n": 606,
     "hi_t1": 6,
     "lo_brk": false,
-    "lo_n": 81,
+    "lo_n": 274,
     "lo_t1": 0,
     "lo_wins": false
    },
@@ -3314,16 +3286,6 @@
     "lo_brk": false,
     "lo_n": 206,
     "lo_t1": 4,
-    "lo_wins": false
-   },
-   {
-    "date": "2026-11-08",
-    "hi_brk": true,
-    "hi_n": 467,
-    "hi_t1": 13,
-    "lo_brk": false,
-    "lo_n": 274,
-    "lo_t1": 0,
     "lo_wins": false
    },
    {
@@ -3342,6 +3304,16 @@
     "hi_n": 467,
     "hi_t1": 13,
     "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 467,
+    "hi_t1": 13,
+    "lo_brk": false,
     "lo_n": 30,
     "lo_t1": 0,
     "lo_wins": false
@@ -3352,18 +3324,8 @@
     "hi_n": 467,
     "hi_t1": 13,
     "lo_brk": false,
-    "lo_n": 81,
+    "lo_n": 274,
     "lo_t1": 0,
-    "lo_wins": false
-   },
-   {
-    "date": "2026-11-08",
-    "hi_brk": true,
-    "hi_n": 467,
-    "hi_t1": 13,
-    "lo_brk": true,
-    "lo_n": 48,
-    "lo_t1": 1,
     "lo_wins": false
    },
    {
@@ -3375,6 +3337,16 @@
     "lo_n": 30,
     "lo_t1": 1,
     "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 467,
+    "hi_t1": 13,
+    "lo_brk": true,
+    "lo_n": 48,
+    "lo_t1": 1,
+    "lo_wins": false
    },
    {
     "date": "2026-11-08",
@@ -3392,7 +3364,7 @@
     "hi_n": 526,
     "hi_t1": 11,
     "lo_brk": false,
-    "lo_n": 274,
+    "lo_n": 81,
     "lo_t1": 0,
     "lo_wins": false
    },
@@ -3412,7 +3384,7 @@
     "hi_n": 526,
     "hi_t1": 11,
     "lo_brk": false,
-    "lo_n": 81,
+    "lo_n": 274,
     "lo_t1": 0,
     "lo_wins": false
    },
@@ -3458,11 +3430,11 @@
    },
    {
     "date": "2026-11-08",
-    "hi_brk": false,
-    "hi_n": 274,
-    "hi_t1": 0,
-    "lo_brk": false,
-    "lo_n": 30,
+    "hi_brk": true,
+    "hi_n": 420,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 45,
     "lo_t1": 0,
     "lo_wins": true
    },
@@ -3481,19 +3453,19 @@
     "hi_brk": false,
     "hi_n": 274,
     "hi_t1": 0,
-    "lo_brk": true,
+    "lo_brk": false,
     "lo_n": 30,
-    "lo_t1": 1,
+    "lo_t1": 0,
     "lo_wins": true
    },
    {
     "date": "2026-11-08",
-    "hi_brk": true,
-    "hi_n": 420,
-    "hi_t1": 3,
+    "hi_brk": false,
+    "hi_n": 274,
+    "hi_t1": 0,
     "lo_brk": true,
-    "lo_n": 45,
-    "lo_t1": 0,
+    "lo_n": 30,
+    "lo_t1": 1,
     "lo_wins": true
    },
    {

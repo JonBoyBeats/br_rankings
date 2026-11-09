@@ -7,11 +7,11 @@ Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). Excluded 
 | Swaps | Group | Swaps | Points left per swap | Share where the swap was already the best option or better |
 |---|---|---|---|---|
 | Field and you | T1 | 1239 | +1.5 | 76% |
-| Field and you | T2 | 6149 | +3.3 | 52% |
-| Field and you | T3 | 17599 | +1.8 | 68% |
-| Field and you | T4 | 2628 | -1.1 | 68% |
-| Field and you | T5 | 1789 | -1.4 | 75% |
-| Field and you | all | 29404 | +1.7 | 65% |
+| Field and you | T2 | 6153 | +3.3 | 52% |
+| Field and you | T3 | 17611 | +1.8 | 68% |
+| Field and you | T4 | 2854 | -1.0 | 66% |
+| Field and you | T5 | 1467 | -1.4 | 81% |
+| Field and you | all | 29324 | +1.7 | 65% |
 | Your teams | AM | 68 | +0.3 | 75% |
 | Your teams | PM | 87 | +0.3 | 80% |
 | Your teams | all | 155 | +0.3 | 78% |
@@ -21,7 +21,7 @@ Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). Excluded 
 | Order | Your swaps | Their points | Nights | Share on the night's most-hit target (avg) | That target's exposure (drafted + swapped, avg) | His field drafted% (avg) |
 |---|---|---|---|---|---|---|
 | Projection only | 155 | 33.9 | 10 | 63% | 17% | 59% |
-| Ownership lowest first (your habit) | 155 | 33.1 | 10 | 67% | 20% | 29% |
+| Ownership lowest first (your habit) | 155 | 33.3 | 10 | 67% | 20% | 30% |
 | Ownership highest first | 155 | 34.3 | 10 | 58% | 16% | 68% |
 
 ## Your own swaps

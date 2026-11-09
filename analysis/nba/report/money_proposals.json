@@ -5,28 +5,28 @@
  "notes": "Weekly MONEY verdict proposals (scripts/nba_money.py, Mondays). Nothing here is in decision_register.csv until the user approves it. Reads: money_report.md sections 3, 3b and 5. A change to the rankings side's inputs (tier_history.csv: a rebuilt button) can move a read without the contests changing; check the register's points side when that happens.",
  "proposals": [
   {
-   "id": "am-t5-button-order",
-   "current_money": "no lean (top-10% lift 1.01 (0.94-1.09); 2026-11-09)",
-   "proposed": "LEAN for",
+   "id": "pricey-flags",
+   "current_money": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+   "proposed": "RULE for",
    "read": {
     "lift": {
-     "lift10": 1.07,
+     "lift10": 1.15,
      "range80": [
-      0.97,
-      1.19
+      1.04,
+      1.27
      ],
-     "teams": 1536060,
+     "teams": 729865,
      "slates": 17,
      "after_price_check": true
     },
     "mine": {
-     "teams": 366,
-     "top10_ratio": 1.37,
-     "top1_ratio": 0.82,
-     "finish_pct": 46.9
+     "teams": 1216,
+     "top10_ratio": 1.41,
+     "top1_ratio": 1.15,
+     "finish_pct": 44.4
     }
    },
-   "reason": "the read has strengthened: the register says no lean, this run reads LEAN for (top-10% lift 1.07, 80% range 0.97-1.19 on 17 slates, 1536060 teams, after the price-split check)"
+   "reason": "the read has strengthened: the register says LEAN for, this run reads RULE for (top-10% lift 1.15, 80% range 1.04-1.27 on 17 slates, 729865 teams, after the price-split check)"
   },
   {
    "id": "am-t5-other-reads",
@@ -34,23 +34,23 @@
    "proposed": "LEAN for",
    "read": {
     "lift": {
-     "lift10": 1.17,
+     "lift10": 1.29,
      "range80": [
-      0.96,
-      1.42
+      1.07,
+      1.59
      ],
-     "teams": 175925,
-     "slates": 17,
+     "teams": 128699,
+     "slates": 15,
      "after_price_check": true
     },
     "mine": {
-     "teams": 278,
-     "top10_ratio": 1.15,
-     "top1_ratio": 0.72,
-     "finish_pct": 49.7
+     "teams": 165,
+     "top10_ratio": 1.39,
+     "top1_ratio": 1.21,
+     "finish_pct": 49.8
     }
    },
-   "reason": "the read has weakened: the register says RULE for, this run reads LEAN for (top-10% lift 1.17, 80% range 0.96-1.42 on 17 slates, 175925 teams, after the price-split check)"
+   "reason": "the read has weakened: the register says RULE for, this run reads LEAN for (top-10% lift 1.29, 80% range 1.07-1.59 on 15 slates, 128699 teams, after the price-split check)"
   },
   {
    "id": "card-opposing-stars",
@@ -58,23 +58,23 @@
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 1.07,
+     "lift10": 1.06,
      "range80": [
-      0.93,
-      1.23
+      0.92,
+      1.22
      ],
-     "teams": 107642,
+     "teams": 107722,
      "slates": 17,
      "after_price_check": true
     },
     "mine": {
      "teams": 533,
-     "top10_ratio": 1.59,
+     "top10_ratio": 1.61,
      "top1_ratio": 1.69,
      "finish_pct": 42.8
     }
    },
-   "reason": "the read has weakened: the register says LEAN for, this run reads no lean (top-10% lift 1.07, 80% range 0.93-1.23 on 17 slates, 107642 teams, after the price-split check)"
+   "reason": "the read has weakened: the register says LEAN for, this run reads no lean (top-10% lift 1.06, 80% range 0.92-1.22 on 17 slates, 107722 teams, after the price-split check)"
   }
  ]
 }

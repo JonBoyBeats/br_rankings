@@ -2,15 +2,15 @@
 
 ### Contest summary
 
-- Your results, 6-drafter (14 nights, 1159 teams; 1.00 is the field's rate): top 10% 1.36 (1.18-1.59), top 1% 1.12 (0.63-1.77); at the top 10%, AM teams 1.43 (1.20-1.65), PM teams 1.32 (1.07-1.60).
+- Your results, 6-drafter (14 nights, 1159 teams; 1.00 is the field's rate): top 10% 1.36 (1.18-1.59), top 1% 1.12 (0.63-1.77); at the top 10%, AM teams 1.70 (1.32-2.05), PM teams 1.27 (1.07-1.50).
 - Your results, 4-drafter (5 nights, 224 teams; 1.00 is the field's rate): top 10% 1.52 (1.14-1.78), top 1% 0.89 (0.27-1.79); at the top 10%, AM teams 0.77 (0.38-0.98), PM teams 1.74 (1.30-2.02).
 - Last night, Sunday Shootaround (6-drafter): 40 teams, median finish top 38%, top 10% 1.25, top 1% 0.00.
 - Forward tests, 6-drafter: 3 nights in of 11-05 to 12-02; nothing is decided before 12-02.
   - Less-drafted tiebreak (in use): 160 pairs; teams with the less-drafted player top 1% 1.21% vs 0.66% (80% range of the difference: +0.42 to +0.64 points).
-  - Questionable at Lock AM: 8 tagged, 5 played; teams that drafted them before noon top 1% 2.71% (1476 teams) vs after 2.14% (2286).
+  - Questionable at Lock AM: 6 tagged, 3 played; teams that drafted them before noon top 1% 2.64% (908 teams) vs after 1.40% (1360).
   - Most-owned turn combo vs the rest, top 1%: 2/3 turn 0.88% vs 1.13% (9 cases); 1/2 turn 1.03% vs 0.70% (3 cases).
   - Boom peer bump: 8 players moved 2+ points so far (too few to read); risers wait on two weeks of entry counts.
-- Last night, where it touched a rule: your takes off the tier rules: 29, 13 right; the field went your way on 3, against on 26; Questionable at Lock AM: Keyonte George (played, on 2 of your 40), Lauri Markkanen (sat, on 0 of your 40), Mitchell Robinson (played, on 0 of your 40).
+- Last night, where it touched a rule: your takes off the tier rules: 32, 13 right; the field went your way on 4, against on 28; Questionable at Lock AM: Lauri Markkanen (sat, on 0 of your 40).
 
 The full tables follow; the morning report reads only this block (the rest is reference).
 
@@ -84,45 +84,43 @@ Picks per team from each of your tiers (each team read with the tiers of the loc
 
 | | T1 | T2 | T3 | T4 | T5 | past your line |
 |---|---|---|---|---|---|---|
-| Top 1% (91 teams) | 0.85 | 0.82 | 1.80 | 0.98 | 0.90 | 0.65 |
-| Field (8946 teams) | 0.50 | 0.82 | 1.89 | 1.11 | 0.74 | 0.93 |
+| Top 1% (91 teams) | 0.85 | 1.08 | 2.12 | 0.97 | 0.58 | 0.41 |
+| Field (8946 teams) | 0.50 | 1.36 | 1.54 | 1.25 | 0.70 | 0.66 |
 
 ### 5. Questionable at Lock AM: the field and you
 
 | Player | ADP at Lock AM | Tag at lock | Played | Field drafted | Your teams with him |
 |---|---|---|---|---|---|
-| Keyonte George | 11.8 | - | yes | 100.0% | 2 of 40 |
-| Lauri Markkanen | 22.8 | Out | **sat** | 0.5% | 0 of 40 |
-| Mitchell Robinson | 36.0 | Questionable | yes | 0.2% | 0 of 40 |
+| Lauri Markkanen | 21.4 | Out | **sat** | 0.5% | 0 of 40 |
 
 ### 6. Your takes against the field
 
-29 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
+32 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
 
 | Lock | Tier | Takes | With the field | Against it | You were right |
 |---|---|---|---|---|---|
-| AM | T3 | 12 | 0 | 12 | 6 |
-| AM | T4 | 1 | 0 | 1 | 0 |
-| AM | T5 | 4 | 1 | 3 | 2 |
+| AM | T3 | 10 | 0 | 10 | 5 |
+| AM | T4 | 2 | 0 | 2 | 0 |
+| AM | T5 | 6 | 0 | 6 | 2 |
 | PM | T2 | 2 | 2 | 0 | 1 |
 | PM | T3 | 2 | 0 | 2 | 1 |
 | PM | T4 | 3 | 0 | 3 | 2 |
-| PM | T5 | 5 | 0 | 5 | 1 |
+| PM | T5 | 7 | 2 | 5 | 2 |
 
 The 10 furthest from ADP:
 
 | Lock | Tier | You put first | Over | ADP | Drafted | Actual | Right |
 |---|---|---|---|---|---|---|---|
-| AM | T3 | Dejounte Murray | Jaden McDaniels | 17.0 / 13.1 | 100% / 100% | 13.1 / 29.7 | no |
+| AM | T3 | Julius Randle | Zion Williamson | 14.6 / 10.6 | 100% / 100% | 23.8 / 30.8 | no |
+| AM | T5 | Rui Hachimura | Jeremiah Fears | 26.4 / 22.6 | 100% / 100% | 23.6 / 43.7 | no |
 | PM | T4 | Day'Ron Sharpe | PJ Washington | 30.9 / 27.4 | 100% / 100% | 30.8 / 16.0 | yes |
-| AM | T3 | Paul George | Zion Williamson | 13.7 / 10.3 | 100% / 100% | 36.1 / 30.8 | yes |
-| AM | T3 | Paul George | Kyrie Irving | 13.7 / 10.5 | 100% / 100% | 36.1 / 30.6 | yes |
-| AM | T3 | Julius Randle | Zion Williamson | 13.4 / 10.3 | 100% / 100% | 23.8 / 30.8 | no |
-| AM | T3 | Julius Randle | Kyrie Irving | 13.4 / 10.5 | 100% / 100% | 23.8 / 30.6 | no |
-| AM | T3 | Jaden McDaniels | Zion Williamson | 13.1 / 10.3 | 100% / 100% | 29.7 / 30.8 | no |
-| AM | T4 | Tyler Herro | Ayo Dosunmu | 17.2 / 15.2 | 100% / 100% | 16.2 / 33.3 | no |
-| AM | T3 | Kyrie Irving | Michael Porter Jr. | 10.5 / 8.9 | 100% / 100% | 30.6 / 29.8 | yes |
-| AM | T3 | Derrick White | Rudy Gobert | 26.2 / 25.0 | 100% / 100% | 34.1 / 28.0 | yes |
+| AM | T3 | Paul George | Zion Williamson | 14.0 / 10.6 | 100% / 100% | 36.1 / 30.8 | yes |
+| AM | T3 | Julius Randle | Kyrie Irving | 14.6 / 11.3 | 100% / 100% | 23.8 / 30.6 | no |
+| AM | T3 | Paul George | Kyrie Irving | 14.0 / 11.3 | 100% / 100% | 36.1 / 30.6 | yes |
+| AM | T3 | Kyrie Irving | Michael Porter Jr. | 11.3 / 9.3 | 100% / 100% | 30.6 / 29.8 | yes |
+| AM | T3 | Jaden McDaniels | Zion Williamson | 12.6 / 10.6 | 100% / 100% | 29.7 / 30.8 | no |
+| AM | T3 | Julius Randle | Jaden McDaniels | 14.6 / 12.6 | 100% / 100% | 23.8 / 29.7 | no |
+| AM | T4 | Tyler Herro | Ayo Dosunmu | 17.0 / 15.1 | 100% / 100% | 16.2 / 33.3 | no |
 
 ### 7. Your uniqueness (flagship)
 
@@ -142,13 +140,13 @@ Tail ratio: the share of your teams in the top X% over X (1.0 is the field's rat
 
 | Contest | Teams | Median finish | Top 1% | Top 5% | Top 10% | Top 20% | AM teams (top 10%) | PM teams (top 10%) |
 |---|---|---|---|---|---|---|---|---|
-| Sunday Shootaround | 40 | top 38% | 0.00 | 1.00 | 1.25 | 1.75 | 15 (0.67) | 25 (1.60) |
+| Sunday Shootaround | 40 | top 38% | 0.00 | 1.00 | 1.25 | 1.75 | 0 (-) | 40 (1.25) |
 
 **Running (every contest, by pod size)**
 
 | Drafters | Nights | Teams | Top 1% | Top 5% | Top 10% | Top 20% | AM top 10% | PM top 10% |
 |---|---|---|---|---|---|---|---|---|
-| 6 | 14 | 1159 | 1.12 (0.63-1.77) | 1.45 (1.16-1.83) | 1.36 (1.18-1.59) | 1.29 (1.18-1.41) | 1.43 (1.20-1.65) | 1.32 (1.07-1.60) |
+| 6 | 14 | 1159 | 1.12 (0.63-1.77) | 1.45 (1.16-1.83) | 1.36 (1.18-1.59) | 1.29 (1.18-1.41) | 1.70 (1.32-2.05) | 1.27 (1.07-1.50) |
 | 4 | 5 | 224 | 0.89 (0.27-1.79) | 1.43 (1.20-1.80) | 1.52 (1.14-1.78) | 1.41 (1.03-1.70) | 0.77 (0.38-0.98) | 1.74 (1.30-2.02) |
 
 ### 9. What won (flagship; a description, not a rule)
@@ -175,7 +173,7 @@ FPOE: fantasy points over the average for his ADP round band, summed over a team
 | 2026-11-05 (4-drafter) | +13.6 / -39.1 | 4.97 / 2.83 |
 | 2026-11-06 | +81.8 / +29.1 | 4.08 / 1.95 |
 | 2026-11-07 | +77.4 / +19.1 | 3.99 / 1.92 |
-| **2026-11-08** | +38.2 / -11.7 | 3.95 / 1.90 |
+| **2026-11-08** | +38.3 / -11.6 | 3.95 / 1.90 |
 
 ### 10. Forward tests (pre-registered 2026-11-04; slates 2026-11-05 to 2026-12-02, 6-drafter)
 
@@ -212,8 +210,8 @@ Last night: 1/2 turn, Bam Adebayo + Darius Acuff Jr.: most-owned (455 teams, 8 t
 
 **Questionable or Doubtful at Lock AM**
 
-8 tagged: 5 played (+5.9 over their closing price on average), 3 sat. Teams that drafted them before noon PT finished top 1% 2.71% (1476 teams), after noon 2.14% (2286). Underdog swaps a ruled-out player, so the sat ones barely show in the leaderboards.
-Last night: Keyonte George (Questionable) played, +7.8; Lauri Markkanen (Questionable) sat; Mitchell Robinson (Questionable) played, +13.2.
+6 tagged: 3 played (+2.8 over their closing price on average), 3 sat. Teams that drafted them before noon PT finished top 1% 2.64% (908 teams), after noon 1.40% (1360). Underdog swaps a ruled-out player, so the sat ones barely show in the leaderboards.
+Last night: Lauri Markkanen (Questionable) sat.
 
 **Risers**: waits on two weeks of the poller's hourly contest counts (logged from 2026-11-04).
 

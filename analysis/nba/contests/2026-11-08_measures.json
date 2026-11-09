@@ -328,12 +328,12 @@
      "drafted": 0.3
     },
     {
-     "player": "Mo Bamba",
+     "player": "Malik Monk",
      "adp": 36.0,
      "drafted": 0.1
     },
     {
-     "player": "Malik Monk",
+     "player": "Mo Bamba",
      "adp": 36.0,
      "drafted": 0.1
     },
@@ -403,7 +403,7 @@
      "drafted": 0.1
     },
     {
-     "player": "8ff2f1d4",
+     "player": "Blake Wesley",
      "adp": null,
      "drafted": 0.1
     },
@@ -425,8 +425,8 @@
     "<10": 37
    },
    "value": {
-    "field_fpoe": -11.7,
-    "top1_fpoe": 38.2,
+    "field_fpoe": -11.6,
+    "top1_fpoe": 38.3,
     "field_breakers": 1.9,
     "top1_breakers": 3.95
    },
@@ -1862,12 +1862,12 @@
      "drafted": 1.1
     },
     {
-     "player": "Daniel Gafford",
+     "player": "Malik Monk",
      "adp": 36.0,
      "drafted": 1.1
     },
     {
-     "player": "Malik Monk",
+     "player": "Daniel Gafford",
      "adp": 36.0,
      "drafted": 1.1
     },
@@ -1887,12 +1887,12 @@
      "drafted": 1.1
     },
     {
-     "player": "Mo Bamba",
+     "player": "Noah Clowney",
      "adp": 36.0,
      "drafted": 0.5
     },
     {
-     "player": "Noah Clowney",
+     "player": "Mo Bamba",
      "adp": 36.0,
      "drafted": 0.5
     },
@@ -1924,8 +1924,8 @@
     "<10": 21
    },
    "value": {
-    "field_fpoe": -11.8,
-    "top1_fpoe": 42.0,
+    "field_fpoe": -11.7,
+    "top1_fpoe": 42.1,
     "field_breakers": 1.91,
     "top1_breakers": 4.0
    },

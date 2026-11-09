@@ -57,12 +57,12 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-10-24,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,34.9,5,-,Questionable,,Questionable,73a771f5-a6fe-4fd1-8917-23e89f6c4aaf,Dylan Harper,SAS,0,30.9,35.0,2,0
 2026-10-24,aa6e0b60-ecef-4c2c-bd18-aef879830742,Cooper Flagg,DAL,34.9,5,-,Questionable,,Questionable,71c33275-bfac-4f2c-88f3-282714b38b20,Derik Queen,NOP,0,33.9,29.6,1,60
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,4e362394-7dec-4301-907a-3cc7217768bf,Daniss Jenkins,DET,0,35.8,37.6,51,30
-2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,1,6.3,20.1,612,0
+2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,1,6.3,20.1,613,0
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,c759c9df-9bf2-4e05-9497-6a5ba5694984,Rui Hachimura,LAC,0,33.0,6.8,13,0
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,d5348697-c7ae-49e9-a500-3dc5c505279a,Collin Murray-Boyles,TOR,1,35.4,15.4,233,0
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,ba7e0647-7bf4-4a58-8357-b092ed9f7635,Cedric Coward,MEM,0,35.7,32.7,81,120
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,34.9,12.1,104,0
-2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,35.6,22.2,126,0
+2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,35.6,22.2,127,0
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,92c94656-e930-4e40-a11f-e3119d5f0660,Jonathan Kuminga,MIN,0,34.4,25.3,53,0
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,0,34.6,39.0,80,120
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,46de5e24-3c33-4ed8-bf93-13cf4ed77705,Mikal Bridges,NYK,0,35.9,16.5,21,0
@@ -81,20 +81,20 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,4f04550c-7e21-4e92-9488-ba5e853650d4,Andre Drummond,NYK,0,36.0,10.6,2,0
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,117cd9df-092f-4c06-ad7f-767e75d80506,Keaton Wagler,LAC,0,36.0,22.0,1,0
 2026-10-25,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.5,2,2,,,,8a7a6c80-3342-403f-ad44-d821f8de4f1f,Derrick Jones Jr.,LAC,0,36.0,18.7,1,0
-2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,34.9,12.1,147,-30
-2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,0,34.6,39.0,114,90
-2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,ba7e0647-7bf4-4a58-8357-b092ed9f7635,Cedric Coward,MEM,0,35.7,32.7,82,90
-2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,c759c9df-9bf2-4e05-9497-6a5ba5694984,Rui Hachimura,LAC,0,33.0,6.8,25,-30
+2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,34.9,12.1,146,-30
+2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,0,34.6,39.0,116,90
+2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,ba7e0647-7bf4-4a58-8357-b092ed9f7635,Cedric Coward,MEM,0,35.7,32.7,78,90
+2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,c759c9df-9bf2-4e05-9497-6a5ba5694984,Rui Hachimura,LAC,0,33.0,6.8,26,-30
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,35.6,22.2,133,-30
-2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,d5348697-c7ae-49e9-a500-3dc5c505279a,Collin Murray-Boyles,TOR,0,35.4,15.4,204,-30
-2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,48851f98-0d68-4b55-8709-f0c942959642,Wendell Carter Jr.,ORL,0,31.7,28.0,13,-30
+2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,d5348697-c7ae-49e9-a500-3dc5c505279a,Collin Murray-Boyles,TOR,0,35.4,15.4,208,-30
+2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,48851f98-0d68-4b55-8709-f0c942959642,Wendell Carter Jr.,ORL,0,31.7,28.0,12,-30
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,cb68fac9-c715-40b4-b97c-ffc6dc74c772,Jakob Poeltl,TOR,0,35.9,0.2,9,-30
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,c4461a68-3389-4586-9d73-b8a7dd53fc46,Anfernee Simons,PHI,1,36.0,21.1,14,0
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,92c94656-e930-4e40-a11f-e3119d5f0660,Jonathan Kuminga,MIN,0,34.4,25.3,105,-30
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,46de5e24-3c33-4ed8-bf93-13cf4ed77705,Mikal Bridges,NYK,0,35.9,16.5,27,-30
+2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,4e362394-7dec-4301-907a-3cc7217768bf,Daniss Jenkins,DET,0,35.8,37.6,30,0
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,b02022e9-b702-422a-8d44-4a059d3d4b64,Tristan da Silva,ORL,0,36.0,27.4,6,-30
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,John Collins,DET,0,32.8,33.2,9,0
-2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,4e362394-7dec-4301-907a-3cc7217768bf,Daniss Jenkins,DET,0,35.8,37.6,28,0
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,ecb83876-9303-4f2f-b504-4285e15fa660,Isaiah Hartenstein,OKC,0,35.9,28.9,4,-30
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,117cd9df-092f-4c06-ad7f-767e75d80506,Keaton Wagler,LAC,0,36.0,22.0,5,-30
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,a1d68037-acec-4596-ad56-9cea344c3854,Adem Bona,PHI,1,35.9,32.1,10,0
@@ -110,30 +110,33 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,4828df48-12ab-4982-b9c3-01ad3dd107f5,Duncan Robinson,DET,0,35.9,28.1,3,0
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,335c77ad-6b21-4254-94bf-6277d520984d,Cason Wallace,OKC,0,36.0,13.1,1,-30
 2026-10-25,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,22.8,3,4,,Questionable,Out,23907bb6-4b50-4b28-9772-dc7a2a298250,Ajay Mitchell,OKC,0,35.9,38.2,2,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,92c94656-e930-4e40-a11f-e3119d5f0660,Jonathan Kuminga,MIN,0,34.4,25.3,31,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,d5348697-c7ae-49e9-a500-3dc5c505279a,Collin Murray-Boyles,TOR,0,35.4,15.4,108,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,34.9,12.1,35,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,60a5e271-34d5-48b0-b7ff-5d7c97d02663,Rudy Gobert,MIN,0,30.1,26.6,1,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,c759c9df-9bf2-4e05-9497-6a5ba5694984,Rui Hachimura,LAC,0,33.0,6.8,18,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,0,34.6,39.0,41,90
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,cb68fac9-c715-40b4-b97c-ffc6dc74c772,Jakob Poeltl,TOR,0,35.9,0.2,5,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,35.6,22.2,13,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,ba7e0647-7bf4-4a58-8357-b092ed9f7635,Cedric Coward,MEM,0,35.7,32.7,24,90
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,John Collins,DET,1,32.8,33.2,9,0
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,c4461a68-3389-4586-9d73-b8a7dd53fc46,Anfernee Simons,PHI,0,36.0,21.1,4,0
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,ecb83876-9303-4f2f-b504-4285e15fa660,Isaiah Hartenstein,OKC,0,35.9,28.9,4,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,46de5e24-3c33-4ed8-bf93-13cf4ed77705,Mikal Bridges,NYK,0,35.9,16.5,13,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,4e362394-7dec-4301-907a-3cc7217768bf,Daniss Jenkins,DET,1,35.8,37.6,7,0
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,1270856d-3c44-4450-98d8-160783483e8a,Ja'Kobe Walter,TOR,0,36.0,37.8,1,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,48851f98-0d68-4b55-8709-f0c942959642,Wendell Carter Jr.,ORL,0,31.7,28.0,4,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,117cd9df-092f-4c06-ad7f-767e75d80506,Keaton Wagler,LAC,0,36.0,22.0,12,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,0,6.3,20.1,4,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,b02022e9-b702-422a-8d44-4a059d3d4b64,Tristan da Silva,ORL,0,36.0,27.4,1,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,a1d68037-acec-4596-ad56-9cea344c3854,Adem Bona,PHI,0,35.9,32.1,2,0
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,4828df48-12ab-4982-b9c3-01ad3dd107f5,Duncan Robinson,DET,1,35.9,28.1,1,0
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,4dec5ebf-730c-438e-af97-2c00dd5743fb,Isaiah Stewart,MEM,0,35.9,28.0,1,90
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,8a7a6c80-3342-403f-ad44-d821f8de4f1f,Derrick Jones Jr.,LAC,0,36.0,18.7,1,-30
-2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,c1401e84-1979-4de4-978d-8710894469dc,Allen Graves,TOR,0,36.0,30.2,1,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,92c94656-e930-4e40-a11f-e3119d5f0660,Jonathan Kuminga,MIN,0,34.4,25.3,26,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,d5348697-c7ae-49e9-a500-3dc5c505279a,Collin Murray-Boyles,TOR,0,35.4,15.4,85,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,34.9,12.1,30,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,60a5e271-34d5-48b0-b7ff-5d7c97d02663,Rudy Gobert,MIN,0,30.1,26.6,1,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,35.6,22.2,15,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,c759c9df-9bf2-4e05-9497-6a5ba5694984,Rui Hachimura,LAC,0,33.0,6.8,16,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,0,34.6,39.0,34,90
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,ba7e0647-7bf4-4a58-8357-b092ed9f7635,Cedric Coward,MEM,0,35.7,32.7,23,90
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,John Collins,DET,0,32.8,33.2,7,0
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,46de5e24-3c33-4ed8-bf93-13cf4ed77705,Mikal Bridges,NYK,0,35.9,16.5,11,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,1270856d-3c44-4450-98d8-160783483e8a,Ja'Kobe Walter,TOR,0,36.0,37.8,1,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,48851f98-0d68-4b55-8709-f0c942959642,Wendell Carter Jr.,ORL,0,31.7,28.0,3,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,117cd9df-092f-4c06-ad7f-767e75d80506,Keaton Wagler,LAC,0,36.0,22.0,6,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,0,6.3,20.1,1,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,ecb83876-9303-4f2f-b504-4285e15fa660,Isaiah Hartenstein,OKC,0,35.9,28.9,3,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,cb68fac9-c715-40b4-b97c-ffc6dc74c772,Jakob Poeltl,TOR,0,35.9,0.2,5,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,b02022e9-b702-422a-8d44-4a059d3d4b64,Tristan da Silva,ORL,0,36.0,27.4,1,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,a1d68037-acec-4596-ad56-9cea344c3854,Adem Bona,PHI,1,35.9,32.1,2,0
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,4e362394-7dec-4301-907a-3cc7217768bf,Daniss Jenkins,DET,0,35.8,37.6,4,0
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,c4461a68-3389-4586-9d73-b8a7dd53fc46,Anfernee Simons,PHI,1,36.0,21.1,2,0
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,4828df48-12ab-4982-b9c3-01ad3dd107f5,Duncan Robinson,DET,0,35.9,28.1,1,0
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,643fcf01-0598-4533-b0eb-e5c21d7ce74e,Jaden McDaniels,MIN,0,28.5,30.7,1,-30
+2026-10-25,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,32.9,4,-,Questionable,,Questionable,c1401e84-1979-4de4-978d-8710894469dc,Allen Graves,TOR,0,36.0,30.2,1,-30
+2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,35.6,22.2,2,-30
+2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,34.9,12.1,1,-30
+2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,46de5e24-3c33-4ed8-bf93-13cf4ed77705,Mikal Bridges,NYK,0,35.9,16.5,2,-30
+2026-10-25,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,34.5,5,5,,,,d5348697-c7ae-49e9-a500-3dc5c505279a,Collin Murray-Boyles,TOR,0,35.4,15.4,1,-30
 2026-10-26,877d23bc-4961-4372-bd1c-02cb7d5ba171,Chet Holmgren,OKC,25.5,4,-,,,,6ee3e8c2-d460-44cc-9c6d-1433cba63dfd,Jaren Jackson Jr.,UTA,0,33.7,12.6,186,60
 2026-10-26,877d23bc-4961-4372-bd1c-02cb7d5ba171,Chet Holmgren,OKC,25.5,4,-,,,,ecb83876-9303-4f2f-b504-4285e15fa660,Isaiah Hartenstein,OKC,1,35.8,34.1,15,0
 2026-10-26,877d23bc-4961-4372-bd1c-02cb7d5ba171,Chet Holmgren,OKC,25.5,4,-,,,,b220d07d-7cfc-4825-bcdc-2c3829a4c76d,Naz Reid,CHA,0,31.3,32.9,101,-60
@@ -255,72 +258,72 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-10-29,20cd7474-4651-4cff-81bc-939895c17f60,Dejounte Murray,NOP,8.1,2,3,,Out,,538a536e-a811-47fe-9a75-d180a620873e,Nickeil Alexander-Walker,ATL,0,17.7,33.1,2,0
 2026-10-29,20cd7474-4651-4cff-81bc-939895c17f60,Dejounte Murray,NOP,8.1,2,3,,Out,,8a5ba59e-34a9-4324-9224-19b7fb6ca2d1,Bennedict Mathurin,NOP,1,24.0,14.6,1,0
 2026-10-29,20cd7474-4651-4cff-81bc-939895c17f60,Dejounte Murray,NOP,8.1,2,3,,Out,,431c070e-82b1-4a56-a02f-f130cd95bb40,Julian Reese,NOP,1,24.0,0.0,2,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,Walker Kessler,LAL,0,33.6,42.6,339,120
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,fede9247-aa66-4a0d-81c6-48be5de3e3d9,Andrew Nembhard,IND,0,35.3,35.9,686,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,Immanuel Quickley,TOR,0,35.8,36.2,131,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,0,34.2,44.2,348,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,ee1a8262-108e-425a-86af-4d87b4e9d67c,Josh Giddey,CHI,0,35.6,21.3,299,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,55579bc3-8de8-420a-bd89-c23cd4a4edc0,Paul Reed,DET,0,32.8,19.3,205,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,61f78bac-2767-4012-adb9-eeaa4970fdf7,Darius Garland,LAC,0,32.1,31.9,195,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,b220d07d-7cfc-4825-bcdc-2c3829a4c76d,Naz Reid,CHA,0,35.9,32.7,53,-60
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,9058761b-daa9-493e-a658-139a83a90b0c,Caleb Wilson,CHI,0,31.0,43.0,72,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,b56f125f-5890-4fcb-85a7-b023645fb1be,Julius Randle,BKN,0,30.0,24.1,18,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,47f4506a-8f13-40d3-a270-c828160c19c5,Jabari Smith Jr.,HOU,1,36.0,28.6,66,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,0,35.9,22.4,11,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,9d687651-e23a-4817-91f5-148a95f4eaf9,Michael Porter Jr.,BKN,0,26.3,24.9,7,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,035ea519-23f8-4d07-80ab-75a3af09ef14,Kyrie Irving,DAL,0,35.7,51.3,37,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,0,36.0,35.6,4,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,643fcf01-0598-4533-b0eb-e5c21d7ce74e,Jaden McDaniels,MIN,0,35.7,44.7,30,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,e4383b0e-e920-41f5-bcb4-6ad89df89265,Fred VanVleet,HOU,1,36.0,34.0,30,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,0,35.8,38.4,63,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,81b32151-a7f8-4388-a18c-a2e96c1e8edd,RJ Barrett,TOR,0,31.2,18.1,41,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,84912f26-e403-49b3-8378-41e12c065097,Tari Eason,HOU,1,,32.6,1,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,0,27.3,43.3,4,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,35.9,26.4,2,0
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,0,36.0,23.6,4,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,8e9726e9-ed27-4e4b-8c4a-9b7971094472,Payton Pritchard,BOS,0,36.0,41.1,1,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,ea2efcac-b586-471d-89df-f81bfe7472e4,OG Anunoby,NYK,0,35.9,19.3,2,-30
-2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,4,3,Questionable,Questionable,Questionable,92c94656-e930-4e40-a11f-e3119d5f0660,Jonathan Kuminga,MIN,0,35.9,8.2,5,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,035ea519-23f8-4d07-80ab-75a3af09ef14,Kyrie Irving,DAL,0,35.7,51.3,20,30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,55579bc3-8de8-420a-bd89-c23cd4a4edc0,Paul Reed,DET,0,32.8,19.3,157,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,0,34.2,44.2,138,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,81b32151-a7f8-4388-a18c-a2e96c1e8edd,RJ Barrett,TOR,0,31.2,18.1,17,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,Walker Kessler,LAL,0,33.6,42.6,90,150
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,61f78bac-2767-4012-adb9-eeaa4970fdf7,Darius Garland,LAC,0,32.1,31.9,133,30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,fede9247-aa66-4a0d-81c6-48be5de3e3d9,Andrew Nembhard,IND,0,35.3,35.9,187,30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,47f4506a-8f13-40d3-a270-c828160c19c5,Jabari Smith Jr.,HOU,0,36.0,28.6,9,30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,b220d07d-7cfc-4825-bcdc-2c3829a4c76d,Naz Reid,CHA,0,35.9,32.7,20,-30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,Immanuel Quickley,TOR,0,35.8,36.2,12,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,ee1a8262-108e-425a-86af-4d87b4e9d67c,Josh Giddey,CHI,0,35.6,21.3,53,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,9058761b-daa9-493e-a658-139a83a90b0c,Caleb Wilson,CHI,0,31.0,43.0,25,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,0,27.3,43.3,6,30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,0,35.8,38.4,11,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,35eb0d47-4057-42b2-9586-07417f1f008f,Moussa Diabate,CHA,0,35.9,30.9,3,-30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,b3f17585-a79a-44ac-a1a5-2c7b521ea88d,Brandin Podziemski,GSW,0,36.0,44.0,1,150
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,e4383b0e-e920-41f5-bcb4-6ad89df89265,Fred VanVleet,HOU,0,36.0,34.0,8,30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,b56f125f-5890-4fcb-85a7-b023645fb1be,Julius Randle,BKN,0,30.0,24.1,5,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,b8220299-ab5f-4eae-85ac-5ea41a032a29,Zaccharie Risacher,DAL,0,36.0,33.7,1,30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,66451c82-4c18-4220-8196-f26a9b2323a7,Matas Buzelis,CHI,0,36.0,19.5,1,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,643fcf01-0598-4533-b0eb-e5c21d7ce74e,Jaden McDaniels,MIN,0,35.7,44.7,1,30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,0,35.9,22.4,2,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,6aca4dc0-4521-444c-9cf8-e1736c04562d,AJ Dybantsa,WAS,0,35.8,28.9,1,-30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,e35ffb21-780b-4da5-a266-f52d4663bbe9,Terrence Shannon Jr.,MIN,0,36.0,17.6,1,30
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,1,36.0,23.6,3,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,5b7b59e1-102f-41a7-ac78-fc25a78cbee9,LeBron James,PHI,1,26.3,46.8,1,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,John Collins,DET,0,36.0,16.8,1,0
-2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,5,5,Questionable,Doubtful,Questionable,1dc5f283-636c-4460-b9a2-c96298249439,Jalen Smith,CHI,0,36.0,25.9,1,0
-2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,55579bc3-8de8-420a-bd89-c23cd4a4edc0,Paul Reed,DET,0,32.8,19.3,9,-30
-2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,0,34.2,44.2,4,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,Walker Kessler,LAL,0,33.6,42.6,339,120
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,fede9247-aa66-4a0d-81c6-48be5de3e3d9,Andrew Nembhard,IND,0,35.3,35.9,686,0
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,Immanuel Quickley,TOR,0,35.8,36.2,131,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,0,34.2,44.2,348,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,ee1a8262-108e-425a-86af-4d87b4e9d67c,Josh Giddey,CHI,0,35.6,21.3,300,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,55579bc3-8de8-420a-bd89-c23cd4a4edc0,Paul Reed,DET,0,32.8,19.3,205,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,61f78bac-2767-4012-adb9-eeaa4970fdf7,Darius Garland,LAC,0,32.1,31.9,195,0
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,b220d07d-7cfc-4825-bcdc-2c3829a4c76d,Naz Reid,CHA,0,35.9,32.7,53,-60
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,9058761b-daa9-493e-a658-139a83a90b0c,Caleb Wilson,CHI,0,31.0,43.0,72,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,b56f125f-5890-4fcb-85a7-b023645fb1be,Julius Randle,BKN,0,30.0,24.1,18,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,47f4506a-8f13-40d3-a270-c828160c19c5,Jabari Smith Jr.,HOU,1,36.0,28.6,66,0
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,0,35.9,22.4,11,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,9d687651-e23a-4817-91f5-148a95f4eaf9,Michael Porter Jr.,BKN,0,26.3,24.9,7,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,035ea519-23f8-4d07-80ab-75a3af09ef14,Kyrie Irving,DAL,0,35.7,51.3,37,0
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,0,36.0,35.6,4,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,643fcf01-0598-4533-b0eb-e5c21d7ce74e,Jaden McDaniels,MIN,0,35.7,44.7,30,0
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,e4383b0e-e920-41f5-bcb4-6ad89df89265,Fred VanVleet,HOU,1,36.0,34.0,30,0
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,0,35.8,38.4,63,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,81b32151-a7f8-4388-a18c-a2e96c1e8edd,RJ Barrett,TOR,0,31.2,18.1,41,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,84912f26-e403-49b3-8378-41e12c065097,Tari Eason,HOU,1,,32.6,1,0
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,0,27.3,43.3,4,0
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,35.9,26.4,2,0
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,0,36.0,23.6,4,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,8e9726e9-ed27-4e4b-8c4a-9b7971094472,Payton Pritchard,BOS,0,36.0,41.1,1,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,ea2efcac-b586-471d-89df-f81bfe7472e4,OG Anunoby,NYK,0,35.9,19.3,2,-30
+2026-10-30,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,14.1,3,3,Questionable,Questionable,Questionable,92c94656-e930-4e40-a11f-e3119d5f0660,Jonathan Kuminga,MIN,0,35.9,8.2,5,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,035ea519-23f8-4d07-80ab-75a3af09ef14,Kyrie Irving,DAL,0,35.7,51.3,20,30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,55579bc3-8de8-420a-bd89-c23cd4a4edc0,Paul Reed,DET,0,32.8,19.3,158,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,0,34.2,44.2,140,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,81b32151-a7f8-4388-a18c-a2e96c1e8edd,RJ Barrett,TOR,0,31.2,18.1,17,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,Walker Kessler,LAL,0,33.6,42.6,91,150
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,61f78bac-2767-4012-adb9-eeaa4970fdf7,Darius Garland,LAC,0,32.1,31.9,133,30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,fede9247-aa66-4a0d-81c6-48be5de3e3d9,Andrew Nembhard,IND,0,35.3,35.9,189,30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,47f4506a-8f13-40d3-a270-c828160c19c5,Jabari Smith Jr.,HOU,0,36.0,28.6,9,30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,b220d07d-7cfc-4825-bcdc-2c3829a4c76d,Naz Reid,CHA,0,35.9,32.7,20,-30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,Immanuel Quickley,TOR,0,35.8,36.2,12,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,ee1a8262-108e-425a-86af-4d87b4e9d67c,Josh Giddey,CHI,0,35.6,21.3,53,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,9058761b-daa9-493e-a658-139a83a90b0c,Caleb Wilson,CHI,0,31.0,43.0,26,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,0,27.3,43.3,6,30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,0,35.8,38.4,11,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,35eb0d47-4057-42b2-9586-07417f1f008f,Moussa Diabate,CHA,0,35.9,30.9,3,-30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,b3f17585-a79a-44ac-a1a5-2c7b521ea88d,Brandin Podziemski,GSW,0,36.0,44.0,1,150
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,e4383b0e-e920-41f5-bcb4-6ad89df89265,Fred VanVleet,HOU,0,36.0,34.0,8,30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,b56f125f-5890-4fcb-85a7-b023645fb1be,Julius Randle,BKN,0,30.0,24.1,5,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,b8220299-ab5f-4eae-85ac-5ea41a032a29,Zaccharie Risacher,DAL,0,36.0,33.7,1,30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,66451c82-4c18-4220-8196-f26a9b2323a7,Matas Buzelis,CHI,0,36.0,19.5,1,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,643fcf01-0598-4533-b0eb-e5c21d7ce74e,Jaden McDaniels,MIN,0,35.7,44.7,1,30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,0,35.9,22.4,2,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,6aca4dc0-4521-444c-9cf8-e1736c04562d,AJ Dybantsa,WAS,0,35.8,28.9,1,-30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,e35ffb21-780b-4da5-a266-f52d4663bbe9,Terrence Shannon Jr.,MIN,0,36.0,17.6,1,30
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,39933cb9-ca1a-40cf-9d3a-86c15f586449,VJ Edgecombe,PHI,1,36.0,23.6,3,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,5b7b59e1-102f-41a7-ac78-fc25a78cbee9,LeBron James,PHI,1,26.3,46.8,1,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,John Collins,DET,0,36.0,16.8,1,0
+2026-10-30,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,33.7,4,5,Questionable,Doubtful,Questionable,1dc5f283-636c-4460-b9a2-c96298249439,Jalen Smith,CHI,0,36.0,25.9,1,0
+2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,55579bc3-8de8-420a-bd89-c23cd4a4edc0,Paul Reed,DET,0,32.8,19.3,11,-30
+2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,fede9247-aa66-4a0d-81c6-48be5de3e3d9,Andrew Nembhard,IND,0,35.3,35.9,22,0
+2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,0,34.2,44.2,5,-30
+2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,61f78bac-2767-4012-adb9-eeaa4970fdf7,Darius Garland,LAC,0,32.1,31.9,3,0
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,0,35.8,38.4,2,-30
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,47f4506a-8f13-40d3-a270-c828160c19c5,Jabari Smith Jr.,HOU,0,36.0,28.6,1,0
-2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,ee1a8262-108e-425a-86af-4d87b4e9d67c,Josh Giddey,CHI,0,35.6,21.3,7,-30
-2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,fede9247-aa66-4a0d-81c6-48be5de3e3d9,Andrew Nembhard,IND,0,35.3,35.9,19,0
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,3049edb3-278c-494d-a03d-bb1e9e7ebe4f,Alex Sarr,WAS,0,36.0,8.6,1,-60
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,Immanuel Quickley,TOR,0,35.8,36.2,1,-30
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,35.9,26.4,1,0
+2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,ee1a8262-108e-425a-86af-4d87b4e9d67c,Josh Giddey,CHI,0,35.6,21.3,6,-30
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,e4383b0e-e920-41f5-bcb4-6ad89df89265,Fred VanVleet,HOU,0,36.0,34.0,3,0
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,4d183b00-1656-438f-a9ee-4726e702b560,Alperen Sengun,HOU,0,14.1,0.0,1,0
-2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,61f78bac-2767-4012-adb9-eeaa4970fdf7,Darius Garland,LAC,0,32.1,31.9,2,0
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,0,36.0,35.6,2,-30
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,9058761b-daa9-493e-a658-139a83a90b0c,Caleb Wilson,CHI,0,31.0,43.0,1,-30
 2026-10-30,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,36.0,5,5,Questionable,Probable,,81b32151-a7f8-4388-a18c-a2e96c1e8edd,RJ Barrett,TOR,0,31.2,18.1,1,-30
@@ -443,26 +446,6 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-11-02,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,19.0,3,3,Questionable,Questionable,Questionable,b863b59b-2841-42df-b869-299dd8d3e563,Stephon Castle,SAS,0,36.0,31.0,1,60
 2026-11-02,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,19.0,3,3,Questionable,Questionable,Questionable,4768b110-abba-451e-ac80-c6f4962ef4af,Jarrett Allen,CLE,0,36.0,28.7,1,-30
 2026-11-02,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,19.0,3,3,Questionable,Questionable,Questionable,8e9726e9-ed27-4e4b-8c4a-9b7971094472,Payton Pritchard,BOS,0,36.0,14.1,1,60
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,3441daf3-fdb0-46ed-8caa-61335e90a18d,Joel Embiid,PHI,0,23.4,26.1,1,0
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,5b7b59e1-102f-41a7-ac78-fc25a78cbee9,LeBron James,PHI,0,28.7,36.9,3,0
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Jaylen Brown,PHI,0,32.3,48.7,6,0
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,b78ba991-272a-438e-81d6-901d66c7e09a,LaMelo Ball,MIN,0,30.3,45.7,7,30
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,d584da6d-9411-4f1c-b278-89531cd7bc11,Evan Mobley,CLE,0,33.7,37.4,9,-30
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,f92516da-a360-48f9-8ee5-527bde656f42,Dyson Daniels,ATL,0,35.9,32.8,4,0
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,c47d3b6a-9d07-48fc-9469-f8616d33b187,Ty Jerome,MEM,0,34.3,55.5,6,30
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,0,,0.0,2,0
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,f4a5e437-76b9-4864-bbdf-ca4f71762c63,Austin Reaves,LAL,0,34.6,31.9,3,150
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,1464ff77-b5a1-4b13-9ef3-20ac265816a2,Onyeka Okongwu,ATL,0,35.9,29.5,2,0
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,0,35.4,27.1,1,0
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,0,35.9,27.6,1,0
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,Devin Booker,PHX,0,31.1,35.1,3,150
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,Immanuel Quickley,TOR,0,36.0,35.8,1,150
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,81b32151-a7f8-4388-a18c-a2e96c1e8edd,RJ Barrett,TOR,0,35.9,41.7,1,150
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,Yaxel Lendeborg,GSW,0,31.3,33.5,2,150
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,Kevin Durant,HOU,0,34.8,25.1,1,60
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,538a536e-a811-47fe-9a75-d180a620873e,Nickeil Alexander-Walker,ATL,0,36.0,52.8,1,0
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,643fcf01-0598-4533-b0eb-e5c21d7ce74e,Jaden McDaniels,MIN,0,35.8,22.7,1,30
-2026-11-02,9af876e3-ad24-4655-aa39-d774419aedea,Pascal Siakam,IND,34.6,4,-,,,,794f5b4a-fc6c-4f3e-b386-246945335358,Brandon Miller,CHA,0,28.0,23.2,1,0
 2026-11-04,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,16.8,3,-,Questionable,,Questionable,61f78bac-2767-4012-adb9-eeaa4970fdf7,Darius Garland,LAC,0,34.6,31.7,264,180
 2026-11-04,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,16.8,3,-,Questionable,,Questionable,f4a5e437-76b9-4864-bbdf-ca4f71762c63,Austin Reaves,LAL,0,34.4,30.6,276,150
 2026-11-04,280a5afc-a318-428e-8d67-3f1e13232277,Jayson Tatum,BOS,16.8,3,-,Questionable,,Questionable,538a536e-a811-47fe-9a75-d180a620873e,Nickeil Alexander-Walker,ATL,0,35.8,30.8,102,-30
@@ -570,15 +553,15 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,d1b1331c-7d12-481a-aab3-8903f7342e3b,Donovan Clingan,POR,0,34.4,37.7,106,180
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,f92516da-a360-48f9-8ee5-527bde656f42,Dyson Daniels,ATL,0,34.6,45.8,484,0
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,3049edb3-278c-494d-a03d-bb1e9e7ebe4f,Alex Sarr,WAS,1,35.9,37.1,56,0
-2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,538a536e-a811-47fe-9a75-d180a620873e,Nickeil Alexander-Walker,ATL,0,35.2,36.4,185,0
+2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,538a536e-a811-47fe-9a75-d180a620873e,Nickeil Alexander-Walker,ATL,0,35.2,36.4,184,0
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,1464ff77-b5a1-4b13-9ef3-20ac265816a2,Onyeka Okongwu,ATL,0,29.6,46.5,53,0
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,643fcf01-0598-4533-b0eb-e5c21d7ce74e,Jaden McDaniels,MIN,0,35.7,44.7,55,60
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,6aca4dc0-4521-444c-9cf8-e1736c04562d,AJ Dybantsa,WAS,1,35.9,36.3,14,0
-2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,5ed6b99c-35aa-4625-b569-b37de86e6ee8,Damian Lillard,POR,0,32.1,27.0,89,180
+2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,5ed6b99c-35aa-4625-b569-b37de86e6ee8,Damian Lillard,POR,0,32.1,27.0,90,180
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,2357ef8a-ae80-4698-9fb9-1a94525c56b1,Kyshawn George,WAS,1,35.8,56.8,28,0
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,c311d754-8979-4374-a4af-af325e7b074a,Zion Williamson,NOP,0,31.3,34.6,66,60
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,794f5b4a-fc6c-4f3e-b386-246945335358,Brandon Miller,CHA,0,34.0,14.9,136,0
-2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,c47d3b6a-9d07-48fc-9469-f8616d33b187,Ty Jerome,MEM,0,30.7,27.9,66,60
+2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,c47d3b6a-9d07-48fc-9469-f8616d33b187,Ty Jerome,MEM,0,30.7,27.9,67,60
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,23907bb6-4b50-4b28-9772-dc7a2a298250,Ajay Mitchell,OKC,0,35.3,41.7,51,60
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,f4a5e437-76b9-4864-bbdf-ca4f71762c63,Austin Reaves,LAL,0,33.1,41.6,216,180
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,d81bde0d-6f87-46b6-a6c3-9fb0eb352c67,De'Aaron Fox,SAS,0,35.9,21.4,4,180
@@ -596,7 +579,7 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,b220d07d-7cfc-4825-bcdc-2c3829a4c76d,Naz Reid,CHA,0,35.8,25.2,1,0
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,18d8989e-69e7-4d30-be67-1e559a65421a,Kingston Flemings,ATL,0,36.0,19.2,1,0
 2026-11-06,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,9.0,2,2,Questionable,Questionable,Questionable,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,0,27.7,33.1,1,60
-2026-11-06,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,2,2,Questionable,Questionable,Questionable,f92516da-a360-48f9-8ee5-527bde656f42,Dyson Daniels,ATL,0,34.6,45.8,329,-60
+2026-11-06,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,2,2,Questionable,Questionable,Questionable,f92516da-a360-48f9-8ee5-527bde656f42,Dyson Daniels,ATL,0,34.6,45.8,330,-60
 2026-11-06,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,2,2,Questionable,Questionable,Questionable,c47d3b6a-9d07-48fc-9469-f8616d33b187,Ty Jerome,MEM,0,30.7,27.9,29,0
 2026-11-06,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,2,2,Questionable,Questionable,Questionable,794f5b4a-fc6c-4f3e-b386-246945335358,Brandon Miller,CHA,0,34.0,14.9,143,-60
 2026-11-06,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,2,2,Questionable,Questionable,Questionable,538a536e-a811-47fe-9a75-d180a620873e,Nickeil Alexander-Walker,ATL,0,35.2,36.4,200,-60
@@ -622,7 +605,7 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-11-06,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,2,2,Questionable,Questionable,Questionable,d81bde0d-6f87-46b6-a6c3-9fb0eb352c67,De'Aaron Fox,SAS,0,35.9,21.4,1,120
 2026-11-06,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,2,2,Questionable,Questionable,Questionable,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,0,27.7,33.1,1,0
 2026-11-06,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,Scottie Barnes,TOR,14.3,2,2,Questionable,Questionable,Questionable,1370bac1-4d75-4f2a-b408-fba6ce961a90,Jamison Battle,TOR,1,36.0,8.4,1,0
-2026-11-06,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,12.9,2,3,Questionable,Out,Questionable,794f5b4a-fc6c-4f3e-b386-246945335358,Brandon Miller,CHA,0,34.0,14.9,104,0
+2026-11-06,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,12.9,2,3,Questionable,Out,Questionable,794f5b4a-fc6c-4f3e-b386-246945335358,Brandon Miller,CHA,0,34.0,14.9,105,0
 2026-11-06,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,12.9,2,3,Questionable,Out,Questionable,538a536e-a811-47fe-9a75-d180a620873e,Nickeil Alexander-Walker,ATL,1,35.2,36.4,306,0
 2026-11-06,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,12.9,2,3,Questionable,Out,Questionable,f4a5e437-76b9-4864-bbdf-ca4f71762c63,Austin Reaves,LAL,0,33.1,41.6,42,180
 2026-11-06,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,Jalen Johnson,ATL,12.9,2,3,Questionable,Out,Questionable,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,0,32.4,34.4,34,60
@@ -655,7 +638,7 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-11-07,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,15.8,3,3,Questionable,Questionable,Questionable,ecb83876-9303-4f2f-b504-4285e15fa660,Isaiah Hartenstein,OKC,0,35.3,33.8,147,0
 2026-11-07,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,15.8,3,3,Questionable,Questionable,Questionable,6aca4dc0-4521-444c-9cf8-e1736c04562d,AJ Dybantsa,WAS,1,34.2,27.7,274,0
 2026-11-07,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,15.8,3,3,Questionable,Questionable,Questionable,3049edb3-278c-494d-a03d-bb1e9e7ebe4f,Alex Sarr,WAS,1,35.0,33.3,491,0
-2026-11-07,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,15.8,3,3,Questionable,Questionable,Questionable,73a771f5-a6fe-4fd1-8917-23e89f6c4aaf,Dylan Harper,SAS,0,31.8,27.9,28,120
+2026-11-07,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,15.8,3,3,Questionable,Questionable,Questionable,73a771f5-a6fe-4fd1-8917-23e89f6c4aaf,Dylan Harper,SAS,0,31.8,29.4,28,120
 2026-11-07,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,15.8,3,3,Questionable,Questionable,Questionable,e23cb84e-49c7-4834-8a57-a0d510b35023,Jalen Green,PHX,0,35.9,27.6,10,60
 2026-11-07,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,15.8,3,3,Questionable,Questionable,Questionable,629e40dc-68c1-4e21-ab3c-92d15f4629b3,Anthony Black,ORL,0,32.0,55.6,62,30
 2026-11-07,b612acf0-6267-48a2-ac48-f52d45c27ece,Anthony Davis,WAS,15.8,3,3,Questionable,Questionable,Questionable,48851f98-0d68-4b55-8709-f0c942959642,Wendell Carter Jr.,ORL,0,33.1,36.2,129,30
@@ -681,7 +664,7 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,6aca4dc0-4521-444c-9cf8-e1736c04562d,AJ Dybantsa,WAS,0,34.2,27.7,116,-30
 2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,b3f17585-a79a-44ac-a1a5-2c7b521ea88d,Brandin Podziemski,GSW,0,35.5,33.9,13,0
 2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,47f4506a-8f13-40d3-a270-c828160c19c5,Jabari Smith Jr.,HOU,0,35.2,39.8,36,30
-2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,73a771f5-a6fe-4fd1-8917-23e89f6c4aaf,Dylan Harper,SAS,0,31.8,27.9,20,90
+2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,73a771f5-a6fe-4fd1-8917-23e89f6c4aaf,Dylan Harper,SAS,0,31.8,29.4,20,90
 2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,229d1d81-7208-4255-b777-bc5848774535,Scoot Henderson,POR,0,36.0,21.9,1,90
 2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,b02022e9-b702-422a-8d44-4a059d3d4b64,Tristan da Silva,ORL,1,36.0,32.4,4,0
 2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,ecb83876-9303-4f2f-b504-4285e15fa660,Isaiah Hartenstein,OKC,0,35.3,33.8,41,-30
@@ -698,40 +681,41 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,41d36b6a-7ce5-4c05-9138-780e49d97fb2,Lu Dort,ATL,0,36.0,8.9,1,-60
 2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,446ae12c-b571-45ea-a1ee-0afe159d53b8,James Harden,CLE,0,28.7,20.9,1,-30
 2026-11-07,7c7c4ed8-3b4e-4466-9107-11904a6c4b00,Desmond Bane,ORL,27.9,3,-,,,,046c78d0-6297-436a-92ab-e50ef6fb2aeb,Aaron Wiggins,ATL,0,36.0,36.8,1,-60
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,eef3da66-7b3b-4410-a9c4-6afd529a46e0,Jaime Jaquez Jr.,MIL,0,35.2,12.4,254,-60
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,8e9726e9-ed27-4e4b-8c4a-9b7971094472,Payton Pritchard,BOS,0,35.3,27.0,165,-60
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,71c33275-bfac-4f2c-88f3-282714b38b20,Derik Queen,NOP,0,33.6,20.5,151,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,37cd1ca3-e387-4e85-a96f-74907b7e5d29,Myles Turner,MIL,0,33.2,20.5,122,-60
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,260d44ae-39e2-43f9-944a-b7af711566e7,Saddiq Bey,NOP,0,34.9,24.3,299,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,1,35.9,23.8,129,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,4fe6205f-3b28-4f12-af14-95bfa647875e,Kris Dunn,LAC,0,35.6,28.0,57,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,b34cb97e-7a7c-4ee5-b537-37e09f0d80e8,Brayden Burries,MIL,0,35.5,30.6,60,-60
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,8a7a6c80-3342-403f-ad44-d821f8de4f1f,Derrick Jones Jr.,LAC,0,35.9,16.3,32,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,7abd07c8-545c-4f1e-804b-7be5455a5955,Keegan Murray,SAC,1,36.0,23.2,6,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,1fdfcfa1-632a-4887-b905-5b51775afe1b,Nikola Jovic,MIA,0,36.0,0.0,1,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,33.5,29.9,69,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,ebef9cbb-5ba3-4862-a43f-f46f0935172f,De'Andre Hunter,SAC,1,35.9,18.1,16,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,a6d2ff8d-3be2-4a6a-966d-930efc2e10d6,Ace Bailey,UTA,0,34.1,23.9,3,-120
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,f120a4ab-5e6e-42ce-8d6a-905ab0778fc6,Neemias Queta,BOS,0,35.8,28.8,10,-60
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,78c6b45f-5728-4f87-852f-67b4ec08dfc4,Mitchell Robinson,BOS,0,36.0,38.4,1,-60
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,45bd37c6-8a64-4240-9ae4-330d0ad4dc4e,Pelle Larsson,MIA,0,35.9,21.1,2,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,901859ec-a705-4a93-ad44-156ca49e4f3c,Kobe Sanders,LAC,0,36.0,13.4,1,0
-2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,2,2,,,Questionable,4b19c641-8668-4966-bdf0-a92bd880dc6d,Kel'el Ware,MIL,0,36.0,3.5,1,-60
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,33.5,29.9,214,120
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,a6d2ff8d-3be2-4a6a-966d-930efc2e10d6,Ace Bailey,UTA,1,34.1,23.9,187,0
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,71c33275-bfac-4f2c-88f3-282714b38b20,Derik Queen,NOP,0,33.6,20.5,124,120
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,eef3da66-7b3b-4410-a9c4-6afd529a46e0,Jaime Jaquez Jr.,MIL,0,35.2,12.4,254,-60
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,8e9726e9-ed27-4e4b-8c4a-9b7971094472,Payton Pritchard,BOS,0,35.3,27.0,165,-60
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,71c33275-bfac-4f2c-88f3-282714b38b20,Derik Queen,NOP,0,33.6,20.5,150,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,8ff2f1d4-08c4-4db1-98a9-888e972f58eb,Blake Wesley,LAC,0,,0.0,1,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,37cd1ca3-e387-4e85-a96f-74907b7e5d29,Myles Turner,MIL,0,33.2,20.5,122,-60
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,260d44ae-39e2-43f9-944a-b7af711566e7,Saddiq Bey,NOP,0,34.9,24.3,299,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,1,35.9,23.8,129,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,4fe6205f-3b28-4f12-af14-95bfa647875e,Kris Dunn,LAC,0,35.6,28.0,57,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,b34cb97e-7a7c-4ee5-b537-37e09f0d80e8,Brayden Burries,MIL,0,35.5,30.6,60,-60
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,8a7a6c80-3342-403f-ad44-d821f8de4f1f,Derrick Jones Jr.,LAC,0,35.9,16.3,32,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,7abd07c8-545c-4f1e-804b-7be5455a5955,Keegan Murray,SAC,1,36.0,23.2,6,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,1fdfcfa1-632a-4887-b905-5b51775afe1b,Nikola Jovic,MIA,0,36.0,0.0,1,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,33.5,29.9,69,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,ebef9cbb-5ba3-4862-a43f-f46f0935172f,De'Andre Hunter,SAC,1,35.9,18.1,16,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,a6d2ff8d-3be2-4a6a-966d-930efc2e10d6,Ace Bailey,UTA,0,34.1,23.9,3,-120
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,f120a4ab-5e6e-42ce-8d6a-905ab0778fc6,Neemias Queta,BOS,0,35.8,28.8,10,-60
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,78c6b45f-5728-4f87-852f-67b4ec08dfc4,Mitchell Robinson,BOS,0,36.0,38.4,1,-60
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,45bd37c6-8a64-4240-9ae4-330d0ad4dc4e,Pelle Larsson,MIA,0,35.9,21.1,2,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,901859ec-a705-4a93-ad44-156ca49e4f3c,Kobe Sanders,LAC,0,36.0,13.4,1,0
+2026-11-08,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,4.9,1,2,,,Questionable,4b19c641-8668-4966-bdf0-a92bd880dc6d,Kel'el Ware,MIL,0,36.0,3.5,1,-60
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,0,33.5,29.9,216,120
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,a6d2ff8d-3be2-4a6a-966d-930efc2e10d6,Ace Bailey,UTA,1,34.1,23.9,191,0
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,71c33275-bfac-4f2c-88f3-282714b38b20,Derik Queen,NOP,0,33.6,20.5,121,120
 2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,8e9726e9-ed27-4e4b-8c4a-9b7971094472,Payton Pritchard,BOS,0,35.3,27.0,20,60
 2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,8e2aa1f4-7b88-43bb-be2c-6016439d3906,Nolan Traore,BKN,0,32.0,17.2,29,30
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,8a7a6c80-3342-403f-ad44-d821f8de4f1f,Derrick Jones Jr.,LAC,0,35.9,16.3,120,120
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,7abd07c8-545c-4f1e-804b-7be5455a5955,Keegan Murray,SAC,0,36.0,23.2,6,120
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,260d44ae-39e2-43f9-944a-b7af711566e7,Saddiq Bey,NOP,0,34.9,24.3,93,120
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,0,35.9,23.8,85,120
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,37cd1ca3-e387-4e85-a96f-74907b7e5d29,Myles Turner,MIL,0,33.2,20.5,86,60
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,ffb41f79-798e-4e36-a3f9-07af6c6f7a61,Day'Ron Sharpe,BKN,0,30.9,30.8,14,30
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,eef3da66-7b3b-4410-a9c4-6afd529a46e0,Jaime Jaquez Jr.,MIL,0,35.2,12.4,86,60
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,8a7a6c80-3342-403f-ad44-d821f8de4f1f,Derrick Jones Jr.,LAC,0,35.9,16.3,122,120
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,7abd07c8-545c-4f1e-804b-7be5455a5955,Keegan Murray,SAC,0,36.0,23.2,5,120
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,260d44ae-39e2-43f9-944a-b7af711566e7,Saddiq Bey,NOP,0,34.9,24.3,95,120
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,0,35.9,23.8,84,120
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,37cd1ca3-e387-4e85-a96f-74907b7e5d29,Myles Turner,MIL,0,33.2,20.5,88,60
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,ffb41f79-798e-4e36-a3f9-07af6c6f7a61,Day'Ron Sharpe,BKN,0,30.9,30.8,17,30
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,eef3da66-7b3b-4410-a9c4-6afd529a46e0,Jaime Jaquez Jr.,MIL,0,35.2,12.4,85,60
 2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,b34cb97e-7a7c-4ee5-b537-37e09f0d80e8,Brayden Burries,MIL,0,35.5,30.6,16,60
 2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,4fe6205f-3b28-4f12-af14-95bfa647875e,Kris Dunn,LAC,0,35.6,28.0,51,120
-2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,b999fa17-fd5a-42e1-aea2-2d1a5229f88f,Jaxson Hayes,UTA,1,36.0,27.7,13,0
+2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,b999fa17-fd5a-42e1-aea2-2d1a5229f88f,Jaxson Hayes,UTA,1,36.0,27.7,14,0
 2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,f120a4ab-5e6e-42ce-8d6a-905ab0778fc6,Neemias Queta,BOS,0,35.8,28.8,11,60
 2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,ebef9cbb-5ba3-4862-a43f-f46f0935172f,De'Andre Hunter,SAC,0,35.9,18.1,6,120
 2026-11-08,025490f6-95d6-437e-926d-f99e80a23c58,Lauri Markkanen,UTA,22.9,3,3,Questionable,Questionable,Out,4b19c641-8668-4966-bdf0-a92bd880dc6d,Kel'el Ware,MIL,0,36.0,3.5,9,60
