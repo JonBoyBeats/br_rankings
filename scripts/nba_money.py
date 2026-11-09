@@ -2,7 +2,7 @@
 
 Everything is read off every team in every contest on file (analysis/nba/contests/, scripts/nba_contests.py), joined at
 its draft window to the rankings side's point-in-time tiers (analysis/nba/report/tier_history.csv) and graded against a
-price baseline. Writes analysis/nba/report/money_report.md only. It never writes decision_register.csv: MONEY verdicts go into the
+price baseline. Writes analysis/nba/report/money_report.md and money_tiers.json (the morning report's per-tier block). It never writes decision_register.csv: MONEY verdicts go into the
 register by hand, only when the user approves them. The 2:17am job runs it.
 
 Definitions
@@ -1169,13 +1169,13 @@ def report(N, mirror):
     sw_out, sw = swap_money(N)
     turn_out, turns = turns_section(N, dates, "bin5")
     field_out, field = field_section(N, dates, "bin5")
-    chk_out, survived = check_section(reg, turns, field, dates)
+    chk_out, survived, checked = check_section(reg, turns, field, dates)
     out += reg_out + chk_out + sw_out
     r6_out, _ = round6_section(N, dates)
     out += r6_out
     out += field_out[:2] + turn_out + field_out[2:] + swap_split_section(N, dates)
     out += verdict_section(reg, sw, survived)
-    return out
+    return out, {"reg": reg, "turns": turns, "field": field, "checked": checked, "survived": survived}
 
 
 def main():
@@ -1183,8 +1183,9 @@ def main():
     ap.add_argument("--mirror", help="a clone of br-adp-mirror (draft windows for nights not cached yet)")
     a = ap.parse_args()
     N = load(a.mirror)
-    out = report(N, a.mirror)
+    out, parts = report(N, a.mirror)
     open(os.path.join(REP, "money_report.md"), "w").write("\n".join(out) + "\n")
+    json.dump(tiers_json(N, parts), open(os.path.join(REP, "money_tiers.json"), "w"), indent=1)
     print("\n".join(out))
 
 
@@ -1267,18 +1268,19 @@ def check_section(reg, turns, field, dates):
     for k, (ev, cs) in field.items():
         if k[0] == "stack":
             items.append(("stack: " + k[1], verdict(ev)[0], cs))
-    survived = {}
+    survived, checked = {}, {}
     for name, before, cs in items:
         r = price_check(cs, dates)
         if not r:
             continue
         survived[name] = r["verdict"]
+        checked[name] = r
         share = lambda x: "%+.1f (%.0f%%)" % (x, 100 * x / r["gap"]) if abs(r["gap"]) >= 0.5 else "%+.1f" % x
         a = r["ev"]["field"]["all"]
         out.append("| %s | %s | %+.1f | %s | %s | %s | %s | %s |" % (
             name, before, r["gap"], share(r["dec"]) if r["has_dec"] else "-", share(r["oth"]) if r["has_dec"] else "-",
             "%+.1f" % r["own"] if r["own"] is not None else "- (holding)", cell(a), r["verdict"]))
-    return out + [""], survived
+    return out + [""], survived, checked
 
 
 def round6_section(N, dates):
@@ -1349,6 +1351,122 @@ def swap_split_section(N, dates):
                   if c[3] == "A" or not any(a is None for a in c[4]["adps"])]
             out.append("| %s | %s | %s |" % (group, w.upper() if w else "both", cell(evaluate(cs, dates)["field"]["all"])))
     return out + [""]
+
+
+# ---------------------------------------------------------------- the morning report's per-tier block
+def tier_keys(spec):
+    """The register's tier column as tiers: "5", "3,4,5", "1-5"; "all", "turn" and "undrafted" are their own blocks."""
+    spec = (spec or "").strip()
+    if spec in ("all", "turn", "undrafted"):
+        return [spec]
+    out = []
+    for part in spec.split(","):
+        if "-" in part:
+            a, b = part.split("-")
+            out += [str(k) for k in range(int(a), int(b) + 1)]
+        elif part.strip():
+            out.append(part.strip())
+    return out
+
+
+def mine_where(cs):
+    """My teams where the decision applied (A), season to date: teams, top-10% rate over the field's 10%, top 1%, finish."""
+    ts = list({id(c[4]): c[4] for c in cs if c[3] == "A" and c[4]["mine"]}.values())     # each team once
+    if not ts:
+        return None
+    return {"teams": len(ts), "top10_ratio": round(sum(t["top"][10] for t in ts) / len(ts) / 0.10, 2),
+            "top1_ratio": round(sum(t["top"][1] for t in ts) / len(ts) / 0.01, 2), "finish_pct": round(100 * st.mean(t["fin"] for t in ts), 1)}
+
+
+def lift_of(ev, checked=None):
+    a = (checked["ev"] if checked else ev)["field"]["all"]
+    if not a or a["lift"][10] is None:
+        return None
+    return {"lift10": round(a["lift"][10], 2), "range80": [round(x, 2) for x in a["r80"]] if "r80" in a else None,
+            "teams": a["n"], "slates": a["slates"], "after_price_check": bool(checked)}
+
+
+def tiers_json(N, parts):
+    """analysis/nba/report/money_tiers.json, for the morning report's tier sections (scripts/nba_money.py writes it nightly):
+    per tier, last night's exposure (mine against the field's, at each team's draft window), the field's drafted% of the
+    tier's VALUE, PRICEY and tagged players, and season to date the register's decisions for the tier: the approved MONEY
+    verdict, the current top-10% lift (after the price-split check where it ran) and my finish where the decision applied."""
+    reg, turns, field, checked = parts["reg"], parts["turns"], parts["field"], parts["checked"]
+    n = N[-1]
+    names = {p: r["name"] for p, r in n["rec"].items()}
+    out = {"generated": dt.date.today().isoformat(), "night": n["date"], "pod": n["pod"], "slates": [x["date"] for x in N],
+           "notes": "Exposure: share of teams holding the player (mine: my teams in that window; field: every team in it). "
+                    "Drafted%: share of that window's pods that drafted him. lift10: top-10% lift against same-contest, "
+                    "same-price teams (money_report.md). verdict: the MONEY column of decision_register.csv as approved; "
+                    "current: this run's read (after the price-split check where it ran). mine: my teams where the decision "
+                    "applied, season to date (top-10% and top-1% rates over the field's).",
+           "tiers": {}}
+    blocks = collections.defaultdict(lambda: {"exposure": {}, "drafted": {}, "decisions": []})
+    # last night: exposure and drafted%
+    for w in ("am", "pm"):
+        ts = [t for v in n["teams"].values() for t in v if t["window"] == w]
+        mine = [t for t in ts if t["mine"]]
+        if not ts:
+            continue
+        pods = collections.defaultdict(set)
+        held = collections.Counter()
+        held_mine = collections.Counter()
+        for t in ts:
+            for p in drafted_by(t):
+                pods[p].add(t["draft_id"])
+                held[p] += 1
+                held_mine[p] += t["mine"]
+        npods = len({t["draft_id"] for t in ts})
+        rows = n["tiers"][w]
+        for k in ("1", "2", "3", "4", "5"):
+            tier_rows = [r for r in rows.values() if r["tier"] == k]
+            if not tier_rows:
+                continue
+            per_team = lambda group: sum(1 for t in group for p in drafted_by(t) if rows.get(p, {}).get("tier") == k) / len(group) if group else None
+            players = sorted(({"name": r["name"], "adp": num(r["adp"]), "flag": r["flag"] or None, "tag": r["tag"] or None,
+                               "q_class": r["q_class"] or None, "mine": round(held_mine[r["player_id"]] / len(mine), 3) if mine else None,
+                               "field": round(held[r["player_id"]] / len(ts), 3), "drafted": round(len(pods[r["player_id"]]) / npods, 3)}
+                              for r in tier_rows if held[r["player_id"]] or held_mine[r["player_id"]]),
+                             key=lambda x: (x["adp"] is None, x["adp"]))
+            blocks[k]["exposure"][w] = {"my_teams": len(mine), "field_teams": len(ts),
+                                        "picks_per_team": {"mine": round(per_team(mine), 2) if mine else None, "field": round(per_team(ts), 2)},
+                                        "players": players}
+            blocks[k]["drafted"][w] = {lab: [{"name": x["name"], "drafted": x["drafted"], "mine": x["mine"]} for x in players
+                                              if (x["flag"] == lab if lab != "Q" else bool(x["tag"]))] for lab in ("VALUE", "PRICEY", "Q")}
+    # season to date: the register's decisions
+    register = list(csv.DictReader(open(os.path.join(REP, "decision_register.csv"))))
+    main_rows = {k[0]: v for k, v in reg.items() if not v[3]}
+    def sources(rid):
+        """[(label, ev, cases, checked result)] for a register id."""
+        if rid == "pricey-flags:T1":
+            v = reg.get(("pricey-flags", "T1"))
+            return [("", v[0], v[4], checked.get("pricey-flags T1"))] if v else []
+        cards = {"card-turn23-reach-higher-proj": [("2/3", "b. reach toward higher projection vs trust")],
+                 "card-turn12-reach": [("1/2", "a. reach vs trust")],
+                 "card-fallers": [("1/2", "fallers vs trust"), ("2/3", "fallers vs trust")]}
+        if rid in cards:
+            return [("%s turn" % k[0] if len(cards[rid]) > 1 else "", turns[k][0], turns[k][1], checked.get("turn %s: %s" % k)) for k in cards[rid] if k in turns]
+        stacks = {"card-same-position-teammates": "Same-position teammates", "card-opposing-stars": "Opposing stars (their team's top 2 by projection, same game)"}
+        if rid in stacks:
+            k = ("stack", stacks[rid])
+            return [("", field[k][0], field[k][1], checked.get("stack: " + stacks[rid]))] if k in field else []
+        return [(k.split(":", 1)[1] if ":" in k else "", v[0], v[4], checked.get(k)) for k, v in main_rows.items() if k == rid or k.startswith(rid + ":")]
+    for r in register:
+        keys = tier_keys(r["tier"]) if r["window"] != "live" else ["live"]
+        for label, ev, cs, chk in sources(r["id"]) or [("", None, None, None)]:
+            item = {"id": r["id"] + (":" + label if label else ""), "decision": r["decision"], "window": r["window"], "status": r["status"],
+                    "points": r["points_verdict"], "verdict": r["money_verdict"],
+                    "current": (chk["verdict"] if chk else verdict(ev)[0]) if ev else None,
+                    "lift": lift_of(ev, chk) if ev else None, "mine": mine_where(cs) if cs else None}
+            lift = item["lift"]
+            item["line"] = "%s: %s%s%s%s" % (item["id"], r["money_verdict"].split(" (")[0],
+                                            "; this run: %s" % item["current"] if item["current"] else "",
+                                            "; top-10%% lift %.2f%s" % (lift["lift10"], " (%.2f-%.2f)" % tuple(lift["range80"]) if lift["range80"] else "") if lift else "",
+                                          "; my teams there %.2fx at the top 10%% (%d teams)" % (item["mine"]["top10_ratio"], item["mine"]["teams"]) if item["mine"] else "")
+            for k in keys:
+                blocks[k]["decisions"].append(item)
+    out["tiers"] = {k: blocks[k] for k in ("1", "2", "3", "4", "5", "all", "turn", "live", "undrafted") if k in blocks}
+    return out
 
 
 if __name__ == "__main__":

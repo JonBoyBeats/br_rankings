@@ -1,0 +1,2802 @@
+{
+ "generated": "2026-11-09",
+ "night": "2026-11-08",
+ "pod": 6,
+ "slates": [
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23",
+  "2026-10-24",
+  "2026-10-25",
+  "2026-10-26",
+  "2026-10-27",
+  "2026-10-28",
+  "2026-10-29",
+  "2026-10-30",
+  "2026-10-31",
+  "2026-11-01",
+  "2026-11-02",
+  "2026-11-04",
+  "2026-11-05",
+  "2026-11-06",
+  "2026-11-07",
+  "2026-11-08"
+ ],
+ "notes": "Exposure: share of teams holding the player (mine: my teams in that window; field: every team in it). Drafted%: share of that window's pods that drafted him. lift10: top-10% lift against same-contest, same-price teams (money_report.md). verdict: the MONEY column of decision_register.csv as approved; current: this run's read (after the price-split check where it ran). mine: my teams where the decision applied, season to date (top-10% and top-1% rates over the field's).",
+ "tiers": {
+  "1": {
+   "exposure": {
+    "am": {
+     "my_teams": 15,
+     "field_teams": 8576,
+     "picks_per_team": {
+      "mine": 0.53,
+      "field": 0.5
+     },
+     "players": [
+      {
+       "name": "Giannis Antetokounmpo",
+       "adp": 1.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.133,
+       "field": 0.167,
+       "drafted": 0.984
+      },
+      {
+       "name": "Cooper Flagg",
+       "adp": 2.4,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.133,
+       "field": 0.167,
+       "drafted": 0.981
+      },
+      {
+       "name": "Jayson Tatum",
+       "adp": 2.8,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.267,
+       "field": 0.167,
+       "drafted": 0.981
+      }
+     ]
+    },
+    "pm": {
+     "my_teams": 25,
+     "field_teams": 1708,
+     "picks_per_team": {
+      "mine": 0.36,
+      "field": 0.49
+     },
+     "players": [
+      {
+       "name": "Giannis Antetokounmpo",
+       "adp": 1.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.16,
+       "field": 0.163,
+       "drafted": 0.917
+      },
+      {
+       "name": "Cooper Flagg",
+       "adp": 2.4,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.08,
+       "field": 0.166,
+       "drafted": 0.934
+      },
+      {
+       "name": "Jayson Tatum",
+       "adp": 2.8,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.12,
+       "field": 0.166,
+       "drafted": 0.934
+      }
+     ]
+    }
+   },
+   "drafted": {
+    "am": {
+     "VALUE": [],
+     "PRICEY": [
+      {
+       "name": "Cooper Flagg",
+       "drafted": 0.981,
+       "mine": 0.133
+      }
+     ],
+     "Q": []
+    },
+    "pm": {
+     "VALUE": [],
+     "PRICEY": [],
+     "Q": []
+    }
+   },
+   "decisions": [
+    {
+     "id": "pricey-flags",
+     "decision": "PRICEY-flagged players last in their tier",
+     "window": "both",
+     "status": "candidate",
+     "points": "mixed / not enough",
+     "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.08,
+      "range80": [
+       0.98,
+       1.2
+      ],
+      "teams": 734571,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 1229,
+      "top10_ratio": 1.42,
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
+     },
+     "line": "pricey-flags: LEAN for overall; this run: LEAN for; top-10% lift 1.08 (0.98-1.20); my teams there 1.42x at the top 10% (1229 teams)"
+    },
+    {
+     "id": "pricey-flags:T1",
+     "decision": "An unflagged player over a PRICEY one in T1",
+     "window": "both",
+     "status": "candidate (split of pricey-flags)",
+     "points": "Unflagged over PRICEY in T1: PM +9.9/pair (33, not enough yet), AM +1.8 (8). The button already sorts PRICEY last in every tier, T1 included",
+     "verdict": "RULE for (1.73 (1.38-2.20), 12 slates; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "RULE for",
+     "lift": {
+      "lift10": 1.73,
+      "range80": [
+       1.37,
+       2.18
+      ],
+      "teams": 96939,
+      "slates": 12,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 303,
+      "top10_ratio": 1.78,
+      "top1_ratio": 2.31,
+      "finish_pct": 42.3
+     },
+     "line": "pricey-flags:T1: RULE for; this run: RULE for; top-10% lift 1.73 (1.37-2.18); my teams there 1.78x at the top 10% (303 teams)"
+    },
+    {
+     "id": "kept-am-t1",
+     "decision": "AM T1: ADP, Boom deciding within 2 picks (original rule)",
+     "window": "AM",
+     "status": "kept (original rule)",
+     "points": "kept: no alternative beat it",
+     "verdict": "pending",
+     "current": null,
+     "lift": null,
+     "mine": null,
+     "line": "kept-am-t1: pending"
+    },
+    {
+     "id": "kept-pm-t1",
+     "decision": "PM T1: ETR (original rule)",
+     "window": "PM",
+     "status": "kept (original rule)",
+     "points": "kept: no alternative beat it",
+     "verdict": "pending",
+     "current": null,
+     "lift": null,
+     "mine": null,
+     "line": "kept-pm-t1: pending"
+    }
+   ]
+  },
+  "2": {
+   "exposure": {
+    "am": {
+     "my_teams": 15,
+     "field_teams": 8576,
+     "picks_per_team": {
+      "mine": 2.13,
+      "field": 2.14
+     },
+     "players": [
+      {
+       "name": "Domantas Sabonis",
+       "adp": 4.8,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.067,
+       "field": 0.137,
+       "drafted": 0.808
+      },
+      {
+       "name": "LaMelo Ball",
+       "adp": 5.3,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.333,
+       "field": 0.166,
+       "drafted": 0.973
+      },
+      {
+       "name": "Darius Acuff Jr.",
+       "adp": 5.7,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.067,
+       "field": 0.166,
+       "drafted": 0.977
+      },
+      {
+       "name": "Bam Adebayo",
+       "adp": 6.3,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.333,
+       "field": 0.166,
+       "drafted": 0.976
+      },
+      {
+       "name": "Michael Porter Jr.",
+       "adp": 8.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.167,
+       "drafted": 0.979
+      },
+      {
+       "name": "Zion Williamson",
+       "adp": 10.3,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.167,
+       "drafted": 0.981
+      },
+      {
+       "name": "Kyrie Irving",
+       "adp": 10.5,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.133,
+       "field": 0.167,
+       "drafted": 0.984
+      },
+      {
+       "name": "Keyonte George",
+       "adp": 11.8,
+       "flag": "PRICEY",
+       "tag": "Questionable",
+       "q_class": "TRAP",
+       "mine": 0.0,
+       "field": 0.166,
+       "drafted": 0.978
+      },
+      {
+       "name": "Jaden McDaniels",
+       "adp": 13.1,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.067,
+       "field": 0.167,
+       "drafted": 0.981
+      },
+      {
+       "name": "Julius Randle",
+       "adp": 13.4,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.267,
+       "field": 0.167,
+       "drafted": 0.979
+      },
+      {
+       "name": "Paul George",
+       "adp": 13.7,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.167,
+       "drafted": 0.979
+      },
+      {
+       "name": "Darius Garland",
+       "adp": 14.1,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.467,
+       "field": 0.167,
+       "drafted": 0.98
+      },
+      {
+       "name": "Dejounte Murray",
+       "adp": 17.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.166,
+       "drafted": 0.978
+      }
+     ]
+    },
+    "pm": {
+     "my_teams": 25,
+     "field_teams": 1708,
+     "picks_per_team": {
+      "mine": 2.68,
+      "field": 2.46
+     },
+     "players": [
+      {
+       "name": "Domantas Sabonis",
+       "adp": 4.8,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.36,
+       "field": 0.118,
+       "drafted": 0.663
+      },
+      {
+       "name": "LaMelo Ball",
+       "adp": 5.3,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.48,
+       "field": 0.172,
+       "drafted": 0.97
+      },
+      {
+       "name": "Darius Acuff Jr.",
+       "adp": 5.7,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.12,
+       "field": 0.169,
+       "drafted": 0.954
+      },
+      {
+       "name": "Bam Adebayo",
+       "adp": 6.3,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.12,
+       "field": 0.17,
+       "drafted": 0.957
+      },
+      {
+       "name": "Michael Porter Jr.",
+       "adp": 8.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.167,
+       "drafted": 0.941
+      },
+      {
+       "name": "Zion Williamson",
+       "adp": 10.3,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.165,
+       "drafted": 0.931
+      },
+      {
+       "name": "Kyrie Irving",
+       "adp": 10.5,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.12,
+       "field": 0.163,
+       "drafted": 0.921
+      },
+      {
+       "name": "Keyonte George",
+       "adp": 11.8,
+       "flag": null,
+       "tag": "Questionable",
+       "q_class": "TRAP",
+       "mine": 0.08,
+       "field": 0.168,
+       "drafted": 0.947
+      },
+      {
+       "name": "Jaden McDaniels",
+       "adp": 13.1,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.08,
+       "field": 0.165,
+       "drafted": 0.931
+      },
+      {
+       "name": "Julius Randle",
+       "adp": 13.4,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.04,
+       "field": 0.167,
+       "drafted": 0.941
+      },
+      {
+       "name": "Paul George",
+       "adp": 13.7,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.28,
+       "field": 0.167,
+       "drafted": 0.944
+      },
+      {
+       "name": "Darius Garland",
+       "adp": 14.1,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.28,
+       "field": 0.166,
+       "drafted": 0.937
+      },
+      {
+       "name": "Ayo Dosunmu",
+       "adp": 15.2,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.164,
+       "drafted": 0.924
+      },
+      {
+       "name": "Dejounte Murray",
+       "adp": 17.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.12,
+       "field": 0.168,
+       "drafted": 0.947
+      },
+      {
+       "name": "Tyler Herro",
+       "adp": 17.2,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.169,
+       "drafted": 0.954
+      }
+     ]
+    }
+   },
+   "drafted": {
+    "am": {
+     "VALUE": [],
+     "PRICEY": [
+      {
+       "name": "Zion Williamson",
+       "drafted": 0.981,
+       "mine": 0.0
+      },
+      {
+       "name": "Kyrie Irving",
+       "drafted": 0.984,
+       "mine": 0.133
+      },
+      {
+       "name": "Keyonte George",
+       "drafted": 0.978,
+       "mine": 0.0
+      },
+      {
+       "name": "Jaden McDaniels",
+       "drafted": 0.981,
+       "mine": 0.067
+      }
+     ],
+     "Q": [
+      {
+       "name": "Keyonte George",
+       "drafted": 0.978,
+       "mine": 0.0
+      }
+     ]
+    },
+    "pm": {
+     "VALUE": [],
+     "PRICEY": [
+      {
+       "name": "Tyler Herro",
+       "drafted": 0.954,
+       "mine": 0.2
+      }
+     ],
+     "Q": [
+      {
+       "name": "Keyonte George",
+       "drafted": 0.947,
+       "mine": 0.08
+      }
+     ]
+    }
+   },
+   "decisions": [
+    {
+     "id": "pricey-flags",
+     "decision": "PRICEY-flagged players last in their tier",
+     "window": "both",
+     "status": "candidate",
+     "points": "mixed / not enough",
+     "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.08,
+      "range80": [
+       0.98,
+       1.2
+      ],
+      "teams": 734571,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 1229,
+      "top10_ratio": 1.42,
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
+     },
+     "line": "pricey-flags: LEAN for overall; this run: LEAN for; top-10% lift 1.08 (0.98-1.20); my teams there 1.42x at the top 10% (1229 teams)"
+    },
+    {
+     "id": "leverage-t2-t4",
+     "decision": "Leverage tiebreak in T2-T4 (less drafted first within 2 points)",
+     "window": "both",
+     "status": "candidate",
+     "points": "On money's definition: not enough yet (AM 13 pairs, PM 6: T2-T3 are near 100% drafted, so 10-point drafted gaps are rare); in the shadow from 2026-11-10",
+     "verdict": "LEAN for (RULE numbers, 1.38 (1.15-2.14), on 6 slates; re-read at 14; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "RULE for",
+     "lift": {
+      "lift10": 1.38,
+      "range80": [
+       1.15,
+       2.13
+      ],
+      "teams": 18710,
+      "slates": 6,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 56,
+      "top10_ratio": 2.32,
+      "top1_ratio": 1.79,
+      "finish_pct": 35.3
+     },
+     "line": "leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.38 (1.15-2.13); my teams there 2.32x at the top 10% (56 teams)"
+    },
+    {
+     "id": "pm-t2-adp-etr2",
+     "decision": "PM T2: ADP, ETR within 2 picks",
+     "window": "PM",
+     "status": "adopted (provisional; best of 8)",
+     "points": "LEAN (listed)",
+     "verdict": "no lean (top-10% lift 1.18 (0.87-1.56); 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 1.19,
+      "range80": [
+       0.87,
+       1.58
+      ],
+      "teams": 59946,
+      "slates": 13,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 336,
+      "top10_ratio": 1.82,
+      "top1_ratio": 2.08,
+      "finish_pct": 40.1
+     },
+     "line": "pm-t2-adp-etr2: no lean; this run: no lean; top-10% lift 1.19 (0.87-1.58); my teams there 1.82x at the top 10% (336 teams)"
+    },
+    {
+     "id": "pm-t2-other-reads",
+     "decision": "Your other reads in PM T2",
+     "window": "PM",
+     "status": "candidate",
+     "points": "LEAN (single window)",
+     "verdict": "no lean (top-10% lift 0.93 (0.76-1.13); 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 0.93,
+      "range80": [
+       0.76,
+       1.14
+      ],
+      "teams": 81995,
+      "slates": 16,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 394,
+      "top10_ratio": 1.14,
+      "top1_ratio": 0.51,
+      "finish_pct": 45.8
+     },
+     "line": "pm-t2-other-reads: no lean; this run: no lean; top-10% lift 0.93 (0.76-1.14); my teams there 1.14x at the top 10% (394 teams)"
+    },
+    {
+     "id": "kept-am-t2",
+     "decision": "AM T2: ADP straight (original rule)",
+     "window": "AM",
+     "status": "kept (original rule)",
+     "points": "kept: no alternative beat it",
+     "verdict": "pending",
+     "current": null,
+     "lift": null,
+     "mine": null,
+     "line": "kept-am-t2: pending"
+    }
+   ]
+  },
+  "3": {
+   "exposure": {
+    "am": {
+     "my_teams": 15,
+     "field_teams": 8576,
+     "picks_per_team": {
+      "mine": 0.47,
+      "field": 0.96
+     },
+     "players": [
+      {
+       "name": "Ayo Dosunmu",
+       "adp": 15.2,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.267,
+       "field": 0.167,
+       "drafted": 0.983
+      },
+      {
+       "name": "Tyler Herro",
+       "adp": 17.2,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.166,
+       "drafted": 0.977
+      },
+      {
+       "name": "Jonathan Kuminga",
+       "adp": 19.4,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.166,
+       "drafted": 0.975
+      },
+      {
+       "name": "Darryn Peterson",
+       "adp": 20.4,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.167,
+       "drafted": 0.981
+      },
+      {
+       "name": "Davion Mitchell",
+       "adp": 21.2,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.167,
+       "drafted": 0.984
+      },
+      {
+       "name": "Lauri Markkanen",
+       "adp": 22.8,
+       "flag": "VALUE",
+       "tag": "Questionable",
+       "q_class": "TRAP",
+       "mine": 0.0,
+       "field": 0.126,
+       "drafted": 0.738
+      }
+     ]
+    },
+    "pm": {
+     "my_teams": 25,
+     "field_teams": 1708,
+     "picks_per_team": {
+      "mine": 0.8,
+      "field": 0.73
+     },
+     "players": [
+      {
+       "name": "Jonathan Kuminga",
+       "adp": 19.4,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.17,
+       "drafted": 0.96
+      },
+      {
+       "name": "Darryn Peterson",
+       "adp": 20.4,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.165,
+       "drafted": 0.931
+      },
+      {
+       "name": "Davion Mitchell",
+       "adp": 21.2,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.28,
+       "field": 0.163,
+       "drafted": 0.921
+      },
+      {
+       "name": "Jeremiah Fears",
+       "adp": 22.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.48,
+       "field": 0.165,
+       "drafted": 0.931
+      },
+      {
+       "name": "Lauri Markkanen",
+       "adp": 22.8,
+       "flag": null,
+       "tag": "Questionable",
+       "q_class": "TRAP",
+       "mine": 0.04,
+       "field": 0.066,
+       "drafted": 0.37
+      }
+     ]
+    }
+   },
+   "drafted": {
+    "am": {
+     "VALUE": [
+      {
+       "name": "Lauri Markkanen",
+       "drafted": 0.738,
+       "mine": 0.0
+      }
+     ],
+     "PRICEY": [
+      {
+       "name": "Ayo Dosunmu",
+       "drafted": 0.983,
+       "mine": 0.267
+      },
+      {
+       "name": "Tyler Herro",
+       "drafted": 0.977,
+       "mine": 0.2
+      },
+      {
+       "name": "Jonathan Kuminga",
+       "drafted": 0.975,
+       "mine": 0.0
+      },
+      {
+       "name": "Darryn Peterson",
+       "drafted": 0.981,
+       "mine": 0.0
+      },
+      {
+       "name": "Davion Mitchell",
+       "drafted": 0.984,
+       "mine": 0.0
+      }
+     ],
+     "Q": [
+      {
+       "name": "Lauri Markkanen",
+       "drafted": 0.738,
+       "mine": 0.0
+      }
+     ]
+    },
+    "pm": {
+     "VALUE": [],
+     "PRICEY": [
+      {
+       "name": "Jonathan Kuminga",
+       "drafted": 0.96,
+       "mine": 0.0
+      },
+      {
+       "name": "Darryn Peterson",
+       "drafted": 0.931,
+       "mine": 0.0
+      }
+     ],
+     "Q": [
+      {
+       "name": "Lauri Markkanen",
+       "drafted": 0.37,
+       "mine": 0.04
+      }
+     ]
+    }
+   },
+   "decisions": [
+    {
+     "id": "value-up-middle-t5",
+     "decision": "VALUE-flagged players first in their tier",
+     "window": "both",
+     "status": "adopted",
+     "points": "LEAN (both windows)",
+     "verdict": "LEAN for (1.14 (1.02-1.25); was RULE before the check; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.14,
+      "range80": [
+       1.03,
+       1.25
+      ],
+      "teams": 1242763,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 999,
+      "top10_ratio": 1.26,
+      "top1_ratio": 1.0,
+      "finish_pct": 45.4
+     },
+     "line": "value-up-middle-t5: LEAN for; this run: LEAN for; top-10% lift 1.14 (1.03-1.25); my teams there 1.26x at the top 10% (999 teams)"
+    },
+    {
+     "id": "pricey-flags",
+     "decision": "PRICEY-flagged players last in their tier",
+     "window": "both",
+     "status": "candidate",
+     "points": "mixed / not enough",
+     "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.08,
+      "range80": [
+       0.98,
+       1.2
+      ],
+      "teams": 734571,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 1229,
+      "top10_ratio": 1.42,
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
+     },
+     "line": "pricey-flags: LEAN for overall; this run: LEAN for; top-10% lift 1.08 (0.98-1.20); my teams there 1.42x at the top 10% (1229 teams)"
+    },
+    {
+     "id": "leverage-t2-t4",
+     "decision": "Leverage tiebreak in T2-T4 (less drafted first within 2 points)",
+     "window": "both",
+     "status": "candidate",
+     "points": "On money's definition: not enough yet (AM 13 pairs, PM 6: T2-T3 are near 100% drafted, so 10-point drafted gaps are rare); in the shadow from 2026-11-10",
+     "verdict": "LEAN for (RULE numbers, 1.38 (1.15-2.14), on 6 slates; re-read at 14; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "RULE for",
+     "lift": {
+      "lift10": 1.38,
+      "range80": [
+       1.15,
+       2.13
+      ],
+      "teams": 18710,
+      "slates": 6,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 56,
+      "top10_ratio": 2.32,
+      "top1_ratio": 1.79,
+      "finish_pct": 35.3
+     },
+     "line": "leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.38 (1.15-2.13); my teams there 2.32x at the top 10% (56 teams)"
+    },
+    {
+     "id": "pm-middle-takes",
+     "decision": "Your takes in the PM middle (board vs ETR)",
+     "window": "PM",
+     "status": "candidate",
+     "points": "LEAN (single window)",
+     "verdict": "no lean (top-10% lift 0.99 (0.80-1.20); 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 0.99,
+      "range80": [
+       0.8,
+       1.19
+      ],
+      "teams": 161537,
+      "slates": 16,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 566,
+      "top10_ratio": 1.4,
+      "top1_ratio": 0.88,
+      "finish_pct": 42.6
+     },
+     "line": "pm-middle-takes: no lean; this run: no lean; top-10% lift 0.99 (0.80-1.19); my teams there 1.40x at the top 10% (566 teams)"
+    },
+    {
+     "id": "kept-am-middle",
+     "decision": "AM T3/T4: Proj, ADP deciding within 3 points (original rule)",
+     "window": "AM",
+     "status": "kept (original rule)",
+     "points": "kept: no alternative beat it",
+     "verdict": "pending",
+     "current": null,
+     "lift": null,
+     "mine": null,
+     "line": "kept-am-middle: pending"
+    },
+    {
+     "id": "kept-pm-t3",
+     "decision": "PM T3: ETR, ties to ADP then Boom (original rule)",
+     "window": "PM",
+     "status": "kept (original rule)",
+     "points": "kept: no alternative beat it",
+     "verdict": "pending",
+     "current": null,
+     "lift": null,
+     "mine": null,
+     "line": "kept-pm-t3: pending"
+    }
+   ]
+  },
+  "4": {
+   "exposure": {
+    "am": {
+     "my_teams": 15,
+     "field_teams": 8576,
+     "picks_per_team": {
+      "mine": 1.73,
+      "field": 1.17
+     },
+     "players": [
+      {
+       "name": "Jeremiah Fears",
+       "adp": 22.0,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.533,
+       "field": 0.167,
+       "drafted": 0.981
+      },
+      {
+       "name": "Trey Murphy III",
+       "adp": 24.6,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.467,
+       "field": 0.167,
+       "drafted": 0.979
+      },
+      {
+       "name": "Rudy Gobert",
+       "adp": 25.0,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.267,
+       "field": 0.166,
+       "drafted": 0.976
+      },
+      {
+       "name": "Derrick White",
+       "adp": 26.2,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.166,
+       "drafted": 0.977
+      },
+      {
+       "name": "Rui Hachimura",
+       "adp": 26.8,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.168,
+       "drafted": 0.99
+      },
+      {
+       "name": "PJ Washington",
+       "adp": 27.5,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.167,
+       "drafted": 0.979
+      },
+      {
+       "name": "Zach LaVine",
+       "adp": 28.4,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.467,
+       "field": 0.167,
+       "drafted": 0.982
+      }
+     ]
+    },
+    "pm": {
+     "my_teams": 25,
+     "field_teams": 1708,
+     "picks_per_team": {
+      "mine": 0.84,
+      "field": 1.0
+     },
+     "players": [
+      {
+       "name": "Trey Murphy III",
+       "adp": 24.6,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.167,
+       "drafted": 0.944
+      },
+      {
+       "name": "Rudy Gobert",
+       "adp": 25.0,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.12,
+       "field": 0.17,
+       "drafted": 0.957
+      },
+      {
+       "name": "Derrick White",
+       "adp": 26.2,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.169,
+       "drafted": 0.954
+      },
+      {
+       "name": "Rui Hachimura",
+       "adp": 26.8,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.157,
+       "drafted": 0.888
+      },
+      {
+       "name": "PJ Washington",
+       "adp": 27.5,
+       "flag": "PRICEY",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.08,
+       "field": 0.167,
+       "drafted": 0.941
+      },
+      {
+       "name": "Zach LaVine",
+       "adp": 28.4,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.24,
+       "field": 0.165,
+       "drafted": 0.927
+      }
+     ]
+    }
+   },
+   "drafted": {
+    "am": {
+     "VALUE": [
+      {
+       "name": "Rudy Gobert",
+       "drafted": 0.976,
+       "mine": 0.267
+      },
+      {
+       "name": "Derrick White",
+       "drafted": 0.977,
+       "mine": 0.0
+      },
+      {
+       "name": "Zach LaVine",
+       "drafted": 0.982,
+       "mine": 0.467
+      }
+     ],
+     "PRICEY": [
+      {
+       "name": "Jeremiah Fears",
+       "drafted": 0.981,
+       "mine": 0.533
+      },
+      {
+       "name": "Rui Hachimura",
+       "drafted": 0.99,
+       "mine": 0.0
+      }
+     ],
+     "Q": []
+    },
+    "pm": {
+     "VALUE": [
+      {
+       "name": "Trey Murphy III",
+       "drafted": 0.944,
+       "mine": 0.2
+      },
+      {
+       "name": "Rudy Gobert",
+       "drafted": 0.957,
+       "mine": 0.12
+      },
+      {
+       "name": "Derrick White",
+       "drafted": 0.954,
+       "mine": 0.2
+      },
+      {
+       "name": "Zach LaVine",
+       "drafted": 0.927,
+       "mine": 0.24
+      }
+     ],
+     "PRICEY": [
+      {
+       "name": "Rui Hachimura",
+       "drafted": 0.888,
+       "mine": 0.0
+      },
+      {
+       "name": "PJ Washington",
+       "drafted": 0.941,
+       "mine": 0.08
+      }
+     ],
+     "Q": []
+    }
+   },
+   "decisions": [
+    {
+     "id": "value-up-middle-t5",
+     "decision": "VALUE-flagged players first in their tier",
+     "window": "both",
+     "status": "adopted",
+     "points": "LEAN (both windows)",
+     "verdict": "LEAN for (1.14 (1.02-1.25); was RULE before the check; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.14,
+      "range80": [
+       1.03,
+       1.25
+      ],
+      "teams": 1242763,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 999,
+      "top10_ratio": 1.26,
+      "top1_ratio": 1.0,
+      "finish_pct": 45.4
+     },
+     "line": "value-up-middle-t5: LEAN for; this run: LEAN for; top-10% lift 1.14 (1.03-1.25); my teams there 1.26x at the top 10% (999 teams)"
+    },
+    {
+     "id": "pricey-flags",
+     "decision": "PRICEY-flagged players last in their tier",
+     "window": "both",
+     "status": "candidate",
+     "points": "mixed / not enough",
+     "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.08,
+      "range80": [
+       0.98,
+       1.2
+      ],
+      "teams": 734571,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 1229,
+      "top10_ratio": 1.42,
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
+     },
+     "line": "pricey-flags: LEAN for overall; this run: LEAN for; top-10% lift 1.08 (0.98-1.20); my teams there 1.42x at the top 10% (1229 teams)"
+    },
+    {
+     "id": "pm-t4-pricey-last-off",
+     "decision": "PRICEY-last off in PM T4 (VALUE first kept)",
+     "window": "PM",
+     "status": "candidate (shadow)",
+     "points": "not enough yet",
+     "verdict": "no lean (top-10% lift 1.15 (0.80-1.45); 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 1.15,
+      "range80": [
+       0.81,
+       1.46
+      ],
+      "teams": 40215,
+      "slates": 9,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 100,
+      "top10_ratio": 1.8,
+      "top1_ratio": 1.0,
+      "finish_pct": 42.4
+     },
+     "line": "pm-t4-pricey-last-off: no lean; this run: no lean; top-10% lift 1.15 (0.81-1.46); my teams there 1.80x at the top 10% (100 teams)"
+    },
+    {
+     "id": "leverage-t2-t4",
+     "decision": "Leverage tiebreak in T2-T4 (less drafted first within 2 points)",
+     "window": "both",
+     "status": "candidate",
+     "points": "On money's definition: not enough yet (AM 13 pairs, PM 6: T2-T3 are near 100% drafted, so 10-point drafted gaps are rare); in the shadow from 2026-11-10",
+     "verdict": "LEAN for (RULE numbers, 1.38 (1.15-2.14), on 6 slates; re-read at 14; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "RULE for",
+     "lift": {
+      "lift10": 1.38,
+      "range80": [
+       1.15,
+       2.13
+      ],
+      "teams": 18710,
+      "slates": 6,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 56,
+      "top10_ratio": 2.32,
+      "top1_ratio": 1.79,
+      "finish_pct": 35.3
+     },
+     "line": "leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.38 (1.15-2.13); my teams there 2.32x at the top 10% (56 teams)"
+    },
+    {
+     "id": "pm-t4-adp-etr2",
+     "decision": "PM T4: ADP, ETR within 2 picks",
+     "window": "PM",
+     "status": "adopted (provisional; best of 8)",
+     "points": "LEAN (listed)",
+     "verdict": "no lean (0.86 (0.72-1.09); LEAN against on ten price groups; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 0.86,
+      "range80": [
+       0.71,
+       1.09
+      ],
+      "teams": 42555,
+      "slates": 13,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 198,
+      "top10_ratio": 0.96,
+      "top1_ratio": 0.0,
+      "finish_pct": 41.9
+     },
+     "line": "pm-t4-adp-etr2: no lean; this run: no lean; top-10% lift 0.86 (0.71-1.09); my teams there 0.96x at the top 10% (198 teams)"
+    },
+    {
+     "id": "pm-middle-takes",
+     "decision": "Your takes in the PM middle (board vs ETR)",
+     "window": "PM",
+     "status": "candidate",
+     "points": "LEAN (single window)",
+     "verdict": "no lean (top-10% lift 0.99 (0.80-1.20); 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 0.99,
+      "range80": [
+       0.8,
+       1.19
+      ],
+      "teams": 161537,
+      "slates": 16,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 566,
+      "top10_ratio": 1.4,
+      "top1_ratio": 0.88,
+      "finish_pct": 42.6
+     },
+     "line": "pm-middle-takes: no lean; this run: no lean; top-10% lift 0.99 (0.80-1.19); my teams there 1.40x at the top 10% (566 teams)"
+    },
+    {
+     "id": "kept-am-middle",
+     "decision": "AM T3/T4: Proj, ADP deciding within 3 points (original rule)",
+     "window": "AM",
+     "status": "kept (original rule)",
+     "points": "kept: no alternative beat it",
+     "verdict": "pending",
+     "current": null,
+     "lift": null,
+     "mine": null,
+     "line": "kept-am-middle: pending"
+    }
+   ]
+  },
+  "5": {
+   "exposure": {
+    "am": {
+     "my_teams": 15,
+     "field_teams": 8576,
+     "picks_per_team": {
+      "mine": 1.13,
+      "field": 1.16
+     },
+     "players": [
+      {
+       "name": "Day'Ron Sharpe",
+       "adp": 31.1,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.067,
+       "field": 0.161,
+       "drafted": 0.946
+      },
+      {
+       "name": "Nolan Traore",
+       "adp": 32.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.161,
+       "drafted": 0.944
+      },
+      {
+       "name": "Myles Turner",
+       "adp": 33.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.135,
+       "drafted": 0.792
+      },
+      {
+       "name": "Derik Queen",
+       "adp": 33.3,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.121,
+       "drafted": 0.709
+      },
+      {
+       "name": "Brook Lopez",
+       "adp": 33.8,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.133,
+       "field": 0.124,
+       "drafted": 0.729
+      },
+      {
+       "name": "Ace Bailey",
+       "adp": 34.2,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.8,
+       "field": 0.103,
+       "drafted": 0.605
+      },
+      {
+       "name": "Saddiq Bey",
+       "adp": 34.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.083,
+       "drafted": 0.487
+      },
+      {
+       "name": "Jaime Jaquez Jr.",
+       "adp": 35.1,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.133,
+       "field": 0.075,
+       "drafted": 0.438
+      },
+      {
+       "name": "Payton Pritchard",
+       "adp": 35.2,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.051,
+       "drafted": 0.298
+      },
+      {
+       "name": "Brayden Burries",
+       "adp": 35.5,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.038,
+       "drafted": 0.225
+      },
+      {
+       "name": "Kris Dunn",
+       "adp": 35.6,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.041,
+       "drafted": 0.239
+      },
+      {
+       "name": "Neemias Queta",
+       "adp": 35.7,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.021,
+       "drafted": 0.121
+      },
+      {
+       "name": "Klay Thompson",
+       "adp": 35.8,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.009,
+       "drafted": 0.051
+      },
+      {
+       "name": "Derrick Jones Jr.",
+       "adp": 35.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.009,
+       "drafted": 0.053
+      },
+      {
+       "name": "Keaton Wagler",
+       "adp": 35.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.007,
+       "drafted": 0.042
+      },
+      {
+       "name": "Pelle Larsson",
+       "adp": 35.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.003,
+       "drafted": 0.018
+      },
+      {
+       "name": "Precious Achiuwa",
+       "adp": 36.0,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.002,
+       "drafted": 0.014
+      },
+      {
+       "name": "De'Andre Hunter",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.005,
+       "drafted": 0.029
+      },
+      {
+       "name": "Isaiah Collier",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.002,
+       "drafted": 0.01
+      },
+      {
+       "name": "Jaxson Hayes",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.003,
+       "drafted": 0.019
+      },
+      {
+       "name": "Naji Marshall",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.008
+      },
+      {
+       "name": "Andrew Wiggins",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.004
+      },
+      {
+       "name": "Daniel Gafford",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.002,
+       "drafted": 0.012
+      },
+      {
+       "name": "Morez Johnson Jr.",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.005
+      },
+      {
+       "name": "Sam Hauser",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Bones Hyland",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.003
+      },
+      {
+       "name": "Mitchell Robinson",
+       "adp": 36.0,
+       "flag": null,
+       "tag": "Questionable",
+       "q_class": "FAIR",
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Keegan Murray",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.006
+      },
+      {
+       "name": "Malik Monk",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Nikola Jovic",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.002
+      },
+      {
+       "name": "Kyle Kuzma",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.005
+      },
+      {
+       "name": "Mo Bamba",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Terrence Shannon Jr.",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Santi Aldama",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Danny Wolf",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Ryan Rollins",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Kel'el Ware",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.003
+      },
+      {
+       "name": "Karlo Matkovic",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Herb Jones",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      },
+      {
+       "name": "Mike Conley",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.0,
+       "drafted": 0.001
+      }
+     ]
+    },
+    "pm": {
+     "my_teams": 25,
+     "field_teams": 1708,
+     "picks_per_team": {
+      "mine": 1.28,
+      "field": 1.25
+     },
+     "players": [
+      {
+       "name": "Day'Ron Sharpe",
+       "adp": 31.1,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.28,
+       "field": 0.174,
+       "drafted": 0.98
+      },
+      {
+       "name": "Nolan Traore",
+       "adp": 32.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.04,
+       "field": 0.157,
+       "drafted": 0.888
+      },
+      {
+       "name": "Myles Turner",
+       "adp": 33.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.11,
+       "drafted": 0.62
+      },
+      {
+       "name": "Derik Queen",
+       "adp": 33.3,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.082,
+       "drafted": 0.462
+      },
+      {
+       "name": "Brook Lopez",
+       "adp": 33.8,
+       "flag": "VALUE",
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.15,
+       "drafted": 0.845
+      },
+      {
+       "name": "Ace Bailey",
+       "adp": 34.2,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.52,
+       "field": 0.142,
+       "drafted": 0.802
+      },
+      {
+       "name": "Saddiq Bey",
+       "adp": 34.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.063,
+       "drafted": 0.353
+      },
+      {
+       "name": "Jaime Jaquez Jr.",
+       "adp": 35.1,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.2,
+       "field": 0.05,
+       "drafted": 0.281
+      },
+      {
+       "name": "Payton Pritchard",
+       "adp": 35.2,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.025,
+       "drafted": 0.139
+      },
+      {
+       "name": "Brayden Burries",
+       "adp": 35.5,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.073,
+       "drafted": 0.409
+      },
+      {
+       "name": "Kris Dunn",
+       "adp": 35.6,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.04,
+       "field": 0.049,
+       "drafted": 0.274
+      },
+      {
+       "name": "Neemias Queta",
+       "adp": 35.7,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.016,
+       "drafted": 0.089
+      },
+      {
+       "name": "Klay Thompson",
+       "adp": 35.8,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.006,
+       "drafted": 0.033
+      },
+      {
+       "name": "Derrick Jones Jr.",
+       "adp": 35.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.009,
+       "drafted": 0.053
+      },
+      {
+       "name": "Keaton Wagler",
+       "adp": 35.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.007
+      },
+      {
+       "name": "Pelle Larsson",
+       "adp": 35.9,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.005,
+       "drafted": 0.026
+      },
+      {
+       "name": "Precious Achiuwa",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.099,
+       "drafted": 0.558
+      },
+      {
+       "name": "De'Andre Hunter",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.011,
+       "drafted": 0.063
+      },
+      {
+       "name": "Isaiah Collier",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.005,
+       "drafted": 0.03
+      },
+      {
+       "name": "Jaxson Hayes",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.006,
+       "drafted": 0.036
+      },
+      {
+       "name": "Naji Marshall",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.002,
+       "drafted": 0.013
+      },
+      {
+       "name": "Daniel Gafford",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.006,
+       "drafted": 0.033
+      },
+      {
+       "name": "Morez Johnson Jr.",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.004,
+       "drafted": 0.023
+      },
+      {
+       "name": "Keegan Murray",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.007,
+       "drafted": 0.04
+      },
+      {
+       "name": "Nikola Jovic",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.007
+      },
+      {
+       "name": "Ryan Rollins",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.003
+      },
+      {
+       "name": "Max Strus",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.003
+      },
+      {
+       "name": "Herb Jones",
+       "adp": 36.0,
+       "flag": null,
+       "tag": null,
+       "q_class": null,
+       "mine": 0.0,
+       "field": 0.001,
+       "drafted": 0.003
+      }
+     ]
+    }
+   },
+   "drafted": {
+    "am": {
+     "VALUE": [
+      {
+       "name": "Day'Ron Sharpe",
+       "drafted": 0.946,
+       "mine": 0.067
+      },
+      {
+       "name": "Derik Queen",
+       "drafted": 0.709,
+       "mine": 0.0
+      },
+      {
+       "name": "Payton Pritchard",
+       "drafted": 0.298,
+       "mine": 0.0
+      },
+      {
+       "name": "Precious Achiuwa",
+       "drafted": 0.014,
+       "mine": 0.0
+      }
+     ],
+     "PRICEY": [],
+     "Q": [
+      {
+       "name": "Mitchell Robinson",
+       "drafted": 0.001,
+       "mine": 0.0
+      }
+     ]
+    },
+    "pm": {
+     "VALUE": [
+      {
+       "name": "Day'Ron Sharpe",
+       "drafted": 0.98,
+       "mine": 0.28
+      },
+      {
+       "name": "Brook Lopez",
+       "drafted": 0.845,
+       "mine": 0.2
+      }
+     ],
+     "PRICEY": [],
+     "Q": []
+    }
+   },
+   "decisions": [
+    {
+     "id": "am-t5-button-order",
+     "decision": "Keep the Tiers button's order in T5",
+     "window": "AM",
+     "status": "adopted",
+     "points": "LEAN (both windows)",
+     "verdict": "no lean (top-10% lift 1.01 (0.94-1.09); 2026-11-09)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.07,
+      "range80": [
+       0.97,
+       1.19
+      ],
+      "teams": 1536060,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 366,
+      "top10_ratio": 1.37,
+      "top1_ratio": 0.82,
+      "finish_pct": 46.9
+     },
+     "line": "am-t5-button-order: no lean; this run: LEAN for; top-10% lift 1.07 (0.97-1.19); my teams there 1.37x at the top 10% (366 teams)"
+    },
+    {
+     "id": "value-up-middle-t5",
+     "decision": "VALUE-flagged players first in their tier",
+     "window": "both",
+     "status": "adopted",
+     "points": "LEAN (both windows)",
+     "verdict": "LEAN for (1.14 (1.02-1.25); was RULE before the check; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.14,
+      "range80": [
+       1.03,
+       1.25
+      ],
+      "teams": 1242763,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 999,
+      "top10_ratio": 1.26,
+      "top1_ratio": 1.0,
+      "finish_pct": 45.4
+     },
+     "line": "value-up-middle-t5: LEAN for; this run: LEAN for; top-10% lift 1.14 (1.03-1.25); my teams there 1.26x at the top 10% (999 teams)"
+    },
+    {
+     "id": "pricey-flags",
+     "decision": "PRICEY-flagged players last in their tier",
+     "window": "both",
+     "status": "candidate",
+     "points": "mixed / not enough",
+     "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.08,
+      "range80": [
+       0.98,
+       1.2
+      ],
+      "teams": 734571,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 1229,
+      "top10_ratio": 1.42,
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
+     },
+     "line": "pricey-flags: LEAN for overall; this run: LEAN for; top-10% lift 1.08 (0.98-1.20); my teams there 1.42x at the top 10% (1229 teams)"
+    },
+    {
+     "id": "q-tag-pushes",
+     "decision": "Your Q-tag pushes (moving a tagged player down)",
+     "window": "both",
+     "status": "candidate",
+     "points": "not enough yet",
+     "verdict": "no lean (top-10% lift 1.12 (0.91-1.37); 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 1.03,
+      "range80": [
+       0.84,
+       1.24
+      ],
+      "teams": 166321,
+      "slates": 12,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 452,
+      "top10_ratio": 1.42,
+      "top1_ratio": 0.88,
+      "finish_pct": 46.6
+     },
+     "line": "q-tag-pushes: no lean; this run: no lean; top-10% lift 1.03 (0.84-1.24); my teams there 1.42x at the top 10% (452 teams)"
+    },
+    {
+     "id": "q-tag-raises",
+     "decision": "Your Q-tag raises (moving a tagged player up)",
+     "window": "both",
+     "status": "candidate",
+     "points": "not enough yet",
+     "verdict": "no lean (top-10% lift 1.10 (0.85-1.44); 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 1.04,
+      "range80": [
+       0.83,
+       1.32
+      ],
+      "teams": 178517,
+      "slates": 12,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 184,
+      "top10_ratio": 1.3,
+      "top1_ratio": 0.54,
+      "finish_pct": 45.2
+     },
+     "line": "q-tag-raises: no lean; this run: no lean; top-10% lift 1.04 (0.83-1.32); my teams there 1.30x at the top 10% (184 teams)"
+    },
+    {
+     "id": "beneficiary-round6:sat",
+     "decision": "Beneficiary picks in round 6 (teammate of a tagged player)",
+     "window": "AM",
+     "status": "candidate",
+     "points": "Round-6 AM picks over their ADP round band: teammate tagged and played +2.5 (31, not enough yet), sat +1.7 (36, not enough yet), no tagged teammate -0.5 (299)",
+     "verdict": "played: RULE for (1.37 (1.17-1.69)); sat: no lean (0.96 (0.78-1.26)); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b",
+     "current": "no lean",
+     "lift": {
+      "lift10": 0.96,
+      "range80": [
+       0.78,
+       1.25
+      ],
+      "teams": 14593,
+      "slates": 14,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 52,
+      "top10_ratio": 1.73,
+      "top1_ratio": 3.85,
+      "finish_pct": 44.1
+     },
+     "line": "beneficiary-round6:sat: played: RULE for; this run: no lean; top-10% lift 0.96 (0.78-1.25); my teams there 1.73x at the top 10% (52 teams)"
+    },
+    {
+     "id": "beneficiary-round6:played",
+     "decision": "Beneficiary picks in round 6 (teammate of a tagged player)",
+     "window": "AM",
+     "status": "candidate",
+     "points": "Round-6 AM picks over their ADP round band: teammate tagged and played +2.5 (31, not enough yet), sat +1.7 (36, not enough yet), no tagged teammate -0.5 (299)",
+     "verdict": "played: RULE for (1.37 (1.17-1.69)); sat: no lean (0.96 (0.78-1.26)); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b",
+     "current": "RULE for",
+     "lift": {
+      "lift10": 1.37,
+      "range80": [
+       1.17,
+       1.7
+      ],
+      "teams": 11545,
+      "slates": 12,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 32,
+      "top10_ratio": 0.94,
+      "top1_ratio": 0.0,
+      "finish_pct": 40.1
+     },
+     "line": "beneficiary-round6:played: played: RULE for; this run: RULE for; top-10% lift 1.37 (1.17-1.70); my teams there 0.94x at the top 10% (32 teams)"
+    },
+    {
+     "id": "pm-t5-beneficiary",
+     "decision": "PM T5 beneficiary picks",
+     "window": "PM",
+     "status": "adopted",
+     "points": "LEAN (listed)",
+     "verdict": "no lean (1.14 (0.91-1.46); was LEAN before the check; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 1.13,
+      "range80": [
+       0.9,
+       1.44
+      ],
+      "teams": 39651,
+      "slates": 15,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 260,
+      "top10_ratio": 1.88,
+      "top1_ratio": 0.77,
+      "finish_pct": 40.8
+     },
+     "line": "pm-t5-beneficiary: no lean; this run: no lean; top-10% lift 1.13 (0.90-1.44); my teams there 1.88x at the top 10% (260 teams)"
+    },
+    {
+     "id": "ownership-tiebreak-t5",
+     "decision": "T5 order: the tier's rule, VALUE first, then the less drafted first within 2 projected points",
+     "window": "both",
+     "status": "adopted (provisional, 2026-11-09; money RULE; the shadow decides)",
+     "points": "On money's definition (within 2 projected points, drafted% 10+ apart): AM primary -3.7/pair (195, LEAN against, RULE numbers, check pending); PM -0.3 (577, no lean); every slate -0.5 (1084, no lean). The -4 to -7 was your board's ownership moves (takes), not this definition (money_points.md). Known price, not a reason to drop it: AM -3.7 (check pending); the button's realized order in sample AM +5.0 (105, RULE +), PM -2.8 (91, LEAN against)",
+     "verdict": "RULE for (1.19 (1.06-1.32); AM 1.16, PM 1.22; the gap is the less-drafted pick itself, +2.6 over price on 0.4 fewer points; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "RULE for",
+     "lift": {
+      "lift10": 1.19,
+      "range80": [
+       1.07,
+       1.33
+      ],
+      "teams": 314402,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 743,
+      "top10_ratio": 1.49,
+      "top1_ratio": 0.81,
+      "finish_pct": 45.3
+     },
+     "line": "ownership-tiebreak-t5: RULE for; this run: RULE for; top-10% lift 1.19 (1.07-1.33); my teams there 1.49x at the top 10% (743 teams)"
+    },
+    {
+     "id": "pm-t5-adp-value",
+     "decision": "PM T5: ADP straight, VALUE first",
+     "window": "PM",
+     "status": "adopted",
+     "points": "RULE",
+     "verdict": "LEAN against (0.87 (0.74-1.02), against the old ETR (2: less drafted); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN against",
+     "lift": {
+      "lift10": 0.83,
+      "range80": [
+       0.68,
+       1.0
+      ],
+      "teams": 461093,
+      "slates": 16,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 341,
+      "top10_ratio": 1.64,
+      "top1_ratio": 1.17,
+      "finish_pct": 42.9
+     },
+     "line": "pm-t5-adp-value: LEAN against; this run: LEAN against; top-10% lift 0.83 (0.68-1.00); my teams there 1.64x at the top 10% (341 teams)"
+    },
+    {
+     "id": "am-t5-other-reads",
+     "decision": "Your other reads in AM T5",
+     "window": "AM",
+     "status": "candidate",
+     "points": "LEAN against (single window)",
+     "verdict": "RULE for (1.31 (1.12-1.54); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN for",
+     "lift": {
+      "lift10": 1.17,
+      "range80": [
+       0.96,
+       1.42
+      ],
+      "teams": 175925,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 278,
+      "top10_ratio": 1.15,
+      "top1_ratio": 0.72,
+      "finish_pct": 49.7
+     },
+     "line": "am-t5-other-reads: RULE for; this run: LEAN for; top-10% lift 1.17 (0.96-1.42); my teams there 1.15x at the top 10% (278 teams)"
+    }
+   ]
+  },
+  "all": {
+   "exposure": {},
+   "drafted": {},
+   "decisions": [
+    {
+     "id": "pm-questionable-back-two",
+     "decision": "Questionable player two tiers back",
+     "window": "PM",
+     "status": "adopted",
+     "points": "LEAN (RULE numbers; check pending)",
+     "verdict": "no lean (top-10% lift 0.98 (0.74-1.23); 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 0.98,
+      "range80": [
+       0.76,
+       1.21
+      ],
+      "teams": 17554,
+      "slates": 14,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 97,
+      "top10_ratio": 1.44,
+      "top1_ratio": 0.0,
+      "finish_pct": 43.5
+     },
+     "line": "pm-questionable-back-two: no lean; this run: no lean; top-10% lift 0.98 (0.76-1.21); my teams there 1.44x at the top 10% (97 teams)"
+    },
+    {
+     "id": "am-questionable-no-push",
+     "decision": "No push for a Questionable player",
+     "window": "AM",
+     "status": "adopted",
+     "points": "no variant beats it",
+     "verdict": "no lean (top-10% lift 1.12 (0.87-1.43); 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 1.11,
+      "range80": [
+       0.88,
+       1.37
+      ],
+      "teams": 16489,
+      "slates": 12,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 140,
+      "top10_ratio": 1.21,
+      "top1_ratio": 1.43,
+      "finish_pct": 47.1
+     },
+     "line": "am-questionable-no-push: no lean; this run: no lean; top-10% lift 1.11 (0.88-1.37); my teams there 1.21x at the top 10% (140 teams)"
+    },
+    {
+     "id": "q-class-x:SMASH",
+     "decision": "Q classes on the swap-adjusted X (SMASH/FAIR/TRAP)",
+     "window": "both",
+     "status": "candidate",
+     "points": "not enough yet",
+     "verdict": "no lean for FAIR (1.22 (0.64-2.68)) or TRAP (0.95 (0.81-1.13)); not enough SMASH (top-10% lift; 2026-11-09)",
+     "current": "not enough",
+     "lift": null,
+     "mine": null,
+     "line": "q-class-x:SMASH: no lean for FAIR; this run: not enough"
+    },
+    {
+     "id": "q-class-x:FAIR",
+     "decision": "Q classes on the swap-adjusted X (SMASH/FAIR/TRAP)",
+     "window": "both",
+     "status": "candidate",
+     "points": "not enough yet",
+     "verdict": "no lean for FAIR (1.22 (0.64-2.68)) or TRAP (0.95 (0.81-1.13)); not enough SMASH (top-10% lift; 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 1.19,
+      "range80": [
+       0.77,
+       2.01
+      ],
+      "teams": 6093,
+      "slates": 14,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 52,
+      "top10_ratio": 1.92,
+      "top1_ratio": 0.0,
+      "finish_pct": 37.7
+     },
+     "line": "q-class-x:FAIR: no lean for FAIR; this run: no lean; top-10% lift 1.19 (0.77-2.01); my teams there 1.92x at the top 10% (52 teams)"
+    },
+    {
+     "id": "q-class-x:TRAP",
+     "decision": "Q classes on the swap-adjusted X (SMASH/FAIR/TRAP)",
+     "window": "both",
+     "status": "candidate",
+     "points": "not enough yet",
+     "verdict": "no lean for FAIR (1.22 (0.64-2.68)) or TRAP (0.95 (0.81-1.13)); not enough SMASH (top-10% lift; 2026-11-09)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 0.96,
+      "range80": [
+       0.84,
+       1.12
+      ],
+      "teams": 24755,
+      "slates": 9,
+      "after_price_check": false
+     },
+     "mine": {
+      "teams": 139,
+      "top10_ratio": 1.08,
+      "top1_ratio": 0.72,
+      "finish_pct": 49.3
+     },
+     "line": "q-class-x:TRAP: no lean for FAIR; this run: no lean; top-10% lift 0.96 (0.84-1.12); my teams there 1.08x at the top 10% (139 teams)"
+    },
+    {
+     "id": "one-tier-cap",
+     "decision": "Combine the ladders with the one-tier cap",
+     "window": "both",
+     "status": "adopted",
+     "points": "LEAN (both windows)",
+     "verdict": "LEAN against (0.79 (0.64-1.04); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN against",
+     "lift": {
+      "lift10": 0.8,
+      "range80": [
+       0.64,
+       1.04
+      ],
+      "teams": 86325,
+      "slates": 15,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 161,
+      "top10_ratio": 1.37,
+      "top1_ratio": 1.24,
+      "finish_pct": 43.2
+     },
+     "line": "one-tier-cap: LEAN against; this run: LEAN against; top-10% lift 0.80 (0.64-1.04); my teams there 1.37x at the top 10% (161 teams)"
+    },
+    {
+     "id": "card-same-position-teammates",
+     "decision": "Avoid two teammates in the same position group",
+     "window": "both",
+     "status": "candidate (draft card)",
+     "points": "pending (rankings side)",
+     "verdict": "RULE against (0.76 (0.64-0.88); spread 5+: 0.84 (0.74-0.92); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "RULE against",
+     "lift": {
+      "lift10": 0.75,
+      "range80": [
+       0.64,
+       0.87
+      ],
+      "teams": 66434,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 300,
+      "top10_ratio": 1.43,
+      "top1_ratio": 2.33,
+      "finish_pct": 44.7
+     },
+     "line": "card-same-position-teammates: RULE against; this run: RULE against; top-10% lift 0.75 (0.64-0.87); my teams there 1.43x at the top 10% (300 teams)"
+    },
+    {
+     "id": "card-opposing-stars",
+     "decision": "Pair stars from opposite sides of one game",
+     "window": "both",
+     "status": "candidate (draft card)",
+     "points": "pending (rankings side)",
+     "verdict": "LEAN for (1.10 (0.95-1.27); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "no lean",
+     "lift": {
+      "lift10": 1.07,
+      "range80": [
+       0.93,
+       1.23
+      ],
+      "teams": 107642,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 533,
+      "top10_ratio": 1.59,
+      "top1_ratio": 1.69,
+      "finish_pct": 42.8
+     },
+     "line": "card-opposing-stars: LEAN for; this run: no lean; top-10% lift 1.07 (0.93-1.23); my teams there 1.59x at the top 10% (533 teams)"
+    }
+   ]
+  },
+  "turn": {
+   "exposure": {},
+   "drafted": {},
+   "decisions": [
+    {
+     "id": "card-turn23-reach-higher-proj",
+     "decision": "2/3 turn: reach (2+ picks past ADP order) only toward a higher projection",
+     "window": "both",
+     "status": "candidate (draft card)",
+     "points": "pending (rankings side)",
+     "verdict": "RULE for (1.82 (1.51-2.10), 4,580 teams, 17 slates; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "RULE for",
+     "lift": {
+      "lift10": 1.77,
+      "range80": [
+       1.46,
+       2.04
+      ],
+      "teams": 4818,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 53,
+      "top10_ratio": 3.4,
+      "top1_ratio": 9.43,
+      "finish_pct": 27.4
+     },
+     "line": "card-turn23-reach-higher-proj: RULE for; this run: RULE for; top-10% lift 1.77 (1.46-2.04); my teams there 3.40x at the top 10% (53 teams)"
+    },
+    {
+     "id": "card-turn12-reach",
+     "decision": "1/2 turn: reach (2+ picks past ADP order) rather than trust ADP order",
+     "window": "both",
+     "status": "candidate (draft card)",
+     "points": "pending (rankings side)",
+     "verdict": "LEAN against (0.74 (0.54-1.02), 23,282 teams, 17 slates; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "LEAN against",
+     "lift": {
+      "lift10": 0.74,
+      "range80": [
+       0.53,
+       1.02
+      ],
+      "teams": 23369,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 121,
+      "top10_ratio": 0.83,
+      "top1_ratio": 0.0,
+      "finish_pct": 55.0
+     },
+     "line": "card-turn12-reach: LEAN against; this run: LEAN against; top-10% lift 0.74 (0.53-1.02); my teams there 0.83x at the top 10% (121 teams)"
+    },
+    {
+     "id": "card-fallers:1/2 turn",
+     "decision": "Take a top player who falls to the turn",
+     "window": "both",
+     "status": "candidate (draft card)",
+     "points": "pending (rankings side)",
+     "verdict": "RULE for at both turns (1/2: 1.64 (1.16-2.49); 2/3: 1.22 (1.06-1.44); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "RULE for",
+     "lift": {
+      "lift10": 1.63,
+      "range80": [
+       1.16,
+       2.47
+      ],
+      "teams": 36296,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 167,
+      "top10_ratio": 1.56,
+      "top1_ratio": 2.4,
+      "finish_pct": 45.2
+     },
+     "line": "card-fallers:1/2 turn: RULE for at both turns; this run: RULE for; top-10% lift 1.63 (1.16-2.47); my teams there 1.56x at the top 10% (167 teams)"
+    },
+    {
+     "id": "card-fallers:2/3 turn",
+     "decision": "Take a top player who falls to the turn",
+     "window": "both",
+     "status": "candidate (draft card)",
+     "points": "pending (rankings side)",
+     "verdict": "RULE for at both turns (1/2: 1.64 (1.16-2.49); 2/3: 1.22 (1.06-1.44); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+     "current": "RULE for",
+     "lift": {
+      "lift10": 1.21,
+      "range80": [
+       1.06,
+       1.42
+      ],
+      "teams": 14922,
+      "slates": 17,
+      "after_price_check": true
+     },
+     "mine": {
+      "teams": 83,
+      "top10_ratio": 2.65,
+      "top1_ratio": 2.41,
+      "finish_pct": 33.8
+     },
+     "line": "card-fallers:2/3 turn: RULE for at both turns; this run: RULE for; top-10% lift 1.21 (1.06-1.42); my teams there 2.65x at the top 10% (83 teams)"
+    }
+   ]
+  },
+  "live": {
+   "exposure": {},
+   "drafted": {},
+   "decisions": [
+    {
+     "id": "live-moves",
+     "decision": "Your live re-ranks after the slate locks (news and other moves)",
+     "window": "live",
+     "status": "candidate",
+     "points": "not enough yet (3 nights)",
+     "verdict": "not enough (saves after lock on 3 nights; 2026-11-09)",
+     "current": null,
+     "lift": null,
+     "mine": null,
+     "line": "live-moves: not enough"
+    },
+    {
+     "id": "swap-shuffle",
+     "decision": "Your final swap order (your Underdog app shuffle at swap time)",
+     "window": "live",
+     "status": "candidate",
+     "points": "not enough yet (155 credited swaps of 268; 12 nights)",
+     "verdict": "not enough (about 100 credited swaps; replayed dollars in money_report.md 3f; 2026-11-09)",
+     "current": null,
+     "lift": null,
+     "mine": null,
+     "line": "swap-shuffle: not enough"
+    },
+    {
+     "id": "swap-ownership-order",
+     "decision": "Ownership order inside near-ties in the swap order (leverage vs spread)",
+     "window": "live",
+     "status": "adopted as the swap board default (leverage); under contest test against spread",
+     "points": "not enough yet: lowest first -0.8/swap against projection only, highest first +0.4 (155 swaps, 10 nights)",
+     "verdict": "not enough (about 100 credited swaps; replayed dollars in money_report.md 3f; 2026-11-09)",
+     "current": null,
+     "lift": null,
+     "mine": null,
+     "line": "swap-ownership-order: not enough"
+    }
+   ]
+  }
+ }
+}

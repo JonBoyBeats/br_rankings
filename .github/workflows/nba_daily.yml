@@ -83,7 +83,7 @@ jobs:
         run: |
           git -C ../br-adp-mirror fetch -q --unshallow || true
           python3 scripts/nba_field.py --mirror ../br-adp-mirror --out analysis/nba/report/field.md > /dev/null
-      # The contest side's money report (scripts/nba_money.py): refreshes money_report.md only, never decision_register.csv
+      # The contest side's money report (scripts/nba_money.py): refreshes money_report.md and money_tiers.json, never decision_register.csv
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
         name: Money
         continue-on-error: true
@@ -113,6 +113,6 @@ jobs:
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
           mkdir -p analysis/cbb/daily analysis/cbb/contests
-          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/shadow.json analysis/nba/report/takes_history.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md
+          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/shadow.json analysis/nba/report/takes_history.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md analysis/nba/report/money_tiers.json
           git diff --cached --quiet || git commit -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           git pull --rebase -q origin main && git push
