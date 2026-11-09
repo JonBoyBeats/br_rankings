@@ -200,7 +200,7 @@ def build(rows, date, slate, window, meta):
                 q = "FAIR" if p == a else ""
         mins, act = num(r["min"]), num(r["actual"])
         out.append({"date": date, "slate": slate, "pod": pod, "window": window,
-                    "sample": "primary" if window == "pm" or (src[1] == "ours" and (meta.get("am") or {}).get("from") == "Lock AM") else "secondary",
+                    "sample": "primary" if window == "pm" or (src[1] == "ours" and ((meta.get("am") or {}).get("from") or "").startswith("Lock AM")) else "secondary",
                     "board": (meta.get(window) or {}).get("from", ""),
                     "player_id": pid, "name": r["name"], "team": r["team"], "adp": num(r.get(adp_col)), "proj": proj(r),
                     "proj_src": src[1], "a_tier": a, "p_tier": p, "tier": c, "flag": "VALUE" if d > 0 else "PRICEY" if d < 0 else "",

@@ -44,7 +44,7 @@ date,comparison,kind,pairs,gain
 2026-10-21,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,6,18.1
 2026-10-23,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,3,48.5
 2026-10-24,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,3,-4.0
-2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,15,-41.8
+2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,15,-49.7
 2026-10-26,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,22,-40.7
 2026-10-27,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,11,-36.3
 2026-10-28,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,7,20.5
@@ -120,7 +120,7 @@ date,comparison,kind,pairs,gain
 2026-10-28,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,6,29.5
 2026-10-30,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,3,37.7
 2026-10-31,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,3,26.0
-2026-11-02,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,14,-27.5
+2026-11-02,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,13,-62.2
 2026-11-04,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,9,8.4
 2026-11-06,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,6,53.8
 2026-11-07,"T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",candidate,5,50.6
@@ -156,7 +156,7 @@ date,comparison,kind,pairs,gain
 2026-10-21,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,49,4.5
 2026-10-23,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,0,0
 2026-10-24,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,37,-168.8
-2026-10-25,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,54,-61.5
+2026-10-25,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,56,-15.6
 2026-10-26,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,38,-138.3
 2026-10-27,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,21,-149.1
 2026-10-28,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,17,65.5
