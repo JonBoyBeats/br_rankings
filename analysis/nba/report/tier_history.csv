@@ -678,11 +678,11 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,Immanuel Quickley,TOR,29.7,31.7,ours_raw,4,4,4,,,,,,26.6,28.0,1,0,0,26,,27,0.226,97.6
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,60a5e271-34d5-48b0-b7ff-5d7c97d02663,Rudy Gobert,MIN,30.2,30.7,ours_raw,4,4,4,,,,,,26.6,31.0,1,0,0,29,,28,0.224,95.9
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,48851f98-0d68-4b55-8709-f0c942959642,Wendell Carter Jr.,ORL,31.5,28.3,ours_raw,4,5,4,PRICEY,,,,,28.0,33.0,1,0,0,40,,31,0.186,93.4
-2026-10-25,nba_sun_main,6,am,secondary,board before ETR,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,John Collins,DET,33.5,25.0,ours_raw,5,5,5,,,,,,33.2,34.0,1,0,0,36,,35,0.154,81.8
-2026-10-25,nba_sun_main,6,am,secondary,board before ETR,c759c9df-9bf2-4e05-9497-6a5ba5694984,Rui Hachimura,LAC,33.0,22.9,ours_raw,5,5,5,,,,,,6.8,29.0,1,0,0,38,,34,0.127,88.3
+2026-10-25,nba_sun_main,6,am,secondary,board before ETR,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,John Collins,DET,33.5,25.0,ours_raw,5,5,5,,,,,,33.2,34.0,1,0,0,36,,38,0.154,81.8
+2026-10-25,nba_sun_main,6,am,secondary,board before ETR,c759c9df-9bf2-4e05-9497-6a5ba5694984,Rui Hachimura,LAC,33.0,22.9,ours_raw,5,5,5,,,,,,6.8,29.0,1,0,0,38,,37,0.127,88.3
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,92c94656-e930-4e40-a11f-e3119d5f0660,Jonathan Kuminga,MIN,34.4,26.9,ours_raw,5,5,5,,,,,,25.3,26.0,1,0,0,41,,33,0.184,75.3
-2026-10-25,nba_sun_main,6,am,secondary,board before ETR,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,35.3,27.0,ours_raw,5,5,5,,,,,,39.0,39.0,1,0,1,32,,38,0.21,58.5
-2026-10-25,nba_sun_main,6,am,secondary,board before ETR,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,34.7,27.4,ours_raw,5,5,5,,,,,,12.1,23.0,1,0,0,51,,36,0.162,67.6
+2026-10-25,nba_sun_main,6,am,secondary,board before ETR,6e58e0ae-7bd4-485c-92f8-670715ab1996,Precious Achiuwa,SAC,35.3,27.0,ours_raw,5,5,5,,,,,,39.0,39.0,1,0,1,32,,36,0.21,58.5
+2026-10-25,nba_sun_main,6,am,secondary,board before ETR,a488038a-7548-46a6-bbf9-7ca1e409ed69,Ayo Dosunmu,MIN,34.7,27.4,ours_raw,5,5,5,,,,,,12.1,23.0,1,0,0,51,,34,0.162,67.6
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,d5348697-c7ae-49e9-a500-3dc5c505279a,Collin Murray-Boyles,TOR,36.0,20.7,ours_raw,5,5,5,,,,,,15.4,19.0,1,0,0,44,,57,0.165,3.9
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,fc946619-6c83-4742-a0f7-6c1d864e9e69,Brook Lopez,LAC,35.5,23.4,ours_raw,5,5,5,,,,,,22.2,23.0,1,0,0,55,,39,0.147,35.9
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,ba7e0647-7bf4-4a58-8357-b092ed9f7635,Cedric Coward,MEM,35.8,26.2,ours_raw,5,5,5,,Questionable,FAIR,,,32.7,32.0,1,0,0,31,,40,0.206,17.3
@@ -721,7 +721,7 @@ date,slate,pod,window,sample,board,player_id,name,team,adp,proj,proj_src,a_tier,
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,d6878266-2684-423c-adf6-618b46fdf9cc,Jamal Cain,ORL,,9.2,ours_raw,5,5,5,,,,,,10.0,15.0,1,0,0,83,,73,,
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,c5cb8f24-c54f-4386-97ef-a8510a641efd,Jaden Bradley,TOR,,-0.5,ours_raw,5,5,5,,,,,,8.7,5.0,1,0,0,,,75,,
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,e8e35556-8bbd-445c-b47b-d58fd5c844b8,Kawhi Leonard,TOR,10.4,40.8,ours_raw,2,2,2,,,,,,0.0,0.0,0,1,0,8,,10,0.224,100.0
-2026-10-25,nba_sun_main,6,am,secondary,board before ETR,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,35.3,28.1,ours_raw,5,5,5,,,,,,0.0,0.0,0,1,0,45,,37,0.217,40.4
+2026-10-25,nba_sun_main,6,am,secondary,board before ETR,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,Ausar Thompson,DET,35.3,28.1,ours_raw,5,5,5,,,,,,0.0,0.0,0,1,0,45,,35,0.217,40.4
 2026-10-25,nba_sun_main,6,am,secondary,board before ETR,08d380dc-2126-4d28-bd52-f4237330473d,Jose Alvarado,NYK,36.0,14.3,ours_raw,5,5,5,,Questionable,FAIR,,,0.0,0.0,0,1,0,82,,69,0.174,0.2
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,Domantas Sabonis,SAC,1.4,52.0,etr,1,2,1,PRICEY,,,,,40.5,35.0,1,0,0,3,1,3,0.197,100.0
 2026-10-25,nba_sun_main,6,pm,primary,board at lock,dc71a323-ed03-4779-8fa1-1130280a6ef9,Shai Gilgeous-Alexander,OKC,2.0,55.4,etr,1,1,1,,,,,,55.7,36.0,1,0,1,1,1,1,0.233,100.0

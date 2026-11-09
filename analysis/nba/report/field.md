@@ -10,7 +10,7 @@
   - Questionable at Lock AM: 8 tagged, 5 played; teams that drafted them before noon top 1% 2.71% (1476 teams) vs after 2.14% (2286).
   - Most-owned turn combo vs the rest, top 1%: 2/3 turn 0.88% vs 1.13% (9 cases); 1/2 turn 1.03% vs 0.70% (3 cases).
   - Boom peer bump: 8 players moved 2+ points so far (too few to read); risers wait on two weeks of entry counts.
-- Last night, where it touched a rule: your takes off the tier rules: 31, 13 right; the field went your way on 11, against on 20; Questionable at Lock AM: Keyonte George (played, on 2 of your 40), Lauri Markkanen (sat, on 0 of your 40), Mitchell Robinson (played, on 0 of your 40).
+- Last night, where it touched a rule: your takes off the tier rules: 29, 13 right; the field went your way on 3, against on 26; Questionable at Lock AM: Keyonte George (played, on 2 of your 40), Lauri Markkanen (sat, on 0 of your 40), Mitchell Robinson (played, on 0 of your 40).
 
 The full tables follow; the morning report reads only this block (the rest is reference).
 
@@ -97,22 +97,24 @@ Picks per team from each of your tiers (each team read with the tiers of the loc
 
 ### 6. Your takes against the field
 
-31 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
+29 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
 
 | Lock | Tier | Takes | With the field | Against it | You were right |
 |---|---|---|---|---|---|
 | AM | T3 | 12 | 0 | 12 | 6 |
 | AM | T4 | 1 | 0 | 1 | 0 |
 | AM | T5 | 4 | 1 | 3 | 2 |
+| PM | T2 | 2 | 2 | 0 | 1 |
 | PM | T3 | 2 | 0 | 2 | 1 |
-| PM | T4 | 2 | 0 | 2 | 1 |
-| PM | T5 | 10 | 10 | 0 | 3 |
+| PM | T4 | 3 | 0 | 3 | 2 |
+| PM | T5 | 5 | 0 | 5 | 1 |
 
 The 10 furthest from ADP:
 
 | Lock | Tier | You put first | Over | ADP | Drafted | Actual | Right |
 |---|---|---|---|---|---|---|---|
 | AM | T3 | Dejounte Murray | Jaden McDaniels | 17.0 / 13.1 | 100% / 100% | 13.1 / 29.7 | no |
+| PM | T4 | Day'Ron Sharpe | PJ Washington | 30.9 / 27.4 | 100% / 100% | 30.8 / 16.0 | yes |
 | AM | T3 | Paul George | Zion Williamson | 13.7 / 10.3 | 100% / 100% | 36.1 / 30.8 | yes |
 | AM | T3 | Paul George | Kyrie Irving | 13.7 / 10.5 | 100% / 100% | 36.1 / 30.6 | yes |
 | AM | T3 | Julius Randle | Zion Williamson | 13.4 / 10.3 | 100% / 100% | 23.8 / 30.8 | no |
@@ -121,7 +123,6 @@ The 10 furthest from ADP:
 | AM | T4 | Tyler Herro | Ayo Dosunmu | 17.2 / 15.2 | 100% / 100% | 16.2 / 33.3 | no |
 | AM | T3 | Kyrie Irving | Michael Porter Jr. | 10.5 / 8.9 | 100% / 100% | 30.6 / 29.8 | yes |
 | AM | T3 | Derrick White | Rudy Gobert | 26.2 / 25.0 | 100% / 100% | 34.1 / 28.0 | yes |
-| PM | T4 | Darryn Peterson | Jonathan Kuminga | 20.5 / 19.5 | 100% / 100% | 39.2 / 1.0 | yes |
 
 ### 7. Your uniqueness (flagship)
 
