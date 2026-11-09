@@ -84,10 +84,12 @@
     "against": "the button"
    },
    "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
-   "status": "testing",
+   "status": "replaced",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
-   "register": "leverage-t2-t4"
+   "register": "leverage-t2-t4",
+   "closed": "2026-11-09",
+   "note": "Replaced by Q-1 (the slot was needed in T4); the weakest under test in T4: +0.2 per pair (73 pairs, no lean), forward none yet"
   },
   "T2-T4-1": {
    "tiers": [
@@ -128,6 +130,32 @@
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
    "register": "beneficiary-round6"
+  },
+  "Q-1": {
+   "tiers": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "window": "am+pm",
+   "idea": "Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",
+   "why": "Both Q rules were tested one size fits all; the 11-09 report sends Luka (80% to play) from T1 to T3 in PM. Expected shape (the user's): keep VALUE Q-tags and high-chance stars; push PRICEY or low-chance ones in T1-T2",
+   "test": {
+    "kind": "pairwise",
+    "pairwise": "qsplit",
+    "flags": "both",
+    "against": "the button",
+    "include_q": true,
+    "rule": "For a player tagged Questionable at the window's record, with p his calibrated chance to play (nba_q_lane fit) and c his combined tier: VALUE or p > 0.70: no push (tier c); else c in T1-T2 and (PRICEY or p < 0.50): two tiers back (min(5, c+2)); else the current rule (AM c, PM min(5, c+2)). Order: the pushed tier, then the button's rank. Graded on 6-drafter decision pairs (ADP within 4, any tiers) with a Questionable player that the rule orders differently from the button; a scratch scored through his swap; positive = the rule beat the button.",
+    "backtest": "Before any forward grading: for Questionable players, the push decision split by flag (VALUE / unflagged / PRICEY), calibrated chance (under 50%, 50-70%, over 70%) and tier (T1-T2 vs T3-T5), in each window: back one and back two against no push, on decision pairs where they differ, points per pair with the 80% range and the evidence label; cells under 40 pairs are 'not enough yet'. 72 cells: by chance alone about 40% of cells with enough pairs would show a lean."
+   },
+   "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
+   "status": "testing",
+   "written": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "register": "pm-questionable-back-two"
   }
  }
 }
