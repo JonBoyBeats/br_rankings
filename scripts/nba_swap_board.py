@@ -186,7 +186,7 @@ def main():
             moved = sum(1 for i, p in enumerate(after[-1]["order"][:80]) if abs(a0.get(p, i) - i) >= 1)
         live.append((name[:10], len(snaps), len(after), moved))
     # ---- write
-    md = ["# NBA swap board backtest (step 7)", "", "Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv).", "",
+    md = ["# NBA swap board backtest (step 7)", "", "Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). " + "Excluded from swap tests: " + "; ".join("%s (%s)" % kv for kv in sorted(S.EXCLUDED.items())) + ".", "",
           "## a. Swap efficiency: points left on the table against the best undrafted option by ETR's final projection", "",
           "| Swaps | Group | Swaps | Points left per swap | Share where the swap was already the best option or better |", "|---|---|---|---|---|"]
     for k in sorted(eff):

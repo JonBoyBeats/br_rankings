@@ -1,6 +1,6 @@
 # NBA swap board backtest (step 7)
 
-Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv).
+Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). Excluded from swap tests: 2026-11-01 (Obi Toppin (ADP 23.1) and Jakob Poeltl (23.4) both sat, 0.3 picks apart: ADP can't tell which one a swap replaced).
 
 ## a. Swap efficiency: points left on the table against the best undrafted option by ETR's final projection
 

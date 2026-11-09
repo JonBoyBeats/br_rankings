@@ -13,7 +13,9 @@ for Q-tagged players; T5 by ADP with VALUE moved up; in T2-T4, a leverage tiebre
 drafted first). Then the three ways to combine the ladders, graded on every decision pair across the board: no move (the
 ADP tier, flags as tiebreaks), the one-tier cap (current), the full move to the projection tier.
 
-Labels follow the evidence policy: a candidate's LEAN is ADOPTED (listed before testing); a RULE needs its check.
+Labels follow the evidence policy: a candidate's LEAN is eligible for adoption (listed before testing); a RULE needs its
+check. Whether it is adopted is leans.json's call (picked from several candidates it is provisional and shadow-tested;
+everything adopted is provisional until its money verdict).
 Writes analysis/nba/report/tier_rules.md.
 
   python3 scripts/nba_tier_rules.py
@@ -178,7 +180,7 @@ def policy(label):
     if label.startswith("RULE"):
         return "RULE"
     if "check pending" in label or label.startswith("LEAN"):
-        return "ADOPTED (listed before testing)" + ("; RULE numbers, check pending" if "check pending" in label else "")
+        return "eligible (listed before testing)" + ("; RULE numbers, check pending" if "check pending" in label else "")
     return ""
 
 
@@ -194,7 +196,8 @@ def main():
            "points per pair on the decision pairs they order differently (positive: the candidate beat the button), with the "
            "80% range from resampling slates, pairs, and the evidence level; then the candidate's own points per pair over "
            "every decision pair in the tier (the button's own is in the header). A scratch is scored through his swap. "
-           "Every candidate was listed before testing, so a LEAN is adopted under the policy.", ""]
+           "Every candidate was listed before testing, so a LEAN is eligible for adoption; what is adopted, provisional or in the "
+           "shadow is in leans.json, and everything adopted is provisional until its money verdict (decision_register.csv).", ""]
     for pod, window, sample, title in cuts:
         rows = [r for r in H if r["pod"] == pod and r["window"] == window and (sample is None or r["sample"] == sample)
                 and (r["tier"] != "5" or (num(r["adp"]) is not None and num(r["adp"]) < G.cap(r)))]

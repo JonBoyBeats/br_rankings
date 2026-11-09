@@ -41,46 +41,48 @@ Refit on 1713 player-locks (both windows): played ~ 0.89 + 0.81 x logit(our chan
 
 ## b. The swap value S at each lock (best expected score among players under 50% drafted)
 
+Excluded from swap tests (no credited swaps, so no actual average): 2026-11-01 (Obi Toppin (ADP 23.1) and Jakob Poeltl (23.4) both sat, 0.3 picks apart: ADP can't tell which one a swap replaced).
+
 | Slate | S at AM | S at PM | The PM player | Swaps' actual average (credited) |
 |---|---|---|---|---|
-| 2026-10-21 | 30.7 | 32.8 | Ty Jerome | 42.4 (21) |
+| 2026-10-21 | 30.7 | 32.8 | Ty Jerome | 43.4 (20) |
 | 2026-10-22 | 15.9 | 18.6 | Cason Wallace | - |
 | 2026-10-23 | 29.9 | 36.9 | Franz Wagner | - |
-| 2026-10-24 | 26.0 | 31.7 | Jalen Green | 27.4 (1372) |
-| 2026-10-25 | 21.2 | 26.5 | Collin Murray-Boyles | 21.9 (2303) |
-| 2026-10-26 | 26.9 | 30.9 | Josh Giddey | 25.5 (515) |
+| 2026-10-24 | 26.0 | 31.7 | Jalen Green | 27.1 (432) |
+| 2026-10-25 | 21.2 | 26.5 | Collin Murray-Boyles | 21.8 (2771) |
+| 2026-10-26 | 26.9 | 30.9 | Josh Giddey | 24.9 (632) |
 | 2026-10-27 | 20.5 | 24.2 | Mikal Bridges | - |
-| 2026-10-28 | 35.5 | 35.0 | RJ Barrett | 38.2 (1662) |
-| 2026-10-29 | 27.7 | 30.9 | Jeremiah Fears | 44.6 (732) |
-| 2026-10-30 | 35.7 | 34.9 | Immanuel Quickley | 34.4 (2562) |
-| 2026-10-31 | 28.9 | 29.8 | Ryan Rollins | - |
+| 2026-10-28 | 35.5 | 35.0 | RJ Barrett | 38.5 (1782) |
+| 2026-10-29 | 27.7 | 30.9 | Jeremiah Fears | 46.0 (2419) |
+| 2026-10-30 | 35.7 | 34.9 | Immanuel Quickley | 34.1 (3621) |
+| 2026-10-31 | 28.9 | 29.8 | Ryan Rollins | 32.6 (2619) |
 | 2026-11-01 | 27.5 | 24.0 | Brandon Williams | - |
-| 2026-11-02 | 38.5 | 39.4 | Austin Reaves | 38.5 (1545) |
-| 2026-11-04 | 39.8 | 36.8 | LeBron James | 36.2 (3707) |
+| 2026-11-02 | 38.5 | 39.4 | Austin Reaves | 38.1 (1550) |
+| 2026-11-04 | 39.8 | 36.8 | LeBron James | 36.1 (3786) |
 | 2026-11-05 | 20.9 | 19.5 | Khaman Maluach | - |
-| 2026-11-06 | 36.2 | 37.1 | Dyson Daniels | 37.4 (2595) |
-| 2026-11-07 | 31.8 | 30.6 | Isaiah Hartenstein | 35.2 (2222) |
-| 2026-11-08 | 29.5 | 25.6 | Kris Dunn | 22.5 (2328) |
+| 2026-11-06 | 36.2 | 37.1 | Dyson Daniels | 37.3 (4308) |
+| 2026-11-07 | 31.8 | 30.6 | Isaiah Hartenstein | 34.0 (2906) |
+| 2026-11-08 | 29.5 | 25.6 | Kris Dunn | 22.5 (2558) |
 
-Swaps scored +1.0 against S at the PM lock on average (12 slates): S is about right.
+Swaps scored +1.1 against S at the PM lock on average (13 slates): S is about right.
 
 ## c-d. Q classes on X (swap-adjusted), by window and tier
 
 | Window | Tier | Class | Players | Played | Slot score (him or his swap) | Breakers | Healthy tier higher / same / lower than ADP |
 |---|---|---|---|---|---|---|---|
-| AM | T1-T2 | FAIR | 3 | 0% | 24.9 | 0 | 0 / 3 / 0 |
+| AM | T1-T2 | FAIR | 3 | 0% | 37.2 | 0 | 0 / 3 / 0 |
 | AM | T1-T2 | TRAP | 2 | 100% | 41.1 | 0 | 0 / 1 / 1 |
-| AM | T3-T4 | SMASH | 6 | 33% | 36.2 | 1 | 6 / 0 / 0 |
-| AM | T3-T4 | FAIR | 2 | 0% | 35.2 | 0 | 2 / 0 / 0 |
-| AM | T3-T4 | TRAP | 1 | 0% | 22.5 | 0 | 1 / 0 / 0 |
-| AM | T5 | SMASH | 1 | 0% | 32.8 | 0 | 1 / 0 / 0 |
-| AM | T5 | FAIR | 23 | 52% | 30.1 | 3 | 0 / 23 / 0 |
-| PM | T1-T2 | FAIR | 3 | 33% | 30.8 | 0 | 0 / 3 / 0 |
+| AM | T3-T4 | SMASH | 6 | 33% | 35.9 | 1 | 6 / 0 / 0 |
+| AM | T3-T4 | FAIR | 2 | 0% | 35.1 | 0 | 2 / 0 / 0 |
+| AM | T3-T4 | TRAP | 1 | 0% | 22.9 | 0 | 1 / 0 / 0 |
+| AM | T5 | SMASH | 1 | 0% | 33.7 | 0 | 1 / 0 / 0 |
+| AM | T5 | FAIR | 23 | 52% | 30.0 | 3 | 0 / 23 / 0 |
+| PM | T1-T2 | FAIR | 3 | 33% | 43.4 | 0 | 0 / 3 / 0 |
 | PM | T1-T2 | TRAP | 1 | 100% | 41.0 | 0 | 0 / 1 / 0 |
-| PM | T3-T4 | SMASH | 3 | 33% | 33.2 | 0 | 3 / 0 / 0 |
-| PM | T3-T4 | FAIR | 4 | 25% | 36.6 | 1 | 3 / 1 / 0 |
-| PM | T3-T4 | TRAP | 3 | 67% | 20.2 | 0 | 0 / 3 / 0 |
-| PM | T5 | SMASH | 1 | 0% | 37.4 | 0 | 0 / 1 / 0 |
+| PM | T3-T4 | SMASH | 3 | 33% | 33.0 | 0 | 3 / 0 / 0 |
+| PM | T3-T4 | FAIR | 4 | 25% | 36.0 | 1 | 3 / 1 / 0 |
+| PM | T3-T4 | TRAP | 3 | 67% | 20.4 | 0 | 0 / 3 / 0 |
+| PM | T5 | SMASH | 1 | 0% | 37.3 | 0 | 0 / 1 / 0 |
 | PM | T5 | FAIR | 24 | 62% | 28.5 | 4 | 0 / 24 / 0 |
 
 ## d. Pushing a tagged player back: the button's order against each variant
@@ -89,30 +91,30 @@ Decision pairs (ADP within 4) that include a tagged player and that the variant 
 
 | Window | Tag | Back one tier | Back two tiers | Rank on X |
 |---|---|---|---|---|
-| AM | Questionable | -1.1 (-3.6 to +2.0), 89 pairs, no lean | +0.8 (-1.9 to +4.1), 119 pairs, no lean | -3.2 (-8.5 to +2.6), 235 pairs, no lean |
-| AM | Doubtful | - | - | +10.7, not enough yet (27) |
-| AM | all tagged | -1.1 (-3.6 to +2.0), 89 pairs, no lean | +0.8 (-1.9 to +4.1), 119 pairs, no lean | -1.8 (-7.4 to +3.9), 262 pairs, no lean |
-| PM | Questionable | -8.0, not enough yet (27) | +21.0, not enough yet (2) | -1.6 (-5.4 to +2.7), 364 pairs, no lean |
+| AM | Questionable | -2.8 (-4.1 to -1.2), 89 pairs, LEAN - (RULE numbers, check pending) | -0.8 (-3.1 to +2.0), 119 pairs, no lean | -3.6 (-8.9 to +2.3), 235 pairs, no lean |
+| AM | Doubtful | - | - | +10.4, not enough yet (27) |
+| AM | all tagged | -2.8 (-4.1 to -1.2), 89 pairs, LEAN - (RULE numbers, check pending) | -0.8 (-3.1 to +2.0), 119 pairs, no lean | -2.2 (-7.6 to +3.4), 262 pairs, no lean |
+| PM | Questionable | -4.3, not enough yet (32) | -0.0, not enough yet (9) | -1.3 (-5.9 to +3.8), 270 pairs, no lean |
 | PM | Doubtful | - | - | - |
-| PM | all tagged | -8.0, not enough yet (27) | +21.0, not enough yet (2) | -1.6 (-5.4 to +2.7), 364 pairs, no lean |
+| PM | all tagged | -4.3, not enough yet (32) | -0.0, not enough yet (9) | -1.3 (-5.9 to +3.8), 270 pairs, no lean |
 
 ## e. Beneficiaries: undrafted or T5 players with a teammate tagged at the AM lock
 
 | Group | Players | Teammate sat | Score over his ADP band | Swap target (any credited swaps) |
 |---|---|---|---|---|
-| Round 6 at the AM lock, teammate sat | 8 | 8 | +3.7 (8 with a band) | 7 (1647 swaps) |
-| Round 6 at the AM lock, teammate played | 8 | 0 | +2.6 (8 with a band) | 2 (219 swaps) |
-| All (T5 or undrafted), teammate sat | 105 | 105 | +2.7 (68 with a band) | 53 (3862 swaps) |
-| All (T5 or undrafted), teammate played | 68 | 0 | +1.3 (53 with a band) | 20 (945 swaps) |
+| Round 6 at the AM lock, teammate sat | 8 | 8 | +3.7 (8 with a band) | 7 (1709 swaps) |
+| Round 6 at the AM lock, teammate played | 8 | 0 | +2.6 (8 with a band) | 2 (258 swaps) |
+| All (T5 or undrafted), teammate sat | 105 | 105 | +2.7 (68 with a band) | 52 (5375 swaps) |
+| All (T5 or undrafted), teammate played | 68 | 0 | +1.3 (53 with a band) | 18 (1149 swaps) |
 
 ## Implied cost of a scratch, by tier
 
-Each tier's average score (players who played, at the PM lock; T5 drafted only) against the average swap for players ruled out from that tier (credited swaps, weighted by teams). Priced up: at the PM lock every teammate projected for 20+ was already drafted inside ADP 30, so no cheap beneficiary was left for a swap; cheap: one was.
+Each tier's average score (players who played, at the PM lock; T5 drafted only) against the average swap for players ruled out from that tier (credited swaps, weighted by teams). Priced up: at the PM lock every teammate projected for 20+ was already drafted inside ADP 30, so no cheap beneficiary was left for a swap; cheap: one was. Excluded from swap tests: 2026-11-01 (Obi Toppin (ADP 23.1) and Jakob Poeltl (23.4) both sat, 0.3 picks apart: ADP can't tell which one a swap replaced).
 
 | Tier (PM lock; AM if off the PM board) | Tier average | Out players (the real sample) | Swaps | Swap average (range by player) | Cost | Priced-up teammates: swaps, average | Cheap teammates: swaps, average |
 |---|---|---|---|---|---|---|---|
-| T1 | 52.2 | 1 (anecdote: under 5 players) | 1214 | 38.5 (38.5 to 38.5) | -13.8 | - | 1214, 38.5 |
-| T2 | 41.3 | 4 (anecdote: under 5 players) | 5233 | 29.7 (0.0 to 37.4) | -11.6 | - | 5233, 29.7 |
-| T3 | 34.0 | 8 | 11913 | 35.1 (22.5 to 44.6) | +1.1 | - | 11913, 35.1 |
-| T4 | 33.8 | 4 (anecdote: under 5 players) | 3183 | 27.1 (22.1 to 37.6) | -6.7 | 848, 22.1 | 2335, 28.9 |
-| T5 | 26.0 | 1 (anecdote: under 5 players) | 21 | 42.4 (42.4 to 42.4) | +16.4 | - | 21, 42.4 |
+| T1 | 52.2 | 1 (anecdote: under 5 players) | 1239 | 38.7 (38.7 to 38.7) | -13.6 | - | 1239, 38.7 |
+| T2 | 41.3 | 4 (anecdote: under 5 players) | 6149 | 30.2 (21.2 to 37.9) | -11.1 | - | 6149, 30.2 |
+| T3 | 34.0 | 11 | 17599 | 35.7 (22.9 to 46.0) | +1.7 | - | 17599, 35.7 |
+| T4 | 33.8 | 7 | 2628 | 27.5 (22.7 to 38.1) | -6.4 | 968, 22.7 | 1660, 30.2 |
+| T5 | 26.0 | 6 | 1789 | 30.9 (21.6 to 43.4) | +4.9 | - | 1789, 30.9 |

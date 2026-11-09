@@ -91,8 +91,8 @@ def main():
                        "reorders": complete})
     md = ["# Your real swaps (from the contest rosters)", "",
           "Written by scripts/nba_my_swaps.py. Small sample: %d credited swaps over %d nights so far; read every number as "
-          "directional. Points: the real incoming player's score minus the other's (positive: your real swap was better)." % (
-              sum(x["credited"] for x in nights), len(nights)), "",
+          "directional. Points: the real incoming player's score minus the other's (positive: your real swap was better). " % (
+              sum(x["credited"] for x in nights), len(nights)) + "Excluded from swap tests: " + "; ".join("%s (%s)" % kv for kv in sorted(S.EXCLUDED.items())) + ".", "",
           "| Night | Your swaps | Credited | Inferred order: constraints (incoming players) | Saved order would have picked the same | App shuffle vs your saved order's pick | vs best by ETR final | vs the swap board's pick | Players your saved order had above the app's choice (avg) |",
           "|---|---|---|---|---|---|---|---|---|"]
     tot = collections.defaultdict(list)

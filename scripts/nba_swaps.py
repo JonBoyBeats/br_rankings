@@ -28,6 +28,9 @@ NBA = os.path.join(HERE, "analysis", "nba")
 TIPS = os.path.join(NBA, "contests", "tips.json")
 OUT = os.path.join(NBA, "report", "swaps.csv")
 ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=%s"
+EXCLUDED = {    # nights left uncredited on purpose, and out of every swap-specific test (their scratches score the season's average swap)
+    "2026-11-01": "Obi Toppin (ADP 23.1) and Jakob Poeltl (23.4) both sat, 0.3 picks apart: ADP can't tell which one a swap replaced",
+}
 MARGIN = 1.0      # a credit needs its matching to beat, by this many picks, every matching that gives the team other players
 TEAM = {"SA": "SAS", "NY": "NYK", "GS": "GSW", "NO": "NOP", "UTAH": "UTA", "WSH": "WAS"}
 
@@ -139,6 +142,9 @@ def night(day):
         need = {t["username"] + str(i): t for i, t in enumerate(pts) if any(t["p%d" % k] and num(t["adp%d" % k]) is None for k in range(1, 7))}
         if not need:
             continue
+        if day in EXCLUDED:
+            unattributed += sum(1 for t in need.values() for i in range(1, 7) if t["p%d" % i] and num(t["adp%d" % i]) is None)
+            continue
         cands = {o: r for o, r in out.items() if o not in roster}
         got = credit_pod([(k, sorted(num(t["adp%d" % i]) for i in range(1, 7) if num(t["adp%d" % i]) is not None),
                            sum(1 for i in range(1, 7) if t["p%d" % i] and num(t["adp%d" % i]) is None)) for k, t in need.items()], pod, cands)
@@ -165,6 +171,8 @@ def main():
         if not n:
             continue
         rows, tip = n["rows"], n["tip"]
+        if day in EXCLUDED:
+            print("\n## %s: EXCLUDED from swap credit and swap-specific tests: %s" % (day, EXCLUDED[day]))
         print("\n## %s: %d contests, %d pods, %d teams, %d swapped-in picks (%d not credited to one player)" % (
             day, n["contests"], n["pods"], n["teams"], n["n_swaps"], n["unattributed"]))
         for o, targets in sorted(n["swaps"].items(), key=lambda x: -len(x[1])):

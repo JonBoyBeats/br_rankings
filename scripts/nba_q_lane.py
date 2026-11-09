@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import nba_boom_ties as B          # noqa: E402  the board's median of its Proj
 import nba_tier_grade as G         # noqa: E402  slots scored with the swap rule, the evidence bar
 import nba_tier_history as T       # noqa: E402  the rule order
+import nba_swaps as SW             # noqa: E402  nights excluded from swap tests
 
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 REP = os.path.join(HERE, "analysis", "nba", "report")
@@ -192,6 +193,7 @@ def main():
         swaps[r["date"]][0] += int(r["teams"])
         swaps[r["date"]][1] += int(r["teams"]) * float(r["swap_fp"])
     out += ["", "## b. The swap value S at each lock (best expected score among players under 50% drafted)", "",
+            "Excluded from swap tests (no credited swaps, so no actual average): " + "; ".join("%s (%s)" % kv for kv in sorted(SW.EXCLUDED.items())) + ".", "",
             "| Slate | S at AM | S at PM | The PM player | Swaps' actual average (credited) |", "|---|---|---|---|---|"]
     diffs = []
     for d in sorted({k[0] for k in S}):
@@ -345,7 +347,8 @@ def main():
     out += ["", "## Implied cost of a scratch, by tier", "",
             "Each tier's average score (players who played, at the PM lock; T5 drafted only) against the average swap for "
             "players ruled out from that tier (credited swaps, weighted by teams). Priced up: at the PM lock every teammate "
-            "projected for 20+ was already drafted inside ADP 30, so no cheap beneficiary was left for a swap; cheap: one was.", "",
+            "projected for 20+ was already drafted inside ADP 30, so no cheap beneficiary was left for a swap; cheap: one was. "
+            "Excluded from swap tests: " + "; ".join("%s (%s)" % kv for kv in sorted(SW.EXCLUDED.items())) + ".", "",
             "| Tier (PM lock; AM if off the PM board) | Tier average | Out players (the real sample) | Swaps | Swap average (range by player) | Cost | Priced-up teammates: swaps, average | Cheap teammates: swaps, average |",
             "|---|---|---|---|---|---|---|---|"]
     tavg = {}

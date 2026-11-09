@@ -1,6 +1,6 @@
 # Your real swaps (from the contest rosters)
 
-Written by scripts/nba_my_swaps.py. Small sample: 155 credited swaps over 12 nights so far; read every number as directional. Points: the real incoming player's score minus the other's (positive: your real swap was better).
+Written by scripts/nba_my_swaps.py. Small sample: 155 credited swaps over 12 nights so far; read every number as directional. Points: the real incoming player's score minus the other's (positive: your real swap was better). Excluded from swap tests: 2026-11-01 (Obi Toppin (ADP 23.1) and Jakob Poeltl (23.4) both sat, 0.3 picks apart: ADP can't tell which one a swap replaced).
 
 | Night | Your swaps | Credited | Inferred order: constraints (incoming players) | Saved order would have picked the same | App shuffle vs your saved order's pick | vs best by ETR final | vs the swap board's pick | Players your saved order had above the app's choice (avg) |
 |---|---|---|---|---|---|---|---|---|
