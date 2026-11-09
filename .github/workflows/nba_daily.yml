@@ -16,7 +16,7 @@ on:
       rebuild: { description: 'Rewrite slates already on file', type: boolean, default: false }
 permissions:
   contents: write
-concurrency:
+concurrency:          # one run at a time: a manual rebuild waits for a running job (GitHub keeps one pending run per group)
   group: analysis
   cancel-in-progress: false
 env:
@@ -100,6 +100,7 @@ jobs:
           python3 scripts/nba_shadow.py > /dev/null
           python3 scripts/nba_swap_board.py > /dev/null
           python3 scripts/nba_my_swaps.py > /dev/null
+          python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror > /dev/null || true
       # Today's Recent notes: last night into the ledger, a fresh note for everyone on today's
       # slates who has played since his last one, then the board's notes file
       - name: Recent notes
@@ -110,9 +111,35 @@ jobs:
           if [ "$EVENING" = true ]; then NOTES_FOR=$(TZ=America/Los_Angeles date -d tomorrow +%F); fi
           python3 scripts/nba_ledger.py auto --slates ../br-adp-mirror/nba_latest.json ${NOTES_FOR:+--date "$NOTES_FOR"}
           python3 scripts/build_takes.py
+      # Commit and push. The workflow owns every file it regenerates (OWNED below); decision_register.csv is chat-only and
+      # never written here. If a chat committed one of the owned files while this ran, the push's rebase conflicts on it:
+      # this run's copy stands (it was just regenerated), the fast steps run again on top of what was pulled (any code or
+      # inputs a chat pushed meanwhile), and the push is retried, three times at most.
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
           mkdir -p analysis/cbb/daily analysis/cbb/contests
-          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/shadow.json analysis/nba/report/takes_history.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md analysis/nba/report/money_tiers.json analysis/nba/report/money_proposals.json
-          git diff --cached --quiet || git commit -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
-          git pull --rebase -q origin main && git push
+          OWNED="analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/shadow.json analysis/nba/report/takes_history.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md analysis/nba/report/money_tiers.json analysis/nba/report/money_proposals.json analysis/nba/report/today.md"
+          git checkout -- analysis/nba/report/decision_register.csv 2>/dev/null || true
+          git add $OWNED
+          git diff --cached --quiet && exit 0
+          git commit -q -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
+          for try in 1 2 3; do
+            if git pull --rebase -q origin main; then
+              git push && exit 0
+              continue
+            fi
+            echo "::warning::push conflict on files this workflow owns (try $try): keeping this run's copy, regenerating on top"
+            for f in $(git diff --name-only --diff-filter=U); do git checkout --theirs -- "$f"; git add "$f"; done
+            GIT_EDITOR=true git rebase --continue
+            python3 scripts/nba_tier_history.py --mirror ../br-adp-mirror > /dev/null
+            python3 scripts/nba_swaps.py > /dev/null
+            python3 scripts/nba_tier_takes.py > /dev/null
+            python3 scripts/nba_shadow.py > /dev/null
+            python3 scripts/nba_swap_board.py > /dev/null
+            python3 scripts/nba_my_swaps.py > /dev/null
+            python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror > /dev/null || true
+            git checkout -- analysis/nba/report/decision_register.csv 2>/dev/null || true
+            git add $OWNED
+            git diff --cached --quiet || git commit -q -m "NBA daily: regenerated on top of a chat's commit"
+          done
+          echo "::error::could not push after 3 tries"; exit 1
