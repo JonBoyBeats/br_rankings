@@ -2314,5 +2314,1281 @@
     }
    ]
   }
+ },
+ "2026-11-08": {
+  "boom": [
+   [
+    0.4554,
+    0.4554,
+    true
+   ],
+   [
+    0.3257,
+    0.2721,
+    false
+   ],
+   [
+    0.3967,
+    0.3527,
+    false
+   ],
+   [
+    0.14,
+    0.1458,
+    false
+   ],
+   [
+    0.1914,
+    0.1914,
+    true
+   ],
+   [
+    0.247,
+    0.2074,
+    false
+   ],
+   [
+    0.1819,
+    0.18,
+    false
+   ],
+   [
+    0.1274,
+    0.1399,
+    false
+   ],
+   [
+    0.1952,
+    0.1952,
+    false
+   ],
+   [
+    0.1857,
+    0.1837,
+    false
+   ],
+   [
+    0.223,
+    0.2314,
+    false
+   ],
+   [
+    0.1412,
+    0.1396,
+    false
+   ],
+   [
+    0.2055,
+    0.1937,
+    false
+   ],
+   [
+    0.1808,
+    0.1879,
+    false
+   ],
+   [
+    0.1845,
+    0.1651,
+    false
+   ],
+   [
+    0.2384,
+    0.2364,
+    false
+   ],
+   [
+    0.1803,
+    0.1875,
+    false
+   ],
+   [
+    0.1602,
+    0.1666,
+    false
+   ],
+   [
+    0.1443,
+    0.1443,
+    false
+   ],
+   [
+    0.1397,
+    0.1455,
+    false
+   ],
+   [
+    0.2111,
+    0.199,
+    true
+   ],
+   [
+    0.1601,
+    0.1624,
+    false
+   ],
+   [
+    0.1895,
+    0.1921,
+    false
+   ],
+   [
+    0.1715,
+    0.1828,
+    false
+   ],
+   [
+    0.1317,
+    0.1336,
+    false
+   ],
+   [
+    0.1676,
+    0.1657,
+    false
+   ],
+   [
+    0.1875,
+    0.1901,
+    false
+   ],
+   [
+    0.2341,
+    0.221,
+    false
+   ],
+   [
+    0.1483,
+    0.1492,
+    false
+   ],
+   [
+    0.1495,
+    0.1403,
+    false
+   ],
+   [
+    0.1691,
+    0.1631,
+    false
+   ],
+   [
+    0.1969,
+    0.1854,
+    false
+   ],
+   [
+    0.2013,
+    0.1943,
+    false
+   ],
+   [
+    0.1393,
+    0.1341,
+    false
+   ],
+   [
+    0.21,
+    0.2078,
+    false
+   ],
+   [
+    0.1579,
+    0.1522,
+    false
+   ],
+   [
+    0.2005,
+    0.2005,
+    false
+   ],
+   [
+    0.1495,
+    0.1478,
+    false
+   ],
+   [
+    0.1308,
+    0.1327,
+    true
+   ],
+   [
+    0.1831,
+    0.1722,
+    false
+   ],
+   [
+    0.1445,
+    0.1466,
+    false
+   ],
+   [
+    0.1596,
+    0.1596,
+    false
+   ],
+   [
+    0.1276,
+    0.1366,
+    false
+   ],
+   [
+    0.2149,
+    0.193,
+    false
+   ],
+   [
+    0.1794,
+    0.1865,
+    false
+   ],
+   [
+    0.1388,
+    0.1235,
+    false
+   ],
+   [
+    0.1691,
+    0.166,
+    false
+   ],
+   [
+    0.1716,
+    0.1697,
+    false
+   ],
+   [
+    0.1691,
+    0.163,
+    false
+   ],
+   [
+    0.186,
+    0.1981,
+    true
+   ],
+   [
+    0.1465,
+    0.1465,
+    false
+   ],
+   [
+    0.1196,
+    0.1247,
+    false
+   ],
+   [
+    0.1472,
+    0.1528,
+    false
+   ],
+   [
+    0.0776,
+    0.0788,
+    false
+   ],
+   [
+    0.1718,
+    0.1699,
+    true
+   ],
+   [
+    0.1924,
+    0.1872,
+    false
+   ],
+   [
+    0.174,
+    0.1678,
+    false
+   ],
+   [
+    0.1879,
+    0.1905,
+    true
+   ],
+   [
+    0.1356,
+    0.1356,
+    false
+   ],
+   [
+    0.1478,
+    0.1478,
+    false
+   ],
+   [
+    0.1851,
+    0.1923,
+    false
+   ],
+   [
+    0.1688,
+    0.1586,
+    false
+   ],
+   [
+    0.1789,
+    0.1683,
+    false
+   ],
+   [
+    0.2045,
+    0.2123,
+    false
+   ],
+   [
+    0.165,
+    0.1672,
+    false
+   ],
+   [
+    0.2532,
+    0.245,
+    false
+   ],
+   [
+    0.1649,
+    0.1589,
+    false
+   ],
+   [
+    0.1293,
+    0.1384,
+    false
+   ],
+   [
+    0.1436,
+    0.1506,
+    false
+   ],
+   [
+    0.1465,
+    0.1561,
+    false
+   ],
+   [
+    0.0538,
+    0.0579,
+    false
+   ],
+   [
+    0.1448,
+    0.1448,
+    false
+   ],
+   [
+    0.1544,
+    0.1544,
+    false
+   ],
+   [
+    0.1387,
+    0.1387,
+    false
+   ]
+  ],
+  "mine": {
+   "breakers": {
+    "field": [
+     8946,
+     16970
+    ],
+    "mine": [
+     40,
+     79
+    ],
+    "top1": [
+     91,
+     359
+    ]
+   },
+   "low_drafted": {
+    "field": [
+     8946,
+     2948
+    ],
+    "mine": [
+     40,
+     7
+    ]
+   },
+   "turn23": {
+    "most-owned": 1,
+    "other": 11,
+    "rarer": 5
+   }
+  },
+  "pod": 6,
+  "q": [
+   {
+    "early": [
+     568,
+     16
+    ],
+    "late": [
+     923,
+     30
+    ],
+    "name": "Keyonte George",
+    "played": true,
+    "tag": "Questionable",
+    "value": 7.8
+   },
+   {
+    "early": [
+     0,
+     0
+    ],
+    "late": [
+     7,
+     0
+    ],
+    "name": "Lauri Markkanen",
+    "played": false,
+    "tag": "Questionable",
+    "value": null
+   },
+   {
+    "early": [
+     0,
+     0
+    ],
+    "late": [
+     3,
+     0
+    ],
+    "name": "Mitchell Robinson",
+    "played": true,
+    "tag": "Questionable",
+    "value": 13.2
+   }
+  ],
+  "teams": 8946,
+  "ties": [
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 1206,
+    "lo_t1": 6,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 995,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 606,
+    "lo_t1": 6,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 467,
+    "lo_t1": 13,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 526,
+    "lo_t1": 11,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 206,
+    "lo_t1": 4,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 274,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1470,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 30,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 1128,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 606,
+    "lo_t1": 6,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 467,
+    "lo_t1": 13,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 206,
+    "lo_t1": 4,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 274,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 45,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 48,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1393,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 30,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 1128,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 467,
+    "lo_t1": 13,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 66,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 206,
+    "lo_t1": 4,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 45,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 420,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 48,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1303,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 30,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1206,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 995,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1206,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 606,
+    "lo_t1": 6,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1206,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 526,
+    "lo_t1": 11,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 1206,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 274,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 467,
+    "lo_t1": 13,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 66,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 206,
+    "lo_t1": 4,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 45,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 420,
+    "lo_t1": 3,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 48,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 1128,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 30,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 995,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 606,
+    "lo_t1": 6,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 995,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 467,
+    "lo_t1": 13,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 995,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 526,
+    "lo_t1": 11,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 995,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 206,
+    "lo_t1": 4,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 995,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 274,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 995,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 606,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 206,
+    "lo_t1": 4,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 606,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 274,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 606,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 606,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 606,
+    "hi_t1": 6,
+    "lo_brk": true,
+    "lo_n": 30,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 467,
+    "hi_t1": 13,
+    "lo_brk": false,
+    "lo_n": 206,
+    "lo_t1": 4,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 467,
+    "hi_t1": 13,
+    "lo_brk": false,
+    "lo_n": 274,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 467,
+    "hi_t1": 13,
+    "lo_brk": true,
+    "lo_n": 45,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 467,
+    "hi_t1": 13,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 467,
+    "hi_t1": 13,
+    "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 467,
+    "hi_t1": 13,
+    "lo_brk": true,
+    "lo_n": 48,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 467,
+    "hi_t1": 13,
+    "lo_brk": true,
+    "lo_n": 30,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 526,
+    "hi_t1": 11,
+    "lo_brk": false,
+    "lo_n": 206,
+    "lo_t1": 4,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 526,
+    "hi_t1": 11,
+    "lo_brk": false,
+    "lo_n": 274,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 526,
+    "hi_t1": 11,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 526,
+    "hi_t1": 11,
+    "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 526,
+    "hi_t1": 11,
+    "lo_brk": true,
+    "lo_n": 30,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 420,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 66,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 206,
+    "hi_t1": 4,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 206,
+    "hi_t1": 4,
+    "lo_brk": true,
+    "lo_n": 30,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 274,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 30,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 274,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 81,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": false,
+    "hi_n": 274,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 30,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 420,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 45,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 420,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 48,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-08",
+    "hi_brk": true,
+    "hi_n": 420,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 33,
+    "lo_t1": 0,
+    "lo_wins": false
+   }
+  ],
+  "turns": {
+   "1/2": [
+    {
+     "combo": [
+      "Bam Adebayo",
+      "Darius Acuff Jr."
+     ],
+     "pop": [
+      455,
+      8,
+      83530.4
+     ],
+     "rest": [
+      1203,
+      2,
+      209708.4
+     ]
+    }
+   ],
+   "2/3": [
+    {
+     "anchor": "Giannis Antetokounmpo",
+     "combo": [
+      "Paul George",
+      "Jaden McDaniels"
+     ],
+     "pop": [
+      119,
+      3,
+      24351.8
+     ],
+     "rest": [
+      1298,
+      53,
+      261804.3
+     ]
+    },
+    {
+     "anchor": "Cooper Flagg",
+     "combo": [
+      "Keyonte George",
+      "Jaden McDaniels"
+     ],
+     "pop": [
+      74,
+      1,
+      15286.3
+     ],
+     "rest": [
+      1353,
+      17,
+      264289.5
+     ]
+    },
+    {
+     "anchor": "Jayson Tatum",
+     "combo": [
+      "Kyrie Irving",
+      "Darius Garland"
+     ],
+     "pop": [
+      69,
+      0,
+      13530.2
+     ],
+     "rest": [
+      1347,
+      1,
+      246035.4
+     ]
+    }
+   ]
+  }
  }
 }

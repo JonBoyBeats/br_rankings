@@ -378,3 +378,33 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-11-07,nba_sat_main,Anthony Black,ORL,split,37.5,42.0,55.6,38,28.6,-7,teammate-out,yes,etr,"ETR 42.0 vs ours 37.5 (Lock AM, before Bane was ruled out); 38 min, 55.6"
 2026-11-07,nba_sat_main,Evan Mobley,CLE,split,41.7,44.9,27.3,33,32.8,-12,teammate-out,yes,ours,"ETR 44.9 vs ours 41.7 with Allen out; 5-11, no stocks"
 2026-11-07,nba_sat_main,Deni Avdija,POR,split,47.3,50.4,21.3,24,33.1,-22,blowout,partly,ours,ETR 50.4 vs ours 47.3; 24 min in a 22-point loss
+2026-11-08,nba_sun_main,Naji Marshall,DAL,am_call,33.2,29.4,12.2,15,22.6,37,blowout,partly,wrong,raised (27th vs ADP 46th); 15 min (usual 23) in a 37-point win; the players passed averaged about 25.6
+2026-11-08,nba_sun_main,Daniel Gafford,DAL,am_call,32.9,29.3,35.0,19,22.7,37,shooting,no,right,raised (28th vs ADP 46th); 18 on 7-8 with 3 blocks in 19 min; beat the players passed (about 25.6)
+2026-11-08,nba_sun_main,Ryan Rollins,MIL,am_call,33.1,25.4,22.0,20,23.7,-20,blowout,partly,wrong,raised (29th vs ADP 46th); 20 min (usual 24) in a 20-point loss as a 13.5 underdog; the players passed averaged about 25.6
+2026-11-08,nba_sun_main,Brayden Burries,MIL,am_call,24.5,29.9,30.6,29,20.1,-20,minutes,yes,wrong,faded (47th vs ADP 32nd); 29 min (usual 20); the 15 who passed him averaged 21.7
+2026-11-08,nba_sun_main,Saddiq Bey,NOP,am_call,27.4,28.4,24.3,26,27.0,-16,shooting,no,wrong,faded (43rd vs ADP 29th); 3-12 but 24.3; the 14 who passed him averaged 21.1
+2026-11-08,nba_sun_main,Myles Turner,MIL,am_call,28.8,29.4,20.5,24,27.4,-20,shooting,no,right,faded (39th vs ADP 26th); 1-8 for 3 points; the 13 who passed him averaged 23.7
+2026-11-08,nba_sun_main,Klay Thompson,MIA,am_call,24.0,26.2,37.4,32,23.3,6,minutes,yes,wrong,"faded (48th vs ADP 35th); 32 min (usual 23), 7-13 from three; the 13 who passed him averaged 20.6"
+2026-11-08,nba_sun_main,Jeremiah Fears,NOP,am_call,32.8,36.5,43.7,29,28.9,-16,shooting,no,wrong,faded (30th vs ADP 18th); 25 on 10-14; the 12 who passed him averaged 26.3
+2026-11-08,nba_sun_main,Jaxson Hayes,UTA,pm_call,29.6,28.1,27.7,29,24.9,-15,teammate-out,yes,right,raised over ETR (36th vs 43rd) with Lauri out (ETR's 2:19pm file still had him); 6-6 in 29 min; the 7 passed averaged 22.6
+2026-11-08,nba_sun_main,Dejounte Murray,NOP,pm_call,42.6,43.5,13.1,28,34.8,-16,blowout,partly,right,faded below ETR (12th vs 7th); 1-6 in 28 min of a 16-point loss; the 5 who passed him averaged 30.7
+2026-11-08,nba_sun_main,Michael Porter Jr.,BKN,pm_call,42.0,42.0,29.8,29,33.4,-37,other,?,right,raised over ETR (6th vs 10th); 19 and 9 in 29 min of a 37-point loss; the 4 passed averaged 26.9
+2026-11-08,nba_sun_main,Kyrie Irving,DAL,pm_call,41.3,42.1,30.6,29,29.7,37,other,?,right,raised over ETR (7th vs 9th); 21 on 9-15 in 29 min of a 37-point win; the 3 passed averaged 25.6
+2026-11-08,nba_sun_main,Darius Garland,LAC,pm_call,47.1,43.6,40.0,32,33.8,16,peripherals,no,wrong,faded below ETR (8th vs 6th); 24 and 10 assists; the 2 who passed him averaged 30.2
+2026-11-08,nba_sun_main,Ayo Dosunmu,MIN,pm_call,37.0,41.0,33.3,30,31.5,15,other,?,right,raised over ETR (11th vs 13th) past Dejounte; 26 on 4-5 from three against 13.1
+2026-11-08,nba_sun_main,Darryn Peterson,UTA,pm_call,34.8,35.3,39.2,35,30.2,-15,teammate-out,yes,right,"raised over ETR (22nd vs 24th) with Lauri out; 35 min (usual 30), 26 on 11-21; the one passed scored 30.8"
+2026-11-08,nba_sun_main,Jeremiah Fears,NOP,pm_call,32.8,36.5,43.7,29,28.9,-16,shooting,no,right,raised over ETR (17th vs 19th); 25 on 10-14; the 2 passed averaged 38.5
+2026-11-08,nba_sun_main,Jonathan Kuminga,MIN,miss,36.0,35.3,1.0,25,31.2,15,blowout,partly,neither,"1.0 in 25 min (usual 31) of a 15-point win as a 12.5 favorite, 2-5 with 3 turnovers"
+2026-11-08,nba_sun_main,Dejounte Murray,NOP,miss,42.6,43.5,13.1,28,34.8,-16,shooting,no,neither,"28 min (usual 35) in a 16-point loss, 1-6"
+2026-11-08,nba_sun_main,PJ Washington,DAL,miss,37.8,34.1,16.0,25,34.7,37,blowout,partly,etr,25 min (usual 35) in a 37-point win
+2026-11-08,nba_sun_main,Tyler Herro,MIL,miss,37.5,38.5,16.2,27,31.1,-20,blowout,partly,neither,"27 min (usual 31) in a 20-point loss as a 13.5 underdog, 5-12"
+2026-11-08,nba_sun_main,Naji Marshall,DAL,miss,33.2,29.4,12.2,15,22.6,37,blowout,partly,etr,15 min (usual 23) in a 37-point win
+2026-11-08,nba_sun_main,Julius Randle,BKN,miss,43.4,43.2,23.8,30,33.8,-37,blowout,partly,neither,30 min (usual 34) in a 37-point loss
+2026-11-08,nba_sun_main,Jaime Jaquez Jr.,MIL,miss,31.6,31.8,12.4,23,28.3,-20,blowout,partly,neither,"23 min (usual 28) in a 20-point loss, 1-3"
+2026-11-08,nba_sun_main,Andrew Wiggins,MIA,miss,31.3,26.4,13.1,32,25.8,6,shooting,no,etr,32 min (usual 26) but 2-6
+2026-11-08,nba_sun_main,Danny Wolf,BKN,split,9.5,27.1,18.6,36,8.6,-37,blowout,partly,etr,"ETR 27.1 vs ours 9.5; 36 min (usual 9) in a 37-point loss, Clowney 8"
+2026-11-08,nba_sun_main,Brook Lopez,LAC,split,28.3,35.1,29.9,26,23.6,16,shooting,no,ours,ETR 35.1 vs ours 28.3; 8-11 for 29.9
+2026-11-08,nba_sun_main,Nolan Traore,BKN,split,26.8,32.3,17.2,21,22.2,-37,blowout,partly,ours,ETR 32.3 vs ours 26.8; 6-15 in a 37-point loss
+2026-11-08,nba_sun_main,Brayden Burries,MIL,split,24.5,29.9,30.6,29,20.1,-20,minutes,yes,etr,ETR 29.9 vs ours 24.5; 29 min (usual 20). No last season: the last-3 average is on from 11-07
+2026-11-08,nba_sun_main,Payton Pritchard,BOS,split,36.2,30.9,27.0,29,26.3,20,shooting,no,etr,ours 36.2 vs ETR 30.9; 4-11 from three
+2026-11-08,nba_sun_main,Derik Queen,NOP,split,34.0,28.9,20.5,21,22.6,-16,shooting,no,etr,ours 34.0 vs ETR 28.9; 1-5 with 4 turnovers
