@@ -63,8 +63,9 @@ swaps and the inferred app order), never from a lock. Nights before 2026-11-10 c
 `analysis/nba/takes/<date>_etr_matchups.csv` (or `_etr_top_plays.csv`) and `<date>_zakarian.csv` with an `at`
 column: when the column came out if the text says so, else when it was pasted (ISO time, like ETR's uploads).
 Then `python3 scripts/build_takes.py`. A take (your order against the button on a decision pair) is credited to
-ETR or Bagel when either player has a note from them stamped before that window's record; else NEWS (his
-projection or his team's status changed since the last lock); else OTHER (`scripts/nba_tier_takes.py`).
+ETR or Bagel only when your move matches their note, stamped before that window's record: you moved up a player the
+note likes (Great, Good, Like, Lean) or moved down one it fades (Bad, Fade); a plain Note credits no one. Else NEWS
+(his projection or his team's status changed since the last lock); else OTHER (`scripts/nba_tier_takes.py`).
 
 Every number comes from the script; don't recompute any of them.
 
@@ -108,7 +109,9 @@ kept if it beat the old rule there, else dropped (the T5 tiebreak is dropped onl
 known price for a money RULE); an idea at 14 forward nights is proposed for adoption at a forward LEAN or better when
 its money verdict isn't against, else dropped; an idea leaning against early may be dropped early; a free test slot
 with a queued idea is offered; an adopted rule with money against is proposed for dropping under the money table
-above. Change the board, `leans.json` or `hypotheses.json` only with the user's yes.
+above. The contest side's weekly money proposals (`analysis/nba/report/money_proposals.json`) are listed in the same
+section, so the user approves everything in one place ("no money proposals this week" when the file is missing).
+Change the board, `leans.json` or `hypotheses.json` only with the user's yes.
 
 **Monthly re-check** (the first report of each month; the report flags it until `recheck.json` names the month): rerun `nba_tier_grade.py`,
 `nba_tier_rules.py`, `nba_q_lane.py` and `nba_backtest_rest.py` and read each adopted lean, rule and

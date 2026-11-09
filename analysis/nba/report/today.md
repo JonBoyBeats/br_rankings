@@ -13,7 +13,8 @@
 
 ## Monday proposals (today: decide)
 
-- none ripe
+- points: none ripe
+- no money proposals this week
 
 ## Today's playbook
 
@@ -196,11 +197,14 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | Bagel+ETR | -3.9, not enough yet (16) |
+| AM | Bagel | -9.3, not enough yet (3) |
+| AM | Bagel+ETR | -4.2, not enough yet (11) |
+| AM | ETR | +5.6, not enough yet (2) |
 | AM | NEWS | -3.1, not enough yet (12) |
-| PM | Bagel+ETR | +0.6, not enough yet (38) |
-| PM | ETR | -4.5, not enough yet (6) |
-| PM | NEWS | +2.8, not enough yet (13) |
+| PM | Bagel | -1.0, not enough yet (6) |
+| PM | Bagel+ETR | +1.0, not enough yet (25) |
+| PM | ETR | -0.5, not enough yet (10) |
+| PM | NEWS | +1.0, not enough yet (16) |
 | PM | OTHER | -1.1, not enough yet (10) |
 
 **T3/T4**
@@ -212,12 +216,14 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | Bagel+ETR | -0.8 (-3.4 to +2.8), 45 pairs, no lean |
-| AM | NEWS | -1.5, not enough yet (20) |
-| PM | Bagel | -2.1, not enough yet (1) |
-| PM | Bagel+ETR | -0.4 (-3.5 to +2.1), 76 pairs, no lean |
-| PM | ETR | +6.3, not enough yet (9) |
-| PM | NEWS | -1.9, not enough yet (14) |
+| AM | Bagel | -11.4, not enough yet (7) |
+| AM | Bagel+ETR | -0.5, not enough yet (29) |
+| AM | ETR | +13.7, not enough yet (4) |
+| AM | NEWS | -1.2, not enough yet (25) |
+| PM | Bagel | +3.7, not enough yet (18) |
+| PM | Bagel+ETR | -1.1, not enough yet (39) |
+| PM | ETR | +2.9, not enough yet (23) |
+| PM | NEWS | -4.6, not enough yet (20) |
 | PM | OTHER | +5.6, not enough yet (13) |
 
 **T5**
@@ -229,15 +235,15 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | Bagel | -10.6, not enough yet (12) |
-| AM | Bagel+ETR | -5.8 (-7.6 to -4.0), 199 pairs, LEAN - (RULE numbers, check pending) |
-| AM | ETR | -0.2, not enough yet (13) |
-| AM | NEWS | +1.6 (-4.1 to +4.8), 78 pairs, no lean |
-| PM | Bagel | -6.6, not enough yet (15) |
-| PM | Bagel+ETR | -3.4 (-4.8 to -1.8), 357 pairs, LEAN - (RULE numbers, check pending) |
-| PM | ETR | -0.9 (-1.5 to +4.8), 101 pairs, no lean |
-| PM | NEWS | -0.4 (-5.1 to +3.7), 96 pairs, no lean |
-| PM | OTHER | +0.2 (-1.8 to +2.7), 102 pairs, no lean |
+| AM | Bagel | -5.3, not enough yet (36) |
+| AM | Bagel+ETR | -6.4 (-9.9 to -2.7), 62 pairs, LEAN - |
+| AM | ETR | -5.1 (-7.7 to -3.2), 76 pairs, LEAN - |
+| AM | NEWS | -1.4 (-5.9 to +1.4), 128 pairs, no lean |
+| PM | Bagel | -6.1 (-8.8 to -2.5), 68 pairs, LEAN - |
+| PM | Bagel+ETR | -3.3 (-4.8 to -1.9), 152 pairs, LEAN - (RULE numbers, check pending) |
+| PM | ETR | -1.3 (-3.2 to +1.1), 180 pairs, no lean |
+| PM | NEWS | -2.2 (-5.4 to +0.9), 153 pairs, LEAN - |
+| PM | OTHER | +0.6 (-1.4 to +3.1), 118 pairs, no lean |
 
 Points per pair or take (count); positive: your board won, VALUE beat its partners, or your take beat the button. Takes are credited to ETR or Bagel when either player had a note from them before the lock, else NEWS (his projection or his team's status changed since the last lock) or OTHER. Verdicts and labels: tier_grade.md.
 

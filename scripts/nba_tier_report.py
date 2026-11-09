@@ -1,7 +1,8 @@
 """NBA morning report by tier, built for a phone. Writes analysis/nba/report/today.md and prints it.
 
   Top        pipeline health (a line per input: contests, results, swaps credited, ETR, Lock AM and PM with any fallback,
-             ADP snapshots, and today's inputs due by 4:30am PT); Monday proposals (computed every day, decided Mondays);
+             ADP snapshots, and today's inputs due by 4:30am PT); Monday proposals (computed every day, decided Mondays),
+             ours and the contest side's weekly money proposals (money_proposals.json) together, approved in one place;
              the monthly re-check when it's due; today's playbook: the switches, the draft card, today's Q-tags and how
              they're handled, VALUE flags, beneficiaries, the swap board, changes this week
   By tier    T1, T2, T3/T4, T5, each in four blocks: last night (your board against ETR, ours and ADP on decision pairs,
@@ -216,6 +217,27 @@ def proposals(shadow, hyp, reg, leans):
     return out
 
 
+def money_proposals():
+    """The contest side's weekly money proposals (analysis/nba/report/money_proposals.json): a list, or {"proposals": [...]}
+    with an optional "week"; each item a string or a dict (id, proposal or text, and any verdict or evidence)."""
+    p = os.path.join(REP, "money_proposals.json")
+    if not os.path.exists(p):
+        return ["no money proposals this week"]
+    doc = json.load(open(p))
+    items = doc.get("proposals", []) if isinstance(doc, dict) else doc
+    week = " (week of %s)" % doc["week"] if isinstance(doc, dict) and doc.get("week") else ""
+    out = []
+    for x in items:
+        if isinstance(x, dict):
+            head = x.get("id") or x.get("decision") or ""
+            body = x.get("proposal") or x.get("text") or x.get("summary") or ""
+            tail = "; ".join(str(x[k]) for k in ("money", "verdict", "evidence", "points") if x.get(k))
+            out.append("%s%s%s%s" % (head, ": " if head and body else "", body, " (%s)" % tail if tail else ""))
+        else:
+            out.append(str(x))
+    return ["money%s: %s" % (week, o) for o in out] or ["no money proposals this week"]
+
+
 def recheck_due(today):
     last = json.load(open(RECHECK)).get("last") if os.path.exists(RECHECK) else None
     return last != today[:7]
@@ -427,7 +449,8 @@ def main():
     md = ["# NBA morning report, %s (last night: %s)" % (today, last), "", "## Pipeline health", ""] + health(a.mirror, today, latest) + [""]
     props = proposals(shadow, hyp, reg, leans)
     md += ["## Monday proposals %s" % ("(today: decide)" if dt.date.fromisoformat(today).weekday() == 0 else "(as of today; decided Monday)"), ""]
-    md += ["- " + p for p in props] or ["- none ripe"]
+    md += ["- " + p for p in props] or ["- points: none ripe"]
+    md += ["- " + p for p in money_proposals()]
     if recheck_due(today):
         md.append("- Monthly re-check due for %s (the morning-report skill, step 1b); mark it done in recheck.json" % today[:7])
     md += [""]
