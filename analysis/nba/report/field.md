@@ -2,8 +2,8 @@
 
 ### Contest summary
 
-- Your results, 6-drafter (14 nights, 1159 teams; 1.00 is the field's rate): top 10% 1.36 (1.18-1.59), top 1% 1.12 (0.63-1.77); at the top 10%, AM teams 1.70 (1.32-2.05), PM teams 1.27 (1.07-1.50).
-- Your results, 4-drafter (5 nights, 224 teams; 1.00 is the field's rate): top 10% 1.52 (1.14-1.78), top 1% 0.89 (0.27-1.79); at the top 10%, AM teams 0.77 (0.38-0.98), PM teams 1.74 (1.30-2.02).
+- Your results, 6-drafter (14 nights, 1159 teams; 1.00 is the field's rate): top 10% 1.36 (1.18-1.59), top 1% 1.12 (0.63-1.77); at the top 10%, AM teams 1.66 (1.39-1.98), PM teams 1.25 (1.03-1.50).
+- Your results, 4-drafter (5 nights, 224 teams; 1.00 is the field's rate): top 10% 1.52 (1.14-1.78), top 1% 0.89 (0.27-1.79); at the top 10%, AM teams 0.82 (0.41-1.03), PM teams 1.71 (1.27-1.99).
 - Last night, Sunday Shootaround (6-drafter): 40 teams, median finish top 38%, top 10% 1.25, top 1% 0.00.
 - Forward tests, 6-drafter: 3 nights in of 11-05 to 12-02; nothing is decided before 12-02.
   - Less-drafted tiebreak (in use): 160 pairs; teams with the less-drafted player top 1% 1.21% vs 0.66% (80% range of the difference: +0.42 to +0.64 points).
@@ -146,8 +146,8 @@ Tail ratio: the share of your teams in the top X% over X (1.0 is the field's rat
 
 | Drafters | Nights | Teams | Top 1% | Top 5% | Top 10% | Top 20% | AM top 10% | PM top 10% |
 |---|---|---|---|---|---|---|---|---|
-| 6 | 14 | 1159 | 1.12 (0.63-1.77) | 1.45 (1.16-1.83) | 1.36 (1.18-1.59) | 1.29 (1.18-1.41) | 1.70 (1.32-2.05) | 1.27 (1.07-1.50) |
-| 4 | 5 | 224 | 0.89 (0.27-1.79) | 1.43 (1.20-1.80) | 1.52 (1.14-1.78) | 1.41 (1.03-1.70) | 0.77 (0.38-0.98) | 1.74 (1.30-2.02) |
+| 6 | 14 | 1159 | 1.12 (0.63-1.77) | 1.45 (1.16-1.83) | 1.36 (1.18-1.59) | 1.29 (1.18-1.41) | 1.66 (1.39-1.98) | 1.25 (1.03-1.50) |
+| 4 | 5 | 224 | 0.89 (0.27-1.79) | 1.43 (1.20-1.80) | 1.52 (1.14-1.78) | 1.41 (1.03-1.70) | 0.82 (0.41-1.03) | 1.71 (1.27-1.99) |
 
 ### 9. What won (flagship; a description, not a rule)
 

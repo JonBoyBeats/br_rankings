@@ -34,7 +34,7 @@ date,comparison,kind,pairs,gain
 2026-10-26,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,32,42.8
 2026-10-27,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,48,155.6
 2026-10-28,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,37,206.0
-2026-10-30,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,45,132.1
+2026-10-30,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,45,132.2
 2026-10-31,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,56,449.4
 2026-11-02,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,39,442.9
 2026-11-04,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,94,222.4
@@ -44,11 +44,11 @@ date,comparison,kind,pairs,gain
 2026-10-21,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,6,18.1
 2026-10-23,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,3,48.5
 2026-10-24,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,3,-4.0
-2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,15,-49.7
-2026-10-26,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,22,-40.7
+2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,15,-41.8
+2026-10-26,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,17,-16.0
 2026-10-27,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,11,-36.3
 2026-10-28,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,7,20.5
-2026-10-30,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,3,-50.6
+2026-10-30,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,7,84.8
 2026-10-31,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,16,-85.6
 2026-11-02,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,1,7.1
 2026-11-04,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,7,-1.2
@@ -83,7 +83,7 @@ date,comparison,kind,pairs,gain
 2026-10-27,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,0,0
 2026-10-28,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,7.7
 2026-10-28,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,2,-30.6
-2026-10-30,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,2,18.7
+2026-10-30,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,2,34.6
 2026-10-30,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,3,13.6
 2026-10-31,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,8.3
 2026-10-31,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,3,-12.3
@@ -142,11 +142,11 @@ date,comparison,kind,pairs,gain
 2026-10-21,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,49,4.5
 2026-10-23,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,0,0
 2026-10-24,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,37,-168.8
-2026-10-25,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,56,-15.6
-2026-10-26,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,38,-138.3
+2026-10-25,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,54,-61.5
+2026-10-26,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,41,-124.8
 2026-10-27,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,21,-149.1
 2026-10-28,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,17,65.5
-2026-10-30,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,39,-102.3
+2026-10-30,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,45,-159.4
 2026-10-31,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,76,-188.2
 2026-11-02,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,61,-266.5
 2026-11-04,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,52,-183.9

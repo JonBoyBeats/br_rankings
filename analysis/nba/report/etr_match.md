@@ -1,16 +1,16 @@
 # Our morning Proj vs ETR's first upload, against ADP
 
-Written nightly by scripts/nba_etr_match.py (its docstring has the definitions). Value = projection minus the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's first file; the top 60 by ADP graded (40 on a 4-drafter slate), in four groups: the elite (ETR's top 2-4, cut at the biggest drop), then next / middle / 6th round on by morning ADP: under 19, 19-31 and 32 on with 6 drafters; under 13, 13-20 and 21 on with 4. 10 slates, 2026-10-28 to 2026-11-08. Rookie gap: ETR's value minus ours for players with no last season (+: we're lower); the board averages their last 3 ETR nights from 2026-11-07.
+Written nightly by scripts/nba_etr_match.py (its docstring has the definitions). Value = projection minus the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's first file; the top 60 by ADP graded (40 on a 4-drafter slate), in four groups: the elite (ETR's top 2-4, cut at the biggest drop), then next / middle / 6th round on by morning ADP: under 19, 19-31 and 32 on with 6 drafters; under 13, 13-20 and 21 on with 4. 11 slates, 2026-10-28 to 2026-11-08. Rookie gap: ETR's value minus ours for players with no last season (+: we're lower); the board averages their last 3 ETR nights from 2026-11-07.
 
 ## Season
 
 | | players | corr | direction (ETR 2+ off ADP) | ETR's top 5 we had above | ETR's bottom 5 we had below | big misses (3+) | CLV ours / ETR | rookie gap (n) |
 |---|---|---|---|---|---|---|---|---|
-| elite | 27 | 0.82 | 21/21 (100%) | 11/11 (100%) | - | 11 (41%) | 0.07 / 0.07 | - (0) |
-| next | 135 | 0.72 | 57/68 (84%) | 6/7 (86%) | 15/15 (100%) | 31 (23%) | 0.17 / 0.45 | +1.5 (8) |
-| middle | 117 | 0.77 | 44/46 (96%) | 9/9 (100%) | 8/8 (100%) | 27 (23%) | 0.39 / 0.62 | +3.0 (11) |
-| 6th round on | 258 | 0.83 | 123/140 (88%) | 21/23 (91%) | 27/27 (100%) | 62 (24%) | 0.12 / 0.22 | +1.5 (11) |
-| **all** | 537 | 0.82 | 245/275 (89%) | 47/50 (94%) | 50/50 (100%) | 131 (24%) | 0.19 / 0.32 | +2.0 (30) |
+| elite | 30 | 0.82 | 24/24 (100%) | 12/12 (100%) | - | 11 (37%) | 0.09 / 0.08 | - (0) |
+| next | 150 | 0.72 | 61/72 (85%) | 7/8 (88%) | 15/15 (100%) | 35 (23%) | 0.19 / 0.47 | +1.5 (8) |
+| middle | 131 | 0.78 | 51/54 (94%) | 9/9 (100%) | 8/8 (100%) | 30 (23%) | 0.41 / 0.63 | +2.8 (13) |
+| 6th round on | 286 | 0.84 | 140/158 (89%) | 24/26 (92%) | 32/32 (100%) | 69 (24%) | 0.11 / 0.23 | +1.4 (13) |
+| **all** | 597 | 0.82 | 276/308 (90%) | 52/55 (95%) | 55/55 (100%) | 145 (24%) | 0.20 / 0.33 | +2.0 (34) |
 
 ## Last 7 slates
 
@@ -26,7 +26,7 @@ Written nightly by scripts/nba_etr_match.py (its docstring has the definitions).
 
 | | n | ETR minus ours | big misses |
 |---|---|---|---|
-| before 2026-11-07 | 21 | +2.74 | 9 |
+| before 2026-11-07 | 25 | +2.54 | 10 |
 | from 2026-11-07 | 9 | +0.36 | 3 |
 
 ## By slate
@@ -35,6 +35,7 @@ Written nightly by scripts/nba_etr_match.py (its docstring has the definitions).
 |---|---|---|---|---|---|---|---|---|
 | 2026-10-28 (6 drafters) | 60 | 0.86 | 27/30 (90%) | 5/5 (100%) | 5/5 (100%) | 18 (30%) | 0.07 / 0.19 | +3.3 (3) |
 | 2026-10-29 (4 drafters) | 40 | 0.84 | 15/17 (88%) | 4/5 (80%) | 5/5 (100%) | 3 (8%) | 0.27 / 0.42 | +2.9 (2) |
+| 2026-10-30 (6 drafters) | 60 | 0.85 | 31/33 (94%) | 5/5 (100%) | 5/5 (100%) | 14 (23%) | 0.34 / 0.39 | +1.5 (4) |
 | 2026-10-31 (6 drafters) | 60 | 0.80 | 28/30 (93%) | 4/5 (80%) | 5/5 (100%) | 8 (13%) | 0.29 / 0.50 | +0.6 (3) |
 | 2026-11-01 (4 drafters) | 40 | 0.73 | 16/20 (80%) | 5/5 (100%) | 5/5 (100%) | 12 (30%) | 0.30 / 0.37 | +2.5 (2) |
 | 2026-11-02 (6 drafters) | 60 | 0.74 | 27/28 (96%) | 5/5 (100%) | 5/5 (100%) | 13 (22%) | 0.17 / 0.32 | +3.5 (4) |
@@ -63,7 +64,4 @@ Written nightly by scripts/nba_etr_match.py (its docstring has the definitions).
 
 - Nolan Traore: ETR above ours by 6.8, 4.4, 7.5
 - Domantas Sabonis: ETR below ours by 3.2, 4.7, 6.2, 6.2
-- Caleb Wilson: ETR above ours by 5.1, 3.1, 6.3
-- Joel Embiid: ETR below ours by 4.0, 3.9, 5.0
-- Luka Doncic: ETR above ours by 4.2, 3.6, 3.7
 - LaMelo Ball: ETR below ours by 3.8, 3.7, 3.1

@@ -10,23 +10,71 @@
    "proposed": "RULE for",
    "read": {
     "lift": {
-     "lift10": 1.15,
+     "lift10": 1.19,
      "range80": [
-      1.04,
-      1.27
+      1.1,
+      1.29
      ],
-     "teams": 736571,
+     "teams": 730392,
      "slates": 17,
      "after_price_check": true
     },
     "mine": {
-     "teams": 1216,
+     "teams": 1226,
      "top10_ratio": 1.41,
-     "top1_ratio": 1.15,
-     "finish_pct": 44.4
+     "top1_ratio": 1.14,
+     "finish_pct": 44.6
     }
    },
-   "reason": "the read has strengthened: the register says LEAN for, this run reads RULE for (top-10% lift 1.15, 80% range 1.04-1.27 on 17 slates, 736571 teams, after the price-split check)"
+   "reason": "the read has strengthened: the register says LEAN for, this run reads RULE for (top-10% lift 1.19, 80% range 1.10-1.29 on 17 slates, 730392 teams, after the price-split check)"
+  },
+  {
+   "id": "value-up-middle-t5",
+   "current_money": "LEAN for (1.14 (1.02-1.25); was RULE before the check; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
+   "proposed": "RULE for",
+   "read": {
+    "lift": {
+     "lift10": 1.18,
+     "range80": [
+      1.05,
+      1.32
+     ],
+     "teams": 1224531,
+     "slates": 17,
+     "after_price_check": true
+    },
+    "mine": {
+     "teams": 998,
+     "top10_ratio": 1.32,
+     "top1_ratio": 1.0,
+     "finish_pct": 45.0
+    }
+   },
+   "reason": "the read has strengthened: the register says LEAN for, this run reads RULE for (top-10% lift 1.18, 80% range 1.05-1.32 on 17 slates, 1224531 teams, after the price-split check)"
+  },
+  {
+   "id": "am-t5-button-order",
+   "current_money": "no lean (top-10% lift 1.01 (0.94-1.09); 2026-11-09)",
+   "proposed": "LEAN for",
+   "read": {
+    "lift": {
+     "lift10": 1.14,
+     "range80": [
+      1.02,
+      1.27
+     ],
+     "teams": 1157729,
+     "slates": 14,
+     "after_price_check": true
+    },
+    "mine": {
+     "teams": 278,
+     "top10_ratio": 1.51,
+     "top1_ratio": 1.08,
+     "finish_pct": 46.5
+    }
+   },
+   "reason": "the read has strengthened: the register says no lean, this run reads LEAN for (top-10% lift 1.14, 80% range 1.02-1.27 on 14 slates, 1157729 teams, after the price-split check)"
   },
   {
    "id": "am-t5-other-reads",
@@ -34,23 +82,47 @@
    "proposed": "LEAN for",
    "read": {
     "lift": {
-     "lift10": 1.32,
+     "lift10": 1.4,
      "range80": [
-      1.1,
-      1.62
+      1.11,
+      1.78
      ],
-     "teams": 104826,
-     "slates": 15,
+     "teams": 86853,
+     "slates": 12,
      "after_price_check": true
     },
     "mine": {
-     "teams": 147,
-     "top10_ratio": 1.36,
-     "top1_ratio": 0.68,
-     "finish_pct": 49.6
+     "teams": 117,
+     "top10_ratio": 1.54,
+     "top1_ratio": 0.85,
+     "finish_pct": 48.2
     }
    },
-   "reason": "the read has weakened: the register says RULE for, this run reads LEAN for (top-10% lift 1.32, 80% range 1.10-1.62 on 15 slates, 104826 teams, after the price-split check)"
+   "reason": "the read has weakened: the register says RULE for, this run reads LEAN for (top-10% lift 1.40, 80% range 1.11-1.78 on 12 slates, 86853 teams, after the price-split check)"
+  },
+  {
+   "id": "q-class-x:FAIR",
+   "current_money": "no lean for FAIR (1.22 (0.64-2.68)) or TRAP (0.95 (0.81-1.13)); not enough SMASH (top-10% lift; 2026-11-09)",
+   "proposed": "LEAN against",
+   "read": {
+    "lift": {
+     "lift10": 0.77,
+     "range80": [
+      0.63,
+      0.97
+     ],
+     "teams": 5020,
+     "slates": 13,
+     "after_price_check": true
+    },
+    "mine": {
+     "teams": 40,
+     "top10_ratio": 1.5,
+     "top1_ratio": 0.0,
+     "finish_pct": 42.0
+    }
+   },
+   "reason": "the read has strengthened: the register says no lean, this run reads LEAN against (top-10% lift 0.77, 80% range 0.63-0.97 on 13 slates, 5020 teams, after the price-split check)"
   },
   {
    "id": "card-opposing-stars",
@@ -58,23 +130,23 @@
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 1.06,
+     "lift10": 1.05,
      "range80": [
-      0.92,
-      1.22
+      0.91,
+      1.21
      ],
-     "teams": 107702,
+     "teams": 107635,
      "slates": 17,
      "after_price_check": true
     },
     "mine": {
-     "teams": 533,
-     "top10_ratio": 1.61,
-     "top1_ratio": 1.69,
-     "finish_pct": 42.8
+     "teams": 539,
+     "top10_ratio": 1.6,
+     "top1_ratio": 1.67,
+     "finish_pct": 42.9
     }
    },
-   "reason": "the read has weakened: the register says LEAN for, this run reads no lean (top-10% lift 1.06, 80% range 0.92-1.22 on 17 slates, 107702 teams, after the price-split check)"
+   "reason": "the read has weakened: the register says LEAN for, this run reads no lean (top-10% lift 1.05, 80% range 0.91-1.21 on 17 slates, 107635 teams, after the price-split check)"
   },
   {
    "id": "card-same-position-teammates:rounds 1-3",
@@ -173,100 +245,52 @@
    "reason": "new split (Different-position teammates (any rounds)): this run reads no lean (top-10% lift 1.02, 80% range 0.91-1.17 on 15 slates, after the price-split check)"
   },
   {
-   "id": "takes:ETR:am",
-   "current_money": "none: a new split",
-   "proposed": "RULE for",
-   "read": {
-    "lift": {
-     "lift10": 1.45,
-     "range80": [
-      1.33,
-      1.52
-     ],
-     "teams": 35738,
-     "slates": 6,
-     "after_price_check": true
-    },
-    "mine": {
-     "teams": 87,
-     "top10_ratio": 1.84,
-     "top1_ratio": 2.3,
-     "finish_pct": 45.0
-    }
-   },
-   "reason": "new split (ETR | AM): this run reads RULE for (top-10% lift 1.45, 80% range 1.33-1.52 on 6 slates, after the price-split check)"
-  },
-  {
    "id": "takes:ETR:pm",
    "current_money": "none: a new split",
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 1.09,
+     "lift10": 1.11,
      "range80": [
-      0.84,
-      1.39
+      0.75,
+      1.56
      ],
-     "teams": 94738,
-     "slates": 8,
-     "after_price_check": true
-    },
-    "mine": {
-     "teams": 264,
-     "top10_ratio": 1.33,
-     "top1_ratio": 0.38,
-     "finish_pct": 41.8
-    }
-   },
-   "reason": "new split (ETR | PM): this run reads no lean (top-10% lift 1.09, 80% range 0.84-1.39 on 8 slates, after the price-split check)"
-  },
-  {
-   "id": "takes:ETR:both",
-   "current_money": "none: a new split",
-   "proposed": "LEAN for",
-   "read": {
-    "lift": {
-     "lift10": 1.19,
-     "range80": [
-      0.99,
-      1.4
-     ],
-     "teams": 130479,
-     "slates": 8,
-     "after_price_check": true
-    },
-    "mine": {
-     "teams": 351,
-     "top10_ratio": 1.45,
-     "top1_ratio": 0.85,
-     "finish_pct": 42.6
-    }
-   },
-   "reason": "new split (ETR | both): this run reads LEAN for (top-10% lift 1.19, 80% range 0.99-1.40 on 8 slates, after the price-split check)"
-  },
-  {
-   "id": "takes:Bagel:am",
-   "current_money": "none: a new split",
-   "proposed": "no lean",
-   "read": {
-    "lift": {
-     "lift10": 0.99,
-     "range80": [
-      0.66,
-      1.45
-     ],
-     "teams": 29317,
+     "teams": 53437,
      "slates": 7,
      "after_price_check": true
     },
     "mine": {
-     "teams": 116,
-     "top10_ratio": 1.03,
-     "top1_ratio": 0.0,
-     "finish_pct": 50.0
+     "teams": 199,
+     "top10_ratio": 1.06,
+     "top1_ratio": 0.5,
+     "finish_pct": 46.0
     }
    },
-   "reason": "new split (Bagel | AM): this run reads no lean (top-10% lift 0.99, 80% range 0.66-1.45 on 7 slates, after the price-split check)"
+   "reason": "new split (ETR | PM): this run reads no lean (top-10% lift 1.11, 80% range 0.75-1.56 on 7 slates, after the price-split check)"
+  },
+  {
+   "id": "takes:ETR:both",
+   "current_money": "none: a new split",
+   "proposed": "no lean",
+   "read": {
+    "lift": {
+     "lift10": 1.11,
+     "range80": [
+      0.75,
+      1.56
+     ],
+     "teams": 53437,
+     "slates": 7,
+     "after_price_check": true
+    },
+    "mine": {
+     "teams": 199,
+     "top10_ratio": 1.06,
+     "top1_ratio": 0.5,
+     "finish_pct": 46.0
+    }
+   },
+   "reason": "new split (ETR | both): this run reads no lean (top-10% lift 1.11, 80% range 0.75-1.56 on 7 slates, after the price-split check)"
   },
   {
    "id": "takes:Bagel:pm",
@@ -274,23 +298,23 @@
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 0.97,
+     "lift10": 0.96,
      "range80": [
-      0.78,
-      1.23
+      0.76,
+      1.28
      ],
-     "teams": 92605,
-     "slates": 9,
+     "teams": 76191,
+     "slates": 8,
      "after_price_check": true
     },
     "mine": {
-     "teams": 275,
-     "top10_ratio": 1.53,
-     "top1_ratio": 0.73,
-     "finish_pct": 42.7
+     "teams": 212,
+     "top10_ratio": 1.46,
+     "top1_ratio": 0.47,
+     "finish_pct": 44.2
     }
    },
-   "reason": "new split (Bagel | PM): this run reads no lean (top-10% lift 0.97, 80% range 0.78-1.23 on 9 slates, after the price-split check)"
+   "reason": "new split (Bagel | PM): this run reads no lean (top-10% lift 0.96, 80% range 0.76-1.28 on 8 slates, after the price-split check)"
   },
   {
    "id": "takes:Bagel:both",
@@ -298,47 +322,23 @@
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 0.97,
+     "lift10": 0.96,
      "range80": [
-      0.79,
-      1.21
+      0.76,
+      1.28
      ],
-     "teams": 121923,
-     "slates": 9,
+     "teams": 76191,
+     "slates": 8,
      "after_price_check": true
     },
     "mine": {
-     "teams": 391,
-     "top10_ratio": 1.38,
-     "top1_ratio": 0.51,
-     "finish_pct": 44.9
+     "teams": 212,
+     "top10_ratio": 1.46,
+     "top1_ratio": 0.47,
+     "finish_pct": 44.2
     }
    },
-   "reason": "new split (Bagel | both): this run reads no lean (top-10% lift 0.97, 80% range 0.79-1.21 on 9 slates, after the price-split check)"
-  },
-  {
-   "id": "takes:Bagel+ETR:am",
-   "current_money": "none: a new split",
-   "proposed": "RULE against",
-   "read": {
-    "lift": {
-     "lift10": 0.87,
-     "range80": [
-      0.77,
-      0.97
-     ],
-     "teams": 58185,
-     "slates": 6,
-     "after_price_check": true
-    },
-    "mine": {
-     "teams": 182,
-     "top10_ratio": 1.54,
-     "top1_ratio": 0.55,
-     "finish_pct": 48.5
-    }
-   },
-   "reason": "new split (Bagel+ETR | AM): this run reads RULE against (top-10% lift 0.87, 80% range 0.77-0.97 on 6 slates, after the price-split check)"
+   "reason": "new split (Bagel | both): this run reads no lean (top-10% lift 0.96, 80% range 0.76-1.28 on 8 slates, after the price-split check)"
   },
   {
    "id": "takes:Bagel+ETR:pm",
@@ -346,23 +346,23 @@
    "proposed": "LEAN against",
    "read": {
     "lift": {
-     "lift10": 0.85,
+     "lift10": 0.89,
      "range80": [
-      0.76,
-      0.98
+      0.77,
+      1.06
      ],
-     "teams": 176219,
+     "teams": 157690,
      "slates": 8,
      "after_price_check": true
     },
     "mine": {
-     "teams": 577,
-     "top10_ratio": 1.37,
-     "top1_ratio": 0.52,
-     "finish_pct": 42.7
+     "teams": 510,
+     "top10_ratio": 1.39,
+     "top1_ratio": 0.59,
+     "finish_pct": 41.8
     }
    },
-   "reason": "new split (Bagel+ETR | PM): this run reads LEAN against (top-10% lift 0.85, 80% range 0.76-0.98 on 8 slates, after the price-split check)"
+   "reason": "new split (Bagel+ETR | PM): this run reads LEAN against (top-10% lift 0.89, 80% range 0.77-1.06 on 8 slates, after the price-split check)"
   },
   {
    "id": "takes:Bagel+ETR:both",
@@ -370,23 +370,23 @@
    "proposed": "LEAN against",
    "read": {
     "lift": {
-     "lift10": 0.86,
+     "lift10": 0.89,
      "range80": [
-      0.78,
-      0.97
+      0.77,
+      1.06
      ],
-     "teams": 234410,
+     "teams": 157690,
      "slates": 8,
      "after_price_check": true
     },
     "mine": {
-     "teams": 759,
-     "top10_ratio": 1.41,
-     "top1_ratio": 0.53,
-     "finish_pct": 44.1
+     "teams": 510,
+     "top10_ratio": 1.39,
+     "top1_ratio": 0.59,
+     "finish_pct": 41.8
     }
    },
-   "reason": "new split (Bagel+ETR | both): this run reads LEAN against (top-10% lift 0.86, 80% range 0.78-0.97 on 8 slates, after the price-split check)"
+   "reason": "new split (Bagel+ETR | both): this run reads LEAN against (top-10% lift 0.89, 80% range 0.77-1.06 on 8 slates, after the price-split check)"
   },
   {
    "id": "takes:NEWS:am",
@@ -394,23 +394,23 @@
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 1.12,
+     "lift10": 1.09,
      "range80": [
-      0.89,
-      1.35
+      0.92,
+      1.27
      ],
-     "teams": 142577,
-     "slates": 14,
+     "teams": 212902,
+     "slates": 12,
      "after_price_check": true
     },
     "mine": {
-     "teams": 115,
-     "top10_ratio": 1.57,
-     "top1_ratio": 0.87,
-     "finish_pct": 48.1
+     "teams": 251,
+     "top10_ratio": 1.67,
+     "top1_ratio": 1.2,
+     "finish_pct": 46.5
     }
    },
-   "reason": "new split (NEWS | AM): this run reads no lean (top-10% lift 1.12, 80% range 0.89-1.35 on 14 slates, after the price-split check)"
+   "reason": "new split (NEWS | AM): this run reads no lean (top-10% lift 1.09, 80% range 0.92-1.27 on 12 slates, after the price-split check)"
   },
   {
    "id": "takes:NEWS:pm",
@@ -418,23 +418,23 @@
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 0.94,
+     "lift10": 0.98,
      "range80": [
-      0.8,
-      1.11
+      0.85,
+      1.09
      ],
-     "teams": 130727,
+     "teams": 199161,
      "slates": 16,
      "after_price_check": true
     },
     "mine": {
-     "teams": 228,
-     "top10_ratio": 0.92,
-     "top1_ratio": 1.32,
-     "finish_pct": 47.1
+     "teams": 293,
+     "top10_ratio": 1.13,
+     "top1_ratio": 1.02,
+     "finish_pct": 44.8
     }
    },
-   "reason": "new split (NEWS | PM): this run reads no lean (top-10% lift 0.94, 80% range 0.80-1.11 on 16 slates, after the price-split check)"
+   "reason": "new split (NEWS | PM): this run reads no lean (top-10% lift 0.98, 80% range 0.85-1.09 on 16 slates, after the price-split check)"
   },
   {
    "id": "takes:NEWS:both",
@@ -442,47 +442,44 @@
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 1.03,
+     "lift10": 1.04,
      "range80": [
-      0.9,
-      1.14
+      0.94,
+      1.13
      ],
-     "teams": 273305,
+     "teams": 412063,
      "slates": 17,
      "after_price_check": true
     },
     "mine": {
-     "teams": 343,
-     "top10_ratio": 1.14,
-     "top1_ratio": 1.17,
-     "finish_pct": 47.4
+     "teams": 544,
+     "top10_ratio": 1.38,
+     "top1_ratio": 1.1,
+     "finish_pct": 45.6
     }
    },
-   "reason": "new split (NEWS | both): this run reads no lean (top-10% lift 1.03, 80% range 0.90-1.14 on 17 slates, after the price-split check)"
+   "reason": "new split (NEWS | both): this run reads no lean (top-10% lift 1.04, 80% range 0.94-1.13 on 17 slates, after the price-split check)"
   },
   {
    "id": "takes:OTHER:am",
    "current_money": "none: a new split",
-   "proposed": "LEAN for",
+   "proposed": "not enough",
    "read": {
     "lift": {
-     "lift10": 1.54,
-     "range80": [
-      1.13,
-      1.73
-     ],
-     "teams": 33437,
-     "slates": 4,
+     "lift10": 1.75,
+     "range80": null,
+     "teams": 27367,
+     "slates": 2,
      "after_price_check": true
     },
     "mine": {
-     "teams": 25,
-     "top10_ratio": 1.2,
-     "top1_ratio": 4.0,
-     "finish_pct": 46.1
+     "teams": 18,
+     "top10_ratio": 1.67,
+     "top1_ratio": 5.56,
+     "finish_pct": 36.4
     }
    },
-   "reason": "new split (OTHER | AM): this run reads LEAN for (top-10% lift 1.54, 80% range 1.13-1.73 on 4 slates, after the price-split check)"
+   "reason": "new split (OTHER | AM): this run reads not enough (top-10% lift 1.75 on 2 slates, after the price-split check)"
   },
   {
    "id": "takes:OTHER:pm",
@@ -490,23 +487,23 @@
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 0.93,
+     "lift10": 0.92,
      "range80": [
-      0.74,
-      1.16
+      0.73,
+      1.13
      ],
-     "teams": 71036,
+     "teams": 71880,
      "slates": 12,
      "after_price_check": true
     },
     "mine": {
-     "teams": 174,
-     "top10_ratio": 1.26,
-     "top1_ratio": 2.87,
-     "finish_pct": 45.9
+     "teams": 180,
+     "top10_ratio": 1.28,
+     "top1_ratio": 2.78,
+     "finish_pct": 46.1
     }
    },
-   "reason": "new split (OTHER | PM): this run reads no lean (top-10% lift 0.93, 80% range 0.74-1.16 on 12 slates, after the price-split check)"
+   "reason": "new split (OTHER | PM): this run reads no lean (top-10% lift 0.92, 80% range 0.73-1.13 on 12 slates, after the price-split check)"
   },
   {
    "id": "takes:OTHER:both",
@@ -516,21 +513,21 @@
     "lift": {
      "lift10": 1.11,
      "range80": [
-      0.85,
-      1.36
+      0.83,
+      1.37
      ],
-     "teams": 104473,
-     "slates": 13,
+     "teams": 99247,
+     "slates": 12,
      "after_price_check": true
     },
     "mine": {
-     "teams": 199,
-     "top10_ratio": 1.26,
-     "top1_ratio": 3.02,
-     "finish_pct": 46.0
+     "teams": 198,
+     "top10_ratio": 1.31,
+     "top1_ratio": 3.03,
+     "finish_pct": 45.2
     }
    },
-   "reason": "new split (OTHER | both): this run reads no lean (top-10% lift 1.11, 80% range 0.85-1.36 on 13 slates, after the price-split check)"
+   "reason": "new split (OTHER | both): this run reads no lean (top-10% lift 1.11, 80% range 0.83-1.37 on 12 slates, after the price-split check)"
   },
   {
    "id": "takes:all:am",
@@ -538,23 +535,23 @@
    "proposed": "LEAN for",
    "read": {
     "lift": {
-     "lift10": 1.14,
+     "lift10": 1.15,
      "range80": [
-      1.01,
-      1.29
+      0.97,
+      1.34
      ],
-     "teams": 299259,
-     "slates": 15,
+     "teams": 240269,
+     "slates": 12,
      "after_price_check": true
     },
     "mine": {
-     "teams": 299,
-     "top10_ratio": 1.54,
-     "top1_ratio": 1.0,
-     "finish_pct": 47.9
+     "teams": 251,
+     "top10_ratio": 1.67,
+     "top1_ratio": 1.2,
+     "finish_pct": 46.5
     }
    },
-   "reason": "new split (all | AM): this run reads LEAN for (top-10% lift 1.14, 80% range 1.01-1.29 on 15 slates, after the price-split check)"
+   "reason": "new split (all | AM): this run reads LEAN for (top-10% lift 1.15, 80% range 0.97-1.34 on 12 slates, after the price-split check)"
   },
   {
    "id": "takes:all:pm",
@@ -562,23 +559,23 @@
    "proposed": "no lean",
    "read": {
     "lift": {
-     "lift10": 0.96,
+     "lift10": 0.98,
      "range80": [
-      0.89,
+      0.9,
       1.06
      ],
-     "teams": 565337,
+     "teams": 558379,
      "slates": 17,
      "after_price_check": true
     },
     "mine": {
-     "teams": 965,
-     "top10_ratio": 1.35,
-     "top1_ratio": 1.14,
-     "finish_pct": 43.4
+     "teams": 890,
+     "top10_ratio": 1.34,
+     "top1_ratio": 1.12,
+     "finish_pct": 43.5
     }
    },
-   "reason": "new split (all | PM): this run reads no lean (top-10% lift 0.96, 80% range 0.89-1.06 on 17 slates, after the price-split check)"
+   "reason": "new split (all | PM): this run reads no lean (top-10% lift 0.98, 80% range 0.90-1.06 on 17 slates, after the price-split check)"
   },
   {
    "id": "takes:all:both",
@@ -589,20 +586,20 @@
      "lift10": 1.03,
      "range80": [
       0.96,
-      1.1
+      1.11
      ],
-     "teams": 864596,
+     "teams": 798648,
      "slates": 17,
      "after_price_check": true
     },
     "mine": {
-     "teams": 1264,
-     "top10_ratio": 1.39,
-     "top1_ratio": 1.11,
-     "finish_pct": 44.5
+     "teams": 1141,
+     "top10_ratio": 1.41,
+     "top1_ratio": 1.14,
+     "finish_pct": 44.1
     }
    },
-   "reason": "new split (all | both): this run reads no lean (top-10% lift 1.03, 80% range 0.96-1.10 on 17 slates, after the price-split check)"
+   "reason": "new split (all | both): this run reads no lean (top-10% lift 1.03, 80% range 0.96-1.11 on 17 slates, after the price-split check)"
   }
  ]
 }

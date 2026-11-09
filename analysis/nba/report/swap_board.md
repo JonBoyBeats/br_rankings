@@ -7,11 +7,11 @@ Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). Excluded 
 | Swaps | Group | Swaps | Points left per swap | Share where the swap was already the best option or better |
 |---|---|---|---|---|
 | Field and you | T1 | 1239 | +1.5 | 76% |
-| Field and you | T2 | 6152 | +3.3 | 52% |
-| Field and you | T3 | 17610 | +1.8 | 68% |
+| Field and you | T2 | 6153 | +3.3 | 52% |
+| Field and you | T3 | 17611 | +1.8 | 68% |
 | Field and you | T4 | 2854 | -1.0 | 66% |
-| Field and you | T5 | 1468 | -1.4 | 81% |
-| Field and you | all | 29323 | +1.7 | 65% |
+| Field and you | T5 | 1463 | -1.4 | 81% |
+| Field and you | all | 29320 | +1.7 | 65% |
 | Your teams | AM | 57 | +0.8 | 74% |
 | Your teams | OVERNIGHT | 29 | -2.6 | 93% |
 | Your teams | PM | 69 | +1.0 | 75% |

@@ -151,22 +151,22 @@
      "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.15,
+      "lift10": 1.19,
       "range80": [
-       1.04,
-       1.27
+       1.1,
+       1.29
       ],
-      "teams": 736571,
+      "teams": 730392,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 1216,
+      "teams": 1226,
       "top10_ratio": 1.41,
-      "top1_ratio": 1.15,
-      "finish_pct": 44.4
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
      },
-     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.15 (1.04-1.27); my teams there 1.41x at the top 10% (1216 teams)"
+     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)"
     },
     {
      "id": "pricey-flags:T1",
@@ -177,22 +177,22 @@
      "verdict": "RULE for (1.73 (1.38-2.20), 12 slates; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.95,
+      "lift10": 1.93,
       "range80": [
-       1.56,
-       2.44
+       1.53,
+       2.36
       ],
-      "teams": 100686,
+      "teams": 96959,
       "slates": 12,
       "after_price_check": true
      },
      "mine": {
-      "teams": 325,
-      "top10_ratio": 1.75,
-      "top1_ratio": 2.15,
-      "finish_pct": 41.8
+      "teams": 333,
+      "top10_ratio": 1.77,
+      "top1_ratio": 2.1,
+      "finish_pct": 41.6
      },
-     "line": "pricey-flags:T1: RULE for; this run: RULE for; top-10% lift 1.95 (1.56-2.44); my teams there 1.75x at the top 10% (325 teams)"
+     "line": "pricey-flags:T1: RULE for; this run: RULE for; top-10% lift 1.93 (1.53-2.36); my teams there 1.77x at the top 10% (333 teams)"
     },
     {
      "id": "kept-am-t1",
@@ -558,22 +558,22 @@
      "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.15,
+      "lift10": 1.19,
       "range80": [
-       1.04,
-       1.27
+       1.1,
+       1.29
       ],
-      "teams": 736571,
+      "teams": 730392,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 1216,
+      "teams": 1226,
       "top10_ratio": 1.41,
-      "top1_ratio": 1.15,
-      "finish_pct": 44.4
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
      },
-     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.15 (1.04-1.27); my teams there 1.41x at the top 10% (1216 teams)"
+     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)"
     },
     {
      "id": "leverage-t2-t4",
@@ -584,22 +584,22 @@
      "verdict": "LEAN for (RULE numbers, 1.38 (1.15-2.14), on 6 slates; re-read at 14; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.55,
+      "lift10": 1.59,
       "range80": [
-       1.27,
-       2.05
+       1.32,
+       2.13
       ],
-      "teams": 20460,
+      "teams": 21382,
       "slates": 6,
       "after_price_check": true
      },
      "mine": {
-      "teams": 68,
-      "top10_ratio": 2.06,
-      "top1_ratio": 1.47,
-      "finish_pct": 38.8
+      "teams": 71,
+      "top10_ratio": 1.97,
+      "top1_ratio": 1.41,
+      "finish_pct": 39.5
      },
-     "line": "leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.55 (1.27-2.05); my teams there 2.06x at the top 10% (68 teams)"
+     "line": "leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.59 (1.32-2.13); my teams there 1.97x at the top 10% (71 teams)"
     },
     {
      "id": "pm-t2-adp-etr2",
@@ -610,22 +610,22 @@
      "verdict": "no lean (top-10% lift 1.18 (0.87-1.56); 2026-11-09)",
      "current": "no lean",
      "lift": {
-      "lift10": 1.13,
+      "lift10": 1.22,
       "range80": [
-       0.86,
-       1.51
+       0.88,
+       1.66
       ],
-      "teams": 81693,
+      "teams": 85103,
       "slates": 13,
-      "after_price_check": true
+      "after_price_check": false
      },
      "mine": {
-      "teams": 425,
-      "top10_ratio": 1.74,
-      "top1_ratio": 1.88,
-      "finish_pct": 40.0
+      "teams": 376,
+      "top10_ratio": 1.68,
+      "top1_ratio": 1.86,
+      "finish_pct": 40.1
      },
-     "line": "pm-t2-adp-etr2: no lean; this run: no lean; top-10% lift 1.13 (0.86-1.51); my teams there 1.74x at the top 10% (425 teams)"
+     "line": "pm-t2-adp-etr2: no lean; this run: no lean; top-10% lift 1.22 (0.88-1.66); my teams there 1.68x at the top 10% (376 teams)"
     },
     {
      "id": "pm-t2-other-reads",
@@ -636,22 +636,22 @@
      "verdict": "no lean (top-10% lift 0.93 (0.76-1.13); 2026-11-09)",
      "current": "no lean",
      "lift": {
-      "lift10": 0.98,
+      "lift10": 0.94,
       "range80": [
-       0.8,
-       1.2
+       0.79,
+       1.1
       ],
-      "teams": 108088,
+      "teams": 110816,
       "slates": 16,
       "after_price_check": false
      },
      "mine": {
-      "teams": 474,
-      "top10_ratio": 1.24,
-      "top1_ratio": 0.63,
-      "finish_pct": 44.5
+      "teams": 451,
+      "top10_ratio": 1.04,
+      "top1_ratio": 0.44,
+      "finish_pct": 46.6
      },
-     "line": "pm-t2-other-reads: no lean; this run: no lean; top-10% lift 0.98 (0.80-1.20); my teams there 1.24x at the top 10% (474 teams)"
+     "line": "pm-t2-other-reads: no lean; this run: no lean; top-10% lift 0.94 (0.79-1.10); my teams there 1.04x at the top 10% (451 teams)"
     },
     {
      "id": "kept-am-t2",
@@ -890,24 +890,24 @@
      "status": "adopted",
      "points": "LEAN (both windows)",
      "verdict": "LEAN for (1.14 (1.02-1.25); was RULE before the check; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
-     "current": "LEAN for",
+     "current": "RULE for",
      "lift": {
-      "lift10": 1.15,
+      "lift10": 1.18,
       "range80": [
-       1.02,
-       1.27
+       1.05,
+       1.32
       ],
-      "teams": 1202481,
+      "teams": 1224531,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 1015,
-      "top10_ratio": 1.29,
-      "top1_ratio": 0.99,
-      "finish_pct": 45.3
+      "teams": 998,
+      "top10_ratio": 1.32,
+      "top1_ratio": 1.0,
+      "finish_pct": 45.0
      },
-     "line": "value-up-middle-t5: LEAN for; this run: LEAN for; top-10% lift 1.15 (1.02-1.27); my teams there 1.29x at the top 10% (1015 teams)"
+     "line": "value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.32); my teams there 1.32x at the top 10% (998 teams)"
     },
     {
      "id": "pricey-flags",
@@ -918,22 +918,22 @@
      "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.15,
+      "lift10": 1.19,
       "range80": [
-       1.04,
-       1.27
+       1.1,
+       1.29
       ],
-      "teams": 736571,
+      "teams": 730392,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 1216,
+      "teams": 1226,
       "top10_ratio": 1.41,
-      "top1_ratio": 1.15,
-      "finish_pct": 44.4
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
      },
-     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.15 (1.04-1.27); my teams there 1.41x at the top 10% (1216 teams)"
+     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)"
     },
     {
      "id": "leverage-t2-t4",
@@ -944,22 +944,22 @@
      "verdict": "LEAN for (RULE numbers, 1.38 (1.15-2.14), on 6 slates; re-read at 14; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.55,
+      "lift10": 1.59,
       "range80": [
-       1.27,
-       2.05
+       1.32,
+       2.13
       ],
-      "teams": 20460,
+      "teams": 21382,
       "slates": 6,
       "after_price_check": true
      },
      "mine": {
-      "teams": 68,
-      "top10_ratio": 2.06,
-      "top1_ratio": 1.47,
-      "finish_pct": 38.8
+      "teams": 71,
+      "top10_ratio": 1.97,
+      "top1_ratio": 1.41,
+      "finish_pct": 39.5
      },
-     "line": "leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.55 (1.27-2.05); my teams there 2.06x at the top 10% (68 teams)"
+     "line": "leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.59 (1.32-2.13); my teams there 1.97x at the top 10% (71 teams)"
     },
     {
      "id": "pm-middle-takes",
@@ -970,22 +970,22 @@
      "verdict": "no lean (top-10% lift 0.99 (0.80-1.20); 2026-11-09)",
      "current": "no lean",
      "lift": {
-      "lift10": 0.96,
+      "lift10": 1.03,
       "range80": [
-       0.78,
-       1.18
+       0.83,
+       1.24
       ],
-      "teams": 202545,
+      "teams": 193908,
       "slates": 16,
       "after_price_check": false
      },
      "mine": {
-      "teams": 655,
-      "top10_ratio": 1.36,
-      "top1_ratio": 0.92,
-      "finish_pct": 42.7
+      "teams": 605,
+      "top10_ratio": 1.39,
+      "top1_ratio": 0.83,
+      "finish_pct": 42.2
      },
-     "line": "pm-middle-takes: no lean; this run: no lean; top-10% lift 0.96 (0.78-1.18); my teams there 1.36x at the top 10% (655 teams)"
+     "line": "pm-middle-takes: no lean; this run: no lean; top-10% lift 1.03 (0.83-1.24); my teams there 1.39x at the top 10% (605 teams)"
     },
     {
      "id": "kept-am-middle",
@@ -1245,24 +1245,24 @@
      "status": "adopted",
      "points": "LEAN (both windows)",
      "verdict": "LEAN for (1.14 (1.02-1.25); was RULE before the check; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
-     "current": "LEAN for",
+     "current": "RULE for",
      "lift": {
-      "lift10": 1.15,
+      "lift10": 1.18,
       "range80": [
-       1.02,
-       1.27
+       1.05,
+       1.32
       ],
-      "teams": 1202481,
+      "teams": 1224531,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 1015,
-      "top10_ratio": 1.29,
-      "top1_ratio": 0.99,
-      "finish_pct": 45.3
+      "teams": 998,
+      "top10_ratio": 1.32,
+      "top1_ratio": 1.0,
+      "finish_pct": 45.0
      },
-     "line": "value-up-middle-t5: LEAN for; this run: LEAN for; top-10% lift 1.15 (1.02-1.27); my teams there 1.29x at the top 10% (1015 teams)"
+     "line": "value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.32); my teams there 1.32x at the top 10% (998 teams)"
     },
     {
      "id": "pricey-flags",
@@ -1273,22 +1273,22 @@
      "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.15,
+      "lift10": 1.19,
       "range80": [
-       1.04,
-       1.27
+       1.1,
+       1.29
       ],
-      "teams": 736571,
+      "teams": 730392,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 1216,
+      "teams": 1226,
       "top10_ratio": 1.41,
-      "top1_ratio": 1.15,
-      "finish_pct": 44.4
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
      },
-     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.15 (1.04-1.27); my teams there 1.41x at the top 10% (1216 teams)"
+     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)"
     },
     {
      "id": "pm-t4-pricey-last-off",
@@ -1299,22 +1299,22 @@
      "verdict": "no lean (top-10% lift 1.15 (0.80-1.45); 2026-11-09)",
      "current": "no lean",
      "lift": {
-      "lift10": 1.15,
+      "lift10": 1.11,
       "range80": [
-       0.79,
-       1.44
+       0.78,
+       1.41
       ],
-      "teams": 45861,
+      "teams": 48789,
       "slates": 9,
       "after_price_check": false
      },
      "mine": {
-      "teams": 130,
-      "top10_ratio": 1.46,
-      "top1_ratio": 1.54,
-      "finish_pct": 46.2
+      "teams": 118,
+      "top10_ratio": 1.69,
+      "top1_ratio": 0.85,
+      "finish_pct": 42.6
      },
-     "line": "pm-t4-pricey-last-off: no lean; this run: no lean; top-10% lift 1.15 (0.79-1.44); my teams there 1.46x at the top 10% (130 teams)"
+     "line": "pm-t4-pricey-last-off: no lean; this run: no lean; top-10% lift 1.11 (0.78-1.41); my teams there 1.69x at the top 10% (118 teams)"
     },
     {
      "id": "leverage-t2-t4",
@@ -1325,22 +1325,22 @@
      "verdict": "LEAN for (RULE numbers, 1.38 (1.15-2.14), on 6 slates; re-read at 14; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.55,
+      "lift10": 1.59,
       "range80": [
-       1.27,
-       2.05
+       1.32,
+       2.13
       ],
-      "teams": 20460,
+      "teams": 21382,
       "slates": 6,
       "after_price_check": true
      },
      "mine": {
-      "teams": 68,
-      "top10_ratio": 2.06,
-      "top1_ratio": 1.47,
-      "finish_pct": 38.8
+      "teams": 71,
+      "top10_ratio": 1.97,
+      "top1_ratio": 1.41,
+      "finish_pct": 39.5
      },
-     "line": "leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.55 (1.27-2.05); my teams there 2.06x at the top 10% (68 teams)"
+     "line": "leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.59 (1.32-2.13); my teams there 1.97x at the top 10% (71 teams)"
     },
     {
      "id": "pm-t4-adp-etr2",
@@ -1351,22 +1351,22 @@
      "verdict": "no lean (0.86 (0.72-1.09); LEAN against on ten price groups; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "no lean",
      "lift": {
-      "lift10": 0.94,
+      "lift10": 0.89,
       "range80": [
-       0.77,
-       1.2
+       0.74,
+       1.14
       ],
-      "teams": 56133,
+      "teams": 52105,
       "slates": 13,
       "after_price_check": false
      },
      "mine": {
-      "teams": 249,
-      "top10_ratio": 1.08,
+      "teams": 218,
+      "top10_ratio": 0.96,
       "top1_ratio": 0.0,
-      "finish_pct": 41.0
+      "finish_pct": 41.2
      },
-     "line": "pm-t4-adp-etr2: no lean; this run: no lean; top-10% lift 0.94 (0.77-1.20); my teams there 1.08x at the top 10% (249 teams)"
+     "line": "pm-t4-adp-etr2: no lean; this run: no lean; top-10% lift 0.89 (0.74-1.14); my teams there 0.96x at the top 10% (218 teams)"
     },
     {
      "id": "pm-middle-takes",
@@ -1377,22 +1377,22 @@
      "verdict": "no lean (top-10% lift 0.99 (0.80-1.20); 2026-11-09)",
      "current": "no lean",
      "lift": {
-      "lift10": 0.96,
+      "lift10": 1.03,
       "range80": [
-       0.78,
-       1.18
+       0.83,
+       1.24
       ],
-      "teams": 202545,
+      "teams": 193908,
       "slates": 16,
       "after_price_check": false
      },
      "mine": {
-      "teams": 655,
-      "top10_ratio": 1.36,
-      "top1_ratio": 0.92,
-      "finish_pct": 42.7
+      "teams": 605,
+      "top10_ratio": 1.39,
+      "top1_ratio": 0.83,
+      "finish_pct": 42.2
      },
-     "line": "pm-middle-takes: no lean; this run: no lean; top-10% lift 0.96 (0.78-1.18); my teams there 1.36x at the top 10% (655 teams)"
+     "line": "pm-middle-takes: no lean; this run: no lean; top-10% lift 1.03 (0.83-1.24); my teams there 1.39x at the top 10% (605 teams)"
     },
     {
      "id": "kept-am-middle",
@@ -2154,24 +2154,24 @@
      "status": "adopted",
      "points": "LEAN (both windows)",
      "verdict": "no lean (top-10% lift 1.01 (0.94-1.09); 2026-11-09)",
-     "current": "no lean",
+     "current": "LEAN for",
      "lift": {
-      "lift10": 1.07,
+      "lift10": 1.14,
       "range80": [
-       0.94,
-       1.2
+       1.02,
+       1.27
       ],
-      "teams": 1110076,
-      "slates": 15,
-      "after_price_check": false
+      "teams": 1157729,
+      "slates": 14,
+      "after_price_check": true
      },
      "mine": {
-      "teams": 204,
-      "top10_ratio": 1.52,
-      "top1_ratio": 0.98,
-      "finish_pct": 48.3
+      "teams": 278,
+      "top10_ratio": 1.51,
+      "top1_ratio": 1.08,
+      "finish_pct": 46.5
      },
-     "line": "am-t5-button-order: no lean; this run: no lean; top-10% lift 1.07 (0.94-1.20); my teams there 1.52x at the top 10% (204 teams)"
+     "line": "am-t5-button-order: no lean; this run: LEAN for; top-10% lift 1.14 (1.02-1.27); my teams there 1.51x at the top 10% (278 teams)"
     },
     {
      "id": "value-up-middle-t5",
@@ -2180,24 +2180,24 @@
      "status": "adopted",
      "points": "LEAN (both windows)",
      "verdict": "LEAN for (1.14 (1.02-1.25); was RULE before the check; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
-     "current": "LEAN for",
+     "current": "RULE for",
      "lift": {
-      "lift10": 1.15,
+      "lift10": 1.18,
       "range80": [
-       1.02,
-       1.27
+       1.05,
+       1.32
       ],
-      "teams": 1202481,
+      "teams": 1224531,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 1015,
-      "top10_ratio": 1.29,
-      "top1_ratio": 0.99,
-      "finish_pct": 45.3
+      "teams": 998,
+      "top10_ratio": 1.32,
+      "top1_ratio": 1.0,
+      "finish_pct": 45.0
      },
-     "line": "value-up-middle-t5: LEAN for; this run: LEAN for; top-10% lift 1.15 (1.02-1.27); my teams there 1.29x at the top 10% (1015 teams)"
+     "line": "value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.32); my teams there 1.32x at the top 10% (998 teams)"
     },
     {
      "id": "pricey-flags",
@@ -2208,22 +2208,22 @@
      "verdict": "LEAN for overall (1.08 (0.97-1.19)); T1 RULE for, row pricey-flags:T1 (2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.15,
+      "lift10": 1.19,
       "range80": [
-       1.04,
-       1.27
+       1.1,
+       1.29
       ],
-      "teams": 736571,
+      "teams": 730392,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 1216,
+      "teams": 1226,
       "top10_ratio": 1.41,
-      "top1_ratio": 1.15,
-      "finish_pct": 44.4
+      "top1_ratio": 1.14,
+      "finish_pct": 44.6
      },
-     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.15 (1.04-1.27); my teams there 1.41x at the top 10% (1216 teams)"
+     "line": "pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)"
     },
     {
      "id": "q-tag-pushes",
@@ -2234,22 +2234,22 @@
      "verdict": "no lean (top-10% lift 1.12 (0.91-1.37); 2026-11-09)",
      "current": "no lean",
      "lift": {
-      "lift10": 1.0,
+      "lift10": 1.08,
       "range80": [
-       0.83,
-       1.21
+       0.92,
+       1.27
       ],
-      "teams": 152573,
-      "slates": 13,
+      "teams": 157996,
+      "slates": 11,
       "after_price_check": false
      },
      "mine": {
-      "teams": 444,
-      "top10_ratio": 1.58,
-      "top1_ratio": 1.13,
+      "teams": 453,
+      "top10_ratio": 1.55,
+      "top1_ratio": 1.1,
       "finish_pct": 46.0
      },
-     "line": "q-tag-pushes: no lean; this run: no lean; top-10% lift 1.00 (0.83-1.21); my teams there 1.58x at the top 10% (444 teams)"
+     "line": "q-tag-pushes: no lean; this run: no lean; top-10% lift 1.08 (0.92-1.27); my teams there 1.55x at the top 10% (453 teams)"
     },
     {
      "id": "q-tag-raises",
@@ -2260,22 +2260,22 @@
      "verdict": "no lean (top-10% lift 1.10 (0.85-1.44); 2026-11-09)",
      "current": "no lean",
      "lift": {
-      "lift10": 1.01,
+      "lift10": 0.99,
       "range80": [
-       0.85,
-       1.23
+       0.83,
+       1.2
       ],
-      "teams": 195821,
-      "slates": 13,
+      "teams": 190041,
+      "slates": 12,
       "after_price_check": false
      },
      "mine": {
-      "teams": 186,
-      "top10_ratio": 1.13,
-      "top1_ratio": 0.54,
-      "finish_pct": 46.5
+      "teams": 180,
+      "top10_ratio": 1.06,
+      "top1_ratio": 0.56,
+      "finish_pct": 47.9
      },
-     "line": "q-tag-raises: no lean; this run: no lean; top-10% lift 1.01 (0.85-1.23); my teams there 1.13x at the top 10% (186 teams)"
+     "line": "q-tag-raises: no lean; this run: no lean; top-10% lift 0.99 (0.83-1.20); my teams there 1.06x at the top 10% (180 teams)"
     },
     {
      "id": "beneficiary-round6:sat",
@@ -2286,22 +2286,22 @@
      "verdict": "played: RULE for (1.37 (1.17-1.69)); sat: no lean (0.96 (0.78-1.26)); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b",
      "current": "no lean",
      "lift": {
-      "lift10": 0.9,
+      "lift10": 0.99,
       "range80": [
-       0.76,
-       1.15
+       0.8,
+       1.31
       ],
-      "teams": 11733,
-      "slates": 13,
+      "teams": 10645,
+      "slates": 12,
       "after_price_check": false
      },
      "mine": {
-      "teams": 35,
-      "top10_ratio": 2.29,
-      "top1_ratio": 5.71,
-      "finish_pct": 47.7
+      "teams": 34,
+      "top10_ratio": 2.35,
+      "top1_ratio": 5.88,
+      "finish_pct": 46.5
      },
-     "line": "beneficiary-round6:sat: played: RULE for; this run: no lean; top-10% lift 0.90 (0.76-1.15); my teams there 2.29x at the top 10% (35 teams)"
+     "line": "beneficiary-round6:sat: played: RULE for; this run: no lean; top-10% lift 0.99 (0.80-1.31); my teams there 2.35x at the top 10% (34 teams)"
     },
     {
      "id": "beneficiary-round6:played",
@@ -2312,22 +2312,22 @@
      "verdict": "played: RULE for (1.37 (1.17-1.69)); sat: no lean (0.96 (0.78-1.26)); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.62,
+      "lift10": 1.44,
       "range80": [
-       1.15,
-       2.37
+       1.14,
+       2.11
       ],
-      "teams": 4308,
-      "slates": 10,
+      "teams": 6633,
+      "slates": 9,
       "after_price_check": true
      },
      "mine": {
       "teams": 16,
-      "top10_ratio": 1.25,
+      "top10_ratio": 1.88,
       "top1_ratio": 0.0,
-      "finish_pct": 42.7
+      "finish_pct": 44.8
      },
-     "line": "beneficiary-round6:played: played: RULE for; this run: RULE for; top-10% lift 1.62 (1.15-2.37); my teams there 1.25x at the top 10% (16 teams)"
+     "line": "beneficiary-round6:played: played: RULE for; this run: RULE for; top-10% lift 1.44 (1.14-2.11); my teams there 1.88x at the top 10% (16 teams)"
     },
     {
      "id": "pm-t5-beneficiary",
@@ -2338,22 +2338,22 @@
      "verdict": "no lean (1.14 (0.91-1.46); was LEAN before the check; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "no lean",
      "lift": {
-      "lift10": 1.11,
+      "lift10": 1.12,
       "range80": [
-       0.92,
-       1.35
+       0.91,
+       1.39
       ],
-      "teams": 48815,
+      "teams": 44839,
       "slates": 15,
       "after_price_check": true
      },
      "mine": {
-      "teams": 281,
-      "top10_ratio": 1.81,
-      "top1_ratio": 0.71,
-      "finish_pct": 40.7
+      "teams": 279,
+      "top10_ratio": 1.79,
+      "top1_ratio": 0.72,
+      "finish_pct": 40.8
      },
-     "line": "pm-t5-beneficiary: no lean; this run: no lean; top-10% lift 1.11 (0.92-1.35); my teams there 1.81x at the top 10% (281 teams)"
+     "line": "pm-t5-beneficiary: no lean; this run: no lean; top-10% lift 1.12 (0.91-1.39); my teams there 1.79x at the top 10% (279 teams)"
     },
     {
      "id": "ownership-tiebreak-t5",
@@ -2364,22 +2364,22 @@
      "verdict": "RULE for (1.19 (1.06-1.32); AM 1.16, PM 1.22; the gap is the less-drafted pick itself, +2.6 over price on 0.4 fewer points; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.17,
+      "lift10": 1.18,
       "range80": [
-       1.04,
+       1.05,
        1.31
       ],
-      "teams": 307581,
+      "teams": 306277,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 700,
-      "top10_ratio": 1.44,
+      "teams": 708,
+      "top10_ratio": 1.41,
       "top1_ratio": 0.71,
       "finish_pct": 45.4
      },
-     "line": "ownership-tiebreak-t5: RULE for; this run: RULE for; top-10% lift 1.17 (1.04-1.31); my teams there 1.44x at the top 10% (700 teams)"
+     "line": "ownership-tiebreak-t5: RULE for; this run: RULE for; top-10% lift 1.18 (1.05-1.31); my teams there 1.41x at the top 10% (708 teams)"
     },
     {
      "id": "pm-t5-adp-value",
@@ -2390,22 +2390,22 @@
      "verdict": "LEAN against (0.87 (0.74-1.02), against the old ETR (2: less drafted); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "LEAN against",
      "lift": {
-      "lift10": 0.84,
+      "lift10": 0.81,
       "range80": [
-       0.7,
-       0.99
+       0.68,
+       0.97
       ],
-      "teams": 606524,
+      "teams": 589630,
       "slates": 16,
       "after_price_check": true
      },
      "mine": {
-      "teams": 416,
-      "top10_ratio": 1.59,
-      "top1_ratio": 0.96,
-      "finish_pct": 42.8
+      "teams": 373,
+      "top10_ratio": 1.61,
+      "top1_ratio": 1.07,
+      "finish_pct": 42.5
      },
-     "line": "pm-t5-adp-value: LEAN against; this run: LEAN against; top-10% lift 0.84 (0.70-0.99); my teams there 1.59x at the top 10% (416 teams)"
+     "line": "pm-t5-adp-value: LEAN against; this run: LEAN against; top-10% lift 0.81 (0.68-0.97); my teams there 1.61x at the top 10% (373 teams)"
     },
     {
      "id": "am-t5-other-reads",
@@ -2416,22 +2416,22 @@
      "verdict": "RULE for (1.31 (1.12-1.54); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "LEAN for",
      "lift": {
-      "lift10": 1.32,
+      "lift10": 1.4,
       "range80": [
-       1.1,
-       1.62
+       1.11,
+       1.78
       ],
-      "teams": 104826,
-      "slates": 15,
+      "teams": 86853,
+      "slates": 12,
       "after_price_check": true
      },
      "mine": {
-      "teams": 147,
-      "top10_ratio": 1.36,
-      "top1_ratio": 0.68,
-      "finish_pct": 49.6
+      "teams": 117,
+      "top10_ratio": 1.54,
+      "top1_ratio": 0.85,
+      "finish_pct": 48.2
      },
-     "line": "am-t5-other-reads: RULE for; this run: LEAN for; top-10% lift 1.32 (1.10-1.62); my teams there 1.36x at the top 10% (147 teams)"
+     "line": "am-t5-other-reads: RULE for; this run: LEAN for; top-10% lift 1.40 (1.11-1.78); my teams there 1.54x at the top 10% (117 teams)"
     }
    ]
   },
@@ -2448,22 +2448,22 @@
      "verdict": "no lean (top-10% lift 0.98 (0.74-1.23); 2026-11-09)",
      "current": "no lean",
      "lift": {
-      "lift10": 1.03,
+      "lift10": 1.07,
       "range80": [
-       0.82,
-       1.25
+       0.84,
+       1.3
       ],
-      "teams": 23183,
+      "teams": 22074,
       "slates": 14,
       "after_price_check": false
      },
      "mine": {
-      "teams": 144,
-      "top10_ratio": 1.11,
-      "top1_ratio": 0.69,
-      "finish_pct": 47.0
+      "teams": 117,
+      "top10_ratio": 1.28,
+      "top1_ratio": 0.0,
+      "finish_pct": 44.8
      },
-     "line": "pm-questionable-back-two: no lean; this run: no lean; top-10% lift 1.03 (0.82-1.25); my teams there 1.11x at the top 10% (144 teams)"
+     "line": "pm-questionable-back-two: no lean; this run: no lean; top-10% lift 1.07 (0.84-1.30); my teams there 1.28x at the top 10% (117 teams)"
     },
     {
      "id": "am-questionable-no-push",
@@ -2474,22 +2474,22 @@
      "verdict": "no lean (top-10% lift 1.12 (0.87-1.43); 2026-11-09)",
      "current": "no lean",
      "lift": {
-      "lift10": 1.14,
+      "lift10": 0.95,
       "range80": [
-       0.89,
-       1.46
+       0.79,
+       1.12
       ],
-      "teams": 11634,
+      "teams": 12173,
       "slates": 11,
       "after_price_check": false
      },
      "mine": {
-      "teams": 84,
-      "top10_ratio": 1.31,
-      "top1_ratio": 1.19,
-      "finish_pct": 47.0
+      "teams": 105,
+      "top10_ratio": 0.95,
+      "top1_ratio": 1.9,
+      "finish_pct": 51.9
      },
-     "line": "am-questionable-no-push: no lean; this run: no lean; top-10% lift 1.14 (0.89-1.46); my teams there 1.31x at the top 10% (84 teams)"
+     "line": "am-questionable-no-push: no lean; this run: no lean; top-10% lift 0.95 (0.79-1.12); my teams there 0.95x at the top 10% (105 teams)"
     },
     {
      "id": "q-class-x:SMASH",
@@ -2510,24 +2510,24 @@
      "status": "candidate",
      "points": "not enough yet",
      "verdict": "no lean for FAIR (1.22 (0.64-2.68)) or TRAP (0.95 (0.81-1.13)); not enough SMASH (top-10% lift; 2026-11-09)",
-     "current": "no lean",
+     "current": "LEAN against",
      "lift": {
-      "lift10": 1.07,
+      "lift10": 0.77,
       "range80": [
-       0.79,
-       1.54
+       0.63,
+       0.97
       ],
-      "teams": 7491,
-      "slates": 14,
-      "after_price_check": false
+      "teams": 5020,
+      "slates": 13,
+      "after_price_check": true
      },
      "mine": {
-      "teams": 52,
-      "top10_ratio": 1.73,
+      "teams": 40,
+      "top10_ratio": 1.5,
       "top1_ratio": 0.0,
-      "finish_pct": 37.9
+      "finish_pct": 42.0
      },
-     "line": "q-class-x:FAIR: no lean for FAIR; this run: no lean; top-10% lift 1.07 (0.79-1.54); my teams there 1.73x at the top 10% (52 teams)"
+     "line": "q-class-x:FAIR: no lean for FAIR; this run: LEAN against; top-10% lift 0.77 (0.63-0.97); my teams there 1.50x at the top 10% (40 teams)"
     },
     {
      "id": "q-class-x:TRAP",
@@ -2540,20 +2540,20 @@
      "lift": {
       "lift10": 0.95,
       "range80": [
-       0.85,
+       0.84,
        1.09
       ],
-      "teams": 26741,
+      "teams": 25908,
       "slates": 9,
       "after_price_check": false
      },
      "mine": {
-      "teams": 174,
-      "top10_ratio": 0.98,
-      "top1_ratio": 1.15,
-      "finish_pct": 50.4
+      "teams": 153,
+      "top10_ratio": 1.05,
+      "top1_ratio": 0.65,
+      "finish_pct": 49.2
      },
-     "line": "q-class-x:TRAP: no lean for FAIR; this run: no lean; top-10% lift 0.95 (0.85-1.09); my teams there 0.98x at the top 10% (174 teams)"
+     "line": "q-class-x:TRAP: no lean for FAIR; this run: no lean; top-10% lift 0.95 (0.84-1.09); my teams there 1.05x at the top 10% (153 teams)"
     },
     {
      "id": "one-tier-cap",
@@ -2566,20 +2566,20 @@
      "lift": {
       "lift10": 0.81,
       "range80": [
-       0.65,
+       0.64,
        1.03
       ],
-      "teams": 91125,
-      "slates": 15,
+      "teams": 92042,
+      "slates": 14,
       "after_price_check": true
      },
      "mine": {
-      "teams": 153,
-      "top10_ratio": 0.92,
-      "top1_ratio": 0.65,
-      "finish_pct": 47.5
+      "teams": 152,
+      "top10_ratio": 1.18,
+      "top1_ratio": 0.66,
+      "finish_pct": 43.3
      },
-     "line": "one-tier-cap: LEAN against; this run: LEAN against; top-10% lift 0.81 (0.65-1.03); my teams there 0.92x at the top 10% (153 teams)"
+     "line": "one-tier-cap: LEAN against; this run: LEAN against; top-10% lift 0.81 (0.64-1.03); my teams there 1.18x at the top 10% (152 teams)"
     },
     {
      "id": "card-same-position-teammates",
@@ -2616,22 +2616,22 @@
      "verdict": "LEAN for (1.10 (0.95-1.27); 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "no lean",
      "lift": {
-      "lift10": 1.06,
+      "lift10": 1.05,
       "range80": [
-       0.92,
-       1.22
+       0.91,
+       1.21
       ],
-      "teams": 107702,
+      "teams": 107635,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 533,
-      "top10_ratio": 1.61,
-      "top1_ratio": 1.69,
-      "finish_pct": 42.8
+      "teams": 539,
+      "top10_ratio": 1.6,
+      "top1_ratio": 1.67,
+      "finish_pct": 42.9
      },
-     "line": "card-opposing-stars: LEAN for; this run: no lean; top-10% lift 1.06 (0.92-1.22); my teams there 1.61x at the top 10% (533 teams)"
+     "line": "card-opposing-stars: LEAN for; this run: no lean; top-10% lift 1.05 (0.91-1.21); my teams there 1.60x at the top 10% (539 teams)"
     }
    ]
   },
@@ -2648,22 +2648,22 @@
      "verdict": "RULE for (1.82 (1.51-2.10), 4,580 teams, 17 slates; 2026-11-09; top-10% lift after the price-split check, money_report.md 3b)",
      "current": "RULE for",
      "lift": {
-      "lift10": 1.7,
+      "lift10": 1.73,
       "range80": [
-       1.37,
-       2.0
+       1.4,
+       2.04
       ],
-      "teams": 4964,
+      "teams": 4981,
       "slates": 17,
       "after_price_check": true
      },
      "mine": {
-      "teams": 51,
-      "top10_ratio": 3.53,
-      "top1_ratio": 9.8,
-      "finish_pct": 26.7
+      "teams": 52,
+      "top10_ratio": 3.46,
+      "top1_ratio": 9.62,
+      "finish_pct": 27.5
      },
-     "line": "card-turn23-reach-higher-proj: RULE for; this run: RULE for; top-10% lift 1.70 (1.37-2.00); my teams there 3.53x at the top 10% (51 teams)"
+     "line": "card-turn23-reach-higher-proj: RULE for; this run: RULE for; top-10% lift 1.73 (1.40-2.04); my teams there 3.46x at the top 10% (52 teams)"
     },
     {
      "id": "card-turn12-reach",
@@ -2878,91 +2878,47 @@
    }
   },
   {
-   "id": "takes:ETR:am",
-   "decision": "ETR | AM",
-   "verdict": "none: a new split",
-   "current": "RULE for",
-   "lift": {
-    "lift10": 1.45,
-    "range80": [
-     1.33,
-     1.52
-    ],
-    "teams": 35738,
-    "slates": 6,
-    "after_price_check": true
-   },
-   "mine": {
-    "teams": 87,
-    "top10_ratio": 1.84,
-    "top1_ratio": 2.3,
-    "finish_pct": 45.0
-   }
-  },
-  {
    "id": "takes:ETR:pm",
    "decision": "ETR | PM",
    "verdict": "none: a new split",
    "current": "no lean",
    "lift": {
-    "lift10": 1.09,
+    "lift10": 1.11,
     "range80": [
-     0.84,
-     1.39
+     0.75,
+     1.56
     ],
-    "teams": 94738,
-    "slates": 8,
+    "teams": 53437,
+    "slates": 7,
     "after_price_check": true
    },
    "mine": {
-    "teams": 264,
-    "top10_ratio": 1.33,
-    "top1_ratio": 0.38,
-    "finish_pct": 41.8
+    "teams": 199,
+    "top10_ratio": 1.06,
+    "top1_ratio": 0.5,
+    "finish_pct": 46.0
    }
   },
   {
    "id": "takes:ETR:both",
    "decision": "ETR | both",
    "verdict": "none: a new split",
-   "current": "LEAN for",
-   "lift": {
-    "lift10": 1.19,
-    "range80": [
-     0.99,
-     1.4
-    ],
-    "teams": 130479,
-    "slates": 8,
-    "after_price_check": true
-   },
-   "mine": {
-    "teams": 351,
-    "top10_ratio": 1.45,
-    "top1_ratio": 0.85,
-    "finish_pct": 42.6
-   }
-  },
-  {
-   "id": "takes:Bagel:am",
-   "decision": "Bagel | AM",
-   "verdict": "none: a new split",
    "current": "no lean",
    "lift": {
-    "lift10": 0.99,
+    "lift10": 1.11,
     "range80": [
-     0.66,
-     1.45
+     0.75,
+     1.56
     ],
-    "teams": 29317,
+    "teams": 53437,
     "slates": 7,
     "after_price_check": true
    },
    "mine": {
-    "teams": 116,
-    "top10_ratio": 1.03,
-    "top1_ratio": 0.0,
-    "finish_pct": 50.0
+    "teams": 199,
+    "top10_ratio": 1.06,
+    "top1_ratio": 0.5,
+    "finish_pct": 46.0
    }
   },
   {
@@ -2971,20 +2927,20 @@
    "verdict": "none: a new split",
    "current": "no lean",
    "lift": {
-    "lift10": 0.97,
+    "lift10": 0.96,
     "range80": [
-     0.78,
-     1.23
+     0.76,
+     1.28
     ],
-    "teams": 92605,
-    "slates": 9,
+    "teams": 76191,
+    "slates": 8,
     "after_price_check": true
    },
    "mine": {
-    "teams": 275,
-    "top10_ratio": 1.53,
-    "top1_ratio": 0.73,
-    "finish_pct": 42.7
+    "teams": 212,
+    "top10_ratio": 1.46,
+    "top1_ratio": 0.47,
+    "finish_pct": 44.2
    }
   },
   {
@@ -2993,42 +2949,20 @@
    "verdict": "none: a new split",
    "current": "no lean",
    "lift": {
-    "lift10": 0.97,
+    "lift10": 0.96,
     "range80": [
-     0.79,
-     1.21
+     0.76,
+     1.28
     ],
-    "teams": 121923,
-    "slates": 9,
+    "teams": 76191,
+    "slates": 8,
     "after_price_check": true
    },
    "mine": {
-    "teams": 391,
-    "top10_ratio": 1.38,
-    "top1_ratio": 0.51,
-    "finish_pct": 44.9
-   }
-  },
-  {
-   "id": "takes:Bagel+ETR:am",
-   "decision": "Bagel+ETR | AM",
-   "verdict": "none: a new split",
-   "current": "RULE against",
-   "lift": {
-    "lift10": 0.87,
-    "range80": [
-     0.77,
-     0.97
-    ],
-    "teams": 58185,
-    "slates": 6,
-    "after_price_check": true
-   },
-   "mine": {
-    "teams": 182,
-    "top10_ratio": 1.54,
-    "top1_ratio": 0.55,
-    "finish_pct": 48.5
+    "teams": 212,
+    "top10_ratio": 1.46,
+    "top1_ratio": 0.47,
+    "finish_pct": 44.2
    }
   },
   {
@@ -3037,20 +2971,20 @@
    "verdict": "none: a new split",
    "current": "LEAN against",
    "lift": {
-    "lift10": 0.85,
+    "lift10": 0.89,
     "range80": [
-     0.76,
-     0.98
+     0.77,
+     1.06
     ],
-    "teams": 176219,
+    "teams": 157690,
     "slates": 8,
     "after_price_check": true
    },
    "mine": {
-    "teams": 577,
-    "top10_ratio": 1.37,
-    "top1_ratio": 0.52,
-    "finish_pct": 42.7
+    "teams": 510,
+    "top10_ratio": 1.39,
+    "top1_ratio": 0.59,
+    "finish_pct": 41.8
    }
   },
   {
@@ -3059,20 +2993,20 @@
    "verdict": "none: a new split",
    "current": "LEAN against",
    "lift": {
-    "lift10": 0.86,
+    "lift10": 0.89,
     "range80": [
-     0.78,
-     0.97
+     0.77,
+     1.06
     ],
-    "teams": 234410,
+    "teams": 157690,
     "slates": 8,
     "after_price_check": true
    },
    "mine": {
-    "teams": 759,
-    "top10_ratio": 1.41,
-    "top1_ratio": 0.53,
-    "finish_pct": 44.1
+    "teams": 510,
+    "top10_ratio": 1.39,
+    "top1_ratio": 0.59,
+    "finish_pct": 41.8
    }
   },
   {
@@ -3081,20 +3015,20 @@
    "verdict": "none: a new split",
    "current": "no lean",
    "lift": {
-    "lift10": 1.12,
+    "lift10": 1.09,
     "range80": [
-     0.89,
-     1.35
+     0.92,
+     1.27
     ],
-    "teams": 142577,
-    "slates": 14,
+    "teams": 212902,
+    "slates": 12,
     "after_price_check": true
    },
    "mine": {
-    "teams": 115,
-    "top10_ratio": 1.57,
-    "top1_ratio": 0.87,
-    "finish_pct": 48.1
+    "teams": 251,
+    "top10_ratio": 1.67,
+    "top1_ratio": 1.2,
+    "finish_pct": 46.5
    }
   },
   {
@@ -3103,20 +3037,20 @@
    "verdict": "none: a new split",
    "current": "no lean",
    "lift": {
-    "lift10": 0.94,
+    "lift10": 0.98,
     "range80": [
-     0.8,
-     1.11
+     0.85,
+     1.09
     ],
-    "teams": 130727,
+    "teams": 199161,
     "slates": 16,
     "after_price_check": true
    },
    "mine": {
-    "teams": 228,
-    "top10_ratio": 0.92,
-    "top1_ratio": 1.32,
-    "finish_pct": 47.1
+    "teams": 293,
+    "top10_ratio": 1.13,
+    "top1_ratio": 1.02,
+    "finish_pct": 44.8
    }
   },
   {
@@ -3125,42 +3059,39 @@
    "verdict": "none: a new split",
    "current": "no lean",
    "lift": {
-    "lift10": 1.03,
+    "lift10": 1.04,
     "range80": [
-     0.9,
-     1.14
+     0.94,
+     1.13
     ],
-    "teams": 273305,
+    "teams": 412063,
     "slates": 17,
     "after_price_check": true
    },
    "mine": {
-    "teams": 343,
-    "top10_ratio": 1.14,
-    "top1_ratio": 1.17,
-    "finish_pct": 47.4
+    "teams": 544,
+    "top10_ratio": 1.38,
+    "top1_ratio": 1.1,
+    "finish_pct": 45.6
    }
   },
   {
    "id": "takes:OTHER:am",
    "decision": "OTHER | AM",
    "verdict": "none: a new split",
-   "current": "LEAN for",
+   "current": "not enough",
    "lift": {
-    "lift10": 1.54,
-    "range80": [
-     1.13,
-     1.73
-    ],
-    "teams": 33437,
-    "slates": 4,
+    "lift10": 1.75,
+    "range80": null,
+    "teams": 27367,
+    "slates": 2,
     "after_price_check": true
    },
    "mine": {
-    "teams": 25,
-    "top10_ratio": 1.2,
-    "top1_ratio": 4.0,
-    "finish_pct": 46.1
+    "teams": 18,
+    "top10_ratio": 1.67,
+    "top1_ratio": 5.56,
+    "finish_pct": 36.4
    }
   },
   {
@@ -3169,20 +3100,20 @@
    "verdict": "none: a new split",
    "current": "no lean",
    "lift": {
-    "lift10": 0.93,
+    "lift10": 0.92,
     "range80": [
-     0.74,
-     1.16
+     0.73,
+     1.13
     ],
-    "teams": 71036,
+    "teams": 71880,
     "slates": 12,
     "after_price_check": true
    },
    "mine": {
-    "teams": 174,
-    "top10_ratio": 1.26,
-    "top1_ratio": 2.87,
-    "finish_pct": 45.9
+    "teams": 180,
+    "top10_ratio": 1.28,
+    "top1_ratio": 2.78,
+    "finish_pct": 46.1
    }
   },
   {
@@ -3193,18 +3124,18 @@
    "lift": {
     "lift10": 1.11,
     "range80": [
-     0.85,
-     1.36
+     0.83,
+     1.37
     ],
-    "teams": 104473,
-    "slates": 13,
+    "teams": 99247,
+    "slates": 12,
     "after_price_check": true
    },
    "mine": {
-    "teams": 199,
-    "top10_ratio": 1.26,
-    "top1_ratio": 3.02,
-    "finish_pct": 46.0
+    "teams": 198,
+    "top10_ratio": 1.31,
+    "top1_ratio": 3.03,
+    "finish_pct": 45.2
    }
   },
   {
@@ -3213,20 +3144,20 @@
    "verdict": "none: a new split",
    "current": "LEAN for",
    "lift": {
-    "lift10": 1.14,
+    "lift10": 1.15,
     "range80": [
-     1.01,
-     1.29
+     0.97,
+     1.34
     ],
-    "teams": 299259,
-    "slates": 15,
+    "teams": 240269,
+    "slates": 12,
     "after_price_check": true
    },
    "mine": {
-    "teams": 299,
-    "top10_ratio": 1.54,
-    "top1_ratio": 1.0,
-    "finish_pct": 47.9
+    "teams": 251,
+    "top10_ratio": 1.67,
+    "top1_ratio": 1.2,
+    "finish_pct": 46.5
    }
   },
   {
@@ -3235,20 +3166,20 @@
    "verdict": "none: a new split",
    "current": "no lean",
    "lift": {
-    "lift10": 0.96,
+    "lift10": 0.98,
     "range80": [
-     0.89,
+     0.9,
      1.06
     ],
-    "teams": 565337,
+    "teams": 558379,
     "slates": 17,
     "after_price_check": true
    },
    "mine": {
-    "teams": 965,
-    "top10_ratio": 1.35,
-    "top1_ratio": 1.14,
-    "finish_pct": 43.4
+    "teams": 890,
+    "top10_ratio": 1.34,
+    "top1_ratio": 1.12,
+    "finish_pct": 43.5
    }
   },
   {
@@ -3260,17 +3191,17 @@
     "lift10": 1.03,
     "range80": [
      0.96,
-     1.1
+     1.11
     ],
-    "teams": 864596,
+    "teams": 798648,
     "slates": 17,
     "after_price_check": true
    },
    "mine": {
-    "teams": 1264,
-    "top10_ratio": 1.39,
-    "top1_ratio": 1.11,
-    "finish_pct": 44.5
+    "teams": 1141,
+    "top10_ratio": 1.41,
+    "top1_ratio": 1.14,
+    "finish_pct": 44.1
    }
   }
  ]
