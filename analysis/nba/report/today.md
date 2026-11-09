@@ -16,8 +16,30 @@
 
 - points: none ripe
 - money: pricey-flags
+- money: value-up-middle-t5
+- money: am-t5-button-order
 - money: am-t5-other-reads
+- money: q-class-x:FAIR
 - money: card-opposing-stars
+- money: card-same-position-teammates:rounds 1-3
+- money: card-same-position-teammates:split
+- money: card-same-position-teammates:rounds 4-6
+- money: card-different-position-teammates
+- money: takes:ETR:pm
+- money: takes:ETR:both
+- money: takes:Bagel:pm
+- money: takes:Bagel:both
+- money: takes:Bagel+ETR:pm
+- money: takes:Bagel+ETR:both
+- money: takes:NEWS:am
+- money: takes:NEWS:pm
+- money: takes:NEWS:both
+- money: takes:OTHER:am
+- money: takes:OTHER:pm
+- money: takes:OTHER:both
+- money: takes:all:am
+- money: takes:all:pm
+- money: takes:all:both
 
 ## Today's playbook
 
@@ -42,7 +64,7 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 **Q-tags and their handling** (calibrated chance to play; AM: no push; PM: two tiers back)
 - Luka Doncic LAL, Questionable, 79%: T1 · AM stays T1 · PM to T3
-- Nikola Jokic DEN, Questionable, 52%: T2 · AM stays T2 · PM to T4
+- Nikola Jokic DEN, Questionable, 53%: T2 · AM stays T2 · PM to T4
 - Scottie Barnes TOR, Questionable, 69%: T2 · AM stays T2 · PM to T4
 - Anthony Davis WAS, Questionable, 55%: T2 · AM stays T2 · PM to T4
 - Jamal Murray DEN, Questionable, 40%: T3 · AM stays T3 · PM to T5
@@ -164,9 +186,9 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - provisional: T5: the less drafted within 2 pts · points money RULE · money RULE for
 
 **Testing** (forward nights of 14 · shadow · money)
-- AM T5: the less drafted within 2 pts vs the old Proj (3: ADP): 0/14 · season +0.1 (-1.7 to +2.2), 120 pairs, no lean · forward none yet · money RULE for
+- AM T5: the less drafted within 2 pts vs the old Proj (3: ADP): 0/14 · season +1.5 (-0.5 to +3.9), 119 pairs, LEAN + · forward none yet · money RULE for
 - PM T5: the less drafted within 2 pts vs the old ADP: 0/14 · season -2.9 (-5.1 to -0.8), 90 pairs, LEAN - (RULE numbers, check pending) · forward none yet · money RULE for
-- T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners: 0/14 · season -2.9 (-4.3 to -1.5), 546 pairs, LEAN - (RULE numbers, check pending) · forward none yet · money played: RULE for
+- T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners: 0/14 · season -3.1 (-4.3 to -1.6), 553 pairs, LEAN - (RULE numbers, check pending) · forward none yet · money played: RULE for
 - Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -8.5, not enough yet (19) · forward none yet · money no lean
 
 **Worth a look**
@@ -180,18 +202,18 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 ## Season
 
-**Overnight window** (drafts before 4:30am; kept out of the AM grades): 0 nights, 0 of your teams; your board against ADP then: no board on file yet
+**Overnight window** (drafts before 4:30am; kept out of the AM grades): 12 nights, 133 of your teams; your board against ADP then: +0.8 (-0.1 to +1.7), 1259 pairs, LEAN +
 
 **T1**
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (5 nights) | +11.0 (2) | +14.6 (2) | - |
+| AM (7 nights) | -9.8 (3) | +24.8 (3) | - |
 | PM (14 nights) | -11.2 (4) | +9.5 (9) | - |
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | NEWS | +2.3, not enough yet (5) |
+| AM | NEWS | -9.4, not enough yet (8) |
 | PM | Bagel+ETR | -6.9, not enough yet (3) |
 | PM | NEWS | -24.3, not enough yet (1) |
 
@@ -199,12 +221,12 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (5 nights) | +4.5 (40) | -0.2 (33) | -9.5 (4) |
+| AM (7 nights) | +4.1 (47) | +1.7 (45) | -1.1 (7) |
 | PM (14 nights) | -1.5 (77) | +2.3 (106) | +4.8 (6) |
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | NEWS | -3.2, not enough yet (27) |
+| AM | NEWS | -1.9, not enough yet (35) |
 | PM | Bagel | -1.0, not enough yet (6) |
 | PM | Bagel+ETR | +4.4, not enough yet (19) |
 | PM | ETR | +7.3, not enough yet (3) |
@@ -215,12 +237,12 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (5 nights) | -2.2 (44) | +0.1 (104) | +4.8 (114) |
+| AM (7 nights) | -1.7 (65) | +0.5 (146) | +1.4 (171) |
 | PM (14 nights) | +2.8 (113) | +2.8 (245) | +2.8 (254) |
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | NEWS | -2.1 (-4.3 to +0.8), 47 pairs, no lean |
+| AM | NEWS | -0.7 (-2.8 to +1.7), 66 pairs, no lean |
 | PM | Bagel | +2.9, not enough yet (14) |
 | PM | Bagel+ETR | -0.2, not enough yet (31) |
 | PM | ETR | +0.6, not enough yet (14) |
@@ -231,13 +253,13 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (5 nights) | +2.7 (62) | -2.6 (256) | +6.0 (198) |
+| AM (7 nights) | +4.0 (92) | -2.7 (356) | +5.6 (344) |
 | PM (14 nights) | -1.2 (268) | -2.2 (728) | +3.5 (512) |
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | NEWS | -3.1 (-6.0 to -0.2), 201 pairs, LEAN - |
-| PM | Bagel | -6.8 (-9.5 to -3.6), 67 pairs, LEAN - |
+| AM | NEWS | -3.1 (-5.2 to -1.0), 282 pairs, LEAN - (RULE numbers, check pending) |
+| PM | Bagel | -6.6 (-9.3 to -3.4), 66 pairs, LEAN - |
 | PM | Bagel+ETR | -3.7 (-5.5 to -1.6), 103 pairs, LEAN - (RULE numbers, check pending) |
 | PM | ETR | -1.2 (-4.7 to +2.5), 92 pairs, no lean |
 | PM | NEWS | -1.8 (-3.8 to +0.3), 247 pairs, LEAN - |
