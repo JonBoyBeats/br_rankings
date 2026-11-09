@@ -26,7 +26,8 @@ Definitions
                 1.0 at the top 10%, with 100+ A teams and 10+ expected top-10% finishes. RULE: the 90% range clear of
                 1.0 and the check slates the same way. Two verdicts per decision: POINTS (the rankings side's) and MONEY.
 
-  python3 scripts/nba_money.py --mirror ../br-adp-mirror
+  python3 scripts/nba_money.py --mirror ../br-adp-mirror            (the nightly workflow: publishes the files above)
+  python3 scripts/nba_money.py --mirror ../br-adp-mirror --draft    (ad hoc, from chat: money_report_draft.md only, never committed)
 """
 import argparse, bisect, collections, csv, datetime as dt, glob, gzip, json, math, os, random, re, statistics as st, sys
 from zoneinfo import ZoneInfo
@@ -1187,9 +1188,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mirror", help="a clone of br-adp-mirror (draft windows for nights not cached yet)")
     ap.add_argument("--proposals", action="store_true", help="write money_proposals.json even if it isn't Monday")
+    ap.add_argument("--draft", action="store_true", help="an ad-hoc run (from chat): write money_report_draft.md only; the "
+                    "published files belong to the nightly workflow")
     a = ap.parse_args()
     N = load(a.mirror)
     out, parts = report(N, a.mirror)
+    if a.draft:
+        open(os.path.join(REP, "money_report_draft.md"), "w").write("\n".join(out) + "\n")
+        print("\n".join(out))
+        return
     open(os.path.join(REP, "money_report.md"), "w").write("\n".join(out) + "\n")
     tj = tiers_json(N, parts)
     tj["splits"] = parts["extra"]
