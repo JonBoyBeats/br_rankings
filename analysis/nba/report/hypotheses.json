@@ -156,6 +156,27 @@
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
    "register": "pm-questionable-back-two"
+  },
+  "T2-1": {
+   "tiers": [
+    2
+   ],
+   "window": "am+pm",
+   "idea": "T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",
+   "why": "Brings the money-backed 2/3-turn rule (reach toward the higher projection: RULE for, lift 1.82) into the board. The worry: projection straight lost to ADP across all of T2 in AM (-6.5 per pair, 51 pairs); test whether picks 10+ behave differently",
+   "test": {
+    "kind": "pairwise",
+    "pairwise": "turn12",
+    "flags": "both",
+    "against": "the button",
+    "rule": "Inside T2 at a window's record (ADP: the window's; projection: ours in AM, ETR in PM): a player at ADP 9.5 or earlier (the 1/2 turn) goes ahead of one after it; two at 9.5 or earlier go by ADP; two after it go by the projection. Flag groups as the button (VALUE first, PRICEY last): a pair with different flags keeps the button's order. Graded on 6-drafter decision pairs (ADP within 4) inside T2 that it orders differently from the button; a scratch scored through his swap; positive = the idea beat the button.",
+    "backtest": "Before forward grading: inside T2, projection straight against ADP straight on decision pairs, split by where the pair sits: both at ADP 9.5 or earlier, straddling 9.5, both after 9.5 (picks 10+); AM (primary sample) and PM; points per pair, positive = projection right, 80% range and label (under 40 pairs: not enough yet). Then T2-1 against the button in sample."
+   },
+   "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
+   "status": "testing",
+   "written": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "register": "card-turn23-reach-higher-proj"
   }
  }
 }
