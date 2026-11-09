@@ -177,6 +177,15 @@
   .tiertag { position: absolute; left: 6px; top: -7px; z-index: 2; padding: 0 5px; border-radius: 3px; font-family: var(--mono);
              font-size: 9px; line-height: 13px; font-weight: 700; user-select: none; }
   .tiertag.drag { cursor: ns-resize; touch-action: none; }
+  /* the Tiers button's read on a row: ADP and projection tier, its flag and, for a Q tag, its class */
+  .tierinfo { display: inline-flex; gap: 3px; align-items: center; font-family: var(--mono); font-size: 10px; white-space: nowrap; }
+  .tierinfo .tap { color: var(--muted); }
+  .tierinfo b { padding: 0 3px; border-radius: 3px; font-weight: 600; }
+  .tflag.v { background: #dcfce7; color: #14532d; }
+  .tflag.pr { background: #fee2e2; color: #7f1d1d; }
+  .tq.smash { background: #1d4ed8; color: #fff; }
+  .tq.fair { background: #e5e7eb; color: #111827; }
+  .tq.trap { background: #b91c1c; color: #fff; }
   .tiertag.t1 { top: 1px; }
   .tiernote { position: absolute; left: 34px; top: -7px; z-index: 2; padding: 0 5px; border: 1px solid; border-radius: 3px;
               background: var(--surface); color: var(--muted); font-family: var(--mono); font-size: 9px; line-height: 11px;
@@ -653,7 +662,9 @@
     html.nba .board.has-expo.etr2 .row { grid-template-columns: 12px 44px minmax(0, 1fr) 37px 80px 73px 0; }
     /* room for the name on a phone: the ETR/Zakarian chips go (the row's \25BE still opens their notes), and with
        exposures showing, the team code too */
-    html.nba .who .stance, html.nba .board.has-expo .who .sub { display: none; }
+    html.nba .who .stance, html.nba .board.has-expo .who .sub, html.nba .tierinfo .tap { display: none; }
+    html.nba .tierinfo b { font-size: 0; padding: 0 2px; }
+    html.nba .tierinfo b::after { content: attr(data-s); font-size: 10px; }
     .num { font-size: 11.5px; }
     .name { font-size: 13.5px; }
     .sub { font-size: 9.5px; }
@@ -758,7 +769,8 @@
         <span class="field-label">Order · floor from</span>
         <span class="pair">
           <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
-          <button type="button" id="tiersBtn" aria-pressed="false" title="Show six tier lines over your order; drag a line's tag to move it">Tiers</button>
+          <button type="button" id="tiersBtn" aria-pressed="false" title="Build the tiers from scratch: an ADP ladder and a projection ladder, lines at their biggest gaps, combined into five tiers with VALUE and PRICEY flags. Moves after it are logged as takes">Tiers</button>
+          <select id="tiersSrc" class="nba-data" title="The projection ladder's source: Auto is our Proj until ETR's file is in, then ETR"><option value="auto">Auto</option><option value="ours">Ours</option><option value="etr">ETR</option></select>
           <button type="button" id="copyMain" hidden title="Rank this slate's players exactly as your main slate ranks them, then fill in the rest">Copy main ranks</button>
           <input type="number" id="switchAt" class="nba-data" min="1" step="1" inputmode="numeric" style="width:58px"
                  title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player (box-score minutes; once ETR's file is in, the minutes its projection implies), or none when there is one for every pick">
@@ -1711,6 +1723,8 @@ function lockBoard(which) {
   locks[which] = { at: new Date().toISOString(), order: state.order.slice(), cut: state.cut == null ? null : state.cut, ours: values };
   var tiers = loadTiers(state.slate.label);   // your tier lines as they stood, for the morning report's by-tier grading
   if (tiers && Array.isArray(tiers.starts)) locks[which].tiers = { on: !!tiers.on, starts: tiers.starts.slice() };
+  var build = tierBuildForLock();             // the Tiers button's ladders and the takes since, for the record
+  if (build) locks[which].build = build;
   save(K.locks(state.slate.label), locks);
   renderLocks();
 }
@@ -2179,7 +2193,7 @@ function putSavedSlate(doc, label, entry) {
 
 function playerCount(n) { return n + (n === 1 ? " player" : " players"); }
 
-function savedEntry(order, slateId, device, nowIso, windows, cut, tiers, outs, locks) {
+function savedEntry(order, slateId, device, nowIso, windows, cut, tiers, outs, locks, build) {
   var e = { order: order.slice(), slate_id: slateId, device: device,
             saved_at: nowIso, count: order.length };
   if (windows && Object.keys(windows).length) e.windows = windows;
@@ -2187,6 +2201,7 @@ function savedEntry(order, slateId, device, nowIso, windows, cut, tiers, outs, l
   // NBA: the players you've marked out ride along (an empty list too, so clearing them syncs)
   if (outs && Array.isArray(outs.list)) e.outs = { list: outs.list.slice(), from: Object.assign({}, outs.from || {}) };
   if (locks && (locks.am || locks.pm)) e.locks = locks;
+  if (build) e.build = build;    // NBA: the Tiers button's ladders and the takes since, for the record
   var at = clampCut(cut, order.length);
   if (at != null) e.cut = at;
   return e;
@@ -2489,6 +2504,8 @@ var K = {
   switchAt: function (label) { return "brr:switch:" + label; },     // NBA: your rank for the ceiling-to-floor switch
   built: function (label) { return "brr:built:" + label; },         // NBA: the order as Build tiers left it
   tiers: function (label) { return "brr:tiers:" + label; },
+  tierBuild: function (label) { return "brr:tierbuild:" + label; },  // NBA: the Tiers button's ladders, combined tiers and the moves since
+  tierSrc: function (label) { return "brr:tiersrc:" + label; },      // NBA: which projection the Tiers button reads (auto, ours, etr)
   locks: function (label) { return "brr:locks:" + label; },         // NBA: {slate_id, am, pm}, your boards locked for the morning report
   expo: function (label) { return "brr:expo:" + label; },           // your exposures from an Underdog export: {file, at, drafts, counts}         // NBA: {on, starts}: where tiers 2-5 begin, by rank
   slate: NBA_LIKE ? "brr:slate:" + SPORT_MODE : "brr:slate",
@@ -3605,10 +3622,10 @@ var NBA_TIER_COLORS = ["#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa"];
    ownership tiebreak, adopted 2026-11-04). Edit freely. */
 var NBA_TIER_NOTES = [
   "Elite \u2013 ADP (2: Boom) then ETR",
-  "Near Studs \u2013 ADP then ADP (1: ETR)",
+  "Stars \u2013 ADP then ADP (1: ETR)",
   "Middle \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
-  "\u201cThe Rest\u201d \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
-  "Sixth Round \u2013 Proj (3: ADP) then ETR (2: less drafted)"
+  "Middle \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
+  "The Rest \u2013 Proj (3: ADP) then ETR (2: less drafted)"
 ];
 
 /** Your saved tiers, read as five: a board saved with six keeps its first five lines (tiers 5 and 6 merge). */
@@ -3665,6 +3682,7 @@ function nbaTiersAfterMove(oldOrder, oldCut, newOrder, newCut, pid, targetPid, s
 /** After a move on an NBA board with tiers on: save the tier lines that keep everyone in his tier. */
 function keepTierLines(oldOrder, oldCut, pid, targetPid) {
   if (!NBA_LIKE || !state.slate) return;
+  logTierMove(pid, oldOrder.indexOf(pid) + 1, state.order.indexOf(pid) + 1);
   var label = state.slate.label, t = loadTiers(label);
   if (!t || !t.on || !Array.isArray(t.starts) || t.starts.length !== NBA_TIERS - 1) return;
   save(K.tiers(label), { on: true, starts: nbaTiersAfterMove(oldOrder, oldCut, state.order, state.cut, pid, targetPid, t.starts) });
@@ -3678,6 +3696,186 @@ function nbaActiveTiers() {
 }
 
 function nbaTierEnd() { return state.cut != null ? state.cut : state.order.length; }
+
+/* ---- The Tiers button: two ladders built from scratch, whatever the current sort.
+   Ladder A ranks the slate by ADP right now, ladder P by the window's projection (our Proj until ETR's
+   file is in, ETR after; the source menu overrides). Each ladder's four lines go to its biggest gap
+   (ADP on A, projection points on P) inside a window of ranks: a line at k ends a tier at rank k.
+   A and P agreeing gives the tier. One apart: the ADP tier, flagged VALUE (P higher) or PRICEY (P lower).
+   Two or more apart: one tier from ADP toward P, flag kept. In each tier VALUE goes first and PRICEY last,
+   each group in the tier's rule for the window (NBA_TIER_NOTES; the same rules as TIER_RULES in
+   scripts/nba_report.py). Players tagged Q, D or GTD also get a class: TRAP (his P(play) x Proj tier is below
+   his ADP tier), SMASH (healthy he's a tier above it and P(play) is 70%+), FAIR (healthy tier = ADP tier).
+   The build is saved, rides with each lock, and every hand move after it is logged with it as a take. */
+var NBA_LADDER = {               // [lowest, highest, start] rank for each line, by pod size (24 picks: 2/3 of 36)
+  6: [[2, 5, 4], [12, 18, 15], [19, 25, 22], [27, 33, 30]],
+  4: [[2, 4, 3], [8, 12, 10], [13, 17, 15], [18, 22, 20]]
+};
+var NBA_SMASH_PLAY = 0.7;
+var NBA_TIER_RULE_STEPS = {      // [key, within]: higher first; within that much, the next key decides
+  am: { 1: [["adp", 2], ["boom", 0]], 2: [["adp", 0]], 3: [["proj", 3], ["adp", 0]], 4: [["proj", 3], ["adp", 0]], 5: [["proj", 3], ["adp", 0]] },
+  pm: { 1: [["projx", 0]], 2: [["adp", 1], ["projx", 0]], 3: [["proj", 0], ["adp", 0], ["boom", 0]],
+        4: [["proj", 0], ["adp", 0], ["boom", 0]], 5: [["projx", 2], ["drafted", 10], ["projx", 0]] }
+};
+
+/** The four line ranks for a ladder: values in ladder order, gap = how far each step falls. */
+function nbaLadderLines(vals, spec) {
+  var lines = [], prev = 1;
+  spec.forEach(function (w) {
+    var best = null, bestGap = -Infinity;
+    for (var k = Math.max(w[0], prev + 1); k <= w[1] && k < vals.length; k++) {
+      var g = Math.abs(vals[k - 1] - vals[k]);
+      if (g > bestGap + 1e-9 || (Math.abs(g - bestGap) <= 1e-9 && Math.abs(k - w[2]) < Math.abs(best - w[2]))) { best = k; bestGap = g; }
+    }
+    if (best == null) best = Math.max(prev + 1, Math.min(w[2], vals.length));
+    lines.push(best); prev = best;
+  });
+  return lines;
+}
+
+function nbaLadderTier(rank, lines) {
+  var t = 1;
+  lines.forEach(function (k) { if (rank > k) t++; });
+  return t;
+}
+
+/** The window's projection: ours until ETR's file is in, ETR after, unless the menu picks one. */
+function nbaTierSource() {
+  var pick = state.slate ? load(K.tierSrc(state.slate.label), "auto") : "auto", etr = !!state.nbaEtrToday;
+  if (pick === "ours" && etr && state.nbaOurs) return { src: "ours", window: "am", vals: state.nbaOurs };
+  if (pick === "etr" && !etr) return { src: "ours", window: "am", vals: state.proj, note: "no ETR file today, so ours" };
+  return etr ? { src: "etr", window: "pm", vals: state.proj } : { src: "ours", window: "am", vals: state.proj };
+}
+
+/** The rule's order (scripts/nba_report.py rule_order): each step's key, higher first, unless within its margin. */
+function nbaRuleSort(list, steps) {
+  var all = steps.concat([["projx", 0], ["adp", 0]]);
+  return list.slice().sort(function (x, y) {
+    for (var i = 0; i < all.length; i++) {
+      var key = all[i][0], within = all[i][1], a = x[key], b = y[key];
+      if (a == null || b == null || a === b || Math.abs(a - b) <= within) continue;
+      if (key === "drafted" && (Math.abs(x.adp - y.adp) > 4 || Math.min(-a, -b) < 2)) continue;  // ownership tiebreak: within 4 picks, both 2%+
+      return a > b ? -1 : 1;
+    }
+    return 0;
+  });
+}
+
+/** Build the ladders and the combined tiers for the slate as it stands. */
+function nbaBuildLadders() {
+  var s = state.slate, src = nbaTierSource(), pod = nbaPodSize(s) === 4 ? 4 : 6, spec = NBA_LADDER[pod];
+  var sh = nbaShading(), fieldCtx = nbaFieldCtx(), cap = nbaDraftSize(s.players) || (pod === 4 ? 24 : 36);
+  var pl = s.players.filter(function (p) { return hasAdp(p) || typeof src.vals[p.player_id] === "number"; });
+  var adpOf = function (p) { return hasAdp(p) ? Math.min(p.adp, cap) : cap; };
+  var projOf = function (p) { var v = src.vals[p.player_id]; return typeof v === "number" ? v : -Infinity; };
+  var A = pl.slice().sort(function (x, y) { return adpOf(x) - adpOf(y) || projOf(y) - projOf(x); });
+  var P = pl.slice().sort(function (x, y) { return projOf(y) - projOf(x) || adpOf(x) - adpOf(y); });
+  var aLines = nbaLadderLines(A.map(adpOf), spec), pLines = nbaLadderLines(P.map(function (p) { return Math.max(projOf(p), 0); }), spec);
+  var aT = {}, pT = {}, pVals = P.map(projOf);
+  A.forEach(function (p, i) { aT[p.player_id] = nbaLadderTier(i + 1, aLines); });
+  P.forEach(function (p, i) { pT[p.player_id] = nbaLadderTier(i + 1, pLines); });
+  var out = { at: new Date().toISOString(), window: src.window, source: src.src, pod: pod, lines: { a: aLines, p: pLines }, players: {} };
+  pl.forEach(function (p) {
+    var pid = p.player_id, a = aT[pid], t = pT[pid], d = a - t, c = Math.abs(d) >= 2 ? a - Math.sign(d) : a;
+    var x = { a: a, p: t, c: c, flag: d > 0 ? "VALUE" : d < 0 ? "PRICEY" : "" };
+    if (/^(q|d|g)/i.test(p.injury || "")) {
+      var sit = nbaSitFor(p), play = sit && typeof sit.p === "number" ? 1 - sit.p : null, v = projOf(p);
+      x.inj = String(p.injury);
+      if (play != null && isFinite(v)) {
+        var e = play * v, rank = 1 + pVals.filter(function (w, i) { return w > e && P[i].player_id !== pid; }).length;
+        var et = nbaLadderTier(rank, pLines);
+        x.play = Math.round(play * 100) / 100; x.et = et;
+        x.q = et > a ? "TRAP" : t < a && play >= NBA_SMASH_PLAY ? "SMASH" : t === a ? "FAIR" : "";
+      } else x.q = t === a ? "FAIR" : "";
+    }
+    out.players[pid] = x;
+  });
+  // order: combined tier, then VALUE / no flag / PRICEY, each by the tier's rule for the window
+  var rows = pl.map(function (p) {
+    var pid = p.player_id, v = projOf(p), r = sh.rows[pid];
+    return { pid: pid, c: out.players[pid].c, flag: out.players[pid].flag, adp: -adpOf(p),
+             proj: isFinite(v) ? Math.round(v) : null, projx: isFinite(v) ? v : null, boom: r && r.boom != null ? r.boom : null,
+             drafted: hasAdp(p) && nbaDraftedPct(pid, fieldCtx) != null ? -nbaDraftedPct(pid, fieldCtx) : null };
+  });
+  var order = [], starts = [];
+  for (var tier = 1; tier <= NBA_TIERS; tier++) {
+    if (tier > 1) starts.push(order.length + 1);
+    ["VALUE", "", "PRICEY"].forEach(function (f) {
+      nbaRuleSort(rows.filter(function (r) { return r.c === tier && r.flag === f; }), NBA_TIER_RULE_STEPS[src.window][tier])
+        .forEach(function (r) { order.push(r.pid); });
+    });
+  }
+  out.order = order; out.starts = starts; out.moves = []; out.note = src.note || null;
+  return out;
+}
+
+/** Press Tiers: rebuild the board from the ladders and save it. */
+function pressTiers() {
+  var label = state.slate.label, prev = load(K.tierBuild(label), null);
+  if (prev && prev.moves && prev.moves.length && !window.confirm("Rebuild from the ladders? Your " + prev.moves.length +
+      " hand move" + (prev.moves.length === 1 ? "" : "s") + " since the last build stay logged with it, and the board goes back to the ladders.")) return;
+  var b = nbaBuildLadders(), seen = {};
+  b.order.forEach(function (pid) { seen[pid] = 1; });
+  if (prev) b.prior = { at: prev.at, window: prev.window, moves: prev.moves || [] };
+  state.order = b.order.concat(state.order.filter(function (pid) { return !seen[pid]; }));
+  if (state.cut != null && state.cut < b.starts[b.starts.length - 1]) state.cut = null;
+  save(K.order(label), state.order);
+  save(K.cut(label), state.cut);
+  save(K.tierBuild(label), b);
+  save(K.tiers(label), { on: true, starts: b.starts.slice() });
+  if (state.view !== "order") { state.view = "order"; $("view").value = "order"; syncSortHeads(); }
+  render();
+  var flags = Object.keys(b.players).filter(function (k) { return b.players[k].flag; }).length;
+  setStatus("Tiers built for the " + b.window.toUpperCase() + " window on " + (b.source === "etr" ? "ETR" : "our Proj") +
+    (b.note ? " (" + b.note + ")" : "") + ": ADP lines at " + b.lines.a.join(", ") + ", projection lines at " + b.lines.p.join(", ") +
+    "; " + flags + " flagged. Moves from here are logged as takes.");
+}
+
+/** After a hand move: log it on the build as a take. */
+function logTierMove(pid, from, to) {
+  if (!NBA_LIKE || !state.slate || from === to) return;
+  var label = state.slate.label, b = load(K.tierBuild(label), null);
+  if (!b) return;
+  (b.moves = b.moves || []).push({ pid: pid, from: from, to: to, at: new Date().toISOString() });
+  save(K.tierBuild(label), b);
+}
+
+/** The build's compact copy for a lock: who sat in which tier and why, and the moves since. */
+function tierBuildForLock() {
+  var b = state.slate ? load(K.tierBuild(state.slate.label), null) : null;
+  return b ? { at: b.at, window: b.window, source: b.source, pod: b.pod, lines: b.lines, players: b.players, order: b.order, moves: b.moves || [] } : null;
+}
+
+/** A, P, flag and Q class for one row, or null without a build. */
+function tierInfoChip(p) {
+  var b = state.slate && NBA_LIKE ? load(K.tierBuild(state.slate.label), null) : null, x = b && b.players[p.player_id];
+  if (!x) return null;
+  var el = document.createElement("span");
+  el.className = "tierinfo";
+  var ap = document.createElement("span");
+  ap.className = "tap";
+  ap.textContent = "A" + x.a + "·P" + x.p;
+  el.appendChild(ap);
+  if (x.flag) {
+    var f = document.createElement("b");
+    f.className = "tflag " + (x.flag === "VALUE" ? "v" : "pr");
+    f.textContent = x.flag === "VALUE" ? "VAL" : "PRC";
+    f.dataset.s = x.flag === "VALUE" ? "V" : "P";
+    el.appendChild(f);
+  }
+  if (x.q) {
+    var q = document.createElement("b");
+    q.className = "tq " + x.q.toLowerCase();
+    q.textContent = x.q;
+    q.dataset.s = x.q.charAt(0);
+    el.appendChild(q);
+  }
+  el.title = "ADP tier " + x.a + ", " + (b.source === "etr" ? "ETR" : "our Proj") + " tier " + x.p + ", in tier " + x.c +
+    (x.flag ? " (" + x.flag + ": the projection has him " + (x.flag === "VALUE" ? "higher" : "lower") + ")" : "") +
+    (x.inj ? ". " + x.inj + (x.play != null ? ", " + Math.round(x.play * 100) + "% to play, expected tier " + x.et : "") +
+      (x.q ? ": " + x.q : "") : "") + ". Built " + new Date(b.at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  return el;
+}
 
 /** Colour the rows already on screen for `starts` (also used while a line is being dragged). */
 function paintTiers(starts) {
@@ -3698,6 +3896,7 @@ function tierTag(t, tiers) {
   tag.style.background = NBA_TIER_COLORS[t - 1];
   tag.style.color = t >= 5 ? "#0b1a33" : "#ffffff";
   if (t === 1) { tag.title = "Tier 1"; tag.classList.add("t1"); return tag; }
+  if (load(K.tierBuild(state.slate.label), null)) { tag.title = "Tier " + t + ": set by the Tiers button (press it again to rebuild)"; return tag; }
   tag.title = "Tier " + t + ": drag up or down to move the line";
   tag.classList.add("drag");
   tag.addEventListener("pointerdown", function (e) {
@@ -3731,16 +3930,6 @@ function tierNote(t) {
   note.textContent = SPORT_MODE === "nba" ? NBA_TIER_NOTES[t - 1] || "" : "";
   note.style.borderColor = NBA_TIER_COLORS[t - 1];
   return note;
-}
-
-function toggleTiers() {
-  var label = state.slate.label, t = loadTiers(label);
-  if (!t || !Array.isArray(t.starts)) t = { on: true, starts: nbaSeedTiers(state.order, state.cut, state.proj) };
-  else t = { on: !t.on, starts: t.starts };
-  save(K.tiers(label), t);
-  if (t.on && state.view !== "order") { state.view = "order"; $("view").value = "order"; syncSortHeads(); }
-  render();
-  if (t.on) setStatus("Tiers on: five bands over your order, tier 5 running to your line. Drag a line's tag (T2-T5) to move it.");
 }
 
 function syncSwitchField() {
@@ -4926,6 +5115,7 @@ function render() {
     var tb = $("tiersBtn"), tt = state.slate && loadTiers(state.slate.label);
     tb.setAttribute("aria-pressed", String(!!(tt && tt.on)));
     tb.classList.toggle("on", !!(tt && tt.on));
+    if ($("tiersSrc")) $("tiersSrc").value = state.slate ? load(K.tierSrc(state.slate.label), "auto") : "auto";
   }
   if (SPORT_MODE === "nba" && state.view === "order" && !state.search.trim() && state.position === "ALL") {
     sw = nbaSwitch();
@@ -4990,6 +5180,8 @@ function render() {
         if (sx) injCell.appendChild(nbaSitChip(p, sx));
       }
       who.append(name, injCell, sub);
+      var ti = SPORT_MODE === "nba" ? tierInfoChip(p) : null;
+      if (ti) who.appendChild(ti);
       if (SPORT_MODE === "cbb") cbbWho(who, p); else nbaWho(who, p, nt || []);
       who.appendChild(nbaOutButton(p));
     } else {
@@ -5805,7 +5997,7 @@ async function syncSave() {
     }
     mergeLocks(prior);
     var entry = savedEntry(state.order, state.slate.slate_id, myDevice(), new Date().toISOString(),
-                           load(K.vorpWin(label), null), state.cut, loadTiers(label), savedOuts(label), slateLocks());
+                           load(K.vorpWin(label), null), state.cut, loadTiers(label), savedOuts(label), slateLocks(), tierBuildForLock());
     var files = {};
     files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
 
@@ -5869,6 +6061,11 @@ async function applyEntry(entry) {
   }
   if (entry.tiers && Array.isArray(entry.tiers.starts)) save(K.tiers(state.slate.label), entry.tiers);
   if (entry.locks && entry.locks.slate_id === state.slate.slate_id) save(K.locks(state.slate.label), entry.locks);
+  if (entry.build && entry.build.at) {
+    var mine = load(K.tierBuild(state.slate.label), null);
+    if (!mine || isoMs(entry.build.at) > isoMs(mine.at) || (entry.build.at === mine.at && (entry.build.moves || []).length > (mine.moves || []).length))
+      save(K.tierBuild(state.slate.label), entry.build);
+  }
   if (entry.outs && Array.isArray(entry.outs.list)) {
     save(K.out(state.slate.label), entry.outs.list);
     save(K.outFrom(state.slate.label), entry.outs.from || {});
@@ -6046,7 +6243,7 @@ async function autoSync(quiet) {
     } else if (push) {
       mergeLocks(remote);
       entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
-                         load(K.vorpWin(label), null), state.cut, loadTiers(label), savedOuts(label), slateLocks());
+                         load(K.vorpWin(label), null), state.cut, loadTiers(label), savedOuts(label), slateLocks(), tierBuildForLock());
       files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
     }
     } catch (be) { boardErr = be; take = false; entry = null; files = {}; msg = ""; }
@@ -6411,7 +6608,8 @@ $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
 $("buildTiers").addEventListener("click", function () { applyNbaProjOrder(); });
 $("lockAm").addEventListener("click", function () { lockBoard("am"); });
 $("lockPm").addEventListener("click", function () { lockBoard("pm"); });
-$("tiersBtn").addEventListener("click", function () { toggleTiers(); });
+$("tiersBtn").addEventListener("click", function () { pressTiers(); });
+$("tiersSrc").addEventListener("change", function () { save(K.tierSrc(state.slate.label), this.value); });
 $("copyMain").addEventListener("click", function () { copyMainRanks(); });
 $("switchAt").addEventListener("change", function () {
   if (!state.slate) return;
@@ -7251,6 +7449,11 @@ function brrSelfTest() {
   ok("a lock another device saved survives this device's save", merged.pm && merged.pm.order[0] === "b" && merged.am.order[0] === "a");
   try { localStorage.removeItem(K.locks("__locktest")); } catch (e) { /* ignore */ }
   state.slate = keepLabel;
+  ok("the tier build rides a saved board", savedEntry(["a"], "s", "d", "t", null, 1, null, null, null, { at: "x", moves: [] }).build.at === "x" &&
+     savedEntry(["a"], "s", "d", "t").build === undefined);
+  ok("ladder lines go to the biggest gap in each window", nbaLadderLines([10, 9, 8, 2, 1.9, 1.8, 1.7, 1.6, 1.5, 1.4, 1.3, 1.2, 1.1, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01, 0, 0, 0, 0, 0, 0, 0], NBA_LADDER[6]).join() === "3,15,22,28" &&
+     nbaLadderTier(3, [3, 15, 22, 30]) === 1 && nbaLadderTier(4, [3, 15, 22, 30]) === 2 && nbaLadderTier(31, [3, 15, 22, 30]) === 5);
+  ok("the rule sort keeps margins", nbaRuleSort([{ pid: "a", adp: -5, boom: 0.1 }, { pid: "b", adp: -6, boom: 0.3 }], [["adp", 2], ["boom", 0]])[0].pid === "b");
   ok("locks ride a saved board", savedEntry(["a"], "s", "d", "t", null, 1, null, null, { slate_id: "s", am: { order: ["a"] } }).locks.am.order[0] === "a" &&
      savedEntry(["a"], "s", "d", "t", null, 1, null, null, { slate_id: "s" }).locks === undefined);
   ok("the matchup note rounds to whole points and names the big parts",
