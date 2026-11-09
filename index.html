@@ -3700,7 +3700,8 @@ function nbaTierEnd() { return state.cut != null ? state.cut : state.order.lengt
 /* ---- The Tiers button: two ladders built from scratch, whatever the current sort.
    Ladder A ranks the slate by ADP right now, ladder P by the window's projection (our Proj until ETR's
    file is in, ETR after; the source menu overrides). Each ladder's four lines go to its biggest gap
-   (ADP on A, projection points on P) inside a window of ranks: a line at k ends a tier at rank k.
+   (ADP on A, projection points on P) inside a window of ranks: a line at k ends a tier at rank k. Every tier keeps
+   at least 4 players (3 on 4-drafter slates): when the biggest gap breaks that, the next-biggest that doesn't.
    A and P agreeing gives the tier. One apart: the ADP tier, flagged VALUE (P higher) or PRICEY (P lower).
    Two or more apart: one tier from ADP toward P, flag kept. In each tier VALUE goes first and PRICEY last,
    each group in the tier's rule for the window (NBA_TIER_NOTES; the same rules as TIER_RULES in
@@ -3711,6 +3712,7 @@ var NBA_LADDER = {               // [lowest, highest, start] rank for each line,
   6: [[2, 5, 4], [12, 18, 15], [19, 25, 22], [27, 33, 30]],
   4: [[2, 4, 3], [8, 12, 10], [13, 17, 15], [18, 22, 20]]
 };
+var NBA_MIN_TIER = { 6: 4, 4: 3 };   // every tier on each ladder holds at least this many (2026-11-09)
 var NBA_SMASH_PLAY = 0.7;
 var NBA_TIER_RULE_STEPS = {      // [key, within]: higher first; within that much, the next key decides
   am: { 1: [["adp", 2], ["boom", 0]], 2: [["adp", 0]], 3: [["proj", 3], ["adp", 0]], 4: [["proj", 3], ["adp", 0]], 5: [["proj", 3], ["adp", 0]] },
@@ -3718,16 +3720,17 @@ var NBA_TIER_RULE_STEPS = {      // [key, within]: higher first; within that muc
         4: [["proj", 0], ["adp", 0], ["boom", 0]], 5: [["projx", 2], ["drafted", 10], ["projx", 0]] }
 };
 
-/** The four line ranks for a ladder: values in ladder order, gap = how far each step falls. */
-function nbaLadderLines(vals, spec) {
-  var lines = [], prev = 1;
-  spec.forEach(function (w) {
-    var best = null, bestGap = -Infinity;
-    for (var k = Math.max(w[0], prev + 1); k <= w[1] && k < vals.length; k++) {
+/** The four line ranks for a ladder: values in ladder order, gap = how far each step falls. Every tier keeps at
+    least minSize players (NBA_MIN_TIER): when the biggest gap breaks that, the next-biggest that doesn't. */
+function nbaLadderLines(vals, spec, minSize) {
+  var lines = [], prev = 0, n = vals.length, min = minSize || 1;
+  spec.forEach(function (w, j) {
+    var best = null, bestGap = -Infinity, least = prev + min, most = j < spec.length - 1 ? n - 1 : n - min;
+    for (var k = Math.max(w[0], least); k <= Math.min(w[1], most, n - 1); k++) {
       var g = Math.abs(vals[k - 1] - vals[k]);
       if (g > bestGap + 1e-9 || (Math.abs(g - bestGap) <= 1e-9 && Math.abs(k - w[2]) < Math.abs(best - w[2]))) { best = k; bestGap = g; }
     }
-    if (best == null) best = Math.max(prev + 1, Math.min(w[2], vals.length));
+    if (best == null) best = Math.min(Math.max(least, w[2]), n);
     lines.push(best); prev = best;
   });
   return lines;
@@ -3770,7 +3773,8 @@ function nbaBuildLadders() {
   var projOf = function (p) { var v = src.vals[p.player_id]; return typeof v === "number" ? v : -Infinity; };
   var A = pl.slice().sort(function (x, y) { return adpOf(x) - adpOf(y) || projOf(y) - projOf(x); });
   var P = pl.slice().sort(function (x, y) { return projOf(y) - projOf(x) || adpOf(x) - adpOf(y); });
-  var aLines = nbaLadderLines(A.map(adpOf), spec), pLines = nbaLadderLines(P.map(function (p) { return Math.max(projOf(p), 0); }), spec);
+  var aLines = nbaLadderLines(A.map(adpOf), spec, NBA_MIN_TIER[pod]),
+      pLines = nbaLadderLines(P.map(function (p) { return Math.max(projOf(p), 0); }), spec, NBA_MIN_TIER[pod]);
   var aT = {}, pT = {}, pVals = P.map(projOf);
   A.forEach(function (p, i) { aT[p.player_id] = nbaLadderTier(i + 1, aLines); });
   P.forEach(function (p, i) { pT[p.player_id] = nbaLadderTier(i + 1, pLines); });
@@ -7452,6 +7456,7 @@ function brrSelfTest() {
   ok("the tier build rides a saved board", savedEntry(["a"], "s", "d", "t", null, 1, null, null, null, { at: "x", moves: [] }).build.at === "x" &&
      savedEntry(["a"], "s", "d", "t").build === undefined);
   ok("ladder lines go to the biggest gap in each window", nbaLadderLines([10, 9, 8, 2, 1.9, 1.8, 1.7, 1.6, 1.5, 1.4, 1.3, 1.2, 1.1, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01, 0, 0, 0, 0, 0, 0, 0], NBA_LADDER[6]).join() === "3,15,22,28" &&
+     nbaLadderLines([10, 9, 8, 2, 1.9, 1.8, 1.7, 1.6, 1.5, 1.4, 1.3, 1.2, 1.1, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01, 0, 0, 0, 0, 0, 0, 0], NBA_LADDER[6], 4).join() === "4,15,22,28" &&
      nbaLadderTier(3, [3, 15, 22, 30]) === 1 && nbaLadderTier(4, [3, 15, 22, 30]) === 2 && nbaLadderTier(31, [3, 15, 22, 30]) === 5);
   ok("the rule sort keeps margins", nbaRuleSort([{ pid: "a", adp: -5, boom: 0.1 }, { pid: "b", adp: -6, boom: 0.3 }], [["adp", 2], ["boom", 0]])[0].pid === "b");
   ok("locks ride a saved board", savedEntry(["a"], "s", "d", "t", null, 1, null, null, { slate_id: "s", am: { order: ["a"] } }).locks.am.order[0] === "a" &&
