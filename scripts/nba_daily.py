@@ -10,6 +10,9 @@ Each row is a player on the slate, for the two halves of the day:
   injury     his Underdog tag at lock; injury_am: his tag when the AM board locked
   tiers      am_tier and pm_tier: the tier (1-5) your board's tier lines put him in at each lock
              (blank past your line, or when the tiers weren't on)
+  at PM     adp_pm, injury_pm and etr_pm: ADP, his tag and ETR's upload as they stood when the PM board locked
+             (Lock PM, else the board saved at lock); play_am and play_pm: our chance he plays (1 - the mirror's
+             nba_sit.json miss chance) at each lock, from 2026-10-27 when the file started (blank before)
   ladders    the Tiers button's build as it rode with each lock (or the board it falls back to), from 2026-11-09:
              {am,pm}_a and _p his ADP and projection ladder tiers, _c the combined tier, _flag VALUE or PRICEY,
              _q his Q class (SMASH, FAIR, TRAP) with _play his chance to play, _built his rank in the build
@@ -57,6 +60,7 @@ COLS = ["date", "slate", "player_id", "name", "team", "pos", "adp_am", "adp_etr"
         # for the player-by-player notes (scripts/nba_ledger.py): his night and his usual per minute
         "opp", "pf", "fg", "fg3", "ft", "pts_pm", "reb_pm", "ast_pm", "stk_pm", "fp_pm", "mtch", "mtch_label", "mtch_cats", "spread"]
 LADDER = ["a", "p", "c", "flag", "q", "play", "built", "src"]
+COLS += ["adp_pm", "injury_pm", "etr_pm", "play_am", "play_pm"]
 COLS += ["%s_%s" % (w, k) for w in ("am", "pm") for k in LADDER]
 
 
@@ -139,6 +143,15 @@ class Mirror:
         """{team: spread} for the day's games, from nba_odds.json as it stood at t."""
         v = self.versions("nba_odds.json", t - dt.timedelta(days=2), t)
         return ((self.show(v[-1][1], "nba_odds.json").get("lines") or {}).get(day) or {}) if v else {}
+
+    def sit_at(self, t, day):
+        """{name key: our chance he plays} for the day, from nba_sit.json as it stood at t ({} before the file)."""
+        v = self.versions("nba_sit.json", t - dt.timedelta(days=2), t)
+        if not v:
+            return {}
+        d = self.show(v[-1][1], "nba_sit.json")
+        d = d if d.get("date") == day else (d.get("days") or {}).get(day) or {}
+        return {norm_name(k): round(1 - x["p"], 3) for k, x in (d.get("players") or {}).items() if isinstance(x.get("p"), (int, float))}
 
     def morning_at(self, t):
         """nba_morning.json as it stood at t."""
@@ -282,6 +295,10 @@ def gist_parts(gist, slate):
     else:
         out["pm"] = {"at": board["saved_at"], "order": board["order"], "ours": {}, "cut": board.get("cut"),
                      "tiers": board.get("tiers"), "build": board.get("build"), "source": "board at lock"} if board else None
+    if out.get("pm"):                                     # ETR's upload as it stood when the PM board locked
+        pm_at = min(iso(out["pm"]["at"]), slate["lock"])
+        at_pm = [r for r in revs if r[0] <= pm_at]
+        out["etr_pm"] = etr_day(gist.store(at_pm[-1][1]), day) if at_pm else None
     return out
 
 
@@ -412,6 +429,13 @@ def build(mirror, gist, slate, name_map):
     adp = lambda snap: {p["player_id"]: p.get("adp") for p in (snap[1] if snap else [])}
     adp_am, adp_etr, adp_close = adp(s_am), adp(s_etr), adp(close)
     injury_am = {p["player_id"]: p.get("injury") or "" for p in (s_am[1] if s_am else [])}   # his tag when the AM board locked
+    pm_at = min(iso(pm["at"]), slate["lock"]) if pm else slate["lock"]
+    s_pm = adp_at(snaps, pm_at)
+    adp_pm = adp(s_pm)
+    injury_pm = {p["player_id"]: p.get("injury") or "" for p in (s_pm[1] if s_pm else [])}
+    etr_pm = join_etr(plist, parts["etr_pm"]["entries"] if parts.get("etr_pm") else None, name_map)
+    am_at = iso(am["at"]) if am else at_pt(day, MORNING_ADP_HOUR)
+    sit_am, sit_pm = mirror.sit_at(am_at, day), mirror.sit_at(pm_at, day)
     etr1 = join_etr(plist, first["entries"] if first else None, name_map)
     etr2 = join_etr(plist, parts["etr_last"]["entries"] if parts.get("etr_last") else None, name_map)
     rank = lambda b: {pid: i + 1 for i, pid in enumerate((b or {}).get("order", []))}
@@ -466,6 +490,9 @@ def build(mirror, gist, slate, name_map):
         })
         for w, b in (("am", am), ("pm", pm)):
             rows[-1].update({"%s_%s" % (w, k): v for k, v in ladder(b, pid).items()})
+        rows[-1].update({"adp_pm": r1(adp_pm.get(pid)), "injury_pm": injury_pm.get(pid, ""),
+                         "etr_pm": r1(etr_pm[pid].get("proj")) if pid in etr_pm else "",
+                         "play_am": sit_am.get(key, ""), "play_pm": sit_pm.get(key, "")})
     when = lambda x: {"at": x["at"], "from": x["source"], "ours": bool(x.get("ours")),
                       "tiers": (x.get("tiers") or {}).get("starts") if (x.get("tiers") or {}).get("on") else None} if x else None
     meta = {"lock": slate["lock"].isoformat(), "adp_am_at": s_am[0].isoformat() if s_am else None,
@@ -473,6 +500,8 @@ def build(mirror, gist, slate, name_map):
             "morning_through": (morning or {}).get("games_through"),
             "etr_first": {"at": first["at"], "file": first.get("file")} if first else None,
             "etr_last": {"at": parts["etr_last"]["at"], "file": parts["etr_last"].get("file")} if parts.get("etr_last") else None,
+            "etr_pm": {"at": parts["etr_pm"]["at"], "file": parts["etr_pm"].get("file")} if parts.get("etr_pm") else None,
+            "adp_pm_at": s_pm[0].isoformat() if s_pm else None,
             "am": when(am), "pm": when(pm), "gist": bool(gist)}
     return rows, meta, box_rows(day, box, mfile, parts["etr_last"]["entries"] if parts.get("etr_last") else None, rows, line)
 
