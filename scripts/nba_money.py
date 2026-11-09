@@ -2,7 +2,8 @@
 
 Everything is read off every team in every contest on file (analysis/nba/contests/, scripts/nba_contests.py), joined at
 its draft window to the rankings side's point-in-time tiers (analysis/nba/report/tier_history.csv) and graded against a
-price baseline. Writes analysis/nba/report/money.md and the MONEY column of decision_register.csv. The 2:17am job runs it.
+price baseline. Writes analysis/nba/report/money_report.md only. It never writes decision_register.csv: MONEY verdicts go into the
+register by hand, only when the user approves them. The 2:17am job runs it.
 
 Definitions
   draft window  each team's draft time is the hourly ADP snapshot nearest the ADPs its picks were taken at
@@ -105,8 +106,10 @@ def load(mirror):
         am, pm = F.locks(date)
         sw = S.night(date)
         credit = collections.defaultdict(set)
+        swap_out = collections.defaultdict(dict)          # team -> swapped-in pick -> the ruled-out player it replaced
         for x in (sw or {}).get("credited", []):
             credit[(x["contest_id"], x["draft_id"], x["username"])].add(x["out"])
+            swap_out[(x["contest_id"], x["draft_id"], x["username"])][x["swap"]] = x["out"]
         out_adp = {o: r["adp_out"] for o, r in ((sw or {}).get("out") or {}).items()}
         for c in contests:
             ts = teams[c["contest_id"]]
@@ -123,6 +126,8 @@ def load(mirror):
                 t["at"] = at
                 t["holds"] = set(t["picks"]) | credit.get(k, set())
                 t["paid"] = paid(t, credit.get(k, set()), out_adp, c["pod_size"])
+                so = swap_out.get(k, {})
+                t["paid_pid"] = [p if a is not None else so.get(p) for p, a in zip(t["picks"], t["adps"])]
                 t["fin"] = t["place"] / n
                 t["top"] = {x: t["place"] <= math.ceil(x * n / 100) for x in XS + (20,)}
                 t["mine"] = t["username"] == ME
@@ -162,6 +167,8 @@ def price(nights):
             for t in ts:
                 es = [e(a) for a in t["paid"]]
                 t["price"] = sum(es) if es and None not in es else None
+                # each slot: who was paid for, what it cost, what it scored (a swap scores through the swapped-in player)
+                t["slots"] = [(pp, x, num((n["rec"].get(p) or {}).get("actual")) or 0.0) for pp, x, p in zip(t["paid_pid"], es, t["picks"])]
             ps = sorted(t["price"] for t in ts if t["price"] is not None)
             for t in ts:
                 for k in (5, 10):
@@ -178,8 +185,9 @@ def strata_lift(cases, bins="bin5"):
     """cases: [(date, contest id, bin, 'A'|'B', team)]. -> per-date sums {date: [O1, E1, O5, E5, O10, E10, fin diff, nA]},
     stratified by contest x the team's price bin (`bins`: quintiles or deciles)."""
     by = collections.defaultdict(lambda: {"A": [], "B": []})
-    for d, cid, _, g, t in cases:
-        by[(d, cid, t[bins])][g].append(t)
+    for c in cases:
+        d, cid, b, g, t = c[:5]
+        by[(d, cid, b if bins == "case" else t[bins])][g].append(t)
     out = collections.defaultdict(lambda: [0.0] * 8)
     for (d, cid, b), v in by.items():
         if not v["A"] or not v["B"]:
@@ -264,8 +272,8 @@ def pair_cases(nights, windows_, tiers, pick, same_tier=True):
                 for x, y in decision_pairs(g, pick):
                     hx, hy = H[w].get(x, []), H[w].get(y, [])
                     ix, iy = {id(t) for t in hx}, {id(t) for t in hy}
-                    cases += [(n["date"], t["contest"]["contest_id"], t["bin"], "A", t) for t in hx if id(t) not in iy]
-                    cases += [(n["date"], t["contest"]["contest_id"], t["bin"], "B", t) for t in hy if id(t) not in ix]
+                    cases += [(n["date"], t["contest"]["contest_id"], t["bin"], "A", t, {x}) for t in hx if id(t) not in iy]
+                    cases += [(n["date"], t["contest"]["contest_id"], t["bin"], "B", t, {y}) for t in hy if id(t) not in ix]
     return cases
 
 
@@ -275,7 +283,9 @@ def hold_cases(nights, windows_, has, eligible=lambda n, t: True):
         for ts in n["teams"].values():
             for t in ts:
                 if t["window"] in windows_ and t["bin"] is not None and eligible(n, t):
-                    cases.append((n["date"], t["contest"]["contest_id"], t["bin"], "A" if has(n, t) else "B", t))
+                    h = has(n, t)
+                    cases.append((n["date"], t["contest"]["contest_id"], t["bin"], "A" if h else "B", t,
+                                  set(h) if isinstance(h, (set, list, tuple)) else set()))
     return cases
 
 
@@ -358,12 +368,13 @@ def teammate_tagged(n, w, p, tags, sat=None):
 def beneficiary_r6(sat):
     def has(n, t):
         last = 5 * t["contest"]["pod_size"]
-        return any(a is not None and a > last and teammate_tagged(n, "am", p, QRE, sat) for p, a in zip(t["picks"], t["adps"]))
+        return {p for p, a in zip(t["picks"], t["adps"]) if a is not None and a > last and teammate_tagged(n, "am", p, QRE, sat)}
     return has
 
 
 def holds_where(cond):
-    return lambda n, t: any(cond(n["tiers"][t["window"]].get(p)) for p in t["holds"] if n["tiers"][t["window"]].get(p))
+    """The players a team holds that meet cond at its window (empty: it holds none)."""
+    return lambda n, t: {p for p in t["holds"] if n["tiers"][t["window"]].get(p) and cond(n["tiers"][t["window"]][p])}
 
 
 def q_class(cls, tiers):
@@ -845,7 +856,7 @@ def turns_section(N, dates, bins):
     inv = {}
     for n in N:
         inv[n["date"]] = {r: p for p, r in ranks_of(n).items()}
-    case = lambda n, t, g: (n["date"], t["contest"]["contest_id"], t[bins], g, t)
+    case = lambda n, t, g, i: (n["date"], t["contest"]["contest_id"], t[bins], g, t, set(i["picks"]))
     out = ["### Turns, from rosters by ADP rank (no pick order)", "",
            "Fallers (a top player who fell to the turn) are kept apart: always taken. For the pairs you control: does reaching "
            "(a player 2+ picks past ADP order) beat trusting ADP order? Lift against same-contest, same-price trusting teams. "
@@ -853,21 +864,21 @@ def turns_section(N, dates, bins):
     results = {}
     for turn in ("1/2", "2/3"):
         xs = [(n, t, i) for n, t, i in tt if i["turn"] == turn]
-        trust = [case(n, t, "B") for n, t, i in xs if i["kind"] == "trust"]
-        tests = [("a. reach vs trust", [case(n, t, "A") for n, t, i in xs if i["kind"] == "reach"] + trust),
-                 ("fallers vs trust", [case(n, t, "A") for n, t, i in xs if i["kind"] == "faller"] + trust)]
+        trust = [case(n, t, "B", i) for n, t, i in xs if i["kind"] == "trust"]
+        tests = [("a. reach vs trust", [case(n, t, "A", i) for n, t, i in xs if i["kind"] == "reach"] + trust),
+                 ("fallers vs trust", [case(n, t, "A", i) for n, t, i in xs if i["kind"] == "faller"] + trust)]
         for kind in ("higher projection", "VALUE flag", "less drafted"):
             tests.append(("b. reach toward %s vs trust" % kind,
-                          [case(n, t, "A") for n, t, i in xs if i["kind"] == "reach" and kind in reach_kinds(n, t, i, inv[n["date"]])] + trust))
+                          [case(n, t, "A", i) for n, t, i in xs if i["kind"] == "reach" and kind in reach_kinds(n, t, i, inv[n["date"]])] + trust))
         key = lambda t, i: (t["contest"]["pod_size"],) + (i["pair"] if turn == "1/2" else (i["anchor"],) + i["pair"])
         cells = collections.Counter(key(t, i) for n, t, i in xs if i["kind"] != "faller")
         for ck, k in sorted(cells.items(), key=lambda kv: (-kv[0][0], -kv[1]))[:16]:
             label = ("c. %d-drafter, ranks %d + %d" % ck) if turn == "1/2" else ("c. %d-drafter, anchor %d, ranks %d + %d" % ck)
-            tests.append((label, [case(n, t, "A" if key(t, i) == ck else "B") for n, t, i in xs if i["kind"] != "faller"
+            tests.append((label, [case(n, t, "A" if key(t, i) == ck else "B", i) for n, t, i in xs if i["kind"] != "faller"
                                   and t["contest"]["pod_size"] == ck[0]]))
         for name, cs in tests:
             ev = evaluate(cs, dates, bins)
-            results[(turn, name)] = ev
+            results[(turn, name)] = (ev, cs)
             out.append("| %s | %s | %s | %s |" % (turn, name, cell(ev["field"]["all"]), cell(ev["mine"]["all"])))
     return out + ["", "Rank pairs (c) are detail: most will be not enough yet. Each is against every other non-faller pair at "
                   "that turn.", ""], results
@@ -876,6 +887,40 @@ def turns_section(N, dates, bins):
 def tiers_of_team(n, t):
     rows = n["tiers"][t["window"]] if t["window"] else {}
     return [rows[p] for p in drafted_by(t) if p in rows]
+
+
+GROUP = {"PG": "G", "SG": "G", "G": "G", "SF": "F", "PF": "F", "F": "F", "C": "C"}
+
+
+def stars(n, w):
+    """Each team's top two by projection at the window."""
+    key = ("_stars", w)
+    if key not in n:
+        by = collections.defaultdict(list)
+        for p, r in n["tiers"][w].items():
+            if num(r["proj"]) is not None:
+                by[r["team"]].append((num(r["proj"]), p))
+        n[key] = {p for v in by.values() for _, p in sorted(v, reverse=True)[:2]}
+    return n[key]
+
+
+def opp_stars(n, t):
+    """The team's stars on opposite sides of one game (empty if none)."""
+    s = stars(n, t["window"])
+    mine = [p for p in drafted_by(t) if p in s and p in n["rec"]]
+    return {p for a in mine for b in mine if a != b and n["rec"][a]["opp"] == n["rec"][b]["team"] for p in (a, b)}
+
+
+def same_pos(n, t, big=None):
+    """Teammates in the same position group on the team (big: only in games with a spread of 5+, or under 5)."""
+    ps = [(p, n["rec"][p]) for p in drafted_by(t) if p in n["rec"]]
+    out = set()
+    for i, (pa, a) in enumerate(ps):
+        for pb, b in ps[i + 1:]:
+            if a["team"] == b["team"] and GROUP.get((a["pos"] or "").split("-")[0]) == GROUP.get((b["pos"] or "").split("-")[0]):
+                if big is None or ((abs(num(a["spread"]) or 0)) >= 5) == big:
+                    out |= {pa, pb}
+    return out
 
 
 def field_section(N, dates, bins):
@@ -929,34 +974,14 @@ def field_section(N, dates, bins):
     out += ["", "T5 breakers (PM tiers) drafted in under half the flagship's pods: %s (of all T5 breakers: %s)." % (
         ", ".join("%s %d" % kv for kv in sorted(low.items())), ", ".join("%s %d" % kv for kv in sorted(tot.items()))), ""]
     # stacks
-    def stars(n, w):
-        rows = n["tiers"][w]
-        by = collections.defaultdict(list)
-        for p, r in rows.items():
-            if num(r["proj"]) is not None:
-                by[r["team"]].append((num(r["proj"]), p))
-        return {p for v in by.values() for _, p in sorted(v, reverse=True)[:2]}
-    def opp_stars(n, t):
-        s = stars(n, t["window"])
-        mine = [p for p in drafted_by(t) if p in s and p in n["rec"]]
-        return any(n["rec"][a]["opp"] == n["rec"][b]["team"] for a in mine for b in mine if a != b)
-    GROUP = {"PG": "G", "SG": "G", "G": "G", "SF": "F", "PF": "F", "F": "F", "C": "C"}
-    def same_pos(n, t, big=None):
-        ps = [n["rec"][p] for p in drafted_by(t) if p in n["rec"]]
-        for i, a in enumerate(ps):
-            for b in ps[i + 1:]:
-                if a["team"] == b["team"] and GROUP.get((a["pos"] or "").split("-")[0]) == GROUP.get((b["pos"] or "").split("-")[0]):
-                    sp = abs(num(a["spread"]) or 0)
-                    if big is None or (sp >= 5) == big:
-                        return True
-        return False
     out += ["### Stacks (residual_correlations.md): teams holding the structure against same-price teams without", "",
             "| Structure | Lift at 10% (80% range), at 1%; finish; teams, slates | Mine |", "|---|---|---|"]
     for name, has in (("Opposing stars (their team's top 2 by projection, same game)", opp_stars),
                       ("Same-position teammates", lambda n, t: same_pos(n, t)),
                       ("Same-position teammates, spread 5+", lambda n, t: same_pos(n, t, True))):
-        ev = evaluate(hold_cases(N, ("am", "pm"), has), dates, bins)
-        res[("stack", name)] = ev
+        cs = hold_cases(N, ("am", "pm"), has)
+        ev = evaluate(cs, dates, bins)
+        res[("stack", name)] = (ev, cs)
         out.append("| %s | %s | %s |" % (name, cell(ev["field"]["all"]), cell(ev["mine"]["all"])))
     # top-finish makeup
     out += ["", "### What top-1% teams held (a description, not a rule)", "",
@@ -982,7 +1007,7 @@ def field_section(N, dates, bins):
         out.append("| %s | %s |" % (g, " | ".join("%.2f" % (a[k] / cnt[g]) for k in ("T1", "T2", "T3", "T4", "T5", "VALUE", "PRICEY", "FAIR", "TRAP", "SMASH", "brk"))))
     # swap luck
     def swapped(n, t):
-        return any(a is None for a in t["adps"])
+        return {p for p, a in zip(t["paid_pid"], t["adps"]) if a is None and p} or any(a is None for a in t["adps"])
     ev = evaluate(hold_cases(N, ("am", "pm"), swapped), dates, bins)
     res[("swaps", "any")] = ev
     out += ["", "### Swaps in the field", "", "Teams with a swap against same-price teams without (each priced at what it paid): %s." % cell(ev["field"]["all"]), ""]
@@ -1055,7 +1080,7 @@ def register_section(N, dates):
         cs = b(N)
         ev5, ev10 = evaluate(cs, dates, "bin5"), evaluate(cs, dates, "bin10")
         v5, v10 = verdict(ev5)[0], verdict(ev10)[0]
-        res[(rid, label.strip())] = (ev5, v5, v10, split)
+        res[(rid, label.strip())] = (ev5, v5, v10, split, cs)
         out.append("| %s%s | %s | %s | %s | %s | %s | %s |" % (
             "" if split else "**%s** " % rid, label, cell(ev5["field"]["all"]), cell(ev5["field"]["find"]), cell(ev5["field"]["check"]),
             cell(ev5["mine"]["all"]), v5, v10 + (" **(changes)**" if v10 != v5 else "")))
@@ -1092,7 +1117,7 @@ def combine(points, money):
     return "not enough on either side yet"
 
 
-def verdict_section(reg, swaps):
+def verdict_section(reg, swaps, survived):
     register = list(csv.DictReader(open(os.path.join(REP, "decision_register.csv"))))
     pts = {r["id"]: r["points_verdict"] for r in register}
     main = {k[0]: v for k, v in reg.items() if not v[3]}
@@ -1106,21 +1131,24 @@ def verdict_section(reg, swaps):
            "show a lean (40%% of cells: 80%%+ of resamples one side happens 40%% of the time with nothing there) and about %d a rule "
            "(90%% range clear of 1.0 and the check slates agreeing, about 5%%). So a lone lean is weak; a rule, or a lean that agrees "
            "with the points verdict, counts." % (cells, leans, rules, round(0.4 * cells), max(1, round(0.05 * cells))),
-           "", "| Decision | Status | POINTS | MONEY | Top-10% lift (80% range), all slates | Recommendation |", "|---|---|---|---|---|---|"]
+           "A lean or rule counts only if it survives the price-split check (section 3b); MONEY below is the verdict that survives.",
+           "", "| Decision | Status | POINTS | MONEY before the check | MONEY (survives the check) | Top-10% lift (80% range), all slates | Recommendation |",
+           "|---|---|---|---|---|---|---|"]
     for r in register:
         rid = r["id"]
         if rid in ("swap-shuffle", "swap-ownership-order", "live-moves"):
             continue
         subs = [(k, v) for k, v in main.items() if k == rid or k.startswith(rid + ":")]
-        for k, (ev5, v5, v10, _) in subs:
+        for k, (ev5, v5, v10, _, _) in subs:
             a = ev5["field"]["all"]
             lift = ("%.2f (%.2f-%.2f)" % ((a["lift"][10],) + a["r80"]) if a and "r80" in a and a["lift"][10] else "-")
-            out.append("| %s | %s | %s | %s%s | %s | %s |" % (k, r["status"], pts[rid], v5, " (deciles: %s)" % v10 if v10 != v5 else "",
-                                                          lift, combine(pts[rid], v5)))
-    out.append("| live-moves | %s | %s | not enough (saves after lock on 3 nights) | - | not enough on either side yet |" % (
+            after = survived.get(k, v5)
+            out.append("| %s | %s | %s | %s%s | %s | %s | %s |" % (k, r["status"], pts[rid], v5, " (deciles: %s)" % v10 if v10 != v5 else "",
+                                                               after, lift, combine(pts[rid], after)))
+    out.append("| live-moves | %s | %s | not enough (saves after lock on 3 nights) | not enough | - | not enough on either side yet |" % (
         next(r["status"] for r in register if r["id"] == "live-moves"), pts["live-moves"]))
     for rid in ("swap-shuffle", "swap-ownership-order"):
-        out.append("| %s | %s | %s | not enough (about 100 swaps; section 3f has the dollars) | - | not enough on either side yet |" % (
+        out.append("| %s | %s | %s | not enough (about 100 swaps; section 3f has the dollars) | not enough | - | not enough on either side yet |" % (
             rid, next(r["status"] for r in register if r["id"] == rid), pts[rid]))
     if flips:
         out += ["", "Verdicts that change on ten price groups: " + "; ".join("%s%s (%s on five, %s on ten)" % (
@@ -1138,11 +1166,12 @@ def report(N, mirror):
     out += data_checks(N) + baseline_section(N) + scoreboard(N)
     reg_out, reg = register_section(N, dates)
     sw_out, sw = swap_money(N)
-    out += reg_out + sw_out
     turn_out, turns = turns_section(N, dates, "bin5")
     field_out, field = field_section(N, dates, "bin5")
-    out += field_out[:2] + turn_out + field_out[2:]
-    out += verdict_section(reg, sw)
+    chk_out, survived = check_section(reg, turns, field, dates)
+    out += reg_out + chk_out + sw_out
+    out += field_out[:2] + turn_out + field_out[2:] + swap_split_section(N, dates)
+    out += verdict_section(reg, sw, survived)
     return out
 
 
@@ -1154,6 +1183,125 @@ def main():
     out = report(N, a.mirror)
     open(os.path.join(REP, "money_report.md"), "w").write("\n".join(out) + "\n")
     print("\n".join(out))
+
+
+
+# ---------------------------------------------------------------- the price-split check (2026-11-09)
+def price_check(cases, dates):
+    """Teams are matched on total price, so a team that took the cheaper player at the decision spent more on its other
+    picks. (a) the A-B gap in points over price, split into the decision pick(s) and the other picks; (b) the lift again,
+    matched on the price of the other picks (contest x quintile of that price among the test's teams); (c) the decision
+    pick's own points, A's minus B's, in the same strata."""
+    rows = []
+    for c in cases:
+        d, cid, b, g, t, dec = c[:6]
+        if t["price"] is None:
+            continue
+        ds = [x for x in t["slots"] if x[0] in dec]
+        rows.append([c, t["points"] - t["price"], sum(fp - e for _, e, fp in ds), sum(fp for _, _, fp in ds),
+                     t["price"] - sum(e for _, e, _ in ds), len(ds)])
+    # a holding test's B teams have no decision pick: their "other picks" are put on the A teams' footing by taking off
+    # the average price of A's decision picks in the same contest
+    holding = not any(r[5] for r in rows if r[0][3] == "B")
+    if holding:
+        dec_price = collections.defaultdict(list)
+        for r in rows:
+            if r[0][3] == "A" and r[5]:
+                dec_price[(r[0][0], r[0][1])].append(r[0][4]["price"] - r[4])
+        for r in rows:
+            if r[0][3] == "B":
+                r[4] -= st.mean(dec_price[(r[0][0], r[0][1])]) if dec_price[(r[0][0], r[0][1])] else 0
+    by = collections.defaultdict(lambda: {"A": [], "B": []})
+    for r in rows:
+        by[(r[0][0], r[0][1], r[0][4]["bin5"])][r[0][3]].append(r)
+    gap = [0.0, 0.0, 0.0]
+    nA = 0
+    for v in by.values():
+        if not v["A"] or not v["B"]:
+            continue
+        mb = [st.mean(r[i] for r in v["B"]) for i in (1, 2, 3)]
+        for r in v["A"]:
+            for k, i in enumerate((1, 2, 3)):
+                gap[k] += r[i] - mb[k]
+            nA += 1
+    if not nA:
+        return None
+    gt, gd, gfp = (x / nA for x in gap)
+    # (b) matched on the other picks' price
+    q = {}
+    groups = collections.defaultdict(list)
+    for r in rows:
+        groups[(r[0][0], r[0][1])].append(r[4])
+    for k, v in groups.items():
+        q[k] = sorted(v)
+    re_cases = []
+    for r in rows:
+        c = r[0]
+        v = q[(c[0], c[1])]
+        bin_ = min(4, bisect.bisect_right(v, r[4]) * 5 // (len(v) + 1))
+        re_cases.append((c[0], c[1], bin_, c[3], c[4]))
+    ev = evaluate(re_cases, dates, "case")
+    return {"gap": gt, "dec": gd, "oth": gt - gd, "own": None if holding else gfp, "has_dec": any(r[5] for r in rows), "ev": ev,
+            "verdict": verdict(ev)[0], "holding": holding}
+
+
+def check_section(reg, turns, field, dates):
+    out = ["## 3b. The price-split check", "",
+           "Teams are matched on total price, so a team that took the cheaper player at the decision spent more on its other "
+           "picks, and cheaper teams beat their price (section 1). For every lean or rule, and the draft-card candidates: the A-B "
+           "gap in points over price, split into the decision pick(s) and the other picks; the decision pick's own points (A's "
+           "minus B's); and the top-10% lift again, matched on the other picks' price (contest x quintile). A money verdict "
+           "counts only if it survives the re-match. A leverage win should show as rank gained with equal or slightly lower own "
+           "points, not as better other picks. Holding tests (a Q player, a beneficiary, a stack): the teams without the holding "
+           "have no decision pick, so their other picks' price is taken as their price less the average price of the holders' "
+           "decision picks in that contest, and own points don't apply. Shares are shown when the gap is half a point or more.", "",
+           "| Decision | Verdict before | Gap, points over price (A-B) | From the decision pick | From the other picks | Decision pick's own points (A-B) | Lift matched on the other picks' price | Verdict that survives |",
+           "|---|---|---|---|---|---|---|---|"]
+    items = [((k[0] + (" " + k[1] if v[3] else "")), v[1], v[4]) for k, v in reg.items() if v[1].startswith(("LEAN", "RULE"))]
+    for k, (ev, cs) in turns.items():
+        if k[1] in ("a. reach vs trust", "fallers vs trust", "b. reach toward higher projection vs trust"):
+            items.append(("turn %s: %s" % k, verdict(ev)[0], cs))
+    for k, (ev, cs) in field.items():
+        if k[0] == "stack":
+            items.append(("stack: " + k[1], verdict(ev)[0], cs))
+    survived = {}
+    for name, before, cs in items:
+        r = price_check(cs, dates)
+        if not r:
+            continue
+        survived[name] = r["verdict"]
+        share = lambda x: "%+.1f (%.0f%%)" % (x, 100 * x / r["gap"]) if abs(r["gap"]) >= 0.5 else "%+.1f" % x
+        a = r["ev"]["field"]["all"]
+        out.append("| %s | %s | %+.1f | %s | %s | %s | %s | %s |" % (
+            name, before, r["gap"], share(r["dec"]) if r["has_dec"] else "-", share(r["oth"]) if r["has_dec"] else "-",
+            "%+.1f" % r["own"] if r["own"] is not None else "- (holding)", cell(a), r["verdict"]))
+    return out + [""], survived
+
+
+def swap_split_section(N, dates):
+    """Teams with a swap against same-price teams without, by the ruled-out player's tier at the team's window."""
+    def has(group, window=None):
+        def f(n, t):
+            if window and t["window"] != window:
+                return False
+            outs = [p for p, a in zip(t["paid_pid"], t["adps"]) if a is None]
+            if not outs:
+                return False
+            if group == "not credited":
+                return any(p is None for p in outs)
+            tiers = [n["tiers"][t["window"]].get(p) for p in outs if p]
+            ok = [r for r in tiers if r and (int(r["tier"]) <= 2) == (group == "T1-T2")]
+            return {r["player_id"] for r in ok}
+        return f
+    out = ["### Swaps by the ruled-out player's tier (at the team's draft window)", "",
+           "Teams with such a swap against same-price teams with no swap. A swapped team is priced at what it paid.", "",
+           "| Ruled-out player | Window | Lift at 10% (80% range), at 1%; finish; teams, slates |", "|---|---|---|"]
+    for group in ("T1-T2", "T3-T5", "not credited"):
+        for w in (None, "am", "pm"):
+            f = has(group, w)
+            cs = [c for c in hold_cases(N, ("am", "pm"), f) if c[3] == "A" or not any(a is None for a in c[4]["adps"])]
+            out.append("| %s | %s | %s |" % (group, w.upper() if w else "both", cell(evaluate(cs, dates)["field"]["all"])))
+    return out + [""]
 
 
 if __name__ == "__main__":

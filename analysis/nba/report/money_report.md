@@ -109,7 +109,7 @@ Dollars: $6835 in fees, $11638 won, +70% ROI over 19 nights (80% range -28% to +
 
 | Night | My teams | Top player | Top pair | Biggest shared core | Field share with 4+ of 6 (median) | Teams with a duplicate |
 |---|---|---|---|---|---|---|
-| 2026-10-20 | 4 | Dylan Harper 50% | Dylan Harper + Tyrese Maxey 50% | 1 (LeBron James + Tyrese Maxey + Victor Wembanyama) | 5.2% | 3 of 4 |
+| 2026-10-20 | 4 | Tyrese Maxey 50% | Dylan Harper + Tyrese Maxey 50% | 1 (LeBron James + Tyrese Maxey + Victor Wembanyama) | 5.2% | 3 of 4 |
 | 2026-10-21 | 50 | Brandon Miller 68% | Alperen Sengun + Brandon Miller 30% | 6 (Alperen Sengun + Brandon Miller + Domantas Sabonis) | 0.5% | 3 of 50 |
 | 2026-10-22 | 20 | Ajay Mitchell 50% | Ajay Mitchell + Jarrett Allen 30% | 3 (Donovan Mitchell + Joel Embiid + Jalen Williams) | 4.5% | 13 of 20 |
 | 2026-10-23 | 60 | Lauri Markkanen 42% | Jayson Tatum + Deni Avdija 18% | 5 (Scottie Barnes + Victor Wembanyama + Kawhi Leonard) | 0.7% | 4 of 60 |
@@ -170,6 +170,36 @@ Reference for the Mine column: all my teams against same-price field teams run 1
 | **pm-middle-takes** PM T3/T4: your board's first where it differs from ETR's | 0.99 (0.80-1.20) at 10%, 0.97 at 1%; finish -0.6; 161936 teams, 16 slates | 0.96 (0.79-1.22) at 10%, 0.96 at 1%; finish +0.3; 116113 teams, 11 slates | 1.05 (0.62-1.46) at 10%, 0.98 at 1%; finish -3.0; 45823 teams, 5 slates | 1.20 (0.91-1.73) at 10%, 0.36 at 1%; finish -6.5; 1252 teams, 15 slates | no lean | no lean |
 | **pm-t2-other-reads** PM T2: your board's first against the button (no tag on either) | 0.93 (0.76-1.13) at 10%, 0.84 at 1%; finish +0.6; 81896 teams, 16 slates | 1.10 (0.85-1.38) at 10%, 1.16 at 1%; finish -1.8; 59938 teams, 11 slates | 0.62 (0.57-0.75) at 10%, 0.43 at 1%; finish +7.2; 21958 teams, 5 slates | 1.32 (1.03-1.62) at 10%, 0.65 at 1%; finish -6.6; 563 teams, 16 slates | no lean | no lean |
 | **am-t5-other-reads** AM T5: your board's first against the button (no tag on either) | 1.28 (1.10-1.51) at 10%, 1.55 at 1%; finish -2.9; 147285 teams, 17 slates | 1.43 (1.19-1.72) at 10%, 1.72 at 1%; finish -3.8; 101161 teams, 12 slates | 1.03 (0.87-1.29) at 10%, 1.27 at 1%; finish -0.8; 46124 teams, 5 slates | 1.40 (1.12-1.79) at 10%, 0.53 at 1%; finish -4.6; 853 teams, 14 slates | RULE for | RULE for |
+
+## 3b. The price-split check
+
+Teams are matched on total price, so a team that took the cheaper player at the decision spent more on its other picks, and cheaper teams beat their price (section 1). For every lean or rule, and the draft-card candidates: the A-B gap in points over price, split into the decision pick(s) and the other picks; the decision pick's own points (A's minus B's); and the top-10% lift again, matched on the other picks' price (contest x quintile). A money verdict counts only if it survives the re-match. A leverage win should show as rank gained with equal or slightly lower own points, not as better other picks. Holding tests (a Q player, a beneficiary, a stack): the teams without the holding have no decision pick, so their other picks' price is taken as their price less the average price of the holders' decision picks in that contest, and own points don't apply. Shares are shown when the gap is half a point or more.
+
+| Decision | Verdict before | Gap, points over price (A-B) | From the decision pick | From the other picks | Decision pick's own points (A-B) | Lift matched on the other picks' price | Verdict that survives |
+|---|---|---|---|---|---|---|---|
+| ownership-tiebreak-t5 | RULE for | +2.5 | +2.6 (103%) | -0.1 (-3%) | -0.4 | 1.19 (1.06-1.32) at 10%, 1.37 at 1%; finish -1.9; 313730 teams, 17 slates | RULE for |
+| ownership-tiebreak-t5 AM only | RULE for | +1.7 | +2.4 (142%) | -0.7 (-42%) | -1.6 | 1.16 (1.06-1.26) at 10%, 1.27 at 1%; finish -1.2; 126458 teams, 17 slates | RULE for |
+| ownership-tiebreak-t5 PM only | RULE for | +3.0 | +2.6 (86%) | +0.4 (14%) | +0.3 | 1.22 (1.06-1.41) at 10%, 1.42 at 1%; finish -2.5; 187264 teams, 17 slates | RULE for |
+| leverage-t2-t4 | RULE for | +4.6 | +4.2 (92%) | +0.4 (8%) | -3.4 | 1.38 (1.15-2.14) at 10%, 1.88 at 1%; finish -4.9; 18664 teams, 6 slates | RULE for |
+| value-up-middle-t5 | RULE for | +1.5 | +1.1 (75%) | +0.4 (25%) | -1.6 | 1.14 (1.02-1.25) at 10%, 1.24 at 1%; finish -1.0; 1238342 teams, 17 slates | LEAN for |
+| value-up-middle-t5 T4 | LEAN for | +1.3 | +1.0 (75%) | +0.3 (25%) | +1.0 | 1.08 (0.91-1.26) at 10%, 1.13 at 1%; finish -0.6; 165618 teams, 16 slates | no lean |
+| value-up-middle-t5 T5 | LEAN for | +1.6 | +0.4 (24%) | +1.2 (76%) | -0.5 | 1.21 (1.03-1.39) at 10%, 1.33 at 1%; finish -2.0; 964675 teams, 17 slates | LEAN for |
+| pricey-flags | LEAN for | +0.5 | +1.2 (233%) | -0.7 (-133%) | +1.9 | 1.08 (0.97-1.19) at 10%, 1.10 at 1%; finish -0.3; 731793 teams, 17 slates | LEAN for |
+| pricey-flags T1 | RULE for | +4.9 | +5.6 (114%) | -0.7 (-14%) | +8.0 | 1.73 (1.38-2.20) at 10%, 2.50 at 1%; finish -6.5; 96945 teams, 12 slates | RULE for |
+| pm-t5-adp-value | LEAN against | -1.5 | -1.2 (84%) | -0.2 (16%) | +0.7 | 0.87 (0.74-1.02) at 10%, 0.77 at 1%; finish +0.8; 570507 teams, 17 slates | LEAN against |
+| one-tier-cap | LEAN against | -3.0 | -2.7 (90%) | -0.3 (10%) | -0.7 | 0.79 (0.64-1.04) at 10%, 0.82 at 1%; finish +4.1; 86492 teams, 15 slates | LEAN against |
+| beneficiary-round6:played | RULE for | +4.3 | +2.4 (57%) | +1.8 (43%) | - (holding) | 1.37 (1.17-1.69) at 10%, 1.45 at 1%; finish -4.1; 11544 teams, 12 slates | RULE for |
+| pm-t5-beneficiary | LEAN for | +0.8 | +3.3 (390%) | -2.4 (-290%) | - (holding) | 1.14 (0.91-1.46) at 10%, 1.73 at 1%; finish -0.1; 39651 teams, 15 slates | no lean |
+| am-t5-other-reads | RULE for | +3.0 | +2.6 (86%) | +0.4 (14%) | +1.4 | 1.31 (1.12-1.54) at 10%, 1.59 at 1%; finish -3.3; 147282 teams, 17 slates | RULE for |
+| turn 1/2: a. reach vs trust | LEAN against | -0.1 | +1.0 | -1.1 | +0.0 | 0.74 (0.54-1.02) at 10%, 0.54 at 1%; finish +1.4; 23282 teams, 17 slates | LEAN against |
+| turn 1/2: fallers vs trust | RULE for | +5.6 | +3.2 (57%) | +2.4 (43%) | +5.8 | 1.64 (1.16-2.49) at 10%, 1.99 at 1%; finish -6.3; 36141 teams, 17 slates | RULE for |
+| turn 1/2: b. reach toward higher projection vs trust | no lean | +1.1 | +1.9 (176%) | -0.8 (-76%) | +1.1 | 1.67 (0.38-3.41) at 10%, 2.73 at 1%; finish +0.6; 3721 teams, 14 slates | no lean |
+| turn 2/3: a. reach vs trust | no lean | -0.1 | +3.3 | -3.5 | +0.7 | 1.09 (0.91-1.27) at 10%, 1.52 at 1%; finish +1.2; 20105 teams, 17 slates | no lean |
+| turn 2/3: fallers vs trust | RULE for | +2.5 | +0.7 (27%) | +1.8 (73%) | +1.7 | 1.22 (1.06-1.44) at 10%, 1.30 at 1%; finish -3.3; 14912 teams, 17 slates | RULE for |
+| turn 2/3: b. reach toward higher projection vs trust | RULE for | +9.0 | +10.4 (115%) | -1.4 (-15%) | +7.5 | 1.82 (1.51-2.10) at 10%, 3.28 at 1%; finish -8.1; 4580 teams, 17 slates | RULE for |
+| stack: Opposing stars (their team's top 2 by projection, same game) | LEAN for | +0.8 | +1.2 (151%) | -0.4 (-51%) | - (holding) | 1.10 (0.95-1.27) at 10%, 1.27 at 1%; finish +0.3; 106817 teams, 17 slates | LEAN for |
+| stack: Same-position teammates | RULE against | -3.8 | -7.9 (211%) | +4.2 (-111%) | - (holding) | 0.76 (0.64-0.88) at 10%, 0.93 at 1%; finish +4.1; 66043 teams, 17 slates | RULE against |
+| stack: Same-position teammates, spread 5+ | RULE against | -0.9 | -2.8 (324%) | +1.9 (-224%) | - (holding) | 0.84 (0.74-0.92) at 10%, 0.77 at 1%; finish +1.9; 23746 teams, 14 slates | RULE against |
 
 ### f. Swaps, replayed in money (my credited swaps)
 
@@ -293,38 +323,55 @@ Teams with a swap against same-price teams without (each priced at what it paid)
 | Me | 1383 | 0.63 | 1.66 | 1.22 | 1.33 | 1.02 | 1.53 | 0.65 | 0.27 | 91% |
 | Everyone | 298362 | 0.61 | 1.66 | 1.12 | 1.34 | 0.93 | 0.96 | 1.17 | 0.20 | 93% |
 
+### Swaps by the ruled-out player's tier (at the team's draft window)
+
+Teams with such a swap against same-price teams with no swap. A swapped team is priced at what it paid.
+
+| Ruled-out player | Window | Lift at 10% (80% range), at 1%; finish; teams, slates |
+|---|---|---|
+| T1-T2 | both | 0.42 (0.17-0.63) at 10%, 0.35 at 1%; finish +13.4; 6262 teams, 5 slates |
+| T1-T2 | AM | 0.36 (0.17-0.58) at 10%, 0.27 at 1%; finish +15.3; 4399 teams, 5 slates |
+| T1-T2 | PM | 0.58 (0.14-0.72) at 10%, 0.58 at 1%; finish +9.0; 1863 teams, 3 slates |
+| T3-T5 | both | 0.79 (0.62-0.99) at 10%, 0.99 at 1%; finish +4.2; 12522 teams, 10 slates |
+| T3-T5 | AM | 0.79 (0.55-1.06) at 10%, 0.89 at 1%; finish +4.5; 8764 teams, 9 slates |
+| T3-T5 | PM | 0.79 (0.62-1.05) at 10%, 1.25 at 1%; finish +3.6; 3758 teams, 7 slates |
+| not credited | both | 0.80 (0.65-0.97) at 10%, 0.81 at 1%; finish +5.7; 27835 teams, 17 slates |
+| not credited | AM | 0.79 (0.65-0.95) at 10%, 0.77 at 1%; finish +6.0; 16174 teams, 17 slates |
+| not credited | PM | 0.81 (0.63-1.04) at 10%, 0.88 at 1%; finish +5.4; 11661 teams, 17 slates |
+
 ## 5. Draft verdicts (not yet written to decision_register.csv)
 
 MONEY rests on the top-10% lift (the faster reader); the top-1% lift and finish are beside it in section 3 as the long-run and steadier checks. 33 cells tested; 14 show a lean or rule and 8 a rule. By chance alone about 13 would show a lean (40% of cells: 80%+ of resamples one side happens 40% of the time with nothing there) and about 2 a rule (90% range clear of 1.0 and the check slates agreeing, about 5%). So a lone lean is weak; a rule, or a lean that agrees with the points verdict, counts.
+A lean or rule counts only if it survives the price-split check (section 3b); MONEY below is the verdict that survives.
 
-| Decision | Status | POINTS | MONEY | Top-10% lift (80% range), all slates | Recommendation |
-|---|---|---|---|---|---|
-| am-t5-button-order | adopted | LEAN (both windows) | no lean | 1.01 (0.94-1.09) | keep on points; money not settled |
-| value-up-middle-t5 | adopted | LEAN (both windows) | RULE for | 1.18 (1.07-1.28) | keep: points and money agree |
-| pricey-flags | candidate | mixed / not enough | LEAN for | 1.07 (0.97-1.18) | watch: money leans for |
-| pm-t4-pricey-last-off | candidate (shadow) | not enough yet | no lean | 1.15 (0.80-1.45) | not enough on either side yet |
-| pm-questionable-back-two | adopted | LEAN (RULE numbers; check pending) | no lean | 0.98 (0.74-1.23) | keep on points; money not settled |
-| am-questionable-no-push | adopted | no variant beats it | no lean | 1.12 (0.87-1.43) | not enough on either side yet |
-| q-tag-pushes | candidate | not enough yet | no lean | 1.12 (0.91-1.37) | not enough on either side yet |
-| q-tag-raises | candidate | not enough yet | no lean | 1.10 (0.85-1.44) | not enough on either side yet |
-| q-class-x:SMASH | candidate | not enough yet | not enough | - | not enough on either side yet |
-| q-class-x:FAIR | candidate | not enough yet | no lean | 1.22 (0.64-2.68) | not enough on either side yet |
-| q-class-x:TRAP | candidate | not enough yet | no lean | 0.95 (0.81-1.13) | not enough on either side yet |
-| beneficiary-round6:sat | candidate | anecdote (8 players) | no lean | 0.96 (0.78-1.26) | not enough on either side yet |
-| beneficiary-round6:played | candidate | anecdote (8 players) | RULE for | 1.41 (1.21-1.71) | candidate: hand to the rankings side with its points cost |
-| pm-t5-beneficiary | adopted | LEAN (listed) | LEAN for | 1.21 (0.96-1.56) | keep: points and money agree |
-| ownership-tiebreak-t5 | paused (under contest test) | costs points | RULE for | 1.24 (1.13-1.36) | keep: the leverage pays (money RULE) |
-| leverage-t2-t4 | candidate | AM about free / PM costs | RULE for | 1.36 (1.14-1.83) | keep: the leverage pays (money RULE) |
-| pm-t2-adp-etr2 | adopted (provisional; best of 8) | LEAN (listed) | no lean | 1.18 (0.87-1.56) | keep on points; money not settled |
-| pm-t4-adp-etr2 | adopted (provisional; best of 8) | LEAN (listed) | no lean (deciles: LEAN against) | 0.86 (0.72-1.09) | keep on points; money not settled |
-| pm-t5-adp-value | adopted | RULE | LEAN against | 0.84 (0.72-0.98) | keep on points; money leans against (watch) |
-| one-tier-cap | adopted | LEAN (both windows) | LEAN against | 0.85 (0.67-1.11) | keep on points; money leans against (watch) |
-| pm-middle-takes | candidate | LEAN (single window) | no lean | 0.99 (0.80-1.20) | keep on points; money not settled |
-| pm-t2-other-reads | candidate | LEAN (single window) | no lean | 0.93 (0.76-1.13) | keep on points; money not settled |
-| am-t5-other-reads | candidate | LEAN against (single window) | RULE for | 1.28 (1.10-1.51) | keep: the leverage pays (money RULE) |
-| live-moves | candidate | not enough yet (3 nights) | not enough (saves after lock on 3 nights) | - | not enough on either side yet |
-| swap-shuffle | candidate | not enough yet (100 credited swaps of 229; 11 nights) | not enough (about 100 swaps; section 3f has the dollars) | - | not enough on either side yet |
-| swap-ownership-order | adopted as the swap board default (leverage); under contest test against spread | no points difference (small sample: 100 swaps, 9 nights) | not enough (about 100 swaps; section 3f has the dollars) | - | not enough on either side yet |
+| Decision | Status | POINTS | MONEY before the check | MONEY (survives the check) | Top-10% lift (80% range), all slates | Recommendation |
+|---|---|---|---|---|---|---|
+| am-t5-button-order | adopted | LEAN (both windows) | no lean | no lean | 1.01 (0.94-1.09) | keep on points; money not settled |
+| value-up-middle-t5 | adopted | LEAN (both windows) | RULE for | LEAN for | 1.18 (1.07-1.28) | keep: points and money agree |
+| pricey-flags | candidate | mixed / not enough | LEAN for | LEAN for | 1.07 (0.97-1.18) | watch: money leans for |
+| pm-t4-pricey-last-off | candidate (shadow) | not enough yet | no lean | no lean | 1.15 (0.80-1.45) | not enough on either side yet |
+| pm-questionable-back-two | adopted | LEAN (RULE numbers; check pending) | no lean | no lean | 0.98 (0.74-1.23) | keep on points; money not settled |
+| am-questionable-no-push | adopted | no variant beats it | no lean | no lean | 1.12 (0.87-1.43) | not enough on either side yet |
+| q-tag-pushes | candidate | not enough yet | no lean | no lean | 1.12 (0.91-1.37) | not enough on either side yet |
+| q-tag-raises | candidate | not enough yet | no lean | no lean | 1.10 (0.85-1.44) | not enough on either side yet |
+| q-class-x:SMASH | candidate | not enough yet | not enough | not enough | - | not enough on either side yet |
+| q-class-x:FAIR | candidate | not enough yet | no lean | no lean | 1.22 (0.64-2.68) | not enough on either side yet |
+| q-class-x:TRAP | candidate | not enough yet | no lean | no lean | 0.95 (0.81-1.13) | not enough on either side yet |
+| beneficiary-round6:sat | candidate | anecdote (8 players) | no lean | no lean | 0.96 (0.78-1.26) | not enough on either side yet |
+| beneficiary-round6:played | candidate | anecdote (8 players) | RULE for | RULE for | 1.41 (1.21-1.71) | candidate: hand to the rankings side with its points cost |
+| pm-t5-beneficiary | adopted | LEAN (listed) | LEAN for | no lean | 1.21 (0.96-1.56) | keep on points; money not settled |
+| ownership-tiebreak-t5 | paused (under contest test) | costs points | RULE for | RULE for | 1.24 (1.13-1.36) | keep: the leverage pays (money RULE) |
+| leverage-t2-t4 | candidate | AM about free / PM costs | RULE for | RULE for | 1.36 (1.14-1.83) | keep: the leverage pays (money RULE) |
+| pm-t2-adp-etr2 | adopted (provisional; best of 8) | LEAN (listed) | no lean | no lean | 1.18 (0.87-1.56) | keep on points; money not settled |
+| pm-t4-adp-etr2 | adopted (provisional; best of 8) | LEAN (listed) | no lean (deciles: LEAN against) | no lean | 0.86 (0.72-1.09) | keep on points; money not settled |
+| pm-t5-adp-value | adopted | RULE | LEAN against | LEAN against | 0.84 (0.72-0.98) | keep on points; money leans against (watch) |
+| one-tier-cap | adopted | LEAN (both windows) | LEAN against | LEAN against | 0.85 (0.67-1.11) | keep on points; money leans against (watch) |
+| pm-middle-takes | candidate | LEAN (single window) | no lean | no lean | 0.99 (0.80-1.20) | keep on points; money not settled |
+| pm-t2-other-reads | candidate | LEAN (single window) | no lean | no lean | 0.93 (0.76-1.13) | keep on points; money not settled |
+| am-t5-other-reads | candidate | LEAN against (single window) | RULE for | RULE for | 1.28 (1.10-1.51) | keep: the leverage pays (money RULE) |
+| live-moves | candidate | not enough yet (3 nights) | not enough (saves after lock on 3 nights) | not enough | - | not enough on either side yet |
+| swap-shuffle | candidate | not enough yet (100 credited swaps of 229; 11 nights) | not enough (about 100 swaps; section 3f has the dollars) | not enough | - | not enough on either side yet |
+| swap-ownership-order | adopted as the swap board default (leverage); under contest test against spread | no points difference (small sample: 100 swaps, 9 nights) | not enough (about 100 swaps; section 3f has the dollars) | not enough | - | not enough on either side yet |
 
 Verdicts that change on ten price groups: pm-t4-adp-etr2 (no lean on five, LEAN against on ten).
 
