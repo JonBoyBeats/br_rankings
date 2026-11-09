@@ -33,8 +33,9 @@ RULE_STEPS = {     # each tier's rule (index.html NBA_TIER_RULE_STEPS, nba_repor
     "am": {1: [("adp", 2), ("boom", 0)], 2: [("adp", 0)], 3: [("proj", 3), ("adp", 0)], 4: [("proj", 3), ("adp", 0)],
            5: [("proj", 3), ("adp", 0)]},
     "pm": {1: [("projx", 0)], 2: [("adp", 1), ("projx", 0)], 3: [("proj", 0), ("adp", 0), ("boom", 0)],
-           4: [("proj", 0), ("adp", 0), ("boom", 0)], 5: [("projx", 2), ("drafted", 10), ("projx", 0)]},
+           4: [("proj", 0), ("adp", 0), ("boom", 0)], 5: [("projx", 0)]},     # T5's ownership tiebreak paused 2026-11-09
 }
+PM_Q_PUSH = 2      # PM window: a Questionable player is ordered two tiers back (lean adopted 2026-11-09)
 FIELD_MODEL = os.path.join(HERE, "analysis", "nba", "contests", "field_model.json")
 MIRROR = None
 COLS = ["date", "slate", "pod", "window", "sample", "board", "player_id", "name", "team", "adp", "proj", "proj_src", "a_tier", "p_tier",
@@ -183,11 +184,12 @@ def build(rows, date, slate, window, meta):
         v = x["proj"]
         keyed.append({"row": x, "adp": -adp(next(r for r in pool if r["player_id"] == x["player_id"])),
                       "proj": float(int(v + 0.5)) if v is not None else None, "projx": v,
-                      "boom": boom.get(x["player_id"]), "drafted": -drafted[x["player_id"]] if x["player_id"] in drafted else None})
+                      "boom": boom.get(x["player_id"]), "drafted": -drafted[x["player_id"]] if x["player_id"] in drafted else None,
+                      "order_tier": min(5, x["tier"] + PM_Q_PUSH) if window == "pm" and re.match(r"^q", x["tag"], re.I) else x["tier"]})
     rank = 0
     for t in range(1, 6):
         for f in ("VALUE", "", "PRICEY"):
-            for k in rule_sort([k for k in keyed if k["row"]["tier"] == t and k["row"]["flag"] == f], RULE_STEPS[window][t]):
+            for k in rule_sort([k for k in keyed if k["order_tier"] == t and k["row"]["flag"] == f], RULE_STEPS[window][t]):
                 rank += 1
                 k["row"]["built"] = rank
     info = {"date": date, "window": window, "pod": pod, "adp_col": adp_col, "proj_src": src[1], "lines_a": la, "lines_p": lp,

@@ -3625,7 +3625,7 @@ var NBA_TIER_NOTES = [
   "Stars \u2013 ADP then ADP (1: ETR)",
   "Middle \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
   "Middle \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
-  "The Rest \u2013 Proj (3: ADP), AM: keep the button\u2019s order (lean, 11-09) \u2013 then ETR (2: less drafted)"
+  "The Rest \u2013 Proj (3: ADP), AM: keep the button\u2019s order \u2013 then ETR (ownership tiebreak paused 11-09)"
 ];
 
 /** Your saved tiers, read as five: a board saved with six keeps its first five lines (tiers 5 and 6 merge). */
@@ -3705,7 +3705,8 @@ function nbaTierEnd() { return state.cut != null ? state.cut : state.order.lengt
    A and P agreeing gives the tier. One apart: the ADP tier, flagged VALUE (P higher) or PRICEY (P lower).
    Two or more apart: one tier from ADP toward P, flag kept. In each tier VALUE goes first and PRICEY last,
    each group in the tier's rule for the window (NBA_TIER_NOTES; the same rules as TIER_RULES in
-   scripts/nba_report.py). Players tagged Q, D or GTD also get a class: TRAP (his P(play) x Proj tier is below
+   scripts/nba_report.py). In the PM window a Questionable player is ordered two tiers back (NBA_PM_Q_PUSH);
+   leans and rules in force are in analysis/nba/report/leans.json. Players tagged Q, D or GTD also get a class: TRAP (his P(play) x Proj tier is below
    his ADP tier), SMASH (healthy he's a tier above it and P(play) is 70%+), FAIR (healthy tier = ADP tier).
    The build is saved, rides with each lock, and every hand move after it is logged with it as a take. */
 var NBA_LADDER = {               // [lowest, highest, start] rank for each line, by pod size (24 picks: 2/3 of 36)
@@ -3718,8 +3719,9 @@ var NBA_SMASH_PLAY = 0.7;
 var NBA_TIER_RULE_STEPS = {      // [key, within]: higher first; within that much, the next key decides
   am: { 1: [["adp", 2], ["boom", 0]], 2: [["adp", 0]], 3: [["proj", 3], ["adp", 0]], 4: [["proj", 3], ["adp", 0]], 5: [["proj", 3], ["adp", 0]] },
   pm: { 1: [["projx", 0]], 2: [["adp", 1], ["projx", 0]], 3: [["proj", 0], ["adp", 0], ["boom", 0]],
-        4: [["proj", 0], ["adp", 0], ["boom", 0]], 5: [["projx", 2], ["drafted", 10], ["projx", 0]] }
+        4: [["proj", 0], ["adp", 0], ["boom", 0]], 5: [["projx", 0]] }    // T5's ownership tiebreak paused 2026-11-09
 };
+var NBA_PM_Q_PUSH = 2;           // PM window: a Questionable player is ordered two tiers back (lean adopted 2026-11-09)
 
 /** The four line ranks for a ladder: values in ladder order, gap = how far each step falls. T2-T4 keep at least
     minSize players (NBA_MIN_TIER) and T1 at least NBA_MIN_T1: when the biggest gap breaks that, the next-biggest that doesn't. */
@@ -3783,6 +3785,7 @@ function nbaBuildLadders() {
   pl.forEach(function (p) {
     var pid = p.player_id, a = aT[pid], t = pT[pid], d = a - t, c = Math.abs(d) >= 2 ? a - Math.sign(d) : a;
     var x = { a: a, p: t, c: c, flag: d > 0 ? "VALUE" : d < 0 ? "PRICEY" : "" };
+    if (src.window === "pm" && /^q/i.test(p.injury || "")) x.push = Math.min(NBA_TIERS, c + NBA_PM_Q_PUSH);
     if (/^(q|d|g)/i.test(p.injury || "")) {
       var sit = nbaSitFor(p), play = sit && typeof sit.p === "number" ? 1 - sit.p : null, v = projOf(p);
       x.inj = String(p.injury);
@@ -3798,7 +3801,7 @@ function nbaBuildLadders() {
   // order: combined tier, then VALUE / no flag / PRICEY, each by the tier's rule for the window
   var rows = pl.map(function (p) {
     var pid = p.player_id, v = projOf(p), r = sh.rows[pid];
-    return { pid: pid, c: out.players[pid].c, flag: out.players[pid].flag, adp: -adpOf(p),
+    return { pid: pid, c: out.players[pid].push || out.players[pid].c, flag: out.players[pid].flag, adp: -adpOf(p),
              proj: isFinite(v) ? Math.round(v) : null, projx: isFinite(v) ? v : null, boom: r && r.boom != null ? r.boom : null,
              drafted: hasAdp(p) && nbaDraftedPct(pid, fieldCtx) != null ? -nbaDraftedPct(pid, fieldCtx) : null };
   });
@@ -3868,6 +3871,13 @@ function tierInfoChip(p) {
     f.dataset.s = x.flag === "VALUE" ? "V" : "P";
     el.appendChild(f);
   }
+  if (x.push) {
+    var pu = document.createElement("b");
+    pu.className = "tq trap";
+    pu.textContent = "T" + x.push;
+    pu.dataset.s = "\u2193";
+    el.appendChild(pu);
+  }
   if (x.q) {
     var q = document.createElement("b");
     q.className = "tq " + x.q.toLowerCase();
@@ -3878,7 +3888,7 @@ function tierInfoChip(p) {
   el.title = "ADP tier " + x.a + ", " + (b.source === "etr" ? "ETR" : "our Proj") + " tier " + x.p + ", in tier " + x.c +
     (x.flag ? " (" + x.flag + ": the projection has him " + (x.flag === "VALUE" ? "higher" : "lower") + ")" : "") +
     (x.inj ? ". " + x.inj + (x.play != null ? ", " + Math.round(x.play * 100) + "% to play, expected tier " + x.et : "") +
-      (x.q ? ": " + x.q : "") : "") + ". Built " + new Date(b.at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      (x.q ? ": " + x.q : "") : "") + (x.push ? ". Questionable in the PM window: ordered in tier " + x.push + " (two back)" : "") + ". Built " + new Date(b.at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
   return el;
 }
 

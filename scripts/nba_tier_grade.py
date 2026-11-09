@@ -317,7 +317,27 @@ def main():
             "either side). So with %d testable cells, about %d leans would appear by chance alone; %d did. Treat any single "
             "lean as a candidate, and weigh the ones that repeat in both windows or across tiers." % (
                 len(AUDIT), len(tested), len(tested), round(0.4 * len(tested)), len(leans)), "",
-            "## The RULE bar, part by part", "", "| Cut | Tier | Test | Pairs | Label | Parts |", "|---|---|---|---|---|---|"]
+            "## Leans under the evidence policy (2026-11-09)", "",
+            "A lean is ADOPTED (used as a tiebreak) only if it holds in both windows (the same test, tier and side in the AM "
+            "primary sample and in PM), was listed as a candidate before testing, or hit the RULE numbers and waits on its "
+            "check; every other lean is a CANDIDATE, forward-tested only. Adopted leans are recorded in leans.json.", "",
+            "| Cut | Tier | Test | Pairs | Label | Policy |", "|---|---|---|---|---|---|"]
+    am_t, pm_t = CUTS[0][3], CUTS[2][3]
+    side = {}
+    for a in AUDIT:
+        if a[4].startswith(("LEAN", "RULE")):
+            side[(a[0], a[1], a[2])] = a[4].split()[1]
+    for a in AUDIT:
+        if not a[4].startswith(("LEAN", "RULE")):
+            continue
+        other = pm_t if a[0] == am_t else am_t if a[0] == pm_t else None
+        both = other and side.get((other, a[1], a[2])) == a[4].split()[1]
+        pending = "check pending" in a[4]
+        policy = "CONTEXT (secondary AM sample, not adopted on its own)" if "secondary" in a[0] else \
+            "ADOPTED (both windows)" if both else "ADOPTED (RULE numbers, check pending)" if pending else \
+            "RULE" if a[4].startswith("RULE") else "CANDIDATE"
+        out.append("| %s | %s | %s | %d | %s | %s |" % (a[0], a[1], a[2], a[3], a[4], policy))
+    out += ["", "## The RULE bar, part by part", "", "| Cut | Tier | Test | Pairs | Label | Parts |", "|---|---|---|---|---|---|"]
     out += ["| %s | %s | %s | %d | %s | %s |" % a for a in AUDIT if a[5]]
     open(OUT, "w").write("\n".join(out) + "\n")
     print("\n".join(out))

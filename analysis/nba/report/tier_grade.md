@@ -211,6 +211,43 @@ Written by scripts/nba_tier_grade.py from tier_history.csv. Decision pairs (same
 
 199 cells were graded (67 with 40+ pairs, so testable). The 80% LEAN bar means about 80% of resamples on one side, which a cell with no real effect clears about 40% of the time (|mean| at least 0.84 standard errors, either side). So with 67 testable cells, about 27 leans would appear by chance alone; 30 did. Treat any single lean as a candidate, and weigh the ones that repeat in both windows or across tiers.
 
+## Leans under the evidence policy (2026-11-09)
+
+A lean is ADOPTED (used as a tiebreak) only if it holds in both windows (the same test, tier and side in the AM primary sample and in PM), was listed as a candidate before testing, or hit the RULE numbers and waits on its check; every other lean is a CANDIDATE, forward-tested only. Adopted leans are recorded in leans.json.
+
+| Cut | Tier | Test | Pairs | Label | Policy |
+|---|---|---|---|---|---|
+| 6-drafter AM, primary (Lock AM on our Proj, 10-28 on) | T2 | your board vs Ours | 41 | LEAN + | CANDIDATE |
+| 6-drafter AM, primary (Lock AM on our Proj, 10-28 on) | T3/T4 (middle) | your board vs Ours | 67 | LEAN - | CANDIDATE |
+| 6-drafter AM, primary (Lock AM on our Proj, 10-28 on) | T5 | your board vs Ours | 100 | LEAN + | CANDIDATE |
+| 6-drafter AM, primary (Lock AM on our Proj, 10-28 on) | T5 | your board vs ADP | 364 | LEAN - (RULE numbers, check pending) | ADOPTED (both windows) |
+| 6-drafter AM, primary (Lock AM on our Proj, 10-28 on) | T3/T4 (middle) | VALUE flag | 167 | LEAN + | ADOPTED (both windows) |
+| 6-drafter AM, primary (Lock AM on our Proj, 10-28 on) | T4 | VALUE flag | 73 | LEAN + | ADOPTED (both windows) |
+| 6-drafter AM, primary (Lock AM on our Proj, 10-28 on) | T5 | VALUE flag | 341 | LEAN + (RULE numbers, check pending) | ADOPTED (both windows) |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T2 | your board vs Ours | 63 | LEAN + | CONTEXT (secondary AM sample, not adopted on its own) |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T3/T4 (middle) | your board vs Ours | 103 | LEAN + (RULE numbers, check pending) | CONTEXT (secondary AM sample, not adopted on its own) |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T3 | your board vs Ours | 41 | LEAN + | CONTEXT (secondary AM sample, not adopted on its own) |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T2 | PRICEY flag | 69 | LEAN - | CONTEXT (secondary AM sample, not adopted on its own) |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T3/T4 (middle) | VALUE flag | 122 | LEAN - (RULE numbers, check pending) | CONTEXT (secondary AM sample, not adopted on its own) |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T4 | VALUE flag | 47 | LEAN - | CONTEXT (secondary AM sample, not adopted on its own) |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | T5 | VALUE flag | 241 | LEAN + (RULE numbers, check pending) | CONTEXT (secondary AM sample, not adopted on its own) |
+| 6-drafter AM, secondary (10-21 to 10-27 on the raw morning file; 11-08 an afternoon board) | Across T4/T5 | VALUE flag | 92 | LEAN + | CONTEXT (secondary AM sample, not adopted on its own) |
+| 6-drafter PM | T2 | your board vs ADP | 106 | LEAN + | CANDIDATE |
+| 6-drafter PM | T3/T4 (middle) | your board vs ETR | 113 | LEAN + | CANDIDATE |
+| 6-drafter PM | T3/T4 (middle) | your board vs ADP | 243 | RULE + | RULE |
+| 6-drafter PM | T3 | your board vs ADP | 118 | RULE + | RULE |
+| 6-drafter PM | T5 | your board vs ADP | 728 | RULE - | ADOPTED (both windows) |
+| 6-drafter PM | T2 | PRICEY flag | 92 | LEAN + | CANDIDATE |
+| 6-drafter PM | T3/T4 (middle) | VALUE flag | 253 | LEAN + | ADOPTED (both windows) |
+| 6-drafter PM | T3 | VALUE flag | 90 | LEAN + | CANDIDATE |
+| 6-drafter PM | T3 | PRICEY flag | 101 | LEAN + | CANDIDATE |
+| 6-drafter PM | T4 | VALUE flag | 102 | LEAN + | ADOPTED (both windows) |
+| 6-drafter PM | T4 | PRICEY flag | 99 | LEAN - | CANDIDATE |
+| 6-drafter PM | T5 | VALUE flag | 512 | LEAN + | ADOPTED (both windows) |
+| 6-drafter PM | Across T2/T3 | PRICEY flag | 64 | LEAN - | CANDIDATE |
+| 4-drafter AM (small slates) | T3/T4 (middle) | PRICEY flag | 43 | LEAN + | CANDIDATE |
+| 4-drafter AM (small slates) | T5 | VALUE flag | 55 | LEAN + | CANDIDATE |
+
 ## The RULE bar, part by part
 
 | Cut | Tier | Test | Pairs | Label | Parts |

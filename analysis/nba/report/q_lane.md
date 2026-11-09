@@ -92,9 +92,9 @@ Decision pairs (ADP within 4) that include a tagged player and that the variant 
 | AM | Questionable | -1.1 (-3.6 to +2.0), 89 pairs, no lean | +0.8 (-1.9 to +4.1), 119 pairs, no lean | -3.2 (-8.5 to +2.6), 235 pairs, no lean |
 | AM | Doubtful | - | - | +10.7, not enough yet (27) |
 | AM | all tagged | -1.1 (-3.6 to +2.0), 89 pairs, no lean | +0.8 (-1.9 to +4.1), 119 pairs, no lean | -1.8 (-7.4 to +3.9), 262 pairs, no lean |
-| PM | Questionable | +0.8 (-1.9 to +4.4), 66 pairs, no lean | +4.9 (+2.1 to +8.4), 103 pairs, LEAN + (RULE numbers, check pending) | -0.7 (-4.8 to +3.8), 374 pairs, no lean |
+| PM | Questionable | -8.0, not enough yet (27) | +21.0, not enough yet (2) | -1.6 (-5.4 to +2.7), 364 pairs, no lean |
 | PM | Doubtful | - | - | - |
-| PM | all tagged | +0.8 (-1.9 to +4.4), 66 pairs, no lean | +4.9 (+2.1 to +8.4), 103 pairs, LEAN + (RULE numbers, check pending) | -0.7 (-4.8 to +3.8), 374 pairs, no lean |
+| PM | all tagged | -8.0, not enough yet (27) | +21.0, not enough yet (2) | -1.6 (-5.4 to +2.7), 364 pairs, no lean |
 
 ## e. Beneficiaries: undrafted or T5 players with a teammate tagged at the AM lock
 
@@ -109,10 +109,10 @@ Decision pairs (ADP within 4) that include a tagged player and that the variant 
 
 Each tier's average score (players who played, at the PM lock; T5 drafted only) against the average swap for players ruled out from that tier (credited swaps, weighted by teams). Priced up: at the PM lock every teammate projected for 20+ was already drafted inside ADP 30, so no cheap beneficiary was left for a swap; cheap: one was.
 
-| Tier (PM lock; AM if off the PM board) | Tier average | Out players | Swaps | Swap average (range by player) | Cost | Priced-up teammates: swaps, average | Cheap teammates: swaps, average |
+| Tier (PM lock; AM if off the PM board) | Tier average | Out players (the real sample) | Swaps | Swap average (range by player) | Cost | Priced-up teammates: swaps, average | Cheap teammates: swaps, average |
 |---|---|---|---|---|---|---|---|
-| T1 | 52.2 | 1 | 1214 | 38.5 (38.5 to 38.5) | -13.8 | - | 1214, 38.5 |
-| T2 | 41.3 | 4 | 5233 | 29.7 (0.0 to 37.4) | -11.6 | - | 5233, 29.7 |
+| T1 | 52.2 | 1 (anecdote: under 5 players) | 1214 | 38.5 (38.5 to 38.5) | -13.8 | - | 1214, 38.5 |
+| T2 | 41.3 | 4 (anecdote: under 5 players) | 5233 | 29.7 (0.0 to 37.4) | -11.6 | - | 5233, 29.7 |
 | T3 | 34.0 | 8 | 11913 | 35.1 (22.5 to 44.6) | +1.1 | - | 11913, 35.1 |
-| T4 | 33.8 | 4 | 3183 | 27.1 (22.1 to 37.6) | -6.7 | 848, 22.1 | 2335, 28.9 |
-| T5 | 26.0 | 1 | 21 | 42.4 (42.4 to 42.4) | +16.4 | - | 21, 42.4 |
+| T4 | 33.8 | 4 (anecdote: under 5 players) | 3183 | 27.1 (22.1 to 37.6) | -6.7 | 848, 22.1 | 2335, 28.9 |
+| T5 | 26.0 | 1 (anecdote: under 5 players) | 21 | 42.4 (42.4 to 42.4) | +16.4 | - | 21, 42.4 |

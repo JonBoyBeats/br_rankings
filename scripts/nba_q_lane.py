@@ -320,7 +320,7 @@ def main():
             "Each tier's average score (players who played, at the PM lock; T5 drafted only) against the average swap for "
             "players ruled out from that tier (credited swaps, weighted by teams). Priced up: at the PM lock every teammate "
             "projected for 20+ was already drafted inside ADP 30, so no cheap beneficiary was left for a swap; cheap: one was.", "",
-            "| Tier (PM lock; AM if off the PM board) | Tier average | Out players | Swaps | Swap average (range by player) | Cost | Priced-up teammates: swaps, average | Cheap teammates: swaps, average |",
+            "| Tier (PM lock; AM if off the PM board) | Tier average | Out players (the real sample) | Swaps | Swap average (range by player) | Cost | Priced-up teammates: swaps, average | Cheap teammates: swaps, average |",
             "|---|---|---|---|---|---|---|---|"]
     tavg = {}
     for t in "12345":
@@ -353,8 +353,8 @@ def main():
         up = [k for k in ks if priced_up(k[1], k[2])]
         cheap = [k for k in ks if k not in up]
         part = lambda kk: "%d, %.1f" % (sum(per_out[k][0] for k in kk), sum(per_out[k][1] for k in kk) / sum(per_out[k][0] for k in kk)) if kk else "-"
-        out.append("| T%s | %s | %d | %d | %.1f (%.1f to %.1f) | %s | %s | %s |" % (
-            t, "%.1f" % tavg[t] if tavg[t] else "-", len(ks), n, avg, min(avgs), max(avgs),
+        out.append("| T%s | %s | %d%s | %d | %.1f (%.1f to %.1f) | %s | %s | %s |" % (
+            t, "%.1f" % tavg[t] if tavg[t] else "-", len(ks), " (anecdote: under 5 players)" if len(ks) < 5 else "", n, avg, min(avgs), max(avgs),
             "%+.1f" % (avg - tavg[t]) if tavg[t] else "-", part(up), part(cheap)))
     open(OUT, "w").write("\n".join(out) + "\n")
     print("\n".join(out))

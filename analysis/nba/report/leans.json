@@ -1,18 +1,74 @@
 {
- "about": "Leans and rules in force, each under forward test. LEAN: 40+ decision pairs and 80%+ of slate resamples one way; used as a tiebreak or default in its tier and window. RULE: 80+ pairs, a 90% range clear of zero, the same direction in the check slates and a drop-one-player check; may reorder players. Each is dropped if it flips direction over the 14 nights after adoption.",
- "items": [
+ "about": "Leans and rules for the tiers, each under forward test. Evidence policy (2026-11-09): a LEAN (40+ decision pairs, 80%+ of slate resamples one way) is ADOPTED, used as a tiebreak or default, only if it holds in both windows, was listed as a candidate before testing, or hit the RULE numbers (80+ pairs, a 90% range clear of zero) and waits on its check (14 slates: 9 to choose on, 5 to check, plus the drop-one-player test); every other lean is a CANDIDATE, forward-tested only. At step 4 chance alone would give about 27 leans of the 67 testable cells; 30 appeared. Anything adopted is dropped if it flips direction over its 14 forward nights. Sources: analysis/nba/report/tier_grade.md, q_lane.md, scripts/nba_take_types.py.",
+ "adopted": [
   {
    "id": "am-t5-button-order",
-   "level": "LEAN",
-   "tier": 5,
-   "window": "am",
-   "pod": 6,
-   "statement": "In the AM window, the Tiers button's T5 order is the default; your moves off it are logged as takes and graded.",
-   "evidence": "Takes history (scripts/nba_tier_takes.py), AM primary sample 2026-10-28 to 2026-11-07, 7 nights: 285 decision pairs, you right 42%, -3.3 points per take, 80% range -4.8 to -1.6 (resampling slates).",
-   "adopted": "2026-11-09",
-   "forward_from": "2026-11-10",
-   "forward_nights": 14,
-   "drop_if": "the AM T5 takes' points per take turns positive over the 14 forward nights"
+   "tier": 5, "window": "am", "pod": 6,
+   "statement": "AM T5: the Tiers button's order is the default; your moves off it are logged as takes and graded.",
+   "evidence": "Holds against ADP in both windows: your board against ADP in T5, AM primary -3.1 per pair (364 pairs, LEAN with the RULE numbers, check pending), PM -2.4 (728 pairs, RULE). Takes against the button, AM primary: -3.3 per take (285 pairs, 80% range -4.8 to -1.6).",
+   "basis": "both windows",
+   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "drop_if": "AM T5 takes against the button turn positive over the 14 forward nights"
+  },
+  {
+   "id": "value-up-middle-t5",
+   "tier": "3, 4, 5", "window": "both", "pod": 6,
+   "statement": "VALUE-flagged players go first in their tier (the button already sorts them there) in the middle and T5, both windows.",
+   "evidence": "VALUE beat its pair partners: middle AM +2.5 (167 pairs), PM +2.7 (253); T4 AM +4.1 (73), PM +1.9 (102); T5 AM +4.5 (341, RULE numbers, check pending), PM +3.5 (512). Points per pair, swap rule.",
+   "basis": "both windows",
+   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "drop_if": "VALUE stops beating its partners in either window over the 14 forward nights"
+  },
+  {
+   "id": "pm-questionable-back-two",
+   "tier": "all", "window": "pm", "pod": 6,
+   "statement": "PM window: a Questionable player is ordered two tiers back (the button's NBA_PM_Q_PUSH; the chip shows the tier he's ordered in).",
+   "evidence": "Against the button's order on decision pairs involving him: +4.9 per pair (103 pairs, 80% range +2.1 to +8.4), RULE numbers, check pending. Back one tier +0.8 (66, no lean); ranking on X -0.7 (374, no lean).",
+   "basis": "RULE numbers, check pending",
+   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "drop_if": "it flips over the 14 forward nights, or fails the check on the last 5 slates once there are 14"
+  },
+  {
+   "id": "am-questionable-no-push",
+   "tier": "all", "window": "am", "pod": 6,
+   "statement": "AM window: no push for a Questionable player; keep the button's order (a scratch is swapped, and the swap scores about like a T3/T4 player).",
+   "evidence": "No variant beat the button: back one tier -1.1 (89 pairs), back two +0.8 (119), rank on X -1.8 (262); none a lean. Swaps average about 33 points (swap value S about right, +1.0).",
+   "basis": "no variant beats the default",
+   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "drop_if": "a push variant reaches a lean over the 14 forward nights"
+  },
+  {
+   "id": "pm-t5-beneficiary-picks",
+   "tier": 5, "window": "pm", "pod": 6,
+   "statement": "PM T5: keep making beneficiary picks (raising a player whose teammate is tagged or out).",
+   "evidence": "PM T5 takes by type: beneficiary picks +3.5 per take (96 pairs, 61% right, 80% range +0.1 to +6.8).",
+   "basis": "listed as a candidate before testing",
+   "adopted": "2026-11-09", "forward_from": "2026-11-10", "forward_nights": 14,
+   "drop_if": "beneficiary takes in PM T5 turn negative over the 14 forward nights"
   }
+ ],
+ "paused": [
+  {
+   "id": "ownership-tiebreak-t5",
+   "statement": "The ownership tiebreak in T5 draft rankings (less drafted first within about 2 points): the PM T5 rule's (2: less drafted), adopted 2026-11-04, and the same habit in AM.",
+   "evidence": "Costs points in both windows: AM T5 ownership-order takes -4.2 per take (112 pairs, 80% range -5.2 to -2.6), PM -6.6 (84 pairs, -9.4 to -2.3).",
+   "paused": "2026-11-09",
+   "status": "paused, under contest test: the contest side tests whether its leverage pays in money terms. Its use in swap ordering is decided by step 7's backtest."
+  }
+ ],
+ "rules": [
+  {"id": "pm-middle-board-vs-adp", "statement": "PM middle (T3/T4): your board beats ADP straight.", "evidence": "+2.7 per pair (243 pairs), RULE: 90% range clear, same side on the last 5 slates, drop one player holds. T3 alone +5.5 (118, RULE)."},
+  {"id": "pm-t5-board-vs-adp", "statement": "PM T5: ADP straight beats your board.", "evidence": "-2.4 per pair (728 pairs), RULE. Holds in AM too (-3.1, 364 pairs): the basis of am-t5-button-order."}
+ ],
+ "candidates": [
+  "AM primary T2: your board beats our Proj (+5.6, 41 pairs)",
+  "AM primary middle: our Proj beats your board (-1.5, 67 pairs)",
+  "AM primary T5: your board beats our Proj straight (+4.1, 100 pairs)",
+  "PM T2: your board beats ADP (+2.3, 106 pairs)",
+  "PM middle: your board beats ETR (+2.7, 113 pairs)",
+  "PM T2 PRICEY lags (+3.1, 92 pairs); PM T3 PRICEY lags (+5.8, 101); PM T4 PRICEY leads (-3.3, 99; not acted on alone); PM across T2/T3 PRICEY leads (-3.7, 64)",
+  "PM T3 VALUE (+6.6, 90 pairs, inside the adopted middle VALUE lean)",
+  "Small slates: AM middle PRICEY lags (+6.8, 43); AM T5 VALUE (+2.3, 55)",
+  "PM T2 other reads in your takes (+4.3, 51 pairs)"
  ]
 }

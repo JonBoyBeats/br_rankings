@@ -373,13 +373,13 @@ MIDDLE_PM = ("ETR (Tie: ADP -> Boom)", [("proj", 0), ("adp", 0), ("boom", 0)])
 TIER_RULES = {
     "am": {1: ("ADP (2: Boom)", [("adp", 2), ("boom", 0)]), 2: ("ADP", [("adp", 0)]), 3: MIDDLE_AM, 4: MIDDLE_AM, 5: MIDDLE_AM},
     "pm": {1: ("ETR", [("projx", 0)]), 2: ("ADP (1: ETR)", [("adp", 1), ("projx", 0)]), 3: MIDDLE_PM, 4: MIDDLE_PM,
-           5: ("ETR (2: less drafted)", [("projx", 2), ("drafted", 10), ("projx", 0)])},
+           5: ("ETR", [("projx", 0)])},      # the ownership tiebreak (2: less drafted, 2026-11-04) paused 2026-11-09
 }
 # The ownership tiebreak, adopted 2026-11-04 on the user's experience (the contest side's study, field_studies.md 2):
 # within 2 points of ETR and 4 picks of ADP, the one with the lower projected drafted% (10+ points apart, both at
 # least 2%) goes first. drafted: the board's projected drafted% for his closing-ADP rank (field_model.json).
 # A tier whose rule changed is graded only from that date (its earlier nights were under the old rule).
-RULE_SINCE = {("pm", 5): "2026-11-04"}
+RULE_SINCE = {("pm", 5): "2026-11-10"}
 FIELD_MODEL = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "contests", "field_model.json")
 
 
