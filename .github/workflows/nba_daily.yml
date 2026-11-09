@@ -79,6 +79,15 @@ jobs:
         run: |
           git -C ../br-adp-mirror fetch -q --unshallow || true
           python3 scripts/nba_field.py --mirror ../br-adp-mirror --out analysis/nba/report/field.md > /dev/null
+      # The tiers: the Tiers button rebuilt at every lock (tier_history.csv), every swap read from the contests (swaps.csv),
+      # and the shadow orders: each replaced rule and each candidate graded against the button (shadow.md)
+      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
+        name: Tiers
+        continue-on-error: true
+        run: |
+          python3 scripts/nba_tier_history.py --mirror ../br-adp-mirror > /dev/null
+          python3 scripts/nba_swaps.py > /dev/null
+          python3 scripts/nba_shadow.py > /dev/null
       # Today's Recent notes: last night into the ledger, a fresh note for everyone on today's
       # slates who has played since his last one, then the board's notes file
       - name: Recent notes
@@ -92,6 +101,6 @@ jobs:
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
           mkdir -p analysis/cbb/daily analysis/cbb/contests
-          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json
+          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/contests/tips.json
           git diff --cached --quiet || git commit -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           git pull --rebase -q origin main && git push

@@ -3624,7 +3624,7 @@ var NBA_TIER_NOTES = [
   "Elite \u2013 ADP (2: Boom) then ETR",
   "Stars \u2013 ADP then ADP (2: ETR)",
   "Middle \u2013 Proj (3: ADP) then ETR (Tie: ADP \u2192 Boom)",
-  "Middle \u2013 Proj (2: less drafted, 3: ADP) then ADP (2: ETR)",
+  "Middle \u2013 Proj (3: ADP) then ADP (2: ETR)",
   "The Rest \u2013 Proj (3: ADP), AM: keep the button\u2019s order \u2013 then ADP (ownership tiebreak paused)"
 ];
 
@@ -3717,10 +3717,10 @@ var NBA_MIN_TIER = { 6: 4, 4: 3 };   // T2-T4 on each ladder hold at least this 
 var NBA_MIN_T1 = 2;                  // T1, the elite, at least 2
 var NBA_SMASH_PLAY = 0.7;
 var NBA_TIER_RULE_STEPS = {      // [key, within]: higher first; within that much, the next key decides
-  // the switches step 6 adopted (2026-11-09, scripts/nba_tier_rules.py): AM T4 leverage (within 2 points the less drafted
-  // first), PM T2 and T4 ADP with ETR within 2 picks, PM T5 ADP (VALUE first, as everywhere)
+  // the switches step 6 adopted (2026-11-09, scripts/nba_tier_rules.py): PM T2 and T4 ADP with ETR within 2 picks
+  // (provisional, best of 8 candidates), PM T5 ADP (a full RULE; VALUE first, as everywhere)
   am: { 1: [["adp", 2], ["boom", 0]], 2: [["adp", 0]], 3: [["proj", 3], ["adp", 0]],
-        4: [["projx", 2], ["drafted", 0], ["proj", 3], ["adp", 0]], 5: [["proj", 3], ["adp", 0]] },
+        4: [["proj", 3], ["adp", 0]], 5: [["proj", 3], ["adp", 0]] },
   pm: { 1: [["projx", 0]], 2: [["adp", 2], ["projx", 0]], 3: [["proj", 0], ["adp", 0], ["boom", 0]],
         4: [["adp", 2], ["projx", 0]], 5: [["adp", 0]] }
 };

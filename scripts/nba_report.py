@@ -372,15 +372,15 @@ MIDDLE_AM = ("Proj (3: ADP)", [("proj", 3), ("adp", 0)])
 MIDDLE_PM = ("ETR (Tie: ADP -> Boom)", [("proj", 0), ("adp", 0), ("boom", 0)])
 TIER_RULES = {      # index.html NBA_TIER_RULE_STEPS; step 6's switches adopted 2026-11-09 (scripts/nba_tier_rules.py)
     "am": {1: ("ADP (2: Boom)", [("adp", 2), ("boom", 0)]), 2: ("ADP", [("adp", 0)]), 3: MIDDLE_AM,
-           4: ("Proj (2: less drafted, 3: ADP)", [("projx", 2), ("drafted", 0), ("proj", 3), ("adp", 0)]), 5: MIDDLE_AM},
+           4: MIDDLE_AM, 5: MIDDLE_AM},
     "pm": {1: ("ETR", [("projx", 0)]), 2: ("ADP (2: ETR)", [("adp", 2), ("projx", 0)]), 3: MIDDLE_PM,
            4: ("ADP (2: ETR)", [("adp", 2), ("projx", 0)]),
            5: ("ADP", [("adp", 0)])},      # the ownership tiebreak (2: less drafted, 2026-11-04) paused 2026-11-09
 }
-# The ownership tiebreak, adopted 2026-11-04 and paused 2026-11-09 in T5 (it cost points in both windows); in AM T4 a
-# leverage tiebreak (within 2 points, the less drafted first) is adopted instead. drafted: the board's projected drafted%
+# The ownership tiebreak, adopted 2026-11-04 and paused 2026-11-09 in T5 (it cost points in both windows). drafted: the board's projected drafted%
 # for his closing-ADP rank (field_model.json). A tier whose rule changed is graded only from that date.
-RULE_SINCE = {("pm", 5): "2026-11-10", ("pm", 2): "2026-11-10", ("pm", 4): "2026-11-10", ("am", 4): "2026-11-10"}
+# The AM T4 leverage tiebreak won step 6 (best of 8 candidates) but lost in PM T4: a candidate, not the rule.
+RULE_SINCE = {("pm", 5): "2026-11-10", ("pm", 2): "2026-11-10", ("pm", 4): "2026-11-10"}
 FIELD_MODEL = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "contests", "field_model.json")
 
 

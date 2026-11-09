@@ -67,30 +67,20 @@
    "drop_if": "beneficiary takes in PM T5 turn negative over the 14 forward nights"
   },
   {
-   "id": "am-t4-leverage-tiebreak",
-   "tier": 4,
-   "window": "am",
-   "pod": 6,
-   "statement": "AM T4: within 2 projected points the less drafted first, then the rule (Proj, 3: ADP).",
-   "evidence": "Step 6, against the button: +2.8 per pair (45 pairs, 80% range +0.5 to +6.9). In the AM middle as a whole the leverage tiebreak was about free (+1.0, 53 pairs, no lean). A Boom tiebreak also leaned + in AM T4 (+2.3, 46 pairs); leverage scored more per pair (+2.36 against +2.10) and is the switch.",
-   "basis": "listed as a candidate before testing",
-   "adopted": "2026-11-09",
-   "forward_from": "2026-11-10",
-   "forward_nights": 14,
-   "drop_if": "it loses to the plain rule over the 14 forward nights"
-  },
-  {
    "id": "pm-t2-adp-etr-2",
    "tier": 2,
    "window": "pm",
    "pod": 6,
    "statement": "PM T2: ADP, with ETR deciding within 2 picks (was within 1).",
    "evidence": "Step 6, against the old rule ADP (1: ETR): +3.9 per pair (57 pairs, 80% range +0.6 to +7.2).",
-   "basis": "listed as a candidate before testing",
+   "basis": "listed as a candidate before testing; chosen as the best of 8 candidates in its cell, so provisional",
    "adopted": "2026-11-09",
    "forward_from": "2026-11-10",
    "forward_nights": 14,
-   "drop_if": "it loses to ADP (1: ETR) over the 14 forward nights"
+   "drop_if": "it does not beat the rule it replaced on the same nights over the 14 forward nights (graded in shadow, analysis/nba/report/shadow.md)",
+   "candidates_compared": 8,
+   "provisional": true,
+   "shadow": "old rule: ADP (1: ETR)"
   },
   {
    "id": "pm-t4-adp-etr-2",
@@ -99,11 +89,14 @@
    "pod": 6,
    "statement": "PM T4: ADP, with ETR deciding within 2 picks (was ETR, ties to ADP then Boom). The first rule to split T4 from T3.",
    "evidence": "Step 6, against the old ETR rule: +3.1 per pair (57 pairs, 80% range +1.0 to +5.6); ADP straight +1.5 (108) and Projection with an ADP tiebreak +2.2 (93) leaned the same way. In PM T3 the ETR rule beat every alternative (ADP straight -6.7, 102 pairs). Open question: with the flags on, PM T4 scores -0.13 per pair; without them +1.21 (no flags beat flags +4.6, 40 pairs): the PRICEY flip again.",
-   "basis": "listed as a candidate before testing",
+   "basis": "listed as a candidate before testing; chosen as the best of 8 candidates in its cell, so provisional",
    "adopted": "2026-11-09",
    "forward_from": "2026-11-10",
    "forward_nights": 14,
-   "drop_if": "it loses to the ETR rule over the 14 forward nights"
+   "drop_if": "it does not beat the rule it replaced on the same nights over the 14 forward nights (graded in shadow, analysis/nba/report/shadow.md)",
+   "candidates_compared": 8,
+   "provisional": true,
+   "shadow": "old rule: ETR, ties to ADP then Boom"
   },
   {
    "id": "pm-t5-adp-value-up",
@@ -116,7 +109,9 @@
    "adopted": "2026-11-09",
    "forward_from": "2026-11-10",
    "forward_nights": 14,
-   "drop_if": "it flips over the 14 forward nights"
+   "drop_if": "it flips over the 14 forward nights",
+   "candidates_compared": 8,
+   "shadow": "old rule: ETR (2: less drafted), the paused ownership tiebreak"
   },
   {
    "id": "keep-one-tier-cap",
@@ -138,7 +133,8 @@
    "statement": "The ownership tiebreak in T5 draft rankings (less drafted first within about 2 points): the PM T5 rule's (2: less drafted), adopted 2026-11-04, and the same habit in AM.",
    "evidence": "Costs points in both windows: AM T5 ownership-order takes -4.2 per take (112 pairs, 80% range -5.2 to -2.6), PM -6.6 (84 pairs, -9.4 to -2.3).",
    "paused": "2026-11-09",
-   "status": "paused, under contest test: the contest side tests whether its leverage pays in money terms. Its use in swap ordering is decided by step 7's backtest."
+   "status": "paused, under contest test: the contest side tests whether its leverage pays in money terms. Its use in swap ordering is decided by step 7's backtest.",
+   "shadow": "graded in shadow nightly: the old PM T5 rule ETR (2: less drafted) against the current switch"
   }
  ],
  "rules": [
@@ -162,7 +158,9 @@
   "PM T2 PRICEY lags (+3.1, 92 pairs); PM T3 PRICEY lags (+5.8, 101); PM T4 PRICEY leads (-3.3, 99; not acted on alone); PM across T2/T3 PRICEY leads (-3.7, 64)",
   "PM T3 VALUE (+6.6, 90 pairs, inside the adopted middle VALUE lean)",
   "Small slates: AM middle PRICEY lags (+6.8, 43); AM T5 VALUE (+2.3, 55)",
-  "PM T2 other reads in your takes (+4.3, 51 pairs)"
+  "PM T2 other reads in your takes (+4.3, 51 pairs)",
+  "AM T4 leverage tiebreak (within 2 projected points, less drafted first): won step 6 as the best of 8 candidates (+2.8 per pair, 45 pairs) but the same tiebreak lost in PM T4 (-2.5, 64); reverted to Proj (3: ADP) on 2026-11-09, forward-tested only",
+  "PRICEY-last off in PM T4 (VALUE first kept): graded in shadow against the button (analysis/nba/report/shadow.md); in step 6 the rule with no flags beat the flags +4.6 (40 pairs)"
  ],
  "kept": [
   "AM T1 ADP (2: Boom), PM T1 ETR: T1 not enough yet (11 pairs at most against any alternative).",
