@@ -328,12 +328,12 @@
      "drafted": 0.3
     },
     {
-     "player": "Malik Monk",
+     "player": "Mo Bamba",
      "adp": 36.0,
      "drafted": 0.1
     },
     {
-     "player": "Mo Bamba",
+     "player": "Malik Monk",
      "adp": 36.0,
      "drafted": 0.1
     },
@@ -388,12 +388,12 @@
      "drafted": 0.1
     },
     {
-     "player": "Kobe Sanders",
+     "player": "Mike Conley",
      "adp": 36.0,
      "drafted": 0.1
     },
     {
-     "player": "Mike Conley",
+     "player": "Kobe Sanders",
      "adp": 36.0,
      "drafted": 0.1
     },
@@ -1887,12 +1887,12 @@
      "drafted": 1.1
     },
     {
-     "player": "Noah Clowney",
+     "player": "Mo Bamba",
      "adp": 36.0,
      "drafted": 0.5
     },
     {
-     "player": "Mo Bamba",
+     "player": "Noah Clowney",
      "adp": 36.0,
      "drafted": 0.5
     },
@@ -2671,12 +2671,12 @@
      "drafted": 2.8
     },
     {
-     "player": "Nikola Jovic",
+     "player": "Keegan Murray",
      "adp": 36.0,
      "drafted": 2.8
     },
     {
-     "player": "Keegan Murray",
+     "player": "Nikola Jovic",
      "adp": 36.0,
      "drafted": 2.8
     }
@@ -2693,8 +2693,8 @@
     "<10": 8
    },
    "value": {
-    "field_fpoe": -12.0,
-    "top1_fpoe": 26.2,
+    "field_fpoe": -11.9,
+    "top1_fpoe": 26.3,
     "field_breakers": 1.9,
     "top1_breakers": 3.33
    },
