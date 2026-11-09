@@ -1205,7 +1205,9 @@ def main():
     tj["candidates"] = parts["candidates"]
     json.dump(tj, open(os.path.join(REP, "money_tiers.json"), "w"), indent=1)
     if a.proposals or dt.datetime.now(PT).weekday() == 0:             # Mondays (Pacific): the weekly verdict proposals
-        json.dump(proposals(tj), open(os.path.join(REP, "money_proposals.json"), "w"), indent=1)
+        path = os.path.join(REP, "money_proposals.json")
+        prev = json.load(open(path)) if os.path.exists(path) else None      # last Monday's: the tracked splits' reads
+        json.dump(proposals(tj, prev), open(path, "w"), indent=1)
     print("\n".join(out))
 
 
@@ -1496,6 +1498,8 @@ def tiers_json(N, parts):
 # ---------------------------------------------------------------- Monday: the weekly verdict proposals
 # Approved 2026-11-09: these register rows are graded on a split from section 3c
 REGISTERED_SPLITS = {"card-same-position-teammates": "card-same-position-teammates:split"}
+# Retired 2026-11-09: computed in the report, never proposed
+RETIRED_SPLITS = {"card-same-position-teammates:rounds 1-3", "card-same-position-teammates:rounds 4-6", "card-different-position-teammates"}
 # Held 2026-11-09 for a week: their reads moved with the rankings side's rebuilt inputs (lock rules, note timing). From
 # `until` on they come back as proposals only if they read the same as `read` (the 11-09 published run) on stable inputs.
 HOLDS = {k: {"since": "2026-11-09", "until": "2026-11-16", "read": v} for k, v in (
@@ -1519,7 +1523,14 @@ def register_verdict(text, label):
     return m.group(0) if m else None
 
 
-def proposals(tj):
+def level(v):
+    """(strength, side) of a verdict: no lean and not enough are both level 0."""
+    v = v or ""
+    return (2 if v.startswith("RULE") else 1 if v.startswith("LEAN") else 0,
+            1 if v.endswith("for") else -1 if v.endswith("against") else 0)
+
+
+def proposals(tj, prev=None):
     """Each register row (or split) whose verdict this run reads differently: register id, current MONEY verdict, the
     proposed verdict, the read, the reason. A row the register holds back until it has N slates ("re-read at N") isn't
     proposed before then. Proposals only: the register changes when the user approves."""
@@ -1563,20 +1574,35 @@ def proposals(tj):
                     ", after the price-split check" if lift["after_price_check"] else "")
             out.append({"id": x["id"], "current_money": x["verdict"], "proposed": x["current"], "read": {"lift": lift, "mine": x["mine"]},
                         "reason": reason})
-    for x in tj.get("splits", []):          # new splits the user asked for: every one is proposed, with its read
-        if x["id"] in REGISTERED_SPLITS.values():
+    # splits: a new one appears once; after that it is tracked quietly and resurfaces only when it crosses a bar or moves a
+    # level (takes cells: only when they reach a LEAN or RULE). Retired splits are never proposed.
+    prev = prev or {}
+    last_seen = prev.get("tracked") or {y["id"]: y["proposed"] for y in prev.get("proposals", []) if y.get("reason", "").startswith("new split")}
+    tracked = {}
+    for x in tj.get("splits", []):
+        if x["id"] in REGISTERED_SPLITS.values() or x["id"] in RETIRED_SPLITS:
             continue
+        cur, last = x["current"], last_seen.get(x["id"])
+        tracked[x["id"]] = cur
+        if last is None:
+            why = "new split (%s): this run reads %s" % (x["decision"], cur)
+        elif level(cur) == level(last):
+            continue
+        elif x["id"].startswith("takes:") and level(cur)[0] == 0:
+            continue
+        else:
+            why = "tracked split moved (%s): %s last time, %s now" % (x["decision"], last, cur)
         lift = x["lift"]
-        out.append({"id": x["id"], "current_money": x["verdict"], "proposed": x["current"], "read": {"lift": lift, "mine": x["mine"]},
-                    "reason": "new split (%s): this run reads %s%s" % (x["decision"], x["current"],
-                              " (top-10%% lift %.2f%s on %d slates%s)" % (lift["lift10"], ", 80%% range %.2f-%.2f" % tuple(lift["range80"]) if lift["range80"] else "",
-                                                                         lift["slates"], ", after the price-split check" if lift["after_price_check"] else "") if lift else "")})
+        out.append({"id": x["id"], "current_money": x["verdict"], "proposed": cur, "read": {"lift": lift, "mine": x["mine"]},
+                    "reason": why + (" (top-10%% lift %.2f%s on %d slates%s)" % (
+                        lift["lift10"], ", 80%% range %.2f-%.2f" % tuple(lift["range80"]) if lift["range80"] else "",
+                        lift["slates"], ", after the price-split check" if lift["after_price_check"] else "") if lift else "")})
     return {"generated": tj["generated"], "night": tj["night"], "slates": len(tj["slates"]),
             "notes": "Weekly MONEY verdict proposals (scripts/nba_money.py, Mondays). Nothing here is in decision_register.csv "
                      "until the user approves it. Reads: money_report.md sections 3, 3b and 5. A change to the rankings side's "
                      "inputs (tier_history.csv: a rebuilt button) can move a read without the contests changing; check the "
                      "register's points side when that happens.",
-            "proposals": out, "held_not_proposed": held, "candidates": tj.get("candidates", [])}
+            "proposals": out, "held_not_proposed": held, "candidates": tj.get("candidates", []), "tracked": tracked}
 
 
 # ---------------------------------------------------------------- 2026-11-09: teammate splits and takes by source
