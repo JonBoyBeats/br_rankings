@@ -690,7 +690,7 @@ def swap_money(N):
     conc = collections.defaultdict(list)                                    # how -> share of a night's swaps on its top target
     for n in N:
         sw = n["swaps"]
-        if not sw or not sw["credited"]:
+        if not sw or not sw["credited"] or n["date"] in S.EXCLUDED:
             continue
         rows, tip, out = sw["rows"], sw["tip"], sw["out"]
         mine = [x for x in sw["credited"] if x["username"] == ME]
@@ -753,7 +753,8 @@ def swap_money(N):
                 conc[how].append(collections.Counter(picks_how[how]).most_common(1)[0][1] / len(picks_how[how]))
     out = ["### f. Swaps, replayed in money (my credited swaps)", "",
            "Each of my credited swaps against an alternative, the team's points moved by the difference and its place and payout "
-           "re-read off the contest's real scores. Positive: what really happened beat the alternative. Small sample; directional.", "",
+           "re-read off the contest's real scores. Positive: what really happened beat the alternative. Small sample; directional. "
+           "Nights left uncredited on purpose (%s) are out." % ", ".join(sorted(S.EXCLUDED)), "",
            "| My real swaps against | Nights | Swaps | Points a swap | Top-10% finishes | Dollars |", "|---|---|---|---|---|---|"]
     labels = {"saved": "my last saved board order's pick (is the app shuffle worth it?)",
               "low": "the swap board, near-ties least drafted first (leverage)", "high": "the swap board, near-ties most drafted first (spread)"}
@@ -1008,7 +1009,7 @@ def field_section(N, dates, bins):
     # swap luck
     def swapped(n, t):
         return {p for p, a in zip(t["paid_pid"], t["adps"]) if a is None and p} or any(a is None for a in t["adps"])
-    ev = evaluate(hold_cases(N, ("am", "pm"), swapped), dates, bins)
+    ev = evaluate(hold_cases([n for n in N if n["date"] not in S.EXCLUDED], ("am", "pm"), swapped), dates, bins)
     res[("swaps", "any")] = ev
     out += ["", "### Swaps in the field", "", "Teams with a swap against same-price teams without (each priced at what it paid): %s." % cell(ev["field"]["all"]), ""]
     # high-volume users
@@ -1170,6 +1171,8 @@ def report(N, mirror):
     field_out, field = field_section(N, dates, "bin5")
     chk_out, survived = check_section(reg, turns, field, dates)
     out += reg_out + chk_out + sw_out
+    r6_out, _ = round6_section(N, dates)
+    out += r6_out
     out += field_out[:2] + turn_out + field_out[2:] + swap_split_section(N, dates)
     out += verdict_section(reg, sw, survived)
     return out
@@ -1278,6 +1281,48 @@ def check_section(reg, turns, field, dates):
     return out + [""], survived
 
 
+def round6_section(N, dates):
+    """The knowable round-6 rule: AM teams with a round-6 pick whose teammate was tagged (Questionable, Doubtful, GTD) at
+    Lock AM, whether he then played or sat, against same-price AM teams without one; split by how high the tagged teammate
+    was being drafted (his Lock AM ADP round; his best if several). Then the price-split check on each."""
+    def has(lo, hi):
+        def f(n, t):
+            last = 5 * t["contest"]["pod_size"]
+            rows = n["tiers"]["am"]
+            out = set()
+            for p, a in zip(t["paid_pid"], t["paid"]):
+                me = rows.get(p) if p else None
+                if not me or a is None or a <= last:
+                    continue
+                mates = [num(r["adp"]) for r in rows.values() if r["team"] == me["team"] and r["player_id"] != p and r["tag"] in QRE]
+                mates = [x if x is not None else 6 * t["contest"]["pod_size"] for x in mates]
+                if mates:
+                    rd = min(6, max(1, math.ceil(min(mates) / t["contest"]["pod_size"])))
+                    if lo <= rd <= hi:
+                        out.add(p)
+            return out
+        return f
+    out = ["### The knowable round-6 rule", "",
+           "AM teams with a round-6 pick whose teammate was tagged at Lock AM (played or sat: not known at the draft), against "
+           "same-price AM teams without one, by the round the tagged teammate was being drafted in. Then the price-split check: "
+           "the round-6 pick's own points over price against the other picks, and the lift re-matched on the other picks' price.", "",
+           "| Tagged teammate drafted in | Lift at 10% (80% range), at 1%; finish; teams, slates | Gap over price (A-B) | From the round-6 pick | From the other picks | Lift matched on the other picks' price | Verdict that survives |",
+           "|---|---|---|---|---|---|---|"]
+    res = {}
+    for label, lo, hi in (("any round", 1, 6), ("rounds 1-2", 1, 2), ("rounds 3-4", 3, 4), ("rounds 5-6 or undrafted", 5, 6)):
+        cs = hold_cases(N, ("am",), has(lo, hi))
+        ev = evaluate(cs, dates)
+        r = price_check(cs, dates)
+        res[label] = (ev, r)
+        if not r:
+            out.append("| %s | %s | - | - | - | - | %s |" % (label, cell(ev["field"]["all"]), verdict(ev)[0]))
+            continue
+        share = lambda x: "%+.1f (%.0f%%)" % (x, 100 * x / r["gap"]) if abs(r["gap"]) >= 0.5 else "%+.1f" % x
+        out.append("| %s | %s | %+.1f | %s | %s | %s | %s |" % (label, cell(ev["field"]["all"]), r["gap"], share(r["dec"]), share(r["oth"]),
+                                                             cell(r["ev"]["field"]["all"]), r["verdict"]))
+    return out + [""], res
+
+
 def swap_split_section(N, dates):
     """Teams with a swap against same-price teams without, by the ruled-out player's tier at the team's window."""
     def has(group, window=None):
@@ -1294,12 +1339,14 @@ def swap_split_section(N, dates):
             return {r["player_id"] for r in ok}
         return f
     out = ["### Swaps by the ruled-out player's tier (at the team's draft window)", "",
-           "Teams with such a swap against same-price teams with no swap. A swapped team is priced at what it paid.", "",
+           "Teams with such a swap against same-price teams with no swap. A swapped team is priced at what it paid. Nights "
+           "nba_swaps.py leaves uncredited on purpose are out of every swap test (%s)." % ", ".join(sorted(S.EXCLUDED)), "",
            "| Ruled-out player | Window | Lift at 10% (80% range), at 1%; finish; teams, slates |", "|---|---|---|"]
     for group in ("T1-T2", "T3-T5", "not credited"):
         for w in (None, "am", "pm"):
             f = has(group, w)
-            cs = [c for c in hold_cases(N, ("am", "pm"), f) if c[3] == "A" or not any(a is None for a in c[4]["adps"])]
+            cs = [c for c in hold_cases([n for n in N if n["date"] not in S.EXCLUDED], ("am", "pm"), f)
+                  if c[3] == "A" or not any(a is None for a in c[4]["adps"])]
             out.append("| %s | %s | %s |" % (group, w.upper() if w else "both", cell(evaluate(cs, dates)["field"]["all"])))
     return out + [""]
 
