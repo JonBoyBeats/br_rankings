@@ -233,10 +233,11 @@ function load(key, fallback) { try { var v = localStorage.getItem(key); return v
 function save(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} }
 /** The ADP from which this slate's rows sort by points: yours if set, else the last pick. */
 /* ---- The field: every lineup in the slate's biggest contest. Underdog's leaderboard is public once the contest
-   locks, but its swaps (a player ruled out goes to the drafter's best undrafted one) happen at the first tip, so
-   this waits until FIELD_AFTER minutes past the slate's first game, then reads every team once, 50 a page and a
-   few pages at a time, and keeps them on this device. A player swapped off every team reads 0 drafted. */
-var FIELD_AFTER = 15;   // minutes after the first tip
+   locks, but its swaps (a player ruled out goes to the drafter's best undrafted one) happen at the first tip, and
+   again at a later game's tip for a player ruled out after lock (Sabonis, Nov 8), so this reads every team
+   FIELD_AFTER minutes past each tip time on the slate, 50 a page and a few pages at a time, and keeps the latest
+   read on this device. A player swapped off every team reads 0 drafted. */
+var FIELD_AFTER = 15;   // minutes after each tip
 var FEE = load("brr:live:fee", 5);                 // one entry's cost in the biggest contest (the Entry $ box)
 var ME = load("brr:live:me", "jonboybeats");   // whose lineups My lineups shows: the Username box, kept on this device
 var UD = "https://api.underdogfantasy.com/v1/draft_pools/";
@@ -248,20 +249,31 @@ function flagship(s) {
     .sort(function (a, b) { return (b.entry_count || 0) - (a.entry_count || 0); })[0] || null;
 }
 
-/** When the field can be read: FIELD_AFTER minutes past the slate's first tip (ESPN's start times), or past its
-    lock plus the usual 8 minutes to the tip when the games aren't in yet. */
-function fieldReadyAt(s) {
-  var tips = Object.keys(state.games).map(function (t) { return new Date(state.games[t].date).getTime(); }).filter(isFinite);
-  var first = tips.length ? Math.min.apply(null, tips) : new Date(s.cutoff).getTime() + 8 * 60e3;
-  return first + FIELD_AFTER * 60e3;
+/** When the field is read: FIELD_AFTER minutes past each tip time of the slate's games (ESPN's start times), or past
+    its lock plus the usual 8 minutes to the tip when the games aren't in yet. Sorted, earliest first. */
+function fieldSweeps(s) {
+  var teams = {};
+  (s.players || []).forEach(function (p) { if (p.team) teams[p.team] = 1; });
+  var tips = {};
+  Object.keys(state.games).forEach(function (t) {
+    var at = new Date(state.games[t].date).getTime();
+    if (teams[t] && isFinite(at)) tips[at] = 1;
+  });
+  var ts = Object.keys(tips).map(Number);
+  if (!ts.length) ts = [new Date(s.cutoff).getTime() + 8 * 60e3];
+  return ts.map(function (t) { return t + FIELD_AFTER * 60e3; }).sort(function (a, b) { return a - b; });
 }
 
 async function loadField(s) {
-  var c = flagship(s), ready = fieldReadyAt(s);
-  if (!c || state.field[s.slate_id] || state.fieldBusy[c.id]) return;
-  if (Date.now() < ready) { state.fieldWait = ready; return; }
+  var c = flagship(s), sweeps = fieldSweeps(s), now = Date.now();
+  var due = sweeps.filter(function (t) { return t <= now; }).pop();      // the latest sweep that has come round
+  state.fieldNext = sweeps.filter(function (t) { return t > now; })[0] || null;
+  if (!c || state.fieldBusy[c.id]) return;
+  if (due == null) { state.fieldWait = sweeps[0]; return; }
+  var have = state.field[s.slate_id];
+  if (have && new Date(have.at).getTime() >= due) return;
   var kept = load("brr:live:field:" + c.id, null);
-  if (kept && kept.payout && new Date(kept.at).getTime() >= ready) { state.field[s.slate_id] = kept; render(); return; }
+  if (kept && kept.payout && new Date(kept.at).getTime() >= due) { state.field[s.slate_id] = kept; render(); return; }
   state.fieldBusy[c.id] = true;
   try {
     var get = function (page) {
@@ -292,7 +304,7 @@ async function loadField(s) {
     });
     var n = Object.keys(pods).length, pct = {};
     Object.keys(inPod).forEach(function (a) { pct[a] = Object.keys(inPod[a]).length / n; });
-    var f = { contest: c.id, title: (c.title || "").trim(), entries: entries.length, pods: n, at: new Date().toISOString(),
+    var f = { contest: c.id, title: (c.title || "").trim(), entries: entries.length, pods: n, at: new Date(now).toISOString(),
               pct: pct, apps: apps, teams: teams, users: users, payout: payout };
     state.field[s.slate_id] = f;
     // one field kept at a time: a night's lineups are a few hundred KB
@@ -433,7 +445,7 @@ function slateEvents() {
 /** One pull: the day's scoreboard, then a box score for every game under way or newly final. */
 async function pull() {
   if (!state.slate || state.busy) return;
-  loadField(state.slate);                 // once its contest has locked; a no-op after that
+  loadField(state.slate);                 // 15 minutes after each tip, once its swaps are in; a no-op between
   state.busy = true;
   try {
     var day = espnDate(state.slate.cutoff), sport = sportOf(state.slate);
@@ -916,7 +928,9 @@ function render() {
   var legend = state.pulledAt ? (live ? " · refreshes every " + EVERY + "s while open" : "") +
     " · dark green: his round's leader so far (players yet to start count at their usual" +
     (state.projFrom ? ", ETR's median from today's file" : "") + "); light green: ahead of his round's usual and close behind, within " + CLOSE + " points at the final horn (5 at the half)" : "";
-  if (fld) msg += " · field: " + fld.title + ", " + fld.entries.toLocaleString() + " teams" + (state.draftedOnly ? ", drafted players only" : "");
+  var hm = { hour: "numeric", minute: "2-digit" };
+  if (fld) msg += " · field: " + fld.title + ", " + fld.entries.toLocaleString() + " teams" + (state.draftedOnly ? ", drafted players only" : "") +
+    " (read " + pt(new Date(fld.at), hm) + (state.fieldNext ? ", again at " + pt(new Date(state.fieldNext), hm) + " after that tip's swaps" : "") + ")";
   else if (state.fieldError) msg += " · couldn't read the field (" + state.fieldError + ")";
   else if (state.fieldWait && Date.now() < state.fieldWait) msg += " · the field comes in at " + pt(new Date(state.fieldWait), { hour: "numeric", minute: "2-digit" }) + " PT, after the swaps";
   if (state.missed && !state.error) msg += " · " + state.missed + " game" + (state.missed > 1 ? "s" : "") + " didn't update this time, showing the last score";
