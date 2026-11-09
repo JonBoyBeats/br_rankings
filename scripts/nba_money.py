@@ -6,7 +6,7 @@ price baseline. Writes analysis/nba/report/money.md and the MONEY column of deci
 
 Definitions
   draft window  each team's draft time is the hourly ADP snapshot nearest the ADPs its picks were taken at
-                (nba_contests.draft_times; kept in analysis/nba/contests/windows/<date>.json); AM or PM by the nearer of
+                (nba_contests.draft_times; kept in analysis/nba/contests/windows/<date>.json.gz); AM or PM by the nearer of
                 that night's Lock AM and Lock PM (nba_field.window). Teams with fewer than 4 priced picks get no window.
   holding       a team holds a player if he is among its picks, or if he was ruled out and one of its swapped-in picks
                 is credited to him (nba_swaps.night): a scratch is scored through his swap, never as 0
@@ -59,9 +59,9 @@ def num(v):
 # ---------------------------------------------------------------- loading
 def windows(date, contests, teams, mirror):
     """{(contest id, draft id, username): draft time ISO} for every team that night, cached."""
-    path = os.path.join(WINDOWS, "%s.json" % date)
+    path = os.path.join(WINDOWS, "%s.json.gz" % date)
     if os.path.exists(path):
-        return json.load(open(path))
+        return json.load(gzip.open(path, "rt"))
     if not mirror:
         return {}
     m = D.Mirror(mirror)
@@ -77,7 +77,7 @@ def windows(date, contests, teams, mirror):
                 out["|".join((c["contest_id"], t["draft_id"], t["username"]))] = times[id(t)].isoformat()
     os.makedirs(WINDOWS, exist_ok=True)
     if out:
-        json.dump(out, open(path, "w"), sort_keys=True)
+        json.dump(out, gzip.open(path, "wt"), sort_keys=True)
     return out
 
 
@@ -370,12 +370,24 @@ def q_class(cls, tiers):
     return holds_where(lambda r: r["q_class"] == cls and int(r["tier"]) in tiers)
 
 
-def pricey_ahead(a, b):
-    """PRICEY-last off: the PRICEY player of a PRICEY/unflagged pair, where he outprojects the other."""
-    if (a["flag"] == "PRICEY") == (b["flag"] == "PRICEY") or (a["flag"] and b["flag"]):
-        return None
-    f, o = (a, b) if a["flag"] == "PRICEY" else (b, a)
-    return f if None not in (num(f["proj"]), num(o["proj"])) and num(f["proj"]) > num(o["proj"]) else None
+def candidate_pick(window, tier, steps, flags):
+    """A shadow candidate against the button (nba_shadow.py): where the candidate's order (the tier's rule steps unless
+    given, with its own flag groups) and the button's built rank disagree on a pair, the candidate's first."""
+    import nba_shadow as SH, nba_tier_rules as TR, nba_tier_history as T
+    cache = {}
+    def pick(a, b):
+        k = a["date"]
+        if "H" not in cache:
+            cache["H"] = TR.G.load()
+        if k not in cache:
+            rs = [r for r in cache["H"] if r["date"] == k and r["window"] == window and r["tier"] == str(tier) and r["built"]]
+            cache[k] = SH.alt_order(TR.items(rs, window), steps or T.RULE_STEPS[window][tier], flags)
+        alt = cache[k]
+        if a["player_id"] not in alt or b["player_id"] not in alt or not a["built"] or not b["built"]:
+            return None
+        nb, na = int(a["built"]) < int(b["built"]), alt[a["player_id"]] < alt[b["player_id"]]
+        return None if nb == na else (a if na else b)
+    return pick
 
 
 # (register id, label, builder -> cases). A is always the side the decision says to take.
@@ -388,8 +400,8 @@ DECISIONS = [
      lambda N: pair_cases(N, ("am", "pm"), {3, 4, 5}, flag_vs_plain("VALUE", True))),
     ("pricey-flags", "An unflagged player over a PRICEY one (T1-T5)",
      lambda N: pair_cases(N, ("am", "pm"), {1, 2, 3, 4, 5}, flag_vs_plain("PRICEY", False))),
-    ("pm-t4-pricey-last-off", "PM T4: PRICEY over an unflagged player he outprojects (the candidate)",
-     lambda N: pair_cases(N, ("pm",), {4}, pricey_ahead)),
+    ("pm-t4-pricey-last-off", "PM T4: the candidate (PRICEY-last off, VALUE first kept) where it differs from the button",
+     lambda N: pair_cases(N, ("pm",), {4}, candidate_pick("pm", 4, None, "value"))),
     ("am-t5-button-order", "AM T5: the button's first of the pair",
      lambda N: pair_cases(N, ("am",), {5}, order_vs(built, lambda r: -built(r) if built(r) is not None else None))),
     ("pm-t2-adp-etr2", "PM T2: the switch ADP (2: ETR) over the old ADP (1: ETR)",
@@ -460,7 +472,7 @@ def verdict(ev):
 
 def cell(s):
     if not s:
-        return "-"
+        return "none"
     r = " (%.2f-%.2f)" % s["r80"] if "r80" in s else ""
     g = lambda x: "%.2f" % s["lift"][x] if s["lift"][x] is not None else "-"
     return "%s%s at 10%%, %s at 1%%; finish %+.1f; %d teams, %d slates" % (g(10), r, g(1), s["fin"], s["n"], s["slates"])
@@ -548,3 +560,601 @@ def baseline_section(N):
             "it (ADP lags news, so players taken past their displayed ADP carry what the price misses). That is why every test "
             "compares teams inside one price group, and runs again on ten groups.", ""]
     return out
+
+
+# ---------------------------------------------------------------- step 2: my results
+def boot_range(nights, fn, level=0.8):
+    if len(nights) < 3:
+        return None
+    rnd = random.Random(13)
+    vals = sorted(v for v in (fn([rnd.choice(nights) for _ in nights]) for _ in range(RESAMPLES)) if v is not None)
+    lo = int(len(vals) * (1 - level) / 2)
+    return (vals[lo], vals[-1 - lo]) if vals else None
+
+
+def scoreboard(N):
+    mine = []                                             # (date, contest, team)
+    for n in N:
+        for c in n["contests"]:
+            for t in n["teams"][c["contest_id"]]:
+                if t["mine"]:
+                    mine.append((n["date"], c, t))
+    def tails(ts):
+        return {x: sum(t["top"][x] for t in ts) / len(ts) / (x / 100) for x in (1, 5, 10, 20)} if ts else None
+    def money(rows):
+        fees = sum(c["fee"] for _, c, _ in rows)
+        won = sum(t["payout"] for _, _, t in rows)
+        return fees, won
+    out = ["## 2. My results", "",
+           "Tail ratio: my share of teams in the top X% over X (1.00 = the field's rate). Finish: average finish percentile (lower "
+           "is better; 50 = the field). Ranges 80%, resampling nights. AM and PM by each team's draft window.", "",
+           "| Contest | Drafters | Nights | Teams | Top 1% | Top 5% | Top 10% | Top 20% | Finish | AM top 10% (teams) | PM top 10% (teams) | Fees | Won | ROI |",
+           "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    groups = collections.defaultdict(list)
+    for d, c, t in mine:
+        groups[(c["title"].strip(), c["pod_size"])].append((d, c, t))
+    def line(name, pod, rows, ranges=False):
+        ts = [t for _, _, t in rows]
+        tl = tails(ts)
+        am, pm = [t for t in ts if t["window"] == "am"], [t for t in ts if t["window"] == "pm"]
+        fees, won = money(rows)
+        ds = sorted({d for d, _, _ in rows})
+        rng = ""
+        if ranges:
+            r = boot_range(ds, lambda dd: (lambda ts: tails(ts)[10] if ts else None)([t for d in dd for x, _, t in rows if x == d]))
+            rng = " (%.2f-%.2f)" % r if r else ""
+        return "| %s | %s | %d | %d | %.2f | %.2f | %.2f%s | %.2f | %.1f | %s (%d) | %s (%d) | $%.0f | $%.0f | %+.0f%% |" % (
+            name, pod, len(ds), len(ts), tl[1], tl[5], tl[10], rng, tl[20], 100 * st.mean(t["fin"] for t in ts),
+            "%.2f" % tails(am)[10] if am else "-", len(am), "%.2f" % tails(pm)[10] if pm else "-", len(pm), fees, won,
+            100 * (won - fees) / fees if fees else 0)
+    for (name, pod), rows in sorted(groups.items(), key=lambda kv: (-kv[0][1], -len(kv[1]))):
+        out.append(line(name, pod, rows))
+    for pod in (6, 4):
+        rows = [x for x in mine if x[1]["pod_size"] == pod]
+        if rows:
+            out.append(line("**all %d-drafter**" % pod, pod, rows, True))
+    out.append(line("**all**", "-", mine, True))
+    # money concentration
+    by_night = collections.defaultdict(lambda: [0.0, 0.0])
+    for d, c, t in mine:
+        by_night[d][0] += c["fee"]
+        by_night[d][1] += t["payout"]
+    fees, won = money(mine)
+    best = max(by_night, key=lambda d: by_night[d][1] - by_night[d][0])
+    bf, bw = by_night[best]
+    ds = sorted(by_night)
+    r = boot_range(ds, lambda dd: (sum(by_night[d][1] for d in dd) - sum(by_night[d][0] for d in dd)) / sum(by_night[d][0] for d in dd))
+    out += ["", "Dollars: $%.0f in fees, $%.0f won, %+.0f%% ROI over %d nights (80%% range %+.0f%% to %+.0f%%, resampling nights). "
+            "Without the best night (%s, $%.0f won on $%.0f) it is %+.0f%%: the money so far rests on one top finish, so the tail "
+            "ratios above are the faster reader." % (fees, won, 100 * (won - fees) / fees, len(ds), 100 * r[0], 100 * r[1], best, bw, bf,
+                                                    100 * ((won - bw) - (fees - bf)) / (fees - bf)), ""]
+    # concentration and uniqueness, by night
+    out += ["**Concentration and uniqueness**: per night, across all my teams. Top player: my most-used player and the share of my "
+            "teams with him; top pair likewise; cores: a team's three earliest picks, how many of my teams share the most-used one. "
+            "Uniqueness (flagship, from the contest measures): the median share of the field holding 4+ of a team's 6, and my "
+            "teams with an exact duplicate in the field.", "",
+            "| Night | My teams | Top player | Top pair | Biggest shared core | Field share with 4+ of 6 (median) | Teams with a duplicate |",
+            "|---|---|---|---|---|---|---|"]
+    names = {}
+    for n in N:
+        names.update({p: r["name"] for p, r in n["rec"].items()})
+    for n in N:
+        ts = [t for d, _, t in mine if d == n["date"]]
+        if not ts:
+            continue
+        pc = collections.Counter(p for t in ts for p in set(t["holds"]))
+        pr = collections.Counter(tuple(sorted(x)) for t in ts for x in __import__("itertools").combinations(sorted(set(t["picks"])), 2))
+        cores = collections.Counter(tuple(sorted(p for p, a in sorted(zip(t["picks"], t["paid"]), key=lambda x: x[1])[:3])) for t in ts)
+        u = None
+        mp = os.path.join(NBA, "contests", "%s_measures.json" % n["date"])
+        if os.path.exists(mp):
+            for c in json.load(open(mp))["contests"]:
+                if c.get("uniqueness"):
+                    u = c["uniqueness"]
+                    break
+        (p1, k1), (pp, k2), (cc, k3) = pc.most_common(1)[0], pr.most_common(1)[0], cores.most_common(1)[0]
+        out.append("| %s | %d | %s %.0f%% | %s %.0f%% | %d (%s) | %s | %s |" % (
+            n["date"], len(ts), names.get(p1, p1), 100 * k1 / len(ts), " + ".join(names.get(x, x) for x in pp), 100 * k2 / len(ts),
+            k3, " + ".join(names.get(x, x) for x in cc), "%.1f%%" % u["share4_median"] if u else "-",
+            "%d of %d" % (u["teams_with_dupes"], u["teams"]) if u else "-"))
+    return out + [""]
+
+
+# ---------------------------------------------------------------- step 3f: my swaps, replayed for money
+def place_and_pay(c, team, points):
+    """The place and payout `team` would have had with `points`, against the contest's other real scores (ties ignored)."""
+    if "points_asc" not in c:
+        c["points_asc"] = sorted(c["points_sorted"])
+    ahead = len(c["points_asc"]) - bisect.bisect_right(c["points_asc"], points) - (1 if team["points"] > points else 0)
+    i = bisect.bisect_left(c["pay_places"], ahead + 1)
+    return ahead + 1, c["pay_amounts"][i] if i < len(c["pay_amounts"]) else 0.0
+
+
+def swap_money(N):
+    """Each of my credited swaps against three alternatives: my last saved board order's pick (the app shuffle's cost),
+    and the swap board's pick with near-ties least drafted first (leverage) or most drafted first (spread). The team's
+    points move by the difference; its place and payout are re-read off the contest's real scores."""
+    import nba_swap_board as W
+    res = collections.defaultdict(lambda: collections.defaultdict(list))   # alternative -> date -> [(dpoints, dtop10, ddollars)]
+    conc = collections.defaultdict(list)                                    # how -> share of a night's swaps on its top target
+    for n in N:
+        sw = n["swaps"]
+        if not sw or not sw["credited"]:
+            continue
+        rows, tip, out = sw["rows"], sw["tip"], sw["out"]
+        mine = [x for x in sw["credited"] if x["username"] == ME]
+        if not mine:
+            continue
+        pods = collections.defaultdict(set)
+        for t in sw["all_teams"]:
+            for i in range(1, 7):
+                if t["p%d" % i] and t["adp%d" % i]:
+                    pods[t["draft_id"]].add(t["p%d" % i])
+        targets = collections.defaultdict(list)
+        for x in sw["credited"]:
+            targets[x["out"]].append(x["swap"])
+        swap_time = {}
+        for o, ts in targets.items():
+            tt = [tip[rows[s]["team"]] for s in ts if s in rows and rows[s]["team"] in tip]
+            swap_time[o] = min(tt) if tt else tip.get(out[o]["team"])
+        sat = {p for p, r in rows.items() if r["min"] == "0.0"}
+        drafted = {pid: num(r["drafted"]) or 0 for pid, r in W.tier_rows(n["date"]).get("pm", {}).items()}
+        snaps = W.orders(n["date"]) or []
+        team_of = {(c["contest_id"], t["draft_id"], t["username"]): (c, t) for c in n["contests"] for t in n["teams"][c["contest_id"]]}
+        alt_by_team = collections.defaultdict(lambda: collections.defaultdict(float))
+        picks_how = collections.defaultdict(list)
+        for x in mine:
+            stime = swap_time.get(x["out"])
+            if stime is None or x["swap"] not in rows or num(rows[x["swap"]]["actual"]) is None:
+                continue
+            elig = [p for p, r in rows.items() if p not in pods[x["draft_id"]] and p not in out and p not in sat
+                    and r["team"] in tip and tip[r["team"]] >= stime]
+            if x["swap"] not in elig:
+                elig.append(x["swap"])
+            fp = num(rows[x["swap"]]["actual"])
+            withproj = [p for p in elig if (num(rows[p]["etr_last"]) or 0) > 0]
+            alts = {}
+            saved = [s for s in snaps if W.parse(s["at"]) <= stime]
+            if saved:
+                rank = {p: i for i, p in enumerate(saved[-1]["order"])}
+                alts["saved"] = min((p for p in elig if p in rank), key=lambda p: rank[p], default=None)
+            if withproj:
+                alts["low"] = W.tie_order(withproj, rows, drafted, "low")[0]
+                alts["high"] = W.tie_order(withproj, rows, drafted, "high")[0]
+            k = (x["contest_id"], x["draft_id"], x["username"])
+            for how, p in alts.items():
+                if p is not None and num(rows[p]["actual"]) is not None:
+                    alt_by_team[k][how] += num(rows[p]["actual"]) - fp
+                    alt_by_team[k][how + "_n"] += 1
+                    picks_how[how].append(p)
+        for k, d in alt_by_team.items():
+            if k not in team_of:
+                continue
+            c, t = team_of[k]
+            for how in ("saved", "low", "high"):
+                if d.get(how + "_n"):
+                    place, pay = place_and_pay(c, t, t["points"] + d[how])
+                    top10 = place <= math.ceil(len(c["points_sorted"]) / 10)
+                    # real minus alternative: positive = what I really did beat the alternative
+                    res[how][n["date"]].append((-d[how], int(t["top"][10]) - int(top10), t["payout"] - pay, int(d[how + "_n"])))
+        for how in ("low", "high"):
+            if picks_how[how]:
+                conc[how].append(collections.Counter(picks_how[how]).most_common(1)[0][1] / len(picks_how[how]))
+    out = ["### f. Swaps, replayed in money (my credited swaps)", "",
+           "Each of my credited swaps against an alternative, the team's points moved by the difference and its place and payout "
+           "re-read off the contest's real scores. Positive: what really happened beat the alternative. Small sample; directional.", "",
+           "| My real swaps against | Nights | Swaps | Points a swap | Top-10% finishes | Dollars |", "|---|---|---|---|---|---|"]
+    labels = {"saved": "my last saved board order's pick (is the app shuffle worth it?)",
+              "low": "the swap board, near-ties least drafted first (leverage)", "high": "the swap board, near-ties most drafted first (spread)"}
+    for how in ("saved", "low", "high"):
+        v = [x for d in res[how].values() for x in d]
+        if not v:
+            continue
+        nsw = sum(x[3] for x in v)
+        out.append("| %s | %d | %d | %+.1f | %+d | %+.0f |" % (labels[how], len(res[how]), nsw, sum(x[0] for x in v) / nsw,
+                                                             sum(x[1] for x in v), sum(x[2] for x in v)))
+    lo = [x for d in res["low"].values() for x in d]
+    hi = [x for d in res["high"].values() for x in d]
+    if lo and hi:
+        out += ["", "Leverage against spread: the leverage board's swaps would have made %+d top-10%% finishes and $%+.0f against "
+                "the spread board's (real minus each, differenced). Leverage put %.0f%% of a night's replayed swaps on one player, "
+                "spread %.0f%%." % (sum(x[1] for x in hi) - sum(x[1] for x in lo), sum(x[2] for x in hi) - sum(x[2] for x in lo),
+                                    100 * st.mean(conc["low"]), 100 * st.mean(conc["high"]))]
+    return out + [""], res
+
+
+# ---------------------------------------------------------------- step 4: the field
+def ranks_of(n):
+    priced = sorted((num(r["adp_close"]), p) for p, r in n["rec"].items() if num(r["adp_close"]) is not None)
+    return {p: i + 1 for i, (_, p) in enumerate(priced)}
+
+
+def drafted_by(t):
+    """The players a team drafted: its picks taken with an ADP, plus the ruled-out players its swaps replaced."""
+    swapped = {p for p, a in zip(t["picks"], t["adps"]) if a is None}
+    return t["holds"] - swapped
+
+
+def turn_teams(N):
+    """[(night, team, info)] for teams at the 1/2 and 2/3 turns, read from rosters by closing-ADP rank.
+    1/2 turn (6 drafters; scaled for 4): the team's two earliest players. Faller: the earliest is a top-(pod-2) player and
+    the second comes by rank pod+2 (a player who fell to the turn, always taken). Otherwise a turn team when the earliest
+    is rank pod-1..pod+2 and the second by rank 2 x pod: expected second rank pod+2 after rank pod-1 (picks 5 and 8),
+    pod+1 after rank pod (6 and 7), else the next rank; a reach takes the first past rank pod, or the second 2+ ranks past
+    its expected one. 2/3 turn: teams anchored by rank 1 or 2; their next two players against picks 2 x pod and 2 x pod + 1
+    (anchor 1) or 2 x pod - 1 and 2 x pod + 2 (anchor 2); a faller there is a second player ranked 2 x pod - 3 or better."""
+    out = []
+    for n in N:
+        rk = ranks_of(n)
+        for c in n["contests"]:
+            pod = c["pod_size"]
+            for t in n["teams"][c["contest_id"]]:
+                if t["bin"] is None or t["window"] is None:
+                    continue
+                rs = sorted((rk[p], p) for p in drafted_by(t) if p in rk)
+                if len(rs) < 3:
+                    continue
+                (r1, p1), (r2, p2), (r3, p3) = rs[0], rs[1], rs[2]
+                if r1 <= pod - 2 and r2 <= pod + 2 and r2 >= pod - 1:
+                    out.append((n, t, {"turn": "1/2", "kind": "faller", "pair": (r1, r2), "picks": (p1, p2)}))
+                elif pod - 1 <= r1 <= pod + 2 and r2 <= 2 * pod:
+                    e2 = pod + 2 if r1 == pod - 1 else pod + 1 if r1 == pod else r1 + 1
+                    reach = None
+                    if r2 - e2 >= 2:
+                        reach = (p2, list(range(e2, r2)))
+                    elif r1 >= pod + 1:
+                        reach = (p1, list(range(pod - 1, r1)))
+                    out.append((n, t, {"turn": "1/2", "kind": "reach" if reach else "trust", "pair": (r1, r2), "picks": (p1, p2), "reach": reach}))
+                if r1 in (1, 2):
+                    e = (2 * pod, 2 * pod + 1) if r1 == 1 else (2 * pod - 1, 2 * pod + 2)
+                    if r2 <= 2 * pod - 3:
+                        out.append((n, t, {"turn": "2/3", "kind": "faller", "pair": (r2, r3), "anchor": r1, "picks": (p2, p3)}))
+                    elif r3 <= 3 * pod:
+                        reach = None
+                        if r3 - e[1] >= 2:
+                            reach = (p3, list(range(e[1], r3)))
+                        elif r2 - e[0] >= 2:
+                            reach = (p2, list(range(e[0], r2)))
+                        out.append((n, t, {"turn": "2/3", "kind": "reach" if reach else "trust", "pair": (r2, r3), "anchor": r1,
+                                           "picks": (p2, p3), "reach": reach}))
+    return out
+
+
+def reach_kinds(n, t, info, rk_inv):
+    """Which way a reach went against the players it jumped (those ranked between the expected spot and the reach,
+    not on the team): toward the higher projection, toward a VALUE flag, toward the less-drafted."""
+    p, jumped_ranks = info["reach"]
+    rows = n["tiers"][t["window"]]
+    me = rows.get(p)
+    jumped = [rows.get(rk_inv.get(r)) for r in jumped_ranks if rk_inv.get(r) not in t["holds"]]
+    jumped = [j for j in jumped if j]
+    if not me or not jumped:
+        return set()
+    kinds = set()
+    if num(me["proj"]) is not None and all(num(j["proj"]) is not None and num(me["proj"]) > num(j["proj"]) for j in jumped):
+        kinds.add("higher projection")
+    if me["flag"] == "VALUE" and not any(j["flag"] == "VALUE" for j in jumped):
+        kinds.add("VALUE flag")
+    if num(me["drafted"]) is not None and all(num(j["drafted"]) is not None and num(me["drafted"]) < num(j["drafted"]) for j in jumped):
+        kinds.add("less drafted")
+    return kinds
+
+
+def turns_section(N, dates, bins):
+    tt = turn_teams(N)
+    inv = {}
+    for n in N:
+        inv[n["date"]] = {r: p for p, r in ranks_of(n).items()}
+    case = lambda n, t, g: (n["date"], t["contest"]["contest_id"], t[bins], g, t)
+    out = ["### Turns, from rosters by ADP rank (no pick order)", "",
+           "Fallers (a top player who fell to the turn) are kept apart: always taken. For the pairs you control: does reaching "
+           "(a player 2+ picks past ADP order) beat trusting ADP order? Lift against same-contest, same-price trusting teams. "
+           "Definitions in turn_teams().", "", "| Turn | Test | Lift at 10% (80% range), at 1%; finish; teams, slates | Mine |", "|---|---|---|---|"]
+    results = {}
+    for turn in ("1/2", "2/3"):
+        xs = [(n, t, i) for n, t, i in tt if i["turn"] == turn]
+        trust = [case(n, t, "B") for n, t, i in xs if i["kind"] == "trust"]
+        tests = [("a. reach vs trust", [case(n, t, "A") for n, t, i in xs if i["kind"] == "reach"] + trust),
+                 ("fallers vs trust", [case(n, t, "A") for n, t, i in xs if i["kind"] == "faller"] + trust)]
+        for kind in ("higher projection", "VALUE flag", "less drafted"):
+            tests.append(("b. reach toward %s vs trust" % kind,
+                          [case(n, t, "A") for n, t, i in xs if i["kind"] == "reach" and kind in reach_kinds(n, t, i, inv[n["date"]])] + trust))
+        key = lambda t, i: (t["contest"]["pod_size"],) + (i["pair"] if turn == "1/2" else (i["anchor"],) + i["pair"])
+        cells = collections.Counter(key(t, i) for n, t, i in xs if i["kind"] != "faller")
+        for ck, k in sorted(cells.items(), key=lambda kv: (-kv[0][0], -kv[1]))[:16]:
+            label = ("c. %d-drafter, ranks %d + %d" % ck) if turn == "1/2" else ("c. %d-drafter, anchor %d, ranks %d + %d" % ck)
+            tests.append((label, [case(n, t, "A" if key(t, i) == ck else "B") for n, t, i in xs if i["kind"] != "faller"
+                                  and t["contest"]["pod_size"] == ck[0]]))
+        for name, cs in tests:
+            ev = evaluate(cs, dates, bins)
+            results[(turn, name)] = ev
+            out.append("| %s | %s | %s | %s |" % (turn, name, cell(ev["field"]["all"]), cell(ev["mine"]["all"])))
+    return out + ["", "Rank pairs (c) are detail: most will be not enough yet. Each is against every other non-faller pair at "
+                  "that turn.", ""], results
+
+
+def tiers_of_team(n, t):
+    rows = n["tiers"][t["window"]] if t["window"] else {}
+    return [rows[p] for p in drafted_by(t) if p in rows]
+
+
+def field_section(N, dates, bins):
+    out = ["## 4. The field", ""]
+    res = {}
+    # drafted% by tier, flag and Q class: each flagged player against an unflagged partner (same tier, ADP within 4)
+    out += ["### Drafted% by tier, flag and Q class", "",
+            "Each flagged (or tagged) player against unflagged, untagged partners in his tier within 4 ADP picks, at the window "
+            "the teams drafted in: the share of that window's pods that took each (all contests). Negative: the field drafted the "
+            "flagged one less.", "", "| Window | Tier | Flag | Pairs | Flagged drafted% | Partner drafted% | Difference |", "|---|---|---|---|---|---|---|"]
+    agg = collections.defaultdict(lambda: [0, 0.0, 0.0])
+    for n in N:
+        for w in ("am", "pm"):
+            pods, inpod = set(), collections.defaultdict(set)
+            for ts in n["teams"].values():
+                for t in ts:
+                    if t["window"] == w:
+                        pods.add(t["draft_id"])
+                        for p in drafted_by(t):
+                            inpod[p].add(t["draft_id"])
+            if not pods:
+                continue
+            dr = {p: len(v) / len(pods) for p, v in inpod.items()}
+            rows = rows_of(n, w)
+            for i, a in enumerate(rows):
+                for b in rows[i + 1:]:
+                    if a["tier"] != b["tier"] or abs(num(a["adp"]) - num(b["adp"])) > 4:
+                        continue
+                    for x, y in ((a, b), (b, a)):
+                        lab = x["flag"] or (x["q_class"] and "Q " + x["q_class"])
+                        if lab and not y["flag"] and not y["q_class"]:
+                            tg = "T1-T2" if int(x["tier"]) <= 2 else "T3-T4" if int(x["tier"]) <= 4 else "T5"
+                            g = agg[(w.upper(), tg, lab)]
+                            g[0] += 1
+                            g[1] += dr.get(x["player_id"], 0)
+                            g[2] += dr.get(y["player_id"], 0)
+    for k in sorted(agg):
+        c, fx, fy = agg[k]
+        out.append("| %s | %s | %s | %d | %.0f%% | %.0f%% | %+.0f |" % (k + (c, 100 * fx / c, 100 * fy / c, 100 * (fx - fy) / c)))
+    # T5 below 100: low-drafted T5 breakers
+    low = collections.Counter()
+    tot = collections.Counter()
+    for n in N:
+        f = max(n["contests"], key=lambda c: int(c["entries"]))
+        d, _ = C.drafted(n["teams"][f["contest_id"]], f["pod_size"])
+        for p, r in n["tiers"]["pm"].items():
+            if r["tier"] == "5" and r["breaker"] == "1":
+                tot[r["flag"] or "unflagged"] += 1
+                if d.get(p, 0) < 0.5:
+                    low[r["flag"] or "unflagged"] += 1
+    out += ["", "T5 breakers (PM tiers) drafted in under half the flagship's pods: %s (of all T5 breakers: %s)." % (
+        ", ".join("%s %d" % kv for kv in sorted(low.items())), ", ".join("%s %d" % kv for kv in sorted(tot.items()))), ""]
+    # stacks
+    def stars(n, w):
+        rows = n["tiers"][w]
+        by = collections.defaultdict(list)
+        for p, r in rows.items():
+            if num(r["proj"]) is not None:
+                by[r["team"]].append((num(r["proj"]), p))
+        return {p for v in by.values() for _, p in sorted(v, reverse=True)[:2]}
+    def opp_stars(n, t):
+        s = stars(n, t["window"])
+        mine = [p for p in drafted_by(t) if p in s and p in n["rec"]]
+        return any(n["rec"][a]["opp"] == n["rec"][b]["team"] for a in mine for b in mine if a != b)
+    GROUP = {"PG": "G", "SG": "G", "G": "G", "SF": "F", "PF": "F", "F": "F", "C": "C"}
+    def same_pos(n, t, big=None):
+        ps = [n["rec"][p] for p in drafted_by(t) if p in n["rec"]]
+        for i, a in enumerate(ps):
+            for b in ps[i + 1:]:
+                if a["team"] == b["team"] and GROUP.get((a["pos"] or "").split("-")[0]) == GROUP.get((b["pos"] or "").split("-")[0]):
+                    sp = abs(num(a["spread"]) or 0)
+                    if big is None or (sp >= 5) == big:
+                        return True
+        return False
+    out += ["### Stacks (residual_correlations.md): teams holding the structure against same-price teams without", "",
+            "| Structure | Lift at 10% (80% range), at 1%; finish; teams, slates | Mine |", "|---|---|---|"]
+    for name, has in (("Opposing stars (their team's top 2 by projection, same game)", opp_stars),
+                      ("Same-position teammates", lambda n, t: same_pos(n, t)),
+                      ("Same-position teammates, spread 5+", lambda n, t: same_pos(n, t, True))):
+        ev = evaluate(hold_cases(N, ("am", "pm"), has), dates, bins)
+        res[("stack", name)] = ev
+        out.append("| %s | %s | %s |" % (name, cell(ev["field"]["all"]), cell(ev["mine"]["all"])))
+    # top-finish makeup
+    out += ["", "### What top-1% teams held (a description, not a rule)", "",
+            "Per team, at its draft window's tiers: picks by combined tier, VALUE and PRICEY picks, tagged picks by Q class, breakers.", "",
+            "| | T1 | T2 | T3 | T4 | T5 | VALUE | PRICEY | FAIR | TRAP | SMASH | Breakers |", "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    acc = {"Top 1%": collections.Counter(), "Field": collections.Counter()}
+    cnt = collections.Counter()
+    for n in N:
+        for ts in n["teams"].values():
+            for t in ts:
+                if not t["window"]:
+                    continue
+                rs = tiers_of_team(n, t)
+                for g in (["Top 1%"] if t["top"][1] else []) + ["Field"]:
+                    cnt[g] += 1
+                    for r in rs:
+                        acc[g]["T" + r["tier"]] += 1
+                        acc[g][r["flag"]] += 1
+                        acc[g][r["q_class"]] += 1
+                        acc[g]["brk"] += r["breaker"] == "1"
+    for g in ("Top 1%", "Field"):
+        a = acc[g]
+        out.append("| %s | %s |" % (g, " | ".join("%.2f" % (a[k] / cnt[g]) for k in ("T1", "T2", "T3", "T4", "T5", "VALUE", "PRICEY", "FAIR", "TRAP", "SMASH", "brk"))))
+    # swap luck
+    def swapped(n, t):
+        return any(a is None for a in t["adps"])
+    ev = evaluate(hold_cases(N, ("am", "pm"), swapped), dates, bins)
+    res[("swaps", "any")] = ev
+    out += ["", "### Swaps in the field", "", "Teams with a swap against same-price teams without (each priced at what it paid): %s." % cell(ev["field"]["all"]), ""]
+    # high-volume users
+    per_user = collections.defaultdict(lambda: collections.Counter())
+    nights_user = collections.defaultdict(set)
+    for n in N:
+        for ts in n["teams"].values():
+            for t in ts:
+                per_user[t["username"]]["teams"] += 1
+                nights_user[t["username"]].add(n["date"])
+    vol = [u for u, c in per_user.items() if c["teams"] >= 100 and len(nights_user[u]) >= 8 and u != ME]
+    def profile(users):
+        a, k = collections.Counter(), 0
+        for n in N:
+            for ts in n["teams"].values():
+                for t in ts:
+                    if t["username"] in users and t["window"]:
+                        k += 1
+                        for r in tiers_of_team(n, t):
+                            a["T" + r["tier"]] += 1
+                            a[r["flag"]] += 1
+                            a["tagged"] += bool(r["tag"])
+                            a["drafted"] += num(r["drafted"]) or 0
+                            a["picks"] += 1
+                        a["dupe"] += 0
+        return a, k
+    out += ["### High-volume users (100+ teams on 8+ nights; studied, never ranked)", "",
+            "%d users. Per team, against the field and me:" % len(vol), "",
+            "| | Teams | T1 | T2 | T3 | T4 | T5 | VALUE | PRICEY | Tagged | Average drafted% of picks |", "|---|---|---|---|---|---|---|---|---|---|---|"]
+    for lab, users in (("High-volume", set(vol)), ("Me", {ME}), ("Everyone", set(per_user))):
+        a, k = profile(users)
+        if k:
+            out.append("| %s | %d | %s | %.0f%% |" % (lab, k, " | ".join("%.2f" % (a[x] / k) for x in ("T1", "T2", "T3", "T4", "T5", "VALUE", "PRICEY", "tagged")),
+                                                     a["drafted"] / a["picks"] if a["picks"] else 0))
+    return out + [""], res
+
+
+# ---------------------------------------------------------------- step 3: the register in money
+SPLITS = [   # detail rows under a register row: (register id, label, builder)
+    ("ownership-tiebreak-t5", "AM only", lambda N: pair_cases(N, ("am",), {5}, less_drafted())),
+    ("ownership-tiebreak-t5", "PM only", lambda N: pair_cases(N, ("pm",), {5}, less_drafted())),
+    ("value-up-middle-t5", "T3", lambda N: pair_cases(N, ("am", "pm"), {3}, flag_vs_plain("VALUE", True))),
+    ("value-up-middle-t5", "T4", lambda N: pair_cases(N, ("am", "pm"), {4}, flag_vs_plain("VALUE", True))),
+    ("value-up-middle-t5", "T5", lambda N: pair_cases(N, ("am", "pm"), {5}, flag_vs_plain("VALUE", True))),
+] + [("pricey-flags", "T%d" % k, (lambda k: lambda N: pair_cases(N, ("am", "pm"), {k}, flag_vs_plain("PRICEY", False)))(k)) for k in range(1, 6)]
+
+
+def register_section(N, dates):
+    """Every register decision (and its detail splits) on quintiles and deciles; the verdict on quintiles, flagged where
+    deciles disagree."""
+    for n in N:
+        N_BY[n["date"]] = n
+    rows = []
+    for rid, label, b in DECISIONS:
+        rows.append((rid, label, b, False))
+        rows += [(r, "  %s" % l, bb, True) for r, l, bb in SPLITS if r == rid]
+    out = ["## 3. The register in money", "",
+           "A = teams that did what the decision says, against same-contest, same-price teams that did the other (pairs) or "
+           "didn't (holdings). Field: every team; mine: my A teams against the field's B. Lift at the top 10%% with its 80%% range "
+           "(resampling slates), at the top 1%%, and finish (A's average finish percentile minus B's: negative is better). "
+           "Find = slates before the last %d, check = the last %d." % (CHECK, CHECK), "",
+           "| Decision | Field, all slates | Find | Check | Mine | Money (quintiles) | Deciles |", "|---|---|---|---|---|---|---|"]
+    ref = evaluate(hold_cases(N, ("am", "pm"), lambda n, t: t["mine"]), dates)["field"]["all"]
+    out.insert(len(out) - 2, "Reference for the Mine column: all my teams against same-price field teams run %s. Mine reads "
+               "against that, not against 1.00." % cell(ref))
+    out.insert(len(out) - 2, "")
+    res = {}
+    for rid, label, b, split in rows:
+        cs = b(N)
+        ev5, ev10 = evaluate(cs, dates, "bin5"), evaluate(cs, dates, "bin10")
+        v5, v10 = verdict(ev5)[0], verdict(ev10)[0]
+        res[(rid, label.strip())] = (ev5, v5, v10, split)
+        out.append("| %s%s | %s | %s | %s | %s | %s | %s |" % (
+            "" if split else "**%s** " % rid, label, cell(ev5["field"]["all"]), cell(ev5["field"]["find"]), cell(ev5["field"]["check"]),
+            cell(ev5["mine"]["all"]), v5, v10 + (" **(changes)**" if v10 != v5 else "")))
+    return out + [""], res
+
+
+# ---------------------------------------------------------------- step 5: two verdicts per decision
+def sign_points(v):
+    v = (v or "").lower()
+    if "against" in v or "costs" in v:
+        return -1
+    if "lean" in v or "rule" in v:
+        return 1
+    return 0
+
+
+def combine(points, money):
+    p, m = sign_points(points), (1 if money.endswith("for") else -1 if money.endswith("against") else 0)
+    strong = money.startswith("RULE")
+    if p > 0 and m > 0:
+        return "keep: points and money agree"
+    if p > 0 and m < 0:
+        return "rethink: money RULE against it" if strong else "keep on points; money leans against (watch)"
+    if p > 0:
+        return "keep on points; money not settled"
+    if p < 0 and m > 0:
+        return "keep: the leverage pays (money RULE)" if strong else "watch: money leans for the leverage, not yet its bar"
+    if p < 0 and m < 0:
+        return "drop: both negative"
+    if p < 0:
+        return "drop on points unless money clears its bar"
+    if m:
+        return "candidate: hand to the rankings side with its points cost" if strong else "watch: money leans %s" % ("for" if m > 0 else "against")
+    return "not enough on either side yet"
+
+
+def verdict_section(reg, swaps):
+    register = list(csv.DictReader(open(os.path.join(REP, "decision_register.csv"))))
+    pts = {r["id"]: r["points_verdict"] for r in register}
+    main = {k[0]: v for k, v in reg.items() if not v[3]}
+    cells = len(reg)
+    leans = sum(1 for v in reg.values() if v[1].startswith(("LEAN", "RULE")))
+    rules = sum(1 for v in reg.values() if v[1].startswith("RULE"))
+    flips = [k for k, v in reg.items() if v[1] != v[2]]
+    out = ["## 5. Draft verdicts (not yet written to decision_register.csv)", "",
+           "MONEY rests on the top-10%% lift (the faster reader); the top-1%% lift and finish are beside it in section 3 as the "
+           "long-run and steadier checks. %d cells tested; %d show a lean or rule and %d a rule. By chance alone about %d would "
+           "show a lean (40%% of cells: 80%%+ of resamples one side happens 40%% of the time with nothing there) and about %d a rule "
+           "(90%% range clear of 1.0 and the check slates agreeing, about 5%%). So a lone lean is weak; a rule, or a lean that agrees "
+           "with the points verdict, counts." % (cells, leans, rules, round(0.4 * cells), max(1, round(0.05 * cells))),
+           "", "| Decision | Status | POINTS | MONEY | Top-10% lift (80% range), all slates | Recommendation |", "|---|---|---|---|---|---|"]
+    for r in register:
+        rid = r["id"]
+        if rid in ("swap-shuffle", "swap-ownership-order", "live-moves"):
+            continue
+        subs = [(k, v) for k, v in main.items() if k == rid or k.startswith(rid + ":")]
+        for k, (ev5, v5, v10, _) in subs:
+            a = ev5["field"]["all"]
+            lift = ("%.2f (%.2f-%.2f)" % ((a["lift"][10],) + a["r80"]) if a and "r80" in a and a["lift"][10] else "-")
+            out.append("| %s | %s | %s | %s%s | %s | %s |" % (k, r["status"], pts[rid], v5, " (deciles: %s)" % v10 if v10 != v5 else "",
+                                                          lift, combine(pts[rid], v5)))
+    out.append("| live-moves | %s | %s | not enough (saves after lock on 3 nights) | - | not enough on either side yet |" % (
+        next(r["status"] for r in register if r["id"] == "live-moves"), pts["live-moves"]))
+    for rid in ("swap-shuffle", "swap-ownership-order"):
+        out.append("| %s | %s | %s | not enough (about 100 swaps; section 3f has the dollars) | - | not enough on either side yet |" % (
+            rid, next(r["status"] for r in register if r["id"] == rid), pts[rid]))
+    if flips:
+        out += ["", "Verdicts that change on ten price groups: " + "; ".join("%s%s (%s on five, %s on ten)" % (
+            k[0], " " + k[1] if reg[k][3] else "", reg[k][1], reg[k][2]) for k in flips) + "."]
+    return out + [""]
+
+
+def report(N, mirror):
+    dates = [n["date"] for n in N]
+    out = ["# NBA money report (draft)", "",
+           "Written by scripts/nba_money.py (definitions in its docstring), %s. Slates %s to %s: %d nights, %d contests, %d teams. "
+           "The contest side's read of whether decisions make money; POINTS verdicts are the rankings side's "
+           "(decision_register.csv)." % (dt.date.today().isoformat(), dates[0], dates[-1], len(N), sum(len(n["contests"]) for n in N),
+                                         sum(len(v) for n in N for v in n["teams"].values())), ""]
+    out += data_checks(N) + baseline_section(N) + scoreboard(N)
+    reg_out, reg = register_section(N, dates)
+    sw_out, sw = swap_money(N)
+    out += reg_out + sw_out
+    turn_out, turns = turns_section(N, dates, "bin5")
+    field_out, field = field_section(N, dates, "bin5")
+    out += field_out[:2] + turn_out + field_out[2:]
+    out += verdict_section(reg, sw)
+    return out
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--mirror", help="a clone of br-adp-mirror (draft windows for nights not cached yet)")
+    a = ap.parse_args()
+    N = load(a.mirror)
+    out = report(N, a.mirror)
+    open(os.path.join(REP, "money_report.md"), "w").write("\n".join(out) + "\n")
+    print("\n".join(out))
+
+
+if __name__ == "__main__":
+    main()
