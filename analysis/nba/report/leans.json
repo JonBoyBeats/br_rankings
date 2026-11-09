@@ -1,5 +1,13 @@
 {
  "about": "Leans and rules for the tiers, each under forward test. Evidence policy (2026-11-09): a LEAN (40+ decision pairs, 80%+ of slate resamples one way) is ADOPTED, used as a tiebreak or default, only if it holds in both windows, was listed as a candidate before testing, or hit the RULE numbers (80+ pairs, a 90% range clear of zero) and waits on its check (14 slates: 9 to choose on, 5 to check, plus the drop-one-player test); every other lean is a CANDIDATE, forward-tested only. At step 4 chance alone would give about 27 leans of the 67 testable cells; 30 appeared. Anything adopted is dropped if it flips direction over its 14 forward nights. Sources: analysis/nba/report/tier_grade.md, q_lane.md, scripts/nba_take_types.py.",
+ "money_policy": "2026-11-09: everything adopted or kept here, switches and leans alike, is PROVISIONAL until its MONEY verdict (top finishes and dollars, written by the contest side into decision_register.csv, column money_verdict, row named by each entry's register field) is in, and may be changed by it. Points and money: both positive, keep. Points positive and money pending, keep provisionally. They disagree: money wins only if its evidence clears its own bar; a decision that loses points is kept only if money clears its bar. Both negative, drop. A proposal from the contest side is checked for its points cost on the same decision pairs and its shadow record, and both are shown to the user before anything changes.",
+ "kept_register": [
+  "kept-am-t1",
+  "kept-pm-t1",
+  "kept-am-t2",
+  "kept-am-middle",
+  "kept-pm-t3"
+ ],
  "adopted": [
   {
    "id": "am-t5-button-order",
@@ -12,7 +20,8 @@
    "adopted": "2026-11-09",
    "forward_from": "2026-11-10",
    "forward_nights": 14,
-   "drop_if": "AM T5 takes against the button turn positive over the 14 forward nights"
+   "drop_if": "AM T5 takes against the button turn positive over the 14 forward nights",
+   "register": "am-t5-button-order"
   },
   {
    "id": "value-up-middle-t5",
@@ -25,7 +34,8 @@
    "adopted": "2026-11-09",
    "forward_from": "2026-11-10",
    "forward_nights": 14,
-   "drop_if": "VALUE stops beating its partners in either window over the 14 forward nights"
+   "drop_if": "VALUE stops beating its partners in either window over the 14 forward nights",
+   "register": "value-up-middle-t5"
   },
   {
    "id": "pm-questionable-back-two",
@@ -38,7 +48,8 @@
    "adopted": "2026-11-09",
    "forward_from": "2026-11-10",
    "forward_nights": 14,
-   "drop_if": "it flips over the 14 forward nights, or fails the check on the last 5 slates once there are 14"
+   "drop_if": "it flips over the 14 forward nights, or fails the check on the last 5 slates once there are 14",
+   "register": "pm-questionable-back-two"
   },
   {
    "id": "am-questionable-no-push",
@@ -51,7 +62,8 @@
    "adopted": "2026-11-09",
    "forward_from": "2026-11-10",
    "forward_nights": 14,
-   "drop_if": "a push variant reaches a lean over the 14 forward nights"
+   "drop_if": "a push variant reaches a lean over the 14 forward nights",
+   "register": "am-questionable-no-push"
   },
   {
    "id": "pm-t5-beneficiary-picks",
@@ -64,7 +76,8 @@
    "adopted": "2026-11-09",
    "forward_from": "2026-11-10",
    "forward_nights": 14,
-   "drop_if": "beneficiary takes in PM T5 turn negative over the 14 forward nights"
+   "drop_if": "beneficiary takes in PM T5 turn negative over the 14 forward nights",
+   "register": "pm-t5-beneficiary"
   },
   {
    "id": "pm-t2-adp-etr-2",
@@ -80,7 +93,8 @@
    "drop_if": "it does not beat the rule it replaced on the same nights over the 14 forward nights (graded in shadow, analysis/nba/report/shadow.md)",
    "candidates_compared": 8,
    "provisional": true,
-   "shadow": "old rule: ADP (1: ETR)"
+   "shadow": "old rule: ADP (1: ETR)",
+   "register": "pm-t2-adp-etr2"
   },
   {
    "id": "pm-t4-adp-etr-2",
@@ -96,7 +110,8 @@
    "drop_if": "it does not beat the rule it replaced on the same nights over the 14 forward nights (graded in shadow, analysis/nba/report/shadow.md)",
    "candidates_compared": 8,
    "provisional": true,
-   "shadow": "old rule: ETR, ties to ADP then Boom"
+   "shadow": "old rule: ETR, ties to ADP then Boom",
+   "register": "pm-t4-adp-etr2"
   },
   {
    "id": "pm-t5-adp-value-up",
@@ -111,7 +126,8 @@
    "forward_nights": 14,
    "drop_if": "it flips over the 14 forward nights",
    "candidates_compared": 8,
-   "shadow": "old rule: ETR (2: less drafted), the paused ownership tiebreak"
+   "shadow": "old rule: ETR (2: less drafted), the paused ownership tiebreak",
+   "register": "pm-t5-adp-value"
   },
   {
    "id": "keep-one-tier-cap",
@@ -124,7 +140,8 @@
    "adopted": "2026-11-09",
    "forward_from": "2026-11-10",
    "forward_nights": 14,
-   "drop_if": "no move reaches a lean over the cap"
+   "drop_if": "no move reaches a lean over the cap",
+   "register": "one-tier-cap"
   }
  ],
  "paused": [
@@ -141,12 +158,14 @@
   {
    "id": "pm-middle-board-vs-adp",
    "statement": "PM middle (T3/T4): your board beats ADP straight.",
-   "evidence": "+2.7 per pair (243 pairs), RULE: 90% range clear, same side on the last 5 slates, drop one player holds. T3 alone +5.5 (118, RULE)."
+   "evidence": "+2.7 per pair (243 pairs), RULE: 90% range clear, same side on the last 5 slates, drop one player holds. T3 alone +5.5 (118, RULE).",
+   "register": "pm-middle-takes"
   },
   {
    "id": "pm-t5-board-vs-adp",
    "statement": "PM T5: ADP straight beats your board.",
-   "evidence": "-2.4 per pair (728 pairs), RULE. Holds in AM too (-3.1, 364 pairs): the basis of am-t5-button-order."
+   "evidence": "-2.4 per pair (728 pairs), RULE. Holds in AM too (-3.1, 364 pairs): the basis of am-t5-button-order.",
+   "register": "pm-t5-adp-value"
   }
  ],
  "candidates": [

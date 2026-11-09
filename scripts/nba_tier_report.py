@@ -27,13 +27,15 @@ OUT = os.path.join(REP, "today.md")
 PT = ZoneInfo("America/Los_Angeles")
 QT = re.compile(r"^(q|d|g)", re.I)
 num = G.num
-SWITCHES = [   # (tier, AM switch, PM switch, the leans.json ids that give their status)
-    (1, "ADP (2: Boom)", "ETR", []),
-    (2, "ADP", "ADP (2: ETR)", ["pm-t2-adp-etr-2"]),
-    (3, "Proj (3: ADP)", "ETR (ties: ADP, Boom)", []),
-    (4, "Proj (3: ADP)", "ADP (2: ETR)", ["pm-t4-adp-etr-2"]),
-    (5, "the button's order", "ADP", ["am-t5-button-order", "pm-t5-adp-value-up"]),
+SWITCHES = [   # (tier, AM switch, PM switch, the decision_register.csv ids of the AM and PM switch)
+    (1, "ADP (2: Boom)", "ETR", ["kept-am-t1", "kept-pm-t1"]),
+    (2, "ADP", "ADP (2: ETR)", ["kept-am-t2", "pm-t2-adp-etr2"]),
+    (3, "Proj (3: ADP)", "ETR (ties: ADP, Boom)", ["kept-am-middle", "kept-pm-t3"]),
+    (4, "Proj (3: ADP)", "ADP (2: ETR)", ["kept-am-middle", "pm-t4-adp-etr2"]),
+    (5, "the button's order", "ADP", ["am-t5-button-order", "pm-t5-adp-value"]),
 ]
+MONEY_NOTE = ("Everything adopted or kept is provisional until its money verdict (top finishes and dollars, from the contest "
+              "side: decision_register.csv) is in, and may be changed by it.")
 
 
 def norm(s):
@@ -130,6 +132,9 @@ def main():
     H = G.load()
     leans = json.load(open(os.path.join(REP, "leans.json")))
     status = {x["id"]: ("provisional" if x.get("provisional") else "RULE" if x.get("basis") == "RULE" else "adopted") for x in leans["adopted"]}
+    reg = {r["id"]: r for r in csv.DictReader(open(os.path.join(REP, "decision_register.csv")))}
+    by_reg = {x["register"]: status[x["id"]] for x in leans["adopted"]}
+    money = lambda rid: "money " + ((reg.get(rid) or {}).get("money_verdict") or "pending")
     pcal = calibrated_play(H)
     md = []
     # ---------------- today
@@ -166,9 +171,9 @@ def main():
             r["play"] = pcal(min(max(1 - miss, 0.005), 0.995), bool(QT.match(r["tag"])))
         md += ["# Today: %s, lock %s PT, %d-drafter pods" % (s["label"].replace("nba_", "").replace("_", " ").title(),
                                                                  lock.astimezone(PT).strftime("%-I:%M %p"), pod), "",
-               "## Today's decisions", "", "**Switches by tier** (AM window · PM window)"]
+               "## Today's decisions", "", MONEY_NOTE, "", "**Switches by tier** (AM window · PM window)"]
         for t, am, pm, ids in SWITCHES:
-            st = ", ".join("%s %s" % (i.split("-")[0].upper(), status.get(i, "kept")) for i in ids) or "kept"
+            st = "; ".join("%s %s, %s" % (w, by_reg.get(i, "kept"), money(i)) for w, i in zip(("AM", "PM"), ids))
             md.append("- T%d: AM %s · PM %s (%s)" % (t, am, pm, st))
         md += ["- Everywhere: VALUE first in the tier (adopted), PRICEY last; the one-tier cap (adopted); "
                "PM Questionable two tiers back (adopted); AM Questionable no push (adopted). Ownership tiebreak in T5: paused.", ""]
@@ -228,9 +233,9 @@ def main():
     # ---------------- last night, tier by tier
     md += tier_sections(H, last)
     # ---------------- season
-    md += ["## Season", ""] + season_tables(H) + ["", "**Adopted and rules** (leans.json)"]
+    md += ["## Season", ""] + season_tables(H) + ["", "**Adopted and rules** (leans.json; points status, money verdict). " + MONEY_NOTE]
     for x in leans["adopted"]:
-        md.append("- %s: %s %s" % (status[x["id"]], x["statement"], "(" + x["evidence"].split(";")[0] + ")"))
+        md.append("- %s, %s: %s %s" % (status[x["id"]], money(x["register"]), x["statement"], "(" + x["evidence"].split(";")[0] + ")"))
     md += ["", "**Paused**: " + "; ".join(x["statement"] for x in leans.get("paused", [])), "",
            "Full tables: tier_grade.md (by tier and window), tier_rules.md, q_lane.md, swap_board.md, my_swaps.md, backtest_rest.md, "
            "decision_register.csv."]

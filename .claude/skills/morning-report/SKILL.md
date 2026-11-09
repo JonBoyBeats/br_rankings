@@ -46,16 +46,42 @@ It writes `analysis/nba/report/today.md` and is the top of the chat (see "In cha
   scratches and what their swaps scored; then tier by tier (T1 the elite, Boom and ADP moves; T2
   the Q lane and ADP drift; T3/T4 your takes; T5 drafted% and the swap targets) and late news by
   tier.
-- **Season**: one table per tier and window, then the adopted leans and rules with their evidence.
+- **Season**: one table per tier and window, then the adopted leans and rules with their evidence
+  and money verdict.
 
 Every number comes from the script; don't recompute any of them.
+
+**Money verdicts.** The contest side writes a MONEY verdict (top finishes and dollars) into
+`decision_register.csv` (`money_verdict`) beside our POINTS verdict. Everything adopted or kept,
+switches and leans alike, is provisional until its money verdict is in, and may be changed by it
+(`leans.json` "money_policy"; each entry's `register` field names its row). Say so wherever a rule's
+status is given. Points and money together:
+
+| Points | Money | Do |
+|---|---|---|
+| positive | positive | keep |
+| positive | pending | keep, provisionally |
+| positive | negative | drop only if money's evidence clears its own bar; otherwise keep |
+| negative | positive | keep only if money's evidence clears its own bar; otherwise drop |
+| negative | negative | drop |
+
+Every change still needs the user's yes.
+
+**A proposal from the contest side** (the user brings it over): before changing anything, check
+(1) its points cost on the same decision pairs: grade it against the current rule on the 6-drafter
+decision pairs in its window and tier the way `nba_tier_rules.py` grades a candidate, with the pairs,
+the 80% range and the label; and (2) its shadow record: its comparison in `shadow.md` if there is one,
+else add it to `nba_shadow.py` and give the season-in-sample line, saying it has no forward nights yet.
+Show the user both beside the money evidence and the table above's call, then change only on a yes.
 
 **Monthly re-check** (the first report of each month): rerun `nba_tier_grade.py`,
 `nba_tier_rules.py`, `nba_q_lane.py` and `nba_backtest_rest.py` and read each adopted lean, rule and
 provisional switch against the bar it was adopted on (LEAN: 40+ pairs, 80% of resamples; RULE: 80+
-pairs, a 90% range clear of zero, the check slates, the drop-one test). One that no longer clears it
-is proposed for demotion in chat, with the numbers, and changed only with the user's yes. Never move
-a bar after the results are in.
+pairs, a 90% range clear of zero, the check slates, the drop-one test), then beside its money
+verdict from `decision_register.csv`, through the points-and-money table above. One that no longer
+clears its points bar, or that the table says to drop, is proposed for demotion in chat with both
+sets of numbers, and changed only with the user's yes. Every entry still at "money pending" is
+listed as provisional. Never move a bar after the results are in.
 
 ## 2. The scores
 

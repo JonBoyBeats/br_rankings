@@ -2,12 +2,14 @@
 
 ## Today's decisions
 
+Everything adopted or kept is provisional until its money verdict (top finishes and dollars, from the contest side: decision_register.csv) is in, and may be changed by it.
+
 **Switches by tier** (AM window · PM window)
-- T1: AM ADP (2: Boom) · PM ETR (kept)
-- T2: AM ADP · PM ADP (2: ETR) (PM provisional)
-- T3: AM Proj (3: ADP) · PM ETR (ties: ADP, Boom) (kept)
-- T4: AM Proj (3: ADP) · PM ADP (2: ETR) (PM provisional)
-- T5: AM the button's order · PM ADP (AM adopted, PM RULE)
+- T1: AM ADP (2: Boom) · PM ETR (AM kept, money pending; PM kept, money pending)
+- T2: AM ADP · PM ADP (2: ETR) (AM kept, money pending; PM provisional, money pending)
+- T3: AM Proj (3: ADP) · PM ETR (ties: ADP, Boom) (AM kept, money pending; PM kept, money pending)
+- T4: AM Proj (3: ADP) · PM ADP (2: ETR) (AM kept, money pending; PM provisional, money pending)
+- T5: AM the button's order · PM ADP (AM adopted, money pending; PM RULE, money pending)
 - Everywhere: VALUE first in the tier (adopted), PRICEY last; the one-tier cap (adopted); PM Questionable two tiers back (adopted); AM Questionable no push (adopted). Ownership tiebreak in T5: paused.
 
 **Q-tags** (calibrated chance to play; tier at the morning read)
@@ -91,16 +93,16 @@
 
 Points per pair (pairs); positive: your board won, or VALUE beat its partners. The verdicts and policy labels are in tier_grade.md.
 
-**Adopted and rules** (leans.json)
-- adopted: AM T5: the Tiers button's order is the default; your moves off it are logged as takes and graded. (Holds against ADP in both windows: your board against ADP in T5, AM primary -3.1 per pair (364 pairs, LEAN with the RULE numbers, check pending), PM -2.4 (728 pairs, RULE). Takes against the button, AM primary: -3.3 per take (285 pairs, 80% range -4.8 to -1.6).)
-- adopted: VALUE-flagged players go first in their tier (the button already sorts them there) in the middle and T5, both windows. (VALUE beat its pair partners: middle AM +2.5 (167 pairs), PM +2.7 (253))
-- adopted: PM window: a Questionable player is ordered two tiers back (the button's NBA_PM_Q_PUSH; the chip shows the tier he's ordered in). (Against the button's order on decision pairs involving him: +4.9 per pair (103 pairs, 80% range +2.1 to +8.4), RULE numbers, check pending. Back one tier +0.8 (66, no lean))
-- adopted: AM window: no push for a Questionable player; keep the button's order (a scratch is swapped, and the swap scores about like a T3/T4 player). (No variant beat the button: back one tier -1.1 (89 pairs), back two +0.8 (119), rank on X -1.8 (262))
-- adopted: PM T5: keep making beneficiary picks (raising a player whose teammate is tagged or out). (PM T5 takes by type: beneficiary picks +3.5 per take (96 pairs, 61% right, 80% range +0.1 to +6.8).)
-- provisional: PM T2: ADP, with ETR deciding within 2 picks (was within 1). (Step 6, against the old rule ADP (1: ETR): +3.9 per pair (57 pairs, 80% range +0.6 to +7.2).)
-- provisional: PM T4: ADP, with ETR deciding within 2 picks (was ETR, ties to ADP then Boom). The first rule to split T4 from T3. (Step 6, against the old ETR rule: +3.1 per pair (57 pairs, 80% range +1.0 to +5.6))
-- RULE: PM T5: ADP straight, VALUE first (was ETR, with the ownership tiebreak). (Step 6, against the old rule: T5 by ADP with VALUE moved up +2.3 per pair (560 pairs, 80% range +0.5 to +4.0): RULE, same side on the last 5 slates, drop one player holds. ADP straight +1.7 (641, lean).)
-- adopted: Combine the ladders with the one-tier cap (current): not the full move to the projection tier, not no move. (Step 6: full move to the projection tier lost to the cap in both windows, AM -4.3 (88 pairs, RULE numbers, check pending), PM -4.1 (240 pairs, RULE))
+**Adopted and rules** (leans.json; points status, money verdict). Everything adopted or kept is provisional until its money verdict (top finishes and dollars, from the contest side: decision_register.csv) is in, and may be changed by it.
+- adopted, money pending: AM T5: the Tiers button's order is the default; your moves off it are logged as takes and graded. (Holds against ADP in both windows: your board against ADP in T5, AM primary -3.1 per pair (364 pairs, LEAN with the RULE numbers, check pending), PM -2.4 (728 pairs, RULE). Takes against the button, AM primary: -3.3 per take (285 pairs, 80% range -4.8 to -1.6).)
+- adopted, money pending: VALUE-flagged players go first in their tier (the button already sorts them there) in the middle and T5, both windows. (VALUE beat its pair partners: middle AM +2.5 (167 pairs), PM +2.7 (253))
+- adopted, money pending: PM window: a Questionable player is ordered two tiers back (the button's NBA_PM_Q_PUSH; the chip shows the tier he's ordered in). (Against the button's order on decision pairs involving him: +4.9 per pair (103 pairs, 80% range +2.1 to +8.4), RULE numbers, check pending. Back one tier +0.8 (66, no lean))
+- adopted, money pending: AM window: no push for a Questionable player; keep the button's order (a scratch is swapped, and the swap scores about like a T3/T4 player). (No variant beat the button: back one tier -1.1 (89 pairs), back two +0.8 (119), rank on X -1.8 (262))
+- adopted, money pending: PM T5: keep making beneficiary picks (raising a player whose teammate is tagged or out). (PM T5 takes by type: beneficiary picks +3.5 per take (96 pairs, 61% right, 80% range +0.1 to +6.8).)
+- provisional, money pending: PM T2: ADP, with ETR deciding within 2 picks (was within 1). (Step 6, against the old rule ADP (1: ETR): +3.9 per pair (57 pairs, 80% range +0.6 to +7.2).)
+- provisional, money pending: PM T4: ADP, with ETR deciding within 2 picks (was ETR, ties to ADP then Boom). The first rule to split T4 from T3. (Step 6, against the old ETR rule: +3.1 per pair (57 pairs, 80% range +1.0 to +5.6))
+- RULE, money pending: PM T5: ADP straight, VALUE first (was ETR, with the ownership tiebreak). (Step 6, against the old rule: T5 by ADP with VALUE moved up +2.3 per pair (560 pairs, 80% range +0.5 to +4.0): RULE, same side on the last 5 slates, drop one player holds. ADP straight +1.7 (641, lean).)
+- adopted, money pending: Combine the ladders with the one-tier cap (current): not the full move to the projection tier, not no move. (Step 6: full move to the projection tier lost to the cap in both windows, AM -4.3 (88 pairs, RULE numbers, check pending), PM -4.1 (240 pairs, RULE))
 
 **Paused**: The ownership tiebreak in T5 draft rankings (less drafted first within about 2 points): the PM T5 rule's (2: less drafted), adopted 2026-11-04, and the same habit in AM.
 
