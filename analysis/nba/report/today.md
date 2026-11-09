@@ -109,7 +109,8 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - PM T2: ADP (2: ETR) vs the old ADP (1: ETR): 0/14 · season +4.1, not enough yet (37) · forward none yet · money no lean
 - T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+): 0/14 · season +1.9, not enough yet (19) · forward none yet · money LEAN for
 - Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -8.5, not enough yet (19) · forward none yet · money no lean
-- T2-1: T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season +0.1 (-1.6 to +1.9), 102 pairs, no lean · forward none yet · money RULE for
+- T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season -0.7, not enough yet (33) · forward none yet · money RULE for
+- T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season +0.5 (-2.0 to +3.3), 69 pairs, no lean · forward none yet · money RULE for
 
 **Worth a look**
 - Dejounte Murray: ours 42.6, actual 13.1, shooting: 28 min (usual 35) in a 16-point loss, 1-6

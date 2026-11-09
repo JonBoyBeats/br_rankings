@@ -176,7 +176,9 @@
    "status": "testing",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
-   "register": "card-turn23-reach-higher-proj"
+   "register": "card-turn23-reach-higher-proj",
+   "split_windows": true,
+   "decide": "Per window (2026-11-09): the shadow grades AM and PM apart (T2-1:am, T2-1:pm), and each window's Monday call stands on its own forward read: PM can be adopted on its own even if AM isn't, and the reverse. The backtest suggests PM (ETR beat ADP past pick 10, +3.7 on 75 pairs) and not AM."
   }
  }
 }

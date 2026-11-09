@@ -105,7 +105,9 @@ Show the user both beside the money evidence and the table above's call, then ch
 written with its test before any grading: its tiers and window, the alternative order (rule steps, or a pairwise
 function in `scripts/nba_shadow.py`), what it's graded against (the button) and the bar, with `status` "testing" and
 `forward_from` the next night. At most 3 ideas under test per tier (the shadow refuses more); the rest wait as
-"queued". The shadow grades them nightly (`shadow.md`, `shadow.json`).
+"queued". The shadow grades them nightly (`shadow.md`, `shadow.json`). An idea marked `split_windows` (T2-1) is
+graded as one row per window (`<id>:am`, `<id>:pm`) and decided per window at its Monday call: one window can be
+adopted on its own forward read even if the other isn't.
 
 **Monday proposals** (decided Mondays; the report lists them daily): a provisional switch at 14 forward nights is
 kept if it beat the old rule there, else dropped (the T5 tiebreak is dropped only if it lost: its points cost is a

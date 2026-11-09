@@ -14,4 +14,5 @@ Written nightly by scripts/nba_shadow.py. Points per pair on the decision pairs 
 | T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+) | candidate | +1.9, not enough yet (19) | 0 | none yet |
 | T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners | candidate | -3.1 (-4.3 to -1.6), 553 pairs, LEAN - (RULE numbers, check pending) | 0 | none yet |
 | Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back) | candidate | -8.5, not enough yet (19) | 0 | none yet |
-| T2-1: T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2 | candidate | +0.1 (-1.6 to +1.9), 102 pairs, no lean | 0 | none yet |
+| T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2 | candidate | -0.7, not enough yet (33) | 0 | none yet |
+| T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2 | candidate | +0.5 (-2.0 to +3.3), 69 pairs, no lean | 0 | none yet |

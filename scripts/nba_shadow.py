@@ -76,11 +76,18 @@ def tier_ideas():
     out = []
     for h in testing:
         t = h["test"]
-        out.append({"id": h["id"], "name": "%s: %s" % (h["id"], h["idea"]), "window": h["window"], "tiers": tuple(h["tiers"]),
+        # an idea decided per window ("split_windows") is graded as one row per window: "<id>:am", "<id>:pm"
+        for w in (h["window"].split("+") if h.get("split_windows") else [h["window"]]):
+            out.append(dict(_row(h, t), id=h["id"] + (":" + w if h.get("split_windows") else ""), window=w,
+                            name="%s%s: %s" % (h["id"], " (%s)" % w.upper() if h.get("split_windows") else "", h["idea"])))
+    return out
+
+
+def _row(h, t):
+    return {"id": h["id"], "name": "%s: %s" % (h["id"], h["idea"]), "window": h["window"], "tiers": tuple(h["tiers"]),
                     "kind": "candidate", "steps": [tuple(x) for x in t["steps"]] if t.get("steps") else None,
                     "pairwise": t.get("pairwise"), "flags": t.get("flags", "both"), "forward": h.get("forward_from", FORWARD),
-                    "drop_if": "no win", "include_q": bool(t.get("include_q")), "cross": t.get("pairwise") == "qsplit"})
-    return out
+                    "drop_if": "no win", "include_q": bool(t.get("include_q")), "cross": t.get("pairwise") == "qsplit"}
 
 
 def pairwise(how, a, b, ctx):

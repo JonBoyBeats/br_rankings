@@ -290,23 +290,51 @@
   }
  },
  {
-  "id": "T2-1",
-  "name": "T2-1: T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",
+  "id": "T2-1:am",
+  "name": "T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",
   "kind": "candidate",
   "tiers": [
    2
   ],
-  "window": "am+pm",
+  "window": "am",
   "drop_if": "no win",
   "forward_from": "2026-11-10",
   "forward_nights": 0,
   "season": {
-   "n": 102,
-   "mean": 0.09427814443228638,
-   "lo": -1.5885040856002495,
-   "hi": 1.8967032967032964,
+   "n": 33,
+   "mean": -0.6677191686670363,
+   "lo": null,
+   "hi": null,
+   "label": "not enough yet (33)",
+   "text": "-0.7, not enough yet (33)"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "T2-1:pm",
+  "name": "T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",
+  "kind": "candidate",
+  "tiers": [
+   2
+  ],
+  "window": "pm",
+  "drop_if": "no win",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 69,
+   "mean": 0.4587116420015277,
+   "lo": -2.042972060575684,
+   "hi": 3.34056312539919,
    "label": "no lean",
-   "text": "+0.1 (-1.6 to +1.9), 102 pairs, no lean"
+   "text": "+0.5 (-2.0 to +3.3), 69 pairs, no lean"
   },
   "forward": {
    "n": 0,

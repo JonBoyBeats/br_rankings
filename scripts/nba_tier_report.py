@@ -202,7 +202,7 @@ def proposals(shadow, hyp, reg, leans):
         if c["kind"] == "candidate":
             if n >= FORWARD_NIGHTS:
                 won = lab.startswith(("LEAN +", "RULE +"))
-                m = (reg.get((hyp.get(c["id"]) or {}).get("register"), {}) or {}).get("money_verdict", "pending")
+                m = (reg.get((hyp.get(c["id"].split(":")[0]) or {}).get("register"), {}) or {}).get("money_verdict", "pending")
                 against = "against" in m.split(" (")[0]
                 out.append("%s: %s after %d nights (%s; money %s)" % (c["name"], "adopt" if won and not against else "drop", n, fv["text"], m.split(" (")[0]))
             elif lab.startswith(("LEAN -", "RULE -")) and fv.get("n", 0) >= 40:
@@ -384,7 +384,7 @@ def tier_blocks(H, last, gname, tiers, shadow, reg, leans, hyp, money, money_tie
     rows = [c for c in shadow if c["kind"] in ("switch", "candidate") and (c.get("drop_if") or c["kind"] == "candidate")
             and set(c["tiers"]) & tiers]
     for c in rows:
-        rid = (hyp.get(c["id"]) or {}).get("register") or SHADOW_REG.get(c["id"], c["id"])
+        rid = (hyp.get(c["id"].split(":")[0]) or {}).get("register") or SHADOW_REG.get(c["id"], c["id"])
         md.append("- %s: %d/%d · season %s · forward %s · %s" % (c["name"], min(c["forward_nights"], FORWARD_NIGHTS), FORWARD_NIGHTS,
                                                                 c["season"]["text"], c["forward"]["text"], money(rid)))
     if not rows:
