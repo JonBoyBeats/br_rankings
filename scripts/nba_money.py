@@ -1176,9 +1176,11 @@ def report(N, mirror):
     out += reg_out + chk_out + sw_out
     r6_out, _ = round6_section(N, dates)
     out += r6_out
+    sp_out, extra = splits_section(N, dates)
+    out += sp_out
     out += field_out[:2] + turn_out + field_out[2:] + swap_split_section(N, dates)
     out += verdict_section(reg, sw, survived)
-    return out, {"reg": reg, "turns": turns, "field": field, "checked": checked, "survived": survived}
+    return out, {"reg": reg, "turns": turns, "field": field, "checked": checked, "survived": survived, "extra": extra}
 
 
 def main():
@@ -1190,6 +1192,7 @@ def main():
     out, parts = report(N, a.mirror)
     open(os.path.join(REP, "money_report.md"), "w").write("\n".join(out) + "\n")
     tj = tiers_json(N, parts)
+    tj["splits"] = parts["extra"]
     json.dump(tj, open(os.path.join(REP, "money_tiers.json"), "w"), indent=1)
     if a.proposals or dt.datetime.now(PT).weekday() == 0:             # Mondays (Pacific): the weekly verdict proposals
         json.dump(proposals(tj), open(os.path.join(REP, "money_proposals.json"), "w"), indent=1)
@@ -1529,12 +1532,121 @@ def proposals(tj):
                     ", after the price-split check" if lift["after_price_check"] else "")
             out.append({"id": x["id"], "current_money": x["verdict"], "proposed": x["current"], "read": {"lift": lift, "mine": x["mine"]},
                         "reason": reason})
+    for x in tj.get("splits", []):          # new splits the user asked for: every one is proposed, with its read
+        lift = x["lift"]
+        out.append({"id": x["id"], "current_money": x["verdict"], "proposed": x["current"], "read": {"lift": lift, "mine": x["mine"]},
+                    "reason": "new split (%s): this run reads %s%s" % (x["decision"], x["current"],
+                              " (top-10%% lift %.2f%s on %d slates%s)" % (lift["lift10"], ", 80%% range %.2f-%.2f" % tuple(lift["range80"]) if lift["range80"] else "",
+                                                                         lift["slates"], ", after the price-split check" if lift["after_price_check"] else "") if lift else "")})
     return {"generated": tj["generated"], "night": tj["night"], "slates": len(tj["slates"]),
             "notes": "Weekly MONEY verdict proposals (scripts/nba_money.py, Mondays). Nothing here is in decision_register.csv "
                      "until the user approves it. Reads: money_report.md sections 3, 3b and 5. A change to the rankings side's "
                      "inputs (tier_history.csv: a rebuilt button) can move a read without the contests changing; check the "
                      "register's points side when that happens.",
             "proposals": out}
+
+
+# ---------------------------------------------------------------- 2026-11-09: teammate splits and takes by source
+def teammate_pairs(n, t):
+    """[(pid a, round a, pid b, round b, same position group)] for every two of the team's picks on one NBA team, by the
+    rounds the team paid for them."""
+    pod = t["contest"]["pod_size"]
+    ps = [(p, min(6, max(1, math.ceil(a / pod)))) for p, a in zip(t["paid_pid"], t["paid"]) if p and p in n["rec"] and a is not None]
+    out = []
+    for i, (pa, ra) in enumerate(ps):
+        for pb, rb in ps[i + 1:]:
+            a, b = n["rec"][pa], n["rec"][pb]
+            if a["team"] == b["team"]:
+                out.append((pa, ra, pb, rb, GROUP.get((a["pos"] or "").split("-")[0]) == GROUP.get((b["pos"] or "").split("-")[0])))
+    return out
+
+
+def teammate_test(same, rounds):
+    """Holding: the team has a teammate pair of this kind (same or different position group; rounds "early" both 1-3,
+    "split" one 1-3 and one 4-6, "late" both 4-6, None any). Eligible: teams with this pair or with no teammates at all."""
+    def kind(x):
+        early = (x[1] <= 3) + (x[3] <= 3)
+        return {2: "early", 1: "split", 0: "late"}[early]
+    def has(n, t):
+        return {p for x in teammate_pairs(n, t) if x[4] == same and (rounds is None or kind(x) == rounds) for p in (x[0], x[2])}
+    def eligible(n, t):
+        return bool(has(n, t)) or not teammate_pairs(n, t)
+    return has, eligible
+
+
+def takes_cases(N, source, window):
+    """Pairs from the rankings side's takes file: A holds the player you put first, B the one the button put first, in the
+    take's window."""
+    rows = [r for r in csv.DictReader(open(os.path.join(REP, "takes_history.csv")))
+            if (source is None or r["source"] == source) and (window is None or r["window"] == window)]
+    by = collections.defaultdict(list)
+    for r in rows:
+        by[(r["date"], r["window"])].append((r["you_first_id"], r["button_first_id"]))
+    cases, drafted = [], []
+    for n in N:
+        for w in ("am", "pm"):
+            pairs = by.get((n["date"], w))
+            if not pairs:
+                continue
+            H = n.setdefault("_holders", holders(n))[w]
+            ts = [t for v in n["teams"].values() for t in v if t["window"] == w]
+            pods = collections.defaultdict(set)
+            for t in ts:
+                for p in drafted_by(t):
+                    pods[p].add(t["draft_id"])
+            npods = len({t["draft_id"] for t in ts}) or 1
+            for x, y in pairs:
+                hx, hy = H.get(x, []), H.get(y, [])
+                ix, iy = {id(t) for t in hx}, {id(t) for t in hy}
+                cases += [(n["date"], t["contest"]["contest_id"], t["bin"], "A", t, {x}) for t in hx if id(t) not in iy]
+                cases += [(n["date"], t["contest"]["contest_id"], t["bin"], "B", t, {y}) for t in hy if id(t) not in ix]
+                drafted.append((len(pods[x]) / npods, len(pods[y]) / npods))
+    gains = [num(r["gain"]) for r in rows if num(r["gain"]) is not None]
+    return cases, drafted, (st.mean(gains) if gains else None, len(gains))
+
+
+def splits_section(N, dates):
+    out = ["## 3c. Splits for Monday: teammates and takes by source", "",
+           "Each with the price-split check (section 3b). Lift: top-10% against same-contest, same-price teams.", "",
+           "### Teammates, by the rounds paid for them", "",
+           "A: teams with that teammate pair; B: teams with no two teammates at all (so same- and different-position pairs face "
+           "the same comparison).", "",
+           "| Test | Lift at 10% (80% range), at 1%; finish; teams, slates | Gap over price (A-B) | From the pair | From the other picks | Lift matched on the other picks' price | Verdict that survives |",
+           "|---|---|---|---|---|---|---|"]
+    extra = []
+    def row(name, rid, cs, extra_cols=""):
+        ev = evaluate(cs, dates)
+        r = price_check(cs, dates)
+        share = lambda x: "%+.1f (%.0f%%)" % (x, 100 * x / r["gap"]) if r and abs(r["gap"]) >= 0.5 else ("%+.1f" % x if r else "-")
+        out.append("| %s | %s | %s | %s | %s | %s | %s |%s" % (name, cell(ev["field"]["all"]), "%+.1f" % r["gap"] if r else "-",
+                                                           share(r["dec"]) if r else "-", share(r["oth"]) if r else "-",
+                                                           cell(r["ev"]["field"]["all"]) if r else "-", r["verdict"] if r else verdict(ev)[0], extra_cols))
+        extra.append({"id": rid, "decision": name, "verdict": "none: a new split", "current": r["verdict"] if r else verdict(ev)[0],
+                      "lift": lift_of(ev, r) if (r or ev) else None, "mine": mine_where(cs)})
+    for name, rid, same, rounds in (("Same position, both rounds 1-3", "card-same-position-teammates:rounds 1-3", True, "early"),
+                                    ("Same position, one in rounds 1-3 and one in 4-6", "card-same-position-teammates:split", True, "split"),
+                                    ("Same position, both rounds 4-6", "card-same-position-teammates:rounds 4-6", True, "late"),
+                                    ("Different-position teammates (any rounds)", "card-different-position-teammates", False, None)):
+        has, elig = teammate_test(same, rounds)
+        row(name, rid, hold_cases(N, ("am", "pm"), has, elig))
+    out += ["", "### Your takes by source (takes_history.csv)", "",
+            "A: teams holding the player you put first; B: the button's first, in the take's window (field and mine). Field "
+            "drafted%: the share of that window's pods that took each. Points: the takes file's average gain per take (yours).", "",
+            "| Source | Window | Lift at 10% (80% range), at 1%; finish; teams, slates | Gap over price (A-B) | From the pick | From the other picks | Lift matched on the other picks' price | Verdict that survives | Takes, points per take | Field drafted%: yours / the button's | Yours the more drafted |",
+            "|---|---|---|---|---|---|---|---|---|---|---|"]
+    for src in ("ETR", "Bagel", "Bagel+ETR", "NEWS", "OTHER", None):
+        for w in ("am", "pm", None):
+            cs, dr, (g, ng) = takes_cases(N, src, w)
+            if not cs:
+                continue
+            name = "%s | %s" % (src or "all", w.upper() if w else "both")
+            rid = "takes:%s:%s" % (src or "all", w or "both")
+            more = sum(1 for a, b in dr if a > b) / len(dr) if dr else None
+            row(name, rid, cs, "")
+            out[-1] = out[-1] + " %d, %s | %s | %s |" % (ng, "%+.1f" % g if g is not None else "-",
+                                                       "%.0f%% / %.0f%%" % (100 * st.mean(a for a, _ in dr), 100 * st.mean(b for _, b in dr)) if dr else "-",
+                                                       "%.0f%%" % (100 * more) if more is not None else "-")
+    return out + [""], extra
 
 
 if __name__ == "__main__":
