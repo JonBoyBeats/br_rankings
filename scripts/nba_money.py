@@ -2,7 +2,8 @@
 
 Everything is read off every team in every contest on file (analysis/nba/contests/, scripts/nba_contests.py), joined at
 its draft window to the rankings side's point-in-time tiers (analysis/nba/report/tier_history.csv) and graded against a
-price baseline. Writes analysis/nba/report/money_report.md and money_tiers.json (the morning report's per-tier block). It never writes decision_register.csv: MONEY verdicts go into the
+price baseline. Writes analysis/nba/report/money_report.md and money_tiers.json (the morning report's per-tier block), and on Mondays
+money_proposals.json (the weekly verdict proposals the rankings side's Monday section reads). It never writes decision_register.csv: MONEY verdicts go into the
 register by hand, only when the user approves them. The 2:17am job runs it.
 
 Definitions
@@ -27,7 +28,8 @@ Definitions
 
   python3 scripts/nba_money.py --mirror ../br-adp-mirror
 """
-import argparse, bisect, collections, csv, datetime as dt, glob, gzip, json, math, os, random, statistics as st, sys
+import argparse, bisect, collections, csv, datetime as dt, glob, gzip, json, math, os, random, re, statistics as st, sys
+from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import nba_contests as C        # noqa: E402  the contest files
@@ -40,6 +42,7 @@ NBA = os.path.join(HERE, "analysis", "nba")
 REP = os.path.join(NBA, "report")
 WINDOWS = os.path.join(NBA, "contests", "windows")
 ME = C.ME
+PT = ZoneInfo("America/Los_Angeles")
 CHECK = 5
 XS = (1, 5, 10)
 RESAMPLES = 1000
@@ -1181,11 +1184,15 @@ def report(N, mirror):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mirror", help="a clone of br-adp-mirror (draft windows for nights not cached yet)")
+    ap.add_argument("--proposals", action="store_true", help="write money_proposals.json even if it isn't Monday")
     a = ap.parse_args()
     N = load(a.mirror)
     out, parts = report(N, a.mirror)
     open(os.path.join(REP, "money_report.md"), "w").write("\n".join(out) + "\n")
-    json.dump(tiers_json(N, parts), open(os.path.join(REP, "money_tiers.json"), "w"), indent=1)
+    tj = tiers_json(N, parts)
+    json.dump(tj, open(os.path.join(REP, "money_tiers.json"), "w"), indent=1)
+    if a.proposals or dt.datetime.now(PT).weekday() == 0:             # Mondays (Pacific): the weekly verdict proposals
+        json.dump(proposals(tj), open(os.path.join(REP, "money_proposals.json"), "w"), indent=1)
     print("\n".join(out))
 
 
@@ -1467,6 +1474,67 @@ def tiers_json(N, parts):
                 blocks[k]["decisions"].append(item)
     out["tiers"] = {k: blocks[k] for k in ("1", "2", "3", "4", "5", "all", "turn", "live", "undrafted") if k in blocks}
     return out
+
+
+# ---------------------------------------------------------------- Monday: the weekly verdict proposals
+VERDICTS = ("RULE for", "RULE against", "LEAN for", "LEAN against", "no lean", "not enough", "pending")
+
+
+def register_verdict(text, label):
+    """The verdict the register's MONEY text gives a row, or one of its splits ("played: RULE for; sat: no lean";
+    "no lean for FAIR ... not enough SMASH"; "RULE for at both turns")."""
+    text = text or ""
+    if label:
+        m = re.search(re.escape(label) + r": (%s)" % "|".join(VERDICTS), text)
+        if m:
+            return m.group(1)
+        m = re.search(r"(%s)(?: for)? %s\b" % ("|".join(VERDICTS), re.escape(label)), text)
+        if m:
+            return m.group(1)
+    m = re.search("|".join(VERDICTS), text)
+    return m.group(0) if m else None
+
+
+def proposals(tj):
+    """Each register row (or split) whose verdict this run reads differently: register id, current MONEY verdict, the
+    proposed verdict, the read, the reason. A row the register holds back until it has N slates ("re-read at N") isn't
+    proposed before then. Proposals only: the register changes when the user approves."""
+    seen, out = set(), []
+    for block in tj["tiers"].values():
+        for x in block["decisions"]:
+            if x["id"] in seen or not x["current"]:
+                continue
+            seen.add(x["id"])
+            label = x["id"].split(":", 1)[1] if ":" in x["id"] else ""
+            label = label.replace(" turn", "") if x["id"].startswith("card-fallers") else label
+            have = register_verdict(x["verdict"], label)
+            if have == x["current"] or (have == "pending" and x["current"] in ("no lean", "not enough")):
+                continue
+            hold = re.search(r"re-read at (\d+)", x["verdict"] or "")
+            if hold and x["lift"] and x["lift"]["slates"] < int(hold.group(1)):
+                continue
+            lift = x["lift"]
+            strength = lambda v: 2 if v and v.startswith("RULE") else 1 if v and v.startswith("LEAN") else 0
+            side = lambda v: 1 if v and v.endswith("for") else -1 if v and v.endswith("against") else 0
+            if side(have) and side(x["current"]) and side(have) != side(x["current"]):
+                why = "the read has turned to the other side"
+            elif strength(x["current"]) > strength(have):
+                why = "the read has strengthened"
+            else:
+                why = "the read has weakened"
+            reason = "%s: the register says %s, this run reads %s" % (why, have or "nothing", x["current"])
+            if lift:
+                reason += " (top-10%% lift %.2f%s on %d slates, %d teams%s)" % (
+                    lift["lift10"], ", 80%% range %.2f-%.2f" % tuple(lift["range80"]) if lift["range80"] else "", lift["slates"], lift["teams"],
+                    ", after the price-split check" if lift["after_price_check"] else "")
+            out.append({"id": x["id"], "current_money": x["verdict"], "proposed": x["current"], "read": {"lift": lift, "mine": x["mine"]},
+                        "reason": reason})
+    return {"generated": tj["generated"], "night": tj["night"], "slates": len(tj["slates"]),
+            "notes": "Weekly MONEY verdict proposals (scripts/nba_money.py, Mondays). Nothing here is in decision_register.csv "
+                     "until the user approves it. Reads: money_report.md sections 3, 3b and 5. A change to the rankings side's "
+                     "inputs (tier_history.csv: a rebuilt button) can move a read without the contests changing; check the "
+                     "register's points side when that happens.",
+            "proposals": out}
 
 
 if __name__ == "__main__":
