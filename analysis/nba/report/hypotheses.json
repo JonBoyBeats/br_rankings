@@ -32,5 +32,102 @@
   "opened": "2026-11-01",
   "rule": "blowout_slide",
   "notes": "The study's open question: net of the opponent the 13+ favorites ran -0.9 (fit) and -2.2 (test). Read against H2 on the same players; it only differs at 13+"
+ },
+ "tiers": {
+  "T4-1": {
+   "tiers": [
+    4
+   ],
+   "window": "pm",
+   "idea": "PRICEY-last off in PM T4 (VALUE first kept)",
+   "why": "Step 6: no flags beat flags in PM T4 +4.6 per pair (40 pairs); money no lean (1.15)",
+   "test": {
+    "kind": "steps",
+    "steps": null,
+    "flags": "value",
+    "against": "the button"
+   },
+   "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
+   "status": "testing",
+   "written": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "register": "pm-t4-pricey-last-off"
+  },
+  "T4-2": {
+   "tiers": [
+    4
+   ],
+   "window": "am",
+   "idea": "AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",
+   "why": "Step 6 best of 8 in AM T4 (reverted 2026-11-09: it lost in PM T4)",
+   "test": {
+    "kind": "steps",
+    "steps": [
+     [
+      "projx",
+      2
+     ],
+     [
+      "drafted",
+      0
+     ],
+     [
+      "proj",
+      3
+     ],
+     [
+      "adp",
+      0
+     ]
+    ],
+    "flags": "both",
+    "against": "the button"
+   },
+   "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
+   "status": "testing",
+   "written": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "register": "leverage-t2-t4"
+  },
+  "T2-T4-1": {
+   "tiers": [
+    2,
+    3,
+    4
+   ],
+   "window": "am+pm",
+   "idea": "T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",
+   "why": "Money LEAN for (RULE numbers, 1.38, 6 slates); points not enough yet (13 AM / 6 PM pairs)",
+   "test": {
+    "kind": "pairwise",
+    "pairwise": "lev",
+    "flags": "both",
+    "against": "the button"
+   },
+   "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
+   "status": "testing",
+   "written": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "register": "leverage-t2-t4"
+  },
+  "T5-1": {
+   "tiers": [
+    5
+   ],
+   "window": "am",
+   "idea": "AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners",
+   "why": "Money RULE for when the teammate played (1.37), no lean when he sat; points: any tagged teammate +2.1 over the round-6 average (67 picks, LEAN +)",
+   "test": {
+    "kind": "pairwise",
+    "pairwise": "beneficiary_r6",
+    "flags": "both",
+    "against": "the button"
+   },
+   "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
+   "status": "testing",
+   "written": "2026-11-09",
+   "forward_from": "2026-11-10",
+   "register": "beneficiary-round6"
+  }
  }
 }

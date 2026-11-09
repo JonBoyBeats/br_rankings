@@ -33,21 +33,38 @@ If it isn't there, say so first: the nightly run may have failed or not run yet 
 python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror
 ```
 
-It writes `analysis/nba/report/today.md` and is the top of the chat (see "In chat"). From the top:
+Run it **after step 4** (so last night's misses and their causes are logged for "worth a look"), and put it first
+in the chat (see "In chat"). It writes `analysis/nba/report/today.md`. From the top:
 
-- **Today's decisions**, read from the mirror at report time (ADP now, the morning projection file):
-  each tier's switch for the AM and PM windows with its status from `leans.json` (adopted,
-  provisional, RULE), today's Q-tags with their tier move and calibrated chance to play, VALUE flags
-  in T3-T5, beneficiaries to watch, and the swap board reminder. It is a directional read: the
-  board's Proj isn't on the server, so the real build is the Tiers button.
-- **Shadow scoreboard**: each provisional switch against the rule it replaced, forward nights only
-  (from 2026-11-10; `shadow.md`).
-- **Last night by tier**: your board against the window's projection and ADP, the VALUE flag, the
-  scratches and what their swaps scored; then tier by tier (T1 the elite, Boom and ADP moves; T2
-  the Q lane and ADP drift; T3/T4 your takes; T5 drafted% and the swap targets) and late news by
-  tier.
-- **Season**: one table per tier and window, then the adopted leans and rules with their evidence
-  and money verdict.
+- **Pipeline health**, a line per input: contests, results, swaps credited, ETR, Lock AM and Lock PM (with any
+  fallback and when it counted), ADP snapshots, and today's inputs (our Proj, chance to play, Q-tags), due by
+  4:30am PT. Anything missing or late goes first in the chat.
+- **Monday proposals**: computed every day, decided on Mondays (see "The loop"). Nothing changes without a yes.
+- **Today's playbook**: each tier's switches (status, money), the draft card, today's Q-tags and how they're
+  handled, VALUE flags, beneficiaries, the swap board, changes this week. A directional read: the board's Proj
+  isn't on the server, so the real build is the Tiers button.
+- **T1, T2, T3/T4, T5**, four blocks each: **last night** (your board against ETR, ours and ADP on decision pairs,
+  AM and PM; your takes by source; the flags; breakers, scratches and swaps), **keep doing** (rules in force,
+  points and money), **testing** (provisional switches and ideas under test: forward nights x/14, the shadow so
+  far, money), **worth a look** (the biggest logged misses and causes); then the **contest side's block** for the
+  tier (`money_tiers.json`, written by the contest side; "contest block pending" until it exists).
+- **Season** at the bottom: a table per tier and window, takes by source and tier, the adopted leans and rules.
+
+**The record of each window** (the daily record, `scripts/nba_daily.py`): your manual Lock AM and Lock PM. A Lock
+AM counts when pressed by your first AM draft (the contest rosters' draft time, plus half an hour since draft times
+are the nearest hourly ADP snapshot; noon PT when you drafted no AM teams). With more than one Lock PM, the last
+one before swaps (the slate's first tip) counts. Fallbacks only when you didn't lock, labelled "fallback" in the
+history and the report: AM, the last board saved (or Tiers build) in the AM window by then; PM, the last export
+before contests close, else the last board saved before then. Swaps are graded from the contest data (your real
+swaps and the inferred app order), never from a lock. Nights before 2026-11-10 carry the old fallbacks, labelled
+"fallback (old rule)".
+
+**Sources.** When the user pastes Gallagher's (ETR) or Zakarian's (Bagel) columns, save them as
+`analysis/nba/takes/<date>_etr_matchups.csv` (or `_etr_top_plays.csv`) and `<date>_zakarian.csv` with an `at`
+column: when the column came out if the text says so, else when it was pasted (ISO time, like ETR's uploads).
+Then `python3 scripts/build_takes.py`. A take (your order against the button on a decision pair) is credited to
+ETR or Bagel when either player has a note from them stamped before that window's record; else NEWS (his
+projection or his team's status changed since the last lock); else OTHER (`scripts/nba_tier_takes.py`).
 
 Every number comes from the script; don't recompute any of them.
 
@@ -80,14 +97,27 @@ the 80% range and the label; and (2) its shadow record: its comparison in `shado
 else add it to `nba_shadow.py` and give the season-in-sample line, saying it has no forward nights yet.
 Show the user both beside the money evidence and the table above's call, then change only on a yes.
 
-**Monthly re-check** (the first report of each month): rerun `nba_tier_grade.py`,
+**The loop.** Ideas for a tier live in `analysis/nba/report/hypotheses.json` under `"tiers"`. Each new idea is
+written with its test before any grading: its tiers and window, the alternative order (rule steps, or a pairwise
+function in `scripts/nba_shadow.py`), what it's graded against (the button) and the bar, with `status` "testing" and
+`forward_from` the next night. At most 3 ideas under test per tier (the shadow refuses more); the rest wait as
+"queued". The shadow grades them nightly (`shadow.md`, `shadow.json`).
+
+**Monday proposals** (decided Mondays; the report lists them daily): a provisional switch at 14 forward nights is
+kept if it beat the old rule there, else dropped (the T5 tiebreak is dropped only if it lost: its points cost is a
+known price for a money RULE); an idea at 14 forward nights is proposed for adoption at a forward LEAN or better when
+its money verdict isn't against, else dropped; an idea leaning against early may be dropped early; a free test slot
+with a queued idea is offered; an adopted rule with money against is proposed for dropping under the money table
+above. Change the board, `leans.json` or `hypotheses.json` only with the user's yes.
+
+**Monthly re-check** (the first report of each month; the report flags it until `recheck.json` names the month): rerun `nba_tier_grade.py`,
 `nba_tier_rules.py`, `nba_q_lane.py` and `nba_backtest_rest.py` and read each adopted lean, rule and
 provisional switch against the bar it was adopted on (LEAN: 40+ pairs, 80% of resamples; RULE: 80+
 pairs, a 90% range clear of zero, the check slates, the drop-one test), then beside its money
 verdict from `decision_register.csv`, through the points-and-money table above. One that no longer
 clears its points bar, or that the table says to drop, is proposed for demotion in chat with both
 sets of numbers, and changed only with the user's yes. Every entry still at "money pending" is
-listed as provisional. Never move a bar after the results are in.
+listed as provisional. Never move a bar after the results are in. When done, set `recheck.json` "last" to the month.
 
 ## 2. The scores
 
@@ -376,9 +406,9 @@ git commit -m "NBA report: takeaways and player notes for <date>" && git push or
 
 In this order, short and scannable, built to read on a phone:
 
-0. **The tier report** (step 1b), as printed down through "Last night tier by tier": today's
-   decisions first, then the shadow scoreboard, then last night by tier. Its season tables go at the
-   very end of the chat, after item 8, not here.
+0. **The tier report** (step 1b), as printed down to "Season": pipeline health (anything missing or late first),
+   Monday proposals, today's playbook, then T1, T2, T3/T4 and T5 with their four blocks and the contest block. Its
+   season tables go at the very end of the chat, after item 8.
 1. **Headline**: the morning and afternoon tables, with their verdicts.
 2. **Tier rules**: the two tables, then one line on anything that stands out last night (a
    tier where the rule clearly beat or lost to ADP or the projection, or your moves off it).
@@ -391,8 +421,8 @@ In this order, short and scannable, built to read on a phone:
    Then the "Morning Proj vs ETR" bullet.
 7. **Last night, player by player**: only players whose ledger line carries a tag (the rest were
    in line), plus any "against the same team" lines.
-8. **Missing**: anything missing from the record (no lock, no tier lines on a lock, no ETR on file,
-   unmatched box scores, notes not written overnight, no contests on file) so it can be fixed.
+8. **Missing**: anything the health lines didn't already cover (no tier lines on a lock, unmatched box
+   scores, notes not written overnight).
 
 9. **Season by tier**: the tier report's season tables, and on the first report of the month the
    re-check (step 1b).

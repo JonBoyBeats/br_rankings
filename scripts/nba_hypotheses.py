@@ -196,6 +196,8 @@ def main():
     print("Scored on every graded rotation player a rule would move: points closer to his actual score "
           "than the base projection (usual minutes x usual rate), with an 80% range over nights.\n")
     for hid, h in reg.items():
+        if hid == "tiers":               # the tier ideas: graded in the shadow (scripts/nba_shadow.py), not here
+            continue
         rule = RULES.get(h.get("rule", ""))
         print("## %s: %s" % (hid, h["title"]))
         print("%s · %s since %s%s" % (h["label"], h["status"], h.get("since") or h["opened"],

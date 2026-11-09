@@ -47,6 +47,10 @@ PT, ET, UTC = ZoneInfo("America/Los_Angeles"), ZoneInfo("America/New_York"), dt.
 OUT = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "daily")
 MORNING_ADP_HOUR = 5     # PT
 ETR_FALLBACK_HOUR = 9    # PT: when no ETR came in, the morning file on file by then
+# The record of each window (2026-11-09): your manual locks; fallbacks only when you didn't lock, labelled "fallback".
+AM_UNTIL = 12            # PT: a draft before noon is an AM draft (nba_contests.AM_UNTIL)
+AM_GRACE = dt.timedelta(minutes=30)       # draft times are the nearest hourly ADP snapshot: a Lock AM that much after counts
+SWAP_FALLBACK = dt.timedelta(minutes=20)  # swaps start at the first tip; without tip times, this long after the slate locks
 ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
 # as on the Live page
 TEAM = {"SA": "SAS", "NY": "NYK", "GS": "GSW", "NO": "NOP", "UTAH": "UTA", "WSH": "WAS"}
@@ -274,7 +278,89 @@ def lock_line(slate, locks, t):
                                 " (board saved %s)" % t.astimezone(PT).strftime("%b %-d %-I:%M%p").lower() if t else " (no saved board)")
 
 
-def gist_parts(gist, slate):
+def lock_history(gist, slate):
+    """Every distinct Lock AM, Lock PM and export the gist saved for the slate, and every saved board, oldest first:
+    ({"am": [...], "pm": [...], "exp": [...]}, [board]). A re-lock replaces the lock on the board, so the earlier ones
+    come from the gist's history; an export carries the tiers and build of the board saved with it."""
+    locks, boards = {"am": {}, "pm": {}, "exp": {}}, {}
+    for t, version in gist.revs:
+        if t < slate["lock"] - dt.timedelta(hours=36) or t > slate["lock"] + dt.timedelta(hours=8):
+            continue
+        b = board_at(gist, version, slate)
+        if not b:
+            continue
+        if b.get("saved_at") and b.get("order"):
+            boards.setdefault(b["saved_at"], b)
+        for k, lk in (b.get("locks") or {}).items():
+            if k in locks and isinstance(lk, dict) and lk.get("at") and lk.get("order"):
+                locks[k].setdefault(lk["at"], dict(lk, tiers=b.get("tiers"), build=b.get("build")) if k == "exp" else lk)
+    srt = lambda d: [d[k] for k in sorted(d, key=iso)]
+    return {k: srt(v) for k, v in locks.items()}, srt(boards)
+
+
+def choose_boards(hist, boards, day, am_cut, close, swaps_at):
+    """The record of each window. AM: the last Lock AM by am_cut (your first AM draft plus AM_GRACE, else noon); else
+    (fallback) the last board saved in the AM window by then, with its Tiers build if it had one. PM: the last Lock PM
+    before swaps (a re-lock after setting the swap order counts); else (fallback) the last export before contests close,
+    else the last board saved before then. Each comes back with "source" saying which."""
+    start = at_pt(day, 0)
+    am = [l for l in hist["am"] if iso(l["at"]) <= am_cut]
+    if am:
+        am_rec = dict(am[-1], source="Lock AM" + (" (last of %d)" % len(am) if len(am) > 1 else ""))
+    else:
+        win = [b for b in boards if start <= iso(b["saved_at"]) <= am_cut]
+        b = win[-1] if win else None
+        am_rec = {"at": b["saved_at"], "order": b["order"], "cut": b.get("cut"), "tiers": b.get("tiers"), "build": b.get("build"),
+                  "source": "fallback: last %s in the AM window" % ("Tiers build" if b.get("build") else "board saved")} if b else None
+    pm = [l for l in hist["pm"] if iso(l["at"]) <= swaps_at]
+    if pm:
+        pm_rec = dict(pm[-1], source="Lock PM" + (" (last of %d before swaps)" % len(pm) if len(pm) > 1 else ""))
+    else:
+        ex = [e for e in hist["exp"] if iso(e["at"]) <= close]
+        bd = [b for b in boards if iso(b["saved_at"]) <= close]
+        if ex:
+            e = ex[-1]
+            pm_rec = {"at": e["at"], "order": e["order"], "cut": e.get("cut"), "tiers": e.get("tiers"), "build": e.get("build"),
+                      "source": "fallback: last export"}
+        elif bd:
+            b = bd[-1]
+            pm_rec = {"at": b["saved_at"], "order": b["order"], "cut": b.get("cut"), "tiers": b.get("tiers"), "build": b.get("build"),
+                      "source": "fallback: last board saved before contests closed"}
+        else:
+            pm_rec = None
+    return am_rec, pm_rec
+
+
+def first_am_draft(slate, snaps):
+    """Your first AM draft of the slate's day (its nearest hourly ADP snapshot), from the pulled contests; None without."""
+    try:
+        import nba_contests as C
+        day = pacific_day(slate["lock"])
+        _, teams = C.load_night(day)
+        mine = [t for ts in teams.values() for t in ts if t["username"] == C.ME]
+        times = C.draft_times(mine, snaps)
+    except Exception as e:                                   # no contests pulled yet: noon stands in
+        print("  %s: no draft times (%s)" % (slate["label"], e))
+        return None
+    am = sorted(t for t in times.values() if pacific_day(t) == day and t.astimezone(PT).hour < AM_UNTIL)
+    return am[0] if am else None
+
+
+def swaps_start(slate, snaps):
+    """When swaps start: the slate's first tip (ESPN, cached in contests/tips.json), else SWAP_FALLBACK after lock."""
+    try:
+        import nba_swaps as S
+        teams = {p.get("team") for p in (snaps[-1][1] if snaps else [])}
+        tip = S.tips(pacific_day(slate["lock"]))
+        t = [v for k, v in tip.items() if k in teams and v >= slate["lock"] - dt.timedelta(minutes=30)]
+        if t:
+            return min(t)
+    except Exception as e:
+        print("  %s: no tip times (%s)" % (slate["label"], e))
+    return slate["lock"] + SWAP_FALLBACK
+
+
+def gist_parts(gist, slate, snaps=None):
     """ETR's first and last upload of the lock day; your morning and afternoon boards (the Lock
     presses, else the board before ETR's first upload and the board at lock); our Proj at each."""
     day = pacific_day(slate["lock"])
@@ -284,8 +370,16 @@ def gist_parts(gist, slate):
     last = revs[-1][1]
     out = {"etr_last": etr_day(gist.store(last), day), "etr_first": None}
     board = board_at(gist, last, slate)
-    locks, saved = find_locks(gist, slate)
-    print(lock_line(slate, locks, saved))
+    hist, boards = lock_history(gist, slate)
+    drafted = first_am_draft(slate, snaps or [])
+    am_cut = min(drafted + AM_GRACE, at_pt(day, AM_UNTIL)) if drafted else at_pt(day, AM_UNTIL)
+    swaps_at = swaps_start(slate, snaps or [])
+    am_rec, pm_rec = choose_boards(hist, boards, day, am_cut, slate["lock"], swaps_at)
+    locks = {k: v for k, v in (("am", am_rec), ("pm", pm_rec)) if v}
+    out["cuts"] = {"am_by": am_cut.isoformat(), "am_by_from": "first AM draft" if drafted else "noon (no AM draft found)",
+                   "close": slate["lock"].isoformat(), "swaps_at": swaps_at.isoformat(),
+                   "seen": {k: [l["at"] for l in v] for k, v in hist.items()}}
+    print("  %s: AM %s, PM %s" % (slate["label"], (am_rec or {}).get("source", "none"), (pm_rec or {}).get("source", "none")))
     # the day's first upload: the earliest revision whose projections are today's (later ones only add to them)
     first_i = None
     if out["etr_last"]:
@@ -303,19 +397,13 @@ def gist_parts(gist, slate):
             tn = tiers_near(gist, slate, locks[which]["at"])
             if tn:
                 locks[which] = dict(locks[which], tiers=tn)
-    if locks.get("am"):
-        out["am"] = dict(locks["am"], source="Lock AM")
-    else:
-        cut = first_i if first_i is not None else len([r for r in revs if r[0] < at_pt(day, ETR_FALLBACK_HOUR)])
-        pre = board_at(gist, revs[cut - 1][1], slate) if cut > 0 else None
+    out["am"] = locks.get("am")
+    if out["am"] and not out["am"].get("ours"):            # a fallback board: our Proj as the board stashed it that day
         stash = gist.store(last)["ours"].get(day + " " + slate["label"])
-        out["am"] = {"at": pre["saved_at"], "order": pre["order"], "ours": stash["values"] if stash else {},
-                     "cut": pre.get("cut"), "tiers": pre.get("tiers"), "build": pre.get("build"), "source": "board before ETR"} if pre else None
-    if locks.get("pm"):
-        out["pm"] = dict(locks["pm"], source="Lock PM")
-    else:
-        out["pm"] = {"at": board["saved_at"], "order": board["order"], "ours": {}, "cut": board.get("cut"),
-                     "tiers": board.get("tiers"), "build": board.get("build"), "source": "board at lock"} if board else None
+        out["am"] = dict(out["am"], ours=stash["values"] if stash else {})
+    out["pm"] = locks.get("pm")
+    if out["pm"] and "ours" not in out["pm"]:
+        out["pm"] = dict(out["pm"], ours={})
     if out.get("pm"):                                     # ETR's upload as it stood when the PM board locked
         pm_at = min(iso(out["pm"]["at"]), slate["lock"])
         at_pm = [r for r in revs if r[0] <= pm_at]
@@ -435,7 +523,7 @@ def build(mirror, gist, slate, name_map):
     if box is None:
         print("  %s: games not final yet, skipped" % slate["label"])
         return None
-    parts = gist_parts(gist, slate) if gist else {}
+    parts = gist_parts(gist, slate, snaps) if gist else {}
     day = pacific_day(slate["lock"])
     first, am, pm = parts.get("etr_first"), parts.get("am"), parts.get("pm")
     morning = mirror.morning_at(iso(first["at"]) if first else at_pt(day, ETR_FALLBACK_HOUR))
@@ -523,7 +611,7 @@ def build(mirror, gist, slate, name_map):
             "etr_last": {"at": parts["etr_last"]["at"], "file": parts["etr_last"].get("file")} if parts.get("etr_last") else None,
             "etr_pm": {"at": parts["etr_pm"]["at"], "file": parts["etr_pm"].get("file")} if parts.get("etr_pm") else None,
             "adp_pm_at": s_pm[0].isoformat() if s_pm else None,
-            "am": when(am), "pm": when(pm), "gist": bool(gist)}
+            "am": when(am), "pm": when(pm), "gist": bool(gist), "cuts": parts.get("cuts")}
     return rows, meta, box_rows(day, box, mfile, parts["etr_last"]["entries"] if parts.get("etr_last") else None, rows, line)
 
 

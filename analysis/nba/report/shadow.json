@@ -1,0 +1,288 @@
+[
+ {
+  "id": "pm-t2-adp-etr2",
+  "name": "PM T2: ADP (2: ETR) vs the old ADP (1: ETR)",
+  "kind": "switch",
+  "tiers": [
+   2
+  ],
+  "window": "pm",
+  "drop_if": "no win",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 37,
+   "mean": 4.100709483958216,
+   "lo": null,
+   "hi": null,
+   "label": "not enough yet (37)",
+   "text": "+4.1, not enough yet (37)"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "pm-t4-adp-etr2",
+  "name": "PM T4: ADP (2: ETR) vs the old ETR rule",
+  "kind": "switch",
+  "tiers": [
+   4
+  ],
+  "window": "pm",
+  "drop_if": "no win",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 19,
+   "mean": -0.536842105263159,
+   "lo": null,
+   "hi": null,
+   "label": "not enough yet (19)",
+   "text": "-0.5, not enough yet (19)"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "pm-t5-vs-old-etr",
+  "name": "PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",
+  "kind": "switch",
+  "tiers": [
+   5
+  ],
+  "window": "pm",
+  "drop_if": null,
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 695,
+   "mean": 1.0088921852196184,
+   "lo": -0.7299909958283423,
+   "hi": 2.7360865055492174,
+   "label": "no lean",
+   "text": "+1.0 (-0.7 to +2.7), 695 pairs, no lean"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "t5-less-drafted-am",
+  "name": "AM T5: the less drafted within 2 pts vs the old Proj (3: ADP)",
+  "kind": "switch",
+  "tiers": [
+   5
+  ],
+  "window": "am",
+  "drop_if": "loss",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 105,
+   "mean": 5.038487761511354,
+   "lo": 1.7786035258343231,
+   "hi": 8.63214002633941,
+   "label": "RULE +",
+   "text": "+5.0 (+1.8 to +8.6), 105 pairs, RULE +"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "t5-less-drafted-pm",
+  "name": "PM T5: the less drafted within 2 pts vs the old ADP",
+  "kind": "switch",
+  "tiers": [
+   5
+  ],
+  "window": "pm",
+  "drop_if": "loss",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 91,
+   "mean": -2.764835164835165,
+   "lo": -4.927272727272728,
+   "hi": -0.7374999999999999,
+   "label": "LEAN - (RULE numbers, check pending)",
+   "text": "-2.8 (-4.9 to -0.7), 91 pairs, LEAN - (RULE numbers, check pending)"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "one-tier-cap",
+  "name": "All tiers, kept: the one-tier cap against the projection tier's order where they disagree",
+  "kind": "cap",
+  "tiers": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "window": "am+pm",
+  "drop_if": null,
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 52,
+   "mean": 0.19266967177926095,
+   "lo": -2.2246078555724678,
+   "hi": 2.518867091342992,
+   "label": "no lean",
+   "text": "+0.2 (-2.2 to +2.5), 52 pairs, no lean"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "T4-1",
+  "name": "T4-1: PRICEY-last off in PM T4 (VALUE first kept)",
+  "kind": "candidate",
+  "tiers": [
+   4
+  ],
+  "window": "pm",
+  "drop_if": "no win",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 14,
+   "mean": 6.799999999999999,
+   "lo": null,
+   "hi": null,
+   "label": "not enough yet (14)",
+   "text": "+6.8, not enough yet (14)"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "T4-2",
+  "name": "T4-2: AM T4 leverage tiebreak: within 2 projected points, less drafted first, then Proj (3: ADP)",
+  "kind": "candidate",
+  "tiers": [
+   4
+  ],
+  "window": "am",
+  "drop_if": "no win",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 73,
+   "mean": 0.4290149219290975,
+   "lo": -1.6255966162232511,
+   "hi": 2.9096333201789006,
+   "label": "no lean",
+   "text": "+0.4 (-1.6 to +2.9), 73 pairs, no lean"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "T2-T4-1",
+  "name": "T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",
+  "kind": "candidate",
+  "tiers": [
+   2,
+   3,
+   4
+  ],
+  "window": "am+pm",
+  "drop_if": "no win",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 18,
+   "mean": 1.1777777777777771,
+   "lo": null,
+   "hi": null,
+   "label": "not enough yet (18)",
+   "text": "+1.2, not enough yet (18)"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "T5-1",
+  "name": "T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners",
+  "kind": "candidate",
+  "tiers": [
+   5
+  ],
+  "window": "am",
+  "drop_if": "no win",
+  "forward_from": "2026-11-10",
+  "forward_nights": 0,
+  "season": {
+   "n": 435,
+   "mean": -2.3034917819728897,
+   "lo": -4.1363804663746135,
+   "hi": -0.04390927105582465,
+   "label": "LEAN -",
+   "text": "-2.3 (-4.1 to -0.0), 435 pairs, LEAN -"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ }
+]

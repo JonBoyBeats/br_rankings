@@ -50,7 +50,8 @@ print(f'{len(cfb)} college takes -> analysis/cfb_takes.json')
 
 # NBA: one CSV per day and source, <YYYY-MM-DD>_<source>.csv in analysis/nba/takes/
 # (the Pacific game day), shown in the Board's row dropdown on that day's NBA slates.
-NBA_SOURCES = {'Zakarian': 'Zakarian, Bagel with Locks (Underdog)', 'ETR': 'Establish the Run, NBA Matchups and Top Plays',
+# Each row carries `at`: when the column came out (or was pasted in), so a take is credited only to notes before it.
+NBA_SOURCES = {'Zakarian': 'Zakarian, Bagel with Locks (Underdog)', 'ETR': 'Establish the Run (Gallagher), NBA Matchups and Top Plays',
                'Recent': 'Our ledger: his last 5 games against ETR, and why (scripts/nba_ledger.py)'}
 nba = []
 for path in sorted(glob.glob(os.path.join(HERE, 'nba', 'takes', '*.csv'))):

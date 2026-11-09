@@ -7,9 +7,19 @@ a player who sat counts his swap's points (his credited swaps in analysis/nba/re
 average swap, else the season's). Writes analysis/nba/report/takes_history.csv, one row per take, and prints the
 grade by pod size, window, AM sample and tier, with an 80% range from resampling slates.
 
+Each take is credited to a source (2026-11-09):
+  ETR / Bagel   either player of the pair has a note that day from ETR (Gallagher's columns, <date>_etr_*.csv)
+                or Zakarian (Bagel, <date>_zakarian.csv) stamped before the window's record (a note with no time stamp
+                counts for the whole day); both: "ETR+Bagel"
+  NEWS          else, either player's projection or his team's status changed since the last lock: PM, ETR moved 2+
+                points from its first upload to the PM record, or a tag on his team changed from the AM record to the
+                PM record; AM (no lock before it that day), our Proj at the AM record 2+ off the morning file, or a tag
+                on his team at the AM record
+  OTHER         the rest
+
   python3 scripts/nba_tier_takes.py
 """
-import csv, collections, os, random
+import csv, collections, datetime as dt, glob, json, os, random, re
 
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 REP = os.path.join(HERE, "analysis", "nba", "report")
@@ -28,10 +38,50 @@ def slot(r):
         if k in sw: return sw[k][1]/sw[k][0], 'swap'
         d=night.get(r['date']); return (d[1]/d[0] if d else allsw), 'swap (night avg)'
     return f(r['actual']), 'played'
+DAILY = os.path.join(HERE, "analysis", "nba", "daily")
+NOTES = {"ETR": "etr_*", "Bagel": "zakarian"}     # source -> <date>_<file>.csv in analysis/nba/takes (ETR: matchups, top plays)
+TAG = re.compile(r"^(q|d|g|o)", re.I)
+norm = lambda n: re.sub(r"[^a-z ]", "", (n or "").lower().replace("-", " ").replace(".", "")).strip()
+iso = lambda t: dt.datetime.fromisoformat(t.replace("Z", "+00:00"))
+meta = json.load(open(os.path.join(DAILY, "meta.json")))
+daily = {}
+for p in glob.glob(os.path.join(DAILY, "*_main.csv")):
+    for r in csv.DictReader(open(p)):
+        daily[(r["date"], r["player_id"])] = r
+def notes(d):
+    """{name key: [(source, at or None)]} for the day."""
+    out = collections.defaultdict(list)
+    for src, fn in NOTES.items():
+        for p in glob.glob(os.path.join(HERE, "analysis", "nba", "takes", "%s_%s.csv" % (d, fn))):
+            for r in csv.DictReader(open(p)):
+                out[norm(r["player"])].append((src, iso(r["at"]) if r.get("at") else None))
+    return out
+def record_at(d, w):
+    m = next((v for k, v in meta.items() if k.startswith(d)), {})
+    x = m.get(w) or {}
+    return iso(x["at"]) if x.get("at") else None
+def changed(d, w, r):
+    """Whether his projection or his team's status changed since the last lock (see the docstring)."""
+    e, mates = daily.get((d, r["player_id"]), {}), [x for x in daily_by_team.get((d, r["team"]), [])]
+    if w == "pm":
+        a, b = f(e.get("etr_first")), f(e.get("etr_pm"))
+        moved = a is not None and b is not None and abs(a - b) >= 2
+        return moved or any((x.get("injury_am") or "") != (x.get("injury_pm") or "") for x in mates)
+    a, b = f(e.get("ours_raw")), f(e.get("ours_am"))
+    return (a is not None and b is not None and abs(a - b) >= 2) or any(TAG.match(x.get("injury_am") or "") for x in mates)
+daily_by_team = collections.defaultdict(list)
+for (d, pid), r in daily.items():
+    daily_by_team[(d, r["team"])].append(r)
+def source(d, w, a, b, nt):
+    at = record_at(d, w)
+    got = sorted({src for r in (a, b) for src, t in nt.get(norm(r["name"]), []) if t is None or at is None or t <= at})
+    if got:
+        return "+".join(got)
+    return "NEWS" if changed(d, w, a) or changed(d, w, b) else "OTHER"
 res=collections.defaultdict(lambda: collections.defaultdict(list))
 rows_out=[]
 for (d,w),rs in [(k,[r for r in H if (r['date'],r['window'])==k]) for k in sorted({(r['date'],r['window']) for r in H})]:
-    sample=rs[0]['sample']; pod=rs[0]['pod']
+    sample=rs[0]['sample']; pod=rs[0]['pod']; nt=notes(d)
     for t in '12345':
         cap0=24.0 if pod=='4' else 36.0
         q=[r for r in rs if r['tier']==t and r['your_rank'] and r['built'] and r['actual']!='' and f(r['adp']) is not None and f(r['adp'])<cap0]
@@ -46,8 +96,10 @@ for (d,w),rs in [(k,[r for r in H if (r['date'],r['window'])==k]) for k in sorte
                 if fx==fy: continue
                 first,second=(fx,fy) if you else (fy,fx)
                 res[(pod,w,sample,t)][d].append(first-second)
-                rows_out.append({'date': d, 'window': w, 'pod': pod, 'sample': sample, 'tier': t, 'you_first': (x if you else y)['name'],
-                                 'button_first': (y if you else x)['name'], 'gain': round(first-second, 1)})
+                a,b=(x,y) if you else (y,x)
+                rows_out.append({'date': d, 'window': w, 'pod': pod, 'sample': sample, 'tier': t, 'you_first': a['name'],
+                                 'button_first': b['name'], 'gain': round(first-second, 1), 'you_first_id': a['player_id'],
+                                 'button_first_id': b['player_id'], 'source': source(d, w, a, b, nt)})
 print('| Pod | Window | Sample | Tier | Nights | Takes (pairs) | You right | Points per take | 80% range |')
 print('|---|---|---|---|---|---|---|---|---|')
 rnd=random.Random(1)

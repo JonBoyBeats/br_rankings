@@ -35,13 +35,13 @@
   "adp_pm_at": "2026-10-21T20:37:35+00:00",
   "am": {
    "at": "2026-10-21T10:48:30.850Z",
-   "from": "board before ETR",
+   "from": "fallback (old rule): board saved before ETR's first upload",
    "ours": false,
    "tiers": null
   },
   "pm": {
    "at": "2026-10-21T21:21:56.839Z",
-   "from": "board at lock",
+   "from": "fallback (old rule): board saved at lock",
    "ours": false,
    "tiers": null
   },
@@ -69,13 +69,13 @@
   "adp_pm_at": "2026-10-22T20:37:03+00:00",
   "am": {
    "at": "2026-10-22T16:34:38.663Z",
-   "from": "board before ETR",
+   "from": "fallback (old rule): board saved before ETR's first upload",
    "ours": false,
    "tiers": null
   },
   "pm": {
    "at": "2026-10-22T20:55:01.585Z",
-   "from": "board at lock",
+   "from": "fallback (old rule): board saved at lock",
    "ours": false,
    "tiers": null
   },
@@ -103,13 +103,13 @@
   "adp_pm_at": "2026-10-23T20:23:16+00:00",
   "am": {
    "at": "2026-10-23T15:49:02.988Z",
-   "from": "board before ETR",
+   "from": "fallback (old rule): board saved before ETR's first upload",
    "ours": false,
    "tiers": null
   },
   "pm": {
    "at": "2026-10-23T21:05:46.492Z",
-   "from": "board at lock",
+   "from": "fallback (old rule): board saved at lock",
    "ours": false,
    "tiers": [
     7,
@@ -143,13 +143,13 @@
   "adp_pm_at": "2026-10-24T21:22:49+00:00",
   "am": {
    "at": "2026-10-24T16:57:04.651Z",
-   "from": "board before ETR",
+   "from": "fallback (old rule): board saved before ETR's first upload",
    "ours": false,
    "tiers": null
   },
   "pm": {
    "at": "2026-10-24T21:58:10.254Z",
-   "from": "board at lock",
+   "from": "fallback (old rule): board saved at lock",
    "ours": false,
    "tiers": [
     4,
@@ -183,13 +183,13 @@
   "adp_pm_at": "2026-10-25T21:23:20+00:00",
   "am": {
    "at": "2026-10-25T19:13:27.818Z",
-   "from": "board before ETR",
+   "from": "fallback (old rule): board saved before ETR's first upload",
    "ours": false,
    "tiers": null
   },
   "pm": {
    "at": "2026-10-25T22:23:12.014Z",
-   "from": "board at lock",
+   "from": "fallback (old rule): board saved at lock",
    "ours": false,
    "tiers": [
     8,
@@ -223,7 +223,7 @@
   "adp_pm_at": "2026-10-26T21:10:50+00:00",
   "am": {
    "at": "2026-10-26T13:20:45.703Z",
-   "from": "board before ETR",
+   "from": "fallback (old rule): board saved before ETR's first upload",
    "ours": false,
    "tiers": [
     5,
@@ -235,7 +235,7 @@
   },
   "pm": {
    "at": "2026-10-26T21:14:03.686Z",
-   "from": "board at lock",
+   "from": "fallback (old rule): board saved at lock",
    "ours": false,
    "tiers": [
     9,
@@ -269,7 +269,7 @@
   "adp_pm_at": "2026-10-27T21:23:51+00:00",
   "am": {
    "at": "2026-10-27T15:06:46.003Z",
-   "from": "board before ETR",
+   "from": "fallback (old rule): board saved before ETR's first upload",
    "ours": false,
    "tiers": [
     6,
@@ -689,7 +689,7 @@
   },
   "pm": {
    "at": "2026-11-06T22:36:54.462Z",
-   "from": "board at lock",
+   "from": "fallback (old rule): board saved at lock",
    "ours": false,
    "tiers": [
     4,
@@ -733,7 +733,7 @@
   },
   "pm": {
    "at": "2026-11-07T22:24:07.860Z",
-   "from": "board at lock",
+   "from": "fallback (old rule): board saved at lock",
    "ours": false,
    "tiers": [
     3,
@@ -766,7 +766,7 @@
   "adp_pm_at": "2026-11-08T22:22:48+00:00",
   "am": {
    "at": "2026-11-08T22:13:01.457Z",
-   "from": "board before ETR",
+   "from": "fallback (old rule): board saved before ETR's first upload",
    "ours": true,
    "tiers": [
     4,
@@ -777,7 +777,7 @@
   },
   "pm": {
    "at": "2026-11-08T23:06:46.906Z",
-   "from": "board at lock",
+   "from": "fallback (old rule): board saved at lock",
    "ours": false,
    "tiers": [
     4,

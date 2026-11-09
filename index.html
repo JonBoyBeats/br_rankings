@@ -1756,7 +1756,7 @@ function lockBoard(which) {
 function mergeLocks(remote) {
   if (!remote || !remote.locks || remote.locks.slate_id !== state.slate.slate_id) return;
   var mine = slateLocks(), changed = false;
-  ["am", "pm"].forEach(function (w) {
+  ["am", "pm", "exp"].forEach(function (w) {
     var r = remote.locks[w];
     if (r && (!mine[w] || isoMs(r.at) > isoMs(mine[w].at))) { mine[w] = r; changed = true; }
   });
@@ -3864,6 +3864,22 @@ function nbaBuildLadders() {
   return out;
 }
 
+/** What the Tiers build needs for today and isn't in yet: our Proj (the morning file through yesterday's games),
+    the Q-tags (the mirror's last poll) and the chance to play (nba_sit.json for today), all due by 4:30am PT. */
+function nbaReadiness(nowMs) {
+  var s = state.slate, out = [];
+  if (!s) return out;
+  var day = pacificDay(s.cutoff), y = new Date(Date.parse(day + "T12:00:00Z") - 864e5).toISOString().slice(0, 10);
+  var through = state.nbaIdx && state.nbaIdx.through;
+  if (through !== y) out.push("our Proj " + (through ? "is through " + through + "'s games, not " + y + "'s" : "isn't loaded"));
+  var sit = state.nbaSit;
+  if (!sit || !(sit.date === day || (sit.days && sit.days[day]))) out.push("chance to play isn't in for " + day);
+  var polled = state.data && Date.parse(String(state.data.generated_at).replace(
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, "$1-$2-$3T$4:$5:$6Z"));
+  if (!isFinite(polled) || (nowMs || Date.now()) - polled > 90 * 60000) out.push("Q-tags are from the mirror's poll at " + whenPT(state.data && state.data.generated_at));
+  return out;
+}
+
 /** Press Tiers: rebuild the board from the ladders and save it. */
 function pressTiers() {
   var label = state.slate.label, prev = load(K.tierBuild(label), null);
@@ -3884,6 +3900,9 @@ function pressTiers() {
   setStatus("Tiers built for the " + b.window.toUpperCase() + " window on " + (b.source === "etr" ? "ETR" : "our Proj") +
     (b.note ? " (" + b.note + ")" : "") + ": ADP lines at " + b.lines.a.join(", ") + ", projection lines at " + b.lines.p.join(", ") +
     "; " + flags + " flagged. Moves from here are logged as takes.");
+  var miss = nbaReadiness();
+  if (miss.length) setStatus("Tiers built, but not ready for today (due by 4:30am PT): " + miss.join("; ") +
+    ". The build used what's on file.", "warn");
 }
 
 /** After a hand move: log it on the build as a take. */
@@ -6708,6 +6727,13 @@ async function doExport() {
     a.click();
     document.body.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    if (SPORT_MODE === "nba" && state.slate && state.slate.slate_id === slate.slate_id) {
+      // NBA: the export rides with the locks to your gist, the PM record's fallback when there's no Lock PM
+      var lk = slateLocks();
+      lk.exp = { at: new Date().toISOString(), order: ranked.slice(), cut: exportCut };
+      lk.slate_id = slate.slate_id;
+      save(K.locks(state.slate.label), lk);
+    }
 
     state.data = fresh;
     state.slate = slate;

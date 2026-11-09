@@ -34,6 +34,11 @@ jobs:
           FROM=$(date -u -d "${SINCE:-today} -7 days" +%F)
           git clone -q --shallow-since="$FROM" https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror
           if [ -n "$GIST_ID" ]; then git clone -q --shallow-since="$FROM" "https://gist.github.com/$GIST_ID.git" ../gist; fi
+      # Last night's contest rosters first: the daily record reads your first AM draft from them (the AM lock's cutoff)
+      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
+        name: Contests pull
+        continue-on-error: true
+        run: python3 scripts/nba_contests.py pull --mirror ../br-adp-mirror
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
         run: |
           python3 scripts/nba_daily.py --mirror ../br-adp-mirror \
@@ -66,7 +71,6 @@ jobs:
         name: Contests
         continue-on-error: true
         run: |
-          python3 scripts/nba_contests.py pull --mirror ../br-adp-mirror
           python3 scripts/nba_contests.py measures --mirror ../br-adp-mirror --date "$(TZ=America/Los_Angeles date -d yesterday +%F)"
           python3 scripts/nba_contests.py model
           # the Live page's lineup chances replayed on last night's flagship, against how they finished
@@ -92,6 +96,7 @@ jobs:
         run: |
           python3 scripts/nba_tier_history.py --mirror ../br-adp-mirror > /dev/null
           python3 scripts/nba_swaps.py > /dev/null
+          python3 scripts/nba_tier_takes.py > /dev/null
           python3 scripts/nba_shadow.py > /dev/null
           python3 scripts/nba_swap_board.py > /dev/null
           python3 scripts/nba_my_swaps.py > /dev/null
@@ -108,6 +113,6 @@ jobs:
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
           mkdir -p analysis/cbb/daily analysis/cbb/contests
-          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md
+          git add analysis/cbb/daily analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/shadow.json analysis/nba/report/takes_history.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md
           git diff --cached --quiet || git commit -m "NBA daily: record and Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           git pull --rebase -q origin main && git push
