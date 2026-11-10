@@ -357,7 +357,7 @@ def biggest_bets(night, mt):
         note = (l.get("note") or l.get("draft") or "").strip() or "No box line."
         lift = x.get("lift10")
         md.append("- **%s**, on %s of your teams (%s of your %s ones) against %s of the field. %s%s" % (
-            short(name), pct(mine), pct(x["mine"]), {"am": "morning", "pm": "afternoon"}[heavy], pct(field), note,
+            name, pct(mine), pct(x["mine"]), {"am": "morning", "pm": "afternoon"}[heavy], pct(field), note,
             "" if lift is None else " His holders made the top 10%% %s." % (
                 "%.1f times as often as the field" % lift if lift >= 0.1 else "almost never")))
     return md + [""]

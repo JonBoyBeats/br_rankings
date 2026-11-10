@@ -8,9 +8,9 @@ Wembanyama (40 points with 9 blocks in 25 minutes), Davis (44 back from his ankl
 
 **Your biggest bets.**
 
-- **Reed**, on 47% of your teams (58% of your afternoon ones) against 16% of the field. In line: 21 minutes with AD playing, 10 rebounds and 3 blocks. His holders made the top 10% 0.8 times as often as the field.
-- **Shead**, on 27% of your teams (46% of your afternoon ones) against 1% of the field. Over: 36 minutes with 20 and 11, Barnes and Quickley out. His holders made the top 10% 1.4 times as often as the field.
-- **Thompson**, on 18% of your teams (28% of your afternoon ones) against 5% of the field. Under on the back end of a back-to-back. His holders made the top 10% 0.6 times as often as the field.
+- **Paul Reed**, on 47% of your teams (58% of your afternoon ones) against 16% of the field. In line: 21 minutes with AD playing, 10 rebounds and 3 blocks. His holders made the top 10% 0.8 times as often as the field.
+- **Jamal Shead**, on 27% of your teams (46% of your afternoon ones) against 1% of the field. Over: 36 minutes with 20 and 11, Barnes and Quickley out. His holders made the top 10% 1.4 times as often as the field.
+- **Ausar Thompson**, on 18% of your teams (28% of your afternoon ones) against 5% of the field. Under on the back end of a back-to-back. His holders made the top 10% 0.6 times as often as the field.
 
 **In every tier.** A player's tier is his ADP tier, moved at most one tier toward our projection's (contest results: an early sign it hurts). PRICEY players (a tier below their ADP on our projection) go last in their tier (an early sign it helps); VALUE players go first in T3 to T5. A Questionable player keeps his tier in the morning (no clear signal) and drops two in the afternoon (no clear signal). Points are scored on head-to-head pairs, two players in a tier within 4 picks of ADP: how much more the chosen one scored. Contest results are how often teams that followed a rule made the top 10%.
 
