@@ -58,5 +58,13 @@
    "SAC"
   ],
   "note": "No Lock AM or Lock PM pressed: since the 11-09 rebuild the morning is the 5:04am board saved in the AM window (fallback), the afternoon the 3:06pm board saved before contests closed (fallback). Domantas Sabonis (ADP 4.9), untagged on the morning board and Questionable at lock, was in ETR's 2:19pm upload and sat: SAC out of both halves. Lauri Markkanen (22.9), Questionable on the morning board, was Out by lock and already off the 3:06pm board: UTA out of the morning only. Jovic, Bilodeau and Poole (36) also sat but weren't drafted early."
+ },
+ "2026-11-09": {
+  "am": [
+   "TOR",
+   "LAL"
+  ],
+  "pm": [],
+  "note": "Scottie Barnes (ADP 10.4), Questionable at the 3:41am Lock AM, was out before lock (off ADP and ETR's 3:48pm upload; already in your out pile at the 3:33pm Lock PM): TOR out of the morning. Austin Reaves (14.1), untagged at Lock AM, the same: LAL out of the morning. Zion Williamson (28.4) and Trey Murphy III (35.7), untagged at Lock AM, sat on the back end of a back-to-back but weren't drafted early: NOP stays graded, calls on their teammates logged as hedge. Quickley, Murray-Boyles, Vassell and Grimes also sat (36)."
  }
 }

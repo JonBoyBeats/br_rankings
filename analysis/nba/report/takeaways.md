@@ -2,6 +2,14 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-09 Mon main
+
+- Locked both windows: Lock AM 3:41am (counted; your first draft from 4:30am came later), Lock PM the last of three before swaps (3:33pm), and one overnight draft. Late news: Scottie Barnes (Questionable at Lock AM) and Austin Reaves (untagged then) were ruled out before the PM lock, so TOR and LAL sit out the morning's grading; Zion and Trey Murphy sat on the back end but weren't early picks.
+- Morning: 63% against ADP (season 53%, too close) but 24% against our number (season 55%, your board still wins); your raises of Podziemski and Nembhard were right, the Sarr raise wrong (AD played). Afternoon: 45% against ETR (season 47%), 48% against ours and ADP; raises on Reed, Bridges and Kyshawn George missed, fades on Dejounte, Castle and Harper were right, the Kyrie fade wrong (38 minutes on the back end, 7-10 from three).
+- Theme (hedges left out): calls that ended in a blowout are now raises 1 right, 16 wrong (10 slates) and fades 12 right, 3 wrong (7 slates); last night's were GSW by 51 over NOP, SAS by 26 over PHX. Raises on players who then played 4+ minutes over their usual: 25 right, 4 wrong; fades on them 3 right, 14 wrong. Cleveland's three stars all played 23-25 minutes in a 12-point loss (unclear) and Cade 27 on the back end: 4 `minutes` misses in one night.
+- Field: 95 teams (80 in Monday Night Hoops, median finish top 36%, top 10% 1.25), none in the top 1%. Running, 6-drafter: 1.35 at the top 10% (15 nights), AM teams 1.63 against PM 1.23. Of your 40 takes off the tier rules, 16 were right.
+- Morning Proj vs ETR (etr_match.md): direction 97% (30 of 31; season 90%), ETR's top and bottom 5 all on the right side, big misses 11 of 60 (18%, season 24%), CLV 0.07 against ETR's 0.08. Missed the same way on 3+ of the last 10: Traore and Flagg (ETR above ours), Sabonis and LaMelo (ETR below). The rookie check has 12 entries since 11-07 (gap +0.55, down from +2.54); reported at 15.
+
 ## 2026-11-08 Sun main
 
 - No Lock AM or Lock PM pressed. The morning is graded off the 2:07pm board saved just before ETR's 2:13pm upload, the afternoon off the 3:06pm board at lock, so both halves read a lighter day of moves than usual. Sabonis (ADP 4.9, Questionable only at lock, still in ETR's 2:19pm file) sat: SAC out of both halves. Lauri (22.9) was Out and already off the 3:06pm board: UTA out of the morning only.

@@ -408,3 +408,33 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-11-08,nba_sun_main,Brayden Burries,MIL,split,24.5,29.9,30.6,29,20.1,-20,minutes,yes,etr,ETR 29.9 vs ours 24.5; 29 min (usual 20). No last season: the last-3 average is on from 11-07
 2026-11-08,nba_sun_main,Payton Pritchard,BOS,split,36.2,30.9,27.0,29,26.3,20,shooting,no,etr,ours 36.2 vs ETR 30.9; 4-11 from three
 2026-11-08,nba_sun_main,Derik Queen,NOP,split,34.0,28.9,20.5,21,22.6,-16,shooting,no,etr,ours 34.0 vs ETR 28.9; 1-5 with 4 turnovers
+2026-11-09,nba_mon_main,Jeremiah Fears,NOP,am_call,37.0,41.3,23.6,29,28.9,-51,hedge,no,right,"faded from ADP 28th to your 45th; 4-12 with 6 turnovers in a 51-point loss. Zion and Trey Murphy sat after Lock AM (untagged then), so a hedge"
+2026-11-09,nba_mon_main,Onyeka Okongwu,ATL,am_call,36.1,36.8,33.3,30,29.6,-10,other,?,wrong,"faded from 23rd to 39th; played his number (33.3 vs ours 36.1) on normal minutes, 6-11: the fade was price, not form"
+2026-11-09,nba_mon_main,Alex Sarr,WAS,am_call,34.2,33.5,18.6,25,26.0,-11,news,no,wrong,"raised from 45th to 31st; AD, Questionable at Lock AM, played 34 minutes, so Sarr's role stayed small: 4 points on 2-5"
+2026-11-09,nba_mon_main,Jalen Green,PHX,am_call,33.3,32.5,15.0,24,29.1,-26,blowout,partly,right,"faded from 33rd to 47th; 24 minutes (usual 29) in a 26-point loss, 2-8"
+2026-11-09,nba_mon_main,Miles Bridges,PHX,am_call,36.2,37.2,19.0,26,32.4,-26,blowout,partly,right,"faded from 25th to 38th; 26 minutes (usual 32) in a 26-point loss, 3-9"
+2026-11-09,nba_mon_main,Brandin Podziemski,GSW,am_call,37.2,37.8,39.4,26,34.0,51,shooting,no,right,raised from 45th to 32nd; 25 on 10-19 (5-11 from three) in only 26 minutes of a 51-point win
+2026-11-09,nba_mon_main,Draymond Green,GSW,am_call,31.8,31.3,15.6,21,27.6,51,blowout,partly,right,faded from 38th to 50th; 21 minutes (usual 28) in a 51-point win
+2026-11-09,nba_mon_main,Andrew Nembhard,IND,am_call,41.2,39.2,33.6,34,33.1,-3,peripherals,no,right,"raised from 38th to 27th; 12 assists on normal minutes carried a 33.6, under our 41 but strong for a 6th-rounder"
+2026-11-09,nba_mon_main,Paul Reed,DET,pm_call,42.6,35.0,29.0,21,26.6,11,minutes,yes,wrong,raised from ETR's 46th to your 23rd; 21 minutes (usual 27) in an 11-point win with AD playing: 10 rebounds and 3 blocks but 4 points. Our number (42.6) was the AD-out case; ETR (35) was closer
+2026-11-09,nba_mon_main,Onyeka Okongwu,ATL,pm_call,36.1,36.8,33.3,30,29.6,-10,other,?,right,raised from ETR's 40th to 30th; 33.3 on normal minutes (6-11) beat the players passed
+2026-11-09,nba_mon_main,Dejounte Murray,NOP,pm_call,46.1,43.0,16.1,18,33.9,-51,blowout,partly,right,faded from ETR's 18th to 28th; 18 minutes (usual 34) in a 51-point loss
+2026-11-09,nba_mon_main,Miles Bridges,PHX,pm_call,36.2,37.2,19.0,26,32.4,-26,blowout,partly,wrong,"raised from ETR's 38th to 29th; 26 minutes in a 26-point loss, 3-9 with no assists"
+2026-11-09,nba_mon_main,Stephon Castle,SAS,pm_call,42.6,41.6,25.1,30,28.9,26,shooting,no,right,faded from ETR's 24th to 33rd; 2-10 on normal minutes
+2026-11-09,nba_mon_main,Kyrie Irving,DAL,pm_call,41.7,44.3,39.0,38,29.6,3,minutes,yes,wrong,faded from ETR's 13th to 19th on the back end of a back-to-back; played 38 minutes (usual 30) in a 3-point game and hit 7-10 from three
+2026-11-09,nba_mon_main,Kyshawn George,WAS,pm_call,36.6,38.4,19.6,35,33.1,-11,shooting,no,wrong,"raised from ETR's 33rd to 27th; 5-12 with 5 turnovers on normal minutes, AD playing"
+2026-11-09,nba_mon_main,Dylan Harper,SAS,pm_call,39.4,39.4,29.0,26,31.9,26,blowout,partly,right,faded from ETR's 31st to 37th; 26 minutes (usual 32) in a 26-point win
+2026-11-09,nba_mon_main,Dejounte Murray,NOP,miss,46.1,43.0,16.1,18,33.9,-51,blowout,partly,etr,18 minutes in a 51-point loss on the back end of a back-to-back
+2026-11-09,nba_mon_main,Donovan Mitchell,CLE,miss,46.9,44.9,22.4,23,33.5,-12,minutes,yes,etr,"23 minutes (usual 34) in a 12-point loss; Mobley (24) and Harden (25) were cut too: looks like a rotation or rest call, unclear"
+2026-11-09,nba_mon_main,Cade Cunningham,DET,miss,57.9,56.3,34.1,27,34.0,11,minutes,yes,etr,"27 minutes (usual 34) in an 11-point win on the back end of a back-to-back, 0-4 from three"
+2026-11-09,nba_mon_main,Evan Mobley,CLE,miss,43.0,42.6,20.9,24,32.8,-12,minutes,yes,etr,"24 minutes (usual 33) in a 12-point loss, with Mitchell and Harden also short: unclear"
+2026-11-09,nba_mon_main,James Harden,CLE,miss,41.6,39.5,21.1,25,33.3,-12,minutes,yes,etr,"25 minutes (usual 33) in a 12-point loss, 3-9 with 4 turnovers: unclear"
+2026-11-09,nba_mon_main,Saddiq Bey,NOP,miss,35.5,36.5,15.0,24,26.9,-51,blowout,partly,ours,"24 minutes in a 51-point loss, 3-9 and no rebounds; his number was up with Zion and Trey out"
+2026-11-09,nba_mon_main,Jalen Johnson,ATL,miss,51.0,51.2,31.4,38,31.7,-10,shooting,no,ours,"38 minutes (usual 32) but 6-14, 0-3 from three with 4 turnovers"
+2026-11-09,nba_mon_main,Fred VanVleet,HOU,miss,34.5,34.3,15.2,30,26.8,10,peripherals,no,etr,"30 minutes (usual 27) and 3-6 from three, but 1 rebound and 2 assists"
+2026-11-09,nba_mon_main,Jamal Shead,TOR,split,27.6,38.4,41.9,36,22.9,-16,teammate-out,yes,etr,"ours 27.6 vs ETR 38.4; 36 minutes (usual 23) with 20 and 11 assists, Barnes and Quickley out: ETR priced the handler role"
+2026-11-09,nba_mon_main,Paul Reed,DET,split,42.6,35.0,29.0,21,26.6,11,minutes,yes,etr,ours 42.6 vs ETR 35.0; 21 minutes with AD playing
+2026-11-09,nba_mon_main,Luka Doncic,LAL,split,66.1,72.0,71.6,39,35.9,10,teammate-out,yes,etr,"ours 66.1 vs ETR 72.0; Reaves out, 39 minutes (usual 36) with 5 stocks: ETR priced the usage"
+2026-11-09,nba_mon_main,Pascal Siakam,IND,split,47.1,41.5,57.8,35,32.0,-3,shooting,no,ours,ours 47.1 vs ETR 41.5; 29 on 9-16 with 5-8 from three
+2026-11-09,nba_mon_main,Ja'Kobe Walter,TOR,split,29.9,35.0,18.2,34,29.1,-16,shooting,no,ours,ours 29.9 vs ETR 35.0; 34 minutes but 4-13 with no assists
+2026-11-09,nba_mon_main,RJ Barrett,TOR,split,44.7,49.5,27.6,36,33.0,-16,shooting,no,ours,ours 44.7 vs ETR 49.5; 36 minutes but 7-21

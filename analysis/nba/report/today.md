@@ -10,7 +10,7 @@
 - Lock PM: Lock PM (last of 3 before swaps) at 3:33pm; swaps from 4:00pm; 3 Lock PM, 0 exports seen
 - Overnight (drafts before 4:30am, kept out of the AM grades): 1 drafts from 4:27am; overnight: last board saved before the first overnight draft at 3:41am
 - ADP snapshots: AM board 3:24am, closing 3:22pm (lock 3:52pm)
-- Today's inputs: our Proj ready 9:23pm; chance to play ready 12:27am; Q-tags polled 1:23am
+- Today's inputs: our Proj ready 9:23pm; chance to play ready 12:27am; Q-tags polled 3:23am
 
 ## Monday proposals (as of today; decided Monday)
 
@@ -51,9 +51,9 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Tyler Herro MIL, Questionable, 32%: T4 · AM stays T4 · PM to T5
 - Josh Hart NYK, Questionable, 64%: T5 · AM stays T5 · PM to T5
 
-**VALUE flags, T3-T5**: Lauri Markkanen (T4, ADP 26.5), Tyler Herro (T4, ADP 28.7), Wendell Carter Jr. (T5, ADP 29.8), VJ Edgecombe (T5, ADP 30.6), Derrick White (T5, ADP 32.1), Zach LaVine (T5, ADP 35.5)
+**VALUE flags, T3-T5**: Lauri Markkanen (T4, ADP 26.5), Tyler Herro (T4, ADP 28.9), Wendell Carter Jr. (T5, ADP 29.6), VJ Edgecombe (T5, ADP 30.6), Derrick White (T5, ADP 31.9), Zach LaVine (T5, ADP 35.5)
 
-**Beneficiaries to watch**: Zach LaVine (SAC, ADP 35.5) if Domantas Sabonis sits; Precious Achiuwa (SAC, undrafted) if Domantas Sabonis sits; Malik Monk (SAC, undrafted) if Domantas Sabonis sits; Ace Bailey (UTA, ADP 33.3) if Lauri Markkanen sits; Isaiah Collier (UTA, ADP 35.9) if Lauri Markkanen sits; Brayden Burries (MIL, ADP 34.3) if Tyler Herro sits; Kyle Kuzma (MIL, ADP 35.9) if Tyler Herro sits; Jaime Jaquez Jr. (MIL, ADP 35.9) if Tyler Herro sits
+**Beneficiaries to watch**: Zach LaVine (SAC, ADP 35.5) if Domantas Sabonis sits; Precious Achiuwa (SAC, undrafted) if Domantas Sabonis sits; Malik Monk (SAC, undrafted) if Domantas Sabonis sits; Ace Bailey (UTA, ADP 33.4) if Lauri Markkanen sits; Isaiah Collier (UTA, ADP 35.9) if Lauri Markkanen sits; Brayden Burries (MIL, ADP 34.3) if Tyler Herro sits; Kyle Kuzma (MIL, ADP 35.9) if Tyler Herro sits; Jaime Jaquez Jr. (MIL, ADP 35.9) if Tyler Herro sits
 
 **Swap board**: after drafting, open Swaps on the board (leverage is the default) and Apply, then your round-6 shuffle in the app. Swaps are graded from the contest data, not from any lock.
 
@@ -82,7 +82,7 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
 
 **Worth a look**
-- misses not logged yet for 2026-11-09 (the skill's steps 3-4)
+- Luka Doncic: ours 66.1, actual 71.6, teammate-out: ours 66.1 vs ETR 72.0; Reaves out, 39 minutes (usual 36) with 5 stocks: ETR priced the usage
 
 **Contest side**
 - pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
@@ -113,7 +113,9 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season +0.2 (-2.4 to +3.1), 70 pairs, no lean · forward none yet · money RULE for
 
 **Worth a look**
-- misses not logged yet for 2026-11-09 (the skill's steps 3-4)
+- Donovan Mitchell: ours 46.9, actual 22.4, minutes: 23 minutes (usual 34) in a 12-point loss; Mobley (24) and Harden (25) were cut too: looks like a rotation or rest call, unclear
+- Cade Cunningham: ours 57.9, actual 34.1, minutes: 27 minutes (usual 34) in an 11-point win on the back end of a back-to-back, 0-4 from three
+- Jalen Johnson: ours 51.0, actual 31.4, shooting: 38 minutes (usual 32) but 6-14, 0-3 from three with 4 turnovers
 
 **Contest side**
 - pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
@@ -146,7 +148,10 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
 
 **Worth a look**
-- misses not logged yet for 2026-11-09 (the skill's steps 3-4)
+- Dejounte Murray: ours 46.1, actual 16.1, blowout: 18 minutes in a 51-point loss on the back end of a back-to-back
+- Evan Mobley: ours 43.0, actual 20.9, minutes: 24 minutes (usual 33) in a 12-point loss, with Mitchell and Harden also short: unclear
+- James Harden: ours 41.6, actual 21.1, minutes: 25 minutes (usual 33) in a 12-point loss, 3-9 with 4 turnovers: unclear
+- RJ Barrett: ours 44.7, actual 27.6, shooting: ours 44.7 vs ETR 49.5; 36 minutes but 7-21
 
 **Contest side**
 - value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.31); my teams there 1.31x at the top 10% (1014 teams)
@@ -184,7 +189,10 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
 
 **Worth a look**
-- misses not logged yet for 2026-11-09 (the skill's steps 3-4)
+- Dejounte Murray: ours 46.1, actual 16.1, blowout: 18 minutes in a 51-point loss on the back end of a back-to-back
+- Saddiq Bey: ours 35.5, actual 15.0, blowout: 24 minutes in a 51-point loss, 3-9 and no rebounds; his number was up with Zion and Trey out
+- Fred VanVleet: ours 34.5, actual 15.2, peripherals: 30 minutes (usual 27) and 3-6 from three, but 1 rebound and 2 assists
+- Jamal Shead: ours 27.6, actual 41.9, teammate-out: ours 27.6 vs ETR 38.4; 36 minutes (usual 23) with 20 and 11 assists, Barnes and Quickley out: ETR priced the handler role
 
 **Contest side**
 - am-t5-button-order: no lean; this run: LEAN for; top-10% lift 1.14 (1.03-1.28); my teams there 1.48x at the top 10% (277 teams)
@@ -244,7 +252,7 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 | AM | NEWS | -2.1 (-4.7 to +0.4), 73 pairs, LEAN - |
 | PM | Bagel | +3.5, not enough yet (19) |
 | PM | Bagel+ETR | +0.3, not enough yet (34) |
-| PM | ETR | +0.7, not enough yet (14) |
+| PM | ETR | +0.6, not enough yet (14) |
 | PM | NEWS | +0.1, not enough yet (34) |
 | PM | OTHER | +1.0, not enough yet (22) |
 
