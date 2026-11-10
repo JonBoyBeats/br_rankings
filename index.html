@@ -3731,7 +3731,8 @@ function nbaTierEnd() { return state.cut != null ? state.cut : state.order.lengt
    each group in the tier's rule for the window (NBA_TIER_NOTES; the same rules as TIER_RULES in
    scripts/nba_report.py). In the PM window a Questionable player is ordered two tiers back (NBA_PM_Q_PUSH);
    leans and rules in force are in analysis/nba/report/leans.json. Players tagged Q, D or GTD also get a class: TRAP (his P(play) x Proj tier is below
-   his ADP tier), SMASH (healthy he's a tier above it and P(play) is 70%+), FAIR (healthy tier = ADP tier).
+   his ADP tier), SMASH (healthy he's a tier above it and P(play) is 70%+), FAIR (healthy tier = ADP tier). That class is saved with
+   the build and graded; the chip on the board shows nbaQClassIn instead: his P(play) x Proj tier against the tier he sits in now.
    The build is saved, rides with each lock, and every hand move after it is logged with it as a take. */
 var NBA_LADDER = {               // [lowest, highest, start] rank for each line, by pod size (24 picks: 2/3 of 36)
   6: [[2, 5, 4], [12, 18, 15], [19, 25, 22], [27, 33, 30]],
@@ -4064,10 +4065,20 @@ function renderSwapPanel() {
   el.appendChild(prev);
 }
 
+/** The Q class against the tier a player sits in now: SMASH when his expected tier (P(play) x Proj; his healthy
+    projection tier without a chance to play) is better than it, FAIR when equal, TRAP when worse. */
+function nbaQClassIn(x, tier) {
+  var e = x.et != null ? x.et : x.p;
+  return e > tier ? "TRAP" : e < tier ? "SMASH" : "FAIR";
+}
+
 /** A, P, flag and Q class for one row, or null without a build. */
 function tierInfoChip(p) {
   var b = state.slate && NBA_LIKE ? load(K.tierBuild(state.slate.label), null) : null, x = b && b.players[p.player_id];
   if (!x) return null;
+  var tiers = loadTiers(state.slate.label), rank = state.order.indexOf(p.player_id) + 1;
+  var cur = tiers && tiers.on && rank > 0 ? nbaTierOf(rank, tiers.starts, nbaTierEnd()) : 0;
+  var qNow = x.inj ? (cur ? nbaQClassIn(x, cur) : x.q) : "";
   var el = document.createElement("span");
   el.className = "tierinfo";
   var ap = document.createElement("span");
@@ -4088,17 +4099,17 @@ function tierInfoChip(p) {
     pu.dataset.s = "\u2193";
     el.appendChild(pu);
   }
-  if (x.q) {
+  if (qNow) {
     var q = document.createElement("b");
-    q.className = "tq " + x.q.toLowerCase();
-    q.textContent = x.q;
-    q.dataset.s = x.q.charAt(0);
+    q.className = "tq " + qNow.toLowerCase();
+    q.textContent = qNow;
+    q.dataset.s = qNow.charAt(0);
     el.appendChild(q);
   }
   el.title = "ADP tier " + x.a + ", " + (b.source === "etr" ? "ETR" : "our Proj") + " tier " + x.p + ", in tier " + x.c +
     (x.flag ? " (" + x.flag + ": the projection has him " + (x.flag === "VALUE" ? "higher" : "lower") + ")" : "") +
     (x.inj ? ". " + x.inj + (x.play != null ? ", " + Math.round(x.play * 100) + "% to play, expected tier " + x.et : "") +
-      (x.q ? ": " + x.q : "") : "") + (x.push ? ". Questionable in the PM window: ordered in tier " + x.push + " (two back)" : "") + ". Built " + new Date(b.at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      (qNow ? ": " + qNow + (cur ? " in tier " + cur : "") : "") : "") + (x.push ? ". Questionable in the PM window: ordered in tier " + x.push + " (two back)" : "") + ". Built " + new Date(b.at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
   return el;
 }
 
@@ -7871,6 +7882,9 @@ function brrSelfTest() {
     state.slate = keep.slate; state.workload = keep.workload; state.nameMaps = keep.nameMaps; usageMemo = null;
   }
 
+  ok("the Q chip reads against the tier he sits in: expected T4 is SMASH in T5, FAIR in T4, TRAP in T3",
+     nbaQClassIn({ et: 4, p: 2 }, 5) === "SMASH" && nbaQClassIn({ et: 4, p: 2 }, 4) === "FAIR" &&
+     nbaQClassIn({ et: 4, p: 2 }, 3) === "TRAP" && nbaQClassIn({ p: 3 }, 3) === "FAIR");
   if (fails.length) { console.error("brrSelfTest FAILED: " + fails.join(", ")); return false; }
   console.log("brrSelfTest passed");
   return true;
