@@ -200,7 +200,7 @@ def main():
             continue
         rule = RULES.get(h.get("rule", ""))
         print("## %s: %s" % (hid, h["title"]))
-        print("%s · %s since %s%s" % (h["label"], h["status"], h.get("since") or h["opened"],
+        print("%s · %s since %s%s" % (h["label"], h["status"], h.get("retired") or h.get("since") or h["opened"],
                                       " · " + h["notes"] if h.get("notes") else ""))
         if not rule:
             print("- " + proposal(h, None, None) + "\n")
