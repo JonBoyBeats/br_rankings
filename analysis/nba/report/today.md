@@ -50,14 +50,14 @@ Monday's eight-game slate broke open at the top and blew out at the bottom. Wemb
 - **Austin Reaves** (LAL): scratched; swaps landed on Thompson (240 teams, 24 points), Harper (222 teams, 29 points), Reid (154 teams, 50 points).
 - In line: Sengun; Lendeborg, in 27 minutes of the 51-point win; Kessler, 21 on 8-12, the rim-funnel spot as billed.
 
-**Contest view.** Your 38 morning teams took 2.0 T2 players each to the field's 2.1, heaviest on Reaves (21% of yours, 10% of the field). Your 57 afternoon teams took 1.8 T2 players each to the field's 1.7, heaviest on Davis (28% of yours, 17% of the field). How often the flagged players were drafted (share of pods): VALUE Jokic 99%; PRICEY Kessler 100%. In the standings, teams holding Davis made the top 10% 3.6 times as often as the field; Cunningham's holders only 0.0 times; Johnson's holders only 0.0 times.
+**Contest view.** Your 38 morning teams took 2.0 T2 players each to the field's 2.1, heaviest on Reaves (21% of yours, 10% of the field). Your 57 afternoon teams took 1.8 T2 players each to the field's 1.7, heaviest on Davis (28% of yours, 17% of the field). How often the flagged players were drafted (share of pods): VALUE Jokic 99%; PRICEY Kessler 100%. In the standings, teams holding Davis made the top 10% 3.6 times as often as the field; Cunningham's holders almost never got there; Johnson's holders almost never got there.
 
 **What we're leaning toward.**
 
 - Afternoon T2's rule in use (ETR breaks ties within two picks) against the old one (within one pick). On trial, 0 of 14 nights in; season backtest +5.0 a pair (39 pairs, too early to say); contest results: no clear signal.
 - In T2 to T4, put the less drafted player first when two are within two projected points and at least 10 points apart in how often they're drafted. Under test, 0 of 14 nights in; season backtest +2.7 a pair (21 pairs, too early to say); contest results: an early sign for.
 - Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on. Under test, each window decided on its own, 0 of 14 nights in; season backtest morning -1.2 a pair (36 pairs, too early to say); afternoon +0.2 a pair (70 pairs, no clear signal); contest results: proven so far.
-- Also testing here (above): Questionable pushes by type; T2 split at the 1/2 turn.
+- Also testing here (above): Questionable pushes by type.
 
 **Today in T2.** Domantas Sabonis (SAC) is Questionable, 57% to play on our calibrated chance: he stays in T2 in the morning and drops to T4 in the afternoon. PRICEY (a tier below): Paul George (ADP 16.3).
 

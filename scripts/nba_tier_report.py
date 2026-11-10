@@ -625,17 +625,19 @@ def contest_view(t, mt):
         s.append("In the standings, %s." % "; ".join(
             (["teams holding %s made the top 10%% %.1f times as often as the field" % (short(paid[0]["name"]), paid[0]["lift10"])] if paid else []) +
             ["%s %.1f times" % (poss(short(x["name"])), x["lift10"]) for x in paid[1:]] +
-            ["%s holders %s" % (poss(short(x["name"])), "never got there" if x["lift10"] == 0 else "only %.1f times" % x["lift10"]) for x in hurt]))
+            ["%s holders %s" % (poss(short(x["name"])), "never got there" if x["lift10"] == 0 else "almost never got there" if x["lift10"] < 0.1 else "only %.1f times" % x["lift10"]) for x in hurt]))
     return [" ".join(s) if s else "No contest data for this tier last night.", ""]
 
 
 def leaning(t, shadow, hyp, reg, shown):
-    s, again = [], []
+    s, again, here = [], [], set()
     for c in shadow:
         if not (c["kind"] == "candidate" or (c["kind"] == "switch" and c.get("drop_if"))) or t not in c["tiers"]:
             continue
         base = c["id"].split(":")[0]
         what = SHADOW_WORDS.get(c["id"]) or (hyp.get(base) or {}).get("plain") or c["name"]
+        if c["id"] in here:
+            continue
         if c["id"] in shown:
             again.append((hyp.get(base) or {}).get("name") or what[0].lower() + what[1:].split(",")[0])
             continue
@@ -643,6 +645,7 @@ def leaning(t, shadow, hyp, reg, shown):
         rid = (hyp.get(base) or {}).get("register") or SHADOW_REG.get(c["id"], c["id"])
         rows = [x for x in shadow if x["id"].split(":")[0] == base] if ":" in c["id"] else [c]
         shown.update(x["id"] for x in rows)
+        here.update(x["id"] for x in rows)
         wn = {"am": "morning ", "pm": "afternoon "}
         back = ["%s%+.1f a pair (%d pairs, %s)" % (wn.get(x["id"].split(":")[1], "") if ":" in x["id"] else "", x["season"]["mean"],
                                                       x["season"]["n"], lab_words(x["season"]["label"]) or "too early to say")
