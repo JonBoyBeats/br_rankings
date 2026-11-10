@@ -47,7 +47,7 @@ date,comparison,kind,pairs,gain
 2026-10-21,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,6,18.1
 2026-10-23,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,6,57.5
 2026-10-24,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,4,-0.9
-2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,15,-41.8
+2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,19,-19.6
 2026-10-26,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,17,-16.0
 2026-10-27,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,11,-36.3
 2026-10-28,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,7,20.5
@@ -224,3 +224,33 @@ date,comparison,kind,pairs,gain
 2026-11-07,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,5,56.0
 2026-11-08,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,13,-99.9
 2026-11-09,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,1,-19.0
+2026-10-21,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,24,-19.9
+2026-10-23,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,46,241.2
+2026-10-24,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,99,-22.1
+2026-10-25,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,16,-11.3
+2026-10-26,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,23,-192.6
+2026-10-27,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,22,-97.5
+2026-10-28,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,56,-332.3
+2026-10-30,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,11,-8.8
+2026-10-31,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,32,-146.1
+2026-11-02,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,42,-192.9
+2026-11-04,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,64,-413.6
+2026-11-06,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,34,-406.4
+2026-11-07,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,29,-72.2
+2026-11-08,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,22,-21.0
+2026-11-09,"T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,53,299.8
+2026-10-21,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,61,16.6
+2026-10-23,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,89,102.6
+2026-10-24,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,52,-1.6
+2026-10-25,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,34,146.8
+2026-10-26,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,25,-40.4
+2026-10-27,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,42,-146.9
+2026-10-28,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,34,-23.6
+2026-10-30,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,30,-92.5
+2026-10-31,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,46,-416.2
+2026-11-02,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,38,-507.3
+2026-11-04,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,87,-410.7
+2026-11-06,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,24,-17.6
+2026-11-07,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,16,-35.4
+2026-11-08,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,40,-36.9
+2026-11-09,"T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",candidate,18,127.1

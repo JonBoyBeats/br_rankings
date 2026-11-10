@@ -7,7 +7,7 @@ Written nightly by scripts/nba_shadow.py. Points per pair on the decision pairs 
 | PM T2: ADP (2: ETR) vs the old ADP (1: ETR) | switch | +5.0, not enough yet (39) | 0 | none yet |
 | PM T4: ADP (2: ETR) vs the old ETR rule | switch | -0.7, not enough yet (23) | 0 | none yet |
 | PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted) | switch | +0.9 (-0.6 to +2.4), 757 pairs, no lean | 0 | none yet |
-| AM T5: the less drafted within 2 pts vs the old Proj (3: ADP) | switch | +2.2 (+0.2 to +4.5), 137 pairs, LEAN + | 0 | none yet |
+| AM T5: the less drafted within 2 pts vs the old Proj (3: ADP) | switch | +2.3 (+0.3 to +4.5), 141 pairs, LEAN + | 0 | none yet |
 | PM T5: the less drafted within 2 pts vs the old ADP | switch | -2.1 (-4.8 to +0.6), 84 pairs, LEAN - | 0 | none yet |
 | All tiers, kept: the one-tier cap against the projection tier's order where they disagree | cap | -0.8 (-2.9 to +1.2), 62 pairs, no lean | 0 | none yet |
 | T4-1: PRICEY-last off in PM T4 (VALUE first kept) | candidate | +3.5, not enough yet (22) | 0 | none yet |
@@ -16,3 +16,5 @@ Written nightly by scripts/nba_shadow.py. Points per pair on the decision pairs 
 | Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back) | candidate | -7.8, not enough yet (24) | 0 | none yet |
 | T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2 | candidate | -1.2, not enough yet (36) | 0 | none yet |
 | T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2 | candidate | +0.2 (-2.4 to +3.1), 70 pairs, no lean | 0 | none yet |
+| T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept) | candidate | -2.4 (-4.3 to -0.7), 573 pairs, RULE - | 0 | none yet |
+| T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept) | candidate | -2.1 (-3.6 to -0.6), 636 pairs, RULE - | 0 | none yet |

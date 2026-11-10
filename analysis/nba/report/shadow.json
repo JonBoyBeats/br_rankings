@@ -12,7 +12,7 @@
   "forward_nights": 0,
   "season": {
    "n": 39,
-   "mean": 4.960028634647928,
+   "mean": 4.960028634647925,
    "lo": null,
    "hi": null,
    "label": "not enough yet (39)",
@@ -68,9 +68,9 @@
   "forward_nights": 0,
   "season": {
    "n": 757,
-   "mean": 0.8652258849255554,
-   "lo": -0.6075141983398855,
-   "hi": 2.3836561845993036,
+   "mean": 0.8652258849255557,
+   "lo": -0.6075141983398864,
+   "hi": 2.3836561845993014,
    "label": "no lean",
    "text": "+0.9 (-0.6 to +2.4), 757 pairs, no lean"
   },
@@ -95,12 +95,12 @@
   "forward_from": "2026-11-10",
   "forward_nights": 0,
   "season": {
-   "n": 137,
-   "mean": 2.1765052877645696,
-   "lo": 0.17126575889615048,
-   "hi": 4.500127594650436,
+   "n": 141,
+   "mean": 2.2722072654166383,
+   "lo": 0.31928073029564175,
+   "hi": 4.519954050247605,
    "label": "LEAN +",
-   "text": "+2.2 (+0.2 to +4.5), 137 pairs, LEAN +"
+   "text": "+2.3 (+0.3 to +4.5), 141 pairs, LEAN +"
   },
   "forward": {
    "n": 0,
@@ -156,9 +156,9 @@
   "forward_nights": 0,
   "season": {
    "n": 62,
-   "mean": -0.8463404279304392,
-   "lo": -2.9443226795174318,
-   "hi": 1.2104827009176922,
+   "mean": -0.8463404279304393,
+   "lo": -2.9443226795174327,
+   "hi": 1.2104827009176926,
    "label": "no lean",
    "text": "-0.8 (-2.9 to +1.2), 62 pairs, no lean"
   },
@@ -242,9 +242,9 @@
   "forward_nights": 0,
   "season": {
    "n": 677,
-   "mean": -3.5595046381572018,
-   "lo": -4.687127857417788,
-   "hi": -2.2214922014362894,
+   "mean": -3.5595046381572004,
+   "lo": -4.687127857417787,
+   "hi": -2.221492201436286,
    "label": "RULE -",
    "text": "-3.6 (-4.7 to -2.2), 677 pairs, RULE -"
   },
@@ -330,11 +330,67 @@
   "forward_nights": 0,
   "season": {
    "n": 70,
-   "mean": 0.1807300471157919,
-   "lo": -2.4046153846153855,
-   "hi": 3.1009545327168273,
+   "mean": 0.18073004711579158,
+   "lo": -2.404615384615385,
+   "hi": 3.100954532716827,
    "label": "no lean",
    "text": "+0.2 (-2.4 to +3.1), 70 pairs, no lean"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "T5-2:am",
+  "name": "T5-2 (AM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",
+  "kind": "candidate",
+  "tiers": [
+   5
+  ],
+  "window": "am",
+  "drop_if": "no win",
+  "forward_from": "2026-11-11",
+  "forward_nights": 0,
+  "season": {
+   "n": 573,
+   "mean": -2.4357976802209333,
+   "lo": -4.269093683786606,
+   "hi": -0.6589673981009684,
+   "label": "RULE -",
+   "text": "-2.4 (-4.3 to -0.7), 573 pairs, RULE -"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "T5-2:pm",
+  "name": "T5-2 (PM): T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",
+  "kind": "candidate",
+  "tiers": [
+   5
+  ],
+  "window": "pm",
+  "drop_if": "no win",
+  "forward_from": "2026-11-11",
+  "forward_nights": 0,
+  "season": {
+   "n": 636,
+   "mean": -2.10062893081761,
+   "lo": -3.5734197730956243,
+   "hi": -0.6210820895522393,
+   "label": "RULE -",
+   "text": "-2.1 (-3.6 to -0.6), 636 pairs, RULE -"
   },
   "forward": {
    "n": 0,

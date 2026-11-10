@@ -192,6 +192,31 @@
    "decide": "Per window (2026-11-09): the shadow grades AM and PM apart (T2-1:am, T2-1:pm), and each window's Monday call stands on its own forward read: PM can be adopted on its own even if AM isn't, and the reverse. The backtest suggests PM (ETR beat ADP past pick 10, +3.7 on 75 pairs) and not AM.",
    "plain": "Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on",
    "name": "T2 split at the 1/2 turn"
+  },
+  "T5-2": {
+   "tiers": [
+    5
+   ],
+   "window": "am+pm",
+   "idea": "T5 by the window's projection to the whole point, the less drafted first within the same point (VALUE first and PRICEY last kept)",
+   "why": "Jon, 2026-11-10: after the VALUE players T5 should go by projection, then reverse ADP within a projection; the late (under 50% drafted) players treated as level on ADP, the less drafted first among them. Tested before: projection straight lost to the button (AM -5.4 per pair, 228 pairs; PM -1.9, 542) and projection with ADP within 3 points had no lean (AM -1.6, 92; PM -0.8, 284); never tested: the less drafted first within a whole point. Contest side: PM T5 by ADP leans against (lift 0.80), the less-drafted tiebreak is a money RULE for",
+   "test": {
+    "kind": "pairwise",
+    "pairwise": "t5proj",
+    "flags": "both",
+    "against": "the button",
+    "rule": "Inside T5 at a window's record (projection: ours in AM, ETR in PM; drafted%: the window's): for two players in the same flag group (VALUE first and PRICEY last kept as the button), the one with the higher projection rounded to the whole point goes first; at the same whole point, the less drafted goes first (which also orders the under-50%-drafted players among themselves); with drafted% equal or missing, the button's order. Graded on 6-drafter decision pairs (ADP within 4) inside T5 that it orders differently from the button; a scratch scored through his swap; positive = the idea beat the button. A PM Questionable player pushed into T5 is left out, as for every idea.",
+    "backtest": "The shadow's season line (in sample, every night before 2026-11-11), each window apart; the forward nights decide."
+   },
+   "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
+   "status": "testing",
+   "written": "2026-11-10",
+   "forward_from": "2026-11-11",
+   "register": null,
+   "split_windows": true,
+   "decide": "Per window: the shadow grades AM and PM apart (T5-2:am, T5-2:pm), and each window's Monday call stands on its own forward read.",
+   "plain": "After the VALUE players, order T5 by the window's projection to the whole point, and within the same point put the less drafted player first",
+   "name": "T5 by projection, then the less drafted"
   }
  }
 }

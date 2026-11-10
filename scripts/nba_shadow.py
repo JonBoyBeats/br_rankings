@@ -14,6 +14,7 @@ From tier_history.csv (the button's order is its `built` rank), for each slate:
           per pair on money's definition, check pending) is a known price for a money RULE, not a reason to drop it: the
           switch is dropped only if it loses to the old rule over its 14 forward nights
   T2-T4   candidate: the same leverage tiebreak on money's definition, each window (money LEAN for)
+  T5      candidate (T5-2, from 2026-11-11): the window's projection to the whole point, the less drafted first within it
   all     the one-tier cap (kept; money leans against): the projection tier's order where it and the combined tier's
           disagree, against the button
 
@@ -109,6 +110,16 @@ def pairwise(how, a, b, ctx):
             return None if xa == xb else (a if xa < xb else b)
         pa, pb = G.num(a["proj"]), G.num(b["proj"])
         return None if pa is None or pb is None or pa == pb else (a if pa > pb else b)
+    if how == "t5proj":                    # T5-2: the window's projection to the whole point, then the less drafted
+        if a["flag"] != b["flag"] or a["tier"] != b["tier"]:
+            return None
+        pa, pb = G.num(a["proj"]), G.num(b["proj"])
+        if pa is None or pb is None:
+            return None
+        if round(pa) != round(pb):
+            return a if round(pa) > round(pb) else b
+        da, db = G.num(a["drafted"]), G.num(b["drafted"])
+        return None if da is None or db is None or da == db else (a if da < db else b)
     if how == "qsplit":                    # Q-1: the Questionable push by flag, chance to play and tier
         ka = (q_tier(a, ctx), int(a["built"]))
         kb = (q_tier(b, ctx), int(b["built"]))
