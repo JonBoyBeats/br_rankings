@@ -13,6 +13,7 @@ date,comparison,kind,pairs,gain
 2026-11-06,PM T2: ADP (2: ETR) vs the old ADP (1: ETR),switch,0,0
 2026-11-07,PM T2: ADP (2: ETR) vs the old ADP (1: ETR),switch,0,0
 2026-11-08,PM T2: ADP (2: ETR) vs the old ADP (1: ETR),switch,3,0.1
+2026-11-09,PM T2: ADP (2: ETR) vs the old ADP (1: ETR),switch,2,41.7
 2026-10-21,PM T4: ADP (2: ETR) vs the old ETR rule,switch,1,2.2
 2026-10-23,PM T4: ADP (2: ETR) vs the old ETR rule,switch,0,0
 2026-10-24,PM T4: ADP (2: ETR) vs the old ETR rule,switch,1,11.1
@@ -27,37 +28,40 @@ date,comparison,kind,pairs,gain
 2026-11-06,PM T4: ADP (2: ETR) vs the old ETR rule,switch,2,-24.7
 2026-11-07,PM T4: ADP (2: ETR) vs the old ETR rule,switch,1,-24.7
 2026-11-08,PM T4: ADP (2: ETR) vs the old ETR rule,switch,2,20.5
-2026-10-21,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,61,76.5
-2026-10-23,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,75,-386.0
-2026-10-24,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,52,-243.8
-2026-10-25,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,52,-254.1
-2026-10-26,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,32,42.8
+2026-11-09,PM T4: ADP (2: ETR) vs the old ETR rule,switch,4,-5.7
+2026-10-21,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,59,99.1
+2026-10-23,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,76,-379.2
+2026-10-24,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,66,-130.8
+2026-10-25,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,53,-258.2
+2026-10-26,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,43,-14.8
 2026-10-27,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,48,155.6
 2026-10-28,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,37,206.0
 2026-10-30,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,45,132.2
 2026-10-31,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,56,449.4
 2026-11-02,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,39,442.9
-2026-11-04,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,94,222.4
+2026-11-04,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,92,205.9
 2026-11-06,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,34,-149.7
-2026-11-07,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,22,91.9
+2026-11-07,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,24,67.7
 2026-11-08,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,58,1.8
+2026-11-09,"PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",switch,27,-172.9
 2026-10-21,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,6,18.1
-2026-10-23,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,3,48.5
-2026-10-24,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,3,-4.0
-2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,19,-19.6
+2026-10-23,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,6,57.5
+2026-10-24,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,4,-0.9
+2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,15,-41.8
 2026-10-26,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,17,-16.0
 2026-10-27,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,11,-36.3
 2026-10-28,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,7,20.5
-2026-10-30,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,7,84.8
-2026-10-31,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,16,-85.6
+2026-10-30,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,12,77.4
+2026-10-31,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,17,-88.1
 2026-11-02,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,1,7.1
 2026-11-04,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,7,-1.2
 2026-11-06,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,4,26.8
 2026-11-07,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,4,90.4
 2026-11-08,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,18,66.9
-2026-10-21,PM T5: the less drafted within 2 pts vs the old ADP,switch,12,-33.7
+2026-11-09,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,8,117.8
+2026-10-21,PM T5: the less drafted within 2 pts vs the old ADP,switch,14,-11.1
 2026-10-23,PM T5: the less drafted within 2 pts vs the old ADP,switch,4,11.1
-2026-10-24,PM T5: the less drafted within 2 pts vs the old ADP,switch,22,-37.8
+2026-10-24,PM T5: the less drafted within 2 pts vs the old ADP,switch,8,64.8
 2026-10-25,PM T5: the less drafted within 2 pts vs the old ADP,switch,0,0
 2026-10-26,PM T5: the less drafted within 2 pts vs the old ADP,switch,4,-0.3
 2026-10-27,PM T5: the less drafted within 2 pts vs the old ADP,switch,2,15.9
@@ -65,10 +69,11 @@ date,comparison,kind,pairs,gain
 2026-10-30,PM T5: the less drafted within 2 pts vs the old ADP,switch,3,69.1
 2026-10-31,PM T5: the less drafted within 2 pts vs the old ADP,switch,2,-51.4
 2026-11-02,PM T5: the less drafted within 2 pts vs the old ADP,switch,4,-71.7
-2026-11-04,PM T5: the less drafted within 2 pts vs the old ADP,switch,9,-52.8
+2026-11-04,PM T5: the less drafted within 2 pts vs the old ADP,switch,11,-69.3
 2026-11-06,PM T5: the less drafted within 2 pts vs the old ADP,switch,9,-97.1
-2026-11-07,PM T5: the less drafted within 2 pts vs the old ADP,switch,0,0
+2026-11-07,PM T5: the less drafted within 2 pts vs the old ADP,switch,1,-8.5
 2026-11-08,PM T5: the less drafted within 2 pts vs the old ADP,switch,1,-0.9
+2026-11-09,PM T5: the less drafted within 2 pts vs the old ADP,switch,3,-19.0
 2026-10-21,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,6,-49.0
 2026-10-21,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-17.2
 2026-10-23,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,2,-5.0
@@ -97,6 +102,8 @@ date,comparison,kind,pairs,gain
 2026-11-07,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,5,-31.4
 2026-11-08,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,2,14.1
 2026-11-08,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-14.8
+2026-11-09,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,5,-27.4
+2026-11-09,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-2.9
 2026-10-21,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
 2026-10-23,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,2,1.2
 2026-10-24,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
@@ -111,6 +118,7 @@ date,comparison,kind,pairs,gain
 2026-11-06,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
 2026-11-07,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
 2026-11-08,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
+2026-11-09,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,8,-17.5
 2026-10-21,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
 2026-10-21,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
 2026-10-23,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
@@ -133,12 +141,14 @@ date,comparison,kind,pairs,gain
 2026-11-02,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,2,23.9
 2026-11-04,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,3,-9.4
 2026-11-04,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
-2026-11-06,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,2,8.5
+2026-11-06,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,3,-4.5
 2026-11-06,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,2,17.9
 2026-11-07,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
 2026-11-07,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
 2026-11-08,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
 2026-11-08,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
+2026-11-09,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,0,0
+2026-11-09,"T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+)",candidate,1,33.5
 2026-10-21,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,49,4.5
 2026-10-23,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,0,0
 2026-10-24,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,37,-168.8
@@ -146,13 +156,14 @@ date,comparison,kind,pairs,gain
 2026-10-26,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,41,-124.8
 2026-10-27,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,21,-149.1
 2026-10-28,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,17,65.5
-2026-10-30,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,45,-159.4
+2026-10-30,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,47,-158.0
 2026-10-31,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,76,-188.2
 2026-11-02,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,61,-266.5
 2026-11-04,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,52,-183.9
 2026-11-06,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,20,217.4
 2026-11-07,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,62,-631.9
 2026-11-08,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,18,-42.8
+2026-11-09,T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners,candidate,122,-721.7
 2026-10-21,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
 2026-10-21,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
 2026-10-23,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
@@ -181,6 +192,8 @@ date,comparison,kind,pairs,gain
 2026-11-07,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,1,-5.5
 2026-11-08,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
 2026-11-08,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
+2026-11-09,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,5,-26.7
+2026-11-09,"Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back)",candidate,0,0
 2026-10-21,"T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,1,11.5
 2026-10-23,"T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,0,0
 2026-10-24,"T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,3,4.6
@@ -195,6 +208,7 @@ date,comparison,kind,pairs,gain
 2026-11-06,"T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,4,-34.0
 2026-11-07,"T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,2,-27.8
 2026-11-08,"T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,3,2.6
+2026-11-09,"T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,3,-20.7
 2026-10-21,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,10,11.9
 2026-10-23,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,4,-43.8
 2026-10-24,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,7,26.6
@@ -209,3 +223,4 @@ date,comparison,kind,pairs,gain
 2026-11-06,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,3,-19.7
 2026-11-07,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,5,56.0
 2026-11-08,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,13,-99.9
+2026-11-09,"T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2",candidate,1,-19.0

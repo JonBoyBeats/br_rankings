@@ -1098,5 +1098,73 @@
   },
   "on": null,
   "orders": 28
+ },
+ "2026-11-09_mon_main.csv": {
+  "lock": "2026-11-09T23:52:00+00:00",
+  "adp_am_at": "2026-11-09T11:24:06+00:00",
+  "adp_etr_at": "2026-11-09T17:22:45+00:00",
+  "adp_close_at": "2026-11-09T23:22:46+00:00",
+  "morning_through": "2026-11-08",
+  "etr_first": {
+   "at": "2026-11-09T18:23:07.787Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-09T102304.223.csv"
+  },
+  "etr_last": {
+   "at": "2026-11-09T23:48:06.071Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-09T102304.223.csv + Underdog NBA Daily Rankings - 2026-11-09T114235.208.csv + Underdog NBA Daily Rankings - 2026-11-09T140417.377.csv + NBA Full Day Projections (5).csv + NBA Full Day Projections (6).csv + NBA Full Day Projections (7).csv + pasted text"
+  },
+  "etr_pm": {
+   "at": "2026-11-09T23:25:32.310Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-09T102304.223.csv + Underdog NBA Daily Rankings - 2026-11-09T114235.208.csv + Underdog NBA Daily Rankings - 2026-11-09T140417.377.csv + NBA Full Day Projections (5).csv + NBA Full Day Projections (6).csv + NBA Full Day Projections (7).csv + pasted text"
+  },
+  "adp_pm_at": "2026-11-09T23:22:46+00:00",
+  "am": {
+   "at": "2026-11-09T11:41:35.190Z",
+   "from": "Lock AM",
+   "ours": true,
+   "tiers": [
+    7,
+    12,
+    20,
+    29
+   ]
+  },
+  "pm": {
+   "at": "2026-11-09T23:33:18.369Z",
+   "from": "Lock PM (last of 3 before swaps)",
+   "ours": true,
+   "tiers": [
+    3,
+    13,
+    23,
+    31
+   ]
+  },
+  "gist": true,
+  "cuts": {
+   "am_by": "2026-11-09T13:57:29+00:00",
+   "am_by_from": "first AM draft (from 4:30am)",
+   "close": "2026-11-09T23:52:00+00:00",
+   "swaps_at": "2026-11-10T00:00:00+00:00",
+   "seen": {
+    "am": [
+     "2026-11-09T11:41:35.190Z",
+     "2026-11-09T18:23:13.433Z"
+    ],
+    "pm": [
+     "2026-11-09T22:21:57.417Z",
+     "2026-11-09T23:30:43.625Z",
+     "2026-11-09T23:33:18.369Z"
+    ],
+    "exp": []
+   }
+  },
+  "on": {
+   "at": "2026-11-09T11:41:35.190Z",
+   "source": "overnight: last board saved before the first overnight draft",
+   "drafts": 1,
+   "first": "2026-11-09T12:27:37+00:00"
+  },
+  "orders": 149
  }
 }

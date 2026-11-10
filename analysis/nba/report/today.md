@@ -1,18 +1,18 @@
-# NBA morning report, 2026-11-09 (last night: 2026-11-08)
+# NBA morning report, 2026-11-10 (last night: 2026-11-09)
 
 ## Pipeline health
 
-- Contests: 3 pulled of 3 listed, 10,290 teams; measures in
-- Results: 2026-11-08_sun_main, 86 players, 86 with a box line
-- Swaps credited: 2571 of 3351 (77%)
-- ETR: first upload 2:13pm, last 2:19pm
-- Lock AM: fallback: last board saved in the AM window at 5:04am; counts by 12:00pm (noon (no AM draft found))
-- Lock PM: fallback: last board saved before contests closed at 3:06pm; swaps from 4:00pm; 0 Lock PM, 0 exports seen
-- Overnight (drafts before 4:30am, kept out of the AM grades): none
-- ADP snapshots: AM board 3:23am, closing 3:22pm (lock 3:52pm)
-- Today's inputs: our Proj ready 9:23pm; chance to play ready 12:23am; Q-tags polled 1:23pm
+- Contests: 5 pulled of 5 listed, 18,672 teams; measures in
+- Results: 2026-11-09_mon_main, 108 players, 108 with a box line
+- Swaps credited: 3920 of 7234 (54%)
+- ETR: first upload 10:23am, last 3:48pm
+- Lock AM: Lock AM at 3:41am; counts by 5:57am (first AM draft (from 4:30am))
+- Lock PM: Lock PM (last of 3 before swaps) at 3:33pm; swaps from 4:00pm; 3 Lock PM, 0 exports seen
+- Overnight (drafts before 4:30am, kept out of the AM grades): 1 drafts from 4:27am; overnight: last board saved before the first overnight draft at 3:41am
+- ADP snapshots: AM board 3:24am, closing 3:22pm (lock 3:52pm)
+- Today's inputs: our Proj ready 9:23pm; chance to play ready 12:27am; Q-tags polled 1:23am
 
-## Monday proposals (today: decide)
+## Monday proposals (as of today; decided Monday)
 
 - points: none ripe
 - money: pricey-flags: LEAN for overall -> RULE for (lift 1.19, 1.10-1.29, 17 slates)
@@ -27,7 +27,7 @@
 
 Everything adopted or kept is provisional until its money verdict (top finishes and dollars, from the contest side: decision_register.csv) is in, and may be changed by it.
 
-**Mon Main, lock 3:52 PM PT, 6-drafter pods**
+**Tue Main, lock 4:22 PM PT, 6-drafter pods**
 
 **Switches by tier** (AM · PM)
 - T1: AM ADP (2: Boom) · PM ETR (AM kept, money pending; PM kept, money pending)
@@ -46,14 +46,14 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - Note: later rounds: a player well past his ADP through round 5 leans worth taking (candidate)
 
 **Q-tags and their handling** (calibrated chance to play; AM: no push; PM: two tiers back)
-- Scottie Barnes TOR, Questionable, 69%: T2 · AM stays T2 · PM to T4
-- Anthony Davis WAS, Questionable, 55%: T2 · AM stays T2 · PM to T4
-- Austin Reaves LAL, Questionable, 42%: T2 · AM stays T2 · PM to T4
-- Immanuel Quickley TOR, Questionable, 61%: T5 · AM stays T5 · PM to T5
+- Domantas Sabonis SAC, Questionable, 57%: T2 · AM stays T2 · PM to T4
+- Lauri Markkanen UTA, Questionable, 42%: T4 · AM stays T4 · PM to T5
+- Tyler Herro MIL, Questionable, 32%: T4 · AM stays T4 · PM to T5
+- Josh Hart NYK, Questionable, 64%: T5 · AM stays T5 · PM to T5
 
-**VALUE flags, T3-T5**: Jamal Murray (T3, ADP 19.4), Ty Jerome (T3, ADP 20.2), Trae Young (T4, ADP 26.2), Zion Williamson (T4, ADP 27.7), Miles Bridges (T5, ADP 30.0), Kyshawn George (T5, ADP 31.1), James Harden (T5, ADP 31.9), Dejounte Murray (T4, ADP 34.1)
+**VALUE flags, T3-T5**: Lauri Markkanen (T4, ADP 26.5), Tyler Herro (T4, ADP 28.7), Wendell Carter Jr. (T5, ADP 29.8), VJ Edgecombe (T5, ADP 30.6), Derrick White (T5, ADP 32.1), Zach LaVine (T5, ADP 35.5)
 
-**Beneficiaries to watch**: Immanuel Quickley (TOR, ADP 35.7) if Scottie Barnes sits; Jakob Poeltl (TOR, undrafted) if Scottie Barnes sits; Collin Murray-Boyles (TOR, undrafted) if Scottie Barnes sits; Jamal Shead (TOR, undrafted) if Scottie Barnes sits; Kyshawn George (WAS, ADP 31.1) if Anthony Davis sits; Alex Sarr (WAS, ADP 35.9) if Anthony Davis sits; AJ Dybantsa (WAS, ADP 35.9) if Anthony Davis sits; Matisse Thybulle (LAL, undrafted) if Austin Reaves sits
+**Beneficiaries to watch**: Zach LaVine (SAC, ADP 35.5) if Domantas Sabonis sits; Precious Achiuwa (SAC, undrafted) if Domantas Sabonis sits; Malik Monk (SAC, undrafted) if Domantas Sabonis sits; Ace Bailey (UTA, ADP 33.3) if Lauri Markkanen sits; Isaiah Collier (UTA, ADP 35.9) if Lauri Markkanen sits; Brayden Burries (MIL, ADP 34.3) if Tyler Herro sits; Kyle Kuzma (MIL, ADP 35.9) if Tyler Herro sits; Jaime Jaquez Jr. (MIL, ADP 35.9) if Tyler Herro sits
 
 **Swap board**: after drafting, open Swaps on the board (leverage is the default) and Apply, then your round-6 shuffle in the app. Swaps are graded from the contest data, not from any lock.
 
@@ -66,11 +66,11 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 ## T1
 
-**Last night (2026-11-08)**, points per pair (pairs); positive: your board won
-- AM (fallback): vs Ours - · vs ADP -9.2 (1) · VALUE - · PRICEY +13.0 (4)
-- PM (fallback): vs ETR - · vs Ours PM - · vs ADP -9.2 (1) · VALUE - · PRICEY -
-- Your takes by source: none
-- Breakers: Giannis Antetokounmpo. Scratches: none
+**Last night (2026-11-09)**, points per pair (pairs); positive: your board won
+- AM: vs Ours +12.1 (1) · vs ADP - · VALUE - · PRICEY -
+- PM: vs ETR - · vs Ours PM - · vs ADP -12.1 (1) · VALUE - · PRICEY -
+- Your takes by source: NEWS +13.9 (2)
+- Breakers: Victor Wembanyama. Scratches: none
 
 **Keep doing** (points · money)
 - T1 switches: AM ADP (2: Boom) (money pending) · PM ETR (money pending)
@@ -79,26 +79,24 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - the one-tier cap · points both windows · money LEAN against
 
 **Testing** (forward nights of 14 · shadow · money)
-- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -8.5, not enough yet (19) · forward none yet · money no lean
+- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
 
 **Worth a look**
-- no logged misses in this tier
+- misses not logged yet for 2026-11-09 (the skill's steps 3-4)
 
 **Contest side**
-- Your picks per team: PM 0.42, field 0.5 (40 of your teams)
-- AM drafted: PRICEY Cooper Flagg 92%, Domantas Sabonis 77%
-- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)
-- pricey-flags:T1: RULE for; this run: RULE for; top-10% lift 1.93 (1.53-2.36); my teams there 1.77x at the top 10% (333 teams)
+- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
+- pricey-flags:T1: RULE for; this run: RULE for; top-10% lift 2.12 (1.75-2.68); my teams there 1.77x at the top 10% (317 teams)
 - kept-am-t1: pending
 - kept-pm-t1: pending
 
 ## T2
 
-**Last night (2026-11-08)**, points per pair (pairs); positive: your board won
-- AM (fallback): vs Ours +6.0 (2) · vs ADP +1.4 (14) · VALUE - · PRICEY +1.2 (16)
-- PM (fallback): vs ETR +4.4 (7) · vs Ours PM - · vs ADP +1.4 (18) · VALUE - · PRICEY +13.1 (5)
-- Your takes by source: NEWS +1.4 (7); OTHER -1.6 (7)
-- Breakers: Bam Adebayo, Darius Garland. Scratches: Domantas Sabonis (swaps averaged 22.1 over 1379)
+**Last night (2026-11-09)**, points per pair (pairs); positive: your board won
+- AM: vs Ours -10.0 (12) · vs ADP -16.4 (6) · VALUE - · PRICEY +6.3 (8)
+- PM: vs ETR - · vs Ours PM +8.2 (2) · vs ADP +26.8 (3) · VALUE +18.2 (3) · PRICEY +8.8 (2)
+- Your takes by source: Bagel+ETR +38.7 (1); NEWS -16.4 (6)
+- Breakers: Anthony Davis. Scratches: none
 
 **Keep doing** (points · money)
 - T2 switches: AM ADP (money pending) · PM ADP (2: ETR) (money no lean)
@@ -108,22 +106,17 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - the one-tier cap · points both windows · money LEAN against
 
 **Testing** (forward nights of 14 · shadow · money)
-- PM T2: ADP (2: ETR) vs the old ADP (1: ETR): 0/14 · season +4.1, not enough yet (37) · forward none yet · money no lean
-- T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+): 0/14 · season +1.9, not enough yet (19) · forward none yet · money LEAN for
-- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -8.5, not enough yet (19) · forward none yet · money no lean
-- T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season -0.7, not enough yet (33) · forward none yet · money RULE for
-- T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season +0.5 (-2.0 to +3.3), 69 pairs, no lean · forward none yet · money RULE for
+- PM T2: ADP (2: ETR) vs the old ADP (1: ETR): 0/14 · season +5.0, not enough yet (39) · forward none yet · money no lean
+- T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+): 0/14 · season +2.7, not enough yet (21) · forward none yet · money LEAN for
+- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
+- T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season -1.2, not enough yet (36) · forward none yet · money RULE for
+- T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season +0.2 (-2.4 to +3.1), 70 pairs, no lean · forward none yet · money RULE for
 
 **Worth a look**
-- Dejounte Murray: ours 42.6, actual 13.1, shooting: 28 min (usual 35) in a 16-point loss, 1-6
-- Tyler Herro: ours 37.5, actual 16.2, blowout: 27 min (usual 31) in a 20-point loss as a 13.5 underdog, 5-12
-- Julius Randle: ours 43.4, actual 23.8, blowout: 30 min (usual 34) in a 37-point loss
+- misses not logged yet for 2026-11-09 (the skill's steps 3-4)
 
 **Contest side**
-- Your picks per team: PM 2.65, field 2.47 (40 of your teams)
-- AM drafted: PRICEY Keyonte George 91%, Zion Williamson 94%, Kyrie Irving 92%, Jaden McDaniels 94%
-- PM drafted: PRICEY Tyler Herro 99% (yours 20%); Q Keyonte George 100% (yours 5%)
-- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)
+- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
 - leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.59 (1.32-2.13); my teams there 1.97x at the top 10% (71 teams)
 - pm-t2-adp-etr2: no lean; this run: no lean; top-10% lift 1.22 (0.88-1.66); my teams there 1.68x at the top 10% (376 teams)
 - pm-t2-other-reads: no lean; this run: no lean; top-10% lift 0.94 (0.79-1.10); my teams there 1.04x at the top 10% (451 teams)
@@ -131,11 +124,11 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 ## T3/T4
 
-**Last night (2026-11-08)**, points per pair (pairs); positive: your board won
-- AM (fallback): vs Ours -20.1 (1) · vs ADP -5.2 (20) · VALUE -5.8 (22) · PRICEY -6.0 (21)
-- PM (fallback): vs ETR +7.3 (10) · vs Ours PM - · vs ADP +8.9 (15) · VALUE +5.8 (15) · PRICEY +11.6 (15)
-- Your takes by source: NEWS -4.9 (6); OTHER -0.8 (2)
-- Breakers: Jeremiah Fears, Derrick White. Scratches: Lauri Markkanen (swaps averaged 23.0 over 1189)
+**Last night (2026-11-09)**, points per pair (pairs); positive: your board won
+- AM: vs Ours -12.5 (6) · vs ADP -7.0 (17) · VALUE +5.4 (22) · PRICEY +7.3 (28)
+- PM: vs ETR +0.8 (14) · vs Ours PM -4.6 (29) · vs ADP -0.5 (28) · VALUE +0.9 (28) · PRICEY +0.0 (37)
+- Your takes by source: Bagel +5.2 (5); Bagel+ETR +6.1 (3); NEWS -12.9 (9)
+- Breakers: Pascal Siakam, Dyson Daniels, Onyeka Okongwu, Naz Reid. Scratches: none
 
 **Keep doing** (points · money)
 - T3 switches: AM Proj (3: ADP) (money pending) · PM ETR (ties: ADP, Boom) (money pending)
@@ -147,40 +140,31 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - the one-tier cap · points both windows · money LEAN against
 
 **Testing** (forward nights of 14 · shadow · money)
-- PM T4: ADP (2: ETR) vs the old ETR rule: 0/14 · season -0.5, not enough yet (19) · forward none yet · money no lean
-- T4-1: PRICEY-last off in PM T4 (VALUE first kept): 0/14 · season +6.8, not enough yet (14) · forward none yet · money no lean
-- T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+): 0/14 · season +1.9, not enough yet (19) · forward none yet · money LEAN for
-- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -8.5, not enough yet (19) · forward none yet · money no lean
+- PM T4: ADP (2: ETR) vs the old ETR rule: 0/14 · season -0.7, not enough yet (23) · forward none yet · money no lean
+- T4-1: PRICEY-last off in PM T4 (VALUE first kept): 0/14 · season +3.5, not enough yet (22) · forward none yet · money no lean
+- T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+): 0/14 · season +2.7, not enough yet (21) · forward none yet · money LEAN for
+- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
 
 **Worth a look**
-- Jonathan Kuminga: ours 36.0, actual 1.0, blowout: 1.0 in 25 min (usual 31) of a 15-point win as a 12.5 favorite, 2-5 with 3 turnovers
-- Dejounte Murray: ours 42.6, actual 13.1, shooting: 28 min (usual 35) in a 16-point loss, 1-6
-- PJ Washington: ours 37.8, actual 16.0, blowout: 25 min (usual 35) in a 37-point win
-- Tyler Herro: ours 37.5, actual 16.2, blowout: 27 min (usual 31) in a 20-point loss as a 13.5 underdog, 5-12
+- misses not logged yet for 2026-11-09 (the skill's steps 3-4)
 
 **Contest side**
-- T3: Your picks per team: PM 0.7, field 0.78 (40 of your teams)
-- T3: AM drafted: VALUE Dejounte Murray 92%, Lauri Markkanen 71%; PRICEY Ayo Dosunmu 94%, Tyler Herro 93%, Jonathan Kuminga 91%, Darryn Peterson 91%, Davion Mitchell 94%; Q Lauri Markkanen 71%
-- T3: PM drafted: PRICEY Jonathan Kuminga 100% (yours 0%), Darryn Peterson 100% (yours 0%); Q Lauri Markkanen 66% (yours 2%)
-- value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.32); my teams there 1.32x at the top 10% (998 teams)
-- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)
+- value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.31); my teams there 1.31x at the top 10% (1014 teams)
+- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
 - leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.59 (1.32-2.13); my teams there 1.97x at the top 10% (71 teams)
 - pm-middle-takes: no lean; this run: no lean; top-10% lift 1.03 (0.83-1.24); my teams there 1.39x at the top 10% (605 teams)
 - kept-am-middle: pending
 - kept-pm-t3: pending
-- T4: Your picks per team: PM 0.97, field 1.0 (40 of your teams)
-- T4: AM drafted: VALUE Rudy Gobert 94%, Derrick White 92%, Zach LaVine 91%; PRICEY Jeremiah Fears 94%, Rui Hachimura 93%
-- T4: PM drafted: VALUE Trey Murphy III 100% (yours 30%), Rudy Gobert 98% (yours 18%), Derrick White 99% (yours 12%), Zach LaVine 99% (yours 32%); PRICEY Rui Hachimura 98% (yours 0%), PJ Washington 99% (yours 5%)
 - pm-t4-pricey-last-off: no lean; this run: no lean; top-10% lift 1.11 (0.78-1.41); my teams there 1.69x at the top 10% (118 teams)
 - pm-t4-adp-etr2: no lean; this run: no lean; top-10% lift 0.89 (0.74-1.14); my teams there 0.96x at the top 10% (218 teams)
 
 ## T5
 
-**Last night (2026-11-08)**, points per pair (pairs); positive: your board won
-- AM (fallback): vs Ours -1.1 (8) · vs ADP +3.2 (53) · VALUE +1.5 (53) · PRICEY -
-- PM (fallback): vs ETR -10.8 (2) · vs Ours PM - · vs ADP -0.2 (36) · VALUE +7.6 (20) · PRICEY -
-- Your takes by source: NEWS +1.4 (41); OTHER -3.2 (21)
-- Breakers: Brook Lopez, Brayden Burries, Klay Thompson, Daniel Gafford, Mitchell Robinson, Kyle Kuzma. Scratches: Nikola Jovic (no swaps credited); Tyler Bilodeau (no swaps credited); Jordan Poole (no swaps credited)
+**Last night (2026-11-09)**, points per pair (pairs); positive: your board won
+- AM: vs Ours -4.8 (41) · vs ADP +7.3 (85) · VALUE +6.9 (80) · PRICEY -
+- PM: vs ETR -1.3 (9) · vs Ours PM +8.4 (26) · vs ADP +4.6 (14) · VALUE -7.1 (13) · PRICEY -
+- Your takes by source: Bagel +14.5 (1); Bagel+ETR +8.0 (6); NEWS +2.5 (70)
+- Breakers: Brandin Podziemski, Jakob Poeltl, Jamal Shead, Grayson Allen, Daniss Jenkins, John Collins. Scratches: Julian Phillips (no swaps credited); Bronny James (no swaps credited)
 
 **Keep doing** (points · money)
 - T5 switches: AM the button's order, then the less drafted within 2 pts (money no lean) · PM ADP, then the less drafted within 2 pts (money LEAN against)
@@ -194,47 +178,41 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 - provisional: T5: the less drafted within 2 pts · points money RULE · money RULE for
 
 **Testing** (forward nights of 14 · shadow · money)
-- AM T5: the less drafted within 2 pts vs the old Proj (3: ADP): 0/14 · season +1.6 (-0.2 to +4.0), 123 pairs, LEAN + · forward none yet · money RULE for
-- PM T5: the less drafted within 2 pts vs the old ADP: 0/14 · season -2.9 (-5.1 to -0.8), 90 pairs, LEAN - (RULE numbers, check pending) · forward none yet · money RULE for
-- T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners: 0/14 · season -3.1 (-4.3 to -1.6), 553 pairs, LEAN - (RULE numbers, check pending) · forward none yet · money played: RULE for
-- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -8.5, not enough yet (19) · forward none yet · money no lean
+- AM T5: the less drafted within 2 pts vs the old Proj (3: ADP): 0/14 · season +2.2 (+0.2 to +4.5), 137 pairs, LEAN + · forward none yet · money RULE for
+- PM T5: the less drafted within 2 pts vs the old ADP: 0/14 · season -2.1 (-4.8 to +0.6), 84 pairs, LEAN - · forward none yet · money RULE for
+- T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners: 0/14 · season -3.6 (-4.7 to -2.2), 677 pairs, RULE - · forward none yet · money played: RULE for
+- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
 
 **Worth a look**
-- Naji Marshall: ours 33.2, actual 12.2, blowout: 15 min (usual 23) in a 37-point win
-- Jaime Jaquez Jr.: ours 31.6, actual 12.4, blowout: 23 min (usual 28) in a 20-point loss, 1-3
-- Andrew Wiggins: ours 31.3, actual 13.1, shooting: 32 min (usual 26) but 2-6
-- Derik Queen: ours 34.0, actual 20.5, shooting: ours 34.0 vs ETR 28.9; 1-5 with 4 turnovers
+- misses not logged yet for 2026-11-09 (the skill's steps 3-4)
 
 **Contest side**
-- Your picks per team: PM 1.23, field 1.18 (40 of your teams)
-- AM drafted: VALUE Derik Queen 86%, Day'Ron Sharpe 84%, Payton Pritchard 44%
-- PM drafted: VALUE Day'Ron Sharpe 100% (yours 20%), Brook Lopez 89% (yours 18%); Q Mitchell Robinson 0% (yours 0%)
-- am-t5-button-order: no lean; this run: LEAN for; top-10% lift 1.14 (1.02-1.27); my teams there 1.51x at the top 10% (278 teams)
-- value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.32); my teams there 1.32x at the top 10% (998 teams)
-- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.19 (1.10-1.29); my teams there 1.41x at the top 10% (1226 teams)
-- q-tag-pushes: no lean; this run: no lean; top-10% lift 1.08 (0.92-1.27); my teams there 1.55x at the top 10% (453 teams)
+- am-t5-button-order: no lean; this run: LEAN for; top-10% lift 1.14 (1.03-1.28); my teams there 1.48x at the top 10% (277 teams)
+- value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.31); my teams there 1.31x at the top 10% (1014 teams)
+- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
+- q-tag-pushes: no lean; this run: no lean; top-10% lift 1.08 (0.90-1.27); my teams there 1.54x at the top 10% (447 teams)
 - q-tag-raises: no lean; this run: no lean; top-10% lift 0.99 (0.83-1.20); my teams there 1.06x at the top 10% (180 teams)
 - beneficiary-round6:sat: played: RULE for; this run: no lean; top-10% lift 0.99 (0.80-1.31); my teams there 2.35x at the top 10% (34 teams)
 - beneficiary-round6:played: played: RULE for; this run: RULE for; top-10% lift 1.44 (1.14-2.11); my teams there 1.88x at the top 10% (16 teams)
 - pm-t5-beneficiary: no lean; this run: no lean; top-10% lift 1.12 (0.91-1.39); my teams there 1.79x at the top 10% (279 teams)
-- ownership-tiebreak-t5: RULE for; this run: RULE for; top-10% lift 1.18 (1.05-1.31); my teams there 1.41x at the top 10% (708 teams)
+- ownership-tiebreak-t5: RULE for; this run: RULE for; top-10% lift 1.19 (1.06-1.32); my teams there 1.43x at the top 10% (718 teams)
 - pm-t5-adp-value: LEAN against; this run: LEAN against; top-10% lift 0.81 (0.68-0.97); my teams there 1.61x at the top 10% (373 teams)
-- am-t5-other-reads: RULE for; this run: LEAN for; top-10% lift 1.40 (1.11-1.78); my teams there 1.54x at the top 10% (117 teams)
+- am-t5-other-reads: RULE for; this run: LEAN for; top-10% lift 1.24 (1.00-1.54); my teams there 1.01x at the top 10% (188 teams)
 
 ## Season
 
-**Overnight window** (drafts before 4:30am; kept out of the AM grades): 12 nights, 133 of your teams; your board against ADP then: +0.8 (-0.1 to +1.7), 1259 pairs, LEAN +
+**Overnight window** (drafts before 4:30am; kept out of the AM grades): 13 nights, 134 of your teams; your board against ADP then: +1.2 (+0.3 to +2.1), 1410 pairs, LEAN + (RULE numbers, check pending)
 
 **T1**
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (7 nights) | -9.8 (3) | +24.8 (3) | - |
-| PM (14 nights) | -11.2 (4) | +9.5 (9) | - |
+| AM (8 nights) | -4.3 (4) | +24.8 (3) | - |
+| PM (15 nights) | -11.2 (4) | +7.4 (10) | - |
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | NEWS | -9.4, not enough yet (8) |
+| AM | NEWS | -4.7, not enough yet (10) |
 | PM | Bagel+ETR | -6.9, not enough yet (3) |
 | PM | NEWS | -24.3, not enough yet (1) |
 
@@ -242,14 +220,14 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (7 nights) | +4.1 (47) | +1.7 (45) | -1.1 (7) |
-| PM (14 nights) | -1.5 (77) | +2.3 (106) | +4.8 (6) |
+| AM (8 nights) | +1.2 (59) | -0.5 (51) | -1.1 (7) |
+| PM (15 nights) | -1.5 (77) | +2.9 (109) | +9.3 (9) |
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | NEWS | -1.9, not enough yet (35) |
+| AM | NEWS | -4.0 (-8.9 to +0.2), 41 pairs, LEAN - |
 | PM | Bagel | -1.0, not enough yet (6) |
-| PM | Bagel+ETR | +4.4, not enough yet (19) |
+| PM | Bagel+ETR | +6.1, not enough yet (20) |
 | PM | ETR | +7.3, not enough yet (3) |
 | PM | NEWS | -0.2, not enough yet (23) |
 | PM | OTHER | -4.6, not enough yet (16) |
@@ -258,33 +236,33 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (7 nights) | -1.7 (65) | +0.5 (146) | +1.4 (171) |
-| PM (14 nights) | +2.8 (113) | +2.8 (245) | +2.8 (254) |
+| AM (8 nights) | -2.6 (71) | -0.2 (163) | +1.9 (193) |
+| PM (15 nights) | +2.6 (127) | +2.4 (273) | +2.6 (282) |
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | NEWS | -0.7 (-2.8 to +1.7), 66 pairs, no lean |
-| PM | Bagel | +2.9, not enough yet (14) |
-| PM | Bagel+ETR | -0.2, not enough yet (31) |
-| PM | ETR | +0.6, not enough yet (14) |
-| PM | NEWS | +0.5, not enough yet (32) |
+| AM | NEWS | -2.1 (-4.7 to +0.4), 73 pairs, LEAN - |
+| PM | Bagel | +3.5, not enough yet (19) |
+| PM | Bagel+ETR | +0.3, not enough yet (34) |
+| PM | ETR | +0.7, not enough yet (14) |
+| PM | NEWS | +0.1, not enough yet (34) |
 | PM | OTHER | +1.0, not enough yet (22) |
 
 **T5**
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (7 nights) | +4.0 (92) | -2.7 (356) | +5.6 (344) |
-| PM (14 nights) | -1.2 (268) | -2.2 (728) | +3.5 (512) |
+| AM (8 nights) | +1.3 (133) | -0.8 (441) | +5.8 (424) |
+| PM (15 nights) | -1.2 (277) | -2.1 (742) | +3.2 (525) |
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | NEWS | -3.1 (-5.2 to -1.0), 282 pairs, LEAN - (RULE numbers, check pending) |
-| PM | Bagel | -6.6 (-9.3 to -3.4), 66 pairs, LEAN - |
-| PM | Bagel+ETR | -3.7 (-5.5 to -1.6), 103 pairs, LEAN - (RULE numbers, check pending) |
+| AM | NEWS | -2.1 (-4.2 to -0.1), 353 pairs, LEAN - |
+| PM | Bagel | -6.3 (-9.0 to -2.7), 66 pairs, LEAN - |
+| PM | Bagel+ETR | -3.0 (-5.0 to -0.8), 108 pairs, LEAN - (RULE numbers, check pending) |
 | PM | ETR | -1.2 (-4.7 to +2.5), 92 pairs, no lean |
-| PM | NEWS | -1.8 (-3.8 to +0.3), 247 pairs, LEAN - |
-| PM | OTHER | +0.1 (-1.6 to +2.7), 164 pairs, no lean |
+| PM | NEWS | -1.7 (-3.7 to +0.3), 253 pairs, LEAN - |
+| PM | OTHER | -0.2 (-1.8 to +2.2), 182 pairs, no lean |
 
 Points per pair or take (count); positive: your board won, VALUE beat its partners, or your take beat the button. Takes are credited to ETR or Bagel when either player had a note from them before the lock, else NEWS (his projection or his team's status changed since the last lock) or OTHER. Verdicts and labels: tier_grade.md.
 

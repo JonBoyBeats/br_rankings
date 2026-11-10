@@ -49,3 +49,8 @@ date,slate,slate_id,contest_id,title,description,max_entries,entries,pods,pod_si
 2026-11-08,nba_sun_main,50c5af29-421f-4d2f-8fd1-b3729a0b05b7,2635b111-dad8-424d-8c9d-f4132808e180,Sunday Shootaround,6 person drafts - $4k to first!,150,8946,1491,6,2026-11-08T23:41:00Z,2026-11-09T10:21:03+00:00
 2026-11-08,nba_sun_main,50c5af29-421f-4d2f-8fd1-b3729a0b05b7,834aba4c-e748-4858-9249-9f3fc00b4ba3,The Layup Line,6 person drafts - $1k to first!,33,1128,188,6,2026-11-08T23:41:00Z,2026-11-09T10:21:17+00:00
 2026-11-08,nba_sun_main,50c5af29-421f-4d2f-8fd1-b3729a0b05b7,d107f5b2-e93c-4c34-85b3-4229b91c0972,The Crossover,5 entry max - $2k to first!,5,216,36,6,2026-11-08T23:41:00Z,2026-11-09T10:21:20+00:00
+2026-11-09,nba_mon_main,aa501f93-ff5a-4e72-9f15-77440fc8855f,9d5e67ba-c3cf-45d8-9170-78591b8f1965,Monday Night Hoops,6 person drafts - $6k to first!,150,13560,2260,6,2026-11-09T23:41:00Z,2026-11-10T10:20:55+00:00
+2026-11-09,nba_mon_main,aa501f93-ff5a-4e72-9f15-77440fc8855f,fbaf3cd5-85f2-4db6-a1d0-4c4bdbcd268a,Buzzer Beater,20 entry max - $1k to first!,20,3744,624,6,2026-11-09T23:41:00Z,2026-11-10T10:21:50+00:00
+2026-11-09,nba_mon_main,aa501f93-ff5a-4e72-9f15-77440fc8855f,ed3653dc-1395-485d-a745-faaa3bf1248d,The Layup Line,6 person drafts - $1k to first!,33,1128,188,6,2026-11-09T23:41:00Z,2026-11-10T10:21:08+00:00
+2026-11-09,nba_mon_main,aa501f93-ff5a-4e72-9f15-77440fc8855f,fd123199-433c-48a9-a342-ed15b0cf8340,The Crossover,5 entry max - $2k to first!,5,216,36,6,2026-11-09T23:41:00Z,2026-11-10T10:21:53+00:00
+2026-11-09,nba_mon_main,aa501f93-ff5a-4e72-9f15-77440fc8855f,bcc4ced7-0778-42e2-934e-5a646be63aed,Pick & Roll,Single Entry - $1.5k to first!,1,24,4,6,2026-11-09T23:41:00Z,2026-11-10T10:20:55+00:00
