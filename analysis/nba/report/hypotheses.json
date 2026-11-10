@@ -52,7 +52,9 @@
    "status": "testing",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
-   "register": "pm-t4-pricey-last-off"
+   "register": "pm-t4-pricey-last-off",
+   "plain": "Stop putting PRICEY players last in afternoon T4 (VALUE players still go first)",
+   "name": "PRICEY-last off in afternoon T4"
   },
   "T4-2": {
    "tiers": [
@@ -90,7 +92,9 @@
    "forward_from": "2026-11-10",
    "register": "leverage-t2-t4",
    "closed": "2026-11-09",
-   "note": "Replaced by Q-1 (the slot was needed in T4); the weakest under test in T4: +0.2 per pair (73 pairs, no lean), forward none yet"
+   "note": "Replaced by Q-1 (the slot was needed in T4); the weakest under test in T4: +0.2 per pair (73 pairs, no lean), forward none yet",
+   "plain": "An earlier T4 idea, replaced",
+   "name": "an earlier T4 idea"
   },
   "T2-T4-1": {
    "tiers": [
@@ -111,7 +115,9 @@
    "status": "testing",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
-   "register": "leverage-t2-t4"
+   "register": "leverage-t2-t4",
+   "plain": "In T2 to T4, put the less drafted player first when two are within two projected points and at least 10 points apart in how often they're drafted",
+   "name": "the less-drafted tiebreak in T2 to T4"
   },
   "T5-1": {
    "tiers": [
@@ -130,7 +136,9 @@
    "status": "testing",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
-   "register": "beneficiary-round6"
+   "register": "beneficiary-round6",
+   "plain": "In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock",
+   "name": "the tagged-teammate bump in morning T5"
   },
   "Q-1": {
    "tiers": [
@@ -156,7 +164,9 @@
    "status": "testing",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
-   "register": "pm-questionable-back-two"
+   "register": "pm-questionable-back-two",
+   "plain": "Push Questionable players by type: VALUE players and those over 70% to play stay put; in T1-T2, PRICEY players and those under 50% to play drop two tiers; everyone else follows the current rule",
+   "name": "Questionable pushes by type"
   },
   "T2-1": {
    "tiers": [
@@ -179,7 +189,9 @@
    "forward_from": "2026-11-10",
    "register": "card-turn23-reach-higher-proj",
    "split_windows": true,
-   "decide": "Per window (2026-11-09): the shadow grades AM and PM apart (T2-1:am, T2-1:pm), and each window's Monday call stands on its own forward read: PM can be adopted on its own even if AM isn't, and the reverse. The backtest suggests PM (ETR beat ADP past pick 10, +3.7 on 75 pairs) and not AM."
+   "decide": "Per window (2026-11-09): the shadow grades AM and PM apart (T2-1:am, T2-1:pm), and each window's Monday call stands on its own forward read: PM can be adopted on its own even if AM isn't, and the reverse. The backtest suggests PM (ETR beat ADP past pick 10, +3.7 on 75 pairs) and not AM.",
+   "plain": "Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on",
+   "name": "T2 split at the 1/2 turn"
   }
  }
 }

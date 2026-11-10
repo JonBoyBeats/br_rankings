@@ -27,28 +27,54 @@ The newest file should be yesterday's main slate (`analysis/nba/daily/<date>_<da
 If it isn't there, say so first: the nightly run may have failed or not run yet (the
 "NBA daily record" workflow). Then report on the newest slate on file.
 
-## 1b. The tier report (phone first)
+## 1b. The report: your morning sports section
 
 ```
 python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror
 ```
 
-Run it **after step 4** (so last night's misses and their causes are logged for "worth a look"), and put it first
-in the chat (see "In chat"). It writes `analysis/nba/report/today.md`. From the top:
+It writes `analysis/nba/report/today.md`: the report on top, the season tables at the bottom. It is what the chat
+posts (see "In chat"), so it is written for a phone: plain technical English in short paragraphs, readable in a few
+minutes. In order:
 
-- **Pipeline health**, a line per input: contests, results, swaps credited, ETR, Lock AM and Lock PM (with any
-  fallback and when it counted), ADP snapshots, and today's inputs (our Proj, chance to play, Q-tags), due by
-  4:30am PT. Anything missing or late goes first in the chat.
-- **Monday proposals**: computed every day, decided on Mondays (see "The loop"). Nothing changes without a yes.
-- **Today's playbook**: each tier's switches (status, money), the draft card, today's Q-tags and how they're
-  handled, VALUE flags, beneficiaries, the swap board, changes this week. A directional read: the board's Proj
-  isn't on the server, so the real build is the Tiers button.
-- **T1, T2, T3/T4, T5**, four blocks each: **last night** (your board against ETR, ours and ADP on decision pairs,
-  AM and PM; your takes by source; the flags; breakers, scratches and swaps), **keep doing** (rules in force,
-  points and money), **testing** (provisional switches and ideas under test: forward nights x/14, the shadow so
-  far, money), **worth a look** (the biggest logged misses and causes); then the **contest side's block** for the
-  tier (`money_tiers.json`, written by the contest side; "contest block pending" until it exists).
-- **Season** at the bottom: a table per tier and window, takes by source and tier, the adopted leans and rules.
+- **Front page**, one paragraph of 5-8 sentences: the story of last night's slate (blowouts, late news, who broke it
+  open), how your teams did (finishes, top 10%, entries and winnings), the one or two lessons, and anything to decide
+  today. The pipeline only if something is wrong.
+- **Monday: decisions for today** (Mondays only): each proposal as a plain-English decision with a recommendation and
+  its evidence in a sentence or two (see "Monday proposals" below). Nothing changes without a yes.
+- **In every tier**: the rules all tiers share, said once (the cap, the flags, the Q-tag handling, what points and
+  contest results mean).
+- **T1 to T5**, about a phone screen each: the rules we played (morning and afternoon, with their status), did they
+  work last night (your board against the straight orders on the tier's head-to-head pairs, and the season), your
+  moves (moves off the button by window, the biggest, and your logged calls with their reasons), the player recap
+  (the ledger's notes; scratches and where the swaps landed), the contest view (your exposure against the field's,
+  flagged players' draft rates, who paid or hurt in the standings, season decisions with a signal), what we're leaning
+  toward (switches on trial and ideas under test) and today in the tier (Q-tags, VALUE and PRICEY, beneficiaries).
+- **The draft card**: how the turns went on your teams last night, and where contest results stand on each card rule.
+- **Back page**: the model (ours against ETR, the projection hypotheses, decisions due), data status, links.
+
+**Words, not codes.** The report never shows register ids, rule codes or verdict labels. RULE is "proven so far",
+LEAN "an early sign", no lean "no clear signal", not enough "too early to say", provisional "on trial". Points are
+the rankings grade, contest results the money grade. Rules are said in words ("In the afternoon, T2 is ordered by ADP,
+and ETR breaks ties when two players are within two picks of each other"), and every number carries its meaning in
+the same sentence. A new tier idea gets a `plain` line in `hypotheses.json` (one sentence, no codes) and a short `name`, and a new
+switch a line in the script's `SHADOW_WORDS`/`RULE_WORDS`.
+
+**The hand-written parts** go in `analysis/nba/report/morning/<night>.json` (the nightly runs keep them; the script
+fills everything else from the files):
+
+```
+{"front": "the front page paragraph",
+ "moves": {"2": "a sentence or two on why your moves in T2 went the way they did"},
+ "card": "anything the turn counts don't say",
+ "back": "a decision or note for the back page",
+ "proposals": {"<decision id>": "your recommendation, when it differs from the script's"}}
+```
+
+Write it **after step 7** (the recap reads the ledger's notes, and "your moves" the calls logged in step 4), then
+re-run the script. The front page is the one part always written by hand; the others only when there is something
+the numbers don't say (a reason, a pattern across tiers). Use only numbers the script, the field section or the
+earlier steps printed.
 
 **The record of each window** (the daily record, `scripts/nba_daily.py`): your manual Lock AM and Lock PM. The AM
 window starts at 4:30am PT; drafts before then (the night before included) are the OVERNIGHT window, labelled, kept
@@ -109,7 +135,7 @@ function in `scripts/nba_shadow.py`), what it's graded against (the button) and 
 graded as one row per window (`<id>:am`, `<id>:pm`) and decided per window at its Monday call: one window can be
 adopted on its own forward read even if the other isn't.
 
-**Monday proposals** (decided Mondays; the report lists them daily): a provisional switch at 14 forward nights is
+**Monday proposals** (the report shows them on Mondays only, each with a recommendation): a provisional switch at 14 forward nights is
 kept if it beat the old rule there, else dropped (the T5 tiebreak is dropped only if it lost: its points cost is a
 known price for a money RULE); an idea at 14 forward nights is proposed for adoption at a forward LEAN or better when
 its money verdict isn't against, else dropped; an idea leaning against early may be dropped early; a free test slot
@@ -412,27 +438,9 @@ git commit -m "NBA report: takeaways and player notes for <date>" && git push or
 
 ## In chat
 
-In this order, short and scannable, built to read on a phone:
-
-0. **The tier report** (step 1b), as printed down to "Season": pipeline health (anything missing or late first),
-   Monday proposals, today's playbook, then T1, T2, T3/T4 and T5 with their four blocks and the contest block. Its
-   season tables go at the very end of the chat, after item 8.
-1. **Headline**: the morning and afternoon tables, with their verdicts.
-2. **Tier rules**: the two tables, then one line on anything that stands out last night (a
-   tier where the rule clearly beat or lost to ADP or the projection, or your moves off it).
-   Until a tier has 14 nights, its verdict is "too early" and no rule changes are suggested.
-3. **Ours vs ETR**: the one line, and the tag line.
-4. **Contests**: the contest summary as the script prints it (your results, the forward tests, last
-   night where it touched a rule), and nothing from the full tables unless the user asks.
-5. **Hypotheses**: a line each, and any proposal (step 6b).
-6. **Themes and takeaways**: only a theme that crossed its bar; otherwise one line saying none did.
-   Then the "Morning Proj vs ETR" bullet.
-7. **Last night, player by player**: only players whose ledger line carries a tag (the rest were
-   in line), plus any "against the same team" lines.
-8. **Missing**: anything the health lines didn't already cover (no tier lines on a lock, unmatched box
-   scores, notes not written overnight).
-
-9. **Season by tier**: the tier report's season tables, and on the first report of the month the
-   re-check (step 1b).
-
-The calls and misses from steps 3-4 are logged for the themes, not listed in chat.
+Post the report from `today.md` as it stands, from the title down to "Season" (the season tables stay in the file),
+after re-running the script with the morning file written. Nothing else, except one closing line for anything that
+needs the user and isn't already on the front page (a proposal awaiting a yes, something missing from the record).
+The scores tables (step 2), the field section (2b), the calls and misses (3-4), the themes (5) and the takeaways (6)
+feed the report and the logs; they aren't posted on their own. On the first report of the month, add the re-check
+(step 1b's "Monthly re-check") after the report.

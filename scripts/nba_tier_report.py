@@ -1,23 +1,27 @@
-"""NBA morning report by tier, built for a phone. Writes analysis/nba/report/today.md and prints it.
+"""NBA morning report: your morning sports section, tier by tier, in plain English. Writes
+analysis/nba/report/today.md and prints it.
 
-  Top        pipeline health (a line per input: contests, results, swaps credited, ETR, Lock AM and PM with any fallback,
-             ADP snapshots, and today's inputs due by 4:30am PT); Monday proposals (computed every day, decided Mondays),
-             ours and the contest side's weekly money proposals (money_proposals.json) together, approved in one place;
-             the monthly re-check when it's due; today's playbook: the switches, the draft card, today's Q-tags and how
-             they're handled, VALUE flags, beneficiaries, the swap board, changes this week
-  By tier    T1, T2, T3/T4, T5, each in four blocks: last night (your board against ETR, ours and ADP on decision pairs,
-             AM and PM; your takes by source; the flags; breakers, scratches and swaps), keep doing (the rules in force,
-             points and money), testing (provisional switches and ideas under test: forward nights x/14, the shadow so
-             far, money), worth a look (the biggest misses and their causes); then the contest side's block for the tier
-             (analysis/nba/report/money_tiers.json, {"tiers": {"T1": [lines], "T2": [...], "T3/T4": [...], "T5": [...]}}
-             or the tier keys at the top level; a tier's value may also be {"lines": [...]}; "contest block pending"
-             until it exists)
-  Season     one table per tier and window, takes by source and tier, the adopted leans and rules
+  Front page   last night's story, how your teams did, the lessons and anything to decide today
+  Proposals    Mondays only: each a plain-English decision with a recommendation and its evidence
+  T1 ... T5    each tier: the rules we played, did they work last night, your moves, the player recap, the contest
+               view, what we're leaning toward, today in this tier
+  Draft card   how the turns went last night, and where contest results stand on each card rule
+  Back page    the model (ours against ETR, the projection hypotheses, decisions due), data status, links
+  Season       the season tables (reference)
+
+The hand-written parts live in analysis/nba/report/morning/<night>.json, written by the morning report and kept by
+the nightly runs: {"front": str, "proposals": {decision id: recommendation}, "moves": {"1".."5": str}, "card": str,
+"back": str}. Until it exists the front page is a summary built from the files. Every number in the generated parts
+comes from the files.
+
+Words, not codes: no register ids, rule codes or verdict labels. RULE: proven so far; LEAN: an early sign; no lean:
+no clear signal; not enough yet: too early to say; provisional: on trial. Points are the rankings grade (fantasy
+points per head-to-head pair); contest results are the money grade (top-10% finishes against similar teams).
 
 Today's slate is read at report time (ADP now, the morning projection file): a directional read, since the board's own
 Proj isn't on the server; the real build is the Tiers button.
 
-  python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror
+  python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror [--today YYYY-MM-DD]
 """
 import argparse, collections, csv, datetime as dt, glob, json, math, os, re, subprocess, sys
 from zoneinfo import ZoneInfo
@@ -32,50 +36,115 @@ REP = G.REP
 DAILY = os.path.join(HERE, "analysis", "nba", "daily")
 CONTESTS = os.path.join(HERE, "analysis", "nba", "contests")
 OUT = os.path.join(REP, "today.md")
+MORNING = os.path.join(REP, "morning")           # <night>.json: the morning report's hand-written parts
 RECHECK = os.path.join(REP, "recheck.json")      # {"last": "YYYY-MM"}: the month of the last monthly re-check
 PT = ZoneInfo("America/Los_Angeles")
 QT = re.compile(r"^(q|d|g)", re.I)
 num = G.num
 FORWARD_NIGHTS = 14
-GROUPS = [("T1", {1}), ("T2", {2}), ("T3/T4", {3, 4}), ("T5", {5})]
-SWITCHES = [   # (tier, AM switch, PM switch, the decision_register.csv ids of the AM and PM switch)
-    (1, "ADP (2: Boom)", "ETR", ["kept-am-t1", "kept-pm-t1"]),
-    (2, "ADP", "ADP (2: ETR)", ["kept-am-t2", "pm-t2-adp-etr2"]),
-    (3, "Proj (3: ADP)", "ETR (ties: ADP, Boom)", ["kept-am-middle", "kept-pm-t3"]),
-    (4, "Proj (3: ADP)", "ADP (2: ETR)", ["kept-am-middle", "pm-t4-adp-etr2"]),
-    (5, "the button's order, then the less drafted within 2 pts", "ADP, then the less drafted within 2 pts",
-     ["am-t5-button-order", "pm-t5-adp-value"]),
-]
-TIEBREAKS = {5: "ownership-tiebreak-t5"}    # a provisional tiebreak on top of the tier's switches, by register id
-DRAFT_CARD = [   # in-draft rules, money-backed (contest side, 2026-11-09; register rows card-*); index.html #draftCard
-    ("2/3 turn: reach toward the higher projection", "card-turn23-reach-higher-proj"),
-    ("1/2 turn: don't reach unless a top player falls (reaching:", "card-turn12-reach"),
-    ("Fallers: at the 1/2 turn, a top-4 ADP player still there at picks 5-8; at the 2/3 turn (from the 1.01/1.02), a top-9 "
-     "player still there at picks 11-14 (4-person pods: top-2 / top-5). Take them.", "card-fallers"),
-    ("Avoid same-position teammates (holding them:", "card-same-position-teammates"),
-    ("Opposing stars from the same game: a plus", "card-opposing-stars"),
-]
-SHORT = {   # leans.json ids, as the phone shows them
-    "am-t5-button-order": "AM T5: the button's order (your moves off it are takes)",
-    "value-up-middle-t5": "VALUE first in the tier (T3-T5)",
-    "pm-questionable-back-two": "PM: a Questionable player two tiers back",
-    "am-questionable-no-push": "AM: no push for a Questionable player",
-    "pm-t5-beneficiary-picks": "PM T5: beneficiary picks",
-    "pm-t2-adp-etr-2": "PM T2: ADP (2: ETR)",
-    "pm-t4-adp-etr-2": "PM T4: ADP (2: ETR)",
-    "pm-t5-adp-value-up": "PM T5: ADP, VALUE first",
-    "keep-one-tier-cap": "the one-tier cap",
-    "t5-less-drafted-within-2": "T5: the less drafted within 2 pts",
+GROUPS = [("T1", {1}), ("T2", {2}), ("T3/T4", {3, 4}), ("T5", {5})]     # the season tables
+SWITCHES = {   # tier: the decision_register.csv ids of its AM and PM switch
+    1: ("kept-am-t1", "kept-pm-t1"), 2: ("kept-am-t2", "pm-t2-adp-etr2"), 3: ("kept-am-middle", "kept-pm-t3"),
+    4: ("kept-am-middle", "pm-t4-adp-etr2"), 5: ("am-t5-button-order", "pm-t5-adp-value")}
+RULE_WORDS = {   # (tier, window): the switch in words (nba_tier_history.RULE_STEPS)
+    (1, "am"): "In the morning, T1 is ordered by ADP, and the higher Boom (his ceiling) goes first when two players are within two picks of each other",
+    (1, "pm"): "In the afternoon, T1 is ordered by ETR's projection",
+    (2, "am"): "In the morning, T2 is ordered straight by ADP",
+    (2, "pm"): "In the afternoon, T2 is ordered by ADP, and ETR breaks ties when two players are within two picks of each other",
+    (3, "am"): "In the morning, T3 is ordered by our projection, and ADP decides when two players are within three points",
+    (3, "pm"): "In the afternoon, T3 is ordered by ETR's projection, with ADP and then Boom breaking exact ties",
+    (4, "am"): "In the morning, T4 is ordered by our projection, and ADP decides when two players are within three points",
+    (4, "pm"): "In the afternoon, T4 is ordered by ADP, and ETR breaks ties when two players are within two picks of each other",
+    (5, "am"): "In the morning, T5 follows the Tiers button: our projection, with ADP deciding when two players are within three points",
+    (5, "pm"): "In the afternoon, T5 is ordered by ADP",
 }
+TIEBREAKS = {5: ("ownership-tiebreak-t5", "In both windows T5 then puts the less drafted player first when two are within two "
+                 "projected points and at least 10 points apart in how often they're drafted")}
 SHADOW_REG = {"t5-less-drafted-am": "ownership-tiebreak-t5", "t5-less-drafted-pm": "ownership-tiebreak-t5",
               "pm-t5-vs-old-etr": "pm-t5-adp-value"}     # shadow.json ids whose money verdict sits on another register row
-DRAFT_NOTE = "Note: later rounds: a player well past his ADP through round 5 leans worth taking (candidate)"
-MONEY_NOTE = ("Everything adopted or kept is provisional until its money verdict (top finishes and dollars, from the contest "
-              "side: decision_register.csv) is in, and may be changed by it.")
+SHADOW_WORDS = {   # shadow.json switch rows in words (the tier ideas carry their own "plain" line in hypotheses.json)
+    "pm-t2-adp-etr2": "Afternoon T2's rule in use (ETR breaks ties within two picks) against the old one (within one pick)",
+    "pm-t4-adp-etr2": "Afternoon T4's rule in use (ADP, ETR breaking ties within two picks) against the old one (straight ETR)",
+    "pm-t5-vs-old-etr": "Afternoon T5's rule in use (ADP) against the old one (ETR's projection), both with the tiebreak",
+    "t5-less-drafted-am": "The less-drafted tiebreak in morning T5, against the button's plain order",
+    "t5-less-drafted-pm": "The less-drafted tiebreak in afternoon T5, against plain ADP",
+}
+LEAN_WORDS = {   # leans.json adopted rules that aren't a tier's switch, in words
+    "value-up-middle-t5": "VALUE players (our projection rates them at least a tier above their ADP) go first in the tier",
+    "keep-one-tier-cap": "no player moves more than one tier from his ADP tier",
+    "am-questionable-no-push": "in the morning a Questionable player keeps his tier",
+    "pm-questionable-back-two": "in the afternoon a Questionable player drops two tiers (to T5 at most)",
+    "pm-t5-beneficiary-picks": "in the afternoon you keep raising beneficiaries (a player whose teammate is tagged or out)",
+}
+SRC_WORDS = {"Ours": "our projection", "ADP": "ADP", "ETR": "ETR", "Ours PM": "our afternoon projection"}
+TAKE_SRC = {"ETR": "on an ETR note", "Bagel": "on a Bagel note", "Bagel+ETR": "on ETR and Bagel notes", "NEWS": "on news",
+            "OTHER": "on your own read"}
+DRAFT_CARD = [   # (the card line, what contest results grade, its register id); index.html #draftCard
+    ("Fallers: at the 1/2 turn, a top-4 ADP player still there at picks 5-8; at the 2/3 turn (from the 1.01/1.02), a "
+     "top-9 player still there at picks 11-14 (4-person pods: top-2 / top-5). Take them.", "taking a faller", "card-fallers"),
+    ("1/2 turn: don't reach unless a top player falls.", "reaching at the 1/2 turn", "card-turn12-reach"),
+    ("2/3 turn: reach toward the higher projection.", "reaching toward the higher projection at the 2/3 turn",
+     "card-turn23-reach-higher-proj"),
+    ("Avoid same-position teammates.", "holding an early pick and a late teammate at his position", "card-same-position-teammates"),
+    ("Opposing stars from the same game: a plus.", "pairing stars from opposite sides of one game", "card-opposing-stars"),
+]
+DRAFT_NOTE = "Later rounds: a player well past his ADP through round 5 leans worth taking (a candidate, not yet tested)."
 
 
-def norm(s):
-    return T.re.sub(r"[^a-z ]", "", (s or "").lower().replace("-", " ").replace(".", "")).strip()
+# ---------------------------------------------------------------- words
+def lab_words(label):
+    l = (label or "").strip().lower()
+    return ("proven so far" if l.startswith("rule") else "an early sign" if l.startswith("lean") else
+            "no clear signal" if l.startswith("no lean") else "too early to say" if l.startswith("not enough") else None)
+
+
+def lab_side(label):
+    l = (label or "").strip().lower().split(" (")[0] + " "
+    return 1 if ("+ " in l or " for " in l) else -1 if ("- " in l or "against" in l) else 0
+
+
+def money_words(v):
+    """A money verdict ('RULE for (...)', 'LEAN against', 'no lean (...)', 'pending') in words."""
+    v = (v or "pending").split(" (")[0].split(";")[0].strip()
+    w, s = lab_words(v), lab_side(v)
+    if w == "proven so far":
+        return "contest results have proven it so far" if s > 0 else "contest results have proven it wrong so far"
+    if w == "an early sign":
+        return "contest results show an early sign %s it" % ("for" if s > 0 else "against")
+    if w == "no clear signal":
+        return "contest results show no clear signal"
+    if w == "too early to say":
+        return "contest results are too early to say"
+    return "contest results are still to come"
+
+
+def gaining(mean, unit="pair"):
+    return "%s %.1f points per %s" % ("gaining" if mean >= 0 else "losing", abs(mean), unit)
+
+
+def season_read(v, unit="pair"):
+    """A points verdict (n, mean, lo, hi, label): 'gaining 1.2 points per pair over 120 pairs (an early sign)'."""
+    n, mean, _, _, label = v
+    if not n:
+        return None
+    return "%s over %d %ss (%s)" % (gaining(mean, unit), n, unit, lab_words(label) or "too early to say")
+
+
+def short(name):
+    return name.split(" ", 1)[-1] if name.count(" ") else name
+
+
+def poss(name):
+    return name + ("'" if name.endswith("s") else "'s")
+
+
+def names(xs):
+    xs = list(xs)
+    return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " and " + xs[-1] if xs else ""
+
+
+def pct(x):
+    return "%d%%" % round(100 * x)
 
 
 def iso(t):
@@ -84,6 +153,11 @@ def iso(t):
 
 def hm(t):
     return iso(t).astimezone(PT).strftime("%-I:%M%p").lower() if t else "-"
+
+
+def norm(s):
+    return T.re.sub(r"[^a-z ]", "", (s or "").lower().replace("-", " ").replace(".", "")).strip()
+
 
 
 def f1(v):
@@ -186,265 +260,515 @@ def health(mirror, today, latest):
     return lines
 
 
-# ---------------------------------------------------------------- Monday proposals and the monthly re-check
-def proposals(shadow, hyp, reg, leans):
-    """What the evidence says to decide (nothing changes without a yes). Switches and ideas at 14 forward nights by
-    their drop rule and bar; ideas leaning against early; a free test slot with a queued idea; money against an adopted
-    rule under money_policy."""
-    out = []
-    for c in shadow:
-        n, fv = c["forward_nights"], c["forward"]
-        lab = fv.get("label") or ""
-        if c["kind"] == "switch" and c.get("drop_if") and n >= FORWARD_NIGHTS:
-            won, lost = lab.startswith(("LEAN +", "RULE +")), lab.startswith(("LEAN -", "RULE -"))
-            if c["drop_if"] == "loss":
-                out.append("%s: %s after %d nights (%s)" % (c["name"], "drop: it lost to the old rule" if lost else "keep, adopt for good", n, fv["text"]))
-            else:
-                out.append("%s: %s after %d nights (%s)" % (c["name"], "keep, adopt for good" if won else "drop: it didn't beat the old rule", n, fv["text"]))
-        if c["kind"] == "candidate":
-            if n >= FORWARD_NIGHTS:
-                won = lab.startswith(("LEAN +", "RULE +"))
-                m = (reg.get((hyp.get(c["id"].split(":")[0]) or {}).get("register"), {}) or {}).get("money_verdict", "pending")
-                against = "against" in m.split(" (")[0]
-                out.append("%s: %s after %d nights (%s; money %s)" % (c["name"], "adopt" if won and not against else "drop", n, fv["text"], m.split(" (")[0]))
-            elif lab.startswith(("LEAN -", "RULE -")) and fv.get("n", 0) >= 40:
-                out.append("%s: leaning against forward (%s, %d nights): drop early?" % (c["name"], fv["text"], n))
-    testing = collections.Counter(t for h in hyp.values() if h.get("status") == "testing" for t in h["tiers"])
-    for k, h in hyp.items():
-        if h.get("status") == "queued" and all(testing[t] < 3 for t in h["tiers"]):
-            out.append("%s: a test slot is free in T%s: start testing \"%s\"?" % (k, "/T".join(map(str, h["tiers"])), h["idea"]))
-    for x in leans.get("adopted", []):
-        m = (reg.get(x.get("register")) or {}).get("money_verdict", "pending").split(" (")[0]
-        if "against" in m:            # money_policy: a money LEAN can't overturn a points RULE; a MONEY RULE can
-            points_rule = x.get("basis") == "RULE" or ", RULE)" in x.get("evidence", "")
-            if m.startswith("RULE") or not points_rule:
-                out.append("%s: money is %s, points %s: drop? (money_policy)" % (SHORT.get(x["id"], x["id"]), m, x.get("basis")))
-    return out
-
-
-def money_proposals():
-    """The contest side's weekly money proposals (analysis/nba/report/money_proposals.json): a list, or {"proposals": [...]}
-    with an optional "week"; each item a string or a dict (id, proposal or text, and any verdict or evidence)."""
-    p = os.path.join(REP, "money_proposals.json")
-    if not os.path.exists(p):
-        return ["no money proposals this week"]
-    doc = json.load(open(p))
-    items = doc.get("proposals", []) if isinstance(doc, dict) else doc
-    week = " (week of %s)" % doc["week"] if isinstance(doc, dict) and doc.get("week") else ""
-    out, new_splits = [], []
-    for x in items:
-        if not isinstance(x, dict):
-            out.append(str(x))
-            continue
-        head = x.get("id") or x.get("decision") or ""
-        lift = ((x.get("read") or {}).get("lift") or {})
-        rd = " (lift %.2f, %.2f-%.2f, %d slates)" % (lift["lift10"], *lift["range80"], lift.get("slates", 0)) \
-            if lift.get("lift10") is not None and lift.get("range80") else ""
-        if x.get("proposed"):
-            cur = (x.get("current_money") or "pending").split(" (")[0].split(";")[0]
-            if cur.startswith("none"):
-                new_splits.append("%s %s%s" % (head, x["proposed"], rd))
-            else:
-                out.append("%s: %s -> %s%s" % (head, cur, x["proposed"], rd))
-        else:
-            body = x.get("proposal") or x.get("text") or x.get("summary") or ""
-            out.append("%s%s%s" % (head, ": " if head and body else "", body))
-    if new_splits:
-        out.append("new splits: " + "; ".join(new_splits))
-    return ["money%s: %s" % (week, o) for o in out] or ["no money proposals this week"]
-
 
 def recheck_due(today):
     last = json.load(open(RECHECK)).get("last") if os.path.exists(RECHECK) else None
     return last != today[:7]
 
 
-# ---------------------------------------------------------------- today's playbook
-def playbook(mirror, H, reg, by_reg, money, leans, hyp, today):
-    md = []
+def problems(lines):
+    """The health lines that say something is wrong."""
+    bad = re.compile(r"NOT READY|late:|none listed|none on file|no daily record|not run|not read|no contests|fallback", re.I)
+    return [l[2:] for l in lines if bad.search(l)]
+
+
+# ---------------------------------------------------------------- today's slate (a directional read)
+def today_pool(mirror, H):
+    """(slate, lock, pod, pool rows with their combined tier c, flag, chance to play; beneficiaries [(row, tagged row)])."""
     s, lock, day, latest = today_slate(mirror)
-    md += ["## Today's playbook", "", MONEY_NOTE, ""]
-    if s:
-        pcal = calibrated_play(H)
-        players = [p for p in s["players"] if p.get("player_id")]
-        pod = 4 if max((p.get("adp") or 0) for p in players) <= 28 else 6
-        cap = 24 if pod == 4 else 36
-        mo = {norm(r["name"]): r for r in json.load(open(os.path.join(mirror, "nba_morning.json"))).get("players", [])}
-        sit_doc = json.load(open(os.path.join(mirror, "nba_sit.json")))
-        sit_day = sit_doc if sit_doc.get("date") == day else (sit_doc.get("days") or {}).get(day) or {}
-        sit = {norm(k): v for k, v in (sit_day.get("players") or {}).items()}
-        rows = []
-        for p in players:
-            name = (p.get("first_name") or "") + " " + (p.get("last_name") or "")
-            mm = mo.get(norm(name)) or {}
-            rows.append({"p": p, "name": name, "team": p.get("team") or "", "adp": p.get("adp"), "proj": mm.get("fp"),
-                         "tag": p.get("injury") or "", "sit": sit.get(norm(name))})
-        pool = [r for r in rows if r["adp"] is not None or r["proj"] is not None]
-        adp = lambda r: min(r["adp"], cap) if r["adp"] is not None else cap
-        A = sorted(pool, key=lambda r: (adp(r), -(r["proj"] or 0)))
-        P = sorted(pool, key=lambda r: (-(r["proj"] or -1e9), adp(r)))
-        la = T.lines([adp(r) for r in A], T.LADDER[pod], T.MIN_TIER[pod])
-        lp = T.lines([max(r["proj"] or 0, 0) for r in P], T.LADDER[pod], T.MIN_TIER[pod])
-        for i, r in enumerate(A):
-            r["a"] = T.tier_of(i + 1, la)
-        for i, r in enumerate(P):
-            r["pt"] = T.tier_of(i + 1, lp)
+    if not s:
+        return None, None, None, [], []
+    pcal = calibrated_play(H)
+    players = [p for p in s["players"] if p.get("player_id")]
+    pod = 4 if max((p.get("adp") or 0) for p in players) <= 28 else 6
+    cap = 24 if pod == 4 else 36
+    mo = {norm(r["name"]): r for r in json.load(open(os.path.join(mirror, "nba_morning.json"))).get("players", [])}
+    sit_doc = json.load(open(os.path.join(mirror, "nba_sit.json")))
+    sit_day = sit_doc if sit_doc.get("date") == day else (sit_doc.get("days") or {}).get(day) or {}
+    sit = {norm(k): v for k, v in (sit_day.get("players") or {}).items()}
+    rows = []
+    for p in players:
+        name = (p.get("first_name") or "") + " " + (p.get("last_name") or "")
+        mm = mo.get(norm(name)) or {}
+        rows.append({"p": p, "name": name, "team": p.get("team") or "", "adp": p.get("adp"), "proj": mm.get("fp"),
+                     "tag": p.get("injury") or "", "sit": sit.get(norm(name))})
+    pool = [r for r in rows if r["adp"] is not None or r["proj"] is not None]
+    adp = lambda r: min(r["adp"], cap) if r["adp"] is not None else cap
+    A = sorted(pool, key=lambda r: (adp(r), -(r["proj"] or 0)))
+    P = sorted(pool, key=lambda r: (-(r["proj"] or -1e9), adp(r)))
+    la = T.lines([adp(r) for r in A], T.LADDER[pod], T.MIN_TIER[pod])
+    lp = T.lines([max(r["proj"] or 0, 0) for r in P], T.LADDER[pod], T.MIN_TIER[pod])
+    for i, r in enumerate(A):
+        r["a"] = T.tier_of(i + 1, la)
+    for i, r in enumerate(P):
+        r["pt"] = T.tier_of(i + 1, lp)
+    for r in pool:
+        d = r["a"] - r["pt"]
+        r["c"] = r["a"] - (1 if d > 0 else -1) if abs(d) >= 2 else r["a"]
+        r["flag"] = "VALUE" if d > 0 else "PRICEY" if d < 0 else ""
+        miss = r["sit"]["p"] if r["sit"] and isinstance(r["sit"].get("p"), (int, float)) else (1.0 if r["tag"].lower().startswith("o") else 0.02)
+        r["play"] = pcal(min(max(1 - miss, 0.005), 0.995), bool(QT.match(r["tag"])))
+        r["drafted"] = r["adp"] is not None and r["adp"] < cap
+    tagged = [r for r in pool if QT.match(r["tag"]) and r["drafted"]]
+    ben = []
+    for tg in tagged + [r for r in pool if r["tag"].lower().startswith("o")]:
         for r in pool:
-            d = r["a"] - r["pt"]
-            r["c"] = r["a"] - (1 if d > 0 else -1) if abs(d) >= 2 else r["a"]
-            r["flag"] = "VALUE" if d > 0 else "PRICEY" if d < 0 else ""
-            miss = r["sit"]["p"] if r["sit"] and isinstance(r["sit"].get("p"), (int, float)) else (1.0 if r["tag"].lower().startswith("o") else 0.02)
-            r["play"] = pcal(min(max(1 - miss, 0.005), 0.995), bool(QT.match(r["tag"])))
-        md += ["**%s, lock %s PT, %d-drafter pods**" % (s["label"].replace("nba_", "").replace("_", " ").title(),
-                                                        lock.astimezone(PT).strftime("%-I:%M %p"), pod), "", "**Switches by tier** (AM · PM)"]
-        for t, am, pm, ids in SWITCHES:
-            st = "; ".join("%s %s, %s" % (w, by_reg.get(i, "kept"), money(i)) for w, i in zip(("AM", "PM"), ids))
-            if t in TIEBREAKS:
-                st += "; tiebreak %s, %s" % (by_reg.get(TIEBREAKS[t], "kept"), money(TIEBREAKS[t]))
-            md.append("- T%d: AM %s · PM %s (%s)" % (t, am, pm, st))
-        md += ["- Everywhere: VALUE first in the tier, PRICEY last; the one-tier cap; PM Questionable two tiers back; AM Questionable no push.", ""]
-        if pod == 4:
-            md += ["Small slate: the switches were chosen on 6-drafter slates; nothing is adopted for 4-drafter pods yet.", ""]
-        md += ["**Draft card**"] + ["- %s %s)" % (txt, money(rid)) if txt.endswith(":") else "- %s (%s)" % (txt, money(rid))
-                                    for txt, rid in DRAFT_CARD] + ["- " + DRAFT_NOTE, ""]
-        tagged = sorted([r for r in pool if QT.match(r["tag"]) and r["adp"] is not None and r["adp"] < cap], key=adp)
-        md.append("**Q-tags and their handling** (calibrated chance to play; AM: no push; PM: two tiers back)")
-        md += ["- %s %s, %s, %d%%: T%d · AM stays T%d · PM to T%d" % (
-            r["name"], r["team"], r["tag"], round(100 * r["play"]), r["c"], r["c"], min(5, r["c"] + 2) if r["tag"].lower().startswith("q") else r["c"])
-            for r in tagged] or ["- none drafted on this slate"]
-        val = sorted([r for r in pool if r["flag"] == "VALUE" and r["c"] >= 3 and r["adp"] is not None and r["adp"] < cap], key=adp)
-        md += ["", "**VALUE flags, T3-T5**: " + (", ".join("%s (T%d, ADP %.1f)" % (r["name"], r["c"], r["adp"]) for r in val) or "none")]
-        ben = []
-        for tg in tagged + [r for r in pool if r["tag"].lower().startswith("o")]:
-            for r in pool:
-                if r["team"] == tg["team"] and r is not tg and (r["adp"] is None or r["adp"] >= cap - 6) and (r["proj"] or 0) >= 15:
-                    ben.append("%s (%s, %s) if %s sits" % (r["name"], r["team"], "undrafted" if r["adp"] is None or r["adp"] >= cap else
-                                                            "ADP %.1f" % r["adp"], tg["name"]))
-        md += ["", "**Beneficiaries to watch**: " + ("; ".join(ben[:8]) or "none"),
-               "", "**Swap board**: after drafting, open Swaps on the board (leverage is the default) and Apply, then your round-6 "
-               "shuffle in the app. Swaps are graded from the contest data, not from any lock.", ""]
-    else:
-        md += ["No main slate today on the mirror yet.", ""]
-    week = (dt.date.fromisoformat(today) - dt.timedelta(days=7)).isoformat()
-    ad = [x for x in leans.get("adopted", []) if x.get("adopted", "") >= week]
-    ch = ["%s: %s" % (lab, ", ".join(SHORT.get(x["id"], x["id"]) for x in ad if bool(x.get("provisional")) == prov))
-          for lab, prov in (("Adopted", False), ("Provisional", True)) if any(bool(x.get("provisional")) == prov for x in ad)]
-    ch += ["Reinstated: " + ", ".join("%s (%s)" % (x["id"], x["on"]) for x in leans.get("reinstated", []) if x.get("on", "") >= week)] \
-        if any(x.get("on", "") >= week for x in leans.get("reinstated", [])) else []
-    ih = [k for k, h in hyp.items() if h.get("written", "") >= week and h.get("status") == "testing"]
-    ch += ["Ideas under test: " + ", ".join(ih)] if ih else []
-    gone = ["%s (%s)" % (k, h["status"]) for k, h in hyp.items() if h.get("closed", "") >= week]
-    ch += ["Ideas closed: " + ", ".join(gone)] if gone else []
-    md += ["**Changes this week**"] + ["- " + c for c in ch] + ([] if ch else ["- none"]) + [""]
+            if r["team"] == tg["team"] and r is not tg and (r["adp"] is None or r["adp"] >= cap - 6) and (r["proj"] or 0) >= 15:
+                ben.append((r, tg))
+    return s, lock, pod, sorted(pool, key=adp), ben[:8]
+
+
+# ---------------------------------------------------------------- front page
+def hand(night):
+    p = os.path.join(MORNING, "%s.json" % night)
+    return json.load(open(p)) if os.path.exists(p) else {}
+
+
+def front_page(night, H, mt, health_lines, slate):
+    """The automatic summary, used until the morning report writes the front page."""
+    md = []
+    rec = {}
+    for p in glob.glob(os.path.join(DAILY, "%s_*_main.csv" % night)):
+        rec = {r["player_id"]: r for r in csv.DictReader(open(p))}
+    games = {}
+    for r in rec.values():
+        m = num(r.get("margin"))
+        if m is not None and m > 0:
+            games[(r["team"], r["opp"])] = m
+    blow = sorted(((m, a, b) for (a, b), m in games.items() if m >= 15), reverse=True)
+    late = (json.load(open(os.path.join(REP, "late_news.json"))) if os.path.exists(os.path.join(REP, "late_news.json")) else {}).get(night) or {}
+    led = [r for r in csv.DictReader(open(os.path.join(HERE, "analysis", "nba", "ledger.csv"))) if r["date"] == night and num(r["gap"]) is not None
+           and num(r["adp_close"]) is not None and num(r["adp_close"]) < 36]
+    s = ["Last night's main slate had %d games" % len(games)]
+    if blow:
+        s[0] += ", %d of them blowouts (%s)" % (len(blow), "; ".join("%s by %d over %s" % (a, m, b) for m, a, b in blow))
+    s[0] += "."
+    if late.get("am") or late.get("pm"):
+        s.append("Late news took %s out of the morning grades%s." % (names(late.get("am") or []) or "no team",
+                                                                   " and %s out of the afternoon's" % names(late["pm"]) if late.get("pm") else ""))
+    up = sorted(led, key=lambda r: -num(r["gap"]))[:3]
+    if up:
+        s.append("The biggest nights against ETR's number among drafted players: %s." % "; ".join(
+            "%s %.0f points over" % (r["name"], num(r["gap"])) for r in up))
+    res = (mt or {}).get("results")
+    if res and (mt or {}).get("night") == night:
+        s.append("Your %d teams (%d drafted in the morning, %d in the afternoon) had a median finish in the top %d%%; %d made the "
+                 "top 10%% and %d the top 1%%, and %d cashed. They cost $%.0f in entries and won $%.0f." % (
+                     res["teams"], res["am"], res["pm"], round(res["median_pct"]), res["top10"], res["top1"], res["cashed"], res["fees"], res["won"]))
+    bad = problems(health_lines)
+    if bad:
+        s.append("Something in the pipeline needs a look: %s." % "; ".join(bad))
+    if slate:
+        s.append("Today: %s, lock %s PT, %d-drafter pods." % (slate[0]["label"].replace("nba_", "").replace("_", " ").title(),
+                                                           slate[1].astimezone(PT).strftime("%-I:%M %p"), slate[2]))
+    s.append("(The written front page comes with the morning report; this is the automatic summary.)")
+    return [" ".join(s), ""]
+
+
+# ---------------------------------------------------------------- Monday proposals
+def decision_text(rid, reg, mt):
+    if rid in reg:
+        return reg[rid]["decision"]
+    for x in [d for blk in ((mt or {}).get("tiers") or {}).values() if isinstance(blk, dict) for d in blk.get("decisions") or []]:
+        if x.get("id") == rid and x.get("decision"):
+            return x["decision"]
+    for x in (mt or {}).get("splits", []):
+        if x.get("id") == rid:
+            m = re.match(r"takes:([^:]+):(\w+)", rid)
+            if m:
+                src, w = m.groups()
+                who = {"all": "all your moves off the button"}.get(src, "your moves off the button %s" % TAKE_SRC.get(src, src))
+                return "%s, %s" % (who, {"am": "in the morning", "pm": "in the afternoon", "both": "both windows"}.get(w, w))
+            return x.get("decision") or rid
+    return rid.replace("-", " ")
+
+
+def lift_words(lift, mine=None):
+    if not lift or lift.get("lift10") is None:
+        return ""
+    s = "teams that followed it finished in the top 10%% %.2f times as often as similar teams (80%% range %.2f to %.2f, %d slates)" % (
+        lift["lift10"], lift["range80"][0], lift["range80"][1], lift.get("slates", 0))
+    if mine and mine.get("top10_ratio") is not None:
+        s += "; your %d such teams, %.2f times" % (mine["teams"], mine["top10_ratio"])
+    return s
+
+
+def monday(shadow, hyp, reg, leans, mt, recs):
+    """Each decision in words with a recommendation and its evidence."""
+    md = ["## Monday: decisions for today", ""]
+    items = []
+    for c in shadow:
+        n, fv = c["forward_nights"], c["forward"]
+        lab = fv.get("label") or ""
+        what = SHADOW_WORDS.get(c["id"]) or (hyp.get(c["id"].split(":")[0]) or {}).get("plain") or c["name"]
+        if n < FORWARD_NIGHTS or c["kind"] not in ("switch", "candidate") or (c["kind"] == "switch" and not c.get("drop_if")):
+            if c["kind"] == "candidate" and lab_side(lab) < 0 and lab_words(lab) in ("proven so far", "an early sign") and fv.get("n", 0) >= 40:
+                items.append((c["id"], "%s: drop it early?" % what, "Drop it",
+                              "Over its first %d forward nights it has been %s." % (n, season_read((fv["n"], fv["mean"], fv["lo"], fv["hi"], lab)))))
+            continue
+        read = season_read((fv["n"], fv["mean"], fv["lo"], fv["hi"], lab)) or "no pairs"
+        won, lost = lab_side(lab) > 0 and lab_words(lab) != "no clear signal", lab_side(lab) < 0 and lab_words(lab) != "no clear signal"
+        if c["kind"] == "switch":
+            keep = not lost if c["drop_if"] == "loss" else won
+            items.append((c["id"], "%s: keep it for good, or drop it?" % what, "Keep it for good" if keep else "Drop it",
+                          "After %d forward nights against the old rule it has been %s." % (n, read)))
+        else:
+            m = (reg.get((hyp.get(c["id"].split(":")[0]) or {}).get("register"), {}) or {}).get("money_verdict")
+            ok = won and lab_side((m or "").split(" (")[0]) >= 0
+            items.append((c["id"], "%s: adopt it?" % what, "Adopt it" if ok else "Drop it",
+                          "After %d forward nights against the button it has been %s, and %s." % (n, read, money_words(m))))
+    for x in leans.get("adopted", []):
+        m = (reg.get(x.get("register")) or {}).get("money_verdict", "pending")
+        if lab_side(m.split(" (")[0]) < 0 and lab_words(m) in ("proven so far", "an early sign"):
+            points_rule = x.get("basis") == "RULE" or ", RULE)" in x.get("evidence", "")
+            if lab_words(m) == "proven so far" or not points_rule:
+                items.append((x["id"], "%s: drop it on contest results?" % (LEAN_WORDS.get(x["id"]) or x["statement"]).rstrip("."),
+                              "Drop it", "%s, and the money policy lets that overturn it." % money_words(m).capitalize()))
+    doc = json.load(open(os.path.join(REP, "money_proposals.json"))) if os.path.exists(os.path.join(REP, "money_proposals.json")) else {}
+    new = []
+    for x in (doc.get("proposals", []) if isinstance(doc, dict) else doc):
+        if not isinstance(x, dict) or not x.get("proposed"):
+            continue
+        rid, cur = x.get("id", ""), (x.get("current_money") or "pending").split(" (")[0].split(";")[0]
+        read = (x.get("read") or {})
+        if cur.startswith("none"):
+            if lab_words(x["proposed"]) in ("proven so far", "an early sign"):
+                new.append("%s (%s; %s)" % (decision_text(rid, reg, mt), money_words(x["proposed"]), lift_words(read.get("lift"))))
+            continue
+        adopted = any(a.get("register") == rid for a in leans.get("adopted", []))
+        rec = "Record the new reading"
+        if adopted and lab_side(x["proposed"]) < 0:
+            points_rule = any(a.get("register") == rid and (a.get("basis") == "RULE") for a in leans.get("adopted", []))
+            rec = ("Record it and drop the rule (contest results proven against it)" if lab_words(x["proposed"]) == "proven so far"
+                   else "Record it but keep the rule (an early sign can't overturn a points rule)" if points_rule
+                   else "Record it and drop the rule (the money policy: an early sign wins when points disagree)")
+        items.append((rid, "Contest results on \"%s\" moved from %s to %s." % (
+            decision_text(rid, reg, mt), (lab_words(cur) or "still to come"), lab_words(x["proposed"]) or x["proposed"]),
+            rec, (lift_words(read.get("lift"), read.get("mine")) or "").capitalize() + "."))
+    if not items and not new:
+        return md + ["Nothing is ready to decide this week.", ""]
+    for rid, q, rec, ev in items:
+        md += ["- **%s** I recommend: %s. %s" % (q, (recs.get(rid) or rec)[0].lower() + (recs.get(rid) or rec)[1:], ev), ""]
+    if new:
+        md += ["- **New splits worth recording:** %s." % "; ".join(new), ""]
     return md
 
 
-# ---------------------------------------------------------------- by tier
-def tier_blocks(H, last, gname, tiers, shadow, reg, leans, hyp, money, money_tiers):
-    md = ["## %s" % gname, ""]
-    # last night
-    md.append("**Last night (%s)**, points per pair (pairs); positive: your board won" % last)
-    for w in ("am", "pm"):
+# ---------------------------------------------------------------- one tier
+def money_short(v):
+    """A money verdict in a few words: 'proven so far', 'an early sign against', 'still to come'..."""
+    v = (v or "pending").split(" (")[0].split(";")[0].strip()
+    w, s = lab_words(v), lab_side(v)
+    if w == "proven so far":
+        return "proven so far" if s > 0 else "proven wrong so far"
+    if w == "an early sign":
+        return "an early sign %s" % ("for" if s > 0 else "against")
+    return w or "still to come"
+
+
+def rules_played(t, reg, by_reg, shadow, leans):
+    def status(rid):
+        st = by_reg.get(rid, "kept")
+        if st == "provisional":
+            c = next((c for c in shadow if c["id"] == rid or SHADOW_REG.get(c["id"]) == rid), None)
+            words = "on trial%s" % (", %d of %d nights in" % (min(c["forward_nights"], FORWARD_NIGHTS), FORWARD_NIGHTS) if c else "")
+        else:
+            words = {"kept": "kept, nothing has beaten it", "adopted": "adopted",
+                     "RULE": "proven so far on points"}.get(st, st)
+        return "%s; contest results: %s" % (words, money_short((reg.get(rid) or {}).get("money_verdict")))
+    am, pm = SWITCHES[t]
+    s = ["%s (%s). %s (%s)." % (RULE_WORDS[(t, "am")], status(am), RULE_WORDS[(t, "pm")], status(pm))]
+    if t in TIEBREAKS:
+        s.append("%s (%s)." % (TIEBREAKS[t][1], status(TIEBREAKS[t][0])))
+    ms = lambda rid: money_short((reg.get(rid) or {}).get("money_verdict"))
+    if t == 1 and "pricey-flags:T1" in reg:
+        s.append("PRICEY players go last here as everywhere, and in T1 contest results read it on its own: %s." % ms("pricey-flags:T1"))
+    if t >= 3:
+        s.append("VALUE players go first in this tier (contest results: %s)." % ms("value-up-middle-t5"))
+    if t == 5:
+        s.append("In the afternoon you also raise beneficiaries, a player whose teammate is tagged or out (contest results: %s)." % ms("pm-t5-beneficiary"))
+    return [" ".join(x for x in s if x), ""]
+
+
+def everywhere(reg):
+    """The rules every tier shares, said once."""
+    ms = lambda rid: money_short((reg.get(rid) or {}).get("money_verdict"))
+    return ["**In every tier.** The Tiers button sets each player's tier from his ADP, moved at most one tier toward where our "
+            "projection puts him (contest results on that cap: %s). Inside a tier, PRICEY players (a tier below their ADP on our "
+            "projection) go last (%s), and in T3 to T5 VALUE players (a tier above) go first. A Questionable player keeps his tier "
+            "in the morning (%s) and drops two tiers in the afternoon (%s). Contest results grade a rule by how often teams that "
+            "followed it finished in the top 10%%; points grade it on head-to-head pairs: two players in the same tier within 4 "
+            "picks of each other's ADP, where the points a pair are how much more the chosen player scored (a scratch counts as "
+            "what his swap scored)." % (ms("one-tier-cap"), ms("pricey-flags"), ms("am-questionable-no-push"), ms("pm-questionable-back-two")), ""]
+
+
+def did_they_work(H, last, t):
+    s = []
+    for w, label in (("am", "Morning"), ("pm", "Afternoon")):
         rn = [r for r in H if r["date"] == last and r["window"] == w]
         if not rn:
-            md.append("- %s: no board" % w.upper())
+            s.append("%s: no board on file." % label)
             continue
-        res = G.grade(H, rn[0]["pod"], w, None, [(gname, tiers, None)])[0]
-        _, _, h2h, _, brk, flags, _ = res
-        srcs = [s for s, _ in G.sources(w)]
-        md.append("- %s%s: %s · VALUE %s · PRICEY %s" % (
-            w.upper(), " (fallback)" if "fallback" in rn[0]["board"] else "", " · ".join("vs %s %s" % (s, f1(h2h[s][0].get(last, []))) for s in srcs),
-            f1(flags["VALUE"].get(last, [])), f1(flags["PRICEY"].get(last, []))))
-    tk = [r for r in csv.DictReader(open(os.path.join(REP, "takes_history.csv"))) if r["date"] == last and int(r["tier"]) in tiers]
-    by_src = collections.defaultdict(list)
-    for r in tk:
-        by_src[r.get("source") or "OTHER"].append(float(r["gain"]))
-    md.append("- Your takes by source: " + ("; ".join("%s %s" % (k, f1(v)) for k, v in sorted(by_src.items())) or "none"))
-    pm = [r for r in H if r["date"] == last and r["window"] == "pm" and int(r["tier"]) in tiers] or \
-         [r for r in H if r["date"] == last and r["window"] == "am" and int(r["tier"]) in tiers]
-    brk = [r["name"] for r in pm if r["breaker"] == "1"]
-    scr = [r for r in pm if r["scratched"] == "1"]
-    sw = collections.defaultdict(lambda: [0, 0.0])
+        _, _, h2h, _, _, flags, _ = G.grade([r for r in H if r["date"] == last], rn[0]["pod"], w, None, [("T", {t}, None)])[0]
+        bits = []
+        for src in (("Ours", "ADP") if w == "am" else ("ETR", "ADP")):
+            g = h2h[src][0].get(last, [])
+            if g:
+                bits.append("%s on %d of %d (%+.1f points a pair)" % (SRC_WORDS[src], sum(1 for x in g if x > 0), len(g), sum(g) / len(g)))
+        fl = ["%s right %d of %d" % (how, sum(1 for x in flags[f].get(last, []) if x > 0), len(flags[f].get(last, [])))
+              for f, how in (("VALUE", "VALUE-first"), ("PRICEY", "PRICEY-last")) if flags[f].get(last)]
+        s.append("%s%s: %s%s." % (label, " (fallback board)" if "fallback" in rn[0]["board"] else "",
+                                  "where they disagreed, your board beat " + " and ".join(bits) if bits else "your board matched the straight orders",
+                                  "; " + ", ".join(fl) if fl else ""))
+    seas = []
+    for w, label, main in (("am", "morning", "Ours"), ("pm", "afternoon", "ETR")):
+        _, nights, h2h, _, _, _, _ = G.grade(H, "6", w, "primary", [("T", {t}, None)])[0]
+        reads = []
+        for src in (main, "ADP"):
+            if h2h[src][0]:
+                n, mean, _, _, lab = G.verdict(h2h[src][0], h2h[src][1])
+                w_ = lab_words(lab)
+                reads.append("%+.1f against %s (%d pairs%s)" % (mean, SRC_WORDS[src].replace("our projection", "ours"), n,
+                                                             ", %s" % w_ if w_ in ("an early sign", "proven so far") else ""))
+        if reads:
+            seas.append("%s %s" % (label, ", ".join(reads)))
+    if seas:
+        s.append("Season, points a pair for your board: %s." % "; ".join(seas))
+    return [" ".join(s), ""]
+
+
+def your_moves(last, t, names_in, hand_moves):
+    s = []
+    tk = [r for r in csv.DictReader(open(os.path.join(REP, "takes_history.csv"))) if r["date"] == last and int(r["tier"]) == t]
+    for w, label in (("am", "Morning"), ("pm", "Afternoon")):
+        xs = [r for r in tk if r["window"] == w]
+        if not xs:
+            continue
+        g = [float(r["gain"]) for r in xs]
+        big = max(xs, key=lambda r: abs(float(r["gain"])))
+        s.append("%s: %d move%s off the Tiers button, %d right (%+.1f points a move); the biggest, %s ahead of %s %s, was %s by %s points." % (
+            label, len(xs), "" if len(xs) == 1 else "s", sum(1 for x in g if x > 0), sum(g) / len(g), short(big["you_first"]),
+            short(big["button_first"]), TAKE_SRC.get(big.get("source") or "OTHER", big.get("source")),
+            "right" if float(big["gain"]) > 0 else "wrong", round(abs(float(big["gain"])), 1 if abs(float(big["gain"])) < 1 else None)))
+    calls = [r for r in csv.DictReader(open(os.path.join(REP, "misses.csv"))) if r["date"] == last and r["kind"] in ("am_call", "pm_call")
+             and r["player"] in names_in]
+    calls.sort(key=lambda r: r["closer"] != "wrong")
+    if calls:
+        s.append("Your calls: %s." % (". ".join("%s %s (%s), %s: %s" % (
+            short(r["player"]), "raised" if r["note"].startswith("raised") else "faded" if r["note"].startswith("faded") else "moved",
+            "morning, against ADP" if r["kind"] == "am_call" else "afternoon, against ETR", r["closer"],
+            (r["note"].split("; ", 1)[1] if "; " in r["note"] else r["note"]).strip().rstrip(".")) for r in calls[:2]) +
+            (". %d more in misses.csv" % (len(calls) - 2) if len(calls) > 2 else "")))
+    if hand_moves:
+        s.append(hand_moves)
+    return [" ".join(s) if s else "No moves off the Tiers button in this tier last night.", ""]
+
+
+def recap(H, last, t):
+    pm = {r["player_id"]: r for r in H if r["date"] == last and r["window"] == "pm"}
+    am = {r["player_id"]: r for r in H if r["date"] == last and r["window"] == "am"}
+    rows = [r for pid, r in {**am, **pm}.items() if int(r["tier"]) == t and (t != 5 or (num(r["adp"]) is not None and num(r["adp"]) < G.cap(r)))]
+    rows.sort(key=G.adp)
+    led = {r["player_id"]: r for r in csv.DictReader(open(os.path.join(HERE, "analysis", "nba", "ledger.csv"))) if r["date"] == last}
+    sw = collections.defaultdict(list)
     for r in csv.DictReader(open(os.path.join(REP, "swaps.csv"))):
         if r["date"] == last:
-            sw[r["out"]][0] += int(r["teams"])
-            sw[r["out"]][1] += int(r["teams"]) * float(r["swap_fp"])
-    md.append("- Breakers: %s. Scratches: %s" % (", ".join(brk) or "none", "; ".join(
-        "%s (%s)" % (r["name"], "swaps averaged %.1f over %d" % (sw[r["name"]][1] / sw[r["name"]][0], sw[r["name"]][0]) if sw[r["name"]][0] else "no swaps credited")
-        for r in scr) or "none"))
-    # keep doing
-    md += ["", "**Keep doing** (points · money)"]
-    for t, am, pm_, ids in SWITCHES:
-        if t in tiers:
-            md.append("- T%d switches: AM %s (%s) · PM %s (%s)" % (t, am, money(ids[0]), pm_, money(ids[1])))
-    for x in leans.get("adopted", []):
-        xt = x.get("tier")
-        hit = xt in tiers if isinstance(xt, int) else any(int(c) in tiers for c in re.findall(r"\d", str(xt))) if xt not in (None, "all") else True
-        if hit:
-            md.append("- %s%s · points %s · %s" % ("provisional: " if x.get("provisional") else "", SHORT.get(x["id"], x["statement"][:70]),
-                                                 x.get("basis", "lean"), money(x.get("register"))))
-    # testing
-    md += ["", "**Testing** (forward nights of %d · shadow · money)" % FORWARD_NIGHTS]
-    rows = [c for c in shadow if c["kind"] in ("switch", "candidate") and (c.get("drop_if") or c["kind"] == "candidate")
-            and set(c["tiers"]) & tiers]
-    for c in rows:
-        rid = (hyp.get(c["id"].split(":")[0]) or {}).get("register") or SHADOW_REG.get(c["id"], c["id"])
-        md.append("- %s: %d/%d · season %s · forward %s · %s" % (c["name"], min(c["forward_nights"], FORWARD_NIGHTS), FORWARD_NIGHTS,
-                                                                c["season"]["text"], c["forward"]["text"], money(rid)))
-    if not rows:
-        md.append("- nothing under test")
-    # worth a look
-    md += ["", "**Worth a look**"]
-    names = {r["name"] for r in H if r["date"] == last and int(r["tier"]) in tiers}
-    mi = [r for r in csv.DictReader(open(os.path.join(REP, "misses.csv"))) if r["date"] == last and r["player"] in names
-          and r["kind"] in ("miss", "split")]
-    if mi:
-        mi.sort(key=lambda r: -abs((num(r["ours"]) or 0) - (num(r["actual"]) or 0)))
-        md += ["- %s: ours %s, actual %s, %s%s" % (r["player"], r["ours"], r["actual"], r["cause"], (": " + r["note"]) if r["note"] else "") for r in mi[:4]]
-    elif any(r["date"] == last for r in csv.DictReader(open(os.path.join(REP, "misses.csv")))):
-        md.append("- no logged misses in this tier")
-    else:
-        md.append("- misses not logged yet for %s (the skill's steps 3-4)" % last)
-    # the contest side's block
-    md += ["", "**Contest side**"]
-    # money_tiers.json "tiers": keyed by tier ("1".."5"; also "T1"-style or the group name); each a list of lines, or a
-    # dict with "lines", "exposure" (picks per team, yours against the field, by window), "drafted" (flagged and Q
-    # players' drafted%) and "decisions" (each with its "line")
-    keys = [str(t) for t in sorted(tiers)]
-    blks = [(k, (money_tiers.get(k) or money_tiers.get("T" + k))) for k in keys] if money_tiers else []
-    if money_tiers and not any(b for _, b in blks) and money_tiers.get(gname):
-        blks = [(gname, money_tiers[gname])]
-    blks = [(k, b) for k, b in blks if b]
-    if not blks:
-        md.append("- contest block pending")
-    seen_dec = set()
-    for k, blk in blks:
-        tag = "T%s: " % k if len(blks) > 1 else ""
-        if isinstance(blk, list):
-            md += ["- " + tag + str(x) for x in blk]
-            continue
-        if not isinstance(blk, dict):
-            md.append("- " + tag + str(blk))
-            continue
-        md += ["- " + tag + str(x) for x in blk.get("lines", [])]
-        ex = blk.get("exposure") or {}
-        pt = ["%s %s, field %s (%d of your teams)" % (w.upper(), (e.get("picks_per_team") or {}).get("mine"),
-                                                   (e.get("picks_per_team") or {}).get("field"), e.get("my_teams") or 0)
-              for w, e in sorted(ex.items()) if e and e.get("my_teams")]
-        if pt:
-            md.append("- %sYour picks per team: %s" % (tag, "; ".join(pt)))
-        for w, groups in sorted((blk.get("drafted") or {}).items()):
-            got = ["%s %s" % (g, ", ".join("%s %.0f%%%s" % (x["name"], 100 * x["drafted"], "" if x.get("mine") is None else
-                                                          " (yours %.0f%%)" % (100 * x["mine"])) for x in v))
-                   for g, v in groups.items() if v]
-            if got:
-                md.append("- %s%s drafted: %s" % (tag, w.upper(), "; ".join(got)))
-        for x in blk.get("decisions") or []:
-            if x.get("id") in seen_dec:          # a decision shared by T3 and T4 shows once
+            sw[r["out_id"]].append(r)
+    md, inline, idle = [], [], []
+    for r in rows:
+        l = led.get(r["player_id"]) or {}
+        note = (l.get("note") or "").strip() or (l.get("draft") or "").strip()
+        tag = " Tagged %s at the lock." % r["tag"] if QT.match(r["tag"] or "") and r["tag"].lower() not in note.lower() else ""
+        brk = " A top score for his round." if r["breaker"] == "1" else ""
+        if r["scratched"] == "1":
+            xs = sorted(sw.get(r["player_id"], []), key=lambda x: -int(x["teams"]))
+            if not xs:
+                idle.append(short(r["name"]))
                 continue
-            seen_dec.add(x.get("id"))
-            md.append("- %s" % (x.get("line") or "%s: %s" % (x.get("id"), x.get("current"))))
-    return md + [""]
+            md.append("- **%s** (%s): scratched%s; swaps landed on %s." % (r["name"], r["team"], " (%s)" % r["tag"] if r["tag"] else "",
+                      ", ".join("%s (%d teams, %.0f points)" % (short(x["swap"]), int(x["teams"]), float(x["swap_fp"])) for x in xs[:3])))
+        elif (l.get("result") or "") == "in line" and not tag and not brk:
+            extra = re.sub(r"^in line[:,.]?\s*", "", note, flags=re.I).rstrip(".")
+            inline.append(short(r["name"]) + (", %s" % (extra[0].lower() + extra[1:]) if extra else ""))
+        else:
+            md.append("- **%s** (%s): %s%s%s" % (r["name"], r["team"], note or "no box line", tag, brk))
+    if inline:
+        md.append("- In line: %s." % "; ".join(inline))
+    if idle:
+        md.append("- Scratched, no swaps credited: %s." % names(idle))
+    return (md or ["No players in this tier last night."]) + [""], {r["name"] for r in rows}
+
+
+def contest_view(t, mt):
+    blk = ((mt or {}).get("tiers") or {}).get(str(t)) or {}
+    s = []
+    for w, label in (("am", "morning"), ("pm", "afternoon")):
+        e = (blk.get("exposure") or {}).get(w)
+        if not e or not e.get("my_teams"):
+            continue
+        ppt = e.get("picks_per_team") or {}
+        ps = [x for x in e.get("players", []) if x.get("mine") is not None]
+        over = [x for x in sorted(ps, key=lambda x: x["field"] - x["mine"])[:1] if x["mine"] - x["field"] >= 0.05]
+        s.append("Your %d %s teams took %.1f T%d players each to the field's %.1f%s." % (
+            e["my_teams"], label, ppt.get("mine") or 0, t, ppt.get("field") or 0,
+            ", heaviest on %s (%s of yours, %s of the field)" % (short(over[0]["name"]), pct(over[0]["mine"]), pct(over[0]["field"])) if over else ""))
+    dr = (blk.get("drafted") or {}).get("pm") or (blk.get("drafted") or {}).get("am") or {}
+    fl = ["%s %s" % (lab, ", ".join("%s %s" % (short(x["name"]), pct(x["drafted"])) for x in dr[lab][:4]))
+          for lab in ("VALUE", "PRICEY") if dr.get(lab)]
+    if fl:
+        s.append("How often the flagged players were drafted (share of pods): %s." % "; ".join(fl))
+    e = (blk.get("exposure") or {}).get("pm") or (blk.get("exposure") or {}).get("am") or {}
+    ls = [x for x in e.get("players", []) if x.get("lift10") is not None]
+    paid = sorted([x for x in ls if x["lift10"] >= 1.3], key=lambda x: -x["lift10"])[:2]
+    hurt = sorted([x for x in ls if x["lift10"] <= 0.7], key=lambda x: x["lift10"])[:2]
+    if paid or hurt:
+        s.append("In the standings, %s." % "; ".join(
+            (["teams holding %s made the top 10%% %.1f times as often as the field" % (short(paid[0]["name"]), paid[0]["lift10"])] if paid else []) +
+            ["%s %.1f times" % (poss(short(x["name"])), x["lift10"]) for x in paid[1:]] +
+            ["%s holders %s" % (poss(short(x["name"])), "never got there" if x["lift10"] == 0 else "only %.1f times" % x["lift10"]) for x in hurt]))
+    return [" ".join(s) if s else "No contest data for this tier last night.", ""]
+
+
+def leaning(t, shadow, hyp, reg, shown):
+    s, again = [], []
+    for c in shadow:
+        if not (c["kind"] == "candidate" or (c["kind"] == "switch" and c.get("drop_if"))) or t not in c["tiers"]:
+            continue
+        base = c["id"].split(":")[0]
+        what = SHADOW_WORDS.get(c["id"]) or (hyp.get(base) or {}).get("plain") or c["name"]
+        if c["id"] in shown:
+            again.append((hyp.get(base) or {}).get("name") or what[0].lower() + what[1:].split(",")[0])
+            continue
+        shown.add(c["id"])
+        rid = (hyp.get(base) or {}).get("register") or SHADOW_REG.get(c["id"], c["id"])
+        rows = [x for x in shadow if x["id"].split(":")[0] == base] if ":" in c["id"] else [c]
+        shown.update(x["id"] for x in rows)
+        wn = {"am": "morning ", "pm": "afternoon "}
+        back = ["%s%+.1f a pair (%d pairs, %s)" % (wn.get(x["id"].split(":")[1], "") if ":" in x["id"] else "", x["season"]["mean"],
+                                                      x["season"]["n"], lab_words(x["season"]["label"]) or "too early to say")
+                for x in rows if x["season"].get("n")]
+        fwd = ["%+.1f a pair so far" % x["forward"]["mean"] for x in rows if x["forward"].get("n")]
+        s.append("- %s. %s%s, %d of %d nights in%s; season backtest %s; contest results: %s." % (
+            what, "On trial" if c["kind"] == "switch" else "Under test", ", each window decided on its own" if len(rows) > 1 else "",
+            min(c["forward_nights"], FORWARD_NIGHTS), FORWARD_NIGHTS, " (%s)" % ", ".join(fwd) if fwd else "",
+            "; ".join(back) or "no pairs", money_short((reg.get(rid) or {}).get("money_verdict"))))
+    if again:
+        s.append("- Also testing here (above): %s." % "; ".join(sorted(set(again))))
+    return (s or ["Nothing under test in this tier."]) + [""]
+
+
+def today_tier(t, pool, ben, pod):
+    if pool is None:
+        return ["Today's slate isn't on the mirror yet.", ""]
+    rs = [r for r in pool if r["c"] == t and r["drafted"]]
+    s = []
+    for r in rs:
+        if QT.match(r["tag"]):
+            q = r["tag"].lower().startswith("q")
+            s.append("%s (%s) is %s, %s to play on our calibrated chance: %s." % (
+                r["name"], r["team"], r["tag"], pct(r["play"]),
+                ("he stays in T%d in the morning and drops to T%d in the afternoon" % (t, t + 2) if t <= 3 else
+                 "he stays in T%d in the morning and drops to T5 in the afternoon" % t if t == 4 else "T5 is the bottom tier, so he stays put") if q
+                else "he stays in T%d in both windows (only Questionable players are pushed)" % t))
+    for f, how in (("VALUE", "VALUE (our projection rates him a tier above his ADP)"), ("PRICEY", "PRICEY (a tier below)")):
+        xs = [r for r in rs if r["flag"] == f]
+        if xs:
+            s.append("%s: %s." % (how, ", ".join("%s (ADP %.1f)" % (r["name"], r["adp"]) for r in xs)))
+    bs = [(r, tg) for r, tg in ben if (r["c"] if r.get("drafted") else 5) == t]
+    if bs:
+        by = collections.OrderedDict()
+        for r, tg in bs:
+            by.setdefault(short(tg["name"]), []).append("%s (%s)" % (r["name"], "ADP %.1f" % r["adp"] if r.get("drafted") else "undrafted"))
+        s.append("Beneficiaries to watch: %s." % "; ".join("if %s sits, %s" % (k, names(v)) for k, v in by.items()))
+    return [" ".join(s) if s else "Nothing flagged or tagged in this tier today.", ""]
+
+
+# ---------------------------------------------------------------- draft card and back page
+def draft_card(mt, reg, night, hand_card):
+    md = ["## The draft card", ""]
+    c = (mt or {}).get("card") if (mt or {}).get("night") == night else None
+    if c:
+        def k(key, what):
+            x = c.get(key)
+            return "%s %d (%d top 10%%)" % (what, x["teams"], x["top10"]) if x else None
+        bits = []
+        for turn in ("1/2", "2/3"):
+            got = [b for b in (k("%s faller" % turn, "took a faller on"), k("%s reach" % turn, "reached on"),
+                               k("%s trust" % turn, "trusted ADP on")) if b]
+            if got:
+                bits.append("at the %s turn you %s" % (turn, ", ".join(got)))
+        hi = c.get("2/3 reach: higher projection")
+        if hi:
+            bits.append("%d of the 2/3-turn reaches went toward the higher projection" % hi["teams"])
+        for key, what in (("same-position teammates", "held same-position teammates on"), ("opposing stars", "paired opposing stars on")):
+            b = k(key, what)
+            if b:
+                bits.append("you " + b)
+        res = mt.get("results") or {}
+        md.append("Last night, of your %s teams, %s." % (res.get("teams", "?"), "; ".join(bits) if bits else "none reached a turn the card reads"))
+    else:
+        md.append("Last night's turns aren't read yet (the contest side's file is from an earlier night).")
+    if hand_card:
+        md[-1] += " " + hand_card
+    md += ["", "Where contest results stand: %s. %s" % (
+        "; ".join("%s, %s" % (what, money_short((reg.get(rid) or {}).get("money_verdict"))) for _, what, rid in DRAFT_CARD),
+        DRAFT_NOTE), ""]
+    return md
+
+
+def back_page(H, last, health_lines, today, hand_back):
+    md = ["## Back page", ""]
+    pm = [r for r in H if r["date"] == last and r["window"] == "pm" and r["scratched"] != "1" and num(r["actual"]) is not None]
+    both = [r for r in pm if num(r["proj"]) is not None and r["ours_pm"] is not None]
+    s = []
+    if len(both) >= 8:
+        act = [num(r["actual"]) for r in both]
+        e_etr = sum(abs(num(r["proj"]) - a) for r, a in zip(both, act)) / len(both)
+        e_our = sum(abs(r["ours_pm"] - a) for r, a in zip(both, act)) / len(both)
+        c_etr, c_our = G.spearman([num(r["proj"]) for r in both], act), G.spearman([r["ours_pm"] for r in both], act)
+        s.append("The model: on the %d players both projected at the afternoon lock, ours missed by %.1f points on average and "
+                 "ETR's by %.1f; ranked against how they finished, ours scored %.2f and ETR's %.2f (1 is a perfect order)." % (
+                     len(both), e_our, e_etr, c_our or 0, c_etr or 0))
+    try:
+        import nba_hypotheses as HY
+        reg = json.load(open(HY.REGISTRY))
+        HY.L.fit_scale(HY.rep.load())
+        history = HY.nights()
+        dates = [d for d, _ in history]
+        hs = []
+        for hid, h in reg.items():
+            rule = HY.RULES.get(h.get("rule", "")) if hid != "tiers" else None
+            if not rule or h["status"] not in ("testing", "adopted", "retired"):
+                continue
+            name = h["title"].split(":")[0].split(" (")[0]
+            if h["status"] == "retired":
+                if h.get("retired", "") >= (dt.date.fromisoformat(today) - dt.timedelta(days=7)).isoformat():
+                    hs.append("the %s was retired on %s and taken out of the board" % (name.lower(), h["retired"][5:]))
+                continue
+            fwd = HY.summary(HY.gains(rule, history, since=h["opened"]))
+            recent = dates[-HY.RECHECK_DAYS:] if dates else []
+            rc = HY.summary(HY.gains(rule, history, since=recent[0])) if h["status"] == "adopted" and recent else None
+            p = HY.proposal(h, fwd, rc)
+            x = rc if h["status"] == "adopted" else fwd
+            if x:
+                hs.append("the %s (%s) lands %.2f points %s than the base projection on %d players%s%s" % (
+                    name.lower(), "in the model" if h["status"] == "adopted" else "under test",
+                    abs(x["mean"]), "closer" if x["mean"] >= 0 else "further off", x["n"],
+                    " (%d of %d nights in)" % (min(x["nights"], HY.FORWARD_DAYS), HY.FORWARD_DAYS) if h["status"] == "testing" else " over the last %d nights" % HY.RECHECK_DAYS,
+                    {"**adopt?**": ": ready to adopt?", "**reject?**": ": time to reject it?", "**retire?**": ": time to retire it?"}.get(p.split(" ")[0], "")))
+        if hs:
+            s.append("Projection hypotheses: %s." % "; ".join(hs))
+    except Exception as e:                                      # the back page must not fail the report
+        s.append("Projection hypotheses not read (%s)." % e)
+    if recheck_due(today):
+        s.append("The monthly re-check is due this month.")
+    if hand_back:
+        s.append(hand_back)
+    bad = problems(health_lines)
+    s2 = "Data: " + ("; ".join(bad) + "." if bad else "everything for last night came in, and today's inputs were ready on time.")
+    md += [" ".join(s), "", s2, "", "Season tables are below; every player's night is in the ledger (analysis/nba/ledger.csv), "
+           "the calls and misses in misses.csv, and the full tier tables in tier_grade.md, shadow.md and money_report.md.", ""]
+    return md
 
 
 def overnight(H):
@@ -506,6 +830,7 @@ def season_tables(H):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mirror", default=os.path.join(HERE, "..", "br-adp-mirror"))
+    ap.add_argument("--today", help="the report's date (YYYY-MM-DD; default today, Pacific)")
     a = ap.parse_args()
     H = G.load()
     leans = json.load(open(os.path.join(REP, "leans.json")))
@@ -516,25 +841,34 @@ def main():
     hyp = (json.load(open(os.path.join(REP, "hypotheses.json"))).get("tiers") or {})
     shadow = json.load(open(os.path.join(REP, "shadow.json"))) if os.path.exists(os.path.join(REP, "shadow.json")) else []
     mt_path = os.path.join(REP, "money_tiers.json")
-    money_tiers = json.load(open(mt_path)) if os.path.exists(mt_path) else None
-    if money_tiers and isinstance(money_tiers.get("tiers"), dict):
-        money_tiers = money_tiers["tiers"]
-    today = dt.datetime.now(dt.timezone.utc).astimezone(PT).date().isoformat()
+    mt = json.load(open(mt_path)) if os.path.exists(mt_path) else None
+    today = a.today or dt.datetime.now(dt.timezone.utc).astimezone(PT).date().isoformat()
     _, _, _, latest = today_slate(a.mirror)
     last = max(r["date"] for r in H)
-    md = ["# NBA morning report, %s (last night: %s)" % (today, last), "", "## Pipeline health", ""] + health(a.mirror, today, latest) + [""]
-    props = proposals(shadow, hyp, reg, leans)
-    md += ["## Monday proposals %s" % ("(today: decide)" if dt.date.fromisoformat(today).weekday() == 0 else "(as of today; decided Monday)"), ""]
-    md += ["- " + p for p in props] or ["- points: none ripe"]
-    md += ["- " + p for p in money_proposals()]
-    if recheck_due(today):
-        md.append("- Monthly re-check due for %s (the morning-report skill, step 1b); mark it done in recheck.json" % today[:7])
-    md += [""]
-    md += playbook(a.mirror, H, reg, by_reg, money, leans, hyp, today)
-    for gname, tiers in GROUPS:
-        md += tier_blocks(H, last, gname, tiers, shadow, reg, leans, hyp, money, money_tiers)
-    md += ["## Season", ""] + overnight(H) + season_tables(H)
-    md += ["", "**Adopted and rules** (leans.json; points status, money verdict). " + MONEY_NOTE]
+    hw = hand(last)
+    hl = health(a.mirror, today, latest)
+    slate, lock, pod, pool, ben = today_pool(a.mirror, H)
+    day = lambda d: dt.date.fromisoformat(d).strftime("%A %-m/%-d")
+    md = ["# NBA morning report, %s" % day(today), "", "*Last night: %s's main slate.*" % day(last), "", "## Front page", ""]
+    md += [hw["front"], ""] if hw.get("front") else front_page(last, H, mt, hl, (slate, lock, pod) if slate else None)
+    if dt.date.fromisoformat(today).weekday() == 0:
+        md += monday(shadow, hyp, reg, leans, mt, hw.get("proposals") or {})
+    shown = set()
+    md += everywhere(reg)
+    for t in range(1, 6):
+        rc, in_tier = recap(H, last, t)
+        md += ["## T%d" % t, "", "**The rules we played.** "] 
+        md[-1] += rules_played(t, reg, by_reg, shadow, leans)[0]
+        md += ["", "**Did they work last night.** " + did_they_work(H, last, t)[0], ""]
+        md += ["**Your moves.** " + your_moves(last, t, in_tier, (hw.get("moves") or {}).get(str(t)))[0], "",
+               "**Player recap.**", ""] + rc
+        md += ["**Contest view.** " + contest_view(t, mt)[0], "", "**What we're leaning toward.**", ""] + leaning(t, shadow, hyp, reg, shown)
+        md += ["**Today in T%d.** " % t + today_tier(t, pool, ben, pod)[0], ""]
+    md += draft_card(mt, reg, last, hw.get("card"))
+    md += back_page(H, last, hl, today, hw.get("back"))
+    md += ["## Season", "", "*Reference tables; points per pair as above. Labels here are the grading's own (RULE: proven so far; "
+           "LEAN: an early sign; no lean: no clear signal; not enough yet: too early to say).*", ""] + overnight(H) + season_tables(H)
+    md += ["", "**Adopted and rules** (leans.json; points status, money verdict)."]
     for x in leans["adopted"]:
         md.append("- %s, %s: %s" % (status[x["id"]], money(x.get("register")), x["statement"]))
     md += ["", "**Paused**: " + ("; ".join(x["statement"] for x in leans.get("paused", [])) or "none"), "",

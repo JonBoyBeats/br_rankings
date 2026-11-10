@@ -1,213 +1,173 @@
-# NBA morning report, 2026-11-10 (last night: 2026-11-09)
+# NBA morning report, Tuesday 11/10
 
-## Pipeline health
+*Last night: Monday 11/9's main slate.*
 
-- Contests: 5 pulled of 5 listed, 18,672 teams; measures in
-- Results: 2026-11-09_mon_main, 108 players, 108 with a box line
-- Swaps credited: 3920 of 7234 (54%)
-- ETR: first upload 10:23am, last 3:48pm
-- Lock AM: Lock AM at 3:41am; counts by 5:57am (first AM draft (from 4:30am))
-- Lock PM: Lock PM (last of 3 before swaps) at 3:33pm; swaps from 4:00pm; 3 Lock PM, 0 exports seen
-- Overnight (drafts before 4:30am, kept out of the AM grades): 1 drafts from 4:27am; overnight: last board saved before the first overnight draft at 3:41am
-- ADP snapshots: AM board 3:24am, closing 3:22pm (lock 3:52pm)
-- Today's inputs: our Proj ready 9:23pm; chance to play ready 12:27am; Q-tags polled 3:23am
+## Front page
 
-## Monday proposals (as of today; decided Monday)
+Monday's eight-game slate broke open at the top and blew out at the bottom. Wembanyama scored 40 with 9 blocks in only 25 minutes of San Antonio's 26-point win, Davis came back from his ankle for 44, Flagg added 43, and Golden State's 51-point win held Curry to 21 minutes. Late news took Toronto and the Lakers out of the morning grades: Barnes (Questionable at your morning lock) and Reaves (untagged then) were both ruled out before the afternoon lock. Your 95 teams (38 drafted in the morning, 57 in the afternoon) had a median finish in the top 37%; 11 made the top 10%, none the top 1%, the best finished in the top 2.4%, and 26 cashed, returning $303 on $455 in entries. The lesson is in the morning: you pushed two Questionable players down against the morning rule (a Questionable player keeps his tier), Davis from 11th on the button to 17th and Murray from 18th to 24th, and both played big (61 and 51 fantasy points), which is most of why your morning board picked the right player on only 24% of the pairs where it disagreed with our projection (55% on the season). The season pattern held too: raises on players whose game turned into a blowout are now 1 right and 16 wrong. Nothing to decide today; the flat blowout trim is retired as you asked.
 
-- points: none ripe
-- money: pricey-flags: LEAN for overall -> RULE for (lift 1.19, 1.10-1.29, 17 slates)
-- money: value-up-middle-t5: LEAN for -> RULE for (lift 1.18, 1.05-1.32, 17 slates)
-- money: am-t5-button-order: no lean -> LEAN for (lift 1.14, 1.02-1.27, 14 slates)
-- money: am-t5-other-reads: RULE for -> LEAN for (lift 1.40, 1.11-1.78, 12 slates)
-- money: q-class-x:FAIR: no lean for FAIR -> LEAN against (lift 0.77, 0.63-0.97, 13 slates)
-- money: card-opposing-stars: LEAN for -> no lean (lift 1.05, 0.91-1.21, 17 slates)
-- money: new splits: card-same-position-teammates:rounds 1-3 no lean (lift 1.10, 0.60-1.59, 10 slates); card-same-position-teammates:split RULE against (lift 0.78, 0.70-0.87, 15 slates); card-same-position-teammates:rounds 4-6 LEAN for (lift 1.09, 0.96-1.24, 15 slates); card-different-position-teammates no lean (lift 1.02, 0.91-1.17, 15 slates); takes:ETR:pm no lean (lift 1.11, 0.75-1.56, 7 slates); takes:ETR:both no lean (lift 1.11, 0.75-1.56, 7 slates); takes:Bagel:pm no lean (lift 0.96, 0.76-1.28, 8 slates); takes:Bagel:both no lean (lift 0.96, 0.76-1.28, 8 slates); takes:Bagel+ETR:pm LEAN against (lift 0.89, 0.77-1.06, 8 slates); takes:Bagel+ETR:both LEAN against (lift 0.89, 0.77-1.06, 8 slates); takes:NEWS:am no lean (lift 1.09, 0.92-1.27, 12 slates); takes:NEWS:pm no lean (lift 0.98, 0.85-1.09, 16 slates); takes:NEWS:both no lean (lift 1.04, 0.94-1.13, 17 slates); takes:OTHER:am not enough; takes:OTHER:pm no lean (lift 0.92, 0.73-1.13, 12 slates); takes:OTHER:both no lean (lift 1.11, 0.83-1.37, 12 slates); takes:all:am LEAN for (lift 1.15, 0.97-1.34, 12 slates); takes:all:pm no lean (lift 0.98, 0.90-1.06, 17 slates); takes:all:both no lean (lift 1.03, 0.96-1.11, 17 slates)
-
-## Today's playbook
-
-Everything adopted or kept is provisional until its money verdict (top finishes and dollars, from the contest side: decision_register.csv) is in, and may be changed by it.
-
-**Tue Main, lock 4:22 PM PT, 6-drafter pods**
-
-**Switches by tier** (AM · PM)
-- T1: AM ADP (2: Boom) · PM ETR (AM kept, money pending; PM kept, money pending)
-- T2: AM ADP · PM ADP (2: ETR) (AM kept, money pending; PM provisional, money no lean)
-- T3: AM Proj (3: ADP) · PM ETR (ties: ADP, Boom) (AM kept, money pending; PM kept, money pending)
-- T4: AM Proj (3: ADP) · PM ADP (2: ETR) (AM kept, money pending; PM provisional, money no lean)
-- T5: AM the button's order, then the less drafted within 2 pts · PM ADP, then the less drafted within 2 pts (AM adopted, money no lean; PM RULE, money LEAN against; tiebreak provisional, money RULE for)
-- Everywhere: VALUE first in the tier, PRICEY last; the one-tier cap; PM Questionable two tiers back; AM Questionable no push.
-
-**Draft card**
-- 2/3 turn: reach toward the higher projection (money RULE for)
-- 1/2 turn: don't reach unless a top player falls (reaching: money LEAN against)
-- Fallers: at the 1/2 turn, a top-4 ADP player still there at picks 5-8; at the 2/3 turn (from the 1.01/1.02), a top-9 player still there at picks 11-14 (4-person pods: top-2 / top-5). Take them. (money RULE for at both turns)
-- Avoid same-position teammates (holding them: money RULE against)
-- Opposing stars from the same game: a plus (money no lean)
-- Note: later rounds: a player well past his ADP through round 5 leans worth taking (candidate)
-
-**Q-tags and their handling** (calibrated chance to play; AM: no push; PM: two tiers back)
-- Domantas Sabonis SAC, Questionable, 57%: T2 · AM stays T2 · PM to T4
-- Lauri Markkanen UTA, Questionable, 42%: T4 · AM stays T4 · PM to T5
-- Tyler Herro MIL, Questionable, 32%: T4 · AM stays T4 · PM to T5
-- Josh Hart NYK, Questionable, 64%: T5 · AM stays T5 · PM to T5
-
-**VALUE flags, T3-T5**: Lauri Markkanen (T4, ADP 26.5), Tyler Herro (T4, ADP 28.9), Wendell Carter Jr. (T5, ADP 29.6), VJ Edgecombe (T5, ADP 30.6), Derrick White (T5, ADP 31.9), Zach LaVine (T5, ADP 35.5)
-
-**Beneficiaries to watch**: Zach LaVine (SAC, ADP 35.5) if Domantas Sabonis sits; Precious Achiuwa (SAC, undrafted) if Domantas Sabonis sits; Malik Monk (SAC, undrafted) if Domantas Sabonis sits; Ace Bailey (UTA, ADP 33.4) if Lauri Markkanen sits; Isaiah Collier (UTA, ADP 35.9) if Lauri Markkanen sits; Brayden Burries (MIL, ADP 34.3) if Tyler Herro sits; Kyle Kuzma (MIL, ADP 35.9) if Tyler Herro sits; Jaime Jaquez Jr. (MIL, ADP 35.9) if Tyler Herro sits
-
-**Swap board**: after drafting, open Swaps on the board (leverage is the default) and Apply, then your round-6 shuffle in the app. Swaps are graded from the contest data, not from any lock.
-
-**Changes this week**
-- Adopted: AM T5: the button's order (your moves off it are takes), VALUE first in the tier (T3-T5), PM: a Questionable player two tiers back, AM: no push for a Questionable player, PM T5: beneficiary picks, PM T5: ADP, VALUE first, the one-tier cap
-- Provisional: PM T2: ADP (2: ETR), PM T4: ADP (2: ETR), T5: the less drafted within 2 pts
-- Reinstated: ownership-tiebreak-t5 (2026-11-09)
-- Ideas under test: T4-1, T2-T4-1, T5-1, Q-1, T2-1
-- Ideas closed: T4-2 (replaced)
+**In every tier.** The Tiers button sets each player's tier from his ADP, moved at most one tier toward where our projection puts him (contest results on that cap: an early sign against). Inside a tier, PRICEY players (a tier below their ADP on our projection) go last (an early sign for), and in T3 to T5 VALUE players (a tier above) go first. A Questionable player keeps his tier in the morning (no clear signal) and drops two tiers in the afternoon (no clear signal). Contest results grade a rule by how often teams that followed it finished in the top 10%; points grade it on head-to-head pairs: two players in the same tier within 4 picks of each other's ADP, where the points a pair are how much more the chosen player scored (a scratch counts as what his swap scored).
 
 ## T1
 
-**Last night (2026-11-09)**, points per pair (pairs); positive: your board won
-- AM: vs Ours +12.1 (1) · vs ADP - · VALUE - · PRICEY -
-- PM: vs ETR - · vs Ours PM - · vs ADP -12.1 (1) · VALUE - · PRICEY -
-- Your takes by source: NEWS +13.9 (2)
-- Breakers: Victor Wembanyama. Scratches: none
+**The rules we played.** In the morning, T1 is ordered by ADP, and the higher Boom (his ceiling) goes first when two players are within two picks of each other (kept, nothing has beaten it; contest results: still to come). In the afternoon, T1 is ordered by ETR's projection (kept, nothing has beaten it; contest results: still to come). PRICEY players go last here as everywhere, and in T1 contest results read it on its own: proven so far.
 
-**Keep doing** (points · money)
-- T1 switches: AM ADP (2: Boom) (money pending) · PM ETR (money pending)
-- PM: a Questionable player two tiers back · points RULE numbers, check pending · money no lean
-- AM: no push for a Questionable player · points no variant beats the default · money no lean
-- the one-tier cap · points both windows · money LEAN against
+**Did they work last night.** Morning: where they disagreed, your board beat our projection on 1 of 1 (+12.1 points a pair). Afternoon: where they disagreed, your board beat ADP on 0 of 1 (-12.1 points a pair). Season, points a pair for your board: morning -4.3 against ours (4 pairs), +24.8 against ADP (3 pairs); afternoon -11.2 against ETR (4 pairs), +7.4 against ADP (10 pairs).
 
-**Testing** (forward nights of 14 · shadow · money)
-- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
+**Your moves.** Morning: 2 moves off the Tiers button, 2 right (+13.9 points a move); the biggest, Wembanyama ahead of Jokic on news, was right by 20 points.
 
-**Worth a look**
-- Luka Doncic: ours 66.1, actual 71.6, teammate-out: ours 66.1 vs ETR 72.0; Reaves out, 39 minutes (usual 36) with 5 stocks: ETR priced the usage
+**Player recap.**
 
-**Contest side**
-- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
-- pricey-flags:T1: RULE for; this run: RULE for; top-10% lift 2.12 (1.75-2.68); my teams there 1.77x at the top 10% (317 teams)
-- kept-am-t1: pending
-- kept-pm-t1: pending
+- **Victor Wembanyama** (SAS): Over: 40 on 15-19 with 9 blocks in only 25 minutes of a 26-point win. A top score for his round.
+- **Luka Doncic** (LAL): Over through the Questionable tag: 32-8-10 with 5 steals and 2 blocks, Reaves out.
+
+**Contest view.** Your 38 morning teams took 0.6 T1 players each to the field's 0.5, heaviest on Doncic (26% of yours, 16% of the field). Your 57 afternoon teams took 0.3 T1 players each to the field's 0.3. In the standings, teams holding Wembanyama made the top 10% 2.9 times as often as the field; Doncic's 1.3 times.
+
+**What we're leaning toward.**
+
+- Push Questionable players by type: VALUE players and those over 70% to play stay put; in T1-T2, PRICEY players and those under 50% to play drop two tiers; everyone else follows the current rule. Under test, 0 of 14 nights in; season backtest -7.8 a pair (24 pairs, too early to say); contest results: no clear signal.
+
+**Today in T1.** PRICEY (a tier below): Karl-Anthony Towns (ADP 4.4).
 
 ## T2
 
-**Last night (2026-11-09)**, points per pair (pairs); positive: your board won
-- AM: vs Ours -10.0 (12) · vs ADP -16.4 (6) · VALUE - · PRICEY +6.3 (8)
-- PM: vs ETR - · vs Ours PM +8.2 (2) · vs ADP +26.8 (3) · VALUE +18.2 (3) · PRICEY +8.8 (2)
-- Your takes by source: Bagel+ETR +38.7 (1); NEWS -16.4 (6)
-- Breakers: Anthony Davis. Scratches: none
+**The rules we played.** In the morning, T2 is ordered straight by ADP (kept, nothing has beaten it; contest results: still to come). In the afternoon, T2 is ordered by ADP, and ETR breaks ties when two players are within two picks of each other (on trial, 0 of 14 nights in; contest results: no clear signal).
 
-**Keep doing** (points · money)
-- T2 switches: AM ADP (money pending) · PM ADP (2: ETR) (money no lean)
-- PM: a Questionable player two tiers back · points RULE numbers, check pending · money no lean
-- AM: no push for a Questionable player · points no variant beats the default · money no lean
-- provisional: PM T2: ADP (2: ETR) · points listed as a candidate before testing; chosen as the best of 8 candidates in its cell, so provisional · money no lean
-- the one-tier cap · points both windows · money LEAN against
+**Did they work last night.** Morning: where they disagreed, your board beat our projection on 4 of 12 (-10.0 points a pair) and ADP on 1 of 6 (-16.4 points a pair); PRICEY-last right 5 of 8. Afternoon: where they disagreed, your board beat ADP on 3 of 3 (+26.8 points a pair); VALUE-first right 2 of 3, PRICEY-last right 1 of 2. Season, points a pair for your board: morning +1.2 against ours (59 pairs), -0.5 against ADP (51 pairs); afternoon -1.5 against ETR (77 pairs), +2.9 against ADP (109 pairs, an early sign).
 
-**Testing** (forward nights of 14 · shadow · money)
-- PM T2: ADP (2: ETR) vs the old ADP (1: ETR): 0/14 · season +5.0, not enough yet (39) · forward none yet · money no lean
-- T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+): 0/14 · season +2.7, not enough yet (21) · forward none yet · money LEAN for
-- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
-- T2-1 (AM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season -1.2, not enough yet (36) · forward none yet · money RULE for
-- T2-1 (PM): T2 by ADP to about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 to the end of T2: 0/14 · season +0.2 (-2.4 to +3.1), 70 pairs, no lean · forward none yet · money RULE for
+**Your moves.** Morning: 6 moves off the Tiers button, 1 right (-16.4 points a move); the biggest, Reaves ahead of Davis on news, was wrong by 32 points. Afternoon: 1 move off the Tiers button, 1 right (+38.7 points a move); the biggest, Davis ahead of Mitchell on ETR and Bagel notes, was right by 39 points. Five of the six morning moves were one idea: Davis, Questionable at the morning lock, dropped behind Reaves, Lendeborg, Kessler and Booker. He played 34 minutes for 61 points, and Reaves was ruled out later.
 
-**Worth a look**
-- Donovan Mitchell: ours 46.9, actual 22.4, minutes: 23 minutes (usual 34) in a 12-point loss; Mobley (24) and Harden (25) were cut too: looks like a rotation or rest call, unclear
-- Cade Cunningham: ours 57.9, actual 34.1, minutes: 27 minutes (usual 34) in an 11-point win on the back end of a back-to-back, 0-4 from three
-- Jalen Johnson: ours 51.0, actual 31.4, shooting: 38 minutes (usual 32) but 6-14, 0-3 from three with 4 turnovers
+**Player recap.**
 
-**Contest side**
-- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
-- leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.59 (1.32-2.13); my teams there 1.97x at the top 10% (71 teams)
-- pm-t2-adp-etr2: no lean; this run: no lean; top-10% lift 1.22 (0.88-1.66); my teams there 1.68x at the top 10% (376 teams)
-- pm-t2-other-reads: no lean; this run: no lean; top-10% lift 0.94 (0.79-1.10); my teams there 1.04x at the top 10% (451 teams)
-- kept-am-t2: pending
+- **Nikola Jokic** (DEN): Over: cleared his tag (Probable by lock) and played 39 minutes.
+- **Cade Cunningham** (DET): Under: 27 minutes with 5 fouls on the back end of a back-to-back, 0-4 from three.
+- **Cooper Flagg** (DAL): Over: 43 on 16-25 in 39 minutes with Kyrie playing too.
+- **Jalen Johnson** (ATL): Under: 6-14 and 4 assists despite 38 minutes.
+- **Stephen Curry** (GSW): Under: 25 on 6-10 in only 21 minutes of a 51-point win.
+- **Donovan Mitchell** (CLE): Under: 23 minutes in a 12-point loss, as were Mobley and Harden: unclear.
+- **Scottie Barnes** (TOR): scratched (Questionable); swaps landed on Harper (330 teams, 29 points), Thompson (276 teams, 24 points), Reid (170 teams, 50 points).
+- **Anthony Davis** (WAS): Over: back from the ankle, 44 on 16-21 in 34 minutes. A top score for his round.
+- **Austin Reaves** (LAL): scratched; swaps landed on Thompson (240 teams, 24 points), Harper (222 teams, 29 points), Reid (154 teams, 50 points).
+- In line: Sengun; Lendeborg, in 27 minutes of the 51-point win; Kessler, 21 on 8-12, the rim-funnel spot as billed.
 
-## T3/T4
+**Contest view.** Your 38 morning teams took 2.0 T2 players each to the field's 2.1, heaviest on Reaves (21% of yours, 10% of the field). Your 57 afternoon teams took 1.8 T2 players each to the field's 1.7, heaviest on Davis (28% of yours, 17% of the field). How often the flagged players were drafted (share of pods): VALUE Jokic 99%; PRICEY Kessler 100%. In the standings, teams holding Davis made the top 10% 3.6 times as often as the field; Cunningham's holders only 0.0 times; Johnson's holders only 0.0 times.
 
-**Last night (2026-11-09)**, points per pair (pairs); positive: your board won
-- AM: vs Ours -12.5 (6) · vs ADP -7.0 (17) · VALUE +5.4 (22) · PRICEY +7.3 (28)
-- PM: vs ETR +0.8 (14) · vs Ours PM -4.6 (29) · vs ADP -0.5 (28) · VALUE +0.9 (28) · PRICEY +0.0 (37)
-- Your takes by source: Bagel +5.2 (5); Bagel+ETR +6.1 (3); NEWS -12.9 (9)
-- Breakers: Pascal Siakam, Dyson Daniels, Onyeka Okongwu, Naz Reid. Scratches: none
+**What we're leaning toward.**
 
-**Keep doing** (points · money)
-- T3 switches: AM Proj (3: ADP) (money pending) · PM ETR (ties: ADP, Boom) (money pending)
-- T4 switches: AM Proj (3: ADP) (money pending) · PM ADP (2: ETR) (money no lean)
-- VALUE first in the tier (T3-T5) · points both windows · money LEAN for
-- PM: a Questionable player two tiers back · points RULE numbers, check pending · money no lean
-- AM: no push for a Questionable player · points no variant beats the default · money no lean
-- provisional: PM T4: ADP (2: ETR) · points listed as a candidate before testing; chosen as the best of 8 candidates in its cell, so provisional · money no lean
-- the one-tier cap · points both windows · money LEAN against
+- Afternoon T2's rule in use (ETR breaks ties within two picks) against the old one (within one pick). On trial, 0 of 14 nights in; season backtest +5.0 a pair (39 pairs, too early to say); contest results: no clear signal.
+- In T2 to T4, put the less drafted player first when two are within two projected points and at least 10 points apart in how often they're drafted. Under test, 0 of 14 nights in; season backtest +2.7 a pair (21 pairs, too early to say); contest results: an early sign for.
+- Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on. Under test, each window decided on its own, 0 of 14 nights in; season backtest morning -1.2 a pair (36 pairs, too early to say); afternoon +0.2 a pair (70 pairs, no clear signal); contest results: proven so far.
+- Also testing here (above): Questionable pushes by type; T2 split at the 1/2 turn.
 
-**Testing** (forward nights of 14 · shadow · money)
-- PM T4: ADP (2: ETR) vs the old ETR rule: 0/14 · season -0.7, not enough yet (23) · forward none yet · money no lean
-- T4-1: PRICEY-last off in PM T4 (VALUE first kept): 0/14 · season +3.5, not enough yet (22) · forward none yet · money no lean
-- T2-T4-1: T2-T4 leverage on money's definition: the less drafted first within 2 projected points (drafted% 10+ apart, both 2%+): 0/14 · season +2.7, not enough yet (21) · forward none yet · money LEAN for
-- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
+**Today in T2.** Domantas Sabonis (SAC) is Questionable, 57% to play on our calibrated chance: he stays in T2 in the morning and drops to T4 in the afternoon. PRICEY (a tier below): Paul George (ADP 16.3).
 
-**Worth a look**
-- Dejounte Murray: ours 46.1, actual 16.1, blowout: 18 minutes in a 51-point loss on the back end of a back-to-back
-- Evan Mobley: ours 43.0, actual 20.9, minutes: 24 minutes (usual 33) in a 12-point loss, with Mitchell and Harden also short: unclear
-- James Harden: ours 41.6, actual 21.1, minutes: 25 minutes (usual 33) in a 12-point loss, 3-9 with 4 turnovers: unclear
-- RJ Barrett: ours 44.7, actual 27.6, shooting: ours 44.7 vs ETR 49.5; 36 minutes but 7-21
+## T3
 
-**Contest side**
-- value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.31); my teams there 1.31x at the top 10% (1014 teams)
-- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
-- leverage-t2-t4: LEAN for; this run: RULE for; top-10% lift 1.59 (1.32-2.13); my teams there 1.97x at the top 10% (71 teams)
-- pm-middle-takes: no lean; this run: no lean; top-10% lift 1.03 (0.83-1.24); my teams there 1.39x at the top 10% (605 teams)
-- kept-am-middle: pending
-- kept-pm-t3: pending
-- pm-t4-pricey-last-off: no lean; this run: no lean; top-10% lift 1.11 (0.78-1.41); my teams there 1.69x at the top 10% (118 teams)
-- pm-t4-adp-etr2: no lean; this run: no lean; top-10% lift 0.89 (0.74-1.14); my teams there 0.96x at the top 10% (218 teams)
+**The rules we played.** In the morning, T3 is ordered by our projection, and ADP decides when two players are within three points (kept, nothing has beaten it; contest results: still to come). In the afternoon, T3 is ordered by ETR's projection, with ADP and then Boom breaking exact ties (kept, nothing has beaten it; contest results: still to come). VALUE players go first in this tier (contest results: an early sign for).
+
+**Did they work last night.** Morning: where they disagreed, your board beat our projection on 0 of 3 (-17.4 points a pair) and ADP on 2 of 6 (-7.0 points a pair); VALUE-first right 5 of 5, PRICEY-last right 8 of 8. Afternoon: where they disagreed, your board beat ETR on 1 of 2 (-15.1 points a pair) and ADP on 2 of 11 (-11.3 points a pair); VALUE-first right 4 of 12, PRICEY-last right 6 of 13. Season, points a pair for your board: morning -3.4 against ours (28 pairs), -1.7 against ADP (51 pairs, an early sign); afternoon +0.5 against ETR (53 pairs), +4.1 against ADP (130 pairs, an early sign).
+
+**Your moves.** Morning: 5 moves off the Tiers button, 0 right (-14.6 points a move); the biggest, Thompson ahead of Murray on news, was wrong by 26 points. Afternoon: 1 move off the Tiers button, 1 right (+0.4 points a move); the biggest, Boozer ahead of Irving on ETR and Bagel notes, was right by 0.4 points. Your calls: Reed raised (afternoon, against ETR), wrong: 21 minutes (usual 27) in an 11-point win with AD playing: 10 rebounds and 3 blocks but 4 points. Our number (42.6) was the AD-out case; ETR (35) was closer. Irving faded (afternoon, against ETR), wrong: played 38 minutes (usual 30) in a 3-point game and hit 7-10 from three. Three of the five morning moves pushed Murray, Questionable at the morning lock, behind Jerome, Boozer and Thompson; he played through it for 51 points.
+
+**Player recap.**
+
+- **Devin Booker** (PHX): Over: 32 on 10-17 in 29 minutes of a 26-point loss.
+- **Evan Mobley** (CLE): Under: 24 minutes in a 12-point loss, 2 rebounds: unclear.
+- **Kevin Durant** (HOU): Over: 12 rebounds and 8 assists, through 6 turnovers.
+- **Jamal Murray** (DEN): Over: 38 on 14-23 (5-8 from three) through a Questionable tag, light on assists.
+- **Pascal Siakam** (IND): Over: 29 on 9-16 with 5-8 from three and 8 assists. A top score for his round.
+- **RJ Barrett** (TOR): Under: 7-21 and 3 rebounds, even with Barnes and Quickley out.
+- **Amen Thompson** (HOU): Under: 8 points on 3-8.
+- In line: Jerome, light on assists (2); Boozer; Irving, played the back end, 35 on 7-10 from three in 38 minutes; Young, assists light (7) against Detroit's defense; Reed, 21 minutes with AD playing, 10 rebounds and 3 blocks.
+
+**Contest view.** Your 38 morning teams took 1.3 T3 players each to the field's 1.2, heaviest on Reed (32% of yours, 16% of the field). Your 57 afternoon teams took 2.6 T3 players each to the field's 2.0, heaviest on Reed (58% of yours, 16% of the field). How often the flagged players were drafted (share of pods): VALUE Jerome 100%, Barrett 100%, Irving 99%; PRICEY Booker 100%, Siakam 100%, Thompson 100%, Young 99%. In the standings, teams holding Siakam made the top 10% 1.7 times as often as the field; Booker's 1.6 times; Mobley's holders only 0.1 times; Barrett's holders only 0.5 times.
+
+**What we're leaning toward.**
+
+- Also testing here (above): Questionable pushes by type; the less-drafted tiebreak in T2 to T4.
+
+**Today in T3.** PRICEY (a tier below): Desmond Bane (ADP 18.7), Anthony Black (ADP 19.0), Darryn Peterson (ADP 19.3), Damian Lillard (ADP 21.1), Miles Bridges (ADP 22.0), Donovan Clingan (ADP 23.2).
+
+## T4
+
+**The rules we played.** In the morning, T4 is ordered by our projection, and ADP decides when two players are within three points (kept, nothing has beaten it; contest results: still to come). In the afternoon, T4 is ordered by ADP, and ETR breaks ties when two players are within two picks of each other (on trial, 0 of 14 nights in; contest results: no clear signal). VALUE players go first in this tier (contest results: an early sign for).
+
+**Did they work last night.** Morning: where they disagreed, your board beat our projection on 0 of 1 (-17.9 points a pair) and ADP on 0 of 6 (-11.9 points a pair); VALUE-first right 4 of 9, PRICEY-last right 7 of 12. Afternoon: where they disagreed, your board beat ETR on 5 of 12 (+3.5 points a pair) and ADP on 9 of 14 (+9.9 points a pair); VALUE-first right 6 of 12, PRICEY-last right 10 of 16. Season, points a pair for your board: morning -2.5 against ours (36 pairs), +0.2 against ADP (84 pairs); afternoon +2.2 against ETR (61 pairs, an early sign), +0.6 against ADP (119 pairs).
+
+**Your moves.** Morning: 2 moves off the Tiers button, 0 right (-16.1 points a move); the biggest, Harden ahead of Irving on news, was wrong by 18 points. Afternoon: 9 moves off the Tiers button, 4 right (+3.7 points a move); the biggest, Reid ahead of Murray on a Bagel note, was right by 34 points. Your calls: Okongwu faded (morning, against ADP), wrong: played his number (33.3 vs ours 36.1) on normal minutes, 6-11: the fade was price, not form. Bridges raised (afternoon, against ETR), wrong: 26 minutes in a 26-point loss, 3-9 with no assists. 6 more in misses.csv.
+
+**Player recap.**
+
+- **Dyson Daniels** (ATL): Over. A top score for his round.
+- **Zion Williamson** (NOP): scratched; swaps landed on Reid (141 teams, 50 points), Murray (130 teams, 16 points), Harper (129 teams, 29 points).
+- **Onyeka Okongwu** (ATL): In line. A top score for his round.
+- **Miles Bridges** (PHX): Under: 26 minutes in a 26-point loss, 3-9 with no assists.
+- **Kyshawn George** (WAS): Under: 5-12 with 5 turnovers, AD back.
+- **Jeremiah Fears** (NOP): Under: 4-12 with 6 turnovers in a 51-point loss, 8 assists.
+- **James Harden** (CLE): Under: 25 minutes in a 12-point loss, 3-9: unclear.
+- **Dejounte Murray** (NOP): Under: 18 minutes with 5 fouls in a 51-point loss.
+- **Stephon Castle** (SAS): Under: 2-10.
+- **Naz Reid** (CHA): Over: 25 and 13 on 26 shots with CHA's backcourt out. A top score for his round.
+
+**Contest view.** Your 38 morning teams took 1.0 T4 players each to the field's 1.2, heaviest on Young (47% of yours, 17% of the field). Your 57 afternoon teams took 0.4 T4 players each to the field's 1.3. How often the flagged players were drafted (share of pods): VALUE Murray 87%, Reid 84%; PRICEY Daniels 100%, Okongwu 96%, Bridges 92%, George 91%. In the standings, teams holding Reid made the top 10% 2.3 times as often as the field; Bridges' holders only 0.2 times; George's holders only 0.2 times.
+
+**What we're leaning toward.**
+
+- Afternoon T4's rule in use (ADP, ETR breaking ties within two picks) against the old one (straight ETR). On trial, 0 of 14 nights in; season backtest -0.7 a pair (23 pairs, too early to say); contest results: no clear signal.
+- Stop putting PRICEY players last in afternoon T4 (VALUE players still go first). Under test, 0 of 14 nights in; season backtest +3.5 a pair (22 pairs, too early to say); contest results: no clear signal.
+- Also testing here (above): Questionable pushes by type; the less-drafted tiebreak in T2 to T4.
+
+**Today in T4.** Lauri Markkanen (UTA) is Questionable, 42% to play on our calibrated chance: he stays in T4 in the morning and drops to T5 in the afternoon. Tyler Herro (MIL) is Questionable, 32% to play on our calibrated chance: he stays in T4 in the morning and drops to T5 in the afternoon. VALUE (our projection rates him a tier above his ADP): Lauri Markkanen (ADP 26.5), Tyler Herro (ADP 28.9).
 
 ## T5
 
-**Last night (2026-11-09)**, points per pair (pairs); positive: your board won
-- AM: vs Ours -4.8 (41) · vs ADP +7.3 (85) · VALUE +6.9 (80) · PRICEY -
-- PM: vs ETR -1.3 (9) · vs Ours PM +8.4 (26) · vs ADP +4.6 (14) · VALUE -7.1 (13) · PRICEY -
-- Your takes by source: Bagel +14.5 (1); Bagel+ETR +8.0 (6); NEWS +2.5 (70)
-- Breakers: Brandin Podziemski, Jakob Poeltl, Jamal Shead, Grayson Allen, Daniss Jenkins, John Collins. Scratches: Julian Phillips (no swaps credited); Bronny James (no swaps credited)
+**The rules we played.** In the morning, T5 follows the Tiers button: our projection, with ADP deciding when two players are within three points (adopted; contest results: no clear signal). In the afternoon, T5 is ordered by ADP (proven so far on points; contest results: an early sign against). In both windows T5 then puts the less drafted player first when two are within two projected points and at least 10 points apart in how often they're drafted (on trial, 0 of 14 nights in; contest results: proven so far). VALUE players go first in this tier (contest results: an early sign for). In the afternoon you also raise beneficiaries, a player whose teammate is tagged or out (contest results: no clear signal).
 
-**Keep doing** (points · money)
-- T5 switches: AM the button's order, then the less drafted within 2 pts (money no lean) · PM ADP, then the less drafted within 2 pts (money LEAN against)
-- AM T5: the button's order (your moves off it are takes) · points both windows · money no lean
-- VALUE first in the tier (T3-T5) · points both windows · money LEAN for
-- PM: a Questionable player two tiers back · points RULE numbers, check pending · money no lean
-- AM: no push for a Questionable player · points no variant beats the default · money no lean
-- PM T5: beneficiary picks · points listed as a candidate before testing · money no lean
-- PM T5: ADP, VALUE first · points RULE · money LEAN against
-- the one-tier cap · points both windows · money LEAN against
-- provisional: T5: the less drafted within 2 pts · points money RULE · money RULE for
+**Did they work last night.** Morning: where they disagreed, your board beat our projection on 14 of 41 (-4.8 points a pair) and ADP on 64 of 85 (+7.3 points a pair); VALUE-first right 51 of 80. Afternoon: where they disagreed, your board beat ETR on 4 of 9 (-1.3 points a pair) and ADP on 7 of 14 (+4.6 points a pair); VALUE-first right 3 of 13. Season, points a pair for your board: morning +1.3 against ours (133 pairs), -0.8 against ADP (441 pairs); afternoon -1.2 against ETR (277 pairs), -2.1 against ADP (742 pairs, proven so far).
 
-**Testing** (forward nights of 14 · shadow · money)
-- AM T5: the less drafted within 2 pts vs the old Proj (3: ADP): 0/14 · season +2.2 (+0.2 to +4.5), 137 pairs, LEAN + · forward none yet · money RULE for
-- PM T5: the less drafted within 2 pts vs the old ADP: 0/14 · season -2.1 (-4.8 to +0.6), 84 pairs, LEAN - · forward none yet · money RULE for
-- T5-1: AM T5: a round-6 pick whose teammate is tagged Q/D/GTD at the AM record goes ahead of his decision-pair partners: 0/14 · season -3.6 (-4.7 to -2.2), 677 pairs, RULE - · forward none yet · money played: RULE for
-- Q-1: Q push by flag, chance and tier: VALUE or over 70% to play, no push; T1-T2 PRICEY or under 50%, two tiers back; else the current rule (AM no push, PM two back): 0/14 · season -7.8, not enough yet (24) · forward none yet · money no lean
+**Your moves.** Morning: 67 moves off the Tiers button, 40 right (+1.8 points a move); the biggest, Allen ahead of Green on news, was right by 29 points. Afternoon: 10 moves off the Tiers button, 8 right (+11.6 points a move); the biggest, Poeltl ahead of Sarr on news, was right by 24 points. Your calls: Sarr raised (morning, against ADP), wrong: AD, Questionable at Lock AM, played 34 minutes, so Sarr's role stayed small: 4 points on 2-5. Green faded (morning, against ADP), right: 24 minutes (usual 29) in a 26-point loss, 2-8. 3 more in misses.csv.
 
-**Worth a look**
-- Dejounte Murray: ours 46.1, actual 16.1, blowout: 18 minutes in a 51-point loss on the back end of a back-to-back
-- Saddiq Bey: ours 35.5, actual 15.0, blowout: 24 minutes in a 51-point loss, 3-9 and no rebounds; his number was up with Zion and Trey out
-- Fred VanVleet: ours 34.5, actual 15.2, peripherals: 30 minutes (usual 27) and 3-6 from three, but 1 rebound and 2 assists
-- Jamal Shead: ours 27.6, actual 41.9, teammate-out: ours 27.6 vs ETR 38.4; 36 minutes (usual 23) with 20 and 11 assists, Barnes and Quickley out: ETR priced the handler role
+**Player recap.**
 
-**Contest side**
-- am-t5-button-order: no lean; this run: LEAN for; top-10% lift 1.14 (1.03-1.28); my teams there 1.48x at the top 10% (277 teams)
-- value-up-middle-t5: LEAN for; this run: RULE for; top-10% lift 1.18 (1.05-1.31); my teams there 1.31x at the top 10% (1014 teams)
-- pricey-flags: LEAN for overall; this run: RULE for; top-10% lift 1.24 (1.12-1.36); my teams there 1.41x at the top 10% (1225 teams)
-- q-tag-pushes: no lean; this run: no lean; top-10% lift 1.08 (0.90-1.27); my teams there 1.54x at the top 10% (447 teams)
-- q-tag-raises: no lean; this run: no lean; top-10% lift 0.99 (0.83-1.20); my teams there 1.06x at the top 10% (180 teams)
-- beneficiary-round6:sat: played: RULE for; this run: no lean; top-10% lift 0.99 (0.80-1.31); my teams there 2.35x at the top 10% (34 teams)
-- beneficiary-round6:played: played: RULE for; this run: RULE for; top-10% lift 1.44 (1.14-2.11); my teams there 1.88x at the top 10% (16 teams)
-- pm-t5-beneficiary: no lean; this run: no lean; top-10% lift 1.12 (0.91-1.39); my teams there 1.79x at the top 10% (279 teams)
-- ownership-tiebreak-t5: RULE for; this run: RULE for; top-10% lift 1.19 (1.06-1.32); my teams there 1.43x at the top 10% (718 teams)
-- pm-t5-adp-value: LEAN against; this run: LEAN against; top-10% lift 0.81 (0.68-0.97); my teams there 1.61x at the top 10% (373 teams)
-- am-t5-other-reads: RULE for; this run: LEAN for; top-10% lift 1.24 (1.00-1.54); my teams there 1.01x at the top 10% (188 teams)
+- **Nickeil Alexander-Walker** (ATL): Over, with 4 stocks.
+- **Ausar Thompson** (DET): Under on the back end of a back-to-back.
+- **Alex Sarr** (WAS): Under: 4 points on 2-5 with AD back.
+- **Jalen Green** (PHX): Under: 24 minutes in a 26-point loss, 2-8.
+- **Ivica Zubac** (IND): Under: 28 minutes but only 3 rebounds.
+- **Brandin Podziemski** (GSW): Over: 25 on 5-11 from three in 26 minutes of a 51-point win. A top score for his round.
+- **Jakob Poeltl** (TOR): Over: 31 minutes (usual 21) with 4 blocks, Barnes out. A top score for his round.
+- **Jamal Shead** (TOR): Over: 36 minutes with 20 and 11, Barnes and Quickley out. A top score for his round.
+- In line: Harper, in 26 minutes of a 26-point win; Nembhard, 12 assists; Smith Jr., no stocks; Queen; Fox, with 9 rebounds; Dybantsa, on 37 minutes.
+- Scratched, no swaps credited: Murphy III, Quickley, Murray-Boyles and Joe.
+
+**Contest view.** Your 38 morning teams took 0.8 T5 players each to the field's 0.8, heaviest on Nembhard (18% of yours, 2% of the field). Your 57 afternoon teams took 0.8 T5 players each to the field's 0.4, heaviest on Shead (46% of yours, 2% of the field). How often the flagged players were drafted (share of pods): VALUE Thompson 39%. In the standings, teams holding Alexander-Walker made the top 10% 2.1 times as often as the field; Poeltl's 1.8 times; Green's holders never got there; Allen's holders never got there.
+
+**What we're leaning toward.**
+
+- The less-drafted tiebreak in morning T5, against the button's plain order. On trial, 0 of 14 nights in; season backtest +2.2 a pair (137 pairs, an early sign); contest results: proven so far.
+- The less-drafted tiebreak in afternoon T5, against plain ADP. On trial, 0 of 14 nights in; season backtest -2.1 a pair (84 pairs, an early sign); contest results: proven so far.
+- In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock. Under test, 0 of 14 nights in; season backtest -3.6 a pair (677 pairs, proven so far); contest results: still to come.
+- Also testing here (above): Questionable pushes by type.
+
+**Today in T5.** Josh Hart (NYK) is Questionable, 64% to play on our calibrated chance: T5 is the bottom tier, so he stays put. VALUE (our projection rates him a tier above his ADP): Wendell Carter Jr. (ADP 29.6), VJ Edgecombe (ADP 30.6), Derrick White (ADP 31.9), Zach LaVine (ADP 35.5). Beneficiaries to watch: if Sabonis sits, Zach LaVine (ADP 35.5), Precious Achiuwa (undrafted) and Malik Monk (undrafted); if Markkanen sits, Ace Bailey (ADP 33.4) and Isaiah Collier (ADP 35.9); if Herro sits, Brayden Burries (ADP 34.3), Kyle Kuzma (ADP 35.9) and Jaime Jaquez Jr. (ADP 35.9).
+
+## The draft card
+
+Last night, of your 95 teams, at the 1/2 turn you took a faller on 13 (1 top 10%), reached on 1 (0 top 10%), trusted ADP on 20 (3 top 10%); at the 2/3 turn you took a faller on 5 (0 top 10%), reached on 7 (2 top 10%), trusted ADP on 13 (3 top 10%); 5 of the 2/3-turn reaches went toward the higher projection; you held same-position teammates on 8 (1 top 10%); you paired opposing stars on 58 (8 top 10%). The 1/2-turn fallers didn't pay last night (1 of 13 teams in the top 10%), but that's one night against a season that has proven them.
+
+Where contest results stand: taking a faller, proven so far; reaching at the 1/2 turn, an early sign against; reaching toward the higher projection at the 2/3 turn, proven so far; holding an early pick and a late teammate at his position, proven wrong so far; pairing stars from opposite sides of one game, no clear signal. Later rounds: a player well past his ADP through round 5 leans worth taking (a candidate, not yet tested).
+
+## Back page
+
+The model: on the 92 players both projected at the afternoon lock, ours missed by 11.0 points on average and ETR's by 10.5; ranked against how they finished, ours scored 0.70 and ETR's 0.70 (1 is a perfect order). Projection hypotheses: the minutes trend (under test) lands 0.39 points closer than the base projection on 207 players (11 of 14 nights in); the blowout trim was retired on 11-10 and taken out of the board; the underdog bench (under test) lands 0.30 points closer than the base projection on 60 players (6 of 14 nights in); the blowout slide (under test) lands 0.18 points closer than the base projection on 43 players (6 of 14 nights in).
+
+Data: everything for last night came in, and today's inputs were ready on time.
+
+Season tables are below; every player's night is in the ledger (analysis/nba/ledger.csv), the calls and misses in misses.csv, and the full tier tables in tier_grade.md, shadow.md and money_report.md.
 
 ## Season
+
+*Reference tables; points per pair as above. Labels here are the grading's own (RULE: proven so far; LEAN: an early sign; no lean: no clear signal; not enough yet: too early to say).*
 
 **Overnight window** (drafts before 4:30am; kept out of the AM grades): 13 nights, 134 of your teams; your board against ADP then: +1.2 (+0.3 to +2.1), 1410 pairs, LEAN + (RULE numbers, check pending)
 
@@ -274,7 +234,7 @@ Everything adopted or kept is provisional until its money verdict (top finishes 
 
 Points per pair or take (count); positive: your board won, VALUE beat its partners, or your take beat the button. Takes are credited to ETR or Bagel when either player had a note from them before the lock, else NEWS (his projection or his team's status changed since the last lock) or OTHER. Verdicts and labels: tier_grade.md.
 
-**Adopted and rules** (leans.json; points status, money verdict). Everything adopted or kept is provisional until its money verdict (top finishes and dollars, from the contest side: decision_register.csv) is in, and may be changed by it.
+**Adopted and rules** (leans.json; points status, money verdict).
 - adopted, money no lean: AM T5: the Tiers button's order is the default; your moves off it are logged as takes and graded.
 - adopted, money LEAN for: VALUE-flagged players go first in their tier (the button already sorts them there) in the middle and T5, both windows.
 - adopted, money no lean: PM window: a Questionable player is ordered two tiers back (the button's NBA_PM_Q_PUSH; the chip shows the tier he's ordered in).

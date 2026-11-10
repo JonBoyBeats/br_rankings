@@ -1425,7 +1425,10 @@ def tiers_json(N, parts):
                     "Drafted%: share of that window's pods that drafted him. lift10: top-10% lift against same-contest, "
                     "same-price teams (money_report.md). verdict: the MONEY column of decision_register.csv as approved; "
                     "current: this run's read (after the price-split check where it ran). mine: my teams where the decision "
-                    "applied, season to date (top-10% and top-1% rates over the field's).",
+                    "applied, season to date (top-10% and top-1% rates over the field's). A player's lift10: his holders' "
+                    "top-10% rate over the window's (20+ holders). results: my teams last night (fees and winnings in "
+                    "dollars, finishes as top x%). card: my teams last night at each turn (faller, reach, trust; a reach's "
+                    "direction) and holding same-position teammates or opposing stars, with how many finished top 10%.",
            "tiers": {}}
     blocks = collections.defaultdict(lambda: {"exposure": {}, "drafted": {}, "decisions": []})
     # last night: exposure and drafted%
@@ -1443,6 +1446,12 @@ def tiers_json(N, parts):
                 held[p] += 1
                 held_mine[p] += t["mine"]
         npods = len({t["draft_id"] for t in ts})
+        top10 = collections.Counter()                     # holders that finished top 10%, for each player's lift
+        for t in ts:
+            for p in drafted_by(t):
+                top10[p] += t["top"][10]
+        base10 = sum(t["top"][10] for t in ts) / len(ts)
+        lift = lambda p: round(top10[p] / held[p] / base10, 2) if held[p] >= 20 and base10 else None
         rows = n["tiers"][w]
         for k in ("1", "2", "3", "4", "5"):
             tier_rows = [r for r in rows.values() if r["tier"] == k]
@@ -1451,7 +1460,8 @@ def tiers_json(N, parts):
             per_team = lambda group: sum(1 for t in group for p in drafted_by(t) if rows.get(p, {}).get("tier") == k) / len(group) if group else None
             players = sorted(({"name": r["name"], "adp": num(r["adp"]), "flag": r["flag"] or None, "tag": r["tag"] or None,
                                "q_class": r["q_class"] or None, "mine": round(held_mine[r["player_id"]] / len(mine), 3) if mine else None,
-                               "field": round(held[r["player_id"]] / len(ts), 3), "drafted": round(len(pods[r["player_id"]]) / npods, 3)}
+                               "field": round(held[r["player_id"]] / len(ts), 3), "drafted": round(len(pods[r["player_id"]]) / npods, 3),
+                               "lift10": lift(r["player_id"])}
                               for r in tier_rows if held[r["player_id"]] or held_mine[r["player_id"]]),
                              key=lambda x: (x["adp"] is None, x["adp"]))
             blocks[k]["exposure"][w] = {"my_teams": len(mine), "field_teams": len(ts),
@@ -1459,6 +1469,29 @@ def tiers_json(N, parts):
                                         "players": players}
             blocks[k]["drafted"][w] = {lab: [{"name": x["name"], "drafted": x["drafted"], "mine": x["mine"]} for x in players
                                               if (x["flag"] == lab if lab != "Q" else bool(x["tag"]))] for lab in ("VALUE", "PRICEY", "Q")}
+    # last night: my teams' results, and the draft card on them (turns, same-position teammates, opposing stars)
+    mine = [t for v in n["teams"].values() for t in v if t["mine"]]
+    if mine:
+        out["results"] = {"teams": len(mine), "am": sum(t["window"] == "am" for t in mine), "pm": sum(t["window"] == "pm" for t in mine),
+                          "fees": round(sum(t["contest"]["fee"] for t in mine), 2), "won": round(sum(t["payout"] for t in mine), 2),
+                          "cashed": sum(t["payout"] > 0 for t in mine), "top10": sum(t["top"][10] for t in mine),
+                          "top1": sum(t["top"][1] for t in mine), "best_pct": round(100 * min(t["fin"] for t in mine), 1),
+                          "median_pct": round(100 * sorted(t["fin"] for t in mine)[len(mine) // 2], 1)}
+        rk_inv = {r: p for p, r in ranks_of(n).items()}
+        card = collections.defaultdict(lambda: {"teams": 0, "top10": 0})
+        for _, t, i in turn_teams([n]):
+            if t["mine"]:
+                for k in ["%s %s" % (i["turn"], i["kind"])] + ["%s reach: %s" % (i["turn"], x) for x in
+                                                              (reach_kinds(n, t, i, rk_inv) if i["kind"] == "reach" else ())]:
+                    card[k]["teams"] += 1
+                    card[k]["top10"] += t["top"][10]
+        for t in mine:
+            if t["window"]:
+                for k, has in (("same-position teammates", same_pos(n, t)), ("opposing stars", opp_stars(n, t))):
+                    if has:
+                        card[k]["teams"] += 1
+                        card[k]["top10"] += t["top"][10]
+        out["card"] = dict(card)
     # season to date: the register's decisions
     register = list(csv.DictReader(open(os.path.join(REP, "decision_register.csv"))))
     main_rows = {k[0]: v for k, v in reg.items() if not v[3]}
