@@ -53,8 +53,13 @@ minutes. In order:
 - **The draft card**: how the turns went on your teams last night, and where contest results stand on each card rule.
 - **Back page**: the model (ours against ETR, the projection hypotheses, decisions due), data status, links.
 
-**Words, not codes.** The report never shows register ids, rule codes or verdict labels. RULE is "proven so far",
-LEAN "an early sign", no lean "no clear signal", not enough "too early to say", provisional "on trial". Points are
+**Words, not codes.** The report never shows register ids, rule codes or verdict labels. Every verdict says which way:
+RULE is "proven to help so far" or "proven to hurt so far", LEAN "an early sign it helps" or "an early sign it hurts"
+(contest results the same: "contest results: an early sign it hurts"); never a bare "proven so far". No lean is "no
+clear signal", not enough "too early to say" (with the pair count when small: "only 21 pairs"), provisional "on trial".
+About 2,000 words in all: per tier, the recap is overs, unders and scratches with the reason only; "did they work" is
+last night in a sentence or two plus one season line; the contest view one sentence. The front page ends with your
+three biggest bets against the field and how each went (generated). Points are
 the rankings grade, contest results the money grade. Rules are said in words ("In the afternoon, T2 is ordered by ADP,
 and ETR breaks ties when two players are within two picks of each other"), and every number carries its meaning in
 the same sentence. A new tier idea gets a `plain` line in `hypotheses.json` (one sentence, no codes) and a short `name`, and a new
