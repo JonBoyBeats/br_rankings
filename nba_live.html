@@ -671,6 +671,7 @@ function simulate(fld, rowsByApp, mineIdx) {
   var track = mineIdx.concat(topIdx), n = track.length;
   var top1 = new Float64Array(n), top10 = new Float64Array(n), win = new Float64Array(n), cuts = [];
   var ev = new Float64Array(n), mineWon = [], pay = fld.payout || [];
+  var inTop = new Float64Array(np), topLineups = 0;    // each player's appearances in the top-1% lineups, over every draw
   function placeOf(sorted, x) {                       // 1 + how many lineups finished strictly above x
     var lo = 0, hi = sorted.length;
     while (lo < hi) { var mid = (lo + hi) >> 1; if (sorted[mid] <= x) lo = mid + 1; else hi = mid; }
@@ -685,6 +686,11 @@ function simulate(fld, rowsByApp, mineIdx) {
     }
     var sorted = tot.slice().sort(), line = sorted[nt - cut1], tenth = sorted[Math.max(0, nt - 10)], best = sorted[nt - 1];
     cuts.push(line);
+    for (var t4 = 0; t4 < nt; t4++) {
+      if (tot[t4] < line) continue;
+      topLineups++;
+      for (var k4 = 0; k4 < ROUNDS; k4++) { var j4 = fld.teams[t4 * ROUNDS + k4]; if (j4 >= 0) inTop[j4]++; }
+    }
     var won = 0;
     track.forEach(function (t, m) {
       if (tot[t] >= line) top1[m]++; if (tot[t] >= tenth) top10[m]++; if (tot[t] >= best) win[m]++;
@@ -697,7 +703,9 @@ function simulate(fld, rowsByApp, mineIdx) {
   cuts.sort(function (a, b) { return a - b; });
   var row = function (t, m) { return { t: t, top1: top1[m] / SIMS, top10: top10[m] / SIMS, win: win[m] / SIMS, ev: ev[m] / SIMS, now: nowTot[t], proj: expect[t] }; };
   mineWon.sort(function (a, b) { return a - b; });
-  return { mine: mineIdx.map(row).sort(function (a, b) { return b.top1 - a.top1 || b.top10 - a.top10 || b.proj - a.proj; }),
+  var share = {};
+  fld.apps.forEach(function (a, i) { share[a] = topLineups ? inTop[i] / topLineups : 0; });
+  return { share: share, mine: mineIdx.map(row).sort(function (a, b) { return b.top1 - a.top1 || b.top10 - a.top10 || b.proj - a.proj; }),
            top: topIdx.map(function (t, i) { return row(t, mineIdx.length + i); }),
            line: cuts[cuts.length >> 1], nt: nt,
            won: { mean: mineWon.reduce(function (a, x) { return a + x; }, 0) / SIMS, lo: mineWon[Math.floor(0.1 * SIMS)], hi: mineWon[Math.floor(0.9 * SIMS)] } };
@@ -712,15 +720,26 @@ function chanceColor(p) {
 }
 
 var TOP10_GOLD = 0.02;   // live for the top 10: in it in 2% of draws or more
+/* NBA players view, once the field is in: a row's green is his share of the projected top-1% lineups (every draw's
+   top 1% of the field, his appearances over theirs), so every player is on one scale whatever his round. Before the
+   field is read, and on the college page, the round-based green below (grade()) stays. */
+var TOP_SHARE_MIN = 0.02, TOP_SHARE_BOLD = 0.25, TOP_SHARE_FULL = 0.5;
+
+/** The night's simulation, shared by both views and run once per pull: my lineups (by the Username box) and the field. */
+function fieldSim(fld, rowsByApp) {
+  var mineIdx = [];
+  fld.users.forEach(function (u, i) { if (u === ME) mineIdx.push(i); });
+  var key = fld.contest + "|" + ME + "|" + (state.pulledAt || 0);
+  if (!state.sim || state.sim.key !== key) state.sim = { key: key, r: simulate(fld, rowsByApp, mineIdx) };
+  return state.sim.r;
+}
 
 function renderLineups(fld, rowsByApp) {
   var host = $("list"), mineIdx = [];
   fld.users.forEach(function (u, i) { if (u === ME) mineIdx.push(i); });
   if (!ME) { host.innerHTML = '<div class="empty">Put your Underdog username in the Username box (Hide shows the controls).</div>'; return; }
   if (!mineIdx.length) { host.innerHTML = '<div class="empty">None of the ' + fld.entries.toLocaleString() + " lineups in " + fld.title + " is under " + ME + ".</div>"; return; }
-  var key = fld.contest + "|" + ME + "|" + (state.pulledAt || 0);
-  if (!state.sim || state.sim.key !== key) state.sim = { key: key, r: simulate(fld, rowsByApp, mineIdx) };
-  var r = state.sim.r, expTop = r.mine.reduce(function (a, x) { return a + x.top1; }, 0);
+  var r = fieldSim(fld, rowsByApp), expTop = r.mine.reduce(function (a, x) { return a + x.top1; }, 0);
   var gold = r.mine.filter(function (x) { return x.top10 >= TOP10_GOLD; }).length;
   host.insertAdjacentHTML("beforeend", '<div class="lsum">' + fld.title + ": <b>" + r.mine.length + "</b> of " + ME + "'s lineups in " + r.nt.toLocaleString() +
     ". Projected top-1% line <b>" + r.line.toFixed(1) + "</b>. Expected top-1% finishes <b>" + expTop.toFixed(1) + "</b> (" +
@@ -868,12 +887,22 @@ function render() {
   head.innerHTML = '<span class="r">ADP</span><span class="exph">Exp</span><span>Player</span><span class="r">Game</span><span class="r" title="Underdog fantasy points">Pts</span>';
   host.appendChild(head);
   var prevRound = null;
+  var simShare = sportOf(state.slate) === "nba" && fld && fld.users ? fieldSim(fld, rowsByApp).share : null;
   rows.forEach(function (r) {
     var p = r.p, el = document.createElement("div");
     el.className = "row";
     if (sortBy === "adp" && prevRound != null && r.round !== prevRound) el.classList.add("rstart");
     prevRound = r.round;
-    if (r.good) {
+    if (simShare) {
+      var sh = simShare[p.appearance_id] || 0;
+      if (sh >= TOP_SHARE_MIN) {
+        el.classList.add("good");
+        if (sh >= TOP_SHARE_BOLD) el.classList.add("lead");
+        el.style.setProperty("--good", (0.10 + 0.55 * Math.min(1, sh / TOP_SHARE_FULL)).toFixed(2));
+      }
+      el.title = "In " + (100 * sh).toFixed(1) + "% of the projected top-1% lineups (" + SIMS + " runs of the rest of the night over " +
+                 fld.title + "'s " + fld.entries.toLocaleString() + " lineups)";
+    } else if (r.good) {
       el.classList.add("good");
       if (r.good === 1) el.classList.add("lead");
       el.style.setProperty("--good", (0.10 + 0.55 * r.good).toFixed(2));
@@ -926,8 +955,12 @@ function render() {
   var live = Object.keys(state.games).some(function (t) { return state.games[t].state === "in"; });
   var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" : "Fetching ESPN…";
   var legend = state.pulledAt ? (live ? " · refreshes every " + EVERY + "s while open" : "") +
-    " · dark green: his round's leader so far (players yet to start count at their usual" +
-    (state.projFrom ? ", ETR's median from today's file" : "") + "); light green: ahead of his round's usual and close behind, within " + CLOSE + " points at the final horn (5 at the half)" : "";
+    (sportOf(state.slate) === "nba" && fld && fld.users
+      ? " · green: how often he is in the projected top-1% lineups (" + SIMS + " runs of the rest of the night over the field's lineups" +
+        (state.projFrom ? ", ETR's median from today's file for what's left" : "") + "), deeper the more often, full at " +
+        Math.round(100 * TOP_SHARE_FULL) + "%, bold at " + Math.round(100 * TOP_SHARE_BOLD) + "%+; none under " + Math.round(100 * TOP_SHARE_MIN) + "%"
+      : " · dark green: his round's leader so far (players yet to start count at their usual" +
+        (state.projFrom ? ", ETR's median from today's file" : "") + "); light green: ahead of his round's usual and close behind, within " + CLOSE + " points at the final horn (5 at the half)") : "";
   var hm = { hour: "numeric", minute: "2-digit" };
   if (fld) msg += " · field: " + fld.title + ", " + fld.entries.toLocaleString() + " teams" + (state.draftedOnly ? ", drafted players only" : "") +
     " (read " + pt(new Date(fld.at), hm) + (state.fieldNext ? ", again at " + pt(new Date(state.fieldNext), hm) + " after that tip's swaps" : "") + ")";
