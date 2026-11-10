@@ -12,7 +12,7 @@
   - Questionable at Lock AM: 13 tagged, 10 played; teams that drafted them before noon top 1% 2.47% (4092 teams) vs after 1.61% (7222).
   - Most-owned turn combo vs the rest, top 1%: 2/3 turn 0.62% vs 1.46% (12 cases); 1/2 turn 0.69% vs 0.71% (4 cases).
   - Boom peer bump: 9 players moved 2+ points so far (too few to read); risers wait on two weeks of entry counts.
-- Last night, where it touched a rule: your takes off the tier rules: 44, 17 right; the field went your way on 17, against on 27; Questionable at Lock AM: Luka Doncic (played, on 21 of your 95), Nikola Jokic (played, on 16 of your 95), Scottie Barnes (sat, on 0 of your 95), Anthony Davis (played, on 25 of your 95), Jamal Murray (played, on 13 of your 95), Jarrett Allen (played, on 0 of your 95), DeMar DeRozan (played, on 0 of your 95), Immanuel Quickley (sat, on 0 of your 95), Isaiah Joe (sat, on 0 of your 95), Aaron Gordon (played, on 0 of your 95), Devin Vassell (sat, on 0 of your 95), Cam Johnson (played, on 0 of your 95), Quentin Grimes (sat, on 0 of your 95).
+- Last night, where it touched a rule: your takes off the tier rules: 40, 16 right; the field went your way on 16, against on 24; Questionable at Lock AM: Luka Doncic (played, on 21 of your 95), Nikola Jokic (played, on 16 of your 95), Scottie Barnes (sat, on 0 of your 95), Anthony Davis (played, on 25 of your 95), Jamal Murray (played, on 13 of your 95), Jarrett Allen (played, on 0 of your 95), DeMar DeRozan (played, on 0 of your 95), Immanuel Quickley (sat, on 0 of your 95), Isaiah Joe (sat, on 0 of your 95), Aaron Gordon (played, on 0 of your 95), Devin Vassell (sat, on 0 of your 95), Cam Johnson (played, on 0 of your 95), Quentin Grimes (sat, on 0 of your 95).
 
 The full tables follow; the morning report reads only this block (the rest is reference).
 
@@ -59,8 +59,8 @@ Drafted% leaves 100% at ADP 27.5. Tag: at Lock AM / at lock. Tiers: yours at Loc
 | Ausar Thompson | 35.4 | 65.5% | 60-99.5 | - / - | 5/5 | 24.0 |
 | Andrew Nembhard | 35.7 | 28.6% | 10-60 | - / - | 5/5 | 33.6 |
 | Derik Queen | 35.8 | 29.5% | 10-60 | - / - | -/5 | 28.8 |
-| Jamal Shead | 35.9 | 24.0% | 10-60 | - / - | 5/5 | 41.9 |
 | Jakob Poeltl | 35.9 | 13.8% | 10-60 | - / - | -/5 | 42.6 |
+| Jamal Shead | 35.9 | 24.0% | 10-60 | - / - | 5/5 | 41.9 |
 
 ### 3. Most-owned pairs and cores (flagship)
 
@@ -109,13 +109,12 @@ Picks per team from each of your tiers (each team read with the tiers of the loc
 
 ### 6. Your takes against the field
 
-44 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
+40 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
 
 | Lock | Tier | Takes | With the field | Against it | You were right |
 |---|---|---|---|---|---|
 | AM | T1 | 2 | 2 | 0 | 1 |
-| AM | T3 | 1 | 1 | 0 | 0 |
-| AM | T4 | 7 | 0 | 7 | 3 |
+| AM | T4 | 4 | 0 | 4 | 2 |
 | AM | T5 | 5 | 4 | 1 | 2 |
 | PM | T2 | 1 | 0 | 1 | 1 |
 | PM | T3 | 1 | 1 | 0 | 1 |

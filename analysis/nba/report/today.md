@@ -27,7 +27,7 @@ Monday's eight-game slate broke open at the top and blew out at the bottom. Wemb
 
 - Push Questionable players by type: VALUE players and those over 70% to play stay put; in T1-T2, PRICEY players and those under 50% to play drop two tiers; everyone else follows the current rule. Under test, 0 of 14 nights in; season backtest -7.8 a pair (24 pairs, too early to say); contest results: no clear signal.
 
-**Today in T1.** PRICEY (a tier below): Karl-Anthony Towns (ADP 4.4).
+**Today in T1.** Nothing flagged or tagged in this tier today.
 
 ## T2
 
@@ -59,7 +59,7 @@ Monday's eight-game slate broke open at the top and blew out at the bottom. Wemb
 - Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on. Under test, each window decided on its own, 0 of 14 nights in; season backtest morning -1.2 a pair (36 pairs, too early to say); afternoon +0.2 a pair (70 pairs, no clear signal); contest results: proven so far.
 - Also testing here (above): Questionable pushes by type.
 
-**Today in T2.** Domantas Sabonis (SAC) is Questionable, 57% to play on our calibrated chance: he stays in T2 in the morning and drops to T4 in the afternoon. PRICEY (a tier below): Paul George (ADP 16.3).
+**Today in T2.** Domantas Sabonis (SAC) is Questionable, 56% to play on our calibrated chance: he stays in T2 in the morning and drops to T4 in the afternoon. PRICEY (a tier below): Paul George (ADP 16.2).
 
 ## T3
 
@@ -86,7 +86,7 @@ Monday's eight-game slate broke open at the top and blew out at the bottom. Wemb
 
 - Also testing here (above): Questionable pushes by type; the less-drafted tiebreak in T2 to T4.
 
-**Today in T3.** PRICEY (a tier below): Desmond Bane (ADP 18.7), Anthony Black (ADP 19.0), Darryn Peterson (ADP 19.3), Damian Lillard (ADP 21.1), Miles Bridges (ADP 22.0), Donovan Clingan (ADP 23.2).
+**Today in T3.** PRICEY (a tier below): Anthony Black (ADP 18.9), Desmond Bane (ADP 19.0), Darryn Peterson (ADP 19.1).
 
 ## T4
 
@@ -117,7 +117,7 @@ Monday's eight-game slate broke open at the top and blew out at the bottom. Wemb
 - Stop putting PRICEY players last in afternoon T4 (VALUE players still go first). Under test, 0 of 14 nights in; season backtest +3.5 a pair (22 pairs, too early to say); contest results: no clear signal.
 - Also testing here (above): Questionable pushes by type; the less-drafted tiebreak in T2 to T4.
 
-**Today in T4.** Lauri Markkanen (UTA) is Questionable, 42% to play on our calibrated chance: he stays in T4 in the morning and drops to T5 in the afternoon. Tyler Herro (MIL) is Questionable, 32% to play on our calibrated chance: he stays in T4 in the morning and drops to T5 in the afternoon. VALUE (our projection rates him a tier above his ADP): Lauri Markkanen (ADP 26.5), Tyler Herro (ADP 28.9).
+**Today in T4.** Lauri Markkanen (UTA) is Questionable, 43% to play on our calibrated chance: he stays in T4 in the morning and drops to T5 in the afternoon. Tyler Herro (MIL) is Questionable, 32% to play on our calibrated chance: he stays in T4 in the morning and drops to T5 in the afternoon. VALUE (our projection rates him a tier above his ADP): Lauri Markkanen (ADP 26.4), Tyler Herro (ADP 29.2).
 
 ## T5
 
@@ -149,7 +149,7 @@ Monday's eight-game slate broke open at the top and blew out at the bottom. Wemb
 - In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock. Under test, 0 of 14 nights in; season backtest -3.6 a pair (677 pairs, proven so far); contest results: still to come.
 - Also testing here (above): Questionable pushes by type.
 
-**Today in T5.** Josh Hart (NYK) is Questionable, 64% to play on our calibrated chance: T5 is the bottom tier, so he stays put. VALUE (our projection rates him a tier above his ADP): Wendell Carter Jr. (ADP 29.6), VJ Edgecombe (ADP 30.6), Derrick White (ADP 31.9), Zach LaVine (ADP 35.5). Beneficiaries to watch: if Sabonis sits, Zach LaVine (ADP 35.5), Precious Achiuwa (undrafted) and Malik Monk (undrafted); if Markkanen sits, Ace Bailey (ADP 33.4) and Isaiah Collier (ADP 35.9); if Herro sits, Brayden Burries (ADP 34.3), Kyle Kuzma (ADP 35.9) and Jaime Jaquez Jr. (ADP 35.9).
+**Today in T5.** Josh Hart (NYK) is Questionable, 64% to play on our calibrated chance: T5 is the bottom tier, so he stays put. VALUE (our projection rates him a tier above his ADP): Wendell Carter Jr. (ADP 29.0), VJ Edgecombe (ADP 30.3), Derrick White (ADP 31.9), Zach LaVine (ADP 35.4). Beneficiaries to watch: if Sabonis sits, Zach LaVine (ADP 35.4), Precious Achiuwa (undrafted), De'Andre Hunter (undrafted), Malik Monk (undrafted) and Dylan Cardwell (undrafted); if Markkanen sits, Ace Bailey (ADP 33.6) and Isaiah Collier (ADP 35.8); if Herro sits, Brayden Burries (ADP 34.2).
 
 ## The draft card
 
@@ -212,7 +212,7 @@ Season tables are below; every player's night is in the ledger (analysis/nba/led
 | AM | NEWS | -2.1 (-4.7 to +0.4), 73 pairs, LEAN - |
 | PM | Bagel | +3.5, not enough yet (19) |
 | PM | Bagel+ETR | +0.3, not enough yet (34) |
-| PM | ETR | +0.6, not enough yet (14) |
+| PM | ETR | +0.7, not enough yet (14) |
 | PM | NEWS | +0.1, not enough yet (34) |
 | PM | OTHER | +1.0, not enough yet (22) |
 
