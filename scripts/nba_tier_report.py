@@ -1124,6 +1124,9 @@ def main():
     slate, lock, pod, pool, ben = today_pool(a.mirror, H)
     day = lambda d: dt.date.fromisoformat(d).strftime("%A %-m/%-d")
     md = ["# NBA morning report, %s" % day(today), "", "*Last night: %s's main slate.*" % day(last), "", "## Front page", ""]
+    if not mt or mt.get("night", "") < last:     # nba_money.py runs `|| true` in the workflow, so a failure shows only here
+        md[2:2] = ["**Contest numbers are stale:** money_tiers.json %s, last night was %s; the money step failed or didn't run." % (
+            "is from %s" % day(mt["night"]) if mt and mt.get("night") else "is missing", day(last)), ""]
     md += [hw["front"], ""] if hw.get("front") else front_page(last, H, mt, hl, (slate, lock, pod) if slate else None)
     md += biggest_bets(last, mt)
     if dt.date.fromisoformat(today).weekday() == 0:
