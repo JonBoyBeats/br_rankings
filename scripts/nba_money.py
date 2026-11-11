@@ -1428,7 +1428,10 @@ def tiers_json(N, parts):
                     "applied, season to date (top-10% and top-1% rates over the field's). A player's lift10: his holders' "
                     "top-10% rate over the window's (20+ holders). results: my teams last night (fees and winnings in "
                     "dollars, finishes as top x%). card: my teams last night at each turn (faller, reach, trust; a reach's "
-                    "direction) and holding same-position teammates or opposing stars, with how many finished top 10%.",
+                    "direction) and holding same-position teammates or opposing stars, with how many finished top 10%. card_decisions: per "
+                    "draft-card decision, last night and season to date, my teams doing it (share of my teams at that turn, or "
+                    "of all my teams) against the field's share, and the field's top-1% and top-10% lift for teams doing it "
+                    "against lift_against (one night is noisy; the season line is the read).",
            "tiers": {}}
     blocks = collections.defaultdict(lambda: {"exposure": {}, "drafted": {}, "decisions": []})
     # last night: exposure and drafted%
@@ -1529,6 +1532,61 @@ def tiers_json(N, parts):
             for k in keys:
                 blocks[k]["decisions"].append(item)
     out["tiers"] = {k: blocks[k] for k in ("1", "2", "3", "4", "5", "all", "turn", "live", "undrafted") if k in blocks}
+    out["card_decisions"] = card_decisions(N, turns, field, parts.get("split_res", {}))
+    return out
+
+
+def card_decisions(N, turns, field, split_res):
+    """Per draft-card decision, last night and season to date: how many of my teams did it (share of my eligible teams)
+    against the field's share, and the field's top-1% and top-10% lift for teams doing it against the comparison group
+    (the card's own tests: money_report.md turns, 3c and stacks). Eligible: at a turn, the teams read at that turn
+    (turn_teams); otherwise every team with a draft window and price bin."""
+    last = N[-1]["date"]
+    rk_inv = {n["date"]: {r: p for p, r in ranks_of(n).items()} for n in N}
+    at_turn = collections.defaultdict(list)            # turn -> [(date, team, info)]
+    for n, t, i in turn_teams(N):
+        at_turn[i["turn"]].append((n["date"], t, i, n))
+    every = [(n["date"], t, None, n) for n in N for ts in n["teams"].values() for t in ts if t["bin"] is not None and t["window"]]
+    swap = lambda cs: [c[:3] + ("B" if c[3] == "A" else "A",) + c[4:] for c in cs]
+    same_has = teammate_test(True, "split")[0]
+    stars_key = ("stack", "Opposing stars (their team's top 2 by projection, same game)")
+    spec = [   # (decision, register id, against, eligible teams, doing it, cases)
+        ("1/2 turn: faller", "card-fallers", "trusting ADP at the 1/2 turn", at_turn["1/2"],
+         lambda d, t, i, n: i["kind"] == "faller", (turns.get(("1/2", "fallers vs trust")) or (None, []))[1]),
+        ("1/2 turn: reach", "card-turn12-reach", "trusting ADP at the 1/2 turn", at_turn["1/2"],
+         lambda d, t, i, n: i["kind"] == "reach", (turns.get(("1/2", "a. reach vs trust")) or (None, []))[1]),
+        ("1/2 turn: trust ADP", "card-turn12-reach", "reaching at the 1/2 turn", at_turn["1/2"],
+         lambda d, t, i, n: i["kind"] == "trust", swap((turns.get(("1/2", "a. reach vs trust")) or (None, []))[1])),
+        ("2/3 turn: faller", "card-fallers", "trusting ADP at the 2/3 turn", at_turn["2/3"],
+         lambda d, t, i, n: i["kind"] == "faller", (turns.get(("2/3", "fallers vs trust")) or (None, []))[1]),
+        ("2/3 turn: reach toward projection", "card-turn23-reach-higher-proj", "trusting ADP at the 2/3 turn", at_turn["2/3"],
+         lambda d, t, i, n: i["kind"] == "reach" and "higher projection" in reach_kinds(n, t, i, rk_inv[d]),
+         (turns.get(("2/3", "b. reach toward higher projection vs trust")) or (None, []))[1]),
+        ("2/3 turn: trust ADP", "card-turn23-reach-higher-proj", "any reach at the 2/3 turn", at_turn["2/3"],
+         lambda d, t, i, n: i["kind"] == "trust", swap((turns.get(("2/3", "a. reach vs trust")) or (None, []))[1])),
+        ("Early pick + late same-position teammate", "card-same-position-teammates", "teams with no two teammates", every,
+         lambda d, t, i, n: bool(same_has(n, t)), (split_res.get("card-same-position-teammates:split") or (None, []))[1]),
+        ("Opposing stars", "card-opposing-stars", "teams without opposing stars", every,
+         lambda d, t, i, n: bool(opp_stars(n, t)), (field.get(stars_key) or (None, []))[1]),
+    ]
+    def share(rows, doing, mine):
+        rs = [r for r in rows if r[1]["mine"] == mine] if mine else rows
+        k = sum(1 for r in rs if doing(*r))
+        return {"teams": k, "of": len(rs), "share": round(k / len(rs), 3) if rs else None}
+    def lift(cs, dates):
+        a = evaluate(cs, dates)["field"]["all"] if any(c[3] == "A" for c in cs) else None
+        if not a:
+            return {"lift1": None, "lift10": None, "teams_doing": 0}
+        r = lambda x: round(a["lift"][x], 2) if a["lift"][x] is not None else None
+        return dict({"lift1": r(1), "lift10": r(10), "teams_doing": a["n"]}, **({"range80_10": [round(x, 2) for x in a["r80"]]} if "r80" in a else {}))
+    out = []
+    dates = [n["date"] for n in N]
+    for name, rid, against, rows, doing, cs in spec:
+        night = [r for r in rows if r[0] == last]
+        out.append({"decision": name, "register": rid, "lift_against": against,
+                    "last_night": dict({"mine": share(night, doing, True), "field": share(night, doing, False)},
+                                       **lift([c for c in cs if c[0] == last], [last])),
+                    "season": dict({"mine": share(rows, doing, True), "field": share(rows, doing, False)}, **lift(cs, dates))})
     return out
 
 
@@ -1975,7 +2033,32 @@ def candidates_section(N, dates):
             line, c = candidate_cell("Round %d, %s" % (rd, "explained (tag or news)" if explained else "nothing explains it"), cs, dates)
             out.append(line)
             cands.append(dict(c, question="4. fallers by round"))
+    # 5. the original rules (asked 2026-11-11)
+    out += ["", "### 5. The original rules (kept-*), asked 2026-11-11", "",
+            "Each tier's kept rule is the Tiers button's order there. A: teams holding the button's first of a decision pair "
+            "(ADP within 4, same tier) and not its second; B: the reverse. Only pairs with the same flag and no tag on either, so "
+            "the order is the rule's steps, not VALUE first / PRICEY last or a Questionable push (those have their own rows).", ""] + head
+    for rid, name, w, tiers in KEPT_RULES:
+        line, c = candidate_cell(name, pair_cases(N, (w,), tiers, button_first), dates)
+        out.append(line)
+        cands.append(dict(c, question="5. original rules", id=rid))
     return out + [""], cands
+
+
+KEPT_RULES = [   # (register id, test, window, tiers)
+    ("kept-am-t1", "AM T1: ADP, Boom deciding within 2 picks", "am", {1}),
+    ("kept-pm-t1", "PM T1: ETR", "pm", {1}),
+    ("kept-am-t2", "AM T2: ADP straight", "am", {2}),
+    ("kept-am-middle", "AM T3/T4: Proj, ADP deciding within 3 points", "am", {3, 4}),
+    ("kept-pm-t3", "PM T3: ETR, ties to ADP then Boom", "pm", {3}),
+]
+
+
+def button_first(a, b):
+    """The button's first of a pair with the same flag and no tag on either (else None)."""
+    if a["flag"] != b["flag"] or tagged(a) or tagged(b) or built(a) is None or built(b) is None or built(a) == built(b):
+        return None
+    return a if built(a) < built(b) else b
 
 
 if __name__ == "__main__":
