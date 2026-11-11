@@ -1430,8 +1430,9 @@ def tiers_json(N, parts):
                     "dollars, finishes as top x%). card: my teams last night at each turn (faller, reach, trust; a reach's "
                     "direction) and holding same-position teammates or opposing stars, with how many finished top 10%. card_decisions: per "
                     "draft-card decision, last night and season to date, my teams doing it (share of my teams at that turn, or "
-                    "of all my teams) against the field's share, and the field's top-1% and top-10% lift for teams doing it "
-                    "against lift_against (one night is noisy; the season line is the read).",
+                    "of all my teams) against the field's share, and vs_field_top1 / vs_field_top10: the top-1% and top-10% rate "
+                    "of the field's teams doing it over the whole field's rate in their contest (every team counts; no price "
+                    "matching, so a cheaper or pricier build's edge is in it). One night is noisy; the season line is the read.",
            "tiers": {}}
     blocks = collections.defaultdict(lambda: {"exposure": {}, "drafted": {}, "decisions": []})
     # last night: exposure and drafted%
@@ -1532,61 +1533,55 @@ def tiers_json(N, parts):
             for k in keys:
                 blocks[k]["decisions"].append(item)
     out["tiers"] = {k: blocks[k] for k in ("1", "2", "3", "4", "5", "all", "turn", "live", "undrafted") if k in blocks}
-    out["card_decisions"] = card_decisions(N, turns, field, parts.get("split_res", {}))
+    out["card_decisions"] = card_decisions(N)
     return out
 
 
-def card_decisions(N, turns, field, split_res):
-    """Per draft-card decision, last night and season to date: how many of my teams did it (share of my eligible teams)
-    against the field's share, and the field's top-1% and top-10% lift for teams doing it against the comparison group
-    (the card's own tests: money_report.md turns, 3c and stacks). Eligible: at a turn, the teams read at that turn
-    (turn_teams); otherwise every team with a draft window and price bin."""
+def card_decisions(N):
+    """Per draft-card decision, last night and season to date: my teams doing it (share of my eligible teams) against the
+    field's share, and the top-1% and top-10% rate of the field's teams doing it as a multiple of the whole field's rate in
+    their contest (every team in it counts; no price matching). Eligible: at a turn, the teams read at that turn
+    (turn_teams); otherwise every team with a draft window and price bin. At each turn faller, reach and trust ADP cover
+    every turn team; at the 2/3 turn the reaches split into toward the higher projection and the rest."""
     last = N[-1]["date"]
     rk_inv = {n["date"]: {r: p for p, r in ranks_of(n).items()} for n in N}
-    at_turn = collections.defaultdict(list)            # turn -> [(date, team, info)]
+    at_turn = collections.defaultdict(list)            # turn -> [(date, team, info, night)]
     for n, t, i in turn_teams(N):
         at_turn[i["turn"]].append((n["date"], t, i, n))
     every = [(n["date"], t, None, n) for n in N for ts in n["teams"].values() for t in ts if t["bin"] is not None and t["window"]]
-    swap = lambda cs: [c[:3] + ("B" if c[3] == "A" else "A",) + c[4:] for c in cs]
+    rate = {}                                          # (date, contest id) -> {x: the whole field's top-x% rate}
+    for n in N:
+        for cid, ts in n["teams"].items():
+            rate[(n["date"], cid)] = {x: sum(t["top"][x] for t in ts) / len(ts) for x in (1, 10)} if ts else None
     same_has = teammate_test(True, "split")[0]
-    stars_key = ("stack", "Opposing stars (their team's top 2 by projection, same game)")
-    spec = [   # (decision, register id, against, eligible teams, doing it, cases)
-        ("1/2 turn: faller", "card-fallers", "trusting ADP at the 1/2 turn", at_turn["1/2"],
-         lambda d, t, i, n: i["kind"] == "faller", (turns.get(("1/2", "fallers vs trust")) or (None, []))[1]),
-        ("1/2 turn: reach", "card-turn12-reach", "trusting ADP at the 1/2 turn", at_turn["1/2"],
-         lambda d, t, i, n: i["kind"] == "reach", (turns.get(("1/2", "a. reach vs trust")) or (None, []))[1]),
-        ("1/2 turn: trust ADP", "card-turn12-reach", "reaching at the 1/2 turn", at_turn["1/2"],
-         lambda d, t, i, n: i["kind"] == "trust", swap((turns.get(("1/2", "a. reach vs trust")) or (None, []))[1])),
-        ("2/3 turn: faller", "card-fallers", "trusting ADP at the 2/3 turn", at_turn["2/3"],
-         lambda d, t, i, n: i["kind"] == "faller", (turns.get(("2/3", "fallers vs trust")) or (None, []))[1]),
-        ("2/3 turn: reach toward projection", "card-turn23-reach-higher-proj", "trusting ADP at the 2/3 turn", at_turn["2/3"],
-         lambda d, t, i, n: i["kind"] == "reach" and "higher projection" in reach_kinds(n, t, i, rk_inv[d]),
-         (turns.get(("2/3", "b. reach toward higher projection vs trust")) or (None, []))[1]),
-        ("2/3 turn: trust ADP", "card-turn23-reach-higher-proj", "any reach at the 2/3 turn", at_turn["2/3"],
-         lambda d, t, i, n: i["kind"] == "trust", swap((turns.get(("2/3", "a. reach vs trust")) or (None, []))[1])),
-        ("Early pick + late same-position teammate", "card-same-position-teammates", "teams with no two teammates", every,
-         lambda d, t, i, n: bool(same_has(n, t)), (split_res.get("card-same-position-teammates:split") or (None, []))[1]),
-        ("Opposing stars", "card-opposing-stars", "teams without opposing stars", every,
-         lambda d, t, i, n: bool(opp_stars(n, t)), (field.get(stars_key) or (None, []))[1]),
+    proj = lambda d, t, i, n: "higher projection" in reach_kinds(n, t, i, rk_inv[d])
+    spec = [   # (decision, register id, eligible teams, doing it)
+        ("1/2 turn: faller", "card-fallers", at_turn["1/2"], lambda d, t, i, n: i["kind"] == "faller"),
+        ("1/2 turn: reach", "card-turn12-reach", at_turn["1/2"], lambda d, t, i, n: i["kind"] == "reach"),
+        ("1/2 turn: trust ADP", "card-turn12-reach", at_turn["1/2"], lambda d, t, i, n: i["kind"] == "trust"),
+        ("2/3 turn: faller", "card-fallers", at_turn["2/3"], lambda d, t, i, n: i["kind"] == "faller"),
+        ("2/3 turn: reach toward projection", "card-turn23-reach-higher-proj", at_turn["2/3"],
+         lambda d, t, i, n: i["kind"] == "reach" and proj(d, t, i, n)),
+        ("2/3 turn: reach, not toward projection", "card-turn23-reach-higher-proj", at_turn["2/3"],
+         lambda d, t, i, n: i["kind"] == "reach" and not proj(d, t, i, n)),
+        ("2/3 turn: trust ADP", "card-turn23-reach-higher-proj", at_turn["2/3"], lambda d, t, i, n: i["kind"] == "trust"),
+        ("Early pick + late same-position teammate", "card-same-position-teammates", every, lambda d, t, i, n: bool(same_has(n, t))),
+        ("Opposing stars", "card-opposing-stars", every, lambda d, t, i, n: bool(opp_stars(n, t))),
     ]
-    def share(rows, doing, mine):
-        rs = [r for r in rows if r[1]["mine"] == mine] if mine else rows
-        k = sum(1 for r in rs if doing(*r))
-        return {"teams": k, "of": len(rs), "share": round(k / len(rs), 3) if rs else None}
-    def lift(cs, dates):
-        a = evaluate(cs, dates)["field"]["all"] if any(c[3] == "A" for c in cs) else None
-        if not a:
-            return {"lift1": None, "lift10": None, "teams_doing": 0}
-        r = lambda x: round(a["lift"][x], 2) if a["lift"][x] is not None else None
-        return dict({"lift1": r(1), "lift10": r(10), "teams_doing": a["n"]}, **({"range80_10": [round(x, 2) for x in a["r80"]]} if "r80" in a else {}))
+    def read(rows, doing):
+        out = {}
+        for who, rs in (("mine", [r for r in rows if r[1]["mine"]]), ("field", rows)):
+            k = sum(1 for r in rs if doing(*r))
+            out[who] = {"teams": k, "of": len(rs), "share": round(k / len(rs), 3) if rs else None}
+        did = [r for r in rows if doing(*r) and rate.get((r[0], r[1]["contest"]["contest_id"]))]
+        for x in (1, 10):
+            exp = sum(rate[(r[0], r[1]["contest"]["contest_id"])][x] for r in did)
+            out["vs_field_top%d" % x] = round(sum(r[1]["top"][x] for r in did) / exp, 2) if exp else None
+        return out
     out = []
-    dates = [n["date"] for n in N]
-    for name, rid, against, rows, doing, cs in spec:
-        night = [r for r in rows if r[0] == last]
-        out.append({"decision": name, "register": rid, "lift_against": against,
-                    "last_night": dict({"mine": share(night, doing, True), "field": share(night, doing, False)},
-                                       **lift([c for c in cs if c[0] == last], [last])),
-                    "season": dict({"mine": share(rows, doing, True), "field": share(rows, doing, False)}, **lift(cs, dates))})
+    for name, rid, rows, doing in spec:
+        out.append({"decision": name, "register": rid, "last_night": read([r for r in rows if r[0] == last], doing),
+                    "season": read(rows, doing)})
     return out
 
 
