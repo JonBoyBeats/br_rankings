@@ -42,16 +42,27 @@ minutes. In order:
   today. The pipeline only if something is wrong.
 - **Monday: decisions for today** (Mondays only): each proposal as a plain-English decision with a recommendation and
   its evidence in a sentence or two (see "Monday proposals" below). Nothing changes without a yes.
-- **In every tier**: the rules all tiers share, said once (the cap, the flags, the Q-tag handling, what points and
-  contest results mean).
-- **T1 to T5**, about a phone screen each: the rules we played (morning and afternoon, with their status), did they
-  work last night (your board against the straight orders on the tier's head-to-head pairs, and the season), your
-  moves (moves off the button by window, the biggest, and your logged calls with their reasons), the player recap
-  (the ledger's notes; scratches and where the swaps landed), the contest view (your exposure against the field's,
-  flagged players' draft rates, who paid or hurt in the standings, season decisions with a signal), what we're leaning
-  toward (switches on trial and ideas under test) and today in the tier (Q-tags, VALUE and PRICEY, beneficiaries).
-- **The draft card**: how the turns went on your teams last night, and where contest results stand on each card rule.
-- **Back page**: the model (ours against ETR, the projection hypotheses, decisions due), data status, links.
+- **How to read the statuses**: the five statuses, a line each. Every rule in the report carries one of them and
+  nothing else: "locked in" (proven on points and in contest results), "in use, on trial" (adopted; with "night N of
+  14" where its 14-night check runs), "in use, original rule" (never beaten, not yet graded by contest results),
+  "being tested" (not in use, graded in the background), "retired".
+- **In every tier**: the rules all tiers share, said once, and what a close call and contest results mean.
+- **T1 to T4**: the rules we played (with their statuses); **who to trust in this tier** (projection straight against
+  ADP on the tier's close calls: last night in one sentence, the season in one, ending in what to do); **your moves**
+  (each move off the button: who over whom, why (the ETR or Bagel note, news, your own read), what each scored, right
+  or wrong; then the week's pattern by source); the player recap; the **contest view** (whose holders made the top
+  10% at outsized rates, what the top-10% teams held that you were light on and the reverse, and the kind of pick
+  that has paid on the season against your share of it, ending in a lean); **what we're leaning toward** (each test
+  in plain words: what it is, where it stands, what it means for you today); today in the tier.
+- **T5 is a menu**: graded by exposure, not order: your T5 picks' average score against the field's, your overweights
+  and how each scored against the T5 average, and late-news hedges (a beneficiary held for a tagged teammate) apart.
+- **The draft card**: each card decision: your share of teams last night against your season average, and how the
+  field's teams that did it finished (top 1% and top 10% against the field's rate), last night and on the season. The
+  field's numbers come from the contest side in money_tiers.json "card_field": {card key: {"mine_season": share,
+  "night": {"top1": x, "top10": x}, "season": {"top1": x, "top10": x}}}; until they land, the line says so.
+- **Back page**: the model (ours against ETR), each projection hypothesis in a plain sentence (what it does to the
+  projection, what adopting it would change, where it stands; `plain`, `adopt_plain` and `retired_plain` in
+  hypotheses.json), decisions due, data status, links.
 
 **Words, not codes.** The report never shows register ids, rule codes or verdict labels. Every verdict says which way:
 RULE is "proven to help so far" or "proven to hurt so far", LEAN "an early sign it helps" or "an early sign it hurts"

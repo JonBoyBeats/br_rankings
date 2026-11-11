@@ -499,97 +499,244 @@ def money_short(v):
     return said((v or "pending").split(" (")[0].split(";")[0].strip())
 
 
-def rules_played(t, reg, by_reg, shadow, leans):
-    def status(rid):
-        st = by_reg.get(rid, "kept")
-        if st == "provisional":
-            c = next((c for c in shadow if c["id"] == rid or SHADOW_REG.get(c["id"]) == rid), None)
-            words = "on trial%s" % (", %d of %d nights in" % (min(c["forward_nights"], FORWARD_NIGHTS), FORWARD_NIGHTS) if c else "")
-        else:
-            words = {"kept": "kept", "adopted": "adopted",
-                     "RULE": "proven to help so far on points"}.get(st, st)
-        return "%s; contest results %s" % (words, money_short((reg.get(rid) or {}).get("money_verdict")))
-    am, pm = SWITCHES[t]
-    s = ["%s (%s). %s (%s)." % (RULE_WORDS[(t, "am")], status(am), RULE_WORDS[(t, "pm")], status(pm))]
-    if t in TIEBREAKS:
-        s.append("%s (%s)." % (TIEBREAKS[t][1], status(TIEBREAKS[t][0])))
-    ms = lambda rid: money_short((reg.get(rid) or {}).get("money_verdict"))
-    if t == 1 and "pricey-flags:T1" in reg:
-        s.append("PRICEY players go last here as everywhere, and in T1 contest results read it on its own: %s." % ms("pricey-flags:T1"))
-    if t >= 3:
-        s.append("VALUE players go first in this tier (contest results: %s)." % ms("value-up-middle-t5"))
-    return [" ".join(x for x in s if x), ""]
+STATUS_KEY = [
+    ("Locked in", "proven on points and in contest results."),
+    ("In use, on trial", "adopted and in use; where its 14-night check is running, the night it's on (\"night 3 of 14\")."),
+    ("In use, original rule", "the rule we started with: nothing has beaten it, and contest results haven't graded it yet."),
+    ("Being tested", "not in use; graded in the background against what is."),
+    ("Retired", "taken out."),
+]
+RULE_MAIN = {(1, "am"): "adp", (1, "pm"): "proj", (2, "am"): "adp", (2, "pm"): "adp", (3, "am"): "proj", (3, "pm"): "proj",
+             (4, "am"): "proj", (4, "pm"): "adp", (5, "am"): "proj", (5, "pm"): "adp"}   # which straight order each rule mostly follows
+KINDS = {   # tier: [(kind, register id, flag or tag the exposure players carry, how it's said)]
+    1: [("PRICEY", "pricey-flags:T1", "PRICEY", "putting PRICEY players last")],
+    2: [("less drafted", "leverage-t2-t4", None, "taking the less drafted of two close players"), ("PRICEY", "pricey-flags", "PRICEY", "putting PRICEY players last")],
+    3: [("VALUE", "value-up-middle-t5", "VALUE", "taking VALUE players first"), ("less drafted", "leverage-t2-t4", None, "taking the less drafted of two close players"),
+        ("PRICEY", "pricey-flags", "PRICEY", "putting PRICEY players last")],
+    4: [("VALUE", "value-up-middle-t5", "VALUE", "taking VALUE players first"), ("less drafted", "leverage-t2-t4", None, "taking the less drafted of two close players"),
+        ("PRICEY", "pricey-flags", "PRICEY", "putting PRICEY players last")],
+    5: [("VALUE", "value-up-middle-t5", "VALUE", "taking VALUE players first"), ("less drafted", "ownership-tiebreak-t5", None, "taking the less drafted of two close players"),
+        ("beneficiary", "pm-t5-beneficiary", None, "afternoon beneficiary picks"), ("Q-tag", "q-tag-raises", "Q", "raising Questionable players"),
+        ("PRICEY", "pricey-flags", "PRICEY", "putting PRICEY players last")],
+}
+CARD = [   # (money_tiers "card" key, what you did)
+    ("1/2 faller", "took a faller at the 1/2 turn"), ("1/2 reach", "reached at the 1/2 turn"), ("1/2 trust", "trusted ADP at the 1/2 turn"),
+    ("2/3 faller", "took a faller at the 2/3 turn"), ("2/3 reach: higher projection", "reached toward the higher projection at the 2/3 turn"),
+    ("2/3 trust", "trusted ADP at the 2/3 turn"), ("same-position teammates", "paired an early pick with a late same-position teammate"),
+    ("opposing stars", "paired stars from opposite sides of one game"),
+]
 
 
-def everywhere(reg):
-    """The rules every tier shares, said once."""
-    ms = lambda rid: money_short((reg.get(rid) or {}).get("money_verdict"))
-    return ["**In every tier.** A player's tier is his ADP tier, moved at most one tier toward our projection's (contest results: %s). "
-            "PRICEY players (a tier below their ADP on our projection) go last in their tier (%s); VALUE players go first in T3 to T5. "
-            "A Questionable player keeps his tier in the morning (%s) and drops two in the afternoon (%s). Points are scored on "
-            "head-to-head pairs, two players in a tier within 4 picks of ADP: how much more the chosen one scored. Contest results "
-            "are how often teams that followed a rule made the top 10%%." % (
-                ms("one-tier-cap"), ms("pricey-flags"), ms("am-questionable-no-push"), ms("pm-questionable-back-two")), ""]
+def status_of(rid, by_reg, reg, shadow):
+    """One of the five statuses for a rule in use, by its register id."""
+    st = by_reg.get(rid)
+    if st is None and (rid or "").startswith("kept-"):
+        return "in use, original rule"
+    m = (reg.get(rid) or {}).get("money_verdict")
+    if st == "RULE" and lab_words(m) == "proven so far" and lab_side(m) > 0:
+        return "locked in"
+    c = next((c for c in shadow if c["id"] == rid or SHADOW_REG.get(c["id"]) == rid or (rid == "one-tier-cap" and c["id"] == "one-tier-cap")), None)
+    return "in use, on trial" + (", night %d of %d" % (min(c["forward_nights"], FORWARD_NIGHTS), FORWARD_NIGHTS) if c else "")
 
 
-def did_they_work(H, last, t):
-    """Last night in a sentence or two, then one season line: the strongest read of your board in this tier."""
-    s = []
-    for w, label in (("am", "In the morning"), ("pm", "In the afternoon")):
-        rn = [r for r in H if r["date"] == last and r["window"] == w]
-        if not rn:
-            continue
-        _, _, h2h, _, _, _, _ = G.grade([r for r in H if r["date"] == last], rn[0]["pod"], w, None, [("T", {t}, None)])[0]
-        bits = []
-        for src in (("Ours", "ADP") if w == "am" else ("ETR", "ADP")):
-            g = h2h[src][0].get(last, [])
-            if len(g) == 1:
-                bits.append("%s %s on the only pair" % ("beat" if g[0] > 0 else "lost to", SRC_WORDS[src]))
-            elif g:
-                bits.append("beat %s on %d of %d pairs" % (SRC_WORDS[src], sum(1 for x in g if x > 0), len(g)))
-        if bits:
-            s.append("%s your board %s." % (label, ", and ".join(bits)))
-    if not s:
-        s.append("Your board matched the straight orders on every pair here last night.")
-    best = None
-    for w, label, main in (("am", "morning", "Ours"), ("pm", "afternoon", "ETR")):
-        _, _, h2h, _, _, _, _ = G.grade(H, "6", w, "primary", [("T", {t}, None)])[0]
-        for src in (main, "ADP"):
-            if h2h[src][0]:
-                n, mean, lo, hi, lab = G.verdict(h2h[src][0], h2h[src][1])
-                rank = {"proven so far": 2, "an early sign": 1}.get(lab_words(lab), 0)
-                if best is None or (rank, n) > (best[0], best[1]):
-                    best = (rank, n, mean, lab, label, src)
-    if best and best[0]:
-        rank, n, mean, lab, label, src = best
-        s.append("On the season your %s board %s %s here: %s (%+.1f points a pair, %d pairs)." % (
-            label, "beats" if mean > 0 else "trails", SRC_WORDS[src], said(lab, mean), mean, n))
-    elif best:
-        s.append("On the season nothing here is clear yet%s." % (" (only %d pairs)" % best[1] if best[1] < 40 else ""))
-    return [" ".join(s), ""]
+def status_key():
+    return ["**How to read the statuses.**", ""] + ["- **%s**: %s" % kv for kv in STATUS_KEY] + [""]
 
 
-def your_moves(last, t, names_in, hand_moves):
-    """Your moves off the button by window, your one most telling logged call, and the morning file's reason."""
-    tk = [r for r in csv.DictReader(open(os.path.join(REP, "takes_history.csv"))) if r["date"] == last and int(r["tier"]) == t]
-    bits = []
-    for w, label in (("am", "morning"), ("pm", "afternoon")):
-        g = [float(r["gain"]) for r in tk if r["window"] == w]
+def who_to_trust(H, last, t):
+    """Projection straight against ADP straight on this tier's close calls: last night in a sentence, the season in one,
+    ending in what to do."""
+    def calls(rows, w):
+        per = collections.defaultdict(list)
+        pl = collections.defaultdict(list)
+        by = collections.defaultdict(list)
+        for r in rows:
+            by[r["date"]].append(r)
+        for d, rs in by.items():
+            for x, y in G.pairs(rs, {t}):
+                px, py = num(x["proj"]), num(y["proj"])
+                if px is None or py is None or px == py or G.adp(x) == G.adp(y) or x["slot"] == y["slot"]:
+                    continue
+                pf = x if px > py else y
+                if pf is (x if G.adp(x) < G.adp(y) else y):
+                    continue
+                o = y if pf is x else x
+                g = pf["slot"] - o["slot"]
+                per[d].append(g)
+                pl[x["player_id"]].append(g)
+                pl[y["player_id"]].append(g)
+        return per, pl
+    who = {"am": "our projection", "pm": "ETR"}
+    s, night = [], []
+    for w in ("am", "pm"):
+        rows = [r for r in H if r["date"] == last and r["window"] == w and int(r["tier"]) == t]
+        per, _ = calls(rows, w)
+        g = per.get(last, [])
         if len(g) == 1:
-            bits.append("your only %s move off the button was %s (%+.1f points)" % (label, "right" if g[0] > 0 else "wrong", g[0]))
+            night.append("%s's pick %s the only close call%s" % (who[w], "won" if g[0] > 0 else "lost", " in the morning" if w == "am" else " in the afternoon"))
         elif g:
-            bits.append("%d %s moves off the button, %d right (%+.1f points a move)" % (len(g), label, sum(1 for x in g if x > 0), sum(g) / len(g)))
-    s = [(bits[0][0].upper() + bits[0][1:] + ("; " + bits[1] if len(bits) > 1 else "") + ".") if bits else "No moves off the button here."]
-    calls = [r for r in csv.DictReader(open(os.path.join(REP, "misses.csv"))) if r["date"] == last and r["kind"] in ("am_call", "pm_call")
-             and r["player"] in names_in]
-    calls.sort(key=lambda r: r["closer"] != "wrong")
-    if calls and not hand_moves:
-        r = calls[0]
-        s.append("Your %s call on %s was %s: %s." % ("morning" if r["kind"] == "am_call" else "afternoon", r["player"], r["closer"],
-                                                   (r["note"].split("; ", 1)[1] if "; " in r["note"] else r["note"]).strip().rstrip(".")))
-    if hand_moves:
-        s.append(hand_moves)
+            night.append("%s's pick scored more %d times out of %d%s" % (who[w], sum(1 for x in g if x > 0), len(g),
+                                                                      " in the morning" if w == "am" else " in the afternoon"))
+    s.append("Last night, when %s disagreed with ADP about two close players here, %s." % (
+        "our projection or ETR", "; ".join(night)) if night else "Last night the projection and ADP agreed on every close call here.")
+    best = None
+    for w in ("am", "pm"):
+        rows = [r for r in H if r["pod"] == "6" and r["window"] == w and (w == "pm" or r["sample"] == "primary") and int(r["tier"]) == t]
+        per, pl = calls(rows, w)
+        if not per:
+            continue
+        n, mean, _, _, lab = G.verdict(per, pl)
+        rank = {"proven so far": 2, "an early sign": 1}.get(lab_words(lab), 0)
+        if best is None or (rank, n) > (best[0], best[1]):
+            best = (rank, n, mean, lab, w)
+    if not best:
+        return [" ".join(s), ""]
+    rank, n, mean, lab, w = best
+    when = "in the morning" if w == "am" else "in the afternoon"
+    if not rank:
+        s.append("On the season there's no clear answer here yet (%s close calls): nothing to change." % n)
+    else:
+        win, lose = (who[w], "ADP") if mean > 0 else ("ADP", who[w])
+        follows = RULE_MAIN[(t, w)] == ("proj" if mean > 0 else "adp")
+        s.append("On the season, trusting %s over %s here %s gains about %.0f points per close call (%s): %s." % (
+            win, lose, when, abs(mean), said(lab, abs(mean)), "keep doing it, the rule already does" if follows
+            else "the rule leans the other way here, so this is worth a test"))
     return [" ".join(s), ""]
+
+
+def take_note(date, r):
+    """Why a take was made, in words: the note it followed, or news, or your own read."""
+    src = r.get("source") or "OTHER"
+    if src == "NEWS":
+        return "on news"
+    if src == "OTHER":
+        return "your own read"
+    words = []
+    for who, f in (("ETR", "etr_matchups"), ("Bagel", "zakarian")):
+        if who not in src:
+            continue
+        p = os.path.join(HERE, "analysis", "nba", "takes", "%s_%s.csv" % (date, f))
+        notes = {x["player"]: x["stance"] for x in csv.DictReader(open(p))} if os.path.exists(p) else {}
+        up, down = notes.get(r["you_first"]), notes.get(r["button_first"])
+        if up in ("Great", "Good", "Like", "Lean"):
+            words.append("%s %s %s" % (who, {"Great": "called", "Good": "called", "Like": "liked", "Lean": "leaned to"}[up],
+                                       short(r["you_first"]) + (" a %s matchup" % up.lower() if up in ("Great", "Good") else "")))
+        elif down in ("Bad", "Fade"):
+            words.append("%s %s %s" % (who, "called" if down == "Bad" else "faded", short(r["button_first"]) + (" a bad matchup" if down == "Bad" else "")))
+    return " and ".join(words) or TAKE_SRC.get(src, src)
+
+
+def t5_menu(H, last, mt):
+    """T5 graded as a menu: your share of each T5 player against the field's, how he scored against the T5 average, and
+    whether your overweights beat the field's T5 picks; late-news hedges apart."""
+    blk = ((mt or {}).get("tiers") or {}).get("5") or {}
+    if not blk.get("exposure") or (mt or {}).get("night") != last:
+        return ["No contest data for T5 last night.", ""]
+    rows = {}
+    for r in H:
+        if r["date"] == last:
+            rows.setdefault(r["name"], {})[r["window"]] = r
+    out = []
+    hedges = []
+    for w, label in (("am", "morning"), ("pm", "afternoon")):
+        e = blk["exposure"].get(w)
+        if not e or not e.get("my_teams"):
+            continue
+        ps = [dict(x, act=rows.get(x["name"], {}).get(w, {}).get("slot")) for x in e.get("players", [])]
+        ps = [x for x in ps if x["act"] is not None]
+        if not ps:
+            continue
+        fw = sum(x["field"] for x in ps)
+        mw = sum(x["mine"] or 0 for x in ps)
+        avg_f = sum(x["field"] * x["act"] for x in ps) / fw if fw else 0
+        avg_m = sum((x["mine"] or 0) * x["act"] for x in ps) / mw if mw else None
+        # a hedge: a T5 player whose teammate was tagged Q/D/GTD at this window's record
+        tagged = {}
+        for n, by in rows.items():
+            r = by.get(w)
+            if r and QT.match(r["tag"] or ""):
+                tagged.setdefault(r["team"], []).append(r)
+        over = sorted([x for x in ps if (x["mine"] or 0) - x["field"] >= 0.05], key=lambda x: x["field"] - (x["mine"] or 0))
+        hedge_names = set()
+        for x in over:
+            r = rows[x["name"]][w]
+            tms = [tg for tg in tagged.get(r["team"], []) if tg["name"] != x["name"]]
+            if tms:
+                hedge_names.add(x["name"])
+                tg = tms[0]
+                sat = tg["scratched"] == "1" or num(tg["min"]) == 0
+                hedges.append("%s, on %s of your %s teams (%s of the field) for %s (%s at the lock): %s." % (
+                    x["name"], pct(x["mine"]), label, pct(x["field"]), tg["name"], tg["tag"],
+                    "%s sat and %s scored %.0f, so the hedge %s" % (short(tg["name"]), short(x["name"]), x["act"], "paid" if x["act"] >= avg_f else "didn't pay")
+                    if sat else "%s played, so the hedge wasn't needed; %s scored %.0f" % (short(tg["name"]), short(x["name"]), x["act"])))
+        bets = [x for x in over if x["name"] not in hedge_names][:3]
+        out.append("Your %s teams' T5 picks averaged %s points, the field's %.0f%s." % (
+            label, "%.0f" % avg_m if avg_m is not None else "-", avg_f,
+            ": your overweights beat the field's T5 picks" if avg_m is not None and avg_m > avg_f else
+            ": the field's T5 picks did better" if avg_m is not None else ""))
+        for x in bets:
+            out.append("- **%s**, %s of yours against %s of the field: scored %.0f, %s the T5 average." % (
+                x["name"], pct(x["mine"]), pct(x["field"]), x["act"],
+                "%.0f over" % (x["act"] - avg_f) if x["act"] >= avg_f else "%.0f under" % (avg_f - x["act"])))
+        out.append("")
+    if hedges:
+        out += ["**Late-news hedges.**", ""] + ["- " + h for h in hedges] + [""]
+    return out or ["No contest data for T5 last night.", ""]
+
+
+def rules_played(t, reg, by_reg, shadow, leans):
+    am, pm = SWITCHES[t]
+    st = lambda rid: status_of(rid, by_reg, reg, shadow)
+    s = ["%s (%s). %s (%s)." % (RULE_WORDS[(t, "am")], st(am), RULE_WORDS[(t, "pm")], st(pm))]
+    if t in TIEBREAKS:
+        s.append("%s (%s)." % (TIEBREAKS[t][1], st(TIEBREAKS[t][0])))
+    if t >= 3:
+        s.append("VALUE players go first in this tier (%s)." % st("value-up-middle-t5"))
+    if t == 5:
+        s.append("In the afternoon you also raise beneficiaries, a player whose teammate is tagged or out (%s)." % st("pm-t5-beneficiary"))
+    return [" ".join(s), ""]
+
+
+def everywhere(reg, by_reg, shadow):
+    """The rules every tier shares, said once."""
+    st = lambda rid: status_of(rid, by_reg, reg, shadow)
+    return ["**In every tier.** A player's tier is his ADP tier, moved at most one tier toward our projection's (%s). PRICEY "
+            "players (a tier below their ADP on our projection) go last in their tier (in use, on trial); VALUE players go first in "
+            "T3 to T5. A Questionable player keeps his tier in the morning (%s) and drops two in the afternoon (%s). A close call "
+            "is two players in the same tier within 4 picks of ADP; points on it are how much more the chosen one scored. Contest "
+            "results are how often teams that followed a rule made the top 10%%." % (
+                st("one-tier-cap"), st("am-questionable-no-push"), st("pm-questionable-back-two")), ""]
+
+
+def your_moves(H, last, t, hand_moves):
+    """Each move off the button in this tier: who over whom, why, what each scored, right or wrong; then the week's
+    pattern by source."""
+    slot = {(r["date"], r["window"], r["name"]): r for r in H}
+    def scored(d, w, n):
+        r = slot.get((d, w, n))
+        if not r:
+            return "?"
+        return "scratched, his swap %.0f" % r["slot"] if r["scratched"] == "1" else "%.0f" % r["slot"]
+    tk = list(csv.DictReader(open(os.path.join(REP, "takes_history.csv"))))
+    md = []
+    for r in [r for r in tk if r["date"] == last and int(r["tier"]) == t]:
+        g = float(r["gain"])
+        md.append("- %s: **%s** ahead of **%s**, %s. %s scored %s, %s %s: %s." % (
+            "Morning" if r["window"] == "am" else "Afternoon", short(r["you_first"]), short(r["button_first"]), take_note(last, r),
+            short(r["you_first"]), scored(last, r["window"], r["you_first"]), short(r["button_first"]),
+            scored(last, r["window"], r["button_first"]), "right" if g > 0 else "wrong" if g < 0 else "even"))
+    week = (dt.date.fromisoformat(last) - dt.timedelta(days=6)).isoformat()
+    by = collections.defaultdict(lambda: [0, 0])
+    for r in tk:
+        if week <= r["date"] <= last and int(r["tier"]) == t:
+            k = {"NEWS": "on news", "OTHER": "on your own reads"}.get(r.get("source") or "OTHER", "off %s notes" % (r.get("source") or "").replace("+", " and "))
+            by[k][0] += float(r["gain"]) > 0
+            by[k][1] += 1
+    head = "No moves off the button here last night." if not md else ""
+    pat = ("This week in T%d, your moves %s." % (t, "; ".join("%s went %d for %d" % (k, a, b) for k, (a, b) in
+                                                           sorted(by.items(), key=lambda kv: -kv[1][1])))) if by else ""
+    md = [m.replace("Jr..", "Jr.") for m in md]
+    return [x for x in [head] if x] + md + ([""] if md else []) + [x for x in (pat, hand_moves or "") if x] + [""]
 
 
 def recap(H, last, t):
@@ -619,47 +766,86 @@ def recap(H, last, t):
     return (md or ["Everyone here played to his number."]) + [""], {r["name"] for r in rows}
 
 
-def contest_view(t, mt):
-    """One sentence: your exposure here against the field's in your bigger window, and who paid or hurt."""
+def contest_view(t, mt, reg):
+    """Who paid in this tier, what the top-10% teams held that you were light on (and the reverse), and the kind of pick
+    that has paid on the season against your share of it last night, ending in a lean."""
     blk = ((mt or {}).get("tiers") or {}).get(str(t)) or {}
     ex = [(w, e) for w, e in (blk.get("exposure") or {}).items() if e and e.get("my_teams")]
     if not ex:
         return ["No contest data for this tier last night.", ""]
     w, e = max(ex, key=lambda x: x[1]["my_teams"])
-    ppt = e.get("picks_per_team") or {}
+    label = {"am": "morning", "pm": "afternoon"}[w]
     ps = [x for x in e.get("players", []) if x.get("mine") is not None]
-    over = [x for x in sorted(ps, key=lambda x: x["field"] - x["mine"])[:1] if x["mine"] - x["field"] >= 0.05]
-    ls = [x for x in e.get("players", []) if x.get("lift10") is not None]
-    top = max(ls, key=lambda x: x["lift10"], default=None)
-    s = "Your %s teams took %.1f T%d players each to the field's %.1f%s%s." % (
-        {"am": "morning", "pm": "afternoon"}[w], ppt.get("mine") or 0, t, ppt.get("field") or 0,
-        ", heaviest on %s (%s of yours, %s of the field)" % (over[0]["name"], pct(over[0]["mine"]), pct(over[0]["field"])) if over else "",
-        "; %s holders made the top 10%% %.1f times as often as the field" % (poss(top["name"]), top["lift10"]) if top and top["lift10"] >= 1.3 else "")
-    return [s, ""]
+    s = []
+    paid = sorted([x for x in ps if (x.get("lift10") or 0) >= 1.3], key=lambda x: -x["lift10"])[:2]
+    if paid:
+        s.append("Holders of %s made the top 10%% at %s the field's rate." % (
+            " and ".join(x["name"] for x in paid), " and ".join("%.1f times" % x["lift10"] for x in paid)))
+    gap = [dict(x, top=x["field"] * x["lift10"]) for x in ps if x.get("lift10") is not None]
+    light = max(gap, key=lambda x: x["top"] - x["mine"], default=None)
+    heavy = max(gap, key=lambda x: x["mine"] - x["top"], default=None)
+    bits = []
+    if light and light["top"] - light["mine"] >= 0.05:
+        bits.append("the top-10%% teams held %s on %s against your %s" % (light["name"], pct(light["top"]), pct(light["mine"])))
+    if heavy and heavy["mine"] - heavy["top"] >= 0.05:
+        bits.append("you held %s on %s against %s of the top-10%% teams" % (heavy["name"], pct(heavy["mine"]), pct(heavy["top"])))
+    if bits:
+        s.append("In your %s window, %s." % (label, "; ".join(bits)))
+    best = None
+    for kind, rid, mark, words in KINDS[t]:
+        m = (reg.get(rid) or {}).get("money_verdict")
+        rank = {"proven so far": 2, "an early sign": 1}.get(lab_words(m), 0)
+        if rank and (best is None or rank > best[0]):
+            best = (rank, kind, rid, mark, words, m)
+    if best:
+        _, kind, rid, mark, words, m = best
+        line = "On the season, %s: contest results say %s" % (words, said(m))
+        if mark:
+            sel = (lambda x: bool(x.get("tag"))) if mark == "Q" else (lambda x: x.get("flag") == mark)
+            mine = sum(x["mine"] for x in ps if sel(x))
+            field = sum(x["field"] for x in ps if sel(x))
+            more = mine > field + 0.1
+            level = abs(mine - field) <= 0.1
+            good = lab_side(m) > 0 if mark != "PRICEY" else lab_side(m) < 0      # holding PRICEY players is the opposite of putting them last
+            line += "; last night you held %.1f %s players a team to the field's %.1f%s" % (
+                mine, kind, field, ", about level with the field" if level else ": lean more toward them" if good and not more else
+                ": lean away from them" if not good and more else ", already on the right side")
+        s.append(line + ".")
+    return [" ".join(s) if s else "Nothing stood out in this tier's contest results last night.", ""]
 
 
 def leaning(t, shadow, hyp, reg, shown):
-    """One line per switch on trial and idea under test in this tier (an idea spanning tiers shows in its first)."""
+    """Each switch on trial and idea being tested here: what it is, where it stands in words, what it means for you today."""
     s = []
     for c in shadow:
         if not (c["kind"] == "candidate" or (c["kind"] == "switch" and c.get("drop_if"))) or t not in c["tiers"] or c["id"] in shown:
             continue
         base = c["id"].split(":")[0]
         h = hyp.get(base) or {}
-        what = SHADOW_WORDS.get(c["id"]) or (h.get("name") or h.get("plain") or c["name"])
-        what = what[0].upper() + what[1:]
+        what = SHADOW_WORDS.get(c["id"]) or h.get("plain") or c["name"]
         rid = h.get("register") or SHADOW_REG.get(c["id"], c["id"])
         rows = [x for x in shadow if x["id"].split(":")[0] == base] if ":" in c["id"] else [c]
         shown.update(x["id"] for x in rows)
-        wn = {"am": "morning ", "pm": "afternoon "}
-        back = ["%s%+.1f a pair (%s)" % (wn.get(x["id"].split(":")[1], "") if ":" in x["id"] else "", x["season"]["mean"],
-                                        said(x["season"]["label"], x["season"]["mean"]) if x["season"]["n"] >= 40 else "only %d pairs" % x["season"]["n"])
-                for x in rows if x["season"].get("n")]
-        fwd = ["%+.1f a pair so far" % x["forward"]["mean"] for x in rows if x["forward"].get("n")]
-        s.append("- %s. %s night %d of %d%s; backtest %s; contest results: %s." % (
-            what, "On trial," if c["kind"] == "switch" else "Testing,", min(c["forward_nights"], FORWARD_NIGHTS), FORWARD_NIGHTS,
-            " (%s)" % ", ".join(fwd) if fwd else "", ", ".join(back) or "no pairs", money_short((reg.get(rid) or {}).get("money_verdict"))))
-    return (s or ["Nothing under test here."]) + [""]
+        night = min(c["forward_nights"], FORWARD_NIGHTS)
+        reads = []
+        for x in rows:
+            fwd = x["forward"].get("n", 0) >= 40 and x["forward_nights"] >= 5     # one big night is not a forward read
+            v = x["forward"] if fwd else x["season"]
+            wd = said(v["label"], v["mean"]) if v.get("n", 0) >= 40 else "too early to say"
+            reads.append(("%s%s %s" % ("in the morning " if x["id"].endswith(":am") else "in the afternoon " if x["id"].endswith(":pm") else "",
+                                       "its forward nights show" if fwd else "the backtest shows", wd), wd))
+        m = (reg.get(rid) or {}).get("money_verdict")
+        helps = any(wd.endswith("helps") or "help" in wd for _, wd in reads)
+        hurts = any("hurt" in wd for _, wd in reads)
+        if c["kind"] == "switch":
+            where = "In use, on trial (night %d of %d); on points, %s" % (night, FORWARD_NIGHTS, ", ".join(r for r, _ in reads))
+            today = "keep doing it while the check runs"
+        else:
+            where = "Being tested (night %d of %d); on points, %s" % (night, FORWARD_NIGHTS, ", ".join(r for r, _ in reads))
+            today = ("nothing changes; not worth doing by hand" if hurts or lab_side(m) < 0 else
+                     "worth trying by hand on close calls" if helps and lab_side(m) > 0 else "nothing changes yet")
+        s.append("- %s. %s; contest results: %s. For today: %s." % (what, where, said(m), today))
+    return (s or ["Nothing being tested here."]) + [""]
 
 
 def today_tier(t, pool, ben, pod):
@@ -688,25 +874,32 @@ def today_tier(t, pool, ben, pod):
 
 # ---------------------------------------------------------------- draft card and back page
 def draft_card(mt, reg, night, hand_card):
+    """Each card decision: your share last night against your season average, and how the field's teams that did it
+    finished, last night and on the season. The field's numbers come from the contest side, in money_tiers.json
+    "card_field": {card key: {"mine_season": share of your teams, "night": {"top1": x, "top10": x}, "season": {...}}}."""
     md = ["## The draft card", ""]
     c = (mt or {}).get("card") if (mt or {}).get("night") == night else None
-    if c:
-        def k(key):
-            x = c.get(key)
-            return "%d (%d top 10%%)" % (x["teams"], x["top10"]) if x else "0"
-        hi = c.get("2/3 reach: higher projection")
-        res = mt.get("results") or {}
-        md.append("Your %s teams last night. At the 1/2 turn: a faller taken on %s, a reach on %s, ADP trusted on %s. At the 2/3 "
-                  "turn: a faller on %s, a reach on %s, ADP trusted on %s. Same-position teammates on %s; opposing stars on %s." % (
-                      res.get("teams", "?"), k("1/2 faller"), k("1/2 reach"), k("1/2 trust"), k("2/3 faller"),
-                      k("2/3 reach")[:-1] + "; %d toward the higher projection)" % hi["teams"] if hi and c.get("2/3 reach") else k("2/3 reach"), k("2/3 trust"),
-                      k("same-position teammates"), k("opposing stars")))
-    else:
-        md.append("Last night's turns aren't read yet (the contest side's file is from an earlier night).")
+    if not c:
+        return md + ["Last night's turns aren't read yet.", ""]
+    teams = ((mt or {}).get("results") or {}).get("teams") or 0
+    cf = (mt or {}).get("card_field") or {}
+    missing = False
+    for key, what in CARD:
+        x = c.get(key) or {"teams": 0, "top10": 0}
+        f = cf.get(key) or {}
+        line = "- Last night you %s on %s of teams" % (what, pct(x["teams"] / teams) if teams else "?")
+        line += " vs your season average of %s." % pct(f["mine_season"]) if f.get("mine_season") is not None else "."
+        if f.get("night") and f.get("season"):
+            line += " Teams across the field that did this finished top 1%% at %.2fx and top 10%% at %.2fx the field's rate, against " \
+                    "%.2fx and %.2fx on the season." % (f["night"]["top1"], f["night"]["top10"], f["season"]["top1"], f["season"]["top10"])
+        else:
+            missing = True
+        md.append(line)
+    if missing:
+        md += ["", "The field's finish rates for each decision come with the contest side's next update to money_tiers.json."]
     if hand_card:
-        md[-1] += " " + hand_card
-    md += [""]
-    return md
+        md += ["", hand_card]
+    return md + [""]
 
 
 def back_page(H, last, health_lines, today, hand_back):
@@ -722,6 +915,7 @@ def back_page(H, last, health_lines, today, hand_back):
         s.append("The model: on the %d players both projected at the afternoon lock, ours missed by %.1f points on average and "
                  "ETR's by %.1f; their rank correlations with the finish were %.2f and %.2f (1 is perfect)." % (
                      len(both), e_our, e_etr, c_our or 0, c_etr or 0))
+    hyp_lines = []
     try:
         import nba_hypotheses as HY
         reg = json.load(open(HY.REGISTRY))
@@ -734,23 +928,32 @@ def back_page(H, last, health_lines, today, hand_back):
             if not rule or h["status"] not in ("testing", "adopted", "retired"):
                 continue
             name = h["title"].split(":")[0].split(" (")[0]
+            plain = h.get("plain") or h["title"].split(": ", 1)[-1]
             if h["status"] == "retired":
                 if h.get("retired", "") >= (dt.date.fromisoformat(today) - dt.timedelta(days=7)).isoformat():
-                    hs.append("the %s was retired on %s and taken out of the board" % (name.lower(), h["retired"][5:]))
+                    hs.append("- **%s** (retired %s): %s; %s." % (name, h["retired"][5:], plain, h.get("retired_plain") or "it stopped helping"))
                 continue
             fwd = HY.summary(HY.gains(rule, history, since=h["opened"]))
             recent = dates[-HY.RECHECK_DAYS:] if dates else []
             rc = HY.summary(HY.gains(rule, history, since=recent[0])) if h["status"] == "adopted" and recent else None
-            p = HY.proposal(h, fwd, rc)
+            p = HY.proposal(h, fwd, rc).split(" ")[0]
             x = rc if h["status"] == "adopted" else fwd
-            if x:
-                hs.append("the %s (%s) %.2f points %s on %d players%s%s" % (
-                    name.lower(), "in the model" if h["status"] == "adopted" else "under test",
-                    abs(x["mean"]), "closer" if x["mean"] >= 0 else "further off", x["n"],
-                    " (%d of %d nights in)" % (min(x["nights"], HY.FORWARD_DAYS), HY.FORWARD_DAYS) if h["status"] == "testing" else " over the last %d nights" % HY.RECHECK_DAYS,
-                    {"**adopt?**": ": ready to adopt?", "**reject?**": ": time to reject it?", "**retire?**": ": time to retire it?"}.get(p.split(" ")[0], "")))
-        if hs:
-            s.append("Projection hypotheses: %s." % "; ".join(hs))
+            if not x:
+                hs.append("- **%s**: %s. It hasn't fired yet." % (name, plain))
+                continue
+            closer = "%.2f points %s" % (abs(x["mean"]), "closer" if x["mean"] >= 0 else "further off")
+            if h["status"] == "adopted":
+                tail = "it's in the model; over the last %d nights it lands %s across %d players%s" % (
+                    HY.RECHECK_DAYS, closer, x["n"], ", so it comes to you to retire" if p == "**retire?**" else "")
+            else:
+                left = HY.FORWARD_DAYS - min(x["nights"], HY.FORWARD_DAYS)
+                tail = "it lands %s across %d players, %d of %d nights in; %s" % (
+                    closer, x["n"], min(x["nights"], HY.FORWARD_DAYS), HY.FORWARD_DAYS,
+                    "it comes to you as a proposal to adopt" if p == "**adopt?**" else "it comes to you as a proposal to reject" if p == "**reject?**"
+                    else "%d more night%s and it comes to you as a proposal" % (left, "" if left == 1 else "s") if left else
+                    "it's still short of a clear answer" )
+            hs.append("- **%s**: %s; adopting it would %s. So far %s." % (name, plain, h.get("adopt_plain") or "build it into the morning Proj", tail))
+        hyp_lines = hs
     except Exception as e:                                      # the back page must not fail the report
         s.append("Projection hypotheses not read (%s)." % e)
     if recheck_due(today):
@@ -759,7 +962,7 @@ def back_page(H, last, health_lines, today, hand_back):
         s.append(hand_back)
     bad = problems(health_lines)
     s2 = "Data: " + ("; ".join(bad) + "." if bad else "everything for last night came in, and today's inputs were ready on time.")
-    md += [" ".join(s), "", s2, "", "Season tables are below; every player's night is in the ledger (analysis/nba/ledger.csv), "
+    md += [" ".join(s), ""] + (["**Projection hypotheses.**", ""] + hyp_lines + [""] if hyp_lines else []) + [s2, "", "Season tables are below; every player's night is in the ledger (analysis/nba/ledger.csv), "
            "the calls and misses in misses.csv, and the full tier tables in tier_grade.md, shadow.md and money_report.md.", ""]
     return md
 
@@ -848,15 +1051,17 @@ def main():
     if dt.date.fromisoformat(today).weekday() == 0:
         md += monday(shadow, hyp, reg, leans, mt, hw.get("proposals") or {})
     shown = set()
-    md += everywhere(reg)
+    md += status_key() + everywhere(reg, by_reg, shadow)
     for t in range(1, 6):
-        rc, in_tier = recap(H, last, t)
-        md += ["## T%d" % t, "", "**The rules we played.** "] 
-        md[-1] += rules_played(t, reg, by_reg, shadow, leans)[0]
-        md += ["", "**Did they work last night.** " + did_they_work(H, last, t)[0], ""]
-        md += ["**Your moves.** " + your_moves(last, t, in_tier, (hw.get("moves") or {}).get(str(t)))[0], "",
-               "**Player recap.**", ""] + rc
-        md += ["**Contest view.** " + contest_view(t, mt)[0], "", "**What we're leaning toward.**", ""] + leaning(t, shadow, hyp, reg, shown)
+        rc, _ = recap(H, last, t)
+        md += ["## T%d" % t, "", "**The rules we played.** " + rules_played(t, reg, by_reg, shadow, leans)[0], ""]
+        hand_moves = (hw.get("moves") or {}).get(str(t))
+        if t < 5:
+            md += ["**Who to trust in this tier.** " + who_to_trust(H, last, t)[0], "", "**Your moves.**", ""] + your_moves(H, last, t, hand_moves)
+        else:
+            md += ["**Your T5 menu.**", ""] + t5_menu(H, last, mt) + ([hand_moves, ""] if hand_moves else [])
+        md += ["**Player recap.**", ""] + rc
+        md += ["**Contest view.** " + contest_view(t, mt, reg)[0], "", "**What we're leaning toward.**", ""] + leaning(t, shadow, hyp, reg, shown)
         md += ["**Today in T%d.** " % t + today_tier(t, pool, ben, pod)[0], ""]
     md += draft_card(mt, reg, last, hw.get("card"))
     md += back_page(H, last, hl, today, hw.get("back"))
