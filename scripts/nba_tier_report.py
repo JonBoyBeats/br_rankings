@@ -829,7 +829,7 @@ def leaning(t, shadow, hyp, reg, shown):
         night = min(c["forward_nights"], FORWARD_NIGHTS)
         reads = []
         for x in rows:
-            fwd = x["forward"].get("n", 0) >= 40
+            fwd = x["forward"].get("n", 0) >= 40 and x["forward_nights"] >= 5     # one big night is not a forward read
             v = x["forward"] if fwd else x["season"]
             wd = said(v["label"], v["mean"]) if v.get("n", 0) >= 40 else "too early to say"
             reads.append(("%s%s %s" % ("in the morning " if x["id"].endswith(":am") else "in the afternoon " if x["id"].endswith(":pm") else "",
