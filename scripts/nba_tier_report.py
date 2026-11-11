@@ -633,8 +633,8 @@ def contest_view(t, mt):
     top = max(ls, key=lambda x: x["lift10"], default=None)
     s = "Your %s teams took %.1f T%d players each to the field's %.1f%s%s." % (
         {"am": "morning", "pm": "afternoon"}[w], ppt.get("mine") or 0, t, ppt.get("field") or 0,
-        ", heaviest on %s (%s of yours, %s of the field)" % (short(over[0]["name"]), pct(over[0]["mine"]), pct(over[0]["field"])) if over else "",
-        "; %s holders made the top 10%% %.1f times as often as the field" % (poss(short(top["name"])), top["lift10"]) if top and top["lift10"] >= 1.3 else "")
+        ", heaviest on %s (%s of yours, %s of the field)" % (over[0]["name"], pct(over[0]["mine"]), pct(over[0]["field"])) if over else "",
+        "; %s holders made the top 10%% %.1f times as often as the field" % (poss(top["name"]), top["lift10"]) if top and top["lift10"] >= 1.3 else "")
     return [s, ""]
 
 

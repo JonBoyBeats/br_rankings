@@ -30,7 +30,7 @@ Tuesday's six-game slate was mostly blowouts: New York beat Milwaukee by 32, Pho
 - **Towns**: Over: 16 rebounds and 3 stocks in only 27 minutes of a 32-point win.
 - **Wagner**: Over: 33 on 11-23 with 7 assists on 38 minutes.
 
-**Contest view.** Your afternoon teams took 0.9 T1 players each to the field's 0.8, heaviest on Gilgeous-Alexander (24% of yours, 17% of the field); Wagner's holders made the top 10% 2.7 times as often as the field.
+**Contest view.** Your afternoon teams took 0.9 T1 players each to the field's 0.8, heaviest on Shai Gilgeous-Alexander (24% of yours, 17% of the field); Franz Wagner's holders made the top 10% 2.7 times as often as the field.
 
 **What we're leaning toward.**
 
@@ -59,7 +59,7 @@ Tuesday's six-game slate was mostly blowouts: New York beat Milwaukee by 32, Pho
 - **James**: Under: 4-12, 1-6 from three, no stocks in a 22-point loss.
 - **George**: Over: 36 on 14-22 with 6-11 from three, light everywhere else.
 
-**Contest view.** Your afternoon teams took 1.9 T2 players each to the field's 1.8, heaviest on George (30% of yours, 17% of the field); George's holders made the top 10% 2.4 times as often as the field.
+**Contest view.** Your afternoon teams took 1.9 T2 players each to the field's 1.8, heaviest on Paul George (30% of yours, 17% of the field); Paul George's holders made the top 10% 2.4 times as often as the field.
 
 **What we're leaning toward.**
 
@@ -84,7 +84,7 @@ Tuesday's six-game slate was mostly blowouts: New York beat Milwaukee by 32, Pho
 - **Bane**: Under: cold 5-19 (4-13 from three) with no stocks.
 - **Markkanen**: scratched; swaps went to Collier (272 teams, 32 points) and LaVine (199 teams, 39 points).
 
-**Contest view.** Your afternoon teams took 0.7 T3 players each to the field's 0.7, heaviest on Bane (30% of yours, 17% of the field); Black's holders made the top 10% 3.1 times as often as the field.
+**Contest view.** Your afternoon teams took 0.7 T3 players each to the field's 0.7, heaviest on Desmond Bane (30% of yours, 17% of the field); Anthony Black's holders made the top 10% 3.1 times as often as the field.
 
 **What we're leaning toward.**
 
@@ -107,7 +107,7 @@ Nothing under test here.
 - **Davion Mitchell**: Over: 19-5-8 on 38 minutes.
 - **Anunoby**: Under: 5-8 from three but no stocks in 29 minutes of the 32-point win.
 
-**Contest view.** Your afternoon teams took 1.0 T4 players each to the field's 1.2, heaviest on Mitchell (30% of yours, 17% of the field).
+**Contest view.** Your afternoon teams took 1.0 T4 players each to the field's 1.2, heaviest on Ajay Mitchell (30% of yours, 17% of the field).
 
 **What we're leaning toward.**
 
@@ -138,7 +138,7 @@ Nothing under test here.
 - **Pritchard**: Over: 18 with 4-8 from three on 30 minutes of a 22-point win.
 - **Queta**: Under: 4 points and no stocks in 22 minutes.
 
-**Contest view.** Your afternoon teams took 1.4 T5 players each to the field's 1.4, heaviest on LaVine (26% of yours, 10% of the field); LaVine's holders made the top 10% 2.0 times as often as the field.
+**Contest view.** Your afternoon teams took 1.4 T5 players each to the field's 1.4, heaviest on Zach LaVine (26% of yours, 10% of the field); Zach LaVine's holders made the top 10% 2.0 times as often as the field.
 
 **What we're leaning toward.**
 
