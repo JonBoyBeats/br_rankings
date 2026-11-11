@@ -534,7 +534,7 @@ def tier_verdict(st, t, key, other_half, mid):
     if c["same"] or c["v"] is None or not c["r80"] or c["n"] < MIN_PAIRS:
         return None
     for sign, word in ((1, "holds"), (-1, "loses")):
-        clear = lambda g: g and (g[0] - mid if sign > 0 else mid - g[1]) > 0
+        clear = lambda g: bool(g) and (g[0] - mid if sign > 0 else mid - g[1]) > 0
         backed = clear(other_half.get(t, {}).get(key, {}).get("r80")) or sum(clear(st[u][key]["r80"]) for u in st if key in st[u]) >= 3
         if clear(c["r90"]) or (clear(c["r80"]) and backed):
             return word if c["drop"] and (c["drop"][0] - mid if sign > 0 else mid - c["drop"][1]) > 0 else "hangs on one player"

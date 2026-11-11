@@ -2,6 +2,14 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-10 Tue main
+
+- Locked both windows (Lock AM 4:04am, Lock PM 3:17pm). Herro, Markkanen and Hart sat, none an early pick, so no team left the grading; calls on their teammates (Burries, Rollins, Bailey, Peterson, Collier) are logged as hedges. Four of six games were 20+ point blowouts.
+- Morning: 68% against our number (season 56%, your board wins) and 64% against ADP (season 54%, too close). Raises on Pritchard and Rollins were right, Holiday and Achiuwa wrong (Sabonis played). Afternoon: 48% against ETR (season 47%); fades on Garland and Green right, the Avdija fade wrong (he hit ETR's number), Davion Mitchell's raise right.
+- Theme (hedges left out): calls tagged blowout are now raises 2 right, 16 wrong (11 slates) and fades 15 right, 3 wrong (8 slates). Raises on players who then played 4+ minutes over their usual: 29 right, 4 wrong; fades on them 8 right, 18 wrong.
+- Field: 80 teams in Tuesday Tip-Off, median finish top 43%, top 10% 1.38, top 1% 2.50 (2 teams; best top 0.1%), $690 on $400. Running, 6-drafter: top 10% 1.35 (16 nights), AM teams 1.50 against PM 1.29. Of your 48 takes off the tier rules, 27 were right.
+- Morning Proj vs ETR (etr_match.md): direction 97% (28 of 29; season 91%), big misses 11 of 60 (18%, season 23%). Missed the same way on 3+ of the last 10: Traore (ETR above), Sabonis (ETR below, five times now), Markkanen and LaMelo (ETR below).
+
 ## 2026-11-09 Mon main
 
 - Locked both windows: Lock AM 3:41am (counted; your first draft from 4:30am came later), Lock PM the last of three before swaps (3:33pm), and one overnight draft. Late news: Scottie Barnes (Questionable at Lock AM) and Austin Reaves (untagged then) were ruled out before the PM lock, so TOR and LAL sit out the morning's grading; Zion and Trey Murphy sat on the back end but weren't early picks.

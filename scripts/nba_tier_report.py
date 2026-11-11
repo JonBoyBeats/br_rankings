@@ -585,7 +585,7 @@ def your_moves(last, t, names_in, hand_moves):
     calls.sort(key=lambda r: r["closer"] != "wrong")
     if calls and not hand_moves:
         r = calls[0]
-        s.append("Your %s call on %s was %s: %s." % ("morning" if r["kind"] == "am_call" else "afternoon", short(r["player"]), r["closer"],
+        s.append("Your %s call on %s was %s: %s." % ("morning" if r["kind"] == "am_call" else "afternoon", r["player"], r["closer"],
                                                    (r["note"].split("; ", 1)[1] if "; " in r["note"] else r["note"]).strip().rstrip(".")))
     if hand_moves:
         s.append(hand_moves)
@@ -604,16 +604,18 @@ def recap(H, last, t):
         if r["date"] == last:
             sw[r["out_id"]].append(r)
     md = []
+    last_names = collections.Counter(short(r["name"]) for r in rows)
+    nm = lambda n: short(n) if last_names[short(n)] == 1 else n
     for r in rows:
         l = led.get(r["player_id"]) or {}
         note = ((l.get("note") or "").strip() or (l.get("draft") or "").strip())
         if r["scratched"] == "1":
             xs = sorted(sw.get(r["player_id"], []), key=lambda x: -int(x["teams"]))[:2]
             if xs:
-                md.append("- **%s**: scratched; swaps went to %s." % (short(r["name"]), " and ".join(
+                md.append("- **%s**: scratched; swaps went to %s." % (nm(r["name"]), " and ".join(
                     "%s (%d teams, %.0f points)" % (short(x["swap"]), int(x["teams"]), float(x["swap_fp"])) for x in xs)))
         elif (l.get("result") or "") in ("over", "under"):
-            md.append("- **%s**: %s" % (short(r["name"]), note or l["result"].capitalize() + "."))
+            md.append("- **%s**: %s" % (nm(r["name"]), note or l["result"].capitalize() + "."))
     return (md or ["Everyone here played to his number."]) + [""], {r["name"] for r in rows}
 
 
@@ -631,8 +633,8 @@ def contest_view(t, mt):
     top = max(ls, key=lambda x: x["lift10"], default=None)
     s = "Your %s teams took %.1f T%d players each to the field's %.1f%s%s." % (
         {"am": "morning", "pm": "afternoon"}[w], ppt.get("mine") or 0, t, ppt.get("field") or 0,
-        ", heaviest on %s (%s of yours, %s of the field)" % (short(over[0]["name"]), pct(over[0]["mine"]), pct(over[0]["field"])) if over else "",
-        "; %s holders made the top 10%% %.1f times as often as the field" % (poss(short(top["name"])), top["lift10"]) if top and top["lift10"] >= 1.3 else "")
+        ", heaviest on %s (%s of yours, %s of the field)" % (over[0]["name"], pct(over[0]["mine"]), pct(over[0]["field"])) if over else "",
+        "; %s holders made the top 10%% %.1f times as often as the field" % (poss(top["name"]), top["lift10"]) if top and top["lift10"] >= 1.3 else "")
     return [s, ""]
 
 
@@ -669,17 +671,17 @@ def today_tier(t, pool, ben, pod):
         if QT.match(r["tag"]):
             q = r["tag"].lower().startswith("q")
             s.append("%s is %s (%s to play): %s." % (
-                short(r["name"]), r["tag"], pct(r["play"]),
+                r["name"], r["tag"], pct(r["play"]),
                 "T%d in the morning, T%d in the afternoon" % (t, min(5, t + 2)) if q and t < 5 else "stays in T%d" % t))
     for f in ("VALUE", "PRICEY"):
         xs = [r for r in rs if r["flag"] == f]
         if xs:
-            s.append("%s: %s." % (f, names([short(r["name"]) for r in xs])))
+            s.append("%s: %s." % (f, names([r["name"] for r in xs])))
     bs = [(r, tg) for r, tg in ben if (r["c"] if r.get("drafted") else 5) == t]
     if bs:
         by = collections.OrderedDict()
         for r, tg in bs:
-            by.setdefault(short(tg["name"]), []).append(short(r["name"]))
+            by.setdefault(tg["name"], []).append(r["name"])
         s.append("Beneficiaries to watch: %s." % "; ".join("if %s sits, %s" % (k, names(v)) for k, v in by.items()))
     return [" ".join(s).replace("..", ".") if s else "Nothing flagged or tagged in this tier today.", ""]
 
