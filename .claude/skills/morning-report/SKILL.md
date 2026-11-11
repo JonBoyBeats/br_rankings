@@ -45,21 +45,28 @@ minutes. In order:
 - **How to read the statuses**: the five statuses, a line each. Every rule in the report carries one of them and
   nothing else: "locked in" (proven on points and in contest results), "in use, on trial" (adopted; with "night N of
   14" where its 14-night check runs), "in use, original rule" (never beaten, not yet graded by contest results),
-  "being tested" (not in use, graded in the background), "retired".
+  "being tested" (not in use, graded in the background), "retired". An original rule carries the contest side's first
+  read (money_tiers.json candidates, by register id) until Monday confirms it: "contest results say it helps (first
+  read, confirmed Monday)" or "contest results: no difference from the alternative". The adopted rules without a
+  switch of their own (VALUE first, PRICEY last, the two Questionable rules, the morning T5 button order) have 14-night
+  checks in the shadow from 2026-11-11 (`check-*` in nba_shadow.py).
 - **In every tier**: the rules all tiers share, said once, and what a close call and contest results mean.
 - **T1 to T4**: the rules we played (with their statuses); **who to trust in this tier** (projection straight against
   ADP on the tier's close calls: last night in one sentence, the season in one, ending in what to do); **your moves**
   (each move off the button: who over whom, why (the ETR or Bagel note, news, your own read), what each scored, right
-  or wrong; then the week's pattern by source); the player recap; the **contest view** (whose holders made the top
+  or wrong; a news move is "forced" when a player in the pair was tagged Out at the lock (not graded) and a "news
+  judgment" otherwise (a Questionable player moved down or up, or a role or minutes call); then the week's record by
+  source, which kind of news judgment lost, and one takeaway); the player recap; the **contest view** (whose holders made the top
   10% at outsized rates, what the top-10% teams held that you were light on and the reverse, and the kind of pick
   that has paid on the season against your share of it, ending in a lean); **what we're leaning toward** (each test
   in plain words: what it is, where it stands, what it means for you today); today in the tier.
 - **T5 is a menu**: graded by exposure, not order: your T5 picks' average score against the field's, your overweights
   and how each scored against the T5 average, and late-news hedges (a beneficiary held for a tagged teammate) apart.
-- **The draft card**: each card decision: your share of teams last night against your season average, and how the
-  field's teams that did it finished (top 1% and top 10% against the field's rate), last night and on the season. The
-  field's numbers come from the contest side in money_tiers.json "card_field": {card key: {"mine_season": share,
-  "night": {"top1": x, "top10": x}, "season": {"top1": x, "top10": x}}}; until they land, the line says so.
+- **The draft card**: each card decision from the contest side's `card_decisions` block in money_tiers.json: your
+  share last night against your season average, and the field's top-1% and top-10% multiples for teams doing it, last
+  night and on the season ("Last night you took a faller at the 1/2 turn on 34% of your teams at that turn vs your
+  season average of 25%. Last night, teams across the field that did this finished top 1% at 1.07x and top 10% at
+  1.3x the field's rate, against 1.06x and 1.2x on the season.").
 - **Back page**: the model (ours against ETR), each projection hypothesis in a plain sentence (what it does to the
   projection, what adopting it would change, where it stands; `plain`, `adopt_plain` and `retired_plain` in
   hypotheses.json), decisions due, data status, links.

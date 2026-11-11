@@ -17,6 +17,8 @@ From tier_history.csv (the button's order is its `built` rank), for each slate:
   T5      candidate (T5-2, from 2026-11-11): the window's projection to the whole point, the less drafted first within it
   all     the one-tier cap (kept; money leans against): the projection tier's order where it and the combined tier's
           disagree, against the button
+  checks  14-night checks on adopted rules, from 2026-11-11: VALUE first (T3-T5), PRICEY last, AM no Questionable push,
+          PM Questionable two back, AM T5 the button's order; positive = the rule in use beat the alternative
 
 A pairwise candidate (a function of a decision pair) takes the button's order except where it applies; for those its
 pick is graded against the button's.
@@ -62,6 +64,19 @@ SWITCHES = [
      "kind": "switch", "steps": [("adp", 0)], "flags": "both", "drop_if": "loss"},
     {"id": "one-tier-cap", "name": "All tiers, kept: the one-tier cap against the projection tier's order where they disagree",
      "window": "am+pm", "tiers": None, "kind": "cap", "pairwise": "cap", "flags": "both", "drop_if": None},
+    # 14-night checks on adopted rules (2026-11-11): positive = the rule in use beat the alternative; forward from 11-11
+    {"id": "check-value-first", "name": "T3-T5, in use: VALUE first against VALUE players left with the rest", "window": "am+pm",
+     "tiers": (3, 4, 5), "kind": "check", "flags": "no-value", "forward": "2026-11-11", "drop_if": "loss"},
+    {"id": "check-pricey-last", "name": "All tiers, in use: PRICEY last against PRICEY players left with the rest", "window": "am+pm",
+     "tiers": None, "kind": "check", "flags": "value-only", "forward": "2026-11-11", "drop_if": "loss"},
+    {"id": "check-am-q", "name": "AM, in use: no push for a Questionable player against two tiers back", "window": "am",
+     "tiers": None, "kind": "check", "pairwise": "qpush", "flags": "both", "include_q": True, "cross": True, "forward": "2026-11-11",
+     "drop_if": "loss"},
+    {"id": "check-pm-q", "name": "PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",
+     "window": "pm", "tiers": None, "kind": "check", "pairwise": "qnopush", "flags": "both", "include_q": True, "cross": True,
+     "forward": "2026-11-11", "drop_if": "loss"},
+    {"id": "check-am-t5-button", "name": "AM T5, in use: the button's order against ADP straight", "window": "am", "tiers": (5,),
+     "kind": "check", "steps": [("adp", 0)], "flags": "both", "forward": "2026-11-11", "drop_if": "loss"},
 ]
 
 
@@ -120,6 +135,16 @@ def pairwise(how, a, b, ctx):
             return a if round(pa) > round(pb) else b
         da, db = G.num(a["drafted"]), G.num(b["drafted"])
         return None if da is None or db is None or da == db else (a if da < db else b)
+    if how in ("qpush", "qnopush"):        # the Questionable checks: a pair with exactly one Questionable player
+        qa, qb = bool(QR.match(a["tag"] or "")), bool(QR.match(b["tag"] or ""))
+        if qa == qb:
+            return None
+        if how == "qpush":                 # AM alternative: push him two tiers back, the button's order otherwise
+            ka = (min(5, int(a["tier"]) + 2) if qa else int(a["tier"]), int(a["built"]))
+            kb = (min(5, int(b["tier"]) + 2) if qb else int(b["tier"]), int(b["built"]))
+        else:                              # PM alternative: no push, ordered by ADP inside his own tier
+            ka, kb = (int(a["tier"]), G.adp(a)), (int(b["tier"]), G.adp(b))
+        return None if ka == kb else (a if ka < kb else b)
     if how == "qsplit":                    # Q-1: the Questionable push by flag, chance to play and tier
         ka = (q_tier(a, ctx), int(a["built"]))
         kb = (q_tier(b, ctx), int(b["built"]))
@@ -143,11 +168,11 @@ def q_tier(r, ctx):
 
 
 def alt_order(its, steps, flags):
-    groups = ("VALUE", "", "PRICEY") if flags == "both" else ("VALUE", None)
+    groups = {"both": [("VALUE",), ("",), ("PRICEY",)], "no-value": [("VALUE", ""), ("PRICEY",)]}.get(
+        flags, [("VALUE",), ("", "PRICEY")])                 # "value-only" (or anything else): PRICEY left with the rest
     out, rank = {}, 0
-    for f in groups:
-        g = [i for i in its if (i["r"]["flag"] == f) if f is not None] if f is not None else \
-            [i for i in its if i["r"]["flag"] != "VALUE"]
+    for grp in groups:
+        g = [i for i in its if i["r"]["flag"] in grp]
         for i in T.rule_sort(g, steps):
             rank += 1
             out[i["r"]["player_id"]] = rank

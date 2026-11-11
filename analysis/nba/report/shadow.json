@@ -12,9 +12,9 @@
   "forward_nights": 1,
   "season": {
    "n": 43,
-   "mean": 4.1358399244481205,
-   "lo": 0.11351351351351542,
-   "hi": 8.11818181818182,
+   "mean": 4.135839924448118,
+   "lo": 0.11351351351351532,
+   "hi": 8.118181818181819,
    "label": "LEAN +",
    "text": "+4.1 (+0.1 to +8.1), 43 pairs, LEAN +"
   },
@@ -68,17 +68,17 @@
   "forward_nights": 1,
   "season": {
    "n": 843,
-   "mean": 0.9350276943400653,
-   "lo": -0.4003141458722792,
-   "hi": 2.3631963039612525,
+   "mean": 0.9350276943400652,
+   "lo": -0.4003141458722782,
+   "hi": 2.3631963039612507,
    "label": "LEAN +",
    "text": "+0.9 (-0.4 to +2.4), 843 pairs, LEAN +"
   },
   "forward": {
    "n": 50,
-   "mean": 0.9310470288005832,
-   "lo": 0.9310470288005832,
-   "hi": 0.9310470288005832,
+   "mean": 0.9310470288005839,
+   "lo": 0.9310470288005839,
+   "hi": 0.9310470288005839,
    "label": "LEAN +",
    "text": "+0.9 (+0.9 to +0.9), 50 pairs, LEAN +"
   }
@@ -95,16 +95,16 @@
   "forward_from": "2026-11-10",
   "forward_nights": 1,
   "season": {
-   "n": 151,
-   "mean": 2.550206784263218,
-   "lo": 0.7322825527412887,
-   "hi": 4.684671439641244,
-   "label": "LEAN + (RULE numbers, check failed)",
-   "text": "+2.6 (+0.7 to +4.7), 151 pairs, LEAN + (RULE numbers, check failed)"
+   "n": 155,
+   "mean": 2.6276208027338455,
+   "lo": 0.9000401057664151,
+   "hi": 4.694947951816951,
+   "label": "RULE +",
+   "text": "+2.6 (+0.9 to +4.7), 155 pairs, RULE +"
   },
   "forward": {
    "n": 14,
-   "mean": 6.207142857142856,
+   "mean": 6.207142857142857,
    "lo": null,
    "hi": null,
    "label": "not enough yet (14)",
@@ -125,8 +125,8 @@
   "season": {
    "n": 88,
    "mean": -2.3761363636363635,
-   "lo": -4.924657534246577,
-   "hi": 0.07540983606557461,
+   "lo": -4.924657534246576,
+   "hi": 0.07540983606557411,
    "label": "LEAN -",
    "text": "-2.4 (-4.9 to +0.1), 88 pairs, LEAN -"
   },
@@ -156,9 +156,9 @@
   "forward_nights": 1,
   "season": {
    "n": 70,
-   "mean": 0.1418127638330398,
+   "mean": 0.14181276383303967,
    "lo": -2.010935618275178,
-   "hi": 2.299655169383777,
+   "hi": 2.2996551693837763,
    "label": "no lean",
    "text": "+0.1 (-2.0 to +2.3), 70 pairs, no lean"
   },
@@ -169,6 +169,160 @@
    "hi": null,
    "label": "not enough yet (8)",
    "text": "+7.8, not enough yet (8)"
+  }
+ },
+ {
+  "id": "check-value-first",
+  "name": "T3-T5, in use: VALUE first against VALUE players left with the rest",
+  "kind": "check",
+  "tiers": [
+   3,
+   4,
+   5
+  ],
+  "window": "am+pm",
+  "drop_if": "loss",
+  "forward_from": "2026-11-11",
+  "forward_nights": 0,
+  "season": {
+   "n": 399,
+   "mean": 0.665767585518955,
+   "lo": -0.41467650171485354,
+   "hi": 1.7281026092735137,
+   "label": "no lean",
+   "text": "+0.7 (-0.4 to +1.7), 399 pairs, no lean"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "check-pricey-last",
+  "name": "All tiers, in use: PRICEY last against PRICEY players left with the rest",
+  "kind": "check",
+  "tiers": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "window": "am+pm",
+  "drop_if": "loss",
+  "forward_from": "2026-11-11",
+  "forward_nights": 0,
+  "season": {
+   "n": 1096,
+   "mean": 3.060831899788465,
+   "lo": 1.8043162550808736,
+   "hi": 4.381348045909779,
+   "label": "RULE +",
+   "text": "+3.1 (+1.8 to +4.4), 1096 pairs, RULE +"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "check-am-q",
+  "name": "AM, in use: no push for a Questionable player against two tiers back",
+  "kind": "check",
+  "tiers": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "window": "am",
+  "drop_if": "loss",
+  "forward_from": "2026-11-11",
+  "forward_nights": 0,
+  "season": {
+   "n": 129,
+   "mean": 1.8119027163758328,
+   "lo": -2.3910392016658757,
+   "hi": 5.607340290086105,
+   "label": "no lean",
+   "text": "+1.8 (-2.4 to +5.6), 129 pairs, no lean"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "check-pm-q",
+  "name": "PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",
+  "kind": "check",
+  "tiers": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "window": "pm",
+  "drop_if": "loss",
+  "forward_from": "2026-11-11",
+  "forward_nights": 0,
+  "season": {
+   "n": 92,
+   "mean": -0.06371614712017663,
+   "lo": -2.85996064922718,
+   "hi": 2.07813330226114,
+   "label": "no lean",
+   "text": "-0.1 (-2.9 to +2.1), 92 pairs, no lean"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
+  }
+ },
+ {
+  "id": "check-am-t5-button",
+  "name": "AM T5, in use: the button's order against ADP straight",
+  "kind": "check",
+  "tiers": [
+   5
+  ],
+  "window": "am",
+  "drop_if": "loss",
+  "forward_from": "2026-11-11",
+  "forward_nights": 0,
+  "season": {
+   "n": 342,
+   "mean": 1.3122294894830315,
+   "lo": -0.3421080518629164,
+   "hi": 3.1764098648577876,
+   "label": "LEAN +",
+   "text": "+1.3 (-0.3 to +3.2), 342 pairs, LEAN +"
+  },
+  "forward": {
+   "n": 0,
+   "mean": null,
+   "lo": null,
+   "hi": null,
+   "label": "-",
+   "text": "none yet"
   }
  },
  {
@@ -242,17 +396,17 @@
   "forward_nights": 1,
   "season": {
    "n": 732,
-   "mean": -2.916372459060691,
-   "lo": -4.243030832132783,
-   "hi": -1.3277952182583277,
+   "mean": -2.9163724590606894,
+   "lo": -4.243030832132781,
+   "hi": -1.327795218258328,
    "label": "RULE -",
    "text": "-2.9 (-4.2 to -1.3), 732 pairs, RULE -"
   },
   "forward": {
    "n": 55,
-   "mean": 4.999999999999999,
-   "lo": 4.999999999999999,
-   "hi": 4.999999999999999,
+   "mean": 5.0,
+   "lo": 5.0,
+   "hi": 5.0,
    "label": "LEAN +",
    "text": "+5.0 (+5.0 to +5.0), 55 pairs, LEAN +"
   }
@@ -302,15 +456,15 @@
   "forward_nights": 1,
   "season": {
    "n": 41,
-   "mean": -2.0819327766879923,
-   "lo": -4.349613217200076,
-   "hi": 0.36076337169939066,
+   "mean": -2.081932776687992,
+   "lo": -4.3496132172000745,
+   "hi": 0.3607633716993905,
    "label": "LEAN -",
    "text": "-2.1 (-4.3 to +0.4), 41 pairs, LEAN -"
   },
   "forward": {
    "n": 5,
-   "mean": -8.52,
+   "mean": -8.520000000000001,
    "lo": null,
    "hi": null,
    "label": "not enough yet (5)",
@@ -330,9 +484,9 @@
   "forward_nights": 1,
   "season": {
    "n": 74,
-   "mean": 0.4169068013257491,
-   "lo": -1.9012773224043724,
-   "hi": 3.0865420081967194,
+   "mean": 0.41690680132574875,
+   "lo": -1.9012773224043718,
+   "hi": 3.0865420081967208,
    "label": "no lean",
    "text": "+0.4 (-1.9 to +3.1), 74 pairs, no lean"
   },
@@ -358,9 +512,9 @@
   "forward_nights": 0,
   "season": {
    "n": 624,
-   "mean": -2.418014180466774,
+   "mean": -2.4180141804667734,
    "lo": -4.039286907268617,
-   "hi": -0.8609608250618059,
+   "hi": -0.860960825061806,
    "label": "RULE -",
    "text": "-2.4 (-4.0 to -0.9), 624 pairs, RULE -"
   },
@@ -387,8 +541,8 @@
   "season": {
    "n": 668,
    "mean": -1.983982035928144,
-   "lo": -3.451858736059478,
-   "hi": -0.5573632538569419,
+   "lo": -3.4518587360594797,
+   "hi": -0.5573632538569425,
    "label": "LEAN - (RULE numbers, check failed)",
    "text": "-2.0 (-3.5 to -0.6), 668 pairs, LEAN - (RULE numbers, check failed)"
   },

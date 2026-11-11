@@ -1471,6 +1471,14 @@ def tiers_json(N, parts):
             blocks[k]["exposure"][w] = {"my_teams": len(mine), "field_teams": len(ts),
                                         "picks_per_team": {"mine": round(per_team(mine), 2) if mine else None, "field": round(per_team(ts), 2)},
                                         "players": players}
+            kinds = {}                                       # share of teams holding at least one player of each kind
+            for lab, sel in (("VALUE", lambda r: r["flag"] == "VALUE"), ("PRICEY", lambda r: r["flag"] == "PRICEY"),
+                             ("Q", lambda r: bool(re.match(r"^(q|d|g)", r["tag"] or "", re.I)))):
+                ids = {r["player_id"] for r in tier_rows if sel(r)}
+                has = lambda t: bool(ids & drafted_by(t))
+                kinds[lab] = {"mine": round(sum(has(t) for t in mine) / len(mine), 3) if mine else None,
+                              "field": round(sum(has(t) for t in ts) / len(ts), 3)}
+            blocks[k]["exposure"][w]["kinds"] = kinds
             blocks[k]["drafted"][w] = {lab: [{"name": x["name"], "drafted": x["drafted"], "mine": x["mine"]} for x in players
                                               if (x["flag"] == lab if lab != "Q" else bool(x["tag"]))] for lab in ("VALUE", "PRICEY", "Q")}
     # last night: my teams' results, and the draft card on them (turns, same-position teammates, opposing stars)

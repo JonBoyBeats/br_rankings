@@ -225,6 +225,38 @@
    "decide": "Per window: the shadow grades AM and PM apart (T5-2:am, T5-2:pm), and each window's Monday call stands on its own forward read.",
    "plain": "After the VALUE players, order T5 by the window's projection to the whole point, and within the same point put the less drafted player first",
    "name": "T5 by projection, then the less drafted"
+  },
+  "T2-2": {
+   "tiers": [
+    2
+   ],
+   "window": "pm",
+   "idea": "PM T2 by ETR's projection, ADP breaking exact ties (instead of ADP with ETR within 2 picks)",
+   "why": "Jon, 2026-11-11, from the morning report's who-to-trust line: on the season, trusting ETR over ADP on afternoon T2 close calls gains about 2 points per call (an early sign), while the afternoon T2 rule follows ADP",
+   "test": {
+    "kind": "steps",
+    "steps": [
+     [
+      "proj",
+      0
+     ],
+     [
+      "adp",
+      0
+     ]
+    ],
+    "flags": "both",
+    "against": "the button",
+    "rule": "Inside afternoon T2 at the PM record: ETR's projection, higher first, ADP breaking exact ties; VALUE first and PRICEY last kept as the button. Graded on 6-drafter decision pairs (ADP within 4) inside T2 that it orders differently from the button; a scratch scored through his swap; positive = the idea beat the button."
+   },
+   "bar": "Forward 14 nights from forward_from, graded nightly in the shadow; Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against; propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
+   "status": "queued",
+   "written": "2026-11-11",
+   "forward_from": null,
+   "register": "pm-t2-adp-etr2",
+   "plain": "In afternoon T2, order by ETR's projection instead of ADP",
+   "name": "ETR over ADP in afternoon T2",
+   "note": "Queued: T2 already has three ideas under test (T2-T4-1, Q-1, T2-1). It starts when one of them frees a slot, or on a Monday yes to drop one."
   }
  }
 }

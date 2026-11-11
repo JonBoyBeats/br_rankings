@@ -50,7 +50,7 @@ date,comparison,kind,pairs,gain
 2026-10-21,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,6,18.1
 2026-10-23,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,6,57.5
 2026-10-24,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,4,-0.9
-2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,15,-41.8
+2026-10-25,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,19,-19.6
 2026-10-26,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,17,-16.0
 2026-10-27,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,11,-36.3
 2026-10-28,AM T5: the less drafted within 2 pts vs the old Proj (3: ADP),switch,7,20.5
@@ -111,6 +111,118 @@ date,comparison,kind,pairs,gain
 2026-11-09,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,1,-2.9
 2026-11-10,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,4,38.8
 2026-11-10,"All tiers, kept: the one-tier cap against the projection tier's order where they disagree",cap,4,23.6
+2026-10-21,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,26,-79.1
+2026-10-21,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,23,152.6
+2026-10-23,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,5,33.6
+2026-10-23,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,12,9.7
+2026-10-24,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,5,-7.2
+2026-10-24,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,20,2.2
+2026-10-25,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,19,-43.2
+2026-10-25,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,3,-32.9
+2026-10-26,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,12,101.7
+2026-10-26,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,6,24.5
+2026-10-27,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,12,-108.9
+2026-10-27,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,0,0
+2026-10-28,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,17,42.7
+2026-10-28,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,25,-36.4
+2026-10-30,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,19,90.0
+2026-10-30,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,6,32.2
+2026-10-31,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,37,-102.7
+2026-10-31,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,0,0
+2026-11-02,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,11,87.7
+2026-11-02,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,12,-78.1
+2026-11-04,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,7,-21.3
+2026-11-04,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,6,-50.8
+2026-11-06,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,6,20.0
+2026-11-06,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,20,121.0
+2026-11-07,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,3,39.6
+2026-11-07,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,6,-21.3
+2026-11-08,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,14,-56.4
+2026-11-08,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,4,30.6
+2026-11-09,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,26,11.8
+2026-11-09,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,6,-52.4
+2026-11-10,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,21,93.9
+2026-11-10,"T3-T5, in use: VALUE first against VALUE players left with the rest",check,10,62.6
+2026-10-21,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,34,-101.0
+2026-10-21,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,15,-50.4
+2026-10-23,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,40,239.0
+2026-10-23,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,28,168.1
+2026-10-24,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,56,101.1
+2026-10-24,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,20,207.4
+2026-10-25,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,51,141.0
+2026-10-25,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,24,147.4
+2026-10-26,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,32,-195.1
+2026-10-26,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,27,-13.8
+2026-10-27,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,22,89.0
+2026-10-27,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,27,275.7
+2026-10-28,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,39,76.4
+2026-10-28,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,27,-140.5
+2026-10-30,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,47,730.3
+2026-10-30,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,22,131.5
+2026-10-31,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,28,-41.3
+2026-10-31,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,27,-63.7
+2026-11-02,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,63,297.8
+2026-11-02,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,35,285.3
+2026-11-04,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,38,-120.9
+2026-11-04,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,23,91.0
+2026-11-06,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,49,84.4
+2026-11-06,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,37,174.0
+2026-11-07,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,39,97.3
+2026-11-07,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,33,-65.0
+2026-11-08,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,45,-38.3
+2026-11-08,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,16,-34.4
+2026-11-09,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,39,355.0
+2026-11-09,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,47,110.2
+2026-11-10,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,43,285.9
+2026-11-10,"All tiers, in use: PRICEY last against PRICEY players left with the rest",check,23,131.4
+2026-10-21,"AM, in use: no push for a Questionable player against two tiers back",check,12,0.1
+2026-10-23,"AM, in use: no push for a Questionable player against two tiers back",check,0,0
+2026-10-24,"AM, in use: no push for a Questionable player against two tiers back",check,5,-70.4
+2026-10-25,"AM, in use: no push for a Questionable player against two tiers back",check,3,-16.4
+2026-10-26,"AM, in use: no push for a Questionable player against two tiers back",check,3,133.6
+2026-10-27,"AM, in use: no push for a Questionable player against two tiers back",check,0,0
+2026-10-28,"AM, in use: no push for a Questionable player against two tiers back",check,6,37.8
+2026-10-30,"AM, in use: no push for a Questionable player against two tiers back",check,6,-44.7
+2026-10-31,"AM, in use: no push for a Questionable player against two tiers back",check,8,73.6
+2026-11-02,"AM, in use: no push for a Questionable player against two tiers back",check,15,-158.0
+2026-11-04,"AM, in use: no push for a Questionable player against two tiers back",check,13,-17.4
+2026-11-06,"AM, in use: no push for a Questionable player against two tiers back",check,14,-4.2
+2026-11-07,"AM, in use: no push for a Questionable player against two tiers back",check,12,102.4
+2026-11-08,"AM, in use: no push for a Questionable player against two tiers back",check,6,-51.2
+2026-11-09,"AM, in use: no push for a Questionable player against two tiers back",check,20,308.7
+2026-11-10,"AM, in use: no push for a Questionable player against two tiers back",check,6,-60.1
+2026-10-21,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,4,-29.3
+2026-10-23,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,0,0
+2026-10-24,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,4,-4.1
+2026-10-25,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,4,45.5
+2026-10-26,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,4,-127.6
+2026-10-27,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,1,6.6
+2026-10-28,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,15,-7.2
+2026-10-30,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,4,22.9
+2026-10-31,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,6,1.8
+2026-11-02,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,19,86.6
+2026-11-04,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,3,17.0
+2026-11-06,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,15,-19.8
+2026-11-07,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,4,11.1
+2026-11-08,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,9,-9.3
+2026-11-09,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,0,0
+2026-11-10,"PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",check,0,0
+2026-10-21,"AM T5, in use: the button's order against ADP straight",check,10,16.6
+2026-10-23,"AM T5, in use: the button's order against ADP straight",check,17,209.9
+2026-10-24,"AM T5, in use: the button's order against ADP straight",check,22,63.4
+2026-10-25,"AM T5, in use: the button's order against ADP straight",check,32,-162.1
+2026-10-26,"AM T5, in use: the button's order against ADP straight",check,25,-136.1
+2026-10-27,"AM T5, in use: the button's order against ADP straight",check,11,-36.3
+2026-10-28,"AM T5, in use: the button's order against ADP straight",check,17,43.1
+2026-10-30,"AM T5, in use: the button's order against ADP straight",check,21,48.8
+2026-10-31,"AM T5, in use: the button's order against ADP straight",check,19,-93.1
+2026-11-02,"AM T5, in use: the button's order against ADP straight",check,10,-24.5
+2026-11-04,"AM T5, in use: the button's order against ADP straight",check,21,-38.1
+2026-11-06,"AM T5, in use: the button's order against ADP straight",check,8,-20.6
+2026-11-07,"AM T5, in use: the button's order against ADP straight",check,7,147.9
+2026-11-08,"AM T5, in use: the button's order against ADP straight",check,44,87.2
+2026-11-09,"AM T5, in use: the button's order against ADP straight",check,23,287.2
+2026-11-10,"AM T5, in use: the button's order against ADP straight",check,55,55.5
 2026-10-21,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
 2026-10-23,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,2,1.2
 2026-10-24,T4-1: PRICEY-last off in PM T4 (VALUE first kept),candidate,0,0
