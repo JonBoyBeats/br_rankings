@@ -49,6 +49,12 @@ jobs:
         name: ETR match
         continue-on-error: true
         run: python3 scripts/nba_etr_match.py --mirror ../br-adp-mirror > /dev/null
+      # Every ETR scenario file from the gist's history, next to the main file it came with (scripts/nba_etr_scenarios.py):
+      # analysis/nba/daily/etr_scenarios.csv, for the study of the out bump against ETR's own
+      - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
+        name: ETR scenarios
+        continue-on-error: true
+        run: if [ -d ../gist ]; then python3 scripts/nba_etr_scenarios.py --gist ../gist; fi
       # College basketball: every CBB slate's projection at lock against the box scores
       # (scripts/cbb_daily.py), then the running grade in the log. Must not hold up the NBA.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
