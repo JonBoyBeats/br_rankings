@@ -3293,17 +3293,6 @@ function renderMeta(rec) {
   }
   var nb = $("baselineNote");
   nb.innerHTML = "";
-  if (!state.baseline) {
-    var d1 = document.createElement("div");
-    d1.className = "notice";
-    d1.innerHTML = "<b>No movement baseline yet</b> for " + slateLabel(s) +
-                   (NBA_LIKE
-                     ? ". The reference locks at 9am Pacific each day" + (SPORT_MODE === "nba" ? " (when ETR posts)" : "") +
-                       ", and this slate had no ADP before then."
-                     : ". The reference locks at 6pm Pacific on Monday and again on Wednesday, " +
-                       "when ETR's projections land, and this slate had no ADP before the last one.");
-    nb.appendChild(closable(d1));
-  }
   if (notes.length) {
     var d2 = document.createElement("div");
     d2.className = "notice warn";
@@ -4579,15 +4568,12 @@ function renderMissingProjections() {
     el.appendChild(o);
   }
   var m = state.projMeta;
-  var morningSig = m && m.morning ? "morning|" + state.slate.label + "|" + m.udOut.join() : null;
+  var morningSig = m && m.morning ? "morning|" + state.slate.label : null;
   if (m && m.morning && state.closedNotices[morningSig] !== true) {
     var a = document.createElement("div"), mo = m.morning;
     a.className = "notice";
-    a.innerHTML = "<b>Morning Proj</b>: " + mo.etr + " players blend their ETR average with box scores, " + mo.box +
-                  " from box scores alone" + (mo.through ? " (games through " + mo.through + ")" : "") +
-                  ", moved for who's out. Upload today's ETR file to replace it." +
-                  (mo.hasBox ? "" : " The box-score file didn't load, so only players with ETR history have a number.") +
-                  (m.udOut.length ? "<div class=\"names\">Underdog has out, teammates moved up: " + esc(m.udOut.join(" · ")) + "</div>" : "");
+    a.innerHTML = "<b>Morning Proj</b> (no ETR file yet)" +
+                  (mo.hasBox ? "" : ". The box-score file didn't load, so only players with ETR history have a number.");
     el.appendChild(closable(a, function () { state.closedNotices[morningSig] = true; }));
   }
   if (m && m.cbb && state.closedNotices["cbb|" + state.slate.label] !== true) {
@@ -6458,19 +6444,18 @@ async function autoSync(quiet) {
       push = localChanged && !take && !wait;
     }
 
-    var files = {}, msg = "";
+    var files = {};
     if (take) {
       syncApplying = true;
       try { await applyEntry(remote); } finally { syncApplying = false; }
       rawSave(K.synced(label), remote.saved_at);
-      msg = "Synced your board from " + remote.device + " (saved " + describeAge(remote.saved_at, Date.now()) + ").";
     } else if (push) {
       mergeLocks(remote);
       entry = savedEntry(state.order, state.slate.slate_id, myDevice(), load(K.mod(label), null) || new Date().toISOString(),
                          load(K.vorpWin(label), null), state.cut, loadTiers(label), savedOuts(label), slateLocks(), tierBuildForLock());
       files[GIST_FILE] = { content: JSON.stringify(putSavedSlate(cur.doc, label, entry), null, 1) };
     }
-    } catch (be) { boardErr = be; take = false; entry = null; files = {}; msg = ""; }
+    } catch (be) { boardErr = be; take = false; entry = null; files = {}; }
 
     // projections: the newer upload wins, either way
     var pmsg = pullProjections(cur, sport, false);
@@ -6482,7 +6467,7 @@ async function autoSync(quiet) {
         var payload = JSON.stringify(localP);
         if (payload.length <= GIST_MAX) files[projFile(sport)] = { content: payload };
       }
-    } else msg += (msg ? "" : "Synced.") + pmsg;
+    }
 
     if (take) rawSave(K.syncedSig(label), boardSig());      // after any re-sort the projections caused
     if (Object.keys(files).length) {
@@ -6493,7 +6478,7 @@ async function autoSync(quiet) {
       recomputeVorp();
       render();
       if (!$("vorpPanel").hidden) renderVorpPanel();
-      setStatus(msg);
+      if (pmsg.indexOf("too big") >= 0) setStatus(pmsg.trim(), "warn");      // a sync that worked stays quiet
     }
     if (boardErr) throw boardErr;
     rawSave(K.syncLog, { at: new Date().toISOString(), ok: true });
