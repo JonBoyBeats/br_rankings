@@ -12,15 +12,26 @@ Tuesday's six-game slate was mostly blowouts: New York beat Milwaukee by 32, Pho
 - **Zach LaVine**, on 21% of your teams (26% of your afternoon ones) against 8% of the field. Over: 31 on 10-16 with 6-9 from three, through 5 turnovers. His holders made the top 10% 2.0 times as often as the field.
 - **Isaiah Hartenstein**, on 28% of your teams (40% of your morning ones) against 16% of the field. In line: 9 rebounds and 5 assists in 24 minutes. His holders made the top 10% 1.4 times as often as the field.
 
-**In every tier.** A player's tier is his ADP tier, moved at most one tier toward our projection's (contest results: an early sign it hurts). PRICEY players (a tier below their ADP on our projection) go last in their tier (an early sign it helps); VALUE players go first in T3 to T5. A Questionable player keeps his tier in the morning (no clear signal) and drops two in the afternoon (no clear signal). Points are scored on head-to-head pairs, two players in a tier within 4 picks of ADP: how much more the chosen one scored. Contest results are how often teams that followed a rule made the top 10%.
+**How to read the statuses.**
+
+- **Locked in**: proven on points and in contest results.
+- **In use, on trial**: adopted and in use; where its 14-night check is running, the night it's on ("night 3 of 14").
+- **In use, original rule**: the rule we started with: nothing has beaten it, and contest results haven't graded it yet.
+- **Being tested**: not in use; graded in the background against what is.
+- **Retired**: taken out.
+
+**In every tier.** A player's tier is his ADP tier, moved at most one tier toward our projection's (in use, on trial, night 1 of 14). PRICEY players (a tier below their ADP on our projection) go last in their tier (in use, on trial); VALUE players go first in T3 to T5. A Questionable player keeps his tier in the morning (in use, on trial) and drops two in the afternoon (in use, on trial). A close call is two players in the same tier within 4 picks of ADP; points on it are how much more the chosen one scored. Contest results are how often teams that followed a rule made the top 10%.
 
 ## T1
 
-**The rules we played.** Morning: ADP, with the higher Boom (his ceiling) first when two are within two picks (kept; contest results still to come). Afternoon: ETR's projection (kept; contest results still to come). PRICEY players go last here as everywhere, and in T1 contest results read it on its own: proven to help so far.
+**The rules we played.** Morning: ADP, with the higher Boom (his ceiling) first when two are within two picks (in use, original rule). Afternoon: ETR's projection (in use, original rule).
 
-**Did they work last night.** In the afternoon your board beat ADP on the only pair. On the season nothing here is clear yet (only 11 pairs).
+**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, ETR's pick won the only close call in the afternoon. On the season there's no clear answer here yet (13 close calls): nothing to change.
 
-**Your moves.** No moves off the button here.
+**Your moves.**
+
+No moves off the button here last night.
+This week in T1, your moves on news went 5 for 8; off Bagel and ETR notes went 1 for 2; on your own reads went 0 for 1.
 
 **Player recap.**
 
@@ -30,21 +41,27 @@ Tuesday's six-game slate was mostly blowouts: New York beat Milwaukee by 32, Pho
 - **Towns**: Over: 16 rebounds and 3 stocks in only 27 minutes of a 32-point win.
 - **Wagner**: Over: 33 on 11-23 with 7 assists on 38 minutes.
 
-**Contest view.** Your afternoon teams took 0.9 T1 players each to the field's 0.8, heaviest on Shai Gilgeous-Alexander (24% of yours, 17% of the field); Franz Wagner's holders made the top 10% 2.7 times as often as the field.
+**Contest view.** Holders of Franz Wagner and Karl-Anthony Towns made the top 10% at 2.7 times and 2.0 times the field's rate. In your afternoon window, the top-10% teams held Franz Wagner on 45% against your 18%; you held Shai Gilgeous-Alexander on 24% against 4% of the top-10% teams. On the season, putting PRICEY players last: contest results say proven to help so far; last night you held 0.5 PRICEY players a team to the field's 0.5, about level with the field.
 
 **What we're leaning toward.**
 
-- Questionable pushes by type. Testing, night 0 of 14; backtest -7.8 a pair (only 24 pairs); contest results: no clear signal.
+- Push Questionable players by type: VALUE players and those over 70% to play stay put; in T1-T2, PRICEY players and those under 50% to play drop two tiers; everyone else follows the current rule. Being tested (night 0 of 14); on points, the backtest shows too early to say; contest results: no clear signal. For today: nothing changes yet.
 
 **Today in T1.** Nothing flagged or tagged in this tier today.
 
 ## T2
 
-**The rules we played.** Morning: straight ADP (kept; contest results still to come). Afternoon: ADP, with ETR breaking ties within two picks (on trial, 1 of 14 nights in; contest results no clear signal).
+**The rules we played.** Morning: straight ADP (in use, original rule). Afternoon: ADP, with ETR breaking ties within two picks (in use, on trial, night 1 of 14).
 
-**Did they work last night.** In the morning your board beat our projection on 4 of 7 pairs, and beat ADP on 2 of 4 pairs. In the afternoon your board beat ETR on 2 of 4 pairs, and beat ADP on 2 of 6 pairs. On the season your afternoon board beats ADP here: an early sign it helps (+2.5 points a pair, 115 pairs).
+**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 5 times out of 11 in the morning; ETR's pick scored more 4 times out of 10 in the afternoon. On the season, trusting ETR over ADP here in the afternoon gains about 2 points per close call (an early sign it helps): the rule leans the other way here, so this is worth a test.
 
-**Your moves.** 3 afternoon moves off the button, 1 right (-10.7 points a move). Your afternoon call on Deni Avdija was wrong: played ETR's number on the dot (43.2 on 34 minutes) while 3 of the 5 you moved ahead fell short.
+**Your moves.**
+
+- Afternoon: **Brown** ahead of **Adebayo**, Bagel leaned to Brown. Brown scored 27, Adebayo 45: wrong.
+- Afternoon: **Acuff Jr.** ahead of **Avdija**, Bagel liked Acuff Jr. Acuff Jr. scored 45, Avdija 43: right.
+- Afternoon: **Brown** ahead of **Avdija**, Bagel leaned to Brown. Brown scored 27, Avdija 43: wrong.
+
+This week in T2, your moves on news went 9 for 29; on your own reads went 3 for 8; off Bagel notes went 2 for 7; off Bagel and ETR notes went 2 for 4.
 
 **Player recap.**
 
@@ -59,23 +76,28 @@ Tuesday's six-game slate was mostly blowouts: New York beat Milwaukee by 32, Pho
 - **James**: Under: 4-12, 1-6 from three, no stocks in a 22-point loss.
 - **George**: Over: 36 on 14-22 with 6-11 from three, light everywhere else.
 
-**Contest view.** Your afternoon teams took 1.9 T2 players each to the field's 1.8, heaviest on Paul George (30% of yours, 17% of the field); Paul George's holders made the top 10% 2.4 times as often as the field.
+**Contest view.** Holders of Paul George and Darius Acuff Jr. made the top 10% at 2.4 times and 1.9 times the field's rate. In your afternoon window, the top-10% teams held Bam Adebayo on 29% against your 6%; you held Joel Embiid on 24% against 2% of the top-10% teams. On the season, taking the less drafted of two close players: contest results say an early sign it helps.
 
 **What we're leaning toward.**
 
-- ETR within two picks in afternoon T2 (the old rule: within one). On trial, night 1 of 14 (-3.9 a pair so far); backtest +4.1 a pair (an early sign it helps); contest results: no clear signal.
-- The less-drafted tiebreak in T2 to T4. Testing, night 0 of 14; backtest +2.2 a pair (only 19 pairs); contest results: an early sign it helps.
-- T2 split at the 1/2 turn. Testing, night 1 of 14 (-8.5 a pair so far, +4.5 a pair so far); backtest morning -2.1 a pair (an early sign it hurts), afternoon +0.4 a pair (no clear signal); contest results: proven to help so far.
+- ETR within two picks in afternoon T2 (the old rule: within one). In use, on trial (night 1 of 14); on points, the backtest shows an early sign it helps; contest results: no clear signal. For today: keep doing it while the check runs.
+- In T2 to T4, put the less drafted player first when two are within two projected points and at least 10 points apart in how often they're drafted. Being tested (night 0 of 14); on points, the backtest shows too early to say; contest results: an early sign it helps. For today: nothing changes yet.
+- Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on. Being tested (night 1 of 14); on points, in the morning the backtest shows an early sign it hurts, in the afternoon the backtest shows no clear signal; contest results: proven to help so far. For today: nothing changes; not worth doing by hand.
 
-**Today in T2.** PRICEY: Jalen Brunson.
+**Today in T2.** Karl-Anthony Towns is Questionable (49% to play): T2 in the morning, T4 in the afternoon. PRICEY: Jalen Brunson.
 
 ## T3
 
-**The rules we played.** Morning: our projection, with ADP deciding within three points (kept; contest results still to come). Afternoon: ETR's projection, with ADP and then Boom breaking exact ties (kept; contest results still to come). VALUE players go first in this tier (contest results: an early sign it helps).
+**The rules we played.** Morning: our projection, with ADP deciding within three points (in use, original rule). Afternoon: ETR's projection, with ADP and then Boom breaking exact ties (in use, original rule). VALUE players go first in this tier (in use, on trial).
 
-**Did they work last night.** In the morning your board beat our projection on 3 of 3 pairs, and lost to ADP on the only pair. In the afternoon your board beat ETR on the only pair. On the season your afternoon board beats ADP here: an early sign it helps (+4.1 points a pair, 130 pairs).
+**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 0 times out of 4 in the morning; ETR's pick lost the only close call in the afternoon. On the season, trusting ETR over ADP here in the afternoon gains about 3 points per close call (an early sign it helps): keep doing it, the rule already does.
 
-**Your moves.** Your only morning move off the button was right (+4.7 points); your only afternoon move off the button was right (+23.7 points). Your afternoon call on Darryn Peterson was wrong: 25 points on 10-19 with Markkanen out, so a hedge.
+**Your moves.**
+
+- Morning: **Clingan** ahead of **Markkanen**, on news. Clingan scored 32, Markkanen scratched, his swap 27: right.
+- Afternoon: **Black** ahead of **Bane**, Bagel liked Black. Black scored 50, Bane 26: right.
+
+This week in T3, your moves on news went 10 for 28; off Bagel notes went 5 for 7; off Bagel and ETR notes went 1 for 3; on your own reads went 1 for 2.
 
 **Player recap.**
 
@@ -84,21 +106,24 @@ Tuesday's six-game slate was mostly blowouts: New York beat Milwaukee by 32, Pho
 - **Bane**: Under: cold 5-19 (4-13 from three) with no stocks.
 - **Markkanen**: scratched; swaps went to Collier (272 teams, 32 points) and LaVine (199 teams, 39 points).
 
-**Contest view.** Your afternoon teams took 0.7 T3 players each to the field's 0.7, heaviest on Desmond Bane (30% of yours, 17% of the field); Anthony Black's holders made the top 10% 3.1 times as often as the field.
+**Contest view.** Holders of Anthony Black and Darryn Peterson made the top 10% at 3.1 times and 1.5 times the field's rate. In your afternoon window, the top-10% teams held Anthony Black on 52% against your 16%; you held Desmond Bane on 30% against 14% of the top-10% teams. On the season, taking VALUE players first: contest results say an early sign it helps; last night you held 0.2 VALUE players a team to the field's 0.3: lean more toward them.
 
 **What we're leaning toward.**
 
-Nothing under test here.
+Nothing being tested here.
 
 **Today in T3.** VALUE: Trae Young and Ty Jerome. PRICEY: Cameron Boozer.
 
 ## T4
 
-**The rules we played.** Morning: our projection, with ADP deciding within three points (kept; contest results still to come). Afternoon: ADP, with ETR breaking ties within two picks (on trial, 1 of 14 nights in; contest results no clear signal). VALUE players go first in this tier (contest results: an early sign it helps).
+**The rules we played.** Morning: our projection, with ADP deciding within three points (in use, original rule). Afternoon: ADP, with ETR breaking ties within two picks (in use, on trial, night 1 of 14). VALUE players go first in this tier (in use, on trial).
 
-**Did they work last night.** In the morning your board lost to our projection on the only pair, and beat ADP on 2 of 2 pairs. In the afternoon your board beat ETR on the only pair, and beat ADP on 3 of 6 pairs. On the season your afternoon board beats ETR here: an early sign it helps (+2.3 points a pair, 62 pairs).
+**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 3 times out of 3 in the morning; ETR's pick scored more 3 times out of 7 in the afternoon. On the season there's no clear answer here yet (148 close calls): nothing to change.
 
-**Your moves.** No moves off the button here. Your afternoon call on Davion Mitchell was right: 19-5-8 on 38 minutes, beat all 4 he jumped (Bagel's underrated play).
+**Your moves.**
+
+No moves off the button here last night.
+This week in T4, your moves on news went 12 for 25; off Bagel notes went 5 for 8; off Bagel and ETR notes went 4 for 7; on your own reads went 1 for 4; off ETR notes went 2 for 2.
 
 **Player recap.**
 
@@ -107,22 +132,38 @@ Nothing under test here.
 - **Davion Mitchell**: Over: 19-5-8 on 38 minutes.
 - **Anunoby**: Under: 5-8 from three but no stocks in 29 minutes of the 32-point win.
 
-**Contest view.** Your afternoon teams took 1.0 T4 players each to the field's 1.2, heaviest on Ajay Mitchell (30% of yours, 17% of the field).
+**Contest view.** In your afternoon window, the top-10% teams held Wendell Carter Jr. on 20% against your 6%; you held Ajay Mitchell on 30% against 5% of the top-10% teams. On the season, taking VALUE players first: contest results say an early sign it helps; last night you held 0.7 VALUE players a team to the field's 0.7, about level with the field.
 
 **What we're leaning toward.**
 
-- ADP with ETR within two picks in afternoon T4 (the old rule: straight ETR). On trial, night 1 of 14 (+6.3 a pair so far); backtest -0.4 a pair (only 24 pairs); contest results: no clear signal.
-- PRICEY-last off in afternoon T4. Testing, night 0 of 14; backtest +3.5 a pair (only 22 pairs); contest results: no clear signal.
+- ADP with ETR within two picks in afternoon T4 (the old rule: straight ETR). In use, on trial (night 1 of 14); on points, the backtest shows too early to say; contest results: no clear signal. For today: keep doing it while the check runs.
+- Stop putting PRICEY players last in afternoon T4 (VALUE players still go first). Being tested (night 0 of 14); on points, the backtest shows too early to say; contest results: no clear signal. For today: nothing changes yet.
 
-**Today in T4.** VALUE: Zion Williamson. PRICEY: Anthony Black.
+**Today in T4.** VALUE: Zion Williamson. PRICEY: Anthony Black and Darryn Peterson.
 
 ## T5
 
-**The rules we played.** Morning: the Tiers button's order, our projection with ADP deciding within three points (adopted; contest results no clear signal). Afternoon: ADP (proven to help so far on points; contest results an early sign it hurts). Then, in both windows, the less drafted of two players goes first when they're within two projected points and at least 10 points apart in how often they're drafted (on trial, 1 of 14 nights in; contest results proven to help so far). VALUE players go first in this tier (contest results: an early sign it helps).
+**The rules we played.** Morning: the Tiers button's order, our projection with ADP deciding within three points (in use, on trial). Afternoon: ADP (in use, on trial, night 1 of 14). Then, in both windows, the less drafted of two players goes first when they're within two projected points and at least 10 points apart in how often they're drafted (in use, on trial, night 1 of 14). VALUE players go first in this tier (in use, on trial). In the afternoon you also raise beneficiaries, a player whose teammate is tagged or out (in use, on trial).
 
-**Did they work last night.** In the morning your board beat our projection on 5 of 7 pairs, and beat ADP on 44 of 89 pairs. In the afternoon your board beat ETR on 8 of 20 pairs, and beat ADP on 19 of 43 pairs. On the season your afternoon board trails ADP here: proven to hurt so far (-2.1 points a pair, 785 pairs).
+**Your T5 menu.**
 
-**Your moves.** 36 morning moves off the button, 13 right (-1.1 points a move); 40 afternoon moves off the button, 17 right (-2.9 points a move). A share of the afternoon moves were hedges on Questionable teammates: Collier for Markkanen paid (31.5 on 24 minutes), Burries for Herro didn't (3 points in a 32-point loss).
+Your morning teams' T5 picks averaged 27 points, the field's 24: your overweights beat the field's T5 picks.
+- **Isaiah Hartenstein**, 40% of yours against 16% of the field: scored 28, 4 over the T5 average.
+- **Aday Mara**, 23% of yours against 4% of the field: scored 28, 4 over the T5 average.
+- **Jrue Holiday**, 13% of yours against 1% of the field: scored 14, 10 under the T5 average.
+
+Your afternoon teams' T5 picks averaged 27 points, the field's 24: your overweights beat the field's T5 picks.
+- **Zach LaVine**, 26% of yours against 10% of the field: scored 39, 15 over the T5 average.
+- **Ace Bailey**, 28% of yours against 16% of the field: scored 32, 8 over the T5 average.
+- **Brook Lopez**, 8% of yours against 2% of the field: scored 14, 10 under the T5 average.
+
+**Late-news hedges.**
+
+- Zach LaVine, on 13% of your morning teams (5% of the field) for Domantas Sabonis (Questionable at the lock): Sabonis played, so the hedge wasn't needed; LaVine scored 39.
+- Ryan Rollins, on 8% of your afternoon teams (2% of the field) for Tyler Herro (Questionable at the lock): Herro sat and Rollins scored 26, so the hedge paid.
+- Brayden Burries, on 18% of your afternoon teams (13% of the field) for Tyler Herro (Questionable at the lock): Herro sat and Burries scored 11, so the hedge didn't pay.
+
+One hedge the tags miss: Markkanen was untagged at your afternoon lock but Questionable at tip, and Collier, held for him, scored 31.5 on 24 minutes with him out.
 
 **Player recap.**
 
@@ -138,24 +179,42 @@ Nothing under test here.
 - **Pritchard**: Over: 18 with 4-8 from three on 30 minutes of a 22-point win.
 - **Queta**: Under: 4 points and no stocks in 22 minutes.
 
-**Contest view.** Your afternoon teams took 1.4 T5 players each to the field's 1.4, heaviest on Zach LaVine (26% of yours, 10% of the field); Zach LaVine's holders made the top 10% 2.0 times as often as the field.
+**Contest view.** Holders of Zach LaVine and Ace Bailey made the top 10% at 2.0 times and 1.9 times the field's rate. In your afternoon window, the top-10% teams held VJ Edgecombe on 19% against your 6%; you held Brayden Burries on 18% against 4% of the top-10% teams. On the season, taking the less drafted of two close players: contest results say proven to help so far.
 
 **What we're leaning toward.**
 
-- The less-drafted tiebreak in morning T5. On trial, night 1 of 14 (+6.2 a pair so far); backtest +2.6 a pair (an early sign it helps); contest results: proven to help so far.
-- The less-drafted tiebreak in afternoon T5. On trial, night 1 of 14 (-7.9 a pair so far); backtest -2.4 a pair (an early sign it hurts); contest results: proven to help so far.
-- The tagged-teammate bump in morning T5. Testing, night 1 of 14 (+5.0 a pair so far); backtest -2.9 a pair (proven to hurt so far); contest results: still to come.
-- T5 by projection, then the less drafted. Testing, night 0 of 14; backtest morning -2.4 a pair (proven to hurt so far), afternoon -2.0 a pair (an early sign it hurts); contest results: still to come.
+- The less-drafted tiebreak in morning T5. In use, on trial (night 1 of 14); on points, the backtest shows an early sign it helps; contest results: proven to help so far. For today: keep doing it while the check runs.
+- The less-drafted tiebreak in afternoon T5. In use, on trial (night 1 of 14); on points, the backtest shows an early sign it hurts; contest results: proven to help so far. For today: keep doing it while the check runs.
+- In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock. Being tested (night 1 of 14); on points, its forward nights show an early sign it helps; contest results: still to come. For today: worth trying by hand on close calls.
+- After the VALUE players, order T5 by the window's projection to the whole point, and within the same point put the less drafted player first. Being tested (night 0 of 14); on points, in the morning the backtest shows proven to hurt so far, in the afternoon the backtest shows an early sign it hurts; contest results: still to come. For today: nothing changes; not worth doing by hand.
 
-**Today in T5.** Keyonte George is Questionable (46% to play): stays in T5. Tyler Herro is Questionable (29% to play): stays in T5. Lauri Markkanen is Questionable (39% to play): stays in T5. VALUE: Evan Mobley, RJ Barrett, Keyonte George, Dejounte Murray and Caleb Wilson. Beneficiaries to watch: if Keyonte George sits, Darryn Peterson, Lauri Markkanen, Ace Bailey and Isaiah Collier; if Tyler Herro sits, Jaime Jaquez Jr.; if Lauri Markkanen sits, Darryn Peterson, Keyonte George and Ace Bailey.
+**Today in T5.** Keyonte George is Questionable (69% to play): stays in T5. Caleb Wilson is Questionable (22% to play): stays in T5. Tyler Herro is Questionable (44% to play): stays in T5. Trey Murphy III is Doubtful (95% to play): stays in T5. VALUE: Keyonte George, Dejounte Murray and Caleb Wilson. Beneficiaries to watch: if Karl-Anthony Towns sits, OG Anunoby, Josh Hart and Mikal Bridges; if Keyonte George sits, Ace Bailey and Isaiah Collier; if Caleb Wilson sits, Josh Giddey and Jalen Smith; if Tyler Herro sits, Jaime Jaquez Jr.
 
 ## The draft card
 
-Your 80 teams last night. At the 1/2 turn: a faller taken on 16 (1 top 10%), a reach on 4 (3 top 10%), ADP trusted on 20 (2 top 10%). At the 2/3 turn: a faller on 7 (0 top 10%), a reach on 1 (0 top 10%), ADP trusted on 25 (0 top 10%). Same-position teammates on 18 (5 top 10%); opposing stars on 39 (7 top 10%). The 1/2-turn reaches paid last night (3 of 4 teams in the top 10%), but that's one night against a season that shows an early sign reaching there hurts.
+- Last night you took a faller at the 1/2 turn on 20% of teams.
+- Last night you reached at the 1/2 turn on 5% of teams.
+- Last night you trusted ADP at the 1/2 turn on 25% of teams.
+- Last night you took a faller at the 2/3 turn on 9% of teams.
+- Last night you reached toward the higher projection at the 2/3 turn on 0% of teams.
+- Last night you trusted ADP at the 2/3 turn on 31% of teams.
+- Last night you paired an early pick with a late same-position teammate on 22% of teams.
+- Last night you paired stars from opposite sides of one game on 49% of teams.
+
+The field's finish rates for each decision come with the contest side's next update to money_tiers.json.
+
+The 1/2-turn reaches paid last night (3 of 4 teams in the top 10%), but that's one night against a season that shows an early sign reaching there hurts.
 
 ## Back page
 
-The model: on the 88 players both projected at the afternoon lock, ours missed by 10.8 points on average and ETR's by 10.4; their rank correlations with the finish were 0.67 and 0.67 (1 is perfect). Projection hypotheses: the minutes trend (under test) 0.23 points closer on 229 players (12 of 14 nights in); the blowout trim was retired on 11-10 and taken out of the board; the underdog bench (under test) 0.35 points closer on 64 players (7 of 14 nights in); the blowout slide (under test) 0.21 points closer on 46 players (7 of 14 nights in).
+The model: on the 88 players both projected at the afternoon lock, ours missed by 10.8 points on average and ETR's by 10.4; their rank correlations with the finish were 0.67 and 0.67 (1 is perfect).
+
+**Projection hypotheses.**
+
+- **Minutes trend**: moves a player's projected minutes to his last-3 average when it runs 4+ minutes off his usual, instead of his usual minutes; adopting it would build that minutes trend into the morning Proj. So far it lands 0.23 points closer across 229 players, 12 of 14 nights in; 2 more nights and it comes to you as a proposal.
+- **Blowout trim** (retired 11-10): took a point off 30-minute players on teams favored by 10 or more; it didn't help, and the blowout slide, which scales the cut with the spread, carries the idea forward.
+- **Underdog bench**: adds 2 points to a bench player (under 20 usual minutes) whose team is a 10-point underdog; adopting it would raise those bench players in the morning Proj. So far it lands 0.35 points closer across 64 players, 7 of 14 nights in; 7 more nights and it comes to you as a proposal.
+- **Blowout slide**: takes a point off 30-minute players on 10-12.5-point favorites and 2 points at 13 or more; adopting it would put that sliding cut into the morning Proj. So far it lands 0.21 points closer across 46 players, 7 of 14 nights in; 7 more nights and it comes to you as a proposal.
 
 Data: everything for last night came in, and today's inputs were ready on time.
 
@@ -206,9 +265,9 @@ Season tables are below; every player's night is in the ledger (analysis/nba/led
 | Your takes | Source | Points per take |
 |---|---|---|
 | AM | NEWS | -2.0 (-4.7 to +0.6), 74 pairs, LEAN - |
-| PM | Bagel | +4.6, not enough yet (20) |
+| PM | Bagel | +4.5, not enough yet (20) |
 | PM | Bagel+ETR | +0.3, not enough yet (34) |
-| PM | ETR | +0.7, not enough yet (14) |
+| PM | ETR | +0.6, not enough yet (14) |
 | PM | NEWS | +0.1, not enough yet (34) |
 | PM | OTHER | +1.0, not enough yet (22) |
 
