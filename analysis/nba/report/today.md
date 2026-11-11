@@ -67,7 +67,7 @@ Tuesday's six-game slate was mostly blowouts: New York beat Milwaukee by 32, Pho
 - The less-drafted tiebreak in T2 to T4. Testing, night 0 of 14; backtest +2.2 a pair (only 19 pairs); contest results: an early sign it helps.
 - T2 split at the 1/2 turn. Testing, night 1 of 14 (-8.5 a pair so far, +4.5 a pair so far); backtest morning -2.1 a pair (an early sign it hurts), afternoon +0.4 a pair (no clear signal); contest results: proven to help so far.
 
-**Today in T2.** PRICEY: Jalen Brunson, Walker Kessler, Pascal Siakam and Kevin Durant.
+**Today in T2.** PRICEY: Jalen Brunson.
 
 ## T3
 
@@ -90,7 +90,7 @@ Tuesday's six-game slate was mostly blowouts: New York beat Milwaukee by 32, Pho
 
 Nothing under test here.
 
-**Today in T3.** VALUE: Trae Young and Ty Jerome. PRICEY: Cameron Boozer and Julius Randle.
+**Today in T3.** VALUE: Trae Young and Ty Jerome. PRICEY: Cameron Boozer.
 
 ## T4
 
@@ -114,7 +114,7 @@ Nothing under test here.
 - ADP with ETR within two picks in afternoon T4 (the old rule: straight ETR). On trial, night 1 of 14 (+6.3 a pair so far); backtest -0.4 a pair (only 24 pairs); contest results: no clear signal.
 - PRICEY-last off in afternoon T4. Testing, night 0 of 14; backtest +3.5 a pair (only 22 pairs); contest results: no clear signal.
 
-**Today in T4.** PRICEY: Anthony Black, Darryn Peterson and Desmond Bane. Beneficiaries to watch: if Keyonte George sits, Darryn Peterson; if Lauri Markkanen sits, Darryn Peterson.
+**Today in T4.** VALUE: Zion Williamson. PRICEY: Anthony Black.
 
 ## T5
 
@@ -147,7 +147,7 @@ Nothing under test here.
 - The tagged-teammate bump in morning T5. Testing, night 1 of 14 (+5.0 a pair so far); backtest -2.9 a pair (proven to hurt so far); contest results: still to come.
 - T5 by projection, then the less drafted. Testing, night 0 of 14; backtest morning -2.4 a pair (proven to hurt so far), afternoon -2.0 a pair (an early sign it hurts); contest results: still to come.
 
-**Today in T5.** Keyonte George is Questionable (46% to play): stays in T5. Tyler Herro is Questionable (29% to play): stays in T5. Lauri Markkanen is Questionable (39% to play): stays in T5. VALUE: Keyonte George, Dejounte Murray and Caleb Wilson. Beneficiaries to watch: if Keyonte George sits, Lauri Markkanen, Ace Bailey and Isaiah Collier; if Tyler Herro sits, Jaime Jaquez Jr.; if Lauri Markkanen sits, Keyonte George and Ace Bailey.
+**Today in T5.** Keyonte George is Questionable (46% to play): stays in T5. Tyler Herro is Questionable (29% to play): stays in T5. Lauri Markkanen is Questionable (39% to play): stays in T5. VALUE: Evan Mobley, RJ Barrett, Keyonte George, Dejounte Murray and Caleb Wilson. Beneficiaries to watch: if Keyonte George sits, Darryn Peterson, Lauri Markkanen, Ace Bailey and Isaiah Collier; if Tyler Herro sits, Jaime Jaquez Jr.; if Lauri Markkanen sits, Darryn Peterson, Keyonte George and Ace Bailey.
 
 ## The draft card
 
@@ -176,7 +176,7 @@ Season tables are below; every player's night is in the ledger (analysis/nba/led
 
 | Your takes | Source | Points per take |
 |---|---|---|
-| AM | NEWS | -0.3, not enough yet (7) |
+| AM | NEWS | -4.7, not enough yet (10) |
 | PM | Bagel+ETR | -6.9, not enough yet (3) |
 | PM | NEWS | -24.3, not enough yet (1) |
 
@@ -206,9 +206,9 @@ Season tables are below; every player's night is in the ledger (analysis/nba/led
 | Your takes | Source | Points per take |
 |---|---|---|
 | AM | NEWS | -2.0 (-4.7 to +0.6), 74 pairs, LEAN - |
-| PM | Bagel | +4.5, not enough yet (20) |
+| PM | Bagel | +4.6, not enough yet (20) |
 | PM | Bagel+ETR | +0.3, not enough yet (34) |
-| PM | ETR | +0.6, not enough yet (14) |
+| PM | ETR | +0.7, not enough yet (14) |
 | PM | NEWS | +0.1, not enough yet (34) |
 | PM | OTHER | +1.0, not enough yet (22) |
 

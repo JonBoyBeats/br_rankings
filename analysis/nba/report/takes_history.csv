@@ -565,6 +565,7 @@ date,window,pod,sample,tier,you_first,button_first,gain,you_first_id,button_firs
 2026-10-26,pm,6,primary,5,Jaden McDaniels,Fred VanVleet,13.1,643fcf01-0598-4533-b0eb-e5c21d7ce74e,e4383b0e-e920-41f5-bcb4-6ad89df89265,Bagel+ETR
 2026-10-26,pm,6,primary,5,Jaden McDaniels,PJ Washington,-12.6,643fcf01-0598-4533-b0eb-e5c21d7ce74e,4ec23d89-288a-42e5-bfdf-5e024f243365,Bagel+ETR
 2026-10-26,pm,6,primary,5,PJ Washington,Fred VanVleet,25.7,4ec23d89-288a-42e5-bfdf-5e024f243365,e4383b0e-e920-41f5-bcb4-6ad89df89265,NEWS
+2026-10-27,am,6,secondary,1,Luka Doncic,Victor Wembanyama,-3.5,1acc32d8-5c04-496b-a643-64df26aafc57,c0266623-325e-43a5-ac93-3def269a64ef,OTHER
 2026-10-27,am,6,secondary,2,Deni Avdija,Karl-Anthony Towns,-7.2,5b2ab3bd-8796-4500-ac13-662a6b057bd0,553255f7-79bb-4b22-a925-7384cc42ec27,NEWS
 2026-10-27,am,6,secondary,2,Jalen Brunson,Karl-Anthony Towns,-14.8,cbcf7977-934a-402a-bbdc-b7795400fcac,553255f7-79bb-4b22-a925-7384cc42ec27,OTHER
 2026-10-27,am,6,secondary,2,Deni Avdija,Jalen Brunson,7.6,5b2ab3bd-8796-4500-ac13-662a6b057bd0,cbcf7977-934a-402a-bbdc-b7795400fcac,NEWS
@@ -667,7 +668,6 @@ date,window,pod,sample,tier,you_first,button_first,gain,you_first_id,button_firs
 2026-10-27,pm,6,primary,5,Matisse Thybulle,Egor Demin,-2.3,e4069d2d-31f6-48b7-9183-6f7790b6a427,4bc84c5d-8221-424b-a076-1cbd73f7b05a,Bagel+ETR
 2026-10-27,pm,6,primary,5,Keldon Johnson,Quentin Grimes,13.0,dbcf9513-cf59-4bfb-b785-513154219d59,6e274d7d-09c5-4a50-b698-824e0a52bb90,OTHER
 2026-10-27,pm,6,primary,5,Robert Williams,Ziaire Williams,12.1,0bc7772a-993c-4bcc-9610-36adde8c776d,9261a407-b214-45b1-873b-a1514d459bab,OTHER
-2026-10-28,am,6,primary,1,Giannis Antetokounmpo,Luka Doncic,15.4,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,1acc32d8-5c04-496b-a643-64df26aafc57,NEWS
 2026-10-28,am,6,primary,2,Karl-Anthony Towns,Tyrese Maxey,3.1,553255f7-79bb-4b22-a925-7384cc42ec27,73d4fb27-030d-4c2d-bcc7-ced393ef6322,NEWS
 2026-10-28,am,6,primary,2,Anthony Davis,Tyrese Maxey,-0.5,b612acf0-6267-48a2-ac48-f52d45c27ece,73d4fb27-030d-4c2d-bcc7-ced393ef6322,NEWS
 2026-10-28,am,6,primary,2,Donovan Mitchell,Tyrese Maxey,-1.5,251127ed-be4a-4102-91f0-19678a44dcf5,73d4fb27-030d-4c2d-bcc7-ced393ef6322,NEWS
@@ -841,6 +841,8 @@ date,window,pod,sample,tier,you_first,button_first,gain,you_first_id,button_firs
 2026-10-29,pm,4,primary,5,Precious Achiuwa,CJ McCollum,26.2,6e58e0ae-7bd4-485c-92f8-670715ab1996,2a5d4e29-7344-477e-aa5a-472a11428c31,Bagel
 2026-10-29,pm,4,primary,5,CJ McCollum,Zach Edey,1.2,2a5d4e29-7344-477e-aa5a-472a11428c31,2d6719b1-774e-43bd-94a8-96d15c28eb32,Bagel
 2026-10-29,pm,4,primary,5,Precious Achiuwa,Zach Edey,27.4,6e58e0ae-7bd4-485c-92f8-670715ab1996,2d6719b1-774e-43bd-94a8-96d15c28eb32,Bagel
+2026-10-30,am,6,primary,1,Nikola Jokic,Giannis Antetokounmpo,-24.2,54a70cec-9c34-4113-bd3e-17b7531f06f5,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,NEWS
+2026-10-30,am,6,primary,1,Luka Doncic,Giannis Antetokounmpo,-10.7,1acc32d8-5c04-496b-a643-64df26aafc57,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,NEWS
 2026-10-30,am,6,primary,2,Scottie Barnes,Brandon Miller,22.1,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,794f5b4a-fc6c-4f3e-b386-246945335358,NEWS
 2026-10-30,am,6,primary,2,Anthony Davis,Brandon Miller,12.7,b612acf0-6267-48a2-ac48-f52d45c27ece,794f5b4a-fc6c-4f3e-b386-246945335358,NEWS
 2026-10-30,am,6,primary,2,Karl-Anthony Towns,Brandon Miller,7.5,553255f7-79bb-4b22-a925-7384cc42ec27,794f5b4a-fc6c-4f3e-b386-246945335358,NEWS
@@ -925,6 +927,8 @@ date,window,pod,sample,tier,you_first,button_first,gain,you_first_id,button_firs
 2026-10-30,pm,6,primary,5,Ayo Dosunmu,Jaylen Brown,-7.1,a488038a-7548-46a6-bbf9-7ca1e409ed69,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Bagel+ETR
 2026-10-30,pm,6,primary,5,Derrick White,Jaylen Brown,-11.1,ba4fd9b8-c122-4109-982c-366f8f7ecef7,23f98978-87d4-4eff-acf2-bc9896ea8bb5,ETR
 2026-10-30,pm,6,primary,5,Naz Reid,Jaylen Brown,-0.8,b220d07d-7cfc-4825-bcdc-2c3829a4c76d,23f98978-87d4-4eff-acf2-bc9896ea8bb5,Bagel+ETR
+2026-10-31,am,6,primary,1,Shai Gilgeous-Alexander,Jalen Johnson,9.9,dc71a323-ed03-4779-8fa1-1130280a6ef9,bbb07b7c-b8b5-4ac7-a45e-89be60ea34b8,NEWS
+2026-10-31,am,6,primary,1,Shai Gilgeous-Alexander,Domantas Sabonis,-4.5,dc71a323-ed03-4779-8fa1-1130280a6ef9,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,NEWS
 2026-10-31,am,6,primary,2,Cameron Boozer,Zion Williamson,4.1,c645e0d6-879a-4c24-8130-c87ecadae429,c311d754-8979-4374-a4af-af325e7b074a,NEWS
 2026-10-31,am,6,primary,2,Darius Acuff Jr.,Zion Williamson,14.3,538deb89-cae1-4376-a228-56bea3c4fe3b,c311d754-8979-4374-a4af-af325e7b074a,NEWS
 2026-10-31,am,6,primary,2,Kevin Durant,Zion Williamson,0.4,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,c311d754-8979-4374-a4af-af325e7b074a,NEWS

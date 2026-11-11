@@ -233,14 +233,14 @@
      "drafted": 6.2
     },
     {
-     "player": "Kris Dunn",
-     "adp": 35.9,
-     "drafted": 2.1
-    },
-    {
      "player": "Precious Achiuwa",
      "adp": 35.9,
      "drafted": 3.9
+    },
+    {
+     "player": "Kris Dunn",
+     "adp": 35.9,
+     "drafted": 2.1
     },
     {
      "player": "Jaime Jaquez Jr.",
@@ -378,12 +378,12 @@
      "drafted": 0.1
     },
     {
-     "player": "Josh Okogie",
+     "player": "Sidy Cissoko",
      "adp": 36.0,
      "drafted": 0.0
     },
     {
-     "player": "Sidy Cissoko",
+     "player": "Josh Okogie",
      "adp": 36.0,
      "drafted": 0.0
     },
@@ -3314,14 +3314,14 @@
      "drafted": 7.4
     },
     {
-     "player": "Jrue Holiday",
-     "adp": 35.9,
-     "drafted": 7.4
-    },
-    {
      "player": "Dillon Brooks",
      "adp": 35.9,
      "drafted": 10.1
+    },
+    {
+     "player": "Jrue Holiday",
+     "adp": 35.9,
+     "drafted": 7.4
     },
     {
      "player": "Jaxson Hayes",
@@ -4159,14 +4159,14 @@
      "drafted": 5.6
     },
     {
-     "player": "Jrue Holiday",
-     "adp": 35.9,
-     "drafted": 11.1
-    },
-    {
      "player": "Dillon Brooks",
      "adp": 35.9,
      "drafted": 5.6
+    },
+    {
+     "player": "Jrue Holiday",
+     "adp": 35.9,
+     "drafted": 11.1
     },
     {
      "player": "Jaxson Hayes",
