@@ -25,11 +25,15 @@ Definitions
   windows       find = every slate but the last CHECK; check = the last CHECK. LEAN: 80%+ of resamples on one side of
                 1.0 at the top 10%, with 100+ A teams and 10+ expected top-10% finishes. RULE: the 90% range clear of
                 1.0 and the check slates the same way. Two verdicts per decision: POINTS (the rankings side's) and MONEY.
+  cache         every heavy test's per-night pieces (lift sums, price-split sums, my teams) are kept in
+                analysis/nba/contests/money_cache/<date>.json.gz while that night's loaded data and the code are unchanged
+                (Store, Cases), so a nightly run builds only the new night's cases and adds up the rest. A code change or
+                a rebuilt input (tier_history.csv, swaps, prices) redoes the nights it touches. --draft reads it, never writes.
 
   python3 scripts/nba_money.py --mirror ../br-adp-mirror            (the nightly workflow: publishes the files above)
   python3 scripts/nba_money.py --mirror ../br-adp-mirror --draft    (ad hoc, from chat: money_report_draft.md only, never committed)
 """
-import argparse, bisect, collections, csv, datetime as dt, glob, gzip, json, math, os, random, re, statistics as st, sys
+import argparse, bisect, collections, csv, datetime as dt, glob, gzip, hashlib, json, math, os, random, re, statistics as st, sys
 from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -462,13 +466,18 @@ def evaluate(cases, dates, bins="bin5"):
     """{who: {span: summary}} for the field (every A team) and mine (my A teams against the field's B), over all slates,
     the find slates and the check slates."""
     check = set(dates[-CHECK:])
+    pers = cases.lift(dates, bins) if isinstance(cases, Cases) else lift_pieces(cases, bins)
     out = {}
     for who in ("field", "mine"):
-        cs = cases if who == "field" else [c for c in cases if c[3] == "B" or c[4]["mine"]]
-        per = strata_lift(cs, bins)
+        per = pers[who]
         out[who] = {"all": summarize(per), "find": summarize({d: v for d, v in per.items() if d not in check}),
                     "check": summarize({d: v for d, v in per.items() if d in check})}
     return out
+
+
+def lift_pieces(cases, bins):
+    """{"field": strata_lift per date, "mine": the same for my A teams against the field's B}."""
+    return {"field": strata_lift(cases, bins), "mine": strata_lift([c for c in cases if c[3] == "B" or c[4]["mine"]], bins)}
 
 
 def verdict(ev):
@@ -657,7 +666,7 @@ def scoreboard(N):
         ts = [t for d, _, t in mine if d == n["date"]]
         if not ts:
             continue
-        pc = collections.Counter(p for t in ts for p in set(t["holds"]))
+        pc = collections.Counter(p for t in ts for p in sorted(t["holds"]))
         pr = collections.Counter(tuple(sorted(x)) for t in ts for x in __import__("itertools").combinations(sorted(set(t["picks"])), 2))
         cores = collections.Counter(tuple(sorted(p for p, a in sorted(zip(t["picks"], t["paid"]), key=lambda x: x[1])[:3])) for t in ts)
         u = None
@@ -882,6 +891,7 @@ def turns_section(N, dates, bins):
             tests.append((label, [case(n, t, "A" if key(t, i) == ck else "B", i) for n, t, i in xs if i["kind"] != "faller"
                                   and t["contest"]["pod_size"] == ck[0]]))
         for name, cs in tests:
+            cs = Cases("turn:%s:%s:%s" % (turn, name, bins), cs, N)
             ev = evaluate(cs, dates, bins)
             results[(turn, name)] = (ev, cs)
             out.append("| %s | %s | %s | %s |" % (turn, name, cell(ev["field"]["all"]), cell(ev["mine"]["all"])))
@@ -984,7 +994,7 @@ def field_section(N, dates, bins):
     for name, has in (("Opposing stars (their team's top 2 by projection, same game)", opp_stars),
                       ("Same-position teammates", lambda n, t: same_pos(n, t)),
                       ("Same-position teammates, spread 5+", lambda n, t: same_pos(n, t, True))):
-        cs = hold_cases(N, ("am", "pm"), has)
+        cs = Cases("stack:%s:%s" % (name, bins), lambda NN, has=has: hold_cases(NN, ("am", "pm"), has), N)
         ev = evaluate(cs, dates, bins)
         res[("stack", name)] = (ev, cs)
         out.append("| %s | %s | %s |" % (name, cell(ev["field"]["all"]), cell(ev["mine"]["all"])))
@@ -1076,13 +1086,13 @@ def register_section(N, dates):
            "(resampling slates), at the top 1%%, and finish (A's average finish percentile minus B's: negative is better). "
            "Find = slates before the last %d, check = the last %d." % (CHECK, CHECK), "",
            "| Decision | Field, all slates | Find | Check | Mine | Money (quintiles) | Deciles |", "|---|---|---|---|---|---|---|"]
-    ref = evaluate(hold_cases(N, ("am", "pm"), lambda n, t: t["mine"]), dates)["field"]["all"]
+    ref = evaluate(Cases("ref:mine", lambda NN: hold_cases(NN, ("am", "pm"), lambda n, t: t["mine"]), N), dates)["field"]["all"]
     out.insert(len(out) - 2, "Reference for the Mine column: all my teams against same-price field teams run %s. Mine reads "
                "against that, not against 1.00." % cell(ref))
     out.insert(len(out) - 2, "")
     res = {}
     for rid, label, b, split in rows:
-        cs = b(N)
+        cs = Cases("reg:%s:%s" % (rid, label.strip()), b, N)
         ev5, ev10 = evaluate(cs, dates, "bin5"), evaluate(cs, dates, "bin10")
         v5, v10 = verdict(ev5)[0], verdict(ev10)[0]
         res[(rid, label.strip())] = (ev5, v5, v10, split, cs)
@@ -1198,6 +1208,8 @@ def main():
     global MIRROR_PATH
     MIRROR_PATH = a.mirror
     N = load(a.mirror)
+    global STORE
+    STORE = Store(N, write=not a.draft)      # an ad-hoc run reads the cache but never writes it
     out, parts = report(N, a.mirror)
     if a.draft:
         open(os.path.join(REP, "money_report_draft.md"), "w").write("\n".join(out) + "\n")
@@ -1208,6 +1220,7 @@ def main():
     tj["splits"] = parts["extra"]
     tj["candidates"] = parts["candidates"]
     json.dump(tj, open(os.path.join(REP, "money_tiers.json"), "w"), indent=1)
+    STORE.save()
     if a.proposals or dt.datetime.now(PT).weekday() == 0:             # Mondays (Pacific): the weekly verdict proposals
         path = os.path.join(REP, "money_proposals.json")
         prev = json.load(open(path)) if os.path.exists(path) else None      # last Monday's: the tracked splits' reads
@@ -1221,7 +1234,38 @@ def price_check(cases, dates):
     """Teams are matched on total price, so a team that took the cheaper player at the decision spent more on its other
     picks. (a) the A-B gap in points over price, split into the decision pick(s) and the other picks; (b) the lift again,
     matched on the price of the other picks (contest x quintile of that price among the test's teams); (c) the decision
-    pick's own points, A's minus B's, in the same strata."""
+    pick's own points, A's minus B's, in the same strata. Each night's share is worked out on its own (price_pieces) and
+    added up here, so a cached night isn't redone."""
+    if isinstance(cases, Cases):
+        parts = cases.price(dates)
+    else:
+        by = collections.defaultdict(list)
+        for c in cases:
+            by[c[0]].append(c)
+        parts = {d: price_pieces(cs) for d, cs in by.items()}
+    parts = {d: v for d, v in parts.items() if v}
+    # a holding test's B teams have no decision pick (their other picks go on the A teams' footing: price_pieces)
+    holding = not any(v["b_has_dec"] for v in parts.values())
+    gap, nA = [0.0, 0.0, 0.0], 0
+    for v in parts.values():
+        gap = [x + y for x, y in zip(gap, v["gap"])]
+        nA += v["n"]
+    if not nA:
+        return None
+    gt, gd, gfp = (x / nA for x in gap)
+    side = "holding" if holding else "pair"
+    per = {who: {d: v[side][who] for d, v in parts.items() if v[side][who]} for who in ("field", "mine")}
+    check = set(dates[-CHECK:])
+    ev = {who: {"all": summarize(p), "find": summarize({d: x for d, x in p.items() if d not in check}),
+                "check": summarize({d: x for d, x in p.items() if d in check})} for who, p in per.items()}
+    return {"gap": gt, "dec": gd, "oth": gt - gd, "own": None if holding else gfp, "has_dec": any(v["has_dec"] for v in parts.values()),
+            "ev": ev, "verdict": verdict(ev)[0], "holding": holding}
+
+
+def price_pieces(cases):
+    """One night's share of price_check: the gap sums over its strata, and the re-matched lift's per-night sums on both
+    footings (holding: B's other picks priced as its price less the holders' average decision-pick price in the contest;
+    pair: as they are)."""
     rows = []
     for c in cases:
         d, cid, b, g, t, dec = c[:6]
@@ -1230,22 +1274,12 @@ def price_check(cases, dates):
         ds = [x for x in t["slots"] if x[0] in dec]
         rows.append([c, t["points"] - t["price"], sum(fp - e for _, e, fp in ds), sum(fp for _, _, fp in ds),
                      t["price"] - sum(e for _, e, _ in ds), len(ds)])
-    # a holding test's B teams have no decision pick: their "other picks" are put on the A teams' footing by taking off
-    # the average price of A's decision picks in the same contest
-    holding = not any(r[5] for r in rows if r[0][3] == "B")
-    if holding:
-        dec_price = collections.defaultdict(list)
-        for r in rows:
-            if r[0][3] == "A" and r[5]:
-                dec_price[(r[0][0], r[0][1])].append(r[0][4]["price"] - r[4])
-        for r in rows:
-            if r[0][3] == "B":
-                r[4] -= st.mean(dec_price[(r[0][0], r[0][1])]) if dec_price[(r[0][0], r[0][1])] else 0
+    if not rows:
+        return None
     by = collections.defaultdict(lambda: {"A": [], "B": []})
     for r in rows:
         by[(r[0][0], r[0][1], r[0][4]["bin5"])][r[0][3]].append(r)
-    gap = [0.0, 0.0, 0.0]
-    nA = 0
+    gap, nA = [0.0, 0.0, 0.0], 0
     for v in by.values():
         if not v["A"] or not v["B"]:
             continue
@@ -1254,25 +1288,157 @@ def price_check(cases, dates):
             for k, i in enumerate((1, 2, 3)):
                 gap[k] += r[i] - mb[k]
             nA += 1
-    if not nA:
-        return None
-    gt, gd, gfp = (x / nA for x in gap)
-    # (b) matched on the other picks' price
-    q = {}
-    groups = collections.defaultdict(list)
+    dec_price = collections.defaultdict(list)
     for r in rows:
-        groups[(r[0][0], r[0][1])].append(r[4])
-    for k, v in groups.items():
-        q[k] = sorted(v)
-    re_cases = []
-    for r in rows:
-        c = r[0]
-        v = q[(c[0], c[1])]
-        bin_ = min(4, bisect.bisect_right(v, r[4]) * 5 // (len(v) + 1))
-        re_cases.append((c[0], c[1], bin_, c[3], c[4]))
-    ev = evaluate(re_cases, dates, "case")
-    return {"gap": gt, "dec": gd, "oth": gt - gd, "own": None if holding else gfp, "has_dec": any(r[5] for r in rows), "ev": ev,
-            "verdict": verdict(ev)[0], "holding": holding}
+        if r[0][3] == "A" and r[5]:
+            dec_price[(r[0][0], r[0][1])].append(r[0][4]["price"] - r[4])
+    dec_mean = {k: st.mean(v) for k, v in dec_price.items() if v}       # once per contest, not once per B team
+    out = {"gap": gap, "n": nA, "has_dec": any(r[5] for r in rows), "b_has_dec": any(r[5] for r in rows if r[0][3] == "B")}
+    for side in ("holding", "pair"):
+        other = [r[4] - (dec_mean.get((r[0][0], r[0][1]), 0) if side == "holding" and r[0][3] == "B" else 0) for r in rows]
+        q = collections.defaultdict(list)
+        for r, x in zip(rows, other):
+            q[(r[0][0], r[0][1])].append(x)
+        q = {k: sorted(v) for k, v in q.items()}
+        re_cases = []
+        for r, x in zip(rows, other):
+            c = r[0]
+            v = q[(c[0], c[1])]
+            re_cases.append((c[0], c[1], min(4, bisect.bisect_right(v, x) * 5 // (len(v) + 1)), c[3], c[4]))
+        lp = lift_pieces(re_cases, "case")
+        out[side] = {who: lp[who].get(rows[0][0][0]) for who in ("field", "mine")}
+    return out
+
+
+# ---------------------------------------------------------------- the per-night cache (2026-11-12)
+CACHE_DIR = os.path.join(NBA, "contests", "money_cache")
+CODE_FILES = ("nba_money.py", "nba_shadow.py", "nba_tier_rules.py", "nba_tier_history.py", "nba_tier_grade.py", "nba_swap_board.py")
+STORE = None
+
+
+class Store:
+    """Each night's pieces of every cached test (analysis/nba/contests/money_cache/<date>.json.gz), kept while the night's
+    loaded data (teams, prices, windows, swaps credited, its tier_history and record rows, its takes) and the code
+    (CODE_FILES) are unchanged; otherwise that night's pieces are worked out again. A night whose contests are final
+    stays put, so a nightly run works out the new night and adds up the rest."""
+    def __init__(self, N, write):
+        here = os.path.dirname(os.path.abspath(__file__))
+        h = hashlib.sha1()
+        for f in CODE_FILES:
+            h.update(open(os.path.join(here, f), "rb").read())
+        self.code, self.write, self.nights = h.hexdigest(), write, {}
+        takes = collections.defaultdict(list)
+        path = os.path.join(REP, "takes_history.csv")
+        if os.path.exists(path):
+            for r in csv.DictReader(open(path)):
+                takes[r["date"]].append(r)
+        for n in N:
+            fp = night_fp(n, takes.get(n["date"], []))
+            f = os.path.join(CACHE_DIR, "%s.json.gz" % n["date"])
+            d = None
+            if os.path.exists(f):
+                try:
+                    d = json.load(gzip.open(f, "rt"))
+                except (OSError, ValueError):
+                    d = None
+            ok = d and d.get("code") == self.code and d.get("fp") == fp
+            self.nights[n["date"]] = {"fp": fp, "tests": d["tests"] if ok else {}, "dirty": not ok}
+
+    def has(self, date, key, kind):
+        return kind in self.nights[date]["tests"].get(key, {})
+
+    def get(self, date, key, kind):
+        return self.nights[date]["tests"][key][kind]
+
+    def put(self, date, key, kind, v):
+        self.nights[date]["tests"].setdefault(key, {})[kind] = v
+        self.nights[date]["dirty"] = True
+
+    def save(self):
+        if not self.write:
+            return 0
+        os.makedirs(CACHE_DIR, exist_ok=True)
+        k = 0
+        for d, v in self.nights.items():
+            if v["dirty"]:
+                with gzip.open(os.path.join(CACHE_DIR, "%s.json.gz" % d), "wt") as f:
+                    json.dump({"code": self.code, "fp": v["fp"], "tests": v["tests"]}, f, separators=(",", ":"))
+                k += 1
+        return k
+
+
+def night_fp(n, takes):
+    """A digest of everything a night's tests read."""
+    h = hashlib.sha1()
+    for c in sorted(n["contests"], key=lambda c: c["contest_id"]):
+        h.update(repr((c["contest_id"], c["fee"], c["pod_size"])).encode())
+        for t in n["teams"][c["contest_id"]]:
+            h.update(repr((t["draft_id"], t["username"], t["place"], t["points"], t["payout"], t["window"], t["price"], t["bin5"],
+                           t["bin10"], t["picks"], t["adps"], t["paid"], t["paid_pid"], t["slots"], sorted(t["holds"]))).encode())
+    for w in ("am", "pm"):
+        for p in sorted(n["tiers"][w]):
+            h.update(repr(sorted(n["tiers"][w][p].items())).encode())
+    for p in sorted(n["rec"]):
+        h.update(repr(sorted(n["rec"][p].items())).encode())
+    h.update(repr(takes).encode())
+    return h.hexdigest()
+
+
+class Cases:
+    """A test's cases night by night: `build` (a function of a list of nights, like the DECISIONS builders) runs only for
+    nights whose pieces aren't cached; or `build` is the cases already made. evaluate, price_check and mine_where read
+    its pieces."""
+    def __init__(self, key, build, N):
+        self.key, self.N, self.mem = key, N, {}
+        self.build = build if callable(build) else None
+        self.by_date = None
+        if not callable(build):
+            self.by_date = collections.defaultdict(list)
+            for c in build:
+                self.by_date[c[0]].append(c)
+
+    def _has(self, d, kind):
+        return STORE.has(d, self.key, kind) if STORE else (d, kind) in self.mem
+
+    def _get(self, d, kind):
+        return STORE.get(d, self.key, kind) if STORE else self.mem[(d, kind)]
+
+    def _put(self, d, kind, v):
+        if STORE:
+            STORE.put(d, self.key, kind, v)
+        else:
+            self.mem[(d, kind)] = v
+
+    def _pieces(self, kind, fn):
+        dates = [n["date"] for n in self.N]
+        todo = [d for d in dates if not self._has(d, kind)]
+        if todo and self.build:
+            if self.by_date is None:
+                self.by_date = {}
+            need = [n for n in self.N if n["date"] in todo and n["date"] not in self.by_date]
+            if need:
+                for d in [n["date"] for n in need]:
+                    self.by_date[d] = []
+                for c in self.build(need):
+                    self.by_date[c[0]].append(c)
+        for d in todo:
+            self._put(d, kind, fn((self.by_date or {}).get(d, [])))
+        return {d: self._get(d, kind) for d in dates}
+
+    def lift(self, dates, bins):
+        def fn(cs):
+            lp = lift_pieces(cs, bins)
+            return {who: (next(iter(v.values())) if v else None) for who, v in lp.items()}
+        ps = self._pieces("ev:" + bins, fn)
+        return {who: {d: ps[d][who] for d in dates if ps.get(d) and ps[d][who]} for who in ("field", "mine")}
+
+    def price(self, dates):
+        ps = self._pieces("pc", price_pieces)
+        return {d: ps[d] for d in dates if ps.get(d)}
+
+    def mine(self):
+        ps = self._pieces("mine", mine_pieces)
+        return [sum(v[i] for v in ps.values()) for i in range(4)]
 
 
 def check_section(reg, turns, field, dates):
@@ -1338,7 +1504,7 @@ def round6_section(N, dates):
            "|---|---|---|---|---|---|---|"]
     res = {}
     for label, lo, hi in (("any round", 1, 6), ("rounds 1-2", 1, 2), ("rounds 3-4", 3, 4), ("rounds 5-6 or undrafted", 5, 6)):
-        cs = hold_cases(N, ("am",), has(lo, hi))
+        cs = Cases("r6:" + label, lambda NN, f=has(lo, hi): hold_cases(NN, ("am",), f), N)
         ev = evaluate(cs, dates)
         r = price_check(cs, dates)
         res[label] = (ev, r)
@@ -1397,11 +1563,16 @@ def tier_keys(spec):
 
 def mine_where(cs):
     """My teams where the decision applied (A), season to date: teams, top-10% rate over the field's 10%, top 1%, finish."""
-    ts = list({id(c[4]): c[4] for c in cs if c[3] == "A" and c[4]["mine"]}.values())     # each team once
-    if not ts:
+    k, t10, t1, fin = cs.mine() if isinstance(cs, Cases) else mine_pieces(cs)
+    if not k:
         return None
-    return {"teams": len(ts), "top10_ratio": round(sum(t["top"][10] for t in ts) / len(ts) / 0.10, 2),
-            "top1_ratio": round(sum(t["top"][1] for t in ts) / len(ts) / 0.01, 2), "finish_pct": round(100 * st.mean(t["fin"] for t in ts), 1)}
+    return {"teams": k, "top10_ratio": round(t10 / k / 0.10, 2), "top1_ratio": round(t1 / k / 0.01, 2), "finish_pct": round(100 * fin / k, 1)}
+
+
+def mine_pieces(cs):
+    """[teams, top-10% finishes, top-1% finishes, sum of finish percentiles] over my A teams, each team once."""
+    ts = list({id(c[4]): c[4] for c in cs if c[3] == "A" and c[4]["mine"]}.values())
+    return [len(ts), sum(t["top"][10] for t in ts), sum(t["top"][1] for t in ts), sum(t["fin"] for t in ts)]
 
 
 def lift_of(ev, checked=None):
@@ -1772,6 +1943,7 @@ def splits_section(N, dates):
            "|---|---|---|---|---|---|---|"]
     extra, res = [], {}
     def row(name, rid, cs, extra_cols=""):
+        cs = Cases("split:" + rid, cs, N)
         ev = evaluate(cs, dates)
         r = price_check(cs, dates)
         res[rid] = (ev, cs, r)
@@ -1786,7 +1958,7 @@ def splits_section(N, dates):
                                     ("Same position, both rounds 4-6", "card-same-position-teammates:rounds 4-6", True, "late"),
                                     ("Different-position teammates (any rounds)", "card-different-position-teammates", False, None)):
         has, elig = teammate_test(same, rounds)
-        row(name, rid, hold_cases(N, ("am", "pm"), has, elig))
+        row(name, rid, lambda NN, has=has, elig=elig: hold_cases(NN, ("am", "pm"), has, elig))
     out += ["", "### Your takes by source (takes_history.csv)", "",
             "A: teams holding the player you put first; B: the button's first, in the take's window (field and mine). Field "
             "drafted%: the share of that window's pods that took each. Points: the takes file's average gain per take (yours).", "",
@@ -1906,7 +2078,8 @@ def morning_wo():
     return out, {(p["name"], p["team"]): p.get("min") or 0 for p in ps}
 
 
-def candidate_cell(name, cs, dates):
+def candidate_cell(name, cs, dates, N):
+    cs = Cases("cand:" + name, cs, N)
     ev = evaluate(cs, dates)
     r = price_check(cs, dates)
     a = (r["ev"] if r else ev)["field"]["all"]
@@ -1969,7 +2142,7 @@ def candidates_section(N, dates):
     for name, has in (("Same position, early + late (the approved card row)", teammate_test(True, "split")[0]),
                       ("Starter + his backup, any rounds", lambda n, t: backup_pairs(n, t)),
                       ("Starter early (rounds 1-3) + his backup late (rounds 4-6)", lambda n, t: backup_pairs(n, t, True))):
-        line, c = candidate_cell(name, hold_cases(N, ("am", "pm"), has, lambda n, t, h=has: bool(h(n, t)) or none(n, t)), dates)
+        line, c = candidate_cell(name, lambda NN, has=has: hold_cases(NN, ("am", "pm"), has, lambda n, t, h=has: bool(h(n, t)) or none(n, t)), dates, N)
         out.append(line)
         cands.append(dict(c, question="1. positions"))
     # 2. fallers: the definitions in use
@@ -1991,7 +2164,7 @@ def candidates_section(N, dates):
             "Against same-contest, same-price teams without (at each team's draft window).", ""] + head
     for name, has in (("2+ T3 VALUE players", count_where(t3v, 2)), ("1+ T3 VALUE player", count_where(t3v, 1)),
                       ("A T4 PRICEY player", count_where(t4p, 1))):
-        line, c = candidate_cell(name, hold_cases(N, ("am", "pm"), has), dates)
+        line, c = candidate_cell(name, lambda NN, has=has: hold_cases(NN, ("am", "pm"), has), dates, N)
         out.append(line)
         cands.append(dict(c, question="3. exposure"))
     # 4. fallers in every round
@@ -2033,7 +2206,7 @@ def candidates_section(N, dates):
             if not any(c[3] == "A" for c in cs):
                 out.append("| Round %d, %s | none | - | - | - |" % (rd, "explained" if explained else "nothing explains it"))
                 continue
-            line, c = candidate_cell("Round %d, %s" % (rd, "explained (tag or news)" if explained else "nothing explains it"), cs, dates)
+            line, c = candidate_cell("Round %d, %s" % (rd, "explained (tag or news)" if explained else "nothing explains it"), cs, dates, N)
             out.append(line)
             cands.append(dict(c, question="4. fallers by round"))
     # 5. the original rules (asked 2026-11-11)
@@ -2042,7 +2215,7 @@ def candidates_section(N, dates):
             "(ADP within 4, same tier) and not its second; B: the reverse. Only pairs with the same flag and no tag on either, so "
             "the order is the rule's steps, not VALUE first / PRICEY last or a Questionable push (those have their own rows).", ""] + head
     for rid, name, w, tiers in KEPT_RULES:
-        line, c = candidate_cell(name, pair_cases(N, (w,), tiers, button_first), dates)
+        line, c = candidate_cell(name, lambda NN, w=w, tiers=tiers: pair_cases(NN, (w,), tiers, button_first), dates, N)
         out.append(line)
         cands.append(dict(c, question="5. original rules", id=rid))
     return out + [""], cands
