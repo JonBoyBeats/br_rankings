@@ -328,12 +328,12 @@
      "drafted": 1.0
     },
     {
-     "player": "Marcus Smart",
+     "player": "Jrue Holiday",
      "adp": 36.0,
      "drafted": 0.1
     },
     {
-     "player": "Jrue Holiday",
+     "player": "Marcus Smart",
      "adp": 36.0,
      "drafted": 0.1
     },
@@ -368,14 +368,14 @@
      "drafted": 0.9
     },
     {
-     "player": "Aday Mara",
-     "adp": 36.0,
-     "drafted": 0.4
-    },
-    {
      "player": "Alex Sarr",
      "adp": 36.0,
      "drafted": 0.2
+    },
+    {
+     "player": "Aday Mara",
+     "adp": 36.0,
+     "drafted": 0.4
     },
     {
      "player": "Jarrett Allen",
@@ -428,12 +428,12 @@
      "drafted": 0.0
     },
     {
-     "player": "Obi Toppin",
+     "player": "Mario Hezonja",
      "adp": 36.0,
      "drafted": 0.0
     },
     {
-     "player": "Mario Hezonja",
+     "player": "Obi Toppin",
      "adp": 36.0,
      "drafted": 0.0
     },
@@ -483,14 +483,14 @@
      "drafted": 0.0
     },
     {
-     "player": "Keldon Johnson",
-     "adp": 36.0,
-     "drafted": 0.1
-    },
-    {
      "player": "Buddy Hield",
      "adp": 36.0,
      "drafted": 0.0
+    },
+    {
+     "player": "Keldon Johnson",
+     "adp": 36.0,
+     "drafted": 0.1
     },
     {
      "player": "Peyton Watson",
@@ -5045,12 +5045,12 @@
      "drafted": 25.0
     },
     {
-     "player": "Dylan Harper",
+     "player": "James Harden",
      "adp": 35.7,
      "drafted": 25.0
     },
     {
-     "player": "James Harden",
+     "player": "Dylan Harper",
      "adp": 35.7,
      "drafted": 25.0
     },

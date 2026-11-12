@@ -82,7 +82,7 @@ This week in T2: news judgments 9 for 29; your own reads 3 for 8; Bagel and ETR 
 - In T2 to T4, put the less drafted player first when two are within two projected points and at least 10 points apart in how often they're drafted. Being tested (night 0 of 14); on points, too early to say; contest results: an early sign it helps. For today: nothing changes yet.
 - Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on. Being tested (night 2 of 14); on points, in the morning the backtest shows no clear signal, in the afternoon the backtest shows no clear signal; contest results: proven to help so far. For today: nothing changes yet.
 
-**Today in T2.** PRICEY: Ayo Dosunmu, Jaden McDaniels and Naz Reid.
+**Today in T2.** PRICEY: Ayo Dosunmu, Naz Reid and Jaden McDaniels.
 
 ## T3
 
@@ -114,7 +114,7 @@ This week in T3: news judgments 6 for 21; Bagel notes 5 for 7; Bagel and ETR not
 
 Nothing being tested here.
 
-**Today in T3.** Scottie Barnes is Questionable (45% to play): T3 in the morning, T5 in the afternoon. LeBron James is Questionable (71% to play): T3 in the morning, T5 in the afternoon. Joel Embiid is Questionable (61% to play): T3 in the morning, T5 in the afternoon. VALUE: Scottie Barnes, LeBron James, Joel Embiid and Kyshawn George. PRICEY: VJ Edgecombe, Ausar Thompson and Rudy Gobert.
+**Today in T3.** Scottie Barnes is Questionable (65% to play): T3 in the morning, T5 in the afternoon. LeBron James is Questionable (77% to play): T3 in the morning, T5 in the afternoon. Joel Embiid is Questionable (73% to play): T3 in the morning, T5 in the afternoon. VALUE: Scottie Barnes, LeBron James, Joel Embiid and Kyshawn George. PRICEY: VJ Edgecombe.
 
 ## T4
 
@@ -146,7 +146,7 @@ This week in T4: news judgments 12 for 24; Bagel notes 5 for 8; Bagel and ETR no
 - ADP with ETR within two picks in afternoon T4 (the old rule: straight ETR). In use, on trial (night 1 of 14); on points, too early to say; contest results: no clear signal. For today: keep doing it while the check runs.
 - Stop putting PRICEY players last in afternoon T4 (VALUE players still go first). Being tested (night 0 of 14); on points, too early to say; contest results: no clear signal. For today: nothing changes yet.
 
-**Today in T4.** PRICEY: Daniss Jenkins and Grayson Allen.
+**Today in T4.** VALUE: Miles Bridges, Immanuel Quickley and PJ Washington. PRICEY: Daniss Jenkins and Grayson Allen.
 
 ## T5
 
@@ -190,7 +190,7 @@ Your afternoon teams' T5 picks averaged 33 points, the field's 28: your overweig
 - In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock. Being tested (night 2 of 14); on points, the backtest shows proven to hurt so far; contest results: still to come. For today: nothing changes; not worth doing by hand.
 - After the VALUE players, order T5 by the window's projection to the whole point, and within the same point put the less drafted player first. Being tested (night 1 of 14); on points, in the morning the backtest shows an early sign it hurts, in the afternoon the backtest shows no clear signal; contest results: still to come. For today: nothing changes; not worth doing by hand.
 
-**Today in T5.** Beneficiaries to watch: if Scottie Barnes sits, Jakob Poeltl, Ja'Kobe Walter, Jamal Shead and Collin Murray-Boyles; if LeBron James sits, Anfernee Simons; if Joel Embiid sits, Anfernee Simons.
+**Today in T5.** VALUE: Alex Sarr. Beneficiaries to watch: if Scottie Barnes sits, Jakob Poeltl, Ja'Kobe Walter, Jamal Shead and Collin Murray-Boyles; if LeBron James sits, Anfernee Simons; if Joel Embiid sits, Anfernee Simons.
 
 ## The draft card
 
