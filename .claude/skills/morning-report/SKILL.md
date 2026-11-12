@@ -63,10 +63,12 @@ minutes. In order:
 - **T5 is a menu**: graded by exposure, not order: your T5 picks' average score against the field's, your overweights
   and how each scored against the T5 average, and late-news hedges (a beneficiary held for a tagged teammate) apart.
 - **The draft card**: each card decision from the contest side's `card_decisions` block in money_tiers.json: your
-  share last night against your season average, and the field's top-1% and top-10% multiples for teams doing it, last
-  night and on the season ("Last night you took a faller at the 1/2 turn on 34% of your teams at that turn vs your
-  season average of 25%. Last night, teams across the field that did this finished top 1% at 1.07x and top 10% at
-  1.3x the field's rate, against 1.06x and 1.2x on the season.").
+  share last night against your season average, and the field's teams doing it as a multiple of the whole field's
+  top-1% and top-10% rate (`vs_field_top1`, `vs_field_top10`), last night and on the season; at a turn, the turn's
+  teams as a group beside the season numbers (the team-weighted average of the turn's options, which cover every team
+  at that turn): "...finished top 1% at 3.6x and top 10% at 2.3x the field's rate on the season (teams at the 2/3
+  turn as a group: 1.16x and 1.11x)." Then one takeaway line: the best and worst option at each turn on the season's
+  top-1% multiple, and whether you're over or under the field on each.
 - **Back page**: the model (ours against ETR), each projection hypothesis in a plain sentence (what it does to the
   projection, what adopting it would change, where it stands; `plain`, `adopt_plain` and `retired_plain` in
   hypotheses.json), decisions due, data status, links.

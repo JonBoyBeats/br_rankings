@@ -950,7 +950,10 @@ def today_tier(t, pool, ben, pod):
 # ---------------------------------------------------------------- draft card and back page
 def draft_card(mt, reg, night, hand_card):
     """Each card decision from the contest side's card_decisions block in money_tiers.json: your share last night against
-    your season average, and the field's top-1% and top-10% multiples for teams doing it, last night and on the season."""
+    your season average, and the top-1% and top-10% rate of the field's teams doing it as a multiple of the whole field's
+    rate (vs_field_top1 / vs_field_top10), last night and on the season; at a turn, the turn's teams as a group beside it
+    (the team-weighted average of the turn's options, which cover every team at that turn). Then one takeaway: the best
+    and worst option at each turn on the season's top-1% multiple, and whether you're over or under the field on it."""
     md = ["## The draft card", ""]
     cds = (mt or {}).get("card_decisions") if (mt or {}).get("night") == night else None
     if not cds:
@@ -958,20 +961,56 @@ def draft_card(mt, reg, night, hand_card):
     verb = {"1/2 turn: faller": "took a faller at the 1/2 turn", "1/2 turn: reach": "reached at the 1/2 turn",
             "1/2 turn: trust ADP": "trusted ADP at the 1/2 turn", "2/3 turn: faller": "took a faller at the 2/3 turn",
             "2/3 turn: reach toward projection": "reached toward the higher projection at the 2/3 turn",
+            "2/3 turn: reach, not toward projection": "reached at the 2/3 turn, not toward the higher projection",
             "2/3 turn: trust ADP": "trusted ADP at the 2/3 turn",
             "Early pick + late same-position teammate": "paired an early pick with a late same-position teammate",
             "Opposing stars": "paired stars from opposite sides of one game"}
+    short_name = {"faller": "taking a faller", "reach": "reaching", "trust ADP": "trusting ADP",
+                  "reach toward projection": "reaching toward the higher projection",
+                  "reach, not toward projection": "reaching anywhere else"}
     x_ = lambda v: "%.2fx" % v if v is not None else "n/a"
+    turn_of = lambda c: c["decision"].split(":")[0] if c["decision"].endswith(tuple(short_name)) and "turn" in c["decision"] else None
+    def group(turn, when):
+        """The turn's teams as a group: the options' multiples weighted by the field's teams doing each."""
+        rs = [(c.get(when) or {}) for c in cds if turn_of(c) == turn]
+        out = []
+        for k in ("vs_field_top1", "vs_field_top10"):
+            w = [(r[k], (r.get("field") or {}).get("teams") or 0) for r in rs if r.get(k) is not None]
+            tot = sum(n for _, n in w)
+            out.append(sum(v * n for v, n in w) / tot if tot else None)
+        return out
     for c in cds:
         ln, se = c.get("last_night") or {}, c.get("season") or {}
         mine_n, mine_s = (ln.get("mine") or {}).get("share"), (se.get("mine") or {}).get("share")
+        turn = turn_of(c)
         line = "- Last night you %s on %s of %s vs your season average of %s." % (
             verb.get(c["decision"], c["decision"]), pct(mine_n) if mine_n is not None else "n/a",
-            "your teams at that turn" if "turn" in c["decision"] else "teams", pct(mine_s) if mine_s is not None else "n/a")
-        if ln.get("lift1") is not None or se.get("lift1") is not None:
+            "your teams at that turn" if turn else "teams", pct(mine_s) if mine_s is not None else "n/a")
+        if ln.get("vs_field_top1") is not None or se.get("vs_field_top1") is not None:
+            g = group(turn, "season") if turn else None
             line += (" Last night, teams across the field that did this finished top 1%% at %s and top 10%% at %s the field's rate, "
-                     "against %s and %s on the season." % (x_(ln.get("lift1")), x_(ln.get("lift10")), x_(se.get("lift1")), x_(se.get("lift10"))))
+                     "against %s and %s on the season%s." % (
+                         x_(ln.get("vs_field_top1")), x_(ln.get("vs_field_top10")), x_(se.get("vs_field_top1")), x_(se.get("vs_field_top10")),
+                         " (teams at the %s turn as a group: %s and %s)" % (turn.split()[0], x_(g[0]), x_(g[1])) if g else ""))
         md.append(line)
+    take = []
+    for turn in ("1/2 turn", "2/3 turn"):
+        opts = [c for c in cds if turn_of(c) == turn and (c.get("season") or {}).get("vs_field_top1") is not None]
+        if len(opts) < 2:
+            continue
+        key = lambda c: ((c["season"]["vs_field_top1"]), c["season"].get("vs_field_top10") or 0)
+        best, worst = max(opts, key=key), min(opts, key=key)
+        def side(c):
+            m, f = (c["season"].get("mine") or {}).get("share"), (c["season"].get("field") or {}).get("share")
+            if m is None or f is None:
+                return "your share isn't read"
+            return "you're about level with the field on it" if abs(m - f) < 0.03 else \
+                "you're %s the field on it (%s against %s)" % ("over" if m > f else "under", pct(m), pct(f))
+        nm = lambda c: short_name[c["decision"].split(": ", 1)[1]]
+        take.append("at the %s, %s has done best (%s the field's top-1%% rate on the season) and %s; %s has done worst (%s) and %s" % (
+            turn, nm(best), x_(best["season"]["vs_field_top1"]), side(best), nm(worst), x_(worst["season"]["vs_field_top1"]), side(worst)))
+    if take:
+        md += ["", "Takeaway: " + "; ".join(take) + "."]
     if hand_card:
         md += ["", hand_card]
     return md + [""]

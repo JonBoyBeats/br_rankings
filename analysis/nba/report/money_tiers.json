@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-11",
+ "generated": "2026-11-12",
  "night": "2026-11-10",
  "pod": 6,
  "slates": [
@@ -25,7 +25,7 @@
   "2026-11-09",
   "2026-11-10"
  ],
- "notes": "Exposure: share of teams holding the player (mine: my teams in that window; field: every team in it). Drafted%: share of that window's pods that drafted him. lift10: top-10% lift against same-contest, same-price teams (money_report.md). verdict: the MONEY column of decision_register.csv as approved; current: this run's read (after the price-split check where it ran). mine: my teams where the decision applied, season to date (top-10% and top-1% rates over the field's). A player's lift10: his holders' top-10% rate over the window's (20+ holders). results: my teams last night (fees and winnings in dollars, finishes as top x%). card: my teams last night at each turn (faller, reach, trust; a reach's direction) and holding same-position teammates or opposing stars, with how many finished top 10%. card_decisions: per draft-card decision, last night and season to date, my teams doing it (share of my teams at that turn, or of all my teams) against the field's share, and the field's top-1% and top-10% lift for teams doing it against lift_against (one night is noisy; the season line is the read).",
+ "notes": "Exposure: share of teams holding the player (mine: my teams in that window; field: every team in it). Drafted%: share of that window's pods that drafted him. lift10: top-10% lift against same-contest, same-price teams (money_report.md). verdict: the MONEY column of decision_register.csv as approved; current: this run's read (after the price-split check where it ran). mine: my teams where the decision applied, season to date (top-10% and top-1% rates over the field's). A player's lift10: his holders' top-10% rate over the window's (20+ holders). results: my teams last night (fees and winnings in dollars, finishes as top x%). card: my teams last night at each turn (faller, reach, trust; a reach's direction) and holding same-position teammates or opposing stars, with how many finished top 10%. card_decisions: per draft-card decision, last night and season to date, my teams doing it (share of my teams at that turn, or of all my teams) against the field's share, and vs_field_top1 / vs_field_top10: the top-1% and top-10% rate of the field's teams doing it over the whole field's rate in their contest (every team counts; no price matching, so a cheaper or pricier build's edge is in it). One night is noisy; the season line is the read.",
  "tiers": {
   "1": {
    "exposure": {
@@ -3313,7 +3313,6 @@
   {
    "decision": "1/2 turn: faller",
    "register": "card-fallers",
-   "lift_against": "trusting ADP at the 1/2 turn",
    "last_night": {
     "mine": {
      "teams": 16,
@@ -3325,9 +3324,8 @@
      "of": 10260,
      "share": 0.368
     },
-    "lift1": 0.93,
-    "lift10": 0.62,
-    "teams_doing": 3774
+    "vs_field_top1": 0.85,
+    "vs_field_top10": 1.09
    },
    "season": {
     "mine": {
@@ -3340,19 +3338,13 @@
      "of": 144230,
      "share": 0.291
     },
-    "lift1": 1.82,
-    "lift10": 1.38,
-    "teams_doing": 41858,
-    "range80_10": [
-     1.01,
-     1.96
-    ]
+    "vs_field_top1": 1.11,
+    "vs_field_top10": 1.04
    }
   },
   {
    "decision": "1/2 turn: reach",
    "register": "card-turn12-reach",
-   "lift_against": "trusting ADP at the 1/2 turn",
    "last_night": {
     "mine": {
      "teams": 4,
@@ -3364,9 +3356,8 @@
      "of": 10260,
      "share": 0.244
     },
-    "lift1": 0.3,
-    "lift10": 0.64,
-    "teams_doing": 2502
+    "vs_field_top1": 0.85,
+    "vs_field_top10": 1.21
    },
    "season": {
     "mine": {
@@ -3379,19 +3370,13 @@
      "of": 144230,
      "share": 0.186
     },
-    "lift1": 0.48,
-    "lift10": 0.72,
-    "teams_doing": 26839,
-    "range80_10": [
-     0.57,
-     0.92
-    ]
+    "vs_field_top1": 0.41,
+    "vs_field_top10": 0.57
    }
   },
   {
    "decision": "1/2 turn: trust ADP",
    "register": "card-turn12-reach",
-   "lift_against": "reaching at the 1/2 turn",
    "last_night": {
     "mine": {
      "teams": 20,
@@ -3403,9 +3388,8 @@
      "of": 10260,
      "share": 0.387
     },
-    "lift1": 3.2,
-    "lift10": 1.35,
-    "teams_doing": 3973
+    "vs_field_top1": 2.46,
+    "vs_field_top10": 1.91
    },
    "season": {
     "mine": {
@@ -3418,19 +3402,13 @@
      "of": 144230,
      "share": 0.523
     },
-    "lift1": 2.4,
-    "lift10": 1.62,
-    "teams_doing": 75384,
-    "range80_10": [
-     1.18,
-     2.09
-    ]
+    "vs_field_top1": 0.97,
+    "vs_field_top10": 0.96
    }
   },
   {
    "decision": "2/3 turn: faller",
    "register": "card-fallers",
-   "lift_against": "trusting ADP at the 2/3 turn",
    "last_night": {
     "mine": {
      "teams": 7,
@@ -3442,9 +3420,8 @@
      "of": 6717,
      "share": 0.203
     },
-    "lift1": 15.28,
-    "lift10": 4.99,
-    "teams_doing": 1365
+    "vs_field_top1": 0.43,
+    "vs_field_top10": 0.68
    },
    "season": {
     "mine": {
@@ -3457,19 +3434,13 @@
      "of": 101503,
      "share": 0.167
     },
-    "lift1": 1.19,
-    "lift10": 1.17,
-    "teams_doing": 16910,
-    "range80_10": [
-     0.98,
-     1.42
-    ]
+    "vs_field_top1": 1.55,
+    "vs_field_top10": 1.47
    }
   },
   {
    "decision": "2/3 turn: reach toward projection",
    "register": "card-turn23-reach-higher-proj",
-   "lift_against": "trusting ADP at the 2/3 turn",
    "last_night": {
     "mine": {
      "teams": 0,
@@ -3481,9 +3452,8 @@
      "of": 6717,
      "share": 0.008
     },
-    "lift1": null,
-    "lift10": 0.0,
-    "teams_doing": 50
+    "vs_field_top1": 0.0,
+    "vs_field_top10": 0.0
    },
    "season": {
     "mine": {
@@ -3496,19 +3466,45 @@
      "of": 101503,
      "share": 0.055
     },
-    "lift1": 2.21,
-    "lift10": 1.6,
-    "teams_doing": 5542,
-    "range80_10": [
-     1.3,
-     2.0
-    ]
+    "vs_field_top1": 3.62,
+    "vs_field_top10": 2.27
+   }
+  },
+  {
+   "decision": "2/3 turn: reach, not toward projection",
+   "register": "card-turn23-reach-higher-proj",
+   "last_night": {
+    "mine": {
+     "teams": 1,
+     "of": 33,
+     "share": 0.03
+    },
+    "field": {
+     "teams": 1108,
+     "of": 6717,
+     "share": 0.165
+    },
+    "vs_field_top1": 0.27,
+    "vs_field_top10": 0.38
+   },
+   "season": {
+    "mine": {
+     "teams": 47,
+     "of": 491,
+     "share": 0.096
+    },
+    "field": {
+     "teams": 17540,
+     "of": 101503,
+     "share": 0.173
+    },
+    "vs_field_top1": 0.9,
+    "vs_field_top10": 0.9
    }
   },
   {
    "decision": "2/3 turn: trust ADP",
    "register": "card-turn23-reach-higher-proj",
-   "lift_against": "any reach at the 2/3 turn",
    "last_night": {
     "mine": {
      "teams": 25,
@@ -3520,9 +3516,8 @@
      "of": 6717,
      "share": 0.624
     },
-    "lift1": 0.15,
-    "lift10": 0.29,
-    "teams_doing": 4186
+    "vs_field_top1": 0.02,
+    "vs_field_top10": 0.13
    },
    "season": {
     "mine": {
@@ -3535,19 +3530,13 @@
      "of": 101503,
      "share": 0.606
     },
-    "lift1": 0.69,
-    "lift10": 0.89,
-    "teams_doing": 61382,
-    "range80_10": [
-     0.77,
-     1.04
-    ]
+    "vs_field_top1": 0.9,
+    "vs_field_top10": 0.96
    }
   },
   {
    "decision": "Early pick + late same-position teammate",
    "register": "card-same-position-teammates",
-   "lift_against": "teams with no two teammates",
    "last_night": {
     "mine": {
      "teams": 11,
@@ -3559,9 +3548,8 @@
      "of": 20830,
      "share": 0.112
     },
-    "lift1": 1.61,
-    "lift10": 1.14,
-    "teams_doing": 2332
+    "vs_field_top1": 1.05,
+    "vs_field_top10": 0.81
    },
    "season": {
     "mine": {
@@ -3574,19 +3562,13 @@
      "of": 310296,
      "share": 0.158
     },
-    "lift1": 0.87,
-    "lift10": 0.89,
-    "teams_doing": 32045,
-    "range80_10": [
-     0.79,
-     0.98
-    ]
+    "vs_field_top1": 0.98,
+    "vs_field_top10": 0.88
    }
   },
   {
    "decision": "Opposing stars",
    "register": "card-opposing-stars",
-   "lift_against": "teams without opposing stars",
    "last_night": {
     "mine": {
      "teams": 39,
@@ -3598,9 +3580,8 @@
      "of": 20830,
      "share": 0.467
     },
-    "lift1": 1.22,
-    "lift10": 0.93,
-    "teams_doing": 9721
+    "vs_field_top1": 1.11,
+    "vs_field_top10": 0.96
    },
    "season": {
     "mine": {
@@ -3613,13 +3594,8 @@
      "of": 310296,
      "share": 0.405
     },
-    "lift1": 1.35,
-    "lift10": 1.16,
-    "teams_doing": 125786,
-    "range80_10": [
-     1.03,
-     1.31
-    ]
+    "vs_field_top1": 1.21,
+    "vs_field_top10": 1.12
    }
   }
  ],
