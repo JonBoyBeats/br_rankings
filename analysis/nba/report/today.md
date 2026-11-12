@@ -210,6 +210,8 @@ Takeaway: at the 1/2 turn, taking a faller has done best (1.08x the field's top-
 
 The model: on the 99 players both projected at the afternoon lock, ours missed by 10.1 points on average and ETR's by 9.4; their rank correlations with the finish were 0.64 and 0.65 (1 is perfect).
 
+Chance to play, morning Questionable players: 58 this season, 27 played (47%). The model sorts the ones who play from the ones who sit at 0.46 (0.5 is a coin flip, 1 is perfect), and doesn't beat a flat 47% guess (Brier 0.271 against 0.249; lower is better). Last night: Keyonte George at 49%, played; Tyler Herro at 31%, played; Immanuel Quickley at 61%, played; Josh Hart at 59%, played; Lauri Markkanen at 41%, sat.
+
 **Projection hypotheses.**
 
 - **Minutes trend**: moves a player's projected minutes to his last-3 average when it runs 4+ minutes off his usual, instead of his usual minutes; adopting it would build that minutes trend into the morning Proj. So far it lands 0.30 points closer across 263 players, 13 of 14 nights in; 1 more night and it comes to you as a proposal.

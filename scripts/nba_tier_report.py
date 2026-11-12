@@ -1017,6 +1017,36 @@ def draft_card(mt, reg, night, hand_card):
     return md + [""]
 
 
+def q_tracker(H, last):
+    """How well the chance-to-play model sorts players tagged Questionable at the morning record, season to date: how
+    many played, whether its calibrated chance orders the ones who play above the ones who sit (AUC: 0.5 is a coin flip,
+    1 is perfect), and whether it beats a flat guess at the season's rate (Brier score, lower is better)."""
+    pcal = calibrated_play(H)
+    seen, rows = set(), []
+    for r in H:
+        if r["window"] != "am" or not (r["tag"] or "").lower().startswith("q") or r["play"] == "" or r["played"] == "":
+            continue
+        if (r["date"], r["player_id"]) in seen:
+            continue
+        seen.add((r["date"], r["player_id"]))
+        rows.append((pcal(min(max(float(r["play"]), 0.005), 0.995), True), int(r["played"]), r["date"], r["name"]))
+    if len(rows) < 10:
+        return []
+    base = sum(y for _, y, _, _ in rows) / len(rows)
+    brier = sum((p - y) ** 2 for p, y, _, _ in rows) / len(rows)
+    flat = sum((base - y) ** 2 for _, y, _, _ in rows) / len(rows)
+    pos, neg = [p for p, y, _, _ in rows if y], [p for p, y, _, _ in rows if not y]
+    auc = sum((a > b) + 0.5 * (a == b) for a in pos for b in neg) / (len(pos) * len(neg)) if pos and neg else None
+    night = [(n, p, y) for p, y, d, n in rows if d == last]
+    out = "Chance to play, morning Questionable players: %d this season, %d played (%s). The model sorts the ones who play from " \
+          "the ones who sit at %.2f (0.5 is a coin flip, 1 is perfect), and %s a flat %s guess (Brier %.3f against %.3f; lower " \
+          "is better)." % (len(rows), sum(y for _, y, _, _ in rows), pct(base), auc if auc is not None else 0.5,
+                           "beats" if brier < flat else "doesn't beat", pct(base), brier, flat)
+    if night:
+        out += " Last night: %s." % "; ".join("%s at %s, %s" % (n, pct(p), "played" if y else "sat") for n, p, y in night)
+    return [out]
+
+
 def back_page(H, last, health_lines, today, hand_back):
     md = ["## Back page", ""]
     pm = [r for r in H if r["date"] == last and r["window"] == "pm" and r["scratched"] != "1" and num(r["actual"]) is not None]
@@ -1030,6 +1060,7 @@ def back_page(H, last, health_lines, today, hand_back):
         s.append("The model: on the %d players both projected at the afternoon lock, ours missed by %.1f points on average and "
                  "ETR's by %.1f; their rank correlations with the finish were %.2f and %.2f (1 is perfect)." % (
                      len(both), e_our, e_etr, c_our or 0, c_etr or 0))
+    tracker = q_tracker(H, last)
     hyp_lines = []
     try:
         import nba_hypotheses as HY
@@ -1077,7 +1108,7 @@ def back_page(H, last, health_lines, today, hand_back):
         s.append(hand_back)
     bad = problems(health_lines)
     s2 = "Data: " + ("; ".join(bad) + "." if bad else "everything for last night came in, and today's inputs were ready on time.")
-    md += [" ".join(s), ""] + (["**Projection hypotheses.**", ""] + hyp_lines + [""] if hyp_lines else []) + [s2, "", "Season tables are below; every player's night is in the ledger (analysis/nba/ledger.csv), "
+    md += [" ".join(s), ""] + ([tracker[0], ""] if tracker else []) + (["**Projection hypotheses.**", ""] + hyp_lines + [""] if hyp_lines else []) + [s2, "", "Season tables are below; every player's night is in the ledger (analysis/nba/ledger.csv), "
            "the calls and misses in misses.csv, and the full tier tables in tier_grade.md, shadow.md and money_report.md.", ""]
     return md
 
