@@ -15,6 +15,7 @@ From tier_history.csv (the button's order is its `built` rank), for each slate:
           switch is dropped only if it loses to the old rule over its 14 forward nights
   T2-T4   candidate: the same leverage tiebreak on money's definition, each window (money LEAN for)
   T5      candidate (T5-2, from 2026-11-11): the window's projection to the whole point, the less drafted first within it
+  AM      candidate (Q-2, from 2026-11-12): a morning Questionable player in T1-T3 drops to the top of T4
   all     the one-tier cap (kept; money leans against): the projection tier's order where it and the combined tier's
           disagree, against the button
   checks  14-night checks on adopted rules, from 2026-11-11: VALUE first (T3-T5), PRICEY last, AM no Questionable push,
@@ -103,7 +104,7 @@ def _row(h, t):
     return {"id": h["id"], "name": "%s: %s" % (h["id"], h["idea"]), "window": h["window"], "tiers": tuple(h["tiers"]),
                     "kind": "candidate", "steps": [tuple(x) for x in t["steps"]] if t.get("steps") else None,
                     "pairwise": t.get("pairwise"), "flags": t.get("flags", "both"), "forward": h.get("forward_from", FORWARD),
-                    "drop_if": "no win", "include_q": bool(t.get("include_q")), "cross": t.get("pairwise") == "qsplit"}
+                    "drop_if": "no win", "include_q": bool(t.get("include_q")), "cross": t.get("pairwise") in ("qsplit", "qam4")}
 
 
 def pairwise(how, a, b, ctx):
@@ -135,6 +136,13 @@ def pairwise(how, a, b, ctx):
             return a if round(pa) > round(pb) else b
         da, db = G.num(a["drafted"]), G.num(b["drafted"])
         return None if da is None or db is None or da == db else (a if da < db else b)
+    if how == "qam4":                      # Q-2: a morning Questionable player in T1-T3 drops to the top of T4
+        qa, qb = bool(QR.match(a["tag"] or "")), bool(QR.match(b["tag"] or ""))
+        if qa == qb:
+            return None
+        ka = (4 if qa and int(a["tier"]) <= 3 else int(a["tier"]), int(a["built"]))
+        kb = (4 if qb and int(b["tier"]) <= 3 else int(b["tier"]), int(b["built"]))
+        return None if ka == kb else (a if ka < kb else b)
     if how in ("qpush", "qnopush"):        # the Questionable checks: a pair with exactly one Questionable player
         qa, qb = bool(QR.match(a["tag"] or "")), bool(QR.match(b["tag"] or ""))
         if qa == qb:

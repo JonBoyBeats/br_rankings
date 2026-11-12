@@ -169,12 +169,14 @@
     "backtest": "Before any forward grading: for Questionable players, the push decision split by flag (VALUE / unflagged / PRICEY), calibrated chance (under 50%, 50-70%, over 70%) and tier (T1-T2 vs T3-T5), in each window: back one and back two against no push, on decision pairs where they differ, points per pair with the 80% range and the evidence label; cells under 40 pairs are 'not enough yet'. 72 cells: by chance alone about 40% of cells with enough pairs would show a lean."
    },
    "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
-   "status": "testing",
+   "status": "replaced",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
    "register": "pm-questionable-back-two",
    "plain": "Push Questionable players by type: VALUE players and those over 70% to play stay put; in T1-T2, PRICEY players and those under 50% to play drop two tiers; everyone else follows the current rule",
-   "name": "Questionable pushes by type"
+   "name": "Questionable pushes by type",
+   "closed": "2026-11-12",
+   "note": "Replaced 2026-11-12 by Q-2 (Jon): Q-1 splits on the chance-to-play model, which has no skill on morning Questionable players (58 players, AUC 0.46; a flat 47% beats it)."
   },
   "T2-1": {
    "tiers": [
@@ -257,6 +259,34 @@
    "plain": "In afternoon T2, order by ETR's projection instead of ADP",
    "name": "ETR over ADP in afternoon T2",
    "note": "Queued: T2 already has three ideas under test (T2-T4-1, Q-1, T2-1). It starts when one of them frees a slot, or on a Monday yes to drop one."
+  },
+  "Q-2": {
+   "tiers": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "window": "am",
+   "idea": "AM: a Questionable player in T1-T3 at the morning record drops to T4 (first in T4 by the button's order); in T4-T5 he keeps his tier; no chance-to-play split",
+   "why": "Jon, 2026-11-12: keep taking Q tags in the morning, but later. Field, morning, 6-drafter, season to date: teams holding a Questionable player taken around rounds 1-3 (ADP 18 or earlier) made the top 1% at 0.90% (ROI -15%), around rounds 4-6 at 1.24% (ROI -2%), against the field's 1.01% (ROI -8%); a late one who sat cost little (1.09% top 1%), an early one who sat a lot (0.55%). The chance-to-play model doesn't sort morning Questionable players (AUC 0.46), so no split on it",
+   "test": {
+    "kind": "pairwise",
+    "pairwise": "qam4",
+    "flags": "both",
+    "include_q": true,
+    "against": "the button",
+    "rule": "Inside the morning record: for a pair with exactly one player tagged Questionable at the morning record, the alternative orders by (his tier moved to 4 if it was 1-3, else his tier; the button's rank); pairs that order the same as the button don't count. Graded on 6-drafter decision pairs (ADP within 4, across tiers) that it orders differently from the button; a scratch scored through his swap; positive = the idea beat the button.",
+    "money": "For the contest side: morning teams holding a Questionable player taken around rounds 1-3 against rounds 4-6 (by ADP), top-10% and top-1% against the field."
+   },
+   "bar": "Forward 14 nights from forward_from, graded nightly in the shadow; Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against; propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
+   "status": "testing",
+   "written": "2026-11-12",
+   "forward_from": "2026-11-12",
+   "register": null,
+   "plain": "In the morning, a Questionable player in T1 to T3 drops to the top of T4, so he's taken around round 4 instead of early; in T4 and T5 he keeps his tier",
+   "name": "Morning Questionable players to T4"
   }
  }
 }
