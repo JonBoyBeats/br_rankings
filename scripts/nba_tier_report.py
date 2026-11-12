@@ -610,7 +610,7 @@ def who_to_trust(H, last, t):
             night.append("%s's pick %s the only close call%s" % (who[w], "won" if g[0] > 0 else "lost", " in the morning" if w == "am" else " in the afternoon"))
         elif g:
             k = sum(1 for x in g if x > 0)
-            night.append("%s's pick %s%s" % (who[w], "won all %d" % len(g) if k == len(g) else "lost all %d" % len(g) if k == 0 else
+            night.append("%s's pick %s%s" % (who[w], ("won both" if len(g) == 2 else "won all %d" % len(g)) if k == len(g) else ("lost both" if len(g) == 2 else "lost all %d" % len(g)) if k == 0 else
                                              "scored more %d times out of %d" % (k, len(g)), " in the morning" if w == "am" else " in the afternoon"))
     s.append("Last night, when %s disagreed with ADP about two close players here, %s." % (
         "our projection or ETR", "; ".join(night)) if night else "Last night the projection and ADP agreed on every close call here.")
@@ -633,8 +633,8 @@ def who_to_trust(H, last, t):
     else:
         win, lose = (who[w], "ADP") if mean > 0 else ("ADP", who[w])
         follows = RULE_MAIN[(t, w)] == ("proj" if mean > 0 else "adp")
-        s.append("On the season, trusting %s over %s here %s gains about %.0f points per close call (%s): %s." % (
-            win, lose, when, abs(mean), said(lab, abs(mean)), "keep doing it, the rule already does" if follows
+        s.append("On the season, trusting %s over %s here %s gains about %.0f point%s per close call (%s): %s." % (
+            win, lose, when, abs(mean), "" if round(abs(mean)) == 1 else "s", said(lab, abs(mean)), "keep doing it, the rule already does" if follows
             else "the rule leans the other way here, so this is worth a test"))
     return [" ".join(s), ""]
 

@@ -26,7 +26,7 @@ Wednesday's ten-game slate was mostly close; the one rout was Brooklyn by 34 ove
 
 **The rules we played.** Morning: ADP, with the higher Boom (his ceiling) first when two are within two picks (in use, original rule; contest results say it helps, first read, confirmed Monday). Afternoon: ETR's projection (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday).
 
-**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick lost all 2 in the morning; ETR's pick lost the only close call in the afternoon. On the season there's no clear answer here yet (14 close calls): nothing to change.
+**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick lost both in the morning; ETR's pick lost the only close call in the afternoon. On the season there's no clear answer here yet (14 close calls): nothing to change.
 
 **Your moves.**
 
@@ -120,7 +120,7 @@ Nothing being tested here.
 
 **The rules we played.** Morning: our projection, with ADP deciding within three points (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ADP, with ETR breaking ties within two picks (in use, on trial, night 1 of 14). VALUE players go first in this tier (in use, on trial, night 1 of 14).
 
-**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 3 times out of 7 in the morning. On the season, trusting our projection over ADP here in the morning gains about 1 points per close call (an early sign it helps): keep doing it, the rule already does.
+**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 3 times out of 7 in the morning. On the season, trusting our projection over ADP here in the morning gains about 1 point per close call (an early sign it helps): keep doing it, the rule already does.
 
 **Your moves.**
 
