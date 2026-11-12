@@ -2,6 +2,14 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-11 Wed main
+
+- Locked both windows (Lock AM 7:51am, Lock PM 3:25pm). Paul George (ADP 26, ruled out after Lock AM) and Trey Murphy (Probable at Lock AM, Doubtful by the afternoon) sat, neither an early pick, so no team left the grading; calls on their teammates (Fears, Dejounte Murray in the morning) are logged as hedges. Curry left after 6 minutes. One rout: Brooklyn by 34 over New Orleans.
+- Morning: 44% against our number (season 55%, your board wins) and 63% against ADP (season 55% of 1,601 pairs: your board now wins). Raises on Nembhard and Fox were right, Quickley wrong (3-14); fades on Shead and Carter right, Sharpe wrong (5 stocks in 19 minutes). Afternoon: 49% against ETR (season 47%), 66% against ADP; fades on Dejounte, Castle and Fears right, Harper (55 on 36 minutes) and Bane (7-11 from three) wrong; raises on Bailey right, McCain and Quickley wrong (both 3-14).
+- Theme (hedges left out): calls tagged blowout are now raises 2 right, 16 wrong (11 slates) and fades 18 right, 3 wrong (9 slates). Raises on players who then played 4+ minutes over their usual: 29 right, 5 wrong; fades on them 8 right, 19 wrong.
+- Field: 80 teams in Hump Day Hoops, median finish top 46%, top 10% 1.12, top 1% 0.00 (best top 2.6%), $150 on $400. Running, 6-drafter: top 10% 1.34 (17 nights), AM teams 1.47 against PM 1.28.
+- Morning Proj vs ETR (etr_match.md): direction 96% (27 of 28; season 91%), big misses 12 of 60 (20%). Missed the same way on 3+ of the last 10: Traore, Avdija and Fears (ETR above ours), Sabonis, Markkanen, Siakam and Jalen Johnson (ETR below).
+
 ## 2026-11-10 Tue main
 
 - Locked both windows (Lock AM 4:04am, Lock PM 3:17pm). Herro, Markkanen and Hart sat, none an early pick, so no team left the grading; calls on their teammates (Burries, Rollins, Bailey, Peterson, Collier) are logged as hedges. Four of six games were 20+ point blowouts.

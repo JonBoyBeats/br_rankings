@@ -4,13 +4,13 @@
 
 ## Front page
 
-Last night's main slate had 10 games, 2 of them blowouts (BKN by 34 over NOP; ORL by 15 over UTA). The biggest nights against ETR's number among drafted players: Dylan Harper 21 points over; James Harden 13 points over; Jamal Murray 12 points over. Your 80 teams (36 drafted in the morning, 44 in the afternoon) had a median finish in the top 46%; 9 made the top 10% and 0 the top 1%, and 15 cashed. They cost $400 in entries and won $150. Today: Thu Main, lock 3:52 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
+Wednesday's ten-game slate was mostly close; the one rout was Brooklyn by 34 over New Orleans, which sank Dejounte Murray (5 points) and Fears. Curry left after 6 minutes, Paul George and Ajay Mitchell sat, and the night belonged to secondary pieces: Dylan Harper (55 with 10 assists and 5 stocks), Avdija (6 stocks), Hartenstein and Zubac in bigger roles, while Luka (46), Gilgeous-Alexander (40, 0-7 from three) and Giddey (7 turnovers) came in well under. Your 80 teams had a median finish in the top 46%; 9 made the top 10%, none the top 1% (best top 2.6%), and 15 cashed, returning $150 on $400. One season verdict settled: your morning board now beats ADP, picking the right player on 55% of 1,601 close calls, though last night it was right on only 44% of its disagreements with our projection. The blowout pattern held again (fades on Murray, Fears and Carter were right, now 18 right and 3 wrong on the season), and the afternoon raises on players back from injury lost: Quickley went 3-14 and McCain 3-14 with Ajay out. Nothing to decide today.
 
 **Your biggest bets.**
 
-- **Pascal Siakam**, on 44% of your teams (64% of your morning ones) against 17% of the field. Over by 8 (46.1 vs ETR 38.2): 28 pts on 7-17 FG, 2-7 3s. His holders made the top 10% 1.4 times as often as the field.
-- **Keyonte George**, on 30% of your teams (46% of your afternoon ones) against 11% of the field. Under by 6 (28.9 vs ETR 35.4): 13 pts on 3-13 FG, 2-8 3s. His holders made the top 10% 0.6 times as often as the field.
-- **Andrew Nembhard**, on 16% of your teams (20% of your afternoon ones) against 3% of the field. In line (33.4 vs ETR 33.4). His holders made the top 10% 1.6 times as often as the field.
+- **Pascal Siakam**, on 44% of your teams (64% of your morning ones) against 17% of the field. Over: 28 points in a 13-point win. His holders made the top 10% 1.4 times as often as the field.
+- **Keyonte George**, on 30% of your teams (46% of your afternoon ones) against 11% of the field. Under: cold 3-13 in his return from the ankle. His holders made the top 10% 0.6 times as often as the field.
+- **Andrew Nembhard**, on 16% of your teams (20% of your afternoon ones) against 3% of the field. In line: 10 assists. His holders made the top 10% 1.6 times as often as the field.
 
 **How to read the statuses.**
 
@@ -37,7 +37,7 @@ This week in T1: news judgments 7 for 9; Bagel and ETR notes 1 for 2; your own r
 
 **Player recap.**
 
-- **Doncic**: Under by 12 (46.5 vs ETR 58.4): 32 min (usual 36), 5 turnovers.
+- **Doncic**: Under: 10-25 with 5 turnovers in 32 minutes of an 11-point win.
 
 **Contest view.** Holders of Nikola Jokic and Victor Wembanyama made the top 10% at 2.2 times and 2.2 times the field's rate. In your afternoon window, the top-10% teams held Nikola Jokic on 37% against your 7%; you held Luka Doncic on 18% against 11% of the top-10% teams. On the season, putting PRICEY players last: contest results, proven to help so far; last night you had a PRICEY player on 0% of your afternoon teams, the field on 0%, about level with the field.
 
@@ -68,11 +68,11 @@ This week in T2: news judgments 9 for 29; your own reads 3 for 8; Bagel and ETR 
 
 **Player recap.**
 
-- **Gilgeous-Alexander**: Under by 14 (39.8 vs ETR 53.3): ETR had him above his usual (53 vs 45), 2 ast (about 6 usual for his minutes).
-- **Sengun**: Over by 7 (52.1 vs ETR 45.1).
-- **Murray**: Over by 12 (51.8 vs ETR 39.5): 30 pts on 12-19 FG, 4-7 3s, 32 min (usual 36).
-- **Avdija**: Over by 10 (53.6 vs ETR 43.3): 4 stl + 2 blk, 3 reb (about 7 usual for his minutes), ETR had him above his usual (43 vs 39).
-- **Mitchell**: Over by 8 (45.4 vs ETR 37.2).
+- **Gilgeous-Alexander**: Under: 9-20, 0-7 from three, 2 assists in a 10-point loss.
+- **Sengun**: Over: 19-13-9 in 37 minutes.
+- **Murray**: Over: 30 on 12-19 with 8 assists in 32 minutes.
+- **Avdija**: Over: 6 stocks and 28 points in a 10-point win, through 5 turnovers.
+- **Mitchell**: Over: 23-7-6 with 3 stocks in 36 minutes of an 8-point win.
 
 **Contest view.** Holders of Donovan Mitchell and Deni Avdija made the top 10% at 2.3 times and 2.1 times the field's rate. In your afternoon window, the top-10% teams held Donovan Mitchell on 37% against your 16%; you held Shai Gilgeous-Alexander on 30% against 4% of the top-10% teams. On the season, taking the less drafted of two close players: contest results, an early sign it helps.
 
@@ -82,7 +82,7 @@ This week in T2: news judgments 9 for 29; your own reads 3 for 8; Bagel and ETR 
 - In T2 to T4, put the less drafted player first when two are within two projected points and at least 10 points apart in how often they're drafted. Being tested (night 0 of 14); on points, too early to say; contest results: an early sign it helps. For today: nothing changes yet.
 - Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on. Being tested (night 2 of 14); on points, in the morning the backtest shows no clear signal, in the afternoon the backtest shows no clear signal; contest results: proven to help so far. For today: nothing changes yet.
 
-**Today in T2.** Scottie Barnes is Questionable (46% to play): T2 in the morning, T4 in the afternoon. LeBron James is Questionable (72% to play): T2 in the morning, T4 in the afternoon. Joel Embiid is Questionable (62% to play): T2 in the morning, T4 in the afternoon. PRICEY: Ayo Dosunmu, Jaden McDaniels, Naz Reid and Paul Reed.
+**Today in T2.** PRICEY: Ayo Dosunmu, Jaden McDaniels and Naz Reid.
 
 ## T3
 
@@ -103,10 +103,10 @@ This week in T3: news judgments 6 for 21; Bagel notes 5 for 7; Bagel and ETR not
 
 **Player recap.**
 
-- **Siakam**: Over by 8 (46.1 vs ETR 38.2): 28 pts on 7-17 FG, 2-7 3s.
-- **Durant**: Under by 7 (30.3 vs ETR 36.9): no steals or blocks.
-- **Randle**: Under by 10 (27.3 vs ETR 37.1): 29 min (usual 33) in a 34-point blowout.
-- **Young**: Under by 10 (27.6 vs ETR 37.4): 4 ast (about 9 usual for his minutes), 15 pts on 5-10 FG, 3-8 3s.
+- **Siakam**: Over: 28 points in a 13-point win.
+- **Durant**: Under: 20 points but 4 rebounds and no stocks.
+- **Randle**: Under: 6-16, 0-5 from three, in 29 minutes of a 34-point win.
+- **Young**: Under: 4 assists and 15 points in a 13-point loss.
 
 **Contest view.** Holders of Pascal Siakam and Zion Williamson made the top 10% at 1.6 times and 1.4 times the field's rate. In your afternoon window, the top-10% teams held Zion Williamson on 22% against your 4%; you held Cameron Boozer on 41% against 12% of the top-10% teams. On the season, taking VALUE players first: contest results, an early sign it helps; last night you had a VALUE player on 0% of your afternoon teams, the field on 0%, about level with the field.
 
@@ -114,7 +114,7 @@ This week in T3: news judgments 6 for 21; Bagel notes 5 for 7; Bagel and ETR not
 
 Nothing being tested here.
 
-**Today in T3.** VALUE: Kyshawn George. PRICEY: VJ Edgecombe, Ausar Thompson and Rudy Gobert.
+**Today in T3.** Scottie Barnes is Questionable (45% to play): T3 in the morning, T5 in the afternoon. LeBron James is Questionable (71% to play): T3 in the morning, T5 in the afternoon. Joel Embiid is Questionable (61% to play): T3 in the morning, T5 in the afternoon. VALUE: Scottie Barnes, LeBron James, Joel Embiid and Kyshawn George. PRICEY: VJ Edgecombe, Ausar Thompson and Rudy Gobert.
 
 ## T4
 
@@ -133,11 +133,11 @@ This week in T4: news judgments 12 for 24; Bagel notes 5 for 8; Bagel and ETR no
 
 **Player recap.**
 
-- **Black**: Over by 8 (42.4 vs ETR 34.2): 39 min (usual 30), 1 stl + 0 blk.
-- **Lendeborg**: Over by 7 (41.0 vs ETR 33.8): 0 ast (about 5 usual for his minutes), 36 min (usual 32).
+- **Black**: Over: 39 minutes (usual 31), 22-7-8.
+- **Lendeborg**: Over: 25 and 10 in 36 minutes with Curry out early.
 - **George**: scratched; swaps went to Fears (165 teams, 22 points) and Giddey (149 teams, 15 points).
-- **Mobley**: Under by 12 (23.5 vs ETR 35.3): 10 pts on 4-8 FG, 0-2 3s, 5 reb (about 8 usual for his minutes).
-- **Murray**: Under by 22 (14.4 vs ETR 36.7): 5 pts on 2-6 FG, 1-3 3s.
+- **Mobley**: Under: 10 points and 5 rebounds on usual minutes.
+- **Murray**: Under: 5 points on 2-6 in a 34-point loss.
 
 **Contest view.** Holders of Yaxel Lendeborg and RJ Barrett made the top 10% at 1.6 times and 1.5 times the field's rate. In your afternoon window, the top-10% teams held Anthony Black on 23% against your 0%; you held Evan Mobley on 9% against 2% of the top-10% teams. On the season, taking VALUE players first: contest results, an early sign it helps; last night you had a VALUE player on 27% of your afternoon teams, the field on 27%, about level with the field.
 
@@ -146,7 +146,7 @@ This week in T4: news judgments 12 for 24; Bagel notes 5 for 8; Bagel and ETR no
 - ADP with ETR within two picks in afternoon T4 (the old rule: straight ETR). In use, on trial (night 1 of 14); on points, too early to say; contest results: no clear signal. For today: keep doing it while the check runs.
 - Stop putting PRICEY players last in afternoon T4 (VALUE players still go first). Being tested (night 0 of 14); on points, too early to say; contest results: no clear signal. For today: nothing changes yet.
 
-**Today in T4.** PRICEY: Daniss Jenkins, Grayson Allen, Jalen Green, John Collins and Jakob Poeltl. Beneficiaries to watch: if Scottie Barnes sits, Jakob Poeltl.
+**Today in T4.** PRICEY: Daniss Jenkins and Grayson Allen.
 
 ## T5
 
@@ -154,7 +154,7 @@ This week in T4: news judgments 12 for 24; Bagel notes 5 for 8; Bagel and ETR no
 
 **Your T5 menu.**
 
-Your morning teams' T5 picks averaged 27 points, the field's 27: the field's T5 picks did better.
+Your morning teams' T5 picks averaged 27 points, the field's 27, about level.
 - **Caleb Wilson**, 14% of yours against 3% of the field: scored 22, 5 under the T5 average.
 - **Andrew Nembhard**, 11% of yours against 2% of the field: scored 33, 6 over the T5 average.
 - **Immanuel Quickley**, 6% of yours against 0% of the field: scored 23, 4 under the T5 average.
@@ -166,20 +166,20 @@ Your afternoon teams' T5 picks averaged 33 points, the field's 28: your overweig
 
 **Player recap.**
 
-- **Giddey**: Under by 18 (14.9 vs ETR 32.8): 9 pts on 4-9 FG, 1-3 3s, 2 reb (about 6 usual for his minutes).
-- **Fears**: Under by 12 (22.3 vs ETR 34.3): no steals or blocks, ETR had him above his usual (34 vs 30).
-- **Keyonte George**: Under by 6 (28.9 vs ETR 35.4): 13 pts on 3-13 FG, 2-8 3s.
-- **Carter Jr.**: Under by 10 (19.9 vs ETR 29.7): 28 min (usual 33) with 5 fouls, no steals or blocks.
-- **Castle**: Under by 14 (20.7 vs ETR 35.0): 11 pts on 5-13 FG, 1-5 3s, 1 reb (about 6 usual for his minutes), 3 ast (about 6 usual for his minutes).
-- **Shead**: Under by 11 (16.6 vs ETR 27.3): 3 pts on 1-6 FG, 0-4 3s, ETR had him above his usual (27 vs 22).
-- **Harden**: Over by 13 (44.4 vs ETR 31.7): 32 pts on 9-14 FG, 5-7 3s.
-- **Harper**: Over by 21 (55.2 vs ETR 33.9): 4 stl + 1 blk, 10 ast (about 5 usual for his minutes), 36 min (usual 31).
-- **Sharpe**: Over by 7 (40.3 vs ETR 33.1): 1 stl + 4 blk, 15 pts on 5-6 FG, 2-3 3s, ETR had him above his usual (33 vs 27).
-- **Poeltl**: Under by 6 (18.3 vs ETR 24.5): 32 min (usual 22), 6 pts on 3-5 FG, 0-0 3s.
-- **Herro**: Over by 8 (39.9 vs ETR 31.6): 35 min (usual 30), 27 pts on 8-16 FG, 2-7 3s.
-- **Dybantsa**: Under by 8 (23.8 vs ETR 31.4): 13 pts on 6-15 FG, 0-4 3s.
-- **White**: Over by 12 (43.7 vs ETR 31.6): 38 min (usual 28), 1 stl + 4 blk, 1 reb (about 4 usual for his minutes).
-- **Quickley**: Under by 9 (22.8 vs ETR 32.0).
+- **Giddey**: Under: 7 turnovers and 2 rebounds in 25 minutes.
+- **Fears**: Under: 14 points in a 34-point loss, no stocks.
+- **Keyonte George**: Under: cold 3-13 in his return from the ankle.
+- **Carter Jr.**: Under: 5 fouls in 28 minutes of a 15-point win.
+- **Castle**: Under: 1 rebound and 3 assists on 5-13.
+- **Shead**: Under: 1-6 for 3 points in 22 minutes with Quickley back.
+- **Harden**: Over: 32 on 9-14 with 5-7 from three.
+- **Harper**: Over: 18-6-10 with 5 stocks in 36 minutes (usual 31).
+- **Sharpe**: Over: 5 stocks on 5-6 in 19 minutes of a 34-point win.
+- **Poeltl**: Under: 6 points despite 32 minutes.
+- **Herro**: Over: back from the knee, 27 and 7 in 35 minutes.
+- **Dybantsa**: Under: 6-15, 0-4 from three.
+- **White**: Over: 5 stocks and 7 assists in 38 minutes with George out.
+- **Quickley**: Under: 3-14 back from the hamstring.
 
 **Contest view.** Holders of Dylan Harper and Derrick White made the top 10% at 5.1 times and 4.6 times the field's rate. In your afternoon window, the top-10% teams held Desmond Bane on 15% against your 0%; you held Keyonte George on 46% against 7% of the top-10% teams. On the season, taking the less drafted of two close players: contest results, proven to help so far.
 
@@ -190,7 +190,7 @@ Your afternoon teams' T5 picks averaged 33 points, the field's 28: your overweig
 - In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock. Being tested (night 2 of 14); on points, the backtest shows proven to hurt so far; contest results: still to come. For today: nothing changes; not worth doing by hand.
 - After the VALUE players, order T5 by the window's projection to the whole point, and within the same point put the less drafted player first. Being tested (night 1 of 14); on points, in the morning the backtest shows an early sign it hurts, in the afternoon the backtest shows no clear signal; contest results: still to come. For today: nothing changes; not worth doing by hand.
 
-**Today in T5.** Beneficiaries to watch: if Scottie Barnes sits, Ja'Kobe Walter, Jamal Shead and Collin Murray-Boyles; if LeBron James sits, Anfernee Simons; if Joel Embiid sits, Anfernee Simons.
+**Today in T5.** Beneficiaries to watch: if Scottie Barnes sits, Jakob Poeltl, Ja'Kobe Walter, Jamal Shead and Collin Murray-Boyles; if LeBron James sits, Anfernee Simons; if Joel Embiid sits, Anfernee Simons.
 
 ## The draft card
 

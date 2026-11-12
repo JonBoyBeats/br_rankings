@@ -707,6 +707,7 @@ def t5_menu(H, last, mt):
         bets = [x for x in over if x["name"] not in hedge_names][:3]
         out.append("Your %s teams' T5 picks averaged %s points, the field's %.0f%s." % (
             label, "%.0f" % avg_m if avg_m is not None else "-", avg_f,
+            ", about level" if avg_m is not None and abs(avg_m - avg_f) < 1 else
             ": your overweights beat the field's T5 picks" if avg_m is not None and avg_m > avg_f else
             ": the field's T5 picks did better" if avg_m is not None else ""))
         for x in bets:
