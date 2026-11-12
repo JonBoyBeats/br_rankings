@@ -1233,5 +1233,72 @@
    "first": "2026-11-10T10:22:59+00:00"
   },
   "orders": 50
+ },
+ "2026-11-11_wed_main.csv": {
+  "lock": "2026-11-11T23:52:00+00:00",
+  "adp_am_at": "2026-11-11T15:23:20+00:00",
+  "adp_etr_at": "2026-11-11T16:33:47+00:00",
+  "adp_close_at": "2026-11-11T23:22:49+00:00",
+  "morning_through": "2026-11-10",
+  "etr_first": {
+   "at": "2026-11-11T17:09:31.039Z",
+   "file": "pasted text"
+  },
+  "etr_last": {
+   "at": "2026-11-11T23:23:34.656Z",
+   "file": "pasted text + Underdog NBA Daily Rankings - 2026-11-11T100125.904.csv + Underdog NBA Daily Rankings - 2026-11-11T113139.190.csv + Underdog NBA Daily Rankings - 2026-11-11T132952.763.csv + Underdog NBA Daily Rankings - 2026-11-11T140309.263.csv + Underdog NBA Daily Rankings - 2026-11-11T150217.930.csv + Underdog NBA Daily Rankings - 2026-11-11T151901.257.csv + NBA Full Day Projections (8).csv"
+  },
+  "etr_pm": {
+   "at": "2026-11-11T23:23:34.656Z",
+   "file": "pasted text + Underdog NBA Daily Rankings - 2026-11-11T100125.904.csv + Underdog NBA Daily Rankings - 2026-11-11T113139.190.csv + Underdog NBA Daily Rankings - 2026-11-11T132952.763.csv + Underdog NBA Daily Rankings - 2026-11-11T140309.263.csv + Underdog NBA Daily Rankings - 2026-11-11T150217.930.csv + Underdog NBA Daily Rankings - 2026-11-11T151901.257.csv + NBA Full Day Projections (8).csv"
+  },
+  "adp_pm_at": "2026-11-11T23:22:49+00:00",
+  "am": {
+   "at": "2026-11-11T15:51:00.317Z",
+   "from": "Lock AM",
+   "ours": true,
+   "tiers": [
+    4,
+    15,
+    23,
+    32
+   ]
+  },
+  "pm": {
+   "at": "2026-11-11T23:25:27.466Z",
+   "from": "Lock PM",
+   "ours": true,
+   "tiers": [
+    4,
+    15,
+    20,
+    31
+   ]
+  },
+  "gist": true,
+  "cuts": {
+   "am_by": "2026-11-11T15:53:20+00:00",
+   "am_by_from": "first AM draft (from 4:30am)",
+   "close": "2026-11-11T23:52:00+00:00",
+   "swaps_at": "2026-11-12T00:00:00+00:00",
+   "seen": {
+    "am": [
+     "2026-11-11T15:51:00.317Z"
+    ],
+    "pm": [
+     "2026-11-11T23:25:27.466Z"
+    ],
+    "exp": [
+     "2026-11-11T15:51:01.816Z",
+     "2026-11-11T18:10:31.601Z",
+     "2026-11-11T19:42:21.457Z",
+     "2026-11-11T22:18:43.431Z",
+     "2026-11-11T23:05:19.984Z",
+     "2026-11-11T23:25:14.276Z"
+    ]
+   }
+  },
+  "on": null,
+  "orders": 145
  }
 }
