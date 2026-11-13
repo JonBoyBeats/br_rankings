@@ -50,7 +50,8 @@ def order(rows, window, rule):
     for t in range(1, 7):
         top = sorted(by.get((t, "top"), []), key=lambda r: num(r["built"]) or 9e9)
         seq += top
-        if t == 6:
+        if t == 6:                   # below the cut (the 2026-11-13 button), then the bottom placement
+            seq += sorted(by.get((6, "normal"), []), key=lambda r: num(r["built"]) or 9e9)
             seq += sorted(by.get((6, "bottom"), []), key=lambda r: num(r["built"]) or 9e9)
             continue
         normal = by.get((t, "normal"), [])

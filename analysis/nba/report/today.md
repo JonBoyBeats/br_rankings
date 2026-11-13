@@ -2,217 +2,179 @@
 
 *Last night: Thursday 11/12's main slate.*
 
+*The standing rules and the words this report uses: [the rulebook](rulebook.md).*
+
 ## Front page
 
 Thursday's four-game slate was settled by one game. Detroit beat Washington by 4 in overtime, and five of the night's seven best scores came from it: Cade Cunningham 80.5 (52 on 16-25 in 48 minutes), Ausar Thompson 61.7 (17-11-11 with 6 stocks), Trae Young 56.4 (37 and 14 assists), Anthony Davis 55.0 and Alex Sarr 50.8 (30 on 12-14). Minnesota beat Dallas by 39, which sank Flagg (28.9), Kyrie, Washington and Gafford, and Barnes and LeBron were ruled out after your 5:10am lock, so Toronto and Philadelphia sit out the morning's grading. Your 80 teams had a median finish in the top 46%; 8 made the top 10% (the field's rate), none the top 1% (best top 1.2%), and 19 cashed, returning $234 on $400: below average, not a disaster. Your memory is mostly right, with two exceptions. You were light on Cade (11 of 80 teams, against a sixth of the field), Sarr (6) and Trae in the afternoon (2 of 40), and on Murray-Boyles in the morning (2 of 40). But Ausar was your second-biggest bet (29 of 80, 48% of your morning teams), and his holders made the top 10% three times as often as the field. You were also over the field on Murray-Boyles in the afternoon (10 of 40, against 16%). Where the fades came from: in the afternoon you put Flagg ahead of Cade, Embiid ahead of Trae, Edgecombe and Kyshawn George ahead of Ausar, and Robinson ahead of Sarr, and all five moves lost. The overtime itself couldn't be seen coming. The repeatable part is the season pattern: fading a player who then plays 4+ minutes over his usual is now 9 right and 22 wrong, and your biggest overweights, Diabate (40% of your teams) and Reid (34%), both came in a little under the field's rate (0.9 and 0.8 times). Nothing to decide today.
 
-**Your biggest bets.**
+## What decided the night, and where you stood
 
-- **Moussa Diabate**, on 40% of your teams (50% of your morning ones) against 16% of the field. In line: 13 rebounds in 32 minutes, 7 points. His holders made the top 10% 0.9 times as often as the field.
-- **Ausar Thompson**, on 36% of your teams (48% of your morning ones) against 17% of the field. Over: 17-11-11 with 6 stocks in 43 minutes (usual 27) of the overtime win. His holders made the top 10% 3.0 times as often as the field.
-- **Naz Reid**, on 34% of your teams (42% of your afternoon ones) against 17% of the field. In line: 34 minutes (usual 29) but cold 6-18. His holders made the top 10% 0.8 times as often as the field.
+- **Cade Cunningham** (80.5): your 14% against the field's 17%; holders made the top 10% 3.1 times the field's rate. You faded him: Flagg ahead of him (afternoon).
+- **Ausar Thompson** (61.7): your 36% against the field's 17%; holders made the top 10% 3.0 times the field's rate. You faded him: Edgecombe ahead of him (afternoon); George ahead of him (afternoon). You backed him: ahead of James.
+- **Trae Young** (56.4): your 14% against the field's 17%; holders made the top 10% 2.6 times the field's rate. You faded him: Embiid ahead of him (afternoon). You backed him: ahead of Barnes.
+- **Alex Sarr** (50.8): your 8% against the field's 16%; holders made the top 10% 2.1 times the field's rate. You faded him: Robinson ahead of him (afternoon).
+- **RJ Barrett** (52.3): your 14% against the field's 17%; holders made the top 10% 2.0 times the field's rate.
 
-**How to read the statuses.**
+Verdict: you were on the right side of 1 of these 5 (over the field where his holders beat it, under where they didn't).
 
-- **Locked in**: proven on points and in contest results.
-- **In use, on trial**: adopted and in use; where its 14-night check is running, the night it's on ("night 3 of 14").
-- **In use, original rule**: the rule we started with: nothing has beaten it, and contest results haven't graded it yet.
-- **Being tested**: not in use; graded in the background against what is.
-- **Retired**: taken out.
+## Your biggest bets and fades
 
-**In every tier.** A player's tier is his ADP tier, moved at most one tier toward our projection's (in use, on trial). PRICEY players (a tier below their ADP on our projection) go last in their tier (in use, on trial); VALUE players go first in T3 to T5. A Questionable player keeps his tier in the morning (in use, on trial) and drops two in the afternoon (in use, on trial). A close call is two players in the same tier within 4 picks of ADP; points on it are how much more the chosen one scored. Contest results are how often teams that followed a rule made the top 10%.
+**Bets.**
+
+- **Moussa Diabate** (T4): your 40% against the field's 16%; why: VALUE (the button had him a tier up on the projection). At the close: ETR 35.0 to 33.0, ADP 33.7 to 31.8: mixed. Result: In line: 13 rebounds in 32 minutes, 7 points; holders 0.9 times the field at the top 10%. **Shaky and lost.**
+- **Ausar Thompson** (T3): your 36% against the field's 17%; why: a news judgment. At the close: ETR 43.0 to 41.4, ADP 20.0 to 18.6: mixed. Result: Over: 17-11-11 with 6 stocks in 43 minutes (usual 27) of the overtime win; holders 3.0 times the field at the top 10%. **Sound and won.**
+- **Naz Reid** (T2): your 34% against the field's 17%; why: a news judgment. At the close: the close didn't move. Result: In line: 34 minutes (usual 29) but cold 6-18; holders 0.8 times the field at the top 10%. **Shaky and lost.**
+
+**Fades (T1-T3).**
+
+- **Miles Bridges** (T3): your 2% against the field's 17%; why: PRICEY. At the close: the close didn't move. Result: In line: 25 minutes, cold 3-9; holders 0.6 times the field at the top 10%. **Sound and won.**
+- **Ayo Dosunmu** (T2): your 2% against the field's 17%; why: a news judgment. At the close: the close didn't move. Result: Under: 27 minutes in a 39-point win, 2 rebounds and 1 assist; holders 0.4 times the field at the top 10%. **Sound and won.**
+- **PJ Washington** (T3): your 8% against the field's 17%; why: PRICEY. At the close: ETR 36.2 to 34.1: toward you. Result: Under: 16 minutes in a 39-point loss; holders 0.2 times the field at the top 10%. **Sound and won.**
+- **Daniss Jenkins** (T3): your 8% against the field's 17%; why: the button's order. At the close: the close didn't move. Result: In line: 42 minutes (usual 26) in overtime, 21 points but no assists; holders 0.5 times the field at the top 10%. **Shaky and won.**
+
+*Sound: the close moved toward your side after your lock (ETR's final, the late ADP); shaky: away. Won: holders beat the field's top-10% rate (bets) or didn't (fades). Players ruled out after the lock are left out.*
 
 ## T1
 
-**The rules we played.** Morning: ADP, with the higher Boom (his ceiling) first when two are within two picks (in use, original rule; contest results say it helps, first read, confirmed Monday). Afternoon: ETR's projection (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday).
+**T1, the elite.** The players every pod takes first; the order is the decision. Morning: ADP, the higher Boom first within 2 picks. Afternoon: ETR. A Questionable player here drops to the top of T2.
 
-**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick won the only close call in the morning; ETR's pick won the only close call in the afternoon. On the season there's no clear answer here yet (15 close calls): nothing to change.
+**How the night went.** Morning: ADP and our projection split 1 pair; the night sided with our projection on 1, and you sided with our projection on 1. Afternoon: ADP and ETR split 1 pair; the night sided with ETR on 1, and you sided with ETR on 0.
 
-**Your moves.**
+**Player recap**, in the button's order.
 
-- Afternoon: **Flagg** ahead of **Cunningham**, news judgment (a role or minutes change). Flagg scored 29, Cunningham 80: wrong.
-
-This week in T1: news judgments 6 for 8; Bagel and ETR notes 1 for 2. Of the news judgments, role or minutes calls went 5 for 7; moving a Questionable player down went 1 for 1. Takeaway: your news judgments are working; keep making them.
-
-**Player recap.**
-
-- **Flagg**: Under: 27 minutes in a 39-point loss, 12 on 5-12.
 - **Cunningham**: Over: 52 on 16-25 with 11 assists in 48 minutes of the overtime win.
+- **Flagg**: Under: 27 minutes in a 39-point loss, 12 on 5-12.
 - **Davis**: Over: 30 and 15 on 13-21 in 44 minutes of the overtime loss, through 6 fouls.
 
-**Contest view.** Holders of Cade Cunningham made the top 10% at 3.1 times the field's rate. In your morning window, the top-10% teams held Cade Cunningham on 52% against your 15%; you held Cooper Flagg on 20% against 1% of the top-10% teams. On the season, putting PRICEY players last: contest results, proven to help so far; last night you had a PRICEY player on 25% of your morning teams, the field on 33%, already on the right side.
-
-**What we're leaning toward.**
-
-Nothing being tested here.
-
-**Today in T1.** PRICEY: Shai Gilgeous-Alexander and Jalen Johnson.
+**Contest view.** Outsized holders: Cade Cunningham (top 10% at 3.1x the field's rate). In your morning window the top-10% teams held Cade Cunningham on 52% against your 15%.
 
 ## T2
 
-**The rules we played.** Morning: straight ADP (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ADP, with ETR breaking ties within two picks (in use, on trial).
+**T2, the stars.** Morning: straight ADP. Afternoon: ADP with ETR breaking ties within 2 picks up to the elite break (pick 13 minus the elites with 6 drafters, 9 with 4), then ETR. The turns are where your share differs from the field's.
 
-**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 9 times out of 14 in the morning; ETR's pick scored more 2 times out of 6 in the afternoon. On the season there's no clear answer here yet (185 close calls): nothing to change.
+**How the night went.** Morning: ADP and our projection split 15 pairs; the night sided with our projection on 13, and you sided with our projection on 8. Afternoon: ADP and ETR split 10 pairs; the night sided with ETR on 3, and you sided with ETR on 4.
 
 **Your moves.**
 
-- Morning: **Brown** ahead of **Booker**, news judgment (a role or minutes change). Brown scored 32, Booker 52: wrong.
-- Morning: **Reid** ahead of **Barnes**, news judgment (a Questionable player moved down). Reid scored 35, Barnes scratched, his swap 24: right.
-- Morning: **Dosunmu** ahead of **Barnes**, news judgment (a Questionable player moved down). Dosunmu scored 27, Barnes scratched, his swap 24: right.
-- Morning: **McDaniels** ahead of **Barnes**, news judgment (a Questionable player moved down). McDaniels scored 31, Barnes scratched, his swap 24: right.
-- Morning: **Young** ahead of **Barnes**, news judgment (a Questionable player moved down). Young scored 56, Barnes scratched, his swap 24: right.
-- Afternoon: **Ball** ahead of **Brown**, news judgment (a role or minutes change). Ball scored 41, Brown 32: right.
-- Afternoon: **Embiid** ahead of **Dosunmu**, news judgment (a Questionable player moved up). Embiid scored 33, Dosunmu 27: right.
-- Afternoon: **Embiid** ahead of **McDaniels**, news judgment (a Questionable player moved up). Embiid scored 33, McDaniels 31: right.
-- Afternoon: **Embiid** ahead of **Young**, news judgment (a Questionable player moved up). Embiid scored 33, Young 56: wrong.
+- Morning: you went against the button, **Brown** ahead of **Booker**; it hurt by 20 points.
+- Afternoon: you went against the button, **Ball** ahead of **Brown**; it helped by 9 points.
 
-This week in T2: news judgments 16 for 36; your own reads 3 for 8; Bagel and ETR notes 4 for 6; Bagel notes 2 for 4; ETR notes 1 for 2. Of the news judgments, role or minutes calls went 7 for 19; moving a Questionable player down went 7 for 14; moving a Questionable player up went 2 for 3. Takeaway: role or minutes calls is what lost (7 for 19 this week); leave those to the button.
+Season, your moves in T2: too early (164 moves on 22 nights, 49% right, -0.6 points a move; ahead in 37% of night-resamples).
 
-**Player recap.**
+**The turn lines.**
+
+- **1/2 turn** (the turn's own average: 0.85x): faller: you 24% (season 29%), field 25%; on the season 1.06x the field's top-1% rate; reach: you 0% (season 17%), field 17%; on the season 0.40x the field's top-1% rate; trust ADP: you 76% (season 54%), field 58%; on the season 0.90x the field's top-1% rate.
+- **2/3 turn** (the turn's own average: 1.30x): faller: you 10% (season 19%), field 16%; on the season 1.90x the field's top-1% rate; reach toward projection: you 5% (season 13%), field 3%; on the season 3.48x the field's top-1% rate; reach, not toward projection: you 24% (season 10%), field 21%; on the season 0.97x the field's top-1% rate; trust ADP: you 62% (season 59%), field 60%; on the season 1.04x the field's top-1% rate.
+
+**Player recap**, in the button's order.
 
 - **Brown**: Under: 18 points, 2 assists and 5 turnovers.
 - **Booker**: Over: 30 on 12-20 with 4 stocks.
 - **Irving**: Under: cold 4-11 in 27 minutes of a 39-point loss.
 - **Barrett**: Over: 31 and 14 on 13-20.
+- **Embiid**: Under: 4 rebounds in 28 minutes through the Questionable tag, 7-17.
 - **Dosunmu**: Under: 27 minutes in a 39-point win, 2 rebounds and 1 assist.
 - **Young**: Over: 37 and 14 assists in 45 minutes of the overtime loss, on 8-23.
-- **Embiid**: Under: 4 rebounds in 28 minutes through the Questionable tag, 7-17.
 - **Barnes**: scratched; swaps went to Brooks (142 teams, 23 points) and Murray-Boyles (104 teams, 36 points).
 
-**Contest view.** Holders of Trae Young and RJ Barrett made the top 10% at 2.6 times and 2.0 times the field's rate. In your morning window, the top-10% teams held Trae Young on 43% against your 22%; you held LaMelo Ball on 32% against 9% of the top-10% teams. On the season, taking the less drafted of two close players: contest results, an early sign it helps.
-
-**What we're leaning toward.**
-
-Nothing being tested here.
-
-**Today in T2.** PRICEY: Jalen Brunson.
+**Contest view.** Outsized holders: Trae Young and RJ Barrett (top 10% at 2.6x and 2.0x the field's rate). In your morning window the top-10% teams held Trae Young on 43% against your 22%.
 
 ## T3
 
-**The rules we played.** Morning: our projection, with ADP deciding within three points (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ETR's projection, with ADP and then Boom breaking exact ties (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). VALUE players go first in this tier (in use, on trial).
+**T3, the middle.** VALUE first, then the rest, PRICEY last; morning by ADP, afternoon by ETR (ADP, then Boom, on exact ties). T3 PRICEY stays ahead of T4 VALUE.
 
-**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 5 times out of 6 in the morning; ETR's pick scored more 4 times out of 11 in the afternoon. On the season, trusting ETR over ADP here in the afternoon gains about 3 points per close call (an early sign it helps): keep doing it, the rule already does.
+**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 5 times out of 6 in the morning; ETR's pick scored more 4 times out of 11 in the afternoon. On the season, trusting ETR over ADP here in the afternoon gains about 3 points per close call (an early sign it helps): keep doing it, the rule already does.
 
 **Your moves.**
 
-- Morning: **George** ahead of **Quickley**, news judgment (a role or minutes change). George scored 25, Quickley 46: wrong.
-- Morning: **George** ahead of **Gobert**, news judgment (a role or minutes change). George scored 25, Gobert 26: wrong.
-- Morning: **Thompson** ahead of **James**, news judgment (a Questionable player moved down). Thompson scored 62, James scratched, his swap 29: right.
-- Morning: **Bridges** ahead of **Quickley**, news judgment (a role or minutes change). Bridges scored 26, Quickley 46: wrong.
-- Morning: **Gobert** ahead of **Quickley**, news judgment (a role or minutes change). Gobert scored 26, Quickley 46: wrong.
-- Morning: **Washington** ahead of **Quickley**, news judgment (a role or minutes change). Washington scored 12, Quickley 46: wrong.
-- Afternoon: **Edgecombe** ahead of **Thompson**, news judgment (a role or minutes change). Edgecombe scored 49, Thompson 62: wrong.
-- Afternoon: **George** ahead of **Thompson**, news judgment (a role or minutes change). George scored 25, Thompson 62: wrong.
-- Afternoon: **Dybantsa** ahead of **Reed**, news judgment (a role or minutes change). Dybantsa scored 23, Reed 29: wrong.
+- Morning: you went against the button, **George** ahead of **Quickley**; it hurt by 21 points.
+- Morning: you went against the button, **George** ahead of **Gobert**; it hurt by 1 point.
+- Morning: you went against the button, **Bridges** ahead of **Quickley**; it hurt by 20 points.
+- Morning: you went against the button, **Gobert** ahead of **Quickley**; it hurt by 20 points.
+- Morning: you went against the button, **Washington** ahead of **Quickley**; it hurt by 34 points.
+- Afternoon: you went against the button, **Edgecombe** ahead of **Thompson**; it hurt by 13 points.
+- Afternoon: you went against the button, **George** ahead of **Thompson**; it hurt by 37 points.
+- Afternoon: you went against the button, **Dybantsa** ahead of **Reed**; it hurt by 6 points.
 
-This week in T3: news judgments 7 for 29; Bagel notes 5 for 7; Bagel and ETR notes 2 for 4; your own reads 1 for 2; ETR notes 0 for 1. Of the news judgments, role or minutes calls went 3 for 16; moving a Questionable player down went 4 for 11; moving a Questionable player up went 0 for 2. Takeaway: role or minutes calls is what lost (3 for 16 this week); leave those to the button.
+Season, your moves in T3: press the button (100 moves on 21 nights, 47% right, -2.5 points a move; ahead in 9% of night-resamples).
+
 Every morning role call in this tier ran into Quickley, who scored 46 in his second game back from the hamstring: the button had him ahead of George, Bridges, Gobert and Washington, and the button was right.
 
-**Player recap.**
+**Player recap**, in the button's order.
 
-- **Edgecombe**: Over: 8 assists and 4 stocks.
-- **George**: Under: 6 fouls in 26 minutes.
 - **Thompson**: Over: 17-11-11 with 6 stocks in 43 minutes (usual 27) of the overtime win.
+- **George**: Under: 6 fouls in 26 minutes.
+- **Edgecombe**: Over: 8 assists and 4 stocks.
 - **Quickley**: Over: 26 on 8-16.
 
-**Contest view.** Holders of Ausar Thompson and Immanuel Quickley made the top 10% at 3.0 times and 1.8 times the field's rate. In your morning window, the top-10% teams held Immanuel Quickley on 29% against your 10%; you held Rudy Gobert on 32% against 16% of the top-10% teams. On the season, taking VALUE players first: contest results, an early sign it helps; last night you had a VALUE player on 70% of your morning teams, the field on 48%, already on the right side.
-
-**What we're leaning toward.**
-
-Nothing being tested here.
-
-**Today in T3.** VALUE: Domantas Sabonis and Ty Jerome. PRICEY: Cameron Boozer, Dyson Daniels and Anthony Black.
+**Contest view.** Outsized holders: Ausar Thompson and Immanuel Quickley (top 10% at 3.0x and 1.8x the field's rate). In your morning window the top-10% teams held Immanuel Quickley on 29% against your 10%. Your VALUE share: 70% of your morning teams held one, the field 48%.
 
 ## T4
 
-**The rules we played.** Morning: our projection, with ADP deciding within three points (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ADP, with ETR breaking ties within two picks (in use, on trial). VALUE players go first in this tier (in use, on trial).
+**T4, to round 6.** The same sort as T3; it ends at the start of round 6 (earlier at a 2-pick ADP gap), never holds a round-6 player, sends its PRICEY players to T5 and borrows from the bottom of T3 when short of 4.
 
-**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick won all 4 in the morning; ETR's pick won both in the afternoon. On the season there's no clear answer here yet (78 close calls): nothing to change.
+**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick won all 4 in the morning; ETR's pick won both in the afternoon. On the season there's no clear answer here yet (78 close calls): nothing to change.
 
 **Your moves.**
 
-- Morning: **Collins** ahead of **Diabate**, news judgment (a role or minutes change). Collins scored 15, Diabate 25: wrong.
-- Morning: **Poeltl** ahead of **Green**, news judgment (a role or minutes change). Poeltl scored 22, Green 18: right.
-- Afternoon: **Robinson** ahead of **Sarr**, news judgment (a role or minutes change). Robinson scored 20, Sarr 51: wrong.
+- Morning: you went against the button, **Collins** ahead of **Diabate**; it hurt by 10 points.
+- Morning: you went against the button, **Poeltl** ahead of **Green**; it helped by 5 points.
+- Afternoon: you went against the button, **Robinson** ahead of **Sarr**; it hurt by 31 points.
 
-This week in T4: news judgments 11 for 24; Bagel notes 5 for 8; Bagel and ETR notes 4 for 6; your own reads 1 for 3; ETR notes 2 for 2. Of the news judgments, role or minutes calls went 11 for 24. Takeaway: no news pattern is clear yet this week.
+Season, your moves in T4: keep doing what you're doing (123 moves on 20 nights, 58% right, +1.7 points a move; ahead in 91% of night-resamples).
 
-**Player recap.**
+**Player recap**, in the button's order.
 
 - **Washington**: Under: 16 minutes in a 39-point loss.
 - **Kuminga**: Over: 5 assists in 24 minutes of a 39-point win.
 - **Collins**: Under: 10 points and 4 rebounds with 5 fouls in 25 minutes.
 
-**Contest view.** Holders of Alex Sarr and VJ Edgecombe made the top 10% at 2.1 times and 1.4 times the field's rate. In your morning window, the top-10% teams held Alex Sarr on 35% against your 10%; you held Moussa Diabate on 50% against 13% of the top-10% teams. On the season, taking VALUE players first: contest results, an early sign it helps; last night you had a VALUE player on 50% of your morning teams, the field on 15%, already on the right side.
-
-**What we're leaning toward.**
-
-Nothing being tested here.
-
-**Today in T4.** VALUE: Keyonte George. PRICEY: Amen Thompson, Josh Giddey and Onyeka Okongwu.
+**Contest view.** Outsized holders: Alex Sarr and VJ Edgecombe (top 10% at 2.1x and 1.4x the field's rate). In your morning window the top-10% teams held Alex Sarr on 35% against your 10%. Your VALUE share: 50% of your morning teams held one, the field 15%.
 
 ## T5
 
-**The rules we played.** Morning: the Tiers button's order, our projection with ADP deciding within three points (in use, on trial). Afternoon: ADP (in use, on trial). Then, in both windows, the less drafted of two players goes first when they're within two projected points and at least 10 points apart in how often they're drafted (in use, on trial). VALUE players go first in this tier (in use, on trial). In the afternoon you also raise beneficiaries, a player whose teammate is tagged or out (in use, on trial).
+**T5, round 6.** Players drafted in under 60% of pods (50-60% at the bottom), projected for 20+ minutes, by projection, to your cut; everyone else below it by projection. Graded on contest results.
 
-**Your T5 menu.**
+**Your T5 menu, on contest results.**
 
-Your morning teams' T5 picks averaged 20 points, the field's 20, about level.
+- Teams with a round-6 player drafted in under 60% of pods: you 21%, the field 23%; their top-10% rate 0.47x the field's last night, 0.99x on the season.
+- Teams with one drafted in 60%+: you 82%, the field 79%; their top-10% rate 1.12x the field's last night, 0.98x on the season.
 
-Your afternoon teams' T5 picks averaged 26 points, the field's 22: your overweights beat the field's T5 picks.
-- **Dillon Brooks**, 38% of yours against 11% of the field: scored 23, 1 over the T5 average.
-- **Jamal Shead**, 15% of yours against 5% of the field: scored 15, 7 under the T5 average.
-- **Collin Murray-Boyles**, 25% of yours against 16% of the field: scored 36, 14 over the T5 average.
-
-**Late-news hedges.**
-
-- Jamal Shead, on 20% of your morning teams (6% of the field) for Scottie Barnes (Questionable at the lock): Barnes sat and Shead scored 15, so the hedge didn't pay.
-
-**Player recap.**
+**Player recap**, in the button's order.
 
 - **Shead**: Under: 1-6 for 5 points in 22 minutes.
 - **Huerter**: Under: 11 points, 1 rebound, no assists in 24 minutes.
 
-**Contest view.** Holders of Collin Murray-Boyles made the top 10% at 2.0 times the field's rate. In your morning window, the top-10% teams held Collin Murray-Boyles on 13% against your 5%; you held Jamal Shead on 20% against 3% of the top-10% teams. On the season, taking the less drafted of two close players: contest results, proven to help so far.
+**Contest view.** Outsized holders: Collin Murray-Boyles (top 10% at 2.0x the field's rate). In your morning window the top-10% teams held Collin Murray-Boyles on 13% against your 5%.
 
-**What we're leaning toward.**
+## Questionable
 
-Nothing being tested here.
+**Last night's Questionable players at the lock.**
 
-**Today in T5.** Klay Thompson is Questionable (55% to play): stays in T5. De'Aaron Fox is Questionable (45% to play): stays in T5. Jalen Suggs is Questionable (63% to play): stays in T5. VALUE: Brandin Podziemski, Darius Garland and Dejounte Murray. Beneficiaries to watch: if Klay Thompson sits, Davion Mitchell and Andrew Wiggins; if De'Aaron Fox sits, Dylan Harper, Stephon Castle and Keldon Johnson; if Jalen Suggs sits, Desmond Bane and Wendell Carter Jr.
+- **Joel Embiid** (Questionable): morning T3, #16 on the button; afternoon T2, #11 on the button; played: 33 points against a projection of 48.
+- **Scottie Barnes** (Questionable): morning T2, #14 on the button; sat; swaps went to Brooks (23) and Murray-Boyles (36).
+- **LeBron James** (Questionable): morning below the cut, #43 on the button; sat; swaps went to Murray-Boyles (36) and Brooks (23).
 
-## The draft card
-
-- Last night you took a faller at the 1/2 turn on 24% of your teams at that turn vs your season average of 29%. Last night, teams across the field that did this finished top 1% at 0.58x and top 10% at 0.80x the field's rate, against 1.06x and 1.01x on the season (teams at the 1/2 turn as a group: 0.85x and 0.88x).
-- Last night you reached at the 1/2 turn on 0% of your teams at that turn vs your season average of 17%. Last night, teams across the field that did this finished top 1% at 0.24x and top 10% at 0.43x the field's rate, against 0.40x and 0.56x on the season (teams at the 1/2 turn as a group: 0.85x and 0.88x).
-- Last night you trusted ADP at the 1/2 turn on 76% of your teams at that turn vs your season average of 54%. Last night, teams across the field that did this finished top 1% at 0.53x and top 10% at 0.91x the field's rate, against 0.90x and 0.92x on the season (teams at the 1/2 turn as a group: 0.85x and 0.88x).
-- Last night you took a faller at the 2/3 turn on 10% of your teams at that turn vs your season average of 19%. Last night, teams across the field that did this finished top 1% at 6.52x and top 10% at 3.34x the field's rate, against 1.90x and 1.62x on the season (teams at the 2/3 turn as a group: 1.30x and 1.18x).
-- Last night you reached toward the higher projection at the 2/3 turn on 5% of your teams at that turn vs your season average of 13%. Last night, teams across the field that did this finished top 1% at 2.55x and top 10% at 4.19x the field's rate, against 3.48x and 2.29x on the season (teams at the 2/3 turn as a group: 1.30x and 1.18x).
-- Last night you reached at the 2/3 turn, not toward the higher projection on 24% of your teams at that turn vs your season average of 10%. Last night, teams across the field that did this finished top 1% at 1.63x and top 10% at 1.32x the field's rate, against 0.97x and 0.96x on the season (teams at the 2/3 turn as a group: 1.30x and 1.18x).
-- Last night you trusted ADP at the 2/3 turn on 62% of your teams at that turn vs your season average of 59%. Last night, teams across the field that did this finished top 1% at 1.00x and top 10% at 0.86x the field's rate, against 1.04x and 1.03x on the season (teams at the 2/3 turn as a group: 1.30x and 1.18x).
-- Last night you paired an early pick with a late same-position teammate on 11% of teams vs your season average of 13%. Last night, teams across the field that did this finished top 1% at 0.88x and top 10% at 0.87x the field's rate, against 0.97x and 0.87x on the season.
-- Last night you paired stars from opposite sides of one game on 41% of teams vs your season average of 43%. Last night, teams across the field that did this finished top 1% at 1.69x and top 10% at 1.47x the field's rate, against 1.20x and 1.13x on the season.
-
-Takeaway: at the 1/2 turn, taking a faller has done best (1.06x the field's top-1% rate on the season) and you're about level with the field on it; reaching has done worst (0.40x) and you're about level with the field on it; at the 2/3 turn, reaching toward the higher projection has done best (3.48x the field's top-1% rate on the season) and you're over the field on it (13% against 5%); reaching anywhere else has done worst (0.97x) and you're under the field on it (10% against 18%).
-
-## Back page
-
-The model: on the 71 players both projected at the afternoon lock, ours missed by 11.0 points on average and ETR's by 10.9; their rank correlations with the finish were 0.74 and 0.69 (1 is perfect).
-
-Chance to play, morning Questionable players: 61 this season, 28 played (46%). The model sorts the ones who play from the ones who sit at 0.46 (0.5 is a coin flip, 1 is perfect), and doesn't beat a flat 46% guess (Brier 0.271 against 0.248; lower is better). Last night: Joel Embiid at 61%, played; Scottie Barnes at 46%, sat; LeBron James at 71%, sat.
+**Your Q moves.** Morning: Reid ahead of Barnes, helped by 11; Morning: Dosunmu ahead of Barnes, helped by 3; Morning: McDaniels ahead of Barnes, helped by 7; Morning: Young ahead of Barnes, helped by 32; Morning: Thompson ahead of James, helped by 33; Afternoon: Embiid ahead of Dosunmu, helped by 6; Afternoon: Embiid ahead of McDaniels, helped by 2; Afternoon: Embiid ahead of Young, hurt by 23.
 
 Swap button: no swap lock yet. Once you press it after your last draft, each swap is compared here with the one your PM list would have made.
 
-**Projection hypotheses.**
+Chance to play, morning Questionable players: 61 this season, 28 played (46%). The model sorts the ones who play from the ones who sit at 0.46 (0.5 is a coin flip, 1 is perfect), and doesn't beat a flat 46% guess (Brier 0.271 against 0.248; lower is better). Last night: Joel Embiid at 61%, played; Scottie Barnes at 46%, sat; LeBron James at 71%, sat.
 
-- **Minutes trend**: moves a player's projected minutes to his last-3 average when it runs 4+ minutes off his usual, instead of his usual minutes; adopting it would build that minutes trend into the morning Proj. So far it lands 0.25 points closer across 285 players, 14 of 14 nights in; it's still short of a clear answer.
-- **Blowout trim** (retired 11-10): took a point off 30-minute players on teams favored by 10 or more; it didn't help, and the blowout slide, which scales the cut with the spread, carries the idea forward.
-- **Underdog bench**: adds 2 points to a bench player (under 20 usual minutes) whose team is a 10-point underdog; adopting it would raise those bench players in the morning Proj. So far it lands 0.22 points closer across 77 players, 9 of 14 nights in; 5 more nights and it comes to you as a proposal.
-- **Blowout slide**: takes a point off 30-minute players on 10-12.5-point favorites and 2 points at 13 or more; adopting it would put that sliding cut into the morning Proj. So far it lands 0.28 points closer across 52 players, 9 of 14 nights in; 5 more nights and it comes to you as a proposal.
+**Today's Questionable players.** Klay Thompson (T5 on the ladders, 55% to play): if he sits, Davion Mitchell, Andrew Wiggins; De'Aaron Fox (T5 on the ladders, 45% to play): if he sits, Dylan Harper, Stephon Castle, Keldon Johnson; Jalen Suggs (T5 on the ladders, 63% to play): if he sits, Desmond Bane, Wendell Carter Jr..
 
-Data: everything for last night came in, and today's inputs were ready on time.
+## Back page
 
-Season tables are below; every player's night is in the ledger (analysis/nba/ledger.csv), the calls and misses in misses.csv, and the full tier tables in tier_grade.md, shadow.md and money_report.md.
+
+
+**Our morning projection against ETR's final.** Last night: 2.69 apart, correlation 0.62. Season: 2.12 points apart on average (against ADP), correlation 0.78, 24% 3+ apart (15 slates).
+
+**ETR's final against the box score.** Last night: +1.60 on average, off by 8.7 a player. Season: +0.13 on average, off by 7.8 (2876 player-nights).
+
+**Gallagher's Bad-matchup arrows** (published before your lock). Season: 132 arrows, -2.6 against ETR's final on average, 59% under it.
+
+**Data.** Everything for last night came in, and today's inputs were ready on time.
 
 ## Season
 
@@ -283,18 +245,4 @@ Season tables are below; every player's night is in the ledger (analysis/nba/led
 
 Points per pair or take (count); positive: your board won, VALUE beat its partners, or your take beat the button. Takes are credited to ETR or Bagel when either player had a note from them before the lock, else NEWS (his projection or his team's status changed since the last lock) or OTHER. Verdicts and labels: tier_grade.md.
 
-**Adopted and rules** (leans.json; points status, money verdict).
-- adopted, money no lean: AM T5: the Tiers button's order is the default; your moves off it are logged as takes and graded.
-- adopted, money LEAN for: VALUE-flagged players go first in their tier (the button already sorts them there) in the middle and T5, both windows.
-- adopted, money no lean: PM window: a Questionable player is ordered two tiers back (the button's NBA_PM_Q_PUSH; the chip shows the tier he's ordered in).
-- adopted, money no lean: AM window: no push for a Questionable player; keep the button's order (a scratch is swapped, and the swap scores about like a T3/T4 player).
-- adopted, money no lean: PM T5: keep making beneficiary picks (raising a player whose teammate is tagged or out).
-- provisional, money no lean: PM T2: ADP, with ETR deciding within 2 picks (was within 1).
-- provisional, money no lean: PM T4: ADP, with ETR deciding within 2 picks (was ETR, ties to ADP then Boom). The first rule to split T4 from T3.
-- RULE, money LEAN against: PM T5: ADP straight, VALUE first (was ETR, with the ownership tiebreak).
-- adopted, money LEAN against: Combine the ladders with the one-tier cap (current): not the full move to the projection tier, not no move.
-- provisional, money RULE for: T5, both windows: the tier's rule, VALUE first and PRICEY last, then the less drafted first within 2 projected points (drafted% 10+ apart, ADP within 4, both 2%+; the rule's order, then neighbours swapped). AM's rule is Proj (3: ADP); PM's base stays ADP, VALUE first.
-
-**Paused**: none
-
-Full tables: tier_grade.md, tier_rules.md, q_lane.md, shadow.md, swap_board.md, my_swaps.md, money_points.md, decision_register.csv.
+Full tables: tier_grade.md, q_lane.md, swap_board.md, my_swaps.md, money_points.md, rules_side_by_side.md, rule_dates.json.
