@@ -37,45 +37,31 @@ It writes `analysis/nba/report/today.md`: the report on top, the season tables a
 posts (see "In chat"), so it is written for a phone: plain technical English in short paragraphs, readable in a few
 minutes. In order:
 
-- **Front page**, one paragraph of 5-8 sentences: the story of last night's slate (blowouts, late news, who broke it
-  open), how your teams did (finishes, top 10%, entries and winnings), the one or two lessons, and anything to decide
-  today. The pipeline only if something is wrong.
-- **Monday: decisions for today** (Mondays only): each proposal as a plain-English decision with a recommendation and
-  its evidence in a sentence or two (see "Monday proposals" below). Nothing changes without a yes.
-- **How to read the statuses**: the five statuses, a line each. Every rule in the report carries one of them and
-  nothing else: "locked in" (proven on points and in contest results), "in use, on trial" (adopted; with "night N of
-  14" where its 14-night check runs), "in use, original rule" (never beaten, not yet graded by contest results),
-  "being tested" (not in use, graded in the background), "retired". An original rule carries the contest side's first
-  read (money_tiers.json candidates, by register id) until Monday confirms it: "contest results say it helps (first
-  read, confirmed Monday)" or "contest results: no difference from the alternative". The adopted rules without a
-  switch of their own (VALUE first, PRICEY last, the two Questionable rules, the morning T5 button order) have 14-night
-  checks in the shadow from 2026-11-11 (`check-*` in nba_shadow.py).
-- **In every tier**: the rules all tiers share, said once, and what a close call and contest results mean.
-- **T1 to T4**: the rules we played (with their statuses); **who to trust in this tier** (projection straight against
-  ADP on the tier's close calls: last night in one sentence, the season in one, ending in what to do); **your moves**
-  (each move off the button: who over whom, why (the ETR or Bagel note, news, your own read), what each scored, right
-  or wrong; a news move is "forced" when a player in the pair was tagged Out at the lock (not graded) and a "news
-  judgment" otherwise (a Questionable player moved down or up, or a role or minutes call); then the week's record by
-  source, which kind of news judgment lost, and one takeaway); the player recap; the **contest view** (whose holders made the top
-  10% at outsized rates, what the top-10% teams held that you were light on and the reverse, and the kind of pick
-  that has paid on the season against your share of it, ending in a lean); **what we're leaning toward** (each test
-  in plain words: what it is, where it stands, what it means for you today); today in the tier.
-- **T5 is a menu**: graded by exposure, not order: your T5 picks' average score against the field's, your overweights
-  and how each scored against the T5 average, and late-news hedges (a beneficiary held for a tagged teammate) apart.
-- **The draft card**: each card decision from the contest side's `card_decisions` block in money_tiers.json: your
-  share last night against your season average, and the field's teams doing it as a multiple of the whole field's
-  top-1% and top-10% rate (`vs_field_top1`, `vs_field_top10`), last night and on the season; at a turn, the turn's
-  teams as a group beside the season numbers (the team-weighted average of the turn's options, which cover every team
-  at that turn): "...finished top 1% at 3.6x and top 10% at 2.3x the field's rate on the season (teams at the 2/3
-  turn as a group: 1.16x and 1.11x)." Then one takeaway line: the best and worst option at each turn on the season's
-  top-1% multiple, and whether you're over or under the field on each.
-- **Back page**: the model (ours against ETR), each projection hypothesis in a plain sentence (what it does to the
-  projection, what adopting it would change, where it stands; `plain`, `adopt_plain` and `retired_plain` in
-  hypotheses.json), the chance-to-play tracker (morning Questionable players this season: how many played, whether the
-  model sorts them better than a coin flip, whether it beats a flat guess, and last night's ones), the Swap button's
-  line (scripts/nba_swap_grade.py: on nights with a swap lock, each of your swaps against the one the PM list would
-  have made, points and contest results, season to date; the swap lock never replaces the PM lock, which stays the
-  draft list the T5 grading reads), decisions due, data status, links.
+- **Top**: a link to the standing rulebook (`analysis/nba/report/rulebook.md`, written by the script: the button's rules,
+  how things are graded, the words the report uses), and one line when a rule went live on the board last night
+  (`rule_dates.json`).
+- **Front page**, hand-written, one paragraph of 5-8 sentences: the story of last night's slate (blowouts, late news, who
+  broke it open), how your teams did (finishes, top 10%, entries and winnings), the one or two lessons, and anything to
+  decide today. Never hindsight ("fading a player who then plays 4+ minutes over his usual") and never answering the
+  operator ("your memory is mostly right"): the report is built every day, not in reply.
+- **What decided the night, and where you stood** (built): the 4-5 players whose holders moved the contest most, your
+  share against the field's, which of your moves faded or backed them, one verdict line.
+- **Your biggest bets and fades** (built): overweights cut at the natural gap (3-5), underweights the same in T1-T3;
+  each with share against the field, why (a move's source, a note, VALUE/PRICEY, the button), what the close did after
+  your lock (ETR's final, the late ADP), the result, and "sound/shaky and won/lost".
+- **Each tier** opens with its theme and rules in two or three lines (no statuses, counters or leanings). T1: how the
+  night went (where ADP and the projection split, which side the night and you took), recap, contest view. T2: how the
+  night went, your moves, the turn lines (card_decisions), recap, contest view. T3/T4: how the night went (who to trust),
+  your moves, recap, contest view (with your VALUE share). T5: the menu on contest results (round-6 picks drafted in
+  under 60% of pods against 60%+, you against the field, last night and season), recap, contest view. "Your moves" is
+  one question per move (did you go against the button, and did it help, on the pair it changed; Q moves left out) and
+  one season line per tier: keep doing what you're doing / press the button / too early. Recaps in the button's order.
+- **Questionable**: last night's Q players at the lock (where the button put them, played or sat and the swaps), your Q
+  moves graded, the Swap button's line, the chance-to-play tracker, today's Q players with play chances and beneficiaries.
+- **Back page**: our morning projection against ETR's final, ETR's final against the box score, Gallagher's Bad-matchup
+  arrows (published before your lock; logged to `gallagher_arrows.csv` for the Friday report), data notes.
+- Gone: the status definitions and "in every tier" blocks (in the rulebook now), the separate draft card, Monday
+  proposals (the Friday report has them), 14-night counters.
 
 **Words, not codes.** The report never shows register ids, rule codes or verdict labels. Every verdict says which way:
 RULE is "proven to help so far" or "proven to hurt so far", LEAN "an early sign it helps" or "an early sign it hurts"
@@ -95,7 +81,6 @@ fills everything else from the files):
 ```
 {"front": "the front page paragraph",
  "moves": {"2": "a sentence or two on why your moves in T2 went the way they did"},
- "card": "anything the turn counts don't say",
  "back": "a decision or note for the back page",
  "proposals": {"<decision id>": "your recommendation, when it differs from the script's"}}
 ```
