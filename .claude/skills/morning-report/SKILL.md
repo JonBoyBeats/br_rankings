@@ -141,22 +141,15 @@ the 80% range and the label; and (2) its shadow record: its comparison in `shado
 else add it to `nba_shadow.py` and give the season-in-sample line, saying it has no forward nights yet.
 Show the user both beside the money evidence and the table above's call, then change only on a yes.
 
-**The loop.** Ideas for a tier live in `analysis/nba/report/hypotheses.json` under `"tiers"`. Each new idea is
-written with its test before any grading: its tiers and window, the alternative order (rule steps, or a pairwise
-function in `scripts/nba_shadow.py`), what it's graded against (the button) and the bar, with `status` "testing" and
-`forward_from` the next night. At most 3 ideas under test per tier (the shadow refuses more); the rest wait as
-"queued". The shadow grades them nightly (`shadow.md`, `shadow.json`). An idea marked `split_windows` (T2-1) is
-graded as one row per window (`<id>:am`, `<id>:pm`) and decided per window at its Monday call: one window can be
-adopted on its own forward read even if the other isn't.
-
-**Monday proposals** (the report shows them on Mondays only, each with a recommendation): a provisional switch at 14 forward nights is
-kept if it beat the old rule there, else dropped (the T5 tiebreak is dropped only if it lost: its points cost is a
-known price for a money RULE); an idea at 14 forward nights is proposed for adoption at a forward LEAN or better when
-its money verdict isn't against, else dropped; an idea leaning against early may be dropped early; a free test slot
-with a queued idea is offered; an adopted rule with money against is proposed for dropping under the money table
-above. The contest side's weekly money proposals (`analysis/nba/report/money_proposals.json`) are listed in the same
-section, so the user approves everything in one place ("no money proposals this week" when the file is missing).
-Change the board, `leans.json` or `hypotheses.json` only with the user's yes.
+**The Friday report** (from 2026-11-20; replaces the Monday proposals and the 14-night checks): its own job after the
+nightly record (`.github/workflows/nba_friday.yml`, `scripts/nba_friday.py` -> `analysis/nba/report/friday.md`). Its
+front page is "What should change this week": nothing, or one line per proposal. A test proposes only at 90%+ of
+night-resamples on its main grade (points for T1-T4 and the projections, contest results for T5, Q tags and swaps,
+which the contest side supplies) with the other grade not against it, and on 40+ pairs over 8+ nights; 80-90% is
+"watching". Every test reads "since the rule went in" (`rule_dates.json`: the first night each rule was live on the
+board; add an entry the day a rule is adopted) and "season". Morning-projection tweaks are proposed every other Friday
+from 11/27 (`etr_gap_study.md`): a tweak is judged only on nights after it went in, never tuned and graded on the same
+nights. When asked for the Friday report, run it and post friday.md in chat; nothing changes without the operator's yes.
 
 **Monthly re-check** (the first report of each month; the report flags it until `recheck.json` names the month): rerun `nba_tier_grade.py`,
 `nba_tier_rules.py`, `nba_q_lane.py` and `nba_backtest_rest.py` and read each adopted lean, rule and
