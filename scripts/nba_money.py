@@ -2,9 +2,10 @@
 
 Everything is read off every team in every contest on file (analysis/nba/contests/, scripts/nba_contests.py), joined at
 its draft window to the rankings side's point-in-time tiers (analysis/nba/report/tier_history.csv) and graded against a
-price baseline. Writes analysis/nba/report/money_report.md and money_tiers.json (the morning report's per-tier block), and on Mondays
-money_proposals.json (the weekly verdict proposals the rankings side's Monday section reads). It never writes decision_register.csv: MONEY verdicts go into the
-register by hand, only when the user approves them. The 2:17am job runs it.
+price baseline. Writes analysis/nba/report/money_report.md and money_tiers.json (the morning report's per-tier block: exposure,
+the register's decisions, card_decisions, t5_drafted, q_picks). The weekly verdict proposals moved to the Friday job
+(scripts/nba_money_friday.py, money_friday.json) on 2026-11-13. It never writes decision_register.csv: MONEY verdicts go
+into the register by hand, only when the user approves them. The 2:17am job runs it.
 
 Definitions
   draft window  each team's draft time is the hourly ADP snapshot nearest the ADPs its picks were taken at
@@ -1201,7 +1202,6 @@ def report(N, mirror):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mirror", help="a clone of br-adp-mirror (draft windows for nights not cached yet)")
-    ap.add_argument("--proposals", action="store_true", help="write money_proposals.json even if it isn't Monday")
     ap.add_argument("--draft", action="store_true", help="an ad-hoc run (from chat): write money_report_draft.md only; the "
                     "published files belong to the nightly workflow")
     a = ap.parse_args()
@@ -1221,10 +1221,6 @@ def main():
     tj["candidates"] = parts["candidates"]
     json.dump(tj, open(os.path.join(REP, "money_tiers.json"), "w"), indent=1)
     STORE.save()
-    if a.proposals or dt.datetime.now(PT).weekday() == 0:             # Mondays (Pacific): the weekly verdict proposals
-        path = os.path.join(REP, "money_proposals.json")
-        prev = json.load(open(path)) if os.path.exists(path) else None      # last Monday's: the tracked splits' reads
-        json.dump(proposals(tj, prev), open(path, "w"), indent=1)
     print("\n".join(out))
 
 
@@ -1713,6 +1709,9 @@ def tiers_json(N, parts):
                 blocks[k]["decisions"].append(item)
     out["tiers"] = {k: blocks[k] for k in ("1", "2", "3", "4", "5", "all", "turn", "live", "undrafted") if k in blocks}
     out["card_decisions"] = card_decisions(N)
+    R = field_rates(N)
+    out["t5_drafted"] = t5_drafted(N, R)
+    out["q_picks"] = q_picks(N, R)
     return out
 
 
@@ -1764,7 +1763,187 @@ def card_decisions(N):
     return out
 
 
-# ---------------------------------------------------------------- Monday: the weekly verdict proposals
+# ---------------------------------------------------------------- field multiples, the hourly tags, nightly T5 and Q blocks (2026-11-13)
+TAGS = os.path.join(NBA, "contests", "tags")
+QTAGS = ("Questionable", "Doubtful", "GTD")
+UNDER = 60          # T5: the drafted% line (share of pods), from the season study
+
+
+def hit(t, x):
+    return (t["payout"] > 0) if x == "cash" else bool(t["top"][x])
+
+
+def field_rates(N):
+    """{(date, contest, price bin): {x: the field's rate}}, x = 1, 10, "cash", over every team with a window and price bin."""
+    by = collections.defaultdict(list)
+    for n in N:
+        for ts in n["teams"].values():
+            for t in ts:
+                if t["window"] and t["bin"] is not None:
+                    by[(n["date"], t["contest"]["contest_id"], t["bin"])].append(t)
+    return {k: {x: sum(hit(t, x) for t in v) / len(v) for x in (1, 10, "cash")} for k, v in by.items()}
+
+
+def field_multiple(units, R):
+    """units: [(date, team)], each team once. Its top-1%, top-10% and cash finishes over the whole field's in the same contest
+    and price quintile: {"teams", "top1"/"top10"/"cash": [multiple, finishes, expected], "range80_top10"} (whole nights
+    resampled 1,000 times)."""
+    per = collections.defaultdict(lambda: collections.defaultdict(float))
+    for d, t in units:
+        r = R.get((d, t["contest"]["contest_id"], t["bin"]))
+        if not r:
+            continue
+        for x in (1, 10, "cash"):
+            per[d][("o", x)] += hit(t, x)
+            per[d][("e", x)] += r[x]
+    out = {"teams": len(units)}
+    for x, k in ((1, "top1"), (10, "top10"), ("cash", "cash")):
+        o, e = sum(v[("o", x)] for v in per.values()), sum(v[("e", x)] for v in per.values())
+        out[k] = [round(o / e, 2) if e else None, int(o), round(e, 1)]
+    ds, rnd, boots = sorted(per), random.Random(11), []
+    for _ in range(RESAMPLES if len(ds) >= 3 else 0):
+        b = [per[rnd.choice(ds)] for _ in ds]
+        e = sum(v[("e", 10)] for v in b)
+        if e:
+            boots.append(sum(v[("o", 10)] for v in b) / e)
+    boots.sort()
+    out["range80_top10"] = [round(boots[len(boots) // 10], 2), round(boots[len(boots) * 9 // 10], 2)] if boots else None
+    return out
+
+
+def tags_of(n):
+    """The Q tags at each hourly snapshot of night n's slate, from the ADP mirror's history, cached in
+    analysis/nba/contests/tags/<date>.json.gz: {"snaps": {snapshot time: {player: [ADP, tag, NBA team]}} (Q-tagged players
+    only), "pre": {player: his ADP in the last snapshot before his first Q tag, None if tagged from the first}}. A team's
+    draft time (its window) is one of these snapshot times."""
+    path = os.path.join(TAGS, "%s.json.gz" % n["date"])
+    if "_tags" in n:
+        return n["_tags"]
+    if os.path.exists(path):
+        n["_tags"] = json.load(gzip.open(path, "rt"))
+        return n["_tags"]
+    if not MIRROR_PATH:
+        return None
+    m, snaps = D.Mirror(MIRROR_PATH), {}
+    for c in {c["slate_id"]: c for c in n["contests"]}.values():
+        for t, ps in m.snapshots({"slate_id": c["slate_id"], "lock": F.iso(c["cutoff"])}):
+            snaps[t.isoformat()] = {p["player_id"]: (p.get("adp"), p.get("injury"), p.get("team")) for p in ps}
+    pre, last = {}, {}
+    for k in sorted(snaps):
+        for p, (adp, tag, _) in snaps[k].items():
+            if p in pre:
+                continue
+            if tag in QTAGS:
+                pre[p] = last.get(p)
+            elif adp is not None:
+                last[p] = adp
+    out = {"snaps": {k: {p: list(v) for p, v in tab.items() if v[1] in QTAGS} for k, tab in snaps.items()}, "pre": pre}
+    if snaps and (STORE is None or STORE.write):
+        os.makedirs(TAGS, exist_ok=True)
+        json.dump(out, gzip.open(path, "wt"))
+    n["_tags"] = out
+    return out
+
+
+def q_at_draft(n, t):
+    """{player: [ADP, tag, NBA team]} Q-tagged at the snapshot the team drafted at (None: no snapshot on file)."""
+    tg = tags_of(n)
+    return (tg or {}).get("snaps", {}).get(t["at"]) if t["at"] else None
+
+
+def sat(n, p):
+    r = n["rec"].get(p)
+    return r is not None and not (num(r["min"]) or 0) > 0
+
+
+def pod_shares(n, cid):
+    """{player: share of the contest's pods that drafted him (0-100)}, from the rosters (swaps credited back)."""
+    key = ("_pods", cid)
+    if key not in n:
+        pods = collections.defaultdict(set)
+        for t in n["teams"][cid]:
+            pods[t["draft_id"]] |= drafted_by(t)
+        cnt = collections.Counter(p for v in pods.values() for p in v)
+        n[key] = {p: 100 * k / len(pods) for p, k in cnt.items()}
+    return n[key]
+
+
+def t5_drafted(N, R):
+    """Per window: the share of my T5 picks and of the field's drafted by under UNDER% of pods, and how teams holding a T5
+    pick under the line (and one at or over it) did, last night and season to date (the field's holders and mine)."""
+    out = {}
+    last = N[-1]["date"]
+    for w in ("am", "pm"):
+        picks = {"mine": [0, 0], "field": [0, 0], "mine_last": [0, 0], "field_last": [0, 0]}
+        groups = collections.defaultdict(list)
+        for n in N:
+            for cid, ts in n["teams"].items():
+                sh = pod_shares(n, cid)
+                for t in ts:
+                    if t["window"] != w or t["bin"] is None:
+                        continue
+                    rows = n["tiers"][w]
+                    g = set()
+                    for p in drafted_by(t):
+                        if (rows.get(p) or {}).get("tier") != "5":
+                            continue
+                        under = sh.get(p, 0) < UNDER
+                        g.add("under" if under else "over")
+                        for k in (["mine", "field"] if t["mine"] else ["field"]):
+                            for kk in ([k, k + "_last"] if n["date"] == last else [k]):
+                                picks[kk][0] += under
+                                picks[kk][1] += 1
+                    for x in g:
+                        groups[(x, "season", "field")].append((n["date"], t))
+                        if t["mine"]:
+                            groups[(x, "season", "mine")].append((n["date"], t))
+                        if n["date"] == last:
+                            groups[(x, "last_night", "field")].append((n["date"], t))
+                            if t["mine"]:
+                                groups[(x, "last_night", "mine")].append((n["date"], t))
+        share = lambda v: {"under": v[0], "picks": v[1], "share": round(v[0] / v[1], 3) if v[1] else None}
+        out[w] = {"line": UNDER, "share_under": {"last_night": {"mine": share(picks["mine_last"]), "field": share(picks["field_last"])},
+                                                 "season": {"mine": share(picks["mine"]), "field": share(picks["field"])}},
+                  "holders": {span: {x: {who: field_multiple(groups[(x, span, who)], R) for who in ("field", "mine")}
+                                     for x in ("under", "over")} for span in ("last_night", "season")}}
+    return out
+
+
+def q_groups(N):
+    """{group: [(date, team)]}: teams by their Q picks (tagged at the snapshot they drafted at): "no Q pick", "T<k>" by the
+    pick's ADP tier at the team's window, "T<k> played"/"T<k> sat", and "played"/"sat" over all tiers."""
+    g = collections.defaultdict(list)
+    for n in N:
+        for ts in n["teams"].values():
+            for t in ts:
+                if not t["window"] or t["bin"] is None:
+                    continue
+                q = q_at_draft(n, t)
+                if q is None:
+                    continue
+                qs = [p for p in drafted_by(t) if p in q]
+                if not qs:
+                    g["no Q pick"].append((n["date"], t))
+                    continue
+                keys = set()
+                for p in qs:
+                    k = "T" + ((n["tiers"][t["window"]].get(p) or {}).get("a_tier") or "?")
+                    s = "sat" if sat(n, p) else "played"
+                    keys |= {k, "%s %s" % (k, s), s, "any Q pick"}
+                for k in keys:
+                    g[k].append((n["date"], t))
+    return g
+
+
+def q_picks(N, R):
+    g = q_groups(N)
+    order = ["no Q pick", "any Q pick", "played", "sat"] + ["T%s%s" % (k, s) for k in "12345" for s in ("", " played", " sat")]
+    return {"notes": "Teams by their Q picks (Questionable or Doubtful at the snapshot the team drafted at), season to date; "
+                     "tier: the pick's ADP tier at the team's window; played/sat: his minutes that night.",
+            "groups": {k: field_multiple(g[k], R) for k in order if g.get(k)}}
+
+
+# ---------------------------------------------------------------- the weekly verdict proposals (Fridays from 2026-11-20: nba_money_friday.py)
 # Approved 2026-11-09: these register rows are graded on a split from section 3c
 REGISTERED_SPLITS = {"card-same-position-teammates": "card-same-position-teammates:split"}
 # Retired 2026-11-09: computed in the report, never proposed
@@ -1867,7 +2046,7 @@ def proposals(tj, prev=None):
                         lift["lift10"], ", 80%% range %.2f-%.2f" % tuple(lift["range80"]) if lift["range80"] else "",
                         lift["slates"], ", after the price-split check" if lift["after_price_check"] else "") if lift else "")})
     return {"generated": tj["generated"], "night": tj["night"], "slates": len(tj["slates"]),
-            "notes": "Weekly MONEY verdict proposals (scripts/nba_money.py, Mondays). Nothing here is in decision_register.csv "
+            "notes": "Weekly MONEY verdict proposals (scripts/nba_money_friday.py, Fridays). Nothing here is in decision_register.csv "
                      "until the user approves it. Reads: money_report.md sections 3, 3b and 5. A change to the rankings side's "
                      "inputs (tier_history.csv: a rebuilt button) can move a read without the contests changing; check the "
                      "register's points side when that happens.",

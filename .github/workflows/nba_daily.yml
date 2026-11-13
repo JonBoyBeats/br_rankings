@@ -113,8 +113,8 @@ jobs:
           python3 scripts/nba_shadow.py > /dev/null
           python3 scripts/nba_swap_board.py > /dev/null
           python3 scripts/nba_my_swaps.py > /dev/null
-          # the contest side's money report: refreshes money_report.md and money_tiers.json (and money_proposals.json on
-          # Mondays), never decision_register.csv; after tier_history so last night's tiers and exposure are in
+          # the contest side's money report: refreshes money_report.md and money_tiers.json (the weekly proposals moved to
+          # the Friday job, nba_friday.yml), never decision_register.csv; after tier_history so last night's tiers are in
           python3 scripts/nba_money.py --mirror ../br-adp-mirror > /dev/null || true
           python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror > /dev/null || true
       # Commit and push. The workflow owns every file it regenerates (OWNED below); decision_register.csv is chat-only and
