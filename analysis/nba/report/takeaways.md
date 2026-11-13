@@ -2,6 +2,14 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-12 Thu main
+
+- Locked both windows (Lock AM 5:10am, the last of 2; Lock PM 3:38pm). Late news: Scottie Barnes (ADP 15.3) and LeBron James (16.8), both Questionable at Lock AM, were out before lock, so TOR and PHI sit out the morning's grading (late_news.json). Detroit beat Washington by 4 in overtime (Cade 80.5, Ausar 61.7, Trae 56.4, AD 55.0, Sarr 50.8); Minnesota beat Dallas by 39.
+- Morning: 35% against our number (season 54%, your board wins) and 64% against ADP (season 55%, your board wins). Fades on Christie, Clayton and Huerter right, Goodwin wrong (24 minutes). Afternoon: 44% against ETR (season 47%, ETR alone wins); the Embiid fade through the tag was right, the Ausar and Sarr fades (overtime minutes) and Kyshawn George raise (6 fouls) wrong; raises on LaMelo and Quickley right.
+- Theme (hedges left out): fades on players who then played 4+ minutes over their usual are now 9 right, 22 wrong (16 slates); raises on them 29 right, 5 wrong. Blowout calls: fades 19 right, 3 wrong; raises 2 right, 16 wrong. Our projection's `teammate-out` misses on Toronto with Barnes out (Graves 25.2 against ETR 19.0, scored 1.4) and Jabari Walker with LeBron out (ours 14.0, ETR 20.7, scored 20.1): ETR priced the absences better both times; on the season, ETR has been closer on 9 of our 14 `teammate-out` misses and splits (6 slates).
+- Field: 80 teams in Thursday Night Hoops, median finish top 46%, top 10% 1.00, top 1% 0.00 (best top 1.2%), $234 on $400. You were light on Cade (11 of 80), Sarr (6) and Trae in the afternoon (2 of 40), heavy on Ausar (29 of 80, holders 3.0x at the top 10%), Diabate (40%, 0.9x) and Reid (34%, 0.8x). Running, 6-drafter: top 10% 1.32 (18 nights), AM teams 1.49 against PM 1.24.
+- Morning Proj vs ETR (etr_match.md): direction 90% (26 of 29), big misses 15 of 60 (25%), CLV ours 0.10 against ETR 0.34. Missed the same way on 3+ of the last 10: Sabonis, Siakam, Markkanen and Jalen Johnson (ETR below ours), Avdija and Fears (ETR above).
+
 ## 2026-11-11 Wed main
 
 - Locked both windows (Lock AM 7:51am, Lock PM 3:25pm). Paul George (ADP 26, ruled out after Lock AM) and Trey Murphy (Probable at Lock AM, Doubtful by the afternoon) sat, neither an early pick, so no team left the grading; calls on their teammates (Fears, Dejounte Murray in the morning) are logged as hedges. Curry left after 6 minutes. One rout: Brooklyn by 34 over New Orleans.

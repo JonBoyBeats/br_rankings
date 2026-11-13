@@ -4,13 +4,13 @@
 
 ## Front page
 
-Last night's main slate had 4 games, 1 of them blowouts (MIN by 39 over DAL). The biggest nights against ETR's number among drafted players: Cade Cunningham 33 points over; Ausar Thompson 28 points over; Alex Sarr 26 points over. Your 80 teams (40 drafted in the morning, 40 in the afternoon) had a median finish in the top 46%; 8 made the top 10% and 0 the top 1%, and 19 cashed. They cost $400 in entries and won $234. Today: Fri Main, lock 3:52 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
+Thursday's four-game slate was settled by one game. Detroit beat Washington by 4 in overtime, and five of the night's seven best scores came from it: Cade Cunningham 80.5 (52 on 16-25 in 48 minutes), Ausar Thompson 61.7 (17-11-11 with 6 stocks), Trae Young 56.4 (37 and 14 assists), Anthony Davis 55.0 and Alex Sarr 50.8 (30 on 12-14). Minnesota beat Dallas by 39, which sank Flagg (28.9), Kyrie, Washington and Gafford, and Barnes and LeBron were ruled out after your 5:10am lock, so Toronto and Philadelphia sit out the morning's grading. Your 80 teams had a median finish in the top 46%; 8 made the top 10% (the field's rate), none the top 1% (best top 1.2%), and 19 cashed, returning $234 on $400: below average, not a disaster. Your memory is mostly right, with two exceptions. You were light on Cade (11 of 80 teams, against a sixth of the field), Sarr (6) and Trae in the afternoon (2 of 40), and on Murray-Boyles in the morning (2 of 40). But Ausar was your second-biggest bet (29 of 80, 48% of your morning teams), and his holders made the top 10% three times as often as the field. You were also over the field on Murray-Boyles in the afternoon (10 of 40, against 16%). Where the fades came from: in the afternoon you put Flagg ahead of Cade, Embiid ahead of Trae, Edgecombe and Kyshawn George ahead of Ausar, and Robinson ahead of Sarr, and all five moves lost. The overtime itself couldn't be seen coming. The repeatable part is the season pattern: fading a player who then plays 4+ minutes over his usual is now 9 right and 22 wrong, and your biggest overweights, Diabate (40% of your teams) and Reid (34%), both came in a little under the field's rate (0.9 and 0.8 times). Nothing to decide today.
 
 **Your biggest bets.**
 
-- **Moussa Diabate**, on 40% of your teams (50% of your morning ones) against 16% of the field. In line (24.6 vs ETR 26.7): 32 min (usual 25). His holders made the top 10% 0.9 times as often as the field.
-- **Ausar Thompson**, on 36% of your teams (48% of your morning ones) against 17% of the field. Over by 28 (61.7 vs ETR 34.1): 43 min (usual 27), 11 ast (about 6 usual for his minutes), 3 stl + 3 blk. His holders made the top 10% 3.0 times as often as the field.
-- **Naz Reid**, on 34% of your teams (42% of your afternoon ones) against 17% of the field. In line (35.1 vs ETR 37.0): 34 min (usual 29). His holders made the top 10% 0.8 times as often as the field.
+- **Moussa Diabate**, on 40% of your teams (50% of your morning ones) against 16% of the field. In line: 13 rebounds in 32 minutes, 7 points. His holders made the top 10% 0.9 times as often as the field.
+- **Ausar Thompson**, on 36% of your teams (48% of your morning ones) against 17% of the field. Over: 17-11-11 with 6 stocks in 43 minutes (usual 27) of the overtime win. His holders made the top 10% 3.0 times as often as the field.
+- **Naz Reid**, on 34% of your teams (42% of your afternoon ones) against 17% of the field. In line: 34 minutes (usual 29) but cold 6-18. His holders made the top 10% 0.8 times as often as the field.
 
 **How to read the statuses.**
 
@@ -36,9 +36,9 @@ This week in T1: news judgments 6 for 8; Bagel and ETR notes 1 for 2. Of the new
 
 **Player recap.**
 
-- **Flagg**: Under by 18 (28.9 vs ETR 47.0): 27 min (usual 34) in a 39-point blowout, 12 pts on 5-12 FG, 1-2 3s.
-- **Cunningham**: Over by 33 (80.5 vs ETR 47.4): 48 min (usual 33), 52 pts on 16-25 FG, 3-5 3s, 1 stl + 1 blk.
-- **Davis**: Over by 12 (55.0 vs ETR 43.1): 44 min (usual 33), 1 stl + 0 blk.
+- **Flagg**: Under: 27 minutes in a 39-point loss, 12 on 5-12.
+- **Cunningham**: Over: 52 on 16-25 with 11 assists in 48 minutes of the overtime win.
+- **Davis**: Over: 30 and 15 on 13-21 in 44 minutes of the overtime loss, through 6 fouls.
 
 **Contest view.** Holders of Cade Cunningham made the top 10% at 3.1 times the field's rate. In your morning window, the top-10% teams held Cade Cunningham on 52% against your 15%; you held Cooper Flagg on 20% against 1% of the top-10% teams. On the season, putting PRICEY players last: contest results, proven to help so far; last night you had a PRICEY player on 25% of your morning teams, the field on 33%, already on the right side.
 
@@ -70,13 +70,13 @@ This week in T2: news judgments 16 for 36; your own reads 3 for 8; Bagel and ETR
 
 **Player recap.**
 
-- **Brown**: Under by 10 (32.2 vs ETR 41.9): 18 pts on 8-15 FG, 0-1 3s, 2 stl + 1 blk.
-- **Booker**: Over by 13 (51.7 vs ETR 38.5): 3 stl + 1 blk, 30 pts on 12-20 FG, 4-8 3s.
-- **Irving**: Under by 16 (21.6 vs ETR 37.2): 10 pts on 4-11 FG, 2-6 3s.
-- **Barrett**: Over by 16 (52.3 vs ETR 36.2): 14 reb (about 7 usual for his minutes), 31 pts on 13-20 FG, 4-7 3s.
-- **Dosunmu**: Under by 8 (26.9 vs ETR 34.4): 27 min (usual 31) in a 39-point blowout, 18 pts on 8-15 FG, 2-4 3s.
-- **Young**: Over by 24 (56.4 vs ETR 32.8): 45 min (usual 34), 37 pts on 8-23 FG, 4-8 3s, no steals or blocks.
-- **Embiid**: Under by 8 (33.3 vs ETR 41.2): 4 reb (about 8 usual for his minutes).
+- **Brown**: Under: 18 points, 2 assists and 5 turnovers.
+- **Booker**: Over: 30 on 12-20 with 4 stocks.
+- **Irving**: Under: cold 4-11 in 27 minutes of a 39-point loss.
+- **Barrett**: Over: 31 and 14 on 13-20.
+- **Dosunmu**: Under: 27 minutes in a 39-point win, 2 rebounds and 1 assist.
+- **Young**: Over: 37 and 14 assists in 45 minutes of the overtime loss, on 8-23.
+- **Embiid**: Under: 4 rebounds in 28 minutes through the Questionable tag, 7-17.
 - **Barnes**: scratched; swaps went to Brooks (142 teams, 23 points) and Murray-Boyles (104 teams, 36 points).
 
 **Contest view.** Holders of Trae Young and RJ Barrett made the top 10% at 2.6 times and 2.0 times the field's rate. In your morning window, the top-10% teams held Trae Young on 43% against your 22%; you held LaMelo Ball on 32% against 9% of the top-10% teams. On the season, taking the less drafted of two close players: contest results, an early sign it helps.
@@ -108,15 +108,16 @@ This week in T2: news judgments 16 for 36; your own reads 3 for 8; Bagel and ETR
 - Afternoon: **Dybantsa** ahead of **Reed**, news judgment (a role or minutes change). Dybantsa scored 23, Reed 29: wrong.
 
 This week in T3: news judgments 7 for 29; Bagel notes 5 for 7; Bagel and ETR notes 2 for 4; your own reads 1 for 2; ETR notes 0 for 1. Of the news judgments, role or minutes calls went 3 for 16; moving a Questionable player down went 4 for 11; moving a Questionable player up went 0 for 2. Takeaway: role or minutes calls is what lost (3 for 16 this week); leave those to the button.
+Every morning role call in this tier ran into Quickley, who scored 46 in his second game back from the hamstring: the button had him ahead of George, Bridges, Gobert and Washington, and the button was right.
 
 **Player recap.**
 
-- **Edgecombe**: Over by 18 (48.6 vs ETR 30.8): 8 ast (about 4 usual for his minutes), 3 stl + 1 blk.
+- **Edgecombe**: Over: 8 assists and 4 stocks.
 - **James**: scratched; swaps went to Murray-Boyles (259 teams, 36 points) and Brooks (50 teams, 23 points).
-- **George**: Under by 7 (24.7 vs ETR 31.8): 26 min (usual 35) with 6 fouls.
-- **Thompson**: Over by 28 (61.7 vs ETR 34.1): 43 min (usual 27), 11 ast (about 6 usual for his minutes), 3 stl + 3 blk.
-- **Quickley**: Over by 15 (45.8 vs ETR 31.1): 26 pts on 8-16 FG, 3-7 3s.
-- **Washington**: Under by 16 (11.6 vs ETR 27.5): 16 min (usual 34) in a 39-point blowout.
+- **George**: Under: 6 fouls in 26 minutes.
+- **Thompson**: Over: 17-11-11 with 6 stocks in 43 minutes (usual 27) of the overtime win.
+- **Quickley**: Over: 26 on 8-16.
+- **Washington**: Under: 16 minutes in a 39-point loss.
 
 **Contest view.** Holders of Ausar Thompson and Immanuel Quickley made the top 10% at 3.0 times and 1.8 times the field's rate. In your morning window, the top-10% teams held Immanuel Quickley on 29% against your 10%; you held Rudy Gobert on 32% against 16% of the top-10% teams. On the season, taking VALUE players first: contest results, an early sign it helps; last night you had a VALUE player on 70% of your morning teams, the field on 48%, already on the right side.
 
@@ -124,7 +125,7 @@ This week in T3: news judgments 7 for 29; Bagel notes 5 for 7; Bagel and ETR not
 
 Nothing being tested here.
 
-**Today in T3.** VALUE: Domantas Sabonis and Ty Jerome. PRICEY: Cameron Boozer, Dyson Daniels, Anthony Black and James Harden.
+**Today in T3.** VALUE: Domantas Sabonis and Ty Jerome. PRICEY: Cameron Boozer, Dyson Daniels and Anthony Black.
 
 ## T4
 
@@ -142,10 +143,10 @@ This week in T4: news judgments 11 for 24; Bagel notes 5 for 8; Bagel and ETR no
 
 **Player recap.**
 
-- **Kuminga**: Over by 6 (34.1 vs ETR 27.9): 24 min (usual 30) in a 39-point blowout, 5 ast (about 2 usual for his minutes).
-- **Collins**: Under by 12 (14.8 vs ETR 27.1).
-- **Sarr**: Over by 26 (50.8 vs ETR 24.8): 44 min (usual 26), 30 pts on 12-14 FG, 4-6 3s, ETR had him below his usual (25 vs 29).
-- **Green**: Under by 7 (17.8 vs ETR 25.1): 21 min (usual 27).
+- **Kuminga**: Over: 5 assists in 24 minutes of a 39-point win.
+- **Collins**: Under: 10 points and 4 rebounds with 5 fouls in 25 minutes.
+- **Sarr**: Over: 30 on 12-14 in 44 minutes (usual 26) of the overtime loss.
+- **Green**: Under: 21 minutes, 3-9, no assists.
 
 **Contest view.** Holders of Alex Sarr and VJ Edgecombe made the top 10% at 2.1 times and 1.4 times the field's rate. In your morning window, the top-10% teams held Alex Sarr on 35% against your 10%; you held Moussa Diabate on 50% against 13% of the top-10% teams. On the season, taking VALUE players first: contest results, an early sign it helps; last night you had a VALUE player on 50% of your morning teams, the field on 15%, already on the right side.
 
@@ -154,7 +155,7 @@ This week in T4: news judgments 11 for 24; Bagel notes 5 for 8; Bagel and ETR no
 - ADP with ETR within two picks in afternoon T4 (the old rule: straight ETR). In use, on trial (night 2 of 14); on points, too early to say; contest results: no clear signal. For today: keep doing it while the check runs.
 - Stop putting PRICEY players last in afternoon T4 (VALUE players still go first). Being tested (night 0 of 14); on points, too early to say; contest results: no clear signal. For today: nothing changes yet.
 
-**Today in T4.** PRICEY: Amen Thompson, Josh Giddey, Onyeka Okongwu, Donovan Clingan, Damian Lillard and Nickeil Alexander-Walker.
+**Today in T4.** VALUE: Keyonte George. PRICEY: Amen Thompson, Josh Giddey and Onyeka Okongwu.
 
 ## T5
 
@@ -175,13 +176,13 @@ Your afternoon teams' T5 picks averaged 26 points, the field's 22: your overweig
 
 **Player recap.**
 
-- **Murray-Boyles**: Over by 9 (36.0 vs ETR 27.0): 1 stl + 5 blk, 32 min (usual 22), 0 reb (about 7 usual for his minutes).
-- **Walter**: Under by 11 (13.0 vs ETR 24.2): 6 pts on 2-8 FG, 1-6 3s.
-- **Shead**: Under by 8 (14.7 vs ETR 22.9).
-- **Huerter**: Under by 7 (14.2 vs ETR 21.3).
-- **Gafford**: Under by 9 (13.1 vs ETR 21.7): 16 min (usual 22) in a 39-point blowout.
-- **Maluach**: Under by 7 (12.9 vs ETR 20.0).
-- **Clayton Jr.**: Under by 8 (7.2 vs ETR 15.4): 22 min (usual 16), 5 pts on 1-8 FG, 0-5 3s.
+- **Murray-Boyles**: Over: 6 stocks (5 blocks) in 32 minutes, no rebounds.
+- **Walter**: Under: cold 2-8, 1-6 from three.
+- **Shead**: Under: 1-6 for 5 points in 22 minutes.
+- **Huerter**: Under: 11 points, 1 rebound, no assists in 24 minutes.
+- **Gafford**: Under: 16 minutes in a 39-point loss.
+- **Maluach**: Under: 4 points in 16 minutes.
+- **Clayton Jr.**: Under: 1-8, 0-5 from three, with 5 turnovers.
 
 **Contest view.** Holders of Collin Murray-Boyles made the top 10% at 2.0 times the field's rate. In your morning window, the top-10% teams held Collin Murray-Boyles on 13% against your 5%; you held Jamal Shead on 20% against 3% of the top-10% teams. On the season, taking the less drafted of two close players: contest results, proven to help so far.
 
@@ -192,7 +193,7 @@ Your afternoon teams' T5 picks averaged 26 points, the field's 22: your overweig
 - In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock. Being tested (night 3 of 14); on points, the backtest shows proven to hurt so far; contest results: still to come. For today: nothing changes; not worth doing by hand.
 - After the VALUE players, order T5 by the window's projection to the whole point, and within the same point put the less drafted player first. Being tested (night 2 of 14); on points, in the morning the backtest shows an early sign it hurts, in the afternoon the backtest shows no clear signal; contest results: still to come. For today: nothing changes; not worth doing by hand.
 
-**Today in T5.** Klay Thompson is Questionable (55% to play): stays in T5. De'Aaron Fox is Questionable (45% to play): stays in T5. Jalen Suggs is Questionable (63% to play): stays in T5. VALUE: Darius Garland and Dejounte Murray. Beneficiaries to watch: if Klay Thompson sits, Davion Mitchell and Andrew Wiggins; if De'Aaron Fox sits, Dylan Harper, Stephon Castle and Keldon Johnson; if Jalen Suggs sits, Desmond Bane and Wendell Carter Jr.
+**Today in T5.** Klay Thompson is Questionable (55% to play): stays in T5. De'Aaron Fox is Questionable (45% to play): stays in T5. Jalen Suggs is Questionable (63% to play): stays in T5. VALUE: Brandin Podziemski, Darius Garland and Dejounte Murray. Beneficiaries to watch: if Klay Thompson sits, Davion Mitchell and Andrew Wiggins; if De'Aaron Fox sits, Dylan Harper, Stephon Castle and Keldon Johnson; if Jalen Suggs sits, Desmond Bane and Wendell Carter Jr.
 
 ## The draft card
 

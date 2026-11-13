@@ -498,3 +498,32 @@ date,slate,player,team,kind,ours,etr_last,actual,min,usual_min,margin,cause,fixa
 2026-11-11,nba_wed_main,Jeremiah Fears,NOP,split,37.7,42.1,22.3,28,29.7,-34,blowout,partly,ours,"28 minutes in a 34-point loss; ETR priced the Murphy-out role (42), ours (38) closer"
 2026-11-11,nba_wed_main,Luka Doncic,LAL,split,71.1,66.7,46.5,32,36.2,11,shooting,no,etr,10-25 with 5 turnovers in 32 minutes; ETR (67) closer than ours (71)
 2026-11-11,nba_wed_main,Day'Ron Sharpe,BKN,split,36,40.3,40.3,19,23.7,34,peripherals,no,etr,"5 stocks on 5-6 in 19 minutes; ETR (40) right on, ours (36) short"
+2026-11-12,nba_thu_main,Naji Marshall,DAL,am_call,30.7,25.7,24.2,23,22.0,-39,other,?,right,"raised from ADP 42nd to your 29th; 24.2 on his usual 23 minutes in a 39-point loss, beat 14 of the 16 he jumped"
+2026-11-12,nba_thu_main,Max Christie,DAL,am_call,22.2,10.7,8.4,7,19.8,-39,blowout,partly,right,faded from ADP 32nd to your 41st; 7 minutes (usual 20) in a 39-point loss
+2026-11-12,nba_thu_main,Terrence Shannon Jr.,MIN,am_call,27.0,24.3,16.4,21,21.3,39,other,?,right,"faded below ADP; 16.4 on his usual 21 minutes, beat 3 of the 6 he fell below"
+2026-11-12,nba_thu_main,Kevin Huerter,DET,am_call,26.2,27.7,14.2,24,23.1,4,peripherals,no,right,"faded below ADP; 11 points, 1 rebound and no assists on usual minutes for 14.2, beat 4 of the 5 he fell below"
+2026-11-12,nba_thu_main,Jordan Goodwin,PHX,am_call,22.5,23.3,21.0,24,20.4,5,minutes,yes,wrong,"faded from ADP 32nd to your 40th; 24 minutes (usual 20) carried a 2-11 night to 21.0, beat 5 of the 8 he fell below"
+2026-11-12,nba_thu_main,Sion James,CHA,am_call,25.4,25.6,19.6,32,25.5,-5,other,?,wrong,"faded; 32 minutes (usual 26) with 8 rebounds and 6 assists for 19.6, level with the players he fell below"
+2026-11-12,nba_thu_main,Walter Clayton Jr.,DAL,am_call,15.1,21.8,7.2,22,16.5,-39,shooting,no,right,"faded deep; 1-8, 0-5 from three with 5 turnovers in a 39-point loss"
+2026-11-12,nba_thu_main,Joel Embiid,PHI,pm_call,49.2,48.0,33.3,28,31.8,11,news,no,right,faded from ETR 6th to your 11th through the Questionable tag at Lock PM; played 28 minutes with 4 rebounds for 33.3
+2026-11-12,nba_thu_main,Ausar Thompson,DET,pm_call,41.9,41.4,61.7,43,27.1,4,other,?,wrong,"faded from ETR 12th to your 17th; overtime: 17-11-11 with 6 stocks in 43 minutes (usual 27), beat all 5 he fell below"
+2026-11-12,nba_thu_main,Jamal Shead,TOR,pm_call,28.6,29.5,14.7,22,24.8,-11,shooting,no,wrong,raised from ETR 37th to your 33rd; 1-6 for 5 points on 22 minutes
+2026-11-12,nba_thu_main,Alex Sarr,WAS,pm_call,33.2,31.5,50.8,44,26.0,-4,other,?,wrong,faded from ETR 32nd to your 35th; overtime: 30 on 12-14 in 44 minutes (usual 26)
+2026-11-12,nba_thu_main,LaMelo Ball,MIN,pm_call,48.9,46.3,41.1,25,27.7,39,shooting,no,right,raised from ETR 7th to your 5th; 6-10 from three and 9 assists in 25 minutes of a 39-point win
+2026-11-12,nba_thu_main,VJ Edgecombe,PHI,pm_call,35.4,37.5,48.6,36,33.2,11,peripherals,no,right,raised from ETR 18th to your 16th; 8 assists and 4 stocks for 48.6
+2026-11-12,nba_thu_main,Kyshawn George,WAS,pm_call,36.8,39.2,24.7,26,35.0,-4,other,?,wrong,raised from ETR 16th to your 14th; 6 fouls in 26 minutes (usual 35) of the overtime game
+2026-11-12,nba_thu_main,Immanuel Quickley,TOR,pm_call,40.3,37.3,45.8,28,30.8,-11,shooting,no,right,raised from ETR 21st to your 19th; 26 on 8-16 on usual minutes
+2026-11-12,nba_thu_main,Cooper Flagg,DAL,miss,53.1,54.3,28.9,27,34.2,-39,blowout,partly,ours,"27 minutes (usual 34) in a 39-point loss; ours 53.1, ETR 54.3"
+2026-11-12,nba_thu_main,Allen Graves,TOR,miss,25.2,19.0,1.4,13,13.1,-11,teammate-out,yes,etr,"ours 25.2 with Barnes out, ETR 19.0; 13 minutes, his usual, for 1.4"
+2026-11-12,nba_thu_main,PJ Washington,DAL,miss,35.3,34.1,11.6,16,34.1,-39,blowout,partly,etr,16 minutes (usual 34) in a 39-point loss
+2026-11-12,nba_thu_main,Cade Cunningham,DET,miss,58.6,55.1,80.5,48,33.3,4,other,?,ours,"overtime: 52 on 16-25 in 48 minutes (usual 33); ours 58.6, ETR 55.1"
+2026-11-12,nba_thu_main,Morez Johnson Jr.,DAL,miss,21.9,23.6,0.4,13,17.1,-39,blowout,partly,ours,"13 minutes in a 39-point loss, 0-4"
+2026-11-12,nba_thu_main,Ausar Thompson,DET,miss,41.9,41.4,61.7,43,27.1,4,other,?,ours,"overtime: 43 minutes (usual 27), 17-11-11 with 6 stocks"
+2026-11-12,nba_thu_main,John Collins,DET,miss,34.5,33.2,14.8,25,26.4,4,peripherals,no,etr,"usual minutes but 10 points, 4 rebounds and 5 fouls"
+2026-11-12,nba_thu_main,Daniel Gafford,DAL,miss,31.9,27.8,13.1,16,22.1,-39,blowout,partly,etr,16 minutes (usual 22) in a 39-point loss
+2026-11-12,nba_thu_main,Paul Reed,DET,split,41.9,34.6,28.7,38,26.0,4,other,?,etr,ours 41.9 against ETR 34.6 (his ADP fell from 16.7 to 21.3 through the day); 38 minutes in overtime but 13 points and no stocks for 28.7: unclear
+2026-11-12,nba_thu_main,Zaccharie Risacher,DAL,split,25.4,18.6,41.7,25,24.0,-39,shooting,no,ours,ours 25.4 against ETR 18.6 (below his usual); 22 on 9-14 in a 39-point loss for 41.7
+2026-11-12,nba_thu_main,Walter Clayton Jr.,DAL,split,15.1,21.8,7.2,22,16.5,-39,shooting,no,ours,ours 15.1 against ETR 21.8; 1-8 with 5 turnovers for 7.2
+2026-11-12,nba_thu_main,Jabari Walker,PHI,split,14.0,20.7,20.1,16,10.1,11,teammate-out,yes,etr,"ours 14.0 against ETR 20.7 with LeBron out; 16 minutes (usual 10), 9 and 8 for 20.1"
+2026-11-12,nba_thu_main,Daniss Jenkins,DET,split,31.7,37.9,34.2,42,25.9,4,other,?,ours,"ours 31.7 against ETR 37.9; 42 minutes in overtime, 21 points but no assists for 34.2"
+2026-11-12,nba_thu_main,Allen Graves,TOR,split,25.2,19.0,1.4,13,13.1,-11,teammate-out,yes,etr,ours 25.2 against ETR 19.0 with Barnes out; 13 minutes for 1.4
