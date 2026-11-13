@@ -18,7 +18,7 @@ group with no rule shows the season only.
   t3t4-boundaries       a T4 VALUE player against a T3 PRICEY one, a T4 PRICEY one against the button's top three in T5 and
                         against the rest of T5, each AM, PM and both; the T4 PRICEY pairs across the round 4/5 line
                         (ADP within 4), the VALUE/PRICEY pairs in one round,
-                        by ADP tier and flag (the 2026-11-13 button moves PRICEY players out of their combined tier):
+                        by the button's tier before its T5 rules and the flag (pre_t5_tier):
                         pairs at one window, ADP within 4 in the same round; each side's teams
   t5-drafted            teams holding a T5 player by the share of pods that drafted him (rosters, swaps credited back), in
                         two pools: ADP T5 (ADP tier 5, the same whatever the button does) and the button's own T5 (from
@@ -143,6 +143,13 @@ def t2_elite(N, R, rule):
 
 
 # ---------------------------------------------------------------- T3/T4
+def pre_t5_tier(r):
+    """The button's tier before its T5 rules: the ADP tier moved one tier toward the projection tier when they're 2+ apart
+    (index.html nbaBuildLaddersNew, from 11-13 with the A5 fix: A5-P3 is T4 VALUE)."""
+    a, p = int(r["a_tier"]), int(r["p_tier"])
+    return a - (1 if a > p else -1) if abs(a - p) >= 2 else a
+
+
 def boundaries(N, R, rule):
     by_date = {n["date"]: n for n in N}
     top3 = {}
@@ -150,9 +157,11 @@ def boundaries(N, R, rule):
         for w in ("am", "pm"):
             t5 = sorted((int(r["built"]), p) for p, r in n["tiers"][w].items() if r["tier"] == "5" and r["built"])
             top3[(n["date"], w)] = {p for _, p in t5[:3]}
-    # by ADP tier and flag: the 2026-11-13 button moves PRICEY players out of their combined tier (rebuilt into every night)
-    t4_pricey = lambda r: r["a_tier"] == "4" and r["flag"] == "PRICEY"
-    tests = [("T4 VALUE (A) vs T3 PRICEY (B)", lambda r: r["a_tier"] == "4" and r["flag"] == "VALUE", lambda r: r["a_tier"] == "3" and r["flag"] == "PRICEY"),
+    # by the button's tier before its T5 rules (the ADP tier with the one-tier move: PRICEY players dropped from T4 and
+    # VALUE players raised from A5 sit where the button put them first), and the flag
+    t4_pricey = lambda r: pre_t5_tier(r) == 4 and r["flag"] == "PRICEY"
+    tests = [("T4 VALUE (A) vs T3 PRICEY (B)", lambda r: pre_t5_tier(r) == 4 and r["flag"] == "VALUE",
+              lambda r: pre_t5_tier(r) == 3 and r["flag"] == "PRICEY"),
              ("T4 PRICEY (A) vs a top-3 T5 (B)", t4_pricey, lambda r: r["tier"] == "5" and r["player_id"] in top3[(r["date"], r["window"])]),
              ("T4 PRICEY (A) vs the rest of T5 (B)", t4_pricey,
               lambda r: r["tier"] == "5" and r["player_id"] not in top3[(r["date"], r["window"])] and not t4_pricey(r))]
