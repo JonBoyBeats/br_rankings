@@ -20,7 +20,7 @@ Thursday's four-game slate was settled by one game. Detroit beat Washington by 4
 - **Being tested**: not in use; graded in the background against what is.
 - **Retired**: taken out.
 
-**In every tier.** A player's tier is his ADP tier, moved at most one tier toward our projection's (in use, on trial, night 3 of 14). PRICEY players (a tier below their ADP on our projection) go last in their tier (in use, on trial, night 2 of 14); VALUE players go first in T3 to T5. A Questionable player keeps his tier in the morning (in use, on trial, night 1 of 14) and drops two in the afternoon (in use, on trial, night 2 of 14). A close call is two players in the same tier within 4 picks of ADP; points on it are how much more the chosen one scored. Contest results are how often teams that followed a rule made the top 10%.
+**In every tier.** A player's tier is his ADP tier, moved at most one tier toward our projection's (in use, on trial). PRICEY players (a tier below their ADP on our projection) go last in their tier (in use, on trial); VALUE players go first in T3 to T5. A Questionable player keeps his tier in the morning (in use, on trial) and drops two in the afternoon (in use, on trial). A close call is two players in the same tier within 4 picks of ADP; points on it are how much more the chosen one scored. Contest results are how often teams that followed a rule made the top 10%.
 
 ## T1
 
@@ -44,13 +44,13 @@ This week in T1: news judgments 6 for 8; Bagel and ETR notes 1 for 2. Of the new
 
 **What we're leaning toward.**
 
-- In the morning, a Questionable player in T1 to T3 drops to the top of T4, so he's taken around round 4 instead of early; in T4 and T5 he keeps his tier. Being tested (night 1 of 14); on points, the backtest shows no clear signal; contest results: still to come. For today: nothing changes yet.
+Nothing being tested here.
 
 **Today in T1.** PRICEY: Shai Gilgeous-Alexander and Jalen Johnson.
 
 ## T2
 
-**The rules we played.** Morning: straight ADP (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ADP, with ETR breaking ties within two picks (in use, on trial, night 3 of 14).
+**The rules we played.** Morning: straight ADP (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ADP, with ETR breaking ties within two picks (in use, on trial).
 
 **Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 9 times out of 14 in the morning; ETR's pick scored more 2 times out of 6 in the afternoon. On the season there's no clear answer here yet (185 close calls): nothing to change.
 
@@ -83,17 +83,15 @@ This week in T2: news judgments 16 for 36; your own reads 3 for 8; Bagel and ETR
 
 **What we're leaning toward.**
 
-- ETR within two picks in afternoon T2 (the old rule: within one). In use, on trial (night 3 of 14); on points, the backtest shows no clear signal; contest results: no clear signal. For today: keep doing it while the check runs.
-- In T2 to T4, put the less drafted player first when two are within two projected points and at least 10 points apart in how often they're drafted. Being tested (night 0 of 14); on points, too early to say; contest results: an early sign it helps. For today: nothing changes yet.
-- Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on. Being tested (night 3 of 14); on points, in the morning the backtest shows no clear signal, in the afternoon the backtest shows no clear signal; contest results: proven to help so far. For today: nothing changes yet.
+Nothing being tested here.
 
 **Today in T2.** PRICEY: Jalen Brunson.
 
 ## T3
 
-**The rules we played.** Morning: our projection, with ADP deciding within three points (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ETR's projection, with ADP and then Boom breaking exact ties (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). VALUE players go first in this tier (in use, on trial, night 2 of 14).
+**The rules we played.** Morning: our projection, with ADP deciding within three points (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ETR's projection, with ADP and then Boom breaking exact ties (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). VALUE players go first in this tier (in use, on trial).
 
-**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 7 times out of 9 in the morning; ETR's pick scored more 6 times out of 13 in the afternoon. On the season, trusting ETR over ADP here in the afternoon gains about 3 points per close call (an early sign it helps): keep doing it, the rule already does.
+**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 5 times out of 6 in the morning; ETR's pick scored more 4 times out of 11 in the afternoon. On the season, trusting ETR over ADP here in the afternoon gains about 3 points per close call (an early sign it helps): keep doing it, the rule already does.
 
 **Your moves.**
 
@@ -113,11 +111,9 @@ Every morning role call in this tier ran into Quickley, who scored 46 in his sec
 **Player recap.**
 
 - **Edgecombe**: Over: 8 assists and 4 stocks.
-- **James**: scratched; swaps went to Murray-Boyles (259 teams, 36 points) and Brooks (50 teams, 23 points).
 - **George**: Under: 6 fouls in 26 minutes.
 - **Thompson**: Over: 17-11-11 with 6 stocks in 43 minutes (usual 27) of the overtime win.
 - **Quickley**: Over: 26 on 8-16.
-- **Washington**: Under: 16 minutes in a 39-point loss.
 
 **Contest view.** Holders of Ausar Thompson and Immanuel Quickley made the top 10% at 3.0 times and 1.8 times the field's rate. In your morning window, the top-10% teams held Immanuel Quickley on 29% against your 10%; you held Rudy Gobert on 32% against 16% of the top-10% teams. On the season, taking VALUE players first: contest results, an early sign it helps; last night you had a VALUE player on 70% of your morning teams, the field on 48%, already on the right side.
 
@@ -129,9 +125,9 @@ Nothing being tested here.
 
 ## T4
 
-**The rules we played.** Morning: our projection, with ADP deciding within three points (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ADP, with ETR breaking ties within two picks (in use, on trial, night 2 of 14). VALUE players go first in this tier (in use, on trial, night 2 of 14).
+**The rules we played.** Morning: our projection, with ADP deciding within three points (in use, original rule; contest results: no difference from the alternative, first read, confirmed Monday). Afternoon: ADP, with ETR breaking ties within two picks (in use, on trial). VALUE players go first in this tier (in use, on trial).
 
-**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 5 times out of 10 in the morning; ETR's pick scored more 2 times out of 5 in the afternoon. On the season there's no clear answer here yet (153 close calls): nothing to change.
+**Who to trust in this tier.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick won all 4 in the morning; ETR's pick won both in the afternoon. On the season there's no clear answer here yet (78 close calls): nothing to change.
 
 **Your moves.**
 
@@ -143,23 +139,21 @@ This week in T4: news judgments 11 for 24; Bagel notes 5 for 8; Bagel and ETR no
 
 **Player recap.**
 
+- **Washington**: Under: 16 minutes in a 39-point loss.
 - **Kuminga**: Over: 5 assists in 24 minutes of a 39-point win.
 - **Collins**: Under: 10 points and 4 rebounds with 5 fouls in 25 minutes.
-- **Sarr**: Over: 30 on 12-14 in 44 minutes (usual 26) of the overtime loss.
-- **Green**: Under: 21 minutes, 3-9, no assists.
 
 **Contest view.** Holders of Alex Sarr and VJ Edgecombe made the top 10% at 2.1 times and 1.4 times the field's rate. In your morning window, the top-10% teams held Alex Sarr on 35% against your 10%; you held Moussa Diabate on 50% against 13% of the top-10% teams. On the season, taking VALUE players first: contest results, an early sign it helps; last night you had a VALUE player on 50% of your morning teams, the field on 15%, already on the right side.
 
 **What we're leaning toward.**
 
-- ADP with ETR within two picks in afternoon T4 (the old rule: straight ETR). In use, on trial (night 2 of 14); on points, too early to say; contest results: no clear signal. For today: keep doing it while the check runs.
-- Stop putting PRICEY players last in afternoon T4 (VALUE players still go first). Being tested (night 0 of 14); on points, too early to say; contest results: no clear signal. For today: nothing changes yet.
+Nothing being tested here.
 
 **Today in T4.** VALUE: Keyonte George. PRICEY: Amen Thompson, Josh Giddey and Onyeka Okongwu.
 
 ## T5
 
-**The rules we played.** Morning: the Tiers button's order, our projection with ADP deciding within three points (in use, on trial, night 2 of 14). Afternoon: ADP (in use, on trial, night 3 of 14). Then, in both windows, the less drafted of two players goes first when they're within two projected points and at least 10 points apart in how often they're drafted (in use, on trial, night 3 of 14). VALUE players go first in this tier (in use, on trial, night 2 of 14). In the afternoon you also raise beneficiaries, a player whose teammate is tagged or out (in use, on trial).
+**The rules we played.** Morning: the Tiers button's order, our projection with ADP deciding within three points (in use, on trial). Afternoon: ADP (in use, on trial). Then, in both windows, the less drafted of two players goes first when they're within two projected points and at least 10 points apart in how often they're drafted (in use, on trial). VALUE players go first in this tier (in use, on trial). In the afternoon you also raise beneficiaries, a player whose teammate is tagged or out (in use, on trial).
 
 **Your T5 menu.**
 
@@ -176,22 +170,14 @@ Your afternoon teams' T5 picks averaged 26 points, the field's 22: your overweig
 
 **Player recap.**
 
-- **Murray-Boyles**: Over: 6 stocks (5 blocks) in 32 minutes, no rebounds.
-- **Walter**: Under: cold 2-8, 1-6 from three.
 - **Shead**: Under: 1-6 for 5 points in 22 minutes.
 - **Huerter**: Under: 11 points, 1 rebound, no assists in 24 minutes.
-- **Gafford**: Under: 16 minutes in a 39-point loss.
-- **Maluach**: Under: 4 points in 16 minutes.
-- **Clayton Jr.**: Under: 1-8, 0-5 from three, with 5 turnovers.
 
 **Contest view.** Holders of Collin Murray-Boyles made the top 10% at 2.0 times the field's rate. In your morning window, the top-10% teams held Collin Murray-Boyles on 13% against your 5%; you held Jamal Shead on 20% against 3% of the top-10% teams. On the season, taking the less drafted of two close players: contest results, proven to help so far.
 
 **What we're leaning toward.**
 
-- The less-drafted tiebreak in morning T5. In use, on trial (night 3 of 14); on points, the backtest shows proven to help so far; contest results: proven to help so far. For today: keep doing it while the check runs.
-- The less-drafted tiebreak in afternoon T5. In use, on trial (night 3 of 14); on points, the backtest shows an early sign it hurts; contest results: proven to help so far. For today: keep doing it while the check runs.
-- In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock. Being tested (night 3 of 14); on points, the backtest shows proven to hurt so far; contest results: still to come. For today: nothing changes; not worth doing by hand.
-- After the VALUE players, order T5 by the window's projection to the whole point, and within the same point put the less drafted player first. Being tested (night 2 of 14); on points, in the morning the backtest shows an early sign it hurts, in the afternoon the backtest shows no clear signal; contest results: still to come. For today: nothing changes; not worth doing by hand.
+Nothing being tested here.
 
 **Today in T5.** Klay Thompson is Questionable (55% to play): stays in T5. De'Aaron Fox is Questionable (45% to play): stays in T5. Jalen Suggs is Questionable (63% to play): stays in T5. VALUE: Brandin Podziemski, Darius Garland and Dejounte Murray. Beneficiaries to watch: if Klay Thompson sits, Davion Mitchell and Andrew Wiggins; if De'Aaron Fox sits, Dylan Harper, Stephon Castle and Keldon Johnson; if Jalen Suggs sits, Desmond Bane and Wendell Carter Jr.
 
@@ -238,7 +224,7 @@ Season tables are below; every player's night is in the ledger (analysis/nba/led
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (11 nights) | +1.9 (6) | +31.5 (4) | - |
+| AM (10 nights) | -0.2 (5) | +31.5 (4) | - |
 | PM (18 nights) | -19.3 (5) | +5.6 (12) | - |
 
 | Your takes | Source | Points per take |
@@ -251,7 +237,7 @@ Season tables are below; every player's night is in the ledger (analysis/nba/led
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (11 nights) | +1.3 (76) | +1.4 (66) | -5.5 (11) |
+| AM (11 nights) | -0.2 (76) | +0.6 (69) | -5.5 (11) |
 | PM (18 nights) | -0.8 (90) | +1.5 (124) | +3.8 (13) |
 
 | Your takes | Source | Points per take |
@@ -267,8 +253,8 @@ Season tables are below; every player's night is in the ledger (analysis/nba/led
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (11 nights) | -2.5 (95) | -0.9 (206) | +1.7 (245) |
-| PM (18 nights) | +2.2 (143) | +1.7 (308) | +2.5 (316) |
+| AM (11 nights) | -4.1 (54) | -0.9 (82) | +4.4 (110) |
+| PM (18 nights) | +0.6 (92) | +2.2 (219) | +3.3 (239) |
 
 | Your takes | Source | Points per take |
 |---|---|---|
@@ -283,8 +269,8 @@ Season tables are below; every player's night is in the ledger (analysis/nba/led
 
 | Window | vs projection | vs ADP | VALUE vs partners |
 |---|---|---|---|
-| AM (11 nights) | +1.0 (160) | +0.8 (654) | +5.1 (555) |
-| PM (18 nights) | -1.3 (337) | -1.2 (865) | +3.0 (645) |
+| AM (11 nights) | +0.2 (60) | -3.0 (210) | +2.6 (265) |
+| PM (18 nights) | -0.1 (135) | -1.8 (274) | +1.3 (107) |
 
 | Your takes | Source | Points per take |
 |---|---|---|

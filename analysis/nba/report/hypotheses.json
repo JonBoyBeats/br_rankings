@@ -57,12 +57,14 @@
     "against": "the button"
    },
    "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
-   "status": "testing",
+   "status": "retired",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
    "register": "pm-t4-pricey-last-off",
    "plain": "Stop putting PRICEY players last in afternoon T4 (VALUE players still go first)",
-   "name": "PRICEY-last off in afternoon T4"
+   "name": "PRICEY-last off in afternoon T4",
+   "retired": "2026-11-13",
+   "retired_plain": "retired in the 2026-11-13 redesign of the button (analysis/nba/report/rule_dates.json has what replaced it)"
   },
   "T4-2": {
    "tiers": [
@@ -120,12 +122,14 @@
     "against": "the button"
    },
    "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
-   "status": "testing",
+   "status": "retired",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
    "register": "leverage-t2-t4",
    "plain": "In T2 to T4, put the less drafted player first when two are within two projected points and at least 10 points apart in how often they're drafted",
-   "name": "the less-drafted tiebreak in T2 to T4"
+   "name": "the less-drafted tiebreak in T2 to T4",
+   "retired": "2026-11-13",
+   "retired_plain": "retired in the 2026-11-13 redesign of the button (analysis/nba/report/rule_dates.json has what replaced it)"
   },
   "T5-1": {
    "tiers": [
@@ -141,12 +145,14 @@
     "against": "the button"
    },
    "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
-   "status": "testing",
+   "status": "retired",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
    "register": "beneficiary-round6",
    "plain": "In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock",
-   "name": "the tagged-teammate bump in morning T5"
+   "name": "the tagged-teammate bump in morning T5",
+   "retired": "2026-11-13",
+   "retired_plain": "retired in the 2026-11-13 redesign of the button (analysis/nba/report/rule_dates.json has what replaced it)"
   },
   "Q-1": {
    "tiers": [
@@ -194,14 +200,16 @@
     "backtest": "Before forward grading: inside T2, projection straight against ADP straight on decision pairs, split by where the pair sits: both at ADP 9.5 or earlier, straddling 9.5, both after 9.5 (picks 10+); AM (primary sample) and PM; points per pair, positive = projection right, 80% range and label (under 40 pairs: not enough yet). Then T2-1 against the button in sample."
    },
    "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
-   "status": "testing",
+   "status": "retired",
    "written": "2026-11-09",
    "forward_from": "2026-11-10",
    "register": "card-turn23-reach-higher-proj",
    "split_windows": true,
    "decide": "Per window (2026-11-09): the shadow grades AM and PM apart (T2-1:am, T2-1:pm), and each window's Monday call stands on its own forward read: PM can be adopted on its own even if AM isn't, and the reverse. The backtest suggests PM (ETR beat ADP past pick 10, +3.7 on 75 pairs) and not AM.",
    "plain": "Order T2 by ADP through about pick 9 (the 1/2 turn), then by the window's projection from about pick 10 on",
-   "name": "T2 split at the 1/2 turn"
+   "name": "T2 split at the 1/2 turn",
+   "retired": "2026-11-13",
+   "retired_plain": "retired in the 2026-11-13 redesign of the button (analysis/nba/report/rule_dates.json has what replaced it)"
   },
   "T5-2": {
    "tiers": [
@@ -219,14 +227,16 @@
     "backtest": "The shadow's season line (in sample, every night before 2026-11-11), each window apart; the forward nights decide."
    },
    "bar": "Forward 14 nights from forward_from, graded nightly in the shadow (shadow.json) on 6-drafter decision pairs where it orders differently from the button; positive = the idea beat the button. Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against (money_policy); propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
-   "status": "testing",
+   "status": "retired",
    "written": "2026-11-10",
    "forward_from": "2026-11-11",
    "register": null,
    "split_windows": true,
    "decide": "Per window: the shadow grades AM and PM apart (T5-2:am, T5-2:pm), and each window's Monday call stands on its own forward read.",
    "plain": "After the VALUE players, order T5 by the window's projection to the whole point, and within the same point put the less drafted player first",
-   "name": "T5 by projection, then the less drafted"
+   "name": "T5 by projection, then the less drafted",
+   "retired": "2026-11-13",
+   "retired_plain": "retired in the 2026-11-13 redesign of the button (analysis/nba/report/rule_dates.json has what replaced it)"
   },
   "T2-2": {
    "tiers": [
@@ -252,13 +262,15 @@
     "rule": "Inside afternoon T2 at the PM record: ETR's projection, higher first, ADP breaking exact ties; VALUE first and PRICEY last kept as the button. Graded on 6-drafter decision pairs (ADP within 4) inside T2 that it orders differently from the button; a scratch scored through his swap; positive = the idea beat the button."
    },
    "bar": "Forward 14 nights from forward_from, graded nightly in the shadow; Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against; propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
-   "status": "queued",
+   "status": "retired",
    "written": "2026-11-11",
    "forward_from": null,
    "register": "pm-t2-adp-etr2",
    "plain": "In afternoon T2, order by ETR's projection instead of ADP",
    "name": "ETR over ADP in afternoon T2",
-   "note": "Queued: T2 already has three ideas under test (T2-T4-1, Q-1, T2-1). It starts when one of them frees a slot, or on a Monday yes to drop one."
+   "note": "Queued: T2 already has three ideas under test (T2-T4-1, Q-1, T2-1). It starts when one of them frees a slot, or on a Monday yes to drop one.",
+   "retired": "2026-11-13",
+   "retired_plain": "retired in the 2026-11-13 redesign of the button (analysis/nba/report/rule_dates.json has what replaced it)"
   },
   "Q-2": {
    "tiers": [
@@ -281,12 +293,14 @@
     "money": "For the contest side: morning teams holding a Questionable player taken around rounds 1-3 against rounds 4-6 (by ADP), top-10% and top-1% against the field."
    },
    "bar": "Forward 14 nights from forward_from, graded nightly in the shadow; Monday: propose adopting at a forward LEAN or better (40+ pairs, 80% of slate resamples) when its money verdict isn't against; propose dropping at a forward lean against, or at 14 nights with no lean. Nothing changes the board without a yes.",
-   "status": "testing",
+   "status": "retired",
    "written": "2026-11-12",
    "forward_from": "2026-11-12",
    "register": null,
    "plain": "In the morning, a Questionable player in T1 to T3 drops to the top of T4, so he's taken around round 4 instead of early; in T4 and T5 he keeps his tier",
-   "name": "Morning Questionable players to T4"
+   "name": "Morning Questionable players to T4",
+   "retired": "2026-11-13",
+   "retired_plain": "retired in the 2026-11-13 redesign of the button (analysis/nba/report/rule_dates.json has what replaced it)"
   }
  }
 }

@@ -1,0 +1,160 @@
+{
+ "_about": "The first night each rule was live on the board (not the day it was decided), by test id. The Friday tests on both sides read it: a test shows 'since the rule went in' from this night and 'season'; a rule without a date shows season only. Add an entry the same day a rule is adopted. 'windows' where a window started later: the 2026-11-13 button went live after that morning's lock, so its morning reads start 11-14.",
+ "_schema": {
+  "since": "YYYY-MM-DD, first night live",
+  "windows": "optional {am, pm}: first night live per window",
+  "what": "the rule in a line"
+ },
+ "elite-cut": {
+  "since": "2026-11-13",
+  "what": "Elites: the top of T1 cut at the biggest projection gap among its top 3-4 (1 to 3)",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t2-am-adp": {
+  "since": "2026-11-13",
+  "what": "T2 morning: straight ADP",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t2-pm-elite-break": {
+  "since": "2026-11-13",
+  "what": "T2 afternoon: ADP with ETR within 2 picks up to pick X, ETR from X (X = 13/9 minus the elites)",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t34-am-adp-groups": {
+  "since": "2026-11-13",
+  "what": "T3/T4 morning: VALUE, rest, PRICEY, each by ADP",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t34-pm-etr-groups": {
+  "since": "2026-11-13",
+  "what": "T3/T4 afternoon: VALUE, rest, PRICEY, each by ETR (ADP, then Boom, on exact ties)",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t3-pricey-over-t4-value": {
+  "since": "2026-11-13",
+  "what": "T3 PRICEY stays ahead of T4 VALUE",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t4-pricey-to-t5": {
+  "since": "2026-11-13",
+  "what": "T4 PRICEY players drop into T5",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t4-ends-round6": {
+  "since": "2026-11-13",
+  "what": "T4 ends at the start of round 6, earlier at an ADP gap of 2+ picks just before it; round 6 never in T4",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t4-borrow-t3": {
+  "since": "2026-11-13",
+  "what": "T4 short of 4 borrows from the bottom of T3",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t5-drafted-60": {
+  "since": "2026-11-13",
+  "what": "T5: drafted under 60% of pods (50-60% at the bottom) by projection; 60%+ out of T5",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t5-minutes-floor": {
+  "since": "2026-11-13",
+  "what": "T5: projected 20+ minutes only (box-score minutes in the morning, ETR-implied in the afternoon)",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "t5-ends-at-cut": {
+  "since": "2026-11-13",
+  "what": "T5 ends at the ranked cut; everyone else below it by projection",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "q-keeps-tier": {
+  "since": "2026-11-13",
+  "what": "Questionable at the lock: keeps his tier in both windows (afternoon two-tiers-back retired)",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "q-t1-to-t2": {
+  "since": "2026-11-13",
+  "what": "A Questionable player in T1 drops to the top of T2",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "q-adp-fall": {
+  "since": "2026-11-13",
+  "what": "A Questionable player whose ADP fell 6+ picks since the tag goes below the cut",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "q-teammate-tiebreak": {
+  "since": "2026-11-13",
+  "what": "A T1-T4 teammate of a Questionable player gets the tiebreak within his group",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "q-t5-follows-t5": {
+  "since": "2026-11-13",
+  "what": "T5 Questionable players follow T5's rule",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
+ },
+ "swap-button": {
+  "since": "2026-11-13",
+  "what": "The Swap button: T5 and below by the latest projection after the last draft, its own swap lock"
+ },
+ "gallagher-bad-arrow": {
+  "since": "2026-11-13",
+  "what": "Down arrow on Gallagher's Bad matchups (column days, write-ups before the lock)"
+ },
+ "proj-box-3-days": {
+  "since": "2026-11-14",
+  "what": "Morning Proj: box scores count as 3 days of ETR, their minutes halfway to the last 3 games"
+ },
+ "proj-fresh-absence": {
+  "since": "2026-11-14",
+  "what": "Morning Proj: a teammate out a first or second night moves teammates 1.5x the table"
+ }
+}

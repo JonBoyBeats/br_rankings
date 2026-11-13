@@ -3973,8 +3973,9 @@ function nbaBuildLaddersOld() {
         there), 50-60% at the bottom of the first group and 60-70% at the top of the second. VALUE shows, doesn't sort.
    Q    (Questionable at the lock) keeps his tier in both windows; in T1 he drops to the top of T2; one whose ADP has
         fallen 6+ picks since the tag goes last; a T1-T4 teammate of a Q player gets the tiebreak within his group;
-        T5 Q players follow T5's rule. The ADP at the tag is what this board saw when it first saw the tag (K.qSeen). */
-var NBA_RULESET = "old";
+        T5 Q players follow T5's rule. The ADP before the tag is the poller's pre_tag_adp (the mirror's last hourly
+        snapshot before it); only when that's missing, what this device saw when it first saw the tag (K.qSeen), marked. */
+var NBA_RULESET = "new";       // switched 2026-11-13 after the operator checked "Old vs new"
 var NBA_R6 = { 6: 30, 4: 20 };          // T4's last pick: the start of round 6 ...
 var NBA_T4_GAP = 2;                     // ... or earlier at an ADP gap this big in the three ranks before it
 var NBA_T4_MIN = 4;                     // T4 short of this borrows from the bottom of T3
@@ -3986,7 +3987,7 @@ var NBA_TIER_NOTES_NEW = [
   "Stars – AM: ADP · PM: ADP (2: ETR) to the elite break, ETR after",
   "Middle – VALUE, rest, PRICEY · AM: ADP · PM: ETR (tie: ADP → Boom)",
   "Middle – VALUE, rest · AM: ADP · PM: ETR (tie: ADP → Boom); ends at round 6",
-  "The Rest – under 60% drafted first, then 60%+, each by projection; 20+ minutes only"
+  "The Rest – drafted under 60% (50-60% last), by projection, 20+ minutes, to your cut; everyone else below it by projection"
 ];
 
 /** The elite count: T1's top by projection cut at the biggest gap among its top 3-4 (1 to 3). */
@@ -4052,7 +4053,10 @@ function nbaBuildLaddersNew() {
     if (x.c === 4 && x.flag === "PRICEY") { x.c = NBA_TIERS; x.dropped = true; }
     if (/^q/i.test(p.injury || "")) {
       x.inj = String(p.injury);
-      var was = qSeen[pid];
+      // his ADP before the tag: the poller's (the last hourly snapshot before it, shared by every device), else
+      // this device's first sighting of the tag, marked
+      var was = typeof p.pre_tag_adp === "number" ? { adp: p.pre_tag_adp, src: "mirror" } : qSeen[pid] ? { adp: qSeen[pid].adp, src: "device" } : null;
+      if (was) x.preTag = was;
       if (was && hasAdp(p) && p.adp - was.adp >= NBA_Q_FALL) { x.qlast = true; x.fell = Math.round((p.adp - was.adp) * 10) / 10; }
       else if (x.c === 1) { x.c = 2; x.qtop = true; }
       var sit = nbaSitFor(p), play = sit && typeof sit.p === "number" ? 1 - sit.p : null, v = projOf(p);
@@ -4096,19 +4100,27 @@ function nbaBuildLaddersNew() {
     var b = t3.pop(); b.x.c = 4; b.x.borrowed = true; borrowed.unshift(b);
   }
   t4 = borrowed.concat(t4);
+  // T5 runs to your cut (yours if it reaches into T5, else NBA_DEFAULT_RANKED): drafted under 60% and 20+ minutes, the
+  // 50-60% gray zone at its bottom. Everyone else below T5 (60%+ drafted, under the floor, the rest of the list, a Q
+  // player whose ADP fell 6+) goes under the cut, where the board sorts by projection like the rest of the tail.
   var t5all = inTier(NBA_TIERS), floor = function (r) { return r.min == null || r.min >= NBA_MIN_FLOOR; };
-  var t5 = t5all.filter(floor).sort(function (x, y) {
-    return nbaT5Band(x.drafted) - nbaT5Band(y.drafted) || (y.projx == null ? -1e9 : y.projx) - (x.projx == null ? -1e9 : x.projx) || x.rawAdp - y.rawAdp;
-  });
-  t5.forEach(function (r) { r.x.band = nbaT5Band(r.drafted); r.x.drafted = Math.round(r.drafted); });
-  var low = t5all.filter(function (r) { return !floor(r); }).sort(function (x, y) { return (y.projx || 0) - (x.projx || 0); });
-  low.forEach(function (r) { r.x.belowFloor = true; });
-  var last = rows.filter(function (r) { return r.x.qlast; });
-  var tiers = [t1, qtop.concat(t2), t3, t4, t5.concat(low, last)], order = [], starts = [];
+  var byProj = function (x, y) { return (y.projx == null ? -1e9 : y.projx) - (x.projx == null ? -1e9 : x.projx) || x.rawAdp - y.rawAdp; };
+  t5all.forEach(function (r) { r.x.band = nbaT5Band(r.drafted); r.x.drafted = Math.round(r.drafted); if (!floor(r)) r.x.belowFloor = true; });
+  var eligible = t5all.filter(function (r) { return floor(r) && r.x.band <= 1; })
+    .sort(function (x, y) { return x.x.band - y.x.band || byProj(x, y); });
+  var head = t1.length + qtop.length + t2.length + t3.length + t4.length;
+  var cutAt = state.cut != null && state.cut > head ? state.cut : Math.max(head, NBA_DEFAULT_RANKED);
+  var t5 = eligible.slice(0, Math.max(0, cutAt - head)), inT5 = {};
+  t5.forEach(function (r) { inT5[r.pid] = 1; });
+  var below = t5all.filter(function (r) { return !inT5[r.pid]; }).concat(rows.filter(function (r) { return r.x.qlast; })).sort(byProj);
+  below.forEach(function (r) { r.x.belowCut = true; });
+  var tiers = [t1, qtop.concat(t2), t3, t4, t5], order = [], starts = [];
   tiers.forEach(function (list, i) {
     if (i) starts.push(order.length + 1);
     list.forEach(function (r) { order.push(r.pid); });
   });
+  out.cut = order.length;
+  below.forEach(function (r) { order.push(r.pid); });
   out.order = order; out.starts = starts; out.moves = []; out.note = src.note || null;
   return out;
 }
@@ -4121,14 +4133,18 @@ function nbaRulesCompare() {
   NBA_RULESET = was;
   var byPid = {};
   state.slate.players.forEach(function (p) { byPid[p.player_id] = p; });
-  var tierAt = function (b, i) { var t = 1; b.starts.forEach(function (st) { if (i + 1 >= st) t++; }); return t; };
+  var tierAt = function (b, i) {
+    if (b.cut != null && i >= b.cut) return "\u2013";
+    var t = 1; b.starts.forEach(function (st) { if (i + 1 >= st) t++; }); return t;
+  };
   var rows = [], n = Math.max(oldB.order.length, newB.order.length), posOld = {};
   oldB.order.forEach(function (pid, i) { posOld[pid] = i; });
   for (var i = 0; i < n; i++) {
     var o = oldB.order[i], w = newB.order[i], x = w ? newB.players[w] : null;
-    var why = !x ? "" : [x.qtop ? "Q: T1 to the top of T2" : "", x.qlast ? "Q: ADP fell " + x.fell + " since the tag, last" : "",
+    var why = !x ? "" : [x.qtop ? "Q: T1 to the top of T2" : "", x.qlast ? "Q: ADP fell " + x.fell + " since the tag" + (x.preTag.src === "device" ? " (this device's first sighting: the poller had no pre-tag ADP)" : "") : "",
                          x.dropped ? "T4 PRICEY dropped" : "", x.borrowed ? "borrowed from T3" : "", x.belowFloor ? "under " + NBA_MIN_FLOOR + " minutes" : "",
-                         x.band === 1 || x.band === 2 ? "gray zone (" + x.drafted + "% drafted)" : x.band === 3 ? x.drafted + "% drafted: last" : ""]
+                         x.band === 1 ? "gray zone (" + x.drafted + "% drafted)" : x.band >= 2 ? x.drafted + "% drafted" : "",
+                         x.belowCut ? "below the cut, by projection" : ""]
       .filter(Boolean).join("; ");
     rows.push({ rank: i + 1, old: o, oldTier: o ? tierAt(oldB, i) : null, now: w, newTier: w ? tierAt(newB, i) : null,
                 moved: w && posOld[w] != null ? posOld[w] - i : null, why: why });
@@ -4146,7 +4162,7 @@ function renderRulesCompare() {
   h.className = "hint";
   h.textContent = "Today's slate under the old button and the new rules (" + c.new.window.toUpperCase() + ", " + c.new.source +
     "; elites " + c.new.elites + ", " + (c.new.window === "pm" ? "elite break at pick " + c.new.breakAt + ", " : "") +
-    "T4 ends after pick " + c.new.lines.a[3] + "). Nothing changes on your board until the switch.";
+    "T4 ends after pick " + c.new.lines.a[3] + "; T5 and the ranked list end at " + c.new.cut + ", the rest below by projection). Nothing changes on your board until the switch.";
   var t = document.createElement("table");
   t.className = "cmp";
   t.innerHTML = "<tr><th>#</th><th>Old</th><th>T</th><th>New</th><th>T</th><th>Δ</th><th>Why</th></tr>";
@@ -4188,7 +4204,8 @@ function pressTiers() {
   b.order.forEach(function (pid) { seen[pid] = 1; });
   if (prev) b.prior = { at: prev.at, window: prev.window, moves: prev.moves || [] };
   state.order = b.order.concat(state.order.filter(function (pid) { return !seen[pid]; }));
-  if (state.cut != null && state.cut < b.starts[b.starts.length - 1]) state.cut = null;
+  if (b.cut != null) state.cut = b.cut;                       // the new rules: T5 ends at the cut
+  else if (state.cut != null && state.cut < b.starts[b.starts.length - 1]) state.cut = null;
   save(K.order(label), state.order);
   save(K.cut(label), state.cut);
   save(K.tierBuild(label), b);

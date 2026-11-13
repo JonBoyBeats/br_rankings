@@ -52,33 +52,8 @@ QT = re.compile(r"^(q|d|g)", re.I)
 # The switches in force that are still provisional, and the kept cap: each against the rule it replaced (positive = the
 # switch won). drop_if: "no win" (dropped unless it beats the old rule over 14 forward nights) or "loss" (dropped only if it
 # loses there: the T5 tiebreak, whose points cost is a known price for a money RULE).
-SWITCHES = [
-    {"id": "pm-t2-adp-etr2", "name": "PM T2: ADP (2: ETR) vs the old ADP (1: ETR)", "window": "pm", "tiers": (2,), "kind": "switch",
-     "steps": [("adp", 1), ("projx", 0)], "flags": "both", "drop_if": "no win"},
-    {"id": "pm-t4-adp-etr2", "name": "PM T4: ADP (2: ETR) vs the old ETR rule", "window": "pm", "tiers": (4,), "kind": "switch",
-     "steps": [("proj", 0), ("adp", 0), ("boom", 0)], "flags": "both", "drop_if": "no win"},
-    {"id": "pm-t5-vs-old-etr", "name": "PM T5: the button (ADP, then the less drafted within 2 pts) vs the old ETR (2: less drafted)",
-     "window": "pm", "tiers": (5,), "kind": "switch", "steps": [("projx", 2), ("drafted", 10), ("projx", 0)], "flags": "both", "drop_if": None},
-    {"id": "t5-less-drafted-am", "name": "AM T5: the less drafted within 2 pts vs the old Proj (3: ADP)", "window": "am", "tiers": (5,),
-     "kind": "switch", "steps": [("proj", 3), ("adp", 0)], "flags": "both", "drop_if": "loss"},
-    {"id": "t5-less-drafted-pm", "name": "PM T5: the less drafted within 2 pts vs the old ADP", "window": "pm", "tiers": (5,),
-     "kind": "switch", "steps": [("adp", 0)], "flags": "both", "drop_if": "loss"},
-    {"id": "one-tier-cap", "name": "All tiers, kept: the one-tier cap against the projection tier's order where they disagree",
-     "window": "am+pm", "tiers": None, "kind": "cap", "pairwise": "cap", "flags": "both", "drop_if": None},
-    # 14-night checks on adopted rules (2026-11-11): positive = the rule in use beat the alternative; forward from 11-11
-    {"id": "check-value-first", "name": "T3-T5, in use: VALUE first against VALUE players left with the rest", "window": "am+pm",
-     "tiers": (3, 4, 5), "kind": "check", "flags": "no-value", "forward": "2026-11-11", "drop_if": "loss"},
-    {"id": "check-pricey-last", "name": "All tiers, in use: PRICEY last against PRICEY players left with the rest", "window": "am+pm",
-     "tiers": None, "kind": "check", "flags": "value-only", "forward": "2026-11-11", "drop_if": "loss"},
-    {"id": "check-am-q", "name": "AM, in use: no push for a Questionable player against two tiers back", "window": "am",
-     "tiers": None, "kind": "check", "pairwise": "qpush", "flags": "both", "include_q": True, "cross": True, "forward": "2026-11-11",
-     "drop_if": "loss"},
-    {"id": "check-pm-q", "name": "PM, in use: a Questionable player two tiers back against no push (by ADP in his tier)",
-     "window": "pm", "tiers": None, "kind": "check", "pairwise": "qnopush", "flags": "both", "include_q": True, "cross": True,
-     "forward": "2026-11-11", "drop_if": "loss"},
-    {"id": "check-am-t5-button", "name": "AM T5, in use: the button's order against ADP straight", "window": "am", "tiers": (5,),
-     "kind": "check", "steps": [("adp", 0)], "flags": "both", "forward": "2026-11-11", "drop_if": "loss"},
-]
+SWITCHES = []    # all retired 2026-11-13 with the old button (provisional switches, the cap and the 14-night checks);
+                 # "since the rule went in" and "season" reads move to the Friday report (rule_dates.json)
 
 
 def tier_ideas():

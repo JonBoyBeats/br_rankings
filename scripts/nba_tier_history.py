@@ -39,17 +39,19 @@ RULE_STEPS = {     # each tier's rule (index.html NBA_TIER_RULE_STEPS, nba_repor
 }
 PM_Q_PUSH = 2      # PM window: a Questionable player is ordered two tiers back (lean adopted 2026-11-09; "old" rules only)
 # The 2026-11-13 redesign (index.html NBA_RULESET; the same rules, one update): "old" until the operator's check
-RULESET = "old"
+RULESET = "new"            # switched 2026-11-13
 R6 = {6: 30, 4: 20}            # T4's last pick: the start of round 6, or earlier at an ADP gap of T4_GAP+ just before it
 T4_GAP, T4_MIN = 2, 4          # T4 short of T4_MIN borrows from the bottom of T3
 T5_LINE, T5_GRAY = 60, (50, 70)
 MIN_FLOOR = 20                 # T5: only players projected for 20+ minutes (T5 dud rates, 2026-11-13)
-Q_FALL = 6                     # a Q player whose ADP fell this many picks since the tag goes last
+Q_FALL = 6                     # a Q player whose ADP fell this many picks since the tag goes below the cut
+DEFAULT_RANKED = 44            # the board's ranked list (NBA_DEFAULT_RANKED): T5 ends there, the rest sorts by projection
+CEIL = (1.045, 7.31)           # index.html NBA_CEIL: the board's Proj from a median, to read ETR's median back out
 FIELD_MODEL = os.path.join(HERE, "analysis", "nba", "contests", "field_model.json")
 MIRROR = None
 COLS = ["date", "slate", "pod", "window", "sample", "board", "player_id", "name", "team", "adp", "proj", "proj_src", "a_tier", "p_tier",
         "tier", "flag", "tag", "q_class", "play", "exp_tier", "actual", "min", "played", "scratched", "breaker",
-        "your_rank", "your_tier", "built", "boom", "drafted"]
+        "your_rank", "your_tier", "built", "boom", "drafted", "proj_min", "pre_tag_adp"]
 
 
 def num(v):
@@ -224,6 +226,9 @@ def build(rows, date, slate, window, meta):
                     "breaker": "" if act is None else int(pid in brk),
                     "your_rank": r.get(w["rank"], ""), "your_tier": r.get(w["tier"], ""), "built": "",
                     "boom": round(boom[pid], 3) if pid in boom else "", "drafted": round(drafted[pid], 1) if pid in drafted else ""})
+    pmin = proj_minutes(rows, window)                     # stored nightly: the minutes the board's floor reads
+    for x in out:
+        x["proj_min"] = round(pmin[x["player_id"]], 1) if pmin.get(x["player_id"]) is not None else ""
     if RULESET == "new":
         new_order(out, pool, rows, adp, window, pod, date, slate, meta, boom, drafted)
         info = {"date": date, "window": window, "pod": pod, "adp_col": adp_col, "proj_src": src[1], "lines_a": la, "lines_p": lp,
@@ -290,26 +295,55 @@ def q_tag_adp(date, slate, window, meta):
     w = meta.get(window) or {}
     if w.get("at"):
         until = min(lock, dt.datetime.fromisoformat(w["at"].replace("Z", "+00:00")))
+    snaps = [(t, {p["player_id"]: p for p in players}) for t, players in (mirror.snapshots(s) if s else []) if t <= until]
     out = {}
-    for t, players in (mirror.snapshots(s) if s else []):
-        if t > until:
-            break
-        for p in players:
-            if Q_TAG.match(p.get("injury") or "") and (p.get("injury") or "")[:1].lower() == "q" and p.get("adp") is not None:
-                out.setdefault(p["player_id"], p["adp"])
+    if snaps:
+        for pid, p in snaps[-1][1].items():
+            if (p.get("injury") or "")[:1].lower() != "q":
+                continue
+            first = p.get("adp")
+            for t, tab in reversed(snaps[:-1]):
+                q = tab.get(pid)
+                if q is None:
+                    continue
+                if (q.get("injury") or "")[:1].lower() != "q":
+                    out[pid] = (q.get("adp"), "pre-tag")    # the poller's pre_tag_adp: the last snapshot before the tag
+                    break
+                first = q.get("adp")
+            else:
+                out[pid] = (first, "first tagged")        # tagged from the first snapshot (the board: this device's first sighting)
     _TAGS[key] = out
     return out
+
+
+def proj_minutes(rows, window):
+    """{player_id: the minutes the board's floor reads}: box-score minutes (usual_min) in the morning; ETR-implied in the
+    afternoon (index.html nbaStatRows: ETR's median over his usual points a minute, scaled so the typical 20+ minute
+    player stays at his box-score level)."""
+    usual = {r["player_id"]: num(r.get("usual_min")) for r in rows}
+    if window == "am":
+        return usual
+    implied = {}
+    for r in rows:
+        v, ppm, u = num(r.get("etr_pm")), num(r.get("fp_pm")), usual[r["player_id"]]
+        if v is not None and ppm and ppm > 0 and u is not None:
+            implied[r["player_id"]] = ((v - 0.75 * CEIL[1]) / (0.25 + 0.75 * CEIL[0])) / ppm
+    ratios = sorted(implied[k] / usual[k] for k in implied if usual[k] and usual[k] >= 20)
+    ratio = ratios[len(ratios) // 2] if ratios else None
+    return {k: (implied[k] / ratio if k in implied and ratio else usual[k]) for k in usual}
 
 
 def new_order(out, pool, rows, adp, window, pod, date, slate, meta, boom, drafted):
     """The button's order under the 2026-11-13 rules (index.html nbaBuildLaddersNew): sets each row's tier and built rank."""
     by = {r["player_id"]: r for r in pool}
     seen = q_tag_adp(date, slate, window, meta)
+    pmin = proj_minutes(rows, window)
     qteams = {x["team"] for x in out if re.match(r"^q", x["tag"], re.I)}
     for x in out:
         x["_qlast"] = x["_qtop"] = False
         if re.match(r"^q", x["tag"], re.I):
-            a0 = seen.get(x["player_id"])
+            a0 = (seen.get(x["player_id"]) or (None, ""))[0]
+            x["pre_tag_adp"] = "" if a0 is None else a0
             if a0 is not None and x["adp"] is not None and x["adp"] - a0 >= Q_FALL:
                 x["_qlast"] = True
             elif x["tier"] == 1:
@@ -322,7 +356,7 @@ def new_order(out, pool, rows, adp, window, pod, date, slate, meta, boom, drafte
         return {"row": x, "adp": -adp(by[x["player_id"]]), "rawadp": adp(by[x["player_id"]]),
                 "proj": float(int(v + 0.5)) if v is not None else None, "projx": v, "boom": boom.get(x["player_id"]),
                 "qmate": 1 if not x["tag"] and x["team"] in qteams else 0,
-                "min": num(by[x["player_id"]].get("usual_min")), "dr": drafted.get(x["player_id"], 0.0) or 0.0}
+                "min": pmin.get(x["player_id"]), "dr": drafted.get(x["player_id"], 0.0) or 0.0}
     K = [k(x) for x in out]
     am = window == "am"
     T1 = [("adp", 2), ("qmate", 0), ("boom", 0)] if am else [("projx", 0), ("qmate", 0)]
@@ -344,10 +378,15 @@ def new_order(out, pool, rows, adp, window, pod, date, slate, meta, boom, drafte
         borrowed.insert(0, b)
     t4 = borrowed + t4
     floor = lambda z: z["min"] is None or z["min"] >= MIN_FLOOR
-    t5 = sorted([z for z in tier(5) if floor(z)], key=lambda z: (t5_band(z["dr"]), -(z["projx"] if z["projx"] is not None else -1e9), z["rawadp"]))
-    low = sorted([z for z in tier(5) if not floor(z)], key=lambda z: -(z["projx"] or 0))
-    last = [z for z in K if z["row"]["_qlast"]]
-    for i, z in enumerate(t1 + qtop + t2 + t3 + t4 + t5 + low + last):
+    by_proj = lambda z: (-(z["projx"] if z["projx"] is not None else -1e9), z["rawadp"])
+    eligible = sorted([z for z in tier(5) if floor(z) and t5_band(z["dr"]) <= 1], key=lambda z: (t5_band(z["dr"]),) + by_proj(z))
+    head = t1 + qtop + t2 + t3 + t4
+    t5 = eligible[:max(0, DEFAULT_RANKED - len(head))]
+    in5 = {id(z) for z in t5}
+    below = sorted([z for z in tier(5) if id(z) not in in5] + [z for z in K if z["row"]["_qlast"]], key=by_proj)
+    for z in below:
+        z["row"]["tier"] = 6                                  # below the cut: out of T5, sorted by projection
+    for i, z in enumerate(head + t5 + below):
         z["row"]["built"] = i + 1
     for x in out:
         x.pop("_qlast", None)
