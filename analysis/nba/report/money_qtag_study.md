@@ -6,7 +6,30 @@ Tag history: Underdog's tag on each priced player in the ADP mirror's snapshots,
 
 ## Summary
 
-(written by hand from the tables below when the file is published)
+1. **The whole bet.** Teams with a Q pick run slightly ahead of the field (1.11x at the top 1%, 1.04x at the top 10%), and it
+   depends on where: T1 trails (0.33x / 0.86x, but only 1,969 teams), T2 leads (1.48x / 1.29x, range 0.92-1.62), T3-T5 sit
+   near the field (0.95x, 0.94x, 1.04x). A Q pick who played: 1.18x; who sat: 0.81x. One the market had already dropped 6+
+   picks past his pre-tag ADP lost badly (0.48x, 0.21x at the top 1%); 0-3 and 3-6 picks paid (1.34x, 1.44x). At the 2/3 turn
+   a Q pick paid (1.71x, range 1.07-2.34); at the 1/2 turn it didn't (0.88x, 1,841 teams). *For "fade until round 4": not as
+   a blanket rule. The money says fade T1 Q picks and any Q player the market has already sunk 6+ picks, but not T2 or the 2/3
+   turn, where the discount paid.*
+2. **Cost of an out.** When the Q pick sat, teams lost about a quarter of their top-10% rate in T2-T4 (0.75x, 0.77x, 0.69x).
+   When he played they gained more in T2 and T3 (1.46x, 1.28x), and T2 Q picks played 73% of the time. In T5 an out didn't
+   hurt (1.23x sat against 0.95x played), likely because the swap usually upgrades the slot. *For "fade until round 4": an out
+   costs most in T2-T4, but in T2 the plays more than pay for it; the fade holds best in T3-T4, where the bet is a wash.*
+3. **Swap crowding.** 221 of 1,983 swap targets drew the crowd (their share of pods 15+ points higher after swaps than at the
+   draft). Teams that swapped into the crowd's target beat teams that swapped into another target within 6 projected points:
+   1.22 at the top 10% (range 1.02-1.48), 1.34 at the top 1%. The off-crowd swaps trailed the field (0.74x). *For "fade until
+   round 4": a Q pick's out is survivable when the swap is the obvious one, which softens the case for fading early.*
+4. **Beneficiaries before the news.** Teams holding a T1 teammate of a Q-tagged player: 1.43x at the top 10% when he sat (range
+   1.06-1.68), 1.09x when he played, about 1.31x before anyone knows. T4 teammates ran 1.08x-1.13x either way; T2 and T3 sat
+   near the field; teams with no such teammate ran 0.94x. *For "fade until round 4": pair the fade with taking the healthy
+   T1 teammate early, which pays whether or not the Q player sits.*
+
+Caveats. T1 Q picks are few (1,969 teams, no range: under three nights carry them). "T?" is a Q pick with no tier row at the
+team's window (1,851 teams, nearly all sat: most likely ruled out before the lock). Tiers are ADP tiers at the window's lock,
+so a Q player who was falling all day can sit a tier lower than where he started. The fall is ADP drift, not the pick number,
+which the rosters don't show. Every multiple matches whole-team price, not the Q pick's own price.
 
 ## 1. The whole bet
 
