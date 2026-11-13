@@ -4043,6 +4043,17 @@ function nbaQSeen(s) {
   return seen.players;
 }
 
+/** The rules run in this order (fixed 2026-11-13): (1) the ADP ladder, its T4/T5 line at the start of round 6 or
+    earlier at a 2+ pick gap (nbaT4Line); (2) the one-tier move toward the projection and the VALUE/PRICEY flags, here, so
+    an A5-P3 player is T4 VALUE whatever his ADP (round 6 is never in T4 on the ADP ladder only); a T4 PRICEY player
+    drops into T5; (3) the T5 rules (drafted% line, minutes floor, below the cut) only on the final T5 (nbaT5Pool). */
+function nbaCombine(a, t) {
+  var d = a - t, x = { a: a, p: t, c: Math.abs(d) >= 2 ? a - Math.sign(d) : a, flag: d > 0 ? "VALUE" : d < 0 ? "PRICEY" : "" };
+  if (x.c === 4 && x.flag === "PRICEY") { x.c = NBA_TIERS; x.dropped = true; }
+  return x;
+}
+function nbaT5Pool(rows) { return rows.filter(function (r) { return !r.x.qlast && r.x.c === NBA_TIERS; }); }
+
 function nbaBuildLaddersNew() {
   var s = state.slate, src = nbaTierSource(), pod = nbaPodSize(s) === 4 ? 4 : 6, spec = NBA_LADDER[pod];
   var sh = nbaShading(), fieldCtx = nbaFieldCtx(), cap = nbaDraftSize(s.players) || (pod === 4 ? 24 : 36);
@@ -4062,10 +4073,7 @@ function nbaBuildLaddersNew() {
   var out = { at: new Date().toISOString(), window: src.window, source: src.src, pod: pod, lines: { a: aLines, p: pLines },
               players: {}, ruleset: "new" };
   pl.forEach(function (p) {
-    var pid = p.player_id, a = aT[pid], t = pT[pid], d = a - t, c = Math.abs(d) >= 2 ? a - Math.sign(d) : a;
-    var x = { a: a, p: t, c: c, flag: d > 0 ? "VALUE" : d < 0 ? "PRICEY" : "" };
-    if (a === NBA_TIERS) x.c = NBA_TIERS;                                  // round 6 is never in T4
-    if (x.c === 4 && x.flag === "PRICEY") { x.c = NBA_TIERS; x.dropped = true; }
+    var pid = p.player_id, a = aT[pid], t = pT[pid], x = nbaCombine(a, t);
     if (/^q/i.test(p.injury || "")) {
       x.inj = String(p.injury);
       // his ADP before the tag: the poller's (the last hourly snapshot before it, shared by every device; when the
@@ -4125,7 +4133,7 @@ function nbaBuildLaddersNew() {
   // there in the morning, 94%). Everyone else below T5 (60%+ drafted, under the floor, the rest of the list, a Q player
   // whose ADP fell 6+) goes under the cut, where the board sorts by projection like the rest of the tail.
   // 4-drafter nights: no drafted% line (under 60% ran 0.93x over 4 nights); T5 by projection until a Friday shows one.
-  var t5all = inTier(NBA_TIERS), floor = function (r) { return r.min == null || r.min >= NBA_MIN_FLOOR; };
+  var t5all = nbaT5Pool(rows), floor = function (r) { return r.min == null || r.min >= NBA_MIN_FLOOR; };
   var byProj = function (x, y) { return (y.projx == null ? -1e9 : y.projx) - (x.projx == null ? -1e9 : x.projx) || x.rawAdp - y.rawAdp; };
   out.t5NoLine = pod === 4;
   t5all.forEach(function (r) { r.x.band = out.t5NoLine ? 0 : nbaT5Band(r.drafted); r.x.drafted = Math.round(r.drafted); if (!floor(r)) r.x.belowFloor = true; });
@@ -8311,6 +8319,10 @@ function brrSelfTest() {
   var gapped = adps.slice(); gapped[27] = 31.5; for (var gi = 28; gi < 40; gi++) gapped[gi] = gapped[gi] + 2.5;
   ok("new rules: T4 ends at the start of round 6, earlier only at a 2+ pick ADP gap just before it",
      nbaT4Line(adps, 6, 22) === 30 && nbaT4Line(gapped, 6, 22) === 27 && nbaT4Line(adps.slice(0, 24), 4, 15) === 20);
+  var a5p3 = { x: nbaCombine(5, 3), drafted: 100 }, a5p5 = { x: nbaCombine(5, 5), drafted: 90 }, a4p5 = { x: nbaCombine(4, 5), drafted: 95 };
+  ok("an A5-P3 player is T4 VALUE and never in T5's drafted% pool, however drafted; A5-P5 and a T4 PRICEY drop are",
+     a5p3.x.c === 4 && a5p3.x.flag === "VALUE" && nbaCombine(5, 4).c === 5 && nbaCombine(5, 4).flag === "VALUE" &&
+     a4p5.x.c === 5 && a4p5.x.dropped && nbaT5Pool([a5p3, a5p5, a4p5]).length === 2 && nbaT5Pool([a5p3, a5p5, a4p5]).indexOf(a5p3) < 0);
   ok("new rules: T5 drafted% bands (under 50, 50-60 gray, 60-70 gray, 70+)",
      nbaT5Band(10) === 0 && nbaT5Band(55) === 1 && nbaT5Band(65) === 2 && nbaT5Band(85) === 3 && nbaT5Band(null) === 0);
   var sw = nbaSwapList(["a", "b", "c", "d", "e", "f", "g"], 4, { a: 50, b: 40, c: 30, d: 10, e: 25, f: null, g: 25 });

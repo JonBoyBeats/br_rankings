@@ -200,10 +200,8 @@ def build(rows, date, slate, window, meta):
         pid, a, p = r["player_id"], at[r["player_id"]], pt[r["player_id"]]
         d = a - p
         c = a - (1 if d > 0 else -1) if abs(d) >= 2 else a
-        if RULESET == "new":
-            if a == 5:
-                c = 5                                    # round 6 is never in T4
-            if c == 4 and d < 0:
+        if RULESET == "new":                             # the one-tier move runs after the ADP ladder (round 6 is never
+            if c == 4 and d < 0:                         # A4 there), so an A5-P3 player is T4 VALUE (fixed 2026-11-13)
                 c = 5                                    # T4 PRICEY drops into T5
         tag, play, q, et = r.get(w["tag"]) or "", num(r.get(w["play"])), "", ""
         if Q_TAG.match(tag):

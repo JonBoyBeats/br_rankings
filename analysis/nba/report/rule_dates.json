@@ -63,7 +63,7 @@
  },
  "t4-ends-round6": {
   "since": "2026-11-13",
-  "what": "T4 ends at the start of round 6, earlier at an ADP gap of 2+ picks just before it; round 6 never in T4",
+  "what": "T4 ends at the start of round 6, earlier at an ADP gap of 2+ picks just before it; round 6 never in T4 on the ADP ladder (the one-tier move can still lift an A5 player into T4: t4-value-from-a5)",
   "windows": {
    "am": "2026-11-14",
    "pm": "2026-11-13"
@@ -164,5 +164,13 @@
    "am": "2026-11-14",
    "pm": "2026-11-13"
   }
+ },
+ "t4-value-from-a5": {
+  "since": "2026-11-13",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  },
+  "what": "Rule order fixed: ADP ladder, then the one-tier move toward the projection (A5-P3 or better is T4 VALUE), then the T5 rules (drafted% line, minutes floor, below the cut) only on the final T5. Before, every A5 player was forced back to T5 (25 primary rows this season sent below the cut)"
  }
 }
