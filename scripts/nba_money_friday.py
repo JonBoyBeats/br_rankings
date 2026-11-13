@@ -1,5 +1,5 @@
 """The Friday report's contest results (asked 2026-11-13; first report 2026-11-20). Writes analysis/nba/report/money_friday.json,
-which the rankings side's Friday report reads. Runs in its own Friday job (.github/workflows/nba_money_friday.yml) after the
+which the rankings side's Friday report reads. Runs in its own Friday job (.github/workflows/nba_friday.yml) after the
 nightly record, so the nightly money step doesn't grow. Results only: nothing here writes the register or the button.
 
 Every test is read over every night on file, as multiples against the whole field in the same contest and price quintile
