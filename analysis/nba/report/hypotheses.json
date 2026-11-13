@@ -42,6 +42,18 @@
   "plain": "takes a point off 30-minute players on 10-12.5-point favorites and 2 points at 13 or more",
   "adopt_plain": "put that sliding cut into the morning Proj"
  },
+ "H5": {
+  "title": "Minutes trend toward ETR: when his last 3 games averaged 4+ minutes over his usual, raise the morning Proj half a point per minute of the difference",
+  "label": "input fix",
+  "status": "testing",
+  "opened": "2026-11-13",
+  "since": "2026-11-13",
+  "rule": "minutes_trend_half",
+  "target": "etr_last",
+  "notes": "Graded against ETR's last upload before lock, not the box score: the morning Proj's job is to match ETR's final number (your call, 2026-11-13; ETR's first upload carries a random multiplier, uploads after 2pm PT don't). From the 11-13 study of 15 slates: where we ran under ETR, ETR's number implied about the minutes the player had played lately (Dosunmu, McDaniels, Kyshawn George, Fears, Flagg, Anthony Black, Okongwu), not his usual. Backtest on those slates: half a point per minute, raises only, 53 players +0.48 closer (range +0.19 to +0.71); cutting on a drop hurt (16 at -0.12) and a full point per minute overshot (-0.63). Picked from four versions on the same slates, so only a first look; the forward test decides",
+  "plain": "raises a player's morning projection half a point per minute when his last 3 games ran 4+ minutes over his usual, to land closer to ETR's final upload",
+  "adopt_plain": "build half the recent minutes gain into the morning Proj"
+ },
  "tiers": {
   "T4-1": {
    "tiers": [

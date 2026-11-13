@@ -2,8 +2,9 @@
 
 For every main slate with a Lock AM pressed before ETR's first upload (analysis/nba/daily/*_main.csv):
 each priced player's value is his projection minus the average of the 6 players nearest him by morning ADP
-(3 either side), worked out separately for ours (ours_am) and ETR's first upload (etr_first), so the two
-scales never need to agree. Then:
+(3 either side), worked out separately for ours (ours_am) and ETR's final upload (etr_last, its last before lock), so
+the two scales never need to agree. The final upload is the target: it is the number the market drafts off at lock, and
+ETR's first upload carries a random multiplier (uploads after 2pm PT don't). Until 2026-11-13 this read the first upload. Then:
 
   direction   of the players ETR has 2+ points above or below their ADP, the share we had the same way
   ETR's top / bottom 5   per slate, how many of ETR's 5 most above (below) ADP we also had above (below)
@@ -56,7 +57,9 @@ def value(xs):
     return [xs[i] - st.mean(xs[max(0, i - 3):i] + xs[i + 1:i + 4]) for i in range(len(xs))]
 
 
-def slates(rookies):
+def slates(rookies, shift=None, target="etr_first"):
+    """shift(row) -> points to add to our morning Proj (or None): lets a projection idea be read against ETR.
+    target: the ETR column read against (etr_first, or etr_last: the last upload before lock, past the first's multiplier)."""
     meta, pod_of = json.load(open(os.path.join(DAILY, "meta.json"))), pods()
     out = []
     for path in sorted(glob.glob(os.path.join(DAILY, "*_main.csv"))):
@@ -64,25 +67,26 @@ def slates(rookies):
         am, e1 = m.get("am") or {}, m.get("etr_first") or {}
         if not am.get("ours") or not e1 or am["at"] >= e1["at"]:      # no Lock AM, or it came after ETR's file
             continue
-        rs = [r for r in csv.DictReader(open(path)) if all(num(r[k]) is not None for k in ("ours_am", "etr_first", "adp_am"))]
+        rs = [r for r in csv.DictReader(open(path)) if all(num(r[k]) is not None for k in ("ours_am", target, "adp_am"))]
         if len(rs) < 30:
             continue
         rs.sort(key=lambda r: num(r["adp_am"]))
         pod = pod_of.get(rs[0]["date"]) or (6 if len(rs) >= 60 else 4)
         mid, last = CUTS[pod]
-        vo, ve = value([num(r["ours_am"]) for r in rs]), value([num(r["etr_first"]) for r in rs])
-        best = sorted((num(r["etr_first"]) for r in rs), reverse=True)[:5]
+        sh = [(shift(r) if shift else None) for r in rs]
+        vo, ve = value([num(r["ours_am"]) + (x or 0) for r, x in zip(rs, sh)]), value([num(r[target]) for r in rs])
+        best = sorted((num(r[target]) for r in rs), reverse=True)[:5]
         gaps = [best[k - 1] - best[k] for k in (2, 3, 4)]
         elite = best[1 + gaps.index(max(gaps))]                 # the lowest elite projection
         ps = []
         for i, r in enumerate(rs[:ROUNDS * pod]):      # values use the whole slate's neighbors; only the top 60 (40) graded
             rd, adp = i // pod + 1, num(r["adp_am"])
-            grp = GROUPS[0] if num(r["etr_first"]) >= elite else GROUPS[1] if adp < mid else GROUPS[2] if adp < last else GROUPS[3]
+            grp = GROUPS[0] if num(r[target]) >= elite else GROUPS[1] if adp < mid else GROUPS[2] if adp < last else GROUPS[3]
             move = num(r["adp_am"]) - num(r["adp_close"]) if num(r["adp_close"]) is not None else None
             ps.append({"date": r["date"], "name": r["name"], "team": r["team"], "rd": rd, "adp": adp,
                        "grp": grp, "ours": vo[i], "etr": ve[i], "move": move,
                        "rookie": r["name"] in rookies, "usual": r["usual_min"], "min": r["min"],
-                       "tag": " / ".join(t for t in (r["injury_am"], r["injury"]) if t)})
+                       "tag": " / ".join(t for t in (r["injury_am"], r["injury"]) if t), "shift": sh[i]})
         for k in sorted(range(len(ps)), key=lambda k: ps[k]["etr"])[-TOP:]:
             ps[k]["etr_top"] = True
         for k in sorted(range(len(ps)), key=lambda k: ps[k]["etr"])[:TOP]:
@@ -133,15 +137,15 @@ def main():
     mpath = os.path.join(a.mirror, "nba_morning.json")
     rookies = {p["name"] for p in json.load(open(mpath))["players"] if p.get("crowd") is None and p.get("games")} \
         if os.path.exists(mpath) else set()
-    ss = slates(rookies)
+    ss = slates(rookies, target="etr_last")
     if not ss:
         print("no slates with a Lock AM before ETR's first file")
         return
     allp = [p for _, _, ps in ss for p in ps]
     last7 = [p for _, _, ps in ss[-7:] for p in ps]
-    L = ["# Our morning Proj vs ETR's first upload, against ADP", "",
+    L = ["# Our morning Proj vs ETR's final upload, against ADP", "",
          "Written nightly by scripts/nba_etr_match.py (its docstring has the definitions). Value = projection minus "
-         "the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's first file; the top 60 by ADP graded (40 on a 4-drafter slate), "
+         "the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's last upload before lock (its first carries a random multiplier); the top 60 by ADP graded (40 on a 4-drafter slate), "
          "in four groups: the elite (ETR's top 2-4, cut at the biggest drop), then next / middle / 6th round on by morning ADP: "
          "under 19, 19-31 and 32 on with 6 drafters; under 13, 13-20 and 21 on with 4. %d slates, "
          "%s to %s. Rookie gap: ETR's value minus ours for players with no last season (+: we're lower); the board "

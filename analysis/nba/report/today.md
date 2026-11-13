@@ -221,6 +221,7 @@ Chance to play, morning Questionable players: 61 this season, 28 played (46%). T
 - **Blowout trim** (retired 11-10): took a point off 30-minute players on teams favored by 10 or more; it didn't help, and the blowout slide, which scales the cut with the spread, carries the idea forward.
 - **Underdog bench**: adds 2 points to a bench player (under 20 usual minutes) whose team is a 10-point underdog; adopting it would raise those bench players in the morning Proj. So far it lands 0.22 points closer across 77 players, 9 of 14 nights in; 5 more nights and it comes to you as a proposal.
 - **Blowout slide**: takes a point off 30-minute players on 10-12.5-point favorites and 2 points at 13 or more; adopting it would put that sliding cut into the morning Proj. So far it lands 0.28 points closer across 52 players, 9 of 14 nights in; 5 more nights and it comes to you as a proposal.
+- **Minutes trend toward ETR**: raises a player's morning projection half a point per minute when his last 3 games ran 4+ minutes over his usual, to land closer to ETR's final upload. It hasn't fired yet.
 
 Data: everything for last night came in, and today's inputs were ready on time.
 

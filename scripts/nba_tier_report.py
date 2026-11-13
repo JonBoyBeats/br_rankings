@@ -1088,6 +1088,8 @@ def back_page(H, last, health_lines, today, hand_back):
                 hs.append("- **%s**: %s. It hasn't fired yet." % (name, plain))
                 continue
             closer = "%.2f points %s" % (abs(x["mean"]), "closer" if x["mean"] >= 0 else "further off")
+            if h.get("target") in ("etr_first", "etr_last"):
+                closer += " to ETR's %s upload" % ("first" if h["target"] == "etr_first" else "final")
             if h["status"] == "adopted":
                 tail = "it's in the model; over the last %d nights it lands %s across %d players%s" % (
                     HY.RECHECK_DAYS, closer, x["n"], ", so it comes to you to retire" if p == "**retire?**" else "")

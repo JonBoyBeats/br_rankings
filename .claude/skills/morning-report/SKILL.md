@@ -347,8 +347,10 @@ when a theme supports it. Keep earlier sections as they are.
 ### Morning Proj vs ETR (one bullet in the takeaways)
 
 Read `analysis/nba/report/etr_match.md`. The 2:17am job rewrites it (`scripts/nba_etr_match.py`,
-whose docstring has the definitions). It scores our Lock AM Proj against ETR's first upload,
-both read against ADP: a player's value is his projection minus the average of the 6 players
+whose docstring has the definitions). The morning Proj's job is to match ETR's final number (your
+call, 2026-11-13): the market drafts off it at lock, and getting there before the market is the CLV.
+So it scores our Lock AM Proj against ETR's last upload before lock (until 11-13 the first upload,
+which carries a random multiplier; uploads after 2pm PT don't), both read against ADP: a player's value is his projection minus the average of the 6 players
 nearest him by morning ADP, so the two scales never need to match. Only slates where Lock AM came
 before ETR's first file are graded, top 60 by morning ADP (40 on 4-drafter nights). It is a
 scorecard for our morning number: it changes no grading and no rule.
@@ -366,7 +368,12 @@ Late news isn't the model's miss (a Questionable tag resolved after Lock AM, a r
 that's the Lock PM's job. Use the tag and minutes columns in "Biggest misses" to tell, and say so
 rather than counting it.
 
-Baseline (8 slates, 10-28 to 11-05): direction 88% (elite 100%, next 83%, middle 93%, 6th round
+Baseline against the final upload (15 slates, 10-28 to 11-12): corr 0.78, direction 87%, big
+misses 24%, CLV ours 0.15 vs ETR 0.33. ETR's own first upload lands within 0.8 points of its final
+on average, ours 2.1: that is the gap to close. Projection ideas aimed at ETR are graded against
+the final upload in `nba_hypotheses.py` (`"target": "etr_last"`, H5 first).
+
+Old baseline against the first upload (8 slates, 10-28 to 11-05): direction 88% (elite 100%, next 83%, middle 93%, 6th round
 on 86%); ETR's bottom 5 we had below 40 of 40, top 5 above 37 of 40; big misses 24%; CLV ours
 0.22 vs ETR 0.33, widest in next (0.22 vs 0.50); rookie gap +2.9.
 
