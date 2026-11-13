@@ -193,7 +193,7 @@ Your afternoon teams' T5 picks averaged 26 points, the field's 22: your overweig
 - In morning T5, move a sixth-round pick ahead of his neighbours when a teammate is tagged Questionable, Doubtful or a game-time decision at the morning lock. Being tested (night 3 of 14); on points, the backtest shows proven to hurt so far; contest results: still to come. For today: nothing changes; not worth doing by hand.
 - After the VALUE players, order T5 by the window's projection to the whole point, and within the same point put the less drafted player first. Being tested (night 2 of 14); on points, in the morning the backtest shows an early sign it hurts, in the afternoon the backtest shows no clear signal; contest results: still to come. For today: nothing changes; not worth doing by hand.
 
-**Today in T5.** Klay Thompson is Questionable (55% to play): stays in T5. De'Aaron Fox is Questionable (45% to play): stays in T5. Jalen Suggs is Questionable (63% to play): stays in T5. VALUE: Brandin Podziemski, Darius Garland and Dejounte Murray. Beneficiaries to watch: if Klay Thompson sits, Davion Mitchell and Andrew Wiggins; if De'Aaron Fox sits, Dylan Harper, Stephon Castle and Keldon Johnson; if Jalen Suggs sits, Desmond Bane and Wendell Carter Jr.
+**Today in T5.** Klay Thompson is Questionable (55% to play): stays in T5. De'Aaron Fox is Questionable (45% to play): stays in T5. VALUE: Brandin Podziemski, Darius Garland and Dejounte Murray. Beneficiaries to watch: if Klay Thompson sits, Davion Mitchell and Andrew Wiggins; if De'Aaron Fox sits, Dylan Harper and Stephon Castle.
 
 ## The draft card
 

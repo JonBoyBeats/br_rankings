@@ -10,7 +10,7 @@
   - Questionable at Lock AM: 20 tagged, 16 played; teams that drafted them before noon top 1% 1.73% (6592 teams) vs after 1.06% (11750).
   - Most-owned turn combo vs the rest, top 1%: 2/3 turn 0.68% vs 1.37% (21 cases); 1/2 turn 0.42% vs 0.67% (7 cases).
   - Boom peer bump: 19 players moved 2+ points so far (too few to read); risers wait on two weeks of entry counts.
-- Last night, where it touched a rule: your takes off the tier rules: 45, 19 right; the field went your way on 16, against on 29; Questionable at Lock AM: Scottie Barnes (sat, on 0 of your 80), LeBron James (sat, on 0 of your 80), Joel Embiid (played, on 13 of your 80).
+- Last night, where it touched a rule: your takes off the tier rules: 24, 12 right; the field went your way on 6, against on 18; Questionable at Lock AM: Scottie Barnes (sat, on 0 of your 80), LeBron James (sat, on 0 of your 80), Joel Embiid (played, on 13 of your 80).
 
 The full tables follow; the morning report reads only this block (the rest is reference).
 
@@ -96,13 +96,13 @@ Picks per team from each of your tiers (each team read with the tiers of the loc
 
 ### 6. Your takes against the field
 
-45 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
+24 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
 
 | Lock | Tier | Takes | With the field | Against it | You were right |
 |---|---|---|---|---|---|
-| AM | T2 | 6 | 0 | 6 | 5 |
-| AM | T4 | 2 | 0 | 2 | 0 |
-| AM | T5 | 20 | 12 | 8 | 7 |
+| AM | T2 | 4 | 0 | 4 | 4 |
+| AM | T4 | 2 | 1 | 1 | 0 |
+| AM | T5 | 1 | 1 | 0 | 1 |
 | PM | T1 | 1 | 1 | 0 | 0 |
 | PM | T2 | 2 | 1 | 1 | 1 |
 | PM | T3 | 1 | 0 | 1 | 0 |
@@ -112,16 +112,16 @@ The 10 furthest from ADP:
 
 | Lock | Tier | You put first | Over | ADP | Drafted | Actual | Right |
 |---|---|---|---|---|---|---|---|
-| AM | T4 | Jonathan Kuminga | Daniss Jenkins | 27.5 / 23.5 | 100% / 100% | 34.1 / 34.2 | no |
-| AM | T5 | Jamal Shead | Jakob Poeltl | 35.5 / 31.5 | 33% / 100% | 14.7 / 22.5 | no |
-| AM | T5 | Dillon Brooks | Jalen Green | 34.9 / 31.2 | 73% / 97% | 23.1 / 17.8 | yes |
 | PM | T5 | Jamal Shead | Duncan Robinson | 35.4 / 31.7 | 33% / 99% | 14.7 / 20.1 | no |
 | PM | T2 | Kyshawn George | Trae Young | 17.0 / 13.5 | 100% / 100% | 24.7 / 56.4 | no |
 | PM | T5 | Dillon Brooks | Duncan Robinson | 35.0 / 31.7 | 73% / 99% | 23.1 / 20.1 | yes |
 | PM | T3 | AJ Dybantsa | Paul Reed | 24.4 / 21.3 | 100% / 100% | 22.6 / 28.7 | no |
-| AM | T5 | Jamal Shead | Ja'Kobe Walter | 35.5 / 32.5 | 33% / 86% | 14.7 / 13.0 | yes |
 | AM | T4 | Grayson Allen | Daniss Jenkins | 26.3 / 23.5 | 100% / 100% | 26.8 / 34.2 | no |
-| AM | T5 | Jamal Shead | Duncan Robinson | 35.5 / 32.8 | 33% / 99% | 14.7 / 20.1 | no |
+| PM | T5 | Collin Murray-Boyles | Alex Sarr | 33.3 / 30.7 | 97% / 99% | 36.0 / 50.8 | no |
+| PM | T5 | Collin Murray-Boyles | Duncan Robinson | 33.3 / 31.7 | 97% / 99% | 36.0 / 20.1 | yes |
+| PM | T5 | Jalen Green | Alex Sarr | 32.2 / 30.7 | 97% / 99% | 17.8 / 50.8 | no |
+| PM | T5 | Dillon Brooks | Ja'Kobe Walter | 35.0 / 33.6 | 73% / 86% | 23.1 / 13.0 | yes |
+| PM | T5 | Moussa Diabate | Alex Sarr | 31.8 / 30.7 | 99% / 99% | 24.6 / 50.8 | no |
 
 ### 7. Your uniqueness (flagship)
 
