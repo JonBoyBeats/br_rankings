@@ -294,7 +294,7 @@ RULES = {
     "t2-turns": None,
     "t2-elite-break": "t2-pm-elite-break",
     "t3t4-boundaries": lambda g: "t3-pricey-over-t4-value" if g.startswith("T4 VALUE") else "t4-pricey-to-t5",
-    "t5-drafted": "t5-drafted-60",
+    "t5-drafted": lambda g: "t5-4drafter-no-line" if "4-drafter" in g else "t5-drafted-60",
     "t5-operator-order": "t5-drafted-60",
     "q-tags": lambda g: ("q-adp-fall" if g.startswith("fell") else "q-teammate-tiebreak" if "teammate" in g
                          else "swap-button" if "swap" in g else "q-t1-to-t2" if g.startswith("T1") else "q-keeps-tier"),
