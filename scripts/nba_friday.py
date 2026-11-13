@@ -1,14 +1,14 @@
 """The Friday report (first edition 2026-11-20; replaces the Monday proposals): analysis/nba/report/friday.md.
 
 Runs as its own Friday job after the nightly record (.github/workflows/nba_friday.yml), so it never delays the
-morning notes. Front page: "What should change this week": nothing, or one line per proposal. Nothing moves without
-the operator's yes.
+morning notes. Front page: "What should change this week": nothing, or one line per proposal, then the contest side's
+register proposals (money_friday.json "proposals"). Nothing moves without the operator's yes.
 
 A test proposes a change only when it's clear on its main grade (90%+ of night-resamples: points for T1-T4 and the
 projections, contest results for T5, Q tags and swaps) and the other grade doesn't disagree; 80-90% shows as
 "watching". Every test shows "since the rule went in" (the first night it was live, analysis/nba/report/rule_dates.json;
 a rule without a date shows season only) and "season". The contest side supplies the contest-result reads
-(money_season_tests.md and the rest, listed at the bottom); this side assembles the report.
+(analysis/nba/report/money_friday.json, written by its Friday job just before this one); this side assembles the report.
 
   python3 scripts/nba_friday.py [--mirror ../br-adp-mirror] [--today YYYY-MM-DD]
 """
@@ -58,6 +58,23 @@ def read(s, in_force_is_a=True):
 
 
 PROPOSALS, WATCHING = [], []
+MF = {}   # the contest side's money_friday.json, loaded in main
+
+
+def money(test):
+    """Lines for one of the contest side's Friday tests: each group's top-10% multiple of the whole field's rate (80% range,
+    teams), season and since its rule went in."""
+    t = (MF.get("tests") or {}).get(test)
+    if not t:
+        return ["- **On contest results** (%s): not in money_friday.json yet." % test]
+    if t.get("status"):
+        return ["- **%s** (contest results): %s." % (t["label"], t["status"])]
+    out = ["- **%s** (contest results, top 10%% against the field's rate):" % t["label"]]
+    for g, x in (t.get("groups") or {}).items():
+        sd = x.get("since_dates")
+        since = "; since %s: %s" % (min(sd.values()), RS.mult(x["since"])) if sd and x.get("since") else ""
+        out.append("  - %s: season %s%s" % (g, RS.mult(x["season"]), since))
+    return out
 
 
 def test_line(title, rid, window, fn, in_force_is_a=True, change=None, rd=None):
@@ -91,7 +108,7 @@ def am_groups_adp(rows, night):
 
 
 def dropped(night):
-    return [r for r in ALL_NW[night] if r["a_tier"] == "4" and r["flag"] == "PRICEY" and r["tierv"] >= 5 and r["ok"]]
+    return [r for r in ALL_NW[night] if int(r["a_tier"]) <= 4 and r["flag"] == "PRICEY" and r["tierv"] >= 5 and r["ok"]]
 
 
 def t5_top3(night):
@@ -204,6 +221,8 @@ def main():
     a = ap.parse_args()
     today = dt.date.fromisoformat(a.today) if a.today else dt.datetime.now(dt.timezone.utc).astimezone(PT).date()
     rd = rule_dates()
+    mf = os.path.join(REP, "money_friday.json")
+    MF.update(json.load(open(mf)) if os.path.exists(mf) else {})
     H = [r for rs in ALL_NW.values() for r in rs]
     body = []
     body += ["## T1", "",
@@ -224,6 +243,7 @@ def main():
             s = c["season"]
             body.append("- **%s**: you %s of teams, the field %s; %.2fx the field's top-1%% rate and %.2fx its top-10%% on the season." % (
                 c["decision"], RS.pct(s["mine"]["share"]), RS.pct(s["field"]["share"]), s["vs_field_top1"], s["vs_field_top10"]))
+    body += money("t2-turns") + money("t2-elite-break")
     body += ["", "## T3 and T4", ""]
     for t in (3, 4):
         body.append(test_line("T%d afternoon: the shared sort (in force) against ADP" % t, "t34-pm-etr-groups", "pm",
@@ -234,13 +254,16 @@ def main():
         # both came from contest results, which stay their main grade (the contest side's read): points show, don't propose
         body.append(test_line("%s: T3 PRICEY ahead of T4 VALUE (in force), on points; the main grade is contest results" % RS.W[w].capitalize(),
                               "t3-pricey-over-t4-value", w, lambda w=w: TS.boundary(w, TS.t4_value, TS.t3_pricey), False, None, rd))
-        body.append(test_line("%s: T4 PRICEY dropped into T5 (in force) against ahead of T5's top 3, on points; the main grade is contest results" % RS.W[w].capitalize(),
+        body.append(test_line("%s: T4 PRICEY right after T5's top 3 (in force) against ahead of them, on points; the main grade is contest results" % RS.W[w].capitalize(),
                               "t4-pricey-to-t5", w, lambda w=w: TS.boundary(w, dropped, t5_top3), False, None, rd))
+    body += money("t3t4-boundaries")
     body += ["- **Where the T4/T5 line fell** (night-windows): " + t4_lines() + ".", ""]
     body += ["## T5", "", "**The 60% line**, on contest results:", ""] + RS.t5_contest(H, mt)
     body += ["- **The drafted% curve**: " + curve_accuracy() + ".",
-             "- **The 4-drafter line**: 60% until set from data; " + str(sum(1 for k in ALL_NW if ALL_NW[k][0]["podv"] == 4) // 2) + " four-drafter nights on file.",
-             "- **The minutes floor against T5 duds** (round-6 ADP players, dud = under half his projection; floor 20): " + floor_duds() + ".", ""]
+             "- **4-drafter nights**: no line, T5 by projection, until a Friday shows a line that works (the contest side reads a 40% line "
+             "in t5-drafted); " + str(sum(1 for k in ALL_NW if ALL_NW[k][0]["podv"] == 4) // 2) + " four-drafter nights on file.",
+             "- **The minutes floor against T5 duds** (round-6 ADP players, dud = under half his projection; floor 20): " + floor_duds() + "."]
+    body += money("t5-drafted") + money("t5-operator-order") + [""]
     body += ["## Questionable tags", ""]
     try:
         import nba_q_rules_test as Q
@@ -259,11 +282,13 @@ def main():
         if r["date"] >= "2026-11-13" and (r["tag"] or "")[:1].lower() == "q":
             qcase["T1 to T2" if r["a_tier"] == "1" else "below the cut (ADP fell 6+)" if r["tier"] == "6" and r["a_tier"] != "5" else "kept his tier"] += 1
     body.append("- Since the Q rules went in: %s." % (", ".join("%s %d" % kv for kv in qcase.items()) or "no Questionable players yet"))
+    body += money("q-tags")
     try:
         import nba_swap_grade
         body.append("- " + nba_swap_grade.season_line())
     except Exception as e:
         body.append("- Swap button: not graded (%s)." % e)
+    body += money("swap-button")
     body += ["", "## Your takes", ""]
     for t in (2, 3, 4):
         body.append("- " + RS.moves(H, "", t)[-2])
@@ -281,14 +306,17 @@ def main():
         body.append("- " + ("; ".join(bad) if bad else "Everything came in on time this week."))
     except Exception as e:
         body.append("- Not read (%s)." % e)
-    money = [os.path.basename(p) for p in sorted(glob.glob(os.path.join(REP, "money_season*.md")) + glob.glob(os.path.join(REP, "money_qtag*.md")))]
-    body += ["", "Contest-result reads from the contest side: %s." % (", ".join(money) or "none on file")]
+    body += ["", "Contest-result reads from the contest side: money_friday.json (%s)." % (
+        "generated %s, %d nights" % (MF["generated"], len(MF.get("nights") or [])) if MF else "not on file")]
     md = ["# NBA Friday report, %s" % today.strftime("%A %-m/%-d"), "",
           "*The standing rules: [the rulebook](rulebook.md). Each test reads since its rule went in (rule_dates.json) and on the season.*", "",
           "## What should change this week", ""]
     md += (["- " + p for p in PROPOSALS] if PROPOSALS else ["Nothing."]) + [""]
     if WATCHING:
         md += ["Watching (80-90%): " + "; ".join(WATCHING) + ".", ""]
+    mp = (MF.get("proposals") or {}).get("proposals") or []
+    md += ["**From the contest side** (register verdicts): " + ("none." if MF else "money_friday.json not on file."), ""] if not mp else \
+          ["**From the contest side** (register verdicts):", ""] + ["- %s: %s" % (x["id"], x["reason"]) for x in mp] + [""]
     md += ["Nothing moves without your yes.", ""] + body
     open(OUT, "w").write("\n".join(md) + "\n")
     print("\n".join(md))

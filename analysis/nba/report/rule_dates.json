@@ -55,7 +55,7 @@
  },
  "t4-pricey-to-t5": {
   "since": "2026-11-13",
-  "what": "T4 PRICEY players drop into T5",
+  "what": "T4 PRICEY players drop into T5, right after its top 3, exempt from the drafted% line (from 2026-11-13 PM)",
   "windows": {
    "am": "2026-11-14",
    "pm": "2026-11-13"
@@ -79,7 +79,7 @@
  },
  "t5-drafted-60": {
   "since": "2026-11-13",
-  "what": "T5: drafted under 60% of pods (50-60% at the bottom) by projection; 60%+ out of T5",
+  "what": "T5: drafted under 60% of pods (50-60% at the bottom) by projection; 60%+ out of T5. 4-drafter nights: no line, T5 by projection (t5-4drafter-no-line)",
   "windows": {
    "am": "2026-11-14",
    "pm": "2026-11-13"
@@ -119,7 +119,7 @@
  },
  "q-adp-fall": {
   "since": "2026-11-13",
-  "what": "A Questionable player whose ADP fell 6+ picks since the tag goes below the cut",
+  "what": "A Questionable player whose ADP fell 6+ picks since the tag goes below the cut (tagged from the slate's open: since his ADP on the last earlier slate where he was untagged, from 2026-11-13 PM)",
   "windows": {
    "am": "2026-11-14",
    "pm": "2026-11-13"
@@ -156,5 +156,13 @@
  "proj-fresh-absence": {
   "since": "2026-11-14",
   "what": "Morning Proj: a teammate out a first or second night moves teammates 1.5x the table"
+ },
+ "t5-4drafter-no-line": {
+  "since": "2026-11-13",
+  "what": "4-drafter nights: no drafted% line; T5 by projection, marked on the board, until a Friday shows a line that works",
+  "windows": {
+   "am": "2026-11-14",
+   "pm": "2026-11-13"
+  }
  }
 }

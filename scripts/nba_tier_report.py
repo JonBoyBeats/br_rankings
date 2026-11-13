@@ -686,7 +686,7 @@ def main():
             md += ["**Your T5 menu, on contest results.**", ""] + RS.t5_contest(H, mt) + ([hand_moves, ""] if hand_moves else [])
         md += ["**Player recap**, in the button's order.", ""] + rc
         md += ["**Contest view.** " + RS.contest(t, mt)[0], ""]
-    md += RS.q_section(H, last, (pool, ben), q_tracker(H, last))
+    md += RS.q_section(H, last, (pool, ben), q_tracker(H, last), mt)
     md += RS.back(last, problems(hl)) + ([hw["back"], ""] if hw.get("back") else [])
     md += ["## Season", "", "*Reference tables; points per pair as above. Labels here are the grading's own (RULE: proven so far, + helps and - hurts; "
            "LEAN: an early sign; no lean: no clear signal; not enough yet: too early to say).*", ""] + overnight(H) + season_tables(H)
