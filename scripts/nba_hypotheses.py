@@ -92,22 +92,7 @@ def dog_bench(row, past):
     return ref + 2, "dog 13+" if row["spread"] >= 13 else "dog 10-12.5", ref
 
 
-def minutes_trend_half(past, usual):
-    """H5: when his last 3 games averaged 4+ minutes over his usual, raise our morning Proj half a point per minute
-    of the difference (up only: ETR follows a growing role; a drop is often a blowout or fouls). Read against ETR's
-    last upload before lock, not the box score (see etr_gains)."""
-    if len(past) < 3 or not usual:
-        return None
-    d = sum(p["min"] for p in past[-3:]) / 3 - usual
-    if d < 4:
-        return None
-    return 0.5 * d, "up"
-
-
-minutes_trend_half.target = "etr_last"
-
-RULES = {"minutes_trend": minutes_trend, "blowout_trim": blowout_trim, "blowout_slide": blowout_slide, "dog_bench": dog_bench,
-         "minutes_trend_half": minutes_trend_half}
+RULES = {"minutes_trend": minutes_trend, "blowout_trim": blowout_trim, "blowout_slide": blowout_slide, "dog_bench": dog_bench}
 
 
 # ---------------------------------------------------------------- scoring
@@ -124,43 +109,8 @@ def nights():
     return out
 
 
-def etr_gains(rule, history, since=None, until=None):
-    """For a rule aimed at ETR (target "etr_first" or "etr_last"): {date: [(points closer to that upload, tag, key)]},
-    on the slates nba_etr_match.py grades (Lock AM before ETR's first file, the top 60 by morning ADP), each player read
-    against his ADP neighbours the way that scorecard reads him, with the rule's shift on our morning Proj. ETR's last
-    upload is the target that matters (its first carries a random multiplier; uploads after 2pm PT don't)."""
-    import nba_etr_match as EM
-    past = defaultdict(list)                       # key -> graded box nights, oldest first
-    for date, rows in history:
-        for r in rows:
-            if rep.graded(r):
-                past[r["key"]].append(r)
-    moved = {}
-
-    def shift(r):
-        p = [x for x in past.get(L.key_of(r["name"]), []) if x["date"] < r["date"]]
-        got = rule(p, EM.num(r["usual_min"]))
-        if got:
-            moved[(r["date"], r["name"])] = got[1]
-            return got[0]
-        return None
-
-    plain = {(p["date"], p["name"]): p for _, _, ps in EM.slates(set(), target=rule.target) for p in ps}
-    out = defaultdict(list)
-    for date, _, ps in EM.slates(set(), shift, rule.target):
-        if (since and date < since) or (until and date >= until):
-            continue
-        for p in ps:
-            if p["shift"] is not None:
-                b = plain[(date, p["name"])]
-                out[date].append((abs(b["etr"] - b["ours"]) - abs(p["etr"] - p["ours"]), moved[(date, p["name"])], L.key_of(p["name"])))
-    return out
-
-
 def gains(rule, history, since=None, until=None):
     """{date: [(points closer than base, tag)]} for the nights in [since, until)."""
-    if getattr(rule, "target", None) in ("etr_first", "etr_last"):
-        return etr_gains(rule, history, since, until)
     past = defaultdict(list)
     out = defaultdict(list)
     for date, rows in history:

@@ -370,8 +370,15 @@ rather than counting it.
 
 Baseline against the final upload (15 slates, 10-28 to 11-12): corr 0.78, direction 87%, big
 misses 24%, CLV ours 0.15 vs ETR 0.33. ETR's own first upload lands within 0.8 points of its final
-on average, ours 2.1: that is the gap to close. Projection ideas aimed at ETR are graded against
-the final upload in `nba_hypotheses.py` (`"target": "etr_last"`, H5 first).
+on average, ours 2.1: that is the gap to close.
+
+**The ETR review, every couple of weeks** (on a Friday, when asked): no forward tests for these.
+Rerun the study in `analysis/nba/report/etr_gap_study.md` on everything since the last review
+(where our morning number and ETR's final differ, by player, team and position, and what
+explains it), try the tweaks that would close the gap on those slates, bake in the ones that do
+(in index.html's NBA morning Proj, with the numbers in its comment), add a dated section to the
+study, and carry on. 2026-11-13: box scores count as 3 days of ETR (was 1), their minutes halfway
+to his last 3 games: 2.10 -> 1.88 points from ETR's final, 3+ apart 24% -> 20%.
 
 Old baseline against the first upload (8 slates, 10-28 to 11-05): direction 88% (elite 100%, next 83%, middle 93%, 6th round
 on 86%); ETR's bottom 5 we had below 40 of 40, top 5 above 37 of 40; big misses 24%; CLV ours

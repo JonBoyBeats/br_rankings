@@ -34,9 +34,7 @@ about what he has played lately:
 | Anthony Black | 4 | 29.4 | 32.1 | 31.5 | +3.0 |
 | Onyeka Okongwu | 7 | 28.7 | 30.9 | 30.5 | +2.0 |
 
-Under test as H5 (hypotheses.json): raise the morning Proj half a point per minute when the last 3 games ran 4+
-over his usual, graded against ETR's final. Backtest +0.48 closer on 53 players (picked from 4 versions on these
-slates; the forward test decides). Avdija (+3.1) and Caleb Wilson (+4.9) are under ETR too, on a mix of minutes and rate.
+Avdija (+3.1) and Caleb Wilson (+4.9) are under ETR too, on a mix of minutes and rate.
 
 **We're over ETR, and it's points per minute.** Our minutes match his recent ones; ETR projects less per minute:
 LaMelo Ball (-2.6), Gobert (-2.2), Trae Young (-2.1), Sarr (-2.4), Davis (-1.8), Harden (-1.8), Mitchell (-1.3),
@@ -53,10 +51,23 @@ ETR publishes no minutes, so the split is read across players instead: ETR final
 minutes over our minutes and this season's actual points per minute over our rate (783 untagged player-nights):
 
 - recent minutes: 0.27 (80% range over slates 0.22 to 0.32). Last 3 games 10% over our minutes puts ETR about
-  2.7% over us, about 0.35 points a minute on a 40-point player: the same size as H5's half point.
+  2.7% over us, about 0.35 points a minute on a 40-point player.
 - this season's rate: 0.17 (0.14 to 0.20), rising with games played (0.11 under 6 games, 0.20 after). A player
   producing 10% under our rate this season sits about 2% under us at ETR: our rate leans on the prior more than ETR's.
 - the two explain about a fifth of the spread (R2 0.21); the rest is ETR's own reads.
 
-Next idea in line (not yet under test; needs a yes): blend our points per minute toward this season's actual, more
-as games pile up, graded against ETR's final like H5. Then review ours and ETR's against the box scores.
+## What we changed (2026-11-13, baked in, no forward test)
+
+The morning Proj is mostly each player's last 10 ETR projections, blended with a box-score number (minutes x his
+usual points a minute) that counted as 1 day of ETR. A shorter or recency-weighted ETR average didn't help (ETR's
+nightly numbers are noisy; the 10-night average beat the last 1-7 and was level with half-lives of 2-5 nights).
+What ETR's final follows is the box scores: counting them as 3 days of ETR, with their minutes moved halfway from
+his usual to his last 3 games, on the same 15 slates (untagged players, no teammate news):
+
+| morning Proj | points from ETR's final | 3+ apart | closer on |
+|---|---|---|---|
+| before (box = 1 day) | 2.10 | 24% | - |
+| box = 2 / 3 / 4 / 6 days | 1.99 / 1.95 / 1.95 / 1.99 | 20-21% | 10-13 of 15 |
+| box = 3 days, minutes halfway to last 3 | 1.88 | 20% | 12 of 15 |
+
+Next review in a couple of weeks: the same read on the slates since, then the next tweak.
