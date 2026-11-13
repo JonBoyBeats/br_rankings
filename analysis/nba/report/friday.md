@@ -6,6 +6,8 @@
 
 Nothing.
 
+**From the contest side** (register verdicts): money_friday.json not on file.
+
 Nothing moves without your yes.
 
 ## T1
@@ -28,40 +30,46 @@ Nothing moves without your yes.
 
 - **Early pick + late same-position teammate**: you 13% of teams, the field 15%; 0.97x the field's top-1% rate and 0.87x its top-10% on the season.
 - **Opposing stars**: you 43% of teams, the field 41%; 1.20x the field's top-1% rate and 1.13x its top-10% on the season.
+- **On contest results** (t2-turns): not in money_friday.json yet.
+- **On contest results** (t2-elite-break): not in money_friday.json yet.
 
 ## T3 and T4
 
 - **T3 afternoon: the shared sort (in force) against ADP**: since the rule went in (11-13) no disagreeing pairs yet; season 9-8-2 nights, the rule in force ahead in 72% of resamples, +4.06 points a pair (151 pairs).
-- **T3 morning: by ADP in each group (in force) against the projection in each group**: since the rule went in (11-14) no disagreeing pairs yet; season 0-2-0 nights, the rule in force ahead in 0% of resamples, -8.57 points a pair (3 pairs) (too few to propose on).
+- **T3 morning: by ADP in each group (in force) against the projection in each group**: since the rule went in (11-14) no disagreeing pairs yet; season 0-1-0 nights, the rule in force ahead in 0% of resamples, -4.60 points a pair (1 pairs) (too few to propose on).
 - **T4 afternoon: the shared sort (in force) against ADP**: since the rule went in (11-13) no disagreeing pairs yet; season 9-9-2 nights, the rule in force ahead in 63% of resamples, -0.00 points a pair (106 pairs).
 - **T4 morning: by ADP in each group (in force) against the projection in each group**: since the rule went in (11-14) no disagreeing pairs yet; season 0-1-0 nights, the rule in force ahead in 0% of resamples, -7.50 points a pair (1 pairs) (too few to propose on).
 - **Morning: T3 PRICEY ahead of T4 VALUE (in force), on points; the main grade is contest results**: since the rule went in (11-14) no disagreeing pairs yet; season 10-3-0 nights, the rule in force ahead in 93% of resamples, +4.44 points a pair (52 pairs).
-- **Morning: T4 PRICEY dropped into T5 (in force) against ahead of T5's top 3, on points; the main grade is contest results**: since the rule went in (11-14) no disagreeing pairs yet; season 8-11-0 nights, the rule in force ahead in 6% of resamples, -3.03 points a pair (100 pairs).
+- **Morning: T4 PRICEY right after T5's top 3 (in force) against ahead of them, on points; the main grade is contest results**: since the rule went in (11-14) no disagreeing pairs yet; season 9-11-1 nights, the rule in force ahead in 1% of resamples, -3.60 points a pair (177 pairs).
 - **Afternoon: T3 PRICEY ahead of T4 VALUE (in force), on points; the main grade is contest results**: since the rule went in (11-13) no disagreeing pairs yet; season 5-2-4 nights, the rule in force ahead in 78% of resamples, +0.16 points a pair (49 pairs).
-- **Afternoon: T4 PRICEY dropped into T5 (in force) against ahead of T5's top 3, on points; the main grade is contest results**: since the rule went in (11-13) no disagreeing pairs yet; season 8-7-2 nights, the rule in force ahead in 43% of resamples, -1.38 points a pair (90 pairs).
+- **Afternoon: T4 PRICEY right after T5's top 3 (in force) against ahead of them, on points; the main grade is contest results**: since the rule went in (11-13) no disagreeing pairs yet; season 9-8-1 nights, the rule in force ahead in 20% of resamples, -3.28 points a pair (114 pairs).
+- **On contest results** (t3t4-boundaries): not in money_friday.json yet.
 - **Where the T4/T5 line fell** (night-windows): at the start of round 6 on 28, earlier, at a 2-pick gap on 16.
 
 ## T5
 
 **The 60% line**, on contest results:
 
-- Teams with a round-6 player drafted in under 60% of pods: you 21%, the field 23%; their top-10% rate 0.47x the field's last night, 0.99x on the season.
-- Teams with one drafted in 60%+: you 82%, the field 79%; their top-10% rate 1.12x the field's last night, 0.98x on the season.
+The contest side's T5 read (money_tiers.json t5_drafted) isn't on file yet.
 
 - **The drafted% curve**: the curve refitted without each night misses by 9.9 points of drafted% in the 30-90% band (-4.5), by 1.9 overall (1671 player-nights).
-- **The 4-drafter line**: 60% until set from data; 4 four-drafter nights on file.
+- **4-drafter nights**: no line, T5 by projection, until a Friday shows a line that works (the contest side reads a 40% line in t5-drafted); 4 four-drafter nights on file.
 - **The minutes floor against T5 duds** (round-6 ADP players, dud = under half his projection; floor 20): 0-16 minutes: 26% duds (23); 16-20 minutes: 35% duds (37); 20-24 minutes: 25% duds (91); 24+ minutes: 12% duds (710).
+- **On contest results** (t5-drafted): not in money_friday.json yet.
+- **On contest results** (t5-operator-order): not in money_friday.json yet.
 
 ## Questionable tags
 
-- Morning, keeps his tier (in force) against two tiers back: 12-8-0 nights, ahead in 87% of resamples, +3.4 points a pair (points; the main grade is contest results, the contest side's).
-- Morning, keeps his tier (in force) against no higher than the top of T4: 4-5-0 nights, ahead in 90% of resamples, +8.7 points a pair (points; the main grade is contest results, the contest side's).
-- Morning, keeps his tier (in force) against the bottom of the list: 19-2-0 nights, ahead in 100% of resamples, +10.4 points a pair (points; the main grade is contest results, the contest side's).
-- Afternoon, keeps his tier (in force) against two tiers back: 8-11-0 nights, ahead in 68% of resamples, +2.4 points a pair (points; the main grade is contest results, the contest side's).
-- Afternoon, keeps his tier (in force) against no higher than the top of T4: 6-2-0 nights, ahead in 98% of resamples, +7.4 points a pair (points; the main grade is contest results, the contest side's).
-- Afternoon, keeps his tier (in force) against the bottom of the list: 15-4-0 nights, ahead in 100% of resamples, +9.3 points a pair (points; the main grade is contest results, the contest side's).
+- Morning, keeps his tier (in force) against two tiers back: 12-8-0 nights, ahead in 90% of resamples, +3.2 points a pair (points; the main grade is contest results, the contest side's).
+- Morning, keeps his tier (in force) against no higher than the top of T4: 3-4-0 nights, ahead in 89% of resamples, +8.9 points a pair (points; the main grade is contest results, the contest side's).
+- Morning, keeps his tier (in force) against the bottom of the list: 19-2-0 nights, ahead in 100% of resamples, +10.7 points a pair (points; the main grade is contest results, the contest side's).
+- Afternoon, keeps his tier (in force) against two tiers back: 8-11-0 nights, ahead in 73% of resamples, +2.6 points a pair (points; the main grade is contest results, the contest side's).
+- Afternoon, keeps his tier (in force) against no higher than the top of T4: 5-1-0 nights, ahead in 99% of resamples, +9.0 points a pair (points; the main grade is contest results, the contest side's).
+- Afternoon, keeps his tier (in force) against the bottom of the list: 15-4-0 nights, ahead in 100% of resamples, +9.6 points a pair (points; the main grade is contest results, the contest side's).
 - Since the Q rules went in: no Questionable players yet.
+- **On contest results** (q-tags): not in money_friday.json yet.
 - Swap button: no swap lock yet. Once you press it after your last draft, each swap is compared here with the one your PM list would have made.
+- **On contest results** (swap-button): not in money_friday.json yet.
 
 ## Your takes
 
@@ -80,6 +88,6 @@ Nothing moves without your yes.
 
 ## Data
 
-- Contests: none listed for 2026-11-19; Results: no daily record for 2026-11-19 (newest 2026-11-12): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-19 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play NOT READY (due 4:30am); Q-tags polled 3:23am
+- Contests: none listed for 2026-11-19; Results: no daily record for 2026-11-19 (newest 2026-11-12): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-19 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play NOT READY (due 4:30am); Q-tags polled 12:00pm
 
-Contest-result reads from the contest side: money_qtag_study.md, money_season_followups.md, money_season_tests.md.
+Contest-result reads from the contest side: money_friday.json (not on file).

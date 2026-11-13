@@ -141,9 +141,11 @@ the 80% range and the label; and (2) its shadow record: its comparison in `shado
 else add it to `nba_shadow.py` and give the season-in-sample line, saying it has no forward nights yet.
 Show the user both beside the money evidence and the table above's call, then change only on a yes.
 
-**The Friday report** (from 2026-11-20; replaces the Monday proposals and the 14-night checks): its own job after the
-nightly record (`.github/workflows/nba_friday.yml`, `scripts/nba_friday.py` -> `analysis/nba/report/friday.md`). Its
-front page is "What should change this week": nothing, or one line per proposal. A test proposes only at 90%+ of
+**The Friday report** (from 2026-11-20; replaces the Monday proposals and the 14-night checks): its own job
+(`.github/workflows/nba_friday_rankings.yml`, `scripts/nba_friday.py` -> `analysis/nba/report/friday.md`), started when
+the contest side's Friday job (`nba_friday.yml` -> `money_friday.json`) succeeds on a Friday morning: nightly -> contest
+Friday -> this. Its front page is "What should change this week": nothing, or one line per proposal, then the contest
+side's register proposals; each section carries the contest side's reads from `money_friday.json`. A test proposes only at 90%+ of
 night-resamples on its main grade (points for T1-T4 and the projections, contest results for T5, Q tags and swaps,
 which the contest side supplies) with the other grade not against it, and on 40+ pairs over 8+ nights; 80-90% is
 "watching". Every test reads "since the rule went in" (`rule_dates.json`: the first night each rule was live on the

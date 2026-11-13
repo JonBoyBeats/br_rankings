@@ -51,7 +51,7 @@ FIELD_MODEL = os.path.join(HERE, "analysis", "nba", "contests", "field_model.jso
 MIRROR = None
 COLS = ["date", "slate", "pod", "window", "sample", "board", "player_id", "name", "team", "adp", "proj", "proj_src", "a_tier", "p_tier",
         "tier", "flag", "tag", "q_class", "play", "exp_tier", "actual", "min", "played", "scratched", "breaker",
-        "your_rank", "your_tier", "built", "boom", "drafted", "proj_min", "pre_tag_adp"]
+        "your_rank", "your_tier", "built", "boom", "drafted", "proj_min", "pre_tag_adp", "pre_tag_src"]
 
 
 def num(v):
@@ -282,7 +282,10 @@ _TAGS = {}
 
 
 def q_tag_adp(date, slate, window, meta):
-    """{player_id: his ADP in the first hourly snapshot that had him Questionable}, up to the window's lock (the mirror)."""
+    """{player_id: (his ADP before the tag, source)} for every player Questionable at the window's lock (the mirror):
+    "pre-tag" the last snapshot before the tag on this slate; tagged from the slate's first snapshot, "previous slate" his
+    ADP in the newest snapshot of the last earlier main slate (up to 4 back) where he was untagged (the poller's
+    pre_tag_src); else "first tagged", his ADP in the first snapshot that had him tagged (the board's device sighting)."""
     key = (date, window)
     if key in _TAGS or not MIRROR:
         return _TAGS.get(key, {})
@@ -311,9 +314,21 @@ def q_tag_adp(date, slate, window, meta):
                     break
                 first = q.get("adp")
             else:
-                out[pid] = (first, "first tagged")        # tagged from the first snapshot (the board: this device's first sighting)
+                out[pid] = earlier_untagged(mirror, s, pid) or (first, "first tagged")
     _TAGS[key] = out
     return out
+
+
+def earlier_untagged(mirror, slate, pid, look=4):
+    """(ADP, "previous slate") from the newest snapshot of the last earlier main slates where he was priced and
+    untagged, else None."""
+    import datetime as dt
+    for s in reversed(mirror.main_slates(slate["lock"] - dt.timedelta(days=10), slate["lock"] - dt.timedelta(hours=1))[-look:]):
+        for t, players in reversed(mirror.snapshots(s)):
+            p = next((p for p in players if p["player_id"] == pid), None)
+            if p is not None and (p.get("injury") or "")[:1].lower() != "q":
+                return p.get("adp"), "previous slate"
+    return None
 
 
 def proj_minutes(rows, window):
@@ -342,8 +357,8 @@ def new_order(out, pool, rows, adp, window, pod, date, slate, meta, boom, drafte
     for x in out:
         x["_qlast"] = x["_qtop"] = False
         if re.match(r"^q", x["tag"], re.I):
-            a0 = (seen.get(x["player_id"]) or (None, ""))[0]
-            x["pre_tag_adp"] = "" if a0 is None else a0
+            a0, src = seen.get(x["player_id"]) or (None, "")
+            x["pre_tag_adp"], x["pre_tag_src"] = ("", "") if a0 is None else (a0, src)
             if a0 is not None and x["adp"] is not None and x["adp"] - a0 >= Q_FALL:
                 x["_qlast"] = True
             elif x["tier"] == 1:
@@ -379,7 +394,12 @@ def new_order(out, pool, rows, adp, window, pod, date, slate, meta, boom, drafte
     t4 = borrowed + t4
     floor = lambda z: z["min"] is None or z["min"] >= MIN_FLOOR
     by_proj = lambda z: (-(z["projx"] if z["projx"] is not None else -1e9), z["rawadp"])
-    eligible = sorted([z for z in tier(5) if floor(z) and t5_band(z["dr"]) <= 1], key=lambda z: (t5_band(z["dr"]),) + by_proj(z))
+    # 4-drafter nights: no drafted% line (until a Friday shows one); the dropped T4 PRICEY players right after T5's top 3,
+    # exempt from the line (index.html nbaBuildLaddersNew)
+    band = (lambda z: 0) if pod == 4 else (lambda z: t5_band(z["dr"]))
+    drop = lambda z: z["row"]["a_tier"] <= 4 and z["row"]["flag"] == "PRICEY"     # a T4 PRICEY player dropped into T5
+    eligible = sorted([z for z in tier(5) if floor(z) and band(z) <= 1 and not drop(z)], key=lambda z: (band(z),) + by_proj(z))
+    eligible = eligible[:3] + sorted([z for z in tier(5) if floor(z) and drop(z)], key=by_proj) + eligible[3:]
     head = t1 + qtop + t2 + t3 + t4
     t5 = eligible[:max(0, DEFAULT_RANKED - len(head))]
     in5 = {id(z) for z in t5}

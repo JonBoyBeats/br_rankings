@@ -1,0 +1,47 @@
+name: NBA Friday rankings report
+# The rankings side's Friday report (scripts/nba_friday.py -> analysis/nba/report/friday.md). Runs after the contest
+# side's Friday job ("NBA Friday report", nba_friday.yml -> money_friday.json), which runs after the nightly record:
+# nightly -> contest Friday -> this. Goes on only when that job succeeded on a Friday morning, Pacific; or by hand.
+on:
+  workflow_run:
+    workflows: ["NBA Friday report"]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:          # shares the nightly record's group, so they never push at once
+  group: analysis
+  cancel-in-progress: false
+jobs:
+  friday:
+    runs-on: ubuntu-latest
+    steps:
+      - id: when
+        run: |
+          if [ "${{ github.event_name }}" = workflow_dispatch ]; then echo "go=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          day=$(TZ=America/Los_Angeles date +%u); hour=$(TZ=America/Los_Angeles date +%H)
+          if [ "${{ github.event.workflow_run.conclusion }}" = success ] && [ "$day" = 5 ] && [ "$hour" -lt 12 ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"; else echo "go=false" >> "$GITHUB_OUTPUT"; fi
+      - if: steps.when.outputs.go == 'true'
+        uses: actions/checkout@v4
+        with: { ref: main }
+      - if: steps.when.outputs.go == 'true'
+        uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - if: steps.when.outputs.go == 'true'
+        name: Friday report
+        run: |
+          git clone -q --shallow-since="$(date -u -d '-7 days' +%F)" https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror
+          python3 scripts/nba_friday.py --mirror ../br-adp-mirror > /dev/null
+      - if: steps.when.outputs.go == 'true'
+        run: |
+          git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
+          git add analysis/nba/report/friday.md analysis/nba/report/gallagher_arrows.csv
+          git diff --cached --quiet && exit 0
+          git commit -q -m "NBA Friday rankings report $(TZ=America/Los_Angeles date +%F)"
+          for try in 1 2 3; do
+            git pull --rebase -q origin main && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 10
+          done
+          echo "::error::could not push after 3 tries"; exit 1

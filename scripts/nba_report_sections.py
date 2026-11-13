@@ -306,61 +306,33 @@ def turn_lines(mt, night):
     return md + [""]
 
 
-def t5_contest(H, mt):
-    """Your share of round-6 picks drafted in under 60% of pods against the field's, and how each group's holders did
-    (top-10% rate against the field's), last night and season, from the contest rosters and tier_history's drafted%."""
-    import nba_contests as C
-    nights = sorted({r["date"] for r in H})
-    res = {}
-    for d in nights:
-        rows = [r for r in H if r["date"] == d and r["window"] == "pm" and num(r["drafted"]) is not None]
-        if not rows:
-            continue
-        pod = int(rows[0]["pod"])
-        r6 = {r["player_id"]: num(r["drafted"]) for r in rows if (num(r["adp"]) or 99) > 5 * pod}
-        try:
-            cs, teams = C.load_night(d)
-        except Exception:
-            continue
-        if not cs:
-            continue
-        flag = max(cs, key=lambda c: int(c["entries"]))
-        ts = teams[flag["contest_id"]]
-        k = -(-len(ts) // 10)
-        acc = {"low": [0, 0, 0, 0], "high": [0, 0, 0, 0]}      # field teams, field top10, my teams, my picks
-        for t in ts:
-            for g in ("low", "high"):
-                has = any(p in r6 and ((r6[p] < 60) == (g == "low")) for p, a in zip(t["picks"], t["adps"]) if a is not None)
-                if has:
-                    acc[g][0] += 1
-                    acc[g][1] += t["place"] <= k
-                    if t["username"] == C.ME:
-                        acc[g][2] += 1
-        mine = sum(1 for t in ts if t["username"] == C.ME)
-        res[d] = (acc, len(ts), k, mine)
-    if not res:
-        return ["No contest data for T5.", ""]
+def mult(m, k="top10"):
+    """"1.12x (0.9-1.4; 812 teams)" from a contest-side field_multiple: k's multiple of the whole field's rate."""
+    if not m or not m.get(k) or m[k][0] is None:
+        return "-"
+    r = m.get("range80_top10") if k == "top10" else None
+    return "%.2fx (%s%d teams)" % (m[k][0], "%.2f-%.2f; " % tuple(r) if r else "", m["teams"])
 
-    def read(ds):
-        tot = {"low": [0, 0, 0], "high": [0, 0, 0]}
-        n = top = mine = 0
-        for d in ds:
-            acc, nt, k, m = res[d]
-            n += nt; top += k; mine += m
-            for g in tot:
-                tot[g][0] += acc[g][0]; tot[g][1] += acc[g][1]; tot[g][2] += acc[g][2]
-        base = top / n if n else 0
-        out = {}
-        for g, (f, f10, m) in tot.items():
-            out[g] = (f / n if n else 0, m / mine if mine else 0, (f10 / f) / base if f and base else None)
-        return out
-    last = max(res)
-    ln, ss = read([last]), read(list(res))
-    lab = {"low": "a round-6 player drafted in under 60% of pods", "high": "one drafted in 60%+"}
+
+def t5_contest(H, mt):
+    """Your T5 picks against the line, and how teams holding one did, from the contest side's money_tiers.json
+    "t5_drafted" (ADP tier 5; top-10% multiples of the whole field in the same contest and price quintile)."""
+    t5 = (mt or {}).get("t5_drafted")
+    if not t5:
+        return ["The contest side's T5 read (money_tiers.json t5_drafted) isn't on file yet.", ""]
     md = []
-    for g in ("low", "high"):
-        md.append("- Teams with %s: you %s, the field %s; their top-10%% rate %s the field's last night, %s on the season." % (
-            lab[g], pct(ln[g][1]), pct(ln[g][0]), "%.2fx" % ln[g][2] if ln[g][2] else "-", "%.2fx" % ss[g][2] if ss[g][2] else "-"))
+    for w in ("am", "pm"):
+        x = t5.get(w)
+        if not x:
+            continue
+        su, ho = x["share_under"], x["holders"]
+        sh = lambda v: "%s of %d" % (pct(v["share"]), v["picks"]) if v.get("picks") else "-"
+        md.append("- **%s** (line %d%%): your ADP-T5 picks under the line %s last night (field %s), %s on the season (field %s). "
+                  "Teams holding one under it, season: top 10%% at %s the field's rate, yours %s; at or over it: %s, yours %s." % (
+                      W[w].capitalize(), x["line"], sh(su["last_night"]["mine"]), pct(su["last_night"]["field"]["share"]),
+                      sh(su["season"]["mine"]), pct(su["season"]["field"]["share"]),
+                      mult(ho["season"]["under"]["field"]), mult(ho["season"]["under"]["mine"]),
+                      mult(ho["season"]["over"]["field"]), mult(ho["season"]["over"]["mine"])))
     return md + [""]
 
 
@@ -401,7 +373,7 @@ def recap_order(H, night, t, recap_lines):
 
 
 # ---------------------------------------------------------------- Questionable
-def q_section(H, night, today_pool, tracker):
+def q_section(H, night, today_pool, tracker, mt=None):
     pool, ben = today_pool
     sw = collections.defaultdict(list)
     for r in csv.DictReader(open(os.path.join(REP, "swaps.csv"))):
@@ -437,6 +409,10 @@ def q_section(H, night, today_pool, tracker):
         md += ["Swap button: not graded (%s)." % e, ""]
     if tracker:
         md += [tracker[0], ""]
+    qp = ((mt or {}).get("q_picks") or {}).get("groups") or {}
+    if qp:
+        md += ["**Q picks on contest results, season** (top 10%% against the field's rate): %s." % "; ".join(
+            "%s %s" % (k, mult(qp[k])) for k in ("no Q pick", "any Q pick", "played", "sat", "T1", "T2", "T3", "T4", "T5") if k in qp), ""]
     today = [r for r in (pool or []) if (r.get("tag") or "")[:1].lower() == "q" and r.get("drafted")]
     bmap = collections.defaultdict(list)
     for r, tg in (ben or []):

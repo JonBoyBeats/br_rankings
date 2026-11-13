@@ -1,34 +1,49 @@
 name: NBA Friday report
-# The Friday report (scripts/nba_friday.py -> analysis/nba/report/friday.md): its own job after the nightly record, so
-# it never delays the morning notes. Started on Fridays after the 2:17am record; the schedule below is a fallback
-# (GitHub's cron runs hours late here). Running twice does no harm.
+# The Friday report's contest results (scripts/nba_money_friday.py -> analysis/nba/report/money_friday.json), kept out of
+# the nightly so its runtime doesn't grow. Starts when the nightly record finishes (GitHub's own cron runs hours late
+# here), and goes on only on a Friday morning, Pacific; or by hand.
 on:
-  schedule:
-    - cron: '47 12 * * 5'     # Fridays, 4:47am PT in daylight time (3:47 in standard)
+  workflow_run:
+    workflows: ["NBA daily record"]
+    types: [completed]
   workflow_dispatch:
+    inputs:
+      monthly: { description: 'Also rerun the monthly tests (edge by tier, duds and smashes)', type: boolean, default: false }
 permissions:
   contents: write
-concurrency:          # shares the nightly record's group, so the two never push at once
+concurrency:
   group: analysis
   cancel-in-progress: false
 jobs:
   friday:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - id: when
+        run: |
+          if [ "${{ github.event_name }}" = workflow_dispatch ]; then echo "go=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          day=$(TZ=America/Los_Angeles date +%u); hour=$(TZ=America/Los_Angeles date +%H)
+          if [ "${{ github.event.workflow_run.conclusion }}" = success ] && [ "$day" = 5 ] && [ "$hour" -lt 12 ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"; else echo "go=false" >> "$GITHUB_OUTPUT"; fi
+      - if: steps.when.outputs.go == 'true'
+        uses: actions/checkout@v4
+        with: { ref: main }
+      - if: steps.when.outputs.go == 'true'
+        uses: actions/setup-python@v5
         with: { python-version: '3.11' }
-      - name: ADP mirror
-        run: git clone -q --shallow-since="$(date -u -d '-7 days' +%F)" https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror
-      - name: Friday report
-        run: python3 scripts/nba_friday.py --mirror ../br-adp-mirror > /dev/null
-      - run: |
+      - if: steps.when.outputs.go == 'true'
+        name: Friday tests
+        run: |
+          git clone -q https://github.com/JonBoyBeats/br-adp-mirror ../br-adp-mirror
+          python3 scripts/nba_money_friday.py --mirror ../br-adp-mirror ${{ inputs.monthly && '--monthly' || '' }}
+      - if: steps.when.outputs.go == 'true'
+        run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
-          git add analysis/nba/report/friday.md analysis/nba/report/gallagher_arrows.csv
+          git add analysis/nba/report/money_friday.json analysis/nba/contests/tags
           git diff --cached --quiet && exit 0
-          git commit -q -m "NBA Friday report $(TZ=America/Los_Angeles date +%F)"
+          git commit -q -m "NBA Friday report: contest results through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           for try in 1 2 3; do
             git pull --rebase -q origin main && git push && exit 0
+            git rebase --abort 2>/dev/null || true
             sleep 10
           done
-          exit 1
+          echo "::error::could not push after 3 tries"; exit 1
