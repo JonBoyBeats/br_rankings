@@ -73,6 +73,7 @@ LADDER = ["a", "p", "c", "flag", "q", "play", "built", "src"]
 COLS += ["adp_pm", "injury_pm", "etr_pm", "play_am", "play_pm"]
 COLS += ["on_rank", "adp_on"]   # the overnight window: your board's order and ADP when your first overnight draft went in
 COLS += ["%s_%s" % (w, k) for w in ("am", "pm") for k in LADDER]
+COLS += ["swap_rank"]   # your rank on the swap lock (the board's Swap button, after your last draft), when you pressed it
 
 
 def norm_name(s):
@@ -283,9 +284,9 @@ def lock_line(slate, locks, t):
 
 def lock_history(gist, slate):
     """Every distinct Lock AM, Lock PM and export the gist saved for the slate, and every saved board, oldest first:
-    ({"am": [...], "pm": [...], "exp": [...]}, [board]). A re-lock replaces the lock on the board, so the earlier ones
-    come from the gist's history; an export carries the tiers and build of the board saved with it."""
-    locks, boards = {"am": {}, "pm": {}, "exp": {}}, {}
+    ({"am": [...], "pm": [...], "exp": [...], "swap": [...]}, [board]). A re-lock replaces the lock on the board, so the
+    earlier ones come from the gist's history; an export carries the tiers and build of the board saved with it."""
+    locks, boards = {"am": {}, "pm": {}, "exp": {}, "swap": {}}, {}
     for t, version in gist.revs:
         if t < slate["lock"] - dt.timedelta(hours=36) or t > slate["lock"] + dt.timedelta(hours=8):
             continue
@@ -420,6 +421,9 @@ def gist_parts(gist, slate, snaps=None):
     if out["am"] and not out["am"].get("ours"):            # a fallback board: our Proj as the board stashed it that day
         stash = gist.store(last)["ours"].get(day + " " + slate["label"])
         out["am"] = dict(out["am"], ours=stash["values"] if stash else {})
+    # the swap lock (the Swap button): its own record, never the PM one; the last one pressed counts
+    out["swap"] = dict(hist["swap"][-1], source="Swap lock" + (" (last of %d)" % len(hist["swap"]) if len(hist["swap"]) > 1 else "")) \
+        if hist.get("swap") else None
     out["pm"] = locks.get("pm")
     if out["pm"] and "ours" not in out["pm"]:
         out["pm"] = dict(out["pm"], ours={})
@@ -567,7 +571,7 @@ def build(mirror, gist, slate, name_map):
     etr1 = join_etr(plist, first["entries"] if first else None, name_map)
     etr2 = join_etr(plist, parts["etr_last"]["entries"] if parts.get("etr_last") else None, name_map)
     rank = lambda b: {pid: i + 1 for i, pid in enumerate((b or {}).get("order", []))}
-    am_rank, pm_rank = rank(am), rank(pm)
+    am_rank, pm_rank, swap_rank = rank(am), rank(pm), rank(parts.get("swap"))
     on = parts.get("on")
     on_rank = rank(on) if on and on.get("order") else {}
     adp_on = adp(adp_at(snaps, iso(on["first"]))) if on else {}
@@ -624,7 +628,7 @@ def build(mirror, gist, slate, name_map):
             rows[-1].update({"%s_%s" % (w, k): v for k, v in ladder(b, pid).items()})
         rows[-1].update({"adp_pm": r1(adp_pm.get(pid)), "injury_pm": injury_pm.get(pid, ""),
                          "etr_pm": r1(etr_pm[pid].get("proj")) if pid in etr_pm else "",
-                         "play_am": sit_am.get(key, ""), "play_pm": sit_pm.get(key, "")})
+                         "play_am": sit_am.get(key, ""), "play_pm": sit_pm.get(key, ""), "swap_rank": swap_rank.get(pid, "")})
     when = lambda x: {"at": x["at"], "from": x["source"], "ours": bool(x.get("ours")),
                       "tiers": (x.get("tiers") or {}).get("starts") if (x.get("tiers") or {}).get("on") else None} if x else None
     meta = {"lock": slate["lock"].isoformat(), "adp_am_at": s_am[0].isoformat() if s_am else None,
@@ -635,6 +639,7 @@ def build(mirror, gist, slate, name_map):
             "etr_pm": {"at": parts["etr_pm"]["at"], "file": parts["etr_pm"].get("file")} if parts.get("etr_pm") else None,
             "adp_pm_at": s_pm[0].isoformat() if s_pm else None,
             "am": when(am), "pm": when(pm), "gist": bool(gist), "cuts": parts.get("cuts"),
+            "swap": {"at": parts["swap"]["at"], "from": parts["swap"]["source"]} if parts.get("swap") else None,
             "on": {k: v for k, v in (parts.get("on") or {}).items() if k != "order"} or None}
     return rows, meta, box_rows(day, box, mfile, parts["etr_last"]["entries"] if parts.get("etr_last") else None, rows, line)
 

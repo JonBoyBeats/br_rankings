@@ -72,8 +72,10 @@ minutes. In order:
 - **Back page**: the model (ours against ETR), each projection hypothesis in a plain sentence (what it does to the
   projection, what adopting it would change, where it stands; `plain`, `adopt_plain` and `retired_plain` in
   hypotheses.json), the chance-to-play tracker (morning Questionable players this season: how many played, whether the
-  model sorts them better than a coin flip, whether it beats a flat guess, and last night's ones), decisions due, data
-  status, links.
+  model sorts them better than a coin flip, whether it beats a flat guess, and last night's ones), the Swap button's
+  line (scripts/nba_swap_grade.py: on nights with a swap lock, each of your swaps against the one the PM list would
+  have made, points and contest results, season to date; the swap lock never replaces the PM lock, which stays the
+  draft list the T5 grading reads), decisions due, data status, links.
 
 **Words, not codes.** The report never shows register ids, rule codes or verdict labels. Every verdict says which way:
 RULE is "proven to help so far" or "proven to hurt so far", LEAN "an early sign it helps" or "an early sign it hurts"

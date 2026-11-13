@@ -830,6 +830,7 @@
       <span class="pair">
         <button type="button" id="lockAm" aria-pressed="false" title="Lock the board your morning drafts come off, for the morning report: your order and our Proj as they stand now">AM</button>
         <button type="button" id="lockPm" aria-pressed="false" title="Lock the board you finish the day on, for the morning report: your order and our Proj as they stand now">PM</button>
+        <button type="button" id="lockSwap" aria-pressed="false" title="Press only after your last draft has filled; then push to Underdog. Re-sorts T5 and everything below it by the latest projection (ETR's final with any news), highest first; T1-T4 stay put. Saves its own swap lock: the PM lock stays your draft list.">Swap</button>
       </span>
     </label>
     <label class="field" id="cfbAllField" hidden>
@@ -1766,12 +1767,53 @@ function lockBoard(which) {
   renderLocks();
 }
 
+/* NBA: the swap list. Underdog swaps a drafted player ruled out before his game to the highest-ranked player left
+   undrafted in his pod by your rankings at swap time, so after your last draft the list below T4 only matters for
+   swaps. The contest side's Q study: swaps to the crowd's swap targets beat other targets within 6 projected points
+   (1.22x the field), off-crowd swaps ran 0.74x. So the Swap button orders T5 and everything below it by the latest
+   projection, highest first (no T5 leverage tiebreak, no floor ordering, no ranked cut), and saves a swap lock beside
+   the AM and PM locks; the PM lock stays the draft list the T5 grading reads. The swap board's panel below (step 7:
+   the whole board by expected points, near-ties by ownership) is a separate, older tool. */
+var NBA_SWAP_REMINDER = "Press only after your last draft has filled; then push to Underdog.";
+
+/** The swap list: the order with T5 (from rank `t5Start`) and everything below it sorted by `proj`, highest first;
+    players with no projection (marked out) keep their order at the bottom. */
+function nbaSwapList(order, t5Start, proj) {
+  var head = order.slice(0, t5Start - 1), tail = order.slice(t5Start - 1);
+  var withP = tail.filter(function (pid) { return proj[pid] != null; }), without = tail.filter(function (pid) { return proj[pid] == null; });
+  withP = withP.map(function (pid, i) { return { pid: pid, i: i }; })
+    .sort(function (a, b) { return (proj[b.pid] - proj[a.pid]) || (a.i - b.i); }).map(function (x) { return x.pid; });
+  return head.concat(withP, without);
+}
+
+function pressSwap() {
+  var label = state.slate.label, tiers = loadTiers(label);
+  if (!tiers || !Array.isArray(tiers.starts) || tiers.starts.length < NBA_TIERS - 1) {
+    window.alert("Build the tiers first: Swap re-sorts T5 and everything below it.");
+    return;
+  }
+  var locks = slateLocks(), when = { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" };
+  if (!window.confirm(NBA_SWAP_REMINDER + "\n\nRe-sort T5 and everything below it by the latest projection" +
+      (state.nbaEtrToday ? " (ETR's final, with any news)" : " (ETR's file for today isn't in: our number)") +
+      " and save a swap lock? T1-T4 stay as they are; your PM lock stays your draft list." +
+      (locks.swap ? "\n\nThis replaces your swap lock from " + new Date(locks.swap.at).toLocaleTimeString("en-US", when) + "." : ""))) return;
+  var t5 = tiers.starts[NBA_TIERS - 2], proj = state.proj || {}, values = {};
+  state.order = nbaSwapList(state.order, t5, proj);
+  state.cut = null;
+  saveBoard();
+  Object.keys(proj).forEach(function (pid) { values[pid] = Math.round(proj[pid] * 10) / 10; });
+  locks.swap = { at: new Date().toISOString(), order: state.order.slice(), from: t5, ours: values, etr: !!state.nbaEtrToday };
+  save(K.locks(label), locks);
+  renderLocks();
+  render();
+}
+
 /** Before a save goes up, keep any lock another device already saved for this slate (the newer of
     each), so a device that never saw the press can't wipe it. */
 function mergeLocks(remote) {
   if (!remote || !remote.locks || remote.locks.slate_id !== state.slate.slate_id) return;
   var mine = slateLocks(), changed = false;
-  ["am", "pm", "exp"].forEach(function (w) {
+  ["am", "pm", "exp", "swap"].forEach(function (w) {
     var r = remote.locks[w];
     if (r && (!mine[w] || isoMs(r.at) > isoMs(mine[w].at))) { mine[w] = r; changed = true; }
   });
@@ -1781,9 +1823,9 @@ function mergeLocks(remote) {
 function renderLocks() {
   if (SPORT_MODE !== "nba" || !state.slate) return;
   var locks = slateLocks(), when = { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" };
-  [["am", "lockAm"], ["pm", "lockPm"]].forEach(function (x) {
+  [["am", "lockAm"], ["pm", "lockPm"], ["swap", "lockSwap"]].forEach(function (x) {
     var l = locks[x[0]], b = $(x[1]);
-    b.textContent = x[0].toUpperCase() + (l ? " \u2713 " + new Date(l.at).toLocaleTimeString("en-US", when).replace(/ [AP]M$/, "") : "");
+    b.textContent = (x[0] === "swap" ? "Swap" : x[0].toUpperCase()) + (l ? " \u2713 " + new Date(l.at).toLocaleTimeString("en-US", when).replace(/ [AP]M$/, "") : "");
     b.setAttribute("aria-pressed", l ? "true" : "false");
   });
 }
@@ -2269,7 +2311,7 @@ function savedEntry(order, slateId, device, nowIso, windows, cut, tiers, outs, l
   if (tiers && Array.isArray(tiers.starts)) e.tiers = { on: !!tiers.on, starts: tiers.starts.slice() };
   // NBA: the players you've marked out ride along (an empty list too, so clearing them syncs)
   if (outs && Array.isArray(outs.list)) e.outs = { list: outs.list.slice(), from: Object.assign({}, outs.from || {}) };
-  if (locks && (locks.am || locks.pm)) e.locks = locks;
+  if (locks && (locks.am || locks.pm || locks.swap)) e.locks = locks;
   if (build) e.build = build;    // NBA: the Tiers button's ladders and the takes since, for the record
   var at = clampCut(cut, order.length);
   if (at != null) e.cut = at;
@@ -7113,6 +7155,7 @@ $("buildProj").addEventListener("click", function () { applyBuilder("proj"); });
 $("buildTiers").addEventListener("click", function () { applyNbaProjOrder(); });
 $("lockAm").addEventListener("click", function () { lockBoard("am"); });
 $("lockPm").addEventListener("click", function () { lockBoard("pm"); });
+$("lockSwap").addEventListener("click", pressSwap);
 $("tiersBtn").addEventListener("click", function () { pressTiers(); });
 $("nflTiersBtn").addEventListener("click", function () { pressNflTiers(); });
 $("swapBtn").addEventListener("click", function () { toggleSwapPanel(); });
@@ -7987,6 +8030,9 @@ function brrSelfTest() {
      nbaRuleSort([{ pid: "a", adp: -30, projx: 20, drafted: -80 }, { pid: "b", adp: -32, projx: 17, drafted: -30 }],
                  [["lev", 2], ["adp", 0]])[0].pid === "a");
   ok("the rule sort keeps margins", nbaRuleSort([{ pid: "a", adp: -5, boom: 0.1 }, { pid: "b", adp: -6, boom: 0.3 }], [["adp", 2], ["boom", 0]])[0].pid === "b");
+  var sw = nbaSwapList(["a", "b", "c", "d", "e", "f", "g"], 4, { a: 50, b: 40, c: 30, d: 10, e: 25, f: null, g: 25 });
+  ok("the swap list sorts T5 and below by projection, highest first; T1-T4 and the order of the unprojected stay",
+     sw.join() === "a,b,c,e,g,d,f" && nbaSwapList(["a", "b"], 1, { a: 1, b: 2 }).join() === "b,a");
   ok("locks ride a saved board", savedEntry(["a"], "s", "d", "t", null, 1, null, null, { slate_id: "s", am: { order: ["a"] } }).locks.am.order[0] === "a" &&
      savedEntry(["a"], "s", "d", "t", null, 1, null, null, { slate_id: "s" }).locks === undefined);
   ok("the matchup note rounds to whole points and names the big parts",

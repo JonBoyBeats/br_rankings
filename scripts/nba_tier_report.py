@@ -1108,7 +1108,12 @@ def back_page(H, last, health_lines, today, hand_back):
         s.append(hand_back)
     bad = problems(health_lines)
     s2 = "Data: " + ("; ".join(bad) + "." if bad else "everything for last night came in, and today's inputs were ready on time.")
-    md += [" ".join(s), ""] + ([tracker[0], ""] if tracker else []) + (["**Projection hypotheses.**", ""] + hyp_lines + [""] if hyp_lines else []) + [s2, "", "Season tables are below; every player's night is in the ledger (analysis/nba/ledger.csv), "
+    try:                                                   # the Swap button: each swap against the PM list's (season to date)
+        import nba_swap_grade
+        swap_line = nba_swap_grade.season_line()
+    except Exception as e:
+        swap_line = "Swap button: not graded (%s)." % e
+    md += [" ".join(s), ""] + ([tracker[0], ""] if tracker else []) + [swap_line, ""] + (["**Projection hypotheses.**", ""] + hyp_lines + [""] if hyp_lines else []) + [s2, "", "Season tables are below; every player's night is in the ledger (analysis/nba/ledger.csv), "
            "the calls and misses in misses.csv, and the full tier tables in tier_grade.md, shadow.md and money_report.md.", ""]
     return md
 
