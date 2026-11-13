@@ -214,7 +214,7 @@
   #tiersBtn.on { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
   /* NBA dock: one bar (Upload, Paste | Tiers, Swaps | AM, PM, Swap locks | Export); the rest behind More. */
   html.nba:not(.cbb):not(.more-open) .nba-more { display: none !important; }
-  html.nba:not(.cbb) .dock .nba-gap { margin-left: 14px; }
+  html.nba:not(.cbb) .dock .nba-gap { margin-left: 8px; }
   html.nba:not(.cbb) #tiersBtn, html.nba:not(.cbb) #swapBtn { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
   html.nba:not(.cbb) #tiersBtn.on { box-shadow: 0 0 0 2px #93b4ff; }
   html.nba:not(.cbb) #lockAm, html.nba:not(.cbb) #lockPm, html.nba:not(.cbb) #lockSwap { background: #13703a; border-color: #13703a; color: #ffffff; }
@@ -845,10 +845,6 @@
         <button type="button" id="lockSwap" aria-pressed="false" title="Press only after your last draft has filled; then push to Underdog. Re-sorts T5 and everything below it by the latest projection (ETR's final with any news), highest first; T1-T4 stay put. Saves its own swap lock: the PM lock stays your draft list.">Swap</button>
       </span>
     </label>
-    <label class="field nba-more" id="cfbAllField" hidden>
-      <span class="field-label">Notes</span>
-      <button type="button" id="cfbAll">Expand all</button>
-    </label>
     <label class="field nba-gap">
       <span class="field-label">Underdog</span>
       <button type="button" id="export" class="primary">Export<span class="wide"> ranking</span></button>
@@ -858,9 +854,13 @@
       <button type="button" id="importBtn" title="Put an exported ranking back on the board">Import</button>
       <input type="file" id="importFile" accept=".csv,text/csv" hidden>
     </div>
+    <label class="field" id="cfbAllField" hidden>
+      <span class="field-label">Notes</span>
+      <button type="button" id="cfbAll">Expand all</button>
+    </label>
     <label class="field nba-only nba-data">
       <span class="field-label">&nbsp;</span>
-      <button type="button" id="moreBtn" aria-expanded="false" title="Show the rest: Order by Proj, Old vs new, the projection source and floor rank, Sync, Notes and Import">More</button>
+      <button type="button" id="moreBtn" aria-expanded="false" title="Show the rest: Order by Proj, Old vs new, the projection source and floor rank, Sync and Import" aria-label="More">⋯</button>
     </label>
   </div>
 
@@ -5869,7 +5869,7 @@ function render() {
   if (NBA_LIKE) $("scoreHead").appendChild(document.createElement("span")).className = "opp-h";
   $("cfbAllField").hidden = !(isCfb && state.cfbIndex) && !(state.slate && state.slate.sport === "nfl" && state.workloadDoc) && !(SPORT_MODE === "nba" && ((state.nbaTakes || []).length || state.nbaMinutes));
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
-  $("cfbAll").textContent = anyOpen ? "Collapse all" : "Expand all";
+  $("cfbAll").textContent = anyOpen ? (state.expandStep === 1 ? "Expand all" : "Collapse all") : SPORT_MODE === "nba" && nbaActiveTiers() ? "Expand T3-T5" : "Expand all";
   $("scoreHead").disabled = NBA_LIKE;
   $("copyMain").hidden = !nbaMainSlate(state.slate);
   $("scoreHead").title = SPORT_MODE === "cbb" ? "Min: his expected minutes tonight. PPM: his fantasy points per minute. Line: his team's spread (negative = favored). Shaded within the top " + NBA_SHADE_TOP + " by Proj"
@@ -6477,9 +6477,15 @@ $("liftOut").addEventListener("click", function () {
 $("liftPlus").addEventListener("click", function () { jumpLifted("plus"); });
 $("cfbAll").addEventListener("click", function (e) {
   e.stopPropagation();
+  // NBA with tiers on: first click opens T3-T5, the second everyone, the third collapses; otherwise open all / collapse
   var anyOpen = Object.keys(state.cfbOpen).some(function (k) { return state.cfbOpen[k]; });
-  state.cfbOpen = {};
-  if (!anyOpen) visibleRows().forEach(function (r) { if (SPORT_MODE === "nba" ? nbaTakesFor(r.p).length || nbaMinutesFor(r.p) : state.slate.sport === "nfl" ? workloadFor(r.p) : cfbFor(r.p)) state.cfbOpen[r.p.player_id] = true; });
+  var tiers = SPORT_MODE === "nba" ? nbaActiveTiers() : null, end = nbaTierEnd();
+  var step = anyOpen ? state.expandStep || 2 : 0, next = step === 0 ? (tiers ? 1 : 2) : step === 1 ? 2 : 0;
+  state.cfbOpen = {}; state.expandStep = next;
+  if (next) visibleRows().forEach(function (r) {
+    if (next === 1 && nbaTierOf(r.rank, tiers.starts, end) < 3) return;
+    if (SPORT_MODE === "nba" ? nbaTakesFor(r.p).length || nbaMinutesFor(r.p) : state.slate.sport === "nfl" ? workloadFor(r.p) : cfbFor(r.p)) state.cfbOpen[r.p.player_id] = true;
+  });
   render();
 });
 $("liftMinus").addEventListener("click", function () { jumpLifted("minus"); });
@@ -7426,7 +7432,7 @@ $("nflTiersBtn").addEventListener("click", function () { pressNflTiers(); });
 $("swapBtn").addEventListener("click", function () { toggleSwapPanel(); });
 $("moreBtn").addEventListener("click", function () {
   var open = document.documentElement.classList.toggle("more-open");
-  this.setAttribute("aria-expanded", String(open)); this.textContent = open ? "Less" : "More";
+  this.setAttribute("aria-expanded", String(open)); this.textContent = open ? "×" : "⋯";
 });
 $("tiersSrc").addEventListener("change", function () { save(K.tierSrc(state.slate.label), this.value); });
 $("copyMain").addEventListener("click", function () { copyMainRanks(); });
