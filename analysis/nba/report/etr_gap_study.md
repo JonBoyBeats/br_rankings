@@ -71,3 +71,29 @@ his usual to his last 3 games, on the same 15 slates (untagged players, no teamm
 | box = 3 days, minutes halfway to last 3 | 1.88 | 20% | 12 of 15 |
 
 Next review in a couple of weeks: the same read on the slates since, then the next tweak.
+
+## Breaking ETR's number apart (2026-11-13)
+
+ETR's final against his own last 10 ETR numbers, 916 player-nights on 23 slates (untagged players with 3+ earlier
+nights), each night's context against the context of those earlier nights, fitted with that night held out:
+
+| ETR's move from his own average explained by | points off ETR's final |
+|---|---|
+| nothing (his last 10 ETR numbers) | 2.38 |
+| + spread, teammates out, recent minutes and rate | 2.18 |
+| + our matchup numbers | 2.07 |
+| + ETR's own opponent and opponent-by-play-style effects instead | 2.09 |
+
+What ETR does, in sizes: about half our matchup number (0.51 of it, 80% range 0.38-0.61); past a 10-point favorite,
+about -12% per further 10 points; +0.36% per 1% his last 3 games' minutes run over his usual; +0.10% per 1% his last
+5 games' points a minute run over his season's; about +3% for a 40-point teammate out.
+
+By opponent and play style, ETR moves the same way our matchup numbers do (correlation 0.50 over 70 cells with 6+
+player-nights: heliocentric stars 0.58, scoring wings 0.51, rim bigs 0.40), but its own cell-by-cell effects don't
+predict held-out nights better than our numbers: at 6-16 player-nights a cell, there isn't enough yet. Look again
+at about 50 slates.
+
+On top of the board as of 11-13, nothing systematic is left except teammate absences: with a rotation teammate out,
+ETR's final ran about 1 point over our number on 13 of 15 nights. The absences here are read from the box files
+(which keep only 15+ minute players), so some are low-minute nights, not absences; settle it with the board's own
+out lists before changing the bump.
