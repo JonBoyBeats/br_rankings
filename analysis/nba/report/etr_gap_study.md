@@ -97,3 +97,20 @@ On top of the board as of 11-13, nothing systematic is left except teammate abse
 ETR's final ran about 1 point over our number on 13 of 15 nights. The absences here are read from the box files
 (which keep only 15+ minute players), so some are low-minute nights, not absences; settle it with the board's own
 out lists before changing the bump.
+
+### Teammates out, checked against what the board knew (2026-11-13)
+
+The board's own inputs rebuilt for each Lock AM (the mirror's Underdog slate at that moment, the morning file's core
+four), against who ETR's final left out; ETR final minus our Lock AM number, 15 slates, untagged players:
+
+| a core teammate out | player-nights | ETR above us |
+|---|---|---|
+| none | 645 | +0.04 |
+| ruled out after your lock (on the slate, not Out at it) | 190 | +1.96 |
+| Out at your lock, first or second night out | 86 | +1.46 |
+| Out at your lock, out 2-4 straight | 35 | +0.27 |
+| Out at your lock, out 5+ straight | 26 | -1.62 |
+
+Most of the gap is late news, the Lock PM's job. On a fresh absence ETR raises his teammates about 1.5 times our
+table (ours 2.24 points on average, ETR about 1.67 more; 5 of 6 nights); on a long one ETR sits under us (4 nights,
+too few to say why). "Off Underdog's slate" teammates were mostly undrafted players, not absences.
