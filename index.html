@@ -212,6 +212,13 @@
   .tiernote.t1 { top: 1px; }
   html.nba .row.tier-first { padding-top: 16px; }   /* room for tier 1's note under the sticky header */
   #tiersBtn.on { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
+  /* NBA dock: one bar (Upload, Paste | Tiers, Swaps | AM, PM, Swap locks | Export); the rest behind More. */
+  html.nba:not(.cbb):not(.more-open) .nba-more { display: none !important; }
+  html.nba:not(.cbb) .dock .nba-gap { margin-left: 14px; }
+  html.nba:not(.cbb) #tiersBtn, html.nba:not(.cbb) #swapBtn { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
+  html.nba:not(.cbb) #tiersBtn.on { box-shadow: 0 0 0 2px #93b4ff; }
+  html.nba:not(.cbb) #lockAm, html.nba:not(.cbb) #lockPm, html.nba:not(.cbb) #lockSwap { background: #13703a; border-color: #13703a; color: #ffffff; }
+  html.cbb #moreBtn { display: none; }
   /* NBA: the switch from ceiling to floor. */
   html.nba .row.switch-start { box-shadow: inset 0 2px 0 #c58b2b; }
   html.nba .row.switch-start { position: relative; }
@@ -792,19 +799,6 @@
           <button type="button" id="nflTiersBtn" hidden title="Build the tiers from scratch (flex, QB and TE ladders on ADP and on ETR's price, VALUE and PRICEY flags) and order the board in position blocks: elite flex, flex tier 2, then RB and WR blocks, each QB and TE where his price falls. Moves after it are logged with the build">Tiers</button>
         </span>
       </label>
-      <label class="field nba-only tool">
-        <span class="field-label">Order · floor from</span>
-        <span class="pair">
-          <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
-          <button type="button" id="tiersBtn" aria-pressed="false" title="Build the tiers from scratch: an ADP ladder and a projection ladder, lines at their biggest gaps, combined into five tiers with VALUE and PRICEY flags. Moves after it are logged as takes">Tiers</button>
-          <button type="button" id="rulesCmpBtn" title="Today's slate under the old button and the new rules, side by side. Changes nothing on your board">Old vs new</button>
-          <button type="button" id="swapBtn" class="nba-data" title="The swap board: your likely-undrafted swap targets in order, where your swaps would land, and a one-step reorder for after drafting">Swaps</button>
-          <select id="tiersSrc" class="nba-data" title="The projection ladder's source: Auto is our Proj until ETR's file is in, then ETR"><option value="auto">Auto</option><option value="ours">Ours</option><option value="etr">ETR</option></select>
-          <button type="button" id="copyMain" hidden title="Rank this slate's players exactly as your main slate ranks them, then fill in the rest">Copy main ranks</button>
-          <input type="number" id="switchAt" class="nba-data" min="1" step="1" inputmode="numeric" style="width:58px"
-                 title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player (box-score minutes; once ETR's file is in, the minutes its projection implies), or none when there is one for every pick">
-        </span>
-      </label>
     </div>
     <div class="controls football-only" style="padding-top:0">
       <div class="chips" id="positions"></div>
@@ -822,15 +816,28 @@
         <button type="button" id="pasteBtn" aria-expanded="false">Paste</button>
       </span>
     </label>
+      <label class="field nba-only nba-gap">
+        <span class="field-label">Order from</span>
+        <span class="pair">
+          <button type="button" id="buildTiers" class="nba-more" title="Order everyone by Proj, best first">Order by Proj</button>
+          <button type="button" id="tiersBtn" aria-pressed="false" title="Build the tiers from scratch: an ADP ladder and a projection ladder, lines at their biggest gaps, combined into five tiers with VALUE and PRICEY flags. Moves after it are logged as takes">Tiers</button>
+          <button type="button" id="rulesCmpBtn" class="nba-more" title="Today's slate under the old button and the new rules, side by side. Changes nothing on your board">Old vs new</button>
+          <button type="button" id="swapBtn" class="nba-data" title="The swap board: your likely-undrafted swap targets in order, where your swaps would land, and a one-step reorder for after drafting">Swaps</button>
+          <select id="tiersSrc" class="nba-data nba-more" title="The projection ladder's source: Auto is our Proj until ETR's file is in, then ETR"><option value="auto">Auto</option><option value="ours">Ours</option><option value="etr">ETR</option></select>
+          <button type="button" id="copyMain" hidden title="Rank this slate's players exactly as your main slate ranks them, then fill in the rest">Copy main ranks</button>
+          <input type="number" id="switchAt" class="nba-data nba-more" min="1" step="1" inputmode="numeric" style="width:58px"
+                 title="The rank where floor starts to matter more than ceiling. Blank: right after the slate's last 32-minute player (box-score minutes; once ETR's file is in, the minutes its projection implies), or none when there is one for every pick">
+        </span>
+      </label>
     <label class="field football-only">
       <span class="field-label">Replacement</span>
       <button type="button" id="vorpBtn" aria-expanded="false">VORP</button>
     </label>
-    <label class="field">
+    <label class="field nba-more">
       <span class="field-label">Saved</span>
       <button type="button" id="syncBtn" aria-expanded="false">Sync</button>
     </label>
-    <label class="field nba-only nba-data">
+    <label class="field nba-only nba-data nba-gap">
       <span class="field-label">Lock</span>
       <span class="pair">
         <button type="button" id="lockAm" aria-pressed="false" title="Lock the board your morning drafts come off, for the morning report: your order and our Proj as they stand now">AM</button>
@@ -838,19 +845,23 @@
         <button type="button" id="lockSwap" aria-pressed="false" title="Press only after your last draft has filled; then push to Underdog. Re-sorts T5 and everything below it by the latest projection (ETR's final with any news), highest first; T1-T4 stay put. Saves its own swap lock: the PM lock stays your draft list.">Swap</button>
       </span>
     </label>
-    <label class="field" id="cfbAllField" hidden>
+    <label class="field nba-more" id="cfbAllField" hidden>
       <span class="field-label">Notes</span>
       <button type="button" id="cfbAll">Expand all</button>
     </label>
-    <label class="field">
+    <label class="field nba-gap">
       <span class="field-label">Underdog</span>
       <button type="button" id="export" class="primary">Export<span class="wide"> ranking</span></button>
     </label>
-    <div class="field">
+    <div class="field nba-more">
       <span class="field-label">Restore</span>
       <button type="button" id="importBtn" title="Put an exported ranking back on the board">Import</button>
       <input type="file" id="importFile" accept=".csv,text/csv" hidden>
     </div>
+    <label class="field nba-only nba-data">
+      <span class="field-label">&nbsp;</span>
+      <button type="button" id="moreBtn" aria-expanded="false" title="Show the rest: Order by Proj, Old vs new, the projection source and floor rank, Sync, Notes and Import">More</button>
+    </label>
   </div>
 
   <div id="vorpPanel" class="paste" hidden>
@@ -3412,7 +3423,7 @@ function renderMeta(rec) {
    the implied minutes are scaled by that day's typical ratio among players who usually
    play 20+: the level stays the box scores', and ETR decides who is above or below it. */
 var NBA_SECURE_MIN = 32;
-var NBA_DEFAULT_RANKED = 44;    // a 36-pick draft plus the next tier you might reach
+var NBA_DEFAULT_RANKED = 40;    // a 36-pick draft plus a few you might reach (40 from 2026-11-13, the operator's call)
 
 /** The draft's size from the slate's ADP: Underdog caps ADP at the last pick (24 or 36). */
 function nbaDraftSize(players) {
@@ -7413,6 +7424,10 @@ $("tiersBtn").addEventListener("click", function () { pressTiers(); });
 $("rulesCmpBtn").addEventListener("click", function () { renderRulesCompare(); });
 $("nflTiersBtn").addEventListener("click", function () { pressNflTiers(); });
 $("swapBtn").addEventListener("click", function () { toggleSwapPanel(); });
+$("moreBtn").addEventListener("click", function () {
+  var open = document.documentElement.classList.toggle("more-open");
+  this.setAttribute("aria-expanded", String(open)); this.textContent = open ? "Less" : "More";
+});
 $("tiersSrc").addEventListener("change", function () { save(K.tierSrc(state.slate.label), this.value); });
 $("copyMain").addEventListener("click", function () { copyMainRanks(); });
 $("switchAt").addEventListener("change", function () {
