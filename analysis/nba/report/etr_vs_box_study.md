@@ -47,3 +47,12 @@ with 18 minutes and a 34-point loss: ETR holding him near 36 is what the record 
 Gallagher's Bad matchups come in under ETR's own final number; his Great and Good ones are already in it. Zakarian
 runs against ETR's final: his Fades beat it, his Likes trail it. About 14 comparisons were looked at, so one or two at
 this strength could be luck; these two are the most consistent across nights. Re-read them at the next review.
+
+## On the board (2026-11-13, your call)
+
+Gallagher's signal is his call, not a profile: on his column nights, players who fit the Bad profile (underdog, our
+matchup number negative, rim bigs and stars against SAS, HOU, BOS, TOR, MIN, OKC) but weren't called Bad ran +0.62
+against ETR's final, and on the other 11 nights the profile ran -0.06. So the board's chevron beside Proj is now a down
+arrow on his Bad matchups, on his column days only, down only (his Great and Good calls are already in ETR's number).
+It replaced the recent-form chevrons: a player's past beats and misses of ETR didn't predict his next game. Zakarian
+is left out: not ETR's. Re-read at the Friday reviews (clean games alone were -0.88, range crossing 0).

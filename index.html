@@ -354,7 +354,7 @@
   .dash { width: 7px; height: 1.5px; background: currentColor; }
 
   .num.proj { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 3px; }
-  /* NBA: a last track for the Recent form arrow, kept even when empty so the numbers stay in a column */
+  /* NBA: a last track for the Gallagher Bad-matchup arrow, kept even when empty so the numbers stay in a column */
   .num.proj.fm { grid-template-columns: 30px 1fr 7px; }
   .num.proj.two.fm { grid-template-columns: 30px 24px 1fr 7px; }
   .num.vorp { font-weight: 600; }
@@ -657,7 +657,7 @@
     .num.adp { grid-template-columns: 17px 1fr; gap: 2px; }
     .num.proj { grid-template-columns: 24px 1fr; gap: 2px; }
     .num.proj.two { grid-template-columns: 18px 20px 1fr; }
-    /* NBA phones: the ADP movement marker gives way to the form arrow beside Proj */
+    /* NBA phones: the ADP movement marker gives way to the Bad-matchup arrow beside Proj */
     html.nba .num.adp { grid-template-columns: 1fr; }
     html.nba .num.adp .ind { display: none; }
     html.nba .num.adp .dpct { display: none; }
@@ -4325,22 +4325,21 @@ function nbaWho(who, p, takes) {
   else who.appendChild(slot());
 }
 
-/* Recent form beside Proj: his last-5 average against ETR, one chevron at NBA_FORM_PTS a game and
-   two at twice that. Form, not a pick: so far ETR has more than caught up on the hot ones. */
-var NBA_FORM_PTS = 4;
-
-function nbaFormArrow(takes, v) {
-  var t = takes.filter(function (x) { return x.source === "Recent"; })[0], f = t ? parseFloat(t.form) : NaN;
-  if (isNaN(f) || Math.abs(f) < NBA_FORM_PTS) return slot();
-  var el = document.createElement("span"), was = parseFloat(t.form_etr);
-  el.className = "ind fm " + (f > 0 ? "up" : "down");
-  for (var c = 0; c < (Math.abs(f) >= 2 * NBA_FORM_PTS ? 2 : 1); c++) el.appendChild(document.createElement("span")).className = "chev";
-  el.title = "Running " + (f > 0 ? "hot" : "cold") + ": " + (f > 0 ? "+" : "\u2212") + Math.abs(f).toFixed(1) +
-    " a game against ETR (" + t.tags + ")" +
-    (!isNaN(was) ? ". ETR averaged " + was.toFixed(1) + " in those games" +
-      (state.nbaEtrToday && v != null ? " and has him at " + v.toFixed(1) + " tonight" : "") : "") +
-    (f > 0 ? ". Form, not a pick: so far ETR has raised hot players about 3 and they've landed about 3 under its new number"
-           : ". Form, not a pick: so far cold players have landed right at ETR's next number");
+/* Beside Proj: a down chevron when Gallagher's matchup column (ETR) calls tonight a Bad matchup. On 12 column nights
+   (Oct 20 - Nov 12) those players finished 1.6 points under ETR's own final number (80% range -2.5 to -0.7; 8 of 10
+   nights under), while his Great and Good calls were already in the number. Down only, and only on his column days
+   (Mon/Wed/Fri): players who fit the same profile (underdog, poor matchup, rim bigs and stars against good defenses)
+   but weren't called Bad ran at ETR's number. Replaced the recent-form chevrons, which didn't predict the next game
+   (analysis/nba/report/etr_vs_box_study.md). Re-read at the Friday reviews. */
+function nbaBadArrow(takes, v) {
+  var t = takes.filter(function (x) { return x.source === "ETR" && x.stance === "Bad"; })[0];
+  if (!t) return slot();
+  var el = document.createElement("span");
+  el.className = "ind fm down";
+  el.appendChild(document.createElement("span")).className = "chev";
+  el.title = "Gallagher: Bad matchup" + (t.blurb ? " (" + t.blurb + ")" : "") +
+    ". His Bad calls have finished about 1.6 points under ETR's final number so far" +
+    (state.nbaEtrToday && v != null ? " (" + v.toFixed(1) + " tonight)" : "");
   return el;
 }
 
@@ -5552,7 +5551,7 @@ function render() {
     } else {
       pr.append(pd, pval);
     }
-    if (SPORT_MODE === "nba") { pr.classList.add("fm"); pr.appendChild(nbaFormArrow(nt || [], v)); }
+    if (SPORT_MODE === "nba") { pr.classList.add("fm"); pr.appendChild(nbaBadArrow(nt || [], v)); }
 
     var ownCell = null;
     if (state.hasOwn) {
@@ -7562,6 +7561,10 @@ function brrSelfTest() {
      Math.abs(lbW.add + 6) < 1e-9 && lbW.notes[0] === "Star Guard out \u22126.0");
   var lbC = nbaLineupBump(Object.assign({}, rW, { wo: {} }), { core: { T: [xS] }, byKey: {} }, (function () { var o = {}; o[normName(xS.name)] = "you"; return o; })(), 0, { "star guard": "Ant OUT" });
   ok("an absence an ETR conditional already holds isn't bumped again", lbC.add === 0 && !lbC.notes.length);
+  var badA = nbaBadArrow([{ source: "ETR", stance: "Bad", blurb: "MIN rebounds extremely well." }], null),
+      noA = nbaBadArrow([{ source: "ETR", stance: "Great" }, { source: "Zakarian", stance: "Fade" }, { source: "Recent", form: "-9" }], null);
+  ok("a down arrow only for Gallagher's Bad matchup (not his Great, not Zakarian, not recent form)",
+     /down/.test(badA.className) && badA.querySelectorAll(".chev").length === 1 && /MIN rebounds/.test(badA.title) && noA.className === "slot");
   var xO = { id: "o", name: "Other Core", team: "T", pos: "F", min: 30, fp: 30, core: true, games: 5 }, idxF = { core: { T: [xS, xO] }, byKey: {} };
   var outS = {}; outS[normName(xS.name)] = "you";
   var hFresh = { "2026-11-01": { "star guard": [30, null], "other core": [25, null] }, "2026-11-02": { "other core": [25, null] } };
