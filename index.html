@@ -1931,7 +1931,26 @@ function nbaIndex(doc) {
  * a core teammate back from a stretch out takes his share back. `boxWeight` is how much
  * of his number is box scores: 0 for ETR alone, 1 for box scores alone.
  */
-function nbaLineupBump(r, idx, out, boxWeight, covered) {
+/* A fresh absence moves ETR more: with a core teammate Out at the morning lock for the first or second night,
+   ETR's final ran 1.46 points over our Lock AM number on 86 player-nights, about 1.5 times our table's raise
+   (5 of 6 nights; Oct 28 - Nov 12, analysis/nba/report/etr_gap_study.md). Longer absences keep the table. */
+var NBA_FRESH_OUT = 1.5;
+
+/** How many of his team's ETR days before `day` he has been missing from, counting back to the last one he was in
+    (his team "in" a day when another of its core four is in that day's file); null with no ETR days before `day`. */
+function nbaDaysOut(x, idx, history, day) {
+  if (!history || !day) return null;
+  var key = normName(x.name), n = 0, days = Object.keys(history).filter(function (d) { return d < day; }).sort().reverse();
+  if (!days.length) return null;
+  for (var i = 0; i < days.length; i++) {
+    var h = history[days[i]];
+    if (h[key]) break;
+    if ((idx.core[x.team] || []).some(function (c) { return c !== x && h[normName(c.name)]; })) n++;
+  }
+  return n;
+}
+
+function nbaLineupBump(r, idx, out, boxWeight, covered, history, day) {
   var mates = (idx.core[r.team] || []).slice(), add = 0, notes = [];
   Object.keys(out).forEach(function (k) {
     var x = idx.byKey[k];
@@ -1940,12 +1959,14 @@ function nbaLineupBump(r, idx, out, boxWeight, covered) {
   });
   mates.forEach(function (x) {
     if (x === r || (covered && covered[normName(x.name)])) return;
-    var b = nbaBump(r, x), seen = boxWeight * ((r.out && r.out[x.id]) || 0);
-    var d = out[normName(x.name)] ? b * (1 - seen) : -b * seen;
+    var b = nbaBump(r, x), seen = boxWeight * ((r.out && r.out[x.id]) || 0), isOut = !!out[normName(x.name)];
+    var nOut = isOut && b > 0 ? nbaDaysOut(x, idx, history, day) : null, fresh = nOut != null && nOut <= 1;
+    var d = isOut ? b * (fresh ? NBA_FRESH_OUT : 1) * (1 - seen) : -b * seen;
     if (Math.abs(d) < 0.05) return;
     add += d;
     // his own split can say he does worse without a teammate, so an out can take points too
-    notes.push(x.name + (out[normName(x.name)] ? " out " : " back ") + (d > 0 ? "+" : "\u2212") + Math.abs(d).toFixed(1));
+    notes.push(x.name + (isOut ? " out " : " back ") + (d > 0 ? "+" : "\u2212") + Math.abs(d).toFixed(1) +
+               (fresh ? " (just out: \u00d7" + NBA_FRESH_OUT + ")" : ""));
   });
   return { add: add, notes: notes };
 }
@@ -2039,7 +2060,7 @@ function nbaValues(players, slate, store, idx, marked, nameMap) {
            : { note: Math.round(100 * (1 - boxWeight)) + "% average of " + etrNote + ", " +
                      Math.round(100 * boxWeight) + "% " + boxNote };
     }
-    var lb = r ? nbaLineupBump(r, idx, out, boxWeight, cond.covered) : { add: 0, notes: [] };
+    var lb = r ? nbaLineupBump(r, idx, out, boxWeight, cond.covered, store.history || {}, day) : { add: 0, notes: [] };
     values[p.player_id] = base + lb.add;
     parts[p.player_id] = Object.assign({}, part, { lineup: lb.notes, mtch: mt || null, line: line == null ? null : line });
   });
@@ -7541,6 +7562,15 @@ function brrSelfTest() {
      Math.abs(lbW.add + 6) < 1e-9 && lbW.notes[0] === "Star Guard out \u22126.0");
   var lbC = nbaLineupBump(Object.assign({}, rW, { wo: {} }), { core: { T: [xS] }, byKey: {} }, (function () { var o = {}; o[normName(xS.name)] = "you"; return o; })(), 0, { "star guard": "Ant OUT" });
   ok("an absence an ETR conditional already holds isn't bumped again", lbC.add === 0 && !lbC.notes.length);
+  var xO = { id: "o", name: "Other Core", team: "T", pos: "F", min: 30, fp: 30, core: true, games: 5 }, idxF = { core: { T: [xS, xO] }, byKey: {} };
+  var outS = {}; outS[normName(xS.name)] = "you";
+  var hFresh = { "2026-11-01": { "star guard": [30, null], "other core": [25, null] }, "2026-11-02": { "other core": [25, null] } };
+  var hLong = { "2026-10-30": { "other core": [25, null] }, "2026-10-31": { "other core": [25, null] }, "2026-11-01": { "other core": [25, null] } };
+  var rP = Object.assign({}, rW, { wo: {} }), plainB = nbaBump(rP, xS);
+  var lbF = nbaLineupBump(rP, idxF, outS, 0, null, hFresh, "2026-11-03"), lbL = nbaLineupBump(rP, idxF, outS, 0, null, hLong, "2026-11-03");
+  ok("a teammate out for the first or second night moves him " + NBA_FRESH_OUT + " times the table; longer, the table",
+     nbaDaysOut(xS, idxF, hFresh, "2026-11-03") === 1 && nbaDaysOut(xS, idxF, hLong, "2026-11-03") === 3 &&
+     Math.abs(lbF.add - NBA_FRESH_OUT * plainB) < 1e-9 && Math.abs(lbL.add - plainB) < 1e-9 && /just out/.test(lbF.notes[0]) && !/just out/.test(lbL.notes[0]));
   var fd = parseProjections('"Player","Pos","Team","Opp","Salary","FPTS","Value","Ceiling","ProjOwn","Site","Slate","Scenario"\n' +
     '"Star Guard","SG","MIN","CLE","$9,100","37.1","1","46.8","3%","FD","MAIN","Default"\n' +
     '"Bench Guard","SG","MIN","CLE","$5,200","22.4","1","30.4","1%","FD","MAIN","Default"\n' +
@@ -7611,8 +7641,8 @@ function brrSelfTest() {
   var oneDay = { current: null, previous: null, history: { "2026-11-01": { "bench guard": [20, null], "star guard": [30, null] } } };
   var mv1 = nbaValues(mSlate.players, mSlate, oneDay, mIdx, [], {});
   var bw1 = NBA_ETR_PRIOR_DAYS / (1 + NBA_ETR_PRIOR_DAYS);       // the box scores' share with one day of ETR
-  ok("one day of ETR is " + Math.round(100 * (1 - bw1)) + "% of the morning number, and the bump for an out drops by the box scores' share of his last 10's absences",
-     Math.abs(mv1.values.P - ((1 - bw1) * 20 + bw1 * nbaBoxBlend(nbaBoxToEtr(12, NBA_BOX_TO_ETR)) + 3.6 * (1 - bw1 * 0.5))) < 1e-9);
+  ok("one day of ETR is " + Math.round(100 * (1 - bw1)) + "% of the morning number, and the bump for an out (fresh: he was in yesterday's file) drops by the box scores' share of his last 10's absences",
+     Math.abs(mv1.values.P - ((1 - bw1) * 20 + bw1 * nbaBoxBlend(nbaBoxToEtr(12, NBA_BOX_TO_ETR)) + NBA_FRESH_OUT * 3.6 * (1 - bw1 * 0.5))) < 1e-9);
   (function () {
     var plain = { id: "s", name: "Star Two", team: "T", pos: "F", min: 34, ppm: 1.3, fp: 44, core: false, games: 5, out: {} };
     var withM = Object.assign({}, plain, { mtch: { "2026-11-02": [2, { p2: 2 }, "scoring wing"] } });

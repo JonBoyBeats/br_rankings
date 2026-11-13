@@ -114,3 +114,6 @@ four), against who ETR's final left out; ETR final minus our Lock AM number, 15 
 Most of the gap is late news, the Lock PM's job. On a fresh absence ETR raises his teammates about 1.5 times our
 table (ours 2.24 points on average, ETR about 1.67 more; 5 of 6 nights); on a long one ETR sits under us (4 nights,
 too few to say why). "Off Underdog's slate" teammates were mostly undrafted players, not absences.
+
+Baked in 2026-11-13 (your yes): a core teammate Out for the first or second night moves his teammates 1.5 times the
+table (index.html NBA_FRESH_OUT); longer absences keep the table until the next review has more nights.

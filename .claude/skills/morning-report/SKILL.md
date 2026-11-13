@@ -378,7 +378,7 @@ Rerun the study in `analysis/nba/report/etr_gap_study.md` on everything since th
 explains it), try the tweaks that would close the gap on those slates, bake in the ones that do
 (in index.html's NBA morning Proj, with the numbers in its comment), add a dated section to the
 study, and carry on. 2026-11-13: box scores count as 3 days of ETR (was 1), their minutes halfway
-to his last 3 games: 2.10 -> 1.88 points from ETR's final, 3+ apart 24% -> 20%.
+to his last 3 games: 2.10 -> 1.88 points from ETR's final, 3+ apart 24% -> 20%. Also 11-13: a teammate out for the first or second night moves his teammates 1.5 times the table.
 
 Old baseline against the first upload (8 slates, 10-28 to 11-05): direction 88% (elite 100%, next 83%, middle 93%, 6th round
 on 86%); ETR's bottom 5 we had below 40 of 40, top 5 above 37 of 40; big misses 24%; CLV ours
