@@ -1,5 +1,5 @@
 """The Friday report's contest results (asked 2026-11-13; first report 2026-11-20). Writes analysis/nba/report/money_friday.json,
-which the rankings side's Friday report reads. Runs in its own Friday job (.github/workflows/nba_friday.yml) after the
+which the rankings side's Friday report reads. Runs in its own Friday job (.github/workflows/nba_money_friday.yml) after the
 nightly record, so the nightly money step doesn't grow. Results only: nothing here writes the register or the button.
 
 Every test is read over every night on file, as multiples against the whole field in the same contest and price quintile
@@ -15,7 +15,9 @@ group with no rule shows the season only.
                         round-2 pick (second by rank) in T2: ETR-leaning when T2 ranked by the window's projection puts
                         him higher than T2 by ADP, ADP-leaning when lower, agree when level. PM is the test (the break is
                         on there), AM for reference; non-elite teams beside it as context
-  t3t4-boundaries       a T4 VALUE player against a T3 PRICEY one, a T4 PRICEY one against the button's top three in T5,
+  t3t4-boundaries       a T4 VALUE player against a T3 PRICEY one, a T4 PRICEY one against the button's top three in T5 and
+                        against the rest of T5, each AM, PM and both; the T4 PRICEY pairs across the round 4/5 line
+                        (ADP within 4), the VALUE/PRICEY pairs in one round,
                         by ADP tier and flag (the 2026-11-13 button moves PRICEY players out of their combined tier):
                         pairs at one window, ADP within 4 in the same round; each side's teams
   t5-drafted            teams holding a T5 player by the share of pods that drafted him (rosters, swaps credited back), in
@@ -26,7 +28,8 @@ group with no rule shows the season only.
   t5-operator-order     T5 pairs (ADP within 4, no tag) where your board's order and the projection's differ: teams
                         holding your first against teams holding the projection's first
   q-tags                Q picks (tagged at the snapshot the team drafted at) by tier and played/sat; fallen 6+ picks
-                        past the pre-tag ADP; T1-T4 teammates of a Q player by whether he sat; crowd swaps (share of
+                        past the pre-tag ADP (the board's: his ADP on the last slate he was untagged, tier_history's
+                        pre_tag_adp; else the last untagged snapshot on the slate); T1-T4 teammates of a Q player by whether he sat; crowd swaps (share of
                         pods 15+ points higher after swaps) against other swap targets within 6 projected points
   swap-button           your swaps against what your PM list would have swapped to: waits for the board's swap lock
   monthly               first Friday of the month (or --monthly): the top-1% edge by tier against its share of points,
@@ -148,20 +151,26 @@ def boundaries(N, R, rule):
             t5 = sorted((int(r["built"]), p) for p, r in n["tiers"][w].items() if r["tier"] == "5" and r["built"])
             top3[(n["date"], w)] = {p for _, p in t5[:3]}
     # by ADP tier and flag: the 2026-11-13 button moves PRICEY players out of their combined tier (rebuilt into every night)
+    t4_pricey = lambda r: r["a_tier"] == "4" and r["flag"] == "PRICEY"
     tests = [("T4 VALUE (A) vs T3 PRICEY (B)", lambda r: r["a_tier"] == "4" and r["flag"] == "VALUE", lambda r: r["a_tier"] == "3" and r["flag"] == "PRICEY"),
-             ("T4 PRICEY (A) vs a top-3 T5 (B)", lambda r: r["a_tier"] == "4" and r["flag"] == "PRICEY",
-              lambda r: r["tier"] == "5" and r["player_id"] in top3[(r["date"], r["window"])])]
+             ("T4 PRICEY (A) vs a top-3 T5 (B)", t4_pricey, lambda r: r["tier"] == "5" and r["player_id"] in top3[(r["date"], r["window"])]),
+             ("T4 PRICEY (A) vs the rest of T5 (B)", t4_pricey,
+              lambda r: r["tier"] == "5" and r["player_id"] not in top3[(r["date"], r["window"])] and not t4_pricey(r))]
     out = {}
     for name, fa, fb in tests:
-        def pick(a, b, fa=fa, fb=fb):
+        def pick(a, b, fa=fa, fb=fb, same_round=name.startswith("T4 VALUE")):
+            # T4 PRICEY players go late in round 4 and T5's top early in round 5: the board's choice is across that line,
+            # so those pairs only need ADP within 4
             pod = by_date[a["date"]]["pod"]
-            if math.ceil(num(a["adp"]) / pod) != math.ceil(num(b["adp"]) / pod):
+            if same_round and math.ceil(num(a["adp"]) / pod) != math.ceil(num(b["adp"]) / pod):
                 return None
             return a if fa(a) and fb(b) else b if fa(b) and fb(a) else None
-        cs = M.pair_cases(N, ("am", "pm"), None, pick, same_tier=False)
-        g = {name + ": A": [(c[0], c[4]) for c in cs if c[3] == "A"], name + ": B": [(c[0], c[4]) for c in cs if c[3] == "B"]}
-        out.update(read(g, R, rule))
-        out[name + ": A"]["slates"] = len({c[0] for c in cs if c[3] == "A"})
+        for label, ws in (("AM", ("am",)), ("PM", ("pm",)), ("both", ("am", "pm"))):
+            cs = M.pair_cases(N, ws, None, pick, same_tier=False)
+            key = "%s, %s" % (name, label)
+            g = {key + ": A": [(c[0], c[4]) for c in cs if c[3] == "A"], key + ": B": [(c[0], c[4]) for c in cs if c[3] == "B"]}
+            out.update(read(g, R, rule))
+            out[key + ": A"]["slates"] = len({c[0] for c in cs if c[3] == "A"})
     return out
 
 
@@ -225,8 +234,12 @@ def q_tags(N, R, rule):
                     continue
                 held = M.drafted_by(t)
                 for p in held:
-                    if p in q and pre.get(p) is not None and q[p][0] is not None:
-                        fall = q[p][0] - pre[p]
+                    # the board's pre-tag ADP (tier_history pre_tag_adp: his ADP on the last slate he was untagged), else
+                    # the last untagged snapshot on this slate
+                    before = num((n["tiers"][t["window"]].get(p) or {}).get("pre_tag_adp"))
+                    before = before if before is not None else pre.get(p)
+                    if p in q and before is not None and q[p][0] is not None:
+                        fall = q[p][0] - before
                         g["fell 6+ picks past the pre-tag ADP" if fall >= 6 else "fell under 6 picks (or rose)"].append((n["date"], t))
                 qteams = collections.defaultdict(list)
                 for p, (_, _, team) in q.items():
