@@ -193,6 +193,10 @@
   #swapPanel .swaphead { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
   #swapPanel .swaplist { margin: 4px 0 6px 20px; padding: 0; }
   #swapPanel .swapprev div { margin-top: 3px; }
+  #rulesCompare { margin: 8px 0; padding: 8px 10px; border: 1px solid var(--line, #cbd5e1); border-radius: 6px; font-size: 13px; overflow-x: auto; }
+  #rulesCompare table.cmp { border-collapse: collapse; margin-top: 6px; }
+  #rulesCompare table.cmp td, #rulesCompare table.cmp th { padding: 1px 6px; text-align: left; white-space: nowrap; }
+  #rulesCompare table.cmp tr.diff td { background: rgba(250, 204, 21, 0.18); }
   .tierinfo { display: inline-flex; gap: 3px; align-items: center; font-family: var(--mono); font-size: 10px; white-space: nowrap; }
   .tierinfo .tap { color: var(--muted); }
   .tierinfo b { padding: 0 3px; border-radius: 3px; font-weight: 600; }
@@ -793,6 +797,7 @@
         <span class="pair">
           <button type="button" id="buildTiers" title="Order everyone by Proj, best first">Order by Proj</button>
           <button type="button" id="tiersBtn" aria-pressed="false" title="Build the tiers from scratch: an ADP ladder and a projection ladder, lines at their biggest gaps, combined into five tiers with VALUE and PRICEY flags. Moves after it are logged as takes">Tiers</button>
+          <button type="button" id="rulesCmpBtn" title="Today's slate under the old button and the new rules, side by side. Changes nothing on your board">Old vs new</button>
           <button type="button" id="swapBtn" class="nba-data" title="The swap board: your likely-undrafted swap targets in order, where your swaps would land, and a one-step reorder for after drafting">Swaps</button>
           <select id="tiersSrc" class="nba-data" title="The projection ladder's source: Auto is our Proj until ETR's file is in, then ETR"><option value="auto">Auto</option><option value="ours">Ours</option><option value="etr">ETR</option></select>
           <button type="button" id="copyMain" hidden title="Rank this slate's players exactly as your main slate ranks them, then fill in the rest">Copy main ranks</button>
@@ -923,6 +928,7 @@
       </ul>
     </details>
     <div id="swapPanel" hidden></div>
+    <div id="rulesCompare" hidden></div>
     <div id="rows"><div class="empty">Loading the mirror&hellip;</div></div>
   </div>
 
@@ -2618,7 +2624,8 @@ var K = {
   tierBuild: function (label) { return "brr:tierbuild:" + label; },  // NBA: the Tiers button's ladders, combined tiers and the moves since
   tierSrc: function (label) { return "brr:tiersrc:" + label; },      // NBA: which projection the Tiers button reads (auto, ours, etr)
   swapMode: function (label) { return "brr:swapmode:" + label; },    // NBA: the swap board's near-tie order (low, proj, high)
-  locks: function (label) { return "brr:locks:" + label; },         // NBA: {slate_id, am, pm}, your boards locked for the morning report
+  locks: function (label) { return "brr:locks:" + label; },
+  qSeen: function (label) { return "brr:qseen:" + label; },          // NBA: each Q-tagged player's ADP when this board first saw the tag         // NBA: {slate_id, am, pm}, your boards locked for the morning report
   expo: function (label) { return "brr:expo:" + label; },           // your exposures from an Underdog export: {file, at, drafts, counts}         // NBA: {on, starts}: where tiers 2-5 begin, by rank
   slate: NBA_LIKE ? "brr:slate:" + SPORT_MODE : "brr:slate",
   tailSort: "brr:tailsort",                                         // what sorts the players below the line
@@ -3894,8 +3901,13 @@ function nbaRuleSort(list, steps) {
   });
 }
 
-/** Build the ladders and the combined tiers for the slate as it stands. */
+/** Build the ladders and the combined tiers for the slate as it stands, by the rules in force (NBA_RULESET). */
 function nbaBuildLadders() {
+  return NBA_RULESET === "new" ? nbaBuildLaddersNew() : nbaBuildLaddersOld();
+}
+
+/** The button as it stood before the 2026-11-13 redesign. */
+function nbaBuildLaddersOld() {
   var s = state.slate, src = nbaTierSource(), pod = nbaPodSize(s) === 4 ? 4 : 6, spec = NBA_LADDER[pod];
   var sh = nbaShading(), fieldCtx = nbaFieldCtx(), cap = nbaDraftSize(s.players) || (pod === 4 ? 24 : 36);
   var pl = s.players.filter(function (p) { return hasAdp(p) || typeof src.vals[p.player_id] === "number"; });
@@ -3942,6 +3954,213 @@ function nbaBuildLadders() {
   }
   out.order = order; out.starts = starts; out.moves = []; out.note = src.note || null;
   return out;
+}
+
+/* ---- The button's rules, 2026-11-13 redesign (NBA_RULESET "new"; "old" is the build above) -------------------------
+   Decided with the operator (analysis/nba/report/tier_season_tests.md, q_rules_test.md, ownership_backcheck.md and the
+   contest side's money studies):
+   T1   unchanged: morning ADP, Boom within 2 picks; afternoon ETR. The elite cut: the top of T1 at the biggest
+        projection gap among its top 3-4 (at least 1, at most 3).
+   T2   morning straight ADP. Afternoon: ADP with ETR within 2 picks up to pick X, then ETR from pick X on (the elite
+        break; X = 13 minus the elites with 6 drafters, 9 minus them with 4).
+   T3/T4  VALUE, then the rest, then PRICEY; morning ADP within each group, afternoon ETR (ADP, then Boom, on exact ties).
+        T4 ends at the start of round 6 (after pick 30; 20 with 4 drafters), earlier only at an ADP gap of 2+ picks
+        just before it; round-6 players are never in T4; T4 PRICEY players drop into T5; T4 short of 4 borrows the
+        bottom of T3 (never T5), and they keep their place at the top of T4.
+   T5   round 6 and the dropped T4 PRICEY players, only those projected for 20+ minutes (NBA_MIN_FLOOR, set from the T5
+        dud rates: 12% at 28+ usual minutes, 22% at 22-24, 28% at 20-22, 34% at 18-20, ~40% under 18); drafted in
+        under 60% of pods first, 60%+ last, each in projection order; 50-70% is the gray zone (the curve misses ~8 points
+        there), 50-60% at the bottom of the first group and 60-70% at the top of the second. VALUE shows, doesn't sort.
+   Q    (Questionable at the lock) keeps his tier in both windows; in T1 he drops to the top of T2; one whose ADP has
+        fallen 6+ picks since the tag goes last; a T1-T4 teammate of a Q player gets the tiebreak within his group;
+        T5 Q players follow T5's rule. The ADP at the tag is what this board saw when it first saw the tag (K.qSeen). */
+var NBA_RULESET = "old";
+var NBA_R6 = { 6: 30, 4: 20 };          // T4's last pick: the start of round 6 ...
+var NBA_T4_GAP = 2;                     // ... or earlier at an ADP gap this big in the three ranks before it
+var NBA_T4_MIN = 4;                     // T4 short of this borrows from the bottom of T3
+var NBA_T5_LINE = 60, NBA_T5_GRAY = [50, 70];
+var NBA_MIN_FLOOR = 20;
+var NBA_Q_FALL = 6;
+var NBA_TIER_NOTES_NEW = [
+  "Elite – AM: ADP (2: Boom) · PM: ETR",
+  "Stars – AM: ADP · PM: ADP (2: ETR) to the elite break, ETR after",
+  "Middle – VALUE, rest, PRICEY · AM: ADP · PM: ETR (tie: ADP → Boom)",
+  "Middle – VALUE, rest · AM: ADP · PM: ETR (tie: ADP → Boom); ends at round 6",
+  "The Rest – under 60% drafted first, then 60%+, each by projection; 20+ minutes only"
+];
+
+/** The elite count: T1's top by projection cut at the biggest gap among its top 3-4 (1 to 3). */
+function nbaElites(projs) {
+  var v = projs.slice().sort(function (a, b) { return b - a; }).slice(0, 4);
+  if (v.length < 2) return 1;
+  var best = 0, gap = -Infinity;
+  for (var i = 0; i < Math.min(3, v.length - 1); i++) if (v[i] - v[i + 1] > gap + 1e-9) { gap = v[i] - v[i + 1]; best = i; }
+  return best + 1;
+}
+
+/** T4's last rank on the ADP ladder: the start of round 6, or earlier at a gap of NBA_T4_GAP+ in the three ranks before. */
+function nbaT4Line(vals, pod, prev) {
+  var r6 = NBA_R6[pod], best = null, gap = -Infinity;
+  for (var k = Math.max(prev + 1, r6 - 3); k <= Math.min(r6 - 1, vals.length - 1); k++) {
+    var g = vals[k] - vals[k - 1];
+    if (g > gap + 1e-9 || (Math.abs(g - gap) <= 1e-9 && best != null && Math.abs(k - r6) < Math.abs(best - r6))) { best = k; gap = g; }
+  }
+  return best != null && gap >= NBA_T4_GAP ? best : Math.min(r6, vals.length);
+}
+
+/** T5's drafted% band: 0 under the gray zone, 1 its lower half (still the first group), 2 its upper half, 3 above it. */
+function nbaT5Band(d) {
+  d = d || 0;
+  return d < NBA_T5_GRAY[0] ? 0 : d < NBA_T5_LINE ? 1 : d < NBA_T5_GRAY[1] ? 2 : 3;
+}
+
+/** The ADP each Q-tagged player had when this board first saw his tag, kept per slate (and recorded here). */
+function nbaQSeen(s) {
+  var key = K.qSeen(s.label), seen = load(key, {}), changed = false;
+  if (seen.slate_id !== s.slate_id) { seen = { slate_id: s.slate_id, players: {} }; changed = true; }
+  s.players.forEach(function (p) {
+    if (/^q/i.test(p.injury || "") && hasAdp(p) && !seen.players[p.player_id]) {
+      seen.players[p.player_id] = { adp: p.adp, at: new Date().toISOString() }; changed = true;
+    }
+  });
+  if (changed) save(key, seen);
+  return seen.players;
+}
+
+function nbaBuildLaddersNew() {
+  var s = state.slate, src = nbaTierSource(), pod = nbaPodSize(s) === 4 ? 4 : 6, spec = NBA_LADDER[pod];
+  var sh = nbaShading(), fieldCtx = nbaFieldCtx(), cap = nbaDraftSize(s.players) || (pod === 4 ? 24 : 36);
+  var pl = s.players.filter(function (p) { return hasAdp(p) || typeof src.vals[p.player_id] === "number"; });
+  var adpOf = function (p) { return hasAdp(p) ? Math.min(p.adp, cap) : cap; };
+  var projOf = function (p) { var v = src.vals[p.player_id]; return typeof v === "number" ? v : -Infinity; };
+  var A = pl.slice().sort(function (x, y) { return adpOf(x) - adpOf(y) || projOf(y) - projOf(x); });
+  var P = pl.slice().sort(function (x, y) { return projOf(y) - projOf(x) || adpOf(x) - adpOf(y); });
+  var aVals = A.map(adpOf), aLines = nbaLadderLines(aVals, spec.slice(0, 3), NBA_MIN_TIER[pod]);
+  aLines.push(nbaT4Line(aVals, pod, aLines[2]));
+  var pLines = nbaLadderLines(P.map(function (p) { return Math.max(projOf(p), 0); }), spec, NBA_MIN_TIER[pod]);
+  var aT = {}, pT = {}, pVals = P.map(projOf);
+  A.forEach(function (p, i) { aT[p.player_id] = nbaLadderTier(i + 1, aLines); });
+  P.forEach(function (p, i) { pT[p.player_id] = nbaLadderTier(i + 1, pLines); });
+  var qSeen = nbaQSeen(s), qTeams = {};
+  pl.forEach(function (p) { if (/^q/i.test(p.injury || "")) qTeams[p.team] = (qTeams[p.team] || 0) + 1; });
+  var out = { at: new Date().toISOString(), window: src.window, source: src.src, pod: pod, lines: { a: aLines, p: pLines },
+              players: {}, ruleset: "new" };
+  pl.forEach(function (p) {
+    var pid = p.player_id, a = aT[pid], t = pT[pid], d = a - t, c = Math.abs(d) >= 2 ? a - Math.sign(d) : a;
+    var x = { a: a, p: t, c: c, flag: d > 0 ? "VALUE" : d < 0 ? "PRICEY" : "" };
+    if (a === NBA_TIERS) x.c = NBA_TIERS;                                  // round 6 is never in T4
+    if (x.c === 4 && x.flag === "PRICEY") { x.c = NBA_TIERS; x.dropped = true; }
+    if (/^q/i.test(p.injury || "")) {
+      x.inj = String(p.injury);
+      var was = qSeen[pid];
+      if (was && hasAdp(p) && p.adp - was.adp >= NBA_Q_FALL) { x.qlast = true; x.fell = Math.round((p.adp - was.adp) * 10) / 10; }
+      else if (x.c === 1) { x.c = 2; x.qtop = true; }
+      var sit = nbaSitFor(p), play = sit && typeof sit.p === "number" ? 1 - sit.p : null, v = projOf(p);
+      if (play != null && isFinite(v)) {
+        var e = play * v, rank = 1 + pVals.filter(function (w, i) { return w > e && P[i].player_id !== pid; }).length;
+        var et = nbaLadderTier(rank, pLines);
+        x.play = Math.round(play * 100) / 100; x.et = et;
+        x.q = et > a ? "TRAP" : t < a && play >= NBA_SMASH_PLAY ? "SMASH" : t === a ? "FAIR" : "";
+      } else x.q = t === a ? "FAIR" : "";
+    } else if (/^(d|g)/i.test(p.injury || "")) x.inj = String(p.injury);
+    out.players[pid] = x;
+  });
+  var elites = nbaElites(pl.filter(function (p) { return out.players[p.player_id].a === 1 && isFinite(projOf(p)); }).map(projOf));
+  var breakAt = (pod === 4 ? 9 : 13) - elites;
+  out.elites = elites; out.breakAt = breakAt;
+  var rows = pl.map(function (p) {
+    var pid = p.player_id, v = projOf(p), r = sh.rows[pid], x = out.players[pid];
+    var dr = hasAdp(p) ? nbaDraftedPct(pid, fieldCtx) : 0;
+    return { pid: pid, x: x, flag: x.flag, adp: -adpOf(p), rawAdp: adpOf(p), proj: isFinite(v) ? Math.round(v) : null,
+             projx: isFinite(v) ? v : null, boom: r && r.boom != null ? r.boom : null,
+             min: r && r.min != null ? r.min : null, drafted: dr == null ? 0 : dr,
+             qmate: !x.inj && qTeams[p.team] ? 1 : 0 };
+  });
+  var am = src.window === "am", sorted = function (list, steps) { return nbaRuleSort(list, steps); };
+  var T = { 1: am ? [["adp", 2], ["qmate", 0], ["boom", 0]] : [["projx", 0], ["qmate", 0]],
+            mid: am ? [["adp", 0], ["qmate", 0]] : [["proj", 0], ["qmate", 0], ["adp", 0], ["boom", 0]] };
+  var inTier = function (t) { return rows.filter(function (r) { return !r.x.qlast && r.x.c === t; }); };
+  var groups = function (list) {
+    var o = [];
+    ["VALUE", "", "PRICEY"].forEach(function (f) { o = o.concat(sorted(list.filter(function (r) { return r.flag === f; }), T.mid)); });
+    return o;
+  };
+  var t1 = sorted(inTier(1).filter(function (r) { return !r.x.qtop; }), T[1]);
+  var qtop = sorted(inTier(2).filter(function (r) { return r.x.qtop; }), T[1]);
+  var rest2 = inTier(2).filter(function (r) { return !r.x.qtop; }), t2;
+  if (am) t2 = sorted(rest2, [["adp", 0], ["qmate", 0]]);
+  else t2 = sorted(rest2.filter(function (r) { return r.rawAdp < breakAt; }), [["adp", 2], ["qmate", 0], ["projx", 0]])
+         .concat(sorted(rest2.filter(function (r) { return r.rawAdp >= breakAt; }), [["projx", 0], ["qmate", 0]]));
+  var t3 = groups(inTier(3)), t4 = groups(inTier(4)), borrowed = [];
+  while (t4.length + borrowed.length < NBA_T4_MIN && t3.length > 1) {
+    var b = t3.pop(); b.x.c = 4; b.x.borrowed = true; borrowed.unshift(b);
+  }
+  t4 = borrowed.concat(t4);
+  var t5all = inTier(NBA_TIERS), floor = function (r) { return r.min == null || r.min >= NBA_MIN_FLOOR; };
+  var t5 = t5all.filter(floor).sort(function (x, y) {
+    return nbaT5Band(x.drafted) - nbaT5Band(y.drafted) || (y.projx == null ? -1e9 : y.projx) - (x.projx == null ? -1e9 : x.projx) || x.rawAdp - y.rawAdp;
+  });
+  t5.forEach(function (r) { r.x.band = nbaT5Band(r.drafted); r.x.drafted = Math.round(r.drafted); });
+  var low = t5all.filter(function (r) { return !floor(r); }).sort(function (x, y) { return (y.projx || 0) - (x.projx || 0); });
+  low.forEach(function (r) { r.x.belowFloor = true; });
+  var last = rows.filter(function (r) { return r.x.qlast; });
+  var tiers = [t1, qtop.concat(t2), t3, t4, t5.concat(low, last)], order = [], starts = [];
+  tiers.forEach(function (list, i) {
+    if (i) starts.push(order.length + 1);
+    list.forEach(function (r) { order.push(r.pid); });
+  });
+  out.order = order; out.starts = starts; out.moves = []; out.note = src.note || null;
+  return out;
+}
+
+/** The two rulesets on today's slate, side by side (the switch waits on the operator's check). */
+function nbaRulesCompare() {
+  var was = NBA_RULESET, oldB, newB;
+  NBA_RULESET = "old"; oldB = nbaBuildLadders();
+  NBA_RULESET = "new"; newB = nbaBuildLadders();
+  NBA_RULESET = was;
+  var byPid = {};
+  state.slate.players.forEach(function (p) { byPid[p.player_id] = p; });
+  var tierAt = function (b, i) { var t = 1; b.starts.forEach(function (st) { if (i + 1 >= st) t++; }); return t; };
+  var rows = [], n = Math.max(oldB.order.length, newB.order.length), posOld = {};
+  oldB.order.forEach(function (pid, i) { posOld[pid] = i; });
+  for (var i = 0; i < n; i++) {
+    var o = oldB.order[i], w = newB.order[i], x = w ? newB.players[w] : null;
+    var why = !x ? "" : [x.qtop ? "Q: T1 to the top of T2" : "", x.qlast ? "Q: ADP fell " + x.fell + " since the tag, last" : "",
+                         x.dropped ? "T4 PRICEY dropped" : "", x.borrowed ? "borrowed from T3" : "", x.belowFloor ? "under " + NBA_MIN_FLOOR + " minutes" : "",
+                         x.band === 1 || x.band === 2 ? "gray zone (" + x.drafted + "% drafted)" : x.band === 3 ? x.drafted + "% drafted: last" : ""]
+      .filter(Boolean).join("; ");
+    rows.push({ rank: i + 1, old: o, oldTier: o ? tierAt(oldB, i) : null, now: w, newTier: w ? tierAt(newB, i) : null,
+                moved: w && posOld[w] != null ? posOld[w] - i : null, why: why });
+  }
+  return { old: oldB, new: newB, rows: rows, name: function (pid) { var p = byPid[pid]; return p ? p.first_name.charAt(0) + ". " + p.last_name : pid; } };
+}
+
+function renderRulesCompare() {
+  var el = $("rulesCompare");
+  if (!el) return;
+  if (!el.hidden) { el.hidden = true; return; }
+  var c = nbaRulesCompare();
+  el.innerHTML = "";
+  var h = document.createElement("div");
+  h.className = "hint";
+  h.textContent = "Today's slate under the old button and the new rules (" + c.new.window.toUpperCase() + ", " + c.new.source +
+    "; elites " + c.new.elites + ", " + (c.new.window === "pm" ? "elite break at pick " + c.new.breakAt + ", " : "") +
+    "T4 ends after pick " + c.new.lines.a[3] + "). Nothing changes on your board until the switch.";
+  var t = document.createElement("table");
+  t.className = "cmp";
+  t.innerHTML = "<tr><th>#</th><th>Old</th><th>T</th><th>New</th><th>T</th><th>Δ</th><th>Why</th></tr>";
+  c.rows.forEach(function (r) {
+    var tr = document.createElement("tr");
+    if (r.oldTier !== r.newTier || r.old !== r.now) tr.className = "diff";
+    [r.rank, r.old ? c.name(r.old) : "", r.oldTier || "", r.now ? c.name(r.now) : "", r.newTier || "",
+     r.moved ? (r.moved > 0 ? "↑" : "↓") + Math.abs(r.moved) : "", r.why].forEach(function (v) {
+      var td = document.createElement("td"); td.textContent = v; tr.appendChild(td);
+    });
+    t.appendChild(tr);
+  });
+  el.append(h, t);
+  el.hidden = false;
 }
 
 /** What the Tiers build needs for today and isn't in yet: our Proj (the morning file through yesterday's games),
@@ -4468,7 +4687,7 @@ function tierTag(t, tiers) {
 function tierNote(t) {
   var note = document.createElement("span");
   note.className = "tiernote" + (t === 1 ? " t1" : "");
-  note.textContent = SPORT_MODE === "nba" ? NBA_TIER_NOTES[t - 1] || "" : "";
+  note.textContent = SPORT_MODE === "nba" ? (NBA_RULESET === "new" ? NBA_TIER_NOTES_NEW : NBA_TIER_NOTES)[t - 1] || "" : "";
   note.style.borderColor = NBA_TIER_COLORS[t - 1];
   return note;
 }
@@ -7157,6 +7376,7 @@ $("lockAm").addEventListener("click", function () { lockBoard("am"); });
 $("lockPm").addEventListener("click", function () { lockBoard("pm"); });
 $("lockSwap").addEventListener("click", pressSwap);
 $("tiersBtn").addEventListener("click", function () { pressTiers(); });
+$("rulesCmpBtn").addEventListener("click", function () { renderRulesCompare(); });
 $("nflTiersBtn").addEventListener("click", function () { pressNflTiers(); });
 $("swapBtn").addEventListener("click", function () { toggleSwapPanel(); });
 $("tiersSrc").addEventListener("change", function () { save(K.tierSrc(state.slate.label), this.value); });
@@ -8030,6 +8250,14 @@ function brrSelfTest() {
      nbaRuleSort([{ pid: "a", adp: -30, projx: 20, drafted: -80 }, { pid: "b", adp: -32, projx: 17, drafted: -30 }],
                  [["lev", 2], ["adp", 0]])[0].pid === "a");
   ok("the rule sort keeps margins", nbaRuleSort([{ pid: "a", adp: -5, boom: 0.1 }, { pid: "b", adp: -6, boom: 0.3 }], [["adp", 2], ["boom", 0]])[0].pid === "b");
+  ok("new rules: the elite cut at the biggest gap among T1's top 3-4 (1 to 3)",
+     nbaElites([60, 50, 49, 48]) === 1 && nbaElites([60, 59, 45, 44]) === 2 && nbaElites([60, 59, 58, 40, 39]) === 3 && nbaElites([55]) === 1);
+  var adps = []; for (var ai = 1; ai <= 40; ai++) adps.push(ai);
+  var gapped = adps.slice(); gapped[27] = 31.5; for (var gi = 28; gi < 40; gi++) gapped[gi] = gapped[gi] + 2.5;
+  ok("new rules: T4 ends at the start of round 6, earlier only at a 2+ pick ADP gap just before it",
+     nbaT4Line(adps, 6, 22) === 30 && nbaT4Line(gapped, 6, 22) === 27 && nbaT4Line(adps.slice(0, 24), 4, 15) === 20);
+  ok("new rules: T5 drafted% bands (under 50, 50-60 gray, 60-70 gray, 70+)",
+     nbaT5Band(10) === 0 && nbaT5Band(55) === 1 && nbaT5Band(65) === 2 && nbaT5Band(85) === 3 && nbaT5Band(null) === 0);
   var sw = nbaSwapList(["a", "b", "c", "d", "e", "f", "g"], 4, { a: 50, b: 40, c: 30, d: 10, e: 25, f: null, g: 25 });
   ok("the swap list sorts T5 and below by projection, highest first; T1-T4 and the order of the unprojected stay",
      sw.join() === "a,b,c,e,g,d,f" && nbaSwapList(["a", "b"], 1, { a: 1, b: 2 }).join() === "b,a");
