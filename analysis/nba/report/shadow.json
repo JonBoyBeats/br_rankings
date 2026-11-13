@@ -9,22 +9,22 @@
   "window": "pm",
   "drop_if": "no win",
   "forward_from": "2026-11-10",
-  "forward_nights": 2,
+  "forward_nights": 3,
   "season": {
-   "n": 49,
-   "mean": 2.7416554439034506,
-   "lo": -1.0725512314344785,
-   "hi": 6.870822335025381,
-   "label": "LEAN +",
-   "text": "+2.7 (-1.1 to +6.9), 49 pairs, LEAN +"
+   "n": 50,
+   "mean": 2.3428223350253847,
+   "lo": -1.4954545454545438,
+   "hi": 6.314583333333335,
+   "label": "no lean",
+   "text": "+2.3 (-1.5 to +6.3), 50 pairs, no lean"
   },
   "forward": {
-   "n": 10,
-   "mean": -5.909999999999998,
+   "n": 11,
+   "mean": -6.936363636363635,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (10)",
-   "text": "-5.9, not enough yet (10)"
+   "label": "not enough yet (11)",
+   "text": "-6.9, not enough yet (11)"
   }
  },
  {
@@ -37,22 +37,22 @@
   "window": "pm",
   "drop_if": "no win",
   "forward_from": "2026-11-10",
-  "forward_nights": 1,
+  "forward_nights": 2,
   "season": {
-   "n": 24,
-   "mean": -0.4000000000000011,
+   "n": 25,
+   "mean": -1.7040000000000008,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (24)",
-   "text": "-0.4, not enough yet (24)"
+   "label": "not enough yet (25)",
+   "text": "-1.7, not enough yet (25)"
   },
   "forward": {
-   "n": 1,
-   "mean": 6.299999999999997,
+   "n": 2,
+   "mean": -13.350000000000001,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (1)",
-   "text": "+6.3, not enough yet (1)"
+   "label": "not enough yet (2)",
+   "text": "-13.4, not enough yet (2)"
   }
  },
  {
@@ -65,22 +65,22 @@
   "window": "pm",
   "drop_if": null,
   "forward_from": "2026-11-10",
-  "forward_nights": 2,
+  "forward_nights": 3,
   "season": {
-   "n": 882,
-   "mean": 0.14776456499849752,
-   "lo": -1.7095010908046806,
-   "hi": 1.876776804186443,
+   "n": 890,
+   "mean": 0.32475095093109646,
+   "lo": -1.556535500522357,
+   "hi": 2.0347578264866715,
    "label": "no lean",
-   "text": "+0.1 (-1.7 to +1.9), 882 pairs, no lean"
+   "text": "+0.3 (-1.6 to +2.0), 890 pairs, no lean"
   },
   "forward": {
-   "n": 108,
-   "mean": -6.574515264444174,
-   "lo": -13.044827586206896,
-   "hi": 0.9310470288005839,
+   "n": 125,
+   "mean": -5.649981188479767,
+   "lo": -11.348872180451126,
+   "hi": 0.8282453237611828,
    "label": "no lean",
-   "text": "-6.6 (-13.0 to +0.9), 108 pairs, no lean"
+   "text": "-5.6 (-11.3 to +0.8), 125 pairs, no lean"
   }
  },
  {
@@ -93,22 +93,22 @@
   "window": "am",
   "drop_if": "loss",
   "forward_from": "2026-11-10",
-  "forward_nights": 2,
+  "forward_nights": 3,
   "season": {
-   "n": 165,
-   "mean": 2.8123559422849382,
-   "lo": 1.123852417751586,
-   "hi": 4.7215112308944835,
+   "n": 168,
+   "mean": 2.6169203160638066,
+   "lo": 0.8198728970394231,
+   "hi": 4.712924534603986,
    "label": "RULE +",
-   "text": "+2.8 (+1.1 to +4.7), 165 pairs, RULE +"
+   "text": "+2.6 (+0.8 to +4.7), 168 pairs, RULE +"
   },
   "forward": {
-   "n": 30,
-   "mean": 5.045250201775627,
+   "n": 37,
+   "mean": 5.461013677115371,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (30)",
-   "text": "+5.0, not enough yet (30)"
+   "label": "not enough yet (37)",
+   "text": "+5.5, not enough yet (37)"
   }
  },
  {
@@ -121,22 +121,22 @@
   "window": "pm",
   "drop_if": "loss",
   "forward_from": "2026-11-10",
-  "forward_nights": 2,
+  "forward_nights": 3,
   "season": {
-   "n": 92,
-   "mean": -2.3728260869565214,
-   "lo": -4.905479452054796,
-   "hi": -0.03389830508474513,
+   "n": 96,
+   "mean": -2.40625,
+   "lo": -4.717187500000002,
+   "hi": -0.09886363636363611,
    "label": "LEAN -",
-   "text": "-2.4 (-4.9 to -0.0), 92 pairs, LEAN -"
+   "text": "-2.4 (-4.7 to -0.1), 96 pairs, LEAN -"
   },
   "forward": {
-   "n": 8,
-   "mean": -5.0875,
+   "n": 13,
+   "mean": -3.3615384615384616,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (8)",
-   "text": "-5.1, not enough yet (8)"
+   "label": "not enough yet (13)",
+   "text": "-3.4, not enough yet (13)"
   }
  },
  {
@@ -153,22 +153,22 @@
   "window": "am+pm",
   "drop_if": null,
   "forward_from": "2026-11-10",
-  "forward_nights": 2,
+  "forward_nights": 3,
   "season": {
-   "n": 75,
-   "mean": 0.011025246244170337,
-   "lo": -2.0718487018289897,
-   "hi": 2.049706527135129,
+   "n": 78,
+   "mean": -0.23683469912419505,
+   "lo": -2.2493083444890676,
+   "hi": 1.736615817428711,
    "label": "no lean",
-   "text": "+0.0 (-2.1 to +2.0), 75 pairs, no lean"
+   "text": "-0.2 (-2.2 to +1.7), 78 pairs, no lean"
   },
   "forward": {
-   "n": 13,
-   "mean": 4.1000000000000005,
+   "n": 16,
+   "mean": 2.125000000000001,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (13)",
-   "text": "+4.1, not enough yet (13)"
+   "label": "not enough yet (16)",
+   "text": "+2.1, not enough yet (16)"
   }
  },
  {
@@ -183,22 +183,22 @@
   "window": "am+pm",
   "drop_if": "loss",
   "forward_from": "2026-11-11",
-  "forward_nights": 1,
+  "forward_nights": 2,
   "season": {
-   "n": 428,
-   "mean": 0.45133281162969857,
-   "lo": -0.58717917177651,
-   "hi": 1.466792004464291,
+   "n": 427,
+   "mean": 0.4925710344113873,
+   "lo": -0.5904825430847953,
+   "hi": 1.593208299646202,
    "label": "no lean",
-   "text": "+0.5 (-0.6 to +1.5), 428 pairs, no lean"
+   "text": "+0.5 (-0.6 to +1.6), 427 pairs, no lean"
   },
   "forward": {
-   "n": 27,
-   "mean": -3.5433638238722978,
+   "n": 28,
+   "mean": -3.0668151158768593,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (27)",
-   "text": "-3.5, not enough yet (27)"
+   "label": "not enough yet (28)",
+   "text": "-3.1, not enough yet (28)"
   }
  },
  {
@@ -215,22 +215,22 @@
   "window": "am+pm",
   "drop_if": "loss",
   "forward_from": "2026-11-11",
-  "forward_nights": 1,
+  "forward_nights": 2,
   "season": {
-   "n": 1181,
-   "mean": 2.797677897984121,
-   "lo": 1.5926294939171075,
-   "hi": 4.028535606803642,
+   "n": 1254,
+   "mean": 2.7215887633563463,
+   "lo": 1.5526344140045794,
+   "hi": 3.93485199813346,
    "label": "RULE +",
-   "text": "+2.8 (+1.6 to +4.0), 1181 pairs, RULE +"
+   "text": "+2.7 (+1.6 to +3.9), 1254 pairs, RULE +"
   },
   "forward": {
-   "n": 84,
-   "mean": -0.39540672201083826,
-   "lo": -0.39540672201083826,
-   "hi": -0.39540672201083826,
-   "label": "LEAN - (RULE numbers, check pending)",
-   "text": "-0.4 (-0.4 to -0.4), 84 pairs, LEAN - (RULE numbers, check pending)"
+   "n": 162,
+   "mean": 0.6148181918562453,
+   "lo": -0.39540672201083815,
+   "hi": 1.7027527144823358,
+   "label": "no lean",
+   "text": "+0.6 (-0.4 to +1.7), 162 pairs, no lean"
   }
  },
  {
@@ -247,22 +247,22 @@
   "window": "am",
   "drop_if": "loss",
   "forward_from": "2026-11-11",
-  "forward_nights": 0,
+  "forward_nights": 1,
   "season": {
-   "n": 129,
-   "mean": 1.8119027163758328,
-   "lo": -2.3910392016658757,
-   "hi": 5.607340290086105,
+   "n": 143,
+   "mean": 0.7569921302824075,
+   "lo": -3.1398844622725917,
+   "hi": 4.7223523116960155,
    "label": "no lean",
-   "text": "+1.8 (-2.4 to +5.6), 129 pairs, no lean"
+   "text": "+0.8 (-3.1 to +4.7), 143 pairs, no lean"
   },
   "forward": {
-   "n": 0,
-   "mean": null,
+   "n": 14,
+   "mean": -8.963255413007003,
    "lo": null,
    "hi": null,
-   "label": "-",
-   "text": "none yet"
+   "label": "not enough yet (14)",
+   "text": "-9.0, not enough yet (14)"
   }
  },
  {
@@ -279,22 +279,22 @@
   "window": "pm",
   "drop_if": "loss",
   "forward_from": "2026-11-11",
-  "forward_nights": 1,
+  "forward_nights": 2,
   "season": {
-   "n": 97,
-   "mean": -0.09960706737171399,
-   "lo": -2.6701082111089294,
-   "hi": 1.946911051058135,
+   "n": 99,
+   "mean": -0.029918035707638912,
+   "lo": -2.567657724837159,
+   "hi": 1.9721799748994544,
    "label": "no lean",
-   "text": "-0.1 (-2.7 to +1.9), 97 pairs, no lean"
+   "text": "-0.0 (-2.6 to +2.0), 99 pairs, no lean"
   },
   "forward": {
-   "n": 5,
-   "mean": -0.7600000000000012,
+   "n": 7,
+   "mean": 0.4142857142857143,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (5)",
-   "text": "-0.8, not enough yet (5)"
+   "label": "not enough yet (7)",
+   "text": "+0.4, not enough yet (7)"
   }
  },
  {
@@ -307,22 +307,22 @@
   "window": "am",
   "drop_if": "loss",
   "forward_from": "2026-11-11",
-  "forward_nights": 1,
+  "forward_nights": 2,
   "season": {
-   "n": 380,
-   "mean": 2.391910070546198,
-   "lo": 0.41741391240295345,
-   "hi": 4.424087745886958,
+   "n": 388,
+   "mean": 2.332808529456856,
+   "lo": 0.38871471068469676,
+   "hi": 4.441153306493376,
    "label": "LEAN +",
-   "text": "+2.4 (+0.4 to +4.4), 380 pairs, LEAN +"
+   "text": "+2.3 (+0.4 to +4.4), 388 pairs, LEAN +"
   },
   "forward": {
-   "n": 44,
-   "mean": 10.632803213735418,
-   "lo": 10.632803213735418,
-   "hi": 10.632803213735418,
+   "n": 52,
+   "mean": 9.94121810392997,
+   "lo": 6.78888888888889,
+   "hi": 10.601007939636245,
    "label": "LEAN +",
-   "text": "+10.6 (+10.6 to +10.6), 44 pairs, LEAN +"
+   "text": "+9.9 (+6.8 to +10.6), 52 pairs, LEAN +"
   }
  },
  {
@@ -367,12 +367,12 @@
   "forward_from": "2026-11-10",
   "forward_nights": 0,
   "season": {
-   "n": 19,
-   "mean": 0.5210526315789471,
+   "n": 18,
+   "mean": 0.7277777777777775,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (19)",
-   "text": "+0.5, not enough yet (19)"
+   "label": "not enough yet (18)",
+   "text": "+0.7, not enough yet (18)"
   },
   "forward": {
    "n": 0,
@@ -393,22 +393,22 @@
   "window": "am",
   "drop_if": "no win",
   "forward_from": "2026-11-10",
-  "forward_nights": 2,
+  "forward_nights": 3,
   "season": {
-   "n": 808,
-   "mean": -3.267042667553854,
-   "lo": -4.483126569038866,
-   "hi": -1.792562235043357,
+   "n": 826,
+   "mean": -3.2194568386754963,
+   "lo": -4.42598292578972,
+   "hi": -1.7800697314860208,
    "label": "RULE -",
-   "text": "-3.3 (-4.5 to -1.8), 808 pairs, RULE -"
+   "text": "-3.2 (-4.4 to -1.8), 826 pairs, RULE -"
   },
   "forward": {
-   "n": 131,
-   "mean": -1.6220292774892333,
-   "lo": -6.414287307251179,
-   "hi": 5.0,
+   "n": 153,
+   "mean": -1.6619989238633304,
+   "lo": -5.843515348863101,
+   "hi": 3.85,
    "label": "no lean",
-   "text": "-1.6 (-6.4 to +5.0), 131 pairs, no lean"
+   "text": "-1.7 (-5.8 to +3.9), 153 pairs, no lean"
   }
  },
  {
@@ -421,22 +421,22 @@
   "window": "am",
   "drop_if": "no win",
   "forward_from": "2026-11-10",
-  "forward_nights": 2,
+  "forward_nights": 3,
   "season": {
-   "n": 43,
-   "mean": -1.133935903353667,
-   "lo": -3.6296590725578692,
-   "hi": 1.5843872180451128,
+   "n": 44,
+   "mean": -1.008164632822902,
+   "lo": -3.382869014641868,
+   "hi": 1.6186046511627898,
    "label": "no lean",
-   "text": "-1.1 (-3.6 to +1.6), 43 pairs, no lean"
+   "text": "-1.0 (-3.4 to +1.6), 44 pairs, no lean"
   },
   "forward": {
-   "n": 7,
-   "mean": -0.8571428571428577,
+   "n": 8,
+   "mean": -0.19999999999999973,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (7)",
-   "text": "-0.9, not enough yet (7)"
+   "label": "not enough yet (8)",
+   "text": "-0.2, not enough yet (8)"
   }
  },
  {
@@ -449,22 +449,22 @@
   "window": "pm",
   "drop_if": "no win",
   "forward_from": "2026-11-10",
-  "forward_nights": 2,
+  "forward_nights": 3,
   "season": {
-   "n": 77,
-   "mean": 0.295468874001369,
-   "lo": -2.0170203795885127,
-   "hi": 2.859420289855072,
+   "n": 79,
+   "mean": 0.6183683961785498,
+   "lo": -1.625860082805972,
+   "hi": 3.136363636363637,
    "label": "no lean",
-   "text": "+0.3 (-2.0 to +2.9), 77 pairs, no lean"
+   "text": "+0.6 (-1.6 to +3.1), 79 pairs, no lean"
   },
   "forward": {
-   "n": 7,
-   "mean": 1.4428571428571435,
+   "n": 9,
+   "mean": 4.022222222222222,
    "lo": null,
    "hi": null,
-   "label": "not enough yet (7)",
-   "text": "+1.4, not enough yet (7)"
+   "label": "not enough yet (9)",
+   "text": "+4.0, not enough yet (9)"
   }
  },
  {
@@ -477,22 +477,22 @@
   "window": "am",
   "drop_if": "no win",
   "forward_from": "2026-11-11",
-  "forward_nights": 1,
+  "forward_nights": 2,
   "season": {
-   "n": 679,
-   "mean": -1.6330486025826796,
-   "lo": -3.4296355515888677,
-   "hi": 0.1412909179358337,
+   "n": 696,
+   "mean": -1.6177354651944602,
+   "lo": -3.339592499101058,
+   "hi": 0.16515933618706488,
    "label": "LEAN -",
-   "text": "-1.6 (-3.4 to +0.1), 679 pairs, LEAN -"
+   "text": "-1.6 (-3.3 to +0.2), 696 pairs, LEAN -"
   },
   "forward": {
-   "n": 52,
-   "mean": 8.053862451108214,
-   "lo": 8.053862451108214,
-   "hi": 8.053862451108214,
-   "label": "LEAN +",
-   "text": "+8.1 (+8.1 to +8.1), 52 pairs, LEAN +"
+   "n": 67,
+   "mean": 5.205982797875031,
+   "lo": -5.857142857142859,
+   "hi": 8.128317876559002,
+   "label": "no lean",
+   "text": "+5.2 (-5.9 to +8.1), 67 pairs, no lean"
   }
  },
  {
@@ -505,22 +505,22 @@
   "window": "pm",
   "drop_if": "no win",
   "forward_from": "2026-11-11",
-  "forward_nights": 1,
+  "forward_nights": 2,
   "season": {
-   "n": 717,
-   "mean": -0.996373779637378,
-   "lo": -2.729710144927536,
-   "hi": 0.9275908479138629,
+   "n": 723,
+   "mean": -0.9504840940525595,
+   "lo": -2.7127697841726626,
+   "hi": 0.9881331403762673,
    "label": "no lean",
-   "text": "-1.0 (-2.7 to +0.9), 717 pairs, no lean"
+   "text": "-1.0 (-2.7 to +1.0), 723 pairs, no lean"
   },
   "forward": {
-   "n": 49,
-   "mean": 12.342857142857142,
-   "lo": 12.342857142857142,
-   "hi": 12.342857142857142,
+   "n": 55,
+   "mean": 11.392727272727273,
+   "lo": 3.633333333333334,
+   "hi": 12.342857142857138,
    "label": "LEAN +",
-   "text": "+12.3 (+12.3 to +12.3), 49 pairs, LEAN +"
+   "text": "+11.4 (+3.6 to +12.3), 55 pairs, LEAN +"
   }
  },
  {
@@ -537,22 +537,22 @@
   "window": "am",
   "drop_if": "no win",
   "forward_from": "2026-11-12",
-  "forward_nights": 0,
+  "forward_nights": 1,
   "season": {
-   "n": 77,
-   "mean": -3.968199351152319,
-   "lo": -7.88374420492191,
-   "hi": 0.8000508330795426,
-   "label": "LEAN -",
-   "text": "-4.0 (-7.9 to +0.8), 77 pairs, LEAN -"
+   "n": 89,
+   "mean": -2.4185512643484066,
+   "lo": -6.591688778240337,
+   "hi": 2.249438482097034,
+   "label": "no lean",
+   "text": "-2.4 (-6.6 to +2.2), 89 pairs, no lean"
   },
   "forward": {
-   "n": 0,
-   "mean": null,
+   "n": 12,
+   "mean": 7.525023959310027,
    "lo": null,
    "hi": null,
-   "label": "-",
-   "text": "none yet"
+   "label": "not enough yet (12)",
+   "text": "+7.5, not enough yet (12)"
   }
  }
 ]

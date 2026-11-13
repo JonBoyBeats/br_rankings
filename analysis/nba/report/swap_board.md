@@ -7,29 +7,29 @@ Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). Excluded 
 | Swaps | Group | Swaps | Points left per swap | Share where the swap was already the best option or better |
 |---|---|---|---|---|
 | Field and you | T1 | 1239 | +1.5 | 76% |
-| Field and you | T2 | 9214 | +1.7 | 59% |
-| Field and you | T3 | 18693 | +2.0 | 66% |
+| Field and you | T2 | 9725 | +2.0 | 58% |
+| Field and you | T3 | 19196 | +2.1 | 66% |
 | Field and you | T4 | 4537 | -2.6 | 73% |
 | Field and you | T5 | 3124 | +3.0 | 58% |
-| Field and you | all | 36807 | +1.4 | 65% |
-| Your teams | AM | 82 | +0.3 | 74% |
+| Field and you | all | 37821 | +1.5 | 65% |
+| Your teams | AM | 97 | +1.5 | 70% |
 | Your teams | OVERNIGHT | 31 | -2.6 | 94% |
 | Your teams | PM | 74 | +0.9 | 77% |
-| Your teams | all | 187 | +0.1 | 79% |
+| Your teams | all | 202 | +0.7 | 76% |
 
 ## b. Your swapped teams under three orders of near-ties (within 2 points on ETR's final)
 
 | Order | Your swaps | Their points | Nights | Share on the night's most-hit target (avg) | That target's exposure (drafted + swapped, avg) | His field drafted% (avg) |
 |---|---|---|---|---|---|---|
-| Projection only | 187 | 33.7 | 12 | 59% | 17% | 54% |
-| Ownership lowest first (your habit) | 187 | 33.5 | 12 | 67% | 18% | 31% |
-| Ownership highest first | 187 | 33.6 | 12 | 53% | 17% | 71% |
+| Projection only | 202 | 33.5 | 13 | 60% | 18% | 56% |
+| Ownership lowest first (your habit) | 202 | 33.4 | 13 | 68% | 19% | 35% |
+| Ownership highest first | 202 | 33.2 | 13 | 53% | 18% | 72% |
 
 ## Your own swaps
 
 Graded from your real swaps in the contest rosters (your Underdog app order, which the board never sees): analysis/nba/report/my_swaps.md. The replay of your saved order that used to stand here is superseded.
 
-Reading section a: points left on the table are the best option's score minus the swap's, so positive means the swap fell short. The field left +1.4 a swap; yours left +0.1 (AM +0.3, PM +0.9).
+Reading section a: points left on the table are the best option's score minus the swap's, so positive means the swap fell short. The field left +1.5 a swap; yours left +0.7 (AM +1.5, PM +0.9).
 
 ## Your live moves: board saves after the slate locked
 
@@ -56,3 +56,4 @@ Reading section a: points left on the table are the best option's score minus th
 | 2026-11-09 | 149 | 0 | 0 |
 | 2026-11-10 | 50 | 0 | 0 |
 | 2026-11-11 | 145 | 1 | 14 |
+| 2026-11-12 | 90 | 0 | 0 |

@@ -1,4 +1,8 @@
 {
+ "00fac8b1-78c8-41ff-b059-5b194f78a10c": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_thu_main"
+ },
  "1d088fe1-53a6-4c71-970f-b11a5f69d60a": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_wed_main"
