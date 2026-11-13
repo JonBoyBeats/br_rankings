@@ -100,6 +100,33 @@ jobs:
           if [ "$EVENING" = true ]; then NOTES_FOR=$(TZ=America/Los_Angeles date -d tomorrow +%F); fi
           python3 scripts/nba_ledger.py auto --slates ../br-adp-mirror/nba_latest.json ${NOTES_FOR:+--date "$NOTES_FOR"}
           python3 scripts/build_takes.py
+      # Push the notes now, so the AM board has them without waiting on the Tiers and money steps. They're committed from a
+      # worktree of the latest main (this checkout holds the other steps' files, unstaged), with the final push's retry:
+      # this run's copy stands on a conflict. If it can't push, the final commit below still carries them.
+      - name: Push Recent notes
+        continue-on-error: true
+        run: |
+          git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
+          NOTES="analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/takes.json analysis/nba_takes.json analysis/cfb_takes.json"
+          git fetch -q origin main
+          git worktree add -q --detach ../notes-push origin/main
+          for f in $NOTES; do
+            if [ -d "$f" ]; then mkdir -p "../notes-push/$f"; cp -r "$f/." "../notes-push/$f/"; elif [ -f "$f" ]; then cp "$f" "../notes-push/$f"; fi
+          done
+          cd ../notes-push
+          git add $NOTES
+          git diff --cached --quiet && exit 0
+          git commit -q -m "NBA daily: Recent notes through $(TZ=America/Los_Angeles date -d yesterday +%F)"
+          for try in 1 2 3; do
+            git push -q origin HEAD:main && exit 0
+            git fetch -q origin main
+            if ! git rebase -q origin/main; then
+              echo "::warning::push conflict on the notes files (try $try): keeping this run's copy"
+              for f in $(git diff --name-only --diff-filter=U); do git checkout --theirs -- "$f"; git add "$f"; done
+              GIT_EDITOR=true git rebase --continue
+            fi
+          done
+          echo "::error::could not push the notes after 3 tries; the final commit will carry them"; exit 1
       # The tiers: the Tiers button rebuilt at every lock (tier_history.csv), every swap read from the contests (swaps.csv),
       # the shadow orders: each replaced rule and each candidate graded against the button (shadow.md), then the money
       # report and the morning report (today.md)

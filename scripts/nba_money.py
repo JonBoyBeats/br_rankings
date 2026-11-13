@@ -1767,6 +1767,7 @@ def card_decisions(N):
 TAGS = os.path.join(NBA, "contests", "tags")
 QTAGS = ("Questionable", "Doubtful", "GTD")
 UNDER = 60          # T5: the drafted% line (share of pods), from the season study
+T5_POOL = lambda r: r.get("a_tier") == "5"   # T5 by ADP tier: the pool a drafted% line sorts, whatever the button does with it
 
 
 def hit(t, x):
@@ -1869,8 +1870,9 @@ def pod_shares(n, cid):
 
 
 def t5_drafted(N, R):
-    """Per window: the share of my T5 picks and of the field's drafted by under UNDER% of pods, and how teams holding a T5
-    pick under the line (and one at or over it) did, last night and season to date (the field's holders and mine)."""
+    """Per window: the share of my T5 picks (ADP tier 5: the 2026-11-13 button moves 60%+ players below its cut, so its own
+    T5 would read the line off itself) and of the field's drafted by under UNDER% of pods, and how teams holding one under the line (and one at or over it) did, last
+    night and season to date (the field's holders and mine)."""
     out = {}
     last = N[-1]["date"]
     for w in ("am", "pm"):
@@ -1885,7 +1887,7 @@ def t5_drafted(N, R):
                     rows = n["tiers"][w]
                     g = set()
                     for p in drafted_by(t):
-                        if (rows.get(p) or {}).get("tier") != "5":
+                        if not T5_POOL(rows.get(p) or {}):
                             continue
                         under = sh.get(p, 0) < UNDER
                         g.add("under" if under else "over")
