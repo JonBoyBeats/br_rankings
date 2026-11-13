@@ -47,8 +47,16 @@ Centers as a group: we're 0.4 above ETR (149 player-nights); wings 0.3-0.4 below
 Young and Davis, under on Kyshawn George. Cleveland: over on Harden, Mitchell and Allen. The team totals are close;
 the split isn't.
 
-## What would settle it
+## Reading ETR's weights from its numbers
 
-ETR's file gives a projection only, so "minutes or rate" is inferred here at our per-minute rate. ETR's own
-minutes projection would split each gap exactly. The next step after that: review ours and ETR's against the box
-scores, so we know which of ETR's choices are worth copying.
+ETR publishes no minutes, so the split is read across players instead: ETR final over ours (log) against recent
+minutes over our minutes and this season's actual points per minute over our rate (783 untagged player-nights):
+
+- recent minutes: 0.27 (80% range over slates 0.22 to 0.32). Last 3 games 10% over our minutes puts ETR about
+  2.7% over us, about 0.35 points a minute on a 40-point player: the same size as H5's half point.
+- this season's rate: 0.17 (0.14 to 0.20), rising with games played (0.11 under 6 games, 0.20 after). A player
+  producing 10% under our rate this season sits about 2% under us at ETR: our rate leans on the prior more than ETR's.
+- the two explain about a fifth of the spread (R2 0.21); the rest is ETR's own reads.
+
+Next idea in line (not yet under test; needs a yes): blend our points per minute toward this season's actual, more
+as games pile up, graded against ETR's final like H5. Then review ours and ETR's against the box scores.
