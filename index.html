@@ -3975,7 +3975,9 @@ function nbaBuildLaddersOld() {
         fallen 6+ picks since the tag goes last; a T1-T4 teammate of a Q player gets the tiebreak within his group;
         T5 Q players follow T5's rule. The ADP before the tag is the poller's pre_tag_adp (the mirror's last hourly
         snapshot before it; tagged from the slate's open, his ADP on the last earlier slate where he was untagged,
-        pre_tag_src "previous slate", marked); only when that's missing, what this device saw when it first saw the tag (K.qSeen), marked. */
+        pre_tag_src "previous slate", marked); only when that's missing, what this device saw when it first saw the tag (K.qSeen), marked.
+        Across slates the fall is the poller's pre_tag_passed, the players behind him on that slate now ahead of him
+        (two slates' ADPs don't compare when their sizes differ); on this slate, the raw pick difference. */
 var NBA_RULESET = "new";       // switched 2026-11-13 after the operator checked "Old vs new"
 var NBA_R6 = { 6: 30, 4: 20 };          // T4's last pick: the start of round 6 ...
 var NBA_T4_GAP = 2;                     // ... or earlier at an ADP gap this big in the three ranks before it
@@ -4059,8 +4061,11 @@ function nbaBuildLaddersNew() {
       // slate opened with him tagged, his ADP on the last earlier slate where he was untagged, marked), else this
       // device's first sighting of the tag, marked
       var was = typeof p.pre_tag_adp === "number" ? { adp: p.pre_tag_adp, src: p.pre_tag_src === "previous slate" ? "previous" : "mirror" } : qSeen[pid] ? { adp: qSeen[pid].adp, src: "device" } : null;
+      if (was && was.src === "previous" && typeof p.pre_tag_passed === "number") was.passed = p.pre_tag_passed;
       if (was) x.preTag = was;
-      if (was && hasAdp(p) && p.adp - was.adp >= NBA_Q_FALL) { x.qlast = true; x.fell = Math.round((p.adp - was.adp) * 10) / 10; }
+      // across slates: the players who passed him; on this slate (or a device sighting): the raw pick difference
+      var fall = !was ? null : was.passed != null ? was.passed : hasAdp(p) ? p.adp - was.adp : null;
+      if (fall != null && fall >= NBA_Q_FALL) { x.qlast = true; x.fell = was.passed != null ? fall : Math.round(fall * 10) / 10; }
       else if (x.c === 1) { x.c = 2; x.qtop = true; }
       var sit = nbaSitFor(p), play = sit && typeof sit.p === "number" ? 1 - sit.p : null, v = projOf(p);
       if (play != null && isFinite(v)) {
@@ -4150,7 +4155,8 @@ function nbaRulesCompare() {
   oldB.order.forEach(function (pid, i) { posOld[pid] = i; });
   for (var i = 0; i < n; i++) {
     var o = oldB.order[i], w = newB.order[i], x = w ? newB.players[w] : null;
-    var why = !x ? "" : [x.qtop ? "Q: T1 to the top of T2" : "", x.qlast ? "Q: ADP fell " + x.fell + " since the tag" + (x.preTag.src === "device" ? " (this device's first sighting: the poller had no pre-tag ADP)" : x.preTag.src === "previous" ? " (from the last slate he was untagged: tagged from this slate's open)" : "") : "",
+    var why = !x ? "" : [x.qtop ? "Q: T1 to the top of T2" : "", x.qlast ? (x.preTag.passed != null ? "Q: " + x.fell + " players passed him since the tag (from the last slate he was untagged: tagged from this slate's open)"
+                        : "Q: ADP fell " + x.fell + " since the tag" + (x.preTag.src === "device" ? " (this device's first sighting: the poller had no pre-tag ADP)" : x.preTag.src === "previous" ? " (from the last slate he was untagged: tagged from this slate's open)" : "")) : "",
                          x.dropped ? "T4 PRICEY dropped, after T5's top 3" : "", x.borrowed ? "borrowed from T3" : "", x.belowFloor ? "under " + NBA_MIN_FLOOR + " minutes" : "",
                          x.band === 1 ? "gray zone (" + x.drafted + "% drafted)" : x.band >= 2 ? x.drafted + "% drafted" : "",
                          x.belowCut ? "below the cut, by projection" : ""]

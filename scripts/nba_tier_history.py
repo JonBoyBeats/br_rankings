@@ -44,14 +44,14 @@ R6 = {6: 30, 4: 20}            # T4's last pick: the start of round 6, or earlie
 T4_GAP, T4_MIN = 2, 4          # T4 short of T4_MIN borrows from the bottom of T3
 T5_LINE, T5_GRAY = 60, (50, 70)
 MIN_FLOOR = 20                 # T5: only players projected for 20+ minutes (T5 dud rates, 2026-11-13)
-Q_FALL = 6                     # a Q player whose ADP fell this many picks since the tag goes below the cut
+Q_FALL = 6                     # a Q player whose ADP fell this many picks since the tag (across slates: this many players passed him) goes below the cut
 DEFAULT_RANKED = 44            # the board's ranked list (NBA_DEFAULT_RANKED): T5 ends there, the rest sorts by projection
 CEIL = (1.045, 7.31)           # index.html NBA_CEIL: the board's Proj from a median, to read ETR's median back out
 FIELD_MODEL = os.path.join(HERE, "analysis", "nba", "contests", "field_model.json")
 MIRROR = None
 COLS = ["date", "slate", "pod", "window", "sample", "board", "player_id", "name", "team", "adp", "proj", "proj_src", "a_tier", "p_tier",
         "tier", "flag", "tag", "q_class", "play", "exp_tier", "actual", "min", "played", "scratched", "breaker",
-        "your_rank", "your_tier", "built", "boom", "drafted", "proj_min", "pre_tag_adp", "pre_tag_src"]
+        "your_rank", "your_tier", "built", "boom", "drafted", "proj_min", "pre_tag_adp", "pre_tag_src", "pre_tag_passed"]
 
 
 def num(v):
@@ -282,10 +282,12 @@ _TAGS = {}
 
 
 def q_tag_adp(date, slate, window, meta):
-    """{player_id: (his ADP before the tag, source)} for every player Questionable at the window's lock (the mirror):
-    "pre-tag" the last snapshot before the tag on this slate; tagged from the slate's first snapshot, "previous slate" his
-    ADP in the newest snapshot of the last earlier main slate (up to 4 back) where he was untagged (the poller's
-    pre_tag_src); else "first tagged", his ADP in the first snapshot that had him tagged (the board's device sighting)."""
+    """{player_id: (his ADP before the tag, source, players passed)} for every player Questionable at the window's lock (the
+    mirror): "pre-tag" the last snapshot before the tag on this slate; tagged from the slate's first snapshot, "previous
+    slate" his ADP in the newest snapshot of the last earlier main slate (up to 4 back) where he was untagged (the poller's
+    pre_tag_src), with the players behind him there who are ahead of him at the window (the poller's pre_tag_passed: the
+    fall across slates, since two slates' ADPs don't compare); else "first tagged", his ADP in the first snapshot that had
+    him tagged (the board's device sighting). Players passed is None except across slates."""
     key = (date, window)
     if key in _TAGS or not MIRROR:
         return _TAGS.get(key, {})
@@ -310,24 +312,30 @@ def q_tag_adp(date, slate, window, meta):
                 if q is None:
                     continue
                 if (q.get("injury") or "")[:1].lower() != "q":
-                    out[pid] = (q.get("adp"), "pre-tag")    # the poller's pre_tag_adp: the last snapshot before the tag
+                    out[pid] = (q.get("adp"), "pre-tag", None)    # the poller's pre_tag_adp: the last snapshot before the tag
                     break
                 first = q.get("adp")
             else:
-                out[pid] = earlier_untagged(mirror, s, pid) or (first, "first tagged")
+                now = {k: v.get("adp") for k, v in snaps[-1][1].items() if v.get("adp") is not None}
+                out[pid] = earlier_untagged(mirror, s, pid, now) or (first, "first tagged", None)
     _TAGS[key] = out
     return out
 
 
-def earlier_untagged(mirror, slate, pid, look=4):
-    """(ADP, "previous slate") from the newest snapshot of the last earlier main slates where he was priced and
-    untagged, else None."""
+def earlier_untagged(mirror, slate, pid, now, look=4):
+    """(ADP, "previous slate", players passed) from the newest snapshot of the last earlier main slates where he was priced
+    and untagged, else None. Players passed: those behind him on that snapshot who are ahead of him in `now` ({player_id:
+    ADP} at the window), among players priced on both (build_mirror.passed)."""
     import datetime as dt
     for s in reversed(mirror.main_slates(slate["lock"] - dt.timedelta(days=10), slate["lock"] - dt.timedelta(hours=1))[-look:]):
         for t, players in reversed(mirror.snapshots(s)):
             p = next((p for p in players if p["player_id"] == pid), None)
             if p is not None and (p.get("injury") or "")[:1].lower() != "q":
-                return p.get("adp"), "previous slate"
+                then = {q["player_id"]: q.get("adp") for q in players if q.get("adp") is not None}
+                k = None
+                if pid in then and pid in now:
+                    k = sum(1 for q in then if q != pid and q in now and then[q] > then[pid] and now[q] < now[pid])
+                return p.get("adp"), "previous slate", k
     return None
 
 
@@ -357,9 +365,12 @@ def new_order(out, pool, rows, adp, window, pod, date, slate, meta, boom, drafte
     for x in out:
         x["_qlast"] = x["_qtop"] = False
         if re.match(r"^q", x["tag"], re.I):
-            a0, src = seen.get(x["player_id"]) or (None, "")
+            a0, src, k = seen.get(x["player_id"]) or (None, "", None)
             x["pre_tag_adp"], x["pre_tag_src"] = ("", "") if a0 is None else (a0, src)
-            if a0 is not None and x["adp"] is not None and x["adp"] - a0 >= Q_FALL:
+            x["pre_tag_passed"] = "" if k is None else k
+            # across slates the fall is the players who passed him; on this slate, the raw pick difference
+            fall = k if k is not None else (x["adp"] - a0 if a0 is not None and x["adp"] is not None else None)
+            if fall is not None and fall >= Q_FALL:
                 x["_qlast"] = True
             elif x["tier"] == 1:
                 x["tier"], x["_qtop"] = 2, True

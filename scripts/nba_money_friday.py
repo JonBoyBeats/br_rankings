@@ -28,8 +28,8 @@ group with no rule shows the season only.
   t5-operator-order     T5 pairs (ADP within 4, no tag) where your board's order and the projection's differ: teams
                         holding your first against teams holding the projection's first
   q-tags                Q picks (tagged at the snapshot the team drafted at) by tier and played/sat; fallen 6+ picks
-                        past the pre-tag ADP (the board's: his ADP on the last slate he was untagged, tier_history's
-                        pre_tag_adp; else the last untagged snapshot on the slate); T1-T4 teammates of a Q player by whether he sat; crowd swaps (share of
+                        since the tag, as the board measures it: on the slate, ADP at the team's draft hour minus the
+                        pre-tag ADP; across slates, the players who passed him (tier_history pre_tag_passed); T1-T4 teammates of a Q player by whether he sat; crowd swaps (share of
                         pods 15+ points higher after swaps) against other swap targets within 6 projected points
   swap-button           your swaps against what your PM list would have swapped to: waits for the board's swap lock
   monthly               first Friday of the month (or --monthly): the top-1% edge by tier against its share of points,
@@ -234,13 +234,21 @@ def q_tags(N, R, rule):
                     continue
                 held = M.drafted_by(t)
                 for p in held:
-                    # the board's pre-tag ADP (tier_history pre_tag_adp: his ADP on the last slate he was untagged), else
-                    # the last untagged snapshot on this slate
-                    before = num((n["tiers"][t["window"]].get(p) or {}).get("pre_tag_adp"))
-                    before = before if before is not None else pre.get(p)
-                    if p in q and before is not None and q[p][0] is not None:
+                    # the board's measure: across slates (tier_history pre_tag_src "previous slate"), the players who
+                    # passed him (pre_tag_passed, at the window's lock); on this slate, his ADP at the team's draft hour
+                    # minus the board's pre-tag ADP, else the last untagged snapshot on the slate
+                    row = n["tiers"][t["window"]].get(p) or {}
+                    if p not in q:
+                        continue
+                    if row.get("pre_tag_src") == "previous slate" and num(row.get("pre_tag_passed")) is not None:
+                        fall = num(row["pre_tag_passed"])
+                    else:
+                        before = num(row.get("pre_tag_adp"))
+                        before = before if before is not None else pre.get(p)
+                        if before is None or q[p][0] is None:
+                            continue
                         fall = q[p][0] - before
-                        g["fell 6+ picks past the pre-tag ADP" if fall >= 6 else "fell under 6 picks (or rose)"].append((n["date"], t))
+                    g["fell 6+ since the tag" if fall >= 6 else "fell under 6 since the tag (or rose)"].append((n["date"], t))
                 qteams = collections.defaultdict(list)
                 for p, (_, _, team) in q.items():
                     qteams[team].append(p)
