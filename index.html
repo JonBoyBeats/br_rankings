@@ -177,6 +177,10 @@
   .tiertag { position: absolute; left: 6px; top: -7px; z-index: 2; padding: 0 5px; border-radius: 3px; font-family: var(--mono);
              font-size: 9px; line-height: 13px; font-weight: 700; user-select: none; }
   .tiertag.drag { cursor: ns-resize; touch-action: none; }
+  .row.nfl-grp-start { position: relative; border-top: 2px solid var(--accent); }
+  .tiertag.nflgrp { background: var(--accent); color: var(--bg); }
+  .tag.nfltier.value { background: #dcfce7; color: #14532d; }
+  .tag.nfltier.pricey { background: #fee2e2; color: #7f1d1d; }
   /* the Tiers button's read on a row: ADP and projection tier, its flag and, for a Q tag, its class */
   #draftCard { margin: 8px 0 0; padding: 6px 10px; border: 1px solid var(--line, #cbd5e1); border-radius: 6px; font-size: 13px; }
   #draftCard summary { cursor: pointer; font-weight: 600; }
@@ -781,6 +785,7 @@
         <span class="pair">
           <button type="button" id="buildScore" title="Seed the order from positional blocks, best usage score first">Builder (Score)</button>
           <button type="button" id="buildProj">Builder (Proj)</button>
+          <button type="button" id="nflTiersBtn" hidden title="Build the tiers from scratch (flex, QB and TE ladders on ADP and on ETR's price, VALUE and PRICEY flags) and order the board in position blocks: elite flex, flex tier 2, then RB and WR blocks, each QB and TE where his price falls. Moves after it are logged with the build">Tiers</button>
         </span>
       </label>
       <label class="field nba-only tool">
@@ -3735,7 +3740,8 @@ function nbaTiersAfterMove(oldOrder, oldCut, newOrder, newCut, pid, targetPid, s
 
 /** After a move on an NBA board with tiers on: save the tier lines that keep everyone in his tier. */
 function keepTierLines(oldOrder, oldCut, pid, targetPid) {
-  if (!NBA_LIKE || !state.slate) return;
+  if (!state.slate) return;
+  if (!NBA_LIKE) { if (state.slate.sport === "nfl") logTierMove(pid, oldOrder.indexOf(pid) + 1, state.order.indexOf(pid) + 1); return; }
   logTierMove(pid, oldOrder.indexOf(pid) + 1, state.order.indexOf(pid) + 1);
   var label = state.slate.label, t = loadTiers(label);
   if (!t || !t.on || !Array.isArray(t.starts) || t.starts.length !== NBA_TIERS - 1) return;
@@ -3939,7 +3945,7 @@ function pressTiers() {
 
 /** After a hand move: log it on the build as a take. */
 function logTierMove(pid, from, to) {
-  if (!NBA_LIKE || !state.slate || from === to) return;
+  if ((!NBA_LIKE && !(state.slate && state.slate.sport === "nfl")) || !state.slate || from === to) return;
   var label = state.slate.label, b = load(K.tierBuild(label), null);
   if (!b) return;
   (b.moves = b.moves || []).push({ pid: pid, from: from, to: to, at: new Date().toISOString() });
@@ -3949,7 +3955,234 @@ function logTierMove(pid, from, to) {
 /** The build's compact copy for a lock: who sat in which tier and why, and the moves since. */
 function tierBuildForLock() {
   var b = state.slate ? load(K.tierBuild(state.slate.label), null) : null;
+  if (b && b.sport === "nfl") return { at: b.at, sport: "nfl", source: b.source, lines: b.lines, groups: b.groups, players: b.players, order: b.order, moves: b.moves || [] };
   return b ? { at: b.at, window: b.window, source: b.source, pod: b.pod, lines: b.lines, players: b.players, order: b.order, moves: b.moves || [] } : null;
+}
+
+/* ---- The NFL Tiers button (2026-11-13). The tiers are battle-royale-research's src/tier_history.py slate_tiers,
+   ported line for line (scripts/nfl_tier_parity.py there checks both give the same tiers on every 2026 week):
+   a flex ladder (RB and WR) with lines at the biggest ADP gap inside rank windows, QB and TE ladders cut at elite
+   (ADP 18) and middle (ADP 30), the capped pile (ADP 34-35.75) as each ladder's bottom tier, and the same ladders
+   on ETR's projection-implied price (within a position, the k-th best median takes the k-th price). A and P one
+   tier apart: the ADP tier, flagged VALUE or PRICEY; two or more apart, one tier toward P. The order is the
+   owner's, in position blocks (2026-11-13):
+     elite flex (T1) by the midpoint of ADP and ETR's price, neighbours within 1 pick the higher VORP first;
+     flex T2 RBs and WRs mixed; flex T3 and T4 an RB block then a WR block, no minimum size;
+     inside each group: ETR's price 2+ picks earlier first, largest gap first (the ETR tiebreak), then ADP, and
+     last the PRICEY players a registered tiebreak leans off (weekly_report.TIEBREAKS);
+     each QB and TE on his own, after the flex tier whose ADP range he falls in, by ADP; the flex pile last.
+   Built for a hand drafter's queue, not autodraft (owner, 2026-11-13), so the order carries no one-TE or
+   round-6-QB guard: those rules stay on the brief. Moves after a build are logged with it, as on NBA. */
+var NFL_FLEX_LINES = [[6, 8, 7], [12, 16, 14], [18, 24, 21]], NFL_FLEX_MIN = [4, 3, 3];
+var NFL_QB_TE_ELITE = 18, NFL_QB_TE_MIDDLE = 30, NFL_DRAFT = 34, NFL_PILE_MAX = 35.75;
+var NFL_E1_GAP = 2;        // ETR's price this many picks earlier or more: first in its group (tier_brief.MARGINAL)
+var NFL_ELITE_NEAR = 1;    // elite flex: midpoints within this many picks, the higher VORP first
+var NFL_TIEBREAK_OFF = { "2 RB PRICEY": 1, "3 RB PRICEY": 1, "3 WR PRICEY": 1, "4 RB VALUE": 1 };
+
+/** tier_history.ladder_lines: the biggest gap inside each window, the tier above it at least its minimum. */
+function nflLadderLines(vals, windows, mins) {
+  var lines = [], prev = 0, n = vals.length;
+  windows.forEach(function (w, j) {
+    var best = null, bestGap = -Infinity;
+    for (var k = Math.max(w[0], prev + mins[j]); k <= Math.min(w[1], n - 1); k++) {
+      var g = Math.abs(vals[k - 1] - vals[k]);
+      if (g > bestGap + 1e-9 || (Math.abs(g - bestGap) <= 1e-9 && Math.abs(k - w[2]) < Math.abs(best - w[2]))) { best = k; bestGap = g; }
+    }
+    if (best == null) best = Math.min(Math.max(prev + mins[j], w[2]), n);
+    lines.push(best); prev = best;
+  });
+  return lines;
+}
+
+/** Tier (1-based) of the player at 0-based index i, for line ranks `lines`. */
+function nflTierAt(i, lines) {
+  var t = 1;
+  lines.forEach(function (ln) { if (ln > 0 && i >= ln) t++; });
+  return t + (lines[0] === 0 ? 1 : 0);
+}
+
+/** tier_history._qb_te_a: [elite count, middle count] for a QB or TE ladder's prices. */
+function nflQbTeLines(close) {
+  var k = close.filter(function (c) { return c <= NFL_QB_TE_ELITE; }).length;
+  if (k > 2) k = (close[1] - close[0]) >= (close[2] - close[1]) ? 1 : 2;
+  var mid = close.filter(function (c) { return c <= NFL_QB_TE_MIDDLE; }).length;
+  return [k, Math.max(mid, k)];
+}
+
+/** tier_history.slate_tiers. rows: [{player_id, position, close, proj}] -> {pid: {ladder, pile, a, p, implied, flag, tier}},
+    plus .lines per ladder. */
+function nflSlateTiers(rows) {
+  var p = rows.filter(function (r) { return r.close <= NFL_PILE_MAX && ["QB", "RB", "WR", "TE"].indexOf(r.position) >= 0; });
+  var out = {}, lines = {};
+  ["FLEX", "QB", "TE"].forEach(function (lad) {
+    var g = p.filter(function (r) { return lad === "FLEX" ? (r.position === "RB" || r.position === "WR") : r.position === lad; })
+      .slice().sort(function (a, b) { return (a.close - b.close) || (a.player_id < b.player_id ? -1 : a.player_id > b.player_id ? 1 : 0); });
+    var n = g.length, core = g.filter(function (r) { return r.close < NFL_DRAFT; }).length;
+    if (!n) return;
+    var cut = function (vals) {
+      var ln = lad === "FLEX" ? nflLadderLines(vals, NFL_FLEX_LINES, NFL_FLEX_MIN) : nflQbTeLines(vals);
+      return ln.map(function (x) { return Math.min(x, vals.length); });
+    };
+    var aLines = cut(g.slice(0, core).map(function (r) { return r.close; }));
+    g.forEach(function (r, i) {
+      out[r.player_id] = { ladder: lad, position: r.position, close: r.close, proj: r.proj, pile: r.close >= NFL_DRAFT,
+                           a: r.close >= NFL_DRAFT ? aLines.length + 1 : nflTierAt(i, aLines), p: null, implied: null };
+    });
+    var withProj = g.filter(function (r) { return typeof r.proj === "number"; });
+    var pLines = null;
+    if (withProj.length >= Math.max(4, Math.floor(n / 2))) {
+      g.forEach(function (r) { out[r.player_id].implied = r.close; });
+      var byPos = {};
+      withProj.forEach(function (r) { (byPos[r.position] = byPos[r.position] || []).push(r); });
+      Object.keys(byPos).forEach(function (pos) {
+        var q = byPos[pos], prices = q.map(function (r) { return r.close; }).sort(function (a, b) { return a - b; });
+        // tied projections keep market order: the cheaper ADP takes the earlier price
+        q.slice().sort(function (a, b) { return (b.proj - a.proj) || (a.close - b.close) || (a.player_id < b.player_id ? -1 : a.player_id > b.player_id ? 1 : 0); }).forEach(function (r, i) { out[r.player_id].implied = prices[i]; });
+      });
+      var q = g.slice().sort(function (a, b) {
+        return (out[a.player_id].implied - out[b.player_id].implied) || (a.close - b.close) || (a.player_id < b.player_id ? -1 : a.player_id > b.player_id ? 1 : 0);
+      });
+      var coreP = q.filter(function (r) { return out[r.player_id].implied < NFL_DRAFT; }).length;
+      pLines = cut(q.slice(0, coreP).map(function (r) { return out[r.player_id].implied; }));
+      q.forEach(function (r, i) { out[r.player_id].p = i >= coreP ? pLines.length + 1 : nflTierAt(i, pLines); });
+    }
+    g.forEach(function (r) {
+      var x = out[r.player_id], d = x.p == null ? 0 : x.a - x.p;
+      x.flag = d > 0 ? "VALUE" : d < 0 ? "PRICEY" : "";
+      x.tier = Math.abs(d) >= 2 ? x.a - Math.sign(d) : x.a;
+      x.gap = x.implied == null ? null : x.close - x.implied;
+    });
+    lines[lad] = { a: aLines, p: pLines };
+  });
+  return { players: out, lines: lines };
+}
+
+/** A group's order: ETR's price 2+ picks earlier first (largest gap), then ADP, PRICEY players a tiebreak leans off last. */
+function nflGroupOrder(list, tier) {
+  var off = function (x) { return !!NFL_TIEBREAK_OFF[tier + " " + x.position + " " + x.flag]; };
+  var byClose = function (a, b) { return a.close - b.close; };
+  var first = list.filter(function (x) { return x.gap != null && x.gap >= NFL_E1_GAP && !off(x); })
+    .sort(function (a, b) { return (b.gap - a.gap) || byClose(a, b); });
+  var last = list.filter(function (x) { return x.flag === "PRICEY" && off(x); }).sort(byClose);
+  var mid = list.filter(function (x) { return first.indexOf(x) < 0 && last.indexOf(x) < 0; }).sort(byClose);
+  return first.concat(mid, last);
+}
+
+/** Elite flex: by the midpoint of ADP and ETR's price; neighbours within NFL_ELITE_NEAR picks, the higher VORP first. */
+function nflEliteOrder(list, vorp) {
+  var mid = function (x) { return (x.close + (x.implied == null ? x.close : x.implied)) / 2; };
+  var out = list.slice().sort(function (a, b) { return (mid(a) - mid(b)) || (a.close - b.close); }), moved = true;
+  var v = function (x) { return typeof vorp[x.pid] === "number" ? vorp[x.pid] : -Infinity; };
+  while (moved) {
+    moved = false;
+    for (var j = 0; j + 1 < out.length; j++) {
+      if (Math.abs(mid(out[j]) - mid(out[j + 1])) <= NFL_ELITE_NEAR && v(out[j + 1]) > v(out[j])) {
+        var t = out[j]; out[j] = out[j + 1]; out[j + 1] = t; moved = true;
+      }
+    }
+  }
+  return out;
+}
+
+/** The owner's block order from nflSlateTiers: [{label, players: [x]}], x carrying pid. */
+function nflTierGroups(tiers, vorp) {
+  var all = Object.keys(tiers.players).map(function (pid) { return Object.assign({ pid: pid }, tiers.players[pid]); });
+  var flex = all.filter(function (x) { return x.ladder === "FLEX" && !x.pile; });
+  var inTier = function (t, pos) { return flex.filter(function (x) { return x.tier === t && (!pos || x.position === pos); }); };
+  var lo = {};
+  [1, 2, 3, 4].forEach(function (t) {
+    var c = inTier(t).map(function (x) { return x.close; });
+    lo[t] = c.length ? Math.min.apply(null, c) : Infinity;
+  });
+  var slotOf = function (x) {           // after the last flex tier priced earlier than him; the pile after tier 4
+    if (x.pile) return 4;
+    var s = 0;
+    [1, 2, 3, 4].forEach(function (t) { if (lo[t] < x.close) s = t; });
+    return s;
+  };
+  var qbte = all.filter(function (x) { return x.ladder !== "FLEX"; });
+  var placed = function (s) {
+    var g = qbte.filter(function (x) { return slotOf(x) === s; }).sort(function (a, b) { return a.close - b.close; });
+    return g.length ? [{ label: s === 4 ? "QBs and TEs, the rest" : "QB/TE", players: g }] : [];
+  };
+  var groups = placed(0);
+  groups.push({ label: "Elite flex", players: nflEliteOrder(inTier(1), vorp) });
+  groups = groups.concat(placed(1));
+  groups.push({ label: "Flex tier 2", players: nflGroupOrder(inTier(2), 2) });
+  groups = groups.concat(placed(2));
+  [3, 4].forEach(function (t) {
+    ["RB", "WR"].forEach(function (pos) {
+      var g = inTier(t, pos);
+      if (g.length) groups.push({ label: "Flex tier " + t + " " + pos + "s", players: nflGroupOrder(g, t) });
+    });
+    if (t === 3) groups = groups.concat(placed(3));
+  });
+  groups = groups.concat(placed(4));
+  var pile = all.filter(function (x) { return x.ladder === "FLEX" && x.pile; });
+  if (pile.length) groups.push({ label: "The long list (the pile)", players: nflGroupOrder(pile, 4) });
+  return groups.filter(function (g) { return g.players.length; });
+}
+
+/** The build for this slate: ladders on ETR's median (the file on the board), the order, and who sits where. */
+function nflBuildTiers() {
+  var s = state.slate, parts = state.projParts || {};
+  var rows = s.players.filter(hasAdp).map(function (p) {
+    var m = parts[p.player_id];
+    return { player_id: p.player_id, position: p.position, close: p.adp, proj: m && typeof m.median === "number" ? m.median : null };
+  });
+  var tiers = nflSlateTiers(rows), groups = nflTierGroups(tiers, state.vorp || {});
+  var order = [], starts = [], players = {};
+  groups.forEach(function (g) {
+    starts.push({ label: g.label, start: order.length + 1 });
+    g.players.forEach(function (x) {
+      order.push(x.pid);
+      players[x.pid] = { ladder: x.ladder, a: x.a, p: x.p, tier: x.tier, flag: x.flag || "", group: g.label,
+                         gap: x.gap == null ? null : Math.round(x.gap * 10) / 10 };
+    });
+  });
+  var projOn = Object.keys(players).some(function (pid) { return players[pid].p != null; });
+  return { at: new Date().toISOString(), sport: "nfl", source: projOn ? ((state.projMeta && state.projMeta.format) || "projection") : "ADP only",
+           lines: tiers.lines, groups: starts, players: players, order: order, moves: [] };
+}
+
+function pressNflTiers() {
+  var label = state.slate.label, prev = load(K.tierBuild(label), null);
+  if (prev && prev.moves && prev.moves.length) {
+    if (!window.confirm("Rebuild from the ladders? Your " + prev.moves.length + " hand move" + (prev.moves.length === 1 ? "" : "s") +
+        " since the last build stay logged with it, and the board goes back to the ladders.")) return;
+  } else if (!prev && load(K.order(label), null) && !window.confirm("This replaces your current order for " + slateLabel(state.slate) + ". Continue?")) {
+    return;
+  }
+  var b = nflBuildTiers();
+  if (!b.order.length) { setStatus("No priced players on this slate yet, so there are no tiers to build.", "warn"); return; }
+  if (prev) b.prior = { at: prev.at, moves: prev.moves || [] };
+  var seen = {};
+  b.order.forEach(function (pid) { seen[pid] = 1; });
+  state.order = resortTail(b.order.concat(state.order.filter(function (pid) { return !seen[pid]; })), b.order.length,
+                           byPidMap(state.slate), tailValues());
+  state.cut = b.order.length;
+  state.newIds = {};
+  save(K.tierBuild(label), b);
+  saveBoard();
+  if (state.view !== "order") { state.view = "order"; $("view").value = "order"; syncSortHeads(); }
+  render();
+  var flags = Object.keys(b.players).filter(function (k) { return b.players[k].flag; }).length;
+  setStatus("Tiers built on " + b.source + ": " + b.groups.length + " groups, " + flags + " flagged, the line at " + b.order.length +
+            ". Moves from here are logged with the build." + (b.source === "ADP only" ? " No projection on the board, so no flags and no ETR tiebreak." : ""),
+            b.source === "ADP only" ? "warn" : undefined);
+}
+
+/** The row's tier chip on an NFL board with a build: tier and flag; the title says why. */
+function nflTierChip(p) {
+  var b = state.slate && state.slate.sport === "nfl" ? load(K.tierBuild(state.slate.label), null) : null;
+  var x = b && b.sport === "nfl" ? b.players[p.player_id] : null;
+  if (!x) return null;
+  var el = document.createElement("span");
+  el.className = "tag nfltier" + (x.flag ? " " + x.flag.toLowerCase() : "");
+  el.textContent = (x.ladder === "FLEX" ? "T" : x.ladder + " T") + x.tier + (x.flag ? " " + x.flag : "");
+  el.title = x.group + ". ADP tier " + x.a + (x.p != null ? ", ETR tier " + x.p : "") +
+             (x.gap != null && x.gap >= NFL_E1_GAP ? "; ETR's price " + x.gap + " picks earlier (the tiebreak)" : "");
+  return el;
 }
 
 /* ---- The swap board (step 7): a drafted player ruled out before his game swaps to your highest-ranked player left
@@ -5364,6 +5597,10 @@ function render() {
   var sw = null, pc = SPORT_MODE === "nba" ? nbaShading() : null, tiers = nbaActiveTiers(), tierEnd = nbaTierEnd();
   var expo = slateExpo();
   var fieldCtx = SPORT_MODE === "nba" ? nbaFieldCtx() : null;
+  var nflOn = !NBA_LIKE && state.slate && state.slate.sport === "nfl";
+  $("nflTiersBtn").hidden = !nflOn;
+  var nflBuild = nflOn ? load(K.tierBuild(state.slate.label), null) : null, nflLastGroup = null;
+  if (nflBuild && (nflBuild.sport !== "nfl" || state.view !== "order" || state.search.trim() || state.position !== "ALL")) nflBuild = null;
   if (NBA_LIKE) {
     var tb = $("tiersBtn"), tt = state.slate && loadTiers(state.slate.label);
     tb.setAttribute("aria-pressed", String(!!(tt && tt.on)));
@@ -5442,6 +5679,17 @@ function render() {
       else if (nw) cfbWho(who, p, { takes: nw.takes });
       var inj = injuryTag(p.injury);
       if (inj) who.appendChild(inj);
+      var ntc = nflOn ? nflTierChip(p) : null;
+      if (ntc) who.appendChild(ntc);
+      var ng = nflBuild && nflBuild.players[p.player_id] ? nflBuild.players[p.player_id].group : null;
+      if (ng && ng !== nflLastGroup && r.rank <= (state.cut == null ? Infinity : state.cut)) {
+        el.classList.add("nfl-grp-start");
+        var gt = document.createElement("span");
+        gt.className = "tiertag nflgrp";
+        gt.textContent = ng;
+        el.appendChild(gt);
+      }
+      if (ng) nflLastGroup = ng;
     }
     if (state.newIds[p.player_id] && !NBA_LIKE) {
       var tag = document.createElement("span");
@@ -5695,6 +5943,7 @@ function applyBuilder(metric) {
     if (!Object.keys(values).length) { setStatus("No usage scores for this slate yet, so there's nothing to seed from.", "warn"); return; }
   }
   var built = buildBlockOrder(state.slate.players, metric === "score" ? "proj" : metric, values, BUILDER_CAPS);
+  if (state.slate.sport === "nfl" && load(K.tierBuild(label), null)) save(K.tierBuild(label), null);   // a Builder seed replaces a Tiers build
   state.order = resortTail(built.order, built.curatedCount, byPidMap(state.slate), tailValues());
   state.cut = built.curatedCount;
   state.newIds = {};
@@ -6865,6 +7114,7 @@ $("buildTiers").addEventListener("click", function () { applyNbaProjOrder(); });
 $("lockAm").addEventListener("click", function () { lockBoard("am"); });
 $("lockPm").addEventListener("click", function () { lockBoard("pm"); });
 $("tiersBtn").addEventListener("click", function () { pressTiers(); });
+$("nflTiersBtn").addEventListener("click", function () { pressNflTiers(); });
 $("swapBtn").addEventListener("click", function () { toggleSwapPanel(); });
 $("tiersSrc").addEventListener("change", function () { save(K.tierSrc(state.slate.label), this.value); });
 $("copyMain").addEventListener("click", function () { copyMainRanks(); });
@@ -7930,6 +8180,33 @@ function brrSelfTest() {
   ok("the Q chip reads against the tier he sits in: expected T4 is SMASH in T5, FAIR in T4, TRAP in T3",
      nbaQClassIn({ et: 4, p: 2 }, 5) === "SMASH" && nbaQClassIn({ et: 4, p: 2 }, 4) === "FAIR" &&
      nbaQClassIn({ et: 4, p: 2 }, 3) === "TRAP" && nbaQClassIn({ p: 3 }, 3) === "FAIR");
+
+  // NFL Tiers button (2026-11-13): the port of tier_history.slate_tiers and the owner's block order
+  ok("nfl QB/TE lines: elite at ADP 18, middle at 30", nflQbTeLines([5, 10, 20, 25, 40]).join() === "2,4" &&
+     nflQbTeLines([3, 4, 12, 20]).join() === "2,4");
+  ok("nfl ladder line at the biggest gap in its window", nflLadderLines([1,2,3,4,5,6,7,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
+     [[6, 8, 7]], [4])[0] === 7);
+  (function () {
+    var rows = [], i;
+    for (i = 0; i < 20; i++) rows.push({ player_id: "f" + i, position: i % 2 ? "WR" : "RB", close: 1 + i * 1.5, proj: 30 - i });
+    rows[2].proj = rows[0].proj;                       // a tie: f0 (ADP 1) and f2 (ADP 4) both project 30
+    rows[4].proj = 40;                                 // f4, ADP 7, is ETR's best RB
+    rows.push({ player_id: "q1", position: "QB", close: 8.2, proj: 25 }, { player_id: "q2", position: "QB", close: 31, proj: 20 },
+              { player_id: "t1", position: "TE", close: 35, proj: 9 }, { player_id: "p1", position: "RB", close: 35.5, proj: 5 });
+    var t = nflSlateTiers(rows).players;
+    ok("nfl tied projections keep market order", t.f0.implied < t.f2.implied);
+    ok("nfl ETR's best RB takes the first RB price", t.f4.implied === 1 && t.f4.gap === 6);
+    ok("nfl the pile is each ladder's bottom tier", t.p1.pile && t.p1.a === 4 && t.t1.a === 3);
+    var g = nflTierGroups(nflSlateTiers(rows), {}), labels = g.map(function (x) { return x.label; });
+    ok("nfl blocks: elite flex first, the rest of QBs/TEs then the pile last", labels[0] === "Elite flex" &&
+       labels[labels.length - 1] === "The long list (the pile)" && labels[labels.length - 2] === "QBs and TEs, the rest");
+    var qbAt = labels.indexOf("QB/TE"), qbG = g[qbAt];
+    ok("nfl a QB goes in after the flex tier priced earlier than him", qbG && qbG.players[0].pid === "q1" && labels[qbAt - 1] === "Elite flex");
+    var x = function (pid, pos, close, gap, flag) { return { pid: pid, position: pos, close: close, gap: gap, flag: flag }; };
+    var o = nflGroupOrder([x("a", "RB", 10, 0, ""), x("b", "RB", 11, 0, "PRICEY"), x("c", "WR", 12, 3, "VALUE"), x("d", "WR", 13, 1, "")], 2)
+      .map(function (y) { return y.pid; }).join();
+    ok("nfl group order: ETR 2+ picks earlier first, PRICEY RB in tier 2 last", o === "c,a,d,b");
+  })();
   if (fails.length) { console.error("brrSelfTest FAILED: " + fails.join(", ")); return false; }
   console.log("brrSelfTest passed");
   return true;
