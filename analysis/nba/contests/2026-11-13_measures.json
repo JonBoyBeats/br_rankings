@@ -3674,14 +3674,14 @@
      "drafted": 7.4
     },
     {
-     "player": "OG Anunoby",
-     "adp": 35.7,
-     "drafted": 15.4
-    },
-    {
      "player": "Ivica Zubac",
      "adp": 35.7,
      "drafted": 10.1
+    },
+    {
+     "player": "OG Anunoby",
+     "adp": 35.7,
+     "drafted": 15.4
     },
     {
      "player": "Isaiah Hartenstein",
@@ -3739,14 +3739,14 @@
      "drafted": 0.5
     },
     {
-     "player": "Jordan Poole",
-     "adp": 36.0,
-     "drafted": 1.6
-    },
-    {
      "player": "Alex Caruso",
      "adp": 36.0,
      "drafted": 3.7
+    },
+    {
+     "player": "Jordan Poole",
+     "adp": 36.0,
+     "drafted": 1.6
     },
     {
      "player": "Zach LaVine",
@@ -3759,17 +3759,7 @@
      "drafted": 1.6
     },
     {
-     "player": "Peyton Watson",
-     "adp": 36.0,
-     "drafted": 1.6
-    },
-    {
      "player": "De'Anthony Melton",
-     "adp": 36.0,
-     "drafted": 1.1
-    },
-    {
-     "player": "Toumani Camara",
      "adp": 36.0,
      "drafted": 1.1
     },
@@ -3777,6 +3767,16 @@
      "player": "Fred VanVleet",
      "adp": 36.0,
      "drafted": 0.5
+    },
+    {
+     "player": "Toumani Camara",
+     "adp": 36.0,
+     "drafted": 1.1
+    },
+    {
+     "player": "Peyton Watson",
+     "adp": 36.0,
+     "drafted": 1.6
     },
     {
      "player": "Jrue Holiday",
@@ -3789,14 +3789,14 @@
      "drafted": 0.5
     },
     {
-     "player": "Draymond Green",
-     "adp": 36.0,
-     "drafted": 1.1
-    },
-    {
      "player": "Kyle Kuzma",
      "adp": 36.0,
      "drafted": 0.5
+    },
+    {
+     "player": "Draymond Green",
+     "adp": 36.0,
+     "drafted": 1.1
     },
     {
      "player": "CJ McCollum",
@@ -4599,12 +4599,12 @@
      "drafted": 2.8
     },
     {
-     "player": "Zach LaVine",
+     "player": "CJ McCollum",
      "adp": 36.0,
      "drafted": 2.8
     },
     {
-     "player": "CJ McCollum",
+     "player": "Zach LaVine",
      "adp": 36.0,
      "drafted": 2.8
     },

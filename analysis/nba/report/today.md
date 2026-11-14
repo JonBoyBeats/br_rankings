@@ -173,7 +173,7 @@ Chance to play, morning Questionable players: 68 this season, 33 played (49%). T
 
 **Q picks on contest results, season** (top 10% against the field's rate): no Q pick 0.99x (0.97-1.01; 318453 teams); any Q pick 1.04x (0.92-1.17; 50887 teams); played 1.18x (0.95-1.41; 31157 teams); sat 0.81x (0.73-0.88; 22009 teams); T1 0.86x (1969 teams); T2 1.29x (0.92-1.62; 17006 teams); T3 0.95x (0.77-1.19; 16595 teams); T4 0.89x (0.64-1.51; 6634 teams); T5 1.06x (0.92-1.23; 10723 teams).
 
-**Today's Questionable players.** Evan Mobley (T3 on the ladders, 46% to play): if he sits, Peyton Watson, Meleek Thomas, Jaylon Tyson; Trey Murphy III (T5 on the ladders, 96% to play): if he sits, Saddiq Bey, Derik Queen; Jalen Smith (T5 on the ladders, 68% to play): if he sits, Matas Buzelis, Norman Powell, Nic Claxton; Klay Thompson (T5 on the ladders, 50% to play); Mikel Brown Jr. (T5 on the ladders, 96% to play).
+**Today's Questionable players.** Evan Mobley (T3 on the ladders, 45% to play): if he sits, Peyton Watson, Meleek Thomas, Jaylon Tyson; Trey Murphy III (T5 on the ladders, 96% to play): if he sits, Saddiq Bey, Derik Queen; Jalen Smith (T5 on the ladders, 68% to play): if he sits, Matas Buzelis, Norman Powell, Nic Claxton; Klay Thompson (T5 on the ladders, 51% to play).
 
 ## Back page
 
