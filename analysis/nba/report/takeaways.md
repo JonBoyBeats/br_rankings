@@ -2,6 +2,14 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-13 Fri main
+
+- Locked both windows (Lock AM 4:07am, Lock PM 2:12pm). No late news on an early pick: the five who sat (Klay, Ajay Mitchell, Dejounte Murray, Jarace Walker, Trey Murphy) all went around pick 36, so no team left the grading; Murray and Murphy out left Zion, Fears, Queen and Bey with bigger roles. Two routs: SAS by 38 over GSW, MEM by 31 over NOP.
+- Morning: 45% against our number (season 54%, too close) and 36% against ADP (season 54%). All eight of the biggest AM calls went wrong: fades on Davion Mitchell (17 assists), Jalen Smith (32 minutes), Zubac (26 minutes) and Fears (Murray and Murphy out), raises on Suggs and Fox through their Questionable tags. Afternoon: 31% against ETR (season 46%, ETR alone wins), 67% against ours; 1 of the 8 biggest PM calls right (the Allen fade). Four of five afternoon T3 moves cost points (season T3 moves 41% right, -4.8 a move: press the button).
+- Theme (hedges left out): our `teammate-out` misses and splits are now 16 on 7 slates, ours too high on 9; last night's two (Queen 41.0 and Zion 50.8 against ETR 32.9 and 44.9, Murray and Murphy out) both had ETR closer. The new fresh-absence bump (1.5x, from 11-14) pushes the same direction: watch the next few late scratches before trusting it.
+- Field: 102 teams (82 in Fast Break Friday, median finish top 42%, top 10% 0.85, top 1% 0.00), 12 cashed, $112 on $470. Light on Sengun (7% against 17%; holders 3.1x at the top 10%), heavy on Garland (30% against 5%, 1.1x) and Zion (33% against 17%, 1.9x). Running, 6-drafter: top 10% 1.28 (19 nights), AM teams 1.43 against PM 1.21.
+- Morning Proj vs ETR (etr_match.md): direction 87% (20 of 23), big misses 20 of 60 (33%, a rough night), CLV ours -0.08 against ETR 0.33. Missed the same way on 3+ of the last 10: Shead, Fears, Avdija, Dosunmu and Black (ETR above ours), Sabonis, Bane, Siakam and Trae (ETR below).
+
 ## 2026-11-12 Thu main
 
 - Locked both windows (Lock AM 5:10am, the last of 2; Lock PM 3:38pm). Late news: Scottie Barnes (ADP 15.3) and LeBron James (16.8), both Questionable at Lock AM, were out before lock, so TOR and PHI sit out the morning's grading (late_news.json). Detroit beat Washington by 4 in overtime (Cade 80.5, Ausar 61.7, Trae 56.4, AD 55.0, Sarr 50.8); Minnesota beat Dallas by 39.
