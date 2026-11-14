@@ -100,7 +100,7 @@ Season, your moves in T2: keep doing what you're doing (211 moves on 23 nights, 
 
 Season, your moves in T3: press the button (95 moves on 22 nights, 41% right, -4.8 points a move; ahead in 1% of night-resamples).
 
-The afternoon T3 moves all went one way: Black and Siakam (both ETR Bad or shaky reads) raised past Sabonis and Durant, and Lendeborg past Daniels before the rout; Zion over Jerome was the one that paid.
+The afternoon T3 moves mostly went one way: Black (an ETR Good matchup) and Siakam (an ETR Bad one) raised past Sabonis and Durant, and Lendeborg past Daniels before the rout; Zion over Jerome was the one that paid.
 
 **Player recap**, in the button's order.
 
