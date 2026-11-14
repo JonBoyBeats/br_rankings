@@ -1371,5 +1371,82 @@
    "first": "2026-11-12T12:22:51+00:00"
   },
   "orders": 90
+ },
+ "2026-11-13_fri_main.csv": {
+  "lock": "2026-11-13T23:52:00+00:00",
+  "adp_am_at": "2026-11-13T11:22:57+00:00",
+  "adp_etr_at": "2026-11-13T20:23:13+00:00",
+  "adp_close_at": "2026-11-13T23:23:13+00:00",
+  "morning_through": "2026-11-12",
+  "etr_first": {
+   "at": "2026-11-13T20:28:52.594Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-13T122849.015.csv"
+  },
+  "etr_last": {
+   "at": "2026-11-13T23:50:56.511Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-13T122849.015.csv + Underdog NBA Daily Rankings - 2026-11-13T140410.195.csv + pasted text"
+  },
+  "etr_pm": {
+   "at": "2026-11-13T22:04:13.769Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-13T122849.015.csv + Underdog NBA Daily Rankings - 2026-11-13T140410.195.csv"
+  },
+  "adp_pm_at": "2026-11-13T21:22:55+00:00",
+  "am": {
+   "at": "2026-11-13T12:07:58.234Z",
+   "from": "Lock AM",
+   "ours": true,
+   "tiers": [
+    5,
+    13,
+    22,
+    29
+   ]
+  },
+  "pm": {
+   "at": "2026-11-13T22:12:04.955Z",
+   "from": "Lock PM",
+   "ours": true,
+   "tiers": [
+    5,
+    13,
+    23,
+    31
+   ]
+  },
+  "gist": true,
+  "cuts": {
+   "am_by": "2026-11-13T14:01:15+00:00",
+   "am_by_from": "first AM draft (from 4:30am)",
+   "close": "2026-11-13T23:52:00+00:00",
+   "swaps_at": "2026-11-14T00:00:00+00:00",
+   "seen": {
+    "am": [
+     "2026-11-13T12:07:58.234Z",
+     "2026-11-13T14:29:52.403Z"
+    ],
+    "pm": [
+     "2026-11-13T22:12:04.955Z"
+    ],
+    "exp": [
+     "2026-11-13T14:29:56.016Z",
+     "2026-11-13T20:56:59.543Z",
+     "2026-11-13T22:12:06.635Z"
+    ],
+    "swap": [
+     "2026-11-13T23:53:06.406Z"
+    ]
+   }
+  },
+  "swap": {
+   "at": "2026-11-13T23:53:06.406Z",
+   "from": "Swap lock"
+  },
+  "on": {
+   "at": null,
+   "source": "overnight: no board saved before it",
+   "drafts": 9,
+   "first": "2026-11-13T10:37:45+00:00"
+  },
+  "orders": 96
  }
 }
