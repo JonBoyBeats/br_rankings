@@ -21,8 +21,9 @@ rule_dates.json; the Friday report reads "since the rule went in" and "season" f
 - Questionable at the lock: keeps his tier (both windows); in T1 he drops to the top of T2; one whose ADP fell 6+ picks
   since the tag (the poller's pre-tag ADP) goes below the cut; a T1-T4 teammate gets the tiebreak in his group; T5's rule
   holds for T5's Q players.
-- Swap button, after your last draft fills: T5 and below by the latest projection; its own swap lock (the PM lock stays
-  the draft list).
+- Swaps, after your last draft fills: T1-T4 exactly as at your PM lock; everyone else (T5 and below the line) by the
+  latest projection, the top 16 as T5 and the line under them (~44-46 ranked); the green Swap lock saves it as its own
+  lock (the PM lock stays the draft list).
 
 ## How things are graded
 

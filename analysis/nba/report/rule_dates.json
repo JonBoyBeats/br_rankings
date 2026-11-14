@@ -143,7 +143,7 @@
  },
  "swap-button": {
   "since": "2026-11-13",
-  "what": "The Swap button: T5 and below by the latest projection after the last draft, its own swap lock"
+  "what": "The Swap button: T1-T4 as at the PM lock, everyone else by the latest projection, the top 16 as T5 and the line under them; the swap lock saves that ranked list (from 2026-11-14; before, T5 and everything below by projection, nothing cut)"
  },
  "gallagher-bad-arrow": {
   "since": "2026-11-13",
