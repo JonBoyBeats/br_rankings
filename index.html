@@ -700,15 +700,20 @@
     .pos { font-size: 9px; padding: 1px 4px; letter-spacing: .04em; }
     .tag { font-size: 9px; padding: 1px 4px; }
     h1 { font-size: 17px; }
-    /* NFL phones (owner, 2026-11-15): one line a player, name, position, team, ADP, score, own and VORP. Proj, the
+    /* NFL phones (owner, 2026-11-15): one line a player, name, position, team, ADP, score, own, Proj and VORP (Proj
+       added back the same day, its change marker hidden). The
        workload strip and its details, the details toggle and the ADP arrows go; a tier chip shows only its flag, as
        V or P; the first name stays an initial, so the last name has the room. */
-    html:not(.nba) .board:not(.cfb) .num.proj, html:not(.nba) .board:not(.cfb) .head .proj-col,
+    html:not(.nba) .board:not(.cfb) .num.proj .pdelta,
     html:not(.nba) .board:not(.cfb) .cfbstrip.inl, html:not(.nba) .board:not(.cfb) .who .cfbx,
     html:not(.nba) .board:not(.cfb) .num.adp .ind,
     html:not(.nba) .board:not(.cfb) .tag.nfltier:not(.value):not(.pricey) { display: none; }
-    html:not(.nba) .board:not(.cfb) .row { grid-template-columns: 12px 22px minmax(0, 1fr) 34px 36px 30px; }
-    html:not(.nba) .board:not(.cfb).has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 34px 36px 26px 30px; }
+    html:not(.nba) .board:not(.cfb) .row { grid-template-columns: 12px 22px minmax(0, 1fr) 34px 36px 24px 28px; }
+    html:not(.nba) .board:not(.cfb).has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 34px 36px 24px 24px 28px; }
+    html:not(.nba) .board:not(.cfb) .num.proj { grid-template-columns: 1fr; }
+    html:not(.nba) .board:not(.cfb) .row { column-gap: 3px; }
+    html:not(.nba) .board:not(.cfb) .name { font-size: 12.5px; }
+    html:not(.nba) .board:not(.cfb) .who { gap: 4px; }
     html:not(.nba) .board:not(.cfb) .num.adp { grid-template-columns: 1fr; }
     html:not(.nba) .board:not(.cfb) .cfbpanel { display: none; }
     html:not(.nba) .board:not(.cfb) .tag.nfltier { font-size: 0; padding: 1px 4px; }
