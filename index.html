@@ -700,6 +700,22 @@
     .pos { font-size: 9px; padding: 1px 4px; letter-spacing: .04em; }
     .tag { font-size: 9px; padding: 1px 4px; }
     h1 { font-size: 17px; }
+    /* NFL phones (owner, 2026-11-15): name, position, team, ADP, score, own and VORP. Proj, the workload strip,
+       the details toggle and the ADP arrows go; a tier chip shows only its flag, as V or P; the name gets a line
+       of its own, first name in full. */
+    html:not(.nba) .board:not(.cfb) .num.proj, html:not(.nba) .board:not(.cfb) .head .proj-col,
+    html:not(.nba) .board:not(.cfb) .cfbstrip.inl, html:not(.nba) .board:not(.cfb) .who .cfbx,
+    html:not(.nba) .board:not(.cfb) .num.adp .ind,
+    html:not(.nba) .board:not(.cfb) .tag.nfltier:not(.value):not(.pricey) { display: none; }
+    html:not(.nba) .board:not(.cfb) .row { grid-template-columns: 12px 22px minmax(0, 1fr) 34px 36px 30px; }
+    html:not(.nba) .board:not(.cfb).has-own .row { grid-template-columns: 12px 22px minmax(0, 1fr) 34px 36px 26px 30px; }
+    html:not(.nba) .board:not(.cfb) .num.adp { grid-template-columns: 1fr; }
+    html:not(.nba) .board:not(.cfb) .who { flex-wrap: wrap; row-gap: 2px; }
+    html:not(.nba) .board:not(.cfb) .who .name { flex-basis: 100%; min-width: 0; }
+    html:not(.nba) .board:not(.cfb) .name .first { display: inline; }
+    html:not(.nba) .board:not(.cfb) .name[data-i]::before { content: none; }
+    html:not(.nba) .board:not(.cfb) .tag.nfltier { font-size: 0; padding: 1px 4px; }
+    html:not(.nba) .board:not(.cfb) .tag.nfltier::after { content: attr(data-s); font-size: 9px; }
     /* NBA rows carry more chips (write-ups, out); the name keeps its own line above them. */
     html.nba .who.nbawho { grid-template-columns: 20px 34px 18px 18px 22px 22px minmax(0, 1fr); column-gap: 5px; row-gap: 3px; }
     html.nba:not(.cbb) .who.nbawho { grid-template-columns: 20px 34px 64px 22px 22px minmax(0, 1fr); }
@@ -917,7 +933,7 @@
         title="Usage: his share of his team's work, 0-100 against his position on this slate">Score</button></span>
       <span class="r own-col"><button type="button" data-sort="own"
         title="Share of drafts the projection file expects this player to appear in">Own</button></span>
-      <span class="r"><button type="button" data-sort="proj"
+      <span class="r proj-col"><button type="button" data-sort="proj"
         title="A quarter of the median plus three quarters of the ceiling">Proj</button></span>
       <span class="r"><button type="button" data-sort="vorp"
         title="Projection less the replacement level at that position">VORP</button></span>
@@ -4500,6 +4516,7 @@ function nflTierChip(p) {
   var el = document.createElement("span");
   el.className = "tag nfltier" + (x.flag ? " " + x.flag.toLowerCase() : "");
   el.textContent = (x.ladder === "FLEX" ? "T" : x.ladder + " T") + x.tier + (x.flag ? " " + x.flag : "");
+  el.dataset.s = x.flag ? x.flag.charAt(0) : "";      // phones show the flag alone, as V or P
   el.title = x.group + ". ADP tier " + x.a + (x.p != null ? ", ETR tier " + x.p : "") +
              (x.gap != null && x.gap >= NFL_E1_GAP ? "; ETR's price " + x.gap + " picks earlier (the tiebreak)" : "");
   return el;
