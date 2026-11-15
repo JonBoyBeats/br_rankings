@@ -1,0 +1,4176 @@
+{
+ "date": "2026-11-14",
+ "slate": "nba_sat_main",
+ "contests": [
+  {
+   "contest": "Saturday Slam",
+   "contest_id": "aa33a90e-98b5-4231-8109-d01c09fc09c2",
+   "entries": 11916,
+   "pods": 1986,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 11916,
+    "win": 319.3,
+    "median": 219.1,
+    "top1": 283.4,
+    "top1_over_median": 64.3,
+    "top5": 263.7,
+    "top5_over_median": 44.6,
+    "top10": 253.6,
+    "top10_over_median": 34.5,
+    "top20": 241.3,
+    "top20_over_median": 22.2
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Giannis Antetokounmpo",
+     "adp": 2.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cade Cunningham",
+     "adp": 3.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 5.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Bam Adebayo",
+     "adp": 6.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 9.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 10.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Davion Mitchell",
+     "adp": 11.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Julius Randle",
+     "adp": 14.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Josh Giddey",
+     "adp": 14.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jeremiah Fears",
+     "adp": 15.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 18.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Day'Ron Sharpe",
+     "adp": 20.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 20.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 21.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 21.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cedric Coward",
+     "adp": 24.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jonathan Kuminga",
+     "adp": 26.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Rudy Gobert",
+     "adp": 26.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Saddiq Bey",
+     "adp": 27.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 29.7,
+     "drafted": 99.9
+    },
+    {
+     "player": "Matas Buzelis",
+     "adp": 30.7,
+     "drafted": 99.9
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 32.0,
+     "drafted": 99.9
+    },
+    {
+     "player": "Norman Powell",
+     "adp": 32.6,
+     "drafted": 99.2
+    },
+    {
+     "player": "Jalen Smith",
+     "adp": 33.2,
+     "drafted": 0.4
+    },
+    {
+     "player": "Jaylon Tyson",
+     "adp": 34.2,
+     "drafted": 99.8
+    },
+    {
+     "player": "Cam Spencer",
+     "adp": 34.7,
+     "drafted": 99.1
+    },
+    {
+     "player": "Duncan Robinson",
+     "adp": 35.0,
+     "drafted": 80.8
+    },
+    {
+     "player": "Meleek Thomas",
+     "adp": 35.0,
+     "drafted": 99.9
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 35.2,
+     "drafted": 60.2
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 35.2,
+     "drafted": 62.7
+    },
+    {
+     "player": "Derik Queen",
+     "adp": 35.4,
+     "drafted": 28.1
+    },
+    {
+     "player": "Tyrese Proctor",
+     "adp": 35.7,
+     "drafted": 95.1
+    },
+    {
+     "player": "Klay Thompson",
+     "adp": 35.7,
+     "drafted": 14.4
+    },
+    {
+     "player": "Mario Hezonja",
+     "adp": 35.8,
+     "drafted": 97.5
+    },
+    {
+     "player": "Egor Demin",
+     "adp": 35.8,
+     "drafted": 16.6
+    },
+    {
+     "player": "John Collins",
+     "adp": 35.8,
+     "drafted": 12.8
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 35.9,
+     "drafted": 6.8
+    },
+    {
+     "player": "Nolan Traore",
+     "adp": 35.9,
+     "drafted": 5.1
+    },
+    {
+     "player": "Bones Hyland",
+     "adp": 35.9,
+     "drafted": 5.9
+    },
+    {
+     "player": "Jaylen Wells",
+     "adp": 35.9,
+     "drafted": 5.1
+    },
+    {
+     "player": "Andrew Wiggins",
+     "adp": 35.9,
+     "drafted": 1.0
+    },
+    {
+     "player": "Thomas Bryant",
+     "adp": 36.0,
+     "drafted": 68.7
+    },
+    {
+     "player": "Bobby Portis",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Naji Marshall",
+     "adp": 36.0,
+     "drafted": 0.8
+    },
+    {
+     "player": "Craig Porter Jr.",
+     "adp": 36.0,
+     "drafted": 19.7
+    },
+    {
+     "player": "Patrick Williams",
+     "adp": 36.0,
+     "drafted": 1.1
+    },
+    {
+     "player": "Mikel Brown Jr.",
+     "adp": 36.0,
+     "drafted": 2.8
+    },
+    {
+     "player": "GG Jackson",
+     "adp": 36.0,
+     "drafted": 2.9
+    },
+    {
+     "player": "Yves Missi",
+     "adp": 36.0,
+     "drafted": 1.6
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 36.0,
+     "drafted": 1.3
+    },
+    {
+     "player": "Danny Wolf",
+     "adp": 36.0,
+     "drafted": 3.3
+    },
+    {
+     "player": "Kevin Huerter",
+     "adp": 36.0,
+     "drafted": 2.2
+    },
+    {
+     "player": "Javon Small",
+     "adp": 36.0,
+     "drafted": 0.8
+    },
+    {
+     "player": "Isaac Okoro",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Nikola Jovic",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "DeMar DeRozan",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Moe Wagner",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Isaiah Stewart",
+     "adp": 36.0,
+     "drafted": 0.3
+    },
+    {
+     "player": "Bennedict Mathurin",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Karlo Matkovic",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Walter Clayton Jr.",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Leonard Miller",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Zaccharie Risacher",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Jordan Poole",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Herb Jones",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "915b100e",
+     "adp": null,
+     "drafted": 1.0
+    },
+    {
+     "player": "James Harden",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "956e588d",
+     "adp": null,
+     "drafted": 0.1
+    },
+    {
+     "player": "Donovan Mitchell",
+     "adp": null,
+     "drafted": 0.4
+    },
+    {
+     "player": "Ty Jerome",
+     "adp": null,
+     "drafted": 0.3
+    },
+    {
+     "player": "Jarrett Allen",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "Trey Murphy III",
+     "adp": null,
+     "drafted": 0.1
+    },
+    {
+     "player": "d2f6e849",
+     "adp": null,
+     "drafted": 0.1
+    },
+    {
+     "player": "Evan Mobley",
+     "adp": null,
+     "drafted": 0.1
+    }
+   ],
+   "first_below_100": {
+    "player": "Norman Powell",
+    "adp": 32.6,
+    "drafted": 99.2
+   },
+   "drafted_bands": {
+    "99.5+": 28,
+    "60-99.5": 8,
+    "10-60": 5,
+    "<10": 37
+   },
+   "value": {
+    "field_fpoe": 30.7,
+    "top1_fpoe": 94.9,
+    "field_breakers": 2.24,
+    "top1_breakers": 4.37
+   },
+   "pairs": [
+    {
+     "pair": "Jamal Murray + Bam Adebayo",
+     "rounds": "1/2",
+     "share": 7.0,
+     "lift": 2.93
+    },
+    {
+     "pair": "LaMelo Ball + Bam Adebayo",
+     "rounds": "1/2",
+     "share": 6.1,
+     "lift": 2.54
+    },
+    {
+     "pair": "Nikola Jokic + Josh Giddey",
+     "rounds": "1/3",
+     "share": 5.7,
+     "lift": 2.38
+    },
+    {
+     "pair": "Nikola Jokic + Julius Randle",
+     "rounds": "1/2",
+     "share": 5.3,
+     "lift": 2.25
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 5.2,
+     "lift": 2.2
+    },
+    {
+     "pair": "Nikola Jokic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 5.2,
+     "lift": 2.19
+    },
+    {
+     "pair": "LaMelo Ball + Ayo Dosunmu",
+     "rounds": "1/3",
+     "share": 5.1,
+     "lift": 2.15
+    },
+    {
+     "pair": "Davion Mitchell + Jonathan Kuminga",
+     "rounds": "2/4",
+     "share": 5.0,
+     "lift": 2.08
+    },
+    {
+     "pair": "Cooper Flagg + Zion Williamson",
+     "rounds": "1/2",
+     "share": 4.9,
+     "lift": 2.07
+    },
+    {
+     "pair": "Jamal Murray + Ayo Dosunmu",
+     "rounds": "1/3",
+     "share": 4.8,
+     "lift": 2.02
+    },
+    {
+     "pair": "Bam Adebayo + Ayo Dosunmu",
+     "rounds": "2/3",
+     "share": 4.8,
+     "lift": 2.02
+    },
+    {
+     "pair": "Bam Adebayo + Day'Ron Sharpe",
+     "rounds": "2/3",
+     "share": 4.8,
+     "lift": 2.0
+    },
+    {
+     "pair": "Nikola Jokic + Jonathan Kuminga",
+     "rounds": "1/4",
+     "share": 4.8,
+     "lift": 2.0
+    },
+    {
+     "pair": "Cameron Boozer + Jaden McDaniels",
+     "rounds": "2/4",
+     "share": 4.7,
+     "lift": 1.99
+    },
+    {
+     "pair": "Bam Adebayo + Matas Buzelis",
+     "rounds": "2/5",
+     "share": 4.6,
+     "lift": 1.95
+    },
+    {
+     "pair": "Bam Adebayo + PJ Washington",
+     "rounds": "2/5",
+     "share": 4.6,
+     "lift": 1.93
+    },
+    {
+     "pair": "LaMelo Ball + Matas Buzelis",
+     "rounds": "1/5",
+     "share": 4.6,
+     "lift": 1.92
+    },
+    {
+     "pair": "Jamal Murray + Matas Buzelis",
+     "rounds": "1/5",
+     "share": 4.4,
+     "lift": 1.85
+    },
+    {
+     "pair": "LaMelo Ball + Day'Ron Sharpe",
+     "rounds": "1/3",
+     "share": 4.4,
+     "lift": 1.84
+    },
+    {
+     "pair": "Kyrie Irving + Rudy Gobert",
+     "rounds": "2/4",
+     "share": 4.3,
+     "lift": 1.82
+    },
+    {
+     "pair": "Bam Adebayo + Jaylon Tyson",
+     "rounds": "2/5",
+     "share": 4.3,
+     "lift": 1.81
+    },
+    {
+     "pair": "Cade Cunningham + Davion Mitchell",
+     "rounds": "1/2",
+     "share": 4.3,
+     "lift": 1.81
+    },
+    {
+     "pair": "Bam Adebayo + Daniss Jenkins",
+     "rounds": "2/3",
+     "share": 4.3,
+     "lift": 1.81
+    },
+    {
+     "pair": "Jamal Murray + Day'Ron Sharpe",
+     "rounds": "1/3",
+     "share": 4.3,
+     "lift": 1.81
+    },
+    {
+     "pair": "Josh Giddey + Saddiq Bey",
+     "rounds": "3/4",
+     "share": 4.3,
+     "lift": 1.79
+    }
+   ],
+   "cores": [
+    {
+     "core": "Bam Adebayo + Jamal Murray + Ayo Dosunmu",
+     "share": 1.7
+    },
+    {
+     "core": "Bam Adebayo + Ayo Dosunmu + LaMelo Ball",
+     "share": 1.5
+    },
+    {
+     "core": "Bam Adebayo + Jamal Murray + Day'Ron Sharpe",
+     "share": 1.4
+    },
+    {
+     "core": "Bam Adebayo + LaMelo Ball + Day'Ron Sharpe",
+     "share": 1.3
+    },
+    {
+     "core": "Nikola Jokic + Julius Randle + Josh Giddey",
+     "share": 1.3
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Julius Randle",
+     "share": 1.3
+    },
+    {
+     "core": "Daniss Jenkins + Bam Adebayo + Jamal Murray",
+     "share": 1.0
+    },
+    {
+     "core": "Jeremiah Fears + Cooper Flagg + Zion Williamson",
+     "share": 0.9
+    },
+    {
+     "core": "Nikola Jokic + Jeremiah Fears + Josh Giddey",
+     "share": 0.9
+    },
+    {
+     "core": "Bam Adebayo + Jaden McDaniels + Jamal Murray",
+     "share": 0.9
+    },
+    {
+     "core": "Davion Mitchell + Josh Giddey + Giannis Antetokounmpo",
+     "share": 0.8
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Josh Giddey",
+     "share": 0.8
+    },
+    {
+     "core": "Bam Adebayo + Jeremiah Fears + Jamal Murray",
+     "share": 0.8
+    },
+    {
+     "core": "Kyrie Irving + Josh Giddey + Giannis Antetokounmpo",
+     "share": 0.8
+    },
+    {
+     "core": "Kyrie Irving + Julius Randle + Giannis Antetokounmpo",
+     "share": 0.8
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Jamal Murray (6) + Bam Adebayo (7)",
+      "share": 7.0,
+      "lift": 2.93,
+      "top1": 0,
+      "avg_points": 217.2
+     },
+     {
+      "pair": "LaMelo Ball (5) + Bam Adebayo (7)",
+      "share": 6.1,
+      "lift": 2.54,
+      "top1": 0,
+      "avg_points": 218.3
+     },
+     {
+      "pair": "LaMelo Ball (5) + Jamal Murray (6)",
+      "share": 2.9,
+      "lift": 1.21,
+      "top1": 0,
+      "avg_points": 218.3
+     },
+     {
+      "pair": "LaMelo Ball (5) + Zion Williamson (8)",
+      "share": 2.6,
+      "lift": 1.1,
+      "top1": 0,
+      "avg_points": 210.5
+     },
+     {
+      "pair": "Jamal Murray (6) + Zion Williamson (8)",
+      "share": 1.7,
+      "lift": 0.71,
+      "top1": 0,
+      "avg_points": 211.5
+     },
+     {
+      "pair": "Bam Adebayo (7) + Zion Williamson (8)",
+      "share": 0.8,
+      "lift": 0.36,
+      "top1": 0,
+      "avg_points": 206.2
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 1986,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Julius Randle (12) + Josh Giddey (13)",
+        "of_anchor": 7.9,
+        "share": 1.3,
+        "top1": 0,
+        "avg_points": 207.0
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Julius Randle (12)",
+        "of_anchor": 7.8,
+        "share": 1.3,
+        "top1": 3,
+        "avg_points": 247.9
+       },
+       {
+        "combo": "Nikola Jokic + Josh Giddey (13) + Jeremiah Fears (15)",
+        "of_anchor": 5.7,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 205.6
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Josh Giddey (13)",
+        "of_anchor": 5.1,
+        "share": 0.8,
+        "top1": 1,
+        "avg_points": 236.8
+       },
+       {
+        "combo": "Nikola Jokic + Davion Mitchell (10) + Josh Giddey (13)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 209.9
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Jeremiah Fears (15)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 240.9
+       },
+       {
+        "combo": "Nikola Jokic + Davion Mitchell (10) + Julius Randle (12)",
+        "of_anchor": 3.5,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 224.9
+       },
+       {
+        "combo": "Nikola Jokic + Julius Randle (12) + Jeremiah Fears (15)",
+        "of_anchor": 3.1,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 216.4
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 2,
+      "teams": 1986,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Josh Giddey (13)",
+        "of_anchor": 5.1,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 232.7
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Josh Giddey (13)",
+        "of_anchor": 5.0,
+        "share": 0.8,
+        "top1": 5,
+        "avg_points": 252.0
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Julius Randle (12)",
+        "of_anchor": 4.9,
+        "share": 0.8,
+        "top1": 10,
+        "avg_points": 262.2
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Julius Randle (12)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 3,
+        "avg_points": 244.6
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Jeremiah Fears (15)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 7,
+        "avg_points": 253.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Daniss Jenkins (18)",
+        "of_anchor": 3.9,
+        "share": 0.7,
+        "top1": 1,
+        "avg_points": 233.9
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Cameron Boozer (9) + Julius Randle (12)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 1,
+        "avg_points": 250.6
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Cameron Boozer (9) + Kyrie Irving (11)",
+        "of_anchor": 3.0,
+        "share": 0.5,
+        "top1": 20,
+        "avg_points": 276.0
+       }
+      ]
+     },
+     {
+      "anchor": "Cade Cunningham",
+      "adp_rank": 3,
+      "teams": 1986,
+      "combos": [
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Daniss Jenkins (18)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 215.1
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Josh Giddey (13)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 216.5
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Day'Ron Sharpe (17)",
+        "of_anchor": 4.2,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 223.7
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Daniss Jenkins (18)",
+        "of_anchor": 4.2,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 210.6
+       },
+       {
+        "combo": "Cade Cunningham + Kyrie Irving (11) + Jeremiah Fears (15)",
+        "of_anchor": 3.9,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 234.7
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Day'Ron Sharpe (17)",
+        "of_anchor": 3.9,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 224.7
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Jeremiah Fears (15)",
+        "of_anchor": 3.6,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 216.1
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Jeremiah Fears (15)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 215.5
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": {
+    "teams": 10,
+    "share4_median": 0.5,
+    "share4_max": 0.8,
+    "teams_with_dupes": 1,
+    "repeats_of_mine": 0,
+    "top_pairs": [
+     [
+      "Thomas Bryant + Cam Spencer",
+      6
+     ],
+     [
+      "Aaron Gordon + Thomas Bryant",
+      6
+     ],
+     [
+      "Aaron Gordon + Cam Spencer",
+      6
+     ],
+     [
+      "Christian Braun + Thomas Bryant",
+      4
+     ],
+     [
+      "Christian Braun + Aaron Gordon",
+      4
+     ]
+    ],
+    "top_cores": [
+     [
+      "Jamal Murray + Cameron Boozer + Ausar Thompson",
+      3
+     ],
+     [
+      "Saddiq Bey + Jeremiah Fears + Cooper Flagg",
+      1
+     ],
+     [
+      "Cameron Boozer + Josh Giddey + Giannis Antetokounmpo",
+      1
+     ],
+     [
+      "Cooper Flagg + Cam Spencer + Josh Giddey",
+      1
+     ],
+     [
+      "Rudy Gobert + Cade Cunningham + Day'Ron Sharpe",
+      1
+     ]
+    ]
+   },
+   "draft_time": {
+    "matched": 11285,
+    "am_share": 32.7,
+    "by_hour_pt": {
+     "00": 159,
+     "01": 105,
+     "02": 114,
+     "03": 97,
+     "04": 115,
+     "05": 260,
+     "06": 250,
+     "07": 302,
+     "08": 459,
+     "09": 522,
+     "10": 654,
+     "11": 653,
+     "12": 918,
+     "13": 954,
+     "14": 1669,
+     "15": 3377,
+     "20": 1,
+     "21": 104,
+     "22": 301,
+     "23": 271
+    }
+   },
+   "mine": {
+    "teams": 10,
+    "median_pct": 57.1,
+    "tail1": 0.0,
+    "tail5": 0.0,
+    "tail10": 0.0,
+    "tail20": 0.5,
+    "payout": 10.0,
+    "am_teams": 0,
+    "am_tail10": null,
+    "pm_teams": 8,
+    "pm_tail10": 0.0
+   },
+   "my_teams": [
+    {
+     "place": 7084,
+     "points": 213.4,
+     "payout": 0.0,
+     "draft_id": "11a0c08b-8a0d-456f-9945-949d8e838cfa",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "7671dd78-6f07-4986-9218-98940c34e88b",
+      "260d44ae-39e2-43f9-944a-b7af711566e7",
+      "ed7b7236-22d1-4cf8-aa75-e3498df98dc1",
+      "0ba32eee-bd42-4efd-8e6f-14d3251932d8",
+      "dc13d065-61af-4175-bc08-34cf343a5849"
+     ],
+     "drafted_at": "2026-11-14T22:23:19+00:00"
+    },
+    {
+     "place": 1615,
+     "points": 248.9,
+     "payout": 10.0,
+     "draft_id": "15144b3e-d449-46e5-b71e-9d28f5697143",
+     "picks": [
+      "fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "ee1a8262-108e-425a-86af-4d87b4e9d67c",
+      "643fcf01-0598-4533-b0eb-e5c21d7ce74e",
+      "ed7b7236-22d1-4cf8-aa75-e3498df98dc1",
+      "dc13d065-61af-4175-bc08-34cf343a5849"
+     ],
+     "drafted_at": "2026-11-14T22:23:19+00:00"
+    },
+    {
+     "place": 9426,
+     "points": 200.5,
+     "payout": 0.0,
+     "draft_id": "3a827007-0837-4b3a-9ac9-97023151e36c",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "ee1a8262-108e-425a-86af-4d87b4e9d67c",
+      "ed7b7236-22d1-4cf8-aa75-e3498df98dc1",
+      "0ba32eee-bd42-4efd-8e6f-14d3251932d8",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "dc13d065-61af-4175-bc08-34cf343a5849"
+     ],
+     "drafted_at": null
+    },
+    {
+     "place": 6808,
+     "points": 214.8,
+     "payout": 0.0,
+     "draft_id": "3b76a309-ee70-41ed-a032-887a66c15a42",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "ffb41f79-798e-4e36-a3f9-07af6c6f7a61",
+      "60a5e271-34d5-48b0-b7ff-5d7c97d02663",
+      "0ba32eee-bd42-4efd-8e6f-14d3251932d8",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "dc13d065-61af-4175-bc08-34cf343a5849"
+     ],
+     "drafted_at": null
+    },
+    {
+     "place": 5872,
+     "points": 219.5,
+     "payout": 0.0,
+     "draft_id": "4ff54716-b08a-41bd-b1e4-40dd2c8e14a1",
+     "picks": [
+      "89d805df-6a3e-40d1-bbf2-ed440e503310",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "ed7b7236-22d1-4cf8-aa75-e3498df98dc1",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "dc13d065-61af-4175-bc08-34cf343a5849"
+     ],
+     "drafted_at": "2026-11-14T22:23:19+00:00"
+    },
+    {
+     "place": 4235,
+     "points": 228.2,
+     "payout": 0.0,
+     "draft_id": "597f10bc-66bb-4456-8b97-73341fe58df4",
+     "picks": [
+      "89d805df-6a3e-40d1-bbf2-ed440e503310",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "0ba32eee-bd42-4efd-8e6f-14d3251932d8",
+      "dc13d065-61af-4175-bc08-34cf343a5849"
+     ],
+     "drafted_at": "2026-11-14T22:23:19+00:00"
+    },
+    {
+     "place": 8225,
+     "points": 207.6,
+     "payout": 0.0,
+     "draft_id": "69dd87e4-ebe3-45f1-9bbb-93d3f6a6bb48",
+     "picks": [
+      "89d805df-6a3e-40d1-bbf2-ed440e503310",
+      "c645e0d6-879a-4c24-8130-c87ecadae429",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "ed7b7236-22d1-4cf8-aa75-e3498df98dc1",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "9cf1c1d8-6fc2-4213-a76c-7aab7480fa15"
+     ],
+     "drafted_at": "2026-11-14T22:23:19+00:00"
+    },
+    {
+     "place": 4382,
+     "points": 227.5,
+     "payout": 0.0,
+     "draft_id": "83a70688-895f-4821-b136-5d826d2756bb",
+     "picks": [
+      "fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744",
+      "8ac84b3c-e6d8-4e6f-9c1e-dd6ad7788696",
+      "60a5e271-34d5-48b0-b7ff-5d7c97d02663",
+      "ed7b7236-22d1-4cf8-aa75-e3498df98dc1",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "dc13d065-61af-4175-bc08-34cf343a5849"
+     ],
+     "drafted_at": "2026-11-14T22:23:19+00:00"
+    },
+    {
+     "place": 6036,
+     "points": 218.6,
+     "payout": 0.0,
+     "draft_id": "88b9b9c8-7e1a-42f3-acf4-9b4ac007b40a",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "8ac84b3c-e6d8-4e6f-9c1e-dd6ad7788696",
+      "4e362394-7dec-4301-907a-3cc7217768bf",
+      "ed7b7236-22d1-4cf8-aa75-e3498df98dc1",
+      "0ba32eee-bd42-4efd-8e6f-14d3251932d8",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e"
+     ],
+     "drafted_at": "2026-11-14T22:23:19+00:00"
+    },
+    {
+     "place": 8394,
+     "points": 206.7,
+     "payout": 0.0,
+     "draft_id": "c8c155e1-033b-471b-be5d-ca99400ff083",
+     "picks": [
+      "9b2c4153-1d5b-4c7b-afa8-b4945affbe8d",
+      "ee1a8262-108e-425a-86af-4d87b4e9d67c",
+      "260d44ae-39e2-43f9-944a-b7af711566e7",
+      "ed7b7236-22d1-4cf8-aa75-e3498df98dc1",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "dc13d065-61af-4175-bc08-34cf343a5849"
+     ],
+     "drafted_at": "2026-11-14T22:23:19+00:00"
+    }
+   ]
+  },
+  {
+   "contest": "Buzzer Beater",
+   "contest_id": "6975adf6-fae8-497b-8a19-3e4d4573665f",
+   "entries": 3354,
+   "pods": 559,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 3354,
+    "win": 311.1,
+    "median": 219.5,
+    "top1": 284.8,
+    "top1_over_median": 65.3,
+    "top5": 265.4,
+    "top5_over_median": 45.9,
+    "top10": 254.8,
+    "top10_over_median": 35.3,
+    "top20": 242.1,
+    "top20_over_median": 22.6
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Giannis Antetokounmpo",
+     "adp": 2.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cade Cunningham",
+     "adp": 3.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 5.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Bam Adebayo",
+     "adp": 6.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 9.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 10.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Davion Mitchell",
+     "adp": 11.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Julius Randle",
+     "adp": 14.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Josh Giddey",
+     "adp": 14.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jeremiah Fears",
+     "adp": 15.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 18.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Day'Ron Sharpe",
+     "adp": 20.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 20.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 21.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 21.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cedric Coward",
+     "adp": 24.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jonathan Kuminga",
+     "adp": 26.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Rudy Gobert",
+     "adp": 26.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Saddiq Bey",
+     "adp": 27.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 29.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Matas Buzelis",
+     "adp": 30.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 32.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Norman Powell",
+     "adp": 32.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jalen Smith",
+     "adp": 33.2,
+     "drafted": 0.7
+    },
+    {
+     "player": "Jaylon Tyson",
+     "adp": 34.2,
+     "drafted": 99.8
+    },
+    {
+     "player": "Cam Spencer",
+     "adp": 34.7,
+     "drafted": 99.6
+    },
+    {
+     "player": "Duncan Robinson",
+     "adp": 35.0,
+     "drafted": 88.7
+    },
+    {
+     "player": "Meleek Thomas",
+     "adp": 35.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 35.2,
+     "drafted": 68.7
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 35.2,
+     "drafted": 76.2
+    },
+    {
+     "player": "Derik Queen",
+     "adp": 35.4,
+     "drafted": 27.5
+    },
+    {
+     "player": "Tyrese Proctor",
+     "adp": 35.7,
+     "drafted": 96.2
+    },
+    {
+     "player": "Klay Thompson",
+     "adp": 35.7,
+     "drafted": 16.5
+    },
+    {
+     "player": "Mario Hezonja",
+     "adp": 35.8,
+     "drafted": 97.7
+    },
+    {
+     "player": "John Collins",
+     "adp": 35.8,
+     "drafted": 15.2
+    },
+    {
+     "player": "Egor Demin",
+     "adp": 35.8,
+     "drafted": 15.9
+    },
+    {
+     "player": "Bones Hyland",
+     "adp": 35.9,
+     "drafted": 6.3
+    },
+    {
+     "player": "Jaylen Wells",
+     "adp": 35.9,
+     "drafted": 3.9
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 35.9,
+     "drafted": 5.4
+    },
+    {
+     "player": "Nolan Traore",
+     "adp": 35.9,
+     "drafted": 4.7
+    },
+    {
+     "player": "Andrew Wiggins",
+     "adp": 35.9,
+     "drafted": 0.2
+    },
+    {
+     "player": "Thomas Bryant",
+     "adp": 36.0,
+     "drafted": 56.4
+    },
+    {
+     "player": "Danny Wolf",
+     "adp": 36.0,
+     "drafted": 1.6
+    },
+    {
+     "player": "Craig Porter Jr.",
+     "adp": 36.0,
+     "drafted": 8.8
+    },
+    {
+     "player": "Yves Missi",
+     "adp": 36.0,
+     "drafted": 1.3
+    },
+    {
+     "player": "Kevin Huerter",
+     "adp": 36.0,
+     "drafted": 1.8
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 36.0,
+     "drafted": 1.3
+    },
+    {
+     "player": "Naji Marshall",
+     "adp": 36.0,
+     "drafted": 0.9
+    },
+    {
+     "player": "Jordan Poole",
+     "adp": 36.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "Mikel Brown Jr.",
+     "adp": 36.0,
+     "drafted": 0.9
+    },
+    {
+     "player": "Nikola Jovic",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Herb Jones",
+     "adp": 36.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "Walter Clayton Jr.",
+     "adp": 36.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "Noah Clowney",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "DeMar DeRozan",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Trey Lyles",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Evan Mobley",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "Jarrett Allen",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "Ty Jerome",
+     "adp": null,
+     "drafted": 0.5
+    },
+    {
+     "player": "Trey Murphy III",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "Donovan Mitchell",
+     "adp": null,
+     "drafted": 0.5
+    },
+    {
+     "player": "5fc0a12c",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "956e588d",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "James Harden",
+     "adp": null,
+     "drafted": 0.2
+    }
+   ],
+   "first_below_100": {
+    "player": "Duncan Robinson",
+    "adp": 35.0,
+    "drafted": 88.7
+   },
+   "drafted_bands": {
+    "99.5+": 30,
+    "60-99.5": 5,
+    "10-60": 5,
+    "<10": 28
+   },
+   "value": {
+    "field_fpoe": 30.8,
+    "top1_fpoe": 96.7,
+    "field_breakers": 2.25,
+    "top1_breakers": 4.41
+   },
+   "pairs": [
+    {
+     "pair": "Jamal Murray + Bam Adebayo",
+     "rounds": "1/2",
+     "share": 7.4,
+     "lift": 3.12
+    },
+    {
+     "pair": "Nikola Jokic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 6.2,
+     "lift": 2.6
+    },
+    {
+     "pair": "Nikola Jokic + Josh Giddey",
+     "rounds": "1/3",
+     "share": 5.3,
+     "lift": 2.24
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 5.1,
+     "lift": 2.13
+    },
+    {
+     "pair": "Bam Adebayo + Ayo Dosunmu",
+     "rounds": "2/3",
+     "share": 5.0,
+     "lift": 2.12
+    },
+    {
+     "pair": "Nikola Jokic + Jonathan Kuminga",
+     "rounds": "1/4",
+     "share": 5.0,
+     "lift": 2.1
+    },
+    {
+     "pair": "Jamal Murray + Ayo Dosunmu",
+     "rounds": "1/3",
+     "share": 5.0,
+     "lift": 2.09
+    },
+    {
+     "pair": "Cooper Flagg + Zion Williamson",
+     "rounds": "1/2",
+     "share": 4.9,
+     "lift": 2.08
+    },
+    {
+     "pair": "LaMelo Ball + Ayo Dosunmu",
+     "rounds": "1/3",
+     "share": 4.9,
+     "lift": 2.07
+    },
+    {
+     "pair": "Bam Adebayo + Day'Ron Sharpe",
+     "rounds": "2/3",
+     "share": 4.9,
+     "lift": 2.07
+    },
+    {
+     "pair": "LaMelo Ball + Bam Adebayo",
+     "rounds": "1/2",
+     "share": 4.8,
+     "lift": 2.03
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Julius Randle",
+     "rounds": "1/2",
+     "share": 4.7,
+     "lift": 1.98
+    },
+    {
+     "pair": "LaMelo Ball + Matas Buzelis",
+     "rounds": "1/5",
+     "share": 4.7,
+     "lift": 1.95
+    },
+    {
+     "pair": "Davion Mitchell + Jonathan Kuminga",
+     "rounds": "2/4",
+     "share": 4.6,
+     "lift": 1.93
+    },
+    {
+     "pair": "Jamal Murray + Paul Reed",
+     "rounds": "1/5",
+     "share": 4.5,
+     "lift": 1.9
+    },
+    {
+     "pair": "Jamal Murray + Day'Ron Sharpe",
+     "rounds": "1/3",
+     "share": 4.5,
+     "lift": 1.89
+    },
+    {
+     "pair": "Cade Cunningham + Davion Mitchell",
+     "rounds": "1/2",
+     "share": 4.5,
+     "lift": 1.89
+    },
+    {
+     "pair": "Nikola Jokic + Julius Randle",
+     "rounds": "1/2",
+     "share": 4.4,
+     "lift": 1.85
+    },
+    {
+     "pair": "Cameron Boozer + Jaden McDaniels",
+     "rounds": "2/4",
+     "share": 4.4,
+     "lift": 1.85
+    },
+    {
+     "pair": "Bam Adebayo + Jaylon Tyson",
+     "rounds": "2/5",
+     "share": 4.4,
+     "lift": 1.84
+    },
+    {
+     "pair": "Bam Adebayo + PJ Washington",
+     "rounds": "2/5",
+     "share": 4.4,
+     "lift": 1.83
+    },
+    {
+     "pair": "Jamal Murray + Jaylon Tyson",
+     "rounds": "1/5",
+     "share": 4.3,
+     "lift": 1.82
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Cedric Coward",
+     "rounds": "1/4",
+     "share": 4.3,
+     "lift": 1.82
+    },
+    {
+     "pair": "Bam Adebayo + Paul Reed",
+     "rounds": "2/5",
+     "share": 4.3,
+     "lift": 1.8
+    },
+    {
+     "pair": "Bam Adebayo + Matas Buzelis",
+     "rounds": "2/5",
+     "share": 4.3,
+     "lift": 1.79
+    }
+   ],
+   "cores": [
+    {
+     "core": "Bam Adebayo + Jamal Murray + Ayo Dosunmu",
+     "share": 1.9
+    },
+    {
+     "core": "Bam Adebayo + Jamal Murray + Day'Ron Sharpe",
+     "share": 1.6
+    },
+    {
+     "core": "Bam Adebayo + Ayo Dosunmu + LaMelo Ball",
+     "share": 1.3
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Josh Giddey",
+     "share": 1.3
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Julius Randle",
+     "share": 1.2
+    },
+    {
+     "core": "Bam Adebayo + Jeremiah Fears + Jamal Murray",
+     "share": 1.2
+    },
+    {
+     "core": "Nikola Jokic + Julius Randle + Josh Giddey",
+     "share": 1.0
+    },
+    {
+     "core": "Julius Randle + Cameron Boozer + Giannis Antetokounmpo",
+     "share": 1.0
+    },
+    {
+     "core": "Kyrie Irving + Julius Randle + Giannis Antetokounmpo",
+     "share": 1.0
+    },
+    {
+     "core": "Bam Adebayo + Jaden McDaniels + Jamal Murray",
+     "share": 0.9
+    },
+    {
+     "core": "Jeremiah Fears + Cooper Flagg + Zion Williamson",
+     "share": 0.9
+    },
+    {
+     "core": "Ayo Dosunmu + Cooper Flagg + Zion Williamson",
+     "share": 0.8
+    },
+    {
+     "core": "Bam Adebayo + Jeremiah Fears + LaMelo Ball",
+     "share": 0.8
+    },
+    {
+     "core": "Bam Adebayo + LaMelo Ball + Day'Ron Sharpe",
+     "share": 0.8
+    },
+    {
+     "core": "Jamal Murray + Ayo Dosunmu + LaMelo Ball",
+     "share": 0.8
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Jamal Murray (6) + Bam Adebayo (7)",
+      "share": 7.4,
+      "lift": 3.12,
+      "top1": 0,
+      "avg_points": 216.1
+     },
+     {
+      "pair": "LaMelo Ball (5) + Bam Adebayo (7)",
+      "share": 4.8,
+      "lift": 2.03,
+      "top1": 0,
+      "avg_points": 217.0
+     },
+     {
+      "pair": "LaMelo Ball (5) + Jamal Murray (6)",
+      "share": 3.2,
+      "lift": 1.35,
+      "top1": 0,
+      "avg_points": 217.1
+     },
+     {
+      "pair": "LaMelo Ball (5) + Zion Williamson (8)",
+      "share": 2.6,
+      "lift": 1.08,
+      "top1": 0,
+      "avg_points": 209.1
+     },
+     {
+      "pair": "Jamal Murray (6) + Zion Williamson (8)",
+      "share": 1.6,
+      "lift": 0.68,
+      "top1": 0,
+      "avg_points": 212.7
+     },
+     {
+      "pair": "Bam Adebayo (7) + Zion Williamson (8)",
+      "share": 0.6,
+      "lift": 0.26,
+      "top1": 0,
+      "avg_points": 208.6
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 559,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Josh Giddey (13)",
+        "of_anchor": 7.7,
+        "share": 1.3,
+        "top1": 0,
+        "avg_points": 235.4
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Julius Randle (12)",
+        "of_anchor": 7.3,
+        "share": 1.2,
+        "top1": 2,
+        "avg_points": 256.6
+       },
+       {
+        "combo": "Nikola Jokic + Julius Randle (12) + Josh Giddey (13)",
+        "of_anchor": 6.3,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 206.5
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Jeremiah Fears (15)",
+        "of_anchor": 4.7,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 236.8
+       },
+       {
+        "combo": "Nikola Jokic + Davion Mitchell (10) + Josh Giddey (13)",
+        "of_anchor": 4.1,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 213.5
+       },
+       {
+        "combo": "Nikola Jokic + Josh Giddey (13) + Jeremiah Fears (15)",
+        "of_anchor": 3.9,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 204.7
+       },
+       {
+        "combo": "Nikola Jokic + Davion Mitchell (10) + Daniss Jenkins (18)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 227.6
+       },
+       {
+        "combo": "Nikola Jokic + Davion Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 3,
+        "avg_points": 254.7
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 2,
+      "teams": 559,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Cameron Boozer (9) + Julius Randle (12)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 247.0
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Julius Randle (12)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 3,
+        "avg_points": 260.6
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Daniss Jenkins (18)",
+        "of_anchor": 5.0,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 234.5
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Josh Giddey (13)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 2,
+        "avg_points": 251.3
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Julius Randle (12)",
+        "of_anchor": 3.9,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 246.3
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Josh Giddey (13)",
+        "of_anchor": 3.9,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 235.4
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Cameron Boozer (9) + Kyrie Irving (11)",
+        "of_anchor": 3.8,
+        "share": 0.6,
+        "top1": 6,
+        "avg_points": 276.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Cameron Boozer (9) + Daniss Jenkins (18)",
+        "of_anchor": 3.4,
+        "share": 0.6,
+        "top1": 1,
+        "avg_points": 242.3
+       }
+      ]
+     },
+     {
+      "anchor": "Cade Cunningham",
+      "adp_rank": 3,
+      "teams": 559,
+      "combos": [
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Daniss Jenkins (18)",
+        "of_anchor": 6.1,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 219.5
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Daniss Jenkins (18)",
+        "of_anchor": 5.4,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 210.0
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Day'Ron Sharpe (17)",
+        "of_anchor": 5.2,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 220.9
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Jeremiah Fears (15)",
+        "of_anchor": 4.8,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 215.3
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Julius Randle (12)",
+        "of_anchor": 4.8,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 223.4
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Day'Ron Sharpe (17)",
+        "of_anchor": 4.7,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 219.3
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Julius Randle (12)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 225.8
+       },
+       {
+        "combo": "Cade Cunningham + Cameron Boozer (9) + Jeremiah Fears (15)",
+        "of_anchor": 4.1,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 216.5
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 3162,
+    "am_share": 35.7,
+    "by_hour_pt": {
+     "00": 36,
+     "01": 56,
+     "02": 39,
+     "03": 32,
+     "04": 23,
+     "05": 42,
+     "06": 75,
+     "07": 112,
+     "08": 178,
+     "09": 130,
+     "10": 197,
+     "11": 208,
+     "12": 247,
+     "13": 329,
+     "14": 482,
+     "15": 803,
+     "21": 17,
+     "22": 75,
+     "23": 81
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  },
+  {
+   "contest": "The Layup Line",
+   "contest_id": "0a620a51-e640-40af-9b00-4e05254d8f38",
+   "entries": 906,
+   "pods": 151,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 906,
+    "win": 300.5,
+    "median": 218.1,
+    "top1": 283.8,
+    "top1_over_median": 65.7,
+    "top5": 265.9,
+    "top5_over_median": 47.8,
+    "top10": 255.0,
+    "top10_over_median": 36.9,
+    "top20": 242.5,
+    "top20_over_median": 24.4
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Giannis Antetokounmpo",
+     "adp": 2.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cade Cunningham",
+     "adp": 3.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 5.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Bam Adebayo",
+     "adp": 6.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 9.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 10.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Davion Mitchell",
+     "adp": 11.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Julius Randle",
+     "adp": 14.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Josh Giddey",
+     "adp": 14.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jeremiah Fears",
+     "adp": 15.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 18.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Day'Ron Sharpe",
+     "adp": 20.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 20.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 21.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 21.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cedric Coward",
+     "adp": 24.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jonathan Kuminga",
+     "adp": 26.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Rudy Gobert",
+     "adp": 26.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Saddiq Bey",
+     "adp": 27.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 29.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Matas Buzelis",
+     "adp": 30.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 32.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Norman Powell",
+     "adp": 32.6,
+     "drafted": 97.4
+    },
+    {
+     "player": "Jalen Smith",
+     "adp": 33.2,
+     "drafted": 0.7
+    },
+    {
+     "player": "Jaylon Tyson",
+     "adp": 34.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cam Spencer",
+     "adp": 34.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Duncan Robinson",
+     "adp": 35.0,
+     "drafted": 80.1
+    },
+    {
+     "player": "Meleek Thomas",
+     "adp": 35.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 35.2,
+     "drafted": 62.9
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 35.2,
+     "drafted": 68.2
+    },
+    {
+     "player": "Derik Queen",
+     "adp": 35.4,
+     "drafted": 34.4
+    },
+    {
+     "player": "Tyrese Proctor",
+     "adp": 35.7,
+     "drafted": 88.7
+    },
+    {
+     "player": "Klay Thompson",
+     "adp": 35.7,
+     "drafted": 20.5
+    },
+    {
+     "player": "Mario Hezonja",
+     "adp": 35.8,
+     "drafted": 98.0
+    },
+    {
+     "player": "John Collins",
+     "adp": 35.8,
+     "drafted": 18.5
+    },
+    {
+     "player": "Egor Demin",
+     "adp": 35.8,
+     "drafted": 6.0
+    },
+    {
+     "player": "Bones Hyland",
+     "adp": 35.9,
+     "drafted": 3.3
+    },
+    {
+     "player": "Jaylen Wells",
+     "adp": 35.9,
+     "drafted": 8.6
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 35.9,
+     "drafted": 3.3
+    },
+    {
+     "player": "Andrew Wiggins",
+     "adp": 35.9,
+     "drafted": 4.6
+    },
+    {
+     "player": "Nolan Traore",
+     "adp": 35.9,
+     "drafted": 4.0
+    },
+    {
+     "player": "Thomas Bryant",
+     "adp": 36.0,
+     "drafted": 64.2
+    },
+    {
+     "player": "Craig Porter Jr.",
+     "adp": 36.0,
+     "drafted": 19.9
+    },
+    {
+     "player": "Javon Small",
+     "adp": 36.0,
+     "drafted": 2.6
+    },
+    {
+     "player": "Danny Wolf",
+     "adp": 36.0,
+     "drafted": 1.3
+    },
+    {
+     "player": "DeMar DeRozan",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Patrick Williams",
+     "adp": 36.0,
+     "drafted": 3.3
+    },
+    {
+     "player": "Naji Marshall",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 36.0,
+     "drafted": 1.3
+    },
+    {
+     "player": "Moe Wagner",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Nikola Jovic",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Kevin Huerter",
+     "adp": 36.0,
+     "drafted": 2.0
+    },
+    {
+     "player": "Mikel Brown Jr.",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Jordan Poole",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Donovan Mitchell",
+     "adp": null,
+     "drafted": 0.7
+    },
+    {
+     "player": "Evan Mobley",
+     "adp": null,
+     "drafted": 0.7
+    },
+    {
+     "player": "5fc0a12c",
+     "adp": null,
+     "drafted": 0.7
+    }
+   ],
+   "first_below_100": {
+    "player": "Norman Powell",
+    "adp": 32.6,
+    "drafted": 97.4
+   },
+   "drafted_bands": {
+    "99.5+": 29,
+    "60-99.5": 7,
+    "10-60": 4,
+    "<10": 21
+   },
+   "value": {
+    "field_fpoe": 30.9,
+    "top1_fpoe": 95.9,
+    "field_breakers": 2.24,
+    "top1_breakers": 4.3
+   },
+   "pairs": [
+    {
+     "pair": "Jamal Murray + Bam Adebayo",
+     "rounds": "1/2",
+     "share": 7.4,
+     "lift": 3.11
+    },
+    {
+     "pair": "Nikola Jokic + Julius Randle",
+     "rounds": "1/2",
+     "share": 6.3,
+     "lift": 2.64
+    },
+    {
+     "pair": "Cameron Boozer + Jaden McDaniels",
+     "rounds": "2/4",
+     "share": 5.6,
+     "lift": 2.36
+    },
+    {
+     "pair": "LaMelo Ball + PJ Washington",
+     "rounds": "1/5",
+     "share": 5.6,
+     "lift": 2.36
+    },
+    {
+     "pair": "Kyrie Irving + Cedric Coward",
+     "rounds": "2/4",
+     "share": 5.2,
+     "lift": 2.18
+    },
+    {
+     "pair": "Ausar Thompson + Mario Hezonja",
+     "rounds": "4/7",
+     "share": 5.1,
+     "lift": 2.18
+    },
+    {
+     "pair": "Bam Adebayo + Day'Ron Sharpe",
+     "rounds": "2/3",
+     "share": 5.1,
+     "lift": 2.13
+    },
+    {
+     "pair": "Jaden McDaniels + Paul Reed",
+     "rounds": "4/5",
+     "share": 5.1,
+     "lift": 2.13
+    },
+    {
+     "pair": "LaMelo Ball + Bam Adebayo",
+     "rounds": "1/2",
+     "share": 5.1,
+     "lift": 2.13
+    },
+    {
+     "pair": "Cade Cunningham + Davion Mitchell",
+     "rounds": "1/2",
+     "share": 5.1,
+     "lift": 2.13
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Cedric Coward",
+     "rounds": "1/4",
+     "share": 5.1,
+     "lift": 2.13
+    },
+    {
+     "pair": "Nikola Jokic + Josh Giddey",
+     "rounds": "1/3",
+     "share": 5.0,
+     "lift": 2.09
+    },
+    {
+     "pair": "Nikola Jokic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 5.0,
+     "lift": 2.09
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Julius Randle",
+     "rounds": "1/2",
+     "share": 4.9,
+     "lift": 2.04
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 4.9,
+     "lift": 2.04
+    },
+    {
+     "pair": "Cameron Boozer + Ayo Dosunmu",
+     "rounds": "2/3",
+     "share": 4.7,
+     "lift": 1.99
+    },
+    {
+     "pair": "Josh Giddey + Jonathan Kuminga",
+     "rounds": "3/4",
+     "share": 4.7,
+     "lift": 1.99
+    },
+    {
+     "pair": "Bam Adebayo + Matas Buzelis",
+     "rounds": "2/5",
+     "share": 4.7,
+     "lift": 1.99
+    },
+    {
+     "pair": "Cade Cunningham + Zion Williamson",
+     "rounds": "1/2",
+     "share": 4.6,
+     "lift": 1.95
+    },
+    {
+     "pair": "Cooper Flagg + Zion Williamson",
+     "rounds": "1/2",
+     "share": 4.6,
+     "lift": 1.95
+    },
+    {
+     "pair": "Julius Randle + Rudy Gobert",
+     "rounds": "2/4",
+     "share": 4.5,
+     "lift": 1.9
+    },
+    {
+     "pair": "Jamal Murray + Day'Ron Sharpe",
+     "rounds": "1/3",
+     "share": 4.5,
+     "lift": 1.9
+    },
+    {
+     "pair": "Kyrie Irving + Julius Randle",
+     "rounds": "2/2",
+     "share": 4.5,
+     "lift": 1.9
+    },
+    {
+     "pair": "Cedric Coward + Cam Spencer",
+     "rounds": "4/6",
+     "share": 4.4,
+     "lift": 1.85
+    },
+    {
+     "pair": "Bam Adebayo + Paul Reed",
+     "rounds": "2/5",
+     "share": 4.4,
+     "lift": 1.85
+    }
+   ],
+   "cores": [
+    {
+     "core": "Kyrie Irving + Julius Randle + Giannis Antetokounmpo",
+     "share": 1.9
+    },
+    {
+     "core": "Bam Adebayo + Jamal Murray + Day'Ron Sharpe",
+     "share": 1.7
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Julius Randle",
+     "share": 1.4
+    },
+    {
+     "core": "Cade Cunningham + Zion Williamson + Josh Giddey",
+     "share": 1.2
+    },
+    {
+     "core": "Bam Adebayo + Jamal Murray + Ayo Dosunmu",
+     "share": 1.2
+    },
+    {
+     "core": "Bam Adebayo + Jaden McDaniels + Jamal Murray",
+     "share": 1.1
+    },
+    {
+     "core": "Nikola Jokic + Julius Randle + Josh Giddey",
+     "share": 1.1
+    },
+    {
+     "core": "Ayo Dosunmu + LaMelo Ball + Cameron Boozer",
+     "share": 1.1
+    },
+    {
+     "core": "Bam Adebayo + Jeremiah Fears + Jamal Murray",
+     "share": 1.1
+    },
+    {
+     "core": "Bam Adebayo + Ayo Dosunmu + LaMelo Ball",
+     "share": 1.0
+    },
+    {
+     "core": "Nikola Jokic + Jeremiah Fears + Josh Giddey",
+     "share": 1.0
+    },
+    {
+     "core": "Davion Mitchell + Cade Cunningham + Josh Giddey",
+     "share": 1.0
+    },
+    {
+     "core": "Bam Adebayo + LaMelo Ball + Day'Ron Sharpe",
+     "share": 1.0
+    },
+    {
+     "core": "Davion Mitchell + Josh Giddey + Giannis Antetokounmpo",
+     "share": 1.0
+    },
+    {
+     "core": "Jeremiah Fears + Cooper Flagg + Zion Williamson",
+     "share": 0.9
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Jamal Murray (6) + Bam Adebayo (7)",
+      "share": 7.4,
+      "lift": 3.11,
+      "top1": 0,
+      "avg_points": 216.5
+     },
+     {
+      "pair": "LaMelo Ball (5) + Bam Adebayo (7)",
+      "share": 5.1,
+      "lift": 2.13,
+      "top1": 0,
+      "avg_points": 217.9
+     },
+     {
+      "pair": "LaMelo Ball (5) + Zion Williamson (8)",
+      "share": 3.0,
+      "lift": 1.25,
+      "top1": 0,
+      "avg_points": 211.0
+     },
+     {
+      "pair": "LaMelo Ball (5) + Jamal Murray (6)",
+      "share": 2.5,
+      "lift": 1.07,
+      "top1": 0,
+      "avg_points": 213.2
+     },
+     {
+      "pair": "Jamal Murray (6) + Zion Williamson (8)",
+      "share": 1.3,
+      "lift": 0.56,
+      "top1": 0,
+      "avg_points": 218.7
+     },
+     {
+      "pair": "Bam Adebayo (7) + Zion Williamson (8)",
+      "share": 0.8,
+      "lift": 0.32,
+      "top1": 0,
+      "avg_points": 195.6
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 151,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Julius Randle (12)",
+        "of_anchor": 8.6,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 250.3
+       },
+       {
+        "combo": "Nikola Jokic + Julius Randle (12) + Josh Giddey (13)",
+        "of_anchor": 6.6,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 205.1
+       },
+       {
+        "combo": "Nikola Jokic + Julius Randle (12) + Jeremiah Fears (15)",
+        "of_anchor": 6.0,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 221.6
+       },
+       {
+        "combo": "Nikola Jokic + Josh Giddey (13) + Jeremiah Fears (15)",
+        "of_anchor": 6.0,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 199.8
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Josh Giddey (13)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 243.1
+       },
+       {
+        "combo": "Nikola Jokic + Davion Mitchell (10) + Julius Randle (12)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 221.1
+       },
+       {
+        "combo": "Nikola Jokic + Davion Mitchell (10) + Jeremiah Fears (15)",
+        "of_anchor": 3.3,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 224.5
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Daniss Jenkins (18)",
+        "of_anchor": 3.3,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 244.0
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 2,
+      "teams": 151,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Julius Randle (12)",
+        "of_anchor": 11.3,
+        "share": 1.9,
+        "top1": 3,
+        "avg_points": 264.9
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Josh Giddey (13)",
+        "of_anchor": 6.0,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 238.9
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Julius Randle (12) + Jeremiah Fears (15)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 238.5
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Daniss Jenkins (18)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 232.9
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Cameron Boozer (9) + Ayo Dosunmu (16)",
+        "of_anchor": 4.0,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 246.3
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Jeremiah Fears (15)",
+        "of_anchor": 4.0,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 230.2
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Julius Randle (12)",
+        "of_anchor": 4.0,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 244.9
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Daniss Jenkins (18)",
+        "of_anchor": 4.0,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 251.7
+       }
+      ]
+     },
+     {
+      "anchor": "Cade Cunningham",
+      "adp_rank": 3,
+      "teams": 151,
+      "combos": [
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Josh Giddey (13)",
+        "of_anchor": 7.3,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 204.0
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Daniss Jenkins (18)",
+        "of_anchor": 6.6,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 220.4
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Daniss Jenkins (18)",
+        "of_anchor": 6.0,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 207.9
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Josh Giddey (13)",
+        "of_anchor": 6.0,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 209.9
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 232.9
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Ayo Dosunmu (16)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 219.3
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Davion Mitchell (10)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 221.9
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Day'Ron Sharpe (17)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 214.1
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 847,
+    "am_share": 27.5,
+    "by_hour_pt": {
+     "00": 11,
+     "02": 16,
+     "03": 6,
+     "04": 7,
+     "05": 16,
+     "06": 18,
+     "07": 3,
+     "08": 9,
+     "09": 16,
+     "10": 54,
+     "11": 77,
+     "12": 96,
+     "13": 65,
+     "14": 92,
+     "15": 211,
+     "16": 9,
+     "17": 9,
+     "18": 8,
+     "19": 29,
+     "20": 37,
+     "21": 23,
+     "22": 15,
+     "23": 20
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  },
+  {
+   "contest": "The Crossover",
+   "contest_id": "b5229c6c-4c3d-4d77-9afa-1e9103818802",
+   "entries": 216,
+   "pods": 36,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 216,
+    "win": 285.1,
+    "median": 219.7,
+    "top1": 271.2,
+    "top1_over_median": 51.5,
+    "top5": 263.6,
+    "top5_over_median": 43.9,
+    "top10": 253.6,
+    "top10_over_median": 33.9,
+    "top20": 240.3,
+    "top20_over_median": 20.6
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Giannis Antetokounmpo",
+     "adp": 2.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cade Cunningham",
+     "adp": 3.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 5.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Bam Adebayo",
+     "adp": 6.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 9.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 10.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Davion Mitchell",
+     "adp": 11.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Julius Randle",
+     "adp": 14.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Josh Giddey",
+     "adp": 14.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jeremiah Fears",
+     "adp": 15.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 18.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Day'Ron Sharpe",
+     "adp": 20.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 20.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 21.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 21.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cedric Coward",
+     "adp": 24.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jonathan Kuminga",
+     "adp": 26.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Rudy Gobert",
+     "adp": 26.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Saddiq Bey",
+     "adp": 27.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 29.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Matas Buzelis",
+     "adp": 30.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 32.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Norman Powell",
+     "adp": 32.6,
+     "drafted": 97.2
+    },
+    {
+     "player": "Jaylon Tyson",
+     "adp": 34.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cam Spencer",
+     "adp": 34.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Meleek Thomas",
+     "adp": 35.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Duncan Robinson",
+     "adp": 35.0,
+     "drafted": 75.0
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 35.2,
+     "drafted": 58.3
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 35.2,
+     "drafted": 50.0
+    },
+    {
+     "player": "Derik Queen",
+     "adp": 35.4,
+     "drafted": 27.8
+    },
+    {
+     "player": "Tyrese Proctor",
+     "adp": 35.7,
+     "drafted": 91.7
+    },
+    {
+     "player": "Klay Thompson",
+     "adp": 35.7,
+     "drafted": 25.0
+    },
+    {
+     "player": "Mario Hezonja",
+     "adp": 35.8,
+     "drafted": 97.2
+    },
+    {
+     "player": "Egor Demin",
+     "adp": 35.8,
+     "drafted": 8.3
+    },
+    {
+     "player": "John Collins",
+     "adp": 35.8,
+     "drafted": 5.6
+    },
+    {
+     "player": "Bones Hyland",
+     "adp": 35.9,
+     "drafted": 5.6
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 35.9,
+     "drafted": 11.1
+    },
+    {
+     "player": "Nolan Traore",
+     "adp": 35.9,
+     "drafted": 16.7
+    },
+    {
+     "player": "Jaylen Wells",
+     "adp": 35.9,
+     "drafted": 2.8
+    },
+    {
+     "player": "Thomas Bryant",
+     "adp": 36.0,
+     "drafted": 88.9
+    },
+    {
+     "player": "Craig Porter Jr.",
+     "adp": 36.0,
+     "drafted": 27.8
+    },
+    {
+     "player": "Javon Small",
+     "adp": 36.0,
+     "drafted": 2.8
+    },
+    {
+     "player": "Mikel Brown Jr.",
+     "adp": 36.0,
+     "drafted": 5.6
+    },
+    {
+     "player": "Donovan Mitchell",
+     "adp": null,
+     "drafted": 2.8
+    }
+   ],
+   "first_below_100": {
+    "player": "Norman Powell",
+    "adp": 32.6,
+    "drafted": 97.2
+   },
+   "drafted_bands": {
+    "99.5+": 29,
+    "60-99.5": 5,
+    "10-60": 7,
+    "<10": 7
+   },
+   "value": {
+    "field_fpoe": 31.2,
+    "top1_fpoe": 85.3,
+    "field_breakers": 2.25,
+    "top1_breakers": 4.67
+   },
+   "pairs": [
+    {
+     "pair": "Nikola Jokic + Jonathan Kuminga",
+     "rounds": "1/4",
+     "share": 7.4,
+     "lift": 3.11
+    },
+    {
+     "pair": "Nikola Jokic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 6.9,
+     "lift": 2.92
+    },
+    {
+     "pair": "Nikola Jokic + Josh Giddey",
+     "rounds": "1/3",
+     "share": 6.9,
+     "lift": 2.92
+    },
+    {
+     "pair": "LaMelo Ball + Bam Adebayo",
+     "rounds": "1/2",
+     "share": 6.5,
+     "lift": 2.72
+    },
+    {
+     "pair": "Jamal Murray + Ayo Dosunmu",
+     "rounds": "1/3",
+     "share": 6.5,
+     "lift": 2.72
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Julius Randle",
+     "rounds": "1/2",
+     "share": 6.5,
+     "lift": 2.72
+    },
+    {
+     "pair": "Jamal Murray + Paul Reed",
+     "rounds": "1/5",
+     "share": 6.5,
+     "lift": 2.72
+    },
+    {
+     "pair": "LaMelo Ball + Day'Ron Sharpe",
+     "rounds": "1/3",
+     "share": 6.5,
+     "lift": 2.72
+    },
+    {
+     "pair": "Jamal Murray + Bam Adebayo",
+     "rounds": "1/2",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Kyrie Irving + Saddiq Bey",
+     "rounds": "2/4",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Kyrie Irving + Jonathan Kuminga",
+     "rounds": "2/4",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Jaden McDaniels + Matas Buzelis",
+     "rounds": "4/5",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Cameron Boozer + Jaden McDaniels",
+     "rounds": "2/4",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Cooper Flagg + Zion Williamson",
+     "rounds": "1/2",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Jamal Murray + Jaden McDaniels",
+     "rounds": "1/4",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Jaden McDaniels + Paul Reed",
+     "rounds": "4/5",
+     "share": 5.6,
+     "lift": 2.33
+    },
+    {
+     "pair": "Day'Ron Sharpe + PJ Washington",
+     "rounds": "3/5",
+     "share": 5.6,
+     "lift": 2.33
+    },
+    {
+     "pair": "Cooper Flagg + Daniss Jenkins",
+     "rounds": "1/3",
+     "share": 5.6,
+     "lift": 2.33
+    },
+    {
+     "pair": "Bam Adebayo + Paul Reed",
+     "rounds": "2/5",
+     "share": 5.6,
+     "lift": 2.33
+    },
+    {
+     "pair": "Josh Giddey + Jonathan Kuminga",
+     "rounds": "3/4",
+     "share": 5.6,
+     "lift": 2.33
+    },
+    {
+     "pair": "Day'Ron Sharpe + Jaylon Tyson",
+     "rounds": "3/5",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Bam Adebayo + Matas Buzelis",
+     "rounds": "2/5",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Davion Mitchell + PJ Washington",
+     "rounds": "2/5",
+     "share": 5.1,
+     "lift": 2.14
+    },
+    {
+     "pair": "Mario Hezonja + Thomas Bryant",
+     "rounds": "7/13",
+     "share": 5.1,
+     "lift": 2.41
+    },
+    {
+     "pair": "Jamal Murray + Cameron Boozer",
+     "rounds": "1/2",
+     "share": 5.1,
+     "lift": 2.14
+    }
+   ],
+   "cores": [
+    {
+     "core": "Jamal Murray + Ayo Dosunmu + Cameron Boozer",
+     "share": 2.8
+    },
+    {
+     "core": "Julius Randle + Cameron Boozer + Giannis Antetokounmpo",
+     "share": 2.3
+    },
+    {
+     "core": "Bam Adebayo + Jamal Murray + Ayo Dosunmu",
+     "share": 1.9
+    },
+    {
+     "core": "Daniss Jenkins + Bam Adebayo + LaMelo Ball",
+     "share": 1.9
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Josh Giddey",
+     "share": 1.9
+    },
+    {
+     "core": "Kyrie Irving + Cade Cunningham + Josh Giddey",
+     "share": 1.4
+    },
+    {
+     "core": "Cooper Flagg + Julius Randle + Cameron Boozer",
+     "share": 1.4
+    },
+    {
+     "core": "Cade Cunningham + Julius Randle + Zion Williamson",
+     "share": 1.4
+    },
+    {
+     "core": "Jamal Murray + LaMelo Ball + Josh Giddey",
+     "share": 1.4
+    },
+    {
+     "core": "Daniss Jenkins + Cooper Flagg + Cameron Boozer",
+     "share": 1.4
+    },
+    {
+     "core": "Davion Mitchell + Julius Randle + Giannis Antetokounmpo",
+     "share": 1.4
+    },
+    {
+     "core": "Jeremiah Fears + Cooper Flagg + Zion Williamson",
+     "share": 1.4
+    },
+    {
+     "core": "Bam Adebayo + Ayo Dosunmu + LaMelo Ball",
+     "share": 1.4
+    },
+    {
+     "core": "Nikola Jokic + Davion Mitchell + Josh Giddey",
+     "share": 1.4
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Julius Randle",
+     "share": 1.4
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "LaMelo Ball (5) + Bam Adebayo (7)",
+      "share": 6.5,
+      "lift": 2.72,
+      "top1": 0,
+      "avg_points": 218.7
+     },
+     {
+      "pair": "Jamal Murray (6) + Bam Adebayo (7)",
+      "share": 6.0,
+      "lift": 2.53,
+      "top1": 0,
+      "avg_points": 209.8
+     },
+     {
+      "pair": "LaMelo Ball (5) + Zion Williamson (8)",
+      "share": 3.2,
+      "lift": 1.36,
+      "top1": 0,
+      "avg_points": 215.0
+     },
+     {
+      "pair": "LaMelo Ball (5) + Jamal Murray (6)",
+      "share": 3.2,
+      "lift": 1.36,
+      "top1": 0,
+      "avg_points": 206.8
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Josh Giddey (13)",
+        "of_anchor": 11.1,
+        "share": 1.9,
+        "top1": 0,
+        "avg_points": 245.5
+       },
+       {
+        "combo": "Nikola Jokic + Davion Mitchell (10) + Josh Giddey (13)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 202.5
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Julius Randle (12)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 236.6
+       },
+       {
+        "combo": "Nikola Jokic + Zion Williamson (8) + Kyrie Irving (11)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 252.7
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Daniss Jenkins (18)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 236.8
+       },
+       {
+        "combo": "Nikola Jokic + Julius Randle (12) + Jeremiah Fears (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 223.2
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Jeremiah Fears (15)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 213.6
+       },
+       {
+        "combo": "Nikola Jokic + Jeremiah Fears (15) + Ayo Dosunmu (16)",
+        "of_anchor": 2.8,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 264.2
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 2,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Cameron Boozer (9) + Julius Randle (12)",
+        "of_anchor": 13.9,
+        "share": 2.3,
+        "top1": 1,
+        "avg_points": 260.1
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Julius Randle (12) + Day'Ron Sharpe (17)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 247.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Julius Randle (12)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 241.0
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Day'Ron Sharpe (17)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 243.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Jeremiah Fears (15) + Day'Ron Sharpe (17)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 243.7
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Josh Giddey (13)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 243.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Jeremiah Fears (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 1,
+        "avg_points": 261.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Jeremiah Fears (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 239.4
+       }
+      ]
+     },
+     {
+      "anchor": "Cade Cunningham",
+      "adp_rank": 3,
+      "teams": 36,
+      "combos": [
+       {
+        "combo": "Cade Cunningham + Kyrie Irving (11) + Josh Giddey (13)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 249.3
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Julius Randle (12)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 220.2
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Jeremiah Fears (15)",
+        "of_anchor": 8.3,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 206.9
+       },
+       {
+        "combo": "Cade Cunningham + Kyrie Irving (11) + Jeremiah Fears (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 256.6
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Davion Mitchell (10)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 237.0
+       },
+       {
+        "combo": "Cade Cunningham + Cameron Boozer (9) + Ayo Dosunmu (16)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 212.4
+       },
+       {
+        "combo": "Cade Cunningham + Cameron Boozer (9) + Jeremiah Fears (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 223.4
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Daniss Jenkins (18)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 213.5
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 199,
+    "am_share": 32.7,
+    "by_hour_pt": {
+     "00": 6,
+     "03": 5,
+     "06": 6,
+     "07": 5,
+     "08": 10,
+     "09": 11,
+     "10": 16,
+     "11": 6,
+     "12": 26,
+     "13": 17,
+     "14": 46,
+     "15": 45
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  },
+  {
+   "contest": "Pick & Roll",
+   "contest_id": "e7960abd-1cec-41c2-be54-30e5b666d394",
+   "entries": 24,
+   "pods": 4,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 24,
+    "win": 282.7,
+    "median": 213.6,
+    "top1": 282.7,
+    "top1_over_median": 69.1,
+    "top5": 272.1,
+    "top5_over_median": 58.5,
+    "top10": 245.9,
+    "top10_over_median": 32.3,
+    "top20": 238.2,
+    "top20_over_median": 24.6
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Giannis Antetokounmpo",
+     "adp": 2.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cade Cunningham",
+     "adp": 3.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "LaMelo Ball",
+     "adp": 5.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Bam Adebayo",
+     "adp": 6.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 9.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cameron Boozer",
+     "adp": 10.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Davion Mitchell",
+     "adp": 11.3,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 12.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Julius Randle",
+     "adp": 14.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Josh Giddey",
+     "adp": 14.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jeremiah Fears",
+     "adp": 15.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ayo Dosunmu",
+     "adp": 18.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Day'Ron Sharpe",
+     "adp": 20.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 20.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaden McDaniels",
+     "adp": 21.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 21.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cedric Coward",
+     "adp": 24.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jonathan Kuminga",
+     "adp": 26.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Rudy Gobert",
+     "adp": 26.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Saddiq Bey",
+     "adp": 27.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 29.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Matas Buzelis",
+     "adp": 30.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 32.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Norman Powell",
+     "adp": 32.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jaylon Tyson",
+     "adp": 34.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cam Spencer",
+     "adp": 34.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Duncan Robinson",
+     "adp": 35.0,
+     "drafted": 75.0
+    },
+    {
+     "player": "Meleek Thomas",
+     "adp": 35.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 35.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 35.2,
+     "drafted": 25.0
+    },
+    {
+     "player": "Tyrese Proctor",
+     "adp": 35.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Mario Hezonja",
+     "adp": 35.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "John Collins",
+     "adp": 35.8,
+     "drafted": 25.0
+    },
+    {
+     "player": "Egor Demin",
+     "adp": 35.8,
+     "drafted": 25.0
+    },
+    {
+     "player": "Thomas Bryant",
+     "adp": 36.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Craig Porter Jr.",
+     "adp": 36.0,
+     "drafted": 50.0
+    }
+   ],
+   "first_below_100": {
+    "player": "Duncan Robinson",
+    "adp": 35.0,
+    "drafted": 75.0
+   },
+   "drafted_bands": {
+    "99.5+": 34,
+    "60-99.5": 1,
+    "10-60": 4,
+    "<10": 0
+   },
+   "value": {
+    "field_fpoe": 30.6,
+    "top1_fpoe": 81.6,
+    "field_breakers": 2.21,
+    "top1_breakers": 4.0
+   },
+   "pairs": [
+    {
+     "pair": "Bam Adebayo + Jaden McDaniels",
+     "rounds": "2/4",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Zion Williamson + Matas Buzelis",
+     "rounds": "2/5",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Daniss Jenkins + PJ Washington",
+     "rounds": "3/5",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Cade Cunningham + Davion Mitchell",
+     "rounds": "1/2",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Josh Giddey + Aaron Gordon",
+     "rounds": "3/6",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Rudy Gobert",
+     "rounds": "1/4",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Julius Randle + Jonathan Kuminga",
+     "rounds": "2/4",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Giannis Antetokounmpo + Julius Randle",
+     "rounds": "1/2",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Bam Adebayo + Paul Reed",
+     "rounds": "2/5",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Jamal Murray + Bam Adebayo",
+     "rounds": "1/2",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Jamal Murray + Paul Reed",
+     "rounds": "1/5",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Ayo Dosunmu + Jaden McDaniels",
+     "rounds": "3/4",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Nikola Jokic + Aaron Gordon",
+     "rounds": "1/6",
+     "share": 12.5,
+     "lift": 5.25
+    },
+    {
+     "pair": "Jaden McDaniels + Norman Powell",
+     "rounds": "4/5",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "LaMelo Ball + Thomas Bryant",
+     "rounds": "1/13",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "LaMelo Ball + Norman Powell",
+     "rounds": "1/5",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "LaMelo Ball + Ausar Thompson",
+     "rounds": "1/4",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Norman Powell + Thomas Bryant",
+     "rounds": "5/13",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Ausar Thompson + Thomas Bryant",
+     "rounds": "4/13",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Cedric Coward + Matas Buzelis",
+     "rounds": "4/5",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Jamal Murray + Cedric Coward",
+     "rounds": "1/4",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Kyrie Irving + Tyrese Proctor",
+     "rounds": "2/7",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Kyrie Irving + Jeremiah Fears",
+     "rounds": "2/3",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Nikola Jokic + Tyrese Proctor",
+     "rounds": "1/7",
+     "share": 8.3,
+     "lift": 3.5
+    },
+    {
+     "pair": "Nikola Jokic + Meleek Thomas",
+     "rounds": "1/6",
+     "share": 8.3,
+     "lift": 3.5
+    }
+   ],
+   "cores": [
+    {
+     "core": "Bam Adebayo + Jamal Murray + Ayo Dosunmu",
+     "share": 8.3
+    },
+    {
+     "core": "Bam Adebayo + Jaden McDaniels + LaMelo Ball",
+     "share": 4.2
+    },
+    {
+     "core": "Jamal Murray + Zion Williamson + Day'Ron Sharpe",
+     "share": 4.2
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Jeremiah Fears",
+     "share": 4.2
+    },
+    {
+     "core": "Davion Mitchell + Cade Cunningham + Ayo Dosunmu",
+     "share": 4.2
+    },
+    {
+     "core": "Julius Randle + Josh Giddey + Giannis Antetokounmpo",
+     "share": 4.2
+    },
+    {
+     "core": "Paul Reed + Cooper Flagg + Cameron Boozer",
+     "share": 4.2
+    },
+    {
+     "core": "Kyrie Irving + Davion Mitchell + Giannis Antetokounmpo",
+     "share": 4.2
+    },
+    {
+     "core": "Matas Buzelis + Cade Cunningham + Zion Williamson",
+     "share": 4.2
+    },
+    {
+     "core": "Jeremiah Fears + Cooper Flagg + Ausar Thompson",
+     "share": 4.2
+    },
+    {
+     "core": "Daniss Jenkins + LaMelo Ball + Cameron Boozer",
+     "share": 4.2
+    },
+    {
+     "core": "Nikola Jokic + Julius Randle + Josh Giddey",
+     "share": 4.2
+    },
+    {
+     "core": "Kyrie Irving + Julius Randle + Giannis Antetokounmpo",
+     "share": 4.2
+    },
+    {
+     "core": "LaMelo Ball + Cameron Boozer + Day'Ron Sharpe",
+     "share": 4.2
+    },
+    {
+     "core": "Ayo Dosunmu + Cooper Flagg + Zion Williamson",
+     "share": 4.2
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Jamal Murray (6) + Bam Adebayo (7)",
+      "share": 12.5,
+      "lift": 5.25,
+      "top1": 0,
+      "avg_points": 216.6
+     },
+     {
+      "pair": "LaMelo Ball (5) + Bam Adebayo (7)",
+      "share": 4.2,
+      "lift": 1.75,
+      "top1": 0,
+      "avg_points": 245.9
+     },
+     {
+      "pair": "Jamal Murray (6) + Zion Williamson (8)",
+      "share": 4.2,
+      "lift": 1.75,
+      "top1": 0,
+      "avg_points": 238.2
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 4,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (11) + Jeremiah Fears (15)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 237.0
+       },
+       {
+        "combo": "Nikola Jokic + Julius Randle (12) + Josh Giddey (13)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 199.8
+       }
+      ]
+     },
+     {
+      "anchor": "Giannis Antetokounmpo",
+      "adp_rank": 2,
+      "teams": 4,
+      "combos": [
+       {
+        "combo": "Giannis Antetokounmpo + Julius Randle (12) + Josh Giddey (13)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 204.8
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Kyrie Irving (11)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 1,
+        "avg_points": 282.7
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Davion Mitchell (10) + Day'Ron Sharpe (17)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 1,
+        "avg_points": 282.7
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Day'Ron Sharpe (17)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 1,
+        "avg_points": 282.7
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Kyrie Irving (11) + Julius Randle (12)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 242.7
+       },
+       {
+        "combo": "Giannis Antetokounmpo + Cameron Boozer (9) + Julius Randle (12)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 272.1
+       }
+      ]
+     },
+     {
+      "anchor": "Cade Cunningham",
+      "adp_rank": 3,
+      "teams": 4,
+      "combos": [
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Daniss Jenkins (18)",
+        "of_anchor": 50.0,
+        "share": 8.3,
+        "top1": 0,
+        "avg_points": 205.2
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Ayo Dosunmu (16)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 205.3
+       },
+       {
+        "combo": "Cade Cunningham + Ayo Dosunmu (16) + Daniss Jenkins (18)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 205.3
+       },
+       {
+        "combo": "Cade Cunningham + Davion Mitchell (10) + Jeremiah Fears (15)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 218.3
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Davion Mitchell (10)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 205.1
+       },
+       {
+        "combo": "Cade Cunningham + Zion Williamson (8) + Daniss Jenkins (18)",
+        "of_anchor": 25.0,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 205.1
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 22,
+    "am_share": 0.0,
+    "by_hour_pt": {
+     "12": 5,
+     "14": 5,
+     "15": 12
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  }
+ ]
+}

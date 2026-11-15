@@ -9237,5 +9237,821 @@
     }
    ]
   }
+ },
+ "2026-11-14": {
+  "boom": [
+   [
+    0.3911,
+    0.3911,
+    false
+   ],
+   [
+    0.3046,
+    0.3046,
+    true
+   ],
+   [
+    0.2327,
+    0.2166,
+    false
+   ],
+   [
+    0.3044,
+    0.2588,
+    false
+   ],
+   [
+    0.1219,
+    0.1271,
+    false
+   ],
+   [
+    0.1744,
+    0.1769,
+    false
+   ],
+   [
+    0.2236,
+    0.1914,
+    false
+   ],
+   [
+    0.1221,
+    0.1342,
+    false
+   ],
+   [
+    0.2094,
+    0.2202,
+    false
+   ],
+   [
+    0.1148,
+    0.1166,
+    false
+   ],
+   [
+    0.1834,
+    0.1834,
+    true
+   ],
+   [
+    0.2023,
+    0.2101,
+    false
+   ],
+   [
+    0.2148,
+    0.2075,
+    false
+   ],
+   [
+    0.1911,
+    0.1754,
+    false
+   ],
+   [
+    0.1744,
+    0.1558,
+    false
+   ],
+   [
+    0.1581,
+    0.1523,
+    false
+   ],
+   [
+    0.1572,
+    0.1365,
+    false
+   ],
+   [
+    0.1969,
+    0.1948,
+    false
+   ],
+   [
+    0.2431,
+    0.2297,
+    false
+   ],
+   [
+    0.1769,
+    0.1794,
+    true
+   ],
+   [
+    0.162,
+    0.1685,
+    false
+   ],
+   [
+    0.189,
+    0.1916,
+    false
+   ],
+   [
+    0.1538,
+    0.1482,
+    false
+   ],
+   [
+    0.1801,
+    0.1782,
+    false
+   ],
+   [
+    0.1631,
+    0.1697,
+    false
+   ],
+   [
+    0.2227,
+    0.2101,
+    false
+   ],
+   [
+    0.1718,
+    0.1786,
+    true
+   ],
+   [
+    0.1265,
+    0.1354,
+    false
+   ],
+   [
+    0.1357,
+    0.1342,
+    false
+   ],
+   [
+    0.1123,
+    0.1141,
+    false
+   ],
+   [
+    0.1336,
+    0.1336,
+    false
+   ],
+   [
+    0.127,
+    0.1324,
+    true
+   ],
+   [
+    0.1232,
+    0.1318,
+    false
+   ],
+   [
+    0.196,
+    0.1892,
+    false
+   ],
+   [
+    0.1289,
+    0.1309,
+    true
+   ],
+   [
+    0.1685,
+    0.1685,
+    true
+   ],
+   [
+    0.1759,
+    0.174,
+    false
+   ],
+   [
+    0.1395,
+    0.1415,
+    false
+   ],
+   [
+    0.2301,
+    0.2301,
+    false
+   ],
+   [
+    0.1508,
+    0.1453,
+    false
+   ],
+   [
+    0.1146,
+    0.1191,
+    false
+   ],
+   [
+    0.1236,
+    0.1289,
+    false
+   ],
+   [
+    0.1611,
+    0.1623,
+    false
+   ],
+   [
+    0.1429,
+    0.1413,
+    true
+   ],
+   [
+    0.174,
+    0.1809,
+    false
+   ],
+   [
+    0.1653,
+    0.1676,
+    false
+   ],
+   [
+    0.163,
+    0.163,
+    false
+   ],
+   [
+    0.201,
+    0.1893,
+    false
+   ],
+   [
+    0.1767,
+    0.1883,
+    false
+   ],
+   [
+    0.1504,
+    0.1526,
+    false
+   ],
+   [
+    0.1267,
+    0.1356,
+    false
+   ],
+   [
+    0.1193,
+    0.1277,
+    true
+   ],
+   [
+    0.1428,
+    0.1497,
+    true
+   ],
+   [
+    0.1874,
+    0.1901,
+    false
+   ],
+   [
+    0.1429,
+    0.1523,
+    false
+   ],
+   [
+    0.1357,
+    0.145,
+    false
+   ],
+   [
+    0.1597,
+    0.1564,
+    false
+   ],
+   [
+    0.1377,
+    0.1377,
+    false
+   ],
+   [
+    0.1743,
+    0.1832,
+    true
+   ],
+   [
+    0.1562,
+    0.1584,
+    false
+   ],
+   [
+    0.1203,
+    0.1294,
+    true
+   ],
+   [
+    0.1184,
+    0.1223,
+    false
+   ],
+   [
+    0.1594,
+    0.1576,
+    false
+   ],
+   [
+    0.1284,
+    0.1278,
+    true
+   ],
+   [
+    0.1636,
+    0.1617,
+    false
+   ],
+   [
+    0.0815,
+    0.0713,
+    true
+   ]
+  ],
+  "mine": {
+   "breakers": {
+    "field": [
+     11916,
+     26659
+    ],
+    "mine": [
+     10,
+     22
+    ],
+    "top1": [
+     121,
+     529
+    ]
+   },
+   "low_drafted": {
+    "field": [
+     11916,
+     2675
+    ],
+    "mine": [
+     10,
+     0
+    ]
+   },
+   "turn23": {
+    "most-owned": 1,
+    "other": 1,
+    "rarer": 0
+   }
+  },
+  "pod": 6,
+  "q": [
+   {
+    "early": [
+     0,
+     0
+    ],
+    "late": [
+     7,
+     0
+    ],
+    "name": "Jalen Smith",
+    "played": false,
+    "tag": "Questionable",
+    "value": null
+   },
+   {
+    "early": [
+     68,
+     0
+    ],
+    "late": [
+     208,
+     7
+    ],
+    "name": "Klay Thompson",
+    "played": true,
+    "tag": "Questionable",
+    "value": 12.2
+   },
+   {
+    "early": [
+     12,
+     0
+    ],
+    "late": [
+     33,
+     0
+    ],
+    "name": "Mikel Brown Jr.",
+    "played": true,
+    "tag": "Questionable",
+    "value": -8.8
+   }
+  ],
+  "teams": 11916,
+  "ties": [
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1985,
+    "hi_t1": 4,
+    "lo_brk": true,
+    "lo_n": 1365,
+    "lo_t1": 22,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 1971,
+    "hi_t1": 30,
+    "lo_brk": true,
+    "lo_n": 1246,
+    "lo_t1": 25,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 1971,
+    "hi_t1": 30,
+    "lo_brk": false,
+    "lo_n": 1196,
+    "lo_t1": 4,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1983,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 1365,
+    "lo_t1": 22,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 1969,
+    "hi_t1": 20,
+    "lo_brk": true,
+    "lo_n": 1365,
+    "lo_t1": 22,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1605,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 1246,
+    "lo_t1": 25,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1605,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 1196,
+    "lo_t1": 4,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1605,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 559,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1605,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 255,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1605,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 135,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1985,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 1365,
+    "lo_t1": 22,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 1246,
+    "hi_t1": 25,
+    "lo_brk": false,
+    "lo_n": 559,
+    "lo_t1": 3,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 1246,
+    "hi_t1": 25,
+    "lo_brk": false,
+    "lo_n": 255,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 1246,
+    "hi_t1": 25,
+    "lo_brk": true,
+    "lo_n": 135,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1196,
+    "hi_t1": 4,
+    "lo_brk": false,
+    "lo_n": 559,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1196,
+    "hi_t1": 4,
+    "lo_brk": false,
+    "lo_n": 255,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1196,
+    "hi_t1": 4,
+    "lo_brk": true,
+    "lo_n": 135,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 559,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 255,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 559,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 135,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 286,
+    "hi_t1": 7,
+    "lo_brk": true,
+    "lo_n": 43,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 286,
+    "hi_t1": 7,
+    "lo_brk": false,
+    "lo_n": 56,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 1888,
+    "hi_t1": 59,
+    "lo_brk": true,
+    "lo_n": 1365,
+    "lo_t1": 22,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 330,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 118,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 330,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 101,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 330,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 101,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 330,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 43,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 330,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 56,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": false,
+    "hi_n": 1936,
+    "hi_t1": 19,
+    "lo_brk": true,
+    "lo_n": 1365,
+    "lo_t1": 22,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 391,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 135,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 391,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 101,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 391,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 101,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 391,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 43,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-14",
+    "hi_brk": true,
+    "hi_n": 391,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 56,
+    "lo_t1": 0,
+    "lo_wins": false
+   }
+  ],
+  "turns": {
+   "1/2": [
+    {
+     "combo": [
+      "Bam Adebayo",
+      "Jamal Murray"
+     ],
+     "pop": [
+      832,
+      0,
+      180726.80000000025
+     ],
+     "rest": [
+      1675,
+      0,
+      360712.99999999965
+     ]
+    }
+   ],
+   "2/3": [
+    {
+     "anchor": "Nikola Jokic",
+     "combo": [
+      "Julius Randle",
+      "Josh Giddey"
+     ],
+     "pop": [
+      157,
+      0,
+      32497.89999999999
+     ],
+     "rest": [
+      1110,
+      9,
+      252668.79999999976
+     ]
+    },
+    {
+     "anchor": "Giannis Antetokounmpo",
+     "combo": [
+      "Davion Mitchell",
+      "Josh Giddey"
+     ],
+     "pop": [
+      101,
+      0,
+      23507.699999999993
+     ],
+     "rest": [
+      1284,
+      73,
+      315488.50000000006
+     ]
+    },
+    {
+     "anchor": "Cade Cunningham",
+     "combo": [
+      "Daniss Jenkins",
+      "Davion Mitchell"
+     ],
+     "pop": [
+      91,
+      0,
+      19574.5
+     ],
+     "rest": [
+      1329,
+      8,
+      299210.5000000003
+     ]
+    }
+   ]
+  }
  }
 }
