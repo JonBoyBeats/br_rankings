@@ -160,6 +160,15 @@ finish, tail ratios, payout). If `analysis/nba/expo.json` has your exposures for
 them against what scored. Rounds are estimates (pick order isn't public). The first weeks of
 results are noise: say so, and propose no rule from them.
 
+## FEATURE FREEZE on the DK tools (2026-11-16, until about 30 graded slates)
+
+The owner froze the CBB DraftKings tools: the DK page (`dk.html`, `dk_sim.js`), the shadow portfolios,
+the team tiles and their recipe, the rule sets, the grading. Until the 30-slate review, change them only
+for: a bug, matching the export to DraftKings' upload template, or what the first real standings files
+call for (the parser, the ownership and lineup columns). Anything else, however good, goes in
+`analysis/cbb/dk/ideas.md` (dated, with why it came up) for the review. Don't propose new features in
+the report; point to that file.
+
 ## 6b. DraftKings standings, the shadow test, and the monthly readout
 
 **When the owner sends a DraftKings standings CSV**: save it unchanged as
