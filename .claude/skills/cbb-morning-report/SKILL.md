@@ -173,6 +173,12 @@ The grading uses the slate's last saved build: the hand-built 20 and the auto-pi
 of 20 from that pool, and the owner's own entries against that pool too (without a build, against No extra
 rules' shadow pool).
 
+**When the owner sends saved lineups + rules** (`dk_entries_<day>_<draft group>.json`, the DK page's Save
+lineups + rules: the night's lineups and the team and if/then rules they were built under): save it
+unchanged in `analysis/cbb/dk/builds/` too. The slate's last saved file (a build or entries) says which rule
+templates the owner used that night; the monthly readout shows his results on nights each was used
+(directional only).
+
 **Nightly**, give one line only: which standings were graded, and the projection gate's state
 (`analysis/cbb/dk/gate.json`). No rule-set verdicts from one night.
 
@@ -188,6 +194,13 @@ readout --sim-z ../br-adp-mirror/dk_cbb_field.json`. It gives, in this order:
 3. The sim's players against reality: where real scores fell in the sim's range by tenth, the
    correlation of misses (teammates, opponents; the sim takes both as 0), game-total spread.
 4. The projection gate.
+
+It also grades the team tiles (`analysis/cbb/dk/tiles_eval.csv`, written nightly by `dk_eval.py tiles`):
+how often FOCUS, OK and FADE teams' top 5 by salary beat their salary-implied points. If FOCUS isn't
+beating OK and FADE, say the verdict recipe (`VERDICT` in battle-royale-research
+`scripts/dk_cbb_teams.py`) needs revisiting and propose a change, tested on the logged tiles first;
+make no change without the owner's yes. And the correlation check covers teammates and opponents of a
+team's #1 on nights he busted (the pivot and bring-back rules lean on it).
 
 The rule sets are frozen (`RULESETS` in `dk_sim.js`, 2026-11-16): no new ones and no changes until the
 decision. **The decision at 30 graded slates**: does any rule set, or the owner's entries, beat the

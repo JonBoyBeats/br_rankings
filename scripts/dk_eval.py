@@ -14,6 +14,8 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             lines (winning score, top 10%, last paid place) against the sim's prediction (when the shadow was built
             for that contest), and each drafted player's projected ownership against his real %Drafted
             (analysis/cbb/dk/own_eval.csv).
+  tiles     analysis/cbb/dk/tiles_eval.csv: each graded night's team tiles (as they stood before lock) against what
+            happened: did the team's top 5 by salary beat the points their salary implied at that night's rate?
   gate      analysis/cbb/dk/gate.json: by salary band, whether DraftKings' season average has beaten ours over the
             graded nights (lower mean error on everyone not tagged Out, a player who sat scoring 0, with at least
             GATE_NIGHTS nights and GATE_N player-nights, and the better of the two on GATE_SHARE of the nights). Where
@@ -28,6 +30,7 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
 
   python3 scripts/dk_eval.py nightly --mirror ../br-adp-mirror
   python3 scripts/dk_eval.py gate
+  python3 scripts/dk_eval.py tiles --mirror ../br-adp-mirror
   python3 scripts/dk_eval.py readout
 """
 import argparse
@@ -52,8 +55,13 @@ EVAL, OWN_EVAL, GATE = os.path.join(DK, "eval.csv"), os.path.join(DK, "own_eval.
 USER = "jonboyjackson"
 EVAL_COLS = ["date", "draft_group", "contest_id", "contest", "entries", "fee", "who", "lineups", "top10", "cash", "dollars_back",
              "fees", "pct_top10", "pct_cash", "pct_dollars", "pool_src", "pool_n", "pool_avg", "field_avg",
-             "field_win", "field_top10", "field_cash", "sim_win", "sim_top10", "sim_cash"]
+             "field_win", "field_top10", "field_cash", "sim_win", "sim_top10", "sim_cash", "rules"]
 RANDOM_SETS = 1000
+TILES_EVAL = os.path.join(DK, "tiles_eval.csv")
+TILE_COLS = ["date", "draft_group", "team", "verdict", "total", "value", "conc", "own_gap", "blowout", "blowout_games", "fragile",
+             "top5_salary", "top5_actual", "top5_implied", "beat"]
+RULE_NAMES = {"min": "Min N from a team / stack", "none": "Exclude team", "if": "1. if player then N+", "ifnot": "2. if NOT player then N+",
+              "ifteam": "3. if N+ from team then M+ from opponent", "never": "4. never player with player"}
 BUILDS = os.path.join(DK, "builds")       # the DK page's saved builds (Save build: its pool, the hand-built 20, the auto-pick)
 OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own_proj", "own_actual"]
 BANDS = [(6000, 99999), (4000, 5999), (0, 3999)]
@@ -185,8 +193,10 @@ def nightly(a):
             row.update(extra or {})
             out.append(row)
 
-        builds = [json.load(open(f)) for f in sorted(glob.glob(os.path.join(BUILDS, "*.json")))]
-        builds = [b for b in builds if str(b.get("draft_group")) == str(slate["draft_group_id"])]
+        saved = [json.load(open(f)) for f in sorted(glob.glob(os.path.join(BUILDS, "*.json")))]
+        saved = [b for b in saved if str(b.get("draft_group")) == str(slate["draft_group_id"])]
+        builds = [b for b in saved if b.get("pool")]                  # Save build: a pool, hand-built and auto-pick
+        used = sorted({r["type"] for r in ((saved[-1].get("rule_set") or []) if saved else [])})   # the night's rules
         none_pool = ((sh or {}).get("rulesets", {}).get("none") or {}).get("pool")
         if sh:
             same = str(sh["contest"]["id"]) == cid
@@ -204,7 +214,8 @@ def nightly(a):
         mine = [e for e in entries if e["name"].lower().startswith(USER)]
         if mine:
             grade("mine", [(e["rank"] <= top10, e["rank"] <= paid, pay.get(e["rank"], 0), e["points"]) for e in mine],
-                  builds[-1]["pool"] if builds else none_pool, "the build's" if builds else "none's")
+                  builds[-1]["pool"] if builds else none_pool, "the build's" if builds else "none's",
+                  {"rules": " ".join(used) if saved else "not saved"})
         for name, (pct, _) in players.items():
             r = by_name.get(name)
             if r and pct is not None:
@@ -221,6 +232,53 @@ def nightly(a):
                 w.writerows(rows)
     if not out:
         print("  DraftKings standings: nothing new to grade")
+
+
+def tiles(a):
+    """Each graded night's team tiles (the mirror's dk_cbb_teams.json as it stood before the first game) against what
+    happened: the team's top 5 by salary, their actual DraftKings points against what their salary implied at that
+    night's rate (every team's top 5: actual points per $1,000 of salary). One row per team in tiles_eval.csv."""
+    mirror = Mirror(a.mirror)
+    done = {(r["date"], r["draft_group"]) for r in read(TILES_EVAL)}
+    out = []
+    for f in sorted(glob.glob(os.path.join(DK, "????-??-??_*.csv"))):
+        rec = read(f)
+        if not rec or (rec[0]["date"], rec[0]["draft_group"]) in done:
+            continue
+        g = rec[0]["draft_group"]
+        day = iso(rec[0]["date"] + "T00:00:00Z")
+        start = None
+        for t, sha in reversed(mirror.versions("dk_cbb_morning.json", day - dt.timedelta(days=1), day + dt.timedelta(days=2))):
+            s = next((x for x in mirror.show(sha, "dk_cbb_morning.json").get("slates", []) if str(x["draft_group_id"]) == g), None)
+            if s:
+                start = iso(s["start"])
+                break
+        doc = at_lock(mirror, "dk_cbb_teams.json", start) if start else None
+        T = ((doc or {}).get("slates") or {}).get(g)
+        if not T:
+            print("  tiles %s: none saved before lock" % g)
+            continue
+        top5 = {}
+        for t in T["teams"]:
+            v = sorted([r for r in rec if r["team"] == t["team"] and r["status"] != "Out"], key=lambda r: -num(r["salary"]))[:5]
+            top5[t["team"]] = (sum(num(r["salary"]) for r in v), sum(num(r["actual_dk"]) or 0 for r in v))
+        sal, pts = sum(x[0] for x in top5.values()), sum(x[1] for x in top5.values())
+        rate = pts / sal if sal else 0
+        for t in T["teams"]:
+            s5, a5 = top5[t["team"]]
+            out.append({"date": rec[0]["date"], "draft_group": g, "team": t["team"], "verdict": t["verdict"], "total": t["total"],
+                        "value": round(t["value"], 3), "conc": round(t["conc"], 3) if t["conc"] is not None else "",
+                        "own_gap": round(t["own_gap"], 3), "blowout": t["blowout"] if t["blowout"] is not None else "",
+                        "blowout_games": t["blowout_games"], "fragile": int(bool(t["fragile"])), "top5_salary": s5,
+                        "top5_actual": round(a5, 2), "top5_implied": round(s5 * rate, 2), "beat": int(a5 > s5 * rate)})
+        print("  tiles %s (%s): %d teams graded" % (g, rec[0]["date"], len(T["teams"])))
+    if out:
+        new = not os.path.exists(TILES_EVAL)
+        with open(TILES_EVAL, "a", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=TILE_COLS)
+            if new:
+                w.writeheader()
+            w.writerows(out)
 
 
 def records():
@@ -333,6 +391,34 @@ def readout(a):
                 if d:
                     print("   cut line %-6s real - sim: %+.1f points on average (%d contests the shadow was built for)" % (k, S.mean(d), len(d)))
 
+    # nights each rule template was used (the owner's saved rules with his entries): his results on those nights
+    mine = [r for r in ev if r["who"] == "mine" and r.get("rules") not in (None, "", "not saved")]
+    if mine:
+        print("\n   Your entries on nights each rule template was used (directional only: few nights, and the nights differ):")
+        for k, name in RULE_NAMES.items():
+            on = [r for r in mine if k in r["rules"].split()]
+            off = [r for r in mine if k not in r["rules"].split()]
+            if on:
+                print("   %-42s used %d nights: top 10%% %4.1f%%, cash %4.1f%% | not used %d: top 10%% %s, cash %s" % (
+                    name, len({r["draft_group"] for r in on}), 100 * S.mean(num(r["top10"]) for r in on), 100 * S.mean(num(r["cash"]) for r in on),
+                    len({r["draft_group"] for r in off}), "%4.1f%%" % (100 * S.mean(num(r["top10"]) for r in off)) if off else "-",
+                    "%4.1f%%" % (100 * S.mean(num(r["cash"]) for r in off)) if off else "-"))
+
+    tl = read(TILES_EVAL)
+    print("\n1b. Team tile verdicts: did the team's top 5 by salary beat what their salary implied? (%d team-nights, %d nights)" % (
+        len(tl), len({(r["date"], r["draft_group"]) for r in tl})))
+    for v in ("FOCUS", "OK", "FADE"):
+        x = [r for r in tl if r["verdict"] == v]
+        if x:
+            print("   %-6s n=%-4d beat their salary-implied points %4.0f%% of the time (actual - implied: %+.1f points a team)" % (
+                v, len(x), 100 * S.mean(int(r["beat"]) for r in x), S.mean(num(r["top5_actual"]) - num(r["top5_implied"]) for r in x)))
+    if tl:
+        rates = {v: S.mean(int(r["beat"]) for r in tl if r["verdict"] == v) for v in ("FOCUS", "OK", "FADE") if any(r["verdict"] == v for r in tl)}
+        if "FOCUS" in rates and all(rates["FOCUS"] > rates[v] for v in rates if v != "FOCUS"):
+            print("   FOCUS beats OK and FADE so far.")
+        else:
+            print("   FOCUS isn't beating OK and FADE so far: the verdict recipe (battle-royale-research scripts/dk_cbb_teams.py) gets revisited.")
+
     own = read(OWN_EVAL)
     print("\n2. Projected ownership against real %%Drafted, by projected band (%d player-contests)" % len(own))
     for lo, hi in OWN_BANDS:
@@ -381,6 +467,32 @@ def readout(a):
     ct, co = corr(tm), corr(op)
     print("   correlation of misses, players projected 10+: teammates %s (%d pairs), opponents %s (%d pairs); the sim takes both"
           " as 0 (2025-26: -0.007, -0.004)" % ("%.3f" % ct if ct is not None else "-", len(tm), "%.3f" % co if co is not None else "-", len(op)))
+    # the pivot and bring-back rules lean on this: when a team's #1 (its highest projection) busts (a miss of 1+
+    # expected misses under), how his teammates and the opponents projected 10+ did, against nights he didn't
+    bust, fine = {"mates": [], "opp": []}, {"mates": [], "opp": []}
+    nights = defaultdict(list)
+    for r in rec:
+        nights[(r["date"], r["draft_group"])].append(r)
+    for v in nights.values():
+        for team in {r["team"] for r in v}:
+            mine_ = [r for r in v if r["team"] == team]
+            one = max(mine_, key=lambda r: num(r["fp_dk"]))
+            if not num(one["min"]) and not num(one["actual_dk"]):
+                continue                            # he sat: that's news, not a bust
+            z1 = (num(one["actual_dk"]) - num(one["fp_dk"])) / num(one["miss_dk"])
+            side = bust if z1 <= -1 else fine
+            for r in v:
+                if r is one or num(r["fp_dk"]) < 10 or r.get("game") != one.get("game"):
+                    continue
+                z = (num(r["actual_dk"]) - num(r["fp_dk"])) / num(r["miss_dk"])
+                (side["mates"] if r["team"] == team else side["opp"]).append(z)
+    for k, name in (("mates", "teammates"), ("opp", "opponents")):
+        if bust[k] and fine[k]:
+            print("   a team's #1 busting: his %s' misses %+.2f (n=%d) against %+.2f when he didn't (n=%d), in expected misses;"
+                  " the sim draws them the same either way" % (name, S.mean(bust[k]), len(bust[k]), S.mean(fine[k]), len(fine[k])))
+        else:
+            print("   a team's #1 busting: his %s: not enough nights yet (%d player-nights beside a bust, %d beside none)" % (
+                name, len(bust[k]), len(fine[k])))
     real, sim = [], []
     for v in by_game.values():
         if len(v) >= 10:
@@ -404,11 +516,13 @@ def main():
     n = sub.add_parser("nightly")
     n.add_argument("--mirror", required=True)
     sub.add_parser("gate")
+    t = sub.add_parser("tiles")
+    t.add_argument("--mirror", required=True)
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "readout": readout}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "readout": readout}[a.cmd](a)
 
 
 if __name__ == "__main__":

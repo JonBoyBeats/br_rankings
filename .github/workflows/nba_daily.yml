@@ -66,6 +66,7 @@ jobs:
           # DraftKings: shadow portfolios and the owner's entries against the standings files dropped in
           # analysis/cbb/dk/standings, then the projection gate the DK page and the shadow portfolios read
           python3 scripts/dk_eval.py nightly --mirror ../br-adp-mirror || true
+          python3 scripts/dk_eval.py tiles --mirror ../br-adp-mirror || true
           python3 scripts/dk_eval.py gate || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
       # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.
