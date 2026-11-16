@@ -60,12 +60,12 @@ EVAL, OWN_EVAL, GATE = os.path.join(DK, "eval.csv"), os.path.join(DK, "own_eval.
 USER = "jonboyjackson"
 EVAL_COLS = ["date", "draft_group", "contest_id", "contest", "entries", "fee", "who", "lineups", "top10", "cash", "dollars_back",
              "fees", "pct_top10", "pct_cash", "pct_dollars", "pool_src", "pool_n", "pool_avg", "field_avg",
-             "field_win", "field_top10", "field_cash", "sim_win", "sim_top10", "sim_cash", "rules"]
+             "field_win", "field_top10", "field_cash", "sim_win", "sim_top10", "sim_cash", "rules", "phase", "version"]
 RANDOM_SETS = 1000
 TILES_EVAL = os.path.join(DK, "tiles_eval.csv")
 TILE_COLS = ["date", "draft_group", "team", "verdict", "borderline", "quality", "leverage", "pts_rank", "value_rank", "conc_rank", "blowout_rank",
              "lev_rank", "ranked_against", "total", "value", "conc", "own_gap", "blowout", "blowout_games", "fragile",
-             "top5_salary", "top5_actual", "top5_implied", "beat"]
+             "top5_salary", "top5_actual", "top5_implied", "beat", "phase", "version"]
 TEAM_EVAL = os.path.join(DK, "team_eval.csv")
 TEAM_COLS = ["date", "draft_group", "contest_id", "team", "own_real", "pts_share", "beat_own", "top1_n", "top1_rate", "field_rate"]
 WEIGHTS = os.path.join(DK, "team_weights.json")
@@ -80,6 +80,17 @@ BANDS = [(6000, 99999), (4000, 5999), (0, 3999)]
 GATE_NIGHTS, GATE_N, GATE_SHARE = 5, 100, 0.6
 OWN_BANDS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
 DECISION_SLATES = 30
+FREEZE_END = "2026-11-23"   # week 1, open for tweaks: slates through this date are warm-up, logged but not counted
+
+
+def phase(date):
+    return "warm-up" if str(date) <= FREEZE_END else "counted"
+
+
+def counted(rows):
+    """The readout's rows: the counted slates once there are any, else the warm-up ones (labelled as such)."""
+    c = [r for r in rows if (r.get("phase") or phase(r["date"])) == "counted"]
+    return (c, "counted") if c else ([r for r in rows if r not in c], "warm-up")
 SIM_Z_SD = 1.266          # the spread of the sim's draws, in expected misses (cbb_form_study.py SIM_Z)
 
 
@@ -187,7 +198,7 @@ def nightly(a):
         sh = (shadow.get("slates") or {}).get(str(slate["draft_group_id"]))
         base = {"date": rec[0]["date"], "draft_group": slate["draft_group_id"], "contest_id": cid, "contest": contest["name"],
                 "entries": n, "fee": fee, "field_win": cut["win"], "field_top10": cut["top10"], "field_cash": cut["cash"],
-                "field_avg": round(S.mean(field), 2)}
+                "field_avg": round(S.mean(field), 2), "phase": phase(rec[0]["date"]), "version": (shadow or {}).get("version", "")}
 
         def lineup(ids):                 # (in the top 10%, cashed, dollars) for one lineup against the real entries
             p = placed(sum(pts.get(i) or 0 for i in ids), field)
@@ -312,7 +323,8 @@ def tiles(a):
                         "value": round(t["value"], 3), "conc": round(t["conc"], 3) if t["conc"] is not None else "",
                         "own_gap": round(t["own_gap"], 3), "blowout": t["blowout"] if t["blowout"] is not None else "",
                         "blowout_games": t["blowout_games"], "fragile": int(bool(t["fragile"])), "top5_salary": s5,
-                        "top5_actual": round(a5, 2), "top5_implied": round(s5 * rate, 2), "beat": int(a5 > s5 * rate)})
+                        "top5_actual": round(a5, 2), "top5_implied": round(s5 * rate, 2), "beat": int(a5 > s5 * rate),
+                        "phase": phase(rec[0]["date"]), "version": (doc or {}).get("version", "")})
         print("  tiles %s (%s): %d teams graded" % (g, rec[0]["date"], len(T["teams"])))
     if out:
         new = not os.path.exists(TILES_EVAL)
@@ -426,10 +438,14 @@ def gate(a):
 
 
 def readout(a):
-    ev = read(EVAL)
+    ev, kind = counted(read(EVAL))
     print("DraftKings CBB readout, %s" % dt.date.today().isoformat())
     slates = sorted({r["draft_group"] for r in ev})
-    print("\n1. Rule sets and your entries against the field (%d graded slates of the %d the decision waits for)" % (len(slates), DECISION_SLATES))
+    print("\n1. Rule sets and your entries against the field (%d %s slates; the decision waits for %d counted, from the freeze after %s)" % (
+        len(slates), kind, DECISION_SLATES, FREEZE_END))
+    if kind == "warm-up" and ev:
+        print("   WARM-UP: these slates ran before the freeze, on code still being tweaked (versions: %s); they don't count." %
+              ", ".join(sorted({r.get("version") or "?" for r in ev})))
     if not ev:
         print("   nothing graded yet: the standings files start it")
     else:
@@ -484,7 +500,7 @@ def readout(a):
                      - S.mean(num(r["top10"]) for r in ev if r["who"] == y and r["draft_group"] == g) for g in both]
                 print("   %s against %s, top-10%% rate slate by slate: %d of %d slates won, mean gap %+.1f pts" % (
                     x, y, sum(g > 0 for g in d), sum(g != 0 for g in d), 100 * S.mean(d)))
-        if len(slates) >= DECISION_SLATES:
+        if kind == "counted" and len(slates) >= DECISION_SLATES:
             beat = [w for w in who_all if S.mean(per[s][w][0] / per[s][w][2] for s in per if w in per[s]) > 0.10]
             print("   DECISION (%d slates): beating the field's 10%% top-10 rate: %s" % (len(slates), ", ".join(beat) or "none: cut back"))
         cuts = list({r["contest_id"]: r for r in ev if r["sim_top10"] not in ("", None)}.values())   # once a contest
@@ -507,7 +523,7 @@ def readout(a):
                     len({r["draft_group"] for r in off}), "%4.1f%%" % (100 * S.mean(num(r["top10"]) for r in off)) if off else "-",
                     "%4.1f%%" % (100 * S.mean(num(r["cash"]) for r in off)) if off else "-"))
 
-    tl = read(TILES_EVAL)
+    tl, _ = counted(read(TILES_EVAL))
     te = read(TEAM_EVAL)
     quad = {(r["date"], r["draft_group"], r["team"]): r["verdict"] for r in tl}
     print("\n1b. Team tiles by quadrant (%d team-nights, %d nights). The three targets:" % (len(tl), len({(r["date"], r["draft_group"]) for r in tl})))

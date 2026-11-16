@@ -17,6 +17,9 @@ const S = require(path.join(ROOT, "dk_sim.js"));
 const sandbox = { self: {} };
 vm.runInNewContext(fs.readFileSync(path.join(ROOT, "vendor", "lp_solver.js"), "utf8"), sandbox);
 const solver = sandbox.self.solver;
+// the code this run is on: this repo (the sim, rule sets, pick) and the one running it (projections, field), when git can say
+function sha(dir) { try { return require("child_process").execSync("git -C " + JSON.stringify(dir) + " rev-parse --short HEAD", { stdio: ["ignore", "pipe", "ignore"] }).toString().trim(); } catch (e) { return "?"; } }
+const VERSION = "br_rankings " + sha(ROOT) + ", battle-royale-research " + sha(process.cwd());
 
 function arg(name, dflt) { const i = process.argv.indexOf("--" + name); return i > 0 ? process.argv[i + 1] : dflt; }
 
@@ -26,7 +29,7 @@ function arg(name, dflt) { const i = process.argv.indexOf("--" + name); return i
   const morning = JSON.parse(fs.readFileSync(path.join(mirror, "dk_cbb_morning.json")));
   const field = JSON.parse(fs.readFileSync(path.join(mirror, "dk_cbb_field.json")));
   const gate = fs.existsSync(gatePath) ? JSON.parse(fs.readFileSync(gatePath)) : null;
-  const doc = { generated_at: new Date().toISOString().replace(/\.\d+Z$/, "Z"), base: S.BASE, cand: { unique: S.CAND_UNIQUE, rand: S.CAND_RAND },
+  const doc = { generated_at: new Date().toISOString().replace(/\.\d+Z$/, "Z"), version: VERSION, base: S.BASE, cand: { unique: S.CAND_UNIQUE, rand: S.CAND_RAND },
                 gate: gate, slates: {} };
   for (const sl of morning.slates) {
     if (sl.locked || new Date(sl.start) <= new Date()) continue;

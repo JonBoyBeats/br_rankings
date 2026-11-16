@@ -1,9 +1,11 @@
 # DraftKings CBB: parked ideas for the 30-slate review
 
-**FEATURE FREEZE from 2026-11-16 until about 30 graded slates** (the owner's call). Allowed meanwhile: bug fixes,
-matching the export to DraftKings' upload template, and fixes the first real standings files call for (the
-standings parser, the ownership and lineup columns). Anything new goes here, dated, with why it came up, and is
-decided at the review, not before.
+**Revised freeze (the owner's call, 2026-11-16):** week 1 (through 2026-11-23) is open for tweaks to anything.
+After that, freeze only what's graded: the sim model, the quadrant recipe and lines, the five shadow rule sets,
+and the portfolio pick. Layout, buttons, the bank/cut/review/export workflow, speed and bug fixes stay open any
+time. The 30-slate count starts at the freeze; slates before it are logged as warm-up, tagged with the version
+they ran on (`phase`, `version` in eval.csv and tiles_eval.csv). Anything new for a frozen part goes here, dated,
+with why it came up, and is decided at the review, not before.
 
 The review starts from the monthly readout (`python3 scripts/dk_eval.py weights`, then `readout`): rule sets and
 the owner's entries against the field's top-10% rate (the 30-slate decision), the random-set percentiles, the
