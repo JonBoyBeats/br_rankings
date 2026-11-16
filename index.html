@@ -49,6 +49,7 @@
   /* A class that sets display would otherwise outrank the browser's [hidden] rule. */
   [hidden] { display: none !important; }
   html, body { margin: 0; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }   /* no iOS text inflation on long lines */
   body {
     background: var(--bg);
     color: var(--ink);
@@ -204,7 +205,8 @@
   .tiertag.t1 { top: 1px; }
   .tiernote { position: absolute; left: 34px; top: -7px; z-index: 2; padding: 0 5px; border: 1px solid; border-radius: 3px;
               background: var(--surface); color: var(--muted); font-family: var(--mono); font-size: 9px; line-height: 11px;
-              white-space: nowrap; pointer-events: none; user-select: none; }
+              white-space: nowrap; pointer-events: none; user-select: none;
+              max-width: calc(100% - 44px); overflow: hidden; text-overflow: ellipsis; box-sizing: border-box; }   /* one line, never wider than the board */
   .tiernote.t1 { top: 1px; }
   html.nba .row.tier-first { padding-top: 16px; }   /* room for tier 1's note under the sticky header */
   #tiersBtn.on { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
