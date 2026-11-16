@@ -215,6 +215,8 @@ def nightly(a):
         saved = [json.load(open(f)) for f in sorted(glob.glob(os.path.join(BUILDS, "*.json")))]
         saved = [b for b in saved if str(b.get("draft_group")) == str(slate["draft_group_id"])]
         builds = [b for b in saved if b.get("pool")]                  # Save build: a pool, hand-built and auto-pick
+        banks = [b for b in builds if b.get("tags")]                  # the page's bank (Bank, cut and portfolios)
+        mine_pool = (banks or builds)[-1]["pool"] if builds else none_pool
         used = sorted({r["type"] for r in ((saved[-1].get("rule_set") or []) if saved else [])})   # the night's rules
         none_pool = ((sh or {}).get("rulesets", {}).get("none") or {}).get("pool")
         if sh:
@@ -226,14 +228,14 @@ def nightly(a):
                           {"sim_win": rs["cut"]["win"], "sim_top10": rs["cut"]["top10"], "sim_cash": rs["cut"]["cash"]} if same else None)
             if sh.get("top20_alone"):
                 grade("top20_alone", [lineup(l["ids"]) for l in sh["top20_alone"]["lineups"]], none_pool, "none's")
-        for b in builds[-1:]:            # the owner's last saved build for the slate: the hand-built 20 and the auto-pick
+        for b in [b for b in builds if b.get("hand") or b.get("auto")][-1:]:   # the last builder save: hand-built and auto-pick
             for key in ("hand", "auto"):
                 if b.get(key):
                     grade(key, [lineup(b["pool"][i]) for i in b[key]], b["pool"], "the build's")
         mine = [e for e in entries if e["name"].lower().startswith(USER)]
         if mine:
             grade("mine", [(e["rank"] <= top10, e["rank"] <= paid, pay.get(e["rank"], 0), e["points"]) for e in mine],
-                  builds[-1]["pool"] if builds else none_pool, "the build's" if builds else "none's",
+                  mine_pool, "the bank's" if banks else "the build's" if builds else "none's",
                   {"rules": " ".join(used) if saved else "not saved"})
         # each team against the real field: its actual share of the points against its real ownership share, and how
         # often 2+ of its players are in the top-1% lineups against how often the field played 2+ of them
