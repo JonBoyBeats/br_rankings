@@ -141,8 +141,9 @@
   }
 
   // S simulated nights: each player's points drawn from his Proj and his ±, in z's shape; the candidates' and the
-  // field's lineups scored. Returns each candidate's score and the field entries above it, by night, and the
-  // simulated field's cut lines (winning score, top 10%, the last paid place), averaged over the nights.
+  // field's lineups scored. Kept by lineup, for the builder's loops: cs[k * S + s] is lineup k's score on night s,
+  // fa[k * S + s] the field entries above it. Also the simulated field's cut lines (winning score, top 10%, the last
+  // paid place), averaged over the nights.
   function simulate(ctx, cand, field, z, contest, N, S) {
     var by = {}; ctx.rows.forEach(function (r) { by[r.id] = r; });
     var ix = {}, mean = [], err = [];
@@ -155,9 +156,9 @@
     }
     var candIx = cand.map(function (L) { return L.ids.map(idx); });
     var fieldIx = field.map(function (L) { return L.map(idx); });
-    var P = mean.length, size = contest.size || 0, paid = payTable(contest).length - 1;
+    var P = mean.length, K = cand.length, size = contest.size || 0, paid = payTable(contest).length - 1;
     var w = Math.max(0, size - N) / fieldIx.length;               // each field lineup stands for w entries
-    var pts = new Float32Array(P), cs = [], fa = [], cut = { win: 0, top10: 0, cash: 0 };
+    var pts = new Float32Array(P), cs = new Float32Array(K * S), fa = new Float32Array(K * S), cut = { win: 0, top10: 0, cash: 0 };
     var fsc = new Float64Array(fieldIx.length);
     function scoreAtPlace(place) {                                // the field's score at a place (1 = best)
       var i = fsc.length - Math.min(fsc.length, Math.max(1, Math.ceil(place / w)));
@@ -168,108 +169,191 @@
       for (var f = 0; f < fieldIx.length; f++) { var t = 0, L = fieldIx[f]; for (var j = 0; j < 8; j++) t += pts[L[j]]; fsc[f] = t; }
       fsc.sort();                                                  // ascending
       cut.win += scoreAtPlace(1) / S; cut.top10 += scoreAtPlace(Math.ceil(0.1 * size)) / S; cut.cash += scoreAtPlace(paid) / S;
-      var row = new Float32Array(cand.length), above = new Float32Array(cand.length);
-      for (var k = 0; k < cand.length; k++) {
+      for (var k = 0; k < K; k++) {
         var t2 = 0, L2 = candIx[k]; for (var j2 = 0; j2 < 8; j2++) t2 += pts[L2[j2]];
-        row[k] = t2;
         var lo = 0, hi = fsc.length;                               // field lineups scoring above t2
         while (lo < hi) { var mid = (lo + hi) >> 1; if (fsc[mid] <= t2) lo = mid + 1; else hi = mid; }
-        above[k] = (fsc.length - lo) * w;
+        cs[k * S + s] = t2; fa[k * S + s] = (fsc.length - lo) * w;
       }
-      cs.push(row); fa.push(above);
     }
-    return { cs: cs, fa: fa, cut: cut };
+    return { cs: cs, fa: fa, K: K, S: S, cut: cut };
   }
 
-  // Greedy: add the candidate that adds the most expected payout to what's chosen (ours push each other down too),
-  // within the exposure caps and Min unique, over the given nights.
+  // The portfolio builder: a set of picked lineups, and what each other lineup would ADD to it, on the given nights.
+  // On every night our own lineups are ranked among the field and among each other, so a lineup that scores on the
+  // same nights as one already picked mostly pushes ours down a place: its added value is small (self-competition),
+  // and a lineup that hits on other nights adds more. Coverage: the share of nights where at least one picked lineup
+  // reaches the top 1% (or cashes). The 20-pick (pick) and the DK page's builder both use this.
+  function builder(sim, contest, nights) {
+    var S = sim.S, K = sim.K, pay = payTable(contest), paid = pay.length - 1, size = contest.size || 0;
+    var T1 = Math.max(1, Math.ceil(0.01 * size)), T10 = Math.max(1, Math.ceil(0.1 * size));
+    if (!nights) { nights = []; for (var n0 = 0; n0 < S; n0++) nights.push(n0); }
+    var M = nights.length, cs = sim.cs, fa = sim.fa;
+    var payF = new Float64Array(Math.max(paid + 2, 2));
+    for (var i0 = 1; i0 <= paid; i0++) payF[i0] = pay[i0];
+    function payAt(place) { var q = Math.round(place); return q >= 1 && q <= paid ? payF[q] : 0; }
+    var picked = [], P = 0, ps = new Float32Array(0), pp = new Float32Array(0), dp = new Float32Array(0);
+    var cov1 = new Uint8Array(M), covC = new Uint8Array(M), total = 0;
+    function refresh() {
+      P = picked.length;
+      ps = new Float32Array(M * P); pp = new Float32Array(M * P); dp = new Float32Array(M * P); total = 0;
+      for (var a = 0; a < M; a++) {
+        var s = nights[a], c1 = 0, cc = 0;
+        for (var i = 0; i < P; i++) ps[a * P + i] = cs[picked[i] * S + s];
+        for (var i2 = 0; i2 < P; i2++) {
+          var me = ps[a * P + i2], mine = 0;
+          for (var j = 0; j < P; j++) if (ps[a * P + j] > me) mine++;
+          var pl = 1 + fa[picked[i2] * S + s] + mine;
+          pp[a * P + i2] = pl; dp[a * P + i2] = payAt(pl + 1) - payAt(pl); total += payAt(pl);
+          var q = Math.round(pl); if (q <= T1) c1 = 1; if (q <= paid) cc = 1;
+        }
+        cov1[a] = c1; covC[a] = cc;
+      }
+      total /= M;
+    }
+    // what lineup k adds: expected payout with it minus without, and the coverage it adds
+    function score(k) {
+      var v = 0, g1 = 0, gc = 0, base = k * S;
+      for (var a = 0; a < M; a++) {
+        var s = nights[a], me = cs[base + s], mine = 0, delta = 0, off = a * P;
+        for (var i = 0; i < P; i++) { if (ps[off + i] > me) mine++; else delta += dp[off + i]; }
+        var pl = 1 + fa[base + s] + mine, q = Math.round(pl);
+        v += (q >= 1 && q <= paid ? payF[q] : 0) + delta;
+        if (!cov1[a] && q <= T1) g1++;
+        if (!covC[a] && q <= paid) gc++;
+      }
+      return { value: v / M, top1: g1 / M, cash: gc / M };
+    }
+    function alone(k) {             // its expected payout by itself (no other lineup of ours in the contest)
+      var v = 0, base = k * S;
+      for (var a = 0; a < M; a++) v += payAt(1 + fa[base + nights[a]]);
+      return v / M;
+    }
+    function lineupStats(i) {       // picked lineup i's numbers in the portfolio as it stands
+      var e = 0, cash = 0, top10 = 0, first = 0;
+      for (var a = 0; a < M; a++) {
+        var pl = pp[a * P + i], q = Math.round(pl);
+        e += payAt(pl); if (q <= paid) cash++; if (q <= T10) top10++; if (q <= 1) first++;
+      }
+      return { e: e / M, cash: cash / M, top10: top10 / M, first: first / M };
+    }
+    function coverage() {
+      var c1 = 0, cc = 0, f = 0;
+      for (var a = 0; a < M; a++) {
+        c1 += cov1[a]; cc += covC[a];
+        for (var i = 0; i < P; i++) if (Math.round(pp[a * P + i]) <= 1) { f++; break; }
+      }
+      return { top1: c1 / M, cash: cc / M, first: f / M };
+    }
+    return { picked: picked, payAt: payAt, paid: paid, K: K,
+             add: function (k) { if (picked.indexOf(k) < 0) { picked.push(k); refresh(); } },
+             remove: function (k) { var i = picked.indexOf(k); if (i >= 0) { picked.splice(i, 1); refresh(); } },
+             set: function (ks) { picked.length = 0; ks.forEach(function (k) { picked.push(k); }); refresh(); },
+             score: score, alone: alone, lineupStats: lineupStats, coverage: coverage, total: function () { return total; } };
+  }
+
+  // The 20-pick: N times, add the lineup that raises the set's expected payout most given those already picked
+  // (builder.score: self-competition in), within the exposure caps and Min unique.
   function pick(ctx, o, cand, sim, contest, N, nights) {
-    var st = ctx.state, pay = payTable(contest), paid = pay.length - 1;
-    function payAt(place) { var q = Math.round(place); return q >= 1 && q <= paid ? pay[q] : 0; }
-    var chosen = [], count = {}, limit = {}, place = nights.map(function () { return []; });
+    var st = ctx.state, b = builder(sim, contest, nights), count = {}, limit = {};
     ctx.rows.forEach(function (r) {
       var cap = Math.min(o.maxExpo, st.cap[r.id] != null && st.cap[r.id] !== "" ? +st.cap[r.id] / 100 : 1);
       limit[r.id] = st.lock[r.id] ? N : Math.floor(cap * N + 1e-9);
     });
-    while (chosen.length < N) {
+    while (b.picked.length < N) {
       var best = -1, bestV = -Infinity;
       for (var k = 0; k < cand.length; k++) {
-        if (chosen.indexOf(k) >= 0) continue;
-        var ids = cand[k].ids;
-        if (ids.some(function (id) { return (count[id] || 0) + 1 > limit[id]; })) continue;
-        if (chosen.some(function (q) { return cand[q].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length > 8 - o.minUnique; })) continue;
-        var v = 0;
-        for (var a = 0; a < nights.length; a++) {
-          var s = nights[a], me = sim.cs[s][k], mine = 0, delta = 0;
-          for (var i = 0; i < chosen.length; i++) {
-            if (sim.cs[s][chosen[i]] > me) mine++;
-            else { var pl = place[a][i]; delta += payAt(pl + 1) - payAt(pl); }
-          }
-          v += payAt(1 + sim.fa[s][k] + mine) + delta;
-        }
+        if (b.picked.indexOf(k) >= 0 || !fits(cand, b.picked, k, count, limit, o.minUnique)) continue;
+        var v = b.score(k).value;
         if (v > bestV) { bestV = v; best = k; }
       }
       if (best < 0) break;
-      for (var b = 0; b < nights.length; b++) {                    // add it: everyone of ours below it moves down a place
-        var s2 = nights[b], me2 = sim.cs[s2][best], mine2 = 0;
-        for (var i2 = 0; i2 < chosen.length; i2++) {
-          if (sim.cs[s2][chosen[i2]] > me2) mine2++; else place[b][i2] += 1;
-        }
-        place[b].push(1 + sim.fa[s2][best] + mine2);
-      }
-      chosen.push(best);
+      b.add(best);
       cand[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
     }
-    return { chosen: chosen, place: place, payAt: payAt, paid: paid };
+    return { chosen: b.picked.slice(), builder: b };
+  }
+
+  // whether lineup k can join the picks: no player past his cap, and Min unique against each picked lineup
+  function fits(cand, picked, k, count, limit, minUnique) {
+    var ids = cand[k].ids;
+    for (var i = 0; i < ids.length; i++) if ((count[ids[i]] || 0) + 1 > limit[ids[i]]) return false;
+    for (var j = 0; j < picked.length; j++) {
+      var shared = 0, other = cand[picked[j]].ids;
+      for (var m = 0; m < ids.length; m++) if (other.indexOf(ids[m]) >= 0) shared++;
+      if (shared > 8 - minUnique) return false;
+    }
+    return true;
   }
 
   // A fixed portfolio's mean payout over the given nights (ours placed among the field and each other)
   function value(sim, contest, chosen, nights) {
-    var pay = payTable(contest), paid = pay.length - 1, total = 0;
-    function payAt(place) { var q = Math.round(place); return q >= 1 && q <= paid ? pay[q] : 0; }
-    nights.forEach(function (s) {
-      chosen.forEach(function (k) {
-        var mine = 0;
-        chosen.forEach(function (j) { if (j !== k && sim.cs[s][j] > sim.cs[s][k]) mine++; });
-        total += payAt(1 + sim.fa[s][k] + mine);
-      });
+    var b = builder(sim, contest, nights);
+    b.set(chosen);
+    return b.total();
+  }
+
+  // The top n lineups by their expected payout alone (no self-competition, no caps): for comparing with the pick
+  function topAlone(sim, contest, n) {
+    var b = builder(sim, contest), v = [];
+    for (var k = 0; k < sim.K; k++) v.push([b.alone(k), k]);
+    return v.sort(function (x, y) { return y[0] - x[0]; }).slice(0, n).map(function (x) { return x[1]; });
+  }
+
+  // A set of lineups' diversity: the most-used player's share, the mean players shared by two lineups, and the
+  // distinct cores (a lineup's core: its three highest-salaried players)
+  function diversity(ctx, lineups) {
+    var by = {}; ctx.rows.forEach(function (r) { by[r.id] = r; });
+    var count = {}, cores = {}, shared = 0, pairs = 0;
+    lineups.forEach(function (L, i) {
+      L.ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
+      cores[L.ids.slice().sort(function (a, b) { return (by[b] || {}).salary - (by[a] || {}).salary || (a < b ? -1 : 1); }).slice(0, 3).sort().join(",")] = 1;
+      for (var j = 0; j < i; j++) { shared += L.ids.filter(function (id) { return lineups[j].ids.indexOf(id) >= 0; }).length; pairs++; }
     });
-    return nights.length ? total / nights.length : 0;
+    var top = Object.keys(count).sort(function (a, b) { return count[b] - count[a]; })[0];
+    return { most_used: top ? { id: top, name: (by[top] || {}).name, share: count[top] / lineups.length } : null,
+             mean_shared: pairs ? shared / pairs : 0, cores: Object.keys(cores).length, n: lineups.length };
+  }
+
+  // A large pool for the builder: lineups drawn under the rules at CAND_RAND noise, duplicates dropped (no
+  // uniqueness constraints: at 1,000 lineups they make every solve slower; 1,000 distinct took 1,023 draws, 18s)
+  async function pool(ctx, o, K) {
+    var seen = {}, out = [], tries = 0;
+    while (out.length < K && tries < 3 * K) {
+      if (tries % 25 === 24 && ctx.progress) await ctx.progress("Building the pool… " + out.length + " of " + K);
+      var r = await solve(ctx, Object.assign({}, o, { n: 1, minUnique: 1, rand: CAND_RAND, noCaps: true }));
+      tries++;
+      if (!r.lineups.length) return { lineups: out, why: r.why };
+      var key = r.lineups[0].ids.slice().sort().join(",");
+      if (!seen[key]) { seen[key] = 1; out.push(r.lineups[0]); }
+    }
+    return { lineups: out, why: out.length < K ? "only " + out.length + " distinct lineups in " + tries + " draws" : "" };
   }
 
   // Candidates under the rules, the sim, the pick, and its stability: the same pick made on each half of the nights
-  // apart, and how many lineups both halves chose.
+  // apart, each scored on the other half against the pick made there.
   async function simPick(ctx, o, contest, field, z, K, S) {
     var N = o.n;
-    var pool = await solve(ctx, Object.assign({}, o, { n: Math.max(N, K), minUnique: CAND_UNIQUE, rand: CAND_RAND, noCaps: true,
-                                                       label: "Building candidates" }));
-    var cand = pool.lineups;
-    if (cand.length < N) return { error: "only " + cand.length + " candidates fit the rules" + (pool.why ? " (" + pool.why + ")" : "") };
+    var cp = await solve(ctx, Object.assign({}, o, { n: Math.max(N, K), minUnique: CAND_UNIQUE, rand: CAND_RAND, noCaps: true,
+                                                     label: "Building candidates" }));
+    var cand = cp.lineups;
+    if (cand.length < N) return { error: "only " + cand.length + " candidates fit the rules" + (cp.why ? " (" + cp.why + ")" : "") };
     if (ctx.progress) await ctx.progress("Simulating " + S + " nights…");
     var sim = simulate(ctx, cand, field, z, contest, N, S);
-    var all = [], h1 = [], h2 = [];
-    for (var s = 0; s < S; s++) { all.push(s); (s < S / 2 ? h1 : h2).push(s); }
+    var h1 = [], h2 = [];
+    for (var s = 0; s < S; s++) (s < S / 2 ? h1 : h2).push(s);
     if (ctx.progress) await ctx.progress("Picking " + N + " lineups, and checking the pick on each half of the nights…");
-    var full = pick(ctx, o, cand, sim, contest, N, all);
-    // stability: the pick made on each half of the nights, scored on the other half against the pick made there.
+    var full = pick(ctx, o, cand, sim, contest, N);
     // Many candidates are worth nearly the same, so which ones get picked moves with the draw; what matters is
     // whether a pick made on one set of nights keeps its value on another.
     var a = pick(ctx, o, cand, sim, contest, N, h1).chosen, b = pick(ctx, o, cand, sim, contest, N, h2).chosen;
     var both = a.filter(function (k) { return b.indexOf(k) >= 0; }).length;
     var kept = (value(sim, contest, a, h2) / (value(sim, contest, b, h2) || 1) + value(sim, contest, b, h1) / (value(sim, contest, a, h1) || 1)) / 2;
-    var total = 0, anyFirst = 0, size = contest.size || 0;
-    var lineups = full.chosen.map(function (k, i) {
-      var e = 0, cash = 0, top10 = 0, first = 0;
-      for (var n = 0; n < S; n++) {
-        var pl = full.place[n][i], q = Math.round(pl);
-        e += full.payAt(pl); if (q <= full.paid) cash++; if (q <= Math.ceil(0.1 * size)) top10++; if (q <= 1) first++;
-      }
-      total += e / S;
-      return Object.assign({}, cand[k], { sim: { e: e / S, cash: cash / S, top10: top10 / S, first: first / S } });
-    });
-    for (var n2 = 0; n2 < S; n2++) if (full.place[n2].some(function (pl) { return Math.round(pl) <= 1; })) anyFirst++;
-    return { lineups: lineups, candidates: cand.length, nights: S, total: total, fee: (contest.entry_fee || 0) * lineups.length,
-             anyFirst: anyFirst / S, cut: sim.cut, stability: { halves: both, kept: kept, n: lineups.length }, why: pool.why };
+    var lineups = full.chosen.map(function (k, i) { return Object.assign({}, cand[k], { sim: full.builder.lineupStats(i) }); });
+    var cov = full.builder.coverage();
+    return { lineups: lineups, chosen: full.chosen, cand: cand, sim: sim, candidates: cand.length, nights: S,
+             total: full.builder.total(), fee: (contest.entry_fee || 0) * lineups.length, anyFirst: cov.first, coverage: cov,
+             diversity: diversity(ctx, lineups), cut: sim.cut, stability: { halves: both, kept: kept, n: lineups.length }, why: cp.why };
   }
 
   // A frozen rule set's rules as solve() takes them, on top of BASE
@@ -282,5 +366,6 @@
 
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
            gatedProj: gatedProj, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
-           simulate: simulate, pick: pick, value: value, simPick: simPick, rulesFor: rulesFor, CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
+           simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
+           pool: pool, simPick: simPick, rulesFor: rulesFor, CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
 });

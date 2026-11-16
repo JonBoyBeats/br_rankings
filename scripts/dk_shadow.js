@@ -1,5 +1,6 @@
 // Shadow portfolios: before each DraftKings CBB slate locks, the 20-lineup portfolio each of the five frozen rule
-// sets (dk_sim.js RULESETS, on BASE) would have entered, built by the same code as the DK page's Sim & pick, on our
+// sets (dk_sim.js RULESETS, on BASE) would have entered (with its candidate pool, for the random-set benchmark, and
+// for No extra rules also the pool's top 20 by expected payout alone), built by the same code as the DK page's Sim & pick, on our
 // projection through the projection gate, with no locks, excludes or overrides. Graded after the slate against the
 // real contest standings (scripts/cbb_daily.py): top-10% and cash rates first, each rule set against "No extra rules"
 // slate by slate. Run hourly by battle-royale-research's NBA ADP poll workflow until the first game.
@@ -46,7 +47,15 @@ function arg(name, dflt) { const i = process.argv.indexOf("--" + name); return i
       const res = await S.simPick(ctx, o, contest, F.field, field.z, S.BASE.candidates, sims);
       entry.rulesets[set.key] = res.error ? { name: set.name, rules: o, error: res.error } : {
         name: set.name, rules: o, lineups: res.lineups.map(l => ({ ids: l.ids, slots: l.slots, sim: l.sim })), expected: res.total,
-        fee: res.fee, any_first: res.anyFirst, cut: res.cut, stability: res.stability, candidates: res.candidates, why: res.why };
+        fee: res.fee, any_first: res.anyFirst, coverage: res.coverage, diversity: res.diversity, cut: res.cut, stability: res.stability,
+        candidates: res.candidates, why: res.why,
+        pool: res.cand.map(l => l.ids) };          // the candidate pool, for the random-set benchmark
+      if (set.key === "none" && !res.error) {
+        // the top 20 of the same pool by expected payout alone (no self-competition, no caps), to set beside the pick
+        const top = S.topAlone(res.sim, contest, S.BASE.n);
+        entry.top20_alone = { lineups: top.map(k => ({ ids: res.cand[k].ids, slots: res.cand[k].slots })),
+                              expected: S.value(res.sim, contest, top), diversity: S.diversity(ctx, top.map(k => res.cand[k])) };
+      }
       console.log(`[shadow ${sl.draft_group_id}] ${set.key}: ${res.error || res.lineups.length + " lineups, expected $" + res.total.toFixed(2) +
                   " on $" + res.fee.toFixed(2) + ", stability " + Math.round(100 * res.stability.kept) + "%"} (${((Date.now() - t) / 1000).toFixed(0)}s)`);
     }
