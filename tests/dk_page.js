@@ -21,6 +21,7 @@ const isG = r => /(^|\/)G(\/|$)/.test(r.roster), isF = r => /(^|\/)F(\/|$)/.test
 
 // the rules, checked here independently of dk_sim.js's own passes()
 function obeys(rule, ids) {
+  if (rule.share != null || rule.maxShare != null) return true;     // a set rule: checked by shareOk
   const has = id => ids.includes(id), cnt = set => (set || []).filter(has).length;
   return { min: () => cnt(rule.ids) >= rule.n, none: () => cnt(rule.ids) === 0, never: () => cnt(rule.ids) <= 1,
            if: () => !has(rule.ids[0]) || cnt(rule.set) >= rule.n, ifnot: () => has(rule.ids[0]) || cnt(rule.set) >= rule.n,
@@ -253,6 +254,52 @@ function audit(name, L, o) {
   await set(Object.assign({}, base, { nLineups: 3 }));
   const imp = await run("#build");
   check("template 4: both locked is refused, not broken", /no lineup left fits the rules|a locked player/.test(imp) && (await lineups()).length === 0, imp);
+
+  // the quadrant: scores on every tile, and each quadrant's button
+  check("tiles: Quality and Leverage on every tile, and what they're ranked against",
+        (await pg.$$eval(".tile .scores", x => x.length)) === TEAMS.teams.length && /ranks against tonight's \d+ teams/.test(await pg.textContent("#slateLine")));
+  const shareOk = (L, R, n) => R.filter(r => r.share != null || r.maxShare != null).every(r => {
+    const have = L.filter(l => r.ids.filter(id => l.ids.includes(id)).length >= r.n).length;
+    return r.share != null ? have >= Math.ceil(r.share * n - 1e-9) : have <= Math.floor(r.maxShare * n + 1e-9);
+  });
+  for (const q of ["FOCUS", "CHALK", "LEVERAGE"]) {
+    const t = TEAMS.teams.find(x => x.verdict === q);
+    if (!t) continue;
+    await clearRules();
+    await pg.click(`.tile[data-team="${t.team}"] button[data-act="quad"]`);
+    const RQ = await rulesNow();
+    const want = { FOCUS: r => r.length === 1 && r[0].share === 0.75 && r[0].n === 2,
+                   CHALK: r => r.length === 1 && r[0].maxShare === 0.5 && r[0].n === 1,
+                   LEVERAGE: r => r.length === 1 && r[0].share === 0.25 && r[0].n === 2 }[q];
+    check(`quadrant ${q} button writes its rules`, want(RQ), JSON.stringify(RQ.map(r => r.label)));
+    await set(Object.assign({}, base, { nLineups: 20 }));
+    const msg = await run("#build");
+    const LQ = await lineups();
+    check(`quadrant ${q}: Build only's 20 lineups meet it as a set`, LQ.length === 20 && shareOk(LQ, RQ, 20) && LQ.every(l => RQ.every(r => obeys(r, l.ids) || r.share != null || r.maxShare != null)), msg);
+    if (q === "CHALK") {
+      const cap1 = await pg.evaluate(id => state.cap[id], t.top[0].id);
+      check("quadrant CHALK caps the #1 at 25% and the set holds it", cap1 === 25 && LQ.filter(l => l.ids.includes(t.top[0].id)).length <= 5, String(cap1));
+      await pg.evaluate(() => { state.cap = {}; save(); renderPlayers(); });
+    }
+  }
+  const fadeRules = await pg.evaluate(t => QUAD.FADE.rules(t), TEAMS.teams[0]);
+  check("quadrant FADE button excludes the team", fadeRules.length === 1 && fadeRules[0].type === "none");
+  // a share rule edited in place, then held by Sim & pick
+  await clearRules();
+  const lev = TEAMS.teams.find(x => x.verdict === "LEVERAGE"), foc = TEAMS.teams.find(x => x.verdict !== "LEVERAGE");
+  await pg.click(`.tile[data-team="${lev.team}"] button[data-act="quad"]`);
+  await pg.fill('.rule[data-i="0"] input.rs', "40"); await pg.press('.rule[data-i="0"] input.rs', "Tab");
+  let RS = await rulesNow();
+  check("share rule edits in place", RS[0].share === 0.4 && /in 40% of lineups/.test(RS[0].label), JSON.stringify(RS));
+  await pg.click(`.tile[data-team="${foc.team}"] button[data-act="min2"]`);
+  await pg.evaluate(t => { state.rules.push({ type: "min", ids: teamIds(t), n: 1, maxShare: 0.5, label: t + " in at most 50% of lineups" }); save(); renderRules(); }, TEAMS.teams.find(x => x.team !== lev.team && x.team !== foc.team).team);
+  RS = await rulesNow();
+  await set(base); await pg.fill("#nCand", "150"); await pg.fill("#nSims", "500");
+  const smsg2 = await run("#simPick");
+  const LS = await lineups();
+  check("Sim & pick holds share rules as a set (and every per-lineup rule)", LS.length === 20 && shareOk(LS, RS, 20) &&
+        LS.every(l => RS.every(r => obeys(r, l.ids) || r.share != null || r.maxShare != null)), smsg2);
+  await clearRules();
 
   // Sim & pick under rules: every lineup obeys, the pass counts are shown
   await clearRules();

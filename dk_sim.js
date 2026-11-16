@@ -106,7 +106,14 @@
         });
       }
       var extra = {};                         // player id -> {constraint: coefficient}, from the rules (o.conds)
-      (o.conds || []).forEach(function (rule, i) { ruleConstraints(rule, i, extra, cons); });
+      var active = (o.conds || []).filter(function (rule) { return !isShare(rule); });
+      if (!o.noCaps) (o.conds || []).filter(isShare).forEach(function (rule) {
+        // at least: the first lineups meet it until enough do; at most: none more once the cap is reached
+        var have = out.filter(function (L) { return meets(rule, L.ids); }).length;
+        if (rule.share != null && have < Math.ceil(rule.share * o.n - 1e-9)) active.push({ type: "min", ids: rule.ids, n: rule.n });
+        if (rule.maxShare != null && have >= Math.floor(rule.maxShare * o.n + 1e-9)) active.push({ type: "under", ids: rule.ids, n: rule.n });
+      });
+      active.forEach(function (rule, i) { ruleConstraints(rule, i, extra, cons); });
       pool.forEach(function (r) {
         if ((count[r.id] || 0) >= limit[r.id]) return;
         var v = { score: proj(r) * (1 + o.rand * gauss(ctx.random)), n: 1, sal: r.salary };
@@ -128,7 +135,7 @@
         vars[r.id] = v; ints[r.id] = 1;
       });
       if (locks.some(function (r) { return !vars[r.id]; })) { why = "a locked player is out of the pool"; break; }
-      var res = solveSplit(ctx.solver, cons, vars, ints, o.conds || [], inPool);
+      var res = solveSplit(ctx.solver, cons, vars, ints, active, inPool);
       if (!res.feasible) { why = "no lineup left fits the rules (loosen Min unique, Max exposure, the stack or ownership rules, Min salary or the locks)"; break; }
       var ids = Object.keys(vars).filter(function (id) { return inPool[id] && res[id] > 0.5; });
       if (ids.length !== 8) { why = "the solver returned " + ids.length + " players"; break; }
@@ -145,9 +152,40 @@
   //   {type: "ifnot", ids: [P], set, n}  2. if not P, then at least n from set
   //   {type: "ifteam", set, n, set2, m}  3. if at least n from set (a team), then at least m from set2 (its opponent)
   //   {type: "never", ids: [P, Q]}       4. never P with Q
+  //   a "min" rule with share: s          in at least ceil(s x N) of the N lineups (the rest free): the quadrant buttons'
+  //                                       "2+ from the team in 75% / 25% of lineups"
+  //   a "min" rule with maxShare: s       in at most floor(s x N) of them (a team exposure cap: "1+ from it in at most 50%")
+  //   {type: "under", ids, n}             fewer than n from ids (what an exposure cap turns into once it's reached)
   // Each rule carries its own label (the page writes it). passes() checks a lineup; ruleConstraints() makes the
   // optimizer obey it exactly.
+  function isShare(rule) { return rule.share != null || rule.maxShare != null; }
+  function meets(rule, ids) { return rule.ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length >= rule.n; }
+  // a set's share rules: [{rule, have, need (at least) or cap (at most), ok}] for lineups out of N planned
+  function shareStatus(rules, lineups, N) {
+    return rules.filter(isShare).map(function (rule) {
+      var have = lineups.filter(function (L) { return meets(rule, L.ids); }).length;
+      if (rule.share != null) { var need = Math.ceil(rule.share * N - 1e-9); return { rule: rule, have: have, need: need, ok: have >= need }; }
+      var cap = Math.floor(rule.maxShare * N + 1e-9);
+      return { rule: rule, have: have, cap: cap, ok: have <= cap };
+    });
+  }
+  // whether lineup k can join the picks and leave every share rule still reachable: an at-most rule takes no more
+  // lineups that meet it once full; the at-least rules' outstanding lineups, counted as if no lineup met two of them,
+  // must fit in the slots left after k (so their lineups are reserved early enough, whatever the overlap)
+  function shareFits(rules, cand, picked, k, N) {
+    var left = N - picked.length - 1, owed = 0;
+    for (var i = 0; i < rules.length; i++) {
+      var rule = rules[i];
+      if (!isShare(rule)) continue;
+      var m = meets(rule, cand[k].ids), have = picked.filter(function (j) { return meets(rule, cand[j].ids); }).length + (m ? 1 : 0);
+      if (rule.maxShare != null && m && have > Math.floor(rule.maxShare * N + 1e-9)) return false;
+      if (rule.share != null) owed += Math.max(0, Math.ceil(rule.share * N - 1e-9) - have);
+    }
+    return owed <= left;
+  }
+
   function passes(rule, ids) {
+    if (isShare(rule)) return true;           // a share rule is about the set, not one lineup (shareStatus)
     var has = function (id) { return ids.indexOf(id) >= 0; };
     var cnt = function (set) { return (set || []).filter(has).length; };
     switch (rule.type) {
@@ -157,6 +195,7 @@
       case "ifnot": return has(rule.ids[0]) || cnt(rule.set) >= rule.n;
       case "ifteam": return cnt(rule.set) < rule.n || cnt(rule.set2) >= rule.m;
       case "never": return cnt(rule.ids) <= 1;
+      case "under": return cnt(rule.ids) < rule.n;
     }
     return true;
   }
@@ -168,6 +207,7 @@
       case "min": cons[k] = { min: rule.n }; rule.ids.forEach(function (id) { add(id, k, 1); }); break;
       case "none": cons[k] = { max: 0 }; rule.ids.forEach(function (id) { add(id, k, 1); }); break;
       case "never": cons[k] = { max: 1 }; rule.ids.forEach(function (id) { add(id, k, 1); }); break;
+      case "under": cons[k] = { max: rule.n - 1 }; rule.ids.forEach(function (id) { add(id, k, 1); }); break;
       case "if":        // sum(set) - n x P >= 0
         cons[k] = { min: 0 }; rule.set.forEach(function (id) { add(id, k, 1); }); add(rule.ids[0], k, -rule.n); break;
       case "ifnot":     // sum(set) + n x P >= n
@@ -185,10 +225,11 @@
   // if/then rule's pass count taken, the passing ones kept, and the pool topped back up to K with lineups drawn under
   // every rule. draw(o, n) gives up to n lineups under o.
   async function underRules(ctx, o, K, draw) {
-    var conds = o.conds || [];
+    var all = o.conds || [], conds = all.filter(function (rule) { return !isShare(rule); });
     var base = (await draw(Object.assign({}, o, { conds: [] }), K)).lineups;
-    var counts = conds.map(function (rule) {
-      return { label: rule.label, pass: base.filter(function (L) { return passes(rule, L.ids); }).length, of: base.length };
+    var counts = all.map(function (rule) {
+      var f = isShare(rule) ? function (L) { return meets(rule, L.ids); } : function (L) { return passes(rule, L.ids); };
+      return { label: rule.label, pass: base.filter(f).length, of: base.length, share: isShare(rule) };
     });
     var keep = base.filter(function (L) { return conds.every(function (rule) { return passes(rule, L.ids); }); });
     var kept = keep.length, added = 0, why = "";
@@ -201,7 +242,22 @@
       });
       why = more.why || "";
     }
-    return { lineups: keep, counts: counts, kept: kept, of: base.length, added: added, why: why };
+    // an at-least share rule needs lineups that meet it: if fewer than three times what the set needs, draw more that do
+    var shareMore = 0;
+    for (var i = 0; i < all.length; i++) {
+      var rule = all[i];
+      if (rule.share == null) continue;
+      var want = 3 * Math.ceil(rule.share * (o.n || 20) - 1e-9), have = keep.filter(function (L) { return meets(rule, L.ids); }).length;
+      if (have < want) {
+        var seen2 = {}; keep.forEach(function (L) { seen2[L.ids.slice().sort().join(",")] = 1; });
+        var extra = await draw(Object.assign({}, o, { conds: conds.concat([{ type: "min", ids: rule.ids, n: rule.n }]) }), want - have);
+        extra.lineups.forEach(function (L) {
+          var key = L.ids.slice().sort().join(",");
+          if (!seen2[key]) { seen2[key] = 1; keep.push(L); shareMore++; }
+        });
+      }
+    }
+    return { lineups: keep, counts: counts, kept: kept, of: base.length, added: added + shareMore, why: why };
   }
 
   // Solve; if the lineup breaks a template-3 rule (n+ from set without m+ from set2), solve its two cases apart (fewer
@@ -351,17 +407,28 @@
       var cap = Math.min(o.maxExpo, st.cap[r.id] != null && st.cap[r.id] !== "" ? +st.cap[r.id] / 100 : 1);
       limit[r.id] = st.lock[r.id] ? N : Math.floor(cap * N + 1e-9);
     });
-    while (b.picked.length < N) {
-      var best = -1, bestV = -Infinity;
-      for (var k = 0; k < cand.length; k++) {
-        if (b.picked.indexOf(k) >= 0 || !fits(cand, b.picked, k, count, limit, o.minUnique)) continue;
-        var v = b.score(k).value;
-        if (v > bestV) { bestV = v; best = k; }
+    // the at-least share rules first, the one with the fewest qualifying candidates first (each lineup the best
+    // addition among those that meet it), so the rarest requirement isn't left to lineups the caps have shut out;
+    // then the rest of the set, by added value
+    var conds = o.conds || [];
+    var phases = conds.filter(function (rule) { return rule.share != null; }).map(function (rule) {
+      return { rule: rule, n: cand.filter(function (L) { return meets(rule, L.ids); }).length };
+    }).sort(function (x, y) { return x.n - y.n; }).map(function (x) { return x.rule; }).concat([null]);
+    phases.forEach(function (rule) {
+      var need = rule ? Math.ceil(rule.share * N - 1e-9) : N;
+      while (b.picked.length < N && (!rule || b.picked.filter(function (j) { return meets(rule, cand[j].ids); }).length < need)) {
+        var best = -1, bestV = -Infinity;
+        for (var k = 0; k < cand.length; k++) {
+          if (b.picked.indexOf(k) >= 0 || (rule && !meets(rule, cand[k].ids)) || !fits(cand, b.picked, k, count, limit, o.minUnique) ||
+              !shareFits(conds, cand, b.picked, k, N)) continue;
+          var v = b.score(k).value;
+          if (v > bestV) { bestV = v; best = k; }
+        }
+        if (best < 0) break;
+        b.add(best);
+        cand[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
       }
-      if (best < 0) break;
-      b.add(best);
-      cand[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
-    }
+    });
     return { chosen: b.picked.slice(), builder: b };
   }
 
@@ -440,12 +507,24 @@
     if (ctx.progress) await ctx.progress("Simulating " + S + " nights…");
     var sim = simulate(ctx, cand, field, z, contest, N, S);
     var full = pick(ctx, o, cand, sim, contest, N);
-    if (full.chosen.length < N && (o.conds || []).length) {
-      // too thin to fill N under the rules and the caps: draw more under the rules and pick again
+    // too thin to fill N under the rules and the caps: draw more under the rules (and, for each at-least share rule
+    // left short, more lineups that meet it), avoiding the players the pick already has at their exposure cap, and
+    // pick again; twice at most
+    for (var round = 0; round < 2 && full.chosen.length < N && (o.conds || []).length; round++) {
       if (ctx.progress) await ctx.progress("Only " + full.chosen.length + " of " + N + " fit: drawing more candidates under the rules…");
-      var more = await draw(o, Math.max(N, K));
       var seen = {}; cand.forEach(function (L) { seen[L.ids.slice().sort().join(",")] = 1; });
-      more.lineups.forEach(function (L) { var key = L.ids.slice().sort().join(","); if (!seen[key]) { seen[key] = 1; cand.push(L); cp.added++; } });
+      var plain = (o.conds || []).filter(function (rule) { return !isShare(rule); });
+      var used = {}; full.chosen.forEach(function (k) { cand[k].ids.forEach(function (id) { used[id] = (used[id] || 0) + 1; }); });
+      var capped = Object.keys(used).filter(function (id) { return used[id] >= Math.floor(o.maxExpo * N + 1e-9) && !ctx.state.lock[id]; });
+      var avoid = capped.length ? [{ type: "none", ids: capped }] : [];
+      var draws = [await draw(Object.assign({}, o, { conds: plain.concat(avoid).concat((o.conds || []).filter(isShare)) }), Math.max(N, K))];
+      var short = shareStatus(o.conds || [], full.chosen.map(function (k) { return cand[k]; }), N).filter(function (x) { return x.need != null && !x.ok; });
+      for (var q = 0; q < short.length; q++) {
+        draws.push(await draw(Object.assign({}, o, { conds: plain.concat(avoid).concat([{ type: "min", ids: short[q].rule.ids, n: short[q].rule.n }]) }), Math.max(N, K)));
+      }
+      draws.forEach(function (more) {
+        more.lineups.forEach(function (L) { var key = L.ids.slice().sort().join(","); if (!seen[key]) { seen[key] = 1; cand.push(L); cp.added++; } });
+      });
       sim = simulate(ctx, cand, field, z, contest, N, S);
       full = pick(ctx, o, cand, sim, contest, N);
       cp.topped = true;
@@ -462,7 +541,8 @@
     var cov = full.builder.coverage();
     return { lineups: lineups, chosen: full.chosen, cand: cand, sim: sim, candidates: cand.length, nights: S,
              total: full.builder.total(), fee: (contest.entry_fee || 0) * lineups.length, anyFirst: cov.first, coverage: cov,
-             diversity: diversity(ctx, lineups), cut: sim.cut, stability: { halves: both, kept: kept, n: lineups.length }, why: cp.why, rules: cp };
+             diversity: diversity(ctx, lineups), cut: sim.cut, stability: { halves: both, kept: kept, n: lineups.length }, why: cp.why, rules: cp,
+             share: shareStatus(o.conds || [], lineups, N) };
   }
 
   // A frozen rule set's rules as solve() takes them, on top of BASE
@@ -477,5 +557,6 @@
            gatedProj: gatedProj, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
+           isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits,
            CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
 });
