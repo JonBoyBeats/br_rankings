@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DK CBB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* The board's dark theme. */
+  :root {
+    color-scheme: dark;
+    --bg: #080b11;
+    --surface: #12151c;
+    --input: #0d1017;
+    --ink: #ffffff;
+    --muted: #8b94a4;
+    --line: #1c212c;
+    --line-strong: #2a3140;
+    --accent: #ffffff;
+    --accent-ink: #080b11;
+    --live: #4dc48d;
+    --bad: #f08a7e;
+    --warn: #f0c541;
+    --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  .shell { max-width: 980px; margin: 0 auto; padding: 0 16px 64px; }
+  .masthead { position: sticky; top: 0; z-index: 30; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: 14px; }
+  .mast-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 19px; font-weight: 700; letter-spacing: -.015em; margin: 0; white-space: nowrap; }
+  h2 { font-size: 14px; font-weight: 700; margin: 22px 0 6px; }
+  .views { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; align-self: center; flex-wrap: wrap; }
+  .views a { font-size: 12.5px; font-weight: 600; padding: 5px 12px; color: var(--muted); text-decoration: none; }
+  .views a[aria-current="page"] { background: var(--accent); color: var(--bg); }
+  .views a:not([aria-current]):hover { color: var(--ink); }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; padding-block: 12px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .grow { flex: 1 1 200px; min-width: 160px; }
+  .field-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  select, input { font-family: var(--sans); font-size: 14px; color: var(--ink); background: var(--input); border: 1px solid var(--line-strong); border-radius: 7px; padding: 7px 9px; height: 34px; }
+  select { width: 100%; }
+  .num { font-family: var(--mono); width: 84px; }
+  button { font-family: var(--sans); font-size: 13.5px; font-weight: 500; border-radius: 7px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); padding: 7px 13px; height: 34px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .status { font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding-bottom: 10px; }
+  .status .bad, .bad { color: var(--bad); }
+  .note { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin: 4px 0 8px; line-height: 1.5; }
+
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 6px 0 8px; }
+  .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
+  .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
+
+  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 54px 64px 48px 42px 46px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
+  #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
+  .head span[data-sort] { cursor: pointer; user-select: none; }
+  .head span.on { color: var(--ink); }
+  .row { border-bottom: 1px solid var(--line); }
+  .row.locked { background: rgba(77, 196, 141, .12); }
+  .row.excluded, .row.out { opacity: .42; }
+  .r { text-align: right; }
+  .m { font-family: var(--mono); font-size: 13px; }
+  .mut { color: var(--muted); }
+  .who { min-width: 0; }
+  .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tag { font-family: var(--mono); font-size: 9.5px; font-weight: 700; border-radius: 3px; padding: 0 4px; margin-left: 5px; vertical-align: 1px; }
+  .tag.q { background: var(--warn); color: #1a1400; }
+  .tag.o { background: var(--bad); color: #1a0500; }
+  .tag.new { border: 1px solid var(--line-strong); color: var(--muted); }
+  .lx { display: flex; gap: 3px; }
+  .lx button { height: 24px; width: 26px; padding: 0; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+  .lx button.lock[aria-pressed="true"] { background: var(--live); border-color: var(--live); color: #04140c; }
+  .lx button.excl[aria-pressed="true"] { background: var(--bad); border-color: var(--bad); color: #1a0500; }
+  .row input { height: 26px; font-family: var(--mono); font-size: 13px; padding: 2px 5px; width: 100%; text-align: right; }
+  .row input.edited { border-color: var(--warn); color: var(--warn); }
+  .val { font-weight: 600; }
+
+  .opts { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; padding: 6px 0 10px; }
+  .lineups { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px; }
+  .lu { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--surface); }
+  .lu .top { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .lu .top b { color: var(--ink); }
+  .lu .s { display: grid; grid-template-columns: 34px minmax(0, 1fr) 44px 38px; gap: 6px; font-size: 12.5px; line-height: 1.5; }
+  .lu .s .pos { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+  .lu .s .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lu .s .lk { color: var(--live); }
+  .expo { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 2px 16px; font-size: 12.5px; }
+  .expo div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 2px 0; }
+  .expo span.m { font-size: 12px; }
+  table.contests { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.contests th { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: left; font-weight: 500; border-bottom: 1px solid var(--line); padding: 6px 4px; }
+  table.contests td { border-bottom: 1px solid var(--line); padding: 4px; }
+  table.contests td.m, table.contests th.r { text-align: right; }
+  .empty { color: var(--muted); padding: 24px 4px; }
+  @media (max-width: 620px) {
+    .head, .row { grid-template-columns: 56px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
+    .col-min, .col-avg { display: none; }
+    .name { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="masthead" id="mast">
+    <div class="mast-row">
+      <h1>DK CBB</h1>
+      <nav class="views" aria-label="Pages">
+        <a href="/">Home</a>
+        <a href="./">NFL</a>
+        <a href="nba.html">NBA</a>
+        <a href="cbb.html">CBB</a>
+        <a href="dk.html" aria-current="page">DK</a>
+        <a href="nba_live.html">Live</a>
+        <a href="/survivor/">Survivor</a>
+      </nav>
+    </div>
+    <div class="controls">
+      <label class="field grow">
+        <span class="field-label">Classic slate</span>
+        <select id="slate"></select>
+      </label>
+      <button type="button" id="reload">Reload</button>
+    </div>
+    <div class="status" id="status">Loading…</div>
+  </div>
+
+  <h2>Players</h2>
+  <div class="note">Proj is ours in DraftKings points (no double-double bonus). Value is Proj per $1,000.
+    Type over a Proj to use your own number. <b>L</b> locks a player into every lineup, <b>X</b> leaves him out.
+    Max% caps one player below the build's max exposure. Out players are left out.</div>
+  <div class="filters">
+    <button type="button" data-pos="all" aria-pressed="true">All</button>
+    <button type="button" data-pos="G" aria-pressed="false">G</button>
+    <button type="button" data-pos="F" aria-pressed="false">F</button>
+    <select id="team" style="width:auto;height:28px;font-size:13px;padding:3px 8px"><option value="">All teams</option></select>
+    <input type="search" id="search" placeholder="Search players">
+    <button type="button" id="resetProj" title="Put every Proj back to ours">Reset Proj</button>
+    <button type="button" id="clearLx" title="Clear every lock, exclude and Max%">Clear L / X</button>
+  </div>
+  <div id="players"></div>
+
+  <h2>Build lineups</h2>
+  <div class="opts">
+    <label class="field"><span class="field-label">Lineups</span><input class="num" id="nLineups" type="number" min="1" max="150" value="20"></label>
+    <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="60"></label>
+    <label class="field"><span class="field-label">Min unique</span><input class="num" id="minUnique" type="number" min="1" max="8" value="3"></label>
+    <label class="field"><span class="field-label">Randomness %</span><input class="num" id="rand" type="number" min="0" max="60" value="15"></label>
+    <label class="field"><span class="field-label">Min salary</span><input class="num" id="minSal" type="number" min="0" max="50000" step="100" value="48500"></label>
+    <label class="field"><span class="field-label">Max per team</span><input class="num" id="maxTeam" type="number" min="1" max="8" value="5"></label>
+    <button type="button" class="primary" id="build">Build</button>
+    <button type="button" id="export" disabled>Export DK CSV</button>
+  </div>
+  <div class="note">Each lineup is the highest-projected one that fits the $50,000 cap and G, G, G, F, F, F, UTIL, UTIL,
+    after Randomness nudges every Proj up or down (a standard deviation of that %, drawn fresh each lineup),
+    sharing at most 8 − Min unique players with any lineup before it, with no player past his exposure cap.
+    Export writes DraftKings' upload file (player IDs under G, G, G, F, F, F, UTIL, UTIL) for the draft group's
+    contests: Lineups → Upload Lineups on DraftKings.</div>
+  <div class="status" id="buildStatus"></div>
+  <div class="lineups" id="lineups"></div>
+  <h2 id="expoHead" hidden>Exposure</h2>
+  <div class="expo" id="expo"></div>
+
+  <h2>Contests</h2>
+  <div class="note" id="contestsAt"></div>
+  <div id="contests"></div>
+</div>
+
+<script src="vendor/lp_solver.js"></script>
+<script>
+var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
+var CAP = 50000, SLOTS = ["G", "G", "G", "F", "F", "F", "UTIL", "UTIL"];
+var doc = null, slate = null, rows = [], state = null, built = [];
+var view = { pos: "all", team: "", q: "", sort: "value", dir: -1 };
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function money(n) { return "$" + Number(n).toLocaleString("en-US"); }
+function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || "null"); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+function key() { return "dkcbb:" + slate.draft_group_id; }
+function save() { store(key(), state); }
+function isG(r) { return /(^|\/)G(\/|$)/.test(r.roster); }
+function isF(r) { return /(^|\/)F(\/|$)/.test(r.roster); }
+function proj(r) { var o = state.proj[r.id]; return o != null ? o : r.fp_dk; }
+function value(r) { return proj(r) / (r.salary / 1000); }
+function usable(r) { return r.status !== "Out" && !state.excl[r.id]; }
+
+async function load() {
+  $("status").textContent = "Loading…";
+  try {
+    var res = await fetch(MIRROR + "dk_cbb_morning.json?t=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    doc = await res.json();
+  } catch (e) {
+    $("status").innerHTML = '<span class="bad">DraftKings projections unreadable (' + esc(e.message) + ").</span>";
+    return;
+  }
+  var sel = $("slate"), keep = sel.value;
+  sel.innerHTML = "";
+  (doc.slates || []).forEach(function (s) {
+    var t = new Date(s.start);
+    var o = document.createElement("option");
+    o.value = s.draft_group_id;
+    o.textContent = t.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) + " · " +
+      t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) + " · " + s.games + " games" + (s.locked ? " · locked" : "");
+    sel.appendChild(o);
+  });
+  if (!sel.options.length) { $("status").textContent = "No DraftKings Classic slate today."; $("players").innerHTML = ""; return; }
+  if (keep && [].some.call(sel.options, function (o) { return o.value === keep; })) sel.value = keep;
+  pick();
+}
+
+function pick() {
+  slate = doc.slates.find(function (s) { return String(s.draft_group_id) === $("slate").value; });
+  rows = Object.keys(slate.players).map(function (id) { return Object.assign({ id: id }, slate.players[id]); });
+  state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {} }, store(key()) || {});
+  var teams = Array.from(new Set(rows.map(function (r) { return r.team; }))).sort();
+  $("team").innerHTML = '<option value="">All teams</option>' + teams.map(function (t) { return '<option>' + esc(t) + "</option>"; }).join("");
+  view.team = "";
+  var gen = new Date(doc.generated_at);
+  $("status").innerHTML = esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
+    (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })));
+  built = []; renderBuilt();
+  renderPlayers(); renderContests();
+}
+
+function renderPlayers() {
+  var list = rows.filter(function (r) {
+    if (view.pos === "G" && !isG(r)) return false;
+    if (view.pos === "F" && !isF(r)) return false;
+    if (view.team && r.team !== view.team) return false;
+    if (view.q && r.name.toLowerCase().indexOf(view.q) < 0) return false;
+    return true;
+  });
+  var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
+              avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; } }[view.sort];
+  list.sort(function (a, b) {
+    var x = get(a), y = get(b);
+    return (a.status === "Out") - (b.status === "Out") || (x < y ? -1 : x > y ? 1 : 0) * view.dir || b.salary - a.salary;   // Out last
+  });
+  var head = '<div class="head"><span>L / X</span>' +
+    [["name", "Player", ""], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"]]
+      .map(function (c) { return '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"; }).join("") +
+    '<span class="r">Max%</span></div>';
+  var body = list.map(function (r) {
+    var tags = (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q">Q</span>' : "") +
+      (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
+    var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
+    var edited = state.proj[r.id] != null;
+    var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] ? " excluded" : "") + (r.status === "Out" ? " out" : "");
+    return '<div class="' + cls + '" data-id="' + esc(r.id) + '">' +
+      '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
+      '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button></span>' +
+      '<span class="who"><div class="name">' + esc(r.name) + tags + '</div><div class="sub">' + esc(r.position + " · " + r.team + (r.home ? " v " : " @ ") + (r.opp || "?") + (line ? " " + line : "") + (r.ou ? " · o/u " + r.ou : "")) + "</div></span>" +
+      '<span class="m r">' + (r.salary / 1000).toFixed(1) + "k</span>" +
+      '<span><input class="proj' + (edited ? " edited" : "") + '" type="number" step="0.1" value="' + proj(r).toFixed(1) + '" aria-label="Proj for ' + esc(r.name) + '"></span>' +
+      '<span class="m r val">' + value(r).toFixed(2) + "</span>" +
+      '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
+      '<span class="m r mut col-avg">' + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
+      '<span><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
+      "</div>";
+  }).join("");
+  $("players").innerHTML = head + (body || '<div class="empty">No players match.</div>');
+}
+
+function renderContests() {
+  var cs = (slate.contests || []).slice().sort(function (a, b) { return (b.prizes || 0) - (a.prizes || 0); });
+  $("contestsAt").textContent = slate.contests_at ? "Entries as of " + new Date(slate.contests_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + "." : "";
+  $("contests").innerHTML = cs.length ? '<table class="contests"><tr><th>Contest</th><th class="r">Fee</th><th class="r">Entries</th><th class="r">Prizes</th><th class="r">Max/user</th></tr>' +
+    cs.map(function (c) {
+      return "<tr><td>" + esc(c.name) + '</td><td class="m">' + money(c.entry_fee) + '</td><td class="m">' + (c.entries || 0).toLocaleString() + " / " + (c.size || 0).toLocaleString() +
+        '</td><td class="m">' + money(c.prizes || 0) + '</td><td class="m">' + (c.max_per_user || 1) + "</td></tr>";
+    }).join("") + "</table>" : '<div class="empty">No contests listed.</div>';
+}
+
+// --- optimizer ---------------------------------------------------------------------------------
+function gauss() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+function build() {
+  var n = +$("nLineups").value || 1, maxExpo = (+$("maxExpo").value || 100) / 100, minUnique = Math.max(1, +$("minUnique").value || 1);
+  var rand = (+$("rand").value || 0) / 100, minSal = +$("minSal").value || 0, maxTeam = +$("maxTeam").value || 8;
+  var pool = rows.filter(usable), locks = pool.filter(function (r) { return state.lock[r.id]; });
+  var limit = {};
+  pool.forEach(function (r) {
+    var cap = Math.min(maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
+    limit[r.id] = state.lock[r.id] ? n : Math.floor(cap * n + 1e-9);
+  });
+  var count = {}, out = [], teams = Array.from(new Set(pool.map(function (r) { return r.team; }))), why = "";
+  for (var k = 0; k < n; k++) {
+    var cons = { n: { equal: 8 }, g: { min: 3 }, f: { min: 3 }, sal: { max: CAP, min: minSal } }, vars = {}, ints = {};
+    teams.forEach(function (t) { cons["t_" + t] = { max: maxTeam }; });
+    out.forEach(function (L, i) { cons["u" + i] = { max: 8 - minUnique }; });
+    pool.forEach(function (r) {
+      if ((count[r.id] || 0) >= limit[r.id]) return;
+      var v = { score: proj(r) * (1 + rand * gauss()), n: 1, sal: r.salary };
+      v["t_" + r.team] = 1;
+      if (isG(r)) v.g = 1;
+      if (isF(r)) v.f = 1;
+      if (state.lock[r.id]) { v["lk_" + r.id] = 1; cons["lk_" + r.id] = { equal: 1 }; }
+      else { v["b_" + r.id] = 1; cons["b_" + r.id] = { max: 1 }; }
+      out.forEach(function (L, i) { if (L.ids.indexOf(r.id) >= 0) v["u" + i] = 1; });
+      vars[r.id] = v; ints[r.id] = 1;
+    });
+    if (locks.some(function (r) { return !vars[r.id]; })) { why = "a locked player is out of the pool"; break; }
+    var res = solver.Solve({ optimize: "score", opType: "max", constraints: cons, variables: vars, ints: ints });
+    if (!res.feasible) { why = "no lineup left fits the rules (loosen Min unique, Max exposure, Min salary or the locks)"; break; }
+    var ids = Object.keys(vars).filter(function (id) { return res[id] > 0.5; });
+    if (ids.length !== 8) { why = "the solver returned " + ids.length + " players"; break; }
+    ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
+    out.push({ ids: ids, slots: assign(ids) });
+  }
+  built = out;
+  renderBuilt(why ? "Built " + out.length + " of " + n + ": " + why + "." : "Built " + out.length + " lineups.");
+}
+
+// G slots from guards first, F slots from forwards first, G/F players where needed, the rest to UTIL
+function assign(ids) {
+  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
+  var ps = ids.map(function (id) { return by[id]; }).sort(function (a, b) { return b.salary - a.salary; });
+  var g = ps.filter(function (r) { return isG(r) && !isF(r); }), f = ps.filter(function (r) { return isF(r) && !isG(r); }), gf = ps.filter(function (r) { return isG(r) && isF(r); });
+  var G = g.splice(0, 3), F = f.splice(0, 3);
+  while (G.length < 3) G.push(gf.shift());
+  while (F.length < 3) F.push(gf.shift());
+  return G.concat(F, g, f, gf).slice(0, 8).map(function (r) { return r.id; });
+}
+
+function renderBuilt(msg) {
+  $("buildStatus").textContent = msg || "";
+  $("export").disabled = !built.length;
+  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
+  $("lineups").innerHTML = built.map(function (L, i) {
+    var sal = 0, pts = 0;
+    var lines = L.slots.map(function (id, j) {
+      var r = by[id]; sal += r.salary; pts += proj(r);
+      return '<div class="s"><span class="pos">' + SLOTS[j] + '</span><span class="nm' + (state.lock[id] ? " lk" : "") + '">' + esc(r.name) + ' <span class="sub">' + esc(r.team) + "</span></span>" +
+        '<span class="m r mut">' + (r.salary / 1000).toFixed(1) + 'k</span><span class="m r">' + proj(r).toFixed(1) + "</span></div>";
+    }).join("");
+    return '<div class="lu"><div class="top"><span>#' + (i + 1) + "</span><span>" + money(sal) + " · <b>" + pts.toFixed(1) + "</b></span></div>" + lines + "</div>";
+  }).join("");
+  var count = {};
+  built.forEach(function (L) { L.ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
+  var ex = Object.keys(count).sort(function (a, b) { return count[b] - count[a] || by[b].salary - by[a].salary; });
+  $("expoHead").hidden = !ex.length;
+  $("expo").innerHTML = ex.map(function (id) {
+    return "<div><span>" + esc(by[id].name) + ' <span class="sub">' + esc(by[id].team) + '</span></span><span class="m">' + count[id] + " · " + Math.round(100 * count[id] / built.length) + "%</span></div>";
+  }).join("");
+}
+
+function exportCsv() {
+  var text = SLOTS.join(",") + "\n" + built.map(function (L) { return L.slots.join(","); }).join("\n") + "\n";
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], { type: "text/csv" }));
+  a.download = "dk_cbb_" + slate.day + "_" + slate.draft_group_id + ".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+// --- events ------------------------------------------------------------------------------------
+$("slate").addEventListener("change", pick);
+$("reload").addEventListener("click", load);
+$("build").addEventListener("click", function () {
+  $("buildStatus").textContent = "Building…";
+  setTimeout(function () { try { build(); } catch (e) { $("buildStatus").innerHTML = '<span class="bad">Build failed: ' + esc(e.message) + "</span>"; } }, 20);
+});
+$("export").addEventListener("click", exportCsv);
+$("search").addEventListener("input", function (e) { view.q = e.target.value.trim().toLowerCase(); renderPlayers(); });
+$("team").addEventListener("change", function (e) { view.team = e.target.value; renderPlayers(); });
+document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    view.pos = b.dataset.pos;
+    document.querySelectorAll(".filters [data-pos]").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+    renderPlayers();
+  });
+});
+$("resetProj").addEventListener("click", function () { state.proj = {}; save(); renderPlayers(); renderBuilt($("buildStatus").textContent); });
+$("clearLx").addEventListener("click", function () { state.lock = {}; state.excl = {}; state.cap = {}; save(); renderPlayers(); });
+$("players").addEventListener("click", function (e) {
+  var h = e.target.closest("[data-sort]");
+  if (h) { var s = h.dataset.sort; view.dir = view.sort === s ? -view.dir : (s === "name" ? 1 : -1); view.sort = s; renderPlayers(); return; }
+  var b = e.target.closest(".lx button"); if (!b) return;
+  var id = b.closest(".row").dataset.id, which = b.classList.contains("lock") ? "lock" : "excl", other = which === "lock" ? "excl" : "lock";
+  if (state[which][id]) delete state[which][id]; else { state[which][id] = 1; delete state[other][id]; }
+  save(); renderPlayers();
+});
+$("players").addEventListener("change", function (e) {
+  var row = e.target.closest(".row"); if (!row) return;
+  var id = row.dataset.id, r = rows.find(function (x) { return x.id === id; });
+  if (e.target.classList.contains("proj")) {
+    var v = parseFloat(e.target.value);
+    if (isNaN(v) || Math.abs(v - r.fp_dk) < 0.05) delete state.proj[id]; else state.proj[id] = v;
+  } else if (e.target.classList.contains("cap")) {
+    var c = e.target.value === "" ? null : Math.max(0, Math.min(100, +e.target.value));
+    if (c == null) delete state.cap[id]; else state.cap[id] = c;
+  }
+  save(); renderPlayers();
+});
+load();
+</script>
+</body>
+</html>
