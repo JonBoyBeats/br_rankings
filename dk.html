@@ -78,6 +78,18 @@
   .tag.o { background: var(--bad); color: #1a0500; }
   .tag.new { border: 1px solid var(--line-strong); color: var(--muted); }
   .tag.frag { border: 1px solid var(--warn); color: var(--warn); font-weight: 600; }
+  .tag.k-out { background: var(--bad); color: #1a0500; }
+  .tag.k-questionable { background: var(--warn); color: #1a1400; }
+  .tag.k-starting, .tag.k-back { background: var(--live); color: #04140c; }
+  .tag.k-news { border: 1px solid var(--line-strong); color: var(--muted); }
+  details.news { margin: 4px 0 10px; }
+  details.news summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
+  .ni { border-bottom: 1px solid var(--line); padding: 6px 2px; font-size: 13px; line-height: 1.4; }
+  .ni .meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+  .ni .meta a { color: var(--muted); }
+  .ni .meta b { color: var(--ink); font-weight: 600; }
+  .ni .tx { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; cursor: pointer; }
+  .ni.open .tx { display: block; }
   .lx { display: flex; gap: 3px; }
   .lx button { height: 24px; width: 26px; padding: 0; font-family: var(--mono); font-size: 11px; font-weight: 700; }
   .lx button.lock[aria-pressed="true"] { background: var(--live); border-color: var(--live); color: #04140c; }
@@ -135,6 +147,9 @@
     <div class="status" id="status">Loading…</div>
   </div>
 
+  <h2>News</h2>
+  <details class="news" id="newsBox"><summary id="newsSum">Loading…</summary><div id="news"></div></details>
+
   <h2>Players</h2>
   <div class="note">Proj is ours in DraftKings points (no double-double bonus). Value is Proj per $1,000.
     Type over a Proj to use your own number. <b>L</b> locks a player into every lineup, <b>X</b> leaves him out.
@@ -183,7 +198,7 @@
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var CAP = 50000, SLOTS = ["G", "G", "G", "F", "F", "F", "UTIL", "UTIL"];
-var doc = null, slate = null, rows = [], state = null, built = [];
+var doc = null, slate = null, rows = [], state = null, built = [], news = [];
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1 };
 
 function $(id) { return document.getElementById(id); }
@@ -208,6 +223,10 @@ async function load() {
     $("status").innerHTML = '<span class="bad">DraftKings projections unreadable (' + esc(e.message) + ").</span>";
     return;
   }
+  try {      // X news for tonight's players (scripts/cbb_news.py); the page works without it
+    var nr = await fetch(MIRROR + "cbb_news.json?t=" + Date.now(), { cache: "no-store" });
+    news = nr.ok ? (await nr.json()).items || [] : [];
+  } catch (e) { news = []; }
   var sel = $("slate"), keep = sel.value;
   sel.innerHTML = "";
   (doc.slates || []).forEach(function (s) {
@@ -234,7 +253,7 @@ function pick() {
   $("status").innerHTML = esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
     (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })));
   built = []; renderBuilt();
-  renderPlayers(); renderContests();
+  renderNews(); renderPlayers(); renderContests();
 }
 
 function renderPlayers() {
@@ -257,7 +276,9 @@ function renderPlayers() {
       .map(function (c) { return '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"; }).join("") +
     '<span class="r">Max%</span></div>';
   var body = list.map(function (r) {
-    var tags = (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q">Q</span>' : "") +
+    var nw = newsOf(r.id);
+    var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
+      (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q">Q</span>' : "") +
       (r.fragile ? '<span class="tag frag" title="Fragile: expected miss ±' + (r.miss_dk || "") + '">fragile</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
     var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
@@ -277,6 +298,26 @@ function renderPlayers() {
       "</div>";
   }).join("");
   $("players").innerHTML = head + (body || '<div class="empty">No players match.</div>');
+}
+
+// a player's newest status item (out, questionable, starting, back); plain "news" items only show in the list
+function newsOf(id) { return news.find(function (n) { return n.kind !== "news" && n.players.indexOf(id) >= 0; }); }
+function ago(t) { var h = (Date.now() - new Date(t)) / 36e5; return h < 1 ? Math.max(1, Math.round(h * 60)) + "m ago" : Math.round(h) + "h ago"; }
+
+function renderNews() {
+  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
+  var mine = news.filter(function (n) { return n.players.some(function (id) { return by[id]; }); })
+    .sort(function (a, b) { return (a.kind === "news") - (b.kind === "news") || (a.at < b.at ? 1 : -1); });   // status first, newest first
+  var status = mine.filter(function (n) { return n.kind !== "news"; }).length;
+  $("newsSum").textContent = mine.length ? mine.length + " tweets on tonight's players in the last 36 hours, " + status + " about status (from X, hourly; projections don't move on them)"
+    : "No news on tonight's players in the last 36 hours (X, hourly).";
+  $("newsBox").open = status > 0;
+  $("news").innerHTML = mine.map(function (n) {
+    return '<div class="ni"><div class="meta"><span class="tag k-' + n.kind + '" style="margin:0 6px 0 0">' + esc(n.kind) + "</span>" +
+      n.players.filter(function (id) { return by[id]; }).map(function (id) { return "<b>" + esc(by[id].name) + "</b>"; }).join(", ") +
+      ' · <a href="' + esc(n.url) + '" target="_blank" rel="noopener">@' + esc(n.author) + "</a> (" + (n.followers || 0).toLocaleString() + ") · " + ago(n.at) +
+      '</div><div class="tx" title="Tap to show all">' + esc(n.text) + "</div></div>";
+  }).join("");
 }
 
 function renderContests() {
@@ -378,6 +419,7 @@ $("build").addEventListener("click", function () {
   setTimeout(function () { try { build(); } catch (e) { $("buildStatus").innerHTML = '<span class="bad">Build failed: ' + esc(e.message) + "</span>"; } }, 20);
 });
 $("export").addEventListener("click", exportCsv);
+$("news").addEventListener("click", function (e) { var t = e.target.closest(".tx"); if (t) t.parentNode.classList.toggle("open"); });
 $("search").addEventListener("input", function (e) { view.q = e.target.value.trim().toLowerCase(); renderPlayers(); });
 $("team").addEventListener("change", function (e) { view.team = e.target.value; renderPlayers(); });
 document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
