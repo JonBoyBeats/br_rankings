@@ -179,17 +179,16 @@ features in the report; point to that file.
 push; the 2:17am job grades it (`scripts/dk_eval.py nightly`), or run it now:
 `python3 scripts/dk_eval.py nightly --mirror ../br-adp-mirror`.
 
-**When the owner sends a saved build** (`dk_build_<day>_<draft group>.json` from the DK page's Save build:
-the pool, the hand-built set and an auto-pick from it): save it unchanged in `analysis/cbb/dk/builds/`.
-The grading uses the slate's last saved build: the hand-built 20 and the auto-pick, each against random sets
-of 20 from that pool, and the owner's own entries against that pool too (without a build, against No extra
-rules' shadow pool).
+**When the owner sends a saved build** (`dk_bank_<day>_<draft group>.json` from the DK page's Save build: the
+night's bank of drawn lineups, each tagged with the idea it was drawn under, the final cut and each contest's
+portfolio): save it unchanged in `analysis/cbb/dk/builds/`. The owner's own entries are graded against the bank
+as their pool (random sets of the same size from it); without one, against No extra rules' shadow pool. Older
+`dk_build_*` files (the page's former portfolio builder: a pool, a hand-built 20, an auto-pick) still grade as
+`hand` and `auto`; the page no longer makes them.
 
-**When the owner sends saved lineups + rules** (`dk_entries_<day>_<draft group>.json`, the DK page's Save
-lineups + rules: the night's lineups and the team and if/then rules they were built under): save it
-unchanged in `analysis/cbb/dk/builds/` too. The slate's last saved file (a build or entries) says which rule
-templates the owner used that night; the monthly readout shows his results on nights each was used
-(directional only).
+Older `dk_entries_*` files (the former Save lineups + rules) go in `analysis/cbb/dk/builds/` too. The slate's
+last saved file says which rule templates the owner used that night (the bank file's `rule_set`: every rule any
+draw used); the monthly readout shows his results on nights each was used (directional only).
 
 **Nightly**, give one line only: which standings were graded, and the projection gate's state
 (`analysis/cbb/dk/gate.json`). No rule-set verdicts from one night.

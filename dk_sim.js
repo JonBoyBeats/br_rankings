@@ -474,7 +474,7 @@
              mean_shared: pairs ? shared / pairs : 0, cores: Object.keys(cores).length, n: lineups.length };
   }
 
-  // A large pool for the builder: lineups drawn under the rules at CAND_RAND noise, duplicates dropped (no
+  // A large pool for the builder: lineups drawn under the rules at CAND_RAND noise (o.poolRand: the DK page's draw sets its own), duplicates dropped (no
   // uniqueness constraints: at 1,000 lineups they make every solve slower; 1,000 distinct took 1,023 draws, 18s)
   async function pool(ctx, o, K) {
     var res = await underRules(ctx, o, K, function (o2, n) { return poolDraw(ctx, o2, n); });
@@ -486,7 +486,7 @@
     var seen = {}, out = [], tries = 0;
     while (out.length < K && tries < 3 * K) {
       if (tries % 25 === 24 && ctx.progress) await ctx.progress("Building the pool… " + out.length + " of " + K);
-      var r = await solve(ctx, Object.assign({}, o, { n: 1, minUnique: 1, rand: CAND_RAND, noCaps: true }));
+      var r = await solve(ctx, Object.assign({}, o, { n: 1, minUnique: 1, rand: o.poolRand != null ? o.poolRand : CAND_RAND, noCaps: true }));
       tries++;
       if (!r.lineups.length) return { lineups: out, why: r.why };
       var key = r.lineups[0].ids.slice().sort().join(",");

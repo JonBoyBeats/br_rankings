@@ -21,21 +21,10 @@ const isG = r => /(^|\/)G(\/|$)/.test(r.roster), isF = r => /(^|\/)F(\/|$)/.test
 
 // the rules, checked here independently of dk_sim.js's own passes()
 function obeys(rule, ids) {
-  if (rule.share != null || rule.maxShare != null) return true;     // a set rule: checked by shareOk
   const has = id => ids.includes(id), cnt = set => (set || []).filter(has).length;
   return { min: () => cnt(rule.ids) >= rule.n, none: () => cnt(rule.ids) === 0, never: () => cnt(rule.ids) <= 1,
            if: () => !has(rule.ids[0]) || cnt(rule.set) >= rule.n, ifnot: () => has(rule.ids[0]) || cnt(rule.set) >= rule.n,
            ifteam: () => cnt(rule.set) < rule.n || cnt(rule.set2) >= rule.m }[rule.type]();
-}
-
-// slots for a lineup saved as ids only (Save build): guards to G first, forwards to F, the rest to UTIL
-function picksSlots(ids) {
-  const ps = ids.map(id => P[id]).sort((a, b) => b.salary - a.salary);
-  const g = ps.filter(r => isG(r) && !isF(r)), f = ps.filter(r => isF(r) && !isG(r)), gf = ps.filter(r => isG(r) && isF(r));
-  const G = g.splice(0, 3), F = f.splice(0, 3);
-  while (G.length < 3) G.push(gf.shift());
-  while (F.length < 3) F.push(gf.shift());
-  return G.concat(F, g, f, gf).slice(0, 8).map(r => Object.keys(P).find(id => P[id] === r));
 }
 
 // every lineup legal and within the rules it was built under
@@ -105,54 +94,54 @@ function audit(name, L, o) {
       else await pg.fill("#" + id, String(v));
     }
   };
-  const lineups = () => pg.evaluate(() => built.map(L => ({ ids: L.ids, slots: L.slots, sim: L.sim })));
-  const run = async (button) => {
-    await pg.click(button);
-    await pg.waitForFunction(() => /^(Built|Sim:|only|no |pick a|Build failed|Sim failed)/.test(document.getElementById("buildStatus").textContent), null, { timeout: 300000 });
-    return pg.textContent("#buildStatus");
+  // Draw & bank n lineups; returns the lineups this draw added to the bank and the status message
+  const draw = async (n) => {
+    const before = await pg.evaluate(() => BANK.lineups.length);
+    await pg.fill("#bankN", String(n));
+    await pg.evaluate(() => { document.getElementById("buildStatus").textContent = ""; });
+    await pg.click("#bankDraw");
+    await pg.waitForFunction(() => /^Banked|bad/.test(document.getElementById("buildStatus").textContent) || document.querySelector("#buildStatus .bad"), null, { timeout: 300000 });
+    const L = await pg.evaluate(b => BANK.lineups.slice(b), before);
+    return { L, msg: await pg.textContent("#buildStatus") };
   };
-  const base = { nLineups: 20, maxExpo: 60, minUnique: 3, rand: 15, minSal: 48500, maxTeam: 5, stackN: 0, stackBoth: false, maxOwn: "", lowN: 0, lowPct: 10 };
-  const rulesOf = v => ({ n: v.nLineups, minSal: v.minSal, maxTeam: v.maxTeam, expo: v.maxExpo / 100, minUnique: v.minUnique, stackN: v.stackN, stackBoth: v.stackBoth,
-                          maxOwn: v.maxOwn === "" ? null : +v.maxOwn, lowN: v.lowN, lowPct: v.lowPct });
+  const emptyBank = () => pg.evaluate(() => { BANK = { lineups: [], tags: [], tagRules: {} }; CUT = null; PF = {}; bankSaveState(); renderBank(); });
+  const base = { rand: 20, minSal: 48500, maxTeam: 5, stackN: 0, stackBoth: false, maxOwn: "", lowN: 0, lowPct: 10 };
+  const rulesOf = v => ({ minSal: v.minSal, maxTeam: v.maxTeam, stackN: v.stackN, stackBoth: v.stackBoth, maxOwn: v.maxOwn === "" ? null : +v.maxOwn, lowN: v.lowN, lowPct: v.lowPct });
 
-  // Build only, under each rule
-  for (const [name, extra] of [["defaults", {}], ["game stack 3, both teams", { stackN: 3, stackBoth: true }], ["max total own 150%", { maxOwn: 150 }],
-                               ["2 players under 10% owned", { lowN: 2 }], ["all three", { stackN: 3, stackBoth: true, maxOwn: 150, lowN: 2 }]]) {
+  // the page reads top to bottom: the draw's settings, then the cut and the pick's (Max exposure, Min unique)
+  const order = await pg.evaluate(() => ["rand", "maxOwn", "ruleList", "bankDraw", "entriesFile", "cutRun", "maxExpo", "minUnique", "pfRun", "pfExport", "bpTable"]
+    .map(id => document.getElementById(id)).every((el, i, a) => i === 0 || (a[i - 1].compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)));
+  check("layout: draw settings, then the cut, then the pick's Max exposure and Min unique, then review", order);
+  check("layout: the old one-contest flow is gone", await pg.evaluate(() => ["simPick", "build", "export", "saveEntries", "bankBuilt", "contest", "nCand", "nLineups", "bpBuild", "bpUse", "bpSave"].every(id => !document.getElementById(id))));
+
+  // Draw & bank under each setting: every lineup drawn is legal and within it, and tagged with it
+  for (const [name, extra, tag] of [["defaults", {}, "no rules"], ["game stack 3, both teams", { stackN: 3, stackBoth: true }, "3-stack + bring-back"],
+                                    ["max total own 150%", { maxOwn: 150 }, "own ≤ 150%"], ["2 players under 10% owned", { lowN: 2 }, "2 under 10%"],
+                                    ["all three", { stackN: 3, stackBoth: true, maxOwn: 150, lowN: 2 }, "3-stack + bring-back + own ≤ 150% + 2 under 10%"]]) {
     const v = Object.assign({}, base, extra);
     await set(v);
-    const msg = await run("#build");
-    audit("Build only, " + name, await lineups(), rulesOf(v));
-    if (!/^Built 20 lineups/.test(msg)) check("Build only, " + name + ": built all 20", false, msg);
+    check("tag line shows the next draw's idea, " + name, (await pg.textContent("#tagNow")) === "Next draw is tagged: " + tag, await pg.textContent("#tagNow"));
+    const { L, msg } = await draw(20);
+    audit("Draw & bank, " + name, L, rulesOf(v));
+    if (L.length < 15) check("Draw & bank, " + name + ": drew 15+ new", false, msg);
+    check("Draw & bank, " + name + ": tagged with its idea", new RegExp('tagged "' + tag.replace(/[+]/g, "\\+") + '"').test(msg), msg);
   }
+  // Max exposure and Min unique don't touch the draw
+  await set(base); await pg.fill("#maxExpo", "5"); await pg.fill("#minUnique", "8");
+  const { L: Lx, msg: mx } = await draw(15);
+  check("Max exposure and Min unique don't limit the draw", Lx.length >= 12, mx);
+  await pg.fill("#maxExpo", "60"); await pg.fill("#minUnique", "3");
 
-  // locks, excludes and a player cap
+  // locks and excludes: in the draw, and in the tag
   const ids = Object.keys(P).filter(id => P[id].status !== "Out").sort((a, c) => P[c].fp_dk / P[c].salary - P[a].fp_dk / P[a].salary);
-  const lockId = ids[3], exclId = ids[0], capId = ids[1];
+  const lockId = ids[3], exclId = ids[0];
   await set(base);
   await pg.click(`#players .row[data-id="${lockId}"] .lock`);
   await pg.click(`#players .row[data-id="${exclId}"] .excl`);
-  await pg.fill(`#players .row[data-id="${capId}"] .cap`, "25");
-  await pg.press(`#players .row[data-id="${capId}"] .cap`, "Tab");
-  await run("#build");
-  audit("Build only, a lock, an exclude and a 25% cap", await lineups(), Object.assign(rulesOf(base), { lock: lockId, excl: exclId, capId: capId, capPct: 0.25 }));
+  const { L: Ll, msg: ml } = await draw(15);
+  audit("Draw & bank, a lock and an exclude", Ll, Object.assign(rulesOf(base), { lock: lockId, excl: exclId }));
+  check("a lock and an exclude are in the tag", /lock .* \+ no /.test(ml), ml);
   await pg.click("#clearLx");
-
-  // Sim & pick (fewer candidates and nights, for speed): rules held, numbers and the stability readout shown
-  await set(Object.assign({}, base, { stackN: 3, stackBoth: true, lowN: 2 }));
-  await pg.fill("#nCand", "150"); await pg.fill("#nSims", "1000");
-  const jukebox = await pg.$$eval("#contest option", o => o.find(x => /Jukebox/.test(x.textContent)).value);
-  await pg.selectOption("#contest", jukebox);
-  const msg = await run("#simPick");
-  const L = await lineups();
-  audit("Sim & pick, stack and low-owned", L, rulesOf(Object.assign({}, base, { stackN: 3, stackBoth: true, lowN: 2 })));
-  check("Sim & pick reports stability and cut lines", /Stability: .* kept \d+% of the value/.test(msg) && /winning score \d+/.test(msg), msg);
-  check("Sim & pick gives every lineup its numbers", L.length === 20 && L.every(l => l.sim && l.sim.e >= 0 && l.sim.cash >= 0 && l.sim.cash <= 1));
-
-  // Export: DraftKings' upload file, the lineups as built, slot for slot
-  const [dl] = await Promise.all([pg.waitForEvent("download"), pg.click("#export")]);
-  const lines = fs.readFileSync(await dl.path(), "utf8").trim().split("\n");
-  check("export header is G,G,G,F,F,F,UTIL,UTIL", lines[0] === "G,G,G,F,F,F,UTIL,UTIL", lines[0]);
-  check("export rows are the built lineups, slot for slot", lines.length === L.length + 1 && lines.slice(1).every((l, i) => l === L[i].slots.join(",")));
 
   // the projection gate: an open band blends DraftKings' average into Proj
   gate = { nights: 9, bands: [{ lo: 6000, hi: 99999, open: true, w: 0.6 }, { lo: 0, hi: 5999, open: false, w: 1 }] };
@@ -185,18 +174,17 @@ function audit(name, L, o) {
   check("news: collapsed by default", !(await pg.$eval("#newsBox", d => d.open)));
   const clearRules = () => pg.evaluate(() => { state.rules = []; state.lock = {}; state.excl = {}; save(); renderRules(); renderPlayers(); });
   const rulesNow = () => pg.evaluate(() => state.rules.slice());
-  const buildAudit = async (name, extra) => {
-    await set(Object.assign({}, base, { nLineups: 12, minUnique: 2 }, extra || {}));
-    const msg = await run("#build");
-    const L = await lineups(), R = await rulesNow();
+  const drawAudit = async (name) => {
+    await set(base);
+    const { L, msg } = await draw(12);
+    const R = await rulesNow();
     const bad = [];
     L.forEach((l, i) => R.forEach(r => { if (!obeys(r, l.ids)) bad.push(`#${i + 1} breaks "${r.label}"`); }));
-    check(`rules, ${name}: ${L.length} lineups obey every rule`, L.length > 0 && !bad.length, bad.slice(0, 3).join("; ") || msg);
+    check(`rules, ${name}: ${L.length} lineups drawn obey every rule`, L.length > 0 && !bad.length, bad.slice(0, 3).join("; ") || msg);
     return L;
   };
   const tile = TEAMS.teams.find(t => t.top && t.top.length >= 3 && t.verdict !== "FADE");
   const tsel = `.tile[data-team="${tile.team}"]`;
-  const mates = id => Object.keys(P).filter(x => P[x].team === P[id].team);
 
   // the tile buttons
   for (const act of ["min2", "min3", "stack", "excl"]) {
@@ -204,8 +192,10 @@ function audit(name, L, o) {
     await openTeam(tile.team); await pg.click(`${tsel} button[data-act="${act}"]`);
     const R = await rulesNow();
     check(`tile button ${act} writes its rule${R.length > 1 ? "s" : ""}`, R.length === (act === "stack" ? 2 : 1), JSON.stringify(R.map(r => r.label)));
-    await buildAudit("tile " + act);
+    await drawAudit("tile " + act);
   }
+  check("rules stay in the box after a draw", (await rulesNow()).length === 1);
+  check("rules list shows the pass counts after a draw", (await pg.$$eval(".rule .pc", x => x.length)) === 1);
   // the #1 player's shortcuts, and editing one after
   await clearRules();
   await openTeam(tile.team); await pg.click(`${tsel} button[data-act="pivot"]`);
@@ -217,7 +207,7 @@ function audit(name, L, o) {
   await pg.fill("#rtN", "2"); await pg.click("#rtSave");
   R = await rulesNow();
   check("rules: a shortcut can be edited after", R.length === 2 && R[1].n === 2 && /then 2\+ from/.test(R[1].label), JSON.stringify(R.map(r => r.label)));
-  await buildAudit("pivot and bring-back (edited)");
+  await drawAudit("pivot and bring-back (edited)");
 
   // the four templates through the editor, each with its condition forced on and forced off
   const addRule = async (type, f) => {
@@ -231,10 +221,10 @@ function audit(name, L, o) {
   await clearRules();
   await addRule("if", async () => { await pg.selectOption("#rtP", p1); await pg.fill("#rtN", "2"); await pg.selectOption("#rtFrom", "opp"); });
   await pg.click(`#players .row[data-id="${p1}"] .lock`);
-  let L2 = await buildAudit("template 1, condition met (he's locked)");
+  let L2 = await drawAudit("template 1, condition met (he's locked)");
   check("template 1: met in every lineup", L2.every(l => l.ids.includes(p1)));
   await pg.click(`#players .row[data-id="${p1}"] .excl`);
-  L2 = await buildAudit("template 1, condition not met (he's excluded)");
+  L2 = await drawAudit("template 1, condition not met (he's excluded)");
   check("template 1: not met, lineups free of it", L2.every(l => !l.ids.includes(p1)));
   // 2. if NOT P then 1+ of his team's #2/#3
   await clearRules();
@@ -242,160 +232,72 @@ function audit(name, L, o) {
   R = await rulesNow();
   check("template 2: list starts as his team's #2 and #3", R[0] && R[0].set.length === 2 && R[0].set.every(id => P[id].team === P[p1].team && id !== p1), JSON.stringify(R));
   await pg.click(`#players .row[data-id="${p1}"] .excl`);
-  L2 = await buildAudit("template 2, condition met (he's excluded)");
+  L2 = await drawAudit("template 2, condition met (he's excluded)");
   await pg.click(`#players .row[data-id="${p1}"] .lock`);
-  L2 = await buildAudit("template 2, condition not met (he's locked)");
+  L2 = await drawAudit("template 2, condition not met (he's locked)");
   check("template 2: not met in every lineup", L2.every(l => l.ids.includes(p1)));
   // 3. if 2+ from team then 1+ from its opponent
   await clearRules();
   await addRule("ifteam", async () => { await pg.selectOption("#rtTeam", t2.team); await pg.fill("#rtN", "2"); await pg.fill("#rtM", "1"); });
   await openTeam(t2.team); await pg.click(`.tile[data-team="${t2.team}"] button[data-act="min2"]`);
-  L2 = await buildAudit("template 3, condition met (a Min 2 from the team)");
+  L2 = await drawAudit("template 3, condition met (a Min 2 from the team)");
   await pg.evaluate(() => { state.rules.pop(); save(); renderRules(); });
   await openTeam(t2.team); await pg.click(`.tile[data-team="${t2.team}"] button[data-act="excl"]`);
-  L2 = await buildAudit("template 3, condition not met (the team excluded)");
+  L2 = await drawAudit("template 3, condition not met (the team excluded)");
   // 4. never P with Q
   await clearRules();
   await addRule("never", async () => { await pg.selectOption("#rtP", p1); await pg.selectOption("#rtQ", p2); });
   await pg.click(`#players .row[data-id="${p1}"] .lock`);
-  L2 = await buildAudit("template 4, one of them locked");
+  L2 = await drawAudit("template 4, one of them locked");
   check("template 4: never the other with him", L2.every(l => !l.ids.includes(p2)));
   await pg.click(`#players .row[data-id="${p2}"] .lock`);
-  await set(Object.assign({}, base, { nLineups: 3 }));
-  const imp = await run("#build");
-  check("template 4: both locked is refused, not broken", /no lineup left fits the rules|a locked player/.test(imp) && (await lineups()).length === 0, imp);
+  const { L: Limp, msg: imp } = await draw(3);
+  check("template 4: both locked is refused, not broken", Limp.length === 0 && /Only 0 of 3: .*(no lineup left fits the rules|a locked player)/.test(imp), imp);
 
-  // the quadrant: scores on every tile, and each quadrant's button
+  // the quadrant: scores on every tile, and each quadrant's button is a rule for the draw
   check("tiles: Quality and Leverage on the tile, and what they're ranked against",
         (await pg.$$eval("#teamPanel .tile .scores", x => x.length)) >= 1 && /ranks against tonight's \d+ teams/.test(await pg.textContent("#slateLine")));
-  const shareOk = (L, R, n) => R.filter(r => r.share != null || r.maxShare != null).every(r => {
-    const have = L.filter(l => r.ids.filter(id => l.ids.includes(id)).length >= r.n).length;
-    return r.share != null ? have >= Math.ceil(r.share * n - 1e-9) : have <= Math.floor(r.maxShare * n + 1e-9);
-  });
   for (const q of ["FOCUS", "CHALK", "LEVERAGE"]) {
     const t = TEAMS.teams.find(x => x.verdict === q);
     if (!t) continue;
     await clearRules();
     await openTeam(t.team); await pg.click(`.tile[data-team="${t.team}"] button[data-act="quad"]`);
     const RQ = await rulesNow();
-    const want = { FOCUS: r => r.length === 1 && r[0].share === 0.75 && r[0].n === 2,
-                   CHALK: r => r.length === 1 && r[0].maxShare === 0.5 && r[0].n === 1,
-                   LEVERAGE: r => r.length === 1 && r[0].share === 0.25 && r[0].n === 2 }[q];
-    check(`quadrant ${q} button writes its rules`, want(RQ), JSON.stringify(RQ.map(r => r.label)));
-    await set(Object.assign({}, base, { nLineups: 20 }));
-    const msg = await run("#build");
-    const LQ = await lineups();
-    check(`quadrant ${q}: Build only's 20 lineups meet it as a set`, LQ.length === 20 && shareOk(LQ, RQ, 20) && LQ.every(l => RQ.every(r => obeys(r, l.ids) || r.share != null || r.maxShare != null)), msg);
-    if (q === "CHALK") {
-      const cap1 = await pg.evaluate(id => state.cap[id], t.top[0].id);
-      check("quadrant CHALK caps the #1 at 25% and the set holds it", cap1 === 25 && LQ.filter(l => l.ids.includes(t.top[0].id)).length <= 5, String(cap1));
-      await pg.evaluate(() => { state.cap = {}; save(); renderPlayers(); });
-    }
+    const want = { FOCUS: r => r.length === 1 && r[0].type === "min" && r[0].n === 2 && r[0].share == null,
+                   CHALK: r => r.length === 1 && r[0].type === "none" && JSON.stringify(r[0].ids) === JSON.stringify([t.top[0].id]),
+                   LEVERAGE: r => r.length === 1 && r[0].type === "min" && r[0].n === 2 && r[0].share == null }[q];
+    check(`quadrant ${q} button writes its draw rule`, want(RQ), JSON.stringify(RQ));
+    await drawAudit("quadrant " + q);
+    if (q === "CHALK") check("quadrant CHALK leaves Max% alone", await pg.evaluate(id => state.cap[id] == null, t.top[0].id));
   }
   const fadeRules = await pg.evaluate(t => QUAD.FADE.rules(t), TEAMS.teams[0]);
   check("quadrant FADE button excludes the team", fadeRules.length === 1 && fadeRules[0].type === "none");
-  // a share rule edited in place, then held by Sim & pick
-  await clearRules();
-  const lev = TEAMS.teams.find(x => x.verdict === "LEVERAGE"), foc = TEAMS.teams.find(x => x.verdict !== "LEVERAGE");
-  await openTeam(lev.team); await pg.click(`.tile[data-team="${lev.team}"] button[data-act="quad"]`);
-  await pg.fill('.rule[data-i="0"] input.rs', "40"); await pg.press('.rule[data-i="0"] input.rs', "Tab");
-  let RS = await rulesNow();
-  check("share rule edits in place", RS[0].share === 0.4 && /in 40% of lineups/.test(RS[0].label), JSON.stringify(RS));
-  await openTeam(foc.team); await pg.click(`.tile[data-team="${foc.team}"] button[data-act="min2"]`);
-  await pg.evaluate(t => { state.rules.push({ type: "min", ids: teamIds(t), n: 1, maxShare: 0.5, label: t + " in at most 50% of lineups" }); save(); renderRules(); }, TEAMS.teams.find(x => x.team !== lev.team && x.team !== foc.team).team);
-  RS = await rulesNow();
-  await set(base); await pg.fill("#nCand", "150"); await pg.fill("#nSims", "500");
-  const smsg2 = await run("#simPick");
-  const LS = await lineups();
-  check("Sim & pick holds share rules as a set (and every per-lineup rule)", LS.length === 20 && shareOk(LS, RS, 20) &&
-        LS.every(l => RS.every(r => obeys(r, l.ids) || r.share != null || r.maxShare != null)), smsg2);
-  await clearRules();
-
-  // Sim & pick under rules: every lineup obeys, the pass counts are shown
-  await clearRules();
-  await openTeam(tile.team); await pg.click(`${tsel} button[data-act="pivot"]`);
-  await openTeam(tile.team); await pg.click(`${tsel} button[data-act="bring"]`);
-  await addRule("never", async () => { await pg.selectOption("#rtP", p1); await pg.selectOption("#rtQ", p2); });
-  await set(base); await pg.fill("#nCand", "150"); await pg.fill("#nSims", "500");
-  const smsg = await run("#simPick");
-  L2 = await lineups(); R = await rulesNow();
-  check("Sim & pick under rules: every lineup obeys every rule", L2.length > 0 && L2.every(l => R.every(r => obeys(r, l.ids))), smsg);
-  check("Sim & pick under rules: says how many candidates pass each", /Rules: .* of \d+ pass; all of them: \d+ of \d+/.test(smsg), smsg);
-  check("rules list shows the pass counts", (await pg.$$eval(".rule .pc:not(.cost)", x => x.length)) === R.length);
-  check("Sim & pick prices the rules: all against none, and each removed", /What the rules cost .* with all of them, .* with none .*Removing one at a time:/.test(smsg), smsg);
-  check("rules list shows each rule's cost", (await pg.$$eval(".rule .cost", x => x.length)) === R.length);
+  // rules saved before the change: "in X% of lineups" becomes its plain rule, "at most X%" goes
+  const lev = TEAMS.teams.find(x => x.verdict === "LEVERAGE") || TEAMS.teams[0];
+  await pg.evaluate(t => { state.rules = [{ type: "min", ids: teamIds(t), n: 2, share: 0.25, label: "2+ from " + t + " in 25% of lineups" },
+                                          { type: "min", ids: teamIds(t), n: 1, maxShare: 0.5, label: t + " in at most 50% of lineups" }]; save(); }, lev.team);
+  await pg.click("#reload");
+  await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("status").textContent));
+  R = await rulesNow();
+  check("old share rules load as draw rules", R.length === 1 && R[0].share == null && R[0].n === 2 && R[0].label === "2+ from " + lev.team, JSON.stringify(R));
   check("team bar marks borderline quadrants", (await pg.$$eval("#teamBar button", v => v.filter(x => /\*$/.test(x.textContent)).length)) ===
         TEAMS.teams.filter(t => t.borderline).length);
-  const [dl4] = await Promise.all([pg.waitForEvent("download"), pg.click("#saveEntries")]);
-  const ent = JSON.parse(fs.readFileSync(await dl4.path(), "utf8"));
-  check("Save lineups + rules writes both", ent.kind === "entries" && ent.rule_set.length === R.length && ent.lineups.length === L2.length);
   await clearRules();
 
-  // the portfolio builder (a small pool, for speed): adding a lineup raises the set's expected payout by exactly its
-  // Added value, remove undoes it, auto-fill stays within the rules, the picks export, Save build writes a gradable file
-  gate = null;
-  await pg.click("#reload");
-  await pg.waitForFunction(() => /Projection gate: closed/.test(document.getElementById("status").textContent));
-  await set(base);
-  await pg.selectOption("#contest", jukebox);
-  await pg.fill("#poolSize", "300"); await pg.fill("#nSims", "1000");
-  await pg.click("#bpBuild");
-  await pg.waitForFunction(() => /Re-scored every lineup/.test(document.getElementById("bpStatus").textContent) || /failed|Only/.test(document.getElementById("bpStatus").textContent), null, { timeout: 300000 });
-  check("builder: pool built and scored", (await pg.$$eval("#bpTable tr", r => r.length)) > 100, await pg.textContent("#bpStatus"));
-  const step = await pg.evaluate(() => {
-    const b = BP.b, out = [];
-    for (const k of [0, 5, 40]) {
-      const before = b.total(), v = BP.scores[k] ? BP.scores[k].value : null;
-      bpAdd(k);
-      out.push(Math.abs(b.total() - before - v));
-    }
-    bpRemove(5);
-    return { gaps: out, picked: b.picked.slice() };
-  });
-  check("builder: Added value is the set's payout with it minus without", step.gaps.every(g => g < 1e-9), JSON.stringify(step.gaps));
-  check("builder: Remove takes a pick out", JSON.stringify(step.picked) === JSON.stringify([0, 40]), JSON.stringify(step.picked));
-  await pg.click("#bpClear");
-  await pg.click("#bpAuto");
-  await pg.waitForFunction(() => /re-scored every lineup/i.test(document.getElementById("bpStatus").textContent) && BP.b.picked.length >= 20 || /stopped/.test(document.getElementById("bpStatus").textContent), null, { timeout: 300000 });
-  const picks = await pg.evaluate(() => BP.b.picked.map(k => ({ ids: BP.pool[k].ids, slots: BP.pool[k].slots })));
-  audit("builder: Auto-fill", picks, rulesOf(base));
-  check("builder: summary shows coverage and diversity", /of nights one reaches the top 1%/.test(await pg.textContent("#bpSummary")) && /distinct cores/.test(await pg.textContent("#bpSummary")));
-  await pg.click("#bpUse");
-  const [dl2] = await Promise.all([pg.waitForEvent("download"), pg.click("#export")]);
-  const rows2 = fs.readFileSync(await dl2.path(), "utf8").trim().split("\n").slice(1);
-  check("builder: Use as my lineups exports the picks", rows2.length === picks.length && rows2.every((l, i) => l === picks[i].slots.join(",")));
-  const [dl3] = await Promise.all([pg.waitForEvent("download"), pg.click("#bpSave")]);
-  const saved = JSON.parse(fs.readFileSync(await dl3.path(), "utf8"));
-  // a 300-lineup pool can run out of lineups that fit the caps short of 20 (the page says so); 1,000 fills
-  check("builder: Save build writes the pool, the hand-built set and an auto-pick", saved.pool.length >= 250 && saved.hand.length === picks.length &&
-        saved.auto.length >= 15 && String(saved.draft_group) === String(slate.draft_group_id), JSON.stringify({ pool: saved.pool.length, hand: saved.hand.length, auto: saved.auto.length }));
-  check("builder: Auto-fill says why when it stops short", picks.length === 20 || /stopped at \d+/.test(await pg.textContent("#bpStatus")));
-  audit("builder: the saved auto-pick", saved.auto.map(k => ({ ids: saved.pool[k], slots: saved.pool[k] })).map(l => ({ ids: l.ids, slots: picksSlots(l.ids) })), rulesOf(base));
-
-  // the bank, the entries file, the cut, the portfolios, review and the DraftKings export. The entries file is
+  // --- the bank, the entries file, the cut, the portfolios, review and the DraftKings export. The entries file is
   // synthetic (made-up entry IDs, in DraftKings' layout), never a real one.
-  const bankDraw = async (n) => {
-    await pg.fill("#bankN", String(n));
-    await pg.click("#bankDraw");
-    await pg.waitForFunction(() => /^Banked|failed|Infeasible|no lineup/.test(document.getElementById("buildStatus").textContent), null, { timeout: 300000 });
-    return pg.textContent("#buildStatus");
-  };
+  await emptyBank();
   await set(base);
-  const m1 = await bankDraw(60);
+  const { msg: m1 } = await draw(60);
   await set(Object.assign({}, base, { stackN: 3, stackBoth: true }));
-  const m2 = await bankDraw(60);
+  const { msg: m2 } = await draw(60);
   await set(base);
-  await pg.click("#bankBuilt");                        // the lineups on the page, banked twice: kept once
-  const nb = await pg.evaluate(() => built.length);
-  await pg.click("#bankBuilt");
-  const m3 = await pg.textContent("#buildStatus");
+  const again = await pg.evaluate(() => bankAdd(BANK.lineups.slice(0, 10), tagNow()));   // banked twice: kept once
   const bank = await pg.evaluate(() => BANK);
   const keys = bank.lineups.map(L => L.ids.slice().sort().join(","));
-  check("bank: duplicates dropped", new Set(keys).size === keys.length && nb > 0 && m3 === "Banked 0 new lineups (" + nb + " already in the bank)." &&
-        bank.lineups.length <= 120 + nb, [m1, m2, m3].join(" | "));
-  check("bank: each lineup tagged with the rules it was built under", bank.tags.length === bank.lineups.length && bank.tags.every(t => t.length >= 1) &&
+  check("bank: duplicates dropped", new Set(keys).size === keys.length && again === 0 && bank.lineups.length <= 120 && bank.lineups.length >= 100, [m1, m2].join(" | "));
+  check("bank: each lineup tagged with the idea it was drawn under", bank.tags.length === bank.lineups.length && bank.tags.every(t => t.length >= 1) &&
         JSON.stringify(Object.keys(bank.tagRules).sort()) === JSON.stringify(["3-stack + bring-back", "no rules"]), JSON.stringify(Object.keys(bank.tagRules)));
-  bank.lineups.forEach((L, i) => { if (bank.tags[i].includes("3-stack + bring-back") && bank.tags[i].length === 1) audit("bank: stack-tagged lineup", [L], rulesOf(Object.assign({}, base, { stackN: 3, stackBoth: true, nLineups: 1, maxExpo: 100 }))); });
   check("bank: the tag table shows each tag", (await pg.$$eval("#bankBox tr", r => r.length)) === 3);
 
   const ENTRY = "Entry ID,Contest Name,Contest ID,Entry Fee,G,G,G,F,F,F,UTIL,UTIL,,Instructions";
@@ -419,6 +321,7 @@ function audit(name, L, o) {
   const ths = await pg.$$eval("#bankBox th", t => t.map(x => x.textContent));
   check("cut: survivors by rule tag after each round", ths.includes("After the cut") && ths.filter(t => /^Round \d+$/.test(t)).length === cut.rounds.length, JSON.stringify(ths));
 
+  await pg.fill("#nSims", "1000");
   await pg.click("#pfRun");
   await pg.waitForFunction(() => /^Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   const pf = await pg.evaluate(() => PF);
@@ -426,14 +329,37 @@ function audit(name, L, o) {
   check("portfolios: one per contest, from the final pool", Object.keys(size).every(c => pf[c] && pf[c].length >= 1 && pf[c].length <= size[c] && pf[c].every(i => cut.keep.includes(i)) &&
         new Set(pf[c]).size === pf[c].length), JSON.stringify(pf));
   check("portfolios: each fills its entries, or says what stops it", Object.keys(size).every(c => pf[c].length === size[c]) || /short: .* stops it|runs out/.test(pmsg), pmsg);
+  Object.keys(size).forEach(c => audit("portfolio " + c + " within Max exposure 60% and Min unique 3", pf[c].map(i => bank.lineups[i]),
+    Object.assign(rulesOf(base), { n: size[c], expo: Math.max(0.6, 1 / size[c]), minUnique: 3 })));
+
+  // review: the contest's set in the builder; Added value is exact, Remove undoes Add, Auto-fill keeps the pick's settings, Keep replaces the set
   await pg.click('button[data-review="197791874"]');
   await pg.waitForFunction(() => BP && BP.review === "197791874");
   check("review: opens the contest's portfolio in the builder", JSON.stringify(await pg.evaluate(() => BP.b.picked.map(k => BP.idx[k]))) === JSON.stringify(pf["197791874"]) &&
-        !(await pg.$eval("#bpKeep", x => x.hidden)));
+        !(await pg.$eval("#bpKeep", x => x.hidden)) && (await pg.$$eval("#bpTable tr", r => r.length)) > 50);
+  await pg.click("#bpClear");
+  const step = await pg.evaluate(() => {
+    const b = BP.b, out = [];
+    for (const k of [0, 5, 40]) {
+      const before = b.total(), v = BP.scores[k] ? BP.scores[k].value : null;
+      bpAdd(k);
+      out.push(Math.abs(b.total() - before - v));
+    }
+    bpRemove(5);
+    return { gaps: out, picked: b.picked.slice() };
+  });
+  check("review: Added value is the set's payout with it minus without", step.gaps.every(g => g < 1e-9), JSON.stringify(step.gaps));
+  check("review: Remove takes a pick out", JSON.stringify(step.picked) === JSON.stringify([0, 40]), JSON.stringify(step.picked));
+  await pg.click("#bpClear");
+  await pg.click("#bpAuto");
+  await pg.waitForFunction(() => BP.b.picked.length >= 5 || /stopped/.test(document.getElementById("bpStatus").textContent), null, { timeout: 300000 });
+  const auto = await pg.evaluate(() => BP.b.picked.map(k => ({ ids: BP.pool[k].ids, slots: BP.pool[k].slots })));
+  audit("review: Auto-fill within Max exposure and Min unique", auto, Object.assign(rulesOf(base), { n: 5, expo: 0.6, minUnique: 3 }));
+  check("review: summary shows coverage and diversity", /of nights one reaches the top 1%/.test(await pg.textContent("#bpSummary")) && /distinct cores/.test(await pg.textContent("#bpSummary")));
   await pg.evaluate(() => bpRemove(BP.b.picked[0]));
   await pg.click("#bpKeep");
-  const pf2 = await pg.evaluate(() => PF["197791874"]);
-  check("review: Keep replaces the contest's portfolio", pf2.length === pf["197791874"].length - 1 && pf2.every(i => pf["197791874"].includes(i)), JSON.stringify(pf2));
+  const pf2 = await pg.evaluate(() => PF["197791874"]), kept = await pg.evaluate(() => BP.b.picked.map(k => BP.idx[k]));
+  check("review: Keep replaces the contest's portfolio", JSON.stringify(pf2) === JSON.stringify(kept) && pf2.length === auto.length - 1, JSON.stringify(pf2));
 
   const [dl5] = await Promise.all([pg.waitForEvent("download"), pg.click("#pfExport")]);
   const out = fs.readFileSync(await dl5.path(), "utf8").trim().split(/\r?\n/).map(l => l.split(","));
@@ -449,13 +375,14 @@ function audit(name, L, o) {
         Object.keys(want).every(id => byId[id] && byId[id].slice(4).join(",") === want[id].join(",") && fake.some(f => String(f[0]) === id && String(f[2]) === byId[id][2])));
   ["197791872", "197791874", "197791877"].forEach(cid => {             // the same lineup may go in two contests, not twice in one
     const L = rowsOut.filter(r => r[2] === cid).map(r => ({ ids: r.slice(4), slots: r.slice(4) }));
-    audit("export: " + cid + "'s lineups", L, rulesOf(Object.assign({}, base, { nLineups: L.length, maxExpo: 100, minUnique: 1 })));
+    audit("export: " + cid + "'s lineups", L, Object.assign(rulesOf(base), { minUnique: 1 }));
   });
 
   const [dl6] = await Promise.all([pg.waitForEvent("download"), pg.click("#bankSave")]);
   const bs = JSON.parse(fs.readFileSync(await dl6.path(), "utf8"));
   check("Save build (bank): the pool, its tags, the final cut and the portfolios", bs.kind === "build" && bs.pool.length === bank.lineups.length && bs.tags.length === bs.pool.length &&
-        JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()), dl6.suggestedFilename());
+        JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()) &&
+        bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3, dl6.suggestedFilename());
 
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();

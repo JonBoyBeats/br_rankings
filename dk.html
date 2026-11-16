@@ -207,8 +207,8 @@
 
   <h2>Players</h2>
   <div class="note">Proj is ours in DraftKings points, with the double-double bonus at his chance of one (shown as DD when 10%+). Value is Proj per $1,000.
-    Type over a Proj to use your own number. <b>L</b> locks a player into every lineup, <b>X</b> leaves him out.
-    Max% caps one player below the build's max exposure. Out players are left out.
+    Type over a Proj to use your own number. <b>L</b> locks a player into every lineup you draw, <b>X</b> leaves him out of
+    them. <b>Max%</b> caps his share of each contest's portfolio (step 3, Pick portfolios). Out players are left out.
     ± is how far off we expect to be (an average miss, DraftKings points); <span class="tag frag" style="margin:0">fragile</span>
     marks players whose expected miss runs 1.31x+ a typical player's at the same projection: minutes that swing game
     to game, few games, a bench role, a transfer. On 2025-26 that third missed by 49% of its projection, the rest by 35%.</div>
@@ -223,24 +223,25 @@
   </div>
   <div id="players"></div>
 
-  <h2>Build lineups</h2>
+  <h2>1. Draw lineups into the bank</h2>
+  <div class="note">Everything in this box shapes the lineups you draw, and nothing else. Set up an idea (a stack, an
+    ownership limit, a team from a tile, an if/then rule), then <b>Draw &amp; bank</b>: each lineup is the highest-projected
+    one that fits the $50,000 cap, G, G, G, F, F, F, UTIL, UTIL and everything here, after Randomness nudges every Proj up
+    or down (a standard deviation of that %, drawn fresh each lineup); repeats are dropped. Every lineup in the bank is
+    tagged with the idea it was drawn under. The settings and rules stay until you change or Remove them: change them, draw
+    again, and the bank holds both ideas. How many you draw of each idea sets the mix going into the cut.</div>
   <div class="opts">
-    <label class="field"><span class="field-label">Lineups</span><input class="num" id="nLineups" type="number" min="1" max="150" value="20"></label>
-    <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="60"></label>
-    <label class="field"><span class="field-label">Min unique</span><input class="num" id="minUnique" type="number" min="1" max="8" value="3"></label>
-    <label class="field"><span class="field-label">Randomness %</span><input class="num" id="rand" type="number" min="0" max="60" value="15"></label>
+    <label class="field"><span class="field-label">Randomness %</span><input class="num" id="rand" type="number" min="0" max="60" value="20"></label>
     <label class="field"><span class="field-label">Min salary</span><input class="num" id="minSal" type="number" min="0" max="50000" step="100" value="48500"></label>
     <label class="field"><span class="field-label">Max per team</span><input class="num" id="maxTeam" type="number" min="1" max="8" value="5"></label>
-  </div>
-  <div class="opts">
     <label class="field"><span class="field-label">Game stack</span><input class="num" id="stackN" type="number" min="0" max="8" value="0" title="At least this many players from one game (0: off)"></label>
     <label class="field" style="flex-direction:row;align-items:center;gap:6px;height:34px"><input type="checkbox" id="stackBoth" style="height:auto"><span class="field-label">from both teams</span></label>
     <label class="field"><span class="field-label">Max total own %</span><input class="num" id="maxOwn" type="number" min="0" max="800" step="10" placeholder="off"></label>
-    <label class="field"><span class="field-label">Min players under</span><input class="num" id="lowN" type="number" min="0" max="8" value="0" title="At least this many players owned under the % beside it (0: off)"></label>
+    <label class="field"><span class="field-label">Min players under</span><input class="num" id="lowN" type="number" min="0" max="8" value="0" title="At least this many players owned under the % (0: off)"></label>
     <label class="field"><span class="field-label">owned %</span><input class="num" id="lowPct" type="number" min="1" max="100" value="10"></label>
   </div>
   <div class="rulesbox">
-    <div class="field-label">Team and if/then rules: every lineup obeys them (Build only, Sim &amp; pick, the builder). Team tiles add them in one click.</div>
+    <div class="field-label">Rules for the draw: every lineup drawn obeys them, until you Remove them. Team tiles add them in one click.</div>
     <div id="ruleList"></div>
     <div class="opts" id="ruleEditor" style="padding-bottom:2px">
       <label class="field"><span class="field-label">Template</span><select id="rtType" style="width:auto">
@@ -261,51 +262,35 @@
     </div>
   </div>
   <div class="opts">
-    <label class="field grow"><span class="field-label">Contest (for the sim)</span><select id="contest"></select></label>
-    <label class="field"><span class="field-label">Candidates</span><input class="num" id="nCand" type="number" min="20" max="400" value="150"></label>
-    <label class="field"><span class="field-label">Sims</span><input class="num" id="nSims" type="number" min="500" max="10000" step="500" value="3000"></label>
-    <button type="button" class="primary" id="simPick">Sim &amp; pick</button>
-    <button type="button" id="build">Build only</button>
-    <button type="button" id="export" disabled>Export DK CSV</button>
-    <button type="button" id="saveEntries" disabled title="Download the lineups and the rules they were built under, to send in with the standings">Save lineups + rules</button>
-    <button type="button" id="bankBuilt" disabled title="Add these lineups to the bank, tagged with tonight's rules">Bank these</button>
-    <label class="field"><span class="field-label">Draw</span><input class="num" id="bankN" type="number" min="10" max="1000" step="10" value="100"></label>
-    <button type="button" id="bankDraw" title="Draw this many lineups under the rules above and bank them">Draw &amp; bank</button>
+    <label class="field"><span class="field-label">Lineups to draw</span><input class="num" id="bankN" type="number" min="10" max="1000" step="10" value="100"></label>
+    <button type="button" class="primary" id="bankDraw">Draw &amp; bank</button>
+    <span class="note" id="tagNow" style="align-self:center;margin:0"></span>
   </div>
-  <div class="note"><b>Build only</b>: each lineup is the highest-projected one that fits the $50,000 cap and G, G, G, F, F, F,
-    UTIL, UTIL and the rules above, after Randomness nudges every Proj up or down (a standard deviation of that %, drawn
-    fresh each lineup), sharing at most 8 − Min unique players with any lineup before it, with no player past his exposure cap.
-    <b>Sim &amp; pick</b>: builds Candidates lineups that way (no exposure cap; each differs from the others by 2+ players, at 20%
-    randomness, its own setting), then plays them against the
-    contest's field over Sims simulated nights and keeps the Lineups that add the most expected payout, one at a time, within
-    the exposure cap and Min unique. A simulated night draws each player's points from his Proj and his ±, in the shape
-    2025-26's misses took (a long upside tail); players' nights are drawn independently, because on 2025-26 teammates' and
-    opponents' misses were uncorrelated (−0.007 and −0.004). The field is 1,000 lineups built from a field projection
-    (half ours, half DraftKings' season average, with noise), copied to fill the contest; Own % is their ownership:
-    a guess until the standings files calibrate it. Payouts are the contest's own table.
-    Export writes DraftKings' upload file (player IDs under G, G, G, F, F, F, UTIL, UTIL): Lineups → Upload Lineups on DraftKings.</div>
   <div class="status" id="buildStatus"></div>
-  <div class="lineups" id="lineups"></div>
-  <div id="summary"></div>
-  <h2 id="expoHead" hidden>Exposure</h2>
-  <div class="expo" id="expo"></div>
 
-  <h2>Bank, cut and portfolios</h2>
-  <div class="note">As you work the slate, <b>bank</b> lineups (Bank these, or Draw &amp; bank under the current rules); each is tagged with the
-    rules it was built under, and a lineup banked twice is kept once. Load DraftKings' <b>entries file</b> (Lineups → Edit Entries → download)
-    and each contest's entry count fills in. <b>Re-sim &amp; cut</b> takes the bank down to Keep: each round simulates the survivors over
-    fresh nights and adds each lineup's payout alone in every contest you're entering to its running total (so its number is the mean
-    over every night it has been through); a lineup stays if it ranks high enough in ANY of them, and Cut % of the rest go. After each
-    round, the survivors by rule tag. <b>Pick portfolios</b> picks each contest's entries from the final pool as a set (the same pick as
-    Sim &amp; pick, with that contest's payouts); <b>Review</b> opens one in the builder below to add or remove lineups; <b>Export DK
-    entries</b> fills the entries file's rows with the lineups, ready to upload (Edit Entries → upload).</div>
+  <h2>2. Cut the bank, pick each contest's entries, export</h2>
+  <div class="note">Load DraftKings' <b>entries file</b> (Lineups → Edit Entries → download): each contest's entry count fills in.
+    <b>Re-sim &amp; cut</b> takes the bank down to Keep: each round simulates the survivors over fresh nights and adds each
+    lineup's payout alone in every contest you're entering to its running total (so its number is the mean over every night
+    it has been through); a lineup stays if it ranks high enough in ANY of them, and Cut % of the rest go. The table shows how
+    many from each idea survive each round. <b>Pick portfolios</b> picks each contest's entries from what's left as a set:
+    one at a time, the lineup that adds the most to the set's expected payout with that contest's payouts, within Max
+    exposure (and each player's Max%) and Min unique, which apply here and only here. <b>Review</b> opens one contest's set
+    below to swap lineups; <b>Export DK entries</b> fills the entries file's rows, ready to upload (Edit Entries → upload).
+    <b>Save build</b> downloads the bank and the portfolios: send it in with the standings and your entries get graded
+    against the bank.</div>
   <div class="opts">
     <label class="field"><span class="field-label">DraftKings entries file</span><input type="file" id="entriesFile" accept=".csv" style="height:auto"></label>
     <label class="field"><span class="field-label">Keep</span><input class="num" id="cutKeep" type="number" min="20" max="5000" step="50" value="500"></label>
     <label class="field"><span class="field-label">Cut % a round</span><input class="num" id="cutPct" type="number" min="1" max="50" value="10"></label>
     <label class="field"><span class="field-label">Nights a round</span><input class="num" id="cutNights" type="number" min="200" max="10000" step="100" value="2000"></label>
     <button type="button" class="primary" id="cutRun">Re-sim &amp; cut</button>
-    <button type="button" id="pfRun">Pick portfolios</button>
+  </div>
+  <div class="opts">
+    <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="60"></label>
+    <label class="field"><span class="field-label">Min unique</span><input class="num" id="minUnique" type="number" min="1" max="8" value="3"></label>
+    <label class="field"><span class="field-label">Nights for the pick</span><input class="num" id="nSims" type="number" min="500" max="10000" step="500" value="3000"></label>
+    <button type="button" class="primary" id="pfRun">Pick portfolios</button>
     <button type="button" id="pfExport" disabled>Export DK entries</button>
     <button type="button" id="bankSave">Save build</button>
     <button type="button" id="bankClear">Clear bank</button>
@@ -315,24 +300,18 @@
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
 
-  <h2>Portfolio builder</h2>
-  <div class="note">Hand-build the set from a large pool. Every pool lineup is scored by what it <b>adds</b> to your picks so
-    far, re-scored after every add or remove: <b>Added</b> is the set's expected payout with it minus without it, your own
-    lineups ranked against each other on every simulated night (one that scores on the same nights as a pick mostly
-    pushes yours down a place, so it adds little); <b>+Cover</b> is the rise in the share of nights where at least one of
-    your lineups reaches the top 1% (or cashes, with the toggle). <b>Alone</b> is its expected payout by itself;
-    <b>Shared</b>, the most players it shares with any pick. Uses the contest, the rules above (the pool is drawn under
-    them) and Sims. Auto-fill adds by Added value within Max exposure and Min unique. <b>Save build</b> downloads the pool,
-    your hand-built set and an auto-pick from the same pool: send it in with the standings and it gets graded, slate by
-    slate, against the auto-pick and against random sets from the pool.</div>
+  <h2>3. Review a contest's portfolio</h2>
+  <div class="note">Opens when you press Review on a contest above. Every lineup left after the cut is scored by what it
+    <b>adds</b> to the contest's picks so far, re-scored after every add or remove: <b>Added</b> is the set's expected payout
+    with it minus without it, your own lineups ranked against each other on every simulated night (one that scores on the
+    same nights as a pick mostly pushes yours down a place, so it adds little); <b>+Cover</b> is the rise in the share of
+    nights where at least one of your lineups reaches the top 1% (or cashes, with the toggle). <b>Alone</b> is its expected
+    payout by itself; <b>Shared</b>, the most players it shares with any pick. Auto-fill adds by Added value within Max
+    exposure and Min unique. <b>Keep</b> makes your set the contest's portfolio for the export.</div>
   <div class="opts">
-    <label class="field"><span class="field-label">Pool size</span><input class="num" id="poolSize" type="number" min="50" max="2000" step="50" value="1000"></label>
-    <button type="button" class="primary" id="bpBuild">Build pool</button>
     <label class="field"><span class="field-label">+Cover counts</span><select id="bpCover" style="width:auto"><option value="top1">top 1%</option><option value="cash">cashing</option></select></label>
     <button type="button" id="bpAuto" disabled>Auto-fill the rest</button>
     <button type="button" id="bpClear" disabled>Clear picks</button>
-    <button type="button" id="bpUse" disabled>Use as my lineups</button>
-    <button type="button" id="bpSave" disabled>Save build</button>
     <button type="button" class="primary" id="bpKeep" hidden>Keep as this contest's portfolio</button>
   </div>
   <div class="status" id="bpStatus"></div>
@@ -349,8 +328,8 @@
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var SLOTS = DKSim.SLOTS;
-var doc = null, slate = null, rows = [], state = null, built = [], news = [], fieldDoc = null, gate = null, builtSummary = null, BP = null;
-var teamsDoc = null, ruleCounts = {}, ruleCost = {}, editing = -1;
+var doc = null, slate = null, rows = [], state = null, news = [], fieldDoc = null, gate = null, BP = null;
+var teamsDoc = null, ruleCounts = {}, editing = -1;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1, panel: null };
 
@@ -413,6 +392,12 @@ function pick() {
   slate = doc.slates.find(function (s) { return String(s.draft_group_id) === $("slate").value; });
   rows = Object.keys(slate.players).map(function (id) { return Object.assign({ id: id }, slate.players[id]); });
   state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, rules: [] }, store(key()) || {});
+  // rules saved before the draw-only change: an "in X% of lineups" rule becomes its plain rule; an "at most X%" one goes
+  state.rules = (state.rules || []).filter(function (r) { return r.maxShare == null; }).map(function (r) {
+    if (r.share == null) return r;
+    var t = (rows.find(function (x) { return x.id === r.ids[0]; }) || {}).team || "";
+    return { type: "min", ids: r.ids, n: r.n, label: r.n + "+ from " + t };
+  });
   var teams = Array.from(new Set(rows.map(function (r) { return r.team; }))).sort();
   $("team").innerHTML = '<option value="">All teams</option>' + teams.map(function (t) { return '<option>' + esc(t) + "</option>"; }).join("");
   view.team = "";
@@ -420,14 +405,9 @@ function pick() {
   $("status").innerHTML = esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
     (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }))) +
     '<br>' + gateText();
-  var cs = (slate.contests || []).filter(function (c) { return c.payouts; }).sort(function (a, b) { return (b.size || 0) - (a.size || 0); });
-  $("contest").innerHTML = cs.map(function (c) {
-    return '<option value="' + esc(c.id) + '">' + esc(c.name + " · " + money(c.entry_fee) + " · " + (c.size || 0).toLocaleString() + " entries · max " + (c.max_per_user || 1)) + "</option>";
-  }).join("") || "<option value=''>No contest with a payout table</option>";
-  built = []; builtSummary = null; renderBuilt();
-  BP = null; $("bpTableWrap").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = "";
-  ["bpAuto", "bpClear", "bpUse", "bpSave"].forEach(function (id) { $(id).disabled = true; });
-  ruleCounts = {}; ruleCost = {}; editing = -1;
+  BP = null; $("bpTableWrap").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpKeep").hidden = true;
+  ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = true; });
+  ruleCounts = {}; editing = -1;
   bankLoadState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
   renderTiles(); renderRules(); fillEditor(); renderNews(); renderPlayers(); renderContests();
 }
@@ -531,48 +511,20 @@ function ctx() {
            progress: function (msg) { $("buildStatus").textContent = msg; return new Promise(function (r) { setTimeout(r, 0); }); } };
 }
 
-function rules() {
+// the draw's settings (section 1): every lineup drawn obeys them
+function drawRules() {
   var v = function (id) { return $(id).value === "" ? null : +$(id).value; };
-  return { n: v("nLineups") || 1, maxExpo: (v("maxExpo") || 100) / 100, minUnique: Math.max(1, v("minUnique") || 1),
-           rand: (v("rand") || 0) / 100, minSal: v("minSal") || 0, maxTeam: v("maxTeam") || 8,
+  return { n: 1, maxExpo: 1, minUnique: 1, poolRand: (v("rand") || 0) / 100, minSal: v("minSal") || 0, maxTeam: v("maxTeam") || 8,
            stackN: v("stackN") || 0, stackBoth: $("stackBoth").checked, maxOwn: v("maxOwn"),
            lowN: v("lowN") || 0, lowPct: v("lowPct") || 10, conds: (state.rules || []).slice() };
 }
+// the pick's settings (section 2), for a contest taking n entries: Max exposure rounds down, so a 1-entry contest gets its one
+function pickRules(n) {
+  var v = function (id) { return $(id).value === "" ? null : +$(id).value; };
+  return { n: n, maxExpo: Math.max((v("maxExpo") || 100) / 100, 1 / n), minUnique: Math.max(1, v("minUnique") || 1), conds: [] };
+}
 
 function assign(ids) { return DKSim.assign(ctx(), ids); }
-
-async function build() {
-  var o = rules(), r = await DKSim.solve(ctx(), o);
-  built = r.lineups; builtSummary = null;
-  renderBuilt(r.why ? "Built " + built.length + " of " + o.n + ": " + r.why + "." : "Built " + built.length + " lineups.");
-}
-
-async function simPick() {
-  var o = rules(), F = fieldOf();
-  var c = (slate.contests || []).find(function (x) { return String(x.id) === $("contest").value; });
-  if (!F || !F.field || !F.field.length) return "no simulated field for this slate";
-  if (!c || !c.payouts) return "pick a contest with a payout table";
-  var res = await DKSim.simPick(ctx(), o, c, F.field, fieldDoc.z, +$("nCand").value || 150, +$("nSims").value || 3000);
-  takeCounts(res.rules);
-  ruleCost = {}; ((res.cost || {}).per || []).forEach(function (c) { ruleCost[c.label] = c; });
-  if (res.error) return res.error + rulesMsg(res.rules);
-  built = res.lineups;
-  builtSummary = { coverage: res.coverage, diversity: res.diversity, total: res.total, fee: res.fee };
-  var st = res.stability, N = o.n;
-  return "Sim: " + built.length + " of " + res.candidates + " candidates into " + c.name + " (" + (c.size || 0).toLocaleString() + " entries) over " +
-    res.nights + " nights: expected back " + cents(res.total) + " on " + cents(res.fee) + (res.fee ? " (ROI " + Math.round(100 * (res.total / res.fee - 1)) + "%)" : "") +
-    "; a 1st place in " + (100 * res.anyFirst).toFixed(1) + "% of nights. Simulated field: winning score " + res.cut.win.toFixed(0) +
-    ", top 10% " + res.cut.top10.toFixed(0) + ", cash line " + res.cut.cash.toFixed(0) + ". Stability: picked again on each half of the nights apart, each half's pick kept " +
-    Math.round(100 * st.kept) + "% of the value of the other half's on its nights" + (st.kept < 0.9 ? " (low: raise Sims)" : "") +
-    " (" + st.halves + " of " + st.n + " lineups the same; many lineups are worth about the same, so which ones get picked moves with the draw)." +
-    (built.length < N ? " Only " + built.length + " fit the exposure and Min unique rules." : "") +
-    " ROI here assumes our projections are right; it ranks lineups, it isn't a forecast of winnings." + rulesMsg(res.rules) +
-    (res.share || []).map(function (x) { return " " + x.rule.label + ": " + x.have + " of " + built.length + (x.ok ? "." : " (short of " + (x.need != null ? x.need : "the cap") + ")."); }).join("") +
-    (res.cost ? " What the rules cost (one pool of " + res.cost.pool + " lineups, the same " + res.cost.nights + " nights): expected back " + cents(res.cost.all) +
-      " with all of them, " + cents(res.cost.none) + " with none (" + (res.cost.none >= res.cost.all ? "they cost " + cents(res.cost.none - res.cost.all) : "they add " + cents(res.cost.all - res.cost.none)) +
-      "). Removing one at a time: " + res.cost.per.map(function (c) { return c.label + " " + (c.cost >= 0 ? "+" : "-") + cents(Math.abs(c.cost)); }).join("; ") +
-      ". The sim takes our projections as right, so a rule that hedges against them always shows a cost here; it isn't a verdict on the rule." : "");
-}
 
 // A portfolio's summary: coverage (nights with a cash / a top-1% finish / a 1st among the set), the most-used
 // player's share, the mean players two lineups share, distinct cores (a lineup's three highest-salaried players)
@@ -586,42 +538,6 @@ function summaryHtml(sm) {
     (d && d.most_used ? "<span><b>" + Math.round(100 * d.most_used.share) + "%</b>most-used: " + esc(d.most_used.name) + "</span>" : "") +
     (d ? "<span><b>" + d.mean_shared.toFixed(1) + "</b>players two lineups share, on average</span><span><b>" + d.cores + " of " + d.n +
          "</b>distinct cores (top-3 salaries)</span>" : "") + "</div>";
-}
-
-function renderBuilt(msg) {
-  $("buildStatus").textContent = msg || "";
-  $("summary").innerHTML = built.length ? summaryHtml(Object.assign({ diversity: DKSim.diversity(ctx(), built) }, builtSummary || {})) : "";
-  $("export").disabled = !built.length;
-  $("saveEntries").disabled = !built.length;
-  $("bankBuilt").disabled = !built.length;
-  if (state) renderRules();
-  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
-  $("lineups").innerHTML = built.map(function (L, i) {
-    var sal = 0, pts = 0, ow = 0;
-    var lines = L.slots.map(function (id, j) {
-      var r = by[id]; sal += r.salary; pts += proj(r); ow += own(r);
-      return '<div class="s"><span class="pos">' + SLOTS[j] + '</span><span class="nm' + (state.lock[id] ? " lk" : "") + '">' + esc(r.name) + ' <span class="sub">' + esc(r.team) + "</span></span>" +
-        '<span class="m r mut">' + (r.salary / 1000).toFixed(1) + 'k</span><span class="m r">' + proj(r).toFixed(1) + "</span></div>";
-    }).join("");
-    var sim = L.sim ? '<div class="top"><span>E ' + cents(L.sim.e) + "</span><span>cash " + Math.round(100 * L.sim.cash) + "% · top 10 " +
-      (100 * L.sim.top10).toFixed(1) + "% · 1st " + (100 * L.sim.first).toFixed(1) + "%</span></div>" : "";
-    return '<div class="lu"><div class="top"><span>#' + (i + 1) + " · own " + Math.round(ow) + "%</span><span>" + money(sal) + " · <b>" + pts.toFixed(1) + "</b></span></div>" + sim + lines + "</div>";
-  }).join("");
-  var count = {};
-  built.forEach(function (L) { L.ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
-  var ex = Object.keys(count).sort(function (a, b) { return count[b] - count[a] || by[b].salary - by[a].salary; });
-  $("expoHead").hidden = !ex.length;
-  $("expo").innerHTML = ex.map(function (id) {
-    return "<div><span>" + esc(by[id].name) + ' <span class="sub">' + esc(by[id].team) + '</span></span><span class="m">' + count[id] + " · " + Math.round(100 * count[id] / built.length) + "%</span></div>";
-  }).join("");
-}
-
-function exportCsv() {
-  var text = SLOTS.join(",") + "\n" + built.map(function (L) { return L.slots.join(","); }).join("\n") + "\n";
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([text], { type: "text/csv" }));
-  a.download = "dk_cbb_" + slate.day + "_" + slate.draft_group_id + ".csv";
-  document.body.appendChild(a); a.click(); a.remove();
 }
 
 // --- team tiles (battle-royale-research scripts/dk_cbb_teams.py: the numbers, flags and verdict come from there) ---
@@ -683,20 +599,16 @@ function tileHtml(t, wide) {
         esc(oppOf(t.team) || "opp") + "</button></div>" : "") + "</div>";
 }
 
-// The quadrant buttons (one click, then editable in the rules list): the share of lineups each sets
-// CHALK pivots off the #1 by capping him (his Max%), not with the "if not him, 1+ of #2/#3" rule: that rule makes
-// every lineup without him play the team, which the team cap then makes impossible past half the set.
-var QUAD_SHARE = { FOCUS: 0.75, CHALK_CAP: 0.5, CHALK_ONE: 0.25, LEVERAGE: 0.25 };
+// The quadrant buttons (one click, then in the rules list like any rule): each is a rule for the draw. The shares the
+// quadrants stood for (FOCUS in about 75% of lineups, LEVERAGE about 25%, the CHALK #1 in at most 25%) are now how
+// much you draw of each idea; the cut and the pick decide what's entered.
 var QUAD = {
-  FOCUS: { text: function (t) { return "FOCUS: 2+ from " + t.team + " in " + Math.round(100 * QUAD_SHARE.FOCUS) + "% of lineups"; },
-           rules: function (t) { return [{ type: "min", ids: teamIds(t.team), n: 2, share: QUAD_SHARE.FOCUS, label: "2+ from " + t.team + " in " + Math.round(100 * QUAD_SHARE.FOCUS) + "% of lineups" }]; } },
-  CHALK: { text: function (t) { return "CHALK: " + ((t.top || [])[0] || {}).name + " in at most " + Math.round(100 * QUAD_SHARE.CHALK_ONE) + "%, " + t.team +
-                                 " in at most " + Math.round(100 * QUAD_SHARE.CHALK_CAP) + "%"; },
-           rules: function (t) {
-             if ((t.top || [])[0]) { state.cap[t.top[0].id] = Math.round(100 * QUAD_SHARE.CHALK_ONE); save(); renderPlayers(); }   // his Max%
-             return [{ type: "min", ids: teamIds(t.team), n: 1, maxShare: QUAD_SHARE.CHALK_CAP, label: t.team + " in at most " + Math.round(100 * QUAD_SHARE.CHALK_CAP) + "% of lineups" }]; } },
-  LEVERAGE: { text: function (t) { return "LEVERAGE: 2+ stack of " + t.team + " in " + Math.round(100 * QUAD_SHARE.LEVERAGE) + "% of lineups"; },
-              rules: function (t) { return [{ type: "min", ids: teamIds(t.team), n: 2, share: QUAD_SHARE.LEVERAGE, label: "2+ from " + t.team + " in " + Math.round(100 * QUAD_SHARE.LEVERAGE) + "% of lineups" }]; } },
+  FOCUS: { text: function (t) { return "FOCUS: 2+ from " + t.team + " (draw plenty)"; },
+           rules: function (t) { return [{ type: "min", ids: teamIds(t.team), n: 2, label: "2+ from " + t.team }]; } },
+  CHALK: { text: function (t) { return "CHALK: without " + ((t.top || [])[0] || {}).name + " (draw some)"; },
+           rules: function (t) { var top = (t.top || [])[0]; return top ? [{ type: "none", ids: [top.id], label: "No " + top.name }] : []; } },
+  LEVERAGE: { text: function (t) { return "LEVERAGE: 2+ from " + t.team + " (draw a few)"; },
+              rules: function (t) { return [{ type: "min", ids: teamIds(t.team), n: 2, label: "2+ from " + t.team }]; } },
   FADE: { text: function (t) { return "FADE: exclude " + t.team; }, rules: function (t) { return tileRules("excl", t); } }
 };
 
@@ -714,42 +626,21 @@ function tileRules(act, t) {
 }
 
 // --- rules: the list, the editor, the pass counts ------------------------------------------------
-function addRules(list) { state.rules = (state.rules || []).concat(list); ruleCost = {}; save(); renderRules(); }
+function addRules(list) { state.rules = (state.rules || []).concat(list); save(); renderRules(); }
 function takeCounts(r) { ruleCounts = {}; ((r && r.counts) || []).forEach(function (c) { ruleCounts[c.label] = c; }); renderRules(); }
 function rulesMsg(r) {
   if (!r || !r.counts || !r.counts.length) return "";
   return " Rules: " + r.counts.map(function (c) { return c.label + ": " + c.pass + " of " + c.of + " pass"; }).join("; ") + "; all of them: " + r.kept + " of " + r.of +
-    (r.added ? "; " + r.added + " more drawn under the rules to fill the pool" + (r.topped ? " (some after the pick ran short of " + rules().n + ")" : "") : "") + ".";
-}
-// what removing the rule would add to the set's expected payout (the last Sim & pick); negative: the rule adds value
-function costHtml(rule) {
-  var c = ruleCost[rule.label];
-  return c ? '<span class="pc cost" title="Expected payout without this rule, minus with it (the last Sim & pick)">' +
-    (c.cost >= 0 ? "costs " + cents(c.cost) : "adds " + cents(-c.cost)) + "</span>" : "";
-}
-function shareLabel(rule) {
-  var team = (byId(rule.ids[0]) || {}).team || "";
-  return rule.share != null ? rule.n + "+ from " + team + " in " + Math.round(100 * rule.share) + "% of lineups"
-    : rule.n + "+ from " + team + " in at most " + Math.round(100 * rule.maxShare) + "% of lineups";
+    (r.added ? "; " + r.added + " more drawn under the rules to fill the pool" : "") + ".";
 }
 function renderRules() {
   var list = state.rules || [];
-  var status = {};
-  DKSim.shareStatus(list, built, rules().n).forEach(function (x) { status[x.rule.label] = x; });
   $("ruleList").innerHTML = list.length ? list.map(function (rule, i) {
-    var c = ruleCounts[rule.label], st = built.length ? status[rule.label] : null;
-    if (DKSim.isShare(rule)) {
-      return '<div class="rule" data-i="' + i + '"><span class="lab">' + esc(rule.label) + '</span><input class="rn" type="number" min="1" max="8" value="' + rule.n +
-        '" title="players from the team"><input class="rs" type="number" min="0" max="100" step="5" value="' + Math.round(100 * (rule.share != null ? rule.share : rule.maxShare)) +
-        '" title="% of lineups">' + (c ? '<span class="pc">' + c.pass + " of " + c.of + " candidates qualify</span>" : "") +
-        (st ? '<span class="pc">' + st.have + " of " + built.length + (st.need != null ? " (need " + st.need + ")" : " (at most " + st.cap + ")") + (st.ok ? "" : " SHORT") + "</span>" : "") +
-        costHtml(rule) +
-        '<button data-act="rm">Remove</button></div>';
-    }
+    var c = ruleCounts[rule.label];
     return '<div class="rule" data-i="' + i + '"><span class="lab">' + esc(rule.label) + "</span>" + (c ? '<span class="pc">' + c.pass + " of " + c.of + " pass</span>" : "") +
-      costHtml(rule) +
       (["if", "ifnot", "ifteam", "never"].indexOf(rule.type) >= 0 ? '<button data-act="edit">Edit</button>' : "") + '<button data-act="rm">Remove</button></div>';
   }).join("") : '<div class="note" style="margin:4px 0">No rules: add one below, or from a team tile.</div>';
+  if (slate) $("tagNow").textContent = "Next draw is tagged: " + tagNow();
 }
 
 function playerOpts() {
@@ -806,16 +697,6 @@ function loadEditor(rule) {
   showEditor();
 }
 
-function saveEntries() {
-  var doc = { kind: "entries", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(),
-              contest_id: $("contest").value, rule_set: state.rules, settings: Object.assign({}, rules(), { conds: undefined }), gate: gate,
-              lineups: built.map(function (L) { return L.ids; }) };
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
-  a.download = "dk_entries_" + slate.day + "_" + slate.draft_group_id + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
-}
-
 // --- the bank, the entries file, the cut, the portfolios, the export -----------------------------------------
 // bank: {lineups: [{ids, slots}], tags: [[tag, ...]], tagRules: {tag: rules}}; kept in the browser for the slate
 var BANK = null, CUT = null, PF = {}, ENTRIES = null;
@@ -825,11 +706,15 @@ function bankLoadState() {
   CUT = null; PF = {}; ENTRIES = store("dkcbb-entries:" + slate.draft_group_id) || null;
 }
 function bankSaveState() { store(bankKey(), BANK); }
-function tagNow() {         // the lineup rules in force: the stack / ownership settings and the rules list
-  var o = rules(), t = [];
+function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
+  var o = drawRules(), t = [], name = function (id) { return shortName((byId(id) || {}).name || id); };
   if (o.stackN) t.push(o.stackN + "-stack" + (o.stackBoth ? " + bring-back" : ""));
   if (o.maxOwn != null) t.push("own ≤ " + o.maxOwn + "%");
   if (o.lowN) t.push(o.lowN + " under " + o.lowPct + "%");
+  if (o.minSal !== 48500) t.push("salary ≥ " + o.minSal);
+  if (o.maxTeam !== 5) t.push("≤ " + o.maxTeam + " a team");
+  Object.keys(state.lock).forEach(function (id) { t.push("lock " + name(id)); });
+  Object.keys(state.excl).forEach(function (id) { t.push("no " + name(id)); });
   (state.rules || []).forEach(function (x) { t.push(x.label); });
   return t.length ? t.join(" + ") : "no rules";
 }
@@ -841,7 +726,7 @@ function bankAdd(lineups, tag) {
     if (seen[key] != null) { if (BANK.tags[seen[key]].indexOf(tag) < 0) BANK.tags[seen[key]].push(tag); return; }
     seen[key] = BANK.lineups.length; BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice() }); BANK.tags.push([tag]); added++;
   });
-  BANK.tagRules[tag] = rules();
+  if (lineups.length) BANK.tagRules[tag] = Object.assign(drawRules(), { lock: Object.keys(state.lock), excl: Object.keys(state.excl) });
   CUT = null; PF = {}; bankSaveState(); renderBank();
   return added;
 }
@@ -929,18 +814,16 @@ async function pickPortfolios() {
   if (!BANK.lineups.length) return "The bank is empty.";
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
   var idx = finalIdx();
-  var pool = idx.map(function (i) { return BANK.lineups[i]; }), S = +$("nSims").value || 3000, o = rules();
-  o = Object.assign({}, o, { conds: (o.conds || []).filter(DKSim.isShare) });   // per-lineup rules came with the bank; share rules apply to each set
+  var pool = idx.map(function (i) { return BANK.lineups[i]; }), S = +$("nSims").value || 3000;
   var msgs = [];
   for (var i = 0; i < cs.length; i++) {
     var c = cs[i], n = Math.min(ns[String(c.id)], c.max_per_user || 1);
     $("cutStatus").textContent = "Picking " + n + " for " + c.name + "…"; await tick();
     var sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, S);
-    var r = DKSim.pick(ctx(), Object.assign({}, o, { n: n, maxExpo: Math.max(o.maxExpo, 1 / n) }), pool, sim, c, n);   // Max exposure rounds down: let a 1-entry contest have its one
+    var po = pickRules(n), r = DKSim.pick(ctx(), po, pool, sim, c, n);
     PF[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
     var why = "";
     if (r.chosen.length < n) {        // which setting stops it: try each one relaxed
-      var po = Object.assign({}, o, { n: n, maxExpo: Math.max(o.maxExpo, 1 / n) });
       var e = DKSim.pick(ctx(), Object.assign({}, po, { maxExpo: 1 }), pool, sim, c, n).chosen.length >= n;
       var u = DKSim.pick(ctx(), Object.assign({}, po, { minUnique: 1 }), pool, sim, c, n).chosen.length >= n;
       why = ", short: " + (e && u ? "Max exposure or Min unique stops it (either one relaxed fills it)" : e ? "Max exposure stops it" : u ? "Min unique stops it" :
@@ -958,10 +841,7 @@ function review(cid) {
   var c = (slate.contests || []).find(function (x) { return String(x.id) === cid; });
   var idx = finalIdx();
   var pos = {}; idx.forEach(function (bi, k) { pos[bi] = k; });
-  var o = Object.assign({}, rules(), { n: Math.min(entriesN()[cid] || 1, c.max_per_user || 1) });
-  o.maxExpo = Math.max(o.maxExpo, 1 / o.n);
-  o.conds = (o.conds || []).filter(DKSim.isShare);
-  $("contest").value = cid;
+  var o = pickRules(Math.min(entriesN()[cid] || 1, c.max_per_user || 1));
   bpLoad(idx.map(function (i) { return BANK.lineups[i]; }), c, o, +$("nSims").value || 3000,
          { picks: (PF[cid] || []).map(function (bi) { return pos[bi]; }).filter(function (k) { return k != null; }), review: cid, idx: idx });
   $("bpStatus").scrollIntoView({ block: "start" });
@@ -999,22 +879,6 @@ function saveBank() {
 // --- the portfolio builder ---------------------------------------------------------------------
 function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
 function shortName(name) { var p = String(name).split(" ").filter(function (x) { return !/^(Jr\.?|Sr\.?|II|III|IV|V)$/.test(x); }); return p[p.length - 1] || name; }
-function contestNow() { return (slate.contests || []).find(function (x) { return String(x.id) === $("contest").value; }); }
-
-async function bpBuild() {
-  var o = rules(), F = fieldOf(), c = contestNow();
-  if (!F || !F.field || !F.field.length) { $("bpStatus").textContent = "No simulated field for this slate."; return; }
-  if (!c || !c.payouts) { $("bpStatus").textContent = "Pick a contest with a payout table (above)."; return; }
-  var K = +$("poolSize").value || 1000, S = +$("nSims").value || 3000, cx = ctx();
-  cx.progress = function (msg) { $("bpStatus").textContent = msg; return tick(); };
-  var t0 = performance.now();
-  var res = await DKSim.pool(cx, o, K);
-  takeCounts(res);
-  if (res.lineups.length < o.n) { $("bpStatus").textContent = "Only " + res.lineups.length + " lineups fit the rules" + (res.why ? " (" + res.why + ")" : "") + "."; return; }
-  $("bpStatus").textContent = "Simulating " + S + " nights for " + res.lineups.length + " lineups…"; await tick();
-  bpLoad(res.lineups, c, o, S, { why: res.why, ruleMsg: rulesMsg(res) });
-}
-
 // the builder on a given pool and contest (picks: indices to start from; review: the contest being reviewed)
 function bpLoad(lineups, c, o, S, extra) {
   var sim = DKSim.simulate(ctx(), lineups, fieldOf().field, fieldDoc.z, c, o.n, S);
@@ -1027,7 +891,7 @@ function bpLoad(lineups, c, o, S, extra) {
          names: lineups.map(function (L) { return L.slots.map(function (id) { return shortName(by[id].name); }).join(" · "); }),
          why: "", ruleMsg: "" }, extra || {});
   if (BP.picks) b.set(BP.picks);
-  ["bpAuto", "bpClear", "bpUse", "bpSave"].forEach(function (id) { $(id).disabled = false; });
+  ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = false; });
   $("bpKeep").hidden = !BP.review;
   bpRescore(); bpRender();
 }
@@ -1048,7 +912,7 @@ function bpAdd(k) { BP.b.add(k); bpRescore(); bpRender(); }
 function bpRemove(k) { BP.b.remove(k); bpRescore(); bpRender(); }
 
 async function bpAuto() {
-  var o = rules(), b = BP.b, count = {}, limit = {};
+  var o = BP.o, b = BP.b, count = {}, limit = {};
   rows.forEach(function (r) {
     var cap = Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
     limit[r.id] = state.lock[r.id] ? o.n : Math.floor(cap * o.n + 1e-9);
@@ -1066,14 +930,14 @@ async function bpAuto() {
     $("bpStatus").textContent = "Auto-filling… " + b.picked.length + " of " + o.n; await tick();
     bpRescore();
   }
-  bpRender(b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure, Min unique and the share rules (a bigger pool helps)." : "");
+  bpRender(b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure and Min unique (a bigger Keep helps)." : "");
 }
 
 function bpRender(note) {
   var b = BP.b, picked = b.picked, cov = $("bpCover").value;
   var lineups = picked.map(function (k) { return BP.pool[k]; });
   $("bpStatus").textContent = (note ? note + " " : "") + BP.pool.length + " lineups in the pool, " + BP.nights + " nights, " + esc(BP.contest.name) +
-    ". Re-scored every lineup in " + Math.round(BP.ms) + " ms" + (BP.ms > 1500 ? " (slow: a smaller pool or fewer Sims re-scores faster)" : "") + "." +
+    ". Re-scored every lineup in " + Math.round(BP.ms) + " ms" + (BP.ms > 1500 ? " (slow: a smaller Keep or fewer nights re-scores faster)" : "") + "." +
     (BP.why ? " " + BP.why + "." : "") + BP.ruleMsg;
   var cnt = {}, by = {};
   rows.forEach(function (r) { by[r.id] = r; });
@@ -1081,9 +945,7 @@ function bpRender(note) {
   var expo = Object.keys(cnt).sort(function (x, y) { return cnt[y] - cnt[x]; }).slice(0, 10)
     .map(function (id) { return esc(shortName(by[id].name)) + " " + Math.round(100 * cnt[id] / picked.length) + "%"; }).join(" · ");
   $("bpSummary").innerHTML = picked.length ? summaryHtml({ coverage: b.coverage(), diversity: DKSim.diversity(ctx(), lineups), total: b.total(),
-    fee: (BP.contest.entry_fee || 0) * picked.length }) + '<div class="note">' + picked.length + " picked. Exposures: " + expo +
-    DKSim.shareStatus(state.rules || [], lineups, rules().n).map(function (x) { return "<br>" + esc(x.rule.label) + ": " + x.have +
-      (x.need != null ? " of " + x.need + " needed" : " (at most " + x.cap + ")") + (x.ok ? "" : " SHORT"); }).join("") + "</div>"
+    fee: (BP.contest.entry_fee || 0) * picked.length }) + '<div class="note">' + picked.length + " picked. Exposures: " + expo + "</div>"
     : '<div class="note">Nothing picked yet: Add lineups below, or Auto-fill.</div>';
   var get = { proj: function (k) { return BP.proj[k]; }, own: function (k) { return BP.own[k]; }, alone: function (k) { return BP.alone[k]; },
               value: function (k) { return BP.scores[k] ? BP.scores[k].value : -1; },
@@ -1106,41 +968,19 @@ function bpRender(note) {
   $("bpTableWrap").hidden = false;
 }
 
-function bpUse() {
-  built = BP.b.picked.map(function (k, i) { return Object.assign({}, BP.pool[k], { sim: BP.b.lineupStats(i) }); });
-  builtSummary = { coverage: BP.b.coverage(), total: BP.b.total(), fee: (BP.contest.entry_fee || 0) * built.length };
-  renderBuilt("Using the builder's " + built.length + " picks: Export writes them.");
-}
-
-function bpSave() {
-  var auto = DKSim.pick(ctx(), rules(), BP.pool, BP.sim, BP.contest, rules().n).chosen;
-  var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, contest_id: BP.contest.id, contest: BP.contest.name,
-              rule_set: state.rules,
-              saved_at: new Date().toISOString(), nights: BP.nights, rules: BP.o, gate: gate,
-              pool: BP.pool.map(function (L) { return L.ids; }), hand: BP.b.picked.slice(), auto: auto };
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
-  a.download = "dk_build_" + slate.day + "_" + slate.draft_group_id + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
-}
-
 // --- events ------------------------------------------------------------------------------------
 $("slate").addEventListener("change", pick);
 $("reload").addEventListener("click", load);
-$("build").addEventListener("click", function () {
-  $("buildStatus").textContent = "Building…";
-  build().catch(function (e) { $("buildStatus").innerHTML = '<span class="bad">Build failed: ' + esc(e.message) + "</span>"; });
-});
-$("export").addEventListener("click", exportCsv);
-$("bankBuilt").addEventListener("click", function () { var n = bankAdd(built, tagNow()); $("buildStatus").textContent = "Banked " + n + " new lineups (" + (built.length - n) + " already in the bank)."; });
 $("bankDraw").addEventListener("click", function () {
   var n = +$("bankN").value || 100, cx = ctx();
   cx.progress = function (msg) { $("buildStatus").textContent = msg; return tick(); };
   $("buildStatus").textContent = "Drawing " + n + " lineups under the rules…";
-  DKSim.pool(cx, rules(), n).then(function (res) {
+  var tag = tagNow();
+  DKSim.pool(cx, drawRules(), n).then(function (res) {
     takeCounts(res);
-    var added = bankAdd(res.lineups, tagNow());
-    $("buildStatus").textContent = "Banked " + added + " new lineups, tagged \"" + tagNow() + "\"" + (res.lineups.length - added ? " (" + (res.lineups.length - added) + " already in the bank)" : "") + "." + rulesMsg(res);
+    var added = bankAdd(res.lineups, tag);
+    $("buildStatus").textContent = "Banked " + added + " new lineups, tagged \"" + tag + "\"" + (res.lineups.length - added ? " (" + (res.lineups.length - added) + " already in the bank)" : "") + "." +
+      (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "") + rulesMsg(res);
   }, function (e) { $("buildStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; });
 });
 $("bankClear").addEventListener("click", function () {
@@ -1165,7 +1005,6 @@ $("bpKeep").addEventListener("click", function () {
   renderEntries(); $("pfExport").disabled = !ENTRIES;
   $("bpStatus").textContent = "Kept " + BP.b.picked.length + " lineups as " + BP.contest.name + "'s portfolio.";
 });
-$("saveEntries").addEventListener("click", saveEntries);
 $("teamBar").addEventListener("click", function (e) {
   var b = e.target.closest("button[data-team]"); if (!b) return;
   view.panel = view.panel === b.dataset.team ? null : b.dataset.team;
@@ -1181,21 +1020,10 @@ $("teamPanel").addEventListener("click", function (e) {
   rowClick(e);
 });
 $("teamPanel").addEventListener("change", rowChange);
-$("ruleList").addEventListener("change", function (e) {
-  var row = e.target.closest(".rule"); if (!row) return;
-  var rule = state.rules[+row.dataset.i];
-  if (e.target.classList.contains("rn")) rule.n = Math.max(1, Math.min(8, +e.target.value || 1));
-  if (e.target.classList.contains("rs")) {
-    var v = Math.max(0, Math.min(100, +e.target.value || 0)) / 100;
-    if (rule.share != null) rule.share = v; else rule.maxShare = v;
-  }
-  rule.label = shareLabel(rule);
-  ruleCost = {}; save(); renderRules();
-});
 $("ruleList").addEventListener("click", function (e) {
   var b = e.target.closest("button[data-act]"); if (!b) return;
   var i = +b.closest(".rule").dataset.i;
-  if (b.dataset.act === "rm") { state.rules.splice(i, 1); ruleCost = {}; save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
+  if (b.dataset.act === "rm") { state.rules.splice(i, 1); save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
   editing = i; loadEditor(state.rules[i]); $("rtSave").textContent = "Save changes"; $("rtCancel").hidden = false;
 });
 $("rtType").addEventListener("change", showEditor);
@@ -1209,18 +1037,12 @@ $("rtP").addEventListener("change", function () {
 $("rtSave").addEventListener("click", function () {
   var r = editorRule();
   if (!r) { alert("Pick the players the rule needs (and two different players for Never)."); return; }
-  if (editing >= 0) { state.rules[editing] = r; editing = -1; ruleCost = {}; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; save(); renderRules(); }
+  if (editing >= 0) { state.rules[editing] = r; editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; save(); renderRules(); }
   else addRules([r]);
 });
 $("rtCancel").addEventListener("click", function () { editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; });
-$("bpBuild").addEventListener("click", function () {
-  $("bpStatus").textContent = "Building the pool…";
-  bpBuild().catch(function (e) { $("bpStatus").innerHTML = '<span class="bad">Pool failed: ' + esc(e.message) + "</span>"; });
-});
 $("bpAuto").addEventListener("click", function () { bpAuto().catch(function (e) { $("bpStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; }); });
 $("bpClear").addEventListener("click", function () { BP.b.set([]); bpRescore(); bpRender(); });
-$("bpUse").addEventListener("click", bpUse);
-$("bpSave").addEventListener("click", bpSave);
 $("bpCover").addEventListener("change", function () { if (BP) bpRender(); });
 $("bpTable").addEventListener("click", function (e) {
   var h = e.target.closest("th[data-k]");
@@ -1228,10 +1050,6 @@ $("bpTable").addEventListener("click", function (e) {
   var b = e.target.closest("button"); if (!b) return;
   var k2 = +b.closest("tr").dataset.k;
   if (b.classList.contains("bpAdd")) bpAdd(k2); else bpRemove(k2);
-});
-$("simPick").addEventListener("click", function () {
-  $("buildStatus").textContent = "Building candidates and simulating…";
-  simPick().then(renderBuilt, function (e) { $("buildStatus").innerHTML = '<span class="bad">Sim failed: ' + esc(e.message) + "</span>"; });
 });
 $("news").addEventListener("click", function (e) { var t = e.target.closest(".tx"); if (t) t.parentNode.classList.toggle("open"); });
 $("search").addEventListener("input", function (e) { view.q = e.target.value.trim().toLowerCase(); renderPlayers(); });
@@ -1243,7 +1061,7 @@ document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
     renderPlayers();
   });
 });
-$("resetProj").addEventListener("click", function () { state.proj = {}; save(); renderPlayers(); renderBuilt($("buildStatus").textContent); });
+$("resetProj").addEventListener("click", function () { state.proj = {}; save(); renderPlayers(); });
 $("clearLx").addEventListener("click", function () { state.lock = {}; state.excl = {}; state.cap = {}; save(); renderPlayers(); });
 $("players").addEventListener("click", function (e) {
   var h = e.target.closest("[data-sort]");
@@ -1269,6 +1087,10 @@ function rowChange(e) {
   }
   save(); renderPlayers();
 }
+["rand", "minSal", "maxTeam", "stackN", "stackBoth", "maxOwn", "lowN", "lowPct"].forEach(function (id) {
+  $(id).addEventListener("input", function () { if (slate) renderRules(); });
+  $(id).addEventListener("change", function () { if (slate) renderRules(); });
+});
 load();
 </script>
 </body>
