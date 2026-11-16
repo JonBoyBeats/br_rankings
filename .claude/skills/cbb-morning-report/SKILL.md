@@ -1,14 +1,17 @@
 ---
 name: cbb-morning-report
-description: College basketball (CBB) morning report. Grades last night's college projections against the box scores (ours, ours without EvanMiya, Underdog's), splits our misses into minutes and points per minute, writes up the biggest misses with a cause and logs them, reads last night's college contests (cut lines, your results, what the field did), and keeps the EvanMiya trial's running verdict. Use when asked for the college, CBB or college basketball morning report.
+description: College basketball (CBB) morning report, Underdog and DraftKings. Grades last night's college projections against the box scores (ours, ours without EvanMiya, Underdog's; on DraftKings ours against DraftKings' average, fragility, double-doubles), splits our misses into minutes and points per minute, writes up the biggest misses with a cause and logs them, reads last night's college contests (cut lines, your results, what the field did), and keeps the EvanMiya trial's running verdict. Use when asked for the college, CBB or college basketball morning report.
 ---
 
 # College basketball morning report
 
 The 2:17am PT nightly job (`.github/workflows/nba_daily.yml`, its "CBB record" and "CBB contests"
 steps) writes last night's college slate to `analysis/cbb/daily/<date>_<day>_main.csv` (our
-projection at lock against ESPN's box scores, `scripts/cbb_daily.py`) and its contests to
-`analysis/cbb/contests/` (`scripts/nba_contests.py --sport cbb`). This report reads them and keeps
+projection at lock against ESPN's box scores, `scripts/cbb_daily.py`), each DraftKings Classic slate
+to `analysis/cbb/dk/<date>_<draft group>.csv` (our DraftKings projection as it stood before the first
+game against what DraftKings paid, bonuses in) and its Underdog contests to
+`analysis/cbb/contests/` (`scripts/nba_contests.py --sport cbb`). Either site can run alone or
+both the same night; the report covers whichever has a slate. This report reads them and keeps
 a log of why we missed, so patterns show up over weeks instead of being remembered night to night.
 
 Unlike the NBA report there's no ETR and no board locks or tier rules on the CBB page: the
@@ -57,6 +60,26 @@ aren't worse; otherwise recommend dropping it. If kept, the next question is its
 in battle-royale-research `scripts/cbb_nightly.py`, 0.5 to start), set from the record, not by
 feel.
 
+**DraftKings** (the report's DRAFTKINGS part, when there's a DraftKings slate):
+
+- **Accuracy**: ours (DraftKings points, the double-double bonus at its chance), ours without
+  EvanMiya, and DraftKings' season average (what the field sees) against what DraftKings paid: for
+  players who played, for everyone not tagged Out (a player who sat scores 0, as in a lineup), by
+  salary band and by build.
+- **Fragility**: expected miss against actual, and fragile against the rest as a share of their
+  projection (2025-26: 49% against 35-36%). Give the season line; once it has about 300 players
+  projected 10+, say whether the fragile tag still separates.
+- **Double-doubles** expected against had, and the **200-minute cap**: minutes off after the cut
+  against before it, for the players it cut.
+- **Watch, EvanMiya rank**: miss as a share of projection by rank band, within under-20 and 20+
+  projected minutes. On the two Underdog nights of 11-03 and 11-04, ranks 8+ missed by more in
+  both (83% against 63%, 49% against 37%). Around 2,000 player-games (about two weeks of slates),
+  propose it as a fragility fact if it holds, tested the way `scripts/cbb_form_study.py` tests
+  the four, and make no change without the owner's yes.
+- **Misses** of 8+ among $5,000+ or projected 20+, and players $4,000+ not tagged Out who sat.
+- **One projection, both sites**: minutes and points per minute over every player either site
+  carried. This is the line that says whether the projection itself is improving.
+
 ## 3. Write up the misses
 
 For each of last night's misses (step 2's list), one cause, from what the row shows (minutes and
@@ -86,6 +109,12 @@ date,slate,player,team,adp,ours,ours_wo_miya,ud,actual,min,min_proj,ppm,ppm_proj
 Don't add rows for a date and slate already in it: running the report twice must not count
 anything twice.
 
+DraftKings misses go in `analysis/cbb/report/dk_misses.csv`, the same causes, with this header:
+
+```
+date,draft_group,player,team,salary,ours,ours_wo_miya,dk_avg,actual,min,min_proj,min_raw,fragile,own,spread,src,cause,fixable,note
+```
+
 ## 5. Themes
 
 Read all of `misses.csv`. Count causes, fixable against not, ours too high against too low, and
@@ -111,6 +140,14 @@ make no change without the owner's yes.
   alone unless the season line is clearly off with 30+ players.
 
 ## 6. The field
+
+**DraftKings**: when the owner has dropped a contest's full standings CSV (it lists each player's
+drafted %), compare it with `own` in last night's DraftKings file: projected ownership against
+actual, biggest misses both ways. The field model's two guesses (`FIELD_W`, `FIELD_NOISE` in
+battle-royale-research `scripts/dk_cbb_field.py`) get fit from these once a few slates are in;
+until then, report the gap and propose nothing.
+
+**Underdog**:
 
 ```
 python3 scripts/nba_contests.py measures --sport cbb --mirror ../br-adp-mirror --date <last night>
@@ -141,7 +178,7 @@ git commit -m "CBB report: takeaways for <date>" && git push origin HEAD:main
 Short and scannable, in this order:
 
 1. **Last night**: ours, without EvanMiya, and Underdog's (drafted players), one line, and the
-   season line under it.
+   season line under it; for DraftKings, ours against DraftKings' average, the same way.
 2. **Where we missed**: minutes or points per minute, and newcomers against the rest.
 3. **The misses**: a line each, with its cause.
 4. **The field**: the cut lines, your results, and one thing that stood out.
