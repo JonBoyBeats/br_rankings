@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 54px 64px 40px 48px 42px 46px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 54px 64px 40px 48px 44px 42px 46px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -117,7 +117,7 @@
   .empty { color: var(--muted); padding: 24px 4px; }
   @media (max-width: 620px) {
     .head, .row { grid-template-columns: 56px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
-    .col-min, .col-avg, .col-miss { display: none; }
+    .col-min, .col-avg, .col-miss, .col-max { display: none; }
     .name { font-size: 13px; }
   }
 </style>
@@ -176,14 +176,33 @@
     <label class="field"><span class="field-label">Randomness %</span><input class="num" id="rand" type="number" min="0" max="60" value="15"></label>
     <label class="field"><span class="field-label">Min salary</span><input class="num" id="minSal" type="number" min="0" max="50000" step="100" value="48500"></label>
     <label class="field"><span class="field-label">Max per team</span><input class="num" id="maxTeam" type="number" min="1" max="8" value="5"></label>
-    <button type="button" class="primary" id="build">Build</button>
+  </div>
+  <div class="opts">
+    <label class="field"><span class="field-label">Game stack</span><input class="num" id="stackN" type="number" min="0" max="8" value="0" title="At least this many players from one game (0: off)"></label>
+    <label class="field" style="flex-direction:row;align-items:center;gap:6px;height:34px"><input type="checkbox" id="stackBoth" style="height:auto"><span class="field-label">from both teams</span></label>
+    <label class="field"><span class="field-label">Max total own %</span><input class="num" id="maxOwn" type="number" min="0" max="800" step="10" placeholder="off"></label>
+    <label class="field"><span class="field-label">Min players under</span><input class="num" id="lowN" type="number" min="0" max="8" value="0" title="At least this many players owned under the % beside it (0: off)"></label>
+    <label class="field"><span class="field-label">owned %</span><input class="num" id="lowPct" type="number" min="1" max="100" value="10"></label>
+  </div>
+  <div class="opts">
+    <label class="field grow"><span class="field-label">Contest (for the sim)</span><select id="contest"></select></label>
+    <label class="field"><span class="field-label">Candidates</span><input class="num" id="nCand" type="number" min="20" max="400" value="150"></label>
+    <label class="field"><span class="field-label">Sims</span><input class="num" id="nSims" type="number" min="100" max="5000" step="100" value="1000"></label>
+    <button type="button" class="primary" id="simPick">Sim &amp; pick</button>
+    <button type="button" id="build">Build only</button>
     <button type="button" id="export" disabled>Export DK CSV</button>
   </div>
-  <div class="note">Each lineup is the highest-projected one that fits the $50,000 cap and G, G, G, F, F, F, UTIL, UTIL,
-    after Randomness nudges every Proj up or down (a standard deviation of that %, drawn fresh each lineup),
-    sharing at most 8 − Min unique players with any lineup before it, with no player past his exposure cap.
-    Export writes DraftKings' upload file (player IDs under G, G, G, F, F, F, UTIL, UTIL) for the draft group's
-    contests: Lineups → Upload Lineups on DraftKings.</div>
+  <div class="note"><b>Build only</b>: each lineup is the highest-projected one that fits the $50,000 cap and G, G, G, F, F, F,
+    UTIL, UTIL and the rules above, after Randomness nudges every Proj up or down (a standard deviation of that %, drawn
+    fresh each lineup), sharing at most 8 − Min unique players with any lineup before it, with no player past his exposure cap.
+    <b>Sim &amp; pick</b>: builds Candidates lineups that way (no exposure cap, Min unique 1), then plays them against the
+    contest's field over Sims simulated nights and keeps the Lineups that add the most expected payout, one at a time, within
+    the exposure cap and Min unique. A simulated night draws each player's points from his Proj and his ±, in the shape
+    2025-26's misses took (a long upside tail); players' nights are drawn independently, because on 2025-26 teammates' and
+    opponents' misses were uncorrelated (−0.007 and −0.004). The field is 1,000 lineups built from a field projection
+    (half ours, half DraftKings' season average, with noise), copied to fill the contest; Own % is their ownership:
+    a guess until the standings files calibrate it. Payouts are the contest's own table.
+    Export writes DraftKings' upload file (player IDs under G, G, G, F, F, F, UTIL, UTIL): Lineups → Upload Lineups on DraftKings.</div>
   <div class="status" id="buildStatus"></div>
   <div class="lineups" id="lineups"></div>
   <h2 id="expoHead" hidden>Exposure</h2>
@@ -198,12 +217,13 @@
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var CAP = 50000, SLOTS = ["G", "G", "G", "F", "F", "F", "UTIL", "UTIL"];
-var doc = null, slate = null, rows = [], state = null, built = [], news = [];
+var doc = null, slate = null, rows = [], state = null, built = [], news = [], fieldDoc = null;
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1 };
 
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 function money(n) { return "$" + Number(n).toLocaleString("en-US"); }
+function cents(n) { return "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || "null"); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
 function key() { return "dkcbb:" + slate.draft_group_id; }
 function save() { store(key(), state); }
@@ -227,6 +247,10 @@ async function load() {
     var nr = await fetch(MIRROR + "cbb_news.json?t=" + Date.now(), { cache: "no-store" });
     news = nr.ok ? (await nr.json()).items || [] : [];
   } catch (e) { news = []; }
+  try {      // the simulated field: ownership and field lineups (scripts/dk_cbb_field.py)
+    var fr = await fetch(MIRROR + "dk_cbb_field.json?t=" + Date.now(), { cache: "no-store" });
+    fieldDoc = fr.ok ? await fr.json() : null;
+  } catch (e) { fieldDoc = null; }
   var sel = $("slate"), keep = sel.value;
   sel.innerHTML = "";
   (doc.slates || []).forEach(function (s) {
@@ -252,6 +276,10 @@ function pick() {
   var gen = new Date(doc.generated_at);
   $("status").innerHTML = esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
     (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })));
+  var cs = (slate.contests || []).filter(function (c) { return c.payouts; }).sort(function (a, b) { return (b.size || 0) - (a.size || 0); });
+  $("contest").innerHTML = cs.map(function (c) {
+    return '<option value="' + esc(c.id) + '">' + esc(c.name + " · " + money(c.entry_fee) + " · " + (c.size || 0).toLocaleString() + " entries · max " + (c.max_per_user || 1)) + "</option>";
+  }).join("") || "<option value=''>No contest with a payout table</option>";
   built = []; renderBuilt();
   renderNews(); renderPlayers(); renderContests();
 }
@@ -266,15 +294,15 @@ function renderPlayers() {
   });
   var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
               avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; },
-              miss: function (r) { return r.miss_dk || 0; } }[view.sort];
+              miss: function (r) { return r.miss_dk || 0; }, own: own }[view.sort];
   list.sort(function (a, b) {
     var x = get(a), y = get(b);
     return (a.status === "Out") - (b.status === "Out") || (x < y ? -1 : x > y ? 1 : 0) * view.dir || b.salary - a.salary;   // Out last
   });
   var head = '<div class="head"><span>L / X</span>' +
-    [["name", "Player", ""], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["miss", "±", "r col-miss"], ["value", "Val", "r"], ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"]]
+    [["name", "Player", ""], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["miss", "±", "r col-miss"], ["value", "Val", "r"], ["own", "Own", "r"], ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"]]
       .map(function (c) { return '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"; }).join("") +
-    '<span class="r">Max%</span></div>';
+    '<span class="r col-max">Max%</span></div>';
   var body = list.map(function (r) {
     var nw = newsOf(r.id);
     var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
@@ -292,9 +320,10 @@ function renderPlayers() {
       '<span><input class="proj' + (edited ? " edited" : "") + '" type="number" step="0.1" value="' + proj(r).toFixed(1) + '" aria-label="Proj for ' + esc(r.name) + '"></span>' +
       '<span class="m r mut col-miss">' + (r.miss_dk != null ? r.miss_dk.toFixed(1) : "–") + "</span>" +
       '<span class="m r val">' + value(r).toFixed(2) + "</span>" +
+      '<span class="m r">' + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
       '<span class="m r mut col-avg">' + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
-      '<span><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
+      '<span class="col-max"><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
       "</div>";
   }).join("");
   $("players").innerHTML = head + (body || '<div class="empty">No players match.</div>');
@@ -333,26 +362,59 @@ function renderContests() {
 // --- optimizer ---------------------------------------------------------------------------------
 function gauss() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
 
-function build() {
-  var n = +$("nLineups").value || 1, maxExpo = (+$("maxExpo").value || 100) / 100, minUnique = Math.max(1, +$("minUnique").value || 1);
-  var rand = (+$("rand").value || 0) / 100, minSal = +$("minSal").value || 0, maxTeam = +$("maxTeam").value || 8;
-  var pool = rows.filter(usable), locks = pool.filter(function (r) { return state.lock[r.id]; });
+function own(r) { return (fieldOf() && fieldOf().own[r.id]) || 0; }
+function fieldOf() { return fieldDoc && slate && fieldDoc.slates[String(slate.draft_group_id)]; }
+
+function rules() {
+  var v = function (id) { return $(id).value === "" ? null : +$(id).value; };
+  return { n: v("nLineups") || 1, maxExpo: (v("maxExpo") || 100) / 100, minUnique: Math.max(1, v("minUnique") || 1),
+           rand: (v("rand") || 0) / 100, minSal: v("minSal") || 0, maxTeam: v("maxTeam") || 8,
+           stackN: v("stackN") || 0, stackBoth: $("stackBoth").checked, maxOwn: v("maxOwn"),
+           lowN: v("lowN") || 0, lowPct: v("lowPct") || 10 };
+}
+
+var MIN_PROJ = 6;      // players projected under this are left out of the optimizer (none is in a top lineup), unless locked
+// Up to o.n lineups under the rules: each the best under that lineup's randomized Proj. o.noCaps: no exposure caps.
+// Yields to the page every few lineups so it can show progress (o.label).
+async function solve(o) {
+  var pool = rows.filter(function (r) { return usable(r) && (proj(r) >= MIN_PROJ || state.lock[r.id]); }), locks = pool.filter(function (r) { return state.lock[r.id]; });
   var limit = {};
   pool.forEach(function (r) {
-    var cap = Math.min(maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
-    limit[r.id] = state.lock[r.id] ? n : Math.floor(cap * n + 1e-9);
+    var cap = o.noCaps ? 1 : Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
+    limit[r.id] = state.lock[r.id] || o.noCaps ? o.n : Math.floor(cap * o.n + 1e-9);
   });
+  var games = Array.from(new Set(pool.map(function (r) { return r.game; })));
   var count = {}, out = [], teams = Array.from(new Set(pool.map(function (r) { return r.team; }))), why = "";
-  for (var k = 0; k < n; k++) {
-    var cons = { n: { equal: 8 }, g: { min: 3 }, f: { min: 3 }, sal: { max: CAP, min: minSal } }, vars = {}, ints = {};
-    teams.forEach(function (t) { cons["t_" + t] = { max: maxTeam }; });
-    out.forEach(function (L, i) { cons["u" + i] = { max: 8 - minUnique }; });
+  for (var k = 0; k < o.n; k++) {
+    if (k % 5 === 4) { $("buildStatus").textContent = (o.label || "Building") + "… " + k + " of " + o.n; await new Promise(function (r) { setTimeout(r, 0); }); }
+    var cons = { n: { equal: 8 }, g: { min: 3 }, f: { min: 3 }, sal: { max: CAP, min: o.minSal } }, vars = {}, ints = {};
+    teams.forEach(function (t) { cons["t_" + t] = { max: o.maxTeam }; });
+    out.forEach(function (L, i) { cons["u" + i] = { max: 8 - o.minUnique }; });
+    if (o.maxOwn != null) cons.own = { max: o.maxOwn };
+    if (o.lowN) cons.low = { min: o.lowN };
+    if (o.stackN) {
+      // y_game = 1 marks the stacked game: at least stackN from it (and one from each side with stackBoth)
+      cons.stack = { min: 1 };
+      games.forEach(function (gm, i) {
+        var y = { score: 0, stack: 1 };
+        y["gs" + i] = -o.stackN; cons["gs" + i] = { min: 0 };
+        if (o.stackBoth) { y["ga" + i] = -1; y["gh" + i] = -1; cons["ga" + i] = { min: 0 }; cons["gh" + i] = { min: 0 }; }
+        vars["y" + i] = y; ints["y" + i] = 1; cons["yb" + i] = { max: 1 }; y["yb" + i] = 1;
+      });
+    }
     pool.forEach(function (r) {
       if ((count[r.id] || 0) >= limit[r.id]) return;
-      var v = { score: proj(r) * (1 + rand * gauss()), n: 1, sal: r.salary };
+      var v = { score: proj(r) * (1 + o.rand * gauss()), n: 1, sal: r.salary };
       v["t_" + r.team] = 1;
       if (isG(r)) v.g = 1;
       if (isF(r)) v.f = 1;
+      if (o.maxOwn != null) v.own = own(r);
+      if (o.lowN && own(r) < o.lowPct) v.low = 1;
+      if (o.stackN) {
+        var gi = games.indexOf(r.game);
+        v["gs" + gi] = 1;
+        if (o.stackBoth) v[(r.home ? "gh" : "ga") + gi] = 1;
+      }
       if (state.lock[r.id]) { v["lk_" + r.id] = 1; cons["lk_" + r.id] = { equal: 1 }; }
       else { v["b_" + r.id] = 1; cons["b_" + r.id] = { max: 1 }; }
       out.forEach(function (L, i) { if (L.ids.indexOf(r.id) >= 0) v["u" + i] = 1; });
@@ -360,14 +422,127 @@ function build() {
     });
     if (locks.some(function (r) { return !vars[r.id]; })) { why = "a locked player is out of the pool"; break; }
     var res = solver.Solve({ optimize: "score", opType: "max", constraints: cons, variables: vars, ints: ints });
-    if (!res.feasible) { why = "no lineup left fits the rules (loosen Min unique, Max exposure, Min salary or the locks)"; break; }
-    var ids = Object.keys(vars).filter(function (id) { return res[id] > 0.5; });
+    if (!res.feasible) { why = "no lineup left fits the rules (loosen Min unique, Max exposure, the stack or ownership rules, Min salary or the locks)"; break; }
+    var ids = Object.keys(vars).filter(function (id) { return id.charAt(0) !== "y" && res[id] > 0.5; });
     if (ids.length !== 8) { why = "the solver returned " + ids.length + " players"; break; }
     ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
     out.push({ ids: ids, slots: assign(ids) });
   }
-  built = out;
-  renderBuilt(why ? "Built " + out.length + " of " + n + ": " + why + "." : "Built " + out.length + " lineups.");
+  return { lineups: out, why: why };
+}
+
+async function build() {
+  var o = rules(), r = await solve(o);
+  built = r.lineups;
+  renderBuilt(r.why ? "Built " + built.length + " of " + o.n + ": " + r.why + "." : "Built " + built.length + " lineups.");
+}
+
+// --- the sim -----------------------------------------------------------------------------------
+function payTable(c) {     // place -> dollars, from [[first, last, dollars], ...]
+  var t = [0];
+  (c.payouts || []).forEach(function (p) { for (var i = p[0]; i <= p[1]; i++) t[i] = p[2]; });
+  for (var i = 1; i < t.length; i++) t[i] = t[i] || 0;
+  return t;
+}
+
+async function simPick() {
+  var o = rules(), F = fieldOf();
+  var c = (slate.contests || []).find(function (x) { return String(x.id) === $("contest").value; });
+  if (!F || !F.field || !F.field.length) return "no simulated field for this slate";
+  if (!c || !c.payouts) return "pick a contest with a payout table";
+  var K = Math.max(o.n, +$("nCand").value || 150), S = +$("nSims").value || 1000, N = o.n;
+  var pool = await solve(Object.assign({}, o, { n: K, minUnique: 1, noCaps: true, label: "Building candidates" }));
+  $("buildStatus").textContent = "Simulating " + S + " nights…";
+  await new Promise(function (r) { setTimeout(r, 0); });
+  var cand = pool.lineups;
+  if (cand.length < N) return "only " + cand.length + " candidates fit the rules" + (pool.why ? " (" + pool.why + ")" : "");
+  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
+  // every player in a candidate or a field lineup, indexed
+  var ix = {}, mean = [], err = [];
+  function idx(id) {
+    if (ix[id] == null) {
+      var r = by[id] || {}, m = r.status === "Out" ? 0 : (by[id] ? proj(r) : 0);
+      ix[id] = mean.length; mean.push(m); err.push(r.miss_dk || 0.35 * m);
+    }
+    return ix[id];
+  }
+  var candIx = cand.map(function (L) { return L.ids.map(idx); });
+  var fieldIx = F.field.map(function (L) { return L.map(idx); });
+  var P = mean.length, Z = fieldDoc.z, pay = payTable(c), paid = pay.length - 1;
+  var w = Math.max(0, (c.size || 0) - N) / fieldIx.length;     // each field lineup stands for w entries
+  var pts = new Float32Array(P), cs = [], fa = [];              // candidate scores and field entries above them, by sim
+  var fsc = new Float64Array(fieldIx.length);
+  for (var s = 0; s < S; s++) {
+    for (var p = 0; p < P; p++) pts[p] = Math.max(0, mean[p] + Z[(Math.random() * 100) | 0] * err[p]);
+    for (var f = 0; f < fieldIx.length; f++) { var t = 0, L = fieldIx[f]; for (var j = 0; j < 8; j++) t += pts[L[j]]; fsc[f] = t; }
+    fsc.sort();                                                  // ascending
+    var row = new Float32Array(cand.length), above = new Float32Array(cand.length);
+    for (var k = 0; k < cand.length; k++) {
+      var t2 = 0, L2 = candIx[k]; for (var j2 = 0; j2 < 8; j2++) t2 += pts[L2[j2]];
+      row[k] = t2;
+      var lo = 0, hi = fsc.length;                               // field lineups scoring above t2
+      while (lo < hi) { var mid = (lo + hi) >> 1; if (fsc[mid] <= t2) lo = mid + 1; else hi = mid; }
+      above[k] = (fsc.length - lo) * w;
+    }
+    cs.push(row); fa.push(above);
+  }
+  function payAt(place) { var q = Math.round(place); return q >= 1 && q <= paid ? pay[q] : 0; }
+  // greedy: add the candidate that adds the most expected payout to what's chosen (ours push each other down too)
+  var chosen = [], count = {}, limit = {};
+  rows.forEach(function (r) {
+    var cap = Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
+    limit[r.id] = state.lock[r.id] ? N : Math.floor(cap * N + 1e-9);
+  });
+  var place = [];                                               // place[s][i]: chosen i's place in sim s
+  for (var s3 = 0; s3 < S; s3++) place.push([]);
+  while (chosen.length < N) {
+    var best = -1, bestV = -Infinity;
+    for (var k3 = 0; k3 < cand.length; k3++) {
+      if (chosen.indexOf(k3) >= 0) continue;
+      var ids = cand[k3].ids;
+      if (ids.some(function (id) { return (count[id] || 0) + 1 > limit[id]; })) continue;
+      if (chosen.some(function (q) { return cand[q].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length > 8 - o.minUnique; })) continue;
+      var v = 0;
+      for (var s4 = 0; s4 < S; s4++) {
+        var me = cs[s4][k3], mine = 0, delta = 0;
+        for (var i4 = 0; i4 < chosen.length; i4++) {
+          var other = cs[s4][chosen[i4]];
+          if (other > me) mine++;
+          else { var pl = place[s4][i4]; delta += payAt(pl + 1) - payAt(pl); }
+        }
+        v += payAt(1 + fa[s4][k3] + mine) + delta;
+      }
+      if (v > bestV) { bestV = v; best = k3; }
+    }
+    if (best < 0) break;
+    // add it: everyone of ours below it moves down a place
+    for (var s5 = 0; s5 < S; s5++) {
+      var me5 = cs[s5][best], mine5 = 0;
+      for (var i5 = 0; i5 < chosen.length; i5++) {
+        if (cs[s5][chosen[i5]] > me5) mine5++; else place[s5][i5] += 1;
+      }
+      place[s5].push(1 + fa[s5][best] + mine5);
+    }
+    chosen.push(best);
+    cand[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
+  }
+  // each chosen lineup's numbers in the finished portfolio
+  var total = 0, anyFirst = 0;
+  built = chosen.map(function (k, i) {
+    var e = 0, cash = 0, top10 = 0, first = 0;
+    for (var s6 = 0; s6 < S; s6++) {
+      var pl6 = place[s6][i], q6 = Math.round(pl6);
+      e += payAt(pl6); if (q6 <= paid) cash++; if (q6 <= 10) top10++; if (q6 <= 1) first++;
+    }
+    total += e / S;
+    return Object.assign({}, cand[k], { sim: { e: e / S, cash: cash / S, top10: top10 / S, first: first / S } });
+  });
+  for (var s7 = 0; s7 < S; s7++) if (place[s7].some(function (pl) { return Math.round(pl) <= 1; })) anyFirst++;
+  var fee = (c.entry_fee || 0) * built.length;
+  return "Sim: " + built.length + " of " + cand.length + " candidates into " + c.name + " (" + (c.size || 0).toLocaleString() + " entries) over " + S +
+    " nights: expected back " + cents(total) + " on " + cents(fee) + (fee ? " (ROI " + Math.round(100 * (total / fee - 1)) + "%)" : "") +
+    "; a 1st place in " + (100 * anyFirst / S).toFixed(1) + "% of nights." + (built.length < N ? " Only " + built.length + " fit the exposure and Min unique rules." : "") +
+    " ROI here assumes our projections are right; it ranks lineups, it isn't a forecast of winnings.";
 }
 
 // G slots from guards first, F slots from forwards first, G/F players where needed, the rest to UTIL
@@ -386,13 +561,15 @@ function renderBuilt(msg) {
   $("export").disabled = !built.length;
   var by = {}; rows.forEach(function (r) { by[r.id] = r; });
   $("lineups").innerHTML = built.map(function (L, i) {
-    var sal = 0, pts = 0;
+    var sal = 0, pts = 0, ow = 0;
     var lines = L.slots.map(function (id, j) {
-      var r = by[id]; sal += r.salary; pts += proj(r);
+      var r = by[id]; sal += r.salary; pts += proj(r); ow += own(r);
       return '<div class="s"><span class="pos">' + SLOTS[j] + '</span><span class="nm' + (state.lock[id] ? " lk" : "") + '">' + esc(r.name) + ' <span class="sub">' + esc(r.team) + "</span></span>" +
         '<span class="m r mut">' + (r.salary / 1000).toFixed(1) + 'k</span><span class="m r">' + proj(r).toFixed(1) + "</span></div>";
     }).join("");
-    return '<div class="lu"><div class="top"><span>#' + (i + 1) + "</span><span>" + money(sal) + " · <b>" + pts.toFixed(1) + "</b></span></div>" + lines + "</div>";
+    var sim = L.sim ? '<div class="top"><span>E ' + cents(L.sim.e) + "</span><span>cash " + Math.round(100 * L.sim.cash) + "% · top 10 " +
+      (100 * L.sim.top10).toFixed(1) + "% · 1st " + (100 * L.sim.first).toFixed(1) + "%</span></div>" : "";
+    return '<div class="lu"><div class="top"><span>#' + (i + 1) + " · own " + Math.round(ow) + "%</span><span>" + money(sal) + " · <b>" + pts.toFixed(1) + "</b></span></div>" + sim + lines + "</div>";
   }).join("");
   var count = {};
   built.forEach(function (L) { L.ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
@@ -416,9 +593,13 @@ $("slate").addEventListener("change", pick);
 $("reload").addEventListener("click", load);
 $("build").addEventListener("click", function () {
   $("buildStatus").textContent = "Building…";
-  setTimeout(function () { try { build(); } catch (e) { $("buildStatus").innerHTML = '<span class="bad">Build failed: ' + esc(e.message) + "</span>"; } }, 20);
+  build().catch(function (e) { $("buildStatus").innerHTML = '<span class="bad">Build failed: ' + esc(e.message) + "</span>"; });
 });
 $("export").addEventListener("click", exportCsv);
+$("simPick").addEventListener("click", function () {
+  $("buildStatus").textContent = "Building candidates and simulating…";
+  simPick().then(renderBuilt, function (e) { $("buildStatus").innerHTML = '<span class="bad">Sim failed: ' + esc(e.message) + "</span>"; });
+});
 $("news").addEventListener("click", function (e) { var t = e.target.closest(".tx"); if (t) t.parentNode.classList.toggle("open"); });
 $("search").addEventListener("input", function (e) { view.q = e.target.value.trim().toLowerCase(); renderPlayers(); });
 $("team").addEventListener("change", function (e) { view.team = e.target.value; renderPlayers(); });
