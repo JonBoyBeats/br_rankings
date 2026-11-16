@@ -167,6 +167,12 @@ results are noise: say so, and propose no rule from them.
 push; the 2:17am job grades it (`scripts/dk_eval.py nightly`), or run it now:
 `python3 scripts/dk_eval.py nightly --mirror ../br-adp-mirror`.
 
+**When the owner sends a saved build** (`dk_build_<day>_<draft group>.json` from the DK page's Save build:
+the pool, the hand-built set and an auto-pick from it): save it unchanged in `analysis/cbb/dk/builds/`.
+The grading uses the slate's last saved build: the hand-built 20 and the auto-pick, each against random sets
+of 20 from that pool, and the owner's own entries against that pool too (without a build, against No extra
+rules' shadow pool).
+
 **Nightly**, give one line only: which standings were graded, and the projection gate's state
 (`analysis/cbb/dk/gate.json`). No rule-set verdicts from one night.
 
@@ -175,6 +181,9 @@ readout --sim-z ../br-adp-mirror/dk_cbb_field.json`. It gives, in this order:
 
 1. Each rule set and the owner's entries: top-10% rate, cash rate, then dollars as the long-run check;
    each rule set against "No extra rules" slate by slate (slates won, paired gap), never pooled totals.
+   Then every portfolio against 1,000 random sets of its size from its own pool: the mean percentile
+   over slates (no skill is ~50) and slates beating the random median; the pick against the pool's top
+   20 by value alone, and hand-built against auto-pick, slate by slate.
 2. Projected ownership against real %Drafted by band.
 3. The sim's players against reality: where real scores fell in the sim's range by tenth, the
    correlation of misses (teammates, opponents; the sim takes both as 0), game-total spread.
