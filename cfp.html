@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CFB Playoff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* Same committed dark theme as the board and Analysis. Data: analysis/cfp.json, written by
+     battle-royale-research scripts/cfp_rankings.py (Kalshi CFP markets + ESPN box scores + CFF). */
+  :root {
+    color-scheme: dark;
+    --bg: #080b11; --surface: #12151c; --surface-2: #161a22;
+    --ink: #ffffff; --muted: #8b94a4; --line: #1c212c; --line-strong: #2a3140;
+    --accent: #ffffff; --neutral-pill: #2a3140; --up: #4dc48d; --down: #f08a7e;
+    --t3: #13703a;  --t3-ink: #ffffff;
+    --t2: #58c07a;  --t2-ink: #06180d;
+    --t1: #e0b43a;  --t1-ink: #1d1503;
+    --tnone: #1a1e27;
+    --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  .shell { max-width: 980px; margin: 0 auto; padding: 0 16px 64px; }
+
+  .masthead { border-bottom: 1px solid var(--line); padding-block: 14px 0; }
+  .mast-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 19px; font-weight: 700; letter-spacing: -.015em; margin: 0; white-space: nowrap; }
+  .mast-meta { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-left: auto; }
+  .views { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; }
+  .views a { font-size: 12.5px; font-weight: 600; padding: 5px 12px; color: var(--muted); text-decoration: none; }
+  .views a[aria-current="page"] { background: var(--accent); color: var(--bg); }
+  .views a:not([aria-current]):hover { color: var(--ink); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; padding-block: 12px; }
+  .field { display: flex; flex-direction: column; gap: 3px; }
+  .field-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 7px; overflow: hidden; height: 34px; }
+  .seg button { all: unset; cursor: pointer; font-size: 13.5px; font-weight: 500; padding: 0 14px; display: flex; align-items: center; color: var(--muted); background: var(--surface); }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+
+  /* ---------- teams ---------- */
+  .teams { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .tcard { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; border-top: 3px solid var(--tc); }
+  .tcard h2 { font-size: 13.5px; margin: 0; font-weight: 700; }
+  .tcard .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin: 1px 0 8px; }
+  .tlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+  .tlist li { display: flex; justify-content: space-between; gap: 8px; font-size: 13.5px; }
+  .tlist .odds { font-family: var(--mono); font-size: 11.5px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .tlist .odds b { color: var(--ink); font-weight: 500; }
+  .tier1 { --tc: var(--t3); } .tier2 { --tc: var(--t2); } .tier3 { --tc: var(--t1); }
+
+  /* ---------- players ---------- */
+  .board { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 52px 92px 52px 44px; align-items: center; gap: 10px; padding: 6px 12px; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: 0; }
+  .head { background: var(--surface-2); font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-block: 8px; }
+  .head > :nth-child(n+3) { text-align: center; }
+  .tierhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 9px 12px; background: var(--bg); border-bottom: 1px solid var(--line); border-top: 2px solid var(--tc); }
+  .tierhead b { font-size: 14.5px; }
+  .tierhead span { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .rank { font-family: var(--mono); font-size: 12.5px; font-weight: 600; color: var(--muted); text-align: right; }
+  .who { min-width: 0; display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+  .name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .team { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .tag { font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 1px 5px; border-radius: 4px; background: var(--neutral-pill); color: var(--ink); white-space: nowrap; }
+  .tag.down { background: color-mix(in srgb, var(--down) 22%, transparent); color: var(--down); }
+  .cell { font-family: var(--mono); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: center; border-radius: 4px; height: 24px; line-height: 24px; background: var(--tc); color: var(--tk); }
+  .tier1 .cell { --tk: var(--t3-ink); } .tier2 .cell { --tk: var(--t2-ink); } .tier3 .cell { --tk: var(--t1-ink); }
+  .num { font-family: var(--mono); font-size: 12px; text-align: center; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; }
+  .num small { color: var(--muted); font-size: 11px; }
+  .dim { color: var(--muted); }
+
+  .empty { padding: 28px 14px; text-align: center; color: var(--muted); font-size: 14px; }
+  .footnote { color: var(--muted); font-size: 12.5px; margin-top: 12px; line-height: 1.6; }
+  .footnote b { color: var(--ink); font-weight: 500; }
+
+  @media (max-width: 760px) {
+    .shell { padding: 0 10px 48px; }
+    .views a { padding: 5px 8px; font-size: 12px; }
+    .mast-meta { margin-left: 0; }
+    .teams { grid-template-columns: 1fr; }
+    .row { grid-template-columns: 24px minmax(0, 1fr) 44px 74px; gap: 6px; padding: 7px 8px; }
+    .row > .l3, .row > .gp { display: none; }
+    .name { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="masthead">
+    <div class="mast-row">
+      <h1>CFB Playoff</h1>
+      <nav class="views" aria-label="Pages">
+        <a href="/">Home</a>
+        <a href="./">NFL</a>
+        <a href="analysis.html">Analysis</a>
+        <a href="nba.html">NBA</a>
+        <a href="cbb.html">CBB</a>
+        <a href="cfp.html" aria-current="page">CFP</a>
+        <a href="/survivor/">Survivor</a>
+      </nav>
+      <div class="mast-meta" id="meta"></div>
+    </div>
+    <div class="controls">
+      <div class="field">
+        <span class="field-label">Position</span>
+        <span class="seg" role="group" aria-label="Position" id="posSeg">
+          <button type="button" data-pos="QB" aria-pressed="true">QB</button>
+          <button type="button" data-pos="RB" aria-pressed="false">RB</button>
+          <button type="button" data-pos="WR" aria-pressed="false">WR</button>
+          <button type="button" data-pos="TE" aria-pressed="false">TE</button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="teams" id="teams"></div>
+  <div class="board" id="board"><div class="empty">Loading…</div></div>
+
+  <p class="footnote">
+    <b>Tiers</b> come from Kalshi. Tier 2 is the four teams most likely to hold a top-4 seed: a bye, so at most 3 of the 4 rounds.
+    Tier 1 is every other team at least 50% to make the playoff: they can play all 4. Tier 3 is the rest.
+    Bye % is the mean of Kalshi's Top-4 Seeds market and its #1–#4 seed markets.
+    <b>Score</b> is actual Underdog PPG blended with our banked CFF weekly projections, each weighted by its weeks.
+    Ranked within tier by score only; playoff odds don't move a player inside his tier.
+    <b>Proj 0</b>: CFF projected him out in the latest week. <b>Out N</b>: he hasn't had a box-score line in his team's last N games.
+    <b>#2</b>, <b>#3</b>: his spot at the position on his own team by PPG.
+  </p>
+</div>
+
+<script>
+"use strict";
+var TIERS = {
+  1: { title: "Tier 1", sub: "Likely in, likely no bye: can play all 4 rounds" },
+  2: { title: "Tier 2", sub: "Most likely top-4 seeds: bye, 3 rounds max" },
+  3: { title: "Tier 3", sub: "Everyone else" }
+};
+var DATA = null, POS = "QB";
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+function pct(x) { return x == null ? "–" : Math.round(x * 100) + "%"; }
+function f1(x) { return x == null ? "–" : (+x).toFixed(1); }
+
+function renderTeams() {
+  $("teams").innerHTML = [1, 2, 3].map(function (t) {
+    var rows = DATA.teams.filter(function (r) { return r.tier === t; }).map(function (r) {
+      return "<li><span>" + esc(r.team) + "</span><span class=\"odds\"><b>" + pct(r.cfp) + "</b> in · bye " + pct(r.p_bye) + "</span></li>";
+    }).join("");
+    return "<section class=\"tcard tier" + t + "\"><h2>" + TIERS[t].title + "</h2><div class=\"sub\">" + TIERS[t].sub + "</div><ul class=\"tlist\">" + rows + "</ul></section>";
+  }).join("");
+}
+
+function renderBoard() {
+  var html = "<div class=\"row head\"><span></span><span>Player</span><span>Score</span><span>PPG / Proj</span><span class=\"l3\">Last 3</span><span class=\"gp\">G</span></div>";
+  [1, 2, 3].forEach(function (t) {
+    var ps = DATA.players.filter(function (p) { return p.pos === POS && p.tier === t; });
+    html += "<div class=\"tierhead tier" + t + "\"><b>" + TIERS[t].title + "</b><span>" + TIERS[t].sub + " · " + ps.length + " " + POS + "</span></div>";
+    html += ps.map(function (p) {
+      var tags = "";
+      if (p.team_depth > 1) tags += "<span class=\"tag\">#" + p.team_depth + "</span>";
+      if (p.proj_last === 0) tags += "<span class=\"tag down\">Proj 0</span>";
+      if (p.missed_recent > 0) tags += "<span class=\"tag down\">Out " + p.missed_recent + "</span>";
+      return "<div class=\"row tier" + t + "\">" +
+        "<span class=\"rank\">" + p.tier_rank + "</span>" +
+        "<span class=\"who\"><span class=\"name\">" + esc(p.name) + "</span><span class=\"team\">" + esc(p.team) + "</span>" + tags + "</span>" +
+        "<span class=\"cell\">" + f1(p.blend) + "</span>" +
+        "<span class=\"num\">" + f1(p.ppg) + " <small>/ " + f1(p.proj) + "</small></span>" +
+        "<span class=\"num l3\">" + f1(p.last3_ppg) + "</span>" +
+        "<span class=\"num gp dim\">" + p.g + "/" + p.team_g + "</span></div>";
+    }).join("");
+  });
+  $("board").innerHTML = html;
+}
+
+$("posSeg").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-pos]");
+  if (!b) return;
+  POS = b.dataset.pos;
+  Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+  if (DATA) renderBoard();
+});
+
+fetch("analysis/cfp.json?t=" + Date.now(), { cache: "no-store" })
+  .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(function (d) {
+    DATA = d;
+    $("meta").innerHTML = "Kalshi + box scores as of <b>" + esc(d.generated.replace("T", " ")) + "</b> UTC";
+    renderTeams(); renderBoard();
+  })
+  .catch(function (e) { $("board").innerHTML = "<div class=\"empty\">Couldn't load analysis/cfp.json (" + esc(e.message) + ")</div>"; });
+</script>
+</body>
+</html>
