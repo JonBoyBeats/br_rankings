@@ -47,6 +47,10 @@
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_sun_main"
  },
+ "db03d2d5-b38b-4551-b6bb-58e4560b54ba": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_sun_main"
+ },
  "ede22b9a-653b-41d8-ab7b-5d486b991d78": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_sat_main"

@@ -10053,5 +10053,201 @@
     }
    ]
   }
+ },
+ "2026-11-15": {
+  "boom": null,
+  "mine": {
+   "breakers": {
+    "field": [
+     8652,
+     16239
+    ],
+    "mine": [
+     0,
+     0
+    ],
+    "top1": [
+     91,
+     359
+    ]
+   },
+   "low_drafted": {
+    "field": [
+     8652,
+     2695
+    ],
+    "mine": [
+     0,
+     0
+    ]
+   },
+   "turn23": {
+    "most-owned": 0,
+    "other": 0,
+    "rarer": 0
+   }
+  },
+  "pod": 6,
+  "q": [
+   {
+    "early": [
+     470,
+     16
+    ],
+    "late": [
+     972,
+     58
+    ],
+    "name": "Scottie Barnes",
+    "played": true,
+    "tag": "Questionable",
+    "value": 22.6
+   },
+   {
+    "early": [
+     461,
+     2
+    ],
+    "late": [
+     981,
+     15
+    ],
+    "name": "Ajay Mitchell",
+    "played": true,
+    "tag": "Questionable",
+    "value": -1.8
+   },
+   {
+    "early": [
+     401,
+     11
+    ],
+    "late": [
+     841,
+     53
+    ],
+    "name": "Alex Sarr",
+    "played": true,
+    "tag": "Questionable",
+    "value": 23.0
+   },
+   {
+    "early": [
+     123,
+     0
+    ],
+    "late": [
+     290,
+     0
+    ],
+    "name": "Keegan Murray",
+    "played": true,
+    "tag": "Questionable",
+    "value": -14.6
+   },
+   {
+    "early": [
+     0,
+     0
+    ],
+    "late": [
+     0,
+     0
+    ],
+    "name": "Precious Achiuwa",
+    "played": false,
+    "tag": "Questionable",
+    "value": null
+   },
+   {
+    "early": [
+     1,
+     0
+    ],
+    "late": [
+     2,
+     0
+    ],
+    "name": "Daniel Gafford",
+    "played": true,
+    "tag": "Questionable",
+    "value": -6.0
+   }
+  ],
+  "teams": 8652,
+  "ties": [],
+  "turns": {
+   "1/2": [
+    {
+     "combo": [
+      "Karl-Anthony Towns",
+      "Cooper Flagg"
+     ],
+     "pop": [
+      771,
+      0,
+      146314.70000000004
+     ],
+     "rest": [
+      1312,
+      6,
+      248437.79999999996
+     ]
+    }
+   ],
+   "2/3": [
+    {
+     "anchor": "Shai Gilgeous-Alexander",
+     "combo": [
+      "Amen Thompson",
+      "Kevin Durant"
+     ],
+     "pop": [
+      172,
+      10,
+      37719.09999999999
+     ],
+     "rest": [
+      1157,
+      40,
+      237331.00000000073
+     ]
+    },
+    {
+     "anchor": "Jalen Johnson",
+     "combo": [
+      "Trae Young",
+      "Kevin Durant"
+     ],
+     "pop": [
+      93,
+      0,
+      16333.900000000001
+     ],
+     "rest": [
+      1210,
+      6,
+      226829.9
+     ]
+    },
+    {
+     "anchor": "Alperen Sengun",
+     "combo": [
+      "Trae Young",
+      "Domantas Sabonis"
+     ],
+     "pop": [
+      87,
+      0,
+      15294.600000000004
+     ],
+     "rest": [
+      1198,
+      10,
+      236254.29999999987
+     ]
+    }
+   ]
+  }
  }
 }

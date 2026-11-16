@@ -23,7 +23,7 @@ Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). Excluded 
 | Order | Your swaps | Their points | Nights | Share on the night's most-hit target (avg) | That target's exposure (drafted + swapped, avg) | His field drafted% (avg) |
 |---|---|---|---|---|---|---|
 | Projection only | 205 | 33.5 | 14 | 60% | 18% | 52% |
-| Ownership lowest first (your habit) | 205 | 33.5 | 14 | 70% | 20% | 33% |
+| Ownership lowest first (your habit) | 205 | 33.3 | 14 | 69% | 21% | 33% |
 | Ownership highest first | 205 | 33.5 | 14 | 57% | 19% | 67% |
 
 ## Your own swaps
@@ -60,3 +60,4 @@ Reading section a: points left on the table are the best option's score minus th
 | 2026-11-12 | 90 | 0 | 0 |
 | 2026-11-13 | 96 | 1 | 42 |
 | 2026-11-14 | 13 | 0 | 0 |
+| 2026-11-15 | 3 | 3 | 0 |
