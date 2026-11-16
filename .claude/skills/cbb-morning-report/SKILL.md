@@ -160,6 +160,31 @@ finish, tail ratios, payout). If `analysis/nba/expo.json` has your exposures for
 them against what scored. Rounds are estimates (pick order isn't public). The first weeks of
 results are noise: say so, and propose no rule from them.
 
+## 6b. DraftKings standings, the shadow test, and the monthly readout
+
+**When the owner sends a DraftKings standings CSV**: save it unchanged as
+`analysis/cbb/dk/standings/contest-standings-<contest id>.csv` (the name DraftKings gives it), commit and
+push; the 2:17am job grades it (`scripts/dk_eval.py nightly`), or run it now:
+`python3 scripts/dk_eval.py nightly --mirror ../br-adp-mirror`.
+
+**Nightly**, give one line only: which standings were graded, and the projection gate's state
+(`analysis/cbb/dk/gate.json`). No rule-set verdicts from one night.
+
+**Monthly** (the first report of each month, and at 30 graded slates): `python3 scripts/dk_eval.py
+readout --sim-z ../br-adp-mirror/dk_cbb_field.json`. It gives, in this order:
+
+1. Each rule set and the owner's entries: top-10% rate, cash rate, then dollars as the long-run check;
+   each rule set against "No extra rules" slate by slate (slates won, paired gap), never pooled totals.
+2. Projected ownership against real %Drafted by band.
+3. The sim's players against reality: where real scores fell in the sim's range by tenth, the
+   correlation of misses (teammates, opponents; the sim takes both as 0), game-total spread.
+4. The projection gate.
+
+The rule sets are frozen (`RULESETS` in `dk_sim.js`, 2026-11-16): no new ones and no changes until the
+decision. **The decision at 30 graded slates**: does any rule set, or the owner's entries, beat the
+field's top-10% rate (10%)? If none does, recommend cutting back. Before 30, report the numbers as
+directional only.
+
 ## 7. Takeaways
 
 Add a dated section at the top of `analysis/cbb/report/takeaways.md` (newest first, create it if

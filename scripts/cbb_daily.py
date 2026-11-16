@@ -54,7 +54,7 @@ MISS_PTS = 8                # a miss worth writing up: ours off by this many poi
 SCORING = {"PTS": 1, "REB": 1.2, "AST": 1.5, "STL": 3, "BLK": 3, "TO": -1}
 COLS = ["date", "slate", "player_id", "name", "team", "adp_close", "src", "fp", "fp_base", "ud", "min_proj", "ppm_proj",
         "miya_ppm", "bpr_rank", "missed", "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual"]
-DK_COLS = ["date", "draft_group", "dk_id", "espn", "name", "team", "position", "salary", "src", "status", "fp_dk", "fp_base_dk",
+DK_COLS = ["date", "draft_group", "dk_id", "espn", "name", "team", "game", "position", "salary", "src", "status", "fp_dk", "fp_base_dk",
            "dk_avg", "value", "own", "fp", "min_proj", "min_raw", "ppm_proj", "miss_dk", "fragile", "p_dd", "bpr_rank", "missed",
            "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "tpm", "dd", "actual", "actual_dk"]
 
@@ -217,7 +217,7 @@ def record_dk(a, mirror, since, now):
             b = played.get(str(r["espn"])) or {"min": 0, "pts": 0, "reb": 0, "ast": 0, "stl": 0, "blk": 0, "tov": 0, "tpm": 0,
                                                  "actual": 0, "actual_dk": 0, "dd": 0}
             out.append({"date": pacific_day(start), "draft_group": g, "dk_id": pid, "espn": r["espn"], "name": r.get("name"),
-                        "team": r.get("team"), "position": r.get("position"), "salary": r.get("salary"), "src": r.get("src"),
+                        "team": r.get("team"), "game": r.get("game"), "position": r.get("position"), "salary": r.get("salary"), "src": r.get("src"),
                         "status": r.get("status", ""), "fp_dk": r.get("fp_dk"), "fp_base_dk": r.get("fp_base_dk", ""),
                         "dk_avg": r.get("dk_avg"), "value": r.get("value"), "own": own.get(pid, ""), "fp": r.get("fp", ""),
                         "min_proj": r.get("min", ""), "min_raw": r.get("min_raw", r.get("min", "")), "ppm_proj": r.get("ppm", ""),
