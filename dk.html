@@ -113,6 +113,26 @@
   table.contests { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   table.contests th { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: left; font-weight: 500; border-bottom: 1px solid var(--line); padding: 6px 4px; }
   table.contests td { border-bottom: 1px solid var(--line); padding: 4px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px; margin: 6px 0 10px; }
+  .tile { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; background: var(--surface); font-size: 12.5px; }
+  .tile .th { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .tile .tn { font-size: 15px; font-weight: 700; }
+  .tile .tn span { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--muted); margin-left: 4px; }
+  .verdict { font-family: var(--mono); font-size: 10.5px; font-weight: 700; border-radius: 4px; padding: 1px 6px; }
+  .verdict.FOCUS { background: var(--live); color: #04140c; } .verdict.OK { border: 1px solid var(--line-strong); color: var(--muted); }
+  .verdict.FADE { background: var(--bad); color: #1a0500; }
+  .tile .why { color: var(--muted); font-size: 12px; margin: 4px 0 6px; line-height: 1.4; }
+  .tile .nums { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; font-family: var(--mono); font-size: 11.5px; }
+  .tile .nums b { color: var(--ink); font-weight: 600; }
+  .tile .nums .k { color: var(--muted); }
+  .tile .flag { font-size: 11.5px; margin-top: 5px; }
+  .tile .flag .tag { margin: 0 4px 0 0; }
+  .tile .acts { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+  .tile .acts button { height: 24px; padding: 0 7px; font-size: 11.5px; }
+  .rulesbox { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 2px 0 10px; }
+  .rule { display: flex; gap: 8px; align-items: center; font-size: 12.5px; border-bottom: 1px solid var(--line); padding: 3px 0; }
+  .rule .lab { flex: 1; } .rule .pc { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .rule button { height: 22px; padding: 0 7px; font-size: 11.5px; }
   .summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px 14px; font-family: var(--mono);
              font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
   .summary b { color: var(--ink); font-size: 13px; display: block; }
@@ -163,6 +183,10 @@
     <div class="status" id="status">Loading…</div>
   </div>
 
+  <h2>Teams</h2>
+  <div class="note" id="slateLine">No team tiles yet.</div>
+  <div class="tiles" id="tiles"></div>
+
   <h2>News</h2>
   <details class="news" id="newsBox"><summary id="newsSum">Loading…</summary><div id="news"></div></details>
 
@@ -200,6 +224,27 @@
     <label class="field"><span class="field-label">Min players under</span><input class="num" id="lowN" type="number" min="0" max="8" value="0" title="At least this many players owned under the % beside it (0: off)"></label>
     <label class="field"><span class="field-label">owned %</span><input class="num" id="lowPct" type="number" min="1" max="100" value="10"></label>
   </div>
+  <div class="rulesbox">
+    <div class="field-label">Team and if/then rules: every lineup obeys them (Build only, Sim &amp; pick, the builder). Team tiles add them in one click.</div>
+    <div id="ruleList"></div>
+    <div class="opts" id="ruleEditor" style="padding-bottom:2px">
+      <label class="field"><span class="field-label">Template</span><select id="rtType" style="width:auto">
+        <option value="if">1. If player, then N+ from…</option>
+        <option value="ifnot">2. If NOT player, then N+ from these</option>
+        <option value="ifteam">3. If N+ from a team, then M+ from its opponent</option>
+        <option value="never">4. Never player with player</option></select></label>
+      <label class="field rt rt-if rt-ifnot rt-never"><span class="field-label">Player</span><select id="rtP" style="width:auto"></select></label>
+      <label class="field rt rt-ifteam"><span class="field-label">Team</span><select id="rtTeam" style="width:auto"></select></label>
+      <label class="field rt rt-if rt-ifnot rt-ifteam"><span class="field-label">N</span><input class="num" id="rtN" type="number" min="1" max="8" value="1"></label>
+      <label class="field rt rt-ifteam"><span class="field-label">M</span><input class="num" id="rtM" type="number" min="1" max="8" value="1"></label>
+      <label class="field rt rt-if"><span class="field-label">From</span><select id="rtFrom" style="width:auto"><option value="opp">his opponent</option>
+        <option value="team">his team</option><option value="list">these players</option></select></label>
+      <label class="field rt rt-never"><span class="field-label">With</span><select id="rtQ" style="width:auto"></select></label>
+      <label class="field rt rt-list"><span class="field-label">These players</span><select id="rtList" multiple size="5" style="height:auto;min-width:230px"></select></label>
+      <button type="button" id="rtSave">Add rule</button>
+      <button type="button" id="rtCancel" hidden>Cancel edit</button>
+    </div>
+  </div>
   <div class="opts">
     <label class="field grow"><span class="field-label">Contest (for the sim)</span><select id="contest"></select></label>
     <label class="field"><span class="field-label">Candidates</span><input class="num" id="nCand" type="number" min="20" max="400" value="150"></label>
@@ -207,6 +252,7 @@
     <button type="button" class="primary" id="simPick">Sim &amp; pick</button>
     <button type="button" id="build">Build only</button>
     <button type="button" id="export" disabled>Export DK CSV</button>
+    <button type="button" id="saveEntries" disabled title="Download the lineups and the rules they were built under, to send in with the standings">Save lineups + rules</button>
   </div>
   <div class="note"><b>Build only</b>: each lineup is the highest-projected one that fits the $50,000 cap and G, G, G, F, F, F,
     UTIL, UTIL and the rules above, after Randomness nudges every Proj up or down (a standard deviation of that %, drawn
@@ -260,6 +306,7 @@
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var SLOTS = DKSim.SLOTS;
 var doc = null, slate = null, rows = [], state = null, built = [], news = [], fieldDoc = null, gate = null, builtSummary = null, BP = null;
+var teamsDoc = null, ruleCounts = {}, editing = -1;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1 };
 
@@ -291,6 +338,10 @@ async function load() {
     var nr = await fetch(MIRROR + "cbb_news.json?t=" + Date.now(), { cache: "no-store" });
     news = nr.ok ? (await nr.json()).items || [] : [];
   } catch (e) { news = []; }
+  try {      // team tiles (battle-royale-research scripts/dk_cbb_teams.py)
+    var tr = await fetch(MIRROR + "dk_cbb_teams.json?t=" + Date.now(), { cache: "no-store" });
+    teamsDoc = tr.ok ? await tr.json() : null;
+  } catch (e) { teamsDoc = null; }
   try {      // the projection gate; none on file yet means closed
     var gr = await fetch(GATE + "?t=" + Date.now(), { cache: "no-store" });
     gate = gr.ok ? await gr.json() : null;
@@ -317,7 +368,7 @@ async function load() {
 function pick() {
   slate = doc.slates.find(function (s) { return String(s.draft_group_id) === $("slate").value; });
   rows = Object.keys(slate.players).map(function (id) { return Object.assign({ id: id }, slate.players[id]); });
-  state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {} }, store(key()) || {});
+  state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, rules: [] }, store(key()) || {});
   var teams = Array.from(new Set(rows.map(function (r) { return r.team; }))).sort();
   $("team").innerHTML = '<option value="">All teams</option>' + teams.map(function (t) { return '<option>' + esc(t) + "</option>"; }).join("");
   view.team = "";
@@ -332,7 +383,8 @@ function pick() {
   built = []; builtSummary = null; renderBuilt();
   BP = null; $("bpTableWrap").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = "";
   ["bpAuto", "bpClear", "bpUse", "bpSave"].forEach(function (id) { $(id).disabled = true; });
-  renderNews(); renderPlayers(); renderContests();
+  ruleCounts = {}; editing = -1;
+  renderTiles(); renderRules(); fillEditor(); renderNews(); renderPlayers(); renderContests();
 }
 
 function gateText() {
@@ -432,7 +484,7 @@ function rules() {
   return { n: v("nLineups") || 1, maxExpo: (v("maxExpo") || 100) / 100, minUnique: Math.max(1, v("minUnique") || 1),
            rand: (v("rand") || 0) / 100, minSal: v("minSal") || 0, maxTeam: v("maxTeam") || 8,
            stackN: v("stackN") || 0, stackBoth: $("stackBoth").checked, maxOwn: v("maxOwn"),
-           lowN: v("lowN") || 0, lowPct: v("lowPct") || 10 };
+           lowN: v("lowN") || 0, lowPct: v("lowPct") || 10, conds: (state.rules || []).slice() };
 }
 
 function assign(ids) { return DKSim.assign(ctx(), ids); }
@@ -449,7 +501,8 @@ async function simPick() {
   if (!F || !F.field || !F.field.length) return "no simulated field for this slate";
   if (!c || !c.payouts) return "pick a contest with a payout table";
   var res = await DKSim.simPick(ctx(), o, c, F.field, fieldDoc.z, +$("nCand").value || 150, +$("nSims").value || 3000);
-  if (res.error) return res.error;
+  takeCounts(res.rules);
+  if (res.error) return res.error + rulesMsg(res.rules);
   built = res.lineups;
   builtSummary = { coverage: res.coverage, diversity: res.diversity, total: res.total, fee: res.fee };
   var st = res.stability, N = o.n;
@@ -460,7 +513,7 @@ async function simPick() {
     Math.round(100 * st.kept) + "% of the value of the other half's on its nights" + (st.kept < 0.9 ? " (low: raise Sims)" : "") +
     " (" + st.halves + " of " + st.n + " lineups the same; many lineups are worth about the same, so which ones get picked moves with the draw)." +
     (built.length < N ? " Only " + built.length + " fit the exposure and Min unique rules." : "") +
-    " ROI here assumes our projections are right; it ranks lineups, it isn't a forecast of winnings.";
+    " ROI here assumes our projections are right; it ranks lineups, it isn't a forecast of winnings." + rulesMsg(res.rules);
 }
 
 // A portfolio's summary: coverage (nights with a cash / a top-1% finish / a 1st among the set), the most-used
@@ -481,6 +534,7 @@ function renderBuilt(msg) {
   $("buildStatus").textContent = msg || "";
   $("summary").innerHTML = built.length ? summaryHtml(Object.assign({ diversity: DKSim.diversity(ctx(), built) }, builtSummary || {})) : "";
   $("export").disabled = !built.length;
+  $("saveEntries").disabled = !built.length;
   var by = {}; rows.forEach(function (r) { by[r.id] = r; });
   $("lineups").innerHTML = built.map(function (L, i) {
     var sal = 0, pts = 0, ow = 0;
@@ -510,6 +564,136 @@ function exportCsv() {
   document.body.appendChild(a); a.click(); a.remove();
 }
 
+// --- team tiles (battle-royale-research scripts/dk_cbb_teams.py: the numbers, flags and verdict come from there) ---
+function teamsOf() { return teamsDoc && slate && teamsDoc.slates[String(slate.draft_group_id)]; }
+function teamIds(t) { return rows.filter(function (r) { return r.team === t; }).map(function (r) { return r.id; }); }
+// a team's opponent, from its game (DraftKings' "AWAY@HOME"), so DraftKings' abbreviations on both sides
+function oppOf(t) { var r = rows.find(function (x) { return x.team === t; }); if (!r || !r.game) return null;
+  var g = r.game.split("@"); return g[0] === t ? g[1] : g[0]; }
+function pct(x) { return Math.round(100 * x) + "%"; }
+
+function renderTiles() {
+  var T = teamsOf();
+  if (!T) { $("slateLine").textContent = "No team tiles for this slate yet."; $("tiles").innerHTML = ""; return; }
+  var sl = T.slate;
+  $("slateLine").textContent = sl.games + " games · " + sl.spreads_15 + " spread" + (sl.spreads_15 === 1 ? "" : "s") + " of 15+ · highest team totals: " +
+    sl.top_totals.map(function (t) { return t.team + " " + t.total; }).join(", ") + ". Lines: " + T.line_source + ". Verdicts come from one written recipe" +
+    " (dk_cbb_teams.py), untested until the monthly readout grades it.";
+  $("tiles").innerHTML = T.teams.map(function (t) {
+    var top = t.top || [], blow = !t.favorite ? "underdog: n/a" : t.blowout == null ? "no 15+ games yet" :
+      pct(t.blowout) + " of their minutes" + (t.blowout_games < 3 ? " (thin: " + t.blowout_games + " game" + (t.blowout_games === 1 ? "" : "s") + ")" : " in " + t.blowout_games + " games") +
+      (t.blowout_source && t.blowout_source !== "this season" ? ", " + t.blowout_source : "");
+    return '<div class="tile" data-team="' + esc(t.team) + '"><div class="th"><span class="tn">' + esc(t.team) + "<span>" + (t.home ? "v " : "@ ") + esc(oppOf(t.team) || "") +
+      '</span></span><span class="verdict ' + t.verdict + '">' + t.verdict + '</span></div><div class="why">' + esc(t.reason) + '</div><div class="nums">' +
+      '<span class="k">Total</span><span><b>' + (t.total != null ? t.total.toFixed(1) : "–") + "</b> (spread " + (t.spread > 0 ? "+" : "") + t.spread + ")</span>" +
+      '<span class="k">Top 3</span><span><b>' + pct(t.conc) + "</b> of the team's projection</span>" +
+      '<span class="k">Blowouts</span><span>' + (t.favorite ? "starters kept <b>" + esc(blow) + "</b>" : esc(blow)) + "</span>" +
+      '<span class="k">Value</span><span>top 3 at <b>' + t.value.toFixed(2) + "x</b> the slate's</span>" +
+      '<span class="k">Owned</span><span><b>' + pct(t.own_share) + "</b> of the field vs <b>" + pct(t.pts_share) + "</b> of the points</span></div>" +
+      '<div class="flag"><span class="tag k-starting">BEST BET</span>' + esc(t.best_bet.name) + " (" + money(t.best_bet.salary) + ", " +
+      (t.best_bet.value != null ? t.best_bet.value.toFixed(2) : "–") + " a $1K)</div>" +
+      (t.fragile.length ? '<div class="flag"><span class="tag q">FRAGILE</span>' + esc(t.fragile.join("; ")) + "</div>" : "") +
+      '<div class="acts"><button data-act="min2">Min 2</button><button data-act="min3">Min 3</button><button data-act="stack">Stack with ' + esc(oppOf(t.team) || "opp") +
+      '</button><button data-act="excl">Exclude</button></div>' +
+      (top.length ? '<div class="acts"><span class="sub" style="align-self:center">#1 ' + esc(top[0].name) + ":</span>" +
+        (top.length >= 3 ? '<button data-act="pivot">Pivot: if not him, 1+ of #2/#3</button>' : "") + '<button data-act="bring">Bring-back: if him, 1+ from ' +
+        esc(oppOf(t.team) || "opp") + "</button></div>" : "") + "</div>";
+  }).join("");
+}
+
+function tileRules(act, t) {
+  var opp = oppOf(t.team), top = t.top || [];
+  if (act === "min2" || act === "min3") { var n = act === "min2" ? 2 : 3; return [{ type: "min", ids: teamIds(t.team), n: n, label: "At least " + n + " from " + t.team }]; }
+  if (act === "stack") return [{ type: "min", ids: teamIds(t.team), n: 2, label: "Stack " + t.team + "-" + opp + ": 2+ from " + t.team },
+                              { type: "min", ids: teamIds(opp), n: 1, label: "Stack " + t.team + "-" + opp + ": 1+ from " + opp }];
+  if (act === "excl") return [{ type: "none", ids: teamIds(t.team), label: "No " + t.team + " players" }];
+  if (act === "pivot") return [{ type: "ifnot", ids: [top[0].id], set: [top[1].id, top[2].id], n: 1,
+                                 label: "If not " + top[0].name + ", then 1+ of " + top[1].name + " / " + top[2].name }];
+  if (act === "bring") return [{ type: "if", ids: [top[0].id], set: teamIds(opp), n: 1, label: "If " + top[0].name + ", then 1+ from " + opp }];
+  return [];
+}
+
+// --- rules: the list, the editor, the pass counts ------------------------------------------------
+function addRules(list) { state.rules = (state.rules || []).concat(list); save(); renderRules(); }
+function takeCounts(r) { ruleCounts = {}; ((r && r.counts) || []).forEach(function (c) { ruleCounts[c.label] = c; }); renderRules(); }
+function rulesMsg(r) {
+  if (!r || !r.counts || !r.counts.length) return "";
+  return " Rules: " + r.counts.map(function (c) { return c.label + ": " + c.pass + " of " + c.of + " pass"; }).join("; ") + "; all of them: " + r.kept + " of " + r.of +
+    (r.added ? "; " + r.added + " more drawn under the rules to fill the pool" + (r.topped ? " (some after the pick ran short of " + rules().n + ")" : "") : "") + ".";
+}
+function renderRules() {
+  var list = state.rules || [];
+  $("ruleList").innerHTML = list.length ? list.map(function (rule, i) {
+    var c = ruleCounts[rule.label];
+    return '<div class="rule" data-i="' + i + '"><span class="lab">' + esc(rule.label) + "</span>" + (c ? '<span class="pc">' + c.pass + " of " + c.of + " pass</span>" : "") +
+      (["if", "ifnot", "ifteam", "never"].indexOf(rule.type) >= 0 ? '<button data-act="edit">Edit</button>' : "") + '<button data-act="rm">Remove</button></div>';
+  }).join("") : '<div class="note" style="margin:4px 0">No rules: add one below, or from a team tile.</div>';
+}
+
+function playerOpts() {
+  return rows.filter(function (r) { return r.status !== "Out"; }).sort(function (a, b) { return a.team < b.team ? -1 : a.team > b.team ? 1 : proj(b) - proj(a); })
+    .map(function (r) { return '<option value="' + esc(r.id) + '">' + esc(r.team + " · " + r.name + " (" + proj(r).toFixed(1) + ")") + "</option>"; }).join("");
+}
+function fillEditor() {
+  var o = playerOpts();
+  ["rtP", "rtQ", "rtList"].forEach(function (id) { $(id).innerHTML = o; });
+  $("rtTeam").innerHTML = Array.from(new Set(rows.map(function (r) { return r.team; }))).sort().map(function (t) { return "<option>" + esc(t) + "</option>"; }).join("");
+  showEditor();
+}
+function showEditor() {
+  var t = $("rtType").value;
+  document.querySelectorAll("#ruleEditor .rt").forEach(function (el) {
+    var on = el.classList.contains("rt-" + t) || (el.classList.contains("rt-list") && (t === "ifnot" || (t === "if" && $("rtFrom").value === "list")));
+    el.hidden = !on;
+  });
+}
+function byId(id) { return rows.find(function (r) { return r.id === id; }); }
+function editorRule() {
+  var t = $("rtType").value, n = Math.max(1, +$("rtN").value || 1), P = byId($("rtP").value);
+  var chosen = Array.from($("rtList").selectedOptions).map(function (o) { return o.value; });
+  var names = function (ids) { return ids.map(function (id) { return byId(id).name; }).join(" / "); };
+  if (t === "if") {
+    var from = $("rtFrom").value, set = from === "opp" ? teamIds(oppOf(P.team)) : from === "team" ? teamIds(P.team).filter(function (id) { return id !== P.id; }) : chosen;
+    if (!set.length) return null;
+    return { type: "if", ids: [P.id], set: set, n: n, label: "If " + P.name + ", then " + n + "+ from " + (from === "opp" ? oppOf(P.team) : from === "team" ? "his team (" + P.team + ")" : names(set)) };
+  }
+  if (t === "ifnot") {
+    if (!chosen.length) return null;
+    return { type: "ifnot", ids: [P.id], set: chosen, n: n, label: "If not " + P.name + ", then " + n + "+ of " + names(chosen) };
+  }
+  if (t === "ifteam") {
+    var T = $("rtTeam").value, opp = oppOf(T), m = Math.max(1, +$("rtM").value || 1);
+    return { type: "ifteam", set: teamIds(T), n: n, set2: teamIds(opp), m: m, label: "If " + n + "+ from " + T + ", then " + m + "+ from " + opp };
+  }
+  var Q = byId($("rtQ").value);
+  if (!Q || Q.id === P.id) return null;
+  return { type: "never", ids: [P.id, Q.id], label: "Never " + P.name + " with " + Q.name };
+}
+function loadEditor(rule) {
+  $("rtType").value = rule.type;
+  if (rule.ids && rule.ids[0]) $("rtP").value = rule.ids[0];
+  if (rule.type === "never") $("rtQ").value = rule.ids[1];
+  $("rtN").value = rule.n || 1; $("rtM").value = rule.m || 1;
+  if (rule.type === "ifteam") $("rtTeam").value = byId(rule.set[0]).team;
+  if (rule.type === "if") {
+    var P = byId(rule.ids[0]), opp = teamIds(oppOf(P.team));
+    $("rtFrom").value = rule.set.length === opp.length && rule.set.every(function (id) { return opp.indexOf(id) >= 0; }) ? "opp" :
+      rule.set.every(function (id) { return byId(id).team === P.team; }) && rule.set.length === teamIds(P.team).length - 1 ? "team" : "list";
+  }
+  Array.from($("rtList").options).forEach(function (o) { o.selected = (rule.set || []).indexOf(o.value) >= 0; });
+  showEditor();
+}
+
+function saveEntries() {
+  var doc = { kind: "entries", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(),
+              contest_id: $("contest").value, rule_set: state.rules, settings: Object.assign({}, rules(), { conds: undefined }), gate: gate,
+              lineups: built.map(function (L) { return L.ids; }) };
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
+  a.download = "dk_entries_" + slate.day + "_" + slate.draft_group_id + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
 // --- the portfolio builder ---------------------------------------------------------------------
 function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
 function shortName(name) { var p = String(name).split(" ").filter(function (x) { return !/^(Jr\.?|Sr\.?|II|III|IV|V)$/.test(x); }); return p[p.length - 1] || name; }
@@ -523,6 +707,7 @@ async function bpBuild() {
   cx.progress = function (msg) { $("bpStatus").textContent = msg; return tick(); };
   var t0 = performance.now();
   var res = await DKSim.pool(cx, o, K);
+  takeCounts(res);
   if (res.lineups.length < o.n) { $("bpStatus").textContent = "Only " + res.lineups.length + " lineups fit the rules" + (res.why ? " (" + res.why + ")" : "") + "."; return; }
   $("bpStatus").textContent = "Simulating " + S + " nights for " + res.lineups.length + " lineups…"; await tick();
   var sim = DKSim.simulate(cx, res.lineups, F.field, fieldDoc.z, c, o.n, S);
@@ -533,7 +718,7 @@ async function bpBuild() {
          proj: res.lineups.map(function (L) { return L.ids.reduce(function (t, id) { return t + proj(by[id]); }, 0); }),
          own: res.lineups.map(function (L) { return L.ids.reduce(function (t, id) { return t + own(by[id]); }, 0); }),
          names: res.lineups.map(function (L) { return L.slots.map(function (id) { return shortName(by[id].name); }).join(" · "); }),
-         why: res.why };
+         why: res.why, ruleMsg: rulesMsg(res) };
   ["bpAuto", "bpClear", "bpUse", "bpSave"].forEach(function (id) { $(id).disabled = false; });
   bpRescore(); bpRender();
 }
@@ -580,7 +765,7 @@ function bpRender(note) {
   var lineups = picked.map(function (k) { return BP.pool[k]; });
   $("bpStatus").textContent = (note ? note + " " : "") + BP.pool.length + " lineups in the pool, " + BP.nights + " nights, " + esc(BP.contest.name) +
     ". Re-scored every lineup in " + Math.round(BP.ms) + " ms" + (BP.ms > 1500 ? " (slow: a smaller pool or fewer Sims re-scores faster)" : "") + "." +
-    (BP.why ? " " + BP.why + "." : "");
+    (BP.why ? " " + BP.why + "." : "") + BP.ruleMsg;
   var cnt = {}, by = {};
   rows.forEach(function (r) { by[r.id] = r; });
   lineups.forEach(function (L) { L.ids.forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; }); });
@@ -618,7 +803,8 @@ function bpUse() {
 
 function bpSave() {
   var auto = DKSim.pick(ctx(), rules(), BP.pool, BP.sim, BP.contest, rules().n).chosen;
-  var doc = { draft_group: slate.draft_group_id, day: slate.day, contest_id: BP.contest.id, contest: BP.contest.name,
+  var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, contest_id: BP.contest.id, contest: BP.contest.name,
+              rule_set: state.rules,
               saved_at: new Date().toISOString(), nights: BP.nights, rules: BP.o, gate: gate,
               pool: BP.pool.map(function (L) { return L.ids; }), hand: BP.b.picked.slice(), auto: auto };
   var a = document.createElement("a");
@@ -635,6 +821,33 @@ $("build").addEventListener("click", function () {
   build().catch(function (e) { $("buildStatus").innerHTML = '<span class="bad">Build failed: ' + esc(e.message) + "</span>"; });
 });
 $("export").addEventListener("click", exportCsv);
+$("saveEntries").addEventListener("click", saveEntries);
+$("tiles").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-act]"); if (!b) return;
+  var t = teamsOf().teams.find(function (x) { return x.team === b.closest(".tile").dataset.team; });
+  addRules(tileRules(b.dataset.act, t));
+});
+$("ruleList").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-act]"); if (!b) return;
+  var i = +b.closest(".rule").dataset.i;
+  if (b.dataset.act === "rm") { state.rules.splice(i, 1); save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
+  editing = i; loadEditor(state.rules[i]); $("rtSave").textContent = "Save changes"; $("rtCancel").hidden = false;
+});
+$("rtType").addEventListener("change", showEditor);
+$("rtFrom").addEventListener("change", showEditor);
+$("rtP").addEventListener("change", function () {
+  if ($("rtType").value !== "ifnot") return;    // template 2's list starts as his team's #2 and #3 by projection
+  var P = byId($("rtP").value), mates = rows.filter(function (r) { return r.team === P.team && r.id !== P.id && r.status !== "Out"; })
+    .sort(function (a, b) { return proj(b) - proj(a); }).slice(0, 2).map(function (r) { return r.id; });
+  Array.from($("rtList").options).forEach(function (o) { o.selected = mates.indexOf(o.value) >= 0; });
+});
+$("rtSave").addEventListener("click", function () {
+  var r = editorRule();
+  if (!r) { alert("Pick the players the rule needs (and two different players for Never)."); return; }
+  if (editing >= 0) { state.rules[editing] = r; editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; save(); renderRules(); }
+  else addRules([r]);
+});
+$("rtCancel").addEventListener("click", function () { editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; });
 $("bpBuild").addEventListener("click", function () {
   $("bpStatus").textContent = "Building the pool…";
   bpBuild().catch(function (e) { $("bpStatus").innerHTML = '<span class="bad">Pool failed: ' + esc(e.message) + "</span>"; });

@@ -86,6 +86,7 @@
       limit[r.id] = st.lock[r.id] || o.noCaps ? o.n : Math.floor(cap * o.n + 1e-9);
     });
     var games = Array.from(new Set(pool.map(function (r) { return r.game; })));
+    var inPool = {}; pool.forEach(function (r) { inPool[r.id] = 1; });
     var count = {}, out = [], teams = Array.from(new Set(pool.map(function (r) { return r.team; }))), why = "";
     for (var k = 0; k < o.n; k++) {
       if (k % 5 === 4 && ctx.progress) await ctx.progress((o.label || "Building") + "… " + k + " of " + o.n);
@@ -104,9 +105,13 @@
           vars["y" + i] = y; ints["y" + i] = 1; cons["yb" + i] = { max: 1 }; y["yb" + i] = 1;
         });
       }
+      var extra = {};                         // player id -> {constraint: coefficient}, from the rules (o.conds)
+      (o.conds || []).forEach(function (rule, i) { ruleConstraints(rule, i, extra, cons); });
       pool.forEach(function (r) {
         if ((count[r.id] || 0) >= limit[r.id]) return;
         var v = { score: proj(r) * (1 + o.rand * gauss(ctx.random)), n: 1, sal: r.salary };
+        var ex = extra[r.id];
+        if (ex) for (var c in ex) v[c] = (v[c] || 0) + ex[c];
         v["t_" + r.team] = 1;
         if (isG(r)) v.g = 1;
         if (isF(r)) v.f = 1;
@@ -123,14 +128,100 @@
         vars[r.id] = v; ints[r.id] = 1;
       });
       if (locks.some(function (r) { return !vars[r.id]; })) { why = "a locked player is out of the pool"; break; }
-      var res = ctx.solver.Solve({ optimize: "score", opType: "max", constraints: cons, variables: vars, ints: ints });
+      var res = solveSplit(ctx.solver, cons, vars, ints, o.conds || [], inPool);
       if (!res.feasible) { why = "no lineup left fits the rules (loosen Min unique, Max exposure, the stack or ownership rules, Min salary or the locks)"; break; }
-      var ids = Object.keys(vars).filter(function (id) { return id.charAt(0) !== "y" && res[id] > 0.5; });
+      var ids = Object.keys(vars).filter(function (id) { return inPool[id] && res[id] > 0.5; });
       if (ids.length !== 8) { why = "the solver returned " + ids.length + " players"; break; }
       ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
       out.push({ ids: ids, slots: assign(ctx, ids) });
     }
     return { lineups: out, why: why };
+  }
+
+  // --- rules: the team tiles' buttons and the four if/then templates ------------------------------------------
+  //   {type: "min", ids, n}              at least n from ids (Min 2 / Min 3 from a team; Stack with opponent: two of them)
+  //   {type: "none", ids}                none of ids (Exclude team)
+  //   {type: "if", ids: [P], set, n}     1. if P, then at least n from set
+  //   {type: "ifnot", ids: [P], set, n}  2. if not P, then at least n from set
+  //   {type: "ifteam", set, n, set2, m}  3. if at least n from set (a team), then at least m from set2 (its opponent)
+  //   {type: "never", ids: [P, Q]}       4. never P with Q
+  // Each rule carries its own label (the page writes it). passes() checks a lineup; ruleConstraints() makes the
+  // optimizer obey it exactly.
+  function passes(rule, ids) {
+    var has = function (id) { return ids.indexOf(id) >= 0; };
+    var cnt = function (set) { return (set || []).filter(has).length; };
+    switch (rule.type) {
+      case "min": return cnt(rule.ids) >= rule.n;
+      case "none": return cnt(rule.ids) === 0;
+      case "if": return !has(rule.ids[0]) || cnt(rule.set) >= rule.n;
+      case "ifnot": return has(rule.ids[0]) || cnt(rule.set) >= rule.n;
+      case "ifteam": return cnt(rule.set) < rule.n || cnt(rule.set2) >= rule.m;
+      case "never": return cnt(rule.ids) <= 1;
+    }
+    return true;
+  }
+
+  function ruleConstraints(rule, i, extra, cons) {
+    var k = "r" + i;
+    var add = function (id, c, coef) { var e = extra[id] = extra[id] || {}; e[c] = (e[c] || 0) + coef; };
+    switch (rule.type) {
+      case "min": cons[k] = { min: rule.n }; rule.ids.forEach(function (id) { add(id, k, 1); }); break;
+      case "none": cons[k] = { max: 0 }; rule.ids.forEach(function (id) { add(id, k, 1); }); break;
+      case "never": cons[k] = { max: 1 }; rule.ids.forEach(function (id) { add(id, k, 1); }); break;
+      case "if":        // sum(set) - n x P >= 0
+        cons[k] = { min: 0 }; rule.set.forEach(function (id) { add(id, k, 1); }); add(rule.ids[0], k, -rule.n); break;
+      case "ifnot":     // sum(set) + n x P >= n
+        cons[k] = { min: rule.n }; rule.set.forEach(function (id) { add(id, k, 1); }); add(rule.ids[0], k, rule.n); break;
+      case "ifteam":
+        // An either/or, which a binary switch made slow in this solver (5-13s for 3 lineups with a team minimum
+        // alongside): only the counts go in here, unbounded; solve() splits on it when a lineup breaks it.
+        rule.set.forEach(function (id) { add(id, k + "a", 1); });
+        rule.set2.forEach(function (id) { add(id, k + "b", 1); });
+        break;
+    }
+  }
+
+  // K candidates under the rules, the way Sim & pick and the builder take them: drawn under the plain rules, each
+  // if/then rule's pass count taken, the passing ones kept, and the pool topped back up to K with lineups drawn under
+  // every rule. draw(o, n) gives up to n lineups under o.
+  async function underRules(ctx, o, K, draw) {
+    var conds = o.conds || [];
+    var base = (await draw(Object.assign({}, o, { conds: [] }), K)).lineups;
+    var counts = conds.map(function (rule) {
+      return { label: rule.label, pass: base.filter(function (L) { return passes(rule, L.ids); }).length, of: base.length };
+    });
+    var keep = base.filter(function (L) { return conds.every(function (rule) { return passes(rule, L.ids); }); });
+    var kept = keep.length, added = 0, why = "";
+    if (conds.length && keep.length < K) {
+      var seen = {}; keep.forEach(function (L) { seen[L.ids.slice().sort().join(",")] = 1; });
+      var more = await draw(o, K - keep.length);
+      more.lineups.forEach(function (L) {
+        var key = L.ids.slice().sort().join(",");
+        if (!seen[key]) { seen[key] = 1; keep.push(L); added++; }
+      });
+      why = more.why || "";
+    }
+    return { lineups: keep, counts: counts, kept: kept, of: base.length, added: added, why: why };
+  }
+
+  // Solve; if the lineup breaks a template-3 rule (n+ from set without m+ from set2), solve its two cases apart (fewer
+  // than n from set; n+ from set and m+ from set2) and keep the better: the same optimum the binary switch gives.
+  function solveSplit(solver, cons, vars, ints, conds, inPool) {
+    var res = solver.Solve({ optimize: "score", opType: "max", constraints: cons, variables: vars, ints: ints });
+    if (!res.feasible) return res;
+    var ids = Object.keys(vars).filter(function (id) { return inPool[id] && res[id] > 0.5; });
+    for (var i = 0; i < conds.length; i++) {
+      var rule = conds[i];
+      if (rule.type !== "ifteam" || passes(rule, ids)) continue;
+      var a = Object.assign({}, cons), b = Object.assign({}, cons);
+      a["r" + i + "a"] = { max: rule.n - 1 };
+      b["r" + i + "a"] = { min: rule.n }; b["r" + i + "b"] = { min: rule.m };
+      var ra = solveSplit(solver, a, vars, ints, conds, inPool), rb = solveSplit(solver, b, vars, ints, conds, inPool);
+      if (!ra.feasible) return rb;
+      if (!rb.feasible) return ra;
+      return ra.result >= rb.result ? ra : rb;
+    }
+    return res;
   }
 
   function payTable(c) {     // place -> dollars, from [[first, last, dollars], ...]
@@ -318,6 +409,12 @@
   // A large pool for the builder: lineups drawn under the rules at CAND_RAND noise, duplicates dropped (no
   // uniqueness constraints: at 1,000 lineups they make every solve slower; 1,000 distinct took 1,023 draws, 18s)
   async function pool(ctx, o, K) {
+    var res = await underRules(ctx, o, K, function (o2, n) { return poolDraw(ctx, o2, n); });
+    res.why = res.why || (res.lineups.length < K ? "only " + res.lineups.length + " distinct lineups fit the rules" : "");
+    return res;
+  }
+
+  async function poolDraw(ctx, o, K) {
     var seen = {}, out = [], tries = 0;
     while (out.length < K && tries < 3 * K) {
       if (tries % 25 === 24 && ctx.progress) await ctx.progress("Building the pool… " + out.length + " of " + K);
@@ -334,16 +431,28 @@
   // apart, each scored on the other half against the pick made there.
   async function simPick(ctx, o, contest, field, z, K, S) {
     var N = o.n;
-    var cp = await solve(ctx, Object.assign({}, o, { n: Math.max(N, K), minUnique: CAND_UNIQUE, rand: CAND_RAND, noCaps: true,
-                                                     label: "Building candidates" }));
+    var draw = function (o2, n) {
+      return solve(ctx, Object.assign({}, o2, { n: n, minUnique: CAND_UNIQUE, rand: CAND_RAND, noCaps: true, label: "Building candidates" }));
+    };
+    var cp = await underRules(ctx, o, Math.max(N, K), draw);
     var cand = cp.lineups;
-    if (cand.length < N) return { error: "only " + cand.length + " candidates fit the rules" + (cp.why ? " (" + cp.why + ")" : "") };
+    if (cand.length < N) return { error: "only " + cand.length + " candidates fit the rules" + (cp.why ? " (" + cp.why + ")" : ""), rules: cp };
     if (ctx.progress) await ctx.progress("Simulating " + S + " nights…");
     var sim = simulate(ctx, cand, field, z, contest, N, S);
+    var full = pick(ctx, o, cand, sim, contest, N);
+    if (full.chosen.length < N && (o.conds || []).length) {
+      // too thin to fill N under the rules and the caps: draw more under the rules and pick again
+      if (ctx.progress) await ctx.progress("Only " + full.chosen.length + " of " + N + " fit: drawing more candidates under the rules…");
+      var more = await draw(o, Math.max(N, K));
+      var seen = {}; cand.forEach(function (L) { seen[L.ids.slice().sort().join(",")] = 1; });
+      more.lineups.forEach(function (L) { var key = L.ids.slice().sort().join(","); if (!seen[key]) { seen[key] = 1; cand.push(L); cp.added++; } });
+      sim = simulate(ctx, cand, field, z, contest, N, S);
+      full = pick(ctx, o, cand, sim, contest, N);
+      cp.topped = true;
+    }
     var h1 = [], h2 = [];
     for (var s = 0; s < S; s++) (s < S / 2 ? h1 : h2).push(s);
-    if (ctx.progress) await ctx.progress("Picking " + N + " lineups, and checking the pick on each half of the nights…");
-    var full = pick(ctx, o, cand, sim, contest, N);
+    if (ctx.progress) await ctx.progress("Checking the pick on each half of the nights…");
     // Many candidates are worth nearly the same, so which ones get picked moves with the draw; what matters is
     // whether a pick made on one set of nights keeps its value on another.
     var a = pick(ctx, o, cand, sim, contest, N, h1).chosen, b = pick(ctx, o, cand, sim, contest, N, h2).chosen;
@@ -353,7 +462,7 @@
     var cov = full.builder.coverage();
     return { lineups: lineups, chosen: full.chosen, cand: cand, sim: sim, candidates: cand.length, nights: S,
              total: full.builder.total(), fee: (contest.entry_fee || 0) * lineups.length, anyFirst: cov.first, coverage: cov,
-             diversity: diversity(ctx, lineups), cut: sim.cut, stability: { halves: both, kept: kept, n: lineups.length }, why: cp.why };
+             diversity: diversity(ctx, lineups), cut: sim.cut, stability: { halves: both, kept: kept, n: lineups.length }, why: cp.why, rules: cp };
   }
 
   // A frozen rule set's rules as solve() takes them, on top of BASE
@@ -367,5 +476,6 @@
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
            gatedProj: gatedProj, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
-           pool: pool, simPick: simPick, rulesFor: rulesFor, CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
+           pool: pool, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
+           CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
 });
