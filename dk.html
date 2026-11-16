@@ -113,11 +113,27 @@
   table.contests { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   table.contests th { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: left; font-weight: 500; border-bottom: 1px solid var(--line); padding: 6px 4px; }
   table.contests td { border-bottom: 1px solid var(--line); padding: 4px; }
+  .summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px 14px; font-family: var(--mono);
+             font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+  .summary b { color: var(--ink); font-size: 13px; display: block; }
+  .bpwrap { max-height: 62vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+  table.bp { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.bp th { position: sticky; top: 0; background: var(--bg); font-family: var(--mono); font-size: 10px; letter-spacing: .06em;
+                text-transform: uppercase; color: var(--muted); text-align: right; font-weight: 500; border-bottom: 1px solid var(--line);
+                padding: 6px 5px; cursor: pointer; white-space: nowrap; }
+  table.bp th.l, table.bp td.l { text-align: left; }
+  table.bp th.on { color: var(--ink); }
+  table.bp td { border-bottom: 1px solid var(--line); padding: 3px 5px; text-align: right; font-family: var(--mono); white-space: nowrap; }
+  table.bp td.nm { font-family: var(--sans); white-space: normal; min-width: 260px; }
+  table.bp tr.picked td { background: rgba(77, 196, 141, .12); }
+  table.bp button { height: 24px; padding: 0 8px; font-size: 12px; }
   table.contests td.m, table.contests th.r { text-align: right; }
   .empty { color: var(--muted); padding: 24px 4px; }
   @media (max-width: 620px) {
     .head, .row { grid-template-columns: 56px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
     .col-min, .col-avg, .col-miss, .col-max { display: none; }
+    table.bp td.nm { min-width: 140px; font-size: 11px; }
+    table.bp td, table.bp th { padding: 3px 3px; }
     .name { font-size: 13px; }
   }
 </style>
@@ -206,8 +222,32 @@
     Export writes DraftKings' upload file (player IDs under G, G, G, F, F, F, UTIL, UTIL): Lineups → Upload Lineups on DraftKings.</div>
   <div class="status" id="buildStatus"></div>
   <div class="lineups" id="lineups"></div>
+  <div id="summary"></div>
   <h2 id="expoHead" hidden>Exposure</h2>
   <div class="expo" id="expo"></div>
+
+  <h2>Portfolio builder</h2>
+  <div class="note">Hand-build the set from a large pool. Every pool lineup is scored by what it <b>adds</b> to your picks so
+    far, re-scored after every add or remove: <b>Added</b> is the set's expected payout with it minus without it, your own
+    lineups ranked against each other on every simulated night (one that scores on the same nights as a pick mostly
+    pushes yours down a place, so it adds little); <b>+Cover</b> is the rise in the share of nights where at least one of
+    your lineups reaches the top 1% (or cashes, with the toggle). <b>Alone</b> is its expected payout by itself;
+    <b>Shared</b>, the most players it shares with any pick. Uses the contest, the rules above (the pool is drawn under
+    them) and Sims. Auto-fill adds by Added value within Max exposure and Min unique. <b>Save build</b> downloads the pool,
+    your hand-built set and an auto-pick from the same pool: send it in with the standings and it gets graded, slate by
+    slate, against the auto-pick and against random sets from the pool.</div>
+  <div class="opts">
+    <label class="field"><span class="field-label">Pool size</span><input class="num" id="poolSize" type="number" min="50" max="2000" step="50" value="1000"></label>
+    <button type="button" class="primary" id="bpBuild">Build pool</button>
+    <label class="field"><span class="field-label">+Cover counts</span><select id="bpCover" style="width:auto"><option value="top1">top 1%</option><option value="cash">cashing</option></select></label>
+    <button type="button" id="bpAuto" disabled>Auto-fill the rest</button>
+    <button type="button" id="bpClear" disabled>Clear picks</button>
+    <button type="button" id="bpUse" disabled>Use as my lineups</button>
+    <button type="button" id="bpSave" disabled>Save build</button>
+  </div>
+  <div class="status" id="bpStatus"></div>
+  <div id="bpSummary"></div>
+  <div class="bpwrap" id="bpTableWrap" hidden><table class="bp" id="bpTable"></table></div>
 
   <h2>Contests</h2>
   <div class="note" id="contestsAt"></div>
@@ -219,7 +259,7 @@
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var SLOTS = DKSim.SLOTS;
-var doc = null, slate = null, rows = [], state = null, built = [], news = [], fieldDoc = null, gate = null;
+var doc = null, slate = null, rows = [], state = null, built = [], news = [], fieldDoc = null, gate = null, builtSummary = null, BP = null;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1 };
 
@@ -289,7 +329,9 @@ function pick() {
   $("contest").innerHTML = cs.map(function (c) {
     return '<option value="' + esc(c.id) + '">' + esc(c.name + " · " + money(c.entry_fee) + " · " + (c.size || 0).toLocaleString() + " entries · max " + (c.max_per_user || 1)) + "</option>";
   }).join("") || "<option value=''>No contest with a payout table</option>";
-  built = []; renderBuilt();
+  built = []; builtSummary = null; renderBuilt();
+  BP = null; $("bpTableWrap").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = "";
+  ["bpAuto", "bpClear", "bpUse", "bpSave"].forEach(function (id) { $(id).disabled = true; });
   renderNews(); renderPlayers(); renderContests();
 }
 
@@ -397,7 +439,7 @@ function assign(ids) { return DKSim.assign(ctx(), ids); }
 
 async function build() {
   var o = rules(), r = await DKSim.solve(ctx(), o);
-  built = r.lineups;
+  built = r.lineups; builtSummary = null;
   renderBuilt(r.why ? "Built " + built.length + " of " + o.n + ": " + r.why + "." : "Built " + built.length + " lineups.");
 }
 
@@ -409,6 +451,7 @@ async function simPick() {
   var res = await DKSim.simPick(ctx(), o, c, F.field, fieldDoc.z, +$("nCand").value || 150, +$("nSims").value || 3000);
   if (res.error) return res.error;
   built = res.lineups;
+  builtSummary = { coverage: res.coverage, diversity: res.diversity, total: res.total, fee: res.fee };
   var st = res.stability, N = o.n;
   return "Sim: " + built.length + " of " + res.candidates + " candidates into " + c.name + " (" + (c.size || 0).toLocaleString() + " entries) over " +
     res.nights + " nights: expected back " + cents(res.total) + " on " + cents(res.fee) + (res.fee ? " (ROI " + Math.round(100 * (res.total / res.fee - 1)) + "%)" : "") +
@@ -420,8 +463,23 @@ async function simPick() {
     " ROI here assumes our projections are right; it ranks lineups, it isn't a forecast of winnings.";
 }
 
+// A portfolio's summary: coverage (nights with a cash / a top-1% finish / a 1st among the set), the most-used
+// player's share, the mean players two lineups share, distinct cores (a lineup's three highest-salaried players)
+function summaryHtml(sm) {
+  if (!sm) return "";
+  var d = sm.diversity, c = sm.coverage;
+  return '<div class="summary">' +
+    (sm.total != null ? "<span><b>" + cents(sm.total) + (sm.fee ? " on " + cents(sm.fee) : "") + "</b>expected back (the sim)</span>" : "") +
+    (c ? "<span><b>" + Math.round(100 * c.cash) + "%</b>of nights one of them cashes</span><span><b>" + Math.round(100 * c.top1) +
+         "%</b>of nights one reaches the top 1%</span><span><b>" + (100 * c.first).toFixed(1) + "%</b>of nights one wins</span>" : "") +
+    (d && d.most_used ? "<span><b>" + Math.round(100 * d.most_used.share) + "%</b>most-used: " + esc(d.most_used.name) + "</span>" : "") +
+    (d ? "<span><b>" + d.mean_shared.toFixed(1) + "</b>players two lineups share, on average</span><span><b>" + d.cores + " of " + d.n +
+         "</b>distinct cores (top-3 salaries)</span>" : "") + "</div>";
+}
+
 function renderBuilt(msg) {
   $("buildStatus").textContent = msg || "";
+  $("summary").innerHTML = built.length ? summaryHtml(Object.assign({ diversity: DKSim.diversity(ctx(), built) }, builtSummary || {})) : "";
   $("export").disabled = !built.length;
   var by = {}; rows.forEach(function (r) { by[r.id] = r; });
   $("lineups").innerHTML = built.map(function (L, i) {
@@ -452,6 +510,123 @@ function exportCsv() {
   document.body.appendChild(a); a.click(); a.remove();
 }
 
+// --- the portfolio builder ---------------------------------------------------------------------
+function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
+function shortName(name) { var p = String(name).split(" ").filter(function (x) { return !/^(Jr\.?|Sr\.?|II|III|IV|V)$/.test(x); }); return p[p.length - 1] || name; }
+function contestNow() { return (slate.contests || []).find(function (x) { return String(x.id) === $("contest").value; }); }
+
+async function bpBuild() {
+  var o = rules(), F = fieldOf(), c = contestNow();
+  if (!F || !F.field || !F.field.length) { $("bpStatus").textContent = "No simulated field for this slate."; return; }
+  if (!c || !c.payouts) { $("bpStatus").textContent = "Pick a contest with a payout table (above)."; return; }
+  var K = +$("poolSize").value || 1000, S = +$("nSims").value || 3000, cx = ctx();
+  cx.progress = function (msg) { $("bpStatus").textContent = msg; return tick(); };
+  var t0 = performance.now();
+  var res = await DKSim.pool(cx, o, K);
+  if (res.lineups.length < o.n) { $("bpStatus").textContent = "Only " + res.lineups.length + " lineups fit the rules" + (res.why ? " (" + res.why + ")" : "") + "."; return; }
+  $("bpStatus").textContent = "Simulating " + S + " nights for " + res.lineups.length + " lineups…"; await tick();
+  var sim = DKSim.simulate(cx, res.lineups, F.field, fieldDoc.z, c, o.n, S);
+  var b = DKSim.builder(sim, c), by = {};
+  rows.forEach(function (r) { by[r.id] = r; });
+  BP = { pool: res.lineups, sim: sim, b: b, contest: c, o: o, nights: S, sort: "value", dir: -1, built_in: (performance.now() - t0) / 1000,
+         alone: res.lineups.map(function (L, k) { return b.alone(k); }),
+         proj: res.lineups.map(function (L) { return L.ids.reduce(function (t, id) { return t + proj(by[id]); }, 0); }),
+         own: res.lineups.map(function (L) { return L.ids.reduce(function (t, id) { return t + own(by[id]); }, 0); }),
+         names: res.lineups.map(function (L) { return L.slots.map(function (id) { return shortName(by[id].name); }).join(" · "); }),
+         why: res.why };
+  ["bpAuto", "bpClear", "bpUse", "bpSave"].forEach(function (id) { $(id).disabled = false; });
+  bpRescore(); bpRender();
+}
+
+function bpRescore() {
+  var t = performance.now(), b = BP.b, picked = b.picked;
+  BP.scores = []; BP.shared = [];
+  for (var k = 0; k < BP.pool.length; k++) {
+    var ids = BP.pool[k].ids, sh = 0;
+    picked.forEach(function (j) { if (j !== k) sh = Math.max(sh, BP.pool[j].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length); });
+    BP.shared.push(sh);
+    BP.scores.push(picked.indexOf(k) >= 0 ? null : b.score(k));
+  }
+  BP.ms = performance.now() - t;
+}
+
+function bpAdd(k) { BP.b.add(k); bpRescore(); bpRender(); }
+function bpRemove(k) { BP.b.remove(k); bpRescore(); bpRender(); }
+
+async function bpAuto() {
+  var o = rules(), b = BP.b, count = {}, limit = {};
+  rows.forEach(function (r) {
+    var cap = Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
+    limit[r.id] = state.lock[r.id] ? o.n : Math.floor(cap * o.n + 1e-9);
+  });
+  b.picked.forEach(function (k) { BP.pool[k].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
+  while (b.picked.length < o.n) {
+    var best = -1, bestV = -Infinity;
+    for (var k = 0; k < BP.pool.length; k++) {
+      var sc = BP.scores[k];
+      if (!sc || !DKSim.fits(BP.pool, b.picked, k, count, limit, o.minUnique)) continue;
+      if (sc.value > bestV) { bestV = sc.value; best = k; }
+    }
+    if (best < 0) break;
+    b.add(best); BP.pool[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
+    $("bpStatus").textContent = "Auto-filling… " + b.picked.length + " of " + o.n; await tick();
+    bpRescore();
+  }
+  bpRender(b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure and Min unique." : "");
+}
+
+function bpRender(note) {
+  var b = BP.b, picked = b.picked, cov = $("bpCover").value;
+  var lineups = picked.map(function (k) { return BP.pool[k]; });
+  $("bpStatus").textContent = (note ? note + " " : "") + BP.pool.length + " lineups in the pool, " + BP.nights + " nights, " + esc(BP.contest.name) +
+    ". Re-scored every lineup in " + Math.round(BP.ms) + " ms" + (BP.ms > 1500 ? " (slow: a smaller pool or fewer Sims re-scores faster)" : "") + "." +
+    (BP.why ? " " + BP.why + "." : "");
+  var cnt = {}, by = {};
+  rows.forEach(function (r) { by[r.id] = r; });
+  lineups.forEach(function (L) { L.ids.forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; }); });
+  var expo = Object.keys(cnt).sort(function (x, y) { return cnt[y] - cnt[x]; }).slice(0, 10)
+    .map(function (id) { return esc(shortName(by[id].name)) + " " + Math.round(100 * cnt[id] / picked.length) + "%"; }).join(" · ");
+  $("bpSummary").innerHTML = picked.length ? summaryHtml({ coverage: b.coverage(), diversity: DKSim.diversity(ctx(), lineups), total: b.total(),
+    fee: (BP.contest.entry_fee || 0) * picked.length }) + '<div class="note">' + picked.length + " picked. Exposures: " + expo + "</div>"
+    : '<div class="note">Nothing picked yet: Add lineups below, or Auto-fill.</div>';
+  var get = { proj: function (k) { return BP.proj[k]; }, own: function (k) { return BP.own[k]; }, alone: function (k) { return BP.alone[k]; },
+              value: function (k) { return BP.scores[k] ? BP.scores[k].value : -1; },
+              cover: function (k) { return BP.scores[k] ? BP.scores[k][cov] : -1; }, shared: function (k) { return BP.shared[k]; } };
+  var rest = [];
+  for (var k = 0; k < BP.pool.length; k++) if (picked.indexOf(k) < 0) rest.push(k);
+  var g = get[BP.sort];
+  rest.sort(function (x, y) { return (g(x) - g(y)) * BP.dir; });
+  var cols = [["proj", "Proj"], ["own", "Own"], ["alone", "Alone"], ["value", "Added"], ["cover", "+Cover"], ["shared", "Shared"]];
+  var head = '<tr><th class="l"></th><th class="l">Lineup</th>' + cols.map(function (c) {
+    return '<th data-k="' + c[0] + '" class="' + (BP.sort === c[0] ? "on" : "") + '">' + c[1] + (BP.sort === c[0] ? (BP.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>";
+  function row(k, isPicked) {
+    var sc = BP.scores[k];
+    return '<tr class="' + (isPicked ? "picked" : "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' + (isPicked ? "bpRm" : "bpAdd") + '">' +
+      (isPicked ? "Remove" : "Add") + '</button></td><td class="l nm">' + esc(BP.names[k]) + "</td><td>" + BP.proj[k].toFixed(1) + "</td><td>" + Math.round(BP.own[k]) +
+      "%</td><td>" + cents(BP.alone[k]) + "</td><td>" + (sc ? cents(sc.value) : "–") + "</td><td>" + (sc ? (100 * sc[cov]).toFixed(1) + "%" : "–") +
+      "</td><td>" + (picked.length ? BP.shared[k] : "–") + "</td></tr>";
+  }
+  $("bpTable").innerHTML = head + picked.map(function (k) { return row(k, true); }).join("") + rest.slice(0, 200).map(function (k) { return row(k, false); }).join("");
+  $("bpTableWrap").hidden = false;
+}
+
+function bpUse() {
+  built = BP.b.picked.map(function (k, i) { return Object.assign({}, BP.pool[k], { sim: BP.b.lineupStats(i) }); });
+  builtSummary = { coverage: BP.b.coverage(), total: BP.b.total(), fee: (BP.contest.entry_fee || 0) * built.length };
+  renderBuilt("Using the builder's " + built.length + " picks: Export writes them.");
+}
+
+function bpSave() {
+  var auto = DKSim.pick(ctx(), rules(), BP.pool, BP.sim, BP.contest, rules().n).chosen;
+  var doc = { draft_group: slate.draft_group_id, day: slate.day, contest_id: BP.contest.id, contest: BP.contest.name,
+              saved_at: new Date().toISOString(), nights: BP.nights, rules: BP.o, gate: gate,
+              pool: BP.pool.map(function (L) { return L.ids; }), hand: BP.b.picked.slice(), auto: auto };
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
+  a.download = "dk_build_" + slate.day + "_" + slate.draft_group_id + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
 // --- events ------------------------------------------------------------------------------------
 $("slate").addEventListener("change", pick);
 $("reload").addEventListener("click", load);
@@ -460,6 +635,22 @@ $("build").addEventListener("click", function () {
   build().catch(function (e) { $("buildStatus").innerHTML = '<span class="bad">Build failed: ' + esc(e.message) + "</span>"; });
 });
 $("export").addEventListener("click", exportCsv);
+$("bpBuild").addEventListener("click", function () {
+  $("bpStatus").textContent = "Building the pool…";
+  bpBuild().catch(function (e) { $("bpStatus").innerHTML = '<span class="bad">Pool failed: ' + esc(e.message) + "</span>"; });
+});
+$("bpAuto").addEventListener("click", function () { bpAuto().catch(function (e) { $("bpStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; }); });
+$("bpClear").addEventListener("click", function () { BP.b.set([]); bpRescore(); bpRender(); });
+$("bpUse").addEventListener("click", bpUse);
+$("bpSave").addEventListener("click", bpSave);
+$("bpCover").addEventListener("change", function () { if (BP) bpRender(); });
+$("bpTable").addEventListener("click", function (e) {
+  var h = e.target.closest("th[data-k]");
+  if (h) { var k = h.dataset.k; BP.dir = BP.sort === k ? -BP.dir : -1; BP.sort = k; bpRender(); return; }
+  var b = e.target.closest("button"); if (!b) return;
+  var k2 = +b.closest("tr").dataset.k;
+  if (b.classList.contains("bpAdd")) bpAdd(k2); else bpRemove(k2);
+});
 $("simPick").addEventListener("click", function () {
   $("buildStatus").textContent = "Building candidates and simulating…";
   simPick().then(renderBuilt, function (e) { $("buildStatus").innerHTML = '<span class="bad">Sim failed: ' + esc(e.message) + "</span>"; });

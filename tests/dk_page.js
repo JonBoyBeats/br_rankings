@@ -19,6 +19,16 @@ const fails = [], passes = [];
 function check(name, ok, detail) { (ok ? passes : fails).push(name + (ok || !detail ? "" : ": " + detail)); }
 const isG = r => /(^|\/)G(\/|$)/.test(r.roster), isF = r => /(^|\/)F(\/|$)/.test(r.roster);
 
+// slots for a lineup saved as ids only (Save build): guards to G first, forwards to F, the rest to UTIL
+function picksSlots(ids) {
+  const ps = ids.map(id => P[id]).sort((a, b) => b.salary - a.salary);
+  const g = ps.filter(r => isG(r) && !isF(r)), f = ps.filter(r => isF(r) && !isG(r)), gf = ps.filter(r => isG(r) && isF(r));
+  const G = g.splice(0, 3), F = f.splice(0, 3);
+  while (G.length < 3) G.push(gf.shift());
+  while (F.length < 3) F.push(gf.shift());
+  return G.concat(F, g, f, gf).slice(0, 8).map(r => Object.keys(P).find(id => P[id] === r));
+}
+
 // every lineup legal and within the rules it was built under
 function audit(name, L, o) {
   const bad = [], count = {};
@@ -143,6 +153,47 @@ function audit(name, L, o) {
   const shown = await pg.evaluate(([a, c]) => [proj(rows.find(r => r.id === a)), proj(rows.find(r => r.id === c))], [pick, cheap]);
   check("gate blends where open", Math.abs(shown[0] - (0.6 * P[pick].fp_dk + 0.4 * P[pick].dk_avg)) < 1e-9, JSON.stringify(shown));
   check("gate leaves closed bands alone", Math.abs(shown[1] - P[cheap].fp_dk) < 1e-9);
+
+  // the portfolio builder (a small pool, for speed): adding a lineup raises the set's expected payout by exactly its
+  // Added value, remove undoes it, auto-fill stays within the rules, the picks export, Save build writes a gradable file
+  gate = null;
+  await pg.click("#reload");
+  await pg.waitForFunction(() => /Projection gate: closed/.test(document.getElementById("status").textContent));
+  await set(base);
+  await pg.selectOption("#contest", jukebox);
+  await pg.fill("#poolSize", "300"); await pg.fill("#nSims", "1000");
+  await pg.click("#bpBuild");
+  await pg.waitForFunction(() => /Re-scored every lineup/.test(document.getElementById("bpStatus").textContent) || /failed|Only/.test(document.getElementById("bpStatus").textContent), null, { timeout: 300000 });
+  check("builder: pool built and scored", (await pg.$$eval("#bpTable tr", r => r.length)) > 100, await pg.textContent("#bpStatus"));
+  const step = await pg.evaluate(() => {
+    const b = BP.b, out = [];
+    for (const k of [0, 5, 40]) {
+      const before = b.total(), v = BP.scores[k] ? BP.scores[k].value : null;
+      bpAdd(k);
+      out.push(Math.abs(b.total() - before - v));
+    }
+    bpRemove(5);
+    return { gaps: out, picked: b.picked.slice() };
+  });
+  check("builder: Added value is the set's payout with it minus without", step.gaps.every(g => g < 1e-9), JSON.stringify(step.gaps));
+  check("builder: Remove takes a pick out", JSON.stringify(step.picked) === JSON.stringify([0, 40]), JSON.stringify(step.picked));
+  await pg.click("#bpClear");
+  await pg.click("#bpAuto");
+  await pg.waitForFunction(() => /re-scored every lineup/i.test(document.getElementById("bpStatus").textContent) && BP.b.picked.length >= 20 || /stopped/.test(document.getElementById("bpStatus").textContent), null, { timeout: 300000 });
+  const picks = await pg.evaluate(() => BP.b.picked.map(k => ({ ids: BP.pool[k].ids, slots: BP.pool[k].slots })));
+  audit("builder: Auto-fill", picks, rulesOf(base));
+  check("builder: summary shows coverage and diversity", /of nights one reaches the top 1%/.test(await pg.textContent("#bpSummary")) && /distinct cores/.test(await pg.textContent("#bpSummary")));
+  await pg.click("#bpUse");
+  const [dl2] = await Promise.all([pg.waitForEvent("download"), pg.click("#export")]);
+  const rows2 = fs.readFileSync(await dl2.path(), "utf8").trim().split("\n").slice(1);
+  check("builder: Use as my lineups exports the picks", rows2.length === picks.length && rows2.every((l, i) => l === picks[i].slots.join(",")));
+  const [dl3] = await Promise.all([pg.waitForEvent("download"), pg.click("#bpSave")]);
+  const saved = JSON.parse(fs.readFileSync(await dl3.path(), "utf8"));
+  // a 300-lineup pool can run out of lineups that fit the caps short of 20 (the page says so); 1,000 fills
+  check("builder: Save build writes the pool, the hand-built set and an auto-pick", saved.pool.length >= 250 && saved.hand.length === picks.length &&
+        saved.auto.length >= 18 && String(saved.draft_group) === String(slate.draft_group_id), JSON.stringify({ pool: saved.pool.length, hand: saved.hand.length, auto: saved.auto.length }));
+  check("builder: Auto-fill says why when it stops short", picks.length === 20 || /stopped at \d+/.test(await pg.textContent("#bpStatus")));
+  audit("builder: the saved auto-pick", saved.auto.map(k => ({ ids: saved.pool[k], slots: saved.pool[k] })).map(l => ({ ids: l.ids, slots: picksSlots(l.ids) })), rulesOf(base));
 
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
