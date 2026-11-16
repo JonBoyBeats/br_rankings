@@ -6,8 +6,11 @@ analysis/cbb/dk/standings/ (contest-standings-<contest id>.csv; never edited). W
 mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
 
   nightly   per standings file not graded yet, rows in analysis/cbb/dk/eval.csv: each of the five frozen rule sets'
-            shadow portfolio, and the owner's own entries (EntryName jonboyjackson), placed among the contest's real
-            entries: share of lineups in the top 10%, share that cashed, dollars back on fees. Then the field's cut
+            shadow portfolio (and No extra rules' pool's top 20 by expected payout alone), the DK page's saved build
+            (analysis/cbb/dk/builds: its hand-built 20 and auto-pick) and the owner's own entries (EntryName
+            jonboyjackson), placed among the contest's real entries: share of lineups in the top 10%, share that
+            cashed, dollars back on fees; and each one's percentile among RANDOM_SETS random sets of its size from its
+            own pool, and the pool's average lineup against the field's average entry. Then the field's cut
             lines (winning score, top 10%, last paid place) against the sim's prediction (when the shadow was built
             for that contest), and each drafted player's projected ownership against his real %Drafted
             (analysis/cbb/dk/own_eval.csv).
@@ -34,6 +37,7 @@ import glob
 import json
 import math
 import os
+import random
 import re
 import statistics as S
 import sys
@@ -47,7 +51,10 @@ STANDINGS = os.path.join(DK, "standings")
 EVAL, OWN_EVAL, GATE = os.path.join(DK, "eval.csv"), os.path.join(DK, "own_eval.csv"), os.path.join(DK, "gate.json")
 USER = "jonboyjackson"
 EVAL_COLS = ["date", "draft_group", "contest_id", "contest", "entries", "fee", "who", "lineups", "top10", "cash", "dollars_back",
-             "fees", "field_win", "field_top10", "field_cash", "sim_win", "sim_top10", "sim_cash"]
+             "fees", "pct_top10", "pct_cash", "pct_dollars", "pool_src", "pool_n", "pool_avg", "field_avg",
+             "field_win", "field_top10", "field_cash", "sim_win", "sim_top10", "sim_cash"]
+RANDOM_SETS = 1000
+BUILDS = os.path.join(DK, "builds")       # the DK page's saved builds (Save build: its pool, the hand-built 20, the auto-pick)
 OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own_proj", "own_actual"]
 BANDS = [(6000, 99999), (4000, 5999), (0, 3999)]
 GATE_NIGHTS, GATE_N, GATE_SHARE = 5, 100, 0.6
@@ -152,24 +159,52 @@ def nightly(a):
         shadow = at_lock(mirror, "dk_cbb_shadow.json", start) or {}
         sh = (shadow.get("slates") or {}).get(str(slate["draft_group_id"]))
         base = {"date": rec[0]["date"], "draft_group": slate["draft_group_id"], "contest_id": cid, "contest": contest["name"],
-                "entries": n, "fee": fee, "field_win": cut["win"], "field_top10": cut["top10"], "field_cash": cut["cash"]}
+                "entries": n, "fee": fee, "field_win": cut["win"], "field_top10": cut["top10"], "field_cash": cut["cash"],
+                "field_avg": round(S.mean(field), 2)}
+
+        def lineup(ids):                 # (in the top 10%, cashed, dollars) for one lineup against the real entries
+            p = placed(sum(pts.get(i) or 0 for i in ids), field)
+            return (p <= top10, p <= paid, pay.get(p, 0), sum(pts.get(i) or 0 for i in ids))
+
+        def grade(who, actual, pool, pool_src, extra=None):
+            """A portfolio's row: its top-10% and cash rates and dollars, and where those land among RANDOM_SETS random
+            sets of the same size from its own pool (percentile: share of random sets below it, ties half)."""
+            k = len(actual)
+            row = dict(base, who=who, lineups=k, top10=sum(a[0] for a in actual) / k, cash=sum(a[1] for a in actual) / k,
+                       dollars_back=sum(a[2] for a in actual), fees=fee * k, pool_src=pool_src, sim_win="", sim_top10="", sim_cash="")
+            if pool and len(pool) >= k:
+                P = [lineup(ids) for ids in pool]
+                rng = random.Random("%s-%s" % (cid, who))
+                sets = [rng.sample(P, k) for _ in range(RANDOM_SETS)]
+                for col, f in (("top10", lambda v: sum(a[0] for a in v) / k), ("cash", lambda v: sum(a[1] for a in v) / k),
+                               ("dollars", lambda v: sum(a[2] for a in v))):
+                    me = f(actual)
+                    rs = [f(v) for v in sets]
+                    row["pct_" + col] = round(100 * (sum(r < me for r in rs) + 0.5 * sum(r == me for r in rs)) / RANDOM_SETS, 1)
+                row.update(pool_n=len(pool), pool_avg=round(S.mean(a[3] for a in P), 2))
+            row.update(extra or {})
+            out.append(row)
+
+        builds = [json.load(open(f)) for f in sorted(glob.glob(os.path.join(BUILDS, "*.json")))]
+        builds = [b for b in builds if str(b.get("draft_group")) == str(slate["draft_group_id"])]
+        none_pool = ((sh or {}).get("rulesets", {}).get("none") or {}).get("pool")
         if sh:
             same = str(sh["contest"]["id"]) == cid
             for key, rs in sh["rulesets"].items():
                 L = rs.get("lineups") or []
-                if not L:
-                    continue
-                scores = [sum(pts.get(i) or 0 for i in l["ids"]) for l in L]
-                places = [placed(s, field) for s in scores]
-                out.append(dict(base, who=key, lineups=len(L), top10=sum(p <= top10 for p in places) / len(L),
-                                cash=sum(p <= paid for p in places) / len(L), dollars_back=sum(pay.get(p, 0) for p in places),
-                                fees=fee * len(L), sim_win=rs["cut"]["win"] if same else "", sim_top10=rs["cut"]["top10"] if same else "",
-                                sim_cash=rs["cut"]["cash"] if same else ""))
+                if L:
+                    grade(key, [lineup(l["ids"]) for l in L], rs.get("pool"), "its own",
+                          {"sim_win": rs["cut"]["win"], "sim_top10": rs["cut"]["top10"], "sim_cash": rs["cut"]["cash"]} if same else None)
+            if sh.get("top20_alone"):
+                grade("top20_alone", [lineup(l["ids"]) for l in sh["top20_alone"]["lineups"]], none_pool, "none's")
+        for b in builds[-1:]:            # the owner's last saved build for the slate: the hand-built 20 and the auto-pick
+            for key in ("hand", "auto"):
+                if b.get(key):
+                    grade(key, [lineup(b["pool"][i]) for i in b[key]], b["pool"], "the build's")
         mine = [e for e in entries if e["name"].lower().startswith(USER)]
         if mine:
-            out.append(dict(base, who="mine", lineups=len(mine), top10=sum(e["rank"] <= top10 for e in mine) / len(mine),
-                            cash=sum(e["rank"] <= paid for e in mine) / len(mine), dollars_back=sum(pay.get(e["rank"], 0) for e in mine),
-                            fees=fee * len(mine), sim_win="", sim_top10="", sim_cash=""))
+            grade("mine", [(e["rank"] <= top10, e["rank"] <= paid, pay.get(e["rank"], 0), e["points"]) for e in mine],
+                  builds[-1]["pool"] if builds else none_pool, "the build's" if builds else "none's")
         for name, (pct, _) in players.items():
             r = by_name.get(name)
             if r and pct is not None:
@@ -263,6 +298,31 @@ def readout(a):
                   "%.2f / %.2f" % (back, fees), pair, pair_c))
         print("   The field's top-10% rate is 10% by definition; its cash rate is the contest's paid places over entries."
               " 'won': slates where the rule set's rate beat No extra rules' (ties left out), 'gap': the mean of the per-slate differences.")
+        # against random sets of the same size from the portfolio's own pool: no skill in the pick is ~50
+        print("\n   Against %d random sets of the same size from each portfolio's own pool (percentile: 50 = no better than"
+              " chance; slates beating the random median on the top-10%% rate):" % RANDOM_SETS)
+        print("   %-12s %7s %9s %9s %9s %16s %22s" % ("", "slates", "top 10%", "cash", "dollars", "beat median", "pool avg vs field avg"))
+        for w in sorted({r["who"] for r in ev}, key=lambda w: (w == "mine", w not in ("none", "top20_alone"), w)):
+            v = [r for r in ev if r["who"] == w and r.get("pct_top10") not in ("", None)]
+            if not v:
+                continue
+            sl = sorted({r["draft_group"] for r in v})
+            def per_slate(col):     # a slate's percentile: the mean over its graded contests
+                return [S.mean(num(r[col]) for r in v if r["draft_group"] == g) for g in sl]
+            t10 = per_slate("pct_top10")
+            gap = S.mean(num(r["pool_avg"]) - num(r["field_avg"]) for r in v if num(r.get("pool_avg")) is not None)
+            print("   %-12s %7d %9.0f %9.0f %9.0f %16s %+21.1f" % (w, len(sl), S.mean(t10), S.mean(per_slate("pct_cash")),
+                  S.mean(per_slate("pct_dollars")), "%d of %d" % (sum(x > 50 for x in t10), len(sl)), gap))
+        print("   none: the 20-pick on No extra rules' pool; top20_alone: that pool's top 20 by expected payout alone; hand / auto:"
+              " the DK page's hand-built 20 and its auto-pick, from the same saved pool; mine: your entries, against the saved"
+              " build's pool (else No extra rules').")
+        for x, y in (("none", "top20_alone"), ("hand", "auto")):
+            both = sorted({r["draft_group"] for r in ev if r["who"] == x} & {r["draft_group"] for r in ev if r["who"] == y})
+            if both:
+                d = [S.mean(num(r["top10"]) for r in ev if r["who"] == x and r["draft_group"] == g)
+                     - S.mean(num(r["top10"]) for r in ev if r["who"] == y and r["draft_group"] == g) for g in both]
+                print("   %s against %s, top-10%% rate slate by slate: %d of %d slates won, mean gap %+.1f pts" % (
+                    x, y, sum(g > 0 for g in d), sum(g != 0 for g in d), 100 * S.mean(d)))
         if len(slates) >= DECISION_SLATES:
             beat = [w for w in who_all if S.mean(per[s][w][0] / per[s][w][2] for s in per if w in per[s]) > 0.10]
             print("   DECISION (%d slates): beating the field's 10%% top-10 rate: %s" % (len(slates), ", ".join(beat) or "none: cut back"))
