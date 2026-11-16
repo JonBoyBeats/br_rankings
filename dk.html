@@ -408,7 +408,7 @@ function pick() {
   BP = null; $("bpTableWrap").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpKeep").hidden = true;
   ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = true; });
   ruleCounts = {}; editing = -1;
-  bankLoadState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
+  bankLoadState(); renderBank(); renderEntries(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
   renderTiles(); renderRules(); fillEditor(); renderNews(); renderPlayers(); renderContests();
 }
 
@@ -703,9 +703,10 @@ var BANK = null, CUT = null, PF = {}, ENTRIES = null;
 function bankKey() { return "dkcbb-bank:" + slate.draft_group_id; }
 function bankLoadState() {
   BANK = store(bankKey()) || { lineups: [], tags: [], tagRules: {} };
-  CUT = null; PF = {}; ENTRIES = store("dkcbb-entries:" + slate.draft_group_id) || null;
+  CUT = null; PF = store("dkcbb-pf:" + slate.draft_group_id) || {}; ENTRIES = store("dkcbb-entries:" + slate.draft_group_id) || null;
 }
 function bankSaveState() { store(bankKey(), BANK); }
+function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); }   // the Live page reads it for your exposures
 function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
   var o = drawRules(), t = [], name = function (id) { return shortName((byId(id) || {}).name || id); };
   if (o.stackN) t.push(o.stackN + "-stack" + (o.stackBoth ? " + bring-back" : ""));
@@ -727,7 +728,7 @@ function bankAdd(lineups, tag) {
     seen[key] = BANK.lineups.length; BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice() }); BANK.tags.push([tag]); added++;
   });
   if (lineups.length) BANK.tagRules[tag] = Object.assign(drawRules(), { lock: Object.keys(state.lock), excl: Object.keys(state.excl) });
-  CUT = null; PF = {}; bankSaveState(); renderBank();
+  CUT = null; PF = {}; pfSave(); bankSaveState(); renderBank();
   return added;
 }
 function finalIdx() { return CUT && CUT.keep ? CUT.keep : BANK.lineups.map(function (L, i) { return i; }); }
@@ -800,7 +801,7 @@ async function runCut() {
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
   var keep = +$("cutKeep").value || 500, pct = (+$("cutPct").value || 10) / 100, S = +$("cutNights").value || 2000;
   var cx = ctx(), live = [];
-  CUT = { keep: null, rounds: live }; PF = {}; renderEntries(); $("pfExport").disabled = true;
+  CUT = { keep: null, rounds: live }; PF = {}; pfSave(); renderEntries(); $("pfExport").disabled = true;
   var res = await DKSim.cutPool(cx, BANK.lineups, cs.map(function (c) { return { contest: c, n: ns[String(c.id)] }; }), F.field, fieldDoc.z, keep, pct, S,
     function (r) { live.push(r); renderBank(); $("cutStatus").textContent = "Round " + r.round + ": " + r.survivors + " left…"; return tick(); });
   CUT = { keep: res.keep, rounds: res.rounds, contests: cs.map(function (c) { return String(c.id); }) };
@@ -832,7 +833,7 @@ async function pickPortfolios() {
     msgs.push(c.name + ": " + r.chosen.length + " of " + n + why + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
       ", one cashes in " + Math.round(100 * r.builder.coverage().cash) + "% of nights)");
   }
-  renderEntries(); $("pfExport").disabled = !ENTRIES;
+  pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
   return "Portfolios from " + (CUT && CUT.keep ? "the final " + pool.length : "the whole bank of " + pool.length) + ": " + msgs.join("; ") + ". Review any one below." +
     (ENTRIES ? "" : " Load the entries file to export them.");
 }
@@ -985,7 +986,7 @@ $("bankDraw").addEventListener("click", function () {
 });
 $("bankClear").addEventListener("click", function () {
   if (!confirm("Clear the bank (" + BANK.lineups.length + " lineups)?")) return;
-  BANK = { lineups: [], tags: [], tagRules: {} }; CUT = null; PF = {}; bankSaveState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
+  BANK = { lineups: [], tags: [], tagRules: {} }; CUT = null; PF = {}; pfSave(); bankSaveState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
 });
 $("entriesFile").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
@@ -1002,7 +1003,7 @@ $("bankSave").addEventListener("click", saveBank);
 $("entriesBox").addEventListener("click", function (e) { var b = e.target.closest("button[data-review]"); if (b) review(b.dataset.review); });
 $("bpKeep").addEventListener("click", function () {
   PF[BP.review] = BP.b.picked.map(function (k) { return BP.idx[k]; });
-  renderEntries(); $("pfExport").disabled = !ENTRIES;
+  pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
   $("bpStatus").textContent = "Kept " + BP.b.picked.length + " lineups as " + BP.contest.name + "'s portfolio.";
 });
 $("teamBar").addEventListener("click", function (e) {

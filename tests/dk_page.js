@@ -384,6 +384,11 @@ function audit(name, L, o) {
         JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()) &&
         bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3, dl6.suggestedFilename());
 
+  await pg.click("#reload");
+  await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("status").textContent));
+  check("portfolios survive a reload (the Live page reads them for your exposures)",
+        JSON.stringify(await pg.evaluate(() => PF["197791874"])) === JSON.stringify(pf2) && !(await pg.$eval("#pfExport", x => x.disabled)));
+
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
   passes.forEach(p => console.log("PASS " + p));
