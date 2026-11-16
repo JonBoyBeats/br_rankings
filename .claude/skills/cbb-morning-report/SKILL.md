@@ -182,8 +182,10 @@ templates the owner used that night; the monthly readout shows his results on ni
 **Nightly**, give one line only: which standings were graded, and the projection gate's state
 (`analysis/cbb/dk/gate.json`). No rule-set verdicts from one night.
 
-**Monthly** (the first report of each month, and at 30 graded slates): `python3 scripts/dk_eval.py
-readout --sim-z ../br-adp-mirror/dk_cbb_field.json`. It gives, in this order:
+**Monthly** (the first report of each month, and at 30 graded slates): first `python3 scripts/dk_eval.py
+weights` (refits Quality's weights on the earlier 2/3 of the logged slates, tests them on the later 1/3, and
+switches the tiles to them only if they beat equal weights there; commit `analysis/cbb/dk/team_weights.json`),
+then `python3 scripts/dk_eval.py readout --sim-z ../br-adp-mirror/dk_cbb_field.json`. It gives, in this order:
 
 1. Each rule set and the owner's entries: top-10% rate, cash rate, then dollars as the long-run check;
    each rule set against "No extra rules" slate by slate (slates won, paired gap), never pooled totals.
@@ -195,11 +197,13 @@ readout --sim-z ../br-adp-mirror/dk_cbb_field.json`. It gives, in this order:
    correlation of misses (teammates, opponents; the sim takes both as 0), game-total spread.
 4. The projection gate.
 
-It also grades the team tiles (`analysis/cbb/dk/tiles_eval.csv`, written nightly by `dk_eval.py tiles`):
-how often FOCUS, OK and FADE teams' top 5 by salary beat their salary-implied points. If FOCUS isn't
-beating OK and FADE, say the verdict recipe (`VERDICT` in battle-royale-research
-`scripts/dk_cbb_teams.py`) needs revisiting and propose a change, tested on the logged tiles first;
-make no change without the owner's yes. And the correlation check covers teammates and opponents of a
+It also grades the team tiles' quadrants (FOCUS / CHALK / LEVERAGE / FADE; `analysis/cbb/dk/tiles_eval.csv`
+and `team_eval.csv`, written nightly) on three targets: the top 5 by salary beat their salary-implied
+points; the team's actual points share beat its real ownership; 2+ of its players in the contest's top-1%
+lineups against the field's rate. Report each quadrant on each, and the Quality weights line (fitted
+against equal, on held-out slates). If FOCUS doesn't beat the others, say the quadrant recipe
+(`scores()` / `quadrant()` in battle-royale-research `scripts/dk_cbb_teams.py`) needs revisiting and
+propose a change, tested on the logged tiles first; make no change without the owner's yes. And the correlation check covers teammates and opponents of a
 team's #1 on nights he busted (the pivot and bring-back rules lean on it).
 
 The rule sets are frozen (`RULESETS` in `dk_sim.js`, 2026-11-16): no new ones and no changes until the

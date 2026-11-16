@@ -14,8 +14,12 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             lines (winning score, top 10%, last paid place) against the sim's prediction (when the shadow was built
             for that contest), and each drafted player's projected ownership against his real %Drafted
             (analysis/cbb/dk/own_eval.csv).
-  tiles     analysis/cbb/dk/tiles_eval.csv: each graded night's team tiles (as they stood before lock) against what
-            happened: did the team's top 5 by salary beat the points their salary implied at that night's rate?
+  tiles     analysis/cbb/dk/tiles_eval.csv: each graded night's team tiles (as they stood before lock: quadrant,
+            Quality, Leverage, the ranks) against what happened: did the team's top 5 by salary beat the points their
+            salary implied at that night's rate? (Targets 2 and 3 come from the standings, in nightly:
+            analysis/cbb/dk/team_eval.csv.)
+  weights   Quality's weights fitted on the earlier 2/3 of the logged slates and tested on the later 1/3; written to
+            analysis/cbb/dk/team_weights.json with use: true only if they beat equal weights there (the tiles read it)
   gate      analysis/cbb/dk/gate.json: by salary band, whether DraftKings' season average has beaten ours over the
             graded nights (lower mean error on everyone not tagged Out, a player who sat scoring 0, with at least
             GATE_NIGHTS nights and GATE_N player-nights, and the better of the two on GATE_SHARE of the nights). Where
@@ -31,6 +35,7 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
   python3 scripts/dk_eval.py nightly --mirror ../br-adp-mirror
   python3 scripts/dk_eval.py gate
   python3 scripts/dk_eval.py tiles --mirror ../br-adp-mirror
+  python3 scripts/dk_eval.py weights      (monthly, with the readout)
   python3 scripts/dk_eval.py readout
 """
 import argparse
@@ -58,8 +63,15 @@ EVAL_COLS = ["date", "draft_group", "contest_id", "contest", "entries", "fee", "
              "field_win", "field_top10", "field_cash", "sim_win", "sim_top10", "sim_cash", "rules"]
 RANDOM_SETS = 1000
 TILES_EVAL = os.path.join(DK, "tiles_eval.csv")
-TILE_COLS = ["date", "draft_group", "team", "verdict", "total", "value", "conc", "own_gap", "blowout", "blowout_games", "fragile",
+TILE_COLS = ["date", "draft_group", "team", "verdict", "quality", "leverage", "pts_rank", "value_rank", "conc_rank", "blowout_rank",
+             "lev_rank", "ranked_against", "total", "value", "conc", "own_gap", "blowout", "blowout_games", "fragile",
              "top5_salary", "top5_actual", "top5_implied", "beat"]
+TEAM_EVAL = os.path.join(DK, "team_eval.csv")
+TEAM_COLS = ["date", "draft_group", "contest_id", "team", "own_real", "pts_share", "beat_own", "top1_n", "top1_rate", "field_rate"]
+WEIGHTS = os.path.join(DK, "team_weights.json")
+QUALITY = ("pts", "value", "conc", "blowout")
+FIT_MIN_SLATES = 10           # slates logged before the weights are fitted (earlier 2/3 to fit, later 1/3 to test)
+QUADS = ("FOCUS", "CHALK", "LEVERAGE", "FADE")
 RULE_NAMES = {"min": "Min N from a team / stack", "none": "Exclude team", "if": "1. if player then N+", "ifnot": "2. if NOT player then N+",
               "ifteam": "3. if N+ from team then M+ from opponent", "never": "4. never player with player"}
 BUILDS = os.path.join(DK, "builds")       # the DK page's saved builds (Save build: its pool, the hand-built 20, the auto-pick)
@@ -88,10 +100,17 @@ def standings(path):
     with open(path, encoding="utf-8-sig") as f:
         for r in csv.DictReader(f):
             if r.get("EntryId") and num(r.get("Points")) is not None:
-                entries.append({"rank": int(num(r["Rank"])), "name": r.get("EntryName") or "", "points": num(r["Points"])})
+                entries.append({"rank": int(num(r["Rank"])), "name": r.get("EntryName") or "", "points": num(r["Points"]),
+                                "lineup": r.get("Lineup") or ""})
             if r.get("Player"):
                 players[r["Player"].strip()] = (num(str(r.get("%Drafted", "")).rstrip("%")), num(r.get("FPTS")))
     return entries, players
+
+
+def lineup_names(s):
+    """The player names in a standings Lineup cell ("F Name G Name ... UTIL Name")."""
+    parts = re.split(r"(?:^|\s)(G|F|UTIL)\s", " " + s.strip())
+    return [x.strip() for x in parts[2::2] if x.strip()]
 
 
 def at_lock(mirror, file, start):
@@ -122,7 +141,7 @@ def pay_table(payouts):
 def nightly(a):
     mirror = Mirror(a.mirror)
     done = {(r["contest_id"]) for r in read(EVAL)}
-    out, own_out = [], []
+    out, own_out, team_out = [], [], []
     for path in sorted(glob.glob(os.path.join(STANDINGS, "*.csv"))):
         m = re.search(r"(\d{6,})", os.path.basename(path))
         if not m or m.group(1) in done:
@@ -216,13 +235,29 @@ def nightly(a):
             grade("mine", [(e["rank"] <= top10, e["rank"] <= paid, pay.get(e["rank"], 0), e["points"]) for e in mine],
                   builds[-1]["pool"] if builds else none_pool, "the build's" if builds else "none's",
                   {"rules": " ".join(used) if saved else "not saved"})
+        # each team against the real field: its actual share of the points against its real ownership share, and how
+        # often 2+ of its players are in the top-1% lineups against how often the field played 2+ of them
+        team_of = {r["name"]: r["team"] for r in rec}
+        lineups = [(e["rank"], [team_of.get(nm) for nm in lineup_names(e.get("lineup") or "")]) for e in entries]
+        lineups = [(rk, ts) for rk, ts in lineups if len(ts) == 8]
+        top1 = [ts for rk, ts in lineups if rk <= max(1, math.ceil(0.01 * n))]
+        all_pts = sum(num(r["actual_dk"]) or 0 for r in rec)
+        for team in sorted({r["team"] for r in rec}):
+            own_real = sum((players.get(r["name"]) or (None,))[0] or 0 for r in rec if r["team"] == team) / 800
+            share = sum(num(r["actual_dk"]) or 0 for r in rec if r["team"] == team) / all_pts if all_pts else 0
+            team_out.append({"date": rec[0]["date"], "draft_group": slate["draft_group_id"], "contest_id": cid, "team": team,
+                             "own_real": round(own_real, 4), "pts_share": round(share, 4), "beat_own": int(share > own_real),
+                             "top1_n": len(top1), "top1_rate": round(sum(ts.count(team) >= 2 for ts in top1) / len(top1), 4) if top1 else "",
+                             "field_rate": round(sum(ts.count(team) >= 2 for _, ts in lineups) / len(lineups), 4) if lineups else ""})
+        if not lineups:
+            print("  %s: no lineups read from the standings' Lineup column; the top-1%% target is skipped" % os.path.basename(path))
         for name, (pct, _) in players.items():
             r = by_name.get(name)
             if r and pct is not None:
                 own_out.append({"date": r["date"], "draft_group": r["draft_group"], "contest_id": cid, "dk_id": r["dk_id"], "name": name,
                                 "salary": r["salary"], "own_proj": r["own"], "own_actual": pct})
         print("  graded %s (%s, %d entries): shadow %s, your entries %d" % (contest["name"], rec[0]["date"], n, "yes" if sh else "none saved", len(mine)))
-    for path, cols, rows in ((EVAL, EVAL_COLS, out), (OWN_EVAL, OWN_COLS, own_out)):
+    for path, cols, rows in ((EVAL, EVAL_COLS, out), (OWN_EVAL, OWN_COLS, own_out), (TEAM_EVAL, TEAM_COLS, team_out)):
         if rows:
             new = not os.path.exists(path)
             with open(path, "a", newline="") as f:
@@ -266,7 +301,11 @@ def tiles(a):
         rate = pts / sal if sal else 0
         for t in T["teams"]:
             s5, a5 = top5[t["team"]]
+            rk = t.get("ranks") or {}
             out.append({"date": rec[0]["date"], "draft_group": g, "team": t["team"], "verdict": t["verdict"], "total": t["total"],
+                        "quality": t.get("quality", ""), "leverage": t.get("leverage", ""), "pts_rank": rk.get("pts", ""),
+                        "value_rank": rk.get("value", ""), "conc_rank": rk.get("conc", ""), "blowout_rank": rk.get("blowout", ""),
+                        "lev_rank": rk.get("lev", ""), "ranked_against": T["slate"].get("ranked_against", ""),
                         "value": round(t["value"], 3), "conc": round(t["conc"], 3) if t["conc"] is not None else "",
                         "own_gap": round(t["own_gap"], 3), "blowout": t["blowout"] if t["blowout"] is not None else "",
                         "blowout_games": t["blowout_games"], "fragile": int(bool(t["fragile"])), "top5_salary": s5,
@@ -279,6 +318,67 @@ def tiles(a):
             if new:
                 w.writeheader()
             w.writerows(out)
+
+
+def corr(a, b):
+    if len(a) < 3 or not S.pstdev(a) or not S.pstdev(b):
+        return 0.0
+    ma, mb = S.mean(a), S.mean(b)
+    return sum((x - ma) * (y - mb) for x, y in zip(a, b)) / (len(a) * S.pstdev(a) * S.pstdev(b))
+
+
+def fit_weights():
+    """Quality's weights fitted on the earlier 2/3 of the logged slates (least squares of the top 5's actual - implied
+    points on the four ranks, negative weights set to 0, the rest scaled to sum to 1), and checked on the later 1/3:
+    the correlation of quality with that margin, fitted weights against equal. None before FIT_MIN_SLATES slates."""
+    tl = [r for r in read(TILES_EVAL) if r.get("pts_rank") not in ("", None)]
+    slates = sorted({(r["date"], r["draft_group"]) for r in tl})
+    if len(slates) < FIT_MIN_SLATES:
+        return {"slates": len(slates), "use": False, "note": "fitted from %d slates on" % FIT_MIN_SLATES}
+    cut = slates[(2 * len(slates)) // 3 - 1]
+    train = [r for r in tl if (r["date"], r["draft_group"]) <= cut]
+    test = [r for r in tl if (r["date"], r["draft_group"]) > cut]
+    X = [[1.0] + [num(r[k + "_rank"]) for k in QUALITY] for r in train]
+    y = [num(r["top5_actual"]) - num(r["top5_implied"]) for r in train]
+    n = len(X[0])
+    A = [[sum(x[i] * x[j] for x in X) for j in range(n)] for i in range(n)]
+    v = [sum(x[i] * yi for x, yi in zip(X, y)) for i in range(n)]
+    for i in range(n):                        # Gaussian elimination
+        for j in range(i + 1, n):
+            f = A[j][i] / A[i][i] if A[i][i] else 0
+            A[j] = [aj - f * ai for aj, ai in zip(A[j], A[i])]
+            v[j] -= f * v[i]
+    beta = [0.0] * n
+    for i in reversed(range(n)):
+        beta[i] = (v[i] - sum(A[i][j] * beta[j] for j in range(i + 1, n))) / A[i][i] if A[i][i] else 0.0
+    raw = [max(0.0, b) for b in beta[1:]]
+    w = {k: (b / sum(raw) if sum(raw) else 0.25) for k, b in zip(QUALITY, raw)}
+    eq = {k: 0.25 for k in QUALITY}
+    q = lambda r, ws: sum(ws[k] * num(r[k + "_rank"]) for k in QUALITY)
+    m = [num(r["top5_actual"]) - num(r["top5_implied"]) for r in test]
+    cf, ce = corr([q(r, w) for r in test], m), corr([q(r, eq) for r in test], m)
+    return {"generated_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "slates": len(slates),
+            "train_slates": len([s for s in slates if s <= cut]), "test_slates": len([s for s in slates if s > cut]),
+            "weights": {k: round(x, 3) for k, x in w.items()}, "equal": eq, "test_corr_fitted": round(cf, 3), "test_corr_equal": round(ce, 3),
+            "use": cf > ce}
+
+
+def weights(a):
+    """Fit, and write analysis/cbb/dk/team_weights.json: the tiles use the fitted weights only when use is true."""
+    w = fit_weights()
+    if "weights" in w:
+        with open(WEIGHTS, "w") as f:
+            json.dump(w, f, indent=1)
+            f.write("\n")
+    print(weights_line(w))
+
+
+def weights_line(w):
+    if "weights" not in w:
+        return "   Quality weights: equal (%d graded slates; %s)" % (w["slates"], w["note"])
+    return ("   Quality weights fitted on %d slates, tested on the next %d: fitted %s (correlation with the top 5's beat %.2f) against equal"
+            " (%.2f): %s" % (w["train_slates"], w["test_slates"], ", ".join("%s %.2f" % kv for kv in w["weights"].items()),
+                             w["test_corr_fitted"], w["test_corr_equal"], "the fitted weights are in use" if w["use"] else "equal weights stay"))
 
 
 def records():
@@ -405,19 +505,25 @@ def readout(a):
                     "%4.1f%%" % (100 * S.mean(num(r["cash"]) for r in off)) if off else "-"))
 
     tl = read(TILES_EVAL)
-    print("\n1b. Team tile verdicts: did the team's top 5 by salary beat what their salary implied? (%d team-nights, %d nights)" % (
-        len(tl), len({(r["date"], r["draft_group"]) for r in tl})))
-    for v in ("FOCUS", "OK", "FADE"):
+    te = read(TEAM_EVAL)
+    quad = {(r["date"], r["draft_group"], r["team"]): r["verdict"] for r in tl}
+    print("\n1b. Team tiles by quadrant (%d team-nights, %d nights). The three targets:" % (len(tl), len({(r["date"], r["draft_group"]) for r in tl})))
+    print("   1 the top 5 by salary beat their salary-implied points; 2 the team's actual points share beat its real ownership"
+          " (standings); 3 2+ of its players in the contest's top-1% lineups, against the field's rate of playing 2+ of them")
+    for v in QUADS:
         x = [r for r in tl if r["verdict"] == v]
-        if x:
-            print("   %-6s n=%-4d beat their salary-implied points %4.0f%% of the time (actual - implied: %+.1f points a team)" % (
-                v, len(x), 100 * S.mean(int(r["beat"]) for r in x), S.mean(num(r["top5_actual"]) - num(r["top5_implied"]) for r in x)))
+        y = [r for r in te if quad.get((r["date"], str(r["draft_group"]), r["team"])) == v]
+        z = [r for r in y if r["top1_rate"] not in ("", None) and r["field_rate"] not in ("", None)]
+        if not x and not y:
+            continue
+        print("   %-8s n=%-4d 1: %s | 2: %s | 3: %s" % (v, len(x),
+              "%3.0f%%" % (100 * S.mean(int(r["beat"]) for r in x)) if x else "-",
+              "%3.0f%% (n=%d)" % (100 * S.mean(int(r["beat_own"]) for r in y), len(y)) if y else "-",
+              ("top 1%% %.0f%% vs field %.0f%%, ahead in %d of %d" % (100 * S.mean(num(r["top1_rate"]) for r in z), 100 * S.mean(num(r["field_rate"]) for r in z),
+               sum(num(r["top1_rate"]) > num(r["field_rate"]) for r in z), len(z))) if z else "-"))
     if tl:
-        rates = {v: S.mean(int(r["beat"]) for r in tl if r["verdict"] == v) for v in ("FOCUS", "OK", "FADE") if any(r["verdict"] == v for r in tl)}
-        if "FOCUS" in rates and all(rates["FOCUS"] > rates[v] for v in rates if v != "FOCUS"):
-            print("   FOCUS beats OK and FADE so far.")
-        else:
-            print("   FOCUS isn't beating OK and FADE so far: the verdict recipe (battle-royale-research scripts/dk_cbb_teams.py) gets revisited.")
+        print("   Ranked against: %s." % ", ".join(sorted({r["ranked_against"] for r in tl if r.get("ranked_against")})))
+    print(weights_line(fit_weights()))
 
     own = read(OWN_EVAL)
     print("\n2. Projected ownership against real %%Drafted, by projected band (%d player-contests)" % len(own))
@@ -516,13 +622,14 @@ def main():
     n = sub.add_parser("nightly")
     n.add_argument("--mirror", required=True)
     sub.add_parser("gate")
+    sub.add_parser("weights")
     t = sub.add_parser("tiles")
     t.add_argument("--mirror", required=True)
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "readout": readout}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout}[a.cmd](a)
 
 
 if __name__ == "__main__":
