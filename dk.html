@@ -187,7 +187,7 @@
   <div class="opts">
     <label class="field grow"><span class="field-label">Contest (for the sim)</span><select id="contest"></select></label>
     <label class="field"><span class="field-label">Candidates</span><input class="num" id="nCand" type="number" min="20" max="400" value="150"></label>
-    <label class="field"><span class="field-label">Sims</span><input class="num" id="nSims" type="number" min="100" max="5000" step="100" value="1000"></label>
+    <label class="field"><span class="field-label">Sims</span><input class="num" id="nSims" type="number" min="500" max="10000" step="500" value="3000"></label>
     <button type="button" class="primary" id="simPick">Sim &amp; pick</button>
     <button type="button" id="build">Build only</button>
     <button type="button" id="export" disabled>Export DK CSV</button>
@@ -195,7 +195,8 @@
   <div class="note"><b>Build only</b>: each lineup is the highest-projected one that fits the $50,000 cap and G, G, G, F, F, F,
     UTIL, UTIL and the rules above, after Randomness nudges every Proj up or down (a standard deviation of that %, drawn
     fresh each lineup), sharing at most 8 − Min unique players with any lineup before it, with no player past his exposure cap.
-    <b>Sim &amp; pick</b>: builds Candidates lineups that way (no exposure cap, Min unique 1), then plays them against the
+    <b>Sim &amp; pick</b>: builds Candidates lineups that way (no exposure cap; each differs from the others by 2+ players, at 20%
+    randomness, its own setting), then plays them against the
     contest's field over Sims simulated nights and keeps the Lineups that add the most expected payout, one at a time, within
     the exposure cap and Min unique. A simulated night draws each player's points from his Proj and his ±, in the shape
     2025-26's misses took (a long upside tail); players' nights are drawn independently, because on 2025-26 teammates' and
@@ -214,10 +215,12 @@
 </div>
 
 <script src="vendor/lp_solver.js"></script>
+<script src="dk_sim.js"></script>
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
-var CAP = 50000, SLOTS = ["G", "G", "G", "F", "F", "F", "UTIL", "UTIL"];
-var doc = null, slate = null, rows = [], state = null, built = [], news = [], fieldDoc = null;
+var SLOTS = DKSim.SLOTS;
+var doc = null, slate = null, rows = [], state = null, built = [], news = [], fieldDoc = null, gate = null;
+var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1 };
 
 function $(id) { return document.getElementById(id); }
@@ -227,9 +230,10 @@ function cents(n) { return "$" + Number(n).toLocaleString("en-US", { minimumFrac
 function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || "null"); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
 function key() { return "dkcbb:" + slate.draft_group_id; }
 function save() { store(key(), state); }
-function isG(r) { return /(^|\/)G(\/|$)/.test(r.roster); }
-function isF(r) { return /(^|\/)F(\/|$)/.test(r.roster); }
-function proj(r) { var o = state.proj[r.id]; return o != null ? o : r.fp_dk; }
+var isG = DKSim.isG, isF = DKSim.isF;
+// Proj: the owner's override, else ours through the projection gate (DraftKings' average blended in where it has
+// beaten ours on the graded nights: analysis/cbb/dk/gate.json, scripts/cbb_daily.py)
+function proj(r) { var o = state.proj[r.id]; return o != null ? o : DKSim.gatedProj(r, gate); }
 function value(r) { return proj(r) / (r.salary / 1000); }
 function usable(r) { return r.status !== "Out" && !state.excl[r.id]; }
 
@@ -247,6 +251,10 @@ async function load() {
     var nr = await fetch(MIRROR + "cbb_news.json?t=" + Date.now(), { cache: "no-store" });
     news = nr.ok ? (await nr.json()).items || [] : [];
   } catch (e) { news = []; }
+  try {      // the projection gate; none on file yet means closed
+    var gr = await fetch(GATE + "?t=" + Date.now(), { cache: "no-store" });
+    gate = gr.ok ? await gr.json() : null;
+  } catch (e) { gate = null; }
   try {      // the simulated field: ownership and field lineups (scripts/dk_cbb_field.py)
     var fr = await fetch(MIRROR + "dk_cbb_field.json?t=" + Date.now(), { cache: "no-store" });
     fieldDoc = fr.ok ? await fr.json() : null;
@@ -275,13 +283,23 @@ function pick() {
   view.team = "";
   var gen = new Date(doc.generated_at);
   $("status").innerHTML = esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
-    (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })));
+    (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }))) +
+    '<br>' + gateText();
   var cs = (slate.contests || []).filter(function (c) { return c.payouts; }).sort(function (a, b) { return (b.size || 0) - (a.size || 0); });
   $("contest").innerHTML = cs.map(function (c) {
     return '<option value="' + esc(c.id) + '">' + esc(c.name + " · " + money(c.entry_fee) + " · " + (c.size || 0).toLocaleString() + " entries · max " + (c.max_per_user || 1)) + "</option>";
   }).join("") || "<option value=''>No contest with a payout table</option>";
   built = []; renderBuilt();
   renderNews(); renderPlayers(); renderContests();
+}
+
+function gateText() {
+  var open = gate && (gate.bands || []).filter(function (b) { return b.open; });
+  if (!gate) return "Projection gate: closed (no graded DraftKings nights yet). Proj is ours.";
+  if (!open.length) return "Projection gate: closed. Ours has held up against DraftKings' average in every salary band (" + gate.nights + " graded nights).";
+  return "Projection gate: OPEN in " + open.map(function (b) { return "$" + b.lo.toLocaleString() + (b.hi < 99999 ? "-" + b.hi.toLocaleString() : "+") +
+    " (Proj = " + Math.round(100 * b.w) + "% ours, " + Math.round(100 * (1 - b.w)) + "% DK avg)"; }).join(", ") +
+    ": DraftKings' average beat ours there over " + gate.nights + " graded nights.";
 }
 
 function renderPlayers() {
@@ -359,11 +377,13 @@ function renderContests() {
     }).join("") + "</table>" : '<div class="empty">No contests listed.</div>';
 }
 
-// --- optimizer ---------------------------------------------------------------------------------
-function gauss() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
-
+// --- optimizer and sim: dk_sim.js (shared with the nightly shadow portfolios) ------------------------
 function own(r) { return (fieldOf() && fieldOf().own[r.id]) || 0; }
 function fieldOf() { return fieldDoc && slate && fieldDoc.slates[String(slate.draft_group_id)]; }
+function ctx() {
+  return { rows: rows, proj: proj, own: own, state: state, solver: solver, random: Math.random,
+           progress: function (msg) { $("buildStatus").textContent = msg; return new Promise(function (r) { setTimeout(r, 0); }); } };
+}
 
 function rules() {
   var v = function (id) { return $(id).value === "" ? null : +$(id).value; };
@@ -373,76 +393,12 @@ function rules() {
            lowN: v("lowN") || 0, lowPct: v("lowPct") || 10 };
 }
 
-var MIN_PROJ = 6;      // players projected under this are left out of the optimizer (none is in a top lineup), unless locked
-// Up to o.n lineups under the rules: each the best under that lineup's randomized Proj. o.noCaps: no exposure caps.
-// Yields to the page every few lineups so it can show progress (o.label).
-async function solve(o) {
-  var pool = rows.filter(function (r) { return usable(r) && (proj(r) >= MIN_PROJ || state.lock[r.id]); }), locks = pool.filter(function (r) { return state.lock[r.id]; });
-  var limit = {};
-  pool.forEach(function (r) {
-    var cap = o.noCaps ? 1 : Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
-    limit[r.id] = state.lock[r.id] || o.noCaps ? o.n : Math.floor(cap * o.n + 1e-9);
-  });
-  var games = Array.from(new Set(pool.map(function (r) { return r.game; })));
-  var count = {}, out = [], teams = Array.from(new Set(pool.map(function (r) { return r.team; }))), why = "";
-  for (var k = 0; k < o.n; k++) {
-    if (k % 5 === 4) { $("buildStatus").textContent = (o.label || "Building") + "… " + k + " of " + o.n; await new Promise(function (r) { setTimeout(r, 0); }); }
-    var cons = { n: { equal: 8 }, g: { min: 3 }, f: { min: 3 }, sal: { max: CAP, min: o.minSal } }, vars = {}, ints = {};
-    teams.forEach(function (t) { cons["t_" + t] = { max: o.maxTeam }; });
-    out.forEach(function (L, i) { cons["u" + i] = { max: 8 - o.minUnique }; });
-    if (o.maxOwn != null) cons.own = { max: o.maxOwn };
-    if (o.lowN) cons.low = { min: o.lowN };
-    if (o.stackN) {
-      // y_game = 1 marks the stacked game: at least stackN from it (and one from each side with stackBoth)
-      cons.stack = { min: 1 };
-      games.forEach(function (gm, i) {
-        var y = { score: 0, stack: 1 };
-        y["gs" + i] = -o.stackN; cons["gs" + i] = { min: 0 };
-        if (o.stackBoth) { y["ga" + i] = -1; y["gh" + i] = -1; cons["ga" + i] = { min: 0 }; cons["gh" + i] = { min: 0 }; }
-        vars["y" + i] = y; ints["y" + i] = 1; cons["yb" + i] = { max: 1 }; y["yb" + i] = 1;
-      });
-    }
-    pool.forEach(function (r) {
-      if ((count[r.id] || 0) >= limit[r.id]) return;
-      var v = { score: proj(r) * (1 + o.rand * gauss()), n: 1, sal: r.salary };
-      v["t_" + r.team] = 1;
-      if (isG(r)) v.g = 1;
-      if (isF(r)) v.f = 1;
-      if (o.maxOwn != null) v.own = own(r);
-      if (o.lowN && own(r) < o.lowPct) v.low = 1;
-      if (o.stackN) {
-        var gi = games.indexOf(r.game);
-        v["gs" + gi] = 1;
-        if (o.stackBoth) v[(r.home ? "gh" : "ga") + gi] = 1;
-      }
-      if (state.lock[r.id]) { v["lk_" + r.id] = 1; cons["lk_" + r.id] = { equal: 1 }; }
-      else { v["b_" + r.id] = 1; cons["b_" + r.id] = { max: 1 }; }
-      out.forEach(function (L, i) { if (L.ids.indexOf(r.id) >= 0) v["u" + i] = 1; });
-      vars[r.id] = v; ints[r.id] = 1;
-    });
-    if (locks.some(function (r) { return !vars[r.id]; })) { why = "a locked player is out of the pool"; break; }
-    var res = solver.Solve({ optimize: "score", opType: "max", constraints: cons, variables: vars, ints: ints });
-    if (!res.feasible) { why = "no lineup left fits the rules (loosen Min unique, Max exposure, the stack or ownership rules, Min salary or the locks)"; break; }
-    var ids = Object.keys(vars).filter(function (id) { return id.charAt(0) !== "y" && res[id] > 0.5; });
-    if (ids.length !== 8) { why = "the solver returned " + ids.length + " players"; break; }
-    ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
-    out.push({ ids: ids, slots: assign(ids) });
-  }
-  return { lineups: out, why: why };
-}
+function assign(ids) { return DKSim.assign(ctx(), ids); }
 
 async function build() {
-  var o = rules(), r = await solve(o);
+  var o = rules(), r = await DKSim.solve(ctx(), o);
   built = r.lineups;
   renderBuilt(r.why ? "Built " + built.length + " of " + o.n + ": " + r.why + "." : "Built " + built.length + " lineups.");
-}
-
-// --- the sim -----------------------------------------------------------------------------------
-function payTable(c) {     // place -> dollars, from [[first, last, dollars], ...]
-  var t = [0];
-  (c.payouts || []).forEach(function (p) { for (var i = p[0]; i <= p[1]; i++) t[i] = p[2]; });
-  for (var i = 1; i < t.length; i++) t[i] = t[i] || 0;
-  return t;
 }
 
 async function simPick() {
@@ -450,110 +406,18 @@ async function simPick() {
   var c = (slate.contests || []).find(function (x) { return String(x.id) === $("contest").value; });
   if (!F || !F.field || !F.field.length) return "no simulated field for this slate";
   if (!c || !c.payouts) return "pick a contest with a payout table";
-  var K = Math.max(o.n, +$("nCand").value || 150), S = +$("nSims").value || 1000, N = o.n;
-  var pool = await solve(Object.assign({}, o, { n: K, minUnique: 1, noCaps: true, label: "Building candidates" }));
-  $("buildStatus").textContent = "Simulating " + S + " nights…";
-  await new Promise(function (r) { setTimeout(r, 0); });
-  var cand = pool.lineups;
-  if (cand.length < N) return "only " + cand.length + " candidates fit the rules" + (pool.why ? " (" + pool.why + ")" : "");
-  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
-  // every player in a candidate or a field lineup, indexed
-  var ix = {}, mean = [], err = [];
-  function idx(id) {
-    if (ix[id] == null) {
-      var r = by[id] || {}, m = r.status === "Out" ? 0 : (by[id] ? proj(r) : 0);
-      ix[id] = mean.length; mean.push(m); err.push(r.miss_dk || 0.35 * m);
-    }
-    return ix[id];
-  }
-  var candIx = cand.map(function (L) { return L.ids.map(idx); });
-  var fieldIx = F.field.map(function (L) { return L.map(idx); });
-  var P = mean.length, Z = fieldDoc.z, pay = payTable(c), paid = pay.length - 1;
-  var w = Math.max(0, (c.size || 0) - N) / fieldIx.length;     // each field lineup stands for w entries
-  var pts = new Float32Array(P), cs = [], fa = [];              // candidate scores and field entries above them, by sim
-  var fsc = new Float64Array(fieldIx.length);
-  for (var s = 0; s < S; s++) {
-    for (var p = 0; p < P; p++) pts[p] = Math.max(0, mean[p] + Z[(Math.random() * 100) | 0] * err[p]);
-    for (var f = 0; f < fieldIx.length; f++) { var t = 0, L = fieldIx[f]; for (var j = 0; j < 8; j++) t += pts[L[j]]; fsc[f] = t; }
-    fsc.sort();                                                  // ascending
-    var row = new Float32Array(cand.length), above = new Float32Array(cand.length);
-    for (var k = 0; k < cand.length; k++) {
-      var t2 = 0, L2 = candIx[k]; for (var j2 = 0; j2 < 8; j2++) t2 += pts[L2[j2]];
-      row[k] = t2;
-      var lo = 0, hi = fsc.length;                               // field lineups scoring above t2
-      while (lo < hi) { var mid = (lo + hi) >> 1; if (fsc[mid] <= t2) lo = mid + 1; else hi = mid; }
-      above[k] = (fsc.length - lo) * w;
-    }
-    cs.push(row); fa.push(above);
-  }
-  function payAt(place) { var q = Math.round(place); return q >= 1 && q <= paid ? pay[q] : 0; }
-  // greedy: add the candidate that adds the most expected payout to what's chosen (ours push each other down too)
-  var chosen = [], count = {}, limit = {};
-  rows.forEach(function (r) {
-    var cap = Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
-    limit[r.id] = state.lock[r.id] ? N : Math.floor(cap * N + 1e-9);
-  });
-  var place = [];                                               // place[s][i]: chosen i's place in sim s
-  for (var s3 = 0; s3 < S; s3++) place.push([]);
-  while (chosen.length < N) {
-    var best = -1, bestV = -Infinity;
-    for (var k3 = 0; k3 < cand.length; k3++) {
-      if (chosen.indexOf(k3) >= 0) continue;
-      var ids = cand[k3].ids;
-      if (ids.some(function (id) { return (count[id] || 0) + 1 > limit[id]; })) continue;
-      if (chosen.some(function (q) { return cand[q].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length > 8 - o.minUnique; })) continue;
-      var v = 0;
-      for (var s4 = 0; s4 < S; s4++) {
-        var me = cs[s4][k3], mine = 0, delta = 0;
-        for (var i4 = 0; i4 < chosen.length; i4++) {
-          var other = cs[s4][chosen[i4]];
-          if (other > me) mine++;
-          else { var pl = place[s4][i4]; delta += payAt(pl + 1) - payAt(pl); }
-        }
-        v += payAt(1 + fa[s4][k3] + mine) + delta;
-      }
-      if (v > bestV) { bestV = v; best = k3; }
-    }
-    if (best < 0) break;
-    // add it: everyone of ours below it moves down a place
-    for (var s5 = 0; s5 < S; s5++) {
-      var me5 = cs[s5][best], mine5 = 0;
-      for (var i5 = 0; i5 < chosen.length; i5++) {
-        if (cs[s5][chosen[i5]] > me5) mine5++; else place[s5][i5] += 1;
-      }
-      place[s5].push(1 + fa[s5][best] + mine5);
-    }
-    chosen.push(best);
-    cand[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
-  }
-  // each chosen lineup's numbers in the finished portfolio
-  var total = 0, anyFirst = 0;
-  built = chosen.map(function (k, i) {
-    var e = 0, cash = 0, top10 = 0, first = 0;
-    for (var s6 = 0; s6 < S; s6++) {
-      var pl6 = place[s6][i], q6 = Math.round(pl6);
-      e += payAt(pl6); if (q6 <= paid) cash++; if (q6 <= 10) top10++; if (q6 <= 1) first++;
-    }
-    total += e / S;
-    return Object.assign({}, cand[k], { sim: { e: e / S, cash: cash / S, top10: top10 / S, first: first / S } });
-  });
-  for (var s7 = 0; s7 < S; s7++) if (place[s7].some(function (pl) { return Math.round(pl) <= 1; })) anyFirst++;
-  var fee = (c.entry_fee || 0) * built.length;
-  return "Sim: " + built.length + " of " + cand.length + " candidates into " + c.name + " (" + (c.size || 0).toLocaleString() + " entries) over " + S +
-    " nights: expected back " + cents(total) + " on " + cents(fee) + (fee ? " (ROI " + Math.round(100 * (total / fee - 1)) + "%)" : "") +
-    "; a 1st place in " + (100 * anyFirst / S).toFixed(1) + "% of nights." + (built.length < N ? " Only " + built.length + " fit the exposure and Min unique rules." : "") +
+  var res = await DKSim.simPick(ctx(), o, c, F.field, fieldDoc.z, +$("nCand").value || 150, +$("nSims").value || 3000);
+  if (res.error) return res.error;
+  built = res.lineups;
+  var st = res.stability, N = o.n;
+  return "Sim: " + built.length + " of " + res.candidates + " candidates into " + c.name + " (" + (c.size || 0).toLocaleString() + " entries) over " +
+    res.nights + " nights: expected back " + cents(res.total) + " on " + cents(res.fee) + (res.fee ? " (ROI " + Math.round(100 * (res.total / res.fee - 1)) + "%)" : "") +
+    "; a 1st place in " + (100 * res.anyFirst).toFixed(1) + "% of nights. Simulated field: winning score " + res.cut.win.toFixed(0) +
+    ", top 10% " + res.cut.top10.toFixed(0) + ", cash line " + res.cut.cash.toFixed(0) + ". Stability: picked again on each half of the nights apart, each half's pick kept " +
+    Math.round(100 * st.kept) + "% of the value of the other half's on its nights" + (st.kept < 0.9 ? " (low: raise Sims)" : "") +
+    " (" + st.halves + " of " + st.n + " lineups the same; many lineups are worth about the same, so which ones get picked moves with the draw)." +
+    (built.length < N ? " Only " + built.length + " fit the exposure and Min unique rules." : "") +
     " ROI here assumes our projections are right; it ranks lineups, it isn't a forecast of winnings.";
-}
-
-// G slots from guards first, F slots from forwards first, G/F players where needed, the rest to UTIL
-function assign(ids) {
-  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
-  var ps = ids.map(function (id) { return by[id]; }).sort(function (a, b) { return b.salary - a.salary; });
-  var g = ps.filter(function (r) { return isG(r) && !isF(r); }), f = ps.filter(function (r) { return isF(r) && !isG(r); }), gf = ps.filter(function (r) { return isG(r) && isF(r); });
-  var G = g.splice(0, 3), F = f.splice(0, 3);
-  while (G.length < 3) G.push(gf.shift());
-  while (F.length < 3) F.push(gf.shift());
-  return G.concat(F, g, f, gf).slice(0, 8).map(function (r) { return r.id; });
 }
 
 function renderBuilt(msg) {
