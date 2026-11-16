@@ -257,7 +257,7 @@
         });
       }
     }
-    return { lineups: keep, counts: counts, kept: kept, of: base.length, added: added + shareMore, why: why };
+    return { lineups: keep, counts: counts, kept: kept, of: base.length, added: added + shareMore, why: why, base: base };
   }
 
   // Solve; if the lineup breaks a template-3 rule (n+ from set without m+ from set2), solve its two cases apart (fewer
@@ -410,7 +410,7 @@
     // the at-least share rules first, the one with the fewest qualifying candidates first (each lineup the best
     // addition among those that meet it), so the rarest requirement isn't left to lineups the caps have shut out;
     // then the rest of the set, by added value
-    var conds = o.conds || [];
+    var conds = o.conds || [], perLine = conds.filter(function (rule) { return !isShare(rule); });
     var phases = conds.filter(function (rule) { return rule.share != null; }).map(function (rule) {
       return { rule: rule, n: cand.filter(function (L) { return meets(rule, L.ids); }).length };
     }).sort(function (x, y) { return x.n - y.n; }).map(function (x) { return x.rule; }).concat([null]);
@@ -419,7 +419,8 @@
       while (b.picked.length < N && (!rule || b.picked.filter(function (j) { return meets(rule, cand[j].ids); }).length < need)) {
         var best = -1, bestV = -Infinity;
         for (var k = 0; k < cand.length; k++) {
-          if (b.picked.indexOf(k) >= 0 || (rule && !meets(rule, cand[k].ids)) || !fits(cand, b.picked, k, count, limit, o.minUnique) ||
+          if (b.picked.indexOf(k) >= 0 || (rule && !meets(rule, cand[k].ids)) ||
+              (perLine.length && !perLine.every(function (r) { return passes(r, cand[k].ids); })) || !fits(cand, b.picked, k, count, limit, o.minUnique) ||
               !shareFits(conds, cand, b.picked, k, N)) continue;
           var v = b.score(k).value;
           if (v > bestV) { bestV = v; best = k; }
@@ -539,10 +540,30 @@
     var kept = (value(sim, contest, a, h2) / (value(sim, contest, b, h2) || 1) + value(sim, contest, b, h1) / (value(sim, contest, a, h1) || 1)) / 2;
     var lineups = full.chosen.map(function (k, i) { return Object.assign({}, cand[k], { sim: full.builder.lineupStats(i) }); });
     var cov = full.builder.coverage();
+    var cost = null;
+    if ((o.conds || []).length) {
+      // What the rules cost: the set picked with all of them, with none, and with each removed, on one pool (the
+      // candidates under the rules and the plain ones drawn first) over the same nights, so only the rules differ
+      if (ctx.progress) await ctx.progress("Pricing the rules: picking again without them…");
+      var union = cand.slice(), seenU = {};
+      union.forEach(function (L) { seenU[L.ids.slice().sort().join(",")] = 1; });
+      (cp.base || []).forEach(function (L) { var key = L.ids.slice().sort().join(","); if (!seenU[key]) { seenU[key] = 1; union.push(L); } });
+      var simU = simulate(ctx, union, field, z, contest, N, S);
+      var ev = function (conds) {
+        var r = pick(ctx, Object.assign({}, o, { conds: conds }), union, simU, contest, N);
+        return { value: r.builder.total(), n: r.chosen.length };
+      };
+      var all = ev(o.conds), none = ev([]);
+      cost = { pool: union.length, nights: S, all: all.value, all_n: all.n, none: none.value, none_n: none.n,
+               per: o.conds.map(function (rule, i) {
+                 var w = ev(o.conds.filter(function (x, j) { return j !== i; }));
+                 return { label: rule.label, without: w.value, cost: w.value - all.value };
+               }) };
+    }
     return { lineups: lineups, chosen: full.chosen, cand: cand, sim: sim, candidates: cand.length, nights: S,
              total: full.builder.total(), fee: (contest.entry_fee || 0) * lineups.length, anyFirst: cov.first, coverage: cov,
              diversity: diversity(ctx, lineups), cut: sim.cut, stability: { halves: both, kept: kept, n: lineups.length }, why: cp.why, rules: cp,
-             share: shareStatus(o.conds || [], lineups, N) };
+             share: shareStatus(o.conds || [], lineups, N), cost: cost };
   }
 
   // A frozen rule set's rules as solve() takes them, on top of BASE

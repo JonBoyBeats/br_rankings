@@ -63,7 +63,7 @@ EVAL_COLS = ["date", "draft_group", "contest_id", "contest", "entries", "fee", "
              "field_win", "field_top10", "field_cash", "sim_win", "sim_top10", "sim_cash", "rules"]
 RANDOM_SETS = 1000
 TILES_EVAL = os.path.join(DK, "tiles_eval.csv")
-TILE_COLS = ["date", "draft_group", "team", "verdict", "quality", "leverage", "pts_rank", "value_rank", "conc_rank", "blowout_rank",
+TILE_COLS = ["date", "draft_group", "team", "verdict", "borderline", "quality", "leverage", "pts_rank", "value_rank", "conc_rank", "blowout_rank",
              "lev_rank", "ranked_against", "total", "value", "conc", "own_gap", "blowout", "blowout_games", "fragile",
              "top5_salary", "top5_actual", "top5_implied", "beat"]
 TEAM_EVAL = os.path.join(DK, "team_eval.csv")
@@ -303,6 +303,7 @@ def tiles(a):
             s5, a5 = top5[t["team"]]
             rk = t.get("ranks") or {}
             out.append({"date": rec[0]["date"], "draft_group": g, "team": t["team"], "verdict": t["verdict"], "total": t["total"],
+                        "borderline": int(bool(t.get("borderline"))),
                         "quality": t.get("quality", ""), "leverage": t.get("leverage", ""), "pts_rank": rk.get("pts", ""),
                         "value_rank": rk.get("value", ""), "conc_rank": rk.get("conc", ""), "blowout_rank": rk.get("blowout", ""),
                         "lev_rank": rk.get("lev", ""), "ranked_against": T["slate"].get("ranked_against", ""),

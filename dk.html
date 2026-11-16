@@ -311,7 +311,7 @@
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var SLOTS = DKSim.SLOTS;
 var doc = null, slate = null, rows = [], state = null, built = [], news = [], fieldDoc = null, gate = null, builtSummary = null, BP = null;
-var teamsDoc = null, ruleCounts = {}, editing = -1;
+var teamsDoc = null, ruleCounts = {}, ruleCost = {}, editing = -1;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1 };
 
@@ -388,7 +388,7 @@ function pick() {
   built = []; builtSummary = null; renderBuilt();
   BP = null; $("bpTableWrap").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = "";
   ["bpAuto", "bpClear", "bpUse", "bpSave"].forEach(function (id) { $(id).disabled = true; });
-  ruleCounts = {}; editing = -1;
+  ruleCounts = {}; ruleCost = {}; editing = -1;
   renderTiles(); renderRules(); fillEditor(); renderNews(); renderPlayers(); renderContests();
 }
 
@@ -507,6 +507,7 @@ async function simPick() {
   if (!c || !c.payouts) return "pick a contest with a payout table";
   var res = await DKSim.simPick(ctx(), o, c, F.field, fieldDoc.z, +$("nCand").value || 150, +$("nSims").value || 3000);
   takeCounts(res.rules);
+  ruleCost = {}; ((res.cost || {}).per || []).forEach(function (c) { ruleCost[c.label] = c; });
   if (res.error) return res.error + rulesMsg(res.rules);
   built = res.lineups;
   builtSummary = { coverage: res.coverage, diversity: res.diversity, total: res.total, fee: res.fee };
@@ -519,7 +520,11 @@ async function simPick() {
     " (" + st.halves + " of " + st.n + " lineups the same; many lineups are worth about the same, so which ones get picked moves with the draw)." +
     (built.length < N ? " Only " + built.length + " fit the exposure and Min unique rules." : "") +
     " ROI here assumes our projections are right; it ranks lineups, it isn't a forecast of winnings." + rulesMsg(res.rules) +
-    (res.share || []).map(function (x) { return " " + x.rule.label + ": " + x.have + " of " + built.length + (x.ok ? "." : " (short of " + (x.need != null ? x.need : "the cap") + ")."); }).join("");
+    (res.share || []).map(function (x) { return " " + x.rule.label + ": " + x.have + " of " + built.length + (x.ok ? "." : " (short of " + (x.need != null ? x.need : "the cap") + ")."); }).join("") +
+    (res.cost ? " What the rules cost (one pool of " + res.cost.pool + " lineups, the same " + res.cost.nights + " nights): expected back " + cents(res.cost.all) +
+      " with all of them, " + cents(res.cost.none) + " with none (" + (res.cost.none >= res.cost.all ? "they cost " + cents(res.cost.none - res.cost.all) : "they add " + cents(res.cost.all - res.cost.none)) +
+      "). Removing one at a time: " + res.cost.per.map(function (c) { return c.label + " " + (c.cost >= 0 ? "+" : "-") + cents(Math.abs(c.cost)); }).join("; ") +
+      ". The sim takes our projections as right, so a rule that hedges against them always shows a cost here; it isn't a verdict on the rule." : "");
 }
 
 // A portfolio's summary: coverage (nights with a cash / a top-1% finish / a 1st among the set), the most-used
@@ -591,7 +596,7 @@ function renderTiles() {
       pct(t.blowout) + " of their minutes" + (t.blowout_games < 3 ? " (thin: " + t.blowout_games + " game" + (t.blowout_games === 1 ? "" : "s") + ")" : " in " + t.blowout_games + " games") +
       (t.blowout_source && t.blowout_source !== "this season" ? ", " + t.blowout_source : "");
     return '<div class="tile" data-team="' + esc(t.team) + '"><div class="th"><span class="tn">' + esc(t.team) + "<span>" + (t.home ? "v " : "@ ") + esc(oppOf(t.team) || "") +
-      '</span></span><span class="verdict ' + t.verdict + '">' + t.verdict + '</span></div>' +
+      '</span></span><span class="verdict ' + t.verdict + '">' + t.verdict + (t.borderline ? " · borderline" : "") + '</span></div>' +
       (t.quality != null ? '<div class="scores">Quality <b>' + Math.round(t.quality) + "</b> · Leverage <b>" + Math.round(t.leverage) + "</b></div>" : "") +
       '<div class="why">' + esc(t.reason) + '</div><div class="nums">' +
       '<span class="k">Total</span><span><b>' + (t.total != null ? t.total.toFixed(1) : "–") + "</b> (spread " + (t.spread > 0 ? "+" : "") + t.spread + ")</span>" +
@@ -642,12 +647,18 @@ function tileRules(act, t) {
 }
 
 // --- rules: the list, the editor, the pass counts ------------------------------------------------
-function addRules(list) { state.rules = (state.rules || []).concat(list); save(); renderRules(); }
+function addRules(list) { state.rules = (state.rules || []).concat(list); ruleCost = {}; save(); renderRules(); }
 function takeCounts(r) { ruleCounts = {}; ((r && r.counts) || []).forEach(function (c) { ruleCounts[c.label] = c; }); renderRules(); }
 function rulesMsg(r) {
   if (!r || !r.counts || !r.counts.length) return "";
   return " Rules: " + r.counts.map(function (c) { return c.label + ": " + c.pass + " of " + c.of + " pass"; }).join("; ") + "; all of them: " + r.kept + " of " + r.of +
     (r.added ? "; " + r.added + " more drawn under the rules to fill the pool" + (r.topped ? " (some after the pick ran short of " + rules().n + ")" : "") : "") + ".";
+}
+// what removing the rule would add to the set's expected payout (the last Sim & pick); negative: the rule adds value
+function costHtml(rule) {
+  var c = ruleCost[rule.label];
+  return c ? '<span class="pc cost" title="Expected payout without this rule, minus with it (the last Sim & pick)">' +
+    (c.cost >= 0 ? "costs " + cents(c.cost) : "adds " + cents(-c.cost)) + "</span>" : "";
 }
 function shareLabel(rule) {
   var team = (byId(rule.ids[0]) || {}).team || "";
@@ -665,9 +676,11 @@ function renderRules() {
         '" title="players from the team"><input class="rs" type="number" min="0" max="100" step="5" value="' + Math.round(100 * (rule.share != null ? rule.share : rule.maxShare)) +
         '" title="% of lineups">' + (c ? '<span class="pc">' + c.pass + " of " + c.of + " candidates qualify</span>" : "") +
         (st ? '<span class="pc">' + st.have + " of " + built.length + (st.need != null ? " (need " + st.need + ")" : " (at most " + st.cap + ")") + (st.ok ? "" : " SHORT") + "</span>" : "") +
+        costHtml(rule) +
         '<button data-act="rm">Remove</button></div>';
     }
     return '<div class="rule" data-i="' + i + '"><span class="lab">' + esc(rule.label) + "</span>" + (c ? '<span class="pc">' + c.pass + " of " + c.of + " pass</span>" : "") +
+      costHtml(rule) +
       (["if", "ifnot", "ifteam", "never"].indexOf(rule.type) >= 0 ? '<button data-act="edit">Edit</button>' : "") + '<button data-act="rm">Remove</button></div>';
   }).join("") : '<div class="note" style="margin:4px 0">No rules: add one below, or from a team tile.</div>';
 }
@@ -880,12 +893,12 @@ $("ruleList").addEventListener("change", function (e) {
     if (rule.share != null) rule.share = v; else rule.maxShare = v;
   }
   rule.label = shareLabel(rule);
-  save(); renderRules();
+  ruleCost = {}; save(); renderRules();
 });
 $("ruleList").addEventListener("click", function (e) {
   var b = e.target.closest("button[data-act]"); if (!b) return;
   var i = +b.closest(".rule").dataset.i;
-  if (b.dataset.act === "rm") { state.rules.splice(i, 1); save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
+  if (b.dataset.act === "rm") { state.rules.splice(i, 1); ruleCost = {}; save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
   editing = i; loadEditor(state.rules[i]); $("rtSave").textContent = "Save changes"; $("rtCancel").hidden = false;
 });
 $("rtType").addEventListener("change", showEditor);
@@ -899,7 +912,7 @@ $("rtP").addEventListener("change", function () {
 $("rtSave").addEventListener("click", function () {
   var r = editorRule();
   if (!r) { alert("Pick the players the rule needs (and two different players for Never)."); return; }
-  if (editing >= 0) { state.rules[editing] = r; editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; save(); renderRules(); }
+  if (editing >= 0) { state.rules[editing] = r; editing = -1; ruleCost = {}; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; save(); renderRules(); }
   else addRules([r]);
 });
 $("rtCancel").addEventListener("click", function () { editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; });

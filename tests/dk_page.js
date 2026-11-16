@@ -171,7 +171,7 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => /Projection gate: closed/.test(document.getElementById("status").textContent));
   check("tiles: one per team, slate line shown", (await pg.$$eval(".tile", t => t.length)) === TEAMS.teams.length &&
         /games · \d+ spreads? of 15\+/.test(await pg.textContent("#slateLine")), await pg.textContent("#slateLine"));
-  check("tiles: in verdict order, each with its reason", JSON.stringify(await pg.$$eval(".tile .verdict", v => v.map(x => x.textContent))) ===
+  check("tiles: in verdict order, each with its reason", JSON.stringify(await pg.$$eval(".tile .verdict", v => v.map(x => x.textContent.replace(" · borderline", "")))) ===
         JSON.stringify(TEAMS.teams.map(t => t.verdict)));
   const clearRules = () => pg.evaluate(() => { state.rules = []; state.lock = {}; state.excl = {}; save(); renderRules(); renderPlayers(); });
   const rulesNow = () => pg.evaluate(() => state.rules.slice());
@@ -311,7 +311,11 @@ function audit(name, L, o) {
   L2 = await lineups(); R = await rulesNow();
   check("Sim & pick under rules: every lineup obeys every rule", L2.length > 0 && L2.every(l => R.every(r => obeys(r, l.ids))), smsg);
   check("Sim & pick under rules: says how many candidates pass each", /Rules: .* of \d+ pass; all of them: \d+ of \d+/.test(smsg), smsg);
-  check("rules list shows the pass counts", (await pg.$$eval(".rule .pc", x => x.length)) === R.length);
+  check("rules list shows the pass counts", (await pg.$$eval(".rule .pc:not(.cost)", x => x.length)) === R.length);
+  check("Sim & pick prices the rules: all against none, and each removed", /What the rules cost .* with all of them, .* with none .*Removing one at a time:/.test(smsg), smsg);
+  check("rules list shows each rule's cost", (await pg.$$eval(".rule .cost", x => x.length)) === R.length);
+  check("tiles mark borderline quadrants", (await pg.$$eval(".tile .verdict", v => v.filter(x => /borderline/.test(x.textContent)).length)) ===
+        TEAMS.teams.filter(t => t.borderline).length);
   const [dl4] = await Promise.all([pg.waitForEvent("download"), pg.click("#saveEntries")]);
   const ent = JSON.parse(fs.readFileSync(await dl4.path(), "utf8"));
   check("Save lineups + rules writes both", ent.kind === "entries" && ent.rule_set.length === R.length && ent.lineups.length === L2.length);
