@@ -273,7 +273,7 @@ function renderPlayers() {
 }
 
 function renderContests() {
-  var cs = (slate.contests || []).slice().sort(function (a, b) { return (b.prizes || 0) - (a.prizes || 0); });
+  var cs = (slate.contests || []).slice().sort(function (a, b) { return (b.size || 0) - (a.size || 0) || (b.prizes || 0) - (a.prizes || 0); });   // biggest fields (the GPPs) first
   $("contestsAt").textContent = slate.contests_at ? "Entries as of " + new Date(slate.contests_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + "." : "";
   $("contests").innerHTML = cs.length ? '<table class="contests"><tr><th>Contest</th><th class="r">Fee</th><th class="r">Entries</th><th class="r">Prizes</th><th class="r">Max/user</th></tr>' +
     cs.map(function (c) {
