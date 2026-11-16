@@ -50,7 +50,7 @@ def short(n):
 
 
 def pct(x):
-    return "%d%%" % round(100 * x)
+    return "-" if x is None else "%d%%" % round(100 * x)     # None: no teams in that window (a night you didn't play)
 
 
 class _ByKey(dict):
