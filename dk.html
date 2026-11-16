@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 54px 64px 48px 42px 46px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 54px 64px 40px 48px 42px 46px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -77,6 +77,7 @@
   .tag.q { background: var(--warn); color: #1a1400; }
   .tag.o { background: var(--bad); color: #1a0500; }
   .tag.new { border: 1px solid var(--line-strong); color: var(--muted); }
+  .tag.frag { border: 1px solid var(--warn); color: var(--warn); font-weight: 600; }
   .lx { display: flex; gap: 3px; }
   .lx button { height: 24px; width: 26px; padding: 0; font-family: var(--mono); font-size: 11px; font-weight: 700; }
   .lx button.lock[aria-pressed="true"] { background: var(--live); border-color: var(--live); color: #04140c; }
@@ -104,7 +105,7 @@
   .empty { color: var(--muted); padding: 24px 4px; }
   @media (max-width: 620px) {
     .head, .row { grid-template-columns: 56px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
-    .col-min, .col-avg { display: none; }
+    .col-min, .col-avg, .col-miss { display: none; }
     .name { font-size: 13px; }
   }
 </style>
@@ -137,7 +138,10 @@
   <h2>Players</h2>
   <div class="note">Proj is ours in DraftKings points (no double-double bonus). Value is Proj per $1,000.
     Type over a Proj to use your own number. <b>L</b> locks a player into every lineup, <b>X</b> leaves him out.
-    Max% caps one player below the build's max exposure. Out players are left out.</div>
+    Max% caps one player below the build's max exposure. Out players are left out.
+    ± is how far off we expect to be (an average miss, DraftKings points); <span class="tag frag" style="margin:0">fragile</span>
+    marks players whose expected miss runs 1.31x+ a typical player's at the same projection: minutes that swing game
+    to game, few games, a bench role, a transfer. On 2025-26 that third missed by 49% of its projection, the rest by 35%.</div>
   <div class="filters">
     <button type="button" data-pos="all" aria-pressed="true">All</button>
     <button type="button" data-pos="G" aria-pressed="false">G</button>
@@ -242,17 +246,19 @@ function renderPlayers() {
     return true;
   });
   var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
-              avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; } }[view.sort];
+              avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; },
+              miss: function (r) { return r.miss_dk || 0; } }[view.sort];
   list.sort(function (a, b) {
     var x = get(a), y = get(b);
     return (a.status === "Out") - (b.status === "Out") || (x < y ? -1 : x > y ? 1 : 0) * view.dir || b.salary - a.salary;   // Out last
   });
   var head = '<div class="head"><span>L / X</span>' +
-    [["name", "Player", ""], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"]]
+    [["name", "Player", ""], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["miss", "±", "r col-miss"], ["value", "Val", "r"], ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"]]
       .map(function (c) { return '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"; }).join("") +
     '<span class="r">Max%</span></div>';
   var body = list.map(function (r) {
     var tags = (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q">Q</span>' : "") +
+      (r.fragile ? '<span class="tag frag" title="Fragile: expected miss ±' + (r.miss_dk || "") + '">fragile</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
     var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
     var edited = state.proj[r.id] != null;
@@ -263,6 +269,7 @@ function renderPlayers() {
       '<span class="who"><div class="name">' + esc(r.name) + tags + '</div><div class="sub">' + esc(r.position + " · " + r.team + (r.home ? " v " : " @ ") + (r.opp || "?") + (line ? " " + line : "") + (r.ou ? " · o/u " + r.ou : "")) + "</div></span>" +
       '<span class="m r">' + (r.salary / 1000).toFixed(1) + "k</span>" +
       '<span><input class="proj' + (edited ? " edited" : "") + '" type="number" step="0.1" value="' + proj(r).toFixed(1) + '" aria-label="Proj for ' + esc(r.name) + '"></span>' +
+      '<span class="m r mut col-miss">' + (r.miss_dk != null ? r.miss_dk.toFixed(1) : "–") + "</span>" +
       '<span class="m r val">' + value(r).toFixed(2) + "</span>" +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
       '<span class="m r mut col-avg">' + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
