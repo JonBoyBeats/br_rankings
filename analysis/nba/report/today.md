@@ -127,6 +127,8 @@ Chance to play, morning Questionable players: 79 this season, 40 played (51%). T
 
 **Q picks on contest results, season** (top 10% against the field's rate): no Q pick 0.99x (0.96-1.01; 338098 teams); any Q pick 1.08x (0.96-1.21; 56260 teams); played 1.24x (1.02-1.46; 35504 teams); sat 0.82x (0.75-0.89; 23261 teams); T1 0.86x (1969 teams); T2 1.28x (0.91-1.60; 17464 teams); T3 0.95x (0.77-1.19; 16595 teams); T4 0.93x (0.71-1.31; 8471 teams); T5 1.07x (0.94-1.24; 10894 teams).
 
+**Today's Questionable players.** Joel Embiid (T3 on the ladders, 81% to play): if he sits, VJ Edgecombe, Anfernee Simons; Amen Thompson (T4 on the ladders, 54% to play): if he sits, Jabari Smith Jr., Fred VanVleet, Reed Sheppard.
+
 ## Back page
 
 

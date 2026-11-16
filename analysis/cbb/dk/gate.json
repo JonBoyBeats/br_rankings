@@ -1,0 +1,31 @@
+{
+ "generated_at": "2026-11-16T19:36:13Z",
+ "nights": 0,
+ "bands": [
+  {
+   "lo": 6000,
+   "hi": 99999,
+   "n": 0,
+   "nights": 0,
+   "open": false,
+   "w": 1.0
+  },
+  {
+   "lo": 4000,
+   "hi": 5999,
+   "n": 0,
+   "nights": 0,
+   "open": false,
+   "w": 1.0
+  },
+  {
+   "lo": 0,
+   "hi": 3999,
+   "n": 0,
+   "nights": 0,
+   "open": false,
+   "w": 1.0
+  }
+ ],
+ "rule": "open where DraftKings' average beat ours: 5+ nights, 100+ player-nights, lower mean error, better on 60%+ of nights"
+}
