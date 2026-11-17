@@ -398,6 +398,28 @@ function audit(name, L, o) {
   check("min/max: Remove clears the player's box", await pg.inputValue(`#players .row[data-id="${cold}"] input.floor`) === "");
   await pg.evaluate(() => { state.floor = {}; state.cap = {}; save(); renderRules(); renderPlayers(); });
   await emptyBank();
+  // the bank in the browser, packed: 12,000 lineups with long idea names save (they overflowed at ~4,400 unpacked) and
+  // come back the same; a failed save says so on the page
+  const rt = await pg.evaluate(() => {
+    const src = Object.keys(slate.players).filter(id => slate.players[id].status !== "Out").slice(0, 40), B = { lineups: [], tags: [], tagRules: {}, groups: { "t1": "Big idea" } };
+    const long = k => "At least 3 from KU + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + idea " + k + " ".repeat(120);
+    for (let i = 0; i < 12000; i++) {
+      const ids = []; for (let j = 0; j < 8; j++) ids.push(src[(i * 7 + j * 5 + (i >> 3)) % src.length]);
+      B.lineups.push({ ids: ids, slots: ids.slice().reverse() }); B.tags.push(i % 5 ? [long(i % 7)] : [long(1), long(2)]);
+    }
+    const keep = BANK; BANK = B; bankSaveState();
+    const ok = !bankSaveFailed, size = localStorage.getItem(bankKey()).length;
+    bankLoadState();
+    const same = JSON.stringify(BANK.lineups) === JSON.stringify(B.lineups) && JSON.stringify(BANK.tags) === JSON.stringify(B.tags) && BANK.groups.t1 === "Big idea";
+    const real = localStorage.setItem; localStorage.setItem = () => { throw new Error("QuotaExceededError"); };
+    bankSaveState(); renderBank();
+    const warned = bankSaveFailed && /Not saved in this browser/.test(document.getElementById("bankBox").textContent);
+    localStorage.setItem = real; BANK = keep; bankSaveState(); renderBank();
+    return { ok, size, same, warned, after: !bankSaveFailed && !/Not saved in this browser/.test(document.getElementById("bankBox").textContent) };
+  });
+  check("bank storage: 12,000 lineups with long idea names save", rt.ok, JSON.stringify(rt));
+  check("bank storage: they come back exactly", rt.same, JSON.stringify(rt));
+  check("bank storage: a failed save warns on the page, and the warning clears once saved", rt.warned && rt.after, JSON.stringify(rt));
   // 3. if 2+ from team then 1+ from its opponent
   await clearRules();
   await addRule("ifteam", async () => { await pg.selectOption("#rtTeam", t2.team); await pg.fill("#rtN", "2"); await pg.fill("#rtM", "1"); });

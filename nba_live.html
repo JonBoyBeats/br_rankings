@@ -380,7 +380,10 @@ function cbbRow(p) { return state.dkRows[p.player_id] || state.cbbRows[p.player_
     (analysis/cbb/dk/builds). */
 function dkExpo(sl) {
   var bank = load("dkcbb-bank:" + sl.dg, null), pf = load("dkcbb-pf:" + sl.dg, null), src = "this device's DK page";
-  var lineups = function (k) { return bank.lineups[k] && bank.lineups[k].ids; };
+  var lineups = function (k) {          // the DK page's bank, packed ("slot ids|order|tags") or as it was
+    var L = bank.lineups[k];
+    return typeof L === "string" ? L.split("|")[0].split(",") : L && L.ids;
+  };
   if (!(bank && pf && Object.keys(pf).length)) {
     var f = state.dkBuilds[sl.dg];
     if (!f || !f.portfolios || !Object.keys(f.portfolios).length) return null;

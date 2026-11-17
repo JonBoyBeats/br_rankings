@@ -794,12 +794,36 @@ function loadEditor(rule) {
 // bank: {lineups: [{ids, slots}], tags: [[tag, ...]], tagRules: {tag: rules}}; kept in the browser for the slate
 var BANK = null, CUT = null, PF = {}, ENTRIES = null;
 function bankKey() { return "dkcbb-bank:" + slate.draft_group_id; }
+/* The bank in the browser, packed (v 2): each idea's name once (tagList), each lineup one string, "slot ids|ids' order
+   in the slots (8 digits)|its tags' indexes". The names repeated on every lineup filled the browser's ~5 MB at about
+   4,400 lineups (2026-11-17), and the saves after that failed silently. Packed, a lineup is under 100 characters. The
+   Live page reads it too (nba_live.html dkExpo). */
+var bankSaveFailed = false;
+function bankPack(B) {
+  var tagList = [], ti = {};
+  var tx = function (t) { if (ti[t] == null) { ti[t] = tagList.length; tagList.push(t); } return ti[t]; };
+  return { v: 2, tagList: tagList, tagRules: B.tagRules, groups: B.groups || {}, lineups: B.lineups.map(function (L, i) {
+    var perm = L.ids.map(function (id) { return L.slots.indexOf(id); });
+    var ok = L.slots.length === L.ids.length && L.ids.length <= 10 && perm.every(function (p) { return p >= 0; });
+    return L.slots.join(",") + "|" + (ok ? perm.join("") : "," + L.ids.join(",")) + "|" + B.tags[i].map(tx).join(".");
+  }) };
+}
+function bankUnpack(raw) {
+  if (!raw || raw.v !== 2) return raw;
+  var B = { lineups: [], tags: [], tagRules: raw.tagRules || {}, groups: raw.groups || {} };
+  raw.lineups.forEach(function (str) {
+    var p = str.split("|"), slots = p[0].split(",");
+    B.lineups.push({ ids: p[1].charAt(0) === "," ? p[1].slice(1).split(",") : p[1].split("").map(function (d) { return slots[+d]; }), slots: slots });
+    B.tags.push(p[2] === "" ? [] : p[2].split(".").map(function (k) { return raw.tagList[+k]; }));
+  });
+  return B;
+}
 function bankLoadState() {
-  BANK = store(bankKey()) || { lineups: [], tags: [], tagRules: {} };
+  BANK = bankUnpack(store(bankKey())) || { lineups: [], tags: [], tagRules: {} };
   BANK.groups = BANK.groups || {};
   CUT = null; PF = store("dkcbb-pf:" + slate.draft_group_id) || {}; ENTRIES = store("dkcbb-entries:" + slate.draft_group_id) || null;
 }
-function bankSaveState() { store(bankKey(), BANK); }
+function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) === null; }
 function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); }   // the Live page reads it for your exposures
 function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
   var o = drawRules(), t = [], name = function (id) { return shortName((byId(id) || {}).name || id); };
@@ -870,7 +894,9 @@ function renderBank() {
   var after = CUT && CUT.keep ? rounds[rounds.length - 1] : null;
   var members = {};
   Object.keys(tags).forEach(function (t) { (members[groupOf(t)] = members[groupOf(t)] || []).push(t); });
-  $("bankBox").innerHTML = '<div class="note"><b>Bank: ' + BANK.lineups.length + " lineups</b>" + (after ? ", " + CUT.keep.length + " after the cut" : CUT ? ", cutting…" : "") + "</div>" +
+  $("bankBox").innerHTML = (bankSaveFailed ? '<div class="note bad"><b>Not saved in this browser:</b> the bank (' + BANK.lineups.length +
+      " lineups) is over the browser's storage limit, so a refresh would lose the newest. Keep this tab open, and Save build to keep a copy.</div>" : "") +
+    '<div class="note"><b>Bank: ' + BANK.lineups.length + " lineups</b>" + (after ? ", " + CUT.keep.length + " after the cut" : CUT ? ", cutting…" : "") + "</div>" +
     (BANK.lineups.length ? '<div class="opts" style="padding:4px 0"><input id="groupName" placeholder="Group name, e.g. Kansas" style="width:190px;height:28px">' +
       '<button type="button" id="groupMake" style="height:28px">Group the ticked tags</button></div>' +
       '<table class="contests"><tr><th>Idea</th><th class="r">Banked</th>' +
