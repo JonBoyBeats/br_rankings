@@ -338,6 +338,9 @@ function audit(name, L, o) {
   const pmsg = await pg.textContent("#cutStatus"), size = { "197791872": 1, "197791874": 5, "197791877": 1 };
   check("portfolios: one per contest, from the final pool", Object.keys(size).every(c => pf[c] && pf[c].length >= 1 && pf[c].length <= size[c] && pf[c].every(i => cut.keep.includes(i)) &&
         new Set(pf[c]).size === pf[c].length), JSON.stringify(pf));
+  const pfAll = Object.values(pf).flat();
+  check("portfolios: each lineup in one contest only, the largest stake first", new Set(pfAll).size === pfAll.length &&
+        /the largest stake first: CBB \$6K Pull Up Jumper/.test(pmsg), pmsg);
   check("portfolios: each fills its entries, or says what stops it", Object.keys(size).every(c => pf[c].length === size[c]) || /short: .* stops it|runs out/.test(pmsg), pmsg);
   Object.keys(size).forEach(c => audit("portfolio " + c + " within Max exposure 60% and Min unique 3", pf[c].map(i => bank.lineups[i]),
     Object.assign(rulesOf(base), { n: size[c], expo: Math.max(0.6, 1 / size[c]), minUnique: 3 })));
@@ -345,6 +348,7 @@ function audit(name, L, o) {
   // review: the contest's set in the builder; Added value is exact, Remove undoes Add, Auto-fill keeps the pick's settings, Keep replaces the set
   await pg.click('button[data-review="197791874"]');
   await pg.waitForFunction(() => BP && BP.review === "197791874");
+  check("review: other contests' lineups aren't on offer", await pg.evaluate(o => BP.idx.every(bi => !o.includes(bi)), pf["197791872"].concat(pf["197791877"])));
   check("review: opens the contest's portfolio in the builder", JSON.stringify(await pg.evaluate(() => BP.b.picked.map(k => BP.idx[k]))) === JSON.stringify(pf["197791874"]) &&
         !(await pg.$eval("#bpKeep", x => x.hidden)) && (await pg.$$eval("#bpTable tr", r => r.length)) > 50);
   const cols = await pg.$$eval("#bpTable th", t => t.map(x => x.textContent.replace(/[↓↑ ]+$/, "")));
@@ -387,10 +391,12 @@ function audit(name, L, o) {
   ["197791872", "197791877", "197791874"].forEach(cid => fake.filter(r => String(r[2]) === cid).slice(0, finalPf[cid].length).forEach((r, k) => want[r[0]] = bank.lineups[finalPf[cid][k]].slots));
   check("export: each entry ID keeps its contest and gets its portfolio's lineup, slot for slot",
         Object.keys(want).every(id => byId[id] && byId[id].slice(4).join(",") === want[id].join(",") && fake.some(f => String(f[0]) === id && String(f[2]) === byId[id][2])));
-  ["197791872", "197791874", "197791877"].forEach(cid => {             // the same lineup may go in two contests, not twice in one
+  ["197791872", "197791874", "197791877"].forEach(cid => {
     const L = rowsOut.filter(r => r[2] === cid).map(r => ({ ids: r.slice(4), slots: r.slice(4) }));
     audit("export: " + cid + "'s lineups", L, Object.assign(rulesOf(base), { minUnique: 1 }));
   });
+  const outKeys = rowsOut.map(r => r.slice(4).slice().sort().join(","));
+  check("export: no lineup twice across the night's contests", new Set(outKeys).size === outKeys.length, outKeys.length + " rows, " + new Set(outKeys).size + " distinct");
 
   const [dl6] = await Promise.all([pg.waitForEvent("download"), pg.click("#bankSave")]);
   const bs = JSON.parse(fs.readFileSync(await dl6.path(), "utf8"));

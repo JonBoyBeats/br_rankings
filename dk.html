@@ -822,15 +822,20 @@ async function pickPortfolios() {
   var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
   if (!BANK.lineups.length) return "The bank is empty.";
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
-  var idx = finalIdx();
-  var pool = idx.map(function (i) { return BANK.lineups[i]; }), S = +$("nSims").value || 3000;
+  // unique entries: every lineup goes in one contest only. The largest stake (fee x our entries) picks first; each
+  // later contest picks from what's left
+  var nOf = function (c) { return Math.min(ns[String(c.id)], c.max_per_user || 1); };
+  cs = cs.slice().sort(function (a, b) { return (b.entry_fee || 0) * nOf(b) - (a.entry_fee || 0) * nOf(a) || (b.entry_fee || 0) - (a.entry_fee || 0); });
+  var all = finalIdx(), taken = {}, S = +$("nSims").value || 3000, size = all.length;
   var msgs = [];
   for (var i = 0; i < cs.length; i++) {
-    var c = cs[i], n = Math.min(ns[String(c.id)], c.max_per_user || 1);
-    $("cutStatus").textContent = "Picking " + n + " for " + c.name + "…"; await tick();
+    var c = cs[i], n = nOf(c);
+    var idx = all.filter(function (bi) { return !taken[bi]; }), pool = idx.map(function (bi) { return BANK.lineups[bi]; });
+    $("cutStatus").textContent = "Picking " + n + " for " + c.name + " from " + pool.length + " left…"; await tick();
     var sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, S);
     var po = pickRules(n), r = DKSim.pick(ctx(), po, pool, sim, c, n);
     PF[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
+    PF[String(c.id)].forEach(function (bi) { taken[bi] = 1; });
     var why = "";
     if (r.chosen.length < n) {        // which setting stops it: try each one relaxed
       var e = DKSim.pick(ctx(), Object.assign({}, po, { maxExpo: 1 }), pool, sim, c, n).chosen.length >= n;
@@ -842,13 +847,16 @@ async function pickPortfolios() {
       ", one cashes in " + Math.round(100 * r.builder.coverage().cash) + "% of nights)");
   }
   pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
-  return "Portfolios from " + (CUT && CUT.keep ? "the final " + pool.length : "the whole bank of " + pool.length) + ": " + msgs.join("; ") + ". Review any one below." +
+  return "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + ", each lineup in one contest only, the largest stake first: " +
+    msgs.join("; ") + ". Review any one below." +
     (ENTRIES ? "" : " Load the entries file to export them.");
 }
 
 function review(cid) {
   var c = (slate.contests || []).find(function (x) { return String(x.id) === cid; });
-  var idx = finalIdx();
+  var other = {};                       // unique entries: lineups in another contest's portfolio aren't on offer here
+  Object.keys(PF).forEach(function (k) { if (k !== cid) PF[k].forEach(function (bi) { other[bi] = 1; }); });
+  var idx = finalIdx().filter(function (bi) { return !other[bi]; });
   var pos = {}; idx.forEach(function (bi, k) { pos[bi] = k; });
   var o = pickRules(Math.min(entriesN()[cid] || 1, c.max_per_user || 1));
   bpLoad(idx.map(function (i) { return BANK.lineups[i]; }), c, o, +$("nSims").value || 3000,
@@ -858,6 +866,9 @@ function review(cid) {
 
 function exportEntries() {
   if (!ENTRIES) return "Load the entries file first.";
+  var seen = {}, dup = 0;               // unique entries: a lineup in two contests' portfolios is refused, not exported
+  Object.keys(PF).forEach(function (k) { PF[k].forEach(function (bi) { if (seen[bi]) dup++; seen[bi] = 1; }); });
+  if (dup) return "Not exported: " + dup + " lineup" + (dup === 1 ? " is" : "s are") + " in more than one contest's portfolio (picked before entries were unique). Press Pick portfolios again.";
   var lines = [ENTRIES.header.map(csvCell).join(",")], used = {}, short = [];
   ENTRIES.rows.forEach(function (r) {
     var pf = PF[r[2]];
