@@ -1949,16 +1949,22 @@ def elites(rows):
 
 
 def pre_t5_tier(r):
-    """The button's tier before its T5 rules: the ADP tier moved one tier toward the projection tier when they're 2+ apart
-    (index.html nbaBuildLaddersNew, from 11-13 with the A5 fix: A5-P3 is T4 VALUE)."""
+    """The button's tier before its T5 rules: its starting ladder's tier moved one tier toward the other ladder's when
+    they're 2+ apart (index.html nbaBuildLaddersNew, from 11-13 with the A5 fix: A5-P3 is T4 VALUE). The start is ADP's
+    ladder, ETR's on the nights the PM button runs on it (nba_tier_history.base_of, from 2026-11-17)."""
+    import nba_tier_history as T
     a, p = int(r["a_tier"]), int(r["p_tier"])
+    if T.base_of(r["date"], r["window"]) == "etr":
+        return p + (1 if a > p else -1) if abs(a - p) >= 2 else p
     return a - (1 if a > p else -1) if abs(a - p) >= 2 else a
 
 
 def dropped_pricey(r):
-    """A T4 PRICEY player the button dropped into T5: the rankings side's nba_friday.dropped(), to the letter."""
-    return r.get("flag") == "PRICEY" and r.get("a_tier", "").isdigit() and r.get("tier", "").isdigit() \
-        and int(r["a_tier"]) <= 4 and int(r["tier"]) >= 5
+    """A T4 PRICEY player the button dropped into T5: the rankings side's nba_friday.dropped(), to the letter, from the
+    button's starting tier (nba_tier_history.base_tier: ETR's on ETR nights)."""
+    import nba_tier_history as T
+    b = T.base_tier(r)
+    return r.get("flag") == "PRICEY" and str(b).isdigit() and r.get("tier", "").isdigit() and int(b) <= 4 and int(r["tier"]) >= 5
 
 
 def base_stats(base):
