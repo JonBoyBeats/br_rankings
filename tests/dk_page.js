@@ -16,6 +16,7 @@ const slate = morning.slates[0];
 const P = slate.players;
 const OWN = field.slates[String(slate.draft_group_id)].own;
 const fails = [], passes = [];
+function DKSimPairs(ids) { const s = ids.slice().sort(), o = []; for (let i = 0; i < s.length; i++) for (let j = i + 1; j < s.length; j++) o.push(s[i] + "|" + s[j]); return o; }
 function check(name, ok, detail) { (ok ? passes : fails).push(name + (ok || !detail ? "" : ": " + detail)); }
 const isG = r => /(^|\/)G(\/|$)/.test(r.roster), isF = r => /(^|\/)F(\/|$)/.test(r.roster);
 
@@ -105,11 +106,11 @@ function audit(name, L, o) {
     return { L, msg: await pg.textContent("#buildStatus") };
   };
   const emptyBank = () => pg.evaluate(() => { BANK = { lineups: [], tags: [], tagRules: {} }; CUT = null; PF = {}; bankSaveState(); renderBank(); });
-  const base = { rand: 20, minSal: 48500, maxTeam: 5, stackN: 0, stackBoth: false, maxOwn: "", lowN: 0, lowPct: 10 };
+  const base = { levW: 0, minSal: 48500, maxTeam: 5, stackN: 0, stackBoth: false, maxOwn: "", lowN: 0, lowPct: 10 };
   const rulesOf = v => ({ minSal: v.minSal, maxTeam: v.maxTeam, stackN: v.stackN, stackBoth: v.stackBoth, maxOwn: v.maxOwn === "" ? null : +v.maxOwn, lowN: v.lowN, lowPct: v.lowPct });
 
   // the page reads top to bottom: the draw's settings, then the cut and the pick's (Max exposure, Min unique)
-  const order = await pg.evaluate(() => ["rand", "maxOwn", "ruleList", "bankDraw", "entriesFile", "cutRun", "maxExpo", "minUnique", "pfRun", "pfExport", "bpTable"]
+  const order = await pg.evaluate(() => ["levW", "maxOwn", "ruleList", "bankDraw", "entriesFile", "cutRun", "maxExpo", "minUnique", "pfRun", "pfExport", "bpTable"]
     .map(id => document.getElementById(id)).every((el, i, a) => i === 0 || (a[i - 1].compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)));
   check("layout: draw settings, then the cut, then the pick's Max exposure and Min unique, then review", order);
   check("layout: the old one-contest flow is gone", await pg.evaluate(() => ["simPick", "build", "export", "saveEntries", "bankBuilt", "contest", "nCand", "nLineups", "bpBuild", "bpUse", "bpSave"].every(id => !document.getElementById(id))));
@@ -126,6 +127,32 @@ function audit(name, L, o) {
     if (L.length < 15) check("Draw & bank, " + name + ": drew 15+ new", false, msg);
     check("Draw & bank, " + name + ": tagged with its idea", new RegExp('tagged "' + tag.replace(/[+]/g, "\\+") + '"').test(msg), msg);
   }
+  // the sim-night draw: a drawn lineup is the solver's best for one simulated night (nightPoints, the sim's distribution)
+  const nightCheck = await pg.evaluate(async () => {
+    const out = [];
+    for (const seed of [5, 6, 7]) {
+      const cx = ctx(), o = Object.assign(drawRules(), { conds: [] });
+      cx.random = DKSim.seeded(seed);
+      const night = DKSim.nightPoints(cx, fieldDoc.z);
+      const best = (await DKSim.solve(cx, Object.assign({}, o, { n: 1, minUnique: 1, noCaps: true, night }))).lineups[0];
+      cx.random = DKSim.seeded(seed);
+      const drawn = (await DKSim.poolDraw(cx, o, 1)).lineups[0];
+      const score = L => L.ids.reduce((t, id) => t + night[id], 0);
+      out.push({ same: best.ids.slice().sort().join() === drawn.ids.slice().sort().join(), night: score(drawn),
+                 proj: drawn.ids.reduce((t, id) => t + proj(byId(id)), 0), varied: Object.keys(night).some(id => Math.abs(night[id] - proj(byId(id))) > 1) });
+    }
+    return out;
+  });
+  check("sim-night draw: each lineup is the best one for its simulated night", nightCheck.every(x => x.same && x.varied), JSON.stringify(nightCheck));
+  const ownOf = L => L.reduce((t, l) => t + l.ids.reduce((u, id) => u + (OWN[id] || 0), 0), 0) / L.length;
+  await set(Object.assign({}, base, { levW: 0.5 }));
+  check("tag line carries the Leverage weight", /leverage 0\.5/.test(await pg.textContent("#tagNow")), await pg.textContent("#tagNow"));
+  const { L: Llev } = await draw(15);
+  await set(base);
+  const { L: L0 } = await draw(15);
+  check("Leverage weight: lineups drawn with it hold less projected ownership", Llev.length >= 10 && ownOf(Llev) < ownOf(L0),
+        "with weight " + ownOf(Llev).toFixed(0) + "%, without " + ownOf(L0).toFixed(0) + "%");
+
   // Max exposure and Min unique don't touch the draw
   await set(base); await pg.fill("#maxExpo", "5"); await pg.fill("#minUnique", "8");
   const { L: Lx, msg: mx } = await draw(15);
@@ -317,19 +344,23 @@ function audit(name, L, o) {
   check("entries file: fills each contest's entries", JSON.stringify(counts) === JSON.stringify({ "197791872": 1, "197791874": 5, "197791877": 1 }), JSON.stringify(counts));
   check("entries file: says which aren't on the slate", /8 entries loaded \(1 in contests not on this slate's list\)/.test(await pg.textContent("#cutStatus")), await pg.textContent("#cutStatus"));
 
-  await pg.fill("#cutKeep", "100"); await pg.fill("#cutPct", "25"); await pg.fill("#cutNights", "300"); await pg.fill("#cutProtect", "30");
+  await pg.fill("#cutKeep", "100"); await pg.fill("#cutPct", "25"); await pg.fill("#cutNights", "300");
   await pg.click("#cutRun");
   await pg.waitForFunction(() => /^Cut |failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   const cmsg = await pg.textContent("#cutStatus"), cut = await pg.evaluate(() => CUT);
-  check("cut: down to Keep, rounds shrinking by Cut %", cut && cut.keep.length === 100 && new Set(cut.keep).size === 100 &&
-        cut.rounds.every((r, i) => i === 0 || r.survivors < cut.rounds[i - 1].survivors), cmsg);
-  const tagN = idx => { const o = {}; idx.forEach(k => bank.tags[k].forEach(t => o[t] = (o[t] || 0) + 1)); return o; };
+  check("cut: rounds shrinking, no lineup twice", cut && new Set(cut.keep).size === cut.keep.length && cut.keep.length <= 102 &&
+        cut.rounds.every((r, i) => i === 0 || r.survivors <= cut.rounds[i - 1].survivors), cmsg);
+  const tagN = idx => { const o = {}; idx.forEach(k => { const t = bank.tags[k][0]; o[t] = (o[t] || 0) + 1; }); return o; };
   const allN = tagN(bank.lineups.map((L, k) => k)), keptN = tagN(cut.keep);
-  check("cut: Protect 30% keeps at least 30% of every tag", Object.keys(allN).every(t => (keptN[t] || 0) >= Math.ceil(0.3 * allN[t])) && /Protect 30% a tag: \d+ lineups held/.test(cmsg),
-        JSON.stringify({ allN, keptN }) + " " + cmsg);
+  const quota = t => Math.max(1, Math.round(allN[t] * Math.min(1, 100 / bank.lineups.length)));
+  check("cut: each idea keeps its share of its own lineups (Keep / bank), no more", Object.keys(allN).every(t => (keptN[t] || 0) <= quota(t) && (keptN[t] || 0) >= Math.min(quota(t), 1)),
+        JSON.stringify(Object.keys(allN).map(t => [t, allN[t], keptN[t] || 0, quota(t)])));
+  const nearDup = cut.keep.some((a, i) => cut.keep.some((b2, j) => j > i && bank.tags[a][0] === bank.tags[b2][0] &&
+    bank.lineups[a].ids.filter(id => bank.lineups[b2].ids.includes(id)).length >= 7));
+  check("cut: no two kept lineups in an idea share 7+ players", !nearDup);
   check("cut: ranked against each contest with entries", cut && JSON.stringify(cut.contests.slice().sort()) === JSON.stringify(["197791872", "197791874", "197791877"]), cmsg);
   const ths = await pg.$$eval("#bankBox th", t => t.map(x => x.textContent));
-  check("cut: survivors by rule tag after each round", ths.includes("After the cut") && ths.filter(t => /^Round \d+$/.test(t)).length === cut.rounds.length, JSON.stringify(ths));
+  check("cut: per idea, banked, each round, kept and share", ths.includes("Kept") && ths.includes("Share") && ths.filter(t => /^Round \d+$/.test(t)).length === cut.rounds.length, JSON.stringify(ths));
 
   await pg.fill("#nSims", "1000");
   await pg.click("#pfRun");
@@ -409,13 +440,40 @@ function audit(name, L, o) {
   const bs = JSON.parse(fs.readFileSync(await dl6.path(), "utf8"));
   check("Save build (bank): the pool, its tags, the final cut and the portfolios", bs.kind === "build" && bs.pool.length === bank.lineups.length && bs.tags.length === bs.pool.length &&
         JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()) &&
-        bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.protect === 30 && bs.cut.keep === 100 && bs.pick && bs.pick.maxExpo === 40 && bs.pick.maxCore === 15,
+        bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.within === "idea" && bs.cut.keep === 100 && bs.pick && bs.pick.maxExpo === 40 && bs.pick.maxCore === 15,
         dl6.suggestedFilename() + " " + JSON.stringify(bs.cut));
 
   await pg.click("#reload");
   await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("status").textContent));
   check("portfolios survive a reload (the Live page reads them for your exposures)",
         JSON.stringify(await pg.evaluate(() => PF["197791874"])) === JSON.stringify(pf2) && !(await pg.$eval("#pfExport", x => x.disabled)));
+
+  // the tie split: players with no spread, a lineup copied 3 times in the field: it ties those 3 every night and its
+  // payout is the mean of the 4 places the tie covers
+  const tie = await pg.evaluate(() => {
+    const L = BANK.lineups[0], cx = ctx();
+    cx.rows = rows.map(r => Object.assign({}, r, { miss_dk: 1e-9 }));
+    const field = fieldOf().field.slice(0, 200).filter(f => f.slice().sort().join() !== L.ids.slice().sort().join()).concat([L.ids, L.ids.slice().reverse(), L.ids.slice()]);
+    const contest = { size: field.length + 1, payouts: [[1, 1, 100], [2, 2, 50], [3, 3, 20], [4, 20, 5]] };
+    const sim = DKSim.simulate(cx, [L], field, fieldDoc.z, contest, 1, 20);
+    const b = DKSim.builder(sim, contest);
+    const mine = L.ids.reduce((t, id) => t + proj(byId(id)), 0);
+    const above = field.filter(f => f.reduce((t, id) => t + proj(byId(id)), 0) > mine + 1e-6).length;
+    const pay = DKSim.payTable(contest), want = [0, 1, 2, 3].reduce((t, i) => t + (pay[1 + above + i] || 0), 0) / 4;
+    return { dup: sim.dup[0], tie: sim.tie[0], alone: b.alone(0), want, above };
+  });
+  check("ties: an identical field lineup is counted and the prize split among the tie", tie.dup === 3 && Math.abs(tie.tie - 3) < 1e-6 && Math.abs(tie.alone - tie.want) < 1e-6, JSON.stringify(tie));
+
+  // the night-wide pair cap: no two players together in more than Max pair % of the night's entries (at least one)
+  await pg.fill("#maxPair", "30");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const night = await pg.evaluate(() => Object.keys(PF).reduce((a, k) => a.concat(PF[k].map(bi => BANK.lineups[bi].ids)), []));
+  const pairMax = (() => { const c = {}; night.forEach(ids => DKSimPairs(ids).forEach(k => c[k] = (c[k] || 0) + 1)); return Math.max(0, ...Object.values(c)); })();
+  check("night-wide pair cap: no pair past 30% of the night's entries", night.length > 0 && pairMax <= Math.max(1, Math.floor(0.3 * 7 + 1e-9)), pairMax + " of " + night.length);
+  check("night view: players, pairs and cores against the field", /The night: \d+ entries/.test(await pg.textContent("#pfBox")) &&
+        (await pg.$$eval("#pfBox table", t => t.length)) === 3);
+  await pg.fill("#maxPair", "");
 
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();

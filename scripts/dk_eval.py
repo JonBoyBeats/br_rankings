@@ -47,6 +47,12 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
   calnote   the calibration week's morning note (through 2026-11-23): bugs found, the audit's a / b / c in one line
             each, and the changes since the last graded slate with their reasons, from analysis/cbb/dk/versions.csv
             (every change, with the slate date it takes effect; the readout splits slates by it)
+  ideas     analysis/cbb/dk/idea_eval.csv, nightly: each saved bank's ideas (the tag each lineup was first drawn under),
+            scored on the real points against each entered contest's real lines: banked, kept and entered counts,
+            the kept share (kept / banked) and entered share (of the contest's entries), the top-10% and cash rates of
+            the idea's banked lineups and of its entered ones, and where the entered set falls among RANDOM_SETS random
+            sets of its size from the idea's own banked lineups. The readout groups ideas by kind (idea_kind: "2+ from
+            a team", "game stack 3", "locks", ...) across nights, since a night's tags name its own teams.
   calweek   for the owner's choice at the freeze: ours, DraftKings' average and the 50/50 blend over the calibration
             week's graded nights (CAL_WEEK), by salary band, and the nights each had the lowest average miss
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
@@ -106,6 +112,9 @@ OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own
 BANDS = [(6000, 99999), (4000, 5999), (0, 3999)]
 GATE_NIGHTS, GATE_N, GATE_SHARE = 5, 100, 0.6
 OWN_BANDS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
+IDEA_EVAL = os.path.join(DK, "idea_eval.csv")
+IDEA_COLS = ["date", "draft_group", "idea", "kind", "contest_id", "contest", "banked", "kept", "entered", "kept_share", "entered_share",
+             "banked_top10", "banked_cash", "entered_top10", "entered_cash", "pct_top10", "pct_cash", "version"]
 CUT_EVAL = os.path.join(DK, "cut_eval.csv")
 CUT_COLS = ["date", "draft_group", "tag", "group", "lineups", "mean", "best", "contest_id", "contest", "top10", "cash", "wins",
             "protect", "phase"]
@@ -769,6 +778,104 @@ def audit(a):
     print_audit(full=False)
 
 
+def idea_kind(t):
+    """An idea's kind, from its saved settings (the bank's tag_settings), without the night's teams and players: the
+    rules' templates ("2+ from a team", "if/then", ...) and the settings off their defaults."""
+    parts = []
+    for r in t.get("conds") or []:
+        ty = r.get("type")
+        parts.append("stack with opponent" if str(r.get("label", "")).startswith("Stack ") else
+                     "%d+ from a team" % r.get("n", 1) if ty == "min" else "exclude a team" if ty == "none" and len(r.get("ids") or []) > 1 else
+                     "exclude a player" if ty == "none" else "if/then (%s)" % ty)
+    if t.get("stackN"):
+        parts.append("game stack %d%s" % (t["stackN"], " both teams" if t.get("stackBoth") else ""))
+    if t.get("maxOwn") is not None:
+        parts.append("ownership cap")
+    if t.get("lowN"):
+        parts.append("%d low-owned" % t["lowN"])
+    if t.get("levW"):
+        parts.append("leverage weight")
+    if t.get("lock"):
+        parts.append("locks")
+    if t.get("excl"):
+        parts.append("excludes")
+    return " + ".join(sorted(set(parts))) or "no rules"
+
+
+def ideas(a):
+    """The nightly idea tracking (see the docstring), rebuilt whole each run like the cut check."""
+    banks = {}
+    for f in sorted(glob.glob(os.path.join(BUILDS, "dk_bank_*.json"))):
+        b = json.load(open(f))
+        g = str(b.get("draft_group"))
+        if g not in banks or (b.get("saved_at") or "") >= (banks[g].get("saved_at") or ""):
+            banks[g] = b
+    ev, out, rng = read(EVAL), [], random.Random(11)
+    for g, b in sorted(banks.items(), key=lambda kv: kv[1].get("day") or ""):
+        rec = read(os.path.join(DK, "%s_%s.csv" % (b["day"], g)))
+        pts = {r["dk_id"]: num(r["actual_dk"]) for r in rec}
+        lines = {r["contest_id"]: r for r in ev if str(r["draft_group"]) == g and r["contest_id"] in (b.get("portfolios") or {}) and r["who"] == "mine"}
+        if not rec or not lines:
+            print("  ideas %s (%s): %s" % (g, b["day"], "no real points yet" if not rec else "no graded standings yet"))
+            continue
+        score = [sum(pts.get(str(i)) or 0 for i in L) for L in b["pool"]]
+        idea = [t[0] for t in b["tags"]]
+        kept = set(b["final"]) if b.get("final") else set(range(len(b["pool"])))
+        settings = b.get("tag_settings") or {}
+        for cid, L in sorted(lines.items()):
+            t10, cash = num(L["field_top10"]), num(L["field_cash"])
+            ent = (b.get("portfolios") or {}).get(cid) or []
+            for name in sorted(set(idea)):
+                mem = [k for k in range(len(b["pool"])) if idea[k] == name]
+                ke, en = [k for k in mem if k in kept], [k for k in ent if idea[k] == name]
+                rate = lambda ks, line: sum(score[k] >= line for k in ks) / len(ks) if ks and line is not None else ""
+                row = {"date": b["day"], "draft_group": g, "idea": name, "kind": idea_kind(settings.get(name) or {}), "contest_id": cid,
+                       "contest": L["contest"], "banked": len(mem), "kept": len(ke), "entered": len(en),
+                       "kept_share": round(len(ke) / len(mem), 4), "entered_share": round(len(en) / len(ent), 4) if ent else "",
+                       "banked_top10": rate(mem, t10), "banked_cash": rate(mem, cash), "entered_top10": rate(en, t10), "entered_cash": rate(en, cash),
+                       "pct_top10": "", "pct_cash": "", "version": version_of(b["day"])}
+                if en and len(mem) > len(en):     # the entered set among random sets of its size from the idea's banked lineups
+                    for col, line in (("pct_top10", t10), ("pct_cash", cash)):
+                        if line is None:
+                            continue
+                        me = sum(score[k] >= line for k in en)
+                        rs = [sum(score[k] >= line for k in rng.sample(mem, len(en))) for _ in range(RANDOM_SETS)]
+                        row[col] = round(100 * (sum(r < me for r in rs) + 0.5 * sum(r == me for r in rs)) / RANDOM_SETS, 1)
+                out.append(row)
+        print("  ideas %s (%s): %d ideas, %d contests" % (g, b["day"], len(set(idea)), len(lines)))
+    if out:
+        with open(IDEA_EVAL, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=IDEA_COLS)
+            w.writeheader()
+            w.writerows(out)
+
+
+def print_ideas():
+    """The readout's ideas section: by kind across nights."""
+    rows = read(IDEA_EVAL)
+    print("\nIdeas by kind, across nights (idea_eval.csv; each night's ideas grouped by kind; rates against the real lines):")
+    if not rows:
+        print("   none graded yet")
+        return
+    print("   %-44s %6s %7s %7s %8s %9s %9s %10s %10s" % ("kind", "nights", "banked", "kept %", "entered", "bank t10", "ent t10", "ent cash", "pct t10"))
+    by = defaultdict(list)
+    for r in rows:
+        by[r["kind"]].append(r)
+    for k, v in sorted(by.items(), key=lambda kv: -sum(num(r["banked"]) for r in kv[1])):
+        seen = {(r["draft_group"], r["idea"]) : r for r in v}.values()          # banked / kept once a night, not per contest
+        banked, kept = sum(num(r["banked"]) for r in seen), sum(num(r["kept"]) for r in seen)
+        en = [r for r in v if num(r["entered"])]
+        wavg = lambda col, rs: sum(num(r[col]) * num(r["entered"]) for r in rs) / sum(num(r["entered"]) for r in rs) if rs else None
+        bt = S.mean(num(r["banked_top10"]) for r in v if r["banked_top10"] not in ("", None)) if any(r["banked_top10"] not in ("", None) for r in v) else None
+        pc = [num(r["pct_top10"]) for r in v if r["pct_top10"] not in ("", None)]
+        print("   %-44s %6d %7d %6.0f%% %8d %8s %9s %10s %10s" % (k[:44], len({r["draft_group"] for r in v}), banked, 100 * kept / banked if banked else 0,
+              sum(num(r["entered"]) for r in v), "%.1f%%" % (100 * bt) if bt is not None else "-",
+              "%.1f%%" % (100 * wavg("entered_top10", en)) if en else "-", "%.1f%%" % (100 * wavg("entered_cash", en)) if en else "-",
+              "%.0f" % S.mean(pc) if pc else "-"))
+    print("   bank t10: the idea's banked lineups reaching the top 10% (is the idea good?); ent t10 / cash: its entered ones; pct t10:"
+          " the entered set among random sets of its size from the idea's own bank (50 = the cut and pick chose no better than chance).")
+
+
 def calnote(a):
     """The calibration week's morning note: bugs found, the audit's a / b / c in one line each, and the changes made
     since the last graded slate with their reasons (versions.csv)."""
@@ -801,6 +908,7 @@ def calnote(a):
 
 def readout(a):
     print_audit(full=True)
+    print_ideas()
     print()
     ev, kind = counted(read(EVAL))
     print("DraftKings CBB readout, %s" % dt.date.today().isoformat())
@@ -1083,11 +1191,12 @@ def main():
     sub.add_parser("audit")
     sub.add_parser("calnote")
     sub.add_parser("calweek")
+    sub.add_parser("ideas")
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas}[a.cmd](a)
 
 
 if __name__ == "__main__":

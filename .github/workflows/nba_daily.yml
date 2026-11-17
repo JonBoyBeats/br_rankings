@@ -70,6 +70,8 @@ jobs:
           python3 scripts/dk_eval.py gate || true
           # the cut check: each saved bank's cut / kept / entered lineups, by rule tag, on the real points
           python3 scripts/dk_eval.py cutcheck || true
+          # the ideas: each saved bank's ideas, banked / kept / entered and how they finished
+          python3 scripts/dk_eval.py ideas || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
       # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening

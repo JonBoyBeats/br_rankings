@@ -201,6 +201,11 @@ reason are computed, never recalled) so the readout can split slates by version.
 they are. The note includes the cut check: kept against cut, average score and each contest's top-10% rate, and how
 many nights "kept averages more but reaches the top 10% less" has held.
 
+**Mechanics freeze with the rest on 2026-11-23** (the owner, 2026-11-17): the draw (sim-night draws, Leverage
+weight), the cut within each idea, the tie split, the pick (exposure, core and pair caps, unique entries) and the
+night view. After it, effort moves to inputs, in this order: projections (minutes, news), ownership, player ranges,
+then late swap. Mechanics ideas go in `analysis/cbb/dk/ideas.md` for the 30-slate review.
+
 **At the freeze (the 2026-11-24 report):** the 50/50 projection blend does NOT end by itself. Run
 `python3 scripts/dk_eval.py calweek` (ours, DraftKings' average and the blend over the week's graded nights: average
 miss, bias, rank correlation by salary band, and the nights each had the lowest miss), show it, and ask the owner
