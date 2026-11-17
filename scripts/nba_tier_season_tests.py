@@ -56,33 +56,39 @@ def pair_rows(rows, key_a, key_b):
     return out
 
 
+PUSH = 3.0     # a pair whose two players finished under 3 points apart is a push: no win, no loss (2026-11-17)
+
+
 def summarize(by_night):
-    """by_night: {night: [A's points per disagreeing pair]} (positive: A's first scored more)."""
+    """by_night: {night: [A's points per disagreeing pair]} (positive: A's first scored more). A tally only: a pair is a
+    win for A at +3 or more, a loss at -3 or less, a push in between; a night goes to the side with more wins."""
     nights = [n for n, v in by_night.items() if v]
-    won = sum(1 for n in nights if sum(x > 0 for x in by_night[n]) > sum(x < 0 for x in by_night[n]))
-    lost = sum(1 for n in nights if sum(x > 0 for x in by_night[n]) < sum(x < 0 for x in by_night[n]))
+    w = {n: sum(x >= PUSH for x in by_night[n]) for n in nights}
+    l = {n: sum(x <= -PUSH for x in by_night[n]) for n in nights}
+    won = sum(1 for n in nights if w[n] > l[n])
+    lost = sum(1 for n in nights if w[n] < l[n])
     allp = [x for n in nights for x in by_night[n]]
     rnd, a_ahead, b_ahead = random.Random(11), 0, 0
     for _ in range(4000):
         s = [rnd.choice(nights) for _ in nights]
-        diff = sum(sum(x > 0 for x in by_night[n]) - sum(x < 0 for x in by_night[n]) for n in s)
+        diff = sum(w[n] - l[n] for n in s)
         a_ahead += diff > 0
         b_ahead += diff < 0
     return {"nights": len(nights), "won": won, "lost": lost, "even": len(nights) - won - lost, "pairs": len(allp),
-            "right": sum(x > 0 for x in allp), "ppp": sum(allp) / len(allp) if allp else 0.0,
-            "a_share": a_ahead / 4000, "b_share": b_ahead / 4000}
+            "right": sum(w.values()), "wrong": sum(l.values()), "pushes": len(allp) - sum(w.values()) - sum(l.values()),
+            "ppp": sum(allp) / len(allp) if allp else 0.0, "a_share": a_ahead / 4000, "b_share": b_ahead / 4000}
 
 
 def line(label, a, b, s):
     if not s["nights"]:
         return "| %s | %s vs %s | no disagreeing pairs | | | |" % (label, a, b)
-    return "| %s | %s vs %s | %d-%d-%d of %d | %.0f%% / %.0f%% | %+.2f | %d (%s right %d%%) |" % (
+    return "| %s | %s vs %s | %d-%d-%d of %d | %.0f%% / %.0f%% | %+.2f | %d: %d-%d, %d pushes |" % (
         label, a, b, s["won"], s["lost"], s["even"], s["nights"], 100 * s["a_share"], 100 * s["b_share"], s["ppp"],
-        s["pairs"], a, round(100 * s["right"] / s["pairs"]))
+        s["pairs"], s["right"], s["wrong"], s["pushes"])
 
 
 HEAD = ("| test | A vs B | nights A won-lost-even | resamples A ahead / B ahead | points per pair (A's first minus "
-        "A's second) | disagreeing pairs |\n|---|---|---|---|---|---|")
+        "A's second) | disagreeing pairs: A won-lost, pushes (under 3 points) |\n|---|---|---|---|---|---|")
 
 
 def tier_rows(night, t):
@@ -195,7 +201,7 @@ if __name__ == "__main__":
     print("%d nights (%s to %s; %d six-drafter, %d four-drafter). Morning projection: ours at the AM lock as it stood "
           "(before 10-28 the morning file); afternoon: ETR's upload at the PM lock. Tiers: the button rebuilt at each lock "
           "(tier_history.csv). Players who didn't play are left out. Every pair in the tier, only those the two orders "
-          "put differently; a night goes to the order with more of its pairs right.\n" % (
+          "put differently, tallied: a win or loss at 3+ points apart, a push under 3; a night goes to the order with more wins.\n" % (
               len(nights), nights[0], nights[-1], pods[6], pods[4]))
     R = {}
     for w, proj_name in (("am", "ours"), ("pm", "ETR")):
