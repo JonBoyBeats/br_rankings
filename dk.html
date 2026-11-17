@@ -618,7 +618,7 @@ function tileHtml(t, wide) {
           return '<button data-act="platoon" data-k="' + k + '" title="Add a rule: never ' + esc(p.starter.name) + " with " + esc(p.bench.name) + '">Never ' +
             esc(p.starter.name) + " + " + esc(p.bench.name) + " (" + esc(p.pos) + ", minutes " + p.corr.toFixed(2) + " over " + p.games + " games" +
             (p.thin ? ", thin" : "") + ")</button>";
-        }).join("") + "</div>" : t.platoon ? '<div class="acts platoon"><span class="sub">Platoon: none with 5+ games both played yet</span></div>' : "") +
+        }).join("") + "</div>" : t.platoon ? '<div class="acts platoon"><span class="sub" title="3+ games both played while the team has played under 5; 5+ after">Platoon: none yet</span></div>' : "") +
       (QUAD[t.verdict] ? '<div class="acts"><button class="quad" data-act="quad">' + esc(QUAD[t.verdict].text(t)) + "</button></div>" : "") +
       '<div class="acts"><button data-act="min2">Min 2</button><button data-act="min3">Min 3</button><button data-act="stack">Stack with ' + esc(oppOf(t.team) || "opp") +
       '</button><button data-act="excl">Exclude</button></div>' +

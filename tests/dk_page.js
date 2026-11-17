@@ -354,8 +354,13 @@ function audit(name, L, o) {
   B = await baseNow();
   check("baseline: To baseline takes it back out", B.base && B.inDraw && !B.inTag, JSON.stringify(B));
   const noPlat = TEAMS.teams.find(t => t.platoon && !t.platoon.length);
-  await openTeam(noPlat.team);
-  check("platoon: a tile without a pair says none yet", /Platoon: none with 5\+ games/.test(await pg.textContent(`.tile[data-team="${noPlat.team}"]`)));
+  if (noPlat) {
+    await openTeam(noPlat.team);
+    check("platoon: a tile without a pair says none yet", /Platoon: none yet/.test(await pg.textContent(`.tile[data-team="${noPlat.team}"]`)));
+  }
+  const thin = TEAMS.teams.find(t => (t.platoon || []).some(p => p.thin));
+  await openTeam(thin.team);
+  check("platoon: a thin pair is marked thin", /games, thin\)/.test(await pg.textContent(`.tile[data-team="${thin.team}"]`)));
   const heavy = TEAMS.teams.find(t => t.heavy_fav), notHeavy = TEAMS.teams.find(t => !t.heavy_fav);
   await openTeam(heavy.team);
   check("platoon: a heavy favorite's tile notes the bench pairing", /garbage time/.test(await pg.textContent(`.tile[data-team="${heavy.team}"]`)));
