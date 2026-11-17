@@ -311,11 +311,11 @@
   // make. A shared draw can only add correlation, and the data show none (slightly the reverse, minutes being shared),
   // so both are 0: the sim's draws stay independent. ctx.corr ({team, game}) overrides them, for checking.
   var CORR = { team: 0, game: 0 };
-  // The prize split among exact ties with the simulated field (placePay): OFF until the simulated field's duplication is
-  // calibrated against the real field's (2026-11-16: the simulated field held an identical lineup for 8 of the owner's
-  // 46 entries, the real one for none). The duplicate counts (dup, tie) are still made, as the sim's uncalibrated
-  // estimate. ctx.tieSplit overrides it, for checking.
-  var TIE_SPLIT = false;
+  // The prize split among exact ties with the simulated field (placePay). Off from 2026-11-17 while the simulated field
+  // duplicated too little overall and too much of our own lineups; back on once the field was calibrated against the real
+  // fields (battle-royale-research scripts/dk_field_calibrate.py: duplication with another user 7.1% simulated against
+  // 6.8% real, salary used matched, the owner's entries duplicated 1 of 36). ctx.tieSplit overrides it, for checking.
+  var TIE_SPLIT = true;
 
   function simulate(ctx, cand, field, z, contest, N, S) {
     var by = {}; ctx.rows.forEach(function (r) { by[r.id] = r; });
