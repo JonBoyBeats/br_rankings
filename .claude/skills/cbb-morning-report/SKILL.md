@@ -193,6 +193,12 @@ draw used); the monthly readout shows his results on nights each was used (direc
 **Nightly**, give one line only: which standings were graded, and the projection gate's state
 (`analysis/cbb/dk/gate.json`). No rule-set verdicts from one night.
 
+**Injuries, daily (owner, 2026-11-17):** `cbb/inputs/outs.csv` in battle-royale-research is filled every day from
+EvanMiya's injury reports (the matchup previews the owner sends): one row per player, date, the team's DraftKings
+abbreviation, name, Out or Questionable, source. An Out regular (20+ minutes, 2+ games) has his minutes handed to his
+teammates by the projection (team_minutes); a player Out with 0 games this season changes nothing. The file's Out
+wins over DraftKings' Questionable. EvanMiya CSVs are needed only when tonight's teams played since the last export.
+
 **Calibration week (through 2026-11-23): the calibration note comes first in the DK part.** Run
 `python3 scripts/dk_eval.py calnote` and give it short: bugs found, the audit's a / b / c in one line each, and any
 change made with its reason. One-night results don't drive changes; principled, reversible tweaks do, and every
