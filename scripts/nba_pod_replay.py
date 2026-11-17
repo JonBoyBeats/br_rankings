@@ -35,7 +35,9 @@ NAMES = {"a": "(a) my locked list", "b": "(b) the button's list", "d": "(d) ADP"
          **{"c%d" % k: "(c%d) mine, T%d's moves undone" % (k, k) for k in range(1, 6)},
          **{"f%d" % k: "(f%d) mine (PM), T%d in ETR's order" % (k, k) for k in range(1, 6)},
          "bp": "(b') the button rebuilt here (PM)", "f": "(f) the button on ETR tiers (PM)", "g": "(g) ETR order, the button's T5 rule (PM)"}
-PAIRS = [("a", y) for y in LISTS[1:]] + [("g", "e"), ("bp", "f")]
+PAIRS = [("a", y) for y in LISTS[1:]] + [("g", "e"), ("bp", "f"), ("f", "e"), ("g", "f")]
+ETR_BUTTON = "2026-11-17"     # the PM button on ETR tiers from this night: which ETR version the PM should use
+ETR_PAIRS = [("f", "e"), ("g", "f"), ("g", "e")]
 META = os.path.join(M.NBA, "daily", "meta.json")
 
 
@@ -317,10 +319,12 @@ def night(n):
                                 tm, tk, _ = replay(plans, seq, s, L, Lw["d"], draw(n["date"], c["contest_id"], did, s, k))
                                 pl, _ = M.place_and_pay(c, t, score(tm, L, tk)[0])
                                 my_t1["draws"][k] += pl <= math.ceil(nn / 100)
+    pm = lists.get("pm") or {}
+    fb = sum(x == y for x, y in zip(pm["f"][:36], pm["b"][:36])) if n["date"] >= ETR_BUTTON and "f" in pm and "b" in pm else None
     for r in mine_rows:                                                     # where my real team lands among (a)'s replays
         f = fins.get(r["w"]) or [r["fin"]]
         r["beat"] = sum(1 for v in f if v > r["fin"]) / len(f)
-    return {"date": n["date"], "res": {"%s|%s" % k: dict(v) for k, v in res.items()}, "mine": mine_rows, "r6": r6, "my_t1": my_t1,
+    return {"date": n["date"], "res": {"%s|%s" % k: dict(v) for k, v in res.items()}, "mine": mine_rows, "r6": r6, "my_t1": my_t1, "f_vs_board": fb,
             "lists": {w: sorted(L) for w, L in lists.items() if L}}
 
 
@@ -411,6 +415,15 @@ def build(nights):
                             "nights": r["nights"], **{f: None if r[f] is None else round(100 * r[f], 3) for f in ("diff", "lo", "hi")}}
         SR.append(blk)
     js["since_rules"] = SR
+    # the PM button on ETR tiers (from ETR_BUTTON): (f) minus (e), (g) minus (f), (g) minus (e), PM only
+    EB = {"since": ETR_BUTTON, "window": "pm", "pairs": {}}
+    for x, y in ETR_PAIRS:
+        for k, _ in keys:
+            r = paired(nights, "pm", x, y, k, since={"am": "9999-12-31", "pm": ETR_BUTTON})
+            EB["pairs"].setdefault(pk(x, y), {})[k] = {
+                "nights": r["nights"], **{f: None if r[f] is None else round(100 * r[f], 3) for f in ("diff", "lo", "hi")}}
+    EB["f_vs_board"] = {x["date"]: x["f_vs_board"] for x in nights if x.get("f_vs_board") is not None}
+    js["pm_etr_button"] = EB
     # top 1% at my real seats: real against (a), with the spreads
     T = [x["my_t1"] for x in nights if x["my_t1"]["seats"]]
     MT = None
@@ -459,7 +472,7 @@ def build(nights):
             out.append("| %s | %d | %s |" % (label(pk(x, y)), P[(w, x, y, "top1")]["nights"], " | ".join(cells)))
         return out
 
-    head = summary(season, P, pos, r6, mine, beat, MT)
+    head = summary(season, P, pos, r6, mine, beat, MT, EB)
     md += ["# Pod replay: my NBA rankings graded by team outcomes", "",
            "Results only. Generated %s from %d nights (%s to %s)." % (js["generated"][:16].replace("T", " "), len(nights), nights[0]["date"], nights[-1]["date"]), ""]
     md += ["## Plain English", ""] + head + [""]
@@ -503,6 +516,17 @@ def build(nights):
                "", "The redraws show how much the round-6 pick alone moves the count; the nights and Poisson ranges show how far a count "
                "this size swings by luck. Real and (a) share the same nights' box scores, so the real-minus-(a) range is the gap from "
                "drafting off something other than the locked list (earlier boards, round-6 choices).", ""]
+    md += ["## The PM button on ETR tiers (since %s, PM)" % ETR_BUTTON, "",
+           "Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, (g) ETR with the button's T5 rule. "
+           "Points of top-10% and top-1% rate (80% range, nights resampled); below zero, the second list did better.", "",
+           "| Pair | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | 80% range |", "|---|---|---|---|---|---|"]
+    for key, v in EB["pairs"].items():
+        t10, t1 = v["top10"], v["top1"]
+        rng = lambda r: "%+.2f to %+.2f" % (r["lo"], r["hi"]) if r["lo"] is not None else "-"
+        md.append("| %s | %d | %s | %s | %s | %s |" % (label(key), t10["nights"], "-" if t10["diff"] is None else "%+.2f" % t10["diff"],
+                                                     rng(t10), "-" if t1["diff"] is None else "%+.2f" % t1["diff"], rng(t1)))
+    md += ["", "(f) rebuilt here against the board's own PM order (the ETR-tier button from %s), places of the top 36 that agree: %s." % (
+        ETR_BUTTON, ", ".join("%s %d" % kv for kv in sorted(EB["f_vs_board"].items())) or "no nights yet"), ""]
     if SR:
         md += ["## Since the rules went in", "",
                "(a) minus each list, both windows, top-10% points (80% range), from each rule date's first night per window (AM and PM "
@@ -589,9 +613,15 @@ def poisson_range(lam, lo=0.1, hi=0.9):
     return out
 
 
-def summary(season, P, pos, r6, mine, beat, MT=None):
+def summary(season, P, pos, r6, mine, beat, MT=None, EB=None):
     """The plain-English lines on top, from the numbers below them."""
     out = []
+    if EB:
+        got = [(k, v["top10"], v["top1"]) for k, v in EB["pairs"].items() if v["top10"]["nights"]]
+        out.append("- **Which ETR version for the PM** (since %s): " % EB["since"] + ("; ".join(
+            "%s %s top-10%% (%s), %s top-1%%, %d nights" % (label(k), pp(r10["diff"] / 100), "%s to %s" % (pp(r10["lo"] / 100), pp(r10["hi"] / 100))
+                                                          if r10["lo"] is not None else "no range yet", pp(r1["diff"] / 100), r10["nights"])
+            for k, r10, r1 in got) if got else "no nights yet") + ".")
     a = season.get(("both", "a"))
     if a:
         out.append("- **My locked list, replayed through every real seat** (%d nights, %d seats): top 1%% %.2f%%, top 10%% %.1f%%, mean finish "

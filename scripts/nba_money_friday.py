@@ -356,7 +356,7 @@ def main():
            "tests": tests, "monthly": mon, "proposals": M.proposals(tj, old),
            # the pod replay (scripts/nba_pod_replay.py; full tables in pod_replay.md/json): (a) my locked list minus each list,
            # season and since each rule date, in percentage points; and top 1% at my real seats
-           "pod_replay": {k: pr.get(k) for k in ("paired_note", "labels", "paired", "since_rules", "my_seats_top1", "r6_fidelity")}}
+           "pod_replay": {k: pr.get(k) for k in ("paired_note", "labels", "paired", "since_rules", "pm_etr_button", "my_seats_top1", "r6_fidelity")}}
     json.dump(out, open(OUT, "w"), indent=1)
     print("money_friday.json: %d tests, %d nights, monthly %s, %d proposals" % (len(tests), len(N), mon.get("generated"),
                                                                                  len(out["proposals"]["proposals"])))
