@@ -1956,8 +1956,9 @@ def pre_t5_tier(r):
 
 
 def dropped_pricey(r):
-    """A T4 PRICEY player (by the button's tier before its T5 rules) the button dropped into T5."""
-    return r.get("tier") == "5" and r.get("flag") == "PRICEY" and pre_t5_tier(r) == 4
+    """A T4 PRICEY player the button dropped into T5: the rankings side's nba_friday.dropped(), to the letter."""
+    return r.get("flag") == "PRICEY" and r.get("a_tier", "").isdigit() and r.get("tier", "").isdigit() \
+        and int(r["a_tier"]) <= 4 and int(r["tier"]) >= 5
 
 
 def base_stats(base):
