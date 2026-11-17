@@ -353,11 +353,39 @@ function audit(name, L, o) {
   await pg.click('#ruleList .rule[data-i="0"] button[data-act="base"]');
   B = await baseNow();
   check("baseline: To baseline takes it back out", B.base && B.inDraw && !B.inTag, JSON.stringify(B));
+  const noPlat = TEAMS.teams.find(t => t.platoon && !t.platoon.length);
+  await openTeam(noPlat.team);
+  check("platoon: a tile without a pair says none yet", /Platoon: none with 5\+ games/.test(await pg.textContent(`.tile[data-team="${noPlat.team}"]`)));
   const heavy = TEAMS.teams.find(t => t.heavy_fav), notHeavy = TEAMS.teams.find(t => !t.heavy_fav);
   await openTeam(heavy.team);
   check("platoon: a heavy favorite's tile notes the bench pairing", /garbage time/.test(await pg.textContent(`.tile[data-team="${heavy.team}"]`)));
   await openTeam(notHeavy.team);
   check("platoon: other tiles don't", !/garbage time/.test(await pg.textContent(`.tile[data-team="${notHeavy.team}"]`)));
+  // player Min% / Max%: set in the player table, listed in the Baseline block, held over each draw's own lineups
+  await clearRules(); await emptyBank(); await set(base);
+  const free = (await draw(20)).L, freq = {};
+  free.forEach(l => l.ids.forEach(id => freq[id] = (freq[id] || 0) + 1));
+  const hot = Object.keys(freq).sort((a, b) => freq[b] - freq[a])[0];
+  const cold = Object.keys(P).filter(id => !freq[id] && P[id].status !== "Out" && P[id].fp_dk >= 12).sort((a, b) => P[b].fp_dk - P[a].fp_dk)[0];
+  const setPct = async (id, cls, v) => {
+    await pg.evaluate(() => { view.panel = null; renderTiles(); });
+    await pg.fill(`#players .row[data-id="${id}"] input.${cls}`, String(v));
+    await pg.dispatchEvent(`#players .row[data-id="${id}"] input.${cls}`, "change");
+  };
+  await setPct(cold, "floor", 25); await setPct(hot, "cap", 20);
+  const xr = await pg.$$eval("#ruleList .xrule .lab", e => e.map(x => x.textContent));
+  check("min/max: both show in the Baseline block", xr.some(t => t.includes(P[cold].name) && t.includes("at least 25%")) && xr.some(t => t.includes(P[hot].name) && t.includes("at most 20%")), JSON.stringify(xr));
+  check("min/max: not in the idea name", !/25%|20%/.test(await pg.textContent("#tagNow")));
+  await emptyBank();
+  const mm = await draw(20), cnt = id => mm.L.filter(l => l.ids.includes(id)).length;
+  check(`min/max: ${P[cold].name} (drawn 0 of 20 free) in at least 25% of the draw`, mm.L.length === 20 && cnt(cold) >= 5, cnt(cold) + " of " + mm.L.length + "; " + mm.msg);
+  check(`min/max: ${P[hot].name} (drawn ${freq[hot]} of 20 free) in at most 20%`, cnt(hot) <= 4, cnt(hot) + " of " + mm.L.length + "; " + mm.msg);
+  check("min/max: the status reports them", /Min\/Max %:/.test(mm.msg), mm.msg);
+  check("min/max: recorded with the idea", await pg.evaluate(c => Object.values(BANK.tagRules).some(t => t.floor && t.floor[c] === 25), cold));
+  await pg.click(`#ruleList .xrule[data-id="${cold}"] button[data-act="rmx"]`);
+  check("min/max: Remove clears the player's box", await pg.inputValue(`#players .row[data-id="${cold}"] input.floor`) === "");
+  await pg.evaluate(() => { state.floor = {}; state.cap = {}; save(); renderRules(); renderPlayers(); });
+  await emptyBank();
   // 3. if 2+ from team then 1+ from its opponent
   await clearRules();
   await addRule("ifteam", async () => { await pg.selectOption("#rtTeam", t2.team); await pg.fill("#rtN", "2"); await pg.fill("#rtM", "1"); });

@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 54px 64px 40px 48px 44px 42px 46px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 54px 64px 40px 48px 44px 42px 46px 50px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -386,7 +386,7 @@ async function load() {
 function pick() {
   slate = doc.slates.find(function (s) { return String(s.draft_group_id) === $("slate").value; });
   rows = Object.keys(slate.players).map(function (id) { return Object.assign({ id: id }, slate.players[id]); });
-  state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, rules: [] }, store(key()) || {});
+  state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, floor: {}, rules: [] }, store(key()) || {});
   // rules saved before the draw-only change: an "in X% of lineups" rule becomes its plain rule; an "at most X%" one goes
   state.rules = (state.rules || []).filter(function (r) { return r.maxShare == null; }).map(function (r) {
     if (r.share == null) return r;
@@ -457,7 +457,8 @@ function playerTable(list, sortable) {
     [["name", "Player", ""], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["miss", "±", "r col-miss"], ["value", "Val", "r"], ["own", "Own", "r"], ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"]]
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
-    '<span class="r col-max">Max%</span></div>';
+    '<span class="r col-max" title="In at least this % of each draw\'s lineups (a baseline: listed in the rules\' Baseline block)">Min%</span>' +
+    '<span class="r col-max" title="In at most this % of each draw\'s lineups, and of a contest\'s set when the builder auto-fills (a baseline: listed in the rules\' Baseline block)">Max%</span></div>';
   var body = list.map(function (r) {
     var nw = newsOf(r.id);
     var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
@@ -478,6 +479,7 @@ function playerTable(list, sortable) {
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
       '<span class="m r mut col-avg">' + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
+      '<span class="col-max"><input class="floor" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + '"></span>' +
       '<span class="col-max"><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
       "</div>";
   }).join("");
@@ -616,7 +618,7 @@ function tileHtml(t, wide) {
           return '<button data-act="platoon" data-k="' + k + '" title="Add a rule: never ' + esc(p.starter.name) + " with " + esc(p.bench.name) + '">Never ' +
             esc(p.starter.name) + " + " + esc(p.bench.name) + " (" + esc(p.pos) + ", minutes " + p.corr.toFixed(2) + " over " + p.games + " games" +
             (p.thin ? ", thin" : "") + ")</button>";
-        }).join("") + "</div>" : "") +
+        }).join("") + "</div>" : t.platoon ? '<div class="acts platoon"><span class="sub">Platoon: none with 5+ games both played yet</span></div>' : "") +
       (QUAD[t.verdict] ? '<div class="acts"><button class="quad" data-act="quad">' + esc(QUAD[t.verdict].text(t)) + "</button></div>" : "") +
       '<div class="acts"><button data-act="min2">Min 2</button><button data-act="min3">Min 3</button><button data-act="stack">Stack with ' + esc(oppOf(t.team) || "opp") +
       '</button><button data-act="excl">Exclude</button></div>' +
@@ -677,7 +679,14 @@ function renderRules() {
   };
   var base = [], idea = [];
   list.forEach(function (rule, i) { (rule.base ? base : idea).push(row(rule, i)); });
-  $("ruleList").innerHTML = list.length ?
+  [["floor", "at least"], ["cap", "at most"]].forEach(function (k) {       // each player's Min% / Max% (set in the player table)
+    Object.keys(state[k[0]] || {}).forEach(function (id) {
+      var r = byId(id);
+      if (r) base.push('<div class="rule xrule" data-id="' + esc(id) + '" data-kind="' + k[0] + '"><span class="lab">' + esc(r.name) + ": in " + k[1] + " " +
+        state[k[0]][id] + "% of each draw" + (k[0] === "cap" ? " (and of an auto-filled set)" : "") + '</span><button data-act="rmx">Remove</button></div>');
+    });
+  });
+  $("ruleList").innerHTML = list.length || base.length ?
     (base.length ? '<div class="sub" style="margin-top:4px">Baseline: every draw, not in the idea name (' + base.length + ")</div>" + base.join("") +
       '<div class="sub" style="margin-top:6px">Idea rules</div>' : "") + (idea.join("") || '<div class="note" style="margin:4px 0">None.</div>')
     : '<div class="note" style="margin:4px 0">No rules: add one below, or from a team tile.</div>';
@@ -795,7 +804,8 @@ function bankAdd(lineups, tag) {
     if (seen[key] != null) { if (BANK.tags[seen[key]].indexOf(tag) < 0) BANK.tags[seen[key]].push(tag); return; }
     seen[key] = BANK.lineups.length; BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice() }); BANK.tags.push([tag]); added++;
   });
-  if (lineups.length) BANK.tagRules[tag] = Object.assign(drawRules(), { z: undefined, lock: Object.keys(state.lock), excl: Object.keys(state.excl) });
+  if (lineups.length) BANK.tagRules[tag] = Object.assign(drawRules(), { z: undefined, lock: Object.keys(state.lock), excl: Object.keys(state.excl),
+                                                         floor: Object.assign({}, state.floor), cap: Object.assign({}, state.cap) });
   CUT = null; PF = {}; pfSave(); bankSaveState(); renderBank();
   return added;
 }
@@ -1140,16 +1150,63 @@ function bpRender(note) {
 // --- events ------------------------------------------------------------------------------------
 $("slate").addEventListener("change", pick);
 $("reload").addEventListener("click", load);
+/* Each player's Min% / Max% (the player table; listed in the Baseline block) over the draw's own lineups. After the
+   draw: lineups over a Max are dropped (those carrying no Min player that needs them first); a Min player short gets
+   lineups drawn under the same rules with him in, in place of lineups no Min player needs; dropped places are drawn
+   again with the players at their Max left out; up to 4 rounds. A locked player stays in every lineup whatever his Max;
+   a Min above his Max gives way to the Max. */
+async function drawBank(cx, o, n) {
+  var res = await DKSim.pool(cx, o, n), L = res.lineups.slice(), N = L.length;
+  var live = function (m) { return Object.keys(m || {}).filter(function (id) { var r = byId(id); return r && r.status !== "Out" && !state.excl[id]; }); };
+  var mins = live(state.floor), maxs = live(state.cap).filter(function (id) { return !state.lock[id]; });
+  if (!N || (!mins.length && !maxs.length)) return res;
+  var key = function (x) { return x.ids.slice().sort().join(","); }, has = function (x, id) { return x.ids.indexOf(id) >= 0; };
+  var cnt = function (id) { return L.filter(function (x) { return has(x, id); }).length; };
+  var need = {}, cap = {};
+  mins.forEach(function (id) { need[id] = Math.ceil(+state.floor[id] / 100 * N - 1e-9); });
+  maxs.forEach(function (id) { cap[id] = Math.floor(+state.cap[id] / 100 * N + 1e-9); });
+  mins.forEach(function (id) { if (cap[id] != null) need[id] = Math.min(need[id], cap[id]); });
+  var needed = function (x) { return mins.some(function (id) { return has(x, id) && cnt(id) <= need[id]; }); };
+  var drop = function (ok) {        // the last lineup passing ok that no Min player needs, else the last passing ok
+    for (var pass = 0; pass < 2; pass++)
+      for (var j = L.length - 1; j >= 0; j--) if (ok(L[j]) && (pass || !needed(L[j]))) { L.splice(j, 1); return true; }
+    return false;
+  };
+  for (var round = 0; round < 4; round++) {
+    maxs.forEach(function (id) { while (cnt(id) > cap[id] && drop(function (x) { return has(x, id); })); });
+    var atCap = maxs.filter(function (id) { return cnt(id) >= cap[id]; });
+    var avoid = atCap.length ? [{ type: "none", ids: atCap }] : [];
+    var short = mins.filter(function (id) { return cnt(id) < need[id]; });
+    if (!short.length && L.length >= N) break;
+    var seen = {}; L.forEach(function (x) { seen[key(x)] = 1; });
+    for (var q = 0; q < short.length; q++) {
+      var id = short[q], more = await DKSim.pool(cx, Object.assign({}, o, { conds: (o.conds || []).concat(avoid, [{ type: "min", ids: [id], n: 1 }]) }), need[id] - cnt(id));
+      more.lineups.forEach(function (x) {
+        if (seen[key(x)] || cnt(id) >= need[id]) return;
+        if (L.length >= N && !drop(function (y) { return !has(y, id) && !needed(y); })) return;
+        seen[key(x)] = 1; L.push(x);
+      });
+    }
+    if (L.length < N) {
+      var fill = await DKSim.pool(cx, Object.assign({}, o, { conds: (o.conds || []).concat(avoid) }), N - L.length);
+      fill.lineups.forEach(function (x) { if (!seen[key(x)] && L.length < N) { seen[key(x)] = 1; L.push(x); } });
+    }
+  }
+  res.lineups = L;
+  res.expo = " Min/Max %: " + mins.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at least " + need[id] + ")"; })
+    .concat(maxs.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at most " + cap[id] + ")"; })).join("; ") + ".";
+  return res;
+}
 $("bankDraw").addEventListener("click", function () {
   var n = +$("bankN").value || 100, cx = ctx();
   cx.progress = function (msg) { $("buildStatus").textContent = msg; return tick(); };
   $("buildStatus").textContent = "Drawing " + n + " lineups under the rules…";
   var tag = tagNow();
-  DKSim.pool(cx, drawRules(), n).then(function (res) {
+  drawBank(cx, drawRules(), n).then(function (res) {
     takeCounts(res);
     var added = bankAdd(res.lineups, tag);
     $("buildStatus").textContent = "Banked " + added + " new lineups, tagged \"" + tag + "\"" + (res.lineups.length - added ? " (" + (res.lineups.length - added) + " already in the bank)" : "") + "." +
-      (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "") + rulesMsg(res);
+      (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "") + rulesMsg(res) + (res.expo || "");
   }, function (e) { $("buildStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; });
 });
 $("bankClear").addEventListener("click", function () {
@@ -1187,6 +1244,7 @@ $("teamPanel").addEventListener("click", function (e) {
 $("teamPanel").addEventListener("change", rowChange);
 $("ruleList").addEventListener("click", function (e) {
   var b = e.target.closest("button[data-act]"); if (!b) return;
+  if (b.dataset.act === "rmx") { var x = b.closest(".xrule"); delete state[x.dataset.kind][x.dataset.id]; save(); renderRules(); renderPlayers(); return; }
   var i = +b.closest(".rule").dataset.i;
   if (b.dataset.act === "base") { var x = state.rules[i]; if (x.base) delete x.base; else x.base = true; save(); renderRules(); return; }
   if (b.dataset.act === "rm") { state.rules.splice(i, 1); save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
@@ -1264,7 +1322,7 @@ document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
   });
 });
 $("resetProj").addEventListener("click", function () { state.proj = {}; save(); renderPlayers(); });
-$("clearLx").addEventListener("click", function () { state.lock = {}; state.excl = {}; state.cap = {}; save(); renderPlayers(); });
+$("clearLx").addEventListener("click", function () { state.lock = {}; state.excl = {}; state.cap = {}; state.floor = {}; save(); renderRules(); renderPlayers(); });
 $("players").addEventListener("click", function (e) {
   var h = e.target.closest("[data-sort]");
   if (h) { var s = h.dataset.sort; view.dir = view.sort === s ? -view.dir : (s === "name" ? 1 : -1); view.sort = s; renderPlayers(); return; }
@@ -1283,9 +1341,11 @@ function rowChange(e) {
   if (e.target.classList.contains("proj")) {
     var v = parseFloat(e.target.value);
     if (isNaN(v) || Math.abs(v - r.fp_dk) < 0.05) delete state.proj[id]; else state.proj[id] = v;
-  } else if (e.target.classList.contains("cap")) {
+  } else if (e.target.classList.contains("cap") || e.target.classList.contains("floor")) {
+    var m = e.target.classList.contains("cap") ? state.cap : state.floor;
     var c = e.target.value === "" ? null : Math.max(0, Math.min(100, +e.target.value));
-    if (c == null) delete state.cap[id]; else state.cap[id] = c;
+    if (c == null) delete m[id]; else m[id] = c;
+    renderRules();
   }
   save(); renderPlayers();
 }
