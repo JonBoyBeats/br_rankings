@@ -323,6 +323,29 @@ function audit(name, L, o) {
   check("rule toggle: the draw and the tag skip an off rule", !offNow.conds.includes(offLab) && offNow.conds.length === 1 && !offNow.tag.includes(offLab));
   await pg.check('#ruleList .rule[data-i="0"] .ruleOn');
   check("rule toggle: on again, back in the draw", await pg.evaluate(l => drawRules().conds.some(r => r.label === l), offLab));
+  // platoon pairs on the tiles: shown with their minutes correlation and games; one click adds Never together, marked
+  // src "platoon" for grading, and the mark survives an edit that keeps the pair; heavy favorites carry the bench note
+  const plat = TEAMS.teams.find(t => (t.platoon || []).length);
+  await clearRules();
+  await openTeam(plat.team);
+  const pb = `.tile[data-team="${plat.team}"] button[data-act="platoon"]`;
+  check("platoon: the tile lists its pairs", await pg.$$eval(pb, b => b.length) === plat.platoon.length);
+  check("platoon: the button shows the minutes correlation and games",
+    (await pg.textContent(pb)).includes(plat.platoon[0].corr.toFixed(2) + " over " + plat.platoon[0].games + " games"));
+  await pg.click(pb);
+  R = await rulesNow();
+  const pp = plat.platoon[0];
+  check("platoon: one click adds Never together, marked for grading", R.length === 1 && R[0].type === "never" && R[0].src === "platoon" &&
+    R[0].ids.join() === [pp.starter.id, pp.bench.id].join() && /\(platoon\)$/.test(R[0].label), JSON.stringify(R));
+  await pg.click('#ruleList .rule[data-i="0"] button[data-act="edit"]');
+  await pg.click("#rtSave");
+  R = await rulesNow();
+  check("platoon: an edit keeping the pair keeps the mark", R[0].src === "platoon" && (R[0].label.match(/\(platoon\)/g) || []).length === 1, JSON.stringify(R));
+  const heavy = TEAMS.teams.find(t => t.heavy_fav), notHeavy = TEAMS.teams.find(t => !t.heavy_fav);
+  await openTeam(heavy.team);
+  check("platoon: a heavy favorite's tile notes the bench pairing", /garbage time/.test(await pg.textContent(`.tile[data-team="${heavy.team}"]`)));
+  await openTeam(notHeavy.team);
+  check("platoon: other tiles don't", !/garbage time/.test(await pg.textContent(`.tile[data-team="${notHeavy.team}"]`)));
   // 3. if 2+ from team then 1+ from its opponent
   await clearRules();
   await addRule("ifteam", async () => { await pg.selectOption("#rtTeam", t2.team); await pg.fill("#rtN", "2"); await pg.fill("#rtM", "1"); });

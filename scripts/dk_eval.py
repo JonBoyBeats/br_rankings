@@ -884,7 +884,8 @@ def idea_kind(t):
     parts = []
     for r in t.get("conds") or []:
         ty = r.get("type")
-        parts.append("stack with opponent" if str(r.get("label", "")).startswith("Stack ") else
+        parts.append("platoon never-together" if r.get("src") == "platoon" else
+                     "stack with opponent" if str(r.get("label", "")).startswith("Stack ") else
                      "%d+ from a team" % r.get("n", 1) if ty == "min" else "exclude a team" if ty == "none" and len(r.get("ids") or []) > 1 else
                      "exclude a player" if ty == "none" else "if/then (%s)" % ty)
     if t.get("stackN"):

@@ -607,7 +607,16 @@ function tileHtml(t, wide) {
       '<span class="k">Owned</span><span><b>' + pct(t.own_share) + "</b> of the field vs <b>" + pct(t.pts_share) + "</b> of the points</span></div>" +
       '<div class="flags"><div class="flag"><span class="tag k-starting">BEST BET</span>' + esc(t.best_bet.name) + " (" + money(t.best_bet.salary) + ", " +
       (t.best_bet.value != null ? t.best_bet.value.toFixed(2) : "–") + " a $1K)</div>" +
-      (t.fragile.length ? '<div class="flag"><span class="tag q">FRAGILE</span>' + esc(t.fragile.join("; ")) + "</div>" : "") + "</div>" +
+      (t.fragile.length ? '<div class="flag"><span class="tag q">FRAGILE</span>' + esc(t.fragile.join("; ")) + "</div>" : "") +
+      (t.heavy_fav ? '<div class="flag"><span class="tag">BENCH</span>Favored by ' + Math.abs(t.spread) + ": two of its bench players together is a small " +
+        "positive pairing here (garbage time), so no blanket bench rule on this team</div>" : "") + "</div>" +
+      ((t.platoon || []).length ? '<div class="acts platoon"><span class="sub" style="align-self:center" title="A usual starter and a bench player at the same ' +
+        'position whose minutes this season moved against each other (minutes correlation, games both played). Teammates like these are the most ' +
+        'negatively correlated pair in DraftKings points.">Platoon:</span>' + t.platoon.map(function (p, k) {
+          return '<button data-act="platoon" data-k="' + k + '" title="Add a rule: never ' + esc(p.starter.name) + " with " + esc(p.bench.name) + '">Never ' +
+            esc(p.starter.name) + " + " + esc(p.bench.name) + " (" + esc(p.pos) + ", minutes " + p.corr.toFixed(2) + " over " + p.games + " games" +
+            (p.thin ? ", thin" : "") + ")</button>";
+        }).join("") + "</div>" : "") +
       (QUAD[t.verdict] ? '<div class="acts"><button class="quad" data-act="quad">' + esc(QUAD[t.verdict].text(t)) + "</button></div>" : "") +
       '<div class="acts"><button data-act="min2">Min 2</button><button data-act="min3">Min 3</button><button data-act="stack">Stack with ' + esc(oppOf(t.team) || "opp") +
       '</button><button data-act="excl">Exclude</button></div>' +
@@ -629,7 +638,7 @@ var QUAD = {
   FADE: { text: function (t) { return "FADE: exclude " + t.team; }, rules: function (t) { return tileRules("excl", t); } }
 };
 
-function tileRules(act, t) {
+function tileRules(act, t, k) {
   if (act === "quad") return QUAD[t.verdict] ? QUAD[t.verdict].rules(t) : [];
   var opp = oppOf(t.team), top = t.top || [];
   if (act === "min2" || act === "min3") { var n = act === "min2" ? 2 : 3; return [{ type: "min", ids: teamIds(t.team), n: n, label: "At least " + n + " from " + t.team }]; }
@@ -638,6 +647,11 @@ function tileRules(act, t) {
   if (act === "excl") return [{ type: "none", ids: teamIds(t.team), label: "No " + t.team + " players" }];
   if (act === "pivot") return [{ type: "ifnot", ids: [top[0].id], set: [top[1].id, top[2].id], n: 1,
                                  label: "If not " + top[0].name + ", then 1+ of " + top[1].name + " / " + top[2].name }];
+  if (act === "platoon") {    // src marks it for grading (dk_eval.py idea_kind: "platoon never-together")
+    var p = t.platoon[k];
+    return [{ type: "never", ids: [p.starter.id, p.bench.id], src: "platoon", platoon: { corr: p.corr, games: p.games, pos: p.pos },
+              label: "Never " + p.starter.name + " with " + p.bench.name + " (platoon)" }];
+  }
   if (act === "bring") return [{ type: "if", ids: [top[0].id], set: teamIds(opp), n: 1, label: "If " + top[0].name + ", then 1+ from " + opp }];
   return [];
 }
@@ -1156,7 +1170,7 @@ $("teamPanel").addEventListener("click", function (e) {
   var b = e.target.closest(".tile button[data-act]");
   if (b) {
     var t = teamsOf().teams.find(function (x) { return x.team === b.closest(".tile").dataset.team; });
-    addRules(tileRules(b.dataset.act, t));
+    addRules(tileRules(b.dataset.act, t, +b.dataset.k));
     return;
   }
   rowClick(e);
@@ -1195,7 +1209,13 @@ $("rtChips").addEventListener("click", function (e) { var b = e.target.closest("
 $("rtSave").addEventListener("click", function () {
   var r = editorRule();
   if (!r) { alert("Pick the players the rule needs (and two different players for Never)."); return; }
-  if (editing >= 0) { if (state.rules[editing].off) r.off = true; state.rules[editing] = r; editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; save(); renderRules(); }
+  if (editing >= 0) {
+    var was = state.rules[editing];
+    if (was.off) r.off = true;
+    if (was.src === "platoon" && r.type === "never" && r.ids.slice().sort().join() === was.ids.slice().sort().join()) {
+      r.src = was.src; r.platoon = was.platoon; r.label += " (platoon)";
+    }
+    state.rules[editing] = r; editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; save(); renderRules(); }
   else addRules([r]);
 });
 $("rtCancel").addEventListener("click", function () { editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; });
