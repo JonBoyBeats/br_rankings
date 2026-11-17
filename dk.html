@@ -174,6 +174,9 @@
     table.bp td, table.bp th { padding: 3px 3px; }
     .name { font-size: 13px; }
   }
+  .pickrow { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .pickrow button { padding: 2px 8px; font-size: 12px; }
+  #rtChips button { background: rgba(46,170,96,.25); }
 </style>
 </head>
 <body>
@@ -248,7 +251,10 @@
       <label class="field rt rt-if"><span class="field-label">From</span><select id="rtFrom" style="width:auto"><option value="opp">his opponent</option>
         <option value="team">his team</option><option value="list">these players</option></select></label>
       <label class="field rt rt-never"><span class="field-label">With</span><select id="rtQ" style="width:auto"></select></label>
-      <label class="field rt rt-list"><span class="field-label">These players</span><select id="rtList" multiple size="5" style="height:auto;min-width:230px"></select></label>
+      <div class="field rt rt-list" style="min-width:260px"><span class="field-label">These players</span>
+        <input id="rtSearch" type="search" placeholder="Type a name or team, Enter adds the first" autocomplete="off">
+        <div id="rtMatches" class="pickrow"></div><div id="rtChips" class="pickrow"></div>
+        <select id="rtList" multiple hidden></select></div>
       <button type="button" id="rtSave">Add rule</button>
       <button type="button" id="rtCancel" hidden>Cancel edit</button>
     </div>
@@ -661,8 +667,32 @@ function playerOpts() {
 function fillEditor() {
   var o = playerOpts();
   ["rtP", "rtQ", "rtList"].forEach(function (id) { $(id).innerHTML = o; });
+  $("rtSearch").value = ""; rtChips();
   $("rtTeam").innerHTML = Array.from(new Set(rows.map(function (r) { return r.team; }))).sort().map(function (t) { return "<option>" + esc(t) + "</option>"; }).join("");
   showEditor();
+}
+/* "These players": the search box lists matches to click (Enter adds the first); chosen players show as chips (click
+   one to drop it). The hidden #rtList holds the choice, as before. */
+function rtMatches() {
+  var q = $("rtSearch").value.trim().toLowerCase(), host = $("rtMatches");
+  if (!q) { host.innerHTML = ""; return; }
+  var hit = function (o) {     // a team code matches its players; otherwise the start of any word of the name
+    var r = byId(o.value);
+    return r.team.toLowerCase() === q || (" " + r.name.toLowerCase()).indexOf(" " + q) >= 0;
+  };
+  var hits = Array.from($("rtList").options).filter(function (o) { return !o.selected && hit(o); }).slice(0, 12);
+  host.innerHTML = hits.length ? hits.map(function (o) { return '<button type="button" data-add="' + esc(o.value) + '">+ ' + esc(o.textContent) + "</button>"; }).join("")
+    : '<span class="note" style="margin:0">No match</span>';
+}
+function rtChips() {
+  $("rtChips").innerHTML = Array.from($("rtList").selectedOptions).map(function (o) {
+    return '<button type="button" data-drop="' + esc(o.value) + '" title="Remove">' + esc(o.textContent) + " &times;</button>"; }).join("");
+  rtMatches();
+}
+function rtSelect(id, on) {
+  var o = Array.from($("rtList").options).find(function (x) { return x.value === id; });
+  if (o) o.selected = on;
+  rtChips();
 }
 function showEditor() {
   var t = $("rtType").value;
@@ -705,6 +735,7 @@ function loadEditor(rule) {
       rule.set.every(function (id) { return byId(id).team === P.team; }) && rule.set.length === teamIds(P.team).length - 1 ? "team" : "list";
   }
   Array.from($("rtList").options).forEach(function (o) { o.selected = (rule.set || []).indexOf(o.value) >= 0; });
+  rtChips();
   showEditor();
 }
 
@@ -1143,7 +1174,17 @@ $("rtP").addEventListener("change", function () {
   var P = byId($("rtP").value), mates = rows.filter(function (r) { return r.team === P.team && r.id !== P.id && r.status !== "Out"; })
     .sort(function (a, b) { return proj(b) - proj(a); }).slice(0, 2).map(function (r) { return r.id; });
   Array.from($("rtList").options).forEach(function (o) { o.selected = mates.indexOf(o.value) >= 0; });
+  rtChips();
 });
+$("rtSearch").addEventListener("input", rtMatches);
+$("rtSearch").addEventListener("keydown", function (e) {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  var b = $("rtMatches").querySelector("[data-add]");
+  if (b) { rtSelect(b.dataset.add, true); $("rtSearch").value = ""; rtMatches(); }
+});
+$("rtMatches").addEventListener("click", function (e) { var b = e.target.closest("[data-add]"); if (b) rtSelect(b.dataset.add, true); });
+$("rtChips").addEventListener("click", function (e) { var b = e.target.closest("[data-drop]"); if (b) rtSelect(b.dataset.drop, false); });
 $("rtSave").addEventListener("click", function () {
   var r = editorRule();
   if (!r) { alert("Pick the players the rule needs (and two different players for Never)."); return; }

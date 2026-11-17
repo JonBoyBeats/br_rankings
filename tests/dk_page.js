@@ -291,6 +291,28 @@ function audit(name, L, o) {
   await rowBtn(p1, "lock");
   L2 = await drawAudit("template 2, condition not met (he's locked)");
   check("template 2: not met in every lineup", L2.every(l => l.ids.includes(p1)));
+  // "These players" by search: type, Enter adds the first match; a chip click drops one; the rule holds the choice
+  await clearRules();
+  await pg.selectOption("#rtType", "ifnot");
+  await pg.selectOption("#rtP", p1); await pg.dispatchEvent("#rtP", "change");
+  check("search: the starting list shows as chips", await pg.$$eval("#rtChips button", b => b.length) === 2);
+  const far = t2.top[0].id, farName = P[far].name;
+  await pg.fill("#rtSearch", farName.split(" ").slice(-1)[0].slice(0, 5));
+  check("search: matches listed as you type", await pg.$$eval("#rtMatches [data-add]", (b, id) => b.some(x => x.dataset.add === id), far));
+  await pg.fill("#rtSearch", farName); await pg.press("#rtSearch", "Enter");
+  check("search: Enter adds the first match as a chip", await pg.$$eval("#rtChips [data-drop]", (b, id) => b.some(x => x.dataset.drop === id), far));
+  await pg.fill("#rtSearch", P[p1].team);
+  check("search: a team code lists only that team", await pg.$$eval("#rtMatches [data-add]", (b, ids) => b.length > 0 && b.every(x => ids.includes(x.dataset.add)),
+    Object.keys(P).filter(id => P[id].team === P[p1].team)));
+  const before = await pg.$$eval("#rtChips button", b => b.length);
+  await pg.click("#rtMatches [data-add]");
+  check("search: clicking a match adds it and keeps the search open", await pg.$$eval("#rtChips button", b => b.length) === before + 1
+    && await pg.inputValue("#rtSearch") === P[p1].team);
+  const dropped = await pg.$eval("#rtChips [data-drop]", b => b.dataset.drop);
+  await pg.click("#rtChips [data-drop]");
+  await pg.click("#rtSave");
+  R = await rulesNow();
+  check("search: the rule holds the chips' players", R[0] && R[0].set.length === before && R[0].set.includes(far) && !R[0].set.includes(dropped), JSON.stringify(R));
   // 3. if 2+ from team then 1+ from its opponent
   await clearRules();
   await addRule("ifteam", async () => { await pg.selectOption("#rtTeam", t2.team); await pg.fill("#rtN", "2"); await pg.fill("#rtM", "1"); });
