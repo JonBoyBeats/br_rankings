@@ -179,6 +179,7 @@
   .pickrow { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
   .pickrow button { padding: 2px 8px; font-size: 12px; }
   #rtChips button { background: rgba(46,170,96,.25); }
+  table.bp .pn { cursor: pointer; } table.bp .pn:hover { color: var(--bad); text-decoration: line-through; }
 </style>
 </head>
 <body>
@@ -317,6 +318,7 @@
   <div class="status" id="bpStatus"></div>
   <div id="bpSummary"></div>
   <div class="opts" id="bpGroups"></div>
+  <div class="opts" id="bpWithout"></div>
   <div class="bpwrap" id="bpTableWrap" hidden><table class="bp" id="bpTable"></table></div>
 </div>
 
@@ -1153,7 +1155,7 @@ async function bpAuto() {
     var best = -1, bestV = -Infinity;
     for (var k = 0; k < BP.pool.length; k++) {
       var sc = BP.scores[k];
-      if (!sc || !DKSim.fits(BP.pool, b.picked, k, count, limit, o.minUnique) || !DKSim.shareFits(o.conds || [], BP.pool, b.picked, k, o.n) ||
+      if (!sc || bpHidden(k) || !DKSim.fits(BP.pool, b.picked, k, count, limit, o.minUnique) || !DKSim.shareFits(o.conds || [], BP.pool, b.picked, k, o.n) ||
           (coreOf && (coreN[coreOf[k]] || 0) + 1 > coreLim) ||
           (pairLim && DKSim.pairs(BP.pool[k].ids).some(function (pk) { return (pairN[pk] || 0) + 1 > pairLim; }))) continue;
       if (sc.value > bestV) { bestV = sc.value; best = k; }
@@ -1169,6 +1171,10 @@ async function bpAuto() {
   bpRender(b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure, Min unique, Max core and Max pair (a bigger Keep helps)." : "");
 }
 
+/* Without: players whose lineups the builder hides (click a name in a lineup; the chip brings them back). Picked lineups
+   stay; Auto-fill skips the hidden ones too. Kept across contests for the session: a fade usually holds for the night. */
+var bpWithout = {};
+function bpHidden(k) { return BP.pool[k].ids.some(function (id) { return bpWithout[id]; }); }
 function bpRender(note) {
   var b = BP.b, picked = b.picked, cov = $("bpCover").value;
   var lineups = picked.map(function (k) { return BP.pool[k]; });
@@ -1201,8 +1207,13 @@ function bpRender(note) {
           esc(gname) + " · " + (gp[gname] || 0) + " picked of " + gc[gname] + "</button>";
       }).join("") + (BP.group ? '<button type="button" data-group="" style="height:26px;padding:0 8px;font-size:12px">All</button>' : "");
   }
-  var rest = [];
-  for (var k = 0; k < BP.pool.length; k++) if (picked.indexOf(k) < 0) rest.push(k);
+  var rest = [], hidden = 0;
+  for (var k = 0; k < BP.pool.length; k++) if (picked.indexOf(k) < 0) { if (bpHidden(k)) hidden++; else rest.push(k); }
+  var wo = Object.keys(bpWithout);
+  $("bpWithout").innerHTML = wo.length ? '<span class="field-label" style="align-self:center">Without</span>' + wo.map(function (id) {
+      return '<button type="button" data-without="' + esc(id) + '" title="Show his lineups again" style="height:26px;padding:0 8px;font-size:12px">' +
+        esc(shortName(by[id].name)) + " &times;</button>"; }).join("") + '<span class="note" style="align-self:center;margin:0">' + hidden + " lineup" + (hidden === 1 ? "" : "s") + " hidden</span>"
+    : '<span class="note" style="margin:0">Click a player\'s name in a lineup to hide every lineup with him.</span>';
   var g = get[BP.sort];
   rest.sort(function (x, y) { return (BP.group ? (grp(y) === BP.group) - (grp(x) === BP.group) : 0) || (g(x) - g(y)) * BP.dir; });
   var cols = [["proj", "Proj"], ["own", "Own"], ["qual", "Quality"], ["core", "Core %"], ["dupe", "Dupes (sim's estimate)"], ["alone", "Alone"], ["value", "Added"], ["cover", "+Cover"], ["shared", "Shared"]];
@@ -1212,7 +1223,8 @@ function bpRender(note) {
     var sc = BP.scores[k];
     var inG = BP.group && grp(k) === BP.group;
     return '<tr class="' + (isPicked ? "picked" : "") + (inG ? " ingroup" : "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' + (isPicked ? "bpRm" : "bpAdd") + '">' +
-      (isPicked ? "Remove" : "Add") + '</button></td><td class="l nm">' + esc(BP.names[k]) + '</td><td class="l mut" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(grp(k)) + '">' + esc(grp(k)) + "</td><td>" + BP.proj[k].toFixed(1) + "</td><td>" + Math.round(BP.own[k]) +
+      (isPicked ? "Remove" : "Add") + '</button></td><td class="l nm">' + BP.pool[k].slots.map(function (id) {
+        return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") + '</td><td class="l mut" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(grp(k)) + '">' + esc(grp(k)) + "</td><td>" + BP.proj[k].toFixed(1) + "</td><td>" + Math.round(BP.own[k]) +
       "%</td><td>" + (BP.qual[k] >= 0 ? "+" : "") + BP.qual[k].toFixed(1) + "</td><td>" + (100 * BP.core[k]).toFixed(1) + "%</td><td>" + (BP.dupe[k] ? BP.dupe[k].toFixed(1) : "0") + "</td><td>" + cents(BP.alone[k]) + "</td><td>" + (sc ? cents(sc.value) : "–") + "</td><td>" + (sc ? (100 * sc[cov]).toFixed(1) + "%" : "–") +
       "</td><td>" + (picked.length ? BP.shared[k] : "–") + "</td></tr>";
   }
@@ -1377,9 +1389,15 @@ $("bankBox").addEventListener("click", function (e) {
   if (u) groupTags(Object.keys(BANK.groups || {}).filter(function (t) { return BANK.groups[t] === u.dataset.ungroup; }), null);
 });
 $("bpCover").addEventListener("change", function () { if (BP) bpRender(); });
+$("bpWithout").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-without]"); if (!b || !BP) return;
+  delete bpWithout[b.dataset.without]; bpRender();
+});
 $("bpTable").addEventListener("click", function (e) {
   var h = e.target.closest("th[data-k]");
   if (h) { var k = h.dataset.k; BP.dir = BP.sort === k ? -BP.dir : -1; BP.sort = k; bpRender(); return; }
+  var pn = e.target.closest(".pn");
+  if (pn) { bpWithout[pn.dataset.pid] = 1; bpRender(); return; }
   var b = e.target.closest("button"); if (!b) return;
   var k2 = +b.closest("tr").dataset.k;
   if (b.classList.contains("bpAdd")) bpAdd(k2); else bpRemove(k2);

@@ -665,6 +665,22 @@ function audit(name, L, o) {
   check("groups: clicking an idea highlights its lineups and brings them to the top", hl.rows > 0 && hl.first, JSON.stringify(hl));
   await pg.click('[data-ungroup="Both ideas"]');
   check("groups: Ungroup splits it back", (await pg.$$eval("#bankBox > table tr", r => r.length)) === 3);
+  // Without: click a name in a lineup to hide every unpicked lineup with him; the chip brings them back; Auto-fill skips them
+  await pg.click("#bpClear").catch(() => {});
+  const pid = await pg.$eval("#bpTable tr:not(.picked)[data-k] .pn", e => e.dataset.pid);
+  const totalRows = await pg.evaluate(() => BP.pool.length);
+  await pg.click(`#bpTable tr:not(.picked)[data-k] .pn[data-pid="${pid}"]`);
+  const wo = await pg.evaluate(id => ({ shown: [...document.querySelectorAll("#bpTable tr:not(.picked)[data-k]")].map(r => BP.pool[+r.dataset.k].ids),
+    chip: !!document.querySelector(`#bpWithout [data-without="${id}"]`), note: document.getElementById("bpWithout").textContent,
+    left: BP.pool.filter(L => !L.ids.includes(id)).length }), pid);
+  check("without: no lineup shown holds the player", wo.shown.length > 0 && wo.shown.every(ids => !ids.includes(pid)), wo.note);
+  check("without: a chip with the hidden count", wo.chip && new RegExp((totalRows - wo.left) + " lineups? hidden").test(wo.note), wo.note);
+  await pg.click("#bpAuto");
+  await pg.waitForFunction(() => !/Auto-filling/.test(document.getElementById("bpStatus").textContent), null, { timeout: 120000 });
+  check("without: Auto-fill leaves his lineups out", await pg.evaluate(id => BP.b.picked.length > 0 && BP.b.picked.every(k => !BP.pool[k].ids.includes(id)), pid));
+  await pg.click(`#bpWithout [data-without="${pid}"]`);
+  check("without: the chip brings them back", await pg.evaluate(id => !bpWithout[id] && !document.querySelector("#bpWithout [data-without]"), pid));
+  await pg.click("#bpClear").catch(() => {});
 
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
