@@ -31,6 +31,19 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             contest's real lines once its standings are graded (eval.csv: winning score, top 10%, last paid place)
             the share that would have reached the top 10%, cashed, and won. Did the cut throw away winners? Rebuilt
             whole each run, so standings that come in later fill in.
+  audit     the audit, projections and ownership first (the sim's grading waits for enough slates), last night and
+            the season so far; short here and in the morning report, in full at the top of the readout:
+            a. projections: ours against the actual DraftKings points by salary band (everyone not tagged Out, a player
+               who sat scoring 0): average miss, bias (projection minus actual), rank correlation; DraftKings' season
+               average and his last-5 average (dk_last5, recorded from 2026-11-17) as benchmarks on the same players
+            b. ownership, from each night's biggest graded contest: projected against actual by projected-ownership
+               band (bias, average miss, rank correlation); a player missing from the standings was drafted by no one
+            c. ownership as the industry's view: each player's actual ownership against what our value implied (the
+               night's players ranked by our points per $1,000, the k-th best value given the k-th highest actual
+               ownership): where the field liked a player more than our value did, did he beat our projection, and
+               where it liked him less, fall short? By size of the disagreement, then, for disagreements of
+               AUDIT_DISAGREE+ points, where the field was right, by salary band, position and minutes change
+               (projected minutes against his last 5)
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
             and the paired gap, on the top-10% rate first, then cash; dollars only as the long-run check), the
             owner's entries against the field's 10%, ownership by band, the sim's cut lines, the correlation check
@@ -43,6 +56,7 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
   python3 scripts/dk_eval.py tiles --mirror ../br-adp-mirror
   python3 scripts/dk_eval.py weights      (monthly, with the readout)
   python3 scripts/dk_eval.py cutcheck
+  python3 scripts/dk_eval.py audit
   python3 scripts/dk_eval.py readout
 """
 import argparse
@@ -90,6 +104,11 @@ CUT_EVAL = os.path.join(DK, "cut_eval.csv")
 CUT_COLS = ["date", "draft_group", "tag", "group", "lineups", "mean", "best", "contest_id", "contest", "top10", "cash", "wins",
             "protect", "phase"]
 DECISION_SLATES = 30
+AUDIT_DISAGREE = 5        # ownership points: a disagreement big enough to list where the field was right
+DISAGREE_BINS = [(10, 999, "field liked more by 10+"), (5, 10, "more by 5-10"), (2, 5, "more by 2-5"), (-2, 2, "within 2"),
+                 (-5, -2, "less by 2-5"), (-10, -5, "less by 5-10"), (-999, -10, "less by 10+")]
+PROJ_BINS = [3, 6, 9, 12, 15, 20, 25, 30, 40, 999]   # our projection, upper edges: misses compared within a level
+MIN_CHANGE = 4            # minutes: projected against his last 5, "up" / "down" past this
 FREEZE_END = "2026-11-23"   # week 1, open for tweaks: slates through this date are warm-up, logged but not counted
 
 
@@ -449,7 +468,222 @@ def gate(a):
                                                 b["n"], b.get("mae_ours", "-"), b.get("mae_avg", "-")) for b in bands)))
 
 
+def ranks(v):
+    """Ranks, ties averaged (for rank correlation)."""
+    order = sorted(range(len(v)), key=lambda i: v[i])
+    r = [0.0] * len(v)
+    i = 0
+    while i < len(order):
+        j = i
+        while j + 1 < len(order) and v[order[j + 1]] == v[order[i]]:
+            j += 1
+        for k in range(i, j + 1):
+            r[order[k]] = (i + j) / 2 + 1
+        i = j + 1
+    return r
+
+
+def spearman(a, b):
+    return corr(ranks(a), ranks(b)) if len(a) >= 3 else None
+
+
+def sal_band(salary):
+    return next(b for b in BANDS if b[0] <= salary <= b[1])
+
+
+def audit_rows():
+    """Every recorded DK player-night that counts for the audit: not tagged Out, with his actual points (0 if he sat)."""
+    out = []
+    for r in records():
+        act, ours = num(r["actual_dk"]), num(r["fp_dk"])
+        if r.get("status") == "Out" or act is None or ours is None or num(r["salary"]) is None:
+            continue
+        out.append(dict(r, act=act, ours=ours, sal=num(r["salary"]), dkavg=num(r.get("dk_avg")), last5=num(r.get("dk_last5")),
+                        own_proj=num(r.get("own"))))
+    return out
+
+
+def fmt_stats(v, act):
+    """(n, average miss, bias, rank correlation) for projections v against actuals act."""
+    if not v:
+        return None
+    d = [x - y for x, y in zip(v, act)]
+    return len(v), S.mean(abs(x) for x in d), S.mean(d), spearman(v, act)
+
+
+def proj_audit(rows):
+    """a: by salary band (and all), ours against DK's average (players with one) and against last-5 (players with one)."""
+    out = []
+    for b in BANDS + [(0, 99999)]:
+        rs = [r for r in rows if b[0] <= r["sal"] <= b[1]]
+        withavg = [r for r in rs if r["dkavg"] is not None]
+        with5 = [r for r in rs if r["last5"] is not None]
+        out.append({"band": "all" if b == (0, 99999) else band_name({"lo": b[0], "hi": b[1]}),
+                    "ours": fmt_stats([r["ours"] for r in withavg], [r["act"] for r in withavg]),
+                    "dkavg": fmt_stats([r["dkavg"] for r in withavg], [r["act"] for r in withavg]),
+                    "ours5": fmt_stats([r["ours"] for r in with5], [r["act"] for r in with5]),
+                    "last5": fmt_stats([r["last5"] for r in with5], [r["act"] for r in with5])})
+    return out
+
+
+def own_nights(rows):
+    """b and c's data: per slate, its biggest graded contest's actual ownership on every audit player (0 if absent from
+    the standings: nobody drafted him). {draft group: [row with own_act]}"""
+    ev, oe = read(EVAL), read(OWN_EVAL)
+    size = {}
+    for r in ev:
+        if num(r.get("entries")) and (r["draft_group"] not in size or num(r["entries"]) > size[r["draft_group"]][1]):
+            size[r["draft_group"]] = (r["contest_id"], num(r["entries"]))
+    act = defaultdict(dict)
+    for r in oe:
+        if size.get(str(r["draft_group"]), (None,))[0] == r["contest_id"]:
+            act[str(r["draft_group"])][r["dk_id"]] = num(r["own_actual"])
+    nights = defaultdict(list)
+    for r in rows:
+        g = str(r["draft_group"])
+        if g in act:
+            nights[g].append(dict(r, own_act=act[g].get(r["dk_id"], 0.0) or 0.0))
+    return nights
+
+
+def own_audit(nights):
+    """b: projected against actual ownership, by projected-ownership band (and all)."""
+    rows = [r for v in nights.values() for r in v if r["own_proj"] is not None]
+    out = []
+    for lo, hi in OWN_BANDS + [(0, 101)]:
+        rs = [r for r in rows if lo <= r["own_proj"] < hi]
+        st = fmt_stats([r["own_proj"] for r in rs], [r["own_act"] for r in rs])
+        out.append({"band": "all" if (lo, hi) == (0, 101) else "%d-%d%%" % (lo, hi) if hi < 101 else "%d%%+" % lo, "stats": st})
+    return out
+
+
+def industry(nights):
+    """c: each player's disagreement (actual ownership minus what our value implied) and his outcome against ours. beat is
+    his miss (actual - ours) less the season's median miss for players projected like him (PROJ_BINS), so the field
+    isn't credited with how misses run at a projection level: outcomes can't go below 0 and run skewed, so low
+    projections beat theirs more often, and the field's disagreements lean toward some projection levels."""
+    out = []
+    pbin = lambda x: next(i for i, e in enumerate(PROJ_BINS) if x < e)
+    misses = defaultdict(list)
+    for rs in nights.values():
+        for r in rs:
+            misses[pbin(r["ours"])].append(r["act"] - r["ours"])
+    med = {k: (sorted(v)[(len(v) - 1) // 2] + sorted(v)[len(v) // 2]) / 2 for k, v in misses.items()}
+    for g, rs in nights.items():
+        by_value = sorted(rs, key=lambda r: -(r["ours"] / (r["sal"] / 1000)))
+        owns = sorted((r["own_act"] for r in rs), reverse=True)
+        for r, implied in zip(by_value, owns):
+            mp, m5 = num(r.get("min_proj")), num(r.get("min_last5"))
+            chg = "unknown" if mp is None or m5 is None else "up %d+" % MIN_CHANGE if mp - m5 >= MIN_CHANGE else \
+                  "down %d+" % MIN_CHANGE if m5 - mp >= MIN_CHANGE else "within %d" % MIN_CHANGE
+            out.append(dict(r, implied=implied, d=r["own_act"] - implied, beat=r["act"] - r["ours"] - med[pbin(r["ours"])], min_change=chg))
+    return out
+
+
+def field_right(rs):
+    """The share of players where the field's disagreement pointed the right way (liked more: beat ours; less: fell short)."""
+    v = [(r["beat"] > 0) == (r["d"] > 0) for r in rs if r["beat"] != 0]
+    return (sum(v) / len(v), len(v)) if v else (None, 0)
+
+
+def keeps_right(rs):
+    """(text, flagged): the field's right share with its slate consistency (slates where it was right on more than half
+    / slates measured), flagged only when it's right well beyond chance (2.5 standard errors over 50%, 20+ players) AND
+    on 2/3+ of 5+ slates: the slate is the unit that replicates, not the player."""
+    fr, n = field_right(rs)
+    by = defaultdict(list)
+    for r in rs:
+        by[r["draft_group"]].append(r)
+    nights = [field_right(v)[0] for v in by.values()]
+    nights = [x for x in nights if x is not None]
+    won = sum(x > 0.5 for x in nights)
+    flag = (fr is not None and n >= 20 and (fr - 0.5) / (0.25 / n) ** 0.5 >= 2.5 and len(nights) >= 5 and won >= 2 * len(nights) / 3)
+    return ("%s of %d, right on %d of %d slates" % ("%.0f%%" % (100 * fr) if fr is not None else "-", n, won, len(nights)), flag)
+
+
+def print_audit(full):
+    rows = audit_rows()
+    if not rows:
+        print("  audit: no recorded DK slates yet")
+        return
+    last = max(r["date"] for r in rows)
+    print("Audit, projections and ownership first (%d DK slates recorded, %d player-nights; last night %s)" % (
+        len({r["draft_group"] for r in rows}), len(rows), last))
+    f = lambda st: "-" if not st else "%4.1f %+5.1f %s" % (st[1], st[2], "%.2f" % st[3] if st[3] is not None else "  - ")
+    for name, rs in (("last night", [r for r in rows if r["date"] == last]), ("season", rows)):
+        a = proj_audit(rs)
+        if full:
+            print("\n  a. Projections, %s (average miss, bias = projection minus actual, rank correlation; DK points):" % name)
+            print("     %-14s %5s  %-17s %-17s | %5s  %-17s %-17s" % ("salary band", "n", "ours", "DK average", "n", "ours", "last-5"))
+            for b in a:
+                n = b["ours"][0] if b["ours"] else 0
+                n5 = b["ours5"][0] if b["ours5"] else 0
+                print("     %-14s %5d  %-17s %-17s | %5d  %-17s %-17s" % (b["band"], n, f(b["ours"]), f(b["dkavg"]), n5, f(b["ours5"]), f(b["last5"])))
+        else:
+            al = a[-1]
+            print("  a. Projections, %s: ours %s against DK average %s%s (miss, bias, rank corr; %d players)" % (
+                name, f(al["ours"]), f(al["dkavg"]), "" if not al["last5"] else "; on the %d with a last-5: ours %s, last-5 %s" % (
+                    al["ours5"][0], f(al["ours5"]), f(al["last5"])), al["ours"][0] if al["ours"] else 0))
+    nights = own_nights(rows)
+    if not nights:
+        print("  b, c. Ownership: no graded standings yet")
+        return
+    lastg = {str(r["draft_group"]) for r in rows if r["date"] == last}
+    for name, ns in (("last night", {g: v for g, v in nights.items() if g in lastg}), ("season", nights)):
+        if not ns:
+            continue
+        b = own_audit(ns)
+        if full:
+            print("\n  b. Ownership, %s (%d slates' biggest graded contest; projected against actual, ownership points):" % (name, len(ns)))
+            print("     %-10s %5s  %-17s" % ("projected", "n", "miss bias rank"))
+            for x in b:
+                if x["stats"]:
+                    print("     %-10s %5d  %s" % (x["band"], x["stats"][0], f(x["stats"])))
+        else:
+            al = b[-1]["stats"]
+            print("  b. Ownership, %s: miss %.1f, bias %+.1f, rank corr %s (%d players, %d slates)" % (
+                name, al[1], al[2], "%.2f" % al[3] if al[3] is not None else "-", al[0], len(ns)))
+    ind = industry(nights)
+    big = [r for r in ind if abs(r["d"]) >= AUDIT_DISAGREE]
+    fr, n = field_right(big)
+    more = [r for r in big if r["d"] > 0]
+    less = [r for r in big if r["d"] < 0]
+    if not full:
+        print("  c. The field against our value, season: disagreed by %d+ points on %d players; the field was right on %s "
+              "(liked more: %d, beat ours by %+.1f against the usual miss at his projection; liked less: %d, %+.1f)%s" % (
+                  AUDIT_DISAGREE, len(big), keeps_right(big)[0], len(more),
+                  S.mean(r["beat"] for r in more) if more else 0, len(less), S.mean(r["beat"] for r in less) if less else 0,
+                  "; FIELD KEEPS BEING RIGHT: see the readout for where" if keeps_right(big)[1] else ""))
+        return
+    print("\n  c. Ownership as the industry's view, season (actual ownership minus what our value implied, and the player against our projection):")
+    print("     (beat ours: his miss against the season's median miss for players projected like him, so how misses run at a level doesn't count)")
+    print("     %-26s %5s  %12s  %10s  %11s" % ("the field", "n", "vs median", "beat ours", "field right"))
+    for lo, hi, label in DISAGREE_BINS:
+        rs = [r for r in ind if lo <= r["d"] < hi]
+        if not rs:
+            continue
+        fr2, _ = field_right(rs) if label != "within 2" else (None, 0)
+        print("     %-26s %5d  %+12.1f  %9.0f%%  %11s" % (label, len(rs), S.mean(r["beat"] for r in rs),
+              100 * sum(r["beat"] > 0 for r in rs) / len(rs), "%.0f%%" % (100 * fr2) if fr2 is not None else ""))
+    print("     Where they disagreed by %d+ points, the field right by:" % AUDIT_DISAGREE)
+    for key, name in (("band", "salary band"), ("position", "position"), ("min_change", "minutes (projected against his last 5)")):
+        groups = defaultdict(list)
+        for r in big:
+            k = band_name({"lo": sal_band(r["sal"])[0], "hi": sal_band(r["sal"])[1]}) if key == "band" else r.get(key) or "?"
+            groups[k].append(r)
+        print("       %s: %s" % (name, "; ".join("%s %s%s" % (k, keeps_right(v)[0], " (FIELD KEEPS BEING RIGHT)" if keeps_right(v)[1] else "")
+              for k, v in sorted(groups.items()))))
+    print("     'field right': liked more and he beat our projection, or liked less and he fell short. FIELD KEEPS BEING RIGHT only when it's")
+    print("     right well beyond chance (2.5 standard errors over 50%, 20+ players) and on 2/3+ of 5+ slates; anything short of that is directional.")
+
+
+def audit(a):
+    print_audit(full=False)
+
+
 def readout(a):
+    print_audit(full=True)
+    print()
     ev, kind = counted(read(EVAL))
     print("DraftKings CBB readout, %s" % dt.date.today().isoformat())
     slates = sorted({r["draft_group"] for r in ev})
@@ -558,14 +792,7 @@ def readout(a):
         print("   Ranked against: %s." % ", ".join(sorted({r["ranked_against"] for r in tl if r.get("ranked_against")})))
     print(weights_line(fit_weights()))
 
-    own = read(OWN_EVAL)
-    print("\n2. Projected ownership against real %%Drafted, by projected band (%d player-contests)" % len(own))
-    for lo, hi in OWN_BANDS:
-        v = [r for r in own if num(r["own_proj"]) is not None and lo <= num(r["own_proj"]) < hi]
-        if v:
-            print("   proj %2d-%-3d%% n=%-4d projected %5.1f%%  real %5.1f%%  mean miss %4.1f pts" % (
-                lo, hi if hi < 101 else 100, len(v), S.mean(num(r["own_proj"]) for r in v), S.mean(num(r["own_actual"]) for r in v),
-                S.mean(abs(num(r["own_proj"]) - num(r["own_actual"])) for r in v)))
+    print("\n2. Projected ownership against real %Drafted: the audit's b, at the top")
 
     rec = [r for r in records() if r["status"] != "Out" and num(r["fp_dk"]) and num(r["miss_dk"])]
     print("\n3. The sim's players against reality (%d player-nights, %d nights)" % (len(rec), len({r["date"] for r in rec})))
@@ -721,11 +948,12 @@ def main():
     t = sub.add_parser("tiles")
     t.add_argument("--mirror", required=True)
     sub.add_parser("cutcheck")
+    sub.add_parser("audit")
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit}[a.cmd](a)
 
 
 if __name__ == "__main__":

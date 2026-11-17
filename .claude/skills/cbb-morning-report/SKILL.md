@@ -193,6 +193,13 @@ draw used); the monthly readout shows his results on nights each was used (direc
 **Nightly**, give one line only: which standings were graded, and the projection gate's state
 (`analysis/cbb/dk/gate.json`). No rule-set verdicts from one night.
 
+**The audit, nightly, first in the DK part of the report** (`python3 scripts/dk_eval.py audit`): projections and
+ownership come first; the sim's grading waits for enough slates. Give its short lines as they print, last night
+and the season: (a) our projection against actual DraftKings points (average miss, bias, rank correlation) beside
+DraftKings' average and the last-5 average; (b) projected against actual ownership; (c) the field against our value:
+where it disagreed by 5+ points, how often it was right, and whether the readout flags FIELD KEEPS BEING RIGHT (only
+when it's right well beyond chance and on 2/3+ of 5+ slates; say "directional" for anything short of that).
+
 **The cut check, nightly** (`python3 scripts/dk_eval.py cutcheck`, run by the 2:17am job after the record;
 rerun it in the report once new standings are in, since it rebuilds `analysis/cbb/dk/cut_eval.csv` whole):
 for last night's saved bank, by rule tag, the lineups the cut removed, kept and entered, scored on the real
@@ -203,7 +210,11 @@ tags lost the most (mean and best of cut against kept). One night is anecdote; s
 **Monthly** (the first report of each month, and at 30 graded slates): first `python3 scripts/dk_eval.py
 weights` (refits Quality's weights on the earlier 2/3 of the logged slates, tests them on the later 1/3, and
 switches the tiles to them only if they beat equal weights there; commit `analysis/cbb/dk/team_weights.json`),
-then `python3 scripts/dk_eval.py readout --sim-z ../br-adp-mirror/dk_cbb_field.json`. It gives, in this order:
+then `python3 scripts/dk_eval.py readout --sim-z ../br-adp-mirror/dk_cbb_field.json`. It leads with the audit in
+full (projections and ownership first, the owner's priority): (a) projections by salary band, ours against DraftKings'
+average and the last-5 average, last night and the season; (b) ownership by projected band; (c) the field against our
+value, by size of the disagreement, then where the field was right by salary band, position and minutes change.
+Report those first. Then, in this order:
 
 1. Each rule set and the owner's entries: top-10% rate, cash rate, then dollars as the long-run check;
    each rule set against "No extra rules" slate by slate (slates won, paired gap), never pooled totals.

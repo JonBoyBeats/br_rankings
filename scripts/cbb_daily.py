@@ -20,7 +20,9 @@ EvanMiya), dk_avg (DraftKings' season average, the number the field sees), min_p
 min_raw (before), miss_dk and fragile (fragility), bpr_rank, status, own (projected ownership, dk_cbb_field.json);
 then the box score and actual_dk: DraftKings' scoring, +1.5 a double-double (two of points, rebounds, assists,
 steals, blocks at 10+), +3 a triple-double on top (DraftKings lists both bonuses; whether they stack is
-unconfirmed, and triple-doubles were 7 in 37,405 college player-games of 2025-26).
+unconfirmed, and triple-doubles were 7 in 37,405 college player-games of 2025-26). Then, for the projection audit
+(dk_eval.py audit): dk_last5 (his last 5 games' DraftKings points before the slate, from 2026-11-17 on), min_last5 and
+min_avg (his minutes, last 5 and this season, for the minutes-change split).
 
   python3 scripts/cbb_daily.py record --mirror ../br-adp-mirror [--since 2026-11-03] [--rebuild]   (both sites)
   python3 scripts/cbb_daily.py report [--since 2026-11-03] [--date 2026-11-03]
@@ -56,7 +58,8 @@ COLS = ["date", "slate", "player_id", "name", "team", "adp_close", "src", "fp", 
         "miya_ppm", "bpr_rank", "missed", "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual"]
 DK_COLS = ["date", "draft_group", "dk_id", "espn", "name", "team", "game", "position", "salary", "src", "status", "fp_dk", "fp_base_dk",
            "dk_avg", "value", "own", "fp", "min_proj", "min_raw", "ppm_proj", "miss_dk", "fragile", "p_dd", "bpr_rank", "missed",
-           "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "tpm", "dd", "actual", "actual_dk"]
+           "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "tpm", "dd", "actual", "actual_dk",
+           "dk_last5", "min_last5", "min_avg"]
 
 
 def dk_points(a):
@@ -223,7 +226,10 @@ def record_dk(a, mirror, since, now):
                         "min_proj": r.get("min", ""), "min_raw": r.get("min_raw", r.get("min", "")), "ppm_proj": r.get("ppm", ""),
                         "miss_dk": r.get("miss_dk", ""), "fragile": int(bool(r.get("fragile"))), "p_dd": r.get("p_dd", ""),
                         "bpr_rank": r.get("bpr_rank", ""), "missed": r.get("missed", ""), "spread": r.get("spread", ""),
-                        "ou": r.get("ou", ""), **b})
+                        "ou": r.get("ou", ""), **b,
+                        # the projection audit's benchmark and the minutes-change split (dk_eval.py audit)
+                        "dk_last5": r.get("dk_last5", ""), "min_avg": r.get("min_avg", ""),
+                        "min_last5": round(sum(r["min_last5"]) / len(r["min_last5"]), 1) if r.get("min_last5") else ""})
         if not ready or not out:
             print("  DK %s: not ready (a game not final, or no projection before the start)" % g)
             continue
