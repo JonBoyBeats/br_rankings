@@ -337,7 +337,14 @@ function audit(name, L, o) {
   const pp = plat.platoon[0];
   check("platoon: one click adds Never together, marked for grading", R.length === 1 && R[0].type === "never" && R[0].src === "platoon" &&
     R[0].ids.join() === [pp.starter.id, pp.bench.id].join() && /\(platoon\)$/.test(R[0].label), JSON.stringify(R));
+  // the baseline block folds: closed by default, its rule count, how many are on and the lowest pass in the summary;
+  // opened, it stays open as the rules re-render
+  check("baseline: folded by default, counted in its summary", await pg.evaluate(() => {
+    const d = document.getElementById("baseFold");
+    return !!d && !d.open && /Baseline: every draw, not in the idea name · 1 rule, 1 on/.test(d.querySelector("summary").textContent); }));
+  await pg.click("#baseFold > summary");
   await pg.click('#ruleList .rule[data-i="0"] button[data-act="edit"]');
+  check("baseline: opened, it stays open through a re-render", await pg.evaluate(() => document.getElementById("baseFold").open));
   await pg.click("#rtSave");
   R = await rulesNow();
   check("platoon: an edit keeping the pair keeps the mark", R[0].src === "platoon" && (R[0].label.match(/\(platoon\)/g) || []).length === 1, JSON.stringify(R));
@@ -610,6 +617,9 @@ function audit(name, L, o) {
   await pg.evaluate(() => { document.querySelectorAll("#bankBox input[data-tag]").forEach(x => { x.checked = true; }); });
   await pg.fill("#groupName", "Both ideas");
   await pg.click("#groupMake");
+  check("groups: a grouped idea's tags fold away, counted", await pg.evaluate(() => {
+    const d = document.querySelector('#bankBox details.fold[data-fold-group="Both ideas"]');
+    return !!d && !d.open && d.querySelector("summary").textContent === "2 tags" && d.querySelectorAll("input[data-tag]").length === 2; }));
   check("groups: ticked tags merge into one idea in the bank table", (await pg.$$eval("#bankBox table tr", r => r.length)) === 2 && /Both ideas/.test(await pg.textContent("#bankBox")) &&
         (await pg.evaluate(() => Object.values(BANK.groups).filter(g => g === "Both ideas").length)) === 2);
   await pg.fill("#cutKeep", "60"); await pg.fill("#cutNights", "200");

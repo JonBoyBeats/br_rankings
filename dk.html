@@ -146,6 +146,8 @@
   .tile .acts button { height: 24px; padding: 0 7px; font-size: 11.5px; }
   .rulesbox { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 2px 0 10px; }
   .rule { display: flex; gap: 8px; align-items: center; font-size: 12.5px; border-bottom: 1px solid var(--line); padding: 3px 0; }
+  details.fold > summary { cursor: pointer; font-size: 12px; color: var(--muted); padding: 3px 0; }
+  details.fold > summary b { color: var(--ink); font-weight: 600; }
   .rule .lab { flex: 1; } .rule.off .lab { opacity: .45; text-decoration: line-through; } .rule .pc { font-family: var(--mono); font-size: 11px; color: var(--muted); }
   .rule button { height: 22px; padding: 0 7px; font-size: 11.5px; }
   .summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px 14px; font-family: var(--mono);
@@ -666,6 +668,13 @@ function rulesMsg(r) {
   return " Rules: " + r.counts.map(function (c) { return c.label + ": " + c.pass + " of " + c.of + " pass"; }).join("; ") + "; all of them: " + r.kept + " of " + r.of +
     (r.added ? "; " + r.added + " more drawn under the rules to fill the pool" : "") + ".";
 }
+var FOLD = { base: false, groups: {} };     // which folds are open (kept across re-renders, this visit only)
+document.addEventListener("toggle", function (e) {
+  var d = e.target;
+  if (!d.classList || !d.classList.contains("fold")) return;
+  if (d.id === "baseFold") FOLD.base = d.open;
+  else if (d.dataset.foldGroup != null) FOLD.groups[d.dataset.foldGroup] = d.open;
+}, true);
 function renderRules() {
   var list = state.rules || [];
   // Baseline rules (never-together pairs moved there; platoon pairs start there): every draw obeys them while ticked,
@@ -677,18 +686,27 @@ function renderRules() {
       (rule.type === "never" ? '<button data-act="base">' + (rule.base ? "To ideas" : "To baseline") + "</button>" : "") +
       (["if", "ifnot", "ifteam", "never"].indexOf(rule.type) >= 0 ? '<button data-act="edit">Edit</button>' : "") + '<button data-act="rm">Remove</button></div>';
   };
-  var base = [], idea = [];
-  list.forEach(function (rule, i) { (rule.base ? base : idea).push(row(rule, i)); });
+  var base = [], idea = [], baseOn = 0, worst = null;
+  list.forEach(function (rule, i) {
+    (rule.base ? base : idea).push(row(rule, i));
+    if (rule.base && !rule.off) {
+      baseOn++;
+      var c = ruleCounts[rule.label];
+      if (c && c.of && (!worst || c.pass / c.of < worst.pass / worst.of)) worst = c;
+    }
+  });
   [["floor", "at least"], ["cap", "at most"]].forEach(function (k) {       // each player's Min% / Max% (set in the player table)
     Object.keys(state[k[0]] || {}).forEach(function (id) {
       var r = byId(id);
+      if (r) baseOn++;
       if (r) base.push('<div class="rule xrule" data-id="' + esc(id) + '" data-kind="' + k[0] + '"><span class="lab">' + esc(r.name) + ": in " + k[1] + " " +
         state[k[0]][id] + "% of each draw" + (k[0] === "cap" ? " (and of an auto-filled set)" : "") + '</span><button data-act="rmx">Remove</button></div>');
     });
   });
   $("ruleList").innerHTML = list.length || base.length ?
-    (base.length ? '<div class="sub" style="margin-top:4px">Baseline: every draw, not in the idea name (' + base.length + ")</div>" + base.join("") +
-      '<div class="sub" style="margin-top:6px">Idea rules</div>' : "") + (idea.join("") || '<div class="note" style="margin:4px 0">None.</div>')
+    (base.length ? '<details class="fold" id="baseFold"' + (FOLD.base ? " open" : "") + '><summary><b>Baseline</b>: every draw, not in the idea name · ' +
+      base.length + " rule" + (base.length === 1 ? "" : "s") + ", " + baseOn + " on" + (worst ? " · lowest pass " + worst.pass + " of " + worst.of : "") +
+      "</summary>" + base.join("") + "</details>" + '<div class="sub" style="margin-top:6px">Idea rules</div>' : "") + (idea.join("") || '<div class="note" style="margin:4px 0">None.</div>')
     : '<div class="note" style="margin:4px 0">No rules: add one below, or from a team tile.</div>';
   if (slate) $("tagNow").textContent = "Next draw is tagged: " + tagNow();
 }
@@ -860,7 +878,11 @@ function renderBank() {
       Object.keys(all).sort(function (a, b) { return all[b] - all[a]; }).map(function (g) {
         var grouped = members[g].length > 1 || members[g][0] !== g;
         return "<tr><td><b>" + esc(g) + "</b>" + (grouped ? ' <button type="button" data-ungroup="' + esc(g) + '" style="height:20px;padding:0 6px;font-size:11px">Ungroup</button>' : "") +
-          '<div class="sub">' + members[g].map(function (t) { return '<label style="display:block"><input type="checkbox" data-tag="' + esc(t) + '"> ' + esc(t) + " (" + tags[t] + ")</label>"; }).join("") + "</div>" +
+          (function () {      // a group's tags fold away once it's grouped; a lone tag shows as it is
+            var list = members[g].map(function (t) { return '<label style="display:block"><input type="checkbox" data-tag="' + esc(t) + '"> ' + esc(t) + " (" + tags[t] + ")</label>"; }).join("");
+            return grouped ? '<details class="fold" data-fold-group="' + esc(g) + '"' + (FOLD.groups[g] ? " open" : "") + '><summary>' + members[g].length + " tag" +
+              (members[g].length === 1 ? "" : "s") + '</summary><div class="sub">' + list + "</div></details>" : '<div class="sub">' + list + "</div>";
+          })() +
           '</td><td class="m">' + all[g] + "</td>" + rounds.map(function (r) { return '<td class="m">' + (r[g] || 0) + "</td>"; }).join("") +
           (after ? '<td class="m">' + (after[g] || 0) + '</td><td class="m">' + Math.round(100 * (after[g] || 0) / all[g]) + "%</td>" : "") + "</tr>";
       }).join("") + "</table>" : "");
