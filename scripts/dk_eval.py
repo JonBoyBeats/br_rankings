@@ -135,15 +135,19 @@ def read(path):
 
 
 def standings(path):
-    """(entries [{rank, name, points}], {player name: (%drafted, fpts)}) from a DraftKings standings CSV."""
+    """(entries [{rank, name, points}], {player name: (%drafted, fpts)}) from a DraftKings standings CSV. Its player
+    list has a row for each roster slot a player was drafted in, each with that slot's %Drafted (verified on the first
+    files, 2026-11-16: Phillips G 53.44% + UTIL 11.01% = the 64.45% DraftKings shows)."""
     entries, players = [], {}
     with open(path, encoding="utf-8-sig") as f:
         for r in csv.DictReader(f):
             if r.get("EntryId") and num(r.get("Points")) is not None:
                 entries.append({"rank": int(num(r["Rank"])), "name": r.get("EntryName") or "", "points": num(r["Points"]),
                                 "lineup": r.get("Lineup") or ""})
-            if r.get("Player"):
-                players[r["Player"].strip()] = (num(str(r.get("%Drafted", "")).rstrip("%")), num(r.get("FPTS")))
+            if r.get("Player"):     # one row per roster slot he was drafted in (G, F, UTIL): his ownership is their sum
+                nm, pct = r["Player"].strip(), num(str(r.get("%Drafted", "")).rstrip("%"))
+                prev = players.get(nm, (None, None))[0]
+                players[nm] = (pct if prev is None else prev + (pct or 0), num(r.get("FPTS")))
     return entries, players
 
 
@@ -153,9 +157,15 @@ def lineup_names(s):
     return [x.strip() for x in parts[2::2] if x.strip()]
 
 
-def at_lock(mirror, file, start):
+def at_lock(mirror, file, start, slate=None):
+    """The mirror's file as it stood before the start; with slate, the latest version before it that has that draft
+    group (an hourly run can leave a slate out, e.g. the shadow with no contest it could build for, on 2026-11-16)."""
     v = mirror.versions(file, start - dt.timedelta(days=2), start)
-    return mirror.show(v[-1][1], file) if v else None
+    for _, sha in reversed(v if slate else v[-1:]):
+        d = mirror.show(sha, file)
+        if not slate or str(slate) in ((d or {}).get("slates") or {}):
+            return d
+    return None
 
 
 def placed(points, field_desc):
@@ -223,7 +233,7 @@ def nightly(a):
         for r in rec:
             if r["name"] in players and players[r["name"]][1] is not None:
                 pts[r["dk_id"]] = players[r["name"]][1]
-        shadow = at_lock(mirror, "dk_cbb_shadow.json", start) or {}
+        shadow = at_lock(mirror, "dk_cbb_shadow.json", start, slate["draft_group_id"]) or {}
         sh = (shadow.get("slates") or {}).get(str(slate["draft_group_id"]))
         base = {"date": rec[0]["date"], "draft_group": slate["draft_group_id"], "contest_id": cid, "contest": contest["name"],
                 "entries": n, "fee": fee, "field_win": cut["win"], "field_top10": cut["top10"], "field_cash": cut["cash"],
@@ -332,7 +342,7 @@ def tiles(a):
             if s:
                 start = iso(s["start"])
                 break
-        doc = at_lock(mirror, "dk_cbb_teams.json", start) if start else None
+        doc = at_lock(mirror, "dk_cbb_teams.json", start, g) if start else None
         T = ((doc or {}).get("slates") or {}).get(g)
         if not T:
             print("  tiles %s: none saved before lock" % g)

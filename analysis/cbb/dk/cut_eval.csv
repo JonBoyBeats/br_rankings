@@ -1,77 +1,305 @@
 date,draft_group,tag,group,lineups,mean,best,contest_id,contest,top10,cash,wins,protect,phase
-2026-11-16,156660,all,cut,3258,212.98,289.75,,,,,,,warm-up
-2026-11-16,156660,all,kept,1000,217.55,272.25,,,,,,,warm-up
-2026-11-16,156660,all,entered,36,210.09,247.25,,,,,,,warm-up
-2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,,,,,,,warm-up
-2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,,,,,,,warm-up
-2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,,,,,,,warm-up
-2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,,,,,,,warm-up
-2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,,,,,,,warm-up
-2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,,,,,,,warm-up
+2026-11-16,156660,all,cut,3258,212.98,289.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0138,0.0414,0,,warm-up
+2026-11-16,156660,all,cut,3258,212.98,289.75,197791874,CBB $1.25K And-One,0.027,0.0826,0,,warm-up
+2026-11-16,156660,all,cut,3258,212.98,289.75,197791875,CBB $200 Quarter Jukebox,0.0396,0.1025,0,,warm-up
+2026-11-16,156660,all,cut,3258,212.98,289.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0488,0.1363,0,,warm-up
+2026-11-16,156660,all,kept,1000,217.55,272.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.01,0.029,0,,warm-up
+2026-11-16,156660,all,kept,1000,217.55,272.25,197791874,CBB $1.25K And-One,0.022,0.073,0,,warm-up
+2026-11-16,156660,all,kept,1000,217.55,272.25,197791875,CBB $200 Quarter Jukebox,0.027,0.098,0,,warm-up
+2026-11-16,156660,all,kept,1000,217.55,272.25,197873654,CBB $100 Dime Time [Just $0.10!],0.031,0.142,0,,warm-up
+2026-11-16,156660,all,entered,36,210.09,247.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,all,entered,36,210.09,247.25,197791874,CBB $1.25K And-One,0.0,0.0278,0,,warm-up
+2026-11-16,156660,all,entered,36,210.09,247.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0278,0,,warm-up
+2026-11-16,156660,all,entered,36,210.09,247.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0278,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0115,0.046,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,197791874,CBB $1.25K And-One,0.046,0.1034,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,197791875,CBB $200 Quarter Jukebox,0.046,0.1264,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,197873654,CBB $100 Dime Time [Just $0.10!],0.046,0.1839,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0769,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,197791874,CBB $1.25K And-One,0.0,0.0769,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,197791875,CBB $200 Quarter Jukebox,0.0769,0.0769,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0769,0.1538,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0208,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0229,0.0458,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,197791874,CBB $1.25K And-One,0.0305,0.0916,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,197791875,CBB $200 Quarter Jukebox,0.0458,0.1145,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0611,0.145,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0149,0.0299,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,197791874,CBB $1.25K And-One,0.0299,0.0597,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,197791875,CBB $200 Quarter Jukebox,0.0299,0.0597,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0299,0.1194,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.008,0.032,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,197791874,CBB $1.25K And-One,0.016,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,197791875,CBB $200 Quarter Jukebox,0.032,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,197873654,CBB $100 Dime Time [Just $0.10!],0.048,0.128,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0133,0.0533,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,197791874,CBB $1.25K And-One,0.04,0.0533,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,197791875,CBB $200 Quarter Jukebox,0.0533,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0533,0.1333,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0438,0.0584,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,197791874,CBB $1.25K And-One,0.0511,0.0949,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,197791875,CBB $200 Quarter Jukebox,0.0584,0.1168,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,197873654,CBB $100 Dime Time [Just $0.10!],0.073,0.1606,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0159,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,197791874,CBB $1.25K And-One,0.0,0.0317,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,197791875,CBB $200 Quarter Jukebox,0.0159,0.0635,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0159,0.0952,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,197791874,CBB $1.25K And-One,0.0,0.2,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,197791875,CBB $200 Quarter Jukebox,0.0,0.2,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.2,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0588,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,197791874,CBB $1.25K And-One,0.0441,0.0735,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,197791875,CBB $200 Quarter Jukebox,0.0588,0.0882,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0588,0.1029,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,197791874,CBB $1.25K And-One,0.0,0.0625,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0938,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0141,0.0282,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,197791874,CBB $1.25K And-One,0.0141,0.0704,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,197791875,CBB $200 Quarter Jukebox,0.0282,0.0986,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0282,0.1127,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,197791874,CBB $1.25K And-One,0.0,0.0345,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,197791875,CBB $200 Quarter Jukebox,0.0,0.069,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.1379,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,197791874,CBB $1.25K And-One,0.0,1.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,197791875,CBB $200 Quarter Jukebox,0.0,1.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0273,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,197791874,CBB $1.25K And-One,0.0391,0.1055,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,197791875,CBB $200 Quarter Jukebox,0.0547,0.125,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0781,0.1523,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,197791874,CBB $1.25K And-One,0.0,0.0714,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0952,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0952,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0336,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,197791874,CBB $1.25K And-One,0.0168,0.0756,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,197791875,CBB $200 Quarter Jukebox,0.0336,0.1176,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0336,0.1261,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,197791874,CBB $1.25K And-One,0.0,0.0125,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,197791875,CBB $200 Quarter Jukebox,0.0,0.025,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0125,0.0375,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0119,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,197791874,CBB $1.25K And-One,0.0,0.0476,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,197791875,CBB $200 Quarter Jukebox,0.0119,0.0714,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0119,0.1071,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0156,0.0312,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,197791874,CBB $1.25K And-One,0.0312,0.0781,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,197791875,CBB $200 Quarter Jukebox,0.0312,0.0781,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0312,0.1094,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0278,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,197791874,CBB $1.25K And-One,0.0278,0.0278,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,197791875,CBB $200 Quarter Jukebox,0.0278,0.0278,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0278,0.0556,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0071,0.0429,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,197791874,CBB $1.25K And-One,0.0286,0.1143,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,197791875,CBB $200 Quarter Jukebox,0.0429,0.1571,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0786,0.1857,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0333,0.05,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,197791874,CBB $1.25K And-One,0.05,0.0833,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,197791875,CBB $200 Quarter Jukebox,0.05,0.1,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,197873654,CBB $100 Dime Time [Just $0.10!],0.05,0.15,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0083,0.0333,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,197791874,CBB $1.25K And-One,0.0167,0.05,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,197791875,CBB $200 Quarter Jukebox,0.0333,0.075,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0333,0.1,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,197791874,CBB $1.25K And-One,0.0,0.038,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,197791875,CBB $200 Quarter Jukebox,0.0,0.0759,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.1013,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.019,0.038,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,197791874,CBB $1.25K And-One,0.0253,0.057,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,197791875,CBB $200 Quarter Jukebox,0.038,0.0696,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,197873654,CBB $100 Dime Time [Just $0.10!],0.038,0.0949,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0244,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0732,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0272,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,197791874,CBB $1.25K And-One,0.0,0.0652,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,197791875,CBB $200 Quarter Jukebox,0.0272,0.0761,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0326,0.1033,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,197791874,CBB $1.25K And-One,0.0625,0.25,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,197791875,CBB $200 Quarter Jukebox,0.0625,0.25,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0625,0.3125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0326,0.0326,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,197791874,CBB $1.25K And-One,0.0326,0.0652,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,197791875,CBB $200 Quarter Jukebox,0.0326,0.0924,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0326,0.1141,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,197791875,CBB $200 Quarter Jukebox,0.0,0.007,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.014,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0182,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0182,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0101,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,197791874,CBB $1.25K And-One,0.0,0.0202,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,197791875,CBB $200 Quarter Jukebox,0.0101,0.0202,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0101,0.0303,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0244,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,197791874,CBB $1.25K And-One,0.0,0.0488,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,197791875,CBB $200 Quarter Jukebox,0.0122,0.061,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0366,0.1341,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0556,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,197791874,CBB $1.25K And-One,0.0556,0.1111,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,197791875,CBB $200 Quarter Jukebox,0.0556,0.1111,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0556,0.1667,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,197791874,CBB $1.25K And-One,0.0,0.1026,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,197791875,CBB $200 Quarter Jukebox,0.0,0.1154,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.1538,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0909,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0909,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.012,0.0419,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,197791874,CBB $1.25K And-One,0.0359,0.0958,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,197791875,CBB $200 Quarter Jukebox,0.0359,0.1138,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0479,0.1677,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0625,0.0625,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,197791874,CBB $1.25K And-One,0.0625,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,197791875,CBB $200 Quarter Jukebox,0.0625,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0625,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0317,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,197791874,CBB $1.25K And-One,0.0159,0.0952,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,197791875,CBB $200 Quarter Jukebox,0.0317,0.0952,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0476,0.1111,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.027,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,197791874,CBB $1.25K And-One,0.027,0.1081,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,197791875,CBB $200 Quarter Jukebox,0.027,0.1351,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,197873654,CBB $100 Dime Time [Just $0.10!],0.027,0.1892,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0139,0.0556,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,197791874,CBB $1.25K And-One,0.0417,0.0972,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,197791875,CBB $200 Quarter Jukebox,0.0556,0.1111,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0833,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0714,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0119,0.0357,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,197791874,CBB $1.25K And-One,0.0119,0.0952,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,197791875,CBB $200 Quarter Jukebox,0.0357,0.131,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0357,0.1429,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,197791874,CBB $1.25K And-One,0.0,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.25,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.027,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,197791874,CBB $1.25K And-One,0.0135,0.0541,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,197791875,CBB $200 Quarter Jukebox,0.027,0.0541,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,197873654,CBB $100 Dime Time [Just $0.10!],0.027,0.1351,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,197791874,CBB $1.25K And-One,0.0,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,197791875,CBB $200 Quarter Jukebox,0.0,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0316,0.0947,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,197791874,CBB $1.25K And-One,0.0737,0.1053,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,197791875,CBB $200 Quarter Jukebox,0.0842,0.1263,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0947,0.1368,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0102,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,197791874,CBB $1.25K And-One,0.0102,0.0204,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,197791875,CBB $200 Quarter Jukebox,0.0102,0.0204,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0102,0.051,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0347,0.1337,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,197791874,CBB $1.25K And-One,0.0842,0.2475,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,197791875,CBB $200 Quarter Jukebox,0.1287,0.3119,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,197873654,CBB $100 Dime Time [Just $0.10!],0.1485,0.4059,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0231,0.0809,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,197791874,CBB $1.25K And-One,0.0578,0.1908,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,197791875,CBB $200 Quarter Jukebox,0.0694,0.2543,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0867,0.3295,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
