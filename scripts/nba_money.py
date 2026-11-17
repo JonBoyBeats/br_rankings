@@ -1602,7 +1602,7 @@ def tiers_json(N, parts):
                     "matching, so a cheaper or pricier build's edge is in it). One night is noisy; the season line is the read. player_multiples: per night, am/pm/all, each "
                     "player's {teams, share, top1, top10: [multiple, finishes, expected], mine: {teams, share}} by the lineups "
                     "holding him (share of top-x% lineups over share of all; drafted picks, swapped_in apart). groups_by_night: "
-                    "the same for T3/T4 by flag, T5 under/over 60%, elite-break teams. card_decisions_by_night: card_decisions "
+                    "the same for T3/T4 by flag, T4 PRICEY dropped into T5, T5 under/over 60% (without them), elite-break teams. card_decisions_by_night: card_decisions "
                     "night by night. finish_bins: my lineups' and the field's finish percentiles in 1% bins. "
                     "t5_drafted.<window>.swaps: the T5 block for swapped-in players.",
            "tiers": {}}
@@ -1948,6 +1948,18 @@ def elites(rows):
     return {p for _, p in top[:1 + gaps.index(max(gaps))]}
 
 
+def pre_t5_tier(r):
+    """The button's tier before its T5 rules: the ADP tier moved one tier toward the projection tier when they're 2+ apart
+    (index.html nbaBuildLaddersNew, from 11-13 with the A5 fix: A5-P3 is T4 VALUE)."""
+    a, p = int(r["a_tier"]), int(r["p_tier"])
+    return a - (1 if a > p else -1) if abs(a - p) >= 2 else a
+
+
+def dropped_pricey(r):
+    """A T4 PRICEY player (by the button's tier before its T5 rules) the button dropped into T5."""
+    return r.get("tier") == "5" and r.get("flag") == "PRICEY" and pre_t5_tier(r) == 4
+
+
 def base_stats(base):
     """A window's lineups, summed once for share_multiple: count, my count, and the top-1% and top-10% rates."""
     nb = len(base)
@@ -2005,8 +2017,9 @@ def player_multiples(N):
 
 def groups_by_night(N):
     """{night: {"am"|"pm": {group: share_multiple}}}: lineups holding a drafted pick of that combined tier and flag at their
-    window (tier_history tier and flag: "T3 VALUE", "T3 normal", "T3 PRICEY", T4 likewise); "T5 under"/"T5 over": a
-    drafted pick in the button's T5 drafted by under (or at least) UNDER% of pods; "elite-break teams": the lineup's first
+    window (tier_history tier and flag: "T3 VALUE", "T3 normal", "T3 PRICEY", T4 likewise); "T4 PRICEY (dropped into T5)":
+    a T4 PRICEY player (the button's tier before its T5 rules) it placed in T5; "T5 under"/"T5 over": any other drafted
+    pick in the button's T5, drafted by under (or at least) UNDER% of pods, so they read T5 leverage only; "elite-break teams": the lineup's first
     player by closing-ADP rank is one of the window's elites (the Friday t2-elite-break definition), "other teams" the rest."""
     out = {}
     for n in N:
@@ -2030,13 +2043,16 @@ def groups_by_night(N):
                             continue
                         if r["tier"] in ("3", "4"):
                             keys.add("T%s %s" % (r["tier"], r["flag"] or "normal"))
+                        elif dropped_pricey(r):
+                            keys.add("T4 PRICEY (dropped into T5)")     # its own group: T5 under/over read T5 leverage only
                         elif r["tier"] == "5":
                             keys.add("T5 under" if sh.get(p, 0) < UNDER else "T5 over")
                     ranked = sorted((rk[p], p) for p in drafted_by(t) if p in rk)
                     keys.add("elite-break teams" if ranked and ranked[0][1] in el else "other teams")
                     for k in keys:
                         g[k].append(t)
-            order = ["T%s %s" % (k, f) for k in "34" for f in ("VALUE", "normal", "PRICEY")] + ["T5 under", "T5 over", "elite-break teams", "other teams"]
+            order = (["T%s %s" % (k, f) for k in "34" for f in ("VALUE", "normal", "PRICEY")] +
+                     ["T4 PRICEY (dropped into T5)", "T5 under", "T5 over", "elite-break teams", "other teams"])
             bs = base_stats(base)
             night[w] = {k: share_multiple(g[k], bs) for k in order}
         out[n["date"]] = night

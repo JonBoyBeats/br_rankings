@@ -135,11 +135,7 @@ def t2_elite(N, R, rule):
 
 
 # ---------------------------------------------------------------- T3/T4
-def pre_t5_tier(r):
-    """The button's tier before its T5 rules: the ADP tier moved one tier toward the projection tier when they're 2+ apart
-    (index.html nbaBuildLaddersNew, from 11-13 with the A5 fix: A5-P3 is T4 VALUE)."""
-    a, p = int(r["a_tier"]), int(r["p_tier"])
-    return a - (1 if a > p else -1) if abs(a - p) >= 2 else a
+pre_t5_tier = M.pre_t5_tier      # the button's tier before its T5 rules (nba_money.pre_t5_tier)
 
 
 def boundaries(N, R, rule):
