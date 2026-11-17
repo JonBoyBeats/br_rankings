@@ -6,7 +6,7 @@
 
 ## Front page
 
-Last night's main slate had 8 games, 3 of them blowouts (NOP by 21 over GSW; MIA by 18 over HOU; MEM by 16 over WAS). The biggest nights against ETR's number among drafted players: Jaylen Brown 17 points over; Davion Mitchell 15 points over; Julius Randle 15 points over. Your 100 teams (25 drafted in the morning, 75 in the afternoon) had a median finish in the top 40%; 12 made the top 10% and 0 the top 1%, and 31 cashed. They cost $460 in entries and won $326. Today: Tue Main, lock 4:22 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
+Monday's eight games had three blowouts (New Orleans by 21 over Golden State, Miami by 18 over Houston, Memphis by 16 over Washington), and late news took Houston out of both halves (Amen Thompson sat after being Questionable at your PM lock) and Philadelphia out of the morning (LeBron). Jaylen Brown (57.6), Davion Mitchell (46.6) and Julius Randle (49.7) were the big nights against ETR; Bam Adebayo left after 16 minutes with 4 points. Your 100 teams had a median finish in the top 40%; 12 made the top 10% and none the top 1%, and 31 cashed, $326 back on $460, the best return in a week. The two biggest bets carried it: Donovan Mitchell on 43% of your teams (field 17%; holders 2.5 times the field at the top 10%) and Embiid on 38% (2.0 times). The board's biggest order moves were the weak part again: in the afternoon your board went with ETR's side on only 27% of the close calls it split on (season 45%, where ETR alone wins), and of the 16 biggest calls against ADP and ETR, 3 were right (the Gobert and Bane raises, the Lillard fade). Since Friday those biggest calls are 7 right and 31 wrong, so where your order breaks from ETR's in the afternoon, the evidence keeps saying to trust ETR. Today: Tuesday main, lock 4:22pm PT.
 
 ## What decided the night, and where you stood
 
@@ -22,16 +22,16 @@ Verdict: you were on the right side of 3 of these 5 (over the field where his ho
 
 **Bets.**
 
-- **Donovan Mitchell** (T2): your 43% against the field's 17%; why: a news judgment. At the close: ETR 46.1 to 51.1, ADP 8.8 to 8.3: toward you. Result: Over by 12 (55.8 vs ETR 43.9): 39 pts on 16-25 FG, 2-5 3s, 36 min (usual 31), ETR had him above his usual (44 vs 39); holders 2.5 times the field at the top 10%. **Sound and won.**
-- **Joel Embiid** (T3): your 38% against the field's 17%; why: ETR Good. At the close: the close didn't move. Result: Over by 8 (50.5 vs ETR 42.5): 37 pts on 13-22 FG, 2-4 3s, ETR had him above his usual (42 vs 38), 1 ast (about 4 usual for his minutes); holders 2.0 times the field at the top 10%. **Sound and won.**
-- **Brandin Podziemski** (T4): your 32% against the field's 17%; why: a news judgment. At the close: ETR 37.2 to 41.1: toward you. Result: In line (31.7 vs ETR 34.5): 1 stl + 2 blk; holders 0.4 times the field at the top 10%. **Sound and lost.**
-- **Kyshawn George** (T5): your 19% against the field's 4%; why: ETR Good. At the close: the close didn't move. Result: In line (29.7 vs ETR 33.0): 1 ast (about 6 usual for his minutes); holders 0.7 times the field at the top 10%. **Shaky and lost.**
+- **Donovan Mitchell** (T2): your 43% against the field's 17%; why: a news judgment. At the close: ETR 46.1 to 51.1, ADP 8.8 to 8.3: toward you. Result: Over: 39 on 16-25 in 36 minutes; holders 2.5 times the field at the top 10%. **Sound and won.**
+- **Joel Embiid** (T3): your 38% against the field's 17%; why: ETR Good. At the close: the close didn't move. Result: Over: 37 on 13-22 through the Questionable tag, LeBron out; holders 2.0 times the field at the top 10%. **Sound and won.**
+- **Brandin Podziemski** (T4): your 32% against the field's 17%; why: a news judgment. At the close: ETR 37.2 to 41.1: toward you. Result: In line: 3-7 from three, 3 stocks; holders 0.4 times the field at the top 10%. **Sound and lost.**
+- **Kyshawn George** (T5): your 19% against the field's 4%; why: ETR Good. At the close: the close didn't move. Result: In line: 18 on 7-10 in 38 minutes; holders 0.7 times the field at the top 10%. **Shaky and lost.**
 
 **Fades (T1-T3).**
 
-- **Devin Booker** (T3): your 4% against the field's 17%; why: ETR Good. At the close: ADP 15.8 to 16.3: toward you. Result: In line (37.8 vs ETR 36.5): 20 pts on 5-14 FG, 1-5 3s; holders 0.5 times the field at the top 10%. **Sound and won.**
-- **Franz Wagner** (T2): your 6% against the field's 17%; why: ETR Bad. At the close: ETR 42.6 to 47.2, ADP 9.0 to 8.0: away from you. Result: In line (43.1 vs ETR 40.2): 21 pts on 8-21 FG, 0-2 3s; holders 0.7 times the field at the top 10%. **Shaky and won.**
-- **Zion Williamson** (T3): your 7% against the field's 17%; why: ETR Great. At the close: ETR 39.7 to 44.0: away from you. Result: In line (32.2 vs ETR 37.0): 25 min (usual 32) in a 21-point blowout; holders 0.2 times the field at the top 10%. **Shaky and won.**
+- **Devin Booker** (T3): your 4% against the field's 17%; why: ETR Good. At the close: ADP 15.8 to 16.3: toward you. Result: In line: 20 and 8 on 5-14; holders 0.5 times the field at the top 10%. **Sound and won.**
+- **Franz Wagner** (T2): your 6% against the field's 17%; why: ETR Bad. At the close: ETR 42.6 to 47.2, ADP 9.0 to 8.0: away from you. Result: In line: 21-8-9 on a cold 8-21; holders 0.7 times the field at the top 10%. **Shaky and won.**
+- **Zion Williamson** (T3): your 7% against the field's 17%; why: ETR Great. At the close: ETR 39.7 to 44.0: away from you. Result: In line: 25 minutes in a 21-point win; holders 0.2 times the field at the top 10%. **Shaky and won.**
 
 *Sound: the close moved toward your side after your lock (ETR's final, the late ADP); shaky: away. Won: holders beat the field's top-10% rate (bets) or didn't (fades). Players ruled out after the lock are left out.*
 
@@ -43,7 +43,7 @@ Verdict: you were on the right side of 3 of these 5 (over the field where his ho
 
 **Player recap**, in the button's order.
 
-- **Davis**: Under by 10 (35.8 vs ETR 45.7): 4 reb (about 11 usual for his minutes).
+- **Davis**: Under: 23 points but 4 rebounds and no assists.
 
 **Contest view.** Outsized holders: Jayson Tatum and Giannis Antetokounmpo (top 10% at 1.9x and 1.6x the field's rate). In your afternoon window the top-10% teams held Nikola Jokic on 20% against your 11%.
 
@@ -72,10 +72,10 @@ Season, your moves in T2: keep doing what you're doing (218 moves on 24 nights, 
 
 **Player recap**, in the button's order.
 
-- **Sengun**: Under by 12 (34.4 vs ETR 46.6): 30 min (usual 34) in a 18-point blowout, 2 ast (about 6 usual for his minutes), 23 pts on 8-11 FG, 1-1 3s.
-- **Mitchell**: Over by 12 (55.8 vs ETR 43.9): 39 pts on 16-25 FG, 2-5 3s, 36 min (usual 31), ETR had him above his usual (44 vs 39).
-- **Adebayo**: Under by 27 (13.2 vs ETR 39.9): 16 min (usual 34) in a 18-point blowout, 4 pts on 1-3 FG, 0-1 3s, 1 reb (about 4 usual for his minutes).
-- **Ball**: Under by 20 (17.0 vs ETR 36.8): 6 pts on 2-13 FG, 2-9 3s, 0 ast (about 6 usual for his minutes), 24 min (usual 29).
+- **Sengun**: Under: 30 minutes in a blowout, 2 assists.
+- **Mitchell**: Over: 39 on 16-25 in 36 minutes.
+- **Adebayo**: Under: left after 16 minutes, 4 points; unclear why.
+- **Ball**: Under: 2-13 with no assists in 24 minutes.
 
 **Contest view.** Outsized holders: Yaxel Lendeborg and Donovan Mitchell (top 10% at 2.0x and 1.8x the field's rate). In your afternoon window the top-10% teams held Yaxel Lendeborg on 34% against your 17%.
 
@@ -93,9 +93,9 @@ Season, your moves in T3: press the button (96 moves on 23 nights, 41% right, -4
 
 **Player recap**, in the button's order.
 
-- **Embiid**: Over by 8 (50.5 vs ETR 42.5): 37 pts on 13-22 FG, 2-4 3s, ETR had him above his usual (42 vs 38), 1 ast (about 4 usual for his minutes).
-- **Brown**: Over by 17 (57.6 vs ETR 40.2): 13 reb (about 6 usual for his minutes), 31 pts on 9-19 FG, 3-8 3s.
-- **Harden**: Under by 8 (29.8 vs ETR 37.9): 9 pts on 3-10 FG, 2-6 3s, 10 ast (about 7 usual for his minutes).
+- **Embiid**: Over: 37 on 13-22 through the Questionable tag, LeBron out.
+- **Brown**: Over: 31 and 13 with LeBron out.
+- **Harden**: Under: 3-10 for 9, though 10 assists.
 
 **Contest view.** Outsized holders: Jaylen Brown and Joel Embiid (top 10% at 3.1x and 2.0x the field's rate). In your afternoon window the top-10% teams held Jaylen Brown on 51% against your 11%. Your VALUE share: 71% of your afternoon teams held one, the field 46%.
 
@@ -113,11 +113,11 @@ Season, your moves in T4: too early (66 moves on 22 nights, 48% right, -0.1 poin
 
 **Player recap**, in the button's order.
 
-- **Fears**: Over by 8 (43.0 vs ETR 34.8): 10 ast (about 5 usual for his minutes), 10 reb (about 4 usual for his minutes), no steals or blocks.
-- **Giddey**: Under by 17 (17.8 vs ETR 34.9): 4 pts on 1-5 FG, 1-4 3s, 24 min (usual 29).
+- **Fears**: Over: 19-10-10.
+- **Giddey**: Under: 24 minutes, 1-5 with 6 turnovers.
 - **Thompson**: scratched; swaps went to Porter Jr. (268 teams, 40 points) and Allen (191 teams, 36 points).
 - **James**: scratched; swaps went to Porter Jr. (313 teams, 40 points) and McDaniels (177 teams, 35 points).
-- **Clingan**: Over by 6 (40.5 vs ETR 34.3): 1 stl + 5 blk, 22 min (usual 26).
+- **Clingan**: Over: 6 stocks and 5-5 in 22 minutes.
 
 **Contest view.** Outsized holders: Jeremiah Fears (top 10% at 1.7x the field's rate). In your afternoon window the top-10% teams held Jeremiah Fears on 28% against your 15%. Your VALUE share: 37% of your afternoon teams held one, the field 33%.
 
@@ -132,11 +132,11 @@ Season, your moves in T4: too early (66 moves on 22 nights, 48% right, -0.1 poin
 
 **Player recap**, in the button's order.
 
-- **Mitchell**: Over by 15 (46.6 vs ETR 31.8): 4 stl + 0 blk.
-- **Dosunmu**: Under by 16 (16.0 vs ETR 31.9): 8 pts on 3-11 FG, 2-7 3s, no steals or blocks.
-- **Coward**: Over by 8 (40.6 vs ETR 32.8): 18 pts on 7-10 FG, 2-4 3s, 6 ast (about 3 usual for his minutes).
-- **Bey**: Over by 10 (40.7 vs ETR 31.2): 23 pts on 8-15 FG, 5-8 3s.
-- **Dybantsa**: Over by 9 (39.5 vs ETR 30.2): 3 stl + 0 blk.
+- **Mitchell**: Over: 10 assists and 4 stocks.
+- **Dosunmu**: Under: 3-11, no stocks.
+- **Coward**: Over: 18-8-6 on 7-10.
+- **Bey**: Over: 23 on 5-8 from three.
+- **Dybantsa**: Over: 21 with 3 stocks in 32 minutes.
 
 **Contest view.** Outsized holders: Saddiq Bey (top 10% at 1.4x the field's rate). In your afternoon window the top-10% teams held Davion Mitchell on 19% against your 0%.
 
@@ -172,6 +172,8 @@ Chance to play, morning Questionable players: 81 this season, 42 played (52%). T
 **Gallagher's Bad-matchup arrows** (published before your lock). Last night: Sarr -13.5; Carter -11.6; Suggs +7.1; Wagner +2.9; Buzelis +0.4; Porter +5.4; Sengun -12.2; Thompson +0.9; Lillard -13.3; Gobert +14.7; Kuminga -4.4; Matkovic -8.9; Ighodaro +10.3; Green +12.1. Season: 160 arrows, -2.0 against ETR's final on average, 56% under it.
 
 **Data.** Everything for last night came in, and today's inputs were ready on time.
+
+Morning T4's tier verdict came in at 14 nights: ADP beats the old rule (projection with ADP within 3). The button has sorted morning T4 by ADP within its VALUE/rest/PRICEY groups since 11-13, so this backs what's already in place.
 
 ## Season
 

@@ -2,6 +2,14 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-16 Mon main
+
+- Locked both windows (Lock AM 4:01am, the last of 2; Lock PM 2:18pm). Late news: Amen Thompson (ADP 22-24), untagged at Lock AM and Questionable at Lock PM, still in ETR's 3:42pm upload, sat (HOU out of both halves); LeBron (25.8) out before the afternoon (PHI out of the morning). Bam left after 16 minutes (graded). Three blowouts: NOP by 21, MIA by 18, MEM by 16.
+- Morning: 50% against our number (season 54%), 36% against ADP (season 53%). AM calls 2 right (Gobert, Bane raises), 5 wrong, 1 push. Afternoon: 27% against ETR (season 45%, ETR alone wins), 45% against ours. PM calls 1 right (Lillard fade), 7 wrong, including the Embiid fade through his tag (37 on 13-22). Since 11-13, biggest calls are 7 right, 31 wrong (hedges out).
+- Splits: ours closer on 5 of 6 (Lendeborg, Jalen Green, Gobert, Spencer, Klay); ETR closer only on Zion (a 25-minute blowout). Season splits ETR 65, ours 57.
+- Field: 100 teams (80 in Monday Night Hoops, median top 40%, top 10% 1.12; 20 in Buzzer Beater, top 10% 1.50), 12 in the top 10%, 31 cashed, $326 on $460. Mitchell (43% against 17%, 2.5x) and Embiid (38%, 2.0x) carried it. Running, 6-drafter: top 10% 1.27 (21 nights), AM teams 1.46 against PM 1.18.
+- Morning Proj vs ETR (etr_match.md): corr 0.80, direction 86% (25 of 29), big misses 11 of 60 (18%), CLV ours 0.28 against ETR 0.30, the closest yet. Missed the same way on 3+ of the last 10: Shead, Fears, Avdija, Black and Davion Mitchell (ETR above ours), Sabonis, Bane and Trae (ETR below).
+
 ## 2026-11-15 Sun main
 
 - No drafts, no Lock AM, and the 3:12pm Lock PM came after the 2:52pm lock and the 3:00pm first tip, so it isn't recorded (swaps had started); ETR's file isn't on file either. Nothing of yours graded. LaVine, Rollins, Achiuwa, Hunter and Kyrie sat. Box scores only: Towns 51.9 (43 minutes), Barnes 55.8, Amen 47.9 on 9-11; Trae 16.2 (0-5) and Acuff 26.0 (9 turnovers) in routs.
