@@ -519,6 +519,10 @@ function audit(name, L, o) {
   check("cut: ranked against each contest with entries", cut && JSON.stringify(cut.contests.slice().sort()) === JSON.stringify(["197791872", "197791874", "197791877"]), cmsg);
   const ths = await pg.$$eval("#bankBox th", t => t.map(x => x.textContent));
   check("cut: per idea, banked, each round, kept and share", ths.includes("Kept") && ths.includes("Share") && ths.filter(t => /^Round \d+$/.test(t)).length === cut.rounds.length, JSON.stringify(ths));
+  // the cut survives a refresh (reloaded with the bank it was made on)
+  const cutBack = await pg.evaluate(() => { const k = CUT.keep.slice(); bankLoadState(); return !!CUT && JSON.stringify(CUT.keep) === JSON.stringify(k); });
+  check("cut: kept across a refresh while the bank is unchanged", cutBack);
+  await pg.evaluate(() => { renderBank(); renderEntries(); });
   // players, bank against the cut: each one's share of the bank and of the kept, as computed from the bank here
   const shareOf = (idx, id) => idx.filter(k => bank.lineups[k].ids.includes(id)).length / idx.length;
   const srows = await pg.$$eval("#cutShares tr[data-id]", t => t.map(r => [r.dataset.id, ...Array.from(r.cells).slice(3).map(c => c.textContent)]));
@@ -651,7 +655,7 @@ function audit(name, L, o) {
   check("groups: a grouped idea's tags fold away, counted", await pg.evaluate(() => {
     const d = document.querySelector('#bankBox details.fold[data-fold-group="Both ideas"]');
     return !!d && !d.open && d.querySelector("summary").textContent === "2 tags" && d.querySelectorAll("input[data-tag]").length === 2; }));
-  check("groups: ticked tags merge into one idea in the bank table", (await pg.$$eval("#bankBox table tr", r => r.length)) === 2 && /Both ideas/.test(await pg.textContent("#bankBox")) &&
+  check("groups: ticked tags merge into one idea in the bank table", (await pg.$$eval("#bankBox > table tr", r => r.length)) === 2 && /Both ideas/.test(await pg.textContent("#bankBox")) &&
         (await pg.evaluate(() => Object.values(BANK.groups).filter(g => g === "Both ideas").length)) === 2);
   await pg.fill("#cutKeep", "60"); await pg.fill("#cutNights", "200");
   await pg.click("#cutRun");

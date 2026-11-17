@@ -823,8 +823,12 @@ function bankUnpack(raw) {
 function bankLoadState() {
   BANK = bankUnpack(store(bankKey())) || { lineups: [], tags: [], tagRules: {} };
   BANK.groups = BANK.groups || {};
-  CUT = null; PF = store("dkcbb-pf:" + slate.draft_group_id) || {}; ENTRIES = store("dkcbb-entries:" + slate.draft_group_id) || null;
+  CUT = store(cutKey());     // the last cut, kept across a refresh while the bank it was made on is unchanged
+  if (!CUT || !CUT.keep || CUT.bankN !== BANK.lineups.length) CUT = null;
+  PF = store("dkcbb-pf:" + slate.draft_group_id) || {}; ENTRIES = store("dkcbb-entries:" + slate.draft_group_id) || null;
 }
+function cutKey() { return "dkcbb-cut:" + slate.draft_group_id; }
+function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else localStorage.removeItem(cutKey()); } catch (e) {} }
 function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) === null; }
 function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); }   // the Live page reads it for your exposures
 function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
@@ -850,7 +854,7 @@ function bankAdd(lineups, tag) {
   });
   if (lineups.length) BANK.tagRules[tag] = Object.assign(drawRules(), { z: undefined, lock: Object.keys(state.lock), excl: Object.keys(state.excl),
                                                          floor: Object.assign({}, state.floor), cap: Object.assign({}, state.cap) });
-  CUT = null; PF = {}; pfSave(); bankSaveState(); renderBank();
+  CUT = null; cutSave(); PF = {}; pfSave(); bankSaveState(); renderBank();
   return added;
 }
 // The night-level ownership view, after the pick: across every contest's entries, each player's exposure against his
@@ -1001,7 +1005,8 @@ async function runCut() {
     function (r) { live.push(r); renderBank(); $("cutStatus").textContent = "Round " + r.round + ": " + r.survivors + " left…"; return tick(); },
     BANK.lineups.map(function (L, i) { return lineupGroup(i); }));
   CUT = { keep: res.keep, rounds: res.rounds, contests: cs.map(function (c) { return String(c.id); }),
-          settings: { keep: keep, pct: Math.round(pct * 100), nights: S, within: "idea" } };
+          settings: { keep: keep, pct: Math.round(pct * 100), nights: S, within: "idea" }, bankN: BANK.lineups.length };
+  cutSave();
   PF = {}; renderBank(); renderEntries();
   return "Cut " + BANK.lineups.length + " to " + res.keep.length + " in " + res.rounds.length + " round" + (res.rounds.length === 1 ? "" : "s") +
     " (" + res.rounds.map(function (r) { return r.survivors; }).join(" → ") + "), " + S + " fresh nights a round, ranked against " + cs.map(function (c) { return c.name; }).join(", ") + "." +
@@ -1296,14 +1301,14 @@ $("bankDraw").addEventListener("click", function () {
 });
 $("bankClear").addEventListener("click", function () {
   if (!confirm("Clear the bank (" + BANK.lineups.length + " lineups)?")) return;
-  BANK = { lineups: [], tags: [], tagRules: {}, groups: {} }; CUT = null; PF = {}; pfSave(); bankSaveState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
+  BANK = { lineups: [], tags: [], tagRules: {}, groups: {} }; CUT = null; cutSave(); PF = {}; pfSave(); bankSaveState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
 });
 $("entriesFile").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   f.text().then(function (t) { $("cutStatus").textContent = loadEntries(t); });
 });
 $("cutRun").addEventListener("click", function () {
-  runCut().then(function (m) { $("cutStatus").textContent = m; }, function (e) { CUT = null; renderBank(); $("cutStatus").innerHTML = '<span class="bad">Cut failed: ' + esc(e.message) + "</span>"; });
+  runCut().then(function (m) { $("cutStatus").textContent = m; }, function (e) { CUT = null; cutSave(); renderBank(); $("cutStatus").innerHTML = '<span class="bad">Cut failed: ' + esc(e.message) + "</span>"; });
 });
 $("pfRun").addEventListener("click", function () {
   pickPortfolios().then(function (m) { $("cutStatus").textContent = m; }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
