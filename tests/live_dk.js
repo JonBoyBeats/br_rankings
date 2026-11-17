@@ -28,6 +28,7 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
   await pg.route(/expo\.json/, r => r.fulfill({ body: "{}", contentType: "application/json" }));
   await pg.route(/dk_bank_/, r => r.fulfill({ path: R + "/analysis/cbb/dk/builds/dk_bank_2026-11-16_156660.json", contentType: "application/json" }));
   await pg.route(/espn\.com/, r => r.fulfill({ body: JSON.stringify(/summary/.test(r.request().url()) ? box : board), contentType: "application/json" }));
+  await pg.clock.setFixedTime(new Date(new Date(sl.start).getTime() + 2 * 3600e3));   // the fixture slate's night: the page lists slates within hours of now
   await pg.goto("file://" + R + "/nba_live.html");
   await pg.waitForFunction(() => /Updated/.test(document.getElementById("status").textContent), null, { timeout: 30000 });
   await pg.evaluate(d => { state.dkBuilds["156660"] = d; render(); }, bank);   // what the repo fetch gives on the site

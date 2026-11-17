@@ -87,7 +87,7 @@ function audit(name, L, o) {
   await pg.goto("file://" + path.join(ROOT, "dk.html"));
   await pg.waitForSelector(".row");
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
-  check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#status")));
+  check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#statusInfo")));
   check("match warning: none when every game matched", !(await pg.$("#matchWarn")));
   const mw = await pg.evaluate(() => {
     const g = rows[0].game, kept = rows.map(r => r.event);
@@ -102,6 +102,11 @@ function audit(name, L, o) {
         /Out per EvanMiya 11\/17 \/ DK: Q</.test(conflict[0]) && conflict[1] === "" && /DK: no tag/.test(conflict[2]), JSON.stringify(conflict));
   check("match warning: a red line naming the unmatched game and its players", mw.t.includes('class="bad"') && mw.t.includes(mw.n + " players unmatched") && mw.t.includes(mw.g), mw.t);
 
+  // a player's L / X in the full list, which shows only with no team clicked
+  const rowBtn = async (id, cls) => {
+    await pg.evaluate(() => { view.panel = null; renderTiles(); });
+    await pg.click(`#players .row[data-id="${id}"] .${cls}`);
+  };
   const set = async (vals) => {
     for (const [id, v] of Object.entries(vals)) {
       if (typeof v === "boolean") await (v ? pg.check("#" + id) : pg.uncheck("#" + id));
@@ -176,8 +181,8 @@ function audit(name, L, o) {
   const ids = Object.keys(P).filter(id => P[id].status !== "Out").sort((a, c) => P[c].fp_dk / P[c].salary - P[a].fp_dk / P[a].salary);
   const lockId = ids[3], exclId = ids[0];
   await set(base);
-  await pg.click(`#players .row[data-id="${lockId}"] .lock`);
-  await pg.click(`#players .row[data-id="${exclId}"] .excl`);
+  await rowBtn(lockId, "lock");
+  await rowBtn(exclId, "excl");
   const { L: Ll, msg: ml } = await draw(15);
   audit("Draw & bank, a lock and an exclude", Ll, Object.assign(rulesOf(base), { lock: lockId, excl: exclId }));
   check("a lock and an exclude are in the tag", /lock .* \+ no /.test(ml), ml);
@@ -186,7 +191,7 @@ function audit(name, L, o) {
   // the projection gate: an open band blends DraftKings' average into Proj
   gate = { nights: 9, bands: [{ lo: 6000, hi: 99999, open: true, w: 0.6 }, { lo: 0, hi: 5999, open: false, w: 1 }] };
   await pg.click("#reload");
-  await pg.waitForFunction(() => /Projection gate: OPEN/.test(document.getElementById("status").textContent));
+  await pg.waitForFunction(() => /Projection gate: OPEN/.test(document.getElementById("statusInfo").textContent));
   const pick = Object.keys(P).find(id => P[id].salary >= 6000 && P[id].dk_avg > 0 && P[id].status !== "Out");
   const cheap = Object.keys(P).find(id => P[id].salary < 6000 && P[id].dk_avg > 0 && P[id].status !== "Out");
   const shown = await pg.evaluate(([a, c]) => [proj(rows.find(r => r.id === a)), proj(rows.find(r => r.id === c))], [pick, cheap]);
@@ -197,7 +202,7 @@ function audit(name, L, o) {
   const TEAMS = JSON.parse(fs.readFileSync(path.join(FIX, "dk_cbb_teams.json"))).slates[String(slate.draft_group_id)];
   gate = null;
   await pg.click("#reload");
-  await pg.waitForFunction(() => /Projection gate: closed/.test(document.getElementById("status").textContent));
+  await pg.waitForFunction(() => /Projection gate: closed/.test(document.getElementById("statusInfo").textContent));
   const openTeam = async team => {
     if (!(await pg.$(`#teamPanel .tile[data-team="${team}"]`))) await pg.click(`#teamBar button[data-team="${team}"]`);
     await pg.waitForSelector(`#teamPanel .tile[data-team="${team}"]`);
@@ -210,7 +215,17 @@ function audit(name, L, o) {
   const opp0 = TEAMS.teams.find(t => t.team !== TEAMS.teams[0].team && TEAMS.teams[0].game === t.game);
   check("team panel: the team's tile, then its opponent's", JSON.stringify(panel) === JSON.stringify([TEAMS.teams[0].team, opp0 && opp0.team]), JSON.stringify(panel));
   const pprojs = await pg.$$eval("#teamPanel .teamside:first-child .row:not(.out) input.proj", x => x.map(i => +i.value));
-  check("team panel: its players by projection, highest first", pprojs.length > 3 && pprojs.every((v, i) => i === 0 || pprojs[i - 1] >= v), JSON.stringify(pprojs));
+  check("team panel: its players by projection, highest first", pprojs.length >= 2 && pprojs.every((v, i) => i === 0 || pprojs[i - 1] >= v), JSON.stringify(pprojs));
+  const pv = await pg.evaluate(() => [...document.querySelectorAll("#teamPanel .teamside .row")].map(r => { const x = rows.find(y => y.id === r.dataset.id); return value(x); }));
+  check("team panel: only players at 2x value or better", pv.length > 0 && pv.every(v => v >= 2), JSON.stringify(pv));
+  check("team panel: the full player list hides while a team is open", await pg.$eval("#playersSec", x => x.hidden));
+  const nShown = pv.length;
+  await pg.click("#teamPanel .showall");
+  const nAll = await pg.$$eval("#teamPanel .teamside .row", r => r.length);
+  check("team panel: Show all shows every player", nAll > nShown, nShown + " -> " + nAll);
+  await pg.click("#teamPanel .showall");
+  check("colour: Value and Own in a green gradient", (await pg.$$eval("#teamPanel .row .val[style], #teamPanel .row .own[style]", x => x.length)) > 0);
+  check("layout: slate details folded away, the old contest list gone", !(await pg.$eval("#slateInfo", d => d.open)) && !(await pg.$("#contests")));
   check("news: collapsed by default", !(await pg.$eval("#newsBox", d => d.open)));
   const clearRules = () => pg.evaluate(() => { state.rules = []; state.lock = {}; state.excl = {}; save(); renderRules(); renderPlayers(); });
   const rulesNow = () => pg.evaluate(() => state.rules.slice());
@@ -260,10 +275,10 @@ function audit(name, L, o) {
   // 1. if P then 2+ from his opponent
   await clearRules();
   await addRule("if", async () => { await pg.selectOption("#rtP", p1); await pg.fill("#rtN", "2"); await pg.selectOption("#rtFrom", "opp"); });
-  await pg.click(`#players .row[data-id="${p1}"] .lock`);
+  await rowBtn(p1, "lock");
   let L2 = await drawAudit("template 1, condition met (he's locked)");
   check("template 1: met in every lineup", L2.every(l => l.ids.includes(p1)));
-  await pg.click(`#players .row[data-id="${p1}"] .excl`);
+  await rowBtn(p1, "excl");
   L2 = await drawAudit("template 1, condition not met (he's excluded)");
   check("template 1: not met, lineups free of it", L2.every(l => !l.ids.includes(p1)));
   // 2. if NOT P then 1+ of his team's #2/#3
@@ -271,9 +286,9 @@ function audit(name, L, o) {
   await addRule("ifnot", async () => { await pg.selectOption("#rtP", p1); await pg.dispatchEvent("#rtP", "change"); await pg.fill("#rtN", "1"); });
   R = await rulesNow();
   check("template 2: list starts as his team's #2 and #3", R[0] && R[0].set.length === 2 && R[0].set.every(id => P[id].team === P[p1].team && id !== p1), JSON.stringify(R));
-  await pg.click(`#players .row[data-id="${p1}"] .excl`);
+  await rowBtn(p1, "excl");
   L2 = await drawAudit("template 2, condition met (he's excluded)");
-  await pg.click(`#players .row[data-id="${p1}"] .lock`);
+  await rowBtn(p1, "lock");
   L2 = await drawAudit("template 2, condition not met (he's locked)");
   check("template 2: not met in every lineup", L2.every(l => l.ids.includes(p1)));
   // 3. if 2+ from team then 1+ from its opponent
@@ -287,14 +302,15 @@ function audit(name, L, o) {
   // 4. never P with Q
   await clearRules();
   await addRule("never", async () => { await pg.selectOption("#rtP", p1); await pg.selectOption("#rtQ", p2); });
-  await pg.click(`#players .row[data-id="${p1}"] .lock`);
+  await rowBtn(p1, "lock");
   L2 = await drawAudit("template 4, one of them locked");
   check("template 4: never the other with him", L2.every(l => !l.ids.includes(p2)));
-  await pg.click(`#players .row[data-id="${p2}"] .lock`);
+  await rowBtn(p2, "lock");
   const { L: Limp, msg: imp } = await draw(3);
   check("template 4: both locked is refused, not broken", Limp.length === 0 && /Only 0 of 3: .*(no lineup left fits the rules|a locked player)/.test(imp), imp);
 
   // the quadrant: scores on every tile, and each quadrant's button is a rule for the draw
+  await openTeam(tile.team);
   check("tiles: Quality and Leverage on the tile, and what they're ranked against",
         (await pg.$$eval("#teamPanel .tile .scores", x => x.length)) >= 1 && /ranks against tonight's \d+ teams/.test(await pg.textContent("#slateLine")));
   for (const q of ["FOCUS", "CHALK", "LEVERAGE"]) {
@@ -317,7 +333,7 @@ function audit(name, L, o) {
   await pg.evaluate(t => { state.rules = [{ type: "min", ids: teamIds(t), n: 2, share: 0.25, label: "2+ from " + t + " in 25% of lineups" },
                                           { type: "min", ids: teamIds(t), n: 1, maxShare: 0.5, label: t + " in at most 50% of lineups" }]; save(); }, lev.team);
   await pg.click("#reload");
-  await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("status").textContent));
+  await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("statusInfo").textContent));
   R = await rulesNow();
   check("old share rules load as draw rules", R.length === 1 && R[0].share == null && R[0].n === 2 && R[0].label === "2+ from " + lev.team, JSON.stringify(R));
   const chips = await pg.$$eval("#teamPanel .tile .verdict", v => v.map(x => x.textContent));
@@ -398,8 +414,8 @@ function audit(name, L, o) {
   await pg.click('button[data-review="197791874"]');
   await pg.waitForFunction(() => BP && BP.review === "197791874");
   check("review: other contests' lineups aren't on offer", await pg.evaluate(o => BP.idx.every(bi => !o.includes(bi)), pf["197791872"].concat(pf["197791877"])));
-  check("review: opens the contest's portfolio in the builder", JSON.stringify(await pg.evaluate(() => BP.b.picked.map(k => BP.idx[k]))) === JSON.stringify(pf["197791874"]) &&
-        !(await pg.$eval("#bpKeep", x => x.hidden)) && (await pg.$$eval("#bpTable tr", r => r.length)) > 50);
+  check("review: Build opens the contest's portfolio in the builder", JSON.stringify(await pg.evaluate(() => BP.b.picked.map(k => BP.idx[k]))) === JSON.stringify(pf["197791874"]) &&
+        (await pg.$$eval("#bpTable tr", r => r.length)) > 50);
   const cols = await pg.$$eval("#bpTable th", t => t.map(x => x.textContent.replace(/[↓↑ ]+$/, "")));
   const qc = await pg.evaluate(() => ({ q: BP.qual.slice(0, 5), c: BP.core.slice(0, 5), n: BP.qual.length, k: BP.pool.length }));
   check("review: Quality and Core % beside the sim value, from the sim", ["Quality", "Core %", "Alone", "Added"].every(c => cols.includes(c)) &&
@@ -426,9 +442,8 @@ function audit(name, L, o) {
   check("review: the summary shows the largest core", /Largest core: .+ in \d+ of \d+/.test(await pg.textContent("#bpSummary")));
   check("review: summary shows coverage and diversity", /of nights one reaches the top 1%/.test(await pg.textContent("#bpSummary")) && /distinct cores/.test(await pg.textContent("#bpSummary")));
   await pg.evaluate(() => bpRemove(BP.b.picked[0]));
-  await pg.click("#bpKeep");
   const pf2 = await pg.evaluate(() => PF["197791874"]), kept = await pg.evaluate(() => BP.b.picked.map(k => BP.idx[k]));
-  check("review: Keep replaces the contest's portfolio", JSON.stringify(pf2) === JSON.stringify(kept) && pf2.length === auto.length - 1, JSON.stringify(pf2));
+  check("review: the picks save to the contest as they change", JSON.stringify(pf2) === JSON.stringify(kept) && pf2.length === auto.length - 1, JSON.stringify(pf2));
 
   const [dl5] = await Promise.all([pg.waitForEvent("download"), pg.click("#pfExport")]);
   const out = fs.readFileSync(await dl5.path(), "utf8").trim().split(/\r?\n/).map(l => l.split(","));
@@ -457,7 +472,7 @@ function audit(name, L, o) {
         dl6.suggestedFilename() + " " + JSON.stringify(bs.cut));
 
   await pg.click("#reload");
-  await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("status").textContent));
+  await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("statusInfo").textContent));
   check("portfolios survive a reload (the Live page reads them for your exposures)",
         JSON.stringify(await pg.evaluate(() => PF["197791874"])) === JSON.stringify(pf2) && !(await pg.$eval("#pfExport", x => x.disabled)));
 
@@ -491,6 +506,24 @@ function audit(name, L, o) {
   check("night view: players, pairs and cores against the field", /The night: \d+ entries/.test(await pg.textContent("#pfBox")) &&
         (await pg.$$eval("#pfBox table", t => t.length)) === 3);
   await pg.fill("#maxPair", "");
+
+  await pg.evaluate(() => { document.querySelectorAll("#bankBox input[data-tag]").forEach(x => { x.checked = true; }); });
+  await pg.fill("#groupName", "Both ideas");
+  await pg.click("#groupMake");
+  check("groups: ticked tags merge into one idea in the bank table", (await pg.$$eval("#bankBox table tr", r => r.length)) === 2 && /Both ideas/.test(await pg.textContent("#bankBox")) &&
+        (await pg.evaluate(() => Object.values(BANK.groups).filter(g => g === "Both ideas").length)) === 2);
+  await pg.fill("#cutKeep", "60"); await pg.fill("#cutNights", "200");
+  await pg.click("#cutRun");
+  await pg.waitForFunction(() => /^Cut |failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const gk = await pg.evaluate(() => ({ kept: CUT.keep.length, n: BANK.lineups.length }));
+  check("groups: the cut keeps the group's share as one idea", Math.abs(gk.kept - Math.round(gk.n * Math.min(1, 60 / gk.n))) <= 1, JSON.stringify(gk));
+  await pg.click('button[data-review="197791874"]');
+  await pg.waitForFunction(() => BP && BP.review === "197791874");
+  await pg.click('#bpGroups button[data-group="Both ideas"]');
+  const hl = await pg.evaluate(() => ({ rows: document.querySelectorAll("#bpTable tr.ingroup").length, first: document.querySelector("#bpTable tr:not(.picked)[data-k]").classList.contains("ingroup") }));
+  check("groups: clicking an idea highlights its lineups and brings them to the top", hl.rows > 0 && hl.first, JSON.stringify(hl));
+  await pg.click('[data-ungroup="Both ideas"]');
+  check("groups: Ungroup splits it back", (await pg.$$eval("#bankBox table tr", r => r.length)) === 3);
 
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
