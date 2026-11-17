@@ -238,6 +238,8 @@ def nightly(a):
         builds = [b for b in saved if b.get("pool")]                  # Save build: a pool, hand-built and auto-pick
         banks = [b for b in builds if b.get("tags")]                  # the page's bank (Bank, cut and portfolios)
         mine_pool = (banks or builds)[-1]["pool"] if builds else none_pool
+        pr = ((banks[-1].get("cut") or {}).get("protect") if banks else None)     # the cut's protect setting, priced by the readout
+        protected = " protect%d" % pr if pr else ""
         used = sorted({r["type"] for r in ((saved[-1].get("rule_set") or []) if saved else [])})   # the night's rules
         none_pool = ((sh or {}).get("rulesets", {}).get("none") or {}).get("pool")
         if sh:
@@ -257,7 +259,7 @@ def nightly(a):
         if mine:
             grade("mine", [(e["rank"] <= top10, e["rank"] <= paid, pay.get(e["rank"], 0), e["points"]) for e in mine],
                   mine_pool, "the bank's" if banks else "the build's" if builds else "none's",
-                  {"rules": " ".join(used) if saved else "not saved"})
+                  {"rules": (" ".join(used) if saved else "not saved") + protected})
         # each team against the real field: its actual share of the points against its real ownership share, and how
         # often 2+ of its players are in the top-1% lineups against how often the field played 2+ of them
         team_of = {r["name"]: r["team"] for r in rec}
@@ -524,9 +526,11 @@ def readout(a):
     mine = [r for r in ev if r["who"] == "mine" and r.get("rules") not in (None, "", "not saved")]
     if mine:
         print("\n   Your entries on nights each rule template was used (directional only: few nights, and the nights differ):")
-        for k, name in RULE_NAMES.items():
-            on = [r for r in mine if k in r["rules"].split()]
-            off = [r for r in mine if k not in r["rules"].split()]
+        uses = [(name, lambda r, k=k: k in r["rules"].split()) for k, name in RULE_NAMES.items()]
+        uses.append(("the cut's Protect % a tag", lambda r: any(t.startswith("protect") for t in r["rules"].split())))
+        for name, used_on in uses:
+            on = [r for r in mine if used_on(r)]
+            off = [r for r in mine if not used_on(r)]
             if on:
                 print("   %-42s used %d nights: top 10%% %4.1f%%, cash %4.1f%% | not used %d: top 10%% %s, cash %s" % (
                     name, len({r["draft_group"] for r in on}), 100 * S.mean(num(r["top10"]) for r in on), 100 * S.mean(num(r["cash"]) for r in on),

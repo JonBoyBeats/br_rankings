@@ -273,7 +273,8 @@
     <b>Re-sim &amp; cut</b> takes the bank down to Keep: each round simulates the survivors over fresh nights and adds each
     lineup's payout alone in every contest you're entering to its running total (so its number is the mean over every night
     it has been through); a lineup stays if it ranks high enough in ANY of them, and Cut % of the rest go. The table shows how
-    many from each idea survive each round. <b>Pick portfolios</b> picks each contest's entries from what's left as a set:
+    many from each idea survive each round. <b>Protect % a tag</b> (off unless set) keeps at least that share of each idea's lineups,
+    its best-ranked, whatever the sim says; it's saved with the build so the grading can price it. <b>Pick portfolios</b> picks each contest's entries from what's left as a set:
     one at a time, the lineup that adds the most to the set's expected payout with that contest's payouts, within Max
     exposure (and each player's Max%) and Min unique, which apply here and only here. <b>Review</b> opens one contest's set
     below to swap lineups; <b>Export DK entries</b> fills the entries file's rows, ready to upload (Edit Entries → upload).
@@ -284,6 +285,7 @@
     <label class="field"><span class="field-label">Keep</span><input class="num" id="cutKeep" type="number" min="20" max="5000" step="50" value="500"></label>
     <label class="field"><span class="field-label">Cut % a round</span><input class="num" id="cutPct" type="number" min="1" max="50" value="10"></label>
     <label class="field"><span class="field-label">Nights a round</span><input class="num" id="cutNights" type="number" min="200" max="10000" step="100" value="2000"></label>
+    <label class="field" title="Keep at least this % of each rule tag's banked lineups through the cut, its best-ranked ones, even past Keep (blank: off)"><span class="field-label">Protect % a tag</span><input class="num" id="cutProtect" type="number" min="0" max="100" step="5" placeholder="off"></label>
     <button type="button" class="primary" id="cutRun">Re-sim &amp; cut</button>
   </div>
   <div class="opts">
@@ -306,7 +308,10 @@
     with it minus without it, your own lineups ranked against each other on every simulated night (one that scores on the
     same nights as a pick mostly pushes yours down a place, so it adds little); <b>+Cover</b> is the rise in the share of
     nights where at least one of your lineups reaches the top 1% (or cashes, with the toggle). <b>Alone</b> is its expected
-    payout by itself; <b>Shared</b>, the most players it shares with any pick. Auto-fill adds by Added value within Max
+    payout by itself; <b>Shared</b>, the most players it shares with any pick. Two more from the sim beside them:
+    <b>Quality</b>, its expected points less what its salary buys at the simulated field's points per dollar (above 0: more
+    points than its price); <b>Core %</b>, the share of the simulated field holding its three highest-salaried players
+    (low: few others have its core, so when it hits, it hits mostly alone). Auto-fill adds by Added value within Max
     exposure and Min unique. <b>Keep</b> makes your set the contest's portfolio for the export.</div>
   <div class="opts">
     <label class="field"><span class="field-label">+Cover counts</span><select id="bpCover" style="width:auto"><option value="top1">top 1%</option><option value="cash">cashing</option></select></label>
@@ -800,14 +805,17 @@ async function runCut() {
   if (!BANK.lineups.length) return "The bank is empty: Bank these, or Draw & bank.";
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
   var keep = +$("cutKeep").value || 500, pct = (+$("cutPct").value || 10) / 100, S = +$("cutNights").value || 2000;
-  var cx = ctx(), live = [];
+  var cx = ctx(), live = [], prot = +$("cutProtect").value || 0;
   CUT = { keep: null, rounds: live }; PF = {}; pfSave(); renderEntries(); $("pfExport").disabled = true;
   var res = await DKSim.cutPool(cx, BANK.lineups, cs.map(function (c) { return { contest: c, n: ns[String(c.id)] }; }), F.field, fieldDoc.z, keep, pct, S,
-    function (r) { live.push(r); renderBank(); $("cutStatus").textContent = "Round " + r.round + ": " + r.survivors + " left…"; return tick(); });
-  CUT = { keep: res.keep, rounds: res.rounds, contests: cs.map(function (c) { return String(c.id); }) };
+    function (r) { live.push(r); renderBank(); $("cutStatus").textContent = "Round " + r.round + ": " + r.survivors + " left…"; return tick(); },
+    prot ? { share: prot / 100, tags: BANK.tags } : null);
+  CUT = { keep: res.keep, rounds: res.rounds, contests: cs.map(function (c) { return String(c.id); }),
+          settings: { keep: keep, pct: Math.round(pct * 100), nights: S, protect: prot || null } };
   PF = {}; renderBank(); renderEntries();
   return "Cut " + BANK.lineups.length + " to " + res.keep.length + " in " + res.rounds.length + " round" + (res.rounds.length === 1 ? "" : "s") +
-    " (" + res.rounds.map(function (r) { return r.survivors; }).join(" → ") + "), " + S + " fresh nights a round, ranked against " + cs.map(function (c) { return c.name; }).join(", ") + ".";
+    " (" + res.rounds.map(function (r) { return r.survivors; }).join(" → ") + "), " + S + " fresh nights a round, ranked against " + cs.map(function (c) { return c.name; }).join(", ") + "." +
+    (prot ? " Protect " + prot + "% a tag: " + (res.rounds[res.rounds.length - 1].held || 0) + " lineups held by the floors" + (res.keep.length > keep ? ", which kept " + res.keep.length + ", past Keep" : "") + "." : "");
 }
 
 async function pickPortfolios() {
@@ -870,7 +878,7 @@ function saveBank() {
   var rs = [];
   Object.keys(BANK.tagRules).forEach(function (t) { (BANK.tagRules[t].conds || []).forEach(function (r) { if (!rs.some(function (x) { return x.label === r.label; })) rs.push(r); }); });
   var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(), rule_set: rs,
-              pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, portfolios: PF, gate: gate };
+              pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null, portfolios: PF, gate: gate };
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
   a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
@@ -890,6 +898,7 @@ function bpLoad(lineups, c, o, S, extra) {
          proj: lineups.map(function (L) { return L.ids.reduce(function (t, id) { return t + proj(by[id]); }, 0); }),
          own: lineups.map(function (L) { return L.ids.reduce(function (t, id) { return t + own(by[id]); }, 0); }),
          names: lineups.map(function (L) { return L.slots.map(function (id) { return shortName(by[id].name); }).join(" · "); }),
+         qual: Array.from(sim.quality), core: Array.from(sim.core),
          why: "", ruleMsg: "" }, extra || {});
   if (BP.picks) b.set(BP.picks);
   ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = false; });
@@ -949,20 +958,21 @@ function bpRender(note) {
     fee: (BP.contest.entry_fee || 0) * picked.length }) + '<div class="note">' + picked.length + " picked. Exposures: " + expo + "</div>"
     : '<div class="note">Nothing picked yet: Add lineups below, or Auto-fill.</div>';
   var get = { proj: function (k) { return BP.proj[k]; }, own: function (k) { return BP.own[k]; }, alone: function (k) { return BP.alone[k]; },
+              qual: function (k) { return BP.qual[k]; }, core: function (k) { return BP.core[k]; },
               value: function (k) { return BP.scores[k] ? BP.scores[k].value : -1; },
               cover: function (k) { return BP.scores[k] ? BP.scores[k][cov] : -1; }, shared: function (k) { return BP.shared[k]; } };
   var rest = [];
   for (var k = 0; k < BP.pool.length; k++) if (picked.indexOf(k) < 0) rest.push(k);
   var g = get[BP.sort];
   rest.sort(function (x, y) { return (g(x) - g(y)) * BP.dir; });
-  var cols = [["proj", "Proj"], ["own", "Own"], ["alone", "Alone"], ["value", "Added"], ["cover", "+Cover"], ["shared", "Shared"]];
+  var cols = [["proj", "Proj"], ["own", "Own"], ["qual", "Quality"], ["core", "Core %"], ["alone", "Alone"], ["value", "Added"], ["cover", "+Cover"], ["shared", "Shared"]];
   var head = '<tr><th class="l"></th><th class="l">Lineup</th>' + cols.map(function (c) {
     return '<th data-k="' + c[0] + '" class="' + (BP.sort === c[0] ? "on" : "") + '">' + c[1] + (BP.sort === c[0] ? (BP.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>";
   function row(k, isPicked) {
     var sc = BP.scores[k];
     return '<tr class="' + (isPicked ? "picked" : "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' + (isPicked ? "bpRm" : "bpAdd") + '">' +
       (isPicked ? "Remove" : "Add") + '</button></td><td class="l nm">' + esc(BP.names[k]) + "</td><td>" + BP.proj[k].toFixed(1) + "</td><td>" + Math.round(BP.own[k]) +
-      "%</td><td>" + cents(BP.alone[k]) + "</td><td>" + (sc ? cents(sc.value) : "–") + "</td><td>" + (sc ? (100 * sc[cov]).toFixed(1) + "%" : "–") +
+      "%</td><td>" + (BP.qual[k] >= 0 ? "+" : "") + BP.qual[k].toFixed(1) + "</td><td>" + (100 * BP.core[k]).toFixed(1) + "%</td><td>" + cents(BP.alone[k]) + "</td><td>" + (sc ? cents(sc.value) : "–") + "</td><td>" + (sc ? (100 * sc[cov]).toFixed(1) + "%" : "–") +
       "</td><td>" + (picked.length ? BP.shared[k] : "–") + "</td></tr>";
   }
   $("bpTable").innerHTML = head + picked.map(function (k) { return row(k, true); }).join("") + rest.slice(0, 200).map(function (k) { return row(k, false); }).join("");

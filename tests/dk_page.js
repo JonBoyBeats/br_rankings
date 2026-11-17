@@ -311,12 +311,16 @@ function audit(name, L, o) {
   check("entries file: fills each contest's entries", JSON.stringify(counts) === JSON.stringify({ "197791872": 1, "197791874": 5, "197791877": 1 }), JSON.stringify(counts));
   check("entries file: says which aren't on the slate", /8 entries loaded \(1 in contests not on this slate's list\)/.test(await pg.textContent("#cutStatus")), await pg.textContent("#cutStatus"));
 
-  await pg.fill("#cutKeep", "100"); await pg.fill("#cutPct", "25"); await pg.fill("#cutNights", "300");
+  await pg.fill("#cutKeep", "100"); await pg.fill("#cutPct", "25"); await pg.fill("#cutNights", "300"); await pg.fill("#cutProtect", "30");
   await pg.click("#cutRun");
   await pg.waitForFunction(() => /^Cut |failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   const cmsg = await pg.textContent("#cutStatus"), cut = await pg.evaluate(() => CUT);
   check("cut: down to Keep, rounds shrinking by Cut %", cut && cut.keep.length === 100 && new Set(cut.keep).size === 100 &&
         cut.rounds.every((r, i) => i === 0 || r.survivors < cut.rounds[i - 1].survivors), cmsg);
+  const tagN = idx => { const o = {}; idx.forEach(k => bank.tags[k].forEach(t => o[t] = (o[t] || 0) + 1)); return o; };
+  const allN = tagN(bank.lineups.map((L, k) => k)), keptN = tagN(cut.keep);
+  check("cut: Protect 30% keeps at least 30% of every tag", Object.keys(allN).every(t => (keptN[t] || 0) >= Math.ceil(0.3 * allN[t])) && /Protect 30% a tag: \d+ lineups held/.test(cmsg),
+        JSON.stringify({ allN, keptN }) + " " + cmsg);
   check("cut: ranked against each contest with entries", cut && JSON.stringify(cut.contests.slice().sort()) === JSON.stringify(["197791872", "197791874", "197791877"]), cmsg);
   const ths = await pg.$$eval("#bankBox th", t => t.map(x => x.textContent));
   check("cut: survivors by rule tag after each round", ths.includes("After the cut") && ths.filter(t => /^Round \d+$/.test(t)).length === cut.rounds.length, JSON.stringify(ths));
@@ -337,6 +341,10 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => BP && BP.review === "197791874");
   check("review: opens the contest's portfolio in the builder", JSON.stringify(await pg.evaluate(() => BP.b.picked.map(k => BP.idx[k]))) === JSON.stringify(pf["197791874"]) &&
         !(await pg.$eval("#bpKeep", x => x.hidden)) && (await pg.$$eval("#bpTable tr", r => r.length)) > 50);
+  const cols = await pg.$$eval("#bpTable th", t => t.map(x => x.textContent.replace(/[↓↑ ]+$/, "")));
+  const qc = await pg.evaluate(() => ({ q: BP.qual.slice(0, 5), c: BP.core.slice(0, 5), n: BP.qual.length, k: BP.pool.length }));
+  check("review: Quality and Core % beside the sim value, from the sim", ["Quality", "Core %", "Alone", "Added"].every(c => cols.includes(c)) &&
+        qc.n === qc.k && qc.q.every(Number.isFinite) && qc.c.every(v => v >= 0 && v <= 1), JSON.stringify({ cols, qc }));
   await pg.click("#bpClear");
   const step = await pg.evaluate(() => {
     const b = BP.b, out = [];
@@ -382,7 +390,8 @@ function audit(name, L, o) {
   const bs = JSON.parse(fs.readFileSync(await dl6.path(), "utf8"));
   check("Save build (bank): the pool, its tags, the final cut and the portfolios", bs.kind === "build" && bs.pool.length === bank.lineups.length && bs.tags.length === bs.pool.length &&
         JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()) &&
-        bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3, dl6.suggestedFilename());
+        bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.protect === 30 && bs.cut.keep === 100,
+        dl6.suggestedFilename() + " " + JSON.stringify(bs.cut));
 
   await pg.click("#reload");
   await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("status").textContent));

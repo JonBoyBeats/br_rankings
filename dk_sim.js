@@ -291,13 +291,27 @@
   // field's lineups scored. Kept by lineup, for the builder's loops: cs[k * S + s] is lineup k's score on night s,
   // fa[k * S + s] the field entries above it. Also the simulated field's cut lines (winning score, top 10%, the last
   // paid place), averaged over the nights.
+  // Shared draws in the sim: on each night a standard normal T per team and G per game (times the spread of the
+  // outcome shape z), and each player's outcome is sqrt(1 - a^2 - b^2) x his own draw + a x T + b x G, so teammates
+  // correlate a^2 + b^2 and opponents b^2. Sized on 2026-27's box scores (battle-royale-research
+  // scripts/cbb_corr_study.py, games of 2026-11-03 to 11-15, 2,837 player-games of players with a usual of 10+ DK
+  // points, misses against their usual in their other games with the line taken out): teammates -0.032 (90%: -0.048
+  // to -0.012), opponents -0.003 (-0.021 to +0.015), a team's total swinging 0.82x what independent players would
+  // make. A shared draw can only add correlation, and the data show none (slightly the reverse, minutes being shared),
+  // so both are 0: the sim's draws stay independent. ctx.corr ({team, game}) overrides them, for checking.
+  var CORR = { team: 0, game: 0 };
+
   function simulate(ctx, cand, field, z, contest, N, S) {
     var by = {}; ctx.rows.forEach(function (r) { by[r.id] = r; });
-    var ix = {}, mean = [], err = [];
+    var ix = {}, mean = [], err = [], tOf = [], gOf = [], teams = {}, games = {};
     function idx(id) {
       if (ix[id] == null) {
         var r = by[id] || {}, m = r.status === "Out" ? 0 : (by[id] ? ctx.proj(r) : 0);
         ix[id] = mean.length; mean.push(m); err.push(r.miss_dk || 0.35 * m);
+        var t = r.team || "?", g = r.game || t;
+        if (teams[t] == null) teams[t] = Object.keys(teams).length;
+        if (games[g] == null) games[g] = Object.keys(games).length;
+        tOf.push(teams[t]); gOf.push(games[g]);
       }
       return ix[id];
     }
@@ -306,14 +320,31 @@
     var P = mean.length, K = cand.length, size = contest.size || 0, paid = payTable(contest).length - 1;
     var w = Math.max(0, size - N) / fieldIx.length;               // each field lineup stands for w entries
     var pts = new Float32Array(P), cs = new Float32Array(K * S), fa = new Float32Array(K * S), cut = { win: 0, top10: 0, cash: 0 };
-    var fsc = new Float64Array(fieldIx.length);
+    var fsc = new Float64Array(fieldIx.length), fieldPts = 0;
     function scoreAtPlace(place) {                                // the field's score at a place (1 = best)
       var i = fsc.length - Math.min(fsc.length, Math.max(1, Math.ceil(place / w)));
       return fsc[i];
     }
+    var corr = ctx.corr || CORR, ca = corr.team || 0, cb = corr.game || 0, shared = ca > 0 || cb > 0;
+    var zm = 0, zsd = 0;
+    if (shared) {
+      z.forEach(function (v) { zm += v / z.length; });
+      z.forEach(function (v) { zsd += (v - zm) * (v - zm) / z.length; });
+      zsd = Math.sqrt(zsd);
+    }
+    var own = Math.sqrt(Math.max(0, 1 - ca * ca - cb * cb)), T = new Float64Array(Object.keys(teams).length), G = new Float64Array(Object.keys(games).length);
+    function normal() { var u = 1 - ctx.random(), v = ctx.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
     for (var s = 0; s < S; s++) {
-      for (var p = 0; p < P; p++) pts[p] = Math.max(0, mean[p] + z[(ctx.random() * z.length) | 0] * err[p]);
-      for (var f = 0; f < fieldIx.length; f++) { var t = 0, L = fieldIx[f]; for (var j = 0; j < 8; j++) t += pts[L[j]]; fsc[f] = t; }
+      if (!shared) for (var p = 0; p < P; p++) pts[p] = Math.max(0, mean[p] + z[(ctx.random() * z.length) | 0] * err[p]);
+      else {
+        for (var ti = 0; ti < T.length; ti++) T[ti] = normal();
+        for (var gi = 0; gi < G.length; gi++) G[gi] = normal();
+        for (var p3 = 0; p3 < P; p3++) {
+          var d = z[(ctx.random() * z.length) | 0];
+          pts[p3] = Math.max(0, mean[p3] + (zm + own * (d - zm) + zsd * (ca * T[tOf[p3]] + cb * G[gOf[p3]])) * err[p3]);
+        }
+      }
+      for (var f = 0; f < fieldIx.length; f++) { var t = 0, L = fieldIx[f]; for (var j = 0; j < 8; j++) t += pts[L[j]]; fsc[f] = t; fieldPts += t / fieldIx.length / S; }
       fsc.sort();                                                  // ascending
       cut.win += scoreAtPlace(1) / S; cut.top10 += scoreAtPlace(Math.ceil(0.1 * size)) / S; cut.cash += scoreAtPlace(paid) / S;
       for (var k = 0; k < K; k++) {
@@ -323,7 +354,21 @@
         cs[k * S + s] = t2; fa[k * S + s] = (fsc.length - lo) * w;
       }
     }
-    return { cs: cs, fa: fa, K: K, S: S, cut: cut };
+    // each lineup's quality and leverage, beside its sim value: quality, its expected points less what its salary
+    // buys at the simulated field's points per dollar; leverage, the share of the field holding its core (its three
+    // highest-salaried players; lower is more leverage)
+    var salOf = function (ids) { return ids.reduce(function (a, id) { return a + ((by[id] || {}).salary || 0); }, 0); };
+    var fieldSal = field.reduce(function (a, L) { return a + salOf(L); }, 0) / Math.max(1, field.length), rate = fieldSal ? fieldPts / fieldSal : 0;
+    var fieldSets = field.map(function (L) { var o = {}; L.forEach(function (id) { o[id] = 1; }); return o; });
+    var quality = new Float32Array(K), core = new Float32Array(K);
+    for (var k3 = 0; k3 < K; k3++) {
+      var e = 0; for (var s3 = 0; s3 < S; s3++) e += cs[k3 * S + s3] / S;
+      quality[k3] = e - salOf(cand[k3].ids) * rate;
+      var top = cand[k3].ids.slice().sort(function (a, b) { return ((by[b] || {}).salary || 0) - ((by[a] || {}).salary || 0); }).slice(0, 3), hold = 0;
+      for (var f3 = 0; f3 < fieldSets.length; f3++) if (fieldSets[f3][top[0]] && fieldSets[f3][top[1]] && fieldSets[f3][top[2]]) hold++;
+      core[k3] = fieldSets.length ? hold / fieldSets.length : 0;
+    }
+    return { cs: cs, fa: fa, K: K, S: S, cut: cut, quality: quality, core: core, rate: rate };
   }
 
   // The portfolio builder: a set of picked lineups, and what each other lineup would ADD to it, on the given nights.
@@ -572,8 +617,13 @@
   // by that estimate, and a lineup stays if it ranks high enough in ANY contest: the threshold rank is the lowest that
   // keeps (1 - cut) of them (never fewer than keep). contests: [{contest, n: our entries in it}]. progress(round) gets
   // {round, survivors} after each round.
-  async function cutPool(ctx, bank, contests, field, z, keep, cut, nights, progress) {
+  // protect (optional): {share, tags: [[tag, ...] per bank lineup]}: each tag keeps at least share x its banked
+  // lineups through every round, its best-ranked ones, even past Keep (off by default)
+  async function cutPool(ctx, bank, contests, field, z, keep, cut, nights, progress, protect) {
     var F = field.length, idx = bank.map(function (L, i) { return i; });
+    var floor = {};                                        // tag -> lineups it keeps at least
+    if (protect && protect.share > 0) protect.tags.forEach(function (ts) { ts.forEach(function (t) { floor[t] = (floor[t] || 0) + protect.share; }); });
+    Object.keys(floor).forEach(function (t) { floor[t] = Math.ceil(floor[t] - 1e-9); });
     var sum = contests.map(function () { return new Float64Array(bank.length); }), seen = new Float64Array(bank.length);
     var raw = { size: F + 1, payouts: [] };               // a contest where each field lineup stands for one entry
     var rounds = [];
@@ -601,8 +651,16 @@
           .forEach(function (i, r) { if (r + 1 < best[i]) best[i] = r + 1; });
       });
       var target = Math.max(keep, Math.ceil(idx.length * (1 - cut)));
-      idx = idx.slice().sort(function (a, b) { return best[a] - best[b]; }).slice(0, target);
-      rounds.push({ round: round, survivors: idx.length, ids: idx.slice() });
+      var order = idx.slice().sort(function (a, b) { return best[a] - best[b]; }), held = {}, nHeld = 0;
+      Object.keys(floor).forEach(function (t) {             // each protected tag's best-ranked, up to its floor
+        var got = 0;
+        for (var o = 0; o < order.length && got < floor[t]; o++) if (protect.tags[order[o]].indexOf(t) >= 0) { if (!held[order[o]]) { held[order[o]] = 1; nHeld++; } got++; }
+      });
+      var before = idx.length;
+      idx = order.filter(function (i) { return held[i]; }).concat(order.filter(function (i) { return !held[i]; }).slice(0, Math.max(0, target - nHeld)));
+      idx.sort(function (a, b) { return best[a] - best[b]; });
+      if (idx.length >= before) { rounds.push({ round: round, survivors: idx.length, ids: idx.slice(), held: nHeld }); if (progress) await progress(rounds[rounds.length - 1]); break; }   // the floors hold it above Keep
+      rounds.push({ round: round, survivors: idx.length, ids: idx.slice(), held: nHeld });
       if (progress) await progress(rounds[rounds.length - 1]);
     }
     var est = function (i) { return contests.map(function (c, ci) { return sum[ci][i] / seen[i]; }); };
@@ -621,6 +679,6 @@
            gatedProj: gatedProj, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
-           isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
+           CORR: CORR, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
            CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
 });
