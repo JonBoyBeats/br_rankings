@@ -313,6 +313,16 @@ function audit(name, L, o) {
   await pg.click("#rtSave");
   R = await rulesNow();
   check("search: the rule holds the chips' players", R[0] && R[0].set.length === before && R[0].set.includes(far) && !R[0].set.includes(dropped), JSON.stringify(R));
+  // a rule's on/off box: off stays listed (and saved), the draw and the tag skip it; on brings it back
+  await addRule("never", async () => { await pg.selectOption("#rtP", p1); await pg.selectOption("#rtQ", p2); });
+  const offLab = (await rulesNow())[0].label;
+  await pg.uncheck('#ruleList .rule[data-i="0"] .ruleOn');
+  const offNow = await pg.evaluate(() => ({ n: state.rules.length, off: !!state.rules[0].off, conds: drawRules().conds.map(r => r.label),
+    tag: document.getElementById("tagNow").textContent, grey: document.querySelector('#ruleList .rule[data-i="0"]').classList.contains("off") }));
+  check("rule toggle: off stays listed, greyed, saved off", offNow.n === 2 && offNow.off && offNow.grey);
+  check("rule toggle: the draw and the tag skip an off rule", !offNow.conds.includes(offLab) && offNow.conds.length === 1 && !offNow.tag.includes(offLab));
+  await pg.check('#ruleList .rule[data-i="0"] .ruleOn');
+  check("rule toggle: on again, back in the draw", await pg.evaluate(l => drawRules().conds.some(r => r.label === l), offLab));
   // 3. if 2+ from team then 1+ from its opponent
   await clearRules();
   await addRule("ifteam", async () => { await pg.selectOption("#rtTeam", t2.team); await pg.fill("#rtN", "2"); await pg.fill("#rtM", "1"); });

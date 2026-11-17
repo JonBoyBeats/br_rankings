@@ -146,7 +146,7 @@
   .tile .acts button { height: 24px; padding: 0 7px; font-size: 11.5px; }
   .rulesbox { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 2px 0 10px; }
   .rule { display: flex; gap: 8px; align-items: center; font-size: 12.5px; border-bottom: 1px solid var(--line); padding: 3px 0; }
-  .rule .lab { flex: 1; } .rule .pc { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .rule .lab { flex: 1; } .rule.off .lab { opacity: .45; text-decoration: line-through; } .rule .pc { font-family: var(--mono); font-size: 11px; color: var(--muted); }
   .rule button { height: 22px; padding: 0 7px; font-size: 11.5px; }
   .summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px 14px; font-family: var(--mono);
              font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
@@ -236,7 +236,7 @@
     <label class="field"><span class="field-label">owned %</span><input class="num" id="lowPct" type="number" min="1" max="100" value="10"></label>
   </div>
   <div class="rulesbox">
-    <div class="field-label">Rules for the draw (they stay until you Remove them)</div>
+    <div class="field-label">Rules for the draw (tick a rule on or off; off ones stay here for later)</div>
     <div id="ruleList"></div>
     <div class="opts" id="ruleEditor" style="padding-bottom:2px">
       <label class="field"><span class="field-label">Template</span><select id="rtType" style="width:auto">
@@ -527,7 +527,7 @@ function drawRules() {
   var v = function (id) { return $(id).value === "" ? null : +$(id).value; };
   return { n: 1, maxExpo: 1, minUnique: 1, z: fieldDoc && fieldDoc.z, levW: v("levW") || 0, minSal: v("minSal") || 0, maxTeam: v("maxTeam") || 8,
            stackN: v("stackN") || 0, stackBoth: $("stackBoth").checked, maxOwn: v("maxOwn"),
-           lowN: v("lowN") || 0, lowPct: v("lowPct") || 10, conds: (state.rules || []).slice() };
+           lowN: v("lowN") || 0, lowPct: v("lowPct") || 10, conds: (state.rules || []).filter(function (r) { return !r.off; }) };
 }
 // the pick's settings (section 2), for a contest taking n entries: Max exposure rounds down, so a 1-entry contest gets its one
 function pickRules(n) {
@@ -654,7 +654,8 @@ function renderRules() {
   var list = state.rules || [];
   $("ruleList").innerHTML = list.length ? list.map(function (rule, i) {
     var c = ruleCounts[rule.label];
-    return '<div class="rule" data-i="' + i + '"><span class="lab">' + esc(rule.label) + "</span>" + (c ? '<span class="pc">' + c.pass + " of " + c.of + " pass</span>" : "") +
+    return '<div class="rule' + (rule.off ? " off" : "") + '" data-i="' + i + '"><input type="checkbox" class="ruleOn" title="On for the next draw (off keeps it here for later)"' +
+      (rule.off ? "" : " checked") + '><span class="lab">' + esc(rule.label) + "</span>" + (c ? '<span class="pc">' + c.pass + " of " + c.of + " pass</span>" : "") +
       (["if", "ifnot", "ifteam", "never"].indexOf(rule.type) >= 0 ? '<button data-act="edit">Edit</button>' : "") + '<button data-act="rm">Remove</button></div>';
   }).join("") : '<div class="note" style="margin:4px 0">No rules: add one below, or from a team tile.</div>';
   if (slate) $("tagNow").textContent = "Next draw is tagged: " + tagNow();
@@ -760,7 +761,7 @@ function tagNow() {         // the draw's idea: the settings off their defaults,
   if (o.levW) t.push("leverage " + o.levW);
   Object.keys(state.lock).forEach(function (id) { t.push("lock " + name(id)); });
   Object.keys(state.excl).forEach(function (id) { t.push("no " + name(id)); });
-  (state.rules || []).forEach(function (x) { t.push(x.label); });
+  (state.rules || []).forEach(function (x) { if (!x.off) t.push(x.label); });
   return t.length ? t.join(" + ") : "no rules";
 }
 function bankAdd(lineups, tag) {
@@ -1167,6 +1168,12 @@ $("ruleList").addEventListener("click", function (e) {
   if (b.dataset.act === "rm") { state.rules.splice(i, 1); save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
   editing = i; loadEditor(state.rules[i]); $("rtSave").textContent = "Save changes"; $("rtCancel").hidden = false;
 });
+$("ruleList").addEventListener("change", function (e) {   // a rule's on/off box: off rules stay listed, the draw skips them
+  if (!e.target.classList.contains("ruleOn")) return;
+  var r = state.rules[+e.target.closest(".rule").dataset.i];
+  if (e.target.checked) delete r.off; else r.off = true;
+  save(); renderRules();
+});
 $("rtType").addEventListener("change", showEditor);
 $("rtFrom").addEventListener("change", showEditor);
 $("rtP").addEventListener("change", function () {
@@ -1188,7 +1195,7 @@ $("rtChips").addEventListener("click", function (e) { var b = e.target.closest("
 $("rtSave").addEventListener("click", function () {
   var r = editorRule();
   if (!r) { alert("Pick the players the rule needs (and two different players for Never)."); return; }
-  if (editing >= 0) { state.rules[editing] = r; editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; save(); renderRules(); }
+  if (editing >= 0) { if (state.rules[editing].off) r.off = true; state.rules[editing] = r; editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; save(); renderRules(); }
   else addRules([r]);
 });
 $("rtCancel").addEventListener("click", function () { editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; });
