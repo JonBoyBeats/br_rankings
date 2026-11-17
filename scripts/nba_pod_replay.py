@@ -30,15 +30,17 @@ import nba_tier_history as T  # noqa: E402  the Tiers button rebuilt (ADP tiers,
 REP = M.REP
 OUT_MD = os.path.join(REP, "pod_replay.md")
 OUT_JSON = os.path.join(REP, "pod_replay.json")
-LISTS = ["a", "b", "c1", "c2", "c3", "c4", "c5", "d", "e", "f1", "f2", "f3", "f4", "f5", "bp", "f", "g"]
+LISTS = ["a", "b", "c1", "c2", "c3", "c4", "c5", "d", "e", "f1", "f2", "f3", "f4", "f5", "bp", "f", "g", "fn"]
 NAMES = {"a": "(a) my locked list", "b": "(b) the button's list", "d": "(d) ADP", "e": "(e) ETR (PM)",
          **{"c%d" % k: "(c%d) mine, T%d's moves undone" % (k, k) for k in range(1, 6)},
          **{"f%d" % k: "(f%d) mine (PM), T%d in ETR's order" % (k, k) for k in range(1, 6)},
-         "bp": "(b') the button rebuilt here (PM)", "f": "(f) the button on ETR tiers (PM)", "g": "(g) ETR order, the button's T5 rule (PM)"}
-PAIRS = [("a", y) for y in LISTS[1:]] + [("g", "e"), ("bp", "f"), ("f", "e"), ("g", "f")]
+         "bp": "(b') the button rebuilt here (PM)", "f": "(f) the button on ETR tiers (PM)", "g": "(g) ETR order, the button's T5 rule (PM)",
+         "fn": "(f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM)"}
+PAIRS = [("a", y) for y in LISTS[1:]] + [("g", "e"), ("bp", "f"), ("f", "e"), ("g", "f"), ("fn", "f"), ("fn", "e")]
 ETR_BUTTON = "2026-11-17"     # the PM button on ETR tiers from this night: which ETR version the PM should use
-ETR_PAIRS = [("f", "e"), ("g", "f"), ("g", "e")]
+ETR_PAIRS = [("f", "e"), ("g", "f"), ("g", "e"), ("fn", "f"), ("fn", "e")]
 META = os.path.join(M.NBA, "daily", "meta.json")
+NODROP = {}        # date -> the players (f-nodrop) keeps in T4 that (f) drops into T5
 
 
 def pk(x, y):
@@ -69,8 +71,12 @@ def button_heads(rec, date):
     meta = (json.load(open(META)) if os.path.exists(META) else {}).get(os.path.basename(path[0]), {})
     out, _ = T.build(rows, date, rows[0]["slate"], "pm", meta)
     oute, _ = T.build(rows, date, rows[0]["slate"], "pm", meta, base="etr")
+    outn, _ = T.build(rows, date, rows[0]["slate"], "pm", meta, base="etr", nodrop=True)
     if not out or not oute:
         return {}
+    # (f-nodrop) touches ETR's T4 players flagged PRICEY whom (f) drops into T5 (market T3); counted per night
+    tier_f = {x["player_id"]: x["tier"] for x in oute}
+    NODROP[date] = sorted(x["name"] for x in outn if x["p_tier"] == 4 and x["flag"] == "PRICEY" and x["tier"] == 4 and tier_f.get(x["player_id"]) != 4)
     by_built = lambda o: [x["player_id"] for x in sorted(o, key=lambda x: x["built"])]
     pod = T.pod_size(rows)
     key = lambda x: (-(x["proj"] if x["proj"] is not None else -1e9), x["adp"] if x["adp"] is not None else 999)
@@ -84,7 +90,7 @@ def button_heads(rec, date):
     t5 = elig[:max(0, T.DEFAULT_RANKED - len(head))]
     ids = {x["player_id"] for x in head + t5}
     g = [x["player_id"] for x in head + t5] + [x["player_id"] for x in sorted((x for x in out if x["player_id"] not in ids), key=key)]
-    return {"bp": by_built(out), "f": by_built(oute), "g": g}
+    return {"bp": by_built(out), "f": by_built(oute), "g": g, "fn": by_built(outn)}
 
 
 def lists_for(rec, w, extra=None):
@@ -423,6 +429,9 @@ def build(nights):
             EB["pairs"].setdefault(pk(x, y), {})[k] = {
                 "nights": r["nights"], **{f: None if r[f] is None else round(100 * r[f], 3) for f in ("diff", "lo", "hi")}}
     EB["f_vs_board"] = {x["date"]: x["f_vs_board"] for x in nights if x.get("f_vs_board") is not None}
+    nd = {x["date"]: NODROP.get(x["date"], []) for x in nights if "%s|fn" % "pm" in x["res"]}
+    EB["nodrop_touched"] = {"players": sum(len(v) for v in nd.values()), "nights": sum(1 for v in nd.values() if v), "of": len(nd),
+                            "by_night": nd}
     js["pm_etr_button"] = EB
     # top 1% at my real seats: real against (a), with the spreads
     T = [x["my_t1"] for x in nights if x["my_t1"]["seats"]]
@@ -499,7 +508,8 @@ def build(nights):
            "- (b'), (f) and (g), PM: the Tiers button rebuilt here from the PM lock's inputs (scripts/nba_tier_history.py, the 11/13 "
            "rules on every night; it matches the board's own PM order at 26-36 of the top 36 places since 11/13). (b') on ADP tiers as "
            "the board; (f) the same rules with the tiers starting from ETR's ladder and moving one tier toward ADP's at two or more "
-           "apart; (g) ETR's order for ETR's T1-T4, then T5 by the button's rule (under the 60% drafted line first, by projection; "
+           "apart; (f-nodrop) the same as (f) but ETR's T4 players flagged PRICEY (market T3) stay at the bottom of T4 instead of "
+           "dropping into T5; (g) ETR's order for ETR's T1-T4, then T5 by the button's rule (under the 60% drafted line first, by projection; "
            "ETR's T4 PRICEY players behind T5's top 3; the minutes floor), 60%+ below the cut. (b') minus (f) isolates the tiers' source.", ""]
     for w, lab in (("both", "Both windows"), ("am", "AM"), ("pm", "PM")):
         md += ["## Season: %s" % lab, ""] + row_season(w) + ["", "Paired: (a) minus each list, same pods and seats, nights resampled for the 80% ranges.", ""] + row_paired(w) + [""]
@@ -517,7 +527,8 @@ def build(nights):
                "this size swings by luck. Real and (a) share the same nights' box scores, so the real-minus-(a) range is the gap from "
                "drafting off something other than the locked list (earlier boards, round-6 choices).", ""]
     md += ["## The PM button on ETR tiers (since %s, PM)" % ETR_BUTTON, "",
-           "Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, (g) ETR with the button's T5 rule. "
+           "Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, (f-nodrop) the same with ETR's T4 PRICEY "
+           "kept in T4, (g) ETR with the button's T5 rule. "
            "Points of top-10% and top-1% rate (80% range, nights resampled); below zero, the second list did better.", "",
            "| Pair | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | 80% range |", "|---|---|---|---|---|---|"]
     for key, v in EB["pairs"].items():
@@ -525,6 +536,9 @@ def build(nights):
         rng = lambda r: "%+.2f to %+.2f" % (r["lo"], r["hi"]) if r["lo"] is not None else "-"
         md.append("| %s | %d | %s | %s | %s | %s |" % (label(key), t10["nights"], "-" if t10["diff"] is None else "%+.2f" % t10["diff"],
                                                      rng(t10), "-" if t1["diff"] is None else "%+.2f" % t1["diff"], rng(t1)))
+    T_ = EB["nodrop_touched"]
+    md += ["", "(f-nodrop) differs from (f) on %d players on %d of %d PM nights (ETR's T4 flagged PRICEY, market T3: kept at the bottom of "
+           "T4 instead of dropped into T5)." % (T_["players"], T_["nights"], T_["of"])]
     md += ["", "(f) rebuilt here against the board's own PM order (the ETR-tier button from %s), places of the top 36 that agree: %s." % (
         ETR_BUTTON, ", ".join("%s %d" % kv for kv in sorted(EB["f_vs_board"].items())) or "no nights yet"), ""]
     if SR:
@@ -638,6 +652,13 @@ def summary(season, P, pos, r6, mine, beat, MT=None, EB=None):
     if tiers:
         out.append("- **My manual moves, tier by tier** (top-10% points my moves added, 80% range): " + "; ".join(
             "T%d %s (%s to %s)" % (k, pp(r["diff"]), pp(r["lo"]), pp(r["hi"])) for k, r in tiers) + ".")
+    nd = [(lab, P.get(("pm", x, y, "top10")), P.get(("pm", x, y, "top1"))) for lab, x, y in (
+        ("(f-nodrop) minus (f)", "fn", "f"), ("(f-nodrop) minus (e)", "fn", "e"))]
+    nd = [(lab, r, r1) for lab, r, r1 in nd if r and r["diff"] is not None]
+    if nd:
+        out.append("- **ETR's T4 PRICEY kept in T4 (PM, season)**, top-10% points (80% range), top-1% points (80% range): " + "; ".join(
+            "%s %s (%s to %s), %s (%s to %s)" % (lab, pp(r["diff"]), pp(r["lo"]), pp(r["hi"]), pp(r1["diff"]), pp(r1["lo"]), pp(r1["hi"]))
+            for lab, r, r1 in nd) + ".")
     ft = [(k, P.get(("pm", "a", "f%d" % k, "top10"))) for k in range(1, 6)]
     ft = [(k, r) for k, r in ft if r and r["diff"] is not None]
     if ft:

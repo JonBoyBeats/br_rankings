@@ -288,7 +288,9 @@ var POD_W = "both";
 try { POD_W = localStorage.getItem("nbaPodWindow") || "both"; } catch (e) { /* storage blocked */ }
 var POD_ROWS = [["b", "vs the button"], ["d", "vs ADP"], ["e", "vs ETR (PM)"], ["f", "vs ETR button"], ["g", "vs ETR + T5"]];   // tier rows: each tier's card
 var POD_ETR = [["f-e", "Button − ETR", "the ETR-tier button minus pure ETR"], ["g-f", "T5 − button", "ETR with the T5 rule minus the ETR-tier button"],
-               ["g-e", "T5 rule", "ETR with the T5 rule minus pure ETR: what the T5 rule adds"]];
+               ["g-e", "T5 rule", "ETR with the T5 rule minus pure ETR: what the T5 rule adds"],
+               ["fn-f", "No-drop − btn", "the ETR-tier button keeping ETR's T4 PRICEY in T4, minus the ETR-tier button (they drop into T5)"],
+               ["fn-e", "No-drop − ETR", "the ETR-tier button keeping ETR's T4 PRICEY in T4, minus pure ETR"]];
 function podSince(lst, w) {
   var x = (D.pod_replay.since || {})[lst] || {};
   return w === "both" ? [x.pm && "PM " + short(x.pm), x.am && "AM " + short(x.am)].filter(Boolean).join(", ") : x[w] ? short(x[w]) : null;
@@ -345,7 +347,9 @@ function podExtra(s, P) {
     var bd = E.f_vs_board || {}, bk = Object.keys(bd).sort();
     el("p", { class: "note" }, s, "PM. Each row: the first list minus the second, in points; right of zero, the first did better. Season, and since the PM " +
        "button went to ETR tiers (" + (E.since ? short(E.since) : "–") + ")." + (bk.length ? " The ETR-tier button rebuilt here matches the board's own PM order at " +
-       bk.map(function (d) { return bd[d] + " of 36 places on " + short(d); }).join(", ") + "." : ""));
+       bk.map(function (d) { return bd[d] + " of 36 places on " + short(d); }).join(", ") + "." : "") +
+       (E.nodrop_touched ? " Keeping ETR's T4 PRICEY (market T3) in T4 changes " + E.nodrop_touched.players + " players on " + E.nodrop_touched.nights +
+        " of " + E.nodrop_touched.of + " PM nights." : ""));
     two(er, ["← the second better", "the first better →"]);
     table(s, ["Comparison", "Top 10% season (80% range)", "Since", "Top 1% season (80% range)", "Since"], er.map(function (r) {
       return [r.full, f(r.top10.season), f(r.top10.since), f(r.top1.season), f(r.top1.since)];

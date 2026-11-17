@@ -171,9 +171,11 @@ def booms(rows, adp_col, proj_col):
     return {it["r"]["player_id"]: B.chance(B.BOOM, it["x"], bars[id(it)], it["m"]) for it in items}
 
 
-def build(rows, date, slate, window, meta, base="adp"):
+def build(rows, date, slate, window, meta, base="adp", nodrop=False):
     """base "etr" (the pod replay's variant, PM): the tiers start from the projection ladder and move one tier toward ADP's
-    at two or more apart; flags, the T4 PRICEY drop, the elites and the rest of the rules as the button's."""
+    at two or more apart; flags, the T4 PRICEY drop, the elites and the rest of the rules as the button's. nodrop (the pod
+    replay's (f-nodrop), with base "etr"): ETR's T4 players flagged PRICEY (market T3) stay in T4, at its bottom with the
+    PRICEY group, instead of dropping into T5."""
     w = WINDOWS[window]
     pod = pod_size(rows)
     cap = 24 if pod == 4 else 36
@@ -216,7 +218,7 @@ def build(rows, date, slate, window, meta, base="adp"):
         if base == "etr":
             c = p + (1 if d > 0 else -1) if abs(d) >= 2 else p
         if RULESET == "new":                             # the one-tier move runs after the ADP ladder (round 6 is never
-            if c == 4 and d < 0:                         # A4 there), so an A5-P3 player is T4 VALUE (fixed 2026-11-13)
+            if c == 4 and d < 0 and not (nodrop and base == "etr" and p == 4):   # A4 there), so an A5-P3 player is T4 VALUE (fixed 2026-11-13)
                 c = 5                                    # T4 PRICEY drops into T5
         tag, play, q, et = r.get(w["tag"]) or "", num(r.get(w["play"])), "", ""
         if Q_TAG.match(tag):

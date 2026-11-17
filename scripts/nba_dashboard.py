@@ -142,7 +142,7 @@ POD_KEYS = ("top10", "top1")
 POD_RULES = {"b": None, "d": None, "e": None, "f": None, "g": None,   # the button's whole rule set
              "c1": ("elite-", "q-t1-"), "c2": ("t2-",), "c3": ("t34-", "t3-"), "c4": ("t34-", "t4-"), "c5": ("t5-", "q-t5-")}
 POD_RULES.update({"f%d" % k: POD_RULES["c%d" % k] for k in range(1, 6)})   # one tier in ETR's order (PM): that tier's rules
-POD_ETR = ("f-e", "g-f", "g-e")    # which ETR version for the PM: the ETR-tier button, pure ETR, ETR with the button's T5 rule
+POD_ETR = ("f-e", "g-f", "g-e", "fn-f", "fn-e")    # which ETR version for the PM: the ETR-tier button, pure ETR, ETR with the button's T5 rule
 
 
 def pod_since(rd, lst):
@@ -194,7 +194,7 @@ def pod_replay():
                                                     "since": pod_paired(pr["by_night"], w, y, k, out["since"][y]) if out["since"][y] else None}
                                                 for k in POD_KEYS}
     eb = pr.get("pm_etr_button") or {}
-    out["etr"] = {"since": eb.get("since"), "f_vs_board": eb.get("f_vs_board"),
+    out["etr"] = {"since": eb.get("since"), "f_vs_board": eb.get("f_vs_board"), "nodrop_touched": {k: v for k, v in (eb.get("nodrop_touched") or {}).items() if k != "by_night"},
                   "rows": {y: {k: {"season": ((pr.get("paired") or {}).get("pm") or {}).get(y, {}).get(k),
                                    "since": (eb.get("pairs") or {}).get(y, {}).get(k)} for k in POD_KEYS}
                            for y in POD_ETR if ((pr.get("paired") or {}).get("pm") or {}).get(y)}}
