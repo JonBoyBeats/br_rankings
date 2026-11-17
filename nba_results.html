@@ -279,7 +279,9 @@ function header() {
 var POD_W = "both";
 try { POD_W = localStorage.getItem("nbaPodWindow") || "both"; } catch (e) { /* storage blocked */ }
 var POD_ROWS = [["b", "vs the button"], ["c1", "Tier 1 moves"], ["c2", "Tier 2 moves"], ["c3", "Tier 3 moves"], ["c4", "Tier 4 moves"],
-                ["c5", "Tier 5 moves"], ["d", "vs ADP"], ["e", "vs ETR (PM)"]];
+                ["c5", "Tier 5 moves"], ["d", "vs ADP"], ["e", "vs ETR (PM)"], ["f", "vs ETR button"], ["g", "vs ETR + T5"]];
+var POD_ETR = [["f-e", "Button − ETR", "the ETR-tier button minus pure ETR"], ["g-f", "T5 − button", "ETR with the T5 rule minus the ETR-tier button"],
+               ["g-e", "T5 rule", "ETR with the T5 rule minus pure ETR: what the T5 rule adds"]];
 function podSince(lst, w) {
   var x = (D.pod_replay.since || {})[lst] || {};
   return w === "both" ? [x.pm && "PM " + short(x.pm), x.am && "AM " + short(x.am)].filter(Boolean).join(", ") : x[w] ? short(x[w]) : null;
@@ -315,9 +317,54 @@ function podReplay() {
     var f = function (v) { return !v || v.diff == null ? "–" : sgn(v.diff) + " (" + sgn(v.lo) + " to " + sgn(v.hi) + "), " + v.nights + "n"; };
     return [r.label, f(r.top10.season), f(r.top10.since) + (r.since ? " from " + r.since : ""), f(r.top1.season), f(r.top1.since)];
   }));
+  try { podExtra(s, P); } catch (e) { el("p", { class: "note" }, s, "The PM extras couldn't be drawn (" + e.message + ")."); }   // never takes the page down
+}
+/** PM only, under the main read: which ETR version the PM should use, ETR by tier, and top 1% at your real seats. */
+function podExtra(s, P) {
+  var f = function (v) { return !v || v.diff == null ? "–" : sgn(v.diff) + (v.lo == null ? "" : " (" + sgn(v.lo) + " to " + sgn(v.hi) + ")") + ", " + v.nights + "n"; };
+  var two = function (rows, ends) {
+    var cols = el("div", { class: "pod-cols" }, s);
+    [["top10", "Top 10%"], ["top1", "Top 1%"]].forEach(function (k) {
+      var c = el("div", {}, cols);
+      el("div", { class: "sub" }, c, k[1] + ", points");
+      forest(c, rows, k[0], ends);
+    });
+  };
+  var E = P.etr || {}, er = POD_ETR.filter(function (r) { return (E.rows || {})[r[0]]; }).map(function (r) {
+    var x = E.rows[r[0]]; return { key: r[0], label: r[1], full: r[2], top10: x.top10, top1: x.top1, since: E.since ? short(E.since) : null };
+  });
+  if (er.length) {
+    el("div", { class: "sub" }, s, "Which ETR version for the PM");
+    var bd = E.f_vs_board || {}, bk = Object.keys(bd).sort();
+    el("p", { class: "note" }, s, "PM. Each row: the first list minus the second, in points; right of zero, the first did better. Season, and since the PM " +
+       "button went to ETR tiers (" + (E.since ? short(E.since) : "–") + ")." + (bk.length ? " The ETR-tier button rebuilt here matches the board's own PM order at " +
+       bk.map(function (d) { return bd[d] + " of 36 places on " + short(d); }).join(", ") + "." : ""));
+    two(er, ["← the second better", "the first better →"]);
+    table(s, ["Comparison", "Top 10% season (80% range)", "Since", "Top 1% season (80% range)", "Since"], er.map(function (r) {
+      return [r.full, f(r.top10.season), f(r.top10.since), f(r.top1.season), f(r.top1.since)];
+    }));
+  }
+  var R = (P.rows || {}).pm || {}, tr = [1, 2, 3, 4, 5].filter(function (k) { return R["f" + k]; }).map(function (k) {
+    var x = R["f" + k]; return { key: "f" + k, label: "T" + k + " ETR order", top10: x.top10, top1: x.top1, since: podSince("f" + k, "pm") };
+  });
+  if (tr.length) {
+    el("div", { class: "sub" }, s, "ETR by tier (PM)");
+    el("p", { class: "note" }, s, "Your PM list against your PM list with one of your tiers in ETR's order; left of zero, ETR's order beat yours in that tier.");
+    two(tr);
+    table(s, ["Tier", "Top 10% season (80% range)", "Since", "Top 1% season (80% range)", "Since"], tr.map(function (r) {
+      return ["T" + r.key.slice(1) + " in ETR's order", f(r.top10.season), f(r.top10.since), f(r.top1.season), f(r.top1.since)];
+    }));
+  }
+  var M = P.my_seats;
+  if (M) {
+    el("div", { class: "sub" }, s, "Top 1% at your real seats: luck or list");
+    el("p", { class: "note" }, s, "Your real teams made top 1% " + M.real + " times in " + M.seats + " lineups (" + M.nights + " nights). Your locked list at the same " +
+       "seats: " + M.list + " (round-6 redraws " + M.draws_lo + "–" + M.draws_hi + "; a count this size swings " + M.poisson[0] + "–" + M.poisson[1] +
+       " by luck). Real minus list: " + sgn(M.real - M.list, 0) + (M.gap_lo != null ? " (80% range " + sgn(M.gap_lo, 0) + " to " + sgn(M.gap_hi, 0) + ")" : "") + ".");
+  }
 }
 /** One row per comparison: season and since, each a dot with its 80% range, around zero. Ranges past the axis end in an arrow. */
-function forest(parent, rows, key) {
+function forest(parent, rows, key, ends) {
   var W = cw(parent), L = 96, Rr = 12, T = 6, RH = 32, B = 34, H = T + RH * rows.length + B;
   // The axis fits the season ranges; a since point (few nights) further out than half again that sits at the edge, marked
   var span = [];
@@ -331,12 +378,12 @@ function forest(parent, rows, key) {
     sv("line", { x1: x(t), x2: x(t), y1: T, y2: H - B, stroke: "var(--grid)" }, svg);
     sv("text", { x: x(t), y: H - B + 13, "text-anchor": "middle" }, svg, sgn(t, Math.abs(hi) < 1 ? 1 : 0));
   });
-  sv("text", { x: L, y: H - 5 }, svg, W < 480 ? "← theirs better" : "← that list better");
-  sv("text", { x: W - Rr, y: H - 5, "text-anchor": "end" }, svg, W < 480 ? "yours better →" : "your list better →");
+  sv("text", { x: L, y: H - 5 }, svg, ends ? ends[0] : W < 480 ? "← theirs better" : "← that list better");
+  sv("text", { x: W - Rr, y: H - 5, "text-anchor": "end" }, svg, ends ? ends[1] : W < 480 ? "yours better →" : "your list better →");
   sv("line", { x1: x(0), x2: x(0), y1: T, y2: H - B, stroke: "var(--field)", "stroke-width": 2 }, svg);
   rows.forEach(function (r, i) {
     var y0 = T + RH * i, g = sv("g", {}, svg), v = r[key];
-    if (i && (r.key === "c1" || r.key === "d")) sv("line", { x1: 0, x2: W, y1: y0, y2: y0, stroke: "var(--line)" }, g);
+    if (i && (r.key === "c1" || r.key === "d" || r.key === "f")) sv("line", { x1: 0, x2: W, y1: y0, y2: y0, stroke: "var(--line)" }, g);
     sv("text", { x: 0, y: y0 + RH / 2 + 4, style: "fill: var(--ink-2); font-family: var(--sans); font-size: 12px" }, g, r.label);
     [[v.season, "var(--me)", -5], [v.since, "var(--alt)", 5]].forEach(function (m) {
       var d = m[0], yy = y0 + RH / 2 + m[2];

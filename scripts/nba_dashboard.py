@@ -44,7 +44,9 @@ DEFS = {
            "list, placed in the real standings (contest side's pod replay). Each bar: your list's top-10% (or top-1%) rate minus "
            "that list's, in percentage points, with its 80% range from resampling nights; right of zero, your list did better. "
            "'Tier N moves' is your list against your list with that tier's moves undone: what those moves added. Season, and "
-           "since the list's rules went live (rule_dates.json).",
+           "since the list's rules went live (rule_dates.json). Below it, PM only: which ETR version the PM should use (the "
+           "ETR-tier button, pure ETR, ETR with the button's T5 rule; each row the first minus the second, since the PM button "
+           "went to ETR tiers), your list with one tier in ETR's order, and top 1% at your real seats against your list there.",
     "t34": "Secondary to the pod replay. Your moves against the button in the tier (takes_history.csv, Q-tagged pairs left out): for each move, the top-1% "
            "multiple of the player you moved up minus the player you moved down, in that window; summed for the night, "
            "with a running total. Tally on points, pushes under 3. VALUE / normal / PRICEY: your share of lineups holding "
@@ -137,8 +139,10 @@ def round6(n):
 # Season comes from its file as written; "since" re-pools its by-night rates from the first night the list's rules were
 # live (rule_dates.json), with the same night resampling (M.boot_range). In percentage points, (a) minus the list.
 POD_KEYS = ("top10", "top1")
-POD_RULES = {"b": None, "d": None, "e": None,               # the button's whole rule set
+POD_RULES = {"b": None, "d": None, "e": None, "f": None, "g": None,   # the button's whole rule set
              "c1": ("elite-", "q-t1-"), "c2": ("t2-",), "c3": ("t34-", "t3-"), "c4": ("t34-", "t4-"), "c5": ("t5-", "q-t5-")}
+POD_RULES.update({"f%d" % k: POD_RULES["c%d" % k] for k in range(1, 6)})   # one tier in ETR's order (PM): that tier's rules
+POD_ETR = ("f-e", "g-f", "g-e")    # which ETR version for the PM: the ETR-tier button, pure ETR, ETR with the button's T5 rule
 
 
 def pod_since(rd, lst):
@@ -189,6 +193,12 @@ def pod_replay():
             out["rows"].setdefault(w, {})[y] = {k: {"season": ys[y].get(k),
                                                     "since": pod_paired(pr["by_night"], w, y, k, out["since"][y]) if out["since"][y] else None}
                                                 for k in POD_KEYS}
+    eb = pr.get("pm_etr_button") or {}
+    out["etr"] = {"since": eb.get("since"), "f_vs_board": eb.get("f_vs_board"),
+                  "rows": {y: {k: {"season": ((pr.get("paired") or {}).get("pm") or {}).get(y, {}).get(k),
+                                   "since": (eb.get("pairs") or {}).get(y, {}).get(k)} for k in POD_KEYS}
+                           for y in POD_ETR if ((pr.get("paired") or {}).get("pm") or {}).get(y)}}
+    out["my_seats"] = pr.get("my_seats_top1")
     return out
 
 
