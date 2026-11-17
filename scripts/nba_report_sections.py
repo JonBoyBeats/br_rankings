@@ -279,10 +279,10 @@ def moves(H, night, t):
         for _ in range(1000):
             up += sum(tally(d) for d in (rnd.choice(ds) for _ in ds)) > 0
         share = up / 1000
-        W, L = sum(g >= PUSH for g in allg), sum(g <= -PUSH for g in allg)
+        won, lost = sum(g >= PUSH for g in allg), sum(g <= -PUSH for g in allg)
         season = ("keep doing what you're doing" if share >= 0.8 else "press the button" if share <= 0.2 else "too early") + \
             " (%d moves on %d nights: %d won, %d lost, %d pushes under 3 points; %+.1f points a move; ahead in %d%% of night-resamples)" % (
-                len(allg), len(by), W, L, len(allg) - W - L, sum(allg) / len(allg), round(100 * share))
+                len(allg), len(by), won, lost, len(allg) - won - lost, sum(allg) / len(allg), round(100 * share))
     return (md or ["No moves against the button here last night."]) + ["", "Season, your moves in T%d: %s." % (t, season), ""]
 
 
@@ -405,17 +405,8 @@ def q_section(H, night, today_pool, tracker, mt=None):
     md += ["**Your Q moves.** " + ("; ".join("%s: %s ahead of %s, %s by %.0f" % (
         W[t["window"]].capitalize(), short(t["you_first"]), short(t["button_first"]), "helped" if float(t["gain"]) > 0 else "hurt", abs(float(t["gain"])))
         for t in qm) + "." if qm else "None last night."), ""]
-    try:
-        import nba_swap_grade
-        md += [nba_swap_grade.season_line(), ""]
-    except Exception as e:
-        md += ["Swap button: not graded (%s)." % e, ""]
-    if tracker:
-        md += [tracker[0], ""]
-    qp = ((mt or {}).get("q_picks") or {}).get("groups") or {}
-    if qp:
-        md += ["**Q picks on contest results, season** (top 10%% against the field's rate): %s." % "; ".join(
-            "%s %s" % (k, mult(qp[k])) for k in ("no Q pick", "any Q pick", "played", "sat", "T1", "T2", "T3", "T4", "T5") if k in qp), ""]
+    # the swap button's season line, the chance-to-play tracker and Q picks on contest results moved to the Results page and
+    # the Friday report (2026-11-17)
     today = [r for r in (pool or []) if (r.get("tag") or "")[:1].lower() == "q" and r.get("drafted")]
     bmap = collections.defaultdict(list)
     for r, tg in (ben or []):

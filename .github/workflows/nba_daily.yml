@@ -151,6 +151,8 @@ jobs:
           # the Friday job, nba_friday.yml), never decision_register.csv; after tier_history so last night's tiers are in
           python3 scripts/nba_money.py --mirror ../br-adp-mirror > /dev/null || true
           python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror > /dev/null || true
+          # the Results page's data (nba_results.html): after the money step, which supplies the contest-side multiples
+          python3 scripts/nba_dashboard.py --mirror ../br-adp-mirror > /dev/null || true
       # Commit and push. The workflow owns every file it regenerates (OWNED below); decision_register.csv is chat-only and
       # never written here. If a chat committed one of the owned files while this ran, the push's rebase conflicts on it:
       # this run's copy stands (it was just regenerated), the fast steps run again on top of what was pulled (any code or
@@ -158,7 +160,7 @@ jobs:
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
           mkdir -p analysis/cbb/daily analysis/cbb/dk analysis/cbb/contests
-          OWNED="analysis/cbb/daily analysis/cbb/dk analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/shadow.json analysis/nba/report/takes_history.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md analysis/nba/report/money_tiers.json analysis/nba/report/money_proposals.json analysis/nba/report/today.md analysis/nba/report/rulebook.md analysis/nba/report/gallagher_arrows.csv"
+          OWNED="analysis/cbb/daily analysis/cbb/dk analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/shadow.json analysis/nba/report/takes_history.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md analysis/nba/report/money_tiers.json analysis/nba/report/money_proposals.json analysis/nba/report/today.md analysis/nba/report/rulebook.md analysis/nba/report/gallagher_arrows.csv analysis/nba/dashboard.json"
           git checkout -- analysis/nba/report/decision_register.csv 2>/dev/null || true
           git add $OWNED
           git diff --cached --quiet && exit 0
@@ -178,6 +180,7 @@ jobs:
             python3 scripts/nba_swap_board.py > /dev/null
             python3 scripts/nba_my_swaps.py > /dev/null
             python3 scripts/nba_tier_report.py --mirror ../br-adp-mirror > /dev/null || true
+            python3 scripts/nba_dashboard.py --mirror ../br-adp-mirror > /dev/null || true
             git checkout -- analysis/nba/report/decision_register.csv 2>/dev/null || true
             git add $OWNED
             git diff --cached --quiet || git commit -q -m "NBA daily: regenerated on top of a chat's commit"

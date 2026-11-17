@@ -186,12 +186,20 @@ def pod_size(rows):
     return 4 if max((r["adp_close"] or r["adp_am"] or 0) for r in rows) <= 28 else 6
 
 
+def t1_4(r, bar):
+    """In T1-T4 at that window's lock (from 2026-11-17 T5 and below the cut are graded on drafted picks and swaps, not
+    on order: they stay out of the board-against-the-orders grades and the biggest calls). Nights before the tiers
+    were recorded keep everyone."""
+    t = r.get("%s_tier" % bar["half"])
+    return t is None or t == "" or num(t) is not None and num(t) <= 4
+
+
 @cached
 def calls(rows, bar, a, b, cut="decision"):
     """Pairs a and b order differently: (a right, b right). cut: "decision" (ADP within DECISION), "all", or
     "breaker" (decision pairs where exactly one broke; right = took the breaker)."""
     ka, kb = a.key(rows), b.key(rows)
-    p = [r for r in pool(rows, bar) if ka(r) is not None and kb(r) is not None]
+    p = [r for r in pool(rows, bar) if ka(r) is not None and kb(r) is not None and t1_4(r, bar)]
     brk = breakers(rows, bar) if cut == "breaker" else None
     win = lose = 0
     for i in range(len(p)):
@@ -660,7 +668,7 @@ def main():
     for s in last:
         rows = s["rows"]
         rank_of = lambda col, rs: dict(zip(map(id, rs), ranks([r[col] for r in rs])))      # ties (the ADP 36 pile) share a rank
-        am_p = [r for r in pool(rows, AM) if r["am_rank"] is not None and r["adp_am"] is not None]
+        am_p = [r for r in pool(rows, AM) if r["am_rank"] is not None and r["adp_am"] is not None and t1_4(r, AM)]
         ra, rm = rank_of("adp_am", am_p), rank_of("am_rank", am_p)
         out += player_table(am_p, "Your biggest AM calls against ADP", [
             ("Player", lambda r: r["name"]), ("ADP AM", lambda r: fmt(r["adp_am"], "%.1f")), ("ADP rank", lambda r: "%.0f" % ra[id(r)]),
@@ -668,7 +676,7 @@ def main():
             ("ADP at lock", lambda r: fmt(r["adp_close"], "%.1f")), ("Actual", lambda r: fmt(r["actual"], "%.1f")),
             ("Min (usual)", lambda r: "%s (%s)" % (fmt(r["min"], "%.0f"), fmt(r["usual_min"], "%.0f")))],
             lambda r: -abs(ra[id(r)] - rm[id(r)]), 8)
-        pm_p = [r for r in pool(rows, PM) if r["pm_rank"] is not None and r["etr_last"] is not None]
+        pm_p = [r for r in pool(rows, PM) if r["pm_rank"] is not None and r["etr_last"] is not None and t1_4(r, PM)]
         re_, rp = {id(r): i + 1 for i, r in enumerate(sorted(pm_p, key=lambda r: -r["etr_last"]))}, rank_of("pm_rank", pm_p)
         out += player_table(pm_p, "Your biggest PM calls against ETR", [
             ("Player", lambda r: r["name"]), ("ETR rank", lambda r: "%d" % re_[id(r)]), ("Your rank", lambda r: "%d" % rp[id(r)]),

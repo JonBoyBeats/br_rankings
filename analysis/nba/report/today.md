@@ -2,7 +2,7 @@
 
 *Last night: Monday 11/16's main slate.*
 
-*The standing rules and the words this report uses: [the rulebook](rulebook.md).*
+*The standing rules and the words this report uses: [the rulebook](rulebook.md). Results over time: the Results page (nba_results.html).*
 
 ## Front page
 
@@ -63,13 +63,6 @@ Verdict: you were on the right side of 3 of these 5 (over the field where his ho
 - Afternoon: you went against the button, **Lendeborg** ahead of **Adebayo**; it helped by 34 points.
 - Afternoon: you went against the button, **Murray** ahead of **Adebayo**; it helped by 29 points.
 
-Season, your moves in T2: keep doing what you're doing (218 moves on 24 nights, 57% right, +2.8 points a move; ahead in 95% of night-resamples).
-
-**The turn lines.**
-
-- **1/2 turn** (the turn's own average: 0.89x): faller: you 62% (season 32%), field 36%; on the season 1.10x the field's top-1% rate; reach: you 3% (season 16%), field 25%; on the season 0.42x the field's top-1% rate; trust ADP: you 35% (season 52%), field 39%; on the season 0.95x the field's top-1% rate.
-- **2/3 turn** (the turn's own average: 1.34x): faller: you 20% (season 19%), field 14%; on the season 1.99x the field's top-1% rate; reach toward projection: you 0% (season 12%), field 9%; on the season 3.31x the field's top-1% rate; reach, not toward projection: you 13% (season 10%), field 17%; on the season 0.95x the field's top-1% rate; trust ADP: you 67% (season 60%), field 60%; on the season 1.10x the field's top-1% rate.
-
 **Player recap**, in the button's order.
 
 - **Sengun**: Under: 30 minutes in a blowout, 2 assists.
@@ -83,13 +76,11 @@ Season, your moves in T2: keep doing what you're doing (218 moves on 24 nights, 
 
 **T3, the middle.** VALUE first, then the rest, PRICEY last; morning by ADP, afternoon by ETR (ADP, then Boom, on exact ties). T3 PRICEY stays ahead of T4 VALUE.
 
-**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 4 times out of 8 in the morning; ETR's pick scored more 5 times out of 10 in the afternoon. On the season, trusting ETR over ADP here in the afternoon gains about 4 points per close call (proven to help so far): keep doing it, the rule already does.
+**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 4 times out of 8 in the morning; ETR's pick scored more 5 times out of 10 in the afternoon.
 
 **Your moves.**
 
 - Afternoon: you went against the button, **Boozer** ahead of **Brown**; it hurt by 12 points.
-
-Season, your moves in T3: press the button (96 moves on 23 nights, 41% right, -4.8 points a move; ahead in 0% of night-resamples).
 
 **Player recap**, in the button's order.
 
@@ -103,13 +94,11 @@ Season, your moves in T3: press the button (96 moves on 23 nights, 41% right, -4
 
 **T4, to round 6.** The same sort as T3; it ends at the start of round 6 (earlier at a 2-pick ADP gap), never holds a round-6 player, sends its PRICEY players to T5 and borrows from the bottom of T3 when short of 4.
 
-**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 7 times out of 13 in the morning; ETR's pick scored more 3 times out of 5 in the afternoon. On the season, trusting our projection over ADP here in the morning gains about 2 points per close call (an early sign it helps): keep doing it, the rule already does.
+**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 7 times out of 13 in the morning; ETR's pick scored more 3 times out of 5 in the afternoon.
 
 **Your moves.**
 
 - Morning: you went against the button, **Podziemski** ahead of **Randle**; it hurt by 18 points.
-
-Season, your moves in T4: too early (66 moves on 22 nights, 48% right, -0.1 points a move; ahead in 45% of night-resamples).
 
 **Player recap**, in the button's order.
 
@@ -124,11 +113,6 @@ Season, your moves in T4: too early (66 moves on 22 nights, 48% right, -0.1 poin
 ## T5
 
 **T5, round 6.** Players drafted in under 60% of pods (50-60% at the bottom), projected for 20+ minutes, by projection, to your cut; everyone else below it by projection. Graded on contest results.
-
-**Your T5 menu, on contest results.**
-
-- **Morning** (line 60%): your ADP-T5 picks under the line 26% of 19 last night (field 32%), 33% of 624 on the season (field 33%). Teams holding one under it, season: top 10% at 1.05x (0.98-1.14; 44469 teams) the field's rate, yours 1.60x (1.06-2.14; 194 teams); at or over it: 0.95x (0.92-0.98; 77995 teams), yours 1.29x (1.08-1.48; 335 teams).
-- **Afternoon** (line 60%): your ADP-T5 picks under the line 84% of 74 last night (field 42%), 52% of 1621 on the season (field 42%). Teams holding one under it, season: top 10% at 1.10x (1.02-1.18; 119591 teams) the field's rate, yours 1.66x (1.35-2.00; 785 teams); at or over it: 0.95x (0.89-1.00; 153497 teams), yours 1.00x (0.78-1.24; 646 teams).
 
 **Player recap**, in the button's order.
 
@@ -153,12 +137,6 @@ Season, your moves in T4: too early (66 moves on 22 nights, 48% right, -0.1 poin
 
 **Your Q moves.** Afternoon: Boozer ahead of Embiid, hurt by 5; Afternoon: Brown ahead of Embiid, helped by 7.
 
-Swap button: 12 of your swaps on 2 nights with a swap lock; the swap list and the PM list picked different players on 10, and on those the swap list's player scored +27.9 a swap (+278.9 in all), the teams finished 3794 places higher, +0 top-10% finishes and +$10 against the PM list. (Underdog's swap matched the swap list on 12 of 12: under that, the list wasn't pushed in time or a game had started.)
-
-Chance to play, morning Questionable players: 81 this season, 42 played (52%). The model sorts the ones who play from the ones who sit at 0.47 (0.5 is a coin flip, 1 is perfect), and doesn't beat a flat 52% guess (Brier 0.265 against 0.250; lower is better). Last night: Jalen Smith at 63%, played; Tre Johnson at 49%, played.
-
-**Q picks on contest results, season** (top 10% against the field's rate): no Q pick 0.98x (0.96-1.00; 354022 teams); any Q pick 1.11x (0.98-1.24; 58910 teams); played 1.28x (1.07-1.48; 37587 teams); sat 0.81x (0.74-0.88; 23883 teams); T1 0.86x (1969 teams); T2 1.28x (0.91-1.60; 17464 teams); T3 1.06x (0.85-1.34; 18666 teams); T4 0.90x (0.68-1.24; 9093 teams); T5 1.07x (0.94-1.25; 10907 teams).
-
 **Today's Questionable players.** Jonathan Kuminga (T5 on the ladders, 67% to play): if he sits, Terrence Shannon Jr., Joan Beringer, Bones Hyland.
 
 ## Back page
@@ -175,73 +153,6 @@ Chance to play, morning Questionable players: 81 this season, 42 played (52%). T
 
 Morning T4's tier verdict came in at 14 nights: ADP beats the old rule (projection with ADP within 3). The button has sorted morning T4 by ADP within its VALUE/rest/PRICEY groups since 11-13, so this backs what's already in place.
 
-## Season
+---
 
-*Reference tables; points per pair as above. Labels here are the grading's own (RULE: proven so far, + helps and - hurts; LEAN: an early sign; no lean: no clear signal; not enough yet: too early to say).*
-
-**Overnight window** (drafts before 4:30am; kept out of the AM grades): 17 nights, 154 of your teams; your board against ADP then: +1.4 (+0.6 to +2.3), 1565 pairs, LEAN + (RULE numbers, one player flips it)
-
-**T1**
-
-| Window | vs projection | vs ADP | VALUE vs partners |
-|---|---|---|---|
-| AM (12 nights) | -0.2 (5) | +31.5 (4) | - |
-| PM (21 nights) | -19.3 (5) | +6.1 (13) | - |
-
-| Your takes | Source | Points per take |
-|---|---|---|
-| AM | NEWS | -2.8, not enough yet (16) |
-| PM | Bagel+ETR | -6.9, not enough yet (3) |
-| PM | NEWS | -38.0, not enough yet (2) |
-
-**T2**
-
-| Window | vs projection | vs ADP | VALUE vs partners |
-|---|---|---|---|
-| AM (13 nights) | +0.0 (85) | +1.6 (77) | -5.5 (11) |
-| PM (21 nights) | -0.6 (102) | +1.9 (140) | +3.8 (13) |
-
-| Your takes | Source | Points per take |
-|---|---|---|
-| AM | NEWS | +1.7 (-2.0 to +5.4), 78 pairs, no lean |
-| PM | Bagel | -4.0, not enough yet (11) |
-| PM | Bagel+ETR | +7.6, not enough yet (31) |
-| PM | ETR | +7.4, not enough yet (9) |
-| PM | NEWS | +1.3, not enough yet (32) |
-| PM | OTHER | -5.4, not enough yet (15) |
-
-**T3/T4**
-
-| Window | vs projection | vs ADP | VALUE vs partners |
-|---|---|---|---|
-| AM (13 nights) | -1.6 (83) | +0.9 (105) | +3.9 (155) |
-| PM (21 nights) | +0.2 (114) | +2.8 (274) | +4.6 (299) |
-
-| Your takes | Source | Points per take |
-|---|---|---|
-| AM | NEWS | -4.1 (-6.9 to -1.1), 46 pairs, LEAN - |
-| PM | Bagel | +4.5, not enough yet (18) |
-| PM | Bagel+ETR | -4.9, not enough yet (34) |
-| PM | ETR | -9.6, not enough yet (8) |
-| PM | NEWS | -1.8, not enough yet (28) |
-| PM | OTHER | -2.5, not enough yet (13) |
-
-**T5**
-
-| Window | vs projection | vs ADP | VALUE vs partners |
-|---|---|---|---|
-| AM (13 nights) | +1.3 (42) | -2.7 (82) | +4.1 (99) |
-| PM (21 nights) | +1.6 (105) | -1.7 (178) | +0.5 (83) |
-
-| Your takes | Source | Points per take |
-|---|---|---|
-| AM | NEWS | +1.2 (-5.7 to +6.9), 43 pairs, no lean |
-| PM | Bagel | -1.2, not enough yet (6) |
-| PM | Bagel+ETR | +5.8, not enough yet (39) |
-| PM | ETR | -0.4, not enough yet (15) |
-| PM | NEWS | -2.3, not enough yet (26) |
-| PM | OTHER | +3.6, not enough yet (23) |
-
-Points per pair or take (count); positive: your board won, VALUE beat its partners, or your take beat the button. Takes are credited to ETR or Bagel when either player had a note from them before the lock, else NEWS (his projection or his team's status changed since the last lock) or OTHER. Verdicts and labels: tier_grade.md.
-
-Full tables: tier_grade.md, q_lane.md, swap_board.md, my_swaps.md, money_points.md, rules_side_by_side.md, rule_dates.json.
+*Grading over time (results, finishes, ETR vs ADP, your moves by tier, T5 and swaps) is on the Results page (nba_results.html, from analysis/nba/dashboard.json); the Friday report proposes changes. Full tables: tier_grade.md, tier_season_tests.md, push_rerun.md, swap_board.md, my_swaps.md, rule_dates.json.*

@@ -1,0 +1,181 @@
+"""The NBA results dashboard's data (asked 2026-11-17): analysis/nba/dashboard.json, read by nba_results.html.
+
+It replaces the morning report's grading over time. One night per entry, so the page reads last night, the last 7 nights
+or the season; the night is the unit. Definitions are fixed here (DEFS) and change only through the Friday report.
+
+The common measure is the TOP-1% MULTIPLE: the share of top-1% lineups holding X over the share of all lineups holding X
+(the top-10% one beside it; points as the backup). Player and group multiples come from the contest side
+(money_tiers.json "player_multiples" and "groups_by_night", drafted picks only, swaps apart); until they're there, those
+charts carry null and the page says it's waiting. Everything else is read from files already on disk: the contest
+rosters and teams (nba_money.load), the button's tiers at each lock (tier_history.csv), your moves against the button
+(takes_history.csv) and your swaps against your PM list (nba_swap_grade).
+
+Pairs are a tally: a win or loss at PUSH+ points apart, a push under (nba_tier_season_tests.PUSH).
+
+  python3 scripts/nba_dashboard.py --mirror ../br-adp-mirror
+"""
+import argparse, collections, csv, json, os, sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import nba_money as M                 # noqa: E402  contests, teams, windows, drafted picks
+import nba_swap_grade as SG           # noqa: E402  your swaps against your PM list
+from nba_tier_season_tests import PUSH  # noqa: E402
+
+HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+REP = os.path.join(HERE, "analysis", "nba", "report")
+OUT = os.path.join(HERE, "analysis", "nba", "dashboard.json")
+num = M.num
+
+DEFS = {
+    "measure": "Top-1% multiple: share of top-1% lineups holding X / share of all lineups holding X (1.00 is the field). "
+               "Top-10% beside it; points as the backup. Drafted picks only, swaps apart. Season reads: the night is the unit.",
+    "header": "Your entries, cash rate, top-10% and top-1% finishes against expected (10% and 1% of your entries), and ROI "
+              "((won - fees) / fees). Field cash rate: share of all entries that cashed.",
+    "finish": "Each lineup's finish as a percentile of its contest (place / entries). Season: share of your lineups in each 1% "
+              "band (the field is 1% in every band). Last night: share of your lineups in the top X%, against the diagonal.",
+    "t1": "Afternoon T1 (the button's tier at the PM lock). Every pair ETR's order and ADP's order put differently: the top-1% "
+          "multiple of ETR's first minus ADP's first, averaged for the night. Marker: the side your PM board took. Tally on "
+          "points, pushes under 3.",
+    "t2": "Afternoon T2, the same ETR-vs-ADP pairs. Elite-break teams (contest side's t2-elite-break) against the rest. "
+          "Your 1/2 and 2/3 turn decisions: your share against the field's, each with its top-1% multiple.",
+    "t34": "Your moves against the button in the tier (takes_history.csv, Q-tagged pairs left out): for each move, the top-1% "
+           "multiple of the player you moved up minus the player you moved down, in that window; summed for the night, "
+           "with a running total. Tally on points, pushes under 3. VALUE / normal / PRICEY: your share of lineups holding "
+           "one against the field's, each group's top-1% multiple.",
+    "t5": "Drafted picks only. Your share of T5 picks under vs at/over the 60% drafted line against the field's, each group's "
+          "top-1% multiple. Second: your round-6 pick (each lineup's latest-ADP drafted pick, played) against the field's "
+          "average round-6 pick, in points. Swaps apart: your swap list's player against the one your PM list would have "
+          "taken, in points.",
+}
+
+
+def mult(pm, date, window, pid, k="top1"):
+    x = ((pm.get(date) or {}).get(window) or {}).get(pid)
+    return x[k][0] if x and x.get(k) and x[k][0] is not None else None
+
+
+def tally(diffs):
+    return [sum(d >= PUSH for d in diffs), sum(d <= -PUSH for d in diffs), sum(abs(d) < PUSH for d in diffs)]
+
+
+def etr_adp_pairs(n, tier, pm):
+    """Afternoon pairs in the button's tier that ETR and ADP order differently."""
+    rows = [r for r in n["tiers"]["pm"].values() if r.get("sample", "primary") == "primary" and r["tier"] == str(tier)
+            and num(r["proj"]) is not None and num(r["adp"]) is not None and r["played"] == "1" and num(r["actual"]) is not None]
+    out = []
+    for i in range(len(rows)):
+        for j in range(i + 1, len(rows)):
+            a, b = rows[i], rows[j]
+            pa, pb, aa, ab = num(a["proj"]), num(b["proj"]), num(a["adp"]), num(b["adp"])
+            if pa == pb or aa == ab or (pa > pb) == (aa < ab):
+                continue
+            e, d = (a, b) if pa > pb else (b, a)                    # ETR's first, ADP's first
+            me = None
+            if num(e.get("your_rank")) is not None and num(d.get("your_rank")) is not None:
+                me = "etr" if num(e["your_rank"]) < num(d["your_rank"]) else "adp"
+            me_m, ad_m = mult(pm, n["date"], "pm", e["player_id"]), mult(pm, n["date"], "pm", d["player_id"])
+            out.append({"etr": e["name"], "adp": d["name"], "mine": me,
+                        "mult": round(me_m - ad_m, 3) if me_m is not None and ad_m is not None else None,
+                        "pts": round(num(e["actual"]) - num(d["actual"]), 1)})
+    return out
+
+
+def pair_block(pairs):
+    ms = [p["mult"] for p in pairs if p["mult"] is not None]
+    return {"pairs": pairs, "value": round(sum(ms) / len(ms), 3) if ms and len(ms) == len(pairs) else None,
+            "tally": tally([p["pts"] for p in pairs]), "mine_etr": sum(p["mine"] == "etr" for p in pairs),
+            "mine_adp": sum(p["mine"] == "adp" for p in pairs)}
+
+
+def moves(date, tier, pm, takes, tags):
+    out = []
+    for r in takes:
+        if r["date"] != date or r["tier"] != str(tier):
+            continue
+        if tags.get((date, r["window"], r["you_first_id"])) or tags.get((date, r["window"], r["button_first_id"])):
+            continue
+        a, b = mult(pm, date, r["window"], r["you_first_id"]), mult(pm, date, r["window"], r["button_first_id"])
+        out.append({"window": r["window"], "up": r["you_first"], "down": r["button_first"], "pts": float(r["gain"]),
+                    "mult": round(a - b, 3) if a is not None and b is not None else None})
+    ms = [x["mult"] for x in out if x["mult"] is not None]
+    return {"moves": out, "value": round(sum(ms), 3) if out and len(ms) == len(out) else (0.0 if not out else None),
+            "tally": tally([x["pts"] for x in out])}
+
+
+def round6(n):
+    """Your lineups' round-6 pick (latest-ADP drafted pick, played) against the field's, in points."""
+    pts = {p: num(r["actual"]) for p, r in n["rec"].items() if num(r.get("min")) and num(r["actual"]) is not None}
+    mine, field = [], []
+    for ts in n["teams"].values():
+        for t in ts:
+            drafted = [(a, p) for p, a in zip(t["picks"], t["adps"]) if a is not None]
+            if len(drafted) < 6:
+                continue
+            p = max(drafted)[1]
+            if p in pts:
+                field.append(pts[p])
+                if t["mine"]:
+                    mine.append(pts[p])
+    avg = lambda v: round(sum(v) / len(v), 2) if v else None
+    return {"mine": avg(mine), "field": avg(field), "mine_n": len(mine)}
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--mirror", default=os.path.join(HERE, "..", "br-adp-mirror"))
+    a = ap.parse_args()
+    M.MIRROR_PATH = a.mirror
+    N = M.load(a.mirror)
+    mt = json.load(open(os.path.join(REP, "money_tiers.json"))) if os.path.exists(os.path.join(REP, "money_tiers.json")) else {}
+    pm = mt.get("player_multiples") or {}
+    gb = mt.get("groups_by_night") or {}
+    cards = mt.get("card_decisions_by_night") or {}
+    takes = list(csv.DictReader(open(os.path.join(REP, "takes_history.csv"))))
+    tags = {}
+    for r in csv.DictReader(open(os.path.join(REP, "tier_history.csv"))):
+        tags[(r["date"], r["window"], r["player_id"])] = (r["tag"] or "")[:1].lower() == "q"
+    swaps = collections.defaultdict(list)
+    try:
+        for s in SG.grade():
+            swaps[s["date"]].append({k: s[k] for k in ("underdog", "swap_list", "pm_list", "pts_swap", "pts_pm", "differs", "matched")})
+    except Exception as e:
+        print("swaps not graded: %s" % e, file=sys.stderr)
+    nights = []
+    for n in N:
+        if not n["contests"]:
+            continue
+        mine = [t for ts in n["teams"].values() for t in ts if t["mine"]]
+        allt = [t for ts in n["teams"].values() for t in ts]
+        fees, won = sum(t["contest"]["fee"] for t in mine), sum(t["payout"] for t in mine)
+        night = {"date": n["date"], "pod": n["pod"],
+                 "header": {"entries": len(mine), "am": sum(t["window"] == "am" for t in mine), "pm": sum(t["window"] == "pm" for t in mine),
+                            "fees": round(fees, 2), "won": round(won, 2), "cashed": sum(t["payout"] > 0 for t in mine),
+                            "top10": sum(t["top"][10] for t in mine), "top1": sum(t["top"][1] for t in mine),
+                            "field_cash_rate": round(sum(t["payout"] > 0 for t in allt) / len(allt), 4) if allt else None},
+                 "finish": sorted(round(t["fin"], 4) for t in mine)}
+        night["t1"] = pair_block(etr_adp_pairs(n, 1, pm))
+        night["t2"] = pair_block(etr_adp_pairs(n, 2, pm))
+        g = gb.get(n["date"]) or {}
+        night["t2"]["elite"] = {w: {k: (g.get(w) or {}).get(k) for k in ("elite-break teams", "other teams")} for w in ("am", "pm")} if g else None
+        night["t2"]["turns"] = cards.get(n["date"]) or ([{"decision": c["decision"], **c["last_night"], "vs_field_top1": c.get("vs_field_top1"),
+                                                         "vs_field_top10": c.get("vs_field_top10")} for c in (mt.get("card_decisions") or [])
+                                                        if "turn" in c["decision"]] if mt.get("night") == n["date"] else None)
+        for t in (3, 4):
+            night["t%d" % t] = moves(n["date"], t, pm, takes, tags)
+            night["t%d" % t]["flags"] = {w: {f: (g.get(w) or {}).get("T%d %s" % (t, f)) for f in ("VALUE", "normal", "PRICEY")}
+                                        for w in ("am", "pm")} if g else None
+        night["t5"] = {"groups": {w: {k: (g.get(w) or {}).get("T5 " + k) for k in ("under", "over")} for w in ("am", "pm")} if g else None,
+                       "round6": round6(n), "swaps": swaps.get(n["date"], [])}
+        nights.append(night)
+    out = {"generated": M.dt.datetime.now(M.PT).isoformat(timespec="minutes"), "defs": DEFS, "push": PUSH,
+           "contest_side": {"player_multiples": bool(pm), "groups_by_night": bool(gb), "card_decisions_by_night": bool(cards)},
+           # the contest side's last-night and season reads as they stand (turns, T5 under/over), until the by-night keys land
+           "latest": {"night": mt.get("night"), "card_decisions": mt.get("card_decisions"), "t5_drafted": mt.get("t5_drafted")},
+           "nights": nights}
+    json.dump(out, open(OUT, "w"), separators=(",", ":"))
+    print("dashboard.json: %d nights, through %s; contest side: %s" % (len(nights), nights[-1]["date"] if nights else "-",
+                                                                      ", ".join(k for k, v in out["contest_side"].items() if v) or "waiting"))
+
+
+if __name__ == "__main__":
+    main()
