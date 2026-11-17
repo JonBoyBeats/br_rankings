@@ -25,6 +25,12 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             GATE_NIGHTS nights and GATE_N player-nights, and the better of the two on GATE_SHARE of the nights). Where
             it has, the gate opens with w, the least-squares weight on ours in w x ours + (1 - w) x DK average; the DK
             page and the shadow portfolios then use that blend there (dk_sim.js gatedProj).
+  cutcheck  analysis/cbb/dk/cut_eval.csv, nightly: each saved bank (analysis/cbb/dk/builds/dk_bank_*.json, the DK
+            page's Save build) scored on the night's real DraftKings points, by rule tag: the lineups the cut removed,
+            the ones it kept, and the ones entered: how many, their mean and best score, and against each entered
+            contest's real lines once its standings are graded (eval.csv: winning score, top 10%, last paid place)
+            the share that would have reached the top 10%, cashed, and won. Did the cut throw away winners? Rebuilt
+            whole each run, so standings that come in later fill in.
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
             and the paired gap, on the top-10% rate first, then cash; dollars only as the long-run check), the
             owner's entries against the field's 10%, ownership by band, the sim's cut lines, the correlation check
@@ -36,6 +42,7 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
   python3 scripts/dk_eval.py gate
   python3 scripts/dk_eval.py tiles --mirror ../br-adp-mirror
   python3 scripts/dk_eval.py weights      (monthly, with the readout)
+  python3 scripts/dk_eval.py cutcheck
   python3 scripts/dk_eval.py readout
 """
 import argparse
@@ -79,6 +86,9 @@ OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own
 BANDS = [(6000, 99999), (4000, 5999), (0, 3999)]
 GATE_NIGHTS, GATE_N, GATE_SHARE = 5, 100, 0.6
 OWN_BANDS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
+CUT_EVAL = os.path.join(DK, "cut_eval.csv")
+CUT_COLS = ["date", "draft_group", "tag", "group", "lineups", "mean", "best", "contest_id", "contest", "top10", "cash", "wins",
+            "protect", "phase"]
 DECISION_SLATES = 30
 FREEZE_END = "2026-11-23"   # week 1, open for tweaks: slates through this date are warm-up, logged but not counted
 
@@ -635,6 +645,68 @@ def readout(a):
         print("\n4. Projection gate: no gate file yet")
 
 
+def cutcheck(a):
+    """The nightly cut check (see the docstring): one row per saved bank, rule tag ("all" for the whole bank), group
+    (cut / kept / entered) and, once standings are graded, entered contest."""
+    banks = {}
+    for f in sorted(glob.glob(os.path.join(BUILDS, "dk_bank_*.json"))):
+        b = json.load(open(f))
+        g = str(b.get("draft_group"))
+        if g not in banks or (b.get("saved_at") or "") >= (banks[g].get("saved_at") or ""):
+            banks[g] = b
+    ev = read(EVAL)
+    out = []
+    for g, b in sorted(banks.items(), key=lambda kv: kv[1].get("day") or ""):
+        rec = read(os.path.join(DK, "%s_%s.csv" % (b["day"], g)))
+        pts = {r["dk_id"]: num(r["actual_dk"]) for r in rec}
+        if not rec or not any(v is not None for v in pts.values()):
+            print("  cut check %s (%s): no real points recorded yet" % (g, b["day"]))
+            continue
+        pool = b["pool"]
+        score = [sum(pts.get(str(i)) or 0 for i in L) for L in pool]
+        entered = sorted({k for ks in (b.get("portfolios") or {}).values() for k in ks})
+        kept = set(b["final"]) if b.get("final") else set(range(len(pool)))
+        groups = {"cut": [k for k in range(len(pool)) if k not in kept], "kept": sorted(kept), "entered": entered}
+        lines = {r["contest_id"]: r for r in ev if str(r["draft_group"]) == g and r["contest_id"] in (b.get("portfolios") or {})}
+        tags = ["all"] + sorted({t for ts in b["tags"] for t in ts})
+        protect = (b.get("cut") or {}).get("protect") or ""
+        for tag in tags:
+            member = (lambda k: True) if tag == "all" else (lambda k, t=tag: t in b["tags"][k])
+            for grp, ks in groups.items():
+                ks = [k for k in ks if member(k)]
+                if not ks:
+                    continue
+                v = [score[k] for k in ks]
+                row = {"date": b["day"], "draft_group": g, "tag": tag, "group": grp, "lineups": len(ks), "mean": round(S.mean(v), 2),
+                       "best": round(max(v), 2), "protect": protect, "phase": phase(b["day"])}
+                if not lines:
+                    out.append(dict(row, contest_id="", contest="", top10="", cash="", wins=""))
+                for cid, L in sorted(lines.items()):
+                    t10, cash, win = num(L["field_top10"]), num(L["field_cash"]), num(L["field_win"])
+                    out.append(dict(row, contest_id=cid, contest=L["contest"],
+                                    top10=round(sum(x >= t10 for x in v) / len(v), 4) if t10 is not None else "",
+                                    cash=round(sum(x >= cash for x in v) / len(v), 4) if cash is not None else "",
+                                    wins=sum(x >= win for x in v) if win is not None else ""))
+        # the night in brief: each tag's kept against cut, and whether the cut held anything better than what was entered
+        best_in = max((score[k] for k in entered), default=None)
+        print("  cut check %s (%s): %d banked, %d kept, %d entered%s; best entered %s, best kept %.1f, best cut %.1f%s" % (
+            g, b["day"], len(pool), len(kept), len(entered), ", protect %s%%" % protect if protect else "",
+            "%.1f" % best_in if best_in is not None else "-", max(score[k] for k in kept),
+            max((score[k] for k in groups["cut"]), default=0), "" if lines else " (no graded standings yet: points only)"))
+        for tag in tags[1:]:
+            ks = [k for k in range(len(pool)) if tag in b["tags"][k]]
+            kk = [score[k] for k in ks if k in kept]
+            cc = [score[k] for k in ks if k not in kept]
+            print("    %-70s kept %4d mean %5.1f best %5.1f | cut %4d mean %5.1f best %5.1f" % (
+                tag[:70], len(kk), S.mean(kk) if kk else 0, max(kk, default=0), len(cc), S.mean(cc) if cc else 0, max(cc, default=0)))
+    if out:
+        with open(CUT_EVAL, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=CUT_COLS)
+            w.writeheader()
+            w.writerows(out)
+        print("  cut_eval.csv: %d rows" % len(out))
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -644,11 +716,12 @@ def main():
     sub.add_parser("weights")
     t = sub.add_parser("tiles")
     t.add_argument("--mirror", required=True)
+    sub.add_parser("cutcheck")
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck}[a.cmd](a)
 
 
 if __name__ == "__main__":

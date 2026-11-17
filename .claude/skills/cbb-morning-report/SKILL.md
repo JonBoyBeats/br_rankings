@@ -193,6 +193,13 @@ draw used); the monthly readout shows his results on nights each was used (direc
 **Nightly**, give one line only: which standings were graded, and the projection gate's state
 (`analysis/cbb/dk/gate.json`). No rule-set verdicts from one night.
 
+**The cut check, nightly** (`python3 scripts/dk_eval.py cutcheck`, run by the 2:17am job after the record;
+rerun it in the report once new standings are in, since it rebuilds `analysis/cbb/dk/cut_eval.csv` whole):
+for last night's saved bank, by rule tag, the lineups the cut removed, kept and entered, scored on the real
+points: count, mean, best, and against each entered contest's real lines the share reaching the top 10%,
+cashing and winning. Report it briefly: did the cut remove lineups that beat the best entered one, and which
+tags lost the most (mean and best of cut against kept). One night is anecdote; say so.
+
 **Monthly** (the first report of each month, and at 30 graded slates): first `python3 scripts/dk_eval.py
 weights` (refits Quality's weights on the earlier 2/3 of the logged slates, tests them on the later 1/3, and
 switches the tiles to them only if they beat equal weights there; commit `analysis/cbb/dk/team_weights.json`),
