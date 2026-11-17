@@ -352,28 +352,60 @@ function t1() { var s = card("T1: ETR's order vs ADP's", D.defs.t1); etrAdp(s, "
 function t2() {
   var s = card("T2: ETR vs ADP, the elite break, your turns", D.defs.t2);
   etrAdp(s, "t2", "T2, afternoon");
-  el("div", { class: "sub" }, s, "Elite-break teams vs the rest");
+  el("div", { class: "sub" }, s, "Elite-break teams vs the rest: your share of lineups vs the field's, with the top-1% multiple, " + rangeLabel());
   if (!D.contest_side.groups_by_night) wait(s, "per-night group multiples (elite-break teams)");
-  el("div", { class: "sub" }, s, "Your 1/2 and 2/3 turn decisions: your share vs the field's, with the top-1% multiple");
-  var cd = (D.latest.card_decisions || []).filter(function (c) { return /turn/.test(c.decision); });
-  if (!cd.length) { wait(s, "turn decisions"); return; }
-  var span = RANGE === "night" ? "last_night" : "season";
-  if (RANGE === "7") el("p", { class: "note" }, s, "Last 7 nights isn't split out yet: showing the season until the contest side's per-night turns land.");
+  else groupBars(s, [["Elite-break teams", "elite-break teams"], ["Other teams", "other teams"]].map(function (g) {
+    return aggGroup(inRange(), g[0], function (n, w) { return n.t2.elite && n.t2.elite[w] ? n.t2.elite[w][g[1]] : null; }); }), "Elite-break teams");
+  el("div", { class: "sub" }, s, "Your 1/2 and 2/3 turn decisions: your share vs the field's, with the top-1% multiple, " + rangeLabel());
+  var per = inRange().filter(function (n) { return Array.isArray(n.t2.turns) && n.t2.turns.length && n.t2.turns[0].mine && n.t2.turns[0].mine.of != null; });
+  var names = [];
+  per.forEach(function (n) { n.t2.turns.forEach(function (c) { if (/turn/.test(c.decision) && names.indexOf(c.decision) < 0) names.push(c.decision); }); });
+  if (!names.length) { wait(s, "per-night turn decisions"); return; }
+  groupBars(s, names.map(function (name) {
+    var mt = 0, mo = 0, ft = 0, fo = 0, w1 = 0, w10 = 0, wt = 0;
+    per.forEach(function (n) { n.t2.turns.forEach(function (c) {
+      if (c.decision !== name) return;
+      mt += c.mine.teams; mo += c.mine.of; ft += c.field.teams; fo += c.field.of;
+      if (c.vs_field_top1 != null) { w1 += c.vs_field_top1 * c.field.teams; w10 += (c.vs_field_top10 || 0) * c.field.teams; wt += c.field.teams; }
+    }); });
+    return { label: name, mine: mo ? mt / mo : null, field: fo ? ft / fo : null, top1: wt ? w1 / wt : null, top10: wt ? w10 / wt : null,
+             tip: ["you " + mt + " of " + mo + " turn lineups, field " + ft + " of " + fo, "multiples weighted by the field's lineups doing it, night by night"] };
+  }), "Turn decisions");
+}
+
+/** One group over the range: share of lineups (yours over your lineups in that window, the field's over all), top-1% and
+    top-10% multiples as total finishes over total expected, both windows together. */
+function aggGroup(ns, label, get) {
+  var ft = 0, fb = 0, mt = 0, mb = 0, f1 = 0, e1 = 0, f10 = 0, e10 = 0, any = false;
+  ns.forEach(function (n) { ["am", "pm"].forEach(function (w) {
+    var b = get(n, w); if (!b || b.share == null) return;
+    any = true;
+    ft += b.teams; fb += b.share ? b.teams / b.share : 0;
+    mt += b.mine ? b.mine.teams : 0; mb += n.header[w] || 0;
+    if (b.top1) { f1 += b.top1[1]; e1 += b.top1[2]; }
+    if (b.top10) { f10 += b.top10[1]; e10 += b.top10[2]; }
+  }); });
+  return { label: label, mine: any && mb ? mt / mb : null, field: any && fb ? ft / fb : null, top1: e1 ? f1 / e1 : null, top10: e10 ? f10 / e10 : null,
+           tip: ["you " + mt + " lineups of " + mb + ", the field " + ft, "top 1%: " + f1 + " finishes against " + fmt(e1, 1) + " expected; top 10%: " + f10 + " against " + fmt(e10, 1)] };
+}
+
+/** Paired horizontal bars, you over the field, with the group's top-1% multiple at the right. */
+function groupBars(s, rows, aria) {
   legend(s, [{ name: "You", color: "var(--me)" }, { name: "Field", color: "var(--field)" }]);
-  var W = cw(s), rowH = 30, L = Math.min(300, Math.round(W * 0.42)), R = W < 600 ? 74 : 120, H = cd.length * rowH + 10;
-  var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Turn decisions" }, s);
-  var mx = Math.max.apply(null, cd.map(function (c) { return Math.max(c[span].mine.share || 0, c[span].field.share || 0); }).concat([0.1]));
+  var W = cw(s), rowH = 30, L = Math.min(300, Math.round(W * 0.42)), R = W < 600 ? 74 : 120, H = rows.length * rowH + 10;
+  var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": aria }, s);
+  var mx = Math.max.apply(null, rows.map(function (r) { return Math.max(r.mine || 0, r.field || 0); }).concat([0.1]));
   var xs = function (v) { return L + v / mx * (W - L - R); };
-  cd.forEach(function (c, i) {
-    var y0 = 6 + i * rowH, m = c[span].mine.share, f = c[span].field.share;
-    sv("text", { x: L - 8, y: y0 + 14, "text-anchor": "end", style: "fill: var(--ink-2); font-family: var(--sans); font-size: 12px" }, svg, c.decision);
-    sv("rect", { x: L, y: y0 + 2, width: Math.max(1, xs(m || 0) - L), height: 10, rx: 3, fill: "var(--me)", class: "bar" }, svg);
-    sv("rect", { x: L, y: y0 + 14, width: Math.max(1, xs(f || 0) - L), height: 10, rx: 3, fill: "var(--field)", class: "bar" }, svg);
-    sv("text", { x: W - R + 8, y: y0 + 16 }, svg, fmt(c.vs_field_top1 != null ? c.vs_field_top1 : c[span].vs_field_top1, 2) + "x" + (W < 600 ? "" : " top 1%"));
+  rows.forEach(function (r, i) {
+    var y0 = 6 + i * rowH;
+    sv("text", { x: L - 8, y: y0 + 14, "text-anchor": "end", style: "fill: var(--ink-2); font-family: var(--sans); font-size: 12px" }, svg, r.label);
+    sv("rect", { x: L, y: y0 + 2, width: Math.max(1, xs(r.mine || 0) - L), height: 10, rx: 3, fill: "var(--me)", class: "bar" }, svg);
+    sv("rect", { x: L, y: y0 + 14, width: Math.max(1, xs(r.field || 0) - L), height: 10, rx: 3, fill: "var(--field)", class: "bar" }, svg);
+    sv("text", { x: W - R + 8, y: y0 + 16 }, svg, fmt(r.top1, 2) + "x" + (W < 600 ? "" : " top 1%"));
     var hit = sv("rect", { x: 0, y: y0, width: W, height: rowH, class: "hit" }, svg);
-    hover(hit, function () { return [c.decision, "you " + pct(m) + " (" + c[span].mine.teams + " of " + c[span].mine.of + "), field " + pct(f),
-      "top-1% multiple " + fmt(c[span].vs_field_top1 != null ? c[span].vs_field_top1 : c.vs_field_top1) + ", top-10% " + fmt(c[span].vs_field_top10 != null ? c[span].vs_field_top10 : c.vs_field_top10)]; });
+    hover(hit, function () { return [fmt(r.top1) + "x top 1% · " + fmt(r.top10) + "x top 10%", r.label + ": you " + pct(r.mine, 1) + ", field " + pct(r.field, 1)].concat(r.tip || []); });
   });
+  table(s, ["Group", "You", "Field", "Top-1% multiple", "Top-10% multiple"], rows.map(function (r) { return [r.label, pct(r.mine, 1), pct(r.field, 1), fmt(r.top1), fmt(r.top10)]; }));
 }
 
 // ---- 4. T3 and T4: your moves vs the button
@@ -394,29 +426,22 @@ function moves(t) {
   if (RANGE !== "night") runningTotal(s, items, hasMult() ? 2 : 0, hasMult() ? "" : " points");
   el("p", { class: "note" }, s, "Tally: " + tallyStr(sumTally(tl)) + " (won-lost-push; a push is under 3 points). Running total: " + sgn(tot, hasMult() ? 2 : 0) + (hasMult() ? "" : " points") + ".");
   table(s, ["Night", "Window", "Moved up", "Moved down", "Points", "Multiple"], all);
-  el("div", { class: "sub" }, s, "VALUE / normal / PRICEY: your share vs the field's, each group's top-1% multiple");
+  el("div", { class: "sub" }, s, "VALUE / normal / PRICEY: your share of lineups vs the field's, each group's top-1% multiple, " + rangeLabel());
   if (!D.contest_side.groups_by_night) wait(s, "per-night group multiples (VALUE, normal, PRICEY)");
+  else groupBars(s, ["VALUE", "normal", "PRICEY"].map(function (f) {
+    return aggGroup(inRange(), "T" + t + " " + f, function (n, w) { var x = n["t" + t].flags; return x && x[w] ? x[w][f] : null; }); }), "T" + t + " flags");
 }
 
 // ---- 5. T5
 function t5() {
   var s = card("T5: drafted picks, round 6, swaps", D.defs.t5), ns = inRange();
-  el("div", { class: "sub" }, s, "Under vs at/over the 60% drafted line: your share vs the field's, holders' multiples");
-  var td = D.latest.t5_drafted;
-  if (!td) wait(s, "T5 drafted-line read");
+  el("div", { class: "sub" }, s, "Drafted T5 picks: under 60%, at/over 60%, and T4 PRICEY dropped into T5: your share of lineups vs the field's, top-1% multiple, " + rangeLabel());
+  var haveDrop = D.contest_side.groups_by_night && inRange().some(function (n) { return n.t5.groups && ["am", "pm"].some(function (w) { return n.t5.groups[w] && n.t5.groups[w].dropped; }); });
+  if (!D.contest_side.groups_by_night) wait(s, "per-night T5 groups (under, at/over 60%, T4 PRICEY dropped into T5)");
   else {
-    var span = RANGE === "night" ? "last_night" : "season";
-    if (RANGE === "7") el("p", { class: "note" }, s, "Last 7 nights isn't split out yet: showing the season until the contest side's per-night groups land.");
-    ["am", "pm"].forEach(function (w) {
-      var x = td[w]; if (!x) return;
-      var su = x.share_under[span], ho = x.holders[span];
-      var tiles = el("div", { class: "tiles" }, s);
-      [["Your picks under " + x.line + "% (" + (w === "am" ? "morning" : "afternoon") + ")", pct(su.mine.share), "field " + pct(su.field.share) + " · " + (su.mine.picks || 0) + " picks"],
-       ["Holders under the line, top 1%", fmt(ho.under.field.top1[0]) + "x", "yours " + fmt(ho.under.mine.top1[0]) + "x (" + ho.under.mine.teams + " teams)"],
-       ["Holders at/over the line, top 1%", fmt(ho.over.field.top1[0]) + "x", "yours " + fmt(ho.over.mine.top1[0]) + "x (" + ho.over.mine.teams + " teams)"]].forEach(function (t) {
-        var d = el("div", { class: "tile" }, tiles); el("div", { class: "label" }, d, t[0]); el("div", { class: "value" }, d, t[1]); el("div", { class: "vs" }, d, t[2]);
-      });
-    });
+    groupBars(s, [["Under 60% drafted", "under"], ["At/over 60% drafted", "over"], ["T4 PRICEY (dropped into T5)", "dropped"]].map(function (g) {
+      return aggGroup(inRange(), g[0], function (n, w) { return n.t5.groups && n.t5.groups[w] ? n.t5.groups[w][g[1]] : null; }); }), "T5 groups");
+    if (!haveDrop) wait(s, "the T4 PRICEY (dropped into T5) group, and the 60% groups without those players");
   }
   el("div", { class: "sub" }, s, "Your round-6 pick vs the field's average round-6 pick, points, per night");
   legend(s, [{ name: "Yours better", color: "var(--me)" }, { name: "Yours worse", color: "var(--neg)" }, { name: "Zero: the field's average", color: "var(--field)", line: true }]);

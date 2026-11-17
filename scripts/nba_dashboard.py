@@ -42,11 +42,17 @@ DEFS = {
            "multiple of the player you moved up minus the player you moved down, in that window; summed for the night, "
            "with a running total. Tally on points, pushes under 3. VALUE / normal / PRICEY: your share of lineups holding "
            "one against the field's, each group's top-1% multiple.",
-    "t5": "Drafted picks only. Your share of T5 picks under vs at/over the 60% drafted line against the field's, each group's "
-          "top-1% multiple. Second: your round-6 pick (each lineup's latest-ADP drafted pick, played) against the field's "
+    "t5": "Drafted picks only. Lineups holding a T5 pick drafted in under 60% of pods, one at or over 60%, and (their own group) "
+          "a T4 PRICEY player the button dropped into T5 (its tier before the T5 rules; left out of the two 60% groups so "
+          "those read T5 leverage only): your share of lineups against the field's, each group's top-1% multiple. Second: your round-6 pick (each lineup's latest-ADP drafted pick, played) against the field's "
           "average round-6 pick, in points. Swaps apart: your swap list's player against the one your PM list would have "
           "taken, in points.",
 }
+
+
+# T5's groups (contest side's groups_by_night keys): T5 leverage under / at-over the 60% line, and the T4 PRICEY players the
+# button drops into T5 on their own (the button's tier before its T5 rules, as nba_friday.dropped; 2026-11-17)
+T5_GROUPS = (("under", "T5 under"), ("over", "T5 over"), ("dropped", "T4 PRICEY (dropped into T5)"))
 
 
 def mult(pm, date, window, pid, k="top1"):
@@ -164,7 +170,7 @@ def main():
             night["t%d" % t] = moves(n["date"], t, pm, takes, tags)
             night["t%d" % t]["flags"] = {w: {f: (g.get(w) or {}).get("T%d %s" % (t, f)) for f in ("VALUE", "normal", "PRICEY")}
                                         for w in ("am", "pm")} if g else None
-        night["t5"] = {"groups": {w: {k: (g.get(w) or {}).get("T5 " + k) for k in ("under", "over")} for w in ("am", "pm")} if g else None,
+        night["t5"] = {"groups": {w: {k: (g.get(w) or {}).get(src) for k, src in T5_GROUPS} for w in ("am", "pm")} if g else None,
                        "round6": round6(n), "swaps": swaps.get(n["date"], [])}
         nights.append(night)
     out = {"generated": M.dt.datetime.now(M.PT).isoformat(timespec="minutes"), "defs": DEFS, "push": PUSH,
