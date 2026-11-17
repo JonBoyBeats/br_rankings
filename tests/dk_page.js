@@ -88,6 +88,15 @@ function audit(name, L, o) {
   await pg.waitForSelector(".row");
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
   check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#status")));
+  check("match warning: none when every game matched", !(await pg.$("#matchWarn")));
+  const mw = await pg.evaluate(() => {
+    const g = rows[0].game, kept = rows.map(r => r.event);
+    rows.forEach(r => { if (r.game === g) delete r.event; });
+    const t = matchText(), n = rows.filter(r => r.game === g).length;
+    rows.forEach((r, i) => { r.event = kept[i]; });
+    return { g, t, n };
+  });
+  check("match warning: a red line naming the unmatched game and its players", mw.t.includes('class="bad"') && mw.t.includes(mw.n + " players unmatched") && mw.t.includes(mw.g), mw.t);
 
   const set = async (vals) => {
     for (const [id, v] of Object.entries(vals)) {

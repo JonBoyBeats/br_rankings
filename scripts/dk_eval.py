@@ -993,6 +993,19 @@ def calnote(a):
     changes = [r for r in new if not r["reason"].startswith("Bug")]
     print("Calibration note, %s (last graded slate %s; version now %s)" % (dt.datetime.now(PT).date().isoformat(), last or "-",
                                                                            versions()[-1]["version"] if versions() else "-"))
+    if getattr(a, "mirror", None):           # the match warning: players whose game found no ESPN match
+        try:
+            doc = json.load(open(os.path.join(a.mirror, "dk_cbb_morning.json")))
+        except (OSError, ValueError):
+            doc = {"slates": []}
+        for sl in doc.get("slates", []):
+            un = [r for r in sl["players"].values() if not r.get("event")]
+            if un:
+                print("MATCH WARNING, slate %s (%s): %d players unmatched (games %s): on DraftKings' average, no minutes, line or "
+                      "fragility; their results can't be graded either" % (sl["draft_group_id"], sl.get("day"), len(un),
+                                                                           ", ".join(sorted({r.get("game") or r.get("team") for r in un}))))
+            else:
+                print("Games matched, slate %s (%s): all %d players" % (sl["draft_group_id"], sl.get("day"), len(sl["players"])))
     print("Bugs found: " + ("; ".join("%s (%s)" % (r["change"], r["reason"][5:].strip()) for r in bugs) if bugs else "none"))
     print(pick("a. Projections, last night"))
     print(pick("b. Ownership, last night"))
@@ -1314,7 +1327,8 @@ def main():
     t.add_argument("--mirror", required=True)
     sub.add_parser("cutcheck")
     sub.add_parser("audit")
-    sub.add_parser("calnote")
+    cn = sub.add_parser("calnote")
+    cn.add_argument("--mirror", help="the mirror checkout, for the match warning on its DraftKings slates")
     sub.add_parser("calweek")
     sub.add_parser("ideas")
     fc = sub.add_parser("fieldcheck")

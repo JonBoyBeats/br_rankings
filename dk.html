@@ -407,7 +407,7 @@ function pick() {
   $("team").innerHTML = '<option value="">All teams</option>' + teams.map(function (t) { return '<option>' + esc(t) + "</option>"; }).join("");
   view.team = "";
   var gen = new Date(doc.generated_at);
-  $("status").innerHTML = esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
+  $("status").innerHTML = matchText() + esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
     (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }))) +
     '<br>' + gateText();
   BP = null; $("bpTableWrap").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpKeep").hidden = true;
@@ -415,6 +415,16 @@ function pick() {
   ruleCounts = {}; editing = -1;
   bankLoadState(); renderBank(); renderEntries(); renderNight(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
   renderTiles(); renderRules(); fillEditor(); renderNews(); renderPlayers(); renderContests();
+}
+
+// The match warning: players whose game found no ESPN match (no event on their row) are on DraftKings' season
+// average, with no minutes, line or fragility (2026-11-17: KU@UNLV and WVU@AUB, 50 players, until a fix)
+function matchText() {
+  var un = rows.filter(function (r) { return !r.event; });
+  if (!un.length) return "";
+  var games = Array.from(new Set(un.map(function (r) { return r.game || r.team; }))).sort();
+  return '<span class="bad" id="matchWarn">' + un.length + " player" + (un.length === 1 ? "" : "s") + " unmatched: game" + (games.length === 1 ? " " : "s ") +
+    esc(games.join(", ")) + " found no ESPN match, so " + (un.length === 1 ? "he's" : "they're") + " on DraftKings' average (no minutes, line or fragility).</span><br>";
 }
 
 function gateText() {

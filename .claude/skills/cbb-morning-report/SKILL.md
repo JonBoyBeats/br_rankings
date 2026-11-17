@@ -200,7 +200,8 @@ teammates by the projection (team_minutes); a player Out with 0 games this seaso
 wins over DraftKings' Questionable. EvanMiya CSVs are needed only when tonight's teams played since the last export.
 
 **Calibration week (through 2026-11-23): the calibration note comes first in the DK part.** Run
-`python3 scripts/dk_eval.py calnote` and give it short: bugs found, the audit's a / b / c in one line each, and any
+`python3 scripts/dk_eval.py calnote --mirror ../br-adp-mirror` and give it short (a MATCH WARNING line, players whose
+game found no ESPN match and sit on DraftKings' average, goes first and plainly; fix the matching before lock): bugs found, the audit's a / b / c in one line each, and any
 change made with its reason. One-night results don't drive changes; principled, reversible tweaks do, and every
 change goes in `analysis/cbb/dk/versions.csv` (date it takes effect, version, component, change, reason; numbers in a
 reason are computed, never recalled) so the readout can split slates by version. Rules and shadow rule sets stay as
