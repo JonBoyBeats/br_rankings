@@ -10249,5 +10249,1092 @@
     }
    ]
   }
+ },
+ "2026-11-16": {
+  "boom": [
+   [
+    0.4121,
+    0.4121,
+    false
+   ],
+   [
+    0.3245,
+    0.3245,
+    false
+   ],
+   [
+    0.1602,
+    0.1727,
+    false
+   ],
+   [
+    0.2482,
+    0.2192,
+    false
+   ],
+   [
+    0.2096,
+    0.1975,
+    false
+   ],
+   [
+    0.1803,
+    0.1612,
+    false
+   ],
+   [
+    0.1459,
+    0.148,
+    false
+   ],
+   [
+    0.175,
+    0.1688,
+    true
+   ],
+   [
+    0.1806,
+    0.1563,
+    false
+   ],
+   [
+    0.1578,
+    0.1642,
+    false
+   ],
+   [
+    0.2126,
+    0.1988,
+    false
+   ],
+   [
+    0.2105,
+    0.1798,
+    false
+   ],
+   [
+    0.1676,
+    0.17,
+    false
+   ],
+   [
+    0.1879,
+    0.1984,
+    false
+   ],
+   [
+    0.1997,
+    0.1976,
+    true
+   ],
+   [
+    0.1575,
+    0.1558,
+    false
+   ],
+   [
+    0.1325,
+    0.1455,
+    false
+   ],
+   [
+    0.269,
+    0.2672,
+    true
+   ],
+   [
+    0.1765,
+    0.179,
+    false
+   ],
+   [
+    0.1636,
+    0.166,
+    false
+   ],
+   [
+    0.1806,
+    0.1896,
+    false
+   ],
+   [
+    0.1801,
+    0.1694,
+    false
+   ],
+   [
+    0.196,
+    0.1846,
+    false
+   ],
+   [
+    0.2125,
+    0.2052,
+    false
+   ],
+   [
+    0.1556,
+    0.1539,
+    false
+   ],
+   [
+    0.1273,
+    0.1292,
+    true
+   ],
+   [
+    0.1893,
+    0.1827,
+    false
+   ],
+   [
+    0.1506,
+    0.1567,
+    false
+   ],
+   [
+    0.2145,
+    0.2226,
+    true
+   ],
+   [
+    0.178,
+    0.1745,
+    false
+   ],
+   [
+    0.1644,
+    0.1626,
+    false
+   ],
+   [
+    0.1999,
+    0.2076,
+    false
+   ],
+   [
+    0.2225,
+    0.2202,
+    false
+   ],
+   [
+    0.1733,
+    0.1714,
+    false
+   ],
+   [
+    0.1775,
+    0.1669,
+    false
+   ],
+   [
+    0.1367,
+    0.1461,
+    false
+   ],
+   [
+    0.1657,
+    0.1723,
+    false
+   ],
+   [
+    0.2092,
+    0.1972,
+    false
+   ],
+   [
+    0.1818,
+    0.1667,
+    false
+   ],
+   [
+    0.1547,
+    0.1491,
+    false
+   ],
+   [
+    0.1984,
+    0.1916,
+    false
+   ],
+   [
+    0.1375,
+    0.1359,
+    false
+   ],
+   [
+    0.1853,
+    0.1879,
+    true
+   ],
+   [
+    0.1836,
+    0.1861,
+    false
+   ],
+   [
+    0.1773,
+    0.1844,
+    false
+   ],
+   [
+    0.1917,
+    0.1917,
+    false
+   ],
+   [
+    0.1591,
+    0.1614,
+    true
+   ],
+   [
+    0.0994,
+    0.1037,
+    false
+   ],
+   [
+    0.2059,
+    0.2083,
+    true
+   ],
+   [
+    0.16,
+    0.1708,
+    false
+   ],
+   [
+    0.1564,
+    0.1507,
+    false
+   ],
+   [
+    0.189,
+    0.1964,
+    false
+   ],
+   [
+    0.1509,
+    0.1531,
+    false
+   ],
+   [
+    0.1398,
+    0.1311,
+    false
+   ],
+   [
+    0.1558,
+    0.1663,
+    false
+   ],
+   [
+    0.1913,
+    0.1846,
+    false
+   ],
+   [
+    0.1767,
+    0.1662,
+    false
+   ],
+   [
+    0.1539,
+    0.1522,
+    false
+   ],
+   [
+    0.1515,
+    0.1577,
+    true
+   ],
+   [
+    0.171,
+    0.1778,
+    false
+   ],
+   [
+    0.1517,
+    0.15,
+    false
+   ],
+   [
+    0.1475,
+    0.1458,
+    false
+   ],
+   [
+    0.1519,
+    0.1502,
+    false
+   ],
+   [
+    0.2307,
+    0.223,
+    true
+   ],
+   [
+    0.1409,
+    0.1409,
+    false
+   ],
+   [
+    0.1816,
+    0.1887,
+    false
+   ],
+   [
+    0.1403,
+    0.1424,
+    false
+   ],
+   [
+    0.18,
+    0.1781,
+    false
+   ],
+   [
+    0.1484,
+    0.1484,
+    false
+   ],
+   [
+    0.1404,
+    0.1501,
+    false
+   ],
+   [
+    0.1442,
+    0.1515,
+    true
+   ],
+   [
+    0.1454,
+    0.1514,
+    false
+   ],
+   [
+    0.1808,
+    0.1834,
+    false
+   ],
+   [
+    0.1376,
+    0.1434,
+    false
+   ],
+   [
+    0.1411,
+    0.1432,
+    true
+   ],
+   [
+    0.1389,
+    0.1485,
+    true
+   ],
+   [
+    0.1197,
+    0.1197,
+    false
+   ],
+   [
+    0.173,
+    0.1626,
+    false
+   ],
+   [
+    0.1815,
+    0.1841,
+    true
+   ],
+   [
+    0.1466,
+    0.1412,
+    false
+   ],
+   [
+    0.1994,
+    0.1955,
+    false
+   ],
+   [
+    0.1465,
+    0.1565,
+    false
+   ],
+   [
+    0.1197,
+    0.1248,
+    false
+   ],
+   [
+    0.1117,
+    0.1181,
+    false
+   ],
+   [
+    0.144,
+    0.144,
+    false
+   ]
+  ],
+  "mine": {
+   "breakers": {
+    "field": [
+     13530,
+     28374
+    ],
+    "mine": [
+     80,
+     168
+    ],
+    "top1": [
+     136,
+     596
+    ]
+   },
+   "low_drafted": {
+    "field": [
+     13530,
+     4603
+    ],
+    "mine": [
+     80,
+     70
+    ]
+   },
+   "turn23": {
+    "most-owned": 1,
+    "other": 26,
+    "rarer": 13
+   }
+  },
+  "pod": 6,
+  "q": [
+   {
+    "early": [
+     6,
+     0
+    ],
+    "late": [
+     36,
+     2
+    ],
+    "name": "Jalen Smith",
+    "played": true,
+    "tag": "Questionable",
+    "value": 21.8
+   },
+   {
+    "early": [
+     0,
+     0
+    ],
+    "late": [
+     0,
+     0
+    ],
+    "name": "Tre Johnson",
+    "played": true,
+    "tag": "Questionable",
+    "value": -9.2
+   }
+  ],
+  "teams": 13530,
+  "ties": [
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 2218,
+    "hi_t1": 96,
+    "lo_brk": false,
+    "lo_n": 1775,
+    "lo_t1": 9,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 2218,
+    "hi_t1": 96,
+    "lo_brk": false,
+    "lo_n": 727,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 2066,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 1775,
+    "lo_t1": 9,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 2066,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 1023,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 2066,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 766,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 2066,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 727,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 2066,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 543,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 2066,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 212,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1982,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 1170,
+    "lo_t1": 13,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1982,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 199,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1982,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 293,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1982,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 64,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1982,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 68,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1982,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 61,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1982,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 119,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1982,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 122,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1982,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 68,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 2219,
+    "hi_t1": 18,
+    "lo_brk": false,
+    "lo_n": 1775,
+    "lo_t1": 9,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 2018,
+    "hi_t1": 33,
+    "lo_brk": false,
+    "lo_n": 1775,
+    "lo_t1": 9,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 2018,
+    "hi_t1": 33,
+    "lo_brk": false,
+    "lo_n": 727,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1775,
+    "hi_t1": 9,
+    "lo_brk": false,
+    "lo_n": 1023,
+    "lo_t1": 3,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1775,
+    "hi_t1": 9,
+    "lo_brk": true,
+    "lo_n": 766,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1775,
+    "hi_t1": 9,
+    "lo_brk": false,
+    "lo_n": 727,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1775,
+    "hi_t1": 9,
+    "lo_brk": false,
+    "lo_n": 543,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1775,
+    "hi_t1": 9,
+    "lo_brk": false,
+    "lo_n": 212,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": true,
+    "lo_n": 766,
+    "lo_t1": 10,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": false,
+    "lo_n": 727,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": false,
+    "lo_n": 543,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": true,
+    "lo_n": 199,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": false,
+    "lo_n": 212,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": true,
+    "lo_n": 64,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": true,
+    "lo_n": 68,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": false,
+    "lo_n": 61,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": true,
+    "lo_n": 119,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 1170,
+    "hi_t1": 13,
+    "lo_brk": false,
+    "lo_n": 122,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1023,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 766,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1023,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 727,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1023,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 543,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1023,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 199,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 1023,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 212,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 766,
+    "hi_t1": 10,
+    "lo_brk": true,
+    "lo_n": 199,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 766,
+    "hi_t1": 10,
+    "lo_brk": false,
+    "lo_n": 212,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 766,
+    "hi_t1": 10,
+    "lo_brk": true,
+    "lo_n": 68,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": true,
+    "hi_n": 766,
+    "hi_t1": 10,
+    "lo_brk": false,
+    "lo_n": 61,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 727,
+    "hi_t1": 2,
+    "lo_brk": true,
+    "lo_n": 199,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 727,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 212,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 543,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 199,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 543,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 212,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 543,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 68,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 543,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 61,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 293,
+    "hi_t1": 2,
+    "lo_brk": true,
+    "lo_n": 64,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-16",
+    "hi_brk": false,
+    "hi_n": 293,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 61,
+    "lo_t1": 1,
+    "lo_wins": true
+   }
+  ],
+  "turns": {
+   "1/2": [
+    {
+     "combo": [
+      "Deni Avdija",
+      "Franz Wagner"
+     ],
+     "pop": [
+      587,
+      1,
+      133670.2
+     ],
+     "rest": [
+      1700,
+      6,
+      388679.4000000004
+     ]
+    }
+   ],
+   "2/3": [
+    {
+     "anchor": "Nikola Jokic",
+     "combo": [
+      "Bam Adebayo",
+      "Jamal Murray"
+     ],
+     "pop": [
+      336,
+      0,
+      71921.60000000002
+     ],
+     "rest": [
+      1850,
+      21,
+      426708.00000000023
+     ]
+    },
+    {
+     "anchor": "Giannis Antetokounmpo",
+     "combo": [
+      "Cameron Boozer",
+      "Yaxel Lendeborg"
+     ],
+     "pop": [
+      181,
+      2,
+      45612.9
+     ],
+     "rest": [
+      1988,
+      53,
+      464099.7999999998
+     ]
+    },
+    {
+     "anchor": "Anthony Davis",
+     "combo": [
+      "Tyrese Maxey",
+      "Devin Booker"
+     ],
+     "pop": [
+      106,
+      0,
+      23254.699999999997
+     ],
+     "rest": [
+      1810,
+      1,
+      405369.1999999998
+     ]
+    }
+   ]
+  }
  }
 }

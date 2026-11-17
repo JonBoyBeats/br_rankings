@@ -1,0 +1,77 @@
+date,draft_group,tag,group,lineups,mean,best,contest_id,contest,top10,cash,wins,protect,phase
+2026-11-16,156660,all,cut,3258,212.98,289.75,,,,,,,warm-up
+2026-11-16,156660,all,kept,1000,217.55,272.25,,,,,,,warm-up
+2026-11-16,156660,all,entered,36,210.09,247.25,,,,,,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,,,,,,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,,,,,,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,,,,,,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,,,,,,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,,,,,,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,,,,,,,warm-up
