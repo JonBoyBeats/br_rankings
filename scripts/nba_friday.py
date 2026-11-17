@@ -108,7 +108,7 @@ def am_groups_adp(rows, night):
 
 
 def dropped(night):
-    return [r for r in ALL_NW[night] if int(r["a_tier"]) <= 4 and r["flag"] == "PRICEY" and r["tierv"] >= 5 and r["ok"]]
+    return [r for r in ALL_NW[night] if int(TH.base_tier(r)) <= 4 and r["flag"] == "PRICEY" and r["tierv"] >= 5 and r["ok"]]
 
 
 def t5_top3(night):
@@ -120,7 +120,7 @@ def elite_right():
     """Do the elites (T1's top by projection, cut at the biggest gap) outscore the rest of T1? Points, by night."""
     by = collections.defaultdict(list)
     for (d, w), rows in ALL_NW.items():
-        t1 = sorted([r for r in rows if r["a_tier"] == "1" and r["projv"] is not None], key=lambda r: -r["projv"])
+        t1 = sorted([r for r in rows if TH.base_tier(r) == "1" and r["projv"] is not None], key=lambda r: -r["projv"])
         if len(t1) < 2:
             continue
         n = TH.elites([r["projv"] for r in t1])
@@ -280,7 +280,7 @@ def main():
     qcase = collections.Counter()
     for r in H:
         if r["date"] >= "2026-11-13" and (r["tag"] or "")[:1].lower() == "q":
-            qcase["T1 to T2" if r["a_tier"] == "1" else "below the cut (ADP fell 6+)" if r["tier"] == "6" and r["a_tier"] != "5" else "kept his tier"] += 1
+            qcase["T1 to T2" if TH.base_tier(r) == "1" else "below the cut (ADP fell 6+)" if r["tier"] == "6" and r["a_tier"] != "5" else "kept his tier"] += 1
     body.append("- Since the Q rules went in: %s." % (", ".join("%s %d" % kv for kv in qcase.items()) or "no Questionable players yet"))
     body += money("q-tags")
     try:

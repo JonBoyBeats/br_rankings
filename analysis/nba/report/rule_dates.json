@@ -172,5 +172,12 @@
    "pm": "2026-11-13"
   },
   "what": "Rule order fixed: ADP ladder, then the one-tier move toward the projection (A5-P3 or better is T4 VALUE), then the T5 rules (drafted% line, minutes floor, below the cut) only on the final T5. Before, every A5 player was forced back to T5 (25 primary rows this season sent below the cut)"
+ },
+ "tiers-pm-etr": {
+  "since": "2026-11-17",
+  "windows": {
+   "pm": "2026-11-17"
+  },
+  "what": "PM tiers start from ETR's ladder, one tier toward ADP's at 2+ apart (was ADP's toward ETR's); the elite cut reads ETR's T1, the T4 PRICEY drop counts players ETR has in T1-T4, T4 ends at ETR's ladder line; groups, elite break, T5 and Q unchanged. AM unchanged. Basis: pod replay, season PM, (f) beat my list by 3.4 top-10 pts (top-1% clear of zero); (b')-(f) -1.0"
  }
 }

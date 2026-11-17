@@ -40,6 +40,17 @@ RULE_STEPS = {     # each tier's rule (index.html NBA_TIER_RULE_STEPS, nba_repor
 PM_Q_PUSH = 2      # PM window: a Questionable player is ordered two tiers back (lean adopted 2026-11-09; "old" rules only)
 # The 2026-11-13 redesign (index.html NBA_RULESET; the same rules, one update): "old" until the operator's check
 RULESET = "new"            # switched 2026-11-13
+PM_ETR_SINCE = "2026-11-17"  # PM tiers on ETR's ladder from this night (rule_dates "tiers-pm-etr"; the board's NBA_PM_BASE)
+
+
+def base_of(date, window):
+    """The ladder the button's tiers started from that night-window: "etr" for PM from PM_ETR_SINCE, else "adp"."""
+    return "etr" if window == "pm" and date >= PM_ETR_SINCE else "adp"
+
+
+def base_tier(r):
+    """A tier_history row's starting tier (the one the elite cut, the T4 PRICEY drop and T1 Q read): ETR's on ETR nights."""
+    return r["p_tier"] if base_of(r["date"], r["window"]) == "etr" else r["a_tier"]
 R6 = {6: 30, 4: 20}            # T4's last pick: the start of round 6, or earlier at an ADP gap of T4_GAP+ just before it
 T4_GAP, T4_MIN = 2, 4          # T4 short of T4_MIN borrows from the bottom of T3
 T5_LINE, T5_GRAY = 60, (50, 70)
@@ -441,11 +452,11 @@ def main():
         if not rows:
             continue
         for window in ("am", "pm"):
-            got, info = build(rows, name[:10], rows[0]["slate"], window, meta.get(name, {}))
+            got, info = build(rows, name[:10], rows[0]["slate"], window, meta.get(name, {}), base=base_of(name[:10], window))
             rows_out += got
             infos.append(info)
     with open(OUT, "w", newline="") as f:
-        wr = csv.DictWriter(f, fieldnames=COLS)
+        wr = csv.DictWriter(f, fieldnames=COLS, extrasaction="ignore")     # "_base" is build's own (ETR nights: base_tier)
         wr.writeheader()
         wr.writerows(rows_out)
     print("| Slate | Window | Pod | Board | ADP | Projection | ADP lines | Proj lines | Lines moved by the minimum | Tagged Q/D/GTD | With P(play) |")

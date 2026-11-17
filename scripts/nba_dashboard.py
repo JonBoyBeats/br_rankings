@@ -147,7 +147,7 @@ def pod_since(rd, lst):
     for k, v in rd.items():
         if k.startswith("_") or not v.get("windows"):
             continue                                            # rules without per-window dates aren't the button's ranking
-        if POD_RULES[lst] and not k.startswith(POD_RULES[lst]):
+        if POD_RULES[lst] and not k.startswith(POD_RULES[lst] + ("tiers-",)):     # "tiers-": the whole ladder, every tier
             continue
         for w, d in v["windows"].items():
             out[w] = max(out.get(w, d), d)

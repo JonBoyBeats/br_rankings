@@ -6,14 +6,16 @@ rule_dates.json; the Friday report reads "since the rule went in" and "season" f
 ## The button (from 2026-11-13; the morning window from 11-14)
 
 - A player's tier is his ADP tier, moved at most one tier toward his projection's; VALUE is a tier better on the
-  projection, PRICEY a tier worse. The projection is ours in the morning, ETR's in the afternoon.
+  projection, PRICEY a tier worse. The projection is ours in the morning, ETR's in the afternoon. Afternoon tiers run
+  the other way (from 11-17): his ETR tier, moved one tier toward his ADP tier at 2+ apart ("PM tiers: ETR"); the elite
+  cut and the T4 PRICEY drop read the ETR tier, and T4 ends at ETR's ladder line, not round 6.
 - T1: morning ADP, the higher Boom first within 2 picks; afternoon ETR. The elite cut: T1's top at the biggest projection
   gap among its top 3-4 (1 to 3 players).
 - T2: morning straight ADP; afternoon ADP with ETR breaking ties within 2 picks up to the elite break (pick 13 minus the
   elites with 6 drafters, 9 minus them with 4), ETR from there.
 - T3 and T4: VALUE, the rest, PRICEY; morning by ADP, afternoon by ETR (ADP, then Boom, on exact ties). T3 PRICEY stays
   ahead of T4 VALUE.
-- T4 ends at the start of round 6 (after pick 30; 20 with 4 drafters), earlier at an ADP gap of 2+ picks just before it;
+- T4 (morning) ends at the start of round 6 (after pick 30; 20 with 4 drafters), earlier at an ADP gap of 2+ picks just before it;
   round-6 players are never in T4; T4 PRICEY players drop into T5; T4 short of 4 borrows the bottom of T3.
 - T5: round 6 and the dropped T4 PRICEY players drafted in under 60% of pods and projected for 20+ minutes (box-score
   minutes in the morning, ETR-implied in the afternoon), by projection, 50-60% at the bottom, to your cut. Everyone else

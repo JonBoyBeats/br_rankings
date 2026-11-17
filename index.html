@@ -4016,6 +4016,11 @@ function nbaBuildLaddersOld() {
         Across slates the fall is the poller's pre_tag_passed, the players behind him on that slate now ahead of him
         (two slates' ADPs don't compare when their sizes differ); on this slate, the raw pick difference. */
 var NBA_RULESET = "new";       // switched 2026-11-13 after the operator checked "Old vs new"
+// PM tiers start from ETR's ladder, one tier toward ADP's at 2+ apart (2026-11-17, rule_dates "tiers-pm-etr"; the contest
+// side's pod replay (f), nba_tier_history.build base="etr"): the elite cut reads ETR's T1, a PRICEY player lands in T4 and
+// drops into T5 as before but counts as "dropped" only when ETR has him in T1-T4, and T4 ends at ETR's own ladder line
+// (the round-6 line is ADP's). Everything after (groups, elite break, T5, Q) as before. AM unchanged.
+var NBA_PM_BASE = "etr";
 var NBA_R6 = { 6: 30, 4: 20 };          // T4's last pick: the start of round 6 ...
 var NBA_T4_GAP = 2;                     // ... or earlier at an ADP gap this big in the three ranks before it
 var NBA_T4_MIN = 4;                     // T4 short of this borrows from the bottom of T3
@@ -4024,10 +4029,10 @@ var NBA_MIN_FLOOR = 20;
 var NBA_T5_NOTE_4 = "The Rest \u2013 4-drafter night: by projection, NO drafted% line (until a Friday shows one), 20+ minutes, to your cut";
 var NBA_Q_FALL = 6;
 var NBA_TIER_NOTES_NEW = [
-  "Elite – AM: ADP (2: Boom) · PM: ETR",
+  "Elite – AM: ADP (2: Boom) · PM: ETR · PM tiers: ETR",
   "Stars – AM: ADP · PM: ADP (2: ETR) to the elite break, ETR after",
   "Middle – VALUE, rest, PRICEY · AM: ADP · PM: ETR (tie: ADP → Boom)",
-  "Middle – VALUE, rest · AM: ADP · PM: ETR (tie: ADP → Boom); ends at round 6",
+  "Middle – VALUE, rest · AM: ADP · PM: ETR (tie: ADP → Boom); AM ends at round 6",
   "The Rest – drafted under 60% (50-60% last), by projection, 20+ minutes, to your cut; everyone else below it by projection"
 ];
 
@@ -4073,9 +4078,10 @@ function nbaQSeen(s) {
     earlier at a 2+ pick gap (nbaT4Line); (2) the one-tier move toward the projection and the VALUE/PRICEY flags, here, so
     an A5-P3 player is T4 VALUE whatever his ADP (round 6 is never in T4 on the ADP ladder only); a T4 PRICEY player
     drops into T5; (3) the T5 rules (drafted% line, minutes floor, below the cut) only on the final T5 (nbaT5Pool). */
-function nbaCombine(a, t) {
+function nbaCombine(a, t, etr) {
   var d = a - t, x = { a: a, p: t, c: Math.abs(d) >= 2 ? a - Math.sign(d) : a, flag: d > 0 ? "VALUE" : d < 0 ? "PRICEY" : "" };
-  if (x.c === 4 && x.flag === "PRICEY") { x.c = NBA_TIERS; x.dropped = true; }
+  if (etr) x.c = Math.abs(d) >= 2 ? t + Math.sign(d) : t;           // PM on ETR's ladder: one tier toward ADP's at 2+ apart
+  if (x.c === 4 && x.flag === "PRICEY") { x.c = NBA_TIERS; if (!etr || t <= 4) x.dropped = true; }
   return x;
 }
 function nbaT5Pool(rows) { return rows.filter(function (r) { return !r.x.qlast && r.x.c === NBA_TIERS; }); }
@@ -4094,12 +4100,12 @@ function nbaBuildLaddersNew() {
   var aT = {}, pT = {}, pVals = P.map(projOf);
   A.forEach(function (p, i) { aT[p.player_id] = nbaLadderTier(i + 1, aLines); });
   P.forEach(function (p, i) { pT[p.player_id] = nbaLadderTier(i + 1, pLines); });
-  var qSeen = nbaQSeen(s), qTeams = {};
+  var etrBase = src.window === "pm" && NBA_PM_BASE === "etr", qSeen = nbaQSeen(s), qTeams = {};
   pl.forEach(function (p) { if (/^q/i.test(p.injury || "")) qTeams[p.team] = (qTeams[p.team] || 0) + 1; });
   var out = { at: new Date().toISOString(), window: src.window, source: src.src, pod: pod, lines: { a: aLines, p: pLines },
-              players: {}, ruleset: "new" };
+              players: {}, ruleset: "new", base: etrBase ? "etr" : "adp" };
   pl.forEach(function (p) {
-    var pid = p.player_id, a = aT[pid], t = pT[pid], x = nbaCombine(a, t);
+    var pid = p.player_id, a = aT[pid], t = pT[pid], x = nbaCombine(a, t, etrBase);
     if (/^q/i.test(p.injury || "")) {
       x.inj = String(p.injury);
       // his ADP before the tag: the poller's (the last hourly snapshot before it, shared by every device; when the
@@ -4122,7 +4128,7 @@ function nbaBuildLaddersNew() {
     } else if (/^(d|g)/i.test(p.injury || "")) x.inj = String(p.injury);
     out.players[pid] = x;
   });
-  var elites = nbaElites(pl.filter(function (p) { return out.players[p.player_id].a === 1 && isFinite(projOf(p)); }).map(projOf));
+  var elites = nbaElites(pl.filter(function (p) { return out.players[p.player_id][etrBase ? "p" : "a"] === 1 && isFinite(projOf(p)); }).map(projOf));
   var breakAt = (pod === 4 ? 9 : 13) - elites;
   out.elites = elites; out.breakAt = breakAt;
   var rows = pl.map(function (p) {
@@ -8205,6 +8211,18 @@ function brrSelfTest() {
   ok("an A5-P3 player is T4 VALUE and never in T5's drafted% pool, however drafted; A5-P5 and a T4 PRICEY drop are",
      a5p3.x.c === 4 && a5p3.x.flag === "VALUE" && nbaCombine(5, 4).c === 5 && nbaCombine(5, 4).flag === "VALUE" &&
      a4p5.x.c === 5 && a4p5.x.dropped && nbaT5Pool([a5p3, a5p5, a4p5]).length === 2 && nbaT5Pool([a5p3, a5p5, a4p5]).indexOf(a5p3) < 0);
+  // PM on ETR's ladder (2026-11-17) against nba_tier_history.build(base="etr"), every A/P pair: c = P one tier toward A at
+  // 2+ apart; c 4 and PRICEY drops into T5; "dropped" (the T5 placement right after its top 3) only when P is T1-T4
+  var etrOk = true;
+  for (var ea = 1; ea <= 5; ea++) for (var ep = 1; ep <= 5; ep++) {
+    var ed = ea - ep, ec = Math.abs(ed) >= 2 ? ep + (ed > 0 ? 1 : -1) : ep;
+    if (ec === 4 && ed < 0) ec = 5;
+    var ex = nbaCombine(ea, ep, true);
+    if (ex.c !== ec || !!ex.dropped !== (ep <= 4 && ed < 0 && ec >= 5) || ex.a !== ea || ex.p !== ep) etrOk = false;
+  }
+  ok("PM ETR tiers: P one tier toward A at 2+ apart, the T4 PRICEY drop and its 'dropped' as the pod replay's (f)",
+     etrOk && nbaCombine(5, 3, true).c === 4 && nbaCombine(5, 3, true).flag === "VALUE" && nbaCombine(3, 4, true).c === 5 &&
+     nbaCombine(3, 4, true).dropped && nbaCombine(2, 5, true).c === 5 && !nbaCombine(2, 5, true).dropped && nbaCombine(1, 3, true).c === 2);
   ok("new rules: T5 drafted% bands (under 50, 50-60 gray, 60-70 gray, 70+)",
      nbaT5Band(10) === 0 && nbaT5Band(55) === 1 && nbaT5Band(65) === 2 && nbaT5Band(85) === 3 && nbaT5Band(null) === 0);
   var sw = nbaSwapList(["a", "b", "c", "d", "e", "f", "g"], 4, { a: 50, b: 40, c: 30, d: 10, e: 25, f: null, g: 25 });
