@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-17T10:22:28Z",
+ "generated_at": "2026-11-17T14:46:29Z",
  "nights": 1,
  "bands": [
   {
@@ -7,8 +7,8 @@
    "hi": 99999,
    "n": 35,
    "nights": 1,
-   "open": false,
-   "w": 1.0,
+   "open": true,
+   "w": 0.5,
    "mae_ours": 7.786,
    "mae_avg": 7.209,
    "nights_avg_won": 1
@@ -18,8 +18,8 @@
    "hi": 5999,
    "n": 52,
    "nights": 1,
-   "open": false,
-   "w": 1.0,
+   "open": true,
+   "w": 0.5,
    "mae_ours": 6.808,
    "mae_avg": 7.783,
    "nights_avg_won": 0
@@ -29,12 +29,14 @@
    "hi": 3999,
    "n": 60,
    "nights": 1,
-   "open": false,
-   "w": 1.0,
+   "open": true,
+   "w": 0.5,
    "mae_ours": 3.723,
    "mae_avg": 3.829,
    "nights_avg_won": 0
   }
  ],
- "rule": "open where DraftKings' average beat ours: 5+ nights, 100+ player-nights, lower mean error, better on 60%+ of nights"
+ "rule": "open where DraftKings' average beat ours: 5+ nights, 100+ player-nights, lower mean error, better on 60%+ of nights",
+ "override": "calibration week through 2026-11-23: ours 50% / DraftKings' average 50% in every band (the rule bypassed)",
+ "version": "cal-1"
 }

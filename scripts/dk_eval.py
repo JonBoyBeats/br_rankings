@@ -44,6 +44,9 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
                where it liked him less, fall short? By size of the disagreement, then, for disagreements of
                AUDIT_DISAGREE+ points, where the field was right, by salary band, position and minutes change
                (projected minutes against his last 5)
+  calnote   the calibration week's morning note (through 2026-11-23): bugs found, the audit's a / b / c in one line
+            each, and the changes since the last graded slate with their reasons, from analysis/cbb/dk/versions.csv
+            (every change, with the slate date it takes effect; the readout splits slates by it)
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
             and the paired gap, on the top-10% rate first, then cash; dollars only as the long-run check), the
             owner's entries against the field's 10%, ownership by band, the sim's cut lines, the correlation check
@@ -71,6 +74,7 @@ import re
 import statistics as S
 import sys
 from collections import defaultdict
+from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.dirname(__file__))
 from nba_daily import Mirror, iso  # noqa: E402
@@ -104,6 +108,12 @@ CUT_EVAL = os.path.join(DK, "cut_eval.csv")
 CUT_COLS = ["date", "draft_group", "tag", "group", "lineups", "mean", "best", "contest_id", "contest", "top10", "cash", "wins",
             "protect", "phase"]
 DECISION_SLATES = 30
+PT = ZoneInfo("America/Los_Angeles")
+VERSIONS = os.path.join(DK, "versions.csv")   # every change, with the slate date it takes effect (version_of)
+# Calibration week: ours blended with DraftKings' average at w in every salary band, the gate's rule bypassed, through
+# "until" (versions.csv cal-1). Reversible: after "until" the gate goes back to its own rule.
+CALIBRATION_BLEND = {"w": 0.5, "from": "2026-11-17", "until": "2026-11-23", "version": "cal-1"}
+BLEND_W = 0.5            # the audit's blend: ours x BLEND_W + DraftKings' average x (1 - BLEND_W) (cal-1's)
 AUDIT_DISAGREE = 5        # ownership points: a disagreement big enough to list where the field was right
 DISAGREE_BINS = [(10, 999, "field liked more by 10+"), (5, 10, "more by 5-10"), (2, 5, "more by 2-5"), (-2, 2, "within 2"),
                  (-5, -2, "less by 2-5"), (-10, -5, "less by 5-10"), (-999, -10, "less by 10+")]
@@ -470,6 +480,12 @@ def gate(a):
     doc = {"generated_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "nights": len(nights), "bands": bands,
            "rule": "open where DraftKings' average beat ours: %d+ nights, %d+ player-nights, lower mean error, better on %d%%+ of nights"
                    % (GATE_NIGHTS, GATE_N, 100 * GATE_SHARE)}
+    cb, today = CALIBRATION_BLEND, dt.datetime.now(PT).date().isoformat()
+    if cb["from"] <= today <= cb["until"]:     # calibration week: every band blended at w, whatever the rule says
+        for b in bands:
+            b.update(open=True, w=cb["w"])
+        doc.update(override="calibration week through %s: ours %d%% / DraftKings' average %d%% in every band (the rule bypassed)" % (
+            cb["until"], round(100 * cb["w"]), round(100 * (1 - cb["w"]))), version=cb["version"])
     with open(GATE, "w") as f:
         json.dump(doc, f, indent=1)
         f.write("\n")
@@ -531,6 +547,7 @@ def proj_audit(rows):
         out.append({"band": "all" if b == (0, 99999) else band_name({"lo": b[0], "hi": b[1]}),
                     "ours": fmt_stats([r["ours"] for r in withavg], [r["act"] for r in withavg]),
                     "dkavg": fmt_stats([r["dkavg"] for r in withavg], [r["act"] for r in withavg]),
+                    "blend": fmt_stats([BLEND_W * r["ours"] + (1 - BLEND_W) * r["dkavg"] for r in withavg], [r["act"] for r in withavg]),
                     "ours5": fmt_stats([r["ours"] for r in with5], [r["act"] for r in with5]),
                     "last5": fmt_stats([r["last5"] for r in with5], [r["act"] for r in with5])})
     return out
@@ -624,15 +641,15 @@ def print_audit(full):
         a = proj_audit(rs)
         if full:
             print("\n  a. Projections, %s (average miss, bias = projection minus actual, rank correlation; DK points):" % name)
-            print("     %-14s %5s  %-17s %-17s | %5s  %-17s %-17s" % ("salary band", "n", "ours", "DK average", "n", "ours", "last-5"))
+            print("     %-14s %5s  %-17s %-17s %-17s | %5s  %-17s %-17s" % ("salary band", "n", "ours", "DK average", "50/50 blend", "n", "ours", "last-5"))
             for b in a:
                 n = b["ours"][0] if b["ours"] else 0
                 n5 = b["ours5"][0] if b["ours5"] else 0
-                print("     %-14s %5d  %-17s %-17s | %5d  %-17s %-17s" % (b["band"], n, f(b["ours"]), f(b["dkavg"]), n5, f(b["ours5"]), f(b["last5"])))
+                print("     %-14s %5d  %-17s %-17s %-17s | %5d  %-17s %-17s" % (b["band"], n, f(b["ours"]), f(b["dkavg"]), f(b["blend"]), n5, f(b["ours5"]), f(b["last5"])))
         else:
             al = a[-1]
-            print("  a. Projections, %s: ours %s against DK average %s%s (miss, bias, rank corr; %d players)" % (
-                name, f(al["ours"]), f(al["dkavg"]), "" if not al["last5"] else "; on the %d with a last-5: ours %s, last-5 %s" % (
+            print("  a. Projections, %s: ours %s, DK average %s, 50/50 blend %s%s (miss, bias, rank corr; %d players)" % (
+                name, f(al["ours"]), f(al["dkavg"]), f(al["blend"]), "" if not al["last5"] else "; on the %d with a last-5: ours %s, last-5 %s" % (
                     al["ours5"][0], f(al["ours5"]), f(al["last5"])), al["ours"][0] if al["ours"] else 0))
     nights = own_nights(rows)
     if not nights:
@@ -687,8 +704,42 @@ def print_audit(full):
     print("     right well beyond chance (2.5 standard errors over 50%, 20+ players) and on 2/3+ of 5+ slates; anything short of that is directional.")
 
 
+def versions():
+    return read(VERSIONS)
+
+
+def version_of(date):
+    """The version in effect on a slate's date: the latest versions.csv label dated on or before it."""
+    v = [r for r in versions() if r["date"] <= str(date)]
+    return v[-1]["version"] if v else "-"
+
+
 def audit(a):
     print_audit(full=False)
+
+
+def calnote(a):
+    """The calibration week's morning note: bugs found, the audit's a / b / c in one line each, and the changes made
+    since the last graded slate with their reasons (versions.csv)."""
+    import contextlib
+    import io
+    rows = audit_rows()
+    last = max((r["date"] for r in rows), default="")
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        print_audit(full=False)
+    lines = buf.getvalue().splitlines()
+    pick = lambda pre: next((l.strip() for l in lines if l.strip().startswith(pre)), pre + " -")
+    new = [r for r in versions() if r["date"] > last]
+    bugs = [r for r in new if r["reason"].startswith("Bug")]
+    changes = [r for r in new if not r["reason"].startswith("Bug")]
+    print("Calibration note, %s (last graded slate %s; version now %s)" % (dt.datetime.now(PT).date().isoformat(), last or "-",
+                                                                           versions()[-1]["version"] if versions() else "-"))
+    print("Bugs found: " + ("; ".join("%s (%s)" % (r["change"], r["reason"][5:].strip()) for r in bugs) if bugs else "none"))
+    print(pick("a. Projections, last night"))
+    print(pick("b. Ownership, last night"))
+    print(pick("c. "))
+    print("Changes: " + ("; ".join("%s %s: %s (why: %s)" % (r["version"], r["component"], r["change"], r["reason"]) for r in changes) if changes else "none"))
 
 
 def readout(a):
@@ -731,6 +782,20 @@ def readout(a):
                   "%.2f / %.2f" % (back, fees), pair, pair_c))
         print("   The field's top-10% rate is 10% by definition; its cash rate is the contest's paid places over entries."
               " 'won': slates where the rule set's rate beat No extra rules' (ties left out), 'gap': the mean of the per-slate differences.")
+        # by version (versions.csv): each slate under the changes in effect on its date
+        byv = defaultdict(lambda: defaultdict(list))
+        for r in ev:
+            byv[version_of(r["date"])][r["who"]].append(r)
+        print("\n   By version (versions.csv; a slate counts under the version in effect on its date):")
+        for v in sorted(byv):
+            parts = []
+            for w in ("mine", "none"):
+                x = byv[v].get(w) or []
+                if x:
+                    n = sum(num(r["lineups"]) for r in x)
+                    parts.append("%s top 10%% %.1f%%, cash %.1f%%" % (w, 100 * sum(num(r["top10"]) * num(r["lineups"]) for r in x) / n,
+                                                                    100 * sum(num(r["cash"]) * num(r["lineups"]) for r in x) / n))
+            print("   %-8s %d slates: %s" % (v, len({r["draft_group"] for w in byv[v] for r in byv[v][w]}), "; ".join(parts) or "-"))
         # against random sets of the same size from the portfolio's own pool: no skill in the pick is ~50
         print("\n   Against %d random sets of the same size from each portfolio's own pool (percentile: 50 = no better than"
               " chance; slates beating the random median on the top-10%% rate):" % RANDOM_SETS)
@@ -959,11 +1024,12 @@ def main():
     t.add_argument("--mirror", required=True)
     sub.add_parser("cutcheck")
     sub.add_parser("audit")
+    sub.add_parser("calnote")
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote}[a.cmd](a)
 
 
 if __name__ == "__main__":

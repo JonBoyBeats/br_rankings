@@ -446,8 +446,25 @@
 
   // The 20-pick: N times, add the lineup that raises the set's expected payout most given those already picked
   // (builder.score: self-competition in), within the exposure caps and Min unique.
+  // A lineup's core: its three highest-salaried players (ties by id), as a key
+  function cores(ctx, lineups) {
+    var sal = {}; ctx.rows.forEach(function (r) { sal[r.id] = r.salary || 0; });
+    return lineups.map(function (L) {
+      return L.ids.slice().sort(function (a, b) { return (sal[b] || 0) - (sal[a] || 0) || (a < b ? -1 : 1); }).slice(0, 3).sort().join(",");
+    });
+  }
+  // the most-used core in a set of lineups: {key, n, of, share}
+  function topCore(ctx, lineups) {
+    var c = {}, best = null;
+    cores(ctx, lineups).forEach(function (k) { c[k] = (c[k] || 0) + 1; if (!best || c[k] > c[best]) best = k; });
+    return best ? { key: best, n: c[best], of: lineups.length, share: c[best] / lineups.length } : null;
+  }
+  // o.maxCore (optional, a share): no core in more than max(1, floor(maxCore x N)) of the N lineups
+  function coreLimit(o, N) { return o.maxCore ? Math.max(1, Math.floor(o.maxCore * N + 1e-9)) : 0; }
+
   function pick(ctx, o, cand, sim, contest, N, nights) {
     var st = ctx.state, b = builder(sim, contest, nights), count = {}, limit = {};
+    var coreOf = o.maxCore ? cores(ctx, cand) : null, coreLim = coreLimit(o, N), coreN = {};
     ctx.rows.forEach(function (r) {
       var cap = Math.min(o.maxExpo, st.cap[r.id] != null && st.cap[r.id] !== "" ? +st.cap[r.id] / 100 : 1);
       limit[r.id] = st.lock[r.id] ? N : Math.floor(cap * N + 1e-9);
@@ -466,13 +483,14 @@
         for (var k = 0; k < cand.length; k++) {
           if (b.picked.indexOf(k) >= 0 || (rule && !meets(rule, cand[k].ids)) ||
               (perLine.length && !perLine.every(function (r) { return passes(r, cand[k].ids); })) || !fits(cand, b.picked, k, count, limit, o.minUnique) ||
-              !shareFits(conds, cand, b.picked, k, N)) continue;
+              !shareFits(conds, cand, b.picked, k, N) || (coreOf && (coreN[coreOf[k]] || 0) + 1 > coreLim)) continue;
           var v = b.score(k).value;
           if (v > bestV) { bestV = v; best = k; }
         }
         if (best < 0) break;
         b.add(best);
         cand[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
+        if (coreOf) coreN[coreOf[best]] = (coreN[coreOf[best]] || 0) + 1;
       }
     });
     return { chosen: b.picked.slice(), builder: b };
@@ -679,6 +697,6 @@
            gatedProj: gatedProj, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
-           CORR: CORR, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
+           CORR: CORR, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
            CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
 });

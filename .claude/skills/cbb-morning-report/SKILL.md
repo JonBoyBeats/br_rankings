@@ -193,6 +193,14 @@ draw used); the monthly readout shows his results on nights each was used (direc
 **Nightly**, give one line only: which standings were graded, and the projection gate's state
 (`analysis/cbb/dk/gate.json`). No rule-set verdicts from one night.
 
+**Calibration week (through 2026-11-23): the calibration note comes first in the DK part.** Run
+`python3 scripts/dk_eval.py calnote` and give it short: bugs found, the audit's a / b / c in one line each, and any
+change made with its reason. One-night results don't drive changes; principled, reversible tweaks do, and every
+change goes in `analysis/cbb/dk/versions.csv` (date it takes effect, version, component, change, reason; numbers in a
+reason are computed, never recalled) so the readout can split slates by version. Rules and shadow rule sets stay as
+they are. On 2026-11-24 the calibration blend ends by itself (dk_eval.py CALIBRATION_BLEND) and the gate's own
+rule takes over: say so in that morning's note.
+
 **The audit, nightly, first in the DK part of the report** (`python3 scripts/dk_eval.py audit`): projections and
 ownership come first; the sim's grading waits for enough slates. Give its short lines as they print, last night
 and the season: (a) our projection against actual DraftKings points (average miss, bias, rank correlation) beside

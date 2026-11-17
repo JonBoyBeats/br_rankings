@@ -276,21 +276,24 @@
     many from each idea survive each round. <b>Protect % a tag</b> (off unless set) keeps at least that share of each idea's lineups,
     its best-ranked, whatever the sim says; it's saved with the build so the grading can price it. <b>Pick portfolios</b> picks each contest's entries from what's left as a set:
     one at a time, the lineup that adds the most to the set's expected payout with that contest's payouts, within Max
-    exposure (and each player's Max%) and Min unique, which apply here and only here. <b>Review</b> opens one contest's set
+    exposure (and each player's Max%), Min unique and Max core (no three-player core, a lineup's three highest salaries, in
+    more than that share of the contest's lineups, at least one each), which apply here and only here; each contest's
+    largest core is shown. Each lineup goes in one contest only, the largest stake picking first. <b>Review</b> opens one contest's set
     below to swap lineups; <b>Export DK entries</b> fills the entries file's rows, ready to upload (Edit Entries → upload).
     <b>Save build</b> downloads the bank and the portfolios: send it in with the standings and your entries get graded
     against the bank.</div>
   <div class="opts">
     <label class="field"><span class="field-label">DraftKings entries file</span><input type="file" id="entriesFile" accept=".csv" style="height:auto"></label>
-    <label class="field"><span class="field-label">Keep</span><input class="num" id="cutKeep" type="number" min="20" max="5000" step="50" value="500"></label>
+    <label class="field"><span class="field-label">Keep</span><input class="num" id="cutKeep" type="number" min="20" max="5000" step="50" value="2000"></label>
     <label class="field"><span class="field-label">Cut % a round</span><input class="num" id="cutPct" type="number" min="1" max="50" value="10"></label>
     <label class="field"><span class="field-label">Nights a round</span><input class="num" id="cutNights" type="number" min="200" max="10000" step="100" value="2000"></label>
     <label class="field" title="Keep at least this % of each rule tag's banked lineups through the cut, its best-ranked ones, even past Keep (blank: off)"><span class="field-label">Protect % a tag</span><input class="num" id="cutProtect" type="number" min="0" max="100" step="5" placeholder="off"></label>
     <button type="button" class="primary" id="cutRun">Re-sim &amp; cut</button>
   </div>
   <div class="opts">
-    <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="60"></label>
+    <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="40"></label>
     <label class="field"><span class="field-label">Min unique</span><input class="num" id="minUnique" type="number" min="1" max="8" value="3"></label>
+    <label class="field" title="No 3-player core (a lineup's three highest salaries) in more than this % of a contest's lineups (at least one lineup a core; blank: off)"><span class="field-label">Max core %</span><input class="num" id="maxCore" type="number" min="1" max="100" value="15"></label>
     <label class="field"><span class="field-label">Nights for the pick</span><input class="num" id="nSims" type="number" min="500" max="10000" step="500" value="3000"></label>
     <button type="button" class="primary" id="pfRun">Pick portfolios</button>
     <button type="button" id="pfExport" disabled>Export DK entries</button>
@@ -312,7 +315,7 @@
     <b>Quality</b>, its expected points less what its salary buys at the simulated field's points per dollar (above 0: more
     points than its price); <b>Core %</b>, the share of the simulated field holding its three highest-salaried players
     (low: few others have its core, so when it hits, it hits mostly alone). Auto-fill adds by Added value within Max
-    exposure and Min unique. <b>Keep</b> makes your set the contest's portfolio for the export.</div>
+    exposure, Min unique and Max core. <b>Keep</b> makes your set the contest's portfolio for the export.</div>
   <div class="opts">
     <label class="field"><span class="field-label">+Cover counts</span><select id="bpCover" style="width:auto"><option value="top1">top 1%</option><option value="cash">cashing</option></select></label>
     <button type="button" id="bpAuto" disabled>Auto-fill the rest</button>
@@ -423,7 +426,7 @@ function gateText() {
   if (!open.length) return "Projection gate: closed. Ours has held up against DraftKings' average in every salary band (" + gate.nights + " graded nights).";
   return "Projection gate: OPEN in " + open.map(function (b) { return "$" + b.lo.toLocaleString() + (b.hi < 99999 ? "-" + b.hi.toLocaleString() : "+") +
     " (Proj = " + Math.round(100 * b.w) + "% ours, " + Math.round(100 * (1 - b.w)) + "% DK avg)"; }).join(", ") +
-    ": DraftKings' average beat ours there over " + gate.nights + " graded nights.";
+    (gate.override ? " (" + gate.version + ", " + gate.override + ")." : ": DraftKings' average beat ours there over " + gate.nights + " graded nights.");
 }
 
 function renderPlayers() {
@@ -526,7 +529,8 @@ function drawRules() {
 // the pick's settings (section 2), for a contest taking n entries: Max exposure rounds down, so a 1-entry contest gets its one
 function pickRules(n) {
   var v = function (id) { return $(id).value === "" ? null : +$(id).value; };
-  return { n: n, maxExpo: Math.max((v("maxExpo") || 100) / 100, 1 / n), minUnique: Math.max(1, v("minUnique") || 1), conds: [] };
+  return { n: n, maxExpo: Math.max((v("maxExpo") || 100) / 100, 1 / n), minUnique: Math.max(1, v("minUnique") || 1), conds: [],
+           maxCore: v("maxCore") ? v("maxCore") / 100 : null };
 }
 
 function assign(ids) { return DKSim.assign(ctx(), ids); }
@@ -736,6 +740,7 @@ function bankAdd(lineups, tag) {
   CUT = null; PF = {}; pfSave(); bankSaveState(); renderBank();
   return added;
 }
+function coreName(key) { return key.split(",").map(function (id) { return shortName((byId(id) || {}).name || id); }).join(" / "); }
 function finalIdx() { return CUT && CUT.keep ? CUT.keep : BANK.lineups.map(function (L, i) { return i; }); }
 function tagCounts(idx) {
   var c = {};
@@ -838,16 +843,20 @@ async function pickPortfolios() {
     PF[String(c.id)].forEach(function (bi) { taken[bi] = 1; });
     var why = "";
     if (r.chosen.length < n) {        // which setting stops it: try each one relaxed
-      var e = DKSim.pick(ctx(), Object.assign({}, po, { maxExpo: 1 }), pool, sim, c, n).chosen.length >= n;
-      var u = DKSim.pick(ctx(), Object.assign({}, po, { minUnique: 1 }), pool, sim, c, n).chosen.length >= n;
-      why = ", short: " + (e && u ? "Max exposure or Min unique stops it (either one relaxed fills it)" : e ? "Max exposure stops it" : u ? "Min unique stops it" :
+      var fills = function (x) { return DKSim.pick(ctx(), Object.assign({}, po, x), pool, sim, c, n).chosen.length >= n; };
+      var stops = [["Max exposure", { maxExpo: 1 }], ["Min unique", { minUnique: 1 }], ["Max core", { maxCore: null }]].filter(function (x) { return fills(x[1]); })
+        .map(function (x) { return x[0]; });
+      why = ", short: " + (stops.length ? stops.join(" or ") + " stops it (relaxing " + (stops.length > 1 ? "any one" : "it") + " fills it)" :
             "the final pool runs out under the caps together") + "; raise Keep, or loosen it";
     }
-    msgs.push(c.name + ": " + r.chosen.length + " of " + n + why + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
+    var tc = DKSim.topCore(ctx(), r.chosen.map(function (k) { return pool[k]; }));
+    msgs.push(c.name + ": " + r.chosen.length + " of " + n + why + (tc ? ", largest core " + coreName(tc.key) + " in " + tc.n + " (" + Math.round(100 * tc.share) + "%)" : "") + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
       ", one cashes in " + Math.round(100 * r.builder.coverage().cash) + "% of nights)");
   }
   pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
-  return "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + ", each lineup in one contest only, the largest stake first: " +
+  var night = DKSim.topCore(ctx(), Object.keys(PF).reduce(function (a, k) { return a.concat(PF[k].map(function (bi) { return BANK.lineups[bi]; })); }, []));
+  return (night ? "Largest core across the night's " + night.of + " entries: " + coreName(night.key) + " in " + night.n + " (" + Math.round(100 * night.share) + "%). " : "") +
+    "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + ", each lineup in one contest only, the largest stake first: " +
     msgs.join("; ") + ". Review any one below." +
     (ENTRIES ? "" : " Load the entries file to export them.");
 }
@@ -889,7 +898,8 @@ function saveBank() {
   var rs = [];
   Object.keys(BANK.tagRules).forEach(function (t) { (BANK.tagRules[t].conds || []).forEach(function (r) { if (!rs.some(function (x) { return x.label === r.label; })) rs.push(r); }); });
   var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(), rule_set: rs,
-              pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null, portfolios: PF, gate: gate };
+              pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null,
+              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, gate: gate };
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
   a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
@@ -933,7 +943,8 @@ function bpAdd(k) { BP.b.add(k); bpRescore(); bpRender(); }
 function bpRemove(k) { BP.b.remove(k); bpRescore(); bpRender(); }
 
 async function bpAuto() {
-  var o = BP.o, b = BP.b, count = {}, limit = {};
+  var o = BP.o, b = BP.b, count = {}, limit = {}, coreOf = o.maxCore ? DKSim.cores(ctx(), BP.pool) : null, coreLim = DKSim.coreLimit(o, o.n), coreN = {};
+  if (coreOf) b.picked.forEach(function (k) { coreN[coreOf[k]] = (coreN[coreOf[k]] || 0) + 1; });
   rows.forEach(function (r) {
     var cap = Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
     limit[r.id] = state.lock[r.id] ? o.n : Math.floor(cap * o.n + 1e-9);
@@ -943,15 +954,17 @@ async function bpAuto() {
     var best = -1, bestV = -Infinity;
     for (var k = 0; k < BP.pool.length; k++) {
       var sc = BP.scores[k];
-      if (!sc || !DKSim.fits(BP.pool, b.picked, k, count, limit, o.minUnique) || !DKSim.shareFits(o.conds || [], BP.pool, b.picked, k, o.n)) continue;
+      if (!sc || !DKSim.fits(BP.pool, b.picked, k, count, limit, o.minUnique) || !DKSim.shareFits(o.conds || [], BP.pool, b.picked, k, o.n) ||
+          (coreOf && (coreN[coreOf[k]] || 0) + 1 > coreLim)) continue;
       if (sc.value > bestV) { bestV = sc.value; best = k; }
     }
     if (best < 0) break;
     b.add(best); BP.pool[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
+    if (coreOf) coreN[coreOf[best]] = (coreN[coreOf[best]] || 0) + 1;
     $("bpStatus").textContent = "Auto-filling… " + b.picked.length + " of " + o.n; await tick();
     bpRescore();
   }
-  bpRender(b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure and Min unique (a bigger Keep helps)." : "");
+  bpRender(b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure, Min unique and Max core (a bigger Keep helps)." : "");
 }
 
 function bpRender(note) {
@@ -966,7 +979,8 @@ function bpRender(note) {
   var expo = Object.keys(cnt).sort(function (x, y) { return cnt[y] - cnt[x]; }).slice(0, 10)
     .map(function (id) { return esc(shortName(by[id].name)) + " " + Math.round(100 * cnt[id] / picked.length) + "%"; }).join(" · ");
   $("bpSummary").innerHTML = picked.length ? summaryHtml({ coverage: b.coverage(), diversity: DKSim.diversity(ctx(), lineups), total: b.total(),
-    fee: (BP.contest.entry_fee || 0) * picked.length }) + '<div class="note">' + picked.length + " picked. Exposures: " + expo + "</div>"
+    fee: (BP.contest.entry_fee || 0) * picked.length }) + '<div class="note">' + picked.length + " picked. Exposures: " + expo +
+    (function () { var tc = DKSim.topCore(ctx(), lineups); return tc ? ". Largest core: " + esc(coreName(tc.key)) + " in " + tc.n + " of " + tc.of + " (" + Math.round(100 * tc.share) + "%)" : ""; })() + "</div>"
     : '<div class="note">Nothing picked yet: Add lineups below, or Auto-fill.</div>';
   var get = { proj: function (k) { return BP.proj[k]; }, own: function (k) { return BP.own[k]; }, alone: function (k) { return BP.alone[k]; },
               qual: function (k) { return BP.qual[k]; }, core: function (k) { return BP.core[k]; },
