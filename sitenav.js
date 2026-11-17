@@ -9,7 +9,7 @@
                                         { key: "survivor", label: "Survivor", href: "/survivor/" }] },
     { key: "nba", label: "NBA", pages: [{ key: "board", label: "Board", href: B + "nba.html" }, { key: "results", label: "Results", href: B + "nba_results.html" }] },
     { key: "cbb", label: "CBB", pages: [{ key: "board", label: "Board", href: B + "cbb.html" }, { key: "dk", label: "DK", href: B + "dk.html" }] },
-    { key: "cfb", label: "CFB", pages: [{ key: "board", label: "Board", href: B + "?league=cfb" }] }
+    { key: "cfb", label: "CFB", pages: [{ key: "board", label: "Board", href: B + "?league=cfb" }, { key: "cfp", label: "CFP", href: B + "cfp.html" }] }
   ];
   var LIVE = B + "nba_live.html";
 
