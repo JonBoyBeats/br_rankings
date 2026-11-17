@@ -160,7 +160,9 @@ def booms(rows, adp_col, proj_col):
     return {it["r"]["player_id"]: B.chance(B.BOOM, it["x"], bars[id(it)], it["m"]) for it in items}
 
 
-def build(rows, date, slate, window, meta):
+def build(rows, date, slate, window, meta, base="adp"):
+    """base "etr" (the pod replay's variant, PM): the tiers start from the projection ladder and move one tier toward ADP's
+    at two or more apart; flags, the T4 PRICEY drop, the elites and the rest of the rules as the button's."""
     w = WINDOWS[window]
     pod = pod_size(rows)
     cap = 24 if pod == 4 else 36
@@ -200,6 +202,8 @@ def build(rows, date, slate, window, meta):
         pid, a, p = r["player_id"], at[r["player_id"]], pt[r["player_id"]]
         d = a - p
         c = a - (1 if d > 0 else -1) if abs(d) >= 2 else a
+        if base == "etr":
+            c = p + (1 if d > 0 else -1) if abs(d) >= 2 else p
         if RULESET == "new":                             # the one-tier move runs after the ADP ladder (round 6 is never
             if c == 4 and d < 0:                         # A4 there), so an A5-P3 player is T4 VALUE (fixed 2026-11-13)
                 c = 5                                    # T4 PRICEY drops into T5
@@ -224,6 +228,8 @@ def build(rows, date, slate, window, meta):
                     "breaker": "" if act is None else int(pid in brk),
                     "your_rank": r.get(w["rank"], ""), "your_tier": r.get(w["tier"], ""), "built": "",
                     "boom": round(boom[pid], 3) if pid in boom else "", "drafted": round(drafted[pid], 1) if pid in drafted else ""})
+        if base == "etr":
+            out[-1]["_base"] = p                           # the tier the rules read as the starting ladder
     pmin = proj_minutes(rows, window)                     # stored nightly: the minutes the board's floor reads
     for x in out:
         x["proj_min"] = round(pmin[x["player_id"]], 1) if pmin.get(x["player_id"]) is not None else ""
@@ -372,7 +378,7 @@ def new_order(out, pool, rows, adp, window, pod, date, slate, meta, boom, drafte
                 x["_qlast"] = True
             elif x["tier"] == 1:
                 x["tier"], x["_qtop"] = 2, True
-    t1_proj = [x["proj"] for x in out if x["a_tier"] == 1 and x["proj"] is not None]
+    t1_proj = [x["proj"] for x in out if x.get("_base", x["a_tier"]) == 1 and x["proj"] is not None]
     brk = (9 if pod == 4 else 13) - elites(t1_proj)
 
     def k(x):
@@ -406,7 +412,7 @@ def new_order(out, pool, rows, adp, window, pod, date, slate, meta, boom, drafte
     # 4-drafter nights: no drafted% line (until a Friday shows one); the dropped T4 PRICEY players right after T5's top 3,
     # exempt from the line (index.html nbaBuildLaddersNew)
     band = (lambda z: 0) if pod == 4 else (lambda z: t5_band(z["dr"]))
-    drop = lambda z: z["row"]["a_tier"] <= 4 and z["row"]["flag"] == "PRICEY"     # a T4 PRICEY player dropped into T5
+    drop = lambda z: z["row"].get("_base", z["row"]["a_tier"]) <= 4 and z["row"]["flag"] == "PRICEY"   # a T4 PRICEY player dropped into T5
     eligible = sorted([z for z in tier(5) if floor(z) and band(z) <= 1 and not drop(z)], key=lambda z: (band(z),) + by_proj(z))
     eligible = eligible[:3] + sorted([z for z in tier(5) if floor(z) and drop(z)], key=by_proj) + eligible[3:]
     head = t1 + qtop + t2 + t3 + t4

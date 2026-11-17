@@ -1,8 +1,8 @@
 """The Friday report's contest results (asked 2026-11-13; first report 2026-11-20). Writes analysis/nba/report/money_friday.json,
 which the rankings side's Friday report reads. Runs in its own Friday job (.github/workflows/nba_friday.yml) after the
 nightly record, so the nightly money step doesn't grow. Results only: nothing here writes the register or the button.
-Also reruns the pod replay (scripts/nba_pod_replay.py: pod_replay.md/json) and carries its paired reads, season and since
-each rule date, under "pod_replay".
+Also carries the pod replay's paired reads (scripts/nba_pod_replay.py, run nightly: pod_replay.json), season and since
+each rule date, under "pod_replay"; reruns it only when the nightly's copy is missing or over 12 hours old.
 
 Every test is read over every night on file, as multiples against the whole field in the same contest and price quintile
 (top 1%, top 10%, cash; counts and an 80% range: nba_money.field_multiple), for the season and since its rule went in. Rule
@@ -325,8 +325,11 @@ def main():
         for w in ("am", "pm"):
             for r in n["tiers"][w].values():
                 r["window"] = w
-    import nba_pod_replay as PR                    # the pod replay, rerun weekly here: pod_replay.md/json, and its reads below
-    pr = PR.run(N)
+    import nba_pod_replay as PR                    # the pod replay: this morning's nightly copy, rerun only if it's missing or stale
+    pr = json.load(open(PR.OUT_JSON)) if os.path.exists(PR.OUT_JSON) else {}
+    age = (dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(pr["generated"])) if pr.get("generated") else None
+    if age is None or age > dt.timedelta(hours=12):
+        pr = PR.run(N, mirror=a.mirror)
     R = M.field_rates(N)
     RD.update(json.load(open(RULE_DATES)) if os.path.exists(RULE_DATES) else {})
     prev = json.load(open(OUT)) if os.path.exists(OUT) else {}

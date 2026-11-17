@@ -15,7 +15,8 @@ Pick order is estimated: Underdog doesn't publish draft slots or pick order. Eac
 taken at, are its rounds 1-6, and the pod's seats are the snake slots that fit those ADPs best (nba_swaps' fit).
 
 Writes analysis/nba/report/pod_replay.md (results only) and pod_replay.json (season paired differences and the same since
-each rule_dates.json date, for the Results dashboard). The Friday report (nba_money_friday.py) reruns it weekly.
+each rule_dates.json date, for the Results dashboard). Runs nightly after the money step (nba_daily.yml); the Friday
+report (nba_money_friday.py) carries that night's reads in money_friday.json.
 
   python3 scripts/nba_pod_replay.py [--mirror ../br-adp-mirror] [--since YYYY-MM-DD] [--dates D1,D2]
 """
@@ -24,14 +25,27 @@ import argparse, collections, datetime as dt, hashlib, itertools, json, math, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import nba_money as M     # noqa: E402  nights, teams, windows, place_and_pay
 import nba_swaps as S     # noqa: E402  snake pick numbers
+import nba_tier_history as T  # noqa: E402  the Tiers button rebuilt (ADP tiers, and on ETR tiers for (f))
 
 REP = M.REP
 OUT_MD = os.path.join(REP, "pod_replay.md")
 OUT_JSON = os.path.join(REP, "pod_replay.json")
-LISTS = ["a", "b", "c1", "c2", "c3", "c4", "c5", "d", "e", "f1", "f2", "f3", "f4", "f5"]
+LISTS = ["a", "b", "c1", "c2", "c3", "c4", "c5", "d", "e", "f1", "f2", "f3", "f4", "f5", "bp", "f", "g"]
 NAMES = {"a": "(a) my locked list", "b": "(b) the button's list", "d": "(d) ADP", "e": "(e) ETR (PM)",
          **{"c%d" % k: "(c%d) mine, T%d's moves undone" % (k, k) for k in range(1, 6)},
-         **{"f%d" % k: "(f%d) mine (PM), T%d in ETR's order" % (k, k) for k in range(1, 6)}}
+         **{"f%d" % k: "(f%d) mine (PM), T%d in ETR's order" % (k, k) for k in range(1, 6)},
+         "bp": "(b') the button rebuilt here (PM)", "f": "(f) the button on ETR tiers (PM)", "g": "(g) ETR order, the button's T5 rule (PM)"}
+PAIRS = [("a", y) for y in LISTS[1:]] + [("g", "e"), ("bp", "f")]
+META = os.path.join(M.NBA, "daily", "meta.json")
+
+
+def pk(x, y):
+    """A pair's key in pod_replay.json: the other list for (a) minus it, else "x-y"."""
+    return y if x == "a" else "%s-%s" % (x, y)
+
+
+def label(key):
+    return NAMES[key] if key in NAMES else "%s minus %s" % tuple(NAMES[k] for k in key.split("-"))
 R6 = 6            # the round-6 pick: drawn from the top this many still available ...
 R6_WEIGHTS = (38, 25, 14, 11, 6, 6)   # ... weighted to my real habit (the first replay's fidelity check, 2026-11-17)
 MY_DRAWS = 200    # round-6 redraws at my real seats, for the top-1% spread
@@ -41,8 +55,38 @@ num = M.num
 
 
 # ---------------------------------------------------------------- the lists
-def lists_for(rec, w):
-    """{list: [player ids]} for the window, each finished in ADP order; and the ADP order itself."""
+def button_heads(rec, date):
+    """PM: (b') the button rebuilt here on ADP tiers, (f) the same on ETR tiers, (g) ETR's order with the button's T5 rule
+    (T1-T4 by the ETR ladder in ETR order; T5: under the drafted% line first by projection, the ETR ladder's T4 PRICEY
+    players behind T5's top 3, the minutes floor; 60%+ and the rest below the cut by projection)."""
+    import glob
+    path = glob.glob(os.path.join(M.NBA, "daily", "%s_*_main.csv" % date))
+    rows = list(rec.values())
+    if not path or not rows:
+        return {}
+    meta = (json.load(open(META)) if os.path.exists(META) else {}).get(os.path.basename(path[0]), {})
+    out, _ = T.build(rows, date, rows[0]["slate"], "pm", meta)
+    oute, _ = T.build(rows, date, rows[0]["slate"], "pm", meta, base="etr")
+    if not out or not oute:
+        return {}
+    by_built = lambda o: [x["player_id"] for x in sorted(o, key=lambda x: x["built"])]
+    pod = T.pod_size(rows)
+    key = lambda x: (-(x["proj"] if x["proj"] is not None else -1e9), x["adp"] if x["adp"] is not None else 999)
+    floor = lambda x: x["proj_min"] == "" or x["proj_min"] >= T.MIN_FLOOR
+    band = (lambda x: 0) if pod == 4 else (lambda x: T.t5_band(x["drafted"] if x["drafted"] != "" else 0))
+    t4p = [x for x in out if x["p_tier"] == 4 and x["flag"] == "PRICEY"]
+    skip = {x["player_id"] for x in t4p}
+    head = sorted([x for x in out if x["p_tier"] <= 4 and x["player_id"] not in skip], key=key)
+    elig = sorted([x for x in out if x["p_tier"] == 5 and floor(x) and band(x) <= 1], key=lambda x: (band(x),) + key(x))
+    elig = elig[:3] + sorted([x for x in t4p if floor(x)], key=key) + elig[3:]
+    t5 = elig[:max(0, T.DEFAULT_RANKED - len(head))]
+    ids = {x["player_id"] for x in head + t5}
+    g = [x["player_id"] for x in head + t5] + [x["player_id"] for x in sorted((x for x in out if x["player_id"] not in ids), key=key)]
+    return {"bp": by_built(out), "f": by_built(oute), "g": g}
+
+
+def lists_for(rec, w, extra=None):
+    """{list: [player ids]} for the window, each finished in ADP order; and the ADP order itself. extra: more heads (PM)."""
     out_now = {p for p, r in rec.items() if r.get("injury_" + w) == "Out"}
     pool = [p for p in rec if p not in out_now]
     adp = {p: num(rec[p].get("adp_" + w)) if num(rec[p].get("adp_" + w)) is not None else num(rec[p].get("adp_close")) for p in pool}
@@ -89,6 +133,9 @@ def lists_for(rec, w):
                     continue
                 it = iter(sorted(members, key=lambda p: (etr[p] is None, -(etr[p] or 0), rank[p])))
                 L["f%d" % k] = finish([next(it) if mt.get(p) == k else p for p in mine])
+        if "e" in L:
+            for k, head in (extra or {}).items():
+                L[k] = finish(head)
     return L
 
 
@@ -219,7 +266,7 @@ def night(n):
     mine_rows = []                                                          # my real seats: real vs (a) at the seat
     r6 = []                                                                 # my real round-6 pick's place among (a)'s top available
     my_t1 = {"seats": 0, "real": 0, "list": 0, "draws": [0] * MY_DRAWS}       # top-1% counts at my real seats
-    lists = {w: lists_for(rec, w) for w in ("am", "pm")}
+    lists = {w: lists_for(rec, w, button_heads(rec, n["date"]) if w == "pm" else None) for w in ("am", "pm")}
     for c in n["contests"]:
         pod, ts_all, nn = c["pod_size"], n["teams"][c["contest_id"]], len(n["teams"][c["contest_id"]])
         pods = collections.defaultdict(list)
@@ -333,7 +380,7 @@ def build(nights):
         js["season"].setdefault(w, {})[name] = {"nights": v["nights"], "seats": v["seats"],
                                                 **{k: None if v[k] is None else round(100 * v[k], 3) for k in ("top1", "top10", "fin", "cash", "roi")}}
     # paired
-    pairs = [("a", y) for y in LISTS[1:]]
+    pairs = PAIRS
     P = {}
     for w in ("am", "pm", "both"):
         for x, y in pairs:
@@ -360,7 +407,7 @@ def build(nights):
                 for k, _ in keys:
                     r = paired(nights, w, x, y, k, since={"am": am, "pm": pm})
                     if r["nights"]:
-                        blk["paired"].setdefault(w, {}).setdefault(y, {})[k] = {
+                        blk["paired"].setdefault(w, {}).setdefault(pk(x, y), {})[k] = {
                             "nights": r["nights"], **{f: None if r[f] is None else round(100 * r[f], 3) for f in ("diff", "lo", "hi")}}
         SR.append(blk)
     js["since_rules"] = SR
@@ -380,7 +427,7 @@ def build(nights):
     js["my_seats_top1"] = MT
     js["paired"] = {}
     for (w, x, y, k), v in P.items():
-        js["paired"].setdefault(w, {}).setdefault(y, {})[k] = {
+        js["paired"].setdefault(w, {}).setdefault(pk(x, y), {})[k] = {
             "nights": v["nights"], **{f: None if v[f] is None else round(100 * v[f], 3) for f in ("diff", "lo", "hi")}}
     # fidelity: my real round-6 pick's place among (a)'s top available
     r6 = [r for x in nights for r in x["r6"]]
@@ -400,7 +447,7 @@ def build(nights):
         return out
 
     def row_paired(w):
-        out = ["| (a) minus | Nights | Top 1% (pts) | 80% range | Top 10% (pts) | 80% range | Mean finish pct (lower is better) | 80% range |",
+        out = ["| (a) minus, or the pair named | Nights | Top 1% (pts) | 80% range | Top 10% (pts) | 80% range | Mean finish pct (lower is better) | 80% range |",
                "|---|---|---|---|---|---|---|---|"]
         for x, y in pairs:
             if (w, x, y, "top1") not in P:
@@ -409,7 +456,7 @@ def build(nights):
             for k, _ in keys:
                 r = P[(w, x, y, k)]
                 cells += [pp(r["diff"]), "%s to %s" % (pp(r["lo"]), pp(r["hi"])) if r["lo"] is not None else "-"]
-            out.append("| %s | %d | %s |" % (NAMES[y], P[(w, x, y, "top1")]["nights"], " | ".join(cells)))
+            out.append("| %s | %d | %s |" % (label(pk(x, y)), P[(w, x, y, "top1")]["nights"], " | ".join(cells)))
         return out
 
     head = summary(season, P, pos, r6, mine, beat, MT)
@@ -435,7 +482,12 @@ def build(nights):
            "- (b) and (c) need the button's list at the lock: on file from 2026-11-09 (PM) and 2026-11-10 (AM). (e) is ETR's PM "
            "projections, highest first (ETR's own rank isn't kept). 11/15 had no locks on file and is out.",
            "- (f) is my PM list with one of my tiers (my tier lines at the PM lock, on file from 10/23) in ETR's order: that tier's "
-           "places in my list, filled by its players highest ETR projection first. (a) minus (f) below zero: ETR's order beat mine there.", ""]
+           "places in my list, filled by its players highest ETR projection first. (a) minus (f) below zero: ETR's order beat mine there.",
+           "- (b'), (f) and (g), PM: the Tiers button rebuilt here from the PM lock's inputs (scripts/nba_tier_history.py, the 11/13 "
+           "rules on every night; it matches the board's own PM order at 26-36 of the top 36 places since 11/13). (b') on ADP tiers as "
+           "the board; (f) the same rules with the tiers starting from ETR's ladder and moving one tier toward ADP's at two or more "
+           "apart; (g) ETR's order for ETR's T1-T4, then T5 by the button's rule (under the 60% drafted line first, by projection; "
+           "ETR's T4 PRICEY players behind T5's top 3; the minutes floor), 60%+ below the cut. (b') minus (f) isolates the tiers' source.", ""]
     for w, lab in (("both", "Both windows"), ("am", "AM"), ("pm", "PM")):
         md += ["## Season: %s" % lab, ""] + row_season(w) + ["", "Paired: (a) minus each list, same pods and seats, nights resampled for the 80% ranges.", ""] + row_paired(w) + [""]
     if MT:
@@ -457,12 +509,12 @@ def build(nights):
                "apart in pod_replay.json). Season is above.", ""]
         for blk in SR:
             md += ["### Since %s (AM) / %s (PM): %s" % (blk["since"]["am"], blk["since"]["pm"], ", ".join(blk["rules"])), "",
-                   "| (a) minus | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |", "|---|---|---|---|---|---|---|"]
+                   "| (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |", "|---|---|---|---|---|---|---|"]
             for w in ("both",):                                  # per window: pod_replay.json
                 for y, v in (blk["paired"].get(w) or {}).items():
                     t10 = v["top10"]
                     md.append("| %s | %s | %d | %+.2f | %s | %+.2f | %+.2f |" % (
-                        NAMES[y], w.upper(), t10["nights"], t10["diff"], "%+.2f to %+.2f" % (t10["lo"], t10["hi"]) if t10["lo"] is not None else "-",
+                        label(y), w.upper(), t10["nights"], t10["diff"], "%+.2f to %+.2f" % (t10["lo"], t10["hi"]) if t10["lo"] is not None else "-",
                         v["top1"]["diff"], v["fin"]["diff"]))
             md += [""]
     # fidelity
@@ -561,6 +613,13 @@ def summary(season, P, pos, r6, mine, beat, MT=None):
     if ft:
         out.append("- **ETR by tier (PM):** my list minus my list with one tier in ETR's order, top-10% points (80% range; below zero, "
                    "ETR's order beat mine in that tier): " + "; ".join("T%d %s (%s to %s)" % (k, pp(r["diff"]), pp(r["lo"]), pp(r["hi"])) for k, r in ft) + ".")
+    bt = [(lab, P.get(("pm", x, y, "top10")), P.get(("pm", x, y, "top1"))) for lab, x, y in (
+        ("(a) minus (f) the button on ETR tiers", "a", "f"), ("(a) minus (g) ETR with the button's T5 rule", "a", "g"),
+        ("(g) minus (e) pure ETR: what the T5 rule adds", "g", "e"), ("(b') minus (f): ADP tiers against ETR tiers in the button", "bp", "f"))]
+    bt = [(lab, r, r1) for lab, r, r1 in bt if r and r["diff"] is not None]
+    if bt:
+        out.append("- **ETR-based button variants (PM)**, top-10% points (80% range), top-1% points: " + "; ".join(
+            "%s %s (%s to %s), %s" % (lab, pp(r["diff"]), pp(r["lo"]), pp(r["hi"]), pp(r1["diff"])) for lab, r, r1 in bt) + ".")
     if MT:
         out.append("- **Top 1%% at my seats:** my real teams %d, my locked list at the same seats %d (round-6 redraws %d-%d, a count this "
                    "size swings %d-%d by luck); real minus list %+d, nights resampled %s." % (
@@ -578,8 +637,10 @@ def summary(season, P, pos, r6, mine, beat, MT=None):
     return out
 
 
-def run(N, want=None, since=None):
-    """Replay the nights, write pod_replay.md and pod_replay.json, and return the json (the Friday report embeds it)."""
+def run(N, want=None, since=None, mirror=None):
+    """Replay the nights, write pod_replay.md and pod_replay.json, and return the json (the Friday report embeds it).
+    mirror: the ADP mirror, for the rebuilt button's Q tags and Boom."""
+    T.MIRROR = mirror or T.MIRROR
     t0, out = time.time(), []
     for n in N:
         if (want and n["date"] not in want) or (since and n["date"] < since):
@@ -602,7 +663,7 @@ def main():
     ap.add_argument("--since")
     ap.add_argument("--dates")
     a = ap.parse_args()
-    run(M.load(a.mirror), set(a.dates.split(",")) if a.dates else None, a.since)
+    run(M.load(a.mirror), set(a.dates.split(",")) if a.dates else None, a.since, a.mirror)
 
 
 if __name__ == "__main__":
