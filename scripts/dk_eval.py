@@ -883,6 +883,8 @@ def idea_kind(t):
     rules' templates ("2+ from a team", "if/then", ...) and the settings off their defaults."""
     parts = []
     for r in t.get("conds") or []:
+        if r.get("base"):           # baseline rules (every draw on the slate) aren't part of an idea; recorded, not kinded
+            continue
         ty = r.get("type")
         parts.append("platoon never-together" if r.get("src") == "platoon" else
                      "stack with opponent" if str(r.get("label", "")).startswith("Stack ") else

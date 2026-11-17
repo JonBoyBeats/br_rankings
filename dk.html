@@ -649,7 +649,7 @@ function tileRules(act, t, k) {
                                  label: "If not " + top[0].name + ", then 1+ of " + top[1].name + " / " + top[2].name }];
   if (act === "platoon") {    // src marks it for grading (dk_eval.py idea_kind: "platoon never-together")
     var p = t.platoon[k];
-    return [{ type: "never", ids: [p.starter.id, p.bench.id], src: "platoon", platoon: { corr: p.corr, games: p.games, pos: p.pos },
+    return [{ type: "never", ids: [p.starter.id, p.bench.id], src: "platoon", base: true, platoon: { corr: p.corr, games: p.games, pos: p.pos },
               label: "Never " + p.starter.name + " with " + p.bench.name + " (platoon)" }];
   }
   if (act === "bring") return [{ type: "if", ids: [top[0].id], set: teamIds(opp), n: 1, label: "If " + top[0].name + ", then 1+ from " + opp }];
@@ -666,12 +666,21 @@ function rulesMsg(r) {
 }
 function renderRules() {
   var list = state.rules || [];
-  $("ruleList").innerHTML = list.length ? list.map(function (rule, i) {
+  // Baseline rules (never-together pairs moved there; platoon pairs start there): every draw obeys them while ticked,
+  // but they stay out of the idea's name, so the bank's ideas don't list them; the bank file still records them
+  var row = function (rule, i) {
     var c = ruleCounts[rule.label];
     return '<div class="rule' + (rule.off ? " off" : "") + '" data-i="' + i + '"><input type="checkbox" class="ruleOn" title="On for the next draw (off keeps it here for later)"' +
       (rule.off ? "" : " checked") + '><span class="lab">' + esc(rule.label) + "</span>" + (c ? '<span class="pc">' + c.pass + " of " + c.of + " pass</span>" : "") +
+      (rule.type === "never" ? '<button data-act="base">' + (rule.base ? "To ideas" : "To baseline") + "</button>" : "") +
       (["if", "ifnot", "ifteam", "never"].indexOf(rule.type) >= 0 ? '<button data-act="edit">Edit</button>' : "") + '<button data-act="rm">Remove</button></div>';
-  }).join("") : '<div class="note" style="margin:4px 0">No rules: add one below, or from a team tile.</div>';
+  };
+  var base = [], idea = [];
+  list.forEach(function (rule, i) { (rule.base ? base : idea).push(row(rule, i)); });
+  $("ruleList").innerHTML = list.length ?
+    (base.length ? '<div class="sub" style="margin-top:4px">Baseline: every draw, not in the idea name (' + base.length + ")</div>" + base.join("") +
+      '<div class="sub" style="margin-top:6px">Idea rules</div>' : "") + (idea.join("") || '<div class="note" style="margin:4px 0">None.</div>')
+    : '<div class="note" style="margin:4px 0">No rules: add one below, or from a team tile.</div>';
   if (slate) $("tagNow").textContent = "Next draw is tagged: " + tagNow();
 }
 
@@ -775,7 +784,7 @@ function tagNow() {         // the draw's idea: the settings off their defaults,
   if (o.levW) t.push("leverage " + o.levW);
   Object.keys(state.lock).forEach(function (id) { t.push("lock " + name(id)); });
   Object.keys(state.excl).forEach(function (id) { t.push("no " + name(id)); });
-  (state.rules || []).forEach(function (x) { if (!x.off) t.push(x.label); });
+  (state.rules || []).forEach(function (x) { if (!x.off && !x.base) t.push(x.label); });
   return t.length ? t.join(" + ") : "no rules";
 }
 function bankAdd(lineups, tag) {
@@ -1179,6 +1188,7 @@ $("teamPanel").addEventListener("change", rowChange);
 $("ruleList").addEventListener("click", function (e) {
   var b = e.target.closest("button[data-act]"); if (!b) return;
   var i = +b.closest(".rule").dataset.i;
+  if (b.dataset.act === "base") { var x = state.rules[i]; if (x.base) delete x.base; else x.base = true; save(); renderRules(); return; }
   if (b.dataset.act === "rm") { state.rules.splice(i, 1); save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
   editing = i; loadEditor(state.rules[i]); $("rtSave").textContent = "Save changes"; $("rtCancel").hidden = false;
 });
@@ -1212,6 +1222,7 @@ $("rtSave").addEventListener("click", function () {
   if (editing >= 0) {
     var was = state.rules[editing];
     if (was.off) r.off = true;
+    if (was.base && r.type === "never") r.base = true;
     if (was.src === "platoon" && r.type === "never" && r.ids.slice().sort().join() === was.ids.slice().sort().join()) {
       r.src = was.src; r.platoon = was.platoon; r.label += " (platoon)";
     }

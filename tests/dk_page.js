@@ -341,6 +341,18 @@ function audit(name, L, o) {
   await pg.click("#rtSave");
   R = await rulesNow();
   check("platoon: an edit keeping the pair keeps the mark", R[0].src === "platoon" && (R[0].label.match(/\(platoon\)/g) || []).length === 1, JSON.stringify(R));
+  // baseline: a platoon rule starts there; the draw obeys it, the idea name leaves it out; To ideas / To baseline move it
+  const lab0 = R[0].label;
+  const baseNow = () => pg.evaluate(l => ({ base: !!state.rules[0].base, inDraw: drawRules().conds.some(r => r.label === l),
+    inTag: document.getElementById("tagNow").textContent.includes(l), block: /Baseline: every draw/.test(document.getElementById("ruleList").textContent) }), lab0);
+  let B = await baseNow();
+  check("baseline: a platoon rule starts in the baseline block, in the draw, out of the idea name", B.base && B.block && B.inDraw && !B.inTag, JSON.stringify(B));
+  await pg.click('#ruleList .rule[data-i="0"] button[data-act="base"]');
+  B = await baseNow();
+  check("baseline: To ideas puts it in the idea name", !B.base && !B.block && B.inDraw && B.inTag, JSON.stringify(B));
+  await pg.click('#ruleList .rule[data-i="0"] button[data-act="base"]');
+  B = await baseNow();
+  check("baseline: To baseline takes it back out", B.base && B.inDraw && !B.inTag, JSON.stringify(B));
   const heavy = TEAMS.teams.find(t => t.heavy_fav), notHeavy = TEAMS.teams.find(t => !t.heavy_fav);
   await openTeam(heavy.team);
   check("platoon: a heavy favorite's tile notes the bench pairing", /garbage time/.test(await pg.textContent(`.tile[data-team="${heavy.team}"]`)));
