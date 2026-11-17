@@ -291,17 +291,38 @@ function finish() {
   sv("line", { x1: L, x2: W - R, y1: y(0.01), y2: y(0.01), stroke: "var(--field)", "stroke-width": 2 }, svg);
   (W < 600 ? [0, 50, 100] : [0, 25, 50, 75, 100]).forEach(function (p) { sv("text", { x: L + band * p, y: H - 6, "text-anchor": "middle" }, svg, "top " + p + "%"); });
 
-  var last = played().slice(-1)[0];
-  el("div", { class: "sub" }, s, "Share of your lineups in the top X%: last night (" + short(last.date) + ")" + (RANGE === "night" ? "" : " and " + rangeLabel()));
-  var cum = function (fs) { var out = [[0, 0]]; var srt = fs.slice().sort(function (a, b) { return a - b; });
-    for (var p = 1; p <= 100; p++) out.push([p, srt.filter(function (f) { return f <= p / 100; }).length / (srt.length || 1)]); return out; };
-  var series = [{ name: "Field", color: "var(--field)", points: [[0, 0], [100, 1]] }, { name: "Last night", color: "var(--me)", points: cum(last.finish), dot: true }];
-  if (RANGE !== "night") series.splice(1, 0, { name: rangeLabel(), color: "var(--alt)", points: cum(fins) });
-  legend(s, series.map(function (x) { return { name: x.name === "Field" ? "Field (the diagonal)" : x.name, color: x.color, line: true }; }));
-  lines(s, series, { aria: "Cumulative finish", x: [0, 100], y: [0, 1], yticks: [0, 0.25, 0.5, 0.75, 1], yfmt: function (v) { return pct(v); },
-    xticks: cw(s) < 600 ? [[0, "top 0%"], [50, "50%"], [100, "100%"]] : [[0, "top 0%"], [10, "10%"], [25, "25%"], [50, "50%"], [75, "75%"], [100, "100%"]],
-    snap: function (v) { return Math.max(1, Math.min(100, Math.round(v))); },
-    tip: function (p) { return ["Top " + p + "%"].concat(series.map(function (x) { return x.name + ": " + pct(x.name === "Field" ? p / 100 : x.points[p][1], 1); })); } });
+  // Second: how often you reached each line, from the cash line up to the top 0.1%, as a multiple of the field's rate
+  // (1.00x is the field). Cash: your cashes over your entries times each night's field cash rate.
+  var ent = ns.reduce(function (a, n) { return a + n.header.entries; }, 0);
+  var rows = [{ label: "Cash line", n: ns.reduce(function (a, n) { return a + n.header.cashed; }, 0),
+                exp: ns.reduce(function (a, n) { return a + (n.header.field_cash_rate || 0) * n.header.entries; }, 0) }];
+  [[0.10, "Top 10%"], [0.05, "Top 5%"], [0.02, "Top 2%"], [0.01, "Top 1%"], [0.005, "Top 0.5%"], [0.001, "Top 0.1%"]].forEach(function (t) {
+    rows.push({ label: t[1], n: fins.filter(function (f) { return f <= t[0]; }).length, exp: fins.length * t[0] });
+  });
+  rows.forEach(function (r) { r.m = r.exp > 0 ? r.n / r.exp : null; });
+  el("div", { class: "sub" }, s, "How often you reached each line, " + rangeLabel() + ": your finishes over the field's rate (" + ent + " lineups)");
+  legend(s, [{ name: "Above the field", color: "var(--me)" }, { name: "Below the field", color: "var(--neg)" }, { name: "Field (1.00x)", color: "var(--field)", line: true }]);
+  var W2 = cw(s), RH = 26, L2 = 74, R2 = W2 < 600 ? 104 : 150, T2 = 4, H2 = T2 + RH * rows.length + 18;
+  var mx = Math.max(2, Math.ceil(Math.max.apply(null, rows.map(function (r) { return r.m || 0; })) * 1.1 * 2) / 2);
+  var xm = function (v) { return L2 + v / mx * (W2 - L2 - R2); };
+  var svg2 = sv("svg", { viewBox: "0 0 " + W2 + " " + H2, role: "img", "aria-label": "Finishes at each line against the field" }, s);
+  for (var t = 0; t <= mx; t += mx > 4 ? 1 : 0.5) {
+    sv("line", { x1: xm(t), x2: xm(t), y1: T2, y2: H2 - 18, stroke: "var(--grid)" }, svg2);
+    sv("text", { x: xm(t), y: H2 - 5, "text-anchor": "middle" }, svg2, fmt(t, 1) + "x");
+  }
+  rows.forEach(function (r, i) {
+    var y0 = T2 + RH * i, g = sv("g", {}, svg2);
+    sv("text", { x: L2 - 8, y: y0 + RH / 2 + 4, "text-anchor": "end", style: "fill: var(--ink-2)" }, g, r.label);
+    if (r.m != null && r.m > 0) sv("rect", { x: L2, y: y0 + 5, width: Math.max(2, xm(r.m) - L2), height: RH - 10, rx: 3,
+                                           fill: r.m >= 1 ? "var(--me)" : "var(--neg)", class: "bar" }, g);
+    sv("text", { x: W2 - R2 + 8, y: y0 + RH / 2 + 4, style: "fill: var(--ink-2)" }, g,
+       (r.m == null ? "–" : fmt(r.m, 2) + "x") + "  " + r.n + " vs " + fmt(r.exp, 1));
+    var hit = sv("rect", { x: 0, y: y0, width: W2, height: RH, class: "hit" }, g);
+    hover(hit, function () { return [r.label + ": " + (r.m == null ? "–" : fmt(r.m, 2) + "x the field"),
+                                     "you " + r.n + " of " + (i ? fins.length : ent) + " lineups (" + pct(r.n / ((i ? fins.length : ent) || 1), 1) + ")",
+                                     "the field's rate would give " + fmt(r.exp, 1)]; });
+  });
+  sv("line", { x1: xm(1), x2: xm(1), y1: T2, y2: H2 - 18, stroke: "var(--field)", "stroke-width": 2 }, svg2);
 }
 
 // ---- the multiple, or points as the backup

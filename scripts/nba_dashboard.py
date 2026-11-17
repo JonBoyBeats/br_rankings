@@ -32,7 +32,9 @@ DEFS = {
     "header": "Your entries, cash rate, top-10% and top-1% finishes against expected (10% and 1% of your entries), and ROI "
               "((won - fees) / fees). Field cash rate: share of all entries that cashed.",
     "finish": "Each lineup's finish as a percentile of its contest (place / entries). Season: share of your lineups in each 1% "
-              "band (the field is 1% in every band). Last night: share of your lineups in the top X%, against the diagonal.",
+              "band (the field is 1% in every band). Then how often you reached each line, the "
+              "cash line to the top 0.1%: your finishes there over what the field's rate gives (1.00x is the field; cash uses each "
+              "night's field cash rate).",
     "t1": "Afternoon T1 (the button's tier at the PM lock). Every pair ETR's order and ADP's order put differently: the top-1% "
           "multiple of ETR's first minus ADP's first, averaged for the night. Marker: the side your PM board took. Tally on "
           "points, pushes under 3.",
