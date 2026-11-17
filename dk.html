@@ -561,7 +561,7 @@ function renderTiles() {
     sl.top_totals.map(function (t) { return t.team + " " + t.total; }).join(", ") + ". Lines: " + T.line_source + "." +
     (sl.ranked_against ? " Quality and Leverage are 0-100 ranks against " + sl.ranked_against + "; quadrants at 50. Untested until the monthly readout grades them." : "");
   $("teamBar").innerHTML = T.teams.map(function (t) {
-    return '<button type="button" class="' + t.verdict + '" data-team="' + esc(t.team) + '" aria-pressed="' + (view.panel === t.team) + '" title="' + esc(t.verdict + ": " + t.reason) + '">' +
+    return '<button type="button" class="' + t.verdict + '" data-team="' + esc(t.team) + '" aria-pressed="' + (view.panel === t.team) + '" title="' + esc(t.verdict + (t.driver ? " (" + t.driver + ")" : "") + ": " + t.reason) + '">' +
       esc(t.team) + (t.borderline ? "*" : "") + "</button>";
   }).join("") + '<span class="note" style="align-self:center;margin:0 4px">bar colour: FOCUS green, CHALK yellow, LEVERAGE blue, FADE red; * borderline</span>';
   renderTeamPanel();
@@ -585,7 +585,7 @@ function tileHtml(t, wide) {
       pct(t.blowout) + " of their minutes" + (t.blowout_games < 3 ? " (thin: " + t.blowout_games + " game" + (t.blowout_games === 1 ? "" : "s") + ")" : " in " + t.blowout_games + " games") +
       (t.blowout_source && t.blowout_source !== "this season" ? ", " + t.blowout_source : "");
     return '<div class="tile' + (wide ? " wide" : "") + '" data-team="' + esc(t.team) + '"><div class="th"><span class="tn">' + esc(t.team) + "<span>" + (t.home ? "v " : "@ ") + esc(oppOf(t.team) || "") +
-      '</span></span><span class="verdict ' + t.verdict + '">' + t.verdict + (t.borderline ? " · borderline" : "") + '</span></div>' +
+      '</span></span><span class="verdict ' + t.verdict + '">' + t.verdict + (t.driver ? " (" + esc(t.driver) + ")" : t.borderline ? " · borderline" : "") + '</span></div>' +
       (t.quality != null ? '<div class="scores">Quality <b>' + Math.round(t.quality) + "</b> · Leverage <b>" + Math.round(t.leverage) + "</b></div>" : "") +
       '<div class="why">' + esc(t.reason) + '</div><div class="nums">' +
       '<span class="k">Total</span><span><b>' + (t.total != null ? t.total.toFixed(1) : "–") + "</b> (spread " + (t.spread > 0 ? "+" : "") + t.spread + ")</span>" +

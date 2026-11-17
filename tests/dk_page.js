@@ -280,6 +280,12 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("status").textContent));
   R = await rulesNow();
   check("old share rules load as draw rules", R.length === 1 && R[0].share == null && R[0].n === 2 && R[0].label === "2+ from " + lev.team, JSON.stringify(R));
+  const chips = await pg.$$eval("#teamPanel .tile .verdict", v => v.map(x => x.textContent));
+  const shownT = await pg.$$eval("#teamPanel .tile", v => v.map(x => x.dataset.team));
+  check("tile verdict says which score drove it", chips.length > 0 && chips.every((c, i) => {
+    const t = TEAMS.teams.find(x => x.team === shownT[i]);
+    return c === t.verdict + " (" + t.driver + ")" && /^(quality|leverage)-driven(, (quality|leverage) borderline)?$|^both borderline$/.test(t.driver);
+  }), JSON.stringify(chips));
   check("team bar marks borderline quadrants", (await pg.$$eval("#teamBar button", v => v.filter(x => /\*$/.test(x.textContent)).length)) ===
         TEAMS.teams.filter(t => t.borderline).length);
   await clearRules();
