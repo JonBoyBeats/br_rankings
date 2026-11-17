@@ -1015,6 +1015,17 @@ def calnote(a):
                   real["sal_p10"], real["sal_p50"], real["sal_p90"], sim["sal_p10"], sim["sal_p50"], sim["sal_p90"],
                   real["at_cap"], sim["at_cap"], real["under_49k"], sim["under_49k"], real["own_30"], sim["own_30"],
                   real["top_own"], sim["top_own"], real["team3"], sim["team3"], sim["own_mae"]))
+        # duplication drift: the simulated field's rate (the night's contests averaged) outside the range of the real ones
+        rd = [num(r["dup_other"]) for r in fe if r["side"] == "real"]
+        sd = S.mean(num(r["dup_other"]) for r in fe if r["side"] == "sim")
+        try:
+            pr = json.loads(sim["params"] or "null") or {}
+        except ValueError:
+            pr = {}
+        built = ("%d build styles" % len(pr["styles"])) if pr.get("styles") else "the original single style" if pr else "unknown settings"
+        print(("DUPLICATION DRIFT: the simulated field (%s) %.1f%% against the real contests' %.1f-%.1f%% (field calibration, "
+               "battle-royale-research dk_field_calibrate.py; the 11-22 refit)" if not min(rd) <= sd <= max(rd) else
+               "Duplication in line: the simulated field (%s) %.1f%%, the real contests %.1f-%.1f%%") % (built, sd, min(rd), max(rd)))
     else:
         print("Field check: no graded field yet")
     print("Changes: " + ("; ".join("%s %s: %s (why: %s)" % (r["version"], r["component"], r["change"], r["reason"]) for r in changes) if changes else "none"))

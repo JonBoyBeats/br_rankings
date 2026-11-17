@@ -210,6 +210,18 @@ night view. After it, effort moves to inputs, in this order: projections (minute
 simulated field's shape against the real one: dk_eval.py fieldcheck, battle-royale-research
 scripts/dk_field_calibrate.py), player ranges, then late swap. Mechanics ideas go in `analysis/cbb/dk/ideas.md` for the 30-slate review.
 
+**Duplication drift, every morning until the freeze:** the note's field check ends with "Duplication in line" or
+"DUPLICATION DRIFT" (the simulated field's rate against the range of the night's real contests). On drift, say so in
+the note, plainly, with the numbers; don't refit on one night (that waits for 11-22).
+
+**The field refit, 2026-11-22 (before the 11-23 freeze):** in battle-royale-research,
+`python3 scripts/dk_field_calibrate.py --br ../br_rankings --grid week` (every candidate on all the week's graded
+nights together; ~20 candidates x 17 s a night). Freeze the setting that fits them together: write it into
+`scripts/dk_cbb_field.py` FIELD_STYLES (keep the current one if it's the best or within noise of it, and prefer one
+that doesn't duplicate the owner's entries more), log it in `analysis/cbb/dk/versions.csv`, and report the week's
+fit night by night: duplication with another user, salary used, at the cap, the top player's ownership, 3+ from
+one team.
+
 **At the freeze (the 2026-11-24 report):** the 50/50 projection blend does NOT end by itself. Run
 `python3 scripts/dk_eval.py calweek` (ours, DraftKings' average and the blend over the week's graded nights: average
 miss, bias, rank correlation by salary band, and the nights each had the lowest miss), show it, and ask the owner
