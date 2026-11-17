@@ -29,6 +29,7 @@ DAILY = os.path.join(HERE, "analysis", "nba", "daily")
 TAKES = os.path.join(HERE, "analysis", "nba", "takes")
 num = G.num
 W = {"am": "morning", "pm": "afternoon"}
+PUSH = 3.0     # pairs under 3 points apart are pushes (2026-11-17)
 
 THEME = {
     1: ["**T1, the elite.** The players every pod takes first; the order is the decision. Morning: ADP, the higher Boom first "
@@ -272,14 +273,16 @@ def moves(H, night, t):
     if len(by) < 5 or len(allg) < 15:
         season = "too early (%d move%s on %d night%s)" % (len(allg), "" if len(allg) == 1 else "s", len(by), "" if len(by) == 1 else "s")
     else:
+        # a tally (2026-11-17): a move wins or loses at 3+ points apart, pushes under 3; resampled by night on wins - losses
+        tally = lambda d: sum(g >= PUSH for g in by[d]) - sum(g <= -PUSH for g in by[d])
         ds, rnd, up = list(by), random.Random(3), 0
         for _ in range(1000):
-            v = [g for d in (rnd.choice(ds) for _ in ds) for g in by[d]]
-            up += sum(v) > 0
+            up += sum(tally(d) for d in (rnd.choice(ds) for _ in ds)) > 0
         share = up / 1000
+        W, L = sum(g >= PUSH for g in allg), sum(g <= -PUSH for g in allg)
         season = ("keep doing what you're doing" if share >= 0.8 else "press the button" if share <= 0.2 else "too early") + \
-            " (%d moves on %d nights, %d%% right, %+.1f points a move; ahead in %d%% of night-resamples)" % (
-                len(allg), len(by), round(100 * sum(g > 0 for g in allg) / len(allg)), sum(allg) / len(allg), round(100 * share))
+            " (%d moves on %d nights: %d won, %d lost, %d pushes under 3 points; %+.1f points a move; ahead in %d%% of night-resamples)" % (
+                len(allg), len(by), W, L, len(allg) - W - L, sum(allg) / len(allg), round(100 * share))
     return (md or ["No moves against the button here last night."]) + ["", "Season, your moves in T%d: %s." % (t, season), ""]
 
 
