@@ -885,7 +885,32 @@ function renderBank() {
           })() +
           '</td><td class="m">' + all[g] + "</td>" + rounds.map(function (r) { return '<td class="m">' + (r[g] || 0) + "</td>"; }).join("") +
           (after ? '<td class="m">' + (after[g] || 0) + '</td><td class="m">' + Math.round(100 * (after[g] || 0) / all[g]) + "%</td>" : "") + "</tr>";
-      }).join("") + "</table>" : "");
+      }).join("") + "</table>" : "") + (after ? cutShares() : "");
+}
+/* Players, bank against the cut: each player's share of the banked lineups and of the kept ones, the change, and his
+   projected field ownership; players in 3%+ of either, biggest risers first. The cut's lean comes from the same
+   projections and simulated field, so it isn't separate evidence (2026-11-16: risers did no better than fallers
+   against their projections; the cut leaned toward the projected chalk). */
+function cutShares() {
+  var share = function (idx) {
+    var c = {};
+    idx.forEach(function (k) { BANK.lineups[k].ids.forEach(function (id) { c[id] = (c[id] || 0) + 1; }); });
+    Object.keys(c).forEach(function (id) { c[id] /= idx.length; });
+    return c;
+  };
+  var bk = share(BANK.lineups.map(function (L, i) { return i; })), kp = share(CUT.keep);
+  var list = Object.keys(Object.assign({}, bk, kp)).filter(function (id) { return byId(id) && Math.max(bk[id] || 0, kp[id] || 0) >= 0.03; })
+    .map(function (id) { return { r: byId(id), b: bk[id] || 0, k: kp[id] || 0 }; }).sort(function (x, y) { return (y.k - y.b) - (x.k - x.b); });
+  var p = function (x) { return Math.round(100 * x) + "%"; };
+  return '<details class="fold" id="cutShares" open><summary>Players: bank against the cut (' + list.length + ' in 3%+ of either)</summary>' +
+    '<div class="note">The cut\'s lean, from the same projections and simulated field: not separate evidence that a riser is underrated.</div>' +
+    '<table class="contests"><tr><th>Player</th><th class="r">Sal</th><th class="r">Field own</th><th class="r">Bank</th><th class="r">Kept</th><th class="r">Change</th></tr>' +
+    list.map(function (x) {
+      var d = x.k - x.b;
+      return "<tr data-id=\"" + esc(x.r.id) + "\"><td>" + esc(x.r.name) + ' <span class="sub">' + esc(x.r.team) + '</span></td><td class="m">' + (x.r.salary / 1000).toFixed(1) + "k</td>" +
+        '<td class="m">' + (fieldOf() ? own(x.r).toFixed(0) + "%" : "–") + '</td><td class="m">' + p(x.b) + '</td><td class="m">' + p(x.k) + "</td>" +
+        '<td class="m"' + (d > 0 ? greenBg(d, 0, 0.2) : "") + ">" + (d >= 0 ? "+" : "") + Math.round(100 * d) + "</td></tr>";
+    }).join("") + "</table></details>";
 }
 function groupTags(tags, name) {
   BANK.groups = BANK.groups || {};

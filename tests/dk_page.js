@@ -497,6 +497,15 @@ function audit(name, L, o) {
   check("cut: ranked against each contest with entries", cut && JSON.stringify(cut.contests.slice().sort()) === JSON.stringify(["197791872", "197791874", "197791877"]), cmsg);
   const ths = await pg.$$eval("#bankBox th", t => t.map(x => x.textContent));
   check("cut: per idea, banked, each round, kept and share", ths.includes("Kept") && ths.includes("Share") && ths.filter(t => /^Round \d+$/.test(t)).length === cut.rounds.length, JSON.stringify(ths));
+  // players, bank against the cut: each one's share of the bank and of the kept, as computed from the bank here
+  const shareOf = (idx, id) => idx.filter(k => bank.lineups[k].ids.includes(id)).length / idx.length;
+  const srows = await pg.$$eval("#cutShares tr[data-id]", t => t.map(r => [r.dataset.id, ...Array.from(r.cells).slice(3).map(c => c.textContent)]));
+  const allIdx = bank.lineups.map((L, k) => k);
+  check("cut shares: a row per player in 3%+ of the bank or the kept", srows.length > 0 && srows.length === new Set(bank.lineups.flatMap(L => L.ids)).size -
+    [...new Set(bank.lineups.flatMap(L => L.ids))].filter(id => Math.max(shareOf(allIdx, id), shareOf(cut.keep, id)) < 0.03).length, srows.length);
+  check("cut shares: bank, kept and change match the lineups", srows.every(([id, b, k, d]) => b === Math.round(100 * shareOf(allIdx, id)) + "%" &&
+    k === Math.round(100 * shareOf(cut.keep, id)) + "%" && +d === Math.round(100 * (shareOf(cut.keep, id) - shareOf(allIdx, id)))), JSON.stringify(srows.slice(0, 3)));
+  check("cut shares: biggest risers first", srows.every((r, i) => i === 0 || +srows[i - 1][3] >= +r[3] - 1));
 
   await pg.fill("#nSims", "1000");
   await pg.click("#pfRun");
@@ -633,7 +642,7 @@ function audit(name, L, o) {
   const hl = await pg.evaluate(() => ({ rows: document.querySelectorAll("#bpTable tr.ingroup").length, first: document.querySelector("#bpTable tr:not(.picked)[data-k]").classList.contains("ingroup") }));
   check("groups: clicking an idea highlights its lineups and brings them to the top", hl.rows > 0 && hl.first, JSON.stringify(hl));
   await pg.click('[data-ungroup="Both ideas"]');
-  check("groups: Ungroup splits it back", (await pg.$$eval("#bankBox table tr", r => r.length)) === 3);
+  check("groups: Ungroup splits it back", (await pg.$$eval("#bankBox > table tr", r => r.length)) === 3);
 
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
