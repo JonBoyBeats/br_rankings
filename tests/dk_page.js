@@ -455,14 +455,18 @@ function audit(name, L, o) {
     cx.rows = rows.map(r => Object.assign({}, r, { miss_dk: 1e-9 }));
     const field = fieldOf().field.slice(0, 200).filter(f => f.slice().sort().join() !== L.ids.slice().sort().join()).concat([L.ids, L.ids.slice().reverse(), L.ids.slice()]);
     const contest = { size: field.length + 1, payouts: [[1, 1, 100], [2, 2, 50], [3, 3, 20], [4, 20, 5]] };
+    const off = DKSim.builder(DKSim.simulate(cx, [L], field, fieldDoc.z, contest, 1, 20), contest).alone(0);   // the default: no split
+    cx.tieSplit = true;
     const sim = DKSim.simulate(cx, [L], field, fieldDoc.z, contest, 1, 20);
     const b = DKSim.builder(sim, contest);
     const mine = L.ids.reduce((t, id) => t + proj(byId(id)), 0);
     const above = field.filter(f => f.reduce((t, id) => t + proj(byId(id)), 0) > mine + 1e-6).length;
     const pay = DKSim.payTable(contest), want = [0, 1, 2, 3].reduce((t, i) => t + (pay[1 + above + i] || 0), 0) / 4;
-    return { dup: sim.dup[0], tie: sim.tie[0], alone: b.alone(0), want, above };
+    return { dup: sim.dup[0], tie: sim.tie[0], alone: b.alone(0), want, above, off, whole: pay[1 + above] || 0 };
   });
-  check("ties: an identical field lineup is counted and the prize split among the tie", tie.dup === 3 && Math.abs(tie.tie - 3) < 1e-6 && Math.abs(tie.alone - tie.want) < 1e-6, JSON.stringify(tie));
+  check("ties: an identical field lineup is counted and, with the split on, the prize split among the tie", tie.dup === 3 && Math.abs(tie.tie - 3) < 1e-6 && Math.abs(tie.alone - tie.want) < 1e-6, JSON.stringify(tie));
+  check("ties: the split is off by default (uncalibrated field): the place's whole prize", Math.abs(tie.off - tie.whole) < 1e-6 && !(await pg.evaluate(() => DKSim.TIE_SPLIT)), JSON.stringify(tie));
+  check("Review labels Dupes as the sim's uncalibrated estimate", /Dupes \(sim's estimate, uncalibrated\)/.test(await pg.textContent("#bpTable")));
 
   // the night-wide pair cap: no two players together in more than Max pair % of the night's entries (at least one)
   await pg.fill("#maxPair", "30");

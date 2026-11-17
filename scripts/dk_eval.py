@@ -53,6 +53,13 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             the idea's banked lineups and of its entered ones, and where the entered set falls among RANDOM_SETS random
             sets of its size from the idea's own banked lineups. The readout groups ideas by kind (idea_kind: "2+ from
             a team", "game stack 3", "locks", ...) across nights, since a night's tags name its own teams.
+  fieldcheck analysis/cbb/dk/field_eval.csv, nightly: the simulated field (the mirror's dk_cbb_field.json before lock)
+            against each graded contest's real field, size-matched (both sampled to the smaller of the two, 1,000 at
+            most, 20 draws): the share of entries holding a lineup another user also entered (the simulated field's
+            lineups each count as their own user), distinct lineups per 1,000 entries, salary used (10th / 50th / 90th
+            percentile, at the $50,000 cap, under $49,000), players by ownership band and the top one's ownership,
+            lineups with 2+ and 3+ from one team, and (simulated) the average miss of its ownership against the real.
+            field_metrics is the one definition; battle-royale-research scripts/dk_field_calibrate.py uses it.
   calweek   for the owner's choice at the freeze: ours, DraftKings' average and the 50/50 blend over the calibration
             week's graded nights (CAL_WEEK), by salary band, and the nights each had the lowest average miss
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
@@ -112,6 +119,11 @@ OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own
 BANDS = [(6000, 99999), (4000, 5999), (0, 3999)]
 GATE_NIGHTS, GATE_N, GATE_SHARE = 5, 100, 0.6
 OWN_BANDS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
+FIELD_EVAL = os.path.join(DK, "field_eval.csv")
+FIELD_COLS = ["date", "draft_group", "contest_id", "contest", "side", "lineups", "matched_n", "dup_other", "distinct_per_1000",
+              "sal_p10", "sal_p50", "sal_p90", "at_cap", "under_49k", "own_30", "own_20", "own_10", "own_5", "own_1", "top_own",
+              "team2", "team3", "own_mae", "params"]
+OWN_BANDS_FIELD = [(30, 101), (20, 30), (10, 20), (5, 10), (1, 5)]
 IDEA_EVAL = os.path.join(DK, "idea_eval.csv")
 IDEA_COLS = ["date", "draft_group", "idea", "kind", "contest_id", "contest", "banked", "kept", "entered", "kept_share", "entered_share",
              "banked_top10", "banked_cash", "entered_top10", "entered_cash", "pct_top10", "pct_cash", "version"]
@@ -119,6 +131,7 @@ CUT_EVAL = os.path.join(DK, "cut_eval.csv")
 CUT_COLS = ["date", "draft_group", "tag", "group", "lineups", "mean", "best", "contest_id", "contest", "top10", "cash", "wins",
             "protect", "phase"]
 DECISION_SLATES = 30
+CAP_DK = 50000
 PT = ZoneInfo("America/Los_Angeles")
 VERSIONS = os.path.join(DK, "versions.csv")   # every change, with the slate date it takes effect (version_of)
 # Calibration week: ours blended with DraftKings' average at w in every salary band, the gate's rule bypassed, from
@@ -778,6 +791,93 @@ def audit(a):
     print_audit(full=False)
 
 
+def field_metrics(lineups, users, info, n, seed=3, draws=20):
+    """A field's shape (fieldcheck): lineups, tuples of DK ids; users, each entry's user (None: each its own); info, DK id ->
+    {salary, team}; n, the size both sides are sampled to for the size-dependent measures (duplication, distinct)."""
+    rng = random.Random(seed)
+    dup, dis = [], []
+    for _ in range(draws if len(lineups) > n else 1):
+        idx = rng.sample(range(len(lineups)), n) if len(lineups) > n else list(range(len(lineups)))
+        who = defaultdict(set)
+        for i in idx:
+            who[lineups[i]].add(users[i] if users else i)
+        dup.append(sum(1 for i in idx if len(who[lineups[i]]) > 1) / len(idx))
+        dis.append(1000 * len(who) / len(idx))
+    sal = sorted(sum(int(info[i]["salary"]) for i in L) for L in lineups)
+    pct = lambda p: sal[min(len(sal) - 1, int(p * len(sal)))]
+    cnt = defaultdict(int)
+    for L in lineups:
+        for i in L:
+            cnt[i] += 1
+    own = {i: 100 * c / len(lineups) for i, c in cnt.items()}
+    team = lambda L, k: max(sum(1 for i in L if info[i]["team"] == t) for t in {info[i]["team"] for i in L}) >= k
+    out = {"lineups": len(lineups), "matched_n": n, "dup_other": round(100 * S.mean(dup), 2), "distinct_per_1000": round(S.mean(dis)),
+           "sal_p10": pct(0.1), "sal_p50": pct(0.5), "sal_p90": pct(0.9),
+           "at_cap": round(100 * sum(x == CAP_DK for x in sal) / len(sal), 1), "under_49k": round(100 * sum(x < 49000 for x in sal) / len(sal), 1),
+           "top_own": round(max(own.values()), 1), "team2": round(100 * sum(team(L, 2) for L in lineups) / len(lineups), 1),
+           "team3": round(100 * sum(team(L, 3) for L in lineups) / len(lineups), 1)}
+    for (lo, hi), col in zip(OWN_BANDS_FIELD, ("own_30", "own_20", "own_10", "own_5", "own_1")):
+        out[col] = sum(1 for v in own.values() if lo <= v < hi)
+    return out, own
+
+
+def real_field(path, byname):
+    """A standings file's entries as (lineups, users): each lineup's names matched to DK ids (byname: name -> id, only
+    names that are unique on the slate); entries with an unmatched name are left out."""
+    entries, _ = standings(path)
+    L, U = [], []
+    for x in entries:
+        ids = [byname.get(nm) for nm in lineup_names(x.get("lineup") or "")]
+        if len(ids) == 8 and all(ids):
+            L.append(tuple(sorted(ids)))
+            U.append((x["name"] or "").split(" (")[0].lower())
+    return L, U, len(entries)
+
+
+def fieldcheck(a):
+    """The nightly field check (see the docstring): rows in field_eval.csv for every graded contest, rebuilt whole."""
+    mirror, ev, out = Mirror(a.mirror), read(EVAL), []
+    graded = {}
+    for r in ev:
+        graded.setdefault((r["date"], str(r["draft_group"])), {})[r["contest_id"]] = r["contest"]
+    for (date, g), contests in sorted(graded.items()):
+        slate = None
+        for _, sha in reversed(mirror.versions("dk_cbb_morning.json", iso(date + "T00:00:00Z") - dt.timedelta(days=1),
+                                               iso(date + "T00:00:00Z") + dt.timedelta(days=2))):
+            slate = next((x for x in mirror.show(sha, "dk_cbb_morning.json").get("slates", []) if str(x["draft_group_id"]) == g), None)
+            if slate:
+                break
+        fd = at_lock(mirror, "dk_cbb_field.json", iso(slate["start"]), g) if slate else None
+        F = ((fd or {}).get("slates") or {}).get(g) or {}
+        if not slate or not F.get("field"):
+            print("  field check %s (%s): no %s" % (g, date, "slate rows" if not slate else "simulated field saved before lock"))
+            continue
+        info = slate["players"]
+        names = defaultdict(list)
+        for k, r in info.items():
+            names[r["name"]].append(k)
+        byname = {nm: v[0] for nm, v in names.items() if len(v) == 1}
+        sim = [tuple(sorted(L)) for L in F["field"]]
+        for cid, cname in sorted(contests.items()):
+            path = os.path.join(STANDINGS, "contest-standings-%s.csv" % cid)
+            if not os.path.exists(path):
+                continue
+            L, U, total = real_field(path, byname)
+            n = min(len(L), len(sim), 1000)
+            rm, rown = field_metrics(L, U, info, n)
+            sm, sown = field_metrics(sim, None, info, n)
+            sm["own_mae"] = round(S.mean(abs(sown.get(k, 0) - rown.get(k, 0)) for k in set(rown) | set(sown)), 2)
+            base = {"date": date, "draft_group": g, "contest_id": cid, "contest": cname}
+            out.append(dict(base, side="real", own_mae="", params="", **rm))
+            out.append(dict(base, side="sim", params=json.dumps(F.get("params")), **sm))
+        print("  field check %s (%s): %d contests" % (g, date, len(contests)))
+    if out:
+        with open(FIELD_EVAL, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=FIELD_COLS)
+            w.writeheader()
+            w.writerows(out)
+
+
 def idea_kind(t):
     """An idea's kind, from its saved settings (the bank's tag_settings), without the night's teams and players: the
     rules' templates ("2+ from a team", "if/then", ...) and the settings off their defaults."""
@@ -903,6 +1003,20 @@ def calnote(a):
     held = [h for h in held if h is not None]
     print("Cut check, last night: %s. 'Kept averages more but reaches the top 10%% less' held on %d of %d graded nights." % (
         line or "no saved bank scored yet", sum(held), len(held)))
+    fe = [r for r in read(FIELD_EVAL) if r["date"] == last]
+    if fe:
+        big = max(fe, key=lambda r: num(r["lineups"]) if r["side"] == "real" else 0)
+        real = next(r for r in fe if r["contest_id"] == big["contest_id"] and r["side"] == "real")
+        sim = next(r for r in fe if r["contest_id"] == big["contest_id"] and r["side"] == "sim")
+        print("Field check, %s (size-matched at %s), real / sim: dup with another user %s%% / %s%%; distinct per 1,000 %s / %s; salary"
+              " p10-p50-p90 %s-%s-%s / %s-%s-%s; at the cap %s%% / %s%%; under $49,000 %s%% / %s%%; players 30%%+ owned %s / %s; top owned"
+              " %s%% / %s%%; 3+ from one team %s%% / %s%%; sim ownership miss %s" % (
+                  big["contest"], real["matched_n"], real["dup_other"], sim["dup_other"], real["distinct_per_1000"], sim["distinct_per_1000"],
+                  real["sal_p10"], real["sal_p50"], real["sal_p90"], sim["sal_p10"], sim["sal_p50"], sim["sal_p90"],
+                  real["at_cap"], sim["at_cap"], real["under_49k"], sim["under_49k"], real["own_30"], sim["own_30"],
+                  real["top_own"], sim["top_own"], real["team3"], sim["team3"], sim["own_mae"]))
+    else:
+        print("Field check: no graded field yet")
     print("Changes: " + ("; ".join("%s %s: %s (why: %s)" % (r["version"], r["component"], r["change"], r["reason"]) for r in changes) if changes else "none"))
 
 
@@ -1192,11 +1306,13 @@ def main():
     sub.add_parser("calnote")
     sub.add_parser("calweek")
     sub.add_parser("ideas")
+    fc = sub.add_parser("fieldcheck")
+    fc.add_argument("--mirror", required=True)
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "fieldcheck": fieldcheck}[a.cmd](a)
 
 
 if __name__ == "__main__":

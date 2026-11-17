@@ -311,6 +311,11 @@
   // make. A shared draw can only add correlation, and the data show none (slightly the reverse, minutes being shared),
   // so both are 0: the sim's draws stay independent. ctx.corr ({team, game}) overrides them, for checking.
   var CORR = { team: 0, game: 0 };
+  // The prize split among exact ties with the simulated field (placePay): OFF until the simulated field's duplication is
+  // calibrated against the real field's (2026-11-16: the simulated field held an identical lineup for 8 of the owner's
+  // 46 entries, the real one for none). The duplicate counts (dup, tie) are still made, as the sim's uncalibrated
+  // estimate. ctx.tieSplit overrides it, for checking.
+  var TIE_SPLIT = false;
 
   function simulate(ctx, cand, field, z, contest, N, S) {
     var by = {}; ctx.rows.forEach(function (r) { by[r.id] = r; });
@@ -385,7 +390,8 @@
     field.forEach(function (L) { var k = L.slice().sort().join(","); fkey[k] = (fkey[k] || 0) + 1; });
     var dup = new Float32Array(K), tie = new Float32Array(K);
     for (var k4 = 0; k4 < K; k4++) { dup[k4] = fkey[cand[k4].ids.slice().sort().join(",")] || 0; tie[k4] = dup[k4] * w; }
-    return { cs: cs, fa: fa, K: K, S: S, cut: cut, quality: quality, core: core, rate: rate, dup: dup, tie: tie };
+    return { cs: cs, fa: fa, K: K, S: S, cut: cut, quality: quality, core: core, rate: rate, dup: dup, tie: tie,
+             tieSplit: ctx.tieSplit != null ? !!ctx.tieSplit : TIE_SPLIT };
   }
 
   // The portfolio builder: a set of picked lineups, and what each other lineup would ADD to it, on the given nights.
@@ -400,7 +406,7 @@
     var M = nights.length, cs = sim.cs, fa = sim.fa;
     var payF = new Float64Array(Math.max(paid + 2, 2));
     for (var i0 = 1; i0 <= paid; i0++) payF[i0] = pay[i0];
-    var tie = sim.tie || new Float32Array(K);
+    var tie = sim.tieSplit && sim.tie ? sim.tie : new Float32Array(K);
     function payAt(place, t) { if (t >= 0.5) return placePay(pay, place, t); var q = Math.round(place); return q >= 1 && q <= paid ? payF[q] : 0; }
     var picked = [], P = 0, ps = new Float32Array(0), pp = new Float32Array(0), dp = new Float32Array(0);
     var cov1 = new Uint8Array(M), covC = new Uint8Array(M), total = 0;
@@ -713,7 +719,7 @@
       contests.forEach(function (c, ci) {
         var pay = payTable(c.contest), w = Math.max(0, (c.contest.size || 0) - c.n) / F;
         for (var k = 0; k < lineups.length; k++) {
-          var t = 0, base = k * nights, ties = sim.dup[k] * w;
+          var t = 0, base = k * nights, ties = sim.tieSplit ? sim.dup[k] * w : 0;
           for (var s = 0; s < nights; s++) t += placePay(pay, 1 + sim.fa[base + s] * w, ties);
           sum[ci][idx[k]] += t;
         }
@@ -758,6 +764,6 @@
            gatedProj: gatedProj, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, poolDraw: poolDraw, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
-           CORR: CORR, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
+           CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
            CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
 });

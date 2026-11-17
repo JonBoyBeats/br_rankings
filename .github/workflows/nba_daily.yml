@@ -72,6 +72,8 @@ jobs:
           python3 scripts/dk_eval.py cutcheck || true
           # the ideas: each saved bank's ideas, banked / kept / entered and how they finished
           python3 scripts/dk_eval.py ideas || true
+          # the field check: the simulated field against each graded contest's real field
+          python3 scripts/dk_eval.py fieldcheck --mirror ../br-adp-mirror || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
       # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening

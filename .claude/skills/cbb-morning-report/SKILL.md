@@ -198,13 +198,17 @@ draw used); the monthly readout shows his results on nights each was used (direc
 change made with its reason. One-night results don't drive changes; principled, reversible tweaks do, and every
 change goes in `analysis/cbb/dk/versions.csv` (date it takes effect, version, component, change, reason; numbers in a
 reason are computed, never recalled) so the readout can split slates by version. Rules and shadow rule sets stay as
-they are. The note includes the cut check: kept against cut, average score and each contest's top-10% rate, and how
+they are. Run `python3 scripts/dk_eval.py fieldcheck --mirror ../br-adp-mirror` first when new standings came in after the
+nightly job, so the note's field line (the simulated field against last night's biggest graded contest, side by
+side: duplication with another user, distinct lineups per 1,000, salary used, players 30%+ owned, the top one's
+ownership, 3+ from one team) is current. The note includes the cut check: kept against cut, average score and each contest's top-10% rate, and how
 many nights "kept averages more but reaches the top 10% less" has held.
 
 **Mechanics freeze with the rest on 2026-11-23** (the owner, 2026-11-17): the draw (sim-night draws, Leverage
 weight), the cut within each idea, the tie split, the pick (exposure, core and pair caps, unique entries) and the
-night view. After it, effort moves to inputs, in this order: projections (minutes, news), ownership, player ranges,
-then late swap. Mechanics ideas go in `analysis/cbb/dk/ideas.md` for the 30-slate review.
+night view. After it, effort moves to inputs, in this order: projections (minutes, news), ownership, the FIELD (the
+simulated field's shape against the real one: dk_eval.py fieldcheck, battle-royale-research
+scripts/dk_field_calibrate.py), player ranges, then late swap. Mechanics ideas go in `analysis/cbb/dk/ideas.md` for the 30-slate review.
 
 **At the freeze (the 2026-11-24 report):** the 50/50 projection blend does NOT end by itself. Run
 `python3 scripts/dk_eval.py calweek` (ours, DraftKings' average and the blend over the week's graded nights: average

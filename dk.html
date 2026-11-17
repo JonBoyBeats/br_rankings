@@ -309,8 +309,9 @@
     payout by itself; <b>Shared</b>, the most players it shares with any pick. Two more from the sim beside them:
     <b>Quality</b>, its expected points less what its salary buys at the simulated field's points per dollar (above 0: more
     points than its price); <b>Core %</b>, the share of the simulated field holding its three highest-salaried players
-    (low: few others have its core, so when it hits, it hits mostly alone); <b>Dupes</b>, the field entries expected to hold the
-    identical lineup in this contest (they tie with it every night and split the prizes there, as DraftKings pays ties). Auto-fill adds by Added value within Max
+    (low: few others have its core, so when it hits, it hits mostly alone); <b>Dupes</b>, the field entries the sim expects to hold the
+    identical lineup in this contest: an uncalibrated estimate (the simulated field duplicates far more than the real one), so the
+    sim doesn't split prizes with them until the field is calibrated. Auto-fill adds by Added value within Max
     exposure, Min unique and Max core. <b>Keep</b> makes your set the contest's portfolio for the export.</div>
   <div class="opts">
     <label class="field"><span class="field-label">+Cover counts</span><select id="bpCover" style="width:auto"><option value="top1">top 1%</option><option value="cash">cashing</option></select></label>
@@ -1023,7 +1024,7 @@ function bpRender(note) {
   for (var k = 0; k < BP.pool.length; k++) if (picked.indexOf(k) < 0) rest.push(k);
   var g = get[BP.sort];
   rest.sort(function (x, y) { return (g(x) - g(y)) * BP.dir; });
-  var cols = [["proj", "Proj"], ["own", "Own"], ["qual", "Quality"], ["core", "Core %"], ["dupe", "Dupes"], ["alone", "Alone"], ["value", "Added"], ["cover", "+Cover"], ["shared", "Shared"]];
+  var cols = [["proj", "Proj"], ["own", "Own"], ["qual", "Quality"], ["core", "Core %"], ["dupe", "Dupes (sim's estimate, uncalibrated)"], ["alone", "Alone"], ["value", "Added"], ["cover", "+Cover"], ["shared", "Shared"]];
   var head = '<tr><th class="l"></th><th class="l">Lineup</th>' + cols.map(function (c) {
     return '<th data-k="' + c[0] + '" class="' + (BP.sort === c[0] ? "on" : "") + '">' + c[1] + (BP.sort === c[0] ? (BP.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>";
   function row(k, isPicked) {
