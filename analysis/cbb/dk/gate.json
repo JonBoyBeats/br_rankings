@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-17T14:46:29Z",
+ "generated_at": "2026-11-17T15:01:36Z",
  "nights": 1,
  "bands": [
   {
@@ -37,6 +37,6 @@
   }
  ],
  "rule": "open where DraftKings' average beat ours: 5+ nights, 100+ player-nights, lower mean error, better on 60%+ of nights",
- "override": "calibration week through 2026-11-23: ours 50% / DraftKings' average 50% in every band (the rule bypassed)",
+ "override": "calibration blend, ours 50% / DraftKings' average 50% in every band, until the owner's choice at the freeze",
  "version": "cal-1"
 }

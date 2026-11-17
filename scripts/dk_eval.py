@@ -47,6 +47,8 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
   calnote   the calibration week's morning note (through 2026-11-23): bugs found, the audit's a / b / c in one line
             each, and the changes since the last graded slate with their reasons, from analysis/cbb/dk/versions.csv
             (every change, with the slate date it takes effect; the readout splits slates by it)
+  calweek   for the owner's choice at the freeze: ours, DraftKings' average and the 50/50 blend over the calibration
+            week's graded nights (CAL_WEEK), by salary band, and the nights each had the lowest average miss
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
             and the paired gap, on the top-10% rate first, then cash; dollars only as the long-run check), the
             owner's entries against the field's 10%, ownership by band, the sim's cut lines, the correlation check
@@ -110,9 +112,13 @@ CUT_COLS = ["date", "draft_group", "tag", "group", "lineups", "mean", "best", "c
 DECISION_SLATES = 30
 PT = ZoneInfo("America/Los_Angeles")
 VERSIONS = os.path.join(DK, "versions.csv")   # every change, with the slate date it takes effect (version_of)
-# Calibration week: ours blended with DraftKings' average at w in every salary band, the gate's rule bypassed, through
-# "until" (versions.csv cal-1). Reversible: after "until" the gate goes back to its own rule.
-CALIBRATION_BLEND = {"w": 0.5, "from": "2026-11-17", "until": "2026-11-23", "version": "cal-1"}
+# Calibration week: ours blended with DraftKings' average at w in every salary band, the gate's rule bypassed, from
+# "from" (versions.csv cal-1), with no end date: it stays on until the owner chooses at the freeze which projection
+# freezes (calweek reports ours, DraftKings' average and the blend over the week). PROJ_CHOICE records that choice:
+# None (not chosen yet: the blend), "ours" (the gate back to its own rule), "dk" (DraftKings' average) or "blend".
+CALIBRATION_BLEND = {"w": 0.5, "from": "2026-11-17", "version": "cal-1"}
+PROJ_CHOICE = None
+CAL_WEEK = ("2026-11-16", "2026-11-23")      # the calibration week's slates, for calweek
 BLEND_W = 0.5            # the audit's blend: ours x BLEND_W + DraftKings' average x (1 - BLEND_W) (cal-1's)
 AUDIT_DISAGREE = 5        # ownership points: a disagreement big enough to list where the field was right
 DISAGREE_BINS = [(10, 999, "field liked more by 10+"), (5, 10, "more by 5-10"), (2, 5, "more by 2-5"), (-2, 2, "within 2"),
@@ -481,11 +487,14 @@ def gate(a):
            "rule": "open where DraftKings' average beat ours: %d+ nights, %d+ player-nights, lower mean error, better on %d%%+ of nights"
                    % (GATE_NIGHTS, GATE_N, 100 * GATE_SHARE)}
     cb, today = CALIBRATION_BLEND, dt.datetime.now(PT).date().isoformat()
-    if cb["from"] <= today <= cb["until"]:     # calibration week: every band blended at w, whatever the rule says
+    if today >= cb["from"] and PROJ_CHOICE in (None, "blend", "dk"):    # every band at w, whatever the rule says
+        w = 0.0 if PROJ_CHOICE == "dk" else cb["w"]
         for b in bands:
-            b.update(open=True, w=cb["w"])
-        doc.update(override="calibration week through %s: ours %d%% / DraftKings' average %d%% in every band (the rule bypassed)" % (
-            cb["until"], round(100 * cb["w"]), round(100 * (1 - cb["w"]))), version=cb["version"])
+            b.update(open=True, w=w)
+        doc.update(override=("calibration blend, ours %d%% / DraftKings' average %d%% in every band, until the owner's choice at the freeze"
+                             if PROJ_CHOICE is None else "the owner's choice at the freeze: %s in every band" % (
+                                 "DraftKings' average" if PROJ_CHOICE == "dk" else "the %d/%d blend" % (round(100 * w), round(100 * (1 - w)))))
+                   % ((round(100 * w), round(100 * (1 - w))) if PROJ_CHOICE is None else ()), version=cb["version"])
     with open(GATE, "w") as f:
         json.dump(doc, f, indent=1)
         f.write("\n")
@@ -641,11 +650,7 @@ def print_audit(full):
         a = proj_audit(rs)
         if full:
             print("\n  a. Projections, %s (average miss, bias = projection minus actual, rank correlation; DK points):" % name)
-            print("     %-14s %5s  %-17s %-17s %-17s | %5s  %-17s %-17s" % ("salary band", "n", "ours", "DK average", "50/50 blend", "n", "ours", "last-5"))
-            for b in a:
-                n = b["ours"][0] if b["ours"] else 0
-                n5 = b["ours5"][0] if b["ours5"] else 0
-                print("     %-14s %5d  %-17s %-17s %-17s | %5d  %-17s %-17s" % (b["band"], n, f(b["ours"]), f(b["dkavg"]), f(b["blend"]), n5, f(b["ours5"]), f(b["last5"])))
+            proj_table(a)
         else:
             al = a[-1]
             print("  a. Projections, %s: ours %s, DK average %s, 50/50 blend %s%s (miss, bias, rank corr; %d players)" % (
@@ -714,6 +719,52 @@ def version_of(date):
     return v[-1]["version"] if v else "-"
 
 
+def proj_table(a):
+    f = lambda st: "-" if not st else "%4.1f %+5.1f %s" % (st[1], st[2], "%.2f" % st[3] if st[3] is not None else "  - ")
+    print("     %-14s %5s  %-17s %-17s %-17s | %5s  %-17s %-17s" % ("salary band", "n", "ours", "DK average", "50/50 blend", "n", "ours", "last-5"))
+    for b in a:
+        n = b["ours"][0] if b["ours"] else 0
+        n5 = b["ours5"][0] if b["ours5"] else 0
+        print("     %-14s %5d  %-17s %-17s %-17s | %5d  %-17s %-17s" % (b["band"], n, f(b["ours"]), f(b["dkavg"]), f(b["blend"]), n5, f(b["ours5"]), f(b["last5"])))
+
+
+def calweek(a):
+    """For the owner's choice at the freeze: ours, DraftKings' average and the 50/50 blend (and last-5) over the
+    calibration week's graded nights, by salary band, and on how many nights each had the lowest average miss."""
+    rows = [r for r in audit_rows() if CAL_WEEK[0] <= r["date"] <= CAL_WEEK[1]]
+    nights = sorted({r["date"] for r in rows})
+    print("Calibration week %s to %s: %d graded nights, %d player-nights. Which projection freezes is the owner's call; until"
+          " then the blend stays on (dk_eval.py PROJ_CHOICE: %s)." % (CAL_WEEK[0], CAL_WEEK[1], len(nights), len(rows), PROJ_CHOICE or "not chosen"))
+    if not rows:
+        return
+    print("  Average miss, bias (projection minus actual), rank correlation, DK points:")
+    proj_table(proj_audit(rows))
+    won = defaultdict(int)
+    for d in nights:
+        al = proj_audit([r for r in rows if r["date"] == d])[-1]
+        best = min(("ours", "DK average", "50/50 blend"), key=lambda k: al[{"ours": "ours", "DK average": "dkavg", "50/50 blend": "blend"}[k]][1])
+        won[best] += 1
+    print("  Lowest average miss, night by night: " + ", ".join("%s %d of %d" % (k, won[k], len(nights)) for k in ("ours", "DK average", "50/50 blend")))
+
+
+def cut_line(g):
+    """The calibration note's cut line for one slate: kept against cut, average score and each entered contest's top-10%
+    rate, from cut_eval.csv; and whether 'kept averages more but reaches the top 10% less' held (the contests' mean rate)."""
+    rows = [r for r in read(CUT_EVAL) if str(r["draft_group"]) == str(g) and r["tag"] == "all"]
+    k = {r["contest"]: r for r in rows if r["group"] == "kept"}
+    c = {r["contest"]: r for r in rows if r["group"] == "cut"}
+    if not k or not c:
+        return None, None
+    km, cm = num(next(iter(k.values()))["mean"]), num(next(iter(c.values()))["mean"])
+    both = [n for n in k if n in c and k[n]["top10"] not in ("", None)]
+    if not both:
+        return "kept averaged %.1f, cut %.1f (no graded standings yet)" % (km, cm), None
+    kt, ct = S.mean(num(k[n]["top10"]) for n in both), S.mean(num(c[n]["top10"]) for n in both)
+    held = km > cm and kt < ct
+    return ("kept averaged %.1f, cut %.1f; top 10%%, kept / cut: %s" % (km, cm, ", ".join(
+        "%s %.1f%% / %.1f%%" % (re.sub(r"^CBB \$[\d.,K]+ ", "", n).split(" [")[0], 100 * num(k[n]["top10"]), 100 * num(c[n]["top10"])) for n in sorted(both)))), held
+
+
 def audit(a):
     print_audit(full=False)
 
@@ -739,6 +790,12 @@ def calnote(a):
     print(pick("a. Projections, last night"))
     print(pick("b. Ownership, last night"))
     print(pick("c. "))
+    cuts = sorted({(r["date"], r["draft_group"]) for r in read(CUT_EVAL)})
+    line, _ = cut_line(cuts[-1][1]) if cuts else (None, None)
+    held = [cut_line(g)[1] for _, g in cuts]
+    held = [h for h in held if h is not None]
+    print("Cut check, last night: %s. 'Kept averages more but reaches the top 10%% less' held on %d of %d graded nights." % (
+        line or "no saved bank scored yet", sum(held), len(held)))
     print("Changes: " + ("; ".join("%s %s: %s (why: %s)" % (r["version"], r["component"], r["change"], r["reason"]) for r in changes) if changes else "none"))
 
 
@@ -1025,11 +1082,12 @@ def main():
     sub.add_parser("cutcheck")
     sub.add_parser("audit")
     sub.add_parser("calnote")
+    sub.add_parser("calweek")
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek}[a.cmd](a)
 
 
 if __name__ == "__main__":

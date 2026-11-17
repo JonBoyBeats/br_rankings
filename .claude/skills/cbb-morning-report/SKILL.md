@@ -198,8 +198,14 @@ draw used); the monthly readout shows his results on nights each was used (direc
 change made with its reason. One-night results don't drive changes; principled, reversible tweaks do, and every
 change goes in `analysis/cbb/dk/versions.csv` (date it takes effect, version, component, change, reason; numbers in a
 reason are computed, never recalled) so the readout can split slates by version. Rules and shadow rule sets stay as
-they are. On 2026-11-24 the calibration blend ends by itself (dk_eval.py CALIBRATION_BLEND) and the gate's own
-rule takes over: say so in that morning's note.
+they are. The note includes the cut check: kept against cut, average score and each contest's top-10% rate, and how
+many nights "kept averages more but reaches the top 10% less" has held.
+
+**At the freeze (the 2026-11-24 report):** the 50/50 projection blend does NOT end by itself. Run
+`python3 scripts/dk_eval.py calweek` (ours, DraftKings' average and the blend over the week's graded nights: average
+miss, bias, rank correlation by salary band, and the nights each had the lowest miss), show it, and ask the owner
+which one freezes. Until he chooses, the blend stays on. Record his choice in `dk_eval.py` PROJ_CHOICE ("ours", "dk"
+or "blend") and as a line in `analysis/cbb/dk/versions.csv`.
 
 **The audit, nightly, first in the DK part of the report** (`python3 scripts/dk_eval.py audit`): projections and
 ownership come first; the sim's grading waits for enough slates. Give its short lines as they print, last night
