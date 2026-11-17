@@ -1,6 +1,8 @@
 """The Friday report's contest results (asked 2026-11-13; first report 2026-11-20). Writes analysis/nba/report/money_friday.json,
 which the rankings side's Friday report reads. Runs in its own Friday job (.github/workflows/nba_friday.yml) after the
 nightly record, so the nightly money step doesn't grow. Results only: nothing here writes the register or the button.
+Also reruns the pod replay (scripts/nba_pod_replay.py: pod_replay.md/json) and carries its paired reads, season and since
+each rule date, under "pod_replay".
 
 Every test is read over every night on file, as multiples against the whole field in the same contest and price quintile
 (top 1%, top 10%, cash; counts and an 80% range: nba_money.field_multiple), for the season and since its rule went in. Rule
@@ -323,6 +325,8 @@ def main():
         for w in ("am", "pm"):
             for r in n["tiers"][w].values():
                 r["window"] = w
+    import nba_pod_replay as PR                    # the pod replay, rerun weekly here: pod_replay.md/json, and its reads below
+    pr = PR.run(N)
     R = M.field_rates(N)
     RD.update(json.load(open(RULE_DATES)) if os.path.exists(RULE_DATES) else {})
     prev = json.load(open(OUT)) if os.path.exists(OUT) else {}
@@ -346,7 +350,10 @@ def main():
                     "top 1%, top 10% and cash, the top-10% 80% range from resampling nights, and team counts; 'since' covers "
                     "nights on or after the test's rule date (rule_dates.json), 'season' every night on file. Definitions: "
                     "scripts/nba_money_friday.py.",
-           "tests": tests, "monthly": mon, "proposals": M.proposals(tj, old)}
+           "tests": tests, "monthly": mon, "proposals": M.proposals(tj, old),
+           # the pod replay (scripts/nba_pod_replay.py; full tables in pod_replay.md/json): (a) my locked list minus each list,
+           # season and since each rule date, in percentage points; and top 1% at my real seats
+           "pod_replay": {k: pr.get(k) for k in ("paired_note", "labels", "paired", "since_rules", "my_seats_top1", "r6_fidelity")}}
     json.dump(out, open(OUT, "w"), indent=1)
     print("money_friday.json: %d tests, %d nights, monthly %s, %d proposals" % (len(tests), len(N), mon.get("generated"),
                                                                                  len(out["proposals"]["proposals"])))
