@@ -40,7 +40,12 @@ DEFS = {
           "points, pushes under 3.",
     "t2": "Afternoon T2, the same ETR-vs-ADP pairs. Elite-break teams (contest side's t2-elite-break) against the rest. "
           "Your 1/2 and 2/3 turn decisions: your share against the field's, each with its top-1% multiple.",
-    "t34": "Your moves against the button in the tier (takes_history.csv, Q-tagged pairs left out): for each move, the top-1% "
+    "pod": "The main read on whether your moves help. Every real pod and seat replayed off your locked list and off each other "
+           "list, placed in the real standings (contest side's pod replay). Each bar: your list's top-10% (or top-1%) rate minus "
+           "that list's, in percentage points, with its 80% range from resampling nights; right of zero, your list did better. "
+           "'Tier N moves' is your list against your list with that tier's moves undone: what those moves added. Season, and "
+           "since the list's rules went live (rule_dates.json).",
+    "t34": "Secondary to the pod replay. Your moves against the button in the tier (takes_history.csv, Q-tagged pairs left out): for each move, the top-1% "
            "multiple of the player you moved up minus the player you moved down, in that window; summed for the night, "
            "with a running total. Tally on points, pushes under 3. VALUE / normal / PRICEY: your share of lineups holding "
            "one against the field's, each group's top-1% multiple.",
@@ -128,6 +133,65 @@ def round6(n):
     return {"mine": avg(mine), "field": avg(field), "mine_n": len(mine)}
 
 
+# Pod replay (contest side's nba_pod_replay.py): (a) my locked list against each list through the real pods and seats.
+# Season comes from its file as written; "since" re-pools its by-night rates from the first night the list's rules were
+# live (rule_dates.json), with the same night resampling (M.boot_range). In percentage points, (a) minus the list.
+POD_KEYS = ("top10", "top1")
+POD_RULES = {"b": None, "d": None, "e": None,               # the button's whole rule set
+             "c1": ("elite-", "q-t1-"), "c2": ("t2-",), "c3": ("t34-", "t3-"), "c4": ("t34-", "t4-"), "c5": ("t5-", "q-t5-")}
+
+
+def pod_since(rd, lst):
+    """First night every one of the list's ranking rules was live, per window (the latest of their dates)."""
+    out = {}
+    for k, v in rd.items():
+        if k.startswith("_") or not v.get("windows"):
+            continue                                            # rules without per-window dates aren't the button's ranking
+        if POD_RULES[lst] and not k.startswith(POD_RULES[lst]):
+            continue
+        for w, d in v["windows"].items():
+            out[w] = max(out.get(w, d), d)
+    return out
+
+
+def pod_paired(rows, w, y, key, since=None):
+    """(a) minus y, seat-weighted over the night-windows where both ran (on or after since[window]); nights resampled."""
+    by = collections.defaultdict(list)
+    for r in rows:
+        if r["window"] in (("am", "pm") if w == "both" else (w,)) and r.get("a") and r.get(y) \
+                and (not since or r["date"] >= since.get(r["window"], "9999")):
+            by[r["date"]].append(r)
+    cells = [by[d] for d in sorted(by)]
+
+    def fn(ns):
+        flat = [r for c in ns for r in c]
+        tot = sum(r["a"]["seats"] for r in flat)
+        return sum(r["a"]["seats"] * (r["a"][key] - r[y][key]) for r in flat) / tot if tot else None
+    v = fn(cells) if cells else None
+    rng = M.boot_range(cells, fn) if v is not None else None
+    r100 = lambda x: None if x is None else round(100 * x, 3)
+    return {"nights": len(cells), "diff": r100(v), "lo": r100(rng[0]) if rng else None, "hi": r100(rng[1]) if rng else None}
+
+
+def pod_replay():
+    p, q = os.path.join(REP, "pod_replay.json"), os.path.join(REP, "rule_dates.json")
+    if not os.path.exists(p):
+        return None
+    pr, rd = json.load(open(p)), json.load(open(q)) if os.path.exists(q) else {}
+    out = {"generated": pr.get("generated"), "labels": pr.get("labels"), "through": (pr.get("nights") or [None])[-1],
+           "mine": {w: {k: (pr["season"].get(w, {}).get("a") or {}).get(k) for k in POD_KEYS + ("nights",)} for w in pr.get("season", {})},
+           "since": {}, "rows": {}}
+    for y in POD_RULES:
+        out["since"][y] = pod_since(rd, y)
+        for w, ys in (pr.get("paired") or {}).items():
+            if y not in ys:
+                continue
+            out["rows"].setdefault(w, {})[y] = {k: {"season": ys[y].get(k),
+                                                    "since": pod_paired(pr["by_night"], w, y, k, out["since"][y]) if out["since"][y] else None}
+                                                for k in POD_KEYS}
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mirror", default=os.path.join(HERE, "..", "br-adp-mirror"))
@@ -179,7 +243,7 @@ def main():
            "contest_side": {"player_multiples": bool(pm), "groups_by_night": bool(gb), "card_decisions_by_night": bool(cards)},
            # the contest side's last-night and season reads as they stand (turns, T5 under/over), until the by-night keys land
            "latest": {"night": mt.get("night"), "card_decisions": mt.get("card_decisions"), "t5_drafted": mt.get("t5_drafted")},
-           "nights": nights}
+           "pod_replay": pod_replay(), "nights": nights}
     json.dump(out, open(OUT, "w"), separators=(",", ":"))
     print("dashboard.json: %d nights, through %s; contest side: %s" % (len(nights), nights[-1]["date"] if nights else "-",
                                                                       ", ".join(k for k, v in out["contest_side"].items() if v) or "waiting"))
