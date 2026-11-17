@@ -43,10 +43,10 @@ DEFS = {
     "pod": "The main read on whether your moves help. Every real pod and seat replayed off your locked list and off each other "
            "list, placed in the real standings (contest side's pod replay). Each bar: your list's top-10% (or top-1%) rate minus "
            "that list's, in percentage points, with its 80% range from resampling nights; right of zero, your list did better. "
-           "'Tier N moves' is your list against your list with that tier's moves undone: what those moves added. Season, and "
-           "since the list's rules went live (rule_dates.json). Below it, PM only: which ETR version the PM should use (the "
-           "ETR-tier button, pure ETR, ETR with the button's T5 rule; each row the first minus the second, since the PM button "
-           "went to ETR tiers), your list with one tier in ETR's order, and top 1% at your real seats against your list there.",
+           "Season, and since the list's rules went live (rule_dates.json). Below it, PM only: which ETR version the PM should "
+           "use (the ETR-tier button, pure ETR, ETR with the button's T5 rule; each row the first minus the second, since the "
+           "PM button went to ETR tiers), and top 1% at your real seats against your list there. Each tier's own read (your "
+           "moves in it, its ETR order) opens that tier's card below.",
     "t34": "Secondary to the pod replay. Your moves against the button in the tier (takes_history.csv, Q-tagged pairs left out): for each move, the top-1% "
            "multiple of the player you moved up minus the player you moved down, in that window; summed for the night, "
            "with a running total. Tally on points, pushes under 3. VALUE / normal / PRICEY: your share of lineups holding "

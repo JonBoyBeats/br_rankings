@@ -65,6 +65,14 @@
   svg .hit { fill: transparent; cursor: default; }
   svg .bar:hover, svg .bar.on { filter: brightness(1.25); }
   details { margin-top: 6px; }
+  details.fold { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
+  details.fold > summary { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .advice { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin: 4px 0 6px; }
+  .advice-h { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .advice ul { margin: 0; padding-left: 18px; }
+  .advice li { font-size: 13.5px; margin: 3px 0; }
+  .advice li.flat { color: var(--ink-2); }
+  .advice li .num { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
   details summary { font-size: 12px; color: var(--muted); cursor: pointer; }
   table { border-collapse: collapse; font-size: 12px; margin-top: 6px; width: 100%; }
   th, td { text-align: left; padding: 3px 8px 3px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
@@ -278,8 +286,7 @@ function header() {
 // ---- 0b. pod replay: the main read on whether your moves help (season and since the rules; not tied to the range buttons)
 var POD_W = "both";
 try { POD_W = localStorage.getItem("nbaPodWindow") || "both"; } catch (e) { /* storage blocked */ }
-var POD_ROWS = [["b", "vs the button"], ["c1", "Tier 1 moves"], ["c2", "Tier 2 moves"], ["c3", "Tier 3 moves"], ["c4", "Tier 4 moves"],
-                ["c5", "Tier 5 moves"], ["d", "vs ADP"], ["e", "vs ETR (PM)"], ["f", "vs ETR button"], ["g", "vs ETR + T5"]];
+var POD_ROWS = [["b", "vs the button"], ["d", "vs ADP"], ["e", "vs ETR (PM)"], ["f", "vs ETR button"], ["g", "vs ETR + T5"]];   // tier rows: each tier's card
 var POD_ETR = [["f-e", "Button − ETR", "the ETR-tier button minus pure ETR"], ["g-f", "T5 − button", "ETR with the T5 rule minus the ETR-tier button"],
                ["g-e", "T5 rule", "ETR with the T5 rule minus pure ETR: what the T5 rule adds"]];
 function podSince(lst, w) {
@@ -342,17 +349,6 @@ function podExtra(s, P) {
     two(er, ["← the second better", "the first better →"]);
     table(s, ["Comparison", "Top 10% season (80% range)", "Since", "Top 1% season (80% range)", "Since"], er.map(function (r) {
       return [r.full, f(r.top10.season), f(r.top10.since), f(r.top1.season), f(r.top1.since)];
-    }));
-  }
-  var R = (P.rows || {}).pm || {}, tr = [1, 2, 3, 4, 5].filter(function (k) { return R["f" + k]; }).map(function (k) {
-    var x = R["f" + k]; return { key: "f" + k, label: "T" + k + " ETR order", top10: x.top10, top1: x.top1, since: podSince("f" + k, "pm") };
-  });
-  if (tr.length) {
-    el("div", { class: "sub" }, s, "ETR by tier (PM)");
-    el("p", { class: "note" }, s, "Your PM list against your PM list with one of your tiers in ETR's order; left of zero, ETR's order beat yours in that tier.");
-    two(tr);
-    table(s, ["Tier", "Top 10% season (80% range)", "Since", "Top 1% season (80% range)", "Since"], tr.map(function (r) {
-      return ["T" + r.key.slice(1) + " in ETR's order", f(r.top10.season), f(r.top10.since), f(r.top1.season), f(r.top1.since)];
     }));
   }
   var M = P.my_seats;
@@ -494,13 +490,87 @@ function etrAdp(s, key, label) {
     return (n[key] ? n[key].pairs : []).map(function (p) { return [n.date, "", p.etr, p.adp, sgn(p.pts, 1), p.mult == null ? "–" : sgn(p.mult), p.mine || "–"]; }); })));
 }
 
-// ---- 2. T1
-function t1() { var s = card("T1: ETR's order vs ADP's", D.defs.t1); etrAdp(s, "t1", "T1, afternoon"); }
+// ---- 2. the tiers: one card each, "what to do" first (the pod replay, season), the evidence folded under it
+var FOLD_OPEN = {};
+/** A folded section, drawn the first time it's opened (so its charts get the real width); stays open across redraws. */
+function fold(parent, title, draw) {
+  var d = el("details", { class: "fold" }, parent), done = false;
+  el("summary", {}, d, title);
+  var body = el("div", {}, d);
+  var go = function () { if (!done) { done = true; draw(body); } };
+  d.addEventListener("toggle", function () { FOLD_OPEN[title] = d.open; if (d.open) go(); });
+  if (FOLD_OPEN[title]) { d.open = true; go(); }
+}
+function podCell(w, key) { return (((D.pod_replay || {}).rows || {})[w] || {})[key] || null; }
+/** up / down: the 80% range clear of zero; leanup / leandown: half a point or more, the range crossing zero; flat: under that. */
+function callOf(v) {
+  if (!v || v.diff == null) return null;
+  if (v.lo != null && v.lo > 0) return "up";
+  if (v.hi != null && v.hi < 0) return "down";
+  return Math.abs(v.diff) >= 0.5 ? (v.diff > 0 ? "leanup" : "leandown") : "flat";
+}
+function ptsStr(v) {
+  return sgn(v.diff, 1) + " pts top 10%" + (v.lo != null ? " (80% range " + sgn(v.lo, 1) + " to " + sgn(v.hi, 1) + ")" : "") + ", " + v.nights + " nights";
+}
+function tierAdvice(k) {
+  var out = [], T = "T" + k;
+  [["am", "Morning"], ["pm", "Afternoon"]].forEach(function (w) {
+    var c = podCell(w[0], "c" + k), v = c && c.top10.season, x = callOf(v);
+    if (!x) return;
+    out.push({ w: w[1], cls: x, v: v, text: {
+      up: "Keep making your " + T + " moves: they beat the button's order",
+      down: "Leave " + T + " in the button's order: your moves cost",
+      leanup: "Your " + T + " moves lean helpful, not proven yet",
+      leandown: "Your " + T + " moves lean costly, not proven yet: the button's order is the safer default",
+      flat: "Your " + T + " moves don't change results: no need to spend time on them" }[x] });
+  });
+  var f = podCell("pm", "f" + k), fv = f && f.top10.season, fx = callOf(fv);
+  if (fx) out.push({ w: "Afternoon", cls: fx, v: fv, text: {
+    down: "Put " + T + " in ETR's order: it beat yours",
+    up: "Your " + T + " order beats ETR's: keep it",
+    leandown: "ETR's " + T + " order leans better than yours, not proven yet",
+    leanup: "Your " + T + " order leans better than ETR's, not proven yet",
+    flat: "Your " + T + " order and ETR's do the same" }[fx] });
+  return out;
+}
+function adviceBox(s, k) {
+  var box = el("div", { class: "advice" }, s), a = tierAdvice(k);
+  el("div", { class: "advice-h" }, box, "What to do in T" + k);
+  if (!a.length) { el("p", { class: "note" }, box, "Waiting on the pod replay for this tier."); return; }
+  var ul = el("ul", {}, box);
+  a.forEach(function (x) {
+    var li = el("li", { class: x.cls === "up" || x.cls === "down" ? "" : "flat" }, ul);
+    var small = (x.cls === "up" || x.cls === "down") && Math.abs(x.v.diff) < 1 ? " (a small edge)" : "";
+    el("b", {}, li, x.w + ": "); li.appendChild(document.createTextNode(x.text + small + ". ")); el("span", { class: "num" }, li, ptsStr(x.v));
+  });
+  el("p", { class: "note" }, box, "From the pod replay, season: every real pod replayed off your locked list and off the alternative. A plain call has its " +
+     "80% range clear of zero; \u201clean\u201d crosses zero. ETR's order is the afternoon only.");
+}
+function tierForest(s, k) {
+  var rows = [["am", "c" + k, "AM moves"], ["pm", "c" + k, "PM moves"], ["pm", "f" + k, "PM ETR order"]].filter(function (r) { return podCell(r[0], r[1]); })
+    .map(function (r) { var x = podCell(r[0], r[1]); return { key: r[0] + r[1], label: r[2], top10: x.top10, top1: x.top1, since: podSince(r[1], r[0]) }; });
+  if (!rows.length) return;
+  el("p", { class: "note" }, s, "Your list minus your list with this tier's moves undone (moves), or with this tier in ETR's order; right of zero, yours did better. " +
+     "Blue: season; orange: since the rules went in.");
+  var cols = el("div", { class: "pod-cols" }, s);
+  [["top10", "Top 10%"], ["top1", "Top 1%"]].forEach(function (q) { var c = el("div", {}, cols); el("div", { class: "sub" }, c, q[1] + ", points"); forest(c, rows, q[0]); });
+}
+function tier(k) {
+  var s = card("T" + k + (k === 5 ? " and below the cut" : ""), null);
+  adviceBox(s, k);
+  tierForest(s, k);
+  var def = function (b, t) { if (t) el("p", { class: "def" }, b, t); };
+  if (k === 1 || k === 2) fold(s, "Why: ETR's order vs ADP's in T" + k + ", pair by pair (afternoon)", function (b) { def(b, D.defs["t" + k]); etrAdp(b, "t" + k, "T" + k + ", afternoon"); });
+  if (k === 2) fold(s, "The elite break and your 1/2 and 2/3 turns", t2Groups);
+  if (k === 3 || k === 4) {
+    fold(s, "Why: your T" + k + " moves vs the button, pair by pair", function (b) { def(b, D.defs.t34); movesPairs(b, k); });
+    fold(s, "T" + k + " VALUE / normal / PRICEY", function (b) { movesFlags(b, k); });
+  }
+  if (k === 5) fold(s, "Drafted% groups, round 6 and swaps", function (b) { def(b, D.defs.t5); t5Body(b); });
+}
 
-// ---- 3. T2
-function t2() {
-  var s = card("T2: ETR vs ADP, the elite break, your turns", D.defs.t2);
-  etrAdp(s, "t2", "T2, afternoon");
+// ---- 3. the T2 groups
+function t2Groups(s) {
   el("div", { class: "sub" }, s, "Elite-break teams vs the rest: your share of lineups vs the field's, with the top-1% multiple, " + rangeLabel());
   if (!D.contest_side.groups_by_night) wait(s, "per-night group multiples (elite-break teams)");
   else groupBars(s, [["Elite-break teams", "elite-break teams"], ["Other teams", "other teams"]].map(function (g) {
@@ -557,9 +627,9 @@ function groupBars(s, rows, aria) {
   table(s, ["Group", "You", "Field", "Top-1% multiple", "Top-10% multiple"], rows.map(function (r) { return [r.label, pct(r.mine, 1), pct(r.field, 1), fmt(r.top1), fmt(r.top10)]; }));
 }
 
-// ---- 4. T3 and T4: your moves vs the button
-function moves(t) {
-  var s = card("T" + t + ": your moves vs the button, by pairs (secondary)", D.defs.t34), ns = inRange(), items = [], tot = 0, tl = [], all = [];
+// ---- 4. T3 and T4: your moves vs the button, pair by pair
+function movesPairs(s, t) {
+  var ns = inRange(), items = [], tot = 0, tl = [], all = [];
   ns.forEach(function (n) {
     var b = n["t" + t];
     if (!b || !b.moves.length) { items.push({ label: short(n.date), value: null, tip: [short(n.date), "no moves against the button"] }); return; }
@@ -575,6 +645,8 @@ function moves(t) {
   if (RANGE !== "night") runningTotal(s, items, hasMult() ? 2 : 0, hasMult() ? "" : " points");
   el("p", { class: "note" }, s, "Tally: " + tallyStr(sumTally(tl)) + " (won-lost-push; a push is under 3 points). Running total: " + sgn(tot, hasMult() ? 2 : 0) + (hasMult() ? "" : " points") + ".");
   table(s, ["Night", "Window", "Moved up", "Moved down", "Points", "Multiple"], all);
+}
+function movesFlags(s, t) {
   el("div", { class: "sub" }, s, "VALUE / normal / PRICEY: your share of lineups vs the field's, each group's top-1% multiple, " + rangeLabel());
   if (!D.contest_side.groups_by_night) wait(s, "per-night group multiples (VALUE, normal, PRICEY)");
   else groupBars(s, ["VALUE", "normal", "PRICEY"].map(function (f) {
@@ -582,8 +654,8 @@ function moves(t) {
 }
 
 // ---- 5. T5
-function t5() {
-  var s = card("T5: drafted picks, round 6, swaps", D.defs.t5), ns = inRange();
+function t5Body(s) {
+  var ns = inRange();
   el("div", { class: "sub" }, s, "Drafted T5 picks: under 60%, at/over 60%, and T4 PRICEY dropped into T5: your share of lineups vs the field's, top-1% multiple, " + rangeLabel());
   var haveDrop = D.contest_side.groups_by_night && inRange().some(function (n) { return n.t5.groups && ["am", "pm"].some(function (w) { return n.t5.groups[w] && n.t5.groups[w].dropped; }); });
   if (!D.contest_side.groups_by_night) wait(s, "per-night T5 groups (under, at/over 60%, T4 PRICEY dropped into T5)");
@@ -617,7 +689,7 @@ function render() {
   document.querySelectorAll(".controls button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.range === RANGE)); });
   $("main").textContent = "";
   if (!D || !played().length) return;
-  header(); podReplay(); finish(); t1(); t2(); t5(); moves(3); moves(4);   // the pair-based move lines last: secondary to the pod replay
+  header(); podReplay(); [1, 2, 3, 4, 5].forEach(tier); finish();   // the headline read, then each tier top to bottom: what to do, then why
 }
 
 var rz = null;
