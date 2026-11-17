@@ -249,6 +249,12 @@ points: count, mean, best, and against each entered contest's real lines the sha
 cashing and winning. Report it briefly: did the cut remove lineups that beat the best entered one, and which
 tags lost the most (mean and best of cut against kept). One night is anecdote; say so.
 
+**Risers vs fallers, nightly** (`python3 scripts/dk_eval.py risers`, run by the 2:17am job; rerun it with the cut check
+once new points are in): the owner's question whether the players the cut raises (kept share above bank share) are the
+ones to be overweight on. Give its two lines (also in the calibration note): last night's risers against fallers on
+actual minus projection with the rank correlation, and the running count of nights risers beat fallers. The night is
+the unit; under 10 nights say it's too few to call.
+
 **Monthly** (the first report of each month, and at 30 graded slates): first `python3 scripts/dk_eval.py
 weights` (refits Quality's weights on the earlier 2/3 of the logged slates, tests them on the later 1/3, and
 switches the tiles to them only if they beat equal weights there; commit `analysis/cbb/dk/team_weights.json`),

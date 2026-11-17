@@ -72,6 +72,8 @@ jobs:
           python3 scripts/dk_eval.py cutcheck || true
           # the ideas: each saved bank's ideas, banked / kept / entered and how they finished
           python3 scripts/dk_eval.py ideas || true
+          # risers vs fallers: do the players the cut raises beat their projections?
+          python3 scripts/dk_eval.py risers || true
           # the field check: the simulated field against each graded contest's real field
           python3 scripts/dk_eval.py fieldcheck --mirror ../br-adp-mirror || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures

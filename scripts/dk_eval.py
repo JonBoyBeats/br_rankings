@@ -47,6 +47,13 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
   calnote   the calibration week's morning note (through 2026-11-23): bugs found, the audit's a / b / c in one line
             each, and the changes since the last graded slate with their reasons, from analysis/cbb/dk/versions.csv
             (every change, with the slate date it takes effect; the readout splits slates by it)
+  risers    analysis/cbb/dk/riser_eval.csv, nightly: does the cut's lean pick players who beat their projections? For
+            each saved bank with a cut and real points, every player in RISER_MIN+ of the banked or the kept lineups:
+            his share of each, the change (kept less banked), projection, actual, actual minus projection, projected
+            ownership. Graded by the night (a night's players move together, so the night is the unit): risers (change
+            +RISER_STEP+) against fallers (-RISER_STEP or more) on actual minus projection, and the rank correlation of
+            the change with it; across nights, the nights risers beat fallers and the average gap. The owner's question
+            (2026-11-17): are the players the cut raises the ones to be overweight on? 2026-11-16 (the old cut): no.
   ideas     analysis/cbb/dk/idea_eval.csv, nightly: each saved bank's ideas (the tag each lineup was first drawn under),
             scored on the real points against each entered contest's real lines: banked, kept and entered counts,
             the kept share (kept / banked) and entered share (of the contest's entries), the top-10% and cash rates of
@@ -127,6 +134,10 @@ OWN_BANDS_FIELD = [(30, 101), (20, 30), (10, 20), (5, 10), (1, 5)]
 IDEA_EVAL = os.path.join(DK, "idea_eval.csv")
 IDEA_COLS = ["date", "draft_group", "idea", "kind", "contest_id", "contest", "banked", "kept", "entered", "kept_share", "entered_share",
              "banked_top10", "banked_cash", "entered_top10", "entered_cash", "pct_top10", "pct_cash", "version"]
+RISER_EVAL = os.path.join(DK, "riser_eval.csv")
+RISER_COLS = ["date", "draft_group", "dk_id", "name", "team", "salary", "bank_share", "kept_share", "change", "proj", "actual", "beat",
+              "own", "version"]
+RISER_MIN, RISER_STEP = 0.03, 0.01
 CUT_EVAL = os.path.join(DK, "cut_eval.csv")
 CUT_COLS = ["date", "draft_group", "tag", "group", "lineups", "mean", "best", "contest_id", "contest", "top10", "cash", "wins",
             "protect", "phase"]
@@ -1019,6 +1030,8 @@ def calnote(a):
     held = [h for h in held if h is not None]
     print("Cut check, last night: %s. 'Kept averages more but reaches the top 10%% less' held on %d of %d graded nights." % (
         line or "no saved bank scored yet", sum(held), len(held)))
+    for line in riser_lines():
+        print(line)
     fe = [r for r in read(FIELD_EVAL) if r["date"] == last]
     if fe:
         big = max(fe, key=lambda r: num(r["lineups"]) if r["side"] == "real" else 0)
@@ -1050,6 +1063,9 @@ def calnote(a):
 def readout(a):
     print_audit(full=True)
     print_ideas()
+    print()
+    for line in riser_lines():
+        print(line)
     print()
     ev, kind = counted(read(EVAL))
     print("DraftKings CBB readout, %s" % dt.date.today().isoformat())
@@ -1319,6 +1335,81 @@ def cutcheck(a):
         print("  cut_eval.csv: %d rows" % len(out))
 
 
+def risers(a):
+    """The nightly riser / faller grade (see the docstring), rebuilt whole each run like the cut check."""
+    banks = {}
+    for f in sorted(glob.glob(os.path.join(BUILDS, "dk_bank_*.json"))):
+        b = json.load(open(f))
+        g = str(b.get("draft_group"))
+        if g not in banks or (b.get("saved_at") or "") >= (banks[g].get("saved_at") or ""):
+            banks[g] = b
+    out = []
+    for g, b in sorted(banks.items(), key=lambda kv: kv[1].get("day") or ""):
+        if not b.get("final"):
+            print("  risers %s (%s): no cut saved with the bank" % (g, b["day"]))
+            continue
+        rec = {r["dk_id"]: r for r in read(os.path.join(DK, "%s_%s.csv" % (b["day"], g)))}
+        if not any(num(r["actual_dk"]) is not None for r in rec.values()):
+            print("  risers %s (%s): no real points recorded yet" % (g, b["day"]))
+            continue
+        pool, kept = b["pool"], b["final"]
+
+        def share(idx):
+            c = {}
+            for k in idx:
+                for i in pool[k]:
+                    c[str(i)] = c.get(str(i), 0) + 1
+            return {i: v / len(idx) for i, v in c.items()}
+        bk, kp = share(range(len(pool))), share(kept)
+        for i in sorted(set(bk) | set(kp)):
+            r = rec.get(i)
+            if not r or max(bk.get(i, 0), kp.get(i, 0)) < RISER_MIN or num(r["actual_dk"]) is None or num(r["fp_dk"]) is None:
+                continue
+            out.append({"date": b["day"], "draft_group": g, "dk_id": i, "name": r["name"], "team": r["team"], "salary": r["salary"],
+                        "bank_share": round(bk.get(i, 0), 4), "kept_share": round(kp.get(i, 0), 4), "change": round(kp.get(i, 0) - bk.get(i, 0), 4),
+                        "proj": r["fp_dk"], "actual": r["actual_dk"], "beat": round(num(r["actual_dk"]) - num(r["fp_dk"]), 2),
+                        "own": r["own"], "version": version_of(b["day"])})
+    if out:
+        with open(RISER_EVAL, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=RISER_COLS)
+            w.writeheader()
+            w.writerows(out)
+    for line in riser_lines():
+        print("  " + line)
+
+
+def riser_nights():
+    """Per graded night: (date, players, risers n, their mean beat, fallers n, their mean beat, rank corr of change with beat)."""
+    by = {}
+    for r in read(RISER_EVAL):
+        by.setdefault((r["date"], r["draft_group"]), []).append(r)
+    out = []
+    for (d, g), rs in sorted(by.items()):
+        up = [num(r["beat"]) for r in rs if num(r["change"]) >= RISER_STEP]
+        dn = [num(r["beat"]) for r in rs if num(r["change"]) <= -RISER_STEP]
+        out.append((d, len(rs), len(up), S.mean(up) if up else None, len(dn), S.mean(dn) if dn else None,
+                    spearman([num(r["change"]) for r in rs], [num(r["beat"]) for r in rs])))
+    return out
+
+
+def riser_lines():
+    """The riser / faller grade in two lines: last night, and across the graded nights (the night as the unit)."""
+    nights = riser_nights()
+    if not nights:
+        return ["Risers vs fallers: no night with a saved cut graded yet"]
+    d, n, nu, mu, nd, md, rho = nights[-1]
+    f = lambda x: "%+.1f" % x if x is not None else "-"
+    both = [x for x in nights if x[3] is not None and x[5] is not None]
+    gaps = [x[3] - x[5] for x in both]
+    rhos = [x[6] for x in nights if x[6] is not None]
+    return ["Risers vs fallers, %s (%d players in %d%%+ of the bank or the kept): %d risers %s against projection, %d fallers %s; "
+            "rank correlation of the cut's change with actual minus projection %s" % (d, n, round(100 * RISER_MIN), nu, f(mu), nd, f(md),
+                                                                                   "%+.2f" % rho if rho is not None else "-"),
+            "Risers vs fallers, %d graded night%s: risers beat fallers on %d; average gap %s points, average rank correlation %s%s" % (
+                len(nights), "" if len(nights) == 1 else "s", sum(g > 0 for g in gaps), f(S.mean(gaps)) if gaps else "-",
+                "%+.2f" % S.mean(rhos) if rhos else "-", " (too few nights to say)" if len(nights) < 10 else "")]
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -1334,13 +1425,14 @@ def main():
     cn.add_argument("--mirror", help="the mirror checkout, for the match warning on its DraftKings slates")
     sub.add_parser("calweek")
     sub.add_parser("ideas")
+    sub.add_parser("risers")
     fc = sub.add_parser("fieldcheck")
     fc.add_argument("--mirror", required=True)
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "fieldcheck": fieldcheck}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fieldcheck": fieldcheck}[a.cmd](a)
 
 
 if __name__ == "__main__":
