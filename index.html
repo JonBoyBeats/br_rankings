@@ -765,17 +765,7 @@
   <div class="masthead">
     <div class="mast-row">
       <h1>Battle Royale Board</h1>
-      <nav class="views" aria-label="Pages">
-        <a href="/">Home</a>
-        <a href="./" id="navNfl" aria-current="page">NFL</a>
-        <a href="analysis.html" class="football-only">Analysis</a>
-        <a href="nba.html" id="navNba">NBA</a>
-        <a href="cbb.html" id="navCbb">CBB</a>
-        <a href="dk.html">DK</a>
-        <a href="nba_results.html" class="nba-only">Results</a>
-        <a href="nba_live.html" class="nba-only">Live</a>
-        <a href="/survivor/">Survivor</a>
-      </nav>
+      <nav id="sitenav" data-sport="board" data-page="board"></nav><script src="sitenav.js"></script>
       <div class="mast-meta" id="meta"></div>
     </div>
     <div class="controls">
@@ -2788,6 +2778,12 @@ function fillSlatePicker() {
   });
   var want = load(K.slate, null);
   var found = state.data.slates.findIndex(function (s) { return s.label === want; });
+  // the site nav's NFL and CFB tabs open the football board on that league (?league=nfl|cfb): its first slate, unless
+  // the remembered one is already that league's
+  var league = !NBA_LIKE && (/(?:^|[?&])league=(nfl|cfb)(?:&|$)/.exec(location.search) || [])[1];
+  if (league && !(found >= 0 && state.data.slates[found].sport === league)) {
+    found = state.data.slates.findIndex(function (s) { return s.sport === league; });
+  }
   sel.value = String(found >= 0 ? found : 0);
 }
 
@@ -2815,6 +2811,7 @@ function selectSlate(index) {
   if (!s) return;
   state.slate = s;
   save(K.slate, s.label);
+  if (window.SiteNav) window.SiteNav.set(NBA_LIKE ? SPORT_MODE : s.sport === "cfb" ? "cfb" : "nfl", "board");
 
   state.pool = null;
   state.added = {};
@@ -7473,8 +7470,6 @@ function bootFailed(where, err) {
     var board = SPORT_MODE.toUpperCase() + " Board";
     document.title = board;
     document.querySelector(".masthead h1").textContent = board;
-    $("navNfl").removeAttribute("aria-current");
-    $(SPORT_MODE === "cbb" ? "navCbb" : "navNba").setAttribute("aria-current", "page");
     // Every NBA spot is a flex, so there is no replacement level to measure against.
     document.querySelector('[data-sort="vorp"]').hidden = true;
     document.querySelector('#view option[value="vorp"]').remove();
