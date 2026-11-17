@@ -1219,7 +1219,7 @@ def main():
     tj = tiers_json(N, parts)
     tj["splits"] = parts["extra"]
     tj["candidates"] = parts["candidates"]
-    json.dump(tj, open(os.path.join(REP, "money_tiers.json"), "w"), indent=1)
+    json.dump(tj, open(os.path.join(REP, "money_tiers.json"), "w"), separators=(",", ":"))   # compact: the per-night blocks are large
     STORE.save()
     print("\n".join(out))
 
@@ -1599,10 +1599,12 @@ def tiers_json(N, parts):
                     "draft-card decision, last night and season to date, my teams doing it (share of my teams at that turn, or "
                     "of all my teams) against the field's share, and vs_field_top1 / vs_field_top10: the top-1% and top-10% rate "
                     "of the field's teams doing it over the whole field's rate in their contest (every team counts; no price "
-                    "matching, so a cheaper or pricier build's edge is in it). One night is noisy; the season line is the read. player_multiples: per night and window, each "
-                    "player's top-1% and top-10% multiple (share of those lineups holding him over share of all lineups), drafted "
-                    "and swapped_in apart, rows as in fields. finish_bins: per night, my lineups' and the field's finish "
-                    "percentiles in 1% bins. t5_drafted.<window>.swaps: the T5 block for swapped-in players.",
+                    "matching, so a cheaper or pricier build's edge is in it). One night is noisy; the season line is the read. player_multiples: per night, am/pm/all, each "
+                    "player's {teams, share, top1, top10: [multiple, finishes, expected], mine: {teams, share}} by the lineups "
+                    "holding him (share of top-x% lineups over share of all; drafted picks, swapped_in apart). groups_by_night: "
+                    "the same for T3/T4 by flag, T5 under/over 60%, elite-break teams. card_decisions_by_night: card_decisions "
+                    "night by night. finish_bins: my lineups' and the field's finish percentiles in 1% bins. "
+                    "t5_drafted.<window>.swaps: the T5 block for swapped-in players.",
            "tiers": {}}
     blocks = collections.defaultdict(lambda: {"exposure": {}, "drafted": {}, "decisions": []})
     # last night: exposure and drafted%
@@ -1714,7 +1716,9 @@ def tiers_json(N, parts):
     out["card_decisions"] = card_decisions(N)
     R = field_rates(N)
     out["t5_drafted"] = t5_drafted(N, R)
+    out["card_decisions_by_night"] = dict(CARD_BY_NIGHT)
     out["player_multiples"] = player_multiples(N)
+    out["groups_by_night"] = groups_by_night(N)
     out["finish_bins"] = finish_bins(N)
     out["q_picks"] = q_picks(N, R)
     return out
@@ -1761,11 +1765,20 @@ def card_decisions(N):
             exp = sum(rate[(r[0], r[1]["contest"]["contest_id"])][x] for r in did)
             out["vs_field_top%d" % x] = round(sum(r[1]["top"][x] for r in did) / exp, 2) if exp else None
         return out
-    out = []
+    out, by_night = [], collections.defaultdict(list)
     for name, rid, rows, doing in spec:
-        out.append({"decision": name, "register": rid, "last_night": read([r for r in rows if r[0] == last], doing),
-                    "season": read(rows, doing)})
+        per = collections.defaultdict(list)
+        for r in rows:
+            per[r[0]].append(r)
+        out.append({"decision": name, "register": rid, "last_night": read(per.get(last, []), doing), "season": read(rows, doing)})
+        for d in sorted(per):
+            by_night[d].append(dict({"decision": name, "register": rid}, **read(per[d], doing)))
+    CARD_BY_NIGHT.clear()
+    CARD_BY_NIGHT.update(by_night)
     return out
+
+
+CARD_BY_NIGHT = {}     # card_decisions' reads night by night, filled by card_decisions (money_tiers card_decisions_by_night)
 
 
 # ---------------------------------------------------------------- field multiples, the hourly tags, nightly T5 and Q blocks (2026-11-13)
@@ -1925,36 +1938,107 @@ def t5_drafted(N, R):
     return out
 
 
+def elites(rows):
+    """A window's elites: T1's top 3-4 by the window's projection, cut at the biggest gap (1-3 players)."""
+    t1 = sorted(((num(r["proj"]), p) for p, r in rows.items() if r["tier"] == "1" and num(r["proj"]) is not None), reverse=True)
+    if len(t1) < 2:
+        return {p for _, p in t1}
+    top = t1[:4]
+    gaps = [top[i][0] - top[i + 1][0] for i in range(min(3, len(top) - 1))]
+    return {p for _, p in top[:1 + gaps.index(max(gaps))]}
+
+
+def base_stats(base):
+    """A window's lineups, summed once for share_multiple: count, my count, and the top-1% and top-10% rates."""
+    nb = len(base)
+    return {"n": nb, "mine": sum(t["mine"] for t in base), 1: sum(t["top"][1] for t in base) / nb if nb else 0,
+            10: sum(t["top"][10] for t in base) / nb if nb else 0}
+
+
+def share_multiple(group, base):
+    """{teams, share, top1, top10, mine}: the group's lineups against all of the window's (`base`: base_stats): share of
+    lineups, the top-1% and top-10% multiple as [multiple, finishes, expected] (expected: the group's lineups x the
+    window's top-x% rate; a straight share against share, not price-matched), and my lineups in it {teams, share of mine}."""
+    nb, mine_b = base["n"], base["mine"]
+    out = {"teams": len(group), "share": round(len(group) / nb, 4) if nb else None}
+    for x in (1, 10):
+        rate = base[x]
+        f, e = sum(t["top"][x] for t in group), len(group) * rate
+        out["top%d" % x] = [round(f / e, 2) if e else None, int(f), round(e, 1)]
+    k = sum(t["mine"] for t in group)
+    out["mine"] = {"teams": k, "share": round(k / mine_b, 3) if mine_b else None}
+    return out
+
+
+def window_teams(n):
+    """{"am", "pm", "all"}: the night's lineups by draft window ("all": both, and lineups with no window)."""
+    ts = [t for v in n["teams"].values() for t in v]
+    return {"am": [t for t in ts if t["window"] == "am"], "pm": [t for t in ts if t["window"] == "pm"], "all": ts}
+
+
 def player_multiples(N):
-    """{night: {window: {"lineups", "top1_lineups", "top10_lineups", "fields", "drafted": {player: row}, "swapped_in":
-    {player: row}}}}: for every player on a lineup at that window (teams with a draft window), his top-1% and top-10%
-    multiple: the share of the window's top-1% (top-10%) lineups holding him over the share of all its lineups holding
-    him, with the counts. Drafted: the players the lineup drafted (a ruled-out pick counts, his swap doesn't); swapped in:
-    the players swaps put on it, kept apart. Not price-matched (a straight share against share)."""
-    fields = ["name", "team", "lineups", "top1", "top10", "m1", "m10"]
+    """{night: {"am"|"pm"|"all": {player: row}, "swapped_in": {"am"|"pm"|"all": {player: row}}}}, row = share_multiple's
+    {teams, share, top1, top10, mine} plus name and team: every player on a lineup, by the lineups holding him. Drafted
+    picks only (a swapped-out player stays with the lineup that drafted him); swapped-in players apart under
+    "swapped_in". The window is the lineup's draft window."""
     out = {}
     for n in N:
+        night, sw = {}, {}
+        for w, base in window_teams(n).items():
+            if not base:
+                continue
+            bs = base_stats(base)
+            for src, picked, dest in (("drafted", drafted_by, night), ("swapped", lambda t: {p for p, a in zip(t["picks"], t["adps"]) if a is None}, sw)):
+                holders = collections.defaultdict(list)
+                for t in base:
+                    for p in picked(t):
+                        holders[p].append(t)
+                rows = {}
+                for p in sorted(holders, key=lambda p: -len(holders[p])):
+                    r = n["rec"].get(p) or n["tiers"]["pm"].get(p) or n["tiers"]["am"].get(p) or {}
+                    rows[p] = dict(share_multiple(holders[p], bs), name=r.get("name", ""), team=r.get("team", ""))
+                dest[w] = rows
+        night["swapped_in"] = sw
+        out[n["date"]] = night
+    return out
+
+
+def groups_by_night(N):
+    """{night: {"am"|"pm": {group: share_multiple}}}: lineups holding a drafted pick of that combined tier and flag at their
+    window (tier_history tier and flag: "T3 VALUE", "T3 normal", "T3 PRICEY", T4 likewise); "T5 under"/"T5 over": a
+    drafted pick in the button's T5 drafted by under (or at least) UNDER% of pods; "elite-break teams": the lineup's first
+    player by closing-ADP rank is one of the window's elites (the Friday t2-elite-break definition), "other teams" the rest."""
+    out = {}
+    for n in N:
+        rk = ranks_of(n)
         night = {}
         for w in ("am", "pm"):
-            ts = [t for v in n["teams"].values() for t in v if t["window"] == w]
-            if not ts:
+            base = window_teams(n)[w]
+            if not base:
                 continue
-            k1, k10 = sum(t["top"][1] for t in ts), sum(t["top"][10] for t in ts)
-            cnt = {src: [collections.Counter(), collections.Counter(), collections.Counter()] for src in ("drafted", "swapped_in")}
-            for t in ts:
-                for src, ps in (("drafted", drafted_by(t)), ("swapped_in", {p for p, a in zip(t["picks"], t["adps"]) if a is None})):
-                    for p in ps:
-                        cnt[src][0][p] += 1
-                        cnt[src][1][p] += t["top"][1]
-                        cnt[src][2][p] += t["top"][10]
-            rows = n["tiers"][w]
-            def row(p, c):
-                r = n["rec"].get(p) or rows.get(p) or {}
-                held, a1, a10 = c[0][p], c[1][p], c[2][p]
-                m = lambda a, k: round((a / k) / (held / len(ts)), 2) if k and held else None
-                return [r.get("name", ""), r.get("team", ""), held, a1, a10, m(a1, k1), m(a10, k10)]
-            night[w] = {"lineups": len(ts), "top1_lineups": k1, "top10_lineups": k10, "fields": fields,
-                        **{src: {p: row(p, c) for p in sorted(c[0], key=lambda p: -c[0][p])} for src, c in cnt.items()}}
+            rows, el = n["tiers"][w], elites(n["tiers"][w])
+            g = collections.defaultdict(list)
+            for cid, ts in n["teams"].items():
+                sh = pod_shares(n, cid)
+                for t in ts:
+                    if t["window"] != w:
+                        continue
+                    keys = set()
+                    for p in drafted_by(t):
+                        r = rows.get(p)
+                        if not r:
+                            continue
+                        if r["tier"] in ("3", "4"):
+                            keys.add("T%s %s" % (r["tier"], r["flag"] or "normal"))
+                        elif r["tier"] == "5":
+                            keys.add("T5 under" if sh.get(p, 0) < UNDER else "T5 over")
+                    ranked = sorted((rk[p], p) for p in drafted_by(t) if p in rk)
+                    keys.add("elite-break teams" if ranked and ranked[0][1] in el else "other teams")
+                    for k in keys:
+                        g[k].append(t)
+            order = ["T%s %s" % (k, f) for k in "34" for f in ("VALUE", "normal", "PRICEY")] + ["T5 under", "T5 over", "elite-break teams", "other teams"]
+            bs = base_stats(base)
+            night[w] = {k: share_multiple(g[k], bs) for k in order}
         out[n["date"]] = night
     return out
 

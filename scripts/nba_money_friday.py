@@ -102,15 +102,7 @@ def t2_turns(N, R, rule):
     return out
 
 
-def elites(rows):
-    """The window's elites: T1's top 3-4 by projection, cut at the biggest gap (1-3 players)."""
-    t1 = sorted(((num(r["proj"]), p) for p, r in rows.items() if r["tier"] == "1" and num(r["proj"]) is not None), reverse=True)
-    if len(t1) < 2:
-        return {p for _, p in t1}
-    top = t1[:4]
-    gaps = [top[i][0] - top[i + 1][0] for i in range(min(3, len(top) - 1))]
-    k = 1 + gaps.index(max(gaps))
-    return {p for _, p in top[:k]}
+elites = M.elites      # the window's elites (nba_money.elites)
 
 
 def t2_elite(N, R, rule):
