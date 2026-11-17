@@ -464,8 +464,8 @@ function playerTable(list, sortable) {
     '<span class="r col-max">Max%</span></div>';
   var body = list.map(function (r) {
     var nw = newsOf(r.id);
-    var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
-      (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q">Q</span>' : "") +
+    var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
+      (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q">Q</span>' : "") + statusConflict(r) +
       (r.fragile ? '<span class="tag frag" title="Fragile: expected miss ±' + (r.miss_dk || "") + '">fragile</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
     var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
@@ -489,6 +489,16 @@ function playerTable(list, sortable) {
 }
 
 // a player's newest status item (out, questionable, starting, back); plain "news" items only show in the list
+// Where the outs file (EvanMiya's injury reports) and DraftKings' tag disagree, both, on his row (the status used: Out
+// from either wins, then Questionable from either)
+function statusConflict(r) {
+  if (!r.status_file) return "";
+  var word = function (x) { x = String(x || "").toUpperCase(); return x.indexOf("O") === 0 ? "Out" : x ? "Q" : "none"; };
+  var f = word(r.status_file), d = word(r.status_dk);
+  if (f === d) return "";
+  var t = r.status_file + " / DK: " + (r.status_dk ? (d === "Out" ? "Out" : r.status_dk.length > 3 ? "Q" : r.status_dk) : "no tag");
+  return '<span class="tag ' + (f === "Out" || d === "Out" ? "o" : "q") + '" title="The outs file and DraftKings disagree; he is projected as ' + esc(r.status || "playing") + '">' + esc(t) + "</span>";
+}
 function newsOf(id) { return news.find(function (n) { return n.kind !== "news" && n.players.indexOf(id) >= 0; }); }
 function ago(t) { var h = (Date.now() - new Date(t)) / 36e5; return h < 1 ? Math.max(1, Math.round(h * 60)) + "m ago" : Math.round(h) + "h ago"; }
 

@@ -96,6 +96,10 @@ function audit(name, L, o) {
     rows.forEach((r, i) => { r.event = kept[i]; });
     return { g, t, n };
   });
+  const conflict = await pg.evaluate(() => [statusConflict({ status: "Out", status_file: "Out per EvanMiya 11/17", status_dk: "Questionable" }),
+    statusConflict({ status: "Out", status_file: "Out per EvanMiya 11/17", status_dk: "O" }), statusConflict({ status: "Out", status_file: "Out per EvanMiya 11/17" })]);
+  check("status: outs file against DraftKings shows both where they disagree, nothing where they agree",
+        /Out per EvanMiya 11\/17 \/ DK: Q</.test(conflict[0]) && conflict[1] === "" && /DK: no tag/.test(conflict[2]), JSON.stringify(conflict));
   check("match warning: a red line naming the unmatched game and its players", mw.t.includes('class="bad"') && mw.t.includes(mw.n + " players unmatched") && mw.t.includes(mw.g), mw.t);
 
   const set = async (vals) => {
