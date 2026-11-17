@@ -137,7 +137,7 @@ Verdict: you were on the right side of 3 of these 5 (over the field where his ho
 
 **Your Q moves.** Afternoon: Boozer ahead of Embiid, hurt by 5; Afternoon: Brown ahead of Embiid, helped by 7.
 
-**Today's Questionable players.** Jonathan Kuminga (T5 on the ladders, 67% to play): if he sits, Terrence Shannon Jr., Joan Beringer, Bones Hyland.
+**Today's Questionable players.** Scottie Barnes (T2 on the ladders, 44% to play): if he sits, Collin Murray-Boyles, Jakob Poeltl, Jamal Shead; Jonathan Kuminga (T5 on the ladders, 50% to play): if he sits, Terrence Shannon Jr., Joan Beringer, Bones Hyland.
 
 ## Back page
 

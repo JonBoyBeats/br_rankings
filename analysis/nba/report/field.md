@@ -11,7 +11,7 @@
   - Questionable at Lock AM: 37 tagged, 29 played; teams that drafted them before noon top 1% 1.75% (8160 teams) vs after 1.71% (15162).
   - Most-owned turn combo vs the rest, top 1%: 2/3 turn 0.63% vs 1.32% (33 cases); 1/2 turn 1.53% vs 0.58% (11 cases).
   - Boom peer bump: 28 players moved 2+ points so far (too few to read); risers wait on two weeks of entry counts.
-- Last night, where it touched a rule: your takes off the tier rules: 66, 24 right; the field went your way on 12, against on 54; Questionable at Lock AM: Jalen Smith (played, on 0 of your 100), Tre Johnson (played, on 0 of your 100).
+- Last night, where it touched a rule: your takes off the tier rules: 61, 20 right; the field went your way on 10, against on 51; Questionable at Lock AM: Jalen Smith (played, on 0 of your 100), Tre Johnson (played, on 0 of your 100).
 
 The full tables follow; the morning report reads only this block (the rest is reference).
 
@@ -56,8 +56,8 @@ Drafted% leaves 100% at ADP 24.5. Tag: at Lock AM / at lock. Tiers: yours at Loc
 | Amen Thompson | 24.5 | 0.0% | under 10 (news?) | - / Questionable | 4/4 | 0.0 |
 | Julius Randle | 32.0 | 98.4% | 60-99.5 | - / - | 5/5 | 49.7 |
 | Damian Lillard | 32.1 | 91.6% | 60-99.5 | - / - | 5/5 | 20.4 |
-| Jarrett Allen | 32.3 | 98.4% | 60-99.5 | - / - | 5/5 | 36.3 |
 | Alex Sarr | 32.3 | 87.9% | 60-99.5 | - / - | 5/- | 16.3 |
+| Jarrett Allen | 32.3 | 98.4% | 60-99.5 | - / - | 5/5 | 36.3 |
 | Michael Porter Jr. | 33.8 | 89.5% | 60-99.5 | - / - | -/5 | 40.2 |
 | Jaden McDaniels | 34.1 | 78.7% | 60-99.5 | - / - | 5/5 | 34.7 |
 | Anthony Black | 35.0 | 51.9% | 10-60 | - / - | -/- | 40.9 |
@@ -103,16 +103,15 @@ Picks per team from each of your tiers (each team read with the tiers of the loc
 
 ### 6. Your takes against the field
 
-66 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
+61 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
 
 | Lock | Tier | Takes | With the field | Against it | You were right |
 |---|---|---|---|---|---|
-| AM | T2 | 3 | 0 | 3 | 3 |
-| AM | T3 | 3 | 2 | 1 | 3 |
+| AM | T2 | 2 | 0 | 2 | 2 |
 | AM | T4 | 1 | 0 | 1 | 1 |
 | AM | T5 | 17 | 2 | 15 | 6 |
 | PM | T2 | 2 | 2 | 0 | 1 |
-| PM | T3 | 2 | 1 | 1 | 0 |
+| PM | T3 | 1 | 1 | 0 | 0 |
 | PM | T4 | 1 | 0 | 1 | 0 |
 | PM | T5 | 37 | 5 | 32 | 10 |
 

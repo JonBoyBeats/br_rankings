@@ -1,6 +1,6 @@
 # Pod replay: my NBA rankings graded by team outcomes
 
-Results only. Generated 2026-11-17 17:59 from 25 nights (2026-10-21 to 2026-11-16).
+Results only. Generated 2026-11-17 18:47 from 25 nights (2026-10-21 to 2026-11-16).
 
 ## Plain English
 
