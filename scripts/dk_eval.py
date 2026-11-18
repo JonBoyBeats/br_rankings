@@ -125,6 +125,12 @@ BUILDS = os.path.join(DK, "builds")       # the DK page's saved builds (Save bui
 OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own_proj", "own_actual"]
 BANDS = [(6000, 99999), (4000, 5999), (0, 3999)]
 GATE_NIGHTS, GATE_N, GATE_SHARE = 5, 100, 0.6
+# The Questionable discount (2026-11-18, the owner's call): a player tagged Questionable is projected at his projection
+# x the measured factor, sum of actual / sum of projected over every graded Questionable player-night (Out excluded),
+# once there are Q_MIN_N of them; written to gate.json, applied by dk_sim.js gatedProj (the page, the shadow sets) and
+# battle-royale-research dk_cbb_field.py (the simulated field). 2026-11-16/17: 10 player-nights, 6 didn't play, the 4
+# who did played 54 of 94 projected minutes; 29.5 of 151.6 points, 0.19.
+Q_MIN_N = 5
 OWN_BANDS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
 FIELD_EVAL = os.path.join(DK, "field_eval.csv")
 FIELD_COLS = ["date", "draft_group", "contest_id", "contest", "side", "lineups", "matched_n", "dup_other", "distinct_per_1000",
@@ -516,7 +522,13 @@ def gate(a):
                 sxx = sum(xi * xi for xi in x)
                 b.update(open=True, w=round(max(0.0, min(1.0, sum(xi * yi for xi, yi in zip(x, y)) / sxx if sxx else 1.0)), 3))
         bands.append(b)
-    doc = {"generated_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "nights": len(nights), "bands": bands,
+    qs = [r for r in rows if r["status"] == "Questionable"]
+    qa, qp = sum(num(r["actual_dk"]) for r in qs), sum(num(r["fp_dk"]) for r in qs)
+    quest = {"n": len(qs), "nights": len({r["date"] for r in qs}), "actual": round(qa, 2), "projected": round(qp, 2),
+             "factor": round(qa / qp, 3) if len(qs) >= Q_MIN_N and qp else 1.0,
+             "rule": "a Questionable player's projection x factor: actual / projected over the graded Questionable player-nights, "
+                     "once there are %d" % Q_MIN_N}
+    doc = {"generated_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "nights": len(nights), "bands": bands, "questionable": quest,
            "rule": "open where DraftKings' average beat ours: %d+ nights, %d+ player-nights, lower mean error, better on %d%%+ of nights"
                    % (GATE_NIGHTS, GATE_N, 100 * GATE_SHARE)}
     cb, today = CALIBRATION_BLEND, dt.datetime.now(PT).date().isoformat()
@@ -531,6 +543,7 @@ def gate(a):
     with open(GATE, "w") as f:
         json.dump(doc, f, indent=1)
         f.write("\n")
+    print("Questionable: x%.2f (%d player-nights on %d nights: %.1f actual of %.1f projected)" % (quest["factor"], quest["n"], quest["nights"], qa, qp))
     print("Projection gate (%d graded nights): %s" % (len(nights), "; ".join(
         "%s %s (n=%d, ours %s vs DK avg %s)" % (band_name(b), "OPEN w=%.2f" % b["w"] if b["open"] else "closed",
                                                 b["n"], b.get("mae_ours", "-"), b.get("mae_avg", "-")) for b in bands)))

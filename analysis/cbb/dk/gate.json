@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-18T11:57:19Z",
+ "generated_at": "2026-11-18T12:28:33Z",
  "nights": 2,
  "bands": [
   {
@@ -36,6 +36,14 @@
    "nights_avg_won": 0
   }
  ],
+ "questionable": {
+  "n": 10,
+  "nights": 2,
+  "actual": 29.5,
+  "projected": 151.6,
+  "factor": 0.195,
+  "rule": "a Questionable player's projection x factor: actual / projected over the graded Questionable player-nights, once there are 5"
+ },
  "rule": "open where DraftKings' average beat ours: 5+ nights, 100+ player-nights, lower mean error, better on 60%+ of nights",
  "override": "calibration blend, ours 50% / DraftKings' average 50% in every band, until the owner's choice at the freeze",
  "version": "cal-1"

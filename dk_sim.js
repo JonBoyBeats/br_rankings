@@ -50,10 +50,13 @@
 
   // The projection gate (analysis/cbb/dk/gate.json, scripts/cbb_daily.py): where DraftKings' season average has beaten
   // ours over the graded nights in a salary band, Proj there is w x ours + (1 - w) x DraftKings' average.
+  // ... and a Questionable player at that x gate.questionable.factor (measured by dk_eval.py gate: actual / projected
+  // over the graded Questionable player-nights; 1 until there are enough)
   function gatedProj(r, gate) {
     var b = gate && (gate.bands || []).find(function (x) { return x.open && r.salary >= x.lo && r.salary <= x.hi; });
-    if (!b || !r.dk_avg) return r.fp_dk;
-    return b.w * r.fp_dk + (1 - b.w) * r.dk_avg;
+    var p = !b || !r.dk_avg ? r.fp_dk : b.w * r.fp_dk + (1 - b.w) * r.dk_avg;
+    var q = gate && gate.questionable && gate.questionable.factor;
+    return r.status === "Questionable" && q != null && p != null ? p * q : p;
   }
 
   // The field's lineup ownership at a percentile (for the ownership-cap rule set)

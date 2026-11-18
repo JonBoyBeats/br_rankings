@@ -197,6 +197,16 @@ function audit(name, L, o) {
   const shown = await pg.evaluate(([a, c]) => [proj(rows.find(r => r.id === a)), proj(rows.find(r => r.id === c))], [pick, cheap]);
   check("gate blends where open", Math.abs(shown[0] - (0.6 * P[pick].fp_dk + 0.4 * P[pick].dk_avg)) < 1e-9, JSON.stringify(shown));
   check("gate leaves closed bands alone", Math.abs(shown[1] - P[cheap].fp_dk) < 1e-9);
+  // the Questionable discount: a Q player at his (gated) projection x the measured factor; everyone else as before
+  gate = { nights: 9, bands: [{ lo: 6000, hi: 99999, open: true, w: 0.6 }, { lo: 0, hi: 5999, open: false, w: 1 }],
+           questionable: { factor: 0.2, n: 10, actual: 30, projected: 150 } };
+  await pg.click("#reload");
+  await pg.waitForFunction(() => /Questionable players are projected at x0\.20/.test(document.getElementById("statusInfo").textContent));
+  const qid = Object.keys(P).find(id => P[id].status === "Questionable" && P[id].fp_dk > 0);
+  const qs = await pg.evaluate(([q, a]) => [proj(rows.find(r => r.id === q)), proj(rows.find(r => r.id === a))], [qid, pick]);
+  const qBase = P[qid].salary >= 6000 && P[qid].dk_avg ? 0.6 * P[qid].fp_dk + 0.4 * P[qid].dk_avg : P[qid].fp_dk;
+  check("questionable: projected at his projection x the factor", Math.abs(qs[0] - 0.2 * qBase) < 1e-9, JSON.stringify([qs[0], qBase]));
+  check("questionable: others unchanged", P[pick].status === "Questionable" || Math.abs(qs[1] - shown[0]) < 1e-9);
 
   // --- team tiles and rules -----------------------------------------------------------------------------
   const TEAMS = JSON.parse(fs.readFileSync(path.join(FIX, "dk_cbb_teams.json"))).slates[String(slate.draft_group_id)];
@@ -564,17 +574,18 @@ function audit(name, L, o) {
         qc.n === qc.k && qc.q.every(Number.isFinite) && qc.c.every(v => v >= 0 && v <= 1), JSON.stringify({ cols, qc }));
   await pg.click("#bpClear");
   const step = await pg.evaluate(() => {
-    const b = BP.b, out = [];
-    for (const k of [0, 5, 40]) {
+    const b = BP.b, out = [], ks = [];
+    for (const start of [0, 5, 40]) {           // three lineups within Max exposure (hand adds keep to it)
+      let k = start; while (ks.includes(k) || bpOver(k).length) k++;
       const before = b.total(), v = BP.scores[k] ? BP.scores[k].value : null;
-      bpAdd(k);
+      bpAdd(k); ks.push(k);
       out.push(Math.abs(b.total() - before - v));
     }
-    bpRemove(5);
-    return { gaps: out, picked: b.picked.slice() };
+    bpRemove(ks[1]);
+    return { gaps: out, picked: b.picked.slice(), want: [ks[0], ks[2]] };
   });
   check("review: Added value is the set's payout with it minus without", step.gaps.every(g => g < 1e-9), JSON.stringify(step.gaps));
-  check("review: Remove takes a pick out", JSON.stringify(step.picked) === JSON.stringify([0, 40]), JSON.stringify(step.picked));
+  check("review: Remove takes a pick out", JSON.stringify(step.picked) === JSON.stringify(step.want), JSON.stringify(step.picked));
   await pg.click("#bpClear");
   await pg.click("#bpAuto");
   await pg.waitForFunction(() => BP.b.picked.length >= 5 || /stopped/.test(document.getElementById("bpStatus").textContent), null, { timeout: 300000 });

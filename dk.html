@@ -405,7 +405,7 @@ function pick() {
   $("status").innerHTML = matchText();
   $("statusInfo").innerHTML = esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
     (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }))) +
-    '<br>' + gateText();
+    '<br>' + gateText() + qText();
   BP = null; $("bpTableWrap").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpGroups").innerHTML = "";
   ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = true; });
   ruleCounts = {}; editing = -1;
@@ -423,6 +423,11 @@ function matchText() {
     esc(games.join(", ")) + " found no ESPN match, so " + (un.length === 1 ? "he's" : "they're") + " on DraftKings' average (no minutes, line or fragility).</span><br>";
 }
 
+function qText() {
+  var q = gate && gate.questionable;
+  return q && q.factor != null && q.factor !== 1 ? " Questionable players are projected at x" + q.factor.toFixed(2) + " (measured on " + q.n +
+    " graded Questionable player-nights: " + q.actual + " DraftKings points against " + q.projected + " projected); edit a Proj once his status is known." : "";
+}
 function gateText() {
   var open = gate && (gate.bands || []).filter(function (b) { return b.open; });
   if (!gate) return "Projection gate: closed (no graded DraftKings nights yet). Proj is ours.";
@@ -467,7 +472,8 @@ function playerTable(list, sortable) {
   var body = list.map(function (r) {
     var nw = newsOf(r.id);
     var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
-      (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q">Q</span>' : "") + statusConflict(r) +
+      (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
+        ' title="Projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : "") + '>Q</span>' : "") + statusConflict(r) +
       (r.fragile ? '<span class="tag frag" title="Fragile: expected miss ±' + (r.miss_dk || "") + '">fragile</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
     var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
