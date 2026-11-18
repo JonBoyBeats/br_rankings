@@ -554,15 +554,22 @@
     phases.forEach(function (rule) {
       var need = rule ? Math.ceil(rule.share * N - 1e-9) : N;
       while (b.picked.length < N && (!rule || b.picked.filter(function (j) { return meets(rule, cand[j].ids); }).length < need)) {
-        var best = -1, bestV = -Infinity;
+        var best = -1, bestV = -Infinity, ok = [];
         for (var k = 0; k < cand.length; k++) {
           if (b.picked.indexOf(k) >= 0 || (rule && !meets(rule, cand[k].ids)) ||
               (perLine.length && !perLine.every(function (r) { return passes(r, cand[k].ids); })) || !fits(cand, b.picked, k, count, limit, o.minUnique) ||
               !shareFits(conds, cand, b.picked, k, N) || (coreOf && (coreN[coreOf[k]] || 0) + 1 > coreLim) ||
               (pairsOf && pairsOf[k].some(function (pk) { return (o.pairCount[pk] || 0) + 1 > o.pairLimit; }))) continue;
-          var v = b.score(k).value;
-          if (v > bestV) { bestV = v; best = k; }
+          ok.push([k, b.score(k)]);
         }
+        // o.objective: "roi" (the default: added value), "cover" (the rise in nights one of the set reaches the top
+        // 1%, added value breaking ties), "balanced" (each, over the best of it among the candidates, weighted equally)
+        var obj = o.objective || "roi", mv = 1e-12, mc = 1e-12;
+        if (obj === "balanced") ok.forEach(function (x) { mv = Math.max(mv, x[1].value); mc = Math.max(mc, x[1].top1); });
+        ok.forEach(function (x) {
+          var sc = x[1], v = obj === "cover" ? sc.top1 * 1e6 + sc.value : obj === "balanced" ? 0.5 * Math.max(0, sc.value) / mv + 0.5 * sc.top1 / mc : sc.value;
+          if (v > bestV) { bestV = v; best = x[0]; }
+        });
         if (best < 0) break;
         b.add(best);
         cand[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });

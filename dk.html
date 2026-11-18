@@ -288,7 +288,7 @@
     simulates the survivors over fresh nights and adds each lineup's payout alone in every contest you're entering to its running
     total; a lineup's rank is its best in ANY of them. Each group keeps the same share of its own lineups (Keep / bank), its
     best-ranked, Cut % a round, skipping a lineup that shares 7+ of 8 players with a better one it kept. <b>Build</b> on a contest
-    opens its builder below (your picks save as you go); <b>Pick portfolios</b> fills every contest automatically instead, within
+    opens its builder below (your picks save as you go); <b>Fill all contests</b> builds a starting portfolio for every contest instead (Start from: Max ROI, Balanced or Max coverage), within
     Max exposure, each player's Max%, Min unique and Max core; each lineup goes in one contest only. <b>Export DK entries</b>
     fills the entries file for upload; <b>Save build</b> downloads the bank and portfolios to send in with the standings.</div></details>
   <div class="opts">
@@ -304,7 +304,9 @@
     <label class="field" title="No 3-player core (a lineup's three highest salaries) in more than this % of a contest's lineups (at least one lineup a core; blank: off)"><span class="field-label">Max core %</span><input class="num" id="maxCore" type="number" min="1" max="100" value="15"></label>
     <label class="field" title="Across the whole night's entries: no two players together in more than this % of them (at least one entry; blank: off)"><span class="field-label">Max pair % (night)</span><input class="num" id="maxPair" type="number" min="1" max="100" placeholder="off"></label>
     <label class="field"><span class="field-label">Nights for the pick</span><input class="num" id="nSims" type="number" min="500" max="10000" step="500" value="3000"></label>
-    <button type="button" class="primary" id="pfRun">Pick portfolios</button>
+    <label class="field" title="A starting portfolio for every contest you're entering, to edit by hand: Max ROI adds by expected value, Max coverage by the rise in nights one of yours reaches the top 1%, Balanced weighs the two equally"><span class="field-label">Start from</span><select id="pfObj" style="width:auto">
+      <option value="roi">Max ROI</option><option value="balanced">Balanced</option><option value="cover">Max coverage</option></select></label>
+    <button type="button" class="primary" id="pfRun">Fill all contests</button>
     <button type="button" id="pfExport" disabled>Export DK entries</button>
     <button type="button" id="bankSave">Save build</button>
     <button type="button" id="bankClear">Clear bank</button>
@@ -1044,7 +1046,7 @@ async function runCut() {
 }
 
 // into: where the portfolios go (the page's PF by default; Save build's Auto-fill benchmark passes its own object)
-async function pickPortfolios(into) {
+async function pickPortfolios(into, objective) {
   into = into || PF;
   var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
   if (!BANK.lineups.length) return "The bank is empty.";
@@ -1063,7 +1065,7 @@ async function pickPortfolios(into) {
     $("cutStatus").textContent = "Picking " + n + " for " + c.name + " from " + pool.length + " left…"; await tick();
     var sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, S);
     var pairsBefore = Object.assign({}, pairCount);       // the night's pair counts before this contest (for the trials below)
-    var po = Object.assign(pickRules(n), pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(ctx(), po, pool, sim, c, n);
+    var po = Object.assign(pickRules(n), { objective: objective || "roi" }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(ctx(), po, pool, sim, c, n);
     into[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
     into[String(c.id)].forEach(function (bi) { taken[bi] = 1; });
     var why = "";
@@ -1102,7 +1104,7 @@ function exportEntries() {
   if (!ENTRIES) return "Load the entries file first.";
   var seen = {}, dup = 0;               // unique entries: a lineup in two contests' portfolios is refused, not exported
   Object.keys(PF).forEach(function (k) { PF[k].forEach(function (bi) { if (seen[bi]) dup++; seen[bi] = 1; }); });
-  if (dup) return "Not exported: " + dup + " lineup" + (dup === 1 ? " is" : "s are") + " in more than one contest's portfolio (picked before entries were unique). Press Pick portfolios again.";
+  if (dup) return "Not exported: " + dup + " lineup" + (dup === 1 ? " is" : "s are") + " in more than one contest's portfolio (picked before entries were unique). Press Fill all contests again.";
   var lines = [ENTRIES.header.map(csvCell).join(",")], used = {}, short = [];
   ENTRIES.rows.forEach(function (r) {
     var pf = PF[r[2]];
@@ -1134,7 +1136,7 @@ async function saveBank() {
   Object.keys(BANK.tagRules).forEach(function (t) { (BANK.tagRules[t].conds || []).forEach(function (r) { if (!rs.some(function (x) { return x.label === r.label; })) rs.push(r); }); });
   var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(), rule_set: rs,
               pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, groups: BANK.groups || {}, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null,
-              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate };
+              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate };
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
   a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
@@ -1436,7 +1438,10 @@ $("cutRun").addEventListener("click", function () {
   runCut().then(function (m) { $("cutStatus").textContent = m; }, function (e) { CUT = null; cutSave(); renderBank(); $("cutStatus").innerHTML = '<span class="bad">Cut failed: ' + esc(e.message) + "</span>"; });
 });
 $("pfRun").addEventListener("click", function () {
-  pickPortfolios().then(function (m) { $("cutStatus").textContent = m; }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
+  var started = Object.keys(PF).filter(function (k) { return (PF[k] || []).length; }).length, obj = $("pfObj").value;
+  if (started && !confirm("Replace your portfolios in " + started + " contest" + (started === 1 ? "" : "s") + " with the " + $("pfObj").selectedOptions[0].textContent + " start?")) return;
+  PF = {};
+  pickPortfolios(null, obj).then(function (m) { $("cutStatus").textContent = m; }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
 });
 $("pfExport").addEventListener("click", function () { $("cutStatus").textContent = exportEntries(); });
 $("bankSave").addEventListener("click", saveBank);

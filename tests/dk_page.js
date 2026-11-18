@@ -75,6 +75,8 @@ function audit(name, L, o) {
 (async () => {
   const b = await chromium.launch();
   const pg = await b.newPage({ viewport: { width: 1100, height: 900 } });
+  let dialogs = [];
+  pg.on("dialog", d => { dialogs.push(d.message()); d.accept(); });       // Fill all contests asks before replacing
   const errors = [];
   pg.on("pageerror", e => errors.push(e.message));
   await pg.route(/fonts\.(googleapis|gstatic)/, r => r.abort());
@@ -548,6 +550,29 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   const pf = await pg.evaluate(() => PF);
   const pmsg = await pg.textContent("#cutStatus"), size = { "197791872": 1, "197791874": 5, "197791877": 1 };
+  // the starting portfolios: Max coverage reaches the top 1% on at least as many nights as Max ROI, which expects at least as much;
+  // filling over existing portfolios asks first
+  const objs = await pg.evaluate(() => {
+    const c = slate.contests.find(x => String(x.id) === "197791874"), pool = finalIdx().map(i => BANK.lineups[i]), n = 5;
+    const sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, 1000), out = {};
+    ["roi", "balanced", "cover"].forEach(ob => { const r = DKSim.pick(ctx(), Object.assign(pickRules(n), { objective: ob }), pool, sim, c, n);
+      out[ob] = { n: r.chosen.length, total: r.builder.total(), cov: r.builder.coverage().top1, ks: r.chosen.slice().sort().join() }; });
+    return out;
+  });
+  check("start from: Max coverage covers the top 1% at least as often as Max ROI, Max ROI expects at least as much",
+        objs.cover.cov >= objs.roi.cov - 1e-9 && objs.roi.total >= objs.cover.total - 1e-9 && objs.roi.n === 5 && objs.cover.n === 5 && objs.balanced.n === 5, JSON.stringify(objs));
+  dialogs = [];
+  await pg.selectOption("#pfObj", "cover");
+  await pg.evaluate(() => { document.getElementById("cutStatus").textContent = ""; });
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  check("start from: replacing filled portfolios asks first", dialogs.length === 1 && /Replace your portfolios in 3 contests with the Max coverage start/.test(dialogs[0]), JSON.stringify(dialogs));
+  await pg.selectOption("#pfObj", "roi");
+  await pg.evaluate(() => { document.getElementById("cutStatus").textContent = ""; });
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  check("start from: Max ROI fills every contest again (fresh nights, so its picks can differ)", await pg.evaluate(sz => Object.keys(sz).every(c => (PF[c] || []).length === sz[c]), size));
+  await pg.evaluate(p => { PF = p; pfSave(); renderEntries(); }, pf);     // the rest of the run works from the first fill
   check("portfolios: one per contest, from the final pool", Object.keys(size).every(c => pf[c] && pf[c].length >= 1 && pf[c].length <= size[c] && pf[c].every(i => cut.keep.includes(i)) &&
         new Set(pf[c]).size === pf[c].length), JSON.stringify(pf));
   const pfAll = Object.values(pf).flat();
