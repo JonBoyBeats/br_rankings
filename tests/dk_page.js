@@ -372,6 +372,18 @@ function audit(name, L, o) {
   await pg.click('#ruleList .rule[data-i="0"] button[data-act="base"]');
   B = await baseNow();
   check("baseline: To baseline takes it back out", B.base && B.inDraw && !B.inTag, JSON.stringify(B));
+  // the platoon log: each draw records what the rule blocked of its rule-free lineups, the projection gap, a sample
+  await emptyBank(); await set(base);
+  await draw(20);
+  const plog = await pg.evaluate(() => { const L = BANK.ruleLog || []; bankLoadState(); return { L, back: JSON.stringify(BANK.ruleLog) === JSON.stringify(L) }; });
+  const e0 = plog.L[0] || {};
+  check("platoon log: one entry for the draw, with blocked of the rule-free lineups", plog.L.length === 1 && e0.of > 0 && e0.blocked >= 0 && e0.blocked <= e0.of &&
+        JSON.stringify(e0.ids) === JSON.stringify([pp.starter.id, pp.bench.id]), JSON.stringify(plog.L));
+  check("platoon log: the sample holds blocked lineups (both players), at most 20", e0.sample && e0.sample.length === Math.min(e0.blocked, 20) &&
+        e0.sample.every(x => x.split(",").includes(pp.starter.id) && x.split(",").includes(pp.bench.id)) && (e0.blocked === 0 || e0.gap === null || Number.isFinite(e0.gap)));
+  check("platoon log: kept with the bank across a reload", plog.back);
+  await pg.evaluate(() => renderBank());
+  await emptyBank();
   const noPlat = TEAMS.teams.find(t => t.platoon && !t.platoon.length);
   if (noPlat) {
     await openTeam(noPlat.team);

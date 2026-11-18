@@ -837,7 +837,7 @@ var bankSaveFailed = false;
 function bankPack(B) {
   var tagList = [], ti = {};
   var tx = function (t) { if (ti[t] == null) { ti[t] = tagList.length; tagList.push(t); } return ti[t]; };
-  return { v: 2, tagList: tagList, tagRules: B.tagRules, groups: B.groups || {}, lineups: B.lineups.map(function (L, i) {
+  return { v: 2, tagList: tagList, tagRules: B.tagRules, groups: B.groups || {}, ruleLog: B.ruleLog || [], lineups: B.lineups.map(function (L, i) {
     var perm = L.ids.map(function (id) { return L.slots.indexOf(id); });
     var ok = L.slots.length === L.ids.length && L.ids.length <= 10 && perm.every(function (p) { return p >= 0; });
     return L.slots.join(",") + "|" + (ok ? perm.join("") : "," + L.ids.join(",")) + "|" + B.tags[i].map(tx).join(".");
@@ -845,7 +845,7 @@ function bankPack(B) {
 }
 function bankUnpack(raw) {
   if (!raw || raw.v !== 2) return raw;
-  var B = { lineups: [], tags: [], tagRules: raw.tagRules || {}, groups: raw.groups || {} };
+  var B = { lineups: [], tags: [], tagRules: raw.tagRules || {}, groups: raw.groups || {}, ruleLog: raw.ruleLog || [] };
   raw.lineups.forEach(function (str) {
     var p = str.split("|"), slots = p[0].split(",");
     B.lineups.push({ ids: p[1].charAt(0) === "," ? p[1].slice(1).split(",") : p[1].split("").map(function (d) { return slots[+d]; }), slots: slots });
@@ -876,6 +876,25 @@ function tagNow() {         // the draw's idea: the settings off their defaults,
   Object.keys(state.excl).forEach(function (id) { t.push("no " + name(id)); });
   (state.rules || []).forEach(function (x) { if (!x.off && !x.base) t.push(x.label); });
   return t.length ? t.join(" + ") : "no rules";
+}
+/* The platoon rules' log, each draw: of the draw's rule-free lineups (the base the rules' pass counts come from), how
+   many each platoon rule blocked, the projected points of those blocked against those passing (positive: it blocked
+   lineups projected higher), and up to PLATOON_LOG_N of the blocked ones, for dk_eval.py platoon to score on the real
+   points next morning. */
+var PLATOON_LOG_N = 20;
+function logPlatoon(o, res, tag) {
+  var base = res.base || [], rules = (o.conds || []).filter(function (r) { return r.src === "platoon"; });
+  if (!base.length || !rules.length) return;
+  var pts = function (L) { return L.ids.reduce(function (t, id) { var r = byId(id); return t + (r ? proj(r) : 0); }, 0); };
+  BANK.ruleLog = BANK.ruleLog || [];
+  rules.forEach(function (rule) {
+    var fail = base.filter(function (L) { return !DKSim.passes(rule, L.ids); }), pass = base.filter(function (L) { return DKSim.passes(rule, L.ids); });
+    var mean = function (a) { return a.length ? a.reduce(function (t, L) { return t + pts(L); }, 0) / a.length : null; };
+    BANK.ruleLog.push({ tag: tag, label: rule.label, ids: rule.ids.slice(), blocked: fail.length, of: base.length,
+                        gap: fail.length && pass.length ? Math.round(100 * (mean(fail) - mean(pass))) / 100 : null,
+                        sample: fail.slice(0, PLATOON_LOG_N).map(function (L) { return L.ids.join(","); }) });
+  });
+  bankSaveState();
 }
 function bankAdd(lineups, tag) {
   var seen = {}, added = 0;
@@ -1179,7 +1198,7 @@ async function saveBank() {
   Object.keys(BANK.tagRules).forEach(function (t) { (BANK.tagRules[t].conds || []).forEach(function (r) { if (!rs.some(function (x) { return x.label === r.label; })) rs.push(r); }); });
   var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(), rule_set: rs,
               pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, groups: BANK.groups || {}, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null,
-              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate };
+              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, rule_log: BANK.ruleLog || [], idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate };
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
   a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
@@ -1477,9 +1496,11 @@ $("bankDraw").addEventListener("click", function () {
   cx.progress = function (msg) { $("buildStatus").textContent = msg; return tick(); };
   $("buildStatus").textContent = "Drawing " + n + " lineups under the rules…";
   var tag = tagNow();
-  drawBank(cx, drawRules(), n).then(function (res) {
+  var dr = drawRules();
+  drawBank(cx, dr, n).then(function (res) {
     takeCounts(res);
     var added = bankAdd(res.lineups, tag);
+    logPlatoon(dr, res, tag);
     $("buildStatus").textContent = "Banked " + added + " new lineups, tagged \"" + tag + "\"" + (res.lineups.length - added ? " (" + (res.lineups.length - added) + " already in the bank)" : "") + "." +
       (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "") + rulesMsg(res) + (res.expo || "");
   }, function (e) { $("buildStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; });

@@ -54,6 +54,13 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             +RISER_STEP+) against fallers (-RISER_STEP or more) on actual minus projection, and the rank correlation of
             the change with it; across nights, the nights risers beat fallers and the average gap. The owner's question
             (2026-11-17): are the players the cut raises the ones to be overweight on? 2026-11-16 (the old cut): no.
+  platoon   analysis/cbb/dk/platoon_eval.csv, nightly: the spot check of each platoon rule (Never together, from the
+            tiles) used in a saved bank, from the bank's rule_log (the DK page records it each draw): the pair's result
+            against projection (both over, both under, or split: the negative pairing held; a player who didn't play
+            counts as under), how many of the draws' rule-free lineups it blocked, their projected points against those
+            passing (positive: it blocked lineups projected higher), and on the real points the blocked lineups logged
+            (up to 20 a draw) against the bank's lineups from the same draws. Flags, once a pair spans PLATOON_FLAG_DAYS:
+            never binds (blocked none) and never held (never split).
   fills     analysis/cbb/dk/fill_eval.csv, nightly: would other parts of the bank have filled the contests better than
             the owner's picks? For each saved bank with graded standings in its entered contests, FILL_SETS random
             fills of the owner's own entry counts (each lineup in one contest only, as entered), drawn from the whole
@@ -147,6 +154,10 @@ OWN_BANDS_FIELD = [(30, 101), (20, 30), (10, 20), (5, 10), (1, 5)]
 IDEA_EVAL = os.path.join(DK, "idea_eval.csv")
 IDEA_COLS = ["date", "draft_group", "idea", "kind", "contest_id", "contest", "banked", "kept", "entered", "kept_share", "entered_share",
              "banked_top10", "banked_cash", "entered_top10", "entered_cash", "pct_top10", "pct_cash", "version"]
+PLATOON_EVAL = os.path.join(DK, "platoon_eval.csv")
+PLATOON_COLS = ["date", "draft_group", "pair", "starter_id", "bench_id", "starter_beat", "bench_beat", "result", "draws", "blocked", "of",
+                "proj_gap", "real_blocked", "real_banked", "real_gap", "version"]
+PLATOON_FLAG_DAYS = 14
 FILL_EVAL = os.path.join(DK, "fill_eval.csv")
 FILL_COLS = ["date", "draft_group", "subset", "lineups", "fills", "fees", "avg_dollars", "roi", "top10_rate", "best_fill",
              "beat_entered", "entered_dollars", "entered_top10_rate", "version"]
@@ -1064,7 +1075,7 @@ def calnote(a):
     held = [h for h in held if h is not None]
     print("Cut check, last night: %s. 'Kept averages more but reaches the top 10%% less' held on %d of %d graded nights." % (
         line or "no saved bank scored yet", sum(held), len(held)))
-    for line in riser_lines() + fill_lines() + auto_lines():
+    for line in riser_lines() + fill_lines() + auto_lines() + platoon_lines():
         print(line)
     fe = [r for r in read(FIELD_EVAL) if r["date"] == last]
     if fe:
@@ -1098,7 +1109,7 @@ def readout(a):
     print_audit(full=True)
     print_ideas()
     print()
-    for line in riser_lines() + fill_lines() + auto_lines():
+    for line in riser_lines() + fill_lines() + auto_lines() + platoon_lines():
         print(line)
     print()
     ev, kind = counted(read(EVAL))
@@ -1369,6 +1380,79 @@ def cutcheck(a):
         print("  cut_eval.csv: %d rows" % len(out))
 
 
+def platoon(a):
+    """The nightly platoon spot check (see the docstring), rebuilt whole each run."""
+    banks = {}
+    for f in sorted(glob.glob(os.path.join(BUILDS, "dk_bank_*.json"))):
+        b = json.load(open(f))
+        g = str(b.get("draft_group"))
+        if g not in banks or (b.get("saved_at") or "") >= (banks[g].get("saved_at") or ""):
+            banks[g] = b
+    out = []
+    for g, b in sorted(banks.items(), key=lambda kv: kv[1].get("day") or ""):
+        log = b.get("rule_log") or []
+        if not log:
+            continue
+        rec = {r["dk_id"]: r for r in read(os.path.join(DK, "%s_%s.csv" % (b["day"], g)))}
+        if not any(num(r["actual_dk"]) is not None for r in rec.values()):
+            print("  platoon %s (%s): no real points recorded yet" % (g, b["day"]))
+            continue
+        act = lambda i: num(rec[i]["actual_dk"]) or 0 if i in rec else 0
+        score = lambda ids: sum(act(str(i)) for i in ids)
+        by = {}
+        for e in log:
+            by.setdefault(tuple(e["ids"]), []).append(e)
+        for (s_id, b_id), es in sorted(by.items()):
+            beat = lambda i: (num(rec[i]["actual_dk"]) or 0) - num(rec[i]["fp_dk"]) if i in rec and num(rec[i]["fp_dk"]) is not None else None
+            sb, bb = beat(str(s_id)), beat(str(b_id))
+            res = "" if sb is None or bb is None else "both over" if sb > 0 and bb > 0 else "split" if (sb > 0) != (bb > 0) else "both under"
+            blocked, of = sum(e["blocked"] for e in es), sum(e["of"] for e in es)
+            gaps = [(e["gap"], e["blocked"]) for e in es if e.get("gap") is not None and e["blocked"]]
+            sample = [x.split(",") for e in es for x in (e.get("sample") or [])]
+            tags = {e["tag"] for e in es}
+            banked = [score(L) for L, t in zip(b["pool"], b["tags"]) if t[0] in tags]
+            rb = S.mean(score(L) for L in sample) if sample else None
+            rk = S.mean(banked) if banked else None
+            out.append({"date": b["day"], "draft_group": g, "pair": "%s / %s" % ((rec.get(str(s_id)) or {}).get("name", s_id), (rec.get(str(b_id)) or {}).get("name", b_id)),
+                        "starter_id": s_id, "bench_id": b_id, "starter_beat": round(sb, 2) if sb is not None else "", "bench_beat": round(bb, 2) if bb is not None else "",
+                        "result": res, "draws": len(es), "blocked": blocked, "of": of,
+                        "proj_gap": round(sum(x * n for x, n in gaps) / sum(n for _, n in gaps), 2) if gaps else "",
+                        "real_blocked": round(rb, 2) if rb is not None else "", "real_banked": round(rk, 2) if rk is not None else "",
+                        "real_gap": round(rb - rk, 2) if rb is not None and rk is not None else "", "version": version_of(b["day"])})
+    if out:
+        with open(PLATOON_EVAL, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=PLATOON_COLS)
+            w.writeheader()
+            w.writerows(out)
+    for line in platoon_lines():
+        print("  " + line)
+
+
+def platoon_lines():
+    """The platoon spot check: last night's rules, and the flags once a pair spans PLATOON_FLAG_DAYS."""
+    rows = read(PLATOON_EVAL)
+    if not rows:
+        return ["Platoon rules: none graded yet (a bank saved with its rule log, and its night's points)"]
+    last = max(r["date"] for r in rows)
+    f = lambda x: "%+.1f" % num(x) if x not in ("", None) else "-"
+    lines = ["Platoon rules, %s: " % last + "; ".join("%s %s (%s / %s vs projection), blocked %s of %s, projected %s, real %s" % (
+        r["pair"], r["result"] or "-", f(r["starter_beat"]), f(r["bench_beat"]), r["blocked"], r["of"], f(r["proj_gap"]), f(r["real_gap"]))
+        for r in rows if r["date"] == last)]
+    by = {}
+    for r in rows:
+        by.setdefault((r["starter_id"], r["bench_id"]), []).append(r)
+    flags = []
+    for k, rs in by.items():
+        days = (dt.date.fromisoformat(max(r["date"] for r in rs)) - dt.date.fromisoformat(min(r["date"] for r in rs))).days
+        if days >= PLATOON_FLAG_DAYS:
+            if not sum(int(r["blocked"]) for r in rs):
+                flags.append("%s never binds (%d nights)" % (rs[-1]["pair"], len(rs)))
+            if not any(r["result"] == "split" for r in rs):
+                flags.append("%s never held: no split in %d nights" % (rs[-1]["pair"], len(rs)))
+    lines.append("Platoon flags (pairs over %d+ days): %s" % (PLATOON_FLAG_DAYS, "; ".join(flags) if flags else "none"))
+    return lines
+
+
 def fills(a):
     """The nightly random-fill grade (see the docstring), rebuilt whole each run."""
     mirror = Mirror(a.mirror)
@@ -1569,6 +1653,7 @@ def main():
     sub.add_parser("calweek")
     sub.add_parser("ideas")
     sub.add_parser("risers")
+    sub.add_parser("platoon")
     fl = sub.add_parser("fills")
     fl.add_argument("--mirror", required=True)
     fc = sub.add_parser("fieldcheck")
@@ -1577,7 +1662,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "fieldcheck": fieldcheck}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "fieldcheck": fieldcheck}[a.cmd](a)
 
 
 if __name__ == "__main__":

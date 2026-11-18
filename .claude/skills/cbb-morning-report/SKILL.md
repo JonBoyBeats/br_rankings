@@ -266,6 +266,12 @@ which Save build records: what Pick portfolios would have entered from the same 
 settings). Give the calibration note's line: his entries against it last night, and the running count of nights it
 beat them. It answers whether hand picking adds anything over the automatic pick; under 10 nights, too few to call.
 
+**Platoon rules, nightly** (`python3 scripts/dk_eval.py platoon`, run by the 2:17am job; from the build's `rule_log`).
+Platoon rules stay global (the baseline). Give the calibration note's two lines: each platoon rule last night (the
+pair both over, both under or split against projection; lineups it blocked of the draws' rule-free ones; the projected
+and the real cost: blocked lineups against the banked ones), and the flags once a pair spans 14+ days (never binds,
+never held). A flagged rule is the owner's call to drop; one night says nothing.
+
 **Monthly** (the first report of each month, and at 30 graded slates): first `python3 scripts/dk_eval.py
 weights` (refits Quality's weights on the earlier 2/3 of the logged slates, tests them on the later 1/3, and
 switches the tiles to them only if they beat equal weights there; commit `analysis/cbb/dk/team_weights.json`),

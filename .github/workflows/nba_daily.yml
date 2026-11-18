@@ -76,6 +76,8 @@ jobs:
           python3 scripts/dk_eval.py risers || true
           # random fills: would other parts of the bank have filled the contests better than the owner's picks?
           python3 scripts/dk_eval.py fills --mirror ../br-adp-mirror || true
+          # the platoon rules' spot check: pair result, lineups blocked, projected and real cost
+          python3 scripts/dk_eval.py platoon || true
           # the field check: the simulated field against each graded contest's real field
           python3 scripts/dk_eval.py fieldcheck --mirror ../br-adp-mirror || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
