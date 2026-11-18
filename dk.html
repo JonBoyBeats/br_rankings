@@ -498,6 +498,14 @@ function greenBg(x, lo, hi) {
   var a = Math.max(0, Math.min(1, (x - lo) / (hi - lo)));
   return a > 0.02 ? ' style="background:rgba(46,170,96,' + (0.08 + 0.5 * a).toFixed(2) + ')"' : "";
 }
+// EvanMiya's position and role (1-5 scales: 1 a point guard / the primary creator, 5 a center / a finisher) and his
+// possessions played, from the ratings file: shown, not projected from
+function emLine(r) {
+  if (r.em_pos == null && r.em_role == null && r.poss == null) return "";
+  return '<span title="EvanMiya: Position and Role on 1-5 scales (1 a point guard / the primary creator, 5 a center / a finisher), possessions played this season' +
+    (r.min_poss != null ? "; his possessions imply " + r.min_poss + " minutes a game" : "") + '"> · EM pos ' + (r.em_pos != null ? r.em_pos.toFixed(1) : "–") +
+    " role " + (r.em_role != null ? r.em_role.toFixed(1) : "–") + (r.poss != null ? " · " + Math.round(r.poss) + " poss" : "") + "</span>";
+}
 function playerTable(list, sortable) {
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["miss", "±", "r col-miss"], ["value", "Val", "r"], ["own", "Own", "r"], ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"]]
@@ -518,7 +526,7 @@ function playerTable(list, sortable) {
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '">' +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
       '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button></span>' +
-      '<span class="who"><div class="name">' + esc(r.name) + tags + '</div><div class="sub">' + esc(r.position + " · " + r.team + (r.home ? " v " : " @ ") + (r.opp || "?") + (line ? " " + line : "") + (r.ou ? " · o/u " + r.ou : "") + (r.p_dd >= 0.1 ? " · DD " + Math.round(100 * r.p_dd) + "%" : "")) + "</div></span>" +
+      '<span class="who"><div class="name">' + esc(r.name) + tags + '</div><div class="sub">' + esc(r.position + " · " + r.team + (r.home ? " v " : " @ ") + (r.opp || "?") + (line ? " " + line : "") + (r.ou ? " · o/u " + r.ou : "") + (r.p_dd >= 0.1 ? " · DD " + Math.round(100 * r.p_dd) + "%" : "")) + emLine(r) + "</div></span>" +
       '<span class="m r">' + (r.salary / 1000).toFixed(1) + "k</span>" +
       '<span><input class="proj' + (edited ? " edited" : "") + '" type="number" step="0.1" value="' + proj(r).toFixed(1) + '" aria-label="Proj for ' + esc(r.name) + '"></span>' +
       '<span class="m r mut col-miss">' + (r.miss_dk != null ? r.miss_dk.toFixed(1) : "–") + "</span>" +

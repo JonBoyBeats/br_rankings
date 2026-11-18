@@ -104,6 +104,11 @@ function audit(name, L, o) {
   await pg.click(`#players .row[data-id="${qRows[0]}"] .excl`);
   await pg.click("#qOnly");
   check("Q filter: off, everyone again", (await pg.$$eval("#players .row", r => r.length)) === playersN);
+  // EvanMiya's position, role and possessions on the row (a player without them shows none)
+  const em = await pg.evaluate(() => { const r = rows.find(x => x.status !== "Out"); Object.assign(r, { em_pos: 1.69, em_role: 2.29, poss: 263, min_poss: 31.2 }); renderPlayers();
+    const el = document.querySelector(`#players .row[data-id="${r.id}"] .sub`); const txt = el.textContent, tip = el.querySelector("span[title]") ? el.querySelector("span[title]").title : "";
+    delete r.em_pos; delete r.em_role; delete r.poss; delete r.min_poss; renderPlayers(); return { txt, tip }; });
+  check("EvanMiya on the row: position, role and possessions, with what his possessions imply", /EM pos 1\.7 role 2\.3 · 263 poss/.test(em.txt) && /31\.2 minutes/.test(em.tip), JSON.stringify(em));
   check("match warning: none when every game matched", !(await pg.$("#matchWarn")));
   const mw = await pg.evaluate(() => {
     const g = rows[0].game, kept = rows.map(r => r.event);
