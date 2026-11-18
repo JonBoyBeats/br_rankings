@@ -179,5 +179,83 @@
    "pm": "2026-11-17"
   },
   "what": "PM tiers start from ETR's ladder, one tier toward ADP's at 2+ apart (was ADP's toward ETR's); the elite cut reads ETR's T1, the T4 PRICEY drop counts players ETR has in T1-T4, T4 ends at ETR's ladder line; groups, elite break, T5 and Q unchanged. AM unchanged. Basis: pod replay, season PM, (f) beat my list by 3.4 top-10 pts (top-1% clear of zero); (b')-(f) -1.0"
+ },
+ "tiers-v3": {
+  "since": "2026-11-18",
+  "windows": {
+   "am": "2026-11-18",
+   "pm": "2026-11-18"
+  },
+  "what": "Tiers on the order grades' definitions: ADP floor (T1 to the ADP ladder's first break, T2 to ADP rank 15, T3 to 22, T4 to 30, T5 the rest among the top 44 by ADP or projection; 4-drafter 10/15/20/30), up one tier when the projection is two or more tiers higher, never down. Replaces the PM ETR-tier ladder, the T4 PRICEY drop, T4's round-6 line and borrowing. Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t1-am": {
+  "since": "2026-11-18",
+  "windows": {
+   "am": "2026-11-18"
+  },
+  "what": "T1 morning: our Proj order, pure (no VALUE/normal/PRICEY groups); a projection order is rounded to whole points, ADP breaking ties. Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t1-pm": {
+  "since": "2026-11-18",
+  "windows": {
+   "pm": "2026-11-18"
+  },
+  "what": "T1 afternoon: ETR order, pure (no VALUE/normal/PRICEY groups); a projection order is rounded to whole points, ADP breaking ties. Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t2-am": {
+  "since": "2026-11-18",
+  "windows": {
+   "am": "2026-11-18"
+  },
+  "what": "T2 morning: ADP order, pure (no VALUE/normal/PRICEY groups). Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t2-pm": {
+  "since": "2026-11-18",
+  "windows": {
+   "pm": "2026-11-18"
+  },
+  "what": "T2 afternoon: ADP order, pure (no VALUE/normal/PRICEY groups); the PM elite break and ETR-within-2 tiebreak gone. Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t3-am": {
+  "since": "2026-11-18",
+  "windows": {
+   "am": "2026-11-18"
+  },
+  "what": "T3 morning: ADP order, pure (no VALUE/normal/PRICEY groups). Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t3-pm": {
+  "since": "2026-11-18",
+  "windows": {
+   "pm": "2026-11-18"
+  },
+  "what": "T3 afternoon: ETR order, pure (no VALUE/normal/PRICEY groups); a projection order is rounded to whole points, ADP breaking ties. Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t4-am": {
+  "since": "2026-11-18",
+  "windows": {
+   "am": "2026-11-18"
+  },
+  "what": "T4 morning: ADP order, pure (no VALUE/normal/PRICEY groups). Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t4-pm": {
+  "since": "2026-11-18",
+  "windows": {
+   "pm": "2026-11-18"
+  },
+  "what": "T4 afternoon: ETR order, pure (no VALUE/normal/PRICEY groups); a projection order is rounded to whole points, ADP breaking ties. Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t5-am": {
+  "since": "2026-11-18",
+  "windows": {
+   "am": "2026-11-18"
+  },
+  "what": "T5 morning: our Proj order, pure (no VALUE/normal/PRICEY groups); a projection order is rounded to whole points, ADP breaking ties; replaces the drafted% leverage line (graded on Fridays as a challenger); 20-minute floor kept. Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
+ },
+ "v3-t5-pm": {
+  "since": "2026-11-18",
+  "windows": {
+   "pm": "2026-11-18"
+  },
+  "what": "T5 afternoon: ETR order, pure (no VALUE/normal/PRICEY groups); a projection order is rounded to whole points, ADP breaking ties; replaces the drafted% leverage line (graded on Fridays as a challenger); 20-minute floor kept. Approved 2026-11-18 from the season order grades (order_grades.json); reviewed each Friday."
  }
 }
