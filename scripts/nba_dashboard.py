@@ -101,8 +101,10 @@ def etr_adp_pairs(n, tier, pm, window="pm"):
 def pair_block(pairs):
     ms = [p["mult"] for p in pairs if p["mult"] is not None]
     m10 = [p.get("mult10") for p in pairs if p.get("mult10") is not None]
-    return {"pairs": pairs, "value": round(sum(ms) / len(ms), 3) if ms and len(ms) == len(pairs) else None,
-            "value10": round(sum(m10) / len(m10), 3) if m10 and len(m10) == len(pairs) else None,
+    # the night's average over the pairs where both players have a multiple (an undrafted player has none: T5 mostly);
+    # None only when no pair has one
+    return {"pairs": pairs, "value": round(sum(ms) / len(ms), 3) if ms else None,
+            "value10": round(sum(m10) / len(m10), 3) if m10 else None, "graded": len(ms),
             "tally": tally([p["pts"] for p in pairs]), "mine_etr": sum(p["mine"] == "etr" for p in pairs),
             "mine_adp": sum(p["mine"] == "adp" for p in pairs)}
 
@@ -120,6 +122,30 @@ def moves(date, tier, pm, takes, tags):
     ms = [x["mult"] for x in out if x["mult"] is not None]
     return {"moves": out, "value": round(sum(ms), 3) if out and len(ms) == len(out) else (0.0 if not out else None),
             "tally": tally([x["pts"] for x in out])}
+
+
+def own_reads(n, tier, pm, takes, tags):
+    """Your moves against the button in the tier that went against BOTH sources: you put X ahead of Y while the window's
+    projection (afternoon ETR, morning ours) and ADP both had Y ahead (asked 2026-11-18). Q-tagged pairs left out, as in
+    moves(); graded like the source pairs: the record on points, the top-10% and top-1% multiple gaps."""
+    out = []
+    for r in takes:
+        if r["date"] != n["date"] or r["tier"] != str(tier):
+            continue
+        if tags.get((n["date"], r["window"], r["you_first_id"])) or tags.get((n["date"], r["window"], r["button_first_id"])):
+            continue
+        rows = n["tiers"].get(r["window"]) or {}
+        x, y = rows.get(r["you_first_id"]), rows.get(r["button_first_id"])
+        if not x or not y or None in (num(x["proj"]), num(y["proj"]), num(x["adp"]), num(y["adp"])):
+            continue
+        if not (num(x["proj"]) < num(y["proj"]) and num(x["adp"]) > num(y["adp"])):
+            continue
+        g = lambda k: (mult(pm, n["date"], r["window"], r["you_first_id"], k), mult(pm, n["date"], r["window"], r["button_first_id"], k))
+        (a1, b1), (a10, b10) = g("top1"), g("top10")
+        out.append({"window": r["window"], "up": r["you_first"], "down": r["button_first"], "pts": float(r["gain"]),
+                    "mult": round(a1 - b1, 3) if a1 is not None and b1 is not None else None,
+                    "mult10": round(a10 - b10, 3) if a10 is not None and b10 is not None else None})
+    return out
 
 
 def round6(n):
@@ -190,9 +216,11 @@ def nodates(r):
 
 
 def holders(nights, key):
-    """T1's holders read, season: a slate over every slate on file (no split counts 0), top 10% and 1% in percentage points
-    (the multiple times 10% or 1%), with the 80% range from resampling nights, and the nights with a split."""
-    on = [n[key] for n in nights if n.get(key)]
+    """A tier's holders read, season: a slate over every slate on file (no split counts 0), top 10% and 1% in percentage
+    points (the multiple times 10% or 1%), with the 80% range from resampling nights, and the nights with a split. key: a
+    night's field, or a function of the night giving the pair block."""
+    get = key if callable(key) else (lambda n: n.get(key))
+    on = [get(n) for n in nights if get(n)]
     out = {"nights": len(on), "split": sum(1 for b in on if b["pairs"])}
     for k, f, scale in (("top10", "value10", 10), ("top1", "value", 1)):
         v = [scale * b[f] if b["pairs"] else 0.0 for b in on] if all(b[f] is not None for b in on if b["pairs"]) else None
@@ -229,7 +257,7 @@ def pod_replay():
     # head to head in a tier (the contest side's "x-y" pairs): the projection's order against straight ADP's, x minus y;
     # season as the file has it, last night and last 7 re-pooled the same way
     out["h2h"] = {}
-    for w, pair in (("pm", "f1-d1"), ("pm", "f2-d2"), ("am", "p1-d1"), ("am", "p2-d2")):
+    for w, pair in [("pm", "f%d-d%d" % (t, t)) for t in range(1, 6)] + [("am", "p%d-d%d" % (t, t)) for t in range(1, 6)]:
         x, y = pair.split("-")
         if not ((pr.get("paired") or {}).get(w) or {}).get(pair):
             continue
@@ -275,6 +303,10 @@ def main():
                  "finish": sorted(round(t["fin"], 4) for t in mine)}
         night["t1"] = pair_block(etr_adp_pairs(n, 1, pm))
         night["t1am"] = pair_block(etr_adp_pairs(n, 1, pm, "am"))     # morning T1: our Proj's first against ADP's (asked 2026-11-18)
+        # every tier through the same lens (asked 2026-11-18): the window's projection against ADP inside the tier, and your
+        # own reads (moves against both); T1 repeats t1 / t1am
+        night["src"] = {w: {str(t): pair_block(etr_adp_pairs(n, t, pm, w)) for t in range(1, 6)} for w in ("am", "pm")}
+        night["own"] = {str(t): own_reads(n, t, pm, takes, tags) for t in range(1, 6)}
         night["t2"] = pair_block(etr_adp_pairs(n, 2, pm))
         g = gb.get(n["date"]) or {}
         night["t2"]["elite"] = {w: {k: (g.get(w) or {}).get(k) for k in ("elite-break teams", "other teams")} for w in ("am", "pm")} if g else None
@@ -290,6 +322,7 @@ def main():
         nights.append(night)
     out = {"generated": M.dt.datetime.now(M.PT).isoformat(timespec="minutes"), "defs": DEFS, "push": PUSH,
            "t1_holders": {"pm": holders(nights, "t1"), "am": holders(nights, "t1am")},
+           "t_holders": {w: {str(t): holders(nights, lambda n, w=w, t=t: n["src"][w][str(t)]) for t in range(1, 6)} for w in ("am", "pm")},
            "contest_side": {"player_multiples": bool(pm), "groups_by_night": bool(gb), "card_decisions_by_night": bool(cards)},
            # the contest side's last-night and season reads as they stand (turns, T5 under/over), until the by-night keys land
            "latest": {"night": mt.get("night"), "card_decisions": mt.get("card_decisions"), "t5_drafted": mt.get("t5_drafted")},
