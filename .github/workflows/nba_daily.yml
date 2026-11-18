@@ -166,6 +166,9 @@ jobs:
           # the pod replay (pod_replay.md/json): my lists through every real pod, season and since the rules; the Results
           # panel reads it, the Friday job copies it into money_friday.json
           python3 scripts/nba_pod_replay.py --mirror ../br-adp-mirror > /dev/null || true
+          # the order grades (order_grades.json/md): which order to lean toward in each tier, on swap values; after the pod
+          # replay, whose headline and per-tier stakes it carries
+          python3 scripts/nba_order_grades.py --mirror ../br-adp-mirror > /dev/null || true
           # the Results page's data (nba_results.html): after the money step, which supplies the contest-side multiples
           python3 scripts/nba_dashboard.py --mirror ../br-adp-mirror > /dev/null || true
       # Commit and push. The workflow owns every file it regenerates (OWNED below); decision_register.csv is chat-only and
@@ -175,7 +178,7 @@ jobs:
       - run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
           mkdir -p analysis/cbb/daily analysis/cbb/dk analysis/cbb/contests
-          OWNED="analysis/cbb/daily analysis/cbb/dk analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/shadow.json analysis/nba/report/takes_history.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md analysis/nba/report/money_tiers.json analysis/nba/report/money_proposals.json analysis/nba/report/pod_replay.md analysis/nba/report/pod_replay.json analysis/nba/report/today.md analysis/nba/report/rulebook.md analysis/nba/report/gallagher_arrows.csv analysis/nba/dashboard.json"
+          OWNED="analysis/cbb/daily analysis/cbb/dk analysis/cbb/contests analysis/nba/daily analysis/nba/ledger.csv analysis/nba/form.csv analysis/nba/takes analysis/*.json analysis/nba/contests analysis/nba/report/etr_match.md analysis/nba/report/field.md analysis/nba/report/forward_tests.json analysis/nba/report/tier_history.csv analysis/nba/report/swaps.csv analysis/nba/report/shadow.md analysis/nba/report/shadow.csv analysis/nba/report/shadow.json analysis/nba/report/takes_history.csv analysis/nba/report/swap_board.md analysis/nba/report/my_swaps.md analysis/nba/contests/tips.json analysis/nba/report/money_report.md analysis/nba/report/money_tiers.json analysis/nba/report/money_proposals.json analysis/nba/report/pod_replay.md analysis/nba/report/pod_replay.json analysis/nba/report/order_grades.json analysis/nba/report/order_grades.md analysis/nba/report/today.md analysis/nba/report/rulebook.md analysis/nba/report/gallagher_arrows.csv analysis/nba/dashboard.json"
           git checkout -- analysis/nba/report/decision_register.csv 2>/dev/null || true
           git add $OWNED
           git diff --cached --quiet && exit 0

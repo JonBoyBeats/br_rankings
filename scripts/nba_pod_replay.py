@@ -30,14 +30,15 @@ import nba_tier_history as T  # noqa: E402  the Tiers button rebuilt (ADP tiers,
 REP = M.REP
 OUT_MD = os.path.join(REP, "pod_replay.md")
 OUT_JSON = os.path.join(REP, "pod_replay.json")
-LISTS = ["a", "b", "c1", "c2", "c3", "c4", "c5", "d", "e", "f1", "f2", "f3", "f4", "f5", "bp", "f", "g", "fn"] + ["d%d" % k for k in range(1, 6)] + ["p%d" % k for k in range(1, 6)]
+LISTS = ["a", "b", "c1", "c2", "c3", "c4", "c5", "d", "e", "f1", "f2", "f3", "f4", "f5", "bp", "f", "g", "fn"] + ["d%d" % k for k in range(1, 6)] + ["p%d" % k for k in range(1, 6)] + ["pj"]
 NAMES = {"a": "(a) my locked list", "b": "(b) the button's list", "d": "(d) ADP", "e": "(e) ETR (PM)",
          **{"c%d" % k: "(c%d) mine, T%d's moves undone" % (k, k) for k in range(1, 6)},
          **{"f%d" % k: "(f%d) mine (PM), T%d in ETR's order" % (k, k) for k in range(1, 6)},
          "bp": "(b') the button rebuilt here (PM)", "f": "(f) the button on ETR tiers (PM)", "g": "(g) ETR order, the button's T5 rule (PM)",
          "fn": "(f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM)",
          **{"d%d" % k: "(d%d) mine, T%d in ADP's order" % (k, k) for k in range(1, 6)},
-         **{"p%d" % k: "(p%d) mine (AM), T%d in our Proj's order" % (k, k) for k in range(1, 6)}}
+         **{"p%d" % k: "(p%d) mine (AM), T%d in our Proj's order" % (k, k) for k in range(1, 6)},
+         "pj": "(pj) our Proj's order (AM)"}
 PAIRS = [("a", y) for y in LISTS[1:]] + [("g", "e"), ("bp", "f"), ("f", "e"), ("g", "f"), ("fn", "f"), ("fn", "e"),
                                          ] + [(x % k, "d%d" % k) for k in range(1, 6) for x in ("f%d", "p%d")]   # each tier: ETR (PM) or Proj (AM) vs ADP
 ETR_BUTTON = "2026-11-17"     # the PM button on ETR tiers from this night: which ETR version the PM should use
@@ -147,6 +148,10 @@ def lists_for(rec, w, extra=None):
         if "e" in L:
             for k, head in (extra or {}).items():
                 L[k] = finish(head)
+    if w == "am":                                             # our morning Proj's whole order (the order grades' headline)
+        pj = {p: next((num(rec[p].get(c)) for c in ("ours_am", "ours_raw") if num(rec[p].get(c)) is not None), None) for p in pool}
+        if sum(v is not None for v in pj.values()) >= 0.5 * len(rank):
+            L["pj"] = finish(sorted((p for p in pool if pj[p] is not None), key=lambda p: (-pj[p], adp[p] or 999)))
     # each tier head to head (both windows): one of my tiers in straight ADP order (d1, d2), and in the morning in our Proj's
     # order (p1, p2); that tier's places in my list, the rest of my list as it is. ETR's (PM) is f1, f2 above.
     mt = col(w + "_tier")
@@ -639,6 +644,11 @@ def build(nights):
                                                                    for name in LISTS if x["res"].get("%s|%s" % (w, name))}})
     md += [""]
     js["r6_fidelity"] = {str(k): v for k, v in sorted(pos.items(), key=lambda kv: str(kv[0]))}
+    # my real teams, night and window: the share of (a)'s replayed teams each one beat (the order grades' percentile)
+    js["my_beat"] = {}
+    for x in nights:
+        for r in x["mine"]:
+            js["my_beat"].setdefault(x["date"], {}).setdefault(r["w"], []).append(round(r["beat"], 4))
     return md, js
 
 
