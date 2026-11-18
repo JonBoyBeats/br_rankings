@@ -54,6 +54,12 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             +RISER_STEP+) against fallers (-RISER_STEP or more) on actual minus projection, and the rank correlation of
             the change with it; across nights, the nights risers beat fallers and the average gap. The owner's question
             (2026-11-17): are the players the cut raises the ones to be overweight on? 2026-11-16 (the old cut): no.
+  pairs     analysis/cbb/dk/pair_eval.csv, nightly: the team tiles' platoon pairs (as they stood at lock) graded, both
+            sets: EvanMiya's position bands and role (the tiles' pairs from 2026-11-18) and ESPN's G or F/C (the set they
+            replaced, still computed beside them): each pair split (one over projection, one under), both over or both
+            under, against the baseline of any two teammates both projected PAIR_BASE_MIN+ minutes on the same slates;
+            for the owner at PAIR_REPORT_NIGHTS graded slates with both sets, to check the band cutoffs (2.33 / 3.67,
+            role gap 1.0) against data.
   platoon   analysis/cbb/dk/platoon_eval.csv, nightly: the spot check of each platoon rule (Never together, from the
             tiles) used in a saved bank, from the bank's rule_log (the DK page records it each draw): the pair's result
             against projection (both over, both under, or split: the negative pairing held; a player who didn't play
@@ -154,6 +160,9 @@ OWN_BANDS_FIELD = [(30, 101), (20, 30), (10, 20), (5, 10), (1, 5)]
 IDEA_EVAL = os.path.join(DK, "idea_eval.csv")
 IDEA_COLS = ["date", "draft_group", "idea", "kind", "contest_id", "contest", "banked", "kept", "entered", "kept_share", "entered_share",
              "banked_top10", "banked_cash", "entered_top10", "entered_cash", "pct_top10", "pct_cash", "version"]
+PAIR_EVAL = os.path.join(DK, "pair_eval.csv")
+PAIR_COLS = ["date", "draft_group", "set", "team", "starter", "bench", "pos", "corr", "games", "thin", "starter_beat", "bench_beat", "result"]
+PAIR_BASE_MIN, PAIR_REPORT_NIGHTS = 12, 5
 PLATOON_EVAL = os.path.join(DK, "platoon_eval.csv")
 PLATOON_COLS = ["date", "draft_group", "pair", "starter_id", "bench_id", "starter_beat", "bench_beat", "result", "draws", "blocked", "of",
                 "proj_gap", "real_blocked", "real_banked", "real_gap", "version"]
@@ -410,6 +419,96 @@ def nightly(a):
         print("  DraftKings standings: nothing new to grade")
 
 
+def tiles_at_lock(mirror, date, g):
+    """A slate's team tiles as the mirror held them before its first game (its start from the mirror's DraftKings file
+    around the night), or None."""
+    day, start = iso(date + "T00:00:00Z"), None
+    for t, sha in reversed(mirror.versions("dk_cbb_morning.json", day - dt.timedelta(days=1), day + dt.timedelta(days=2))):
+        s = next((x for x in mirror.show(sha, "dk_cbb_morning.json").get("slates", []) if str(x["draft_group_id"]) == g), None)
+        if s:
+            start = iso(s["start"])
+            break
+    doc = at_lock(mirror, "dk_cbb_teams.json", start, g) if start else None
+    return ((doc or {}).get("slates") or {}).get(g)
+
+
+def pairs(a):
+    """The tiles' platoon pairs graded, nightly (see the docstring): every pair in both sets, rebuilt whole each run."""
+    mirror = Mirror(a.mirror)
+    out = []
+    for f in sorted(glob.glob(os.path.join(DK, "????-??-??_*.csv"))):
+        rec = read(f)
+        if not rec or not any(num(r["actual_dk"]) is not None for r in rec):
+            continue
+        g, d = rec[0]["draft_group"], rec[0]["date"]
+        T = tiles_at_lock(mirror, d, g)
+        if not T:
+            continue
+        by = {r["dk_id"]: r for r in rec}
+        beat = lambda i: (num(by[i]["actual_dk"]) or 0) - num(by[i]["fp_dk"]) if i in by and num(by[i]["fp_dk"]) is not None else None
+        for t in T["teams"]:
+            if "platoon_espn" in t:                          # both sets, from 2026-11-18
+                sets = (("em", t.get("platoon") or []), ("espn", t.get("platoon_espn") or []))
+            elif "EvanMiya" in (t.get("platoon_rule") or ""):
+                sets = (("em", t.get("platoon") or []),)
+            else:                                            # before EvanMiya's bands, the pairs were ESPN's G or F/C
+                sets = (("espn", t.get("platoon") or []),)
+            for name, ps in sets:
+                for p in ps:
+                    sb, bb = beat(str(p["starter"]["id"])), beat(str(p["bench"]["id"]))
+                    if sb is None or bb is None:
+                        continue
+                    out.append({"date": d, "draft_group": g, "set": name, "team": t["team"], "starter": p["starter"]["name"], "bench": p["bench"]["name"],
+                                "pos": p.get("pos") or "", "corr": p["corr"], "games": p["games"], "thin": int(bool(p.get("thin"))),
+                                "starter_beat": round(sb, 2), "bench_beat": round(bb, 2),
+                                "result": "split" if (sb > 0) != (bb > 0) else "both over" if sb > 0 else "both under"})
+    if out:
+        with open(PAIR_EVAL, "w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=PAIR_COLS)
+            w.writeheader()
+            w.writerows(out)
+    for line in pair_lines():
+        print("  " + line)
+
+
+def pair_lines():
+    """Both platoon sets against each other and against any two rotation teammates, by how often a pair split."""
+    rows = read(PAIR_EVAL)
+    if not rows:
+        return ["Platoon pair sets: none graded yet"]
+    lines = []
+    for name, label in (("em", "EvanMiya bands"), ("espn", "ESPN G or F/C")):
+        rs = [r for r in rows if r["set"] == name]
+        nights = len({(r["date"], r["draft_group"]) for r in rs})
+        if rs:
+            c = lambda res: sum(r["result"] == res for r in rs)
+            lines.append("%s: %d pairs on %d graded slate%s; split %d (%.0f%%), both over %d, both under %d" % (
+                label, len(rs), nights, "" if nights == 1 else "s", c("split"), 100 * c("split") / len(rs), c("both over"), c("both under")))
+        else:
+            lines.append("%s: none graded yet" % label)
+    # the baseline: any two teammates both projected PAIR_BASE_MIN+ minutes, on the same graded slates
+    slates = {(r["date"], r["draft_group"]) for r in rows}
+    sp = tot = 0
+    for f in sorted(glob.glob(os.path.join(DK, "????-??-??_*.csv"))):
+        rec = read(f)
+        if not rec or (rec[0]["date"], rec[0]["draft_group"]) not in slates:
+            continue
+        team = defaultdict(list)
+        for r in rec:
+            if num(r["min_proj"] or None) is not None and num(r["min_proj"]) >= PAIR_BASE_MIN and num(r["fp_dk"]) is not None and num(r["actual_dk"]) is not None:
+                team[r["team"]].append(num(r["actual_dk"]) - num(r["fp_dk"]))
+        for v in team.values():
+            for i in range(len(v)):
+                for j in range(i + 1, len(v)):
+                    tot += 1; sp += (v[i] > 0) != (v[j] > 0)
+    if tot:
+        lines.append("Baseline, any two teammates projected %d+ minutes on those slates: %d pairs, split %.0f%%" % (PAIR_BASE_MIN, tot, 100 * sp / tot))
+    n_em = len({(r["date"], r["draft_group"]) for r in rows if r["set"] == "em"})
+    if n_em < PAIR_REPORT_NIGHTS:
+        lines.append("(the comparison is for the owner at %d graded slates with both sets; %d so far)" % (PAIR_REPORT_NIGHTS, n_em))
+    return lines
+
+
 def tiles(a):
     """Each graded night's team tiles (the mirror's dk_cbb_teams.json as it stood before the first game) against what
     happened: the team's top 5 by salary, their actual DraftKings points against what their salary implied at that
@@ -422,15 +521,7 @@ def tiles(a):
         if not rec or (rec[0]["date"], rec[0]["draft_group"]) in done:
             continue
         g = rec[0]["draft_group"]
-        day = iso(rec[0]["date"] + "T00:00:00Z")
-        start = None
-        for t, sha in reversed(mirror.versions("dk_cbb_morning.json", day - dt.timedelta(days=1), day + dt.timedelta(days=2))):
-            s = next((x for x in mirror.show(sha, "dk_cbb_morning.json").get("slates", []) if str(x["draft_group_id"]) == g), None)
-            if s:
-                start = iso(s["start"])
-                break
-        doc = at_lock(mirror, "dk_cbb_teams.json", start, g) if start else None
-        T = ((doc or {}).get("slates") or {}).get(g)
+        T = tiles_at_lock(mirror, rec[0]["date"], g)
         if not T:
             print("  tiles %s: none saved before lock" % g)
             continue
@@ -452,7 +543,7 @@ def tiles(a):
                         "own_gap": round(t["own_gap"], 3), "blowout": t["blowout"] if t["blowout"] is not None else "",
                         "blowout_games": t["blowout_games"], "fragile": int(bool(t["fragile"])), "top5_salary": s5,
                         "top5_actual": round(a5, 2), "top5_implied": round(s5 * rate, 2), "beat": int(a5 > s5 * rate),
-                        "phase": phase(rec[0]["date"]), "version": (doc or {}).get("version", "")})
+                        "phase": phase(rec[0]["date"]), "version": T.get("version", "")})
         print("  tiles %s (%s): %d teams graded" % (g, rec[0]["date"], len(T["teams"])))
     if out:
         new = not os.path.exists(TILES_EVAL)
@@ -1075,7 +1166,7 @@ def calnote(a):
     held = [h for h in held if h is not None]
     print("Cut check, last night: %s. 'Kept averages more but reaches the top 10%% less' held on %d of %d graded nights." % (
         line or "no saved bank scored yet", sum(held), len(held)))
-    for line in riser_lines() + fill_lines() + auto_lines() + platoon_lines():
+    for line in riser_lines() + fill_lines() + auto_lines() + platoon_lines() + pair_lines():
         print(line)
     fe = [r for r in read(FIELD_EVAL) if r["date"] == last]
     if fe:
@@ -1109,7 +1200,7 @@ def readout(a):
     print_audit(full=True)
     print_ideas()
     print()
-    for line in riser_lines() + fill_lines() + auto_lines() + platoon_lines():
+    for line in riser_lines() + fill_lines() + auto_lines() + platoon_lines() + pair_lines():
         print(line)
     print()
     ev, kind = counted(read(EVAL))
@@ -1654,6 +1745,8 @@ def main():
     sub.add_parser("ideas")
     sub.add_parser("risers")
     sub.add_parser("platoon")
+    pr = sub.add_parser("pairs")
+    pr.add_argument("--mirror", required=True)
     fl = sub.add_parser("fills")
     fl.add_argument("--mirror", required=True)
     fc = sub.add_parser("fieldcheck")
@@ -1662,7 +1755,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "fieldcheck": fieldcheck}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck}[a.cmd](a)
 
 
 if __name__ == "__main__":

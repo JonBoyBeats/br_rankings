@@ -282,6 +282,12 @@ pair both over, both under or split against projection; lineups it blocked of th
 and the real cost: blocked lineups against the banked ones), and the flags once a pair spans 14+ days (never binds,
 never held). A flagged rule is the owner's call to drop; one night says nothing.
 
+**Platoon pair sets, nightly** (`python3 scripts/dk_eval.py pairs --mirror ../br-adp-mirror`, run by the 2:17am job):
+the tiles' pairs by EvanMiya's position bands and role (from 2026-11-18) against the ESPN G or F/C set computed beside
+them, each graded split (one over projection, one under) or moved together, with any two rotation teammates as the
+baseline. Give its lines; at 5 graded slates with both sets, report the comparison to the owner so the band cutoffs
+(2.33 / 3.67, role gap 1.0, battle-royale-research dk_cbb_teams.py) can be checked against data.
+
 **Monthly** (the first report of each month, and at 30 graded slates): first `python3 scripts/dk_eval.py
 weights` (refits Quality's weights on the earlier 2/3 of the logged slates, tests them on the later 1/3, and
 switches the tiles to them only if they beat equal weights there; commit `analysis/cbb/dk/team_weights.json`),
