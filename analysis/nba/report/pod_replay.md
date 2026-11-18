@@ -1,6 +1,6 @@
 # Pod replay: my NBA rankings graded by team outcomes
 
-Results only. Generated 2026-11-18 18:11 from 26 nights (2026-10-21 to 2026-11-17).
+Results only. Generated 2026-11-18 18:42 from 26 nights (2026-10-21 to 2026-11-17).
 
 ## Plain English
 
@@ -11,7 +11,7 @@ Results only. Generated 2026-11-18 18:11 from 26 nights (2026-10-21 to 2026-11-1
 - **Against ETR's order (PM)** (26 nights, PM): my list -4.32 pts top-10% (80% range -7.47 to -1.04), -0.99 pts top-1%, mean finish +1.7.
 - **My manual moves, tier by tier** (top-10% points my moves added, 80% range): T1 +0.21 (-0.06 to +0.48); T2 +2.04 (+0.89 to +3.55); T3 -1.26 (-3.37 to +0.89); T4 -0.11 (-1.28 to +1.08); T5 -0.65 (-2.01 to +0.59).
 - **ETR's T4 PRICEY kept in T4 (PM, season)**, top-10% points (80% range), top-1% points (80% range): (f-nodrop) minus (f) +0.04 (+0.01 to +0.06), +0.01 (+0.00 to +0.01); (f-nodrop) minus (e) -1.04 (-3.27 to +1.14), +0.20 (-0.27 to +0.68).
-- **T1 and T2 head to head** (your tier in each order, the rest of your list as it is; top-10% points, 80% range, then top-1% points): T1 PM, ETR minus ADP +0.25 (-0.43 to +0.91), -0.03, 23 nights; T1 AM, Proj minus ADP +1.29 (-0.85 to +3.58), +0.13, 18 nights; T2 PM, ETR minus ADP -0.12 (-1.47 to +1.23), -0.04, 24 nights; T2 AM, Proj minus ADP -1.36 (-3.36 to +0.57), -0.41, 19 nights.
+- **Each tier head to head** (your tier in each order, the rest of your list as it is; top-10% points, 80% range, then top-1% points): T1 PM, ETR minus ADP +0.25 (-0.43 to +0.91), -0.03, 23 nights; T1 AM, Proj minus ADP +1.29 (-0.85 to +3.58), +0.13, 18 nights; T2 PM, ETR minus ADP -0.12 (-1.47 to +1.23), -0.04, 24 nights; T2 AM, Proj minus ADP -1.36 (-3.36 to +0.57), -0.41, 19 nights; T3 PM, ETR minus ADP +0.61 (-1.06 to +2.22), +0.40, 24 nights; T3 AM, Proj minus ADP +0.65 (-0.50 to +1.79), +0.08, 19 nights; T4 PM, ETR minus ADP +0.53 (-0.23 to +1.39), +0.06, 24 nights; T4 AM, Proj minus ADP -0.36 (-0.75 to +0.04), -0.06, 19 nights; T5 PM, ETR minus ADP -0.03 (-1.22 to +1.08), -0.10, 24 nights; T5 AM, Proj minus ADP +0.87 (+0.01 to +1.75), -0.04, 18 nights.
 - **ETR by tier (PM):** my list minus my list with one tier in ETR's order, top-10% points (80% range; below zero, ETR's order beat mine in that tier): T1 -0.09 (-0.49 to +0.33); T2 +0.06 (-0.89 to +0.91); T3 -0.60 (-1.79 to +0.70); T4 -0.50 (-1.07 to -0.00); T5 -0.87 (-1.77 to +0.01).
 - **ETR-based button variants (PM)**, top-10% points (80% range), top-1% points: (a) minus (f) the button on ETR tiers -3.25 (-6.53 to +0.12), -1.18; (a) minus (g) ETR with the button's T5 rule -3.91 (-7.10 to -0.56), -0.91; (g) minus (e) pure ETR: what the T5 rule adds -0.42 (-0.89 to +0.02), -0.08; (b') minus (f): ADP tiers against ETR tiers in the button -0.90 (-3.24 to +1.55), -0.28.
 - **Top 1% at my seats:** my real teams 17, my locked list at the same seats 25 (round-6 redraws 22-31, a count this size swings 20-33 by luck); real minus list -8, nights resampled -19 to +3.
@@ -29,7 +29,7 @@ Results only. Generated 2026-11-18 18:11 from 26 nights (2026-10-21 to 2026-11-1
 - (c) undoes one tier's manual moves: that tier's players (by the button's tier) go back to their button positions and everyone else keeps my order around them. A list identical to (a) reuses (a)'s results.
 - (b) and (c) need the button's list at the lock: on file from 2026-11-09 (PM) and 2026-11-10 (AM). (e) is ETR's PM projections, highest first (ETR's own rank isn't kept). 11/15 had no locks on file and is out.
 - (f) is my PM list with one of my tiers (my tier lines at the PM lock, on file from 10/23) in ETR's order: that tier's places in my list, filled by its players highest ETR projection first. (a) minus (f) below zero: ETR's order beat mine there.
-- (d1), (d2): my list with my T1 (or T2) in straight ADP order; (p1), (p2), AM: in our morning Proj's order (ours_am, ours_raw before 10/28). With (f1), (f2) (ETR's order, PM) they give the head-to-head pairs (f1) minus (d1) and (p1) minus (d1), and the same for T2: right of zero, the projection's order beat ADP's. My tiers at the lock (AM from 10/27).
+- (d1)-(d5): my list with one of my tiers in straight ADP order; (p1)-(p5), AM: in our morning Proj's order (ours_am, ours_raw before 10/28). With (f1)-(f5) (ETR's order, PM) they give each tier's head-to-head pairs, (fk) minus (dk) PM and (pk) minus (dk) AM: right of zero, the projection's order beat ADP's. My tiers at the lock (AM from 10/27). Every pair also carries its split: nights the first came out ahead, behind, even (top-10% and top-1% each).
 - (b'), (f) and (g), PM: the Tiers button rebuilt here from the PM lock's inputs (scripts/nba_tier_history.py, the 11/13 rules on every night; it matches the board's own PM order at 26-36 of the top 36 places since 11/13). (b') on ADP tiers as the board; (f) the same rules with the tiers starting from ETR's ladder and moving one tier toward ADP's at two or more apart; (f-nodrop) the same as (f) but ETR's T4 players flagged PRICEY (market T3) stay at the bottom of T4 instead of dropping into T5; (g) ETR's order for ETR's T1-T4, then T5 by the button's rule (under the 60% drafted line first, by projection; ETR's T4 PRICEY players behind T5's top 3; the minutes floor), 60%+ below the cut. (b') minus (f) isolates the tiers' source.
 
 ## Season: Both windows
@@ -56,8 +56,14 @@ Results only. Generated 2026-11-18 18:11 from 26 nights (2026-10-21 to 2026-11-1
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 26 | 310792 | 2.39% | 15.4% | 43.4 | 26% | +94% |
 | (d1) mine, T1 in ADP's order | 23 | 379138 | 1.29% | 12.3% | 46.2 | 22% | +26% |
 | (d2) mine, T2 in ADP's order | 24 | 399630 | 1.28% | 12.6% | 46.0 | 22% | +25% |
+| (d3) mine, T3 in ADP's order | 24 | 399630 | 1.28% | 12.6% | 45.8 | 23% | +12% |
+| (d4) mine, T4 in ADP's order | 24 | 399630 | 1.32% | 12.6% | 45.7 | 23% | +26% |
+| (d5) mine, T5 in ADP's order | 24 | 394922 | 1.38% | 12.6% | 45.2 | 23% | +26% |
 | (p1) mine (AM), T1 in our Proj's order | 18 | 114056 | 1.52% | 14.2% | 44.0 | 25% | +40% |
 | (p2) mine (AM), T2 in our Proj's order | 19 | 120832 | 1.09% | 12.5% | 46.2 | 22% | +10% |
+| (p3) mine (AM), T3 in our Proj's order | 19 | 120832 | 1.69% | 14.9% | 44.0 | 26% | +54% |
+| (p4) mine (AM), T4 in our Proj's order | 19 | 120832 | 1.47% | 13.7% | 44.9 | 24% | +32% |
+| (p5) mine (AM), T5 in our Proj's order | 18 | 116124 | 1.29% | 12.9% | 46.6 | 23% | +17% |
 
 Paired: (a) minus each list, same pods and seats, nights resampled for the 80% ranges.
 
@@ -82,8 +88,14 @@ Paired: (a) minus each list, same pods and seats, nights resampled for the 80% r
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 26 | -1.19 | -2.08 to -0.32 | -3.29 | -6.57 to +0.08 | +2.06 | -1.63 to +5.46 |
 | (d1) mine, T1 in ADP's order | 23 | +0.06 | -0.01 to +0.14 | +0.50 | -0.06 to +1.10 | -0.85 | -1.58 to -0.19 |
 | (d2) mine, T2 in ADP's order | 24 | +0.01 | -0.16 to +0.17 | -0.01 | -0.95 to +0.88 | -0.58 | -1.78 to +0.65 |
+| (d3) mine, T3 in ADP's order | 24 | +0.01 | -0.23 to +0.30 | -0.07 | -0.94 to +0.85 | -0.33 | -1.65 to +0.97 |
+| (d4) mine, T4 in ADP's order | 24 | -0.03 | -0.14 to +0.09 | -0.02 | -0.65 to +0.65 | -0.26 | -0.95 to +0.36 |
+| (d5) mine, T5 in ADP's order | 24 | -0.08 | -0.23 to +0.07 | -0.06 | -0.77 to +0.74 | +0.33 | -0.66 to +1.28 |
 | (p1) mine (AM), T1 in our Proj's order | 18 | +0.04 | -0.02 to +0.09 | +0.01 | -1.43 to +1.30 | +0.19 | -1.04 to +1.57 |
 | (p2) mine (AM), T2 in our Proj's order | 19 | +0.39 | +0.15 to +0.65 | +1.44 | +0.07 to +3.06 | -1.72 | -3.92 to +0.29 |
+| (p3) mine (AM), T3 in our Proj's order | 19 | -0.21 | -0.53 to +0.09 | -0.91 | -2.20 to +0.34 | +0.40 | -0.80 to +1.75 |
+| (p4) mine (AM), T4 in our Proj's order | 19 | +0.01 | -0.12 to +0.12 | +0.23 | -0.33 to +0.82 | -0.44 | -0.92 to +0.06 |
+| (p5) mine (AM), T5 in our Proj's order | 18 | +0.21 | -0.02 to +0.44 | +1.07 | +0.22 to +1.91 | -1.75 | -2.82 to -0.61 |
 | (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | 26 | -0.08 | -0.21 to +0.05 | -0.42 | -0.89 to +0.02 | +0.86 | +0.13 to +1.67 |
 | (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | 26 | -0.28 | -1.08 to +0.54 | -0.90 | -3.24 to +1.55 | +1.32 | -1.32 to +3.96 |
 | (f) the button on ETR tiers (PM) minus (e) ETR (PM) | 26 | +0.19 | -0.28 to +0.67 | -1.07 | -3.29 to +1.10 | -0.33 | -2.48 to +1.69 |
@@ -91,9 +103,15 @@ Paired: (a) minus each list, same pods and seats, nights resampled for the 80% r
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | 26 | +0.01 | +0.00 to +0.01 | +0.04 | +0.01 to +0.06 | -0.07 | -0.15 to -0.00 |
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | 26 | +0.20 | -0.27 to +0.68 | -1.04 | -3.27 to +1.14 | -0.40 | -2.54 to +1.61 |
 | (f1) mine (PM), T1 in ETR's order minus (d1) mine, T1 in ADP's order | 23 | -0.03 | -0.15 to +0.09 | +0.25 | -0.43 to +0.91 | -1.48 | -2.48 to -0.62 |
-| (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | 24 | -0.04 | -0.26 to +0.16 | -0.12 | -1.47 to +1.23 | -0.41 | -2.09 to +1.33 |
 | (p1) mine (AM), T1 in our Proj's order minus (d1) mine, T1 in ADP's order | 18 | +0.13 | -0.01 to +0.29 | +1.29 | -0.85 to +3.58 | -1.16 | -3.00 to +0.60 |
+| (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | 24 | -0.04 | -0.26 to +0.16 | -0.12 | -1.47 to +1.23 | -0.41 | -2.09 to +1.33 |
 | (p2) mine (AM), T2 in our Proj's order minus (d2) mine, T2 in ADP's order | 19 | -0.41 | -0.79 to -0.03 | -1.36 | -3.36 to +0.57 | +1.17 | -1.66 to +4.07 |
+| (f3) mine (PM), T3 in ETR's order minus (d3) mine, T3 in ADP's order | 24 | +0.40 | -0.04 to +0.88 | +0.61 | -1.06 to +2.22 | +0.14 | -2.09 to +2.52 |
+| (p3) mine (AM), T3 in our Proj's order minus (d3) mine, T3 in ADP's order | 19 | +0.08 | -0.21 to +0.36 | +0.65 | -0.50 to +1.79 | -0.37 | -1.81 to +1.00 |
+| (f4) mine (PM), T4 in ETR's order minus (d4) mine, T4 in ADP's order | 24 | +0.06 | -0.08 to +0.20 | +0.53 | -0.23 to +1.39 | -0.60 | -1.43 to +0.22 |
+| (p4) mine (AM), T4 in our Proj's order minus (d4) mine, T4 in ADP's order | 19 | -0.06 | -0.14 to +0.02 | -0.36 | -0.75 to +0.04 | +0.38 | -0.26 to +0.99 |
+| (f5) mine (PM), T5 in ETR's order minus (d5) mine, T5 in ADP's order | 24 | -0.10 | -0.29 to +0.10 | -0.03 | -1.22 to +1.08 | +0.04 | -1.48 to +1.54 |
+| (p5) mine (AM), T5 in our Proj's order minus (d5) mine, T5 in ADP's order | 18 | -0.04 | -0.39 to +0.30 | +0.87 | +0.01 to +1.75 | +0.03 | -1.39 to +1.43 |
 
 ## Season: AM
 
@@ -109,8 +127,14 @@ Paired: (a) minus each list, same pods and seats, nights resampled for the 80% r
 | (d) ADP | 21 | 130912 | 1.17% | 11.0% | 48.3 | 20% | +4% |
 | (d1) mine, T1 in ADP's order | 18 | 114056 | 1.38% | 12.9% | 45.2 | 23% | +31% |
 | (d2) mine, T2 in ADP's order | 19 | 120832 | 1.50% | 13.9% | 45.0 | 24% | +33% |
+| (d3) mine, T3 in ADP's order | 19 | 120832 | 1.61% | 14.2% | 44.4 | 25% | +50% |
+| (d4) mine, T4 in ADP's order | 19 | 120832 | 1.53% | 14.1% | 44.5 | 25% | +42% |
+| (d5) mine, T5 in ADP's order | 18 | 116124 | 1.32% | 12.0% | 46.5 | 21% | +1% |
 | (p1) mine (AM), T1 in our Proj's order | 18 | 114056 | 1.52% | 14.2% | 44.0 | 25% | +40% |
 | (p2) mine (AM), T2 in our Proj's order | 19 | 120832 | 1.09% | 12.5% | 46.2 | 22% | +10% |
+| (p3) mine (AM), T3 in our Proj's order | 19 | 120832 | 1.69% | 14.9% | 44.0 | 26% | +54% |
+| (p4) mine (AM), T4 in our Proj's order | 19 | 120832 | 1.47% | 13.7% | 44.9 | 24% | +32% |
+| (p5) mine (AM), T5 in our Proj's order | 18 | 116124 | 1.29% | 12.9% | 46.6 | 23% | +17% |
 
 Paired: (a) minus each list, same pods and seats, nights resampled for the 80% ranges.
 
@@ -125,10 +149,19 @@ Paired: (a) minus each list, same pods and seats, nights resampled for the 80% r
 | (d) ADP | 21 | +0.21 | -0.17 to +0.59 | +2.26 | +0.31 to +4.14 | -3.60 | -6.62 to -0.62 |
 | (d1) mine, T1 in ADP's order | 18 | +0.17 | +0.05 to +0.30 | +1.30 | +0.27 to +2.35 | -0.97 | -1.83 to -0.16 |
 | (d2) mine, T2 in ADP's order | 19 | -0.02 | -0.32 to +0.28 | +0.08 | -1.18 to +1.29 | -0.55 | -2.26 to +1.10 |
+| (d3) mine, T3 in ADP's order | 19 | -0.13 | -0.31 to +0.05 | -0.26 | -0.98 to +0.50 | +0.03 | -1.01 to +0.99 |
+| (d4) mine, T4 in ADP's order | 19 | -0.05 | -0.19 to +0.08 | -0.13 | -0.74 to +0.47 | -0.06 | -0.77 to +0.68 |
+| (d5) mine, T5 in ADP's order | 18 | +0.17 | -0.19 to +0.53 | +1.94 | +0.95 to +2.93 | -1.72 | -3.14 to -0.38 |
 | (p1) mine (AM), T1 in our Proj's order | 18 | +0.04 | -0.02 to +0.09 | +0.01 | -1.43 to +1.30 | +0.19 | -1.04 to +1.57 |
 | (p2) mine (AM), T2 in our Proj's order | 19 | +0.39 | +0.15 to +0.65 | +1.44 | +0.07 to +3.06 | -1.72 | -3.92 to +0.29 |
+| (p3) mine (AM), T3 in our Proj's order | 19 | -0.21 | -0.53 to +0.09 | -0.91 | -2.20 to +0.34 | +0.40 | -0.80 to +1.75 |
+| (p4) mine (AM), T4 in our Proj's order | 19 | +0.01 | -0.12 to +0.12 | +0.23 | -0.33 to +0.82 | -0.44 | -0.92 to +0.06 |
+| (p5) mine (AM), T5 in our Proj's order | 18 | +0.21 | -0.02 to +0.44 | +1.07 | +0.22 to +1.91 | -1.75 | -2.82 to -0.61 |
 | (p1) mine (AM), T1 in our Proj's order minus (d1) mine, T1 in ADP's order | 18 | +0.13 | -0.01 to +0.29 | +1.29 | -0.85 to +3.58 | -1.16 | -3.00 to +0.60 |
 | (p2) mine (AM), T2 in our Proj's order minus (d2) mine, T2 in ADP's order | 19 | -0.41 | -0.79 to -0.03 | -1.36 | -3.36 to +0.57 | +1.17 | -1.66 to +4.07 |
+| (p3) mine (AM), T3 in our Proj's order minus (d3) mine, T3 in ADP's order | 19 | +0.08 | -0.21 to +0.36 | +0.65 | -0.50 to +1.79 | -0.37 | -1.81 to +1.00 |
+| (p4) mine (AM), T4 in our Proj's order minus (d4) mine, T4 in ADP's order | 19 | -0.06 | -0.14 to +0.02 | -0.36 | -0.75 to +0.04 | +0.38 | -0.26 to +0.99 |
+| (p5) mine (AM), T5 in our Proj's order minus (d5) mine, T5 in ADP's order | 18 | -0.04 | -0.39 to +0.30 | +0.87 | +0.01 to +1.75 | +0.03 | -1.39 to +1.43 |
 
 ## Season: PM
 
@@ -154,6 +187,9 @@ Paired: (a) minus each list, same pods and seats, nights resampled for the 80% r
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 26 | 310792 | 2.39% | 15.4% | 43.4 | 26% | +94% |
 | (d1) mine, T1 in ADP's order | 23 | 265082 | 1.25% | 12.0% | 46.6 | 22% | +24% |
 | (d2) mine, T2 in ADP's order | 24 | 278798 | 1.19% | 12.0% | 46.5 | 22% | +21% |
+| (d3) mine, T3 in ADP's order | 24 | 278798 | 1.14% | 11.9% | 46.4 | 22% | -5% |
+| (d4) mine, T4 in ADP's order | 24 | 278798 | 1.23% | 11.9% | 46.2 | 22% | +19% |
+| (d5) mine, T5 in ADP's order | 24 | 278798 | 1.40% | 12.8% | 44.7 | 23% | +36% |
 
 Paired: (a) minus each list, same pods and seats, nights resampled for the 80% ranges.
 
@@ -178,6 +214,9 @@ Paired: (a) minus each list, same pods and seats, nights resampled for the 80% r
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 26 | -1.19 | -2.08 to -0.32 | -3.29 | -6.57 to +0.08 | +2.06 | -1.63 to +5.46 |
 | (d1) mine, T1 in ADP's order | 23 | +0.01 | -0.06 to +0.09 | +0.15 | -0.33 to +0.67 | -0.81 | -1.59 to -0.11 |
 | (d2) mine, T2 in ADP's order | 24 | +0.02 | -0.18 to +0.20 | -0.06 | -1.20 to +1.09 | -0.60 | -2.00 to +0.79 |
+| (d3) mine, T3 in ADP's order | 24 | +0.07 | -0.24 to +0.46 | +0.02 | -0.99 to +1.11 | -0.48 | -2.13 to +1.14 |
+| (d4) mine, T4 in ADP's order | 24 | -0.02 | -0.16 to +0.12 | +0.03 | -0.75 to +0.83 | -0.35 | -1.22 to +0.49 |
+| (d5) mine, T5 in ADP's order | 24 | -0.19 | -0.37 to -0.01 | -0.90 | -1.99 to +0.25 | +1.18 | -0.22 to +2.50 |
 | (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | 26 | -0.08 | -0.21 to +0.05 | -0.42 | -0.89 to +0.02 | +0.86 | +0.13 to +1.67 |
 | (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | 26 | -0.28 | -1.08 to +0.54 | -0.90 | -3.24 to +1.55 | +1.32 | -1.32 to +3.96 |
 | (f) the button on ETR tiers (PM) minus (e) ETR (PM) | 26 | +0.19 | -0.28 to +0.67 | -1.07 | -3.29 to +1.10 | -0.33 | -2.48 to +1.69 |
@@ -186,6 +225,9 @@ Paired: (a) minus each list, same pods and seats, nights resampled for the 80% r
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | 26 | +0.20 | -0.27 to +0.68 | -1.04 | -3.27 to +1.14 | -0.40 | -2.54 to +1.61 |
 | (f1) mine (PM), T1 in ETR's order minus (d1) mine, T1 in ADP's order | 23 | -0.03 | -0.15 to +0.09 | +0.25 | -0.43 to +0.91 | -1.48 | -2.48 to -0.62 |
 | (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | 24 | -0.04 | -0.26 to +0.16 | -0.12 | -1.47 to +1.23 | -0.41 | -2.09 to +1.33 |
+| (f3) mine (PM), T3 in ETR's order minus (d3) mine, T3 in ADP's order | 24 | +0.40 | -0.04 to +0.88 | +0.61 | -1.06 to +2.22 | +0.14 | -2.09 to +2.52 |
+| (f4) mine (PM), T4 in ETR's order minus (d4) mine, T4 in ADP's order | 24 | +0.06 | -0.08 to +0.20 | +0.53 | -0.23 to +1.39 | -0.60 | -1.43 to +0.22 |
+| (f5) mine (PM), T5 in ETR's order minus (d5) mine, T5 in ADP's order | 24 | -0.10 | -0.29 to +0.10 | -0.03 | -1.22 to +1.08 | +0.04 | -1.48 to +1.54 |
 
 ## Top 1% at my seats: luck or list
 
@@ -222,7 +264,7 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 
 (a) minus each list, both windows, top-10% points (80% range), from each rule date's first night per window (AM and PM apart in pod_replay.json). Season is above.
 
-### Since 2026-11-13 (AM) / 2026-11-13 (PM): gallagher-bad-arrow, swap-button
+### since 2026-11-13 AM / since 2026-11-13 PM: gallagher-bad-arrow, swap-button
 
 | (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |
 |---|---|---|---|---|---|---|
@@ -245,8 +287,14 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 4 | -4.57 | -7.66 to -1.87 | -1.61 | +5.32 |
 | (d1) mine, T1 in ADP's order | BOTH | 4 | +0.34 | -0.03 to +0.73 | +0.02 | -0.35 |
 | (d2) mine, T2 in ADP's order | BOTH | 4 | +0.61 | -1.12 to +2.43 | +0.15 | -2.98 |
+| (d3) mine, T3 in ADP's order | BOTH | 4 | +2.16 | +0.93 to +3.40 | +0.09 | -5.17 |
+| (d4) mine, T4 in ADP's order | BOTH | 4 | +0.30 | -0.34 to +0.97 | -0.03 | -0.12 |
+| (d5) mine, T5 in ADP's order | BOTH | 4 | +0.51 | -0.50 to +1.47 | -0.10 | -0.90 |
 | (p1) mine (AM), T1 in our Proj's order | BOTH | 3 | +0.00 | +0.00 to +0.00 | +0.00 | +0.00 |
 | (p2) mine (AM), T2 in our Proj's order | BOTH | 3 | +1.80 | +0.58 to +2.94 | +0.25 | -0.84 |
+| (p3) mine (AM), T3 in our Proj's order | BOTH | 3 | +1.00 | -0.12 to +2.20 | +0.23 | -0.73 |
+| (p4) mine (AM), T4 in our Proj's order | BOTH | 3 | +0.12 | -0.10 to +0.36 | -0.01 | -1.16 |
+| (p5) mine (AM), T5 in our Proj's order | BOTH | 3 | +1.99 | +1.86 to +2.12 | +0.12 | -2.18 |
 | (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 4 | -2.08 | -3.33 to -1.05 | -0.33 | +3.33 |
 | (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | -2.07 | -6.69 to +2.21 | +0.05 | +7.16 |
 | (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 4 | -8.40 | -14.98 to -2.32 | -1.62 | +5.66 |
@@ -254,11 +302,17 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | +0.05 | -0.03 to +0.11 | +0.01 | -0.11 |
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 4 | -8.35 | -14.93 to -2.27 | -1.61 | +5.54 |
 | (f1) mine (PM), T1 in ETR's order minus (d1) mine, T1 in ADP's order | BOTH | 4 | +0.46 | -0.01 to +1.00 | +0.03 | -0.49 |
-| (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | BOTH | 4 | -1.13 | -3.10 to +0.96 | +0.02 | +0.42 |
 | (p1) mine (AM), T1 in our Proj's order minus (d1) mine, T1 in ADP's order | BOTH | 3 | -0.05 | -0.10 to +0.00 | -0.02 | +0.07 |
+| (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | BOTH | 4 | -1.13 | -3.10 to +0.96 | +0.02 | +0.42 |
 | (p2) mine (AM), T2 in our Proj's order minus (d2) mine, T2 in ADP's order | BOTH | 3 | +1.56 | -1.76 to +5.12 | +0.33 | -3.41 |
+| (f3) mine (PM), T3 in ETR's order minus (d3) mine, T3 in ADP's order | BOTH | 4 | +6.07 | +2.18 to +10.21 | +1.21 | -9.48 |
+| (p3) mine (AM), T3 in our Proj's order minus (d3) mine, T3 in ADP's order | BOTH | 3 | +0.58 | -0.23 to +1.42 | -0.10 | -2.58 |
+| (f4) mine (PM), T4 in ETR's order minus (d4) mine, T4 in ADP's order | BOTH | 4 | +0.35 | -0.64 to +1.17 | -0.02 | -0.18 |
+| (p4) mine (AM), T4 in our Proj's order minus (d4) mine, T4 in ADP's order | BOTH | 3 | -0.36 | -1.63 to +0.85 | -0.06 | +1.77 |
+| (f5) mine (PM), T5 in ETR's order minus (d5) mine, T5 in ADP's order | BOTH | 4 | +2.02 | +1.25 to +2.85 | -0.05 | -2.96 |
+| (p5) mine (AM), T5 in our Proj's order minus (d5) mine, T5 in ADP's order | BOTH | 3 | +2.92 | +0.99 to +4.99 | +0.47 | -2.86 |
 
-### Since 2026-11-14 (AM) / 2026-11-13 (PM): elite-cut, q-adp-fall, q-keeps-tier, q-t1-to-t2, q-t5-follows-t5, q-teammate-tiebreak, t2-am-adp, t2-pm-elite-break, t3-pricey-over-t4-value, t34-am-adp-groups, t34-pm-etr-groups, t4-borrow-t3, t4-ends-round6, t4-pricey-to-t5, t4-value-from-a5, t5-4drafter-no-line, t5-drafted-60, t5-ends-at-cut, t5-minutes-floor
+### since 2026-11-14 AM / since 2026-11-13 PM: elite-cut, q-adp-fall, q-keeps-tier, q-t1-to-t2, q-t5-follows-t5, q-teammate-tiebreak, t2-am-adp, t2-pm-elite-break, t3-pricey-over-t4-value, t34-am-adp-groups, t34-pm-etr-groups, t4-borrow-t3, t4-ends-round6, t4-pricey-to-t5, t4-value-from-a5, t5-4drafter-no-line, t5-drafted-60, t5-ends-at-cut, t5-minutes-floor
 
 | (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |
 |---|---|---|---|---|---|---|
@@ -281,8 +335,14 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 4 | -4.57 | -7.66 to -1.87 | -1.61 | +5.32 |
 | (d1) mine, T1 in ADP's order | BOTH | 4 | +0.36 | -0.03 to +0.79 | +0.02 | -0.38 |
 | (d2) mine, T2 in ADP's order | BOTH | 4 | +0.64 | -1.36 to +2.43 | +0.15 | -3.58 |
+| (d3) mine, T3 in ADP's order | BOTH | 4 | +2.11 | +0.93 to +3.51 | +0.09 | -4.89 |
+| (d4) mine, T4 in ADP's order | BOTH | 4 | +0.47 | -0.27 to +1.21 | -0.01 | -0.28 |
+| (d5) mine, T5 in ADP's order | BOTH | 4 | +0.12 | -0.79 to +0.98 | -0.12 | -0.45 |
 | (p1) mine (AM), T1 in our Proj's order | BOTH | 2 | +0.00 | - | +0.00 | +0.00 |
 | (p2) mine (AM), T2 in our Proj's order | BOTH | 2 | +1.95 | - | +0.35 | -0.83 |
+| (p3) mine (AM), T3 in our Proj's order | BOTH | 2 | +1.08 | - | +0.28 | -0.44 |
+| (p4) mine (AM), T4 in our Proj's order | BOTH | 2 | -0.04 | - | -0.01 | -0.51 |
+| (p5) mine (AM), T5 in our Proj's order | BOTH | 2 | +2.11 | - | +0.21 | -2.19 |
 | (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 4 | -2.08 | -3.33 to -1.05 | -0.33 | +3.33 |
 | (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | -2.07 | -6.69 to +2.21 | +0.05 | +7.16 |
 | (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 4 | -8.40 | -14.98 to -2.32 | -1.62 | +5.66 |
@@ -290,11 +350,17 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | +0.05 | -0.03 to +0.11 | +0.01 | -0.11 |
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 4 | -8.35 | -14.93 to -2.27 | -1.61 | +5.54 |
 | (f1) mine (PM), T1 in ETR's order minus (d1) mine, T1 in ADP's order | BOTH | 4 | +0.46 | -0.01 to +1.00 | +0.03 | -0.49 |
-| (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | BOTH | 4 | -1.13 | -3.10 to +0.96 | +0.02 | +0.42 |
 | (p1) mine (AM), T1 in our Proj's order minus (d1) mine, T1 in ADP's order | BOTH | 2 | -0.08 | - | -0.03 | +0.10 |
+| (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | BOTH | 4 | -1.13 | -3.10 to +0.96 | +0.02 | +0.42 |
 | (p2) mine (AM), T2 in our Proj's order minus (d2) mine, T2 in ADP's order | BOTH | 2 | +2.76 | - | +0.39 | -7.19 |
+| (f3) mine (PM), T3 in ETR's order minus (d3) mine, T3 in ADP's order | BOTH | 4 | +6.07 | +2.18 to +10.21 | +1.21 | -9.48 |
+| (p3) mine (AM), T3 in our Proj's order minus (d3) mine, T3 in ADP's order | BOTH | 2 | -0.03 | - | -0.10 | -0.58 |
+| (f4) mine (PM), T4 in ETR's order minus (d4) mine, T4 in ADP's order | BOTH | 4 | +0.35 | -0.64 to +1.17 | -0.02 | -0.18 |
+| (p4) mine (AM), T4 in our Proj's order minus (d4) mine, T4 in ADP's order | BOTH | 2 | +0.52 | - | +0.04 | +0.52 |
+| (f5) mine (PM), T5 in ETR's order minus (d5) mine, T5 in ADP's order | BOTH | 4 | +2.02 | +1.25 to +2.85 | -0.05 | -2.96 |
+| (p5) mine (AM), T5 in our Proj's order minus (d5) mine, T5 in ADP's order | BOTH | 2 | +2.64 | - | +0.58 | -2.23 |
 
-### Since 2026-11-14 (AM) / 2026-11-14 (PM): proj-box-3-days, proj-fresh-absence
+### since 2026-11-14 AM / since 2026-11-14 PM: proj-box-3-days, proj-fresh-absence
 
 | (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |
 |---|---|---|---|---|---|---|
@@ -317,8 +383,14 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 3 | -3.01 | -7.11 to +0.39 | -0.66 | +4.91 |
 | (d1) mine, T1 in ADP's order | BOTH | 3 | +0.46 | -0.04 to +1.00 | +0.03 | -0.48 |
 | (d2) mine, T2 in ADP's order | BOTH | 3 | +1.57 | -0.42 to +3.72 | +0.19 | -4.53 |
+| (d3) mine, T3 in ADP's order | BOTH | 3 | +1.18 | +0.15 to +2.21 | +0.09 | -2.33 |
+| (d4) mine, T4 in ADP's order | BOTH | 3 | +0.15 | -0.70 to +1.07 | -0.00 | +0.64 |
+| (d5) mine, T5 in ADP's order | BOTH | 3 | -0.02 | -1.19 to +1.06 | +0.04 | +0.06 |
 | (p1) mine (AM), T1 in our Proj's order | BOTH | 2 | +0.00 | - | +0.00 | +0.00 |
 | (p2) mine (AM), T2 in our Proj's order | BOTH | 2 | +1.95 | - | +0.35 | -0.83 |
+| (p3) mine (AM), T3 in our Proj's order | BOTH | 2 | +1.08 | - | +0.28 | -0.44 |
+| (p4) mine (AM), T4 in our Proj's order | BOTH | 2 | -0.04 | - | -0.01 | -0.51 |
+| (p5) mine (AM), T5 in our Proj's order | BOTH | 2 | +2.11 | - | +0.21 | -2.19 |
 | (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 3 | -2.71 | -3.97 to -1.36 | -0.43 | +4.35 |
 | (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | -4.19 | -9.81 to +0.48 | -0.71 | +9.60 |
 | (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 3 | -11.60 | -20.49 to -4.22 | -2.06 | +7.26 |
@@ -326,21 +398,27 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | +0.06 | -0.04 to +0.15 | +0.01 | -0.15 |
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 3 | -11.54 | -20.51 to -4.09 | -2.05 | +7.11 |
 | (f1) mine (PM), T1 in ETR's order minus (d1) mine, T1 in ADP's order | BOTH | 3 | +0.62 | -0.01 to +1.38 | +0.04 | -0.65 |
-| (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | BOTH | 3 | -0.14 | -2.81 to +2.73 | +0.04 | +0.45 |
 | (p1) mine (AM), T1 in our Proj's order minus (d1) mine, T1 in ADP's order | BOTH | 2 | -0.08 | - | -0.03 | +0.10 |
+| (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | BOTH | 3 | -0.14 | -2.81 to +2.73 | +0.04 | +0.45 |
 | (p2) mine (AM), T2 in our Proj's order minus (d2) mine, T2 in ADP's order | BOTH | 2 | +2.76 | - | +0.39 | -7.19 |
+| (f3) mine (PM), T3 in ETR's order minus (d3) mine, T3 in ADP's order | BOTH | 3 | +2.98 | +0.92 to +5.29 | +0.13 | -5.48 |
+| (p3) mine (AM), T3 in our Proj's order minus (d3) mine, T3 in ADP's order | BOTH | 2 | -0.03 | - | -0.10 | -0.58 |
+| (f4) mine (PM), T4 in ETR's order minus (d4) mine, T4 in ADP's order | BOTH | 3 | -0.12 | -1.14 to +0.97 | -0.01 | +1.06 |
+| (p4) mine (AM), T4 in our Proj's order minus (d4) mine, T4 in ADP's order | BOTH | 2 | +0.52 | - | +0.04 | +0.52 |
+| (f5) mine (PM), T5 in ETR's order minus (d5) mine, T5 in ADP's order | BOTH | 3 | +2.25 | +1.23 to +3.40 | +0.14 | -2.96 |
+| (p5) mine (AM), T5 in our Proj's order minus (d5) mine, T5 in ADP's order | BOTH | 2 | +2.64 | - | +0.58 | -2.23 |
 
-### Since 2026-11-17 (AM) / 2026-11-17 (PM): tiers-pm-etr
+### not in the AM / since 2026-11-17 PM: tiers-pm-etr
 
 | (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |
 |---|---|---|---|---|---|---|
-| (b) the button's list | BOTH | 1 | -2.63 | - | -0.24 | +3.42 |
+| (b) the button's list | BOTH | 1 | -3.37 | - | -0.26 | +5.81 |
 | (c1) mine, T1's moves undone | BOTH | 1 | +0.00 | - | +0.00 | +0.00 |
-| (c2) mine, T2's moves undone | BOTH | 1 | +2.00 | - | +0.09 | -3.79 |
-| (c3) mine, T3's moves undone | BOTH | 1 | +0.16 | - | +0.03 | +0.14 |
-| (c4) mine, T4's moves undone | BOTH | 1 | -2.86 | - | -0.30 | +3.46 |
-| (c5) mine, T5's moves undone | BOTH | 1 | -3.18 | - | -0.09 | +3.35 |
-| (d) ADP | BOTH | 1 | +0.83 | - | -0.24 | -8.01 |
+| (c2) mine, T2's moves undone | BOTH | 1 | +2.21 | - | +0.06 | -3.86 |
+| (c3) mine, T3's moves undone | BOTH | 1 | +0.24 | - | +0.04 | +0.21 |
+| (c4) mine, T4's moves undone | BOTH | 1 | -2.12 | - | -0.13 | +3.10 |
+| (c5) mine, T5's moves undone | BOTH | 1 | -5.34 | - | -0.24 | +6.06 |
+| (d) ADP | BOTH | 1 | -0.01 | - | -0.31 | -8.62 |
 | (e) ETR (PM) | BOTH | 1 | -9.49 | - | -1.04 | +8.87 |
 | (f1) mine (PM), T1 in ETR's order | BOTH | 1 | +0.00 | - | +0.00 | +0.00 |
 | (f2) mine (PM), T2 in ETR's order | BOTH | 1 | +2.36 | - | +0.06 | -4.57 |
@@ -351,10 +429,11 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 | (f) the button on ETR tiers (PM) | BOTH | 1 | +0.11 | - | -0.04 | +0.90 |
 | (g) ETR order, the button's T5 rule (PM) | BOTH | 1 | -5.09 | - | -0.19 | +8.60 |
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 1 | +0.16 | - | -0.03 | +0.83 |
-| (d1) mine, T1 in ADP's order | BOTH | 1 | -0.06 | - | -0.02 | +0.19 |
-| (d2) mine, T2 in ADP's order | BOTH | 1 | -0.90 | - | -0.10 | -0.47 |
-| (p1) mine (AM), T1 in our Proj's order | BOTH | 1 | +0.00 | - | +0.00 | +0.00 |
-| (p2) mine (AM), T2 in our Proj's order | BOTH | 1 | +3.56 | - | +0.38 | -3.18 |
+| (d1) mine, T1 in ADP's order | BOTH | 1 | -0.01 | - | +0.00 | +0.19 |
+| (d2) mine, T2 in ADP's order | BOTH | 1 | -2.10 | - | -0.21 | +1.08 |
+| (d3) mine, T3 in ADP's order | BOTH | 1 | +0.41 | - | -0.10 | -4.48 |
+| (d4) mine, T4 in ADP's order | BOTH | 1 | -1.14 | - | -0.06 | +3.93 |
+| (d5) mine, T5 in ADP's order | BOTH | 1 | +0.91 | - | +0.14 | -1.02 |
 | (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 1 | -4.41 | - | -0.85 | +0.27 |
 | (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 1 | -0.01 | - | -0.01 | +5.79 |
 | (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 1 | -9.61 | - | -1.01 | +7.98 |
@@ -363,8 +442,9 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 | (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 1 | -9.66 | - | -1.01 | +8.04 |
 | (f1) mine (PM), T1 in ETR's order minus (d1) mine, T1 in ADP's order | BOTH | 1 | -0.01 | - | +0.00 | +0.19 |
 | (f2) mine (PM), T2 in ETR's order minus (d2) mine, T2 in ADP's order | BOTH | 1 | -4.46 | - | -0.27 | +5.65 |
-| (p1) mine (AM), T1 in our Proj's order minus (d1) mine, T1 in ADP's order | BOTH | 1 | -0.15 | - | -0.06 | +0.18 |
-| (p2) mine (AM), T2 in our Proj's order minus (d2) mine, T2 in ADP's order | BOTH | 1 | -1.99 | - | -0.23 | -0.47 |
+| (f3) mine (PM), T3 in ETR's order minus (d3) mine, T3 in ADP's order | BOTH | 1 | +6.24 | - | +0.19 | -12.90 |
+| (f4) mine (PM), T4 in ETR's order minus (d4) mine, T4 in ADP's order | BOTH | 1 | -1.58 | - | -0.05 | +4.65 |
+| (f5) mine (PM), T5 in ETR's order minus (d5) mine, T5 in ADP's order | BOTH | 1 | +4.32 | - | +0.21 | -5.65 |
 
 ## Round 6 fidelity
 
@@ -421,53 +501,53 @@ My real teams beside (a) replayed at the same seats, and where they land in (a)'
 
 Top 10% / mean finish percentile for each list; seats are every seat in that window's pods.
 
-| Night | Window | Seats | (a) | (b) | (c1) | (c2) | (c3) | (c4) | (c5) | (d) | (e) | (f1) | (f2) | (f3) | (f4) | (f5) | (b') | (f) | (g) | (f-nodrop) | (d1) | (d2) | (p1) | (p2) |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2026-10-21 | PM | 16254 | 13.7% / 41 | - | - | - | - | - | - | 7.4% / 49 | 26.9% / 29 | - | - | - | - | - | 42.1% / 25 | 29.5% / 27 | 24.1% / 32 | 29.5% / 27 | - | - | - | - |
-| 2026-10-22 | PM | 15740 | 14.2% / 43 | - | - | - | - | - | - | 10.5% / 49 | 14.5% / 45 | - | - | - | - | - | 3.4% / 51 | 2.3% / 56 | 14.8% / 44 | 2.3% / 56 | - | - | - | - |
-| 2026-10-23 | PM | 15732 | 14.0% / 41 | - | - | - | - | - | - | 8.1% / 48 | 1.5% / 63 | 14.6% / 39 | 19.1% / 36 | 13.2% / 42 | 13.3% / 43 | 11.5% / 43 | 9.4% / 46 | 3.6% / 60 | 1.3% / 63 | 3.6% / 60 | 14.0% / 41 | 12.5% / 42 | - | - |
-| 2026-10-24 | AM | 6714 | 2.5% / 51 | - | - | - | - | - | - | 12.7% / 42 | - | - | - | - | - | - | - | - | - | - | - | - | - | - |
-| 2026-10-24 | PM | 7860 | 24.7% / 45 | - | - | - | - | - | - | 12.3% / 43 | 23.3% / 52 | 24.7% / 45 | 24.7% / 45 | 24.7% / 45 | 24.8% / 45 | 23.8% / 50 | 19.9% / 44 | 22.5% / 41 | 21.4% / 53 | 22.5% / 41 | 24.7% / 45 | 24.9% / 47 | - | - |
-| 2026-10-25 | AM | 3366 | 8.1% / 40 | - | - | - | - | - | - | 4.2% / 52 | - | - | - | - | - | - | - | - | - | - | - | - | - | - |
-| 2026-10-25 | PM | 7782 | 2.7% / 51 | - | - | - | - | - | - | 4.7% / 54 | 4.2% / 48 | 2.7% / 51 | 2.9% / 50 | 2.9% / 50 | 3.5% / 48 | 2.7% / 50 | 5.5% / 48 | 3.6% / 49 | 4.3% / 48 | 3.6% / 49 | 2.6% / 53 | 3.1% / 49 | - | - |
-| 2026-10-26 | PM | 13530 | 27.3% / 30 | - | - | - | - | - | - | 14.3% / 41 | 21.6% / 32 | 22.4% / 33 | 24.5% / 30 | 36.1% / 23 | 26.5% / 31 | 24.7% / 32 | 21.8% / 29 | 13.3% / 34 | 21.8% / 32 | 13.3% / 34 | 27.3% / 30 | 22.7% / 34 | - | - |
-| 2026-10-27 | AM | 5046 | 6.6% / 62 | - | - | - | - | - | - | 14.3% / 41 | - | - | - | - | - | - | - | - | - | - | 6.6% / 62 | 6.7% / 61 | 6.6% / 62 | 6.7% / 59 |
-| 2026-10-27 | PM | 10704 | 14.9% / 42 | - | - | - | - | - | - | 13.7% / 43 | 10.2% / 49 | 14.9% / 42 | 11.4% / 47 | 6.4% / 48 | 22.7% / 34 | 8.8% / 44 | 11.7% / 47 | 7.4% / 54 | 12.1% / 49 | 7.4% / 54 | 14.9% / 42 | 14.6% / 42 | - | - |
-| 2026-10-28 | AM | 4032 | 15.0% / 43 | - | - | - | - | - | - | 13.8% / 45 | - | - | - | - | - | - | - | - | - | - | 15.0% / 43 | 15.3% / 43 | 12.6% / 47 | 20.8% / 32 |
-| 2026-10-28 | PM | 11718 | 3.5% / 60 | - | - | - | - | - | - | 16.4% / 43 | 2.9% / 70 | 3.5% / 60 | 5.9% / 51 | 2.8% / 68 | 3.4% / 61 | 5.8% / 57 | 2.8% / 59 | 6.2% / 58 | 3.0% / 70 | 6.2% / 58 | 3.5% / 60 | 3.1% / 63 | - | - |
-| 2026-10-29 | AM | 4708 | 13.7% / 35 | - | - | - | - | - | - | 6.7% / 62 | - | - | - | - | - | - | - | - | - | - | 12.9% / 39 | 19.0% / 39 | 10.7% / 37 | 11.2% / 42 |
-| 2026-10-29 | PM | 8848 | 15.2% / 40 | - | - | - | - | - | - | 4.3% / 59 | 34.5% / 25 | 15.2% / 40 | 17.7% / 37 | 13.8% / 41 | 19.2% / 39 | 15.2% / 40 | 22.2% / 37 | 42.3% / 21 | 34.5% / 25 | 42.3% / 21 | 15.1% / 42 | 10.3% / 46 | - | - |
-| 2026-10-30 | AM | 7104 | 10.6% / 43 | - | - | - | - | - | - | 8.3% / 55 | - | - | - | - | - | - | - | - | - | - | 10.6% / 43 | 8.2% / 47 | 10.6% / 43 | 13.9% / 39 |
-| 2026-10-30 | PM | 13764 | 15.0% / 36 | - | - | - | - | - | - | 8.4% / 53 | 16.6% / 30 | 16.8% / 33 | 11.1% / 40 | 17.6% / 33 | 18.9% / 32 | 15.2% / 35 | 17.6% / 31 | 13.7% / 39 | 16.1% / 31 | 13.8% / 39 | 15.0% / 36 | 9.8% / 44 | - | - |
-| 2026-10-31 | AM | 5322 | 17.2% / 46 | - | - | - | - | - | - | 12.6% / 48 | - | - | - | - | - | - | - | - | - | - | 17.2% / 46 | 14.0% / 51 | 17.2% / 46 | 13.8% / 53 |
-| 2026-10-31 | PM | 8682 | 6.0% / 60 | - | - | - | - | - | - | 15.7% / 48 | 3.7% / 69 | 6.0% / 60 | 3.9% / 64 | 5.3% / 63 | 5.5% / 60 | 5.5% / 61 | 3.0% / 66 | 1.4% / 69 | 1.5% / 71 | 2.0% / 67 | 6.2% / 58 | 8.5% / 58 | - | - |
-| 2026-11-01 | AM | 6100 | 9.9% / 51 | - | - | - | - | - | - | 14.6% / 47 | - | - | - | - | - | - | - | - | - | - | 9.9% / 51 | 22.4% / 38 | 9.9% / 51 | 14.4% / 51 |
-| 2026-11-01 | PM | 4180 | 18.0% / 45 | - | - | - | - | - | - | 16.0% / 48 | 17.4% / 39 | 18.0% / 45 | 17.2% / 41 | 17.9% / 45 | 17.9% / 44 | 18.0% / 44 | 19.8% / 30 | 19.2% / 31 | 17.4% / 39 | 19.2% / 31 | 18.0% / 45 | 17.8% / 38 | - | - |
-| 2026-11-02 | AM | 5778 | 10.2% / 54 | - | - | - | - | - | - | 10.0% / 52 | - | - | - | - | - | - | - | - | - | - | 5.7% / 58 | 11.8% / 53 | 10.2% / 54 | 4.5% / 61 |
-| 2026-11-02 | PM | 12894 | 11.8% / 46 | - | - | - | - | - | - | 16.2% / 45 | 3.8% / 61 | 11.8% / 46 | 7.3% / 52 | 6.6% / 55 | 11.5% / 47 | 12.5% / 45 | 7.1% / 58 | 11.4% / 43 | 3.4% / 62 | 11.5% / 43 | 7.0% / 57 | 11.8% / 46 | - | - |
-| 2026-11-04 | AM | 9480 | 20.4% / 44 | - | - | - | - | - | - | 11.9% / 43 | - | - | - | - | - | - | - | - | - | - | 11.0% / 49 | 20.7% / 41 | 31.0% / 34 | 20.7% / 39 |
-| 2026-11-04 | PM | 11868 | 10.0% / 58 | - | - | - | - | - | - | 10.8% / 45 | 10.5% / 54 | 10.0% / 58 | 10.0% / 57 | 10.0% / 58 | 11.0% / 57 | 11.0% / 57 | 18.6% / 45 | 12.8% / 51 | 9.9% / 55 | 12.8% / 51 | 6.7% / 65 | 10.7% / 54 | - | - |
-| 2026-11-05 | AM | 6776 | 9.8% / 48 | - | - | - | - | - | - | 9.6% / 45 | - | - | - | - | - | - | - | - | - | - | - | 9.8% / 48 | - | 11.3% / 44 |
-| 2026-11-05 | PM | 13716 | 8.6% / 49 | - | - | - | - | - | - | 6.9% / 47 | 21.2% / 41 | - | 10.1% / 44 | 17.9% / 47 | 9.5% / 48 | 9.2% / 48 | 20.9% / 34 | 38.2% / 27 | 21.8% / 41 | 38.2% / 27 | - | 8.6% / 49 | - | - |
-| 2026-11-06 | AM | 6090 | 10.8% / 50 | - | - | - | - | - | - | 7.5% / 54 | - | - | - | - | - | - | - | - | - | - | 10.8% / 50 | 12.6% / 49 | 10.8% / 50 | 8.9% / 53 |
-| 2026-11-06 | PM | 14706 | 7.0% / 57 | - | - | - | - | - | - | 6.0% / 57 | 35.0% / 27 | 10.4% / 54 | 5.0% / 58 | 5.9% / 60 | 8.5% / 54 | 16.0% / 41 | 23.4% / 38 | 37.3% / 30 | 38.0% / 26 | 37.3% / 30 | 7.0% / 57 | 9.1% / 55 | - | - |
-| 2026-11-07 | AM | 7806 | 12.5% / 45 | - | - | - | - | - | - | 11.5% / 42 | - | - | - | - | - | - | - | - | - | - | 12.5% / 45 | 17.8% / 38 | 12.5% / 45 | 3.8% / 58 |
-| 2026-11-07 | PM | 10764 | 10.2% / 49 | - | - | - | - | - | - | 16.2% / 42 | 24.7% / 35 | 10.2% / 49 | 13.1% / 47 | 10.3% / 50 | 10.2% / 49 | 10.2% / 49 | 25.0% / 39 | 16.8% / 42 | 25.1% / 35 | 16.8% / 42 | 10.2% / 49 | 21.9% / 41 | - | - |
-| 2026-11-08 | AM | 3210 | 12.5% / 47 | - | - | - | - | - | - | 14.2% / 50 | - | - | - | - | - | - | - | - | - | - | 15.4% / 45 | 12.4% / 49 | 12.5% / 47 | 12.4% / 49 |
-| 2026-11-08 | PM | 7074 | 15.7% / 35 | - | - | - | - | - | - | 14.2% / 49 | 5.2% / 53 | 15.7% / 35 | 10.7% / 42 | 11.3% / 39 | 16.4% / 34 | 16.8% / 34 | 17.4% / 40 | 17.0% / 36 | 5.5% / 52 | 17.1% / 35 | 17.9% / 33 | 10.3% / 43 | - | - |
-| 2026-11-09 | AM | 5940 | 10.4% / 50 | - | - | - | - | - | - | 14.2% / 46 | - | - | - | - | - | - | - | - | - | - | 11.1% / 46 | 10.1% / 51 | 8.5% / 48 | 9.5% / 50 |
-| 2026-11-09 | PM | 12720 | 15.4% / 38 | 2.3% / 61 | 15.4% / 38 | 3.1% / 52 | 11.8% / 41 | 12.1% / 45 | 15.1% / 39 | 17.1% / 43 | 2.7% / 58 | 15.4% / 38 | 15.4% / 38 | 14.2% / 39 | 12.0% / 45 | 16.1% / 38 | 11.5% / 48 | 1.5% / 60 | 3.3% / 56 | 1.5% / 60 | 20.4% / 36 | 8.7% / 48 | - | - |
-| 2026-11-10 | AM | 7344 | 20.3% / 35 | 13.4% / 42 | 20.3% / 35 | 20.3% / 35 | 16.7% / 39 | 20.3% / 35 | 15.8% / 39 | 8.7% / 53 | - | - | - | - | - | - | - | - | - | - | 20.3% / 35 | 18.4% / 37 | 20.3% / 35 | 5.6% / 54 |
-| 2026-11-10 | PM | 13488 | 13.8% / 48 | 14.9% / 47 | 13.8% / 48 | 13.7% / 48 | 13.8% / 48 | 13.8% / 48 | 14.9% / 47 | 11.0% / 46 | 14.5% / 44 | 13.8% / 48 | 22.0% / 41 | 11.2% / 52 | 13.5% / 49 | 16.1% / 46 | 4.7% / 61 | 8.0% / 50 | 13.3% / 45 | 8.0% / 50 | 12.4% / 49 | 12.9% / 46 | - | - |
-| 2026-11-11 | AM | 11076 | 10.5% / 48 | 5.1% / 63 | 7.3% / 50 | 9.8% / 53 | 10.3% / 49 | 7.2% / 56 | 9.0% / 51 | 14.2% / 44 | - | - | - | - | - | - | - | - | - | - | 10.5% / 48 | 9.6% / 50 | 4.5% / 53 | 10.6% / 48 |
-| 2026-11-11 | PM | 9774 | 10.2% / 46 | 3.0% / 69 | 10.2% / 46 | 9.6% / 48 | 9.8% / 46 | 5.7% / 61 | 6.2% / 57 | 15.5% / 41 | 1.0% / 78 | 10.2% / 46 | 10.6% / 46 | 10.2% / 46 | 9.6% / 46 | 4.9% / 59 | 4.3% / 70 | 2.4% / 76 | 1.2% / 78 | 2.4% / 76 | 13.0% / 44 | 18.2% / 38 | - | - |
-| 2026-11-12 | AM | 6336 | 24.6% / 29 | 20.5% / 36 | 24.6% / 29 | 14.3% / 41 | 25.6% / 30 | 25.4% / 28 | 30.8% / 25 | 9.7% / 49 | - | - | - | - | - | - | - | - | - | - | 17.8% / 38 | 15.9% / 39 | 24.6% / 29 | 28.5% / 25 |
-| 2026-11-12 | PM | 11508 | 5.6% / 54 | 17.1% / 38 | 6.0% / 46 | 8.8% / 51 | 5.7% / 54 | 11.2% / 50 | 12.5% / 50 | 12.0% / 46 | 24.4% / 32 | 6.0% / 46 | 6.2% / 54 | 2.3% / 60 | 5.6% / 54 | 8.7% / 52 | 8.2% / 42 | 29.7% / 26 | 24.9% / 34 | 29.8% / 26 | 5.6% / 54 | 12.2% / 44 | - | - |
-| 2026-11-13 | AM | 5694 | 14.7% / 40 | 11.3% / 38 | 14.7% / 40 | 13.4% / 36 | 15.5% / 40 | 12.1% / 42 | 12.5% / 42 | 9.6% / 47 | - | - | - | - | - | - | - | - | - | - | 14.7% / 40 | 14.4% / 36 | 14.7% / 40 | 13.2% / 41 |
-| 2026-11-13 | PM | 14658 | 16.3% / 33 | 33.4% / 23 | 16.3% / 33 | 16.3% / 33 | 34.5% / 22 | 15.7% / 34 | 15.6% / 33 | 8.4% / 54 | 24.5% / 25 | 16.3% / 33 | 15.2% / 33 | 25.8% / 26 | 16.3% / 33 | 17.0% / 32 | 29.6% / 26 | 25.5% / 26 | 24.3% / 25 | 25.5% / 26 | 16.3% / 33 | 19.2% / 33 | - | - |
-| 2026-11-14 | PM | 16410 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 8.3% / 52 | 10.8% / 48 | 9.6% / 48 | 8.8% / 56 | 9.6% / 48 | 9.5% / 48 | 10.2% / 47 | 9.6% / 48 | 8.9% / 51 | 7.6% / 59 | 9.1% / 50 | 9.6% / 48 | 8.8% / 51 | - | - |
-| 2026-11-16 | AM | 6156 | 22.4% / 33 | 16.5% / 44 | 22.4% / 33 | 14.2% / 46 | 22.4% / 33 | 27.7% / 30 | 21.7% / 35 | 10.5% / 53 | - | - | - | - | - | - | - | - | - | - | 22.4% / 33 | 14.2% / 46 | 22.4% / 33 | 22.2% / 31 |
-| 2026-11-16 | PM | 12420 | 8.2% / 48 | 8.0% / 48 | 8.2% / 48 | 7.8% / 51 | 7.5% / 49 | 8.2% / 48 | 9.5% / 46 | 5.4% / 57 | 46.0% / 16 | 8.2% / 48 | 9.3% / 46 | 7.7% / 48 | 8.2% / 48 | 16.2% / 40 | 4.0% / 60 | 19.4% / 29 | 45.9% / 16 | 19.4% / 29 | 6.0% / 51 | 4.7% / 57 | - | - |
-| 2026-11-17 | AM | 6834 | 11.1% / 44 | 12.2% / 45 | 11.1% / 44 | 9.5% / 47 | 11.1% / 44 | 15.5% / 40 | 9.9% / 46 | 8.6% / 50 | - | - | - | - | - | - | - | - | - | - | 11.3% / 44 | 9.5% / 47 | 11.1% / 44 | 7.6% / 47 |
-| 2026-11-17 | PM | 13998 | 7.1% / 47 | 10.5% / 41 | 7.1% / 47 | 4.9% / 51 | 6.9% / 47 | 9.2% / 44 | 12.5% / 41 | 7.1% / 55 | 16.6% / 38 | 7.1% / 47 | 4.8% / 51 | 12.9% / 38 | 6.7% / 47 | 10.5% / 42 | 7.0% / 52 | 7.0% / 46 | 12.2% / 38 | 7.0% / 46 | 7.1% / 47 | 9.2% / 46 | - | - |
+| Night | Window | Seats | (a) | (b) | (c1) | (c2) | (c3) | (c4) | (c5) | (d) | (e) | (f1) | (f2) | (f3) | (f4) | (f5) | (b') | (f) | (g) | (f-nodrop) | (d1) | (d2) | (d3) | (d4) | (d5) | (p1) | (p2) | (p3) | (p4) | (p5) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2026-10-21 | PM | 16254 | 13.7% / 41 | - | - | - | - | - | - | 7.4% / 49 | 26.9% / 29 | - | - | - | - | - | 42.1% / 25 | 29.5% / 27 | 24.1% / 32 | 29.5% / 27 | - | - | - | - | - | - | - | - | - | - |
+| 2026-10-22 | PM | 15740 | 14.2% / 43 | - | - | - | - | - | - | 10.5% / 49 | 14.5% / 45 | - | - | - | - | - | 3.4% / 51 | 2.3% / 56 | 14.8% / 44 | 2.3% / 56 | - | - | - | - | - | - | - | - | - | - |
+| 2026-10-23 | PM | 15732 | 14.0% / 41 | - | - | - | - | - | - | 8.1% / 48 | 1.5% / 63 | 14.6% / 39 | 19.1% / 36 | 13.2% / 42 | 13.3% / 43 | 11.5% / 43 | 9.4% / 46 | 3.6% / 60 | 1.3% / 63 | 3.6% / 60 | 14.0% / 41 | 12.5% / 42 | 12.0% / 43 | 13.3% / 42 | 9.0% / 44 | - | - | - | - | - |
+| 2026-10-24 | AM | 6714 | 2.5% / 51 | - | - | - | - | - | - | 12.7% / 42 | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - |
+| 2026-10-24 | PM | 7860 | 24.7% / 45 | - | - | - | - | - | - | 12.3% / 43 | 23.3% / 52 | 24.7% / 45 | 24.7% / 45 | 24.7% / 45 | 24.8% / 45 | 23.8% / 50 | 19.9% / 44 | 22.5% / 41 | 21.4% / 53 | 22.5% / 41 | 24.7% / 45 | 24.9% / 47 | 14.1% / 47 | 23.5% / 46 | 24.9% / 41 | - | - | - | - | - |
+| 2026-10-25 | AM | 3366 | 8.1% / 40 | - | - | - | - | - | - | 4.2% / 52 | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - |
+| 2026-10-25 | PM | 7782 | 2.7% / 51 | - | - | - | - | - | - | 4.7% / 54 | 4.2% / 48 | 2.7% / 51 | 2.9% / 50 | 2.9% / 50 | 3.5% / 48 | 2.7% / 50 | 5.5% / 48 | 3.6% / 49 | 4.3% / 48 | 3.6% / 49 | 2.6% / 53 | 3.1% / 49 | 3.7% / 49 | 3.5% / 47 | 2.0% / 54 | - | - | - | - | - |
+| 2026-10-26 | PM | 13530 | 27.3% / 30 | - | - | - | - | - | - | 14.3% / 41 | 21.6% / 32 | 22.4% / 33 | 24.5% / 30 | 36.1% / 23 | 26.5% / 31 | 24.7% / 32 | 21.8% / 29 | 13.3% / 34 | 21.8% / 32 | 13.3% / 34 | 27.3% / 30 | 22.7% / 34 | 33.6% / 26 | 23.7% / 33 | 25.6% / 32 | - | - | - | - | - |
+| 2026-10-27 | AM | 5046 | 6.6% / 62 | - | - | - | - | - | - | 14.3% / 41 | - | - | - | - | - | - | - | - | - | - | 6.6% / 62 | 6.7% / 61 | 5.6% / 58 | 13.9% / 58 | 5.7% / 56 | 6.6% / 62 | 6.7% / 59 | 5.4% / 56 | 13.9% / 58 | 4.7% / 60 |
+| 2026-10-27 | PM | 10704 | 14.9% / 42 | - | - | - | - | - | - | 13.7% / 43 | 10.2% / 49 | 14.9% / 42 | 11.4% / 47 | 6.4% / 48 | 22.7% / 34 | 8.8% / 44 | 11.7% / 47 | 7.4% / 54 | 12.1% / 49 | 7.4% / 54 | 14.9% / 42 | 14.6% / 42 | 12.5% / 49 | 22.5% / 34 | 18.9% / 38 | - | - | - | - | - |
+| 2026-10-28 | AM | 4032 | 15.0% / 43 | - | - | - | - | - | - | 13.8% / 45 | - | - | - | - | - | - | - | - | - | - | 15.0% / 43 | 15.3% / 43 | 16.9% / 38 | 15.0% / 43 | 18.6% / 42 | 12.6% / 47 | 20.8% / 32 | 13.1% / 43 | 15.0% / 43 | 15.2% / 43 |
+| 2026-10-28 | PM | 11718 | 3.5% / 60 | - | - | - | - | - | - | 16.4% / 43 | 2.9% / 70 | 3.5% / 60 | 5.9% / 51 | 2.8% / 68 | 3.4% / 61 | 5.8% / 57 | 2.8% / 59 | 6.2% / 58 | 3.0% / 70 | 6.2% / 58 | 3.5% / 60 | 3.1% / 63 | 12.8% / 41 | 3.4% / 61 | 5.6% / 57 | - | - | - | - | - |
+| 2026-10-29 | AM | 4708 | 13.7% / 35 | - | - | - | - | - | - | 6.7% / 62 | - | - | - | - | - | - | - | - | - | - | 12.9% / 39 | 19.0% / 39 | 8.7% / 43 | 6.9% / 41 | - | 10.7% / 37 | 11.2% / 42 | 13.6% / 36 | 6.1% / 41 | - |
+| 2026-10-29 | PM | 8848 | 15.2% / 40 | - | - | - | - | - | - | 4.3% / 59 | 34.5% / 25 | 15.2% / 40 | 17.7% / 37 | 13.8% / 41 | 19.2% / 39 | 15.2% / 40 | 22.2% / 37 | 42.3% / 21 | 34.5% / 25 | 42.3% / 21 | 15.1% / 42 | 10.3% / 46 | 14.8% / 39 | 5.4% / 50 | 15.2% / 40 | - | - | - | - | - |
+| 2026-10-30 | AM | 7104 | 10.6% / 43 | - | - | - | - | - | - | 8.3% / 55 | - | - | - | - | - | - | - | - | - | - | 10.6% / 43 | 8.2% / 47 | 14.8% / 39 | 10.9% / 42 | 8.9% / 45 | 10.6% / 43 | 13.9% / 39 | 9.9% / 43 | 10.1% / 43 | 9.8% / 43 |
+| 2026-10-30 | PM | 13764 | 15.0% / 36 | - | - | - | - | - | - | 8.4% / 53 | 16.6% / 30 | 16.8% / 33 | 11.1% / 40 | 17.6% / 33 | 18.9% / 32 | 15.2% / 35 | 17.6% / 31 | 13.7% / 39 | 16.1% / 31 | 13.8% / 39 | 15.0% / 36 | 9.8% / 44 | 16.6% / 35 | 17.1% / 36 | 15.6% / 35 | - | - | - | - | - |
+| 2026-10-31 | AM | 5322 | 17.2% / 46 | - | - | - | - | - | - | 12.6% / 48 | - | - | - | - | - | - | - | - | - | - | 17.2% / 46 | 14.0% / 51 | 17.2% / 46 | 18.2% / 44 | 12.0% / 50 | 17.2% / 46 | 13.8% / 53 | 18.6% / 43 | 15.6% / 47 | 7.4% / 61 |
+| 2026-10-31 | PM | 8682 | 6.0% / 60 | - | - | - | - | - | - | 15.7% / 48 | 3.7% / 69 | 6.0% / 60 | 3.9% / 64 | 5.3% / 63 | 5.5% / 60 | 5.5% / 61 | 3.0% / 66 | 1.4% / 69 | 1.5% / 71 | 2.0% / 67 | 6.2% / 58 | 8.5% / 58 | 5.4% / 62 | 6.2% / 59 | 18.8% / 41 | - | - | - | - | - |
+| 2026-11-01 | AM | 6100 | 9.9% / 51 | - | - | - | - | - | - | 14.6% / 47 | - | - | - | - | - | - | - | - | - | - | 9.9% / 51 | 22.4% / 38 | 10.5% / 49 | 11.0% / 49 | 9.8% / 51 | 9.9% / 51 | 14.4% / 51 | 5.5% / 61 | 9.7% / 51 | 9.9% / 51 |
+| 2026-11-01 | PM | 4180 | 18.0% / 45 | - | - | - | - | - | - | 16.0% / 48 | 17.4% / 39 | 18.0% / 45 | 17.2% / 41 | 17.9% / 45 | 17.9% / 44 | 18.0% / 44 | 19.8% / 30 | 19.2% / 31 | 17.4% / 39 | 19.2% / 31 | 18.0% / 45 | 17.8% / 38 | 18.3% / 43 | 8.0% / 57 | 16.5% / 46 | - | - | - | - | - |
+| 2026-11-02 | AM | 5778 | 10.2% / 54 | - | - | - | - | - | - | 10.0% / 52 | - | - | - | - | - | - | - | - | - | - | 5.7% / 58 | 11.8% / 53 | 13.9% / 50 | 10.9% / 53 | 7.0% / 58 | 10.2% / 54 | 4.5% / 61 | 12.7% / 51 | 10.4% / 53 | 7.1% / 61 |
+| 2026-11-02 | PM | 12894 | 11.8% / 46 | - | - | - | - | - | - | 16.2% / 45 | 3.8% / 61 | 11.8% / 46 | 7.3% / 52 | 6.6% / 55 | 11.5% / 47 | 12.5% / 45 | 7.1% / 58 | 11.4% / 43 | 3.4% / 62 | 11.5% / 43 | 7.0% / 57 | 11.8% / 46 | 13.9% / 44 | 12.1% / 46 | 21.0% / 37 | - | - | - | - | - |
+| 2026-11-04 | AM | 9480 | 20.4% / 44 | - | - | - | - | - | - | 11.9% / 43 | - | - | - | - | - | - | - | - | - | - | 11.0% / 49 | 20.7% / 41 | 19.6% / 46 | 19.7% / 44 | 21.9% / 40 | 31.0% / 34 | 20.7% / 39 | 19.6% / 47 | 19.6% / 45 | 20.3% / 44 |
+| 2026-11-04 | PM | 11868 | 10.0% / 58 | - | - | - | - | - | - | 10.8% / 45 | 10.5% / 54 | 10.0% / 58 | 10.0% / 57 | 10.0% / 58 | 11.0% / 57 | 11.0% / 57 | 18.6% / 45 | 12.8% / 51 | 9.9% / 55 | 12.8% / 51 | 6.7% / 65 | 10.7% / 54 | 10.0% / 58 | 12.1% / 56 | 13.9% / 50 | - | - | - | - | - |
+| 2026-11-05 | AM | 6776 | 9.8% / 48 | - | - | - | - | - | - | 9.6% / 45 | - | - | - | - | - | - | - | - | - | - | - | 9.8% / 48 | 9.8% / 47 | 11.0% / 47 | 8.6% / 49 | - | 11.3% / 44 | 16.7% / 46 | 9.5% / 49 | 11.1% / 47 |
+| 2026-11-05 | PM | 13716 | 8.6% / 49 | - | - | - | - | - | - | 6.9% / 47 | 21.2% / 41 | - | 10.1% / 44 | 17.9% / 47 | 9.5% / 48 | 9.2% / 48 | 20.9% / 34 | 38.2% / 27 | 21.8% / 41 | 38.2% / 27 | - | 8.6% / 49 | 8.7% / 48 | 7.3% / 50 | 8.3% / 49 | - | - | - | - | - |
+| 2026-11-06 | AM | 6090 | 10.8% / 50 | - | - | - | - | - | - | 7.5% / 54 | - | - | - | - | - | - | - | - | - | - | 10.8% / 50 | 12.6% / 49 | 10.7% / 50 | 11.0% / 50 | 9.8% / 51 | 10.8% / 50 | 8.9% / 53 | 11.1% / 49 | 10.8% / 50 | 12.2% / 47 |
+| 2026-11-06 | PM | 14706 | 7.0% / 57 | - | - | - | - | - | - | 6.0% / 57 | 35.0% / 27 | 10.4% / 54 | 5.0% / 58 | 5.9% / 60 | 8.5% / 54 | 16.0% / 41 | 23.4% / 38 | 37.3% / 30 | 38.0% / 26 | 37.3% / 30 | 7.0% / 57 | 9.1% / 55 | 6.1% / 59 | 7.3% / 57 | 8.4% / 53 | - | - | - | - | - |
+| 2026-11-07 | AM | 7806 | 12.5% / 45 | - | - | - | - | - | - | 11.5% / 42 | - | - | - | - | - | - | - | - | - | - | 12.5% / 45 | 17.8% / 38 | 13.3% / 45 | 10.6% / 48 | 11.7% / 46 | 12.5% / 45 | 3.8% / 58 | 22.6% / 37 | 13.0% / 45 | 13.6% / 45 |
+| 2026-11-07 | PM | 10764 | 10.2% / 49 | - | - | - | - | - | - | 16.2% / 42 | 24.7% / 35 | 10.2% / 49 | 13.1% / 47 | 10.3% / 50 | 10.2% / 49 | 10.2% / 49 | 25.0% / 39 | 16.8% / 42 | 25.1% / 35 | 16.8% / 42 | 10.2% / 49 | 21.9% / 41 | 9.5% / 50 | 10.2% / 49 | 5.3% / 57 | - | - | - | - | - |
+| 2026-11-08 | AM | 3210 | 12.5% / 47 | - | - | - | - | - | - | 14.2% / 50 | - | - | - | - | - | - | - | - | - | - | 15.4% / 45 | 12.4% / 49 | 11.1% / 46 | 12.6% / 47 | 13.7% / 47 | 12.5% / 47 | 12.4% / 49 | 12.5% / 47 | 12.5% / 47 | 11.1% / 50 |
+| 2026-11-08 | PM | 7074 | 15.7% / 35 | - | - | - | - | - | - | 14.2% / 49 | 5.2% / 53 | 15.7% / 35 | 10.7% / 42 | 11.3% / 39 | 16.4% / 34 | 16.8% / 34 | 17.4% / 40 | 17.0% / 36 | 5.5% / 52 | 17.1% / 35 | 17.9% / 33 | 10.3% / 43 | 14.5% / 37 | 15.9% / 36 | 16.8% / 34 | - | - | - | - | - |
+| 2026-11-09 | AM | 5940 | 10.4% / 50 | - | - | - | - | - | - | 14.2% / 46 | - | - | - | - | - | - | - | - | - | - | 11.1% / 46 | 10.1% / 51 | 16.9% / 47 | 11.9% / 48 | 6.5% / 56 | 8.5% / 48 | 9.5% / 50 | 22.0% / 40 | 11.2% / 48 | 8.2% / 55 |
+| 2026-11-09 | PM | 12720 | 15.4% / 38 | 2.3% / 61 | 15.4% / 38 | 3.1% / 52 | 11.8% / 41 | 12.1% / 45 | 15.1% / 39 | 17.1% / 43 | 2.7% / 58 | 15.4% / 38 | 15.4% / 38 | 14.2% / 39 | 12.0% / 45 | 16.1% / 38 | 11.5% / 48 | 1.5% / 60 | 3.3% / 56 | 1.5% / 60 | 20.4% / 36 | 8.7% / 48 | 24.1% / 29 | 14.5% / 43 | 16.9% / 37 | - | - | - | - | - |
+| 2026-11-10 | AM | 7344 | 20.3% / 35 | 13.4% / 42 | 20.3% / 35 | 20.3% / 35 | 16.7% / 39 | 20.3% / 35 | 15.8% / 39 | 8.7% / 53 | - | - | - | - | - | - | - | - | - | - | 20.3% / 35 | 18.4% / 37 | 22.4% / 34 | 18.7% / 38 | 11.3% / 47 | 20.3% / 35 | 5.6% / 54 | 19.0% / 36 | 20.3% / 35 | 16.0% / 40 |
+| 2026-11-10 | PM | 13488 | 13.8% / 48 | 14.9% / 47 | 13.8% / 48 | 13.7% / 48 | 13.8% / 48 | 13.8% / 48 | 14.9% / 47 | 11.0% / 46 | 14.5% / 44 | 13.8% / 48 | 22.0% / 41 | 11.2% / 52 | 13.5% / 49 | 16.1% / 46 | 4.7% / 61 | 8.0% / 50 | 13.3% / 45 | 8.0% / 50 | 12.4% / 49 | 12.9% / 46 | 13.8% / 48 | 15.0% / 46 | 10.5% / 51 | - | - | - | - | - |
+| 2026-11-11 | AM | 11076 | 10.5% / 48 | 5.1% / 63 | 7.3% / 50 | 9.8% / 53 | 10.3% / 49 | 7.2% / 56 | 9.0% / 51 | 14.2% / 44 | - | - | - | - | - | - | - | - | - | - | 10.5% / 48 | 9.6% / 50 | 10.6% / 47 | 10.0% / 52 | 10.9% / 45 | 4.5% / 53 | 10.6% / 48 | 9.5% / 50 | 9.2% / 50 | 9.4% / 50 |
+| 2026-11-11 | PM | 9774 | 10.2% / 46 | 3.0% / 69 | 10.2% / 46 | 9.6% / 48 | 9.8% / 46 | 5.7% / 61 | 6.2% / 57 | 15.5% / 41 | 1.0% / 78 | 10.2% / 46 | 10.6% / 46 | 10.2% / 46 | 9.6% / 46 | 4.9% / 59 | 4.3% / 70 | 2.4% / 76 | 1.2% / 78 | 2.4% / 76 | 13.0% / 44 | 18.2% / 38 | 7.8% / 48 | 18.3% / 41 | 5.9% / 54 | - | - | - | - | - |
+| 2026-11-12 | AM | 6336 | 24.6% / 29 | 20.5% / 36 | 24.6% / 29 | 14.3% / 41 | 25.6% / 30 | 25.4% / 28 | 30.8% / 25 | 9.7% / 49 | - | - | - | - | - | - | - | - | - | - | 17.8% / 38 | 15.9% / 39 | 21.0% / 34 | 25.9% / 28 | 24.7% / 29 | 24.6% / 29 | 28.5% / 25 | 22.1% / 32 | 24.5% / 29 | 29.8% / 26 |
+| 2026-11-12 | PM | 11508 | 5.6% / 54 | 17.1% / 38 | 6.0% / 46 | 8.8% / 51 | 5.7% / 54 | 11.2% / 50 | 12.5% / 50 | 12.0% / 46 | 24.4% / 32 | 6.0% / 46 | 6.2% / 54 | 2.3% / 60 | 5.6% / 54 | 8.7% / 52 | 8.2% / 42 | 29.7% / 26 | 24.9% / 34 | 29.8% / 26 | 5.6% / 54 | 12.2% / 44 | 3.0% / 58 | 5.5% / 55 | 10.3% / 51 | - | - | - | - | - |
+| 2026-11-13 | AM | 5694 | 14.7% / 40 | 11.3% / 38 | 14.7% / 40 | 13.4% / 36 | 15.5% / 40 | 12.1% / 42 | 12.5% / 42 | 9.6% / 47 | - | - | - | - | - | - | - | - | - | - | 14.7% / 40 | 14.4% / 36 | 11.9% / 49 | 16.5% / 38 | 9.4% / 46 | 14.7% / 40 | 13.2% / 41 | 13.9% / 41 | 14.2% / 43 | 13.0% / 42 |
+| 2026-11-13 | PM | 14658 | 16.3% / 33 | 33.4% / 23 | 16.3% / 33 | 16.3% / 33 | 34.5% / 22 | 15.7% / 34 | 15.6% / 33 | 8.4% / 54 | 24.5% / 25 | 16.3% / 33 | 15.2% / 33 | 25.8% / 26 | 16.3% / 33 | 17.0% / 32 | 29.6% / 26 | 25.5% / 26 | 24.3% / 25 | 25.5% / 26 | 16.3% / 33 | 19.2% / 33 | 10.7% / 47 | 14.6% / 36 | 15.7% / 35 | - | - | - | - | - |
+| 2026-11-14 | PM | 16410 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 8.3% / 52 | 10.8% / 48 | 9.6% / 48 | 8.8% / 56 | 9.6% / 48 | 9.5% / 48 | 10.2% / 47 | 9.6% / 48 | 8.9% / 51 | 7.6% / 59 | 9.1% / 50 | 9.6% / 48 | 8.8% / 51 | 9.5% / 48 | 9.9% / 48 | 9.0% / 49 | - | - | - | - | - |
+| 2026-11-16 | AM | 6156 | 22.4% / 33 | 16.5% / 44 | 22.4% / 33 | 14.2% / 46 | 22.4% / 33 | 27.7% / 30 | 21.7% / 35 | 10.5% / 53 | - | - | - | - | - | - | - | - | - | - | 22.4% / 33 | 14.2% / 46 | 20.2% / 35 | 21.1% / 35 | 14.6% / 41 | 22.4% / 33 | 22.2% / 31 | 19.5% / 35 | 22.6% / 33 | 20.3% / 34 |
+| 2026-11-16 | PM | 12420 | 8.2% / 48 | 8.0% / 48 | 8.2% / 48 | 7.8% / 51 | 7.5% / 49 | 8.2% / 48 | 9.5% / 46 | 5.4% / 57 | 46.0% / 16 | 8.2% / 48 | 9.3% / 46 | 7.7% / 48 | 8.2% / 48 | 16.2% / 40 | 4.0% / 60 | 19.4% / 29 | 45.9% / 16 | 19.4% / 29 | 6.0% / 51 | 4.7% / 57 | 4.5% / 53 | 6.3% / 50 | 14.9% / 41 | - | - | - | - | - |
+| 2026-11-17 | AM | 6834 | 11.1% / 44 | 12.2% / 45 | 11.1% / 44 | 9.5% / 47 | 11.1% / 44 | 15.5% / 40 | 9.9% / 46 | 8.6% / 50 | - | - | - | - | - | - | - | - | - | - | 11.3% / 44 | 9.5% / 47 | 11.1% / 44 | 11.4% / 42 | 9.1% / 45 | 11.1% / 44 | 7.6% / 47 | 11.6% / 43 | 11.0% / 45 | 9.0% / 47 |
+| 2026-11-17 | PM | 13998 | 7.1% / 47 | 10.5% / 41 | 7.1% / 47 | 4.9% / 51 | 6.9% / 47 | 9.2% / 44 | 12.5% / 41 | 7.1% / 55 | 16.6% / 38 | 7.1% / 47 | 4.8% / 51 | 12.9% / 38 | 6.7% / 47 | 10.5% / 42 | 7.0% / 52 | 7.0% / 46 | 12.2% / 38 | 7.0% / 46 | 7.1% / 47 | 9.2% / 46 | 6.7% / 51 | 8.3% / 43 | 6.2% / 48 | - | - | - | - | - |
 

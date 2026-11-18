@@ -30,16 +30,16 @@ import nba_tier_history as T  # noqa: E402  the Tiers button rebuilt (ADP tiers,
 REP = M.REP
 OUT_MD = os.path.join(REP, "pod_replay.md")
 OUT_JSON = os.path.join(REP, "pod_replay.json")
-LISTS = ["a", "b", "c1", "c2", "c3", "c4", "c5", "d", "e", "f1", "f2", "f3", "f4", "f5", "bp", "f", "g", "fn", "d1", "d2", "p1", "p2"]
+LISTS = ["a", "b", "c1", "c2", "c3", "c4", "c5", "d", "e", "f1", "f2", "f3", "f4", "f5", "bp", "f", "g", "fn"] + ["d%d" % k for k in range(1, 6)] + ["p%d" % k for k in range(1, 6)]
 NAMES = {"a": "(a) my locked list", "b": "(b) the button's list", "d": "(d) ADP", "e": "(e) ETR (PM)",
          **{"c%d" % k: "(c%d) mine, T%d's moves undone" % (k, k) for k in range(1, 6)},
          **{"f%d" % k: "(f%d) mine (PM), T%d in ETR's order" % (k, k) for k in range(1, 6)},
          "bp": "(b') the button rebuilt here (PM)", "f": "(f) the button on ETR tiers (PM)", "g": "(g) ETR order, the button's T5 rule (PM)",
          "fn": "(f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM)",
-         **{"d%d" % k: "(d%d) mine, T%d in ADP's order" % (k, k) for k in (1, 2)},
-         **{"p%d" % k: "(p%d) mine (AM), T%d in our Proj's order" % (k, k) for k in (1, 2)}}
+         **{"d%d" % k: "(d%d) mine, T%d in ADP's order" % (k, k) for k in range(1, 6)},
+         **{"p%d" % k: "(p%d) mine (AM), T%d in our Proj's order" % (k, k) for k in range(1, 6)}}
 PAIRS = [("a", y) for y in LISTS[1:]] + [("g", "e"), ("bp", "f"), ("f", "e"), ("g", "f"), ("fn", "f"), ("fn", "e"),
-                                         ("f1", "d1"), ("f2", "d2"), ("p1", "d1"), ("p2", "d2")]   # T1/T2: ETR (PM) or Proj (AM) vs ADP
+                                         ] + [(x % k, "d%d" % k) for k in range(1, 6) for x in ("f%d", "p%d")]   # each tier: ETR (PM) or Proj (AM) vs ADP
 ETR_BUTTON = "2026-11-17"     # the PM button on ETR tiers from this night: which ETR version the PM should use
 ETR_PAIRS = [("f", "e"), ("g", "f"), ("g", "e"), ("fn", "f"), ("fn", "e")]
 META = os.path.join(M.NBA, "daily", "meta.json")
@@ -147,12 +147,12 @@ def lists_for(rec, w, extra=None):
         if "e" in L:
             for k, head in (extra or {}).items():
                 L[k] = finish(head)
-    # T1 and T2 head to head (both windows): one of my tiers in straight ADP order (d1, d2), and in the morning in our Proj's
+    # each tier head to head (both windows): one of my tiers in straight ADP order (d1, d2), and in the morning in our Proj's
     # order (p1, p2); that tier's places in my list, the rest of my list as it is. ETR's (PM) is f1, f2 above.
     mt = col(w + "_tier")
     if mt:
         proj_am = {p: next((num(rec[p].get(c)) for c in ("ours_am", "ours_raw") if num(rec[p].get(c)) is not None), None) for p in pool}
-        for k in (1, 2):
+        for k in range(1, 6):
             members = [p for p in mine if mt.get(p) == k]
             if len(members) < 2:
                 continue
@@ -380,7 +380,10 @@ def paired(nights, w, x, y, key, since=None):
         return sum(n["res"]["%s|%s" % (ww, x)][key] - n["res"]["%s|%s" % (ww, y)][key] for n, ww in flat) / tot
     v = fn(cells) if cells else None
     rng = M.boot_range(cells, fn) if v is not None else None
-    return {"nights": len(cells), "diff": v, "lo": rng[0] if rng else None, "hi": rng[1] if rng else None}
+    per = [fn([c]) for c in cells]                        # night by night: nights (x) came out ahead, behind, even
+    split = [sum(1 for d in per if d is not None and d > 1e-12), sum(1 for d in per if d is not None and d < -1e-12),
+             sum(1 for d in per if d is not None and abs(d) <= 1e-12)]
+    return {"nights": len(cells), "diff": v, "lo": rng[0] if rng else None, "hi": rng[1] if rng else None, "split": split}
 
 
 def pp(v, scale=100, spec="%+.2f"):
@@ -425,8 +428,11 @@ def build(nights):
     groups = collections.defaultdict(list)
     for rid, v in rd.items():
         if not rid.startswith("_") and isinstance(v, dict) and re.match(r"\d{4}-\d\d-\d\d$", v.get("since") or ""):
-            wd = v.get("windows") if isinstance(v.get("windows"), dict) else {}
-            groups[(wd.get("am") or v["since"], wd.get("pm") or v["since"])].append(rid)
+            wd = v.get("windows") if isinstance(v.get("windows"), dict) else None
+            if wd:                                           # windows listed: only those (a PM-only rule has no AM start)
+                groups[(wd.get("am") or "9999-12-31", wd.get("pm") or "9999-12-31")].append(rid)
+            else:
+                groups[(v["since"], v["since"])].append(rid)
     SR = []
     for (am, pm), rids in sorted(groups.items()):
         blk = {"since": {"am": am, "pm": pm}, "rules": sorted(rids), "paired": {}}
@@ -436,7 +442,7 @@ def build(nights):
                     r = paired(nights, w, x, y, k, since={"am": am, "pm": pm})
                     if r["nights"]:
                         blk["paired"].setdefault(w, {}).setdefault(pk(x, y), {})[k] = {
-                            "nights": r["nights"], **{f: None if r[f] is None else round(100 * r[f], 3) for f in ("diff", "lo", "hi")}}
+                            "nights": r["nights"], "split": r.get("split"), **{f: None if r[f] is None else round(100 * r[f], 3) for f in ("diff", "lo", "hi")}}
         SR.append(blk)
     js["since_rules"] = SR
     # the PM button on ETR tiers (from ETR_BUTTON): (f) minus (e), (g) minus (f), (g) minus (e), PM only
@@ -445,7 +451,7 @@ def build(nights):
         for k, _ in keys:
             r = paired(nights, "pm", x, y, k, since={"am": "9999-12-31", "pm": ETR_BUTTON})
             EB["pairs"].setdefault(pk(x, y), {})[k] = {
-                "nights": r["nights"], **{f: None if r[f] is None else round(100 * r[f], 3) for f in ("diff", "lo", "hi")}}
+                "nights": r["nights"], "split": r.get("split"), **{f: None if r[f] is None else round(100 * r[f], 3) for f in ("diff", "lo", "hi")}}
     EB["f_vs_board"] = {x["date"]: x["f_vs_board"] for x in nights if x.get("f_vs_board") is not None}
     nd = {x["date"]: NODROP.get(x["date"], []) for x in nights if "%s|fn" % "pm" in x["res"]}
     EB["nodrop_touched"] = {"players": sum(len(v) for v in nd.values()), "nights": sum(1 for v in nd.values() if v), "of": len(nd),
@@ -468,7 +474,7 @@ def build(nights):
     js["paired"] = {}
     for (w, x, y, k), v in P.items():
         js["paired"].setdefault(w, {}).setdefault(pk(x, y), {})[k] = {
-            "nights": v["nights"], **{f: None if v[f] is None else round(100 * v[f], 3) for f in ("diff", "lo", "hi")}}
+            "nights": v["nights"], "split": v.get("split"), **{f: None if v[f] is None else round(100 * v[f], 3) for f in ("diff", "lo", "hi")}}
     # fidelity: my real round-6 pick's place among (a)'s top available
     r6 = [r for x in nights for r in x["r6"]]
     pos = collections.Counter(r["pos"] if r["pos"] is not None and r["pos"] <= R6 else ("7-15" if r["pos"] else "not in top 15") for r in r6)
@@ -523,9 +529,10 @@ def build(nights):
            "projections, highest first (ETR's own rank isn't kept). 11/15 had no locks on file and is out.",
            "- (f) is my PM list with one of my tiers (my tier lines at the PM lock, on file from 10/23) in ETR's order: that tier's "
            "places in my list, filled by its players highest ETR projection first. (a) minus (f) below zero: ETR's order beat mine there.",
-           "- (d1), (d2): my list with my T1 (or T2) in straight ADP order; (p1), (p2), AM: in our morning Proj's order (ours_am, "
-           "ours_raw before 10/28). With (f1), (f2) (ETR's order, PM) they give the head-to-head pairs (f1) minus (d1) and (p1) minus "
-           "(d1), and the same for T2: right of zero, the projection's order beat ADP's. My tiers at the lock (AM from 10/27).",
+           "- (d1)-(d5): my list with one of my tiers in straight ADP order; (p1)-(p5), AM: in our morning Proj's order (ours_am, "
+           "ours_raw before 10/28). With (f1)-(f5) (ETR's order, PM) they give each tier's head-to-head pairs, (fk) minus (dk) PM and "
+           "(pk) minus (dk) AM: right of zero, the projection's order beat ADP's. My tiers at the lock (AM from 10/27). Every pair "
+           "also carries its split: nights the first came out ahead, behind, even (top-10% and top-1% each).",
            "- (b'), (f) and (g), PM: the Tiers button rebuilt here from the PM lock's inputs (scripts/nba_tier_history.py, the 11/13 "
            "rules on every night; it matches the board's own PM order at 26-36 of the top 36 places since 11/13). (b') on ADP tiers as "
            "the board; (f) the same rules with the tiers starting from ETR's ladder and moving one tier toward ADP's at two or more "
@@ -567,7 +574,8 @@ def build(nights):
                "(a) minus each list, both windows, top-10% points (80% range), from each rule date's first night per window (AM and PM "
                "apart in pod_replay.json). Season is above.", ""]
         for blk in SR:
-            md += ["### Since %s (AM) / %s (PM): %s" % (blk["since"]["am"], blk["since"]["pm"], ", ".join(blk["rules"])), "",
+            sd = lambda d: "not in the" if d.startswith("9999") else "since " + d
+            md += ["### %s AM / %s PM: %s" % (sd(blk["since"]["am"]), sd(blk["since"]["pm"]), ", ".join(blk["rules"])), "",
                    "| (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |", "|---|---|---|---|---|---|---|"]
             for w in ("both",):                                  # per window: pod_replay.json
                 for y, v in (blk["paired"].get(w) or {}).items():
@@ -680,12 +688,12 @@ def summary(season, P, pos, r6, mine, beat, MT=None, EB=None):
         out.append("- **ETR's T4 PRICEY kept in T4 (PM, season)**, top-10% points (80% range), top-1% points (80% range): " + "; ".join(
             "%s %s (%s to %s), %s (%s to %s)" % (lab, pp(r["diff"]), pp(r["lo"]), pp(r["hi"]), pp(r1["diff"]), pp(r1["lo"]), pp(r1["hi"]))
             for lab, r, r1 in nd) + ".")
-    hh = [(lab, P.get((w, x, y, "top10")), P.get((w, x, y, "top1"))) for lab, w, x, y in (
-        ("T1 PM, ETR minus ADP", "pm", "f1", "d1"), ("T1 AM, Proj minus ADP", "am", "p1", "d1"),
-        ("T2 PM, ETR minus ADP", "pm", "f2", "d2"), ("T2 AM, Proj minus ADP", "am", "p2", "d2"))]
+    hh = [(lab, P.get((w, x, y, "top10")), P.get((w, x, y, "top1"))) for lab, w, x, y in [
+        ("T%d %s, %s minus ADP" % (k, w.upper(), "ETR" if w == "pm" else "Proj"), w, ("f%d" if w == "pm" else "p%d") % k, "d%d" % k)
+        for k in range(1, 6) for w in ("pm", "am")]]
     hh = [(lab, r, r1) for lab, r, r1 in hh if r and r["diff"] is not None]
     if hh:
-        out.append("- **T1 and T2 head to head** (your tier in each order, the rest of your list as it is; top-10% points, 80% range, "
+        out.append("- **Each tier head to head** (your tier in each order, the rest of your list as it is; top-10% points, 80% range, "
                    "then top-1% points): " + "; ".join("%s %s (%s to %s), %s, %d nights" % (lab, pp(r["diff"]), pp(r["lo"]), pp(r["hi"]),
                                                                                               pp(r1["diff"]), r["nights"]) for lab, r, r1 in hh) + ".")
     ft = [(k, P.get(("pm", "a", "f%d" % k, "top10"))) for k in range(1, 6)]
