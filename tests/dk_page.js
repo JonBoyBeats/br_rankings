@@ -609,7 +609,25 @@ function audit(name, L, o) {
   await pg.evaluate(() => { document.getElementById("cutStatus").textContent = ""; });
   await pg.click("#pfRun");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
-  check("start from: Max ROI fills every contest again (fresh nights, so its picks can differ)", await pg.evaluate(sz => Object.keys(sz).every(c => (PF[c] || []).length >= 1 && PF[c].length <= sz[c]), size));
+  check("start from: the same nights, so Max ROI again repeats the first fill's picks", JSON.stringify(await pg.evaluate(() => PF)) === JSON.stringify(pf), JSON.stringify(await pg.evaluate(() => PF)));
+  // Undo fill: the set the last fill replaced comes back (here the Max coverage one)
+  const covPF = await pg.evaluate(() => JSON.parse(localStorage.getItem("dkcbb-pf-prev:" + slate.draft_group_id)));
+  await pg.click("#pfUndo");
+  check("undo fill: the replaced portfolios are back, the button spent", JSON.stringify(await pg.evaluate(() => PF)) === JSON.stringify(covPF) &&
+        await pg.$eval("#pfUndo", b => b.disabled) && /Undone/.test(await pg.textContent("#cutStatus")), JSON.stringify(covPF));
+  // same nights: one lineup scores the same every night whatever pool it's simulated in; New nights changes the seed
+  const same = await pg.evaluate(() => {
+    const c = slate.contests.find(x => String(x.id) === "197791874"), all = finalIdx().map(i => BANK.lineups[i]);
+    const a = DKSim.simulate(nightsCtx(c), all.slice(0, 30), fieldOf().field, fieldDoc.z, c, 5, 300);
+    const b = DKSim.simulate(nightsCtx(c), [all[0]].concat(all.slice(40, 60)), fieldOf().field, fieldDoc.z, c, 5, 300);
+    let eq = true; for (let s2 = 0; s2 < 300; s2++) if (a.cs[s2] !== b.cs[s2] || a.fa[s2] !== b.fa[s2]) eq = false;
+    return eq;
+  });
+  check("same nights: a lineup's every night is the same in any pool (seeded, players in a fixed order)", same);
+  const seed0 = await pg.evaluate(() => nightsSeed());
+  await pg.click("#pfNights");
+  check("new nights: a new seed for the slate, said so", await pg.evaluate(s0 => nightsSeed() !== s0, seed0) && /New nights for this slate/.test(await pg.textContent("#cutStatus")));
+  await pg.evaluate(s0 => { state.nightsSeed = s0; save(); }, seed0);
   await pg.evaluate(p => { PF = p; pfSave(); renderEntries(); }, pf);     // the rest of the run works from the first fill
   check("portfolios: one per contest, from the final pool", Object.keys(size).every(c => pf[c] && pf[c].length >= 1 && pf[c].length <= size[c] && pf[c].every(i => cut.keep.includes(i)) &&
         new Set(pf[c]).size === pf[c].length), JSON.stringify(pf));

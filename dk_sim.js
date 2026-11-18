@@ -52,6 +52,17 @@
   // ours over the graded nights in a salary band, Proj there is w x ours + (1 - w) x DraftKings' average.
   // ... and a Questionable player at that x gate.questionable.factor (measured by dk_eval.py gate: actual / projected
   // over the graded Questionable player-nights; 1 until there are enough)
+  // A seeded random generator (mulberry32): the same seed, the same draws
+  function seeded(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      var t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
   function gatedProj(r, gate) {
     var b = gate && (gate.bands || []).find(function (x) { return x.open && r.salary >= x.lo && r.salary <= x.hi; });
     var p = !b || !r.dk_avg ? r.fp_dk : b.w * r.fp_dk + (1 - b.w) * r.dk_avg;
@@ -334,6 +345,9 @@
       }
       return ix[id];
     }
+    // every player on the slate first, in its fixed order: each night then takes the same draws for a player whatever
+    // lineups are in the pool, so a seeded ctx.random gives the same nights to any pool (the DK page's fills, 2026-11-18)
+    ctx.rows.forEach(function (r) { idx(r.id); });
     var candIx = cand.map(function (L) { return L.ids.map(idx); });
     var fieldIx = field.map(function (L) { return L.map(idx); });
     var P = mean.length, K = cand.length, size = contest.size || 0, paid = payTable(contest).length - 1;
@@ -810,7 +824,7 @@
   }
 
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
-           gatedProj: gatedProj, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
+           gatedProj: gatedProj, seeded: seeded, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, poolDraw: poolDraw, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
            CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,

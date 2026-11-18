@@ -308,6 +308,8 @@
     <label class="field" title="A starting portfolio for every contest you're entering, to edit by hand: Max ROI adds by expected value, Max coverage by the rise in nights one of yours reaches the top 1%, Balanced weighs the two equally"><span class="field-label">Start from</span><select id="pfObj" style="width:auto">
       <option value="roi">Max ROI</option><option value="balanced">Balanced</option><option value="cover">Max coverage</option></select></label>
     <button type="button" class="primary" id="pfRun">Fill all contests</button>
+    <button type="button" id="pfUndo" disabled title="Put back the portfolios the last fill replaced">Undo fill</button>
+    <button type="button" id="pfNights" title="Draw new simulated nights for this slate (the fills, the builder and the scoreboard all use the slate's nights)">New nights</button>
     <button type="button" id="pfExport" disabled>Export DK entries</button>
     <button type="button" id="bankSave">Save build</button>
     <button type="button" id="bankClear">Clear bank</button>
@@ -560,6 +562,15 @@ function ctx() {
   return { rows: rows, proj: proj, own: own, state: state, solver: solver, random: Math.random,
            progress: function (msg) { $("buildStatus").textContent = msg; return new Promise(function (r) { setTimeout(r, 0); }); } };
 }
+
+/* The slate's nights: one seed per slate (kept with its settings, in the build as nights_seed), mixed with each contest's
+   id, drives the sim for the fills, the builder and the idea scoreboard, so Max ROI, Balanced and Max coverage see the
+   same nights and a refill repeats its picks; New nights draws a new seed. (The cut keeps fresh nights each round.) */
+function nightsSeed() {
+  if (state.nightsSeed == null) { state.nightsSeed = Math.floor(Math.random() * 2147483647); save(); }
+  return state.nightsSeed;
+}
+function nightsCtx(c) { return Object.assign(ctx(), { random: DKSim.seeded((nightsSeed() ^ Math.imul(+c.id || 0, 2654435761)) >>> 0) }); }
 
 // the draw's settings (section 1): every lineup drawn obeys them
 function drawRules() {
@@ -859,6 +870,7 @@ function bankLoadState() {
   CUT = store(cutKey());     // the last cut, kept across a refresh while the bank it was made on is unchanged
   if (!CUT || !CUT.keep || CUT.bankN !== BANK.lineups.length) CUT = null;
   PF = store("dkcbb-pf:" + slate.draft_group_id) || {}; ENTRIES = store("dkcbb-entries:" + slate.draft_group_id) || null;
+  $("pfUndo").disabled = !store("dkcbb-pf-prev:" + slate.draft_group_id);
 }
 function cutKey() { return "dkcbb-cut:" + slate.draft_group_id; }
 function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else localStorage.removeItem(cutKey()); } catch (e) {} }
@@ -1077,7 +1089,7 @@ function ideaBoard(cs, ns, S) {
   var ret = new Float64Array(K), fees = 0, w = 0, t1 = new Float64Array(K), t10 = new Float64Array(K), cash = new Float64Array(K);
   cs.forEach(function (c) {
     var n = Math.min(ns[String(c.id)], c.max_per_user || 1), fee = c.entry_fee || 0;
-    var sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, S), st = DKSim.aloneStats(sim, c);
+    var sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, n, S), st = DKSim.aloneStats(sim, c);
     for (var k = 0; k < K; k++) {
       ret[k] += n * (st.odd[k] + st.even[k]) / 2; t1[k] += n * st.top1[k]; t10[k] += n * st.top10[k]; cash[k] += n * st.cash[k];
     }
@@ -1125,7 +1137,7 @@ async function pickPortfolios(into, objective) {
     var c = cs[i], n = nOf(c);
     var idx = all.filter(function (bi) { return !taken[bi]; }), pool = idx.map(function (bi) { return BANK.lineups[bi]; });
     $("cutStatus").textContent = "Picking " + n + " for " + c.name + " from " + pool.length + " left…"; await tick();
-    var sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, S);
+    var sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, n, S);
     var pairsBefore = Object.assign({}, pairCount);       // the night's pair counts before this contest (for the trials below)
     var po = Object.assign(pickRules(n), { objective: objective || "roi" }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(ctx(), po, pool, sim, c, n);
     into[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
@@ -1145,7 +1157,7 @@ async function pickPortfolios(into, objective) {
   if (into === PF) { pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES; }
   var night = DKSim.topCore(ctx(), Object.keys(into).reduce(function (a, k) { return a.concat(into[k].map(function (bi) { return BANK.lineups[bi]; })); }, []));
   return (night ? "Largest core across the night's " + night.of + " entries: " + coreName(night.key) + " in " + night.n + " (" + Math.round(100 * night.share) + "%). " : "") +
-    "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + ", each lineup in one contest only, the largest stake first: " +
+    "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + " on the slate's nights (#" + nightsSeed() + "), each lineup in one contest only, the largest stake first: " +
     msgs.join("; ") + ". Review any one below." +
     (ENTRIES ? "" : " Load the entries file to export them.");
 }
@@ -1198,7 +1210,7 @@ async function saveBank() {
   Object.keys(BANK.tagRules).forEach(function (t) { (BANK.tagRules[t].conds || []).forEach(function (r) { if (!rs.some(function (x) { return x.label === r.label; })) rs.push(r); }); });
   var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(), rule_set: rs,
               pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, groups: BANK.groups || {}, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null,
-              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, rule_log: BANK.ruleLog || [], idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate };
+              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, nights_seed: nightsSeed(), rule_log: BANK.ruleLog || [], idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate };
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
   a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
@@ -1211,7 +1223,7 @@ function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
 function shortName(name) { var p = String(name).split(" ").filter(function (x) { return !/^(Jr\.?|Sr\.?|II|III|IV|V)$/.test(x); }); return p[p.length - 1] || name; }
 // the builder on a given pool and contest (picks: indices to start from; review: the contest being reviewed)
 function bpLoad(lineups, c, o, S, extra) {
-  var sim = DKSim.simulate(ctx(), lineups, fieldOf().field, fieldDoc.z, c, o.n, S);
+  var sim = DKSim.simulate(nightsCtx(c), lineups, fieldOf().field, fieldDoc.z, c, o.n, S);
   var b = DKSim.builder(sim, c), by = {};
   rows.forEach(function (r) { by[r.id] = r; });
   BP = Object.assign({ pool: lineups, sim: sim, b: b, contest: c, o: o, nights: S, sort: "value", dir: -1,
@@ -1518,9 +1530,25 @@ $("cutRun").addEventListener("click", function () {
 });
 $("pfRun").addEventListener("click", function () {
   var started = Object.keys(PF).filter(function (k) { return (PF[k] || []).length; }).length, obj = $("pfObj").value;
-  if (started && !confirm("Replace your portfolios in " + started + " contest" + (started === 1 ? "" : "s") + " with the " + $("pfObj").selectedOptions[0].textContent + " start?")) return;
+  if (started && !confirm("Replace your portfolios in " + started + " contest" + (started === 1 ? "" : "s") + " with the " + $("pfObj").selectedOptions[0].textContent + " start? (Undo fill puts them back.)")) return;
+  if (started) { store(undoKey(), PF); $("pfUndo").disabled = false; }   // the replaced set, for Undo fill
   PF = {};
   pickPortfolios(null, obj).then(function (m) { $("cutStatus").textContent = m; }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
+});
+function undoKey() { return "dkcbb-pf-prev:" + slate.draft_group_id; }
+$("pfUndo").addEventListener("click", function () {
+  var prev = store(undoKey());
+  if (!prev) return;
+  PF = prev; pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
+  try { localStorage.removeItem(undoKey()); } catch (e) {}
+  $("pfUndo").disabled = true;
+  if (BP && BP.review) review(BP.review);
+  $("cutStatus").textContent = "Undone: your portfolios before the last fill are back.";
+});
+$("pfNights").addEventListener("click", function () {
+  state.nightsSeed = Math.floor(Math.random() * 2147483647); save();
+  if (CUT) { delete CUT.auto; cutSave(); }        // the benchmark is redrawn on the new nights at the next Save build
+  $("cutStatus").textContent = "New nights for this slate (#" + state.nightsSeed + "): fills, the builder and the scoreboard use them from now on.";
 });
 $("pfExport").addEventListener("click", function () { $("cutStatus").textContent = exportEntries(); });
 $("bankSave").addEventListener("click", saveBank);
