@@ -432,6 +432,22 @@ function audit(name, L, o) {
   check("bank storage: 12,000 lineups with long idea names save", rt.ok, JSON.stringify(rt));
   check("bank storage: they come back exactly", rt.same, JSON.stringify(rt));
   check("bank storage: a failed save warns on the page, and the warning clears once saved", rt.warned && rt.after, JSON.stringify(rt));
+  // Max share in bank: over two draws no unlocked player passes the share of the whole bank; recorded with the idea
+  await clearRules(); await emptyBank(); await set(base);
+  const fr = (await draw(20)).L, fq = {};
+  fr.forEach(l => l.ids.forEach(id => fq[id] = (fq[id] || 0) + 1));
+  const hot2 = Object.keys(fq).sort((a, b) => fq[b] - fq[a])[0];
+  await emptyBank();
+  await pg.fill("#bankMax", "25");
+  await draw(20); const second = await draw(20);
+  const bankShare = await pg.evaluate(() => { const c = {}; BANK.lineups.forEach(L => L.ids.forEach(id => { if (!state.lock[id]) c[id] = (c[id] || 0) + 1; }));
+    return { n: BANK.lineups.length, max: Math.max(...Object.values(c)), top: Object.keys(c).sort((a, b) => c[b] - c[a])[0] }; });
+  check(`max share in bank: ${P[hot2].name} drawn ${fq[hot2]} of 20 freely; at 25% no one passes a quarter of the bank`,
+        bankShare.n >= 30 && bankShare.max <= Math.floor(0.25 * bankShare.n + 1e-9) + 1, JSON.stringify(bankShare) + " " + second.msg);
+  check("max share in bank: the status says who is at it", /Max share in bank 25%/.test(second.msg), second.msg);
+  check("max share in bank: recorded with the idea", await pg.evaluate(() => Object.values(BANK.tagRules).some(t => t.bankMax === 25)));
+  await pg.fill("#bankMax", "");
+  await emptyBank();
   // 3. if 2+ from team then 1+ from its opponent
   await clearRules();
   await addRule("ifteam", async () => { await pg.selectOption("#rtTeam", t2.team); await pg.fill("#rtN", "2"); await pg.fill("#rtM", "1"); });

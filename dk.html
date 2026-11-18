@@ -276,6 +276,7 @@
   </div>
   <div class="opts">
     <label class="field"><span class="field-label">Lineups to draw</span><input class="num" id="bankN" type="number" min="10" max="1000" step="10" value="100"></label>
+    <label class="field" title="A safety net, off when blank: no unlocked player in more than this share of the whole bank (the lineups already banked and this draw); a draw that would pass it drops his extra lineups and draws replacements without him"><span class="field-label">Max share in bank %</span><input class="num" id="bankMax" type="number" min="10" max="100" step="5" placeholder="off"></label>
     <button type="button" class="primary" id="bankDraw">Draw &amp; bank</button>
     <span class="note" id="tagNow" style="align-self:center;margin:0"></span>
   </div>
@@ -885,7 +886,8 @@ function bankAdd(lineups, tag) {
     seen[key] = BANK.lineups.length; BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice() }); BANK.tags.push([tag]); added++;
   });
   if (lineups.length) BANK.tagRules[tag] = Object.assign(drawRules(), { z: undefined, lock: Object.keys(state.lock), excl: Object.keys(state.excl),
-                                                         floor: Object.assign({}, state.floor), cap: Object.assign({}, state.cap) });
+                                                         floor: Object.assign({}, state.floor), cap: Object.assign({}, state.cap),
+                                                         bankMax: +$("bankMax").value || null });
   CUT = null; cutSave(); PF = {}; pfSave(); bankSaveState(); renderBank();
   return added;
 }
@@ -1418,12 +1420,23 @@ async function drawBank(cx, o, n) {
   var res = await DKSim.pool(cx, o, n), L = res.lineups.slice(), N = L.length;
   var live = function (m) { return Object.keys(m || {}).filter(function (id) { var r = byId(id); return r && r.status !== "Out" && !state.excl[id]; }); };
   var mins = live(state.floor), maxs = live(state.cap).filter(function (id) { return !state.lock[id]; });
+  // Max share in bank: every unlocked player in at most that share of the bank once this draw joins it
+  var gb = +$("bankMax").value || 0, inBank = {}, B = BANK.lineups.length, global = [];
+  if (gb) {
+    BANK.lineups.forEach(function (x) { x.ids.forEach(function (id) { inBank[id] = (inBank[id] || 0) + 1; }); });
+    global = rows.filter(function (r) { return r.status !== "Out" && !state.excl[r.id] && !state.lock[r.id] && maxs.indexOf(r.id) < 0; }).map(function (r) { return r.id; });
+    maxs = maxs.concat(global);
+  }
   if (!N || (!mins.length && !maxs.length)) return res;
   var key = function (x) { return x.ids.slice().sort().join(","); }, has = function (x, id) { return x.ids.indexOf(id) >= 0; };
   var cnt = function (id) { return L.filter(function (x) { return has(x, id); }).length; };
   var need = {}, cap = {};
   mins.forEach(function (id) { need[id] = Math.ceil(+state.floor[id] / 100 * N - 1e-9); });
-  maxs.forEach(function (id) { cap[id] = Math.floor(+state.cap[id] / 100 * N + 1e-9); });
+  maxs.forEach(function (id) {
+    var c = state.cap[id] != null && state.cap[id] !== "" ? Math.floor(+state.cap[id] / 100 * N + 1e-9) : Infinity;
+    if (gb) c = Math.min(c, Math.max(0, Math.floor(gb / 100 * (B + N) + 1e-9) - (inBank[id] || 0)));
+    cap[id] = c;
+  });
   mins.forEach(function (id) { if (cap[id] != null) need[id] = Math.min(need[id], cap[id]); });
   var needed = function (x) { return mins.some(function (id) { return has(x, id) && cnt(id) <= need[id]; }); };
   var drop = function (ok) {        // the last lineup passing ok that no Min player needs, else the last passing ok
@@ -1452,8 +1465,11 @@ async function drawBank(cx, o, n) {
     }
   }
   res.lineups = L;
-  res.expo = " Min/Max %: " + mins.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at least " + need[id] + ")"; })
-    .concat(maxs.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at most " + cap[id] + ")"; })).join("; ") + ".";
+  var listed = maxs.filter(function (id) { return global.indexOf(id) < 0; });
+  var atBank = global.filter(function (id) { return cnt(id) >= cap[id]; });
+  res.expo = (mins.length || listed.length ? " Min/Max %: " + mins.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at least " + need[id] + ")"; })
+    .concat(listed.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at most " + cap[id] + ")"; })).join("; ") + "." : "") +
+    (gb ? " Max share in bank " + gb + "%: " + (atBank.length ? atBank.map(function (id) { return byId(id).name; }).join(", ") + " at it" : "no one at it") + "." : "");
   return res;
 }
 $("bankDraw").addEventListener("click", function () {
