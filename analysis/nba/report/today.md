@@ -8,7 +8,7 @@
 
 ## Front page
 
-Last night's main slate had 5 games, 1 of them blowouts (UTA by 25 over LAC). The biggest nights against ETR's number among drafted players: Quentin Grimes 33 points over; Ausar Thompson 23 points over; Naz Reid 20 points over. Your 99 teams (30 drafted in the morning, 69 in the afternoon) had a median finish in the top 37%; 12 made the top 10% and 0 the top 1%, and 26 cashed. They cost $457 in entries and won $261. Today: Wed Main, lock 3:52 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
+Tuesday's five games had one blowout, Utah by 25 over the Clippers, and late news took Portland out of both halves: Deni Avdija, Questionable at your 2:36pm PM lock and still in ETR's 3:50pm upload at 48.2, sat. The nights that broke it open came from deep in the draft and the middle: Quentin Grimes (58.7 on 10-14 from three), Brice Sensabaugh (61.7 in 35 minutes of the rout), Ausar Thompson (12 assists and 5 stocks for 55.8) and Naz Reid (54.2 on 42 minutes); Rudy Gobert's 4.8 in foul trouble sank his holders. Your 99 teams (30 drafted in the morning, 69 in the afternoon) had a median finish in the top 37%; 12 made the top 10% and none the top 1%, and 26 cashed, $261 back on $457. It was the first night of the afternoon button on ETR's ladder, and where your board and ETR's order split a close call, yours was right 56% of the time (season 48%), and 59% against ADP. The morning was the strong half again, 70% right against ADP on its close calls (season 56%), with the Beringer and Sensabaugh raises paying. Of the afternoon's biggest calls against ETR, 3 were right and 5 wrong, and the wrong ones were mostly fades (Reid, Bamba, Miller). Today: Wednesday's main (lock 3:52pm PT) and late slates, the second night on ETR's tiers.
 
 ## What decided the night, and where you stood
 
@@ -24,19 +24,19 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 **Bets.**
 
-- **Ayo Dosunmu** (T3): your 39% against the field's 17%; why: the button's order. At the close: ETR 41.2 to 39.9, ADP 24.0 to 23.1: mixed. Result: Over by 8 (41.3 vs ETR 32.9): 30 pts on 11-19 FG, 7-11 3s, 39 min (usual 33); holders 1.7 times the field at the top 10%. **Sound and won.**
-- **John Collins** (T5): your 22% against the field's 1%; why: a news judgment. At the close: the close didn't move. Result: Under by 6 (18.2 vs ETR 24.4): 1 reb (about 5 usual for his minutes); holders 0.0 times the field at the top 10%. **Shaky and won.**
-- **Jaden McDaniels** (T2): your 37% against the field's 17%; why: VALUE (the button had him a tier up on the projection). At the close: the close didn't move. Result: Over by 10 (44.0 vs ETR 33.7): 3 stl + 1 blk, 22 pts on 10-16 FG, 2-5 3s; holders 1.4 times the field at the top 10%. **Sound and won.**
-- **Jrue Holiday** (T5): your 21% against the field's 2%; why: a news judgment. At the close: the close didn't move. Result: Over by 20 (45.0 vs ETR 24.8): 23 pts on 7-19 FG, 5-9 3s, 2 stl + 1 blk, 31 min (usual 26); holders 2.0 times the field at the top 10%. **Sound and won.**
-- **Darius Garland** (T2): your 33% against the field's 17%; why: the button's order. At the close: the close didn't move. Result: In line (39.1 vs ETR 39.3): ETR had him above his usual (39 vs 34); holders 1.1 times the field at the top 10%. **Shaky and won.**
+- **Ayo Dosunmu** (T3): your 39% against the field's 17%; why: the button's order. At the close: ETR 41.2 to 39.9, ADP 24.0 to 23.1: mixed. Result: Over: 7-11 from three for 30 in 39 minutes, 5 fouls; holders 1.7 times the field at the top 10%. **Sound and won.**
+- **John Collins** (T5): your 22% against the field's 1%; why: a news judgment. At the close: the close didn't move. Result: Under: 11 points and 1 rebound in 23 minutes; holders 0.0 times the field at the top 10%. **Shaky and won.**
+- **Jaden McDaniels** (T2): your 37% against the field's 17%; why: VALUE (the button had him a tier up on the projection). At the close: the close didn't move. Result: Over: 22 on 10-16 with 4 stocks; holders 1.4 times the field at the top 10%. **Sound and won.**
+- **Jrue Holiday** (T5): your 21% against the field's 2%; why: a news judgment. At the close: the close didn't move. Result: Over: 23 with 5 threes and 3 stocks on 31 minutes (usual 26); holders 2.0 times the field at the top 10%. **Sound and won.**
+- **Darius Garland** (T2): your 33% against the field's 17%; why: the button's order. At the close: the close didn't move. Result: In line: 20 and 7, 8-8 at the line, on 30 minutes of a 25-point loss; holders 1.1 times the field at the top 10%. **Shaky and won.**
 
 **Fades (T1-T3).**
 
-- **Immanuel Quickley** (T3): your 2% against the field's 17%; why: PRICEY. At the close: ETR 38.9 to 36.7: toward you. Result: In line (24.7 vs ETR 30.6): no steals or blocks; holders 0.4 times the field at the top 10%. **Sound and won.**
-- **Stephon Castle** (T3): your 8% against the field's 17%; why: a news judgment. At the close: the close didn't move. Result: Under by 12 (19.9 vs ETR 32.1): 10 pts on 3-11 FG, 2-5 3s, 2 reb (about 6 usual for his minutes), no steals or blocks; holders 0.2 times the field at the top 10%. **Sound and won.**
-- **Ausar Thompson** (T2): your 8% against the field's 17%; why: a news judgment. At the close: ETR 43.1 to 40.0: toward you. Result: Over by 23 (55.8 vs ETR 32.7): 12 ast (about 4 usual for his minutes), 5 stl + 0 blk; holders 2.1 times the field at the top 10%. **Sound and lost.**
-- **Victor Wembanyama** (T1): your 9% against the field's 17%; why: the button's order. At the close: the close didn't move. Result: In line (55.6 vs ETR 61.0): 1 stl + 1 blk; holders 1.1 times the field at the top 10%. **Sound and lost.**
-- **Darryn Peterson** (T2): your 10% against the field's 17%; why: a news judgment. At the close: the close didn't move. Result: Under by 14 (22.0 vs ETR 36.0): 13 pts on 3-10 FG, 2-4 3s; holders 0.4 times the field at the top 10%. **Sound and won.**
+- **Immanuel Quickley** (T3): your 2% against the field's 17%; why: PRICEY. At the close: ETR 38.9 to 36.7: toward you. Result: In line: 14 and 7 on 6-11, no stocks and 1 rebound; holders 0.4 times the field at the top 10%. **Sound and won.**
+- **Stephon Castle** (T3): your 8% against the field's 17%; why: a news judgment. At the close: the close didn't move. Result: Under: 3-11 for 10, no stocks, on his usual minutes; holders 0.2 times the field at the top 10%. **Sound and won.**
+- **Ausar Thompson** (T2): your 8% against the field's 17%; why: a news judgment. At the close: ETR 43.1 to 40.0: toward you. Result: Over: 12 assists and 5 stocks for 55.8 on 29 minutes; holders 2.1 times the field at the top 10%. **Sound and lost.**
+- **Victor Wembanyama** (T1): your 9% against the field's 17%; why: the button's order. At the close: the close didn't move. Result: In line: 25 and 18 on 34 minutes, but 1-8 from three and 2 stocks in a 12-point loss; holders 1.1 times the field at the top 10%. **Sound and lost.**
+- **Darryn Peterson** (T2): your 10% against the field's 17%; why: a news judgment. At the close: the close didn't move. Result: Under: cold 3-10 for 13 in 31 minutes; holders 0.4 times the field at the top 10%. **Sound and won.**
 
 *Sound: the close moved toward your side after your lock (ETR's final, the late ADP); shaky: away. Won: holders beat the field's top-10% rate (bets) or didn't (fades). Players ruled out after the lock are left out.*
 
@@ -48,7 +48,7 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 **Player recap**, in the button's order.
 
-- **Doncic**: Under by 8 (54.7 vs ETR 62.5): 42 min (usual 36).
+- **Doncic**: Under: 36 on 13-34 with 5 turnovers and 5 fouls, despite 42 minutes.
 
 **Contest view.** In your afternoon window the top-10% teams held Victor Wembanyama on 18% against your 12%.
 
@@ -68,14 +68,14 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 **Player recap**, in the button's order.
 
-- **Barnes**: Under by 8 (33.8 vs ETR 41.5): 2 ast (about 6 usual for his minutes), 4 reb (about 8 usual for his minutes).
-- **Towns**: Over by 6 (48.2 vs ETR 41.7): 8 ast (about 4 usual for his minutes), 16 pts on 7-9 FG, 1-2 3s.
+- **Barnes**: Under: played through the Questionable tag, 20 points but 4 rebounds and 2 assists.
+- **Towns**: Over: 16-16-8 on 7-9, the boards and assists doing the work.
 - **Avdija**: scratched; swaps went to Shannon Jr. (560 teams, 18 points) and Holiday (500 teams, 45 points).
-- **Brunson**: Over by 6 (45.5 vs ETR 39.2): 31 pts on 10-22 FG, 4-11 3s.
-- **George**: Over by 15 (52.9 vs ETR 38.1): 30 pts on 10-17 FG, 4-8 3s, 11 ast (about 7 usual for his minutes).
-- **Ball**: Under by 7 (29.8 vs ETR 36.9): 2 ast (about 7 usual for his minutes), 9 reb (about 5 usual for his minutes), 18 pts on 7-17 FG, 3-8 3s.
-- **Peterson**: Under by 14 (22.0 vs ETR 36.0): 13 pts on 3-10 FG, 2-4 3s.
-- **McDaniels**: Over by 10 (44.0 vs ETR 33.7): 3 stl + 1 blk, 22 pts on 10-16 FG, 2-5 3s.
+- **Brunson**: Over: 31 on 10-22, 7-7 at the line, in his usual 34 minutes.
+- **George**: Over: 30 and 11 on 10-17, 4-8 from three, in a 25-point win.
+- **Ball**: Under: 18 and 9 on 7-17 with 2 assists and 5 turnovers.
+- **Peterson**: Under: cold 3-10 for 13 in 31 minutes.
+- **McDaniels**: Over: 22 on 10-16 with 4 stocks.
 
 **Contest view.** Outsized holders: Keyonte George and Jaden McDaniels (top 10% at 2.2x and 1.4x the field's rate). In your afternoon window the top-10% teams held Keyonte George on 38% against your 9%.
 
@@ -95,11 +95,11 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 **Player recap**, in the button's order.
 
-- **Dosunmu**: Over by 8 (41.3 vs ETR 32.9): 30 pts on 11-19 FG, 7-11 3s, 39 min (usual 33).
-- **Thompson**: Over by 23 (55.8 vs ETR 32.7): 12 ast (about 4 usual for his minutes), 5 stl + 0 blk.
-- **Harper**: Under by 7 (25.8 vs ETR 33.2): 2 ast (about 5 usual for his minutes), no steals or blocks.
-- **Reid**: Over by 20 (54.2 vs ETR 33.8): 42 min (usual 29), 2 stl + 2 blk.
-- **Castle**: Under by 12 (19.9 vs ETR 32.1): 10 pts on 3-11 FG, 2-5 3s, 2 reb (about 6 usual for his minutes), no steals or blocks.
+- **Dosunmu**: Over: 7-11 from three for 30 in 39 minutes, 5 fouls.
+- **Thompson**: Over: 12 assists and 5 stocks for 55.8 on 29 minutes.
+- **Harper**: Under: 20 on 8-14 but 2 assists and no stocks in 35 minutes.
+- **Reid**: Over: 42 minutes (usual 29), 23 and 11 with 4 stocks.
+- **Castle**: Under: 3-11 for 10, no stocks, on his usual minutes.
 
 **Contest view.** Outsized holders: Naz Reid and Ausar Thompson (top 10% at 2.4x and 2.1x the field's rate). In your afternoon window the top-10% teams held Ausar Thompson on 35% against your 4%. Your VALUE share: 39% of your afternoon teams held one, the field 17%.
 
@@ -115,9 +115,9 @@ No moves against the button here last night.
 
 **Player recap**, in the button's order.
 
-- **Gobert**: Under by 27 (4.8 vs ETR 31.8): 0 pts on 0-3 FG, 0-0 3s, 22 min (usual 28), 4 reb (about 8 usual for his minutes).
-- **Fox**: Under by 15 (14.4 vs ETR 29.7): 6 pts on 3-10 FG, 0-5 3s, 2 ast (about 7 usual for his minutes), 34 min (usual 28).
-- **Jenkins**: Over by 11 (40.5 vs ETR 29.1): 38 min (usual 29), 25 pts on 11-21 FG, 3-7 3s.
+- **Gobert**: Under: foul trouble, 22 minutes with 4 fouls, 0-3 and 4 rebounds.
+- **Fox**: Under: 3-10, 0-5 from three, for 6 in 34 minutes of a 12-point loss.
+- **Jenkins**: Over: 38 minutes (usual 30), 25 on 11-21.
 
 **Contest view.** Outsized holders: Mo Bamba and Daniss Jenkins (top 10% at 1.5x and 1.4x the field's rate). In your afternoon window the top-10% teams held Daniss Jenkins on 24% against your 9%. Your VALUE share: 0% of your afternoon teams held one, the field 0%.
 
@@ -127,11 +127,11 @@ No moves against the button here last night.
 
 **Player recap**, in the button's order.
 
-- **Holiday**: Over by 20 (45.0 vs ETR 24.8): 23 pts on 7-19 FG, 5-9 3s, 2 stl + 1 blk, 31 min (usual 26).
-- **Hachimura**: Over by 8 (32.5 vs ETR 24.9): 20 pts on 7-10 FG, 4-4 3s.
-- **Collins**: Under by 6 (18.2 vs ETR 24.4): 1 reb (about 5 usual for his minutes).
-- **White**: Over by 11 (33.6 vs ETR 23.0): 26 min (usual 18), 3 stl + 0 blk.
-- **Wagler**: Under by 6 (16.4 vs ETR 22.5): 15 pts on 5-9 FG, 1-3 3s, 18 min (usual 22) in a 25-point blowout.
+- **Holiday**: Over: 23 with 5 threes and 3 stocks on 31 minutes (usual 26).
+- **Hachimura**: Over: 4-4 from three for 20 in 27 minutes.
+- **Collins**: Under: 11 points and 1 rebound in 23 minutes.
+- **White**: Over: 26 minutes (usual 18) with Grayson Allen out, 19 and 3 stocks.
+- **Wagler**: Under: 18 minutes (usual 23) in a 25-point loss, 15 points and little else.
 
 **Contest view.** Outsized holders: Brice Sensabaugh and Jrue Holiday (top 10% at 4.5x and 2.0x the field's rate). In your afternoon window the top-10% teams held Immanuel Quickley on 7% against your 1%.
 
@@ -145,7 +145,7 @@ No moves against the button here last night.
 
 **Your Q moves.** Afternoon: Towns ahead of Barnes, helped by 14; Afternoon: Brunson ahead of Barnes, helped by 12; Afternoon: Brunson ahead of Avdija, helped by 14.
 
-**Today's Questionable players.** Austin Reaves (T5 on the ladders, 8% to play): if he sits, Walker Kessler, Quentin Grimes, Sandro Mamukelashvili; Walker Kessler (T5 on the ladders, 19% to play): if he sits, Austin Reaves, Quentin Grimes, Sandro Mamukelashvili; Amen Thompson (T5 on the ladders, 64% to play).
+**Today's Questionable players.** Walker Kessler (T5 on the ladders, 20% to play): if he sits, Austin Reaves, Quentin Grimes, Sandro Mamukelashvili; Austin Reaves (T5 on the ladders, 8% to play): if he sits, Walker Kessler, Quentin Grimes, Sandro Mamukelashvili; Amen Thompson (T5 on the ladders, 64% to play): if he sits, Kevin Durant.
 
 ## Back page
 
@@ -158,6 +158,8 @@ No moves against the button here last night.
 **Gallagher's Bad-matchup arrows** (published before your lock). Season: 160 arrows, -2.0 against ETR's final on average, 56% under it.
 
 **Data.** Everything for last night came in, and today's inputs were ready on time.
+
+One proposal waits on your yes: H1 (the minutes trend, a player whose last 3 games averaged 4+ minutes off his usual projected at his last-3 minutes) beat the base model on its forward test, 0.63 points closer over 422 players and 19 nights (range +0.22 to +1.05). Adopting it means building it into the morning Proj as its own change.
 
 ---
 

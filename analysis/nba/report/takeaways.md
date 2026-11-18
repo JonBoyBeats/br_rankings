@@ -2,6 +2,15 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-17 Tue main
+
+- Locked both windows (Lock AM 4:15am, Lock PM 2:36pm; lock 4:22pm). Late news: Deni Avdija (ADP 7), untagged at Lock AM and Questionable at Lock PM, still in ETR's 3:50pm upload, sat: POR out of both halves (late_news.json). Kuminga (Questionable at Lock AM) was off the slate by the afternoon. One blowout: UTA by 25 over LAC. First night of the PM button on ETR's ladder.
+- Morning: 50% against our number (season 54%), 70% against ADP (season 56%, your board wins). AM calls 5 right, 3 wrong: the Beringer and Sensabaugh raises and the Clarkson, Bryant and Huerter fades right; the Sexton raise (3-12) and the Bridges and Lopez fades wrong. Afternoon: 56% against ETR (season 48%), 51% against ours, 59% against ADP. PM calls 3 right (Jenkins and Brunson raises, the Barnes fade through his tag), 5 wrong (the Castle and Fox raises on cold shooting, the Reid, Bamba and Miller fades).
+- Theme (hedges out): afternoon fades of players ETR ranked above you that went wrong on minutes or a teammate out are now 16 on 11 slates; of the 17 such fades logged, 1 was right (Reid and Bamba last night, each 12+ minutes over his usual). The minutes weren't known at the lock, so this isn't a rule: it says that where ETR is above you on a player with a minutes path, the fade is the riskier side. With the PM button now on ETR's ladder, fewer of these fades start from the button.
+- Splits: ours closer on 3 of 6 (Beringer, Huerter, Wembanyama), ETR on 3 (Reed, Miller, Collins). Misses: Gobert (foul trouble, 4.8) was our biggest too-high; Sensabaugh and Grimes (35 and 42 minutes) the too-lows.
+- Field: 99 teams, median finish top 37%, 12 in the top 10%, none in the top 1%, 26 cashed, $261 on $457. Running, 6-drafter: top 10% 1.26 (22 nights), top 1% 0.83; AM teams 1.47 against PM 1.17 at the top 10%.
+- Morning Proj vs ETR (etr_match.md): corr 0.86, direction 82% (31 of 38), big misses 14 of 60 (23%), CLV ours 0.05 against ETR 0.22. Missed the same way on 3+ of the last 10: Reed, Sabonis, Bane, Gobert and Trae (ETR below ours); Shead, Fears, Avdija and Davion Mitchell (ETR above).
+
 ## 2026-11-16 Mon main
 
 - Locked both windows (Lock AM 4:01am, the last of 2; Lock PM 2:18pm). Late news: Amen Thompson (ADP 22-24), untagged at Lock AM and Questionable at Lock PM, still in ETR's 3:42pm upload, sat (HOU out of both halves); LeBron (25.8) out before the afternoon (PHI out of the morning). Bam left after 16 minutes (graded). Three blowouts: NOP by 21, MIA by 18, MEM by 16.
