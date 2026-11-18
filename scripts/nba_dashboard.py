@@ -180,7 +180,26 @@ def pod_paired(rows, w, y, key, since=None, last=None, x="a"):
     v = fn(cells) if cells else None
     rng = M.boot_range(cells, fn) if v is not None else None
     r100 = lambda x: None if x is None else round(100 * x, 3)
-    return {"nights": len(cells), "diff": r100(v), "lo": r100(rng[0]) if rng else None, "hi": r100(rng[1]) if rng else None}
+    return {"nights": len(cells), "diff": r100(v), "lo": r100(rng[0]) if rng else None, "hi": r100(rng[1]) if rng else None,
+            "dates": [c[0]["date"] for c in cells]}
+
+
+def nodates(r):
+    r.pop("dates", None)
+    return r
+
+
+def holders(nights, key):
+    """T1's holders read, season: a slate over every slate on file (no split counts 0), top 10% and 1% in percentage points
+    (the multiple times 10% or 1%), with the 80% range from resampling nights, and the nights with a split."""
+    on = [n[key] for n in nights if n.get(key)]
+    out = {"nights": len(on), "split": sum(1 for b in on if b["pairs"])}
+    for k, f, scale in (("top10", "value10", 10), ("top1", "value", 1)):
+        v = [scale * b[f] if b["pairs"] else 0.0 for b in on] if all(b[f] is not None for b in on if b["pairs"]) else None
+        mean = (lambda xs: sum(xs) / len(xs) if xs else None)
+        rng = M.boot_range(v, mean) if v else None
+        out[k] = {"diff": round(mean(v), 3) if v else None, "lo": round(rng[0], 3) if rng else None, "hi": round(rng[1], 3) if rng else None}
+    return out
 
 
 def pod_replay():
@@ -197,9 +216,9 @@ def pod_replay():
             if y not in ys:
                 continue
             out["rows"].setdefault(w, {})[y] = {k: {"season": ys[y].get(k),
-                                                    "since": pod_paired(pr["by_night"], w, y, k, out["since"][y]) if out["since"][y] else None,
-                                                    "last": pod_paired(pr["by_night"], w, y, k, last=1),       # the newest night it ran
-                                                    "last7": pod_paired(pr["by_night"], w, y, k, last=7)}      # its last 7 nights
+                                                    "since": nodates(pod_paired(pr["by_night"], w, y, k, out["since"][y])) if out["since"][y] else None,
+                                                    "last": nodates(pod_paired(pr["by_night"], w, y, k, last=1)),   # the newest night it ran
+                                                    "last7": nodates(pod_paired(pr["by_night"], w, y, k, last=7))}  # its last 7 nights
                                                 for k in POD_KEYS}
     eb = pr.get("pm_etr_button") or {}
     out["etr"] = {"since": eb.get("since"), "f_vs_board": eb.get("f_vs_board"), "nodrop_touched": {k: v for k, v in (eb.get("nodrop_touched") or {}).items() if k != "by_night"},
@@ -214,7 +233,8 @@ def pod_replay():
         x, y = pair.split("-")
         if not ((pr.get("paired") or {}).get(w) or {}).get(pair):
             continue
-        out["h2h"].setdefault(w, {})[pair] = {k: {"season": pr["paired"][w][pair].get(k),
+        out["h2h"].setdefault(w, {})[pair] = {k: {"season": dict(pr["paired"][w][pair].get(k) or {},
+                                                              dates=pod_paired(pr["by_night"], w, y, k, x=x)["dates"]),
                                                   "last": pod_paired(pr["by_night"], w, y, k, last=1, x=x),
                                                   "last7": pod_paired(pr["by_night"], w, y, k, last=7, x=x)} for k in POD_KEYS}
     return out
@@ -269,6 +289,7 @@ def main():
                        "round6": round6(n), "swaps": swaps.get(n["date"], [])}
         nights.append(night)
     out = {"generated": M.dt.datetime.now(M.PT).isoformat(timespec="minutes"), "defs": DEFS, "push": PUSH,
+           "t1_holders": {"pm": holders(nights, "t1"), "am": holders(nights, "t1am")},
            "contest_side": {"player_multiples": bool(pm), "groups_by_night": bool(gb), "card_decisions_by_night": bool(cards)},
            # the contest side's last-night and season reads as they stand (turns, T5 under/over), until the by-night keys land
            "latest": {"night": mt.get("night"), "card_decisions": mt.get("card_decisions"), "t5_drafted": mt.get("t5_drafted")},

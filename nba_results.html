@@ -568,18 +568,25 @@ function t1Board(s) {
                               ["Last night (" + short(all[all.length - 1].date) + ")", all.slice(-1), "last"]];
   var rec = function (ns, key) { var t = sumTally(ns.map(function (n) { return n[key] ? n[key].tally : [0, 0, 0]; })); return t[0] + t[1] + t[2] ? tallyStr(t) : "no split"; };
   // a slate: over every slate on file, a night with no split counting 0 (the pod replay's nights count the same way)
-  var held = function (ns, key, f, scale) {
+  var splitN = function (n, key) { return n && n[key] && n[key].pairs.length ? 1 : 0; };
+  var nightsBy = {}; D.nights.forEach(function (n) { nightsBy[n.date] = n; });
+  var splits = function (dates, key) { return (dates || []).reduce(function (a, d) { return a + splitN(nightsBy[d], key); }, 0); };
+  var nn = function (k, rng) { return " (" + (rng ? rng + "; " : "") + k + " split night" + (k === 1 ? "" : "s") + ")"; };
+  var held = function (ns, key, f, scale, which) {
     var on = ns.filter(function (n) { return n[key]; }), v = on.map(function (n) { return n[key].pairs.length ? n[key][f] : 0; });
     var split = on.filter(function (n) { return n[key].pairs.length; }).length;
     if (!split) return "no split";
     if (v.some(function (x) { return x == null; })) return "waiting";
-    return sgn(scale * v.reduce(function (a, x) { return a + x; }, 0) / v.length) + (ns.length > 1 ? " (split on " + split + " of " + on.length + ")" : "");
+    var hs = which === "season" && D.t1_holders && D.t1_holders[key === "t1" ? "pm" : "am"], r = hs && hs[f === "value10" ? "top10" : "top1"];
+    return sgn(scale * v.reduce(function (a, x) { return a + x; }, 0) / v.length) +
+           (which === "last" ? "" : nn(split, r && r.lo != null ? sgn(r.lo) + " to " + sgn(r.hi) : null));
   };
-  var pod = function (w, pair, which, q) {
+  // last night isn't shown: one night rarely changes which T1 player a seat ends up with, so it reads 0.00 almost always
+  var pod = function (w, pair, which, q, key) {
+    if (which === "last") return "";
     var c = ((((D.pod_replay || {}).h2h || {})[w] || {})[pair] || {})[q], v = c ? c[which] : null;
     if (!v || v.diff == null) return "–";
-    return sgn(v.diff) + (which === "season" && v.lo != null ? " (" + sgn(v.lo) + " to " + sgn(v.hi) + ")" : "") +
-           (which !== "last" && v.nights ? (which === "season" ? ", " + v.nights + " nights" : "") : "");
+    return sgn(v.diff) + nn(splits(v.dates, key), which === "season" && v.lo != null ? sgn(v.lo) + " to " + sgn(v.hi) : null);
   };
   var block = function (title, key, w, pair, side) {
     el("div", { class: "sub" }, s, title);
@@ -587,14 +594,33 @@ function t1Board(s) {
     el("th", {}, tr, ""); cols.forEach(function (c) { el("th", {}, tr, c[0]); });
     var tb = el("tbody", {}, t);
     [[side.charAt(0).toUpperCase() + side.slice(1) + "'s record against ADP (W-L-push, points)", function (c) { return rec(c[1], key); }],
-     ["What happened: holders of " + side + "'s pick minus ADP's, top 10%", function (c) { return held(c[1], key, "value10", 10); }],
-     ["What happened: holders of " + side + "'s pick minus ADP's, top 1%", function (c) { return held(c[1], key, "value", 1); }],
-     ["Pod replay: your seats, T1 in " + side + "'s order minus ADP's, top 10%", function (c) { return pod(w, pair, c[2], "top10"); }],
-     ["Pod replay: your seats, T1 in " + side + "'s order minus ADP's, top 1%", function (c) { return pod(w, pair, c[2], "top1"); }]].forEach(function (r) {
+     ["What happened: holders of " + side + "'s pick minus ADP's, top 10%", function (c) { return held(c[1], key, "value10", 10, c[2]); }],
+     ["What happened: holders of " + side + "'s pick minus ADP's, top 1%", function (c) { return held(c[1], key, "value", 1, c[2]); }],
+     ["Pod replay: your seats, T1 in " + side + "'s order minus ADP's, top 10%", function (c) { return pod(w, pair, c[2], "top10", key); }],
+     ["Pod replay: your seats, T1 in " + side + "'s order minus ADP's, top 1%", function (c) { return pod(w, pair, c[2], "top1", key); }]].forEach(function (r) {
       var row = el("tr", {}, tb); el("td", {}, row, r[0]);
       cols.forEach(function (c) { el("td", {}, row, r[1](c)); });
     });
   };
+  // the verdict, one line a window, from the season numbers (top 10%): "clear" only when the 80% range excludes zero,
+  // else "leaning"; "no read" under 5 nights with a split (asked 2026-11-18)
+  var verdict = function (label, key, w, pair, side) {
+    var h = (D.t1_holders || {})[w], hv = h && h.top10, pv = (((((D.pod_replay || {}).h2h || {})[w] || {})[pair] || {}).top10 || {}).season;
+    if (!h || h.split < 5) return label + ": no read yet (" + (h ? h.split : 0) + " split night" + (h && h.split === 1 ? "" : "s") + ").";
+    var clear = function (v) { return v && v.lo != null && (v.lo > 0 || v.hi < 0); };
+    var who = hv.diff >= 0 ? side : "ADP", hc = clear(hv);
+    var out = label + ": " + (hc ? "trust " : "leaning ") + who + (who === side ? " over ADP" : " over " + side) + " (holders " + sgn(hv.diff) +
+              " a slate, " + (hc ? "clear" : "not clear of zero") + ", " + h.split + " split nights)";
+    if (pv && pv.diff != null) out += "; on your seats " + (clear(pv) ? "the pod replay agrees, clear" : Math.abs(pv.diff) < 0.5 ? "small stakes" : "the pod replay leans " + (pv.diff >= 0 ? side : "ADP")) +
+                                      " (pod " + sgn(pv.diff) + (clear(pv) ? "" : ", not clear of zero") + ")";
+    return out + ".";
+  };
+  var vb = el("div", { class: "advice" }, s);
+  el("div", { class: "advice-h" }, vb, "What to do in T1");
+  var ul = el("ul", {}, vb);
+  el("li", {}, ul, verdict("Afternoon", "t1", "pm", "f1-d1", "ETR"));
+  if (D.nights.some(function (n) { return n.t1am; })) el("li", {}, ul, verdict("Morning", "t1am", "am", "p1-d1", "our projection"));
+  el("p", { class: "note" }, vb, "Season, top 10%. Clear: the 80% range (nights resampled) excludes zero.");
   block("Afternoon: trusting ETR's order over ADP's", "t1", "pm", "f1-d1", "ETR");
   if (D.nights.some(function (n) { return n.t1am; })) block("Morning: trusting our projection's order over ADP's", "t1am", "am", "p1-d1", "our Proj");
   else wait(s, "the morning T1 pairs (our Proj against ADP), built with tonight's nightly");
