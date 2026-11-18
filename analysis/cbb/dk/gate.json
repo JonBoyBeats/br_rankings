@@ -1,38 +1,38 @@
 {
- "generated_at": "2026-11-17T15:01:36Z",
- "nights": 1,
+ "generated_at": "2026-11-18T11:57:19Z",
+ "nights": 2,
  "bands": [
   {
    "lo": 6000,
    "hi": 99999,
-   "n": 35,
-   "nights": 1,
+   "n": 94,
+   "nights": 2,
    "open": true,
    "w": 0.5,
-   "mae_ours": 7.786,
-   "mae_avg": 7.209,
+   "mae_ours": 8.644,
+   "mae_avg": 9.404,
    "nights_avg_won": 1
   },
   {
    "lo": 4000,
    "hi": 5999,
-   "n": 52,
-   "nights": 1,
+   "n": 126,
+   "nights": 2,
    "open": true,
    "w": 0.5,
-   "mae_ours": 6.808,
-   "mae_avg": 7.783,
+   "mae_ours": 7.013,
+   "mae_avg": 7.664,
    "nights_avg_won": 0
   },
   {
    "lo": 0,
    "hi": 3999,
-   "n": 60,
-   "nights": 1,
+   "n": 164,
+   "nights": 2,
    "open": true,
    "w": 0.5,
-   "mae_ours": 3.723,
-   "mae_avg": 3.829,
+   "mae_ours": 3.513,
+   "mae_avg": 4.0,
    "nights_avg_won": 0
   }
  ],
