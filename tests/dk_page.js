@@ -693,14 +693,48 @@ function audit(name, L, o) {
   const totalRows = await pg.evaluate(() => BP.pool.length);
   await pg.click(`#bpTable tr:not(.picked)[data-k] .pn[data-pid="${pid}"]`);
   const wo = await pg.evaluate(id => ({ shown: [...document.querySelectorAll("#bpTable tr:not(.picked)[data-k]")].map(r => BP.pool[+r.dataset.k].ids),
-    chip: !!document.querySelector(`#bpWithout [data-without="${id}"]`), note: document.getElementById("bpWithout").textContent,
+    chip: !!document.querySelector(`#bpWithout [data-fkind="p"][data-fkey="${id}"]`), note: document.getElementById("bpWithout").textContent,
     left: BP.pool.filter(L => !L.ids.includes(id)).length }), pid);
   check("without: no lineup shown holds the player", wo.shown.length > 0 && wo.shown.every(ids => !ids.includes(pid)), wo.note);
   check("without: a chip with the hidden count", wo.chip && new RegExp((totalRows - wo.left) + " lineups? hidden").test(wo.note), wo.note);
   await pg.click("#bpAuto");
   await pg.waitForFunction(() => !/Auto-filling/.test(document.getElementById("bpStatus").textContent), null, { timeout: 120000 });
   check("without: Auto-fill leaves his lineups out", await pg.evaluate(id => BP.b.picked.length > 0 && BP.b.picked.every(k => !BP.pool[k].ids.includes(id)), pid));
-  await pg.click(`#bpWithout [data-without="${pid}"]`);
+  await pg.click(`#bpWithout [data-fkind="p"][data-fkey="${pid}"]`);
+  check("without: the chip brings them back", await pg.evaluate(id => !bpFilt.p[id] && !document.querySelector("#bpWithout [data-fkind]"), pid));
+  // the side panel: Players, Combos, Cores; a tap cycles with (only lineups with it) / without / off; counts in view and yours
+  await pg.click("#bpClear").catch(() => {});
+  const shownIds = () => pg.evaluate(() => [...document.querySelectorAll("#bpTable tr:not(.picked)[data-k]")].map(r => +r.dataset.k));
+  const sp = await pg.$eval("#bpSideList .srow[data-key]", e => ({ key: e.dataset.key, view: +e.children[1].textContent }));
+  check("panel: players listed with their lineups in view", sp.view === await pg.evaluate(id => BP.pool.filter(L => L.ids.includes(id)).length, sp.key), JSON.stringify(sp));
+  await pg.click(`#bpSideList .srow[data-key="${sp.key}"]`);
+  let ks = await shownIds();
+  check("panel: tap once, only lineups with him", ks.length > 0 && await pg.evaluate(([ks, id]) => ks.every(k => BP.pool[k].ids.includes(id)), [ks, sp.key]) &&
+        /with /.test(await pg.textContent("#bpWithout")));
+  await pg.click(`#bpSideList .srow[data-key="${sp.key}"]`);
+  ks = await shownIds();
+  check("panel: again, only lineups without him", ks.length > 0 && await pg.evaluate(([ks, id]) => ks.every(k => !BP.pool[k].ids.includes(id)), [ks, sp.key]));
+  await pg.click(`#bpSideList .srow[data-key="${sp.key}"]`);
+  check("panel: again, off", await pg.evaluate(id => !bpFilt.p[id], sp.key));
+  await pg.click('#bpSide [data-tab="pair"]');
+  const pr = await pg.$eval("#bpSideList .srow[data-key]", e => e.dataset.key);
+  await pg.click(`#bpSideList .srow[data-key="${pr}"]`);
+  ks = await shownIds();
+  check("panel: a combo with, only lineups holding both", ks.length > 0 && await pg.evaluate(([ks, pk]) => ks.every(k => pk.split("|").every(id => BP.pool[k].ids.includes(id))), [ks, pr]));
+  await pg.click('#bpSide [data-tab="core"]');
+  const cr = await pg.$eval("#bpSideList .srow[data-key]", e => e.dataset.key);
+  await pg.click(`#bpSideList .srow[data-key="${cr}"]`);
+  ks = await shownIds();
+  check("panel: filters stack: a core with as well, only lineups on that core holding the combo", ks.length > 0 && await pg.evaluate(([ks, ck, pk]) => {
+    const keys = DKSim.cores(ctx(), BP.pool);
+    return ks.every(k => keys[k] === ck && pk.split("|").every(id => BP.pool[k].ids.includes(id)));
+  }, [ks, cr, pr]) || (await pg.evaluate(() => document.querySelectorAll("#bpTable tr:not(.picked)[data-k]").length)) === 0);
+  await pg.click('#bpWithout [data-fclear]');
+  check("panel: Clear all", await pg.evaluate(() => !Object.keys(bpFilt.p).length && !Object.keys(bpFilt.pair).length && !Object.keys(bpFilt.core).length));
+  await pg.click('#bpSide [data-tab="p"]');
+  await pg.fill("#bpSideQ", P[sp.key].name.split(" ").slice(-1)[0]);
+  check("panel: search finds a player", (await pg.$$eval("#bpSideList .srow[data-key]", r => r.map(x => x.dataset.key))).includes(sp.key));
+  await pg.fill("#bpSideQ", "");
   // Max exposure binds hand adds: in this contest's set a player goes in at most floor(Max exposure x entries) lineups
   await pg.click("#bpClear").catch(() => {});
   const cap = await pg.evaluate(() => {
@@ -719,7 +753,6 @@ function audit(name, L, o) {
   await pg.evaluate(c => bpAdd(c.withP[c.lim]), cap);
   check("max exposure, hand adds: an add past the limit is refused", await pg.evaluate(c => BP.b.picked.length === c.lim, cap));
   await pg.click("#bpClear").catch(() => {});
-  check("without: the chip brings them back", await pg.evaluate(id => !bpWithout[id] && !document.querySelector("#bpWithout [data-without]"), pid));
   await pg.click("#bpClear").catch(() => {});
 
   check("no page errors", !errors.length, errors.join("; "));

@@ -154,6 +154,15 @@
              font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
   .summary b { color: var(--ink); font-size: 13px; display: block; }
   .bpwrap { max-height: 62vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+  .bpgrid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 10px; align-items: start; }
+  @media (max-width: 900px) { .bpgrid { grid-template-columns: minmax(0, 1fr); } }
+  .bpside { max-height: 62vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+  .bpside .opts button { height: 26px; padding: 0 8px; font-size: 12px; }
+  .srow { display: grid; grid-template-columns: minmax(0, 1fr) 44px 38px; gap: 6px; font-size: 12.5px; padding: 3px 4px; cursor: pointer; border-radius: 4px; }
+  .srow:hover { background: var(--surface); }
+  .srow .m { font-family: var(--mono); text-align: right; color: var(--muted); }
+  .srow.with { background: rgba(46,170,96,.28); } .srow.without { background: rgba(220,80,70,.22); } .srow.without span:first-child { text-decoration: line-through; }
+  .bpside b.w { color: #5fbf7f; } .bpside b.wo { color: #e0705f; }
   table.bp { width: 100%; border-collapse: collapse; font-size: 12px; }
   table.bp th { position: sticky; top: 0; background: var(--bg); font-family: var(--mono); font-size: 10px; letter-spacing: .06em;
                 text-transform: uppercase; color: var(--muted); text-align: right; font-weight: 500; border-bottom: 1px solid var(--line);
@@ -320,7 +329,15 @@
   <div id="bpSummary"></div>
   <div class="opts" id="bpGroups"></div>
   <div class="opts" id="bpWithout"></div>
-  <div class="bpwrap" id="bpTableWrap" hidden><table class="bp" id="bpTable"></table></div>
+  <div class="bpgrid">
+    <div class="bpwrap" id="bpTableWrap" hidden><table class="bp" id="bpTable"></table></div>
+    <div class="bpside" id="bpSide" hidden>
+      <div class="opts" style="padding:0 0 4px"><button type="button" data-tab="p" aria-pressed="true">Players</button><button type="button" data-tab="pair" aria-pressed="false">Combos</button><button type="button" data-tab="core" aria-pressed="false">Cores</button></div>
+      <input id="bpSideQ" type="search" placeholder="Find a player" autocomplete="off" style="width:100%;height:28px">
+      <div class="note" style="margin:4px 0">Tap: <b class="w">with</b> (only lineups with it), again: <b class="wo">without</b>, again: off. Counts: lineups in view / your picks.</div>
+      <div id="bpSideList"></div>
+    </div>
+  </div>
 </div>
 
 <script src="vendor/lp_solver.js"></script>
@@ -406,7 +423,7 @@ function pick() {
   $("statusInfo").innerHTML = esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
     (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }))) +
     '<br>' + gateText() + qText();
-  BP = null; $("bpTableWrap").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpGroups").innerHTML = "";
+  BP = null; $("bpTableWrap").hidden = true; $("bpSide").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpGroups").innerHTML = "";
   ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = true; });
   ruleCounts = {}; editing = -1;
   bankLoadState(); renderBank(); renderEntries(); renderNight(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
@@ -1210,10 +1227,40 @@ async function bpAuto() {
   bpRender(b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure, Min unique, Max core and Max pair (a bigger Keep helps)." : "");
 }
 
-/* Without: players whose lineups the builder hides (click a name in a lineup; the chip brings them back). Picked lineups
-   stay; Auto-fill skips the hidden ones too. Kept across contests for the session: a fade usually holds for the night. */
-var bpWithout = {};
-function bpHidden(k) { return BP.pool[k].ids.some(function (id) { return bpWithout[id]; }); }
+/* The builder's filters: players, combos (two players) and cores (a lineup's three highest salaries, as Max core counts
+   them), each "with" (only lineups that have it) or "without" (none that do); from the side panel, or a name clicked in a
+   lineup (without). Picked lineups stay; Auto-fill keeps to the filters too. Kept across contests for the session. */
+var bpFilt = { p: {}, pair: {}, core: {} }, bpTab = "p";
+function bpCoreKeys() { if (!BP.coreKeys) BP.coreKeys = DKSim.cores(ctx(), BP.pool); return BP.coreKeys; }
+function bpHidden(k) {
+  var ids = BP.pool[k].ids, has = function (id) { return ids.indexOf(id) >= 0; };
+  for (var id in bpFilt.p) if (has(id) !== (bpFilt.p[id] === "with")) return true;
+  for (var pk in bpFilt.pair) { var two = pk.split("|"); if ((has(two[0]) && has(two[1])) !== (bpFilt.pair[pk] === "with")) return true; }
+  for (var ck in bpFilt.core) if ((bpCoreKeys()[k] === ck) !== (bpFilt.core[ck] === "with")) return true;
+  return false;
+}
+function filtName(kind, key) {
+  return kind === "core" ? coreName(key) : key.split("|").map(function (id) { return shortName((byId(id) || {}).name || id); }).join(" + ");
+}
+// the side panel's list for the tab: each item's lineups in view (unpicked, after the filters) and in your picks
+function bpSideRender(rest) {
+  if (!BP) return;
+  if (rest) BP.sideRest = rest;
+  rest = BP.sideRest || [];
+  var picked = BP.b.picked, q = ($("bpSideQ").value || "").trim().toLowerCase(), vc = {}, pc = {}, coreK = bpTab === "core" ? bpCoreKeys() : null;
+  var keysOf = function (k) { return bpTab === "p" ? BP.pool[k].ids : bpTab === "pair" ? DKSim.pairs(BP.pool[k].ids) : [coreK[k]]; };
+  rest.forEach(function (k) { keysOf(k).forEach(function (x) { vc[x] = (vc[x] || 0) + 1; }); });
+  picked.forEach(function (k) { keysOf(k).forEach(function (x) { pc[x] = (pc[x] || 0) + 1; }); });
+  Object.keys(bpFilt[bpTab]).forEach(function (x) { if (vc[x] == null) vc[x] = 0; });       // a filtered item stays listed
+  var list = Object.keys(vc).filter(function (x) { return !q || filtName(bpTab, x).toLowerCase().indexOf(q) >= 0 || (bpTab === "core" && x.split(",").some(function (id) { return ((byId(id) || {}).name || "").toLowerCase().indexOf(q) >= 0; })); })
+    .sort(function (a, b) { return !!bpFilt[bpTab][b] - !!bpFilt[bpTab][a] || vc[b] - vc[a] || (pc[b] || 0) - (pc[a] || 0); }).slice(0, bpTab === "p" ? 120 : 60);
+  $("bpSideList").innerHTML = '<div class="srow" style="cursor:default"><span class="sub">' + ({ p: "Player", pair: "Combo", core: "Core" })[bpTab] +
+    '</span><span class="m">view</span><span class="m">yours</span></div>' + list.map(function (x) {
+      var st = bpFilt[bpTab][x] || "";
+      return '<div class="srow ' + st + '" data-key="' + esc(x) + '" title="' + esc(filtName(bpTab, x)) + '"><span>' + esc(filtName(bpTab, x)) + '</span><span class="m">' + vc[x] +
+        '</span><span class="m">' + (pc[x] || 0) + "</span></div>";
+    }).join("") + (list.length ? "" : '<div class="note">Nothing in view.</div>');
+}
 function bpRender(note) {
   var b = BP.b, picked = b.picked, cov = $("bpCover").value;
   var lineups = picked.map(function (k) { return BP.pool[k]; });
@@ -1248,11 +1295,13 @@ function bpRender(note) {
   }
   var rest = [], hidden = 0;
   for (var k = 0; k < BP.pool.length; k++) if (picked.indexOf(k) < 0) { if (bpHidden(k)) hidden++; else rest.push(k); }
-  var wo = Object.keys(bpWithout);
-  $("bpWithout").innerHTML = wo.length ? '<span class="field-label" style="align-self:center">Without</span>' + wo.map(function (id) {
-      return '<button type="button" data-without="' + esc(id) + '" title="Show his lineups again" style="height:26px;padding:0 8px;font-size:12px">' +
-        esc(shortName(by[id].name)) + " &times;</button>"; }).join("") + '<span class="note" style="align-self:center;margin:0">' + hidden + " lineup" + (hidden === 1 ? "" : "s") + " hidden</span>"
-    : '<span class="note" style="margin:0">Click a player\'s name in a lineup to hide every lineup with him.</span>';
+  var active = [];
+  ["p", "pair", "core"].forEach(function (kind) { Object.keys(bpFilt[kind]).forEach(function (x) { active.push([kind, x, bpFilt[kind][x]]); }); });
+  $("bpWithout").innerHTML = active.length ? '<span class="field-label" style="align-self:center">Filters</span>' + active.map(function (f) {
+      return '<button type="button" data-fkind="' + f[0] + '" data-fkey="' + esc(f[1]) + '" title="Clear this filter" style="height:26px;padding:0 8px;font-size:12px">' +
+        (f[2] === "with" ? "with " : "without ") + esc(filtName(f[0], f[1])) + " &times;</button>"; }).join("") +
+      '<button type="button" data-fclear="1" style="height:26px;padding:0 8px;font-size:12px">Clear all</button><span class="note" style="align-self:center;margin:0">' + hidden + " lineup" + (hidden === 1 ? "" : "s") + " hidden</span>"
+    : '<span class="note" style="margin:0">Filter with the panel beside the table (players, combos, cores), or click a name in a lineup to hide every lineup with him.</span>';
   var g = get[BP.sort];
   rest.sort(function (x, y) { return (BP.group ? (grp(y) === BP.group) - (grp(x) === BP.group) : 0) || (g(x) - g(y)) * BP.dir; });
   var cols = [["proj", "Proj"], ["own", "Own"], ["qual", "Quality"], ["core", "Core %"], ["dupe", "Dupes (sim's estimate)"], ["alone", "Alone"], ["value", "Added"], ["cover", "+Cover"], ["shared", "Shared"]];
@@ -1269,7 +1318,8 @@ function bpRender(note) {
       "</td><td>" + (picked.length ? BP.shared[k] : "–") + "</td></tr>";
   }
   $("bpTable").innerHTML = head + picked.map(function (k) { return row(k, true); }).join("") + rest.slice(0, 200).map(function (k) { return row(k, false); }).join("");
-  $("bpTableWrap").hidden = false;
+  $("bpTableWrap").hidden = false; $("bpSide").hidden = false;
+  bpSideRender(rest);
 }
 
 // --- events ------------------------------------------------------------------------------------
@@ -1430,14 +1480,31 @@ $("bankBox").addEventListener("click", function (e) {
 });
 $("bpCover").addEventListener("change", function () { if (BP) bpRender(); });
 $("bpWithout").addEventListener("click", function (e) {
-  var b = e.target.closest("button[data-without]"); if (!b || !BP) return;
-  delete bpWithout[b.dataset.without]; bpRender();
+  if (!BP) return;
+  if (e.target.closest("button[data-fclear]")) { bpFilt = { p: {}, pair: {}, core: {} }; bpRender(); return; }
+  var b = e.target.closest("button[data-fkind]"); if (!b) return;
+  delete bpFilt[b.dataset.fkind][b.dataset.fkey]; bpRender();
 });
+$("bpSide").addEventListener("click", function (e) {
+  if (!BP) return;
+  var t = e.target.closest("button[data-tab]");
+  if (t) {
+    bpTab = t.dataset.tab;
+    document.querySelectorAll("#bpSide [data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === t)); });
+    $("bpSideQ").placeholder = bpTab === "p" ? "Find a player" : "Find a player in them";
+    bpSideRender(); return;
+  }
+  var r = e.target.closest(".srow[data-key]"); if (!r) return;
+  var f = bpFilt[bpTab], x = r.dataset.key;
+  if (!f[x]) f[x] = "with"; else if (f[x] === "with") f[x] = "without"; else delete f[x];
+  bpRender();
+});
+$("bpSideQ").addEventListener("input", function () { bpSideRender(); });
 $("bpTable").addEventListener("click", function (e) {
   var h = e.target.closest("th[data-k]");
   if (h) { var k = h.dataset.k; BP.dir = BP.sort === k ? -BP.dir : -1; BP.sort = k; bpRender(); return; }
   var pn = e.target.closest(".pn");
-  if (pn) { bpWithout[pn.dataset.pid] = 1; bpRender(); return; }
+  if (pn) { bpFilt.p[pn.dataset.pid] = "without"; bpRender(); return; }
   var b = e.target.closest("button"); if (!b) return;
   var k2 = +b.closest("tr").dataset.k;
   if (b.classList.contains("bpAdd")) bpAdd(k2); else bpRemove(k2);
