@@ -38,8 +38,9 @@ THEME = {
         "(pick 13 minus the elites with 6 drafters, 9 with 4), then ETR. The turns are where your share differs from the field's."],
     3: ["**T3, the middle.** VALUE first, then the rest, PRICEY last; morning by ADP, afternoon by ETR (ADP, then Boom, on "
         "exact ties). T3 PRICEY stays ahead of T4 VALUE."],
-    4: ["**T4, to round 6.** The same sort as T3; it ends at the start of round 6 (earlier at a 2-pick ADP gap), never holds a "
-        "round-6 player, sends its PRICEY players to T5 and borrows from the bottom of T3 when short of 4."],
+    4: ["**T4, to round 6.** The same sort as T3. In the morning it ends at the start of round 6 (earlier at a 2-pick ADP gap) "
+        "and never holds a round-6 player; in the afternoon (from 11-17) it ends at ETR's ladder line, so a round-6 ADP that ETR "
+        "rates as T4 can sit in it. It sends its PRICEY players to T5 and borrows from the bottom of T3 when short of 4."],
     5: ["**T5, round 6.** Players drafted in under 60% of pods (50-60% at the bottom), projected for 20+ minutes, by projection, "
         "to your cut; everyone else below it by projection. Graded on contest results."],
 }

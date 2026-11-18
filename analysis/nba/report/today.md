@@ -105,7 +105,7 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 ## T4
 
-**T4, to round 6.** The same sort as T3; it ends at the start of round 6 (earlier at a 2-pick ADP gap), never holds a round-6 player, sends its PRICEY players to T5 and borrows from the bottom of T3 when short of 4.
+**T4, to round 6.** The same sort as T3. In the morning it ends at the start of round 6 (earlier at a 2-pick ADP gap) and never holds a round-6 player; in the afternoon (from 11-17) it ends at ETR's ladder line, so a round-6 ADP that ETR rates as T4 can sit in it. It sends its PRICEY players to T5 and borrows from the bottom of T3 when short of 4.
 
 **How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 1 times out of 2 in the morning; ETR's pick lost all 3 in the afternoon.
 
