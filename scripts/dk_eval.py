@@ -54,6 +54,13 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             +RISER_STEP+) against fallers (-RISER_STEP or more) on actual minus projection, and the rank correlation of
             the change with it; across nights, the nights risers beat fallers and the average gap. The owner's question
             (2026-11-17): are the players the cut raises the ones to be overweight on? 2026-11-16 (the old cut): no.
+  fills     analysis/cbb/dk/fill_eval.csv, nightly: would other parts of the bank have filled the contests better than
+            the owner's picks? For each saved bank with graded standings in its entered contests, FILL_SETS random
+            fills of the owner's own entry counts (each lineup in one contest only, as entered), drawn from the whole
+            bank, the cut's kept and removed lineups, and each kept idea (group), every lineup paid alone against the
+            contest's real field and payout table (the nightly grade's own lineup()): average dollars back and return
+            on the fees, the share of lineups in the top 10%%, the best fill, and the share of fills beating the owner's
+            entries in dollars. The night is the unit: across nights, how often the kept fills' average beat the entered.
   ideas     analysis/cbb/dk/idea_eval.csv, nightly: each saved bank's ideas (the tag each lineup was first drawn under),
             scored on the real points against each entered contest's real lines: banked, kept and entered counts,
             the kept share (kept / banked) and entered share (of the contest's entries), the top-10% and cash rates of
@@ -140,6 +147,10 @@ OWN_BANDS_FIELD = [(30, 101), (20, 30), (10, 20), (5, 10), (1, 5)]
 IDEA_EVAL = os.path.join(DK, "idea_eval.csv")
 IDEA_COLS = ["date", "draft_group", "idea", "kind", "contest_id", "contest", "banked", "kept", "entered", "kept_share", "entered_share",
              "banked_top10", "banked_cash", "entered_top10", "entered_cash", "pct_top10", "pct_cash", "version"]
+FILL_EVAL = os.path.join(DK, "fill_eval.csv")
+FILL_COLS = ["date", "draft_group", "subset", "lineups", "fills", "fees", "avg_dollars", "roi", "top10_rate", "best_fill",
+             "beat_entered", "entered_dollars", "entered_top10_rate", "version"]
+FILL_SETS = 1000
 RISER_EVAL = os.path.join(DK, "riser_eval.csv")
 RISER_COLS = ["date", "draft_group", "dk_id", "name", "team", "salary", "bank_share", "kept_share", "change", "proj", "actual", "beat",
               "own", "version"]
@@ -243,6 +254,33 @@ def pay_table(payouts):
     return t
 
 
+def slate_for(mirror, cid):
+    """(record rows, slate, start) for a contest: the record whose slate lists it in the mirror's DraftKings file as it
+    stood around its night; (None, None, None) if none does."""
+    for f in sorted(glob.glob(os.path.join(DK, "????-??-??_*.csv"))):
+        rows = read(f)
+        if not rows:
+            continue
+        g = rows[0]["draft_group"]
+        vs = mirror.versions("dk_cbb_morning.json", iso(rows[0]["date"] + "T00:00:00Z") - dt.timedelta(days=1),
+                             iso(rows[0]["date"] + "T00:00:00Z") + dt.timedelta(days=2))
+        for t, sha in reversed(vs):
+            doc = mirror.show(sha, "dk_cbb_morning.json")
+            s = next((x for x in doc.get("slates", []) if str(x["draft_group_id"]) == g), None)
+            if s and any(str(c["id"]) == cid for c in s.get("contests", [])):
+                return rows, s, iso(s["start"])
+    return None, None, None
+
+
+def night_points(rec, players):
+    """Every drafted player's DraftKings points: the standings' FPTS, else the record's."""
+    pts = {r["dk_id"]: num(r["actual_dk"]) for r in rec}
+    for r in rec:
+        if r["name"] in players and players[r["name"]][1] is not None:
+            pts[r["dk_id"]] = players[r["name"]][1]
+    return pts
+
+
 def nightly(a):
     mirror = Mirror(a.mirror)
     done = {(r["contest_id"]) for r in read(EVAL)}
@@ -256,23 +294,7 @@ def nightly(a):
         if not entries:
             print("  %s: no entries read" % os.path.basename(path))
             continue
-        # which slate: the record whose contests list this one (the mirror's DraftKings file as it stood at lock)
-        rec, slate, start = None, None, None
-        for f in sorted(glob.glob(os.path.join(DK, "????-??-??_*.csv"))):
-            rows = read(f)
-            if not rows:
-                continue
-            g = rows[0]["draft_group"]
-            vs = mirror.versions("dk_cbb_morning.json", iso(rows[0]["date"] + "T00:00:00Z") - dt.timedelta(days=1),
-                                 iso(rows[0]["date"] + "T00:00:00Z") + dt.timedelta(days=2))
-            for t, sha in reversed(vs):
-                doc = mirror.show(sha, "dk_cbb_morning.json")
-                s = next((x for x in doc.get("slates", []) if str(x["draft_group_id"]) == g), None)
-                if s and any(str(c["id"]) == cid for c in s.get("contests", [])):
-                    rec, slate, start = rows, s, iso(s["start"])
-                    break
-            if rec:
-                break
+        rec, slate, start = slate_for(mirror, cid)
         if not rec:
             print("  %s: no graded DraftKings slate lists contest %s yet" % (os.path.basename(path), cid))
             continue
@@ -282,12 +304,8 @@ def nightly(a):
         field = sorted((e["points"] for e in entries), reverse=True)
         top10 = math.ceil(0.1 * n)
         cut = {"win": field[0], "top10": field[top10 - 1], "cash": field[paid - 1] if paid and paid <= n else None}
-        # every drafted player's DraftKings points: the standings' FPTS, else the record's
         by_name = {r["name"]: r for r in rec}
-        pts = {r["dk_id"]: num(r["actual_dk"]) for r in rec}
-        for r in rec:
-            if r["name"] in players and players[r["name"]][1] is not None:
-                pts[r["dk_id"]] = players[r["name"]][1]
+        pts = night_points(rec, players)
         shadow = at_lock(mirror, "dk_cbb_shadow.json", start, slate["draft_group_id"]) or {}
         sh = (shadow.get("slates") or {}).get(str(slate["draft_group_id"]))
         base = {"date": rec[0]["date"], "draft_group": slate["draft_group_id"], "contest_id": cid, "contest": contest["name"],
@@ -1043,7 +1061,7 @@ def calnote(a):
     held = [h for h in held if h is not None]
     print("Cut check, last night: %s. 'Kept averages more but reaches the top 10%% less' held on %d of %d graded nights." % (
         line or "no saved bank scored yet", sum(held), len(held)))
-    for line in riser_lines():
+    for line in riser_lines() + fill_lines():
         print(line)
     fe = [r for r in read(FIELD_EVAL) if r["date"] == last]
     if fe:
@@ -1077,7 +1095,7 @@ def readout(a):
     print_audit(full=True)
     print_ideas()
     print()
-    for line in riser_lines():
+    for line in riser_lines() + fill_lines():
         print(line)
     print()
     ev, kind = counted(read(EVAL))
@@ -1348,6 +1366,96 @@ def cutcheck(a):
         print("  cut_eval.csv: %d rows" % len(out))
 
 
+def fills(a):
+    """The nightly random-fill grade (see the docstring), rebuilt whole each run."""
+    mirror = Mirror(a.mirror)
+    banks = {}
+    for f in sorted(glob.glob(os.path.join(BUILDS, "dk_bank_*.json"))):
+        b = json.load(open(f))
+        g = str(b.get("draft_group"))
+        if g not in banks or (b.get("saved_at") or "") >= (banks[g].get("saved_at") or ""):
+            banks[g] = b
+    out, rng = [], random.Random(13)
+    for g, b in sorted(banks.items(), key=lambda kv: kv[1].get("day") or ""):
+        pf = {c: ks for c, ks in (b.get("portfolios") or {}).items() if ks}
+        files = {c: os.path.join(STANDINGS, "contest-standings-%s.csv" % c) for c in pf}
+        if not pf or not all(os.path.exists(p) for p in files.values()):
+            print("  fills %s (%s): %s" % (g, b["day"], "no portfolios saved" if not pf else "standings missing for " +
+                                          ", ".join(c for c, p in files.items() if not os.path.exists(p))))
+            continue
+        pool, kept = b["pool"], set(b.get("final") or range(len(b["pool"])))
+        pay, fee = {}, {}
+        for cid in pf:
+            entries, players = standings(files[cid])
+            rec, slate, _ = slate_for(mirror, cid)
+            if not rec:
+                break
+            contest = next(c for c in slate["contests"] if str(c["id"]) == cid)
+            table, n = pay_table(contest.get("payouts")), len(entries)
+            field = sorted((e["points"] for e in entries), reverse=True)
+            top10, pts = field[math.ceil(0.1 * n) - 1], night_points(rec, players)
+            pay[cid] = [(table.get(placed(v, field), 0), v >= top10) for v in (sum(pts.get(str(i)) or 0 for i in L) for L in pool)]
+            fee[cid] = contest.get("entry_fee") or 0
+        if len(pay) < len(pf):
+            print("  fills %s (%s): a contest's slate isn't in the mirror's history" % (g, b["day"]))
+            continue
+        fees = sum(fee[c] * len(ks) for c, ks in pf.items())
+        n_ent = sum(len(ks) for ks in pf.values())
+        e_dol = sum(pay[c][k][0] for c, ks in pf.items() for k in ks)
+        e_t10 = sum(pay[c][k][1] for c, ks in pf.items() for k in ks) / n_ent
+        grp = lambda k: (b.get("groups") or {}).get(b["tags"][k][0], b["tags"][k][0])
+        subsets = [("bank", list(range(len(pool)))), ("kept", sorted(kept)), ("cut", [k for k in range(len(pool)) if k not in kept])]
+        subsets += [("kept: " + gname, [k for k in sorted(kept) if grp(k) == gname]) for gname in sorted({grp(k) for k in kept})]
+        for name, idx in subsets:
+            if len(idx) < n_ent:
+                continue
+            dol, t10 = [], []
+            for _ in range(FILL_SETS):
+                pick = rng.sample(idx, n_ent)
+                i, d, t = 0, 0.0, 0
+                for c, ks in pf.items():
+                    for k in pick[i:i + len(ks)]:
+                        d += pay[c][k][0]; t += pay[c][k][1]
+                    i += len(ks)
+                dol.append(d); t10.append(t / n_ent)
+            out.append({"date": b["day"], "draft_group": g, "subset": name, "lineups": len(idx), "fills": FILL_SETS, "fees": round(fees, 2),
+                        "avg_dollars": round(S.mean(dol), 2), "roi": round(S.mean(dol) / fees, 4) if fees else "",
+                        "top10_rate": round(S.mean(t10), 4), "best_fill": round(max(dol), 2),
+                        "beat_entered": round(sum(d > e_dol for d in dol) / FILL_SETS, 4), "entered_dollars": round(e_dol, 2),
+                        "entered_top10_rate": round(e_t10, 4), "version": version_of(b["day"])})
+        print("  fills %s (%s): %d entries in %d contests, %d subsets" % (g, b["day"], n_ent, len(pf), len(subsets)))
+    if out:
+        with open(FILL_EVAL, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=FILL_COLS)
+            w.writeheader()
+            w.writerows(out)
+    for line in fill_lines():
+        print("  " + line)
+
+
+def fill_lines():
+    """The random-fill grade in two lines: last night, and across the graded nights."""
+    rows = read(FILL_EVAL)
+    if not rows:
+        return ["Random fills: no night with a saved bank and its standings graded yet"]
+    nights = sorted({(r["date"], r["draft_group"]) for r in rows})
+    by = lambda d, g, sub: next((r for r in rows if (r["date"], r["draft_group"]) == (d, g) and r["subset"] == sub), None)
+    d, g = nights[-1]
+    e, k, bk, c = by(d, g, "kept"), by(d, g, "kept"), by(d, g, "bank"), by(d, g, "cut")
+    ideas = sorted((r for r in rows if (r["date"], r["draft_group"]) == (d, g) and r["subset"].startswith("kept: ")),
+                   key=lambda r: -num(r["avg_dollars"]))
+    pc = lambda x: "%.0f%%" % (100 * num(x))
+    line1 = ("Random fills, %s (your entry counts, %s fills each): yours $%.2f back on $%.2f (%s), top 10%% %s; average fill: bank $%.2f, "
+             "kept $%.2f (beats yours %s), cut $%.2f; ideas (kept): %s" % (
+                 d, k["fills"], num(k["entered_dollars"]), num(k["fees"]), pc(num(k["entered_dollars"]) / num(k["fees"]) if num(k["fees"]) else 0),
+                 pc(k["entered_top10_rate"]), num(bk["avg_dollars"]), num(k["avg_dollars"]), pc(k["beat_entered"]), num(c["avg_dollars"]) if c else 0,
+                 ", ".join("%s $%.2f" % (r["subset"][6:], num(r["avg_dollars"])) for r in ideas)))
+    won = [num(by(dd, gg, "kept")["avg_dollars"]) > num(by(dd, gg, "kept")["entered_dollars"]) for dd, gg in nights if by(dd, gg, "kept")]
+    line2 = "Random fills, %d graded night%s: the kept lineups' average fill beat your entries on %d%s" % (
+        len(won), "" if len(won) == 1 else "s", sum(won), " (too few nights to say)" if len(won) < 10 else "")
+    return [line1, line2]
+
+
 def risers(a):
     """The nightly riser / faller grade (see the docstring), rebuilt whole each run like the cut check."""
     banks = {}
@@ -1439,13 +1547,15 @@ def main():
     sub.add_parser("calweek")
     sub.add_parser("ideas")
     sub.add_parser("risers")
+    fl = sub.add_parser("fills")
+    fl.add_argument("--mirror", required=True)
     fc = sub.add_parser("fieldcheck")
     fc.add_argument("--mirror", required=True)
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fieldcheck": fieldcheck}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "fieldcheck": fieldcheck}[a.cmd](a)
 
 
 if __name__ == "__main__":

@@ -255,6 +255,12 @@ ones to be overweight on. Give its two lines (also in the calibration note): las
 actual minus projection with the rank correlation, and the running count of nights risers beat fallers. The night is
 the unit; under 10 nights say it's too few to call.
 
+**Random fills, nightly** (`python3 scripts/dk_eval.py fills --mirror ../br-adp-mirror`, run by the 2:17am job; rerun it
+once new standings are in): random fills of the owner's own entry counts from the bank, the cut's kept and removed
+lineups and each kept idea, paid against the real fields. Give its two lines (also in the calibration note): last
+night's entries against the average fill from each subset (and how often a kept fill beat them), and the running count
+of nights the kept fills' average beat his entries. The night is the unit; under 10 nights say it's too few to call.
+
 **Monthly** (the first report of each month, and at 30 graded slates): first `python3 scripts/dk_eval.py
 weights` (refits Quality's weights on the earlier 2/3 of the logged slates, tests them on the later 1/3, and
 switches the tiles to them only if they beat equal weights there; commit `analysis/cbb/dk/team_weights.json`),
