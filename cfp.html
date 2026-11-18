@@ -96,12 +96,28 @@
 <div class="shell">
   <div class="masthead">
     <div class="mast-row">
-      <h1>CFB Playoff</h1>
+      <h1 id="title">CFB Playoff</h1>
       <nav id="sitenav" data-sport="cfb" data-page="cfp"></nav>
+      <script>
+        /* One page for both playoff boards: nfl_playoffs.html opens it as cfp.html?league=nfl. */
+        var LEAGUE = /(?:^|[?&])league=nfl(?:&|$)/.test(location.search) ? "nfl" : "cfb";
+        if (LEAGUE === "nfl") {
+          document.getElementById("sitenav").dataset.sport = "nfl";
+          document.getElementById("sitenav").dataset.page = "playoffs";
+          document.getElementById("title").textContent = document.title = "NFL Playoff";
+        }
+      </script>
       <script src="sitenav.js"></script>
       <div class="mast-meta" id="meta"></div>
     </div>
     <div class="controls">
+      <div class="field" id="confField" hidden>
+        <span class="field-label">Conference</span>
+        <span class="seg" role="group" aria-label="Conference" id="confSeg">
+          <button type="button" data-conf="AFC" aria-pressed="true">AFC</button>
+          <button type="button" data-conf="NFC" aria-pressed="false">NFC</button>
+        </span>
+      </div>
       <div class="field">
         <span class="field-label">Position</span>
         <span class="seg" role="group" aria-label="Position" id="posSeg">
@@ -117,7 +133,7 @@
   <div class="teams" id="teams"></div>
   <div class="board" id="board"><div class="empty">Loading…</div></div>
 
-  <p class="footnote">
+  <p class="footnote" id="footCfb">
     <b>Tiers</b> come from Kalshi. Tier 2 is the four teams most likely to hold a top-4 seed: a bye, so at most 3 of the 4 rounds.
     Tier 1 is every other team at least 50% to make the playoff: they can play all 4. Tier 3 is the rest.
     Bye % is the mean of Kalshi's Top-4 Seeds market and its #1–#4 seed markets.
@@ -126,16 +142,28 @@
     <b>Proj 0</b>: CFF projected him out in the latest week. <b>Out N</b>: he hasn't had a box-score line in his team's last N games.
     <b>#2</b>, <b>#3</b>: his spot at the position on his own team by PPG.
   </p>
+  <p class="footnote" id="footNfl" hidden>
+    <b>Tiers</b> come from Kalshi, per conference. Tier 2 is the team most likely to be the #1 seed: the only bye, so at most 3 of the 4 rounds.
+    Tier 1 is every other team at least 50% to make the playoff: they can play all 4. Tier 3 is the rest.
+    Bye % is Kalshi's #1-seed market; Conf % is its conference-champion market.
+    <b>Score</b> is actual Underdog PPG (nflverse stat lines, Underdog's scoring) blended with our banked ETR weekly projections, each weighted by its weeks.
+    Ranked within tier by score only; playoff odds don't move a player inside his tier.
+    <b>Proj 0</b>: his team played in the latest banked week and ETR left him off. <b>Out N</b>: no stat line in his team's last N games.
+    <b>#2</b>, <b>#3</b>: his spot at the position on his own team by PPG.
+  </p>
 </div>
 
 <script>
 "use strict";
+var NFL = LEAGUE === "nfl";
 var TIERS = {
-  1: { title: "Tier 1", sub: "Likely in, likely no bye: can play all 4 rounds" },
-  2: { title: "Tier 2", sub: "Most likely top-4 seeds: bye, 3 rounds max" },
+  1: { title: "Tier 1", sub: NFL ? "Likely in, not the #1 seed: can play all 4 rounds" : "Likely in, likely no bye: can play all 4 rounds" },
+  2: { title: "Tier 2", sub: NFL ? "#1-seed favorite: the bye, 3 rounds max" : "Most likely top-4 seeds: bye, 3 rounds max" },
   3: { title: "Tier 3", sub: "Everyone else" }
 };
-var DATA = null, POS = "QB";
+var SRC = NFL ? "analysis/nfl_playoff.json" : "analysis/cfp.json";
+var DATA = null, POS = "QB", CONF = "AFC";
+function inConf(r) { return !NFL || r.conf === CONF; }
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 function pct(x) { return x == null ? "–" : Math.round(x * 100) + "%"; }
@@ -143,8 +171,9 @@ function f1(x) { return x == null ? "–" : (+x).toFixed(1); }
 
 function renderTeams() {
   $("teams").innerHTML = [1, 2, 3].map(function (t) {
-    var rows = DATA.teams.filter(function (r) { return r.tier === t; }).map(function (r) {
-      return "<li><span>" + esc(r.team) + "</span><span class=\"odds\"><b>" + pct(r.cfp) + "</b> in · bye " + pct(r.p_bye) + "</span></li>";
+    var rows = DATA.teams.filter(function (r) { return r.tier === t && inConf(r); }).map(function (r) {
+      return "<li><span>" + esc(r.team) + "</span><span class=\"odds\"><b>" + pct(NFL ? r.playoff : r.cfp) + "</b> in · bye " + pct(r.p_bye) +
+        (NFL ? " · conf " + pct(r.conf_champ) : "") + "</span></li>";
     }).join("");
     return "<section class=\"tcard tier" + t + "\"><h2>" + TIERS[t].title + "</h2><div class=\"sub\">" + TIERS[t].sub + "</div><ul class=\"tlist\">" + rows + "</ul></section>";
   }).join("");
@@ -153,7 +182,7 @@ function renderTeams() {
 function renderBoard() {
   var html = "<div class=\"row head\"><span></span><span>Player</span><span>Score</span><span>PPG / Proj</span><span class=\"l3\">Last 3</span><span class=\"gp\">G</span></div>";
   [1, 2, 3].forEach(function (t) {
-    var ps = DATA.players.filter(function (p) { return p.pos === POS && p.tier === t; });
+    var ps = DATA.players.filter(function (p) { return p.pos === POS && p.tier === t && inConf(p); });
     html += "<div class=\"tierhead tier" + t + "\"><b>" + TIERS[t].title + "</b><span>" + TIERS[t].sub + " · " + ps.length + " " + POS + "</span></div>";
     html += ps.map(function (p) {
       var tags = "";
@@ -180,14 +209,23 @@ $("posSeg").addEventListener("click", function (e) {
   if (DATA) renderBoard();
 });
 
-fetch("analysis/cfp.json?t=" + Date.now(), { cache: "no-store" })
+$("confSeg").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-conf]");
+  if (!b) return;
+  CONF = b.dataset.conf;
+  Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+  if (DATA) { renderTeams(); renderBoard(); }
+});
+if (NFL) { $("confField").hidden = false; $("footCfb").hidden = true; $("footNfl").hidden = false; }
+
+fetch(SRC + "?t=" + Date.now(), { cache: "no-store" })
   .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(function (d) {
     DATA = d;
-    $("meta").innerHTML = "Kalshi + box scores as of <b>" + esc(d.generated.replace("T", " ")) + "</b> UTC";
+    $("meta").innerHTML = "Kalshi as of <b>" + esc(d.generated.replace("T", " ")) + "</b> UTC" + (d.through ? " · " + esc(d.through) : "");
     renderTeams(); renderBoard();
   })
-  .catch(function (e) { $("board").innerHTML = "<div class=\"empty\">Couldn't load analysis/cfp.json (" + esc(e.message) + ")</div>"; });
+  .catch(function (e) { $("board").innerHTML = "<div class=\"empty\">Couldn't load " + SRC + " (" + esc(e.message) + ")</div>"; });
 </script>
 </body>
 </html>

@@ -6,6 +6,7 @@
   var B = "/br_rankings/";
   var SPORTS = [
     { key: "nfl", label: "NFL", pages: [{ key: "board", label: "Board", href: B + "?league=nfl" }, { key: "analysis", label: "Analysis", href: B + "analysis.html" },
+                                        { key: "playoffs", label: "Playoffs", href: B + "nfl_playoffs.html" },
                                         { key: "survivor", label: "Survivor", href: "/survivor/" }] },
     { key: "nba", label: "NBA", pages: [{ key: "board", label: "Board", href: B + "nba.html" }, { key: "results", label: "Results", href: B + "nba_results.html" }] },
     { key: "cbb", label: "CBB", pages: [{ key: "board", label: "Board", href: B + "cbb.html" }, { key: "dk", label: "DK", href: B + "dk.html" }] },

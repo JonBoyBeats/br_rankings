@@ -1,0 +1,7 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>NFL Playoff</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The NFL playoff board is the CFP page in NFL mode, so every fix reaches both. -->
+<script>location.replace("cfp.html?league=nfl" + location.search.replace(/^\?/, "&") + location.hash);</script>
+<noscript><a href="cfp.html?league=nfl">Open the NFL playoff board</a></noscript>
