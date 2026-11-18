@@ -2747,7 +2747,26 @@ async function loadMirror() {
   var file = NBA_LIKE ? SPORT_MODE + "_latest.json" : "latest.json";
   var data = await fetchJson(file);
   if (!data || !Array.isArray(data.slates)) throw new Error(file + " has no slates array");
+  if (NBA_LIKE) {
+    // A slate drops out of <sport>_latest.json the minute its contest locks, but Underdog takes ranking changes (the swaps
+    // list) until the games start, so tonight's locked slates stay on the board, marked, from <sport>_tonight.json (the
+    // Live page's file: last ADP before lock, no pool or baseline) until the night is over (asked 2026-11-18)
+    var tonight = await fetchJson(SPORT_MODE + "_tonight.json").catch(function () { return null; });
+    var have = {};
+    data.slates.forEach(function (s) { have[s.slate_id] = 1; });
+    ((tonight && tonight.slates) || []).forEach(function (s) {
+      if (have[s.slate_id] || !nightOpen(s.cutoff)) return;
+      s.locked = true;
+      data.slates.push(s);
+    });
+  }
   return data;
+}
+
+/** A locked slate's night runs to 3am Pacific after its lock (every game over, before tomorrow's slates matter). */
+function nightOpen(cutoff, now) {
+  var t = (now == null ? Date.now() : now) - 3 * 3600e3;
+  return pacificDay(new Date(t).toISOString()) <= pacificDay(cutoff);
 }
 
 async function loadNameMaps() {
@@ -2764,7 +2783,7 @@ async function loadNameMaps() {
 
 // ---------------------------------------------------------------- slate wiring
 function slateLabel(s) {
-  return s.sport.toUpperCase() + " · " + (s.title || s.label);
+  return s.sport.toUpperCase() + " · " + (s.title || s.label) + (s.locked ? " (locked)" : "");
 }
 
 function fillSlatePicker() {
@@ -3405,7 +3424,7 @@ function renderMeta(rec) {
   var s = state.slate, d = state.data;
   var parts = [
     "<span>mirror <b>" + whenPT(d.generated_at) + "</b></span>",
-    "<span>slate closes <b>" + whenPT(s.cutoff) + "</b></span>",
+    "<span>slate " + (s.locked ? "locked" : "closes") + " <b>" + whenPT(s.cutoff) + "</b></span>",
     "<span><b>" + s.players.length + "</b> priced</span>"
   ];
   if (s.baseline && s.baseline.captured_at) {
@@ -8223,6 +8242,11 @@ function brrSelfTest() {
   ok("PM ETR tiers: P one tier toward A at 2+ apart, the T4 PRICEY drop and its 'dropped' as the pod replay's (f)",
      etrOk && nbaCombine(5, 3, true).c === 4 && nbaCombine(5, 3, true).flag === "VALUE" && nbaCombine(3, 4, true).c === 5 &&
      nbaCombine(3, 4, true).dropped && nbaCombine(2, 5, true).c === 5 && !nbaCombine(2, 5, true).dropped && nbaCombine(1, 3, true).c === 2);
+  // a locked slate stays on the board through its night: to 3am Pacific after its lock (11-17's 4:22pm PT lock: on at
+  // 11:59pm and 2:59am, off at 3:01am)
+  ok("a locked slate stays on the board until 3am Pacific after its lock",
+     nightOpen("2026-11-18T00:22:00Z", Date.parse("2026-11-18T07:59:00Z")) && nightOpen("2026-11-18T00:22:00Z", Date.parse("2026-11-18T10:59:00Z")) &&
+     !nightOpen("2026-11-18T00:22:00Z", Date.parse("2026-11-18T11:01:00Z")) && nightOpen("2026-11-18T00:22:00Z", Date.parse("2026-11-18T00:30:00Z")));
   ok("new rules: T5 drafted% bands (under 50, 50-60 gray, 60-70 gray, 70+)",
      nbaT5Band(10) === 0 && nbaT5Band(55) === 1 && nbaT5Band(65) === 2 && nbaT5Band(85) === 3 && nbaT5Band(null) === 0);
   var sw = nbaSwapList(["a", "b", "c", "d", "e", "f", "g"], 4, { a: 50, b: 40, c: 30, d: 10, e: 25, f: null, g: 25 });
