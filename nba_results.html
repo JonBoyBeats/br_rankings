@@ -576,7 +576,7 @@ function t1Board(s) {
     var on = ns.filter(function (n) { return n[key]; }), v = on.map(function (n) { return n[key].pairs.length ? n[key][f] : 0; });
     var split = on.filter(function (n) { return n[key].pairs.length; }).length;
     if (!split) return "no split";
-    if (v.some(function (x) { return x == null; })) return "waiting";
+    if (v.some(function (x) { return x == null; })) return "waiting for tonight's data";
     var hs = which === "season" && D.t1_holders && D.t1_holders[key === "t1" ? "pm" : "am"], r = hs && hs[f === "value10" ? "top10" : "top1"];
     return sgn(scale * v.reduce(function (a, x) { return a + x; }, 0) / v.length) +
            (which === "last" ? "" : nn(split, r && r.lo != null ? sgn(r.lo) + " to " + sgn(r.hi) : null));
@@ -584,6 +584,7 @@ function t1Board(s) {
   // last night isn't shown: one night rarely changes which T1 player a seat ends up with, so it reads 0.00 almost always
   var pod = function (w, pair, which, q, key) {
     if (which === "last") return "";
+    if (!(D.pod_replay || {}).h2h) return "waiting for tonight's data";
     var c = ((((D.pod_replay || {}).h2h || {})[w] || {})[pair] || {})[q], v = c ? c[which] : null;
     if (!v || v.diff == null) return "–";
     return sgn(v.diff) + nn(splits(v.dates, key), which === "season" && v.lo != null ? sgn(v.lo) + " to " + sgn(v.hi) : null);
@@ -606,7 +607,8 @@ function t1Board(s) {
   // else "leaning"; "no read" under 5 nights with a split (asked 2026-11-18)
   var verdict = function (label, key, w, pair, side) {
     var h = (D.t1_holders || {})[w], hv = h && h.top10, pv = (((((D.pod_replay || {}).h2h || {})[w] || {})[pair] || {}).top10 || {}).season;
-    if (!h || h.split < 5) return label + ": no read yet (" + (h ? h.split : 0) + " split night" + (h && h.split === 1 ? "" : "s") + ").";
+    if (!h || !hv || hv.diff == null) return label + ": waiting for tonight's data.";     // fields the nightly rebuild adds
+    if (h.split < 5) return label + ": no read yet (" + (h ? h.split : 0) + " split night" + (h && h.split === 1 ? "" : "s") + ").";
     var clear = function (v) { return v && v.lo != null && (v.lo > 0 || v.hi < 0); };
     var who = hv.diff >= 0 ? side : "ADP", hc = clear(hv);
     var out = label + ": " + (hc ? "trust " : "leaning ") + who + (who === side ? " over ADP" : " over " + side) + " (holders " + sgn(hv.diff) +
