@@ -690,6 +690,41 @@ function ogCell(b, units) {
   return sgn(b.v) + (units ? " " + units : "") + " (" + (b.lo != null ? sgn(b.lo) + " to " + sgn(b.hi) + "; " : "") + (b.nights || 0) + " night" + (b.nights === 1 ? "" : "s") + ")";
 }
 function ogWait(s) { wait(s, "the order grades (order_grades.json)"); }
+function ogClear(b) { return !!(b && b.lo != null && b.hi != null && (b.lo > 0 || b.hi < 0)); }
+function ogName(o, lower) { var n = o === "mine" ? "your order" : o === "proj" ? "our projection" : OG_NAMES[o] || o; return lower || o === "mine" || o === "proj" ? n : n; }
+/** A head-to-head's night split from by_night (the first order's score above, below or level with the second's): season
+    every night both ran, last 7 the last 7 of those. The score a night is the order's slope as the file stores it. */
+function ogSplit(w, k, x, y, q, which) {
+  var rows = ((OG || {}).by_night || []).map(function (n) {
+    var t = ((n.tiers || {})[w] || {})[String(k)], a = t && t.orders && t.orders[x], b = t && t.orders && t.orders[y];
+    return a && b && a.slope && b.slope && a.slope[q] != null && b.slope[q] != null ? a.slope[q] - b.slope[q] : null;
+  }).filter(function (v) { return v != null; });
+  if (which === "last7") rows = rows.slice(-7);
+  if (!rows.length) return null;
+  return { won: rows.filter(function (v) { return v > 1e-9; }).length, lost: rows.filter(function (v) { return v < -1e-9; }).length,
+           even: rows.filter(function (v) { return Math.abs(v) <= 1e-9; }).length };
+}
+function ogSplitStr(sp) { return sp ? sp.won + "-" + sp.lost + "-" + sp.even : ""; }
+/** One head-to-head cell: A minus B, its range, nights, the won-lost-even split, and clear / not clear. */
+function ogH2H(b, sp, units) {
+  if (!b || b.v == null) return "–";
+  return sgn(b.v) + (units ? " " + units : "") + " (" + (b.lo != null ? sgn(b.lo) + " to " + sgn(b.hi) + "; " : "") + (b.nights || 0) + " nights" +
+         (sp ? "; " + ogSplitStr(sp) + " W-L-even" : "") + ") " + (ogClear(b) ? "clear" : "not clear");
+}
+/** The clear head-to-heads, season, in words: "ETR clearly beats your order (top 10%)". */
+function ogClearList(pairs) {
+  var out = [];
+  pairs.forEach(function (p) {
+    ["top10", "top1"].forEach(function (q) {
+      var b = p.blk[q] && p.blk[q].season;
+      if (!ogClear(b)) return;
+      var win = b.v > 0 ? p.a : p.b, lose = b.v > 0 ? p.b : p.a;
+      var W = ogName(win), L = ogName(lose);
+      out.push(W.charAt(0).toUpperCase() + W.slice(1) + " clearly beats " + L + " (" + (q === "top10" ? "top 10%" : "top 1%") + ", " + sgn(Math.abs(b.v)) + ")");
+    });
+  });
+  return out;
+}
 /** Follow X when X's season top-10% diff against every other order in the tier excludes zero; Your reads win when X is
     your order; else Toss-up. */
 function ogVerdict(t) {
@@ -709,22 +744,40 @@ function ogVerdict(t) {
   }
   return { text: "Toss-up", why: "no order beats all the others clear of zero at the top 10%" };
 }
+function ogTable(s, head, rows) {
+  var tb = el("table", {}, s), tr = el("tr", {}, el("thead", {}, tb));
+  head.forEach(function (h) { el("th", {}, tr, h); });
+  var body = el("tbody", {}, tb);
+  rows.forEach(function (r) { var row = el("tr", {}, body); r.forEach(function (c) { el("td", {}, row, c); }); });
+}
+var OG_COLS = [["top10", "season"], ["top10", "last7"], ["top1", "season"], ["top1", "last7"]];
+var OG_HEAD = ["Top 10%, season", "Top 10%, last 7", "Top 1%, season", "Top 1%, last 7"];
 function ogTierTable(s, k, w) {
   var t = (((OG || {}).tiers || {})[w] || {})[String(k)];
   el("div", { class: "sub" }, s, w === "pm" ? "Afternoon" : "Morning");
   if (!t || !t.orders) { el("p", { class: "note" }, s, "No grades for this window yet."); return; }
-  var units = ((OG.defs || {}).units) || "";
+  var units = ((OG.defs || {}).units) ? "" : "";
+  var order = ["adp", "etr", "proj", "mine", "lev"].filter(function (o) { return t.orders[o]; });
+  var pairs = Object.keys(t.diffs || {}).map(function (key) { var ab = key.split("-"); return { key: key, a: ab[0], b: ab[1], blk: t.diffs[key] }; });
   var v = ogVerdict(t), box = el("div", { class: "advice" }, s);
   el("div", { class: "advice-h" }, box, v.text);
+  var cl = ogClearList(pairs), ul = el("ul", {}, box);
+  if (cl.length) cl.forEach(function (x) { el("li", {}, ul, x + "."); });
+  else el("li", { class: "flat" }, ul, "No head-to-head is clear of zero on the season.");
   el("p", { class: "note" }, box, v.why.charAt(0).toUpperCase() + v.why.slice(1) + (t.members ? ". " + t.members.charAt(0).toUpperCase() + t.members.slice(1) : "") + ".");
-  var tb = el("table", {}, s), tr = el("tr", {}, el("thead", {}, tb));
-  ["Order", "Top 10%, season", "Top 10%, last 7", "Top 1%, season", "Top 1%, last 7"].forEach(function (h) { el("th", {}, tr, h); });
-  var body = el("tbody", {}, tb);
-  ["adp", "etr", "proj", "mine", "lev"].filter(function (o) { return t.orders[o]; }).forEach(function (o) {
-    var r = el("tr", {}, body), x = t.orders[o];
-    el("td", {}, r, OG_NAMES[o] || o);
-    [["top10", "season"], ["top10", "last7"], ["top1", "season"], ["top1", "last7"]].forEach(function (c) { el("td", {}, r, ogCell((x[c[0]] || {})[c[1]], units)); });
-  });
+  // each order's own score, with its rank correlation beside it (secondary)
+  ogTable(s, ["Order"].concat(OG_HEAD, ["Rank corr, top 10% (season)"]), order.map(function (o) {
+    var x = t.orders[o], rc = x.rank_corr && x.rank_corr.top10 && x.rank_corr.top10.season;
+    return [ogName(o).charAt(0).toUpperCase() + ogName(o).slice(1)].concat(OG_COLS.map(function (c) { return ogCell((x[c[0]] || {})[c[1]], units); }),
+      [rc && rc.v != null ? fmt(rc.v, 2) + (rc.lo != null ? " (" + fmt(rc.lo, 2) + " to " + fmt(rc.hi, 2) + ")" : "") : "–"]);
+  }));
+  // every head-to-head: A minus B
+  ogTable(s, ["Head to head (first minus second)"].concat(OG_HEAD), pairs.map(function (p) {
+    var A = ogName(p.a), B = ogName(p.b);
+    return [A.charAt(0).toUpperCase() + A.slice(1) + " minus " + B].concat(OG_COLS.map(function (c) {
+      return ogH2H((p.blk[c[0]] || {})[c[1]], (p.blk[c[0]] || {}).split ? p.blk[c[0]].split[c[1]] : ogSplit(w, k, p.a, p.b, c[0], c[1]), units);
+    }));
+  }));
   var st = t.stakes;
   if (st) el("p", { class: "note" }, s, "Stakes (pod replay, your seats): top 10% " + ogCell((st.top10 || {}).season) + ", last 7 " + ogCell((st.top10 || {}).last7) +
                                         "; top 1% " + ogCell((st.top1 || {}).season) + ".");
@@ -736,21 +789,27 @@ function orderHeadline() {
     var h = (OG.headline || {})[w];
     if (!h) return;
     el("div", { class: "sub" }, s, w === "pm" ? "Afternoon" : "Morning");
-    var tb = el("table", {}, s), tr = el("tr", {}, el("thead", {}, tb));
-    ["List", "Top 10%, season", "Top 10%, last 7", "Top 1%, season", "Top 1%, last 7"].forEach(function (x) { el("th", {}, tr, x); });
-    var body = el("tbody", {}, tb);
-    ["mine", "adp", "etr", "proj"].filter(function (o) { return (h.lists || {})[o]; }).forEach(function (o) {
-      var r = el("tr", {}, body), x = h.lists[o], vs = (h.vs_mine || {})[o];
-      el("td", {}, r, o === "mine" ? "Your list" : OG_NAMES[o] + "'s list");
-      [["top10", "season"], ["top10", "last7"], ["top1", "season"], ["top1", "last7"]].forEach(function (c) {
-        var b = (x[c[0]] || {})[c[1]], d = vs && vs[c[0]] ? vs[c[0]][c[1]] : null;
-        el("td", {}, r, (b && b.v != null ? fmt(b.v, 2) + "%" : "–") + (d && d.v != null ? " (vs yours " + sgn(d.v) + (d.lo != null ? ", " + sgn(d.lo) + " to " + sgn(d.hi) : "") + ")" : ""));
-      });
+    var lists = ["mine", "adp", "etr", "proj"].filter(function (o) { return (h.lists || {})[o]; });
+    var name = function (o) { return o === "mine" ? "Your list" : (o === "proj" ? "Our projection" : OG_NAMES[o]) + "'s list"; };
+    var vs = Object.keys(h.vs_mine || {}).map(function (o) { return { a: o, b: "mine", blk: h.vs_mine[o] }; });
+    var cl = ogClearList(vs.map(function (p) { return { a: p.a, b: p.b, blk: p.blk }; })).map(function (x) {
+      return x.replace(/^ADP/, "ADP's list").replace(/^ETR/, "ETR's list").replace(/^Our projection/, "Our projection's list").replace(/^Your order/, "Your list")
+              .replace(/beats ADP/, "beats ADP's list").replace(/beats ETR/, "beats ETR's list").replace(/beats our projection/, "beats our projection's list").replace(/beats your order/, "beats your list");
     });
+    var box = el("div", { class: "advice" }, s), ul = el("ul", {}, box);
+    if (cl.length) cl.forEach(function (x) { el("li", {}, ul, x + "."); }); else el("li", { class: "flat" }, ul, "No whole list is clearly ahead of another on the season.");
+    ogTable(s, ["List (share of seats)"].concat(OG_HEAD), lists.map(function (o) {
+      return [name(o)].concat(OG_COLS.map(function (c) { var b = (h.lists[o][c[0]] || {})[c[1]]; return b && b.v != null ? fmt(b.v, 2) + "%" + (b.lo != null ? " (" + fmt(b.lo, 2) + " to " + fmt(b.hi, 2) + ")" : "") : "–"; }));
+    }));
+    ogTable(s, ["Head to head (first minus second)"].concat(OG_HEAD), vs.map(function (p) {
+      return [name(p.a) + " minus yours"].concat(OG_COLS.map(function (c) { var q = p.blk[c[0]] || {}; return ogH2H(q[c[1]], q.split ? q.split[c[1]] : null); }));
+    }));
     var pc = function (b) { return !b || b.v == null ? "–" : fmt(b.v, 0) + (b.lo != null ? " (" + fmt(b.lo, 0) + " to " + fmt(b.hi, 0) + "; " : " (") + (b.nights || 0) + " nights)"; };
     if (h.my_percentile) el("p", { class: "note" }, s, "Your real teams among your list's replays: median percentile " + pc(h.my_percentile.season) +
                                                      ", last 7 " + pc(h.my_percentile.last7) + " (50 is your list's typical replay).");
   });
+  el("p", { class: "note" }, s, "Head to head: the first minus the second, the 80% range from resampling nights, nights, the won-lost-even night split where " +
+     "the night-by-night numbers are on file, and clear when the range excludes zero.");
   fold(s, "Archive: the earlier pod replay panel", function (b) { podReplay(b); });
 }
 function tier(k) {
