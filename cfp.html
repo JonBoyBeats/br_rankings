@@ -77,6 +77,8 @@
   .num small { color: var(--muted); font-size: 11px; }
   .dim { color: var(--muted); }
 
+  .dl { display: inline-flex; align-items: center; height: 34px; padding: 0 13px; border-radius: 7px; font-size: 13.5px; font-weight: 600;
+        text-decoration: none; background: var(--accent); color: var(--bg); white-space: nowrap; }
   .empty { padding: 28px 14px; text-align: center; color: var(--muted); font-size: 14px; }
   .footnote { color: var(--muted); font-size: 12.5px; margin-top: 12px; line-height: 1.6; }
   .footnote b { color: var(--ink); font-weight: 500; }
@@ -88,6 +90,8 @@
     .teams { grid-template-columns: 1fr; }
     .row { grid-template-columns: 24px minmax(0, 1fr) 44px 74px; gap: 6px; padding: 7px 8px; }
     .row > .l3, .row > .gp { display: none; }
+    .sc-dk .row { grid-template-columns: 24px minmax(0, 1fr) 44px 74px 34px; }
+    .sc-dk .row > .gp { display: block; }   /* DK on a phone keeps Upl, the download's order */
     .name { font-size: 14px; }
   }
 </style>
@@ -118,6 +122,13 @@
           <button type="button" data-conf="NFC" aria-pressed="false">NFC</button>
         </span>
       </div>
+      <div class="field" id="scoreField" hidden>
+        <span class="field-label">Scoring</span>
+        <span class="seg" role="group" aria-label="Scoring" id="scoreSeg">
+          <button type="button" data-sc="ud" aria-pressed="true">UD</button>
+          <button type="button" data-sc="dk" aria-pressed="false">DK</button>
+        </span>
+      </div>
       <div class="field">
         <span class="field-label">Position</span>
         <span class="seg" role="group" aria-label="Position" id="posSeg">
@@ -126,6 +137,11 @@
           <button type="button" data-pos="WR" aria-pressed="false">WR</button>
           <button type="button" data-pos="TE" aria-pressed="false">TE</button>
         </span>
+      </div>
+      <div class="field" id="dkField" hidden>
+        <span class="field-label">DraftKings</span>
+        <a class="dl" href="analysis/nfl_dk_rankings.csv" download="dk_playoff_rankings.csv"
+           title="DK's pre-draft rankings file in our order, every player: upload it on DraftKings">Download rankings</a>
       </div>
     </div>
   </div>
@@ -151,6 +167,12 @@
     <b>Proj 0</b>: his team played in the latest banked week and ETR left him off. <b>Out N</b>: no stat line in his team's last N games.
     <b>#2</b>, <b>#3</b>: his spot at the position on his own team by PPG.
   </p>
+  <p class="footnote" id="footDk" hidden>
+    <b>DK</b> scores with DraftKings' rules: full PPR, +3 at 300 passing, 100 rushing and 100 receiving yards, −1 per fumble lost.
+    ETR's projections are converted to DK per player from his own games. <b>ADP</b> is the field's, from DK's rankings file.
+    <b>Upl</b> is his spot in the download: halfway between his ADP and our pick, where our pick is DK score
+    (tier 2 at ¾, tier 3 at ½: rounds they can play) above the position's replacement level. Set DK's pre-draft position limits when you upload.
+  </p>
 </div>
 
 <script>
@@ -162,7 +184,11 @@ var TIERS = {
   3: { title: "Tier 3", sub: "Everyone else" }
 };
 var SRC = NFL ? "analysis/nfl_playoff.json" : "analysis/cfp.json";
-var DATA = null, POS = "QB", CONF = "AFC";
+var DATA = null, POS = "QB", CONF = "AFC", SC = "ud";
+var COLS = {   // what each scoring shows: score, PPG / proj, third and fourth columns
+  ud: { s: "blend", p: "ppg", j: "proj", c3: ["Last 3", function (p) { return f1(p.last3_ppg); }], c4: ["G", function (p) { return p.g + "/" + p.team_g; }] },
+  dk: { s: "dk_blend", p: "dk_ppg", j: "dk_proj", c3: ["ADP", function (p) { return f1(p.adp); }], c4: ["Upl", function (p) { return p.dk_rank == null ? "–" : p.dk_rank; }] }
+};
 function inConf(r) { return !NFL || r.conf === CONF; }
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -180,22 +206,24 @@ function renderTeams() {
 }
 
 function renderBoard() {
-  var html = "<div class=\"row head\"><span></span><span>Player</span><span>Score</span><span>PPG / Proj</span><span class=\"l3\">Last 3</span><span class=\"gp\">G</span></div>";
+  var C = COLS[SC];
+  var html = "<div class=\"row head\"><span></span><span>Player</span><span>Score</span><span>PPG / Proj</span><span class=\"l3\">" + C.c3[0] + "</span><span class=\"gp\">" + C.c4[0] + "</span></div>";
   [1, 2, 3].forEach(function (t) {
-    var ps = DATA.players.filter(function (p) { return p.pos === POS && p.tier === t && inConf(p); });
+    var ps = DATA.players.filter(function (p) { return p.pos === POS && p.tier === t && inConf(p) && p[C.s] >= 5; })
+      .sort(function (a, b) { return b[C.s] - a[C.s]; });
     html += "<div class=\"tierhead tier" + t + "\"><b>" + TIERS[t].title + "</b><span>" + TIERS[t].sub + " · " + ps.length + " " + POS + "</span></div>";
-    html += ps.map(function (p) {
+    html += ps.map(function (p, i) {
       var tags = "";
       if (p.team_depth > 1) tags += "<span class=\"tag\">#" + p.team_depth + "</span>";
       if (p.proj_last === 0) tags += "<span class=\"tag down\">Proj 0</span>";
       if (p.missed_recent > 0) tags += "<span class=\"tag down\">Out " + p.missed_recent + "</span>";
       return "<div class=\"row tier" + t + "\">" +
-        "<span class=\"rank\">" + p.tier_rank + "</span>" +
+        "<span class=\"rank\">" + (i + 1) + "</span>" +
         "<span class=\"who\"><span class=\"name\">" + esc(p.name) + "</span><span class=\"team\">" + esc(p.team) + "</span>" + tags + "</span>" +
-        "<span class=\"cell\">" + f1(p.blend) + "</span>" +
-        "<span class=\"num\">" + f1(p.ppg) + " <small>/ " + f1(p.proj) + "</small></span>" +
-        "<span class=\"num l3\">" + f1(p.last3_ppg) + "</span>" +
-        "<span class=\"num gp dim\">" + p.g + "/" + p.team_g + "</span></div>";
+        "<span class=\"cell\">" + f1(p[C.s]) + "</span>" +
+        "<span class=\"num\">" + f1(p[C.p]) + " <small>/ " + f1(p[C.j]) + "</small></span>" +
+        "<span class=\"num l3\">" + C.c3[1](p) + "</span>" +
+        "<span class=\"num gp dim\">" + C.c4[1](p) + "</span></div>";
     }).join("");
   });
   $("board").innerHTML = html;
@@ -216,7 +244,16 @@ $("confSeg").addEventListener("click", function (e) {
   Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
   if (DATA) { renderTeams(); renderBoard(); }
 });
-if (NFL) { $("confField").hidden = false; $("footCfb").hidden = true; $("footNfl").hidden = false; }
+$("scoreSeg").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-sc]");
+  if (!b) return;
+  SC = b.dataset.sc;
+  Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+  $("dkField").hidden = $("footDk").hidden = SC !== "dk";
+  document.body.classList.toggle("sc-dk", SC === "dk");
+  if (DATA) renderBoard();
+});
+if (NFL) { $("confField").hidden = $("scoreField").hidden = false; $("footCfb").hidden = true; $("footNfl").hidden = false; }
 
 fetch(SRC + "?t=" + Date.now(), { cache: "no-store" })
   .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
