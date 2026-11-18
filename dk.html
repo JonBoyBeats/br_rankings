@@ -314,12 +314,14 @@
 
   <h2>3. Build a contest's portfolio</h2>
   <details class="news"><summary>The builder's columns</summary><div class="note">Press <b>Build</b> on a contest above.
-    <b>Added</b>: the set's expected payout with the lineup minus without it (your lineups compete with each other);
-    <b>+Cover</b>: the rise in nights at least one of yours reaches the top 1% (or cashes); <b>Alone</b>: its expected payout by
-    itself; <b>Shared</b>: the most players it shares with a pick; <b>Quality</b>: expected points less what its salary buys at
-    the field's rate; <b>Core %</b>: the simulated field's share holding its three highest salaries; <b>Dupes</b>: field entries
-    expected to hold the identical lineup. Click an idea to highlight its lineups and bring them to the top. Auto-fill adds by
-    Added within Max exposure, Min unique and Max core. Picks save to the contest as you go.</div></details>
+    <b>Tier</b>: A / B / C, split where lineups differ by more than the sim's own noise (its odd nights against its even), so
+    lineups in one tier are a toss-up; <b>ROI %</b>: its expected payout alone less the fee, over the fee; <b>Top 10% / Top 1% /
+    Cash</b>: how often it gets there alone; <b>Added ROI</b>: what it adds to the set (with it less without: your lineups
+    compete with each other), over the fee; <b>+Cover</b>: the rise in nights at least one of yours reaches the top 1% (or
+    cashes); <b>Shared</b>: the most players it shares with a pick; <b>Own</b>: its players' projected ownership summed;
+    <b>Core %</b>: the simulated field's share holding its three highest salaries; <b>Dupes</b>: field entries expected to
+    hold the identical lineup. Click an idea to highlight its lineups and bring them to the top. Auto-fill adds by Added
+    within Max exposure, Min unique and Max core. Picks save to the contest as you go.</div></details>
   <div class="opts">
     <label class="field"><span class="field-label">+Cover counts</span><select id="bpCover" style="width:auto"><option value="top1">top 1%</option><option value="cash">cashing</option></select></label>
     <button type="button" id="bpAuto" disabled>Auto-fill the rest</button>
@@ -353,6 +355,8 @@ var view = { pos: "all", team: "", q: "", sort: "value", dir: -1, panel: null };
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 function money(n) { return "$" + Number(n).toLocaleString("en-US"); }
+function roiTxt(x) { return x == null ? "–" : (x >= 0 ? "+" : "") + Math.round(100 * x) + "%"; }
+function pct1(x) { return (100 * x).toFixed(1) + "%"; }
 function cents(n) { return "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || "null"); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
 function key() { return "dkcbb:" + slate.draft_group_id; }
@@ -1151,6 +1155,13 @@ function bpLoad(lineups, c, o, S, extra) {
          names: lineups.map(function (L) { return L.slots.map(function (id) { return shortName(by[id].name); }).join(" · "); }),
          qual: Array.from(sim.quality), core: Array.from(sim.core), dupe: Array.from(sim.tie),
          why: "", ruleMsg: "" }, extra || {});
+  // each lineup alone: ROI % ((expected payout - fee) / fee), its top-1% / top-10% / cash rates, and its tier by the
+  // sim's own noise (dk_sim.js aloneStats, tiers)
+  var st = DKSim.aloneStats(sim, c), fee = c.entry_fee || 0;
+  BP.fee = fee; BP.t1 = Array.from(st.top1); BP.t10 = Array.from(st.top10); BP.cashR = Array.from(st.cash);
+  BP.roi = BP.alone.map(function (v) { return fee ? (v - fee) / fee : null; });
+  var tr = DKSim.tiers(BP.alone, st.odd, st.even);
+  BP.tier = tr.tier; BP.sigma = tr.sigma;
   if (BP.picks) b.set(BP.picks);
   ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = false; });
   BP.group = BP.group || null;
@@ -1266,7 +1277,8 @@ function bpRender(note) {
   var lineups = picked.map(function (k) { return BP.pool[k]; });
   var need = BP.o && BP.o.n;
   $("bpStatus").textContent = (note ? note + " " : "") + (BP.review ? BP.contest.name + ": " + picked.length + " of " + need + " picked, saved as its portfolio. " : "") +
-    BP.pool.length + " lineups in the pool, " + BP.nights + " nights" +
+    BP.pool.length + " lineups in the pool, " + BP.nights + " nights" + (BP.fee ? "; tiers A / B / C split where lineups differ by more than the sim's noise (one lineup's ROI \u00b1" +
+      Math.round(100 * BP.sigma / BP.fee) + " points, from its odd against its even nights)" : "") +
     ". Re-scored every lineup in " + Math.round(BP.ms) + " ms" + (BP.ms > 1500 ? " (slow: a smaller Keep or fewer nights re-scores faster)" : "") + "." +
     (BP.why ? " " + BP.why + "." : "") + BP.ruleMsg;
   var cnt = {}, by = {};
@@ -1279,6 +1291,8 @@ function bpRender(note) {
     (function () { var tc = DKSim.topCore(ctx(), lineups); return tc ? ". Largest core: " + esc(coreName(tc.key)) + " in " + tc.n + " of " + tc.of + " (" + Math.round(100 * tc.share) + "%)" : ""; })() + "</div>"
     : '<div class="note">Nothing picked yet: Add lineups below, or Auto-fill.</div>';
   var get = { proj: function (k) { return BP.proj[k]; }, own: function (k) { return BP.own[k]; }, alone: function (k) { return BP.alone[k]; },
+              tier: function (k) { return -"ABC".indexOf(BP.tier[k]) * 1e6 + BP.alone[k]; }, roi: function (k) { return BP.alone[k]; },
+              t10: function (k) { return BP.t10[k]; }, t1: function (k) { return BP.t1[k]; }, cash: function (k) { return BP.cashR[k]; },
               qual: function (k) { return BP.qual[k]; }, core: function (k) { return BP.core[k]; }, dupe: function (k) { return BP.dupe[k]; },
               value: function (k) { return BP.scores[k] ? BP.scores[k].value : -1; },
               cover: function (k) { return BP.scores[k] ? BP.scores[k][cov] : -1; }, shared: function (k) { return BP.shared[k]; } };
@@ -1302,9 +1316,18 @@ function bpRender(note) {
         (f[2] === "with" ? "with " : "without ") + esc(filtName(f[0], f[1])) + " &times;</button>"; }).join("") +
       '<button type="button" data-fclear="1" style="height:26px;padding:0 8px;font-size:12px">Clear all</button><span class="note" style="align-self:center;margin:0">' + hidden + " lineup" + (hidden === 1 ? "" : "s") + " hidden</span>"
     : '<span class="note" style="margin:0">Filter with the panel beside the table (players, combos, cores), or click a name in a lineup to hide every lineup with him.</span>';
+  // the filtered set in brief (and the highlighted idea within it): count, average ROI %, top-10% rate
+  var brief = function (ks) { return ks.length + " lineup" + (ks.length === 1 ? "" : "s") + ", average ROI " + (BP.fee ? roiTxt(ks.reduce(function (t, k) { return t + BP.roi[k]; }, 0) / Math.max(1, ks.length)) : "–") +
+    ", top 10% " + pct1(ks.reduce(function (t, k) { return t + BP.t10[k]; }, 0) / Math.max(1, ks.length)); };
+  if (active.length || BP.group) {
+    var inGrp = BP.group ? rest.filter(function (k) { return grp(k) === BP.group; }) : null;
+    $("bpWithout").insertAdjacentHTML("beforeend", '<span class="note" id="bpBrief" style="align-self:center;margin:0 0 0 8px"><b>' + (active.length ? "Filtered" : "In view") + ":</b> " + brief(rest) +
+      (inGrp ? "; <b>" + esc(BP.group) + ":</b> " + brief(inGrp) : "") + "</span>");
+  }
   var g = get[BP.sort];
   rest.sort(function (x, y) { return (BP.group ? (grp(y) === BP.group) - (grp(x) === BP.group) : 0) || (g(x) - g(y)) * BP.dir; });
-  var cols = [["proj", "Proj"], ["own", "Own"], ["qual", "Quality"], ["core", "Core %"], ["dupe", "Dupes (sim's estimate)"], ["alone", "Alone"], ["value", "Added"], ["cover", "+Cover"], ["shared", "Shared"]];
+  var cols = [["tier", "Tier"], ["roi", "ROI %"], ["t10", "Top 10%"], ["t1", "Top 1%"], ["cash", "Cash"], ["core", "Core %"], ["dupe", "Dupes (sim's estimate)"],
+              ["value", "Added ROI"], ["cover", "+Cover"], ["shared", "Shared"], ["own", "Own"]];
   var head = '<tr><th class="l"></th><th class="l">Lineup</th><th class="l">Idea</th>' + cols.map(function (c) {
     return '<th data-k="' + c[0] + '" class="' + (BP.sort === c[0] ? "on" : "") + '">' + c[1] + (BP.sort === c[0] ? (BP.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>";
   function row(k, isPicked) {
@@ -1313,9 +1336,9 @@ function bpRender(note) {
     return '<tr class="' + (isPicked ? "picked" : "") + (inG ? " ingroup" : "") + (over.length ? " over" : "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' + (isPicked ? "bpRm" : "bpAdd") + '"' +
       (over.length ? ' disabled title="' + esc(over.map(function (x) { return x.name + " is in " + x.n + " of your " + BP.o.n + " (his limit " + x.limit + ": Max exposure " + Math.round(100 * BP.o.maxExpo) + "%)"; }).join("; ")) + '"' : "") + ">" +
       (isPicked ? "Remove" : "Add") + '</button></td><td class="l nm">' + BP.pool[k].slots.map(function (id) {
-        return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") + '</td><td class="l mut" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(grp(k)) + '">' + esc(grp(k)) + "</td><td>" + BP.proj[k].toFixed(1) + "</td><td>" + Math.round(BP.own[k]) +
-      "%</td><td>" + (BP.qual[k] >= 0 ? "+" : "") + BP.qual[k].toFixed(1) + "</td><td>" + (100 * BP.core[k]).toFixed(1) + "%</td><td>" + (BP.dupe[k] ? BP.dupe[k].toFixed(1) : "0") + "</td><td>" + cents(BP.alone[k]) + "</td><td>" + (sc ? cents(sc.value) : "–") + "</td><td>" + (sc ? (100 * sc[cov]).toFixed(1) + "%" : "–") +
-      "</td><td>" + (picked.length ? BP.shared[k] : "–") + "</td></tr>";
+        return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") + '</td><td class="l mut" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(grp(k)) + '">' + esc(grp(k)) + "</td><td><b>" + BP.tier[k] + "</b></td><td>" + roiTxt(BP.roi[k]) + "</td><td>" + pct1(BP.t10[k]) + "</td><td>" + pct1(BP.t1[k]) + "</td><td>" + pct1(BP.cashR[k]) +
+      "</td><td>" + (100 * BP.core[k]).toFixed(1) + "%</td><td>" + (BP.dupe[k] ? BP.dupe[k].toFixed(1) : "0") + "</td><td>" + (sc && BP.fee ? roiTxt((sc.value - BP.fee) / BP.fee) : "–") +
+      "</td><td>" + (sc ? (100 * sc[cov]).toFixed(1) + "%" : "–") + "</td><td>" + (picked.length ? BP.shared[k] : "–") + "</td><td>" + Math.round(BP.own[k]) + "%</td></tr>";
   }
   $("bpTable").innerHTML = head + picked.map(function (k) { return row(k, true); }).join("") + rest.slice(0, 200).map(function (k) { return row(k, false); }).join("");
   $("bpTableWrap").hidden = false; $("bpSide").hidden = false;

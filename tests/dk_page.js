@@ -570,8 +570,20 @@ function audit(name, L, o) {
         (await pg.$$eval("#bpTable tr", r => r.length)) > 50);
   const cols = await pg.$$eval("#bpTable th", t => t.map(x => x.textContent.replace(/[↓↑ ]+$/, "")));
   const qc = await pg.evaluate(() => ({ q: BP.qual.slice(0, 5), c: BP.core.slice(0, 5), n: BP.qual.length, k: BP.pool.length }));
-  check("review: Quality and Core % beside the sim value, from the sim", ["Quality", "Core %", "Alone", "Added"].every(c => cols.includes(c)) &&
+  check("review: ROI-first columns, the dollar columns gone", ["Tier", "ROI %", "Top 10%", "Top 1%", "Cash", "Core %", "Added ROI", "+Cover", "Shared", "Own"].every(c => cols.includes(c)) &&
+        !["Proj", "Quality", "Alone", "Added"].some(c => cols.includes(c)) &&
         qc.n === qc.k && qc.q.every(Number.isFinite) && qc.c.every(v => v >= 0 && v <= 1), JSON.stringify({ cols, qc }));
+  const rv = await pg.evaluate(() => {
+    const K = BP.pool.length, ok = [];
+    for (let k = 0; k < K; k++) ok.push(Math.abs(BP.roi[k] - (BP.alone[k] - BP.fee) / BP.fee) < 1e-9);
+    const rank = { A: 0, B: 1, C: 2 }, order = BP.pool.map((L, k) => k).sort((a, b) => BP.alone[b] - BP.alone[a]);
+    const mono = order.every((k, i) => i === 0 || rank[BP.tier[k]] >= rank[BP.tier[order[i - 1]]]);
+    const rates = BP.pool.every((L, k) => BP.t1[k] >= 0 && BP.t1[k] <= BP.t10[k] + 1e-9 && BP.t10[k] <= 1 && BP.cashR[k] >= 0 && BP.cashR[k] <= 1);
+    return { roi: ok.every(Boolean), mono, rates, sigma: BP.sigma, tiers: [...new Set(BP.tier)].sort().join(""), fee: BP.fee };
+  });
+  check("review: ROI % is (expected payout alone - fee) / fee", rv.roi && rv.fee > 0, JSON.stringify(rv));
+  check("review: tiers A/B/C follow the sim value, split by its measured noise", rv.mono && rv.tiers.startsWith("A") && Number.isFinite(rv.sigma) && rv.sigma > 0, JSON.stringify(rv));
+  check("review: top-1%, top-10% and cash rates from the sim's nights", rv.rates);
   await pg.click("#bpClear");
   const step = await pg.evaluate(() => {
     const b = BP.b, out = [], ks = [];
@@ -709,6 +721,9 @@ function audit(name, L, o) {
   check("panel: players listed with their lineups in view", sp.view === await pg.evaluate(id => BP.pool.filter(L => L.ids.includes(id)).length, sp.key), JSON.stringify(sp));
   await pg.click(`#bpSideList .srow[data-key="${sp.key}"]`);
   let ks = await shownIds();
+  const brief = await pg.evaluate(() => ({ txt: (document.getElementById("bpBrief") || {}).textContent || "",
+    n: BP.pool.map((L, k) => k).filter(k => !BP.b.picked.includes(k) && !bpHidden(k)).length }));
+  check("panel: the filtered set's summary: count, average ROI, top 10%", new RegExp("Filtered: " + brief.n + " lineups?, average ROI [+-]\\d+%, top 10% \\d").test(brief.txt), JSON.stringify(brief));
   check("panel: tap once, only lineups with him", ks.length > 0 && await pg.evaluate(([ks, id]) => ks.every(k => BP.pool[k].ids.includes(id)), [ks, sp.key]) &&
         /with /.test(await pg.textContent("#bpWithout")));
   await pg.click(`#bpSideList .srow[data-key="${sp.key}"]`);

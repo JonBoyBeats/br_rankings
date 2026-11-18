@@ -487,6 +487,45 @@
     cores(ctx, lineups).forEach(function (k) { c[k] = (c[k] || 0) + 1; if (!best || c[k] > c[best]) best = k; });
     return best ? { key: best, n: c[best], of: lineups.length, share: c[best] / lineups.length } : null;
   }
+  // Each lineup alone in a contest, from the sim's nights: how often it places in the top 1%, the top 10% and the
+  // cash, and its payout alone on the odd and the even nights (for tiers). {top1, top10, cash, odd, even} arrays.
+  function aloneStats(sim, contest) {
+    var S = sim.S, K = sim.K, size = contest.size || 0, paid = payTable(contest).length - 1;
+    var T1 = Math.max(1, Math.ceil(0.01 * size)), T10 = Math.max(1, Math.ceil(0.1 * size));
+    var odd = [], even = [];
+    for (var s = 0; s < S; s++) (s % 2 ? odd : even).push(s);
+    var bo = builder(sim, contest, odd), be = builder(sim, contest, even);
+    var out = { top1: new Float32Array(K), top10: new Float32Array(K), cash: new Float32Array(K), odd: new Float32Array(K), even: new Float32Array(K) };
+    for (var k = 0; k < K; k++) {
+      var a = 0, b = 0, c = 0;
+      for (var s2 = 0; s2 < S; s2++) {
+        var q = Math.round(1 + sim.fa[k * S + s2]);
+        if (q <= T1) a++;
+        if (q <= T10) b++;
+        if (q <= paid) c++;
+      }
+      out.top1[k] = a / S; out.top10[k] = b / S; out.cash[k] = c / S; out.odd[k] = bo.alone(k); out.even[k] = be.alone(k);
+    }
+    return out;
+  }
+  // Tiers A / B / C by the sim's own noise: the spread of each lineup's odd-night less even-night value gives the
+  // noise of one lineup's value (sigma = sd / 2: the full value is the halves' mean); two lineups differ by more than
+  // noise when their values are 2 x sqrt(2) x sigma apart. Best first, a lineup starts the next tier once it falls that
+  // far below the top of its own; C holds the rest. {tier: ["A", ...], sigma}
+  function tiers(v, h1, h2) {
+    var n = v.length, d = [], m = 0;
+    for (var i = 0; i < n; i++) { d.push(h1[i] - h2[i]); m += (h1[i] - h2[i]) / n; }
+    var sd = 0; d.forEach(function (x) { sd += (x - m) * (x - m) / Math.max(1, n - 1); });
+    var sigma = Math.sqrt(sd) / 2, gap = 2 * Math.SQRT2 * sigma, order = [];
+    for (var j = 0; j < n; j++) order.push(j);
+    order.sort(function (a, b) { return v[b] - v[a]; });
+    var out = new Array(n), t = 0, top = n ? v[order[0]] : 0;
+    order.forEach(function (k) {
+      if (t < 2 && v[k] < top - gap) { t++; top = v[k]; }
+      out[k] = "ABC"[t];
+    });
+    return { tier: out, sigma: sigma };
+  }
   // a lineup's 28 player pairs, as keys
   function pairs(ids) {
     var s = ids.slice().sort(), out = [];
@@ -764,7 +803,7 @@
   }
 
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
-           gatedProj: gatedProj, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
+           gatedProj: gatedProj, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, poolDraw: poolDraw, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
            CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
