@@ -226,6 +226,7 @@
     <button type="button" data-pos="all" aria-pressed="true">All</button>
     <button type="button" data-pos="G" aria-pressed="false">G</button>
     <button type="button" data-pos="F" aria-pressed="false">F</button>
+    <button type="button" id="qOnly" aria-pressed="false" title="Only the players tagged Questionable (by DraftKings or the outs file), to mark X on the ones not worth the risk">Q</button>
     <select id="team" style="width:auto;height:28px;font-size:13px;padding:3px 8px"><option value="">All teams</option></select>
     <input type="search" id="search" placeholder="Search players">
     <button type="button" id="resetProj" title="Put every Proj back to ours">Reset Proj</button>
@@ -465,14 +466,21 @@ function gateText() {
     (gate.override ? " (" + gate.version + ", " + gate.override + ")." : ": DraftKings' average beat ours there over " + gate.nights + " graded nights.");
 }
 
+// Questionable by any source: our status, DraftKings' tag or the outs file (not Out)
+function isQ(r) {
+  var notOut = function (x) { return x && !/^\s*O/i.test(String(x)); };
+  return r.status !== "Out" && (r.status === "Questionable" || notOut(r.status_dk) || notOut(r.status_file));
+}
 function renderPlayers() {
   var list = rows.filter(function (r) {
     if (view.pos === "G" && !isG(r)) return false;
     if (view.pos === "F" && !isF(r)) return false;
     if (view.team && r.team !== view.team) return false;
     if (view.q && r.name.toLowerCase().indexOf(view.q) < 0) return false;
+    if (view.qOnly && !isQ(r)) return false;
     return true;
   });
+  $("qOnly").textContent = "Q (" + rows.filter(isQ).length + ")";
   var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
               avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; },
               miss: function (r) { return r.miss_dk || 0; }, own: own }[view.sort];
@@ -1664,6 +1672,7 @@ $("bpTable").addEventListener("click", function (e) {
 $("news").addEventListener("click", function (e) { var t = e.target.closest(".tx"); if (t) t.parentNode.classList.toggle("open"); });
 $("search").addEventListener("input", function (e) { view.q = e.target.value.trim().toLowerCase(); renderPlayers(); });
 $("team").addEventListener("change", function (e) { view.team = e.target.value; renderPlayers(); });
+$("qOnly").addEventListener("click", function () { view.qOnly = !view.qOnly; this.setAttribute("aria-pressed", String(view.qOnly)); renderPlayers(); });
 document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
   b.addEventListener("click", function () {
     view.pos = b.dataset.pos;

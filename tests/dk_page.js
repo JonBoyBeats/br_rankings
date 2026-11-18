@@ -90,6 +90,20 @@ function audit(name, L, o) {
   await pg.waitForSelector(".row");
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
   check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#statusInfo")));
+  // the Q filter: only players Questionable by any source; X on one excludes him as anywhere else; off shows everyone
+  await pg.evaluate(() => { view.panel = null; renderTiles(); });
+  const playersN = await pg.$$eval("#players .row", r => r.length);
+  await pg.click("#qOnly");
+  const qRows = await pg.$$eval("#players .row", r => r.map(x => x.dataset.id));
+  const wantQ = Object.keys(P).filter(id => { const r = P[id], no = x => x && !/^\s*O/i.test(String(x));
+    return r.status !== "Out" && (r.status === "Questionable" || no(r.status_dk) || no(r.status_file)); });
+  check("Q filter: only the Questionable players, counted on the button", qRows.length > 0 && JSON.stringify(qRows.slice().sort()) === JSON.stringify(wantQ.slice().sort()) &&
+        (await pg.textContent("#qOnly")) === "Q (" + wantQ.length + ")", JSON.stringify([qRows.length, wantQ.length]));
+  await pg.click(`#players .row[data-id="${qRows[0]}"] .excl`);
+  check("Q filter: X on a Q player excludes him", await pg.evaluate(id => !!state.excl[id], qRows[0]));
+  await pg.click(`#players .row[data-id="${qRows[0]}"] .excl`);
+  await pg.click("#qOnly");
+  check("Q filter: off, everyone again", (await pg.$$eval("#players .row", r => r.length)) === playersN);
   check("match warning: none when every game matched", !(await pg.$("#matchWarn")));
   const mw = await pg.evaluate(() => {
     const g = rows[0].game, kept = rows.map(r => r.event);
