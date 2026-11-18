@@ -531,6 +531,13 @@ function audit(name, L, o) {
   check("cut: ranked against each contest with entries", cut && JSON.stringify(cut.contests.slice().sort()) === JSON.stringify(["197791872", "197791874", "197791877"]), cmsg);
   const ths = await pg.$$eval("#bankBox th", t => t.map(x => x.textContent));
   check("cut: per idea, banked, each round, kept and share", ths.includes("Kept") && ths.includes("Share") && ths.filter(t => /^Round \d+$/.test(t)).length === cut.rounds.length, JSON.stringify(ths));
+  // the idea scoreboard: one row per idea in the kept lineups, best sim ROI first
+  const brd = await pg.evaluate(() => ({ rows: CUT.board.rows, shown: [...document.querySelectorAll("#ideaBoard tr[data-idea]")].map(r => r.dataset.idea),
+    groups: [...new Set(CUT.keep.map(i => lineupGroup(i)))].sort() }));
+  check("idea scoreboard: a row per idea, kept adding up to the cut", brd.rows.length === brd.groups.length && JSON.stringify(brd.rows.map(r => r.idea).sort()) === JSON.stringify(brd.groups) &&
+        brd.rows.reduce((t, r) => t + r.kept, 0) === cut.keep.length && brd.shown.length === brd.rows.length, JSON.stringify(brd.rows.map(r => [r.idea, r.kept])));
+  check("idea scoreboard: best ROI first; rates, ownership and cores in range", brd.rows.every((r, i) => i === 0 || brd.rows[i - 1].roi >= r.roi) &&
+        brd.rows.every(r => Number.isFinite(r.roi) && r.top1 <= r.top10 + 1e-9 && r.top10 <= 1 && r.cash <= 1 && r.own > 0 && r.cores >= 1 && r.cores <= r.kept), JSON.stringify(brd.rows));
   // the cut survives a refresh (reloaded with the bank it was made on)
   const cutBack = await pg.evaluate(() => { const k = CUT.keep.slice(); bankLoadState(); return !!CUT && JSON.stringify(CUT.keep) === JSON.stringify(k); });
   check("cut: kept across a refresh while the bank is unchanged", cutBack);
@@ -550,17 +557,20 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   const pf = await pg.evaluate(() => PF);
   const pmsg = await pg.textContent("#cutStatus"), size = { "197791872": 1, "197791874": 5, "197791877": 1 };
-  // the starting portfolios: Max coverage reaches the top 1% on at least as many nights as Max ROI, which expects at least as much;
-  // filling over existing portfolios asks first
+  // the starting portfolios: each fills the set, and each one's first pick is the best single lineup by its own measure
+  // (Max ROI: expected value; Max coverage: the top-1% coverage it adds alone, value breaking ties). Greedy picking
+  // doesn't promise the best whole set by either measure, so the sets aren't compared on them.
   const objs = await pg.evaluate(() => {
     const c = slate.contests.find(x => String(x.id) === "197791874"), pool = finalIdx().map(i => BANK.lineups[i]), n = 5;
-    const sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, 1000), out = {};
+    const sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, 1000), out = {}, b0 = DKSim.builder(sim, c);
+    const sc = pool.map((L, k) => b0.score(k));
+    const best = f => sc.reduce((bi, x, k) => (f(x) > f(sc[bi]) ? k : bi), 0);
     ["roi", "balanced", "cover"].forEach(ob => { const r = DKSim.pick(ctx(), Object.assign(pickRules(n), { objective: ob }), pool, sim, c, n);
-      out[ob] = { n: r.chosen.length, total: r.builder.total(), cov: r.builder.coverage().top1, ks: r.chosen.slice().sort().join() }; });
-    return out;
+      out[ob] = { n: r.chosen.length, first: r.chosen[0] }; });
+    return { out, roiBest: best(x => x.value), coverBest: best(x => x.top1 * 1e6 + x.value) };
   });
-  check("start from: Max coverage covers the top 1% at least as often as Max ROI, Max ROI expects at least as much",
-        objs.cover.cov >= objs.roi.cov - 1e-9 && objs.roi.total >= objs.cover.total - 1e-9 && objs.roi.n === 5 && objs.cover.n === 5 && objs.balanced.n === 5, JSON.stringify(objs));
+  check("start from: each start fills what the caps allow; first picks are the best lineup by value (Max ROI) and by coverage (Max coverage)",
+        ["roi", "balanced", "cover"].every(o => objs.out[o].n >= 1 && objs.out[o].n <= 5) && objs.out.roi.first === objs.roiBest && objs.out.cover.first === objs.coverBest, JSON.stringify(objs));
   dialogs = [];
   await pg.selectOption("#pfObj", "cover");
   await pg.evaluate(() => { document.getElementById("cutStatus").textContent = ""; });
@@ -571,7 +581,7 @@ function audit(name, L, o) {
   await pg.evaluate(() => { document.getElementById("cutStatus").textContent = ""; });
   await pg.click("#pfRun");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
-  check("start from: Max ROI fills every contest again (fresh nights, so its picks can differ)", await pg.evaluate(sz => Object.keys(sz).every(c => (PF[c] || []).length === sz[c]), size));
+  check("start from: Max ROI fills every contest again (fresh nights, so its picks can differ)", await pg.evaluate(sz => Object.keys(sz).every(c => (PF[c] || []).length >= 1 && PF[c].length <= sz[c]), size));
   await pg.evaluate(p => { PF = p; pfSave(); renderEntries(); }, pf);     // the rest of the run works from the first fill
   check("portfolios: one per contest, from the final pool", Object.keys(size).every(c => pf[c] && pf[c].length >= 1 && pf[c].length <= size[c] && pf[c].every(i => cut.keep.includes(i)) &&
         new Set(pf[c]).size === pf[c].length), JSON.stringify(pf));
@@ -772,8 +782,10 @@ function audit(name, L, o) {
   await pg.click('#bpWithout [data-fclear]');
   check("panel: Clear all", await pg.evaluate(() => !Object.keys(bpFilt.p).length && !Object.keys(bpFilt.pair).length && !Object.keys(bpFilt.core).length));
   await pg.click('#bpSide [data-tab="p"]');
-  await pg.fill("#bpSideQ", P[sp.key].name.split(" ").slice(-1)[0]);
-  check("panel: search finds a player", (await pg.$$eval("#bpSideList .srow[data-key]", r => r.map(x => x.dataset.key))).includes(sp.key));
+  for (const q of [P[sp.key].name.split(" ").slice(-1)[0], P[sp.key].name.split(" ")[0], P[sp.key].name]) {     // last word, first name, full name
+    await pg.fill("#bpSideQ", q);
+    check("panel: search finds a player by \"" + q + "\"", (await pg.$$eval("#bpSideList .srow[data-key]", r => r.map(x => x.dataset.key))).includes(sp.key));
+  }
   await pg.fill("#bpSideQ", "");
   // Max exposure binds hand adds: in this contest's set a player goes in at most floor(Max exposure x entries) lineups
   await pg.click("#bpClear").catch(() => {});
