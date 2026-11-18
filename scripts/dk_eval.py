@@ -357,6 +357,9 @@ def nightly(a):
             for key in ("hand", "auto"):
                 if b.get(key):
                     grade(key, [lineup(b["pool"][i]) for i in b[key]], b["pool"], "the build's")
+        # the Auto-fill benchmark: what Pick portfolios would have entered from the same final pool (Save build, 2026-11-18)
+        for b in [b for b in banks if (b.get("auto_portfolios") or {}).get(cid)][-1:]:
+            grade("auto_kept", [lineup(b["pool"][i]) for i in b["auto_portfolios"][cid]], b["pool"], "the bank's")
         mine = [e for e in entries if e["name"].lower().startswith(USER)]
         if mine:
             grade("mine", [(e["rank"] <= top10, e["rank"] <= paid, pay.get(e["rank"], 0), e["points"]) for e in mine],
@@ -1061,7 +1064,7 @@ def calnote(a):
     held = [h for h in held if h is not None]
     print("Cut check, last night: %s. 'Kept averages more but reaches the top 10%% less' held on %d of %d graded nights." % (
         line or "no saved bank scored yet", sum(held), len(held)))
-    for line in riser_lines() + fill_lines():
+    for line in riser_lines() + fill_lines() + auto_lines():
         print(line)
     fe = [r for r in read(FIELD_EVAL) if r["date"] == last]
     if fe:
@@ -1095,7 +1098,7 @@ def readout(a):
     print_audit(full=True)
     print_ideas()
     print()
-    for line in riser_lines() + fill_lines():
+    for line in riser_lines() + fill_lines() + auto_lines():
         print(line)
     print()
     ev, kind = counted(read(EVAL))
@@ -1454,6 +1457,25 @@ def fill_lines():
     line2 = "Random fills, %d graded night%s: the kept lineups' average fill beat your entries on %d%s" % (
         len(won), "" if len(won) == 1 else "s", sum(won), " (too few nights to say)" if len(won) < 10 else "")
     return [line1, line2]
+
+
+def auto_lines():
+    """Your entries against the Auto-fill benchmark (auto_kept), last night and across the nights that have both."""
+    ev = read(EVAL)
+    nights = {}
+    for r in ev:
+        if r["who"] in ("mine", "auto_kept"):
+            d = nights.setdefault((r["date"], r["draft_group"]), {})
+            x = d.setdefault(r["who"], [0.0, 0.0, 0])
+            x[0] += num(r["dollars_back"]) or 0; x[1] += num(r["fees"]) or 0; x[2] += int(r["lineups"])
+    both = sorted(k for k, v in nights.items() if "mine" in v and "auto_kept" in v)
+    if not both:
+        return ["Auto-fill benchmark: none graded yet (Save build records it once there's a cut and entry counts)"]
+    m, au = nights[both[-1]]["mine"], nights[both[-1]]["auto_kept"]
+    won = sum(nights[k]["auto_kept"][0] > nights[k]["mine"][0] for k in both)
+    return ["Auto-fill benchmark, %s: yours $%.2f back on $%.2f, Auto-fill from the same final pool $%.2f on $%.2f; across %d night%s "
+            "Auto-fill beat yours on %d%s" % (both[-1][0], m[0], m[1], au[0], au[1], len(both), "" if len(both) == 1 else "s", won,
+                                             " (too few nights to say)" if len(both) < 10 else "")]
 
 
 def risers(a):

@@ -617,12 +617,19 @@ function audit(name, L, o) {
   const outKeys = rowsOut.map(r => r.slice(4).slice().sort().join(","));
   check("export: no lineup twice across the night's contests", new Set(outKeys).size === outKeys.length, outKeys.length + " rows, " + new Set(outKeys).size + " distinct");
 
-  const [dl6] = await Promise.all([pg.waitForEvent("download"), pg.click("#bankSave")]);
+  const pfBefore = await pg.evaluate(() => JSON.stringify(PF));
+  const [dl6] = await Promise.all([pg.waitForEvent("download", { timeout: 300000 }), pg.click("#bankSave")]);
   const bs = JSON.parse(fs.readFileSync(await dl6.path(), "utf8"));
   check("Save build (bank): the pool, its tags, the final cut and the portfolios", bs.kind === "build" && bs.pool.length === bank.lineups.length && bs.tags.length === bs.pool.length &&
         JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()) &&
         bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.within === "idea" && bs.cut.keep === 100 && bs.pick && bs.pick.maxExpo === 40 && bs.pick.maxCore === 15,
         dl6.suggestedFilename() + " " + JSON.stringify(bs.cut));
+  // the Auto-fill benchmark: Pick portfolios' entries from the same final pool, apart from yours, each lineup once
+  const ap = bs.auto_portfolios || {}, apAll = Object.values(ap).flat();
+  check("Save build: the Auto-fill benchmark for each contest with entries, from the final pool, each lineup once",
+        ["197791872", "197791874", "197791877"].every(c => (ap[c] || []).length > 0) && apAll.every(k => cut.keep.includes(k)) && new Set(apAll).size === apAll.length,
+        JSON.stringify(Object.fromEntries(Object.entries(ap).map(([c, v]) => [c, v.length]))));
+  check("Save build: your portfolios untouched by the benchmark", await pg.evaluate(() => JSON.stringify(PF)) === pfBefore);
 
   await pg.click("#reload");
   await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("statusInfo").textContent));

@@ -261,6 +261,11 @@ lineups and each kept idea, paid against the real fields. Give its two lines (al
 night's entries against the average fill from each subset (and how often a kept fill beat them), and the running count
 of nights the kept fills' average beat his entries. The night is the unit; under 10 nights say it's too few to call.
 
+**The Auto-fill benchmark, nightly** (graded by `dk_eval.py nightly` as `auto_kept`, from the build's `auto_portfolios`,
+which Save build records: what Pick portfolios would have entered from the same final pool, entry counts and pick
+settings). Give the calibration note's line: his entries against it last night, and the running count of nights it
+beat them. It answers whether hand picking adds anything over the automatic pick; under 10 nights, too few to call.
+
 **Monthly** (the first report of each month, and at 30 graded slates): first `python3 scripts/dk_eval.py
 weights` (refits Quality's weights on the earlier 2/3 of the logged slates, tests them on the later 1/3, and
 switches the tiles to them only if they beat equal weights there; commit `analysis/cbb/dk/team_weights.json`),

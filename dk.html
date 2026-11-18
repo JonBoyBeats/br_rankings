@@ -1020,7 +1020,9 @@ async function runCut() {
     " Each idea kept its share, " + Math.round(100 * Math.min(1, keep / BANK.lineups.length)) + "% of its own lineups, skipping any that shared 7+ players with a better one it kept.";
 }
 
-async function pickPortfolios() {
+// into: where the portfolios go (the page's PF by default; Save build's Auto-fill benchmark passes its own object)
+async function pickPortfolios(into) {
+  into = into || PF;
   var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
   if (!BANK.lineups.length) return "The bank is empty.";
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
@@ -1039,8 +1041,8 @@ async function pickPortfolios() {
     var sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, S);
     var pairsBefore = Object.assign({}, pairCount);       // the night's pair counts before this contest (for the trials below)
     var po = Object.assign(pickRules(n), pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(ctx(), po, pool, sim, c, n);
-    PF[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
-    PF[String(c.id)].forEach(function (bi) { taken[bi] = 1; });
+    into[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
+    into[String(c.id)].forEach(function (bi) { taken[bi] = 1; });
     var why = "";
     if (r.chosen.length < n) {        // which setting stops it: try each one relaxed
       var fills = function (x) { return DKSim.pick(ctx(), Object.assign({}, po, x, pairLimit ? { pairCount: Object.assign({}, pairsBefore) } : {}), pool, sim, c, n).chosen.length >= n; };
@@ -1053,8 +1055,8 @@ async function pickPortfolios() {
     msgs.push(c.name + ": " + r.chosen.length + " of " + n + why + (tc ? ", largest core " + coreName(tc.key) + " in " + tc.n + " (" + Math.round(100 * tc.share) + "%)" : "") + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
       ", one cashes in " + Math.round(100 * r.builder.coverage().cash) + "% of nights)");
   }
-  pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
-  var night = DKSim.topCore(ctx(), Object.keys(PF).reduce(function (a, k) { return a.concat(PF[k].map(function (bi) { return BANK.lineups[bi]; })); }, []));
+  if (into === PF) { pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES; }
+  var night = DKSim.topCore(ctx(), Object.keys(into).reduce(function (a, k) { return a.concat(into[k].map(function (bi) { return BANK.lineups[bi]; })); }, []));
   return (night ? "Largest core across the night's " + night.of + " entries: " + coreName(night.key) + " in " + night.n + " (" + Math.round(100 * night.share) + "%). " : "") +
     "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + ", each lineup in one contest only, the largest stake first: " +
     msgs.join("; ") + ". Review any one below." +
@@ -1094,16 +1096,27 @@ function exportEntries() {
   return "Exported " + (lines.length - 1) + " entries" + (short.length ? "; " + short.length + " left blank (a portfolio shorter than its entries)" : "") + ". Upload it at Lineups → Edit Entries.";
 }
 
-function saveBank() {
+/* Save build also records the Auto-fill benchmark (2026-11-18): what Pick portfolios would enter from the same final
+   pool, entry counts and pick settings, kept apart from your portfolios (auto_portfolios); dk_eval.py nightly grades
+   it beside your entries as "auto_kept". Made once a cut and entry counts (kept with the cut), so a resave is quick. */
+async function saveBank() {
+  var ns = entriesN(), sig = JSON.stringify([ns, $("maxExpo").value, $("minUnique").value, $("maxCore").value, $("maxPair").value]);
+  if (CUT && CUT.keep && Object.keys(ns).length && (!CUT.auto || CUT.autoSig !== sig)) {
+    $("cutStatus").textContent = "Saving: picking the Auto-fill benchmark from the final pool (once a cut)…"; await tick();
+    var auto = {};
+    var m = await pickPortfolios(auto);
+    if (typeof m === "string" && Object.keys(auto).length) { CUT.auto = auto; CUT.autoSig = sig; cutSave(); }
+  }
   var rs = [];
   Object.keys(BANK.tagRules).forEach(function (t) { (BANK.tagRules[t].conds || []).forEach(function (r) { if (!rs.some(function (x) { return x.label === r.label; })) rs.push(r); }); });
   var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(), rule_set: rs,
               pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, groups: BANK.groups || {}, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null,
-              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, gate: gate };
+              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate };
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
   a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
   document.body.appendChild(a); a.click(); a.remove();
+  $("cutStatus").textContent = "Saved the build" + (CUT && CUT.auto ? ", with the Auto-fill benchmark (graded beside your entries)" : "") + ".";
 }
 
 // --- the portfolio builder ---------------------------------------------------------------------
