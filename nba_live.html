@@ -230,6 +230,9 @@ var state = { slates: [], slate: null, sort: load("brr:live:sort", "fp"), mine: 
               games: {}, gamesById: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false,
               field: {}, fieldBusy: {}, draftedOnly: load("brr:live:drafted", true), view: load("brr:live:view", "players"), sim: null };
 function sportOf(s) { return (s && s.sport) || "nba"; }
+/** The sort is kept per kind of slate: NBA, college on Underdog, DraftKings Classic (brr:live:sort:<kind>; the old
+    single brr:live:sort is the default for a kind not yet chosen). */
+function sortKind(s) { return s && s.dk ? "dk" : sportOf(s); }
 
 function $(id) { return document.getElementById(id); }
 function load(key, fallback) { try { var v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; } }
@@ -913,7 +916,8 @@ function render() {
   ["tail", "fee", "me"].forEach(function (id) { $(id).closest(".field").hidden = !!sl.dk; });   // Underdog's controls
   $("upload").hidden = !!sl.dk;
   // Exposure sort needs exposures; without them it falls back to ADP (the choice is kept for the next slate)
-  var sortBy = (state.sort === "expo" && !ex) || (state.sort === "val" && !sl.dk) ? "adp" : state.sort;
+  var want = load("brr:live:sort:" + sortKind(sl), state.sort);     // each kind of slate keeps its own sort
+  var sortBy = (want === "expo" && !ex) || (want === "val" && !sl.dk) ? "adp" : want;
   $("sort").querySelector('option[value="expo"]').disabled = !ex;
   $("sort").value = sortBy;
   $("mine").hidden = !ex;
@@ -1091,7 +1095,7 @@ $("slate").addEventListener("change", function () {
   state.games = {}; state.box = {}; state.finals = {};
   render(); pull();
 });
-$("sort").addEventListener("change", function () { state.sort = this.value; save("brr:live:sort", state.sort); render(); });
+$("sort").addEventListener("change", function () { save("brr:live:sort:" + sortKind(state.slate), this.value); render(); });
 $("tail").addEventListener("change", function () {
   var v = Number(this.value);
   if (state.slate) save("brr:live:tail:" + state.slate.slate_id, isFinite(v) && v > 0 && v < TEAMS * ROUNDS ? v : null);

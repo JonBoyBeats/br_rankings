@@ -66,7 +66,18 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
     (await pg.getAttribute('#sportBtns [data-sport="nba"]', "aria-pressed")) === "true"]);
   await pg.click('#sportBtns [data-sport="cbb"]');
   ok.push(["CBB button: back to DK Classic", /DK Classic/.test(await pg.$eval("#slate", s => s.selectedOptions[0].textContent))]);
+  // each kind of slate keeps its own sort: Value on DK Classic, UD points on NBA, through the buttons both ways
+  await pg.click("#fold"); await pg.selectOption("#sort", "val"); await pg.click("#fold");     // controls hidden between
+  await pg.click('#sportBtns [data-sport="nba"]');
+  await pg.click("#fold"); await pg.selectOption("#sort", "fp"); await pg.click("#fold");
+  await pg.click('#sportBtns [data-sport="cbb"]');
+  const dkSort = await pg.inputValue("#sort");
+  await pg.click('#sportBtns [data-sport="nba"]');
+  const nbaSort = await pg.inputValue("#sort");
+  await pg.click('#sportBtns [data-sport="cbb"]');
+  ok.push(["each slate kind keeps its sort (DK Value, NBA UD points)", dkSort === "val" && nbaSort === "fp" && await pg.inputValue("#sort") === "val"]);
   await pg.click("#fold");
+  await pg.selectOption("#sort", "expo");
   await pg.waitForFunction(() => /Updated/.test(document.getElementById("status").textContent));
   await pg.evaluate(d => { state.dkBuilds["156660"] = d; render(); }, bank);
   await pg.click("#mine");
