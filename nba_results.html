@@ -691,9 +691,16 @@ function t5Body(s) {
 
 function render() {
   document.querySelectorAll(".controls button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.range === RANGE)); });
-  $("main").textContent = "";
-  if (!D || !played().length) return;
-  header(); podReplay(); [1, 2, 3, 4, 5].forEach(tier); finish();   // the headline read, then each tier top to bottom: what to do, then why
+  // redraw in place: hold the page's height while it's rebuilt and put the scroll back, so switching the range keeps you on
+  // the chart you were reading (asked 2026-11-18)
+  var m = $("main"), y = window.scrollY;
+  m.style.minHeight = m.offsetHeight + "px";
+  m.textContent = "";
+  if (D && played().length) {
+    header(); finish(); podReplay(); [1, 2, 3, 4, 5].forEach(tier);   // results and finishes first, then the headline read, then each tier
+  }
+  m.style.minHeight = "";
+  window.scrollTo(0, y);
 }
 
 var rz = null;
