@@ -1,21 +1,21 @@
 # Pod replay: my NBA rankings graded by team outcomes
 
-Results only. Generated 2026-11-17 22:26 from 25 nights (2026-10-21 to 2026-11-16).
+Results only. Generated 2026-11-18 10:43 from 26 nights (2026-10-21 to 2026-11-17).
 
 ## Plain English
 
-- **Which ETR version for the PM** (since 2026-11-17): no nights yet.
-- **My locked list, replayed through every real seat** (25 nights, 420872 seats): top 1% 1.29%, top 10% 12.7%, mean finish percentile 45.2 (an average team: 1%, 10%, 50).
-- **Against the button's list** (7 nights): my list +0.27 pts top-10% (80% range -3.03 to +3.44), -0.88 pts top-1%, mean finish -3.8.
-- **Against ADP** (25 nights): my list +1.76 pts top-10% (80% range +0.51 to +2.92), +0.19 pts top-1%, mean finish -3.0.
-- **Against ETR's order (PM)** (25 nights, PM): my list -4.08 pts top-10% (80% range -7.38 to -0.76), -0.99 pts top-1%, mean finish +1.3.
-- **My manual moves, tier by tier** (top-10% points my moves added, 80% range): T1 +0.24 (-0.07 to +0.53); T2 +2.05 (+0.64 to +3.64); T3 -1.49 (-3.89 to +0.96); T4 +0.34 (-0.81 to +1.53); T5 -0.24 (-1.67 to +0.98).
-- **ETR's T4 PRICEY kept in T4 (PM, season)**, top-10% points (80% range), top-1% points (80% range): (f-nodrop) minus (f) +0.04 (+0.01 to +0.07), +0.01 (+0.01 to +0.02); (f-nodrop) minus (e) -0.63 (-2.86 to +1.59), +0.26 (-0.24 to +0.76).
-- **ETR by tier (PM):** my list minus my list with one tier in ETR's order, top-10% points (80% range; below zero, ETR's order beat mine in that tier): T1 -0.10 (-0.53 to +0.32); T2 -0.06 (-0.97 to +0.79); T3 -0.32 (-1.52 to +0.95); T4 -0.55 (-1.13 to -0.03); T5 -0.73 (-1.70 to +0.24).
-- **ETR-based button variants (PM)**, top-10% points (80% range), top-1% points: (a) minus (f) the button on ETR tiers -3.41 (-6.94 to +0.14), -1.24; (a) minus (g) ETR with the button's T5 rule -3.85 (-7.31 to -0.54), -0.94; (g) minus (e) pure ETR: what the T5 rule adds -0.23 (-0.64 to +0.15), -0.04; (b') minus (f): ADP tiers against ETR tiers in the button -0.95 (-3.29 to +1.58), -0.29.
-- **Top 1% at my seats:** my real teams 17, my locked list at the same seats 25 (round-6 redraws 22-31, a count this size swings 20-33 by luck); real minus list -8, nights resampled -18 to +3.
+- **Which ETR version for the PM** (since 2026-11-17): (f) the button on ETR tiers (PM) minus (e) ETR (PM) -9.61 top-10% (no range yet), -1.01 top-1%, 1 nights; (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) +5.20 top-10% (no range yet), +0.16 top-1%, 1 nights; (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) -4.41 top-10% (no range yet), -0.85 top-1%, 1 nights; (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) -0.05 top-10% (no range yet), -0.01 top-1%, 1 nights; (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) -9.66 top-10% (no range yet), -1.01 top-1%, 1 nights.
+- **My locked list, replayed through every real seat** (26 nights, 441704 seats): top 1% 1.25%, top 10% 12.5%, mean finish percentile 45.2 (an average team: 1%, 10%, 50).
+- **Against the button's list** (8 nights): my list -0.14 pts top-10% (80% range -2.95 to +2.97), -0.79 pts top-1%, mean finish -2.8.
+- **Against ADP** (26 nights): my list +1.72 pts top-10% (80% range +0.48 to +2.80), +0.17 pts top-1%, mean finish -3.3.
+- **Against ETR's order (PM)** (26 nights, PM): my list -4.32 pts top-10% (80% range -7.47 to -1.04), -0.99 pts top-1%, mean finish +1.7.
+- **My manual moves, tier by tier** (top-10% points my moves added, 80% range): T1 +0.21 (-0.06 to +0.48); T2 +2.04 (+0.89 to +3.55); T3 -1.26 (-3.37 to +0.89); T4 -0.11 (-1.28 to +1.08); T5 -0.65 (-2.01 to +0.59).
+- **ETR's T4 PRICEY kept in T4 (PM, season)**, top-10% points (80% range), top-1% points (80% range): (f-nodrop) minus (f) +0.04 (+0.01 to +0.06), +0.01 (+0.00 to +0.01); (f-nodrop) minus (e) -1.04 (-3.27 to +1.14), +0.20 (-0.27 to +0.68).
+- **ETR by tier (PM):** my list minus my list with one tier in ETR's order, top-10% points (80% range; below zero, ETR's order beat mine in that tier): T1 -0.09 (-0.49 to +0.33); T2 +0.06 (-0.89 to +0.91); T3 -0.60 (-1.79 to +0.70); T4 -0.50 (-1.07 to -0.00); T5 -0.87 (-1.77 to +0.01).
+- **ETR-based button variants (PM)**, top-10% points (80% range), top-1% points: (a) minus (f) the button on ETR tiers -3.25 (-6.53 to +0.12), -1.18; (a) minus (g) ETR with the button's T5 rule -3.91 (-7.10 to -0.56), -0.91; (g) minus (e) pure ETR: what the T5 rule adds -0.42 (-0.89 to +0.02), -0.08; (b') minus (f): ADP tiers against ETR tiers in the button -0.90 (-3.24 to +1.55), -0.28.
+- **Top 1% at my seats:** my real teams 17, my locked list at the same seats 25 (round-6 redraws 22-31, a count this size swings 20-33 by luck); real minus list -8, nights resampled -19 to +3.
 - **Round 6 fidelity:** 30% of my real round-6 picks were (a)'s #1 still available, 80% were in its top 6 (the replay's weighted draw: 38% and 100%).
-- **My real teams** (1926): top 10% 13.0% against 13.9% for (a) replayed at the same seats; they beat 49% of (a)'s replayed teams on average (50% = in line with the list).
+- **My real teams** (2025): top 10% 12.9% against 13.7% for (a) replayed at the same seats; they beat 49% of (a)'s replayed teams on average (50% = in line with the list).
 
 ## How it was run
 
@@ -34,132 +34,132 @@ Results only. Generated 2026-11-17 22:26 from 25 nights (2026-10-21 to 2026-11-1
 
 | List | Nights | Seats | Top 1% | Top 10% | Mean finish pct | Cash | ROI |
 |---|---|---|---|---|---|---|---|
-| (a) my locked list | 25 | 420872 | 1.29% | 12.7% | 45.2 | 23% | +30% |
-| (b) the button's list | 7 | 127584 | 2.08% | 12.9% | 46.7 | 23% | +59% |
-| (c1) mine, T1's moves undone | 7 | 127584 | 1.19% | 13.0% | 42.3 | 25% | +15% |
-| (c2) mine, T2's moves undone | 7 | 127584 | 0.93% | 11.2% | 46.0 | 21% | -9% |
-| (c3) mine, T3's moves undone | 7 | 127584 | 2.18% | 14.7% | 42.4 | 27% | +69% |
-| (c4) mine, T4's moves undone | 7 | 127584 | 1.27% | 12.9% | 45.1 | 24% | +19% |
-| (c5) mine, T5's moves undone | 7 | 127584 | 1.32% | 13.5% | 43.6 | 25% | +26% |
-| (d) ADP | 25 | 420872 | 1.11% | 10.9% | 48.2 | 20% | -1% |
-| (e) ETR (PM) | 25 | 296794 | 2.23% | 16.5% | 44.1 | 27% | +71% |
-| (f1) mine (PM), T1 in ETR's order | 22 | 251084 | 1.27% | 12.5% | 45.0 | 23% | +30% |
-| (f2) mine (PM), T2 in ETR's order | 23 | 264800 | 1.20% | 12.3% | 45.8 | 23% | +26% |
-| (f3) mine (PM), T3 in ETR's order | 23 | 264800 | 1.59% | 12.5% | 46.9 | 23% | +34% |
-| (f4) mine (PM), T4 in ETR's order | 23 | 264800 | 1.34% | 12.8% | 45.5 | 23% | +31% |
-| (f5) mine (PM), T5 in ETR's order | 23 | 264800 | 1.35% | 12.9% | 44.9 | 24% | +37% |
-| (b') the button rebuilt here (PM) | 25 | 296794 | 2.19% | 14.9% | 44.5 | 25% | +111% |
-| (f) the button on ETR tiers (PM) | 25 | 296794 | 2.48% | 15.8% | 43.4 | 27% | +101% |
-| (g) ETR order, the button's T5 rule (PM) | 25 | 296794 | 2.19% | 16.2% | 45.0 | 26% | +66% |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 25 | 296794 | 2.49% | 15.8% | 43.3 | 27% | +101% |
+| (a) my locked list | 26 | 441704 | 1.25% | 12.5% | 45.2 | 23% | +26% |
+| (b) the button's list | 8 | 148416 | 1.88% | 12.7% | 46.1 | 23% | +46% |
+| (c1) mine, T1's moves undone | 8 | 148416 | 1.08% | 12.3% | 42.8 | 24% | +7% |
+| (c2) mine, T2's moves undone | 8 | 148416 | 0.85% | 10.5% | 46.5 | 20% | -15% |
+| (c3) mine, T3's moves undone | 8 | 148416 | 1.93% | 13.8% | 42.8 | 25% | +52% |
+| (c4) mine, T4's moves undone | 8 | 148416 | 1.19% | 12.7% | 44.7 | 23% | +14% |
+| (c5) mine, T5's moves undone | 8 | 148416 | 1.20% | 13.2% | 43.4 | 25% | +18% |
+| (d) ADP | 26 | 441704 | 1.09% | 10.7% | 48.5 | 19% | -2% |
+| (e) ETR (PM) | 26 | 310792 | 2.19% | 16.5% | 43.8 | 27% | +69% |
+| (f1) mine (PM), T1 in ETR's order | 23 | 265082 | 1.22% | 12.2% | 45.1 | 23% | +26% |
+| (f2) mine (PM), T2 in ETR's order | 24 | 278798 | 1.15% | 11.9% | 46.1 | 22% | +21% |
+| (f3) mine (PM), T3 in ETR's order | 24 | 278798 | 1.54% | 12.5% | 46.5 | 23% | +31% |
+| (f4) mine (PM), T4 in ETR's order | 24 | 278798 | 1.28% | 12.4% | 45.6 | 23% | +27% |
+| (f5) mine (PM), T5 in ETR's order | 24 | 278798 | 1.30% | 12.8% | 44.7 | 24% | +33% |
+| (b') the button rebuilt here (PM) | 26 | 310792 | 2.11% | 14.5% | 44.8 | 25% | +103% |
+| (f) the button on ETR tiers (PM) | 26 | 310792 | 2.38% | 15.4% | 43.5 | 26% | +93% |
+| (g) ETR order, the button's T5 rule (PM) | 26 | 310792 | 2.11% | 16.1% | 44.7 | 26% | +61% |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 26 | 310792 | 2.39% | 15.4% | 43.4 | 26% | +94% |
 
 Paired: (a) minus each list, same pods and seats, nights resampled for the 80% ranges.
 
 | (a) minus, or the pair named | Nights | Top 1% (pts) | 80% range | Top 10% (pts) | 80% range | Mean finish pct (lower is better) | 80% range |
 |---|---|---|---|---|---|---|---|
-| (b) the button's list | 7 | -0.88 | -2.12 to +0.35 | +0.27 | -3.03 to +3.44 | -3.76 | -8.91 to +1.27 |
-| (c1) mine, T1's moves undone | 7 | +0.01 | +0.00 to +0.02 | +0.24 | -0.07 to +0.53 | +0.62 | -0.29 to +1.60 |
-| (c2) mine, T2's moves undone | 7 | +0.27 | +0.10 to +0.45 | +2.05 | +0.64 to +3.64 | -3.03 | -5.08 to -1.17 |
-| (c3) mine, T3's moves undone | 7 | -0.98 | -2.25 to +0.27 | -1.49 | -3.89 to +0.96 | +0.58 | -0.97 to +2.08 |
-| (c4) mine, T4's moves undone | 7 | -0.07 | -0.19 to +0.05 | +0.34 | -0.81 to +1.53 | -2.17 | -4.52 to +0.05 |
-| (c5) mine, T5's moves undone | 7 | -0.12 | -0.35 to +0.09 | -0.24 | -1.67 to +0.98 | -0.63 | -2.16 to +0.91 |
-| (d) ADP | 25 | +0.19 | -0.10 to +0.47 | +1.76 | +0.51 to +2.92 | -3.03 | -5.16 to -0.74 |
-| (e) ETR (PM) | 25 | -0.99 | -1.79 to -0.21 | -4.08 | -7.38 to -0.76 | +1.32 | -2.80 to +5.24 |
-| (f1) mine (PM), T1 in ETR's order | 22 | +0.04 | -0.03 to +0.13 | -0.10 | -0.53 to +0.32 | +0.71 | +0.15 to +1.36 |
-| (f2) mine (PM), T2 in ETR's order | 23 | +0.06 | -0.14 to +0.24 | -0.06 | -0.97 to +0.79 | +0.05 | -1.22 to +1.27 |
-| (f3) mine (PM), T3 in ETR's order | 23 | -0.33 | -0.67 to +0.02 | -0.32 | -1.52 to +0.95 | -1.10 | -2.19 to -0.01 |
-| (f4) mine (PM), T4 in ETR's order | 23 | -0.08 | -0.17 to -0.01 | -0.55 | -1.13 to -0.03 | +0.31 | -0.43 to +1.00 |
-| (f5) mine (PM), T5 in ETR's order | 23 | -0.09 | -0.20 to +0.02 | -0.73 | -1.70 to +0.24 | +0.96 | -0.42 to +2.39 |
-| (b') the button rebuilt here (PM) | 25 | -0.95 | -1.86 to -0.14 | -2.47 | -5.26 to +0.20 | +0.93 | -1.86 to +3.66 |
-| (f) the button on ETR tiers (PM) | 25 | -1.24 | -2.15 to -0.33 | -3.41 | -6.94 to +0.14 | +2.04 | -1.81 to +5.96 |
-| (g) ETR order, the button's T5 rule (PM) | 25 | -0.94 | -1.82 to -0.13 | -3.85 | -7.31 to -0.54 | +0.43 | -3.74 to +4.57 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 25 | -1.25 | -2.16 to -0.34 | -3.45 | -6.99 to +0.09 | +2.12 | -1.76 to +6.03 |
-| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | 25 | -0.04 | -0.17 to +0.08 | -0.23 | -0.64 to +0.15 | +0.89 | +0.14 to +1.75 |
-| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | 25 | -0.29 | -1.10 to +0.59 | -0.95 | -3.29 to +1.58 | +1.11 | -1.67 to +3.75 |
-| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | 25 | +0.25 | -0.25 to +0.75 | -0.67 | -2.92 to +1.55 | -0.72 | -2.87 to +1.41 |
-| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | 25 | -0.29 | -0.78 to +0.19 | +0.44 | -1.80 to +2.75 | +1.62 | -0.66 to +3.86 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | 25 | +0.01 | +0.01 to +0.02 | +0.04 | +0.01 to +0.07 | -0.08 | -0.16 to -0.01 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | 25 | +0.26 | -0.24 to +0.76 | -0.63 | -2.86 to +1.59 | -0.80 | -2.96 to +1.33 |
+| (b) the button's list | 8 | -0.79 | -1.85 to +0.28 | -0.14 | -2.95 to +2.97 | -2.75 | -7.46 to +1.42 |
+| (c1) mine, T1's moves undone | 8 | +0.01 | +0.00 to +0.02 | +0.21 | -0.06 to +0.48 | +0.53 | -0.26 to +1.39 |
+| (c2) mine, T2's moves undone | 8 | +0.24 | +0.10 to +0.41 | +2.04 | +0.89 to +3.55 | -3.13 | -4.99 to -1.68 |
+| (c3) mine, T3's moves undone | 8 | -0.84 | -1.95 to +0.23 | -1.26 | -3.37 to +0.89 | +0.51 | -0.81 to +1.83 |
+| (c4) mine, T4's moves undone | 8 | -0.10 | -0.22 to +0.01 | -0.11 | -1.28 to +1.08 | -1.38 | -3.75 to +0.70 |
+| (c5) mine, T5's moves undone | 8 | -0.11 | -0.32 to +0.06 | -0.65 | -2.01 to +0.59 | -0.07 | -1.74 to +1.43 |
+| (d) ADP | 26 | +0.17 | -0.11 to +0.44 | +1.72 | +0.48 to +2.80 | -3.27 | -5.46 to -1.07 |
+| (e) ETR (PM) | 26 | -0.99 | -1.72 to -0.25 | -4.32 | -7.47 to -1.04 | +1.66 | -2.34 to +5.41 |
+| (f1) mine (PM), T1 in ETR's order | 23 | +0.04 | -0.03 to +0.12 | -0.09 | -0.49 to +0.33 | +0.68 | +0.14 to +1.28 |
+| (f2) mine (PM), T2 in ETR's order | 24 | +0.06 | -0.13 to +0.23 | +0.06 | -0.89 to +0.91 | -0.18 | -1.37 to +0.99 |
+| (f3) mine (PM), T3 in ETR's order | 24 | -0.33 | -0.67 to +0.02 | -0.60 | -1.79 to +0.70 | -0.62 | -1.82 to +0.66 |
+| (f4) mine (PM), T4 in ETR's order | 24 | -0.08 | -0.16 to -0.01 | -0.50 | -1.07 to -0.00 | +0.26 | -0.43 to +0.97 |
+| (f5) mine (PM), T5 in ETR's order | 24 | -0.09 | -0.19 to +0.02 | -0.87 | -1.77 to +0.01 | +1.14 | -0.24 to +2.54 |
+| (b') the button rebuilt here (PM) | 26 | -0.91 | -1.82 to -0.11 | -2.35 | -5.06 to +0.26 | +0.67 | -1.94 to +3.26 |
+| (f) the button on ETR tiers (PM) | 26 | -1.18 | -2.07 to -0.31 | -3.25 | -6.53 to +0.12 | +1.99 | -1.74 to +5.38 |
+| (g) ETR order, the button's T5 rule (PM) | 26 | -0.91 | -1.71 to -0.13 | -3.91 | -7.10 to -0.56 | +0.79 | -3.24 to +4.63 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 26 | -1.19 | -2.08 to -0.32 | -3.29 | -6.57 to +0.08 | +2.06 | -1.63 to +5.46 |
+| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | 26 | -0.08 | -0.21 to +0.05 | -0.42 | -0.89 to +0.02 | +0.86 | +0.13 to +1.67 |
+| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | 26 | -0.28 | -1.08 to +0.54 | -0.90 | -3.24 to +1.55 | +1.32 | -1.32 to +3.96 |
+| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | 26 | +0.19 | -0.28 to +0.67 | -1.07 | -3.29 to +1.10 | -0.33 | -2.48 to +1.69 |
+| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | 26 | -0.27 | -0.74 to +0.21 | +0.65 | -1.45 to +2.79 | +1.20 | -1.01 to +3.38 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | 26 | +0.01 | +0.00 to +0.01 | +0.04 | +0.01 to +0.06 | -0.07 | -0.15 to -0.00 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | 26 | +0.20 | -0.27 to +0.68 | -1.04 | -3.27 to +1.14 | -0.40 | -2.54 to +1.61 |
 
 ## Season: AM
 
 | List | Nights | Seats | Top 1% | Top 10% | Mean finish pct | Cash | ROI |
 |---|---|---|---|---|---|---|---|
-| (a) my locked list | 20 | 124078 | 1.41% | 13.3% | 44.7 | 24% | +30% |
-| (b) the button's list | 5 | 36606 | 1.29% | 12.3% | 47.1 | 22% | +21% |
-| (c1) mine, T1's moves undone | 5 | 36606 | 2.15% | 16.6% | 38.9 | 30% | +88% |
-| (c2) mine, T2's moves undone | 5 | 36606 | 1.62% | 14.0% | 43.6 | 25% | +34% |
-| (c3) mine, T3's moves undone | 5 | 36606 | 1.82% | 17.1% | 39.6 | 30% | +69% |
-| (c4) mine, T4's moves undone | 5 | 36606 | 2.29% | 17.2% | 40.3 | 30% | +107% |
-| (c5) mine, T5's moves undone | 5 | 36606 | 2.18% | 16.8% | 39.9 | 30% | +95% |
-| (d) ADP | 20 | 124078 | 1.18% | 11.1% | 48.1 | 20% | +4% |
+| (a) my locked list | 21 | 130912 | 1.38% | 13.2% | 44.7 | 23% | +28% |
+| (b) the button's list | 6 | 43440 | 1.25% | 12.3% | 46.8 | 22% | +17% |
+| (c1) mine, T1's moves undone | 6 | 43440 | 1.94% | 15.7% | 39.7 | 28% | +73% |
+| (c2) mine, T2's moves undone | 6 | 43440 | 1.47% | 13.3% | 44.2 | 24% | +25% |
+| (c3) mine, T3's moves undone | 6 | 43440 | 1.66% | 16.1% | 40.3 | 28% | +56% |
+| (c4) mine, T4's moves undone | 6 | 43440 | 2.15% | 16.9% | 40.2 | 29% | +96% |
+| (c5) mine, T5's moves undone | 6 | 43440 | 1.93% | 15.7% | 40.8 | 28% | +76% |
+| (d) ADP | 21 | 130912 | 1.17% | 11.0% | 48.3 | 20% | +4% |
 
 Paired: (a) minus each list, same pods and seats, nights resampled for the 80% ranges.
 
 | (a) minus, or the pair named | Nights | Top 1% (pts) | 80% range | Top 10% (pts) | 80% range | Mean finish pct (lower is better) | 80% range |
 |---|---|---|---|---|---|---|---|
-| (b) the button's list | 5 | +0.89 | +0.41 to +1.46 | +5.25 | +4.58 to +5.85 | -8.76 | -12.03 to -5.13 |
-| (c1) mine, T1's moves undone | 5 | +0.04 | +0.00 to +0.06 | +0.95 | -0.01 to +1.73 | -0.56 | -1.03 to +0.01 |
-| (c2) mine, T2's moves undone | 5 | +0.57 | +0.07 to +1.17 | +3.56 | +1.52 to +6.04 | -5.24 | -7.98 to -1.90 |
-| (c3) mine, T3's moves undone | 5 | +0.37 | -0.01 to +0.81 | +0.48 | -0.43 to +1.34 | -1.31 | -2.03 to -0.52 |
-| (c4) mine, T4's moves undone | 5 | -0.10 | -0.43 to +0.18 | +0.33 | -1.72 to +1.94 | -2.00 | -4.39 to +0.84 |
-| (c5) mine, T5's moves undone | 5 | +0.01 | -0.51 to +0.53 | +0.72 | -1.29 to +2.46 | -1.55 | -2.80 to +0.04 |
-| (d) ADP | 20 | +0.23 | -0.19 to +0.63 | +2.24 | +0.19 to +4.18 | -3.43 | -6.51 to -0.28 |
+| (b) the button's list | 6 | +0.72 | +0.27 to +1.25 | +4.25 | +2.90 to +5.52 | -7.61 | -10.87 to -3.85 |
+| (c1) mine, T1's moves undone | 6 | +0.03 | +0.00 to +0.06 | +0.80 | -0.01 to +1.49 | -0.47 | -0.88 to +0.01 |
+| (c2) mine, T2's moves undone | 6 | +0.50 | +0.07 to +0.98 | +3.25 | +1.50 to +5.23 | -4.99 | -7.82 to -2.14 |
+| (c3) mine, T3's moves undone | 6 | +0.31 | -0.01 to +0.68 | +0.40 | -0.33 to +1.15 | -1.10 | -1.73 to -0.35 |
+| (c4) mine, T4's moves undone | 6 | -0.19 | -0.50 to +0.07 | -0.41 | -2.20 to +1.22 | -1.02 | -3.43 to +1.59 |
+| (c5) mine, T5's moves undone | 6 | +0.04 | -0.39 to +0.49 | +0.80 | -0.80 to +2.35 | -1.65 | -2.71 to -0.40 |
+| (d) ADP | 21 | +0.21 | -0.17 to +0.59 | +2.26 | +0.31 to +4.14 | -3.60 | -6.62 to -0.62 |
 
 ## Season: PM
 
 | List | Nights | Seats | Top 1% | Top 10% | Mean finish pct | Cash | ROI |
 |---|---|---|---|---|---|---|---|
-| (a) my locked list | 25 | 296794 | 1.24% | 12.4% | 45.4 | 23% | +30% |
-| (b) the button's list | 7 | 90978 | 2.39% | 13.2% | 46.5 | 23% | +74% |
-| (c1) mine, T1's moves undone | 7 | 90978 | 0.80% | 11.5% | 43.7 | 23% | -14% |
-| (c2) mine, T2's moves undone | 7 | 90978 | 0.66% | 10.0% | 46.9 | 20% | -25% |
-| (c3) mine, T3's moves undone | 7 | 90978 | 2.32% | 13.8% | 43.5 | 25% | +69% |
-| (c4) mine, T4's moves undone | 7 | 90978 | 0.86% | 11.1% | 47.0 | 22% | -15% |
-| (c5) mine, T5's moves undone | 7 | 90978 | 0.97% | 12.1% | 45.1 | 23% | -0% |
-| (d) ADP | 25 | 296794 | 1.07% | 10.8% | 48.3 | 20% | -3% |
-| (e) ETR (PM) | 25 | 296794 | 2.23% | 16.5% | 44.1 | 27% | +71% |
-| (f1) mine (PM), T1 in ETR's order | 22 | 251084 | 1.27% | 12.5% | 45.0 | 23% | +30% |
-| (f2) mine (PM), T2 in ETR's order | 23 | 264800 | 1.20% | 12.3% | 45.8 | 23% | +26% |
-| (f3) mine (PM), T3 in ETR's order | 23 | 264800 | 1.59% | 12.5% | 46.9 | 23% | +34% |
-| (f4) mine (PM), T4 in ETR's order | 23 | 264800 | 1.34% | 12.8% | 45.5 | 23% | +31% |
-| (f5) mine (PM), T5 in ETR's order | 23 | 264800 | 1.35% | 12.9% | 44.9 | 24% | +37% |
-| (b') the button rebuilt here (PM) | 25 | 296794 | 2.19% | 14.9% | 44.5 | 25% | +111% |
-| (f) the button on ETR tiers (PM) | 25 | 296794 | 2.48% | 15.8% | 43.4 | 27% | +101% |
-| (g) ETR order, the button's T5 rule (PM) | 25 | 296794 | 2.19% | 16.2% | 45.0 | 26% | +66% |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 25 | 296794 | 2.49% | 15.8% | 43.3 | 27% | +101% |
+| (a) my locked list | 26 | 310792 | 1.20% | 12.1% | 45.5 | 22% | +26% |
+| (b) the button's list | 8 | 104976 | 2.14% | 12.8% | 45.8 | 23% | +58% |
+| (c1) mine, T1's moves undone | 8 | 104976 | 0.73% | 10.9% | 44.1 | 22% | -19% |
+| (c2) mine, T2's moves undone | 8 | 104976 | 0.59% | 9.4% | 47.4 | 19% | -30% |
+| (c3) mine, T3's moves undone | 8 | 104976 | 2.04% | 12.8% | 43.9 | 24% | +51% |
+| (c4) mine, T4's moves undone | 8 | 104976 | 0.80% | 10.9% | 46.6 | 21% | -19% |
+| (c5) mine, T5's moves undone | 8 | 104976 | 0.90% | 12.1% | 44.5 | 23% | -5% |
+| (d) ADP | 26 | 310792 | 1.05% | 10.7% | 48.6 | 19% | -4% |
+| (e) ETR (PM) | 26 | 310792 | 2.19% | 16.5% | 43.8 | 27% | +69% |
+| (f1) mine (PM), T1 in ETR's order | 23 | 265082 | 1.22% | 12.2% | 45.1 | 23% | +26% |
+| (f2) mine (PM), T2 in ETR's order | 24 | 278798 | 1.15% | 11.9% | 46.1 | 22% | +21% |
+| (f3) mine (PM), T3 in ETR's order | 24 | 278798 | 1.54% | 12.5% | 46.5 | 23% | +31% |
+| (f4) mine (PM), T4 in ETR's order | 24 | 278798 | 1.28% | 12.4% | 45.6 | 23% | +27% |
+| (f5) mine (PM), T5 in ETR's order | 24 | 278798 | 1.30% | 12.8% | 44.7 | 24% | +33% |
+| (b') the button rebuilt here (PM) | 26 | 310792 | 2.11% | 14.5% | 44.8 | 25% | +103% |
+| (f) the button on ETR tiers (PM) | 26 | 310792 | 2.38% | 15.4% | 43.5 | 26% | +93% |
+| (g) ETR order, the button's T5 rule (PM) | 26 | 310792 | 2.11% | 16.1% | 44.7 | 26% | +61% |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 26 | 310792 | 2.39% | 15.4% | 43.4 | 26% | +94% |
 
 Paired: (a) minus each list, same pods and seats, nights resampled for the 80% ranges.
 
 | (a) minus, or the pair named | Nights | Top 1% (pts) | 80% range | Top 10% (pts) | 80% range | Mean finish pct (lower is better) | 80% range |
 |---|---|---|---|---|---|---|---|
-| (b) the button's list | 7 | -1.59 | -3.35 to +0.10 | -1.74 | -6.34 to +2.59 | -1.75 | -7.89 to +4.00 |
-| (c1) mine, T1's moves undone | 7 | +0.00 | +0.00 to +0.00 | -0.05 | -0.10 to +0.00 | +1.09 | +0.00 to +2.36 |
-| (c2) mine, T2's moves undone | 7 | +0.15 | -0.03 to +0.35 | +1.44 | -0.67 to +3.64 | -2.14 | -4.71 to +0.10 |
-| (c3) mine, T3's moves undone | 7 | -1.52 | -3.26 to +0.16 | -2.29 | -5.64 to +1.00 | +1.33 | -0.68 to +3.37 |
-| (c4) mine, T4's moves undone | 7 | -0.06 | -0.19 to +0.07 | +0.34 | -0.95 to +1.55 | -2.24 | -4.60 to -0.11 |
-| (c5) mine, T5's moves undone | 7 | -0.17 | -0.38 to +0.02 | -0.62 | -1.93 to +0.56 | -0.26 | -2.00 to +1.43 |
-| (d) ADP | 25 | +0.17 | -0.23 to +0.56 | +1.56 | -0.07 to +2.99 | -2.87 | -5.06 to -0.41 |
-| (e) ETR (PM) | 25 | -0.99 | -1.79 to -0.21 | -4.08 | -7.38 to -0.76 | +1.32 | -2.80 to +5.24 |
-| (f1) mine (PM), T1 in ETR's order | 22 | +0.04 | -0.03 to +0.13 | -0.10 | -0.53 to +0.32 | +0.71 | +0.15 to +1.36 |
-| (f2) mine (PM), T2 in ETR's order | 23 | +0.06 | -0.14 to +0.24 | -0.06 | -0.97 to +0.79 | +0.05 | -1.22 to +1.27 |
-| (f3) mine (PM), T3 in ETR's order | 23 | -0.33 | -0.67 to +0.02 | -0.32 | -1.52 to +0.95 | -1.10 | -2.19 to -0.01 |
-| (f4) mine (PM), T4 in ETR's order | 23 | -0.08 | -0.17 to -0.01 | -0.55 | -1.13 to -0.03 | +0.31 | -0.43 to +1.00 |
-| (f5) mine (PM), T5 in ETR's order | 23 | -0.09 | -0.20 to +0.02 | -0.73 | -1.70 to +0.24 | +0.96 | -0.42 to +2.39 |
-| (b') the button rebuilt here (PM) | 25 | -0.95 | -1.86 to -0.14 | -2.47 | -5.26 to +0.20 | +0.93 | -1.86 to +3.66 |
-| (f) the button on ETR tiers (PM) | 25 | -1.24 | -2.15 to -0.33 | -3.41 | -6.94 to +0.14 | +2.04 | -1.81 to +5.96 |
-| (g) ETR order, the button's T5 rule (PM) | 25 | -0.94 | -1.82 to -0.13 | -3.85 | -7.31 to -0.54 | +0.43 | -3.74 to +4.57 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 25 | -1.25 | -2.16 to -0.34 | -3.45 | -6.99 to +0.09 | +2.12 | -1.76 to +6.03 |
-| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | 25 | -0.04 | -0.17 to +0.08 | -0.23 | -0.64 to +0.15 | +0.89 | +0.14 to +1.75 |
-| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | 25 | -0.29 | -1.10 to +0.59 | -0.95 | -3.29 to +1.58 | +1.11 | -1.67 to +3.75 |
-| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | 25 | +0.25 | -0.25 to +0.75 | -0.67 | -2.92 to +1.55 | -0.72 | -2.87 to +1.41 |
-| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | 25 | -0.29 | -0.78 to +0.19 | +0.44 | -1.80 to +2.75 | +1.62 | -0.66 to +3.86 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | 25 | +0.01 | +0.01 to +0.02 | +0.04 | +0.01 to +0.07 | -0.08 | -0.16 to -0.01 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | 25 | +0.26 | -0.24 to +0.76 | -0.63 | -2.86 to +1.59 | -0.80 | -2.96 to +1.33 |
+| (b) the button's list | 8 | -1.41 | -2.91 to +0.09 | -1.95 | -5.63 to +2.32 | -0.74 | -6.75 to +4.21 |
+| (c1) mine, T1's moves undone | 8 | +0.00 | +0.00 to +0.00 | -0.04 | -0.09 to +0.00 | +0.94 | +0.00 to +2.02 |
+| (c2) mine, T2's moves undone | 8 | +0.13 | -0.02 to +0.31 | +1.54 | -0.19 to +3.47 | -2.37 | -4.59 to -0.43 |
+| (c3) mine, T3's moves undone | 8 | -1.31 | -2.81 to +0.15 | -1.95 | -4.82 to +0.95 | +1.18 | -0.58 to +2.93 |
+| (c4) mine, T4's moves undone | 8 | -0.07 | -0.19 to +0.04 | +0.01 | -1.12 to +1.16 | -1.52 | -3.94 to +0.48 |
+| (c5) mine, T5's moves undone | 8 | -0.18 | -0.36 to +0.00 | -1.25 | -2.65 to +0.09 | +0.58 | -1.43 to +2.34 |
+| (d) ADP | 26 | +0.15 | -0.23 to +0.52 | +1.49 | -0.04 to +2.89 | -3.13 | -5.47 to -0.63 |
+| (e) ETR (PM) | 26 | -0.99 | -1.72 to -0.25 | -4.32 | -7.47 to -1.04 | +1.66 | -2.34 to +5.41 |
+| (f1) mine (PM), T1 in ETR's order | 23 | +0.04 | -0.03 to +0.12 | -0.09 | -0.49 to +0.33 | +0.68 | +0.14 to +1.28 |
+| (f2) mine (PM), T2 in ETR's order | 24 | +0.06 | -0.13 to +0.23 | +0.06 | -0.89 to +0.91 | -0.18 | -1.37 to +0.99 |
+| (f3) mine (PM), T3 in ETR's order | 24 | -0.33 | -0.67 to +0.02 | -0.60 | -1.79 to +0.70 | -0.62 | -1.82 to +0.66 |
+| (f4) mine (PM), T4 in ETR's order | 24 | -0.08 | -0.16 to -0.01 | -0.50 | -1.07 to -0.00 | +0.26 | -0.43 to +0.97 |
+| (f5) mine (PM), T5 in ETR's order | 24 | -0.09 | -0.19 to +0.02 | -0.87 | -1.77 to +0.01 | +1.14 | -0.24 to +2.54 |
+| (b') the button rebuilt here (PM) | 26 | -0.91 | -1.82 to -0.11 | -2.35 | -5.06 to +0.26 | +0.67 | -1.94 to +3.26 |
+| (f) the button on ETR tiers (PM) | 26 | -1.18 | -2.07 to -0.31 | -3.25 | -6.53 to +0.12 | +1.99 | -1.74 to +5.38 |
+| (g) ETR order, the button's T5 rule (PM) | 26 | -0.91 | -1.71 to -0.13 | -3.91 | -7.10 to -0.56 | +0.79 | -3.24 to +4.63 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | 26 | -1.19 | -2.08 to -0.32 | -3.29 | -6.57 to +0.08 | +2.06 | -1.63 to +5.46 |
+| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | 26 | -0.08 | -0.21 to +0.05 | -0.42 | -0.89 to +0.02 | +0.86 | +0.13 to +1.67 |
+| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | 26 | -0.28 | -1.08 to +0.54 | -0.90 | -3.24 to +1.55 | +1.32 | -1.32 to +3.96 |
+| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | 26 | +0.19 | -0.28 to +0.67 | -1.07 | -3.29 to +1.10 | -0.33 | -2.48 to +1.69 |
+| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | 26 | -0.27 | -0.74 to +0.21 | +0.65 | -1.45 to +2.79 | +1.20 | -1.01 to +3.38 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | 26 | +0.01 | +0.00 to +0.01 | +0.04 | +0.01 to +0.06 | -0.07 | -0.15 to -0.00 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | 26 | +0.20 | -0.27 to +0.68 | -1.04 | -3.27 to +1.14 | -0.40 | -2.54 to +1.61 |
 
 ## Top 1% at my seats: luck or list
 
-My locked list (a) replayed at my real seats and pods only (1926 teams, 25 nights), against my real teams.
+My locked list (a) replayed at my real seats and pods only (2025 teams, 26 nights), against my real teams.
 
 | | Top-1% finishes |
 |---|---|
@@ -168,7 +168,7 @@ My locked list (a) replayed at my real seats and pods only (1926 teams, 25 night
 | (a), 200 round-6 redraws: median (10%-90%) | 26 (22-31) |
 | (a), nights resampled: 80% range | 17-33 |
 | (a), Poisson spread around its redraw mean (26.1): 80% range | 20-33 |
-| Real minus (a), nights resampled: 80% range | -8 (-18 to +3) |
+| Real minus (a), nights resampled: 80% range | -8 (-19 to +3) |
 
 The redraws show how much the round-6 pick alone moves the count; the nights and Poisson ranges show how far a count this size swings by luck. Real and (a) share the same nights' box scores, so the real-minus-(a) range is the gap from drafting off something other than the locked list (earlier boards, round-6 choices).
 
@@ -178,15 +178,15 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 
 | Pair | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | 80% range |
 |---|---|---|---|---|---|
-| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | 0 | - | - | - | - |
-| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | 0 | - | - | - | - |
-| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | 0 | - | - | - | - |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | 0 | - | - | - | - |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | 0 | - | - | - | - |
+| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | 1 | -9.61 | - | -1.01 | - |
+| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | 1 | +5.20 | - | +0.16 | - |
+| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | 1 | -4.41 | - | -0.85 | - |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | 1 | -0.05 | - | -0.01 | - |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | 1 | -9.66 | - | -1.01 | - |
 
-(f-nodrop) differs from (f) on 37 players on 17 of 25 PM nights (ETR's T4 flagged PRICEY, market T3: kept at the bottom of T4 instead of dropped into T5).
+(f-nodrop) differs from (f) on 39 players on 18 of 26 PM nights (ETR's T4 flagged PRICEY, market T3: kept at the bottom of T4 instead of dropped into T5).
 
-(f) rebuilt here against the board's own PM order (the ETR-tier button from 2026-11-17), places of the top 36 that agree: no nights yet.
+(f) rebuilt here against the board's own PM order (the ETR-tier button from 2026-11-17), places of the top 36 that agree: 2026-11-17 31.
 
 ## Since the rules went in
 
@@ -196,90 +196,113 @@ Which ETR version the PM should use: (e) pure ETR, (f) the button on ETR tiers, 
 
 | (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |
 |---|---|---|---|---|---|---|
-| (b) the button's list | BOTH | 3 | -3.48 | -8.08 to +1.42 | -2.45 | +1.47 |
-| (c1) mine, T1's moves undone | BOTH | 3 | -0.00 | -0.00 to +0.00 | +0.00 | +0.00 |
-| (c2) mine, T2's moves undone | BOTH | 3 | +1.14 | +0.14 to +2.06 | +0.18 | -1.48 |
-| (c3) mine, T3's moves undone | BOTH | 3 | -4.74 | -9.48 to +0.31 | -2.64 | +2.85 |
-| (c4) mine, T4's moves undone | BOTH | 3 | -0.17 | -1.23 to +0.82 | -0.12 | -0.12 |
-| (c5) mine, T5's moves undone | BOTH | 3 | +0.20 | -0.48 to +0.83 | +0.00 | -0.02 |
-| (d) ADP | BOTH | 3 | +4.94 | +2.88 to +6.73 | +0.14 | -11.76 |
-| (e) ETR (PM) | BOTH | 3 | -14.03 | -26.83 to -3.38 | -3.91 | +11.51 |
-| (f1) mine (PM), T1 in ETR's order | BOTH | 3 | +0.00 | +0.00 to +0.00 | +0.00 | +0.00 |
-| (f2) mine (PM), T2 in ETR's order | BOTH | 3 | +0.36 | -0.34 to +1.00 | -0.02 | -2.48 |
-| (f3) mine (PM), T3 in ETR's order | BOTH | 3 | -3.05 | -6.49 to +0.29 | -1.41 | +2.21 |
-| (f4) mine (PM), T4 in ETR's order | BOTH | 3 | +0.02 | -0.01 to +0.05 | +0.01 | +0.01 |
-| (f5) mine (PM), T5 in ETR's order | BOTH | 3 | -2.79 | -5.33 to -0.67 | -0.34 | +3.02 |
-| (b') the button rebuilt here (PM) | BOTH | 3 | -3.29 | -8.50 to +2.48 | -2.17 | -1.01 |
-| (f) the button on ETR tiers (PM) | BOTH | 3 | -6.02 | -10.44 to -2.34 | -2.10 | +6.60 |
-| (g) ETR order, the button's T5 rule (PM) | BOTH | 3 | -12.70 | -26.66 to -1.09 | -3.75 | +7.20 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 3 | -6.10 | -10.44 to -2.49 | -2.12 | +6.76 |
-| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 3 | -1.33 | -2.37 to -0.17 | -0.17 | +4.31 |
-| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | -2.73 | -8.96 to +2.89 | +0.07 | +7.60 |
-| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 3 | -8.01 | -16.80 to -0.09 | -1.81 | +4.91 |
-| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | +6.68 | -1.25 to +16.22 | +1.65 | -0.60 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | +0.08 | +0.00 to +0.15 | +0.01 | -0.17 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 3 | -7.93 | -16.71 to -0.01 | -1.80 | +4.74 |
+| (b) the button's list | BOTH | 4 | -3.25 | -6.62 to +0.28 | -1.84 | +2.01 |
+| (c1) mine, T1's moves undone | BOTH | 4 | -0.00 | -0.00 to +0.00 | +0.00 | +0.00 |
+| (c2) mine, T2's moves undone | BOTH | 4 | +1.37 | +0.66 to +2.05 | +0.15 | -2.11 |
+| (c3) mine, T3's moves undone | BOTH | 4 | -3.40 | -7.05 to +0.27 | -1.91 | +2.11 |
+| (c4) mine, T4's moves undone | BOTH | 4 | -0.91 | -1.99 to +0.18 | -0.17 | +0.86 |
+| (c5) mine, T5's moves undone | BOTH | 4 | -0.73 | -1.90 to +0.46 | -0.02 | +0.90 |
+| (d) ADP | BOTH | 4 | +3.82 | +2.11 to +5.54 | +0.03 | -10.74 |
+| (e) ETR (PM) | BOTH | 4 | -12.93 | -22.30 to -4.77 | -3.21 | +10.86 |
+| (f1) mine (PM), T1 in ETR's order | BOTH | 4 | +0.00 | +0.00 to +0.00 | +0.00 | +0.00 |
+| (f2) mine (PM), T2 in ETR's order | BOTH | 4 | +0.85 | +0.04 to +1.61 | -0.00 | -2.99 |
+| (f3) mine (PM), T3 in ETR's order | BOTH | 4 | -3.72 | -6.32 to -1.26 | -1.14 | +3.72 |
+| (f4) mine (PM), T4 in ETR's order | BOTH | 4 | +0.12 | +0.01 to +0.24 | +0.00 | -0.17 |
+| (f5) mine (PM), T5 in ETR's order | BOTH | 4 | -2.94 | -4.83 to -1.30 | -0.28 | +3.41 |
+| (b') the button rebuilt here (PM) | BOTH | 4 | -2.46 | -6.48 to +1.89 | -1.65 | -1.95 |
+| (f) the button on ETR tiers (PM) | BOTH | 4 | -4.53 | -7.68 to -1.71 | -1.60 | +5.21 |
+| (g) ETR order, the button's T5 rule (PM) | BOTH | 4 | -10.85 | -21.02 to -2.00 | -2.88 | +7.54 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 4 | -4.57 | -7.66 to -1.87 | -1.61 | +5.32 |
+| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 4 | -2.08 | -3.33 to -1.05 | -0.33 | +3.33 |
+| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | -2.07 | -6.69 to +2.21 | +0.05 | +7.16 |
+| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 4 | -8.40 | -14.98 to -2.32 | -1.62 | +5.66 |
+| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | +6.32 | +0.22 to +13.34 | +1.28 | -2.33 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | +0.05 | -0.03 to +0.11 | +0.01 | -0.11 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 4 | -8.35 | -14.93 to -2.27 | -1.61 | +5.54 |
 
 ### Since 2026-11-14 (AM) / 2026-11-13 (PM): elite-cut, q-adp-fall, q-keeps-tier, q-t1-to-t2, q-t5-follows-t5, q-teammate-tiebreak, t2-am-adp, t2-pm-elite-break, t3-pricey-over-t4-value, t34-am-adp-groups, t34-pm-etr-groups, t4-borrow-t3, t4-ends-round6, t4-pricey-to-t5, t4-value-from-a5, t5-4drafter-no-line, t5-drafted-60, t5-ends-at-cut, t5-minutes-floor
 
 | (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |
 |---|---|---|---|---|---|---|
-| (b) the button's list | BOTH | 3 | -4.27 | -10.94 to +1.42 | -2.77 | +1.39 |
-| (c1) mine, T1's moves undone | BOTH | 3 | -0.00 | -0.00 to +0.00 | +0.00 | +0.00 |
-| (c2) mine, T2's moves undone | BOTH | 3 | +1.11 | +0.00 to +2.13 | +0.17 | -2.14 |
-| (c3) mine, T3's moves undone | BOTH | 3 | -5.20 | -11.64 to +0.31 | -2.94 | +3.13 |
-| (c4) mine, T4's moves undone | BOTH | 3 | -0.49 | -1.23 to +0.39 | -0.15 | +0.09 |
-| (c5) mine, T5's moves undone | BOTH | 3 | -0.04 | -0.48 to +0.48 | -0.01 | +0.22 |
-| (d) ADP | BOTH | 3 | +4.92 | +2.88 to +7.11 | +0.16 | -12.25 |
-| (e) ETR (PM) | BOTH | 3 | -14.03 | -26.83 to -3.38 | -3.91 | +11.51 |
-| (f1) mine (PM), T1 in ETR's order | BOTH | 3 | +0.00 | +0.00 to +0.00 | +0.00 | +0.00 |
-| (f2) mine (PM), T2 in ETR's order | BOTH | 3 | +0.36 | -0.34 to +1.00 | -0.02 | -2.48 |
-| (f3) mine (PM), T3 in ETR's order | BOTH | 3 | -3.05 | -6.49 to +0.29 | -1.41 | +2.21 |
-| (f4) mine (PM), T4 in ETR's order | BOTH | 3 | +0.02 | -0.01 to +0.05 | +0.01 | +0.01 |
-| (f5) mine (PM), T5 in ETR's order | BOTH | 3 | -2.79 | -5.33 to -0.67 | -0.34 | +3.02 |
-| (b') the button rebuilt here (PM) | BOTH | 3 | -3.29 | -8.50 to +2.48 | -2.17 | -1.01 |
-| (f) the button on ETR tiers (PM) | BOTH | 3 | -6.02 | -10.44 to -2.34 | -2.10 | +6.60 |
-| (g) ETR order, the button's T5 rule (PM) | BOTH | 3 | -12.70 | -26.66 to -1.09 | -3.75 | +7.20 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 3 | -6.10 | -10.44 to -2.49 | -2.12 | +6.76 |
-| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 3 | -1.33 | -2.37 to -0.17 | -0.17 | +4.31 |
-| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | -2.73 | -8.96 to +2.89 | +0.07 | +7.60 |
-| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 3 | -8.01 | -16.80 to -0.09 | -1.81 | +4.91 |
-| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | +6.68 | -1.25 to +16.22 | +1.65 | -0.60 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | +0.08 | +0.00 to +0.15 | +0.01 | -0.17 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 3 | -7.93 | -16.71 to -0.01 | -1.80 | +4.74 |
+| (b) the button's list | BOTH | 4 | -3.79 | -8.34 to +0.28 | -2.02 | +1.99 |
+| (c1) mine, T1's moves undone | BOTH | 4 | -0.00 | -0.00 to +0.00 | +0.00 | +0.00 |
+| (c2) mine, T2's moves undone | BOTH | 4 | +1.38 | +0.61 to +2.10 | +0.15 | -2.63 |
+| (c3) mine, T3's moves undone | BOTH | 4 | -3.61 | -8.15 to +0.27 | -2.06 | +2.25 |
+| (c4) mine, T4's moves undone | BOTH | 4 | -1.19 | -1.99 to -0.24 | -0.20 | +1.08 |
+| (c5) mine, T5's moves undone | BOTH | 4 | -0.97 | -1.90 to +0.14 | -0.03 | +1.15 |
+| (d) ADP | BOTH | 4 | +3.71 | +2.11 to +5.62 | +0.04 | -11.00 |
+| (e) ETR (PM) | BOTH | 4 | -12.93 | -22.30 to -4.77 | -3.21 | +10.86 |
+| (f1) mine (PM), T1 in ETR's order | BOTH | 4 | +0.00 | +0.00 to +0.00 | +0.00 | +0.00 |
+| (f2) mine (PM), T2 in ETR's order | BOTH | 4 | +0.85 | +0.04 to +1.61 | -0.00 | -2.99 |
+| (f3) mine (PM), T3 in ETR's order | BOTH | 4 | -3.72 | -6.32 to -1.26 | -1.14 | +3.72 |
+| (f4) mine (PM), T4 in ETR's order | BOTH | 4 | +0.12 | +0.01 to +0.24 | +0.00 | -0.17 |
+| (f5) mine (PM), T5 in ETR's order | BOTH | 4 | -2.94 | -4.83 to -1.30 | -0.28 | +3.41 |
+| (b') the button rebuilt here (PM) | BOTH | 4 | -2.46 | -6.48 to +1.89 | -1.65 | -1.95 |
+| (f) the button on ETR tiers (PM) | BOTH | 4 | -4.53 | -7.68 to -1.71 | -1.60 | +5.21 |
+| (g) ETR order, the button's T5 rule (PM) | BOTH | 4 | -10.85 | -21.02 to -2.00 | -2.88 | +7.54 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 4 | -4.57 | -7.66 to -1.87 | -1.61 | +5.32 |
+| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 4 | -2.08 | -3.33 to -1.05 | -0.33 | +3.33 |
+| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | -2.07 | -6.69 to +2.21 | +0.05 | +7.16 |
+| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 4 | -8.40 | -14.98 to -2.32 | -1.62 | +5.66 |
+| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | +6.32 | +0.22 to +13.34 | +1.28 | -2.33 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 4 | +0.05 | -0.03 to +0.11 | +0.01 | -0.11 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 4 | -8.35 | -14.93 to -2.27 | -1.61 | +5.54 |
 
 ### Since 2026-11-14 (AM) / 2026-11-14 (PM): proj-box-3-days, proj-fresh-absence
 
 | (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |
 |---|---|---|---|---|---|---|
-| (b) the button's list | BOTH | 2 | +1.08 | - | +0.13 | -1.97 |
-| (c1) mine, T1's moves undone | BOTH | 2 | -0.00 | - | +0.00 | +0.00 |
-| (c2) mine, T2's moves undone | BOTH | 2 | +1.58 | - | +0.25 | -3.04 |
-| (c3) mine, T3's moves undone | BOTH | 2 | +0.24 | - | +0.04 | -0.07 |
-| (c4) mine, T4's moves undone | BOTH | 2 | -0.94 | - | -0.24 | +0.58 |
-| (c5) mine, T5's moves undone | BOTH | 2 | -0.37 | - | -0.03 | +0.47 |
-| (d) ADP | BOTH | 2 | +3.64 | - | +0.41 | -8.57 |
-| (e) ETR (PM) | BOTH | 2 | -17.00 | - | -3.51 | +13.55 |
-| (f1) mine (PM), T1 in ETR's order | BOTH | 2 | +0.00 | - | +0.00 | +0.00 |
-| (f2) mine (PM), T2 in ETR's order | BOTH | 2 | -0.02 | - | -0.04 | -3.59 |
-| (f3) mine (PM), T3 in ETR's order | BOTH | 2 | +0.20 | - | +0.04 | +0.01 |
-| (f4) mine (PM), T4 in ETR's order | BOTH | 2 | +0.04 | - | +0.01 | +0.01 |
-| (f5) mine (PM), T5 in ETR's order | BOTH | 2 | -3.87 | - | -0.47 | +4.25 |
-| (b') the button rebuilt here (PM) | BOTH | 2 | +1.78 | - | +0.11 | -4.81 |
-| (f) the button on ETR tiers (PM) | BOTH | 2 | -4.44 | - | -0.94 | +6.64 |
-| (g) ETR order, the button's T5 rule (PM) | BOTH | 2 | -15.11 | - | -3.29 | +7.22 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 2 | -4.55 | - | -0.96 | +6.89 |
-| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 2 | -1.89 | - | -0.22 | +6.33 |
-| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 2 | -6.21 | - | -1.04 | +11.45 |
-| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 2 | -12.56 | - | -2.57 | +6.91 |
-| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | BOTH | 2 | +10.67 | - | +2.35 | -0.59 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 2 | +0.12 | - | +0.02 | -0.26 |
-| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 2 | -12.45 | - | -2.55 | +6.66 |
+| (b) the button's list | BOTH | 3 | -0.30 | -1.89 to +1.42 | -0.01 | +0.04 |
+| (c1) mine, T1's moves undone | BOTH | 3 | -0.00 | -0.00 to +0.00 | +0.00 | +0.00 |
+| (c2) mine, T2's moves undone | BOTH | 3 | +1.74 | +0.78 to +2.62 | +0.19 | -3.32 |
+| (c3) mine, T3's moves undone | BOTH | 3 | +0.21 | +0.06 to +0.34 | +0.04 | +0.01 |
+| (c4) mine, T4's moves undone | BOTH | 3 | -1.66 | -2.53 to -0.64 | -0.26 | +1.66 |
+| (c5) mine, T5's moves undone | BOTH | 3 | -1.42 | -2.41 to -0.25 | -0.05 | +1.55 |
+| (d) ADP | BOTH | 3 | +2.59 | +0.95 to +4.37 | +0.17 | -8.36 |
+| (e) ETR (PM) | BOTH | 3 | -14.55 | -27.62 to -3.70 | -2.70 | +12.02 |
+| (f1) mine (PM), T1 in ETR's order | BOTH | 3 | +0.00 | +0.00 to +0.00 | +0.00 | +0.00 |
+| (f2) mine (PM), T2 in ETR's order | BOTH | 3 | +0.76 | -0.34 to +1.78 | -0.01 | -3.91 |
+| (f3) mine (PM), T3 in ETR's order | BOTH | 3 | -1.76 | -3.89 to +0.29 | -0.07 | +2.76 |
+| (f4) mine (PM), T4 in ETR's order | BOTH | 3 | +0.17 | +0.03 to +0.31 | +0.00 | -0.23 |
+| (f5) mine (PM), T5 in ETR's order | BOTH | 3 | -3.72 | -6.40 to -1.50 | -0.34 | +4.37 |
+| (b') the button rebuilt here (PM) | BOTH | 3 | +1.24 | +0.04 to +2.68 | +0.07 | -4.84 |
+| (f) the button on ETR tiers (PM) | BOTH | 3 | -2.95 | -7.13 to +0.52 | -0.64 | +4.76 |
+| (g) ETR order, the button's T5 rule (PM) | BOTH | 3 | -11.83 | -25.94 to -0.13 | -2.28 | +7.67 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 3 | -3.01 | -7.11 to +0.39 | -0.66 | +4.91 |
+| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 3 | -2.71 | -3.97 to -1.36 | -0.43 | +4.35 |
+| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | -4.19 | -9.81 to +0.48 | -0.71 | +9.60 |
+| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 3 | -11.60 | -20.49 to -4.22 | -2.06 | +7.26 |
+| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | +8.88 | +0.65 to +18.81 | +1.63 | -2.91 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 3 | +0.06 | -0.04 to +0.15 | +0.01 | -0.15 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 3 | -11.54 | -20.51 to -4.09 | -2.05 | +7.11 |
 
 ### Since 2026-11-17 (AM) / 2026-11-17 (PM): tiers-pm-etr
 
 | (a) minus, or the pair named | Window | Nights | Top 10% (pts) | 80% range | Top 1% (pts) | Mean finish pct |
 |---|---|---|---|---|---|---|
+| (b) the button's list | BOTH | 1 | -2.63 | - | -0.24 | +3.42 |
+| (c1) mine, T1's moves undone | BOTH | 1 | +0.00 | - | +0.00 | +0.00 |
+| (c2) mine, T2's moves undone | BOTH | 1 | +2.00 | - | +0.09 | -3.79 |
+| (c3) mine, T3's moves undone | BOTH | 1 | +0.16 | - | +0.03 | +0.14 |
+| (c4) mine, T4's moves undone | BOTH | 1 | -2.86 | - | -0.30 | +3.46 |
+| (c5) mine, T5's moves undone | BOTH | 1 | -3.18 | - | -0.09 | +3.35 |
+| (d) ADP | BOTH | 1 | +0.83 | - | -0.24 | -8.01 |
+| (e) ETR (PM) | BOTH | 1 | -9.49 | - | -1.04 | +8.87 |
+| (f1) mine (PM), T1 in ETR's order | BOTH | 1 | +0.00 | - | +0.00 | +0.00 |
+| (f2) mine (PM), T2 in ETR's order | BOTH | 1 | +2.36 | - | +0.06 | -4.57 |
+| (f3) mine (PM), T3 in ETR's order | BOTH | 1 | -5.82 | - | -0.29 | +8.42 |
+| (f4) mine (PM), T4 in ETR's order | BOTH | 1 | +0.44 | - | -0.01 | -0.71 |
+| (f5) mine (PM), T5 in ETR's order | BOTH | 1 | -3.42 | - | -0.06 | +4.63 |
+| (b') the button rebuilt here (PM) | BOTH | 1 | +0.13 | - | -0.02 | -4.89 |
+| (f) the button on ETR tiers (PM) | BOTH | 1 | +0.11 | - | -0.04 | +0.90 |
+| (g) ETR order, the button's T5 rule (PM) | BOTH | 1 | -5.09 | - | -0.19 | +8.60 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) | BOTH | 1 | +0.16 | - | -0.03 | +0.83 |
+| (g) ETR order, the button's T5 rule (PM) minus (e) ETR (PM) | BOTH | 1 | -4.41 | - | -0.85 | +0.27 |
+| (b') the button rebuilt here (PM) minus (f) the button on ETR tiers (PM) | BOTH | 1 | -0.01 | - | -0.01 | +5.79 |
+| (f) the button on ETR tiers (PM) minus (e) ETR (PM) | BOTH | 1 | -9.61 | - | -1.01 | +7.98 |
+| (g) ETR order, the button's T5 rule (PM) minus (f) the button on ETR tiers (PM) | BOTH | 1 | +5.20 | - | +0.16 | -7.71 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (f) the button on ETR tiers (PM) | BOTH | 1 | -0.05 | - | -0.01 | +0.06 |
+| (f-nodrop) the ETR-tier button, ETR's T4 PRICEY kept in T4 (PM) minus (e) ETR (PM) | BOTH | 1 | -9.66 | - | -1.01 | +8.04 |
 
 ## Round 6 fidelity
 
@@ -287,9 +310,9 @@ My real round-6 pick (each of my real teams' sixth by ADP-at-draft), placed amon
 
 | Window | Teams | #1 | #2 | #3 | #4 | #5 | #6 | 7-15 | not in top 15 |
 |---|---|---|---|---|---|---|---|---|---|
-| BOTH | 1926 | 30% | 20% | 11% | 9% | 5% | 5% | 10% | 10% |
-| AM | 563 | 32% | 18% | 14% | 8% | 4% | 5% | 4% | 15% |
-| PM | 1363 | 29% | 21% | 10% | 9% | 5% | 5% | 12% | 8% |
+| BOTH | 2025 | 30% | 20% | 11% | 8% | 5% | 5% | 10% | 11% |
+| AM | 593 | 33% | 19% | 13% | 8% | 4% | 4% | 4% | 15% |
+| PM | 1432 | 29% | 21% | 10% | 9% | 6% | 5% | 12% | 9% |
 
 By night (both windows): the share of my real round-6 picks that were (a)'s #1 available, #1-3, #1-6.
 
@@ -320,6 +343,7 @@ By night (both windows): the share of my real round-6 picks that were (a)'s #1 a
 | 2026-11-13 | 102 | 36% | 66% | 75% |
 | 2026-11-14 | 10 | 10% | 80% | 90% |
 | 2026-11-16 | 100 | 22% | 57% | 77% |
+| 2026-11-17 | 99 | 26% | 56% | 77% |
 
 ## My real teams against (a)
 
@@ -327,9 +351,9 @@ My real teams beside (a) replayed at the same seats, and where they land in (a)'
 
 | Window | Teams | Real top 1% | (a) top 1% | Real top 10% | (a) top 10% | Real mean finish | (a) mean finish | Real beat this share of (a)'s replays |
 |---|---|---|---|---|---|---|---|---|
-| BOTH | 1926 | 0.88% | 1.30% | 13.0% | 13.9% | 44.9 | 43.0 | 49% |
-| AM | 563 | 0.71% | 1.24% | 14.0% | 14.6% | 46.2 | 42.8 | 48% |
-| PM | 1363 | 0.95% | 1.32% | 12.5% | 13.6% | 44.4 | 43.0 | 49% |
+| BOTH | 2025 | 0.84% | 1.23% | 12.9% | 13.7% | 44.7 | 43.0 | 49% |
+| AM | 593 | 0.67% | 1.18% | 14.2% | 14.5% | 45.7 | 42.7 | 49% |
+| PM | 1432 | 0.91% | 1.26% | 12.4% | 13.3% | 44.3 | 43.1 | 49% |
 
 ## By night
 
@@ -382,4 +406,6 @@ Top 10% / mean finish percentile for each list; seats are every seat in that win
 | 2026-11-14 | PM | 16410 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 9.6% / 48 | 8.3% / 52 | 10.8% / 48 | 9.6% / 48 | 8.8% / 56 | 9.6% / 48 | 9.5% / 48 | 10.2% / 47 | 9.6% / 48 | 8.9% / 51 | 7.6% / 59 | 9.1% / 50 |
 | 2026-11-16 | AM | 6156 | 22.4% / 33 | 16.5% / 44 | 22.4% / 33 | 14.2% / 46 | 22.4% / 33 | 27.7% / 30 | 21.7% / 35 | 10.5% / 53 | - | - | - | - | - | - | - | - | - | - |
 | 2026-11-16 | PM | 12420 | 8.2% / 48 | 8.0% / 48 | 8.2% / 48 | 7.8% / 51 | 7.5% / 49 | 8.2% / 48 | 9.5% / 46 | 5.4% / 57 | 46.0% / 16 | 8.2% / 48 | 9.3% / 46 | 7.7% / 48 | 8.2% / 48 | 16.2% / 40 | 4.0% / 60 | 19.4% / 29 | 45.9% / 16 | 19.4% / 29 |
+| 2026-11-17 | AM | 6834 | 11.1% / 44 | 12.2% / 45 | 11.1% / 44 | 9.5% / 47 | 11.1% / 44 | 15.5% / 40 | 9.9% / 46 | 8.6% / 50 | - | - | - | - | - | - | - | - | - | - |
+| 2026-11-17 | PM | 13998 | 7.1% / 47 | 10.5% / 41 | 7.1% / 47 | 4.9% / 51 | 6.9% / 47 | 9.2% / 44 | 12.5% / 41 | 7.1% / 55 | 16.6% / 38 | 7.1% / 47 | 4.8% / 51 | 12.9% / 38 | 6.7% / 47 | 10.5% / 42 | 7.0% / 52 | 7.0% / 46 | 12.2% / 38 | 7.0% / 46 |
 

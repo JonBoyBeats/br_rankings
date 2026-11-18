@@ -3,6 +3,10 @@
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_thu_main"
  },
+ "0f2ff0c4-6929-476b-bf3d-114512d8dff4": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_tue_main"
+ },
  "1d088fe1-53a6-4c71-970f-b11a5f69d60a": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_wed_main"
