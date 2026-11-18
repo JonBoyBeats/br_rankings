@@ -217,6 +217,14 @@ def summarize(vals_by_night, last=7):
     return {"season": blk(vs), "last7": blk(vs[-last:])}
 
 
+def split_of(vals_by_night, last=7):
+    """{"season", "last7"}: nights the first came out ahead (won), behind (lost), level (even); [(date, diff)]."""
+    vs = sorted((d, v) for d, v in vals_by_night if v is not None)
+    cnt = lambda sub: {"won": sum(1 for _, v in sub if v > 1e-9), "lost": sum(1 for _, v in sub if v < -1e-9),
+                       "even": sum(1 for _, v in sub if abs(v) <= 1e-9)}
+    return {"season": cnt(vs), "last7": cnt(vs[-last:])}
+
+
 def pooled(cells, x, y=None, key="top10"):
     """Seat-weighted pooled rate (or x minus y) over pod-replay by_night cells, in points, with nights resampled."""
     def fn(cs):
@@ -249,6 +257,8 @@ def build(nights, pr):
                           "teams my real teams beat, 0-100.",
               "orders": "adp: ADP; etr / proj: the projection rounded to whole points, ADP breaking ties; mine: my locked list's "
                         "order; lev (T5): under 60% drafted first, by projection.",
+              "split": "won / lost / even: nights the first list or order came out ahead of the second, behind it, level (headline "
+                       "vs_mine: that list against mine; tier diffs: the first order's score against the second's).",
               "stakes": "The pod replay's read for the tier: my list with my tier in the projection's order minus the same in ADP's "
                         "order (my own tier lines), top-10% and top-1% points."},
           "headline": {}, "tiers": {}}
@@ -267,10 +277,11 @@ def build(nights, pr):
                 blk["orders"][o] = {q: summarize([(d, c["orders"][o]["slope"][q]) for d, c in cells if o in c["orders"]]) for q in KEYS}
                 blk["orders"][o]["rank_corr"] = {q: summarize([(d, c["orders"][o]["rc"][q]) for d, c in cells if o in c["orders"]]) for q in KEYS}
             for a, b in itertools.combinations(names, 2):
-                blk["diffs"]["%s-%s" % (a, b)] = {q: summarize([(d, c["orders"][a]["slope"][q] - c["orders"][b]["slope"][q]) for d, c in cells
-                                                                 if a in c["orders"] and b in c["orders"]
-                                                                 and c["orders"][a]["slope"][q] is not None and c["orders"][b]["slope"][q] is not None])
-                                                  for q in KEYS}
+                blk["diffs"]["%s-%s" % (a, b)] = {}
+                for q in KEYS:
+                    dv = [(d, c["orders"][a]["slope"][q] - c["orders"][b]["slope"][q]) for d, c in cells
+                          if a in c["orders"] and b in c["orders"] and c["orders"][a]["slope"][q] is not None and c["orders"][b]["slope"][q] is not None]
+                    blk["diffs"]["%s-%s" % (a, b)][q] = dict(summarize(dv), split=split_of(dv))
             # stakes: the pod replay's projection-order minus ADP-order pair for the tier (my tier lines)
             x_, y_ = ("f" if w == "pm" else "p") + k, "d" + k
             bn = sorted((c for c in pr.get("by_night", []) if c["window"] == w), key=lambda c: c["date"])
@@ -287,7 +298,8 @@ def build(nights, pr):
             if any(c.get(key) for c in bn):
                 h["lists"][name] = {q: pooled(bn, key, None, q) for q in KEYS}
                 if name != "mine":
-                    h["vs_mine"][name] = {q: pooled(bn, key, "a", q) for q in KEYS}
+                    h["vs_mine"][name] = {q: dict(pooled(bn, key, "a", q), split=split_of(
+                        [(c["date"], c[key][q] - c["a"][q]) for c in bn if c.get(key) and c.get("a")])) for q in KEYS}
         beats = sorted((d, v[w]) for d, v in (pr.get("my_beat") or {}).items() if v.get(w))
         h["my_percentile"] = summarize([(d, 100 * st.median(b)) for d, b in beats])
         js["headline"][w] = h
