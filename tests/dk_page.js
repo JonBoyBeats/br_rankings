@@ -108,6 +108,10 @@ function audit(name, L, o) {
   const em = await pg.evaluate(() => { const r = rows.find(x => x.status !== "Out"); Object.assign(r, { em_pos: 1.69, em_role: 2.29, poss: 263, min_poss: 31.2 }); renderPlayers();
     const el = document.querySelector(`#players .row[data-id="${r.id}"] .sub`); const txt = el.textContent, tip = el.querySelector("span[title]") ? el.querySelector("span[title]").title : "";
     delete r.em_pos; delete r.em_role; delete r.poss; delete r.min_poss; renderPlayers(); return { txt, tip }; });
+  const l5 = await pg.evaluate(() => { const r = rows.find(x => x.status !== "Out" && x.dk_avg); r.last5 = [["2026-11-12", 30, 24.5], ["2026-11-15", 34.4, 31], ["2026-11-17", 28, 18.25]]; renderPlayers();
+    const el = document.querySelector(`#players .row[data-id="${r.id}"] .col-avg`); const t = el.title; delete r.last5; renderPlayers(); return t; });
+  check("DK avg hover: his last games, newest first, minutes, DK points and per minute",
+        l5.split("\n").length === 4 && /^Last 3, newest first/.test(l5) && /11\/17  28 min  18\.3 DK  0\.65\/min/.test(l5.split("\n")[1]) && /11\/12  30 min  24\.5 DK  0\.82\/min/.test(l5.split("\n")[3]), l5);
   check("EvanMiya on the row: position, role and possessions, with what his possessions imply", /EM pos 1\.7 role 2\.3 · 263 poss/.test(em.txt) && /31\.2 minutes/.test(em.tip), JSON.stringify(em));
   check("match warning: none when every game matched", !(await pg.$("#matchWarn")));
   const mw = await pg.evaluate(() => {

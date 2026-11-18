@@ -192,6 +192,7 @@
   table.bp .pn { cursor: pointer; } table.bp .pn:hover { color: var(--bad); text-decoration: line-through; }
   table.bp tr.over td { opacity: .5; } table.bp tr.over td:first-child { opacity: 1; }
   table.bp button.bpForce { color: var(--bad); border-color: var(--bad); font-size: 11px; padding: 0 6px; }
+  .row .has5 { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
 </style>
 </head>
 <body>
@@ -500,6 +501,13 @@ function greenBg(x, lo, hi) {
 }
 // EvanMiya's position and role (1-5 scales: 1 a point guard / the primary creator, 5 a center / a finisher) and his
 // possessions played, from the ratings file: shown, not projected from
+// his last games (up to 5), newest first: date, minutes, DraftKings points (the double-double bonus in) and per minute
+function last5Text(r) {
+  return "Last " + r.last5.length + ", newest first\n" + r.last5.slice().reverse().map(function (g) {
+    var d = String(g[0] || "").slice(5).replace("-", "/");
+    return (d ? d + "  " : "") + Math.round(g[1]) + " min  " + g[2].toFixed(1) + " DK  " + (g[1] ? (g[2] / g[1]).toFixed(2) : "–") + "/min";
+  }).join("\n");
+}
 function emLine(r) {
   if (r.em_pos == null && r.em_role == null && r.poss == null) return "";
   return '<span title="EvanMiya: Position and Role on 1-5 scales (1 a point guard / the primary creator, 5 a center / a finisher), possessions played this season' +
@@ -533,7 +541,7 @@ function playerTable(list, sortable) {
       '<span class="m r val"' + greenBg(value(r), 2, 4.5) + ">" + value(r).toFixed(2) + "</span>" +
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
-      '<span class="m r mut col-avg">' + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
+      '<span class="m r mut col-avg' + (r.last5 && r.last5.length ? ' has5" title="' + esc(last5Text(r)) + '"' : '"') + ">" + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
       '<span class="col-max"><input class="floor" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + '"></span>' +
       '<span class="col-max"><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
       "</div>";
