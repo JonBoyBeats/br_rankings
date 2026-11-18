@@ -90,15 +90,19 @@ def etr_adp_pairs(n, tier, pm, window="pm"):
             if num(e.get("your_rank")) is not None and num(d.get("your_rank")) is not None:
                 me = "etr" if num(e["your_rank"]) < num(d["your_rank"]) else "adp"
             me_m, ad_m = mult(pm, n["date"], window, e["player_id"]), mult(pm, n["date"], window, d["player_id"])
+            me10, ad10 = mult(pm, n["date"], window, e["player_id"], "top10"), mult(pm, n["date"], window, d["player_id"], "top10")
             out.append({"etr": e["name"], "adp": d["name"], "mine": me,
                         "mult": round(me_m - ad_m, 3) if me_m is not None and ad_m is not None else None,
+                        "mult10": round(me10 - ad10, 3) if me10 is not None and ad10 is not None else None,
                         "pts": round(num(e["actual"]) - num(d["actual"]), 1)})
     return out
 
 
 def pair_block(pairs):
     ms = [p["mult"] for p in pairs if p["mult"] is not None]
+    m10 = [p.get("mult10") for p in pairs if p.get("mult10") is not None]
     return {"pairs": pairs, "value": round(sum(ms) / len(ms), 3) if ms and len(ms) == len(pairs) else None,
+            "value10": round(sum(m10) / len(m10), 3) if m10 and len(m10) == len(pairs) else None,
             "tally": tally([p["pts"] for p in pairs]), "mine_etr": sum(p["mine"] == "etr" for p in pairs),
             "mine_adp": sum(p["mine"] == "adp" for p in pairs)}
 
@@ -159,20 +163,20 @@ def pod_since(rd, lst):
     return out
 
 
-def pod_paired(rows, w, y, key, since=None, last=None):
-    """(a) minus y, seat-weighted over the night-windows where both ran (on or after since[window], or only the last `last`
-    nights they both ran); nights resampled."""
+def pod_paired(rows, w, y, key, since=None, last=None, x="a"):
+    """x (default (a), my list) minus y, seat-weighted over the night-windows where both ran (on or after since[window], or
+    only the last `last` nights they both ran); nights resampled."""
     by = collections.defaultdict(list)
     for r in rows:
-        if r["window"] in (("am", "pm") if w == "both" else (w,)) and r.get("a") and r.get(y) \
+        if r["window"] in (("am", "pm") if w == "both" else (w,)) and r.get(x) and r.get(y) \
                 and (not since or r["date"] >= since.get(r["window"], "9999")):
             by[r["date"]].append(r)
     cells = [by[d] for d in sorted(by)][-last:] if last else [by[d] for d in sorted(by)]
 
     def fn(ns):
         flat = [r for c in ns for r in c]
-        tot = sum(r["a"]["seats"] for r in flat)
-        return sum(r["a"]["seats"] * (r["a"][key] - r[y][key]) for r in flat) / tot if tot else None
+        tot = sum(r[x]["seats"] for r in flat)
+        return sum(r[x]["seats"] * (r[x][key] - r[y][key]) for r in flat) / tot if tot else None
     v = fn(cells) if cells else None
     rng = M.boot_range(cells, fn) if v is not None else None
     r100 = lambda x: None if x is None else round(100 * x, 3)
@@ -203,6 +207,16 @@ def pod_replay():
                                    "since": (eb.get("pairs") or {}).get(y, {}).get(k)} for k in POD_KEYS}
                            for y in POD_ETR if ((pr.get("paired") or {}).get("pm") or {}).get(y)}}
     out["my_seats"] = pr.get("my_seats_top1")
+    # head to head in a tier (the contest side's "x-y" pairs): the projection's order against straight ADP's, x minus y;
+    # season as the file has it, last night and last 7 re-pooled the same way
+    out["h2h"] = {}
+    for w, pair in (("pm", "f1-d1"), ("pm", "f2-d2"), ("am", "p1-d1"), ("am", "p2-d2")):
+        x, y = pair.split("-")
+        if not ((pr.get("paired") or {}).get(w) or {}).get(pair):
+            continue
+        out["h2h"].setdefault(w, {})[pair] = {k: {"season": pr["paired"][w][pair].get(k),
+                                                  "last": pod_paired(pr["by_night"], w, y, k, last=1, x=x),
+                                                  "last7": pod_paired(pr["by_night"], w, y, k, last=7, x=x)} for k in POD_KEYS}
     return out
 
 

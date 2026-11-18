@@ -559,47 +559,51 @@ function tierForest(s, k) {
   var cols = el("div", { class: "pod-cols" }, s);
   [["top10", "Top 10%"], ["top1", "Top 1%"]].forEach(function (q) { var c = el("div", {}, cols); el("div", { class: "sub" }, c, q[1] + ", points"); forest(c, rows, q[0]); });
 }
-/* T1 as a scoreboard (asked 2026-11-18): afternoon, trusting ETR's order over ADP's; morning, our Proj's over ADP's. Each
-   a small table, Season | Last 7 | Last night: the pair record on points, the top-1% multiple gap, and the pod replay. */
+/* T1 as a scoreboard (asked 2026-11-18): afternoon, trusting ETR's order over ADP's; morning, our Proj's over ADP's. Each a
+   small table, Season | Last 7 | Last night, every number but the record in the same unit, percentage points of the share
+   reaching the top 10% / top 1%, a slate: what happened to the players' holders (a multiple m is m x 10% or m x 1% exactly),
+   and the pod replay's read on your seats (the tier in the projection's order against in ADP's). */
 function t1Board(s) {
-  var all = D.nights, last7 = all.slice(-7), lastN = all.slice(-1);
-  var col = [["Season", all], ["Last 7 nights", last7], ["Last night (" + short(all[all.length - 1].date) + ")", lastN]];
+  var all = D.nights, cols = [["Season, a slate", all, "season"], ["Last 7 nights, a slate", all.slice(-7), "last7"],
+                              ["Last night (" + short(all[all.length - 1].date) + ")", all.slice(-1), "last"]];
   var rec = function (ns, key) { var t = sumTally(ns.map(function (n) { return n[key] ? n[key].tally : [0, 0, 0]; })); return t[0] + t[1] + t[2] ? tallyStr(t) : "no split"; };
-  var mul = function (ns, key) {
-    var v = ns.map(function (n) { return n[key] && n[key].pairs.length ? n[key].value : undefined; }).filter(function (x) { return x !== undefined; });
-    if (!v.length) return "no split";
+  // a slate: over every slate on file, a night with no split counting 0 (the pod replay's nights count the same way)
+  var held = function (ns, key, f, scale) {
+    var on = ns.filter(function (n) { return n[key]; }), v = on.map(function (n) { return n[key].pairs.length ? n[key][f] : 0; });
+    var split = on.filter(function (n) { return n[key].pairs.length; }).length;
+    if (!split) return "no split";
     if (v.some(function (x) { return x == null; })) return "waiting";
-    var tot = v.reduce(function (a, x) { return a + x; }, 0);
-    return (ns.length > 1 ? sgn(tot) + " total, " : "") + sgn(tot / v.length) + (ns.length > 1 ? " a slate (" + v.length + ")" : "");
+    return sgn(scale * v.reduce(function (a, x) { return a + x; }, 0) / v.length) + (ns.length > 1 ? " (split on " + split + " of " + on.length + ")" : "");
   };
-  var pod = function (w, list, which, q) {
-    var c = podCell(w, list), v = c && c[q] ? c[q][which] : null;
+  var pod = function (w, pair, which, q) {
+    var c = ((((D.pod_replay || {}).h2h || {})[w] || {})[pair] || {})[q], v = c ? c[which] : null;
     if (!v || v.diff == null) return "–";
-    return sgn(-v.diff) + (which === "season" && v.lo != null ? " (" + sgn(-v.hi) + " to " + sgn(-v.lo) + ")" : "");
+    return sgn(v.diff) + (which === "season" && v.lo != null ? " (" + sgn(v.lo) + " to " + sgn(v.hi) + ")" : "") +
+           (which !== "last" && v.nights ? (which === "season" ? ", " + v.nights + " nights" : "") : "");
   };
-  var block = function (title, key, side, other, podList, podLabel) {
+  var block = function (title, key, w, pair, side) {
     el("div", { class: "sub" }, s, title);
     var t = el("table", {}, s), tr = el("tr", {}, el("thead", {}, t));
-    el("th", {}, tr, ""); col.forEach(function (c) { el("th", {}, tr, c[0]); });
+    el("th", {}, tr, ""); cols.forEach(function (c) { el("th", {}, tr, c[0]); });
     var tb = el("tbody", {}, t);
-    var w = key === "t1" ? "pm" : "am", at = ["season", "last7", "last"];
-    [[side.charAt(0).toUpperCase() + side.slice(1) + "'s record (W-L-push, points)", function (ns) { return rec(ns, key); }],
-     ["Top-1% multiple, " + side + "'s first minus " + other + "'s", function (ns) { return mul(ns, key); }],
-     [podLabel + ", top 10% (points)", function (ns, i) { return pod(w, podList, at[i], "top10"); }],
-     [podLabel + ", top 1% (points)", function (ns, i) { return pod(w, podList, at[i], "top1"); }]].forEach(function (r) {
+    [[side.charAt(0).toUpperCase() + side.slice(1) + "'s record against ADP (W-L-push, points)", function (c) { return rec(c[1], key); }],
+     ["What happened: holders of " + side + "'s pick minus ADP's, top 10%", function (c) { return held(c[1], key, "value10", 10); }],
+     ["What happened: holders of " + side + "'s pick minus ADP's, top 1%", function (c) { return held(c[1], key, "value", 1); }],
+     ["Pod replay: your seats, T1 in " + side + "'s order minus ADP's, top 10%", function (c) { return pod(w, pair, c[2], "top10"); }],
+     ["Pod replay: your seats, T1 in " + side + "'s order minus ADP's, top 1%", function (c) { return pod(w, pair, c[2], "top1"); }]].forEach(function (r) {
       var row = el("tr", {}, tb); el("td", {}, row, r[0]);
-      col.forEach(function (c, i) { el("td", {}, row, r[1](c[1], i)); });
+      cols.forEach(function (c) { el("td", {}, row, r[1](c)); });
     });
   };
-  block("Afternoon: trusting ETR's order over ADP's", "t1", "ETR", "ADP", "f1", "Pod replay: your list with T1 in ETR's order, minus yours");
-  if (D.nights.some(function (n) { return n.t1am; }))
-    block("Morning: trusting our projection's order over ADP's", "t1am", "our Proj", "ADP", "c1", "Pod replay: the button's T1 (ADP, Boom within 2), minus yours");
+  block("Afternoon: trusting ETR's order over ADP's", "t1", "pm", "f1-d1", "ETR");
+  if (D.nights.some(function (n) { return n.t1am; })) block("Morning: trusting our projection's order over ADP's", "t1am", "am", "p1-d1", "our Proj");
   else wait(s, "the morning T1 pairs (our Proj against ADP), built with tonight's nightly");
-  el("p", { class: "note" }, s, "Record: every pair of T1 players the two orders put differently (with three players, up to three pairs), won or lost " +
-     "at 3+ points, a push under 3. Multiple: how many times the field's rate the holders of each side's pick made the top 1%, " +
-     "the one side's minus the other's, averaged over the night's pairs; it measures the players, not your teams. Pod replay: every " +
-     "real pod replayed off the two lists, the gap in the share of seats reaching the top 10% / top 1%, in percentage points " +
-     "(80% range on the season); positive means the alternative did better than your list.");
+  el("p", { class: "note" }, s, "Every number but the record is in percentage points of the share reaching the top 10% / top 1%, a slate " +
+     "(positive: the projection's side did better). Record: every pair of T1 players the two orders put differently (with three " +
+     "players, up to three pairs), won or lost at 3+ points, a push under 3. What happened: the lineups across the contest " +
+     "that held the projection's pick against those that held ADP's, on the night's real results. Pod replay: every real pod " +
+     "replayed off your list with T1 in each order, same results; it is smaller because only the seats where the order " +
+     "changes which player you end up with move, and it removes the luck of draft slots and pods, not of the games (80% range on the season).");
 }
 function tier(k) {
   var s = card("T" + k + (k === 5 ? " and below the cut" : ""), null);
