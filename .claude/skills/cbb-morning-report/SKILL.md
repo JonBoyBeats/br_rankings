@@ -197,7 +197,17 @@ draw used); the monthly readout shows his results on nights each was used (direc
 EvanMiya's injury reports (the matchup previews the owner sends): one row per player, date, the team's DraftKings
 abbreviation, name, Out or Questionable, source. An Out regular (20+ minutes, 2+ games) has his minutes handed to his
 teammates by the projection (team_minutes); a player Out with 0 games this season changes nothing. The file's Out
-wins over DraftKings' Questionable. EvanMiya CSVs are needed only when tonight's teams played since the last export.
+wins over DraftKings' Questionable.
+
+**EvanMiya uploads, daily (owner, 2026-11-18):** three files only: the Skills Leaderboard, Player Ratings and Team
+Ratings. File each unchanged under a new date: `cbb/inputs/evanmiya/<date>_skills.csv`, `<date>_ratings.csv`,
+`<date>_team_ratings.csv` (never edited, never overwritten). Not needed: indispensability, and the per-team pages
+(game analysis, on-off, lineups); ESPN box scores and team ratings cover them. After filing, trigger the projection
+refresh (battle-royale-research `nba_adp_poll.yml`) and confirm in the mirror's `dk_cbb_morning.json` that
+`evanmiya` names the new date's files and every slate player's game matched (no DraftKings-average fallbacks).
+EvanMiya rows join on his Player ID (name and team for files without one). The DraftKings rate keeps EvanMiya's
+all season (`MIYA_RATE_W` 0.35, from `scripts/cbb_miya_rate_study.py`); rerun that study as dated team ratings come
+in, for the opponent-adjusted rate it can't judge yet (the first team ratings are 2026-11-18's).
 
 **Calibration week (through 2026-11-23): the calibration note comes first in the DK part.** Run
 `python3 scripts/dk_eval.py calnote --mirror ../br-adp-mirror` and give it short (a MATCH WARNING line, players whose
