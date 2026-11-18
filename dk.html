@@ -160,6 +160,7 @@
   .bpside .opts button { height: 26px; padding: 0 8px; font-size: 12px; }
   .srow { display: grid; grid-template-columns: minmax(0, 1fr) 44px 38px; gap: 6px; font-size: 12.5px; padding: 3px 4px; cursor: pointer; border-radius: 4px; }
   .srow:hover { background: var(--surface); }
+  .srow.r4 { grid-template-columns: minmax(0, 1fr) 40px 36px 36px; }
   .srow .m { font-family: var(--mono); text-align: right; color: var(--muted); }
   .srow.with { background: rgba(46,170,96,.28); } .srow.without { background: rgba(220,80,70,.22); } .srow.without span:first-child { text-decoration: line-through; }
   .bpside b.w { color: #5fbf7f; } .bpside b.wo { color: #e0705f; }
@@ -189,7 +190,8 @@
   .pickrow button { padding: 2px 8px; font-size: 12px; }
   #rtChips button { background: rgba(46,170,96,.25); }
   table.bp .pn { cursor: pointer; } table.bp .pn:hover { color: var(--bad); text-decoration: line-through; }
-  table.bp tr.over td { opacity: .45; }
+  table.bp tr.over td { opacity: .5; } table.bp tr.over td:first-child { opacity: 1; }
+  table.bp button.bpForce { color: var(--bad); border-color: var(--bad); font-size: 11px; padding: 0 6px; }
 </style>
 </head>
 <body>
@@ -1197,7 +1199,21 @@ function bpOver(k) {          // the players lineup k would take past their limi
   return BP.pool[k].ids.filter(function (id) { return limit[id] != null && (count[id] || 0) + 1 > limit[id]; })
     .map(function (id) { return { name: byId(id).name, n: count[id] || 0, limit: limit[id] }; });
 }
-function bpAdd(k) { if (bpOver(k).length) return; BP.b.add(k); bpRescore(); bpCommit(); bpRender(); }
+/* What lineup k would break as a hand add, as reasons: a player past his limit (Max exposure / Max%), too few players
+   different from a pick (Min unique), or its core (three highest salaries) past Max core. "Add anyway" overrides. */
+function bpBlocks(k) {
+  var o = BP.o, why = bpOver(k).map(function (x) { return x.name + " is in " + x.n + " of your " + o.n + " (his limit " + x.limit + ")"; });
+  var ids = BP.pool[k].ids, mu = o.minUnique || 1;
+  var close = BP.b.picked.filter(function (j) { return 8 - BP.pool[j].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length < mu; });
+  if (close.length) why.push("shares " + (8 - mu + 1) + "+ of 8 players with " + close.length + " pick" + (close.length === 1 ? "" : "s") + " (Min unique " + mu + ")");
+  var lim = DKSim.coreLimit(o, o.n);
+  if (lim) {
+    var keys = bpCoreKeys(), n = BP.b.picked.filter(function (j) { return keys[j] === keys[k]; }).length;
+    if (n + 1 > lim) why.push("its core " + coreName(keys[k]) + " is in " + n + " of your " + o.n + " (Max core " + Math.round(100 * o.maxCore) + "%: " + lim + ")");
+  }
+  return why;
+}
+function bpAdd(k, force) { if (!force && bpBlocks(k).length) return; BP.b.add(k); bpRescore(); bpCommit(); bpRender(); }
 function bpRemove(k) { BP.b.remove(k); bpRescore(); bpCommit(); bpRender(); }
 // the builder's picks are the contest's portfolio, saved as they change
 function bpCommit() {
@@ -1265,11 +1281,12 @@ function bpSideRender(rest) {
   Object.keys(bpFilt[bpTab]).forEach(function (x) { if (vc[x] == null) vc[x] = 0; });       // a filtered item stays listed
   var list = Object.keys(vc).filter(function (x) { return !q || filtName(bpTab, x).toLowerCase().indexOf(q) >= 0 || (bpTab === "core" && x.split(",").some(function (id) { return ((byId(id) || {}).name || "").toLowerCase().indexOf(q) >= 0; })); })
     .sort(function (a, b) { return !!bpFilt[bpTab][b] - !!bpFilt[bpTab][a] || vc[b] - vc[a] || (pc[b] || 0) - (pc[a] || 0); }).slice(0, bpTab === "p" ? 120 : 60);
-  $("bpSideList").innerHTML = '<div class="srow" style="cursor:default"><span class="sub">' + ({ p: "Player", pair: "Combo", core: "Core" })[bpTab] +
-    '</span><span class="m">view</span><span class="m">yours</span></div>' + list.map(function (x) {
-      var st = bpFilt[bpTab][x] || "";
-      return '<div class="srow ' + st + '" data-key="' + esc(x) + '" title="' + esc(filtName(bpTab, x)) + '"><span>' + esc(filtName(bpTab, x)) + '</span><span class="m">' + vc[x] +
-        '</span><span class="m">' + (pc[x] || 0) + "</span></div>";
+  var lim = bpTab === "p" ? bpLimits() : null;      // players: the room left under each one's limit in this set
+  $("bpSideList").innerHTML = '<div class="srow' + (lim ? " r4" : "") + '" style="cursor:default"><span class="sub">' + ({ p: "Player", pair: "Combo", core: "Core" })[bpTab] +
+    '</span><span class="m">view</span><span class="m">yours</span>' + (lim ? '<span class="m" title="How many more of your lineups he can go in (Max exposure / his Max%)">room</span>' : "") + "</div>" + list.map(function (x) {
+      var st = bpFilt[bpTab][x] || "", room = lim && lim[x] != null ? lim[x] - (pc[x] || 0) : null;
+      return '<div class="srow ' + st + (lim ? " r4" : "") + '" data-key="' + esc(x) + '" title="' + esc(filtName(bpTab, x)) + '"><span>' + esc(filtName(bpTab, x)) + '</span><span class="m">' + vc[x] +
+        '</span><span class="m">' + (pc[x] || 0) + "</span>" + (lim ? '<span class="m"' + (room != null && room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (room == null ? "–" : room) + "</span>" : "") + "</div>";
     }).join("") + (list.length ? "" : '<div class="note">Nothing in view.</div>');
 }
 function bpRender(note) {
@@ -1332,10 +1349,10 @@ function bpRender(note) {
     return '<th data-k="' + c[0] + '" class="' + (BP.sort === c[0] ? "on" : "") + '">' + c[1] + (BP.sort === c[0] ? (BP.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>";
   function row(k, isPicked) {
     var sc = BP.scores[k];
-    var inG = BP.group && grp(k) === BP.group, over = isPicked ? [] : bpOver(k);
-    return '<tr class="' + (isPicked ? "picked" : "") + (inG ? " ingroup" : "") + (over.length ? " over" : "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' + (isPicked ? "bpRm" : "bpAdd") + '"' +
-      (over.length ? ' disabled title="' + esc(over.map(function (x) { return x.name + " is in " + x.n + " of your " + BP.o.n + " (his limit " + x.limit + ": Max exposure " + Math.round(100 * BP.o.maxExpo) + "%)"; }).join("; ")) + '"' : "") + ">" +
-      (isPicked ? "Remove" : "Add") + '</button></td><td class="l nm">' + BP.pool[k].slots.map(function (id) {
+    var inG = BP.group && grp(k) === BP.group, over = isPicked ? [] : bpBlocks(k);
+    return '<tr class="' + (isPicked ? "picked" : "") + (inG ? " ingroup" : "") + (over.length ? " over" : "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' +
+      (isPicked ? "bpRm" : over.length ? "bpForce" : "bpAdd") + '"' + (over.length ? ' title="Over a cap: ' + esc(over.join("; ")) + '. Click to add it anyway."' : "") + ">" +
+      (isPicked ? "Remove" : over.length ? "Add anyway" : "Add") + '</button></td><td class="l nm">' + BP.pool[k].slots.map(function (id) {
         return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") + '</td><td class="l mut" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(grp(k)) + '">' + esc(grp(k)) + "</td><td><b>" + BP.tier[k] + "</b></td><td>" + roiTxt(BP.roi[k]) + "</td><td>" + pct1(BP.t10[k]) + "</td><td>" + pct1(BP.t1[k]) + "</td><td>" + pct1(BP.cashR[k]) +
       "</td><td>" + (100 * BP.core[k]).toFixed(1) + "%</td><td>" + (BP.dupe[k] ? BP.dupe[k].toFixed(1) : "0") + "</td><td>" + (sc && BP.fee ? roiTxt((sc.value - BP.fee) / BP.fee) : "–") +
       "</td><td>" + (sc ? (100 * sc[cov]).toFixed(1) + "%" : "–") + "</td><td>" + (picked.length ? BP.shared[k] : "–") + "</td><td>" + Math.round(BP.own[k]) + "%</td></tr>";
@@ -1530,7 +1547,7 @@ $("bpTable").addEventListener("click", function (e) {
   if (pn) { bpFilt.p[pn.dataset.pid] = "without"; bpRender(); return; }
   var b = e.target.closest("button"); if (!b) return;
   var k2 = +b.closest("tr").dataset.k;
-  if (b.classList.contains("bpAdd")) bpAdd(k2); else bpRemove(k2);
+  if (b.classList.contains("bpAdd")) bpAdd(k2); else if (b.classList.contains("bpForce")) bpAdd(k2, true); else bpRemove(k2);
 });
 $("news").addEventListener("click", function (e) { var t = e.target.closest(".tx"); if (t) t.parentNode.classList.toggle("open"); });
 $("search").addEventListener("input", function (e) { view.q = e.target.value.trim().toLowerCase(); renderPlayers(); });

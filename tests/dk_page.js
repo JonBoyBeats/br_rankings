@@ -588,7 +588,7 @@ function audit(name, L, o) {
   const step = await pg.evaluate(() => {
     const b = BP.b, out = [], ks = [];
     for (const start of [0, 5, 40]) {           // three lineups within Max exposure (hand adds keep to it)
-      let k = start; while (ks.includes(k) || bpOver(k).length) k++;
+      let k = start; while (ks.includes(k) || bpBlocks(k).length) k++;
       const before = b.total(), v = BP.scores[k] ? BP.scores[k].value : null;
       bpAdd(k); ks.push(k);
       out.push(Math.abs(b.total() - before - v));
@@ -759,14 +759,43 @@ function audit(name, L, o) {
     const withP = BP.pool.map((L, k) => k).filter(k => BP.pool[k].ids.includes(p));
     return { n, lim, p, withP: withP.slice(0, lim + 1) };
   });
-  for (const k of cap.withP.slice(0, cap.lim)) await pg.evaluate(k => bpAdd(k), k);
+  for (const k of cap.withP.slice(0, cap.lim)) await pg.evaluate(k => bpAdd(k, true), k);    // forced: this check is about exposure
   const after = await pg.evaluate(c => ({ picked: BP.b.picked.length, btn: (() => { const tr = document.querySelector(`#bpTable tr[data-k="${c.withP[c.lim]}"]`);
-    return tr ? { disabled: tr.querySelector("button").disabled, title: tr.querySelector("button").title } : null; })() }), cap);
-  check(`max exposure, hand adds: ${cap.lim} of ${cap.n} with the most-used player, then his lineups refuse`, after.picked === cap.lim && (!after.btn || after.btn.disabled),
+    const b = tr && tr.querySelector("button");
+    return b ? { text: b.textContent, title: b.title } : null; })() }), cap);
+  check(`max exposure, hand adds: ${cap.lim} of ${cap.n} with the most-used player, then his lineups refuse`, after.picked === cap.lim && (!after.btn || after.btn.text === "Add anyway"),
     JSON.stringify(after));
-  if (after.btn) check("max exposure, hand adds: the refusal says why", /his limit \d+: Max exposure 40%/.test(after.btn.title), after.btn.title);
+  if (after.btn) check("max exposure, hand adds: the refusal says why, with Add anyway", after.btn.text === "Add anyway" && /his limit \d+/.test(after.btn.title), JSON.stringify(after.btn));
   await pg.evaluate(c => bpAdd(c.withP[c.lim]), cap);
   check("max exposure, hand adds: an add past the limit is refused", await pg.evaluate(c => BP.b.picked.length === c.lim, cap));
+  const room = await pg.evaluate(id => { const r = document.querySelector(`#bpSideList .srow[data-key="${id}"]`); return r ? +r.children[3].textContent : null; }, cap.p);
+  check("caps: the panel shows his room left (0 at his limit)", room === 0, String(room));
+  if (after.btn) {
+    await pg.click(`#bpTable tr[data-k="${cap.withP[cap.lim]}"] button.bpForce`);
+    check("caps: Add anyway overrides", await pg.evaluate(c => BP.b.picked.length === c.lim + 1 && BP.b.picked.includes(c.withP[c.lim]), cap));
+  }
+  // Min unique and Max core block a hand add too (with the same override)
+  await pg.click("#bpClear").catch(() => {});
+  const mu = await pg.evaluate(() => {
+    const mu = BP.o.minUnique || 1, keys = DKSim.cores(ctx(), BP.pool), K = BP.pool.length;
+    let a = -1, b = -1;
+    for (let i = 0; i < K && a < 0; i++) for (let j = i + 1; j < K; j++) {
+      const sh = BP.pool[i].ids.filter(id => BP.pool[j].ids.includes(id)).length;
+      if (8 - sh < mu) { a = i; b = j; break; }
+    }
+    const byCore = {}; keys.forEach((k, i) => (byCore[k] = byCore[k] || []).push(i));
+    const lim = DKSim.coreLimit(BP.o, BP.o.n), many = Object.values(byCore).find(v => v.length > lim);
+    return { a, b, mu, lim, many: many ? many.slice(0, lim + 1) : null };
+  });
+  if (mu.a >= 0) {
+    await pg.evaluate(m => bpAdd(m.a, true), mu);
+    check("caps: Min unique blocks a near-copy of a pick", await pg.evaluate(m => bpBlocks(m.b).some(x => /Min unique/.test(x)), mu));
+    await pg.click("#bpClear").catch(() => {});
+  }
+  if (mu.lim && mu.many) {
+    for (const k of mu.many.slice(0, mu.lim)) await pg.evaluate(k => bpAdd(k, true), k);
+    check("caps: Max core blocks a core past its limit", await pg.evaluate(m => bpBlocks(m.many[m.lim]).some(x => /Max core/.test(x)), mu));
+  }
   await pg.click("#bpClear").catch(() => {});
   await pg.click("#bpClear").catch(() => {});
 
