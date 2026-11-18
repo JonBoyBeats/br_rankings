@@ -73,9 +73,10 @@ def tally(diffs):
     return [sum(d >= PUSH for d in diffs), sum(d <= -PUSH for d in diffs), sum(abs(d) < PUSH for d in diffs)]
 
 
-def etr_adp_pairs(n, tier, pm):
-    """Afternoon pairs in the button's tier that ETR and ADP order differently."""
-    rows = [r for r in n["tiers"]["pm"].values() if r.get("sample", "primary") == "primary" and r["tier"] == str(tier)
+def etr_adp_pairs(n, tier, pm, window="pm"):
+    """Pairs in the button's tier that the window's projection (afternoon ETR, morning ours) and ADP order differently;
+    "etr" names the projection's first either way."""
+    rows = [r for r in (n["tiers"].get(window) or {}).values() if r.get("sample", "primary") == "primary" and r["tier"] == str(tier)
             and num(r["proj"]) is not None and num(r["adp"]) is not None and r["played"] == "1" and num(r["actual"]) is not None]
     out = []
     for i in range(len(rows)):
@@ -88,7 +89,7 @@ def etr_adp_pairs(n, tier, pm):
             me = None
             if num(e.get("your_rank")) is not None and num(d.get("your_rank")) is not None:
                 me = "etr" if num(e["your_rank"]) < num(d["your_rank"]) else "adp"
-            me_m, ad_m = mult(pm, n["date"], "pm", e["player_id"]), mult(pm, n["date"], "pm", d["player_id"])
+            me_m, ad_m = mult(pm, n["date"], window, e["player_id"]), mult(pm, n["date"], window, d["player_id"])
             out.append({"etr": e["name"], "adp": d["name"], "mine": me,
                         "mult": round(me_m - ad_m, 3) if me_m is not None and ad_m is not None else None,
                         "pts": round(num(e["actual"]) - num(d["actual"]), 1)})
@@ -158,14 +159,15 @@ def pod_since(rd, lst):
     return out
 
 
-def pod_paired(rows, w, y, key, since=None):
-    """(a) minus y, seat-weighted over the night-windows where both ran (on or after since[window]); nights resampled."""
+def pod_paired(rows, w, y, key, since=None, last=None):
+    """(a) minus y, seat-weighted over the night-windows where both ran (on or after since[window], or only the last `last`
+    nights they both ran); nights resampled."""
     by = collections.defaultdict(list)
     for r in rows:
         if r["window"] in (("am", "pm") if w == "both" else (w,)) and r.get("a") and r.get(y) \
                 and (not since or r["date"] >= since.get(r["window"], "9999")):
             by[r["date"]].append(r)
-    cells = [by[d] for d in sorted(by)]
+    cells = [by[d] for d in sorted(by)][-last:] if last else [by[d] for d in sorted(by)]
 
     def fn(ns):
         flat = [r for c in ns for r in c]
@@ -191,7 +193,9 @@ def pod_replay():
             if y not in ys:
                 continue
             out["rows"].setdefault(w, {})[y] = {k: {"season": ys[y].get(k),
-                                                    "since": pod_paired(pr["by_night"], w, y, k, out["since"][y]) if out["since"][y] else None}
+                                                    "since": pod_paired(pr["by_night"], w, y, k, out["since"][y]) if out["since"][y] else None,
+                                                    "last": pod_paired(pr["by_night"], w, y, k, last=1),       # the newest night it ran
+                                                    "last7": pod_paired(pr["by_night"], w, y, k, last=7)}      # its last 7 nights
                                                 for k in POD_KEYS}
     eb = pr.get("pm_etr_button") or {}
     out["etr"] = {"since": eb.get("since"), "f_vs_board": eb.get("f_vs_board"), "nodrop_touched": {k: v for k, v in (eb.get("nodrop_touched") or {}).items() if k != "by_night"},
@@ -236,6 +240,7 @@ def main():
                             "field_cash_rate": round(sum(t["payout"] > 0 for t in allt) / len(allt), 4) if allt else None},
                  "finish": sorted(round(t["fin"], 4) for t in mine)}
         night["t1"] = pair_block(etr_adp_pairs(n, 1, pm))
+        night["t1am"] = pair_block(etr_adp_pairs(n, 1, pm, "am"))     # morning T1: our Proj's first against ADP's (asked 2026-11-18)
         night["t2"] = pair_block(etr_adp_pairs(n, 2, pm))
         g = gb.get(n["date"]) or {}
         night["t2"]["elite"] = {w: {k: (g.get(w) or {}).get(k) for k in ("elite-break teams", "other teams")} for w in ("am", "pm")} if g else None
