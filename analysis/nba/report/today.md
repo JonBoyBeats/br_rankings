@@ -145,7 +145,7 @@ No moves against the button here last night.
 
 **Your Q moves.** Afternoon: Towns ahead of Barnes, helped by 14; Afternoon: Brunson ahead of Barnes, helped by 12; Afternoon: Brunson ahead of Avdija, helped by 14.
 
-**Today's Questionable players.** Walker Kessler (T5 on the ladders, 20% to play): if he sits, Austin Reaves, Quentin Grimes, Sandro Mamukelashvili; Austin Reaves (T5 on the ladders, 8% to play): if he sits, Walker Kessler, Quentin Grimes, Sandro Mamukelashvili; Amen Thompson (T5 on the ladders, 64% to play): if he sits, Kevin Durant.
+**Today's Questionable players.** Austin Reaves (T5 on the ladders, 1% to play): if he sits, Walker Kessler, Quentin Grimes; RJ Barrett (T5 on the ladders, 49% to play): if he sits, Immanuel Quickley; Amen Thompson (T5 on the ladders, 64% to play): if he sits, Kevin Durant.
 
 ## Back page
 

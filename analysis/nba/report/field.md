@@ -11,7 +11,7 @@
   - Questionable at Lock AM: 38 tagged, 29 played; teams that drafted them before noon top 1% 1.75% (8160 teams) vs after 1.71% (15162).
   - Most-owned turn combo vs the rest, top 1%: 2/3 turn 0.58% vs 1.29% (36 cases); 1/2 turn 1.51% vs 0.61% (12 cases).
   - Boom peer bump: 29 players moved 2+ points so far (too few to read); risers wait on two weeks of entry counts.
-- Last night, where it touched a rule: your takes off the tier rules: 42, 31 right; the field went your way on 8, against on 34; Questionable at Lock AM: Jonathan Kuminga (sat, on 0 of your 99), Trey Alexander (sat, on 0 of your 99), Isaiah Joe (sat, on 0 of your 99).
+- Last night, where it touched a rule: your takes off the tier rules: 31, 20 right; the field went your way on 7, against on 24; Questionable at Lock AM: Jonathan Kuminga (sat, on 0 of your 99), Trey Alexander (sat, on 0 of your 99), Isaiah Joe (sat, on 0 of your 99).
 
 The full tables follow; the morning report reads only this block (the rest is reference).
 
@@ -59,8 +59,8 @@ Drafted% leaves 100% at ADP 7.3. Tag: at Lock AM / at lock. Tiers: yours at Lock
 | Moussa Diabate | 32.8 | 98.3% | 60-99.5 | - / - | 5/5 | 28.2 |
 | Paul Reed | 32.9 | 94.9% | 60-99.5 | - / - | 5/5 | 36.7 |
 | Quentin Grimes | 33.7 | 92.4% | 60-99.5 | - / - | -/- | 58.7 |
-| Kevin Huerter | 34.6 | 74.1% | 60-99.5 | - / - | -/- | 14.9 |
 | Terrence Shannon Jr. | 34.6 | 84.8% | 60-99.5 | - / - | 5/5 | 18.2 |
+| Kevin Huerter | 34.6 | 74.1% | 60-99.5 | - / - | -/- | 14.9 |
 | Josh Hart | 35.2 | 30.9% | 10-60 | - / - | -/5 | 17.8 |
 | Rui Hachimura | 35.4 | 36.9% | 10-60 | - / - | 5/5 | 32.5 |
 | Coby White | 35.6 | 17.8% | 10-60 | - / - | -/5 | 33.6 |
@@ -102,16 +102,16 @@ Picks per team from each of your tiers (each team read with the tiers of the loc
 
 ### 6. Your takes against the field
 
-42 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
+31 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
 
 | Lock | Tier | Takes | With the field | Against it | You were right |
 |---|---|---|---|---|---|
-| AM | T2 | 4 | 0 | 4 | 4 |
-| AM | T5 | 4 | 0 | 4 | 2 |
+| AM | T2 | 3 | 0 | 3 | 3 |
+| AM | T5 | 2 | 0 | 2 | 0 |
 | PM | T2 | 1 | 1 | 0 | 1 |
 | PM | T3 | 3 | 1 | 2 | 1 |
 | PM | T4 | 4 | 0 | 4 | 2 |
-| PM | T5 | 26 | 6 | 20 | 21 |
+| PM | T5 | 18 | 5 | 13 | 13 |
 
 The 10 furthest from ADP:
 
@@ -123,10 +123,10 @@ The 10 furthest from ADP:
 | PM | T4 | Daniss Jenkins | Immanuel Quickley | 22.4 / 19.1 | 100% / 100% | 40.5 / 24.7 | yes |
 | PM | T5 | John Collins | Collin Murray-Boyles | 35.9 / 32.7 | 5% / 98% | 18.2 / 24.7 | no |
 | PM | T5 | John Collins | Moussa Diabate | 35.9 / 32.8 | 5% / 98% | 18.2 / 28.2 | no |
-| PM | T5 | Jrue Holiday | Collin Murray-Boyles | 35.7 / 32.7 | 35% / 98% | 45.0 / 24.7 | yes |
 | PM | T5 | John Collins | Paul Reed | 35.9 / 32.9 | 5% / 95% | 18.2 / 36.7 | no |
-| PM | T5 | Jrue Holiday | Moussa Diabate | 35.7 / 32.8 | 35% / 98% | 45.0 / 28.2 | yes |
-| PM | T5 | Jrue Holiday | Paul Reed | 35.7 / 32.9 | 35% / 95% | 45.0 / 36.7 | yes |
+| PM | T5 | Rui Hachimura | Collin Murray-Boyles | 35.4 / 32.7 | 37% / 98% | 32.5 / 24.7 | yes |
+| PM | T4 | Rudy Gobert | Daniss Jenkins | 25.0 / 22.4 | 100% / 100% | 4.8 / 40.5 | no |
+| PM | T5 | Rui Hachimura | Moussa Diabate | 35.4 / 32.8 | 37% / 98% | 32.5 / 28.2 | yes |
 
 ### 7. Your uniqueness (flagship)
 
