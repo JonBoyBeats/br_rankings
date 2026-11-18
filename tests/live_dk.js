@@ -23,6 +23,8 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
   await pg.route(/br-adp-mirror/, r => {
     const u = r.request().url();
     if (/dk_cbb_morning/.test(u)) return r.fulfill({ path: FIX + "/dk_cbb_morning.json", contentType: "application/json" });
+    if (/nba_tonight/.test(u)) return r.fulfill({ body: JSON.stringify({ slates: [{ slate_id: "nba1", label: "nba_mon_main", title: "Main Slate", sport: "nba", cutoff: sl.start,
+      players: [{ player_id: "p1", appearance_id: "a1", first_name: "Test", last_name: "Guard", team: "LAL", adp: 1.5 }] }] }), contentType: "application/json" });
     return r.fulfill({ body: JSON.stringify({ slates: [], players: {} }), contentType: "application/json" });
   });
   await pg.route(/expo\.json/, r => r.fulfill({ body: "{}", contentType: "application/json" }));
@@ -31,6 +33,11 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
   await pg.clock.setFixedTime(new Date(new Date(sl.start).getTime() + 2 * 3600e3));   // the fixture slate's night: the page lists slates within hours of now
   await pg.goto("file://" + R + "/nba_live.html");
   await pg.waitForFunction(() => /Updated/.test(document.getElementById("status").textContent), null, { timeout: 30000 });
+  const dkOpt = await pg.$$eval("#slate option", o => o.find(x => /DK Classic/.test(x.textContent)).value);
+  if (await pg.inputValue("#slate") !== dkOpt) {      // with the NBA slate there too, open the DK one
+    await pg.selectOption("#slate", dkOpt);
+    await pg.waitForFunction(() => /Updated/.test(document.getElementById("status").textContent), null, { timeout: 30000 });
+  }
   await pg.evaluate(d => { state.dkBuilds["156660"] = d; render(); }, bank);   // what the repo fetch gives on the site
   await pg.selectOption("#sort", "expo");
   const first = await pg.$eval("#list .row", el => el.innerText.replace(/\s+/g, " "));
@@ -50,6 +57,18 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
   await pg.selectOption("#sort", "val");
   ok.push(["sort by Value: the one with points first", (await pg.$eval("#list .row", el => el.innerText.replace(/\s+/g, " "))).includes(P.name)]);
   await pg.selectOption("#sort", "expo");
+  // the sport buttons beside the title: there with the controls hidden; NBA goes to the NBA slate, CBB back to DK Classic
+  await pg.click("#fold");
+  const btns = await pg.$$eval("#sportBtns button", b => b.map(x => x.textContent + ":" + x.getAttribute("aria-pressed") + ":" + (x.offsetParent !== null)));
+  ok.push(["sport buttons, shown with the controls hidden, CBB pressed", JSON.stringify(btns) === JSON.stringify(["NBA:false:true", "CBB:true:true"])]);
+  await pg.click('#sportBtns [data-sport="nba"]');
+  ok.push(["NBA button: the NBA slate", /^NBA/.test(await pg.$eval("#slate", s => s.selectedOptions[0].textContent)) &&
+    (await pg.getAttribute('#sportBtns [data-sport="nba"]', "aria-pressed")) === "true"]);
+  await pg.click('#sportBtns [data-sport="cbb"]');
+  ok.push(["CBB button: back to DK Classic", /DK Classic/.test(await pg.$eval("#slate", s => s.selectedOptions[0].textContent))]);
+  await pg.click("#fold");
+  await pg.waitForFunction(() => /Updated/.test(document.getElementById("status").textContent));
+  await pg.evaluate(d => { state.dkBuilds["156660"] = d; render(); }, bank);
   await pg.click("#mine");
   ok.push(["Mine only: the players in your lineups", (await pg.$$eval("#list .row", r => r.length)) === Object.keys(cnt).length]);
   ok.push(["no page errors", !errs.length]);

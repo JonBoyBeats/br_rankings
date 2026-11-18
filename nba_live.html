@@ -34,6 +34,8 @@
 
   .masthead { position: sticky; top: 0; z-index: 30; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: 14px; }
   .mast-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .sportbtns { display: flex; gap: 6px; align-self: center; }
+  .sportbtns button { height: 28px; padding: 0 12px; font-size: 13px; }
   h1 { font-size: 19px; font-weight: 700; letter-spacing: -.015em; margin: 0; white-space: nowrap; }
   .views { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; align-self: center; }
   .views a { font-size: 12.5px; font-weight: 600; padding: 5px 12px; color: var(--muted); text-decoration: none; }
@@ -124,6 +126,7 @@
   <div class="masthead">
     <div class="mast-row">
       <h1>Live</h1>
+      <div class="sportbtns" id="sportBtns"></div>
       <nav id="sitenav" data-sport="" data-page="live"></nav><script src="sitenav.js"></script>
     </div>
     <div class="controls">
@@ -427,11 +430,31 @@ function fillSlates() {
   state.slates.forEach(function (s, i) { if (s.label === keep) pick = i; });
   sel.value = String(pick);
   setSlate(state.slates[pick] || null);
+  sportButtons();
+}
+
+/* A button per sport with a slate (shown with the controls folded too): it goes to that sport's last-viewed slate, else
+   the one fillSlates would choose among its slates (played with your exposure, else the main one, else the latest). */
+function sportButtons() {
+  var sports = [];
+  state.slates.forEach(function (s) { if (sports.indexOf(sportOf(s)) < 0) sports.push(sportOf(s)); });
+  $("sportBtns").innerHTML = sports.length < 2 ? "" : sports.map(function (sp) {
+    return '<button type="button" data-sport="' + sp + '" aria-pressed="' + (sportOf(state.slate) === sp) + '">' + sp.toUpperCase() + "</button>";
+  }).join("");
+}
+function slateForSport(sp) {
+  var list = state.slates.filter(function (s) { return sportOf(s) === sp; }), keep = load("brr:live:slate:" + sp, null), now = Date.now();
+  var kept = list.filter(function (s) { return s.label === keep; })[0];
+  if (kept) return kept;
+  var played = list.filter(function (s) { return new Date(s.cutoff).getTime() <= now; });
+  var mine = function (s) { var e = load(expoKey(s.label), null); return !!((e && e.drafts) || state.posted[s.slate_id] || (s.dk && dkExpo(s))); };
+  return played.filter(mine).pop() || played.filter(function (s) { return /_main$/.test(s.label); }).pop() || played.pop() || list[0];
 }
 
 /** Make a slate the one shown: its sport's usual output is what grade() reads. */
 function setSlate(s) {
   state.slate = s;
+  if (s) save("brr:live:slate:" + sportOf(s), s.label);
   state.proj = state.projBy[s && s.dk ? "dk" : sportOf(s)] || {};
 }
 
@@ -1055,8 +1078,15 @@ function render() {
 }
 
 // ---------------------------------------------------------------- wiring
+$("sportBtns").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-sport]"), s = b && slateForSport(b.dataset.sport);
+  if (!s || s === state.slate) return;
+  $("slate").value = String(state.slates.indexOf(s));
+  $("slate").dispatchEvent(new Event("change"));
+});
 $("slate").addEventListener("change", function () {
   setSlate(state.slates[Number(this.value)]);
+  sportButtons();
   save("brr:live:slate", state.slate.label);
   state.games = {}; state.box = {}; state.finals = {};
   render(); pull();
