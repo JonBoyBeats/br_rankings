@@ -295,8 +295,8 @@ function podSince(lst, w) {
   var x = (D.pod_replay.since || {})[lst] || {};
   return w === "both" ? [x.pm && "PM " + short(x.pm), x.am && "AM " + short(x.am)].filter(Boolean).join(", ") : x[w] ? short(x[w]) : null;
 }
-function podReplay() {
-  var s = card("Pod replay: does your list beat the others?", D.defs.pod), P = D.pod_replay;
+function podReplay(parent) {
+  var s = parent || card("Pod replay: does your list beat the others?", D.defs.pod), P = D.pod_replay;
   if (!P) { wait(s, "the pod replay (pod_replay.json)"); return; }
   var seg = el("div", { class: "seg", role: "group", "aria-label": "Window" }, s);
   [["both", "Both windows"], ["am", "AM"], ["pm", "PM"]].forEach(function (b) {
@@ -677,18 +677,103 @@ function ownReads(s, k) {
   };
   p.appendChild(document.createTextNode("season " + read(D.nights) + "; last 7 nights " + read(D.nights.slice(-7)) + "; last night " + read(D.nights.slice(-1)) + "."));
 }
+/* ---- Order grading (2026-11-18, the operator's plan from the coordinating chat; grading only, the button is unchanged).
+   The contest side writes analysis/nba/report/order_grades.json: each order (ADP, ETR in the afternoon, our Proj in the
+   morning, your order, the leverage order in T5) scored inside each tier on how fast swap value drops by order position,
+   top 10% and top 1%, season and last 7 with 80% ranges and night counts; every pair of orders differenced; a stakes line
+   from the pod replay; and a headline of whole lists through the pod replay. The page reads the file directly, so it
+   fills in as soon as the contest side publishes it. */
+var OG = null;
+var OG_NAMES = { adp: "ADP", etr: "ETR", proj: "Our projection", mine: "Your order", lev: "Leverage order" };
+function ogCell(b, units) {
+  if (!b || b.v == null) return "–";
+  return sgn(b.v) + (units ? " " + units : "") + " (" + (b.lo != null ? sgn(b.lo) + " to " + sgn(b.hi) + "; " : "") + (b.nights || 0) + " night" + (b.nights === 1 ? "" : "s") + ")";
+}
+function ogWait(s) { wait(s, "the order grades (order_grades.json)"); }
+/** Follow X when X's season top-10% diff against every other order in the tier excludes zero; Your reads win when X is
+    your order; else Toss-up. */
+function ogVerdict(t) {
+  var keys = Object.keys(t.orders || {}), D2 = t.diffs || {};
+  var diff = function (x, y) {
+    var a = D2[x + "-" + y], b = D2[y + "-" + x], v = a && a.top10 && a.top10.season, u = b && b.top10 && b.top10.season;
+    if (v && v.v != null) return v;
+    if (u && u.v != null) return { v: -u.v, lo: u.hi == null ? null : -u.hi, hi: u.lo == null ? null : -u.lo, nights: u.nights };
+    return null;
+  };
+  for (var i = 0; i < keys.length; i++) {
+    var x = keys[i], all = keys.filter(function (y) { return y !== x; }).map(function (y) { return diff(x, y); });
+    if (all.length && all.every(function (d) { return d && d.lo != null && d.lo > 0; })) {
+      var worst = all.reduce(function (a, d) { return d.v < a.v ? d : a; });
+      return { text: x === "mine" ? "Your reads win" : "Follow " + (x === "proj" ? "our projection" : OG_NAMES[x]), why: "beats every other order clear of zero at the top 10% (smallest margin " + sgn(worst.v) + ")" };
+    }
+  }
+  return { text: "Toss-up", why: "no order beats all the others clear of zero at the top 10%" };
+}
+function ogTierTable(s, k, w) {
+  var t = (((OG || {}).tiers || {})[w] || {})[String(k)];
+  el("div", { class: "sub" }, s, w === "pm" ? "Afternoon" : "Morning");
+  if (!t || !t.orders) { el("p", { class: "note" }, s, "No grades for this window yet."); return; }
+  var units = ((OG.defs || {}).units) || "";
+  var v = ogVerdict(t), box = el("div", { class: "advice" }, s);
+  el("div", { class: "advice-h" }, box, v.text);
+  el("p", { class: "note" }, box, v.why.charAt(0).toUpperCase() + v.why.slice(1) + (t.members ? ". " + t.members.charAt(0).toUpperCase() + t.members.slice(1) : "") + ".");
+  var tb = el("table", {}, s), tr = el("tr", {}, el("thead", {}, tb));
+  ["Order", "Top 10%, season", "Top 10%, last 7", "Top 1%, season", "Top 1%, last 7"].forEach(function (h) { el("th", {}, tr, h); });
+  var body = el("tbody", {}, tb);
+  ["adp", "etr", "proj", "mine", "lev"].filter(function (o) { return t.orders[o]; }).forEach(function (o) {
+    var r = el("tr", {}, body), x = t.orders[o];
+    el("td", {}, r, OG_NAMES[o] || o);
+    [["top10", "season"], ["top10", "last7"], ["top1", "season"], ["top1", "last7"]].forEach(function (c) { el("td", {}, r, ogCell((x[c[0]] || {})[c[1]], units)); });
+  });
+  var st = t.stakes;
+  if (st) el("p", { class: "note" }, s, "Stakes (pod replay, your seats): top 10% " + ogCell((st.top10 || {}).season) + ", last 7 " + ogCell((st.top10 || {}).last7) +
+                                        "; top 1% " + ogCell((st.top1 || {}).season) + ".");
+}
+function orderHeadline() {
+  var s = card("Your list against ADP's and ETR's, through the pod replay", OG && OG.defs ? OG.defs.headline || null : null);
+  if (!OG) { ogWait(s); fold(s, "Archive: the earlier pod replay panel", function (b) { podReplay(b); }); return; }
+  ["pm", "am"].forEach(function (w) {
+    var h = (OG.headline || {})[w];
+    if (!h) return;
+    el("div", { class: "sub" }, s, w === "pm" ? "Afternoon" : "Morning");
+    var tb = el("table", {}, s), tr = el("tr", {}, el("thead", {}, tb));
+    ["List", "Top 10%, season", "Top 10%, last 7", "Top 1%, season", "Top 1%, last 7"].forEach(function (x) { el("th", {}, tr, x); });
+    var body = el("tbody", {}, tb);
+    ["mine", "adp", "etr", "proj"].filter(function (o) { return (h.lists || {})[o]; }).forEach(function (o) {
+      var r = el("tr", {}, body), x = h.lists[o], vs = (h.vs_mine || {})[o];
+      el("td", {}, r, o === "mine" ? "Your list" : OG_NAMES[o] + "'s list");
+      [["top10", "season"], ["top10", "last7"], ["top1", "season"], ["top1", "last7"]].forEach(function (c) {
+        var b = (x[c[0]] || {})[c[1]], d = vs && vs[c[0]] ? vs[c[0]][c[1]] : null;
+        el("td", {}, r, (b && b.v != null ? fmt(b.v, 2) + "%" : "–") + (d && d.v != null ? " (vs yours " + sgn(d.v) + (d.lo != null ? ", " + sgn(d.lo) + " to " + sgn(d.hi) : "") + ")" : ""));
+      });
+    });
+    var pc = function (b) { return !b || b.v == null ? "–" : fmt(b.v, 0) + (b.lo != null ? " (" + fmt(b.lo, 0) + " to " + fmt(b.hi, 0) + "; " : " (") + (b.nights || 0) + " nights)"; };
+    if (h.my_percentile) el("p", { class: "note" }, s, "Your real teams among your list's replays: median percentile " + pc(h.my_percentile.season) +
+                                                     ", last 7 " + pc(h.my_percentile.last7) + " (50 is your list's typical replay).");
+  });
+  fold(s, "Archive: the earlier pod replay panel", function (b) { podReplay(b); });
+}
 function tier(k) {
   var s = card("T" + k + (k === 5 ? " and below the cut" : ""), null);
   var def = function (b, t) { if (t) el("p", { class: "def" }, b, t); };
   if (k === 5) { el("div", { class: "sub" }, s, "Leverage: drafted% groups"); def(s, D.defs.t5); t5Body(s, "groups"); }   // T5: the leverage panel first
-  tierBoard(s, k);
-  fold(s, "Your moves against the button in T" + k + " (detail)", function (b) {
-    adviceBox(b, k); tierForest(b, k);
-    if (k === 3 || k === 4) { def(b, D.defs.t34); movesPairs(b, k); }
+  if (!OG) ogWait(s);
+  else {
+    if (OG.defs && OG.defs.tiers) el("p", { class: "def" }, s, OG.defs.tiers);
+    if (OG.defs && OG.defs.score) el("p", { class: "def" }, s, OG.defs.score);
+    ogTierTable(s, k, "pm"); ogTierTable(s, k, "am");
+  }
+  // everything graded before: the pairs, holders, record, your own reads and your moves against the button
+  fold(s, "Archive: pairs, holders, record and your moves (T" + k + ")", function (b) {
+    tierBoard(b, k);
+    fold(b, "Your moves against the button in T" + k + " (detail)", function (c) {
+      adviceBox(c, k); tierForest(c, k);
+      if (k === 3 || k === 4) { def(c, D.defs.t34); movesPairs(c, k); }
+    });
+    if (k === 1 || k === 2) fold(b, "ETR's order vs ADP's in T" + k + ", pair by pair (afternoon)", function (c) { def(c, D.defs["t" + k]); etrAdp(c, "t" + k, "T" + k + ", afternoon"); });
+    if (k === 2) fold(b, "The elite break and your 1/2 and 2/3 turns", t2Groups);
+    if (k === 3 || k === 4) fold(b, "T" + k + " VALUE / normal / PRICEY", function (c) { movesFlags(c, k); });
   });
-  if (k === 1 || k === 2) fold(s, "Why: ETR's order vs ADP's in T" + k + ", pair by pair (afternoon)", function (b) { def(b, D.defs["t" + k]); etrAdp(b, "t" + k, "T" + k + ", afternoon"); });
-  if (k === 2) fold(s, "The elite break and your 1/2 and 2/3 turns", t2Groups);
-  if (k === 3 || k === 4) fold(s, "T" + k + " VALUE / normal / PRICEY", function (b) { movesFlags(b, k); });
   if (k === 5) fold(s, "Round 6 and swaps", function (b) { t5Body(b, "rest"); });
 }
 
@@ -819,7 +904,7 @@ function render() {
   m.style.minHeight = m.offsetHeight + "px";
   m.textContent = "";
   if (D && played().length) {
-    header(); finish(); podReplay(); [1, 2, 3, 4, 5].forEach(tier);   // results and finishes first, then the headline read, then each tier
+    header(); finish(); orderHeadline(); [1, 2, 3, 4, 5].forEach(tier);   // results and finishes, the order headline, then each tier
   }
   m.style.minHeight = "";
   window.scrollTo(0, y);
@@ -831,6 +916,9 @@ document.querySelectorAll(".controls button").forEach(function (b) {
   b.addEventListener("click", function () { RANGE = b.dataset.range; try { localStorage.setItem("nbaResultsRange", RANGE); } catch (e) { /* storage blocked */ } render(); });
 });
 
+// the order grades, the contest side's file, read on its own so the page fills as soon as it is published
+fetch("analysis/nba/report/order_grades.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+  .then(function (g) { OG = g; if (D) render(); }).catch(function () { OG = null; });
 fetch("analysis/nba/dashboard.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
   D = d;
   var p = played(), cs = d.contest_side;
