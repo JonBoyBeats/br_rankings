@@ -349,7 +349,7 @@ def night(n):
                                 pl, _ = M.place_and_pay(c, t, score(tm, L, tk)[0])
                                 my_t1["draws"][k] += pl <= math.ceil(nn / 100)
     pm = lists.get("pm") or {}
-    fb = sum(x == y for x, y in zip(pm["f"][:36], pm["b"][:36])) if n["date"] >= ETR_BUTTON and "f" in pm and "b" in pm else None
+    fb = sum(x == y for x, y in zip(pm["f"][:36], pm["b"][:36])) if T.base_of(n["date"], "pm") == "etr" and "f" in pm and "b" in pm else None   # the board ran (f) those nights
     for r in mine_rows:                                                     # where my real team lands among (a)'s replays
         f = fins.get(r["w"]) or [r["fin"]]
         r["beat"] = sum(1 for v in f if v > r["fin"]) / len(f)
