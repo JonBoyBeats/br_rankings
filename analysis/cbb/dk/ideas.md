@@ -26,3 +26,5 @@ gate, the sim's calibration and correlation checks.
 | 2026-11-16 | Same-coach list for the blowout fallback (`cbb/inputs/coaches.csv`) | ESPN's API names no coach; an input, so it can be filled any time without a code change. |
 | 2026-11-16 | Suggest news sources automatically for teams new to a slate | Done by hand now (`cbb_news.py suggest`), a handful of calls a team. |
 | 2026-11-16 | DraftKings triple-double bonus: do the double-double and triple-double bonuses stack? | Unconfirmed; 7 triple-doubles in 37,405 college player-games, so it barely matters. |
+| 2026-11-18 | Platoon pairs from ESPN play-by-play: shared floor time of same-position teammates from the substitution record (no downloads needed) | Owner's EvanMiya audit: a direct measure of who replaces whom, beside the minutes-moving-opposite check. Parked, not built. |
+| 2026-11-18 | Non-garbage-time minutes for blowouts (starters' minutes with the blowout stretch taken out) | Owner's EvanMiya audit: build only if the nightly misses show blowouts are where the projection is off. |
