@@ -41,9 +41,15 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
     ["a DK Classic slate in the list", /DK Classic/.test(await pg.$eval("#slate", s => s.selectedOptions[0].textContent))],
     ["the first column is Exp, not ADP", /^EXP PLAYER/.test(head)],
     ["the most-used player first, at his exposure", first.startsWith(want + " " + P.name)],
-    ["DraftKings points with the double-double bonus", /44\.8$/.test(first)],
+    ["DraftKings points with the double-double bonus", / 44\.8 /.test(first + " ")],
+    ["his value so far after the points: points per $1,000", first.endsWith("44.8 " + (44.75 / (P.salary / 1000)).toFixed(1) + "x")],
+    ["the value cell shaded green", await pg.$eval("#list .row .val", e => /rgba\(46, 170, 96/.test(getComputedStyle(e).backgroundColor))],
+    ["players without points show no value", (await pg.$$eval("#list .row .val.none", e => e.length)) === (await pg.$$eval("#list .row", e => e.length)) - 1],
     ["the status names the entries counted", /exposure: 46 DraftKings entries \(the saved build\)/.test(status)],
   ];
+  await pg.selectOption("#sort", "val");
+  ok.push(["sort by Value: the one with points first", (await pg.$eval("#list .row", el => el.innerText.replace(/\s+/g, " "))).includes(P.name)]);
+  await pg.selectOption("#sort", "expo");
   await pg.click("#mine");
   ok.push(["Mine only: the players in your lineups", (await pg.$$eval("#list .row", r => r.length)) === Object.keys(cnt).length]);
   ok.push(["no page errors", !errs.length]);

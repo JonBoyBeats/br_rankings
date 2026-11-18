@@ -106,9 +106,14 @@
   /* No exposure loaded: the chip column goes. */
   .list.no-expo .head, .list.no-expo .row { grid-template-columns: 44px minmax(0, 1fr) 74px 64px; }
   .list.no-expo .expo, .list.no-expo .exph { display: none; }
+  /* DraftKings: a value column after the points (points per $1,000 of salary so far, green deeper as it climbs) */
+  .list.dkv .head, .list.dkv .row { grid-template-columns: 44px minmax(0, 1fr) 74px 56px 50px; }
+  .val { font-family: var(--mono); font-size: 13px; text-align: right; border-radius: 4px; padding: 1px 4px; }
+  .val.none { color: var(--muted); }
   @media (max-width: 520px) {
     .head, .row { grid-template-columns: 32px 28px minmax(0, 1fr) 52px 42px; gap: 6px; }
     .list.no-expo .head, .list.no-expo .row { grid-template-columns: 32px minmax(0, 1fr) 52px 42px; }
+    .list.dkv .head, .list.dkv .row { grid-template-columns: 32px minmax(0, 1fr) 48px 40px 40px; }
     .name { font-size: 13px; }
     .fp { font-size: 14px; }
   }
@@ -132,6 +137,7 @@
           <option value="adp">ADP</option>
           <option value="fp">UD points</option>
           <option value="expo">Exposure</option>
+          <option value="val" hidden>Value</option>
         </select>
       </label>
       <label class="field" title="From this ADP down, players sort by points instead of ADP (36 is where Underdog parks everyone undrafted)">
@@ -877,12 +883,14 @@ function render() {
     of = dx ? dx.n + " DraftKings entries (" + dx.src + ")" : "";
   }
   host.classList.toggle("no-expo", !ex || !!sl.dk);     // DraftKings: the exposure is in the first column
+  host.classList.toggle("dkv", !!sl.dk);                 // DraftKings: the value column
+  $("sort").querySelector('option[value="val"]').hidden = !sl.dk;
   $("sort").querySelector('option[value="adp"]').textContent = sl.dk ? "Salary" : "ADP";
   $("sort").querySelector('option[value="fp"]').textContent = sl.dk ? "DK points" : "UD points";
   ["tail", "fee", "me"].forEach(function (id) { $(id).closest(".field").hidden = !!sl.dk; });   // Underdog's controls
   $("upload").hidden = !!sl.dk;
   // Exposure sort needs exposures; without them it falls back to ADP (the choice is kept for the next slate)
-  var sortBy = state.sort === "expo" && !ex ? "adp" : state.sort;
+  var sortBy = (state.sort === "expo" && !ex) || (state.sort === "val" && !sl.dk) ? "adp" : state.sort;
   $("sort").querySelector('option[value="expo"]').disabled = !ex;
   $("sort").value = sortBy;
   $("mine").hidden = !ex;
@@ -906,7 +914,7 @@ function render() {
     // Points once he has a box line: in a live game even before his first full minute (ESPN
     // counts whole minutes, so everyone reads 0 at the tip); in a final one only if he played.
     var fp = b && !b.out && b.has && (b.s.min > 0 || (g && g.state === "in")) ? (sl.dk ? dkPoints(b) : udPoints(b.s)) : null;
-    return { p: p, b: b, g: g, fp: fp, f: share ? share(p) : 0 };
+    return { p: p, b: b, g: g, fp: fp, f: share ? share(p) : 0, val: sl.dk && fp != null && p.salary ? fp / (p.salary / 1000) : null };
   });
   // the field's picks: only players it drafted, before grading, so each round is judged against who was taken
   var fld = state.field[sl.slate_id] || null, rowsByApp = {};
@@ -928,8 +936,9 @@ function render() {
   if (document.activeElement !== $("tail")) $("tail").value = last;
   function byFp(a, b) { return (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp) || a.p.adp - b.p.adp; }
   function byExpo(a, b) { return b.f - a.f || a.p.adp - b.p.adp; }
+  function byVal(a, b) { return (b.val == null ? -1 : b.val) - (a.val == null ? -1 : a.val) || (b.p.salary || 0) - (a.p.salary || 0); }
   function bySalary(a, b) { return (b.p.salary || 0) - (a.p.salary || 0) || (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp); }
-  rows.sort(sortBy === "fp" ? byFp : sortBy === "expo" ? byExpo : sl.dk ? bySalary : function (a, b) {
+  rows.sort(sortBy === "fp" ? byFp : sortBy === "expo" ? byExpo : sortBy === "val" ? byVal : sl.dk ? bySalary : function (a, b) {
     var ta = a.p.adp >= last, tb = b.p.adp >= last;
     return ta !== tb ? (ta ? 1 : -1) : ta ? byFp(a, b) : a.p.adp - b.p.adp;
   });
@@ -939,7 +948,7 @@ function render() {
   } else {
   var head = document.createElement("div");
   head.className = "head";
-  head.innerHTML = sl.dk ? '<span class="r" title="Your exposure: the share of your DraftKings entries with him">Exp</span><span>Player</span><span class="r">Game</span><span class="r" title="DraftKings fantasy points">Pts</span>'
+  head.innerHTML = sl.dk ? '<span class="r" title="Your exposure: the share of your DraftKings entries with him">Exp</span><span>Player</span><span class="r">Game</span><span class="r" title="DraftKings fantasy points">Pts</span><span class="r" title="Value so far: DraftKings points per $1,000 of salary (green deepens from 1x to 6x)">Val</span>'
     : '<span class="r">ADP</span><span class="exph">Exp</span><span>Player</span><span class="r">Game</span><span class="r" title="Underdog fantasy points">Pts</span>';
   host.appendChild(head);
   var prevRound = null;
@@ -1003,6 +1012,17 @@ function render() {
     fp.className = "fp" + (r.fp == null ? " none" : "");
     fp.textContent = r.fp != null ? r.fp.toFixed(1) : dnp ? "DNP" : "–";
     el.appendChild(fp);
+    if (sl.dk) {
+      var vl = document.createElement("span");
+      vl.className = "val" + (r.val == null ? " none" : "");
+      vl.textContent = r.val != null ? r.val.toFixed(1) + "x" : "–";
+      if (r.val != null) {
+        var a = Math.max(0, Math.min(1, (r.val - 1) / 5));
+        if (a > 0) vl.style.background = "rgba(46,170,96," + (0.1 + 0.55 * a).toFixed(2) + ")";
+        vl.title = r.fp.toFixed(1) + " points on a $" + p.salary.toLocaleString() + " salary";
+      }
+      el.appendChild(vl);
+    }
     if (state.open[p.player_id]) {
       el.classList.add("open");
       var d = document.createElement("div"); d.className = "detail"; d.innerHTML = detailHtml(r);
