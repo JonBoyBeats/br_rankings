@@ -180,6 +180,7 @@
   .pickrow button { padding: 2px 8px; font-size: 12px; }
   #rtChips button { background: rgba(46,170,96,.25); }
   table.bp .pn { cursor: pointer; } table.bp .pn:hover { color: var(--bad); text-decoration: line-through; }
+  table.bp tr.over td { opacity: .45; }
 </style>
 </head>
 <body>
@@ -1132,7 +1133,24 @@ function bpRescore() {
   BP.ms = performance.now() - t;
 }
 
-function bpAdd(k) { BP.b.add(k); bpRescore(); bpCommit(); bpRender(); }
+/* Each player's limit in this contest's set: Max exposure (at least one), his own Max% if lower, a locked player the
+   whole set. Auto-fill and hand adds both keep to it (2026-11-18: the 40% bound Auto-fill only, and hand picks put
+   Hansberry in 87% of the 11-16 entries and Dior Johnson in 78% of 11-17's). */
+function bpLimits() {
+  var o = BP.o, limit = {};
+  rows.forEach(function (r) {
+    var cap = Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
+    limit[r.id] = state.lock[r.id] ? o.n : Math.floor(cap * o.n + 1e-9);
+  });
+  return limit;
+}
+function bpOver(k) {          // the players lineup k would take past their limit: [{name, n, limit}]
+  var count = {}, limit = bpLimits();
+  BP.b.picked.forEach(function (j) { BP.pool[j].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
+  return BP.pool[k].ids.filter(function (id) { return limit[id] != null && (count[id] || 0) + 1 > limit[id]; })
+    .map(function (id) { return { name: byId(id).name, n: count[id] || 0, limit: limit[id] }; });
+}
+function bpAdd(k) { if (bpOver(k).length) return; BP.b.add(k); bpRescore(); bpCommit(); bpRender(); }
 function bpRemove(k) { BP.b.remove(k); bpRescore(); bpCommit(); bpRender(); }
 // the builder's picks are the contest's portfolio, saved as they change
 function bpCommit() {
@@ -1151,10 +1169,7 @@ async function bpAuto() {
     Object.keys(PF).forEach(function (cid) { if (cid !== BP.review) PF[cid].forEach(function (bi) { DKSim.pairs(BANK.lineups[bi].ids).forEach(function (k) { pairN[k] = (pairN[k] || 0) + 1; }); }); });
     b.picked.forEach(function (k) { DKSim.pairs(BP.pool[k].ids).forEach(function (pk) { pairN[pk] = (pairN[pk] || 0) + 1; }); });
   }
-  rows.forEach(function (r) {
-    var cap = Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
-    limit[r.id] = state.lock[r.id] ? o.n : Math.floor(cap * o.n + 1e-9);
-  });
+  limit = bpLimits();
   b.picked.forEach(function (k) { BP.pool[k].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
   while (b.picked.length < o.n) {
     var best = -1, bestV = -Infinity;
@@ -1226,8 +1241,9 @@ function bpRender(note) {
     return '<th data-k="' + c[0] + '" class="' + (BP.sort === c[0] ? "on" : "") + '">' + c[1] + (BP.sort === c[0] ? (BP.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>";
   function row(k, isPicked) {
     var sc = BP.scores[k];
-    var inG = BP.group && grp(k) === BP.group;
-    return '<tr class="' + (isPicked ? "picked" : "") + (inG ? " ingroup" : "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' + (isPicked ? "bpRm" : "bpAdd") + '">' +
+    var inG = BP.group && grp(k) === BP.group, over = isPicked ? [] : bpOver(k);
+    return '<tr class="' + (isPicked ? "picked" : "") + (inG ? " ingroup" : "") + (over.length ? " over" : "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' + (isPicked ? "bpRm" : "bpAdd") + '"' +
+      (over.length ? ' disabled title="' + esc(over.map(function (x) { return x.name + " is in " + x.n + " of your " + BP.o.n + " (his limit " + x.limit + ": Max exposure " + Math.round(100 * BP.o.maxExpo) + "%)"; }).join("; ")) + '"' : "") + ">" +
       (isPicked ? "Remove" : "Add") + '</button></td><td class="l nm">' + BP.pool[k].slots.map(function (id) {
         return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") + '</td><td class="l mut" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(grp(k)) + '">' + esc(grp(k)) + "</td><td>" + BP.proj[k].toFixed(1) + "</td><td>" + Math.round(BP.own[k]) +
       "%</td><td>" + (BP.qual[k] >= 0 ? "+" : "") + BP.qual[k].toFixed(1) + "</td><td>" + (100 * BP.core[k]).toFixed(1) + "%</td><td>" + (BP.dupe[k] ? BP.dupe[k].toFixed(1) : "0") + "</td><td>" + cents(BP.alone[k]) + "</td><td>" + (sc ? cents(sc.value) : "–") + "</td><td>" + (sc ? (100 * sc[cov]).toFixed(1) + "%" : "–") +

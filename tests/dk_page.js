@@ -683,6 +683,24 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => !/Auto-filling/.test(document.getElementById("bpStatus").textContent), null, { timeout: 120000 });
   check("without: Auto-fill leaves his lineups out", await pg.evaluate(id => BP.b.picked.length > 0 && BP.b.picked.every(k => !BP.pool[k].ids.includes(id)), pid));
   await pg.click(`#bpWithout [data-without="${pid}"]`);
+  // Max exposure binds hand adds: in this contest's set a player goes in at most floor(Max exposure x entries) lineups
+  await pg.click("#bpClear").catch(() => {});
+  const cap = await pg.evaluate(() => {
+    const n = BP.o.n, lim = Math.floor(BP.o.maxExpo * n + 1e-9), cnt = {};
+    BP.pool.forEach(L => L.ids.forEach(id => { if (!state.lock[id]) cnt[id] = (cnt[id] || 0) + 1; }));
+    const p = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0];
+    const withP = BP.pool.map((L, k) => k).filter(k => BP.pool[k].ids.includes(p));
+    return { n, lim, p, withP: withP.slice(0, lim + 1) };
+  });
+  for (const k of cap.withP.slice(0, cap.lim)) await pg.evaluate(k => bpAdd(k), k);
+  const after = await pg.evaluate(c => ({ picked: BP.b.picked.length, btn: (() => { const tr = document.querySelector(`#bpTable tr[data-k="${c.withP[c.lim]}"]`);
+    return tr ? { disabled: tr.querySelector("button").disabled, title: tr.querySelector("button").title } : null; })() }), cap);
+  check(`max exposure, hand adds: ${cap.lim} of ${cap.n} with the most-used player, then his lineups refuse`, after.picked === cap.lim && (!after.btn || after.btn.disabled),
+    JSON.stringify(after));
+  if (after.btn) check("max exposure, hand adds: the refusal says why", /his limit \d+: Max exposure 40%/.test(after.btn.title), after.btn.title);
+  await pg.evaluate(c => bpAdd(c.withP[c.lim]), cap);
+  check("max exposure, hand adds: an add past the limit is refused", await pg.evaluate(c => BP.b.picked.length === c.lim, cap));
+  await pg.click("#bpClear").catch(() => {});
   check("without: the chip brings them back", await pg.evaluate(id => !bpWithout[id] && !document.querySelector("#bpWithout [data-without]"), pid));
   await pg.click("#bpClear").catch(() => {});
 
