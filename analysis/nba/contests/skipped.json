@@ -3,6 +3,10 @@
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_thu_main"
  },
+ "0f2ff0c4-6929-476b-bf3d-114512d8dff4": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_tue_main"
+ },
  "1d088fe1-53a6-4c71-970f-b11a5f69d60a": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_wed_main"
@@ -18,6 +22,10 @@
  "86bd3c53-5d04-4e7e-b3cc-0529a6e8358e": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_tue_main"
+ },
+ "9169f962-1992-4e88-9ca8-05a66b2e3570": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_sat_main"
  },
  "96757949-ff9c-4b0d-ad3a-169a672cc652": {
   "reason": "leaderboard not public (HTTP 401)",
@@ -40,6 +48,14 @@
   "slate": "nba_fri_main"
  },
  "b8e8bd8b-92d5-43a2-b7da-60fe32aff80d": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_sun_main"
+ },
+ "c88838ba-cb3a-41aa-82fa-cf13420c3f3b": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_mon_main"
+ },
+ "db03d2d5-b38b-4551-b6bb-58e4560b54ba": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_sun_main"
  },

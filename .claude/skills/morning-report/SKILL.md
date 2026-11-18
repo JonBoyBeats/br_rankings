@@ -60,6 +60,16 @@ minutes. In order:
   moves graded, the Swap button's line, the chance-to-play tracker, today's Q players with play chances and beneficiaries.
 - **Back page**: our morning projection against ETR's final, ETR's final against the box score, Gallagher's Bad-matchup
   arrows (published before your lock; logged to `gallagher_arrows.csv` for the Friday report), data notes.
+- **From 2026-11-17 the grading over time lives on the Results page** (`nba_results.html`, data from
+  `scripts/nba_dashboard.py` -> `analysis/nba/dashboard.json`, built nightly after the money step): results and finishes,
+  T1/T2 ETR vs ADP, the elite break and your turns, your moves vs the button in T3/T4, T5 (drafted picks under/over the
+  60% line, your round-6 pick against the field's, swaps apart). Common measure: the top-1% multiple (share of top-1%
+  lineups holding X over the share of all lineups holding X; top-10% beside it; points as the backup until the contest
+  side's per-player multiples land in money_tiers.json). Definitions are fixed in the script's DEFS and change only via
+  the Friday report. The morning report keeps the front page, last night's items and the player recap: no season lines,
+  turn lines, T5 menu, swap/chance-to-play season lines or season tables. Pairs everywhere are a tally (win or loss at 3+
+  points apart, push under 3; `push_rerun.md`). T5 and below the cut are out of "board vs the orders" and the biggest
+  calls (T1-T4 only): T5 is graded on drafted picks and swaps, not order.
 - Gone: the status definitions and "in every tier" blocks (in the rulebook now), the separate draft card, Monday
   proposals (the Friday report has them), 14-night counters.
 

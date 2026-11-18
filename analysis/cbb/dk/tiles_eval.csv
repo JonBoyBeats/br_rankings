@@ -1,0 +1,13 @@
+date,draft_group,team,verdict,borderline,quality,leverage,pts_rank,value_rank,conc_rank,blowout_rank,lev_rank,ranked_against,total,value,conc,own_gap,blowout,blowout_games,fragile,top5_salary,top5_actual,top5_implied,beat,phase,version
+2026-11-16,156660,UK,FOCUS,1,51.6,81.8,63.6,45.5,27.3,70.0,81.8,tonight's 12 teams,90.5,0.959,0.374,-0.058,0.9946646341463415,2,0,36600.0,153.25,132.7,1,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,VT,CHALK,0,82.7,27.3,100.0,90.9,100.0,40.0,27.3,tonight's 12 teams,81.5,1.204,0.524,0.041,0.9320252277505257,3,0,34600.0,118.25,125.45,0,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,UGA,CHALK,0,72.4,18.2,72.7,72.7,90.9,53.3,18.2,tonight's 12 teams,87.5,1.148,0.453,0.042,0.9666381522668948,1,0,29200.0,110.75,105.87,1,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,STMRY,CHALK,0,70.1,9.1,81.8,100.0,81.8,16.7,9.1,tonight's 12 teams,84.5,1.304,0.447,0.102,0.8940646130728775,2,0,29700.0,153.25,107.68,1,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,PORST,CHALK,1,58.0,45.5,54.5,54.5,72.7,50.0,45.5,tonight's 12 teams,66.0,0.974,0.447,-0.006,,0,0,29700.0,115.0,107.68,1,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,UCLA,CHALK,1,57.5,0.0,90.9,63.6,45.5,30.0,0.0,tonight's 12 teams,87.5,1.136,0.41,0.125,0.9246309246309247,2,0,35900.0,128.75,130.16,0,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,JAC,CHALK,1,53.4,36.4,27.3,81.8,54.5,50.0,36.4,tonight's 12 teams,66.0,1.17,0.418,0.018,,0,0,24100.0,80.5,87.38,0,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,OKST,LEVERAGE,1,43.2,100.0,45.5,27.3,0.0,100.0,100.0,tonight's 12 teams,90.5,0.898,0.319,-0.091,0.9990237552879924,3,1,34200.0,125.5,124.0,1,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,RICH,LEVERAGE,1,42.0,72.7,36.4,18.2,63.6,50.0,72.7,tonight's 12 teams,69.0,0.791,0.423,-0.043,,0,0,36400.0,118.0,131.97,0,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,LBS,LEVERAGE,1,26.1,54.5,9.1,9.1,36.4,50.0,54.5,tonight's 12 teams,58.0,0.79,0.408,-0.03,,0,0,27400.0,82.25,99.34,0,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,GRAM,LEVERAGE,0,23.9,63.6,0.0,36.4,9.1,50.0,63.6,tonight's 12 teams,62.0,0.919,0.36,-0.031,,0,0,24700.0,82.75,89.55,0,warm-up,battle-royale-research 30270f2
+2026-11-16,156660,CARK,LEVERAGE,0,21.6,90.9,18.2,0.0,18.2,50.0,90.9,tonight's 12 teams,72.0,0.705,0.365,-0.068,,0,1,31500.0,87.75,114.21,0,warm-up,battle-royale-research 30270f2

@@ -1,22 +1,22 @@
-# NBA morning report, Saturday 11/14
+# NBA morning report, Wednesday 11/18
 
-*Last night: Friday 11/13's main slate.*
+*Last night: Tuesday 11/17's main slate.*
 
-*The standing rules and the words this report uses: [the rulebook](rulebook.md).*
+*The standing rules and the words this report uses: [the rulebook](rulebook.md). Results over time: the Results page (nba_results.html).*
 
-**New on the board last night:** Elites: the top of T1 cut at the biggest projection gap among its top 3-4 (1 to 3); T2 morning: straight ADP; T2 afternoon: ADP with ETR within 2 picks up to pick X, ETR from X (X = 13/9 minus the elites); and 18 more (rulebook).
+**New on the board last night:** PM tiers start from ETR's ladder, one tier toward ADP's at 2+ apart (was ADP's toward ETR's); the elite cut reads ETR's T1, the T4 PRICEY drop counts players ETR has in T1-T4, T4 ends at ETR's ladder line; groups, elite break, T5 and Q unchanged. AM unchanged. Basis: pod replay, season PM, (f) beat my list by 3.4 top-10 pts (top-1% clear of zero); (b')-(f) -1.0.
 
 ## Front page
 
-Friday's nine-game slate had two routs, San Antonio by 38 over Golden State and Memphis by 31 over New Orleans, and it was broken open by Alperen Sengun (69.9: 43 on 17-24), Franz Wagner (66.8: 35 and 12 assists), Bam Adebayo (58.3) and Davion Mitchell (55.5 on 17 assists); Yaxel Lendeborg (12.9 in the Spurs rout) and Darius Acuff (32.8 on 6-19) sank their holders. Your 102 teams had a median finish in the top 42%; 7 made the top 10% (below the field's rate) and none the top 1%, and 12 cashed, $112 back on $470. The biggest gap against the field was Sengun: on 7% of your teams against the field's 17%, and on half of the afternoon's top-10% teams against 8% of yours. In the afternoon, where your board and ETR's order split a close call, ETR's side scored more 69% of the time (your board 31%; season 46%, where ETR alone wins), and four of your five T3 moves cost points, three of them putting Black and Siakam ahead of Sabonis and Durant. On the season your T3 moves are 41% right at about 5 points a move against you, so the button's T3 order is the one to follow. Two board changes are live from today: an A5 player whose projection is two tiers higher now lands in T4 VALUE instead of below the cut, and the Swaps button keeps T1-T4 from your PM lock and ranks the top 16 by projection as T5.
+Last night's main slate had 5 games, 1 of them blowouts (UTA by 25 over LAC). The biggest nights against ETR's number among drafted players: Quentin Grimes 33 points over; Ausar Thompson 23 points over; Naz Reid 20 points over. Your 99 teams (30 drafted in the morning, 69 in the afternoon) had a median finish in the top 37%; 12 made the top 10% and 0 the top 1%, and 26 cashed. They cost $457 in entries and won $261. Today: Wed Main, lock 3:52 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
 
 ## What decided the night, and where you stood
 
-- **Franz Wagner** (66.8): your 17% against the field's 17%; holders made the top 10% 3.2 times the field's rate.
-- **Alperen Sengun** (69.9): your 7% against the field's 17%; holders made the top 10% 3.1 times the field's rate. You backed him: ahead of Towns.
-- **Domantas Sabonis** (41.9): your 9% against the field's 17%; holders made the top 10% 2.1 times the field's rate. You faded him: Siakam ahead of him (afternoon); Black ahead of him (afternoon).
-- **Yaxel Lendeborg** (12.9): your 11% against the field's 17%; holders made the top 10% 0.0 times the field's rate. You backed him: ahead of Daniels.
-- **Darius Acuff Jr.** (32.8): your 12% against the field's 17%; holders made the top 10% 0.1 times the field's rate. You faded him: Mitchell ahead of him (morning); Brunson ahead of him (morning).
+- **Naz Reid** (54.2): your 20% against the field's 17%; holders made the top 10% 2.6 times the field's rate.
+- **Ausar Thompson** (55.8): your 8% against the field's 17%; holders made the top 10% 2.1 times the field's rate. You faded him: Castle ahead of him (afternoon); Clingan ahead of him (afternoon). You backed him: ahead of Castle, Lillard.
+- **Keyonte George** (52.9): your 11% against the field's 17%; holders made the top 10% 2.0 times the field's rate.
+- **Rudy Gobert** (4.8): your 21% against the field's 17%; holders made the top 10% 0.1 times the field's rate.
+- **Stephon Castle** (19.9): your 8% against the field's 17%; holders made the top 10% 0.2 times the field's rate. You faded him: Clingan ahead of him (morning); Thompson ahead of him (morning); Miller ahead of him (morning). You backed him: ahead of Thompson, Barrett.
 
 Verdict: you were on the right side of 2 of these 5 (over the field where his holders beat it, under where they didn't).
 
@@ -24,17 +24,19 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 **Bets.**
 
-- **Darius Garland** (T5): your 30% against the field's 5%; why: ETR Note. At the close: the close didn't move. Result: Over: 24 and 7 in 37 minutes; holders 1.1 times the field at the top 10%. **Sound and won.**
-- **Zion Williamson** (T3): your 33% against the field's 17%; why: a Bagel note. At the close: ETR 42.1 to 44.9, ADP 20.2 to 19.5: toward you. Result: In line: 22 on 7-15 with 4 stocks, Murray and Murphy out; holders 1.9 times the field at the top 10%. **Sound and won.**
-- **Cameron Boozer** (T3): your 31% against the field's 17%; why: ETR Great. At the close: the close didn't move. Result: In line: 5 fouls held him to 25 minutes; 12 and 10 with 3 stocks; holders 0.6 times the field at the top 10%. **Shaky and lost.**
-- **Nickeil Alexander-Walker** (T4): your 26% against the field's 12%; why: ETR Good. At the close: the close didn't move. Result: In line: 41 minutes carried a 1-11 night from three, with 4 stocks; holders 1.2 times the field at the top 10%. **Sound and won.**
-- **Jeremiah Fears** (T4): your 25% against the field's 12%; why: ETR Great. At the close: ADP 31.8 to 29.9: toward you. Result: In line: 18-5-7 in 34 minutes with Murray and Murphy out, 0-5 from three; holders 1.1 times the field at the top 10%. **Sound and won.**
+- **Ayo Dosunmu** (T3): your 39% against the field's 17%; why: the button's order. At the close: ETR 41.2 to 39.9, ADP 24.0 to 23.1: mixed. Result: Over by 8 (41.3 vs ETR 32.9): 30 pts on 11-19 FG, 7-11 3s, 39 min (usual 33); holders 1.7 times the field at the top 10%. **Sound and won.**
+- **John Collins** (T5): your 22% against the field's 1%; why: a news judgment. At the close: the close didn't move. Result: Under by 6 (18.2 vs ETR 24.4): 1 reb (about 5 usual for his minutes); holders 0.0 times the field at the top 10%. **Shaky and won.**
+- **Jaden McDaniels** (T2): your 37% against the field's 17%; why: VALUE (the button had him a tier up on the projection). At the close: the close didn't move. Result: Over by 10 (44.0 vs ETR 33.7): 3 stl + 1 blk, 22 pts on 10-16 FG, 2-5 3s; holders 1.4 times the field at the top 10%. **Sound and won.**
+- **Jrue Holiday** (T5): your 21% against the field's 2%; why: a news judgment. At the close: the close didn't move. Result: Over by 20 (45.0 vs ETR 24.8): 23 pts on 7-19 FG, 5-9 3s, 2 stl + 1 blk, 31 min (usual 26); holders 2.0 times the field at the top 10%. **Sound and won.**
+- **Darius Garland** (T2): your 33% against the field's 17%; why: the button's order. At the close: the close didn't move. Result: In line (39.1 vs ETR 39.3): ETR had him above his usual (39 vs 34); holders 1.1 times the field at the top 10%. **Shaky and won.**
 
 **Fades (T1-T3).**
 
-- **Pascal Siakam** (T3): your 2% against the field's 17%; why: ETR Bad. At the close: the close didn't move. Result: Under: 3 rebounds and 19 points on 5-13; holders 0.1 times the field at the top 10%. **Sound and won.**
-- **Alperen Sengun** (T2): your 7% against the field's 17%; why: ETR Great. At the close: the close didn't move. Result: Over: 43 on 17-24 with 12 rebounds; Utah had no answer inside; holders 3.1 times the field at the top 10%. **Shaky and lost.**
-- **Domantas Sabonis** (T3): your 9% against the field's 17%; why: a Bagel and ETR note. At the close: ETR 40.2 to 43.4, ADP 18.2 to 19.1: mixed. Result: In line: 21 and 12 on 9-16; holders 2.1 times the field at the top 10%. **Shaky and lost.**
+- **Immanuel Quickley** (T3): your 2% against the field's 17%; why: PRICEY. At the close: ETR 38.9 to 36.7: toward you. Result: In line (24.7 vs ETR 30.6): no steals or blocks; holders 0.4 times the field at the top 10%. **Sound and won.**
+- **Stephon Castle** (T3): your 8% against the field's 17%; why: a news judgment. At the close: the close didn't move. Result: Under by 12 (19.9 vs ETR 32.1): 10 pts on 3-11 FG, 2-5 3s, 2 reb (about 6 usual for his minutes), no steals or blocks; holders 0.2 times the field at the top 10%. **Sound and won.**
+- **Ausar Thompson** (T2): your 8% against the field's 17%; why: a news judgment. At the close: ETR 43.1 to 40.0: toward you. Result: Over by 23 (55.8 vs ETR 32.7): 12 ast (about 4 usual for his minutes), 5 stl + 0 blk; holders 2.1 times the field at the top 10%. **Sound and lost.**
+- **Victor Wembanyama** (T1): your 9% against the field's 17%; why: the button's order. At the close: the close didn't move. Result: In line (55.6 vs ETR 61.0): 1 stl + 1 blk; holders 1.1 times the field at the top 10%. **Sound and lost.**
+- **Darryn Peterson** (T2): your 10% against the field's 17%; why: a news judgment. At the close: the close didn't move. Result: Under by 14 (22.0 vs ETR 36.0): 13 pts on 3-10 FG, 2-4 3s; holders 0.4 times the field at the top 10%. **Sound and won.**
 
 *Sound: the close moved toward your side after your lock (ETR's final, the late ADP); shaky: away. Won: holders beat the field's top-10% rate (bets) or didn't (fades). Players ruled out after the lock are left out.*
 
@@ -42,220 +44,121 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 **T1, the elite.** The players every pod takes first; the order is the decision. Morning: ADP, the higher Boom first within 2 picks. Afternoon: ETR. A Questionable player here drops to the top of T2.
 
-**How the night went.** ADP and the projection agreed on every pair here last night.
+**How the night went.** Morning: ADP and our projection split 1 pair; the night sided with our projection on 0, and you sided with our projection on 1. Afternoon: ADP and ETR split 1 pair; the night sided with ETR on 0, and you sided with ETR on 1.
 
 **Player recap**, in the button's order.
 
-- **Wembanyama**: Under: 21 minutes in a 38-point rout, 12 and 12 with 6 assists.
-- **Antetokounmpo**: Under: 37 on 15-20, but 2 assists and 1 stock in 31 minutes.
+- **Doncic**: Under by 8 (54.7 vs ETR 62.5): 42 min (usual 36).
 
-**Contest view.** Nothing stood out in this tier's contest results last night.
+**Contest view.** In your afternoon window the top-10% teams held Victor Wembanyama on 18% against your 12%.
 
 ## T2
 
 **T2, the stars.** Morning: straight ADP. Afternoon: ADP with ETR breaking ties within 2 picks up to the elite break (pick 13 minus the elites with 6 drafters, 9 with 4), then ETR. The turns are where your share differs from the field's.
 
-**How the night went.** Morning: ADP and our projection split 10 pairs; the night sided with our projection on 4, and you sided with our projection on 6. Afternoon: ADP and ETR split 6 pairs; the night sided with ETR on 3, and you sided with ETR on 5.
+**How the night went.** Morning: ADP and our projection split 9 pairs; the night sided with our projection on 5, and you sided with our projection on 4. Afternoon: ADP and ETR split 4 pairs; the night sided with ETR on 1, and you sided with ETR on 2.
 
 **Your moves.**
 
-- Morning: you went against the button, **Sengun** ahead of **Towns**; it helped by 13 points.
-- Morning: you went against the button, **Mitchell** ahead of **Acuff**; it helped by 4 points.
-- Morning: you went against the button, **Brunson** ahead of **Acuff**; it helped by 20 points.
-- Morning: you went against the button, **Mitchell** ahead of **Adebayo**; it hurt by 21 points.
-- Morning: you went against the button, **Brunson** ahead of **Adebayo**; it hurt by 6 points.
-- Morning: you went against the button, **Mitchell** ahead of **Brunson**; it hurt by 15 points.
-
-Season, your moves in T2: keep doing what you're doing (211 moves on 23 nights, 56% right, +2.0 points a move; ahead in 89% of night-resamples).
-
-**The turn lines.**
-
-- **1/2 turn** (the turn's own average: 0.92x): faller: you 42% (season 29%), field 22%; on the season 1.03x the field's top-1% rate; reach: you 21% (season 17%), field 20%; on the season 0.44x the field's top-1% rate; trust ADP: you 36% (season 54%), field 58%; on the season 1.03x the field's top-1% rate.
-- **2/3 turn** (the turn's own average: 1.24x): faller: you 13% (season 18%), field 13%; on the season 1.82x the field's top-1% rate; reach toward projection: you 10% (season 12%), field 4%; on the season 3.34x the field's top-1% rate; reach, not toward projection: you 5% (season 10%), field 21%; on the season 0.91x the field's top-1% rate; trust ADP: you 71% (season 60%), field 61%; on the season 1.00x the field's top-1% rate.
+- Morning: you went against the button, **Avdija** ahead of **Brunson**; it hurt by 14 points.
+- Morning: you went against the button, **Miller** ahead of **Peterson**; it helped by 12 points.
+- Morning: you went against the button, **Clingan** ahead of **Castle**; it helped by 17 points.
+- Morning: you went against the button, **Thompson** ahead of **Castle**; it helped by 36 points.
+- Morning: you went against the button, **Miller** ahead of **Castle**; it helped by 14 points.
 
 **Player recap**, in the button's order.
 
-- **Wagner**: Over: 35 on 13-22 with 12 assists.
-- **Sengun**: Over: 43 on 17-24 with 12 rebounds; Utah had no answer inside.
-- **Towns**: Over: 23 and 15 with 3 steals.
-- **Adebayo**: Over: 37 on 13-19 with 14 rebounds in 38 minutes.
-- **Brunson**: Over: 33 on 11-22 with 11 assists.
-- **Acuff Jr.**: Under: cold 6-19 with 4 turnovers.
+- **Barnes**: Under by 8 (33.8 vs ETR 41.5): 2 ast (about 6 usual for his minutes), 4 reb (about 8 usual for his minutes).
+- **Towns**: Over by 6 (48.2 vs ETR 41.7): 8 ast (about 4 usual for his minutes), 16 pts on 7-9 FG, 1-2 3s.
+- **Avdija**: scratched; swaps went to Shannon Jr. (560 teams, 18 points) and Holiday (500 teams, 45 points).
+- **Brunson**: Over by 6 (45.5 vs ETR 39.2): 31 pts on 10-22 FG, 4-11 3s.
+- **George**: Over by 15 (52.9 vs ETR 38.1): 30 pts on 10-17 FG, 4-8 3s, 11 ast (about 7 usual for his minutes).
+- **Ball**: Under by 7 (29.8 vs ETR 36.9): 2 ast (about 7 usual for his minutes), 9 reb (about 5 usual for his minutes), 18 pts on 7-17 FG, 3-8 3s.
+- **Peterson**: Under by 14 (22.0 vs ETR 36.0): 13 pts on 3-10 FG, 2-4 3s.
+- **McDaniels**: Over by 10 (44.0 vs ETR 33.7): 3 stl + 1 blk, 22 pts on 10-16 FG, 2-5 3s.
 
-**Contest view.** Outsized holders: Franz Wagner and Alperen Sengun (top 10% at 3.2x and 3.1x the field's rate). In your afternoon window the top-10% teams held Alperen Sengun on 52% against your 8%.
+**Contest view.** Outsized holders: Keyonte George and Jaden McDaniels (top 10% at 2.2x and 1.4x the field's rate). In your afternoon window the top-10% teams held Keyonte George on 38% against your 9%.
 
 ## T3
 
 **T3, the middle.** VALUE first, then the rest, PRICEY last; morning by ADP, afternoon by ETR (ADP, then Boom, on exact ties). T3 PRICEY stays ahead of T4 VALUE.
 
-**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 9 times out of 11 in the morning; ETR's pick scored more 13 times out of 14 in the afternoon. On the season, trusting ETR over ADP here in the afternoon gains about 4 points per close call (an early sign it helps): keep doing it, the rule already does.
+**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick won all 7 in the morning; ETR's pick scored more 5 times out of 6 in the afternoon.
 
 **Your moves.**
 
-- Afternoon: you went against the button, **Lendeborg** ahead of **Daniels**; it hurt by 16 points.
-- Afternoon: you went against the button, **Siakam** ahead of **Sabonis**; it hurt by 19 points.
-- Afternoon: you went against the button, **Black** ahead of **Durant**; it hurt by 14 points.
-- Afternoon: you went against the button, **Williamson** ahead of **Jerome**; it helped by 11 points.
-- Afternoon: you went against the button, **Black** ahead of **Sabonis**; it hurt by 23 points.
-
-Season, your moves in T3: press the button (95 moves on 22 nights, 41% right, -4.8 points a move; ahead in 1% of night-resamples).
-
-The afternoon T3 moves mostly went one way: Black (an ETR Good matchup) and Siakam (an ETR Bad one) raised past Sabonis and Durant, and Lendeborg past Daniels before the rout; Zion over Jerome was the one that paid.
+- Afternoon: you went against the button, **Castle** ahead of **Thompson**; it hurt by 36 points.
+- Afternoon: you went against the button, **Castle** ahead of **Barrett**; it hurt by 19 points.
+- Afternoon: you went against the button, **Clingan** ahead of **Thompson**; it hurt by 19 points.
+- Afternoon: you went against the button, **Clingan** ahead of **Barrett**; it hurt by 2 points.
+- Afternoon: you went against the button, **Thompson** ahead of **Lillard**; it helped by 21 points.
 
 **Player recap**, in the button's order.
 
-- **Giddey**: Over: 15-10-14 in 39 minutes.
-- **Daniels**: Under: only 5 shots for 6 points in 36 minutes; 9 rebounds and 2 stocks kept him afloat.
-- **Lendeborg**: Under: 1-13 in 24 minutes of a 38-point loss.
-- **Black**: Under: 1-9 with 5 turnovers in 37 minutes.
-- **Siakam**: Under: 3 rebounds and 19 points on 5-13.
+- **Dosunmu**: Over by 8 (41.3 vs ETR 32.9): 30 pts on 11-19 FG, 7-11 3s, 39 min (usual 33).
+- **Thompson**: Over by 23 (55.8 vs ETR 32.7): 12 ast (about 4 usual for his minutes), 5 stl + 0 blk.
+- **Harper**: Under by 7 (25.8 vs ETR 33.2): 2 ast (about 5 usual for his minutes), no steals or blocks.
+- **Reid**: Over by 20 (54.2 vs ETR 33.8): 42 min (usual 29), 2 stl + 2 blk.
+- **Castle**: Under by 12 (19.9 vs ETR 32.1): 10 pts on 3-11 FG, 2-5 3s, 2 reb (about 6 usual for his minutes), no steals or blocks.
 
-**Contest view.** Outsized holders: Zion Williamson and Josh Giddey (top 10% at 2.5x and 1.8x the field's rate). In your afternoon window the top-10% teams held Domantas Sabonis on 27% against your 5%. Your VALUE share: 82% of your afternoon teams held one, the field 53%.
+**Contest view.** Outsized holders: Naz Reid and Ausar Thompson (top 10% at 2.4x and 2.1x the field's rate). In your afternoon window the top-10% teams held Ausar Thompson on 35% against your 4%. Your VALUE share: 39% of your afternoon teams held one, the field 17%.
 
 ## T4
 
 **T4, to round 6.** The same sort as T3; it ends at the start of round 6 (earlier at a 2-pick ADP gap), never holds a round-6 player, sends its PRICEY players to T5 and borrows from the bottom of T3 when short of 4.
 
-**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 2 times out of 6 in the morning; ETR's pick scored more 7 times out of 8 in the afternoon. On the season, trusting ETR over ADP here in the afternoon gains about 1 point per close call (an early sign it helps): the rule leans the other way here, so this is worth a test.
+**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 1 times out of 2 in the morning; ETR's pick lost all 3 in the afternoon.
 
 **Your moves.**
 
-- Afternoon: you went against the button, **Thompson** ahead of **George**; it hurt by 13 points.
-- Afternoon: you went against the button, **Okongwu** ahead of **George**; it hurt by 7 points.
-
-Season, your moves in T4: too early (65 moves on 21 nights, 49% right, +0.2 points a move; ahead in 54% of night-resamples).
+No moves against the button here last night.
 
 **Player recap**, in the button's order.
 
-- **Harden**: Over: 20 and 8 with 4 stocks.
-- **George**: Over: 27 on 8-18 in 38 minutes.
+- **Gobert**: Under by 27 (4.8 vs ETR 31.8): 0 pts on 0-3 FG, 0-0 3s, 22 min (usual 28), 4 reb (about 8 usual for his minutes).
+- **Fox**: Under by 15 (14.4 vs ETR 29.7): 6 pts on 3-10 FG, 0-5 3s, 2 ast (about 7 usual for his minutes), 34 min (usual 28).
+- **Jenkins**: Over by 11 (40.5 vs ETR 29.1): 38 min (usual 29), 25 pts on 11-21 FG, 3-7 3s.
 
-**Contest view.** Outsized holders: Donovan Clingan (top 10% at 1.9x the field's rate). In your afternoon window the top-10% teams held Donovan Clingan on 31% against your 18%. Your VALUE share: 82% of your afternoon teams held one, the field 57%.
+**Contest view.** Outsized holders: Mo Bamba and Daniss Jenkins (top 10% at 1.5x and 1.4x the field's rate). In your afternoon window the top-10% teams held Daniss Jenkins on 24% against your 9%. Your VALUE share: 0% of your afternoon teams held one, the field 0%.
 
 ## T5
 
 **T5, round 6.** Players drafted in under 60% of pods (50-60% at the bottom), projected for 20+ minutes, by projection, to your cut; everyone else below it by projection. Graded on contest results.
 
-**Your T5 menu, on contest results.**
-
-- **Morning** (line 60%): your ADP-T5 picks under the line 55% of 29 last night (field 27%), 33% of 605 on the season (field 33%). Teams holding one under it, season: top 10% at 1.05x (0.98-1.15; 42683 teams) the field's rate, yours 1.59x (1.03-2.14; 189 teams); at or over it: 0.96x (0.92-0.99; 74357 teams), yours 1.25x (1.05-1.44; 321 teams).
-- **Afternoon** (line 60%): your ADP-T5 picks under the line 67% of 89 last night (field 36%), 50% of 1539 on the season (field 40%). Teams holding one under it, season: top 10% at 1.09x (1.01-1.18; 105001 teams) the field's rate, yours 1.76x (1.46-2.09; 717 teams); at or over it: 0.95x (0.89-1.00; 143842 teams), yours 0.99x (0.76-1.24; 634 teams).
-
 **Player recap**, in the button's order.
 
-- **Garland**: Over: 24 and 7 in 37 minutes.
-- **Podziemski**: Under: 22 minutes in a 38-point loss, no assists.
-- **Allen**: Under: only 4 shots in 32 minutes for 9 points.
-- **Anunoby**: Under: 4-13, 2 rebounds.
-- **Hartenstein**: Over: 21 on 9-10 with 16 rebounds.
-- **Smith**: Over: 12 rebounds and 3 stocks in 32 minutes (usual 24).
+- **Holiday**: Over by 20 (45.0 vs ETR 24.8): 23 pts on 7-19 FG, 5-9 3s, 2 stl + 1 blk, 31 min (usual 26).
+- **Hachimura**: Over by 8 (32.5 vs ETR 24.9): 20 pts on 7-10 FG, 4-4 3s.
+- **Collins**: Under by 6 (18.2 vs ETR 24.4): 1 reb (about 5 usual for his minutes).
+- **White**: Over by 11 (33.6 vs ETR 23.0): 26 min (usual 18), 3 stl + 0 blk.
+- **Wagler**: Under by 6 (16.4 vs ETR 22.5): 15 pts on 5-9 FG, 1-3 3s, 18 min (usual 22) in a 25-point blowout.
 
-**Contest view.** Outsized holders: Norman Powell and Isaiah Hartenstein (top 10% at 2.0x and 1.8x the field's rate).
+**Contest view.** Outsized holders: Brice Sensabaugh and Jrue Holiday (top 10% at 4.5x and 2.0x the field's rate). In your afternoon window the top-10% teams held Immanuel Quickley on 7% against your 1%.
 
 ## Questionable
 
 **Last night's Questionable players at the lock.**
 
-- **Klay Thompson** (Questionable): morning below the cut, #93 on the button; sat; swaps went to no credited swaps.
-- **Ajay Mitchell** (Questionable): morning below the cut, #44 on the button; afternoon T5, #36 on the button; sat; swaps went to no credited swaps.
-- **De'Aaron Fox** (Questionable): morning T5, #35 on the button; afternoon below the cut, #52 on the button; played: 16 points against a projection of 35.
-- **Jalen Suggs** (Questionable): morning T5, #28 on the button; played: 9 points against a projection of 40.
-- **Kingston Flemings** (Questionable): morning below the cut, #76 on the button; afternoon below the cut, #75 on the button; played: 2 points against a projection of 29.
-- **Norman Powell** (Questionable): morning below the cut, #56 on the button; afternoon T5, #37 on the button; played: 42 points against a projection of 38.
-- **Aaron Nesmith** (Questionable): morning below the cut, #88 on the button; played: 27 points against a projection of 27.
-- **Devin Vassell** (Questionable): afternoon below the cut, #78 on the button; played: 12 points against a projection of 28.
+- **Jonathan Kuminga** (Questionable): morning below the cut, #41 on the button; sat; swaps went to Shannon (18) and Hachimura (32).
+- **Scottie Barnes** (Questionable): afternoon T2, #4 on the button; played: 34 points against a projection of 49.
+- **Deni Avdija** (Questionable): afternoon T2, #6 on the button; sat; swaps went to Shannon (18) and Holiday (45).
 
-**Your Q moves.** Morning: Anunoby ahead of Fox, helped by 2; Morning: Hartenstein ahead of Suggs, helped by 41; Afternoon: Mitchell ahead of Allen, helped by 7.
+**Your Q moves.** Afternoon: Towns ahead of Barnes, helped by 14; Afternoon: Brunson ahead of Barnes, helped by 12; Afternoon: Brunson ahead of Avdija, helped by 14.
 
-Swap button: 2 of your swaps on 1 night with a swap lock; the swap list and the PM list picked the same player every time. (Underdog's swap matched the swap list on 2 of 2: under that, the list wasn't pushed in time or a game had started.)
-
-Chance to play, morning Questionable players: 68 this season, 33 played (49%). The model sorts the ones who play from the ones who sit at 0.45 (0.5 is a coin flip, 1 is perfect), and doesn't beat a flat 49% guess (Brier 0.271 against 0.250; lower is better). Last night: Klay Thompson at 57%, sat; Ajay Mitchell at 64%, sat; De'Aaron Fox at 47%, played; Jalen Suggs at 64%, played; Kingston Flemings at 54%, played; Norman Powell at 56%, played; Aaron Nesmith at 55%, played.
-
-**Q picks on contest results, season** (top 10% against the field's rate): no Q pick 0.99x (0.97-1.01; 318453 teams); any Q pick 1.04x (0.92-1.17; 50887 teams); played 1.18x (0.95-1.41; 31157 teams); sat 0.81x (0.73-0.88; 22009 teams); T1 0.86x (1969 teams); T2 1.29x (0.92-1.62; 17006 teams); T3 0.95x (0.77-1.19; 16595 teams); T4 0.89x (0.64-1.51; 6634 teams); T5 1.06x (0.92-1.23; 10723 teams).
-
-**Today's Questionable players.** Evan Mobley (T3 on the ladders, 45% to play): if he sits, Peyton Watson, Meleek Thomas, Jaylon Tyson; Trey Murphy III (T5 on the ladders, 96% to play): if he sits, Saddiq Bey, Derik Queen; Jalen Smith (T5 on the ladders, 68% to play): if he sits, Matas Buzelis, Norman Powell, Nic Claxton; Klay Thompson (T5 on the ladders, 51% to play).
+**Today's Questionable players.** Austin Reaves (T5 on the ladders, 8% to play): if he sits, Walker Kessler, Quentin Grimes, Sandro Mamukelashvili; Walker Kessler (T5 on the ladders, 19% to play): if he sits, Austin Reaves, Quentin Grimes, Sandro Mamukelashvili; Amen Thompson (T5 on the ladders, 64% to play).
 
 ## Back page
 
 
 
-**Our morning projection against ETR's final.** Last night: 2.50 apart, correlation 0.64. Season: 2.14 points apart on average (against ADP), correlation 0.77, 25% 3+ apart (16 slates).
+**Our morning projection against ETR's final.** Last night: 2.11 apart, correlation 0.86. Season: 2.11 points apart on average (against ADP), correlation 0.78, 24% 3+ apart (18 slates).
 
-**ETR's final against the box score.** Last night: +1.26 on average, off by 8.2 a player. Season: +0.19 on average, off by 7.8 (3037 player-nights).
+**ETR's final against the box score.** Last night: +0.58 on average, off by 7.8 a player. Season: +0.28 on average, off by 7.8 (3341 player-nights).
 
-**Gallagher's Bad-matchup arrows** (published before your lock). Last night: Turner +9.9; Siakam -11.6; Brunson +12.3; Giddey +16.2; Powell +10.9; Allen -7.9; Matkovic -13.1; Hayes -1.9; George +8.7; Lendeborg -23.4; LaVine +1.3; Sabonis +4.7; Clingan +5.7; Lopez +20.6. Season: 146 arrows, -2.2 against ETR's final on average, 57% under it.
+**Gallagher's Bad-matchup arrows** (published before your lock). Season: 160 arrows, -2.0 against ETR's final on average, 56% under it.
 
 **Data.** Everything for last night came in, and today's inputs were ready on time.
 
-Watch the new fresh-absence bump (1.5x the teammate table, from today): last night's two biggest splits on a team with fresh absences (Queen 41.0 against ETR 32.9, Zion 50.8 against 44.9, with Murray and Murphy out) already had our number too high, and ETR was closer.
+---
 
-## Season
-
-*Reference tables; points per pair as above. Labels here are the grading's own (RULE: proven so far, + helps and - hurts; LEAN: an early sign; no lean: no clear signal; not enough yet: too early to say).*
-
-**Overnight window** (drafts before 4:30am; kept out of the AM grades): 16 nights, 152 of your teams; your board against ADP then: +1.3 (+0.4 to +2.1), 1465 pairs, LEAN + (RULE numbers, one player flips it)
-
-**T1**
-
-| Window | vs projection | vs ADP | VALUE vs partners |
-|---|---|---|---|
-| AM (11 nights) | -0.2 (5) | +31.5 (4) | - |
-| PM (19 nights) | -19.3 (5) | +5.6 (12) | - |
-
-| Your takes | Source | Points per take |
-|---|---|---|
-| AM | NEWS | -4.3, not enough yet (15) |
-| PM | Bagel+ETR | -6.9, not enough yet (3) |
-| PM | NEWS | -38.0, not enough yet (2) |
-
-**T2**
-
-| Window | vs projection | vs ADP | VALUE vs partners |
-|---|---|---|---|
-| AM (12 nights) | +0.6 (78) | +0.5 (74) | -5.5 (11) |
-| PM (19 nights) | -0.8 (89) | +1.4 (127) | +3.8 (13) |
-
-| Your takes | Source | Points per take |
-|---|---|---|
-| AM | NEWS | +0.6 (-2.9 to +4.1), 75 pairs, no lean |
-| PM | Bagel | -4.0, not enough yet (11) |
-| PM | Bagel+ETR | +5.3, not enough yet (28) |
-| PM | ETR | +6.2, not enough yet (8) |
-| PM | NEWS | +1.3, not enough yet (32) |
-| PM | OTHER | -5.4, not enough yet (15) |
-
-**T3/T4**
-
-| Window | vs projection | vs ADP | VALUE vs partners |
-|---|---|---|---|
-| AM (12 nights) | -2.0 (69) | +0.6 (98) | +3.6 (135) |
-| PM (19 nights) | +0.3 (107) | +3.0 (253) | +4.1 (270) |
-
-| Your takes | Source | Points per take |
-|---|---|---|
-| AM | NEWS | -3.8 (-6.8 to -0.7), 45 pairs, LEAN - |
-| PM | Bagel | +4.5, not enough yet (18) |
-| PM | Bagel+ETR | -4.7, not enough yet (32) |
-| PM | ETR | -12.0, not enough yet (7) |
-| PM | NEWS | -1.8, not enough yet (28) |
-| PM | OTHER | -2.5, not enough yet (13) |
-
-**T5**
-
-| Window | vs projection | vs ADP | VALUE vs partners |
-|---|---|---|---|
-| AM (12 nights) | +1.3 (42) | -2.9 (78) | +3.9 (89) |
-| PM (19 nights) | +2.0 (100) | -1.5 (162) | +0.8 (76) |
-
-| Your takes | Source | Points per take |
-|---|---|---|
-| AM | NEWS | +1.2 (-5.7 to +6.9), 43 pairs, no lean |
-| PM | Bagel | -1.2, not enough yet (6) |
-| PM | Bagel+ETR | +7.1, not enough yet (36) |
-| PM | ETR | -0.4, not enough yet (15) |
-| PM | NEWS | -2.2, not enough yet (25) |
-| PM | OTHER | +3.6, not enough yet (23) |
-
-Points per pair or take (count); positive: your board won, VALUE beat its partners, or your take beat the button. Takes are credited to ETR or Bagel when either player had a note from them before the lock, else NEWS (his projection or his team's status changed since the last lock) or OTHER. Verdicts and labels: tier_grade.md.
-
-Full tables: tier_grade.md, q_lane.md, swap_board.md, my_swaps.md, money_points.md, rules_side_by_side.md, rule_dates.json.
+*Grading over time (results, finishes, ETR vs ADP, your moves by tier, T5 and swaps) is on the Results page (nba_results.html, from analysis/nba/dashboard.json); the Friday report proposes changes. Full tables: tier_grade.md, tier_season_tests.md, push_rerun.md, swap_board.md, my_swaps.md, rule_dates.json.*

@@ -2,6 +2,27 @@
 
 Written by the morning report (/morning-report), newest first. Each section: last night, any theme with 3+ cases on 2+ slates in misses.csv, and a change to try when a theme backs it.
 
+## 2026-11-16 Mon main
+
+- Locked both windows (Lock AM 4:01am, the last of 2; Lock PM 2:18pm). Late news: Amen Thompson (ADP 22-24), untagged at Lock AM and Questionable at Lock PM, still in ETR's 3:42pm upload, sat (HOU out of both halves); LeBron (25.8) out before the afternoon (PHI out of the morning). Bam left after 16 minutes (graded). Three blowouts: NOP by 21, MIA by 18, MEM by 16.
+- Morning: 50% against our number (season 54%), 36% against ADP (season 53%). AM calls 2 right (Gobert, Bane raises), 5 wrong, 1 push. Afternoon: 27% against ETR (season 45%, ETR alone wins), 45% against ours. PM calls 1 right (Lillard fade), 7 wrong, including the Embiid fade through his tag (37 on 13-22). Since 11-13, biggest calls are 7 right, 31 wrong (hedges out).
+- Splits: ours closer on 5 of 6 (Lendeborg, Jalen Green, Gobert, Spencer, Klay); ETR closer only on Zion (a 25-minute blowout). Season splits ETR 65, ours 57.
+- Field: 100 teams (80 in Monday Night Hoops, median top 40%, top 10% 1.12; 20 in Buzzer Beater, top 10% 1.50), 12 in the top 10%, 31 cashed, $326 on $460. Mitchell (43% against 17%, 2.5x) and Embiid (38%, 2.0x) carried it. Running, 6-drafter: top 10% 1.27 (21 nights), AM teams 1.46 against PM 1.18.
+- Morning Proj vs ETR (etr_match.md): corr 0.80, direction 86% (25 of 29), big misses 11 of 60 (18%), CLV ours 0.28 against ETR 0.30, the closest yet. Missed the same way on 3+ of the last 10: Shead, Fears, Avdija, Black and Davion Mitchell (ETR above ours), Sabonis, Bane and Trae (ETR below).
+
+## 2026-11-15 Sun main
+
+- No drafts, no Lock AM, and the 3:12pm Lock PM came after the 2:52pm lock and the 3:00pm first tip, so it isn't recorded (swaps had started); ETR's file isn't on file either. Nothing of yours graded. LaVine, Rollins, Achiuwa, Hunter and Kyrie sat. Box scores only: Towns 51.9 (43 minutes), Barnes 55.8, Amen 47.9 on 9-11; Trae 16.2 (0-5) and Acuff 26.0 (9 turnovers) in routs.
+- Note: Sunday slates can lock at 2:52pm. A late lock or upload after the first tip can't be graded.
+
+## 2026-11-14 Sat main
+
+- Lock PM 1:55pm, swap lock 2:57pm, no Lock AM. Late news after Lock PM: Donovan Mitchell (ADP 8.8), Harden (16.0), Allen (25.5) and Watson, all Questionable at Lock PM, were ruled out, and Michael Porter Jr. (15.3, untagged) sat: CLE and BKN out of the afternoon (late_news.json). Also out: Edey, Grant, Ty Jerome (MEM), Jalen Smith, Claxton (CHI), Murphy, Mathurin (NOP).
+- Afternoon: 43% against ETR (season 46%, ETR alone wins), 64% against ours, 51% against ADP. Biggest calls 3 right, 4 wrong, 1 push: raises on Davion Mitchell and Gordon and the Robinson fade (17 minutes in a 20-point loss) right; fades on Braun (5 stocks), Queen (Murphy and Mathurin out) and Reed, and the Wiggins raise, wrong.
+- Theme (hedges left out): `teammate-out` splits are now ETR closer on 13 of 18 (ours too high on 15 of 23 teammate-out misses and splits). Saturday, the first night with the fresh-absence bump (1.5x), ETR was closer on 4 of 5: Matkovic 31.7 against 23.1 (scored 13.1), Stewart 32.1 against 23.8 (17.1), GG Jackson 27.4 against 20.9 (3 minutes), Missi 30.1 against 24.8 (25.1); Leonard Miller (ours 25.5, ETR 11.4, scored 25.6) was ours. A case for the 11/27 projection review, not a change now.
+- Field: 10 teams in Saturday Slam, median finish top 57%, none in the top 10%. Running, 6-drafter: top 10% 1.27 (20 nights), AM teams 1.43 against PM 1.20.
+- Morning Proj vs ETR: not graded either night (no Lock AM before ETR's first file).
+
 ## 2026-11-13 Fri main
 
 - Locked both windows (Lock AM 4:07am, Lock PM 2:12pm). No late news on an early pick: the five who sat (Klay, Ajay Mitchell, Dejounte Murray, Jarace Walker, Trey Murphy) all went around pick 36, so no team left the grading; Murray and Murphy out left Zion, Fears, Queen and Bey with bigger roles. Two routs: SAS by 38 over GSW, MEM by 31 over NOP.

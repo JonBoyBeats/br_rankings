@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NBA Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* The board's dark theme; chart colours from the dataviz reference palette's dark steps, validated on --surface
+     (#3987e5 / #d95926 / #e66767: all checks pass). Field baselines are gray; text never wears a series colour. */
+  :root {
+    color-scheme: dark;
+    --bg: #080b11; --surface: #12151c; --surface-2: #161a22;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #8b94a4;
+    --line: #1c212c; --line-strong: #2a3140; --grid: #232836; --axis: #383d4a;
+    --accent: #ffffff;
+    --me: #3987e5;        /* you (series 1) */
+    --alt: #d95926;       /* the second series (series 2) */
+    --neg: #e66767;       /* below zero */
+    --field: #8b94a4;     /* the field's baseline */
+    --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  .shell { max-width: 980px; margin: 0 auto; padding: 0 16px 64px; }
+  .masthead { position: sticky; top: 0; z-index: 30; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: 14px; }
+  .mast-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 19px; font-weight: 700; letter-spacing: -.015em; margin: 0; white-space: nowrap; }
+  .views { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; align-self: center; flex-wrap: wrap; }
+  .views a { font-size: 12.5px; font-weight: 600; padding: 5px 12px; color: var(--muted); text-decoration: none; }
+  .views a[aria-current="page"] { background: var(--accent); color: var(--bg); }
+  .views a:not([aria-current]):hover { color: var(--ink); }
+  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 12px 0; }
+  .controls button { font-family: var(--sans); font-size: 13px; font-weight: 500; border-radius: 7px; border: 1px solid var(--line-strong);
+                     background: var(--surface); color: var(--ink); padding: 6px 12px; cursor: pointer; }
+  .controls button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .seg { display: inline-flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 2px; }
+  .seg button { font-family: var(--sans); font-size: 12.5px; font-weight: 500; border-radius: 7px; border: 1px solid var(--line-strong);
+                background: var(--surface-2); color: var(--ink); padding: 5px 11px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .pod-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .pod-cols { grid-template-columns: 1fr; } }
+  .status { font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding-bottom: 10px; }
+  section.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-top: 14px; }
+  section.card h2 { font-size: 15px; font-weight: 700; margin: 0 0 2px; }
+  .def { font-size: 12.5px; color: var(--muted); margin: 0 0 10px; }
+  .sub { font-size: 13px; font-weight: 600; color: var(--ink-2); margin: 14px 0 4px; }
+  .note { font-size: 12.5px; color: var(--ink-2); margin: 6px 0 0; }
+  .wait { font-size: 12.5px; color: var(--muted); border: 1px dashed var(--line-strong); border-radius: 8px; padding: 10px 12px; margin: 6px 0; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .tile { background: var(--surface-2); border-radius: 8px; padding: 10px 12px; }
+  .tile .label { font-size: 12px; color: var(--muted); }
+  .tile .value { font-size: 22px; font-weight: 600; margin-top: 2px; }
+  .tile .vs { font-size: 12px; color: var(--ink-2); }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); margin: 4px 0 6px; }
+  .legend i { display: inline-block; width: 12px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .legend i.ln { height: 2px; border-radius: 1px; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  svg text { font-family: var(--mono); font-size: 10px; fill: var(--muted); }
+  svg .hit { fill: transparent; cursor: default; }
+  svg .bar:hover, svg .bar.on { filter: brightness(1.25); }
+  details { margin-top: 6px; }
+  details.fold { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
+  details.fold > summary { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .advice { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin: 4px 0 6px; }
+  .advice-h { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .advice ul { margin: 0; padding-left: 18px; }
+  .advice li { font-size: 13.5px; margin: 3px 0; }
+  .advice li.flat { color: var(--ink-2); }
+  .advice li .num { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  details summary { font-size: 12px; color: var(--muted); cursor: pointer; }
+  table { border-collapse: collapse; font-size: 12px; margin-top: 6px; width: 100%; }
+  th, td { text-align: left; padding: 3px 8px 3px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  th { color: var(--muted); font-weight: 500; }
+  #tip { position: fixed; z-index: 50; pointer-events: none; background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 7px;
+         padding: 6px 9px; font-size: 12px; max-width: 280px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+  #tip b { display: block; font-size: 13px; }
+  #tip span { color: var(--ink-2); }
+  @media (max-width: 560px) { .tile .value { font-size: 19px; } .views a { padding: 5px 8px; font-size: 12px; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="masthead">
+    <div class="mast-row">
+      <h1>NBA Results</h1>
+      <nav id="sitenav" data-sport="nba" data-page="results"></nav><script src="sitenav.js"></script>
+    </div>
+    <div class="controls" role="group" aria-label="Range">
+      <button type="button" data-range="night" aria-pressed="false">Last night</button>
+      <button type="button" data-range="7" aria-pressed="false">Last 7 nights</button>
+      <button type="button" data-range="season" aria-pressed="true">Season</button>
+    </div>
+    <div class="status" id="status">Loading&hellip;</div>
+  </div>
+  <div id="main"></div>
+</div>
+<div id="tip" hidden></div>
+<script>
+"use strict";
+var D = null, RANGE = "season";
+try { RANGE = localStorage.getItem("nbaResultsRange") || "season"; } catch (e) { /* storage blocked */ }
+var $ = function (id) { return document.getElementById(id); };
+var NS = "http://www.w3.org/2000/svg";
+
+function el(tag, attrs, parent, text) {
+  var e = document.createElement(tag);
+  Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function sv(tag, attrs, parent, text) {
+  var e = document.createElementNS(NS, tag);
+  Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function fmt(x, d) { return x == null || isNaN(x) ? "–" : (+x).toFixed(d == null ? 2 : d); }
+function pct(x, d) { return x == null || isNaN(x) ? "–" : (100 * x).toFixed(d == null ? 0 : d) + "%"; }
+function sgn(x, d) { return x == null || isNaN(x) ? "–" : (x > 0 ? "+" : "") + (+x).toFixed(d == null ? 2 : d); }
+function short(d) { var p = d.split("-"); return +p[1] + "/" + +p[2]; }
+
+// ---- tooltip (values lead, labels follow; textContent only)
+function tipShow(ev, lines) {
+  var t = $("tip");
+  t.textContent = "";
+  lines.forEach(function (l, i) { el(i ? "span" : "b", {}, t, l); if (i) el("br", {}, t); });
+  t.hidden = false;
+  var x = Math.min(ev.clientX + 14, window.innerWidth - t.offsetWidth - 8), y = ev.clientY + 14;
+  if (y + t.offsetHeight > window.innerHeight - 8) y = ev.clientY - t.offsetHeight - 10;
+  t.style.left = x + "px"; t.style.top = y + "px";
+}
+function tipHide() { $("tip").hidden = true; }
+function hover(node, lines) {
+  node.setAttribute("tabindex", "0");
+  node.addEventListener("pointermove", function (ev) { tipShow(ev, lines()); });
+  node.addEventListener("pointerleave", tipHide);
+  node.addEventListener("focus", function () { var r = node.getBoundingClientRect(); tipShow({ clientX: r.right, clientY: r.top }, lines()); });
+  node.addEventListener("blur", tipHide);
+}
+
+// ---- the range: last night, the last 7 nights, the season (nights you played)
+function played() { return D.nights.filter(function (n) { return n.header.entries > 0; }); }
+function inRange() {
+  var p = played();
+  return RANGE === "night" ? p.slice(-1) : RANGE === "7" ? p.slice(-7) : p;
+}
+function rangeLabel() { return RANGE === "night" ? "last night (" + short(played().slice(-1)[0].date) + ")" : RANGE === "7" ? "the last 7 nights" : "the season"; }
+
+// ---- charts
+/** Round ticks (1, 2, 5 x 10^k) covering [lo, hi], about four of them. */
+function cw(parent) { return Math.max(300, Math.round(parent.getBoundingClientRect().width || 900)); }
+function niceTicks(lo, hi) {
+  if (hi - lo < 1e-9) { lo -= 1; hi += 1; }
+  var raw = (hi - lo) / 4, mag = Math.pow(10, Math.floor(Math.log10(raw))), st = [1, 2, 5, 10].map(function (k) { return k * mag; }).filter(function (k) { return k >= raw; })[0];
+  var out = [];
+  for (var v = Math.floor(lo / st) * st; v <= hi + st * 1e-9; v += st) out.push(Math.round(v / st) * st);
+  if (out[out.length - 1] < hi) out.push(out[out.length - 1] + st);
+  return out;
+}
+/** The running total of per-night values, as one line on its own axis (never a second axis on the columns). */
+function runningTotal(parent, items, dec, unit) {
+  var pts = [], tot = 0;
+  items.forEach(function (d, i) { if (d.value != null) { tot += d.value; pts.push([i, tot, d.label]); } });
+  if (pts.length < 2) return;
+  var tk = niceTicks(Math.min(0, Math.min.apply(null, pts.map(function (p) { return p[1]; }))), Math.max(0, Math.max.apply(null, pts.map(function (p) { return p[1]; }))));
+  el("div", { class: "note" }, parent, "Running total, " + rangeLabel() + ": " + sgn(tot, dec) + unit);
+  var nx = Math.max(1, items.length - 1);
+  lines(parent, [{ name: "Running total", color: "var(--me)", points: pts.map(function (p) { return [p[0], p[1]]; }), dot: true }],
+    { h: 130, aria: "Running total", x: [0, nx], y: [tk[0], tk[tk.length - 1]], yticks: tk, yfmt: function (v) { return sgn(v, dec); },
+      xticks: [[0, items[0].label], [nx, items[items.length - 1].label]],
+      snap: function (v) { var best = pts[0]; pts.forEach(function (p) { if (Math.abs(p[0] - v) < Math.abs(best[0] - v)) best = p; }); return best[0]; },
+      tip: function (x) { var p = pts.filter(function (q) { return q[0] === x; })[0]; return [sgn(p[1], dec) + unit, "running total through " + p[2]]; } });
+}
+/** Per-night columns around zero (one axis), positive in --me, negative in --neg; marks below the axis label which
+    side you took. items: [{label, value, tip: [..], mark}] */
+function columns(parent, items, opts) {
+  var W = cw(parent), H = 190, L = 44, R = 8, T = 10, B = 34;
+  var vals = items.map(function (d) { return d.value; }).filter(function (v) { return v != null; });
+  var tk = niceTicks(Math.min(0, Math.min.apply(null, vals.concat([0]))), Math.max(0, Math.max.apply(null, vals.concat([0])))), lo = tk[0], hi = tk[tk.length - 1];
+  var y = function (v) { return T + (hi - v) / (hi - lo) * (H - T - B); };
+  var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": opts.aria || "" }, parent);
+  tk.forEach(function (v) {
+    sv("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "var(--grid)", "stroke-width": 1 }, svg);
+    sv("text", { x: L - 6, y: y(v) + 3, "text-anchor": "end" }, svg, sgn(v, opts.dec == null ? 2 : opts.dec));
+  });
+  sv("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: "var(--field)", "stroke-width": 2 }, svg);
+  var n = items.length, band = (W - L - R) / Math.max(n, 1), bw = Math.min(24, band * 0.6);
+  items.forEach(function (d, i) {
+    var cx = L + band * (i + 0.5), g = sv("g", {}, svg);
+    if (d.value != null) {
+      var y0 = y(0), y1 = y(d.value), top = Math.min(y0, y1), h = Math.max(1, Math.abs(y1 - y0)), r = Math.min(4, h / 2);
+      var up = d.value >= 0, x0 = cx - bw / 2;
+      // 4px rounded data end, square at the baseline
+      var path = up ? "M" + x0 + "," + (top + h) + "V" + (top + r) + "Q" + x0 + "," + top + " " + (x0 + r) + "," + top + "H" + (x0 + bw - r) +
+                      "Q" + (x0 + bw) + "," + top + " " + (x0 + bw) + "," + (top + r) + "V" + (top + h) + "Z"
+                    : "M" + x0 + "," + top + "V" + (top + h - r) + "Q" + x0 + "," + (top + h) + " " + (x0 + r) + "," + (top + h) + "H" + (x0 + bw - r) +
+                      "Q" + (x0 + bw) + "," + (top + h) + " " + (x0 + bw) + "," + (top + h - r) + "V" + top + "Z";
+      sv("path", { d: path, fill: up ? "var(--me)" : "var(--neg)", class: "bar" }, g);
+    }
+    var step = Math.ceil(n / Math.max(4, Math.floor(W / 64)));
+    if ((i % step === 0 && n - 1 - i >= step) || i === n - 1) sv("text", { x: cx, y: H - B + 13, "text-anchor": "middle" }, svg, d.label);
+    if (d.mark) sv("text", { x: cx, y: H - 6, "text-anchor": "middle", style: "fill: var(--ink-2)" }, svg, d.mark);
+    var hit = sv("rect", { x: cx - band / 2, y: T, width: band, height: H - T - B, class: "hit" }, g);
+    hover(hit, function () { return d.tip; });
+  });
+  return svg;
+}
+
+/** Lines on one axis. series: [{name, color, points: [[x, y]], width}], x and y domains given. */
+function lines(parent, series, opts) {
+  var W = cw(parent), H = opts.h || 200, L = 44, R = 10, T = 10, B = 26;
+  var x = function (v) { return L + (v - opts.x[0]) / (opts.x[1] - opts.x[0]) * (W - L - R); };
+  var y = function (v) { return T + (opts.y[1] - v) / (opts.y[1] - opts.y[0]) * (H - T - B); };
+  var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": opts.aria || "" }, parent);
+  opts.yticks.forEach(function (v) {
+    sv("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "var(--grid)", "stroke-width": 1 }, svg);
+    sv("text", { x: L - 6, y: y(v) + 3, "text-anchor": "end" }, svg, opts.yfmt(v));
+  });
+  opts.xticks.forEach(function (t) { sv("text", { x: x(t[0]), y: H - 8, "text-anchor": "middle" }, svg, t[1]); });
+  series.forEach(function (s) {
+    if (!s.points.length) return;
+    sv("path", { d: s.points.map(function (p, i) { return (i ? "L" : "M") + x(p[0]) + "," + y(p[1]); }).join(""), fill: "none",
+                 stroke: s.color, "stroke-width": s.width || 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    var last = s.points[s.points.length - 1];
+    if (s.dot) sv("circle", { cx: x(last[0]), cy: y(last[1]), r: 4, fill: s.color, stroke: "var(--surface)", "stroke-width": 2 }, svg);
+  });
+  // crosshair + one tooltip with every series at that x
+  var cross = sv("line", { y1: T, y2: H - B, stroke: "var(--axis)", "stroke-width": 1, visibility: "hidden" }, svg);
+  var hit = sv("rect", { x: L, y: T, width: W - L - R, height: H - T - B, class: "hit" }, svg);
+  hit.addEventListener("pointermove", function (ev) {
+    var b = svg.getBoundingClientRect(), vx = opts.x[0] + ((ev.clientX - b.left) / b.width * W - L) / (W - L - R) * (opts.x[1] - opts.x[0]);
+    var xs = opts.snap(vx);
+    cross.setAttribute("x1", x(xs)); cross.setAttribute("x2", x(xs)); cross.setAttribute("visibility", "visible");
+    tipShow(ev, opts.tip(xs));
+  });
+  hit.addEventListener("pointerleave", function () { cross.setAttribute("visibility", "hidden"); tipHide(); });
+  return svg;
+}
+
+function legend(parent, items) {
+  var lg = el("div", { class: "legend" }, parent);
+  items.forEach(function (it) { var s = el("span", {}, lg); el("i", { class: it.line ? "ln" : "", style: "background:" + it.color }, s); s.appendChild(document.createTextNode(it.name)); });
+}
+function table(parent, head, rows) {
+  var d = el("details", {}, parent); el("summary", {}, d, "Table");
+  var t = el("table", {}, d), tr = el("tr", {}, el("thead", {}, t));
+  head.forEach(function (h) { el("th", {}, tr, h); });
+  var tb = el("tbody", {}, t);
+  rows.forEach(function (r) { var tr2 = el("tr", {}, tb); r.forEach(function (c) { el("td", {}, tr2, c); }); });
+}
+function card(title, def) {
+  var s = el("section", { class: "card" }, $("main"));
+  el("h2", {}, s, title);
+  if (def) el("p", { class: "def" }, s, def);
+  return s;
+}
+function wait(parent, what) { el("div", { class: "wait" }, parent, "Waiting on the contest side: " + what + "."); }
+
+// ---- 0. header
+function header() {
+  var ns = inRange(), s = card("Results", D.defs.header);
+  var sum = function (k) { return ns.reduce(function (a, n) { return a + n.header[k]; }, 0); };
+  var ent = sum("entries"), fees = sum("fees"), won = sum("won"), cash = sum("cashed"), t10 = sum("top10"), t1 = sum("top1");
+  var fcash = ns.reduce(function (a, n) { return a + (n.header.field_cash_rate || 0) * n.header.entries; }, 0) / (ent || 1);
+  var tiles = el("div", { class: "tiles" }, s);
+  [["Entries", String(ent), ns.length + " night" + (ns.length === 1 ? "" : "s")],
+   ["Cash rate", pct(cash / ent, 1), "field " + pct(fcash, 1)],
+   ["Top 10%", String(t10), "expected " + fmt(ent * 0.10, 1) + " (" + fmt(t10 / (ent * 0.10 || 1), 2) + "x)"],
+   ["Top 1%", String(t1), "expected " + fmt(ent * 0.01, 1) + " (" + fmt(t1 / (ent * 0.01 || 1), 2) + "x)"],
+   ["ROI", sgn(100 * (won - fees) / (fees || 1), 1) + "%", "$" + fmt(won, 0) + " back on $" + fmt(fees, 0)]].forEach(function (t) {
+    var d = el("div", { class: "tile" }, tiles); el("div", { class: "label" }, d, t[0]); el("div", { class: "value" }, d, t[1]); el("div", { class: "vs" }, d, t[2]);
+  });
+  table(s, ["Night", "Entries", "Cashed", "Top 10%", "Top 1%", "Fees", "Won"], ns.map(function (n) {
+    var h = n.header; return [n.date, h.entries, h.cashed, h.top10, h.top1, "$" + fmt(h.fees, 0), "$" + fmt(h.won, 0)];
+  }));
+}
+
+// ---- 0b. pod replay: the main read on whether your moves help (season and since the rules; not tied to the range buttons)
+var POD_W = "both";
+try { POD_W = localStorage.getItem("nbaPodWindow") || "both"; } catch (e) { /* storage blocked */ }
+var POD_ROWS = [["b", "vs the button"], ["d", "vs ADP"], ["e", "vs ETR (PM)"], ["f", "vs ETR button"], ["g", "vs ETR + T5"]];   // tier rows: each tier's card
+var POD_ETR = [["f-e", "Button − ETR", "the ETR-tier button minus pure ETR"], ["g-f", "T5 − button", "ETR with the T5 rule minus the ETR-tier button"],
+               ["g-e", "T5 rule", "ETR with the T5 rule minus pure ETR: what the T5 rule adds"],
+               ["fn-f", "No-drop − btn", "the ETR-tier button keeping ETR's T4 PRICEY in T4, minus the ETR-tier button (they drop into T5)"],
+               ["fn-e", "No-drop − ETR", "the ETR-tier button keeping ETR's T4 PRICEY in T4, minus pure ETR"]];
+function podSince(lst, w) {
+  var x = (D.pod_replay.since || {})[lst] || {};
+  return w === "both" ? [x.pm && "PM " + short(x.pm), x.am && "AM " + short(x.am)].filter(Boolean).join(", ") : x[w] ? short(x[w]) : null;
+}
+function podReplay() {
+  var s = card("Pod replay: does your list beat the others?", D.defs.pod), P = D.pod_replay;
+  if (!P) { wait(s, "the pod replay (pod_replay.json)"); return; }
+  var seg = el("div", { class: "seg", role: "group", "aria-label": "Window" }, s);
+  [["both", "Both windows"], ["am", "AM"], ["pm", "PM"]].forEach(function (b) {
+    var bt = el("button", { type: "button", "aria-pressed": String(POD_W === b[0]) }, seg, b[1]);
+    bt.addEventListener("click", function () { POD_W = b[0]; try { localStorage.setItem("nbaPodWindow", POD_W); } catch (e) { /* storage blocked */ } render(); });
+  });
+  var R = P.rows[POD_W] || {}, mine = (P.mine || {})[POD_W] || {};
+  var rows = POD_ROWS.filter(function (r) { return R[r[0]]; }).map(function (r) {
+    var x = R[r[0]];
+    return { key: r[0], label: r[1], top10: x.top10, top1: x.top1, since: podSince(r[0], POD_W) };
+  });
+  el("p", { class: "note" }, s, "Your locked list, replayed: top 10% in " + fmt(mine.top10, 1) + "% of seats (the field: 10%), top 1% in " +
+     fmt(mine.top1, 2) + "% (the field: 1%), " + (mine.nights || 0) + " nights through " + (P.through ? short(P.through) : "–") +
+     ". Each row: your list minus that list, in percentage points; right of zero, yours did better.");
+  legend(s, [{ name: "Season", color: "var(--me)" }, { name: "Since the rules went in", color: "var(--alt)" }, { name: "80% range", color: "var(--ink-2)", line: true },
+             { name: "Zero: no difference", color: "var(--field)", line: true }]);
+  var sn = rows.length ? R[rows[0].key].top10.since : null;
+  el("p", { class: "note" }, s, "Since the rules went in: " + (podSince("b", POD_W) || "–") + " (" + (sn ? sn.nights : 0) + " night" +
+     (sn && sn.nights === 1 ? "" : "s") + (sn && sn.nights < 3 ? "; a range needs 3+, so dots only" : "") + "). Season: every night each list ran.");
+  var cols = el("div", { class: "pod-cols" }, s);
+  [["top10", "Top 10%"], ["top1", "Top 1%"]].forEach(function (k) {
+    var c = el("div", {}, cols);
+    el("div", { class: "sub" }, c, k[1] + ": your list minus each, points");
+    forest(c, rows, k[0]);
+  });
+  table(s, ["Comparison", "Top 10% season (80% range)", "Since (80% range)", "Top 1% season (80% range)", "Since (80% range)"], rows.map(function (r) {
+    var f = function (v) { return !v || v.diff == null ? "–" : sgn(v.diff) + " (" + sgn(v.lo) + " to " + sgn(v.hi) + "), " + v.nights + "n"; };
+    return [r.label, f(r.top10.season), f(r.top10.since) + (r.since ? " from " + r.since : ""), f(r.top1.season), f(r.top1.since)];
+  }));
+  try { podExtra(s, P); } catch (e) { el("p", { class: "note" }, s, "The PM extras couldn't be drawn (" + e.message + ")."); }   // never takes the page down
+}
+/** PM only, under the main read: which ETR version the PM should use, ETR by tier, and top 1% at your real seats. */
+function podExtra(s, P) {
+  var f = function (v) { return !v || v.diff == null ? "–" : sgn(v.diff) + (v.lo == null ? "" : " (" + sgn(v.lo) + " to " + sgn(v.hi) + ")") + ", " + v.nights + "n"; };
+  var two = function (rows, ends) {
+    var cols = el("div", { class: "pod-cols" }, s);
+    [["top10", "Top 10%"], ["top1", "Top 1%"]].forEach(function (k) {
+      var c = el("div", {}, cols);
+      el("div", { class: "sub" }, c, k[1] + ", points");
+      forest(c, rows, k[0], ends);
+    });
+  };
+  var E = P.etr || {}, er = POD_ETR.filter(function (r) { return (E.rows || {})[r[0]]; }).map(function (r) {
+    var x = E.rows[r[0]]; return { key: r[0], label: r[1], full: r[2], top10: x.top10, top1: x.top1, since: E.since ? short(E.since) : null };
+  });
+  if (er.length) {
+    el("div", { class: "sub" }, s, "Which ETR version for the PM");
+    var bd = E.f_vs_board || {}, bk = Object.keys(bd).sort();
+    el("p", { class: "note" }, s, "PM. Each row: the first list minus the second, in points; right of zero, the first did better. Season, and since the PM " +
+       "button went to ETR tiers (" + (E.since ? short(E.since) : "–") + ")." + (bk.length ? " The ETR-tier button rebuilt here matches the board's own PM order at " +
+       bk.map(function (d) { return bd[d] + " of 36 places on " + short(d); }).join(", ") + "." : "") +
+       (E.nodrop_touched ? " Keeping ETR's T4 PRICEY (market T3) in T4 changes " + E.nodrop_touched.players + " players on " + E.nodrop_touched.nights +
+        " of " + E.nodrop_touched.of + " PM nights." : ""));
+    two(er, ["← the second better", "the first better →"]);
+    table(s, ["Comparison", "Top 10% season (80% range)", "Since", "Top 1% season (80% range)", "Since"], er.map(function (r) {
+      return [r.full, f(r.top10.season), f(r.top10.since), f(r.top1.season), f(r.top1.since)];
+    }));
+  }
+  var M = P.my_seats;
+  if (M) {
+    el("div", { class: "sub" }, s, "Top 1% at your real seats: luck or list");
+    el("p", { class: "note" }, s, "Your real teams made top 1% " + M.real + " times in " + M.seats + " lineups (" + M.nights + " nights). Your locked list at the same " +
+       "seats: " + M.list + " (round-6 redraws " + M.draws_lo + "–" + M.draws_hi + "; a count this size swings " + M.poisson[0] + "–" + M.poisson[1] +
+       " by luck). Real minus list: " + sgn(M.real - M.list, 0) + (M.gap_lo != null ? " (80% range " + sgn(M.gap_lo, 0) + " to " + sgn(M.gap_hi, 0) + ")" : "") + ".");
+  }
+}
+/** One row per comparison: season and since, each a dot with its 80% range, around zero. Ranges past the axis end in an arrow. */
+function forest(parent, rows, key, ends) {
+  var W = cw(parent), L = 96, Rr = 12, T = 6, RH = 32, B = 34, H = T + RH * rows.length + B;
+  // The axis fits the season ranges; a since point (few nights) further out than half again that sits at the edge, marked
+  var span = [];
+  rows.forEach(function (r) { var v = r[key]; if (v.season) span.push(v.season.lo, v.season.hi, v.season.diff); });
+  var m0 = Math.max.apply(null, span.filter(function (v) { return v != null; }).map(Math.abs).concat([0.1])), m = m0;
+  rows.forEach(function (r) { var d = r[key].since; if (d && d.diff != null) m = Math.max(m, Math.min(Math.abs(d.diff), m0 * 1.5)); });
+  var tk = niceTicks(-m * 1.05, m * 1.05);
+  var lo = tk[0], hi = tk[tk.length - 1], x = function (v) { return L + (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo) * (W - L - Rr); };
+  var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Pod replay, " + key }, parent);
+  tk.forEach(function (t) {
+    sv("line", { x1: x(t), x2: x(t), y1: T, y2: H - B, stroke: "var(--grid)" }, svg);
+    sv("text", { x: x(t), y: H - B + 13, "text-anchor": "middle" }, svg, sgn(t, Math.abs(hi) < 1 ? 1 : 0));
+  });
+  sv("text", { x: L, y: H - 5 }, svg, ends ? ends[0] : W < 480 ? "← theirs better" : "← that list better");
+  sv("text", { x: W - Rr, y: H - 5, "text-anchor": "end" }, svg, ends ? ends[1] : W < 480 ? "yours better →" : "your list better →");
+  sv("line", { x1: x(0), x2: x(0), y1: T, y2: H - B, stroke: "var(--field)", "stroke-width": 2 }, svg);
+  rows.forEach(function (r, i) {
+    var y0 = T + RH * i, g = sv("g", {}, svg), v = r[key];
+    if (i && (r.key === "c1" || r.key === "d" || r.key === "f")) sv("line", { x1: 0, x2: W, y1: y0, y2: y0, stroke: "var(--line)" }, g);
+    sv("text", { x: 0, y: y0 + RH / 2 + 4, style: "fill: var(--ink-2); font-family: var(--sans); font-size: 12px" }, g, r.label);
+    [[v.season, "var(--me)", -5], [v.since, "var(--alt)", 5]].forEach(function (m) {
+      var d = m[0], yy = y0 + RH / 2 + m[2];
+      if (!d || d.diff == null) return;
+      if (d.lo != null && d.hi != null) {
+        sv("line", { x1: x(d.lo), x2: x(d.hi), y1: yy, y2: yy, stroke: m[1], "stroke-width": 2, "stroke-linecap": "round", opacity: 0.75 }, g);
+        if (d.lo < lo) sv("path", { d: "M" + (x(lo) + 5) + "," + (yy - 4) + "L" + x(lo) + "," + yy + "L" + (x(lo) + 5) + "," + (yy + 4), fill: "none", stroke: m[1], "stroke-width": 1.5 }, g);
+        if (d.hi > hi) sv("path", { d: "M" + (x(hi) - 5) + "," + (yy - 4) + "L" + x(hi) + "," + yy + "L" + (x(hi) - 5) + "," + (yy + 4), fill: "none", stroke: m[1], "stroke-width": 1.5 }, g);
+      }
+      var out = d.diff < lo || d.diff > hi;
+      sv("circle", { cx: x(d.diff), cy: yy, r: 4, fill: out ? "var(--surface)" : m[1], stroke: out ? m[1] : "var(--surface)", "stroke-width": 1.5 }, g);
+      if (out) sv("text", { x: x(d.diff) + (d.diff < lo ? 8 : -8), y: yy + 3.5, "text-anchor": d.diff < lo ? "start" : "end",
+        style: "fill: " + m[1] + "; paint-order: stroke; stroke: var(--surface); stroke-width: 4px" }, g, sgn(d.diff, 1));
+    });
+    var hit = sv("rect", { x: 0, y: y0, width: W, height: RH, class: "hit" }, g);
+    hover(hit, function () {
+      var f = function (d, what) { return !d || d.diff == null ? what + ": –" : what + ": " + sgn(d.diff) + " pts (80% range " + sgn(d.lo) + " to " + sgn(d.hi) + "), " + d.nights + " night" + (d.nights === 1 ? "" : "s"); };
+      return [r.label + (key === "top1" ? ", top 1%" : ", top 10%"), f(v.season, "Season"), f(v.since, "Since " + (r.since || "the rules"))];
+    });
+  });
+}
+
+// ---- 1. finish distribution
+function finish() {
+  var ns = inRange(), s = card("Finish distribution", D.defs.finish);
+  var fins = [].concat.apply([], ns.map(function (n) { return n.finish; }));
+  var bins = new Array(100).fill(0);
+  fins.forEach(function (f) { bins[Math.min(99, Math.floor(f * 100))]++; });
+  var share = bins.map(function (b) { return b / (fins.length || 1); });
+  el("div", { class: "sub" }, s, "Share of your lineups in each 1% band, " + rangeLabel() + " (" + fins.length + " lineups)");
+  legend(s, [{ name: "You", color: "var(--me)" }, { name: "Field (1% in every band)", color: "var(--field)", line: true }]);
+  var W = cw(s), H = 170, L = 44, R = 8, T = 8, B = 24, hi = Math.max(0.03, Math.max.apply(null, share) * 1.1);
+  var y = function (v) { return T + (hi - v) / hi * (H - T - B); }, band = (W - L - R) / 100;
+  var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Finish distribution" }, s);
+  [0, hi / 2, hi].forEach(function (v) { sv("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "var(--grid)" }, svg); sv("text", { x: L - 6, y: y(v) + 3, "text-anchor": "end" }, svg, pct(v, 1)); });
+  share.forEach(function (v, i) {
+    var x0 = L + band * i + 1, h = y(0) - y(v);
+    if (v > 0) sv("rect", { x: x0, y: y(v), width: band - 2, height: h, rx: Math.min(2, h / 2), fill: "var(--me)", class: "bar" }, svg);
+    var hit = sv("rect", { x: L + band * i, y: T, width: band, height: H - T - B, class: "hit" }, svg);
+    hover(hit, function () { return [pct(v, 1) + " of your lineups", "finished in the top " + (i + 1) + "% band (" + i + "-" + (i + 1) + "%)", "field: 1.0%"]; });
+  });
+  sv("line", { x1: L, x2: W - R, y1: y(0.01), y2: y(0.01), stroke: "var(--field)", "stroke-width": 2 }, svg);
+  (W < 600 ? [0, 50, 100] : [0, 25, 50, 75, 100]).forEach(function (p) { sv("text", { x: L + band * p, y: H - 6, "text-anchor": "middle" }, svg, "top " + p + "%"); });
+
+  // Second: how often you reached each line, from the cash line up to the top 0.1%, as a multiple of the field's rate
+  // (1.00x is the field). Cash: your cashes over your entries times each night's field cash rate.
+  var ent = ns.reduce(function (a, n) { return a + n.header.entries; }, 0);
+  var rows = [{ label: "Cash line", n: ns.reduce(function (a, n) { return a + n.header.cashed; }, 0),
+                exp: ns.reduce(function (a, n) { return a + (n.header.field_cash_rate || 0) * n.header.entries; }, 0) }];
+  [[0.10, "Top 10%"], [0.05, "Top 5%"], [0.02, "Top 2%"], [0.01, "Top 1%"], [0.005, "Top 0.5%"], [0.001, "Top 0.1%"]].forEach(function (t) {
+    rows.push({ label: t[1], n: fins.filter(function (f) { return f <= t[0]; }).length, exp: fins.length * t[0] });
+  });
+  rows.forEach(function (r) { r.m = r.exp > 0 ? r.n / r.exp : null; });
+  el("div", { class: "sub" }, s, "How often you reached each line, " + rangeLabel() + ": your finishes over the field's rate (" + ent + " lineups)");
+  legend(s, [{ name: "Above the field", color: "var(--me)" }, { name: "Below the field", color: "var(--neg)" }, { name: "Field (1.00x)", color: "var(--field)", line: true }]);
+  var W2 = cw(s), RH = 26, L2 = 74, R2 = W2 < 600 ? 104 : 150, T2 = 4, H2 = T2 + RH * rows.length + 18;
+  var mx = Math.max(2, Math.ceil(Math.max.apply(null, rows.map(function (r) { return r.m || 0; })) * 1.1 * 2) / 2);
+  var xm = function (v) { return L2 + v / mx * (W2 - L2 - R2); };
+  var svg2 = sv("svg", { viewBox: "0 0 " + W2 + " " + H2, role: "img", "aria-label": "Finishes at each line against the field" }, s);
+  for (var t = 0; t <= mx; t += mx > 4 ? 1 : 0.5) {
+    sv("line", { x1: xm(t), x2: xm(t), y1: T2, y2: H2 - 18, stroke: "var(--grid)" }, svg2);
+    sv("text", { x: xm(t), y: H2 - 5, "text-anchor": "middle" }, svg2, fmt(t, 1) + "x");
+  }
+  rows.forEach(function (r, i) {
+    var y0 = T2 + RH * i, g = sv("g", {}, svg2);
+    sv("text", { x: L2 - 8, y: y0 + RH / 2 + 4, "text-anchor": "end", style: "fill: var(--ink-2)" }, g, r.label);
+    if (r.m != null && r.m > 0) sv("rect", { x: L2, y: y0 + 5, width: Math.max(2, xm(r.m) - L2), height: RH - 10, rx: 3,
+                                           fill: r.m >= 1 ? "var(--me)" : "var(--neg)", class: "bar" }, g);
+    sv("text", { x: W2 - R2 + 8, y: y0 + RH / 2 + 4, style: "fill: var(--ink-2)" }, g,
+       (r.m == null ? "–" : fmt(r.m, 2) + "x") + "  " + r.n + " vs " + fmt(r.exp, 1));
+    var hit = sv("rect", { x: 0, y: y0, width: W2, height: RH, class: "hit" }, g);
+    hover(hit, function () { return [r.label + ": " + (r.m == null ? "–" : fmt(r.m, 2) + "x the field"),
+                                     "you " + r.n + " of " + (i ? fins.length : ent) + " lineups (" + pct(r.n / ((i ? fins.length : ent) || 1), 1) + ")",
+                                     "the field's rate would give " + fmt(r.exp, 1)]; });
+  });
+  sv("line", { x1: xm(1), x2: xm(1), y1: T2, y2: H2 - 18, stroke: "var(--field)", "stroke-width": 2 }, svg2);
+}
+
+// ---- the multiple, or points as the backup
+function hasMult() { return D.contest_side.player_multiples; }
+function pairNight(n, key) {
+  var b = n[key]; if (!b || !b.pairs.length) return null;
+  var v = hasMult() ? b.value : b.pairs.reduce(function (a, p) { return a + p.pts; }, 0) / b.pairs.length;
+  return { v: v, b: b };
+}
+function tallyStr(t) { return t[0] + "-" + t[1] + "-" + t[2]; }
+function sumTally(list) { return list.reduce(function (a, t) { return [a[0] + t[0], a[1] + t[1], a[2] + t[2]]; }, [0, 0, 0]); }
+
+function etrAdp(s, key, label) {
+  var ns = inRange(), items = [], run = [], tot = 0, tl = [];
+  ns.forEach(function (n) {
+    var r = pairNight(n, key);
+    if (!r) { items.push({ label: short(n.date), value: null, tip: [short(n.date), "no pairs ETR and ADP ordered differently"] }); return; }
+    tot += r.v || 0; run.push([items.length, tot]); tl.push(r.b.tally);
+    var side = r.b.mine_etr > r.b.mine_adp ? "E" : r.b.mine_adp > r.b.mine_etr ? "A" : r.b.mine_etr ? "=" : "";
+    items.push({ label: short(n.date), value: r.v, mark: side, tip: [sgn(r.v, hasMult() ? 2 : 1) + (hasMult() ? " top-1% multiple" : " points a pair"),
+      short(n.date) + ": " + r.b.pairs.length + " pair" + (r.b.pairs.length === 1 ? "" : "s") + ", ETR's side " + tallyStr(r.b.tally) + " (W-L-push)",
+      "you sided with ETR on " + r.b.mine_etr + ", with ADP on " + r.b.mine_adp].concat(r.b.pairs.slice(0, 4).map(function (p) {
+        return p.etr + " (ETR) vs " + p.adp + " (ADP): " + sgn(p.pts, 1) + " pts" + (p.mult != null ? ", " + sgn(p.mult) + "x" : ""); })) });
+  });
+  el("div", { class: "sub" }, s, label + ": ETR's first minus ADP's first, per night, " + rangeLabel() + (hasMult() ? " (top-1% multiple)" : " (points a pair: the backup until the multiples land)"));
+  legend(s, [{ name: "ETR's side better", color: "var(--me)" }, { name: "ADP's side better", color: "var(--neg)" }, { name: "Zero: no difference", color: "var(--field)", line: true }]);
+  columns(s, items, { aria: label, dec: hasMult() ? 2 : 1 });
+  if (RANGE !== "night") runningTotal(s, items, hasMult() ? 2 : 1, hasMult() ? "" : " points a pair, summed");
+  el("p", { class: "note" }, s, "Letters under the bars: the side your PM board took (E = ETR, A = ADP). Tally, ETR's side: " + tallyStr(sumTally(tl)) +
+     " (win or loss at 3+ points, push under 3). Running total: " + sgn(tot, hasMult() ? 2 : 1) + ".");
+  table(s, ["Night", "Pairs", "ETR's first", "ADP's first", "Points", "Multiple", "Your side"], [].concat.apply([], ns.map(function (n) {
+    return (n[key] ? n[key].pairs : []).map(function (p) { return [n.date, "", p.etr, p.adp, sgn(p.pts, 1), p.mult == null ? "–" : sgn(p.mult), p.mine || "–"]; }); })));
+}
+
+// ---- 2. the tiers: one card each, "what to do" first (the pod replay, season), the evidence folded under it
+var FOLD_OPEN = {};
+/** A folded section, drawn the first time it's opened (so its charts get the real width); stays open across redraws. */
+function fold(parent, title, draw) {
+  var d = el("details", { class: "fold" }, parent), done = false;
+  el("summary", {}, d, title);
+  var body = el("div", {}, d);
+  var go = function () { if (!done) { done = true; draw(body); } };
+  d.addEventListener("toggle", function () { FOLD_OPEN[title] = d.open; if (d.open) go(); });
+  if (FOLD_OPEN[title]) { d.open = true; go(); }
+}
+function podCell(w, key) { return (((D.pod_replay || {}).rows || {})[w] || {})[key] || null; }
+/** up / down: the 80% range clear of zero; leanup / leandown: half a point or more, the range crossing zero; flat: under that. */
+function callOf(v) {
+  if (!v || v.diff == null) return null;
+  if (v.lo != null && v.lo > 0) return "up";
+  if (v.hi != null && v.hi < 0) return "down";
+  return Math.abs(v.diff) >= 0.5 ? (v.diff > 0 ? "leanup" : "leandown") : "flat";
+}
+function ptsStr(v) {
+  return sgn(v.diff, 1) + " pts top 10%" + (v.lo != null ? " (80% range " + sgn(v.lo, 1) + " to " + sgn(v.hi, 1) + ")" : "") + ", " + v.nights + " nights";
+}
+function tierAdvice(k) {
+  var out = [], T = "T" + k;
+  [["am", "Morning"], ["pm", "Afternoon"]].forEach(function (w) {
+    var c = podCell(w[0], "c" + k), v = c && c.top10.season, x = callOf(v);
+    if (!x) return;
+    out.push({ w: w[1], cls: x, v: v, text: {
+      up: "Keep making your " + T + " moves: they beat the button's order",
+      down: "Leave " + T + " in the button's order: your moves cost",
+      leanup: "Your " + T + " moves lean helpful, not proven yet",
+      leandown: "Your " + T + " moves lean costly, not proven yet: the button's order is the safer default",
+      flat: "Your " + T + " moves don't change results: no need to spend time on them" }[x] });
+  });
+  var f = podCell("pm", "f" + k), fv = f && f.top10.season, fx = callOf(fv);
+  if (fx) out.push({ w: "Afternoon", cls: fx, v: fv, text: {
+    down: "Put " + T + " in ETR's order: it beat yours",
+    up: "Your " + T + " order beats ETR's: keep it",
+    leandown: "ETR's " + T + " order leans better than yours, not proven yet",
+    leanup: "Your " + T + " order leans better than ETR's, not proven yet",
+    flat: "Your " + T + " order and ETR's do the same" }[fx] });
+  return out;
+}
+function adviceBox(s, k) {
+  var box = el("div", { class: "advice" }, s), a = tierAdvice(k);
+  el("div", { class: "advice-h" }, box, "What to do in T" + k);
+  if (!a.length) { el("p", { class: "note" }, box, "Waiting on the pod replay for this tier."); return; }
+  var ul = el("ul", {}, box);
+  a.forEach(function (x) {
+    var li = el("li", { class: x.cls === "up" || x.cls === "down" ? "" : "flat" }, ul);
+    var small = (x.cls === "up" || x.cls === "down") && Math.abs(x.v.diff) < 1 ? " (a small edge)" : "";
+    el("b", {}, li, x.w + ": "); li.appendChild(document.createTextNode(x.text + small + ". ")); el("span", { class: "num" }, li, ptsStr(x.v));
+  });
+  el("p", { class: "note" }, box, "From the pod replay, season: every real pod replayed off your locked list and off the alternative. A plain call has its " +
+     "80% range clear of zero; \u201clean\u201d crosses zero. ETR's order is the afternoon only.");
+}
+function tierForest(s, k) {
+  var rows = [["am", "c" + k, "AM moves"], ["pm", "c" + k, "PM moves"], ["pm", "f" + k, "PM ETR order"]].filter(function (r) { return podCell(r[0], r[1]); })
+    .map(function (r) { var x = podCell(r[0], r[1]); return { key: r[0] + r[1], label: r[2], top10: x.top10, top1: x.top1, since: podSince(r[1], r[0]) }; });
+  if (!rows.length) return;
+  el("p", { class: "note" }, s, "Your list minus your list with this tier's moves undone (moves), or with this tier in ETR's order; right of zero, yours did better. " +
+     "Blue: season; orange: since the rules went in.");
+  var cols = el("div", { class: "pod-cols" }, s);
+  [["top10", "Top 10%"], ["top1", "Top 1%"]].forEach(function (q) { var c = el("div", {}, cols); el("div", { class: "sub" }, c, q[1] + ", points"); forest(c, rows, q[0]); });
+}
+function tier(k) {
+  var s = card("T" + k + (k === 5 ? " and below the cut" : ""), null);
+  adviceBox(s, k);
+  tierForest(s, k);
+  var def = function (b, t) { if (t) el("p", { class: "def" }, b, t); };
+  if (k === 1 || k === 2) fold(s, "Why: ETR's order vs ADP's in T" + k + ", pair by pair (afternoon)", function (b) { def(b, D.defs["t" + k]); etrAdp(b, "t" + k, "T" + k + ", afternoon"); });
+  if (k === 2) fold(s, "The elite break and your 1/2 and 2/3 turns", t2Groups);
+  if (k === 3 || k === 4) {
+    fold(s, "Why: your T" + k + " moves vs the button, pair by pair", function (b) { def(b, D.defs.t34); movesPairs(b, k); });
+    fold(s, "T" + k + " VALUE / normal / PRICEY", function (b) { movesFlags(b, k); });
+  }
+  if (k === 5) fold(s, "Drafted% groups, round 6 and swaps", function (b) { def(b, D.defs.t5); t5Body(b); });
+}
+
+// ---- 3. the T2 groups
+function t2Groups(s) {
+  el("div", { class: "sub" }, s, "Elite-break teams vs the rest: your share of lineups vs the field's, with the top-1% multiple, " + rangeLabel());
+  if (!D.contest_side.groups_by_night) wait(s, "per-night group multiples (elite-break teams)");
+  else groupBars(s, [["Elite-break teams", "elite-break teams"], ["Other teams", "other teams"]].map(function (g) {
+    return aggGroup(inRange(), g[0], function (n, w) { return n.t2.elite && n.t2.elite[w] ? n.t2.elite[w][g[1]] : null; }); }), "Elite-break teams");
+  el("div", { class: "sub" }, s, "Your 1/2 and 2/3 turn decisions: your share vs the field's, with the top-1% multiple, " + rangeLabel());
+  var per = inRange().filter(function (n) { return Array.isArray(n.t2.turns) && n.t2.turns.length && n.t2.turns[0].mine && n.t2.turns[0].mine.of != null; });
+  var names = [];
+  per.forEach(function (n) { n.t2.turns.forEach(function (c) { if (/turn/.test(c.decision) && names.indexOf(c.decision) < 0) names.push(c.decision); }); });
+  if (!names.length) { wait(s, "per-night turn decisions"); return; }
+  groupBars(s, names.map(function (name) {
+    var mt = 0, mo = 0, ft = 0, fo = 0, w1 = 0, w10 = 0, wt = 0;
+    per.forEach(function (n) { n.t2.turns.forEach(function (c) {
+      if (c.decision !== name) return;
+      mt += c.mine.teams; mo += c.mine.of; ft += c.field.teams; fo += c.field.of;
+      if (c.vs_field_top1 != null) { w1 += c.vs_field_top1 * c.field.teams; w10 += (c.vs_field_top10 || 0) * c.field.teams; wt += c.field.teams; }
+    }); });
+    return { label: name, mine: mo ? mt / mo : null, field: fo ? ft / fo : null, top1: wt ? w1 / wt : null, top10: wt ? w10 / wt : null,
+             tip: ["you " + mt + " of " + mo + " turn lineups, field " + ft + " of " + fo, "multiples weighted by the field's lineups doing it, night by night"] };
+  }), "Turn decisions");
+}
+
+/** One group over the range: share of lineups (yours over your lineups in that window, the field's over all), top-1% and
+    top-10% multiples as total finishes over total expected, both windows together. */
+function aggGroup(ns, label, get) {
+  var ft = 0, fb = 0, mt = 0, mb = 0, f1 = 0, e1 = 0, f10 = 0, e10 = 0, any = false;
+  ns.forEach(function (n) { ["am", "pm"].forEach(function (w) {
+    var b = get(n, w); if (!b || b.share == null) return;
+    any = true;
+    ft += b.teams; fb += b.share ? b.teams / b.share : 0;
+    mt += b.mine ? b.mine.teams : 0; mb += n.header[w] || 0;
+    if (b.top1) { f1 += b.top1[1]; e1 += b.top1[2]; }
+    if (b.top10) { f10 += b.top10[1]; e10 += b.top10[2]; }
+  }); });
+  return { label: label, mine: any && mb ? mt / mb : null, field: any && fb ? ft / fb : null, top1: e1 ? f1 / e1 : null, top10: e10 ? f10 / e10 : null,
+           tip: ["you " + mt + " lineups of " + mb + ", the field " + ft, "top 1%: " + f1 + " finishes against " + fmt(e1, 1) + " expected; top 10%: " + f10 + " against " + fmt(e10, 1)] };
+}
+
+/** Paired horizontal bars, you over the field, with the group's top-1% multiple at the right. */
+function groupBars(s, rows, aria) {
+  legend(s, [{ name: "You", color: "var(--me)" }, { name: "Field", color: "var(--field)" }]);
+  var W = cw(s), rowH = 30, L = Math.min(300, Math.round(W * 0.42)), R = W < 600 ? 74 : 120, H = rows.length * rowH + 10;
+  var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": aria }, s);
+  var mx = Math.max.apply(null, rows.map(function (r) { return Math.max(r.mine || 0, r.field || 0); }).concat([0.1]));
+  var xs = function (v) { return L + v / mx * (W - L - R); };
+  rows.forEach(function (r, i) {
+    var y0 = 6 + i * rowH;
+    sv("text", { x: L - 8, y: y0 + 14, "text-anchor": "end", style: "fill: var(--ink-2); font-family: var(--sans); font-size: 12px" }, svg, r.label);
+    sv("rect", { x: L, y: y0 + 2, width: Math.max(1, xs(r.mine || 0) - L), height: 10, rx: 3, fill: "var(--me)", class: "bar" }, svg);
+    sv("rect", { x: L, y: y0 + 14, width: Math.max(1, xs(r.field || 0) - L), height: 10, rx: 3, fill: "var(--field)", class: "bar" }, svg);
+    sv("text", { x: W - R + 8, y: y0 + 16 }, svg, fmt(r.top1, 2) + "x" + (W < 600 ? "" : " top 1%"));
+    var hit = sv("rect", { x: 0, y: y0, width: W, height: rowH, class: "hit" }, svg);
+    hover(hit, function () { return [fmt(r.top1) + "x top 1% · " + fmt(r.top10) + "x top 10%", r.label + ": you " + pct(r.mine, 1) + ", field " + pct(r.field, 1)].concat(r.tip || []); });
+  });
+  table(s, ["Group", "You", "Field", "Top-1% multiple", "Top-10% multiple"], rows.map(function (r) { return [r.label, pct(r.mine, 1), pct(r.field, 1), fmt(r.top1), fmt(r.top10)]; }));
+}
+
+// ---- 4. T3 and T4: your moves vs the button, pair by pair
+function movesPairs(s, t) {
+  var ns = inRange(), items = [], tot = 0, tl = [], all = [];
+  ns.forEach(function (n) {
+    var b = n["t" + t];
+    if (!b || !b.moves.length) { items.push({ label: short(n.date), value: null, tip: [short(n.date), "no moves against the button"] }); return; }
+    var v = hasMult() ? b.value : b.moves.reduce(function (a, m) { return a + m.pts; }, 0);
+    tot += v || 0; tl.push(b.tally); all = all.concat(b.moves.map(function (m) { return [n.date].concat([m.window, m.up, m.down, sgn(m.pts, 1), m.mult == null ? "–" : sgn(m.mult)]); }));
+    items.push({ label: short(n.date), value: v, tip: [sgn(v, hasMult() ? 2 : 1) + (hasMult() ? " top-1% multiple" : " points"),
+      short(n.date) + ": " + b.moves.length + " move" + (b.moves.length === 1 ? "" : "s") + ", " + tallyStr(b.tally) + " (W-L-push)"].concat(
+      b.moves.slice(0, 5).map(function (m) { return (m.window === "am" ? "AM " : "PM ") + m.up + " over " + m.down + ": " + sgn(m.pts, 1); })) });
+  });
+  el("div", { class: "sub" }, s, "Gained or lost on the pairs your moves changed, per night, " + rangeLabel() + (hasMult() ? " (top-1% multiple)" : " (points: the backup until the multiples land)"));
+  legend(s, [{ name: "Your moves gained", color: "var(--me)" }, { name: "Your moves cost", color: "var(--neg)" }, { name: "Zero: the button's order", color: "var(--field)", line: true }]);
+  columns(s, items, { aria: "T" + t + " moves", dec: hasMult() ? 2 : 0 });
+  if (RANGE !== "night") runningTotal(s, items, hasMult() ? 2 : 0, hasMult() ? "" : " points");
+  el("p", { class: "note" }, s, "Tally: " + tallyStr(sumTally(tl)) + " (won-lost-push; a push is under 3 points). Running total: " + sgn(tot, hasMult() ? 2 : 0) + (hasMult() ? "" : " points") + ".");
+  table(s, ["Night", "Window", "Moved up", "Moved down", "Points", "Multiple"], all);
+}
+function movesFlags(s, t) {
+  el("div", { class: "sub" }, s, "VALUE / normal / PRICEY: your share of lineups vs the field's, each group's top-1% multiple, " + rangeLabel());
+  if (!D.contest_side.groups_by_night) wait(s, "per-night group multiples (VALUE, normal, PRICEY)");
+  else groupBars(s, ["VALUE", "normal", "PRICEY"].map(function (f) {
+    return aggGroup(inRange(), "T" + t + " " + f, function (n, w) { var x = n["t" + t].flags; return x && x[w] ? x[w][f] : null; }); }), "T" + t + " flags");
+}
+
+// ---- 5. T5
+function t5Body(s) {
+  var ns = inRange();
+  el("div", { class: "sub" }, s, "Drafted T5 picks: under 60%, at/over 60%, and T4 PRICEY dropped into T5: your share of lineups vs the field's, top-1% multiple, " + rangeLabel());
+  var haveDrop = D.contest_side.groups_by_night && inRange().some(function (n) { return n.t5.groups && ["am", "pm"].some(function (w) { return n.t5.groups[w] && n.t5.groups[w].dropped; }); });
+  if (!D.contest_side.groups_by_night) wait(s, "per-night T5 groups (under, at/over 60%, T4 PRICEY dropped into T5)");
+  else {
+    groupBars(s, [["Under 60% drafted", "under"], ["At/over 60% drafted", "over"], ["T4 PRICEY (dropped into T5)", "dropped"]].map(function (g) {
+      return aggGroup(inRange(), g[0], function (n, w) { return n.t5.groups && n.t5.groups[w] ? n.t5.groups[w][g[1]] : null; }); }), "T5 groups");
+    if (!haveDrop) wait(s, "the T4 PRICEY (dropped into T5) group, and the 60% groups without those players");
+  }
+  el("div", { class: "sub" }, s, "Your round-6 pick vs the field's average round-6 pick, points, per night");
+  legend(s, [{ name: "Yours better", color: "var(--me)" }, { name: "Yours worse", color: "var(--neg)" }, { name: "Zero: the field's average", color: "var(--field)", line: true }]);
+  var items = ns.map(function (n) {
+    var r = n.t5.round6, v = r.mine != null && r.field != null ? r.mine - r.field : null;
+    return { label: short(n.date), value: v, tip: [sgn(v, 1) + " points", short(n.date) + ": yours " + fmt(r.mine, 1) + " (" + r.mine_n + " lineups), field " + fmt(r.field, 1)] };
+  });
+  columns(s, items, { aria: "Round-6 points", dec: 1 });
+  var m = ns.filter(function (n) { return n.t5.round6.mine != null; });
+  var avg = m.length ? m.reduce(function (a, n) { return a + n.t5.round6.mine - n.t5.round6.field; }, 0) / m.length : null;
+  el("p", { class: "note" }, s, "Average per night, " + rangeLabel() + ": " + sgn(avg, 1) + " points.");
+  el("div", { class: "sub" }, s, "Swaps: your swap list vs what your PM list would have taken");
+  var sw = [].concat.apply([], ns.map(function (n) { return n.t5.swaps.map(function (x) { return [n.date, x.underdog, x.swap_list, x.pm_list, fmt(x.pts_swap, 1), fmt(x.pts_pm, 1), x.differs ? sgn(x.pts_swap - x.pts_pm, 1) : "same"]; }); }));
+  var diff = [].concat.apply([], ns.map(function (n) { return n.t5.swaps.filter(function (x) { return x.differs; }); }));
+  if (!sw.length) el("p", { class: "note" }, s, "No swaps with a swap lock in " + rangeLabel() + ".");
+  else {
+    el("p", { class: "note" }, s, sw.length + " swap" + (sw.length === 1 ? "" : "s") + "; the lists differed on " + diff.length +
+       (diff.length ? ", where the swap list's player scored " + sgn(diff.reduce(function (a, x) { return a + x.pts_swap - x.pts_pm; }, 0) / diff.length, 1) + " a swap" : "") + ".");
+    table(s, ["Night", "Underdog swapped in", "Swap list", "PM list", "Swap pts", "PM pts", "Difference"], sw);
+  }
+}
+
+function render() {
+  document.querySelectorAll(".controls button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.range === RANGE)); });
+  $("main").textContent = "";
+  if (!D || !played().length) return;
+  header(); podReplay(); [1, 2, 3, 4, 5].forEach(tier); finish();   // the headline read, then each tier top to bottom: what to do, then why
+}
+
+var rz = null;
+window.addEventListener("resize", function () { clearTimeout(rz); rz = setTimeout(render, 150); });
+document.querySelectorAll(".controls button").forEach(function (b) {
+  b.addEventListener("click", function () { RANGE = b.dataset.range; try { localStorage.setItem("nbaResultsRange", RANGE); } catch (e) { /* storage blocked */ } render(); });
+});
+
+fetch("analysis/nba/dashboard.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+  D = d;
+  var p = played(), cs = d.contest_side;
+  $("status").textContent = "Through " + (p.length ? p[p.length - 1].date : "–") + " · " + p.length + " nights played · built " + d.generated +
+    " · contest side: " + (cs.player_multiples ? "multiples in" : "multiples pending (charts use points)");
+  render();
+}).catch(function (e) { $("status").textContent = "Couldn't load the results: " + e; });
+</script>
+</body>
+</html>

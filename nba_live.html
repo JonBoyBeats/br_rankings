@@ -34,6 +34,8 @@
 
   .masthead { position: sticky; top: 0; z-index: 30; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: 14px; }
   .mast-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .sportbtns { display: flex; gap: 6px; align-self: center; }
+  .sportbtns button { height: 28px; padding: 0 12px; font-size: 13px; }
   h1 { font-size: 19px; font-weight: 700; letter-spacing: -.015em; margin: 0; white-space: nowrap; }
   .views { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; align-self: center; }
   .views a { font-size: 12.5px; font-weight: 600; padding: 5px 12px; color: var(--muted); text-decoration: none; }
@@ -106,9 +108,14 @@
   /* No exposure loaded: the chip column goes. */
   .list.no-expo .head, .list.no-expo .row { grid-template-columns: 44px minmax(0, 1fr) 74px 64px; }
   .list.no-expo .expo, .list.no-expo .exph { display: none; }
+  /* DraftKings: a value column after the points (points per $1,000 of salary so far, green deeper as it climbs) */
+  .list.dkv .head, .list.dkv .row { grid-template-columns: 44px minmax(0, 1fr) 74px 56px 50px; }
+  .val { font-family: var(--mono); font-size: 13px; text-align: right; border-radius: 4px; padding: 1px 4px; }
+  .val.none { color: var(--muted); }
   @media (max-width: 520px) {
     .head, .row { grid-template-columns: 32px 28px minmax(0, 1fr) 52px 42px; gap: 6px; }
     .list.no-expo .head, .list.no-expo .row { grid-template-columns: 32px minmax(0, 1fr) 52px 42px; }
+    .list.dkv .head, .list.dkv .row { grid-template-columns: 32px minmax(0, 1fr) 48px 40px 40px; }
     .name { font-size: 13px; }
     .fp { font-size: 14px; }
   }
@@ -119,15 +126,8 @@
   <div class="masthead">
     <div class="mast-row">
       <h1>Live</h1>
-      <nav class="views" aria-label="Pages">
-        <a href="/">Home</a>
-        <a href="./">NFL</a>
-        <a href="nba.html">NBA</a>
-        <a href="cbb.html">CBB</a>
-        <a href="cfp.html">CFP</a>
-        <a href="nba_live.html" aria-current="page">Live</a>
-        <a href="/survivor/">Survivor</a>
-      </nav>
+      <div class="sportbtns" id="sportBtns"></div>
+      <nav id="sitenav" data-sport="" data-page="live"></nav><script src="sitenav.js"></script>
     </div>
     <div class="controls">
       <label class="field grow">
@@ -140,6 +140,7 @@
           <option value="adp">ADP</option>
           <option value="fp">UD points</option>
           <option value="expo">Exposure</option>
+          <option value="val" hidden>Value</option>
         </select>
       </label>
       <label class="field" title="From this ADP down, players sort by points instead of ADP (36 is where Underdog parks everyone undrafted)">
@@ -224,10 +225,14 @@ var EXTRA = { FG: "fg", "3PT": "fg3", FT: "ft",
               "fieldGoalsMade-fieldGoalsAttempted": "fg", "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "fg3",
               "freeThrowsMade-freeThrowsAttempted": "ft" };
 
-var state = { slates: [], slate: null, sort: load("brr:live:sort", "fp"), mine: false, open: {}, posted: {}, proj: {}, projBy: { nba: {}, cbb: {} }, cbbRows: {},
+var state = { slates: [], slate: null, sort: load("brr:live:sort", "fp"), mine: false, open: {}, posted: {}, proj: {}, projBy: { nba: {}, cbb: {}, dk: {} }, cbbRows: {},
+              dkRows: {}, dkBuilds: {},
               games: {}, gamesById: {}, box: {}, finals: {}, pulledAt: null, error: null, busy: false,
               field: {}, fieldBusy: {}, draftedOnly: load("brr:live:drafted", true), view: load("brr:live:view", "players"), sim: null };
 function sportOf(s) { return (s && s.sport) || "nba"; }
+/** The sort is kept per kind of slate: NBA, college on Underdog, DraftKings Classic (brr:live:sort:<kind>; the old
+    single brr:live:sort is the default for a kind not yet chosen). */
+function sortKind(s) { return s && s.dk ? "dk" : sportOf(s); }
 
 function $(id) { return document.getElementById(id); }
 function load(key, fallback) { try { var v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; } }
@@ -356,7 +361,57 @@ async function loadSlates() {
     seen[s.slate_id] = 1;
     out.push(s);
   });
+  var dk = await mirror("dk_cbb_morning.json").catch(function () { return { slates: [] }; });
+  (dk.slates || []).forEach(function (d) {
+    var t = new Date(d.start).getTime();
+    if (t < now - 20 * 3600e3 || t > now + 16 * 3600e3) return;
+    out.push(dkSlate(d));
+  });
   return out.sort(function (a, b) { return a.cutoff < b.cutoff ? -1 : 1; });
+}
+
+/* DraftKings CBB Classic (the DK page's slate) as a Live slate: its players carry our ESPN athlete and game ids, so
+   they're matched to box scores like the college slates; points are DraftKings' (dkPoints), and the first column is
+   your exposure across the night's DraftKings portfolios (dkExpo) instead of ADP. */
+function dkSlate(d) {
+  var players = Object.keys(d.players).map(function (id) {
+    var r = d.players[id], sp = String(r.name).split(" ");
+    state.dkRows[id] = r;
+    if (r.status !== "Out" && typeof r.fp_dk === "number") state.projBy.dk[normName(r.name)] = r.fp_dk;
+    return { player_id: id, first_name: sp[0], last_name: sp.slice(1).join(" "), team: r.team, adp: 0, salary: r.salary,
+             injury: r.status && r.status !== "Active" ? r.status : null };
+  });
+  return { sport: "cbb", dk: true, dg: String(d.draft_group_id), day: d.day, slate_id: "dk:" + d.draft_group_id, label: "dk_" + d.draft_group_id,
+           title: "DK Classic", cutoff: d.start, players: players, contests: [] };
+}
+/** Our projection row for a college player: the DK page's for a DraftKings slate, else the Underdog one's. */
+function cbbRow(p) { return state.dkRows[p.player_id] || state.cbbRows[p.player_id]; }
+
+/** Your exposure on a DraftKings slate: the share of your entered lineups (every contest's portfolio, as the DK
+    page picked and kept them) with each player. This device's DK page first, else the saved build in the repo
+    (analysis/cbb/dk/builds). */
+function dkExpo(sl) {
+  var bank = load("dkcbb-bank:" + sl.dg, null), pf = load("dkcbb-pf:" + sl.dg, null), src = "this device's DK page";
+  var lineups = function (k) {          // the DK page's bank, packed ("slot ids|order|tags") or as it was
+    var L = bank.lineups[k];
+    return typeof L === "string" ? L.split("|")[0].split(",") : L && L.ids;
+  };
+  if (!(bank && pf && Object.keys(pf).length)) {
+    var f = state.dkBuilds[sl.dg];
+    if (!f || !f.portfolios || !Object.keys(f.portfolios).length) return null;
+    pf = f.portfolios; src = "the saved build"; lineups = function (k) { return f.pool[k]; };
+  }
+  var counts = {}, n = 0;
+  Object.keys(pf).forEach(function (cid) {
+    pf[cid].forEach(function (k) { var ids = lineups(k); if (!ids) return; n++; ids.forEach(function (id) { counts[id] = (counts[id] || 0) + 1; }); });
+  });
+  return n ? { n: n, counts: counts, src: src } : null;
+}
+/** DraftKings' points for a box line: its scoring, +1.5 a double-double, +3 more a triple-double (cbb_daily.py dk_points). */
+function dkPoints(b) {
+  var s = b.s, tpm = parseFloat(String((b.x && b.x.fg3) || "0").split("-")[0]) || 0;
+  var n10 = ["pts", "reb", "ast", "stl", "blk"].filter(function (k) { return s[k] >= 10; }).length;
+  return Math.round((s.pts + 0.5 * tpm + 1.25 * s.reb + 1.5 * s.ast + 2 * s.stl + 2 * s.blk - 0.5 * s.tov + (n10 >= 2 ? 1.5 : 0) + (n10 >= 3 ? 3 : 0)) * 100) / 100;
 }
 
 function fillSlates() {
@@ -371,19 +426,39 @@ function fillSlates() {
   });
   /* Of the slates being played (locked), the one with your exposures (uploaded here or posted to
      expo.json), else the main slate: a late slate's games are all on the main slate too. */
-  var mine = function (s) { var e = load(expoKey(s.label), null); return !!((e && e.drafts) || state.posted[s.slate_id]); };
+  var mine = function (s) { var e = load(expoKey(s.label), null); return !!((e && e.drafts) || state.posted[s.slate_id] || (s.dk && dkExpo(s))); };
   var played = state.slates.filter(function (s) { return new Date(s.cutoff).getTime() <= now; });
   var choose = played.filter(mine).pop() || played.filter(function (s) { return /_main$/.test(s.label); }).pop() || played.pop();
   if (choose) pick = state.slates.indexOf(choose);
   state.slates.forEach(function (s, i) { if (s.label === keep) pick = i; });
   sel.value = String(pick);
   setSlate(state.slates[pick] || null);
+  sportButtons();
+}
+
+/* A button per sport with a slate (shown with the controls folded too): it goes to that sport's last-viewed slate, else
+   the one fillSlates would choose among its slates (played with your exposure, else the main one, else the latest). */
+function sportButtons() {
+  var sports = [];
+  state.slates.forEach(function (s) { if (sports.indexOf(sportOf(s)) < 0) sports.push(sportOf(s)); });
+  $("sportBtns").innerHTML = sports.length < 2 ? "" : sports.map(function (sp) {
+    return '<button type="button" data-sport="' + sp + '" aria-pressed="' + (sportOf(state.slate) === sp) + '">' + sp.toUpperCase() + "</button>";
+  }).join("");
+}
+function slateForSport(sp) {
+  var list = state.slates.filter(function (s) { return sportOf(s) === sp; }), keep = load("brr:live:slate:" + sp, null), now = Date.now();
+  var kept = list.filter(function (s) { return s.label === keep; })[0];
+  if (kept) return kept;
+  var played = list.filter(function (s) { return new Date(s.cutoff).getTime() <= now; });
+  var mine = function (s) { var e = load(expoKey(s.label), null); return !!((e && e.drafts) || state.posted[s.slate_id] || (s.dk && dkExpo(s))); };
+  return played.filter(mine).pop() || played.filter(function (s) { return /_main$/.test(s.label); }).pop() || played.pop() || list[0];
 }
 
 /** Make a slate the one shown: its sport's usual output is what grade() reads. */
 function setSlate(s) {
   state.slate = s;
-  state.proj = state.projBy[sportOf(s)] || {};
+  if (s) save("brr:live:slate:" + sportOf(s), s.label);
+  state.proj = state.projBy[s && s.dk ? "dk" : sportOf(s)] || {};
 }
 
 // ---------------------------------------------------------------- ESPN
@@ -436,7 +511,7 @@ function boxRows(summ) {
 function slateEvents() {
   var out = {};
   state.slate.players.forEach(function (p) {
-    var r = state.cbbRows[p.player_id];
+    var r = cbbRow(p);
     if (r && r.event) out[r.event] = 1;
     if (r && r.opp) out[r.opp] = 1;
   });
@@ -827,9 +902,22 @@ function render() {
       ex = { at: fx.at, drafts: nMine };
     }
   }
-  host.classList.toggle("no-expo", !ex);
+  if (sl.dk) {
+    var dx = dkExpo(sl);
+    ex = dx ? { drafts: dx.n } : null;
+    share = dx ? function (p) { return (dx.counts[p.player_id] || 0) / dx.n; } : null;
+    of = dx ? dx.n + " DraftKings entries (" + dx.src + ")" : "";
+  }
+  host.classList.toggle("no-expo", !ex || !!sl.dk);     // DraftKings: the exposure is in the first column
+  host.classList.toggle("dkv", !!sl.dk);                 // DraftKings: the value column
+  $("sort").querySelector('option[value="val"]').hidden = !sl.dk;
+  $("sort").querySelector('option[value="adp"]').textContent = sl.dk ? "Salary" : "ADP";
+  $("sort").querySelector('option[value="fp"]').textContent = sl.dk ? "DK points" : "UD points";
+  ["tail", "fee", "me"].forEach(function (id) { $(id).closest(".field").hidden = !!sl.dk; });   // Underdog's controls
+  $("upload").hidden = !!sl.dk;
   // Exposure sort needs exposures; without them it falls back to ADP (the choice is kept for the next slate)
-  var sortBy = state.sort === "expo" && !ex ? "adp" : state.sort;
+  var want = load("brr:live:sort:" + sortKind(sl), state.sort);     // each kind of slate keeps its own sort
+  var sortBy = (want === "expo" && !ex) || (want === "val" && !sl.dk) ? "adp" : want;
   $("sort").querySelector('option[value="expo"]').disabled = !ex;
   $("sort").value = sortBy;
   $("mine").hidden = !ex;
@@ -847,13 +935,13 @@ function render() {
     });
   });
   var rows = sl.players.map(function (p) {
-    var k = normName(p.first_name + " " + p.last_name), cr = cbb ? state.cbbRows[p.player_id] || {} : null;
+    var k = normName(p.first_name + " " + p.last_name), cr = cbb ? cbbRow(p) || {} : null;
     var b = (cr && cr.espn && byId[String(cr.espn)]) || byKey[k + "|" + p.team] || byName[k] || null;
     var g = cr ? state.gamesById[cr.event] || state.games[cr.opp] || null : state.games[p.team] || null;
     // Points once he has a box line: in a live game even before his first full minute (ESPN
     // counts whole minutes, so everyone reads 0 at the tip); in a final one only if he played.
-    var fp = b && !b.out && b.has && (b.s.min > 0 || (g && g.state === "in")) ? udPoints(b.s) : null;
-    return { p: p, b: b, g: g, fp: fp, f: share ? share(p) : 0 };
+    var fp = b && !b.out && b.has && (b.s.min > 0 || (g && g.state === "in")) ? (sl.dk ? dkPoints(b) : udPoints(b.s)) : null;
+    return { p: p, b: b, g: g, fp: fp, f: share ? share(p) : 0, val: sl.dk && fp != null && p.salary ? fp / (p.salary / 1000) : null };
   });
   // the field's picks: only players it drafted, before grading, so each round is judged against who was taken
   var fld = state.field[sl.slate_id] || null, rowsByApp = {};
@@ -866,7 +954,7 @@ function render() {
   $("drafted").setAttribute("aria-pressed", String(!!(fld && state.draftedOnly)));
   rows.forEach(function (r) { r.own = fld ? fld.pct[r.p.appearance_id] || 0 : null; });
   if (fld && state.draftedOnly) rows = rows.filter(function (r) { return r.own >= FIELD_MIN; });
-  grade(rows);
+  if (!sl.dk) grade(rows);       // the green is by ADP round: Underdog only
   if (ex && state.mine) rows = rows.filter(function (r) { return r.f; });
   /* By ADP up to the last pick of the draft. Underdog parks everyone nobody is drafting at
      exactly that ADP (36.0), so from it on there's no order to keep: they sort by points.
@@ -875,7 +963,9 @@ function render() {
   if (document.activeElement !== $("tail")) $("tail").value = last;
   function byFp(a, b) { return (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp) || a.p.adp - b.p.adp; }
   function byExpo(a, b) { return b.f - a.f || a.p.adp - b.p.adp; }
-  rows.sort(sortBy === "fp" ? byFp : sortBy === "expo" ? byExpo : function (a, b) {
+  function byVal(a, b) { return (b.val == null ? -1 : b.val) - (a.val == null ? -1 : a.val) || (b.p.salary || 0) - (a.p.salary || 0); }
+  function bySalary(a, b) { return (b.p.salary || 0) - (a.p.salary || 0) || (b.fp == null ? -1 : b.fp) - (a.fp == null ? -1 : a.fp); }
+  rows.sort(sortBy === "fp" ? byFp : sortBy === "expo" ? byExpo : sortBy === "val" ? byVal : sl.dk ? bySalary : function (a, b) {
     var ta = a.p.adp >= last, tb = b.p.adp >= last;
     return ta !== tb ? (ta ? 1 : -1) : ta ? byFp(a, b) : a.p.adp - b.p.adp;
   });
@@ -885,14 +975,15 @@ function render() {
   } else {
   var head = document.createElement("div");
   head.className = "head";
-  head.innerHTML = '<span class="r">ADP</span><span class="exph">Exp</span><span>Player</span><span class="r">Game</span><span class="r" title="Underdog fantasy points">Pts</span>';
+  head.innerHTML = sl.dk ? '<span class="r" title="Your exposure: the share of your DraftKings entries with him">Exp</span><span>Player</span><span class="r">Game</span><span class="r" title="DraftKings fantasy points">Pts</span><span class="r" title="Value so far: DraftKings points per $1,000 of salary (green deepens from 1x to 6x)">Val</span>'
+    : '<span class="r">ADP</span><span class="exph">Exp</span><span>Player</span><span class="r">Game</span><span class="r" title="Underdog fantasy points">Pts</span>';
   host.appendChild(head);
   var prevRound = null;
   var simShare = sportOf(state.slate) === "nba" && fld && fld.users ? fieldSim(fld, rowsByApp).share : null;
   rows.forEach(function (r) {
     var p = r.p, el = document.createElement("div");
     el.className = "row";
-    if (sortBy === "adp" && prevRound != null && r.round !== prevRound) el.classList.add("rstart");
+    if (sortBy === "adp" && !sl.dk && prevRound != null && r.round !== prevRound) el.classList.add("rstart");
     prevRound = r.round;
     if (simShare) {
       var sh = simShare[p.appearance_id] || 0;
@@ -912,7 +1003,12 @@ function render() {
           (r.lead.played > 0 ? ")" : ", his usual: not started)")
         : ", his round's best");
     }
-    var adp = document.createElement("span"); adp.className = "adp r"; adp.textContent = p.adp.toFixed(1); el.appendChild(adp);
+    var adp = document.createElement("span"); adp.className = "adp r";
+    if (sl.dk) {
+      adp.textContent = ex ? (r.f ? Math.round(100 * r.f) + "%" : "–") : "";
+      if (r.f) { adp.style.color = "var(--ink)"; adp.style.fontWeight = "600"; adp.title = Math.round(r.f * 100) + "% of your " + of; }
+    } else adp.textContent = p.adp.toFixed(1);
+    el.appendChild(adp);
     var chip = document.createElement("span"); chip.className = "expo";
     if (ex) {
       var c = expoColor(r.f);
@@ -926,6 +1022,7 @@ function render() {
     nm.appendChild(document.createTextNode(p.first_name + " " + p.last_name));
     var tm = document.createElement("span"); tm.className = "tm"; tm.textContent = p.team || "";
     nm.appendChild(tm);
+    if (sl.dk && p.salary) { var sal = document.createElement("span"); sal.className = "tm"; sal.textContent = (p.salary / 1000).toFixed(1) + "k"; nm.appendChild(sal); }
     if (r.own != null && r.own < 0.995) {
       var dr = document.createElement("span"); dr.className = "tm";
       dr.textContent = Math.round(r.own * 100) + "%";
@@ -942,6 +1039,17 @@ function render() {
     fp.className = "fp" + (r.fp == null ? " none" : "");
     fp.textContent = r.fp != null ? r.fp.toFixed(1) : dnp ? "DNP" : "–";
     el.appendChild(fp);
+    if (sl.dk) {
+      var vl = document.createElement("span");
+      vl.className = "val" + (r.val == null ? " none" : "");
+      vl.textContent = r.val != null ? r.val.toFixed(1) + "x" : "–";
+      if (r.val != null) {
+        var a = Math.max(0, Math.min(1, (r.val - 1) / 5));
+        if (a > 0) vl.style.background = "rgba(46,170,96," + (0.1 + 0.55 * a).toFixed(2) + ")";
+        vl.title = r.fp.toFixed(1) + " points on a $" + p.salary.toLocaleString() + " salary";
+      }
+      el.appendChild(vl);
+    }
     if (state.open[p.player_id]) {
       el.classList.add("open");
       var d = document.createElement("div"); d.className = "detail"; d.innerHTML = detailHtml(r);
@@ -950,12 +1058,12 @@ function render() {
     el.addEventListener("click", function () { state.open[p.player_id] = !state.open[p.player_id]; render(); });
     host.appendChild(el);
   });
-  if (!rows.length) host.insertAdjacentHTML("beforeend", '<div class="empty">None of your drafted players are on this slate.</div>');
+  if (!rows.length) host.insertAdjacentHTML("beforeend", '<div class="empty">None of your ' + (sl.dk ? "entered" : "drafted") + ' players are on this slate.</div>');
   }
 
   var live = Object.keys(state.games).some(function (t) { return state.games[t].state === "in"; });
   var msg = state.pulledAt ? "Updated " + pt(state.pulledAt, { hour: "numeric", minute: "2-digit", second: "2-digit" }) + " PT" : "Fetching ESPN…";
-  var legend = state.pulledAt ? (live ? " · refreshes every " + EVERY + "s while open" : "") +
+  var legend = state.pulledAt && sl.dk ? (live ? " · refreshes every " + EVERY + "s while open" : "") : state.pulledAt ? (live ? " · refreshes every " + EVERY + "s while open" : "") +
     (sportOf(state.slate) === "nba" && fld && fld.users
       ? " · green: how often he is in the projected top-1% lineups (" + SIMS + " runs of the rest of the night over the field's lineups" +
         (state.projFrom ? ", ETR's median from today's file for what's left" : "") + "), deeper the more often, full at " +
@@ -963,6 +1071,7 @@ function render() {
       : " · dark green: his round's leader so far (players yet to start count at their usual" +
         (state.projFrom ? ", ETR's median from today's file" : "") + "); light green: ahead of his round's usual and close behind, within " + CLOSE + " points at the final horn (5 at the half)") : "";
   var hm = { hour: "numeric", minute: "2-digit" };
+  if (sl.dk) msg += ex ? " · exposure: " + of : " · no DraftKings portfolios found: pick them on the DK page, or Save build there and send it in";
   if (fld) msg += " · field: " + fld.title + ", " + fld.entries.toLocaleString() + " teams" + (state.draftedOnly ? ", drafted players only" : "") +
     " (read " + pt(new Date(fld.at), hm) + (state.fieldNext ? ", again at " + pt(new Date(state.fieldNext), hm) + " after that tip's swaps" : "") + ")";
   else if (state.fieldError) msg += " · couldn't read the field (" + state.fieldError + ")";
@@ -973,13 +1082,20 @@ function render() {
 }
 
 // ---------------------------------------------------------------- wiring
+$("sportBtns").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-sport]"), s = b && slateForSport(b.dataset.sport);
+  if (!s || s === state.slate) return;
+  $("slate").value = String(state.slates.indexOf(s));
+  $("slate").dispatchEvent(new Event("change"));
+});
 $("slate").addEventListener("change", function () {
   setSlate(state.slates[Number(this.value)]);
+  sportButtons();
   save("brr:live:slate", state.slate.label);
   state.games = {}; state.box = {}; state.finals = {};
   render(); pull();
 });
-$("sort").addEventListener("change", function () { state.sort = this.value; save("brr:live:sort", state.sort); render(); });
+$("sort").addEventListener("change", function () { save("brr:live:sort:" + sortKind(state.slate), this.value); render(); });
 $("tail").addEventListener("change", function () {
   var v = Number(this.value);
   if (state.slate) save("brr:live:tail:" + state.slate.slate_id, isFinite(v) && v > 0 && v < TEAMS * ROUNDS ? v : null);
@@ -1046,6 +1162,10 @@ function etrUsual() {
   }).catch(function () {}).then(function () { render(); if (sportOf(state.slate) === "cbb") pull(); });
   state.posted = await fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { return d.slates || {}; }).catch(function () { return {}; });
+  await Promise.all(state.slates.filter(function (s) { return s.dk; }).map(function (s) {
+    return fetch("analysis/cbb/dk/builds/dk_bank_" + s.day + "_" + s.dg + ".json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) state.dkBuilds[s.dg] = d; }).catch(function () {});
+  }));
   fillSlates();
   render();
   pull();

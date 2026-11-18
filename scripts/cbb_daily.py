@@ -13,14 +13,28 @@ For every CBB slate that locked, each player our projection covered on its teams
             points (the NBA's scoring: points 1, rebounds 1.2, assists 1.5, steals and
             blocks 3, turnovers -1); 0 for a player whose team played without him
 
-  python3 scripts/cbb_daily.py record --mirror ../br-adp-mirror [--since 2026-11-03] [--rebuild]
+DraftKings (analysis/cbb/dk/<date>_<draft group>.csv): every player we projected on each DraftKings Classic slate
+that started, from the mirror's dk_cbb_morning.json as it stood just before the first game (the rows the DK page
+used): salary, fp_dk (ours in DraftKings points, with the double-double bonus at p_dd), fp_base_dk (without
+EvanMiya), dk_avg (DraftKings' season average, the number the field sees), min_proj (after the 200-minute cap) and
+min_raw (before), miss_dk and fragile (fragility), bpr_rank, status, own (projected ownership, dk_cbb_field.json);
+then the box score and actual_dk: DraftKings' scoring, +1.5 a double-double (two of points, rebounds, assists,
+steals, blocks at 10+), +3 a triple-double on top (DraftKings lists both bonuses; whether they stack is
+unconfirmed, and triple-doubles were 7 in 37,405 college player-games of 2025-26). Then, for the projection audit
+(dk_eval.py audit): dk_last5 (his last 5 games' DraftKings points before the slate, from 2026-11-17 on), min_last5 and
+min_avg (his minutes, last 5 and this season, for the minutes-change split).
+
+  python3 scripts/cbb_daily.py record --mirror ../br-adp-mirror [--since 2026-11-03] [--rebuild]   (both sites)
   python3 scripts/cbb_daily.py report [--since 2026-11-03] [--date 2026-11-03]
 
-report grades last night and every slate on file: mean error and bias of ours, ours
+report grades both sites. Underdog: last night and every slate on file: mean error and bias of ours, ours
 without EvanMiya and Underdog's on the players who played, overall, drafted only and by
 src; where ours missed (minutes, and points per minute in the minutes played); and last
-night's misses of MISS_PTS+. EvanMiya's November trial is decided on it; the college
-morning report (.claude/skills/cbb-morning-report) reads it.
+night's misses of MISS_PTS+. DraftKings: ours, ours without EvanMiya and DraftKings' average against what
+DraftKings paid, by build and salary; fragility (expected against actual miss, fragile against the rest);
+double-doubles expected against had; EvanMiya's rank bands; the misses. Then the one projection under both:
+its minutes and points per minute over every player either site carried. EvanMiya's November trial is
+decided on it; the college morning report (.claude/skills/cbb-morning-report) reads it.
 """
 import argparse
 import csv
@@ -36,11 +50,23 @@ sys.path.insert(0, os.path.dirname(__file__))
 from nba_daily import ET, Mirror, UTC, at_pt, fetch_json, iso, pacific_day  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "analysis", "cbb", "daily")
+DK_OUT = os.path.join(os.path.dirname(__file__), "..", "analysis", "cbb", "dk")
 ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball"
 MISS_PTS = 8                # a miss worth writing up: ours off by this many points
 SCORING = {"PTS": 1, "REB": 1.2, "AST": 1.5, "STL": 3, "BLK": 3, "TO": -1}
 COLS = ["date", "slate", "player_id", "name", "team", "adp_close", "src", "fp", "fp_base", "ud", "min_proj", "ppm_proj",
         "miya_ppm", "bpr_rank", "missed", "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "actual"]
+DK_COLS = ["date", "draft_group", "dk_id", "espn", "name", "team", "game", "position", "salary", "src", "status", "fp_dk", "fp_base_dk",
+           "dk_avg", "value", "own", "fp", "min_proj", "min_raw", "ppm_proj", "miss_dk", "fragile", "p_dd", "bpr_rank", "missed",
+           "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "tpm", "dd", "actual", "actual_dk",
+           "dk_last5", "min_last5", "min_avg"]
+
+
+def dk_points(a):
+    """DraftKings' points for a box line, bonuses in (see the docstring)."""
+    n10 = sum(a[k] >= 10 for k in ("pts", "reb", "ast", "stl", "blk"))
+    return round(a["pts"] + 0.5 * a["tpm"] + 1.25 * a["reb"] + 1.5 * a["ast"] + 2 * a["stl"] + 2 * a["blk"] - 0.5 * a["tov"]
+                 + 1.5 * (n10 >= 2) + 3 * (n10 >= 3), 2)
 
 
 def slates(mirror, since, until):
@@ -76,10 +102,13 @@ def box(event):
                 continue
             try:
                 row = {"min": float(v["MIN"]), "pts": float(v["PTS"]), "reb": float(v["REB"]), "ast": float(v["AST"]),
-                       "stl": float(v["STL"]), "blk": float(v["BLK"]), "tov": float(v["TO"])}
+                       "stl": float(v["STL"]), "blk": float(v["BLK"]), "tov": float(v["TO"]),
+                       "tpm": float(str(v.get("3PT") or "0-0").split("-")[0] or 0)}
             except (KeyError, ValueError):
                 continue
             row["actual"] = round(sum(row[k] * w for k, w in zip(("pts", "reb", "ast", "stl", "blk", "tov"), SCORING.values())), 1)
+            row["actual_dk"] = dk_points(row)
+            row["dd"] = int(sum(row[k] >= 10 for k in ("pts", "reb", "ast", "stl", "blk")) >= 2)
             out[str(a["athlete"]["id"])] = row
     return out, teams
 
@@ -146,10 +175,69 @@ def record(a):
             print("  %s: not ready (no projection at lock, or a game not final)" % slate["label"])
             continue
         with open(path, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=COLS)
+            w = csv.DictWriter(f, fieldnames=COLS, extrasaction="ignore")
             w.writeheader()
             w.writerows(rows)
         print("  wrote %s: %d players, %d played" % (os.path.basename(path), len(rows), sum(1 for r in rows if r["min"])))
+    record_dk(a, mirror, since, now)
+
+
+def dk_slates(mirror, since, until):
+    """Every DraftKings slate that started in [since, until]: {draft group: (start, its entry in dk_cbb_morning.json
+    as it stood last before the start, projected ownership then)}."""
+    found = {}
+    for t, sha in mirror.versions("dk_cbb_morning.json", since - dt.timedelta(days=2), until):
+        for s in mirror.show(sha, "dk_cbb_morning.json").get("slates", []):
+            start = iso(s["start"])
+            if since <= start <= until and t < start and not s.get("locked"):
+                found[s["draft_group_id"]] = (start, s, t)
+    out = {}
+    for g, (start, s, t) in found.items():
+        own = {}
+        for ft, fsha in mirror.versions("dk_cbb_field.json", t - dt.timedelta(days=1), start):
+            own = (mirror.show(fsha, "dk_cbb_field.json").get("slates", {}).get(str(g)) or {}).get("own", own)
+        out[g] = (start, s, own)
+    return out
+
+
+def record_dk(a, mirror, since, now):
+    os.makedirs(DK_OUT, exist_ok=True)
+    for g, (start, s, own) in sorted(dk_slates(mirror, since, now - dt.timedelta(hours=3)).items()):
+        path = os.path.join(DK_OUT, "%s_%s.csv" % (pacific_day(start), g))
+        if os.path.exists(path) and not a.rebuild:
+            continue
+        boxes, out, ready = {}, [], True
+        for pid, r in sorted(s["players"].items(), key=lambda x: -(x[1].get("fp_dk") or 0)):
+            ev = r.get("event")
+            if not ev or not r.get("espn"):
+                continue                        # not matched to ESPN: his night can't be read
+            if ev not in boxes:
+                boxes[ev] = box(ev)
+            if boxes[ev] is None:
+                ready = False
+                break
+            played, _ = boxes[ev]
+            b = played.get(str(r["espn"])) or {"min": 0, "pts": 0, "reb": 0, "ast": 0, "stl": 0, "blk": 0, "tov": 0, "tpm": 0,
+                                                 "actual": 0, "actual_dk": 0, "dd": 0}
+            out.append({"date": pacific_day(start), "draft_group": g, "dk_id": pid, "espn": r["espn"], "name": r.get("name"),
+                        "team": r.get("team"), "game": r.get("game"), "position": r.get("position"), "salary": r.get("salary"), "src": r.get("src"),
+                        "status": r.get("status", ""), "fp_dk": r.get("fp_dk"), "fp_base_dk": r.get("fp_base_dk", ""),
+                        "dk_avg": r.get("dk_avg"), "value": r.get("value"), "own": own.get(pid, ""), "fp": r.get("fp", ""),
+                        "min_proj": r.get("min", ""), "min_raw": r.get("min_raw", r.get("min", "")), "ppm_proj": r.get("ppm", ""),
+                        "miss_dk": r.get("miss_dk", ""), "fragile": int(bool(r.get("fragile"))), "p_dd": r.get("p_dd", ""),
+                        "bpr_rank": r.get("bpr_rank", ""), "missed": r.get("missed", ""), "spread": r.get("spread", ""),
+                        "ou": r.get("ou", ""), **b,
+                        # the projection audit's benchmark and the minutes-change split (dk_eval.py audit)
+                        "dk_last5": r.get("dk_last5", ""), "min_avg": r.get("min_avg", ""),
+                        "min_last5": round(sum(r["min_last5"]) / len(r["min_last5"]), 1) if r.get("min_last5") else ""})
+        if not ready or not out:
+            print("  DK %s: not ready (a game not final, or no projection before the start)" % g)
+            continue
+        with open(path, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=DK_COLS, extrasaction="ignore")
+            w.writeheader()
+            w.writerows(out)
+        print("  wrote dk/%s: %d players, %d played" % (os.path.basename(path), len(out), sum(1 for r in out if r["min"])))
 
 
 def num(v):
@@ -173,8 +261,10 @@ def report(a):
             rows += list(csv.DictReader(open(f)))
     nights = sorted({r["date"] for r in rows})
     if not nights:
-        print("CBB record: nothing on file yet")
+        print("CBB record (Underdog): nothing on file yet")
+        report_dk(a, rows)
         return
+    print("=" * 30 + " UNDERDOG " + "=" * 30)
     last = a.date or nights[-1]
     night = [r for r in rows if r["date"] == last]
     print("CBB record: %d player-nights, %d slate days (%s); last night %s" % (len(rows), len(nights), ", ".join(nights), last))
@@ -247,6 +337,103 @@ def report(a):
     dnp = [r for r in night if not num(r["min"]) and r["adp_close"]]
     if dnp:
         print("Drafted and didn't play last night: " + ", ".join("%s %s" % (r["name"], r["team"]) for r in dnp))
+    report_dk(a, rows)
+
+
+def report_dk(a, ud_rows):
+    """DraftKings' slates, then the one projection under both sites (see the docstring)."""
+    rows = []
+    for f in sorted(glob.glob(os.path.join(DK_OUT, "*.csv"))):
+        if not a.since or os.path.basename(f) >= a.since:
+            rows += list(csv.DictReader(open(f)))
+    print("\n" + "=" * 30 + " DRAFTKINGS " + "=" * 30)
+    nights = sorted({r["date"] for r in rows})
+    if not nights:
+        print("DraftKings record: nothing on file yet")
+        return
+    last = a.date if a.date in nights else nights[-1]
+    night = [r for r in rows if r["date"] == last]
+    print("DraftKings record: %d player-nights, %d slate days (%s); last night %s" % (len(rows), len(nights), ", ".join(nights), last))
+
+    def grade(label, rs, played=True):
+        rs = [r for r in rs if num(r["fp_dk"]) is not None and (num(r["min"]) or not played) and r["status"] != "Out"]
+        if not rs:
+            return
+        parts = []
+        for k, name in (("fp_dk", "ours"), ("fp_base_dk", "ours w/o Miya"), ("dk_avg", "DK avg")):
+            err = [(num(r[k]) if num(r[k]) is not None else num(r["fp_dk"])) - num(r["actual_dk"]) for r in rs]
+            parts.append("%s %.2f (%+.2f)" % (name, S.mean(abs(e) for e in err), S.mean(err)))
+        print("  %-36s n=%-4d mean error (bias): %s" % (label, len(rs), " | ".join(parts)))
+
+    for title, rs in (("LAST NIGHT (%s)" % last, night), ("SEASON (%d nights)" % len(nights), rows)):
+        print("\n%s. DraftKings points, ours (bonus at its chance) against what DraftKings paid; DK avg: its season"
+              " average, what the field sees:" % title)
+        grade("played", rs)
+        grade("everyone not tagged Out (sat = 0)", rs, played=False)
+        for lo, hi in ((6000, 99999), (4000, 5999), (0, 3999)):
+            grade("played, salary " + ("$%s+" % format(lo, ",") if hi > 9999 else "$%s-%s" % (format(lo, ","), format(hi, ","))),
+                  [r for r in rs if lo <= num(r["salary"]) <= hi])
+        by = defaultdict(list)
+        for r in rs:
+            by[r["src"]].append(r)
+        for k in sorted(by):
+            grade("played, built from: " + k, by[k])
+
+        pl = [r for r in rs if num(r["min"]) and num(r["miss_dk"]) is not None and r["status"] != "Out"]
+        if pl:
+            print("  Fragility: expected miss %.2f against actual %.2f (n=%d)" % (
+                S.mean(num(r["miss_dk"]) for r in pl), S.mean(abs(num(r["fp_dk"]) - num(r["actual_dk"])) for r in pl), len(pl)))
+            for name, v in (("fragile", [r for r in pl if r["fragile"] == "1"]), ("the rest", [r for r in pl if r["fragile"] != "1"])):
+                v = [r for r in v if num(r["fp_dk"]) >= 10]
+                if v:
+                    print("    %-9s projected 10+: missed by %.0f%% of their projection (n=%d)  [2025-26: fragile 49%%, rest 35-36%%]" % (
+                        name, 100 * sum(abs(num(r["fp_dk"]) - num(r["actual_dk"])) for r in v) / sum(num(r["fp_dk"]) for r in v), len(v)))
+        pd = [r for r in rs if num(r["p_dd"]) is not None and r["status"] != "Out"]
+        if pd:
+            print("  Double-doubles: %.1f expected, %d had (n=%d)" % (sum(num(r["p_dd"]) for r in pd), sum(int(r["dd"] or 0) for r in pd), len(pd)))
+        cut = [r for r in rs if num(r["min_raw"]) and num(r["min_proj"]) and num(r["min_raw"]) - num(r["min_proj"]) >= 1 and r["status"] != "Out"]
+        if cut:
+            print("  200-minute cap, players it cut 1+ (sat = 0): minutes off %.1f after the cut against %.1f before (n=%d)" % (
+                S.mean(abs(num(r["min_proj"]) - num(r["min"])) for r in cut), S.mean(abs(num(r["min_raw"]) - num(r["min"])) for r in cut), len(cut)))
+        line = []
+        for lo, hi in ((1, 3), (4, 7), (8, 99)):
+            for bench in (True, False):
+                v = [r for r in rs if r["bpr_rank"] and lo <= int(float(r["bpr_rank"])) <= hi and num(r["min"]) and num(r["min_proj"])
+                     and (num(r["min_proj"]) < 20) == bench and num(r["fp_dk"]) and r["status"] != "Out"]
+                if v:
+                    line.append("ranks %s %s: %.0f%% (n=%d)" % ("%d-%d" % (lo, hi) if hi < 99 else "%d+" % lo, "under 20 min" if bench else "20+ min",
+                                100 * sum(abs(num(r["fp_dk"]) - num(r["actual_dk"])) for r in v) / sum(num(r["fp_dk"]) for r in v), len(v)))
+        print("  Watch, EvanMiya rank (miss as a share of projection): " + ("; ".join(line) or "none"))
+
+    big = sorted((r for r in night if num(r["fp_dk"]) is not None and r["status"] != "Out"
+                  and (num(r["salary"]) >= 5000 or num(r["fp_dk"]) >= 20) and abs(num(r["fp_dk"]) - num(r["actual_dk"])) >= MISS_PTS),
+                 key=lambda r: -abs(num(r["fp_dk"]) - num(r["actual_dk"])))
+    print("\nLast night's DraftKings misses of %d+ ($5,000+ or projected 20+), biggest first:" % MISS_PTS)
+    for r in big:
+        print("  %-24s %-5s $%-5s ours %5.1f%s DK avg %5.1f actual %5.1f | min %4.1f vs %4.1f proj | pts/min %.2f vs %.2f | spread %s | %s%s%s" % (
+            r["name"], r["team"], r["salary"], num(r["fp_dk"]),
+            " (w/o Miya %.1f)" % num(r["fp_base_dk"]) if num(r["fp_base_dk"]) is not None and num(r["fp_base_dk"]) != num(r["fp_dk"]) else "",
+            num(r["dk_avg"]) or 0, num(r["actual_dk"]), num(r["min"]), num(r["min_proj"]) or 0,
+            num(r["actual"]) / num(r["min"]) if num(r["min"]) else 0, num(r["ppm_proj"]) or 0, r["spread"] or "-", r["src"],
+            " fragile" if r["fragile"] == "1" else "", " own %s%%" % r["own"] if r["own"] else ""))
+    sat = [r for r in night if not num(r["min"]) and r["status"] != "Out" and num(r["salary"]) >= 4000]
+    if sat:
+        print("Not tagged Out, $4,000+, and didn't play: " + ", ".join("%s %s (%s)" % (r["name"], r["team"], r["status"] or "no tag") for r in sat))
+
+    # the one projection under both sites: minutes and points per minute (Underdog's scale) over every player either
+    # carried, a player on both counted once (DraftKings' row)
+    both, seen = [], set()
+    for r in rows:
+        seen.add((r["date"], r["name"], r["team"]))
+        both.append(r)
+    both += [r for r in ud_rows if (r["date"], r["name"], r["team"]) not in seen]
+    rs = [r for r in both if num(r["min"]) and num(r["min_proj"]) and num(r["ppm_proj"])]
+    if rs:
+        dm = [num(r["min_proj"]) - num(r["min"]) for r in rs]
+        dp = [num(r["ppm_proj"]) - num(r["actual"]) / num(r["min"]) for r in rs]
+        print("\nOne projection, both sites (%d player-nights who played): minutes off %.1f (bias %+.1f) | points/minute off"
+              " %.2f (bias %+.2f), weighted by minutes %.2f" % (len(rs), S.mean(map(abs, dm)), S.mean(dm), S.mean(map(abs, dp)), S.mean(dp),
+              sum(abs(d) * num(r["min"]) for d, r in zip(dp, rs)) / sum(num(r["min"]) for r in rs)))
 
 
 def main():

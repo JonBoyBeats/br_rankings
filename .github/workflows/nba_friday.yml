@@ -38,7 +38,7 @@ jobs:
       - if: steps.when.outputs.go == 'true'
         run: |
           git config user.name "analysis-bot"; git config user.email "analysis-bot@users.noreply.github.com"
-          git add analysis/nba/report/money_friday.json analysis/nba/contests/tags
+          git add analysis/nba/report/money_friday.json analysis/nba/report/pod_replay.md analysis/nba/report/pod_replay.json analysis/nba/contests/tags
           git diff --cached --quiet && exit 0
           git commit -q -m "NBA Friday report: contest results through $(TZ=America/Los_Angeles date -d yesterday +%F)"
           for try in 1 2 3; do

@@ -1,0 +1,50 @@
+{
+ "generated_at": "2026-11-18T12:28:33Z",
+ "nights": 2,
+ "bands": [
+  {
+   "lo": 6000,
+   "hi": 99999,
+   "n": 94,
+   "nights": 2,
+   "open": true,
+   "w": 0.5,
+   "mae_ours": 8.644,
+   "mae_avg": 9.404,
+   "nights_avg_won": 1
+  },
+  {
+   "lo": 4000,
+   "hi": 5999,
+   "n": 126,
+   "nights": 2,
+   "open": true,
+   "w": 0.5,
+   "mae_ours": 7.013,
+   "mae_avg": 7.664,
+   "nights_avg_won": 0
+  },
+  {
+   "lo": 0,
+   "hi": 3999,
+   "n": 164,
+   "nights": 2,
+   "open": true,
+   "w": 0.5,
+   "mae_ours": 3.513,
+   "mae_avg": 4.0,
+   "nights_avg_won": 0
+  }
+ ],
+ "questionable": {
+  "n": 10,
+  "nights": 2,
+  "actual": 29.5,
+  "projected": 151.6,
+  "factor": 0.195,
+  "rule": "a Questionable player's projection x factor: actual / projected over the graded Questionable player-nights, once there are 5"
+ },
+ "rule": "open where DraftKings' average beat ours: 5+ nights, 100+ player-nights, lower mean error, better on 60%+ of nights",
+ "override": "calibration blend, ours 50% / DraftKings' average 50% in every band, until the owner's choice at the freeze",
+ "version": "cal-1"
+}

@@ -1,0 +1,957 @@
+date,draft_group,tag,group,lineups,mean,best,contest_id,contest,top10,cash,wins,protect,phase
+2026-11-16,156660,all,cut,3258,212.98,289.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0138,0.0414,0,,warm-up
+2026-11-16,156660,all,cut,3258,212.98,289.75,197791874,CBB $1.25K And-One,0.027,0.0826,0,,warm-up
+2026-11-16,156660,all,cut,3258,212.98,289.75,197791875,CBB $200 Quarter Jukebox,0.0396,0.1025,0,,warm-up
+2026-11-16,156660,all,cut,3258,212.98,289.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0488,0.1363,0,,warm-up
+2026-11-16,156660,all,kept,1000,217.55,272.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.01,0.029,0,,warm-up
+2026-11-16,156660,all,kept,1000,217.55,272.25,197791874,CBB $1.25K And-One,0.022,0.073,0,,warm-up
+2026-11-16,156660,all,kept,1000,217.55,272.25,197791875,CBB $200 Quarter Jukebox,0.027,0.098,0,,warm-up
+2026-11-16,156660,all,kept,1000,217.55,272.25,197873654,CBB $100 Dime Time [Just $0.10!],0.031,0.142,0,,warm-up
+2026-11-16,156660,all,entered,36,210.09,247.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,all,entered,36,210.09,247.25,197791874,CBB $1.25K And-One,0.0,0.0278,0,,warm-up
+2026-11-16,156660,all,entered,36,210.09,247.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0278,0,,warm-up
+2026-11-16,156660,all,entered,36,210.09,247.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0278,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0115,0.046,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,197791874,CBB $1.25K And-One,0.046,0.1034,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,197791875,CBB $200 Quarter Jukebox,0.046,0.1264,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,cut,87,212.84,267.5,197873654,CBB $100 Dime Time [Just $0.10!],0.046,0.1839,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0769,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,197791874,CBB $1.25K And-One,0.0,0.0769,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,197791875,CBB $200 Quarter Jukebox,0.0769,0.0769,0,,warm-up
+2026-11-16,156660,1 under 10% + salary ≥ 49000 + At least 2 from UK,kept,13,214.21,257.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0769,0.1538,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,cut,96,205.25,243.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0208,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,2 under 10% + salary ≥ 49000 + At least 2 from UK,kept,4,206.5,238.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0229,0.0458,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,197791874,CBB $1.25K And-One,0.0305,0.0916,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,197791875,CBB $200 Quarter Jukebox,0.0458,0.1145,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,cut,131,214.29,272.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0611,0.145,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0149,0.0299,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,197791874,CBB $1.25K And-One,0.0299,0.0597,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,197791875,CBB $200 Quarter Jukebox,0.0299,0.0597,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,kept,67,215.75,270.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0299,0.1194,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from STMRY,entered,3,209.58,230.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.008,0.032,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,197791874,CBB $1.25K And-One,0.016,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,197791875,CBB $200 Quarter Jukebox,0.032,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,cut,125,213.15,273.0,197873654,CBB $100 Dime Time [Just $0.10!],0.048,0.128,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0133,0.0533,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,197791874,CBB $1.25K And-One,0.04,0.0533,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,197791875,CBB $200 Quarter Jukebox,0.0533,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,kept,75,220.16,265.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0533,0.1333,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UCLA,entered,3,206.5,207.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0438,0.0584,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,197791874,CBB $1.25K And-One,0.0511,0.0949,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,197791875,CBB $200 Quarter Jukebox,0.0584,0.1168,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,cut,137,214.86,271.5,197873654,CBB $100 Dime Time [Just $0.10!],0.073,0.1606,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0159,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,197791874,CBB $1.25K And-One,0.0,0.0317,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,197791875,CBB $200 Quarter Jukebox,0.0159,0.0635,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,kept,63,213.61,257.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0159,0.0952,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,197791874,CBB $1.25K And-One,0.0,0.2,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,197791875,CBB $200 Quarter Jukebox,0.0,0.2,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UGA,entered,5,220.25,247.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.2,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0588,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,197791874,CBB $1.25K And-One,0.0441,0.0735,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,197791875,CBB $200 Quarter Jukebox,0.0588,0.0882,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",cut,68,212.49,264.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0588,0.1029,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,197791874,CBB $1.25K And-One,0.0,0.0625,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0938,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",kept,32,219.57,252.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If Blue Cain, then 1+ from JAC",entered,3,217.08,228.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0141,0.0282,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,197791874,CBB $1.25K And-One,0.0141,0.0704,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,197791875,CBB $200 Quarter Jukebox,0.0282,0.0986,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",cut,71,208.76,272.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0282,0.1127,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,197791874,CBB $1.25K And-One,0.0,0.0345,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,197791875,CBB $200 Quarter Jukebox,0.0,0.069,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",kept,29,216.1,247.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.1379,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,197791874,CBB $1.25K And-One,0.0,1.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,197791875,CBB $200 Quarter Jukebox,0.0,1.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from UGA + If not Blue Cain, then 1+ of Kanon Catchings / Marcus Millender",entered,1,247.25,247.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0273,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,197791874,CBB $1.25K And-One,0.0391,0.1055,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,197791875,CBB $200 Quarter Jukebox,0.0547,0.125,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,cut,256,212.75,289.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0781,0.1523,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,197791874,CBB $1.25K And-One,0.0,0.0714,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0952,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from UK,kept,42,219.89,253.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0952,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0336,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,197791874,CBB $1.25K And-One,0.0168,0.0756,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,197791875,CBB $200 Quarter Jukebox,0.0336,0.1176,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,cut,119,211.54,262.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0336,0.1261,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,197791874,CBB $1.25K And-One,0.0,0.0125,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,197791875,CBB $200 Quarter Jukebox,0.0,0.025,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,kept,80,209.05,255.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0125,0.0375,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 2 from VT,entered,8,207.31,223.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0119,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,197791874,CBB $1.25K And-One,0.0,0.0476,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,197791875,CBB $200 Quarter Jukebox,0.0119,0.0714,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",cut,84,209.58,256.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0119,0.1071,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",kept,16,211.06,228.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If Amani Hansberry, then 1+ from RICH",entered,1,211.25,211.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0156,0.0312,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,197791874,CBB $1.25K And-One,0.0312,0.0781,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,197791875,CBB $200 Quarter Jukebox,0.0312,0.0781,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",cut,64,207.81,270.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0312,0.1094,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0278,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,197791874,CBB $1.25K And-One,0.0278,0.0278,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,197791875,CBB $200 Quarter Jukebox,0.0278,0.0278,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",kept,36,212.78,259.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0278,0.0556,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 2 from VT + If not Amani Hansberry, then 1+ of Ben Hammond / Jaylen Curry",entered,3,201.17,230.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0071,0.0429,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,197791874,CBB $1.25K And-One,0.0286,0.1143,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,197791875,CBB $200 Quarter Jukebox,0.0429,0.1571,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,cut,140,221.01,264.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0786,0.1857,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0333,0.05,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,197791874,CBB $1.25K And-One,0.05,0.0833,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,197791875,CBB $200 Quarter Jukebox,0.05,0.1,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,kept,60,216.28,267.0,197873654,CBB $100 Dime Time [Just $0.10!],0.05,0.15,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from STMRY,entered,4,214.38,227.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0083,0.0333,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,197791874,CBB $1.25K And-One,0.0167,0.05,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,197791875,CBB $200 Quarter Jukebox,0.0333,0.075,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,cut,120,204.78,267.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0333,0.1,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,197791874,CBB $1.25K And-One,0.0,0.038,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,197791875,CBB $200 Quarter Jukebox,0.0,0.0759,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,kept,79,215.42,251.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.1013,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UCLA,entered,3,202.0,220.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.019,0.038,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,197791874,CBB $1.25K And-One,0.0253,0.057,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,197791875,CBB $200 Quarter Jukebox,0.038,0.0696,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,cut,158,210.95,267.75,197873654,CBB $100 Dime Time [Just $0.10!],0.038,0.0949,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0244,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UGA,kept,41,210.94,246.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0732,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0272,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,197791874,CBB $1.25K And-One,0.0,0.0652,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,197791875,CBB $200 Quarter Jukebox,0.0272,0.0761,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,cut,184,211.11,257.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0326,0.1033,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,197791874,CBB $1.25K And-One,0.0625,0.25,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,197791875,CBB $200 Quarter Jukebox,0.0625,0.25,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from UK,kept,16,232.36,260.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0625,0.3125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0326,0.0326,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,197791874,CBB $1.25K And-One,0.0326,0.0652,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,197791875,CBB $200 Quarter Jukebox,0.0326,0.0924,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",cut,184,213.84,277.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0326,0.1141,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + At least 3 from UK + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic",kept,16,223.25,244.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,197791875,CBB $200 Quarter Jukebox,0.0,0.007,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,cut,143,204.42,244.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.014,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0182,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,kept,55,204.13,246.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0182,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + At least 3 from VT,entered,1,202.0,202.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0101,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,197791874,CBB $1.25K And-One,0.0,0.0202,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,197791875,CBB $200 Quarter Jukebox,0.0101,0.0202,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",cut,99,196.88,256.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0101,0.0303,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Malachi Moreno, then 1+ from GRAM + At least 3 from UK",kept,1,208.25,208.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0244,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,197791874,CBB $1.25K And-One,0.0,0.0488,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,197791875,CBB $200 Quarter Jukebox,0.0122,0.061,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",cut,82,212.55,257.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0366,0.1341,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0556,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,197791874,CBB $1.25K And-One,0.0556,0.1111,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,197791875,CBB $200 Quarter Jukebox,0.0556,0.1111,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",kept,18,206.72,259.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0556,0.1667,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Mantas Juzenas, then 1+ from PORST",entered,1,185.0,185.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,197791874,CBB $1.25K And-One,0.0,0.1026,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,197791875,CBB $200 Quarter Jukebox,0.0,0.1154,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",cut,78,213.05,251.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.1538,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0909,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",kept,22,206.59,246.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0909,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If Nikola Kusturica, then 1+ from LBS",entered,1,216.0,216.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.012,0.0419,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,197791874,CBB $1.25K And-One,0.0359,0.0958,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,197791875,CBB $200 Quarter Jukebox,0.0359,0.1138,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",cut,167,219.86,267.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0479,0.1677,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0625,0.0625,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,197791874,CBB $1.25K And-One,0.0625,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,197791875,CBB $200 Quarter Jukebox,0.0625,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Malachi Moreno, then 1+ of Zoom Diallo / Milan Momcilovic + At least 2 from UK",kept,32,222.53,272.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0625,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0317,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,197791874,CBB $1.25K And-One,0.0159,0.0952,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,197791875,CBB $200 Quarter Jukebox,0.0317,0.0952,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",cut,63,216.49,264.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0476,0.1111,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.027,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,197791874,CBB $1.25K And-One,0.027,0.1081,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,197791875,CBB $200 Quarter Jukebox,0.027,0.1351,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",kept,37,216.1,260.0,197873654,CBB $100 Dime Time [Just $0.10!],0.027,0.1892,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Mantas Juzenas, then 1+ of Joshua Dent / Darius Bivins",entered,1,205.25,205.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0139,0.0556,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,197791874,CBB $1.25K And-One,0.0417,0.0972,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,197791875,CBB $200 Quarter Jukebox,0.0556,0.1111,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",cut,72,211.91,283.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0833,0.125,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",kept,28,211.79,243.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0714,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,"salary ≥ 49000 + If not Nikola Kusturica, then 1+ of Eric Dailey Jr. / Trent Perry",entered,1,220.75,220.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0119,0.0357,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,197791874,CBB $1.25K And-One,0.0119,0.0952,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,197791875,CBB $200 Quarter Jukebox,0.0357,0.131,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,cut,84,212.79,267.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0357,0.1429,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,197791874,CBB $1.25K And-One,0.0,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0625,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack STMRY-PORST: 2+ from STMRY + Stack STMRY-PORST: 1+ from PORST,kept,16,221.09,249.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.25,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.027,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,197791874,CBB $1.25K And-One,0.0135,0.0541,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,197791875,CBB $200 Quarter Jukebox,0.027,0.0541,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,cut,74,216.98,262.75,197873654,CBB $100 Dime Time [Just $0.10!],0.027,0.1351,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,197791874,CBB $1.25K And-One,0.0,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,197791875,CBB $200 Quarter Jukebox,0.0,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,kept,25,215.25,249.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.08,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UGA-JAC: 2+ from UGA + Stack UGA-JAC: 1+ from JAC,entered,1,204.75,204.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0316,0.0947,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,197791874,CBB $1.25K And-One,0.0737,0.1053,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,197791875,CBB $200 Quarter Jukebox,0.0842,0.1263,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,cut,95,212.48,272.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0947,0.1368,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack UK-GRAM: 2+ from UK + Stack UK-GRAM: 1+ from GRAM,kept,5,205.25,221.0,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0102,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,197791874,CBB $1.25K And-One,0.0102,0.0204,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,197791875,CBB $200 Quarter Jukebox,0.0102,0.0204,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,cut,98,202.26,262.5,197873654,CBB $100 Dime Time [Just $0.10!],0.0102,0.051,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + Stack VT-RICH: 2+ from VT + Stack VT-RICH: 1+ from RICH,kept,2,195.38,197.25,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0347,0.1337,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,197791874,CBB $1.25K And-One,0.0842,0.2475,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,197791875,CBB $200 Quarter Jukebox,0.1287,0.3119,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,cut,202,234.77,279.0,197873654,CBB $100 Dime Time [Just $0.10!],0.1485,0.4059,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0231,0.0809,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,197791874,CBB $1.25K And-One,0.0578,0.1908,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,197791875,CBB $200 Quarter Jukebox,0.0694,0.2543,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,kept,173,234.38,267.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0867,0.3295,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,197791872,CBB $6K Pull Up Jumper [$2K to 1st],0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,197791874,CBB $1.25K And-One,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,197791875,CBB $200 Quarter Jukebox,0.0,0.0,0,,warm-up
+2026-11-16,156660,salary ≥ 49000 + lock Hansberry + lock Moreno + lock Juzenas,entered,1,238.75,238.75,197873654,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,all,cut,8000,167.75,272.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0489,0.1151,3,,warm-up
+2026-11-17,156663,all,cut,8000,167.75,272.75,197921824,CBB $1.5K And-One,0.0403,0.1072,0,,warm-up
+2026-11-17,156663,all,cut,8000,167.75,272.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0403,0.1006,3,,warm-up
+2026-11-17,156663,all,cut,8000,167.75,272.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0403,0.1072,14,,warm-up
+2026-11-17,156663,all,kept,2000,176.52,279.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0815,0.1665,5,,warm-up
+2026-11-17,156663,all,kept,2000,176.52,279.5,197921824,CBB $1.5K And-One,0.074,0.155,0,,warm-up
+2026-11-17,156663,all,kept,2000,176.52,279.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.074,0.1435,5,,warm-up
+2026-11-17,156663,all,kept,2000,176.52,279.5,197925185,CBB $50 Dime Time [Just $0.10!],0.074,0.155,6,,warm-up
+2026-11-17,156663,all,entered,67,181.78,253.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0448,0.1791,0,,warm-up
+2026-11-17,156663,all,entered,67,181.78,253.5,197921824,CBB $1.5K And-One,0.0299,0.1642,0,,warm-up
+2026-11-17,156663,all,entered,67,181.78,253.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0299,0.1493,0,,warm-up
+2026-11-17,156663,all,entered,67,181.78,253.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0299,0.1642,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from AUB + At least 3 from WVU,cut,173,164.64,242.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0231,0.0636,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from AUB + At least 3 from WVU,cut,173,164.64,242.25,197921824,CBB $1.5K And-One,0.0116,0.0578,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from AUB + At least 3 from WVU,cut,173,164.64,242.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0116,0.052,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from AUB + At least 3 from WVU,cut,173,164.64,242.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0116,0.0578,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from AUB + At least 3 from WVU,kept,27,170.36,219.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.1481,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from AUB + At least 3 from WVU,kept,27,170.36,219.5,197921824,CBB $1.5K And-One,0.0,0.1481,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from AUB + At least 3 from WVU,kept,27,170.36,219.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.1111,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from AUB + At least 3 from WVU,kept,27,170.36,219.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.1481,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,cut,166,168.3,251.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0602,0.1084,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,cut,166,168.3,251.25,197921824,CBB $1.5K And-One,0.0482,0.0964,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,cut,166,168.3,251.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0482,0.0964,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,cut,166,168.3,251.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0482,0.0964,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,kept,34,176.84,241.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0882,0.1471,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,kept,34,176.84,241.25,197921824,CBB $1.5K And-One,0.0882,0.1471,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,kept,34,176.84,241.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0882,0.1471,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,kept,34,176.84,241.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0882,0.1471,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,entered,4,170.62,203.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,entered,4,170.62,203.75,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,entered,4,170.62,203.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from KU,entered,4,170.62,203.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from VU,cut,143,157.72,223.5,197906434,CBB $100 Dime Time [Just $0.10!],0.007,0.0629,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from VU,cut,143,157.72,223.5,197921824,CBB $1.5K And-One,0.007,0.0629,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from VU,cut,143,157.72,223.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.007,0.0559,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from VU,cut,143,157.72,223.5,197925185,CBB $50 Dime Time [Just $0.10!],0.007,0.0629,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from VU,kept,57,171.2,240.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0702,0.1579,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from VU,kept,57,171.2,240.75,197921824,CBB $1.5K And-One,0.0526,0.1404,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from VU,kept,57,171.2,240.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0526,0.1404,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 2 from VU,kept,57,171.2,240.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0526,0.1404,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from AUB + At least 2 from WVU,cut,186,162.38,220.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0054,0.0645,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from AUB + At least 2 from WVU,cut,186,162.38,220.75,197921824,CBB $1.5K And-One,0.0,0.0591,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from AUB + At least 2 from WVU,cut,186,162.38,220.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0538,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from AUB + At least 2 from WVU,cut,186,162.38,220.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0591,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from AUB + At least 2 from WVU,kept,14,163.88,191.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from AUB + At least 2 from WVU,kept,14,163.88,191.75,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from AUB + At least 2 from WVU,kept,14,163.88,191.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from AUB + At least 2 from WVU,kept,14,163.88,191.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,cut,166,166.96,239.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0422,0.1205,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,cut,166,166.96,239.5,197921824,CBB $1.5K And-One,0.0422,0.1084,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,cut,166,166.96,239.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0422,0.0964,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,cut,166,166.96,239.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0422,0.1084,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,kept,34,177.57,226.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0588,0.1471,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,kept,34,177.57,226.5,197921824,CBB $1.5K And-One,0.0588,0.1471,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,kept,34,177.57,226.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0588,0.1471,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,kept,34,177.57,226.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0588,0.1471,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,entered,1,218.75,218.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,entered,1,218.75,218.75,197921824,CBB $1.5K And-One,0.0,1.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,entered,1,218.75,218.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,1.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from KU,entered,1,218.75,218.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from VU,cut,182,151.72,218.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0275,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from VU,cut,182,151.72,218.0,197921824,CBB $1.5K And-One,0.0,0.0275,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from VU,cut,182,151.72,218.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0275,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from VU,cut,182,151.72,218.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0275,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from VU,kept,18,158.1,207.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0556,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from VU,kept,18,158.1,207.5,197921824,CBB $1.5K And-One,0.0,0.0556,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from VU,kept,18,158.1,207.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + At least 3 from VU,kept,18,158.1,207.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0556,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",cut,82,179.95,265.0,197906434,CBB $100 Dime Time [Just $0.10!],0.1098,0.2073,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",cut,82,179.95,265.0,197921824,CBB $1.5K And-One,0.0854,0.1707,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",cut,82,179.95,265.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0854,0.1707,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",cut,82,179.95,265.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0854,0.1707,3,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",kept,18,179.74,224.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0556,0.0556,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",kept,18,179.74,224.75,197921824,CBB $1.5K And-One,0.0556,0.0556,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",kept,18,179.74,224.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0556,0.0556,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",kept,18,179.74,224.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0556,0.0556,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",entered,3,182.5,195.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",entered,3,182.5,195.0,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",entered,3,182.5,195.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from KU",entered,3,182.5,195.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from VU",cut,74,169.27,232.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0405,0.0946,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from VU",cut,74,169.27,232.0,197921824,CBB $1.5K And-One,0.0405,0.0946,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from VU",cut,74,169.27,232.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0405,0.0811,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from VU",cut,74,169.27,232.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0405,0.0946,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from VU",kept,26,170.97,246.25,197906434,CBB $100 Dime Time [Just $0.10!],0.1538,0.1538,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from VU",kept,26,170.97,246.25,197921824,CBB $1.5K And-One,0.1154,0.1538,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from VU",kept,26,170.97,246.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1154,0.1538,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 2 from VU",kept,26,170.97,246.25,197925185,CBB $50 Dime Time [Just $0.10!],0.1154,0.1538,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",cut,75,178.33,259.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0933,0.2133,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",cut,75,178.33,259.75,197921824,CBB $1.5K And-One,0.0933,0.2133,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",cut,75,178.33,259.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0933,0.2,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",cut,75,178.33,259.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0933,0.2133,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",kept,25,184.97,234.0,197906434,CBB $100 Dime Time [Just $0.10!],0.08,0.24,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",kept,25,184.97,234.0,197921824,CBB $1.5K And-One,0.08,0.24,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",kept,25,184.97,234.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.08,0.24,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",kept,25,184.97,234.0,197925185,CBB $50 Dime Time [Just $0.10!],0.08,0.24,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",entered,3,206.5,219.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.6667,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",entered,3,206.5,219.5,197921824,CBB $1.5K And-One,0.0,0.6667,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",entered,3,206.5,219.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.6667,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from KU",entered,3,206.5,219.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.6667,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from VU",cut,86,157.55,231.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0116,0.0233,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from VU",cut,86,157.55,231.75,197921824,CBB $1.5K And-One,0.0116,0.0233,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from VU",cut,86,157.55,231.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0116,0.0116,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from VU",cut,86,157.55,231.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0116,0.0233,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from VU",kept,14,164.59,224.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0714,0.2143,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from VU",kept,14,164.59,224.0,197921824,CBB $1.5K And-One,0.0714,0.2143,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from VU",kept,14,164.59,224.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0714,0.2143,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + At least 3 from VU",kept,14,164.59,224.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0714,0.2143,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",cut,77,179.37,250.0,197906434,CBB $100 Dime Time [Just $0.10!],0.1299,0.1818,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",cut,77,179.37,250.0,197921824,CBB $1.5K And-One,0.0909,0.1818,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",cut,77,179.37,250.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0909,0.1818,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",cut,77,179.37,250.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0909,0.1818,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",kept,23,182.79,236.75,197906434,CBB $100 Dime Time [Just $0.10!],0.1739,0.2609,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",kept,23,182.79,236.75,197921824,CBB $1.5K And-One,0.1739,0.2609,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",kept,23,182.79,236.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1739,0.2609,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",kept,23,182.79,236.75,197925185,CBB $50 Dime Time [Just $0.10!],0.1739,0.2609,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",entered,6,163.0,205.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",entered,6,163.0,205.75,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",entered,6,163.0,205.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from KU",entered,6,163.0,205.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",cut,64,173.04,221.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0156,0.125,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",cut,64,173.04,221.25,197921824,CBB $1.5K And-One,0.0,0.1094,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",cut,64,173.04,221.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0938,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",cut,64,173.04,221.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.1094,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",kept,36,180.74,246.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0833,0.1944,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",kept,36,180.74,246.5,197921824,CBB $1.5K And-One,0.0556,0.1944,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",kept,36,180.74,246.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0556,0.1944,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",kept,36,180.74,246.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0556,0.1944,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",entered,1,211.5,211.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",entered,1,211.5,211.5,197921824,CBB $1.5K And-One,0.0,1.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",entered,1,211.5,211.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,1.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 2 from VU",entered,1,211.5,211.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",cut,71,185.86,255.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0986,0.3099,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",cut,71,185.86,255.75,197921824,CBB $1.5K And-One,0.0845,0.2958,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",cut,71,185.86,255.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0845,0.2535,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",cut,71,185.86,255.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0845,0.2958,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",kept,29,179.53,227.0,197906434,CBB $100 Dime Time [Just $0.10!],0.1034,0.1034,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",kept,29,179.53,227.0,197921824,CBB $1.5K And-One,0.0345,0.1034,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",kept,29,179.53,227.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0345,0.1034,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",kept,29,179.53,227.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0345,0.1034,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",entered,4,188.44,220.75,197906434,CBB $100 Dime Time [Just $0.10!],0.25,0.25,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",entered,4,188.44,220.75,197921824,CBB $1.5K And-One,0.0,0.25,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",entered,4,188.44,220.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.25,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from KU",entered,4,188.44,220.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.25,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from VU",cut,77,162.69,263.5,197906434,CBB $100 Dime Time [Just $0.10!],0.013,0.0649,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from VU",cut,77,162.69,263.5,197921824,CBB $1.5K And-One,0.013,0.0649,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from VU",cut,77,162.69,263.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.013,0.0519,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from VU",cut,77,162.69,263.5,197925185,CBB $50 Dime Time [Just $0.10!],0.013,0.0649,1,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from VU",kept,23,162.32,191.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from VU",kept,23,162.32,191.5,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from VU",kept,23,162.32,191.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + At least 3 from VU",kept,23,162.32,191.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",cut,82,178.05,256.0,197906434,CBB $100 Dime Time [Just $0.10!],0.1341,0.2073,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",cut,82,178.05,256.0,197921824,CBB $1.5K And-One,0.122,0.1951,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",cut,82,178.05,256.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.122,0.1951,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",cut,82,178.05,256.0,197925185,CBB $50 Dime Time [Just $0.10!],0.122,0.1951,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",kept,18,186.28,239.75,197906434,CBB $100 Dime Time [Just $0.10!],0.1111,0.2222,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",kept,18,186.28,239.75,197921824,CBB $1.5K And-One,0.1111,0.2222,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",kept,18,186.28,239.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1111,0.2222,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",kept,18,186.28,239.75,197925185,CBB $50 Dime Time [Just $0.10!],0.1111,0.2222,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",entered,3,190.5,204.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",entered,3,190.5,204.75,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",entered,3,190.5,204.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from KU",entered,3,190.5,204.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",cut,68,172.87,247.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0735,0.1176,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",cut,68,172.87,247.5,197921824,CBB $1.5K And-One,0.0735,0.1029,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",cut,68,172.87,247.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0735,0.1029,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",cut,68,172.87,247.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0735,0.1029,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",kept,32,181.47,279.5,197906434,CBB $100 Dime Time [Just $0.10!],0.125,0.25,1,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",kept,32,181.47,279.5,197921824,CBB $1.5K And-One,0.125,0.2188,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",kept,32,181.47,279.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.125,0.1875,1,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",kept,32,181.47,279.5,197925185,CBB $50 Dime Time [Just $0.10!],0.125,0.2188,1,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",entered,2,167.38,206.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.5,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",entered,2,167.38,206.25,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",entered,2,167.38,206.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 2 from VU",entered,2,167.38,206.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from KU",cut,75,178.31,249.25,197906434,CBB $100 Dime Time [Just $0.10!],0.08,0.1333,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from KU",cut,75,178.31,249.25,197921824,CBB $1.5K And-One,0.08,0.12,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from KU",cut,75,178.31,249.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.08,0.1067,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from KU",cut,75,178.31,249.25,197925185,CBB $50 Dime Time [Just $0.10!],0.08,0.12,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from KU",kept,25,185.4,243.25,197906434,CBB $100 Dime Time [Just $0.10!],0.08,0.32,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from KU",kept,25,185.4,243.25,197921824,CBB $1.5K And-One,0.08,0.32,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from KU",kept,25,185.4,243.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.08,0.32,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from KU",kept,25,185.4,243.25,197925185,CBB $50 Dime Time [Just $0.10!],0.08,0.32,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from VU",cut,87,161.08,229.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0345,0.0345,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from VU",cut,87,161.08,229.5,197921824,CBB $1.5K And-One,0.0345,0.0345,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from VU",cut,87,161.08,229.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0345,0.0345,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from VU",cut,87,161.08,229.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0345,0.0345,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from VU",kept,13,159.58,222.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0769,0.0769,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from VU",kept,13,159.58,222.25,197921824,CBB $1.5K And-One,0.0769,0.0769,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from VU",kept,13,159.58,222.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0769,0.0769,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + At least 3 from VU",kept,13,159.58,222.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0769,0.0769,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",cut,80,162.51,238.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0125,0.0625,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",cut,80,162.51,238.25,197921824,CBB $1.5K And-One,0.0125,0.0625,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",cut,80,162.51,238.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0125,0.05,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",cut,80,162.51,238.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0125,0.0625,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",kept,20,173.59,213.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.1,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",kept,20,173.59,213.25,197921824,CBB $1.5K And-One,0.0,0.1,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",kept,20,173.59,213.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.1,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",kept,20,173.59,213.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.1,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",entered,1,181.0,181.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",entered,1,181.0,181.0,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",entered,1,181.0,181.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from KU",entered,1,181.0,181.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from VU",cut,73,150.52,229.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0137,0.0274,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from VU",cut,73,150.52,229.5,197921824,CBB $1.5K And-One,0.0137,0.0274,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from VU",cut,73,150.52,229.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0137,0.0274,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from VU",cut,73,150.52,229.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0137,0.0274,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from VU",kept,27,162.48,232.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0741,0.1111,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from VU",kept,27,162.48,232.5,197921824,CBB $1.5K And-One,0.037,0.1111,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from VU",kept,27,162.48,232.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.037,0.1111,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 2 from VU",kept,27,162.48,232.5,197925185,CBB $50 Dime Time [Just $0.10!],0.037,0.1111,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from KU",cut,81,163.91,221.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0123,0.0617,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from KU",cut,81,163.91,221.0,197921824,CBB $1.5K And-One,0.0,0.0617,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from KU",cut,81,163.91,221.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0617,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from KU",cut,81,163.91,221.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0617,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from KU",kept,19,180.89,240.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0526,0.1053,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from KU",kept,19,180.89,240.0,197921824,CBB $1.5K And-One,0.0526,0.1053,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from KU",kept,19,180.89,240.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0526,0.1053,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from KU",kept,19,180.89,240.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0526,0.1053,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from VU",cut,92,150.4,208.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0217,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from VU",cut,92,150.4,208.25,197921824,CBB $1.5K And-One,0.0,0.0217,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from VU",cut,92,150.4,208.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from VU",cut,92,150.4,208.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0217,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from VU",kept,8,176.81,199.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from VU",kept,8,176.81,199.5,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from VU",kept,8,176.81,199.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + At least 3 from VU",kept,8,176.81,199.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,cut,131,165.05,238.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0153,0.0382,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,cut,131,165.05,238.75,197921824,CBB $1.5K And-One,0.0153,0.0305,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,cut,131,165.05,238.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0153,0.0305,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,cut,131,165.05,238.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0153,0.0305,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,kept,69,173.75,259.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0725,0.1594,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,kept,69,173.75,259.0,197921824,CBB $1.5K And-One,0.0725,0.1449,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,kept,69,173.75,259.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0725,0.1449,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,kept,69,173.75,259.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0725,0.1449,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,entered,1,195.5,195.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,entered,1,195.5,195.5,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,entered,1,195.5,195.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,entered,1,195.5,195.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,cut,155,163.84,234.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0194,0.0516,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,cut,155,163.84,234.75,197921824,CBB $1.5K And-One,0.0194,0.0516,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,cut,155,163.84,234.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0194,0.0452,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,cut,155,163.84,234.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0194,0.0516,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,kept,45,164.95,225.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0444,0.1333,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,kept,45,164.95,225.5,197921824,CBB $1.5K And-One,0.0444,0.1333,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,kept,45,164.95,225.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0444,0.0889,0,,warm-up
+2026-11-17,156663,1 under 10% + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,kept,45,164.95,225.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0444,0.1333,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,77,178.03,250.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0519,0.1688,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,77,178.03,250.25,197921824,CBB $1.5K And-One,0.0519,0.1558,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,77,178.03,250.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0519,0.1299,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,77,178.03,250.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0519,0.1558,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,23,185.99,235.0,197906434,CBB $100 Dime Time [Just $0.10!],0.087,0.2174,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,23,185.99,235.0,197921824,CBB $1.5K And-One,0.087,0.1739,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,23,185.99,235.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.087,0.087,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,23,185.99,235.0,197925185,CBB $50 Dime Time [Just $0.10!],0.087,0.1739,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",entered,1,184.0,184.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",entered,1,184.0,184.0,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",entered,1,184.0,184.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 1+ from VU + At least 3 from PITT",entered,1,184.0,184.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,85,170.96,237.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0471,0.1176,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,85,170.96,237.75,197921824,CBB $1.5K And-One,0.0353,0.1176,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,85,170.96,237.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0353,0.1176,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,85,170.96,237.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0353,0.1176,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,15,169.9,215.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0667,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,15,169.9,215.0,197921824,CBB $1.5K And-One,0.0,0.0667,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,15,169.9,215.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0667,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,15,169.9,215.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0667,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",entered,1,215.0,215.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",entered,1,215.0,215.0,197921824,CBB $1.5K And-One,0.0,1.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",entered,1,215.0,215.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,1.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Chase Foster, then 1+ of Baye Ndongo / Naithan George + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",entered,1,215.0,215.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,77,190.67,254.75,197906434,CBB $100 Dime Time [Just $0.10!],0.1688,0.3117,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,77,190.67,254.75,197921824,CBB $1.5K And-One,0.1169,0.2987,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,77,190.67,254.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1169,0.2857,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,77,190.67,254.75,197925185,CBB $50 Dime Time [Just $0.10!],0.1169,0.2987,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,23,197.03,245.0,197906434,CBB $100 Dime Time [Just $0.10!],0.2174,0.4348,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,23,197.03,245.0,197921824,CBB $1.5K And-One,0.2174,0.4348,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,23,197.03,245.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.2174,0.4348,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,23,197.03,245.0,197925185,CBB $50 Dime Time [Just $0.10!],0.2174,0.4348,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",entered,1,163.25,163.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",entered,1,163.25,163.25,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",entered,1,163.25,163.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 1+ from VU + At least 3 from PITT",entered,1,163.25,163.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,68,191.73,267.25,197906434,CBB $100 Dime Time [Just $0.10!],0.1029,0.2353,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,68,191.73,267.25,197921824,CBB $1.5K And-One,0.0882,0.2206,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,68,191.73,267.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0882,0.2059,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,68,191.73,267.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0882,0.2206,1,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,32,186.98,259.5,197906434,CBB $100 Dime Time [Just $0.10!],0.125,0.3125,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,32,186.98,259.5,197921824,CBB $1.5K And-One,0.125,0.2812,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,32,186.98,259.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.125,0.25,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,32,186.98,259.5,197925185,CBB $50 Dime Time [Just $0.10!],0.125,0.2812,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,75,193.84,250.75,197906434,CBB $100 Dime Time [Just $0.10!],0.2,0.4133,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,75,193.84,250.75,197921824,CBB $1.5K And-One,0.16,0.4,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,75,193.84,250.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.16,0.3867,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,75,193.84,250.75,197925185,CBB $50 Dime Time [Just $0.10!],0.16,0.4,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,25,190.08,248.75,197906434,CBB $100 Dime Time [Just $0.10!],0.16,0.2,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,25,190.08,248.75,197921824,CBB $1.5K And-One,0.16,0.2,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,25,190.08,248.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.16,0.2,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,25,190.08,248.75,197925185,CBB $50 Dime Time [Just $0.10!],0.16,0.2,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,77,186.02,256.0,197906434,CBB $100 Dime Time [Just $0.10!],0.1429,0.2857,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,77,186.02,256.0,197921824,CBB $1.5K And-One,0.1299,0.2468,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,77,186.02,256.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1299,0.2468,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,77,186.02,256.0,197925185,CBB $50 Dime Time [Just $0.10!],0.1299,0.2468,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,23,180.98,217.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.3043,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,23,180.98,217.25,197921824,CBB $1.5K And-One,0.0,0.3043,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,23,180.98,217.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.2174,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,23,180.98,217.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.3043,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",entered,2,161.62,176.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",entered,2,161.62,176.25,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",entered,2,161.62,176.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Quentin Coleman, then 1+ of Andrej Stojakovic / Ethan Brown + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",entered,2,161.62,176.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,75,177.77,261.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0667,0.16,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,75,177.77,261.0,197921824,CBB $1.5K And-One,0.0667,0.1467,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,75,177.77,261.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0667,0.1467,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 1+ from VU + At least 3 from PITT",cut,75,177.77,261.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0667,0.1467,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,25,176.72,240.75,197906434,CBB $100 Dime Time [Just $0.10!],0.04,0.08,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,25,176.72,240.75,197921824,CBB $1.5K And-One,0.04,0.08,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,25,176.72,240.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.04,0.08,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 1+ from VU + At least 3 from PITT",kept,25,176.72,240.75,197925185,CBB $50 Dime Time [Just $0.10!],0.04,0.08,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,77,174.85,247.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0649,0.1558,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,77,174.85,247.0,197921824,CBB $1.5K And-One,0.0649,0.1429,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,77,174.85,247.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0649,0.1299,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",cut,77,174.85,247.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0649,0.1429,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,23,172.85,223.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0435,0.1304,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,23,172.85,223.75,197921824,CBB $1.5K And-One,0.0435,0.087,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,23,172.85,223.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0435,0.087,0,,warm-up
+2026-11-17,156663,"1 under 10% + leverage 0.2 + If not Tyrin Jones, then 1+ of Cam Miles / Sebastian Mack + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU",kept,23,172.85,223.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0435,0.087,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,161,168.53,227.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0248,0.1242,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,161,168.53,227.75,197921824,CBB $1.5K And-One,0.0124,0.1242,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,161,168.53,227.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0124,0.1242,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,161,168.53,227.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0124,0.1242,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,39,192.6,274.0,197906434,CBB $100 Dime Time [Just $0.10!],0.2051,0.359,1,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,39,192.6,274.0,197921824,CBB $1.5K And-One,0.2051,0.3333,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,39,192.6,274.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.2051,0.2821,1,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,39,192.6,274.0,197925185,CBB $50 Dime Time [Just $0.10!],0.2051,0.3333,1,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,164.25,164.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,164.25,164.25,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,164.25,164.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,164.25,164.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,166,160.42,226.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0181,0.0723,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,166,160.42,226.5,197921824,CBB $1.5K And-One,0.012,0.0602,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,166,160.42,226.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.012,0.0542,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,166,160.42,226.5,197925185,CBB $50 Dime Time [Just $0.10!],0.012,0.0602,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,34,176.61,229.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0294,0.1765,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,34,176.61,229.75,197921824,CBB $1.5K And-One,0.0294,0.1765,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,34,176.61,229.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0294,0.1471,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,34,176.61,229.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0294,0.1765,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,entered,1,182.75,182.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,entered,1,182.75,182.75,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,entered,1,182.75,182.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,entered,1,182.75,182.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,151,170.0,240.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0464,0.1589,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,151,170.0,240.5,197921824,CBB $1.5K And-One,0.0265,0.1391,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,151,170.0,240.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0265,0.1258,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,151,170.0,240.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0265,0.1391,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,49,183.09,253.5,197906434,CBB $100 Dime Time [Just $0.10!],0.1633,0.2245,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,49,183.09,253.5,197921824,CBB $1.5K And-One,0.1429,0.1837,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,49,183.09,253.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1429,0.1633,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,49,183.09,253.5,197925185,CBB $50 Dime Time [Just $0.10!],0.1429,0.1837,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,3,206.42,253.5,197906434,CBB $100 Dime Time [Just $0.10!],0.3333,0.3333,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,3,206.42,253.5,197921824,CBB $1.5K And-One,0.3333,0.3333,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,3,206.42,253.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.3333,0.3333,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,3,206.42,253.5,197925185,CBB $50 Dime Time [Just $0.10!],0.3333,0.3333,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,159,177.83,256.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0881,0.2264,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,159,177.83,256.75,197921824,CBB $1.5K And-One,0.0503,0.2075,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,159,177.83,256.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0503,0.1824,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,159,177.83,256.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0503,0.2075,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,41,176.26,236.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0488,0.1463,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,41,176.26,236.25,197921824,CBB $1.5K And-One,0.0488,0.122,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,41,176.26,236.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0488,0.0976,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,41,176.26,236.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0488,0.122,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,169,174.0,249.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0769,0.1657,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,169,174.0,249.75,197921824,CBB $1.5K And-One,0.071,0.1538,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,169,174.0,249.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.071,0.142,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,169,174.0,249.75,197925185,CBB $50 Dime Time [Just $0.10!],0.071,0.1538,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,31,171.43,228.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0323,0.0968,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,31,171.43,228.75,197921824,CBB $1.5K And-One,0.0323,0.0968,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,31,171.43,228.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0323,0.0645,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,31,171.43,228.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0323,0.0968,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,cut,150,161.08,232.75,197906434,CBB $100 Dime Time [Just $0.10!],0.02,0.0733,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,cut,150,161.08,232.75,197921824,CBB $1.5K And-One,0.02,0.0733,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,cut,150,161.08,232.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.02,0.0667,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,cut,150,161.08,232.75,197925185,CBB $50 Dime Time [Just $0.10!],0.02,0.0733,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,kept,50,167.0,242.0,197906434,CBB $100 Dime Time [Just $0.10!],0.06,0.08,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,kept,50,167.0,242.0,197921824,CBB $1.5K And-One,0.06,0.08,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,kept,50,167.0,242.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.06,0.08,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,kept,50,167.0,242.0,197925185,CBB $50 Dime Time [Just $0.10!],0.06,0.08,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,entered,1,200.25,200.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,entered,1,200.25,200.25,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,entered,1,200.25,200.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,entered,1,200.25,200.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,152,187.13,252.0,197906434,CBB $100 Dime Time [Just $0.10!],0.125,0.2697,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,152,187.13,252.0,197921824,CBB $1.5K And-One,0.0921,0.25,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,152,187.13,252.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0921,0.2303,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,152,187.13,252.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0921,0.25,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,48,201.1,248.75,197906434,CBB $100 Dime Time [Just $0.10!],0.3125,0.4583,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,48,201.1,248.75,197921824,CBB $1.5K And-One,0.25,0.3958,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,48,201.1,248.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.25,0.3958,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,48,201.1,248.75,197925185,CBB $50 Dime Time [Just $0.10!],0.25,0.3958,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,166.0,166.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,166.0,166.0,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,166.0,166.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,1 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,166.0,166.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,cut,170,161.42,220.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0059,0.0353,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,cut,170,161.42,220.0,197921824,CBB $1.5K And-One,0.0,0.0294,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,cut,170,161.42,220.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0235,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,cut,170,161.42,220.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0294,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,kept,30,175.04,227.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0667,0.0667,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,kept,30,175.04,227.75,197921824,CBB $1.5K And-One,0.0667,0.0667,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,kept,30,175.04,227.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0667,0.0667,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,kept,30,175.04,227.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0667,0.0667,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,entered,1,205.0,205.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,entered,1,205.0,205.0,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,entered,1,205.0,205.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from AUB + At least 3 from WVU,entered,1,205.0,205.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from KU,cut,167,166.89,245.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0539,0.1078,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from KU,cut,167,166.89,245.75,197921824,CBB $1.5K And-One,0.0419,0.1078,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from KU,cut,167,166.89,245.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0419,0.1078,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from KU,cut,167,166.89,245.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0419,0.1078,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from KU,kept,33,175.52,224.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0303,0.1515,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from KU,kept,33,175.52,224.25,197921824,CBB $1.5K And-One,0.0303,0.1212,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from KU,kept,33,175.52,224.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0303,0.1212,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from KU,kept,33,175.52,224.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0303,0.1212,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,cut,151,157.63,262.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0199,0.053,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,cut,151,157.63,262.75,197921824,CBB $1.5K And-One,0.0199,0.0397,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,cut,151,157.63,262.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0199,0.0397,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,cut,151,157.63,262.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0199,0.0397,1,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,kept,49,162.14,227.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0408,0.0408,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,kept,49,162.14,227.5,197921824,CBB $1.5K And-One,0.0204,0.0408,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,kept,49,162.14,227.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0204,0.0408,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,kept,49,162.14,227.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0204,0.0408,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,entered,3,167.0,173.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,entered,3,167.0,173.5,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,entered,3,167.0,173.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 2 from VU,entered,3,167.0,173.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,cut,184,161.36,236.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0054,0.0543,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,cut,184,161.36,236.75,197921824,CBB $1.5K And-One,0.0054,0.0543,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,cut,184,161.36,236.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0054,0.0543,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,cut,184,161.36,236.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0054,0.0543,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,kept,16,173.56,236.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0625,0.0625,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,kept,16,173.56,236.5,197921824,CBB $1.5K And-One,0.0625,0.0625,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,kept,16,173.56,236.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0625,0.0625,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,kept,16,173.56,236.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0625,0.0625,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,entered,1,236.5,236.5,197906434,CBB $100 Dime Time [Just $0.10!],1.0,1.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,entered,1,236.5,236.5,197921824,CBB $1.5K And-One,1.0,1.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,entered,1,236.5,236.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,1.0,1.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from AUB + At least 2 from WVU,entered,1,236.5,236.5,197925185,CBB $50 Dime Time [Just $0.10!],1.0,1.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,cut,161,165.38,252.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0683,0.1304,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,cut,161,165.38,252.75,197921824,CBB $1.5K And-One,0.0497,0.118,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,cut,161,165.38,252.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0497,0.1118,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,cut,161,165.38,252.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0497,0.118,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,kept,39,179.6,254.25,197906434,CBB $100 Dime Time [Just $0.10!],0.1026,0.1795,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,kept,39,179.6,254.25,197921824,CBB $1.5K And-One,0.0769,0.1795,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,kept,39,179.6,254.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0769,0.1795,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,kept,39,179.6,254.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0769,0.1795,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,entered,2,155.88,165.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,entered,2,155.88,165.0,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,entered,2,155.88,165.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from KU,entered,2,155.88,165.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from VU,cut,179,152.14,219.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0056,0.0447,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from VU,cut,179,152.14,219.75,197921824,CBB $1.5K And-One,0.0,0.0391,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from VU,cut,179,152.14,219.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0391,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from VU,cut,179,152.14,219.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0391,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from VU,kept,21,168.54,228.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0952,0.0952,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from VU,kept,21,168.54,228.25,197921824,CBB $1.5K And-One,0.0952,0.0952,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from VU,kept,21,168.54,228.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0952,0.0952,0,,warm-up
+2026-11-17,156663,2 under 10% + At least 3 from VU,kept,21,168.54,228.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0952,0.0952,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,cut,120,160.35,225.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0333,0.05,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,cut,120,160.35,225.0,197921824,CBB $1.5K And-One,0.025,0.05,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,cut,120,160.35,225.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.025,0.05,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,cut,120,160.35,225.0,197925185,CBB $50 Dime Time [Just $0.10!],0.025,0.05,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,kept,80,171.48,245.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0375,0.075,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,kept,80,171.48,245.75,197921824,CBB $1.5K And-One,0.0375,0.075,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,kept,80,171.48,245.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0375,0.075,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,kept,80,171.48,245.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0375,0.075,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,entered,3,186.17,200.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,entered,3,186.17,200.25,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,entered,3,186.17,200.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + Stack AUB-WVU: 2+ from AUB + Stack AUB-WVU: 1+ from WVU,entered,3,186.17,200.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,174,165.97,260.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0287,0.0862,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,174,165.97,260.5,197921824,CBB $1.5K And-One,0.0287,0.0862,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,174,165.97,260.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0287,0.0862,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,174,165.97,260.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0287,0.0862,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,26,178.2,255.25,197906434,CBB $100 Dime Time [Just $0.10!],0.1154,0.1923,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,26,178.2,255.25,197921824,CBB $1.5K And-One,0.1154,0.1923,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,26,178.2,255.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1154,0.1923,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,26,178.2,255.25,197925185,CBB $50 Dime Time [Just $0.10!],0.1154,0.1923,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,158,164.84,244.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0506,0.0886,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,158,164.84,244.75,197921824,CBB $1.5K And-One,0.038,0.0886,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,158,164.84,244.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.038,0.0823,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,158,164.84,244.75,197925185,CBB $50 Dime Time [Just $0.10!],0.038,0.0886,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,42,176.68,243.5,197906434,CBB $100 Dime Time [Just $0.10!],0.119,0.2143,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,42,176.68,243.5,197921824,CBB $1.5K And-One,0.119,0.1667,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,42,176.68,243.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.119,0.1667,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,42,176.68,243.5,197925185,CBB $50 Dime Time [Just $0.10!],0.119,0.1667,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,157,172.77,239.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0637,0.1656,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,157,172.77,239.5,197921824,CBB $1.5K And-One,0.051,0.1529,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,157,172.77,239.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.051,0.1338,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,157,172.77,239.5,197925185,CBB $50 Dime Time [Just $0.10!],0.051,0.1529,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,43,180.58,277.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0698,0.2093,2,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,43,180.58,277.75,197921824,CBB $1.5K And-One,0.0698,0.2093,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,43,180.58,277.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0698,0.2093,2,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,43,180.58,277.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0698,0.2093,2,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,1,136.25,136.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,1,136.25,136.25,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,1,136.25,136.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,1,136.25,136.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,158,174.88,261.25,197906434,CBB $100 Dime Time [Just $0.10!],0.1203,0.2089,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,158,174.88,261.25,197921824,CBB $1.5K And-One,0.1139,0.2025,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,158,174.88,261.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1139,0.1962,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,158,174.88,261.25,197925185,CBB $50 Dime Time [Just $0.10!],0.1139,0.2025,1,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,42,186.67,256.25,197906434,CBB $100 Dime Time [Just $0.10!],0.119,0.2143,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,42,186.67,256.25,197921824,CBB $1.5K And-One,0.0952,0.1667,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,42,186.67,256.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0952,0.1667,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,42,186.67,256.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0952,0.1667,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,entered,2,181.38,186.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,entered,2,181.38,186.5,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,entered,2,181.38,186.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,entered,2,181.38,186.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,170,169.38,248.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0588,0.1353,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,170,169.38,248.5,197921824,CBB $1.5K And-One,0.0412,0.1353,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,170,169.38,248.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0412,0.1294,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,170,169.38,248.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0412,0.1353,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,30,178.68,263.25,197906434,CBB $100 Dime Time [Just $0.10!],0.2,0.2667,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,30,178.68,263.25,197921824,CBB $1.5K And-One,0.2,0.2667,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,30,178.68,263.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.2,0.2667,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,30,178.68,263.25,197925185,CBB $50 Dime Time [Just $0.10!],0.2,0.2667,1,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,entered,1,182.0,182.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,entered,1,182.0,182.0,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,entered,1,182.0,182.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,entered,1,182.0,182.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,cut,176,159.19,229.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0057,0.017,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,cut,176,159.19,229.75,197921824,CBB $1.5K And-One,0.0057,0.017,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,cut,176,159.19,229.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0057,0.017,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,cut,176,159.19,229.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0057,0.017,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,kept,24,171.16,225.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0417,0.0417,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,kept,24,171.16,225.0,197921824,CBB $1.5K And-One,0.0417,0.0417,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,kept,24,171.16,225.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0417,0.0417,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + At least 2 from AUB,kept,24,171.16,225.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0417,0.0417,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,cut,155,160.17,242.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0194,0.0516,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,cut,155,160.17,242.0,197921824,CBB $1.5K And-One,0.0129,0.0452,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,cut,155,160.17,242.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0129,0.0452,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,cut,155,160.17,242.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0129,0.0452,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,kept,45,172.88,223.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0444,0.1333,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,kept,45,172.88,223.25,197921824,CBB $1.5K And-One,0.0222,0.1333,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,kept,45,172.88,223.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0222,0.0444,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,kept,45,172.88,223.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0222,0.1333,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,entered,3,197.08,208.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.3333,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,entered,3,197.08,208.0,197921824,CBB $1.5K And-One,0.0,0.3333,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,entered,3,197.08,208.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + Stack WVU-AUB: 2+ from WVU + Stack WVU-AUB: 1+ from AUB,entered,3,197.08,208.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.3333,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,162,188.16,261.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0864,0.2346,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,162,188.16,261.5,197921824,CBB $1.5K And-One,0.0864,0.2099,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,162,188.16,261.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0864,0.2037,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,cut,162,188.16,261.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0864,0.2099,1,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,38,196.49,243.25,197906434,CBB $100 Dime Time [Just $0.10!],0.1316,0.3158,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,38,196.49,243.25,197921824,CBB $1.5K And-One,0.1316,0.2895,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,38,196.49,243.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1316,0.2895,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,kept,38,196.49,243.25,197925185,CBB $50 Dime Time [Just $0.10!],0.1316,0.2895,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,215.75,215.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,215.75,215.75,197921824,CBB $1.5K And-One,0.0,1.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,215.75,215.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,1.0,0,,warm-up
+2026-11-17,156663,2 under 10% + leverage 0.2 + lock Stojakovic + Stack DUKE-IL: 2+ from DUKE + At least 2 from IL,entered,1,215.75,215.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,At least 2 from KU,cut,158,167.48,270.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0506,0.1076,1,,warm-up
+2026-11-17,156663,At least 2 from KU,cut,158,167.48,270.25,197921824,CBB $1.5K And-One,0.0443,0.1013,0,,warm-up
+2026-11-17,156663,At least 2 from KU,cut,158,167.48,270.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0443,0.1013,1,,warm-up
+2026-11-17,156663,At least 2 from KU,cut,158,167.48,270.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0443,0.1013,2,,warm-up
+2026-11-17,156663,At least 2 from KU,kept,42,174.26,230.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0476,0.0714,0,,warm-up
+2026-11-17,156663,At least 2 from KU,kept,42,174.26,230.0,197921824,CBB $1.5K And-One,0.0476,0.0714,0,,warm-up
+2026-11-17,156663,At least 2 from KU,kept,42,174.26,230.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0476,0.0714,0,,warm-up
+2026-11-17,156663,At least 2 from KU,kept,42,174.26,230.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0476,0.0714,0,,warm-up
+2026-11-17,156663,At least 2 from KU,entered,2,147.38,176.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 2 from KU,entered,2,147.38,176.5,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 2 from KU,entered,2,147.38,176.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 2 from KU,entered,2,147.38,176.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 2 from VU,cut,142,159.51,229.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0211,0.0493,0,,warm-up
+2026-11-17,156663,At least 2 from VU,cut,142,159.51,229.75,197921824,CBB $1.5K And-One,0.0141,0.0423,0,,warm-up
+2026-11-17,156663,At least 2 from VU,cut,142,159.51,229.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0141,0.0352,0,,warm-up
+2026-11-17,156663,At least 2 from VU,cut,142,159.51,229.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0141,0.0423,0,,warm-up
+2026-11-17,156663,At least 2 from VU,kept,58,168.09,269.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0345,0.1034,1,,warm-up
+2026-11-17,156663,At least 2 from VU,kept,58,168.09,269.0,197921824,CBB $1.5K And-One,0.0345,0.1034,0,,warm-up
+2026-11-17,156663,At least 2 from VU,kept,58,168.09,269.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0345,0.0862,1,,warm-up
+2026-11-17,156663,At least 2 from VU,kept,58,168.09,269.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0345,0.1034,1,,warm-up
+2026-11-17,156663,At least 2 from VU,entered,1,180.25,180.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 2 from VU,entered,1,180.25,180.25,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 2 from VU,entered,1,180.25,180.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 2 from VU,entered,1,180.25,180.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from KU,cut,159,166.6,264.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0314,0.1006,0,,warm-up
+2026-11-17,156663,At least 3 from KU,cut,159,166.6,264.25,197921824,CBB $1.5K And-One,0.0314,0.0818,0,,warm-up
+2026-11-17,156663,At least 3 from KU,cut,159,166.6,264.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0314,0.0692,0,,warm-up
+2026-11-17,156663,At least 3 from KU,cut,159,166.6,264.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0314,0.0818,1,,warm-up
+2026-11-17,156663,At least 3 from KU,kept,41,176.05,227.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0244,0.122,0,,warm-up
+2026-11-17,156663,At least 3 from KU,kept,41,176.05,227.75,197921824,CBB $1.5K And-One,0.0244,0.0976,0,,warm-up
+2026-11-17,156663,At least 3 from KU,kept,41,176.05,227.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0244,0.0976,0,,warm-up
+2026-11-17,156663,At least 3 from KU,kept,41,176.05,227.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0244,0.0976,0,,warm-up
+2026-11-17,156663,At least 3 from KU,entered,2,171.0,181.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from KU,entered,2,171.0,181.75,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from KU,entered,2,171.0,181.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from KU,entered,2,171.0,181.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from VU,cut,182,154.25,219.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0055,0.022,0,,warm-up
+2026-11-17,156663,At least 3 from VU,cut,182,154.25,219.75,197921824,CBB $1.5K And-One,0.0,0.022,0,,warm-up
+2026-11-17,156663,At least 3 from VU,cut,182,154.25,219.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.022,0,,warm-up
+2026-11-17,156663,At least 3 from VU,cut,182,154.25,219.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.022,0,,warm-up
+2026-11-17,156663,At least 3 from VU,kept,18,154.32,207.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0556,0,,warm-up
+2026-11-17,156663,At least 3 from VU,kept,18,154.32,207.0,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from VU,kept,18,154.32,207.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from VU,kept,18,154.32,207.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from VU,entered,1,161.0,161.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from VU,entered,1,161.0,161.0,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from VU,entered,1,161.0,161.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,At least 3 from VU,entered,1,161.0,161.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,160,165.99,254.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0563,0.0938,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,160,165.99,254.0,197921824,CBB $1.5K And-One,0.05,0.0875,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,160,165.99,254.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.05,0.0875,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,cut,160,165.99,254.0,197925185,CBB $50 Dime Time [Just $0.10!],0.05,0.0875,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,40,175.84,249.0,197906434,CBB $100 Dime Time [Just $0.10!],0.1,0.2,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,40,175.84,249.0,197921824,CBB $1.5K And-One,0.1,0.175,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,40,175.84,249.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1,0.15,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,kept,40,175.84,249.0,197925185,CBB $50 Dime Time [Just $0.10!],0.1,0.175,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,entered,1,176.25,176.25,197906434,CBB $100 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,entered,1,176.25,176.25,197921824,CBB $1.5K And-One,0.0,0.0,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,entered,1,176.25,176.25,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,0.0,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack DUKE-IL: 2+ from DUKE + Stack DUKE-IL: 1+ from IL,entered,1,176.25,176.25,197925185,CBB $50 Dime Time [Just $0.10!],0.0,0.0,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,159,170.16,272.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0629,0.1258,2,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,159,170.16,272.75,197921824,CBB $1.5K And-One,0.0629,0.1195,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,159,170.16,272.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0629,0.1132,2,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,cut,159,170.16,272.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0629,0.1195,2,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,41,186.41,255.5,197906434,CBB $100 Dime Time [Just $0.10!],0.1463,0.2683,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,41,186.41,255.5,197921824,CBB $1.5K And-One,0.122,0.2439,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,41,186.41,255.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.122,0.2439,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,kept,41,186.41,255.5,197925185,CBB $50 Dime Time [Just $0.10!],0.122,0.2439,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,1,211.75,211.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,1,211.75,211.75,197921824,CBB $1.5K And-One,0.0,1.0,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,1,211.75,211.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0,1.0,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack IL-DUKE: 2+ from IL + Stack IL-DUKE: 1+ from DUKE,entered,1,211.75,211.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0,1.0,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,165,180.68,260.5,197906434,CBB $100 Dime Time [Just $0.10!],0.1333,0.2364,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,165,180.68,260.5,197921824,CBB $1.5K And-One,0.1091,0.2182,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,165,180.68,260.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.1091,0.2061,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,cut,165,180.68,260.5,197925185,CBB $50 Dime Time [Just $0.10!],0.1091,0.2182,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,35,174.81,231.5,197906434,CBB $100 Dime Time [Just $0.10!],0.0286,0.1429,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,35,174.81,231.5,197921824,CBB $1.5K And-One,0.0286,0.1429,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,35,174.81,231.5,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0286,0.1143,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 1+ from VU + At least 3 from PITT,kept,35,174.81,231.5,197925185,CBB $50 Dime Time [Just $0.10!],0.0286,0.1429,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,168,170.72,262.0,197906434,CBB $100 Dime Time [Just $0.10!],0.0655,0.1369,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,168,170.72,262.0,197921824,CBB $1.5K And-One,0.0536,0.125,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,168,170.72,262.0,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0536,0.119,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,cut,168,170.72,262.0,197925185,CBB $50 Dime Time [Just $0.10!],0.0536,0.125,1,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,32,165.8,232.75,197906434,CBB $100 Dime Time [Just $0.10!],0.0312,0.0625,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,32,165.8,232.75,197921824,CBB $1.5K And-One,0.0312,0.0625,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,32,165.8,232.75,197921825,CBB $250 Quarter Jukebox [Just $0.25!] ,0.0312,0.0625,0,,warm-up
+2026-11-17,156663,leverage 0.2 + Stack PITT-VU: 2+ from PITT + Stack PITT-VU: 1+ from VU,kept,32,165.8,232.75,197925185,CBB $50 Dime Time [Just $0.10!],0.0312,0.0625,0,,warm-up

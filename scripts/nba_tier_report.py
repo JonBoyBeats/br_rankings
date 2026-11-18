@@ -665,7 +665,8 @@ def main():
             "is from %s" % day(mt["night"]) if mt and mt.get("night") else "is missing", day(last)), ""]
     import nba_report_sections as RS
     RS.write_rulebook()
-    md[4:4] = ["*The standing rules and the words this report uses: [the rulebook](rulebook.md).*", ""] + RS.rule_change(last)
+    md[4:4] = ["*The standing rules and the words this report uses: [the rulebook](rulebook.md). Results over time: the Results page "
+               "(nba_results.html).*", ""] + RS.rule_change(last)
     md += [hw["front"], ""] if hw.get("front") else front_page(last, H, mt, hl, (slate, lock, pod) if slate else None)
     md += RS.decided(mt, last)
     md += RS.bets_and_fades(mt, last, H)
@@ -677,20 +678,18 @@ def main():
         if t in (1, 2):
             md += ["**How the night went.** " + RS.night_line(H, last, t), ""]
         elif t in (3, 4):
-            md += ["**How the night went.** " + who_to_trust(H, last, t)[0], ""]
-        if t in (2, 3, 4):
-            md += ["**Your moves.**", ""] + RS.moves(H, last, t) + ([hand_moves, ""] if hand_moves else [])
-        if t == 2:
-            md += ["**The turn lines.**", ""] + RS.turn_lines(mt, last)
-        if t == 5:
-            md += ["**Your T5 menu, on contest results.**", ""] + RS.t5_contest(H, mt) + ([hand_moves, ""] if hand_moves else [])
+            md += ["**How the night went.** " + who_to_trust(H, last, t)[0].split(" On the season")[0], ""]
+        if t in (2, 3, 4):                   # last night's moves only: the season reads are on the Results page (2026-11-17)
+            md += ["**Your moves.**", ""] + RS.moves(H, last, t)[:-3] + [""] + ([hand_moves, ""] if hand_moves else [])
+        if t == 5 and hand_moves:
+            md += [hand_moves, ""]
         md += ["**Player recap**, in the button's order.", ""] + rc
         md += ["**Contest view.** " + RS.contest(t, mt)[0], ""]
     md += RS.q_section(H, last, (pool, ben), q_tracker(H, last), mt)
     md += RS.back(last, problems(hl)) + ([hw["back"], ""] if hw.get("back") else [])
-    md += ["## Season", "", "*Reference tables; points per pair as above. Labels here are the grading's own (RULE: proven so far, + helps and - hurts; "
-           "LEAN: an early sign; no lean: no clear signal; not enough yet: too early to say).*", ""] + overnight(H) + season_tables(H)
-    md += ["", "Full tables: tier_grade.md, q_lane.md, swap_board.md, my_swaps.md, money_points.md, rules_side_by_side.md, rule_dates.json."]
+    md += ["---", "", "*Grading over time (results, finishes, ETR vs ADP, your moves by tier, T5 and swaps) is on the Results page "
+           "(nba_results.html, from analysis/nba/dashboard.json); the Friday report proposes changes. Full tables: tier_grade.md, "
+           "tier_season_tests.md, push_rerun.md, swap_board.md, my_swaps.md, rule_dates.json.*"]
     open(OUT, "w").write("\n".join(md) + "\n")
     print("\n".join(md))
 

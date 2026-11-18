@@ -1,6 +1,8 @@
 """The Friday report's contest results (asked 2026-11-13; first report 2026-11-20). Writes analysis/nba/report/money_friday.json,
 which the rankings side's Friday report reads. Runs in its own Friday job (.github/workflows/nba_friday.yml) after the
 nightly record, so the nightly money step doesn't grow. Results only: nothing here writes the register or the button.
+Also carries the pod replay's paired reads (scripts/nba_pod_replay.py, run nightly: pod_replay.json), season and since
+each rule date, under "pod_replay"; reruns it only when the nightly's copy is missing or over 12 hours old.
 
 Every test is read over every night on file, as multiples against the whole field in the same contest and price quintile
 (top 1%, top 10%, cash; counts and an 80% range: nba_money.field_multiple), for the season and since its rule went in. Rule
@@ -102,15 +104,7 @@ def t2_turns(N, R, rule):
     return out
 
 
-def elites(rows):
-    """The window's elites: T1's top 3-4 by projection, cut at the biggest gap (1-3 players)."""
-    t1 = sorted(((num(r["proj"]), p) for p, r in rows.items() if r["tier"] == "1" and num(r["proj"]) is not None), reverse=True)
-    if len(t1) < 2:
-        return {p for _, p in t1}
-    top = t1[:4]
-    gaps = [top[i][0] - top[i + 1][0] for i in range(min(3, len(top) - 1))]
-    k = 1 + gaps.index(max(gaps))
-    return {p for _, p in top[:k]}
+elites = M.elites      # the window's elites (nba_money.elites)
 
 
 def t2_elite(N, R, rule):
@@ -143,11 +137,7 @@ def t2_elite(N, R, rule):
 
 
 # ---------------------------------------------------------------- T3/T4
-def pre_t5_tier(r):
-    """The button's tier before its T5 rules: the ADP tier moved one tier toward the projection tier when they're 2+ apart
-    (index.html nbaBuildLaddersNew, from 11-13 with the A5 fix: A5-P3 is T4 VALUE)."""
-    a, p = int(r["a_tier"]), int(r["p_tier"])
-    return a - (1 if a > p else -1) if abs(a - p) >= 2 else a
+pre_t5_tier = M.pre_t5_tier      # the button's tier before its T5 rules (nba_money.pre_t5_tier)
 
 
 def boundaries(N, R, rule):
@@ -335,6 +325,11 @@ def main():
         for w in ("am", "pm"):
             for r in n["tiers"][w].values():
                 r["window"] = w
+    import nba_pod_replay as PR                    # the pod replay: this morning's nightly copy, rerun only if it's missing or stale
+    pr = json.load(open(PR.OUT_JSON)) if os.path.exists(PR.OUT_JSON) else {}
+    age = (dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(pr["generated"])) if pr.get("generated") else None
+    if age is None or age > dt.timedelta(hours=12):
+        pr = PR.run(N, mirror=a.mirror)
     R = M.field_rates(N)
     RD.update(json.load(open(RULE_DATES)) if os.path.exists(RULE_DATES) else {})
     prev = json.load(open(OUT)) if os.path.exists(OUT) else {}
@@ -358,7 +353,10 @@ def main():
                     "top 1%, top 10% and cash, the top-10% 80% range from resampling nights, and team counts; 'since' covers "
                     "nights on or after the test's rule date (rule_dates.json), 'season' every night on file. Definitions: "
                     "scripts/nba_money_friday.py.",
-           "tests": tests, "monthly": mon, "proposals": M.proposals(tj, old)}
+           "tests": tests, "monthly": mon, "proposals": M.proposals(tj, old),
+           # the pod replay (scripts/nba_pod_replay.py; full tables in pod_replay.md/json): (a) my locked list minus each list,
+           # season and since each rule date, in percentage points; and top 1% at my real seats
+           "pod_replay": {k: pr.get(k) for k in ("paired_note", "labels", "paired", "since_rules", "pm_etr_button", "my_seats_top1", "r6_fidelity")}}
     json.dump(out, open(OUT, "w"), indent=1)
     print("money_friday.json: %d tests, %d nights, monthly %s, %d proposals" % (len(tests), len(N), mon.get("generated"),
                                                                                  len(out["proposals"]["proposals"])))

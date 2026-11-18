@@ -29,6 +29,7 @@ DAILY = os.path.join(HERE, "analysis", "nba", "daily")
 TAKES = os.path.join(HERE, "analysis", "nba", "takes")
 num = G.num
 W = {"am": "morning", "pm": "afternoon"}
+PUSH = 3.0     # pairs under 3 points apart are pushes (2026-11-17)
 
 THEME = {
     1: ["**T1, the elite.** The players every pod takes first; the order is the decision. Morning: ADP, the higher Boom first "
@@ -50,7 +51,7 @@ def short(n):
 
 
 def pct(x):
-    return "%d%%" % round(100 * x)
+    return "-" if x is None else "%d%%" % round(100 * x)     # None: no teams in that window (a night you didn't play)
 
 
 class _ByKey(dict):
@@ -272,14 +273,16 @@ def moves(H, night, t):
     if len(by) < 5 or len(allg) < 15:
         season = "too early (%d move%s on %d night%s)" % (len(allg), "" if len(allg) == 1 else "s", len(by), "" if len(by) == 1 else "s")
     else:
+        # a tally (2026-11-17): a move wins or loses at 3+ points apart, pushes under 3; resampled by night on wins - losses
+        tally = lambda d: sum(g >= PUSH for g in by[d]) - sum(g <= -PUSH for g in by[d])
         ds, rnd, up = list(by), random.Random(3), 0
         for _ in range(1000):
-            v = [g for d in (rnd.choice(ds) for _ in ds) for g in by[d]]
-            up += sum(v) > 0
+            up += sum(tally(d) for d in (rnd.choice(ds) for _ in ds)) > 0
         share = up / 1000
+        won, lost = sum(g >= PUSH for g in allg), sum(g <= -PUSH for g in allg)
         season = ("keep doing what you're doing" if share >= 0.8 else "press the button" if share <= 0.2 else "too early") + \
-            " (%d moves on %d nights, %d%% right, %+.1f points a move; ahead in %d%% of night-resamples)" % (
-                len(allg), len(by), round(100 * sum(g > 0 for g in allg) / len(allg)), sum(allg) / len(allg), round(100 * share))
+            " (%d moves on %d nights: %d won, %d lost, %d pushes under 3 points; %+.1f points a move; ahead in %d%% of night-resamples)" % (
+                len(allg), len(by), won, lost, len(allg) - won - lost, sum(allg) / len(allg), round(100 * share))
     return (md or ["No moves against the button here last night."]) + ["", "Season, your moves in T%d: %s." % (t, season), ""]
 
 
@@ -402,17 +405,8 @@ def q_section(H, night, today_pool, tracker, mt=None):
     md += ["**Your Q moves.** " + ("; ".join("%s: %s ahead of %s, %s by %.0f" % (
         W[t["window"]].capitalize(), short(t["you_first"]), short(t["button_first"]), "helped" if float(t["gain"]) > 0 else "hurt", abs(float(t["gain"])))
         for t in qm) + "." if qm else "None last night."), ""]
-    try:
-        import nba_swap_grade
-        md += [nba_swap_grade.season_line(), ""]
-    except Exception as e:
-        md += ["Swap button: not graded (%s)." % e, ""]
-    if tracker:
-        md += [tracker[0], ""]
-    qp = ((mt or {}).get("q_picks") or {}).get("groups") or {}
-    if qp:
-        md += ["**Q picks on contest results, season** (top 10%% against the field's rate): %s." % "; ".join(
-            "%s %s" % (k, mult(qp[k])) for k in ("no Q pick", "any Q pick", "played", "sat", "T1", "T2", "T3", "T4", "T5") if k in qp), ""]
+    # the swap button's season line, the chance-to-play tracker and Q picks on contest results moved to the Results page and
+    # the Friday report (2026-11-17)
     today = [r for r in (pool or []) if (r.get("tag") or "")[:1].lower() == "q" and r.get("drafted")]
     bmap = collections.defaultdict(list)
     for r, tg in (ben or []):
@@ -512,14 +506,16 @@ rule_dates.json; the Friday report reads "since the rule went in" and "season" f
 ## The button (from 2026-11-13; the morning window from 11-14)
 
 - A player's tier is his ADP tier, moved at most one tier toward his projection's; VALUE is a tier better on the
-  projection, PRICEY a tier worse. The projection is ours in the morning, ETR's in the afternoon.
+  projection, PRICEY a tier worse. The projection is ours in the morning, ETR's in the afternoon. Afternoon tiers run
+  the other way (from 11-17): his ETR tier, moved one tier toward his ADP tier at 2+ apart ("PM tiers: ETR"); the elite
+  cut and the T4 PRICEY drop read the ETR tier, and T4 ends at ETR's ladder line, not round 6.
 - T1: morning ADP, the higher Boom first within 2 picks; afternoon ETR. The elite cut: T1's top at the biggest projection
   gap among its top 3-4 (1 to 3 players).
 - T2: morning straight ADP; afternoon ADP with ETR breaking ties within 2 picks up to the elite break (pick 13 minus the
   elites with 6 drafters, 9 minus them with 4), ETR from there.
 - T3 and T4: VALUE, the rest, PRICEY; morning by ADP, afternoon by ETR (ADP, then Boom, on exact ties). T3 PRICEY stays
   ahead of T4 VALUE.
-- T4 ends at the start of round 6 (after pick 30; 20 with 4 drafters), earlier at an ADP gap of 2+ picks just before it;
+- T4 (morning) ends at the start of round 6 (after pick 30; 20 with 4 drafters), earlier at an ADP gap of 2+ picks just before it;
   round-6 players are never in T4; T4 PRICEY players drop into T5; T4 short of 4 borrows the bottom of T3.
 - T5: round 6 and the dropped T4 PRICEY players drafted in under 60% of pods and projected for 20+ minutes (box-score
   minutes in the morning, ETR-implied in the afternoon), by projection, 50-60% at the bottom, to your cut. Everyone else

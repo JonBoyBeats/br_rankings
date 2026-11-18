@@ -1,0 +1,1711 @@
+{
+ "date": "2026-11-15",
+ "slate": "nba_sun_main",
+ "contests": [
+  {
+   "contest": "Sunday Shootaround",
+   "contest_id": "fe28c863-9fb1-4982-b865-3a930fa957c5",
+   "entries": 8652,
+   "pods": 1442,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 8652,
+    "win": 269.9,
+    "median": 192.6,
+    "top1": 244.5,
+    "top1_over_median": 51.9,
+    "top5": 229.8,
+    "top5_over_median": 37.2,
+    "top10": 221.6,
+    "top10_over_median": 29.0,
+    "top20": 211.4,
+    "top20_over_median": 18.8
+   },
+   "drafted_curve": [
+    {
+     "player": "Shai Gilgeous-Alexander",
+     "adp": 1.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jalen Johnson",
+     "adp": 2.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Alperen Sengun",
+     "adp": 3.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 3.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Davis",
+     "adp": 5.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Karl-Anthony Towns",
+     "adp": 6.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 6.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jalen Brunson",
+     "adp": 8.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Domantas Sabonis",
+     "adp": 9.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Darius Acuff Jr.",
+     "adp": 10.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kevin Durant",
+     "adp": 10.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Scottie Barnes",
+     "adp": 12.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Amen Thompson",
+     "adp": 13.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 14.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 14.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "RJ Barrett",
+     "adp": 16.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Dyson Daniels",
+     "adp": 17.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Onyeka Okongwu",
+     "adp": 18.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Tyler Herro",
+     "adp": 18.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Isaiah Hartenstein",
+     "adp": 20.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Nickeil Alexander-Walker",
+     "adp": 20.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 23.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Immanuel Quickley",
+     "adp": 23.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Derrick White",
+     "adp": 24.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "OG Anunoby",
+     "adp": 25.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 27.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "CJ McCollum",
+     "adp": 28.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jabari Smith Jr.",
+     "adp": 28.8,
+     "drafted": 99.9
+    },
+    {
+     "player": "Jared McCain",
+     "adp": 30.8,
+     "drafted": 99.0
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 31.1,
+     "drafted": 98.8
+    },
+    {
+     "player": "Jaime Jaquez Jr.",
+     "adp": 31.3,
+     "drafted": 99.6
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 33.8,
+     "drafted": 86.1
+    },
+    {
+     "player": "Josh Hart",
+     "adp": 33.9,
+     "drafted": 68.0
+    },
+    {
+     "player": "Reed Sheppard",
+     "adp": 34.2,
+     "drafted": 75.2
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 35.1,
+     "drafted": 38.3
+    },
+    {
+     "player": "Neemias Queta",
+     "adp": 35.5,
+     "drafted": 29.8
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 35.5,
+     "drafted": 22.3
+    },
+    {
+     "player": "Myles Turner",
+     "adp": 35.6,
+     "drafted": 86.1
+    },
+    {
+     "player": "Keegan Murray",
+     "adp": 35.7,
+     "drafted": 28.7
+    },
+    {
+     "player": "Tari Eason",
+     "adp": 35.8,
+     "drafted": 16.1
+    },
+    {
+     "player": "Aday Mara",
+     "adp": 35.8,
+     "drafted": 13.1
+    },
+    {
+     "player": "Brayden Burries",
+     "adp": 35.9,
+     "drafted": 9.8
+    },
+    {
+     "player": "Collin Murray-Boyles",
+     "adp": 35.9,
+     "drafted": 5.9
+    },
+    {
+     "player": "Mikal Bridges",
+     "adp": 35.9,
+     "drafted": 3.6
+    },
+    {
+     "player": "Aaron Wiggins",
+     "adp": 35.9,
+     "drafted": 3.8
+    },
+    {
+     "player": "Kyle Kuzma",
+     "adp": 35.9,
+     "drafted": 2.4
+    },
+    {
+     "player": "Steven Adams",
+     "adp": 35.9,
+     "drafted": 0.8
+    },
+    {
+     "player": "Alex Caruso",
+     "adp": 35.9,
+     "drafted": 2.4
+    },
+    {
+     "player": "Naji Marshall",
+     "adp": 35.9,
+     "drafted": 4.2
+    },
+    {
+     "player": "Walter Clayton Jr.",
+     "adp": 36.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "Luka Garza",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Caleb Martin",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Jakob Poeltl",
+     "adp": 36.0,
+     "drafted": 2.0
+    },
+    {
+     "player": "Kel'el Ware",
+     "adp": 36.0,
+     "drafted": 0.9
+    },
+    {
+     "player": "Deandre Ayton",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Jamal Shead",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Mitchell Robinson",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Kenrich Williams",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Nate Ament",
+     "adp": 36.0,
+     "drafted": 0.3
+    },
+    {
+     "player": "Malik Monk",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Morez Johnson Jr.",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 36.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Bilal Coulibaly",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Dylan Cardwell",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Ja'Kobe Walter",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Jose Alvarado",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Andre Drummond",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Bennett Stirtz",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Lu Dort",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Zaccharie Risacher",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Bogdan Bogdanovic",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": null,
+     "drafted": 0.2
+    },
+    {
+     "player": "877d23bc",
+     "adp": null,
+     "drafted": 0.1
+    }
+   ],
+   "first_below_100": {
+    "player": "Jared McCain",
+    "adp": 30.8,
+    "drafted": 99.0
+   },
+   "drafted_bands": {
+    "99.5+": 29,
+    "60-99.5": 6,
+    "10-60": 6,
+    "<10": 32
+   },
+   "value": {
+    "field_fpoe": -2.2,
+    "top1_fpoe": 54.2,
+    "field_breakers": 1.88,
+    "top1_breakers": 3.95
+   },
+   "pairs": [
+    {
+     "pair": "Karl-Anthony Towns + Cooper Flagg",
+     "rounds": "1/2",
+     "share": 8.9,
+     "lift": 3.74
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Amen Thompson",
+     "rounds": "1/3",
+     "share": 8.5,
+     "lift": 3.56
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Derrick White",
+     "rounds": "1/4",
+     "share": 7.3,
+     "lift": 3.06
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Immanuel Quickley",
+     "rounds": "1/4",
+     "share": 6.7,
+     "lift": 2.82
+    },
+    {
+     "pair": "Cooper Flagg + Dyson Daniels",
+     "rounds": "2/3",
+     "share": 6.1,
+     "lift": 2.55
+    },
+    {
+     "pair": "Karl-Anthony Towns + Dyson Daniels",
+     "rounds": "1/3",
+     "share": 6.1,
+     "lift": 2.54
+    },
+    {
+     "pair": "Karl-Anthony Towns + Onyeka Okongwu",
+     "rounds": "1/3",
+     "share": 6.0,
+     "lift": 2.53
+    },
+    {
+     "pair": "Anthony Davis + Jalen Brunson",
+     "rounds": "1/2",
+     "share": 5.8,
+     "lift": 2.45
+    },
+    {
+     "pair": "Cooper Flagg + AJ Dybantsa",
+     "rounds": "2/5",
+     "share": 5.7,
+     "lift": 2.44
+    },
+    {
+     "pair": "Amen Thompson + Derrick White",
+     "rounds": "3/4",
+     "share": 5.7,
+     "lift": 2.39
+    },
+    {
+     "pair": "Cooper Flagg + Onyeka Okongwu",
+     "rounds": "2/3",
+     "share": 5.6,
+     "lift": 2.37
+    },
+    {
+     "pair": "Cooper Flagg + Tyler Herro",
+     "rounds": "2/4",
+     "share": 5.3,
+     "lift": 2.22
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + OG Anunoby",
+     "rounds": "1/5",
+     "share": 5.3,
+     "lift": 2.21
+    },
+    {
+     "pair": "Amen Thompson + Immanuel Quickley",
+     "rounds": "3/4",
+     "share": 5.2,
+     "lift": 2.19
+    },
+    {
+     "pair": "Karl-Anthony Towns + AJ Dybantsa",
+     "rounds": "1/5",
+     "share": 5.2,
+     "lift": 2.21
+    },
+    {
+     "pair": "Amen Thompson + OG Anunoby",
+     "rounds": "3/5",
+     "share": 5.1,
+     "lift": 2.13
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Kevin Durant",
+     "rounds": "1/2",
+     "share": 5.0,
+     "lift": 2.08
+    },
+    {
+     "pair": "Jalen Johnson + Kyshawn George",
+     "rounds": "1/4",
+     "share": 4.9,
+     "lift": 2.06
+    },
+    {
+     "pair": "Trae Young + Immanuel Quickley",
+     "rounds": "3/4",
+     "share": 4.8,
+     "lift": 2.02
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Kyshawn George",
+     "rounds": "1/4",
+     "share": 4.8,
+     "lift": 2.0
+    },
+    {
+     "pair": "Dyson Daniels + AJ Dybantsa",
+     "rounds": "3/5",
+     "share": 4.6,
+     "lift": 1.97
+    },
+    {
+     "pair": "Amen Thompson + Kyshawn George",
+     "rounds": "3/4",
+     "share": 4.6,
+     "lift": 1.95
+    },
+    {
+     "pair": "Anthony Davis + RJ Barrett",
+     "rounds": "1/3",
+     "share": 4.6,
+     "lift": 1.95
+    },
+    {
+     "pair": "Kevin Durant + Kyshawn George",
+     "rounds": "2/4",
+     "share": 4.6,
+     "lift": 1.95
+    },
+    {
+     "pair": "Karl-Anthony Towns + Tyler Herro",
+     "rounds": "1/4",
+     "share": 4.6,
+     "lift": 1.94
+    }
+   ],
+   "cores": [
+    {
+     "core": "Onyeka Okongwu + Karl-Anthony Towns + Cooper Flagg",
+     "share": 2.6
+    },
+    {
+     "core": "Karl-Anthony Towns + RJ Barrett + Cooper Flagg",
+     "share": 2.2
+    },
+    {
+     "core": "Karl-Anthony Towns + Cooper Flagg + Dyson Daniels",
+     "share": 2.0
+    },
+    {
+     "core": "Amen Thompson + Kevin Durant + Shai Gilgeous-Alexander",
+     "share": 2.0
+    },
+    {
+     "core": "Amen Thompson + Scottie Barnes + Shai Gilgeous-Alexander",
+     "share": 1.7
+    },
+    {
+     "core": "RJ Barrett + Anthony Davis + Jalen Brunson",
+     "share": 1.7
+    },
+    {
+     "core": "Amen Thompson + Trae Young + Shai Gilgeous-Alexander",
+     "share": 1.5
+    },
+    {
+     "core": "Amen Thompson + Darius Acuff Jr. + Shai Gilgeous-Alexander",
+     "share": 1.2
+    },
+    {
+     "core": "Onyeka Okongwu + Anthony Davis + Jalen Brunson",
+     "share": 1.1
+    },
+    {
+     "core": "Trae Young + Kevin Durant + Jalen Johnson",
+     "share": 1.1
+    },
+    {
+     "core": "Trae Young + Alperen Sengun + Domantas Sabonis",
+     "share": 1.0
+    },
+    {
+     "core": "Paul George + Alperen Sengun + Domantas Sabonis",
+     "share": 1.0
+    },
+    {
+     "core": "Jayson Tatum + RJ Barrett + Jalen Brunson",
+     "share": 1.0
+    },
+    {
+     "core": "RJ Barrett + Cooper Flagg + Anthony Davis",
+     "share": 1.0
+    },
+    {
+     "core": "Paul George + Alperen Sengun + Darius Acuff Jr.",
+     "share": 0.9
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Karl-Anthony Towns (6) + Cooper Flagg (7)",
+      "share": 8.9,
+      "lift": 3.74,
+      "top1": 0,
+      "avg_points": 189.8
+     },
+     {
+      "pair": "Anthony Davis (5) + Jalen Brunson (8)",
+      "share": 5.8,
+      "lift": 2.45,
+      "top1": 1,
+      "avg_points": 189.1
+     },
+     {
+      "pair": "Anthony Davis (5) + Cooper Flagg (7)",
+      "share": 3.6,
+      "lift": 1.5,
+      "top1": 0,
+      "avg_points": 174.5
+     },
+     {
+      "pair": "Karl-Anthony Towns (6) + Jalen Brunson (8)",
+      "share": 3.0,
+      "lift": 1.27,
+      "top1": 3,
+      "avg_points": 204.9
+     },
+     {
+      "pair": "Anthony Davis (5) + Karl-Anthony Towns (6)",
+      "share": 1.8,
+      "lift": 0.77,
+      "top1": 2,
+      "avg_points": 198.4
+     },
+     {
+      "pair": "Cooper Flagg (7) + Jalen Brunson (8)",
+      "share": 0.9,
+      "lift": 0.37,
+      "top1": 0,
+      "avg_points": 179.5
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 1,
+      "teams": 1442,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + Kevin Durant (11) + Amen Thompson (13)",
+        "of_anchor": 11.9,
+        "share": 2.0,
+        "top1": 10,
+        "avg_points": 219.3
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Scottie Barnes (12) + Amen Thompson (13)",
+        "of_anchor": 10.1,
+        "share": 1.7,
+        "top1": 32,
+        "avg_points": 236.4
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Amen Thompson (13) + Trae Young (14)",
+        "of_anchor": 8.7,
+        "share": 1.5,
+        "top1": 0,
+        "avg_points": 197.4
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Darius Acuff Jr. (10) + Amen Thompson (13)",
+        "of_anchor": 7.4,
+        "share": 1.2,
+        "top1": 0,
+        "avg_points": 207.9
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Kevin Durant (11) + Trae Young (14)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 187.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Amen Thompson (13)",
+        "of_anchor": 5.2,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 208.8
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Amen Thompson (13) + Paul George (15)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 212.1
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Scottie Barnes (12) + Paul George (15)",
+        "of_anchor": 3.0,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 215.1
+       }
+      ]
+     },
+     {
+      "anchor": "Jalen Johnson",
+      "adp_rank": 2,
+      "teams": 1442,
+      "combos": [
+       {
+        "combo": "Jalen Johnson + Kevin Durant (11) + Trae Young (14)",
+        "of_anchor": 6.4,
+        "share": 1.1,
+        "top1": 0,
+        "avg_points": 175.6
+       },
+       {
+        "combo": "Jalen Johnson + Kevin Durant (11) + Amen Thompson (13)",
+        "of_anchor": 5.5,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 205.5
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Trae Young (14)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 160.2
+       },
+       {
+        "combo": "Jalen Johnson + Domantas Sabonis (9) + Trae Young (14)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 162.9
+       },
+       {
+        "combo": "Jalen Johnson + Scottie Barnes (12) + Amen Thompson (13)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 4,
+        "avg_points": 223.9
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Amen Thompson (13)",
+        "of_anchor": 4.4,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 195.8
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Paul George (15)",
+        "of_anchor": 4.3,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 171.3
+       },
+       {
+        "combo": "Jalen Johnson + Kevin Durant (11) + Paul George (15)",
+        "of_anchor": 3.9,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 186.2
+       }
+      ]
+     },
+     {
+      "anchor": "Alperen Sengun",
+      "adp_rank": 3,
+      "teams": 1442,
+      "combos": [
+       {
+        "combo": "Alperen Sengun + Domantas Sabonis (9) + Trae Young (14)",
+        "of_anchor": 6.0,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 175.8
+       },
+       {
+        "combo": "Alperen Sengun + Domantas Sabonis (9) + Paul George (15)",
+        "of_anchor": 5.8,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 192.5
+       },
+       {
+        "combo": "Alperen Sengun + Darius Acuff Jr. (10) + Paul George (15)",
+        "of_anchor": 5.6,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 186.1
+       },
+       {
+        "combo": "Alperen Sengun + Darius Acuff Jr. (10) + Trae Young (14)",
+        "of_anchor": 4.7,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 172.9
+       },
+       {
+        "combo": "Alperen Sengun + Kevin Durant (11) + Trae Young (14)",
+        "of_anchor": 4.0,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 187.8
+       },
+       {
+        "combo": "Alperen Sengun + Scottie Barnes (12) + Paul George (15)",
+        "of_anchor": 3.9,
+        "share": 0.6,
+        "top1": 1,
+        "avg_points": 217.4
+       },
+       {
+        "combo": "Alperen Sengun + Kevin Durant (11) + Paul George (15)",
+        "of_anchor": 3.9,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 200.5
+       },
+       {
+        "combo": "Alperen Sengun + Domantas Sabonis (9) + Onyeka Okongwu (18)",
+        "of_anchor": 3.3,
+        "share": 0.6,
+        "top1": 1,
+        "avg_points": 197.1
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 8651,
+    "am_share": 32.3,
+    "by_hour_pt": {
+     "00": 117,
+     "01": 50,
+     "02": 81,
+     "03": 114,
+     "04": 101,
+     "05": 135,
+     "06": 174,
+     "07": 369,
+     "08": 114,
+     "09": 381,
+     "10": 604,
+     "11": 552,
+     "12": 895,
+     "13": 1283,
+     "14": 2503,
+     "17": 3,
+     "18": 13,
+     "19": 77,
+     "20": 380,
+     "21": 302,
+     "22": 229,
+     "23": 174
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  },
+  {
+   "contest": "The Layup Line",
+   "contest_id": "1317a985-2a81-4a09-976d-58847f702084",
+   "entries": 912,
+   "pods": 152,
+   "pod_size": 6,
+   "cut_lines": {
+    "entries": 912,
+    "win": 263.6,
+    "median": 193.6,
+    "top1": 243.7,
+    "top1_over_median": 50.1,
+    "top5": 228.7,
+    "top5_over_median": 35.1,
+    "top10": 221.7,
+    "top10_over_median": 28.1,
+    "top20": 212.9,
+    "top20_over_median": 19.3
+   },
+   "drafted_curve": [
+    {
+     "player": "Shai Gilgeous-Alexander",
+     "adp": 1.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jalen Johnson",
+     "adp": 2.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Alperen Sengun",
+     "adp": 3.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 3.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Davis",
+     "adp": 5.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Karl-Anthony Towns",
+     "adp": 6.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 6.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jalen Brunson",
+     "adp": 8.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Domantas Sabonis",
+     "adp": 9.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Darius Acuff Jr.",
+     "adp": 10.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kevin Durant",
+     "adp": 10.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Scottie Barnes",
+     "adp": 12.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Amen Thompson",
+     "adp": 13.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 14.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 14.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "RJ Barrett",
+     "adp": 16.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Dyson Daniels",
+     "adp": 17.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Onyeka Okongwu",
+     "adp": 18.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Tyler Herro",
+     "adp": 18.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Isaiah Hartenstein",
+     "adp": 20.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Nickeil Alexander-Walker",
+     "adp": 20.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 23.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Immanuel Quickley",
+     "adp": 23.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Derrick White",
+     "adp": 24.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "OG Anunoby",
+     "adp": 25.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 27.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "CJ McCollum",
+     "adp": 28.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jabari Smith Jr.",
+     "adp": 28.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jared McCain",
+     "adp": 30.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 31.1,
+     "drafted": 99.3
+    },
+    {
+     "player": "Jaime Jaquez Jr.",
+     "adp": 31.3,
+     "drafted": 98.7
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 33.8,
+     "drafted": 77.6
+    },
+    {
+     "player": "Josh Hart",
+     "adp": 33.9,
+     "drafted": 69.1
+    },
+    {
+     "player": "Reed Sheppard",
+     "adp": 34.2,
+     "drafted": 83.6
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 35.1,
+     "drafted": 40.1
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 35.5,
+     "drafted": 21.7
+    },
+    {
+     "player": "Neemias Queta",
+     "adp": 35.5,
+     "drafted": 15.8
+    },
+    {
+     "player": "Myles Turner",
+     "adp": 35.6,
+     "drafted": 76.3
+    },
+    {
+     "player": "Keegan Murray",
+     "adp": 35.7,
+     "drafted": 17.1
+    },
+    {
+     "player": "Aday Mara",
+     "adp": 35.8,
+     "drafted": 26.3
+    },
+    {
+     "player": "Tari Eason",
+     "adp": 35.8,
+     "drafted": 18.4
+    },
+    {
+     "player": "Brayden Burries",
+     "adp": 35.9,
+     "drafted": 21.7
+    },
+    {
+     "player": "Alex Caruso",
+     "adp": 35.9,
+     "drafted": 3.9
+    },
+    {
+     "player": "Mikal Bridges",
+     "adp": 35.9,
+     "drafted": 3.3
+    },
+    {
+     "player": "Aaron Wiggins",
+     "adp": 35.9,
+     "drafted": 6.6
+    },
+    {
+     "player": "Collin Murray-Boyles",
+     "adp": 35.9,
+     "drafted": 6.6
+    },
+    {
+     "player": "Steven Adams",
+     "adp": 35.9,
+     "drafted": 1.3
+    },
+    {
+     "player": "Naji Marshall",
+     "adp": 35.9,
+     "drafted": 0.7
+    },
+    {
+     "player": "Kyle Kuzma",
+     "adp": 35.9,
+     "drafted": 4.6
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Walter Clayton Jr.",
+     "adp": 36.0,
+     "drafted": 1.3
+    },
+    {
+     "player": "Caleb Martin",
+     "adp": 36.0,
+     "drafted": 1.3
+    },
+    {
+     "player": "Ja'Kobe Walter",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Kel'el Ware",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Jakob Poeltl",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Bennett Stirtz",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Andre Drummond",
+     "adp": 36.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": null,
+     "drafted": 0.7
+    }
+   ],
+   "first_below_100": {
+    "player": "AJ Dybantsa",
+    "adp": 31.1,
+    "drafted": 99.3
+   },
+   "drafted_bands": {
+    "99.5+": 29,
+    "60-99.5": 6,
+    "10-60": 7,
+    "<10": 16
+   },
+   "value": {
+    "field_fpoe": -1.8,
+    "top1_fpoe": 54.9,
+    "field_breakers": 1.91,
+    "top1_breakers": 4.4
+   },
+   "pairs": [
+    {
+     "pair": "Shai Gilgeous-Alexander + Amen Thompson",
+     "rounds": "1/3",
+     "share": 9.1,
+     "lift": 3.82
+    },
+    {
+     "pair": "Karl-Anthony Towns + Cooper Flagg",
+     "rounds": "1/2",
+     "share": 8.4,
+     "lift": 3.55
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Immanuel Quickley",
+     "rounds": "1/4",
+     "share": 6.7,
+     "lift": 2.81
+    },
+    {
+     "pair": "Cooper Flagg + AJ Dybantsa",
+     "rounds": "2/5",
+     "share": 6.7,
+     "lift": 2.83
+    },
+    {
+     "pair": "Onyeka Okongwu + Jared McCain",
+     "rounds": "3/5",
+     "share": 5.9,
+     "lift": 2.49
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Derrick White",
+     "rounds": "1/4",
+     "share": 5.9,
+     "lift": 2.49
+    },
+    {
+     "pair": "Karl-Anthony Towns + RJ Barrett",
+     "rounds": "1/3",
+     "share": 5.8,
+     "lift": 2.44
+    },
+    {
+     "pair": "Jalen Brunson + Onyeka Okongwu",
+     "rounds": "2/3",
+     "share": 5.7,
+     "lift": 2.39
+    },
+    {
+     "pair": "Cooper Flagg + Tyler Herro",
+     "rounds": "2/4",
+     "share": 5.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Karl-Anthony Towns + Onyeka Okongwu",
+     "rounds": "1/3",
+     "share": 5.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Amen Thompson + Derrick White",
+     "rounds": "3/4",
+     "share": 5.4,
+     "lift": 2.26
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + OG Anunoby",
+     "rounds": "1/5",
+     "share": 5.4,
+     "lift": 2.26
+    },
+    {
+     "pair": "Anthony Davis + RJ Barrett",
+     "rounds": "1/3",
+     "share": 5.3,
+     "lift": 2.21
+    },
+    {
+     "pair": "Anthony Davis + Jalen Brunson",
+     "rounds": "1/2",
+     "share": 5.3,
+     "lift": 2.21
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Trae Young",
+     "rounds": "1/3",
+     "share": 5.2,
+     "lift": 2.16
+    },
+    {
+     "pair": "Karl-Anthony Towns + Jared McCain",
+     "rounds": "1/5",
+     "share": 5.2,
+     "lift": 2.16
+    },
+    {
+     "pair": "Jayson Tatum + Scottie Barnes",
+     "rounds": "1/2",
+     "share": 5.2,
+     "lift": 2.16
+    },
+    {
+     "pair": "Amen Thompson + OG Anunoby",
+     "rounds": "3/5",
+     "share": 5.0,
+     "lift": 2.12
+    },
+    {
+     "pair": "Cooper Flagg + Onyeka Okongwu",
+     "rounds": "2/3",
+     "share": 4.9,
+     "lift": 2.07
+    },
+    {
+     "pair": "Trae Young + Kyshawn George",
+     "rounds": "3/4",
+     "share": 4.8,
+     "lift": 2.03
+    },
+    {
+     "pair": "Shai Gilgeous-Alexander + Kyshawn George",
+     "rounds": "1/4",
+     "share": 4.8,
+     "lift": 2.03
+    },
+    {
+     "pair": "Jalen Johnson + Kevin Durant",
+     "rounds": "1/2",
+     "share": 4.7,
+     "lift": 1.98
+    },
+    {
+     "pair": "Amen Thompson + Kyshawn George",
+     "rounds": "3/4",
+     "share": 4.6,
+     "lift": 1.93
+    },
+    {
+     "pair": "Jalen Brunson + Jaime Jaquez Jr.",
+     "rounds": "2/6",
+     "share": 4.6,
+     "lift": 1.96
+    },
+    {
+     "pair": "Jalen Johnson + Darius Acuff Jr.",
+     "rounds": "1/2",
+     "share": 4.6,
+     "lift": 1.93
+    }
+   ],
+   "cores": [
+    {
+     "core": "Karl-Anthony Towns + RJ Barrett + Cooper Flagg",
+     "share": 2.4
+    },
+    {
+     "core": "Amen Thompson + Trae Young + Shai Gilgeous-Alexander",
+     "share": 2.3
+    },
+    {
+     "core": "Onyeka Okongwu + Karl-Anthony Towns + Cooper Flagg",
+     "share": 1.8
+    },
+    {
+     "core": "Amen Thompson + Darius Acuff Jr. + Shai Gilgeous-Alexander",
+     "share": 1.5
+    },
+    {
+     "core": "RJ Barrett + Anthony Davis + Jalen Brunson",
+     "share": 1.5
+    },
+    {
+     "core": "Trae Young + Darius Acuff Jr. + Jalen Johnson",
+     "share": 1.4
+    },
+    {
+     "core": "Jayson Tatum + Scottie Barnes + Dyson Daniels",
+     "share": 1.4
+    },
+    {
+     "core": "Amen Thompson + Shai Gilgeous-Alexander + Domantas Sabonis",
+     "share": 1.4
+    },
+    {
+     "core": "Karl-Anthony Towns + Cooper Flagg + Dyson Daniels",
+     "share": 1.3
+    },
+    {
+     "core": "Karl-Anthony Towns + Tyler Herro + Cooper Flagg",
+     "share": 1.1
+    },
+    {
+     "core": "Amen Thompson + Kevin Durant + Jalen Johnson",
+     "share": 1.0
+    },
+    {
+     "core": "Jayson Tatum + Scottie Barnes + Domantas Sabonis",
+     "share": 1.0
+    },
+    {
+     "core": "Paul George + Amen Thompson + Shai Gilgeous-Alexander",
+     "share": 1.0
+    },
+    {
+     "core": "Alperen Sengun + RJ Barrett + Domantas Sabonis",
+     "share": 0.9
+    },
+    {
+     "core": "Trae Young + Jalen Johnson + Domantas Sabonis",
+     "share": 0.9
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     5,
+     8
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Karl-Anthony Towns (6) + Cooper Flagg (7)",
+      "share": 8.4,
+      "lift": 3.55,
+      "top1": 0,
+      "avg_points": 192.1
+     },
+     {
+      "pair": "Anthony Davis (5) + Jalen Brunson (8)",
+      "share": 5.3,
+      "lift": 2.21,
+      "top1": 0,
+      "avg_points": 188.4
+     },
+     {
+      "pair": "Anthony Davis (5) + Cooper Flagg (7)",
+      "share": 2.9,
+      "lift": 1.2,
+      "top1": 0,
+      "avg_points": 181.7
+     },
+     {
+      "pair": "Karl-Anthony Towns (6) + Jalen Brunson (8)",
+      "share": 2.7,
+      "lift": 1.15,
+      "top1": 0,
+      "avg_points": 206.0
+     },
+     {
+      "pair": "Anthony Davis (5) + Karl-Anthony Towns (6)",
+      "share": 2.0,
+      "lift": 0.83,
+      "top1": 0,
+      "avg_points": 200.7
+     },
+     {
+      "pair": "Cooper Flagg (7) + Jalen Brunson (8)",
+      "share": 1.4,
+      "lift": 0.6,
+      "top1": 0,
+      "avg_points": 189.3
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Shai Gilgeous-Alexander",
+      "adp_rank": 1,
+      "teams": 152,
+      "combos": [
+       {
+        "combo": "Shai Gilgeous-Alexander + Amen Thompson (13) + Trae Young (14)",
+        "of_anchor": 13.8,
+        "share": 2.3,
+        "top1": 0,
+        "avg_points": 199.5
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Darius Acuff Jr. (10) + Amen Thompson (13)",
+        "of_anchor": 9.2,
+        "share": 1.5,
+        "top1": 0,
+        "avg_points": 207.5
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Amen Thompson (13)",
+        "of_anchor": 8.6,
+        "share": 1.4,
+        "top1": 1,
+        "avg_points": 215.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Scottie Barnes (12) + Amen Thompson (13)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 3,
+        "avg_points": 244.3
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Amen Thompson (13) + Paul George (15)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 204.7
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Kevin Durant (11) + Amen Thompson (13)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 220.0
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Domantas Sabonis (9) + Trae Young (14)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 181.3
+       },
+       {
+        "combo": "Shai Gilgeous-Alexander + Darius Acuff Jr. (10) + Trae Young (14)",
+        "of_anchor": 2.6,
+        "share": 0.4,
+        "top1": 0,
+        "avg_points": 170.3
+       }
+      ]
+     },
+     {
+      "anchor": "Jalen Johnson",
+      "adp_rank": 2,
+      "teams": 152,
+      "combos": [
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Trae Young (14)",
+        "of_anchor": 8.6,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 160.9
+       },
+       {
+        "combo": "Jalen Johnson + Kevin Durant (11) + Amen Thompson (13)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 209.0
+       },
+       {
+        "combo": "Jalen Johnson + Kevin Durant (11) + Trae Young (14)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 173.6
+       },
+       {
+        "combo": "Jalen Johnson + Domantas Sabonis (9) + Trae Young (14)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 151.3
+       },
+       {
+        "combo": "Jalen Johnson + Darius Acuff Jr. (10) + Paul George (15)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 181.7
+       },
+       {
+        "combo": "Jalen Johnson + Domantas Sabonis (9) + Amen Thompson (13)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 192.1
+       },
+       {
+        "combo": "Jalen Johnson + Kevin Durant (11) + Paul George (15)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 187.2
+       },
+       {
+        "combo": "Jalen Johnson + Domantas Sabonis (9) + Paul George (15)",
+        "of_anchor": 3.3,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 176.6
+       }
+      ]
+     },
+     {
+      "anchor": "Alperen Sengun",
+      "adp_rank": 3,
+      "teams": 152,
+      "combos": [
+       {
+        "combo": "Alperen Sengun + Paul George (15) + Onyeka Okongwu (18)",
+        "of_anchor": 5.9,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 205.7
+       },
+       {
+        "combo": "Alperen Sengun + Domantas Sabonis (9) + RJ Barrett (16)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 188.7
+       },
+       {
+        "combo": "Alperen Sengun + Domantas Sabonis (9) + Scottie Barnes (12)",
+        "of_anchor": 5.3,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 216.6
+       },
+       {
+        "combo": "Alperen Sengun + Jalen Brunson (8) + Paul George (15)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 200.9
+       },
+       {
+        "combo": "Alperen Sengun + Darius Acuff Jr. (10) + Scottie Barnes (12)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 215.2
+       },
+       {
+        "combo": "Alperen Sengun + Domantas Sabonis (9) + Trae Young (14)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 177.1
+       },
+       {
+        "combo": "Alperen Sengun + Domantas Sabonis (9) + Onyeka Okongwu (18)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 195.5
+       },
+       {
+        "combo": "Alperen Sengun + Darius Acuff Jr. (10) + Paul George (15)",
+        "of_anchor": 4.6,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 184.6
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 852,
+    "am_share": 30.3,
+    "by_hour_pt": {
+     "00": 9,
+     "01": 4,
+     "02": 8,
+     "03": 7,
+     "04": 3,
+     "05": 14,
+     "06": 15,
+     "07": 39,
+     "08": 15,
+     "09": 32,
+     "10": 52,
+     "11": 60,
+     "12": 97,
+     "13": 100,
+     "14": 271,
+     "17": 30,
+     "18": 27,
+     "19": 27,
+     "20": 13,
+     "21": 17,
+     "22": 7,
+     "23": 5
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  }
+ ]
+}
