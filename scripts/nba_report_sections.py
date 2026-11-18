@@ -31,18 +31,15 @@ num = G.num
 W = {"am": "morning", "pm": "afternoon"}
 PUSH = 3.0     # pairs under 3 points apart are pushes (2026-11-17)
 
-THEME = {
-    1: ["**T1, the elite.** The players every pod takes first; the order is the decision. Morning: ADP, the higher Boom first "
-        "within 2 picks. Afternoon: ETR. A Questionable player here drops to the top of T2."],
-    2: ["**T2, the stars.** Morning: straight ADP. Afternoon: ADP with ETR breaking ties within 2 picks up to the elite break "
-        "(pick 13 minus the elites with 6 drafters, 9 with 4), then ETR. The turns are where your share differs from the field's."],
-    3: ["**T3, the middle.** VALUE first, then the rest, PRICEY last; morning by ADP, afternoon by ETR (ADP, then Boom, on "
-        "exact ties). T3 PRICEY stays ahead of T4 VALUE."],
-    4: ["**T4, to round 6.** The same sort as T3. In the morning it ends at the start of round 6 (earlier at a 2-pick ADP gap) "
-        "and never holds a round-6 player; in the afternoon (from 11-17) it ends at ETR's ladder line, so a round-6 ADP that ETR "
-        "rates as T4 can sit in it. It sends its PRICEY players to T5 and borrows from the bottom of T3 when short of 4."],
-    5: ["**T5, round 6.** Players drafted in under 60% of pods (50-60% at the bottom), projected for 20+ minutes, by projection, "
-        "to your cut; everyone else below it by projection. Graded on contest results."],
+THEME = {     # the 2026-11-18 rules (index.html nbaBuildLaddersV3)
+    1: ["**T1, the elite.** To the ADP ladder's first natural break. Morning: our projection; afternoon: ETR (rounded to "
+        "whole points, ADP breaking ties). A Questionable player here drops to the top of T2."],
+    2: ["**T2, the stars.** ADP to pick 15 (one tier up when the projection puts a player two or more tiers higher). "
+        "Straight ADP in both windows. The turns are where your share differs from the field's."],
+    3: ["**T3, the middle.** ADP to pick 22. Morning: straight ADP; afternoon: ETR (rounded, ADP breaking ties)."],
+    4: ["**T4, to pick 30.** ADP to pick 30. Morning: straight ADP; afternoon: ETR (rounded, ADP breaking ties)."],
+    5: ["**T5, the rest.** The top 44 by ADP or by projection, projected for 20+ minutes, to your cut; everyone else below "
+        "it by projection. Morning: our projection; afternoon: ETR (rounded, ADP breaking ties)."],
 }
 
 
@@ -504,7 +501,20 @@ RULEBOOK = """# The rulebook
 The standing rules behind the morning report (linked once at its top). Each rule's first night on the board is in
 rule_dates.json; the Friday report reads "since the rule went in" and "season" from there.
 
-## The button (from 2026-11-13; the morning window from 11-14)
+## The button (from 2026-11-18, both windows; approved from the season order grades, reviewed each Friday)
+
+- Tiers: ADP is the floor. T1 to the ADP ladder's first natural break, T2 to ADP rank 15, T3 to 22, T4 to 30, T5 the rest
+  among the top 44 by ADP or by projection (4-drafter nights 10/15/20, T5 to 30). A player moves up one tier when the
+  projection puts him two or more tiers higher; never down. VALUE / PRICEY still show, but don't sort.
+- Orders inside each tier, pure: morning T1 our projection, T2-T4 ADP, T5 our projection; afternoon T2 ADP, T1, T3, T4 and
+  T5 ETR. A projection order is the projection rounded to whole points, ADP breaking ties.
+- Questionable at the lock: keeps his tier; in T1 he drops to the top of T2; one whose ADP fell 6+ picks since the tag
+  goes below the cut; a T1-T4 teammate of a Q player gets the tiebreak. T5: projected for 20+ minutes, to your cut.
+- Swaps: as below. Graded each Friday by the order grades: which order wins in each tier, the rule's against every other
+  (yours, the other source, and in T5 the leverage order as a challenger); a change is proposed only when another order
+  beats the rule's since the rule went in, clear of zero.
+
+## Before 2026-11-18 (for reading earlier nights)
 
 - A player's tier is his ADP tier, moved at most one tier toward his projection's; VALUE is a tier better on the
   projection, PRICEY a tier worse. The projection is ours in the morning, ETR's in the afternoon. Afternoon tiers run

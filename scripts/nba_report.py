@@ -378,18 +378,15 @@ MIN_PAIRS = 30       # and pairs a comparison needs (with fewer the resampled ra
 # Whatever a rule leaves level goes by the projection, then ADP.
 MIDDLE_AM = ("Proj (3: ADP)", [("proj", 3), ("adp", 0)])
 MIDDLE_PM = ("ETR (Tie: ADP -> Boom)", [("proj", 0), ("adp", 0), ("boom", 0)])
-TIER_RULES = {      # index.html NBA_TIER_RULE_STEPS; step 6's switches adopted 2026-11-09 (scripts/nba_tier_rules.py)
-    "am": {1: ("ADP (2: Boom)", [("adp", 2), ("boom", 0)]), 2: ("ADP", [("adp", 0)]), 3: MIDDLE_AM,
-           4: MIDDLE_AM, 5: ("Proj (3: ADP), less drafted within 2 pts", [("lev", 2), ("proj", 3), ("adp", 0)])},
-    "pm": {1: ("ETR", [("projx", 0)]), 2: ("ADP (2: ETR)", [("adp", 2), ("projx", 0)]), 3: MIDDLE_PM,
-           4: ("ADP (2: ETR)", [("adp", 2), ("projx", 0)]),
-           5: ("ADP, less drafted within 2 pts", [("lev", 2), ("adp", 0)])},   # T5 tiebreak 2026-11-09, provisional
+TIER_RULES = {      # index.html NBA_V3_ORDER (2026-11-18): pure orders; "proj" is the projection rounded to whole points, ADP on ties
+    "am": {1: ("Proj (ADP ties)", [("proj", 0), ("adp", 0)]), 2: ("ADP", [("adp", 0)]), 3: ("ADP", [("adp", 0)]),
+           4: ("ADP", [("adp", 0)]), 5: ("Proj (ADP ties)", [("proj", 0), ("adp", 0)])},
+    "pm": {1: ("ETR (ADP ties)", [("proj", 0), ("adp", 0)]), 2: ("ADP", [("adp", 0)]), 3: ("ETR (ADP ties)", [("proj", 0), ("adp", 0)]),
+           4: ("ETR (ADP ties)", [("proj", 0), ("adp", 0)]), 5: ("ETR (ADP ties)", [("proj", 0), ("adp", 0)])},
 }
-# The ownership tiebreak, adopted 2026-11-04 and paused 2026-11-09 in T5 (it cost points in both windows). drafted: the board's projected drafted%
-# for his closing-ADP rank (field_model.json). A tier whose rule changed is graded only from that date.
-# The AM T4 leverage tiebreak won step 6 (best of 8 candidates) but lost in PM T4: a candidate, not the rule.
-# T5 in both windows: the less drafted within 2 projected points first (provisional, 2026-11-09; money RULE for).
-RULE_SINCE = {("pm", 5): "2026-11-10", ("pm", 2): "2026-11-10", ("pm", 4): "2026-11-10", ("am", 5): "2026-11-10"}
+# Earlier rule sets (2026-11-09 to 11-17: Boom within 2 in AM T1, ADP within 2 then ETR in PM T2/T4, VALUE/normal/PRICEY groups
+# in T3/T4, the less-drafted T5 tiebreak) are in the git history; a tier's grade restarts at its rule's date.
+RULE_SINCE = {(w, t): "2026-11-18" for w in ("am", "pm") for t in range(1, 6)}
 FIELD_MODEL = os.path.join(os.path.dirname(__file__), "..", "analysis", "nba", "contests", "field_model.json")
 
 

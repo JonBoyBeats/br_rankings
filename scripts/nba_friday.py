@@ -214,6 +214,58 @@ def etr_vs_box():
         sum(res) / len(res), sum(abs(x) for x in res) / len(res), len(res)) if res else "no box files"
 
 
+OG_NAMES = {"adp": "ADP", "etr": "ETR", "proj": "our projection", "mine": "your order", "lev": "the leverage order"}
+
+
+def order_wins(rd):
+    """Which order wins in each tier (the order grades, from 2026-11-18's rules): the rule's order (TH.V3_ORDER) against
+    every other order graded there (your order, the other source, and in T5 the leverage order as a challenger), on the
+    order grades' score at the top 10%: since the rule went in (each tier and window's rule_dates entry), re-pooled from
+    the nights with the same night resampling, and the season as the file has it. Proposes a change only when another
+    order beats the rule's since the rule, clear of zero (80% range), over 8+ nights."""
+    import nba_money as M
+    p = os.path.join(REP, "order_grades.json")
+    if not os.path.exists(p):
+        return ["- Not read (order_grades.json not on file)."]
+    og = json.load(open(p))
+    out = []
+    for w, wname in (("pm", "Afternoon"), ("am", "Morning")):
+        for k in range(1, 6):
+            t = ((og.get("tiers") or {}).get(w) or {}).get(str(k))
+            if not t:
+                continue
+            rule = TH.V3_ORDER[w][k]
+            rule = rule if rule == "adp" else ("etr" if w == "pm" else "proj")
+            since = since_of(rd, "v3-t%d-%s" % (k, w), w) or "9999"
+            parts = []
+            for o in [x for x in t["orders"] if x != rule]:
+                # since the rule: the other order's nightly score minus the rule's, nights resampled
+                cells = [n["tiers"][w][str(k)]["orders"] for n in og.get("by_night", [])
+                         if n["date"] >= since and ((n.get("tiers") or {}).get(w) or {}).get(str(k), {}).get("orders", {}).get(o)
+                         and n["tiers"][w][str(k)]["orders"].get(rule)]
+                vals = [c[o]["slope"]["top10"] - c[rule]["slope"]["top10"] for c in cells
+                        if c[o]["slope"].get("top10") is not None and c[rule]["slope"].get("top10") is not None]
+                mean = (lambda v: sum(v) / len(v) if v else None)
+                rng = M.boot_range(vals, mean) if len(vals) >= 3 else None
+                d = (t.get("diffs") or {}).get(o + "-" + rule) or (t.get("diffs") or {}).get(rule + "-" + o)
+                sv = (d or {}).get("top10", {}).get("season") if d else None
+                if sv and (o + "-" + rule) not in (t.get("diffs") or {}):
+                    sv = {"v": -sv["v"], "lo": -sv["hi"] if sv.get("hi") is not None else None, "hi": -sv["lo"] if sv.get("lo") is not None else None, "nights": sv.get("nights")}
+                f = lambda x: "%+.2f" % x
+                part = "%s %s" % (OG_NAMES[o], ("since the rule %s (%s to %s, %d nights)" % (f(mean(vals)), f(rng[0]), f(rng[1]), len(vals)) if rng else
+                                                 "since the rule: %d night%s" % (len(vals), "" if len(vals) == 1 else "s")))
+                if sv and sv.get("v") is not None:
+                    part += ", season %s (%s to %s)" % (f(sv["v"]), f(sv["lo"]), f(sv["hi"]))
+                parts.append(part)
+                if rng and len(vals) >= 8 and rng[0] > 0:
+                    PROPOSALS.append("T%d %s: order by %s; it beats the rule's %s since the rule by %s at the top 10%% (80%% range %s to %s, %d nights)" % (
+                        k, wname.lower(), OG_NAMES[o], OG_NAMES[rule], f(mean(vals)), f(rng[0]), f(rng[1]), len(vals)))
+                elif sv and sv.get("lo") is not None and sv["lo"] > 0:
+                    WATCHING.append("T%d %s: %s ahead of the rule's %s on the season (not since the rule)" % (k, wname.lower(), OG_NAMES[o], OG_NAMES[rule]))
+            out.append("- **T%d %s** (rule: %s), each order minus the rule's, top 10%%: %s." % (k, wname.lower(), OG_NAMES[rule], "; ".join(parts)))
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mirror", default=os.path.join(HERE, "..", "br-adp-mirror"))
@@ -225,6 +277,10 @@ def main():
     MF.update(json.load(open(mf)) if os.path.exists(mf) else {})
     H = [r for rs in ALL_NW.values() for r in rs]
     body = []
+    body += ["## Which order wins, by tier", "",
+             "The order grades (order_grades.json): the score is how fast swap value drops down the order. The rule's order "
+             "(2026-11-18) against every other order in the tier; a change is proposed only when another order beats it since "
+             "the rule went in, clear of zero, over 8+ nights.", ""] + order_wins(rd) + [""]
     body += ["## T1", "",
              test_line("Afternoon: ETR (in force) against ADP", None, "pm", lambda: TS.compare("pm", [1], TS.PROJ, TS.ADP), True, "order afternoon T1 by ADP", rd),
              test_line("Morning: ADP (in force) against our projection", None, "am", lambda: TS.compare("am", [1], TS.ADP, TS.PROJ), True, "order morning T1 by our projection", rd),

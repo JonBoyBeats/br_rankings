@@ -3,7 +3,20 @@
 The standing rules behind the morning report (linked once at its top). Each rule's first night on the board is in
 rule_dates.json; the Friday report reads "since the rule went in" and "season" from there.
 
-## The button (from 2026-11-13; the morning window from 11-14)
+## The button (from 2026-11-18, both windows; approved from the season order grades, reviewed each Friday)
+
+- Tiers: ADP is the floor. T1 to the ADP ladder's first natural break, T2 to ADP rank 15, T3 to 22, T4 to 30, T5 the rest
+  among the top 44 by ADP or by projection (4-drafter nights 10/15/20, T5 to 30). A player moves up one tier when the
+  projection puts him two or more tiers higher; never down. VALUE / PRICEY still show, but don't sort.
+- Orders inside each tier, pure: morning T1 our projection, T2-T4 ADP, T5 our projection; afternoon T2 ADP, T1, T3, T4 and
+  T5 ETR. A projection order is the projection rounded to whole points, ADP breaking ties.
+- Questionable at the lock: keeps his tier; in T1 he drops to the top of T2; one whose ADP fell 6+ picks since the tag
+  goes below the cut; a T1-T4 teammate of a Q player gets the tiebreak. T5: projected for 20+ minutes, to your cut.
+- Swaps: as below. Graded each Friday by the order grades: which order wins in each tier, the rule's against every other
+  (yours, the other source, and in T5 the leverage order as a challenger); a change is proposed only when another order
+  beats the rule's since the rule went in, clear of zero.
+
+## Before 2026-11-18 (for reading earlier nights)
 
 - A player's tier is his ADP tier, moved at most one tier toward his projection's; VALUE is a tier better on the
   projection, PRICEY a tier worse. The projection is ours in the morning, ETR's in the afternoon. Afternoon tiers run
