@@ -618,8 +618,8 @@ function tierBoard(s, k) {
     var tb = el("tbody", {}, t);
     [[side.charAt(0).toUpperCase() + side.slice(1) + "'s record against ADP (W-L-push, points)", function (c) { return rec(c[1], w); }],
      ["What happened: holders of " + side + "'s pick minus ADP's, top 10%", function (c) { return held(c[1], w, "value10", 10, c[2]); }],
-     ["What happened: holders of " + side + "'s pick minus ADP's, top 1%", function (c) { return held(c[1], w, "value", 1, c[2]); }],
      ["Pod replay: your seats, T" + k + " in " + side + "'s order minus ADP's, top 10%", function (c) { return pod(w, pair, c[2], "top10"); }],
+     ["What happened: holders of " + side + "'s pick minus ADP's, top 1%", function (c) { return held(c[1], w, "value", 1, c[2]); }],
      ["Pod replay: your seats, T" + k + " in " + side + "'s order minus ADP's, top 1%", function (c) { return pod(w, pair, c[2], "top1"); }]].forEach(function (r) {
       var row = el("tr", {}, tb); el("td", {}, row, r[0]);
       cols.forEach(function (c) { el("td", {}, row, r[1](c)); });
