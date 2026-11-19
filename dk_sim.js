@@ -701,7 +701,7 @@
       var key = r.lineups[0].ids.slice().sort().join(",");
       if (!seen[key]) { seen[key] = 1; out.push(r.lineups[0]); }
     }
-    return { lineups: out, why: out.length < K ? "only " + out.length + " distinct lineups in " + tries + " draws" : "" };
+    return { lineups: out, why: out.length < K ? "only " + out.length + " distinct lineups fit these rules" + (o.nightS != null && o.nightS < 1 ? " at this bank noise (" + o.nightS + ")" : "") + " in " + tries + " draws" : "" };
   }
 
   // Variants around a lineup (the DK page's Variants of the top, 2026-11-19): M draws, each locking a random K of the

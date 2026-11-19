@@ -82,6 +82,32 @@
   .tag.k-questionable { background: var(--warn); color: #1a1400; }
   .tag.k-doubtful, .tag.d { background: var(--bad); color: #1a0500; opacity: .8; }
   .row button.deepin { height: 18px; padding: 0 6px; font-size: 10.5px; margin-left: 4px; }
+  /* the builder, one screen (#nb) */
+  #nbBar { position: sticky; top: 0; z-index: 20; background: var(--bg, var(--surface)); border-bottom: 1px solid var(--line); padding: 6px 0; }
+  #nbBar .nbrow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  #nbTabs button { height: 28px; padding: 0 10px; font-size: 12.5px; }
+  #nbTabs button[aria-pressed="true"] { outline: 2px solid var(--live); }
+  #nbTabs button.short { color: var(--bad); border-color: var(--bad); }
+  #nbSum { font-size: 12.5px; margin: 4px 0 0; }
+  #nbSum b { font-weight: 600; }
+  .nbmain { display: grid; grid-template-columns: minmax(0, 1fr) 440px; gap: 10px; margin-top: 8px; }
+  #nbStatusSlot .status { max-height: 4.6em; overflow: auto; margin: 4px 0; }
+  @media (max-width: 900px) { .nbmain { grid-template-columns: 1fr; } }
+  .nbscroll { max-height: calc(100vh - var(--nbtop, 300px)); overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+  #nbList table, #nbPlayers table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  #nbList td, #nbList th, #nbPlayers td, #nbPlayers th { padding: 3px 4px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+  #nbList td.l, #nbList th.l, #nbPlayers td.l, #nbPlayers th.l { text-align: left; }
+  #nbList tr.tierh td { background: var(--surface); font-weight: 600; text-align: left; position: sticky; top: 0; }
+  #nbList tr.picked { background: color-mix(in srgb, var(--live) 14%, transparent); }
+  #nbList tr.kid td:first-child { padding-left: 18px; }
+  #nbList tr.kid { opacity: .92; }
+  #nbList .nm { white-space: normal; min-width: 200px; }
+  #nbList button, #nbPlayers button, #nbFilters button { height: 22px; padding: 0 7px; font-size: 11.5px; }
+  #nbPlayers tr { cursor: pointer; }
+  #nbPlayers tr.with td:first-child { box-shadow: inset 3px 0 var(--live); }
+  #nbPlayers tr.without td:first-child { box-shadow: inset 3px 0 var(--bad); }
+  #nbPlayers th { cursor: pointer; position: sticky; top: 0; background: var(--surface); }
+  #nbFilters { font-size: 12px; margin: 0 0 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
   details.card { margin: 6px 0 4px; font-size: 12.5px; }
   details.card summary { cursor: pointer; color: var(--muted); }
   details.card .cl { margin: 3px 0 3px 10px; }
@@ -315,10 +341,10 @@
     <button type="button" class="primary" id="cutRun">Re-sim &amp; cut</button>
   </div>
   <div class="opts" title="After the cut, before Fill: variants around the top kept lineups, each keeping some of its players and redrawing the rest under its idea's rules, the bank noise and the pool rules; those that reach the kept pool's top half on the same nights join it, tagged &quot;variant of #rank&quot; (grouped as Variants of the top). Backtest in versions.csv">
-    <label class="field"><span class="field-label">Top kept</span><input class="num" id="varN" type="number" min="1" max="100" value="15"></label>
+    <label class="field" title="Blank: the tier-A size, at least 10 and at most 25"><span class="field-label">Top kept</span><input class="num" id="varN" type="number" min="1" max="100" placeholder="tier A"></label>
     <label class="field"><span class="field-label">Variants each</span><input class="num" id="varM" type="number" min="1" max="100" value="25"></label>
     <label class="field"><span class="field-label">Players kept</span><input class="num" id="varK" type="number" min="3" max="7" value="5"></label>
-    <button type="button" id="varRun">Variants of the top</button>
+    <button type="button" id="varRun">Variants of tier A</button>
   </div>
   <div class="opts">
     <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="40"></label>
@@ -337,11 +363,38 @@
     <button type="button" id="bankSave">Save build</button>
     <button type="button" id="bankClear">Clear bank</button>
   </div>
+  <div id="s2out">
   <div class="status" id="cutStatus"></div>
   <div id="bankBox"></div>
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
+  </div>
+  <div class="opts"><button type="button" id="nbOn">New builder view</button></div>
 
+  <section id="nb" hidden>
+    <div id="nbBar">
+      <div class="nbrow"><span id="nbTabs"></span></div>
+      <div class="nbrow" style="margin-top:4px">
+        <button type="button" class="primary" id="nbFill">Fill all contests</button>
+        <button type="button" id="nbUndo">Undo fill</button>
+        <button type="button" id="nbVar">Variants of tier A</button>
+        <button type="button" id="nbAuto">Auto-fill the rest</button>
+        <button type="button" id="nbExport">Export DK entries</button>
+        <button type="button" id="nbSave">Save build</button>
+        <button type="button" id="nbOff" title="The old layout, the same bank, cut and portfolios">Classic view</button>
+      </div>
+      <div id="nbSum"></div>
+    </div>
+    <div id="nbStatusSlot"></div>
+    <div class="nbmain">
+      <div><div id="nbFilters"></div><div class="nbscroll" id="nbList"><div class="note" style="padding:8px">Cut the bank, then Fill all contests or pick a contest above.</div></div></div>
+      <div><div class="opts" style="padding:0 0 4px" id="nbRTabs"><button type="button" data-rt="p" aria-pressed="true">Players</button><button type="button" data-rt="pair" aria-pressed="false">Pairs</button><button type="button" data-rt="core" aria-pressed="false">Cores</button></div>
+        <div class="nbscroll" id="nbRight"><div id="nbPlayers"></div></div></div>
+    </div>
+    <details class="news" id="nbDetails"><summary>Details: the cut round by round, the idea scoreboard, players bank vs cut, contests and entries, the night's players, pairs and cores</summary><div id="nbDetailsBody"></div></details>
+  </section>
+
+  <div id="classic3">
   <h2>3. Build a contest's portfolio</h2>
   <details class="news"><summary>The builder's columns</summary><div class="note">Press <b>Build</b> on a contest above.
     <b>Tier</b>: A / B / C, split where lineups differ by more than the sim's own noise (its odd nights against its even), so
@@ -369,6 +422,7 @@
       <div class="note" style="margin:4px 0">Tap: <b class="w">with</b> (only lineups with it), again: <b class="wo">without</b>, again: off. Counts: lineups in view / your picks.</div>
       <div id="bpSideList"></div>
     </div>
+  </div>
   </div>
 </div>
 
@@ -547,6 +601,7 @@ function pick() {
   ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = true; });
   ruleCounts = {}; editing = -1;
   bankLoadState(); renderBank(); renderEntries(); renderNight(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
+  if (NB.on) { BP = null; nbOpen(); }
   renderTiles(); renderRules(); fillEditor(); renderNews(); renderPlayers();
 }
 
@@ -1175,8 +1230,8 @@ function bankCheck() {
     "% own: the bank projects " + Math.abs(d).toFixed(0) + (d < 0 ? " below" : " above") + " the field." +
     " Holding a player projected under " + PUNT_MIN + " minutes: bank " + Math.round(100 * avg(bank, punt)) + "%, field " + Math.round(100 * avg(F.field, punt)) + "%" +
     (all.length > 1 ? " (by idea: " + all.sort(function (a, b) { return b.u - a.u; }).map(function (x) { return esc(x.k) + " " + Math.round(100 * x.u) + "%"; }).join(", ") + ")" : "") + "." +
-    (under.length ? ' <span class="bad">' + under.length + " idea" + (under.length === 1 ? "" : "s") + " more than " + BANK_UNDER + " under the field:</span> " +
-      under.map(function (x) { return esc(x.k) + " " + x.p.toFixed(0) + " pts, " + x.o.toFixed(0) + "% (" + x.n + ")"; }).join("; ") : "");
+    (under.length ? ' <span class="bad">' + under.map(function (x) { return "Idea \u201c" + esc(x.k) + "\u201d projects " + (fp - x.p).toFixed(0) + " points under the field (" +
+      x.p.toFixed(0) + " vs " + fp.toFixed(0) + ", " + x.n + " lineups)"; }).join("; ") + ".</span>" : "");
 }
 function renderBank() {
   if (!BANK) return;
@@ -1184,7 +1239,8 @@ function renderBank() {
   // by group: banked, each round of the cut (live while it runs), kept and share; each group's tags with a box to regroup
   var idx = BANK.lineups.map(function (L, i) { return i; });
   var all = tagCounts(idx), tags = tagCounts(idx, true), rounds = CUT ? CUT.rounds.map(function (r) { return tagCounts(r.ids); }) : [];
-  var after = CUT && CUT.keep ? rounds[rounds.length - 1] : null;
+  var after = CUT && CUT.keep ? tagCounts(CUT.keep) : null;     // the kept pool, variants added after the cut included
+  var late = function (g) { return g === "Variants of the top"; };
   var members = {};
   Object.keys(tags).forEach(function (t) { (members[groupOf(t)] = members[groupOf(t)] || []).push(t); });
   $("bankBox").innerHTML = (bankSaveFailed ? '<div class="note bad"><b>Not saved in this browser:</b> the bank (' + BANK.lineups.length +
@@ -1202,7 +1258,7 @@ function renderBank() {
             return grouped ? '<details class="fold" data-fold-group="' + esc(g) + '"' + (FOLD.groups[g] ? " open" : "") + '><summary>' + members[g].length + " tag" +
               (members[g].length === 1 ? "" : "s") + '</summary><div class="sub">' + list + "</div></details>" : '<div class="sub">' + list + "</div>";
           })() +
-          '</td><td class="m">' + all[g] + "</td>" + rounds.map(function (r) { return '<td class="m">' + (r[g] || 0) + "</td>"; }).join("") +
+          '</td><td class="m">' + all[g] + "</td>" + rounds.map(function (r) { return late(g) ? '<td class="m mut">after the cut</td>' : '<td class="m">' + (r[g] || 0) + "</td>"; }).join("") +
           (after ? '<td class="m">' + (after[g] || 0) + '</td><td class="m">' + Math.round(100 * (after[g] || 0) / all[g]) + "%</td>" : "") + "</tr>";
       }).join("") + "</table>" : "") + (after ? boardHtml() + cutShares() : "");
 }
@@ -1253,6 +1309,7 @@ function renderEntries(fromFileNow) {     // fromFileNow: the entries file just 
         '</td><td class="m"><input data-cid="' + esc(c.id) + '" type="number" min="0" max="' + (c.max_per_user || 1) + '" value="' + want + '" style="width:64px;height:26px"></td>' +
         '<td class="m">' + (want ? pf.length + " / " + Math.min(want, c.max_per_user || 1) + ' <button type="button" data-review="' + esc(c.id) + '" style="height:24px;padding:0 7px;font-size:11.5px">Build</button>' : "") + "</td></tr>";
     }).join("") + "</table>" + (ENTRIES ? '<div class="note">Entries file: ' + ENTRIES.rows.length + " entries loaded.</div>" : "");
+  if (typeof NB !== "undefined" && NB.on) nbRender();
 }
 function parseCsv(text) {       // RFC 4180-ish: quoted fields, doubled quotes
   var out = [], row = [], f = "", q = false;
@@ -1705,7 +1762,217 @@ function bpRender(note) {
   $("bpTable").innerHTML = head + picked.map(function (k) { return row(k, true); }).join("") + rest.slice(0, 200).map(function (k) { return row(k, false); }).join("");
   $("bpTableWrap").hidden = false; $("bpSide").hidden = false;
   bpSideRender(rest);
+  if (NB.on) nbRender();
 }
+
+/* The builder on one screen (2026-11-19, the owner: "too much scrolling"): a sticky bar (contest tabs with their fill,
+   Fill / Undo / Variants of tier A / Auto-fill / Export / Save, a live summary for the contest and the night, tier A),
+   the contest's lineups by tier with variants folded under their parent, a condensed player list with this contest's
+   and tonight's exposure and the room left, and everything else in one Details fold. It is a view: the same bank, cut,
+   portfolios and builder (BP) as the classic layout, whose buttons it presses; "Classic view" switches back. */
+var NB = { on: false, open: {}, more: {}, rt: "p", psort: "night", pdir: -1, cache: {} };
+function nbStored() { try { return localStorage.getItem("dkcbb:nb") !== "false"; } catch (e) { return true; } }
+function nbSet(on) {
+  NB.on = !!on;
+  try { localStorage.setItem("dkcbb:nb", String(NB.on)); } catch (e) {}
+  $("nb").hidden = !NB.on; $("classic3").hidden = NB.on; $("nbOn").hidden = NB.on;
+  var out = $("s2out"), det = $("nbDetailsBody");
+  if (NB.on) { $("nbStatusSlot").appendChild($("cutStatus")); ["bankBox", "entriesBox", "pfBox"].forEach(function (id) { det.appendChild($(id)); }); }
+  else { ["cutStatus", "bankBox", "entriesBox", "pfBox"].forEach(function (id) { out.appendChild($(id)); }); nbSide(false); }
+  if (NB.on) nbOpen();
+}
+// the bar sits under the page's own sticky masthead; the panes fill what's left of the screen
+function nbFit() {
+  if (!NB.on) return;
+  var m = document.querySelector(".masthead"), h = m ? m.offsetHeight : 0;
+  $("nbBar").style.top = h + "px";
+  document.documentElement.style.setProperty("--nbtop", (h + $("nbBar").offsetHeight + 40) + "px");
+}
+window.addEventListener("resize", nbFit);
+function nbContests() {
+  var ns = entriesN();
+  return (slate && slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; })
+    .map(function (c) { return { c: c, n: Math.min(ns[String(c.id)], c.max_per_user || 1) }; });
+}
+// the contest on screen: the builder's, else the first with entries (loaded when the cut is there)
+function nbOpen() {
+  if (!NB.on) return;
+  var cs = nbContests();
+  if (CUT && CUT.keep && cs.length && (!BP || !BP.review || !cs.some(function (x) { return String(x.c.id) === BP.review; }))) { review(String(cs[0].c.id)); return; }
+  nbRender();
+}
+function nbOverCap(cid, n) {                // a contest's portfolio past a cap: a player past Max exposure / his Max% / the night cap
+  var cnt = {}, night = nightUsed(null), nl = nightLimit(), mx = (+$("maxExpo").value || 100) / 100;
+  (PF[cid] || []).forEach(function (bi) { BANK.lineups[bi].ids.forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; }); });
+  return Object.keys(cnt).some(function (id) {
+    if (state.lock[id]) return false;
+    var cap = Math.min(mx, state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1);
+    return cnt[id] > Math.max(1, Math.floor(cap * n + 1e-9)) || (nl < Infinity && (night[id] || 0) > nl);
+  });
+}
+function nbShort(name) { return String(name).replace(/^CBB\s+/, "").replace(/\s*\[.*?\]\s*/g, " ").replace(/\s+/g, " ").trim(); }
+// a contest's portfolio alone on the slate's nights (cached by its picks): expected back, fees, per-entry rates
+function nbSetStats(cid) {
+  var x = nbContests().find(function (y) { return String(y.c.id) === cid; }), ids = PF[cid] || [];
+  if (!x || !ids.length) return null;
+  var key = cid + ":" + ids.join(",");
+  if (NB.cache[key]) return NB.cache[key];
+  var c = x.c, L = ids.map(function (bi) { return BANK.lineups[bi]; }), S = +$("nSims").value || 3000;
+  var sim = DKSim.simulate(nightsCtx(c), L, fieldOf().field, fieldDoc.z, c, L.length, S), b = DKSim.builder(sim, c), st = DKSim.aloneStats(sim, c);
+  b.set(L.map(function (_, k) { return k; }));
+  var m = function (a) { return Array.from(a).reduce(function (t, v) { return t + v; }, 0) / L.length; };
+  return (NB.cache[key] = { exp: b.total(), fee: (c.entry_fee || 0) * L.length, n: L.length, t10: m(st.top10), t1: m(st.top1), cash: m(st.cash) });
+}
+function nbSumText(label, x) {
+  if (!x || !x.n) return "<b>" + label + ":</b> nothing picked";
+  return "<b>" + label + ":</b> " + x.n + " entr" + (x.n === 1 ? "y" : "ies") + " · ROI " + (x.fee ? roiTxt((x.exp - x.fee) / x.fee) : "–") + " · top 10% " + pct1(x.t10) +
+    " · top 1% " + pct1(x.t1) + " · cash " + pct1(x.cash) + " <span class=\"mut\">(each entry alone; ROI on the set)</span>";
+}
+function nbRender() {
+  if (!NB.on || !slate) return;
+  var cs = nbContests(), cur = BP && BP.review;
+  $("nbTabs").innerHTML = cs.length ? cs.map(function (x) {
+    var cid = String(x.c.id), have = (PF[cid] || []).length, bad = have < x.n || nbOverCap(cid, x.n);
+    return '<button type="button" data-cid="' + cid + '" aria-pressed="' + (cid === cur) + '" class="' + (bad ? "short" : "") + '" title="' + esc(x.c.name) +
+      (have < x.n ? ": short of its entries" : bad ? ": a player past a cap" : "") + '">' + esc(nbShort(x.c.name)) + " " + have + "/" + x.n + "</button>";
+  }).join("") : '<span class="note">Load the entries file (or set entries) to see your contests here.</span>';
+  $("nbExport").disabled = $("pfExport").disabled; $("nbUndo").disabled = $("pfUndo").disabled;
+  // live summary: this contest (the builder's picks) and the night (every contest's portfolio)
+  var here = null;
+  if (BP && BP.review) {
+    var p = BP.b.picked, mean = function (a) { return p.reduce(function (t, k) { return t + a[k]; }, 0) / Math.max(1, p.length); };
+    here = { exp: BP.b.total(), fee: (BP.contest.entry_fee || 0) * p.length, n: p.length, t10: mean(BP.t10), t1: mean(BP.t1), cash: mean(BP.cashR) };
+  }
+  var night = { exp: 0, fee: 0, n: 0, t10: 0, t1: 0, cash: 0 };
+  cs.forEach(function (x) {
+    var cid = String(x.c.id), y = cid === cur ? here : nbSetStats(cid);
+    if (!y || !y.n) return;
+    night.exp += y.exp; night.fee += y.fee; night.t10 += y.t10 * y.n; night.t1 += y.t1 * y.n; night.cash += y.cash * y.n; night.n += y.n;
+  });
+  if (night.n) { night.t10 /= night.n; night.t1 /= night.n; night.cash /= night.n; }
+  var tA = CUT && CUT.board && CUT.board.tierA;
+  $("nbSum").innerHTML = (cur ? nbSumText(nbShort(BP.contest.name), here) + "<br>" : "") + nbSumText("Tonight", night) +
+    (tA ? '<br><span' + (tA.flag ? ' class="bad"' : "") + "><b>Tier A:</b> " + tA.n + " lineup" + (tA.n === 1 ? "" : "s") + ", " + tA.ideas + " idea" + (tA.ideas === 1 ? "" : "s") +
+      (tA.top ? ", " + esc(tA.top) + " " + Math.round(100 * tA.topShare) + "%" : "") + (tA.flag ? " (red flag: one great lineup with no close cousins, or one idea)" : "") + "</span>" : "");
+  nbListRender();
+  if (NB.rt === "p") nbPlayersRender(); else bpSideRender();
+  nbFit();
+}
+function nbListRender() {
+  if (!BP || !BP.review) { $("nbFilters").innerHTML = ""; return; }
+  var picked = BP.b.picked, pos = {}, by = {}, kids = {}, parentOf = {};
+  rows.forEach(function (r) { by[r.id] = r; });
+  (BP.idx || []).forEach(function (bi, k) { pos[bi] = k; });
+  (BP.idx || []).forEach(function (bi, k) {           // a variant folds under its parent when the parent is in the pool
+    var m = /^variant of #(\d+)$/.exec((BANK.tags[bi] || [])[0] || ""), pbi = m && CUT && CUT.keep ? CUT.keep[+m[1] - 1] : null;
+    if (pbi != null && pos[pbi] != null && pos[pbi] !== k && !bpHidden(pos[pbi])) { parentOf[k] = pos[pbi]; (kids[pos[pbi]] = kids[pos[pbi]] || []).push(k); }
+  });
+  var rest = [], hidden = 0;
+  for (var k = 0; k < BP.pool.length; k++) if (picked.indexOf(k) < 0) { if (bpHidden(k)) hidden++; else if (parentOf[k] == null) rest.push(k); }
+  var active = [];
+  ["p", "pair", "core"].forEach(function (kind) { Object.keys(bpFilt[kind]).forEach(function (x) { active.push([kind, x, bpFilt[kind][x]]); }); });
+  $("nbFilters").innerHTML = '<span class="mut">' + rest.length + " in view" + (hidden ? ", " + hidden + " hidden by filters" : "") + "</span>" + active.map(function (f) {
+    return '<button type="button" data-fkind="' + f[0] + '" data-fkey="' + esc(f[1]) + '" title="Clear this filter">' + (f[2] === "with" ? "with " : "without ") + esc(filtName(f[0], f[1])) + " &times;</button>";
+  }).join("") + (active.length ? '<button type="button" data-fclear="1">Clear filters</button>' : "");
+  var grp = function (k) { return lineupGroup(BP.idx[k]); };
+  var row = function (k, isPicked, cls) {
+    var over = isPicked ? [] : bpBlocks(k), ks = kids[k] || [], best = ks.length ? Math.max.apply(null, ks.map(function (j) { return BP.roi[j]; })) : null;
+    return '<tr class="' + (isPicked ? "picked " : "") + (cls || "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' + (isPicked ? "bpRm" : over.length ? "bpForce" : "bpAdd") + '"' +
+      (over.length ? ' title="Over a cap: ' + esc(over.join("; ")) + '. Click to add it anyway."' : "") + ">" + (isPicked ? "Remove" : over.length ? "Add anyway" : "Add") + "</button></td>" +
+      '<td class="l nm">' + BP.pool[k].slots.map(function (id) { return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") +
+      (ks.length && !cls ? ' <button type="button" class="nbKids" data-k="' + k + '">' + (NB.open[k] ? "▾" : "▸") + " " + ks.length + " variant" + (ks.length === 1 ? "" : "s") + ", best " + roiTxt(best) + "</button>" : "") +
+      "</td><td><b>" + BP.tier[k] + "</b></td><td>" + roiTxt(BP.roi[k]) + "</td><td>" + pct1(BP.t10[k]) + "</td><td>" + pct1(BP.t1[k]) + "</td><td>" + pct1(BP.cashR[k]) +
+      "</td><td>" + Math.round(BP.own[k]) + "%</td><td>" + (BP.dupe[k] ? BP.dupe[k].toFixed(1) : "0") + '</td><td class="l mut" style="max-width:140px;overflow:hidden;text-overflow:ellipsis" title="' +
+      esc(grp(k)) + '">' + esc(grp(k)) + "</td></tr>" +
+      (ks.length && NB.open[k] && !cls ? ks.slice().sort(function (a, b) { return BP.alone[b] - BP.alone[a]; }).filter(function (j) { return picked.indexOf(j) < 0; })
+        .map(function (j) { return row(j, false, "kid"); }).join("") : "");
+  };
+  var head = '<tr><th class="l"></th><th class="l">Lineup</th><th>Tier</th><th>ROI</th><th>Top 10%</th><th>Top 1%</th><th>Cash</th><th>Own</th><th>Dupes</th><th class="l">Idea</th></tr>';
+  var html = head + (picked.length ? '<tr class="tierh"><td colspan="10">Your picks · ' + picked.length + " of " + BP.o.n + "</td></tr>" + picked.map(function (k) { return row(k, true); }).join("") : "");
+  ["A", "B", "C"].forEach(function (t) {
+    var ks = rest.filter(function (k) { return BP.tier[k] === t; }).sort(function (a, b) { return BP.alone[b] - BP.alone[a]; }), show = NB.more[t] || 60;
+    if (!ks.length) return;
+    html += '<tr class="tierh"><td colspan="10">Tier ' + t + " · " + ks.length + "</td></tr>" + ks.slice(0, show).map(function (k) { return row(k, false); }).join("") +
+      (ks.length > show ? '<tr><td colspan="10" class="l"><button type="button" class="nbMore" data-t="' + t + '">Show ' + Math.min(60, ks.length - show) + " more of " + (ks.length - show) + "</button></td></tr>" : "");
+  });
+  $("nbList").innerHTML = "<table>" + html + "</table>";
+}
+// the condensed player list: this contest's and tonight's exposure, the room left under the binding cap
+function nbPlayersRender() {
+  if (!BP || !BP.review) { $("nbPlayers").innerHTML = ""; return; }
+  var inPool = {}, here = {}, night = nightUsed(BP.review), lim = bpLimits(), n = BP.o.n, N = nightEntries();
+  BP.pool.forEach(function (L) { L.ids.forEach(function (id) { inPool[id] = 1; }); });
+  BP.b.picked.forEach(function (k) { BP.pool[k].ids.forEach(function (id) { here[id] = (here[id] || 0) + 1; }); });
+  var list = Object.keys(inPool).map(byId).filter(Boolean).map(function (r) {
+    var c = here[r.id] || 0, t = (night[r.id] || 0) + c;
+    return { r: r, sal: r.salary, proj: proj(r), own: own(r), here: n ? c / n : 0, night: N ? t / N : 0, room: lim[r.id] != null ? lim[r.id] - c : null };
+  });
+  var key = NB.psort, dir = NB.pdir;
+  list.sort(function (a, b) { var x = key === "name" ? a.r.name : a[key], y = key === "name" ? b.r.name : b[key]; return (x < y ? -1 : x > y ? 1 : 0) * dir || b.night - a.night; });
+  var th = function (k, l) { return '<th data-ps="' + k + '"' + (k === "name" ? ' class="l"' : "") + ">" + l + (NB.psort === k ? (NB.pdir < 0 ? " ↓" : " ↑") : "") + "</th>"; };
+  $("nbPlayers").innerHTML = '<div class="note" style="margin:4px 6px">Tap: <b class="w">with</b>, again <b class="wo">without</b>, again off.</div><table><tr>' + th("name", "Player") + th("sal", "Sal") + th("proj", "Proj") + th("own", "Field") +
+    th("here", "Here") + th("night", "Tonight") + th("room", "Room") + "</tr>" + list.map(function (x) {
+      var f = bpFilt.p[x.r.id] || "";
+      return '<tr class="' + f + '" data-pid="' + esc(x.r.id) + '"><td class="l">' + esc(shortName(x.r.name)) + ' <span class="mut">' + esc(x.r.team) + "</span></td><td>" + (x.sal / 1000).toFixed(1) +
+        "</td><td>" + x.proj.toFixed(1) + "</td><td>" + Math.round(x.own) + "%</td><td>" + Math.round(100 * x.here) + "%</td><td>" + Math.round(100 * x.night) + "%</td><td" +
+        (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</td></tr>";
+    }).join("") + "</table>";
+}
+// Pairs and Cores: the classic side panel, moved into the right pane while one of them is open
+function nbSide(show, tab) {
+  var side = $("bpSide");
+  if (show) {
+    $("nbRight").appendChild(side); side.hidden = false; $("nbPlayers").hidden = true;
+    bpTab = tab;
+    document.querySelectorAll("#bpSide [data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", String(x.dataset.tab === tab)); x.hidden = x.dataset.tab === "p"; });
+  } else {
+    var grid = document.querySelector("#classic3 .bpgrid");
+    if (side.parentNode !== grid) grid.appendChild(side);
+    document.querySelectorAll("#bpSide [data-tab]").forEach(function (x) { x.hidden = false; });
+    $("nbPlayers").hidden = false; bpTab = "p";
+    document.querySelectorAll("#bpSide [data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", String(x.dataset.tab === "p")); });
+  }
+}
+$("nbOn").addEventListener("click", function () { nbSet(true); });
+$("nbOff").addEventListener("click", function () { nbSet(false); });
+$("nbFill").addEventListener("click", function () { $("pfRun").click(); });
+$("nbUndo").addEventListener("click", function () { $("pfUndo").click(); });
+$("nbVar").addEventListener("click", function () { $("varRun").click(); });
+$("nbAuto").addEventListener("click", function () { if (BP && BP.review) $("bpAuto").click(); });
+$("nbExport").addEventListener("click", function () { $("pfExport").click(); });
+$("nbSave").addEventListener("click", function () { $("bankSave").click(); });
+$("nbTabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-cid]"); if (b) review(b.dataset.cid); });
+$("nbRTabs").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-rt]"); if (!b) return;
+  NB.rt = b.dataset.rt;
+  document.querySelectorAll("#nbRTabs button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+  nbSide(NB.rt !== "p", NB.rt);
+  nbRender();
+});
+$("nbFilters").addEventListener("click", function (e) {
+  var b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.fclear) bpFilt = { p: {}, pair: {}, core: {} }; else delete bpFilt[b.dataset.fkind][b.dataset.fkey];
+  bpRender();
+});
+$("nbList").addEventListener("click", function (e) {
+  var pn = e.target.closest(".pn");
+  if (pn) { bpFilt.p[pn.dataset.pid] = "without"; bpRender(); return; }
+  var b = e.target.closest("button"); if (!b) return;
+  if (b.classList.contains("nbKids")) { NB.open[+b.dataset.k] = !NB.open[+b.dataset.k]; nbListRender(); return; }
+  if (b.classList.contains("nbMore")) { NB.more[b.dataset.t] = (NB.more[b.dataset.t] || 60) + 60; nbListRender(); return; }
+  var k = +b.closest("tr").dataset.k;
+  if (b.classList.contains("bpAdd")) bpAdd(k); else if (b.classList.contains("bpForce")) bpAdd(k, true); else if (b.classList.contains("bpRm")) bpRemove(k);
+});
+$("nbPlayers").addEventListener("click", function (e) {
+  var h = e.target.closest("th[data-ps]");
+  if (h) { NB.pdir = NB.psort === h.dataset.ps ? -NB.pdir : (h.dataset.ps === "name" ? 1 : -1); NB.psort = h.dataset.ps; nbPlayersRender(); return; }
+  var r = e.target.closest("tr[data-pid]"); if (!r) return;
+  var f = bpFilt.p, x = r.dataset.pid;
+  if (!f[x]) f[x] = "with"; else if (f[x] === "with") f[x] = "without"; else delete f[x];
+  bpRender();
+});
+
+nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
 $("slate").addEventListener("change", pick);
@@ -1811,7 +2078,8 @@ async function runVariants() {
   if (!CUT || !CUT.keep) return "Re-sim & cut first: variants grow around the kept lineups.";
   var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
-  var N = Math.max(1, +$("varN").value || 15), M = Math.max(1, +$("varM").value || 25), K = Math.min(7, Math.max(3, +$("varK").value || 5));
+  var tA = CUT.board && CUT.board.tierA ? CUT.board.tierA.n : 15;
+  var N = +$("varN").value ? Math.max(1, +$("varN").value) : Math.min(25, Math.max(10, tA)), M = Math.max(1, +$("varM").value || 25), K = Math.min(7, Math.max(3, +$("varK").value || 5));
   var keep = CUT.keep.slice(), top = keep.slice(0, N), shared = function (a, b) { return a.filter(function (id) { return b.indexOf(id) >= 0; }).length; };
   var vars = [], from = [];
   for (var p = 0; p < top.length; p++) {
@@ -1853,22 +2121,22 @@ async function runVariants() {
   $("cutStatus").textContent = "Scoring the kept lineups for the idea scoreboard…"; await tick();
   CUT.board = ideaBoard(cs, ns, S);
   bankSaveState(); cutSave(); PF = {}; pfSave(); renderBank(); renderEntries();
-  return "Variants of the top " + top.length + " (" + K + " of 8 players kept, " + M + " draws each): " + vars.length + " new after near-duplicates, " + added +
+  return "Variants of tier A, the top " + top.length + " (" + K + " of 8 players kept, " + M + " draws each): " + vars.length + " new after near-duplicates, " + added +
     " reached the kept pool's top half and joined it (tagged \"variant of #rank\", grouped as Variants of the top). Tier A: " +
     (before != null ? before + " → " : "") + CUT.board.tierA.n + ". Fill all contests again to use them.";
 }
 $("varRun").addEventListener("click", function () {
-  runVariants().then(function (m) { $("cutStatus").textContent = m; }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Variants failed: ' + esc(e.message) + "</span>"; });
+  runVariants().then(function (m) { $("cutStatus").textContent = m; if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Variants failed: ' + esc(e.message) + "</span>"; });
 });
 $("cutRun").addEventListener("click", function () {
-  runCut().then(function (m) { $("cutStatus").textContent = m; }, function (e) { CUT = null; cutSave(); renderBank(); $("cutStatus").innerHTML = '<span class="bad">Cut failed: ' + esc(e.message) + "</span>"; });
+  runCut().then(function (m) { $("cutStatus").textContent = m; if (NB.on) { BP = null; nbOpen(); } }, function (e) { CUT = null; cutSave(); renderBank(); $("cutStatus").innerHTML = '<span class="bad">Cut failed: ' + esc(e.message) + "</span>"; });
 });
 $("pfRun").addEventListener("click", function () {
   var started = Object.keys(PF).filter(function (k) { return (PF[k] || []).length; }).length, obj = $("pfObj").value;
   if (started && !confirm("Replace your portfolios in " + started + " contest" + (started === 1 ? "" : "s") + " with the " + $("pfObj").selectedOptions[0].textContent + " start? (Undo fill puts them back.)")) return;
   if (started) { store(undoKey(), PF); $("pfUndo").disabled = false; }   // the replaced set, for Undo fill
   PF = {};
-  pickPortfolios(null, obj).then(function (m) { $("cutStatus").textContent = m; }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
+  pickPortfolios(null, obj).then(function (m) { $("cutStatus").textContent = m; if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
 });
 function undoKey() { return "dkcbb-pf-prev:" + slate.draft_group_id; }
 $("pfUndo").addEventListener("click", function () {

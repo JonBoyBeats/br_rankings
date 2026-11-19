@@ -75,6 +75,8 @@ function audit(name, L, o) {
 (async () => {
   const b = await chromium.launch();
   const pg = await b.newPage({ viewport: { width: 1100, height: 900 } });
+  // the classic layout for the checks below (the one-screen builder is checked at the end)
+  await pg.addInitScript(() => { try { if (!sessionStorage.getItem("nbInit")) { localStorage.setItem("dkcbb:nb", "false"); sessionStorage.setItem("nbInit", "1"); } } catch (e) {} });
   let dialogs = [];
   pg.on("dialog", d => { dialogs.push(d.message()); d.accept(); });       // Fill all contests asks before replacing
   const errors = [];
@@ -1094,7 +1096,85 @@ function audit(name, L, o) {
     return { msg, added: added.length, bankGrew: BANK.lineups.length - n0, legal, near, parent, grouped, bankN: CUT.bankN === BANK.lineups.length, tierA: !!CUT.board.tierA };
   });
   check("variants of the top: legal, near their parent (5+ of 8), none sharing 7+ with a kept lineup, in the kept pool, tagged and grouped; the scoreboard redone",
-        !vr.skipped && vr.added === vr.bankGrew && vr.legal && vr.near && vr.parent && vr.grouped && vr.bankN && vr.tierA && vr.added > 0 && /^Variants of the top 3/.test(vr.msg), JSON.stringify(vr));
+        !vr.skipped && vr.added === vr.bankGrew && vr.legal && vr.near && vr.parent && vr.grouped && vr.bankN && vr.tierA && vr.added > 0 && /^Variants of tier A, the top 3 /.test(vr.msg), JSON.stringify(vr));
+  // --- the builder on one screen ---------------------------------------------------------------------
+  dialogs = [];
+  await pg.fill("#maxUse", "3"); await pg.fill("#maxNight", "60");
+  await pg.click("#nbOn");
+  await pg.waitForFunction(() => NB.on && BP && BP.review && document.querySelectorAll("#nbTabs button").length > 0, null, { timeout: 300000 });
+  const nb_nb0 = await pg.evaluate(() => ({ classicHidden: document.getElementById("classic3").hidden, status: document.getElementById("cutStatus").parentNode.id,
+    details: ["bankBox", "entriesBox", "pfBox"].every(id => document.getElementById(id).closest("#nbDetails")) }));
+  check("one screen: Classic hidden, the status in the bar, the cut, contests and night view in Details", nb_nb0.classicHidden && nb_nb0.status === "nbStatusSlot" && nb_nb0.details, JSON.stringify(nb_nb0));
+  await pg.click("#nbFill");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  await pg.waitForFunction(() => BP && BP.review && document.querySelectorAll("#nbList tr[data-k]").length > 0, null, { timeout: 300000 });
+  const nb_tabs = await pg.evaluate(() => [...document.querySelectorAll("#nbTabs button")].map(b => {
+    const x = nbContests().find(y => String(y.c.id) === b.dataset.cid), have = (PF[b.dataset.cid] || []).length;
+    return { ok: new RegExp(" " + have + "/" + x.n + "$").test(b.textContent), red: b.classList.contains("short") === (have < x.n || nbOverCap(b.dataset.cid, x.n)) }; }));
+  check("one screen: a tab per contest, its fill (picked / entries), red when short or past a cap", nb_tabs.length >= 2 && nb_tabs.every(t => t.ok && t.red), JSON.stringify(nb_tabs));
+  const nb_caps = await pg.evaluate(() => { const c = {}, use = {}; let n = 0;
+    Object.values(PF).forEach(v => { const within = new Set(v).size === v.length; v.forEach(bi => { n++; use[bi] = (use[bi] || 0) + 1; BANK.lineups[bi].ids.forEach(id => { if (!state.lock[id]) c[id] = (c[id] || 0) + 1; }); }); });
+    return { maxPlayer: Math.max(0, ...Object.values(c)), lim: nightLimit(), maxUse: Math.max(0, ...Object.values(use)), within: Object.values(PF).every(v => new Set(v).size === v.length) }; });
+  check("one screen: Fill keeps the night cap (60%) and Max contests per lineup (3), unique within a contest", nb_caps.maxPlayer <= nb_caps.lim && nb_caps.maxUse <= 3 && nb_caps.within, JSON.stringify(nb_caps));
+  const nb_sum1 = await pg.evaluate(() => document.getElementById("nbSum").textContent);
+  check("one screen: the live summary, this contest and tonight (ROI, top 10%, top 1%, cash), and tier A", /Tonight: \d+ entr/.test(nb_sum1) && /ROI/.test(nb_sum1) && /top 10%/.test(nb_sum1) && /top 1%/.test(nb_sum1) && /cash/.test(nb_sum1) && /Tier A: \d+ lineup/.test(nb_sum1), nb_sum1);
+  // Add and Remove from the list: the pick, its contest's portfolio, the tab and the summary move together
+  const nb_addRm = await pg.evaluate(async () => {
+    const cid = BP.review, before = BP.b.picked.length, sumB = document.getElementById("nbSum").textContent;
+    if (before >= BP.o.n) { const r = document.querySelector("#nbList tr.picked button.bpRm"); r.click(); }
+    const mid = BP.b.picked.length, add = document.querySelector("#nbList tr:not(.picked) button.bpAdd") || document.querySelector("#nbList tr:not(.picked) button.bpForce");
+    if (!add) return { skipped: true };
+    const k = +add.closest("tr").dataset.k; add.click();
+    const after = BP.b.picked.length, inPF = PF[cid].includes(BP.idx[k]), tab = document.querySelector('#nbTabs button[data-cid="' + cid + '"]').textContent;
+    document.querySelector('#nbList tr.picked[data-k="' + k + '"] button.bpRm').click();
+    return { mid, after, inPF, tabOk: new RegExp(" " + after + "/").test(tab), back: BP.b.picked.length === mid && !PF[cid].includes(BP.idx[k]), sumMoved: document.getElementById("nbSum").textContent !== "" };
+  });
+  check("one screen: Add from the list picks it into the contest's portfolio and its tab; Remove takes it out", !nb_addRm.skipped && nb_addRm.after === nb_addRm.mid + 1 && nb_addRm.inPF && nb_addRm.tabOk && nb_addRm.back, JSON.stringify(nb_addRm));
+  // the player pane: this contest's and tonight's exposure, the room under the binding cap
+  const nb_pp = await pg.evaluate(() => {
+    const r = document.querySelector("#nbPlayers tr[data-pid]"), id = r.dataset.pid, cells = [...r.children].map(td => td.textContent);
+    const here = BP.b.picked.filter(k => BP.pool[k].ids.includes(id)).length, night = (nightUsed(BP.review)[id] || 0) + here, lim = bpLimits()[id];
+    return { here: cells[4], night: cells[5], room: cells[6], wantHere: Math.round(100 * here / BP.o.n) + "%", wantNight: Math.round(100 * night / nightEntries()) + "%", wantRoom: String(lim - here) };
+  });
+  check("one screen: the player pane shows his exposure here and tonight, and the room left", nb_pp.here === nb_pp.wantHere && nb_pp.night === nb_pp.wantNight && nb_pp.room === nb_pp.wantRoom, JSON.stringify(nb_pp));
+  const nb_tap = await pg.evaluate(() => { const r = document.querySelector("#nbPlayers tr[data-pid]"), id = r.dataset.pid; r.click();
+    const a = bpFilt.p[id]; document.querySelector('#nbPlayers tr[data-pid="' + id + '"]').click(); const b = bpFilt.p[id];
+    document.querySelector('#nbPlayers tr[data-pid="' + id + '"]').click(); return [a, b, bpFilt.p[id] || "off"]; });
+  check("one screen: tapping a player cycles with, without, off", JSON.stringify(nb_tap) === JSON.stringify(["with", "without", "off"]), JSON.stringify(nb_tap));
+  // variants fold under their parent
+  const nb_fold = await pg.evaluate(() => {
+    for (const x of nbContests()) {
+      review(String(x.c.id));
+      const btn = document.querySelector("#nbList .nbKids");
+      if (!btn) continue;
+      const pk = +btn.dataset.k; btn.click();
+      const kids = [...document.querySelectorAll("#nbList tr.kid")].map(tr => +tr.dataset.k);
+      const ok = kids.length > 0 && kids.every(k => /^variant of #\d+$/.test(BANK.tags[BP.idx[k]][0]) && CUT.keep[+BANK.tags[BP.idx[k]][0].split("#")[1] - 1] === BP.idx[pk]);
+      const loose = [...document.querySelectorAll("#nbList tr[data-k]:not(.kid):not(.picked)")].some(tr => kids.includes(+tr.dataset.k));
+      return { found: true, kids: kids.length, ok, loose };
+    }
+    const vars = BANK.tags.filter(t => /^variant of/.test(t[0])).length;
+    return { found: false, vars };
+  });
+  check("one screen: variants fold under their parent (expanding inline), not as rows of their own", nb_fold.found ? nb_fold.ok && !nb_fold.loose : nb_fold.vars === 0, JSON.stringify(nb_fold));
+  // Pairs and Cores open in the right pane; Players comes back
+  await pg.click('#nbRTabs button[data-rt="pair"]');
+  const nb_side = await pg.evaluate(() => ({ inPane: document.getElementById("bpSide").parentNode.id, tab: bpTab, rows: document.querySelectorAll("#bpSideList .srow[data-key]").length }));
+  await pg.click('#nbRTabs button[data-rt="p"]');
+  check("one screen: Pairs in the right pane, Players back after", nb_side.inPane === "nbRight" && nb_side.tab === "pair" && nb_side.rows > 0 &&
+        (await pg.evaluate(() => !document.getElementById("nbPlayers").hidden && bpTab === "p")), JSON.stringify(nb_side));
+  // Export from the top bar: one row per entry with a lineup, no lineup twice in a contest
+  const [nb_dl9] = await Promise.all([pg.waitForEvent("download"), pg.click("#nbExport")]);
+  const nb_out9 = fs.readFileSync(await nb_dl9.path(), "utf8").trim().split(/\r?\n/).map(l => l.split(","));
+  const nb_per = {}; let nb_twice = 0;
+  nb_out9.slice(1).forEach(r => { const k = r[2] + ":" + r.slice(4, 12).slice().sort().join("|"); if (nb_per[k]) nb_twice++; nb_per[k] = 1; });
+  check("one screen: Export from the top bar, DraftKings' header, no lineup twice in one contest", nb_out9[0].slice(0, 4).join(",") === "Entry ID,Contest Name,Contest ID,Entry Fee" && nb_out9.length > 1 && nb_twice === 0, nb_out9.length + " rows, " + nb_twice + " nb_twice");
+  // Classic view: the same portfolios, the outputs back in place
+  const nb_pfNB = await pg.evaluate(() => JSON.stringify(PF));
+  await pg.click("#nbOff");
+  check("Classic view: back to the old layout with the same portfolios", await pg.evaluate(p => !document.getElementById("classic3").hidden && document.getElementById("nb").hidden &&
+        document.getElementById("cutStatus").parentNode.id === "s2out" && JSON.stringify(PF) === p, nb_pfNB));
+  await pg.fill("#maxUse", "1");
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
   passes.forEach(p => console.log("PASS " + p));
