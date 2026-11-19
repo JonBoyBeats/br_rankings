@@ -29,3 +29,15 @@ date,draft_group,team,verdict,borderline,quality,leverage,pts_rank,value_rank,co
 2026-11-17,156663,AUB,LEVERAGE,0,16.3,100.0,0.0,0.0,15.4,50.0,100.0,tonight's 14 teams,71.0,0.792,0.389,-0.049,,0,0,33200.0,86.0,106.03,0,warm-up,battle-royale-research 2a61df9
 2026-11-17,156663,ARK,FADE,0,39.4,38.5,23.1,7.7,76.9,50.0,38.5,tonight's 14 teams,76.0,0.803,0.454,-0.001,,0,0,35900.0,91.0,114.65,0,warm-up,battle-royale-research 2a61df9
 2026-11-17,156663,TENN,FADE,0,24.0,30.8,7.7,15.4,23.1,50.0,30.8,tonight's 14 teams,73.5,0.91,0.406,0.01,,0,0,32300.0,87.75,103.15,0,warm-up,battle-royale-research 2a61df9
+2026-11-18,157032,ND,CHALK,0,83.3,0.0,100.0,66.7,66.7,100.0,0.0,tonight's 4 teams,76.5,1.139,0.442,0.093,0.9446169772256728,3,0,31200.0,161.25,130.98,1,warm-up,battle-royale-research 2b9da72
+2026-11-18,157032,RU,CHALK,1,54.2,33.3,33.3,100.0,33.3,50.0,33.3,tonight's 4 teams,74.0,1.208,0.438,0.042,,0,0,27400.0,141.25,115.02,1,warm-up,battle-royale-research 2b9da72
+2026-11-18,157032,UF,LEVERAGE,1,45.8,100.0,66.7,0.0,100.0,16.7,100.0,tonight's 4 teams,73.5,0.825,0.511,-0.094,0.8620689655172415,2,0,38100.0,116.5,159.94,0,warm-up,battle-royale-research 2b9da72
+2026-11-18,157032,UH,LEVERAGE,0,20.8,66.7,0.0,33.3,0.0,50.0,66.7,tonight's 4 teams,72.0,0.922,0.414,-0.042,,0,0,33900.0,129.25,142.31,0,warm-up,battle-royale-research 2b9da72
+2026-11-18,157033,WVU,FOCUS,0,66.1,71.4,57.1,100.0,57.1,50.0,71.4,tonight's 8 teams,72.0,1.09,0.435,-0.025,,0,0,31300.0,102.5,107.96,0,warm-up,battle-royale-research d7f6b54
+2026-11-18,157033,KU,FOCUS,0,64.3,85.7,71.4,57.1,28.6,100.0,85.7,tonight's 8 teams,78.5,1.01,0.406,-0.064,1.0,4,1,35000.0,96.5,120.72,0,warm-up,battle-royale-research d7f6b54
+2026-11-18,157033,UCONN,CHALK,1,66.1,42.9,85.7,42.9,85.7,50.0,42.9,tonight's 8 teams,72.0,0.995,0.489,0.005,,0,0,33700.0,145.25,116.24,1,warm-up,battle-royale-research d7f6b54
+2026-11-18,157033,ARIZ,CHALK,1,54.2,28.6,100.0,0.0,100.0,16.7,28.6,tonight's 8 teams,75.5,0.91,0.578,0.006,0.8792302587923027,2,0,38400.0,159.75,132.45,1,warm-up,battle-royale-research d7f6b54
+2026-11-18,157033,UNLV,LEVERAGE,1,44.6,57.1,28.6,28.6,71.4,50.0,57.1,tonight's 8 teams,74.0,0.98,0.469,-0.015,,0,1,30900.0,104.75,106.58,0,warm-up,battle-royale-research d7f6b54
+2026-11-18,157033,AUB,LEVERAGE,0,33.1,100.0,42.9,14.3,14.3,61.1,100.0,tonight's 8 teams,83.5,0.96,0.404,-0.068,0.9692570452604612,2,0,32800.0,84.25,113.13,0,warm-up,battle-royale-research d7f6b54
+2026-11-18,157033,WICH,FADE,1,41.9,0.0,14.3,71.4,42.9,38.9,0.0,tonight's 8 teams,76.0,1.019,0.413,0.082,0.8900961136648557,2,0,29600.0,103.75,102.1,1,warm-up,battle-royale-research d7f6b54
+2026-11-18,157033,LY-IL,FADE,0,33.9,14.3,0.0,85.7,0.0,50.0,14.3,tonight's 8 teams,74.5,1.085,0.373,0.08,,0,0,28000.0,99.0,96.58,1,warm-up,battle-royale-research d7f6b54

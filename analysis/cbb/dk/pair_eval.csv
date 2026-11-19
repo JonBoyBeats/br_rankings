@@ -25,3 +25,34 @@ date,draft_group,set,team,starter,bench,pos,corr,games,thin,starter_beat,bench_b
 2026-11-17,156663,espn,ARK,Cooper Bowser,Abdou Toure,F-C,-0.83,4,1,-1.1,-1.05,both under
 2026-11-17,156663,espn,TENN,DeWayne Brown II,Braedan Lue,F-C,-1.0,3,1,10.55,-3.1,split
 2026-11-17,156663,espn,TENN,Miles Rubin,Braedan Lue,F-C,-0.93,3,1,11.0,-3.1,split
+2026-11-18,157032,espn,ND,Braeden Smith,Jonathan Sanderson,G,-0.62,5,0,21.2,-3.25,split
+2026-11-18,157032,espn,ND,Ethan Roberts,Jonathan Sanderson,G,-0.45,5,0,1.8,-3.25,split
+2026-11-18,157032,em,RU,Tariq Francis,Jamichael Davis,G,-0.73,4,1,16.2,8.75,both over
+2026-11-18,157032,em,RU,Tariq Francis,RaSheed Jones,G,-0.63,4,1,16.2,-9.7,split
+2026-11-18,157032,espn,RU,Darren Buchanan Jr.,Diego Garavaglia,G,-0.9,4,1,-5.0,-2.95,both under
+2026-11-18,157032,espn,RU,Tariq Francis,Jamichael Davis,G,-0.73,4,1,16.2,8.75,both over
+2026-11-18,157032,em,UH,Delrecco Gillespie,Arafan Diane,B,-0.85,4,1,-5.1,-5.15,both under
+2026-11-18,157032,em,UH,Chase McCarty,Braden East,B,-0.77,4,1,2.75,-11.1,split
+2026-11-18,157032,espn,UH,Delrecco Gillespie,Arafan Diane,F-C,-0.85,4,1,-5.1,-5.15,both under
+2026-11-18,157032,espn,UH,Chase McCarty,Braden East,F-C,-0.77,4,1,2.75,-11.1,split
+2026-11-18,157033,em,WVU,Seydou Traore,Joson Sanon,W,-0.68,4,1,2.55,-8.35,split
+2026-11-18,157033,em,WVU,Finley Bizjack,Joson Sanon,W,-0.6,4,1,-9.45,-8.35,both under
+2026-11-18,157033,espn,WVU,Seydou Traore,Martin Somerville,G,-0.85,4,1,2.55,12.15,both over
+2026-11-18,157033,espn,WVU,Miles Sadler,Martin Somerville,G,-0.82,4,1,11.4,12.15,both over
+2026-11-18,157033,em,KU,Tyran Stokes,Dennis Parker Jr.,G,-0.63,4,1,-26.9,-9.85,both under
+2026-11-18,157033,em,KU,Taylen Kinney,Dennis Parker Jr.,G,-0.36,4,1,-3.9,-9.85,both under
+2026-11-18,157033,espn,KU,Trey Kaufman-Renn,Keanu Dawes,F-C,-0.9,4,1,6.75,26.5,both over
+2026-11-18,157033,espn,KU,Tyran Stokes,Dennis Parker Jr.,G,-0.63,4,1,-26.9,-9.85,both under
+2026-11-18,157033,espn,UCONN,Na'jai Hines,Colben Landrew,F-C,-1.0,4,1,4.75,12.3,both over
+2026-11-18,157033,espn,UCONN,Na'jai Hines,Oskar Giltay,F-C,-0.87,4,1,4.75,-0.05,split
+2026-11-18,157033,em,ARIZ,Derek Dixon,Cameron Holmes,G,-0.9,4,1,1.85,-1.35,split
+2026-11-18,157033,espn,ARIZ,Bryce James,JJ Mandaquit,G,-0.99,3,1,-5.5,7.75,split
+2026-11-18,157033,espn,ARIZ,Derek Dixon,Cameron Holmes,G,-0.9,4,1,1.85,-1.35,split
+2026-11-18,157033,espn,UNLV,Jeremy Foumena,Jackson Kiss,F-C,-0.89,4,1,0.5,-1.8,split
+2026-11-18,157033,espn,UNLV,Dontrez Williams,Issac Williamson,G,-0.83,3,1,2.05,0.5,both over
+2026-11-18,157033,em,AUB,Narcisse Ngoy,Bukky Oboye,B,-0.92,4,1,-16.05,12.25,split
+2026-11-18,157033,espn,AUB,Kevin Overton,George Kimble III,G,-0.99,4,1,-16.2,12.2,split
+2026-11-18,157033,espn,AUB,Narcisse Ngoy,Bukky Oboye,F-C,-0.92,4,1,-16.05,12.25,split
+2026-11-18,157033,espn,WICH,William Berg,Emmanuel Okorafor,F-C,-0.98,3,1,17.85,1.55,both over
+2026-11-18,157033,espn,LY-IL,Ryan Agarwal,Donald Hand Jr.,G,-0.96,3,1,22.1,-9.6,split
+2026-11-18,157033,espn,LY-IL,Jason Schofield,Xavier Amos,F-C,-0.79,4,1,0.15,-9.5,split
