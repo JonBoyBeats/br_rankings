@@ -164,7 +164,7 @@ OWN_BANDS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
 FIELD_EVAL = os.path.join(DK, "field_eval.csv")
 FIELD_COLS = ["date", "draft_group", "contest_id", "contest", "side", "lineups", "matched_n", "dup_other", "distinct_per_1000",
               "sal_p10", "sal_p50", "sal_p90", "at_cap", "under_49k", "own_30", "own_20", "own_10", "own_5", "own_1", "top_own",
-              "team2", "team3", "team4", "team5", "games", "low10", "high40", "own_sum", "sal_mean", "dup_field", "proj_mean", "own_proj", "own_mae", "params"]
+              "team2", "team3", "team4", "team5", "games", "low10", "high40", "own_sum", "sal_mean", "dup_field", "proj_mean", "own_proj", "punt1", "punt2", "own_mae", "params"]
 # The construction rows beside real and sim (fieldcheck): our bank, our cut, our entered (the owner's standings entries)
 # and each sharp user's. The owner's list, 2026-11-19.
 SHARP = ["dbaggot3", "feartheturtle7"]
@@ -979,6 +979,45 @@ def field_metrics(lineups, users, info, n, seed=3, draws=20):
     return out, own
 
 
+PUNT_MIN = 15            # a punt: a player projected under this many minutes at lock (punt1 / punt2: lineups with 1+ / 2+)
+COPIES_EVAL = os.path.join(DK, "copies_eval.csv")
+COPIES_COLS = ["date", "draft_group", "contest_id", "contest", "bucket", "entries", "share", "fees", "won", "roi"]
+COPY_BUCKETS = [("unique", 0, 0), ("1-2", 1, 2), ("3-9", 3, 9), ("10+", 10, 10 ** 9)]
+
+
+def copies_rows(path, contest, base):
+    """A contest's real entries by copies (other USERS holding the same 8 players; the same user's re-entries aren't
+    copies): each bucket's share of entries and its ROI, prizes split among entries tied on points (the payout
+    table from the lobby)."""
+    entries, _ = standings(path)
+    pay = pay_table((contest or {}).get("payouts"))
+    fee = num((contest or {}).get("entry_fee"))
+    if not entries or not pay or not fee:
+        return []
+    users = defaultdict(set)
+    key = [frozenset(lineup_names(e["lineup"])) for e in entries]
+    for k, e in zip(key, entries):
+        users[k].add((e["name"] or "").split(" (")[0].lower())
+    order = sorted(range(len(entries)), key=lambda i: -entries[i]["points"])
+    won, i = [0.0] * len(entries), 0
+    while i < len(order):                   # a tie on points shares the prizes of the places it covers
+        j = i
+        while j + 1 < len(order) and entries[order[j + 1]]["points"] == entries[order[i]]["points"]:
+            j += 1
+        share = sum(pay.get(r, 0) for r in range(i + 1, j + 2)) / (j - i + 1)
+        for k in order[i:j + 1]:
+            won[k] = share
+        i = j + 1
+    out = []
+    for name, lo, hi in COPY_BUCKETS:
+        ix = [i for i, (k, e) in enumerate(zip(key, entries)) if lo <= len(users[k] - {(e["name"] or "").split(" (")[0].lower()}) <= hi]
+        if ix:
+            w = sum(won[i] for i in ix)
+            out.append(dict(base, bucket=name, entries=len(ix), share=round(100 * len(ix) / len(entries), 1), fees=round(fee * len(ix), 2),
+                            won=round(w, 2), roi=round(100 * (w - fee * len(ix)) / (fee * len(ix)), 1)))
+    return out
+
+
 def construction(lineups, ref, info, who=None, me=None, proj=None, pown=None):
     """How a set of lineups is built against a contest's real ownership (ref: DK id -> % of its entries): players at or
     under 10% and at or above 40% per lineup, summed ownership and salary per lineup; with who (lineup -> the real
@@ -994,6 +1033,8 @@ def construction(lineups, ref, info, who=None, me=None, proj=None, pown=None):
         out["dup_field"] = round(100 * sum(bool(who.get(L, set()) - {me}) for L in lineups) / n, 1)
     out["proj_mean"] = round(sum(proj.get(i, 0) for L in lineups for i in L) / n, 1) if proj else ""
     out["own_proj"] = round(sum(pown.get(i, 0) for L in lineups for i in L) / n) if pown else ""
+    pu = [sum((num(info[i].get("min")) or 0) < PUNT_MIN for i in L) for L in lineups]
+    out["punt1"], out["punt2"] = round(100 * sum(x >= 1 for x in pu) / n, 1), round(100 * sum(x >= 2 for x in pu) / n, 1)
     return out
 
 
@@ -1012,7 +1053,7 @@ def real_field(path, byname):
 
 def fieldcheck(a):
     """The nightly field check (see the docstring): rows in field_eval.csv for every graded contest, rebuilt whole."""
-    mirror, ev, out = Mirror(a.mirror), read(EVAL), []
+    mirror, ev, out, copies = Mirror(a.mirror), read(EVAL), [], []
     graded = {}
     for r in ev:
         graded.setdefault((r["date"], str(r["draft_group"])), {})[r["contest_id"]] = r["contest"]
@@ -1047,6 +1088,8 @@ def fieldcheck(a):
             if not os.path.exists(path):
                 continue
             L, U, total = real_field(path, byname)
+            copies += copies_rows(path, next((c for c in slate.get("contests") or [] if str(c.get("id")) == str(cid)), None),
+                                  {"date": date, "draft_group": g, "contest_id": cid, "contest": cname})
             n = min(len(L), len(sim), 1000)
             rm, rown = field_metrics(L, U, info, n)
             sm, sown = field_metrics(sim, None, info, n)
@@ -1070,6 +1113,11 @@ def fieldcheck(a):
             w = csv.DictWriter(f, fieldnames=FIELD_COLS)
             w.writeheader()
             w.writerows(out)
+    if copies:
+        with open(COPIES_EVAL, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=COPIES_COLS)
+            w.writeheader()
+            w.writerows(copies)
 
 
 def idea_kind(t):
@@ -1874,11 +1922,21 @@ def owncard(a):
         print("  " + line)
     fe = [r for r in read(FIELD_EVAL) if r["date"] == last and BASE_CONTEST in r["contest"] and "(Early)" not in r["contest"]]
     if fe:
-        print("Construction, %s %s (%s games): side, 3+ from a team, <=10%% / >=40%% owned a lineup, summed ownership, salary, shared with another user" % (
-            last, fe[0]["contest"], fe[0]["games"]))
+        print("Construction, %s %s (%s games): side, 3+ from a team, <=10%% / >=40%% owned a lineup, summed ownership, salary, shared with another user, "
+              "projection and projected ownership, with a player projected under %d minutes (1+ / 2+)" % (last, fe[0]["contest"], fe[0]["games"], PUNT_MIN))
         for r in fe:
-            print("  %-20s %5s  %5s%%  %4s / %-4s  %4s%%  %s  %s" % (r["side"], r["lineups"], r["team3"], r["low10"], r["high40"], r["own_sum"],
-                                                                r["sal_mean"], r["dup_field"] or r["dup_other"]))
+            print("  %-20s %5s  %5s%%  %4s / %-4s  %4s%%  %s  %s  %s pts %s%%  %s%% / %s%%" % (
+                r["side"], r["lineups"], r["team3"], r["low10"], r["high40"], r["own_sum"], r["sal_mean"], r["dup_field"] or r["dup_other"],
+                r.get("proj_mean", ""), r.get("own_proj", ""), r.get("punt1", ""), r.get("punt2", "")))
+    cp = read(COPIES_EVAL)
+    if cp:
+        agg = defaultdict(lambda: [0, 0.0, 0.0])
+        for r in cp:
+            a = agg[r["bucket"]]
+            a[0] += int(r["entries"]); a[1] += num(r["fees"]); a[2] += num(r["won"])
+        tot = sum(a[0] for a in agg.values())
+        print("Copies (other users holding the same 8 players), %d contests, ties split: " % len({r["contest_id"] for r in cp}) + "; ".join(
+            "%s %.0f%% of entries, ROI %+.0f%%" % (b, 100 * agg[b][0] / tot, 100 * (agg[b][2] - agg[b][1]) / agg[b][1]) for b, _, _ in COPY_BUCKETS if agg[b][1]))
 
 
 def groupby_night(rows):

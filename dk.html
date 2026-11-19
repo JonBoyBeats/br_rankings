@@ -1116,7 +1116,7 @@ function tagCounts(idx, byTag) {     // lineups by group (or by tag): the tag ea
 /* The bank check (before Re-sim & cut, information only): the bank's and each idea's average projection and summed
    projected ownership against the simulated field's; an idea projecting more than BANK_UNDER points under the field
    is flagged (2026-11-16 to 11-18: the bank projected 10 to 20 under the real field's average lineup). */
-var BANK_UNDER = 5;
+var BANK_UNDER = 5, PUNT_MIN = 15;     // a punt: a player projected under PUNT_MIN minutes (tracking, 2026-11-19)
 function bankCheck() {
   var F = fieldOf(), el = $("bankCheck");
   if (!el) return;
@@ -1125,14 +1125,18 @@ function bankCheck() {
   var pts = function (ids) { return ids.reduce(function (t, id) { return t + (by[id] ? proj(by[id]) : 0); }, 0); };
   var ow = function (ids) { return ids.reduce(function (t, id) { return t + (F.own[id] || 0); }, 0); };
   var avg = function (L, f) { return L.reduce(function (t, x) { return t + f(x); }, 0) / L.length; };
+  var punt = function (ids) { return ids.some(function (id) { var r = by[id]; return r && (r.min || 0) * (minScale[id] || 1) < PUNT_MIN; }) ? 1 : 0; };
   var fp = avg(F.field, pts), fo = avg(F.field, ow), bank = BANK.lineups.map(function (L) { return L.ids; }), bp = avg(bank, pts), bo = avg(bank, ow);
   var g = {};
   BANK.lineups.forEach(function (L, i) { var k = groupOf((BANK.tags[i] || [])[0] || ""); (g[k] = g[k] || []).push(L.ids); });
-  var under = Object.keys(g).map(function (k) { return { k: k, p: avg(g[k], pts), o: avg(g[k], ow), n: g[k].length }; })
+  var all = Object.keys(g).map(function (k) { return { k: k, p: avg(g[k], pts), o: avg(g[k], ow), n: g[k].length, u: avg(g[k], punt) }; });
+  var under = all
     .filter(function (x) { return x.p < fp - BANK_UNDER; }).sort(function (a, b) { return a.p - b.p; });
   var d = bp - fp;
   el.innerHTML = "<b>Bank check:</b> bank " + bp.toFixed(0) + " pts, " + bo.toFixed(0) + "% own; field " + fp.toFixed(0) + " pts, " + fo.toFixed(0) +
     "% own: the bank projects " + Math.abs(d).toFixed(0) + (d < 0 ? " below" : " above") + " the field." +
+    " Holding a player projected under " + PUNT_MIN + " minutes: bank " + Math.round(100 * avg(bank, punt)) + "%, field " + Math.round(100 * avg(F.field, punt)) + "%" +
+    (all.length > 1 ? " (by idea: " + all.sort(function (a, b) { return b.u - a.u; }).map(function (x) { return esc(x.k) + " " + Math.round(100 * x.u) + "%"; }).join(", ") + ")" : "") + "." +
     (under.length ? ' <span class="bad">' + under.length + " idea" + (under.length === 1 ? "" : "s") + " more than " + BANK_UNDER + " under the field:</span> " +
       under.map(function (x) { return esc(x.k) + " " + x.p.toFixed(0) + " pts, " + x.o.toFixed(0) + "% (" + x.n + ")"; }).join("; ") : "");
 }
