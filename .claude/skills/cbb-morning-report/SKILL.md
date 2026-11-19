@@ -232,6 +232,14 @@ ownership, salary, shared lineups). Settings change only on the 3 bands, and onl
 way; the 5 bands are for reading. The owner keeps an entry in the Pull Up Jumper each night so its standings can be
 downloaded (a night without it falls back to the biggest graded contest, and the card says which).
 
+**News sources and team cards, every morning (2026-11-19):** battle-royale-research's day's news read suggests
+candidate X sources for tonight's teams with none listed (cbb/news/suggest/<date>.txt: the accounts naming the most of
+a team's players, with followers and bio; 6 teams a day, each once). Vet them: a beat writer, the team's own account
+or a school site, not a betting or aggregator account; add the keepers to cbb/inputs/news_sources.csv (espn_team,
+school, handle, kind, added, note) and say which teams still have none. Check the DK page's team cards built (each
+team's tile in mirror/dk_cbb_teams.json has a card with its game count); say how many deep-bench players are out
+of the pool by default.
+
 **Mechanics freeze with the rest on 2026-11-23** (the owner, 2026-11-17): the draw (sim-night draws, Leverage
 weight), the cut within each idea, the tie split, the pick (exposure, core and pair caps, unique entries) and the
 night view. After it, effort moves to inputs, in this order: projections (minutes, news), ownership, the FIELD (the
