@@ -166,7 +166,7 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 **Your Q moves.** Morning: Kessler ahead of Siakam, hurt by 21; Morning: Kessler ahead of Young, hurt by 0; Morning: Kessler ahead of Okongwu, hurt by 16; Morning: Kessler ahead of Reed, hurt by 7; Morning: Reaves ahead of Daniels, hurt by 0; Afternoon: Sengun ahead of Cunningham, hurt by 15; Afternoon: Flagg ahead of Cunningham, helped by 31; Afternoon: Durant ahead of Barrett, hurt by 3; Afternoon: Barrett ahead of Quickley, hurt by 8.
 
-**Today's Questionable players.** Deni Avdija (T2 on the ladders, 57% to play): if he sits, Toumani Camara, Sidy Cissoko, Scoot Henderson; Ty Jerome (T3 on the ladders, 51% to play): if he sits, Isaiah Stewart, Jerami Grant, Jaylen Wells; Jonathan Kuminga (T4 on the ladders, 56% to play): if he sits, Terrence Shannon Jr.; Toumani Camara (T5 on the ladders, 57% to play); Ryan Rollins (T5 on the ladders, 38% to play); Isaiah Stewart (T5 on the ladders, 53% to play).
+**Today's Questionable players.** Deni Avdija (T2 on the ladders, 65% to play): if he sits, Toumani Camara, Sidy Cissoko, Scoot Henderson; Ty Jerome (T3 on the ladders, 59% to play): if he sits, Isaiah Stewart, Jerami Grant, Javon Small; Jonathan Kuminga (T4 on the ladders, 60% to play): if he sits, Terrence Shannon Jr.; Toumani Camara (T5 on the ladders, 59% to play); Ryan Rollins (T5 on the ladders, 44% to play); Isaiah Stewart (T5 on the ladders, 59% to play).
 
 ## Back page
 

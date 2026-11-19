@@ -93,12 +93,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Bam Adebayo",
+     "player": "Joel Embiid",
      "adp": 17.1,
      "drafted": 100.0
     },
     {
-     "player": "Joel Embiid",
+     "player": "Bam Adebayo",
      "adp": 17.1,
      "drafted": 100.0
     },
@@ -153,14 +153,14 @@
      "drafted": 100.0
     },
     {
-     "player": "Zion Williamson",
-     "adp": 29.0,
-     "drafted": 98.8
-    },
-    {
      "player": "Walker Kessler",
      "adp": 29.0,
      "drafted": 100.0
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 29.0,
+     "drafted": 98.8
     },
     {
      "player": "Kevin Durant",
@@ -328,14 +328,14 @@
      "drafted": 0.7
     },
     {
-     "player": "Saddiq Bey",
-     "adp": 36.0,
-     "drafted": 1.1
-    },
-    {
      "player": "Tyrese Proctor",
      "adp": 36.0,
      "drafted": 0.3
+    },
+    {
+     "player": "Saddiq Bey",
+     "adp": 36.0,
+     "drafted": 1.1
     },
     {
      "player": "Ja'Kobe Walter",
@@ -348,12 +348,12 @@
      "drafted": 0.2
     },
     {
-     "player": "Derrick White",
+     "player": "Payton Pritchard",
      "adp": 36.0,
      "drafted": 0.1
     },
     {
-     "player": "Payton Pritchard",
+     "player": "Derrick White",
      "adp": 36.0,
      "drafted": 0.1
     },
@@ -2335,12 +2335,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Bam Adebayo",
+     "player": "Joel Embiid",
      "adp": 17.1,
      "drafted": 100.0
     },
     {
-     "player": "Joel Embiid",
+     "player": "Bam Adebayo",
      "adp": 17.1,
      "drafted": 100.0
     },
@@ -2395,14 +2395,14 @@
      "drafted": 100.0
     },
     {
-     "player": "Zion Williamson",
-     "adp": 29.0,
-     "drafted": 99.8
-    },
-    {
      "player": "Walker Kessler",
      "adp": 29.0,
      "drafted": 100.0
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 29.0,
+     "drafted": 99.8
     },
     {
      "player": "Kevin Durant",
@@ -3576,12 +3576,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Bam Adebayo",
+     "player": "Joel Embiid",
      "adp": 17.1,
      "drafted": 100.0
     },
     {
-     "player": "Joel Embiid",
+     "player": "Bam Adebayo",
      "adp": 17.1,
      "drafted": 100.0
     },
@@ -3636,14 +3636,14 @@
      "drafted": 100.0
     },
     {
-     "player": "Zion Williamson",
-     "adp": 29.0,
-     "drafted": 98.9
-    },
-    {
      "player": "Walker Kessler",
      "adp": 29.0,
      "drafted": 99.5
+    },
+    {
+     "player": "Zion Williamson",
+     "adp": 29.0,
+     "drafted": 98.9
     },
     {
      "player": "Kevin Durant",
@@ -4402,12 +4402,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Bam Adebayo",
+     "player": "Joel Embiid",
      "adp": 17.1,
      "drafted": 100.0
     },
     {
-     "player": "Joel Embiid",
+     "player": "Bam Adebayo",
      "adp": 17.1,
      "drafted": 100.0
     },
@@ -4462,12 +4462,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Zion Williamson",
+     "player": "Walker Kessler",
      "adp": 29.0,
      "drafted": 100.0
     },
     {
-     "player": "Walker Kessler",
+     "player": "Zion Williamson",
      "adp": 29.0,
      "drafted": 100.0
     },
@@ -5152,12 +5152,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Bam Adebayo",
+     "player": "Joel Embiid",
      "adp": 17.1,
      "drafted": 100.0
     },
     {
-     "player": "Joel Embiid",
+     "player": "Bam Adebayo",
      "adp": 17.1,
      "drafted": 100.0
     },
@@ -5212,12 +5212,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Zion Williamson",
+     "player": "Walker Kessler",
      "adp": 29.0,
      "drafted": 100.0
     },
     {
-     "player": "Walker Kessler",
+     "player": "Zion Williamson",
      "adp": 29.0,
      "drafted": 100.0
     },
@@ -5277,12 +5277,12 @@
      "drafted": 25.0
     },
     {
-     "player": "Norman Powell",
+     "player": "Amen Thompson",
      "adp": 35.8,
      "drafted": 25.0
     },
     {
-     "player": "Amen Thompson",
+     "player": "Norman Powell",
      "adp": 35.8,
      "drafted": 25.0
     },
@@ -5292,14 +5292,14 @@
      "drafted": 25.0
     },
     {
-     "player": "Ajay Mitchell",
-     "adp": 36.0,
-     "drafted": 50.0
-    },
-    {
      "player": "Desmond Bane",
      "adp": 36.0,
      "drafted": 25.0
+    },
+    {
+     "player": "Ajay Mitchell",
+     "adp": 36.0,
+     "drafted": 50.0
     }
    ],
    "first_below_100": {
