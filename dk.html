@@ -322,6 +322,7 @@
     <label class="field"><span class="field-label">Nights for the pick</span><input class="num" id="nSims" type="number" min="500" max="10000" step="500" value="3000"></label>
     <label class="field" title="A starting portfolio for every contest you're entering, to edit by hand: Max ROI adds by expected value, Max coverage by the rise in nights one of yours reaches the top 1%, Balanced weighs the two equally"><span class="field-label">Start from</span><select id="pfObj" style="width:auto">
       <option value="roi">Max ROI</option><option value="balanced">Balanced</option><option value="cover">Max coverage</option></select></label>
+    <label class="field" title="Unique within a contest; across contests one lineup can go in this many (1: each lineup in one contest only, the rule until 2026-11-19). Each contest has its own prizes, so a copy in another contest splits nothing; it adds swing. Fill all contests and the builder both keep to it"><span class="field-label">Max contests per lineup</span><input class="num" id="maxUse" type="number" min="1" max="10" step="1" value="3"></label>
     <button type="button" class="primary" id="pfRun">Fill all contests</button>
     <button type="button" id="pfUndo" disabled title="Put back the portfolios the last fill replaced">Undo fill</button>
     <button type="button" id="pfNights" title="Draw new simulated nights for this slate (the fills, the builder and the scoreboard all use the slate's nights)">New nights</button>
@@ -401,12 +402,20 @@ function deepIds() {
   ((T && T.teams) || []).forEach(function (t) { ((t.card && t.card.deep) || []).forEach(function (id) { o[id] = 1; }); });
   return o;
 }
+/* No punts without news (2026-11-19, the backtest in versions.csv): a player projected under PUNT_MIN minutes is out of
+   the pool by default too, unless his minutes rose on news (a teammate Out, by tag or by you, and his projection, after
+   the refit, above his season average). The same one tap (state.deepIn) brings him back. The bank only: the cut's
+   nights, the field and the shadow sets are unchanged. */
+function isPunt(r) {
+  if (r.status === "Out" || (r.min || 0) * (minScale[r.id] || 1) >= PUNT_MIN) return false;
+  var news = rows.some(function (x) { return x.team === r.team && x.id !== r.id && x.status === "Out"; });
+  return !(news && r.min_avg != null && (r.min || 0) * (minScale[r.id] || 1) > r.min_avg);
+}
 function applyOuts() {
   minScale = {};
   var deep = deepIds();
   rows.forEach(function (r) {
     r.status = isDoubtful(r) ? (state.ins[r.id] ? "Questionable" : "Out") : state.outs[r.id] ? "Out" : r._status0;
-    r.deepOut = !!deep[r.id] && !state.deepIn[r.id];
   });
   var teams = {};
   rows.forEach(function (r) { if (r.status !== r._status0) teams[r.team] = 1; });
@@ -415,6 +424,7 @@ function applyOuts() {
     var fit = DKSim.fitMinutes(v.map(function (r) { return r.min; }), 200);
     v.forEach(function (r, i) { minScale[r.id] = fit[i] / r.min; });
   });
+  rows.forEach(function (r) { r.punt = !deep[r.id] && isPunt(r); r.deepOut = (!!deep[r.id] || r.punt) && !state.deepIn[r.id]; });
   adjustField();
 }
 /* The simulated field after a change of yours (Mark out, a Doubtful left out, or put back): each field lineup holding
@@ -624,8 +634,10 @@ function playerTable(list, sortable) {
         (state.outs[r.id] ? "Undo out" : "Mark out") + "</button>" : "") +
       (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005 ? '<span class="tag" title="A teammate you ruled out: his minutes ' + (r.min || 0).toFixed(1) +
         " -> " + ((r.min || 0) * minScale[r.id]).toFixed(1) + '">' + (minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min</span>" : "") + statusConflict(r) +
-      (deepIds()[r.id] ? '<button type="button" class="deepin" data-id="' + esc(r.id) + '" title="' + (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" :
-        "Deep bench, brought back: leave him out again") + '">' + (r.deepOut ? "deep: use" : "deep: drop") + "</button>" : "") +
+      (deepIds()[r.id] || r.punt ? '<button type="button" class="deepin" data-id="' + esc(r.id) + '" title="' + (r.punt ?
+        (r.deepOut ? "Projected under " + PUNT_MIN + " minutes with no news raising them: out of the pool by default. Use him" : "Brought back: leave him out again") :
+        (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" : "Deep bench, brought back: leave him out again")) + '">' +
+        (r.punt ? (r.deepOut ? "<" + PUNT_MIN + " min: use" : "<" + PUNT_MIN + " min: drop") : (r.deepOut ? "deep: use" : "deep: drop")) + "</button>" : "") +
       (r.fragile ? '<span class="tag frag" title="Fragile: expected miss ±' + (r.miss_dk || "") + '">fragile</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
     var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
@@ -1271,11 +1283,13 @@ async function runCut() {
 function ideaBoard(cs, ns, S) {
   var keep = CUT.keep, pool = keep.map(function (i) { return BANK.lineups[i]; }), K = pool.length;
   var ret = new Float64Array(K), fees = 0, w = 0, t1 = new Float64Array(K), t10 = new Float64Array(K), cash = new Float64Array(K);
+  var odd = new Float64Array(K), even = new Float64Array(K);
   cs.forEach(function (c) {
     var n = Math.min(ns[String(c.id)], c.max_per_user || 1), fee = c.entry_fee || 0;
     var sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, n, S), st = DKSim.aloneStats(sim, c);
     for (var k = 0; k < K; k++) {
       ret[k] += n * (st.odd[k] + st.even[k]) / 2; t1[k] += n * st.top1[k]; t10[k] += n * st.top10[k]; cash[k] += n * st.cash[k];
+      odd[k] += n * st.odd[k]; even[k] += n * st.even[k];
     }
     fees += n * fee; w += n;
   });
@@ -1289,13 +1303,26 @@ function ideaBoard(cs, ns, S) {
              own: ks.reduce(function (t, k) { return t + ownOf(pool[k]); }, 0) / ks.length, cores: new Set(ks.map(function (k) { return keys[k]; })).size };
   });
   rows.sort(function (a, b) { return (b.roi == null ? -1e9 : b.roi) - (a.roi == null ? -1e9 : a.roi); });
-  return { rows: rows, nights: S, contests: cs.map(function (c) { return c.name; }) };
+  // tier A (the portfolio screen's test: within the sim's own noise of the best, on the entries-weighted value alone):
+  // how many kept lineups, from how many ideas; a red flag at 1-2 lineups or a single idea (one great lineup with no
+  // close cousins, 2026-11-18's 283.5 winner). values: each kept lineup's value, for the build and the nightly grade
+  var tr = DKSim.tiers(Array.from(ret), Array.from(odd), Array.from(even)), aIx = [];
+  tr.tier.forEach(function (t, k) { if (t === "A") aIx.push(k); });
+  var aBy = {}; aIx.forEach(function (k) { var g = lineupGroup(keep[k]); aBy[g] = (aBy[g] || 0) + 1; });
+  var topIdea = Object.keys(aBy).sort(function (a, b) { return aBy[b] - aBy[a]; })[0];
+  var tierA = { n: aIx.length, ideas: Object.keys(aBy).length, top: topIdea || null, topShare: aIx.length ? aBy[topIdea] / aIx.length : 0, sigma: tr.sigma };
+  tierA.flag = tierA.n <= 2 || tierA.ideas === 1;
+  return { rows: rows, nights: S, contests: cs.map(function (c) { return c.name; }), tierA: tierA,
+           values: Array.from(ret, function (x) { return Math.round(100 * x / Math.max(1, w)) / 100; }) };
 }
 function boardHtml() {
   var B = CUT && CUT.board;
   if (!B || !B.rows.length) return "";
   return '<details class="fold" id="ideaBoard" open><summary>Idea scoreboard: the kept lineups by idea, best sim ROI first</summary>' +
     '<div class="note">Each kept lineup alone in ' + esc(B.contests.join(", ")) + " (" + B.nights + " fresh nights), each contest weighted by your entries in it.</div>" +
+    (B.tierA ? '<div class="note' + (B.tierA.flag ? " bad" : "") + '" id="tierA"><b>Tier A:</b> ' + B.tierA.n + " kept lineup" + (B.tierA.n === 1 ? "" : "s") +
+      " within the sim's noise of the best, from " + B.tierA.ideas + " idea" + (B.tierA.ideas === 1 ? "" : "s") + (B.tierA.top ? " (top: " + esc(B.tierA.top) + ", " +
+      Math.round(100 * B.tierA.topShare) + "%)" : "") + (B.tierA.flag ? ". Red flag: " + (B.tierA.n <= 2 ? "one or two great lineups with no close cousins" : "all from one idea") : "") + ".</div>" : "") +
     '<table class="contests"><tr><th>Idea</th><th class="r">Kept</th><th class="r">Sim ROI</th><th class="r">Top 10%</th><th class="r">Top 1%</th><th class="r">Cash</th><th class="r">Avg own</th><th class="r">Cores</th></tr>' +
     B.rows.map(function (r) {
       return '<tr data-idea="' + esc(r.idea) + '"><td>' + esc(r.idea) + '</td><td class="m">' + r.kept + '</td><td class="m">' + roiTxt(r.roi) + '</td><td class="m">' + pct1(r.top10) +
@@ -1309,23 +1336,24 @@ async function pickPortfolios(into, objective) {
   var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
   if (!BANK.lineups.length) return "The bank is empty.";
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
-  // unique entries: every lineup goes in one contest only. The largest stake (fee x our entries) picks first; each
-  // later contest picks from what's left
+  // unique WITHIN a contest; across contests a lineup goes in at most Max contests per lineup (2026-11-19; 1 was
+  // the rule until then): each contest has its own prizes, so a copy in another contest splits nothing. The largest
+  // stake (fee x our entries) picks first; each later contest picks from the lineups not yet at the max
   var nOf = function (c) { return Math.min(ns[String(c.id)], c.max_per_user || 1); };
   cs = cs.slice().sort(function (a, b) { return (b.entry_fee || 0) * nOf(b) - (a.entry_fee || 0) * nOf(a) || (b.entry_fee || 0) - (a.entry_fee || 0); });
-  var all = finalIdx(), taken = {}, S = +$("nSims").value || 3000, size = all.length;
+  var all = finalIdx(), taken = {}, S = +$("nSims").value || 3000, size = all.length, maxUse = maxUses();
   var nightN = cs.reduce(function (a, c) { return a + nOf(c); }, 0), mp = +$("maxPair").value || 0, pairCount = {};
   var pairLimit = mp ? Math.max(1, Math.floor(mp / 100 * nightN + 1e-9)) : 0;
   var msgs = [];
   for (var i = 0; i < cs.length; i++) {
     var c = cs[i], n = nOf(c);
-    var idx = all.filter(function (bi) { return !taken[bi]; }), pool = idx.map(function (bi) { return BANK.lineups[bi]; });
+    var idx = all.filter(function (bi) { return (taken[bi] || 0) < maxUse; }), pool = idx.map(function (bi) { return BANK.lineups[bi]; });
     $("cutStatus").textContent = "Picking " + n + " for " + c.name + " from " + pool.length + " left…"; await tick();
     var sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, n, S);
     var pairsBefore = Object.assign({}, pairCount);       // the night's pair counts before this contest (for the trials below)
     var po = Object.assign(pickRules(n), { objective: objective || "roi" }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(ctx(), po, pool, sim, c, n);
     into[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
-    into[String(c.id)].forEach(function (bi) { taken[bi] = 1; });
+    into[String(c.id)].forEach(function (bi) { taken[bi] = (taken[bi] || 0) + 1; });
     var why = "";
     if (r.chosen.length < n) {        // which setting stops it: try each one relaxed
       var fills = function (x) { return DKSim.pick(ctx(), Object.assign({}, po, x, pairLimit ? { pairCount: Object.assign({}, pairsBefore) } : {}), pool, sim, c, n).chosen.length >= n; };
@@ -1341,16 +1369,17 @@ async function pickPortfolios(into, objective) {
   if (into === PF) { pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES; }
   var night = DKSim.topCore(ctx(), Object.keys(into).reduce(function (a, k) { return a.concat(into[k].map(function (bi) { return BANK.lineups[bi]; })); }, []));
   return (night ? "Largest core across the night's " + night.of + " entries: " + coreName(night.key) + " in " + night.n + " (" + Math.round(100 * night.share) + "%). " : "") +
-    "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + " on the slate's nights (#" + nightsSeed() + "), each lineup in one contest only, the largest stake first: " +
+    "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + " on the slate's nights (#" + nightsSeed() + "), each lineup in " + (maxUse === 1 ? "one contest only" : "at most " + maxUse + " contests") + ", the largest stake first: " +
     msgs.join("; ") + ". Review any one below." +
     (ENTRIES ? "" : " Load the entries file to export them.");
 }
 
+function maxUses() { return Math.max(1, Math.round(+$("maxUse").value || 3)); }
 function review(cid) {
   var c = (slate.contests || []).find(function (x) { return String(x.id) === cid; });
-  var other = {};                       // unique entries: lineups in another contest's portfolio aren't on offer here
-  Object.keys(PF).forEach(function (k) { if (k !== cid) PF[k].forEach(function (bi) { other[bi] = 1; }); });
-  var idx = finalIdx().filter(function (bi) { return !other[bi]; });
+  var other = {};                       // lineups already in Max contests per lineup other contests aren't on offer here
+  Object.keys(PF).forEach(function (k) { if (k !== cid) PF[k].forEach(function (bi) { other[bi] = (other[bi] || 0) + 1; }); });
+  var mu = maxUses(), idx = finalIdx().filter(function (bi) { return (other[bi] || 0) < mu; });
   var pos = {}; idx.forEach(function (bi, k) { pos[bi] = k; });
   var o = pickRules(Math.min(entriesN()[cid] || 1, c.max_per_user || 1));
   bpLoad(idx.map(function (i) { return BANK.lineups[i]; }), c, o, +$("nSims").value || 3000,
@@ -1360,9 +1389,9 @@ function review(cid) {
 
 function exportEntries() {
   if (!ENTRIES) return "Load the entries file first.";
-  var seen = {}, dup = 0;               // unique entries: a lineup in two contests' portfolios is refused, not exported
-  Object.keys(PF).forEach(function (k) { PF[k].forEach(function (bi) { if (seen[bi]) dup++; seen[bi] = 1; }); });
-  if (dup) return "Not exported: " + dup + " lineup" + (dup === 1 ? " is" : "s are") + " in more than one contest's portfolio (picked before entries were unique). Press Fill all contests again.";
+  var dup = 0;                          // unique within a contest: a lineup twice in one contest's portfolio is refused
+  Object.keys(PF).forEach(function (k) { var seen = {}; PF[k].forEach(function (bi) { if (seen[bi]) dup++; seen[bi] = 1; }); });
+  if (dup) return "Not exported: " + dup + " lineup" + (dup === 1 ? " is" : "s are") + " in the same contest's portfolio twice. Press Fill all contests again.";
   var lines = [ENTRIES.header.map(csvCell).join(",")], used = {}, short = [];
   ENTRIES.rows.forEach(function (r) {
     var pf = PF[r[2]];

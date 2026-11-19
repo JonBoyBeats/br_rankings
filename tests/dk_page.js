@@ -153,6 +153,23 @@ function audit(name, L, o) {
   });
   check("deep bench: out of the pool by default (page and sim), shown excluded; Use brings him back",
         dp.deep === true && dp.page === false && dp.sim === false && dp.cls && dp.back, JSON.stringify(dp));
+  // no punts without news: under 15 projected minutes is out of the pool by default, unless a teammate is out and his
+  // refit minutes pass his season average; Use brings him back
+  const pu = await pg.evaluate(() => {
+    const r = rows.find(x => x.status !== "Out" && x.min > 3 && x.min < 12 && !deepIds()[x.id] && rows.filter(y => y.team === x.team && y.status !== "Out" && y.min > 0).length >= 6 &&
+      !rows.some(y => y.team === x.team && y.status === "Out"));
+    const was = { min_avg: r.min_avg }; r.min_avg = r.min - 0.5;
+    applyOuts(); const def = { punt: r.punt, out: r.deepOut, usable: usable(r), sim: DKSim.usable(ctx(), r) };
+    const mate = rows.filter(y => y.team === r.team && y.id !== r.id && y.status !== "Out" && y.min > 20)[0];
+    state.outs[mate.id] = 1; applyOuts(); const news = { punt: r.punt, min: r.min * (minScale[r.id] || 1), avg: r.min_avg };
+    delete state.outs[mate.id]; applyOuts();
+    view.panel = null; renderTiles(); renderPlayers();
+    document.querySelector(`#players .row[data-id="${r.id}"] .deepin`).click(); const back = !r.deepOut && usable(r);
+    state.deepIn = {}; r.min_avg = was.min_avg; applyOuts(); renderPlayers();
+    return { def, news, back };
+  });
+  check("no punts without news: under 15 projected minutes out by default (page and sim); a teammate out raising him past his average lets him in; Use brings him back",
+        pu.def.punt && pu.def.out && !pu.def.usable && pu.def.sim === false && (pu.news.min > pu.news.avg ? !pu.news.punt : true) && pu.back, JSON.stringify(pu));
   // the field after a Mark out: his field lineups swap him for a player who fits, ownership recounted; undo restores the field
   const fa = await pg.evaluate(() => {
     const F0 = fieldOf(), q = rows.filter(r => r.status !== "Out" && (F0.own[r.id] || 0) > 5 && rows.filter(x => x.team === r.team && x.min > 0 && x.status !== "Out").length >= 6)
@@ -693,6 +710,11 @@ function audit(name, L, o) {
     groups: [...new Set(CUT.keep.map(i => lineupGroup(i)))].sort() }));
   check("idea scoreboard: a row per idea, kept adding up to the cut", brd.rows.length === brd.groups.length && JSON.stringify(brd.rows.map(r => r.idea).sort()) === JSON.stringify(brd.groups) &&
         brd.rows.reduce((t, r) => t + r.kept, 0) === cut.keep.length && brd.shown.length === brd.rows.length, JSON.stringify(brd.rows.map(r => [r.idea, r.kept])));
+  const ta = await pg.evaluate(() => { const T = CUT.board.tierA, v = CUT.board.values, el = document.getElementById("tierA");
+    const tr = DKSim.tiers(v, v, v); return { T, n: v.length, keep: CUT.keep.length, txt: el ? el.textContent : "" }; });
+  check("tier A after the cut: its count, ideas and top idea's share shown, red-flagged at 1-2 lineups or one idea; each kept lineup's value saved",
+        ta.T && ta.T.n >= 1 && ta.T.n <= ta.keep && ta.T.ideas >= 1 && ta.n === ta.keep && new RegExp("^Tier A: " + ta.T.n + " kept lineup").test(ta.txt) &&
+        ta.T.flag === (ta.T.n <= 2 || ta.T.ideas === 1) && /Red flag/.test(ta.txt) === ta.T.flag, JSON.stringify(ta));
   check("idea scoreboard: best ROI first; rates, ownership and cores in range", brd.rows.every((r, i) => i === 0 || brd.rows[i - 1].roi >= r.roi) &&
         brd.rows.every(r => Number.isFinite(r.roi) && r.top1 <= r.top10 + 1e-9 && r.top10 <= 1 && r.cash <= 1 && r.own > 0 && r.cores >= 1 && r.cores <= r.kept), JSON.stringify(brd.rows));
   // the cut survives a refresh (reloaded with the bank it was made on)
@@ -710,6 +732,7 @@ function audit(name, L, o) {
   check("cut shares: biggest risers first", srows.every((r, i) => i === 0 || +srows[i - 1][3] >= +r[3] - 1));
 
   await pg.fill("#nSims", "1000");
+  await pg.fill("#maxUse", "1");          // the checks below are the one-contest-only rule; Max contests per lineup 3 is checked further down
   await pg.click("#pfRun");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   const pf = await pg.evaluate(() => PF);
@@ -890,6 +913,22 @@ function audit(name, L, o) {
   check("night view: players, pairs and cores against the field", /The night: \d+ entries/.test(await pg.textContent("#pfBox")) &&
         (await pg.$$eval("#pfBox table", t => t.length)) === 3);
   await pg.fill("#maxPair", "");
+  // Max contests per lineup (3 by default): unique within a contest, a lineup in at most 3; the builder offers only
+  // lineups under the max elsewhere; the export refuses only a lineup twice in one contest
+  check("max contests per lineup: 3 by default", await pg.evaluate(() => { const x = document.getElementById("maxUse"); return x.defaultValue === "3"; }));
+  await pg.fill("#maxUse", "3");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const mcu = await pg.evaluate(() => { const use = {}, within = Object.keys(PF).every(k => new Set(PF[k]).size === PF[k].length);
+    Object.values(PF).forEach(v => v.forEach(bi => { use[bi] = (use[bi] || 0) + 1; }));
+    return { within, max: Math.max(...Object.values(use)), msg: document.getElementById("cutStatus").textContent }; });
+  check("max contests per lineup: unique within each contest, no lineup in more than 3, said so", mcu.within && mcu.max <= 3 && /each lineup in at most 3 contests/.test(mcu.msg), JSON.stringify(mcu));
+  await pg.click('button[data-review="197791874"]');
+  await pg.waitForFunction(() => BP && BP.review === "197791874");
+  check("max contests per lineup: the builder offers only lineups under the max in the other contests", await pg.evaluate(() => {
+    const other = {}; Object.keys(PF).forEach(k => { if (k !== "197791874") PF[k].forEach(bi => { other[bi] = (other[bi] || 0) + 1; }); });
+    return BP.idx.every(bi => (other[bi] || 0) < 3); }));
+  await pg.fill("#maxUse", "1");
 
   await pg.evaluate(() => { document.querySelectorAll("#bankBox input[data-tag]").forEach(x => { x.checked = true; }); });
   await pg.fill("#groupName", "Both ideas");
