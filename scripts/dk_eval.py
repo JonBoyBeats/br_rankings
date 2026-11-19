@@ -2004,7 +2004,7 @@ def leverage_lines(rows):
 
 SCAN_EVAL = os.path.join(DK, "scan_eval.csv")
 SCAN_COLS = ["date", "draft_group", "contest_id", "contest", "stack", "kind", "n", "rank", "of", "read", "scan_g_t1", "scan_field", "tile_verdict",
-             "real_entries", "real_top10", "real_top1"]
+             "real_entries", "real_top10", "real_top1", "proj", "actual"]
 
 
 def scan_grade(a):
@@ -2012,7 +2012,8 @@ def scan_grade(a):
     night's baseline contest (the main $15, else the biggest graded): the share of real entries holding the stack that
     reached the real top 10% and top 1%; beside each team's tile verdict (tiles_eval.csv) for its team stacks. Prints
     whether the scan's top third of stacks reached the top 10% / top 1% more often than its bottom third, and the same
-    by tile verdict."""
+    by tile verdict. Player rows (the player scan, 2026-11-19): the same rates for real entries holding the player, and
+    his real points against the scan's projection; printed by Read (core and leverage against fade and skip)."""
     base, verdict, out = baselines(), {}, []
     for r in read(os.path.join(DK, "tiles_eval.csv")):
         verdict[(str(r["draft_group"]), r["team"])] = r["verdict"]
@@ -2045,6 +2046,17 @@ def scan_grade(a):
                         "tile_verdict": verdict.get((g, row["team"]), "") if row["kind"] == "team" else "",
                         "real_entries": len(hit), "real_top10": round(sum(rk <= t10 for rk in hit) / len(hit), 4) if hit else "",
                         "real_top1": round(sum(rk <= t1 for rk in hit) / len(hit), 4) if hit else ""})
+        byid = {r["dk_id"]: r for r in info.values()}
+        for i, row in enumerate(sc.get("players") or []):
+            pid = str(row["id"])
+            hit = [rk for rk, L in lines if any(x and x["dk_id"] == pid for x in L)]
+            act = num((byid.get(pid) or {}).get("actual_dk"))
+            out.append({"date": date, "draft_group": g, "contest_id": cid, "contest": cname, "stack": row["key"], "kind": "player", "n": "",
+                        "rank": i + 1, "of": len(sc["players"]), "read": row["read"], "scan_g_t1": round(row["g_t1"], 5),
+                        "scan_field": round(row["fown"] / 100, 4) if row.get("fown") is not None else "", "tile_verdict": "",
+                        "real_entries": len(hit), "real_top10": round(sum(rk <= t10 for rk in hit) / len(hit), 4) if hit else "",
+                        "real_top1": round(sum(rk <= t1 for rk in hit) / len(hit), 4) if hit else "",
+                        "proj": round(row["proj"], 2) if row.get("proj") is not None else "", "actual": act if act is not None else ""})
     if out:
         with open(SCAN_EVAL, "w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=SCAN_COLS)
@@ -2055,8 +2067,9 @@ def scan_grade(a):
 
 
 def scan_lines():
-    rs = [r for r in read(SCAN_EVAL) if r["real_entries"] and int(r["real_entries"]) >= 5]
-    if not rs:
+    allr = [r for r in read(SCAN_EVAL) if r["real_entries"] and int(r["real_entries"]) >= 5]
+    rs, pls = [r for r in allr if r["kind"] != "player"], [r for r in allr if r["kind"] == "player"]
+    if not allr:
         return ["Slate scan: no graded scan yet (a build saved with a scan, and its standings)"]
     def rate(sub, k):
         e = sum(int(r["real_entries"]) for r in sub)
@@ -2064,13 +2077,20 @@ def scan_lines():
     top = [r for r in rs if int(r["rank"]) <= int(r["of"]) / 3]
     bot = [r for r in rs if int(r["rank"]) > 2 * int(r["of"]) / 3]
     f = lambda x: "%.1f%%" % (100 * x) if x is not None else "-"
-    out = ["Slate scan, %d night%s: real entries holding the scan's top third of stacks reached the top 10%% %s / top 1%% %s; its bottom third %s / %s" % (
+    out = [] if not rs else ["Slate scan, %d night%s: real entries holding the scan's top third of stacks reached the top 10%% %s / top 1%% %s; its bottom third %s / %s" % (
         len({r["date"] for r in rs}), "" if len({r["date"] for r in rs}) == 1 else "s", f(rate(top, "real_top10")), f(rate(top, "real_top1")), f(rate(bot, "real_top10")), f(rate(bot, "real_top1")))]
     tv = [r for r in rs if r["tile_verdict"] and r["kind"] == "team" and r["n"] == "3"]
     if tv:
         out.append("  team 3+ stacks by tile verdict: " + "; ".join("%s %s / %s (%d)" % (v, f(rate([r for r in tv if r["tile_verdict"] == v], "real_top10")),
                    f(rate([r for r in tv if r["tile_verdict"] == v], "real_top1")), len([r for r in tv if r["tile_verdict"] == v]))
                    for v in ("FOCUS", "CHALK", "LEVERAGE", "FADE") if any(r["tile_verdict"] == v for r in tv)))
+    if pls:                     # the player scan: entries holding each Read's players, and the players' real less projected points
+        def pts(sub):
+            d = [num(r["actual"]) - num(r["proj"]) for r in sub if r.get("actual") not in ("", None) and r.get("proj") not in ("", None)]
+            return "%+.1f" % (sum(d) / len(d)) if d else "-"
+        out.append("  players by Read (top 10% / top 1% of real entries holding them; real less projected points; players): " + "; ".join(
+            "%s %s / %s, %s (%d)" % (v, f(rate(sub, "real_top10")), f(rate(sub, "real_top1")), pts(sub), len(sub))
+            for v, sub in [(v, [r for r in pls if r["read"] in v.split("+")]) for v in ("core", "leverage", "core+leverage", "even", "fade", "skip", "fade+skip")] if sub))
     return out
 
 

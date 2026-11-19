@@ -252,8 +252,9 @@
   <details class="news" id="newsBox"><summary id="newsSum">News: loading…</summary><div id="news"></div></details>
   <details class="news" id="slateInfo"><summary>Slate details</summary><div class="status" id="statusInfo"></div><div class="note" id="slateLine">No team tiles yet.</div></details>
 
-  <details class="news" id="scanBox" open><summary><b>Slate scan</b>: which team and game stacks sim best, before any rules</summary>
-    <div class="opts"><label class="field"><span class="field-label">Lineups a stack</span><input class="num" id="scanN" type="number" min="20" max="400" step="10" value="100"></label>
+  <details class="news" id="scanBox" open><summary><b>Slate scan</b>: which players, team stacks and game stacks sim best, before any rules</summary>
+    <div class="opts"><label class="field"><span class="field-label">Lineups a player</span><input class="num" id="scanP" type="number" min="0" max="400" step="10" value="60"></label>
+      <label class="field"><span class="field-label">Lineups a stack</span><input class="num" id="scanN" type="number" min="20" max="400" step="10" value="100"></label>
       <button type="button" id="scanRun">Scan the slate</button><span class="note" id="scanStatus" style="align-self:center;margin:0"></span></div>
     <div id="scanTable"></div></details>
 
@@ -1986,7 +1987,7 @@ $("nbPlayers").addEventListener("click", function (e) {
    field, each lineup alone in each contest you're entering, weighted by your entries (the idea scoreboard's value).
    A forced batch, because a plain bank piles up on the optimizer's favorites and leaves most stacks too few lineups to
    judge. For reading: nothing changes the bank or the cut; "Bank this" adds the stack's rule for your next draw. */
-var SCAN = null, SCAN_THIN = 50, SCAN_SALT = 0x5ca7f00d;
+var SCAN = null, SCAN_THIN = 50, SCAN_SALT = 0x5ca7f00d, SCAN_CHUNK = 2000;
 function scanKey() { return "dkcbb-scan:" + slate.draft_group_id; }
 function scanStacks() {
   var live = rows.filter(usable), teams = {}, games = {};
@@ -2005,6 +2006,13 @@ function scanStacks() {
   });
   return out;
 }
+// the player scan (2026-11-19): every player projected PUNT_MIN+ minutes who is in the pool (not Out, not Doubtful
+// unless played, not excluded), forced in at least once
+function scanPlayers() {
+  return rows.filter(function (r) { return usable(r) && (r.min || 0) * (minScale[r.id] || 1) >= PUNT_MIN; }).sort(function (a, b) { return proj(b) - proj(a); }).map(function (r) {
+    return { key: r.name, kind: "player", id: r.id, team: r.team, conds: [{ type: "min", ids: [r.id], n: 1, label: "at least 1 of " + r.name }] };
+  });
+}
 function scanHolds(st, ids) {           // does a lineup (DK ids) hold the stack?
   var by = {}; ids.forEach(function (id) { var r = byId(id); if (r) by[id] = r; });
   if (st.kind === "team") return ids.filter(function (id) { return by[id] && by[id].team === st.team; }).length >= st.n;
@@ -2012,9 +2020,11 @@ function scanHolds(st, ids) {           // does a lineup (DK ids) hold the stack
   return inG.length >= st.n && two.every(function (t) { return inG.some(function (id) { return by[id].team === t; }); });
 }
 async function runScan() {
-  var F = fieldOf();
+  var F = fieldOf(), t0 = Date.now();
   if (!F || !F.field) return "No simulated field for this slate yet.";
   var per = Math.max(20, +$("scanN").value || 100), S = +$("nSims").value || 3000, stacks = scanStacks();
+  var perP = +$("scanP").value || 0, players = perP > 0 ? scanPlayers() : [];
+  if (perP > 0) perP = Math.max(20, perP);
   var cs = nbContests();
   if (!cs.length) {                      // no entries set: the biggest contest with a payout table, one entry
     var big = (slate.contests || []).filter(function (c) { return c.payouts; }).sort(function (a, b) { return (b.size || 0) - (a.size || 0); })[0];
@@ -2022,13 +2032,14 @@ async function runScan() {
     cs = [{ c: big, n: 1 }];
   }
   var base = Object.assign(drawRules(), { conds: [], levW: 0, minSal: 0, maxTeam: 8, stackN: 0, stackBoth: false, maxOwn: null, lowN: 0 });
-  var batches = [{ key: "Plain (no rules)", kind: "plain", conds: [] }].concat(stacks), pool = [], at = {};
+  // players after the stacks: each batch's seed is its place in the list, so the stacks draw as they did before
+  var batches = [{ key: "Plain (no rules)", kind: "plain", conds: [] }].concat(stacks, players), pool = [], at = {};
   for (var i = 0; i < batches.length; i++) {
     var bt = batches[i], cx = ctx();
     cx.state = Object.assign({}, state, { lock: {}, excl: {}, cap: {}, floor: {} });
     cx.random = DKSim.seeded(7919 * (i + 1) + (+slate.draft_group_id || 0));
     $("scanStatus").textContent = "Drawing " + bt.key + " (" + (i + 1) + " of " + batches.length + ")…"; await tick();
-    var res = await DKSim.pool(cx, Object.assign({}, base, { conds: bt.conds }), bt.kind === "plain" ? 5 * per : per);
+    var res = await DKSim.pool(cx, Object.assign({}, base, { conds: bt.conds }), bt.kind === "plain" ? 5 * per : bt.kind === "player" ? perP : per);
     bt.idx = res.lineups.map(function (L) {
       var k = L.ids.slice().sort().join(",");
       if (at[k] == null) { at[k] = pool.length; pool.push(L); }
@@ -2039,41 +2050,54 @@ async function runScan() {
   $("scanStatus").textContent = "Simming " + pool.length + " lineups on the slate's nights…"; await tick();
   var v = new Float64Array(pool.length), fee = 0, t10 = new Float64Array(pool.length), t1 = new Float64Array(pool.length), cash = new Float64Array(pool.length), w = 0;
   var o1 = new Float64Array(pool.length), e1 = new Float64Array(pool.length);
-  cs.forEach(function (x) {
-    // the slate's own nights mixed with a fixed scan salt: a rerun on the same pool and settings gives the same order
-    var cxs = Object.assign(ctx(), { random: DKSim.seeded(((nightsSeed() ^ SCAN_SALT) ^ Math.imul(+x.c.id || 0, 2654435761)) >>> 0) });
-    var sim = DKSim.simulate(cxs, pool, F.field, fieldDoc.z, x.c, x.n, S), st = DKSim.aloneStats(sim, x.c);
-    var T1 = Math.max(1, Math.ceil(0.01 * (x.c.size || 0))), half = Math.ceil(S / 2);
-    for (var k = 0; k < pool.length; k++) {
-      v[k] += x.n * (st.odd[k] + st.even[k]) / 2; t10[k] += x.n * st.top10[k]; t1[k] += x.n * st.top1[k]; cash[k] += x.n * st.cash[k];
-      var ho = 0, he = 0;                // top-1% finishes on odd and even nights, for the noise test
-      for (var s2 = 0; s2 < S; s2++) if (Math.round(1 + sim.fa[k * S + s2]) <= T1) { if (s2 % 2) ho++; else he++; }
-      o1[k] += x.n * ho / Math.floor(S / 2); e1[k] += x.n * he / half;
+  for (var ci = 0; ci < cs.length; ci++) {
+    var x = cs[ci], T1 = Math.max(1, Math.ceil(0.01 * (x.c.size || 0))), half = Math.ceil(S / 2);
+    // in chunks of SCAN_CHUNK lineups (the sim holds two floats a lineup a night), each on the same nights: the slate's
+    // own nights mixed with a fixed scan salt, reseeded per chunk (a player's draws don't depend on the pool), so a
+    // rerun on the same pool and settings gives the same order
+    for (var c0 = 0; c0 < pool.length; c0 += SCAN_CHUNK) {
+      $("scanStatus").textContent = "Simming " + pool.length + " lineups on the slate's nights (" + x.c.name + ", " + Math.min(pool.length, c0 + SCAN_CHUNK) + ")…"; await tick();
+      var part = pool.slice(c0, c0 + SCAN_CHUNK);
+      var cxs = Object.assign(ctx(), { random: DKSim.seeded(((nightsSeed() ^ SCAN_SALT) ^ Math.imul(+x.c.id || 0, 2654435761)) >>> 0) });
+      var sim = DKSim.simulate(cxs, part, F.field, fieldDoc.z, x.c, x.n, S), st = DKSim.aloneStats(sim, x.c);
+      for (var j = 0; j < part.length; j++) {
+        var k = c0 + j;
+        v[k] += x.n * (st.odd[j] + st.even[j]) / 2; t10[k] += x.n * st.top10[j]; t1[k] += x.n * st.top1[j]; cash[k] += x.n * st.cash[j];
+        var ho = 0, he = 0;                // top-1% finishes on odd and even nights, for the noise test
+        for (var s2 = 0; s2 < S; s2++) if (Math.round(1 + sim.fa[j * S + s2]) <= T1) { if (s2 % 2) ho++; else he++; }
+        o1[k] += x.n * ho / Math.floor(S / 2); e1[k] += x.n * he / half;
+      }
     }
     fee += x.n * (x.c.entry_fee || 0); w += x.n;
-  });
+  }
   var mean = function (a, ix) { return ix.reduce(function (t, k) { return t + a[k]; }, 0) / Math.max(1, ix.length); };
   var ownOf = function (L) { return L.ids.reduce(function (t, id) { var r = byId(id); return t + (r ? own(r) : 0); }, 0); };
   var rowsOut = batches.map(function (bt) {
     var ix = bt.idx, val = mean(v, ix);
+    var pr = bt.kind === "player" ? byId(bt.id) : null;
     return { key: bt.key, kind: bt.kind, team: bt.team || null, game: bt.game || null, n: bt.n || null, drawn: ix.length, distinct: bt.distinct,
+             id: bt.id || null, salary: pr ? pr.salary : null, proj: pr ? proj(pr) : null, fown: pr ? own(pr) : null,
              roi: fee ? (val - fee) / fee : null, t10: mean(t10, ix) / w, t1: mean(t1, ix) / w, cash: mean(cash, ix) / w, t1o: mean(o1, ix) / w, t1e: mean(e1, ix) / w,
              own: ix.reduce(function (t, k) { return t + ownOf(pool[k]); }, 0) / Math.max(1, ix.length),
-             field: bt.kind === "plain" ? null : F.field.filter(function (L) { return scanHolds(bt, L); }).length / F.field.length,
+             field: bt.kind === "plain" ? null : bt.kind === "player" ? (pr ? own(pr) / 100 : null) : F.field.filter(function (L) { return scanHolds(bt, L); }).length / F.field.length,
              conds: bt.conds };
   });
-  var plain = rowsOut[0], stk = rowsOut.slice(1);
-  stk.forEach(function (r) { r.g_roi = r.roi != null && plain.roi != null ? r.roi - plain.roi : null; r.g_t10 = r.t10 - plain.t10; r.g_t1 = r.t1 - plain.t1; r.g_cash = r.cash - plain.cash; r.thin = r.distinct < SCAN_THIN; });
+  var plain = rowsOut[0], stk = rowsOut.filter(function (r) { return r.kind === "team" || r.kind === "game"; }), pls = rowsOut.filter(function (r) { return r.kind === "player"; });
+  stk.concat(pls).forEach(function (r) { r.g_roi = r.roi != null && plain.roi != null ? r.roi - plain.roi : null; r.g_t10 = r.t10 - plain.t10; r.g_t1 = r.t1 - plain.t1; r.g_cash = r.cash - plain.cash;
+    r.thin = r.kind === "player" ? r.distinct < perP / 2 : r.distinct < SCAN_THIN; });
   // field light or heavy against stacks of its own kind (team 3+, team 4+, game 3+, ...): a 4+ stack is rarer than a 3+
   var meds = {};
   stk.forEach(function (r) { (meds[r.kind + r.n] = meds[r.kind + r.n] || []).push(r.field); });
   Object.keys(meds).forEach(function (k) { var a = meds[k].sort(function (x, y) { return x - y; }); meds[k] = a[Math.floor(a.length / 2)]; });
   // the noise test (the tiers' own): each stack's top-1% gain on odd nights and on even nights; sigma = sd(odd - even) / 2
   // across the stacks; a gain clears the noise past 2 x sqrt(2) x sigma. Strong above it, weak below minus it, else even
-  var nt = stk.filter(function (r) { return !r.thin; }), src = nt.length >= 5 ? nt : stk;     // thin rows only when too few others
-  var dd = src.map(function (r) { return (r.t1o - plain.t1o) - (r.t1e - plain.t1e); });
-  var dm = dd.reduce(function (t, x) { return t + x; }, 0) / Math.max(1, dd.length);
-  var sigma = Math.sqrt(dd.reduce(function (t, x) { return t + (x - dm) * (x - dm); }, 0) / Math.max(1, dd.length - 1)) / 2, bar = 2 * Math.SQRT2 * sigma;
+  var noise = function (list) {
+    var nt = list.filter(function (r) { return !r.thin; }), src = nt.length >= 5 ? nt : list;   // thin rows only when too few others
+    var dd = src.map(function (r) { return (r.t1o - plain.t1o) - (r.t1e - plain.t1e); });
+    var dm = dd.reduce(function (t, x) { return t + x; }, 0) / Math.max(1, dd.length);
+    return Math.sqrt(dd.reduce(function (t, x) { return t + (x - dm) * (x - dm); }, 0) / Math.max(1, dd.length - 1)) / 2;
+  };
+  var sigma = noise(stk), bar = 2 * Math.SQRT2 * sigma;
   stk.forEach(function (r) {
     r.fieldMedian = meds[r.kind + r.n]; r.noise = bar;
     r.read = r.g_t1 > bar ? (r.field < r.fieldMedian ? "strong, field light" : "strong, field heavy") : r.g_t1 < -bar ? "weak" : "even";
@@ -2081,11 +2105,21 @@ async function runScan() {
   var med = meds;
   stk.sort(function (a, b) { return (a.thin - b.thin) || (b.g_t1 - a.g_t1); });
   stk.forEach(function (r, i) { r.rank = i + 1; });
+  // players: the same test on their own rows (their own noise bar); field heavy or light against the scanned players'
+  // median field ownership. core: strong and field heavy; leverage: strong and field light; fade: weak and field
+  // heavy; skip: weak and field light; even between
+  var psigma = noise(pls), pbar = 2 * Math.SQRT2 * psigma, po = pls.map(function (r) { return r.fown; }).sort(function (a, b) { return a - b; }), pmed = po.length ? po[Math.floor(po.length / 2)] : null;
+  pls.forEach(function (r) {
+    var heavy = r.fown >= pmed; r.noise = pbar;
+    r.read = r.g_t1 > pbar ? (heavy ? "core" : "leverage") : r.g_t1 < -pbar ? (heavy ? "fade" : "skip") : "even";
+  });
+  pls.sort(function (a, b) { return (a.thin - b.thin) || (b.g_t1 - a.g_t1); });
   SCAN = { at: new Date().toISOString(), draft_group: slate.draft_group_id, per: per, nights: S, contests: cs.map(function (x) { return { id: x.c.id, name: x.c.name, n: x.n }; }),
-           nightS: base.nightS, fieldMedian: med, plain: plain, rows: stk, sigma: sigma, bar: bar, seed: nightsSeed() };
+           nightS: base.nightS, fieldMedian: med, plain: plain, rows: stk, sigma: sigma, bar: bar, seed: nightsSeed(),
+           perP: perP, players: pls, psigma: psigma, pbar: pbar, pownMedian: pmed };
   store(scanKey(), SCAN);
   renderScan();
-  return "Scanned " + stk.length + " stacks (" + per + " lineups each, " + 5 * per + " plain) on " + S + " nights against " + cs.map(function (x) { return x.c.name; }).join(", ") + ".";
+  return "Scanned " + (pls.length ? pls.length + " players (" + perP + " lineups each), " : "") + stk.length + " stacks (" + per + " lineups each, " + 5 * per + " plain) in " + Math.round((Date.now() - t0) / 1000) + " s on " + S + " nights against " + cs.map(function (x) { return x.c.name; }).join(", ") + ".";
 }
 function renderScan() {
   var S = SCAN;
@@ -2112,11 +2146,61 @@ function renderScan() {
           '</td><td class="m">' + p(r.field) + '</td><td class="m">' + Math.round(r.own) + '%</td><td>' + r.read + '</td><td><button type="button" class="scanBank" data-i="' + i + '" style="height:22px;padding:0 7px;font-size:11.5px">Bank this</button></td></tr>';
       }).join("");
   };
-  $("scanTable").innerHTML = '<div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
+  // players first (2026-11-19): each forced in at least once; our bank's share holding him read now, not at scan time
+  var sortIx = function (list, kind, def) {
+    var srt = S.sort[kind] || def, ix = list.map(function (r, i) { return i; });
+    ix.sort(function (x, y) {
+      var a = list[x], b = list[y], va = a[srt.k], vb = b[srt.k];
+      return ((a.thin || 0) - (b.thin || 0)) || (va == null) - (vb == null) || (va < vb ? -1 : va > vb ? 1 : 0) * srt.dir || (b.g_t1 || 0) - (a.g_t1 || 0);
+    });
+    return { ix: ix, srt: srt };
+  };
+  var head = function (cs, kind, srt) {
+    return "<tr>" + cs.map(function (c) { return '<th data-sk="' + c[0] + '" data-skind="' + kind + '" class="' + (c[2] ? "" : "r") + '" style="cursor:pointer">' + c[1] + (srt.k === c[0] ? (srt.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "<th></th></tr>";
+  };
+  var btn = function (attr) { return '<button type="button" class="scanBank" ' + attr + ' style="height:22px;padding:0 7px;font-size:11.5px">Bank this</button>'; };
+  var pl = S.players || [], ptab = "", ttab = "";
+  if (pl.length) {
+    var nb = BANK && BANK.lineups && BANK.lineups.length ? BANK.lineups.length : 0;
+    pl.forEach(function (r) {
+      r.ppk = r.proj != null && r.salary ? 1000 * r.proj / r.salary : null;
+      r.bank = nb ? BANK.lineups.filter(function (L) { return L.ids.indexOf(r.id) >= 0; }).length / nb : null;
+    });
+    var pcols = [["key", "Player", 1], ["team", "Team", 1], ["salary", "Salary"], ["proj", "Proj"], ["ppk", "Pts/$1K"], ["fown", "Field own"], ["bank", "Our bank"],
+                 ["g_t1", "Top 1% gain"], ["g_roi", "ROI gain"], ["g_cash", "Cash gain"], ["read", "Read", 1]];
+    var ps = sortIx(pl, "player", { k: "g_t1", dir: -1 });
+    ptab = '<tr><th colspan="12" class="l" style="text-align:left;padding-top:10px">Players</th></tr>' + head(pcols, "player", ps.srt) + ps.ix.map(function (i) {
+      var r = pl[i];
+      return '<tr style="' + (r.thin ? "opacity:.5" : "") + '"><td>' + esc(r.key) + (r.thin ? ' <span class="mut">thin</span>' : "") + "</td><td>" + esc(r.team || "") + '</td><td class="m">' + (r.salary || 0).toLocaleString() +
+        '</td><td class="m">' + (r.proj == null ? "–" : r.proj.toFixed(1)) + '</td><td class="m">' + (r.ppk == null ? "–" : r.ppk.toFixed(2)) + '</td><td class="m">' + (r.fown == null ? "–" : r.fown.toFixed(1) + "%") +
+        '</td><td class="m">' + (r.bank == null ? "–" : p(r.bank)) + '</td><td class="m"><b>' + g(r.g_t1, 2) + '</b> <span class="mut">\u00b1' + (100 * r.noise).toFixed(2) + '</span></td><td class="m">' + g(r.g_roi) +
+        '</td><td class="m">' + g(r.g_cash) + "</td><td>" + r.read + "</td><td>" + btn('data-p="' + i + '"') + "</td></tr>";
+    }).join("");
+    // the team rollup: each team's core and leverage players, and its best team stack in the scan
+    var T = {};
+    pl.forEach(function (r) { if (!r.thin && (r.read === "core" || r.read === "leverage")) ((T[r.team] = T[r.team] || { core: [], lev: [] })[r.read === "core" ? "core" : "lev"]).push(r); });
+    var tr = Object.keys(T).map(function (t) {
+      var st = S.rows.filter(function (x) { return x.kind === "team" && x.team === t; }).sort(function (a, b) { return (a.thin - b.thin) || b.g_t1 - a.g_t1; })[0] || null;
+      return { team: t, core: T[t].core, lev: T[t].lev, nc: T[t].core.length, nl: T[t].lev.length, n: T[t].core.length + T[t].lev.length, st: st, g_t1: st ? st.g_t1 : null,
+               ids: T[t].core.concat(T[t].lev).map(function (r) { return r.id; }) };
+    });
+    S.teamRoll = tr;
+    var names = function (a) { return a.length ? a.length + ": " + a.map(function (r) { return esc(r.key); }).join(", ") : "–"; };
+    var tcols = [["team", "Team", 1], ["nc", "Core", 1], ["nl", "Leverage", 1], ["g_t1", "Best team stack", 1]];
+    var ts = sortIx(tr, "teamroll", { k: "n", dir: -1 });
+    ttab = tr.length ? '<tr><th colspan="12" class="l" style="text-align:left;padding-top:10px">Teams from the player scan</th></tr>' + head(tcols, "teamroll", ts.srt) + ts.ix.map(function (i) {
+      var r = tr[i];
+      return "<tr><td>" + esc(r.team) + "</td><td>" + names(r.core) + "</td><td>" + names(r.lev) + "</td><td>" + (r.st ? esc(r.st.key) + " " + g(r.st.g_t1, 2) + ", " + r.st.read : "–") + "</td><td>" +
+        (r.n >= 2 ? btn('data-t="' + i + '"') : "") + "</td></tr>";
+    }).join("") : '<tr><td colspan="12" class="mut">Teams from the player scan: no core or leverage players.</td></tr>';
+  }
+  $("scanTable").innerHTML = '<div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each (Read on their own noise, \u00b1" + (100 * S.pbar).toFixed(2) +
+    "; core: strong and field own at or over the players' median " + (S.pownMedian || 0).toFixed(1) + "%, leverage: strong and under it, fade: weak and over, skip: weak and under; a team's Bank this adds at least 2 of its core and leverage players), " : "") + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
     " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
     p(S.plain.t1, 2) + ", cash " + p(S.plain.cash) + ". Gains are in points over the plain batch. Read: <b>strong</b> when its top-1% gain clears the sim's own noise, more than " + (S.bar != null ? "\u00b1" + (100 * S.bar).toFixed(2) : "the noise") +
     " (2\u221a2 \u00d7 sigma, sigma from each stack's gain on odd nights against even nights, the tiers' test), <b>weak</b> below minus that, <b>even</b> between; <b>field light</b> when the field holds it less than the median of stacks of its kind (" +
     Object.keys(S.fieldMedian || {}).sort().map(function (k) { return k.replace(/^(team|game)(\d)$/, "$1 $2+") + " " + p(S.fieldMedian[k]); }).join(", ") + "); thin (under " + SCAN_THIN + " distinct lineups) greyed and last. On the slate's own nights (seed " + S.seed + "), so a rerun repeats. Click a header to sort.</div>" +
+    (pl.length ? '<div style="overflow:auto"><table class="contests" id="scanPlayers">' + ptab + ttab + "</table></div>" : "") +
     '<div style="overflow:auto"><table class="contests">' + section("team", "Team stacks") + section("game", "Game stacks") + "</table></div>";
 }
 $("scanRun").addEventListener("click", function () {
@@ -2127,12 +2211,16 @@ $("scanRun").addEventListener("click", function () {
 $("scanTable").addEventListener("click", function (e) {
   var h = e.target.closest("th[data-sk]");
   if (h) {                                  // sort a section: click again to reverse; kept with the slate's scan
-    var kd = h.dataset.skind, cur = (SCAN.sort = SCAN.sort || {})[kd] || { k: "g_t1", dir: -1 };
-    SCAN.sort[kd] = { k: h.dataset.sk, dir: cur.k === h.dataset.sk ? -cur.dir : (h.dataset.sk === "key" || h.dataset.sk === "read" ? 1 : -1) };
+    var kd = h.dataset.skind, cur = (SCAN.sort = SCAN.sort || {})[kd] || (kd === "teamroll" ? { k: "n", dir: -1 } : { k: "g_t1", dir: -1 });
+    SCAN.sort[kd] = { k: h.dataset.sk, dir: cur.k === h.dataset.sk ? -cur.dir : (/^(key|read|team)$/.test(h.dataset.sk) ? 1 : -1) };
     store(scanKey(), SCAN); renderScan(); return;
   }
   var b = e.target.closest(".scanBank"); if (!b) return;
-  var r = SCAN.rows[+b.dataset.i];
+  var r = b.dataset.p != null ? SCAN.players[+b.dataset.p] : b.dataset.t != null ? null : SCAN.rows[+b.dataset.i];
+  if (b.dataset.t != null) {                // a team row: at least 2 of its core and leverage players
+    var t = SCAN.teamRoll[+b.dataset.t];
+    r = { key: t.team + " core/leverage 2+", conds: [{ type: "min", ids: t.ids.slice(), n: 2, label: t.team + ": at least 2 of " + t.core.concat(t.lev).map(function (x) { return x.key; }).join(", ") }] };
+  }
   addRules(r.conds.map(function (c) { return Object.assign({}, c); }));
   $("scanStatus").textContent = "Added " + r.key + " to the rules: Draw & bank draws under it.";
   $("bankDraw").scrollIntoView({ block: "center" });
