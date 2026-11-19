@@ -1110,13 +1110,30 @@ function audit(name, L, o) {
     return { n: rowsS.length, want: st.length, teams, sorted, gains, reads, fieldOk, thin, table: document.querySelectorAll("#scanTable tr").length, msg: document.getElementById("scanStatus").textContent };
   });
   check("slate scan: a row a stack (each team 3+ and 4+, each game 3+ to 5+ with both teams), gains over the plain batch, Read derived, thin flagged, sorted by top-1% gain",
-        sc.n === sc.want && sc.n >= sc.teams * 2 && sc.sorted && sc.gains && sc.reads && sc.fieldOk && sc.thin && sc.table === sc.n + 1, JSON.stringify(sc));
+        sc.n === sc.want && sc.n >= sc.teams * 2 && sc.sorted && sc.gains && sc.reads && sc.fieldOk && sc.thin && sc.table === sc.n + 4, JSON.stringify(sc));
   const scHold = await pg.evaluate(async () => {        // every lineup a stack's batch drew holds the stack
     const st = scanStacks().find(x => x.kind === "game"), cx = ctx(); cx.state = Object.assign({}, state, { lock: {}, excl: {}, cap: {}, floor: {} }); cx.random = DKSim.seeded(5);
     const res = await DKSim.pool(cx, Object.assign(drawRules(), { conds: st.conds, levW: 0, minSal: 0, maxTeam: 8, stackN: 0, lowN: 0, maxOwn: null }), 10);
     return { n: res.lineups.length, all: res.lineups.every(L => scanHolds(st, L.ids)) };
   });
   check("slate scan: a game stack's lineups hold the stack (both teams)", scHold.n > 0 && scHold.all, JSON.stringify(scHold));
+  // two sections, each sortable on its own: a header click sorts (again reverses), kept with the slate's scan
+  const so = await pg.evaluate(() => {
+    const order = kind => { const out = [], trs = [...document.querySelectorAll("#scanTable tr")]; let on = false;
+      trs.forEach(tr => { const th = tr.querySelector("th[colspan]"); if (th) { on = th.textContent === (kind === "team" ? "Team stacks" : "Game stacks"); return; }
+        if (on && tr.querySelector(".scanBank")) out.push(SCAN.rows[+tr.querySelector(".scanBank").dataset.i]); }); return out; };
+    const sections = [...document.querySelectorAll("#scanTable th[colspan]")].map(t => t.textContent);
+    const teamOnly = order("team").every(r => r.kind === "team") && order("game").every(r => r.kind === "game");
+    document.querySelector('#scanTable th[data-sk="field"][data-skind="team"]').click();
+    const a = order("team").filter(r => !r.thin), down = a.every((r, i) => i === 0 || a[i - 1].field >= r.field);
+    document.querySelector('#scanTable th[data-sk="field"][data-skind="team"]').click();
+    const b = order("team").filter(r => !r.thin), up = b.every((r, i) => i === 0 || b[i - 1].field <= r.field);
+    const game = order("game").filter(r => !r.thin), gameDefault = game.every((r, i) => i === 0 || game[i - 1].g_t1 >= r.g_t1);
+    const kept = JSON.parse(localStorage.getItem(scanKey())).sort.team;
+    return { sections, teamOnly, down, up, gameDefault, kept, arrow: /Field holds ↑/.test(document.querySelector('#scanTable th[data-sk="field"][data-skind="team"]').textContent) };
+  });
+  check("slate scan: Team stacks and Game stacks, each sorted on its own by a header click (again reverses, arrow shown), the sort kept with the scan",
+        JSON.stringify(so.sections) === JSON.stringify(["Team stacks", "Game stacks"]) && so.teamOnly && so.down && so.up && so.gameDefault && so.arrow && so.kept && so.kept.k === "field" && so.kept.dir === 1, JSON.stringify(so));
   const rules0 = await pg.evaluate(() => (state.rules || []).length);
   await pg.click("#scanTable .scanBank");
   check("slate scan: Bank this adds the stack's rule for the next draw", await pg.evaluate(n => state.rules.length > n && /\d\+/.test(state.rules[state.rules.length - 1].label), rules0));

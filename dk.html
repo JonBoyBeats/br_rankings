@@ -2073,16 +2073,32 @@ function renderScan() {
   var S = SCAN;
   if (!S || String(S.draft_group) !== String(slate && slate.draft_group_id)) { $("scanTable").innerHTML = ""; return; }
   var g = function (x, d) { return x == null ? "–" : (x > 0 ? "+" : "") + (100 * x).toFixed(d || 1); }, p = function (x, d) { return x == null ? "–" : (100 * x).toFixed(d || 1) + "%"; };
+  S.sort = S.sort || {};
+  var cols = [["key", "Stack", 1], ["distinct", "Drawn"], ["roi", "ROI"], ["t10", "Top 10%"], ["t1", "Top 1%"], ["cash", "Cash"], ["g_roi", "ROI gain"], ["g_t10", "Top 10% gain"],
+              ["g_t1", "Top 1% gain"], ["g_cash", "Cash gain"], ["field", "Field holds"], ["own", "Own"], ["read", "Read", 1]];
+  // each section sorts on its own (the default: top-1% gain, highest first); thin rows always last
+  var section = function (kind, title) {
+    var srt = S.sort[kind] || { k: "g_t1", dir: -1 };
+    var ix = S.rows.map(function (r, i) { return i; }).filter(function (i) { return S.rows[i].kind === kind; });
+    if (!ix.length) return "";
+    ix.sort(function (x, y) {
+      var a = S.rows[x], b = S.rows[y], va = a[srt.k], vb = b[srt.k];
+      return (a.thin - b.thin) || (va < vb ? -1 : va > vb ? 1 : 0) * srt.dir || b.g_t1 - a.g_t1;
+    });
+    return '<tr><th colspan="15" class="l" style="text-align:left;padding-top:10px">' + title + "</th></tr><tr>" + cols.map(function (c) {
+        return '<th data-sk="' + c[0] + '" data-skind="' + kind + '" class="' + (c[2] ? "" : "r") + '" style="cursor:pointer">' + c[1] + (srt.k === c[0] ? (srt.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "<th></th></tr>" +
+      ix.map(function (i) {
+        var r = S.rows[i];
+        return '<tr style="' + (r.thin ? "opacity:.5" : "") + '"><td>' + esc(r.key) + (r.thin ? ' <span class="mut">thin</span>' : "") + '</td><td class="m">' + r.distinct + '</td><td class="m">' + roiTxt(r.roi) + '</td><td class="m">' + p(r.t10) +
+          '</td><td class="m">' + p(r.t1, 2) + '</td><td class="m">' + p(r.cash) + '</td><td class="m">' + g(r.g_roi) + '</td><td class="m">' + g(r.g_t10) + '</td><td class="m"><b>' + g(r.g_t1, 2) + '</b></td><td class="m">' + g(r.g_cash) +
+          '</td><td class="m">' + p(r.field) + '</td><td class="m">' + Math.round(r.own) + '%</td><td>' + r.read + '</td><td><button type="button" class="scanBank" data-i="' + i + '" style="height:22px;padding:0 7px;font-size:11.5px">Bank this</button></td></tr>';
+      }).join("");
+  };
   $("scanTable").innerHTML = '<div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
     " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
-    p(S.plain.t1) + ", cash " + p(S.plain.cash) + ". Gains are in points over the plain batch. Read: <b>strong</b> when its top-1% gain is above 0, <b>field light</b> when the field holds it less than the median of stacks of its kind (" +
-    Object.keys(S.fieldMedian || {}).sort().map(function (k) { return k.replace(/^(team|game)(\d)$/, "$1 $2+") + " " + p(S.fieldMedian[k]); }).join(", ") + "); thin (under " + SCAN_THIN + " distinct lineups) greyed.</div>" +
-    '<div style="overflow:auto"><table class="contests"><tr><th>Stack</th><th class="r">Drawn</th><th class="r">ROI</th><th class="r">Top 10%</th><th class="r">Top 1%</th><th class="r">Cash</th><th class="r">ROI gain</th><th class="r">Top 10% gain</th>' +
-    '<th class="r">Top 1% gain</th><th class="r">Cash gain</th><th class="r">Field holds</th><th class="r">Own</th><th>Read</th><th></th></tr>' + S.rows.map(function (r, i) {
-      return '<tr style="' + (r.thin ? "opacity:.5" : "") + '"><td>' + esc(r.key) + (r.thin ? ' <span class="mut">thin</span>' : "") + '</td><td class="m">' + r.distinct + '</td><td class="m">' + roiTxt(r.roi) + '</td><td class="m">' + p(r.t10) +
-        '</td><td class="m">' + p(r.t1, 2) + '</td><td class="m">' + p(r.cash) + '</td><td class="m">' + g(r.g_roi) + '</td><td class="m">' + g(r.g_t10) + '</td><td class="m"><b>' + g(r.g_t1, 2) + '</b></td><td class="m">' + g(r.g_cash) +
-        '</td><td class="m">' + p(r.field) + '</td><td class="m">' + Math.round(r.own) + '%</td><td>' + r.read + '</td><td><button type="button" class="scanBank" data-i="' + i + '" style="height:22px;padding:0 7px;font-size:11.5px">Bank this</button></td></tr>';
-    }).join("") + "</table></div>";
+    p(S.plain.t1, 2) + ", cash " + p(S.plain.cash) + ". Gains are in points over the plain batch. Read: <b>strong</b> when its top-1% gain is above 0, <b>field light</b> when the field holds it less than the median of stacks of its kind (" +
+    Object.keys(S.fieldMedian || {}).sort().map(function (k) { return k.replace(/^(team|game)(\d)$/, "$1 $2+") + " " + p(S.fieldMedian[k]); }).join(", ") + "); thin (under " + SCAN_THIN + " distinct lineups) greyed and last. Click a header to sort.</div>" +
+    '<div style="overflow:auto"><table class="contests">' + section("team", "Team stacks") + section("game", "Game stacks") + "</table></div>";
 }
 $("scanRun").addEventListener("click", function () {
   $("scanRun").disabled = true;
@@ -2090,6 +2106,12 @@ $("scanRun").addEventListener("click", function () {
                  function (e) { $("scanStatus").innerHTML = '<span class="bad">Scan failed: ' + esc(e.message) + "</span>"; $("scanRun").disabled = false; });
 });
 $("scanTable").addEventListener("click", function (e) {
+  var h = e.target.closest("th[data-sk]");
+  if (h) {                                  // sort a section: click again to reverse; kept with the slate's scan
+    var kd = h.dataset.skind, cur = (SCAN.sort = SCAN.sort || {})[kd] || { k: "g_t1", dir: -1 };
+    SCAN.sort[kd] = { k: h.dataset.sk, dir: cur.k === h.dataset.sk ? -cur.dir : (h.dataset.sk === "key" || h.dataset.sk === "read" ? 1 : -1) };
+    store(scanKey(), SCAN); renderScan(); return;
+  }
   var b = e.target.closest(".scanBank"); if (!b) return;
   var r = SCAN.rows[+b.dataset.i];
   addRules(r.conds.map(function (c) { return Object.assign({}, c); }));
