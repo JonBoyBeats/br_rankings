@@ -663,7 +663,10 @@
   // One simulated night's points for every player, from the distribution simulate() draws them from: his projection
   // plus his expected miss x a draw from the outcome shape z (never below 0), with the team and game draws when CORR
   // (or ctx.corr) sets them
-  function nightPoints(ctx, z) {
+  // s (optional, 1 when absent): each player's deviation from his projection scaled by s, for the bank's draw only
+  // (poolDraw's o.nightS, the DK page's Bank noise); the cut, the pick, the field and the shadow sets draw at 1
+  function nightPoints(ctx, z, s) {
+    s = s == null ? 1 : s;
     var corr = ctx.corr || CORR, ca = corr.team || 0, cb = corr.game || 0, out = {}, T = {}, G = {}, zm = 0, zsd = 0;
     if (ca > 0 || cb > 0) {
       z.forEach(function (v) { zm += v / z.length; });
@@ -679,7 +682,7 @@
         if (G[g] == null) G[g] = gauss(ctx.random);
         d = zm + own * (d - zm) + zsd * (ca * T[t] + cb * G[g]);
       }
-      out[r.id] = Math.max(0, m + d * err);
+      out[r.id] = Math.max(0, m + s * d * err);
     });
     return out;
   }
@@ -692,7 +695,7 @@
     while (out.length < K && tries < 3 * K) {
       if (tries % 25 === 24 && ctx.progress) await ctx.progress("Building the pool… " + out.length + " of " + K);
       var r = await solve(ctx, Object.assign({}, o, { n: 1, minUnique: 1, rand: o.poolRand != null ? o.poolRand : CAND_RAND, noCaps: true,
-                                                      night: o.z ? nightPoints(ctx, o.z) : null }));
+                                                      night: o.z ? nightPoints(ctx, o.z, o.nightS) : null }));
       tries++;
       if (!r.lineups.length) return { lineups: out, why: r.why };
       var key = r.lineups[0].ids.slice().sort().join(",");

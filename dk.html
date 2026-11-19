@@ -290,6 +290,7 @@
   <div class="opts">
     <label class="field"><span class="field-label">Lineups to draw</span><input class="num" id="bankN" type="number" min="10" max="1000" step="10" value="100"></label>
     <label class="field" title="A safety net, off when blank: no unlocked player in more than this share of the whole bank (the lineups already banked and this draw); a draw that would pass it drops his extra lineups and draws replacements without him"><span class="field-label">Max share in bank %</span><input class="num" id="bankMax" type="number" min="10" max="100" step="5" placeholder="off"></label>
+    <label class="field" title="Each simulated night a lineup is drawn for, pulled toward the projection: a player's night = projection + this x (his simulated night - projection). 1 is the full noise (until 2026-11-19); 0.35, the backtest's choice on 11-16 to 11-18 (versions.csv). The bank's draw only: the cut, the pick and the field keep the full noise"><span class="field-label">Bank noise</span><input class="num" id="bankS" type="number" min="0.1" max="1" step="0.05" value="0.35"></label>
     <button type="button" class="primary" id="bankDraw">Draw &amp; bank</button>
     <span class="note" id="tagNow" style="align-self:center;margin:0"></span>
   </div>
@@ -310,6 +311,7 @@
     <label class="field"><span class="field-label">Keep</span><input class="num" id="cutKeep" type="number" min="20" max="5000" step="50" value="2000"></label>
     <label class="field"><span class="field-label">Cut % a round</span><input class="num" id="cutPct" type="number" min="1" max="50" value="10"></label>
     <label class="field"><span class="field-label">Nights a round</span><input class="num" id="cutNights" type="number" min="200" max="10000" step="100" value="2000"></label>
+    <div class="note" id="bankCheck" style="flex-basis:100%;margin:0"></div>
     <button type="button" class="primary" id="cutRun">Re-sim &amp; cut</button>
   </div>
   <div class="opts">
@@ -701,7 +703,8 @@ function drawRules() {
   var v = function (id) { return $(id).value === "" ? null : +$(id).value; };
   return { n: 1, maxExpo: 1, minUnique: 1, z: fieldDoc && fieldDoc.z, levW: v("levW") || 0, minSal: v("minSal") || 0, maxTeam: v("maxTeam") || 8,
            stackN: v("stackN") || 0, stackBoth: $("stackBoth").checked, maxOwn: v("maxOwn"),
-           lowN: v("lowN") || 0, lowPct: v("lowPct") || 10, conds: (state.rules || []).filter(function (r) { return !r.off; }) };
+           lowN: v("lowN") || 0, lowPct: v("lowPct") || 10, conds: (state.rules || []).filter(function (r) { return !r.off; }),
+           nightS: v("bankS") != null ? v("bankS") : 0.35 };
 }
 // the pick's settings (section 2), for a contest taking n entries: Max exposure rounds down, so a 1-entry contest gets its one
 function pickRules(n) {
@@ -1110,8 +1113,32 @@ function tagCounts(idx, byTag) {     // lineups by group (or by tag): the tag ea
   idx.forEach(function (i) { var t = byTag ? BANK.tags[i][0] : lineupGroup(i); c[t] = (c[t] || 0) + 1; });
   return c;
 }
+/* The bank check (before Re-sim & cut, information only): the bank's and each idea's average projection and summed
+   projected ownership against the simulated field's; an idea projecting more than BANK_UNDER points under the field
+   is flagged (2026-11-16 to 11-18: the bank projected 10 to 20 under the real field's average lineup). */
+var BANK_UNDER = 5;
+function bankCheck() {
+  var F = fieldOf(), el = $("bankCheck");
+  if (!el) return;
+  if (!BANK || !BANK.lineups.length || !F || !F.field || !F.field.length) { el.innerHTML = ""; return; }
+  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
+  var pts = function (ids) { return ids.reduce(function (t, id) { return t + (by[id] ? proj(by[id]) : 0); }, 0); };
+  var ow = function (ids) { return ids.reduce(function (t, id) { return t + (F.own[id] || 0); }, 0); };
+  var avg = function (L, f) { return L.reduce(function (t, x) { return t + f(x); }, 0) / L.length; };
+  var fp = avg(F.field, pts), fo = avg(F.field, ow), bank = BANK.lineups.map(function (L) { return L.ids; }), bp = avg(bank, pts), bo = avg(bank, ow);
+  var g = {};
+  BANK.lineups.forEach(function (L, i) { var k = groupOf((BANK.tags[i] || [])[0] || ""); (g[k] = g[k] || []).push(L.ids); });
+  var under = Object.keys(g).map(function (k) { return { k: k, p: avg(g[k], pts), o: avg(g[k], ow), n: g[k].length }; })
+    .filter(function (x) { return x.p < fp - BANK_UNDER; }).sort(function (a, b) { return a.p - b.p; });
+  var d = bp - fp;
+  el.innerHTML = "<b>Bank check:</b> bank " + bp.toFixed(0) + " pts, " + bo.toFixed(0) + "% own; field " + fp.toFixed(0) + " pts, " + fo.toFixed(0) +
+    "% own: the bank projects " + Math.abs(d).toFixed(0) + (d < 0 ? " below" : " above") + " the field." +
+    (under.length ? ' <span class="bad">' + under.length + " idea" + (under.length === 1 ? "" : "s") + " more than " + BANK_UNDER + " under the field:</span> " +
+      under.map(function (x) { return esc(x.k) + " " + x.p.toFixed(0) + " pts, " + x.o.toFixed(0) + "% (" + x.n + ")"; }).join("; ") : "");
+}
 function renderBank() {
   if (!BANK) return;
+  bankCheck();
   // by group: banked, each round of the cut (live while it runs), kept and share; each group's tags with a box to regroup
   var idx = BANK.lineups.map(function (L, i) { return i; });
   var all = tagCounts(idx), tags = tagCounts(idx, true), rounds = CUT ? CUT.rounds.map(function (r) { return tagCounts(r.ids); }) : [];
@@ -1628,7 +1655,7 @@ async function drawBank(cx, o, n) {
       for (var j = L.length - 1; j >= 0; j--) if (ok(L[j]) && (pass || !needed(L[j]))) { L.splice(j, 1); return true; }
     return false;
   };
-  for (var round = 0; round < 4; round++) {
+  for (var round = 0; round < 8; round++) {
     maxs.forEach(function (id) { while (cnt(id) > cap[id] && drop(function (x) { return has(x, id); })); });
     var atCap = maxs.filter(function (id) { return cnt(id) >= cap[id]; });
     var avoid = atCap.length ? [{ type: "none", ids: atCap }] : [];
@@ -1646,9 +1673,17 @@ async function drawBank(cx, o, n) {
     if (L.length < N) {
       var fill = await DKSim.pool(cx, Object.assign({}, o, { conds: (o.conds || []).concat(avoid) }), N - L.length);
       fill.lineups.forEach(function (x) { if (!seen[key(x)] && L.length < N) { seen[key(x)] = 1; L.push(x); } });
+      if (L.length < N && o.nightS != null && o.nightS < 1) {     // near the projection the replacements run out: the full noise
+        fill = await DKSim.pool(cx, Object.assign({}, o, { conds: (o.conds || []).concat(avoid), nightS: 1 }), N - L.length);
+        fill.lineups.forEach(function (x) { if (!seen[key(x)] && L.length < N) { seen[key(x)] = 1; L.push(x); } });
+      }
     }
   }
+  // the last round's refill is held to the caps too: a draw short rather than over (a bank drawn near the projection,
+  // Bank noise under 1, bunches on the same players)
+  maxs.forEach(function (id) { while (cnt(id) > cap[id] && drop(function (x) { return has(x, id); })); });
   res.lineups = L;
+  if (L.length < N) res.why = res.why || "the Max% caps left " + L.length;
   var listed = maxs.filter(function (id) { return global.indexOf(id) < 0; });
   var atBank = global.filter(function (id) { return cnt(id) >= cap[id]; });
   res.expo = (mins.length || listed.length ? " Min/Max %: " + mins.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at least " + need[id] + ")"; })

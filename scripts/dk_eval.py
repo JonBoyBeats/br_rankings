@@ -164,7 +164,7 @@ OWN_BANDS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
 FIELD_EVAL = os.path.join(DK, "field_eval.csv")
 FIELD_COLS = ["date", "draft_group", "contest_id", "contest", "side", "lineups", "matched_n", "dup_other", "distinct_per_1000",
               "sal_p10", "sal_p50", "sal_p90", "at_cap", "under_49k", "own_30", "own_20", "own_10", "own_5", "own_1", "top_own",
-              "team2", "team3", "team4", "team5", "games", "low10", "high40", "own_sum", "sal_mean", "dup_field", "own_mae", "params"]
+              "team2", "team3", "team4", "team5", "games", "low10", "high40", "own_sum", "sal_mean", "dup_field", "proj_mean", "own_proj", "own_mae", "params"]
 # The construction rows beside real and sim (fieldcheck): our bank, our cut, our entered (the owner's standings entries)
 # and each sharp user's. The owner's list, 2026-11-19.
 SHARP = ["dbaggot3", "feartheturtle7"]
@@ -979,10 +979,12 @@ def field_metrics(lineups, users, info, n, seed=3, draws=20):
     return out, own
 
 
-def construction(lineups, ref, info, who=None, me=None):
+def construction(lineups, ref, info, who=None, me=None, proj=None, pown=None):
     """How a set of lineups is built against a contest's real ownership (ref: DK id -> % of its entries): players at or
     under 10% and at or above 40% per lineup, summed ownership and salary per lineup; with who (lineup -> the real
-    field's users holding it), the share of the set's lineups some other real user (not me) also entered."""
+    field's users holding it), the share of the set's lineups some other real user (not me) also entered. With proj
+    (DK id -> our projection at lock) and pown (DK id -> the simulated field's projected ownership): each lineup's
+    projection and summed projected ownership, averaged (the bank check's two numbers, 2026-11-19)."""
     n = len(lineups)
     out = {"low10": round(sum(ref.get(i, 0) <= 10 for L in lineups for i in L) / n, 2),
            "high40": round(sum(ref.get(i, 0) >= 40 for L in lineups for i in L) / n, 2),
@@ -990,6 +992,8 @@ def construction(lineups, ref, info, who=None, me=None):
            "sal_mean": round(sum(int(info[i]["salary"]) for L in lineups for i in L) / n), "dup_field": ""}
     if who is not None:
         out["dup_field"] = round(100 * sum(bool(who.get(L, set()) - {me}) for L in lineups) / n, 1)
+    out["proj_mean"] = round(sum(proj.get(i, 0) for L in lineups for i in L) / n, 1) if proj else ""
+    out["own_proj"] = round(sum(pown.get(i, 0) for L in lineups for i in L) / n) if pown else ""
     return out
 
 
@@ -1031,6 +1035,9 @@ def fieldcheck(a):
         byname = {nm: v[0] for nm, v in names.items() if len(v) == 1}
         sim = [tuple(sorted(L)) for L in F["field"]]
         games = len({r.get("game") for r in info.values()})
+        # our projection at lock (through the gate, as the page shows it) and the simulated field's ownership
+        pj = {k: num(r.get("fp_gate")) if num(r.get("fp_gate")) is not None else (num(r.get("fp_dk")) or 0) for k, r in info.items()}
+        pown = F.get("own") or {}
         bf = os.path.join(BUILDS, "dk_bank_%s_%s.json" % (date, g))
         B = json.load(open(bf)) if os.path.exists(bf) else {}
         bank = [tuple(sorted(str(i) for i in L)) for L in B.get("pool") or []]
@@ -1045,8 +1052,8 @@ def fieldcheck(a):
             sm, sown = field_metrics(sim, None, info, n)
             sm["own_mae"] = round(S.mean(abs(sown.get(k, 0) - rown.get(k, 0)) for k in set(rown) | set(sown)), 2)
             base = {"date": date, "draft_group": g, "contest_id": cid, "contest": cname, "games": games}
-            out.append(dict(base, side="real", own_mae="", params="", **rm, **construction(L, rown, info)))
-            out.append(dict(base, side="sim", params=json.dumps(F.get("params")), **sm, **construction(sim, rown, info)))
+            out.append(dict(base, side="real", own_mae="", params="", **rm, **construction(L, rown, info, proj=pj, pown=pown)))
+            out.append(dict(base, side="sim", params=json.dumps(F.get("params")), **sm, **construction(sim, rown, info, proj=pj, pown=pown)))
             who = defaultdict(set)
             for x, u in zip(L, U):
                 who[x].add(u)
@@ -1056,7 +1063,7 @@ def fieldcheck(a):
                 if xs:
                     m, _ = field_metrics(xs, None, info, len(xs))
                     out.append(dict(base, side=side, own_mae="", params="", **dict(m, dup_other=""),
-                                    **construction(xs, rown, info, who, me)))
+                                    **construction(xs, rown, info, who, me, proj=pj, pown=pown)))
         print("  field check %s (%s): %d contests" % (g, date, len(contests)))
     if out:
         with open(FIELD_EVAL, "w", newline="") as f:

@@ -241,13 +241,22 @@ function audit(name, L, o) {
     if (L.length < 15) check("Draw & bank, " + name + ": drew 15+ new", false, msg);
     check("Draw & bank, " + name + ": tagged with its idea", new RegExp('tagged "' + tag.replace(/[+]/g, "\\+") + '"').test(msg), msg);
   }
+  // the bank check before Re-sim & cut: the bank's and the field's projection and ownership, ideas well under the field flagged
+  const bc = await pg.evaluate(() => {
+    renderBank(); const t = document.getElementById("bankCheck").textContent, F = fieldOf();
+    const pts = ids => ids.reduce((u, id) => u + proj(byId(id)), 0), want = BANK.lineups.reduce((u, l) => u + pts(l.ids), 0) / BANK.lineups.length;
+    const fp = F.field.reduce((u, l) => u + pts(l), 0) / F.field.length;
+    return { t, want: Math.round(want), fp: Math.round(fp), tagged: BANK.tagRules[Object.keys(BANK.tagRules)[0]].nightS };
+  });
+  check("bank check: the bank's and the field's average projection and ownership, before Re-sim & cut; the idea's bank noise saved",
+        new RegExp("^Bank check: bank " + bc.want + " pts, \\d+% own; field " + bc.fp + " pts, \\d+% own: the bank projects \\d+ (below|above) the field").test(bc.t) && bc.tagged === 0.35, JSON.stringify(bc));
   // the sim-night draw: a drawn lineup is the solver's best for one simulated night (nightPoints, the sim's distribution)
   const nightCheck = await pg.evaluate(async () => {
     const out = [];
     for (const seed of [5, 6, 7]) {
       const cx = ctx(), o = Object.assign(drawRules(), { conds: [] });
       cx.random = DKSim.seeded(seed);
-      const night = DKSim.nightPoints(cx, fieldDoc.z);
+      const night = DKSim.nightPoints(cx, fieldDoc.z, o.nightS);
       const best = (await DKSim.solve(cx, Object.assign({}, o, { n: 1, minUnique: 1, noCaps: true, night }))).lineups[0];
       cx.random = DKSim.seeded(seed);
       const drawn = (await DKSim.poolDraw(cx, o, 1)).lineups[0];
@@ -258,6 +267,18 @@ function audit(name, L, o) {
     return out;
   });
   check("sim-night draw: each lineup is the best one for its simulated night", nightCheck.every(x => x.same && x.varied), JSON.stringify(nightCheck));
+  // Bank noise: the bank's nights pulled toward the projection (0.35 by default) project higher than at full noise; the
+  // nights a player gets scale with it; the setting is saved with each idea
+  const bn = await pg.evaluate(async () => {
+    const run = async s => { const cx = ctx(); cx.random = DKSim.seeded(11); const o = Object.assign(drawRules(), { conds: [], nightS: s });
+      const L = (await DKSim.poolDraw(cx, o, 40)).lineups; return L.reduce((t, l) => t + l.ids.reduce((u, id) => u + proj(byId(id)), 0), 0) / L.length; };
+    const cx = ctx(), r = rows.find(x => x.status !== "Out" && proj(x) > 15);
+    cx.random = DKSim.seeded(3); const a = DKSim.nightPoints(cx, fieldDoc.z, 1)[r.id];
+    cx.random = DKSim.seeded(3); const b = DKSim.nightPoints(cx, fieldDoc.z, 0.35)[r.id];
+    return { def: drawRules().nightS, full: await run(1), shrunk: await run(0.35), scaled: Math.abs((b - proj(r)) - 0.35 * (a - proj(r))) < 1e-9 || a === 0 };
+  });
+  check("bank noise: 0.35 by default; a bank drawn at 0.35 projects above one at 1; each night's deviation scales by it",
+        bn.def === 0.35 && bn.shrunk > bn.full && bn.scaled, JSON.stringify(bn));
   const ownOf = L => L.reduce((t, l) => t + l.ids.reduce((u, id) => u + (OWN[id] || 0), 0), 0) / L.length;
   await set(Object.assign({}, base, { levW: 0.5 }));
   check("tag line carries the Leverage weight", /leverage 0\.5/.test(await pg.textContent("#tagNow")), await pg.textContent("#tagNow"));
@@ -777,13 +798,15 @@ function audit(name, L, o) {
   const step = await pg.evaluate(() => {
     const b = BP.b, out = [], ks = [];
     for (const start of [0, 5, 40]) {           // three lineups within Max exposure (hand adds keep to it)
-      let k = start; while (ks.includes(k) || bpBlocks(k).length) k++;
+      let k = Math.min(start, BP.pool.length - 1); while (k < BP.pool.length && (ks.includes(k) || bpBlocks(k).length)) k++;
+      if (k >= BP.pool.length) { k = 0; while (k < BP.pool.length && (ks.includes(k) || bpBlocks(k).length)) k++; }
+      if (k >= BP.pool.length) break;           // every other lineup blocked by the caps: test the ones found
       const before = b.total(), v = BP.scores[k] ? BP.scores[k].value : null;
       bpAdd(k); ks.push(k);
       out.push(Math.abs(b.total() - before - v));
     }
     bpRemove(ks[1]);
-    return { gaps: out, picked: b.picked.slice(), want: [ks[0], ks[2]] };
+    return { gaps: out, picked: b.picked.slice(), want: ks.filter((k, i) => i !== 1) };
   });
   check("review: Added value is the set's payout with it minus without", step.gaps.every(g => g < 1e-9), JSON.stringify(step.gaps));
   check("review: Remove takes a pick out", JSON.stringify(step.picked) === JSON.stringify(step.want), JSON.stringify(step.picked));
