@@ -93,7 +93,7 @@
     return t.length ? t[Math.min(t.length - 1, Math.floor(pct / 100 * t.length))] : null;
   }
 
-  function usable(ctx, r) { return r.status !== "Out" && !ctx.state.excl[r.id]; }
+  function usable(ctx, r) { return r.status !== "Out" && !ctx.state.excl[r.id] && !r.deepOut; }   // deepOut: the DK page's deep bench
 
   // G slots from guards first, F slots from forwards first, G/F players where needed, the rest to UTIL
   function assign(ctx, ids) {
@@ -841,7 +841,7 @@
   }
 
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
-           gatedProj: gatedProj, seeded: seeded, fitMinutes: fitMinutes, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
+           gatedProj: gatedProj, seeded: seeded, fitMinutes: fitMinutes, usable: usable, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, poolDraw: poolDraw, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
            CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,

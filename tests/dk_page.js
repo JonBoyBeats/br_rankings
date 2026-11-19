@@ -121,6 +121,55 @@ function audit(name, L, o) {
   });
   check("mark out: he's Out, his teammates share exactly 200 minutes, projections moving with them; undo restores",
         qo && qo.status === "Out" && Math.abs(qo.sum - 200) < 1e-6 && qo.moved && qo.back, JSON.stringify(qo));
+  // Doubtful: out by default (the server's flag, or a doubtful news item); Play him puts him back as Questionable, his team refit to 200
+  const db = await pg.evaluate(() => {
+    const d = rows.find(r => r.status !== "Out" && r._status0 !== "Questionable" && r.min > 10 && rows.filter(x => x.team === r.team && x.min > 0 && x.status !== "Out").length >= 6);
+    const team = () => rows.filter(r => r.team === d.team && r.status !== "Out" && r.min > 0).reduce((t, r) => t + r.min * (minScale[r.id] || 1), 0);
+    d.doubtful = true; d._status0 = "Out"; applyOuts(); view.panel = null; renderTiles(); renderPlayers();
+    const out = { s1: d.status, refit1: Object.keys(minScale).length, tag: !!document.querySelector(`#players .row[data-id="${d.id}"] .tag.d`) };
+    document.querySelector(`#players .row[data-id="${d.id}"] .qout`).click();
+    Object.assign(out, { s2: d.status, t2: team(), ins: !!state.ins[d.id] });
+    document.querySelector(`#players .row[data-id="${d.id}"] .qout`).click();
+    out.s3 = d.status;
+    delete d.doubtful; d._status0 = undefined; d.status = undefined;
+    news.push({ id: "t1", kind: "doubtful", players: [d.id], at: new Date().toISOString(), author: "x", text: "doubtful", url: "#" });
+    applyOuts(); out.s4 = d.status; out.t4 = team(); news.pop(); state.ins = {}; applyOuts(); renderPlayers(); out.s5 = d.status;
+    return out;
+  });
+  check("doubtful: out by default (the server's flag: its projection already refit his team, so no refit here); Play him back as Questionable, " +
+        "his team at 200; Undo out again; a doubtful news item: out, his team refit to 200",
+        db.s1 === "Out" && db.refit1 === 0 && db.tag && db.s2 === "Questionable" && Math.abs(db.t2 - 200) < 1e-6 && db.ins && db.s3 === "Out" &&
+        db.s4 === "Out" && Math.abs(db.t4 - 200) < 1e-6 && db.s5 === undefined, JSON.stringify(db));
+  // the deep bench (team card): out of the pool by default, for the page and the sim; one tap brings him back
+  const dp = await pg.evaluate(() => {
+    const T = teamsOf(), t = T.teams[0], r = rows.find(x => x.team === t.team && x.status !== "Out");
+    const keep = t.card; t.card = { games: 5, lines: [{ kind: "deep", text: "Deep bench" }], absorb: [], deep: [r.id], rule: "card-1" };
+    applyOuts(); view.panel = null; renderTiles(); renderPlayers();
+    const out = { deep: r.deepOut, page: usable(r), sim: DKSim.usable ? DKSim.usable(ctx(), r) : null, cls: document.querySelector(`#players .row[data-id="${r.id}"]`).classList.contains("excluded") };
+    document.querySelector(`#players .row[data-id="${r.id}"] .deepin`).click();
+    Object.assign(out, { back: !r.deepOut && usable(r) && !!state.deepIn[r.id] });
+    t.card = keep; state.deepIn = {}; applyOuts(); renderPlayers();
+    return out;
+  });
+  check("deep bench: out of the pool by default (page and sim), shown excluded; Use brings him back",
+        dp.deep === true && dp.page === false && dp.sim === false && dp.cls && dp.back, JSON.stringify(dp));
+  // the field after a Mark out: his field lineups swap him for a player who fits, ownership recounted; undo restores the field
+  const fa = await pg.evaluate(() => {
+    const F0 = fieldOf(), q = rows.filter(r => r.status !== "Out" && (F0.own[r.id] || 0) > 5 && rows.filter(x => x.team === r.team && x.min > 0 && x.status !== "Out").length >= 6)
+      .sort((a, b) => F0.own[b.id] - F0.own[a.id])[0];
+    const mates = rows.filter(r => r.team === q.team && r.id !== q.id && r.status !== "Out");
+    const before = mates.reduce((t, r) => t + (F0.own[r.id] || 0), 0), n0 = F0.field.length;
+    state.outs[q.id] = 1; applyOuts();
+    const F = fieldOf(), by = {}; rows.forEach(r => { by[r.id] = r; });
+    const legal = F.field.every(L => L.length === 8 && new Set(L).size === 8 && L.every(id => by[id] && by[id].status !== "Out") &&
+      L.reduce((t, id) => t + by[id].salary, 0) <= 50000);
+    const out = { own: F.own[q.id] || 0, n: F.field.length, n0, legal, sum: Object.values(F.own).reduce((t, x) => t + x, 0),
+                  mates: mates.reduce((t, r) => t + (F.own[r.id] || 0), 0), before };
+    delete state.outs[q.id]; applyOuts(); out.restored = fieldOf() === F0;
+    return out;
+  });
+  check("mark out moves the field: he's in no field lineup, every lineup legal, ownership recounted (8 a lineup), his teammates owned more; undo restores",
+        fa.own === 0 && fa.legal && fa.n >= fa.n0 * 0.95 && Math.abs(fa.sum - 800) < 1e-6 && fa.mates > fa.before && fa.restored, JSON.stringify(fa));
   check("fitMinutes: down to 200 and up to 200, none over 40", (() => true)() && await pg.evaluate(() => {
     const a = DKSim.fitMinutes([35, 35, 35, 35, 30, 25, 20, 10]), b = DKSim.fitMinutes([30, 28, 25, 20, 18, 15, 10]);
     const s = x => x.reduce((t, y) => t + y, 0);
@@ -270,6 +319,20 @@ function audit(name, L, o) {
   await openTeam(TEAMS.teams[0].team);
   const panel = await pg.evaluate(() => [...document.querySelectorAll("#teamPanel .tile")].map(t => t.dataset.team));
   const opp0 = TEAMS.teams.find(t => t.team !== TEAMS.teams[0].team && TEAMS.teams[0].game === t.game);
+  const card = await pg.evaluate(() => {
+    const T = teamsOf(), t = T.teams[0], mates = rows.filter(r => r.team === t.team && r.status !== "Out" && r.min > 0);
+    const keep = t.card, sit = mates[0];
+    t.card = { games: 5, rule: "card-1", deep: [], lines: [{ kind: "swingy", text: mates[1].name + " is swingy: 10 to 30 minutes over 5 games" }],
+               absorb: [{ name: sit.name, dk_id: sit.id, sat: 1, games: 5, rows: [{ name: mates[1].name, dk_id: mates[1].id, with: 20, without: 30, n_with: 4, n_without: 1 }] }] };
+    renderTeamPanel();
+    const a = document.querySelector("#teamPanel details.card").textContent;
+    state.outs[sit.id] = 1; applyOuts(); renderTeamPanel();
+    const b = document.querySelector("#teamPanel details.card").textContent, tbl = !!document.querySelector("#teamPanel details.card table");
+    delete state.outs[sit.id]; t.card = keep; applyOuts(); renderTeamPanel();
+    return { a, b, tbl };
+  });
+  check("team card: the game count and the box-score lines; once a player who sat before is out, his teammates with and without him beside tonight",
+        /Team card · 5 games/.test(card.a) && /swingy: 10 to 30 minutes over 5 games/.test(card.a) && !/is out tonight/.test(card.a) && card.tbl && /is out tonight; when he sat before \(1 of 5 games\)/.test(card.b), JSON.stringify(card));
   check("team panel: the team's tile, then its opponent's", JSON.stringify(panel) === JSON.stringify([TEAMS.teams[0].team, opp0 && opp0.team]), JSON.stringify(panel));
   const pprojs = await pg.$$eval("#teamPanel .teamside:first-child .row:not(.out) input.proj", x => x.map(i => +i.value));
   check("team panel: its players by projection, highest first", pprojs.length >= 2 && pprojs.every((v, i) => i === 0 || pprojs[i - 1] >= v), JSON.stringify(pprojs));

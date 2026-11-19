@@ -80,6 +80,16 @@
   .tag.frag { border: 1px solid var(--warn); color: var(--warn); font-weight: 600; }
   .tag.k-out { background: var(--bad); color: #1a0500; }
   .tag.k-questionable { background: var(--warn); color: #1a1400; }
+  .tag.k-doubtful, .tag.d { background: var(--bad); color: #1a0500; opacity: .8; }
+  .row button.deepin { height: 18px; padding: 0 6px; font-size: 10.5px; margin-left: 4px; }
+  details.card { margin: 6px 0 4px; font-size: 12.5px; }
+  details.card summary { cursor: pointer; color: var(--muted); }
+  details.card .cl { margin: 3px 0 3px 10px; }
+  details.card .cl b { font-weight: 600; }
+  details.card table { border-collapse: collapse; margin: 2px 0 6px 10px; font-size: 12px; }
+  details.card td, details.card th { padding: 1px 8px 1px 0; text-align: right; }
+  details.card td:first-child, details.card th:first-child { text-align: left; }
+  details.card button { height: 20px; padding: 0 6px; font-size: 11px; margin: 0 4px 2px 0; }
   .tag.k-starting, .tag.k-back { background: var(--live); color: #04140c; }
   .tag.k-news { border: 1px solid var(--line-strong); color: var(--muted); }
   details.news { margin: 4px 0 10px; }
@@ -357,7 +367,7 @@
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var SLOTS = DKSim.SLOTS;
-var doc = null, slate = null, rows = [], state = null, news = [], fieldDoc = null, gate = null, BP = null;
+var doc = null, slate = null, rows = [], state = null, news = [], newsUnsourced = [], fieldDoc = null, gate = null, BP = null;
 var teamsDoc = null, ruleCounts = {}, editing = -1;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1, panel: null };
@@ -378,20 +388,79 @@ function proj(r) { var o = state.proj[r.id]; return o != null ? o : DKSim.gatedP
 /* Your Out toggle (a Questionable player you rule out, e.g. 2026-11-18's Stokes): he's Out for the draw and the pick,
    and his team's other players share 200 minutes again (DKSim.fitMinutes, the projection's own rule), each one's
    projection moving with his minutes (points per minute held). minScale: player id -> new minutes / projected. */
+/* Doubtful is out by default (the owner, 2026-11-19: Stokes was reported doubtful at 18:10Z on 11-18 and sat): one
+   Doubtful in the outs file or DraftKings' tag (the projection already leaves him out), or whose newest status item in
+   the news says doubtful; "Play him" (state.ins) puts him back as Questionable. The deep bench (the team card, battle-
+   royale-research dk_cbb_teams.py) is out of the pool by default; "Use" (state.deepIn) brings one back. */
 var minScale = {};
+function isDoubtful(r) { return !!r.doubtful || (newsOf(r.id) || {}).kind === "doubtful"; }
+function deepIds() {
+  var T = teamsOf(), o = {};
+  ((T && T.teams) || []).forEach(function (t) { ((t.card && t.card.deep) || []).forEach(function (id) { o[id] = 1; }); });
+  return o;
+}
 function applyOuts() {
   minScale = {};
-  rows.forEach(function (r) { r.status = state.outs && state.outs[r.id] ? "Out" : r._status0; });
+  var deep = deepIds();
+  rows.forEach(function (r) {
+    r.status = isDoubtful(r) ? (state.ins[r.id] ? "Questionable" : "Out") : state.outs[r.id] ? "Out" : r._status0;
+    r.deepOut = !!deep[r.id] && !state.deepIn[r.id];
+  });
   var teams = {};
-  rows.forEach(function (r) { if (state.outs && state.outs[r.id]) teams[r.team] = 1; });
+  rows.forEach(function (r) { if (r.status !== r._status0) teams[r.team] = 1; });
   Object.keys(teams).forEach(function (t) {
     var v = rows.filter(function (r) { return r.team === t && r.status !== "Out" && r.min != null && r.min > 0; });
     var fit = DKSim.fitMinutes(v.map(function (r) { return r.min; }), 200);
     v.forEach(function (r, i) { minScale[r.id] = fit[i] / r.min; });
   });
+  adjustField();
+}
+/* The simulated field after a change of yours (Mark out, a Doubtful left out, or put back): each field lineup holding
+   a player who is out now swaps him for the best player that fits (the cap, the G G G F F F UTIL UTIL slots) under the
+   field's own view, (ours + DraftKings' average) / 2 with each teammate's minutes change, times (1 + 0.25 N(0, 1))
+   redrawn per lineup (dk_cbb_field.py's main style), so a teammate who takes the minutes takes the ownership
+   (2026-11-18: Dawes 10% projected, 50% real once Stokes sat). Ownership is recounted from the lineups. A Doubtful you
+   put back stays out of the field (it was built without him). */
+var fieldAdj = null;
+function adjustField() {
+  fieldAdj = null;
+  var F = fieldDoc && slate && fieldDoc.slates[String(slate.draft_group_id)];
+  if (!F || !F.field) return;
+  var gone = {}, n = 0;
+  rows.forEach(function (r) { if (r.status === "Out" && r._status0 !== "Out") { gone[r.id] = 1; n++; } });
+  if (!n) return;
+  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
+  var live = rows.filter(function (r) { return r.status !== "Out" && r.salary; });
+  var fv = function (r) { var m = minScale[r.id] || 1; return (DKSim.gatedProj(r, gate) * m + (r.dk_avg || DKSim.gatedProj(r, gate)) * m) / 2; };
+  var rnd = DKSim.seeded(7), gauss = function () { return Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd()); };
+  var slotsOk = function (ids) {
+    var g = 0, f = 0, b = 0;
+    ids.forEach(function (id) { var r = by[id], G = isG(r), Fw = isF(r); g += G; f += Fw; b += G && Fw; });
+    return g >= 3 && f >= 3 && g + f - b >= 6;
+  };
+  var field = [];
+  F.field.forEach(function (L) {
+    var out = L.filter(function (id) { return gone[id]; });
+    if (!out.length) { field.push(L); return; }
+    var keep = L.filter(function (id) { return !gone[id]; });
+    out.forEach(function () {
+      var left = 50000 - keep.reduce(function (t, id) { return t + (by[id] ? by[id].salary : 0); }, 0), best = null, bv = -1;
+      live.forEach(function (r) {
+        if (r.salary > left || keep.indexOf(r.id) >= 0) return;
+        if (keep.length === 7 && !slotsOk(keep.concat([r.id]))) return;
+        var v = fv(r) * (1 + 0.25 * gauss());
+        if (v > bv) { bv = v; best = r; }
+      });
+      if (best) keep.push(best.id);
+    });
+    if (keep.length === 8) field.push(keep);
+  });
+  var cnt = {}; field.forEach(function (L) { L.forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; }); });
+  var own = {}; Object.keys(cnt).forEach(function (id) { own[id] = 100 * cnt[id] / field.length; });
+  fieldAdj = Object.assign({}, F, { field: field, own: own, adjusted: n });
 }
 function value(r) { return proj(r) / (r.salary / 1000); }
-function usable(r) { return r.status !== "Out" && !state.excl[r.id]; }
+function usable(r) { return r.status !== "Out" && !state.excl[r.id] && !r.deepOut; }
 
 async function load() {
   $("status").textContent = "Loading…"; $("statusInfo").textContent = "";
@@ -405,8 +474,9 @@ async function load() {
   }
   try {      // X news for tonight's players (scripts/cbb_news.py); the page works without it
     var nr = await fetch(MIRROR + "cbb_news.json?t=" + Date.now(), { cache: "no-store" });
-    news = nr.ok ? (await nr.json()).items || [] : [];
-  } catch (e) { news = []; }
+    var nj = nr.ok ? await nr.json() : {};
+    news = nj.items || []; newsUnsourced = nj.unsourced || [];
+  } catch (e) { news = []; newsUnsourced = []; }
   try {      // team tiles (battle-royale-research scripts/dk_cbb_teams.py)
     var tr = await fetch(MIRROR + "dk_cbb_teams.json?t=" + Date.now(), { cache: "no-store" });
     teamsDoc = tr.ok ? await tr.json() : null;
@@ -437,8 +507,8 @@ async function load() {
 function pick() {
   slate = doc.slates.find(function (s) { return String(s.draft_group_id) === $("slate").value; });
   rows = Object.keys(slate.players).map(function (id) { var r = Object.assign({ id: id }, slate.players[id]); r._status0 = r.status; return r; });
-  state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, floor: {}, outs: {}, rules: [] }, store(key()) || {});
-  state.outs = state.outs || {};
+  state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, floor: {}, outs: {}, ins: {}, deepIn: {}, rules: [] }, store(key()) || {});
+  state.outs = state.outs || {}; state.ins = state.ins || {}; state.deepIn = state.deepIn || {};
   applyOuts();
   // rules saved before the draw-only change: an "in X% of lineups" rule becomes its plain rule; an "at most X%" one goes
   state.rules = (state.rules || []).filter(function (r) { return r.maxShare == null; }).map(function (r) {
@@ -542,18 +612,23 @@ function playerTable(list, sortable) {
   var body = list.map(function (r) {
     var nw = newsOf(r.id);
     var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
+      (isDoubtful(r) ? '<span class="tag d" title="Doubtful: out by default">D</span>' : "") +
       (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
         ' title="Projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : "") + '>Q</span>' : "") +
-      (r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout" title="' +
+      (isDoubtful(r) ? '<button type="button" class="qout" title="' + (state.ins[r.id] ? "Back to out (Doubtful)" : "Play him: back as Questionable, his teammates refit to 200") +
+        '">' + (state.ins[r.id] ? "Undo" : "Play him") + "</button>" :
+      r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout" title="' +
         (state.outs[r.id] ? "Put him back as Questionable" : "Rule him out: his teammates share his minutes (200 for the team)") + '">' +
         (state.outs[r.id] ? "Undo out" : "Mark out") + "</button>" : "") +
       (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005 ? '<span class="tag" title="A teammate you ruled out: his minutes ' + (r.min || 0).toFixed(1) +
-        " -> " + ((r.min || 0) * minScale[r.id]).toFixed(1) + '">+' + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min</span>" : "") + statusConflict(r) +
+        " -> " + ((r.min || 0) * minScale[r.id]).toFixed(1) + '">' + (minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min</span>" : "") + statusConflict(r) +
+      (deepIds()[r.id] ? '<button type="button" class="deepin" data-id="' + esc(r.id) + '" title="' + (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" :
+        "Deep bench, brought back: leave him out again") + '">' + (r.deepOut ? "deep: use" : "deep: drop") + "</button>" : "") +
       (r.fragile ? '<span class="tag frag" title="Fragile: expected miss ±' + (r.miss_dk || "") + '">fragile</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
     var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
     var edited = state.proj[r.id] != null;
-    var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] ? " excluded" : "") + (r.status === "Out" ? " out" : "");
+    var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] || r.deepOut ? " excluded" : "") + (r.status === "Out" ? " out" : "");
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '">' +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
       '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button></span>' +
@@ -593,7 +668,9 @@ function renderNews() {
   var status = mine.filter(function (n) { return n.kind !== "news"; }).length;
   $("newsSum").textContent = "News: " + (status ? status + " injury / status item" + (status === 1 ? "" : "s") : "no injury or status items") +
     (mine.length > status ? " · " + (mine.length - status) + " other tweet" + (mine.length - status === 1 ? "" : "s") : "") +
-    " (X, read daily from 1pm Pacific; projections don't move on them)";
+    " (X, read daily from 1pm Pacific and before each game's tip; projections don't move on them, but a doubtful item leaves him out by default)" +
+    (function () { var mine = newsUnsourced.filter(function (t) { return rows.some(function (r) { return r.team === t; }); });
+      return mine.length ? " · No listed source: " + mine.join(", ") : ""; })();
   $("news").innerHTML = mine.map(function (n) {
     return '<div class="ni"><div class="meta"><span class="tag k-' + n.kind + '" style="margin:0 6px 0 0">' + esc(n.kind) + "</span>" +
       n.players.filter(function (id) { return by[id]; }).map(function (id) { return "<b>" + esc(by[id].name) + "</b>"; }).join(", ") +
@@ -604,7 +681,7 @@ function renderNews() {
 
 // --- optimizer and sim: dk_sim.js (shared with the nightly shadow portfolios) ------------------------
 function own(r) { return (fieldOf() && fieldOf().own[r.id]) || 0; }
-function fieldOf() { return fieldDoc && slate && fieldDoc.slates[String(slate.draft_group_id)]; }
+function fieldOf() { return fieldAdj || (fieldDoc && slate && fieldDoc.slates[String(slate.draft_group_id)]); }
 function ctx() {
   return { rows: rows, proj: proj, own: own, state: state, solver: solver, random: Math.random,
            progress: function (msg) { $("buildStatus").textContent = msg; return new Promise(function (r) { setTimeout(r, 0); }); } };
@@ -682,11 +759,39 @@ function renderTeamPanel() {
   var side = function (tt) {
     var all = rows.filter(function (r) { return r.team === tt.team; }).sort(function (a, b) { return (a.status === "Out") - (b.status === "Out") || proj(b) - proj(a); });
     var list = view.showAll ? all : all.filter(function (r) { return r.status !== "Out" && value(r) >= PANEL_MIN_VALUE || state.lock[r.id] || state.excl[r.id]; });
-    return '<div class="teamside">' + tileHtml(tt, true) + '<div class="plist">' + playerTable(list, false) +
+    return '<div class="teamside">' + tileHtml(tt, true) + cardHtml(tt) + '<div class="plist">' + playerTable(list, false) +
       '<button type="button" class="showall" style="height:24px;padding:0 8px;font-size:11.5px;margin:4px 0">' +
       (view.showAll ? "Only " + PANEL_MIN_VALUE + "x value and up" : "Show all " + all.length + " (" + (all.length - list.length) + " under " + PANEL_MIN_VALUE + "x or out)") + "</button></div></div>";
   };
   $("teamPanel").innerHTML = side(t) + (o ? '<div class="note" style="margin:2px 0">Opponent:</div>' + side(o) : "");
+}
+
+/* The team card (battle-royale-research dk_cbb_teams.py team_card): facts from this season's box scores, each with its
+   game count, and tonight's statuses with their sources. Where a player who sat before is out tonight, his teammates'
+   minutes with and without him sit beside tonight's projected minutes. */
+function cardHtml(t) {
+  var c = t.card, mine = rows.filter(function (r) { return r.team === t.team; });
+  var st = mine.filter(function (r) { return r.status === "Out" || r.status === "Questionable" || isDoubtful(r) || newsOf(r.id); }).map(function (r) {
+    var nw = newsOf(r.id), src = [];
+    if (r.status_dk) src.push("DK tag " + r.status_dk);
+    if (r.status_file) src.push(r.status_file);
+    if (nw) src.push("news (" + nw.kind + "): @" + nw.author + ", " + ago(nw.at) + (nw.late ? ", late read" : ""));
+    if (state.outs[r.id]) src.push("you marked him out");
+    if (state.ins[r.id]) src.push("you put him back");
+    return '<div class="cl"><b>' + esc(r.name) + "</b>: " + esc(isDoubtful(r) && r.status === "Out" ? "Doubtful, out by default" : r.status || "playing") +
+      (src.length ? " (" + esc(src.join("; ")) + ")" : "") + "</div>";
+  });
+  var tonight = function (id) { var r = byId(id); return r && r.min != null ? (r.status === "Out" ? "out" : (r.min * (minScale[id] || 1)).toFixed(0)) : "–"; };
+  var abs = ((c && c.absorb) || []).filter(function (a) { var r = a.dk_id && byId(a.dk_id); return r && r.status === "Out"; }).map(function (a) {
+    return '<div class="cl">' + esc(a.name) + " is out tonight; when he sat before (" + a.sat + " of " + a.games + " games):</div><table><tr><th></th><th>with him</th><th>without</th><th>tonight</th></tr>" +
+      a.rows.map(function (x) { return "<tr><td>" + esc(x.name) + "</td><td>" + x["with"].toFixed(0) + "</td><td>" + x.without.toFixed(0) + "</td><td>" + (x.dk_id ? tonight(x.dk_id) : "–") + "</td></tr>"; }).join("") + "</table>";
+  });
+  var deep = ((c && c.deep) || []).map(function (id) { var r = byId(id); return r ? '<button type="button" class="deepin" data-id="' + esc(id) + '">' + (r.deepOut ? "Use " : "Drop ") + esc(r.name) + "</button>" : ""; }).join("");
+  var lines = ((c && c.lines) || []).map(function (l) { return '<div class="cl">' + esc(l.text) + "</div>"; });
+  return '<details class="card"' + (FOLD.cards[t.team] ? " open" : "") + ' data-card="' + esc(t.team) + '"><summary>Team card' + (c ? " · " + c.games + " game" + (c.games === 1 ? "" : "s") : "") + "</summary>" +
+    (st.length ? st.join("") : '<div class="cl">No one tagged or in the news.</div>') + abs.join("") +
+    (c ? lines.join("") || '<div class="cl">Nothing to flag from the box scores.</div>' : '<div class="cl">No box-score card for this team yet.</div>') +
+    (deep ? '<div class="cl">Deep bench: ' + deep + "</div>" : "") + "</details>";
 }
 
 function tileHtml(t, wide) {
@@ -761,9 +866,10 @@ function rulesMsg(r) {
   return " Rules: " + r.counts.map(function (c) { return c.label + ": " + c.pass + " of " + c.of + " pass"; }).join("; ") + "; all of them: " + r.kept + " of " + r.of +
     (r.added ? "; " + r.added + " more drawn under the rules to fill the pool" : "") + ".";
 }
-var FOLD = { base: false, groups: {} };     // which folds are open (kept across re-renders, this visit only)
+var FOLD = { base: false, groups: {}, cards: {} };     // which folds are open (kept across re-renders, this visit only)
 document.addEventListener("toggle", function (e) {
   var d = e.target;
+  if (d.dataset && d.dataset.card) { FOLD.cards[d.dataset.card] = d.open; return; }
   if (!d.classList || !d.classList.contains("fold")) return;
   if (d.id === "baseFold") FOLD.base = d.open;
   else if (d.dataset.foldGroup != null) FOLD.groups[d.dataset.foldGroup] = d.open;
@@ -1496,13 +1602,13 @@ $("reload").addEventListener("click", load);
    a Min above his Max gives way to the Max. */
 async function drawBank(cx, o, n) {
   var res = await DKSim.pool(cx, o, n), L = res.lineups.slice(), N = L.length;
-  var live = function (m) { return Object.keys(m || {}).filter(function (id) { var r = byId(id); return r && r.status !== "Out" && !state.excl[id]; }); };
+  var live = function (m) { return Object.keys(m || {}).filter(function (id) { var r = byId(id); return r && usable(r); }); };
   var mins = live(state.floor), maxs = live(state.cap).filter(function (id) { return !state.lock[id]; });
   // Max share in bank: every unlocked player in at most that share of the bank once this draw joins it
   var gb = +$("bankMax").value || 0, inBank = {}, B = BANK.lineups.length, global = [];
   if (gb) {
     BANK.lineups.forEach(function (x) { x.ids.forEach(function (id) { inBank[id] = (inBank[id] || 0) + 1; }); });
-    global = rows.filter(function (r) { return r.status !== "Out" && !state.excl[r.id] && !state.lock[r.id] && maxs.indexOf(r.id) < 0; }).map(function (r) { return r.id; });
+    global = rows.filter(function (r) { return usable(r) && !state.lock[r.id] && maxs.indexOf(r.id) < 0; }).map(function (r) { return r.id; });
     maxs = maxs.concat(global);
   }
   if (!N || (!mins.length && !maxs.length)) return res;
@@ -1727,10 +1833,11 @@ $("players").addEventListener("click", function (e) {
   rowClick(e);
 });
 function rowClick(e) {
-  var q = e.target.closest(".qout");
-  if (q) {
-    var qid = q.closest(".row").dataset.id;
-    if (state.outs[qid]) delete state.outs[qid]; else state.outs[qid] = 1;
+  var q = e.target.closest(".qout"), dp = e.target.closest(".deepin");
+  if (q || dp) {
+    var qid = q ? (q.dataset.id || q.closest(".row").dataset.id) : dp.dataset.id, qr = byId(qid);
+    var m = dp ? state.deepIn : qr && isDoubtful(qr) ? state.ins : state.outs;
+    if (m[qid]) delete m[qid]; else m[qid] = 1;
     save(); applyOuts(); renderPlayers(); if (view.panel) renderTeamPanel();
     return;
   }
