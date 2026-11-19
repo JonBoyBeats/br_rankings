@@ -1277,8 +1277,11 @@ function audit(name, L, o) {
   await pg.click("#nbOn");
   await pg.waitForFunction(() => NB.on && BP && BP.review && document.querySelectorAll("#nbTabs button").length > 0, null, { timeout: 300000 });
   const nb_nb0 = await pg.evaluate(() => ({ classicHidden: document.getElementById("classic3").hidden, status: document.getElementById("cutStatus").parentNode.id,
-    details: ["bankBox", "entriesBox", "pfBox"].every(id => document.getElementById(id).closest("#nbDetails")) }));
-  check("one screen: Classic hidden, the status in the bar, the cut, contests and night view in Details", nb_nb0.classicHidden && nb_nb0.status === "nbStatusSlot" && nb_nb0.details, JSON.stringify(nb_nb0));
+    details: ["entriesBox", "pfBox"].every(id => document.getElementById(id).closest("#nbDetails")),
+    bank: !document.getElementById("bankBox").closest("#nbDetails") && document.getElementById("bankBox").parentNode.id === "s2out" && document.getElementById("bankBox").offsetParent !== null &&
+      !!document.querySelector("#bankBox input[data-tag]") && !!document.getElementById("groupName") && document.getElementById("groupName").offsetParent !== null }));
+  check("one screen: Classic hidden, the status in the bar, contests and night view in Details; the bank table (tag boxes, grouping) visible under Draw & bank, not folded",
+        nb_nb0.classicHidden && nb_nb0.status === "nbStatusSlot" && nb_nb0.details && nb_nb0.bank, JSON.stringify(nb_nb0));
   await pg.click("#nbFill");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   await pg.waitForFunction(() => BP && BP.review && document.querySelectorAll("#nbList tr[data-k]").length > 0, null, { timeout: 300000 });

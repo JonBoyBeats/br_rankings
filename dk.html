@@ -411,7 +411,7 @@
       <div><div class="opts" style="padding:0 0 4px" id="nbRTabs"><button type="button" data-rt="p" aria-pressed="true">Players</button><button type="button" data-rt="pair" aria-pressed="false">Pairs</button><button type="button" data-rt="core" aria-pressed="false">Cores</button></div>
         <div class="nbscroll" id="nbRight"><div id="nbPlayers"></div></div></div>
     </div>
-    <details class="news" id="nbDetails"><summary>Details: the cut round by round, the idea scoreboard, players bank vs cut, contests and entries, the night's players, pairs and cores</summary><div id="nbDetailsBody"></div></details>
+    <details class="news" id="nbDetails"><summary>Details: contests and entries, the night's players, pairs and cores</summary><div id="nbDetailsBody"></div></details>
   </section>
 
   <div id="classic3">
@@ -1906,7 +1906,8 @@ function nbSet(on) {
   try { localStorage.setItem("dkcbb:nb", String(NB.on)); } catch (e) {}
   $("nb").hidden = !NB.on; $("classic3").hidden = NB.on; $("nbOn").hidden = NB.on;
   var out = $("s2out"), det = $("nbDetailsBody");
-  if (NB.on) { $("nbStatusSlot").appendChild($("cutStatus")); ["bankBox", "entriesBox", "pfBox"].forEach(function (id) { det.appendChild($(id)); }); }
+  // the bank table (tag boxes, Group the ticked tags) stays under Draw & bank in both views: grouping comes before the cut
+  if (NB.on) { $("nbStatusSlot").appendChild($("cutStatus")); ["entriesBox", "pfBox"].forEach(function (id) { det.appendChild($(id)); }); }
   else { ["cutStatus", "bankBox", "entriesBox", "pfBox"].forEach(function (id) { out.appendChild($(id)); }); nbSide(false); }
   if (NB.on) nbOpen();
 }
