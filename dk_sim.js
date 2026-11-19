@@ -61,7 +61,8 @@
     for (var it = 0; it < 20; it++) {
       var gap = total - m.reduce(function (a, x) { return a + x; }, 0);
       if (Math.abs(gap) < 1e-6) break;
-      var w = m.map(function (x) { return (gap > 0 ? x < 40 : x > 0.5) ? x * Math.max(1, 40 - x) : 0; });
+      // over 200 the excess comes off by 40 - m (the bench gives up the most); short of it, the gap goes on by m x (40 - m)
+      var w = m.map(function (x) { return gap > 0 ? (x < 40 ? x * Math.max(1, 40 - x) : 0) : (x > 0.5 ? Math.max(1, 40 - x) : 0); });
       var W = w.reduce(function (a, x) { return a + x; }, 0);
       if (!W) break;
       m = m.map(function (x, i) { return Math.min(40, Math.max(0.5, x + gap * w[i] / W)); });
