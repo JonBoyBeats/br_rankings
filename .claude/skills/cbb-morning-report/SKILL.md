@@ -221,6 +221,17 @@ side: duplication with another user, distinct lineups per 1,000, salary used, pl
 ownership, 3+ from one team) is current. The note includes the cut check: kept against cut, average score and each contest's top-10% rate, and how
 many nights "kept averages more but reaches the top 10% less" has held.
 
+**The ownership card, every morning (the owner, 2026-11-19):** `python3 scripts/dk_eval.py owncard` (after
+fieldcheck). Ownership is the main $15 contest's (the Pull Up Jumper, not the Early one); the And-One, Quarter
+Jukebox and Dime Time are shown against it. Give it as one short card: the headline "projected under 5% landed under
+5%"; the 3 bands (under 5, 5-20, 20+) with actual / projected, the miss and how many nights ran over; projection
+misses by the same bands; the leverage list (under 5% owned beating ours by 8+, 25%+ missing by 5+, with minutes,
+points a minute and teammates who sat: a low-owned player who beat us is worth a cause); and the construction rows
+(real, sim, bank, cut, entered, dbaggot3, feartheturtle7: 3+ from a team, low / high owned a lineup, summed
+ownership, salary, shared lineups). Settings change only on the 3 bands, and only when most nights ran the same
+way; the 5 bands are for reading. The owner keeps an entry in the Pull Up Jumper each night so its standings can be
+downloaded (a night without it falls back to the biggest graded contest, and the card says which).
+
 **Mechanics freeze with the rest on 2026-11-23** (the owner, 2026-11-17): the draw (sim-night draws, Leverage
 weight), the cut within each idea, the tie split, the pick (exposure, core and pair caps, unique entries) and the
 night view. After it, effort moves to inputs, in this order: projections (minutes, news), ownership, the FIELD (the

@@ -82,6 +82,8 @@ jobs:
           python3 scripts/dk_eval.py pairs --mirror ../br-adp-mirror || true
           # the field check: the simulated field against each graded contest's real field
           python3 scripts/dk_eval.py fieldcheck --mirror ../br-adp-mirror || true
+          # the ownership card: calibration against the main $15 contest, leverage list, construction
+          python3 scripts/dk_eval.py owncard || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
       # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening

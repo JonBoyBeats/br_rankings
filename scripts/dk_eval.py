@@ -85,8 +85,17 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             most, 20 draws): the share of entries holding a lineup another user also entered (the simulated field's
             lineups each count as their own user), distinct lineups per 1,000 entries, salary used (10th / 50th / 90th
             percentile, at the $50,000 cap, under $49,000), players by ownership band and the top one's ownership,
-            lineups with 2+ and 3+ from one team, and (simulated) the average miss of its ownership against the real.
+            lineups with 2+ to 5+ from one team, and (simulated) the average miss of its ownership against the real.
+            Construction (construction(), against the contest's real ownership): players at or under 10% and at or
+            above 40% per lineup, summed ownership, salary, the slate's games. Beside real and sim, the same for our
+            bank, our cut (the saved build), our entered (the owner's standings entries) and each SHARP user's
+            entries, with dup_field: the share of them some other real user also entered.
             field_metrics is the one definition; battle-royale-research scripts/dk_field_calibrate.py uses it.
+  owncard   the ownership card, nightly (printed): ownership is the slate's main $15 contest's (BASE_CONTEST; else its
+            biggest graded contest). Projected under 5% landed under 5%; OWN_DECIDE's 3 bands (settings are decided on
+            these) and OWN_SHOW's 5 (read only): actual / projected, average miss, nights over; the other contests
+            against the baseline; our projection's miss by baseline ownership; last night's leverage list (LEV_*); and
+            last night's construction rows from field_eval.csv.
   calweek   for the owner's choice at the freeze: ours, DraftKings' average and the 50/50 blend over the calibration
             week's graded nights (CAL_WEEK), by salary band, and the nights each had the lowest average miss
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
@@ -155,7 +164,10 @@ OWN_BANDS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
 FIELD_EVAL = os.path.join(DK, "field_eval.csv")
 FIELD_COLS = ["date", "draft_group", "contest_id", "contest", "side", "lineups", "matched_n", "dup_other", "distinct_per_1000",
               "sal_p10", "sal_p50", "sal_p90", "at_cap", "under_49k", "own_30", "own_20", "own_10", "own_5", "own_1", "top_own",
-              "team2", "team3", "own_mae", "params"]
+              "team2", "team3", "team4", "team5", "games", "low10", "high40", "own_sum", "sal_mean", "dup_field", "own_mae", "params"]
+# The construction rows beside real and sim (fieldcheck): our bank, our cut, our entered (the owner's standings entries)
+# and each sharp user's. The owner's list, 2026-11-19.
+SHARP = ["dbaggot3", "feartheturtle7"]
 OWN_BANDS_FIELD = [(30, 101), (20, 30), (10, 20), (5, 10), (1, 5)]
 IDEA_EVAL = os.path.join(DK, "idea_eval.csv")
 IDEA_COLS = ["date", "draft_group", "idea", "kind", "contest_id", "contest", "banked", "kept", "entered", "kept_share", "entered_share",
@@ -732,16 +744,13 @@ def proj_audit(rows):
 
 
 def own_nights(rows):
-    """b and c's data: per slate, its biggest graded contest's actual ownership on every audit player (0 if absent from
-    the standings: nobody drafted him). {draft group: [row with own_act]}"""
-    ev, oe = read(EVAL), read(OWN_EVAL)
-    size = {}
-    for r in ev:
-        if num(r.get("entries")) and (r["draft_group"] not in size or num(r["entries"]) > size[r["draft_group"]][1]):
-            size[r["draft_group"]] = (r["contest_id"], num(r["entries"]))
+    """b and c's data: per slate, its baseline contest's actual ownership (baselines(): the main $15 contest, else the
+    biggest graded one) on every audit player (0 if absent from the standings: nobody drafted him). {draft group: [row
+    with own_act]}"""
+    base = baselines()
     act = defaultdict(dict)
-    for r in oe:
-        if size.get(str(r["draft_group"]), (None,))[0] == r["contest_id"]:
+    for r in read(OWN_EVAL):
+        if base.get(str(r["draft_group"]), (None,))[0] == r["contest_id"]:
             act[str(r["draft_group"])][r["dk_id"]] = num(r["own_actual"])
     nights = defaultdict(list)
     for r in rows:
@@ -962,10 +971,26 @@ def field_metrics(lineups, users, info, n, seed=3, draws=20):
            "sal_p10": pct(0.1), "sal_p50": pct(0.5), "sal_p90": pct(0.9),
            "at_cap": round(100 * sum(x == CAP_DK for x in sal) / len(sal), 1), "under_49k": round(100 * sum(x < 49000 for x in sal) / len(sal), 1),
            "top_own": round(max(own.values()), 1), "team2": round(100 * sum(team(L, 2) for L in lineups) / len(lineups), 1),
-           "team3": round(100 * sum(team(L, 3) for L in lineups) / len(lineups), 1)}
+           "team3": round(100 * sum(team(L, 3) for L in lineups) / len(lineups), 1),
+           "team4": round(100 * sum(team(L, 4) for L in lineups) / len(lineups), 1),
+           "team5": round(100 * sum(team(L, 5) for L in lineups) / len(lineups), 1)}
     for (lo, hi), col in zip(OWN_BANDS_FIELD, ("own_30", "own_20", "own_10", "own_5", "own_1")):
         out[col] = sum(1 for v in own.values() if lo <= v < hi)
     return out, own
+
+
+def construction(lineups, ref, info, who=None, me=None):
+    """How a set of lineups is built against a contest's real ownership (ref: DK id -> % of its entries): players at or
+    under 10% and at or above 40% per lineup, summed ownership and salary per lineup; with who (lineup -> the real
+    field's users holding it), the share of the set's lineups some other real user (not me) also entered."""
+    n = len(lineups)
+    out = {"low10": round(sum(ref.get(i, 0) <= 10 for L in lineups for i in L) / n, 2),
+           "high40": round(sum(ref.get(i, 0) >= 40 for L in lineups for i in L) / n, 2),
+           "own_sum": round(sum(ref.get(i, 0) for L in lineups for i in L) / n),
+           "sal_mean": round(sum(int(info[i]["salary"]) for L in lineups for i in L) / n), "dup_field": ""}
+    if who is not None:
+        out["dup_field"] = round(100 * sum(bool(who.get(L, set()) - {me}) for L in lineups) / n, 1)
+    return out
 
 
 def real_field(path, byname):
@@ -1005,6 +1030,11 @@ def fieldcheck(a):
             names[r["name"]].append(k)
         byname = {nm: v[0] for nm, v in names.items() if len(v) == 1}
         sim = [tuple(sorted(L)) for L in F["field"]]
+        games = len({r.get("game") for r in info.values()})
+        bf = os.path.join(BUILDS, "dk_bank_%s_%s.json" % (date, g))
+        B = json.load(open(bf)) if os.path.exists(bf) else {}
+        bank = [tuple(sorted(str(i) for i in L)) for L in B.get("pool") or []]
+        cut = [bank[i] for i in B.get("final") or []]
         for cid, cname in sorted(contests.items()):
             path = os.path.join(STANDINGS, "contest-standings-%s.csv" % cid)
             if not os.path.exists(path):
@@ -1014,9 +1044,19 @@ def fieldcheck(a):
             rm, rown = field_metrics(L, U, info, n)
             sm, sown = field_metrics(sim, None, info, n)
             sm["own_mae"] = round(S.mean(abs(sown.get(k, 0) - rown.get(k, 0)) for k in set(rown) | set(sown)), 2)
-            base = {"date": date, "draft_group": g, "contest_id": cid, "contest": cname}
-            out.append(dict(base, side="real", own_mae="", params="", **rm))
-            out.append(dict(base, side="sim", params=json.dumps(F.get("params")), **sm))
+            base = {"date": date, "draft_group": g, "contest_id": cid, "contest": cname, "games": games}
+            out.append(dict(base, side="real", own_mae="", params="", **rm, **construction(L, rown, info)))
+            out.append(dict(base, side="sim", params=json.dumps(F.get("params")), **sm, **construction(sim, rown, info)))
+            who = defaultdict(set)
+            for x, u in zip(L, U):
+                who[x].add(u)
+            sides = [("bank", bank, USER), ("cut", cut, USER), ("entered", [x for x, u in zip(L, U) if u == USER], USER)]
+            sides += [("user:" + u, [x for x, v in zip(L, U) if v == u], u) for u in SHARP]
+            for side, xs, me in sides:
+                if xs:
+                    m, _ = field_metrics(xs, None, info, len(xs))
+                    out.append(dict(base, side=side, own_mae="", params="", **dict(m, dup_other=""),
+                                    **construction(xs, rown, info, who, me)))
         print("  field check %s (%s): %d contests" % (g, date, len(contests)))
     if out:
         with open(FIELD_EVAL, "w", newline="") as f:
@@ -1727,6 +1767,162 @@ def riser_lines():
                 len(nights), "" if len(nights) == 1 else "s", sum(g > 0 for g in gaps), f(S.mean(gaps)) if gaps else "-",
                 "%+.2f" % S.mean(rhos) if rhos else "-", " (too few nights to say)" if len(nights) < 10 else "")]
 
+# The ownership card (owncard): ownership is the main $15 contest's (the owner's baseline, 2026-11-19: BASE_CONTEST in
+# its name, else the slate's biggest graded contest). Settings are decided on OWN_DECIDE's 3 bands; OWN_SHOW's 5 are read only.
+BASE_CONTEST = "Pull Up Jumper"
+OWN_DECIDE = [(0, 5), (5, 20), (20, 101)]
+OWN_SHOW = [(0, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
+LEV_LOW, LEV_BEAT, LEV_HIGH, LEV_MISS = 5, 8, 25, 5     # the leverage list: under 5% owned beating projection by 8+, 25%+ missing by 5+
+
+
+def baselines():
+    """{draft group: (contest id, contest name, date)}: each slate's ownership baseline."""
+    best = {}
+    for r in read(EVAL):
+        g, base = str(r["draft_group"]), BASE_CONTEST in r["contest"] and "(Early)" not in r["contest"]
+        key = (base, num(r.get("entries")) or 0)
+        if g not in best or key > best[g][0]:
+            best[g] = (key, r["contest_id"], r["contest"], r["date"])
+    return {g: v[1:] for g, v in best.items()}
+
+
+def own_rows():
+    """Every audit player-night with own_act: his ownership in the slate's baseline contest (0 if nobody drafted him),
+    and own_by: {contest id: his ownership} for each of the slate's graded contests."""
+    by = defaultdict(lambda: defaultdict(dict))
+    for r in read(OWN_EVAL):
+        by[str(r["draft_group"])][r["contest_id"]][r["dk_id"]] = num(r["own_actual"]) or 0.0
+    out, base = [], baselines()
+    for r in audit_rows():
+        g = str(r["draft_group"])
+        if g in base and base[g][0] in by[g]:
+            out.append(dict(r, own_act=by[g][base[g][0]].get(r["dk_id"], 0.0), own_by={c: v.get(r["dk_id"], 0.0) for c, v in by[g].items()}))
+    return out, base
+
+
+def band_label(lo, hi):
+    return "under %d" % hi if not lo else "%d+" % lo if hi > 100 else "%d-%d" % (lo, hi)
+
+
+def band_line(rows, bands, proj, act, label):
+    """One row a band: n, projected and actual means, actual / projected, average miss, and the nights it ran over
+    (actual above projected) out of the nights it was measured."""
+    out = []
+    for lo, hi in bands:
+        rs = [r for r in rows if lo <= proj(r) < hi]
+        if not rs:
+            continue
+        night = defaultdict(list)
+        for r in rs:
+            night[r["date"]].append(act(r) - proj(r))
+        sp, sa = sum(proj(r) for r in rs), sum(act(r) for r in rs)
+        out.append("  %-8s n %3d  %s %5.1f  actual %5.1f  actual/%s %s  miss %4.1f  over on %d of %d nights" % (
+            band_label(lo, hi), len(rs), label, sp / len(rs), sa / len(rs), label,
+            "%.2f" % (sa / sp) if sp else "  - ", S.mean(abs(act(r) - proj(r)) for r in rs),
+            sum(S.mean(v) > 0 for v in night.values()), len(night)))
+    return out
+
+
+def owncard(a):
+    """The short ownership card: calibration against the baseline contest, the other contests against it, projection
+    misses by ownership, last night's leverage list and construction."""
+    rows, base = own_rows()
+    rows = [r for r in rows if r["own_proj"] is not None]
+    if not rows:
+        print("Ownership card: no graded night with a baseline contest yet")
+        return
+    last = max(r["date"] for r in rows)
+    print("Ownership card (baseline: %s)" % "; ".join("%s %s" % (d, c) for g, (_, c, d) in sorted(base.items(), key=lambda x: x[1][2])))
+    u5 = [r for r in rows if r["own_proj"] < 5]
+    per = defaultdict(list)
+    for r in u5:
+        per[r["date"]].append(r["own_act"] < 5)
+    cross = sorted([r for r in u5 if r["own_act"] >= 10], key=lambda r: -r["own_act"])
+    print("Projected under 5%% landed under 5%%: %.0f%% of %d (%s)%s" % (
+        100 * S.mean(x for v in per.values() for x in v), len(u5), ", ".join("%s %.0f%%" % (d[5:], 100 * S.mean(v)) for d, v in sorted(per.items())),
+        "; landed 10%+: " + ", ".join("%s %s %.1f" % (r["date"][5:], r["name"], r["own_act"]) for r in cross) if cross else ""))
+    print("Ownership, the 3 bands settings are decided on (by our projection):")
+    print("\n".join(band_line(rows, OWN_DECIDE, lambda r: r["own_proj"], lambda r: r["own_act"], "proj")))
+    print("Ownership, 5 bands (read only):")
+    print("\n".join(band_line(rows, OWN_SHOW, lambda r: r["own_proj"], lambda r: r["own_act"], "proj")))
+    names = {r["contest_id"]: r["contest"] for r in read(EVAL)}
+    kinds = defaultdict(list)                       # contest kind -> [(date, MAE vs baseline, {band: mean diff})]
+    for (d, g), rs in groupby_night(rows).items():
+        for cid in rs[0]["own_by"]:
+            if cid == base[g][0]:
+                continue
+            diff = {b: [r["own_by"][cid] - r["own_act"] for r in rs if b[0] <= r["own_act"] < b[1]] for b in OWN_DECIDE}
+            kinds[contest_kind(names.get(cid, cid))].append((d, S.mean(abs(r["own_by"][cid] - r["own_act"]) for r in rs), diff))
+    print("Other contests against the baseline (their ownership minus its, by its band):")
+    for k, v in sorted(kinds.items()):
+        cells = []
+        for b in OWN_DECIDE:
+            ds = [S.mean(x[2][b]) for x in v if x[2][b]]
+            cells.append("%s %+.1f (higher on %d of %d)" % (band_label(*b), S.mean(ds), sum(x > 0 for x in ds), len(ds)) if ds else "-")
+        print("  %-16s %d contest-night%s, miss %.1f; %s" % (k, len(v), "" if len(v) == 1 else "s", S.mean(x[1] for x in v), "; ".join(cells)))
+    print("Projection (actual minus ours, fp_dk as the audit) by baseline ownership:")
+    print("\n".join(proj_band_lines(rows)))
+    print("Leverage, %s:" % last)
+    for line in leverage_lines([r for r in rows if r["date"] == last]):
+        print("  " + line)
+    fe = [r for r in read(FIELD_EVAL) if r["date"] == last and BASE_CONTEST in r["contest"] and "(Early)" not in r["contest"]]
+    if fe:
+        print("Construction, %s %s (%s games): side, 3+ from a team, <=10%% / >=40%% owned a lineup, summed ownership, salary, shared with another user" % (
+            last, fe[0]["contest"], fe[0]["games"]))
+        for r in fe:
+            print("  %-20s %5s  %5s%%  %4s / %-4s  %4s%%  %s  %s" % (r["side"], r["lineups"], r["team3"], r["low10"], r["high40"], r["own_sum"],
+                                                                r["sal_mean"], r["dup_field"] or r["dup_other"]))
+
+
+def groupby_night(rows):
+    out = defaultdict(list)
+    for r in rows:
+        out[(r["date"], str(r["draft_group"]))].append(r)
+    return out
+
+
+def contest_kind(name):
+    for k in ("Pull Up Jumper", "And-One", "Quarter Jukebox", "Dime Time", "Big Five", "High Five"):
+        if k in name:
+            return k + (" (small)" if k == "And-One" and "$100 " in name else "")
+    return name
+
+
+def proj_band_lines(rows):
+    """Our projection's miss by baseline ownership band (3 bands): n, bias (actual minus ours), average miss, nights over."""
+    out = []
+    for lo, hi in OWN_DECIDE:
+        rs = [r for r in rows if lo <= r["own_act"] < hi]
+        if not rs:
+            continue
+        night = defaultdict(list)
+        for r in rs:
+            night[r["date"]].append(r["act"] - r["ours"])
+        out.append("  %-8s n %3d  bias %+5.1f  miss %4.1f  actual above ours on %d of %d nights" % (
+            band_label(lo, hi), len(rs), S.mean(r["act"] - r["ours"] for r in rs),
+            S.mean(abs(r["act"] - r["ours"]) for r in rs), sum(S.mean(v) > 0 for v in night.values()), len(night)))
+    return out
+
+
+def leverage_lines(rows):
+    """Under LEV_LOW% owned beating our projection by LEV_BEAT+, and LEV_HIGH%+ missing it by LEV_MISS+: minutes and
+    points per minute, and teammates projected 10+ minutes who sat (not tagged Out)."""
+    sat = defaultdict(list)
+    for r in rows:
+        if (num(r.get("min_proj")) or 0) >= 10 and not num(r.get("min")):
+            sat[r["team"]].append("%s%s" % (r["name"], " (%s)" % r["status"] if r.get("status") else ""))
+    def line(r):
+        mp, m = num(r.get("min_proj")) or 0, num(r.get("min")) or 0
+        ppm = num(r.get("ppm_proj"))
+        others = [x for x in sat[r["team"]] if not x.startswith(r["name"])]
+        return "%s %s $%d, %.1f%% owned: %.1f on %.1f; minutes %.0f -> %.0f, points a minute %s -> %s%s" % (
+            r["name"], r["team"], r["sal"], r["own_act"], r["act"], r["ours"], mp, m, "%.2f" % ppm if ppm else "-",
+            "%.2f" % (r["act"] / m) if m else "-", "; sat: " + ", ".join(others) if others else "")
+    low = sorted([r for r in rows if r["own_act"] < LEV_LOW and r["act"] - r["ours"] >= LEV_BEAT], key=lambda r: r["ours"] - r["act"])
+    high = sorted([r for r in rows if r["own_act"] >= LEV_HIGH and r["ours"] - r["act"] >= LEV_MISS], key=lambda r: r["act"] - r["ours"])
+    return (["Under %d%% owned, beat ours by %d+:%s" % (LEV_LOW, LEV_BEAT, "" if low else " none")] + ["  " + line(r) for r in low] +
+            ["%d%%+ owned, missed ours by %d+:%s" % (LEV_HIGH, LEV_MISS, "" if high else " none")] + ["  " + line(r) for r in high])
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -1743,6 +1939,7 @@ def main():
     cn.add_argument("--mirror", help="the mirror checkout, for the match warning on its DraftKings slates")
     sub.add_parser("calweek")
     sub.add_parser("ideas")
+    sub.add_parser("owncard")
     sub.add_parser("risers")
     sub.add_parser("platoon")
     pr = sub.add_parser("pairs")
@@ -1755,7 +1952,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard}[a.cmd](a)
 
 
 if __name__ == "__main__":
