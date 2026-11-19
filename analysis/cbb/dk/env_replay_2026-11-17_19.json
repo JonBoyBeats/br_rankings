@@ -1,0 +1,260 @@
+{
+ "17": {
+  "night": "2026-11-17",
+  "draft_group": "156663",
+  "contests": [
+   "CBB $100 Dime Time [Just $0.10!] x20",
+   "CBB $1.5K And-One x10",
+   "CBB $250 Quarter Jukebox [Just $0.25!]  x20",
+   "CBB $50 Dime Time [Just $0.10!] x17"
+  ],
+  "b": 0.12,
+  "top3_players": 42,
+  "scan_draw_s": 100,
+  "scan_stacks": {
+   "n": 49,
+   "rank_corr": 0.986,
+   "rank_corr_noise": 0.993,
+   "reads_changed_noise": 0,
+   "bar_off": 0.097,
+   "bar_on": 0.115,
+   "reads_changed": 1,
+   "strong_off": 2,
+   "strong_on": 2,
+   "top5_off": [
+    "PITT 3+ 0.36",
+    "PITT 4+ 0.32",
+    "ARK@IU 3+ -0.02",
+    "KU@UNLV 3+ -0.07",
+    "IL@DUKE 3+ -0.19"
+   ],
+   "top5_on": [
+    "PITT 3+ 0.35",
+    "PITT 4+ 0.25",
+    "ARK@IU 3+ -0.00",
+    "KU@UNLV 3+ -0.14",
+    "IL@DUKE 3+ -0.20"
+   ],
+   "mean_gain_change_team": 0.014,
+   "mean_gain_change_game": 0.008
+  },
+  "scan_players": {
+   "n": 96,
+   "rank_corr": 0.993,
+   "rank_corr_noise": 0.994,
+   "reads_changed_noise": 5,
+   "bar_off": 0.099,
+   "bar_on": 0.094,
+   "reads_changed": 8,
+   "strong_off": 6,
+   "strong_on": 6,
+   "top5_off": [
+    "Ethan Brown 0.38",
+    "Finley Bizjack 0.23",
+    "Jonathan Powell 0.19",
+    "Quentin Coleman 0.19",
+    "Naithan George 0.18"
+   ],
+   "top5_on": [
+    "Ethan Brown 0.30",
+    "Quentin Coleman 0.18",
+    "Aiden Sherrell 0.17",
+    "Naithan George 0.13",
+    "Jonathan Powell 0.13"
+   ],
+   "mean_gain_change_top3": -0.015,
+   "mean_gain_change_others": -0.006
+  },
+  "cut": {
+   "pool": 10000,
+   "kept": 2000,
+   "overlap": 0.868,
+   "overlap_noise": 0.871,
+   "brought_in": 264,
+   "tierA_off": 2,
+   "tierA_on": 8,
+   "mean_top3_same_game_in": 1.92,
+   "mean_top3_same_game_dropped": 1.93,
+   "real": {
+    "kept_off_top10": 11.1,
+    "kept_on_top10": 10.7,
+    "kept_off_top1": 1.7,
+    "kept_on_top1": 1.4,
+    "brought_in_top10": 6.4,
+    "dropped_top10": 9.5,
+    "brought_in_top1": 0.4,
+    "dropped_top1": 2.3
+   }
+  },
+  "seconds": 187
+ },
+ "18": {
+  "night": "2026-11-18",
+  "draft_group": "157033",
+  "contests": [
+   "CBB $7K Pull Up Jumper [$2K to 1st] x1",
+   "CBB $1.25K And-One x10",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 Dime Time [Just $0.10!] x20",
+   "CBB $100 And-One x3"
+  ],
+  "b": 0.12,
+  "top3_players": 24,
+  "scan_draw_s": 25,
+  "scan_stacks": {
+   "n": 28,
+   "rank_corr": 0.985,
+   "rank_corr_noise": 0.985,
+   "reads_changed_noise": 1,
+   "bar_off": 0.066,
+   "bar_on": 0.052,
+   "reads_changed": 1,
+   "strong_off": 0,
+   "strong_on": 0,
+   "top5_off": [
+    "WICH@LY-IL 3+ 0.02",
+    "KU@WVU 3+ 0.01",
+    "LY-IL 3+ -0.02",
+    "UCONN@ARIZ 3+ -0.02",
+    "KU 3+ -0.03"
+   ],
+   "top5_on": [
+    "KU@WVU 3+ 0.00",
+    "KU 3+ -0.01",
+    "WICH@LY-IL 3+ -0.02",
+    "UCONN 3+ -0.03",
+    "LY-IL 3+ -0.03"
+   ],
+   "mean_gain_change_team": -0.005,
+   "mean_gain_change_game": -0.01
+  },
+  "scan_players": {
+   "n": 56,
+   "rank_corr": 0.968,
+   "rank_corr_noise": 0.978,
+   "reads_changed_noise": 6,
+   "bar_off": 0.079,
+   "bar_on": 0.078,
+   "reads_changed": 7,
+   "strong_off": 3,
+   "strong_on": 1,
+   "top5_off": [
+    "Dayan Nessah 0.11",
+    "Kolby King 0.09",
+    "Tyrin Jones 0.09",
+    "Leroy Blyden Jr. 0.07",
+    "Miles Sadler 0.07"
+   ],
+   "top5_on": [
+    "Finley Bizjack 0.11",
+    "Miles Sadler 0.06",
+    "Leroy Blyden Jr. 0.06",
+    "Na'jai Hines 0.05",
+    "Narcisse Ngoy 0.05"
+   ],
+   "mean_gain_change_top3": -0.002,
+   "mean_gain_change_others": -0.021
+  },
+  "cut": {
+   "pool": 6000,
+   "kept": 1500,
+   "overlap": 0.848,
+   "overlap_noise": 0.84,
+   "brought_in": 228,
+   "tierA_off": 3,
+   "tierA_on": 4,
+   "mean_top3_same_game_in": 2.18,
+   "mean_top3_same_game_dropped": 1.91,
+   "real": {
+    "kept_off_top10": 1.7,
+    "kept_on_top10": 1.5,
+    "kept_off_top1": 0.3,
+    "kept_on_top1": 0.3,
+    "brought_in_top10": 0,
+    "dropped_top10": 0.9,
+    "brought_in_top1": 0,
+    "dropped_top1": 0
+   }
+  },
+  "seconds": 85
+ },
+ "19": {
+  "night": "2026-11-19",
+  "draft_group": "157138",
+  "contests": [
+   "CBB $3K Pull Up Jumper [$1K to 1st] (Early) x1",
+   "CBB $750 And-One (Early) x10",
+   "CBB $50 Dime Time [Just $0.10!] (Early) x10",
+   "CBB $200 And-One (Early) x5"
+  ],
+  "b": 0.12,
+  "top3_players": 18,
+  "scan_draw_s": 13,
+  "scan_stacks": {
+   "n": 21,
+   "rank_corr": 0.945,
+   "rank_corr_noise": 0.943,
+   "reads_changed_noise": 3,
+   "bar_off": 0.09,
+   "bar_on": 0.057,
+   "reads_changed": 5,
+   "strong_off": 0,
+   "strong_on": 2,
+   "top5_off": [
+    "NCST@MURR 3+ 0.03",
+    "ND 3+ 0.03",
+    "NCST@MURR 4+ 0.01",
+    "MURR 3+ 0.00",
+    "ND 4+ -0.01"
+   ],
+   "top5_on": [
+    "NCST@MURR 3+ 0.07",
+    "MURR 3+ 0.06",
+    "NCST@MURR 4+ 0.03",
+    "NCST@MURR 5+ 0.02",
+    "MURR 4+ 0.00"
+   ],
+   "mean_gain_change_team": 0.001,
+   "mean_gain_change_game": 0.009
+  },
+  "scan_players": {
+   "n": 43,
+   "rank_corr": 0.921,
+   "rank_corr_noise": 0.894,
+   "reads_changed_noise": 9,
+   "bar_off": 0.088,
+   "bar_on": 0.075,
+   "reads_changed": 6,
+   "strong_off": 0,
+   "strong_on": 2,
+   "top5_off": [
+    "George Kimble III 0.08",
+    "Braeden Smith 0.08",
+    "Finley Bizjack 0.06",
+    "Javan Buchanan 0.06",
+    "Brayden Shorter 0.05"
+   ],
+   "top5_on": [
+    "Braeden Smith 0.10",
+    "Javan Buchanan 0.09",
+    "Darius Adams 0.07",
+    "Miles Sadler 0.06",
+    "Finley Bizjack 0.05"
+   ],
+   "mean_gain_change_top3": 0.003,
+   "mean_gain_change_others": 0.015
+  },
+  "cut": {
+   "pool": 8555,
+   "kept": 1521,
+   "overlap": 0.717,
+   "overlap_noise": 0.71,
+   "brought_in": 430,
+   "tierA_off": 12,
+   "tierA_on": 14,
+   "mean_top3_same_game_in": 3.55,
+   "mean_top3_same_game_dropped": 3.2
+  },
+  "seconds": 78
+ }
+}

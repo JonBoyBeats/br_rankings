@@ -213,7 +213,7 @@ function audit(name, L, o) {
              tip: el.querySelector(".nm").title, line: (r.spread > 0 ? "+" : "") + r.spread, ou: r.ou, frag: f ? { badge: !!fel.querySelector(".frag"), tip: /Fragile: expected miss/.test(fel.querySelector(".nm").title) } : null };
   });
   check("Players list: Pos / Team / Opp columns, matchup and line in the name's tooltip, fragile in the tooltip, no ± column or grey line",
-        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "DK avg", "Top 1%", "Read"]) && pl.sub === 0 &&
+        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "DK avg", "Top 1%", "ROI", "Cash", "Read", "Bank"]) && pl.sub === 0 &&
         JSON.stringify(pl.cells) === JSON.stringify(pl.want) && pl.tip.includes(pl.line) && pl.tip.includes("o/u " + pl.ou) && (!pl.frag || (!pl.frag.badge && pl.frag.tip)), JSON.stringify(pl));
   check("match warning: none when every game matched", !(await pg.$("#matchWarn")));
   const mw = await pg.evaluate(() => {
@@ -1164,16 +1164,14 @@ function audit(name, L, o) {
     const reads = bar > 0 && P.every(r => r.read === (r.g_t1 > bar ? (r.fown >= m ? "core" : "leverage") : r.g_t1 < -bar ? (r.fown >= m ? "fade" : "skip") : "even"));
     const gains = P.every(r => Math.abs(r.g_t1 - (r.t1 - SCAN.plain.t1)) < 1e-12 && Math.abs(r.g_cash - (r.cash - SCAN.plain.cash)) < 1e-12);
     const noOut = P.every(r => { const x = byId(r.id); return x.status !== "Out" && !x.deepOut; });
-    const first = document.querySelector("#scanTable table").id === "scanPlayers" && document.querySelector("#scanTable th[colspan]").textContent === "Players";
-    const heads = [...document.querySelectorAll('#scanPlayers th[data-skind="player"]')].map(t => t.textContent.replace(/ [↓↑]$/, ""));
+    const first = document.querySelector("#scanTable table").id === "scanPlayers" && !document.querySelector('#scanTable th[data-skind="player"]');
     const roll = SCAN.teamRoll.every(t => t.core.every(r => r.read === "core" && r.team === t.team) && t.lev.every(r => r.read === "leverage" && r.team === t.team) && t.n >= 1 &&
       (!t.st || (t.st.kind === "team" && t.st.team === t.team)));
     const rollAll = P.filter(r => !r.thin && /core|leverage/.test(r.read)).every(r => SCAN.teamRoll.some(t => t.ids.includes(r.id)));
-    return { n: P.length, same: JSON.stringify(ids) === JSON.stringify(want), reads, gains, noOut, first, heads, roll, rollAll, sum: SCAN.players.reduce((o, r) => (o[r.read] = (o[r.read] || 0) + 1, o), {}) };
+    return { n: P.length, same: JSON.stringify(ids) === JSON.stringify(want), reads, gains, noOut, first, roll, rollAll, sum: SCAN.players.reduce((o, r) => (o[r.read] = (o[r.read] || 0) + 1, o), {}) };
   });
-  check("player scan: a row for every player in the pool at 15+ projected minutes (none Out, Doubtful or deep bench), gains over the plain batch, Read core/leverage/fade/skip/even from its own noise and the median field own, shown first",
-        ps.n > 20 && ps.same && ps.reads && ps.gains && ps.noOut && ps.first &&
-        JSON.stringify(ps.heads) === JSON.stringify(["Player", "Team", "Salary", "Proj", "Pts/$1K", "Field own", "Our bank", "Top 1% gain", "ROI gain", "Cash gain", "Read"]), JSON.stringify(ps));
+  check("player scan: a row for every player in the pool at 15+ projected minutes (none Out, Doubtful or deep bench), gains over the plain batch, Read core/leverage/fade/skip/even from its own noise and the median field own; no Players table of its own in the scan (the Players list carries it), the team rollup first",
+        ps.n > 20 && ps.same && ps.reads && ps.gains && ps.noOut && ps.first, JSON.stringify(ps));
   check("player scan: the team rollup lists each team's core and leverage players and its best team stack", ps.roll && ps.rollAll, JSON.stringify(ps));
   const pHold = await pg.evaluate(async () => {        // a player's batch holds him
     const b = scanPlayers()[3], cx = ctx(); cx.state = Object.assign({}, state, { lock: {}, excl: {}, cap: {}, floor: {} }); cx.random = DKSim.seeded(5);
@@ -1184,27 +1182,26 @@ function audit(name, L, o) {
   const pList = await pg.evaluate(() => {
     renderPlayers();
     const ok = SCAN.players.every(x => { const el = document.querySelector(`#players .row[data-id="${x.id}"]`); if (!el) return true;
-      const c = el.querySelectorAll(".col-scan"); return c[0].textContent === (x.g_t1 > 0 ? "+" : "") + (100 * x.g_t1).toFixed(2) && c[1].textContent === x.read; });
+      const c = el.querySelectorAll(".col-scan"); return c[0].querySelector(".sg").textContent === (x.g_t1 > 0 ? "+" : "") + (100 * x.g_t1).toFixed(2) && c[0].querySelector(".nb2").textContent === "\u00b1" + (100 * x.noise).toFixed(2) &&
+        c[1].textContent === (x.g_roi > 0 ? "+" : "") + (100 * x.g_roi).toFixed(0) && c[2].textContent === (x.g_cash > 0 ? "+" : "") + (100 * x.g_cash).toFixed(1) &&
+        c[3].textContent === x.read && c[3].querySelector(".read-" + x.read) && !!c[5].querySelector(".pbank"); });
     view.sort = "scan"; view.dir = -1; renderPlayers();
     const ids = [...document.querySelectorAll("#players .row")].map(e => e.dataset.id).filter(id => byId(id).status !== "Out"), g = ids.map(id => scanRowOf(id) ? scanRowOf(id).g_t1 : -Infinity);
     const sorted = g.every((x, i) => i === 0 || g[i - 1] >= x);
     view.sort = "value"; view.dir = -1; renderPlayers();
     return { ok, sorted };
   });
-  check("player scan: its top-1% gain and Read in the Players list, sortable", pList.ok && pList.sorted, JSON.stringify(pList));
+  check("player scan: its top-1% gain (noise bar under it), ROI and cash gains, Read (coloured) and Bank this in the Players list, sortable", pList.ok && pList.sorted, JSON.stringify(pList));
   const pso = await pg.evaluate(() => {
-    const order = () => [...document.querySelectorAll("#scanPlayers .scanBank[data-p]")].map(b => SCAN.players[+b.dataset.p]).filter(r => !r.thin);
-    const def = order().every((r, i, a) => i === 0 || a[i - 1].g_t1 >= r.g_t1);
-    document.querySelector('#scanPlayers th[data-sk="ppk"]').click();
-    const a = order(), down = a.every((r, i) => i === 0 || a[i - 1].ppk >= r.ppk);
-    document.querySelector('#scanPlayers th[data-sk="key"]').click();
-    const b = order(), alpha = b.every((r, i) => i === 0 || b[i - 1].key <= r.key);
-    return { def, down, alpha, kept: JSON.parse(localStorage.getItem(scanKey())).sort.player };
+    document.querySelector('#players .head [data-sort="sroi"]').click();
+    const g = [...document.querySelectorAll("#players .row")].map(e => scanRowOf(e.dataset.id)).filter(x => x && byId(x.id).status !== "Out").map(x => x.g_roi);
+    const down = g.every((x, i) => i === 0 || g[i - 1] >= x);
+    view.sort = "value"; view.dir = -1; renderPlayers();
+    return { down, n: g.length };
   });
-  check("player scan: sorted by top-1% gain, any header sorts (Pts/$1K high first, Player A to Z), kept with the scan",
-        pso.def && pso.down && pso.alpha && pso.kept && pso.kept.k === "key", JSON.stringify(pso));
+  check("Players list: sorts by the scan's ROI gain", pso.down && pso.n > 20, JSON.stringify(pso));
   const psb = await pg.evaluate(() => {
-    const n0 = (state.rules || []).length, b = document.querySelector("#scanPlayers .scanBank[data-p]"), r = SCAN.players[+b.dataset.p]; b.click();
+    const n0 = (state.rules || []).length, b = document.querySelector("#players .row:not(.out) .pbank"), r = byId(b.closest(".row").dataset.id); b.click();
     const add = state.rules[state.rules.length - 1], one = add.type === "min" && add.n === 1 && add.ids.length === 1 && add.ids[0] === r.id && state.rules.length === n0 + 1;
     const tb = document.querySelector("#scanPlayers .scanBank[data-t]"); let two = null;
     if (tb) { const t = SCAN.teamRoll[+tb.dataset.t]; tb.click(); const a2 = state.rules[state.rules.length - 1];

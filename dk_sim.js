@@ -383,6 +383,14 @@
       zsd = Math.sqrt(zsd);
     }
     var own = Math.sqrt(Math.max(0, 1 - ca * ca - cb * cb)), T = new Float64Array(Object.keys(teams).length), G = new Float64Array(Object.keys(games).length);
+    // optional (a study's, 2026-11-19; the page never sets it): the game loading only on the players in corr.gameIds
+    // (each team's top 3 by minutes), the rest at 0, each player's own share sqrt(1 - a^2 - b^2) with his own b
+    var bOf = new Float64Array(P), ownOf = new Float64Array(P);
+    for (var pb = 0; pb < P; pb++) { bOf[pb] = cb; ownOf[pb] = own; }
+    if (corr.gameIds) {
+      var ids = Object.keys(ix);
+      ids.forEach(function (id) { var q = ix[id]; bOf[q] = corr.gameIds[id] ? cb : 0; ownOf[q] = Math.sqrt(Math.max(0, 1 - ca * ca - bOf[q] * bOf[q])); });
+    }
     function normal() { var u = 1 - ctx.random(), v = ctx.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
     for (var s = 0; s < S; s++) {
       if (!shared) for (var p = 0; p < P; p++) pts[p] = Math.max(0, mean[p] + z[(ctx.random() * z.length) | 0] * err[p]);
@@ -391,7 +399,7 @@
         for (var gi = 0; gi < G.length; gi++) G[gi] = normal();
         for (var p3 = 0; p3 < P; p3++) {
           var d = z[(ctx.random() * z.length) | 0];
-          pts[p3] = Math.max(0, mean[p3] + (zm + own * (d - zm) + zsd * (ca * T[tOf[p3]] + cb * G[gOf[p3]])) * err[p3]);
+          pts[p3] = Math.max(0, mean[p3] + (zm + ownOf[p3] * (d - zm) + zsd * (ca * T[tOf[p3]] + bOf[p3] * G[gOf[p3]])) * err[p3]);
         }
       }
       for (var f = 0; f < fieldIx.length; f++) { var t = 0, L = fieldIx[f]; for (var j = 0; j < 8; j++) t += pts[L[j]]; fsc[f] = t; fieldPts += t / fieldIx.length / S; }

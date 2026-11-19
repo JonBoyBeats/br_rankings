@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 34px 46px 50px 54px 64px 48px 44px 42px 46px 54px 60px 50px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 52px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 36px 50px 38px 38px 54px 36px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -78,7 +78,9 @@
   .tag.q { background: var(--warn); color: #1a1400; }
   .tag.o { background: var(--bad); color: #1a0500; }
   .tag.new { border: 1px solid var(--line-strong); color: var(--muted); }
-  .read-core, .read-leverage { color: var(--live, #2eaa60); font-weight: 600; } .read-fade, .read-skip { color: var(--muted); }
+  .read-leverage { color: #3fbf7f; font-weight: 600; } .read-core { color: #5b9cf0; font-weight: 600; } .read-fade { color: var(--bad); font-weight: 600; } .read-skip, .read-even { color: var(--muted); }
+  .row .nb2 { font-size: 9.5px; display: block; line-height: 1; }
+  .row button.pbank { height: 20px; width: 24px; padding: 0; font-size: 12px; }
   .tag.k-out { background: var(--bad); color: #1a0500; }
   .tag.k-questionable { background: var(--warn); color: #1a1400; }
   .tag.k-doubtful, .tag.d { background: var(--bad); color: #1a0500; opacity: .8; }
@@ -656,6 +658,9 @@ function renderPlayers() {
               avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; },
               own: own, pos: function (r) { return r.position || ""; }, team: function (r) { return r.team || ""; }, opp: function (r) { return r.opp || ""; },
               scan: function (r) { var x = scanRowOf(r.id); return x ? x.g_t1 : -Infinity; },
+              sroi: function (r) { var x = scanRowOf(r.id); return x && x.g_roi != null ? x.g_roi : -Infinity; },
+              scash: function (r) { var x = scanRowOf(r.id); return x ? x.g_cash : -Infinity; },
+              bank: function (r) { return bankShare()[r.id] || 0; },
               read: function (r) { var x = scanRowOf(r.id); return x ? ["core", "leverage", "even", "fade", "skip"].indexOf(x.read) : 9; } }[view.sort] || value;
   list.sort(function (a, b) {
     var x = get(a), y = get(b);
@@ -699,15 +704,29 @@ function scanRowOf(id) {
   if (scanMapOf !== SCAN.players) { scanMap = {}; SCAN.players.forEach(function (x) { scanMap[String(x.id)] = x; }); scanMapOf = SCAN.players; }
   return scanMap[String(id)] || null;
 }
-var scanMap = {}, scanMapOf = null;
+var scanMap = {}, scanMapOf = null, bankShareMemo = null;
+// a gain in points (x 100), signed
+function sgn(x, d) { return (x > 0 ? "+" : "") + (100 * x).toFixed(d); }
+// each player's share of the bank's lineups (the Players list's Bank column), cached per bank size
+function bankShare() {
+  var n = BANK && BANK.lineups ? BANK.lineups.length : 0;
+  if (bankShareMemo && bankShareMemo.bank === BANK && bankShareMemo.n === n) return bankShareMemo.v;
+  var v = {};
+  if (n) BANK.lineups.forEach(function (L) { L.ids.forEach(function (id) { v[id] = (v[id] || 0) + 1 / n; }); });
+  bankShareMemo = { bank: BANK, n: n, v: v };
+  return v;
+}
 function playerTable(list, sortable) {
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"],
-     ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"], ["scan", "Top 1%", "r col-scan"], ["read", "Read", "col-scan"]]
+     ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"], ["scan", "Top 1%", "r col-scan"], ["sroi", "ROI", "r col-scan"], ["scash", "Cash", "r col-scan"], ["read", "Read", "col-scan"],
+     ["bank", "Bank", "r col-scan"]]
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
+    '<span class="col-scan" title="Bank this: a rule, at least 1 of him, for your next draw"></span>' +
     '<span class="r col-max" title="In at least this % of each draw\'s lineups (a baseline: listed in the rules\' Baseline block)">Min%</span>' +
     '<span class="r col-max" title="In at most this % of each draw\'s lineups, and of a contest\'s set when the builder auto-fills (a baseline: listed in the rules\' Baseline block)">Max%</span></div>';
+  var bshare = bankShare();
   var body = list.map(function (r) {
     var nw = newsOf(r.id);
     var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
@@ -741,9 +760,13 @@ function playerTable(list, sortable) {
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
       '<span class="m r mut col-avg' + (r.last5 && r.last5.length ? ' has5" title="' + esc(last5Text(r)) + '"' : '"') + ">" + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
-      '<span class="m r col-scan"' + (sc ? ' title="Player scan: top-1% gain over the plain batch \u00b1' + (100 * sc.noise).toFixed(2) + " (the noise bar); ROI gain " + (sc.g_roi == null ? "–" : (sc.g_roi > 0 ? "+" : "") + (100 * sc.g_roi).toFixed(1)) +
-        ", cash gain " + (sc.g_cash > 0 ? "+" : "") + (100 * sc.g_cash).toFixed(1) + '"' : "") + ">" + (sc ? (sc.g_t1 > 0 ? "+" : "") + (100 * sc.g_t1).toFixed(2) : "–") + "</span>" +
+      '<span class="m r col-scan"' + (sc ? ' title="Player scan: top-1% gain over the plain batch, in points; the noise bar under it"' : "") + ">" +
+        (sc ? '<span class="sg">' + sgn(sc.g_t1, 2) + '</span><span class="nb2 mut">\u00b1' + (100 * sc.noise).toFixed(2) + "</span>" : "–") + "</span>" +
+      '<span class="m r col-scan">' + (sc && sc.g_roi != null ? sgn(sc.g_roi, 0) : "–") + "</span>" +
+      '<span class="m r col-scan">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
       '<span class="col-scan">' + (sc ? '<span class="read-' + sc.read + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
+      '<span class="m r col-scan">' + (BANK && BANK.lineups && BANK.lineups.length ? Math.round(100 * (bshare[r.id] || 0)) + "%" : "–") + "</span>" +
+      '<span class="col-scan"><button type="button" class="pbank" title="Bank this: at least 1 of ' + esc(r.name) + ' in your next draw"' + (r.status === "Out" ? " disabled" : "") + ">+</button></span>" +
       '<span class="col-max"><input class="floor" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + '"></span>' +
       '<span class="col-max"><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
       "</div>";
@@ -2180,23 +2203,8 @@ function renderScan() {
     return "<tr>" + cs.map(function (c) { return '<th data-sk="' + c[0] + '" data-skind="' + kind + '" class="' + (c[2] ? "" : "r") + '" style="cursor:pointer">' + c[1] + (srt.k === c[0] ? (srt.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "<th></th></tr>";
   };
   var btn = function (attr) { return '<button type="button" class="scanBank" ' + attr + ' style="height:22px;padding:0 7px;font-size:11.5px">Bank this</button>'; };
-  var pl = S.players || [], ptab = "", ttab = "";
+  var pl = S.players || [], ttab = "";
   if (pl.length) {
-    var nb = BANK && BANK.lineups && BANK.lineups.length ? BANK.lineups.length : 0;
-    pl.forEach(function (r) {
-      r.ppk = r.proj != null && r.salary ? 1000 * r.proj / r.salary : null;
-      r.bank = nb ? BANK.lineups.filter(function (L) { return L.ids.indexOf(r.id) >= 0; }).length / nb : null;
-    });
-    var pcols = [["key", "Player", 1], ["team", "Team", 1], ["salary", "Salary"], ["proj", "Proj"], ["ppk", "Pts/$1K"], ["fown", "Field own"], ["bank", "Our bank"],
-                 ["g_t1", "Top 1% gain"], ["g_roi", "ROI gain"], ["g_cash", "Cash gain"], ["read", "Read", 1]];
-    var ps = sortIx(pl, "player", { k: "g_t1", dir: -1 });
-    ptab = '<tr><th colspan="12" class="l" style="text-align:left;padding-top:10px">Players</th></tr>' + head(pcols, "player", ps.srt) + ps.ix.map(function (i) {
-      var r = pl[i];
-      return '<tr style="' + (r.thin ? "opacity:.5" : "") + '"><td>' + esc(r.key) + (r.thin ? ' <span class="mut">thin</span>' : "") + "</td><td>" + esc(r.team || "") + '</td><td class="m">' + (r.salary || 0).toLocaleString() +
-        '</td><td class="m">' + (r.proj == null ? "–" : r.proj.toFixed(1)) + '</td><td class="m">' + (r.ppk == null ? "–" : r.ppk.toFixed(2)) + '</td><td class="m">' + (r.fown == null ? "–" : r.fown.toFixed(1) + "%") +
-        '</td><td class="m">' + (r.bank == null ? "–" : p(r.bank)) + '</td><td class="m"><b>' + g(r.g_t1, 2) + '</b> <span class="mut">\u00b1' + (100 * r.noise).toFixed(2) + '</span></td><td class="m">' + g(r.g_roi) +
-        '</td><td class="m">' + g(r.g_cash) + "</td><td>" + r.read + "</td><td>" + btn('data-p="' + i + '"') + "</td></tr>";
-    }).join("");
     // the team rollup: each team's core and leverage players, and its best team stack in the scan
     var T = {};
     pl.forEach(function (r) { if (!r.thin && (r.read === "core" || r.read === "leverage")) ((T[r.team] = T[r.team] || { core: [], lev: [] })[r.read === "core" ? "core" : "lev"]).push(r); });
@@ -2215,13 +2223,13 @@ function renderScan() {
         (r.n >= 2 ? btn('data-t="' + i + '"') : "") + "</td></tr>";
     }).join("") : '<tr><td colspan="12" class="mut">Teams from the player scan: no core or leverage players.</td></tr>';
   }
-  $("scanTable").innerHTML = '<div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each (Read on their own noise, \u00b1" + (100 * S.pbar).toFixed(2) +
+  $("scanTable").innerHTML = '<div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each, in the Players list's Top 1% / ROI / Cash / Read columns (Read on their own noise, \u00b1" + (100 * S.pbar).toFixed(2) +
     "; core: strong and field own at or over the players' median " + (S.pownMedian || 0).toFixed(1) + "%, leverage: strong and under it, fade: weak and over, skip: weak and under; a team's Bank this adds at least 2 of its core and leverage players), " : "") + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
     " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
     p(S.plain.t1, 2) + ", cash " + p(S.plain.cash) + ". Gains are in points over the plain batch. Read: <b>strong</b> when its top-1% gain clears the sim's own noise, more than " + (S.bar != null ? "\u00b1" + (100 * S.bar).toFixed(2) : "the noise") +
     " (2\u221a2 \u00d7 sigma, sigma from each stack's gain on odd nights against even nights, the tiers' test), <b>weak</b> below minus that, <b>even</b> between; <b>field light</b> when the field holds it less than the median of stacks of its kind (" +
     Object.keys(S.fieldMedian || {}).sort().map(function (k) { return k.replace(/^(team|game)(\d)$/, "$1 $2+") + " " + p(S.fieldMedian[k]); }).join(", ") + "); thin (under " + SCAN_THIN + " distinct lineups) greyed and last. On the slate's own nights (seed " + S.seed + "), so a rerun repeats. Click a header to sort.</div>" +
-    (pl.length ? '<div style="overflow:auto"><table class="contests" id="scanPlayers">' + ptab + ttab + "</table></div>" : "") +
+    (pl.length ? '<div style="overflow:auto"><table class="contests" id="scanPlayers">' + ttab + "</table></div>" : "") +
     '<div style="overflow:auto"><table class="contests">' + section("team", "Team stacks") + section("game", "Game stacks") + "</table></div>";
 }
 $("scanRun").addEventListener("click", function () {
@@ -2558,6 +2566,13 @@ $("players").addEventListener("click", function (e) {
   rowClick(e);
 });
 function rowClick(e) {
+  var pb = e.target.closest(".pbank");
+  if (pb) {
+    var pr = byId(pb.closest(".row").dataset.id);
+    addRules([{ type: "min", ids: [pr.id], n: 1, label: "at least 1 of " + pr.name }]);
+    $("scanStatus").textContent = "Added at least 1 of " + pr.name + " to the rules: Draw & bank draws under it.";
+    return;
+  }
   var q = e.target.closest(".qout"), dp = e.target.closest(".deepin");
   if (q || dp) {
     var qid = q ? (q.dataset.id || q.closest(".row").dataset.id) : dp.dataset.id, qr = byId(qid);
