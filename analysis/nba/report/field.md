@@ -1,17 +1,17 @@
-## Field: 2026-11-17, 5 contests (flagship Tuesday Tip-Off, 15756 teams in 6-drafter pods)
+## Field: 2026-11-18, 5 contests (flagship Hump Day Hoops, 14706 teams in 6-drafter pods)
 
 ### Contest summary
 
-- Your results, 6-drafter (22 nights, 1805 teams; 1.00 is the field's rate): top 10% 1.26 (1.13-1.43), top 1% 0.83 (0.45-1.29); at the top 10%, AM teams 1.47 (1.28-1.70), PM teams 1.17 (1.01-1.37).
+- Your results, 6-drafter (23 nights, 1905 teams; 1.00 is the field's rate): top 10% 1.24 (1.13-1.40), top 1% 0.79 (0.45-1.21); at the top 10%, AM teams 1.43 (1.23-1.64), PM teams 1.16 (1.01-1.36).
 - Your results, 4-drafter (5 nights, 224 teams; 1.00 is the field's rate): top 10% 1.52 (1.14-1.78), top 1% 0.89 (0.27-1.79); at the top 10%, AM teams 0.82 (0.41-1.03), PM teams 1.71 (1.27-1.99).
-- Last night, Tuesday Tip-Off (6-drafter): 80 teams, median finish top 37%, top 10% 1.12, top 1% 0.00.
-- Last night, Buzzer Beater (6-drafter): 19 teams, median finish top 30%, top 10% 1.58, top 1% 0.00.
-- Forward tests, 6-drafter: 12 nights in of 11-05 to 12-02; nothing is decided before 12-02.
-  - Less-drafted tiebreak (in use): 551 pairs; teams with the less-drafted player top 1% 1.00% vs 0.83% (80% range of the difference: -0.14 to +0.47 points).
-  - Questionable at Lock AM: 38 tagged, 29 played; teams that drafted them before noon top 1% 1.75% (8160 teams) vs after 1.71% (15162).
-  - Most-owned turn combo vs the rest, top 1%: 2/3 turn 0.58% vs 1.29% (36 cases); 1/2 turn 1.51% vs 0.61% (12 cases).
-  - Boom peer bump: 29 players moved 2+ points so far (too few to read); risers wait on two weeks of entry counts.
-- Last night, where it touched a rule: your takes off the tier rules: 31, 20 right; the field went your way on 7, against on 24; Questionable at Lock AM: Jonathan Kuminga (sat, on 0 of your 99), Trey Alexander (sat, on 0 of your 99), Isaiah Joe (sat, on 0 of your 99).
+- Last night, Hump Day Hoops (6-drafter): 80 teams, median finish top 54%, top 10% 0.75, top 1% 0.00.
+- Last night, Buzzer Beater (6-drafter): 20 teams, median finish top 60%, top 10% 1.50, top 1% 0.00.
+- Forward tests, 6-drafter: 13 nights in of 11-05 to 12-02; nothing is decided before 12-02.
+  - Less-drafted tiebreak (in use): 636 pairs; teams with the less-drafted player top 1% 0.99% vs 0.79% (80% range of the difference: -0.07 to +0.46 points).
+  - Questionable at Lock AM: 40 tagged, 31 played; teams that drafted them before noon top 1% 1.61% (9000 teams) vs after 1.54% (17141).
+  - Most-owned turn combo vs the rest, top 1%: 2/3 turn 0.54% vs 1.32% (39 cases); 1/2 turn 1.41% vs 0.59% (13 cases).
+  - Boom peer bump: 34 players moved 2+ points so far (too few to read); risers wait on two weeks of entry counts.
+- Last night, where it touched a rule: your takes off the tier rules: 34, 11 right; the field went your way on 8, against on 26; Questionable at Lock AM: Walker Kessler (played, on 7 of your 100), Austin Reaves (sat, on 0 of your 100), Amen Thompson (played, on 0 of your 100), Draymond Green (played, on 0 of your 100), Jaylon Tyson (sat, on 0 of your 100).
 
 The full tables follow; the morning report reads only this block (the rest is reference).
 
@@ -46,25 +46,35 @@ The full tables follow; the morning report reads only this block (the rest is re
 | 2026-11-14 | Saturday Slam | 11916 | 1986 of 6 | 319.3 | 283.4 | 263.7 | 253.6 | 241.3 | 219.1 | +64.3 |
 | 2026-11-15 | Sunday Shootaround | 8652 | 1442 of 6 | 269.9 | 244.5 | 229.8 | 221.6 | 211.4 | 192.6 | +51.9 |
 | 2026-11-16 | Monday Night Hoops | 13530 | 2255 of 6 | 305.1 | 280.5 | 267.4 | 260.1 | 249.7 | 229.3 | +51.2 |
-| **2026-11-17** | Tuesday Tip-Off | 15756 | 2626 of 6 | 301.7 | 269.2 | 250.6 | 241.1 | 229.2 | 206.5 | +62.7 |
+| 2026-11-17 | Tuesday Tip-Off | 15756 | 2626 of 6 | 301.7 | 269.2 | 250.6 | 241.1 | 229.2 | 206.5 | +62.7 |
+| **2026-11-18** | Hump Day Hoops | 14706 | 2451 of 6 | 316.1 | 285.3 | 271.5 | 263.4 | 253.1 | 232.6 | +52.7 |
 
 ### 2. Field ownership (flagship)
 
-Drafted% leaves 100% at ADP 7.3. Tag: at Lock AM / at lock. Tiers: yours at Lock AM / Lock PM.
+Drafted% leaves 100% at ADP 6.6. Tag: at Lock AM / at lock. Tiers: yours at Lock AM / Lock PM.
 
 | Player | ADP at lock | Drafted | Band | Tag | Tiers | Actual |
 |---|---|---|---|---|---|---|
-| Deni Avdija | 7.3 | 0.0% | under 10 (news?) | - / Questionable | 2/2 | 0.0 |
-| Collin Murray-Boyles | 32.7 | 98.2% | 60-99.5 | - / - | -/5 | 24.7 |
-| Moussa Diabate | 32.8 | 98.3% | 60-99.5 | - / - | 5/5 | 28.2 |
-| Paul Reed | 32.9 | 94.9% | 60-99.5 | - / - | 5/5 | 36.7 |
-| Quentin Grimes | 33.7 | 92.4% | 60-99.5 | - / - | -/- | 58.7 |
-| Terrence Shannon Jr. | 34.6 | 84.8% | 60-99.5 | - / - | 5/5 | 18.2 |
-| Kevin Huerter | 34.6 | 74.1% | 60-99.5 | - / - | -/- | 14.9 |
-| Josh Hart | 35.2 | 30.9% | 10-60 | - / - | -/5 | 17.8 |
-| Rui Hachimura | 35.4 | 36.9% | 10-60 | - / - | 5/5 | 32.5 |
-| Coby White | 35.6 | 17.8% | 10-60 | - / - | -/5 | 33.6 |
-| Jrue Holiday | 35.7 | 35.3% | 10-60 | - / - | 5/5 | 45.0 |
+| Cade Cunningham | 6.6 | 0.0% | under 10 (news?) | - / Questionable | 2/2 | 0.0 |
+| Tyrese Maxey | 13.1 | 0.1% | under 10 (news?) | - / Questionable | 2/2 | 0.0 |
+| Davion Mitchell | 24.7 | 99.4% | 60-99.5 | - / - | 5/4 | 34.4 |
+| Zion Williamson | 29.0 | 98.8% | 60-99.5 | - / - | 4/4 | 30.9 |
+| Kevin Durant | 31.7 | 93.9% | 60-99.5 | - / - | 4/4 | 25.9 |
+| Cedric Coward | 32.1 | 87.5% | 60-99.5 | - / - | -/5 | 35.1 |
+| Dyson Daniels | 33.3 | 79.7% | 60-99.5 | - / - | 5/5 | 33.0 |
+| Paul George | 34.2 | 67.8% | 60-99.5 | - / - | -/5 | 27.3 |
+| Immanuel Quickley | 34.5 | 98.5% | 60-99.5 | - / - | 5/5 | 37.1 |
+| Daniss Jenkins | 34.8 | 73.5% | 60-99.5 | - / - | -/5 | 31.3 |
+| Pascal Siakam | 34.9 | 41.5% | 10-60 | - / - | 5/5 | 44.3 |
+| Jeremiah Fears | 35.1 | 63.2% | 60-99.5 | - / - | 5/5 | 30.0 |
+| James Harden | 35.5 | 24.8% | 10-60 | - / - | -/5 | 34.7 |
+| Nickeil Alexander-Walker | 35.5 | 16.2% | 10-60 | - / - | 5/- | 36.3 |
+| Anthony Black | 35.6 | 16.3% | 10-60 | - / - | -/5 | 30.4 |
+| Tyler Herro | 35.7 | 13.5% | 10-60 | - / - | -/5 | 19.4 |
+| Trae Young | 35.8 | 10.6% | 10-60 | - / - | 5/5 | 24.2 |
+| Amen Thompson | 35.8 | 15.3% | 10-60 | Questionable / - | -/- | 33.3 |
+| Collin Murray-Boyles | 36.0 | 23.2% | 10-60 | - / - | -/- | 4.9 |
+| VJ Edgecombe | 36.0 | 16.8% | 10-60 | - / - | -/- | 44.6 |
 
 ### 3. Most-owned pairs and cores (flagship)
 
@@ -72,17 +82,17 @@ Lift: against a pod dealt at random, so the snake's turns are part of it (turn p
 
 | Pair | Rounds (est.) | Share of teams | Lift | Flags |
 |---|---|---|---|---|
-| Victor Wembanyama + Stephon Castle | 1/2 | 6.3% | 2.6x | turn pair |
-| Luka Doncic + Donovan Clingan | 1/3 | 6.3% | 2.6x | - |
-| Luka Doncic + Darryn Peterson | 1/2 | 6.3% | 2.6x | turn pair |
-| Victor Wembanyama + Donovan Clingan | 1/3 | 6.2% | 2.6x | - |
-| Victor Wembanyama + Darryn Peterson | 1/2 | 5.9% | 2.5x | turn pair |
+| Luka Doncic + Donovan Mitchell | 1/3 | 7.3% | 3.1x | - |
+| Alperen Sengun + Cameron Boozer | 2/3 | 6.2% | 2.6x | turn pair |
+| Cooper Flagg + Darius Acuff Jr. | 2/4 | 5.8% | 2.4x | - |
+| Jayson Tatum + Cameron Boozer | 1/3 | 5.6% | 2.3x | - |
+| Jayson Tatum + Darius Acuff Jr. | 1/4 | 5.3% | 2.2x | - |
 
 | Core (a team's 3 earliest picks) | Share of teams | Flags |
 |---|---|---|
-| Stephon Castle + Victor Wembanyama + Donovan Clingan | 1.8% | - |
-| Stephon Castle + Darryn Peterson + Victor Wembanyama | 1.6% | - |
-| Luka Doncic + Darryn Peterson + Donovan Clingan | 1.6% | - |
+| Luka Doncic + Donovan Mitchell + Yaxel Lendeborg | 1.3% | - |
+| Anthony Davis + Yaxel Lendeborg + Giannis Antetokounmpo | 1.2% | - |
+| Alperen Sengun + Cooper Flagg + Cameron Boozer | 1.2% | - |
 
 ### 4. Your tiers in the top 1% (flagship)
 
@@ -90,55 +100,59 @@ Picks per team from each of your tiers (each team read with the tiers of the loc
 
 | | T1 | T2 | T3 | T4 | T5 | past your line |
 |---|---|---|---|---|---|---|
-| Top 1% (158 teams) | 0.33 | 1.74 | 1.58 | 0.65 | 0.72 | 0.99 |
-| Field (15756 teams) | 0.33 | 1.65 | 1.18 | 1.12 | 1.15 | 0.57 |
+| Top 1% (149 teams) | 0.72 | 1.51 | 1.40 | 1.11 | 1.04 | 0.23 |
+| Field (14706 teams) | 0.62 | 1.40 | 1.12 | 1.32 | 1.22 | 0.31 |
 
 ### 5. Questionable at Lock AM: the field and you
 
 | Player | ADP at Lock AM | Tag at lock | Played | Field drafted | Your teams with him |
 |---|---|---|---|---|---|
-| Jonathan Kuminga | 30.4 | Questionable | **sat** | 0.1% | 0 of 99 |
-| Trey Alexander | 36.0 | Questionable | **sat** | 0.0% | 0 of 99 |
+| Walker Kessler | 32.9 | - | yes | 100.0% | 7 of 100 |
+| Austin Reaves | 33.5 | Questionable | **sat** | 0.0% | 0 of 100 |
+| Amen Thompson | 35.5 | - | yes | 15.3% | 0 of 100 |
+| Draymond Green | 36.0 | Questionable | yes | 0.0% | 0 of 100 |
 
 ### 6. Your takes against the field
 
-31 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
+34 takes. With the field: the field took the one you put first earlier (by ADP at that lock, or drafted% when level).
 
 | Lock | Tier | Takes | With the field | Against it | You were right |
 |---|---|---|---|---|---|
-| AM | T2 | 3 | 0 | 3 | 3 |
-| AM | T5 | 2 | 0 | 2 | 0 |
-| PM | T2 | 1 | 1 | 0 | 1 |
-| PM | T3 | 3 | 1 | 2 | 1 |
-| PM | T4 | 4 | 0 | 4 | 2 |
-| PM | T5 | 18 | 5 | 13 | 13 |
+| AM | T1 | 3 | 1 | 2 | 2 |
+| AM | T2 | 1 | 0 | 1 | 1 |
+| AM | T3 | 1 | 0 | 1 | 1 |
+| AM | T4 | 1 | 0 | 1 | 0 |
+| AM | T5 | 4 | 3 | 1 | 2 |
+| PM | T3 | 1 | 1 | 0 | 0 |
+| PM | T4 | 2 | 2 | 0 | 1 |
+| PM | T5 | 21 | 1 | 20 | 4 |
 
 The 10 furthest from ADP:
 
 | Lock | Tier | You put first | Over | ADP | Drafted | Actual | Right |
 |---|---|---|---|---|---|---|---|
-| PM | T4 | OG Anunoby | Immanuel Quickley | 22.9 / 19.1 | 100% / 100% | 28.8 / 24.7 | yes |
-| PM | T3 | Ayo Dosunmu | Dylan Harper | 23.1 / 19.7 | 100% / 100% | 41.3 / 25.8 | yes |
-| PM | T3 | Ayo Dosunmu | Naz Reid | 23.1 / 19.8 | 100% / 100% | 41.3 / 54.2 | no |
-| PM | T4 | Daniss Jenkins | Immanuel Quickley | 22.4 / 19.1 | 100% / 100% | 40.5 / 24.7 | yes |
-| PM | T5 | John Collins | Collin Murray-Boyles | 35.9 / 32.7 | 5% / 98% | 18.2 / 24.7 | no |
-| PM | T5 | John Collins | Moussa Diabate | 35.9 / 32.8 | 5% / 98% | 18.2 / 28.2 | no |
-| PM | T5 | John Collins | Paul Reed | 35.9 / 32.9 | 5% / 95% | 18.2 / 36.7 | no |
-| PM | T5 | Rui Hachimura | Collin Murray-Boyles | 35.4 / 32.7 | 37% / 98% | 32.5 / 24.7 | yes |
-| PM | T4 | Rudy Gobert | Daniss Jenkins | 25.0 / 22.4 | 100% / 100% | 4.8 / 40.5 | no |
-| PM | T5 | Rui Hachimura | Moussa Diabate | 35.4 / 32.8 | 37% / 98% | 32.5 / 28.2 | yes |
+| PM | T5 | Jarrett Allen | Cedric Coward | 36.0 / 32.1 | 3% / 87% | 34.8 / 35.1 | no |
+| PM | T5 | Tyler Herro | Cedric Coward | 35.7 / 32.1 | 14% / 87% | 19.4 / 35.1 | no |
+| PM | T5 | Anthony Black | Cedric Coward | 35.6 / 32.1 | 16% / 87% | 30.4 / 35.1 | no |
+| PM | T5 | Jarrett Allen | Dyson Daniels | 36.0 / 33.3 | 3% / 80% | 34.8 / 33.0 | yes |
+| PM | T5 | Daniss Jenkins | Cedric Coward | 34.8 / 32.1 | 74% / 87% | 31.3 / 35.1 | no |
+| PM | T5 | Tyler Herro | Dyson Daniels | 35.7 / 33.3 | 14% / 80% | 19.4 / 33.0 | no |
+| PM | T5 | Anthony Black | Dyson Daniels | 35.6 / 33.3 | 16% / 80% | 30.4 / 33.0 | no |
+| AM | T3 | Joel Embiid | Yaxel Lendeborg | 18.3 / 16.1 | 100% / 100% | 55.7 / 31.0 | yes |
+| AM | T5 | Michael Porter Jr. | Dyson Daniels | 34.4 / 32.2 | 100% / 80% | 12.1 / 33.0 | no |
+| PM | T5 | Darryn Peterson | Paul George | 35.9 / 34.2 | 9% / 68% | 14.7 / 27.3 | no |
 
 ### 7. Your uniqueness (flagship)
 
-Your 80 teams: the share of the field holding 4+ of your 6 is 0.60% at the median (max 2.40%); 11 have an exact duplicate in the field, 0 repeat another of your own.
+Your 80 teams: the share of the field holding 4+ of your 6 is 0.60% at the median (max 2.20%); 5 have an exact duplicate in the field, 4 repeat another of your own.
 
 | Your most-used | Your teams | Field share |
 |---|---|---|
-| Jrue Holiday + Jalen Brunson | 13 | 1.5% |
-| Darius Garland + Ayo Dosunmu | 13 | 3.7% |
-| Jaden McDaniels + Jrue Holiday | 12 | 1.2% |
-| Karl-Anthony Towns + Darius Garland + Jaden McDaniels | 4 | 0.7% |
-| Luka Doncic + Jaden McDaniels + Darryn Peterson | 3 | 0.5% |
+| Domantas Sabonis + Yaxel Lendeborg | 21 | 2.6% |
+| Luka Doncic + Yaxel Lendeborg | 18 | 3.5% |
+| Julius Randle + Yaxel Lendeborg | 17 | 4.4% |
+| Luka Doncic + Donovan Mitchell + Yaxel Lendeborg | 7 | 1.3% |
+| Luka Doncic + Jalen Johnson + Yaxel Lendeborg | 3 | 0.2% |
 
 ### 8. Your results
 
@@ -146,14 +160,14 @@ Tail ratio: the share of your teams in the top X% over X (1.0 is the field's rat
 
 | Contest | Teams | Median finish | Top 1% | Top 5% | Top 10% | Top 20% | AM teams (top 10%) | PM teams (top 10%) |
 |---|---|---|---|---|---|---|---|---|
-| Tuesday Tip-Off | 80 | top 37% | 0.00 | 0.75 | 1.12 | 1.31 | 20 (2.00) | 60 (0.83) |
-| Buzzer Beater | 19 | top 30% | 0.00 | 1.05 | 1.58 | 1.58 | 10 (1.00) | 9 (2.22) |
+| Hump Day Hoops | 80 | top 54% | 0.00 | 0.50 | 0.75 | 0.69 | 20 (0.00) | 60 (1.00) |
+| Buzzer Beater | 20 | top 60% | 0.00 | 2.00 | 1.50 | 1.00 | 10 (2.00) | 10 (1.00) |
 
 **Running (every contest, by pod size)**
 
 | Drafters | Nights | Teams | Top 1% | Top 5% | Top 10% | Top 20% | AM top 10% | PM top 10% |
 |---|---|---|---|---|---|---|---|---|
-| 6 | 22 | 1805 | 0.83 (0.45-1.29) | 1.26 (1.06-1.54) | 1.26 (1.13-1.43) | 1.22 (1.13-1.31) | 1.47 (1.28-1.70) | 1.17 (1.01-1.37) |
+| 6 | 23 | 1905 | 0.79 (0.45-1.21) | 1.24 (1.05-1.49) | 1.24 (1.13-1.40) | 1.19 (1.11-1.29) | 1.43 (1.23-1.64) | 1.16 (1.01-1.36) |
 | 4 | 5 | 224 | 0.89 (0.27-1.79) | 1.43 (1.20-1.80) | 1.52 (1.14-1.78) | 1.41 (1.03-1.70) | 0.82 (0.41-1.03) | 1.71 (1.27-1.99) |
 
 ### 9. What won (flagship; a description, not a rule)
@@ -189,45 +203,46 @@ FPOE: fantasy points over the average for his ADP round band, summed over a team
 | 2026-11-14 | +94.9 / +30.7 | 4.37 / 2.24 |
 | 2026-11-15 | +54.2 / -2.2 | 3.95 / 1.88 |
 | 2026-11-16 | +84.1 / +28.3 | 4.38 / 2.10 |
-| **2026-11-17** | +87.1 / +14.7 | 4.18 / 2.21 |
+| 2026-11-17 | +87.1 / +14.7 | 4.18 / 2.21 |
+| **2026-11-18** | +91.4 / +38.2 | 4.19 / 1.78 |
 
 ### 10. Forward tests (pre-registered 2026-11-04; slates 2026-11-05 to 2026-12-02, 6-drafter)
 
-12 nights in so far. Ranges: 80%, resampling nights; the turns' crowding bar uses 90%.
+13 nights in so far. Ranges: 80%, resampling nights; the turns' crowding bar uses 90%.
 
 **Turns: the most-owned combo against the rest**
 
 | Turn | Cases | Top 1%: most-owned / rest | Points: most-owned - rest | Cases it outscored | On those: top 1% most-owned / rest | Crowding penalty? |
 |---|---|---|---|---|---|---|
-| 2/3 | 36 | 0.58% / 1.29% | -4.9 | 13 | 2.07% / 1.49% | verdict when the window ends (90% range of the difference: -0.40 to +1.56 percentage points) |
-| 1/2 | 12 | 1.51% / 0.61% | -0.1 | 6 | 2.84% / 0.64% | verdict when the window ends (90% range of the difference: -0.30 to +5.49 percentage points) |
+| 2/3 | 39 | 0.54% / 1.32% | -5.5 | 14 | 1.93% / 1.45% | verdict when the window ends (90% range of the difference: -0.46 to +1.36 percentage points) |
+| 1/2 | 13 | 1.41% / 0.59% | -2.7 | 6 | 2.84% / 0.64% | verdict when the window ends (90% range of the difference: -0.27 to +5.69 percentage points) |
 
-Last night: 1/2 turn, Keyonte George + Scottie Barnes: most-owned (585 teams, 7 top 1%, 216.2 pts) vs the rest (696, 10, 220.0); 2/3 turn, Victor Wembanyama + Stephon Castle + Donovan Clingan: most-owned (290 teams, 0 top 1%, 193.7 pts) vs the rest (2084, 27, 208.0); 2/3 turn, Luka Doncic + Darryn Peterson + Donovan Clingan: most-owned (252 teams, 0 top 1%, 195.6 pts) vs the rest (2093, 17, 206.5); 2/3 turn, Cade Cunningham + Darius Garland + Ausar Thompson: most-owned (142 teams, 1 top 1%, 224.9 pts) vs the rest (2059, 22, 205.0).
+Last night: 1/2 turn, Jayson Tatum + Alperen Sengun: most-owned (649 teams, 0 top 1%, 197.4 pts) vs the rest (1253, 3, 230.1); 2/3 turn, Luka Doncic + Donovan Mitchell + Yaxel Lendeborg: most-owned (196 teams, 0 top 1%, 211.4 pts) vs the rest (1183, 0, 234.9); 2/3 turn, Giannis Antetokounmpo + Anthony Davis + Yaxel Lendeborg: most-owned (182 teams, 0 top 1%, 239.2 pts) vs the rest (1388, 59, 254.6); 2/3 turn, Nikola Jokic + Jamal Murray + Anthony Davis: most-owned (124 teams, 0 top 1%, 246.1 pts) vs the rest (1443, 12, 242.4).
 
 **Boom peer bump: calibration**
 
-- Moved 2+ points: 29 players: Boom 24% with the bump (21% without), 17% boomed; Brier 0.1539 with the bump, 0.1499 without (lower is better).
-- The rest: 837 players: Boom 17% with the bump (17% without), 15% boomed.
+- Moved 2+ points: 34 players: Boom 23% with the bump (20% without), 21% boomed; Brier 0.1694 with the bump, 0.1682 without (lower is better).
+- The rest: 925 players: Boom 17% with the bump (17% without), 15% boomed.
 
 **Ownership tiebreak: the lower- against the higher-drafted player in tied pairs**
 
-551 pairs: teams carrying the lower-drafted player finished top 1% 1.00%, the higher 0.83% (80% range of the difference -0.14 to +0.47 percentage points); adopted 2026-11-04; checked when the window ends. Points, context only: the lower one outscored 52%, breakers 41% vs 34%.
+636 pairs: teams carrying the lower-drafted player finished top 1% 0.99%, the higher 0.79% (80% range of the difference -0.07 to +0.46 percentage points); adopted 2026-11-04; checked when the window ends. Points, context only: the lower one outscored 51%, breakers 39% vs 33%.
 
 **Your teams**
 
 | | Last night | Running |
 |---|---|---|
-| Breakers a team: yours | 2.65 | 2.16 |
-| Breakers a team: top 1% | 4.18 | 4.25 |
-| Breakers a team: field | 2.21 | 2.05 |
-| Picks under 50% drafted a team: yours | 0.69 | 0.57 |
-| Picks under 50% drafted a team: field | 0.26 | 0.32 |
-| 2/3 turn: most-owned / rarer / other pair | 1 / 9 / 25 | 27 / 92 / 211 |
+| Breakers a team: yours | 1.60 | 2.10 |
+| Breakers a team: top 1% | 4.19 | 4.24 |
+| Breakers a team: field | 1.78 | 2.03 |
+| Picks under 50% drafted a team: yours | 0.45 | 0.55 |
+| Picks under 50% drafted a team: field | 0.40 | 0.32 |
+| 2/3 turn: most-owned / rarer / other pair | 9 / 11 / 6 | 36 / 103 / 217 |
 
 **Questionable or Doubtful at Lock AM**
 
-38 tagged: 29 played (+2.5 over their closing price on average), 9 sat. Teams that drafted them before noon PT finished top 1% 1.75% (8160 teams), after noon 1.71% (15162). Underdog swaps a ruled-out player, so the sat ones barely show in the leaderboards.
-Last night: Trey Alexander (Questionable) sat.
+40 tagged: 31 played (+2.4 over their closing price on average), 9 sat. Teams that drafted them before noon PT finished top 1% 1.61% (9000 teams), after noon 1.54% (17141). Underdog swaps a ruled-out player, so the sat ones barely show in the leaderboards.
+Last night: Walker Kessler (Questionable) played, -7.6; Amen Thompson (Questionable) played, +9.5.
 
 **Risers**: waits on two weeks of the poller's hourly contest counts (logged from 2026-11-04).
 

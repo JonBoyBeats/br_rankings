@@ -62,5 +62,9 @@
  "ede22b9a-653b-41d8-ab7b-5d486b991d78": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_sat_main"
+ },
+ "f8954075-91a4-42ee-8431-1ce89d1f3f94": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_wed_main"
  }
 }

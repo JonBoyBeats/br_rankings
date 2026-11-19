@@ -357,22 +357,22 @@ date,window,pod,sample,tier,you_first,button_first,gain,you_first_id,button_firs
 2026-11-01,am,4,primary,4,Day'Ron Sharpe,De'Anthony Melton,-3.1,ffb41f79-798e-4e36-a3f9-07af6c6f7a61,d7177a01-46ef-4896-baa8-808801c41cf2,NEWS
 2026-11-01,am,4,primary,5,Kris Dunn,Rui Hachimura,11.0,4fe6205f-3b28-4f12-af14-95bfa647875e,c759c9df-9bf2-4e05-9497-6a5ba5694984,NEWS
 2026-11-01,am,4,primary,5,Kris Dunn,Kelly Oubre,23.5,4fe6205f-3b28-4f12-af14-95bfa647875e,5a6d9324-cc0e-432b-8b40-44457bbc818c,NEWS
-2026-11-01,am,4,primary,5,Kris Dunn,Obi Toppin,9.2,4fe6205f-3b28-4f12-af14-95bfa647875e,7e61640c-d3cb-4a20-9e91-849ca68d6b26,NEWS
+2026-11-01,am,4,primary,5,Kris Dunn,Obi Toppin,9.5,4fe6205f-3b28-4f12-af14-95bfa647875e,7e61640c-d3cb-4a20-9e91-849ca68d6b26,NEWS
 2026-11-01,am,4,primary,5,Jarace Walker,Ja'Kobe Walter,-4.1,1fe44598-87f0-4708-83ae-0496ed8d7f13,1270856d-3c44-4450-98d8-160783483e8a,NEWS
 2026-11-01,am,4,primary,5,Jarace Walker,Derrick Jones Jr.,2.8,1fe44598-87f0-4708-83ae-0496ed8d7f13,8a7a6c80-3342-403f-ad44-d821f8de4f1f,NEWS
-2026-11-01,am,4,primary,5,Kelly Oubre,Obi Toppin,-14.3,5a6d9324-cc0e-432b-8b40-44457bbc818c,7e61640c-d3cb-4a20-9e91-849ca68d6b26,NEWS
+2026-11-01,am,4,primary,5,Kelly Oubre,Obi Toppin,-14.0,5a6d9324-cc0e-432b-8b40-44457bbc818c,7e61640c-d3cb-4a20-9e91-849ca68d6b26,NEWS
 2026-11-01,pm,4,primary,2,Julius Randle,Yaxel Lendeborg,-14.8,b56f125f-5890-4fcb-85a7-b023645fb1be,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,OTHER
 2026-11-01,pm,4,primary,2,Andrew Nembhard,Michael Porter Jr.,-4.7,fede9247-aa66-4a0d-81c6-48be5de3e3d9,9d687651-e23a-4817-91f5-148a95f4eaf9,NEWS
 2026-11-01,pm,4,primary,2,Darius Garland,Yaxel Lendeborg,-26.3,61f78bac-2767-4012-adb9-eeaa4970fdf7,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,OTHER
 2026-11-01,pm,4,primary,3,Immanuel Quickley,Brandin Podziemski,-5.9,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,b3f17585-a79a-44ac-a1a5-2c7b521ea88d,OTHER
 2026-11-01,pm,4,primary,5,Jarace Walker,Ja'Kobe Walter,-4.1,1fe44598-87f0-4708-83ae-0496ed8d7f13,1270856d-3c44-4450-98d8-160783483e8a,NEWS
-2026-11-01,pm,4,primary,5,Jakob Poeltl,Ja'Kobe Walter,8.4,cb68fac9-c715-40b4-b97c-ffc6dc74c772,1270856d-3c44-4450-98d8-160783483e8a,OTHER
+2026-11-01,pm,4,primary,5,Jakob Poeltl,Ja'Kobe Walter,8.1,cb68fac9-c715-40b4-b97c-ffc6dc74c772,1270856d-3c44-4450-98d8-160783483e8a,OTHER
 2026-11-01,pm,4,primary,5,Derrick Jones Jr.,Ja'Kobe Walter,-6.9,8a7a6c80-3342-403f-ad44-d821f8de4f1f,1270856d-3c44-4450-98d8-160783483e8a,OTHER
 2026-11-01,pm,4,primary,5,Jarace Walker,Derrick Jones Jr.,2.8,1fe44598-87f0-4708-83ae-0496ed8d7f13,8a7a6c80-3342-403f-ad44-d821f8de4f1f,NEWS
 2026-11-01,pm,4,primary,5,Jarace Walker,Collin Murray-Boyles,2.6,1fe44598-87f0-4708-83ae-0496ed8d7f13,d5348697-c7ae-49e9-a500-3dc5c505279a,NEWS
-2026-11-01,pm,4,primary,5,Jakob Poeltl,Brook Lopez,18.8,cb68fac9-c715-40b4-b97c-ffc6dc74c772,fc946619-6c83-4742-a0f7-6c1d864e9e69,OTHER
-2026-11-01,pm,4,primary,5,Jakob Poeltl,Derrick Jones Jr.,15.3,cb68fac9-c715-40b4-b97c-ffc6dc74c772,8a7a6c80-3342-403f-ad44-d821f8de4f1f,OTHER
-2026-11-01,pm,4,primary,5,Jakob Poeltl,Matisse Thybulle,8.3,cb68fac9-c715-40b4-b97c-ffc6dc74c772,e4069d2d-31f6-48b7-9183-6f7790b6a427,NEWS
+2026-11-01,pm,4,primary,5,Jakob Poeltl,Brook Lopez,18.5,cb68fac9-c715-40b4-b97c-ffc6dc74c772,fc946619-6c83-4742-a0f7-6c1d864e9e69,OTHER
+2026-11-01,pm,4,primary,5,Jakob Poeltl,Derrick Jones Jr.,15.0,cb68fac9-c715-40b4-b97c-ffc6dc74c772,8a7a6c80-3342-403f-ad44-d821f8de4f1f,OTHER
+2026-11-01,pm,4,primary,5,Jakob Poeltl,Matisse Thybulle,8.0,cb68fac9-c715-40b4-b97c-ffc6dc74c772,e4069d2d-31f6-48b7-9183-6f7790b6a427,NEWS
 2026-11-01,pm,4,primary,5,Aaron Nesmith,Derrick Jones Jr.,3.7,527ee0d2-a334-431a-ba8d-a413e1b5604e,8a7a6c80-3342-403f-ad44-d821f8de4f1f,NEWS
 2026-11-01,pm,4,primary,5,Collin Murray-Boyles,Derrick Jones Jr.,0.2,d5348697-c7ae-49e9-a500-3dc5c505279a,8a7a6c80-3342-403f-ad44-d821f8de4f1f,OTHER
 2026-11-01,pm,4,primary,5,Gui Santos,Derrick Jones Jr.,-5.8,38d0eb9e-c5dc-442d-a404-2c18a85b1416,8a7a6c80-3342-403f-ad44-d821f8de4f1f,OTHER
@@ -663,7 +663,7 @@ date,window,pod,sample,tier,you_first,button_first,gain,you_first_id,button_firs
 2026-11-13,pm,6,primary,5,Jalen Smith,Jarrett Allen,13.8,1dc5f283-636c-4460-b9a2-c96298249439,4768b110-abba-451e-ac80-c6f4962ef4af,ETR
 2026-11-13,pm,6,primary,5,OG Anunoby,Jarrett Allen,-7.2,ea2efcac-b586-471d-89df-f81bfe7472e4,4768b110-abba-451e-ac80-c6f4962ef4af,Bagel+ETR
 2026-11-13,pm,6,primary,5,Isaiah Hartenstein,Jarrett Allen,25.1,ecb83876-9303-4f2f-b504-4285e15fa660,4768b110-abba-451e-ac80-c6f4962ef4af,Bagel+ETR
-2026-11-13,pm,6,primary,5,Ajay Mitchell,Jarrett Allen,7.1,23907bb6-4b50-4b28-9772-dc7a2a298250,4768b110-abba-451e-ac80-c6f4962ef4af,Bagel+ETR
+2026-11-13,pm,6,primary,5,Ajay Mitchell,Jarrett Allen,6.8,23907bb6-4b50-4b28-9772-dc7a2a298250,4768b110-abba-451e-ac80-c6f4962ef4af,Bagel+ETR
 2026-11-13,pm,6,primary,5,Isaiah Hartenstein,OG Anunoby,32.3,ecb83876-9303-4f2f-b504-4285e15fa660,ea2efcac-b586-471d-89df-f81bfe7472e4,Bagel+ETR
 2026-11-16,am,6,primary,1,Giannis Antetokounmpo,Anthony Davis,19.8,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,b612acf0-6267-48a2-ac48-f52d45c27ece,NEWS
 2026-11-16,am,6,primary,2,Franz Wagner,LaMelo Ball,26.1,ffad7c30-f8a5-4125-bbd3-34b4226aa611,b78ba991-272a-438e-81d6-901d66c7e09a,NEWS
@@ -698,3 +698,49 @@ date,window,pod,sample,tier,you_first,button_first,gain,you_first_id,button_firs
 2026-11-17,pm,6,primary,5,John Collins,Rui Hachimura,-14.3,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,c759c9df-9bf2-4e05-9497-6a5ba5694984,NEWS
 2026-11-17,pm,6,primary,5,John Collins,Grayson Allen,-12.7,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,7fcb05f5-084c-46e0-a58c-bd166af0141e,NEWS
 2026-11-17,pm,6,primary,5,John Collins,Jrue Holiday,-26.8,823d4a1d-aef5-449c-8db6-fbd1e491e7ae,9e719478-77ae-485a-912c-17dba230ed8a,NEWS
+2026-11-18,am,6,primary,1,Giannis Antetokounmpo,Luka Doncic,18.8,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,1acc32d8-5c04-496b-a643-64df26aafc57,NEWS
+2026-11-18,am,6,primary,1,Nikola Jokic,Luka Doncic,5.6,54a70cec-9c34-4113-bd3e-17b7531f06f5,1acc32d8-5c04-496b-a643-64df26aafc57,NEWS
+2026-11-18,am,6,primary,1,Nikola Jokic,Giannis Antetokounmpo,-13.2,54a70cec-9c34-4113-bd3e-17b7531f06f5,fa5b03cd-b8c1-4b1f-8ce7-bf1da13c0744,NEWS
+2026-11-18,am,6,primary,2,Franz Wagner,Anthony Davis,13.3,ffad7c30-f8a5-4125-bbd3-34b4226aa611,b612acf0-6267-48a2-ac48-f52d45c27ece,NEWS
+2026-11-18,am,6,primary,2,Tyrese Maxey,Scottie Barnes,0.1,73d4fb27-030d-4c2d-bcc7-ced393ef6322,b2dcd9a6-a4d7-453f-8bc0-1d40d15b9f03,NEWS
+2026-11-18,am,6,primary,3,Bam Adebayo,Yaxel Lendeborg,5.8,50e02dbc-3d90-4aa7-a733-ddc33730a9ae,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,NEWS
+2026-11-18,am,6,primary,3,Joel Embiid,Yaxel Lendeborg,24.7,3441daf3-fdb0-46ed-8caa-61335e90a18d,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,NEWS
+2026-11-18,am,6,primary,3,Darius Acuff Jr.,Cameron Boozer,4.7,538deb89-cae1-4376-a228-56bea3c4fe3b,c645e0d6-879a-4c24-8130-c87ecadae429,NEWS
+2026-11-18,am,6,primary,3,Domantas Sabonis,Cameron Boozer,-13.5,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,c645e0d6-879a-4c24-8130-c87ecadae429,NEWS
+2026-11-18,am,6,primary,3,Domantas Sabonis,Ausar Thompson,9.2,e8cd9da6-71e3-4555-afc9-bfa4a331f6f5,f6c11d2b-49dc-4311-940d-ebb700ba3c9e,NEWS
+2026-11-18,am,6,primary,4,Devin Booker,Kyrie Irving,2.7,cd80b263-d93f-4fb9-b406-b6e9241d4fa7,035ea519-23f8-4d07-80ab-75a3af09ef14,NEWS
+2026-11-18,am,6,primary,4,Julius Randle,Davion Mitchell,-10.4,b56f125f-5890-4fcb-85a7-b023645fb1be,8ac84b3c-e6d8-4e6f-9c1e-dd6ad7788696,NEWS
+2026-11-18,am,6,primary,4,Keyonte George,Davion Mitchell,10.8,20ac0001-bd5e-42f8-9b9c-c445e2ac326b,8ac84b3c-e6d8-4e6f-9c1e-dd6ad7788696,NEWS
+2026-11-18,am,6,primary,4,Kevin Durant,Davion Mitchell,-8.5,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,8ac84b3c-e6d8-4e6f-9c1e-dd6ad7788696,NEWS
+2026-11-18,am,6,primary,4,Julius Randle,Kyrie Irving,-15.7,b56f125f-5890-4fcb-85a7-b023645fb1be,035ea519-23f8-4d07-80ab-75a3af09ef14,NEWS
+2026-11-18,am,6,primary,4,Zion Williamson,Kyrie Irving,-8.8,c311d754-8979-4374-a4af-af325e7b074a,035ea519-23f8-4d07-80ab-75a3af09ef14,NEWS
+2026-11-18,am,6,primary,4,Kevin Durant,Keyonte George,-19.3,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,20ac0001-bd5e-42f8-9b9c-c445e2ac326b,NEWS
+2026-11-18,am,6,primary,5,Walker Kessler,Pascal Siakam,-20.6,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,9af876e3-ad24-4655-aa39-d774419aedea,NEWS
+2026-11-18,am,6,primary,5,Walker Kessler,Trae Young,-0.5,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,4bc97202-8305-42e7-b615-c0b8db8fef2a,NEWS
+2026-11-18,am,6,primary,5,Walker Kessler,Onyeka Okongwu,-16.1,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,1464ff77-b5a1-4b13-9ef3-20ac265816a2,NEWS
+2026-11-18,am,6,primary,5,Walker Kessler,Paul Reed,-7.2,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,55579bc3-8de8-420a-bd89-c23cd4a4edc0,NEWS
+2026-11-18,am,6,primary,5,Michael Porter Jr.,Dyson Daniels,-20.9,9d687651-e23a-4817-91f5-148a95f4eaf9,f92516da-a360-48f9-8ee5-527bde656f42,NEWS
+2026-11-18,am,6,primary,5,Austin Reaves,Dyson Daniels,-0.1,f4a5e437-76b9-4864-bbdf-ca4f71762c63,f92516da-a360-48f9-8ee5-527bde656f42,NEWS
+2026-11-18,am,6,primary,5,Pascal Siakam,Paul Reed,13.4,9af876e3-ad24-4655-aa39-d774419aedea,55579bc3-8de8-420a-bd89-c23cd4a4edc0,NEWS
+2026-11-18,pm,6,primary,2,Alperen Sengun,Cade Cunningham,-14.7,4d183b00-1656-438f-a9ee-4726e702b560,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,ETR
+2026-11-18,pm,6,primary,2,Cooper Flagg,Cade Cunningham,30.9,aa6e0b60-ecef-4c2c-bd18-aef879830742,9b2c4153-1d5b-4c7b-afa8-b4945affbe8d,ETR
+2026-11-18,pm,6,primary,2,Donovan Mitchell,Tyrese Maxey,13.4,251127ed-be4a-4102-91f0-19678a44dcf5,73d4fb27-030d-4c2d-bcc7-ced393ef6322,ETR
+2026-11-18,pm,6,primary,2,Yaxel Lendeborg,Tyrese Maxey,1.1,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,73d4fb27-030d-4c2d-bcc7-ced393ef6322,ETR
+2026-11-18,pm,6,primary,2,Yaxel Lendeborg,Jamal Murray,-16.4,f8a27b19-ad90-4ea8-a1a5-0fcab860f5f9,89d805df-6a3e-40d1-bbf2-ed440e503310,ETR
+2026-11-18,pm,6,primary,4,Zion Williamson,Michael Porter Jr.,18.8,c311d754-8979-4374-a4af-af325e7b074a,9d687651-e23a-4817-91f5-148a95f4eaf9,NEWS
+2026-11-18,pm,6,primary,4,Walker Kessler,Kevin Durant,-2.2,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,ETR
+2026-11-18,pm,6,primary,4,Walker Kessler,Michael Porter Jr.,11.6,a3f4ae1e-0cbe-424d-accf-f57c2aaa5a33,9d687651-e23a-4817-91f5-148a95f4eaf9,ETR
+2026-11-18,pm,6,primary,4,Kevin Durant,Michael Porter Jr.,13.8,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,9d687651-e23a-4817-91f5-148a95f4eaf9,ETR
+2026-11-18,pm,6,primary,4,Kevin Durant,Immanuel Quickley,-11.2,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,ETR
+2026-11-18,pm,6,primary,4,Kevin Durant,RJ Barrett,-3.4,a15f3504-1ee9-4634-874d-fd95ad1f9dcd,81b32151-a7f8-4388-a18c-a2e96c1e8edd,ETR
+2026-11-18,pm,6,primary,4,Michael Porter Jr.,Immanuel Quickley,-25.0,9d687651-e23a-4817-91f5-148a95f4eaf9,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,ETR
+2026-11-18,pm,6,primary,4,RJ Barrett,Immanuel Quickley,-7.8,81b32151-a7f8-4388-a18c-a2e96c1e8edd,1ff8bad4-afc7-4f9b-9c37-106a30eccfbb,ETR
+2026-11-18,pm,6,primary,5,Norman Powell,Paul George,2.6,f6b77929-8ddc-480e-b4e7-4840f98e9633,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,ETR
+2026-11-18,pm,6,primary,5,Darryn Peterson,Paul George,-12.6,bab5de80-ca38-465a-82f8-65cef19c2ad6,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,ETR
+2026-11-18,pm,6,primary,5,James Harden,Pascal Siakam,-9.6,446ae12c-b571-45ea-a1ee-0afe159d53b8,9af876e3-ad24-4655-aa39-d774419aedea,ETR
+2026-11-18,pm,6,primary,5,Norman Powell,Pascal Siakam,-14.4,f6b77929-8ddc-480e-b4e7-4840f98e9633,9af876e3-ad24-4655-aa39-d774419aedea,ETR
+2026-11-18,pm,6,primary,5,Darryn Peterson,Pascal Siakam,-29.6,bab5de80-ca38-465a-82f8-65cef19c2ad6,9af876e3-ad24-4655-aa39-d774419aedea,ETR
+2026-11-18,pm,6,primary,5,Norman Powell,James Harden,-4.8,f6b77929-8ddc-480e-b4e7-4840f98e9633,446ae12c-b571-45ea-a1ee-0afe159d53b8,ETR
+2026-11-18,pm,6,primary,5,Darryn Peterson,James Harden,-20.0,bab5de80-ca38-465a-82f8-65cef19c2ad6,446ae12c-b571-45ea-a1ee-0afe159d53b8,ETR
+2026-11-18,pm,6,primary,5,Norman Powell,Trae Young,5.7,f6b77929-8ddc-480e-b4e7-4840f98e9633,4bc97202-8305-42e7-b615-c0b8db8fef2a,ETR
+2026-11-18,pm,6,primary,5,Darryn Peterson,Trae Young,-9.5,bab5de80-ca38-465a-82f8-65cef19c2ad6,4bc97202-8305-42e7-b615-c0b8db8fef2a,ETR
