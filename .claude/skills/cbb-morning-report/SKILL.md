@@ -240,6 +240,9 @@ school, handle, kind, added, note) and say which teams still have none. Check th
 team's tile in mirror/dk_cbb_teams.json has a card with its game count); say how many deep-bench players are out
 of the pool by default.
 
+**From early January (conference play):** start the planned availability-report reader (analysis/cbb/dk/ideas.md,
+2026-11-19): first say whether the conference reports are out yet and what form they're published in.
+
 **Mechanics freeze with the rest on 2026-11-23** (the owner, 2026-11-17): the draw (sim-night draws, Leverage
 weight), the cut within each idea, the tie split, the pick (exposure, core and pair caps, unique entries) and the
 night view. After it, effort moves to inputs, in this order: projections (minutes, news), ownership, the FIELD (the
