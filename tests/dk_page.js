@@ -281,6 +281,14 @@ function audit(name, L, o) {
   });
   check("bank check: the bank's and the field's average projection and ownership, before Re-sim & cut; the idea's bank noise saved",
         new RegExp("^Bank check: bank " + bc.want + " pts, \\d+% own; field " + bc.fp + " pts, \\d+% own: the bank projects \\d+ (below|above) the field").test(bc.t) && bc.tagged === 0.35, JSON.stringify(bc));
+  // ownership position: the simulated field's own-sum quartiles and the bank's percentile in it, computed independently
+  const op = await pg.evaluate(() => {
+    const F = fieldOf(), ow = ids => ids.reduce((u, id) => u + (F.own[id] || 0), 0), v = F.field.map(ow).sort((a, b) => a - b);
+    const q = p => Math.round(v[Math.min(v.length - 1, Math.floor(p * v.length))]), m = BANK.lineups.reduce((u, l) => u + ow(l.ids), 0) / BANK.lineups.length;
+    const pc = Math.round(100 * v.filter(x => x < m).length / v.length), t = document.getElementById("bankCheck").textContent;
+    return { t, want: "field own sum " + [q(0.1), q(0.25), q(0.5), q(0.75)].join(" / ") + "% (10th / 25th / median / 75th); bank at the field's " + pc, pc };
+  });
+  check("bank check: ownership position, the field's own-sum 10th / 25th / median / 75th and the bank's percentile in it", op.t.includes("Ownership position: " + op.want), JSON.stringify(op));
   // the sim-night draw: a drawn lineup is the solver's best for one simulated night (nightPoints, the sim's distribution)
   const nightCheck = await pg.evaluate(async () => {
     const out = [];
@@ -1283,6 +1291,11 @@ function audit(name, L, o) {
     return { maxPlayer: Math.max(0, ...Object.values(c)), lim: nightLimit(), maxUse: Math.max(0, ...Object.values(use)), within: Object.values(PF).every(v => new Set(v).size === v.length) }; });
   check("one screen: Fill keeps the night cap (60%) and Max contests per lineup (3), unique within a contest", nb_caps.maxPlayer <= nb_caps.lim && nb_caps.maxUse <= 3 && nb_caps.within, JSON.stringify(nb_caps));
   const nb_sum1 = await pg.evaluate(() => document.getElementById("nbSum").textContent);
+  const nbo = await pg.evaluate(() => {
+    const C = ownClump(), picks = Object.keys(PF).reduce((a, k) => a.concat(PF[k].map(bi => BANK.lineups[bi].ids)), []), el = document.getElementById("nbOwnPos");
+    return { t: el && el.textContent, pc: picks.length ? C.at(picks).pct : null };
+  });
+  check("builder bar: own position, the field's own-sum quartiles and the picks' percentile", !!nbo.t && (nbo.pc == null ? /no picks yet/.test(nbo.t) : nbo.t.includes("picks at the field's " + nbo.pc)), JSON.stringify(nbo));
   check("one screen: the live summary, this contest and tonight (ROI, top 10%, top 1%, cash), and tier A", /Tonight: \d+ entr/.test(nb_sum1) && /ROI/.test(nb_sum1) && /top 10%/.test(nb_sum1) && /top 1%/.test(nb_sum1) && /cash/.test(nb_sum1) && /Tier A: \d+ lineup/.test(nb_sum1), nb_sum1);
   // Add and Remove from the list: the pick, its contest's portfolio, the tab and the summary move together
   const nb_addRm = await pg.evaluate(async () => {

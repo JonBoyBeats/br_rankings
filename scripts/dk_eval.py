@@ -91,6 +91,9 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             bank, our cut (the saved build), our entered (the owner's standings entries) and each SHARP user's
             entries, with dup_field: the share of them some other real user also entered.
             field_metrics is the one definition; battle-royale-research scripts/dk_field_calibrate.py uses it.
+            Every row: own_pct (the side's mean summed ownership as a percentile of the real field's) and night_tag
+            (news / quiet, night_tag()). Also own_pos_eval.csv: the real field's top-10% / top-1% rates by own-sum
+            percentile band; printed with duplication real vs simulated by night tag (tracking only, 2026-11-19).
   owncard   the ownership card, nightly (printed): ownership is the slate's main $15 contest's (BASE_CONTEST; else its
             biggest graded contest). Projected under 5% landed under 5%; OWN_DECIDE's 3 bands (settings are decided on
             these) and OWN_SHOW's 5 (read only): actual / projected, average miss, nights over; the other contests
@@ -167,7 +170,17 @@ OWN_BANDS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 35), (35, 101)]
 FIELD_EVAL = os.path.join(DK, "field_eval.csv")
 FIELD_COLS = ["date", "draft_group", "contest_id", "contest", "side", "lineups", "matched_n", "dup_other", "distinct_per_1000",
               "sal_p10", "sal_p50", "sal_p90", "at_cap", "under_49k", "own_30", "own_20", "own_10", "own_5", "own_1", "top_own",
-              "team2", "team3", "team4", "team5", "games", "low10", "high40", "own_sum", "sal_mean", "dup_field", "proj_mean", "own_proj", "punt1", "punt2", "own_mae", "params"]
+              "team2", "team3", "team4", "team5", "games", "low10", "high40", "own_sum", "sal_mean", "dup_field", "proj_mean", "own_proj", "punt1", "punt2", "own_pct", "night_tag", "own_mae", "params"]
+# Ownership position and news nights (tracking, 2026-11-19, from the ETR show): own_pct, a side's mean summed ownership
+# as a percentile of the real field's lineups' summed ownership; night_tag, "news" when a player projected NEWS_MIN+
+# minutes in the morning run was Out (or Doubtful, which the projection outs) at lock and not in the morning, or was
+# named out or doubtful by the news feed that day, or was marked out on the page (the build's outs, saved from
+# 2026-11-19), else "quiet". own_pos_eval.csv: the real field's top-10% and top-1% rates by
+# own-sum percentile band of the real field.
+NEWS_MIN = 20
+OWN_POS_EVAL = os.path.join(DK, "own_pos_eval.csv")
+OWN_POS_COLS = ["date", "draft_group", "contest_id", "contest", "night_tag", "band", "entries", "top10", "top1"]
+OWN_POS_BANDS = [(0, 10), (10, 25), (25, 50), (50, 75), (75, 100)]
 # The construction rows beside real and sim (fieldcheck): our bank, our cut, our entered (the owner's standings entries)
 # and each sharp user's. The owner's list, 2026-11-19.
 SHARP = ["dbaggot3", "feartheturtle7"]
@@ -1031,7 +1044,7 @@ def copies_rows(path, contest, base):
     return out
 
 
-def construction(lineups, ref, info, who=None, me=None, proj=None, pown=None):
+def construction(lineups, ref, info, who=None, me=None, proj=None, pown=None, real_sums=None):
     """How a set of lineups is built against a contest's real ownership (ref: DK id -> % of its entries): players at or
     under 10% and at or above 40% per lineup, summed ownership and salary per lineup; with who (lineup -> the real
     field's users holding it), the share of the set's lineups some other real user (not me) also entered. With proj
@@ -1048,6 +1061,77 @@ def construction(lineups, ref, info, who=None, me=None, proj=None, pown=None):
     out["own_proj"] = round(sum(pown.get(i, 0) for L in lineups for i in L) / n) if pown else ""
     pu = [sum((num(info[i].get("min")) or 0) < PUNT_MIN for i in L) for L in lineups]
     out["punt1"], out["punt2"] = round(100 * sum(x >= 1 for x in pu) / n, 1), round(100 * sum(x >= 2 for x in pu) / n, 1)
+    out["own_pct"] = ""
+    if real_sums:                # real_sums: the real field's lineups' summed ownership, sorted
+        import bisect
+        out["own_pct"] = round(100 * bisect.bisect_left(real_sums, sum(ref.get(i, 0) for L in lineups for i in L) / n) / len(real_sums))
+    return out
+
+
+def night_tag(mirror, date, g, start, build):
+    """"news" or "quiet" (see NEWS_MIN): the morning run's first version of the slate against the version at lock."""
+    first = None
+    for _, sha in mirror.versions("dk_cbb_morning.json", iso(date + "T00:00:00Z"), start):
+        first = next((x for x in mirror.show(sha, "dk_cbb_morning.json").get("slates", []) if str(x["draft_group_id"]) == g), None)
+        if first:
+            break
+    last = None
+    for _, sha in reversed(mirror.versions("dk_cbb_morning.json", iso(date + "T00:00:00Z"), start)):
+        last = next((x for x in mirror.show(sha, "dk_cbb_morning.json").get("slates", []) if str(x["draft_group_id"]) == g), None)
+        if last:
+            break
+    if not first or not last:
+        return ""
+    big = {k for k, r in first["players"].items() if (num(r.get("min")) or 0) >= NEWS_MIN and r.get("status") != "Out"}
+    late = {k for k in big if (last["players"].get(k) or {}).get("status") == "Out" or (last["players"].get(k) or {}).get("doubtful")}
+    marked = big & {str(k) for k in ((build or {}).get("outs") or {})}
+    nw = at_lock(mirror, "cbb_news.json", start) or {}        # an out or doubtful item in the news feed on the day
+    said = big & {str(i) for x in nw.get("items") or [] if x.get("kind") in ("out", "doubtful") and str(x.get("at", ""))[:10] >= date
+                  for i in x.get("players") or []}
+    return "news" if late or marked or said else "quiet"
+
+
+def own_pos_rows(path, byname, ref, base):
+    """The real field's entries by own-sum percentile band (of the real field): each band's top-10% and top-1% rates."""
+    entries, _ = standings(path)
+    n = len(entries)
+    t10, t1 = math.ceil(0.1 * n), max(1, math.ceil(0.01 * n))
+    xs = []
+    for e in entries:
+        ids = [byname.get(nm) for nm in lineup_names(e.get("lineup") or "")]
+        if len(ids) == 8 and all(ids):
+            xs.append((sum(ref.get(i, 0) for i in ids), e["rank"]))
+    if not xs:
+        return []
+    order = sorted(range(len(xs)), key=lambda k: xs[k][0])
+    pct = [0] * len(xs)
+    for j, k in enumerate(order):
+        pct[k] = 100 * j / len(xs)
+    out = []
+    for lo, hi in OWN_POS_BANDS:
+        ix = [k for k in range(len(xs)) if lo <= pct[k] < hi]
+        if ix:
+            out.append(dict(base, band="%d-%d" % (lo, hi), entries=len(ix), top10=round(sum(xs[k][1] <= t10 for k in ix) / len(ix), 4),
+                            top1=round(sum(xs[k][1] <= t1 for k in ix) / len(ix), 4)))
+    return out
+
+
+def own_pos_lines():
+    """Printed by fieldcheck: the real fields' top-10% / top-1% rates by own-sum band, and duplication real vs sim by night tag."""
+    rs, out = read(OWN_POS_EVAL), []
+    if rs:
+        f = lambda sub, k: sum(num(r[k]) * int(r["entries"]) for r in sub) / max(1, sum(int(r["entries"]) for r in sub))
+        out.append("Ownership position, %d contest-nights (real fields; own-sum percentile of the real field: top 10%% / top 1%%): " % len({(r["date"], r["contest_id"]) for r in rs}) +
+                   "; ".join("%s %.1f%% / %.2f%%" % (b, 100 * f([r for r in rs if r["band"] == b], "top10"), 100 * f([r for r in rs if r["band"] == b], "top1"))
+                             for b in ["%d-%d" % x for x in OWN_POS_BANDS] if any(r["band"] == b for r in rs)))
+    fe = [r for r in read(FIELD_EVAL) if r.get("night_tag")]
+    for tag in ("news", "quiet"):
+        sub = [r for r in fe if r["night_tag"] == tag]
+        real = [num(r["dup_other"]) for r in sub if r["side"] == "real" and num(r["dup_other"]) is not None]
+        sim = [num(r["dup_other"]) for r in sub if r["side"] == "sim" and num(r["dup_other"]) is not None]
+        if real and sim:
+            out.append("Duplication on %s nights (%d contest-nights, %d nights): real %.1f%%, simulated %.1f%% of entries holding a lineup another user entered" % (
+                tag, len(real), len({r["date"] for r in sub}), S.mean(real), S.mean(sim)))
     return out
 
 
@@ -1066,7 +1150,7 @@ def real_field(path, byname):
 
 def fieldcheck(a):
     """The nightly field check (see the docstring): rows in field_eval.csv for every graded contest, rebuilt whole."""
-    mirror, ev, out, copies = Mirror(a.mirror), read(EVAL), [], []
+    mirror, ev, out, copies, pos = Mirror(a.mirror), read(EVAL), [], [], []
     graded = {}
     for r in ev:
         graded.setdefault((r["date"], str(r["draft_group"])), {})[r["contest_id"]] = r["contest"]
@@ -1096,6 +1180,7 @@ def fieldcheck(a):
         B = json.load(open(bf)) if os.path.exists(bf) else {}
         bank = [tuple(sorted(str(i) for i in L)) for L in B.get("pool") or []]
         cut = [bank[i] for i in B.get("final") or []]
+        tag = night_tag(mirror, date, g, iso(slate["start"]), B)
         for cid, cname in sorted(contests.items()):
             path = os.path.join(STANDINGS, "contest-standings-%s.csv" % cid)
             if not os.path.exists(path):
@@ -1107,9 +1192,11 @@ def fieldcheck(a):
             rm, rown = field_metrics(L, U, info, n)
             sm, sown = field_metrics(sim, None, info, n)
             sm["own_mae"] = round(S.mean(abs(sown.get(k, 0) - rown.get(k, 0)) for k in set(rown) | set(sown)), 2)
-            base = {"date": date, "draft_group": g, "contest_id": cid, "contest": cname, "games": games}
-            out.append(dict(base, side="real", own_mae="", params="", **rm, **construction(L, rown, info, proj=pj, pown=pown)))
-            out.append(dict(base, side="sim", params=json.dumps(F.get("params")), **sm, **construction(sim, rown, info, proj=pj, pown=pown)))
+            base = {"date": date, "draft_group": g, "contest_id": cid, "contest": cname, "games": games, "night_tag": tag}
+            rs_ = sorted(sum(rown.get(i, 0) for i in x) for x in L)
+            pos += own_pos_rows(path, byname, rown, {"date": date, "draft_group": g, "contest_id": cid, "contest": cname, "night_tag": tag})
+            out.append(dict(base, side="real", own_mae="", params="", **rm, **construction(L, rown, info, proj=pj, pown=pown, real_sums=rs_)))
+            out.append(dict(base, side="sim", params=json.dumps(F.get("params")), **sm, **construction(sim, rown, info, proj=pj, pown=pown, real_sums=rs_)))
             who = defaultdict(set)
             for x, u in zip(L, U):
                 who[x].add(u)
@@ -1119,7 +1206,7 @@ def fieldcheck(a):
                 if xs:
                     m, _ = field_metrics(xs, None, info, len(xs))
                     out.append(dict(base, side=side, own_mae="", params="", **dict(m, dup_other=""),
-                                    **construction(xs, rown, info, who, me, proj=pj, pown=pown)))
+                                    **construction(xs, rown, info, who, me, proj=pj, pown=pown, real_sums=rs_)))
         print("  field check %s (%s): %d contests" % (g, date, len(contests)))
     if out:
         with open(FIELD_EVAL, "w", newline="") as f:
@@ -1131,6 +1218,13 @@ def fieldcheck(a):
             w = csv.DictWriter(f, fieldnames=COPIES_COLS)
             w.writeheader()
             w.writerows(copies)
+    if pos:
+        with open(OWN_POS_EVAL, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=OWN_POS_COLS)
+            w.writeheader()
+            w.writerows(pos)
+    for line in own_pos_lines():
+        print(line)
 
 
 def idea_kind(t):

@@ -1314,6 +1314,23 @@ function tagCounts(idx, byTag) {     // lineups by group (or by tag): the tag ea
    projected ownership against the simulated field's; an idea projecting more than BANK_UNDER points under the field
    is flagged (2026-11-16 to 11-18: the bank projected 10 to 20 under the real field's average lineup). */
 var BANK_UNDER = 5, PUNT_MIN = 15;     // a punt: a player projected under PUNT_MIN minutes (tracking, 2026-11-19)
+/* Ownership position (tracking, 2026-11-19, from the ETR show: sit a little under the field's clump of summed
+   ownership, not far under): the simulated field's lineups' summed projected ownership at its 10th / 25th / 50th /
+   75th percentiles, and where a set of ours sits in it: the share of field lineups under the set's mean own sum. */
+function ownClump() {
+  var F = fieldOf(); if (!F || !F.field || !F.field.length) return null;
+  var ow = function (ids) { return ids.reduce(function (t, id) { return t + (F.own[id] || 0); }, 0); };
+  var v = F.field.map(ow).sort(function (a, b) { return a - b; }), q = function (p) { return v[Math.min(v.length - 1, Math.floor(p * v.length))]; };
+  return { q10: q(0.1), q25: q(0.25), q50: q(0.5), q75: q(0.75), own: ow,
+           at: function (sets) {           // the field's percentile of the sets' mean own sum
+             if (!sets.length) return null;
+             var m = sets.reduce(function (t, ids) { return t + ow(ids); }, 0) / sets.length, lo = 0, hi = v.length;
+             while (lo < hi) { var mid = (lo + hi) >> 1; if (v[mid] < m) lo = mid + 1; else hi = mid; }
+             return { mean: m, pct: Math.round(100 * lo / v.length) };
+           } };
+}
+function clumpText(C) { return "field own sum " + [C.q10, C.q25, C.q50, C.q75].map(function (x) { return Math.round(x); }).join(" / ") + "% (10th / 25th / median / 75th)"; }
+function ordinal(n) { var s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
 function bankCheck() {
   var F = fieldOf(), el = $("bankCheck");
   if (!el) return;
@@ -1334,6 +1351,12 @@ function bankCheck() {
     "% own: the bank projects " + Math.abs(d).toFixed(0) + (d < 0 ? " below" : " above") + " the field." +
     " Holding a player projected under " + PUNT_MIN + " minutes: bank " + Math.round(100 * avg(bank, punt)) + "%, field " + Math.round(100 * avg(F.field, punt)) + "%" +
     (all.length > 1 ? " (by idea: " + all.sort(function (a, b) { return b.u - a.u; }).map(function (x) { return esc(x.k) + " " + Math.round(100 * x.u) + "%"; }).join(", ") + ")" : "") + "." +
+    (function () {
+      var C = ownClump(); if (!C) return "";
+      var b = C.at(bank), c = CUT && CUT.keep ? C.at(CUT.keep.map(function (i) { return BANK.lineups[i].ids; })) : null;
+      return " <b>Ownership position:</b> " + clumpText(C) + "; bank at the field's " + ordinal(b.pct) + " percentile (" + Math.round(b.mean) + "%)" +
+        (c ? ", cut at the " + ordinal(c.pct) + " (" + Math.round(c.mean) + "%)" : "") + ".";
+    })() +
     (under.length ? ' <span class="bad">' + under.map(function (x) { return "Idea \u201c" + esc(x.k) + "\u201d projects " + (fp - x.p).toFixed(0) + " points under the field (" +
       x.p.toFixed(0) + " vs " + fp.toFixed(0) + ", " + x.n + " lineups)"; }).join("; ") + ".</span>" : "");
 }
@@ -1634,7 +1657,8 @@ async function saveBank() {
   var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(), rule_set: rs,
               pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, groups: BANK.groups || {}, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null,
               pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, nights_seed: nightsSeed(), rule_log: BANK.ruleLog || [], idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate,
-              scan: SCAN && String(SCAN.draft_group) === String(slate.draft_group_id) ? SCAN : null };
+              scan: SCAN && String(SCAN.draft_group) === String(slate.draft_group_id) ? SCAN : null,
+              outs: Object.assign({}, state.outs), ins: Object.assign({}, state.ins) };   // Mark out / Play him: the night's news tag (dk_eval night_tag)
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
   a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
@@ -1955,10 +1979,12 @@ function nbRender() {
     night.exp += y.exp; night.fee += y.fee; night.t10 += y.t10 * y.n; night.t1 += y.t1 * y.n; night.cash += y.cash * y.n; night.n += y.n;
   });
   if (night.n) { night.t10 /= night.n; night.t1 /= night.n; night.cash /= night.n; }
-  var tA = CUT && CUT.board && CUT.board.tierA;
+  var tA = CUT && CUT.board && CUT.board.tierA, C = ownClump();
+  var picks = Object.keys(PF).reduce(function (a, k) { return a.concat(PF[k].map(function (bi) { return BANK.lineups[bi].ids; })); }, []), pa = C && C.at(picks);
   $("nbSum").innerHTML = (cur ? nbSumText(nbShort(BP.contest.name), here) + "<br>" : "") + nbSumText("Tonight", night) +
     (tA ? '<br><span' + (tA.flag ? ' class="bad"' : "") + "><b>Tier A:</b> " + tA.n + " lineup" + (tA.n === 1 ? "" : "s") + ", " + tA.ideas + " idea" + (tA.ideas === 1 ? "" : "s") +
-      (tA.top ? ", " + esc(tA.top) + " " + Math.round(100 * tA.topShare) + "%" : "") + (tA.flag ? " (red flag: one great lineup with no close cousins, or one idea)" : "") + "</span>" : "");
+      (tA.top ? ", " + esc(tA.top) + " " + Math.round(100 * tA.topShare) + "%" : "") + (tA.flag ? " (red flag: one great lineup with no close cousins, or one idea)" : "") + "</span>" : "") +
+    (C ? '<br><span id="nbOwnPos"><b>Own position:</b> ' + clumpText(C) + (pa ? "; picks at the field's " + ordinal(pa.pct) + " percentile (" + Math.round(pa.mean) + "%)" : "; no picks yet") + "</span>" : "");
   nbListRender();
   if (NB.rt === "p") nbPlayersRender(); else bpSideRender();
   nbFit();
