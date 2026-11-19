@@ -376,7 +376,7 @@
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var SLOTS = DKSim.SLOTS;
-var doc = null, slate = null, rows = [], state = null, news = [], newsUnsourced = [], fieldDoc = null, gate = null, BP = null;
+var doc = null, slate = null, rows = [], state = null, news = [], newsUnsourced = [], analyst = [], fieldDoc = null, gate = null, BP = null;
 var teamsDoc = null, ruleCounts = {}, editing = -1;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1, panel: null };
@@ -493,8 +493,8 @@ async function load() {
   try {      // X news for tonight's players (scripts/cbb_news.py); the page works without it
     var nr = await fetch(MIRROR + "cbb_news.json?t=" + Date.now(), { cache: "no-store" });
     var nj = nr.ok ? await nr.json() : {};
-    news = nj.items || []; newsUnsourced = nj.unsourced || [];
-  } catch (e) { news = []; newsUnsourced = []; }
+    news = nj.items || []; newsUnsourced = nj.unsourced || []; analyst = nj.analyst || [];
+  } catch (e) { news = []; newsUnsourced = []; analyst = []; }
   try {      // team tiles (battle-royale-research scripts/dk_cbb_teams.py)
     var tr = await fetch(MIRROR + "dk_cbb_teams.json?t=" + Date.now(), { cache: "no-store" });
     teamsDoc = tr.ok ? await tr.json() : null;
@@ -790,6 +790,20 @@ function renderTeamPanel() {
 /* The team card (battle-royale-research dk_cbb_teams.py team_card): facts from this season's box scores, each with its
    game count, and tonight's statuses with their sources. Where a player who sat before is out tonight, his teammates'
    minutes with and without him sit beside tonight's projected minutes. */
+/* The analysts' posts (battle-royale-research cbb_news.py, kind "analyst": the owner's pick @BuriedTreys), reading only:
+   a writeup of the team's game tonight (a post naming both teams) at the top of the card and as a chip on the tile, and
+   up to ANALYST_MAX of the last week's posts naming the team or one of its players, newest first. */
+var ANALYST_MAX = 5;
+function writeups(t) { return analyst.filter(function (a) { return a.writeup && (a.games || []).indexOf(t.game) >= 0; }); }
+function analystNotes(t) {
+  var ids = {}; rows.forEach(function (r) { if (r.team === t.team) ids[r.id] = 1; });
+  return analyst.filter(function (a) { return (a.teams || []).indexOf(t.team) >= 0 || (a.players || []).some(function (id) { return ids[id]; }); }).slice(0, ANALYST_MAX);
+}
+function postHtml(a) {
+  var tx = String(a.text || ""), short = tx.length > 420 ? tx.slice(0, 420) + "…" : tx;
+  return '<div class="cl"><a href="' + esc(a.url) + '" target="_blank" rel="noopener">@' + esc(a.author) + "</a>, " + ago(a.at) + (a.writeup ? " · <b>writeup</b>" : "") +
+    ': <span title="' + esc(tx) + '">' + esc(short).replace(/\n+/g, " · ") + "</span></div>";
+}
 function cardHtml(t) {
   var c = t.card, mine = rows.filter(function (r) { return r.team === t.team; });
   var st = mine.filter(function (r) { return r.status === "Out" || r.status === "Questionable" || isDoubtful(r) || newsOf(r.id); }).map(function (r) {
@@ -809,10 +823,13 @@ function cardHtml(t) {
   });
   var deep = ((c && c.deep) || []).map(function (id) { var r = byId(id); return r ? '<button type="button" class="deepin" data-id="' + esc(id) + '">' + (r.deepOut ? "Use " : "Drop ") + esc(r.name) + "</button>" : ""; }).join("");
   var lines = ((c && c.lines) || []).map(function (l) { return '<div class="cl">' + esc(l.text) + "</div>"; });
+  var wu = writeups(t), notes = analystNotes(t).filter(function (a) { return wu.indexOf(a) < 0; });
   return '<details class="card"' + (FOLD.cards[t.team] ? " open" : "") + ' data-card="' + esc(t.team) + '"><summary>Team card' + (c ? " · " + c.games + " game" + (c.games === 1 ? "" : "s") : "") + "</summary>" +
+    wu.map(postHtml).join("") +
     (st.length ? st.join("") : '<div class="cl">No one tagged or in the news.</div>') + abs.join("") +
     (c ? lines.join("") || '<div class="cl">Nothing to flag from the box scores.</div>' : '<div class="cl">No box-score card for this team yet.</div>') +
-    (deep ? '<div class="cl">Deep bench: ' + deep + "</div>" : "") + "</details>";
+    (deep ? '<div class="cl">Deep bench: ' + deep + "</div>" : "") +
+    (notes.length ? '<div class="cl"><b>Analyst notes</b> (last 7 days, reading only):</div>' + notes.map(postHtml).join("") : "") + "</details>";
 }
 
 function tileHtml(t, wide) {
@@ -822,6 +839,8 @@ function tileHtml(t, wide) {
     return '<div class="tile' + (wide ? " wide" : "") + '" data-team="' + esc(t.team) + '"><div class="th"><span class="tn">' + esc(t.team) + "<span>" + (t.home ? "v " : "@ ") + esc(oppOf(t.team) || "") +
       '</span></span><span class="verdict ' + t.verdict + '">' + t.verdict + (t.driver ? " (" + esc(t.driver) + ")" : t.borderline ? " · borderline" : "") + '</span></div>' +
       (t.quality != null ? '<div class="scores">Quality <b>' + Math.round(t.quality) + "</b> · Leverage <b>" + Math.round(t.leverage) + "</b></div>" : "") +
+      writeups(t).map(function (a) { return '<a class="tag k-starting" style="margin:2px 6px 2px 0;display:inline-block" href="' + esc(a.url) + '" target="_blank" rel="noopener" title="' +
+        esc(String(a.text || "").slice(0, 300)) + '">' + esc(a.author) + " writeup</a>"; }).join("") +
       '<div class="why">' + esc(t.reason) + '</div><div class="nums">' +
       '<span class="k">Total</span><span><b>' + (t.total != null ? t.total.toFixed(1) : "–") + "</b> (spread " + (t.spread > 0 ? "+" : "") + t.spread + ")</span>" +
       '<span class="k">Top 3</span><span><b>' + pct(t.conc) + "</b> of the team's projection</span>" +

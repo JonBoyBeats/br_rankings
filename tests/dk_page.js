@@ -371,6 +371,22 @@ function audit(name, L, o) {
   });
   check("team card: the game count and the box-score lines; once a player who sat before is out, his teammates with and without him beside tonight",
         /Team card · 5 games/.test(card.a) && /swingy: 10 to 30 minutes over 5 games/.test(card.a) && !/is out tonight/.test(card.a) && card.tbl && /is out tonight; when he sat before \(1 of 5 games\)/.test(card.b), JSON.stringify(card));
+  const an = await pg.evaluate(() => {
+    const t = teamsOf().teams[0], keep = analyst;
+    analyst = [{ id: "a1", author: "BuriedTreys", at: new Date().toISOString(), url: "https://x.com/BuriedTreys/status/1", text: "Game writeup text",
+                 teams: t.game.split("@"), games: [t.game], players: [], writeup: true, kind: "analyst" },
+               { id: "a2", author: "BuriedTreys", at: new Date(Date.now() - 864e5).toISOString(), url: "https://x.com/BuriedTreys/status/2", text: "A team note",
+                 teams: [t.team], games: [], players: [], writeup: false, kind: "analyst" }];
+    renderTeamPanel();
+    const tile = document.querySelector('#teamPanel .tile[data-team="' + t.team + '"]'), card = document.querySelector('#teamPanel details.card[data-card="' + t.team + '"]');
+    const chip = tile.querySelector('a[href="https://x.com/BuriedTreys/status/1"]'), first = card.querySelector(".cl");
+    const out = { chip: chip && chip.textContent, first: first && first.textContent, notes: /Analyst notes/.test(card.textContent) && /A team note/.test(card.textContent),
+                  noNews: !rows.some(r => newsOf(r.id) && newsOf(r.id).kind === "analyst") };
+    analyst = keep; renderTeamPanel();
+    return out;
+  });
+  check("analyst: a writeup of tonight's game is a chip on the tile, linked, and the top of the card; the week's notes in their own section; never a player's news tag",
+        an.chip === "BuriedTreys writeup" && /writeup: Game writeup text/.test(an.first || "") && an.notes && an.noNews, JSON.stringify(an));
   check("team panel: the team's tile, then its opponent's", JSON.stringify(panel) === JSON.stringify([TEAMS.teams[0].team, opp0 && opp0.team]), JSON.stringify(panel));
   const pprojs = await pg.$$eval("#teamPanel .teamside:first-child .row:not(.out) input.proj", x => x.map(i => +i.value));
   check("team panel: its players by projection, highest first", pprojs.length >= 2 && pprojs.every((v, i) => i === 0 || pprojs[i - 1] >= v), JSON.stringify(pprojs));
