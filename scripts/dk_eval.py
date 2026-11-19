@@ -371,11 +371,11 @@ def nightly(a):
         saved = [b for b in saved if str(b.get("draft_group")) == str(slate["draft_group_id"])]
         builds = [b for b in saved if b.get("pool")]                  # Save build: a pool, hand-built and auto-pick
         banks = [b for b in builds if b.get("tags")]                  # the page's bank (Bank, cut and portfolios)
-        mine_pool = (banks or builds)[-1]["pool"] if builds else none_pool
+        none_pool = ((sh or {}).get("rulesets", {}).get("none") or {}).get("pool")
+        mine_pool = (banks or builds)[-1]["pool"] if builds else none_pool       # no saved build: "No extra rules"' pool
         pr = ((banks[-1].get("cut") or {}).get("protect") if banks else None)     # the cut's protect setting, priced by the readout
         protected = " protect%d" % pr if pr else ""
         used = sorted({r["type"] for r in ((saved[-1].get("rule_set") or []) if saved else [])})   # the night's rules
-        none_pool = ((sh or {}).get("rulesets", {}).get("none") or {}).get("pool")
         if sh:
             same = str(sh["contest"]["id"]) == cid
             for key, rs in sh["rulesets"].items():
