@@ -1986,7 +1986,7 @@ $("nbPlayers").addEventListener("click", function (e) {
    field, each lineup alone in each contest you're entering, weighted by your entries (the idea scoreboard's value).
    A forced batch, because a plain bank piles up on the optimizer's favorites and leaves most stacks too few lineups to
    judge. For reading: nothing changes the bank or the cut; "Bank this" adds the stack's rule for your next draw. */
-var SCAN = null, SCAN_THIN = 50;
+var SCAN = null, SCAN_THIN = 50, SCAN_SALT = 0x5ca7f00d;
 function scanKey() { return "dkcbb-scan:" + slate.draft_group_id; }
 function scanStacks() {
   var live = rows.filter(usable), teams = {}, games = {};
@@ -2038,9 +2038,18 @@ async function runScan() {
   }
   $("scanStatus").textContent = "Simming " + pool.length + " lineups on the slate's nights…"; await tick();
   var v = new Float64Array(pool.length), fee = 0, t10 = new Float64Array(pool.length), t1 = new Float64Array(pool.length), cash = new Float64Array(pool.length), w = 0;
+  var o1 = new Float64Array(pool.length), e1 = new Float64Array(pool.length);
   cs.forEach(function (x) {
-    var st = DKSim.aloneStats(DKSim.simulate(nightsCtx(x.c), pool, F.field, fieldDoc.z, x.c, x.n, S), x.c);
-    for (var k = 0; k < pool.length; k++) { v[k] += x.n * (st.odd[k] + st.even[k]) / 2; t10[k] += x.n * st.top10[k]; t1[k] += x.n * st.top1[k]; cash[k] += x.n * st.cash[k]; }
+    // the slate's own nights mixed with a fixed scan salt: a rerun on the same pool and settings gives the same order
+    var cxs = Object.assign(ctx(), { random: DKSim.seeded(((nightsSeed() ^ SCAN_SALT) ^ Math.imul(+x.c.id || 0, 2654435761)) >>> 0) });
+    var sim = DKSim.simulate(cxs, pool, F.field, fieldDoc.z, x.c, x.n, S), st = DKSim.aloneStats(sim, x.c);
+    var T1 = Math.max(1, Math.ceil(0.01 * (x.c.size || 0))), half = Math.ceil(S / 2);
+    for (var k = 0; k < pool.length; k++) {
+      v[k] += x.n * (st.odd[k] + st.even[k]) / 2; t10[k] += x.n * st.top10[k]; t1[k] += x.n * st.top1[k]; cash[k] += x.n * st.cash[k];
+      var ho = 0, he = 0;                // top-1% finishes on odd and even nights, for the noise test
+      for (var s2 = 0; s2 < S; s2++) if (Math.round(1 + sim.fa[k * S + s2]) <= T1) { if (s2 % 2) ho++; else he++; }
+      o1[k] += x.n * ho / Math.floor(S / 2); e1[k] += x.n * he / half;
+    }
     fee += x.n * (x.c.entry_fee || 0); w += x.n;
   });
   var mean = function (a, ix) { return ix.reduce(function (t, k) { return t + a[k]; }, 0) / Math.max(1, ix.length); };
@@ -2048,7 +2057,7 @@ async function runScan() {
   var rowsOut = batches.map(function (bt) {
     var ix = bt.idx, val = mean(v, ix);
     return { key: bt.key, kind: bt.kind, team: bt.team || null, game: bt.game || null, n: bt.n || null, drawn: ix.length, distinct: bt.distinct,
-             roi: fee ? (val - fee) / fee : null, t10: mean(t10, ix) / w, t1: mean(t1, ix) / w, cash: mean(cash, ix) / w,
+             roi: fee ? (val - fee) / fee : null, t10: mean(t10, ix) / w, t1: mean(t1, ix) / w, cash: mean(cash, ix) / w, t1o: mean(o1, ix) / w, t1e: mean(e1, ix) / w,
              own: ix.reduce(function (t, k) { return t + ownOf(pool[k]); }, 0) / Math.max(1, ix.length),
              field: bt.kind === "plain" ? null : F.field.filter(function (L) { return scanHolds(bt, L); }).length / F.field.length,
              conds: bt.conds };
@@ -2059,12 +2068,21 @@ async function runScan() {
   var meds = {};
   stk.forEach(function (r) { (meds[r.kind + r.n] = meds[r.kind + r.n] || []).push(r.field); });
   Object.keys(meds).forEach(function (k) { var a = meds[k].sort(function (x, y) { return x - y; }); meds[k] = a[Math.floor(a.length / 2)]; });
-  stk.forEach(function (r) { r.fieldMedian = meds[r.kind + r.n]; r.read = r.g_t1 > 0 ? (r.field < r.fieldMedian ? "strong, field light" : "strong, field heavy") : "weak"; });
+  // the noise test (the tiers' own): each stack's top-1% gain on odd nights and on even nights; sigma = sd(odd - even) / 2
+  // across the stacks; a gain clears the noise past 2 x sqrt(2) x sigma. Strong above it, weak below minus it, else even
+  var nt = stk.filter(function (r) { return !r.thin; }), src = nt.length >= 5 ? nt : stk;     // thin rows only when too few others
+  var dd = src.map(function (r) { return (r.t1o - plain.t1o) - (r.t1e - plain.t1e); });
+  var dm = dd.reduce(function (t, x) { return t + x; }, 0) / Math.max(1, dd.length);
+  var sigma = Math.sqrt(dd.reduce(function (t, x) { return t + (x - dm) * (x - dm); }, 0) / Math.max(1, dd.length - 1)) / 2, bar = 2 * Math.SQRT2 * sigma;
+  stk.forEach(function (r) {
+    r.fieldMedian = meds[r.kind + r.n]; r.noise = bar;
+    r.read = r.g_t1 > bar ? (r.field < r.fieldMedian ? "strong, field light" : "strong, field heavy") : r.g_t1 < -bar ? "weak" : "even";
+  });
   var med = meds;
   stk.sort(function (a, b) { return (a.thin - b.thin) || (b.g_t1 - a.g_t1); });
   stk.forEach(function (r, i) { r.rank = i + 1; });
   SCAN = { at: new Date().toISOString(), draft_group: slate.draft_group_id, per: per, nights: S, contests: cs.map(function (x) { return { id: x.c.id, name: x.c.name, n: x.n }; }),
-           nightS: base.nightS, fieldMedian: med, plain: plain, rows: stk };
+           nightS: base.nightS, fieldMedian: med, plain: plain, rows: stk, sigma: sigma, bar: bar, seed: nightsSeed() };
   store(scanKey(), SCAN);
   renderScan();
   return "Scanned " + stk.length + " stacks (" + per + " lineups each, " + 5 * per + " plain) on " + S + " nights against " + cs.map(function (x) { return x.c.name; }).join(", ") + ".";
@@ -2090,14 +2108,15 @@ function renderScan() {
       ix.map(function (i) {
         var r = S.rows[i];
         return '<tr style="' + (r.thin ? "opacity:.5" : "") + '"><td>' + esc(r.key) + (r.thin ? ' <span class="mut">thin</span>' : "") + '</td><td class="m">' + r.distinct + '</td><td class="m">' + roiTxt(r.roi) + '</td><td class="m">' + p(r.t10) +
-          '</td><td class="m">' + p(r.t1, 2) + '</td><td class="m">' + p(r.cash) + '</td><td class="m">' + g(r.g_roi) + '</td><td class="m">' + g(r.g_t10) + '</td><td class="m"><b>' + g(r.g_t1, 2) + '</b></td><td class="m">' + g(r.g_cash) +
+          '</td><td class="m">' + p(r.t1, 2) + '</td><td class="m">' + p(r.cash) + '</td><td class="m">' + g(r.g_roi) + '</td><td class="m">' + g(r.g_t10) + '</td><td class="m"><b>' + g(r.g_t1, 2) + "</b>" + (r.noise != null ? ' <span class="mut">\u00b1' + (100 * r.noise).toFixed(2) + "</span>" : "") + '</td><td class="m">' + g(r.g_cash) +
           '</td><td class="m">' + p(r.field) + '</td><td class="m">' + Math.round(r.own) + '%</td><td>' + r.read + '</td><td><button type="button" class="scanBank" data-i="' + i + '" style="height:22px;padding:0 7px;font-size:11.5px">Bank this</button></td></tr>';
       }).join("");
   };
   $("scanTable").innerHTML = '<div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
     " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
-    p(S.plain.t1, 2) + ", cash " + p(S.plain.cash) + ". Gains are in points over the plain batch. Read: <b>strong</b> when its top-1% gain is above 0, <b>field light</b> when the field holds it less than the median of stacks of its kind (" +
-    Object.keys(S.fieldMedian || {}).sort().map(function (k) { return k.replace(/^(team|game)(\d)$/, "$1 $2+") + " " + p(S.fieldMedian[k]); }).join(", ") + "); thin (under " + SCAN_THIN + " distinct lineups) greyed and last. Click a header to sort.</div>" +
+    p(S.plain.t1, 2) + ", cash " + p(S.plain.cash) + ". Gains are in points over the plain batch. Read: <b>strong</b> when its top-1% gain clears the sim's own noise, more than " + (S.bar != null ? "\u00b1" + (100 * S.bar).toFixed(2) : "the noise") +
+    " (2\u221a2 \u00d7 sigma, sigma from each stack's gain on odd nights against even nights, the tiers' test), <b>weak</b> below minus that, <b>even</b> between; <b>field light</b> when the field holds it less than the median of stacks of its kind (" +
+    Object.keys(S.fieldMedian || {}).sort().map(function (k) { return k.replace(/^(team|game)(\d)$/, "$1 $2+") + " " + p(S.fieldMedian[k]); }).join(", ") + "); thin (under " + SCAN_THIN + " distinct lineups) greyed and last. On the slate's own nights (seed " + S.seed + "), so a rerun repeats. Click a header to sort.</div>" +
     '<div style="overflow:auto"><table class="contests">' + section("team", "Team stacks") + section("game", "Game stacks") + "</table></div>";
 }
 $("scanRun").addEventListener("click", function () {

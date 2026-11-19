@@ -1105,12 +1105,18 @@ function audit(name, L, o) {
     const st = scanStacks(), teams = new Set(rows.filter(usable).map(r => r.team)).size, rowsS = SCAN.rows;
     const sorted = rowsS.every((r, i) => i === 0 || (rowsS[i - 1].thin - r.thin) < 0 || ((rowsS[i - 1].thin === r.thin) && rowsS[i - 1].g_t1 >= r.g_t1 - 1e-12));
     const gains = rowsS.every(r => Math.abs(r.g_t1 - (r.t1 - SCAN.plain.t1)) < 1e-12 && Math.abs(r.g_t10 - (r.t10 - SCAN.plain.t10)) < 1e-12);
-    const reads = rowsS.every(r => r.read === (r.g_t1 > 0 ? (r.field < SCAN.fieldMedian[r.kind + r.n] ? "strong, field light" : "strong, field heavy") : "weak"));
+    const reads = SCAN.bar > 0 && rowsS.every(r => r.read === (r.g_t1 > SCAN.bar ? (r.field < SCAN.fieldMedian[r.kind + r.n] ? "strong, field light" : "strong, field heavy") : r.g_t1 < -SCAN.bar ? "weak" : "even"));
     const fieldOk = rowsS.every(r => r.field >= 0 && r.field <= 1), thin = rowsS.every(r => r.thin === (r.distinct < SCAN_THIN));
     return { n: rowsS.length, want: st.length, teams, sorted, gains, reads, fieldOk, thin, table: document.querySelectorAll("#scanTable tr").length, msg: document.getElementById("scanStatus").textContent };
   });
   check("slate scan: a row a stack (each team 3+ and 4+, each game 3+ to 5+ with both teams), gains over the plain batch, Read derived, thin flagged, sorted by top-1% gain",
         sc.n === sc.want && sc.n >= sc.teams * 2 && sc.sorted && sc.gains && sc.reads && sc.fieldOk && sc.thin && sc.table === sc.n + 4, JSON.stringify(sc));
+  // fixed nights: the same scan again gives the same numbers and order
+  const first = await pg.evaluate(() => SCAN.rows.map(r => r.key + ":" + r.g_t1.toFixed(8)).join("|"));
+  await pg.click("#scanRun");
+  await pg.waitForFunction(() => /^Scanned|failed/.test(document.getElementById("scanStatus").textContent) && !document.getElementById("scanRun").disabled, null, { timeout: 600000 });
+  check("slate scan: on the slate's own nights, a rerun repeats exactly (and shows the noise beside each top-1% gain)",
+        (await pg.evaluate(() => SCAN.rows.map(r => r.key + ":" + r.g_t1.toFixed(8)).join("|"))) === first && (await pg.evaluate(() => /\u00b1/.test(document.getElementById("scanTable").textContent))));
   const scHold = await pg.evaluate(async () => {        // every lineup a stack's batch drew holds the stack
     const st = scanStacks().find(x => x.kind === "game"), cx = ctx(); cx.state = Object.assign({}, state, { lock: {}, excl: {}, cap: {}, floor: {} }); cx.random = DKSim.seeded(5);
     const res = await DKSim.pool(cx, Object.assign(drawRules(), { conds: st.conds, levW: 0, minSal: 0, maxTeam: 8, stackN: 0, lowN: 0, maxOwn: null }), 10);
