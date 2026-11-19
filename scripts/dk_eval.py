@@ -96,6 +96,9 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             these) and OWN_SHOW's 5 (read only): actual / projected, average miss, nights over; the other contests
             against the baseline; our projection's miss by baseline ownership; last night's leverage list (LEV_*); and
             last night's construction rows from field_eval.csv.
+  scan      analysis/cbb/dk/scan_eval.csv, nightly (log only): each saved slate scan's stacks against the night's real field
+            (the baseline contest): the share of real entries holding each stack that reached the top 10% / top 1%, the
+            scan's top third against its bottom third, and team stacks by their tile verdict
   calweek   for the owner's choice at the freeze: ours, DraftKings' average and the 50/50 blend over the calibration
             week's graded nights (CAL_WEEK), by salary band, and the nights each had the lowest average miss
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
@@ -1999,6 +2002,78 @@ def leverage_lines(rows):
             ["%d%%+ owned, missed ours by %d+:%s" % (LEV_HIGH, LEV_MISS, "" if high else " none")] + ["  " + line(r) for r in high])
 
 
+SCAN_EVAL = os.path.join(DK, "scan_eval.csv")
+SCAN_COLS = ["date", "draft_group", "contest_id", "contest", "stack", "kind", "n", "rank", "of", "read", "scan_g_t1", "scan_field", "tile_verdict",
+             "real_entries", "real_top10", "real_top1"]
+
+
+def scan_grade(a):
+    """The slate scan graded, nightly (log only): each stack a saved build's scan ranked, against the real field of the
+    night's baseline contest (the main $15, else the biggest graded): the share of real entries holding the stack that
+    reached the real top 10% and top 1%; beside each team's tile verdict (tiles_eval.csv) for its team stacks. Prints
+    whether the scan's top third of stacks reached the top 10% / top 1% more often than its bottom third, and the same
+    by tile verdict."""
+    base, verdict, out = baselines(), {}, []
+    for r in read(os.path.join(DK, "tiles_eval.csv")):
+        verdict[(str(r["draft_group"]), r["team"])] = r["verdict"]
+    for f in sorted(glob.glob(os.path.join(BUILDS, "*.json"))):
+        B = json.load(open(f))
+        sc, g = B.get("scan"), str(B.get("draft_group"))
+        if not sc or g not in base:
+            continue
+        cid, cname, date = base[g]
+        path = os.path.join(STANDINGS, "contest-standings-%s.csv" % cid)
+        slate = os.path.join(DK, "%s_%s.csv" % (date, g))
+        if not os.path.exists(path) or not os.path.exists(slate):
+            continue
+        info = {r["name"]: r for r in read(slate)}
+        entries, _ = standings(path)
+        n = len(entries)
+        t10, t1 = math.ceil(0.1 * n), max(1, math.ceil(0.01 * n))
+        lines = [(e["rank"], [info.get(x) for x in lineup_names(e["lineup"])]) for e in entries]
+        for row in sc.get("rows") or []:
+            def holds(L):
+                L = [x for x in L if x]
+                if row["kind"] == "team":
+                    return sum(x["team"] == row["team"] for x in L) >= row["n"]
+                two = row["game"].split("@")
+                ing = [x for x in L if x["game"] == row["game"]]
+                return len(ing) >= row["n"] and all(any(x["team"] == t for x in ing) for t in two)
+            hit = [rk for rk, L in lines if holds(L)]
+            out.append({"date": date, "draft_group": g, "contest_id": cid, "contest": cname, "stack": row["key"], "kind": row["kind"], "n": row["n"],
+                        "rank": row["rank"], "of": len(sc["rows"]), "read": row["read"], "scan_g_t1": round(row["g_t1"], 5), "scan_field": round(row["field"], 4),
+                        "tile_verdict": verdict.get((g, row["team"]), "") if row["kind"] == "team" else "",
+                        "real_entries": len(hit), "real_top10": round(sum(rk <= t10 for rk in hit) / len(hit), 4) if hit else "",
+                        "real_top1": round(sum(rk <= t1 for rk in hit) / len(hit), 4) if hit else ""})
+    if out:
+        with open(SCAN_EVAL, "w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=SCAN_COLS)
+            w.writeheader()
+            w.writerows(out)
+    for line in scan_lines():
+        print(line)
+
+
+def scan_lines():
+    rs = [r for r in read(SCAN_EVAL) if r["real_entries"] and int(r["real_entries"]) >= 5]
+    if not rs:
+        return ["Slate scan: no graded scan yet (a build saved with a scan, and its standings)"]
+    def rate(sub, k):
+        e = sum(int(r["real_entries"]) for r in sub)
+        return sum(num(r[k]) * int(r["real_entries"]) for r in sub) / e if e else None
+    top = [r for r in rs if int(r["rank"]) <= int(r["of"]) / 3]
+    bot = [r for r in rs if int(r["rank"]) > 2 * int(r["of"]) / 3]
+    f = lambda x: "%.1f%%" % (100 * x) if x is not None else "-"
+    out = ["Slate scan, %d night%s: real entries holding the scan's top third of stacks reached the top 10%% %s / top 1%% %s; its bottom third %s / %s" % (
+        len({r["date"] for r in rs}), "" if len({r["date"] for r in rs}) == 1 else "s", f(rate(top, "real_top10")), f(rate(top, "real_top1")), f(rate(bot, "real_top10")), f(rate(bot, "real_top1")))]
+    tv = [r for r in rs if r["tile_verdict"] and r["kind"] == "team" and r["n"] == "3"]
+    if tv:
+        out.append("  team 3+ stacks by tile verdict: " + "; ".join("%s %s / %s (%d)" % (v, f(rate([r for r in tv if r["tile_verdict"] == v], "real_top10")),
+                   f(rate([r for r in tv if r["tile_verdict"] == v], "real_top1")), len([r for r in tv if r["tile_verdict"] == v]))
+                   for v in ("FOCUS", "CHALK", "LEVERAGE", "FADE") if any(r["tile_verdict"] == v for r in tv)))
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -2015,6 +2090,7 @@ def main():
     sub.add_parser("calweek")
     sub.add_parser("ideas")
     sub.add_parser("owncard")
+    sub.add_parser("scan")
     sub.add_parser("risers")
     sub.add_parser("platoon")
     pr = sub.add_parser("pairs")
@@ -2027,7 +2103,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade}[a.cmd](a)
 
 
 if __name__ == "__main__":

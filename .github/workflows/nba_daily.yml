@@ -84,6 +84,8 @@ jobs:
           python3 scripts/dk_eval.py fieldcheck --mirror ../br-adp-mirror || true
           # the ownership card: calibration against the main $15 contest, leverage list, construction
           python3 scripts/dk_eval.py owncard || true
+          # the slate scan graded: its stacks against the real field, beside the tile verdicts (log only)
+          python3 scripts/dk_eval.py scan || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
       # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
