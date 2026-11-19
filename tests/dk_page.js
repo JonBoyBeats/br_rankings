@@ -196,13 +196,25 @@ function audit(name, L, o) {
   }));
   // EvanMiya's position, role and possessions on the row (a player without them shows none)
   const em = await pg.evaluate(() => { const r = rows.find(x => x.status !== "Out"); Object.assign(r, { em_pos: 1.69, em_role: 2.29, poss: 263, min_poss: 31.2 }); renderPlayers();
-    const el = document.querySelector(`#players .row[data-id="${r.id}"] .sub`); const txt = el.textContent, tip = el.querySelector("span[title]") ? el.querySelector("span[title]").title : "";
+    const el = document.querySelector(`#players .row[data-id="${r.id}"] .nm`); const txt = el.title, tip = el.title;
     delete r.em_pos; delete r.em_role; delete r.poss; delete r.min_poss; renderPlayers(); return { txt, tip }; });
   const l5 = await pg.evaluate(() => { const r = rows.find(x => x.status !== "Out" && x.dk_avg); r.last5 = [["2026-11-12", 30, 24.5], ["2026-11-15", 34.4, 31], ["2026-11-17", 28, 18.25]]; renderPlayers();
     const el = document.querySelector(`#players .row[data-id="${r.id}"] .col-avg`); const t = el.title; delete r.last5; renderPlayers(); return t; });
   check("DK avg hover: his last games, newest first, minutes, DK points and per minute",
         l5.split("\n").length === 4 && /^Last 3, newest first/.test(l5) && /11\/17  28 min  18\.3 DK  0\.65\/min/.test(l5.split("\n")[1]) && /11\/12  30 min  24\.5 DK  0\.82\/min/.test(l5.split("\n")[3]), l5);
-  check("EvanMiya on the row: position, role and possessions, with what his possessions imply", /EM pos 1\.7 role 2\.3 · 263 poss/.test(em.txt) && /31\.2 minutes/.test(em.tip), JSON.stringify(em));
+  check("EvanMiya in the name's tooltip: position, role and possessions, with what his possessions imply", /EvanMiya: pos 1\.7 role 2\.3 · 263 poss/.test(em.txt) && /31\.2 minutes/.test(em.tip), JSON.stringify(em));
+  // the Players list (2026-11-19): Pos / Team / Opp columns, the matchup, line, double-double and fragile in the name's
+  // tooltip (no grey line, no fragile badge), no ± column
+  const pl = await pg.evaluate(() => {
+    const heads = [...document.querySelectorAll("#players .head span[data-sort]")].map(x => x.textContent.replace(/ [↓↑]$/, ""));
+    const r = rows.find(x => x.status !== "Out" && x.spread != null && x.ou), el = document.querySelector(`#players .row[data-id="${r.id}"]`), cells = [...el.children].map(c => c.textContent);
+    const f = rows.find(x => x.fragile), fel = f && document.querySelector(`#players .row[data-id="${f.id}"]`);
+    return { heads, sub: document.querySelectorAll("#players .sub").length, cells: cells.slice(2, 5), want: [r.position, r.team, (r.home ? "v " : "@ ") + r.opp],
+             tip: el.querySelector(".nm").title, line: (r.spread > 0 ? "+" : "") + r.spread, ou: r.ou, frag: f ? { badge: !!fel.querySelector(".frag"), tip: /Fragile: expected miss/.test(fel.querySelector(".nm").title) } : null };
+  });
+  check("Players list: Pos / Team / Opp columns, matchup and line in the name's tooltip, fragile in the tooltip, no ± column or grey line",
+        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "DK avg", "Top 1%", "Read"]) && pl.sub === 0 &&
+        JSON.stringify(pl.cells) === JSON.stringify(pl.want) && pl.tip.includes(pl.line) && pl.tip.includes("o/u " + pl.ou) && (!pl.frag || (!pl.frag.badge && pl.frag.tip)), JSON.stringify(pl));
   check("match warning: none when every game matched", !(await pg.$("#matchWarn")));
   const mw = await pg.evaluate(() => {
     const g = rows[0].game, kept = rows.map(r => r.event);
@@ -1169,6 +1181,17 @@ function audit(name, L, o) {
     return { n: res.lineups.length, all: res.lineups.every(L => L.ids.includes(b.id)) };
   });
   check("player scan: a player's batch holds him", pHold.n > 0 && pHold.all, JSON.stringify(pHold));
+  const pList = await pg.evaluate(() => {
+    renderPlayers();
+    const ok = SCAN.players.every(x => { const el = document.querySelector(`#players .row[data-id="${x.id}"]`); if (!el) return true;
+      const c = el.querySelectorAll(".col-scan"); return c[0].textContent === (x.g_t1 > 0 ? "+" : "") + (100 * x.g_t1).toFixed(2) && c[1].textContent === x.read; });
+    view.sort = "scan"; view.dir = -1; renderPlayers();
+    const ids = [...document.querySelectorAll("#players .row")].map(e => e.dataset.id).filter(id => byId(id).status !== "Out"), g = ids.map(id => scanRowOf(id) ? scanRowOf(id).g_t1 : -Infinity);
+    const sorted = g.every((x, i) => i === 0 || g[i - 1] >= x);
+    view.sort = "value"; view.dir = -1; renderPlayers();
+    return { ok, sorted };
+  });
+  check("player scan: its top-1% gain and Read in the Players list, sortable", pList.ok && pList.sorted, JSON.stringify(pList));
   const pso = await pg.evaluate(() => {
     const order = () => [...document.querySelectorAll("#scanPlayers .scanBank[data-p]")].map(b => SCAN.players[+b.dataset.p]).filter(r => !r.thin);
     const def = order().every((r, i, a) => i === 0 || a[i - 1].g_t1 >= r.g_t1);

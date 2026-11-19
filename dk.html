@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 54px 64px 40px 48px 44px 42px 46px 50px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 34px 46px 50px 54px 64px 48px 44px 42px 46px 54px 60px 50px 50px; gap: 8px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -72,12 +72,13 @@
   .mut { color: var(--muted); }
   .who { min-width: 0; }
   .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .name .nm[title] { cursor: help; }
   .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tag { font-family: var(--mono); font-size: 9.5px; font-weight: 700; border-radius: 3px; padding: 0 4px; margin-left: 5px; vertical-align: 1px; }
   .tag.q { background: var(--warn); color: #1a1400; }
   .tag.o { background: var(--bad); color: #1a0500; }
   .tag.new { border: 1px solid var(--line-strong); color: var(--muted); }
-  .tag.frag { border: 1px solid var(--warn); color: var(--warn); font-weight: 600; }
+  .read-core, .read-leverage { color: var(--live, #2eaa60); font-weight: 600; } .read-fade, .read-skip { color: var(--muted); }
   .tag.k-out { background: var(--bad); color: #1a0500; }
   .tag.k-questionable { background: var(--warn); color: #1a1400; }
   .tag.k-doubtful, .tag.d { background: var(--bad); color: #1a0500; opacity: .8; }
@@ -217,7 +218,7 @@
   .empty { color: var(--muted); padding: 24px 4px; }
   @media (max-width: 620px) {
     .head, .row { grid-template-columns: 56px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
-    .col-min, .col-avg, .col-miss, .col-max { display: none; }
+    .col-min, .col-avg, .col-max, .col-pos, .col-team, .col-opp, .col-scan { display: none; }
     table.bp td.nm { min-width: 140px; font-size: 11px; }
     table.bp td, table.bp th { padding: 3px 3px; }
     .name { font-size: 13px; }
@@ -653,7 +654,9 @@ function renderPlayers() {
   $("qOnly").textContent = "Q (" + rows.filter(isQ).length + ")";
   var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
               avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; },
-              miss: function (r) { return r.miss_dk || 0; }, own: own }[view.sort];
+              own: own, pos: function (r) { return r.position || ""; }, team: function (r) { return r.team || ""; }, opp: function (r) { return r.opp || ""; },
+              scan: function (r) { var x = scanRowOf(r.id); return x ? x.g_t1 : -Infinity; },
+              read: function (r) { var x = scanRowOf(r.id); return x ? ["core", "leverage", "even", "fade", "skip"].indexOf(x.read) : 9; } }[view.sort] || value;
   list.sort(function (a, b) {
     var x = get(a), y = get(b);
     return (a.status === "Out") - (b.status === "Out") || (x < y ? -1 : x > y ? 1 : 0) * view.dir || b.salary - a.salary;   // Out last
@@ -677,15 +680,30 @@ function last5Text(r) {
     return (d ? d + "  " : "") + Math.round(g[1]) + " min  " + g[2].toFixed(1) + " DK  " + (g[1] ? (g[2] / g[1]).toFixed(2) : "–") + "/min";
   }).join("\n");
 }
-function emLine(r) {
+function emText(r) {
   if (r.em_pos == null && r.em_role == null && r.poss == null) return "";
-  return '<span title="EvanMiya: Position and Role on 1-5 scales (1 a point guard / the primary creator, 5 a center / a finisher), possessions played this season' +
-    (r.min_poss != null ? "; his possessions imply " + r.min_poss + " minutes a game" : "") + '"> · EM pos ' + (r.em_pos != null ? r.em_pos.toFixed(1) : "–") +
-    " role " + (r.em_role != null ? r.em_role.toFixed(1) : "–") + (r.poss != null ? " · " + Math.round(r.poss) + " poss" : "") + "</span>";
+  return "EvanMiya: pos " + (r.em_pos != null ? r.em_pos.toFixed(1) : "–") + " role " + (r.em_role != null ? r.em_role.toFixed(1) : "–") +
+    (r.poss != null ? " · " + Math.round(r.poss) + " poss" : "") + (r.min_poss != null ? " (his possessions imply " + r.min_poss + " minutes a game)" : "") +
+    "\n  (1-5 scales: 1 a point guard / the primary creator, 5 a center / a finisher)";
 }
+// the name's tooltip (2026-11-19, in place of the grey line under it): matchup, line, double-double, EvanMiya, fragile
+function whoTip(r) {
+  var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
+  return [r.position + " · " + r.team + (r.home ? " v " : " @ ") + (r.opp || "?") + (line ? " " + line : "") + (r.ou ? " · o/u " + r.ou : ""),
+          r.p_dd >= 0.1 ? "Double-double " + Math.round(100 * r.p_dd) + "%" : "", emText(r),
+          r.fragile ? "Fragile: expected miss \u00b1" + (r.miss_dk != null ? r.miss_dk : "") : ""].filter(Boolean).join("\n");
+}
+// the player scan's row for a player (this slate's scan), for the Players list
+function scanRowOf(id) {
+  if (!SCAN || !slate || String(SCAN.draft_group) !== String(slate.draft_group_id) || !SCAN.players) return null;
+  if (scanMapOf !== SCAN.players) { scanMap = {}; SCAN.players.forEach(function (x) { scanMap[String(x.id)] = x; }); scanMapOf = SCAN.players; }
+  return scanMap[String(id)] || null;
+}
+var scanMap = {}, scanMapOf = null;
 function playerTable(list, sortable) {
   var head = '<div class="head"><span>L / X</span>' +
-    [["name", "Player", ""], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["miss", "±", "r col-miss"], ["value", "Val", "r"], ["own", "Own", "r"], ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"]]
+    [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"],
+     ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"], ["scan", "Top 1%", "r col-scan"], ["read", "Read", "col-scan"]]
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
     '<span class="r col-max" title="In at least this % of each draw\'s lineups (a baseline: listed in the rules\' Baseline block)">Min%</span>' +
@@ -707,22 +725,25 @@ function playerTable(list, sortable) {
         (r.deepOut ? "Projected under " + PUNT_MIN + " minutes with no news raising them: out of the pool by default. Use him" : "Brought back: leave him out again") :
         (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" : "Deep bench, brought back: leave him out again")) + '">' +
         (r.punt ? (r.deepOut ? "<" + PUNT_MIN + " min: use" : "<" + PUNT_MIN + " min: drop") : (r.deepOut ? "deep: use" : "deep: drop")) + "</button>" : "") +
-      (r.fragile ? '<span class="tag frag" title="Fragile: expected miss ±' + (r.miss_dk || "") + '">fragile</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
-    var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
-    var edited = state.proj[r.id] != null;
+    var edited = state.proj[r.id] != null, sc = scanRowOf(r.id);
     var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] || r.deepOut ? " excluded" : "") + (r.status === "Out" ? " out" : "");
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '">' +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
       '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button></span>' +
-      '<span class="who"><div class="name">' + esc(r.name) + tags + '</div><div class="sub">' + esc(r.position + " · " + r.team + (r.home ? " v " : " @ ") + (r.opp || "?") + (line ? " " + line : "") + (r.ou ? " · o/u " + r.ou : "") + (r.p_dd >= 0.1 ? " · DD " + Math.round(100 * r.p_dd) + "%" : "")) + emLine(r) + "</div></span>" +
+      '<span class="who"><div class="name"><span class="nm" title="' + esc(whoTip(r)) + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
+      '<span class="m mut col-pos">' + esc(r.position || "") + "</span>" +
+      '<span class="m col-team">' + esc(r.team || "") + "</span>" +
+      '<span class="m mut col-opp">' + (r.home ? "v " : "@ ") + esc(r.opp || "?") + "</span>" +
       '<span class="m r">' + (r.salary / 1000).toFixed(1) + "k</span>" +
       '<span><input class="proj' + (edited ? " edited" : "") + '" type="number" step="0.1" value="' + proj(r).toFixed(1) + '" aria-label="Proj for ' + esc(r.name) + '"></span>' +
-      '<span class="m r mut col-miss">' + (r.miss_dk != null ? r.miss_dk.toFixed(1) : "–") + "</span>" +
       '<span class="m r val"' + greenBg(value(r), 2, 4.5) + ">" + value(r).toFixed(2) + "</span>" +
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
       '<span class="m r mut col-avg' + (r.last5 && r.last5.length ? ' has5" title="' + esc(last5Text(r)) + '"' : '"') + ">" + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
+      '<span class="m r col-scan"' + (sc ? ' title="Player scan: top-1% gain over the plain batch \u00b1' + (100 * sc.noise).toFixed(2) + " (the noise bar); ROI gain " + (sc.g_roi == null ? "–" : (sc.g_roi > 0 ? "+" : "") + (100 * sc.g_roi).toFixed(1)) +
+        ", cash gain " + (sc.g_cash > 0 ? "+" : "") + (100 * sc.g_cash).toFixed(1) + '"' : "") + ">" + (sc ? (sc.g_t1 > 0 ? "+" : "") + (100 * sc.g_t1).toFixed(2) : "–") + "</span>" +
+      '<span class="col-scan">' + (sc ? '<span class="read-' + sc.read + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
       '<span class="col-max"><input class="floor" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + '"></span>' +
       '<span class="col-max"><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
       "</div>";
@@ -2118,7 +2139,7 @@ async function runScan() {
            nightS: base.nightS, fieldMedian: med, plain: plain, rows: stk, sigma: sigma, bar: bar, seed: nightsSeed(),
            perP: perP, players: pls, psigma: psigma, pbar: pbar, pownMedian: pmed };
   store(scanKey(), SCAN);
-  renderScan();
+  renderScan(); renderPlayers();
   return "Scanned " + (pls.length ? pls.length + " players (" + perP + " lineups each), " : "") + stk.length + " stacks (" + per + " lineups each, " + 5 * per + " plain) in " + Math.round((Date.now() - t0) / 1000) + " s on " + S + " nights against " + cs.map(function (x) { return x.c.name; }).join(", ") + ".";
 }
 function renderScan() {
