@@ -81,6 +81,7 @@
   .read-leverage { color: #3fbf7f; font-weight: 600; } .read-core { color: #5b9cf0; font-weight: 600; } .read-fade { color: var(--bad); font-weight: 600; } .read-skip, .read-even { color: var(--muted); }
   .row .nb2 { font-size: 9.5px; display: block; line-height: 1; }
   .row button.pbank { height: 20px; width: 24px; padding: 0; font-size: 12px; }
+  .head span[data-sort="read"], .row .rdc { padding-left: 8px; font-size: 12.5px; }
   .tag.k-out { background: var(--bad); color: #1a0500; }
   .tag.k-questionable { background: var(--warn); color: #1a1400; }
   .tag.k-doubtful, .tag.d { background: var(--bad); color: #1a0500; opacity: .8; }
@@ -157,7 +158,17 @@
   .teambar button.FOCUS { border-left-color: var(--live); } .teambar button.CHALK { border-left-color: var(--warn); }
   .teambar button.LEVERAGE { border-left-color: #5aa9e6; } .teambar button.FADE { border-left-color: var(--bad); }
   .teambar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-  .teamside { margin: 6px 0 14px; }
+  .teamside { margin: 6px 0 14px; min-width: 0; }
+  .teambar .gchip { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 6px; padding: 2px; gap: 2px; }
+  .teambar .gchip button { height: 26px; }
+  .gamehead { font-family: var(--mono); font-size: 12px; margin: 6px 0 4px; }
+  .gamehead b { font-size: 14px; font-family: inherit; }
+  .gameteams { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+  @media (max-width: 760px) { .gameteams { grid-template-columns: minmax(0, 1fr); } }
+  .scanblk { border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; margin: 6px 0; font-size: 12px; }
+  .scanblk .sr { font-family: var(--mono); font-size: 11.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 2px 0; }
+  .scanblk button, table.gstk button, .topreads button { height: 22px; padding: 0 7px; font-size: 11.5px; }
+  .topreads { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0; align-items: center; }
   .tile.wide { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2px 20px; }
   .tile.wide .th, .tile.wide .scores, .tile.wide .why { grid-column: 1 / -1; }
   .tile.wide .flags { grid-column: 2; } .tile.wide .acts { grid-column: 1 / -1; }
@@ -654,6 +665,10 @@ function renderPlayers() {
     return true;
   });
   $("qOnly").textContent = "Q (" + rows.filter(isQ).length + ")";
+  $("players").innerHTML = playerTable(sortList(list), true);
+  renderTeamPanel();
+}
+function sortList(list) {
   var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
               avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; },
               own: own, pos: function (r) { return r.position || ""; }, team: function (r) { return r.team || ""; }, opp: function (r) { return r.opp || ""; },
@@ -662,12 +677,10 @@ function renderPlayers() {
               scash: function (r) { var x = scanRowOf(r.id); return x ? x.g_cash : -Infinity; },
               bank: function (r) { return bankShare()[r.id] || 0; },
               read: function (r) { var x = scanRowOf(r.id); return x ? ["core", "leverage", "even", "fade", "skip"].indexOf(x.read) : 9; } }[view.sort] || value;
-  list.sort(function (a, b) {
+  return list.sort(function (a, b) {
     var x = get(a), y = get(b);
     return (a.status === "Out") - (b.status === "Out") || (x < y ? -1 : x > y ? 1 : 0) * view.dir || b.salary - a.salary;   // Out last
   });
-  $("players").innerHTML = playerTable(list, true);
-  renderTeamPanel();
 }
 
 // a table of player rows (lock / exclude, Proj, Max% edits work in it wherever it's shown); sortable: the full list
@@ -764,7 +777,7 @@ function playerTable(list, sortable) {
         (sc ? '<span class="sg">' + sgn(sc.g_t1, 2) + '</span><span class="nb2 mut">\u00b1' + (100 * sc.noise).toFixed(2) + "</span>" : "–") + "</span>" +
       '<span class="m r col-scan">' + (sc && sc.g_roi != null ? sgn(sc.g_roi, 0) : "–") + "</span>" +
       '<span class="m r col-scan">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
-      '<span class="col-scan">' + (sc ? '<span class="read-' + sc.read + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
+      '<span class="col-scan rdc">' + (sc ? '<span class="read-' + sc.read + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
       '<span class="m r col-scan">' + (BANK && BANK.lineups && BANK.lineups.length ? Math.round(100 * (bshare[r.id] || 0)) + "%" : "–") + "</span>" +
       '<span class="col-scan"><button type="button" class="pbank" title="Bank this: at least 1 of ' + esc(r.name) + ' in your next draw"' + (r.status === "Out" ? " disabled" : "") + ">+</button></span>" +
       '<span class="col-max"><input class="floor" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + '"></span>' +
@@ -869,13 +882,54 @@ function renderTiles() {
   $("slateLine").textContent = sl.games + " games · " + sl.spreads_15 + " spread" + (sl.spreads_15 === 1 ? "" : "s") + " of 15+ · highest team totals: " +
     sl.top_totals.map(function (t) { return t.team + " " + t.total; }).join(", ") + ". Lines: " + T.line_source + "." +
     (sl.ranked_against ? " Quality and Leverage are 0-100 ranks against " + sl.ranked_against + "; quadrants at 50. Untested until the monthly readout grades them." : "");
-  $("teamBar").innerHTML = T.teams.map(function (t) {
-    return '<button type="button" class="' + t.verdict + '" data-team="' + esc(t.team) + '" aria-pressed="' + (view.panel === t.team) + '" title="' + esc(t.verdict + (t.driver ? " (" + t.driver + ")" : "") + ": " + t.reason) + '">' +
+  var open = view.panel ? gameOf(view.panel) : null;
+  var chip = function (t) {
+    return '<button type="button" class="' + t.verdict + '" data-team="' + esc(t.team) + '" aria-pressed="' + (!!open && gameOf(t.team) === open) + '" title="' + esc(t.verdict + (t.driver ? " (" + t.driver + ")" : "") + ": " + t.reason) + '">' +
       esc(t.team) + (t.borderline ? "*" : "") + "</button>";
-  }).join("");
+  };
+  $("teamBar").innerHTML = gamesOf(T).map(function (g) { return '<span class="gchip" data-game="' + esc(g.game) + '">' + g.teams.map(chip).join("") + "</span>"; }).join("");
   renderTeamPanel();
 }
 
+/* Teams by game (2026-11-19): the chips grouped by game, ordered by tip; a click opens the game: its header and game
+   stacks from the scan, both teams' cards side by side (each with its scan block), then one player list for both. */
+function gameOf(team) { var r = rows.find(function (x) { return x.team === team && x.game; }); return r ? r.game : team; }
+function tipOf(game) { var t = null; rows.forEach(function (r) { if (r.game === game && r.game_start && (!t || r.game_start < t)) t = r.game_start; }); return t; }
+function gamesOf(T) {
+  var by = {}, out = [];
+  T.teams.forEach(function (t) { var g = gameOf(t.team); if (!by[g]) { by[g] = { game: g, teams: [] }; out.push(by[g]); } by[g].teams.push(t); });
+  out.forEach(function (g) { var two = g.game.split("@"); g.teams.sort(function (a, b) { return two.indexOf(a.team) - two.indexOf(b.team); }); g.tip = tipOf(g.game); });
+  return out.sort(function (a, b) { return (a.tip || "~").localeCompare(b.tip || "~") || a.game.localeCompare(b.game); });
+}
+function scanNow() { return SCAN && slate && String(SCAN.draft_group) === String(slate.draft_group_id) ? SCAN : null; }
+function scanBtn(i) { return '<button type="button" class="scanBank" data-i="' + i + '">Bank this</button>'; }
+function scanGain(r) { return sgn(r.g_t1, 2) + (r.noise != null ? ' <span class="mut">\u00b1' + (100 * r.noise).toFixed(2) + "</span>" : ""); }
+// a team card's scan block: its 3+ and 4+ stacks and its core and leverage players
+function scanBlock(team) {
+  var S = scanNow();
+  if (!S) return '<div class="scanblk"><b>Scan</b> <span class="mut">–</span> <a href="#scanBox" class="scanlink">Scan the slate</a></div>';
+  var st = S.rows.map(function (r, i) { return [r, i]; }).filter(function (x) { return x[0].kind === "team" && x[0].team === team; }).sort(function (a, b) { return a[0].n - b[0].n; });
+  var pl = (S.players || []).filter(function (r) { return r.team === team && !r.thin && (r.read === "core" || r.read === "leverage"); });
+  return '<div class="scanblk"><b>Scan</b>' + (st.length ? st.map(function (x) {
+      var r = x[0];
+      return '<div class="sr"><span>' + r.n + '+</span><span>' + scanGain(r) + "</span><span>field " + Math.round(100 * r.field) + "%</span><span>" + esc(r.read) + (r.thin ? " (thin)" : "") + "</span>" + scanBtn(x[1]) + "</div>";
+    }).join("") : '<div class="sr mut">No stack rows for this team.</div>') +
+    '<div class="sr">' + (S.players ? (pl.length ? pl.map(function (r) { return '<span class="read-' + r.read + '">' + esc(r.key) + " (" + r.read + ")</span>"; }).join("") : '<span class="mut">No core or leverage players.</span>') :
+      '<span class="mut">No player scan (Lineups a player was 0).</span>') + "</div></div>";
+}
+function gameHead(game, T) {
+  var two = game.split("@"), S = scanNow(), tip = tipOf(game), r0 = rows.find(function (r) { return r.game === game && r.ou; });
+  var fav = T.teams.filter(function (t) { return gameOf(t.team) === game && t.spread < 0; })[0];
+  var st = S ? S.rows.map(function (r, i) { return [r, i]; }).filter(function (x) { return x[0].kind === "game" && x[0].game === game; }).sort(function (a, b) { return a[0].n - b[0].n; }) : [];
+  return '<div class="gamehead"><b>' + esc(two[0] + " @ " + (two[1] || "")) + "</b>" + (tip ? " · " + new Date(tip).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "") +
+      (fav ? " · " + esc(fav.team) + " " + fav.spread : "") + (r0 ? " · o/u " + r0.ou : "") + "</div>" +
+    (S ? (st.length ? '<table class="contests gstk"><tr><th>Game stack</th><th class="r">Top 1% gain</th><th class="r">ROI gain</th><th class="r">Field holds</th><th>Read</th><th></th></tr>' + st.map(function (x) {
+        var r = x[0];
+        return "<tr" + (r.thin ? ' style="opacity:.5"' : "") + "><td>" + r.n + '+</td><td class="m">' + scanGain(r) + '</td><td class="m">' + (r.g_roi == null ? "–" : sgn(r.g_roi, 1)) + '</td><td class="m">' + Math.round(100 * r.field) + "%</td><td>" +
+          esc(r.read) + "</td><td>" + scanBtn(x[1]) + "</td></tr>";
+      }).join("") + "</table>" : '<div class="note">No game stack rows for this game in the scan.</div>') :
+      '<div class="note">Game stacks: – <a href="#scanBox" class="scanlink">Scan the slate</a></div>');
+}
 var PANEL_MIN_VALUE = 2;     // a clicked team shows its players at this value (points per $1K) or better, unless Show all
 function renderTeamPanel() {
   var T = teamsOf();
@@ -883,15 +937,14 @@ function renderTeamPanel() {
   if (!T || !view.panel) { $("teamPanel").innerHTML = ""; return; }
   var t = T.teams.find(function (x) { return x.team === view.panel; });
   if (!t) { $("teamPanel").innerHTML = ""; return; }
-  var o = T.teams.find(function (x) { return x.team === oppOf(t.team); });
-  var side = function (tt) {
-    var all = rows.filter(function (r) { return r.team === tt.team; }).sort(function (a, b) { return (a.status === "Out") - (b.status === "Out") || proj(b) - proj(a); });
-    var list = view.showAll ? all : all.filter(function (r) { return r.status !== "Out" && value(r) >= PANEL_MIN_VALUE || state.lock[r.id] || state.excl[r.id]; });
-    return '<div class="teamside">' + tileHtml(tt, true) + cardHtml(tt) + '<div class="plist">' + playerTable(list, false) +
-      '<button type="button" class="showall" style="height:24px;padding:0 8px;font-size:11.5px;margin:4px 0">' +
-      (view.showAll ? "Only " + PANEL_MIN_VALUE + "x value and up" : "Show all " + all.length + " (" + (all.length - list.length) + " under " + PANEL_MIN_VALUE + "x or out)") + "</button></div></div>";
-  };
-  $("teamPanel").innerHTML = side(t) + (o ? '<div class="note" style="margin:2px 0">Opponent:</div>' + side(o) : "");
+  var o = T.teams.find(function (x) { return x.team === oppOf(t.team); }), game = gameOf(t.team), mine = o ? [t.team, o.team] : [t.team];
+  var side = function (tt) { return '<div class="teamside">' + tileHtml(tt, false) + cardHtml(tt) + scanBlock(tt.team) + "</div>"; };
+  // one list for both teams, the Players list's table and sort (Val by default)
+  var all = sortList(rows.filter(function (r) { return mine.indexOf(r.team) >= 0; }));
+  var list = view.showAll ? all : all.filter(function (r) { return r.status !== "Out" && value(r) >= PANEL_MIN_VALUE || state.lock[r.id] || state.excl[r.id]; });
+  $("teamPanel").innerHTML = gameHead(game, T) + '<div class="gameteams">' + side(t) + (o ? side(o) : "") + "</div>" +
+    '<div class="plist">' + playerTable(list, true) + '<button type="button" class="showall" style="height:24px;padding:0 8px;font-size:11.5px;margin:4px 0">' +
+    (view.showAll ? "Only " + PANEL_MIN_VALUE + "x value and up" : "Show all " + all.length + " (" + (all.length - list.length) + " under " + PANEL_MIN_VALUE + "x or out)") + "</button></div>";
 }
 
 /* The team card (battle-royale-research dk_cbb_teams.py team_card): facts from this season's box scores, each with its
@@ -2031,6 +2084,7 @@ $("nbPlayers").addEventListener("click", function (e) {
    field, each lineup alone in each contest you're entering, weighted by your entries (the idea scoreboard's value).
    A forced batch, because a plain bank piles up on the optimizer's favorites and leaves most stacks too few lineups to
    judge. For reading: nothing changes the bank or the cut; "Bank this" adds the stack's rule for your next draw. */
+var scanAllOpen = false;
 var SCAN = null, SCAN_THIN = 50, SCAN_SALT = 0x5ca7f00d, SCAN_CHUNK = 2000;
 function scanKey() { return "dkcbb-scan:" + slate.draft_group_id; }
 function scanStacks() {
@@ -2223,14 +2277,22 @@ function renderScan() {
         (r.n >= 2 ? btn('data-t="' + i + '"') : "") + "</td></tr>";
     }).join("") : '<tr><td colspan="12" class="mut">Teams from the player scan: no core or leverage players.</td></tr>';
   }
-  $("scanTable").innerHTML = '<div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each, in the Players list's Top 1% / ROI / Cash / Read columns (Read on their own noise, \u00b1" + (100 * S.pbar).toFixed(2) +
+  var thick = S.rows.filter(function (r) { return !r.thin; });          // thin rows only when every row is thin
+  var tops = (thick.length ? thick : S.rows.slice()).sort(function (a, b) { return b.g_t1 - a.g_t1; }).slice(0, 5);
+  var levs = pl.filter(function (r) { return !r.thin && r.read === "leverage"; });
+  var strip = '<div class="topreads"><b>Top reads</b>' + tops.map(function (r) {
+      return '<button type="button" class="topread" data-team="' + esc(r.team || r.game.split("@")[0]) + '" title="Open its game">' + esc(r.key) + " " + sgn(r.g_t1, 2) + " · " + esc(r.read) + "</button>";
+    }).join("") + (levs.length ? '<span class="mut">Leverage:</span>' + levs.map(function (r) {
+      return '<button type="button" class="topread read-leverage" data-team="' + esc(r.team) + '" title="Open its game">' + esc(r.key) + " " + sgn(r.g_t1, 2) + "</button>";
+    }).join("") : "") + "</div>";
+  $("scanTable").innerHTML = strip + '<details id="scanAll"' + (scanAllOpen ? " open" : "") + '><summary>All scan rows</summary><div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each, in the Players list's Top 1% / ROI / Cash / Read columns (Read on their own noise, \u00b1" + (100 * S.pbar).toFixed(2) +
     "; core: strong and field own at or over the players' median " + (S.pownMedian || 0).toFixed(1) + "%, leverage: strong and under it, fade: weak and over, skip: weak and under; a team's Bank this adds at least 2 of its core and leverage players), " : "") + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
     " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
     p(S.plain.t1, 2) + ", cash " + p(S.plain.cash) + ". Gains are in points over the plain batch. Read: <b>strong</b> when its top-1% gain clears the sim's own noise, more than " + (S.bar != null ? "\u00b1" + (100 * S.bar).toFixed(2) : "the noise") +
     " (2\u221a2 \u00d7 sigma, sigma from each stack's gain on odd nights against even nights, the tiers' test), <b>weak</b> below minus that, <b>even</b> between; <b>field light</b> when the field holds it less than the median of stacks of its kind (" +
     Object.keys(S.fieldMedian || {}).sort().map(function (k) { return k.replace(/^(team|game)(\d)$/, "$1 $2+") + " " + p(S.fieldMedian[k]); }).join(", ") + "); thin (under " + SCAN_THIN + " distinct lineups) greyed and last. On the slate's own nights (seed " + S.seed + "), so a rerun repeats. Click a header to sort.</div>" +
     (pl.length ? '<div style="overflow:auto"><table class="contests" id="scanPlayers">' + ttab + "</table></div>" : "") +
-    '<div style="overflow:auto"><table class="contests">' + section("team", "Team stacks") + section("game", "Game stacks") + "</table></div>";
+    '<div style="overflow:auto"><table class="contests">' + section("team", "Team stacks") + section("game", "Game stacks") + "</table></div></details>";
 }
 $("scanRun").addEventListener("click", function () {
   $("scanRun").disabled = true;
@@ -2244,7 +2306,12 @@ $("scanTable").addEventListener("click", function (e) {
     SCAN.sort[kd] = { k: h.dataset.sk, dir: cur.k === h.dataset.sk ? -cur.dir : (/^(key|read|team)$/.test(h.dataset.sk) ? 1 : -1) };
     store(scanKey(), SCAN); renderScan(); return;
   }
-  var b = e.target.closest(".scanBank"); if (!b) return;
+  var tr0 = e.target.closest(".topread");
+  if (tr0) { view.panel = tr0.dataset.team; renderTiles(); renderPlayers(); $("teamBar").scrollIntoView({ block: "start" }); return; }
+  var b = e.target.closest(".scanBank"); if (b) scanBankApply(b);
+});
+$("scanTable").addEventListener("toggle", function (e) { if (e.target.id === "scanAll") scanAllOpen = e.target.open; }, true);
+function scanBankApply(b) {
   var r = b.dataset.p != null ? SCAN.players[+b.dataset.p] : b.dataset.t != null ? null : SCAN.rows[+b.dataset.i];
   if (b.dataset.t != null) {                // a team row: at least 2 of its core and leverage players
     var t = SCAN.teamRoll[+b.dataset.t];
@@ -2253,7 +2320,7 @@ $("scanTable").addEventListener("click", function (e) {
   addRules(r.conds.map(function (c) { return Object.assign({}, c); }));
   $("scanStatus").textContent = "Added " + r.key + " to the rules: Draw & bank draws under it.";
   $("bankDraw").scrollIntoView({ block: "center" });
-});
+}
 
 nbSet(nbStored());
 
@@ -2441,11 +2508,15 @@ $("bankSave").addEventListener("click", saveBank);
 $("entriesBox").addEventListener("click", function (e) { var b = e.target.closest("button[data-review]"); if (b) review(b.dataset.review); });
 $("teamBar").addEventListener("click", function (e) {
   var b = e.target.closest("button[data-team]"); if (!b) return;
-  view.panel = view.panel === b.dataset.team ? null : b.dataset.team;
+  view.panel = view.panel && gameOf(view.panel) === gameOf(b.dataset.team) && view.panel === b.dataset.team ? null : b.dataset.team;
   renderTiles();
 });
 $("teamPanel").addEventListener("click", function (e) {
   if (e.target.closest(".showall")) { view.showAll = !view.showAll; renderTeamPanel(); return; }
+  var hs = e.target.closest("[data-sort]");
+  if (hs) { var sk = hs.dataset.sort; view.dir = view.sort === sk ? -view.dir : (sk === "name" ? 1 : -1); view.sort = sk; renderPlayers(); return; }
+  var sb2 = e.target.closest(".scanBank"); if (sb2) { scanBankApply(sb2); return; }
+  if (e.target.closest(".scanlink")) { e.preventDefault(); $("scanBox").open = true; $("scanBox").scrollIntoView({ block: "start" }); return; }
   var b = e.target.closest(".tile button[data-act]");
   if (b) {
     var t = teamsOf().teams.find(function (x) { return x.team === b.closest(".tile").dataset.team; });

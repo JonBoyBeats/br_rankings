@@ -367,7 +367,13 @@ function audit(name, L, o) {
   };
   check("team bar: one button per team, slate line shown", (await pg.$$eval("#teamBar button", t => t.length)) === TEAMS.teams.length &&
         /games · \d+ spreads? of 15\+/.test(await pg.textContent("#slateLine")), await pg.textContent("#slateLine"));
-  check("team bar: in quadrant order", JSON.stringify(await pg.$$eval("#teamBar button", v => v.map(x => x.className))) === JSON.stringify(TEAMS.teams.map(t => t.verdict)));
+  const chipsG = await pg.evaluate(() => {
+    const gs = [...document.querySelectorAll("#teamBar .gchip")].map(c => ({ game: c.dataset.game, teams: [...c.querySelectorAll("button")].map(b => b.dataset.team), cls: [...c.querySelectorAll("button")].map(b => b.className) }));
+    const tips = gs.map(g => tipOf(g.game) || "~"), T = teamsOf();
+    return { gs, ordered: tips.every((x, i) => i === 0 || tips[i - 1] <= x), sameGame: gs.every(g => g.teams.every(t => gameOf(t) === g.game) && g.teams.join("@") === g.game || g.teams.length === 1),
+             colours: gs.every(g => g.teams.every((t, i) => g.cls[i] === T.teams.find(x => x.team === t).verdict)) };
+  });
+  check("team bar: chips grouped by game (away | home in one chip), ordered by tip, each team keeping its colour", chipsG.gs.length > 1 && chipsG.ordered && chipsG.sameGame && chipsG.colours, JSON.stringify(chipsG));
   await openTeam(TEAMS.teams[0].team);
   const panel = await pg.evaluate(() => [...document.querySelectorAll("#teamPanel .tile")].map(t => t.dataset.team));
   const opp0 = TEAMS.teams.find(t => t.team !== TEAMS.teams[0].team && TEAMS.teams[0].game === t.game);
@@ -402,14 +408,34 @@ function audit(name, L, o) {
   check("analyst: a writeup of tonight's game is a chip on the tile, linked, and the top of the card; the week's notes in their own section; never a player's news tag",
         an.chip === "BuriedTreys writeup" && /writeup: Game writeup text/.test(an.first || "") && an.notes && an.noNews, JSON.stringify(an));
   check("team panel: the team's tile, then its opponent's", JSON.stringify(panel) === JSON.stringify([TEAMS.teams[0].team, opp0 && opp0.team]), JSON.stringify(panel));
-  const pprojs = await pg.$$eval("#teamPanel .teamside:first-child .row:not(.out) input.proj", x => x.map(i => +i.value));
-  check("team panel: its players by projection, highest first", pprojs.length >= 2 && pprojs.every((v, i) => i === 0 || pprojs[i - 1] >= v), JSON.stringify(pprojs));
-  const pv = await pg.evaluate(() => [...document.querySelectorAll("#teamPanel .teamside .row")].map(r => { const x = rows.find(y => y.id === r.dataset.id); return value(x); }));
+  const gv = await pg.evaluate(() => {
+    const ids = [...document.querySelectorAll("#teamPanel .plist .row")].map(r => r.dataset.id), teams = new Set(ids.map(id => byId(id).team));
+    const v = ids.map(id => byId(id)).filter(r => r.status !== "Out").map(value), t = teamsOf().teams.find(x => x.team === view.panel);
+    return { teams: [...teams].sort(), want: [t.team, oppOf(t.team)].sort(), sorted: v.every((x, i) => i === 0 || v[i - 1] >= x), lists: document.querySelectorAll("#teamPanel .plist").length,
+             pressed: [...document.querySelectorAll("#teamBar button[aria-pressed=true]")].map(b => b.dataset.team).sort(), head: !!document.querySelector("#teamPanel .gamehead"),
+             heads: [...document.querySelectorAll("#teamPanel .plist .head span[data-sort]")].length,
+             blank: !scanNow() && [...document.querySelectorAll("#teamPanel .scanblk")].length === 2 && [...document.querySelectorAll("#teamPanel .scanblk")].every(b => /–/.test(b.textContent) && b.querySelector("a.scanlink")) };
+  });
+  check("game view: the game header, both team cards with a Scan block (– and a Scan the slate link before a scan), then one player list for both teams, sorted by Val, with the Players list's columns; both chips pressed",
+        gv.head && gv.blank && gv.lists === 1 && JSON.stringify(gv.teams) === JSON.stringify(gv.want) && gv.sorted && gv.heads >= 15 && JSON.stringify(gv.pressed) === JSON.stringify(gv.want), JSON.stringify(gv));
+  const gs2 = await pg.evaluate(() => {
+    const t = view.panel, o = oppOf(t);
+    document.querySelector('#teamBar button[data-team="' + o + '"]').click();
+    const a = [...document.querySelectorAll("#teamPanel .tile")].map(x => x.dataset.team);
+    document.querySelector('#teamPanel .plist .head [data-sort="proj"]').click();
+    const p = [...document.querySelectorAll("#teamPanel .plist .row")].map(r => byId(r.dataset.id)).filter(r => r.status !== "Out").map(proj);
+    view.sort = "value"; view.dir = -1;
+    document.querySelector('#teamBar button[data-team="' + t + '"]').click();
+    return { a, want: [o, t], sortedProj: p.every((x, i) => i === 0 || p[i - 1] >= x), back: view.panel === t };
+  });
+  check("game view: the other team's chip opens the same game with it first; the list sorts by a header click",
+        JSON.stringify(gs2.a) === JSON.stringify(gs2.want) && gs2.sortedProj && gs2.back, JSON.stringify(gs2));
+  const pv = await pg.evaluate(() => [...document.querySelectorAll("#teamPanel .plist .row")].map(r => { const x = rows.find(y => y.id === r.dataset.id); return value(x); }));
   check("team panel: only players at 2x value or better", pv.length > 0 && pv.every(v => v >= 2), JSON.stringify(pv));
   check("team panel: the full player list hides while a team is open", await pg.$eval("#playersSec", x => x.hidden));
   const nShown = pv.length;
   await pg.click("#teamPanel .showall");
-  const nAll = await pg.$$eval("#teamPanel .teamside .row", r => r.length);
+  const nAll = await pg.$$eval("#teamPanel .plist .row", r => r.length);
   check("team panel: Show all shows every player", nAll > nShown, nShown + " -> " + nAll);
   await pg.click("#teamPanel .showall");
   check("colour: Value and Own in a green gradient", (await pg.$$eval("#teamPanel .row .val[style], #teamPanel .row .own[style]", x => x.length)) > 0);
@@ -1153,9 +1179,35 @@ function audit(name, L, o) {
   check("slate scan: Team stacks and Game stacks, each sorted on its own by a header click (again reverses, arrow shown), the sort kept with the scan",
         JSON.stringify(so.sections) === JSON.stringify(["Team stacks", "Game stacks"]) && so.teamOnly && so.down && so.up && so.gameDefault && so.arrow && so.kept && so.kept.k === "field" && so.kept.dir === 1, JSON.stringify(so));
   const rules0 = await pg.evaluate(() => (state.rules || []).length);
-  await pg.click("#scanTable table:not(#scanPlayers) .scanBank");
+  await pg.evaluate(() => document.querySelector("#scanTable table:not(#scanPlayers) .scanBank").click());
   check("slate scan: Bank this adds the stack's rule for the next draw", await pg.evaluate(n => state.rules.length > n && /\d\+/.test(state.rules[state.rules.length - 1].label), rules0));
   await pg.evaluate(n => { state.rules = state.rules.slice(0, n); save(); renderRules(); }, rules0);
+  // the scan's top reads (up to 5 strongest stacks, the leverage players), each opening its game; the full tables folded
+  const trd = await pg.evaluate(() => {
+    const b = [...document.querySelectorAll("#scanTable .topread")], fold = document.getElementById("scanAll"), thick = SCAN.rows.filter(r => !r.thin), tops = (thick.length ? thick : SCAN.rows.slice()).sort((a, c) => c.g_t1 - a.g_t1).slice(0, 5);
+    const stackBtns = b.filter(x => !x.classList.contains("read-leverage")).map(x => x.textContent.split(" ")[0] + " " + x.textContent.split(" ")[1]);
+    const lev = b.filter(x => x.classList.contains("read-leverage")).length, wantLev = SCAN.players.filter(r => !r.thin && r.read === "leverage").length;
+    b[0].click();
+    const opened = view.panel === b[0].dataset.team && !!document.querySelector('#teamPanel .tile[data-team="' + b[0].dataset.team + '"]');
+    view.panel = null; renderTiles(); renderPlayers();
+    return { n: stackBtns.length, keys: stackBtns, want: tops.map(r => r.key), lev, wantLev, closed: fold && !fold.open, inFold: !!fold.querySelector("th[colspan]"), opened };
+  });
+  check("slate scan: a Top reads strip (the 5 strongest stacks, the leverage players) opening its game; the full tables and the team rollup in a closed All scan rows fold",
+        trd.n === trd.want.length && JSON.stringify(trd.keys) === JSON.stringify(trd.want) && trd.lev === trd.wantLev && trd.closed && trd.inFold && trd.opened, JSON.stringify(trd));
+  // the game view's scan: game stacks under the header, each team card's 3+ / 4+ rows and its core and leverage players
+  const gsc = await pg.evaluate(() => {
+    const t = teamsOf().teams[0]; view.panel = t.team; renderTiles();
+    const g = gameOf(t.team), gr = [...document.querySelectorAll("#teamPanel table.gstk tr")].length - 1, wantG = SCAN.rows.filter(r => r.kind === "game" && r.game === g).length;
+    const blk = document.querySelector('#teamPanel .teamside .scanblk'), sr = blk.querySelectorAll(".sr").length, wantT = SCAN.rows.filter(r => r.kind === "team" && r.team === t.team).length;
+    const names = [...blk.querySelectorAll(".read-core, .read-leverage")].map(x => x.textContent.replace(/ \((core|leverage)\)$/, "")).sort();
+    const wantN = SCAN.players.filter(r => r.team === t.team && !r.thin && /core|leverage/.test(r.read)).map(r => r.key).sort();
+    const n0 = state.rules.length; blk.querySelector(".scanBank").click(); const added = state.rules.length === n0 + 1 && /\d\+/.test(state.rules[n0].label);
+    state.rules = state.rules.slice(0, n0); save(); renderRules();
+    view.panel = null; renderTiles(); renderPlayers();
+    return { gr, wantG, sr, wantT, names, wantN, added };
+  });
+  check("game view: the game's stack rows from the scan; each team card's Scan block with its 3+ / 4+ rows and core / leverage players, Bank this working",
+        gsc.gr === gsc.wantG && gsc.wantG >= 1 && gsc.sr === gsc.wantT + 1 && JSON.stringify(gsc.names) === JSON.stringify(gsc.wantN) && gsc.added, JSON.stringify(gsc));
   // the player scan, at the top: a row for every player in the pool projected 15+ minutes, gains over the same plain
   // batch, Read on the players' own noise and their median field ownership, the team rollup from those reads
   const ps = await pg.evaluate(() => {
