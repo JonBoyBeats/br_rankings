@@ -18,6 +18,12 @@ const seed = B.nights_seed || 1405393094;
 const ctxOf = r => ({ rows, proj: x => S.gatedProj(x, gate), own: x => N.field.own[x.id] || 0, state: { lock: {}, excl: {}, cap: {}, floor: {} }, random: r });
 const pool = (B.final || B.pool.map((_, i) => i)).map(i => ({ ids: B.pool[i].map(String) }));
 const pk = Object.assign({ maxExpo: 40, minUnique: 3, maxCore: 15 }, B.pick || {});
+// contests the lobby file missed, from analysis/cbb/dk/contests_supplement.json (the owner's screenshots)
+const supF = path.join(ROOT, "analysis/cbb/dk/contests_supplement.json");
+const sup = fs.existsSync(supF) ? JSON.parse(fs.readFileSync(supF)).contests || {} : {};
+Object.keys(B.portfolios || {}).forEach(id => {
+  if (sup[id] && !N.slate.contests.some(c => String(c.id) === id && c.payouts)) N.slate.contests = N.slate.contests.filter(c => String(c.id) !== id).concat([sup[id]]);
+});
 const missing = Object.keys(B.portfolios || {}).filter(id => !N.slate.contests.some(c => String(c.id) === id && c.payouts));
 const cs = Object.keys(B.portfolios || {}).map(id => N.slate.contests.find(c => String(c.id) === id)).filter(c => c && c.payouts)
   .map(c => Object.assign({}, c, { n: Math.min(B.portfolios[String(c.id)].length, c.max_per_user || 1) }))

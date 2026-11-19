@@ -981,6 +981,16 @@ def field_metrics(lineups, users, info, n, seed=3, draws=20):
 
 PUNT_MIN = 15            # a punt: a player projected under this many minutes at lock (punt1 / punt2: lineups with 1+ / 2+)
 COPIES_EVAL = os.path.join(DK, "copies_eval.csv")
+SUPPLEMENT = os.path.join(DK, "contests_supplement.json")   # contests missing from the lobby files, from the owner's screenshots
+
+
+def contest_info(slate, cid):
+    """A contest's lobby record (entry fee, payouts) from the slate's lobby, else from SUPPLEMENT."""
+    c = next((c for c in (slate or {}).get("contests") or [] if str(c.get("id")) == str(cid)), None)
+    if c and c.get("payouts"):
+        return c
+    sup = (json.load(open(SUPPLEMENT)).get("contests") or {}) if os.path.exists(SUPPLEMENT) else {}
+    return sup.get(str(cid)) or c
 COPIES_COLS = ["date", "draft_group", "contest_id", "contest", "bucket", "entries", "share", "fees", "won", "roi"]
 COPY_BUCKETS = [("unique", 0, 0), ("1-2", 1, 2), ("3-9", 3, 9), ("10+", 10, 10 ** 9)]
 
@@ -1088,7 +1098,7 @@ def fieldcheck(a):
             if not os.path.exists(path):
                 continue
             L, U, total = real_field(path, byname)
-            copies += copies_rows(path, next((c for c in slate.get("contests") or [] if str(c.get("id")) == str(cid)), None),
+            copies += copies_rows(path, contest_info(slate, cid),
                                   {"date": date, "draft_group": g, "contest_id": cid, "contest": cname})
             n = min(len(L), len(sim), 1000)
             rm, rown = field_metrics(L, U, info, n)
