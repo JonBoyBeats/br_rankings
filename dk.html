@@ -1428,6 +1428,38 @@ function entriesN() {      // contest id -> our entries in it (the inputs, else 
   document.querySelectorAll("#entriesBox input[data-cid]").forEach(function (i) { var n = +i.value || 0; if (n > 0) out[i.dataset.cid] = n; });
   return out;
 }
+/* Contests the entries file names that the slate's list doesn't have (or has without a payout table): a contest that
+   opened after the last lobby run (2026-11-19: the $150 And-One, 5 entries). DraftKings refuses the page's own requests,
+   so the page rechecks the mirror (the lobby run, hourly until lock) every CONTEST_POLL ms and takes the slate's new
+   contest list as soon as it has them, leaving the bank, the cut and the picks as they are; "Check now" does it at once. */
+var CONTEST_POLL = 180000, contestTimer = null;
+function unlisted(cs) {
+  if (!ENTRIES) return [];
+  var have = {}, out = {};
+  cs.forEach(function (c) { have[String(c.id)] = 1; });
+  ENTRIES.rows.forEach(function (r) { if (!have[r[2]]) (out[r[2]] = out[r[2]] || { id: r[2], name: r[1], n: 0 }).n++; });
+  return Object.keys(out).map(function (k) { return out[k]; });
+}
+function unlistedHtml(cs) {
+  var u = unlisted(cs); if (!u.length) return "";
+  return '<div class="note bad" id="unlisted">Not on this slate\'s list yet (or no payout table): ' + u.map(function (x) { return esc(x.name || "contest") + " (" + x.n + " entr" + (x.n === 1 ? "y" : "ies") + ", id " + esc(x.id) + ")"; }).join("; ") +
+    ". Rechecking the mirror every " + CONTEST_POLL / 60000 + " minutes (DraftKings' lobby is read hourly until lock); your bank, cut and picks stay. " +
+    '<button type="button" id="contestCheck" style="height:22px;padding:0 7px;font-size:11.5px">Check now</button></div>';
+}
+function contestPoll(cs) {
+  var want = unlisted(cs).length > 0;
+  if (want && !contestTimer) contestTimer = setInterval(refreshContests, CONTEST_POLL);
+  if (!want && contestTimer) { clearInterval(contestTimer); contestTimer = null; }
+}
+async function refreshContests() {
+  try {
+    var d = await (await fetch(MIRROR + "dk_cbb_morning.json?t=" + Date.now(), { cache: "no-store" })).json();
+    var s2 = (d.slates || []).find(function (x) { return slate && String(x.draft_group_id) === String(slate.draft_group_id); });
+    if (!s2) return;
+    slate.contests = s2.contests || []; slate.contests_at = s2.contests_at;
+    renderEntries(); renderNight(); if (NB.on) nbOpen();
+  } catch (e) {}
+}
 function renderEntries(fromFileNow) {     // fromFileNow: the entries file just loaded, its counts win over typed ones
   var cs = (slate.contests || []).filter(function (c) { return c.payouts; }).sort(function (a, b) { return (b.size || 0) - (a.size || 0); });
   var fromFile = {};
@@ -1439,7 +1471,8 @@ function renderEntries(fromFileNow) {     // fromFileNow: the entries file just 
       return "<tr><td>" + esc(c.name) + '</td><td class="m">' + money(c.entry_fee) + '</td><td class="m">' + (c.size || 0).toLocaleString() + '</td><td class="m">' + (c.max_per_user || 1) +
         '</td><td class="m"><input data-cid="' + esc(c.id) + '" type="number" min="0" max="' + (c.max_per_user || 1) + '" value="' + want + '" style="width:64px;height:26px"></td>' +
         '<td class="m">' + (want ? pf.length + " / " + Math.min(want, c.max_per_user || 1) + ' <button type="button" data-review="' + esc(c.id) + '" style="height:24px;padding:0 7px;font-size:11.5px">Build</button>' : "") + "</td></tr>";
-    }).join("") + "</table>" + (ENTRIES ? '<div class="note">Entries file: ' + ENTRIES.rows.length + " entries loaded.</div>" : "");
+    }).join("") + "</table>" + (ENTRIES ? '<div class="note">Entries file: ' + ENTRIES.rows.length + " entries loaded.</div>" : "") + unlistedHtml(cs);
+  contestPoll(cs);
   if (typeof NB !== "undefined" && NB.on) nbRender();
 }
 function parseCsv(text) {       // RFC 4180-ish: quoted fields, doubled quotes
@@ -2445,6 +2478,7 @@ $("bankClear").addEventListener("click", function () {
   if (!confirm("Clear the bank (" + BANK.lineups.length + " lineups)?")) return;
   BANK = { lineups: [], tags: [], tagRules: {}, groups: {} }; CUT = null; cutSave(); PF = {}; pfSave(); bankSaveState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
 });
+$("entriesBox").addEventListener("click", function (e) { if (e.target.id === "contestCheck") refreshContests(); });
 $("entriesFile").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   f.text().then(function (t) { $("cutStatus").textContent = loadEntries(t); });

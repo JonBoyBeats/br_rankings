@@ -751,6 +751,20 @@ function audit(name, L, o) {
   const counts = await pg.evaluate(() => entriesN());
   check("entries file: fills each contest's entries", JSON.stringify(counts) === JSON.stringify({ "197791872": 1, "197791874": 5, "197791877": 1 }), JSON.stringify(counts));
   check("entries file: says which aren't on the slate", /8 entries loaded \(1 in contests not on this slate's list\)/.test(await pg.textContent("#cutStatus")), await pg.textContent("#cutStatus"));
+  // contests the file names that the slate doesn't list: named in the entries box, rechecked from the mirror (Check now
+  // takes the slate's new list at once, the bank untouched)
+  const ul = await pg.evaluate(async () => {
+    const note0 = (document.getElementById("unlisted") || {}).textContent || "", timer0 = !!contestTimer, n0 = BANK.lineups.length;
+    const i = slate.contests.findIndex(c => String(c.id) === "197791874"), keep = slate.contests[i];
+    slate.contests.splice(i, 1); renderEntries();
+    const note1 = document.getElementById("unlisted").textContent;
+    document.getElementById("contestCheck").click();
+    for (let k = 0; k < 50 && !slate.contests.some(c => String(c.id) === "197791874"); k++) await new Promise(r => setTimeout(r, 100));
+    const note2 = document.getElementById("unlisted").textContent;
+    return { note0, timer0, note1, note2, back: slate.contests.some(c => String(c.id) === "197791874"), bank: BANK.lineups.length === n0, keepName: keep.name, ent: entriesN()["197791874"] };
+  });
+  check("entries file: contests not on the slate's list named in the entries box (with entries and id), rechecked from the mirror; Check now takes the new list, the bank untouched",
+        /Some Other Contest \(1 entry, id 111\)/.test(ul.note0) && ul.timer0 && /And-One \(5 entries, id 197791874\)/.test(ul.note1) && ul.back && !/197791874/.test(ul.note2) && ul.bank && ul.ent === 5, JSON.stringify(ul));
 
   await pg.fill("#cutKeep", "100"); await pg.fill("#cutPct", "25"); await pg.fill("#cutNights", "300");
   await pg.click("#cutRun");
