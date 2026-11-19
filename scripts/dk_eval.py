@@ -174,10 +174,11 @@ FIELD_COLS = ["date", "draft_group", "contest_id", "contest", "side", "lineups",
 # Ownership position and news nights (tracking, 2026-11-19, from the ETR show): own_pct, a side's mean summed ownership
 # as a percentile of the real field's lineups' summed ownership; night_tag, "news" when a player projected NEWS_MIN+
 # minutes in the morning run was Out (or Doubtful, which the projection outs) at lock and not in the morning, or was
-# named out or doubtful by the news feed that day, or was marked out on the page (the build's outs, saved from
+# named out or doubtful by the news feed that day (its kind, or "doubtful" / "out" in its text), or was marked out on the page (the build's outs, saved from
 # 2026-11-19), else "quiet". own_pos_eval.csv: the real field's top-10% and top-1% rates by
 # own-sum percentile band of the real field.
 NEWS_MIN = 20
+NEWS_SAYS = r"\bdoubtful\b|\b(?:is|are|ruled|will be|listed as|remains?)\s+out\b|\bout\s+(?:tonight|for|vs\.?|versus|against|indefinitely)\b|\bwill not play\b|\bwon't play\b"
 OWN_POS_EVAL = os.path.join(DK, "own_pos_eval.csv")
 OWN_POS_COLS = ["date", "draft_group", "contest_id", "contest", "night_tag", "band", "entries", "top10", "top1"]
 OWN_POS_BANDS = [(0, 10), (10, 25), (25, 50), (50, 75), (75, 100)]
@@ -1072,8 +1073,8 @@ def night_tag(mirror, date, g, start, build):
     """"news" or "quiet" (see NEWS_MIN): the morning run's first version of the slate against the version at lock."""
     first = None
     for _, sha in mirror.versions("dk_cbb_morning.json", iso(date + "T00:00:00Z"), start):
-        first = next((x for x in mirror.show(sha, "dk_cbb_morning.json").get("slates", []) if str(x["draft_group_id"]) == g), None)
-        if first:
+        first = next((x for x in mirror.show(sha, "dk_cbb_morning.json").get("slates", []) if str(x["draft_group_id"]) == g and x.get("players")), None)
+        if first:               # the first version with the slate's rows (a slate can be listed before its rows fill)
             break
     last = None
     for _, sha in reversed(mirror.versions("dk_cbb_morning.json", iso(date + "T00:00:00Z"), start)):
@@ -1085,9 +1086,14 @@ def night_tag(mirror, date, g, start, build):
     big = {k for k, r in first["players"].items() if (num(r.get("min")) or 0) >= NEWS_MIN and r.get("status") != "Out"}
     late = {k for k in big if (last["players"].get(k) or {}).get("status") == "Out" or (last["players"].get(k) or {}).get("doubtful")}
     marked = big & {str(k) for k in ((build or {}).get("outs") or {})}
-    nw = at_lock(mirror, "cbb_news.json", start) or {}        # an out or doubtful item in the news feed on the day
-    said = big & {str(i) for x in nw.get("items") or [] if x.get("kind") in ("out", "doubtful") and str(x.get("at", ""))[:10] >= date
-                  for i in x.get("players") or []}
+    # the news feed that day (every version up to lock: the file keeps only recent items): an item about him filed out
+    # or doubtful, or a status item (any kind but plain "news") saying so in its text (11-18's Stokes "is doubtful
+    # tonight" was filed questionable, before the doubtful kind existed); a bare "out" in commentary doesn't count
+    said = set()
+    for _, sha in mirror.versions("cbb_news.json", iso(date + "T00:00:00Z"), start):
+        for x in (mirror.show(sha, "cbb_news.json") or {}).get("items") or []:
+            if str(x.get("at", ""))[:10] >= date and (x.get("kind") in ("out", "doubtful") or x.get("kind") != "news" and re.search(NEWS_SAYS, x.get("text") or "", re.I)):
+                said |= big & {str(i) for i in x.get("players") or []}
     return "news" if late or marked or said else "quiet"
 
 
