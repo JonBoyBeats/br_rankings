@@ -5,6 +5,7 @@
 //   node scripts/dk_bank_noise_study.js DIR/<date>.json 2000 1,0.75,0.5,0.35 DIR/banks_<date>.json
 //   node scripts/dk_bank_noise_study.js DIR/<date>.json 2000 1,0.5,0.35 DIR/rep_<date>.json --ideas analysis/cbb/dk/builds/<the night's build>
 //   python3 scripts/dk_bank_noise_study.py score --dir DIR
+//   (--no-punts on either draw: the punt test, players projected under 15 minutes left out unless his minutes rose on news)
 //
 // Without --ideas: a "No extra rules" bank (drawRules' defaults) of K lineups at each s. With it: the night's own ideas
 // (the build's tag_settings, locks and excludes), each redrawn in proportion to its share of that night's bank. The
@@ -19,6 +20,12 @@ const B = ii > 0 ? JSON.parse(fs.readFileSync(process.argv[ii + 1])) : null;
 const rows = Object.entries(N.slate.players).map(([id, r]) => Object.assign({ id }, r));
 const games = {}; rows.forEach(r => { games[r.team] = Math.max(games[r.team] || 0, r.gp || 0); });
 rows.forEach(r => { r.deepOut = r.status !== "Out" && (r.min || 0) < 12 && (r.min_avg == null || r.min_avg < 8 || (r.gp || 0) < games[r.team] / 2); });
+// --no-punts (the punt test, 2026-11-19): also leave out every player projected under 15 minutes, unless his minutes
+// rose on news (a teammate Out at lock and his projection above his season average)
+if (process.argv.includes("--no-punts")) {
+  const outTeam = {}; rows.forEach(r => { if (r.status === "Out") outTeam[r.team] = 1; });
+  rows.forEach(r => { if (r.status !== "Out" && (r.min || 0) < 15 && !(outTeam[r.team] && r.min_avg != null && r.min > r.min_avg)) r.deepOut = true; });
+}
 const plain = { "No extra rules": { n: 1, maxExpo: 1, minUnique: 1, levW: 0, minSal: 0, maxTeam: 8, stackN: 0, stackBoth: false, maxOwn: null, lowN: 0, lowPct: 10, conds: [] } };
 const count = {}; if (B) B.tags.forEach(t => { const k = Array.isArray(t) ? t.join(" + ") : t; count[k] = (count[k] || 0) + 1; });
 (async () => {
