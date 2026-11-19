@@ -704,6 +704,30 @@
     return { lineups: out, why: out.length < K ? "only " + out.length + " distinct lineups in " + tries + " draws" : "" };
   }
 
+  // Variants around a lineup (the DK page's Variants of the top, 2026-11-19): M draws, each locking a random K of the
+  // parent's 8 players (with the idea's own locks) and redrawing the rest as the bank does, the best lineup under the
+  // idea's rules (o) for one simulated night at the bank noise (o.nightS). Duplicates of the parent or of each other
+  // are dropped; the caller drops near-duplicates of its kept pool.
+  async function variants(ctx, o, parent, K, M) {
+    var out = [], seen = {}, st = ctx.state, keep = st.lock;
+    seen[parent.slice().sort().join(",")] = 1;
+    for (var m = 0; m < M; m++) {
+      var ids = parent.slice();
+      for (var i = ids.length - 1; i > 0; i--) { var j = (ctx.random() * (i + 1)) | 0, t = ids[i]; ids[i] = ids[j]; ids[j] = t; }
+      var lock = Object.assign({}, keep); ids.slice(0, K).forEach(function (id) { lock[id] = 1; });
+      st.lock = lock;
+      try {
+        var r = await solve(ctx, Object.assign({}, o, { n: 1, minUnique: 1, rand: o.poolRand != null ? o.poolRand : CAND_RAND, noCaps: true,
+                                                         night: o.z ? nightPoints(ctx, o.z, o.nightS) : null }));
+      } finally { st.lock = keep; }
+      var L = r.lineups[0];
+      if (!L) continue;
+      var key = L.ids.slice().sort().join(",");
+      if (!seen[key]) { seen[key] = 1; out.push(L); }
+    }
+    return out;
+  }
+
   // Candidates under the rules, the sim, the pick, and its stability: the same pick made on each half of the nights
   // apart, each scored on the other half against the pick made there.
   async function simPick(ctx, o, contest, field, z, K, S) {
@@ -845,7 +869,7 @@
 
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
            gatedProj: gatedProj, seeded: seeded, fitMinutes: fitMinutes, usable: usable, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
-           simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
+           simulate: simulate, builder: builder, pick: pick, variants: variants, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, poolDraw: poolDraw, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
            CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
            CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };

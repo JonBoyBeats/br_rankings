@@ -1052,6 +1052,23 @@ function audit(name, L, o) {
   await pg.click("#bpClear").catch(() => {});
   await pg.click("#bpClear").catch(() => {});
 
+  // Variants of the top: around the top kept lineups, each variant legal, sharing at least Players kept with its parent
+  // and fewer than 7 with any lineup kept before; those that join are in the kept pool, tagged and grouped
+  const vr = await pg.evaluate(async () => {
+    if (!CUT || !CUT.keep) return { skipped: true };
+    const keep0 = CUT.keep.slice(), n0 = BANK.lineups.length;
+    document.getElementById("varN").value = "3"; document.getElementById("varM").value = "6"; document.getElementById("varK").value = "5";
+    const msg = await runVariants();
+    const added = CUT.keep.slice(keep0.length), sh = (a, b) => a.filter(id => b.includes(id)).length;
+    const legal = added.every(i => { const L = BANK.lineups[i], rs = L.ids.map(byId);
+      return L.ids.length === 8 && new Set(L.ids).size === 8 && rs.every(r => r && r.status !== "Out") && rs.reduce((t, r) => t + r.salary, 0) <= 50000; });
+    const near = added.every(i => keep0.every(k => sh(BANK.lineups[k].ids, BANK.lineups[i].ids) < 7));
+    const parent = added.every(i => { const m = /variant of #(\d+)/.exec(BANK.tags[i][0]); return m && sh(BANK.lineups[keep0[+m[1] - 1]].ids, BANK.lineups[i].ids) >= 5; });
+    const grouped = added.every(i => lineupGroup(i) === "Variants of the top");
+    return { msg, added: added.length, bankGrew: BANK.lineups.length - n0, legal, near, parent, grouped, bankN: CUT.bankN === BANK.lineups.length, tierA: !!CUT.board.tierA };
+  });
+  check("variants of the top: legal, near their parent (5+ of 8), none sharing 7+ with a kept lineup, in the kept pool, tagged and grouped; the scoreboard redone",
+        !vr.skipped && vr.added === vr.bankGrew && vr.legal && vr.near && vr.parent && vr.grouped && vr.bankN && vr.tierA && vr.added > 0 && /^Variants of the top 3/.test(vr.msg), JSON.stringify(vr));
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
   passes.forEach(p => console.log("PASS " + p));

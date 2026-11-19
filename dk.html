@@ -314,6 +314,12 @@
     <div class="note" id="bankCheck" style="flex-basis:100%;margin:0"></div>
     <button type="button" class="primary" id="cutRun">Re-sim &amp; cut</button>
   </div>
+  <div class="opts" title="After the cut, before Fill: variants around the top kept lineups, each keeping some of its players and redrawing the rest under its idea's rules, the bank noise and the pool rules; those that reach the kept pool's top half on the same nights join it, tagged &quot;variant of #rank&quot; (grouped as Variants of the top). Backtest in versions.csv">
+    <label class="field"><span class="field-label">Top kept</span><input class="num" id="varN" type="number" min="1" max="100" value="15"></label>
+    <label class="field"><span class="field-label">Variants each</span><input class="num" id="varM" type="number" min="1" max="100" value="25"></label>
+    <label class="field"><span class="field-label">Players kept</span><input class="num" id="varK" type="number" min="3" max="7" value="5"></label>
+    <button type="button" id="varRun">Variants of the top</button>
+  </div>
   <div class="opts">
     <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="40"></label>
     <label class="field"><span class="field-label">Min unique</span><input class="num" id="minUnique" type="number" min="1" max="8" value="3"></label>
@@ -1745,6 +1751,65 @@ $("bankClear").addEventListener("click", function () {
 $("entriesFile").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   f.text().then(function (t) { $("cutStatus").textContent = loadEntries(t); });
+});
+/* Variants of the top (2026-11-19; the owner presses it after the cut): around each of the top Top kept lineups (cut
+   rank order), Variants each draws, each keeping a random Players kept of its 8 (DKSim.variants) under the lineup's own
+   idea's saved rules, with the bank noise and the pool as it stands (deep bench, punts, outs). A variant sharing 7+
+   players with a kept lineup or another variant is dropped, as the cut does. Kept and variants are simmed together on
+   the slate's nights, each alone in every contest you're entering (the idea scoreboard's value); a variant reaching the
+   kept pool's median joins the bank and the kept pool, tagged "variant of #rank" and grouped as Variants of the top. */
+async function runVariants() {
+  if (!CUT || !CUT.keep) return "Re-sim & cut first: variants grow around the kept lineups.";
+  var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
+  if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
+  var N = Math.max(1, +$("varN").value || 15), M = Math.max(1, +$("varM").value || 25), K = Math.min(7, Math.max(3, +$("varK").value || 5));
+  var keep = CUT.keep.slice(), top = keep.slice(0, N), shared = function (a, b) { return a.filter(function (id) { return b.indexOf(id) >= 0; }).length; };
+  var vars = [], from = [];
+  for (var p = 0; p < top.length; p++) {
+    $("cutStatus").textContent = "Variants around #" + (p + 1) + " of " + top.length + "…"; await tick();
+    var bi = top[p], o0 = (BANK.tagRules || {})[BANK.tags[bi][0]] || {}, cx = ctx();
+    var map = function (a) { var o = {}; (a || []).forEach(function (id) { o[id] = 1; }); return o; };
+    cx.state = Object.assign({}, state, { lock: map(o0.lock), excl: Object.assign(map(o0.excl), state.excl) });
+    var o = Object.assign({}, drawRules(), o0, { z: fieldDoc.z, nightS: drawRules().nightS, conds: o0.conds || drawRules().conds });
+    var got = await DKSim.variants(cx, o, BANK.lineups[bi].ids, K, M);
+    got.forEach(function (L) {
+      if (keep.some(function (k) { return shared(BANK.lineups[k].ids, L.ids) >= 7; }) || vars.some(function (x) { return shared(x.ids, L.ids) >= 7; })) return;
+      vars.push(L); from.push(p + 1);
+    });
+  }
+  if (!vars.length) return "No new variants: every draw repeated a kept lineup or one sharing 7+ of its players.";
+  $("cutStatus").textContent = "Simming " + keep.length + " kept and " + vars.length + " variants on the slate's nights…"; await tick();
+  var S = +$("nSims").value || 3000, pool = keep.map(function (k) { return BANK.lineups[k]; }).concat(vars), v = new Float64Array(pool.length), w = 0;
+  cs.forEach(function (c) {
+    var n = Math.min(ns[String(c.id)], c.max_per_user || 1), st = DKSim.aloneStats(DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, n, S), c);
+    for (var k = 0; k < pool.length; k++) v[k] += n * (st.odd[k] + st.even[k]) / 2;
+    w += n;
+  });
+  var kv = Array.prototype.slice.call(v, 0, keep.length).sort(function (a, b) { return a - b; }), med = kv[Math.floor(kv.length / 2)];
+  var before = CUT.board && CUT.board.tierA ? CUT.board.tierA.n : null, added = 0, seen = {};
+  BANK.lineups.forEach(function (L) { seen[L.ids.slice().sort().join(",")] = 1; });
+  BANK.groups = BANK.groups || {};
+  vars.forEach(function (L, j) {           // straight into the bank and the kept pool (bankAdd would drop the cut)
+    var key = L.ids.slice().sort().join(",");
+    if (v[keep.length + j] < med || seen[key]) return;
+    seen[key] = 1;
+    var tag = "variant of #" + from[j];
+    BANK.groups[tag] = "Variants of the top";
+    BANK.tagRules[tag] = BANK.tagRules[tag] || { variant: { of: from[j], keptPlayers: K, each: M }, nightS: drawRules().nightS };
+    CUT.keep.push(BANK.lineups.length);
+    BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice() }); BANK.tags.push([tag]); added++;
+  });
+  CUT.bankN = BANK.lineups.length;
+  CUT.variants = { top: N, each: M, keptPlayers: K, drawn: vars.length, added: added };
+  $("cutStatus").textContent = "Scoring the kept lineups for the idea scoreboard…"; await tick();
+  CUT.board = ideaBoard(cs, ns, S);
+  bankSaveState(); cutSave(); PF = {}; pfSave(); renderBank(); renderEntries();
+  return "Variants of the top " + top.length + " (" + K + " of 8 players kept, " + M + " draws each): " + vars.length + " new after near-duplicates, " + added +
+    " reached the kept pool's top half and joined it (tagged \"variant of #rank\", grouped as Variants of the top). Tier A: " +
+    (before != null ? before + " → " : "") + CUT.board.tierA.n + ". Fill all contests again to use them.";
+}
+$("varRun").addEventListener("click", function () {
+  runVariants().then(function (m) { $("cutStatus").textContent = m; }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Variants failed: ' + esc(e.message) + "</span>"; });
 });
 $("cutRun").addEventListener("click", function () {
   runCut().then(function (m) { $("cutStatus").textContent = m; }, function (e) { CUT = null; cutSave(); renderBank(); $("cutStatus").innerHTML = '<span class="bad">Cut failed: ' + esc(e.message) + "</span>"; });
