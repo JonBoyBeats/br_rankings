@@ -328,6 +328,7 @@
     <label class="field"><span class="field-label">Nights for the pick</span><input class="num" id="nSims" type="number" min="500" max="10000" step="500" value="3000"></label>
     <label class="field" title="A starting portfolio for every contest you're entering, to edit by hand: Max ROI adds by expected value, Max coverage by the rise in nights one of yours reaches the top 1%, Balanced weighs the two equally"><span class="field-label">Start from</span><select id="pfObj" style="width:auto">
       <option value="roi">Max ROI</option><option value="balanced">Balanced</option><option value="cover">Max coverage</option></select></label>
+    <label class="field" title="No unlocked player in more than this % of the night's entries across all your contests (on top of each contest's Max exposure, his own Max%, Max core and Min unique). Fill all contests and hand adds keep to it; Add anyway overrides. 2026-11-19: on the early slate one player was in 85% of 26 entries"><span class="field-label">Max exposure, night %</span><input class="num" id="maxNight" type="number" min="5" max="100" step="5" value="60"></label>
     <label class="field" title="Unique within a contest; across contests one lineup can go in this many (1: each lineup in one contest only, the rule until 2026-11-19). Each contest has its own prizes, so a copy in another contest splits nothing; it adds swing. Fill all contests and the builder both keep to it"><span class="field-label">Max contests per lineup</span><input class="num" id="maxUse" type="number" min="1" max="10" step="1" value="3"></label>
     <button type="button" class="primary" id="pfRun">Fill all contests</button>
     <button type="button" id="pfUndo" disabled title="Put back the portfolios the last fill replaced">Undo fill</button>
@@ -1366,7 +1367,7 @@ async function pickPortfolios(into, objective) {
   // stake (fee x our entries) picks first; each later contest picks from the lineups not yet at the max
   var nOf = function (c) { return Math.min(ns[String(c.id)], c.max_per_user || 1); };
   cs = cs.slice().sort(function (a, b) { return (b.entry_fee || 0) * nOf(b) - (a.entry_fee || 0) * nOf(a) || (b.entry_fee || 0) - (a.entry_fee || 0); });
-  var all = finalIdx(), taken = {}, S = +$("nSims").value || 3000, size = all.length, maxUse = maxUses();
+  var all = finalIdx(), taken = {}, S = +$("nSims").value || 3000, size = all.length, maxUse = maxUses(), nightCount = {};
   var nightN = cs.reduce(function (a, c) { return a + nOf(c); }, 0), mp = +$("maxPair").value || 0, pairCount = {};
   var pairLimit = mp ? Math.max(1, Math.floor(mp / 100 * nightN + 1e-9)) : 0;
   var msgs = [];
@@ -1376,13 +1377,24 @@ async function pickPortfolios(into, objective) {
     $("cutStatus").textContent = "Picking " + n + " for " + c.name + " from " + pool.length + " left…"; await tick();
     var sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, n, S);
     var pairsBefore = Object.assign({}, pairCount);       // the night's pair counts before this contest (for the trials below)
-    var po = Object.assign(pickRules(n), { objective: objective || "roi" }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(ctx(), po, pool, sim, c, n);
+    var cxN = ctx(), nl = nightLimit();     // the night cap, as each player's Max% in this contest: his room left tonight
+    if (nl < Infinity) {
+      var capN = Object.assign({}, state.cap);
+      Object.keys(nightCount).forEach(function (id) {
+        if (state.lock[id]) return;
+        var room = Math.max(0, nl - nightCount[id]);
+        if (room < n) capN[id] = Math.min(capN[id] != null && capN[id] !== "" ? +capN[id] : 100, 100 * (room + 1e-6) / n);
+      });
+      cxN.state = Object.assign({}, state, { cap: capN });
+    }
+    var po = Object.assign(pickRules(n), { objective: objective || "roi" }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(cxN, po, pool, sim, c, n);
     into[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
-    into[String(c.id)].forEach(function (bi) { taken[bi] = (taken[bi] || 0) + 1; });
+    into[String(c.id)].forEach(function (bi) { taken[bi] = (taken[bi] || 0) + 1; BANK.lineups[bi].ids.forEach(function (id) { nightCount[id] = (nightCount[id] || 0) + 1; }); });
     var why = "";
     if (r.chosen.length < n) {        // which setting stops it: try each one relaxed
-      var fills = function (x) { return DKSim.pick(ctx(), Object.assign({}, po, x, pairLimit ? { pairCount: Object.assign({}, pairsBefore) } : {}), pool, sim, c, n).chosen.length >= n; };
+      var fills = function (x, cx2) { return DKSim.pick(cx2 || cxN, Object.assign({}, po, x, pairLimit ? { pairCount: Object.assign({}, pairsBefore) } : {}), pool, sim, c, n).chosen.length >= n; };
       var stops = [["Max exposure", { maxExpo: 1 }], ["Min unique", { minUnique: 1 }], ["Max core", { maxCore: null }], ["Max pair", { pairLimit: 0 }]].filter(function (x) { return fills(x[1]); })
+        .concat(nl < Infinity && fills({}, ctx()) ? [["Max exposure, night", {}]] : [])
         .map(function (x) { return x[0]; });
       why = ", short: " + (stops.length ? stops.join(" or ") + " stops it (relaxing " + (stops.length > 1 ? "any one" : "it") + " fills it)" :
             "the final pool runs out under the caps together") + "; raise Keep, or loosen it";
@@ -1400,6 +1412,18 @@ async function pickPortfolios(into, objective) {
 }
 
 function maxUses() { return Math.max(1, Math.round(+$("maxUse").value || 3)); }
+/* The night cap: no unlocked player in more than Max exposure, night % of the night's entries (every contest you're
+   entering, each at its entries); the room a player has left in a contest is the cap less his entries in the others. */
+function nightEntries() {
+  var ns = entriesN();
+  return Object.keys(ns).reduce(function (a, k) { var c = (slate.contests || []).find(function (x) { return String(x.id) === k; }); return a + Math.min(ns[k], (c && c.max_per_user) || 1); }, 0);
+}
+function nightLimit() { var p = +$("maxNight").value; return p ? Math.max(1, Math.floor(p / 100 * nightEntries() + 1e-9)) : Infinity; }
+function nightUsed(except) {
+  var u = {};
+  Object.keys(PF).forEach(function (cid) { if (cid !== except) PF[cid].forEach(function (bi) { BANK.lineups[bi].ids.forEach(function (id) { u[id] = (u[id] || 0) + 1; }); }); });
+  return u;
+}
 function review(cid) {
   var c = (slate.contests || []).find(function (x) { return String(x.id) === cid; });
   var other = {};                       // lineups already in Max contests per lineup other contests aren't on offer here
@@ -1499,24 +1523,30 @@ function bpRescore() {
 /* Each player's limit in this contest's set: Max exposure (at least one), his own Max% if lower, a locked player the
    whole set. Auto-fill and hand adds both keep to it (2026-11-18: the 40% bound Auto-fill only, and hand picks put
    Hansberry in 87% of the 11-16 entries and Dior Johnson in 78% of 11-17's). */
-function bpLimits() {
-  var o = BP.o, limit = {};
+function bpLimits(why) {      // why: {id: "night"} where the night cap is the one that binds
+  var o = BP.o, limit = {}, nl = nightLimit(), used = nl < Infinity ? nightUsed(BP.review) : {};
   rows.forEach(function (r) {
     var cap = Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
     limit[r.id] = state.lock[r.id] ? o.n : Math.floor(cap * o.n + 1e-9);
+    if (!state.lock[r.id] && nl < Infinity && nl - (used[r.id] || 0) < limit[r.id]) {
+      limit[r.id] = Math.max(0, nl - (used[r.id] || 0));
+      if (why) why[r.id] = "night";
+    }
   });
   return limit;
 }
-function bpOver(k) {          // the players lineup k would take past their limit: [{name, n, limit}]
-  var count = {}, limit = bpLimits();
+function bpOver(k) {          // the players lineup k would take past their limit: [{name, n, limit, night}]
+  var count = {}, why = {}, limit = bpLimits(why);
   BP.b.picked.forEach(function (j) { BP.pool[j].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
   return BP.pool[k].ids.filter(function (id) { return limit[id] != null && (count[id] || 0) + 1 > limit[id]; })
-    .map(function (id) { return { name: byId(id).name, n: count[id] || 0, limit: limit[id] }; });
+    .map(function (id) { return { name: byId(id).name, n: count[id] || 0, limit: limit[id], night: why[id] === "night" }; });
 }
 /* What lineup k would break as a hand add, as reasons: a player past his limit (Max exposure / Max%), too few players
    different from a pick (Min unique), or its core (three highest salaries) past Max core. "Add anyway" overrides. */
 function bpBlocks(k) {
-  var o = BP.o, why = bpOver(k).map(function (x) { return x.name + " is in " + x.n + " of your " + o.n + " (his limit " + x.limit + ")"; });
+  var o = BP.o, why = bpOver(k).map(function (x) {
+    return x.night ? x.name + " is at the night cap: " + nightLimit() + " of tonight's " + nightEntries() + " entries (Max exposure, night " + $("maxNight").value + "%)"
+                   : x.name + " is in " + x.n + " of your " + o.n + " (his limit " + x.limit + ")"; });
   var ids = BP.pool[k].ids, mu = o.minUnique || 1;
   var close = BP.b.picked.filter(function (j) { return 8 - BP.pool[j].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length < mu; });
   if (close.length) why.push("shares " + (8 - mu + 1) + "+ of 8 players with " + close.length + " pick" + (close.length === 1 ? "" : "s") + " (Min unique " + mu + ")");

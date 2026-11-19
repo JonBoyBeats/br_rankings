@@ -944,6 +944,16 @@ function audit(name, L, o) {
   check("max contests per lineup: the builder offers only lineups under the max in the other contests", await pg.evaluate(() => {
     const other = {}; Object.keys(PF).forEach(k => { if (k !== "197791874") PF[k].forEach(bi => { other[bi] = (other[bi] || 0) + 1; }); });
     return BP.idx.every(bi => (other[bi] || 0) < 3); }));
+  // Max exposure, night %: 60 by default; at 40, no unlocked player in more than 40% of the night's entries across every contest
+  check("night cap: 60% by default", await pg.evaluate(() => document.getElementById("maxNight").defaultValue === "60"));
+  await pg.fill("#maxNight", "40");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const nc = await pg.evaluate(() => { const c = {}; let n = 0;
+    Object.values(PF).forEach(v => v.forEach(bi => { n++; BANK.lineups[bi].ids.forEach(id => { if (!state.lock[id]) c[id] = (c[id] || 0) + 1; }); }));
+    return { n, max: Math.max(0, ...Object.values(c)), lim: nightLimit(), night: nightEntries() }; });
+  check("night cap: at 40%, no unlocked player past 40% of the night's entries", nc.n > 0 && nc.max <= nc.lim && nc.lim === Math.max(1, Math.floor(0.4 * nc.night + 1e-9)), JSON.stringify(nc));
+  await pg.fill("#maxNight", "60");
   await pg.fill("#maxUse", "1");
 
   await pg.evaluate(() => { document.querySelectorAll("#bankBox input[data-tag]").forEach(x => { x.checked = true; }); });
