@@ -215,6 +215,9 @@ function roundOf(rank) { return Math.min(ROUNDS, Math.ceil(rank / TEAMS)); }
 var EVERY = 60;   // seconds between pulls while the page is open; ESPN's box scores move about this often
 // ESPN's abbreviations -> the board's (the nightly job's map)
 var TEAM = { SA: "SAS", NY: "NYK", GS: "GSW", NO: "NOP", UTAH: "UTA", WSH: "WAS" };
+// Underdog's NBA team codes -> the same: its slates write GS, NO, NY, SA and LA (the Clippers), so a player on those teams
+// never found his game (no live colour, no game line) until 2026-11-19
+var UD_TEAM = { SA: "SAS", NY: "NYK", GS: "GSW", NO: "NOP", LA: "LAC", UTAH: "UTA", WSH: "WAS", PHO: "PHX", BRK: "BKN", CHO: "CHA" };
 // ESPN's spelling -> Underdog's, as on the board
 var ESPN_ALIASES = { "miles mcbride": "deuce mcbride", "herbert jones": "herb jones", "moritz wagner": "moe wagner",
                      "luguentz dort": "lu dort", "cameron johnson": "cam johnson" };
@@ -359,6 +362,7 @@ async function loadSlates() {
     var t = new Date(s.cutoff).getTime();
     if (seen[s.slate_id] || !s.players.length || t < now - 20 * 3600e3 || t > now + 16 * 3600e3) return;
     seen[s.slate_id] = 1;
+    if (sportOf(s) === "nba") s.players.forEach(function (p) { if (p.team && UD_TEAM[p.team]) p.team = UD_TEAM[p.team]; });
     out.push(s);
   });
   var dk = await mirror("dk_cbb_morning.json").catch(function () { return { slates: [] }; });
