@@ -104,6 +104,28 @@ function audit(name, L, o) {
   await pg.click(`#players .row[data-id="${qRows[0]}"] .excl`);
   await pg.click("#qOnly");
   check("Q filter: off, everyone again", (await pg.$$eval("#players .row", r => r.length)) === playersN);
+  // Mark out: a Questionable player ruled out; his teammates share exactly 200 minutes, projections moving with minutes
+  const qo = await pg.evaluate(() => {
+    const q = rows.find(r => r._status0 === "Questionable" && r.min > 0 && rows.filter(x => x.team === r.team && x.min > 0 && x.status !== "Out").length >= 6);
+    if (!q) return null;
+    const mates = rows.filter(r => r.team === q.team && r.id !== q.id && r.status !== "Out" && r.min > 0);
+    const before = Object.fromEntries(mates.map(r => [r.id, proj(r)]));
+    view.panel = null; view.qOnly = false; renderTiles(); renderPlayers();
+    document.querySelector(`#players .row[data-id="${q.id}"] .qout`).click();
+    const sum = mates.reduce((t, r) => t + r.min * (minScale[r.id] || 1), 0);
+    const moved = mates.every(r => Math.abs(proj(r) - before[r.id] * (minScale[r.id] || 1)) < 1e-9);
+    const out = { status: q.status, sum, moved, tag: !!document.querySelector(`#players .row[data-id="${mates[0].id}"]`) };
+    document.querySelector(`#players .row[data-id="${q.id}"] .qout`).click();
+    out.back = q.status === "Questionable" && mates.every(r => Math.abs(proj(r) - before[r.id]) < 1e-9) && !Object.keys(state.outs).length;
+    return out;
+  });
+  check("mark out: he's Out, his teammates share exactly 200 minutes, projections moving with them; undo restores",
+        qo && qo.status === "Out" && Math.abs(qo.sum - 200) < 1e-6 && qo.moved && qo.back, JSON.stringify(qo));
+  check("fitMinutes: down to 200 and up to 200, none over 40", (() => true)() && await pg.evaluate(() => {
+    const a = DKSim.fitMinutes([35, 35, 35, 35, 30, 25, 20, 10]), b = DKSim.fitMinutes([30, 28, 25, 20, 18, 15, 10]);
+    const s = x => x.reduce((t, y) => t + y, 0);
+    return Math.abs(s(a) - 200) < 1e-6 && Math.abs(s(b) - 200) < 1e-6 && Math.max(...b) <= 40;
+  }));
   // EvanMiya's position, role and possessions on the row (a player without them shows none)
   const em = await pg.evaluate(() => { const r = rows.find(x => x.status !== "Out"); Object.assign(r, { em_pos: 1.69, em_role: 2.29, poss: 263, min_poss: 31.2 }); renderPlayers();
     const el = document.querySelector(`#players .row[data-id="${r.id}"] .sub`); const txt = el.textContent, tip = el.querySelector("span[title]") ? el.querySelector("span[title]").title : "";

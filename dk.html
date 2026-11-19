@@ -193,6 +193,7 @@
   table.bp tr.over td { opacity: .5; } table.bp tr.over td:first-child { opacity: 1; }
   table.bp button.bpForce { color: var(--bad); border-color: var(--bad); font-size: 11px; padding: 0 6px; }
   .row .has5 { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
+  .row button.qout { height: 20px; padding: 0 6px; font-size: 10.5px; margin-left: 4px; }
 </style>
 </head>
 <body>
@@ -373,7 +374,22 @@ function save() { store(key(), state); }
 var isG = DKSim.isG, isF = DKSim.isF;
 // Proj: the owner's override, else ours through the projection gate (DraftKings' average blended in where it has
 // beaten ours on the graded nights: analysis/cbb/dk/gate.json, scripts/cbb_daily.py)
-function proj(r) { var o = state.proj[r.id]; return o != null ? o : DKSim.gatedProj(r, gate); }
+function proj(r) { var o = state.proj[r.id]; return o != null ? o : DKSim.gatedProj(r, gate) * (minScale[r.id] || 1); }
+/* Your Out toggle (a Questionable player you rule out, e.g. 2026-11-18's Stokes): he's Out for the draw and the pick,
+   and his team's other players share 200 minutes again (DKSim.fitMinutes, the projection's own rule), each one's
+   projection moving with his minutes (points per minute held). minScale: player id -> new minutes / projected. */
+var minScale = {};
+function applyOuts() {
+  minScale = {};
+  rows.forEach(function (r) { r.status = state.outs && state.outs[r.id] ? "Out" : r._status0; });
+  var teams = {};
+  rows.forEach(function (r) { if (state.outs && state.outs[r.id]) teams[r.team] = 1; });
+  Object.keys(teams).forEach(function (t) {
+    var v = rows.filter(function (r) { return r.team === t && r.status !== "Out" && r.min != null && r.min > 0; });
+    var fit = DKSim.fitMinutes(v.map(function (r) { return r.min; }), 200);
+    v.forEach(function (r, i) { minScale[r.id] = fit[i] / r.min; });
+  });
+}
 function value(r) { return proj(r) / (r.salary / 1000); }
 function usable(r) { return r.status !== "Out" && !state.excl[r.id]; }
 
@@ -420,8 +436,10 @@ async function load() {
 
 function pick() {
   slate = doc.slates.find(function (s) { return String(s.draft_group_id) === $("slate").value; });
-  rows = Object.keys(slate.players).map(function (id) { return Object.assign({ id: id }, slate.players[id]); });
-  state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, floor: {}, rules: [] }, store(key()) || {});
+  rows = Object.keys(slate.players).map(function (id) { var r = Object.assign({ id: id }, slate.players[id]); r._status0 = r.status; return r; });
+  state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, floor: {}, outs: {}, rules: [] }, store(key()) || {});
+  state.outs = state.outs || {};
+  applyOuts();
   // rules saved before the draw-only change: an "in X% of lineups" rule becomes its plain rule; an "at most X%" one goes
   state.rules = (state.rules || []).filter(function (r) { return r.maxShare == null; }).map(function (r) {
     if (r.share == null) return r;
@@ -525,7 +543,12 @@ function playerTable(list, sortable) {
     var nw = newsOf(r.id);
     var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
       (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
-        ' title="Projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : "") + '>Q</span>' : "") + statusConflict(r) +
+        ' title="Projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : "") + '>Q</span>' : "") +
+      (r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout" title="' +
+        (state.outs[r.id] ? "Put him back as Questionable" : "Rule him out: his teammates share his minutes (200 for the team)") + '">' +
+        (state.outs[r.id] ? "Undo out" : "Mark out") + "</button>" : "") +
+      (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005 ? '<span class="tag" title="A teammate you ruled out: his minutes ' + (r.min || 0).toFixed(1) +
+        " -> " + ((r.min || 0) * minScale[r.id]).toFixed(1) + '">+' + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min</span>" : "") + statusConflict(r) +
       (r.fragile ? '<span class="tag frag" title="Fragile: expected miss ±' + (r.miss_dk || "") + '">fragile</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
     var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
@@ -1704,6 +1727,13 @@ $("players").addEventListener("click", function (e) {
   rowClick(e);
 });
 function rowClick(e) {
+  var q = e.target.closest(".qout");
+  if (q) {
+    var qid = q.closest(".row").dataset.id;
+    if (state.outs[qid]) delete state.outs[qid]; else state.outs[qid] = 1;
+    save(); applyOuts(); renderPlayers(); if (view.panel) renderTeamPanel();
+    return;
+  }
   var b = e.target.closest(".lx button"); if (!b) return;
   var id = b.closest(".row").dataset.id, which = b.classList.contains("lock") ? "lock" : "excl", other = which === "lock" ? "excl" : "lock";
   if (state[which][id]) delete state[which][id]; else { state[which][id] = 1; delete state[other][id]; }

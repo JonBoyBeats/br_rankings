@@ -52,6 +52,22 @@
   // ours over the graded nights in a salary band, Proj there is w x ours + (1 - w) x DraftKings' average.
   // ... and a Questionable player at that x gate.questionable.factor (measured by dk_eval.py gate: actual / projected
   // over the graded Questionable player-nights; 1 until there are enough)
+  // A team's projected minutes made to add up to exactly total (200): over it, the excess off each in proportion to
+  // m x (40 - m), none under 0.5; under it, the shortfall on the same way, none over 40. The same rule as
+  // battle-royale-research cbb_nightly.py fit_minutes (the owner's, 2026-11-19).
+  function fitMinutes(mins, total) {
+    total = total == null ? 200 : total;
+    var m = mins.slice();
+    for (var it = 0; it < 20; it++) {
+      var gap = total - m.reduce(function (a, x) { return a + x; }, 0);
+      if (Math.abs(gap) < 1e-6) break;
+      var w = m.map(function (x) { return (gap > 0 ? x < 40 : x > 0.5) ? x * Math.max(1, 40 - x) : 0; });
+      var W = w.reduce(function (a, x) { return a + x; }, 0);
+      if (!W) break;
+      m = m.map(function (x, i) { return Math.min(40, Math.max(0.5, x + gap * w[i] / W)); });
+    }
+    return m;
+  }
   // A seeded random generator (mulberry32): the same seed, the same draws
   function seeded(seed) {
     var a = seed >>> 0;
@@ -824,7 +840,7 @@
   }
 
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
-           gatedProj: gatedProj, seeded: seeded, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
+           gatedProj: gatedProj, seeded: seeded, fitMinutes: fitMinutes, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, poolDraw: poolDraw, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
            CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
