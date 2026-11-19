@@ -942,8 +942,15 @@ function audit(name, L, o) {
         JSON.stringify(Object.fromEntries(Object.entries(ap).map(([c, v]) => [c, v.length]))));
   check("Save build: your portfolios untouched by the benchmark", await pg.evaluate(() => JSON.stringify(PF)) === pfBefore);
 
+  // Reload on the same slate: new rows and contests from the mirror, the bank / cut / picks as they are in the page
+  // (a bank past the browser's storage would otherwise lose its newest lineups, 2026-11-19)
+  const rl0 = await pg.evaluate(() => { const n = BANK.lineups.length; BANK.lineups.push({ ids: BANK.lineups[0].ids.slice(), slots: BANK.lineups[0].slots.slice() }); BANK.tags.push(["in memory only"]);
+    const c = slate.contests.pop(); return { n, cid: c.id }; });
   await pg.click("#reload");
   await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("statusInfo").textContent));
+  const rl = await pg.evaluate(c => ({ n: BANK.lineups.length, tag: BANK.tags[BANK.tags.length - 1][0], back: slate.contests.some(x => x.id === c) }), rl0.cid);
+  check("Reload keeps the page's bank on the same slate and takes the mirror's contests", rl.n === rl0.n + 1 && rl.tag === "in memory only" && rl.back, JSON.stringify([rl0, rl]));
+  await pg.evaluate(() => { BANK.lineups.pop(); BANK.tags.pop(); renderBank(); });
   check("portfolios survive a reload (the Live page reads them for your exposures)",
         JSON.stringify(await pg.evaluate(() => PF["197791874"])) === JSON.stringify(pf2) && !(await pg.$eval("#pfExport", x => x.disabled)));
 

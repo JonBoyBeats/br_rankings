@@ -594,10 +594,13 @@ async function load() {
   });
   if (!sel.options.length) { $("status").textContent = "No DraftKings Classic slate today."; $("players").innerHTML = ""; return; }
   if (keep && [].some.call(sel.options, function (o) { return o.value === keep; })) sel.value = keep;
-  pick();
+  // Reload on the same slate keeps the bank, the cut, the picks and the entries file as they are in this page (the
+  // bank can outgrow the browser's storage, 2026-11-19), and takes the new rows, contests and field
+  pick(!!(slate && BANK && sel.value === keep && String(slate.draft_group_id) === keep));
 }
 
-function pick() {
+function pick(keepMem) {
+  keepMem = keepMem === true;       // the slate picker's change event passes an Event: a new slate loads its own bank
   slate = doc.slates.find(function (s) { return String(s.draft_group_id) === $("slate").value; });
   rows = Object.keys(slate.players).map(function (id) { var r = Object.assign({ id: id }, slate.players[id]); r._status0 = r.status; return r; });
   state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, floor: {}, outs: {}, ins: {}, deepIn: {}, rules: [] }, store(key()) || {});
@@ -620,7 +623,8 @@ function pick() {
   BP = null; $("bpTableWrap").hidden = true; $("bpSide").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpGroups").innerHTML = "";
   ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = true; });
   ruleCounts = {}; editing = -1;
-  bankLoadState(); renderBank(); renderEntries(); renderNight(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
+  if (!keepMem) bankLoadState();
+  renderBank(); renderEntries(); renderNight(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
   if (NB.on) { BP = null; nbOpen(); }
   SCAN = store(scanKey()); renderScan();
   renderTiles(); renderRules(); fillEditor(); renderNews(); renderPlayers();
