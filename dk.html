@@ -492,6 +492,8 @@ function save() { store(key(), state); }
 var isG = DKSim.isG, isF = DKSim.isF;
 // Proj: the owner's override, else ours through the projection gate (DraftKings' average blended in where it has
 // beaten ours on the graded nights: analysis/cbb/dk/gate.json, scripts/cbb_daily.py)
+/* Display (2026-11-20, B4): projections as whole points and ownership as whole percentages on screen; the sim, the
+   cut and every saved number keep full precision (a projection you type stays as typed, shown to one decimal). */
 function proj(r) { var o = state.proj[r.id]; return o != null ? o : DKSim.gatedProj(r, gate) * (minScale[r.id] || 1); }
 /* Your Out toggle (a Questionable player you rule out, e.g. 2026-11-18's Stokes): he's Out for the draw and the pick,
    and his team's other players share 200 minutes again (DKSim.fitMinutes, the projection's own rule), each one's
@@ -824,7 +826,7 @@ function playerTable(list, sortable, fs) {
       '<span class="m col-team">' + esc(r.team || "") + "</span>" +
       '<span class="m mut col-opp">' + (r.home ? "v " : "@ ") + esc(r.opp || "?") + "</span>" +
       '<span class="m r">' + (r.salary / 1000).toFixed(1) + "k</span>" +
-      '<span><input class="proj' + (edited ? " edited" : "") + '" type="number" step="0.1" value="' + proj(r).toFixed(1) + '" aria-label="Proj for ' + esc(r.name) + '"></span>' +
+      '<span><input class="proj' + (edited ? " edited" : "") + '" type="number" step="0.1" value="' + proj(r).toFixed(edited ? 1 : 0) + '" aria-label="Proj for ' + esc(r.name) + '"></span>' +
       '<span class="m r val"' + greenBg(value(r), 2, 4.5) + ">" + value(r).toFixed(2) + "</span>" +
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
@@ -1071,7 +1073,7 @@ function cardHtml(t) {
       if (r.status === "Questionable") tg.push("Q");
       if (nw && nw.kind !== "questionable") tg.push("news: " + nw.kind);
       if (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005) tg.push((minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min (outs)");
-      return '<tr data-id="' + esc(r.id) + '"><td class="l">' + esc(shortName(r.name)) + "</td><td>" + proj(r).toFixed(1) + "</td><td>" + tonight(r.id) + "</td><td>" +
+      return '<tr data-id="' + esc(r.id) + '"><td class="l">' + esc(shortName(r.name)) + "</td><td>" + proj(r).toFixed(0) + "</td><td>" + tonight(r.id) + "</td><td>" +
         (season != null ? season.toFixed(0) + thin(m) : "–") + "</td><td>" + (last3 != null ? last3.toFixed(0) : "–") + '</td><td class="l">' + esc(tg.join(" · ")) + "</td></tr>";
     }).join("") + "</table>" : '<div class="cl">No player projected ' + ROTATION_MIN + "+ minutes.</div>";
   var deep = ((c && c.deep) || []).map(function (id) { var r = byId(id); return r ? '<button type="button" class="deepin" data-id="' + esc(id) + '">' + (r.deepOut ? "Use " : "Drop ") + esc(r.name) + "</button>" : ""; }).join("");
@@ -1203,7 +1205,7 @@ function renderRules() {
 
 function playerOpts() {
   return rows.filter(function (r) { return r.status !== "Out"; }).sort(function (a, b) { return a.team < b.team ? -1 : a.team > b.team ? 1 : proj(b) - proj(a); })
-    .map(function (r) { return '<option value="' + esc(r.id) + '">' + esc(r.team + " · " + r.name + " (" + proj(r).toFixed(1) + ")") + "</option>"; }).join("");
+    .map(function (r) { return '<option value="' + esc(r.id) + '">' + esc(r.team + " · " + r.name + " (" + proj(r).toFixed(0) + ")") + "</option>"; }).join("");
 }
 function fillEditor() {
   var o = playerOpts();
@@ -2496,7 +2498,7 @@ function renderScan() {
       return '<button type="button" class="topread read-leverage" data-team="' + esc(r.team) + '" title="Open its game">' + esc(r.key) + " " + sgn(r.g_t1, 2) + "</button>";
     }).join("") : "") + "</div>";
   $("scanTable").innerHTML = strip + '<details id="scanAll"' + (scanAllOpen ? " open" : "") + '><summary>All scan rows</summary><div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each, in the Players list's Top 1% / ROI / Cash / Read columns (Read on their own noise, \u00b1" + (100 * S.pbar).toFixed(2) +
-    "; core: strong and field own at or over the players' median " + (S.pownMedian || 0).toFixed(1) + "%, leverage: strong and under it, fade: weak and over, skip: weak and under; a team's Bank this adds at least 2 of its core and leverage players), " : "") + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
+    "; core: strong and field own at or over the players' median " + Math.round(S.pownMedian || 0) + "%, leverage: strong and under it, fade: weak and over, skip: weak and under; a team's Bank this adds at least 2 of its core and leverage players), " : "") + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
     " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
     p(S.plain.t1, 2) + ", cash " + p(S.plain.cash) + ". Gains are in points over the plain batch. Read: <b>strong</b> when its top-1% gain clears the sim's own noise, more than " + (S.bar != null ? "\u00b1" + (100 * S.bar).toFixed(2) : "the noise") +
     " (2\u221a2 \u00d7 sigma, sigma from each stack's gain on odd nights against even nights, the tiers' test), <b>weak</b> below minus that, <b>even</b> between; <b>field light</b> when the field holds it less than the median of stacks of its kind (" +

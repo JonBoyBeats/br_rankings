@@ -424,14 +424,14 @@ function audit(name, L, o) {
     const a = el().textContent, rot = [...el().querySelectorAll("table.rot tr[data-id]")].map(tr => tr.dataset.id);
     const want = rows.filter(r => r.team === t.team && r.status !== "Out" && (r.min || 0) * (minScale[r.id] || 1) >= 10).sort((x, y) => proj(y) - proj(x)).slice(0, 9).map(r => r.id);
     const rowOf = id => { const tr = el().querySelector('table.rot tr[data-id="' + id + '"]'); return tr ? [...tr.children].map(td => td.textContent) : null; };
-    const projOk = rot.every(id => +rowOf(id)[1] === +proj(byId(id)).toFixed(1));
+    const projOk = rot.every(id => +rowOf(id)[1] === +proj(byId(id)).toFixed(0));
     const r1 = rowOf(mates[1].id), r2 = rowOf(mates[2].id);
     state.outs[sit.id] = 1; applyOuts(); renderTeamPanel();
     const b = el().textContent, firstOut = el().querySelector("summary").nextElementSibling, tbl = !!el().querySelector("table:not(.rot)");
     delete state.outs[sit.id]; t.card = keep; applyOuts(); renderTeamPanel();
     return { a, b, rot, want, projOk, r1, r2, first: firstOut && firstOut.textContent, tbl };
   });
-  check("team card: the game count; one rotation table in projection order (the Players list's Proj), season / last-3 minutes and tags (swingy, missed k of n, thin game counts); no per-player paragraphs or deep-bench sentence; an Out player's with / without table first",
+  check("team card: the game count; one rotation table in projection order (the Players list's Proj, whole points), season / last-3 minutes and tags (swingy, missed k of n, thin game counts); no per-player paragraphs or deep-bench sentence; an Out player's with / without table first",
         /Team card · 5 games/.test(card.a) && JSON.stringify(card.rot) === JSON.stringify(card.want) && card.rot.length >= 3 && card.projOk &&
         card.r1 && /swingy 10\u201330/.test(card.r1[5]) && /missed 3 of 5/.test(card.r1[5]) && /\(2 g\)/.test(card.r1[3]) &&
         card.r2 && card.r2[3] === "24" && card.r2[4] === "30" && /missed 1 of 5/.test(card.r2[5]) &&

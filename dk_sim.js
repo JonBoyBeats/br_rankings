@@ -728,7 +728,10 @@
     seen[parent.slice().sort().join(",")] = 1;
     for (var m = 0; m < M; m++) {
       var ids = parent.slice();
-      for (var i = ids.length - 1; i > 0; i--) { var j = (ctx.random() * (i + 1)) | 0, t = ids[i]; ids[i] = ids[j]; ids[j] = t; }
+      // a fresh random K of the parent's 8 each draw; o.keepSets (a test's, 2026-11-20, C3: index lists into the parent,
+      // cycled) instead keeps a set chosen for it, so every player is dropped equally often
+      if (o.keepSets && o.keepSets.length) ids = o.keepSets[m % o.keepSets.length].map(function (x) { return parent[x]; });
+      else for (var i = ids.length - 1; i > 0; i--) { var j = (ctx.random() * (i + 1)) | 0, t = ids[i]; ids[i] = ids[j]; ids[j] = t; }
       var lock = Object.assign({}, keep); ids.slice(0, K).forEach(function (id) { lock[id] = 1; });
       st.lock = lock;
       try {
@@ -826,7 +829,10 @@
   // to its running total, so a lineup's number is its mean over every night it has been through; a lineup's rank is its
   // best across the contests (top in ANY of them). Then each idea keeps its best-ranked, down by Cut % a round to its
   // share, skipping a lineup that shares 7+ of 8 players with a better-ranked one it has kept.
-  async function cutPool(ctx, bank, contests, field, z, keep, cut, nights, progress, tags) {
+  // opts.mode "merit" (a test, 2026-11-20, C2; the page never sets it): each round ranks every lineup together and keeps
+  // the best overall down to Keep, each idea keeping a floor (its best max(5, 1% of its bank)) so none vanishes
+  async function cutPool(ctx, bank, contests, field, z, keep, cut, nights, progress, tags, opts) {
+    var merit = opts && opts.mode === "merit";
     var F = field.length, idx = bank.map(function (L, i) { return i; });
     var tagOf = bank.map(function (L, i) { return (tags && tags[i]) || "all"; }), size = {}, quota = {};
     tagOf.forEach(function (t) { size[t] = (size[t] || 0) + 1; });
@@ -834,7 +840,8 @@
     var sum = contests.map(function () { return new Float64Array(bank.length); }), seen = new Float64Array(bank.length);
     var raw = { size: F + 1, payouts: [] };               // a contest where each field lineup stands for one entry
     var rounds = [];
-    var over = function () { var n = {}; idx.forEach(function (i) { n[tagOf[i]] = (n[tagOf[i]] || 0) + 1; }); return Object.keys(n).some(function (t) { return n[t] > quota[t]; }); };
+    var over = function () { if (merit) return idx.length > keep; var n = {}; idx.forEach(function (i) { n[tagOf[i]] = (n[tagOf[i]] || 0) + 1; }); return Object.keys(n).some(function (t) { return n[t] > quota[t]; }); };
+    var floor = {}; Object.keys(size).forEach(function (t) { floor[t] = Math.min(size[t], Math.max(5, Math.ceil(0.01 * size[t]))); });
     for (var round = 1; over() || round === 1; round++) {
       var lineups = idx.map(function (i) { return bank[i]; });
       var sim = simulate(ctx, lineups, field, z, raw, 1, nights);
@@ -857,6 +864,19 @@
       var byTag = {};
       idx.slice().sort(function (a, b) { return best[a] - best[b]; }).forEach(function (i) { (byTag[tagOf[i]] = byTag[tagOf[i]] || []).push(i); });
       var before = idx.length, next = [];
+      if (merit) {                                         // the floors first, then the best overall down to this round's target
+        var target = Math.max(keep, Math.ceil(idx.length * (1 - cut))), taken = {}, keptBy = {};
+        var nearIn = function (i) {        // 7+ players shared with a lineup of its idea already kept (the equal cut's test)
+          var ids = bank[i].ids; return (keptBy[tagOf[i]] || []).some(function (j) { return bank[j].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length >= 7; }); };
+        var take = function (i) { next.push(i); taken[i] = 1; (keptBy[tagOf[i]] = keptBy[tagOf[i]] || []).push(i); };
+        Object.keys(byTag).forEach(function (t) {
+          var got = 0;
+          for (var a = 0; a < byTag[t].length && got < floor[t]; a++) { var i = byTag[t][a]; if (!nearIn(i)) { take(i); got++; } }
+        });
+        var order = idx.slice().sort(function (a, b) { return best[a] - best[b]; });
+        for (var o2 = 0; o2 < order.length && next.length < target; o2++) { var i2 = order[o2]; if (!taken[i2] && !nearIn(i2)) take(i2); }
+        byTag = {};
+      }
       Object.keys(byTag).forEach(function (t) {
         var alive = byTag[t], target = Math.max(quota[t], Math.ceil(alive.length * (1 - cut))), kept = [];
         for (var a = 0; a < alive.length && kept.length < target; a++) {

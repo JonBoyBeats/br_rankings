@@ -17,6 +17,8 @@ const sb = { self: {} }; vm.runInNewContext(fs.readFileSync(path.join(ROOT, "ven
 const [nf, bf, sdir, actf] = process.argv.slice(2);
 const opt = (k, d) => { const i = process.argv.indexOf("--" + k); return i > 0 ? process.argv[i + 1] : d; };
 const TOP = +opt("n", 15), M = +opt("m", 25), KS = String(opt("k", "5,6")).split(",").map(Number), SIMS = +opt("sims", 2000), WIN = opt("winner", null), ROUNDS = +opt("rounds", 1);
+const SYSTEMATIC = process.argv.includes("--systematic");   // C3: cycle through every K-of-8 keep-set (shuffled once) instead of a random one each draw
+const combos = (n, k) => { const out = []; const go = (s, a) => { if (a.length === k) { out.push(a.slice()); return; } for (let i = s; i < n; i++) { a.push(i); go(i + 1, a); a.pop(); } }; go(0, []); return out; };
 const N = JSON.parse(fs.readFileSync(nf)), B = JSON.parse(fs.readFileSync(bf)), gate = JSON.parse(fs.readFileSync(path.join(ROOT, "analysis/cbb/dk/gate.json")));
 const rows = Object.entries(N.slate.players).map(([id, r]) => Object.assign({ id }, r));
 const games = {}, outTeam = {};
@@ -65,6 +67,7 @@ const rates = L => L.length ? { top10: +(100 * L.filter(x => realOf(x) >= t10).l
       const st = { lock: Object.fromEntries((o0.lock || []).map(x => [x, 1])), excl: Object.fromEntries((o0.excl || []).map(x => [x, 1])), cap: {}, floor: {} };
       const cx = ctxOf(S.seeded(seed + 1000 * K + p), st);
       const o = Object.assign({ n: 1, maxExpo: 1, minUnique: 1, maxTeam: 8, conds: [] }, o0, { z: N.z, nightS: 0.35 });
+      if (SYSTEMATIC) { const r0 = S.seeded(seed + 31 * p), cb = combos(8, K); for (let i = cb.length - 1; i > 0; i--) { const j = (r0() * (i + 1)) | 0; [cb[i], cb[j]] = [cb[j], cb[i]]; } o.keepSets = cb; }
       for (const L of await S.variants(cx, o, kept[p].ids, K, M)) {
         if (kept.some(x => shared(x.ids, L.ids) >= 7) || vars.some(x => shared(x.ids, L.ids) >= 7)) continue;
         vars.push({ ids: L.ids.map(String) }); parentOf.push(p);
