@@ -2477,6 +2477,92 @@ def ownaudit(a):
             print(l)
 
 
+OWN_WATCH = os.path.join(DK, "own_watch.json")
+BLUE_BLOODS = {"DUKE", "UK", "KU", "UNC", "UCLA", "IU", "UCONN", "MSU", "ARIZ", "NOVA"}    # DK's team codes
+# a pattern's status from its nights (B3): confirmed needs WATCH_CONFIRM player-nights on WATCH_NIGHTS nights, the
+# same direction on WATCH_SAME of them and a ratio at least WATCH_SIZE away from 1; dead once measured on WATCH_NIGHTS
+# nights with the direction under WATCH_DEAD or the ratio within 10%
+WATCH_CONFIRM, WATCH_NIGHTS, WATCH_SAME, WATCH_SIZE, WATCH_DEAD = 30, 5, 0.75, 0.25, 0.6
+
+
+def ownwatch(a):
+    """B3, the ownership watchlist (2026-11-20, BUILD; hypotheses, not the improvement loop): for every graded
+    player-night, log((real + 1) / (projected + 1)) in the baseline contest (own_rows), and per pattern the nightly
+    gap between the players it flags and the rest of that night's players (so a night that ran hot everywhere counts
+    zero). Patterns, from what's on file at lock: top-2 projected in the highest-total game; blue bloods (BLUE_BLOODS);
+    coming off a big game (last game's DK points 10+ over his season average, from the mirror's file before lock);
+    top-2 projected on the biggest favourite; the 5 highest salaries; round-number salaries ($X,000). Not measurable
+    yet (no source on file): ranked teams, the national TV game, NBA prospects, salary drops, starter vs bench news
+    beneficiary. Status: watching -> emerging -> confirmed / dead (WATCH_*). own_watch.json for the page, which shows
+    confirmed patterns as a note and never moves a number; acting on one is a Friday-review decision."""
+    rows, base = own_rows()
+    rows = [r for r in rows if r["own_proj"] is not None]
+    mirror = Mirror(a.mirror)
+    nights = []
+    for (d, g), rs in sorted(groupby_night(rows).items()):
+        last = {}
+        day = iso(d + "T00:00:00Z")
+        vs = mirror.versions("dk_cbb_morning.json", day - dt.timedelta(days=1), day + dt.timedelta(days=2))
+        start = None
+        for t, sha in reversed(vs):
+            sl = next((x for x in mirror.show(sha, "dk_cbb_morning.json").get("slates", []) if str(x["draft_group_id"]) == g), None)
+            if sl and start is None:
+                start = iso(sl["start"])
+            if sl and start and t < start:
+                last = {k: (p.get("last5") or [None])[-1] for k, p in (sl.get("players") or {}).items()}
+                break
+        ou = {}
+        for r in rs:
+            if num(r.get("ou")):
+                ou[r["game"]] = num(r["ou"])
+        hg = max(ou, key=ou.get) if ou else None
+        fav = min((r for r in rs if num(r.get("spread")) is not None), key=lambda r: num(r["spread"]), default=None)
+        top2 = lambda sub: {r["dk_id"] for r in sorted(sub, key=lambda r: -r["ours"])[:2]}
+        flags = {
+            "top-2 projected in the highest-total game": top2([r for r in rs if r["game"] == hg]),
+            "blue bloods": {r["dk_id"] for r in rs if r["team"] in BLUE_BLOODS},
+            "coming off a big game": {r["dk_id"] for r in rs if isinstance(last.get(r["dk_id"]), list) and r.get("dkavg") is not None and last[r["dk_id"]][2] >= r["dkavg"] + 10},
+            "top-2 projected on the biggest favourite": top2([r for r in rs if fav and r["team"] == fav["team"]]),
+            "the 5 highest salaries": {r["dk_id"] for r in sorted(rs, key=lambda r: -r["sal"])[:5]},
+            "round-number salaries": {r["dk_id"] for r in rs if r["sal"] % 1000 == 0},
+        }
+        lr = {r["dk_id"]: math.log((r["own_act"] + 1) / (r["own_proj"] + 1)) for r in rs}
+        nights.append({"date": d, "draft_group": g, "recency_on_file": bool(last), "flags": flags, "lr": lr,
+                       "names": {r["dk_id"]: r["name"] for r in rs}, "proj": {r["dk_id"]: r["own_proj"] for r in rs}, "act": {r["dk_id"]: r["own_act"] for r in rs}})
+    out = {"updated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "rule": "confirmed: %d+ player-nights on %d+ nights, the same direction on %d%%+ of nights, real/projected %d%%+ off 1; dead: %d+ nights and the direction under %d%% or within 10%%" % (
+        WATCH_CONFIRM, WATCH_NIGHTS, 100 * WATCH_SAME, 100 * WATCH_SIZE, WATCH_NIGHTS, 100 * WATCH_DEAD), "patterns": []}
+    print("Ownership watchlist (real vs projected in the baseline contest; each night, the flagged players against the rest):")
+    for name in nights[0]["flags"] if nights else []:
+        per, n, ex = [], 0, []
+        for nt in nights:
+            if name == "coming off a big game" and not nt["recency_on_file"]:
+                continue
+            f = nt["flags"][name]; rest = [v for k, v in nt["lr"].items() if k not in f]
+            fl = [nt["lr"][k] for k in f if k in nt["lr"]]
+            if fl and rest:
+                per.append((nt["date"], S.mean(fl) - S.mean(rest))); n += len(fl)
+                ex += ["%s %s %.0f/%.0f%%" % (nt["date"][5:], nt["names"][k], nt["act"][k], nt["proj"][k]) for k in f if k in nt["lr"]][:2]
+        if not per:
+            st, ratio, same = "watching", None, 0
+        else:
+            m = S.mean(x for _, x in per); ratio = math.exp(m); same = sum((x > 0) == (m > 0) for _, x in per) / len(per)
+            if n >= WATCH_CONFIRM and len(per) >= WATCH_NIGHTS and same >= WATCH_SAME and abs(ratio - 1) >= WATCH_SIZE:
+                st = "confirmed"
+            elif len(per) >= WATCH_NIGHTS and (same < WATCH_DEAD or abs(ratio - 1) < 0.10):
+                st = "dead"
+            elif len(per) >= 3 and same >= 2 / 3 and abs(ratio - 1) >= 0.15:
+                st = "emerging"
+            else:
+                st = "watching"
+        out["patterns"].append({"pattern": name, "status": st, "player_nights": n, "nights": len(per), "ratio": round(ratio, 2) if ratio else None,
+                                "same_direction": "%d of %d" % (round(same * len(per)), len(per)), "examples": ex[:6]})
+        print("  %-42s %-9s %3d player-nights on %d nights; real/projected vs the rest x%s; same direction %d of %d nights%s" % (
+            name, st, n, len(per), "%.2f" % ratio if ratio else "-", round(same * len(per)), len(per), ("; e.g. " + ", ".join(ex[:3])) if ex else ""))
+    print("  not measurable yet (no source on file): ranked teams, the national TV game, NBA prospects, salary drops, starter vs bench news beneficiary")
+    with open(OWN_WATCH, "w") as fh:
+        json.dump(out, fh, indent=1)
+
+
 MISSES = os.path.join(DK, "misses.csv")
 MISSES_COLS = ["date", "draft_group", "lens", "subject", "team", "miss", "detail", "tags"]
 MISS_TAGS = ["late news / scratch", "teammate out", "minutes role change", "newcomer / few games", "blowout", "stale DK avg",
@@ -2649,6 +2735,8 @@ def main():
     pa_ = sub.add_parser("projaudit")
     pa_.add_argument("--mirror", help="the mirror checkout: the shape lens on today's open slates too")
     sub.add_parser("ownaudit")
+    ow = sub.add_parser("ownwatch")
+    ow.add_argument("--mirror", required=True)
     ms = sub.add_parser("misses")
     ms.add_argument("--friday", action="store_true", help="counts by tag: the latest night's week, and all nights")
     sub.add_parser("risers")
@@ -2663,7 +2751,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch}[a.cmd](a)
 
 
 if __name__ == "__main__":

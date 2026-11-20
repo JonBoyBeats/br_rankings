@@ -91,6 +91,8 @@ jobs:
           # A3, the biggest-misses log: each lens's largest misses with reason tags (misses.csv; --friday counts by tag)
           # B1, the ownership audit by shape: team sums, within-team order and gaps, top-5, bands, duplication (own_audit.csv)
           python3 scripts/dk_eval.py ownaudit || true
+          # B3, the ownership watchlist: patterns in real vs projected ownership, status by rule (own_watch.json; the page notes confirmed ones)
+          python3 scripts/dk_eval.py ownwatch --mirror ../br-adp-mirror || true
           python3 scripts/dk_eval.py misses || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
       # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.

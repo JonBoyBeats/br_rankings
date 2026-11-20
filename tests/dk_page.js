@@ -94,8 +94,13 @@ function audit(name, L, o) {
   await pg.route(/dk_cbb_teams/, r => r.fulfill({ path: path.join(FIX, "dk_cbb_teams.json"), contentType: "application/json" }));
   let gate = null;
   await pg.route(/gate\.json/, r => gate ? r.fulfill({ body: JSON.stringify(gate), contentType: "application/json" }) : r.fulfill({ status: 404, body: "" }));
+  await pg.route(/own_watch\.json/, r => r.fulfill({ contentType: "application/json", body: JSON.stringify({ patterns: [
+    { pattern: "coming off a big game", status: "confirmed", ratio: 1.4, player_nights: 40, nights: 6, same_direction: "5 of 6" },
+    { pattern: "blue bloods", status: "emerging", ratio: 1.2, player_nights: 90, nights: 4, same_direction: "3 of 4" }] }) }));
   await pg.goto("file://" + path.join(ROOT, "dk.html"));
   await pg.waitForSelector(".row");
+  const ow = await pg.evaluate(() => ({ hidden: $("ownWatch").hidden, text: $("ownWatch").textContent }));
+  check("ownership watch (B3): the note shows confirmed patterns only", !ow.hidden && /coming off a big game/.test(ow.text) && !/blue bloods/.test(ow.text), JSON.stringify(ow));
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
   check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#statusInfo")));
   // the default slate: today's main (Pacific day: most games; a tie goes to the soonest unlocked, else the later), locked or not; with none today, the

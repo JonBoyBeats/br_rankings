@@ -459,6 +459,7 @@
   <h2>Players</h2>
   <div class="note">Click a team above for its players at 2x value or better. <b>L</b> lock, <b>X</b> leave out (both for the
     draw); type over a Proj to use your own; <b>Max%</b> caps him in each contest's portfolio. Green: higher value, higher ownership.</div>
+  <div class="note" id="ownWatch" hidden></div>
   <div class="filters">
     <button type="button" data-pos="all" aria-pressed="true">All</button>
     <button type="button" data-pos="G" aria-pressed="false">G</button>
@@ -481,6 +482,7 @@ var SLOTS = DKSim.SLOTS;
 var doc = null, slate = null, rows = [], state = null, news = [], newsUnsourced = [], analyst = [], fieldDoc = null, gate = null, BP = null;
 var teamsDoc = null, ruleCounts = {}, editing = -1;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
+var OWN_WATCH = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/own_watch.json";   // B3 (dk_eval.py ownwatch)
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1, panel: null };
 
 function $(id) { return document.getElementById(id); }
@@ -632,6 +634,13 @@ async function load() {
     var fr = await fetch(MIRROR + "dk_cbb_field.json?t=" + Date.now(), { cache: "no-store" });
     fieldDoc = fr.ok ? await fr.json() : null;
   } catch (e) { fieldDoc = null; }
+  try {      // the ownership watchlist: confirmed patterns only, as a note; never moves a number (B3)
+    var wr = await fetch(OWN_WATCH + "?t=" + Date.now(), { cache: "no-store" }), wd = wr.ok ? await wr.json() : null;
+    var conf = ((wd && wd.patterns) || []).filter(function (p) { return p.status === "confirmed"; });
+    $("ownWatch").hidden = !conf.length;
+    $("ownWatch").textContent = conf.length ? "Ownership watch, confirmed (information only; acting on one is a Friday-review call): " + conf.map(function (p) {
+      return p.pattern + " real/projected x" + p.ratio + " (" + p.player_nights + " player-nights, " + p.nights + " nights, same way on " + p.same_direction + ")"; }).join("; ") : "";
+  } catch (e) { $("ownWatch").hidden = true; }
   var sel = $("slate"), keep = sel.value;
   sel.innerHTML = "";
   (doc.slates || []).forEach(function (s) {
