@@ -79,6 +79,10 @@ function audit(name, L, o) {
   await pg.addInitScript(() => { try { if (!sessionStorage.getItem("nbInit")) { localStorage.setItem("dkcbb:nb", "false"); sessionStorage.setItem("nbInit", "1"); } } catch (e) {} });
   let dialogs = [];
   pg.on("dialog", d => { dialogs.push(d.message()); d.accept(); });       // Fill all contests asks before replacing
+  for (const m of ["click", "fill", "selectOption"]) {       // the page's steps (Bank / Cut / Fill): open the one holding the target first
+    const orig = pg[m].bind(pg);
+    pg[m] = async (sel, ...a) => { await pg.evaluate(q => { try { const el = document.querySelector(q), sec = el && el.closest("section.step"); if (sec && sec.hidden) showStep(sec.dataset.step); } catch (e) {} }, sel).catch(() => {}); return orig(sel, ...a); };
+  }
   const errors = [];
   pg.on("pageerror", e => errors.push(e.message));
   await pg.route(/fonts\.(googleapis|gstatic)/, r => r.abort());
@@ -1094,6 +1098,42 @@ function audit(name, L, o) {
   check("groups: clicking an idea highlights its lineups and brings them to the top", hl.rows > 0 && hl.first, JSON.stringify(hl));
   await pg.click('[data-ungroup="Both ideas"]');
   check("groups: Ungroup splits it back", (await pg.$$eval("#bankBox > table tr", r => r.length)) === 3);
+  // Tick all ungrouped ticks only the tags not in a group; Group with nothing ticked takes every ungrouped tag
+  const gu = await pg.evaluate(() => {
+    showStep("bank");
+    const tags = [...document.querySelectorAll("#bankBox input[data-tag]")].map(x => x.dataset.tag);
+    groupTags([tags[0]], "First");
+    document.getElementById("groupTickAll").click();
+    const ticked = [...document.querySelectorAll("#bankBox input[data-tag]:checked")].map(x => x.dataset.tag);
+    document.querySelectorAll("#bankBox input[data-tag]").forEach(x => { x.checked = false; });
+    document.getElementById("groupName").value = "Rest"; document.getElementById("groupMake").click();
+    const rest = tags.slice(1).every(t => BANK.groups[t] === "Rest") && BANK.groups[tags[0]] === "First";
+    const tip = document.getElementById("groupMake").title;
+    groupTags(tags, null);
+    return { tags, ticked, rest, tip, back: Object.keys(BANK.groups).length };
+  });
+  check("groups: Tick all ungrouped ticks only the ungrouped tags; Group with nothing ticked groups every ungrouped tag (and says so in its tooltip)",
+        gu.tags.length >= 2 && JSON.stringify(gu.ticked) === JSON.stringify(gu.tags.slice(1)) && gu.rest && /nothing ticked/.test(gu.tip) && gu.back === 0, JSON.stringify(gu));
+  // the step bar: Bank / Cut / Fill, one panel at a time, kept per slate; switching shows panels and touches nothing else
+  const sb = await pg.evaluate(() => {
+    const before = JSON.stringify([BANK.lineups.length, CUT && CUT.keep && CUT.keep.length, PF]), seen = {};
+    ["bank", "cut", "fill"].forEach(st => { document.querySelector('#stepBar button[data-step="' + st + '"]').click();
+      seen[st] = [...document.querySelectorAll("section.step")].filter(x => !x.hidden).map(x => x.dataset.step).join(",") + "|" + document.querySelector("#stepBar button[aria-pressed=true]").dataset.step; });
+    const kept = JSON.parse(localStorage.getItem(key())).step, labels = [...document.querySelectorAll("#stepBar button")].map(b => b.textContent);
+    const bankHas = ["bankDraw", "bankN", "ruleList", "bankCheck", "bankBox", "levW"].every(id => document.getElementById(id) && document.getElementById(id).closest("#stepBank"));
+    const cutHas = ["cutRun", "cutKeep", "varRun", "entriesFile"].every(id => document.getElementById(id).closest("#stepCut"));
+    const fillHas = ["pfRun", "maxExpo", "entriesBox", "nb", "classic3"].every(id => document.getElementById(id).closest("#stepFill"));
+    const order = [...document.querySelectorAll("#stepFill, #newsBox, #scanBox, #teamBar, #playersSec")].map(x => x.id);
+    const last = document.getElementById("playersSec").compareDocumentPosition(document.getElementById("stepFill")) & Node.DOCUMENT_POSITION_PRECEDING;
+    const after = JSON.stringify([BANK.lineups.length, CUT && CUT.keep && CUT.keep.length, PF]);
+    delete state.step; save(); renderSteps();
+    return { seen, kept, labels, bankHas, cutHas, fillHas, order, last: !!last, same: before === after, dflt: stepNow() };
+  });
+  check("step bar: Bank / Cut / Fill show one panel each (kept with the slate), with live counts; switching leaves the bank, cut and picks alone; the default follows the work (Fill once a cut exists)",
+        sb.seen.bank === "bank|bank" && sb.seen.cut === "cut|cut" && sb.seen.fill === "fill|fill" && sb.kept === "fill" && /^Bank [\d,]+$/.test(sb.labels[0]) && /^Cut [\d,]+ kept$/.test(sb.labels[1]) && /^Fill \d+\/\d+$/.test(sb.labels[2]) &&
+        sb.same && sb.dflt === "fill", JSON.stringify(sb));
+  check("layout: the Bank step holds the draw controls and the bank table, Cut the cut, Fill the fill and the builders; then the reading folds; Teams and Players last",
+        sb.bankHas && sb.cutHas && sb.fillHas && JSON.stringify(sb.order) === JSON.stringify(["stepFill", "newsBox", "scanBox", "teamBar", "playersSec"]) && sb.last, JSON.stringify(sb));
   // Without: click a name in a lineup to hide every unpicked lineup with him; the chip brings them back; Auto-fill skips them
   await pg.click("#bpClear").catch(() => {});
   const pid = await pg.$eval("#bpTable tr:not(.picked)[data-k] .pn", e => e.dataset.pid);
@@ -1357,12 +1397,14 @@ function audit(name, L, o) {
   await pg.fill("#maxUse", "3"); await pg.fill("#maxNight", "60");
   await pg.click("#nbOn");
   await pg.waitForFunction(() => NB.on && BP && BP.review && document.querySelectorAll("#nbTabs button").length > 0, null, { timeout: 300000 });
-  const nb_nb0 = await pg.evaluate(() => ({ classicHidden: document.getElementById("classic3").hidden, status: document.getElementById("cutStatus").parentNode.id,
-    details: ["entriesBox", "pfBox"].every(id => document.getElementById(id).closest("#nbDetails")),
-    bank: !document.getElementById("bankBox").closest("#nbDetails") && document.getElementById("bankBox").parentNode.id === "s2out" && document.getElementById("bankBox").offsetParent !== null &&
-      !!document.querySelector("#bankBox input[data-tag]") && !!document.getElementById("groupName") && document.getElementById("groupName").offsetParent !== null }));
-  check("one screen: Classic hidden, the status in the bar, contests and night view in Details; the bank table (tag boxes, grouping) visible under Draw & bank, not folded",
-        nb_nb0.classicHidden && nb_nb0.status === "nbStatusSlot" && nb_nb0.details && nb_nb0.bank, JSON.stringify(nb_nb0));
+  const nb_nb0 = await pg.evaluate(() => { const step0 = stepNow(); showStep("bank");
+    const out = { classicHidden: document.getElementById("classic3").hidden, status: document.getElementById("cutStatus").nextElementSibling.id,
+      details: ["entriesBox", "pfBox"].every(id => document.getElementById(id).closest("#nbDetails")),
+      bank: !document.getElementById("bankBox").closest("#nbDetails") && !!document.getElementById("bankBox").closest("#stepBank") && document.getElementById("bankBox").offsetParent !== null &&
+        !!document.querySelector("#bankBox input[data-tag]") && !!document.getElementById("groupName") && document.getElementById("groupName").offsetParent !== null };
+    showStep(step0); return out; });
+  check("one screen: Classic hidden, the status under the step bar, contests and night view in Details; the bank table (tag boxes, grouping) in the Bank step, not folded",
+        nb_nb0.classicHidden && nb_nb0.status === "stepBank" && nb_nb0.details && nb_nb0.bank, JSON.stringify(nb_nb0));
   await pg.click("#nbFill");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   await pg.waitForFunction(() => BP && BP.review && document.querySelectorAll("#nbList tr[data-k]").length > 0, null, { timeout: 300000 });
@@ -1440,7 +1482,7 @@ function audit(name, L, o) {
   const nb_pfNB = await pg.evaluate(() => JSON.stringify(PF));
   await pg.click("#nbOff");
   check("Classic view: back to the old layout with the same portfolios", await pg.evaluate(p => !document.getElementById("classic3").hidden && document.getElementById("nb").hidden &&
-        document.getElementById("cutStatus").parentNode.id === "s2out" && JSON.stringify(PF) === p, nb_pfNB));
+        document.getElementById("entriesBox").parentNode.id === "s2out" && document.getElementById("cutStatus").nextElementSibling.id === "stepBank" && JSON.stringify(PF) === p, nb_pfNB));
   await pg.fill("#maxUse", "1");
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();

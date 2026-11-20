@@ -160,6 +160,10 @@
   .teambar button.LEVERAGE { border-left-color: #5aa9e6; } .teambar button.FADE { border-left-color: var(--bad); }
   .teambar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
   .teamside { margin: 6px 0 14px; min-width: 0; }
+  .stepbar { display: flex; gap: 6px; padding: 6px 0 2px; }
+  .stepbar button { flex: 1; height: 36px; font-size: 14px; font-weight: 700; }
+  .stepbar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink, #080b11); }
+  .stepbar button .st { font-weight: 400; font-size: 12px; opacity: .85; margin-left: 6px; }
   .teambar .gchip { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 6px; padding: 2px; gap: 2px; }
   .teambar .gchip button { height: 26px; }
   .gamehead { font-family: var(--mono); font-size: 12px; margin: 6px 0 4px; }
@@ -265,38 +269,11 @@
       <button type="button" id="reload">Reload</button>
     </div>
     <div class="status" id="status">Loading…</div>
+    <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="true">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button></div>
   </div>
 
-  <details class="news" id="newsBox"><summary id="newsSum">News: loading…</summary><div id="news"></div></details>
-  <details class="news" id="slateInfo"><summary>Slate details</summary><div class="status" id="statusInfo"></div><div class="note" id="slateLine">No team tiles yet.</div></details>
-
-  <details class="news" id="scanBox" open><summary><b>Slate scan</b>: which players, team stacks and game stacks sim best, before any rules</summary>
-    <div class="opts"><label class="field"><span class="field-label">Lineups a player</span><input class="num" id="scanP" type="number" min="0" max="400" step="10" value="60"></label>
-      <label class="field"><span class="field-label">Lineups a stack</span><input class="num" id="scanN" type="number" min="20" max="400" step="10" value="100"></label>
-      <button type="button" id="scanRun">Scan the slate</button><span class="note" id="scanStatus" style="align-self:center;margin:0"></span></div>
-    <div id="scanTable"></div></details>
-
-  <h2>Teams</h2>
-  <div class="teambar" id="teamBar"></div>
-  <div id="teamPanel"></div>
-
-  <div id="playersSec">
-  <h2>Players</h2>
-  <div class="note">Click a team above for its players at 2x value or better. <b>L</b> lock, <b>X</b> leave out (both for the
-    draw); type over a Proj to use your own; <b>Max%</b> caps him in each contest's portfolio. Green: higher value, higher ownership.</div>
-  <div class="filters">
-    <button type="button" data-pos="all" aria-pressed="true">All</button>
-    <button type="button" data-pos="G" aria-pressed="false">G</button>
-    <button type="button" data-pos="F" aria-pressed="false">F</button>
-    <button type="button" id="qOnly" aria-pressed="false" title="Only the players tagged Questionable (by DraftKings or the outs file), to mark X on the ones not worth the risk">Q</button>
-    <select id="team" style="width:auto;height:28px;font-size:13px;padding:3px 8px"><option value="">All teams</option></select>
-    <input type="search" id="search" placeholder="Search players">
-    <button type="button" id="resetProj" title="Put every Proj back to ours">Reset Proj</button>
-    <button type="button" id="clearLx" title="Clear every lock, exclude and Max%">Clear L / X</button>
-  </div>
-  <div id="players"></div>
-  </div>
-
+  <div class="status" id="cutStatus"></div>
+  <section class="step" id="stepBank" data-step="bank">
   <h2>1. Draw lineups into the bank</h2>
   <div class="note">Set up an idea, then <b>Draw &amp; bank</b>: each lineup is the best one for a simulated night under
     everything here, tagged with its idea. <b>Leverage weight</b> (0 = off) fades the chalk inside the idea: each player
@@ -346,6 +323,11 @@
   </div>
   <div class="status" id="buildStatus"></div>
 
+  <div class="note" id="bankCheck" style="margin:2px 0 6px"></div>
+  <div id="bankBox"></div>
+  </section>
+
+  <section class="step" id="stepCut" data-step="cut" hidden>
   <h2>2. Cut the bank, build each contest's entries, export</h2>
   <details class="news"><summary>How the cut and the pick work</summary><div class="note">Load DraftKings' <b>entries file</b>
     (Lineups → Edit Entries → download): each contest's entry count fills in. <b>Group</b> the bank's tags into ideas (e.g. six
@@ -361,7 +343,6 @@
     <label class="field"><span class="field-label">Keep</span><input class="num" id="cutKeep" type="number" min="20" max="5000" step="50" value="2000"></label>
     <label class="field"><span class="field-label">Cut % a round</span><input class="num" id="cutPct" type="number" min="1" max="50" value="10"></label>
     <label class="field"><span class="field-label">Nights a round</span><input class="num" id="cutNights" type="number" min="200" max="10000" step="100" value="2000"></label>
-    <div class="note" id="bankCheck" style="flex-basis:100%;margin:0"></div>
     <button type="button" class="primary" id="cutRun">Re-sim &amp; cut</button>
   </div>
   <div class="opts" title="After the cut, before Fill: variants around the top kept lineups, each keeping some of its players and redrawing the rest under its idea's rules, the bank noise and the pool rules; those that reach the kept pool's top half on the same nights join it, tagged &quot;variant of #rank&quot; (grouped as Variants of the top). Backtest in versions.csv">
@@ -370,6 +351,9 @@
     <label class="field"><span class="field-label">Players kept</span><input class="num" id="varK" type="number" min="3" max="7" value="5"></label>
     <button type="button" id="varRun">Variants of tier A</button>
   </div>
+  </section>
+
+  <section class="step" id="stepFill" data-step="fill" hidden>
   <div class="opts">
     <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="40"></label>
     <label class="field"><span class="field-label">Min unique</span><input class="num" id="minUnique" type="number" min="1" max="8" value="3"></label>
@@ -390,8 +374,6 @@
     <button type="button" id="bankClear">Clear bank</button>
   </div>
   <div id="s2out">
-  <div class="status" id="cutStatus"></div>
-  <div id="bankBox"></div>
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
   </div>
@@ -449,6 +431,37 @@
       <div id="bpSideList"></div>
     </div>
   </div>
+  </div>
+  </section>
+
+  <details class="news" id="newsBox"><summary id="newsSum">News: loading…</summary><div id="news"></div></details>
+  <details class="news" id="slateInfo"><summary>Slate details</summary><div class="status" id="statusInfo"></div><div class="note" id="slateLine">No team tiles yet.</div></details>
+
+  <details class="news" id="scanBox" open><summary><b>Slate scan</b>: which players, team stacks and game stacks sim best, before any rules</summary>
+    <div class="opts"><label class="field"><span class="field-label">Lineups a player</span><input class="num" id="scanP" type="number" min="0" max="400" step="10" value="60"></label>
+      <label class="field"><span class="field-label">Lineups a stack</span><input class="num" id="scanN" type="number" min="20" max="400" step="10" value="100"></label>
+      <button type="button" id="scanRun">Scan the slate</button><span class="note" id="scanStatus" style="align-self:center;margin:0"></span></div>
+    <div id="scanTable"></div></details>
+
+  <h2>Teams</h2>
+  <div class="teambar" id="teamBar"></div>
+  <div id="teamPanel"></div>
+
+  <div id="playersSec">
+  <h2>Players</h2>
+  <div class="note">Click a team above for its players at 2x value or better. <b>L</b> lock, <b>X</b> leave out (both for the
+    draw); type over a Proj to use your own; <b>Max%</b> caps him in each contest's portfolio. Green: higher value, higher ownership.</div>
+  <div class="filters">
+    <button type="button" data-pos="all" aria-pressed="true">All</button>
+    <button type="button" data-pos="G" aria-pressed="false">G</button>
+    <button type="button" data-pos="F" aria-pressed="false">F</button>
+    <button type="button" id="qOnly" aria-pressed="false" title="Only the players tagged Questionable (by DraftKings or the outs file), to mark X on the ones not worth the risk">Q</button>
+    <select id="team" style="width:auto;height:28px;font-size:13px;padding:3px 8px"><option value="">All teams</option></select>
+    <input type="search" id="search" placeholder="Search players">
+    <button type="button" id="resetProj" title="Put every Proj back to ours">Reset Proj</button>
+    <button type="button" id="clearLx" title="Clear every lock, exclude and Max%">Clear L / X</button>
+  </div>
+  <div id="players"></div>
   </div>
 </div>
 
@@ -1294,7 +1307,7 @@ function bankLoadState() {
 function cutKey() { return "dkcbb-cut:" + slate.draft_group_id; }
 function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else localStorage.removeItem(cutKey()); } catch (e) {} }
 function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) === null; }
-function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); }   // the Live page reads it for your exposures
+function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); renderSteps(); }   // the Live page reads it for your exposures
 function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
   var o = drawRules(), t = [], name = function (id) { return shortName((byId(id) || {}).name || id); };
   if (o.stackN) t.push(o.stackN + "-stack" + (o.stackBoth ? " + bring-back" : ""));
@@ -1426,8 +1439,28 @@ function bankCheck() {
     (under.length ? ' <span class="bad">' + under.map(function (x) { return "Idea \u201c" + esc(x.k) + "\u201d projects " + (fp - x.p).toFixed(0) + " points under the field (" +
       x.p.toFixed(0) + " vs " + fp.toFixed(0) + ", " + x.n + " lineups)"; }).join("; ") + ".</span>" : "");
 }
+/* The step bar (2026-11-20, the operator's layout): Bank · Cut · Fill, one panel open at a time, the choice kept per
+   slate (state.step); with none chosen, Bank until the bank has lineups, then Cut, then Fill once a cut exists. Each
+   button shows a short live status. Switching steps only shows and hides panels. */
+function stepNow() {
+  if (state && state.step) return state.step;
+  return !BANK || !BANK.lineups.length ? "bank" : !(CUT && CUT.keep) ? "cut" : "fill";
+}
+function showStep(st) { if (state) { state.step = st; save(); } renderSteps(); }
+function renderSteps() {
+  if (!$("stepBar")) return;
+  var st = stepNow(), nb = BANK ? BANK.lineups.length : 0, ent = 0, picked = 0, ns = typeof entriesN === "function" ? entriesN() : {};
+  Object.keys(ns).forEach(function (k) { ent += ns[k]; picked += Math.min(ns[k], (PF[k] || []).length); });
+  var label = { bank: "Bank <span class=\"st\">" + nb.toLocaleString() + "</span>",
+                cut: "Cut <span class=\"st\">" + (CUT && CUT.keep ? CUT.keep.length.toLocaleString() + " kept" : "–") + "</span>",
+                fill: "Fill <span class=\"st\">" + (ent ? picked + "/" + ent : "–") + "</span>" };
+  document.querySelectorAll("#stepBar button[data-step]").forEach(function (b) { b.innerHTML = label[b.dataset.step]; b.setAttribute("aria-pressed", String(b.dataset.step === st)); });
+  document.querySelectorAll("section.step").forEach(function (x) { x.hidden = x.dataset.step !== st; });
+  if (st === "fill" && typeof nbFit === "function") nbFit();
+}
 function renderBank() {
   if (!BANK) return;
+  renderSteps();
   bankCheck();
   // by group: banked, each round of the cut (live while it runs), kept and share; each group's tags with a box to regroup
   var idx = BANK.lineups.map(function (L, i) { return i; });
@@ -1440,7 +1473,8 @@ function renderBank() {
       " lineups) is over the browser's storage limit, so a refresh would lose the newest. Keep this tab open, and Save build to keep a copy.</div>" : "") +
     '<div class="note"><b>Bank: ' + BANK.lineups.length + " lineups</b>" + (after ? ", " + CUT.keep.length + " after the cut" : CUT ? ", cutting…" : "") + "</div>" +
     (BANK.lineups.length ? '<div class="opts" style="padding:4px 0"><input id="groupName" placeholder="Group name, e.g. Kansas" style="width:190px;height:28px">' +
-      '<button type="button" id="groupMake" style="height:28px">Group the ticked tags</button></div>' +
+      '<button type="button" id="groupMake" style="height:28px" title="Groups the ticked tags under the name; with nothing ticked, every tag not yet in a group">Group the ticked tags</button>' +
+      '<button type="button" id="groupTickAll" style="height:28px" title="Tick every tag not yet in a group">Tick all ungrouped</button></div>' +
       '<table class="contests"><tr><th>Idea</th><th class="r">Banked</th>' +
       rounds.map(function (r, i) { return '<th class="r">Round ' + (i + 1) + "</th>"; }).join("") + (after ? '<th class="r">Kept</th><th class="r">Share</th>' : "") + "</tr>" +
       Object.keys(all).sort(function (a, b) { return all[b] - all[a]; }).map(function (g) {
@@ -1479,6 +1513,11 @@ function cutShares() {
         '<td class="m">' + (fieldOf() ? own(x.r).toFixed(0) + "%" : "–") + '</td><td class="m">' + p(x.b) + '</td><td class="m">' + p(x.k) + "</td>" +
         '<td class="m"' + (d > 0 ? greenBg(d, 0, 0.2) : "") + ">" + (d >= 0 ? "+" : "") + Math.round(100 * d) + "</td></tr>";
     }).join("") + "</table></details>";
+}
+function ungroupedTags() {
+  var seen = {};
+  BANK.tags.forEach(function (ts) { var t = Array.isArray(ts) ? ts[0] : ts; if (t && !(BANK.groups || {})[t]) seen[t] = 1; });
+  return Object.keys(seen);
 }
 function groupTags(tags, name) {
   BANK.groups = BANK.groups || {};
@@ -1535,6 +1574,7 @@ function renderEntries(fromFileNow) {     // fromFileNow: the entries file just 
         '<td class="m">' + (want ? pf.length + " / " + Math.min(want, c.max_per_user || 1) + ' <button type="button" data-review="' + esc(c.id) + '" style="height:24px;padding:0 7px;font-size:11.5px">Build</button>' : "") + "</td></tr>";
     }).join("") + "</table>" + (ENTRIES ? '<div class="note">Entries file: ' + ENTRIES.rows.length + " entries loaded.</div>" : "") + unlistedHtml(cs);
   contestPoll(cs);
+  renderSteps();
   if (typeof NB !== "undefined" && NB.on) nbRender();
 }
 function parseCsv(text) {       // RFC 4180-ish: quoted fields, doubled quotes
@@ -2007,8 +2047,9 @@ function nbSet(on) {
   $("nb").hidden = !NB.on; $("classic3").hidden = NB.on; $("nbOn").hidden = NB.on;
   var out = $("s2out"), det = $("nbDetailsBody");
   // the bank table (tag boxes, Group the ticked tags) stays under Draw & bank in both views: grouping comes before the cut
-  if (NB.on) { $("nbStatusSlot").appendChild($("cutStatus")); ["entriesBox", "pfBox"].forEach(function (id) { det.appendChild($(id)); }); }
-  else { ["cutStatus", "bankBox", "entriesBox", "pfBox"].forEach(function (id) { out.appendChild($(id)); }); nbSide(false); }
+  // the status line sits under the step bar and the bank table in the Bank step, in both views (2026-11-20)
+  if (NB.on) { ["entriesBox", "pfBox"].forEach(function (id) { det.appendChild($(id)); }); }
+  else { ["entriesBox", "pfBox"].forEach(function (id) { out.appendChild($(id)); }); nbSide(false); }
   if (NB.on) nbOpen();
 }
 // the bar sits under the page's own sticky masthead; the panes fill what's left of the screen
@@ -2447,12 +2488,13 @@ function scanBankApply(b) {
   }
   addRules(r.conds.map(function (c) { return Object.assign({}, c); }));
   $("scanStatus").textContent = "Added " + r.key + " to the rules: Draw & bank draws under it.";
-  $("bankDraw").scrollIntoView({ block: "center" });
+  showStep("bank"); $("bankDraw").scrollIntoView({ block: "center" });
 }
 
 nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
+$("stepBar").addEventListener("click", function (e) { var b = e.target.closest("button[data-step]"); if (b) showStep(b.dataset.step); });
 $("slate").addEventListener("change", function (e) {       // a hand pick holds for the rest of the Pacific day
   try { localStorage.setItem("dkcbb:slatePick", JSON.stringify({ day: ptDay(Date.now()), dg: $("slate").value })); } catch (x) {}
   pick(e);
@@ -2537,8 +2579,10 @@ $("bankDraw").addEventListener("click", function () {
     takeCounts(res);
     var added = bankAdd(res.lineups, tag);
     logPlatoon(dr, res, tag);
-    $("buildStatus").textContent = "Banked " + added + " new lineups, tagged \"" + tag + "\"" + (res.lineups.length - added ? " (" + (res.lineups.length - added) + " already in the bank)" : "") + "." +
-      (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "") + rulesMsg(res) + (res.expo || "");
+    var more = (rulesMsg(res) + (res.expo || "")).trim();
+    $("buildStatus").innerHTML = esc("Banked " + added + " new lineups, tagged \"" + tag + "\"" + (res.lineups.length - added ? " (" + (res.lineups.length - added) + " already in the bank)" : "") + "." +
+      (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "")) +
+      (more ? ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">rules</summary> ' + esc(more) + "</details>" : "");
   }, function (e) { $("buildStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; });
 });
 $("bankClear").addEventListener("click", function () {
@@ -2712,8 +2756,13 @@ $("bpGroups").addEventListener("click", function (e) {
   BP.group = b.dataset.group === BP.group || b.dataset.group === "" ? null : b.dataset.group; bpRender();
 });
 $("bankBox").addEventListener("click", function (e) {
+  if (e.target.id === "groupTickAll") {
+    document.querySelectorAll("#bankBox input[data-tag]").forEach(function (x) { x.checked = !(BANK.groups || {})[x.dataset.tag]; });
+    return;
+  }
   if (e.target.id === "groupMake") {
     var t = [].map.call(document.querySelectorAll("#bankBox input[data-tag]:checked"), function (x) { return x.dataset.tag; }), name = $("groupName").value.trim();
+    if (!t.length) t = ungroupedTags();          // nothing ticked: every tag not yet in a group
     if (t.length && name) groupTags(t, name);
     return;
   }
