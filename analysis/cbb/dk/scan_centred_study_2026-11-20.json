@@ -1,0 +1,646 @@
+{
+ "2026-11-17_156663": {
+  "night": "2026-11-17",
+  "noise_bar": 0.098,
+  "all_real": {
+   "players": 96,
+   "entries": 12827,
+   "top10": 11.5,
+   "top1": 1.02,
+   "pts_vs_proj": -1.1
+  },
+  "centred": {
+   "gain_median": -0.354,
+   "by_read": {
+    "core": {
+     "today": {
+      "players": 9,
+      "entries": 3363,
+      "top10": 11.5,
+      "top1": 1.04,
+      "pts_vs_proj": -0.8
+     },
+     "centred": {
+      "players": 39,
+      "entries": 10593,
+      "top10": 12.1,
+      "top1": 1.12,
+      "pts_vs_proj": -0.4
+     }
+    },
+    "leverage": {
+     "today": null,
+     "centred": {
+      "players": 3,
+      "entries": 746,
+      "top10": 11.3,
+      "top1": 0.27,
+      "pts_vs_proj": 2.5
+     }
+    },
+    "lean core": {
+     "today": {
+      "players": 12,
+      "entries": 3873,
+      "top10": 13.9,
+      "top1": 1.5,
+      "pts_vs_proj": 3.9
+     },
+     "centred": {
+      "players": 3,
+      "entries": 284,
+      "top10": 5.3,
+      "top1": 0,
+      "pts_vs_proj": -7.9
+     }
+    },
+    "lean leverage": {
+     "today": null,
+     "centred": {
+      "players": 2,
+      "entries": 202,
+      "top10": 22.3,
+      "top1": 2.48,
+      "pts_vs_proj": 15.3
+     }
+    },
+    "even": {
+     "today": {
+      "players": 6,
+      "entries": 1568,
+      "top10": 13.5,
+      "top1": 0.89,
+      "pts_vs_proj": -6.3
+     },
+     "centred": {
+      "players": 7,
+      "entries": 158,
+      "top10": 4.4,
+      "top1": 0,
+      "pts_vs_proj": -5
+     }
+    },
+    "fade": {
+     "today": {
+      "players": 21,
+      "entries": 2266,
+      "top10": 7.5,
+      "top1": 0.53,
+      "pts_vs_proj": -3.4
+     },
+     "centred": {
+      "players": 4,
+      "entries": 131,
+      "top10": 3.8,
+      "top1": 0,
+      "pts_vs_proj": -0.7
+     }
+    },
+    "skip": {
+     "today": {
+      "players": 48,
+      "entries": 1757,
+      "top10": 10,
+      "top1": 0.68,
+      "pts_vs_proj": -0.8
+     },
+     "centred": {
+      "players": 38,
+      "entries": 713,
+      "top10": 5.9,
+      "top1": 0.7,
+      "pts_vs_proj": -1.8
+     }
+    }
+   },
+   "strong_today": {
+    "players": 9,
+    "entries": 3363,
+    "top10": 11.5,
+    "top1": 1.04,
+    "pts_vs_proj": -0.8
+   },
+   "strong_centred": {
+    "players": 42,
+    "entries": 11339,
+    "top10": 12.1,
+    "top1": 1.07,
+    "pts_vs_proj": -0.2
+   },
+   "up_today": {
+    "players": 21,
+    "entries": 7236,
+    "top10": 12.8,
+    "top1": 1.29,
+    "pts_vs_proj": 1.9
+   },
+   "up_centred": {
+    "players": 47,
+    "entries": 11825,
+    "top10": 12.1,
+    "top1": 1.07,
+    "pts_vs_proj": 0
+   },
+   "weak_today": {
+    "players": 69,
+    "entries": 4023,
+    "top10": 8.6,
+    "top1": 0.6,
+    "pts_vs_proj": -1.6
+   },
+   "weak_centred": {
+    "players": 42,
+    "entries": 844,
+    "top10": 5.6,
+    "top1": 0.59,
+    "pts_vs_proj": -1.7
+   }
+  }
+ },
+ "2026-11-18_157033": {
+  "night": "2026-11-18",
+  "noise_bar": 0.081,
+  "all_real": {
+   "players": 56,
+   "entries": 4140,
+   "top10": 10.4,
+   "top1": 1.16,
+   "pts_vs_proj": 0.4
+  },
+  "centred": {
+   "gain_median": -0.163,
+   "by_read": {
+    "core": {
+     "today": {
+      "players": 2,
+      "entries": 557,
+      "top10": 13.6,
+      "top1": 1.26,
+      "pts_vs_proj": 11
+     },
+     "centred": {
+      "players": 16,
+      "entries": 2726,
+      "top10": 12.2,
+      "top1": 1.39,
+      "pts_vs_proj": 0.1
+     }
+    },
+    "leverage": {
+     "today": null,
+     "centred": null
+    },
+    "lean core": {
+     "today": {
+      "players": 8,
+      "entries": 1322,
+      "top10": 11.9,
+      "top1": 1.29,
+      "pts_vs_proj": 1
+     },
+     "centred": {
+      "players": 9,
+      "entries": 936,
+      "top10": 8.2,
+      "top1": 0.85,
+      "pts_vs_proj": 1.6
+     }
+    },
+    "lean leverage": {
+     "today": null,
+     "centred": {
+      "players": 2,
+      "entries": 2,
+      "top10": 0,
+      "top1": 0,
+      "pts_vs_proj": 2.5
+     }
+    },
+    "even": {
+     "today": {
+      "players": 5,
+      "entries": 819,
+      "top10": 11.7,
+      "top1": 1.59,
+      "pts_vs_proj": -5.4
+     },
+     "centred": {
+      "players": 12,
+      "entries": 270,
+      "top10": 6.3,
+      "top1": 0.74,
+      "pts_vs_proj": 4
+     }
+    },
+    "fade": {
+     "today": {
+      "players": 13,
+      "entries": 1088,
+      "top10": 7.9,
+      "top1": 0.83,
+      "pts_vs_proj": 2.2
+     },
+     "centred": null
+    },
+    "skip": {
+     "today": {
+      "players": 28,
+      "entries": 354,
+      "top10": 4.8,
+      "top1": 0.56,
+      "pts_vs_proj": -0.3
+     },
+     "centred": {
+      "players": 17,
+      "entries": 206,
+      "top10": 2.4,
+      "top1": 0,
+      "pts_vs_proj": -2.7
+     }
+    }
+   },
+   "strong_today": {
+    "players": 2,
+    "entries": 557,
+    "top10": 13.6,
+    "top1": 1.26,
+    "pts_vs_proj": 11
+   },
+   "strong_centred": {
+    "players": 16,
+    "entries": 2726,
+    "top10": 12.2,
+    "top1": 1.39,
+    "pts_vs_proj": 0.1
+   },
+   "up_today": {
+    "players": 10,
+    "entries": 1879,
+    "top10": 12.4,
+    "top1": 1.28,
+    "pts_vs_proj": 3
+   },
+   "up_centred": {
+    "players": 27,
+    "entries": 3664,
+    "top10": 11.2,
+    "top1": 1.26,
+    "pts_vs_proj": 0.8
+   },
+   "weak_today": {
+    "players": 41,
+    "entries": 1442,
+    "top10": 7.1,
+    "top1": 0.76,
+    "pts_vs_proj": 0.5
+   },
+   "weak_centred": {
+    "players": 17,
+    "entries": 206,
+    "top10": 2.4,
+    "top1": 0,
+    "pts_vs_proj": -2.7
+   }
+  }
+ },
+ "2026-11-19_157138": {
+  "night": "2026-11-19",
+  "noise_bar": 0.077,
+  "all_real": {
+   "players": 43,
+   "entries": 1801,
+   "top10": 10.3,
+   "top1": 1.17,
+   "pts_vs_proj": -2.5
+  },
+  "centred": {
+   "gain_median": -0.08,
+   "by_read": {
+    "core": {
+     "today": {
+      "players": 1,
+      "entries": 103,
+      "top10": 12.6,
+      "top1": 0,
+      "pts_vs_proj": -3.9
+     },
+     "centred": {
+      "players": 7,
+      "entries": 795,
+      "top10": 12.8,
+      "top1": 1.13,
+      "pts_vs_proj": -0.1
+     }
+    },
+    "leverage": {
+     "today": {
+      "players": 1,
+      "entries": 3,
+      "top10": 33.3,
+      "top1": 0,
+      "pts_vs_proj": 1.4
+     },
+     "centred": {
+      "players": 3,
+      "entries": 55,
+      "top10": 5.5,
+      "top1": 1.82,
+      "pts_vs_proj": -6.2
+     }
+    },
+    "lean core": {
+     "today": {
+      "players": 5,
+      "entries": 554,
+      "top10": 12.8,
+      "top1": 1.26,
+      "pts_vs_proj": 3
+     },
+     "centred": {
+      "players": 8,
+      "entries": 368,
+      "top10": 8.2,
+      "top1": 1.36,
+      "pts_vs_proj": -0.7
+     }
+    },
+    "lean leverage": {
+     "today": {
+      "players": 2,
+      "entries": 52,
+      "top10": 3.8,
+      "top1": 1.92,
+      "pts_vs_proj": -10
+     },
+     "centred": {
+      "players": 3,
+      "entries": 51,
+      "top10": 7.8,
+      "top1": 1.96,
+      "pts_vs_proj": 1.5
+     }
+    },
+    "even": {
+     "today": {
+      "players": 12,
+      "entries": 557,
+      "top10": 9.3,
+      "top1": 1.44,
+      "pts_vs_proj": -1.1
+     },
+     "centred": {
+      "players": 8,
+      "entries": 320,
+      "top10": 7.8,
+      "top1": 0.63,
+      "pts_vs_proj": -5.5
+     }
+    },
+    "fade": {
+     "today": {
+      "players": 7,
+      "entries": 218,
+      "top10": 6,
+      "top1": 0.46,
+      "pts_vs_proj": -5.8
+     },
+     "centred": {
+      "players": 2,
+      "entries": 30,
+      "top10": 6.7,
+      "top1": 0,
+      "pts_vs_proj": -1.9
+     }
+    },
+    "skip": {
+     "today": {
+      "players": 15,
+      "entries": 314,
+      "top10": 10.5,
+      "top1": 1.27,
+      "pts_vs_proj": -3.3
+     },
+     "centred": {
+      "players": 12,
+      "entries": 182,
+      "top10": 10.4,
+      "top1": 1.65,
+      "pts_vs_proj": -3.5
+     }
+    }
+   },
+   "strong_today": {
+    "players": 2,
+    "entries": 106,
+    "top10": 13.2,
+    "top1": 0,
+    "pts_vs_proj": -1.2
+   },
+   "strong_centred": {
+    "players": 10,
+    "entries": 850,
+    "top10": 12.4,
+    "top1": 1.18,
+    "pts_vs_proj": -1.9
+   },
+   "up_today": {
+    "players": 9,
+    "entries": 712,
+    "top10": 12.2,
+    "top1": 1.12,
+    "pts_vs_proj": -0.8
+   },
+   "up_centred": {
+    "players": 21,
+    "entries": 1269,
+    "top10": 11,
+    "top1": 1.26,
+    "pts_vs_proj": -1
+   },
+   "weak_today": {
+    "players": 22,
+    "entries": 532,
+    "top10": 8.6,
+    "top1": 0.94,
+    "pts_vs_proj": -4.1
+   },
+   "weak_centred": {
+    "players": 14,
+    "entries": 212,
+    "top10": 9.9,
+    "top1": 1.42,
+    "pts_vs_proj": -3.3
+   }
+  }
+ },
+ "2026-11-19_157139": {
+  "night": "2026-11-19",
+  "noise_bar": 0.066,
+  "all_real": {
+   "players": 79,
+   "entries": 10996,
+   "top10": 10.1,
+   "top1": 1.03,
+   "pts_vs_proj": 0.2
+  },
+  "centred": {
+   "gain_median": -0.1,
+   "by_read": {
+    "core": {
+     "today": {
+      "players": 11,
+      "entries": 3370,
+      "top10": 11.3,
+      "top1": 1.04,
+      "pts_vs_proj": 0.6
+     },
+     "centred": {
+      "players": 25,
+      "entries": 7659,
+      "top10": 10.8,
+      "top1": 1.07,
+      "pts_vs_proj": 0
+     }
+    },
+    "leverage": {
+     "today": {
+      "players": 2,
+      "entries": 2,
+      "top10": 0,
+      "top1": 0,
+      "pts_vs_proj": -8.9
+     },
+     "centred": {
+      "players": 5,
+      "entries": 264,
+      "top10": 14,
+      "top1": 2.65,
+      "pts_vs_proj": 3.6
+     }
+    },
+    "lean core": {
+     "today": {
+      "players": 10,
+      "entries": 3450,
+      "top10": 10.5,
+      "top1": 0.96,
+      "pts_vs_proj": 0.3
+     },
+     "centred": {
+      "players": 6,
+      "entries": 623,
+      "top10": 8.2,
+      "top1": 0.8,
+      "pts_vs_proj": 1.2
+     }
+    },
+    "lean leverage": {
+     "today": {
+      "players": 1,
+      "entries": 75,
+      "top10": 18.7,
+      "top1": 6.67,
+      "pts_vs_proj": 20.5
+     },
+     "centred": {
+      "players": 3,
+      "entries": 414,
+      "top10": 5.6,
+      "top1": 0.72,
+      "pts_vs_proj": -3.5
+     }
+    },
+    "even": {
+     "today": {
+      "players": 11,
+      "entries": 1838,
+      "top10": 9.4,
+      "top1": 1.31,
+      "pts_vs_proj": 0
+     },
+     "centred": {
+      "players": 9,
+      "entries": 744,
+      "top10": 6.7,
+      "top1": 0.54,
+      "pts_vs_proj": -5.5
+     }
+    },
+    "fade": {
+     "today": {
+      "players": 12,
+      "entries": 1196,
+      "top10": 7.7,
+      "top1": 0.5,
+      "pts_vs_proj": 0.3
+     },
+     "centred": {
+      "players": 5,
+      "entries": 478,
+      "top10": 7.5,
+      "top1": 0.42,
+      "pts_vs_proj": 2.1
+     }
+    },
+    "skip": {
+     "today": {
+      "players": 32,
+      "entries": 1065,
+      "top10": 8.2,
+      "top1": 0.94,
+      "pts_vs_proj": 0
+     },
+     "centred": {
+      "players": 26,
+      "entries": 814,
+      "top10": 10.4,
+      "top1": 1.23,
+      "pts_vs_proj": 1.6
+     }
+    }
+   },
+   "strong_today": {
+    "players": 13,
+    "entries": 3372,
+    "top10": 11.3,
+    "top1": 1.04,
+    "pts_vs_proj": -0.8
+   },
+   "strong_centred": {
+    "players": 30,
+    "entries": 7923,
+    "top10": 10.9,
+    "top1": 1.12,
+    "pts_vs_proj": 0.6
+   },
+   "up_today": {
+    "players": 24,
+    "entries": 6897,
+    "top10": 11,
+    "top1": 1.06,
+    "pts_vs_proj": 0.5
+   },
+   "up_centred": {
+    "players": 39,
+    "entries": 8960,
+    "top10": 10.5,
+    "top1": 1.08,
+    "pts_vs_proj": 0.4
+   },
+   "weak_today": {
+    "players": 44,
+    "entries": 2261,
+    "top10": 7.9,
+    "top1": 0.71,
+    "pts_vs_proj": 0.1
+   },
+   "weak_centred": {
+    "players": 31,
+    "entries": 1292,
+    "top10": 9.4,
+    "top1": 0.93,
+    "pts_vs_proj": 1.7
+   }
+  }
+ }
+}
