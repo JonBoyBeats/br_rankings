@@ -2564,7 +2564,23 @@ def ownwatch(a):
 
 
 MISSES = os.path.join(DK, "misses.csv")
-MISSES_COLS = ["date", "draft_group", "lens", "subject", "team", "miss", "detail", "tags"]
+MISSES_COLS = ["date", "draft_group", "lens", "subject", "team", "miss", "detail", "tags", "driver"]
+
+
+def gap_driver(r, gap):
+    """What drives a salary gap (the coordinator, 2026-11-20): our projection against his last 5 (fp_dk - dk_last5)
+    split into minutes ((min_proj - min_last5) x his recent points a minute), EvanMiya (fp_dk - fp_base_dk) and rate
+    (the rest: our points a minute against his recent beyond EvanMiya). When our number sits within half the gap of
+    his last 5, the price is what's off the line: "price (DK avg)". No last 5: "no recent games"."""
+    fp, l5, m5, mp = num(r.get("fp_dk")), num(r.get("dk_last5")), num(r.get("min_last5")), num(r.get("min_proj"))
+    if fp is None or l5 is None or not m5:
+        return "no recent games", {}
+    d = fp - l5
+    parts = {"minutes": ((mp or 0) - m5) * l5 / m5, "EvanMiya": fp - (num(r.get("fp_base_dk")) if num(r.get("fp_base_dk")) is not None else fp)}
+    parts["rate"] = d - parts["minutes"] - parts["EvanMiya"]
+    if abs(d) < 0.5 * abs(gap):
+        return "price (DK avg)", parts
+    return max(parts, key=lambda k: abs(parts[k]) if (parts[k] > 0) == (d > 0) else -1), parts
 MISS_TAGS = ["late news / scratch", "teammate out", "minutes role change", "newcomer / few games", "blowout", "stale DK avg",
              "salary-value spot", "chalk concentration", "Q status", "unexplained"]
 
@@ -2642,8 +2658,8 @@ def misses(a):
                 x.append("Q status")
             return x or ["unexplained"]
 
-        def add(lens, subject, team, miss, detail, tg):
-            out.append({"date": date, "draft_group": g, "lens": lens, "subject": subject, "team": team, "miss": round(miss, 2), "detail": detail, "tags": "; ".join(tg)})
+        def add(lens, subject, team, miss, detail, tg, driver=""):
+            out.append({"date": date, "draft_group": g, "lens": lens, "subject": subject, "team": team, "miss": round(miss, 2), "detail": detail, "tags": "; ".join(tg), "driver": driver})
         # minutes
         mm = [r for r in live if (num(r.get("min_proj")) or 0) >= 10 or mins(r) >= 10]
         for r in sorted(mm, key=lambda r: -abs(mins(r) - (num(r.get("min_proj")) or 0)))[:5]:
@@ -2676,8 +2692,11 @@ def misses(a):
             res = [y - (a_ + b_ * x) for x, y in zip(xs, ys)]; sd = S.pstdev(res)
             for r, e in sorted(zip(val, res), key=lambda z: -abs(z[1])):
                 if abs(e) >= 2 * sd:
+                    dv, parts = gap_driver(r, e)
                     add("salary", r["name"], r["team"], (num(r.get("actual_dk")) or 0) - num(r["fp_dk"]),
-                        "projection %+.1f off the salary line; %.1f projected, %.1f real" % (e, num(r["fp_dk"]), num(r.get("actual_dk")) or 0), tags(r, market=True))
+                        "projection %+.1f off the salary line; %.1f projected, %.1f real; $%s; vs last 5 %s" % (
+                            e, num(r["fp_dk"]), num(r.get("actual_dk")) or 0, r["salary"], ", ".join("%s %+.1f" % kv for kv in parts.items()) or "-"),
+                        tags(r, market=True), "%s (%s)" % (dv, "above" if e > 0 else "below"))
         # ownership
         byid = {r["dk_id"]: r for r in rows}
         for k, (pj, ac) in sorted(((k, v) for k, v in og.items() if k in byid), key=lambda kv: -abs(kv[1][1] - kv[1][0]))[:5]:
@@ -2710,9 +2729,15 @@ def misses(a):
             print("Misses by tag, %s (%d misses on %d slates; a miss can carry several tags):" % (label, len(rs), len({(r["date"], r["draft_group"]) for r in rs})))
             for t, n in c.most_common():
                 print("  %-22s %3d   %s" % (t, n, ", ".join("%s %d" % kv for kv in by[t].most_common())))
+            sg = [r for r in rs if r["lens"] == "salary"]
+            if sg:                      # what drives the salary gaps: does our rate run hot on stars?
+                star = lambda r: "$8K+" if int(re.search(r"\$(\d+)", r["detail"]).group(1)) >= 8000 else "under $8K"
+                dc = Counter((r["driver"], star(r)) for r in sg)
+                print("  salary gaps by driver (%d; real minus projected beside): " % len(sg) + "; ".join(
+                    "%s %s %d (%+.1f)" % (d, b, n, S.mean(x["miss"] for x in sg if x["driver"] == d and star(x) == b)) for (d, b), n in dc.most_common()))
         return
     for r in [r for r in out if r["date"] == last]:
-        print("%s %s %-9s %-24s %+7.1f  %s  [%s]" % (r["date"], r["draft_group"], r["lens"], r["subject"], r["miss"], r["detail"], r["tags"]))
+        print("%s %s %-9s %-24s %+7.1f  %s  [%s]%s" % (r["date"], r["draft_group"], r["lens"], r["subject"], r["miss"], r["detail"], r["tags"], "  driver: " + r["driver"] if r["driver"] else ""))
 
 
 def main():
