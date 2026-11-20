@@ -60,7 +60,7 @@ function audit(name, L, o) {
     ids.forEach(id => { count[id] = (count[id] || 0) + 1; });
   });
   if (o.expo) {                    // caps are a share of the lineups asked for (o.n), as the optimizer sets them
-    const n = o.n || L.length, cap = Math.floor(o.expo * n + 1e-9);
+    const n = o.n || L.length, cap = Math.max(1, n <= 5 ? Math.ceil(o.expo * n - 1e-4) : Math.floor(o.expo * n + 1e-9));   // rounded up in a contest of 5 or fewer
     Object.entries(count).forEach(([id, c]) => { if (id !== o.lock && c > (o.capId === id ? Math.floor(o.capPct * n + 1e-9) : cap)) bad.push(`${P[id].name} in ${c} of ${L.length}`); });
   }
   if (o.minUnique) {
@@ -1115,10 +1115,21 @@ function audit(name, L, o) {
     check("panel: search finds a player by \"" + q + "\"", (await pg.$$eval("#bpSideList .srow[data-key]", r => r.map(x => x.dataset.key))).includes(sp.key));
   }
   await pg.fill("#bpSideQ", "");
-  // Max exposure binds hand adds: in this contest's set a player goes in at most floor(Max exposure x entries) lineups
+  // Max exposure in a small contest: rounded up at 5 entries or fewer, so 3 entries at 40% or 60% fill 3 of 3 (each
+  // player in 2 at most) where floor would force them fully disjoint
+  const small = await pg.evaluate(() => {
+    const c = Object.assign({}, slate.contests.find(x => x.payouts)), pool = BANK.lineups.slice(0, 300).map(L => ({ ids: L.ids }));
+    const sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, 3, 400);
+    return [0.4, 0.6].map(p => { const r = DKSim.pick(ctx(), { n: 3, maxExpo: p, minUnique: 3, conds: [], maxCore: null }, pool, sim, c, 3), cnt = {};
+      r.chosen.forEach(k => pool[k].ids.forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }));
+      return { p, n: r.chosen.length, max: Math.max(...Object.values(cnt)), lim: DKSim.expoLimit(p, 3), big: DKSim.expoLimit(p, 20) }; });
+  });
+  check("Max exposure in a small contest: 3 entries at 40% and at 60% fill 3 of 3, each player in 2 at most (rounded up at 5 entries or fewer; 20 entries still floor)",
+        small.every(x => x.n === 3 && x.lim === 2 && x.max <= 2) && small[0].big === 8 && small[1].big === 12, JSON.stringify(small));
+  // Max exposure binds hand adds: in this contest's set a player goes in at most its limit (DKSim.expoLimit)
   await pg.click("#bpClear").catch(() => {});
   const cap = await pg.evaluate(() => {
-    const n = BP.o.n, lim = Math.floor(BP.o.maxExpo * n + 1e-9), cnt = {};
+    const n = BP.o.n, lim = DKSim.expoLimit(BP.o.maxExpo, n), cnt = {};
     BP.pool.forEach(L => L.ids.forEach(id => { if (!state.lock[id]) cnt[id] = (cnt[id] || 0) + 1; }));
     const p = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0];
     const withP = BP.pool.map((L, k) => k).filter(k => BP.pool[k].ids.includes(p));

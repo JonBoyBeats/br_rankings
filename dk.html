@@ -1767,7 +1767,7 @@ function bpLimits(why) {      // why: {id: "night"} where the night cap is the o
   var o = BP.o, limit = {}, nl = nightLimit(), used = nl < Infinity ? nightUsed(BP.review) : {};
   rows.forEach(function (r) {
     var cap = Math.min(o.maxExpo, state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] / 100 : 1);
-    limit[r.id] = fillLock()[r.id] ? o.n : Math.floor(cap * o.n + 1e-9);
+    limit[r.id] = fillLock()[r.id] ? o.n : DKSim.expoLimit(cap, o.n);
     if (!fillLock()[r.id] && nl < Infinity && nl - (used[r.id] || 0) < limit[r.id]) {
       limit[r.id] = Math.max(0, nl - (used[r.id] || 0));
       if (why) why[r.id] = "night";
@@ -1991,7 +1991,7 @@ function nbOverCap(cid, n) {                // a contest's portfolio past a cap:
   return Object.keys(cnt).some(function (id) {
     if (fillLock()[id]) return false;
     var cap = Math.min(mx, state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1);
-    return cnt[id] > Math.max(1, Math.floor(cap * n + 1e-9)) || (nl < Infinity && (night[id] || 0) > nl);
+    return cnt[id] > Math.max(1, DKSim.expoLimit(cap, n)) || (nl < Infinity && (night[id] || 0) > nl);
   });
 }
 function nbShort(name) { return String(name).replace(/^CBB\s+/, "").replace(/\s*\[.*?\]\s*/g, " ").replace(/\s+/g, " ").trim(); }
