@@ -115,6 +115,11 @@ DraftKings misses go in `analysis/cbb/report/dk_misses.csv`, the same causes, wi
 date,draft_group,player,team,salary,ours,ours_wo_miya,dk_avg,actual,min,min_proj,min_raw,fragile,own,spread,src,cause,fixable,note
 ```
 
+The automatic log beside it (A3, all five lenses: minutes, shape, Vegas, salary gaps, ownership, each miss with
+reason tags; rebuilt nightly): `python3 scripts/dk_eval.py misses` prints last night's rows from
+`analysis/cbb/dk/misses.csv`. On Fridays, `python3 scripts/dk_eval.py misses --friday` gives the counts by tag for
+the week; a tag that recurs is a candidate fix under A2, tested first and adopted only with the operator's yes.
+
 ## 5. Themes
 
 Read all of `misses.csv`. Count causes, fixable against not, ours too high against too low, and

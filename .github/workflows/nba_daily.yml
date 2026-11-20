@@ -88,6 +88,8 @@ jobs:
           python3 scripts/dk_eval.py scan || true
           # A1, the morning projection audit: minutes, shape, Vegas, salary, ownership agreement (tracking)
           python3 scripts/dk_eval.py projaudit --mirror ../br-adp-mirror || true
+          # A3, the biggest-misses log: each lens's largest misses with reason tags (misses.csv; --friday counts by tag)
+          python3 scripts/dk_eval.py misses || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
       # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
