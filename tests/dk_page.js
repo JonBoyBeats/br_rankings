@@ -267,7 +267,7 @@ function audit(name, L, o) {
              tip: el.querySelector(".nm").title, line: (r.spread > 0 ? "+" : "") + r.spread, ou: r.ou, frag: f ? { badge: !!fel.querySelector(".frag") === !!fragileMap()[f.id], tip: /Swingy: expected miss/.test(fel.querySelector(".nm").title) } : null };
   });
   check("Players list: Pos / Team / Opp columns, matchup and line in the name's tooltip, fragile in the tooltip, no ± column or grey line",
-        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "DK avg", "Top 1%", "ROI", "Cash", "Read", "Bank"]) && pl.sub === 0 &&
+        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "MPG", "DK avg", "Cash", "Read"]) && pl.sub === 0 &&
         JSON.stringify(pl.cells) === JSON.stringify(pl.want) && pl.tip.includes(pl.line) && pl.tip.includes("o/u " + pl.ou) && (!pl.frag || (pl.frag.badge && pl.frag.tip)), JSON.stringify(pl));
   // A4: fragile from the lenses: the badge only when 2+ lenses disagree with our number, the reasons in its hover
   const fragA4 = await pg.evaluate(() => { const m = fragileMap(), ids = Object.keys(m);
@@ -533,7 +533,7 @@ function audit(name, L, o) {
              blank: !scanNow() && [...document.querySelectorAll("#teamPanel .scanblk")].length === 2 && [...document.querySelectorAll("#teamPanel .scanblk")].every(b => /–/.test(b.textContent) && b.querySelector("a.scanlink")) };
   });
   check("game view: the game header, both team cards with a Scan block (– and a Scan the slate link before a scan), then one player list for both teams, sorted by Val, with the Players list's columns; both chips pressed",
-        gv.head && gv.blank && gv.lists === 1 && JSON.stringify(gv.teams) === JSON.stringify(gv.want) && gv.sorted && gv.heads >= 15 && JSON.stringify(gv.pressed) === JSON.stringify(gv.want), JSON.stringify(gv));
+        gv.head && gv.blank && gv.lists === 1 && JSON.stringify(gv.teams) === JSON.stringify(gv.want) && gv.sorted && gv.heads >= 13 && JSON.stringify(gv.pressed) === JSON.stringify(gv.want), JSON.stringify(gv));
   const gs2 = await pg.evaluate(() => {
     const t = view.panel, o = oppOf(t);
     document.querySelector('#teamBar button[data-team="' + o + '"]').click();
@@ -1552,16 +1552,31 @@ function audit(name, L, o) {
   const pList = await pg.evaluate(() => {
     renderPlayers();
     const ok = SCAN.players.every(x => { const el = document.querySelector(`#players .row[data-id="${x.id}"]`); if (!el) return true;
-      const c = el.querySelectorAll(".col-scan"); return c[0].querySelector(".sg").textContent === (x.g_t1 > 0 ? "+" : "") + (100 * x.g_t1).toFixed(2) && c[0].querySelector(".nb2").textContent === "\u00b1" + (100 * x.noise).toFixed(2) &&
-        c[1].textContent === (x.g_roi > 0 ? "+" : "") + (100 * x.g_roi).toFixed(0) && c[2].textContent === (x.g_cash > 0 ? "+" : "") + (100 * x.g_cash).toFixed(1) &&
-        c[3].textContent === x.read && c[3].querySelector(".read-" + x.read.replace(/ /g, "-")) && !!c[5].querySelector(".pbank"); });
+      // Cash and Read (coloured) as columns; Top 1% (with its noise bar), ROI and the bank share in Read's hover (2026-11-20)
+      const c = el.querySelectorAll(".col-scan"), tip = c[1].title || "";
+      return c.length === 3 && c[0].textContent === (x.g_cash > 0 ? "+" : "") + (100 * x.g_cash).toFixed(1) &&
+        c[1].textContent === x.read && c[1].querySelector(".read-" + x.read.replace(/ /g, "-")) && !!c[2].querySelector(".pbank") &&
+        tip.includes("top-1% gain " + (x.g_t1 > 0 ? "+" : "") + (100 * x.g_t1).toFixed(2) + " (noise \u00b1" + (100 * x.noise).toFixed(2) + ")") &&
+        tip.includes("ROI gain " + (x.g_roi > 0 ? "+" : "") + (100 * x.g_roi).toFixed(0)) && (!BANK.lineups.length || /Bank \d+% vs field \d+%/.test(tip)); });
     view.sort = "scan"; view.dir = -1; renderPlayers();
     const ids = [...document.querySelectorAll("#players .row")].map(e => e.dataset.id).filter(id => byId(id).status !== "Out"), g = ids.map(id => scanRowOf(id) ? scanRowOf(id).g_t1 : -Infinity);
     const sorted = g.every((x, i) => i === 0 || g[i - 1] >= x);
     view.sort = "value"; view.dir = -1; renderPlayers();
     return { ok, sorted };
   });
-  check("player scan: its top-1% gain (noise bar under it), ROI and cash gains, Read (coloured) and Bank this in the Players list, sortable", pList.ok && pList.sorted, JSON.stringify(pList));
+  check("player scan: Cash and Read (coloured) columns with Bank this; Top 1% (noise bar), ROI and the bank share in Read's hover; sortable by the scan", pList.ok && pList.sorted, JSON.stringify(pList));
+  const mpg = await pg.evaluate(() => { renderPlayers(); const heads = [...document.querySelectorAll("#players .head span[data-sort]")].map(x => x.dataset.sort);
+    const r = rows.find(x => x.status !== "Out" && document.querySelector('#players .row[data-id="' + x.id + '"]'));
+    const keep = [r.min_avg, r.min_last5, r.min_cv]; r.min_avg = 27.4; r.min_last5 = [30, 22, 28, 31, 26]; r.min_cv = 0.12; renderPlayers();
+    const cell = document.querySelector('#players .row[data-id="' + r.id + '"] .col-mpg'), text = cell.textContent, tip = cell.title;
+    r.min_avg = keep[0]; r.min_last5 = keep[1]; r.min_cv = keep[2]; renderPlayers();
+    document.querySelector('#players .head [data-sort="mpg"]').click();
+    const v = [...document.querySelectorAll("#players .row")].map(e => { const x = byId(e.dataset.id); return x.min_avg != null ? x.min_avg : -1; }), down = v.every((x, i) => i === 0 || v[i - 1] >= x);
+    view.sort = "value"; view.dir = -1; renderPlayers();
+    return { after: heads.indexOf("mpg") === heads.indexOf("min") + 1, gone: !["scan", "sroi", "bank"].some(k => heads.includes(k)), cash: heads.includes("scash"), text, want: "27", tip, down };
+  });
+  check("Players list: MPG (season minutes a game) right after Min, last 5 in the hover, sortable; no Top 1% / ROI / Bank columns, Cash kept",
+        mpg.after && mpg.gone && mpg.cash && mpg.text === mpg.want && mpg.tip === "Season 27.4 min a game played; last 5: 30, 22, 28, 31, 26; minutes CV 0.12" && mpg.down, JSON.stringify(mpg));
   check("player table: with a scan the scan columns show (no-scan layout off)", await pg.evaluate(() => { renderPlayers(); const c = document.querySelector("#players .row .col-scan");
     return !$("players").classList.contains("noscan") && !!c && getComputedStyle(c).display !== "none"; }));
   const c1 = await pg.evaluate(() => {
@@ -1598,7 +1613,7 @@ function audit(name, L, o) {
         c1.inOk && c1.outOk && c1.shown === c1.want && (c1.focus < 2 || (c1.hasBtn && c1.pre.type === "min" && c1.pre.n === Math.min(3, c1.focus) && c1.pre.added === 0 &&
          JSON.stringify(c1.pre.chips.slice().sort()) === JSON.stringify(c1.focusIds.slice().sort()) && c1.rule.type === "min" && c1.rule.n === Math.min(3, c1.focus) && c1.rule.same)), JSON.stringify(c1));
   const pso = await pg.evaluate(() => {
-    document.querySelector('#players .head [data-sort="sroi"]').click();
+    view.sort = "sroi"; view.dir = -1; renderPlayers();      // the ROI gain still sorts (its column is in Read's hover now)
     const g = [...document.querySelectorAll("#players .row")].map(e => scanRowOf(e.dataset.id)).filter(x => x && byId(x.id).status !== "Out").map(x => x.g_roi);
     const down = g.every((x, i) => i === 0 || g[i - 1] >= x);
     view.sort = "value"; view.dir = -1; renderPlayers();
