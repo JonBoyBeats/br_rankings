@@ -336,7 +336,9 @@
 
   <div class="note" id="bankCheck" style="margin:2px 0 6px"></div>
   <div id="bankBox"></div>
-  <div class="opts" style="padding:2px 0"><button type="button" id="bankClear" title="Empties this slate's bank (asks first)">Clear bank</button></div>
+  <div class="opts" style="padding:2px 0"><button type="button" id="bankClear" title="Empties this slate's bank (asks first)">Clear bank</button>
+    <button type="button" id="clearOld" title="Removes other slates' saved banks, cuts, portfolios, entries and scans from this browser (asks first; today's slates, unlocked ones and this one stay)">Clear old slates</button></div>
+  <div class="note" style="margin:0 0 4px">Closing the tab after a slate is what frees the page's memory; Save build is the durable copy (Load build restores it).</div>
   </section>
 
   <section class="step" id="stepCut" data-step="cut" hidden>
@@ -404,6 +406,7 @@
     <button type="button" class="linkbtn" id="nbOn" title="The one-screen builder">New builder view</button>
   </div>
   <div class="note" id="fillUnder"></div>
+  <div class="note" id="strandBox" hidden></div>
   <div id="s2out">
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
@@ -1414,7 +1417,7 @@ function bankLoadState() {
 function cutKey() { return "dkcbb-cut:" + slate.draft_group_id; }
 function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else localStorage.removeItem(cutKey()); } catch (e) {} }
 function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) === null; }
-function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); renderSteps(); renderUnder(); }   // the Live page reads it for your exposures
+function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); renderSteps(); renderUnder(); renderStrand(); }   // the Live page reads it for your exposures
 function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
   var o = drawRules(), t = [], name = function (id) { return shortName((byId(id) || {}).name || id); };
   if (o.stackN) t.push(o.stackN + "-stack" + (o.stackBoth ? " + bring-back" : ""));
@@ -1764,7 +1767,7 @@ async function runCut() {
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
   var keep = +$("cutKeep").value || 500, pct = (+$("cutPct").value || 10) / 100, S = +$("cutNights").value || 2000, mode = $("cutMode").value === "equal" ? "equal" : "merit";
   var cx = ctx(), live = [];
-  CUT = { keep: null, rounds: live }; PF = {}; pfSave(); renderEntries(); $("pfExport").disabled = true;
+  CUT = { keep: null, rounds: live }; PF = {}; strandOn = false; pfSave(); renderEntries(); $("pfExport").disabled = true;
   var res = await DKSim.cutPool(cx, BANK.lineups, cs.map(function (c) { return { contest: c, n: ns[String(c.id)] }; }), F.field, fieldDoc.z, keep, pct, S,
     function (r) {
       live.push(r); renderBank();
@@ -2150,6 +2153,7 @@ function bpCommit() {
 }
 
 async function bpAuto() {
+  strandOn = true;
   var o = BP.o, b = BP.b, count = {}, limit = {}, coreOf = o.maxCore ? DKSim.cores(ctx(), BP.pool) : null, coreLim = DKSim.coreLimit(o, o.n), coreN = {};
   if (coreOf) b.picked.forEach(function (k) { coreN[coreOf[k]] = (coreN[coreOf[k]] || 0) + 1; });
   var mp = +$("maxPair").value || 0, pairN = {}, pairLim = 0;
@@ -2850,6 +2854,30 @@ $("bankClear").addEventListener("click", function () {
   if (!confirm("Clear the bank (" + BANK.lineups.length + " lineups)?")) return;
   BANK = { lineups: [], tags: [], tagRules: {}, groups: {} }; CUT = null; cutSave(); PF = {}; pfSave(); bankSaveState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
 });
+/* Clear old slates (2026-11-20, the operator): the browser keeps each slate's bank, cut, portfolios (and the one before
+   the last fill), entries file and scan by draft group. This removes those of every slate except today's (Pacific),
+   any not yet locked and the one open, after asking with the count and the space it frees. Settings (dkcbb:<group>),
+   dkcbb:nb and dkcbb:slatePick stay. Today's portfolios must survive the games: the Live page reads dkcbb-pf: for exposures. */
+var OLD_KEYS = ["dkcbb-bank:", "dkcbb-cut:", "dkcbb-pf:", "dkcbb-pf-prev:", "dkcbb-entries:", "dkcbb-scan:"];
+function oldSlateKeys(now) {
+  var pday = function (t) { return new Date(t).toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }); }, today = pday(now || Date.now()), keep = {};
+  ((doc && doc.slates) || []).forEach(function (s) { if (pday(s.start) === today || !s.locked || new Date(s.start).getTime() > (now || Date.now())) keep[String(s.draft_group_id)] = 1; });
+  if (slate) keep[String(slate.draft_group_id)] = 1;
+  var out = [], bytes = 0, groups = {};
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i), pre = OLD_KEYS.find(function (p) { return k.indexOf(p) === 0; });
+    if (!pre || keep[k.slice(pre.length)]) continue;
+    out.push(k); groups[k.slice(pre.length)] = 1; bytes += 2 * (k.length + (localStorage.getItem(k) || "").length);
+  }
+  return { keys: out, slates: Object.keys(groups).length, bytes: bytes };
+}
+$("clearOld").addEventListener("click", function () {
+  var o; try { o = oldSlateKeys(); } catch (e) { $("buildStatus").textContent = "This browser's storage isn't readable here."; return; }
+  if (!o.keys.length) { $("buildStatus").textContent = "No old slates saved in this browser."; return; }
+  if (!confirm("Remove " + o.slates + " old slate" + (o.slates === 1 ? "" : "s") + "' saved banks, cuts, portfolios, entries and scans (about " + (o.bytes / 1048576).toFixed(1) + " MB)? Today's slates, unlocked ones and this one stay.")) return;
+  o.keys.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+  $("buildStatus").textContent = "Cleared " + o.slates + " old slate" + (o.slates === 1 ? "" : "s") + " (about " + (o.bytes / 1048576).toFixed(1) + " MB freed).";
+});
 $("cutUnlisted").addEventListener("click", function (e) { if (e.target.id === "contestCheck") refreshContests(); });
 $("entriesFile").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
@@ -2949,8 +2977,8 @@ $("pfRun").addEventListener("click", function () {
   var started = Object.keys(PF).filter(function (k) { return (PF[k] || []).length; }).length, obj = $("pfObj").value;
   if (started && !confirm("Replace your portfolios in " + started + " contest" + (started === 1 ? "" : "s") + " with the " + $("pfObj").selectedOptions[0].textContent + " start? (Undo fill puts them back.)")) return;
   if (started) { store(undoKey(), PF); $("pfUndo").disabled = false; }   // the replaced set, for Undo fill
-  PF = {};
-  pickPortfolios(null, obj).then(function (m) { fillMsg(m); if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
+  PF = {}; strandOn = true;
+  pickPortfolios(null, obj).then(function (m) { fillMsg(m); renderStrand(); if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
 });
 /* Under-exposed (2026-11-20, C4c): the players, team stacks (3+ from a team) and pairs tonight's entries hold well
    below the sim's preference, read as their share of tier A (the kept lineups within the sim's noise of the best, at
@@ -2996,6 +3024,61 @@ function fillMsg(m) {            // after Fill all contests: one line (filled of
     (rx.length ? " " + rx.join("; ") + "." : "") + lockNote()) +
     ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">details</summary> ' + esc(m) + "</details>";
 }
+/* Stranded seats (2026-11-20, the operator): after Fill all contests or Auto-fill the rest leaves seats open, each short
+   contest says which cap blocked it and names the players at it, and offers the kept lineup that breaks the caps least
+   (fewest players over, then the fewest entries over, then the best sim value) as a one-tap add for one open seat. Nothing
+   is added by itself; the fill's completer still never relaxes the night cap. Caps checked: the night cap, the contest's
+   Max exposure (and a player's Max%), Min unique within the contest, Max contests per lineup (as a filter). */
+var strandOn = false;
+function strandFor(cid, n) {
+  var have = PF[cid] || [], mu = maxUses(), uses = {}, nl = nightLimit(), night = nightUsed(null), cnt = {}, mx = (+$("maxExpo").value || 100) / 100;
+  var minU = Math.max(1, +$("minUnique").value || 1);
+  Object.keys(PF).forEach(function (k) { PF[k].forEach(function (bi) { uses[bi] = (uses[bi] || 0) + 1; }); });
+  have.forEach(function (bi) { BANK.lineups[bi].ids.forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; }); });
+  var lim = function (id) { var cp = state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1; return state.lock[id] ? n : DKSim.expoLimit(Math.min(mx, cp), n); };
+  var val = {}; if (CUT && CUT.keep && CUT.board && CUT.board.values) CUT.keep.forEach(function (bi, k) { val[bi] = CUT.board.values[k] || 0; });
+  var blk = { night: {}, contest: {}, unique: 0 }, best = null;
+  finalIdx().forEach(function (bi) {
+    if (have.indexOf(bi) >= 0 || (uses[bi] || 0) >= mu) return;
+    var ids = BANK.lineups[bi].ids, over = [], ex = 0;
+    ids.forEach(function (id) {
+      if (!state.lock[id] && (night[id] || 0) + 1 > nl) { over.push([id, "night"]); ex += (night[id] || 0) + 1 - nl; blk.night[id] = (blk.night[id] || 0) + 1; }
+      if ((cnt[id] || 0) + 1 > lim(id)) { over.push([id, "contest"]); ex += (cnt[id] || 0) + 1 - lim(id); blk.contest[id] = (blk.contest[id] || 0) + 1; }
+    });
+    var close = have.filter(function (bj) { return BANK.lineups[bj].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length > 8 - minU; }).length;
+    if (close) { blk.unique++; over.push([null, "unique"]); ex += close; }
+    var k = [over.length, ex, -(val[bi] || 0)];
+    if (!best || k[0] < best.k[0] || (k[0] === best.k[0] && (k[1] < best.k[1] || (k[1] === best.k[1] && k[2] < best.k[2])))) best = { bi: bi, k: k, over: over };
+  });
+  var top = function (o) { return Object.keys(o).sort(function (a, b) { return o[b] - o[a]; }).slice(0, 5).map(function (id) { return shortName((byId(id) || {}).name || id); }); };
+  var why = [];
+  if (Object.keys(blk.night).length) why.push("Night cap blocked: " + top(blk.night).join(", ") + " at " + $("maxNight").value + "%");
+  if (Object.keys(blk.contest).length) why.push("Max exposure blocked: " + top(blk.contest).join(", ") + " at " + Math.round(100 * mx) + "% of " + n);
+  if (blk.unique) why.push("Min unique " + minU + " blocked " + blk.unique + " lineup" + (blk.unique === 1 ? "" : "s"));
+  return { why: why, best: best };
+}
+function renderStrand() {
+  var el = $("strandBox"); if (!el) return;
+  if (!strandOn || !BANK || !slate) { el.hidden = true; el.innerHTML = ""; return; }
+  var lines = [];
+  nbContests().forEach(function (x) {
+    var cid = String(x.c.id), open = x.n - (PF[cid] || []).length;
+    if (open <= 0) return;
+    var r = strandFor(cid, x.n), b = r.best;
+    var breaks = b ? b.over.map(function (o) { return o[1] === "unique" ? "Min unique" : shortName((byId(o[0]) || {}).name || o[0]) + " +1 " + (o[1] === "night" ? "night" : "contest"); }) : [];
+    lines.push("<b>" + esc(nbShort(x.c.name)) + "</b>: " + open + " open. " + esc(r.why.join("; ") || "No lineup left in the final pool under Max contests per lineup") + "." +
+      (b ? ' <button type="button" class="strandAdd" data-cid="' + esc(cid) + '" data-bi="' + b.bi + '" title="Adds this one lineup to this contest; breaks: ' + esc(breaks.join(", ") || "nothing") + '">Add best' +
+        (breaks.length ? " (breaks " + esc(breaks.join(", ")) + ")" : "") + "</button>" : ""));
+  });
+  el.hidden = !lines.length;
+  el.innerHTML = lines.length ? "Open seats: " + lines.join(" · ") : "";
+}
+$("strandBox").addEventListener("click", function (e) {
+  var b = e.target.closest(".strandAdd"); if (!b) return;
+  var cid = b.dataset.cid; PF[cid] = (PF[cid] || []).concat([+b.dataset.bi]);
+  pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
+  if (typeof NB !== "undefined" && NB.on && BP && BP.review === cid) review(cid);
+});
 function undoKey() { return "dkcbb-pf-prev:" + slate.draft_group_id; }
 $("pfUndo").addEventListener("click", function () {
   var prev = store(undoKey());

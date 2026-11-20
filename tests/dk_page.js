@@ -1144,6 +1144,31 @@ function audit(name, L, o) {
   check("night view: players, pairs and cores against the field", /The night: \d+ entries/.test(await pg.textContent("#pfBox")) &&
         (await pg.$$eval("#pfBox table", t => t.length)) === 3);
   await pg.fill("#maxPair", "");
+  // stranded seats: with a tight night cap the fill leaves seats open; the panel names the cap that blocked and offers
+  // the lineup that breaks the caps least as a one-tap add; nothing is added by itself
+  const night0 = await pg.evaluate(() => $("maxNight").value);
+  await pg.fill("#maxNight", "15");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed|^Filled/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const st0 = await pg.evaluate(() => { const open = nbContests().reduce((t, x) => t + Math.max(0, x.n - (PF[String(x.c.id)] || []).length), 0), b = document.querySelector("#strandBox .strandAdd");
+    return { open, shown: !$("strandBox").hidden, text: $("strandBox").textContent, btn: !!b, cid: b && b.dataset.cid, n: b ? (PF[b.dataset.cid] || []).length : null }; });
+  if (st0.btn) await pg.click("#strandBox .strandAdd");
+  const st1 = await pg.evaluate(c => ({ n: c ? (PF[c] || []).length : null }), st0.cid);
+  check("stranded seats: a fill left short names the cap that blocked (Night cap blocked: players at 15%) and offers a one-tap add of the lineup that breaks the caps least; nothing added by itself",
+        st0.open > 0 && st0.shown && /Open seats: .*\d+ open\. .*Night cap blocked: .+ at 15%/.test(st0.text) && st0.btn && st1.n === st0.n + 1, JSON.stringify([st0, st1]));
+  await pg.fill("#maxNight", night0);
+  // Clear old slates: other slates' banks / cuts / portfolios / entries / scans go after asking; this slate's stay, and settings
+  const co = await pg.evaluate(() => {
+    const dg = String(slate.draft_group_id), keys = ["dkcbb-bank:999001", "dkcbb-cut:999001", "dkcbb-pf:999001", "dkcbb-pf-prev:999001", "dkcbb-entries:999001", "dkcbb-scan:999001", "dkcbb:999001"];
+    keys.forEach(k => localStorage.setItem(k, JSON.stringify({ x: 1 })));
+    const mine = localStorage.getItem("dkcbb-pf:" + dg), asked = []; const c0 = window.confirm; window.confirm = m => { asked.push(m); return true; };
+    document.getElementById("clearOld").click(); window.confirm = c0;
+    return { asked, gone: keys.slice(0, 6).every(k => localStorage.getItem(k) === null), settings: localStorage.getItem("dkcbb:999001") !== null, mine: localStorage.getItem("dkcbb-pf:" + dg) === mine && mine !== null,
+             msg: document.getElementById("buildStatus").textContent, note: /Closing the tab after a slate/.test(document.getElementById("stepBank").textContent) };
+  });
+  check("clear old slates: asks with the count and space, removes another slate's bank / cut / portfolios / entries / scan, keeps this slate's and the settings; a line under Clear bank",
+        co.asked.length === 1 && /Remove 1 old slate.+about [\d.]+ MB/.test(co.asked[0]) && co.gone && co.settings && co.mine && /Cleared 1 old slate/.test(co.msg) && co.note, JSON.stringify(co));
+  await pg.evaluate(() => localStorage.removeItem("dkcbb:999001"));
   // Max contests per lineup (3 by default): unique within a contest, a lineup in at most 3; the builder offers only
   // lineups under the max elsewhere; the export refuses only a lineup twice in one contest
   check("max contests per lineup: 3 by default", await pg.evaluate(() => { const x = document.getElementById("maxUse"); return x.defaultValue === "3"; }));
