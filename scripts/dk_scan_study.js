@@ -9,12 +9,20 @@
 // Judged on real results in the night's main contest: for each list's players, the share of real entries holding him
 // that reached the real top 10% / top 1%, and his real points less his projection; beside every player's average.
 //
-//   node scripts/dk_scan_study.js <night.json> <build.json> <standings dir> <slate csv> [--perp 40] [--neutral 3000] [--focus 12]
+// v2 (2026-11-20, the operator's yes to a backtest): the ridge ROI coefficient net of what the projection alone predicts
+// (each scanned player's coefficient less its least-squares fit on his projection and salary), then 6 core (field
+// ownership at or above the median) + 6 leverage (below) by the net; and a sharper second pass: the top SECOND by the
+// net each get a forced batch of 2 x PERP lineups (at least 1 of him, fresh seeds), ranked by that batch's mean sim ROI
+// over the plain batch's, 6 core + 6 leverage from them (topped up from the net order). Every list is judged half by
+// half (core, leverage) on real results, beside today's scan's core and leverage halves.
+//
+//   node scripts/dk_scan_study.js <night.json> <build.json> <standings dir> <slate csv> [--perp 40] [--neutral 3000] [--focus 12] [--second 20]
 const fs = require("fs"), path = require("path"), vm = require("vm");
 const ROOT = path.join(__dirname, ".."), S = require(path.join(ROOT, "dk_sim.js"));
 const sb = { self: {} }; vm.runInNewContext(fs.readFileSync(path.join(ROOT, "vendor", "lp_solver.js"), "utf8"), sb);
 const [nf, bf, sdir, actf] = process.argv.slice(2);
 const opt = (k, d) => { const i = process.argv.indexOf("--" + k); return i > 0 ? +process.argv[i + 1] : d; };
+const SECOND = opt("second", 20), HALF = 6;
 const PERP = opt("perp", 40), NEUTRAL = opt("neutral", 3000), FOCUS = opt("focus", 12), SIMS = opt("sims", 2000), LAMBDA = opt("lambda", 20), BOOT = opt("boot", 40);
 const N = JSON.parse(fs.readFileSync(nf)), B = JSON.parse(fs.readFileSync(bf)), gate = JSON.parse(fs.readFileSync(path.join(ROOT, "analysis/cbb/dk/gate.json")));
 const rows = Object.entries(N.slate.players).map(([id, r]) => Object.assign({ id }, r));
@@ -114,6 +122,30 @@ function judge(list, R) {          // a list's players: real top-10% / top-1% ra
   const focus = ranked.slice(0, FOCUS).map(x => Object.assign(x, { read: x.own >= medOwn ? "core" : "leverage" }));
   const R = realRates();
   const all = judge(scanP.map(r => r.id), R);
+  // v2: the ridge coefficient net of projection and salary (least squares over the scanned players)
+  const gp = x => S.gatedProj(byId[x.id], gate), X = ranked.map(x => [1, gp(x), byId[x.id].salary / 1000]);
+  const ols = (X, y) => {            // normal equations, 3 x 3
+    const k = X[0].length, A = Array.from({ length: k }, () => new Array(k + 1).fill(0));
+    X.forEach((r, i) => { for (let a = 0; a < k; a++) { for (let c = 0; c < k; c++) A[a][c] += r[a] * r[c]; A[a][k] += r[a] * y[i]; } });
+    for (let i = 0; i < k; i++) { let p = i; for (let r = i + 1; r < k; r++) if (Math.abs(A[r][i]) > Math.abs(A[p][i])) p = r; [A[i], A[p]] = [A[p], A[i]];
+      const d = A[i][i] || 1e-12; for (let c = i; c <= k; c++) A[i][c] /= d; for (let r = 0; r < k; r++) if (r !== i) { const f = A[r][i]; for (let c = i; c <= k; c++) A[r][c] -= f * A[i][c]; } }
+    return A.map(r => r[k]);
+  };
+  const beta = ols(X, ranked.map(x => x.roi));
+  ranked.forEach((x, i) => { x.net = x.roi - X[i].reduce((t, v, j) => t + v * beta[j], 0); });
+  const byNet = ranked.slice().sort((a, b) => b.net - a.net);
+  const halves = (order, key) => ({ core: order.filter(x => x.own >= medOwn).slice(0, HALF), leverage: order.filter(x => x.own < medOwn).slice(0, HALF) });
+  const v2a = halves(byNet);
+  // the sharper second pass on the top SECOND by the net
+  const top = byNet.slice(0, SECOND), pool2 = [], at2 = {}, add2 = L => { const k = L.ids.slice().sort().join(","); if (at2[k] == null) { at2[k] = pool2.length; pool2.push({ ids: L.ids.map(String) }); } return at2[k]; };
+  const plain2 = (await S.pool(ctxOf(S.seeded(104729 + (+N.g || 0))), baseO, 10 * PERP)).lineups.map(add2), b2 = [];
+  for (let i = 0; i < top.length; i++) b2.push({ x: top[i], idx: (await S.pool(ctxOf(S.seeded(104729 * (i + 2) + (+N.g || 0))), Object.assign({}, baseO, { conds: [{ type: "min", ids: [top[i].id], n: 1 }] }), 2 * PERP)).lineups.map(add2) });
+  const val2 = value(pool2), m2 = mean(val2.roi, plain2);
+  b2.forEach(b => { b.x.second = mean(val2.roi, b.idx) - m2; });
+  const sec = top.slice().sort((a, b) => b.second - a.second), v2b = halves(sec.concat(byNet.filter(x => !top.includes(x))));
+  const half = l => ({ core: judge(l.core.map(x => x.id), R), leverage: judge(l.leverage.map(x => x.id), R),
+                       names: { core: l.core.map(x => x.name), leverage: l.leverage.map(x => x.name) } });
+  const curHalf = { core: judge(gains.filter(x => x.read === "core").map(x => x.id), R), leverage: judge(gains.filter(x => x.read === "leverage").map(x => x.id), R) };
   const out = { night: N.date, draft_group: N.g, players_scanned: scanP.length, neutral: nPool.length, own_median: +medOwn.toFixed(1), noise_bar: +(100 * bar).toFixed(3),
     current: { core: gains.filter(x => x.read === "core").length, leverage: gains.filter(x => x.read === "leverage").length, even: gains.filter(x => x.read === "even").length,
                fade: gains.filter(x => x.read === "fade").length, skip: gains.filter(x => x.read === "skip").length,
@@ -121,6 +153,7 @@ function judge(list, R) {          // a list's players: real top-10% / top-1% ra
     ridge: { focus: focus.map(x => ({ name: x.name, read: x.read, roi: +(100 * x.roi).toFixed(1), band: +(100 * x.band).toFixed(1), top1: +(100 * x.top1).toFixed(2), own: +x.own.toFixed(1), held: x.held })),
              focus_real: judge(focus.map(x => x.id), R), bottom_real: judge(ranked.slice(-FOCUS).map(x => x.id), R),
              chalk_held: ranked.filter(x => x.own >= 25).length, chalk_in_focus: focus.filter(x => x.own >= 25).length },
+    v2: { current_halves: curHalf, net_beta: beta.map(b => +b.toFixed(5)), net: half(v2a), second_pass: half(v2b) },
     all_real: all, field_rates: R ? { top10: +(100 * R.all10).toFixed(1), top1: +(100 * R.all1).toFixed(2) } : null, seconds: Math.round((Date.now() - t0) / 1000) };
   console.log(JSON.stringify(out, null, 1));
 })();
