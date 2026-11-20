@@ -236,6 +236,10 @@ points a minute and teammates who sat: a low-owned player who beat us is worth a
 ownership, salary, shared lineups). Settings change only on the 3 bands, and only when most nights ran the same
 way; the 5 bands are for reading. The owner keeps an entry in the Pull Up Jumper each night so its standings can be
 downloaded (a night without it falls back to the biggest graded contest, and the card says which).
+Under the card, the shape audit (B1, 2026-11-20): `python3 scripts/dk_eval.py ownaudit`: team sums (rank, miss,
+real / projected for our top 3 teams), within a team (our most-owned the real one, order of the top 4, the #1-#2 gap
+ours vs real), the top-5 hit and the 3 bands, and duplication real vs simulated on news and quiet nights. Shape, not
+exact percentages; its biggest team misses are in the misses log.
 
 **News sources and team cards, every morning (2026-11-19):** battle-royale-research's day's news read suggests
 candidate X sources for tonight's teams with none listed (cbb/news/suggest/<date>.txt: the accounts naming the most of

@@ -2393,6 +2393,90 @@ def projaudit(a):
             len(PX), pooled, pooled_a, sum(m("sal_gaps")), sum(m("sal_unexplained")), 100 * sum(m("sal_unexplained")) / max(1, sum(m("sal_gaps"))), S.mean(m("own_rank")) if m("own_rank") else float("nan")))
 
 
+OWN_AUDIT = os.path.join(DK, "own_audit.csv")
+OWN_AUDIT_COLS = ["date", "draft_group", "contest", "night_tag", "players", "teams", "team_rank", "team_miss", "team_top3", "top1_match", "order_rank",
+                  "gap_ours", "gap_real", "top5_hit", "band_u5", "band_5_20", "band_20", "dup_real", "dup_sim"]
+
+
+def own_team_shape(rs):
+    """{team: (summed projected, summed real, [its players by our projection, top 4])} from own_rows rows."""
+    t = defaultdict(list)
+    for r in rs:
+        t[r["team"]].append(r)
+    return {k: (sum(r["own_proj"] for r in v), sum(r["own_act"] for r in v), sorted(v, key=lambda r: -r["own_proj"])[:4]) for k, v in t.items()}
+
+
+def ownaudit(a):
+    """B1, the morning ownership audit by shape (2026-11-20, BUILD; tracking): each graded slate's projected ownership
+    against the real ownership of its baseline contest (own_rows: a player nobody drafted is 0%), by shape not exact %.
+    Team: rank correlation of summed projected vs real, the mean miss of a team's sum, and real / projected for our 3
+    most-owned teams. Within a team (teams with a player projected 5%+): how often our most-owned is the real most-owned,
+    the rank agreement over our top 4, and the gap between our #1 and #2 (ours vs real, same two players). Slate: how
+    many of our top 5 are the real top 5, and real / projected in the 3 decision bands. Duplication: real vs simulated
+    share of entries holding a lineup another user entered (field_eval.csv, the slate's contests averaged), with the
+    night tag. own_audit.csv rebuilt whole; the biggest team misses go in A3's log (misses)."""
+    rows, base = own_rows()
+    rows = [r for r in rows if r["own_proj"] is not None]
+    fe = read(FIELD_EVAL)
+    out = []
+    for (d, g), rs in sorted(groupby_night(rows).items()):
+        ts = own_team_shape(rs)
+        tk = [k for k in ts if ts[k][0] > 0 or ts[k][1] > 0]
+        trank = spearman([ts[k][0] for k in tk], [ts[k][1] for k in tk])
+        top3 = sorted(tk, key=lambda k: -ts[k][0])[:3]
+        m1, ordr, go, gr = [], [], [], []
+        for k in tk:
+            pl = ts[k][2]
+            if len(pl) < 2 or pl[0]["own_proj"] < 5:
+                continue
+            allp = [r for r in rs if r["team"] == k]
+            m1.append(max(allp, key=lambda r: r["own_act"])["dk_id"] == pl[0]["dk_id"])
+            rho = spearman([r["own_proj"] for r in pl], [r["own_act"] for r in pl])
+            if rho is not None:
+                ordr.append(rho)
+            go.append(pl[0]["own_proj"] - pl[1]["own_proj"]); gr.append(pl[0]["own_act"] - pl[1]["own_act"])
+        p5 = {r["dk_id"] for r in sorted(rs, key=lambda r: -r["own_proj"])[:5]}
+        a5 = {r["dk_id"] for r in sorted(rs, key=lambda r: -r["own_act"])[:5]}
+        band = []
+        for lo, hi in OWN_DECIDE:
+            b = [r for r in rs if lo <= r["own_proj"] < hi]
+            sp = sum(r["own_proj"] for r in b)
+            band.append(round(sum(r["own_act"] for r in b) / sp, 2) if sp else "")
+        sub = [r for r in fe if r["draft_group"] == g]
+        dr = [num(r["dup_other"]) for r in sub if r["side"] == "real" and num(r["dup_other"]) is not None]
+        ds = [num(r["dup_other"]) for r in sub if r["side"] == "sim" and num(r["dup_other"]) is not None]
+        out.append({"date": d, "draft_group": g, "contest": base[g][1], "night_tag": next((r["night_tag"] for r in sub if r.get("night_tag")), ""),
+                    "players": len(rs), "teams": len(tk), "team_rank": round(trank, 3) if trank is not None else "",
+                    "team_miss": round(S.mean(abs(ts[k][1] - ts[k][0]) for k in tk), 1) if tk else "",
+                    "team_top3": " ".join("%s:%.2f" % (k, ts[k][1] / ts[k][0]) for k in top3 if ts[k][0]),
+                    "top1_match": "%d/%d" % (sum(m1), len(m1)), "order_rank": round(S.mean(ordr), 3) if ordr else "",
+                    "gap_ours": round(S.mean(go), 1) if go else "", "gap_real": round(S.mean(gr), 1) if gr else "",
+                    "top5_hit": len(p5 & a5), "band_u5": band[0], "band_5_20": band[1], "band_20": band[2],
+                    "dup_real": round(S.mean(dr), 1) if dr else "", "dup_sim": round(S.mean(ds), 1) if ds else ""})
+    if not out:
+        print("Ownership audit: no graded night with a baseline contest yet")
+        return
+    with open(OWN_AUDIT, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=OWN_AUDIT_COLS)
+        w.writeheader()
+        w.writerows(out)
+    print("Ownership audit by shape (projected vs the baseline contest's real; a player nobody drafted counts 0%):")
+    for r in out:
+        print("  %s %s %s (%s): teams %s, rank %s, a team's sum off by %s pts, our top 3 teams real/proj %s; within a team: our most-owned the real one %s, "
+              "order (top 4) %s, #1-#2 gap ours %s vs real %s; top-5 owned hit %s of 5; bands real/proj under 5 %s, 5-20 %s, 20+ %s; duplication real %s%% vs sim %s%%" % (
+                  r["date"], r["draft_group"], r["contest"], r["night_tag"] or "untagged", r["teams"], r["team_rank"], r["team_miss"], r["team_top3"], r["top1_match"],
+                  r["order_rank"], r["gap_ours"], r["gap_real"], r["top5_hit"], r["band_u5"], r["band_5_20"], r["band_20"], r["dup_real"], r["dup_sim"]))
+    m = lambda k: [num(r[k]) for r in out if r[k] not in ("", None)]
+    t1 = [tuple(map(int, r["top1_match"].split("/"))) for r in out]
+    print("All %d slates: team rank %.3f, a team's sum off by %.1f pts; most-owned on a team right %d of %d; order %.3f; #1-#2 gap ours %.1f vs real %.1f; "
+          "top-5 hit %.1f of 5; bands real/proj %s" % (len(out), S.mean(m("team_rank")), S.mean(m("team_miss")), sum(x[0] for x in t1), sum(x[1] for x in t1),
+                                                       S.mean(m("order_rank")), S.mean(m("gap_ours")), S.mean(m("gap_real")), S.mean(m("top5_hit")),
+                                                       ", ".join("%s %.2f" % (band_label(*b), S.mean(m(k))) for b, k in zip(OWN_DECIDE, ["band_u5", "band_5_20", "band_20"]) if m(k))))
+    for l in own_pos_lines():
+        if l.startswith("Duplication"):
+            print(l)
+
+
 MISSES = os.path.join(DK, "misses.csv")
 MISSES_COLS = ["date", "draft_group", "lens", "subject", "team", "miss", "detail", "tags"]
 MISS_TAGS = ["late news / scratch", "teammate out", "minutes role change", "newcomer / few games", "blowout", "stale DK avg",
@@ -2407,11 +2491,11 @@ def misses(a):
     implied total beside), salary (every 2 sd gap off the slate's salary line, as A1; the miss is his real minus
     projected points) and ownership (real minus projected, against the slate's baseline contest, top 5).
     --friday: counts by tag for the week of the latest night (Monday on) and for all nights."""
-    base, own = baselines(), defaultdict(dict)
-    for r in read(os.path.join(DK, "own_eval.csv")):
-        g = str(r["draft_group"])
-        if g in base and r["contest_id"] == base[g][0] and num(r.get("own_actual")) is not None:
-            own[g][r["dk_id"]] = (num(r.get("own_proj")) or 0.0, num(r["own_actual"]))
+    orows, base = own_rows()
+    own = defaultdict(dict)                 # the baseline contest's ownership; a player nobody drafted is 0%
+    for r in orows:
+        if r["own_proj"] is not None:
+            own[str(r["draft_group"])][r["dk_id"]] = (r["own_proj"], r["own_act"])
     out = []
     for f in sorted(glob.glob(os.path.join(DK, "20??-??-??_*.csv"))):
         rows = read(f)
@@ -2513,6 +2597,14 @@ def misses(a):
         for k, (pj, ac) in sorted(((k, v) for k, v in og.items() if k in byid), key=lambda kv: -abs(kv[1][1] - kv[1][0]))[:5]:
             r = byid[k]
             add("ownership", r["name"], r["team"], ac - pj, "%.0f%% projected, %.0f%% real (%s)" % (pj, ac, base[g][1]), tags(r, market=True))
+        # ownership by team (B1): a team's summed ownership, real minus projected, top 3
+        if og:
+            tsum = defaultdict(lambda: [0.0, 0.0])
+            for k, (pj, ac) in og.items():
+                if k in byid:
+                    tsum[byid[k]["team"]][0] += pj; tsum[byid[k]["team"]][1] += ac
+            for t, (pj, ac) in sorted(tsum.items(), key=lambda kv: -abs(kv[1][1] - kv[1][0]))[:3]:
+                add("own team", t, t, ac - pj, "summed %.0f%% projected, %.0f%% real" % (pj, ac), team_tags(t))
     if out:
         with open(MISSES, "w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=MISSES_COLS)
@@ -2556,6 +2648,7 @@ def main():
     sub.add_parser("scan")
     pa_ = sub.add_parser("projaudit")
     pa_.add_argument("--mirror", help="the mirror checkout: the shape lens on today's open slates too")
+    sub.add_parser("ownaudit")
     ms = sub.add_parser("misses")
     ms.add_argument("--friday", action="store_true", help="counts by tag: the latest night's week, and all nights")
     sub.add_parser("risers")
@@ -2570,7 +2663,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit}[a.cmd](a)
 
 
 if __name__ == "__main__":

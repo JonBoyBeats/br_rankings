@@ -21,6 +21,9 @@ date,draft_group,lens,subject,team,miss,detail,tags
 2026-11-16,156660,ownership,Mantas Juzenas,STMRY,20.91,"65% projected, 86% real (CBB $6K Pull Up Jumper [$2K to 1st])",minutes role change; newcomer / few games; blowout; salary-value spot; chalk concentration
 2026-11-16,156660,ownership,Kareem Stagg,UGA,17.58,"14% projected, 32% real (CBB $6K Pull Up Jumper [$2K to 1st])",newcomer / few games; blowout; salary-value spot; chalk concentration
 2026-11-16,156660,ownership,Joe Philon III,UCLA,-15.51,"56% projected, 41% real (CBB $6K Pull Up Jumper [$2K to 1st])",teammate out; newcomer / few games; blowout; salary-value spot; chalk concentration
+2026-11-16,156660,own team,UCLA,UCLA,-75.66,"summed 189% projected, 114% real",late news / scratch; blowout; Q status
+2026-11-16,156660,own team,UGA,UGA,22.2,"summed 105% projected, 127% real",blowout
+2026-11-16,156660,own team,UK,UK,15.06,"summed 36% projected, 51% real",late news / scratch; blowout; Q status
 2026-11-17,156662,minutes,Boogie Fland,UF,-19.7,"28 projected, 8 played",Q status
 2026-11-17,156662,minutes,Chendall Weaver,UH,14.0,"13 projected, 27 played",unexplained
 2026-11-17,156662,minutes,Urban Klavzar,UF,12.7,"18 projected, 31 played",unexplained
@@ -59,6 +62,9 @@ date,draft_group,lens,subject,team,miss,detail,tags
 2026-11-17,156663,ownership,Tyler Harris,UNLV,-27.22,"27% projected, 0% real (CBB $1.5K And-One)",late news / scratch; newcomer / few games; blowout; salary-value spot; Q status
 2026-11-17,156663,ownership,Jordan Scott,MSU,-19.37,"22% projected, 2% real (CBB $1.5K And-One)",Q status
 2026-11-17,156663,ownership,Patrick Ngongba II,DUKE,19.3,"22% projected, 42% real (CBB $1.5K And-One)",blowout; chalk concentration
+2026-11-17,156663,own team,DUKE,DUKE,69.3,"summed 39% projected, 108% real",blowout
+2026-11-17,156663,own team,KU,KU,56.03,"summed 45% projected, 101% real",teammate out; blowout; Q status
+2026-11-17,156663,own team,UNLV,UNLV,-52.05,"summed 96% projected, 44% real",late news / scratch; blowout; Q status
 2026-11-18,157032,minutes,Tariq Francis,RU,14.2,"23 projected, 37 played",unexplained
 2026-11-18,157032,minutes,Lino Mark,RU,13.7,"25 projected, 39 played",unexplained
 2026-11-18,157032,minutes,Alex Lloyd,UF,-12.4,"12 projected, 0 played",unexplained
@@ -93,6 +99,9 @@ date,draft_group,lens,subject,team,miss,detail,tags
 2026-11-18,157033,ownership,Tre White,KU,34.79,"15% projected, 50% real (CBB $7K Pull Up Jumper [$2K to 1st])",teammate out; chalk concentration
 2026-11-18,157033,ownership,Ivan Kharchenkov,ARIZ,-25.13,"49% projected, 24% real (CBB $7K Pull Up Jumper [$2K to 1st])",unexplained
 2026-11-18,157033,ownership,Leroy Blyden Jr.,KU,22.51,"24% projected, 46% real (CBB $7K Pull Up Jumper [$2K to 1st])",teammate out; salary-value spot; chalk concentration
+2026-11-18,157033,own team,KU,KU,123.16,"summed 60% projected, 183% real",late news / scratch; teammate out; Q status
+2026-11-18,157033,own team,LY-IL,LY-IL,-81.86,"summed 171% projected, 89% real",late news / scratch
+2026-11-18,157033,own team,ARIZ,ARIZ,-45.84,"summed 95% projected, 49% real",Q status
 2026-11-19,157138,minutes,Boogie Fland,UF,-23.8,"24 projected, 0 played",late news / scratch
 2026-11-19,157138,minutes,Jones Lay,UF,17.4,"1 projected, 18 played",teammate out; newcomer / few games
 2026-11-19,157138,minutes,Amir Jenkins,WVU,-17.1,"17 projected, 0 played",late news / scratch; newcomer / few games; Q status
@@ -113,6 +122,9 @@ date,draft_group,lens,subject,team,miss,detail,tags
 2026-11-19,157138,ownership,Urban Klavzar,UF,23.54,"5% projected, 29% real (CBB $750 And-One (Early))",teammate out
 2026-11-19,157138,ownership,Martin Somerville,WVU,-22.13,"34% projected, 12% real (CBB $750 And-One (Early))",teammate out; salary-value spot
 2026-11-19,157138,ownership,Braeden Smith,ND,-21.06,"37% projected, 16% real (CBB $750 And-One (Early))",salary-value spot
+2026-11-19,157138,own team,UF,UF,76.99,"summed 46% projected, 123% real",late news / scratch
+2026-11-19,157138,own team,WVU,WVU,-65.01,"summed 133% projected, 68% real",late news / scratch; Q status
+2026-11-19,157138,own team,ND,ND,-60.6,"summed 170% projected, 109% real",unexplained
 2026-11-19,157139,minutes,Tyler Harris,UNLV,-23.3,"23 projected, 0 played",late news / scratch; newcomer / few games; Q status
 2026-11-19,157139,minutes,Dennis Parker Jr.,KU,18.0,"11 projected, 29 played",teammate out
 2026-11-19,157139,minutes,Brandon Jennings,VCU,17.8,"17 projected, 35 played",unexplained
@@ -130,7 +142,10 @@ date,draft_group,lens,subject,team,miss,detail,tags
 2026-11-19,157139,salary,Lino Mark,RU,-11.35,"projection +8.2 off the salary line; 31.1 projected, 19.8 real",salary-value spot; chalk concentration
 2026-11-19,157139,salary,Brock Harding,TCU,13.5,"projection +7.6 off the salary line; 30.5 projected, 44.0 real",salary-value spot; chalk concentration
 2026-11-19,157139,ownership,Mackenzie Mgbako,TA&M,36.17,"24% projected, 60% real (CBB $6K Pull Up Jumper [$2K to 1st])",chalk concentration
-2026-11-19,157139,ownership,Robbie Avila,TCU,30.58,"0% projected, 31% real (CBB $6K Pull Up Jumper [$2K to 1st])",newcomer / few games; chalk concentration
 2026-11-19,157139,ownership,Lino Mark,RU,27.18,"36% projected, 64% real (CBB $6K Pull Up Jumper [$2K to 1st])",salary-value spot; chalk concentration
 2026-11-19,157139,ownership,Torey Alston,VCU,-26.52,"48% projected, 21% real (CBB $6K Pull Up Jumper [$2K to 1st])",salary-value spot
 2026-11-19,157139,ownership,Tariq Francis,RU,20.72,"12% projected, 32% real (CBB $6K Pull Up Jumper [$2K to 1st])",salary-value spot; chalk concentration
+2026-11-19,157139,ownership,Nolan Winter,WISC,19.48,"4% projected, 24% real (CBB $6K Pull Up Jumper [$2K to 1st])",unexplained
+2026-11-19,157139,own team,TCU,TCU,-44.67,"summed 179% projected, 134% real",unexplained
+2026-11-19,157139,own team,RU,RU,43.55,"summed 98% projected, 142% real",unexplained
+2026-11-19,157139,own team,TA&M,TA&M,39.24,"summed 50% projected, 89% real",unexplained
