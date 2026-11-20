@@ -1,0 +1,1646 @@
+{
+ "variants": {
+  "m56rand": {
+   "2026-11-18_157033": {
+    "night": "2026-11-18",
+    "kept": 1500,
+    "contests": [
+     "CBB $7K Pull Up Jumper [$2K to 1st] x1",
+     "CBB $1.25K And-One x10",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $100 And-One x3"
+    ],
+    "tierA_before": 3,
+    "kept_real": {
+     "top10": 1.5,
+     "cash": 2.9
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 432,
+      "appended": 407,
+      "parents_with_variants": 15,
+      "parents_beaten": 11,
+      "mean_best_minus_parent": 0.07,
+      "fresh_parents_beaten": 9,
+      "fresh_mean_best_minus_parent": 0.066,
+      "tierA_after": 1,
+      "appended_real": {
+       "top10": 4.7,
+       "cash": 9.8
+      },
+      "variants_real": {
+       "top10": 4.4,
+       "cash": 9.3
+      },
+      "median_value": 0.294,
+      "parent_value_mean": 0.695
+     }
+    }
+   },
+   "2026-11-19_157139": {
+    "night": "2026-11-19",
+    "kept": 2098,
+    "contests": [
+     "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+     "CBB $1.25K And-One x20",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $150 And-One x5"
+    ],
+    "tierA_before": 58,
+    "kept_real": {
+     "top10": 3.4,
+     "cash": 7.8
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 346,
+      "appended": 157,
+      "parents_with_variants": 15,
+      "parents_beaten": 8,
+      "mean_best_minus_parent": 0.071,
+      "fresh_parents_beaten": 5,
+      "fresh_mean_best_minus_parent": -0.083,
+      "tierA_after": 43,
+      "appended_real": {
+       "top10": 0.6,
+       "cash": 8.3
+      },
+      "variants_real": {
+       "top10": 2.3,
+       "cash": 8.4
+      },
+      "median_value": 1.062,
+      "parent_value_mean": 1.404
+     }
+    }
+   },
+   "2026-11-19_157138": {
+    "night": "2026-11-19",
+    "kept": 1521,
+    "contests": [
+     "CBB $3K Pull Up Jumper [$1K to 1st] (Early) x1",
+     "CBB $750 And-One (Early) x10",
+     "CBB $50 Dime Time [Just $0.10!] (Early) x10",
+     "CBB $200 And-One (Early) x5"
+    ],
+    "tierA_before": 6,
+    "kept_real": {
+     "top10": 2.7,
+     "cash": 13
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 174,
+      "appended": 72,
+      "parents_with_variants": 15,
+      "parents_beaten": 7,
+      "mean_best_minus_parent": -0.039,
+      "fresh_parents_beaten": 5,
+      "fresh_mean_best_minus_parent": -0.109,
+      "tierA_after": 9,
+      "appended_real": {
+       "top10": 11.1,
+       "cash": 25
+      },
+      "variants_real": {
+       "top10": 6.9,
+       "cash": 23
+      },
+      "median_value": 1.007,
+      "parent_value_mean": 1.356
+     }
+    }
+   },
+   "2026-11-17_156663": {
+    "night": "2026-11-17",
+    "kept": 2000,
+    "contests": [
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $1.5K And-One x10",
+     "CBB $250 Quarter Jukebox [Just $0.25!]  x20",
+     "CBB $50 Dime Time [Just $0.10!] x17"
+    ],
+    "tierA_before": 2,
+    "kept_real": {
+     "top10": 7.4,
+     "cash": 15.5
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 572,
+      "appended": 470,
+      "parents_with_variants": 15,
+      "parents_beaten": 15,
+      "mean_best_minus_parent": 0.227,
+      "fresh_parents_beaten": 15,
+      "fresh_mean_best_minus_parent": 0.228,
+      "tierA_after": 2,
+      "appended_real": {
+       "top10": 9.8,
+       "cash": 20.4
+      },
+      "variants_real": {
+       "top10": 8,
+       "cash": 17.7
+      },
+      "median_value": 0.125,
+      "parent_value_mean": 0.271
+     }
+    }
+   }
+  },
+  "m25k4": {
+   "2026-11-18_157033": {
+    "night": "2026-11-18",
+    "kept": 1500,
+    "contests": [
+     "CBB $7K Pull Up Jumper [$2K to 1st] x1",
+     "CBB $1.25K And-One x10",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $100 And-One x3"
+    ],
+    "tierA_before": 3,
+    "kept_real": {
+     "top10": 1.5,
+     "cash": 2.9
+    },
+    "runs": {
+     "K=4": {
+      "drawn": 258,
+      "appended": 246,
+      "parents_with_variants": 15,
+      "parents_beaten": 10,
+      "mean_best_minus_parent": 0.082,
+      "fresh_parents_beaten": 10,
+      "fresh_mean_best_minus_parent": 0.057,
+      "tierA_after": 3,
+      "appended_real": {
+       "top10": 6.9,
+       "cash": 9.3
+      },
+      "variants_real": {
+       "top10": 6.6,
+       "cash": 8.9
+      },
+      "median_value": 0.294,
+      "parent_value_mean": 0.695
+     }
+    }
+   },
+   "2026-11-19_157139": {
+    "night": "2026-11-19",
+    "kept": 2098,
+    "contests": [
+     "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+     "CBB $1.25K And-One x20",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $150 And-One x5"
+    ],
+    "tierA_before": 58,
+    "kept_real": {
+     "top10": 3.4,
+     "cash": 7.8
+    },
+    "runs": {
+     "K=4": {
+      "drawn": 212,
+      "appended": 96,
+      "parents_with_variants": 15,
+      "parents_beaten": 8,
+      "mean_best_minus_parent": 0.048,
+      "fresh_parents_beaten": 4,
+      "fresh_mean_best_minus_parent": -0.129,
+      "tierA_after": 28,
+      "appended_real": {
+       "top10": 2.1,
+       "cash": 11.5
+      },
+      "variants_real": {
+       "top10": 3.8,
+       "cash": 10.4
+      },
+      "median_value": 1.062,
+      "parent_value_mean": 1.404
+     }
+    }
+   },
+   "2026-11-19_157138": {
+    "night": "2026-11-19",
+    "kept": 1521,
+    "contests": [
+     "CBB $3K Pull Up Jumper [$1K to 1st] (Early) x1",
+     "CBB $750 And-One (Early) x10",
+     "CBB $50 Dime Time [Just $0.10!] (Early) x10",
+     "CBB $200 And-One (Early) x5"
+    ],
+    "tierA_before": 6,
+    "kept_real": {
+     "top10": 2.7,
+     "cash": 13
+    },
+    "runs": {
+     "K=4": {
+      "drawn": 106,
+      "appended": 44,
+      "parents_with_variants": 15,
+      "parents_beaten": 7,
+      "mean_best_minus_parent": -0.079,
+      "fresh_parents_beaten": 2,
+      "fresh_mean_best_minus_parent": -0.171,
+      "tierA_after": 8,
+      "appended_real": {
+       "top10": 9.1,
+       "cash": 22.7
+      },
+      "variants_real": {
+       "top10": 8.5,
+       "cash": 22.6
+      },
+      "median_value": 1.007,
+      "parent_value_mean": 1.356
+     }
+    }
+   },
+   "2026-11-17_156663": {
+    "night": "2026-11-17",
+    "kept": 2000,
+    "contests": [
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $1.5K And-One x10",
+     "CBB $250 Quarter Jukebox [Just $0.25!]  x20",
+     "CBB $50 Dime Time [Just $0.10!] x17"
+    ],
+    "tierA_before": 2,
+    "kept_real": {
+     "top10": 7.4,
+     "cash": 15.5
+    },
+    "runs": {
+     "K=4": {
+      "drawn": 344,
+      "appended": 292,
+      "parents_with_variants": 15,
+      "parents_beaten": 15,
+      "mean_best_minus_parent": 0.251,
+      "fresh_parents_beaten": 15,
+      "fresh_mean_best_minus_parent": 0.254,
+      "tierA_after": 5,
+      "appended_real": {
+       "top10": 6.8,
+       "cash": 18.8
+      },
+      "variants_real": {
+       "top10": 6.1,
+       "cash": 17.2
+      },
+      "median_value": 0.125,
+      "parent_value_mean": 0.271
+     }
+    }
+   }
+  },
+  "m25k5r2": {
+   "2026-11-17_156663": {
+    "night": "2026-11-17",
+    "kept": 2000,
+    "contests": [
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $1.5K And-One x10",
+     "CBB $250 Quarter Jukebox [Just $0.25!]  x20",
+     "CBB $50 Dime Time [Just $0.10!] x17"
+    ],
+    "tierA_before": 2,
+    "kept_real": {
+     "top10": 7.4,
+     "cash": 15.5
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 288,
+      "appended": 226,
+      "parents_with_variants": 15,
+      "parents_beaten": 15,
+      "mean_best_minus_parent": 0.187,
+      "fresh_parents_beaten": 15,
+      "fresh_mean_best_minus_parent": 0.185,
+      "tierA_after": 5,
+      "appended_real": {
+       "top10": 9.3,
+       "cash": 21.7
+      },
+      "variants_real": {
+       "top10": 7.3,
+       "cash": 17.7
+      },
+      "median_value": 0.125,
+      "parent_value_mean": 0.271,
+      "round2": {
+       "pool_after_round1": 2226,
+       "tierA_after_round1": 5,
+       "drawn": 215,
+       "appended": 215,
+       "tierA_after_round2": 8,
+       "top_mean_after_round1": 0.542,
+       "top_mean_after_round2": 0.558,
+       "appended_real": {
+        "top10": 22.3,
+        "cash": 42.8
+       }
+      }
+     }
+    }
+   },
+   "2026-11-19_157139": {
+    "night": "2026-11-19",
+    "kept": 2098,
+    "contests": [
+     "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+     "CBB $1.25K And-One x20",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $150 And-One x5"
+    ],
+    "tierA_before": 58,
+    "kept_real": {
+     "top10": 3.4,
+     "cash": 7.8
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 172,
+      "appended": 76,
+      "parents_with_variants": 15,
+      "parents_beaten": 6,
+      "mean_best_minus_parent": -0.021,
+      "fresh_parents_beaten": 3,
+      "fresh_mean_best_minus_parent": -0.212,
+      "tierA_after": 43,
+      "appended_real": {
+       "top10": 1.3,
+       "cash": 14.5
+      },
+      "variants_real": {
+       "top10": 2.9,
+       "cash": 12.8
+      },
+      "median_value": 1.062,
+      "parent_value_mean": 1.404,
+      "round2": {
+       "pool_after_round1": 2174,
+       "tierA_after_round1": 43,
+       "drawn": 183,
+       "appended": 125,
+       "tierA_after_round2": 11,
+       "top_mean_after_round1": 1.74,
+       "top_mean_after_round2": 1.796,
+       "appended_real": {
+        "top10": 2.4,
+        "cash": 5.6
+       }
+      }
+     }
+    }
+   },
+   "2026-11-18_157033": {
+    "night": "2026-11-18",
+    "kept": 1500,
+    "contests": [
+     "CBB $7K Pull Up Jumper [$2K to 1st] x1",
+     "CBB $1.25K And-One x10",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $100 And-One x3"
+    ],
+    "tierA_before": 3,
+    "kept_real": {
+     "top10": 1.5,
+     "cash": 2.9
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 223,
+      "appended": 211,
+      "parents_with_variants": 15,
+      "parents_beaten": 10,
+      "mean_best_minus_parent": 0.048,
+      "fresh_parents_beaten": 8,
+      "fresh_mean_best_minus_parent": 0.032,
+      "tierA_after": 1,
+      "appended_real": {
+       "top10": 5.7,
+       "cash": 9
+      },
+      "variants_real": {
+       "top10": 5.4,
+       "cash": 8.5
+      },
+      "median_value": 0.294,
+      "parent_value_mean": 0.695,
+      "round2": {
+       "pool_after_round1": 1711,
+       "tierA_after_round1": 1,
+       "drawn": 160,
+       "appended": 156,
+       "tierA_after_round2": 3,
+       "top_mean_after_round1": 0.823,
+       "top_mean_after_round2": 0.869,
+       "appended_real": {
+        "top10": 7.7,
+        "cash": 13.5
+       }
+      }
+     }
+    }
+   },
+   "2026-11-19_157138": {
+    "night": "2026-11-19",
+    "kept": 1521,
+    "contests": [
+     "CBB $3K Pull Up Jumper [$1K to 1st] (Early) x1",
+     "CBB $750 And-One (Early) x10",
+     "CBB $50 Dime Time [Just $0.10!] (Early) x10",
+     "CBB $200 And-One (Early) x5"
+    ],
+    "tierA_before": 6,
+    "kept_real": {
+     "top10": 2.7,
+     "cash": 13
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 79,
+      "appended": 34,
+      "parents_with_variants": 15,
+      "parents_beaten": 3,
+      "mean_best_minus_parent": -0.146,
+      "fresh_parents_beaten": 3,
+      "fresh_mean_best_minus_parent": -0.199,
+      "tierA_after": 8,
+      "appended_real": {
+       "top10": 14.7,
+       "cash": 29.4
+      },
+      "variants_real": {
+       "top10": 7.6,
+       "cash": 22.8
+      },
+      "median_value": 1.007,
+      "parent_value_mean": 1.356,
+      "round2": {
+       "pool_after_round1": 1555,
+       "tierA_after_round1": 8,
+       "drawn": 92,
+       "appended": 47,
+       "tierA_after_round2": 8,
+       "top_mean_after_round1": 1.508,
+       "top_mean_after_round2": 1.51,
+       "appended_real": {
+        "top10": 4.3,
+        "cash": 6.4
+       }
+      }
+     }
+    }
+   }
+  },
+  "m100k5": {
+   "2026-11-19_157139": {
+    "night": "2026-11-19",
+    "kept": 2098,
+    "contests": [
+     "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+     "CBB $1.25K And-One x20",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $150 And-One x5"
+    ],
+    "tierA_before": 58,
+    "kept_real": {
+     "top10": 3.4,
+     "cash": 7.8
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 589,
+      "appended": 266,
+      "parents_with_variants": 15,
+      "parents_beaten": 9,
+      "mean_best_minus_parent": 0.128,
+      "fresh_parents_beaten": 6,
+      "fresh_mean_best_minus_parent": -0.04,
+      "tierA_after": 53,
+      "appended_real": {
+       "top10": 2.6,
+       "cash": 9.4
+      },
+      "variants_real": {
+       "top10": 2.9,
+       "cash": 8.3
+      },
+      "median_value": 1.062,
+      "parent_value_mean": 1.404
+     }
+    }
+   },
+   "2026-11-17_156663": {
+    "night": "2026-11-17",
+    "kept": 2000,
+    "contests": [
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $1.5K And-One x10",
+     "CBB $250 Quarter Jukebox [Just $0.25!]  x20",
+     "CBB $50 Dime Time [Just $0.10!] x17"
+    ],
+    "tierA_before": 2,
+    "kept_real": {
+     "top10": 7.4,
+     "cash": 15.5
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 953,
+      "appended": 774,
+      "parents_with_variants": 15,
+      "parents_beaten": 15,
+      "mean_best_minus_parent": 0.236,
+      "fresh_parents_beaten": 15,
+      "fresh_mean_best_minus_parent": 0.238,
+      "tierA_after": 2,
+      "appended_real": {
+       "top10": 8.4,
+       "cash": 19.4
+      },
+      "variants_real": {
+       "top10": 6.9,
+       "cash": 16.5
+      },
+      "median_value": 0.125,
+      "parent_value_mean": 0.271
+     }
+    }
+   },
+   "2026-11-18_157033": {
+    "night": "2026-11-18",
+    "kept": 1500,
+    "contests": [
+     "CBB $7K Pull Up Jumper [$2K to 1st] x1",
+     "CBB $1.25K And-One x10",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $100 And-One x3"
+    ],
+    "tierA_before": 3,
+    "kept_real": {
+     "top10": 1.5,
+     "cash": 2.9
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 703,
+      "appended": 659,
+      "parents_with_variants": 15,
+      "parents_beaten": 11,
+      "mean_best_minus_parent": 0.074,
+      "fresh_parents_beaten": 12,
+      "fresh_mean_best_minus_parent": 0.074,
+      "tierA_after": 2,
+      "appended_real": {
+       "top10": 4.2,
+       "cash": 9.6
+      },
+      "variants_real": {
+       "top10": 4,
+       "cash": 9.2
+      },
+      "median_value": 0.294,
+      "parent_value_mean": 0.695
+     }
+    }
+   },
+   "2026-11-19_157138": {
+    "night": "2026-11-19",
+    "kept": 1521,
+    "contests": [
+     "CBB $3K Pull Up Jumper [$1K to 1st] (Early) x1",
+     "CBB $750 And-One (Early) x10",
+     "CBB $50 Dime Time [Just $0.10!] (Early) x10",
+     "CBB $200 And-One (Early) x5"
+    ],
+    "tierA_before": 6,
+    "kept_real": {
+     "top10": 2.7,
+     "cash": 13
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 295,
+      "appended": 96,
+      "parents_with_variants": 15,
+      "parents_beaten": 7,
+      "mean_best_minus_parent": -0.039,
+      "fresh_parents_beaten": 5,
+      "fresh_mean_best_minus_parent": -0.109,
+      "tierA_after": 9,
+      "appended_real": {
+       "top10": 9.4,
+       "cash": 24
+      },
+      "variants_real": {
+       "top10": 7.8,
+       "cash": 22.4
+      },
+      "median_value": 1.007,
+      "parent_value_mean": 1.356
+     }
+    }
+   }
+  },
+  "m56sys": {
+   "2026-11-18_157033": {
+    "night": "2026-11-18",
+    "kept": 1500,
+    "contests": [
+     "CBB $7K Pull Up Jumper [$2K to 1st] x1",
+     "CBB $1.25K And-One x10",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $100 And-One x3"
+    ],
+    "tierA_before": 3,
+    "kept_real": {
+     "top10": 1.5,
+     "cash": 2.9
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 440,
+      "appended": 421,
+      "parents_with_variants": 15,
+      "parents_beaten": 14,
+      "mean_best_minus_parent": 0.103,
+      "fresh_parents_beaten": 12,
+      "fresh_mean_best_minus_parent": 0.089,
+      "tierA_after": 5,
+      "appended_real": {
+       "top10": 5.7,
+       "cash": 10.9
+      },
+      "variants_real": {
+       "top10": 5.5,
+       "cash": 10.5
+      },
+      "median_value": 0.294,
+      "parent_value_mean": 0.695
+     }
+    }
+   },
+   "2026-11-19_157139": {
+    "night": "2026-11-19",
+    "kept": 2098,
+    "contests": [
+     "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+     "CBB $1.25K And-One x20",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $150 And-One x5"
+    ],
+    "tierA_before": 58,
+    "kept_real": {
+     "top10": 3.4,
+     "cash": 7.8
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 358,
+      "appended": 173,
+      "parents_with_variants": 15,
+      "parents_beaten": 12,
+      "mean_best_minus_parent": 0.159,
+      "fresh_parents_beaten": 9,
+      "fresh_mean_best_minus_parent": 0.12,
+      "tierA_after": 13,
+      "appended_real": {
+       "top10": 1.2,
+       "cash": 6.9
+      },
+      "variants_real": {
+       "top10": 1.7,
+       "cash": 7
+      },
+      "median_value": 1.062,
+      "parent_value_mean": 1.404
+     }
+    }
+   },
+   "2026-11-17_156663": {
+    "night": "2026-11-17",
+    "kept": 2000,
+    "contests": [
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $1.5K And-One x10",
+     "CBB $250 Quarter Jukebox [Just $0.25!]  x20",
+     "CBB $50 Dime Time [Just $0.10!] x17"
+    ],
+    "tierA_before": 2,
+    "kept_real": {
+     "top10": 7.4,
+     "cash": 15.5
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 608,
+      "appended": 492,
+      "parents_with_variants": 15,
+      "parents_beaten": 15,
+      "mean_best_minus_parent": 0.238,
+      "fresh_parents_beaten": 14,
+      "fresh_mean_best_minus_parent": 0.251,
+      "tierA_after": 2,
+      "appended_real": {
+       "top10": 7.9,
+       "cash": 21.1
+      },
+      "variants_real": {
+       "top10": 6.7,
+       "cash": 18.3
+      },
+      "median_value": 0.125,
+      "parent_value_mean": 0.271
+     }
+    }
+   },
+   "2026-11-19_157138": {
+    "night": "2026-11-19",
+    "kept": 1521,
+    "contests": [
+     "CBB $3K Pull Up Jumper [$1K to 1st] (Early) x1",
+     "CBB $750 And-One (Early) x10",
+     "CBB $50 Dime Time [Just $0.10!] (Early) x10",
+     "CBB $200 And-One (Early) x5"
+    ],
+    "tierA_before": 6,
+    "kept_real": {
+     "top10": 2.7,
+     "cash": 13
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 179,
+      "appended": 52,
+      "parents_with_variants": 15,
+      "parents_beaten": 6,
+      "mean_best_minus_parent": -0.109,
+      "fresh_parents_beaten": 3,
+      "fresh_mean_best_minus_parent": -0.183,
+      "tierA_after": 7,
+      "appended_real": {
+       "top10": 13.5,
+       "cash": 32.7
+      },
+      "variants_real": {
+       "top10": 6.1,
+       "cash": 18.4
+      },
+      "median_value": 1.007,
+      "parent_value_mean": 1.356
+     }
+    }
+   }
+  },
+  "m50k5": {
+   "2026-11-17_156663": {
+    "night": "2026-11-17",
+    "kept": 2000,
+    "contests": [
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $1.5K And-One x10",
+     "CBB $250 Quarter Jukebox [Just $0.25!]  x20",
+     "CBB $50 Dime Time [Just $0.10!] x17"
+    ],
+    "tierA_before": 2,
+    "kept_real": {
+     "top10": 7.4,
+     "cash": 15.5
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 513,
+      "appended": 420,
+      "parents_with_variants": 15,
+      "parents_beaten": 15,
+      "mean_best_minus_parent": 0.227,
+      "fresh_parents_beaten": 15,
+      "fresh_mean_best_minus_parent": 0.232,
+      "tierA_after": 2,
+      "appended_real": {
+       "top10": 10,
+       "cash": 20.7
+      },
+      "variants_real": {
+       "top10": 8.2,
+       "cash": 17.9
+      },
+      "median_value": 0.125,
+      "parent_value_mean": 0.271
+     }
+    }
+   },
+   "2026-11-18_157033": {
+    "night": "2026-11-18",
+    "kept": 1500,
+    "contests": [
+     "CBB $7K Pull Up Jumper [$2K to 1st] x1",
+     "CBB $1.25K And-One x10",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $100 And-One x3"
+    ],
+    "tierA_before": 3,
+    "kept_real": {
+     "top10": 1.5,
+     "cash": 2.9
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 397,
+      "appended": 373,
+      "parents_with_variants": 15,
+      "parents_beaten": 11,
+      "mean_best_minus_parent": 0.068,
+      "fresh_parents_beaten": 9,
+      "fresh_mean_best_minus_parent": 0.069,
+      "tierA_after": 1,
+      "appended_real": {
+       "top10": 4.3,
+       "cash": 9.9
+      },
+      "variants_real": {
+       "top10": 4,
+       "cash": 9.3
+      },
+      "median_value": 0.294,
+      "parent_value_mean": 0.695
+     }
+    }
+   },
+   "2026-11-19_157138": {
+    "night": "2026-11-19",
+    "kept": 1521,
+    "contests": [
+     "CBB $3K Pull Up Jumper [$1K to 1st] (Early) x1",
+     "CBB $750 And-One (Early) x10",
+     "CBB $50 Dime Time [Just $0.10!] (Early) x10",
+     "CBB $200 And-One (Early) x5"
+    ],
+    "tierA_before": 6,
+    "kept_real": {
+     "top10": 2.7,
+     "cash": 13
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 158,
+      "appended": 65,
+      "parents_with_variants": 15,
+      "parents_beaten": 7,
+      "mean_best_minus_parent": -0.027,
+      "fresh_parents_beaten": 5,
+      "fresh_mean_best_minus_parent": -0.107,
+      "tierA_after": 9,
+      "appended_real": {
+       "top10": 10.8,
+       "cash": 24.6
+      },
+      "variants_real": {
+       "top10": 6.3,
+       "cash": 23.4
+      },
+      "median_value": 1.007,
+      "parent_value_mean": 1.356
+     }
+    }
+   },
+   "2026-11-19_157139": {
+    "night": "2026-11-19",
+    "kept": 2098,
+    "contests": [
+     "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+     "CBB $1.25K And-One x20",
+     "CBB $200 Quarter Jukebox x20",
+     "CBB $100 Dime Time [Just $0.10!] x20",
+     "CBB $150 And-One x5"
+    ],
+    "tierA_before": 58,
+    "kept_real": {
+     "top10": 3.4,
+     "cash": 7.8
+    },
+    "runs": {
+     "K=5": {
+      "drawn": 313,
+      "appended": 144,
+      "parents_with_variants": 15,
+      "parents_beaten": 8,
+      "mean_best_minus_parent": 0.071,
+      "fresh_parents_beaten": 5,
+      "fresh_mean_best_minus_parent": -0.083,
+      "tierA_after": 42,
+      "appended_real": {
+       "top10": 0.7,
+       "cash": 8.3
+      },
+      "variants_real": {
+       "top10": 2.6,
+       "cash": 8.6
+      },
+      "median_value": 1.062,
+      "parent_value_mean": 1.404
+     }
+    }
+   }
+  }
+ },
+ "scan": {
+  "2026-11-18_157033": {
+   "night": "2026-11-18",
+   "draft_group": "157033",
+   "players_scanned": 56,
+   "neutral": 3000,
+   "own_median": 6.9,
+   "noise_bar": 0.081,
+   "current": {
+    "core": 2,
+    "leverage": 0,
+    "even": 13,
+    "fade": 13,
+    "skip": 28,
+    "core_leverage_real": {
+     "players": 2,
+     "entries": 557,
+     "top10": 13.6,
+     "top1": 1.26,
+     "pts_vs_proj": 11
+    },
+    "fade_skip_real": {
+     "players": 41,
+     "entries": 1442,
+     "top10": 7.1,
+     "top1": 0.76,
+     "pts_vs_proj": 0.5
+    }
+   },
+   "ridge": {
+    "focus": [
+     {
+      "name": "William Berg",
+      "read": "core",
+      "roi": 30.5,
+      "band": 0.7,
+      "top1": 0.41,
+      "own": 75.5,
+      "held": 2849
+     },
+     {
+      "name": "Miles Sadler",
+      "read": "core",
+      "roi": 16.2,
+      "band": 0.4,
+      "top1": 0.22,
+      "own": 44.9,
+      "held": 1553
+     },
+     {
+      "name": "Na'jai Hines",
+      "read": "core",
+      "roi": 14.8,
+      "band": 0.4,
+      "top1": 0.18,
+      "own": 44,
+      "held": 1272
+     },
+     {
+      "name": "Ivan Kharchenkov",
+      "read": "core",
+      "roi": 14.2,
+      "band": 0.4,
+      "top1": 0.14,
+      "own": 48.8,
+      "held": 1524
+     },
+     {
+      "name": "Eddie Ricks III",
+      "read": "core",
+      "roi": 12.3,
+      "band": 0.5,
+      "top1": 0.11,
+      "own": 68.3,
+      "held": 1910
+     },
+     {
+      "name": "Dayan Nessah",
+      "read": "core",
+      "roi": 12,
+      "band": 0.4,
+      "top1": 0.19,
+      "own": 26.3,
+      "held": 864
+     },
+     {
+      "name": "Finley Bizjack",
+      "read": "core",
+      "roi": 11.8,
+      "band": 0.5,
+      "top1": 0.14,
+      "own": 22.3,
+      "held": 761
+     },
+     {
+      "name": "Colben Landrew",
+      "read": "core",
+      "roi": 11.4,
+      "band": 0.6,
+      "top1": 0.16,
+      "own": 21.1,
+      "held": 654
+     },
+     {
+      "name": "Narcisse Ngoy",
+      "read": "core",
+      "roi": 11.3,
+      "band": 0.5,
+      "top1": 0.19,
+      "own": 19,
+      "held": 533
+     },
+     {
+      "name": "Tyrin Jones",
+      "read": "core",
+      "roi": 10.3,
+      "band": 0.3,
+      "top1": 0.17,
+      "own": 28.6,
+      "held": 826
+     },
+     {
+      "name": "Leroy Blyden Jr.",
+      "read": "core",
+      "roi": 10.2,
+      "band": 0.4,
+      "top1": 0.19,
+      "own": 23.7,
+      "held": 744
+     },
+     {
+      "name": "Dillon Battie",
+      "read": "core",
+      "roi": 10,
+      "band": 0.4,
+      "top1": 0.18,
+      "own": 39.9,
+      "held": 1138
+     }
+    ],
+    "focus_real": {
+     "players": 12,
+     "entries": 2109,
+     "top10": 11.4,
+     "top1": 1.19,
+     "pts_vs_proj": -2.3
+    },
+    "bottom_real": {
+     "players": 12,
+     "entries": 147,
+     "top10": 2.7,
+     "top1": 0,
+     "pts_vs_proj": -2
+    },
+    "chalk_held": 10,
+    "chalk_in_focus": 8
+   },
+   "all_real": {
+    "players": 56,
+    "entries": 4140,
+    "top10": 10.4,
+    "top1": 1.16,
+    "pts_vs_proj": 0.4
+   },
+   "field_rates": {
+    "top10": 10.2,
+    "top1": 1.14
+   },
+   "seconds": 55
+  },
+  "2026-11-17_156663": {
+   "night": "2026-11-17",
+   "draft_group": "156663",
+   "players_scanned": 96,
+   "neutral": 3000,
+   "own_median": 2,
+   "noise_bar": 0.098,
+   "current": {
+    "core": 9,
+    "leverage": 0,
+    "even": 18,
+    "fade": 21,
+    "skip": 48,
+    "core_leverage_real": {
+     "players": 9,
+     "entries": 3363,
+     "top10": 11.5,
+     "top1": 1.04,
+     "pts_vs_proj": -0.8
+    },
+    "fade_skip_real": {
+     "players": 69,
+     "entries": 4023,
+     "top10": 8.6,
+     "top1": 0.6,
+     "pts_vs_proj": -1.6
+    }
+   },
+   "ridge": {
+    "focus": [
+     {
+      "name": "Dior Johnson",
+      "read": "core",
+      "roi": 48.2,
+      "band": 0.7,
+      "top1": 0.66,
+      "own": 65.2,
+      "held": 2645
+     },
+     {
+      "name": "Ethan Brown",
+      "read": "core",
+      "roi": 31.5,
+      "band": 0.6,
+      "top1": 0.42,
+      "own": 47.2,
+      "held": 1388
+     },
+     {
+      "name": "Terrence Hill Jr.",
+      "read": "core",
+      "roi": 28.7,
+      "band": 0.7,
+      "top1": 0.33,
+      "own": 35.9,
+      "held": 977
+     },
+     {
+      "name": "Quentin Coleman",
+      "read": "core",
+      "roi": 25.9,
+      "band": 0.7,
+      "top1": 0.31,
+      "own": 39.1,
+      "held": 1060
+     },
+     {
+      "name": "Davion Thompson",
+      "read": "core",
+      "roi": 25.1,
+      "band": 0.6,
+      "top1": 0.38,
+      "own": 29.9,
+      "held": 816
+     },
+     {
+      "name": "Chase Foster",
+      "read": "core",
+      "roi": 24.2,
+      "band": 0.6,
+      "top1": 0.31,
+      "own": 43.5,
+      "held": 1552
+     },
+     {
+      "name": "Jonathan Powell",
+      "read": "core",
+      "roi": 24,
+      "band": 0.6,
+      "top1": 0.34,
+      "own": 26.9,
+      "held": 1162
+     },
+     {
+      "name": "Tre White",
+      "read": "core",
+      "roi": 22.5,
+      "band": 0.7,
+      "top1": 0.47,
+      "own": 13.2,
+      "held": 542
+     },
+     {
+      "name": "Finley Bizjack",
+      "read": "core",
+      "roi": 21.1,
+      "band": 0.7,
+      "top1": 0.39,
+      "own": 10.7,
+      "held": 398
+     },
+     {
+      "name": "A'lahn Sumler",
+      "read": "core",
+      "roi": 20.7,
+      "band": 0.7,
+      "top1": 0.37,
+      "own": 19.9,
+      "held": 640
+     },
+     {
+      "name": "Miles Sadler",
+      "read": "core",
+      "roi": 19.7,
+      "band": 0.7,
+      "top1": 0.31,
+      "own": 25.4,
+      "held": 752
+     },
+     {
+      "name": "Tyrin Jones",
+      "read": "core",
+      "roi": 19,
+      "band": 0.6,
+      "top1": 0.23,
+      "own": 36.9,
+      "held": 1138
+     }
+    ],
+    "focus_real": {
+     "players": 12,
+     "entries": 5244,
+     "top10": 12.3,
+     "top1": 0.95,
+     "pts_vs_proj": -2.6
+    },
+    "bottom_real": {
+     "players": 12,
+     "entries": 345,
+     "top10": 5.8,
+     "top1": 0.58,
+     "pts_vs_proj": -1.2
+    },
+    "chalk_held": 9,
+    "chalk_in_focus": 9
+   },
+   "all_real": {
+    "players": 96,
+    "entries": 12827,
+    "top10": 11.5,
+    "top1": 1.02,
+    "pts_vs_proj": -1.1
+   },
+   "field_rates": {
+    "top10": 11.4,
+    "top1": 1.04
+   },
+   "seconds": 125
+  },
+  "2026-11-19_157138": {
+   "night": "2026-11-19",
+   "draft_group": "157138",
+   "players_scanned": 43,
+   "neutral": 3000,
+   "own_median": 9.8,
+   "noise_bar": 0.077,
+   "current": {
+    "core": 1,
+    "leverage": 1,
+    "even": 19,
+    "fade": 7,
+    "skip": 15,
+    "core_leverage_real": {
+     "players": 2,
+     "entries": 106,
+     "top10": 13.2,
+     "top1": 0,
+     "pts_vs_proj": -1.2
+    },
+    "fade_skip_real": {
+     "players": 22,
+     "entries": 532,
+     "top10": 8.6,
+     "top1": 0.94,
+     "pts_vs_proj": -4.1
+    }
+   },
+   "ridge": {
+    "focus": [
+     {
+      "name": "Brayden Shorter",
+      "read": "core",
+      "roi": 23,
+      "band": 0.4,
+      "top1": 0.29,
+      "own": 81.3,
+      "held": 2813
+     },
+     {
+      "name": "Miles Sadler",
+      "read": "core",
+      "roi": 13.8,
+      "band": 0.3,
+      "top1": 0.18,
+      "own": 45.2,
+      "held": 1500
+     },
+     {
+      "name": "Roman Domon",
+      "read": "core",
+      "roi": 13.5,
+      "band": 0.3,
+      "top1": 0.16,
+      "own": 52.1,
+      "held": 1783
+     },
+     {
+      "name": "Brady Koehler",
+      "read": "core",
+      "roi": 12.6,
+      "band": 0.2,
+      "top1": 0.11,
+      "own": 56.1,
+      "held": 1755
+     },
+     {
+      "name": "Paul McNeil Jr.",
+      "read": "core",
+      "roi": 11.1,
+      "band": 0.3,
+      "top1": 0.13,
+      "own": 46.1,
+      "held": 1364
+     },
+     {
+      "name": "Braeden Smith",
+      "read": "core",
+      "roi": 10.7,
+      "band": 0.3,
+      "top1": 0.15,
+      "own": 37,
+      "held": 1132
+     },
+     {
+      "name": "Brigham Rogers",
+      "read": "core",
+      "roi": 8.5,
+      "band": 0.3,
+      "top1": 0.06,
+      "own": 51.6,
+      "held": 1578
+     },
+     {
+      "name": "Preston Edmead",
+      "read": "core",
+      "roi": 8.4,
+      "band": 0.4,
+      "top1": 0.07,
+      "own": 34.3,
+      "held": 952
+     },
+     {
+      "name": "George Kimble III",
+      "read": "core",
+      "roi": 7,
+      "band": 0.2,
+      "top1": 0.13,
+      "own": 13.3,
+      "held": 483
+     },
+     {
+      "name": "Ven-Allen Lubin",
+      "read": "core",
+      "roi": 5.7,
+      "band": 0.3,
+      "top1": 0.07,
+      "own": 47.4,
+      "held": 1376
+     },
+     {
+      "name": "Logan Duncomb",
+      "read": "leverage",
+      "roi": 5.3,
+      "band": 0.5,
+      "top1": 0.16,
+      "own": 9.3,
+      "held": 449
+     },
+     {
+      "name": "Ethan Roberts",
+      "read": "core",
+      "roi": 5.2,
+      "band": 0.3,
+      "top1": 0.02,
+      "own": 36.3,
+      "held": 1036
+     }
+    ],
+    "focus_real": {
+     "players": 12,
+     "entries": 1190,
+     "top10": 11.6,
+     "top1": 1.26,
+     "pts_vs_proj": -2.8
+    },
+    "bottom_real": {
+     "players": 12,
+     "entries": 266,
+     "top10": 11.3,
+     "top1": 1.5,
+     "pts_vs_proj": -2.5
+    },
+    "chalk_held": 12,
+    "chalk_in_focus": 10
+   },
+   "all_real": {
+    "players": 43,
+    "entries": 1801,
+    "top10": 10.3,
+    "top1": 1.17,
+    "pts_vs_proj": -2.5
+   },
+   "field_rates": {
+    "top10": 10.6,
+    "top1": 1.28
+   },
+   "seconds": 32
+  },
+  "2026-11-19_157139": {
+   "night": "2026-11-19",
+   "draft_group": "157139",
+   "players_scanned": 79,
+   "neutral": 3000,
+   "own_median": 5.5,
+   "noise_bar": 0.066,
+   "current": {
+    "core": 11,
+    "leverage": 2,
+    "even": 22,
+    "fade": 12,
+    "skip": 32,
+    "core_leverage_real": {
+     "players": 13,
+     "entries": 3372,
+     "top10": 11.3,
+     "top1": 1.04,
+     "pts_vs_proj": -0.8
+    },
+    "fade_skip_real": {
+     "players": 44,
+     "entries": 2261,
+     "top10": 7.9,
+     "top1": 0.71,
+     "pts_vs_proj": 0.1
+    }
+   },
+   "ridge": {
+    "focus": [
+     {
+      "name": "Micah Robinson",
+      "read": "core",
+      "roi": 18.6,
+      "band": 0.5,
+      "top1": 0.25,
+      "own": 59.1,
+      "held": 1944
+     },
+     {
+      "name": "Malique Ewin",
+      "read": "core",
+      "roi": 17.9,
+      "band": 0.5,
+      "top1": 0.21,
+      "own": 36.7,
+      "held": 1425
+     },
+     {
+      "name": "Brock Harding",
+      "read": "core",
+      "roi": 17,
+      "band": 0.4,
+      "top1": 0.17,
+      "own": 54.2,
+      "held": 1779
+     },
+     {
+      "name": "Lino Mark",
+      "read": "core",
+      "roi": 16.3,
+      "band": 0.6,
+      "top1": 0.23,
+      "own": 36.5,
+      "held": 1219
+     },
+     {
+      "name": "Daniel Freitag",
+      "read": "core",
+      "roi": 14.3,
+      "band": 0.5,
+      "top1": 0.2,
+      "own": 20.9,
+      "held": 613
+     },
+     {
+      "name": "Brad Longcor III",
+      "read": "core",
+      "roi": 12.8,
+      "band": 0.4,
+      "top1": 0.14,
+      "own": 31.2,
+      "held": 833
+     },
+     {
+      "name": "Tyler Harris",
+      "read": "leverage",
+      "roi": 11.9,
+      "band": 1.4,
+      "top1": 0.14,
+      "own": 0,
+      "held": 125
+     },
+     {
+      "name": "Tariq Francis",
+      "read": "core",
+      "roi": 11.3,
+      "band": 0.7,
+      "top1": 0.21,
+      "own": 11.7,
+      "held": 417
+     },
+     {
+      "name": "Dedan Thomas Jr.",
+      "read": "core",
+      "roi": 11,
+      "band": 0.9,
+      "top1": 0.14,
+      "own": 5.5,
+      "held": 148
+     },
+     {
+      "name": "Christian Gurdak",
+      "read": "core",
+      "roi": 11,
+      "band": 0.5,
+      "top1": 0.1,
+      "own": 37.8,
+      "held": 1150
+     },
+     {
+      "name": "Gavin Sykes",
+      "read": "core",
+      "roi": 10.8,
+      "band": 0.6,
+      "top1": 0.18,
+      "own": 15.2,
+      "held": 521
+     },
+     {
+      "name": "Xavier Edmonds",
+      "read": "core",
+      "roi": 10.5,
+      "band": 0.4,
+      "top1": 0.12,
+      "own": 31.1,
+      "held": 871
+     }
+    ],
+    "focus_real": {
+     "players": 12,
+     "entries": 4768,
+     "top10": 11.1,
+     "top1": 1.11,
+     "pts_vs_proj": -4
+    },
+    "bottom_real": {
+     "players": 12,
+     "entries": 215,
+     "top10": 5.6,
+     "top1": 0.47,
+     "pts_vs_proj": 0.6
+    },
+    "chalk_held": 9,
+    "chalk_in_focus": 7
+   },
+   "all_real": {
+    "players": 79,
+    "entries": 10996,
+    "top10": 10.1,
+    "top1": 1.03,
+    "pts_vs_proj": 0.2
+   },
+   "field_rates": {
+    "top10": 10.4,
+    "top1": 1.04
+   },
+   "seconds": 93
+  }
+ }
+}
