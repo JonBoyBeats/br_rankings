@@ -1536,6 +1536,11 @@ function finalIdx() { return CUT && CUT.keep ? CUT.keep : BANK.lineups.map(funct
 // each group's share; the builder highlights a group's lineups.
 function groupOf(tag) { return (BANK.groups || {})[tag] || tag; }
 function lineupGroup(i) { return groupOf(BANK.tags[i][0]); }
+/* Shared-lineup credit (2026-11-20, the operator): a lineup a later idea also drew carries both tags; the scoreboard and
+   the grades count it for EVERY idea (group) that drew it, not only the first (lineupGroup, which the cut still uses). */
+function lineupGroups(i) { var o = []; (BANK.tags[i] || []).forEach(function (t) { var g = groupOf(t); if (o.indexOf(g) < 0) o.push(g); }); return o.length ? o : [lineupGroup(i)]; }
+function ideaCounts(idx) { var c = {}; idx.forEach(function (i) { lineupGroups(i).forEach(function (g) { c[g] = (c[g] || 0) + 1; }); }); return c; }
+function ideaShared(idx) { var c = {}; idx.forEach(function (i) { var gs = lineupGroups(i); if (gs.length > 1) gs.forEach(function (g) { c[g] = (c[g] || 0) + 1; }); }); return c; }
 function tagCounts(idx, byTag) {     // lineups by group (or by tag): the tag each was first drawn under
   var c = {};
   idx.forEach(function (i) { var t = byTag ? BANK.tags[i][0] : lineupGroup(i); c[t] = (c[t] || 0) + 1; });
@@ -1837,7 +1842,7 @@ function ideaBoard(cs, ns, S) {
     fees += n * fee; w += n;
   });
   var keys = DKSim.cores(ctx(), pool), by = {};
-  keep.forEach(function (bi, k) { (by[lineupGroup(bi)] = by[lineupGroup(bi)] || []).push(k); });
+  keep.forEach(function (bi, k) { lineupGroups(bi).forEach(function (g) { (by[g] = by[g] || []).push(k); }); });   // every idea that drew it
   var ownOf = function (L) { return L.ids.reduce(function (t, id) { var r = byId(id); return t + (r ? own(r) : 0); }, 0); };
   var rows = Object.keys(by).map(function (g) {
     var ks = by[g], m = function (a) { return ks.reduce(function (t, k) { return t + a[k]; }, 0) / ks.length / w; };
@@ -1851,7 +1856,7 @@ function ideaBoard(cs, ns, S) {
   // close cousins, 2026-11-18's 283.5 winner). values: each kept lineup's value, for the build and the nightly grade
   var tr = DKSim.tiers(Array.from(ret), Array.from(odd), Array.from(even)), aIx = [];
   tr.tier.forEach(function (t, k) { if (t === "A") aIx.push(k); });
-  var aBy = {}; aIx.forEach(function (k) { var g = lineupGroup(keep[k]); aBy[g] = (aBy[g] || 0) + 1; });
+  var aBy = {}; aIx.forEach(function (k) { lineupGroups(keep[k]).forEach(function (g) { aBy[g] = (aBy[g] || 0) + 1; }); });
   var topIdea = Object.keys(aBy).sort(function (a, b) { return aBy[b] - aBy[a]; })[0];
   var tierA = { n: aIx.length, ideas: Object.keys(aBy).length, top: topIdea || null, topShare: aIx.length ? aBy[topIdea] / aIx.length : 0, sigma: tr.sigma, by: aBy };
   tierA.flag = tierA.n <= 2 || tierA.ideas === 1;
@@ -1877,18 +1882,20 @@ function renderCut() {
   var idx = BANK.lineups.map(function (L, i) { return i; }), all = tagCounts(idx);
   if (!CUT || !CUT.keep) { $("cutIdeas").innerHTML = BANK.lineups.length ? '<div class="note">Re-sim &amp; cut to see each idea\'s kept lineups, sim ROI and tier A.</div>' : ""; $("cutSharesBox").innerHTML = ""; return; }
   var after = tagCounts(CUT.keep), board = CUT.board || { rows: [] }, br = {}, T = board.tierA;
+  var allE = ideaCounts(idx), afterE = ideaCounts(CUT.keep), shr = ideaShared(idx);     // every idea that drew a lineup (shared credit)
   board.rows.forEach(function (r) { br[r.idea] = r; });
   var late = function (g) { return g === "Variants of the top"; };
-  var rowsI = Object.keys(Object.assign({}, all, after)).map(function (g) {
+  var rowsI = Object.keys(Object.assign({}, allE, afterE)).map(function (g) {
     var b = br[g] || {};
-    return { idea: g, banked: late(g) ? null : all[g] || 0, kept: after[g] || 0, share: late(g) || !all[g] ? null : (after[g] || 0) / all[g], ta: T && T.by ? T.by[g] || 0 : null,
+    return { idea: g, banked: late(g) ? null : allE[g] || 0, shared: late(g) ? null : shr[g] || 0, kept: afterE[g] || 0, share: late(g) || !allE[g] ? null : (afterE[g] || 0) / allE[g], ta: T && T.by ? T.by[g] || 0 : null,
              roi: b.roi != null ? b.roi : null, top10: b.top10, top1: b.top1, cash: b.cash, own: b.own, cores: b.cores };
   });
   var k = cutSort.k, dir = cutSort.dir;
   rowsI.sort(function (a, b) { var x = a[k], y = b[k]; if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
     return (x < y ? -1 : x > y ? 1 : 0) * dir || (b.roi || -1e9) - (a.roi || -1e9); });
-  var cols = [["idea", "Idea"], ["banked", "Banked"], ["kept", "Kept"], ["share", "Share"], ["ta", "Tier A"], ["roi", "Sim ROI"], ["top10", "Top 10%"], ["top1", "Top 1%"], ["cash", "Cash"], ["own", "Avg own"], ["cores", "Cores"]];
-  var info = board.contests ? "Each kept lineup alone in " + board.contests.join(", ") + " (" + board.nights + " fresh nights), each contest weighted by your entries in it. Tier A: kept lineups within the sim's noise of the best." : "";
+  var cols = [["idea", "Idea"], ["banked", "Banked"], ["shared", "Shared"], ["kept", "Kept"], ["share", "Share"], ["ta", "Tier A"], ["roi", "Sim ROI"], ["top10", "Top 10%"], ["top1", "Top 1%"], ["cash", "Cash"], ["own", "Avg own"], ["cores", "Cores"]];
+  var info = (board.contests ? "Each kept lineup alone in " + board.contests.join(", ") + " (" + board.nights + " fresh nights), each contest weighted by your entries in it. Tier A: kept lineups within the sim's noise of the best. " : "") +
+    "A lineup two ideas drew counts for both (Shared: this idea's banked lineups another idea also drew), so the columns can sum past the bank, the kept pool and tier A.";
   var f = function (x, fn) { return x == null ? "–" : fn(x); };
   var rounds = CUT.rounds.map(function (r) { return tagCounts(r.ids); });
   $("cutIdeas").innerHTML = (T ? '<div class="note' + (T.flag ? " bad" : "") + '" id="tierA"><b>Tier A tonight:</b> ' + T.n + " lineup" + (T.n === 1 ? "" : "s") + ", " + T.ideas + " idea" + (T.ideas === 1 ? "" : "s") +
@@ -1896,7 +1903,7 @@ function renderCut() {
     '<table class="contests" id="ideaTable"><tr>' + cols.map(function (c) {
       return '<th data-ck="' + c[0] + '" class="' + (c[0] === "idea" ? "" : "r") + '">' + c[1] + (c[0] === "idea" && info ? ' <span class="mut" title="' + esc(info) + '">(i)</span>' : "") + (cutSort.k === c[0] ? (cutSort.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>" +
     rowsI.map(function (r) {
-      return '<tr data-idea="' + esc(r.idea) + '"><td>' + esc(r.idea) + '</td><td class="m">' + (late(r.idea) ? '<span class="mut">after the cut</span>' : r.banked) + '</td><td class="m">' + r.kept + '</td><td class="m">' +
+      return '<tr data-idea="' + esc(r.idea) + '"><td>' + esc(r.idea) + '</td><td class="m">' + (late(r.idea) ? '<span class="mut">after the cut</span>' : r.banked) + '</td><td class="m">' + f(r.shared, String) + '</td><td class="m">' + r.kept + '</td><td class="m">' +
         f(r.share, function (x) { return Math.round(100 * x) + "%"; }) + '</td><td class="m">' + f(r.ta, String) + '</td><td class="m" style="color:' + (r.roi == null ? "inherit" : r.roi > 0 ? "var(--live)" : "var(--bad)") + '">' + roiTxt(r.roi) +
         '</td><td class="m">' + f(r.top10, pct1) + '</td><td class="m">' + f(r.top1, pct1) + '</td><td class="m">' + f(r.cash, pct1) + '</td><td class="m">' + f(r.own, function (x) { return Math.round(x) + "%"; }) + '</td><td class="m">' + f(r.cores, String) + "</td></tr>";
     }).join("") + "</table>" +
