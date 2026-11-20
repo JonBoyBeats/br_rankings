@@ -339,6 +339,7 @@
   <div class="opts" id="cutSetup">
     <label class="field"><span class="field-label">DraftKings entries file</span><input type="file" id="entriesFile" accept=".csv" style="height:auto"></label>
     <span class="note" id="entriesSum" style="align-self:center;margin:0"></span>
+    <label class="field" title="By merit (adopted 2026-11-20 from the C2 test): every lineup ranked together each round, each idea keeping at least its best max(5, 1% of its bank). Equal share: each idea keeps the same share of its own lineups (the old cut, for comparison)"><span class="field-label">Cut</span><select id="cutMode"><option value="merit" selected>by merit (floor 5)</option><option value="equal">equal share per idea</option></select></label>
     <label class="field"><span class="field-label">Keep</span><input class="num" id="cutKeep" type="number" min="20" max="5000" step="50" value="2000"></label>
     <label class="field"><span class="field-label">Cut % a round</span><input class="num" id="cutPct" type="number" min="1" max="50" value="10"></label>
     <label class="field"><span class="field-label">Nights a round</span><input class="num" id="cutNights" type="number" min="200" max="10000" step="100" value="2000"></label>
@@ -349,8 +350,10 @@
     (Lineups → Edit Entries → download): each contest's entry count fills in. <b>Group</b> the bank's tags into ideas (e.g. six
     Kansas tags into "Kansas"): the cut works within each group. <b>Re-sim &amp; cut</b> takes the bank down to Keep: each round
     simulates the survivors over fresh nights and adds each lineup's payout alone in every contest you're entering to its running
-    total; a lineup's rank is its best in ANY of them. Each group keeps the same share of its own lineups (Keep / bank), its
-    best-ranked, Cut % a round, skipping a lineup that shares 7+ of 8 players with a better one it kept. <b>Build</b> on a contest
+    total; a lineup's rank is its best in ANY of them. <b>Cut: by merit (floor 5)</b>, the default: every lineup is ranked
+    together and the best overall survive, Cut % a round down to Keep, each group keeping at least its best max(5, 1% of its
+    lineups) so no idea vanishes. <b>Equal share per idea</b> (for comparison): each group keeps the same share of its own
+    lineups (Keep / bank), its best-ranked. Either way a lineup sharing 7+ of 8 players with a better one its group kept is skipped. <b>Build</b> on a contest
     opens its builder below (your picks save as you go); <b>Fill all contests</b> builds a starting portfolio for every contest instead (Start from: Max ROI, Balanced or Max coverage), within
     Max exposure, each player's Max%, Min unique and Max core; each lineup goes in one contest only. <b>Export DK entries</b>
     fills the entries file for upload; <b>Save build</b> downloads the bank and portfolios to send in with the standings.</div>
@@ -360,8 +363,10 @@
   <div id="cutIdeas"></div>
   <div class="opts" title="After the cut, before Fill: variants around the top kept lineups, each keeping some of its players and redrawing the rest under its idea's rules, the bank noise and the pool rules; those that reach the kept pool's top half on the same nights join it, tagged &quot;variant of #rank&quot; (grouped as Variants of the top). Backtest in versions.csv">
     <label class="field" title="Blank: the tier-A size, at least 10 and at most 25"><span class="field-label">Top kept</span><input class="num" id="varN" type="number" min="1" max="100" placeholder="tier A"></label>
-    <label class="field"><span class="field-label">Variants each</span><input class="num" id="varM" type="number" min="1" max="100" value="25"></label>
+    <label class="field" title="Every keep-set (adopted 2026-11-20 from the C3 test): each variant keeps a different K of the parent's 8, every K-of-8 set once, so every player is dropped equally often. Random: a fresh random K each draw (the old way)"><span class="field-label">Keep-sets</span><select id="varSets"><option value="all" selected>every K-of-8 set</option><option value="random">random each draw</option></select></label>
+    <label class="field"><span class="field-label">Variants each</span><input class="num" id="varM" type="number" min="1" max="100" value="56" disabled></label>
     <label class="field"><span class="field-label">Players kept</span><input class="num" id="varK" type="number" min="3" max="7" value="5"></label>
+    <span class="note" id="varSetsNote" style="align-self:center;margin:0">Variants: every 5-of-8 keep-set, 56 each</span>
     <button type="button" id="varRun">Variants of tier A</button>
   </div>
   <div class="note" id="varResult"></div>
@@ -817,7 +822,19 @@ function scanRowOf(id) {
   if (scanMapOf !== SCAN.players) { scanMap = {}; SCAN.players.forEach(function (x) { scanMap[String(x.id)] = x; }); scanMapOf = SCAN.players; }
   return scanMap[String(id)] || null;
 }
-var scanMap = {}, scanMapOf = null, bankShareMemo = null, BANK_GAP_LOW = 0.02, BANK_GAP_HIGH = 0.4;
+var scanMap = {}, scanMapOf = null, bankShareMemo = null;
+// C1 (revised 2026-11-20 by the operator): each scan read against the player's projected field ownership f, with bs
+// his share of the bank. Leverage under-banked below 1.5 f (only when f >= 2%: a leverage play pays only if we hold him
+// more than the field); core below 0.75 f; even below 0.5 f; a fade over-banked at f or more AND 10%+ of the bank.
+var BANK_GAP = { leverage: 1.5, core: 0.75, even: 0.5, levFloor: 0.02, fadeMin: 0.10 };
+function bankGap(read, bs, f) {
+  var pc = function (x) { return Math.round(100 * x) + "%"; }, k = BANK_GAP[read];
+  if (k != null && (read !== "leverage" || f >= BANK_GAP.levFloor) && bs < k * f)
+    return { cls: "bankgap-in", tip: read.charAt(0).toUpperCase() + read.slice(1) + ": " + pc(bs) + " of bank vs " + pc(f) + " field (want " + Math.ceil(100 * k * f - 1e-9) + "%+)" };
+  if (read === "fade" && bs >= f && bs >= BANK_GAP.fadeMin)
+    return { cls: "bankgap-out", tip: "Fade: " + pc(bs) + " of bank vs " + pc(f) + " field (want under " + pc(Math.max(f, BANK_GAP.fadeMin)) + ")" };
+  return null;
+}
 // a gain in points (x 100), signed
 function sgn(x, d) { return (x > 0 ? "+" : "") + (100 * x).toFixed(d); }
 // each player's share of the bank's lineups (the Players list's Bank column), cached per bank size
@@ -861,12 +878,11 @@ function playerTable(list, sortable, fs) {
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
     var edited = state.proj[r.id] != null, sc = scanRowOf(r.id);
     var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] || r.deepOut ? " excluded" : "") + (r.status === "Out" ? " out" : "");
-    // C1 (2026-11-20): the scan likes him but the bank hardly holds him, or fades him and the bank is heavy on him
+    // C1: the bank against the scan's read and his field ownership (bankGap)
     var gapTip = "";
     if (sc && BANK && BANK.lineups && BANK.lineups.length && r.status !== "Out") {
-      var bs = bshare[r.id] || 0;
-      if (/core|leverage|even/.test(sc.read) && bs < BANK_GAP_LOW) { cls += " bankgap-in"; gapTip = "The scan reads him " + sc.read + "; " + Math.round(100 * bs) + "% of the bank holds him"; }
-      else if (sc.read === "fade" && bs > BANK_GAP_HIGH) { cls += " bankgap-out"; gapTip = "The scan reads him fade; " + Math.round(100 * bs) + "% of the bank holds him"; }
+      var gp = bankGap(sc.read, bshare[r.id] || 0, own(r) / 100);
+      if (gp) { cls += " " + gp.cls; gapTip = gp.tip; }
     }
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '"' + (gapTip ? ' title="' + esc(gapTip) + '"' : "") + ">" +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
@@ -1696,7 +1712,7 @@ async function runCut() {
   var F = fieldOf(), ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
   if (!BANK.lineups.length) return "The bank is empty: Bank these, or Draw & bank.";
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
-  var keep = +$("cutKeep").value || 500, pct = (+$("cutPct").value || 10) / 100, S = +$("cutNights").value || 2000;
+  var keep = +$("cutKeep").value || 500, pct = (+$("cutPct").value || 10) / 100, S = +$("cutNights").value || 2000, mode = $("cutMode").value === "equal" ? "equal" : "merit";
   var cx = ctx(), live = [];
   CUT = { keep: null, rounds: live }; PF = {}; pfSave(); renderEntries(); $("pfExport").disabled = true;
   var res = await DKSim.cutPool(cx, BANK.lineups, cs.map(function (c) { return { contest: c, n: ns[String(c.id)] }; }), F.field, fieldDoc.z, keep, pct, S,
@@ -1707,9 +1723,9 @@ async function runCut() {
       $("cutProgText").textContent = "Round " + r.round + " of ~" + est + " · " + r.survivors.toLocaleString() + " left";
       $("cutStatus").textContent = "Round " + r.round + ": " + r.survivors + " left…"; return tick();
     },
-    BANK.lineups.map(function (L, i) { return lineupGroup(i); }));
+    BANK.lineups.map(function (L, i) { return lineupGroup(i); }), { mode: mode });
   CUT = { keep: res.keep, rounds: res.rounds, contests: cs.map(function (c) { return String(c.id); }),
-          settings: { keep: keep, pct: Math.round(pct * 100), nights: S, within: "idea" }, bankN: BANK.lineups.length };
+          settings: { keep: keep, pct: Math.round(pct * 100), nights: S, within: "idea", mode: mode }, bankN: BANK.lineups.length };
   $("cutStatus").textContent = "Scoring the kept lineups for the idea scoreboard…"; await tick();
   CUT.board = ideaBoard(cs, ns, +$("nSims").value || 3000);
   $("cutProgress").hidden = true;
@@ -2743,6 +2759,18 @@ $("entriesFile").addEventListener("change", function (e) {
    players with a kept lineup or another variant is dropped, as the cut does. Kept and variants are simmed together on
    the slate's nights, each alone in every contest you're entering (the idea scoreboard's value); a variant reaching the
    kept pool's median joins the bank and the kept pool, tagged "variant of #rank" and grouped as Variants of the top. */
+function keepSets(K) {                     // every K-of-8 index set (C3)
+  var out = [], go = function (s, a) { if (a.length === K) { out.push(a.slice()); return; } for (var i = s; i < 8; i++) { a.push(i); go(i + 1, a); a.pop(); } };
+  go(0, []); return out;
+}
+function varSetsSync() {
+  var K = Math.min(7, Math.max(3, +$("varK").value || 5)), all = $("varSets").value === "all";
+  $("varM").disabled = all;
+  if (all) $("varM").value = keepSets(K).length;
+  $("varSetsNote").textContent = all ? "Variants: every " + K + "-of-8 keep-set, " + keepSets(K).length + " each" : "Variants: a random " + K + " of 8 kept each draw";
+}
+$("varSets").addEventListener("change", varSetsSync);
+$("varK").addEventListener("input", varSetsSync);
 async function runVariants() {
   if (!CUT || !CUT.keep) return "Re-sim & cut first: variants grow around the kept lineups.";
   var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
@@ -2757,6 +2785,11 @@ async function runVariants() {
     var map = function (a) { var o = {}; (a || []).forEach(function (id) { o[id] = 1; }); return o; };
     cx.state = Object.assign({}, state, { lock: map(o0.lock), excl: Object.assign(map(o0.excl), state.excl) });
     var o = Object.assign({}, drawRules(), o0, { z: fieldDoc.z, nightS: drawRules().nightS, conds: o0.conds || drawRules().conds });
+    if ($("varSets").value === "all") {    // every K-of-8 set once, shuffled once per parent (as the C3 study)
+      var cb = keepSets(K);
+      for (var q = cb.length - 1; q > 0; q--) { var j = (cx.random() * (q + 1)) | 0, tq = cb[q]; cb[q] = cb[j]; cb[j] = tq; }
+      o.keepSets = cb; M = cb.length;
+    }
     var got = await DKSim.variants(cx, o, BANK.lineups[bi].ids, K, M);
     got.forEach(function (L) {
       if (keep.some(function (k) { return shared(BANK.lineups[k].ids, L.ids) >= 7; }) || vars.some(function (x) { return shared(x.ids, L.ids) >= 7; })) return;
@@ -2786,12 +2819,12 @@ async function runVariants() {
     BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice() }); BANK.tags.push([tag]); added++;
   });
   CUT.bankN = BANK.lineups.length;
-  CUT.variants = { top: N, each: M, keptPlayers: K, drawn: vars.length, added: added };
+  CUT.variants = { top: N, each: M, keptPlayers: K, keepSets: $("varSets").value, drawn: vars.length, added: added };
   $("cutStatus").textContent = "Scoring the kept lineups for the idea scoreboard…"; await tick();
   CUT.board = ideaBoard(cs, ns, S);
   bankSaveState(); cutSave(); PF = {}; pfSave(); renderBank(); renderEntries();
   $("varResult").textContent = vars.length + " new, " + added + " joined · Tier A " + (before != null ? before + " → " : "") + CUT.board.tierA.n;
-  return "Variants of tier A, the top " + top.length + " (" + K + " of 8 players kept, " + M + " draws each): " + vars.length + " new after near-duplicates, " + added +
+  return "Variants of tier A, the top " + top.length + " (" + K + " of 8 players kept, " + ($("varSets").value === "all" ? "every keep-set, " : "") + M + " draws each): " + vars.length + " new after near-duplicates, " + added +
     " reached the kept pool's top half and joined it (tagged \"variant of #rank\", grouped as Variants of the top). Tier A: " +
     (before != null ? before + " → " : "") + CUT.board.tierA.n + ". Fill all contests again to use them.";
 }

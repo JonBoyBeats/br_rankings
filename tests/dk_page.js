@@ -823,9 +823,11 @@ function audit(name, L, o) {
         /Some Other Contest \(1 entry, id 111\)/.test(ul.note0) && ul.timer0 && /And-One \(5 entries, id 197791874\)/.test(ul.note1) && ul.back && !/197791874/.test(ul.note2) && ul.bank && ul.ent === 5, JSON.stringify(ul));
 
   await pg.fill("#cutKeep", "100"); await pg.fill("#cutPct", "25"); await pg.fill("#cutNights", "300");
+  check("cut: by merit (floor 5) is the default, equal share an option", await pg.evaluate(() => $("cutMode").value === "merit" && [...$("cutMode").options].some(o => o.value === "equal")));
+  await pg.selectOption("#cutMode", "equal");
   await pg.click("#cutRun");
   await pg.waitForFunction(() => /^Cut |failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
-  const cmsg = await pg.textContent("#cutStatus"), cut = await pg.evaluate(() => CUT);
+  let cmsg = await pg.textContent("#cutStatus"), cut = await pg.evaluate(() => CUT);
   check("cut: rounds shrinking, no lineup twice", cut && new Set(cut.keep).size === cut.keep.length && cut.keep.length <= 102 &&
         cut.rounds.every((r, i) => i === 0 || r.survivors <= cut.rounds[i - 1].survivors), cmsg);
   const tagN = idx => { const o = {}; idx.forEach(k => { const t = bank.tags[k][0]; o[t] = (o[t] || 0) + 1; }); return o; };
@@ -836,10 +838,22 @@ function audit(name, L, o) {
   const nearDup = cut.keep.some((a, i) => cut.keep.some((b2, j) => j > i && bank.tags[a][0] === bank.tags[b2][0] &&
     bank.lineups[a].ids.filter(id => bank.lineups[b2].ids.includes(id)).length >= 7));
   check("cut: no two kept lineups in an idea share 7+ players", !nearDup);
+  // by merit (the default since C2): every lineup ranked together, each idea keeping at least min(its bank, max(5, 1%))
+  await pg.selectOption("#cutMode", "merit");
+  await pg.evaluate(() => { document.getElementById("cutStatus").textContent = ""; });
+  await pg.click("#cutRun");
+  await pg.waitForFunction(() => /^Cut |failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const mcut = await pg.evaluate(() => CUT), mN = tagN(mcut.keep), floor = t => Math.min(allN[t], Math.max(5, Math.ceil(0.01 * allN[t])));
+  const sumFloor = Object.keys(allN).reduce((a, t) => a + floor(t), 0);
+  check("cut by merit: kept down to Keep (or the ideas' floors), each idea at its floor or more, no lineup twice, settings say merit",
+        mcut.settings.mode === "merit" && new Set(mcut.keep).size === mcut.keep.length && mcut.keep.length <= Math.max(100, sumFloor) &&
+        Object.keys(allN).every(t => (mN[t] || 0) >= Math.min(floor(t), 1)) && cut.settings.mode === "equal",
+        JSON.stringify([mcut.keep.length, sumFloor, Object.keys(allN).map(t => [t, allN[t], mN[t] || 0, floor(t)])]));
+  cut = mcut;                                    // the page now holds the merit cut; what follows checks against it
   check("cut: ranked against each contest with entries", cut && JSON.stringify(cut.contests.slice().sort()) === JSON.stringify(["197791872", "197791874", "197791877"]), cmsg);
   const ths = await pg.$$eval("#bankBox th", t => t.map(x => x.textContent)), rth = await pg.$$eval("#cutRounds th", t => t.map(x => x.textContent));
   check("cut: the Bank step's table banked, kept and share (no rounds); the rounds in the Cut step's closed Round by round fold",
-        ths.includes("Kept") && ths.includes("Share") && !ths.some(t => /^Round/.test(t)) && rth.filter(t => /^Round \d+$/.test(t)).length === cut.rounds.length &&
+        ths.includes("Kept") && ths.includes("Share") && !ths.some(t => /^Round/.test(t)) && rth.filter(t => /^Round \d+$/.test(t)).length === mcut.rounds.length &&
         (await pg.$eval("#cutRounds", d => !d.open)), JSON.stringify([ths, rth]));
   // the idea scoreboard: one row per idea in the kept lineups, best sim ROI first
   const brd = await pg.evaluate(() => ({ rows: CUT.board.rows, shown: [...document.querySelectorAll("#ideaTable tr[data-idea]")].map(r => r.dataset.idea),
@@ -1027,7 +1041,7 @@ function audit(name, L, o) {
   const bs = JSON.parse(fs.readFileSync(await dl6.path(), "utf8"));
   check("Save build (bank): the pool, its tags, the final cut and the portfolios", bs.kind === "build" && bs.pool.length === bank.lineups.length && bs.tags.length === bs.pool.length &&
         JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()) &&
-        bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.within === "idea" && bs.cut.keep === 100 && bs.pick && bs.pick.maxExpo === 60 && bs.pick.maxCore === 15,
+        bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.within === "idea" && bs.cut.mode === "merit" && bs.cut.keep === 100 && bs.pick && bs.pick.maxExpo === 60 && bs.pick.maxCore === 15,
         dl6.suggestedFilename() + " " + JSON.stringify(bs.cut));
   // the Auto-fill benchmark: Pick portfolios' entries from the same final pool, apart from yours, each lineup once
   const ap = bs.auto_portfolios || {}, apAll = Object.values(ap).flat();
@@ -1316,7 +1330,9 @@ function audit(name, L, o) {
   const vr = await pg.evaluate(async () => {
     if (!CUT || !CUT.keep) return { skipped: true };
     const keep0 = CUT.keep.slice(), n0 = BANK.lineups.length;
-    document.getElementById("varN").value = "3"; document.getElementById("varM").value = "6"; document.getElementById("varK").value = "5";
+    const def = { sets: $("varSets").value, M: $("varM").value, Mdis: $("varM").disabled, note: $("varSetsNote").textContent };
+    document.getElementById("varN").value = "1"; document.getElementById("varK").value = "6"; varSetsSync();   // every 6-of-8 keep-set: 28 draws
+    const six = { M: $("varM").value, note: $("varSetsNote").textContent };
     const msg = await runVariants();
     const added = CUT.keep.slice(keep0.length), sh = (a, b) => a.filter(id => b.includes(id)).length;
     const legal = added.every(i => { const L = BANK.lineups[i], rs = L.ids.map(byId);
@@ -1325,13 +1341,16 @@ function audit(name, L, o) {
     const parent = added.every(i => { const m = /variant of #(\d+)/.exec(BANK.tags[i][0]); return m && sh(BANK.lineups[keep0[+m[1] - 1]].ids, BANK.lineups[i].ids) >= 5; });
     const grouped = added.every(i => lineupGroup(i) === "Variants of the top");
     const row = document.querySelector('#ideaTable tr[data-idea="Variants of the top"]');
-    return { msg, added: added.length, bankGrew: BANK.lineups.length - n0, legal, near, parent, grouped, bankN: CUT.bankN === BANK.lineups.length, tierA: !!CUT.board.tierA,
+    return { def, six, each: CUT.variants.each, ks: CUT.variants.keepSets, msg, added: added.length, bankGrew: BANK.lineups.length - n0, legal, near, parent, grouped, bankN: CUT.bankN === BANK.lineups.length, tierA: !!CUT.board.tierA,
              res: document.getElementById("varResult").textContent, row: row ? [...row.cells].map(c => c.textContent) : null };
   });
   check("variants: the result line under the row (new, joined, tier A before → after) and a Variants of the top row in the idea table, after the cut in Banked",
         new RegExp("^\\d+ new, " + vr.added + " joined · Tier A \\d+ → \\d+$").test(vr.res || "") && vr.row && vr.row[1] === "after the cut" && +vr.row[2] === vr.added, JSON.stringify([vr.res, vr.row]));
   check("variants of the top: legal, near their parent (5+ of 8), none sharing 7+ with a kept lineup, in the kept pool, tagged and grouped; the scoreboard redone",
-        !vr.skipped && vr.added === vr.bankGrew && vr.legal && vr.near && vr.parent && vr.grouped && vr.bankN && vr.tierA && vr.added > 0 && /^Variants of tier A, the top 3 /.test(vr.msg), JSON.stringify(vr));
+        !vr.skipped && vr.added === vr.bankGrew && vr.legal && vr.near && vr.parent && vr.grouped && vr.bankN && vr.tierA && vr.added > 0 && /^Variants of tier A, the top 1 /.test(vr.msg), JSON.stringify(vr));
+  check("variants (C3): every K-of-8 keep-set is the default, 56 each at K 5 (Variants each follows K), and the run used every set once",
+        vr.def && vr.def.sets === "all" && vr.def.M === "56" && vr.def.Mdis && vr.def.note === "Variants: every 5-of-8 keep-set, 56 each" &&
+        vr.six.M === "28" && /every 6-of-8 keep-set, 28 each/.test(vr.six.note) && vr.each === 28 && vr.ks === "all" && /every keep-set, 28 draws each/.test(vr.msg), JSON.stringify(vr));
   // --- the slate scan ------------------------------------------------------------------------------------
   await pg.fill("#scanN", "20"); await pg.fill("#scanP", "20");
   await pg.click("#scanRun");
@@ -1443,13 +1462,21 @@ function audit(name, L, o) {
   check("player scan: its top-1% gain (noise bar under it), ROI and cash gains, Read (coloured) and Bank this in the Players list, sortable", pList.ok && pList.sorted, JSON.stringify(pList));
   const c1 = await pg.evaluate(() => {
     renderPlayers(); const bs = bankShare(), rowsIn = [...document.querySelectorAll("#players .row.bankgap-in")].map(e => e.dataset.id), rowsOut = [...document.querySelectorAll("#players .row.bankgap-out")].map(e => e.dataset.id);
-    const inOk = rowsIn.every(id => /core|leverage|even/.test(scanRowOf(id).read) && (bs[id] || 0) < 0.02), outOk = rowsOut.every(id => scanRowOf(id).read === "fade" && (bs[id] || 0) > 0.4);
-    const want = SCAN.players.filter(x => byId(x.id).status !== "Out" && ((/core|leverage|even/.test(x.read) && (bs[x.id] || 0) < 0.02) || (x.read === "fade" && (bs[x.id] || 0) > 0.4)) && document.querySelector('#players .row[data-id="' + x.id + '"]')).length;
+    // the rule by hand: leverage < 1.5 f (f >= 2%), core < 0.75 f, even < 0.5 f; fade >= f and >= 10%
+    const f = id => own(byId(id)) / 100, k = { leverage: 1.5, core: 0.75, even: 0.5 };
+    const under = (rd, b, fo) => k[rd] != null && (rd !== "leverage" || fo >= 0.02) && b < k[rd] * fo, over = (rd, b, fo) => rd === "fade" && b >= fo && b >= 0.1;
+    const inOk = rowsIn.every(id => under(scanRowOf(id).read, bs[id] || 0, f(id))), outOk = rowsOut.every(id => over(scanRowOf(id).read, bs[id] || 0, f(id)));
+    const want = SCAN.players.filter(x => byId(x.id).status !== "Out" && (under(x.read, bs[x.id] || 0, f(x.id)) || over(x.read, bs[x.id] || 0, f(x.id))) && document.querySelector('#players .row[data-id="' + x.id + '"]')).length;
+    const tips = [bankGap("leverage", 0.04, 0.06), bankGap("leverage", 0.04, 0.015), bankGap("core", 0.2, 0.3), bankGap("core", 0.25, 0.3), bankGap("even", 0.04, 0.1),
+                  bankGap("fade", 0.25, 0.18), bankGap("fade", 0.08, 0.05), bankGap("fade", 0.15, 0.2)].map(g => g && g.tip);
     const n0 = state.rules.length, b = document.getElementById("focusBank");
     let rule = null; if (b) { b.click(); rule = state.rules[n0]; state.rules = state.rules.slice(0, n0); save(); renderRules(); }
-    return { inOk, outOk, shown: rowsIn.length + rowsOut.length, want, rule: rule && { type: rule.type, n: rule.n, k: rule.ids.length, same: JSON.stringify(rule.ids) === JSON.stringify(SCAN.focus) }, hasBtn: !!b, focus: (SCAN.focus || []).length };
+    return { tips, inOk, outOk, shown: rowsIn.length + rowsOut.length, want, rule: rule && { type: rule.type, n: rule.n, k: rule.ids.length, same: JSON.stringify(rule.ids) === JSON.stringify(SCAN.focus) }, hasBtn: !!b, focus: (SCAN.focus || []).length };
   });
-  check("bank helpers (C1): the Players list marks a scan core / leverage / even at ~0% of the bank and a fade heavy in it; Bank: at least 3 of the focus set adds one min-N rule (not locks)",
+  check("bank helpers (C1, against field ownership): the tooltips state the rule and the numbers (leverage 1.5x from 2% owned, core 0.75x, even 0.5x, fade at the field and 10%+)",
+        JSON.stringify(c1.tips) === JSON.stringify(["Leverage: 4% of bank vs 6% field (want 9%+)", null, "Core: 20% of bank vs 30% field (want 23%+)", null,
+                                                     "Even: 4% of bank vs 10% field (want 5%+)", "Fade: 25% of bank vs 18% field (want under 18%)", null, null]), JSON.stringify(c1.tips));
+  check("bank helpers (C1): the Players list marks a scan read the bank holds too little of (against the field) and a fade it holds too much of; Bank: at least 3 of the focus set adds one min-N rule (not locks)",
         c1.inOk && c1.outOk && c1.shown === c1.want && (c1.focus < 2 || (c1.hasBtn && c1.rule.type === "min" && c1.rule.n === Math.min(3, c1.focus) && c1.rule.same)), JSON.stringify(c1));
   const pso = await pg.evaluate(() => {
     document.querySelector('#players .head [data-sort="sroi"]').click();

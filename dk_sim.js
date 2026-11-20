@@ -760,8 +760,8 @@
     seen[parent.slice().sort().join(",")] = 1;
     for (var m = 0; m < M; m++) {
       var ids = parent.slice();
-      // a fresh random K of the parent's 8 each draw; o.keepSets (a test's, 2026-11-20, C3: index lists into the parent,
-      // cycled) instead keeps a set chosen for it, so every player is dropped equally often
+      // a fresh random K of the parent's 8 each draw; o.keepSets (the page's default since 2026-11-20, adopted from the
+      // C3 test: index lists into the parent, cycled) instead keeps a set chosen for it, so every player is dropped equally often
       if (o.keepSets && o.keepSets.length) ids = o.keepSets[m % o.keepSets.length].map(function (x) { return parent[x]; });
       else for (var i = ids.length - 1; i > 0; i--) { var j = (ctx.random() * (i + 1)) | 0, t = ids[i]; ids[i] = ids[j]; ids[j] = t; }
       var lock = Object.assign({}, keep); ids.slice(0, K).forEach(function (id) { lock[id] = 1; });
@@ -861,7 +861,7 @@
   // to its running total, so a lineup's number is its mean over every night it has been through; a lineup's rank is its
   // best across the contests (top in ANY of them). Then each idea keeps its best-ranked, down by Cut % a round to its
   // share, skipping a lineup that shares 7+ of 8 players with a better-ranked one it has kept.
-  // opts.mode "merit" (a test, 2026-11-20, C2; the page never sets it): each round ranks every lineup together and keeps
+  // opts.mode "merit" (the page's default since 2026-11-20, adopted from the C2 test; without it, equal share): each round ranks every lineup together and keeps
   // the best overall down to Keep, each idea keeping a floor (its best max(5, 1% of its bank)) so none vanishes
   async function cutPool(ctx, bank, contests, field, z, keep, cut, nights, progress, tags, opts) {
     var merit = opts && opts.mode === "merit";
