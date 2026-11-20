@@ -187,6 +187,9 @@
   .tile .scores b { color: var(--ink); font-size: 13px; }
   .tile button.quad { border-color: var(--line-strong); font-weight: 600; }
   .rule input { height: 22px; width: 52px; font-family: var(--mono); font-size: 12px; padding: 1px 4px; }
+  table.rot { border-collapse: collapse; font-family: var(--mono); font-size: 11.5px; margin: 4px 0; width: 100%; }
+  table.rot th, table.rot td { padding: 2px 6px; text-align: right; border-bottom: 1px solid var(--line); }
+  table.rot .l { text-align: left; }
   .tile .why { color: var(--muted); font-size: 12px; margin: 4px 0 6px; line-height: 1.4; }
   .tile .nums { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; font-family: var(--mono); font-size: 11.5px; }
   .tile .nums b { color: var(--ink); font-weight: 600; }
@@ -933,15 +936,19 @@ function renderTiles() {
   renderTeamPanel();
 }
 
-/* Teams by game (2026-11-19): the chips grouped by game, ordered by tip; a click opens the game: its header and game
+/* Teams by game (2026-11-19): the chips grouped by game, ordered by o/u (highest first; 2026-11-20); a click opens the game: its header and game
    stacks from the scan, both teams' cards side by side (each with its scan block), then one player list for both. */
 function gameOf(team) { var r = rows.find(function (x) { return x.team === team && x.game; }); return r ? r.game : team; }
 function tipOf(game) { var t = null; rows.forEach(function (r) { if (r.game === game && r.game_start && (!t || r.game_start < t)) t = r.game_start; }); return t; }
 function gamesOf(T) {
   var by = {}, out = [];
   T.teams.forEach(function (t) { var g = gameOf(t.team); if (!by[g]) { by[g] = { game: g, teams: [] }; out.push(by[g]); } by[g].teams.push(t); });
-  out.forEach(function (g) { var two = g.game.split("@"); g.teams.sort(function (a, b) { return two.indexOf(a.team) - two.indexOf(b.team); }); g.tip = tipOf(g.game); });
-  return out.sort(function (a, b) { return (a.tip || "~").localeCompare(b.tip || "~") || a.game.localeCompare(b.game); });
+  out.forEach(function (g) {
+    var two = g.game.split("@"), r0 = rows.find(function (r) { return r.game === g.game && r.ou; });
+    g.teams.sort(function (a, b) { return two.indexOf(a.team) - two.indexOf(b.team); }); g.tip = tipOf(g.game); g.ou = r0 ? +r0.ou : null;
+  });
+  // the highest o/u first (2026-11-20, the operator); a tie, or no line, by the earlier tip
+  return out.sort(function (a, b) { return (b.ou == null ? -1 : b.ou) - (a.ou == null ? -1 : a.ou) || (a.tip || "~").localeCompare(b.tip || "~") || a.game.localeCompare(b.game); });
 }
 function scanNow() { return SCAN && slate && String(SCAN.draft_group) === String(slate.draft_group_id) ? SCAN : null; }
 function scanBtn(i) { return '<button type="button" class="scanBank" data-i="' + i + '">Bank this</button>'; }
@@ -1006,32 +1013,49 @@ function postHtml(a) {
   return '<div class="cl"><a href="' + esc(a.url) + '" target="_blank" rel="noopener">@' + esc(a.author) + "</a>, " + ago(a.at) + (a.writeup ? " · <b>writeup</b>" : "") +
     ': <span title="' + esc(tx) + '">' + esc(short).replace(/\n+/g, " · ") + "</span></div>";
 }
+/* The team card (2026-11-20, rewritten to read beside the player list): (a) each player out tonight who sat before,
+   with his teammates' minutes with and without him beside tonight's (unchanged, first); (b) one rotation table, the
+   players projected ROTATION_MIN+ minutes tonight (at most ROTATION_MAX), in projection order: Proj, minutes tonight,
+   season and last-3 minutes from the box scores, and the card's notes as short tags (swingy, ramping, up / down last 3,
+   missed k of n, Q, news); (c) the deep bench as its Use / Drop chips only; then the analysts' posts. */
+var ROTATION_MIN = 10, ROTATION_MAX = 9;
 function cardHtml(t) {
   var c = t.card, mine = rows.filter(function (r) { return r.team === t.team; });
-  var st = mine.filter(function (r) { return r.status === "Out" || r.status === "Questionable" || isDoubtful(r) || newsOf(r.id); }).map(function (r) {
-    var nw = newsOf(r.id), src = [];
-    if (r.status_dk) src.push("DK tag " + r.status_dk);
-    if (r.status_file) src.push(r.status_file);
-    if (nw) src.push("news (" + nw.kind + "): @" + nw.author + ", " + ago(nw.at) + (nw.late ? ", late read" : ""));
-    if (state.outs[r.id]) src.push("you marked him out");
-    if (state.ins[r.id]) src.push("you put him back");
-    return '<div class="cl"><b>' + esc(r.name) + "</b>: " + esc(isDoubtful(r) && r.status === "Out" ? "Doubtful, out by default" : r.status || "playing") +
-      (src.length ? " (" + esc(src.join("; ")) + ")" : "") + "</div>";
-  });
   var tonight = function (id) { var r = byId(id); return r && r.min != null ? (r.status === "Out" ? "out" : (r.min * (minScale[id] || 1)).toFixed(0)) : "–"; };
   var abs = ((c && c.absorb) || []).filter(function (a) { var r = a.dk_id && byId(a.dk_id); return r && r.status === "Out"; }).map(function (a) {
     return '<div class="cl">' + esc(a.name) + " is out tonight; when he sat before (" + a.sat + " of " + a.games + " games):</div><table><tr><th></th><th>with him</th><th>without</th><th>tonight</th></tr>" +
       a.rows.map(function (x) { return "<tr><td>" + esc(x.name) + "</td><td>" + x["with"].toFixed(0) + "</td><td>" + x.without.toFixed(0) + "</td><td>" + (x.dk_id ? tonight(x.dk_id) : "–") + "</td></tr>"; }).join("") + "</table>";
   });
+  // out tonight without a with / without table: one short line, with the source
+  var shown = {}; ((c && c.absorb) || []).forEach(function (a) { if (a.dk_id) shown[a.dk_id] = 1; });
+  var outs = mine.filter(function (r) { return r.status === "Out" && !shown[r.id] && (r.min || 0) >= ROTATION_MIN; }).map(function (r) {
+    return esc(r.name) + (isDoubtful(r) ? " (Doubtful)" : r.status_dk ? " (DK " + esc(r.status_dk) + ")" : state.outs[r.id] ? " (you)" : "");
+  });
+  // the rotation table
+  var tags = {};
+  ((c && c.lines) || []).forEach(function (l) { if (l.dk_id && l.tag) (tags[l.dk_id] = tags[l.dk_id] || []).push(l.tag); });
+  var mins = (c && c.mins) || {};
+  var rot = mine.filter(function (r) { return r.status !== "Out" && (r.min || 0) * (minScale[r.id] || 1) >= ROTATION_MIN; })
+    .sort(function (a, b) { return proj(b) - proj(a); }).slice(0, ROTATION_MAX);
+  var thin = function (m) { return m && m.played < 4 ? ' <span class="mut">(' + m.played + " g)</span>" : ""; };
+  var table = rot.length ? '<table class="rot"><tr><th class="l">Player</th><th>Proj</th><th>Min</th><th>Season</th><th>Last 3</th><th class="l">Notes</th></tr>' + rot.map(function (r) {
+      var m = mins[r.id], l5 = r.min_last5 && r.min_last5.length ? r.min_last5.slice(-3) : null, nw = newsOf(r.id);
+      var season = m ? m.season : r.min_avg, last3 = m ? m.last3 : l5 ? l5.reduce(function (x, y) { return x + y; }, 0) / l5.length : null;
+      var tg = (tags[r.id] || []).filter(function (x) { return !/^missed /.test(x); });
+      if (m && m.played < m.of) tg.unshift("missed " + (m.of - m.played) + " of " + m.of);
+      if (r.status === "Questionable") tg.push("Q");
+      if (nw && nw.kind !== "questionable") tg.push("news: " + nw.kind);
+      if (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005) tg.push((minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min (outs)");
+      return '<tr data-id="' + esc(r.id) + '"><td class="l">' + esc(shortName(r.name)) + "</td><td>" + proj(r).toFixed(1) + "</td><td>" + tonight(r.id) + "</td><td>" +
+        (season != null ? season.toFixed(0) + thin(m) : "–") + "</td><td>" + (last3 != null ? last3.toFixed(0) : "–") + '</td><td class="l">' + esc(tg.join(" · ")) + "</td></tr>";
+    }).join("") + "</table>" : '<div class="cl">No player projected ' + ROTATION_MIN + "+ minutes.</div>";
   var deep = ((c && c.deep) || []).map(function (id) { var r = byId(id); return r ? '<button type="button" class="deepin" data-id="' + esc(id) + '">' + (r.deepOut ? "Use " : "Drop ") + esc(r.name) + "</button>" : ""; }).join("");
-  var lines = ((c && c.lines) || []).map(function (l) { return '<div class="cl">' + esc(l.text) + "</div>"; });
   var wu = writeups(t), notes = analystNotes(t).filter(function (a) { return wu.indexOf(a) < 0; });
   return '<details class="card"' + (FOLD.cards[t.team] ? " open" : "") + ' data-card="' + esc(t.team) + '"><summary>Team card' + (c ? " · " + c.games + " game" + (c.games === 1 ? "" : "s") : "") + "</summary>" +
-    wu.map(postHtml).join("") +
-    (st.length ? st.join("") : '<div class="cl">No one tagged or in the news.</div>') + abs.join("") +
-    (c ? lines.join("") || '<div class="cl">Nothing to flag from the box scores.</div>' : '<div class="cl">No box-score card for this team yet.</div>') +
+    abs.join("") + (outs.length ? '<div class="cl">Out tonight: ' + outs.join(", ") + "</div>" : "") +
+    (c ? "" : '<div class="cl">No box-score card for this team yet: season and last-3 minutes from DraftKings\' rows.</div>') + table +
     (deep ? '<div class="cl">Deep bench: ' + deep + "</div>" : "") +
-    (notes.length ? '<div class="cl"><b>Analyst notes</b> (last 7 days, reading only):</div>' + notes.map(postHtml).join("") : "") + "</details>";
+    wu.map(postHtml).join("") + (notes.length ? '<div class="cl"><b>Analyst notes</b> (last 7 days, reading only):</div>' + notes.map(postHtml).join("") : "") + "</details>";
 }
 
 function tileHtml(t, wide) {

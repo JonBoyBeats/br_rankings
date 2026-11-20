@@ -397,28 +397,40 @@ function audit(name, L, o) {
         /games · \d+ spreads? of 15\+/.test(await pg.textContent("#slateLine")), await pg.textContent("#slateLine"));
   const chipsG = await pg.evaluate(() => {
     const gs = [...document.querySelectorAll("#teamBar .gchip")].map(c => ({ game: c.dataset.game, teams: [...c.querySelectorAll("button")].map(b => b.dataset.team), cls: [...c.querySelectorAll("button")].map(b => b.className) }));
-    const tips = gs.map(g => tipOf(g.game) || "~"), T = teamsOf();
-    return { gs, ordered: tips.every((x, i) => i === 0 || tips[i - 1] <= x), sameGame: gs.every(g => g.teams.every(t => gameOf(t) === g.game) && g.teams.join("@") === g.game || g.teams.length === 1),
+    const T = teamsOf(), ou = g => { const r = rows.find(x => x.game === g && x.ou); return r ? +r.ou : -1; }, key = gs.map(g => [ou(g.game), tipOf(g.game) || "~"]);
+    return { gs, key, ordered: key.every((x, i) => i === 0 || key[i - 1][0] > x[0] || (key[i - 1][0] === x[0] && key[i - 1][1] <= x[1])), sameGame: gs.every(g => g.teams.every(t => gameOf(t) === g.game) && g.teams.join("@") === g.game || g.teams.length === 1),
              colours: gs.every(g => g.teams.every((t, i) => g.cls[i] === T.teams.find(x => x.team === t).verdict)) };
   });
-  check("team bar: chips grouped by game (away | home in one chip), ordered by tip, each team keeping its colour", chipsG.gs.length > 1 && chipsG.ordered && chipsG.sameGame && chipsG.colours, JSON.stringify(chipsG));
+  check("team bar: chips grouped by game (away | home in one chip), ordered by o/u (highest first, a tie by the earlier tip), each team keeping its colour", chipsG.gs.length > 1 && chipsG.ordered && chipsG.sameGame && chipsG.colours, JSON.stringify(chipsG));
   await openTeam(TEAMS.teams[0].team);
   const panel = await pg.evaluate(() => [...document.querySelectorAll("#teamPanel .tile")].map(t => t.dataset.team));
   const opp0 = TEAMS.teams.find(t => t.team !== TEAMS.teams[0].team && TEAMS.teams[0].game === t.game);
   const card = await pg.evaluate(() => {
     const T = teamsOf(), t = T.teams[0], mates = rows.filter(r => r.team === t.team && r.status !== "Out" && r.min > 0);
     const keep = t.card, sit = mates[0];
-    t.card = { games: 5, rule: "card-1", deep: [], lines: [{ kind: "swingy", text: mates[1].name + " is swingy: 10 to 30 minutes over 5 games" }],
+    t.card = { games: 5, rule: "card-1", deep: [mates[mates.length - 1].id],
+               lines: [{ kind: "swingy", text: mates[1].name + " is swingy: 10 to 30 minutes over 5 games", dk_id: mates[1].id, tag: "swingy 10\u201330" },
+                       { kind: "deep", text: "Deep bench, out of the pool by default: someone (1 a game)", dk_id: null, tag: null }],
+               mins: { [mates[2].id]: { season: 24.4, last3: 30.2, played: 4, of: 5 }, [mates[1].id]: { season: 20, last3: 18, played: 2, of: 5 } },
                absorb: [{ name: sit.name, dk_id: sit.id, sat: 1, games: 5, rows: [{ name: mates[1].name, dk_id: mates[1].id, with: 20, without: 30, n_with: 4, n_without: 1 }] }] };
     renderTeamPanel();
-    const a = document.querySelector("#teamPanel details.card").textContent;
+    const el = () => document.querySelector('#teamPanel details.card[data-card="' + t.team + '"]');
+    const a = el().textContent, rot = [...el().querySelectorAll("table.rot tr[data-id]")].map(tr => tr.dataset.id);
+    const want = rows.filter(r => r.team === t.team && r.status !== "Out" && (r.min || 0) * (minScale[r.id] || 1) >= 10).sort((x, y) => proj(y) - proj(x)).slice(0, 9).map(r => r.id);
+    const rowOf = id => { const tr = el().querySelector('table.rot tr[data-id="' + id + '"]'); return tr ? [...tr.children].map(td => td.textContent) : null; };
+    const projOk = rot.every(id => +rowOf(id)[1] === +proj(byId(id)).toFixed(1));
+    const r1 = rowOf(mates[1].id), r2 = rowOf(mates[2].id);
     state.outs[sit.id] = 1; applyOuts(); renderTeamPanel();
-    const b = document.querySelector("#teamPanel details.card").textContent, tbl = !!document.querySelector("#teamPanel details.card table");
+    const b = el().textContent, firstOut = el().querySelector("summary").nextElementSibling, tbl = !!el().querySelector("table:not(.rot)");
     delete state.outs[sit.id]; t.card = keep; applyOuts(); renderTeamPanel();
-    return { a, b, tbl };
+    return { a, b, rot, want, projOk, r1, r2, first: firstOut && firstOut.textContent, tbl };
   });
-  check("team card: the game count and the box-score lines; once a player who sat before is out, his teammates with and without him beside tonight",
-        /Team card · 5 games/.test(card.a) && /swingy: 10 to 30 minutes over 5 games/.test(card.a) && !/is out tonight/.test(card.a) && card.tbl && /is out tonight; when he sat before \(1 of 5 games\)/.test(card.b), JSON.stringify(card));
+  check("team card: the game count; one rotation table in projection order (the Players list's Proj), season / last-3 minutes and tags (swingy, missed k of n, thin game counts); no per-player paragraphs or deep-bench sentence; an Out player's with / without table first",
+        /Team card · 5 games/.test(card.a) && JSON.stringify(card.rot) === JSON.stringify(card.want) && card.rot.length >= 3 && card.projOk &&
+        card.r1 && /swingy 10\u201330/.test(card.r1[5]) && /missed 3 of 5/.test(card.r1[5]) && /\(2 g\)/.test(card.r1[3]) &&
+        card.r2 && card.r2[3] === "24" && card.r2[4] === "30" && /missed 1 of 5/.test(card.r2[5]) &&
+        !/is swingy/.test(card.a) && !/Deep bench, out of the pool/.test(card.a) && !/is out tonight/.test(card.a) &&
+        card.tbl && /is out tonight; when he sat before \(1 of 5 games\)/.test(card.first || ""), JSON.stringify(card));
   const an = await pg.evaluate(() => {
     const t = teamsOf().teams[0], keep = analyst;
     analyst = [{ id: "a1", author: "BuriedTreys", at: new Date().toISOString(), url: "https://x.com/BuriedTreys/status/1", text: "Game writeup text",
@@ -427,13 +439,13 @@ function audit(name, L, o) {
                  teams: [t.team], games: [], players: [], writeup: false, kind: "analyst" }];
     renderTeamPanel();
     const tile = document.querySelector('#teamPanel .tile[data-team="' + t.team + '"]'), card = document.querySelector('#teamPanel details.card[data-card="' + t.team + '"]');
-    const chip = tile.querySelector('a[href="https://x.com/BuriedTreys/status/1"]'), first = card.querySelector(".cl");
+    const chip = tile.querySelector('a[href="https://x.com/BuriedTreys/status/1"]'), first = [...card.querySelectorAll(".cl")].find(x => /writeup/.test(x.textContent));
     const out = { chip: chip && chip.textContent, first: first && first.textContent, notes: /Analyst notes/.test(card.textContent) && /A team note/.test(card.textContent),
                   noNews: !rows.some(r => newsOf(r.id) && newsOf(r.id).kind === "analyst") };
     analyst = keep; renderTeamPanel();
     return out;
   });
-  check("analyst: a writeup of tonight's game is a chip on the tile, linked, and the top of the card; the week's notes in their own section; never a player's news tag",
+  check("analyst: a writeup of tonight's game is a chip on the tile, linked, and in the card with the analysts' posts at the bottom; the week's notes in their own section; never a player's news tag",
         an.chip === "BuriedTreys writeup" && /writeup: Game writeup text/.test(an.first || "") && an.notes && an.noNews, JSON.stringify(an));
   check("team panel: the team's tile, then its opponent's", JSON.stringify(panel) === JSON.stringify([TEAMS.teams[0].team, opp0 && opp0.team]), JSON.stringify(panel));
   const gv = await pg.evaluate(() => {
