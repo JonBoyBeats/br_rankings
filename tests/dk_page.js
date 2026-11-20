@@ -872,6 +872,8 @@ function audit(name, L, o) {
   await pg.evaluate(() => { document.getElementById("cutStatus").textContent = ""; });
   await pg.click("#cutRun");
   await pg.waitForFunction(() => /^Cut |failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const mmsg = await pg.textContent("#cutStatus");
+  check("cut by merit: the status says by merit (floor 5) with the kept counts by idea, not each idea's share", /By merit \(floor 5\): kept by idea .+ \d+/.test(mmsg) && !/kept its share/.test(mmsg), mmsg);
   const mcut = await pg.evaluate(() => CUT), mN = tagN(mcut.keep), floor = t => Math.min(allN[t], Math.max(5, Math.ceil(0.01 * allN[t])));
   const sumFloor = Object.keys(allN).reduce((a, t) => a + floor(t), 0);
   check("cut by merit: kept down to Keep (or the ideas' floors), each idea at its floor or more, no lineup twice, settings say merit",
@@ -901,11 +903,13 @@ function audit(name, L, o) {
     const kd = [...document.querySelectorAll("#ideaTable tr[data-idea]")].map(tr => +tr.cells[2].textContent);
     cutSort = { k: "roi", dir: -1 }; renderCut();
     return { heads, taSum, T: T.n, keptOk, roiOrder, keptSorted: kd.every((x, i) => i === 0 || kd[i - 1] >= x), line: document.getElementById("cutBankLine").textContent,
+             check: document.getElementById("bankCheck").textContent, far: BANKSTATS.far, pct: BANKSTATS.pct, fp: BANKSTATS.fp, bp: BANKSTATS.bp,
              tier: document.getElementById("tierA").textContent, sum: document.getElementById("entriesSum").textContent, info: !!document.querySelector('#ideaTable th[data-ck="idea"] span[title]') };
   });
   check("cut step: one idea table (Idea, Banked, Kept, Share, Tier A, Sim ROI, Top 10%, Top 1%, Cash, Avg own, Cores), best Sim ROI first and sortable; tier A by idea sums to tier A tonight; the bank line and the entries summary",
         JSON.stringify(it.heads) === JSON.stringify(["Idea", "Banked", "Kept", "Share", "Tier A", "Sim ROI", "Top 10%", "Top 1%", "Cash", "Avg own", "Cores"]) && it.taSum === it.T && it.keptOk && it.roiOrder && it.keptSorted &&
-        /^Bank [\d,]+ · \d+ pts (under|over) the field · own \d+% vs \d+% · field's \d+(st|nd|rd|th) pct/.test(it.line) && /^Tier A tonight: \d+ lineup/.test(it.tier) && /^8 entries · 4 contests$/.test(it.sum) && it.info, JSON.stringify(it));
+        /^Whole bank [\d,]+ · \d+ pts (under|over) the field · own \d+% vs \d+% · field's \d+(st|nd|rd|th) pct.* \| Kept [\d,]+ · \d+ pts (under|over) the field · own \d+% vs \d+%/.test(it.line) &&
+        it.far === (/far below the field/.test(it.line) && /far below the field/.test(it.check)) && it.far === ((it.pct != null && it.pct < 15) || it.fp - it.bp >= 5) && /^Tier A tonight: \d+ lineup/.test(it.tier) && /^8 entries · 4 contests$/.test(it.sum) && it.info, JSON.stringify(it));
   const ta = await pg.evaluate(() => { const T = CUT.board.tierA, v = CUT.board.values, el = document.getElementById("tierA");
     const tr = DKSim.tiers(v, v, v); return { T, n: v.length, keep: CUT.keep.length, txt: el ? el.textContent : "" }; });
   check("tier A after the cut: its count, ideas and top idea's share shown, red-flagged at 1-2 lineups or one idea; each kept lineup's value saved",

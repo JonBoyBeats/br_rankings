@@ -1549,8 +1549,12 @@ function bankCheck() {
   var all = Object.keys(g).map(function (k) { return { k: k, p: avg(g[k], pts), o: avg(g[k], ow), n: g[k].length, u: avg(g[k], punt) }; });
   var under = all
     .filter(function (x) { return x.p < fp - BANK_UNDER; }).sort(function (a, b) { return a.p - b.p; });
-  var d = bp - fp, C0 = ownClump();
-  BANKSTATS = { n: bank.length, bp: bp, fp: fp, bo: bo, fo: fo, pct: C0 ? C0.at(bank).pct : null,
+  var d = bp - fp, C0 = ownClump(), kept = CUT && CUT.keep ? CUT.keep.map(function (i) { return BANK.lineups[i] ? BANK.lineups[i].ids : null; }).filter(Boolean) : [];
+  var bpct = C0 ? C0.at(bank).pct : null;
+  // far below the field (2026-11-20, the operator): under the field's 15th ownership percentile, or 5+ points under it
+  var far = (bpct != null && bpct < 15) || fp - bp >= 5;
+  BANKSTATS = { n: bank.length, bp: bp, fp: fp, bo: bo, fo: fo, pct: bpct, far: far,
+                kn: kept.length, kp: kept.length ? avg(kept, pts) : null, ko: kept.length ? avg(kept, ow) : null,
                 under: under.map(function (x) { return "Idea \u201c" + x.k + "\u201d projects " + (fp - x.p).toFixed(0) + " points under the field (" + x.p.toFixed(0) + " vs " + fp.toFixed(0) + ", " + x.n + " lineups)"; }) };
   el.innerHTML = "<b>Bank check:</b> bank " + bp.toFixed(0) + " pts, " + bo.toFixed(0) + "% own; field " + fp.toFixed(0) + " pts, " + fo.toFixed(0) +
     "% own: the bank projects " + Math.abs(d).toFixed(0) + (d < 0 ? " below" : " above") + " the field." +
@@ -1562,6 +1566,7 @@ function bankCheck() {
       return " <b>Ownership position:</b> " + clumpText(C) + "; bank at the field's " + ordinal(b.pct) + " percentile (" + Math.round(b.mean) + "%)" +
         (c ? ", cut at the " + ordinal(c.pct) + " (" + Math.round(c.mean) + "%)" : "") + ".";
     })() +
+    (far ? ' <span class="bad"><b>Your bank is far below the field: check the leverage weight / exclusions.</b></span>' : "") +
     (under.length ? ' <span class="bad">' + under.map(function (x) { return "Idea \u201c" + esc(x.k) + "\u201d projects " + (fp - x.p).toFixed(0) + " points under the field (" +
       x.p.toFixed(0) + " vs " + fp.toFixed(0) + ", " + x.n + " lineups)"; }).join("; ") + ".</span>" : "");
 }
@@ -1775,7 +1780,10 @@ async function runCut() {
   PF = {}; renderBank(); renderEntries();
   return "Cut " + BANK.lineups.length + " to " + res.keep.length + " in " + res.rounds.length + " round" + (res.rounds.length === 1 ? "" : "s") +
     " (" + res.rounds.map(function (r) { return r.survivors; }).join(" → ") + "), " + S + " fresh nights a round, ranked against " + cs.map(function (c) { return c.name; }).join(", ") + "." +
-    " Each idea kept its share, " + Math.round(100 * Math.min(1, keep / BANK.lineups.length)) + "% of its own lineups, skipping any that shared 7+ players with a better one it kept.";
+    (mode === "merit" ? " By merit (floor 5): kept by idea " + (function () {
+        var n = {}; res.keep.forEach(function (i) { var g = lineupGroup(i); n[g] = (n[g] || 0) + 1; });
+        return Object.keys(n).sort(function (a, b) { return n[b] - n[a]; }).map(function (g) { return g + " " + n[g]; }).join(", "); })() + "; a lineup sharing 7+ players with a better one its idea kept was skipped."
+      : " Each idea kept its share, " + Math.round(100 * Math.min(1, keep / BANK.lineups.length)) + "% of its own lineups, skipping any that shared 7+ players with a better one it kept.");
 }
 
 /* The idea scoreboard, after the cut: each kept lineup alone in every contest you're entering, on fresh nights, each
@@ -1825,11 +1833,14 @@ var cutSort = { k: "roi", dir: -1 };
 function renderCut() {
   if (!$("cutIdeas") || !BANK) return;
   var B = BANKSTATS;
-  $("cutBankLine").className = "note" + (B && B.under.length ? " bad" : "");
+  $("cutBankLine").className = "note" + (B && (B.under.length || B.far) ? " bad" : "");
   $("cutBankLine").title = B && B.under.length ? B.under.join("\n") : "";
-  $("cutBankLine").innerHTML = B ? "Bank " + B.n.toLocaleString() + " · " + Math.abs(B.bp - B.fp).toFixed(0) + " pts " + (B.bp < B.fp ? "under" : "over") + " the field · own " +
-    Math.round(B.bo) + "% vs " + Math.round(B.fo) + "%" + (B.pct != null ? " · field's " + ordinal(B.pct) + " pct" : "") + (B.under.length ? " · " + B.under.length + " idea" + (B.under.length === 1 ? "" : "s") + " well under (hover)" : "") :
-    "Bank " + (BANK.lineups.length || 0).toLocaleString();
+  // the whole bank (2026-11-20: labelled, the idea table below is the kept pool), then the kept pool's own numbers
+  $("cutBankLine").innerHTML = B ? "Whole bank " + B.n.toLocaleString() + " · " + Math.abs(B.bp - B.fp).toFixed(0) + " pts " + (B.bp < B.fp ? "under" : "over") + " the field · own " +
+    Math.round(B.bo) + "% vs " + Math.round(B.fo) + "%" + (B.pct != null ? " · field's " + ordinal(B.pct) + " pct" : "") + (B.under.length ? " · " + B.under.length + " idea" + (B.under.length === 1 ? "" : "s") + " well under (hover)" : "") +
+    (B.kn ? " | Kept " + B.kn.toLocaleString() + " · " + Math.abs(B.kp - B.fp).toFixed(0) + " pts " + (B.kp < B.fp ? "under" : "over") + " the field · own " + Math.round(B.ko) + "% vs " + Math.round(B.fo) + "%" : "") +
+    (B.far ? " · <b>your bank is far below the field: check the leverage weight / exclusions</b>" : "") :
+    "Whole bank " + (BANK.lineups.length || 0).toLocaleString();
   var idx = BANK.lineups.map(function (L, i) { return i; }), all = tagCounts(idx);
   if (!CUT || !CUT.keep) { $("cutIdeas").innerHTML = BANK.lineups.length ? '<div class="note">Re-sim &amp; cut to see each idea\'s kept lineups, sim ROI and tier A.</div>' : ""; $("cutSharesBox").innerHTML = ""; return; }
   var after = tagCounts(CUT.keep), board = CUT.board || { rows: [] }, br = {}, T = board.tierA;
