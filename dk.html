@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 52px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 36px 50px 38px 38px 54px 36px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 80px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 36px 50px 38px 38px 54px 36px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -82,6 +82,7 @@
   .tag.lk { background: var(--live); color: #04140c; }
   .read-leverage { color: #3fbf7f; font-weight: 600; } .read-core { color: #5b9cf0; font-weight: 600; }
   .read-lean-leverage { color: #9fe0bf; } .read-lean-core { color: #a9c9f6; }
+  .lx button.setadd { width: auto; padding: 0 4px; font-size: 10px; opacity: .7; } .lx button.setadd:hover { opacity: 1; }
   .sat { font-weight: 600; padding: 0 6px; border-radius: 4px; } .sat-green { color: #3fbf7f; } .sat-amber { color: #e0a63a; } .sat-red { color: var(--bad); } .read-fade { color: var(--bad); font-weight: 600; } .read-skip, .read-even { color: var(--muted); }
   .row .nb2 { font-size: 9.5px; display: block; line-height: 1; }
   .row button.pbank { height: 20px; width: 24px; padding: 0; font-size: 12px; }
@@ -163,7 +164,7 @@
   #fillSet > summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
   #nbList.nbscroll { max-height: 440px; }
   #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
-  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 52px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 50px 38px 38px 54px 36px 36px 40px 34px 26px 42px 42px; }
+  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 80px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 50px 38px 38px 54px 36px 36px 40px 34px 26px 42px 42px; }
   #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
   #players .row.bankgap-in { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out { box-shadow: inset 3px 0 var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
@@ -307,10 +308,11 @@
         <option value="if">1. If player, then N+ from…</option>
         <option value="ifnot">2. If NOT player, then N+ from these</option>
         <option value="ifteam">3. If N+ from a team, then M+ from its opponent</option>
-        <option value="never">4. Never player with player</option></select></label>
+        <option value="never">4. Never player with player</option>
+        <option value="min">5. At least N from these players</option></select></label>
       <label class="field rt rt-if rt-ifnot rt-never"><span class="field-label">Player</span><select id="rtP" style="width:auto"></select></label>
       <label class="field rt rt-ifteam"><span class="field-label">Team</span><select id="rtTeam" style="width:auto"></select></label>
-      <label class="field rt rt-if rt-ifnot rt-ifteam"><span class="field-label">N</span><input class="num" id="rtN" type="number" min="1" max="8" value="1"></label>
+      <label class="field rt rt-if rt-ifnot rt-ifteam rt-min"><span class="field-label">N</span><input class="num" id="rtN" type="number" min="1" max="8" value="1"></label>
       <label class="field rt rt-ifteam"><span class="field-label">M</span><input class="num" id="rtM" type="number" min="1" max="8" value="1"></label>
       <label class="field rt rt-if"><span class="field-label">From</span><select id="rtFrom" style="width:auto"><option value="opp">his opponent</option>
         <option value="team">his team</option><option value="list">these players</option></select></label>
@@ -892,7 +894,8 @@ function playerTable(list, sortable, fs) {
     }
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '"' + (gapTip ? ' title="' + esc(gapTip) + '"' : "") + ">" +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
-      '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button></span>' +
+      '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button>' +
+      (r.status !== "Out" ? '<button type="button" class="setadd" title="Add him to the rule editor\'s players (template 5: at least N from these players)">+set</button>' : "") + "</span>" +
       '<span class="who"><div class="name"><span class="nm' + (fs && bpFilt.p[r.id] ? (bpFilt.p[r.id] === "with" ? " w" : " wo") : "") + '" title="' + esc(whoTip(r)) + (fs ? "\nTap: with, again without, again off (filters the lineups)" : "") + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
       '<span class="m mut col-pos">' + esc(r.position || "") + "</span>" +
       '<span class="m col-team">' + esc(r.team || "") + "</span>" +
@@ -1145,6 +1148,8 @@ function cardHtml(t) {
       if (r.status === "Questionable") tg.push("Q");
       if (nw && nw.kind !== "questionable") tg.push("news: " + nw.kind);
       if (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005) tg.push((minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min (outs)");
+      // an Out the pipeline already has (2026-11-20, display only): his teammates' minutes against the fit with him in
+      if (r.out_gain != null && Math.round(r.out_gain) >= 1) tg.push("+" + Math.round(r.out_gain) + " min (outs: " + r.out_from.split(", ").map(shortName).join(", ") + ")");
       return '<tr data-id="' + esc(r.id) + '"><td class="l">' + esc(shortName(r.name)) + "</td><td>" + proj(r).toFixed(0) + "</td><td>" + tonight(r.id) + "</td><td>" +
         (season != null ? season.toFixed(0) + thin(m) : "–") + "</td><td>" + (last3 != null ? last3.toFixed(0) : "–") + '</td><td class="l">' + esc(tg.join(" · ")) + "</td></tr>";
     }).join("") + "</table>" : '<div class="cl">No player projected ' + ROTATION_MIN + "+ minutes.</div>";
@@ -1248,7 +1253,7 @@ function renderRules() {
     return '<div class="rule' + (rule.off ? " off" : "") + '" data-i="' + i + '"><input type="checkbox" class="ruleOn" title="On for the next draw (off keeps it here for later)"' +
       (rule.off ? "" : " checked") + '><span class="lab">' + esc(rule.label) + "</span>" + (c ? '<span class="pc">' + c.pass + " of " + c.of + " pass</span>" : "") +
       (rule.type === "never" ? '<button data-act="base">' + (rule.base ? "To ideas" : "To baseline") + "</button>" : "") +
-      (["if", "ifnot", "ifteam", "never"].indexOf(rule.type) >= 0 ? '<button data-act="edit">Edit</button>' : "") + '<button data-act="rm">Remove</button></div>';
+      (["if", "ifnot", "ifteam", "never"].indexOf(rule.type) >= 0 || (rule.type === "min" && rule.ids && rule.ids.length > 1) ? '<button data-act="edit">Edit</button>' : "") + '<button data-act="rm">Remove</button></div>';
   };
   var base = [], idea = [], baseOn = 0, worst = null;
   list.forEach(function (rule, i) {
@@ -1312,7 +1317,7 @@ function rtSelect(id, on) {
 function showEditor() {
   var t = $("rtType").value;
   document.querySelectorAll("#ruleEditor .rt").forEach(function (el) {
-    var on = el.classList.contains("rt-" + t) || (el.classList.contains("rt-list") && (t === "ifnot" || (t === "if" && $("rtFrom").value === "list")));
+    var on = el.classList.contains("rt-" + t) || (el.classList.contains("rt-list") && (t === "ifnot" || t === "min" || (t === "if" && $("rtFrom").value === "list")));
     el.hidden = !on;
   });
 }
@@ -1329,6 +1334,11 @@ function editorRule() {
   if (t === "ifnot") {
     if (!chosen.length) return null;
     return { type: "ifnot", ids: [P.id], set: chosen, n: n, label: "If not " + P.name + ", then " + n + "+ of " + names(chosen) };
+  }
+  if (t === "min") {          // template 5 (2026-11-20): at least N from these players, the scan's focus-set kind of rule
+    if (!chosen.length) return null;
+    var k = Math.min(n, chosen.length);
+    return { type: "min", ids: chosen, n: k, label: "at least " + k + " of " + chosen.map(function (id) { return shortName(byId(id).name); }).join(", ") };
   }
   if (t === "ifteam") {
     var T = $("rtTeam").value, opp = oppOf(T), m = Math.max(1, +$("rtM").value || 1);
@@ -1349,9 +1359,17 @@ function loadEditor(rule) {
     $("rtFrom").value = rule.set.length === opp.length && rule.set.every(function (id) { return opp.indexOf(id) >= 0; }) ? "opp" :
       rule.set.every(function (id) { return byId(id).team === P.team; }) && rule.set.length === teamIds(P.team).length - 1 ? "team" : "list";
   }
-  Array.from($("rtList").options).forEach(function (o) { o.selected = (rule.set || []).indexOf(o.value) >= 0; });
+  var listIds = rule.type === "min" ? rule.ids : rule.set || [];
+  Array.from($("rtList").options).forEach(function (o) { o.selected = listIds.indexOf(o.value) >= 0; });
   rtChips();
   showEditor();
+}
+// a player set into template 5 (the scan's focus set, the Players list's +set): keeps the chips already there
+function rtSet(ids, n) {
+  if ($("rtType").value !== "min" && !($("rtType").value === "ifnot" || ($("rtType").value === "if" && $("rtFrom").value === "list"))) $("rtType").value = "min";
+  ids.forEach(function (id) { var o = Array.from($("rtList").options).find(function (x) { return x.value === id; }); if (o) o.selected = true; });
+  if (n != null) $("rtN").value = n;
+  rtChips(); showEditor();
 }
 
 // --- the bank, the entries file, the cut, the portfolios, the export -----------------------------------------
@@ -2685,11 +2703,13 @@ $("scanTable").addEventListener("click", function (e) {
     SCAN.sort[kd] = { k: h.dataset.sk, dir: cur.k === h.dataset.sk ? -cur.dir : (/^(key|read|team)$/.test(h.dataset.sk) ? 1 : -1) };
     store(scanKey(), SCAN); renderScan(); return;
   }
-  if (e.target.id === "focusBank") {
+  if (e.target.id === "focusBank") {     // opens template 5 pre-filled: swap chips, then Add rule (2026-11-20)
     var ids = SCAN.focus || [], k = Math.min(3, ids.length);
-    addRules([{ type: "min", ids: ids.slice(), n: k, label: "at least " + k + " of " + ids.map(function (id) { return shortName((byId(id) || {}).name || id); }).join(", ") }]);
-    $("scanStatus").textContent = "Added at least " + k + " of the scan's " + ids.length + " focus players to the rules: Draw & bank draws under it.";
-    showStep("bank"); return;
+    if (editing >= 0) { editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; }
+    Array.from($("rtList").options).forEach(function (o) { o.selected = false; });
+    $("rtType").value = "min"; rtSet(ids, k);
+    $("scanStatus").textContent = "The rule editor has at least " + k + " of the scan's " + ids.length + " focus players: change the players or N, then Add rule.";
+    showStep("bank"); $("ruleEditor").scrollIntoView({ block: "center" }); return;
   }
   var tr0 = e.target.closest(".topread");
   if (tr0) { view.panel = tr0.dataset.team; renderTiles(); renderPlayers(); $("teamBar").scrollIntoView({ block: "start" }); return; }
@@ -3119,6 +3139,8 @@ function rowClick(e) {
     if (!f[x]) f[x] = "with"; else if (f[x] === "with") f[x] = "without"; else delete f[x];
     bpRender(); return;
   }
+  var sa = e.target.closest(".setadd");
+  if (sa) { rtSet([sa.closest(".row").dataset.id]); return; }
   var pb = e.target.closest(".pbank");
   if (pb) {
     var pr = byId(pb.closest(".row").dataset.id);

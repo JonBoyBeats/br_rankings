@@ -376,6 +376,22 @@ function audit(name, L, o) {
   check("saturation light: new · repeats · near-copies after each Draw & bank, coloured by the fresh share (green 75%+, amber 50-75, red under 50 or tapped out)",
         !!satM && sat.el === "sat sat-" + wantLvl && new RegExp("^" + Math.round(100 * satFr) + "% fresh").test(sat.text) && JSON.stringify(sat.rules) === JSON.stringify(["green", "amber", "red", "red"]) &&
         JSON.stringify(sat.near) === JSON.stringify([1, 0]), JSON.stringify([m0, sat, wantLvl]));
+  // template 5, at least N from these players: +set on a player row adds a chip; the rule saves as {type: "min", ids, n}
+  // and every lineup drawn under it holds N of them
+  const top3 = await pg.evaluate(() => rows.filter(r => r.status !== "Out" && !r.deepOut).sort((a, b) => proj(b) - proj(a)).slice(0, 3).map(r => r.id));
+  await pg.evaluate(() => { $("rtType").value = "if"; $("rtFrom").value = "opp"; Array.from($("rtList").options).forEach(o => { o.selected = false; }); rtChips(); showEditor(); });
+  for (const id of top3) await pg.click(`#players .row[data-id="${id}"] .setadd`, { timeout: 15000 });
+  const t5 = await pg.evaluate(() => ({ type: $("rtType").value, chips: Array.from($("rtList").selectedOptions).map(o => o.value), shown: !document.querySelector("#ruleEditor .rt-list").hidden }));
+  await pg.fill("#rtN", "2");
+  const nR = await pg.evaluate(() => state.rules.length);
+  await pg.click("#rtSave");
+  const t5r = await pg.evaluate(n => state.rules[n], nR);
+  const { L: L5 } = await draw(12);
+  check("rule template 5: +set adds each player as a chip (switching the editor to template 5); Add rule saves at least N of them; every lineup drawn holds N",
+        t5.type === "min" && t5.shown && JSON.stringify(t5.chips.slice().sort()) === JSON.stringify(top3.slice().sort()) && t5r && t5r.type === "min" && t5r.n === 2 &&
+        JSON.stringify(t5r.ids.slice().sort()) === JSON.stringify(top3.slice().sort()) && /^at least 2 of /.test(t5r.label) && L5.length > 0 && L5.every(L => L.ids.filter(id => top3.includes(id)).length >= 2),
+        JSON.stringify([t5, t5r, L5.length]));
+  await pg.evaluate(n => { state.rules.splice(n, 1); save(); renderRules(); Array.from($("rtList").options).forEach(o => { o.selected = false; }); rtChips(); $("rtType").value = "if"; showEditor(); }, nR);
   check("Leverage weight: lineups drawn with it hold less projected ownership", Llev.length >= 10 && ownOf(Llev) < ownOf(L0),
         "with weight " + ownOf(Llev).toFixed(0) + "%, without " + ownOf(L0).toFixed(0) + "%");
 
@@ -453,11 +469,15 @@ function audit(name, L, o) {
     const rowOf = id => { const tr = el().querySelector('table.rot tr[data-id="' + id + '"]'); return tr ? [...tr.children].map(td => td.textContent) : null; };
     const projOk = rot.every(id => +rowOf(id)[1] === +proj(byId(id)).toFixed(0));
     const r1 = rowOf(mates[1].id), r2 = rowOf(mates[2].id);
+    // an Out the pipeline already has: its out_gain / out_from show as "+N min (outs: X)" (display only)
+    const m3 = byId(mates[2].id); m3.out_gain = 2.4; m3.out_from = "Kai Shinholster"; renderTeamPanel();
+    const r3 = rowOf(mates[2].id); delete m3.out_gain; delete m3.out_from; renderTeamPanel();
     state.outs[sit.id] = 1; applyOuts(); renderTeamPanel();
     const b = el().textContent, firstOut = el().querySelector("summary").nextElementSibling, tbl = !!el().querySelector("table:not(.rot)");
     delete state.outs[sit.id]; t.card = keep; applyOuts(); renderTeamPanel();
-    return { a, b, rot, want, projOk, r1, r2, first: firstOut && firstOut.textContent, tbl };
+    return { a, b, rot, want, projOk, r1, r2, r3, first: firstOut && firstOut.textContent, tbl };
   });
+  check("team card: a pipeline Out shows on his teammates as \"+N min (outs: X)\"", card.r3 && /\+2 min \(outs: Shinholster\)/.test(card.r3[5]), JSON.stringify(card.r3));
   check("team card: the game count; one rotation table in projection order (the Players list's Proj, whole points), season / last-3 minutes and tags (swingy, missed k of n, thin game counts); no per-player paragraphs or deep-bench sentence; an Out player's with / without table first",
         /Team card · 5 games/.test(card.a) && JSON.stringify(card.rot) === JSON.stringify(card.want) && card.rot.length >= 3 && card.projOk &&
         card.r1 && /swingy 10\u201330/.test(card.r1[5]) && /missed 3 of 5/.test(card.r1[5]) && /\(2 g\)/.test(card.r1[3]) &&
@@ -1503,8 +1523,13 @@ function audit(name, L, o) {
           lean = P2.filter(x => /^lean /.test(x.read)).sort((a, b) => b.g_t1 - a.g_t1), focusOk = JSON.stringify(SCAN.focus) === JSON.stringify(strong.concat(lean).slice(0, 6).map(x => x.id));
     const leanCls = [...document.querySelectorAll("#players .rdc span")].filter(e => /^lean /.test(e.textContent)).every(e => e.className === "read-" + e.textContent.replace(" ", "-"));
     const n0 = state.rules.length, b = document.getElementById("focusBank");
-    let rule = null; if (b) { b.click(); rule = state.rules[n0]; state.rules = state.rules.slice(0, n0); save(); renderRules(); }
-    return { tips, focusOk, leanCls, inOk, outOk, shown: rowsIn.length + rowsOut.length, want, rule: rule && { type: rule.type, n: rule.n, k: rule.ids.length, same: JSON.stringify(rule.ids) === JSON.stringify(SCAN.focus) }, hasBtn: !!b, focus: (SCAN.focus || []).length };
+    let rule = null, pre = null;
+    if (b) {                          // opens template 5 pre-filled; Add rule saves it
+      b.click(); pre = { type: $("rtType").value, n: +$("rtN").value, chips: Array.from($("rtList").selectedOptions).map(o => o.value), added: state.rules.length - n0 };
+      $("rtSave").click(); rule = state.rules[n0]; state.rules = state.rules.slice(0, n0); save(); renderRules();
+      Array.from($("rtList").options).forEach(o => { o.selected = false; }); rtChips();
+    }
+    return { focusIds: SCAN.focus || [], pre, tips, focusOk, leanCls, inOk, outOk, shown: rowsIn.length + rowsOut.length, want, rule: rule && { type: rule.type, n: rule.n, k: rule.ids.length, same: JSON.stringify(rule.ids.slice().sort()) === JSON.stringify((SCAN.focus || []).slice().sort()) }, hasBtn: !!b, focus: (SCAN.focus || []).length };
   });
   check("bank helpers (C1, against field ownership): the tooltips state the rule and the numbers (leverage 1.5x from 2% owned, core 0.75x, even 0.5x, fade at the field and 10%+)",
         JSON.stringify(c1.tips) === JSON.stringify(["Leverage: 4% of bank vs 6% field (want 9%+)", null, "Core: 20% of bank vs 30% field (want 23%+)", null,
@@ -1512,7 +1537,8 @@ function audit(name, L, o) {
                                                      "Lean leverage: 4% of bank vs 6% field (want 9%+)", null, "Lean core: 20% of bank vs 30% field (want 23%+)"]), JSON.stringify(c1.tips));
   check("lean reads: the focus set takes strong core / leverage first, then lean by gain; lean reads in their own colour class", c1.focusOk && c1.leanCls, JSON.stringify([c1.focusOk, c1.leanCls]));
   check("bank helpers (C1): the Players list marks a scan read the bank holds too little of (against the field) and a fade it holds too much of; Bank: at least 3 of the focus set adds one min-N rule (not locks)",
-        c1.inOk && c1.outOk && c1.shown === c1.want && (c1.focus < 2 || (c1.hasBtn && c1.rule.type === "min" && c1.rule.n === Math.min(3, c1.focus) && c1.rule.same)), JSON.stringify(c1));
+        c1.inOk && c1.outOk && c1.shown === c1.want && (c1.focus < 2 || (c1.hasBtn && c1.pre.type === "min" && c1.pre.n === Math.min(3, c1.focus) && c1.pre.added === 0 &&
+         JSON.stringify(c1.pre.chips.slice().sort()) === JSON.stringify(c1.focusIds.slice().sort()) && c1.rule.type === "min" && c1.rule.n === Math.min(3, c1.focus) && c1.rule.same)), JSON.stringify(c1));
   const pso = await pg.evaluate(() => {
     document.querySelector('#players .head [data-sort="sroi"]').click();
     const g = [...document.querySelectorAll("#players .row")].map(e => scanRowOf(e.dataset.id)).filter(x => x && byId(x.id).status !== "Out").map(x => x.g_roi);
