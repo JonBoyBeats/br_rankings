@@ -103,6 +103,29 @@ function audit(name, L, o) {
   check("ownership watch (B3): the note shows confirmed patterns only", !ow.hidden && /coming off a big game/.test(ow.text) && !/blue bloods/.test(ow.text), JSON.stringify(ow));
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
   check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#statusInfo")));
+  // the player table layout (2026-11-20): actions (out / play / use / drop) in the fixed L / X group and clickable at a
+  // laptop width; Q / D / OUT / new kept beside the name; the scan's columns hidden until a scan exists; Show: all / in pool / left out
+  await pg.setViewportSize({ width: 1280, height: 900 });
+  const lay = await pg.evaluate(() => {
+    renderPlayers();
+    const acts = [...document.querySelectorAll("#players .row .qout, #players .row .deepin")];
+    const inLx = acts.every(b => b.closest(".lx")) && !document.querySelector("#players .row .name .qout, #players .row .name .deepin");
+    const hit = acts.filter(b => b.offsetParent).slice(0, 15).every(b => { b.scrollIntoView({ block: "center" }); const r = b.getBoundingClientRect(); return document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === b; });
+    const qs = rows.filter(r => r.status === "Questionable" && document.querySelector('#players .row[data-id="' + r.id + '"]'));
+    const qKeep = qs.every(r => !!document.querySelector('#players .row[data-id="' + r.id + '"] .tkeep .tag.q'));
+    const noscan = $("players").classList.contains("noscan") && !SCAN, cell = document.querySelector("#players .row .col-scan");
+    const hidden = !cell || getComputedStyle(cell).display === "none";
+    const sel = $("poolShow"), n0 = document.querySelectorAll("#players .row").length;
+    sel.value = "out"; sel.dispatchEvent(new Event("change"));
+    const outRows = [...document.querySelectorAll("#players .row")].map(e => byId(e.dataset.id)), outOk = outRows.length > 0 && outRows.every(r => r.status !== "Out" ? (r.deepOut || state.excl[r.id]) : isDoubtful(r));
+    sel.value = "in"; sel.dispatchEvent(new Event("change"));
+    const inRows = [...document.querySelectorAll("#players .row")].map(e => byId(e.dataset.id)), inOk = inRows.length > 0 && inRows.every(r => usable(r));
+    sel.value = "all"; sel.dispatchEvent(new Event("change"));
+    return { acts: acts.length, inLx, hit, qs: qs.length, qKeep, noscan, hidden, outN: outRows.length, outOk, inN: inRows.length, inOk, back: document.querySelectorAll("#players .row").length === n0 };
+  });
+  check("player table: the out / play / use / drop actions sit in the L / X group, clickable at 1280px; Q stays beside a truncated name; scan columns hidden with no scan; Show all / in pool / left out",
+        lay.acts > 0 && lay.inLx && lay.hit && lay.qKeep && lay.noscan && lay.hidden && lay.outOk && lay.inOk && lay.back, JSON.stringify(lay));
+  await pg.setViewportSize({ width: 1100, height: 900 });
   // the default slate: today's main (Pacific day: most games; a tie goes to the soonest unlocked, else the later), locked or not; with none today, the
   // newest unlocked, else the most recent; a hand pick holds for the rest of that day
   const ds = await pg.evaluate(() => {
@@ -1217,9 +1240,11 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   const c4 = await pg.evaluate(() => { const st = document.getElementById("cutStatus").textContent, five = PF["197791874"] || [], cnt = {};
     five.forEach(bi => BANK.lineups[bi].ids.forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }));
-    return { n: five.length, relaxed: /relaxed to \d+% to fill \d+ slot/.test(st), oneLine: /^Filled \d+ of \d+ entries[^]*relaxed to/.test(st), maxUse: Math.max(...Object.values(cnt)), st: st.slice(0, 300) }; });
-  check("fill completes itself: short at 20% exposure, it relaxes one cap a step at a time (to 70% at most), fills the 5-entry contest and says so in the one-line status",
-        c4.relaxed && c4.oneLine && c4.n === 5 && c4.maxUse <= DKSimLimit(0.7, 5), JSON.stringify(c4));
+    const sb = document.querySelector('#strandBox .strandAdd[data-cid="197791874"]');
+    return { n: five.length, relaxed: /relaxed to \d+% to fill \d+ slot/.test(st), oneLine: /^Filled \d+ of \d+ entries[^]*relaxed to/.test(st), maxUse: Math.max(...Object.values(cnt)), st: st.slice(0, 300),
+             strand: !!sb && !$("strandBox").hidden }; });
+  check("fill completes itself: short at 20% exposure, it relaxes one cap a step at a time (to 70% at most) and says so in the one-line status; the 5-entry contest fills, or what's left open gets the stranded-seat line (random pool)",
+        c4.relaxed && c4.oneLine && (c4.n === 5 || (c4.n === 4 && c4.strand)) && c4.maxUse <= DKSimLimit(0.7, 5), JSON.stringify(c4));
   const und = await pg.evaluate(() => { renderUnder(); const u = underExposed(), t = document.getElementById("fillUnder").textContent;
     const ok = !u || ["p", "st", "pr"].every(k => u[k].every(x => x.want >= 0.2 && x.want - x.have >= 0.15 - 1e-9));
     return { has: !!u, ok, t: t.slice(0, 200), shown: !u || (["p", "st", "pr"].some(k => u[k].length) ? /^Under-exposed against tier A/.test(t) : t === "") }; });
@@ -1537,6 +1562,8 @@ function audit(name, L, o) {
     return { ok, sorted };
   });
   check("player scan: its top-1% gain (noise bar under it), ROI and cash gains, Read (coloured) and Bank this in the Players list, sortable", pList.ok && pList.sorted, JSON.stringify(pList));
+  check("player table: with a scan the scan columns show (no-scan layout off)", await pg.evaluate(() => { renderPlayers(); const c = document.querySelector("#players .row .col-scan");
+    return !$("players").classList.contains("noscan") && !!c && getComputedStyle(c).display !== "none"; }));
   const c1 = await pg.evaluate(() => {
     renderPlayers(); const bs = bankShare(), rowsIn = [...document.querySelectorAll("#players .row.bankgap-in")].map(e => e.dataset.id), rowsOut = [...document.querySelectorAll("#players .row.bankgap-out")].map(e => e.dataset.id);
     // the rule by hand: leverage < 1.5 f (f >= 2%), core < 0.75 f, even < 0.5 f; fade >= f and >= 10%
@@ -1632,6 +1659,17 @@ function audit(name, L, o) {
         fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Auto-fill the rest", "Undo fill", "New nights", "Export DK entries", "Save build", "Load build"]) && fb.clear === "stepBank" &&
         fb.varIn === "stepCut" && fb.folded && /^Fill: contest 60% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights$/.test(fb.sum) &&
         ["Here", "Tonight", "Room"].every(h => fb.heads.includes(h)), JSON.stringify(fb));
+  // the operator's case (2026-11-20, a Fill-step row's "use" clipped off the name): at 1280px in the Fill step every
+  // action button is in the L / X group and is what a click at its centre lands on
+  await pg.setViewportSize({ width: 1280, height: 900 });
+  const fact = await pg.evaluate(() => {
+    renderPlayers();
+    const acts = [...document.querySelectorAll("#fillPlayersSlot #players .row .qout, #fillPlayersSlot #players .row .deepin")].filter(b => b.offsetParent);
+    return { n: acts.length, fill: $("players").classList.contains("fillcols"), inLx: acts.every(b => b.closest(".lx")),
+             hit: acts.slice(0, 15).every(b => { b.scrollIntoView({ block: "center" }); const r = b.getBoundingClientRect(); return document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === b; }) };
+  });
+  check("player table (Fill step, 1280px): out / play / use / drop in the L / X group and clickable", fact.fill && fact.n > 0 && fact.inLx && fact.hit, JSON.stringify(fact));
+  await pg.setViewportSize({ width: 1100, height: 900 });
   dialogs = [];
   const nBank = await pg.evaluate(() => BANK.lineups.length);
   pg.removeAllListeners("dialog"); pg.once("dialog", d => { dialogs.push(d.message()); d.dismiss(); });

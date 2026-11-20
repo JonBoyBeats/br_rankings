@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 80px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 36px 50px 38px 38px 54px 36px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 128px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 36px 50px 38px 38px 54px 36px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -72,6 +72,12 @@
   .mut { color: var(--muted); }
   .who { min-width: 0; }
   .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* the name truncates first; Q / D / OUT / new stay (.tkeep); the other tags truncate, all of them in the hover (.tmore) */
+  #players .name { display: flex; align-items: center; gap: 3px; }
+  #players .name .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; }
+  #players .name .tkeep { flex: none; display: inline-flex; gap: 3px; }
+  #players .name .tmore { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 3 auto; }
+  .lx button.act { width: auto; padding: 0 4px; font-size: 10px; font-weight: 600; }
   .name .nm[title] { cursor: help; }
   .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tag { font-family: var(--mono); font-size: 9.5px; font-weight: 700; border-radius: 3px; padding: 0 4px; margin-left: 5px; vertical-align: 1px; }
@@ -164,7 +170,11 @@
   #fillSet > summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
   #nbList.nbscroll { max-height: 440px; }
   #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
-  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 80px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 50px 38px 38px 54px 36px 36px 40px 34px 26px 42px 42px; }
+  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 50px 38px 38px 54px 36px 36px 40px 34px 26px 42px 42px; }
+  /* no player scan for the slate yet (2026-11-20): its six columns hidden, their width to the name */
+  #players.noscan .col-scan { display: none; }
+  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(140px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 36px 42px 42px; }
+  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(140px, 1fr) 44px 46px 54px 38px 36px 28px 36px 40px 34px 42px 42px; }
   #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
   #players .row.bankgap-in { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out { box-shadow: inset 3px 0 var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
@@ -248,7 +258,8 @@
   table.contests td.m, table.contests th.r { text-align: right; }
   .empty { color: var(--muted); padding: 24px 4px; }
   @media (max-width: 620px) {
-    .head, .row { grid-template-columns: 56px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
+    .head, .row, #players.noscan .head, #players.noscan .row { grid-template-columns: 90px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
+    .lx button.setadd { display: none; }
     .col-min, .col-avg, .col-max, .col-pos, .col-team, .col-opp, .col-scan { display: none; }
     table.bp td.nm { min-width: 140px; font-size: 11px; }
     table.bp td, table.bp th { padding: 3px 3px; }
@@ -479,6 +490,7 @@
     <button type="button" data-pos="G" aria-pressed="false">G</button>
     <button type="button" data-pos="F" aria-pressed="false">F</button>
     <button type="button" id="qOnly" aria-pressed="false" title="Only the players tagged Questionable (by DraftKings or the outs file), to mark X on the ones not worth the risk">Q</button>
+    <label class="field" style="flex-direction:row;align-items:center;gap:4px" title="In pool: the players the draws can use. Left out: punts, the deep bench, your X and Doubtfuls, to bring one back fast (use / play in the L / X group)"><span class="field-label" style="margin:0">Show</span><select id="poolShow" style="width:auto;height:28px"><option value="all">all</option><option value="in">in pool</option><option value="out">left out</option></select></label>
     <select id="team" style="width:auto;height:28px;font-size:13px;padding:3px 8px"><option value="">All teams</option></select>
     <input type="search" id="search" placeholder="Search players">
     <button type="button" id="resetProj" title="Put every Proj back to ours">Reset Proj</button>
@@ -742,11 +754,14 @@ function renderPlayers() {
     if (view.team && r.team !== view.team) return false;
     if (view.q && r.name.toLowerCase().indexOf(view.q) < 0) return false;
     if (view.qOnly && !isQ(r)) return false;
+    if (view.pool === "in" && !(usable(r))) return false;
+    if (view.pool === "out" && !(r.status !== "Out" ? (r.deepOut || state.excl[r.id]) : isDoubtful(r))) return false;
     return true;
   });
   $("qOnly").textContent = "Q (" + rows.filter(isQ).length + ")";
   var fs = fillStats();
   $("players").classList.toggle("fillcols", !!fs);
+  $("players").classList.toggle("noscan", !rows.some(function (r) { return !!scanRowOf(r.id); }));   // no player scan yet: its columns hidden
   $("players").innerHTML = playerTable(sortList(list), true, fs);
   renderTeamPanel();
 }
@@ -873,23 +888,28 @@ function playerTable(list, sortable, fs) {
   var bshare = bankShare();
   var body = list.map(function (r) {
     var nw = newsOf(r.id);
-    var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
-      (isDoubtful(r) ? '<span class="tag d" title="Doubtful: out by default">D</span>' : "") +
-      (fragileMap()[r.id] ? '<span class="tag frag" title="' + esc("Fragile: " + fragileMap()[r.id].join("; ")) + '">fragile</span>' : "") +
+    // the tags (2026-11-20 layout): Q / D / OUT / new kept beside the name; the rest may truncate, each still in the hover
+    var keep = (isDoubtful(r) ? '<span class="tag d" title="Doubtful: out by default">D</span>' : "") +
       (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
-        ' title="Projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : "") + '>Q</span>' : "") +
-      (isDoubtful(r) ? '<button type="button" class="qout" title="' + (state.ins[r.id] ? "Back to out (Doubtful)" : "Play him: back as Questionable, his teammates refit to 200") +
-        '">' + (state.ins[r.id] ? "Undo" : "Play him") + "</button>" :
-      r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout" title="' +
-        (state.outs[r.id] ? "Put him back as Questionable" : "Rule him out: his teammates share his minutes (200 for the team)") + '">' +
-        (state.outs[r.id] ? "Undo out" : "Mark out") + "</button>" : "") +
-      (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005 ? '<span class="tag" title="A teammate you ruled out: his minutes ' + (r.min || 0).toFixed(1) +
-        " -> " + ((r.min || 0) * minScale[r.id]).toFixed(1) + '">' + (minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min</span>" : "") + statusConflict(r) +
-      (deepIds()[r.id] || r.punt ? '<button type="button" class="deepin" data-id="' + esc(r.id) + '" title="' + (r.punt ?
-        (r.deepOut ? "Projected under " + PUNT_MIN + " minutes with no news raising them: out of the pool by default. Use him" : "Brought back: leave him out again") :
-        (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" : "Deep bench, brought back: leave him out again")) + '">' +
-        (r.punt ? (r.deepOut ? "<" + PUNT_MIN + " min: use" : "<" + PUNT_MIN + " min: drop") : (r.deepOut ? "deep: use" : "deep: drop")) + "</button>" : "") +
+        ' title="Questionable: projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : ' title="Questionable"') + '>Q</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
+    var moreTxt = [], more = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
+      (fragileMap()[r.id] ? '<span class="tag frag" title="' + esc("Fragile: " + fragileMap()[r.id].join("; ")) + '">fragile</span>' : "") +
+      (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005 ? '<span class="tag" title="A teammate you ruled out: his minutes ' + (r.min || 0).toFixed(1) +
+        " -> " + ((r.min || 0) * minScale[r.id]).toFixed(1) + '">' + (minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min</span>" : "") + statusConflict(r);
+    if (nw) moreTxt.push((nw.late ? "late " : "") + "news: " + nw.kind + " (@" + nw.author + ": " + nw.text + ")");
+    if (fragileMap()[r.id]) moreTxt.push("Fragile: " + fragileMap()[r.id].join("; "));
+    if (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005) moreTxt.push((minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min from a teammate you ruled out");
+    var tags = (keep ? '<span class="tkeep">' + keep + "</span>" : "") + (more ? '<span class="tmore" title="' + esc(moreTxt.join("\n") || "") + '">' + more + "</span>" : "");
+    // the actions (Mark out / Play him, use / drop the deep bench or a punt) in the fixed L / X group, never clipped
+    var act = isDoubtful(r) ? '<button type="button" class="qout act" title="' + (state.ins[r.id] ? "Back to out (Doubtful)" : "Play him: back as Questionable, his teammates refit to 200") +
+        '">' + (state.ins[r.id] ? "undo" : "play") + "</button>" :
+      r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout act" title="' +
+        (state.outs[r.id] ? "Undo out: put him back as Questionable" : "Mark out: rule him out, his teammates share his minutes (200 for the team)") + '">' +
+        (state.outs[r.id] ? "undo" : "out") + "</button>" :
+      deepIds()[r.id] || r.punt ? '<button type="button" class="deepin act" data-id="' + esc(r.id) + '" title="' + (r.punt ?
+        (r.deepOut ? "Projected under " + PUNT_MIN + " minutes with no news raising them: out of the pool by default. Use him" : "Brought back (under " + PUNT_MIN + " minutes): leave him out again") :
+        (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" : "Deep bench, brought back: leave him out again")) + '">' + (r.deepOut ? "use" : "drop") + "</button>" : "";
     var edited = state.proj[r.id] != null, sc = scanRowOf(r.id);
     var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] || r.deepOut ? " excluded" : "") + (r.status === "Out" ? " out" : "");
     // C1: the bank against the scan's read and his field ownership (bankGap)
@@ -901,7 +921,7 @@ function playerTable(list, sortable, fs) {
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '"' + (gapTip ? ' title="' + esc(gapTip) + '"' : "") + ">" +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
       '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button>' +
-      (r.status !== "Out" ? '<button type="button" class="setadd" title="Add him to the rule editor\'s players (template 5: at least N from these players)">+set</button>' : "") + "</span>" +
+      (r.status !== "Out" ? '<button type="button" class="setadd" title="Add him to the rule editor\'s players (template 5: at least N from these players)">+set</button>' : "") + act + "</span>" +
       '<span class="who"><div class="name"><span class="nm' + (fs && bpFilt.p[r.id] ? (bpFilt.p[r.id] === "with" ? " w" : " wo") : "") + '" title="' + esc(whoTip(r)) + (fs ? "\nTap: with, again without, again off (filters the lineups)" : "") + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
       '<span class="m mut col-pos">' + esc(r.position || "") + "</span>" +
       '<span class="m col-team">' + esc(r.team || "") + "</span>" +
@@ -3217,6 +3237,7 @@ $("bpTable").addEventListener("click", function (e) {
 $("news").addEventListener("click", function (e) { var t = e.target.closest(".tx"); if (t) t.parentNode.classList.toggle("open"); });
 $("search").addEventListener("input", function (e) { view.q = e.target.value.trim().toLowerCase(); renderPlayers(); });
 $("team").addEventListener("change", function (e) { view.team = e.target.value; renderPlayers(); });
+$("poolShow").addEventListener("change", function () { view.pool = this.value; renderPlayers(); });
 $("qOnly").addEventListener("click", function () { view.qOnly = !view.qOnly; this.setAttribute("aria-pressed", String(view.qOnly)); renderPlayers(); });
 document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
   b.addEventListener("click", function () {
