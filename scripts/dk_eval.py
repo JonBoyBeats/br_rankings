@@ -2113,7 +2113,8 @@ def scan_grade(a):
     reached the real top 10% and top 1%; beside each team's tile verdict (tiles_eval.csv) for its team stacks. Prints
     whether the scan's top third of stacks reached the top 10% / top 1% more often than its bottom third, and the same
     by tile verdict. Player rows (the player scan, 2026-11-19): the same rates for real entries holding the player, and
-    his real points against the scan's projection; printed by Read (core and leverage against fade and skip)."""
+    his real points against the scan's projection; printed by Read (core and leverage against fade and skip; lean core and
+    lean leverage from 2026-11-20, derived for scans saved before: an even with a positive gain, by the scan's median)."""
     base, verdict, out = baselines(), {}, []
     for r in read(os.path.join(DK, "tiles_eval.csv")):
         verdict[(str(r["draft_group"]), r["team"])] = r["verdict"]
@@ -2147,12 +2148,17 @@ def scan_grade(a):
                         "real_entries": len(hit), "real_top10": round(sum(rk <= t10 for rk in hit) / len(hit), 4) if hit else "",
                         "real_top1": round(sum(rk <= t1 for rk in hit) / len(hit), 4) if hit else ""})
         byid = {r["dk_id"]: r for r in info.values()}
+        pmed = sc.get("pownMedian")
+        def pread(row):                 # lean reads (2026-11-20) for scans saved before them: an even with a positive gain
+            if row["read"] == "even" and row["g_t1"] > 0 and pmed is not None and row.get("fown") is not None:
+                return "lean core" if row["fown"] >= pmed else "lean leverage"
+            return row["read"]
         for i, row in enumerate(sc.get("players") or []):
             pid = str(row["id"])
             hit = [rk for rk, L in lines if any(x and x["dk_id"] == pid for x in L)]
             act = num((byid.get(pid) or {}).get("actual_dk"))
             out.append({"date": date, "draft_group": g, "contest_id": cid, "contest": cname, "stack": row["key"], "kind": "player", "n": "",
-                        "rank": i + 1, "of": len(sc["players"]), "read": row["read"], "scan_g_t1": round(row["g_t1"], 5),
+                        "rank": i + 1, "of": len(sc["players"]), "read": pread(row), "scan_g_t1": round(row["g_t1"], 5),
                         "scan_field": round(row["fown"] / 100, 4) if row.get("fown") is not None else "", "tile_verdict": "",
                         "real_entries": len(hit), "real_top10": round(sum(rk <= t10 for rk in hit) / len(hit), 4) if hit else "",
                         "real_top1": round(sum(rk <= t1 for rk in hit) / len(hit), 4) if hit else "",
@@ -2190,7 +2196,8 @@ def scan_lines():
             return "%+.1f" % (sum(d) / len(d)) if d else "-"
         out.append("  players by Read (top 10% / top 1% of real entries holding them; real less projected points; players): " + "; ".join(
             "%s %s / %s, %s (%d)" % (v, f(rate(sub, "real_top10")), f(rate(sub, "real_top1")), pts(sub), len(sub))
-            for v, sub in [(v, [r for r in pls if r["read"] in v.split("+")]) for v in ("core", "leverage", "core+leverage", "even", "fade", "skip", "fade+skip")] if sub))
+            for v, sub in [(v, [r for r in pls if r["read"] in v.split("+")]) for v in ("core", "leverage", "core+leverage", "lean core", "lean leverage", "lean core+lean leverage",
+                                                                                     "even", "fade", "skip", "fade+skip")] if sub))
     return out
 
 

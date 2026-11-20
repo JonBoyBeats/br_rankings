@@ -1429,7 +1429,7 @@ function audit(name, L, o) {
   const ps = await pg.evaluate(() => {
     const want = rows.filter(r => usable(r) && (r.min || 0) * (minScale[r.id] || 1) >= PUNT_MIN).map(r => r.id).sort(), P = SCAN.players, m = SCAN.pownMedian;
     const ids = P.map(r => r.id).sort(), bar = SCAN.pbar;
-    const reads = bar > 0 && P.every(r => r.read === (r.g_t1 > bar ? (r.fown >= m ? "core" : "leverage") : r.g_t1 < -bar ? (r.fown >= m ? "fade" : "skip") : "even"));
+    const reads = bar > 0 && P.every(r => r.read === (r.g_t1 > bar ? (r.fown >= m ? "core" : "leverage") : r.g_t1 < -bar ? (r.fown >= m ? "fade" : "skip") : r.g_t1 > 0 ? (r.fown >= m ? "lean core" : "lean leverage") : "even"));
     const gains = P.every(r => Math.abs(r.g_t1 - (r.t1 - SCAN.plain.t1)) < 1e-12 && Math.abs(r.g_cash - (r.cash - SCAN.plain.cash)) < 1e-12);
     const noOut = P.every(r => { const x = byId(r.id); return x.status !== "Out" && !x.deepOut; });
     const first = document.querySelector("#scanTable table").id === "scanPlayers" && !document.querySelector('#scanTable th[data-skind="player"]');
@@ -1463,19 +1463,26 @@ function audit(name, L, o) {
   const c1 = await pg.evaluate(() => {
     renderPlayers(); const bs = bankShare(), rowsIn = [...document.querySelectorAll("#players .row.bankgap-in")].map(e => e.dataset.id), rowsOut = [...document.querySelectorAll("#players .row.bankgap-out")].map(e => e.dataset.id);
     // the rule by hand: leverage < 1.5 f (f >= 2%), core < 0.75 f, even < 0.5 f; fade >= f and >= 10%
-    const f = id => own(byId(id)) / 100, k = { leverage: 1.5, core: 0.75, even: 0.5 };
-    const under = (rd, b, fo) => k[rd] != null && (rd !== "leverage" || fo >= 0.02) && b < k[rd] * fo, over = (rd, b, fo) => rd === "fade" && b >= fo && b >= 0.1;
+    const f = id => own(byId(id)) / 100, k = { leverage: 1.5, core: 0.75, "lean leverage": 1.5, "lean core": 0.75, even: 0.5 };
+    const under = (rd, b, fo) => k[rd] != null && (!/leverage/.test(rd) || fo >= 0.02) && b < k[rd] * fo, over = (rd, b, fo) => rd === "fade" && b >= fo && b >= 0.1;
     const inOk = rowsIn.every(id => under(scanRowOf(id).read, bs[id] || 0, f(id))), outOk = rowsOut.every(id => over(scanRowOf(id).read, bs[id] || 0, f(id)));
     const want = SCAN.players.filter(x => byId(x.id).status !== "Out" && (under(x.read, bs[x.id] || 0, f(x.id)) || over(x.read, bs[x.id] || 0, f(x.id))) && document.querySelector('#players .row[data-id="' + x.id + '"]')).length;
     const tips = [bankGap("leverage", 0.04, 0.06), bankGap("leverage", 0.04, 0.015), bankGap("core", 0.2, 0.3), bankGap("core", 0.25, 0.3), bankGap("even", 0.04, 0.1),
-                  bankGap("fade", 0.25, 0.18), bankGap("fade", 0.08, 0.05), bankGap("fade", 0.15, 0.2)].map(g => g && g.tip);
+                  bankGap("fade", 0.25, 0.18), bankGap("fade", 0.08, 0.05), bankGap("fade", 0.15, 0.2),
+                  bankGap("lean leverage", 0.04, 0.06), bankGap("lean leverage", 0.01, 0.015), bankGap("lean core", 0.2, 0.3)].map(g => g && g.tip);
+    // the focus set: the strong core / leverage by gain first, then the lean ones by gain
+    const P2 = SCAN.players.filter(x => !x.thin), strong = P2.filter(x => x.read === "core" || x.read === "leverage").sort((a, b) => b.g_t1 - a.g_t1),
+          lean = P2.filter(x => /^lean /.test(x.read)).sort((a, b) => b.g_t1 - a.g_t1), focusOk = JSON.stringify(SCAN.focus) === JSON.stringify(strong.concat(lean).slice(0, 6).map(x => x.id));
+    const leanCls = [...document.querySelectorAll("#players .rdc span")].filter(e => /^lean /.test(e.textContent)).every(e => e.className === "read-" + e.textContent.replace(" ", "-"));
     const n0 = state.rules.length, b = document.getElementById("focusBank");
     let rule = null; if (b) { b.click(); rule = state.rules[n0]; state.rules = state.rules.slice(0, n0); save(); renderRules(); }
-    return { tips, inOk, outOk, shown: rowsIn.length + rowsOut.length, want, rule: rule && { type: rule.type, n: rule.n, k: rule.ids.length, same: JSON.stringify(rule.ids) === JSON.stringify(SCAN.focus) }, hasBtn: !!b, focus: (SCAN.focus || []).length };
+    return { tips, focusOk, leanCls, inOk, outOk, shown: rowsIn.length + rowsOut.length, want, rule: rule && { type: rule.type, n: rule.n, k: rule.ids.length, same: JSON.stringify(rule.ids) === JSON.stringify(SCAN.focus) }, hasBtn: !!b, focus: (SCAN.focus || []).length };
   });
   check("bank helpers (C1, against field ownership): the tooltips state the rule and the numbers (leverage 1.5x from 2% owned, core 0.75x, even 0.5x, fade at the field and 10%+)",
         JSON.stringify(c1.tips) === JSON.stringify(["Leverage: 4% of bank vs 6% field (want 9%+)", null, "Core: 20% of bank vs 30% field (want 23%+)", null,
-                                                     "Even: 4% of bank vs 10% field (want 5%+)", "Fade: 25% of bank vs 18% field (want under 18%)", null, null]), JSON.stringify(c1.tips));
+                                                     "Even: 4% of bank vs 10% field (want 5%+)", "Fade: 25% of bank vs 18% field (want under 18%)", null, null,
+                                                     "Lean leverage: 4% of bank vs 6% field (want 9%+)", null, "Lean core: 20% of bank vs 30% field (want 23%+)"]), JSON.stringify(c1.tips));
+  check("lean reads: the focus set takes strong core / leverage first, then lean by gain; lean reads in their own colour class", c1.focusOk && c1.leanCls, JSON.stringify([c1.focusOk, c1.leanCls]));
   check("bank helpers (C1): the Players list marks a scan read the bank holds too little of (against the field) and a fade it holds too much of; Bank: at least 3 of the focus set adds one min-N rule (not locks)",
         c1.inOk && c1.outOk && c1.shown === c1.want && (c1.focus < 2 || (c1.hasBtn && c1.rule.type === "min" && c1.rule.n === Math.min(3, c1.focus) && c1.rule.same)), JSON.stringify(c1));
   const pso = await pg.evaluate(() => {

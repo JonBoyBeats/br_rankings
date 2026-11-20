@@ -80,7 +80,8 @@
   .tag.new { border: 1px solid var(--line-strong); color: var(--muted); }
   .tag.frag { border: 1px solid var(--warn); color: var(--warn); font-weight: 600; }
   .tag.lk { background: var(--live); color: #04140c; }
-  .read-leverage { color: #3fbf7f; font-weight: 600; } .read-core { color: #5b9cf0; font-weight: 600; } .read-fade { color: var(--bad); font-weight: 600; } .read-skip, .read-even { color: var(--muted); }
+  .read-leverage { color: #3fbf7f; font-weight: 600; } .read-core { color: #5b9cf0; font-weight: 600; }
+  .read-lean-leverage { color: #9fe0bf; } .read-lean-core { color: #a9c9f6; } .read-fade { color: var(--bad); font-weight: 600; } .read-skip, .read-even { color: var(--muted); }
   .row .nb2 { font-size: 9.5px; display: block; line-height: 1; }
   .row button.pbank { height: 20px; width: 24px; padding: 0; font-size: 12px; }
   .head span[data-sort="read"], .row .rdc { padding-left: 8px; font-size: 12.5px; }
@@ -752,7 +753,7 @@ function sortList(list) {
               here: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].here : 0; },
               tonight: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].tonight : 0; },
               room: function (r) { var f = fillStats(); return f && f[r.id] && f[r.id].room != null ? f[r.id].room : 1e9; },
-              read: function (r) { var x = scanRowOf(r.id); return x ? ["core", "leverage", "even", "fade", "skip"].indexOf(x.read) : 9; } }[view.sort] || value;
+              read: function (r) { var x = scanRowOf(r.id); return x ? ["core", "leverage", "lean core", "lean leverage", "even", "fade", "skip"].indexOf(x.read) : 9; } }[view.sort] || value;
   return list.sort(function (a, b) {
     var x = get(a), y = get(b);
     return (a.status === "Out") - (b.status === "Out") || (x < y ? -1 : x > y ? 1 : 0) * view.dir || b.salary - a.salary;   // Out last
@@ -826,10 +827,12 @@ var scanMap = {}, scanMapOf = null, bankShareMemo = null;
 // C1 (revised 2026-11-20 by the operator): each scan read against the player's projected field ownership f, with bs
 // his share of the bank. Leverage under-banked below 1.5 f (only when f >= 2%: a leverage play pays only if we hold him
 // more than the field); core below 0.75 f; even below 0.5 f; a fade over-banked at f or more AND 10%+ of the bank.
-var BANK_GAP = { leverage: 1.5, core: 0.75, even: 0.5, levFloor: 0.02, fadeMin: 0.10 };
+// Lean reads (2026-11-20) like their strong versions: lean leverage below 1.5 f (f >= 2%), lean core below 0.75 f.
+var BANK_GAP = { leverage: 1.5, core: 0.75, "lean leverage": 1.5, "lean core": 0.75, even: 0.5, levFloor: 0.02, fadeMin: 0.10 };
+function readCls(read) { return "read-" + String(read).replace(/ /g, "-"); }
 function bankGap(read, bs, f) {
   var pc = function (x) { return Math.round(100 * x) + "%"; }, k = BANK_GAP[read];
-  if (k != null && (read !== "leverage" || f >= BANK_GAP.levFloor) && bs < k * f)
+  if (k != null && (!/leverage/.test(read) || f >= BANK_GAP.levFloor) && bs < k * f)
     return { cls: "bankgap-in", tip: read.charAt(0).toUpperCase() + read.slice(1) + ": " + pc(bs) + " of bank vs " + pc(f) + " field (want " + Math.ceil(100 * k * f - 1e-9) + "%+)" };
   if (read === "fade" && bs >= f && bs >= BANK_GAP.fadeMin)
     return { cls: "bankgap-out", tip: "Fade: " + pc(bs) + " of bank vs " + pc(f) + " field (want under " + pc(Math.max(f, BANK_GAP.fadeMin)) + ")" };
@@ -901,7 +904,7 @@ function playerTable(list, sortable, fs) {
         (sc ? '<span class="sg">' + sgn(sc.g_t1, 2) + '</span><span class="nb2 mut">\u00b1' + (100 * sc.noise).toFixed(2) + "</span>" : "–") + "</span>" +
       '<span class="m r col-scan">' + (sc && sc.g_roi != null ? sgn(sc.g_roi, 0) : "–") + "</span>" +
       '<span class="m r col-scan">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
-      '<span class="col-scan rdc">' + (sc ? '<span class="read-' + sc.read + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
+      '<span class="col-scan rdc">' + (sc ? '<span class="' + readCls(sc.read) + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
       '<span class="m r col-scan">' + (BANK && BANK.lineups && BANK.lineups.length ? Math.round(100 * (bshare[r.id] || 0)) + "%" : "–") + "</span>" +
       (fs ? (function (x) { x = x || {}; return '<span class="m r">' + Math.round(100 * (x.here || 0)) + '%</span><span class="m r">' + Math.round(100 * (x.tonight || 0)) + '%</span><span class="m r"' +
         (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</span>"; })(fs[r.id]) : "") +
@@ -2517,11 +2520,12 @@ async function runScan() {
   stk.forEach(function (r, i) { r.rank = i + 1; });
   // players: the same test on their own rows (their own noise bar); field heavy or light against the scanned players'
   // median field ownership. core: strong and field heavy; leverage: strong and field light; fade: weak and field
-  // heavy; skip: weak and field light; even between
+  // heavy; skip: weak and field light; lean core / lean leverage (the operator, 2026-11-20): a positive gain inside the
+  // noise bar, field heavy / light; even: inside the noise and 0 or less
   var psigma = noise(pls), pbar = 2 * Math.SQRT2 * psigma, po = pls.map(function (r) { return r.fown; }).sort(function (a, b) { return a - b; }), pmed = po.length ? po[Math.floor(po.length / 2)] : null;
   pls.forEach(function (r) {
     var heavy = r.fown >= pmed; r.noise = pbar;
-    r.read = r.g_t1 > pbar ? (heavy ? "core" : "leverage") : r.g_t1 < -pbar ? (heavy ? "fade" : "skip") : "even";
+    r.read = r.g_t1 > pbar ? (heavy ? "core" : "leverage") : r.g_t1 < -pbar ? (heavy ? "fade" : "skip") : r.g_t1 > 0 ? (heavy ? "lean core" : "lean leverage") : "even";
   });
   pls.sort(function (a, b) { return (a.thin - b.thin) || (b.g_t1 - a.g_t1); });
   SCAN = { at: new Date().toISOString(), draft_group: slate.draft_group_id, per: per, nights: S, contests: cs.map(function (x) { return { id: x.c.id, name: x.c.name, n: x.n }; }),
@@ -2592,9 +2596,10 @@ function renderScan() {
   var thick = S.rows.filter(function (r) { return !r.thin; });          // thin rows only when every row is thin
   var tops = (thick.length ? thick : S.rows.slice()).sort(function (a, b) { return b.g_t1 - a.g_t1; }).slice(0, 5);
   var levs = pl.filter(function (r) { return !r.thin && r.read === "leverage"; });
-  // the focus set (C1): the core and leverage players by top-1% gain, topped up from the evens, six at most
-  var foc = pl.filter(function (r) { return !r.thin && /core|leverage/.test(r.read); }).sort(function (a, b) { return b.g_t1 - a.g_t1; });
-  foc = foc.concat(pl.filter(function (r) { return !r.thin && r.read === "even"; }).sort(function (a, b) { return b.g_t1 - a.g_t1; })).slice(0, 6);
+  // the focus set (C1): the strong core and leverage players by top-1% gain, then the lean ones by gain, six at most
+  var byG = function (a, b) { return b.g_t1 - a.g_t1; };
+  var foc = pl.filter(function (r) { return !r.thin && (r.read === "core" || r.read === "leverage"); }).sort(byG);
+  foc = foc.concat(pl.filter(function (r) { return !r.thin && /^lean /.test(r.read); }).sort(byG)).slice(0, 6);
   S.focus = foc.map(function (r) { return r.id; });
   var strip = '<div class="topreads"><b>Top reads</b>' + tops.map(function (r) {
       return '<button type="button" class="topread" data-team="' + esc(r.team || r.game.split("@")[0]) + '" title="Open its game">' + esc(r.key) + " " + sgn(r.g_t1, 2) + " · " + esc(r.read) + "</button>";

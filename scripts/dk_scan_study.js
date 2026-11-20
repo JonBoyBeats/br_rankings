@@ -108,7 +108,7 @@ function judge(list, R) {          // a list's players: real top-10% / top-1% ra
   const val = value(pool), mean = (a, ix) => ix.reduce((t, k) => t + a[k], 0) / Math.max(1, ix.length);
   const gains = batches.map(b => ({ id: b.id, g: mean(val.t1, b.idx) - mean(val.t1, plain), d: (mean(val.o1, b.idx) - mean(val.o1, plain)) - (mean(val.e1, b.idx) - mean(val.e1, plain)) }));
   const dm = gains.reduce((t, x) => t + x.d, 0) / gains.length, bar = 2 * Math.SQRT2 * Math.sqrt(gains.reduce((t, x) => t + (x.d - dm) ** 2, 0) / Math.max(1, gains.length - 1)) / 2;
-  const read = x => x.g > bar ? (own(x.id) >= medOwn ? "core" : "leverage") : x.g < -bar ? (own(x.id) >= medOwn ? "fade" : "skip") : "even";
+  const read = x => x.g > bar ? (own(x.id) >= medOwn ? "core" : "leverage") : x.g < -bar ? (own(x.id) >= medOwn ? "fade" : "skip") : x.g > 0 ? (own(x.id) >= medOwn ? "lean core" : "lean leverage") : "even";
   gains.forEach(x => { x.read = read(x); });
   // the redesign: ridge on the neutral batch
   const nPool = neutral.map(i => pool[i]), players = [...new Set(nPool.flatMap(L => L.ids))].filter(id => byId[id]);
@@ -149,7 +149,10 @@ function judge(list, R) {          // a list's players: real top-10% / top-1% ra
   const out = { night: N.date, draft_group: N.g, players_scanned: scanP.length, neutral: nPool.length, own_median: +medOwn.toFixed(1), noise_bar: +(100 * bar).toFixed(3),
     current: { core: gains.filter(x => x.read === "core").length, leverage: gains.filter(x => x.read === "leverage").length, even: gains.filter(x => x.read === "even").length,
                fade: gains.filter(x => x.read === "fade").length, skip: gains.filter(x => x.read === "skip").length,
-               core_leverage_real: judge(gains.filter(x => /core|leverage/.test(x.read)).map(x => x.id), R), fade_skip_real: judge(gains.filter(x => /fade|skip/.test(x.read)).map(x => x.id), R) },
+               lean_core: gains.filter(x => x.read === "lean core").length, lean_leverage: gains.filter(x => x.read === "lean leverage").length,
+               core_leverage_real: judge(gains.filter(x => x.read === "core" || x.read === "leverage").map(x => x.id), R),
+               lean_core_real: judge(gains.filter(x => x.read === "lean core").map(x => x.id), R), lean_leverage_real: judge(gains.filter(x => x.read === "lean leverage").map(x => x.id), R),
+               even_real: judge(gains.filter(x => x.read === "even").map(x => x.id), R), fade_skip_real: judge(gains.filter(x => /fade|skip/.test(x.read)).map(x => x.id), R) },
     ridge: { focus: focus.map(x => ({ name: x.name, read: x.read, roi: +(100 * x.roi).toFixed(1), band: +(100 * x.band).toFixed(1), top1: +(100 * x.top1).toFixed(2), own: +x.own.toFixed(1), held: x.held })),
              focus_real: judge(focus.map(x => x.id), R), bottom_real: judge(ranked.slice(-FOCUS).map(x => x.id), R),
              chalk_held: ranked.filter(x => x.own >= 25).length, chalk_in_focus: focus.filter(x => x.own >= 25).length },
