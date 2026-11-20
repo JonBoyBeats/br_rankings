@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 80px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 36px 50px 38px 38px 54px 36px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 128px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 34px 36px 38px 70px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -72,6 +72,12 @@
   .mut { color: var(--muted); }
   .who { min-width: 0; }
   .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* the name truncates first; Q / D / OUT / new stay (.tkeep); the other tags truncate, all of them in the hover (.tmore) */
+  #players .name { display: flex; align-items: center; gap: 3px; }
+  #players .name .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; }
+  #players .name .tkeep { flex: none; display: inline-flex; gap: 3px; }
+  #players .name .tmore { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 3 auto; }
+  .lx button.act { width: auto; padding: 0 4px; font-size: 10px; font-weight: 600; }
   .name .nm[title] { cursor: help; }
   .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tag { font-family: var(--mono); font-size: 9.5px; font-weight: 700; border-radius: 3px; padding: 0 4px; margin-left: 5px; vertical-align: 1px; }
@@ -164,7 +170,11 @@
   #fillSet > summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
   #nbList.nbscroll { max-height: 440px; }
   #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
-  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 80px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 50px 38px 38px 54px 36px 36px 40px 34px 26px 42px 42px; }
+  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 34px 38px 70px 36px 40px 34px 26px 42px 42px; }
+  /* no player scan for the slate yet (2026-11-20): its six columns hidden, their width to the name */
+  #players.noscan .col-scan { display: none; }
+  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(140px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 34px 36px 42px 42px; }
+  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(140px, 1fr) 44px 46px 54px 38px 36px 28px 34px 36px 40px 34px 42px 42px; }
   #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
   #players .row.bankgap-in { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out { box-shadow: inset 3px 0 var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
@@ -248,8 +258,9 @@
   table.contests td.m, table.contests th.r { text-align: right; }
   .empty { color: var(--muted); padding: 24px 4px; }
   @media (max-width: 620px) {
-    .head, .row { grid-template-columns: 56px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
-    .col-min, .col-avg, .col-max, .col-pos, .col-team, .col-opp, .col-scan { display: none; }
+    .head, .row, #players.noscan .head, #players.noscan .row { grid-template-columns: 90px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
+    .lx button.setadd { display: none; }
+    .col-min, .col-mpg, .col-avg, .col-max, .col-pos, .col-team, .col-opp, .col-scan { display: none; }
     table.bp td.nm { min-width: 140px; font-size: 11px; }
     table.bp td, table.bp th { padding: 3px 3px; }
     .name { font-size: 13px; }
@@ -336,7 +347,9 @@
 
   <div class="note" id="bankCheck" style="margin:2px 0 6px"></div>
   <div id="bankBox"></div>
-  <div class="opts" style="padding:2px 0"><button type="button" id="bankClear" title="Empties this slate's bank (asks first)">Clear bank</button></div>
+  <div class="opts" style="padding:2px 0"><button type="button" id="bankClear" title="Empties this slate's bank (asks first)">Clear bank</button>
+    <button type="button" id="clearOld" title="Removes other slates' saved banks, cuts, portfolios, entries and scans from this browser (asks first; today's slates, unlocked ones and this one stay)">Clear old slates</button></div>
+  <div class="note" style="margin:0 0 4px">Closing the tab after a slate is what frees the page's memory; Save build is the durable copy (Load build restores it).</div>
   </section>
 
   <section class="step" id="stepCut" data-step="cut" hidden>
@@ -404,6 +417,7 @@
     <button type="button" class="linkbtn" id="nbOn" title="The one-screen builder">New builder view</button>
   </div>
   <div class="note" id="fillUnder"></div>
+  <div class="note" id="strandBox" hidden></div>
   <div id="s2out">
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
@@ -476,6 +490,7 @@
     <button type="button" data-pos="G" aria-pressed="false">G</button>
     <button type="button" data-pos="F" aria-pressed="false">F</button>
     <button type="button" id="qOnly" aria-pressed="false" title="Only the players tagged Questionable (by DraftKings or the outs file), to mark X on the ones not worth the risk">Q</button>
+    <label class="field" style="flex-direction:row;align-items:center;gap:4px" title="In pool: the players the draws can use. Left out: punts, the deep bench, your X and Doubtfuls, to bring one back fast (use / play in the L / X group)"><span class="field-label" style="margin:0">Show</span><select id="poolShow" style="width:auto;height:28px"><option value="all">all</option><option value="in">in pool</option><option value="out">left out</option></select></label>
     <select id="team" style="width:auto;height:28px;font-size:13px;padding:3px 8px"><option value="">All teams</option></select>
     <input type="search" id="search" placeholder="Search players">
     <button type="button" id="resetProj" title="Put every Proj back to ours">Reset Proj</button>
@@ -739,17 +754,20 @@ function renderPlayers() {
     if (view.team && r.team !== view.team) return false;
     if (view.q && r.name.toLowerCase().indexOf(view.q) < 0) return false;
     if (view.qOnly && !isQ(r)) return false;
+    if (view.pool === "in" && !(usable(r))) return false;
+    if (view.pool === "out" && !(r.status !== "Out" ? (r.deepOut || state.excl[r.id]) : isDoubtful(r))) return false;
     return true;
   });
   $("qOnly").textContent = "Q (" + rows.filter(isQ).length + ")";
   var fs = fillStats();
   $("players").classList.toggle("fillcols", !!fs);
+  $("players").classList.toggle("noscan", !rows.some(function (r) { return !!scanRowOf(r.id); }));   // no player scan yet: its columns hidden
   $("players").innerHTML = playerTable(sortList(list), true, fs);
   renderTeamPanel();
 }
 function sortList(list) {
   var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
-              avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; },
+              avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; }, mpg: function (r) { return r.min_avg != null ? r.min_avg : -1; },
               own: own, pos: function (r) { return r.position || ""; }, team: function (r) { return r.team || ""; }, opp: function (r) { return r.opp || ""; },
               scan: function (r) { var x = scanRowOf(r.id); return x ? x.g_t1 : -Infinity; },
               sroi: function (r) { var x = scanRowOf(r.id); return x && x.g_roi != null ? x.g_roi : -Infinity; },
@@ -835,6 +853,14 @@ var scanMap = {}, scanMapOf = null, bankShareMemo = null;
 // Lean reads (2026-11-20) like their strong versions: lean leverage below 1.5 f (f >= 2%), lean core below 0.75 f.
 // A skip (weak, field light; 2026-11-20) is over-banked at 2 f or more AND 8%+ of the bank.
 var BANK_GAP = { leverage: 1.5, core: 0.75, "lean leverage": 1.5, "lean core": 0.75, even: 0.5, levFloor: 0.02, fadeMin: 0.10, skipX: 2, skipMin: 0.08 };
+function readTip(r, sc, bshare) {     // Read's hover: the scan's numbers and the bank against the field
+  var t = ["Player scan: top-1% gain " + sgn(sc.g_t1, 2) + " (noise \u00b1" + (100 * sc.noise).toFixed(2) + ")", "ROI gain " + (sc.g_roi != null ? sgn(sc.g_roi, 0) : "–"), "Cash gain " + sgn(sc.g_cash, 1)];
+  if (BANK && BANK.lineups && BANK.lineups.length) {
+    var bs = (bshare || bankShare())[r.id] || 0, g = bankGap(sc.read, bs, own(r) / 100);
+    t.push("Bank " + Math.round(100 * bs) + "% vs field " + Math.round(own(r)) + "%" + (g ? " · " + g.tip : ""));
+  }
+  return t.join("\n");
+}
 function readCls(read) { return "read-" + String(read).replace(/ /g, "-"); }
 function bankGap(read, bs, f) {
   var pc = function (x) { return Math.round(100 * x) + "%"; }, k = BANK_GAP[read];
@@ -860,8 +886,7 @@ function bankShare() {
 function playerTable(list, sortable, fs) {
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"],
-     ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"], ["scan", "Top 1%", "r col-scan"], ["sroi", "ROI", "r col-scan"], ["scash", "Cash", "r col-scan"], ["read", "Read", "col-scan"],
-     ["bank", "Bank", "r col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
+     ["min", "Min", "r col-min"], ["mpg", "MPG", "r col-mpg"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan"], ["read", "Read", "col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
     '<span class="col-scan" title="Bank this: a rule, at least 1 of him, for your next draw"></span>' +
@@ -870,23 +895,28 @@ function playerTable(list, sortable, fs) {
   var bshare = bankShare();
   var body = list.map(function (r) {
     var nw = newsOf(r.id);
-    var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
-      (isDoubtful(r) ? '<span class="tag d" title="Doubtful: out by default">D</span>' : "") +
-      (fragileMap()[r.id] ? '<span class="tag frag" title="' + esc("Fragile: " + fragileMap()[r.id].join("; ")) + '">fragile</span>' : "") +
+    // the tags (2026-11-20 layout): Q / D / OUT / new kept beside the name; the rest may truncate, each still in the hover
+    var keep = (isDoubtful(r) ? '<span class="tag d" title="Doubtful: out by default">D</span>' : "") +
       (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
-        ' title="Projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : "") + '>Q</span>' : "") +
-      (isDoubtful(r) ? '<button type="button" class="qout" title="' + (state.ins[r.id] ? "Back to out (Doubtful)" : "Play him: back as Questionable, his teammates refit to 200") +
-        '">' + (state.ins[r.id] ? "Undo" : "Play him") + "</button>" :
-      r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout" title="' +
-        (state.outs[r.id] ? "Put him back as Questionable" : "Rule him out: his teammates share his minutes (200 for the team)") + '">' +
-        (state.outs[r.id] ? "Undo out" : "Mark out") + "</button>" : "") +
-      (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005 ? '<span class="tag" title="A teammate you ruled out: his minutes ' + (r.min || 0).toFixed(1) +
-        " -> " + ((r.min || 0) * minScale[r.id]).toFixed(1) + '">' + (minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min</span>" : "") + statusConflict(r) +
-      (deepIds()[r.id] || r.punt ? '<button type="button" class="deepin" data-id="' + esc(r.id) + '" title="' + (r.punt ?
-        (r.deepOut ? "Projected under " + PUNT_MIN + " minutes with no news raising them: out of the pool by default. Use him" : "Brought back: leave him out again") :
-        (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" : "Deep bench, brought back: leave him out again")) + '">' +
-        (r.punt ? (r.deepOut ? "<" + PUNT_MIN + " min: use" : "<" + PUNT_MIN + " min: drop") : (r.deepOut ? "deep: use" : "deep: drop")) + "</button>" : "") +
+        ' title="Questionable: projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : ' title="Questionable"') + '>Q</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
+    var moreTxt = [], more = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
+      (fragileMap()[r.id] ? '<span class="tag frag" title="' + esc("Fragile: " + fragileMap()[r.id].join("; ")) + '">fragile</span>' : "") +
+      (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005 ? '<span class="tag" title="A teammate you ruled out: his minutes ' + (r.min || 0).toFixed(1) +
+        " -> " + ((r.min || 0) * minScale[r.id]).toFixed(1) + '">' + (minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min</span>" : "") + statusConflict(r);
+    if (nw) moreTxt.push((nw.late ? "late " : "") + "news: " + nw.kind + " (@" + nw.author + ": " + nw.text + ")");
+    if (fragileMap()[r.id]) moreTxt.push("Fragile: " + fragileMap()[r.id].join("; "));
+    if (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005) moreTxt.push((minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min from a teammate you ruled out");
+    var tags = (keep ? '<span class="tkeep">' + keep + "</span>" : "") + (more ? '<span class="tmore" title="' + esc(moreTxt.join("\n") || "") + '">' + more + "</span>" : "");
+    // the actions (Mark out / Play him, use / drop the deep bench or a punt) in the fixed L / X group, never clipped
+    var act = isDoubtful(r) ? '<button type="button" class="qout act" title="' + (state.ins[r.id] ? "Back to out (Doubtful)" : "Play him: back as Questionable, his teammates refit to 200") +
+        '">' + (state.ins[r.id] ? "undo" : "play") + "</button>" :
+      r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout act" title="' +
+        (state.outs[r.id] ? "Undo out: put him back as Questionable" : "Mark out: rule him out, his teammates share his minutes (200 for the team)") + '">' +
+        (state.outs[r.id] ? "undo" : "out") + "</button>" :
+      deepIds()[r.id] || r.punt ? '<button type="button" class="deepin act" data-id="' + esc(r.id) + '" title="' + (r.punt ?
+        (r.deepOut ? "Projected under " + PUNT_MIN + " minutes with no news raising them: out of the pool by default. Use him" : "Brought back (under " + PUNT_MIN + " minutes): leave him out again") :
+        (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" : "Deep bench, brought back: leave him out again")) + '">' + (r.deepOut ? "use" : "drop") + "</button>" : "";
     var edited = state.proj[r.id] != null, sc = scanRowOf(r.id);
     var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] || r.deepOut ? " excluded" : "") + (r.status === "Out" ? " out" : "");
     // C1: the bank against the scan's read and his field ownership (bankGap)
@@ -898,7 +928,7 @@ function playerTable(list, sortable, fs) {
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '"' + (gapTip ? ' title="' + esc(gapTip) + '"' : "") + ">" +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
       '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button>' +
-      (r.status !== "Out" ? '<button type="button" class="setadd" title="Add him to the rule editor\'s players (template 5: at least N from these players)">+set</button>' : "") + "</span>" +
+      (r.status !== "Out" ? '<button type="button" class="setadd" title="Add him to the rule editor\'s players (template 5: at least N from these players)">+set</button>' : "") + act + "</span>" +
       '<span class="who"><div class="name"><span class="nm' + (fs && bpFilt.p[r.id] ? (bpFilt.p[r.id] === "with" ? " w" : " wo") : "") + '" title="' + esc(whoTip(r)) + (fs ? "\nTap: with, again without, again off (filters the lineups)" : "") + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
       '<span class="m mut col-pos">' + esc(r.position || "") + "</span>" +
       '<span class="m col-team">' + esc(r.team || "") + "</span>" +
@@ -908,13 +938,13 @@ function playerTable(list, sortable, fs) {
       '<span class="m r val"' + greenBg(value(r), 2, 4.5) + ">" + value(r).toFixed(2) + "</span>" +
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
+      // MPG (2026-11-20): his season minutes a game played, beside our minutes projection; the hover his last 5 and their spread
+      '<span class="m r mut col-mpg"' + (r.min_avg != null ? ' title="' + esc("Season " + r.min_avg.toFixed(1) + " min a game played" + (r.min_last5 && r.min_last5.length ? "; last " + r.min_last5.length + ": " +
+        r.min_last5.map(function (m) { return Math.round(m); }).join(", ") : "") + (r.min_cv != null ? "; minutes CV " + r.min_cv.toFixed(2) : "")) + '"' : "") + ">" + (r.min_avg != null ? r.min_avg.toFixed(0) : "–") + "</span>" +
       '<span class="m r mut col-avg' + (r.last5 && r.last5.length ? ' has5" title="' + esc(last5Text(r)) + '"' : '"') + ">" + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
-      '<span class="m r col-scan"' + (sc ? ' title="Player scan: top-1% gain over the plain batch, in points; the noise bar under it"' : "") + ">" +
-        (sc ? '<span class="sg">' + sgn(sc.g_t1, 2) + '</span><span class="nb2 mut">\u00b1' + (100 * sc.noise).toFixed(2) + "</span>" : "–") + "</span>" +
-      '<span class="m r col-scan">' + (sc && sc.g_roi != null ? sgn(sc.g_roi, 0) : "–") + "</span>" +
       '<span class="m r col-scan">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
-      '<span class="col-scan rdc">' + (sc ? '<span class="' + readCls(sc.read) + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
-      '<span class="m r col-scan">' + (BANK && BANK.lineups && BANK.lineups.length ? Math.round(100 * (bshare[r.id] || 0)) + "%" : "–") + "</span>" +
+      // Read (2026-11-20: Top 1%, ROI and Bank folded into its hover; the bank-gap stripe stays on the row)
+      '<span class="col-scan rdc"' + (sc ? ' title="' + esc(readTip(r, sc, bshare)) + '"' : "") + ">" + (sc ? '<span class="' + readCls(sc.read) + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
       (fs ? (function (x) { x = x || {}; return '<span class="m r">' + Math.round(100 * (x.here || 0)) + '%</span><span class="m r">' + Math.round(100 * (x.tonight || 0)) + '%</span><span class="m r"' +
         (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</span>"; })(fs[r.id]) : "") +
       '<span class="col-scan"><button type="button" class="pbank" title="Bank this: at least 1 of ' + esc(r.name) + ' in your next draw"' + (r.status === "Out" ? " disabled" : "") + ">+</button></span>" +
@@ -1414,7 +1444,7 @@ function bankLoadState() {
 function cutKey() { return "dkcbb-cut:" + slate.draft_group_id; }
 function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else localStorage.removeItem(cutKey()); } catch (e) {} }
 function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) === null; }
-function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); renderSteps(); renderUnder(); }   // the Live page reads it for your exposures
+function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); renderSteps(); renderUnder(); renderStrand(); }   // the Live page reads it for your exposures
 function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
   var o = drawRules(), t = [], name = function (id) { return shortName((byId(id) || {}).name || id); };
   if (o.stackN) t.push(o.stackN + "-stack" + (o.stackBoth ? " + bring-back" : ""));
@@ -1764,7 +1794,7 @@ async function runCut() {
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
   var keep = +$("cutKeep").value || 500, pct = (+$("cutPct").value || 10) / 100, S = +$("cutNights").value || 2000, mode = $("cutMode").value === "equal" ? "equal" : "merit";
   var cx = ctx(), live = [];
-  CUT = { keep: null, rounds: live }; PF = {}; pfSave(); renderEntries(); $("pfExport").disabled = true;
+  CUT = { keep: null, rounds: live }; PF = {}; strandOn = false; pfSave(); renderEntries(); $("pfExport").disabled = true;
   var res = await DKSim.cutPool(cx, BANK.lineups, cs.map(function (c) { return { contest: c, n: ns[String(c.id)] }; }), F.field, fieldDoc.z, keep, pct, S,
     function (r) {
       live.push(r); renderBank();
@@ -2150,6 +2180,7 @@ function bpCommit() {
 }
 
 async function bpAuto() {
+  strandOn = true;
   var o = BP.o, b = BP.b, count = {}, limit = {}, coreOf = o.maxCore ? DKSim.cores(ctx(), BP.pool) : null, coreLim = DKSim.coreLimit(o, o.n), coreN = {};
   if (coreOf) b.picked.forEach(function (k) { coreN[coreOf[k]] = (coreN[coreOf[k]] || 0) + 1; });
   var mp = +$("maxPair").value || 0, pairN = {}, pairLim = 0;
@@ -2850,6 +2881,30 @@ $("bankClear").addEventListener("click", function () {
   if (!confirm("Clear the bank (" + BANK.lineups.length + " lineups)?")) return;
   BANK = { lineups: [], tags: [], tagRules: {}, groups: {} }; CUT = null; cutSave(); PF = {}; pfSave(); bankSaveState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
 });
+/* Clear old slates (2026-11-20, the operator): the browser keeps each slate's bank, cut, portfolios (and the one before
+   the last fill), entries file and scan by draft group. This removes those of every slate except today's (Pacific),
+   any not yet locked and the one open, after asking with the count and the space it frees. Settings (dkcbb:<group>),
+   dkcbb:nb and dkcbb:slatePick stay. Today's portfolios must survive the games: the Live page reads dkcbb-pf: for exposures. */
+var OLD_KEYS = ["dkcbb-bank:", "dkcbb-cut:", "dkcbb-pf:", "dkcbb-pf-prev:", "dkcbb-entries:", "dkcbb-scan:"];
+function oldSlateKeys(now) {
+  var pday = function (t) { return new Date(t).toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }); }, today = pday(now || Date.now()), keep = {};
+  ((doc && doc.slates) || []).forEach(function (s) { if (pday(s.start) === today || !s.locked || new Date(s.start).getTime() > (now || Date.now())) keep[String(s.draft_group_id)] = 1; });
+  if (slate) keep[String(slate.draft_group_id)] = 1;
+  var out = [], bytes = 0, groups = {};
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i), pre = OLD_KEYS.find(function (p) { return k.indexOf(p) === 0; });
+    if (!pre || keep[k.slice(pre.length)]) continue;
+    out.push(k); groups[k.slice(pre.length)] = 1; bytes += 2 * (k.length + (localStorage.getItem(k) || "").length);
+  }
+  return { keys: out, slates: Object.keys(groups).length, bytes: bytes };
+}
+$("clearOld").addEventListener("click", function () {
+  var o; try { o = oldSlateKeys(); } catch (e) { $("buildStatus").textContent = "This browser's storage isn't readable here."; return; }
+  if (!o.keys.length) { $("buildStatus").textContent = "No old slates saved in this browser."; return; }
+  if (!confirm("Remove " + o.slates + " old slate" + (o.slates === 1 ? "" : "s") + "' saved banks, cuts, portfolios, entries and scans (about " + (o.bytes / 1048576).toFixed(1) + " MB)? Today's slates, unlocked ones and this one stay.")) return;
+  o.keys.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+  $("buildStatus").textContent = "Cleared " + o.slates + " old slate" + (o.slates === 1 ? "" : "s") + " (about " + (o.bytes / 1048576).toFixed(1) + " MB freed).";
+});
 $("cutUnlisted").addEventListener("click", function (e) { if (e.target.id === "contestCheck") refreshContests(); });
 $("entriesFile").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
@@ -2949,8 +3004,8 @@ $("pfRun").addEventListener("click", function () {
   var started = Object.keys(PF).filter(function (k) { return (PF[k] || []).length; }).length, obj = $("pfObj").value;
   if (started && !confirm("Replace your portfolios in " + started + " contest" + (started === 1 ? "" : "s") + " with the " + $("pfObj").selectedOptions[0].textContent + " start? (Undo fill puts them back.)")) return;
   if (started) { store(undoKey(), PF); $("pfUndo").disabled = false; }   // the replaced set, for Undo fill
-  PF = {};
-  pickPortfolios(null, obj).then(function (m) { fillMsg(m); if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
+  PF = {}; strandOn = true;
+  pickPortfolios(null, obj).then(function (m) { fillMsg(m); renderStrand(); if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
 });
 /* Under-exposed (2026-11-20, C4c): the players, team stacks (3+ from a team) and pairs tonight's entries hold well
    below the sim's preference, read as their share of tier A (the kept lineups within the sim's noise of the best, at
@@ -2996,6 +3051,61 @@ function fillMsg(m) {            // after Fill all contests: one line (filled of
     (rx.length ? " " + rx.join("; ") + "." : "") + lockNote()) +
     ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">details</summary> ' + esc(m) + "</details>";
 }
+/* Stranded seats (2026-11-20, the operator): after Fill all contests or Auto-fill the rest leaves seats open, each short
+   contest says which cap blocked it and names the players at it, and offers the kept lineup that breaks the caps least
+   (fewest players over, then the fewest entries over, then the best sim value) as a one-tap add for one open seat. Nothing
+   is added by itself; the fill's completer still never relaxes the night cap. Caps checked: the night cap, the contest's
+   Max exposure (and a player's Max%), Min unique within the contest, Max contests per lineup (as a filter). */
+var strandOn = false;
+function strandFor(cid, n) {
+  var have = PF[cid] || [], mu = maxUses(), uses = {}, nl = nightLimit(), night = nightUsed(null), cnt = {}, mx = (+$("maxExpo").value || 100) / 100;
+  var minU = Math.max(1, +$("minUnique").value || 1);
+  Object.keys(PF).forEach(function (k) { PF[k].forEach(function (bi) { uses[bi] = (uses[bi] || 0) + 1; }); });
+  have.forEach(function (bi) { BANK.lineups[bi].ids.forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; }); });
+  var lim = function (id) { var cp = state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1; return state.lock[id] ? n : DKSim.expoLimit(Math.min(mx, cp), n); };
+  var val = {}; if (CUT && CUT.keep && CUT.board && CUT.board.values) CUT.keep.forEach(function (bi, k) { val[bi] = CUT.board.values[k] || 0; });
+  var blk = { night: {}, contest: {}, unique: 0 }, best = null;
+  finalIdx().forEach(function (bi) {
+    if (have.indexOf(bi) >= 0 || (uses[bi] || 0) >= mu) return;
+    var ids = BANK.lineups[bi].ids, over = [], ex = 0;
+    ids.forEach(function (id) {
+      if (!state.lock[id] && (night[id] || 0) + 1 > nl) { over.push([id, "night"]); ex += (night[id] || 0) + 1 - nl; blk.night[id] = (blk.night[id] || 0) + 1; }
+      if ((cnt[id] || 0) + 1 > lim(id)) { over.push([id, "contest"]); ex += (cnt[id] || 0) + 1 - lim(id); blk.contest[id] = (blk.contest[id] || 0) + 1; }
+    });
+    var close = have.filter(function (bj) { return BANK.lineups[bj].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length > 8 - minU; }).length;
+    if (close) { blk.unique++; over.push([null, "unique"]); ex += close; }
+    var k = [over.length, ex, -(val[bi] || 0)];
+    if (!best || k[0] < best.k[0] || (k[0] === best.k[0] && (k[1] < best.k[1] || (k[1] === best.k[1] && k[2] < best.k[2])))) best = { bi: bi, k: k, over: over };
+  });
+  var top = function (o) { return Object.keys(o).sort(function (a, b) { return o[b] - o[a]; }).slice(0, 5).map(function (id) { return shortName((byId(id) || {}).name || id); }); };
+  var why = [];
+  if (Object.keys(blk.night).length) why.push("Night cap blocked: " + top(blk.night).join(", ") + " at " + $("maxNight").value + "%");
+  if (Object.keys(blk.contest).length) why.push("Max exposure blocked: " + top(blk.contest).join(", ") + " at " + Math.round(100 * mx) + "% of " + n);
+  if (blk.unique) why.push("Min unique " + minU + " blocked " + blk.unique + " lineup" + (blk.unique === 1 ? "" : "s"));
+  return { why: why, best: best };
+}
+function renderStrand() {
+  var el = $("strandBox"); if (!el) return;
+  if (!strandOn || !BANK || !slate) { el.hidden = true; el.innerHTML = ""; return; }
+  var lines = [];
+  nbContests().forEach(function (x) {
+    var cid = String(x.c.id), open = x.n - (PF[cid] || []).length;
+    if (open <= 0) return;
+    var r = strandFor(cid, x.n), b = r.best;
+    var breaks = b ? b.over.map(function (o) { return o[1] === "unique" ? "Min unique" : shortName((byId(o[0]) || {}).name || o[0]) + " +1 " + (o[1] === "night" ? "night" : "contest"); }) : [];
+    lines.push("<b>" + esc(nbShort(x.c.name)) + "</b>: " + open + " open. " + esc(r.why.join("; ") || "No lineup left in the final pool under Max contests per lineup") + "." +
+      (b ? ' <button type="button" class="strandAdd" data-cid="' + esc(cid) + '" data-bi="' + b.bi + '" title="Adds this one lineup to this contest; breaks: ' + esc(breaks.join(", ") || "nothing") + '">Add best' +
+        (breaks.length ? " (breaks " + esc(breaks.join(", ")) + ")" : "") + "</button>" : ""));
+  });
+  el.hidden = !lines.length;
+  el.innerHTML = lines.length ? "Open seats: " + lines.join(" · ") : "";
+}
+$("strandBox").addEventListener("click", function (e) {
+  var b = e.target.closest(".strandAdd"); if (!b) return;
+  var cid = b.dataset.cid; PF[cid] = (PF[cid] || []).concat([+b.dataset.bi]);
+  pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
+  if (typeof NB !== "undefined" && NB.on && BP && BP.review === cid) review(cid);
+});
 function undoKey() { return "dkcbb-pf-prev:" + slate.draft_group_id; }
 $("pfUndo").addEventListener("click", function () {
   var prev = store(undoKey());
@@ -3134,6 +3244,7 @@ $("bpTable").addEventListener("click", function (e) {
 $("news").addEventListener("click", function (e) { var t = e.target.closest(".tx"); if (t) t.parentNode.classList.toggle("open"); });
 $("search").addEventListener("input", function (e) { view.q = e.target.value.trim().toLowerCase(); renderPlayers(); });
 $("team").addEventListener("change", function (e) { view.team = e.target.value; renderPlayers(); });
+$("poolShow").addEventListener("change", function () { view.pool = this.value; renderPlayers(); });
 $("qOnly").addEventListener("click", function () { view.qOnly = !view.qOnly; this.setAttribute("aria-pressed", String(view.qOnly)); renderPlayers(); });
 document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
   b.addEventListener("click", function () {

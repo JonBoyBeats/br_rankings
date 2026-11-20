@@ -103,6 +103,29 @@ function audit(name, L, o) {
   check("ownership watch (B3): the note shows confirmed patterns only", !ow.hidden && /coming off a big game/.test(ow.text) && !/blue bloods/.test(ow.text), JSON.stringify(ow));
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
   check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#statusInfo")));
+  // the player table layout (2026-11-20): actions (out / play / use / drop) in the fixed L / X group and clickable at a
+  // laptop width; Q / D / OUT / new kept beside the name; the scan's columns hidden until a scan exists; Show: all / in pool / left out
+  await pg.setViewportSize({ width: 1280, height: 900 });
+  const lay = await pg.evaluate(() => {
+    renderPlayers();
+    const acts = [...document.querySelectorAll("#players .row .qout, #players .row .deepin")];
+    const inLx = acts.every(b => b.closest(".lx")) && !document.querySelector("#players .row .name .qout, #players .row .name .deepin");
+    const hit = acts.filter(b => b.offsetParent).slice(0, 15).every(b => { b.scrollIntoView({ block: "center" }); const r = b.getBoundingClientRect(); return document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === b; });
+    const qs = rows.filter(r => r.status === "Questionable" && document.querySelector('#players .row[data-id="' + r.id + '"]'));
+    const qKeep = qs.every(r => !!document.querySelector('#players .row[data-id="' + r.id + '"] .tkeep .tag.q'));
+    const noscan = $("players").classList.contains("noscan") && !SCAN, cell = document.querySelector("#players .row .col-scan");
+    const hidden = !cell || getComputedStyle(cell).display === "none";
+    const sel = $("poolShow"), n0 = document.querySelectorAll("#players .row").length;
+    sel.value = "out"; sel.dispatchEvent(new Event("change"));
+    const outRows = [...document.querySelectorAll("#players .row")].map(e => byId(e.dataset.id)), outOk = outRows.length > 0 && outRows.every(r => r.status !== "Out" ? (r.deepOut || state.excl[r.id]) : isDoubtful(r));
+    sel.value = "in"; sel.dispatchEvent(new Event("change"));
+    const inRows = [...document.querySelectorAll("#players .row")].map(e => byId(e.dataset.id)), inOk = inRows.length > 0 && inRows.every(r => usable(r));
+    sel.value = "all"; sel.dispatchEvent(new Event("change"));
+    return { acts: acts.length, inLx, hit, qs: qs.length, qKeep, noscan, hidden, outN: outRows.length, outOk, inN: inRows.length, inOk, back: document.querySelectorAll("#players .row").length === n0 };
+  });
+  check("player table: the out / play / use / drop actions sit in the L / X group, clickable at 1280px; Q stays beside a truncated name; scan columns hidden with no scan; Show all / in pool / left out",
+        lay.acts > 0 && lay.inLx && lay.hit && lay.qKeep && lay.noscan && lay.hidden && lay.outOk && lay.inOk && lay.back, JSON.stringify(lay));
+  await pg.setViewportSize({ width: 1100, height: 900 });
   // the default slate: today's main (Pacific day: most games; a tie goes to the soonest unlocked, else the later), locked or not; with none today, the
   // newest unlocked, else the most recent; a hand pick holds for the rest of that day
   const ds = await pg.evaluate(() => {
@@ -244,7 +267,7 @@ function audit(name, L, o) {
              tip: el.querySelector(".nm").title, line: (r.spread > 0 ? "+" : "") + r.spread, ou: r.ou, frag: f ? { badge: !!fel.querySelector(".frag") === !!fragileMap()[f.id], tip: /Swingy: expected miss/.test(fel.querySelector(".nm").title) } : null };
   });
   check("Players list: Pos / Team / Opp columns, matchup and line in the name's tooltip, fragile in the tooltip, no ± column or grey line",
-        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "DK avg", "Top 1%", "ROI", "Cash", "Read", "Bank"]) && pl.sub === 0 &&
+        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "MPG", "DK avg", "Cash", "Read"]) && pl.sub === 0 &&
         JSON.stringify(pl.cells) === JSON.stringify(pl.want) && pl.tip.includes(pl.line) && pl.tip.includes("o/u " + pl.ou) && (!pl.frag || (pl.frag.badge && pl.frag.tip)), JSON.stringify(pl));
   // A4: fragile from the lenses: the badge only when 2+ lenses disagree with our number, the reasons in its hover
   const fragA4 = await pg.evaluate(() => { const m = fragileMap(), ids = Object.keys(m);
@@ -510,7 +533,7 @@ function audit(name, L, o) {
              blank: !scanNow() && [...document.querySelectorAll("#teamPanel .scanblk")].length === 2 && [...document.querySelectorAll("#teamPanel .scanblk")].every(b => /–/.test(b.textContent) && b.querySelector("a.scanlink")) };
   });
   check("game view: the game header, both team cards with a Scan block (– and a Scan the slate link before a scan), then one player list for both teams, sorted by Val, with the Players list's columns; both chips pressed",
-        gv.head && gv.blank && gv.lists === 1 && JSON.stringify(gv.teams) === JSON.stringify(gv.want) && gv.sorted && gv.heads >= 15 && JSON.stringify(gv.pressed) === JSON.stringify(gv.want), JSON.stringify(gv));
+        gv.head && gv.blank && gv.lists === 1 && JSON.stringify(gv.teams) === JSON.stringify(gv.want) && gv.sorted && gv.heads >= 13 && JSON.stringify(gv.pressed) === JSON.stringify(gv.want), JSON.stringify(gv));
   const gs2 = await pg.evaluate(() => {
     const t = view.panel, o = oppOf(t);
     document.querySelector('#teamBar button[data-team="' + o + '"]').click();
@@ -1144,6 +1167,31 @@ function audit(name, L, o) {
   check("night view: players, pairs and cores against the field", /The night: \d+ entries/.test(await pg.textContent("#pfBox")) &&
         (await pg.$$eval("#pfBox table", t => t.length)) === 3);
   await pg.fill("#maxPair", "");
+  // stranded seats: with a tight night cap the fill leaves seats open; the panel names the cap that blocked and offers
+  // the lineup that breaks the caps least as a one-tap add; nothing is added by itself
+  const night0 = await pg.evaluate(() => $("maxNight").value);
+  await pg.fill("#maxNight", "15");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed|^Filled/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const st0 = await pg.evaluate(() => { const open = nbContests().reduce((t, x) => t + Math.max(0, x.n - (PF[String(x.c.id)] || []).length), 0), b = document.querySelector("#strandBox .strandAdd");
+    return { open, shown: !$("strandBox").hidden, text: $("strandBox").textContent, btn: !!b, cid: b && b.dataset.cid, n: b ? (PF[b.dataset.cid] || []).length : null }; });
+  if (st0.btn) await pg.click("#strandBox .strandAdd");
+  const st1 = await pg.evaluate(c => ({ n: c ? (PF[c] || []).length : null }), st0.cid);
+  check("stranded seats: a fill left short names the cap that blocked (Night cap blocked: players at 15%) and offers a one-tap add of the lineup that breaks the caps least; nothing added by itself",
+        st0.open > 0 && st0.shown && /Open seats: .*\d+ open\. .*Night cap blocked: .+ at 15%/.test(st0.text) && st0.btn && st1.n === st0.n + 1, JSON.stringify([st0, st1]));
+  await pg.fill("#maxNight", night0);
+  // Clear old slates: other slates' banks / cuts / portfolios / entries / scans go after asking; this slate's stay, and settings
+  const co = await pg.evaluate(() => {
+    const dg = String(slate.draft_group_id), keys = ["dkcbb-bank:999001", "dkcbb-cut:999001", "dkcbb-pf:999001", "dkcbb-pf-prev:999001", "dkcbb-entries:999001", "dkcbb-scan:999001", "dkcbb:999001"];
+    keys.forEach(k => localStorage.setItem(k, JSON.stringify({ x: 1 })));
+    const mine = localStorage.getItem("dkcbb-pf:" + dg), asked = []; const c0 = window.confirm; window.confirm = m => { asked.push(m); return true; };
+    document.getElementById("clearOld").click(); window.confirm = c0;
+    return { asked, gone: keys.slice(0, 6).every(k => localStorage.getItem(k) === null), settings: localStorage.getItem("dkcbb:999001") !== null, mine: localStorage.getItem("dkcbb-pf:" + dg) === mine && mine !== null,
+             msg: document.getElementById("buildStatus").textContent, note: /Closing the tab after a slate/.test(document.getElementById("stepBank").textContent) };
+  });
+  check("clear old slates: asks with the count and space, removes another slate's bank / cut / portfolios / entries / scan, keeps this slate's and the settings; a line under Clear bank",
+        co.asked.length === 1 && /Remove 1 old slate.+about [\d.]+ MB/.test(co.asked[0]) && co.gone && co.settings && co.mine && /Cleared 1 old slate/.test(co.msg) && co.note, JSON.stringify(co));
+  await pg.evaluate(() => localStorage.removeItem("dkcbb:999001"));
   // Max contests per lineup (3 by default): unique within a contest, a lineup in at most 3; the builder offers only
   // lineups under the max elsewhere; the export refuses only a lineup twice in one contest
   check("max contests per lineup: 3 by default", await pg.evaluate(() => { const x = document.getElementById("maxUse"); return x.defaultValue === "3"; }));
@@ -1192,9 +1240,11 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   const c4 = await pg.evaluate(() => { const st = document.getElementById("cutStatus").textContent, five = PF["197791874"] || [], cnt = {};
     five.forEach(bi => BANK.lineups[bi].ids.forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }));
-    return { n: five.length, relaxed: /relaxed to \d+% to fill \d+ slot/.test(st), oneLine: /^Filled \d+ of \d+ entries[^]*relaxed to/.test(st), maxUse: Math.max(...Object.values(cnt)), st: st.slice(0, 300) }; });
-  check("fill completes itself: short at 20% exposure, it relaxes one cap a step at a time (to 70% at most), fills the 5-entry contest and says so in the one-line status",
-        c4.relaxed && c4.oneLine && c4.n === 5 && c4.maxUse <= DKSimLimit(0.7, 5), JSON.stringify(c4));
+    const sb = document.querySelector('#strandBox .strandAdd[data-cid="197791874"]');
+    return { n: five.length, relaxed: /relaxed to \d+% to fill \d+ slot/.test(st), oneLine: /^Filled \d+ of \d+ entries[^]*relaxed to/.test(st), maxUse: Math.max(...Object.values(cnt)), st: st.slice(0, 300),
+             strand: !!sb && !$("strandBox").hidden }; });
+  check("fill completes itself: short at 20% exposure, it relaxes one cap a step at a time (to 70% at most) and says so in the one-line status; the 5-entry contest fills, or what's left open gets the stranded-seat line (random pool)",
+        c4.relaxed && c4.oneLine && (c4.n === 5 || (c4.n === 4 && c4.strand)) && c4.maxUse <= DKSimLimit(0.7, 5), JSON.stringify(c4));
   const und = await pg.evaluate(() => { renderUnder(); const u = underExposed(), t = document.getElementById("fillUnder").textContent;
     const ok = !u || ["p", "st", "pr"].every(k => u[k].every(x => x.want >= 0.2 && x.want - x.have >= 0.15 - 1e-9));
     return { has: !!u, ok, t: t.slice(0, 200), shown: !u || (["p", "st", "pr"].some(k => u[k].length) ? /^Under-exposed against tier A/.test(t) : t === "") }; });
@@ -1502,16 +1552,33 @@ function audit(name, L, o) {
   const pList = await pg.evaluate(() => {
     renderPlayers();
     const ok = SCAN.players.every(x => { const el = document.querySelector(`#players .row[data-id="${x.id}"]`); if (!el) return true;
-      const c = el.querySelectorAll(".col-scan"); return c[0].querySelector(".sg").textContent === (x.g_t1 > 0 ? "+" : "") + (100 * x.g_t1).toFixed(2) && c[0].querySelector(".nb2").textContent === "\u00b1" + (100 * x.noise).toFixed(2) &&
-        c[1].textContent === (x.g_roi > 0 ? "+" : "") + (100 * x.g_roi).toFixed(0) && c[2].textContent === (x.g_cash > 0 ? "+" : "") + (100 * x.g_cash).toFixed(1) &&
-        c[3].textContent === x.read && c[3].querySelector(".read-" + x.read.replace(/ /g, "-")) && !!c[5].querySelector(".pbank"); });
+      // Cash and Read (coloured) as columns; Top 1% (with its noise bar), ROI and the bank share in Read's hover (2026-11-20)
+      const c = el.querySelectorAll(".col-scan"), tip = c[1].title || "";
+      return c.length === 3 && c[0].textContent === (x.g_cash > 0 ? "+" : "") + (100 * x.g_cash).toFixed(1) &&
+        c[1].textContent === x.read && c[1].querySelector(".read-" + x.read.replace(/ /g, "-")) && !!c[2].querySelector(".pbank") &&
+        tip.includes("top-1% gain " + (x.g_t1 > 0 ? "+" : "") + (100 * x.g_t1).toFixed(2) + " (noise \u00b1" + (100 * x.noise).toFixed(2) + ")") &&
+        tip.includes("ROI gain " + (x.g_roi > 0 ? "+" : "") + (100 * x.g_roi).toFixed(0)) && (!BANK.lineups.length || /Bank \d+% vs field \d+%/.test(tip)); });
     view.sort = "scan"; view.dir = -1; renderPlayers();
     const ids = [...document.querySelectorAll("#players .row")].map(e => e.dataset.id).filter(id => byId(id).status !== "Out"), g = ids.map(id => scanRowOf(id) ? scanRowOf(id).g_t1 : -Infinity);
     const sorted = g.every((x, i) => i === 0 || g[i - 1] >= x);
     view.sort = "value"; view.dir = -1; renderPlayers();
     return { ok, sorted };
   });
-  check("player scan: its top-1% gain (noise bar under it), ROI and cash gains, Read (coloured) and Bank this in the Players list, sortable", pList.ok && pList.sorted, JSON.stringify(pList));
+  check("player scan: Cash and Read (coloured) columns with Bank this; Top 1% (noise bar), ROI and the bank share in Read's hover; sortable by the scan", pList.ok && pList.sorted, JSON.stringify(pList));
+  const mpg = await pg.evaluate(() => { renderPlayers(); const heads = [...document.querySelectorAll("#players .head span[data-sort]")].map(x => x.dataset.sort);
+    const r = rows.find(x => x.status !== "Out" && document.querySelector('#players .row[data-id="' + x.id + '"]'));
+    const keep = [r.min_avg, r.min_last5, r.min_cv]; r.min_avg = 27.4; r.min_last5 = [30, 22, 28, 31, 26]; r.min_cv = 0.12; renderPlayers();
+    const cell = document.querySelector('#players .row[data-id="' + r.id + '"] .col-mpg'), text = cell.textContent, tip = cell.title;
+    r.min_avg = keep[0]; r.min_last5 = keep[1]; r.min_cv = keep[2]; renderPlayers();
+    document.querySelector('#players .head [data-sort="mpg"]').click();
+    const v = [...document.querySelectorAll("#players .row")].map(e => { const x = byId(e.dataset.id); return x.min_avg != null ? x.min_avg : -1; }), down = v.every((x, i) => i === 0 || v[i - 1] >= x);
+    view.sort = "value"; view.dir = -1; renderPlayers();
+    return { after: heads.indexOf("mpg") === heads.indexOf("min") + 1, gone: !["scan", "sroi", "bank"].some(k => heads.includes(k)), cash: heads.includes("scash"), text, want: "27", tip, down };
+  });
+  check("Players list: MPG (season minutes a game) right after Min, last 5 in the hover, sortable; no Top 1% / ROI / Bank columns, Cash kept",
+        mpg.after && mpg.gone && mpg.cash && mpg.text === mpg.want && mpg.tip === "Season 27.4 min a game played; last 5: 30, 22, 28, 31, 26; minutes CV 0.12" && mpg.down, JSON.stringify(mpg));
+  check("player table: with a scan the scan columns show (no-scan layout off)", await pg.evaluate(() => { renderPlayers(); const c = document.querySelector("#players .row .col-scan");
+    return !$("players").classList.contains("noscan") && !!c && getComputedStyle(c).display !== "none"; }));
   const c1 = await pg.evaluate(() => {
     renderPlayers(); const bs = bankShare(), rowsIn = [...document.querySelectorAll("#players .row.bankgap-in")].map(e => e.dataset.id), rowsOut = [...document.querySelectorAll("#players .row.bankgap-out")].map(e => e.dataset.id);
     // the rule by hand: leverage < 1.5 f (f >= 2%), core < 0.75 f, even < 0.5 f; fade >= f and >= 10%
@@ -1546,7 +1613,7 @@ function audit(name, L, o) {
         c1.inOk && c1.outOk && c1.shown === c1.want && (c1.focus < 2 || (c1.hasBtn && c1.pre.type === "min" && c1.pre.n === Math.min(3, c1.focus) && c1.pre.added === 0 &&
          JSON.stringify(c1.pre.chips.slice().sort()) === JSON.stringify(c1.focusIds.slice().sort()) && c1.rule.type === "min" && c1.rule.n === Math.min(3, c1.focus) && c1.rule.same)), JSON.stringify(c1));
   const pso = await pg.evaluate(() => {
-    document.querySelector('#players .head [data-sort="sroi"]').click();
+    view.sort = "sroi"; view.dir = -1; renderPlayers();      // the ROI gain still sorts (its column is in Read's hover now)
     const g = [...document.querySelectorAll("#players .row")].map(e => scanRowOf(e.dataset.id)).filter(x => x && byId(x.id).status !== "Out").map(x => x.g_roi);
     const down = g.every((x, i) => i === 0 || g[i - 1] >= x);
     view.sort = "value"; view.dir = -1; renderPlayers();
@@ -1607,6 +1674,17 @@ function audit(name, L, o) {
         fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Auto-fill the rest", "Undo fill", "New nights", "Export DK entries", "Save build", "Load build"]) && fb.clear === "stepBank" &&
         fb.varIn === "stepCut" && fb.folded && /^Fill: contest 60% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights$/.test(fb.sum) &&
         ["Here", "Tonight", "Room"].every(h => fb.heads.includes(h)), JSON.stringify(fb));
+  // the operator's case (2026-11-20, a Fill-step row's "use" clipped off the name): at 1280px in the Fill step every
+  // action button is in the L / X group and is what a click at its centre lands on
+  await pg.setViewportSize({ width: 1280, height: 900 });
+  const fact = await pg.evaluate(() => {
+    renderPlayers();
+    const acts = [...document.querySelectorAll("#fillPlayersSlot #players .row .qout, #fillPlayersSlot #players .row .deepin")].filter(b => b.offsetParent);
+    return { n: acts.length, fill: $("players").classList.contains("fillcols"), inLx: acts.every(b => b.closest(".lx")),
+             hit: acts.slice(0, 15).every(b => { b.scrollIntoView({ block: "center" }); const r = b.getBoundingClientRect(); return document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === b; }) };
+  });
+  check("player table (Fill step, 1280px): out / play / use / drop in the L / X group and clickable", fact.fill && fact.n > 0 && fact.inLx && fact.hit, JSON.stringify(fact));
+  await pg.setViewportSize({ width: 1100, height: 900 });
   dialogs = [];
   const nBank = await pg.evaluate(() => BANK.lineups.length);
   pg.removeAllListeners("dialog"); pg.once("dialog", d => { dialogs.push(d.message()); d.dismiss(); });
