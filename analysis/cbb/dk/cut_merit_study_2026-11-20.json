@@ -1,0 +1,230 @@
+{
+ "c17": {
+  "night": "2026-11-17",
+  "draft_group": "156663",
+  "bank": 10000,
+  "keep": 2000,
+  "pct": 0.1,
+  "nights": 2000,
+  "contests": [
+   "CBB $1.5K And-One x10",
+   "CBB $250 Quarter Jukebox [Just $0.25!]  x20",
+   "CBB $100 Dime Time [Just $0.10!] x20",
+   "CBB $50 Dime Time [Just $0.10!] x17"
+  ],
+  "runs": {
+   "equal": {
+    "kept": 2000,
+    "rounds": 16,
+    "ideas_kept": 5,
+    "tierA": 2,
+    "tierA_ideas": 1,
+    "tierA_by": {
+     "Kansas": 2
+    },
+    "best_value": 0.553,
+    "fill_net": 4.7,
+    "fill_short": 0,
+    "real_random_fills": {
+     "mean": -2.06,
+     "positive": 28.5
+    },
+    "seconds": 71
+   },
+   "merit": {
+    "kept": 2000,
+    "rounds": 16,
+    "ideas_kept": 5,
+    "tierA": 2,
+    "tierA_ideas": 1,
+    "tierA_by": {
+     "Kansas": 2
+    },
+    "best_value": 0.553,
+    "fill_net": 4.7,
+    "fill_short": 0,
+    "real_random_fills": {
+     "mean": -1.5,
+     "positive": 31.5
+    },
+    "seconds": 66
+   }
+  }
+ },
+ "c18": {
+  "night": "2026-11-18",
+  "draft_group": "157033",
+  "bank": 6000,
+  "keep": 1500,
+  "pct": 0.1,
+  "nights": 2000,
+  "contests": [
+   "CBB $7K Pull Up Jumper [$2K to 1st] x1",
+   "CBB $1.25K And-One x10",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 And-One x3",
+   "CBB $100 Dime Time [Just $0.10!] x20"
+  ],
+  "runs": {
+   "equal": {
+    "kept": 1500,
+    "rounds": 14,
+    "ideas_kept": 3,
+    "tierA": 2,
+    "tierA_ideas": 2,
+    "tierA_by": {
+     "UNLV-AUB": 1,
+     "WVU-KU": 1
+    },
+    "best_value": 0.817,
+    "fill_net": -0.87,
+    "fill_short": 0,
+    "real_random_fills": {
+     "mean": -21.05,
+     "positive": 3.5
+    },
+    "seconds": 49
+   },
+   "merit": {
+    "kept": 1500,
+    "rounds": 14,
+    "ideas_kept": 3,
+    "tierA": 2,
+    "tierA_ideas": 2,
+    "tierA_by": {
+     "UNLV-AUB": 1,
+     "WVU-KU": 1
+    },
+    "best_value": 0.817,
+    "fill_net": -0.51,
+    "fill_short": 2,
+    "real_random_fills": {
+     "mean": -17.87,
+     "positive": 5.5
+    },
+    "seconds": 45
+   }
+  }
+ },
+ "c19e": {
+  "night": "2026-11-19",
+  "draft_group": "157138",
+  "bank": 8555,
+  "keep": 1500,
+  "pct": 0.1,
+  "nights": 2000,
+  "contests": [
+   "CBB $3K Pull Up Jumper [$1K to 1st] (Early) x1",
+   "CBB $750 And-One (Early) x10",
+   "CBB $200 And-One (Early) x5",
+   "CBB $50 Dime Time [Just $0.10!] (Early) x10"
+  ],
+  "runs": {
+   "equal": {
+    "kept": 1505,
+    "rounds": 16,
+    "ideas_kept": 4,
+    "tierA": 43,
+    "tierA_ideas": 3,
+    "tierA_by": {
+     "AUB": 28,
+     "NCST": 12,
+     "Florida": 3
+    },
+    "best_value": 1.574,
+    "fill_net": 3.35,
+    "fill_short": 13,
+    "real_random_fills": {
+     "mean": -24.77,
+     "positive": 1
+    },
+    "seconds": 56
+   },
+   "merit": {
+    "kept": 1500,
+    "rounds": 15,
+    "ideas_kept": 4,
+    "tierA": 44,
+    "tierA_ideas": 3,
+    "tierA_by": {
+     "AUB": 29,
+     "NCST": 12,
+     "Florida": 3
+    },
+    "best_value": 1.574,
+    "fill_net": 3.32,
+    "fill_short": 13,
+    "real_random_fills": {
+     "mean": -23.54,
+     "positive": 2
+    },
+    "seconds": 52
+   }
+  }
+ },
+ "c19m": {
+  "night": "2026-11-19",
+  "draft_group": "157139",
+  "bank": 13132,
+  "keep": 2000,
+  "pct": 0.15,
+  "nights": 2000,
+  "contests": [
+   "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+   "CBB $1.25K And-One x20",
+   "CBB $150 And-One x5",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 Dime Time [Just $0.10!] x20"
+  ],
+  "runs": {
+   "equal": {
+    "kept": 2000,
+    "rounds": 13,
+    "ideas_kept": 8,
+    "tierA": 80,
+    "tierA_ideas": 7,
+    "tierA_by": {
+     "RU-UNLV": 33,
+     "TCU-TXAM": 33,
+     "ORE-ORST": 5,
+     "ROI": 4,
+     "Variants of the top": 3,
+     "Top 1%": 1,
+     "CASH": 1
+    },
+    "best_value": 1.892,
+    "fill_net": 20.12,
+    "fill_short": 15,
+    "real_random_fills": {
+     "mean": -63.34,
+     "positive": 0
+    },
+    "seconds": 66
+   },
+   "merit": {
+    "kept": 2000,
+    "rounds": 9,
+    "ideas_kept": 8,
+    "tierA": 88,
+    "tierA_ideas": 7,
+    "tierA_by": {
+     "RU-UNLV": 38,
+     "TCU-TXAM": 35,
+     "ORE-ORST": 6,
+     "ROI": 4,
+     "Variants of the top": 3,
+     "Top 1%": 1,
+     "CASH": 1
+    },
+    "best_value": 1.892,
+    "fill_net": 19.76,
+    "fill_short": 15,
+    "real_random_fills": {
+     "mean": -56.08,
+     "positive": 2
+    },
+    "seconds": 57
+   }
+  }
+ }
+}
