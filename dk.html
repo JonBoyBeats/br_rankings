@@ -559,8 +559,8 @@ function value(r) { return proj(r) / (r.salary / 1000); }
 function usable(r) { return r.status !== "Out" && !state.excl[r.id] && !r.deepOut; }
 
 /* The slate the page opens on (2026-11-20): today's main slate, by the operator's day in Pacific time: among today's
-   slates the one with the most games (the later start on a tie), locked or not, so after lock it still opens on
-   tonight's main; with none listed today, the newest slate not yet locked, else the most recent. A slate picked by hand
+   slates the one with the most games, locked or not, so after lock it still opens on tonight's main; on a tie, the
+   soonest not yet locked (the one built first), else, all locked, the later (the night's last main, for review); with none listed today, the newest slate not yet locked, else the most recent. A slate picked by hand
    is kept for the rest of that Pacific day (pick: {day, dg}). The picker's list is unchanged. */
 function ptDay(t) { return new Date(t).toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }); }
 function slatePick() { try { return JSON.parse(localStorage.getItem("dkcbb:slatePick") || "null"); } catch (e) { return null; } }
@@ -570,8 +570,13 @@ function defaultSlate(slates, now, pick) {
   if (pick && pick.day === today && has(pick.dg)) return pick.dg;
   var later = function (a, b) { return new Date(b.start) - new Date(a.start); };
   var todays = slates.filter(function (s) { return ptDay(s.start) === today; });
-  if (todays.length) return todays.slice().sort(function (a, b) { return (b.games || 0) - (a.games || 0) || later(a, b); })[0].draft_group_id;
-  var open = slates.filter(function (s) { return !s.locked && new Date(s.start) > now; });
+  var open = function (s) { return !s.locked && new Date(s.start) > now; };
+  if (todays.length) {         // the most games; on a tie the soonest not yet locked (built first), else the later (the night's last, for review)
+    var g = Math.max.apply(null, todays.map(function (s) { return s.games || 0; })), top = todays.filter(function (s) { return (s.games || 0) === g; });
+    var un = top.filter(open);
+    return un.length ? un.sort(function (a, b) { return new Date(a.start) - new Date(b.start); })[0].draft_group_id : top.sort(later)[0].draft_group_id;
+  }
+  open = slates.filter(open);
   return (open.length ? open : slates).slice().sort(later)[0].draft_group_id;
 }
 async function load() {
