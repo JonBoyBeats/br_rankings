@@ -60,7 +60,7 @@ function audit(name, L, o) {
     ids.forEach(id => { count[id] = (count[id] || 0) + 1; });
   });
   if (o.expo) {                    // caps are a share of the lineups asked for (o.n), as the optimizer sets them
-    const n = o.n || L.length, cap = Math.floor(o.expo * n + 1e-9);
+    const n = o.n || L.length, cap = Math.max(1, n <= 5 ? Math.ceil(o.expo * n - 1e-4) : Math.floor(o.expo * n + 1e-9));   // rounded up in a contest of 5 or fewer
     Object.entries(count).forEach(([id, c]) => { if (id !== o.lock && c > (o.capId === id ? Math.floor(o.capPct * n + 1e-9) : cap)) bad.push(`${P[id].name} in ${c} of ${L.length}`); });
   }
   if (o.minUnique) {
@@ -79,6 +79,10 @@ function audit(name, L, o) {
   await pg.addInitScript(() => { try { if (!sessionStorage.getItem("nbInit")) { localStorage.setItem("dkcbb:nb", "false"); sessionStorage.setItem("nbInit", "1"); } } catch (e) {} });
   let dialogs = [];
   pg.on("dialog", d => { dialogs.push(d.message()); d.accept(); });       // Fill all contests asks before replacing
+  for (const m of ["click", "fill", "selectOption"]) {       // the page's steps (Bank / Cut / Fill): open the one holding the target first
+    const orig = pg[m].bind(pg);
+    pg[m] = async (sel, ...a) => { await pg.evaluate(q => { try { const el = document.querySelector(q), sec = el && el.closest("section.step"); if (sec && sec.hidden) showStep(sec.dataset.step); } catch (e) {} }, sel).catch(() => {}); return orig(sel, ...a); };
+  }
   const errors = [];
   pg.on("pageerror", e => errors.push(e.message));
   await pg.route(/fonts\.(googleapis|gstatic)/, r => r.abort());
@@ -92,6 +96,26 @@ function audit(name, L, o) {
   await pg.waitForSelector(".row");
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
   check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#statusInfo")));
+  // the default slate: today's main (Pacific day: most games; a tie goes to the soonest unlocked, else the later), locked or not; with none today, the
+  // newest unlocked, else the most recent; a hand pick holds for the rest of that day
+  const ds = await pg.evaluate(() => {
+    const now = Date.parse("2026-11-19T18:00:00Z");               // 10:00 AM Pacific, 11-19
+    const L = [{ draft_group_id: 1, start: "2026-11-19T01:00:00Z", games: 9, locked: true },     // yesterday's main (11-18 Pacific)
+               { draft_group_id: 2, start: "2026-11-19T17:00:00Z", games: 4, locked: true },     // today's early, locked
+               { draft_group_id: 3, start: "2026-11-20T00:00:00Z", games: 9, locked: false },    // today's main (16:00 Pacific)
+               { draft_group_id: 5, start: "2026-11-20T03:00:00Z", games: 9, locked: false },    // today's late, as many games, later start
+               { draft_group_id: 4, start: "2026-11-20T17:30:00Z", games: 7, locked: false }];   // tomorrow's
+    const afterLock = Date.parse("2026-11-20T06:30:00Z");          // 22:30 Pacific, everything today locked
+    const L2 = L.map(s => Object.assign({}, s, { locked: s.draft_group_id !== 4 }));
+    const between = Date.parse("2026-11-20T01:00:00Z"), L3 = L.map(s => Object.assign({}, s, { locked: s.draft_group_id <= 3 }));   // 17:00 Pacific: today's main locked, the late not
+    return { today: defaultSlate(L, now, null), afterLock: defaultSlate(L2, afterLock, null), between: defaultSlate(L3, between, null),
+             none: defaultSlate(L.filter(s => s.draft_group_id <= 2), Date.parse("2026-11-21T15:00:00Z"), null),
+             noneOpen: defaultSlate([L[0], L[4]], Date.parse("2026-11-20T15:00:00Z"), null),
+             picked: defaultSlate(L, now, { day: "2026-11-19", dg: 2 }), stale: defaultSlate(L, now, { day: "2026-11-18", dg: 2 }),
+             opened: document.getElementById("slate").value === String(defaultSlate(doc.slates, Date.now(), slatePick())) };
+  });
+  check("default slate: today's main (most games; on a tie the soonest unlocked, else the later) locked or not; none today, the newest unlocked, else the most recent; a hand pick holds for its day only",
+        ds.today === 3 && ds.between === 5 && ds.afterLock === 5 && ds.none === 2 && ds.noneOpen === 4 && ds.picked === 2 && ds.stale === 3 && ds.opened, JSON.stringify(ds));
   // the Q filter: only players Questionable by any source; X on one excludes him as anywhere else; off shows everyone
   await pg.evaluate(() => { view.panel = null; renderTiles(); });
   const playersN = await pg.$$eval("#players .row", r => r.length);
@@ -377,28 +401,40 @@ function audit(name, L, o) {
         /games · \d+ spreads? of 15\+/.test(await pg.textContent("#slateLine")), await pg.textContent("#slateLine"));
   const chipsG = await pg.evaluate(() => {
     const gs = [...document.querySelectorAll("#teamBar .gchip")].map(c => ({ game: c.dataset.game, teams: [...c.querySelectorAll("button")].map(b => b.dataset.team), cls: [...c.querySelectorAll("button")].map(b => b.className) }));
-    const tips = gs.map(g => tipOf(g.game) || "~"), T = teamsOf();
-    return { gs, ordered: tips.every((x, i) => i === 0 || tips[i - 1] <= x), sameGame: gs.every(g => g.teams.every(t => gameOf(t) === g.game) && g.teams.join("@") === g.game || g.teams.length === 1),
+    const T = teamsOf(), ou = g => { const r = rows.find(x => x.game === g && x.ou); return r ? +r.ou : -1; }, key = gs.map(g => [ou(g.game), tipOf(g.game) || "~"]);
+    return { gs, key, ordered: key.every((x, i) => i === 0 || key[i - 1][0] > x[0] || (key[i - 1][0] === x[0] && key[i - 1][1] <= x[1])), sameGame: gs.every(g => g.teams.every(t => gameOf(t) === g.game) && g.teams.join("@") === g.game || g.teams.length === 1),
              colours: gs.every(g => g.teams.every((t, i) => g.cls[i] === T.teams.find(x => x.team === t).verdict)) };
   });
-  check("team bar: chips grouped by game (away | home in one chip), ordered by tip, each team keeping its colour", chipsG.gs.length > 1 && chipsG.ordered && chipsG.sameGame && chipsG.colours, JSON.stringify(chipsG));
+  check("team bar: chips grouped by game (away | home in one chip), ordered by o/u (highest first, a tie by the earlier tip), each team keeping its colour", chipsG.gs.length > 1 && chipsG.ordered && chipsG.sameGame && chipsG.colours, JSON.stringify(chipsG));
   await openTeam(TEAMS.teams[0].team);
   const panel = await pg.evaluate(() => [...document.querySelectorAll("#teamPanel .tile")].map(t => t.dataset.team));
   const opp0 = TEAMS.teams.find(t => t.team !== TEAMS.teams[0].team && TEAMS.teams[0].game === t.game);
   const card = await pg.evaluate(() => {
     const T = teamsOf(), t = T.teams[0], mates = rows.filter(r => r.team === t.team && r.status !== "Out" && r.min > 0);
     const keep = t.card, sit = mates[0];
-    t.card = { games: 5, rule: "card-1", deep: [], lines: [{ kind: "swingy", text: mates[1].name + " is swingy: 10 to 30 minutes over 5 games" }],
+    t.card = { games: 5, rule: "card-1", deep: [mates[mates.length - 1].id],
+               lines: [{ kind: "swingy", text: mates[1].name + " is swingy: 10 to 30 minutes over 5 games", dk_id: mates[1].id, tag: "swingy 10\u201330" },
+                       { kind: "deep", text: "Deep bench, out of the pool by default: someone (1 a game)", dk_id: null, tag: null }],
+               mins: { [mates[2].id]: { season: 24.4, last3: 30.2, played: 4, of: 5 }, [mates[1].id]: { season: 20, last3: 18, played: 2, of: 5 } },
                absorb: [{ name: sit.name, dk_id: sit.id, sat: 1, games: 5, rows: [{ name: mates[1].name, dk_id: mates[1].id, with: 20, without: 30, n_with: 4, n_without: 1 }] }] };
     renderTeamPanel();
-    const a = document.querySelector("#teamPanel details.card").textContent;
+    const el = () => document.querySelector('#teamPanel details.card[data-card="' + t.team + '"]');
+    const a = el().textContent, rot = [...el().querySelectorAll("table.rot tr[data-id]")].map(tr => tr.dataset.id);
+    const want = rows.filter(r => r.team === t.team && r.status !== "Out" && (r.min || 0) * (minScale[r.id] || 1) >= 10).sort((x, y) => proj(y) - proj(x)).slice(0, 9).map(r => r.id);
+    const rowOf = id => { const tr = el().querySelector('table.rot tr[data-id="' + id + '"]'); return tr ? [...tr.children].map(td => td.textContent) : null; };
+    const projOk = rot.every(id => +rowOf(id)[1] === +proj(byId(id)).toFixed(1));
+    const r1 = rowOf(mates[1].id), r2 = rowOf(mates[2].id);
     state.outs[sit.id] = 1; applyOuts(); renderTeamPanel();
-    const b = document.querySelector("#teamPanel details.card").textContent, tbl = !!document.querySelector("#teamPanel details.card table");
+    const b = el().textContent, firstOut = el().querySelector("summary").nextElementSibling, tbl = !!el().querySelector("table:not(.rot)");
     delete state.outs[sit.id]; t.card = keep; applyOuts(); renderTeamPanel();
-    return { a, b, tbl };
+    return { a, b, rot, want, projOk, r1, r2, first: firstOut && firstOut.textContent, tbl };
   });
-  check("team card: the game count and the box-score lines; once a player who sat before is out, his teammates with and without him beside tonight",
-        /Team card · 5 games/.test(card.a) && /swingy: 10 to 30 minutes over 5 games/.test(card.a) && !/is out tonight/.test(card.a) && card.tbl && /is out tonight; when he sat before \(1 of 5 games\)/.test(card.b), JSON.stringify(card));
+  check("team card: the game count; one rotation table in projection order (the Players list's Proj), season / last-3 minutes and tags (swingy, missed k of n, thin game counts); no per-player paragraphs or deep-bench sentence; an Out player's with / without table first",
+        /Team card · 5 games/.test(card.a) && JSON.stringify(card.rot) === JSON.stringify(card.want) && card.rot.length >= 3 && card.projOk &&
+        card.r1 && /swingy 10\u201330/.test(card.r1[5]) && /missed 3 of 5/.test(card.r1[5]) && /\(2 g\)/.test(card.r1[3]) &&
+        card.r2 && card.r2[3] === "24" && card.r2[4] === "30" && /missed 1 of 5/.test(card.r2[5]) &&
+        !/is swingy/.test(card.a) && !/Deep bench, out of the pool/.test(card.a) && !/is out tonight/.test(card.a) &&
+        card.tbl && /is out tonight; when he sat before \(1 of 5 games\)/.test(card.first || ""), JSON.stringify(card));
   const an = await pg.evaluate(() => {
     const t = teamsOf().teams[0], keep = analyst;
     analyst = [{ id: "a1", author: "BuriedTreys", at: new Date().toISOString(), url: "https://x.com/BuriedTreys/status/1", text: "Game writeup text",
@@ -407,13 +443,13 @@ function audit(name, L, o) {
                  teams: [t.team], games: [], players: [], writeup: false, kind: "analyst" }];
     renderTeamPanel();
     const tile = document.querySelector('#teamPanel .tile[data-team="' + t.team + '"]'), card = document.querySelector('#teamPanel details.card[data-card="' + t.team + '"]');
-    const chip = tile.querySelector('a[href="https://x.com/BuriedTreys/status/1"]'), first = card.querySelector(".cl");
+    const chip = tile.querySelector('a[href="https://x.com/BuriedTreys/status/1"]'), first = [...card.querySelectorAll(".cl")].find(x => /writeup/.test(x.textContent));
     const out = { chip: chip && chip.textContent, first: first && first.textContent, notes: /Analyst notes/.test(card.textContent) && /A team note/.test(card.textContent),
                   noNews: !rows.some(r => newsOf(r.id) && newsOf(r.id).kind === "analyst") };
     analyst = keep; renderTeamPanel();
     return out;
   });
-  check("analyst: a writeup of tonight's game is a chip on the tile, linked, and the top of the card; the week's notes in their own section; never a player's news tag",
+  check("analyst: a writeup of tonight's game is a chip on the tile, linked, and in the card with the analysts' posts at the bottom; the week's notes in their own section; never a player's news tag",
         an.chip === "BuriedTreys writeup" && /writeup: Game writeup text/.test(an.first || "") && an.notes && an.noNews, JSON.stringify(an));
   check("team panel: the team's tile, then its opponent's", JSON.stringify(panel) === JSON.stringify([TEAMS.teams[0].team, opp0 && opp0.team]), JSON.stringify(panel));
   const gv = await pg.evaluate(() => {
@@ -1022,6 +1058,23 @@ function audit(name, L, o) {
     Object.values(PF).forEach(v => v.forEach(bi => { n++; BANK.lineups[bi].ids.forEach(id => { if (!state.lock[id]) c[id] = (c[id] || 0) + 1; }); }));
     return { n, max: Math.max(0, ...Object.values(c)), lim: nightLimit(), night: nightEntries() }; });
   check("night cap: at 40%, no unlocked player past 40% of the night's entries", nc.n > 0 && nc.max <= nc.lim && nc.lim === Math.max(1, Math.floor(0.4 * nc.night + 1e-9)), JSON.stringify(nc));
+  // Locks apply to: draws only by default (a locked player capped like the rest in the fill), with a note naming each
+  // locked player's share of the night; "Draws and fill" exempts him again
+  const lk0 = await pg.evaluate(() => { const c = {}; BANK.lineups.forEach(L => L.ids.forEach(id => { c[id] = (c[id] || 0) + 1; }));
+    const top = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; state.lock = { [top]: 1 }; save(); return { top, sel: document.getElementById("lockFill").value }; });
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const lk1 = await pg.evaluate(top => { const used = nightUsed(null); return { share: used[top] || 0, lim: nightLimit(), note: document.getElementById("cutStatus").textContent }; }, lk0.top);
+  check("locks apply to draws only by default: a locked player capped like the rest in Fill, and the note names his share tonight",
+        lk0.sel === "draws" && lk1.share <= lk1.lim && /1 locked player capped like the rest in the fill \(Locks apply to: draws only\): .+ \d+% tonight/.test(lk1.note), JSON.stringify([lk0, lk1]));
+  await pg.selectOption("#lockFill", "fill");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const lk2 = await pg.evaluate(() => ({ note: document.getElementById("cutStatus").textContent, kept: state.lockFill }));
+  check("locks apply to draws and fill: the note says he's exempt from the caps, and the setting is kept with the slate",
+        /1 locked player is exempt from the caps \(Locks apply to: draws and fill\)/.test(lk2.note) && lk2.kept === "fill", JSON.stringify(lk2));
+  await pg.selectOption("#lockFill", "draws");
+  await pg.evaluate(() => { state.lock = {}; save(); renderPlayers(); });
   await pg.fill("#maxNight", "60");
   await pg.fill("#maxUse", "1");
 
@@ -1045,6 +1098,42 @@ function audit(name, L, o) {
   check("groups: clicking an idea highlights its lineups and brings them to the top", hl.rows > 0 && hl.first, JSON.stringify(hl));
   await pg.click('[data-ungroup="Both ideas"]');
   check("groups: Ungroup splits it back", (await pg.$$eval("#bankBox > table tr", r => r.length)) === 3);
+  // Tick all ungrouped ticks only the tags not in a group; Group with nothing ticked takes every ungrouped tag
+  const gu = await pg.evaluate(() => {
+    showStep("bank");
+    const tags = [...document.querySelectorAll("#bankBox input[data-tag]")].map(x => x.dataset.tag);
+    groupTags([tags[0]], "First");
+    document.getElementById("groupTickAll").click();
+    const ticked = [...document.querySelectorAll("#bankBox input[data-tag]:checked")].map(x => x.dataset.tag);
+    document.querySelectorAll("#bankBox input[data-tag]").forEach(x => { x.checked = false; });
+    document.getElementById("groupName").value = "Rest"; document.getElementById("groupMake").click();
+    const rest = tags.slice(1).every(t => BANK.groups[t] === "Rest") && BANK.groups[tags[0]] === "First";
+    const tip = document.getElementById("groupMake").title;
+    groupTags(tags, null);
+    return { tags, ticked, rest, tip, back: Object.keys(BANK.groups).length };
+  });
+  check("groups: Tick all ungrouped ticks only the ungrouped tags; Group with nothing ticked groups every ungrouped tag (and says so in its tooltip)",
+        gu.tags.length >= 2 && JSON.stringify(gu.ticked) === JSON.stringify(gu.tags.slice(1)) && gu.rest && /nothing ticked/.test(gu.tip) && gu.back === 0, JSON.stringify(gu));
+  // the step bar: Bank / Cut / Fill, one panel at a time, kept per slate; switching shows panels and touches nothing else
+  const sb = await pg.evaluate(() => {
+    const before = JSON.stringify([BANK.lineups.length, CUT && CUT.keep && CUT.keep.length, PF]), seen = {};
+    ["bank", "cut", "fill"].forEach(st => { document.querySelector('#stepBar button[data-step="' + st + '"]').click();
+      seen[st] = [...document.querySelectorAll("section.step")].filter(x => !x.hidden).map(x => x.dataset.step).join(",") + "|" + document.querySelector("#stepBar button[aria-pressed=true]").dataset.step; });
+    const kept = JSON.parse(localStorage.getItem(key())).step, labels = [...document.querySelectorAll("#stepBar button")].map(b => b.textContent);
+    const bankHas = ["bankDraw", "bankN", "ruleList", "bankCheck", "bankBox", "levW"].every(id => document.getElementById(id) && document.getElementById(id).closest("#stepBank"));
+    const cutHas = ["cutRun", "cutKeep", "varRun", "entriesFile"].every(id => document.getElementById(id).closest("#stepCut"));
+    const fillHas = ["pfRun", "maxExpo", "entriesBox", "nb", "classic3"].every(id => document.getElementById(id).closest("#stepFill"));
+    const order = [...document.querySelectorAll("#stepFill, #newsBox, #scanBox, #teamBar, #playersSec")].map(x => x.id);
+    const last = document.getElementById("playersSec").compareDocumentPosition(document.getElementById("stepFill")) & Node.DOCUMENT_POSITION_PRECEDING;
+    const after = JSON.stringify([BANK.lineups.length, CUT && CUT.keep && CUT.keep.length, PF]);
+    delete state.step; save(); renderSteps();
+    return { seen, kept, labels, bankHas, cutHas, fillHas, order, last: !!last, same: before === after, dflt: stepNow() };
+  });
+  check("step bar: Bank / Cut / Fill show one panel each (kept with the slate), with live counts; switching leaves the bank, cut and picks alone; the default follows the work (Fill once a cut exists)",
+        sb.seen.bank === "bank|bank" && sb.seen.cut === "cut|cut" && sb.seen.fill === "fill|fill" && sb.kept === "fill" && /^Bank [\d,]+$/.test(sb.labels[0]) && /^Cut [\d,]+ kept$/.test(sb.labels[1]) && /^Fill \d+\/\d+$/.test(sb.labels[2]) &&
+        sb.same && sb.dflt === "fill", JSON.stringify(sb));
+  check("layout: the Bank step holds the draw controls and the bank table, Cut the cut, Fill the fill and the builders; then the reading folds; Teams and Players last",
+        sb.bankHas && sb.cutHas && sb.fillHas && JSON.stringify(sb.order) === JSON.stringify(["stepFill", "newsBox", "scanBox", "teamBar", "playersSec"]) && sb.last, JSON.stringify(sb));
   // Without: click a name in a lineup to hide every unpicked lineup with him; the chip brings them back; Auto-fill skips them
   await pg.click("#bpClear").catch(() => {});
   const pid = await pg.$eval("#bpTable tr:not(.picked)[data-k] .pn", e => e.dataset.pid);
@@ -1098,10 +1187,21 @@ function audit(name, L, o) {
     check("panel: search finds a player by \"" + q + "\"", (await pg.$$eval("#bpSideList .srow[data-key]", r => r.map(x => x.dataset.key))).includes(sp.key));
   }
   await pg.fill("#bpSideQ", "");
-  // Max exposure binds hand adds: in this contest's set a player goes in at most floor(Max exposure x entries) lineups
+  // Max exposure in a small contest: rounded up at 5 entries or fewer, so 3 entries at 40% or 60% fill 3 of 3 (each
+  // player in 2 at most) where floor would force them fully disjoint
+  const small = await pg.evaluate(() => {
+    const c = Object.assign({}, slate.contests.find(x => x.payouts)), pool = BANK.lineups.slice(0, 300).map(L => ({ ids: L.ids }));
+    const sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, 3, 400);
+    return [0.4, 0.6].map(p => { const r = DKSim.pick(ctx(), { n: 3, maxExpo: p, minUnique: 3, conds: [], maxCore: null }, pool, sim, c, 3), cnt = {};
+      r.chosen.forEach(k => pool[k].ids.forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }));
+      return { p, n: r.chosen.length, max: Math.max(...Object.values(cnt)), lim: DKSim.expoLimit(p, 3), big: DKSim.expoLimit(p, 20) }; });
+  });
+  check("Max exposure in a small contest: 3 entries at 40% and at 60% fill 3 of 3, each player in 2 at most (rounded up at 5 entries or fewer; 20 entries still floor)",
+        small.every(x => x.n === 3 && x.lim === 2 && x.max <= 2) && small[0].big === 8 && small[1].big === 12, JSON.stringify(small));
+  // Max exposure binds hand adds: in this contest's set a player goes in at most its limit (DKSim.expoLimit)
   await pg.click("#bpClear").catch(() => {});
   const cap = await pg.evaluate(() => {
-    const n = BP.o.n, lim = Math.floor(BP.o.maxExpo * n + 1e-9), cnt = {};
+    const n = BP.o.n, lim = DKSim.expoLimit(BP.o.maxExpo, n), cnt = {};
     BP.pool.forEach(L => L.ids.forEach(id => { if (!state.lock[id]) cnt[id] = (cnt[id] || 0) + 1; }));
     const p = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0];
     const withP = BP.pool.map((L, k) => k).filter(k => BP.pool[k].ids.includes(p));
@@ -1297,12 +1397,14 @@ function audit(name, L, o) {
   await pg.fill("#maxUse", "3"); await pg.fill("#maxNight", "60");
   await pg.click("#nbOn");
   await pg.waitForFunction(() => NB.on && BP && BP.review && document.querySelectorAll("#nbTabs button").length > 0, null, { timeout: 300000 });
-  const nb_nb0 = await pg.evaluate(() => ({ classicHidden: document.getElementById("classic3").hidden, status: document.getElementById("cutStatus").parentNode.id,
-    details: ["entriesBox", "pfBox"].every(id => document.getElementById(id).closest("#nbDetails")),
-    bank: !document.getElementById("bankBox").closest("#nbDetails") && document.getElementById("bankBox").parentNode.id === "s2out" && document.getElementById("bankBox").offsetParent !== null &&
-      !!document.querySelector("#bankBox input[data-tag]") && !!document.getElementById("groupName") && document.getElementById("groupName").offsetParent !== null }));
-  check("one screen: Classic hidden, the status in the bar, contests and night view in Details; the bank table (tag boxes, grouping) visible under Draw & bank, not folded",
-        nb_nb0.classicHidden && nb_nb0.status === "nbStatusSlot" && nb_nb0.details && nb_nb0.bank, JSON.stringify(nb_nb0));
+  const nb_nb0 = await pg.evaluate(() => { const step0 = stepNow(); showStep("bank");
+    const out = { classicHidden: document.getElementById("classic3").hidden, status: document.getElementById("cutStatus").nextElementSibling.id,
+      details: ["entriesBox", "pfBox"].every(id => document.getElementById(id).closest("#nbDetails")),
+      bank: !document.getElementById("bankBox").closest("#nbDetails") && !!document.getElementById("bankBox").closest("#stepBank") && document.getElementById("bankBox").offsetParent !== null &&
+        !!document.querySelector("#bankBox input[data-tag]") && !!document.getElementById("groupName") && document.getElementById("groupName").offsetParent !== null };
+    showStep(step0); return out; });
+  check("one screen: Classic hidden, the status under the step bar, contests and night view in Details; the bank table (tag boxes, grouping) in the Bank step, not folded",
+        nb_nb0.classicHidden && nb_nb0.status === "stepBank" && nb_nb0.details && nb_nb0.bank, JSON.stringify(nb_nb0));
   await pg.click("#nbFill");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   await pg.waitForFunction(() => BP && BP.review && document.querySelectorAll("#nbList tr[data-k]").length > 0, null, { timeout: 300000 });
@@ -1320,7 +1422,11 @@ function audit(name, L, o) {
     return { t: el && el.textContent, pc: picks.length ? C.at(picks).pct : null };
   });
   check("builder bar: own position, the field's own-sum quartiles and the picks' percentile", !!nbo.t && (nbo.pc == null ? /no picks yet/.test(nbo.t) : nbo.t.includes("picks at the field's " + nbo.pc)), JSON.stringify(nbo));
-  check("one screen: the live summary, this contest and tonight (ROI, top 10%, top 1%, cash), and tier A", /Tonight: \d+ entr/.test(nb_sum1) && /ROI/.test(nb_sum1) && /top 10%/.test(nb_sum1) && /top 1%/.test(nb_sum1) && /cash/.test(nb_sum1) && /Tier A: \d+ lineup/.test(nb_sum1), nb_sum1);
+  const lkm = await pg.evaluate(() => { const id = BP.pool[BP.b.picked[0] != null ? BP.b.picked[0] : 0].ids[0]; state.lock[id] = 1; nbPlayersRender();
+    const tr = document.querySelector('#nbPlayers tr[data-pid="' + id + '"]'), has = !!(tr && tr.querySelector(".tag.lk")), other = document.querySelectorAll("#nbPlayers .tag.lk").length;
+    delete state.lock[id]; nbPlayersRender(); return { has, other, after: document.querySelectorAll("#nbPlayers .tag.lk").length }; });
+  check("one screen: a locked player marked in the player pane", lkm.has && lkm.other === 1 && lkm.after === 0, JSON.stringify(lkm));
+  check("one screen: the live summary, this contest and tonight (ROI, top 10%, top 1%, cash), and tier A", /Tonight: \d+ entr/.test(nb_sum1) && /ROI/.test(nb_sum1) && /top 10%/.test(nb_sum1) && /top 1%/.test(nb_sum1) && /cash/.test(nb_sum1) && /Tier A tonight: \d+ lineup/.test(nb_sum1), nb_sum1);
   // Add and Remove from the list: the pick, its contest's portfolio, the tab and the summary move together
   const nb_addRm = await pg.evaluate(async () => {
     const cid = BP.review, before = BP.b.picked.length, sumB = document.getElementById("nbSum").textContent;
@@ -1376,7 +1482,7 @@ function audit(name, L, o) {
   const nb_pfNB = await pg.evaluate(() => JSON.stringify(PF));
   await pg.click("#nbOff");
   check("Classic view: back to the old layout with the same portfolios", await pg.evaluate(p => !document.getElementById("classic3").hidden && document.getElementById("nb").hidden &&
-        document.getElementById("cutStatus").parentNode.id === "s2out" && JSON.stringify(PF) === p, nb_pfNB));
+        document.getElementById("entriesBox").parentNode.id === "s2out" && document.getElementById("cutStatus").nextElementSibling.id === "stepBank" && JSON.stringify(PF) === p, nb_pfNB));
   await pg.fill("#maxUse", "1");
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();

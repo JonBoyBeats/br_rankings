@@ -574,6 +574,13 @@
   // o.maxCore (optional, a share): no core in more than max(1, floor(maxCore x N)) of the N lineups
   function coreLimit(o, N) { return o.maxCore ? Math.max(1, Math.floor(o.maxCore * N + 1e-9)) : 0; }
 
+  // A player's limit in a contest's set of N at exposure share cap: floor(cap x N), but rounded up in a contest of
+  // SMALL_N or fewer entries (2026-11-20: 3 entries at 60% floored to 1 forced the set fully disjoint and the fill came
+  // up a lineup short). A share near 0 (the page's night cap with no room left) stays 0. The fill, Auto-fill and hand
+  // adds all use it.
+  var SMALL_N = 5;
+  // (the round-up's 1e-4 keeps a limit set to an exact count exact: the page passes the night cap's room as a share, +1e-6)
+  function expoLimit(cap, N) { return N <= SMALL_N ? Math.max(0, Math.ceil(cap * N - 1e-4)) : Math.floor(cap * N + 1e-9); }
   function pick(ctx, o, cand, sim, contest, N, nights) {
     var st = ctx.state, b = builder(sim, contest, nights), count = {}, limit = {};
     var coreOf = o.maxCore ? cores(ctx, cand) : null, coreLim = coreLimit(o, N), coreN = {};
@@ -581,7 +588,7 @@
     var pairsOf = o.pairLimit ? cand.map(function (L) { return pairs(L.ids); }) : null;
     ctx.rows.forEach(function (r) {
       var cap = Math.min(o.maxExpo, st.cap[r.id] != null && st.cap[r.id] !== "" ? +st.cap[r.id] / 100 : 1);
-      limit[r.id] = st.lock[r.id] ? N : Math.floor(cap * N + 1e-9);
+      limit[r.id] = st.lock[r.id] ? N : expoLimit(cap, N);
     });
     // the at-least share rules first, the one with the fewest qualifying candidates first (each lineup the best
     // addition among those that meet it), so the rarest requirement isn't left to lineups the caps have shut out;
@@ -757,7 +764,7 @@
       var seen = {}; cand.forEach(function (L) { seen[L.ids.slice().sort().join(",")] = 1; });
       var plain = (o.conds || []).filter(function (rule) { return !isShare(rule); });
       var used = {}; full.chosen.forEach(function (k) { cand[k].ids.forEach(function (id) { used[id] = (used[id] || 0) + 1; }); });
-      var capped = Object.keys(used).filter(function (id) { return used[id] >= Math.floor(o.maxExpo * N + 1e-9) && !ctx.state.lock[id]; });
+      var capped = Object.keys(used).filter(function (id) { return used[id] >= expoLimit(o.maxExpo, N) && !ctx.state.lock[id]; });
       var avoid = capped.length ? [{ type: "none", ids: capped }] : [];
       var draws = [await draw(Object.assign({}, o, { conds: plain.concat(avoid).concat((o.conds || []).filter(isShare)) }), Math.max(N, K))];
       var short = shareStatus(o.conds || [], full.chosen.map(function (k) { return cand[k]; }), N).filter(function (x) { return x.need != null && !x.ok; });
@@ -877,7 +884,7 @@
 
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
            gatedProj: gatedProj, seeded: seeded, fitMinutes: fitMinutes, usable: usable, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
-           simulate: simulate, builder: builder, pick: pick, variants: variants, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
+           simulate: simulate, builder: builder, pick: pick, expoLimit: expoLimit, variants: variants, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, poolDraw: poolDraw, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
            CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
            CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
