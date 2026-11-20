@@ -43,16 +43,16 @@ date,draft_group,contest_id,contest,stack,kind,n,rank,of,read,scan_g_t1,scan_fie
 2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],SHU 4+,team,4,42,42,weak,-0.00795,0,LEVERAGE,0,,,,
 2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Lino Mark,player,,1,79,core,0.00109,0.369,,277,0.0903,0.0108,30.35,19.75
 2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Tariq Francis,player,,2,79,core,0.00094,0.119,,141,0.1702,0.0284,23.65,34.75
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Micah Robinson,player,,3,79,even,0.00061,0.603,,205,0.0829,0.0098,32.3,25.0
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Fedor Zugic,player,,4,79,even,0.00054,0.167,,48,0.0625,0.0,17.4,14.75
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Brock Harding,player,,5,79,even,0.00053,0.559,,195,0.1538,0.0205,32.45,44.0
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Ahmad Nowell,player,,6,79,even,0.00041,0.117,,26,0.0769,0.0,16.45,10.5
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Blake Harper,player,,7,79,even,0.0004,0.105,,75,0.36,0.0533,24.3,43.75
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Jasper Johnson,player,,8,79,even,0.00035,0.015,,65,0.1538,0.0154,14.3,23.25
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Torey Alston,player,,9,79,even,0.00035,0.491,,93,0.0215,0.0,27.95,16.75
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Nolan Winter,player,,10,79,even,0.00031,0.046,,103,0.068,0.0097,25.67,24.25
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Wei Lin,player,,11,79,even,0.0002,0.222,,37,0.0,0.0,20.4,9.0
-2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Gavin Sykes,player,,12,79,even,0.0001,0.153,,6,0.1667,0.0,20.5,22.25
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Micah Robinson,player,,3,79,lean core,0.00061,0.603,,205,0.0829,0.0098,32.3,25.0
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Fedor Zugic,player,,4,79,lean core,0.00054,0.167,,48,0.0625,0.0,17.4,14.75
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Brock Harding,player,,5,79,lean core,0.00053,0.559,,195,0.1538,0.0205,32.45,44.0
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Ahmad Nowell,player,,6,79,lean core,0.00041,0.117,,26,0.0769,0.0,16.45,10.5
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Blake Harper,player,,7,79,lean core,0.0004,0.105,,75,0.36,0.0533,24.3,43.75
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Jasper Johnson,player,,8,79,lean leverage,0.00035,0.015,,65,0.1538,0.0154,14.3,23.25
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Torey Alston,player,,9,79,lean core,0.00035,0.491,,93,0.0215,0.0,27.95,16.75
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Nolan Winter,player,,10,79,lean leverage,0.00031,0.046,,103,0.068,0.0097,25.67,24.25
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Wei Lin,player,,11,79,lean core,0.0002,0.222,,37,0.0,0.0,20.4,9.0
+2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Gavin Sykes,player,,12,79,lean core,0.0001,0.153,,6,0.1667,0.0,20.5,22.25
 2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Delrecco Gillespie,player,,13,79,even,-1e-05,0.094,,38,0.1053,0.0263,23.05,34.75
 2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Sebastian Mack,player,,14,79,even,-0.00014,0.12,,75,0.1067,0.0133,23.25,29.0
 2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Elijah Mahi,player,,15,79,even,-0.00016,0.345,,117,0.0513,0.0085,25.5,25.0
