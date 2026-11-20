@@ -911,26 +911,27 @@ function audit(name, L, o) {
         (await pg.$eval("#cutRounds", d => !d.open)), JSON.stringify([ths, rth]));
   // the idea scoreboard: one row per idea in the kept lineups, best sim ROI first
   const brd = await pg.evaluate(() => ({ rows: CUT.board.rows, shown: [...document.querySelectorAll("#ideaTable tr[data-idea]")].map(r => r.dataset.idea),
-    groups: [...new Set(CUT.keep.map(i => lineupGroup(i)))].sort(), board: !!document.getElementById("ideaBoard"), tables: document.querySelectorAll("#stepCut table.contests:not(#cutRounds table)").length }));
-  check("idea scoreboard: a row per idea, kept adding up to the cut", brd.rows.length === brd.groups.length && JSON.stringify(brd.rows.map(r => r.idea).sort()) === JSON.stringify(brd.groups) &&
-        brd.rows.reduce((t, r) => t + r.kept, 0) === cut.keep.length && brd.shown.length === brd.rows.length && !brd.board && brd.tables === 1, JSON.stringify([brd.rows.map(r => [r.idea, r.kept]), brd.board, brd.tables]));
+    groups: [...new Set(CUT.keep.flatMap(i => lineupGroups(i)))].sort(), every: Object.fromEntries([...new Set(CUT.keep.flatMap(i => lineupGroups(i)))].map(g => [g, CUT.keep.filter(i => lineupGroups(i).includes(g)).length])), board: !!document.getElementById("ideaBoard"), tables: document.querySelectorAll("#stepCut table.contests:not(#cutRounds table)").length }));
+  check("idea scoreboard: a row per idea, each counting every kept lineup that idea drew (a shared lineup for each of its ideas)", brd.rows.length === brd.groups.length && JSON.stringify(brd.rows.map(r => r.idea).sort()) === JSON.stringify(brd.groups) &&
+        brd.rows.every(r => r.kept === brd.every[r.idea]) && brd.rows.reduce((t, r) => t + r.kept, 0) >= cut.keep.length && brd.shown.length === brd.rows.length && !brd.board && brd.tables === 1, JSON.stringify([brd.rows.map(r => [r.idea, r.kept]), brd.board, brd.tables]));
   // the Cut step's one idea table: Banked / Kept / Share / Tier A / the board's numbers, best Sim ROI first, sortable;
   // tier A by idea adds up to tier A tonight; the one bank line; the entries file's summary
   const it = await pg.evaluate(() => {
     const cells = [...document.querySelectorAll("#ideaTable tr[data-idea]")].map(tr => [tr.dataset.idea, ...[...tr.cells].slice(1).map(c => c.textContent)]);
     const heads = [...document.querySelectorAll("#ideaTable th")].map(t => t.textContent.replace(/ \(i\)| [↓↑]/g, ""));
-    const taSum = cells.reduce((t, c) => t + (+c[4] || 0), 0), T = CUT.board.tierA;
-    const keptOk = cells.every(c => +c[2] === CUT.keep.filter(i => lineupGroup(i) === c[0]).length);
+    const taSum = cells.reduce((t, c) => t + (+c[5] || 0), 0), T = CUT.board.tierA;
+    const keptOk = cells.every(c => +c[3] === CUT.keep.filter(i => lineupGroups(i).includes(c[0])).length) &&
+      cells.every(c => c[2] === "–" || +c[2] === BANK.lineups.map((L, i) => i).filter(i => lineupGroups(i).length > 1 && lineupGroups(i).includes(c[0])).length);
     const roiOrder = cells.map(c => CUT.board.rows.find(r => r.idea === c[0])).filter(Boolean).every((r, i, a) => i === 0 || a[i - 1].roi >= r.roi);
     document.querySelector('#ideaTable th[data-ck="kept"]').click();
-    const kd = [...document.querySelectorAll("#ideaTable tr[data-idea]")].map(tr => +tr.cells[2].textContent);
+    const kd = [...document.querySelectorAll("#ideaTable tr[data-idea]")].map(tr => +tr.cells[3].textContent);
     cutSort = { k: "roi", dir: -1 }; renderCut();
     return { heads, taSum, T: T.n, keptOk, roiOrder, keptSorted: kd.every((x, i) => i === 0 || kd[i - 1] >= x), line: document.getElementById("cutBankLine").textContent,
              check: document.getElementById("bankCheck").textContent, far: BANKSTATS.far, pct: BANKSTATS.pct, fp: BANKSTATS.fp, bp: BANKSTATS.bp, kn: BANKSTATS.kn, kp: BANKSTATS.kp, kpct: BANKSTATS.kpct,
              tier: document.getElementById("tierA").textContent, sum: document.getElementById("entriesSum").textContent, info: !!document.querySelector('#ideaTable th[data-ck="idea"] span[title]') };
   });
   check("cut step: one idea table (Idea, Banked, Kept, Share, Tier A, Sim ROI, Top 10%, Top 1%, Cash, Avg own, Cores), best Sim ROI first and sortable; tier A by idea sums to tier A tonight; the bank line and the entries summary",
-        JSON.stringify(it.heads) === JSON.stringify(["Idea", "Banked", "Kept", "Share", "Tier A", "Sim ROI", "Top 10%", "Top 1%", "Cash", "Avg own", "Cores"]) && it.taSum === it.T && it.keptOk && it.roiOrder && it.keptSorted &&
+        JSON.stringify(it.heads) === JSON.stringify(["Idea", "Banked", "Shared", "Kept", "Share", "Tier A", "Sim ROI", "Top 10%", "Top 1%", "Cash", "Avg own", "Cores"]) && it.taSum >= it.T && it.keptOk && it.roiOrder && it.keptSorted &&
         /^Whole bank [\d,]+ · \d+ pts (under|over) the field · own \d+% vs \d+% · field's \d+(st|nd|rd|th) pct.* \| Kept [\d,]+ · \d+ pts (under|over) the field · own \d+% vs \d+%/.test(it.line) &&
         it.far === (/far below the field/.test(it.line) && /far below the field/.test(it.check)) && it.far === (it.kn ? (it.kpct != null && it.kpct < 15) || it.fp - it.kp >= 5 : (it.pct != null && it.pct < 15) || it.fp - it.bp >= 5) && /^Tier A tonight: \d+ lineup/.test(it.tier) && /^8 entries · 4 contests$/.test(it.sum) && it.info, JSON.stringify(it));
   const ta = await pg.evaluate(() => { const T = CUT.board.tierA, v = CUT.board.values, el = document.getElementById("tierA");
@@ -1447,7 +1448,7 @@ function audit(name, L, o) {
              res: document.getElementById("varResult").textContent, row: row ? [...row.cells].map(c => c.textContent) : null };
   });
   check("variants: the result line under the row (new, joined, tier A before → after) and a Variants of the top row in the idea table, after the cut in Banked",
-        new RegExp("^\\d+ new, " + vr.added + " joined · Tier A \\d+ → \\d+$").test(vr.res || "") && vr.row && vr.row[1] === "after the cut" && +vr.row[2] === vr.added, JSON.stringify([vr.res, vr.row]));
+        new RegExp("^\\d+ new, " + vr.added + " joined · Tier A \\d+ → \\d+$").test(vr.res || "") && vr.row && vr.row[1] === "after the cut" && +vr.row[3] === vr.added, JSON.stringify([vr.res, vr.row]));
   check("variants of the top: legal, near their parent (5+ of 8), none sharing 7+ with a kept lineup, in the kept pool, tagged and grouped; the scoreboard redone",
         !vr.skipped && vr.added === vr.bankGrew && vr.legal && vr.near && vr.parent && vr.grouped && vr.bankN && vr.tierA && vr.added > 0 && /^Variants of tier A, the top 1 /.test(vr.msg), JSON.stringify(vr));
   check("variants (C3): every K-of-8 keep-set is the default, 56 each at K 5 (Variants each follows K), and the run used every set once",

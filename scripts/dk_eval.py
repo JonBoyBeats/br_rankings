@@ -187,7 +187,7 @@ OWN_POS_BANDS = [(0, 10), (10, 25), (25, 50), (50, 75), (75, 100)]
 SHARP = ["dbaggot3", "feartheturtle7"]
 OWN_BANDS_FIELD = [(30, 101), (20, 30), (10, 20), (5, 10), (1, 5)]
 IDEA_EVAL = os.path.join(DK, "idea_eval.csv")
-IDEA_COLS = ["date", "draft_group", "idea", "kind", "contest_id", "contest", "banked", "kept", "entered", "kept_share", "entered_share",
+IDEA_COLS = ["date", "draft_group", "idea", "kind", "contest_id", "contest", "banked", "shared", "kept", "entered", "kept_share", "entered_share",
              "banked_top10", "banked_cash", "entered_top10", "entered_cash", "pct_top10", "pct_cash", "version"]
 PAIR_EVAL = os.path.join(DK, "pair_eval.csv")
 PAIR_COLS = ["date", "draft_group", "set", "team", "starter", "bench", "pos", "corr", "games", "thin", "starter_beat", "bench_beat", "result"]
@@ -1277,18 +1277,19 @@ def ideas(a):
             print("  ideas %s (%s): %s" % (g, b["day"], "no real points yet" if not rec else "no graded standings yet"))
             continue
         score = [sum(pts.get(str(i)) or 0 for i in L) for L in b["pool"]]
-        idea = [t[0] for t in b["tags"]]
+        # every tag a lineup was drawn under (2026-11-20, shared credit): a lineup two ideas drew counts for both
+        idea = [set(t) if isinstance(t, list) else {t} for t in b["tags"]]
         kept = set(b["final"]) if b.get("final") else set(range(len(b["pool"])))
         settings = b.get("tag_settings") or {}
         for cid, L in sorted(lines.items()):
             t10, cash = num(L["field_top10"]), num(L["field_cash"])
             ent = (b.get("portfolios") or {}).get(cid) or []
-            for name in sorted(set(idea)):
-                mem = [k for k in range(len(b["pool"])) if idea[k] == name]
-                ke, en = [k for k in mem if k in kept], [k for k in ent if idea[k] == name]
+            for name in sorted(set().union(*idea)):
+                mem = [k for k in range(len(b["pool"])) if name in idea[k]]
+                ke, en = [k for k in mem if k in kept], [k for k in ent if name in idea[k]]
                 rate = lambda ks, line: sum(score[k] >= line for k in ks) / len(ks) if ks and line is not None else ""
                 row = {"date": b["day"], "draft_group": g, "idea": name, "kind": idea_kind(settings.get(name) or {}), "contest_id": cid,
-                       "contest": L["contest"], "banked": len(mem), "kept": len(ke), "entered": len(en),
+                       "contest": L["contest"], "banked": len(mem), "shared": sum(1 for k in mem if len(idea[k]) > 1), "kept": len(ke), "entered": len(en),
                        "kept_share": round(len(ke) / len(mem), 4), "entered_share": round(len(en) / len(ent), 4) if ent else "",
                        "banked_top10": rate(mem, t10), "banked_cash": rate(mem, cash), "entered_top10": rate(en, t10), "entered_cash": rate(en, cash),
                        "pct_top10": "", "pct_cash": "", "version": version_of(b["day"])}
@@ -1300,7 +1301,7 @@ def ideas(a):
                         rs = [sum(score[k] >= line for k in rng.sample(mem, len(en))) for _ in range(RANDOM_SETS)]
                         row[col] = round(100 * (sum(r < me for r in rs) + 0.5 * sum(r == me for r in rs)) / RANDOM_SETS, 1)
                 out.append(row)
-        print("  ideas %s (%s): %d ideas, %d contests" % (g, b["day"], len(set(idea)), len(lines)))
+        print("  ideas %s (%s): %d ideas, %d contests" % (g, b["day"], len(set().union(*idea)), len(lines)))
     if out:
         with open(IDEA_EVAL, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=IDEA_COLS)
