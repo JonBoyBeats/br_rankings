@@ -102,6 +102,41 @@
      "real_net": null
     }
    }
+  },
+  "19-main": {
+   "night": "2026-11-19",
+   "contests": [
+    "CBB $6K Pull Up Jumper [$2K to 1st] x3 $15",
+    "CBB $1.25K And-One x20 $1",
+    "CBB $150 And-One x5 $1",
+    "CBB $200 Quarter Jukebox x20 $0.25",
+    "CBB $100 Dime Time [Just $0.10!] x20 $0.1"
+   ],
+   "night_limit": 40,
+   "res": {
+    "Max ROI": {
+     "entries": 53,
+     "distinct": 48,
+     "fees": 72.05,
+     "expected_net": 16.6,
+     "sd": 224.97,
+     "p5": -67.4,
+     "p95": 164.75,
+     "top1_nights": 39.2,
+     "real_net": null
+    },
+    "Balanced": {
+     "entries": 56,
+     "distinct": 52,
+     "fees": 72.5,
+     "expected_net": 15.28,
+     "sd": 208.55,
+     "p5": -65.55,
+     "p95": 143.45,
+     "top1_nights": 45,
+     "real_net": null
+    }
+   }
   }
  },
  "variants_two_rounds": {
