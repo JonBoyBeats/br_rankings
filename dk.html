@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 128px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 34px 40px 36px 38px 70px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 128px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -170,11 +170,11 @@
   #fillSet > summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
   #nbList.nbscroll { max-height: 440px; }
   #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
-  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px; }
+  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(96px, 1fr) 44px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px; }
   /* no player scan for the slate yet (2026-11-20): its six columns hidden, their width to the name */
   #players.noscan .col-scan { display: none; }
-  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(140px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 34px 40px 36px 42px 42px; }
-  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(140px, 1fr) 44px 46px 54px 38px 36px 28px 34px 40px 36px 40px 34px 42px 42px; }
+  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(140px, 1fr) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px; }
+  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(140px, 1fr) 44px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px; }
   #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
   #players .row.bankgap-in { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out { box-shadow: inset 3px 0 var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
@@ -260,7 +260,7 @@
   @media (max-width: 620px) {
     .head, .row, #players.noscan .head, #players.noscan .row { grid-template-columns: 90px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
     .lx button.setadd { display: none; }
-    .col-min, .col-mpg, .col-obpr, .col-avg, .col-max, .col-pos, .col-team, .col-opp, .col-scan { display: none; }
+    .col-min, .col-mpg, .col-obpr, .col-bank, .col-avg, .col-max, .col-pos, .col-team, .col-opp, .col-scan { display: none; }
     table.bp td.nm { min-width: 140px; font-size: 11px; }
     table.bp td, table.bp th { padding: 3px 3px; }
     .name { font-size: 13px; }
@@ -885,7 +885,7 @@ function bankShare() {
 }
 function playerTable(list, sortable, fs) {
   var head = '<div class="head"><span>L / X</span>' +
-    [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"],
+    [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"], ["bank", "Bank", "r col-bank"],
      ["min", "Min", "r col-min"], ["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan"], ["read", "Read", "col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
@@ -937,6 +937,10 @@ function playerTable(list, sortable, fs) {
       '<span><input class="proj' + (edited ? " edited" : "") + '" type="number" step="0.1" value="' + proj(r).toFixed(edited ? 1 : 0) + '" aria-label="Proj for ' + esc(r.name) + '"></span>' +
       '<span class="m r val"' + greenBg(value(r), 2, 4.5) + ">" + value(r).toFixed(2) + "</span>" +
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
+      // Bank (back 2026-11-20, beside Own, whenever a bank exists): his share of the bank; the hover against the field, with the flag
+      (function () { var hasB = BANK && BANK.lineups && BANK.lineups.length, bs = hasB ? bshare[r.id] || 0 : 0, gp2 = hasB && sc ? bankGap(sc.read, bs, own(r) / 100) : null;
+        return '<span class="m r col-bank"' + (hasB ? ' title="' + esc("In " + Math.round(100 * bs) + "% of the bank vs " + Math.round(own(r)) + "% field" + (gp2 ? " · " + gp2.tip : "")) + '"' : "") + ">" +
+          (hasB ? Math.round(100 * bs) + "%" : "–") + "</span>"; })() +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
       // MPG (2026-11-20): his season minutes a game played, beside our minutes projection; the hover his last 5 and their spread
       '<span class="m r mut col-mpg"' + (r.min_avg != null ? ' title="' + esc("Season " + r.min_avg.toFixed(1) + " min a game played" + (r.min_last5 && r.min_last5.length ? "; last " + r.min_last5.length + ": " +

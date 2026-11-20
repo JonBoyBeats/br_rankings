@@ -267,7 +267,7 @@ function audit(name, L, o) {
              tip: el.querySelector(".nm").title, line: (r.spread > 0 ? "+" : "") + r.spread, ou: r.ou, frag: f ? { badge: !!fel.querySelector(".frag") === !!fragileMap()[f.id], tip: /Swingy: expected miss/.test(fel.querySelector(".nm").title) } : null };
   });
   check("Players list: Pos / Team / Opp columns, matchup and line in the name's tooltip, fragile in the tooltip, no ± column or grey line",
-        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "MPG", "OBPR", "DK avg", "Cash", "Read"]) && pl.sub === 0 &&
+        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Bank", "Min", "MPG", "OBPR", "DK avg", "Cash", "Read"]) && pl.sub === 0 &&
         JSON.stringify(pl.cells) === JSON.stringify(pl.want) && pl.tip.includes(pl.line) && pl.tip.includes("o/u " + pl.ou) && (!pl.frag || (pl.frag.badge && pl.frag.tip)), JSON.stringify(pl));
   // A4: fragile from the lenses: the badge only when 2+ lenses disagree with our number, the reasons in its hover
   const fragA4 = await pg.evaluate(() => { const m = fragileMap(), ids = Object.keys(m);
@@ -1577,7 +1577,7 @@ function audit(name, L, o) {
     document.querySelector('#players .head [data-sort="mpg"]').click();
     const v = [...document.querySelectorAll("#players .row")].map(e => { const x = byId(e.dataset.id); return x.min_avg != null ? x.min_avg : -1; }), down = v.every((x, i) => i === 0 || v[i - 1] >= x);
     view.sort = "value"; view.dir = -1; renderPlayers();
-    return { after: heads.indexOf("mpg") === heads.indexOf("min") + 1, gone: !["scan", "sroi", "bank"].some(k => heads.includes(k)), cash: heads.includes("scash"), text, want: "27", tip, down, obText, obTip, dash, obAfter: heads.indexOf("obpr") === heads.indexOf("mpg") + 1 };
+    return { after: heads.indexOf("mpg") === heads.indexOf("min") + 1, gone: !["scan", "sroi"].some(k => heads.includes(k)) && heads.indexOf("bank") === heads.indexOf("own") + 1, cash: heads.includes("scash"), text, want: "27", tip, down, obText, obTip, dash, obAfter: heads.indexOf("obpr") === heads.indexOf("mpg") + 1 };
   });
   check("Players list: MPG (season minutes a game) right after Min, last 5 in the hover, sortable; no Top 1% / ROI / Bank columns, Cash kept",
         mpg.after && mpg.gone && mpg.cash && mpg.text === mpg.want && mpg.tip === "Season 27.4 min a game played; last 5: 30, 22, 28, 31, 26; minutes CV 0.12" &&
