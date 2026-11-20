@@ -160,6 +160,8 @@
   .teambar button.LEVERAGE { border-left-color: #5aa9e6; } .teambar button.FADE { border-left-color: var(--bad); }
   .teambar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
   .teamside { margin: 6px 0 14px; min-width: 0; }
+  .infobtn { height: 22px; width: 22px; padding: 0; border-radius: 50%; font-size: 12px; font-style: italic; font-weight: 700; align-self: center; }
+  #cutIdeas th[data-ck] { cursor: pointer; }
   .stepbar { display: flex; gap: 6px; padding: 6px 0 2px; }
   .stepbar button { flex: 1; height: 36px; font-size: 14px; font-weight: 700; }
   .stepbar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink, #080b11); }
@@ -328,8 +330,16 @@
   </section>
 
   <section class="step" id="stepCut" data-step="cut" hidden>
-  <h2>2. Cut the bank, build each contest's entries, export</h2>
-  <details class="news"><summary>How the cut and the pick work</summary><div class="note">Load DraftKings' <b>entries file</b>
+  <div class="opts" id="cutSetup">
+    <label class="field"><span class="field-label">DraftKings entries file</span><input type="file" id="entriesFile" accept=".csv" style="height:auto"></label>
+    <span class="note" id="entriesSum" style="align-self:center;margin:0"></span>
+    <label class="field"><span class="field-label">Keep</span><input class="num" id="cutKeep" type="number" min="20" max="5000" step="50" value="2000"></label>
+    <label class="field"><span class="field-label">Cut % a round</span><input class="num" id="cutPct" type="number" min="1" max="50" value="10"></label>
+    <label class="field"><span class="field-label">Nights a round</span><input class="num" id="cutNights" type="number" min="200" max="10000" step="100" value="2000"></label>
+    <button type="button" class="primary" id="cutRun">Re-sim &amp; cut</button>
+    <button type="button" id="cutHow" class="infobtn" title="How the cut and the pick work" aria-expanded="false">i</button>
+  </div>
+  <div class="note" id="cutHowText" hidden>Load DraftKings' <b>entries file</b>
     (Lineups → Edit Entries → download): each contest's entry count fills in. <b>Group</b> the bank's tags into ideas (e.g. six
     Kansas tags into "Kansas"): the cut works within each group. <b>Re-sim &amp; cut</b> takes the bank down to Keep: each round
     simulates the survivors over fresh nights and adds each lineup's payout alone in every contest you're entering to its running
@@ -337,20 +347,18 @@
     best-ranked, Cut % a round, skipping a lineup that shares 7+ of 8 players with a better one it kept. <b>Build</b> on a contest
     opens its builder below (your picks save as you go); <b>Fill all contests</b> builds a starting portfolio for every contest instead (Start from: Max ROI, Balanced or Max coverage), within
     Max exposure, each player's Max%, Min unique and Max core; each lineup goes in one contest only. <b>Export DK entries</b>
-    fills the entries file for upload; <b>Save build</b> downloads the bank and portfolios to send in with the standings.</div></details>
-  <div class="opts">
-    <label class="field"><span class="field-label">DraftKings entries file</span><input type="file" id="entriesFile" accept=".csv" style="height:auto"></label>
-    <label class="field"><span class="field-label">Keep</span><input class="num" id="cutKeep" type="number" min="20" max="5000" step="50" value="2000"></label>
-    <label class="field"><span class="field-label">Cut % a round</span><input class="num" id="cutPct" type="number" min="1" max="50" value="10"></label>
-    <label class="field"><span class="field-label">Nights a round</span><input class="num" id="cutNights" type="number" min="200" max="10000" step="100" value="2000"></label>
-    <button type="button" class="primary" id="cutRun">Re-sim &amp; cut</button>
-  </div>
+    fills the entries file for upload; <b>Save build</b> downloads the bank and portfolios to send in with the standings.</div>
+  <div id="cutUnlisted"></div>
+  <div class="note" id="cutBankLine"></div>
+  <div id="cutProgress" hidden><progress id="cutBar" max="1" value="0" style="width:220px;vertical-align:middle"></progress> <span class="note" id="cutProgText" style="margin:0"></span></div>
+  <div id="cutIdeas"></div>
   <div class="opts" title="After the cut, before Fill: variants around the top kept lineups, each keeping some of its players and redrawing the rest under its idea's rules, the bank noise and the pool rules; those that reach the kept pool's top half on the same nights join it, tagged &quot;variant of #rank&quot; (grouped as Variants of the top). Backtest in versions.csv">
     <label class="field" title="Blank: the tier-A size, at least 10 and at most 25"><span class="field-label">Top kept</span><input class="num" id="varN" type="number" min="1" max="100" placeholder="tier A"></label>
     <label class="field"><span class="field-label">Variants each</span><input class="num" id="varM" type="number" min="1" max="100" value="25"></label>
     <label class="field"><span class="field-label">Players kept</span><input class="num" id="varK" type="number" min="3" max="7" value="5"></label>
     <button type="button" id="varRun">Variants of tier A</button>
   </div>
+  <div class="note" id="varResult"></div>
   </section>
 
   <section class="step" id="stepFill" data-step="fill" hidden>
@@ -376,6 +384,7 @@
   <div id="s2out">
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
+  <div id="cutSharesBox"></div>
   </div>
   <div class="opts"><button type="button" id="nbOn">New builder view</button></div>
 
@@ -1410,8 +1419,10 @@ function ownClump() {
 }
 function clumpText(C) { return "field own sum " + [C.q10, C.q25, C.q50, C.q75].map(function (x) { return Math.round(x); }).join(" / ") + "% (10th / 25th / median / 75th)"; }
 function ordinal(n) { var s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+var BANKSTATS = null;
 function bankCheck() {
   var F = fieldOf(), el = $("bankCheck");
+  BANKSTATS = null;
   if (!el) return;
   if (!BANK || !BANK.lineups.length || !F || !F.field || !F.field.length) { el.innerHTML = ""; return; }
   var by = {}; rows.forEach(function (r) { by[r.id] = r; });
@@ -1425,7 +1436,9 @@ function bankCheck() {
   var all = Object.keys(g).map(function (k) { return { k: k, p: avg(g[k], pts), o: avg(g[k], ow), n: g[k].length, u: avg(g[k], punt) }; });
   var under = all
     .filter(function (x) { return x.p < fp - BANK_UNDER; }).sort(function (a, b) { return a.p - b.p; });
-  var d = bp - fp;
+  var d = bp - fp, C0 = ownClump();
+  BANKSTATS = { n: bank.length, bp: bp, fp: fp, bo: bo, fo: fo, pct: C0 ? C0.at(bank).pct : null,
+                under: under.map(function (x) { return "Idea \u201c" + x.k + "\u201d projects " + (fp - x.p).toFixed(0) + " points under the field (" + x.p.toFixed(0) + " vs " + fp.toFixed(0) + ", " + x.n + " lineups)"; }) };
   el.innerHTML = "<b>Bank check:</b> bank " + bp.toFixed(0) + " pts, " + bo.toFixed(0) + "% own; field " + fp.toFixed(0) + " pts, " + fo.toFixed(0) +
     "% own: the bank projects " + Math.abs(d).toFixed(0) + (d < 0 ? " below" : " above") + " the field." +
     " Holding a player projected under " + PUNT_MIN + " minutes: bank " + Math.round(100 * avg(bank, punt)) + "%, field " + Math.round(100 * avg(F.field, punt)) + "%" +
@@ -1464,7 +1477,7 @@ function renderBank() {
   bankCheck();
   // by group: banked, each round of the cut (live while it runs), kept and share; each group's tags with a box to regroup
   var idx = BANK.lineups.map(function (L, i) { return i; });
-  var all = tagCounts(idx), tags = tagCounts(idx, true), rounds = CUT ? CUT.rounds.map(function (r) { return tagCounts(r.ids); }) : [];
+  var all = tagCounts(idx), tags = tagCounts(idx, true), rounds = [];      // the rounds: the Cut step's Round by round fold
   var after = CUT && CUT.keep ? tagCounts(CUT.keep) : null;     // the kept pool, variants added after the cut included
   var late = function (g) { return g === "Variants of the top"; };
   var members = {};
@@ -1487,7 +1500,8 @@ function renderBank() {
           })() +
           '</td><td class="m">' + all[g] + "</td>" + rounds.map(function (r) { return late(g) ? '<td class="m mut">after the cut</td>' : '<td class="m">' + (r[g] || 0) + "</td>"; }).join("") +
           (after ? '<td class="m">' + (after[g] || 0) + '</td><td class="m">' + Math.round(100 * (after[g] || 0) / all[g]) + "%</td>" : "") + "</tr>";
-      }).join("") + "</table>" : "") + (after ? boardHtml() + cutShares() : "");
+      }).join("") + "</table>" : "");
+  renderCut();
 }
 /* Players, bank against the cut: each player's share of the banked lineups and of the kept ones, the change, and his
    projected field ownership; players in 3%+ of either, biggest risers first. The cut's lean comes from the same
@@ -1572,7 +1586,9 @@ function renderEntries(fromFileNow) {     // fromFileNow: the entries file just 
       return "<tr><td>" + esc(c.name) + '</td><td class="m">' + money(c.entry_fee) + '</td><td class="m">' + (c.size || 0).toLocaleString() + '</td><td class="m">' + (c.max_per_user || 1) +
         '</td><td class="m"><input data-cid="' + esc(c.id) + '" type="number" min="0" max="' + (c.max_per_user || 1) + '" value="' + want + '" style="width:64px;height:26px"></td>' +
         '<td class="m">' + (want ? pf.length + " / " + Math.min(want, c.max_per_user || 1) + ' <button type="button" data-review="' + esc(c.id) + '" style="height:24px;padding:0 7px;font-size:11.5px">Build</button>' : "") + "</td></tr>";
-    }).join("") + "</table>" + (ENTRIES ? '<div class="note">Entries file: ' + ENTRIES.rows.length + " entries loaded.</div>" : "") + unlistedHtml(cs);
+    }).join("") + "</table>" + (ENTRIES ? '<div class="note">Entries file: ' + ENTRIES.rows.length + " entries loaded.</div>" : "");
+  $("entriesSum").textContent = ENTRIES ? ENTRIES.rows.length + " entries · " + new Set(ENTRIES.rows.map(function (r) { return r[2]; })).size + " contests" : "";
+  $("cutUnlisted").innerHTML = unlistedHtml(cs);
   contestPoll(cs);
   renderSteps();
   if (typeof NB !== "undefined" && NB.on) nbRender();
@@ -1612,12 +1628,19 @@ async function runCut() {
   var cx = ctx(), live = [];
   CUT = { keep: null, rounds: live }; PF = {}; pfSave(); renderEntries(); $("pfExport").disabled = true;
   var res = await DKSim.cutPool(cx, BANK.lineups, cs.map(function (c) { return { contest: c, n: ns[String(c.id)] }; }), F.field, fieldDoc.z, keep, pct, S,
-    function (r) { live.push(r); renderBank(); $("cutStatus").textContent = "Round " + r.round + ": " + r.survivors + " left…"; return tick(); },
+    function (r) {
+      live.push(r); renderBank();
+      var N0 = BANK.lineups.length, est = Math.max(r.round, Math.ceil(Math.log(Math.min(1, keep / N0)) / Math.log(1 - pct) - 1e-9));
+      $("cutProgress").hidden = false; $("cutBar").value = Math.min(1, (N0 - r.survivors) / Math.max(1, N0 - keep));
+      $("cutProgText").textContent = "Round " + r.round + " of ~" + est + " · " + r.survivors.toLocaleString() + " left";
+      $("cutStatus").textContent = "Round " + r.round + ": " + r.survivors + " left…"; return tick();
+    },
     BANK.lineups.map(function (L, i) { return lineupGroup(i); }));
   CUT = { keep: res.keep, rounds: res.rounds, contests: cs.map(function (c) { return String(c.id); }),
           settings: { keep: keep, pct: Math.round(pct * 100), nights: S, within: "idea" }, bankN: BANK.lineups.length };
   $("cutStatus").textContent = "Scoring the kept lineups for the idea scoreboard…"; await tick();
   CUT.board = ideaBoard(cs, ns, +$("nSims").value || 3000);
+  $("cutProgress").hidden = true;
   cutSave();
   PF = {}; renderBank(); renderEntries();
   return "Cut " + BANK.lineups.length + " to " + res.keep.length + " in " + res.rounds.length + " round" + (res.rounds.length === 1 ? "" : "s") +
@@ -1659,24 +1682,57 @@ function ideaBoard(cs, ns, S) {
   tr.tier.forEach(function (t, k) { if (t === "A") aIx.push(k); });
   var aBy = {}; aIx.forEach(function (k) { var g = lineupGroup(keep[k]); aBy[g] = (aBy[g] || 0) + 1; });
   var topIdea = Object.keys(aBy).sort(function (a, b) { return aBy[b] - aBy[a]; })[0];
-  var tierA = { n: aIx.length, ideas: Object.keys(aBy).length, top: topIdea || null, topShare: aIx.length ? aBy[topIdea] / aIx.length : 0, sigma: tr.sigma };
+  var tierA = { n: aIx.length, ideas: Object.keys(aBy).length, top: topIdea || null, topShare: aIx.length ? aBy[topIdea] / aIx.length : 0, sigma: tr.sigma, by: aBy };
   tierA.flag = tierA.n <= 2 || tierA.ideas === 1;
   return { rows: rows, nights: S, contests: cs.map(function (c) { return c.name; }), tierA: tierA,
            values: Array.from(ret, function (x) { return Math.round(100 * x / Math.max(1, w)) / 100; }) };
 }
-function boardHtml() {
-  var B = CUT && CUT.board;
-  if (!B || !B.rows.length) return "";
-  return '<details class="fold" id="ideaBoard" open><summary>Idea scoreboard: the kept lineups by idea, best sim ROI first</summary>' +
-    '<div class="note">Each kept lineup alone in ' + esc(B.contests.join(", ")) + " (" + B.nights + " fresh nights), each contest weighted by your entries in it.</div>" +
-    (B.tierA ? '<div class="note' + (B.tierA.flag ? " bad" : "") + '" id="tierA"><b>Tier A:</b> ' + B.tierA.n + " kept lineup" + (B.tierA.n === 1 ? "" : "s") +
-      " within the sim's noise of the best, from " + B.tierA.ideas + " idea" + (B.tierA.ideas === 1 ? "" : "s") + (B.tierA.top ? " (top: " + esc(B.tierA.top) + ", " +
-      Math.round(100 * B.tierA.topShare) + "%)" : "") + (B.tierA.flag ? ". Red flag: " + (B.tierA.n <= 2 ? "one or two great lineups with no close cousins" : "all from one idea") : "") + ".</div>" : "") +
-    '<table class="contests"><tr><th>Idea</th><th class="r">Kept</th><th class="r">Sim ROI</th><th class="r">Top 10%</th><th class="r">Top 1%</th><th class="r">Cash</th><th class="r">Avg own</th><th class="r">Cores</th></tr>' +
-    B.rows.map(function (r) {
-      return '<tr data-idea="' + esc(r.idea) + '"><td>' + esc(r.idea) + '</td><td class="m">' + r.kept + '</td><td class="m">' + roiTxt(r.roi) + '</td><td class="m">' + pct1(r.top10) +
-        '</td><td class="m">' + pct1(r.top1) + '</td><td class="m">' + pct1(r.cash) + '</td><td class="m">' + Math.round(r.own) + '%</td><td class="m">' + r.cores + "</td></tr>";
-    }).join("") + "</table></details>";
+/* The Cut step (2026-11-20, the operator's layout part 2): the entries file's summary, one bank line (its red idea
+   warnings on hover), the cut's progress while it runs, and ONE idea table (Banked, Kept, Share, Tier A, the board's
+   Sim ROI / Top 10% / Top 1% / Cash / Avg own / Cores), best Sim ROI first and sortable, with the tier-A line above it
+   and the rounds in a closed fold under it. */
+var cutSort = { k: "roi", dir: -1 };
+function renderCut() {
+  if (!$("cutIdeas") || !BANK) return;
+  var B = BANKSTATS;
+  $("cutBankLine").className = "note" + (B && B.under.length ? " bad" : "");
+  $("cutBankLine").title = B && B.under.length ? B.under.join("\n") : "";
+  $("cutBankLine").innerHTML = B ? "Bank " + B.n.toLocaleString() + " · " + Math.abs(B.bp - B.fp).toFixed(0) + " pts " + (B.bp < B.fp ? "under" : "over") + " the field · own " +
+    Math.round(B.bo) + "% vs " + Math.round(B.fo) + "%" + (B.pct != null ? " · field's " + ordinal(B.pct) + " pct" : "") + (B.under.length ? " · " + B.under.length + " idea" + (B.under.length === 1 ? "" : "s") + " well under (hover)" : "") :
+    "Bank " + (BANK.lineups.length || 0).toLocaleString();
+  var idx = BANK.lineups.map(function (L, i) { return i; }), all = tagCounts(idx);
+  if (!CUT || !CUT.keep) { $("cutIdeas").innerHTML = BANK.lineups.length ? '<div class="note">Re-sim &amp; cut to see each idea\'s kept lineups, sim ROI and tier A.</div>' : ""; $("cutSharesBox").innerHTML = ""; return; }
+  var after = tagCounts(CUT.keep), board = CUT.board || { rows: [] }, br = {}, T = board.tierA;
+  board.rows.forEach(function (r) { br[r.idea] = r; });
+  var late = function (g) { return g === "Variants of the top"; };
+  var rowsI = Object.keys(Object.assign({}, all, after)).map(function (g) {
+    var b = br[g] || {};
+    return { idea: g, banked: late(g) ? null : all[g] || 0, kept: after[g] || 0, share: late(g) || !all[g] ? null : (after[g] || 0) / all[g], ta: T && T.by ? T.by[g] || 0 : null,
+             roi: b.roi != null ? b.roi : null, top10: b.top10, top1: b.top1, cash: b.cash, own: b.own, cores: b.cores };
+  });
+  var k = cutSort.k, dir = cutSort.dir;
+  rowsI.sort(function (a, b) { var x = a[k], y = b[k]; if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
+    return (x < y ? -1 : x > y ? 1 : 0) * dir || (b.roi || -1e9) - (a.roi || -1e9); });
+  var cols = [["idea", "Idea"], ["banked", "Banked"], ["kept", "Kept"], ["share", "Share"], ["ta", "Tier A"], ["roi", "Sim ROI"], ["top10", "Top 10%"], ["top1", "Top 1%"], ["cash", "Cash"], ["own", "Avg own"], ["cores", "Cores"]];
+  var info = board.contests ? "Each kept lineup alone in " + board.contests.join(", ") + " (" + board.nights + " fresh nights), each contest weighted by your entries in it. Tier A: kept lineups within the sim's noise of the best." : "";
+  var f = function (x, fn) { return x == null ? "–" : fn(x); };
+  var rounds = CUT.rounds.map(function (r) { return tagCounts(r.ids); });
+  $("cutIdeas").innerHTML = (T ? '<div class="note' + (T.flag ? " bad" : "") + '" id="tierA"><b>Tier A tonight:</b> ' + T.n + " lineup" + (T.n === 1 ? "" : "s") + ", " + T.ideas + " idea" + (T.ideas === 1 ? "" : "s") +
+      (T.top ? " (top: " + esc(T.top) + " " + Math.round(100 * T.topShare) + "%)" : "") + (T.flag ? ". Red flag: " + (T.n <= 2 ? "one or two great lineups with no close cousins" : "all from one idea") : "") + "</div>" : "") +
+    '<table class="contests" id="ideaTable"><tr>' + cols.map(function (c) {
+      return '<th data-ck="' + c[0] + '" class="' + (c[0] === "idea" ? "" : "r") + '">' + c[1] + (c[0] === "idea" && info ? ' <span class="mut" title="' + esc(info) + '">(i)</span>' : "") + (cutSort.k === c[0] ? (cutSort.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>" +
+    rowsI.map(function (r) {
+      return '<tr data-idea="' + esc(r.idea) + '"><td>' + esc(r.idea) + '</td><td class="m">' + (late(r.idea) ? '<span class="mut">after the cut</span>' : r.banked) + '</td><td class="m">' + r.kept + '</td><td class="m">' +
+        f(r.share, function (x) { return Math.round(100 * x) + "%"; }) + '</td><td class="m">' + f(r.ta, String) + '</td><td class="m" style="color:' + (r.roi == null ? "inherit" : r.roi > 0 ? "var(--live)" : "var(--bad)") + '">' + roiTxt(r.roi) +
+        '</td><td class="m">' + f(r.top10, pct1) + '</td><td class="m">' + f(r.top1, pct1) + '</td><td class="m">' + f(r.cash, pct1) + '</td><td class="m">' + f(r.own, function (x) { return Math.round(x) + "%"; }) + '</td><td class="m">' + f(r.cores, String) + "</td></tr>";
+    }).join("") + "</table>" +
+    (rounds.length ? '<details class="fold" id="cutRounds"><summary>Round by round</summary><table class="contests"><tr><th>Idea</th><th class="r">Banked</th>' +
+      rounds.map(function (r, i) { return '<th class="r">Round ' + (i + 1) + "</th>"; }).join("") + '<th class="r">Kept</th></tr>' +
+      Object.keys(all).sort(function (a, b) { return all[b] - all[a]; }).map(function (g) {
+        return "<tr><td>" + esc(g) + '</td><td class="m">' + all[g] + "</td>" + rounds.map(function (r) { return late(g) ? '<td class="m mut">after the cut</td>' : '<td class="m">' + (r[g] || 0) + "</td>"; }).join("") +
+          '<td class="m">' + (after[g] || 0) + "</td></tr>";
+      }).join("") + "</table></details>" : "");
+  $("cutSharesBox").innerHTML = cutShares();
 }
 
 // into: where the portfolios go (the page's PF by default; Save build's Auto-fill benchmark passes its own object)
@@ -2048,8 +2104,8 @@ function nbSet(on) {
   var out = $("s2out"), det = $("nbDetailsBody");
   // the bank table (tag boxes, Group the ticked tags) stays under Draw & bank in both views: grouping comes before the cut
   // the status line sits under the step bar and the bank table in the Bank step, in both views (2026-11-20)
-  if (NB.on) { ["entriesBox", "pfBox"].forEach(function (id) { det.appendChild($(id)); }); }
-  else { ["entriesBox", "pfBox"].forEach(function (id) { out.appendChild($(id)); }); nbSide(false); }
+  if (NB.on) { ["entriesBox", "pfBox", "cutSharesBox"].forEach(function (id) { det.appendChild($(id)); }); }
+  else { ["entriesBox", "pfBox", "cutSharesBox"].forEach(function (id) { out.appendChild($(id)); }); nbSide(false); }
   if (NB.on) nbOpen();
 }
 // the bar sits under the page's own sticky masthead; the panes fill what's left of the screen
@@ -2494,6 +2550,11 @@ function scanBankApply(b) {
 nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
+$("cutIdeas").addEventListener("click", function (e) {
+  var h = e.target.closest("th[data-ck]"); if (!h) return;
+  cutSort = { k: h.dataset.ck, dir: cutSort.k === h.dataset.ck ? -cutSort.dir : (h.dataset.ck === "idea" ? 1 : -1) }; renderCut();
+});
+$("cutHow").addEventListener("click", function () { var t = $("cutHowText"); t.hidden = !t.hidden; $("cutHow").setAttribute("aria-expanded", String(!t.hidden)); });
 $("stepBar").addEventListener("click", function (e) { var b = e.target.closest("button[data-step]"); if (b) showStep(b.dataset.step); });
 $("slate").addEventListener("change", function (e) {       // a hand pick holds for the rest of the Pacific day
   try { localStorage.setItem("dkcbb:slatePick", JSON.stringify({ day: ptDay(Date.now()), dg: $("slate").value })); } catch (x) {}
@@ -2589,7 +2650,7 @@ $("bankClear").addEventListener("click", function () {
   if (!confirm("Clear the bank (" + BANK.lineups.length + " lineups)?")) return;
   BANK = { lineups: [], tags: [], tagRules: {}, groups: {} }; CUT = null; cutSave(); PF = {}; pfSave(); bankSaveState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
 });
-$("entriesBox").addEventListener("click", function (e) { if (e.target.id === "contestCheck") refreshContests(); });
+$("cutUnlisted").addEventListener("click", function (e) { if (e.target.id === "contestCheck") refreshContests(); });
 $("entriesFile").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   f.text().then(function (t) { $("cutStatus").textContent = loadEntries(t); });
@@ -2647,6 +2708,7 @@ async function runVariants() {
   $("cutStatus").textContent = "Scoring the kept lineups for the idea scoreboard…"; await tick();
   CUT.board = ideaBoard(cs, ns, S);
   bankSaveState(); cutSave(); PF = {}; pfSave(); renderBank(); renderEntries();
+  $("varResult").textContent = vars.length + " new, " + added + " joined · Tier A " + (before != null ? before + " → " : "") + CUT.board.tierA.n;
   return "Variants of tier A, the top " + top.length + " (" + K + " of 8 players kept, " + M + " draws each): " + vars.length + " new after near-duplicates, " + added +
     " reached the kept pool's top half and joined it (tagged \"variant of #rank\", grouped as Variants of the top). Tier A: " +
     (before != null ? before + " → " : "") + CUT.board.tierA.n + ". Fill all contests again to use them.";
