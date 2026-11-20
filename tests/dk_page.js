@@ -5,7 +5,7 @@
 //
 // Run it before changing dk.html or dk_sim.js.
 const { chromium } = require("playwright");
-const fs = require("fs");
+const fs = require("fs"), os = require("os");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
@@ -366,7 +366,16 @@ function audit(name, L, o) {
   check("tag line carries the Leverage weight", /leverage 0\.5/.test(await pg.textContent("#tagNow")), await pg.textContent("#tagNow"));
   const { L: Llev } = await draw(15);
   await set(base);
-  const { L: L0 } = await draw(15);
+  const { L: L0, msg: m0 } = await draw(15);
+  // the saturation light: new / repeats / near-copies, coloured by fresh = (new - near-copies) / asked
+  const sat = await pg.evaluate(() => ({ el: (document.querySelector("#buildStatus .sat") || {}).className, text: (document.querySelector("#buildStatus .sat") || {}).textContent,
+    rules: [saturation(100, 90, 5, false), saturation(100, 70, 5, false), saturation(100, 60, 20, false), saturation(100, 90, 0, true)].map(x => x.level),
+    near: (() => { const L = BANK.lineups[0], copy = { ids: L.ids.slice(0, 7).concat(["x"]), slots: [] }, same = { ids: L.ids.slice(), slots: [] }; return [nearCopies([copy]), nearCopies([same])]; })() }));
+  const satM = /^Banked (\d+) new · (\d+) repeats · (\d+) near-copies \(7 of 8 shared with a banked lineup\)/.exec(m0);
+  const satFr = satM ? Math.max(0, +satM[1] - +satM[3]) / 15 : -1, wantLvl = L0.length < 15 ? "red" : satFr >= 0.75 ? "green" : satFr >= 0.5 ? "amber" : "red";
+  check("saturation light: new · repeats · near-copies after each Draw & bank, coloured by the fresh share (green 75%+, amber 50-75, red under 50 or tapped out)",
+        !!satM && sat.el === "sat sat-" + wantLvl && new RegExp("^" + Math.round(100 * satFr) + "% fresh").test(sat.text) && JSON.stringify(sat.rules) === JSON.stringify(["green", "amber", "red", "red"]) &&
+        JSON.stringify(sat.near) === JSON.stringify([1, 0]), JSON.stringify([m0, sat, wantLvl]));
   check("Leverage weight: lineups drawn with it hold less projected ownership", Llev.length >= 10 && ownOf(Llev) < ownOf(L0),
         "with weight " + ownOf(Llev).toFixed(0) + "%, without " + ownOf(L0).toFixed(0) + "%");
 
@@ -1043,6 +1052,25 @@ function audit(name, L, o) {
         JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()) &&
         bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.within === "idea" && bs.cut.mode === "merit" && bs.cut.keep === 100 && bs.pick && bs.pick.maxExpo === 60 && bs.pick.maxCore === 15,
         dl6.suggestedFilename() + " " + JSON.stringify(bs.cut));
+  // Load build: Save build carries what it needs (slots, the whole cut, entry counts; no entries file); save -> clear ->
+  // load gives the same bank, cut and picks; another draft group is refused
+  check("Save build: slots, the whole cut and the entry counts for Load build, no entry IDs",
+        bs.slots && bs.slots.length === bs.pool.length && bs.cut_state && JSON.stringify(bs.cut_state.keep) === JSON.stringify(cut.keep) && bs.entries_n && !("entries" in bs) &&
+        !JSON.stringify(bs).includes("Entry ID"), JSON.stringify(Object.keys(bs)));
+  const lbSnap = () => pg.evaluate(() => JSON.stringify({ b: BANK.lineups.map(L => [L.ids, L.slots]), t: BANK.tags, g: BANK.groups || {}, r: Object.keys(BANK.tagRules).sort(), k: CUT && CUT.keep, s: CUT && CUT.settings, pf: PF, seed: nightsSeed(), n: entriesN() }));
+  const lbBefore = await lbSnap();
+  await pg.evaluate(() => { BANK = { lineups: [], tags: [], tagRules: {}, groups: {} }; CUT = null; cutSave(); PF = {}; pfSave(); state.nightsSeed = 12345; bankSaveState(); renderBank(); renderEntries(); });
+  const lbOther = path.join(os.tmpdir(), "dk_build_other.json");
+  fs.writeFileSync(lbOther, JSON.stringify(Object.assign({}, bs, { draft_group: 999 })));
+  await pg.setInputFiles("#bankLoadFile", lbOther);
+  await pg.waitForFunction(() => /draft group 999/.test(document.getElementById("cutStatus").textContent));
+  const lbRefused = await pg.evaluate(() => BANK.lineups.length === 0 && !!document.querySelector("#cutStatus .bad"));
+  await pg.setInputFiles("#bankLoadFile", await dl6.path());
+  await pg.waitForFunction(() => /^Restored /.test(document.getElementById("cutStatus").textContent));
+  const lbAfter = await lbSnap(), lbMsg = await pg.textContent("#cutStatus");
+  check("Load build: another draft group refused; save -> clear -> load gives the same bank, slots, tags, groups, cut, picks, entry counts and nights seed, and says what came back",
+        lbRefused && lbAfter === lbBefore && new RegExp("^Restored " + bank.lineups.length.toLocaleString("en-US") + " banked · " + cut.keep.length + " kept · " + Object.values(bs.portfolios).flat().length + " entries picked").test(lbMsg),
+        lbMsg + (lbAfter === lbBefore ? "" : " differs"));
   // the Auto-fill benchmark: Pick portfolios' entries from the same final pool, apart from yours, each lineup once
   const ap = bs.auto_portfolios || {}, apAll = Object.values(ap).flat();
   check("Save build: the Auto-fill benchmark for each contest with entries, from the final pool, each lineup once",
@@ -1543,8 +1571,8 @@ function audit(name, L, o) {
     buttons: [...document.querySelectorAll("#fillButtons button:not(.linkbtn)")].map(b => b.textContent), clear: document.getElementById("bankClear").closest("section.step").id,
     sum: document.getElementById("fillSetSum").textContent, folded: ["maxExpo", "maxNight", "minUnique", "maxCore", "maxPair", "maxUse", "lockFill", "pfObj", "nSims"].every(id => document.getElementById(id).closest("#fillSet")) && document.getElementById("fillSet").tagName === "DETAILS", varIn: document.getElementById("varRun").closest("section.step").id,
     heads: [...document.querySelectorAll("#fillPlayersSlot #players .head span[data-sort]")].map(x => x.textContent.replace(/ [↓↑]$/, "")) }));
-  check("fill step: one set of buttons (Fill all contests, Auto-fill the rest, Undo fill, New nights, Export DK entries, Save build), Variants only in Cut, Clear bank only in Bank, the settings one line, no side pane",
-        fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Auto-fill the rest", "Undo fill", "New nights", "Export DK entries", "Save build"]) && fb.clear === "stepBank" &&
+  check("fill step: one set of buttons (Fill all contests, Auto-fill the rest, Undo fill, New nights, Export DK entries, Save build, Load build), Variants only in Cut, Clear bank only in Bank, the settings one line, no side pane",
+        fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Auto-fill the rest", "Undo fill", "New nights", "Export DK entries", "Save build", "Load build"]) && fb.clear === "stepBank" &&
         fb.varIn === "stepCut" && fb.folded && /^Fill: contest 60% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights$/.test(fb.sum) &&
         ["Here", "Tonight", "Room"].every(h => fb.heads.includes(h)), JSON.stringify(fb));
   dialogs = [];

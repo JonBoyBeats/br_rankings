@@ -81,7 +81,8 @@
   .tag.frag { border: 1px solid var(--warn); color: var(--warn); font-weight: 600; }
   .tag.lk { background: var(--live); color: #04140c; }
   .read-leverage { color: #3fbf7f; font-weight: 600; } .read-core { color: #5b9cf0; font-weight: 600; }
-  .read-lean-leverage { color: #9fe0bf; } .read-lean-core { color: #a9c9f6; } .read-fade { color: var(--bad); font-weight: 600; } .read-skip, .read-even { color: var(--muted); }
+  .read-lean-leverage { color: #9fe0bf; } .read-lean-core { color: #a9c9f6; }
+  .sat { font-weight: 600; padding: 0 6px; border-radius: 4px; } .sat-green { color: #3fbf7f; } .sat-amber { color: #e0a63a; } .sat-red { color: var(--bad); } .read-fade { color: var(--bad); font-weight: 600; } .read-skip, .read-even { color: var(--muted); }
   .row .nb2 { font-size: 9.5px; display: block; line-height: 1; }
   .row button.pbank { height: 20px; width: 24px; padding: 0; font-size: 12px; }
   .head span[data-sort="read"], .row .rdc { padding-left: 8px; font-size: 12.5px; }
@@ -395,6 +396,8 @@
     <button type="button" id="pfNights" title="Draw new simulated nights for this slate (the fills, the builder and the scoreboard all use the slate's nights)">New nights</button>
     <button type="button" id="pfExport" disabled>Export DK entries</button>
     <button type="button" id="bankSave">Save build</button>
+    <button type="button" id="bankLoad" title="Restore a saved build of this slate: the bank, the cut, the variants, the portfolios and the slate's nights">Load build</button>
+    <input type="file" id="bankLoadFile" accept=".json,application/json" hidden>
     <button type="button" class="linkbtn" id="nbOff" title="The old layout, the same bank, cut and portfolios">Classic view</button>
     <button type="button" class="linkbtn" id="nbOn" title="The one-screen builder">New builder view</button>
   </div>
@@ -1423,6 +1426,21 @@ function logPlatoon(o, res, tag) {
   });
   bankSaveState();
 }
+/* The saturation light after each Draw & bank (2026-11-20, the operator): near-copies are new lineups sharing 7 of their
+   8 players with one already banked (each banked lineup's eight 7-player sets, looked up); fresh = (new - near-copies) /
+   asked for. Green at 75%+, amber 50-75% (the rule is saturating: change one thing), red under 50% or when fewer
+   distinct lineups fit than asked (tapped out: switch the rule). */
+function nearCopies(lineups) {
+  var seven = {}, keyOf = function (ids) { return ids.slice().sort(); }, sevens = function (s) { return s.map(function (_, j) { return s.slice(0, j).concat(s.slice(j + 1)).join(","); }); };
+  var have = {}; BANK.lineups.forEach(function (L) { var s = keyOf(L.ids); have[s.join(",")] = 1; sevens(s).forEach(function (k) { seven[k] = 1; }); });
+  return lineups.filter(function (L) { var s = keyOf(L.ids); return !have[s.join(",")] && sevens(s).some(function (k) { return seven[k]; }); }).length;
+}
+function saturation(asked, added, near, short) {
+  var fresh = asked ? Math.max(0, added - near) / asked : 0, pc = Math.round(100 * fresh) + "% fresh";
+  if (short || fresh < 0.5) return { level: "red", fresh: fresh, text: pc + ": tapped out, switch the rule" };
+  if (fresh < 0.75) return { level: "amber", fresh: fresh, text: pc + ": this rule is saturating, change one thing" };
+  return { level: "green", fresh: fresh, text: pc };
+}
 function bankAdd(lineups, tag) {
   var seen = {}, added = 0;
   BANK.lineups.forEach(function (L, i) { seen[L.ids.slice().sort().join(",")] = i; });
@@ -1963,13 +1981,52 @@ async function saveBank() {
               pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, groups: BANK.groups || {}, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null,
               pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, nights_seed: nightsSeed(), rule_log: BANK.ruleLog || [], idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate,
               scan: SCAN && String(SCAN.draft_group) === String(slate.draft_group_id) ? SCAN : null,
-              outs: Object.assign({}, state.outs), ins: Object.assign({}, state.ins) };   // Mark out / Play him: the night's news tag (dk_eval night_tag)
+              outs: Object.assign({}, state.outs), ins: Object.assign({}, state.ins),   // Mark out / Play him: the night's news tag (dk_eval night_tag)
+              // for Load build (2026-11-20): each lineup's slots, the whole cut (rounds, values, variants) and the entry
+              // counts per contest (never the entries file: its entry IDs stay out of a build)
+              slots: BANK.lineups.map(function (L) { return L.slots; }), cut_state: CUT && CUT.keep ? CUT : null, entries_n: entriesN() };
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
   a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
   document.body.appendChild(a); a.click(); a.remove();
   $("cutStatus").textContent = "Saved the build" + (CUT && CUT.auto ? ", with the Auto-fill benchmark (graded beside your entries)" : "") + ".";
 }
+
+/* Load build (2026-11-20, the operator): a saved build file of this slate restores the bank (lineups, tags, groups, tag
+   settings), the cut (kept order, settings, rounds, values, variants), the portfolios, the entry counts and the slate's
+   nights seed, so a crashed or discarded tab with a bank past the browser's storage needn't re-bank. A build of another
+   draft group is refused. Builds saved before 2026-11-20 carry no slots or whole cut: slots come from the ids
+   (DKSim.lateSlots), the cut from the final pool and its settings. The entries file is loaded again for its entry IDs. */
+function loadBuild(doc) {
+  if (!doc || doc.kind !== "build" || !Array.isArray(doc.pool)) return { err: "That isn't a saved build (Save build's .json)." };
+  if (String(doc.draft_group) !== String(slate.draft_group_id))
+    return { err: "That build is for draft group " + doc.draft_group + (doc.day ? " (" + doc.day + ")" : "") + "; this slate is " + slate.draft_group_id + ". Pick its slate first." };
+  var cx = ctx();
+  BANK = { lineups: doc.pool.map(function (ids, i) { ids = ids.map(String); return { ids: ids, slots: doc.slots && doc.slots[i] ? doc.slots[i].map(String) : DKSim.lateSlots(cx, ids) }; }),
+           tags: (doc.tags || []).map(function (t) { return Array.isArray(t) ? t : [t]; }), tagRules: doc.tag_settings || {}, groups: doc.groups || {}, ruleLog: doc.rule_log || [] };
+  while (BANK.tags.length < BANK.lineups.length) BANK.tags.push([]);
+  CUT = doc.cut_state ? doc.cut_state : doc.final ? { keep: doc.final, rounds: [], settings: doc.cut, board: doc.idea_board || null, auto: doc.auto_portfolios || null,
+        contests: Object.keys(doc.entries_n || doc.portfolios || {}) } : null;
+  if (CUT) CUT.bankN = BANK.lineups.length;
+  PF = doc.portfolios || {};
+  if (doc.nights_seed != null) { state.nightsSeed = doc.nights_seed; save(); }
+  bankSaveState(); cutSave(); pfSave(); renderBank();
+  renderEntries();
+  Object.keys(doc.entries_n || {}).forEach(function (cid) { var i = document.querySelector('#entriesBox input[data-cid="' + cid + '"]'); if (i) i.value = doc.entries_n[cid]; });
+  renderEntries(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
+  var picked = Object.keys(PF).reduce(function (t, k) { return t + PF[k].length; }, 0);
+  return { msg: "Restored " + BANK.lineups.length.toLocaleString() + " banked · " + (CUT && CUT.keep ? CUT.keep.length.toLocaleString() : 0) + " kept · " + picked + " entries picked" +
+                (CUT && CUT.variants ? " · variants: " + CUT.variants.added + " joined" : "") + (bankSaveFailed ? ". Not saved in this browser (over its storage): keep the file." : ".") +
+                (ENTRIES ? "" : " Load the entries file again before Export.") };
+}
+$("bankLoad").addEventListener("click", function () { $("bankLoadFile").value = ""; $("bankLoadFile").click(); });
+$("bankLoadFile").addEventListener("change", function (e) {
+  var f = e.target.files[0]; if (!f) return;
+  f.text().then(function (t) {
+    var r; try { r = loadBuild(JSON.parse(t)); } catch (x) { r = { err: "That file isn't readable as a build (" + x.message + ")." }; }
+    $("cutStatus").innerHTML = r.err ? '<span class="bad">' + esc(r.err) + "</span>" : esc(r.msg);
+  });
+});
 
 // --- the portfolio builder ---------------------------------------------------------------------
 function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
@@ -2741,11 +2798,14 @@ $("bankDraw").addEventListener("click", function () {
   var dr = drawRules();
   drawBank(cx, dr, n).then(function (res) {
     takeCounts(res);
+    var near = nearCopies(res.lineups);      // before they join the bank
     var added = bankAdd(res.lineups, tag);
     logPlatoon(dr, res, tag);
-    var more = (rulesMsg(res) + (res.expo || "")).trim();
-    $("buildStatus").innerHTML = esc("Banked " + added + " new lineups, tagged \"" + tag + "\"" + (res.lineups.length - added ? " (" + (res.lineups.length - added) + " already in the bank)" : "") + "." +
+    var more = (rulesMsg(res) + (res.expo || "")).trim(), sat = saturation(n, added, near, res.lineups.length < n);
+    $("buildStatus").innerHTML = esc("Banked " + added + " new · " + (res.lineups.length - added) + " repeats · " + near + " near-copies (7 of 8 shared with a banked lineup), tagged \"" + tag + "\"." +
       (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "")) +
+      ' <span class="sat sat-' + sat.level + '" title="Fresh: new less near-copies, of the ' + n + ' asked for">' + esc(sat.text) + "</span>" +
+      (bankSaveFailed ? ' <span class="bad">Not saved in this browser: Save build to checkpoint.</span>' : "") +
       (more ? ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">rules</summary> ' + esc(more) + "</details>" : "");
   }, function (e) { $("buildStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; });
 });
