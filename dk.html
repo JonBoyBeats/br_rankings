@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 128px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 34px 36px 38px 70px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 128px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 34px 40px 36px 38px 70px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -170,11 +170,11 @@
   #fillSet > summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
   #nbList.nbscroll { max-height: 440px; }
   #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
-  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 34px 38px 70px 36px 40px 34px 26px 42px 42px; }
+  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px; }
   /* no player scan for the slate yet (2026-11-20): its six columns hidden, their width to the name */
   #players.noscan .col-scan { display: none; }
-  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(140px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 34px 36px 42px 42px; }
-  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(140px, 1fr) 44px 46px 54px 38px 36px 28px 34px 36px 40px 34px 42px 42px; }
+  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(140px, 1fr) 30px 44px 48px 44px 56px 38px 36px 28px 34px 40px 36px 42px 42px; }
+  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(140px, 1fr) 44px 46px 54px 38px 36px 28px 34px 40px 36px 40px 34px 42px 42px; }
   #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
   #players .row.bankgap-in { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out { box-shadow: inset 3px 0 var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
@@ -260,7 +260,7 @@
   @media (max-width: 620px) {
     .head, .row, #players.noscan .head, #players.noscan .row { grid-template-columns: 90px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
     .lx button.setadd { display: none; }
-    .col-min, .col-mpg, .col-avg, .col-max, .col-pos, .col-team, .col-opp, .col-scan { display: none; }
+    .col-min, .col-mpg, .col-obpr, .col-avg, .col-max, .col-pos, .col-team, .col-opp, .col-scan { display: none; }
     table.bp td.nm { min-width: 140px; font-size: 11px; }
     table.bp td, table.bp th { padding: 3px 3px; }
     .name { font-size: 13px; }
@@ -767,7 +767,7 @@ function renderPlayers() {
 }
 function sortList(list) {
   var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
-              avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; }, mpg: function (r) { return r.min_avg != null ? r.min_avg : -1; },
+              avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; }, mpg: function (r) { return r.min_avg != null ? r.min_avg : -1; }, obpr: function (r) { return r.obpr != null ? r.obpr : -99; },
               own: own, pos: function (r) { return r.position || ""; }, team: function (r) { return r.team || ""; }, opp: function (r) { return r.opp || ""; },
               scan: function (r) { var x = scanRowOf(r.id); return x ? x.g_t1 : -Infinity; },
               sroi: function (r) { var x = scanRowOf(r.id); return x && x.g_roi != null ? x.g_roi : -Infinity; },
@@ -886,7 +886,7 @@ function bankShare() {
 function playerTable(list, sortable, fs) {
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"],
-     ["min", "Min", "r col-min"], ["mpg", "MPG", "r col-mpg"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan"], ["read", "Read", "col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
+     ["min", "Min", "r col-min"], ["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan"], ["read", "Read", "col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
     '<span class="col-scan" title="Bank this: a rule, at least 1 of him, for your next draw"></span>' +
@@ -941,6 +941,9 @@ function playerTable(list, sortable, fs) {
       // MPG (2026-11-20): his season minutes a game played, beside our minutes projection; the hover his last 5 and their spread
       '<span class="m r mut col-mpg"' + (r.min_avg != null ? ' title="' + esc("Season " + r.min_avg.toFixed(1) + " min a game played" + (r.min_last5 && r.min_last5.length ? "; last " + r.min_last5.length + ": " +
         r.min_last5.map(function (m) { return Math.round(m); }).join(", ") : "") + (r.min_cv != null ? "; minutes CV " + r.min_cv.toFixed(2) : "")) + '"' : "") + ">" + (r.min_avg != null ? r.min_avg.toFixed(0) : "–") + "</span>" +
+      // OBPR (2026-11-20): EvanMiya's offensive BPR; the hover BPR, DBPR and his OBPR rank on his team; "–" with no EvanMiya match
+      '<span class="m r mut col-obpr"' + (r.obpr != null ? ' title="' + esc("EvanMiya OBPR " + r.obpr.toFixed(2) + (r.bpr != null ? "; BPR " + r.bpr.toFixed(2) : "") + (r.dbpr != null ? "; DBPR " + r.dbpr.toFixed(2) : "") +
+        (r.bpr_rank != null ? "; #" + r.bpr_rank + " on " + (r.team || "his team") + " by OBPR" : "")) + '"' : "") + ">" + (r.obpr != null ? r.obpr.toFixed(1) : "–") + "</span>" +
       '<span class="m r mut col-avg' + (r.last5 && r.last5.length ? ' has5" title="' + esc(last5Text(r)) + '"' : '"') + ">" + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
       '<span class="m r col-scan">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
       // Read (2026-11-20: Top 1%, ROI and Bank folded into its hover; the bank-gap stripe stays on the row)

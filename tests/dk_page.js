@@ -267,7 +267,7 @@ function audit(name, L, o) {
              tip: el.querySelector(".nm").title, line: (r.spread > 0 ? "+" : "") + r.spread, ou: r.ou, frag: f ? { badge: !!fel.querySelector(".frag") === !!fragileMap()[f.id], tip: /Swingy: expected miss/.test(fel.querySelector(".nm").title) } : null };
   });
   check("Players list: Pos / Team / Opp columns, matchup and line in the name's tooltip, fragile in the tooltip, no ± column or grey line",
-        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "MPG", "DK avg", "Cash", "Read"]) && pl.sub === 0 &&
+        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "MPG", "OBPR", "DK avg", "Cash", "Read"]) && pl.sub === 0 &&
         JSON.stringify(pl.cells) === JSON.stringify(pl.want) && pl.tip.includes(pl.line) && pl.tip.includes("o/u " + pl.ou) && (!pl.frag || (pl.frag.badge && pl.frag.tip)), JSON.stringify(pl));
   // A4: fragile from the lenses: the badge only when 2+ lenses disagree with our number, the reasons in its hover
   const fragA4 = await pg.evaluate(() => { const m = fragileMap(), ids = Object.keys(m);
@@ -1568,16 +1568,20 @@ function audit(name, L, o) {
   check("player scan: Cash and Read (coloured) columns with Bank this; Top 1% (noise bar), ROI and the bank share in Read's hover; sortable by the scan", pList.ok && pList.sorted, JSON.stringify(pList));
   const mpg = await pg.evaluate(() => { renderPlayers(); const heads = [...document.querySelectorAll("#players .head span[data-sort]")].map(x => x.dataset.sort);
     const r = rows.find(x => x.status !== "Out" && document.querySelector('#players .row[data-id="' + x.id + '"]'));
-    const keep = [r.min_avg, r.min_last5, r.min_cv]; r.min_avg = 27.4; r.min_last5 = [30, 22, 28, 31, 26]; r.min_cv = 0.12; renderPlayers();
+    const keep = [r.min_avg, r.min_last5, r.min_cv, r.obpr, r.dbpr, r.bpr, r.bpr_rank]; r.min_avg = 27.4; r.min_last5 = [30, 22, 28, 31, 26]; r.min_cv = 0.12;
+    r.obpr = 3.214; r.dbpr = 1.05; r.bpr = 4.26; r.bpr_rank = 2; renderPlayers();
     const cell = document.querySelector('#players .row[data-id="' + r.id + '"] .col-mpg'), text = cell.textContent, tip = cell.title;
-    r.min_avg = keep[0]; r.min_last5 = keep[1]; r.min_cv = keep[2]; renderPlayers();
+    const ob = document.querySelector('#players .row[data-id="' + r.id + '"] .col-obpr'), obText = ob.textContent, obTip = ob.title;
+    const r2 = rows.find(x => x !== r && x.obpr == null && document.querySelector('#players .row[data-id="' + x.id + '"]')), dash = r2 ? document.querySelector('#players .row[data-id="' + r2.id + '"] .col-obpr').textContent : "–";
+    [r.min_avg, r.min_last5, r.min_cv, r.obpr, r.dbpr, r.bpr, r.bpr_rank] = keep; renderPlayers();
     document.querySelector('#players .head [data-sort="mpg"]').click();
     const v = [...document.querySelectorAll("#players .row")].map(e => { const x = byId(e.dataset.id); return x.min_avg != null ? x.min_avg : -1; }), down = v.every((x, i) => i === 0 || v[i - 1] >= x);
     view.sort = "value"; view.dir = -1; renderPlayers();
-    return { after: heads.indexOf("mpg") === heads.indexOf("min") + 1, gone: !["scan", "sroi", "bank"].some(k => heads.includes(k)), cash: heads.includes("scash"), text, want: "27", tip, down };
+    return { after: heads.indexOf("mpg") === heads.indexOf("min") + 1, gone: !["scan", "sroi", "bank"].some(k => heads.includes(k)), cash: heads.includes("scash"), text, want: "27", tip, down, obText, obTip, dash, obAfter: heads.indexOf("obpr") === heads.indexOf("mpg") + 1 };
   });
   check("Players list: MPG (season minutes a game) right after Min, last 5 in the hover, sortable; no Top 1% / ROI / Bank columns, Cash kept",
-        mpg.after && mpg.gone && mpg.cash && mpg.text === mpg.want && mpg.tip === "Season 27.4 min a game played; last 5: 30, 22, 28, 31, 26; minutes CV 0.12" && mpg.down, JSON.stringify(mpg));
+        mpg.after && mpg.gone && mpg.cash && mpg.text === mpg.want && mpg.tip === "Season 27.4 min a game played; last 5: 30, 22, 28, 31, 26; minutes CV 0.12" &&
+        mpg.obAfter && mpg.obText === "3.2" && mpg.obTip === "EvanMiya OBPR 3.21; BPR 4.26; DBPR 1.05; #2 on " + "" + mpg.obTip.split(" on ")[1].split(" by")[0] + " by OBPR" && mpg.dash === "–" && mpg.down, JSON.stringify(mpg));
   check("player table: with a scan the scan columns show (no-scan layout off)", await pg.evaluate(() => { renderPlayers(); const c = document.querySelector("#players .row .col-scan");
     return !$("players").classList.contains("noscan") && !!c && getComputedStyle(c).display !== "none"; }));
   const c1 = await pg.evaluate(() => {
