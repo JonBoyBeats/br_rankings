@@ -213,14 +213,14 @@ The order grades (order_grades.json): the score is how fast swap value drops dow
 - **Q picks, their fall, their teammates, and crowd swaps** (contest results, top 10% against the field's rate):
   - no Q pick: season 0.98x (0.96-1.00; 401860 teams); since 2026-11-13: 0.95x (0.89-1.00; 97988 teams)
   - T3 played: season 1.47x (0.96-1.91; 7395 teams); since 2026-11-13: 1.98x (2071 teams)
-  - any Q pick: season 1.10x (0.97-1.22; 69639 teams); since 2026-11-13: 1.27x (1.01-1.49; 18794 teams)
   - played: season 1.30x (1.10-1.50; 43474 teams); since 2026-11-13: 1.59x (1.30-1.79; 12359 teams)
   - T3: season 1.06x (0.85-1.33; 19043 teams); since 2026-11-13: 1.82x (2448 teams)
+  - any Q pick: season 1.10x (0.97-1.22; 69639 teams); since 2026-11-13: 1.27x (1.01-1.49; 18794 teams)
+  - T5: season 1.27x (0.98-1.60; 13558 teams); since 2026-11-13: 2.08x (0.84-2.78; 2877 teams)
   - T5 sat: season 1.17x (0.95-1.24; 3246 teams); since 2026-11-13: 1.09x (0.97-1.12; 454 teams)
   - sat: season 0.78x (0.71-0.84; 29964 teams); since 2026-11-13: 0.69x (0.50-0.84; 7955 teams)
-  - T5: season 1.27x (0.98-1.60; 13558 teams); since 2026-11-13: 2.08x (0.84-2.78; 2877 teams)
-  - T4 sat: season 0.73x (0.57-0.96; 2390 teams); since 2026-11-13: 0.77x (894 teams)
   - T4: season 1.00x (0.77-1.29; 11445 teams); since 2026-11-13: 1.15x (0.84-1.30; 4811 teams)
+  - T4 sat: season 0.73x (0.57-0.96; 2390 teams); since 2026-11-13: 0.77x (894 teams)
   - T5 played: season 1.31x (0.93-1.80; 10321 teams); since 2026-11-13: 2.26x (0.78-2.99; 2430 teams)
   - T2 played: season 1.39x (0.93-1.81; 13953 teams); since 2026-11-13: 0.66x (1446 teams)
   - T2: season 1.12x (0.82-1.39; 23760 teams); since 2026-11-13: 0.64x (0.41-0.79; 6754 teams)
@@ -228,8 +228,8 @@ The order grades (order_grades.json): the score is how fast swap value drops dow
   - T?: season 1.35x (0.66-1.78; 4988 teams); since 2026-11-13: 1.79x (1.15-1.85; 3137 teams)
   - T? played: season 1.93x (2675 teams); since 2026-11-13: 1.93x (2673 teams)
   - T3 sat: season 0.77x (0.69-0.86; 11799 teams); since 2026-11-13: 0.70x (377 teams)
-  - T1 played: season 0.86x (1969 teams); since 2026-11-13: -
   - T1: season 0.86x (1969 teams); since 2026-11-13: -
+  - T1 played: season 0.86x (1969 teams); since 2026-11-13: -
   - T4 played: season 1.08x (0.84-1.53; 9086 teams); since 2026-11-13: 1.26x (3948 teams)
   - T2 sat: season 0.68x (0.51-0.79; 10257 teams); since 2026-11-13: 0.62x (0.41-0.79; 5732 teams)
   - T2 teammate of a Q player who sat: season 0.89x (0.81-0.97; 103156 teams); since 2026-11-13: 0.78x (0.62-0.90; 23913 teams)
