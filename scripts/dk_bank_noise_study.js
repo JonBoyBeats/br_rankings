@@ -26,6 +26,14 @@ if (process.argv.includes("--no-punts")) {
   const outTeam = {}; rows.forEach(r => { if (r.status === "Out") outTeam[r.team] = 1; });
   rows.forEach(r => { if (r.status !== "Out" && (r.min || 0) < 15 && !(outTeam[r.team] && r.min_avg != null && r.min > r.min_avg)) r.deepOut = true; });
 }
+// the field's punts (2026-11-20 test): --keep-owned P keeps a deep-bench or punt player in the pool when the simulated
+// field projects him P%+ owned; --small-games G drops the punt and deep-bench rules on a slate of G games or fewer
+{
+  const ko = process.argv.indexOf("--keep-owned"), sg = process.argv.indexOf("--small-games");
+  const nGames = new Set(rows.map(r => r.game).filter(Boolean)).size;
+  if (sg > 0 && nGames <= +process.argv[sg + 1]) rows.forEach(r => { r.deepOut = false; });
+  if (ko > 0) rows.forEach(r => { if (r.deepOut && (N.field.own[r.id] || 0) >= +process.argv[ko + 1]) r.deepOut = false; });
+}
 const plain = { "No extra rules": { n: 1, maxExpo: 1, minUnique: 1, levW: 0, minSal: 0, maxTeam: 8, stackN: 0, stackBoth: false, maxOwn: null, lowN: 0, lowPct: 10, conds: [] } };
 const count = {}; if (B) B.tags.forEach(t => { const k = Array.isArray(t) ? t.join(" + ") : t; count[k] = (count[k] || 0) + 1; });
 (async () => {
