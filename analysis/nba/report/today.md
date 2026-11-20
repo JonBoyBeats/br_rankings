@@ -141,7 +141,7 @@ Verdict: you were on the right side of 4 of these 5 (over the field where his ho
 
 **Your Q moves.** Afternoon: Kuminga ahead of Ware, helped by 16; Afternoon: Kuminga ahead of Melton, helped by 7; Afternoon: Stewart ahead of Bridges, hurt by 10; Afternoon: Stewart ahead of Shannon, hurt by 8; Afternoon: Wagler ahead of Stewart, helped by 1.
 
-**Today's Questionable players.** Alperen Sengun (T2 on the ladders, 53% to play): if he sits, Fred VanVleet, Jabari Smith Jr.; Peyton Watson (T5 on the ladders, 63% to play): if he sits, Jarrett Allen, Tyrese Proctor.
+**Today's Questionable players.** Alperen Sengun (T2 on the ladders, 64% to play): if he sits, Fred VanVleet, Jabari Smith Jr..
 
 ## Back page
 
