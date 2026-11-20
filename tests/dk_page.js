@@ -760,26 +760,55 @@ function audit(name, L, o) {
   await emptyBank();
   // the bank in the browser, packed: 12,000 lineups with long idea names save (they overflowed at ~4,400 unpacked) and
   // come back the same; a failed save says so on the page
-  const rt = await pg.evaluate(() => {
+  const rt = await pg.evaluate(async () => {
     const src = Object.keys(slate.players).filter(id => slate.players[id].status !== "Out").slice(0, 40), B = { lineups: [], tags: [], tagRules: {}, groups: { "t1": "Big idea" } };
     const long = k => "At least 3 from KU + If not Ethan Brown, then 1+ of Andrej Stojakovic / Quentin Coleman + idea " + k + " ".repeat(120);
     for (let i = 0; i < 12000; i++) {
       const ids = []; for (let j = 0; j < 8; j++) ids.push(src[(i * 7 + j * 5 + (i >> 3)) % src.length]);
       B.lineups.push({ ids: ids, slots: ids.slice().reverse() }); B.tags.push(i % 5 ? [long(i % 7)] : [long(1), long(2)]);
     }
-    const keep = BANK; BANK = B; bankSaveState();
-    const ok = !bankSaveFailed, size = localStorage.getItem(bankKey()).length;
-    bankLoadState();
+    const wait = () => new Promise(r => setTimeout(r, 300));
+    const keep = BANK; BANK = B; bankSaveState(); await wait();
+    // since 2026-11-20 the bank is in IndexedDB, none of it in localStorage
+    const ok = !bankSaveFailed && !!IDB && localStorage.getItem(bankKey()) === null, stored = await idbGet(bankKey()), size = JSON.stringify(stored || "").length;
+    delete BIGMEM[bankKey()]; await bigInit([String(slate.draft_group_id)]); bankLoadState();
     const same = JSON.stringify(BANK.lineups) === JSON.stringify(B.lineups) && JSON.stringify(BANK.tags) === JSON.stringify(B.tags) && BANK.groups.t1 === "Big idea";
-    const real = localStorage.setItem; localStorage.setItem = () => { throw new Error("QuotaExceededError"); };
-    bankSaveState(); renderBank();
+    const real = idbPut; idbPut = () => Promise.resolve(false);
+    bankSaveState(); await wait(); renderBank();
     const warned = bankSaveFailed && /Not saved in this browser/.test(document.getElementById("bankBox").textContent);
-    localStorage.setItem = real; BANK = keep; bankSaveState(); renderBank();
+    idbPut = real; BANK = keep; bankSaveState(); await wait(); renderBank();
     return { ok, size, same, warned, after: !bankSaveFailed && !/Not saved in this browser/.test(document.getElementById("bankBox").textContent) };
   });
   check("bank storage: 12,000 lineups with long idea names save", rt.ok, JSON.stringify(rt));
   check("bank storage: they come back exactly", rt.same, JSON.stringify(rt));
   check("bank storage: a failed save warns on the page, and the warning clears once saved", rt.warned && rt.after, JSON.stringify(rt));
+  // the move to IndexedDB (2026-11-20): a bank (and cut) left in localStorage by the old page moves over at load, is
+  // deleted from localStorage only once IndexedDB has it, and comes back whole; the DK page's other keys stay under the
+  // cap, a write past it skipped without throwing (another page's keys untouched)
+  const mig = await pg.evaluate(async () => {
+    const dg = String(slate.draft_group_id), bk = "dkcbb-bank:" + dg, ck = "dkcbb-cut:" + dg, held = BANK;
+    if (!BANK.lineups.length) {         // a small bank of its own when the bank is empty here
+      const src = Object.keys(slate.players).filter(id => slate.players[id].status !== "Out").slice(0, 16);
+      BANK = { lineups: [0, 1, 2].map(k => ({ ids: src.slice(k, k + 8), slots: src.slice(k, k + 8) })), tags: [["mig a"], ["mig a", "mig b"], ["mig b"]], tagRules: {}, groups: {} };
+    }
+    const before = JSON.stringify(bankPack(BANK)), cutBefore = JSON.stringify(CUT);
+    await idbDel(bk); await idbDel(ck); delete BIGMEM[bk]; delete BIGMEM[ck];
+    localStorage.setItem(bk, before); if (CUT) localStorage.setItem(ck, cutBefore);
+    const n0 = BANK.lineups.length; BANK = { lineups: [], tags: [], tagRules: {} };
+    await bigInit([dg]);
+    const lsGone = localStorage.getItem(bk) === null && localStorage.getItem(ck) === null, inIdb = JSON.stringify(await idbGet(bk)) === before;
+    bankLoadState();
+    const back = BANK.lineups.length === n0 && JSON.stringify(bankPack(BANK)) === before && JSON.stringify(CUT) === cutBefore;
+    localStorage.setItem("brr:locks:test", "nba");
+    let threw = false, r; try { r = store("dkcbb-entries:big", { x: "y".repeat(600000) }); } catch (e) { threw = true; }
+    const capped = r === null && !threw && localStorage.getItem("dkcbb-entries:big") === null && localStorage.getItem("brr:locks:test") === "nba";
+    localStorage.removeItem("brr:locks:test");
+    let use = 0; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.indexOf("dkcbb") === 0) use += 2 * (k.length + localStorage.getItem(k).length); }
+    BANK = held; bankSaveState(); await new Promise(r => setTimeout(r, 200)); renderBank(); renderEntries();
+    return { n0, lsGone, inIdb, back, capped, under: use < LS_CAP, use };
+  });
+  check("storage: a bank and cut in localStorage move to IndexedDB at load and come back whole (localStorage copy deleted only after); the DK page's localStorage stays under its cap, a write past it skipped, never thrown",
+        mig.n0 > 0 && mig.lsGone && mig.inIdb && mig.back && mig.capped && mig.under, JSON.stringify(mig));
   // Max share in bank: over two draws no unlocked player passes the share of the whole bank; recorded with the idea
   await clearRules(); await emptyBank(); await set(base);
   const fr = (await draw(20)).L, fq = {};
@@ -1005,7 +1034,7 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   check("start from: the same nights, so Max ROI again repeats the first fill's picks", JSON.stringify(await pg.evaluate(() => PF)) === JSON.stringify(pf), JSON.stringify(await pg.evaluate(() => PF)));
   // Undo fill: the set the last fill replaced comes back (here the Max coverage one)
-  const covPF = await pg.evaluate(() => JSON.parse(localStorage.getItem("dkcbb-pf-prev:" + slate.draft_group_id)));
+  const covPF = await pg.evaluate(() => store("dkcbb-pf-prev:" + slate.draft_group_id));
   await pg.click("#pfUndo");
   check("undo fill: the replaced portfolios are back, the button spent", JSON.stringify(await pg.evaluate(() => PF)) === JSON.stringify(covPF) &&
         await pg.$eval("#pfUndo", b => b.disabled) && /Undone/.test(await pg.textContent("#cutStatus")), JSON.stringify(covPF));
@@ -1200,11 +1229,13 @@ function audit(name, L, o) {
         st0.open > 0 && st0.shown && /Open seats: .*\d+ open\. .*Night cap blocked: .+ at 15%/.test(st0.text) && st0.btn && st1.n === st0.n + 1, JSON.stringify([st0, st1]));
   await pg.fill("#maxNight", night0);
   // Clear old slates: other slates' banks / cuts / portfolios / entries / scans go after asking; this slate's stay, and settings
-  const co = await pg.evaluate(() => {
+  const co = await pg.evaluate(async () => {
     const dg = String(slate.draft_group_id), keys = ["dkcbb-bank:999001", "dkcbb-cut:999001", "dkcbb-pf:999001", "dkcbb-pf-prev:999001", "dkcbb-entries:999001", "dkcbb-scan:999001", "dkcbb:999001"];
     keys.forEach(k => localStorage.setItem(k, JSON.stringify({ x: 1 })));
     const mine = localStorage.getItem("dkcbb-pf:" + dg), asked = []; const c0 = window.confirm; window.confirm = m => { asked.push(m); return true; };
-    document.getElementById("clearOld").click(); window.confirm = c0;
+    document.getElementById("clearOld").click();
+    for (let t = 0; t < 40 && !/Cleared|No old slates/.test(document.getElementById("buildStatus").textContent); t++) await new Promise(r => setTimeout(r, 50));
+    window.confirm = c0;
     return { asked, gone: keys.slice(0, 6).every(k => localStorage.getItem(k) === null), settings: localStorage.getItem("dkcbb:999001") !== null, mine: localStorage.getItem("dkcbb-pf:" + dg) === mine && mine !== null,
              msg: document.getElementById("buildStatus").textContent, note: /Closing the tab after a slate/.test(document.getElementById("stepBank").textContent) };
   });
@@ -1510,7 +1541,7 @@ function audit(name, L, o) {
     document.querySelector('#scanTable th[data-sk="field"][data-skind="team"]').click();
     const b = order("team").filter(r => !r.thin), up = b.every((r, i) => i === 0 || b[i - 1].field <= r.field);
     const game = order("game").filter(r => !r.thin), gameDefault = game.every((r, i) => i === 0 || game[i - 1].g_t1 >= r.g_t1);
-    const kept = JSON.parse(localStorage.getItem(scanKey())).sort.team;
+    const kept = store(scanKey()).sort.team;
     return { sections, teamOnly, down, up, gameDefault, kept, arrow: /Field holds ↑/.test(document.querySelector('#scanTable th[data-sk="field"][data-skind="team"]').textContent) };
   });
   check("slate scan: Team stacks and Game stacks, each sorted on its own by a header click (again reverses, arrow shown), the sort kept with the scan",

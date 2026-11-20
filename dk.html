@@ -521,7 +521,74 @@ function money(n) { return "$" + Number(n).toLocaleString("en-US"); }
 function roiTxt(x) { return x == null ? "–" : (x >= 0 ? "+" : "") + Math.round(100 * x) + "%"; }
 function pct1(x) { return (100 * x).toFixed(1) + "%"; }
 function cents(n) { return "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || "null"); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+/* Storage (2026-11-20, the operator: college data must never crowd out the NBA board on the same origin). The big keys
+   (each slate's bank, cut, scan and the portfolios before the last fill) live in IndexedDB ("dkcbb" / "kv"), read
+   through BIGMEM, a copy in memory filled for the doc's slates at load (bigInit, which first moves any localStorage copy
+   over and only then deletes it). Everything else stays in localStorage (settings, portfolios, entries, the Live page's
+   dkcbb-pf: and dkcbb-pflu:), held under LS_CAP for all dkcbb keys together: a write past it is skipped (the page's
+   "Not saved in this browser" note), never thrown. Without IndexedDB the big keys fall back to localStorage, capped too. */
+var BIG_PRE = ["dkcbb-bank:", "dkcbb-cut:", "dkcbb-scan:", "dkcbb-pf-prev:"], BIGMEM = {}, IDB = null, LS_CAP = 900 * 1024;
+function isBig(k) { return BIG_PRE.some(function (p) { return k.indexOf(p) === 0; }); }
+function idbOpen() {
+  return new Promise(function (res) {
+    try { var r = indexedDB.open("dkcbb", 1); r.onupgradeneeded = function () { r.result.createObjectStore("kv"); }; r.onsuccess = function () { res(r.result); }; r.onerror = function () { res(null); }; }
+    catch (e) { res(null); }
+  });
+}
+function idbReq(mode, f) {
+  return new Promise(function (res) {
+    if (!IDB) return res(undefined);
+    try { var tx = IDB.transaction("kv", mode), q = f(tx.objectStore("kv")); tx.oncomplete = function () { res(q ? q.result : true); }; tx.onerror = tx.onabort = function () { res(undefined); }; }
+    catch (e) { res(undefined); }
+  });
+}
+function idbGet(k) { return idbReq("readonly", function (os) { return os.get(k); }); }
+function idbPut(k, v) { return idbReq("readwrite", function (os) { os.put(v, k); return null; }).then(function (x) { return x === true; }); }
+function idbDel(k) { return idbReq("readwrite", function (os) { os.delete(k); return null; }); }
+function idbKeys() { return idbReq("readonly", function (os) { return os.getAllKeys(); }).then(function (x) { return x || []; }); }
+async function bigInit(dgs) {
+  if (!IDB) IDB = await idbOpen();
+  if (IDB) {                        // move any localStorage copy over first: deleted only once IndexedDB has it
+    var ks = []; try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (isBig(k)) ks.push(k); } } catch (e) {}
+    for (var j = 0; j < ks.length; j++) {
+      var v = null; try { v = JSON.parse(localStorage.getItem(ks[j]) || "null"); } catch (e) { v = null; }
+      if (v != null && await idbPut(ks[j], v)) { BIGMEM[ks[j]] = v; try { localStorage.removeItem(ks[j]); } catch (e) {} }
+    }
+  }
+  for (var d = 0; d < dgs.length; d++) for (var p = 0; p < BIG_PRE.length; p++) {
+    var key = BIG_PRE[p] + dgs[d];
+    if (key in BIGMEM) continue;
+    var got = IDB ? await idbGet(key) : undefined;
+    if (got === undefined) { try { got = JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { got = null; } }
+    BIGMEM[key] = got == null ? null : got;
+  }
+}
+function lsUse(skip) {               // characters in the dkcbb keys, the one being replaced left out
+  var n = 0; try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k.indexOf("dkcbb") === 0 && k !== skip) n += k.length + (localStorage.getItem(k) || "").length; } } catch (e) {}
+  return 2 * n;
+}
+function lsPut(k, s) { if (lsUse(k) + 2 * (k.length + s.length) > LS_CAP) return null; localStorage.setItem(k, s); return true; }
+function bigDel(k) { delete BIGMEM[k]; if (IDB) idbDel(k); try { localStorage.removeItem(k); } catch (e) {} }
+var bigWriteFailed = {};
+function store(k, v) {
+  try {
+    if (isBig(k)) {
+      if (v === undefined) { if (k in BIGMEM) return BIGMEM[k]; return JSON.parse(localStorage.getItem(k) || "null"); }
+      BIGMEM[k] = v;
+      if (IDB) {
+        idbPut(k, v).then(function (ok) {
+          var was = !!bigWriteFailed[k]; bigWriteFailed[k] = !ok;
+          if (k.indexOf("dkcbb-bank:") === 0 && slate && k === bankKey()) { bankSaveFailed = !ok; if (was !== !ok) renderBank(); }
+        });
+        try { localStorage.removeItem(k); } catch (e) {}
+        return true;
+      }
+      return lsPut(k, JSON.stringify(v));
+    }
+    if (v === undefined) return JSON.parse(localStorage.getItem(k) || "null");
+    return lsPut(k, JSON.stringify(v));
+  } catch (e) { return null; }
+}
 function key() { return "dkcbb:" + slate.draft_group_id; }
 function save() { store(key(), state); }
 var isG = DKSim.isG, isF = DKSim.isF;
@@ -647,6 +714,7 @@ async function load() {
     $("status").innerHTML = '<span class="bad">DraftKings projections unreadable (' + esc(e.message) + ").</span>";
     return;
   }
+  try { await bigInit((doc.slates || []).map(function (s) { return String(s.draft_group_id); })); } catch (e) {}
   try {      // X news for tonight's players (scripts/cbb_news.py); the page works without it
     var nr = await fetch(MIRROR + "cbb_news.json?t=" + Date.now(), { cache: "no-store" });
     var nj = nr.ok ? await nr.json() : {};
@@ -1453,9 +1521,11 @@ function bankLoadState() {
   $("pfUndo").disabled = !store("dkcbb-pf-prev:" + slate.draft_group_id);
 }
 function cutKey() { return "dkcbb-cut:" + slate.draft_group_id; }
-function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else localStorage.removeItem(cutKey()); } catch (e) {} }
+function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else bigDel(cutKey()); } catch (e) {} }
 function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) === null; }
-function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); renderSteps(); renderUnder(); renderStrand(); }   // the Live page reads it for your exposures
+function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF);
+  // the Live page's copy of your entered lineups as player ids (the bank itself is in IndexedDB, out of its reach)
+  try { var lu = {}; Object.keys(PF).forEach(function (cid) { lu[cid] = PF[cid].map(function (bi) { return BANK.lineups[bi] ? BANK.lineups[bi].ids : null; }).filter(Boolean); }); store("dkcbb-pflu:" + slate.draft_group_id, lu); } catch (e) {} renderNight(); renderSteps(); renderUnder(); renderStrand(); }   // the Live page reads it for your exposures
 function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
   var o = drawRules(), t = [], name = function (id) { return shortName((byId(id) || {}).name || id); };
   if (o.stackN) t.push(o.stackN + "-stack" + (o.stackBoth ? " + bring-back" : ""));
@@ -2948,24 +3018,33 @@ $("bankClear").addEventListener("click", function () {
    the last fill), entries file and scan by draft group. This removes those of every slate except today's (Pacific),
    any not yet locked and the one open, after asking with the count and the space it frees. Settings (dkcbb:<group>),
    dkcbb:nb and dkcbb:slatePick stay. Today's portfolios must survive the games: the Live page reads dkcbb-pf: for exposures. */
-var OLD_KEYS = ["dkcbb-bank:", "dkcbb-cut:", "dkcbb-pf:", "dkcbb-pf-prev:", "dkcbb-entries:", "dkcbb-scan:"];
-function oldSlateKeys(now) {
+var OLD_KEYS = ["dkcbb-bank:", "dkcbb-cut:", "dkcbb-pf:", "dkcbb-pf-prev:", "dkcbb-pflu:", "dkcbb-entries:", "dkcbb-scan:"];
+async function oldSlateKeys(now) {     // localStorage and IndexedDB (the banks, cuts and scans live there since 2026-11-20)
   var pday = function (t) { return new Date(t).toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }); }, today = pday(now || Date.now()), keep = {};
   ((doc && doc.slates) || []).forEach(function (s) { if (pday(s.start) === today || !s.locked || new Date(s.start).getTime() > (now || Date.now())) keep[String(s.draft_group_id)] = 1; });
   if (slate) keep[String(slate.draft_group_id)] = 1;
-  var out = [], bytes = 0, groups = {};
+  var out = [], idb = [], bytes = 0, groups = {};
+  var old = function (k) { var pre = OLD_KEYS.find(function (p) { return k.indexOf(p) === 0; }); return pre && !keep[k.slice(pre.length)] ? k.slice(pre.length) : null; };
   for (var i = 0; i < localStorage.length; i++) {
-    var k = localStorage.key(i), pre = OLD_KEYS.find(function (p) { return k.indexOf(p) === 0; });
-    if (!pre || keep[k.slice(pre.length)]) continue;
-    out.push(k); groups[k.slice(pre.length)] = 1; bytes += 2 * (k.length + (localStorage.getItem(k) || "").length);
+    var k = localStorage.key(i), g = old(k);
+    if (g == null) continue;
+    out.push(k); groups[g] = 1; bytes += 2 * (k.length + (localStorage.getItem(k) || "").length);
   }
-  return { keys: out, slates: Object.keys(groups).length, bytes: bytes };
+  var ik = IDB ? await idbKeys() : [];
+  for (var j = 0; j < ik.length; j++) {
+    var g2 = old(String(ik[j]));
+    if (g2 == null) continue;
+    var v = ik[j] in BIGMEM ? BIGMEM[ik[j]] : await idbGet(ik[j]);
+    idb.push(ik[j]); groups[g2] = 1; bytes += 2 * (String(ik[j]).length + JSON.stringify(v || null).length);
+  }
+  return { keys: out, idb: idb, slates: Object.keys(groups).length, bytes: bytes };
 }
-$("clearOld").addEventListener("click", function () {
-  var o; try { o = oldSlateKeys(); } catch (e) { $("buildStatus").textContent = "This browser's storage isn't readable here."; return; }
-  if (!o.keys.length) { $("buildStatus").textContent = "No old slates saved in this browser."; return; }
+$("clearOld").addEventListener("click", async function () {
+  var o; try { o = await oldSlateKeys(); } catch (e) { $("buildStatus").textContent = "This browser's storage isn't readable here."; return; }
+  if (!o.keys.length && !o.idb.length) { $("buildStatus").textContent = "No old slates saved in this browser."; return; }
   if (!confirm("Remove " + o.slates + " old slate" + (o.slates === 1 ? "" : "s") + "' saved banks, cuts, portfolios, entries and scans (about " + (o.bytes / 1048576).toFixed(1) + " MB)? Today's slates, unlocked ones and this one stay.")) return;
   o.keys.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+  for (var i = 0; i < o.idb.length; i++) { delete BIGMEM[o.idb[i]]; await idbDel(o.idb[i]); }
   $("buildStatus").textContent = "Cleared " + o.slates + " old slate" + (o.slates === 1 ? "" : "s") + " (about " + (o.bytes / 1048576).toFixed(1) + " MB freed).";
 });
 $("cutUnlisted").addEventListener("click", function (e) { if (e.target.id === "contestCheck") refreshContests(); });
@@ -3174,7 +3253,7 @@ $("pfUndo").addEventListener("click", function () {
   var prev = store(undoKey());
   if (!prev) return;
   PF = prev; pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
-  try { localStorage.removeItem(undoKey()); } catch (e) {}
+  bigDel(undoKey());
   $("pfUndo").disabled = true;
   if (BP && BP.review) review(BP.review);
   $("cutStatus").textContent = "Undone: your portfolios before the last fill are back.";

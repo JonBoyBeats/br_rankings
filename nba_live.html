@@ -400,6 +400,13 @@ function dkExpo(sl) {
     var L = bank.lineups[k];
     return typeof L === "string" ? L.split("|")[0].split(",") : L && L.ids;
   };
+  // since 2026-11-20 the DK page keeps its bank in IndexedDB and writes your entered lineups' player ids here
+  var lu = load("dkcbb-pflu:" + sl.dg, null);
+  if (lu && Object.keys(lu).length) {
+    var c0 = {}, n0 = 0;
+    Object.keys(lu).forEach(function (cid) { (lu[cid] || []).forEach(function (ids) { n0++; ids.forEach(function (id) { c0[id] = (c0[id] || 0) + 1; }); }); });
+    if (n0) return { n: n0, counts: c0, src: src };
+  }
   if (!(bank && pf && Object.keys(pf).length)) {
     var f = state.dkBuilds[sl.dg];
     if (!f || !f.portfolios || !Object.keys(f.portfolios).length) return null;
