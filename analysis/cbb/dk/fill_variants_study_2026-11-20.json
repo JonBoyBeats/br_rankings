@@ -1,0 +1,210 @@
+{
+ "fill": {
+  "17": {
+   "night": "2026-11-17",
+   "contests": [
+    "CBB $1.5K And-One x10 $1",
+    "CBB $250 Quarter Jukebox [Just $0.25!]  x20 $0.25",
+    "CBB $100 Dime Time [Just $0.10!] x20 $0.1",
+    "CBB $50 Dime Time [Just $0.10!] x17 $0.1"
+   ],
+   "night_limit": 40,
+   "res": {
+    "Max ROI": {
+     "entries": 67,
+     "distinct": 43,
+     "fees": 18.7,
+     "expected_net": 6.3,
+     "sd": 33.49,
+     "p5": -14.95,
+     "p95": 52.8,
+     "top1_nights": 44.4,
+     "real_net": -4.35
+    },
+    "Balanced": {
+     "entries": 67,
+     "distinct": 45,
+     "fees": 18.7,
+     "expected_net": 5.32,
+     "sd": 32.18,
+     "p5": -15.2,
+     "p95": 47.1,
+     "top1_nights": 44.9,
+     "real_net": 6.2
+    }
+   }
+  },
+  "18": {
+   "night": "2026-11-18",
+   "contests": [
+    "CBB $7K Pull Up Jumper [$2K to 1st] x1 $15",
+    "CBB $1.25K And-One x10 $1",
+    "CBB $200 Quarter Jukebox x20 $0.25",
+    "CBB $100 And-One x3 $1",
+    "CBB $100 Dime Time [Just $0.10!] x20 $0.1"
+   ],
+   "night_limit": 32,
+   "res": {
+    "Max ROI": {
+     "entries": 54,
+     "distinct": 42,
+     "fees": 35,
+     "expected_net": -1.96,
+     "sd": 117.84,
+     "p5": -33.4,
+     "p95": 60.45,
+     "top1_nights": 31.9,
+     "real_net": 2116.4
+    },
+    "Balanced": {
+     "entries": 54,
+     "distinct": 44,
+     "fees": 35,
+     "expected_net": -6.42,
+     "sd": 99.16,
+     "p5": -33.25,
+     "p95": 53.3,
+     "top1_nights": 33.5,
+     "real_net": 3.4
+    }
+   }
+  },
+  "19": {
+   "night": "2026-11-19",
+   "contests": [
+    "CBB $3K Pull Up Jumper [$1K to 1st] (Early) x1 $15",
+    "CBB $750 And-One (Early) x10 $1",
+    "CBB $200 And-One (Early) x5 $1",
+    "CBB $50 Dime Time [Just $0.10!] (Early) x10 $0.1"
+   ],
+   "night_limit": 15,
+   "res": {
+    "Max ROI": {
+     "entries": 13,
+     "distinct": 9,
+     "fees": 22.5,
+     "expected_net": 3.33,
+     "sd": 83.03,
+     "p5": -22.5,
+     "p95": 78.4,
+     "top1_nights": 11.7,
+     "real_net": null
+    },
+    "Balanced": {
+     "entries": 14,
+     "distinct": 13,
+     "fees": 23.5,
+     "expected_net": -0.23,
+     "sd": 69.75,
+     "p5": -23.3,
+     "p95": 64,
+     "top1_nights": 15.8,
+     "real_net": null
+    }
+   }
+  }
+ },
+ "variants_two_rounds": {
+  "17": {
+   "night": "2026-11-17",
+   "kept": 2000,
+   "contests": [
+    "CBB $100 Dime Time [Just $0.10!] x20",
+    "CBB $1.5K And-One x10",
+    "CBB $250 Quarter Jukebox [Just $0.25!]  x20",
+    "CBB $50 Dime Time [Just $0.10!] x17"
+   ],
+   "tierA_before": 2,
+   "kept_real": {
+    "top10": 7.4,
+    "cash": 15.5
+   },
+   "runs": {
+    "K=5": {
+     "drawn": 288,
+     "appended": 223,
+     "parents_with_variants": 15,
+     "parents_beaten": 15,
+     "mean_best_minus_parent": 0.212,
+     "fresh_parents_beaten": 15,
+     "fresh_mean_best_minus_parent": 0.204,
+     "tierA_after": 5,
+     "appended_real": {
+      "top10": 9.4,
+      "cash": 22
+     },
+     "variants_real": {
+      "top10": 7.3,
+      "cash": 17.7
+     },
+     "median_value": 0.129,
+     "parent_value_mean": 0.269,
+     "round2": {
+      "pool_after_round1": 2223,
+      "tierA_after_round1": 5,
+      "drawn": 224,
+      "appended": 223,
+      "tierA_after_round2": 10,
+      "top_mean_after_round1": 0.57,
+      "top_mean_after_round2": 0.593,
+      "appended_real": {
+       "top10": 18.8,
+       "cash": 40.4
+      }
+     }
+    }
+   }
+  },
+  "18": {
+   "night": "2026-11-18",
+   "kept": 1500,
+   "contests": [
+    "CBB $7K Pull Up Jumper [$2K to 1st] x1",
+    "CBB $1.25K And-One x10",
+    "CBB $200 Quarter Jukebox x20",
+    "CBB $100 Dime Time [Just $0.10!] x20",
+    "CBB $100 And-One x3"
+   ],
+   "tierA_before": 3,
+   "kept_real": {
+    "top10": 1.5,
+    "cash": 2.9
+   },
+   "runs": {
+    "K=5": {
+     "drawn": 223,
+     "appended": 211,
+     "parents_with_variants": 15,
+     "parents_beaten": 10,
+     "mean_best_minus_parent": 0.048,
+     "fresh_parents_beaten": 8,
+     "fresh_mean_best_minus_parent": 0.032,
+     "tierA_after": 1,
+     "appended_real": {
+      "top10": 5.7,
+      "cash": 9
+     },
+     "variants_real": {
+      "top10": 5.4,
+      "cash": 8.5
+     },
+     "median_value": 0.294,
+     "parent_value_mean": 0.695,
+     "round2": {
+      "pool_after_round1": 1711,
+      "tierA_after_round1": 1,
+      "drawn": 160,
+      "appended": 156,
+      "tierA_after_round2": 3,
+      "top_mean_after_round1": 0.823,
+      "top_mean_after_round2": 0.869,
+      "appended_real": {
+       "top10": 7.7,
+       "cash": 13.5
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -7,13 +7,16 @@
 // parent, (b) tier A (DKSim.tiers) before and after, (c) real top-10% / cash rates of the appended variants and of the
 // kept pool in the night's main contest, as color.
 //
-//   node scripts/dk_variants_study.js <night.json> <build.json> <standings dir> <slate csv> [--n 15] [--m 25] [--k 5,6] [--sims 2000] [--winner IDX]
+//   node scripts/dk_variants_study.js <night.json> <build.json> <standings dir> <slate csv> [--n 15] [--m 25] [--k 5,6] [--sims 2000] [--winner IDX] [--rounds 2]
+// --rounds 2 (2026-11-20): a second round on the first K, around the top N of the kept pool with round one's appended
+// variants in it (a variant's idea is its first parent's), appended the same way; tier A after each round, and the
+// second round's appended variants' real rates beside the first's.
 const fs = require("fs"), path = require("path"), vm = require("vm");
 const ROOT = path.join(__dirname, ".."), S = require(path.join(ROOT, "dk_sim.js"));
 const sb = { self: {} }; vm.runInNewContext(fs.readFileSync(path.join(ROOT, "vendor", "lp_solver.js"), "utf8"), sb);
 const [nf, bf, sdir, actf] = process.argv.slice(2);
 const opt = (k, d) => { const i = process.argv.indexOf("--" + k); return i > 0 ? process.argv[i + 1] : d; };
-const TOP = +opt("n", 15), M = +opt("m", 25), KS = String(opt("k", "5,6")).split(",").map(Number), SIMS = +opt("sims", 2000), WIN = opt("winner", null);
+const TOP = +opt("n", 15), M = +opt("m", 25), KS = String(opt("k", "5,6")).split(",").map(Number), SIMS = +opt("sims", 2000), WIN = opt("winner", null), ROUNDS = +opt("rounds", 1);
 const N = JSON.parse(fs.readFileSync(nf)), B = JSON.parse(fs.readFileSync(bf)), gate = JSON.parse(fs.readFileSync(path.join(ROOT, "analysis/cbb/dk/gate.json")));
 const rows = Object.entries(N.slate.players).map(([id, r]) => Object.assign({ id }, r));
 const games = {}, outTeam = {};
@@ -89,6 +92,28 @@ const rates = L => L.length ? { top10: +(100 * L.filter(x => realOf(x) >= t10).l
       const w = B.pool[+WIN].map(String);
       r.winner_cousins = { "7of8": vars.filter(x => shared(x.ids, w) >= 7).length, "6of8": vars.filter(x => shared(x.ids, w) === 6).length,
                            kept_rank: B.final.indexOf(+WIN) + 1, best_cousin_real: Math.max(0, ...vars.filter(x => shared(x.ids, w) >= 6).map(realOf)) };
+    }
+    if (ROUNDS >= 2 && K === KS[0]) {       // round two around the new top (kept + round one's appended)
+      const pool1 = kept.map(x => ({ ids: x.ids, bi: x.bi })).concat(vars.map((x, i) => ({ ids: x.ids, bi: kept[parentOf[i]].bi })).filter((_, i) => vv[i] >= med));
+      const v1 = value(pool1.map(x => ({ ids: x.ids }))), order = v1.v.map((x, i) => [x, i]).sort((a, b) => b[0] - a[0]).map(([, i]) => i);
+      const vars2 = [];
+      for (let q = 0; q < Math.min(TOP, order.length); q++) {
+        const par = pool1[order[q]], o0 = B.tag_settings[tagOf(par.bi)] || {};
+        const st = { lock: Object.fromEntries((o0.lock || []).map(x => [x, 1])), excl: Object.fromEntries((o0.excl || []).map(x => [x, 1])), cap: {}, floor: {} };
+        const cx = ctxOf(S.seeded(seed + 50000 + 1000 * K + q), st);
+        const o = Object.assign({ n: 1, maxExpo: 1, minUnique: 1, maxTeam: 8, conds: [] }, o0, { z: N.z, nightS: 0.35 });
+        for (const L of await S.variants(cx, o, par.ids, K, M)) {
+          if (pool1.some(x => shared(x.ids, L.ids) >= 7) || vars2.some(x => shared(x.ids, L.ids) >= 7)) continue;
+          vars2.push({ ids: L.ids.map(String) });
+        }
+      }
+      const all2 = value(pool1.map(x => ({ ids: x.ids })).concat(vars2)), k1 = pool1.length, kv2 = all2.v.slice(0, k1), vv2 = all2.v.slice(k1);
+      const med2 = kv2.slice().sort((a, b) => a - b)[Math.floor(k1 / 2)], keep2 = vv2.map((x, i) => i).filter(i => vv2[i] >= med2);
+      const after2 = { v: kv2.concat(keep2.map(i => vv2[i])), odd: all2.odd.slice(0, k1).concat(keep2.map(i => all2.odd[k1 + i])), even: all2.even.slice(0, k1).concat(keep2.map(i => all2.even[k1 + i])) };
+      const top2 = after2.v.slice().sort((a, b) => b - a).slice(0, TOP), top1 = v1.v.slice().sort((a, b) => b - a).slice(0, TOP);
+      r.round2 = { pool_after_round1: k1, tierA_after_round1: tierA(v1), drawn: vars2.length, appended: keep2.length, tierA_after_round2: tierA(after2),
+                   top_mean_after_round1: +(top1.reduce((a, b) => a + b, 0) / top1.length).toFixed(3), top_mean_after_round2: +(top2.reduce((a, b) => a + b, 0) / top2.length).toFixed(3),
+                   appended_real: rates(keep2.map(i => vars2[i])) };
     }
     out.runs["K=" + K] = r;
   }
