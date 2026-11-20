@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-20T14:32Z",
+ "updated": "2026-11-20T14:53Z",
  "rule": "confirmed: 30+ player-nights on 5+ nights, the same direction on 75%+ of nights, real/projected 25%+ off 1; dead: 5+ nights and the direction under 60% or within 10%",
  "patterns": [
   {
@@ -10,12 +10,12 @@
    "ratio": 1.17,
    "same_direction": "4 of 5",
    "examples": [
-    "11-16 Anthony Felesi 2/3%",
     "11-16 Kashie Natt 5/2%",
+    "11-16 Anthony Felesi 2/3%",
     "11-17 Andrej Stojakovic 4/9%",
     "11-17 Patrick Ngongba II 42/22%",
-    "11-18 Tahaad Pettiford 24/9%",
-    "11-18 Tyrin Jones 28/29%"
+    "11-18 Tyrin Jones 28/29%",
+    "11-18 Tahaad Pettiford 24/9%"
    ]
   },
   {
@@ -26,12 +26,12 @@
    "ratio": 1.1,
    "same_direction": "3 of 4",
    "examples": [
-    "11-16 Joe Philon III 41/56%",
-    "11-16 Jaylen Petty 5/18%",
-    "11-17 Justin Monden 0/0%",
-    "11-17 Matthew Watkins 0/0%",
-    "11-18 Motiejus Krivas 5/15%",
-    "11-18 Will Thengvall 0/0%"
+    "11-16 Trent Noah 0/2%",
+    "11-16 Brandon Williams 1/3%",
+    "11-17 Paul Mbiya 0/0%",
+    "11-17 Jacob Theodosiou 0/0%",
+    "11-18 Trent Perry 1/0%",
+    "11-18 Derek Dixon 5/8%"
    ]
   },
   {
@@ -42,12 +42,12 @@
    "ratio": 1.39,
    "same_direction": "3 of 3",
    "examples": [
-    "11-18 Leroy Blyden Jr. 46/24%",
     "11-18 Caleb Holt 14/20%",
-    "11-19 Roman Domon 65/52%",
+    "11-18 Dillon Battie 50/40%",
     "11-19 Brady Koehler 40/56%",
-    "11-19 DeShawn Gory 1/3%",
-    "11-19 Elijah Mahi 27/35%"
+    "11-19 Denzel Aberdeen 32/4%",
+    "11-19 Elijah Mahi 27/35%",
+    "11-19 Lino Mark 64/36%"
    ]
   },
   {
@@ -58,10 +58,10 @@
    "ratio": 1.35,
    "same_direction": "4 of 5",
    "examples": [
-    "11-16 Eric Dailey Jr. 9/22%",
     "11-16 Nikola Kusturica 43/45%",
-    "11-17 Tyran Stokes 20/8%",
+    "11-16 Eric Dailey Jr. 9/22%",
     "11-17 Tre White 15/13%",
+    "11-17 Tyran Stokes 20/8%",
     "11-18 Thomas Dowd 5/7%",
     "11-18 Tahaad Pettiford 24/9%"
    ]
@@ -74,11 +74,11 @@
    "ratio": 0.9,
    "same_direction": "3 of 5",
    "examples": [
-    "11-16 Milan Momcilovic 1/0%",
     "11-16 Trent Perry 5/16%",
-    "11-17 Billy Richmond III 2/1%",
-    "11-17 Luigi Suigo 4/20%",
-    "11-18 Motiejus Krivas 5/15%",
+    "11-16 Derin Saran 3/5%",
+    "11-17 Baye Ndongo 9/12%",
+    "11-17 Jeremy Fears Jr. 20/17%",
+    "11-18 Silas Demary Jr. 13/21%",
     "11-18 Tahaad Pettiford 24/9%"
    ]
   },
@@ -90,12 +90,60 @@
    "ratio": 0.89,
    "same_direction": "5 of 5",
    "examples": [
-    "11-16 Blake Bahr 0/0%",
-    "11-16 Dylan Homenick 0/0%",
-    "11-17 Macari Moore 0/0%",
-    "11-17 Justin Monden 0/0%",
-    "11-18 Will Thengvall 0/0%",
-    "11-18 Tyler Harris 0/0%"
+    "11-16 Harry Beauchamp 4/0%",
+    "11-16 Eltayeb Eltayeb 0/0%",
+    "11-17 Paul Mbiya 0/0%",
+    "11-17 Jacob Theodosiou 0/0%",
+    "11-18 Derek Dixon 5/8%",
+    "11-18 Jalen Cunningham 0/0%"
+   ]
+  },
+  {
+   "pattern": "ranked teams (AP, else coaches)",
+   "status": "dead",
+   "player_nights": 181,
+   "nights": 5,
+   "ratio": 1.06,
+   "same_direction": "3 of 5",
+   "examples": [
+    "11-16 Javonte Floyd 0/0%",
+    "11-16 Joe Philon III 41/56%",
+    "11-17 Troy Henderson 0/0%",
+    "11-17 Jacob Theodosiou 0/0%",
+    "11-18 Trent Perry 1/0%",
+    "11-18 Derek Dixon 5/8%"
+   ]
+  },
+  {
+   "pattern": "the national TV games",
+   "status": "watching",
+   "player_nights": 394,
+   "nights": 4,
+   "ratio": 1.06,
+   "same_direction": "3 of 4",
+   "examples": [
+    "11-17 Troy Henderson 0/0%",
+    "11-17 Jacob Theodosiou 0/0%",
+    "11-18 Jalen Cunningham 0/0%",
+    "11-18 Caleb Holt 14/20%",
+    "11-19 Thomas Dowd 5/11%",
+    "11-19 Keonte Greybear 0/0%"
+   ]
+  },
+  {
+   "pattern": "salary down $300+ from his last slate",
+   "status": "emerging",
+   "player_nights": 32,
+   "nights": 3,
+   "ratio": 0.82,
+   "same_direction": "3 of 3",
+   "examples": [
+    "11-18 Seydou Traore 0/0%",
+    "11-18 Thomas Dowd 5/7%",
+    "11-19 Thomas Dowd 5/11%",
+    "11-19 Owen Freeman 21/6%",
+    "11-19 Jackson Kiss 3/4%",
+    "11-19 Braden East 0/0%"
    ]
   }
  ]

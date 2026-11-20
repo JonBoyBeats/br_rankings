@@ -2498,9 +2498,11 @@ def ownwatch(a):
     rows, base = own_rows()
     rows = [r for r in rows if r["own_proj"] is not None]
     mirror = Mirror(a.mirror)
+    bpath = os.path.join(DK, "watch_backfill.json")       # facts for slates graded before the records carried them
+    backfill = json.load(open(bpath)) if os.path.exists(bpath) else {}
     nights = []
     for (d, g), rs in sorted(groupby_night(rows).items()):
-        last = {}
+        last, rec = {}, {}
         day = iso(d + "T00:00:00Z")
         vs = mirror.versions("dk_cbb_morning.json", day - dt.timedelta(days=1), day + dt.timedelta(days=2))
         start = None
@@ -2510,7 +2512,10 @@ def ownwatch(a):
                 start = iso(sl["start"])
             if sl and start and t < start:
                 last = {k: (p.get("last5") or [None])[-1] for k, p in (sl.get("players") or {}).items()}
+                rec = sl.get("players") or {}
                 break
+        bf = backfill.get(g, {})
+        fact = lambda k, f: (rec.get(k) or {}).get(f) if f in (rec.get(k) or {}) else (bf.get(k) or {}).get(f)
         ou = {}
         for r in rs:
             if num(r.get("ou")):
@@ -2525,9 +2530,14 @@ def ownwatch(a):
             "top-2 projected on the biggest favourite": top2([r for r in rs if fav and r["team"] == fav["team"]]),
             "the 5 highest salaries": {r["dk_id"] for r in sorted(rs, key=lambda r: -r["sal"])[:5]},
             "round-number salaries": {r["dk_id"] for r in rs if r["sal"] % 1000 == 0},
+            "ranked teams (AP, else coaches)": {r["dk_id"] for r in rs if fact(r["dk_id"], "team_rank")},
+            "the national TV games": {r["dk_id"] for r in rs if fact(r["dk_id"], "tv")},
+            "salary down $300+ from his last slate": {r["dk_id"] for r in rs if fact(r["dk_id"], "sal_prev") and r["sal"] <= fact(r["dk_id"], "sal_prev") - 300},
         }
+        seen = {k: any(fact(r["dk_id"], f) for r in rs) for k, f in (("ranked teams (AP, else coaches)", "team_rank"), ("the national TV games", "tv"),
+                                                                     ("salary down $300+ from his last slate", "sal_prev"))}
         lr = {r["dk_id"]: math.log((r["own_act"] + 1) / (r["own_proj"] + 1)) for r in rs}
-        nights.append({"date": d, "draft_group": g, "recency_on_file": bool(last), "flags": flags, "lr": lr,
+        nights.append({"date": d, "draft_group": g, "recency_on_file": bool(last), "on_file": seen, "flags": flags, "lr": lr,
                        "names": {r["dk_id"]: r["name"] for r in rs}, "proj": {r["dk_id"]: r["own_proj"] for r in rs}, "act": {r["dk_id"]: r["own_act"] for r in rs}})
     out = {"updated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "rule": "confirmed: %d+ player-nights on %d+ nights, the same direction on %d%%+ of nights, real/projected %d%%+ off 1; dead: %d+ nights and the direction under %d%% or within 10%%" % (
         WATCH_CONFIRM, WATCH_NIGHTS, 100 * WATCH_SAME, 100 * WATCH_SIZE, WATCH_NIGHTS, 100 * WATCH_DEAD), "patterns": []}
@@ -2535,7 +2545,7 @@ def ownwatch(a):
     for name in nights[0]["flags"] if nights else []:
         per, n, ex = [], 0, []
         for nt in nights:
-            if name == "coming off a big game" and not nt["recency_on_file"]:
+            if name == "coming off a big game" and not nt["recency_on_file"] or nt["on_file"].get(name) is False:
                 continue
             f = nt["flags"][name]; rest = [v for k, v in nt["lr"].items() if k not in f]
             fl = [nt["lr"][k] for k in f if k in nt["lr"]]
@@ -2558,7 +2568,7 @@ def ownwatch(a):
                                 "same_direction": "%d of %d" % (round(same * len(per)), len(per)), "examples": ex[:6]})
         print("  %-42s %-9s %3d player-nights on %d nights; real/projected vs the rest x%s; same direction %d of %d nights%s" % (
             name, st, n, len(per), "%.2f" % ratio if ratio else "-", round(same * len(per)), len(per), ("; e.g. " + ", ".join(ex[:3])) if ex else ""))
-    print("  not measurable yet (no source on file): ranked teams, the national TV game, NBA prospects, salary drops, starter vs bench news beneficiary")
+    print("  not measured: NBA prospects (skipped for now), starter vs bench news beneficiary")
     with open(OWN_WATCH, "w") as fh:
         json.dump(out, fh, indent=1)
 
