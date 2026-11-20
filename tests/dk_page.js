@@ -92,6 +92,25 @@ function audit(name, L, o) {
   await pg.waitForSelector(".row");
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
   check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#statusInfo")));
+  // the default slate: today's main (Pacific day: most games, later start on a tie), locked or not; with none today, the
+  // newest unlocked, else the most recent; a hand pick holds for the rest of that day
+  const ds = await pg.evaluate(() => {
+    const now = Date.parse("2026-11-19T18:00:00Z");               // 10:00 AM Pacific, 11-19
+    const L = [{ draft_group_id: 1, start: "2026-11-19T01:00:00Z", games: 9, locked: true },     // yesterday's main (11-18 Pacific)
+               { draft_group_id: 2, start: "2026-11-19T17:00:00Z", games: 4, locked: true },     // today's early, locked
+               { draft_group_id: 3, start: "2026-11-20T00:00:00Z", games: 9, locked: false },    // today's main (16:00 Pacific)
+               { draft_group_id: 5, start: "2026-11-20T03:00:00Z", games: 9, locked: false },    // today's late, as many games, later start
+               { draft_group_id: 4, start: "2026-11-20T17:30:00Z", games: 7, locked: false }];   // tomorrow's
+    const afterLock = Date.parse("2026-11-20T06:30:00Z");          // 22:30 Pacific, everything today locked
+    const L2 = L.map(s => Object.assign({}, s, { locked: s.draft_group_id !== 4 }));
+    return { today: defaultSlate(L, now, null), afterLock: defaultSlate(L2, afterLock, null),
+             none: defaultSlate(L.filter(s => s.draft_group_id <= 2), Date.parse("2026-11-21T15:00:00Z"), null),
+             noneOpen: defaultSlate([L[0], L[4]], Date.parse("2026-11-20T15:00:00Z"), null),
+             picked: defaultSlate(L, now, { day: "2026-11-19", dg: 2 }), stale: defaultSlate(L, now, { day: "2026-11-18", dg: 2 }),
+             opened: document.getElementById("slate").value === String(defaultSlate(doc.slates, Date.now(), slatePick())) };
+  });
+  check("default slate: today's main (most games, later start on a tie) locked or not; none today, the newest unlocked, else the most recent; a hand pick holds for its day only",
+        ds.today === 5 && ds.afterLock === 5 && ds.none === 2 && ds.noneOpen === 4 && ds.picked === 2 && ds.stale === 5 && ds.opened, JSON.stringify(ds));
   // the Q filter: only players Questionable by any source; X on one excludes him as anywhere else; off shows everyone
   await pg.evaluate(() => { view.panel = null; renderTiles(); });
   const playersN = await pg.$$eval("#players .row", r => r.length);

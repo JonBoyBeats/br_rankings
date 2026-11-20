@@ -558,6 +558,22 @@ function adjustField() {
 function value(r) { return proj(r) / (r.salary / 1000); }
 function usable(r) { return r.status !== "Out" && !state.excl[r.id] && !r.deepOut; }
 
+/* The slate the page opens on (2026-11-20): today's main slate, by the operator's day in Pacific time: among today's
+   slates the one with the most games (the later start on a tie), locked or not, so after lock it still opens on
+   tonight's main; with none listed today, the newest slate not yet locked, else the most recent. A slate picked by hand
+   is kept for the rest of that Pacific day (pick: {day, dg}). The picker's list is unchanged. */
+function ptDay(t) { return new Date(t).toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }); }
+function slatePick() { try { return JSON.parse(localStorage.getItem("dkcbb:slatePick") || "null"); } catch (e) { return null; } }
+function defaultSlate(slates, now, pick) {
+  if (!slates.length) return null;
+  var today = ptDay(now), has = function (dg) { return slates.some(function (s) { return String(s.draft_group_id) === String(dg); }); };
+  if (pick && pick.day === today && has(pick.dg)) return pick.dg;
+  var later = function (a, b) { return new Date(b.start) - new Date(a.start); };
+  var todays = slates.filter(function (s) { return ptDay(s.start) === today; });
+  if (todays.length) return todays.slice().sort(function (a, b) { return (b.games || 0) - (a.games || 0) || later(a, b); })[0].draft_group_id;
+  var open = slates.filter(function (s) { return !s.locked && new Date(s.start) > now; });
+  return (open.length ? open : slates).slice().sort(later)[0].draft_group_id;
+}
 async function load() {
   $("status").textContent = "Loading…"; $("statusInfo").textContent = "";
   try {
@@ -597,6 +613,7 @@ async function load() {
   });
   if (!sel.options.length) { $("status").textContent = "No DraftKings Classic slate today."; $("players").innerHTML = ""; return; }
   if (keep && [].some.call(sel.options, function (o) { return o.value === keep; })) sel.value = keep;
+  else { var dg = defaultSlate(doc.slates || [], Date.now(), slatePick()); if (dg != null) sel.value = String(dg); }
   // Reload on the same slate keeps the bank, the cut, the picks and the entries file as they are in this page (the
   // bank can outgrow the browser's storage, 2026-11-19), and takes the new rows, contests and field
   pick(!!(slate && BANK && sel.value === keep && String(slate.draft_group_id) === keep));
@@ -2407,7 +2424,10 @@ function scanBankApply(b) {
 nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
-$("slate").addEventListener("change", pick);
+$("slate").addEventListener("change", function (e) {       // a hand pick holds for the rest of the Pacific day
+  try { localStorage.setItem("dkcbb:slatePick", JSON.stringify({ day: ptDay(Date.now()), dg: $("slate").value })); } catch (x) {}
+  pick(e);
+});
 $("reload").addEventListener("click", load);
 /* Each player's Min% / Max% (the player table; listed in the Baseline block) over the draw's own lineups. After the
    draw: lineups over a Max are dropped (those carrying no Min player that needs them first); a Min player short gets
