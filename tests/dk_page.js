@@ -1022,6 +1022,23 @@ function audit(name, L, o) {
     Object.values(PF).forEach(v => v.forEach(bi => { n++; BANK.lineups[bi].ids.forEach(id => { if (!state.lock[id]) c[id] = (c[id] || 0) + 1; }); }));
     return { n, max: Math.max(0, ...Object.values(c)), lim: nightLimit(), night: nightEntries() }; });
   check("night cap: at 40%, no unlocked player past 40% of the night's entries", nc.n > 0 && nc.max <= nc.lim && nc.lim === Math.max(1, Math.floor(0.4 * nc.night + 1e-9)), JSON.stringify(nc));
+  // Locks apply to: draws only by default (a locked player capped like the rest in the fill), with a note naming each
+  // locked player's share of the night; "Draws and fill" exempts him again
+  const lk0 = await pg.evaluate(() => { const c = {}; BANK.lineups.forEach(L => L.ids.forEach(id => { c[id] = (c[id] || 0) + 1; }));
+    const top = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; state.lock = { [top]: 1 }; save(); return { top, sel: document.getElementById("lockFill").value }; });
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const lk1 = await pg.evaluate(top => { const used = nightUsed(null); return { share: used[top] || 0, lim: nightLimit(), note: document.getElementById("cutStatus").textContent }; }, lk0.top);
+  check("locks apply to draws only by default: a locked player capped like the rest in Fill, and the note names his share tonight",
+        lk0.sel === "draws" && lk1.share <= lk1.lim && /1 locked player capped like the rest in the fill \(Locks apply to: draws only\): .+ \d+% tonight/.test(lk1.note), JSON.stringify([lk0, lk1]));
+  await pg.selectOption("#lockFill", "fill");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const lk2 = await pg.evaluate(() => ({ note: document.getElementById("cutStatus").textContent, kept: state.lockFill }));
+  check("locks apply to draws and fill: the note says he's exempt from the caps, and the setting is kept with the slate",
+        /1 locked player is exempt from the caps \(Locks apply to: draws and fill\)/.test(lk2.note) && lk2.kept === "fill", JSON.stringify(lk2));
+  await pg.selectOption("#lockFill", "draws");
+  await pg.evaluate(() => { state.lock = {}; save(); renderPlayers(); });
   await pg.fill("#maxNight", "60");
   await pg.fill("#maxUse", "1");
 
@@ -1320,7 +1337,11 @@ function audit(name, L, o) {
     return { t: el && el.textContent, pc: picks.length ? C.at(picks).pct : null };
   });
   check("builder bar: own position, the field's own-sum quartiles and the picks' percentile", !!nbo.t && (nbo.pc == null ? /no picks yet/.test(nbo.t) : nbo.t.includes("picks at the field's " + nbo.pc)), JSON.stringify(nbo));
-  check("one screen: the live summary, this contest and tonight (ROI, top 10%, top 1%, cash), and tier A", /Tonight: \d+ entr/.test(nb_sum1) && /ROI/.test(nb_sum1) && /top 10%/.test(nb_sum1) && /top 1%/.test(nb_sum1) && /cash/.test(nb_sum1) && /Tier A: \d+ lineup/.test(nb_sum1), nb_sum1);
+  const lkm = await pg.evaluate(() => { const id = BP.pool[BP.b.picked[0] != null ? BP.b.picked[0] : 0].ids[0]; state.lock[id] = 1; nbPlayersRender();
+    const tr = document.querySelector('#nbPlayers tr[data-pid="' + id + '"]'), has = !!(tr && tr.querySelector(".tag.lk")), other = document.querySelectorAll("#nbPlayers .tag.lk").length;
+    delete state.lock[id]; nbPlayersRender(); return { has, other, after: document.querySelectorAll("#nbPlayers .tag.lk").length }; });
+  check("one screen: a locked player marked in the player pane", lkm.has && lkm.other === 1 && lkm.after === 0, JSON.stringify(lkm));
+  check("one screen: the live summary, this contest and tonight (ROI, top 10%, top 1%, cash), and tier A", /Tonight: \d+ entr/.test(nb_sum1) && /ROI/.test(nb_sum1) && /top 10%/.test(nb_sum1) && /top 1%/.test(nb_sum1) && /cash/.test(nb_sum1) && /Tier A tonight: \d+ lineup/.test(nb_sum1), nb_sum1);
   // Add and Remove from the list: the pick, its contest's portfolio, the tab and the summary move together
   const nb_addRm = await pg.evaluate(async () => {
     const cid = BP.review, before = BP.b.picked.length, sumB = document.getElementById("nbSum").textContent;
