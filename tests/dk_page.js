@@ -355,8 +355,9 @@ function audit(name, L, o) {
   // Max exposure and Min unique don't touch the draw
   await set(base); await pg.fill("#maxExpo", "5"); await pg.fill("#minUnique", "8");
   const { L: Lx, msg: mx } = await draw(15);
+  check("Max exposure: 60% by default (the operator, 2026-11-20)", await pg.evaluate(() => document.getElementById("maxExpo").defaultValue === "60"));
   check("Max exposure and Min unique don't limit the draw", Lx.length >= 12, mx);
-  await pg.fill("#maxExpo", "40"); await pg.fill("#minUnique", "3");
+  await pg.fill("#maxExpo", "60"); await pg.fill("#minUnique", "3");
 
   // locks and excludes: in the draw, and in the tag
   const ids = Object.keys(P).filter(id => P[id].status !== "Out").sort((a, c) => P[c].fp_dk / P[c].salary - P[a].fp_dk / P[a].salary);
@@ -921,8 +922,8 @@ function audit(name, L, o) {
   check("portfolios: each lineup in one contest only, the largest stake first", new Set(pfAll).size === pfAll.length &&
         /the largest stake first: CBB \$6K Pull Up Jumper/.test(pmsg), pmsg);
   check("portfolios: each fills its entries, or says what stops it", Object.keys(size).every(c => pf[c].length === size[c]) || /short: .* stops it|runs out/.test(pmsg), pmsg);
-  Object.keys(size).forEach(c => audit("portfolio " + c + " within Max exposure 40% and Min unique 3", pf[c].map(i => bank.lineups[i]),
-    Object.assign(rulesOf(base), { n: size[c], expo: Math.max(0.4, 1 / size[c]), minUnique: 3 })));
+  Object.keys(size).forEach(c => audit("portfolio " + c + " within Max exposure 60% and Min unique 3", pf[c].map(i => bank.lineups[i]),
+    Object.assign(rulesOf(base), { n: size[c], expo: Math.max(0.6, 1 / size[c]), minUnique: 3 })));
   const coreOf = ids => ids.slice().sort((a, b) => P[b].salary - P[a].salary || (a < b ? -1 : 1)).slice(0, 3).sort().join(",");
   const coreMax = a => { const c = {}; a.forEach(i => { const k = coreOf(bank.lineups[i].ids); c[k] = (c[k] || 0) + 1; }); return Math.max(0, ...Object.values(c)); };
   check("portfolios: no core in more than 15% of a contest's lineups (at least one each)", Object.keys(size).every(c => coreMax(pf[c]) <= Math.max(1, Math.floor(0.15 * size[c] + 1e-9))),
@@ -971,7 +972,7 @@ function audit(name, L, o) {
   await pg.click("#bpAuto");
   await pg.waitForFunction(() => BP.b.picked.length >= 5 || /stopped/.test(document.getElementById("bpStatus").textContent), null, { timeout: 300000 });
   const auto = await pg.evaluate(() => BP.b.picked.map(k => ({ ids: BP.pool[k].ids, slots: BP.pool[k].slots })));
-  audit("review: Auto-fill within Max exposure and Min unique", auto, Object.assign(rulesOf(base), { n: 5, expo: 0.4, minUnique: 3 }));
+  audit("review: Auto-fill within Max exposure and Min unique", auto, Object.assign(rulesOf(base), { n: 5, expo: 0.6, minUnique: 3 }));
   check("review: Auto-fill keeps each core to one lineup of 5 (Max core 15%)", (() => { const c = {}; auto.forEach(l => { const k = coreOf(l.ids); c[k] = (c[k] || 0) + 1; }); return Math.max(...Object.values(c)) <= 1; })());
   check("review: the summary shows the largest core", /Largest core: .+ in \d+ of \d+/.test(await pg.textContent("#bpSummary")));
   check("review: summary shows coverage and diversity", /of nights one reaches the top 1%/.test(await pg.textContent("#bpSummary")) && /distinct cores/.test(await pg.textContent("#bpSummary")));
@@ -1003,7 +1004,7 @@ function audit(name, L, o) {
   const bs = JSON.parse(fs.readFileSync(await dl6.path(), "utf8"));
   check("Save build (bank): the pool, its tags, the final cut and the portfolios", bs.kind === "build" && bs.pool.length === bank.lineups.length && bs.tags.length === bs.pool.length &&
         JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()) &&
-        bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.within === "idea" && bs.cut.keep === 100 && bs.pick && bs.pick.maxExpo === 40 && bs.pick.maxCore === 15,
+        bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.within === "idea" && bs.cut.keep === 100 && bs.pick && bs.pick.maxExpo === 60 && bs.pick.maxCore === 15,
         dl6.suggestedFilename() + " " + JSON.stringify(bs.cut));
   // the Auto-fill benchmark: Pick portfolios' entries from the same final pool, apart from yours, each lineup once
   const ap = bs.auto_portfolios || {}, apAll = Object.values(ap).flat();
@@ -1457,7 +1458,7 @@ function audit(name, L, o) {
     heads: [...document.querySelectorAll("#fillPlayersSlot #players .head span[data-sort]")].map(x => x.textContent.replace(/ [↓↑]$/, "")) }));
   check("fill step: one set of buttons (Fill all contests, Auto-fill the rest, Undo fill, New nights, Export DK entries, Save build), Variants only in Cut, Clear bank only in Bank, the settings one line, no side pane",
         fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Auto-fill the rest", "Undo fill", "New nights", "Export DK entries", "Save build"]) && fb.clear === "stepBank" &&
-        fb.varIn === "stepCut" && fb.folded && /^Fill: contest 40% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights$/.test(fb.sum) &&
+        fb.varIn === "stepCut" && fb.folded && /^Fill: contest 60% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights$/.test(fb.sum) &&
         ["Here", "Tonight", "Room"].every(h => fb.heads.includes(h)), JSON.stringify(fb));
   dialogs = [];
   const nBank = await pg.evaluate(() => BANK.lineups.length);

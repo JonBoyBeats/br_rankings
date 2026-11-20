@@ -88,7 +88,7 @@
      "p5": -22.5,
      "p95": 78.4,
      "top1_nights": 11.7,
-     "real_net": null
+     "real_net": 1.1
     },
     "Balanced": {
      "entries": 14,
@@ -99,7 +99,7 @@
      "p5": -23.3,
      "p95": 64,
      "top1_nights": 15.8,
-     "real_net": null
+     "real_net": -19.6
     }
    }
   },
@@ -123,7 +123,7 @@
      "p5": -67.4,
      "p95": 164.75,
      "top1_nights": 39.2,
-     "real_net": null
+     "real_net": -63.75
     },
     "Balanced": {
      "entries": 56,
@@ -134,7 +134,7 @@
      "p5": -65.55,
      "p95": 143.45,
      "top1_nights": 45,
-     "real_net": null
+     "real_net": -68
     }
    }
   }

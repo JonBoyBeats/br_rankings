@@ -56,3 +56,48 @@ date,draft_group,set,team,starter,bench,pos,corr,games,thin,starter_beat,bench_b
 2026-11-18,157033,espn,WICH,William Berg,Emmanuel Okorafor,F-C,-0.98,3,1,17.85,1.55,both over
 2026-11-18,157033,espn,LY-IL,Ryan Agarwal,Donald Hand Jr.,G,-0.96,3,1,22.1,-9.6,split
 2026-11-18,157033,espn,LY-IL,Jason Schofield,Xavier Amos,F-C,-0.79,4,1,0.15,-9.5,split
+2026-11-19,157138,em,NCST,Darius Adams,Christian Hammond,G,-0.9,4,1,-18.6,4.3,split
+2026-11-19,157138,espn,NCST,Darius Adams,Christian Hammond,G,-0.9,4,1,-18.6,4.3,split
+2026-11-19,157138,espn,ND,Ethan Roberts,Jonathan Sanderson,G,-0.36,6,0,-21.1,-5.7,both under
+2026-11-19,157138,espn,ND,Braeden Smith,Jonathan Sanderson,G,-0.33,6,0,10.4,-5.7,split
+2026-11-19,157138,em,MURR,Talis Soulhac,Christian Jones,G,-0.99,5,0,6.6,-1.0,split
+2026-11-19,157138,espn,MURR,Talis Soulhac,Christian Jones,G,-0.99,5,0,6.6,-1.0,split
+2026-11-19,157138,espn,MURR,Talis Soulhac,Mathis Courbon,G,-0.85,5,0,6.6,4.45,both over
+2026-11-19,157138,em,UF,Boogie Fland,Urban Klavzar,G,-0.95,5,0,-15.0,13.1,split
+2026-11-19,157138,espn,UF,Boogie Fland,Urban Klavzar,G,-0.95,5,0,-15.0,13.1,split
+2026-11-19,157138,espn,UF,Boogie Fland,Isaiah Brown,G,-0.8,5,0,-15.0,1.55,split
+2026-11-19,157138,em,WVU,Mouhamed Sylla,Amadou Seini,B,-0.75,5,0,-1.1,-5.95,both under
+2026-11-19,157138,em,WVU,Seydou Traore,Joson Sanon,W,-0.45,5,0,-7.6,0.35,split
+2026-11-19,157138,espn,WVU,Brenen Lorient,Javan Buchanan,F-C,-0.9,5,0,-3.25,0.35,split
+2026-11-19,157138,espn,WVU,Mouhamed Sylla,Amadou Seini,F-C,-0.75,5,0,-1.1,-5.95,both under
+2026-11-19,157138,em,AUB,Narcisse Ngoy,Bukky Oboye,B,-0.71,5,0,-15.7,0.75,split
+2026-11-19,157138,espn,AUB,Kevin Overton,George Kimble III,G,-1.0,5,0,7.95,-4.65,split
+2026-11-19,157138,espn,AUB,Narcisse Ngoy,Owen Freeman,F-C,-0.84,5,0,-15.7,21.85,split
+2026-11-19,157139,espn,UNLV,Jeremy Foumena,Jackson Kiss,F-C,-0.84,5,0,0.45,-7.15,split
+2026-11-19,157139,espn,UNLV,Cam Miles,Kota Suttle Jr.,G,-0.36,5,0,-13.55,4.55,split
+2026-11-19,157139,em,UH,Delrecco Gillespie,Braden East,B,-0.91,5,0,9.55,-4.5,split
+2026-11-19,157139,em,UH,Delrecco Gillespie,Arafan Diane,B,-0.79,5,0,9.55,-2.55,split
+2026-11-19,157139,espn,UH,Delrecco Gillespie,Braden East,F-C,-0.91,5,0,9.55,-4.5,split
+2026-11-19,157139,espn,UH,Delrecco Gillespie,Arafan Diane,F-C,-0.79,5,0,9.55,-2.55,split
+2026-11-19,157139,em,TCU,Xavier Edmonds,Ryan Hunt,B,-0.52,4,1,0.4,-6.6,split
+2026-11-19,157139,espn,TCU,DJ Thomas,Ryan Hunt,F-C,-0.87,4,1,-11.6,-6.6,both under
+2026-11-19,157139,espn,TCU,Micah Robinson,Trent Lincoln,G,-0.77,4,1,-5.8,-6.3,both under
+2026-11-19,157139,em,RU,Tariq Francis,RaSheed Jones,G,-0.91,5,0,8.05,2.45,both over
+2026-11-19,157139,em,RU,Darin Smith Jr.,RaSheed Jones,G,-0.78,5,0,21.55,2.45,both over
+2026-11-19,157139,espn,RU,Tariq Francis,RaSheed Jones,G,-0.91,5,0,8.05,2.45,both over
+2026-11-19,157139,espn,RU,Darin Smith Jr.,RaSheed Jones,G,-0.78,5,0,21.55,2.45,both over
+2026-11-19,157139,espn,ORST,Daniel Freitag,Chris Johnson,G,-0.91,5,0,-4.3,3.75,split
+2026-11-19,157139,em,ORE,Taylor Bowen,Tajh Ariza,W,-0.77,3,1,-13.95,4.4,split
+2026-11-19,157139,espn,ORE,Andrew Meadow,Sean Stewart,F-C,-1.0,3,1,0.0,-16.6,both under
+2026-11-19,157139,espn,WISC,Owen Foxwell,Zach Kinziger,G,-0.77,4,1,-0.3,-0.2,both under
+2026-11-19,157139,espn,WISC,Victory Onuetu,Austin Rapp,F-C,-0.77,4,1,-1.75,16.2,split
+2026-11-19,157139,espn,TA&M,PJ Haggerty,Jalen Reece,G,-0.94,5,0,28.25,3.7,both over
+2026-11-19,157139,espn,TA&M,Jordan Pope,Jalen Reece,G,-0.62,5,0,-0.8,3.7,split
+2026-11-19,157139,em,SHU,Roddie Anderson,Trey Parker,G,-0.68,4,1,-4.45,24.75,split
+2026-11-19,157139,espn,SHU,Del Jones,Mihailo Petrovic,G,-0.78,4,1,-0.25,-4.7,both under
+2026-11-19,157139,espn,SHU,Roddie Anderson,Trey Parker,G,-0.68,4,1,-4.45,24.75,split
+2026-11-19,157139,em,STC,Brad Longcor III,David Castillo,G,-0.76,5,0,-9.4,-11.9,both under
+2026-11-19,157139,espn,STC,Brad Longcor III,David Castillo,G,-0.76,5,0,-9.4,-11.9,both under
+2026-11-19,157139,espn,STC,Sash Gavalyugov,Thierry Darlan,G,-0.31,5,0,3.65,-2.05,split
+2026-11-19,157139,espn,VCU,Michael Belle,Torey Alston,F-C,-0.56,3,1,-3.2,-7.95,both under
+2026-11-19,157139,espn,VCU,Brandon Jennings,Ahmad Nowell,G,-0.36,3,1,9.25,-4.1,split
