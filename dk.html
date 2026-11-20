@@ -99,19 +99,15 @@
   #nbStatusSlot .status { max-height: 4.6em; overflow: auto; margin: 4px 0; }
   @media (max-width: 900px) { .nbmain { grid-template-columns: 1fr; } }
   .nbscroll { max-height: calc(100vh - var(--nbtop, 300px)); overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
-  #nbList table, #nbPlayers table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  #nbList td, #nbList th, #nbPlayers td, #nbPlayers th { padding: 3px 4px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
-  #nbList td.l, #nbList th.l, #nbPlayers td.l, #nbPlayers th.l { text-align: left; }
+  #nbList table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  #nbList td, #nbList th { padding: 3px 4px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+  #nbList td.l, #nbList th.l { text-align: left; }
   #nbList tr.tierh td { background: var(--surface); font-weight: 600; text-align: left; position: sticky; top: 0; }
   #nbList tr.picked { background: color-mix(in srgb, var(--live) 14%, transparent); }
   #nbList tr.kid td:first-child { padding-left: 18px; }
   #nbList tr.kid { opacity: .92; }
   #nbList .nm { white-space: normal; min-width: 200px; }
-  #nbList button, #nbPlayers button, #nbFilters button { height: 22px; padding: 0 7px; font-size: 11.5px; }
-  #nbPlayers tr { cursor: pointer; }
-  #nbPlayers tr.with td:first-child { box-shadow: inset 3px 0 var(--live); }
-  #nbPlayers tr.without td:first-child { box-shadow: inset 3px 0 var(--bad); }
-  #nbPlayers th { cursor: pointer; position: sticky; top: 0; background: var(--surface); }
+  #nbList button, #nbFilters button { height: 22px; padding: 0 7px; font-size: 11.5px; }
   #nbFilters { font-size: 12px; margin: 0 0 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
   details.card { margin: 6px 0 4px; font-size: 12.5px; }
   details.card summary { cursor: pointer; color: var(--muted); }
@@ -160,7 +156,14 @@
   .teambar button.LEVERAGE { border-left-color: #5aa9e6; } .teambar button.FADE { border-left-color: var(--bad); }
   .teambar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
   .teamside { margin: 6px 0 14px; min-width: 0; }
-  .infobtn { height: 22px; width: 22px; padding: 0; border-radius: 50%; font-size: 12px; font-style: italic; font-weight: 700; align-self: center; }
+  .linkbtn { background: none; border: none; text-decoration: underline; color: var(--muted); height: auto; padding: 0 4px; font-size: 12px; align-self: center; }
+  #fillSet > summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
+  #nbList.nbscroll { max-height: 440px; }
+  #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
+  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 52px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 50px 38px 38px 54px 36px 36px 40px 34px 26px 42px 42px; }
+  #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
+  #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
+  #players.fillcols .nm { cursor: pointer; } height: 22px; width: 22px; padding: 0; border-radius: 50%; font-size: 12px; font-style: italic; font-weight: 700; align-self: center; }
   #cutIdeas th[data-ck] { cursor: pointer; }
   .stepbar { display: flex; gap: 6px; padding: 6px 0 2px; }
   .stepbar button { flex: 1; height: 36px; font-size: 14px; font-weight: 700; }
@@ -327,6 +330,7 @@
 
   <div class="note" id="bankCheck" style="margin:2px 0 6px"></div>
   <div id="bankBox"></div>
+  <div class="opts" style="padding:2px 0"><button type="button" id="bankClear" title="Empties this slate's bank (asks first)">Clear bank</button></div>
   </section>
 
   <section class="step" id="stepCut" data-step="cut" hidden>
@@ -362,6 +366,7 @@
   </section>
 
   <section class="step" id="stepFill" data-step="fill" hidden>
+  <details id="fillSet"><summary id="fillSetSum">Fill settings</summary>
   <div class="opts">
     <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="40"></label>
     <label class="field"><span class="field-label">Min unique</span><input class="num" id="minUnique" type="number" min="1" max="8" value="3"></label>
@@ -374,40 +379,32 @@
     <label class="field" title="Unique within a contest; across contests one lineup can go in this many (1: each lineup in one contest only, the rule until 2026-11-19). Each contest has its own prizes, so a copy in another contest splits nothing; it adds swing. Fill all contests and the builder both keep to it"><span class="field-label">Max contests per lineup</span><input class="num" id="maxUse" type="number" min="1" max="10" step="1" value="3"></label>
     <label class="field" title="Locks are a draw-time rule: with Draws only (the default), a locked player is in every lineup you draw but Fill all contests, Auto-fill and hand adds cap him like anyone else (Max exposure, his Max%, the night cap). Draws and fill: a locked player is also exempt from those caps in the fill"><span class="field-label">Locks apply to</span><select id="lockFill" style="width:auto">
       <option value="draws">Draws only</option><option value="fill">Draws and fill</option></select></label>
+  </div></details>
+  <div class="opts" id="fillButtons">
     <button type="button" class="primary" id="pfRun">Fill all contests</button>
+    <button type="button" id="bpAuto" disabled>Auto-fill the rest</button>
     <button type="button" id="pfUndo" disabled title="Put back the portfolios the last fill replaced">Undo fill</button>
     <button type="button" id="pfNights" title="Draw new simulated nights for this slate (the fills, the builder and the scoreboard all use the slate's nights)">New nights</button>
     <button type="button" id="pfExport" disabled>Export DK entries</button>
     <button type="button" id="bankSave">Save build</button>
-    <button type="button" id="bankClear">Clear bank</button>
+    <button type="button" class="linkbtn" id="nbOff" title="The old layout, the same bank, cut and portfolios">Classic view</button>
+    <button type="button" class="linkbtn" id="nbOn" title="The one-screen builder">New builder view</button>
   </div>
   <div id="s2out">
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
   <div id="cutSharesBox"></div>
   </div>
-  <div class="opts"><button type="button" id="nbOn">New builder view</button></div>
 
   <section id="nb" hidden>
     <div id="nbBar">
       <div class="nbrow"><span id="nbTabs"></span></div>
-      <div class="nbrow" style="margin-top:4px">
-        <button type="button" class="primary" id="nbFill">Fill all contests</button>
-        <button type="button" id="nbUndo">Undo fill</button>
-        <button type="button" id="nbVar">Variants of tier A</button>
-        <button type="button" id="nbAuto">Auto-fill the rest</button>
-        <button type="button" id="nbExport">Export DK entries</button>
-        <button type="button" id="nbSave">Save build</button>
-        <button type="button" id="nbOff" title="The old layout, the same bank, cut and portfolios">Classic view</button>
-      </div>
       <div id="nbSum"></div>
     </div>
     <div id="nbStatusSlot"></div>
-    <div class="nbmain">
-      <div><div id="nbFilters"></div><div class="nbscroll" id="nbList"><div class="note" style="padding:8px">Cut the bank, then Fill all contests or pick a contest above.</div></div></div>
-      <div><div class="opts" style="padding:0 0 4px" id="nbRTabs"><button type="button" data-rt="p" aria-pressed="true">Players</button><button type="button" data-rt="pair" aria-pressed="false">Pairs</button><button type="button" data-rt="core" aria-pressed="false">Cores</button></div>
-        <div class="nbscroll" id="nbRight"><div id="nbPlayers"></div></div></div>
-    </div>
+    <div id="nbFilters"></div><div class="nbscroll" id="nbList"><div class="note" style="padding:8px">Cut the bank, then Fill all contests or pick a contest above.</div></div>
+    <div class="opts" style="padding:0 0 4px" id="nbRTabs"><button type="button" data-rt="p" aria-pressed="true">Players</button><button type="button" data-rt="pair" aria-pressed="false">Pairs</button><button type="button" data-rt="core" aria-pressed="false">Cores</button></div>
+    <div id="fillPlayersSlot"></div><div id="fillSideSlot"></div>
     <details class="news" id="nbDetails"><summary>Details: contests and entries, the night's players, pairs and cores</summary><div id="nbDetailsBody"></div></details>
   </section>
 
@@ -424,7 +421,6 @@
     within Max exposure, Min unique and Max core. Picks save to the contest as you go.</div></details>
   <div class="opts">
     <label class="field"><span class="field-label">+Cover counts</span><select id="bpCover" style="width:auto"><option value="top1">top 1%</option><option value="cash">cashing</option></select></label>
-    <button type="button" id="bpAuto" disabled>Auto-fill the rest</button>
     <button type="button" id="bpClear" disabled>Clear picks</button>
   </div>
   <div class="status" id="bpStatus"></div>
@@ -456,7 +452,7 @@
   <div class="teambar" id="teamBar"></div>
   <div id="teamPanel"></div>
 
-  <div id="playersSec">
+  <div id="playersHome"><div id="playersSec">
   <h2>Players</h2>
   <div class="note">Click a team above for its players at 2x value or better. <b>L</b> lock, <b>X</b> leave out (both for the
     draw); type over a Proj to use your own; <b>Max%</b> caps him in each contest's portfolio. Green: higher value, higher ownership.</div>
@@ -471,7 +467,7 @@
     <button type="button" id="clearLx" title="Clear every lock, exclude and Max%">Clear L / X</button>
   </div>
   <div id="players"></div>
-  </div>
+  </div></div>
 </div>
 
 <script src="vendor/lp_solver.js"></script>
@@ -673,7 +669,7 @@ function pick(keepMem) {
   BP = null; $("bpTableWrap").hidden = true; $("bpSide").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpGroups").innerHTML = "";
   ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = true; });
   ruleCounts = {}; editing = -1;
-  $("lockFill").value = state.lockFill === "fill" ? "fill" : "draws";
+  $("lockFill").value = state.lockFill === "fill" ? "fill" : "draws"; fillSetText();
   if (!keepMem) bankLoadState();
   renderBank(); renderEntries(); renderNight(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
   if (NB.on) { BP = null; nbOpen(); }
@@ -720,7 +716,9 @@ function renderPlayers() {
     return true;
   });
   $("qOnly").textContent = "Q (" + rows.filter(isQ).length + ")";
-  $("players").innerHTML = playerTable(sortList(list), true);
+  var fs = fillStats();
+  $("players").classList.toggle("fillcols", !!fs);
+  $("players").innerHTML = playerTable(sortList(list), true, fs);
   renderTeamPanel();
 }
 function sortList(list) {
@@ -731,6 +729,9 @@ function sortList(list) {
               sroi: function (r) { var x = scanRowOf(r.id); return x && x.g_roi != null ? x.g_roi : -Infinity; },
               scash: function (r) { var x = scanRowOf(r.id); return x ? x.g_cash : -Infinity; },
               bank: function (r) { return bankShare()[r.id] || 0; },
+              here: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].here : 0; },
+              tonight: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].tonight : 0; },
+              room: function (r) { var f = fillStats(); return f && f[r.id] && f[r.id].room != null ? f[r.id].room : 1e9; },
               read: function (r) { var x = scanRowOf(r.id); return x ? ["core", "leverage", "even", "fade", "skip"].indexOf(x.read) : 9; } }[view.sort] || value;
   return list.sort(function (a, b) {
     var x = get(a), y = get(b);
@@ -784,11 +785,11 @@ function bankShare() {
   bankShareMemo = { bank: BANK, n: n, v: v };
   return v;
 }
-function playerTable(list, sortable) {
+function playerTable(list, sortable, fs) {
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"],
      ["min", "Min", "r col-min"], ["avg", "DK avg", "r col-avg"], ["scan", "Top 1%", "r col-scan"], ["sroi", "ROI", "r col-scan"], ["scash", "Cash", "r col-scan"], ["read", "Read", "col-scan"],
-     ["bank", "Bank", "r col-scan"]]
+     ["bank", "Bank", "r col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
     '<span class="col-scan" title="Bank this: a rule, at least 1 of him, for your next draw"></span>' +
@@ -818,7 +819,7 @@ function playerTable(list, sortable) {
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '">' +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
       '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button></span>' +
-      '<span class="who"><div class="name"><span class="nm" title="' + esc(whoTip(r)) + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
+      '<span class="who"><div class="name"><span class="nm' + (fs && bpFilt.p[r.id] ? (bpFilt.p[r.id] === "with" ? " w" : " wo") : "") + '" title="' + esc(whoTip(r)) + (fs ? "\nTap: with, again without, again off (filters the lineups)" : "") + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
       '<span class="m mut col-pos">' + esc(r.position || "") + "</span>" +
       '<span class="m col-team">' + esc(r.team || "") + "</span>" +
       '<span class="m mut col-opp">' + (r.home ? "v " : "@ ") + esc(r.opp || "?") + "</span>" +
@@ -834,6 +835,8 @@ function playerTable(list, sortable) {
       '<span class="m r col-scan">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
       '<span class="col-scan rdc">' + (sc ? '<span class="read-' + sc.read + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
       '<span class="m r col-scan">' + (BANK && BANK.lineups && BANK.lineups.length ? Math.round(100 * (bshare[r.id] || 0)) + "%" : "–") + "</span>" +
+      (fs ? (function (x) { x = x || {}; return '<span class="m r">' + Math.round(100 * (x.here || 0)) + '%</span><span class="m r">' + Math.round(100 * (x.tonight || 0)) + '%</span><span class="m r"' +
+        (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</span>"; })(fs[r.id]) : "") +
       '<span class="col-scan"><button type="button" class="pbank" title="Bank this: at least 1 of ' + esc(r.name) + ' in your next draw"' + (r.status === "Out" ? " disabled" : "") + ">+</button></span>" +
       '<span class="col-max"><input class="floor" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + '"></span>' +
       '<span class="col-max"><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
@@ -1004,7 +1007,7 @@ function gameHead(game, T) {
 var PANEL_MIN_VALUE = 2;     // a clicked team shows its players at this value (points per $1K) or better, unless Show all
 function renderTeamPanel() {
   var T = teamsOf();
-  $("playersSec").hidden = !!(T && view.panel);       // the full list only when no team is clicked
+  if (!fillMode()) $("playersSec").hidden = !!(T && view.panel);       // the full list only when no team is clicked (the Fill step's list always shows)
   if (!T || !view.panel) { $("teamPanel").innerHTML = ""; return; }
   var t = T.teams.find(function (x) { return x.team === view.panel; });
   if (!t) { $("teamPanel").innerHTML = ""; return; }
@@ -1459,6 +1462,22 @@ function stepNow() {
   if (state && state.step) return state.step;
   return !BANK || !BANK.lineups.length ? "bank" : !(CUT && CUT.keep) ? "cut" : "fill";
 }
+/* The Fill step's players (2026-11-20, the operator's layout part 3): in the one-screen view the page's own Players
+   list moves under the lineups, with the builder's Here / Tonight / Room columns, and a tap on a name filters the
+   lineups (with, without, off); Pairs and Cores are tabs above it. In the other steps it is back at the page's bottom. */
+function fillMode() { return !!(typeof NB !== "undefined" && NB.on && state && stepNow() === "fill"); }
+function placePlayers() {
+  var sec = $("playersSec"), want = fillMode() ? $("fillPlayersSlot") : $("playersHome");
+  if (sec.parentNode !== want) { want.appendChild(sec); renderPlayers(); }
+  if (fillMode()) sec.hidden = NB.rt !== "p";
+}
+function fillStats() {          // this contest's and tonight's exposure and the room, for the Players list
+  if (!fillMode() || !BP || !BP.review) return null;
+  var here = {}, n = BP.o.n, night = nightUsed(BP.review), N = nightEntries(), lim = bpLimits(), out = {};
+  BP.b.picked.forEach(function (k) { BP.pool[k].ids.forEach(function (id) { here[id] = (here[id] || 0) + 1; }); });
+  rows.forEach(function (r) { var c = here[r.id] || 0; out[r.id] = { here: n ? c / n : 0, tonight: N ? ((night[r.id] || 0) + c) / N : 0, room: lim[r.id] != null ? lim[r.id] - c : null }; });
+  return out;
+}
 function showStep(st) { if (state) { state.step = st; save(); } renderSteps(); }
 function renderSteps() {
   if (!$("stepBar")) return;
@@ -1469,6 +1488,7 @@ function renderSteps() {
                 fill: "Fill <span class=\"st\">" + (ent ? picked + "/" + ent : "–") + "</span>" };
   document.querySelectorAll("#stepBar button[data-step]").forEach(function (b) { b.innerHTML = label[b.dataset.step]; b.setAttribute("aria-pressed", String(b.dataset.step === st)); });
   document.querySelectorAll("section.step").forEach(function (x) { x.hidden = x.dataset.step !== st; });
+  if (typeof placePlayers === "function" && $("playersSec")) placePlayers();
   if (st === "fill" && typeof nbFit === "function") nbFit();
 }
 function renderBank() {
@@ -2100,13 +2120,14 @@ function nbStored() { try { return localStorage.getItem("dkcbb:nb") !== "false";
 function nbSet(on) {
   NB.on = !!on;
   try { localStorage.setItem("dkcbb:nb", String(NB.on)); } catch (e) {}
-  $("nb").hidden = !NB.on; $("classic3").hidden = NB.on; $("nbOn").hidden = NB.on;
+  $("nb").hidden = !NB.on; $("classic3").hidden = NB.on; $("nbOn").hidden = NB.on; $("nbOff").hidden = !NB.on;
   var out = $("s2out"), det = $("nbDetailsBody");
   // the bank table (tag boxes, Group the ticked tags) stays under Draw & bank in both views: grouping comes before the cut
   // the status line sits under the step bar and the bank table in the Bank step, in both views (2026-11-20)
   if (NB.on) { ["entriesBox", "pfBox", "cutSharesBox"].forEach(function (id) { det.appendChild($(id)); }); }
   else { ["entriesBox", "pfBox", "cutSharesBox"].forEach(function (id) { out.appendChild($(id)); }); nbSide(false); }
   if (NB.on) nbOpen();
+  placePlayers();
 }
 // the bar sits under the page's own sticky masthead; the panes fill what's left of the screen
 function nbFit() {
@@ -2163,7 +2184,6 @@ function nbRender() {
     return '<button type="button" data-cid="' + cid + '" aria-pressed="' + (cid === cur) + '" class="' + (bad ? "short" : "") + '" title="' + esc(x.c.name) +
       (have < x.n ? ": short of its entries" : bad ? ": a player past a cap" : "") + '">' + esc(nbShort(x.c.name)) + " " + have + "/" + x.n + "</button>";
   }).join("") : '<span class="note">Load the entries file (or set entries) to see your contests here.</span>';
-  $("nbExport").disabled = $("pfExport").disabled; $("nbUndo").disabled = $("pfUndo").disabled;
   // live summary: this contest (the builder's picks) and the night (every contest's portfolio)
   var here = null;
   if (BP && BP.review) {
@@ -2184,7 +2204,7 @@ function nbRender() {
       (tA.top ? ", " + esc(tA.top) + " " + Math.round(100 * tA.topShare) + "%" : "") + (tA.flag ? " (red flag: one great lineup with no close cousins, or one idea)" : "") + "</span>" : "") +
     (C ? '<br><span id="nbOwnPos"><b>Own position:</b> ' + clumpText(C) + (pa ? "; picks at the field's " + ordinal(pa.pct) + " percentile (" + Math.round(pa.mean) + "%)" : "; no picks yet") + "</span>" : "");
   nbListRender();
-  if (NB.rt === "p") nbPlayersRender(); else bpSideRender();
+  if (NB.rt === "p") renderPlayers(); else bpSideRender();
   nbFit();
 }
 function nbListRender() {
@@ -2227,50 +2247,23 @@ function nbListRender() {
   $("nbList").innerHTML = "<table>" + html + "</table>";
 }
 // the condensed player list: this contest's and tonight's exposure, the room left under the binding cap
-function nbPlayersRender() {
-  if (!BP || !BP.review) { $("nbPlayers").innerHTML = ""; return; }
-  var inPool = {}, here = {}, night = nightUsed(BP.review), lim = bpLimits(), n = BP.o.n, N = nightEntries();
-  BP.pool.forEach(function (L) { L.ids.forEach(function (id) { inPool[id] = 1; }); });
-  BP.b.picked.forEach(function (k) { BP.pool[k].ids.forEach(function (id) { here[id] = (here[id] || 0) + 1; }); });
-  var list = Object.keys(inPool).map(byId).filter(Boolean).map(function (r) {
-    var c = here[r.id] || 0, t = (night[r.id] || 0) + c;
-    return { r: r, sal: r.salary, proj: proj(r), own: own(r), here: n ? c / n : 0, night: N ? t / N : 0, room: lim[r.id] != null ? lim[r.id] - c : null };
-  });
-  var key = NB.psort, dir = NB.pdir;
-  list.sort(function (a, b) { var x = key === "name" ? a.r.name : a[key], y = key === "name" ? b.r.name : b[key]; return (x < y ? -1 : x > y ? 1 : 0) * dir || b.night - a.night; });
-  var th = function (k, l) { return '<th data-ps="' + k + '"' + (k === "name" ? ' class="l"' : "") + ">" + l + (NB.psort === k ? (NB.pdir < 0 ? " ↓" : " ↑") : "") + "</th>"; };
-  $("nbPlayers").innerHTML = '<div class="note" style="margin:4px 6px">Tap: <b class="w">with</b>, again <b class="wo">without</b>, again off.</div><table><tr>' + th("name", "Player") + th("sal", "Sal") + th("proj", "Proj") + th("own", "Field") +
-    th("here", "Here") + th("night", "Tonight") + th("room", "Room") + "</tr>" + list.map(function (x) {
-      var f = bpFilt.p[x.r.id] || "";
-      return '<tr class="' + f + '" data-pid="' + esc(x.r.id) + '"><td class="l">' + esc(shortName(x.r.name)) + (state.lock[x.r.id] ? ' <span class="tag lk" title="Locked (from your draws)' +
-        (state.lockFill === "fill" ? ": exempt from the caps in the fill" : ": capped like the rest in the fill (Locks apply to: draws only)") + '">L</span>' : "") + ' <span class="mut">' + esc(x.r.team) + "</span></td><td>" + (x.sal / 1000).toFixed(1) +
-        "</td><td>" + x.proj.toFixed(1) + "</td><td>" + Math.round(x.own) + "%</td><td>" + Math.round(100 * x.here) + "%</td><td>" + Math.round(100 * x.night) + "%</td><td" +
-        (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</td></tr>";
-    }).join("") + "</table>";
-}
 // Pairs and Cores: the classic side panel, moved into the right pane while one of them is open
 function nbSide(show, tab) {
   var side = $("bpSide");
   if (show) {
-    $("nbRight").appendChild(side); side.hidden = false; $("nbPlayers").hidden = true;
+    $("fillSideSlot").appendChild(side); side.hidden = false; $("playersSec").hidden = true;
     bpTab = tab;
     document.querySelectorAll("#bpSide [data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", String(x.dataset.tab === tab)); x.hidden = x.dataset.tab === "p"; });
   } else {
     var grid = document.querySelector("#classic3 .bpgrid");
     if (side.parentNode !== grid) grid.appendChild(side);
     document.querySelectorAll("#bpSide [data-tab]").forEach(function (x) { x.hidden = false; });
-    $("nbPlayers").hidden = false; bpTab = "p";
+    $("playersSec").hidden = false; bpTab = "p";
     document.querySelectorAll("#bpSide [data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", String(x.dataset.tab === "p")); });
   }
 }
 $("nbOn").addEventListener("click", function () { nbSet(true); });
 $("nbOff").addEventListener("click", function () { nbSet(false); });
-$("nbFill").addEventListener("click", function () { $("pfRun").click(); });
-$("nbUndo").addEventListener("click", function () { $("pfUndo").click(); });
-$("nbVar").addEventListener("click", function () { $("varRun").click(); });
-$("nbAuto").addEventListener("click", function () { if (BP && BP.review) $("bpAuto").click(); });
-$("nbExport").addEventListener("click", function () { $("pfExport").click(); });
-$("nbSave").addEventListener("click", function () { $("bankSave").click(); });
 $("nbTabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-cid]"); if (b) review(b.dataset.cid); });
 $("nbRTabs").addEventListener("click", function (e) {
   var b = e.target.closest("button[data-rt]"); if (!b) return;
@@ -2292,14 +2285,6 @@ $("nbList").addEventListener("click", function (e) {
   if (b.classList.contains("nbMore")) { NB.more[b.dataset.t] = (NB.more[b.dataset.t] || 60) + 60; nbListRender(); return; }
   var k = +b.closest("tr").dataset.k;
   if (b.classList.contains("bpAdd")) bpAdd(k); else if (b.classList.contains("bpForce")) bpAdd(k, true); else if (b.classList.contains("bpRm")) bpRemove(k);
-});
-$("nbPlayers").addEventListener("click", function (e) {
-  var h = e.target.closest("th[data-ps]");
-  if (h) { NB.pdir = NB.psort === h.dataset.ps ? -NB.pdir : (h.dataset.ps === "name" ? 1 : -1); NB.psort = h.dataset.ps; nbPlayersRender(); return; }
-  var r = e.target.closest("tr[data-pid]"); if (!r) return;
-  var f = bpFilt.p, x = r.dataset.pid;
-  if (!f[x]) f[x] = "with"; else if (f[x] === "with") f[x] = "without"; else delete f[x];
-  bpRender();
 });
 
 /* The slate scan (2026-11-19, the owner: where to focus the bank before any rules). For each team, a forced batch
@@ -2719,14 +2704,28 @@ $("varRun").addEventListener("click", function () {
 $("cutRun").addEventListener("click", function () {
   runCut().then(function (m) { $("cutStatus").textContent = m; if (NB.on) { BP = null; nbOpen(); } }, function (e) { CUT = null; cutSave(); renderBank(); $("cutStatus").innerHTML = '<span class="bad">Cut failed: ' + esc(e.message) + "</span>"; });
 });
+function fillSetText() {
+  var v = function (id) { return $(id).value; };
+  $("fillSetSum").textContent = "Fill: contest " + (v("maxExpo") || "–") + "% · night " + (v("maxNight") || "off") + (v("maxNight") ? "%" : "") + " · unique " + v("minUnique") + " · core " +
+    (v("maxCore") ? v("maxCore") + "%" : "off") + (v("maxPair") ? " · pair " + v("maxPair") + "%" : "") + " · max " + v("maxUse") + " contest" + (+v("maxUse") === 1 ? "" : "s") +
+    " · locks: " + (v("lockFill") === "fill" ? "draws and fill" : "draws only") + " · " + $("pfObj").selectedOptions[0].textContent + " · " + v("nSims") + " nights";
+}
+$("fillSet").addEventListener("input", fillSetText);
+$("fillSet").addEventListener("change", fillSetText);
 $("lockFill").addEventListener("change", function () { state.lockFill = $("lockFill").value; save(); if (BP && BP.review) bpRender(); if (NB.on) nbRender(); });
 $("pfRun").addEventListener("click", function () {
   var started = Object.keys(PF).filter(function (k) { return (PF[k] || []).length; }).length, obj = $("pfObj").value;
   if (started && !confirm("Replace your portfolios in " + started + " contest" + (started === 1 ? "" : "s") + " with the " + $("pfObj").selectedOptions[0].textContent + " start? (Undo fill puts them back.)")) return;
   if (started) { store(undoKey(), PF); $("pfUndo").disabled = false; }   // the replaced set, for Undo fill
   PF = {};
-  pickPortfolios(null, obj).then(function (m) { $("cutStatus").textContent = m + lockNote(); if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
+  pickPortfolios(null, obj).then(function (m) { fillMsg(m); if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
 });
+function fillMsg(m) {            // after Fill all contests: one line (filled of entries, short contests), the detail in a fold
+  var ns = entriesN(), have = 0, want = 0, short = [];
+  nbContests().forEach(function (x) { var k = String(x.c.id), h = Math.min(x.n, (PF[k] || []).length); have += h; want += x.n; if (h < x.n) short.push(nbShort(x.c.name) + " " + h + "/" + x.n); });
+  $("cutStatus").innerHTML = esc("Filled " + have + " of " + want + " entries in " + nbContests().length + " contests" + (short.length ? "; short: " + short.join(", ") : "") + "." + lockNote()) +
+    ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">details</summary> ' + esc(m) + "</details>";
+}
 function undoKey() { return "dkcbb-pf-prev:" + slate.draft_group_id; }
 $("pfUndo").addEventListener("click", function () {
   var prev = store(undoKey());
@@ -2881,6 +2880,12 @@ $("players").addEventListener("click", function (e) {
   rowClick(e);
 });
 function rowClick(e) {
+  var nmEl = e.target.closest(".nm");
+  if (nmEl && fillMode() && BP && BP.review) {      // the Fill step: a name filters the lineups, with / without / off
+    var f = bpFilt.p, x = nmEl.closest(".row").dataset.id;
+    if (!f[x]) f[x] = "with"; else if (f[x] === "with") f[x] = "without"; else delete f[x];
+    bpRender(); return;
+  }
   var pb = e.target.closest(".pbank");
   if (pb) {
     var pr = byId(pb.closest(".row").dataset.id);

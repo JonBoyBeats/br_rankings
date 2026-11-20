@@ -81,7 +81,8 @@ function audit(name, L, o) {
   pg.on("dialog", d => { dialogs.push(d.message()); d.accept(); });       // Fill all contests asks before replacing
   for (const m of ["click", "fill", "selectOption"]) {       // the page's steps (Bank / Cut / Fill): open the one holding the target first
     const orig = pg[m].bind(pg);
-    pg[m] = async (sel, ...a) => { await pg.evaluate(q => { try { const el = document.querySelector(q), sec = el && el.closest("section.step"); if (sec && sec.hidden) showStep(sec.dataset.step); } catch (e) {} }, sel).catch(() => {}); return orig(sel, ...a); };
+    pg[m] = async (sel, ...a) => { await pg.evaluate(q => { try { const el = document.querySelector(q), sec = el && el.closest("section.step"); if (sec && sec.hidden) showStep(sec.dataset.step);
+      for (let d = el && el.closest("details"); d; d = d.parentElement && d.parentElement.closest("details")) d.open = true; } catch (e) {} }, sel).catch(() => {}); return orig(sel, ...a); };
   }
   const errors = [];
   pg.on("pageerror", e => errors.push(e.message));
@@ -1428,7 +1429,7 @@ function audit(name, L, o) {
     showStep(step0); return out; });
   check("one screen: Classic hidden, the status under the step bar, contests and night view in Details; the bank table (tag boxes, grouping) in the Bank step, not folded",
         nb_nb0.classicHidden && nb_nb0.status === "stepBank" && nb_nb0.details && nb_nb0.bank, JSON.stringify(nb_nb0));
-  await pg.click("#nbFill");
+  await pg.click("#pfRun");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   await pg.waitForFunction(() => BP && BP.review && document.querySelectorAll("#nbList tr[data-k]").length > 0, null, { timeout: 300000 });
   const nb_tabs = await pg.evaluate(() => [...document.querySelectorAll("#nbTabs button")].map(b => {
@@ -1445,10 +1446,26 @@ function audit(name, L, o) {
     return { t: el && el.textContent, pc: picks.length ? C.at(picks).pct : null };
   });
   check("builder bar: own position, the field's own-sum quartiles and the picks' percentile", !!nbo.t && (nbo.pc == null ? /no picks yet/.test(nbo.t) : nbo.t.includes("picks at the field's " + nbo.pc)), JSON.stringify(nbo));
-  const lkm = await pg.evaluate(() => { const id = BP.pool[BP.b.picked[0] != null ? BP.b.picked[0] : 0].ids[0]; state.lock[id] = 1; nbPlayersRender();
-    const tr = document.querySelector('#nbPlayers tr[data-pid="' + id + '"]'), has = !!(tr && tr.querySelector(".tag.lk")), other = document.querySelectorAll("#nbPlayers .tag.lk").length;
-    delete state.lock[id]; nbPlayersRender(); return { has, other, after: document.querySelectorAll("#nbPlayers .tag.lk").length }; });
-  check("one screen: a locked player marked in the player pane", lkm.has && lkm.other === 1 && lkm.after === 0, JSON.stringify(lkm));
+  const lkm = await pg.evaluate(() => { const id = BP.pool[BP.b.picked[0] != null ? BP.b.picked[0] : 0].ids[0]; state.lock[id] = 1; renderPlayers();
+    const row = document.querySelector('#fillPlayersSlot #players .row[data-id="' + id + '"]'), has = !!(row && row.classList.contains("locked")), other = document.querySelectorAll("#fillPlayersSlot #players .row.locked").length;
+    delete state.lock[id]; renderPlayers(); return { has, other, after: document.querySelectorAll("#fillPlayersSlot #players .row.locked").length }; });
+  check("one screen: a locked player marked in the Players list under the lineups", lkm.has && lkm.other === 1 && lkm.after === 0, JSON.stringify(lkm));
+  // the Fill step: one set of fill buttons, the settings folded to one line, Clear bank in the Bank step only, no side pane
+  const fb = await pg.evaluate(() => ({ ids: ["nbFill", "nbUndo", "nbVar", "nbAuto", "nbExport", "nbSave", "nbRight", "nbPlayers"].filter(id => document.getElementById(id)),
+    buttons: [...document.querySelectorAll("#fillButtons button:not(.linkbtn)")].map(b => b.textContent), clear: document.getElementById("bankClear").closest("section.step").id,
+    sum: document.getElementById("fillSetSum").textContent, folded: ["maxExpo", "maxNight", "minUnique", "maxCore", "maxPair", "maxUse", "lockFill", "pfObj", "nSims"].every(id => document.getElementById(id).closest("#fillSet")) && document.getElementById("fillSet").tagName === "DETAILS", varIn: document.getElementById("varRun").closest("section.step").id,
+    heads: [...document.querySelectorAll("#fillPlayersSlot #players .head span[data-sort]")].map(x => x.textContent.replace(/ [↓↑]$/, "")) }));
+  check("fill step: one set of buttons (Fill all contests, Auto-fill the rest, Undo fill, New nights, Export DK entries, Save build), Variants only in Cut, Clear bank only in Bank, the settings one line, no side pane",
+        fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Auto-fill the rest", "Undo fill", "New nights", "Export DK entries", "Save build"]) && fb.clear === "stepBank" &&
+        fb.varIn === "stepCut" && fb.folded && /^Fill: contest 40% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights$/.test(fb.sum) &&
+        ["Here", "Tonight", "Room"].every(h => fb.heads.includes(h)), JSON.stringify(fb));
+  dialogs = [];
+  const nBank = await pg.evaluate(() => BANK.lineups.length);
+  pg.removeAllListeners("dialog"); pg.once("dialog", d => { dialogs.push(d.message()); d.dismiss(); });
+  await pg.click("#bankClear");
+  check("Clear bank asks first (dismissed: the bank stays)", dialogs.length === 1 && /Clear the bank/.test(dialogs[0]) && (await pg.evaluate(() => BANK.lineups.length)) === nBank, JSON.stringify(dialogs));
+  pg.on("dialog", d => { dialogs.push(d.message()); d.accept(); });
+  await pg.evaluate(() => showStep("fill"));
   check("one screen: the live summary, this contest and tonight (ROI, top 10%, top 1%, cash), and tier A", /Tonight: \d+ entr/.test(nb_sum1) && /ROI/.test(nb_sum1) && /top 10%/.test(nb_sum1) && /top 1%/.test(nb_sum1) && /cash/.test(nb_sum1) && /Tier A tonight: \d+ lineup/.test(nb_sum1), nb_sum1);
   // Add and Remove from the list: the pick, its contest's portfolio, the tab and the summary move together
   const nb_addRm = await pg.evaluate(async () => {
@@ -1462,17 +1479,20 @@ function audit(name, L, o) {
     return { mid, after, inPF, tabOk: new RegExp(" " + after + "/").test(tab), back: BP.b.picked.length === mid && !PF[cid].includes(BP.idx[k]), sumMoved: document.getElementById("nbSum").textContent !== "" };
   });
   check("one screen: Add from the list picks it into the contest's portfolio and its tab; Remove takes it out", !nb_addRm.skipped && nb_addRm.after === nb_addRm.mid + 1 && nb_addRm.inPF && nb_addRm.tabOk && nb_addRm.back, JSON.stringify(nb_addRm));
-  // the player pane: this contest's and tonight's exposure, the room under the binding cap
+  // the Players list under the lineups: this contest's and tonight's exposure, the room under the binding cap
   const nb_pp = await pg.evaluate(() => {
-    const r = document.querySelector("#nbPlayers tr[data-pid]"), id = r.dataset.pid, cells = [...r.children].map(td => td.textContent);
+    const id = BP.pool[BP.b.picked[0]].ids[0], r = document.querySelector('#fillPlayersSlot #players .row[data-id="' + id + '"]');
+    const heads = [...document.querySelectorAll("#fillPlayersSlot #players .head > span")].map(x => x.textContent.replace(/ [↓↑]$/, "")), cells = [...r.children].map(x => x.textContent);
+    const at = h => cells[heads.indexOf(h)];
     const here = BP.b.picked.filter(k => BP.pool[k].ids.includes(id)).length, night = (nightUsed(BP.review)[id] || 0) + here, lim = bpLimits()[id];
-    return { here: cells[4], night: cells[5], room: cells[6], wantHere: Math.round(100 * here / BP.o.n) + "%", wantNight: Math.round(100 * night / nightEntries()) + "%", wantRoom: String(lim - here) };
+    return { here: at("Here"), night: at("Tonight"), room: at("Room"), wantHere: Math.round(100 * here / BP.o.n) + "%", wantNight: Math.round(100 * night / nightEntries()) + "%", wantRoom: String(lim - here) };
   });
-  check("one screen: the player pane shows his exposure here and tonight, and the room left", nb_pp.here === nb_pp.wantHere && nb_pp.night === nb_pp.wantNight && nb_pp.room === nb_pp.wantRoom, JSON.stringify(nb_pp));
-  const nb_tap = await pg.evaluate(() => { const r = document.querySelector("#nbPlayers tr[data-pid]"), id = r.dataset.pid; r.click();
-    const a = bpFilt.p[id]; document.querySelector('#nbPlayers tr[data-pid="' + id + '"]').click(); const b = bpFilt.p[id];
-    document.querySelector('#nbPlayers tr[data-pid="' + id + '"]').click(); return [a, b, bpFilt.p[id] || "off"]; });
-  check("one screen: tapping a player cycles with, without, off", JSON.stringify(nb_tap) === JSON.stringify(["with", "without", "off"]), JSON.stringify(nb_tap));
+  check("one screen: the Players list under the lineups shows his exposure here and tonight, and the room left", nb_pp.here === nb_pp.wantHere && nb_pp.night === nb_pp.wantNight && nb_pp.room === nb_pp.wantRoom, JSON.stringify(nb_pp));
+  const nb_tap = await pg.evaluate(() => { const id = BP.pool[0].ids[0], nm = () => document.querySelector('#fillPlayersSlot #players .row[data-id="' + id + '"] .nm');
+    nm().click(); const a = bpFilt.p[id], shownA = [...document.querySelectorAll("#nbList tr[data-k]:not(.picked)")].every(tr => BP.pool[+tr.dataset.k].ids.includes(id));
+    nm().click(); const b = bpFilt.p[id], shownB = [...document.querySelectorAll("#nbList tr[data-k]:not(.picked)")].every(tr => !BP.pool[+tr.dataset.k].ids.includes(id));
+    nm().click(); return [a, b, bpFilt.p[id] || "off", shownA, shownB]; });
+  check("one screen: tapping a player's name in the Players list cycles with, without, off and filters the lineups", JSON.stringify(nb_tap) === JSON.stringify(["with", "without", "off", true, true]), JSON.stringify(nb_tap));
   // variants fold under their parent
   const nb_fold = await pg.evaluate(() => {
     for (const x of nbContests()) {
@@ -1493,10 +1513,10 @@ function audit(name, L, o) {
   await pg.click('#nbRTabs button[data-rt="pair"]');
   const nb_side = await pg.evaluate(() => ({ inPane: document.getElementById("bpSide").parentNode.id, tab: bpTab, rows: document.querySelectorAll("#bpSideList .srow[data-key]").length }));
   await pg.click('#nbRTabs button[data-rt="p"]');
-  check("one screen: Pairs in the right pane, Players back after", nb_side.inPane === "nbRight" && nb_side.tab === "pair" && nb_side.rows > 0 &&
-        (await pg.evaluate(() => !document.getElementById("nbPlayers").hidden && bpTab === "p")), JSON.stringify(nb_side));
+  check("one screen: Pairs and Cores as tabs above the Players list (in its place), Players back after", nb_side.inPane === "fillSideSlot" && nb_side.tab === "pair" && nb_side.rows > 0 &&
+        (await pg.evaluate(() => !document.getElementById("playersSec").hidden && document.getElementById("playersSec").parentNode.id === "fillPlayersSlot" && bpTab === "p")), JSON.stringify(nb_side));
   // Export from the top bar: one row per entry with a lineup, no lineup twice in a contest
-  const [nb_dl9] = await Promise.all([pg.waitForEvent("download"), pg.click("#nbExport")]);
+  const [nb_dl9] = await Promise.all([pg.waitForEvent("download"), pg.click("#pfExport")]);
   const nb_out9 = fs.readFileSync(await nb_dl9.path(), "utf8").trim().split(/\r?\n/).map(l => l.split(","));
   const nb_per = {}; let nb_twice = 0;
   nb_out9.slice(1).forEach(r => { const k = r[2] + ":" + r.slice(4, 12).slice().sort().join("|"); if (nb_per[k]) nb_twice++; nb_per[k] = 1; });
@@ -1505,7 +1525,8 @@ function audit(name, L, o) {
   const nb_pfNB = await pg.evaluate(() => JSON.stringify(PF));
   await pg.click("#nbOff");
   check("Classic view: back to the old layout with the same portfolios", await pg.evaluate(p => !document.getElementById("classic3").hidden && document.getElementById("nb").hidden &&
-        document.getElementById("entriesBox").parentNode.id === "s2out" && document.getElementById("cutStatus").nextElementSibling.id === "stepBank" && JSON.stringify(PF) === p, nb_pfNB));
+        document.getElementById("entriesBox").parentNode.id === "s2out" && document.getElementById("cutStatus").nextElementSibling.id === "stepBank" && JSON.stringify(PF) === p &&
+        document.getElementById("playersSec").parentNode.id === "playersHome", nb_pfNB));
   await pg.fill("#maxUse", "1");
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
