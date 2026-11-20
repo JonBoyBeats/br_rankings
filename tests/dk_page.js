@@ -399,6 +399,24 @@ function audit(name, L, o) {
   check("saturation light: new · repeats · near-copies after each Draw & bank, coloured by the fresh share (green 75%+, amber 50-75, red under 50 or tapped out)",
         !!satM && sat.el === "sat sat-" + wantLvl && new RegExp("^" + Math.round(100 * satFr) + "% fresh").test(sat.text) && JSON.stringify(sat.rules) === JSON.stringify(["green", "amber", "red", "red"]) &&
         JSON.stringify(sat.near) === JSON.stringify([1, 0]), JSON.stringify([m0, sat, wantLvl]));
+  // Draw the 9 (a 2 x 2 sweep here for speed): one batch per leverage x under combination, each tagged "<idea> L.. U..",
+  // grouped under the idea, its saved rules carrying its own levW / lowN; the panel put back; the status says what happened
+  const sw = await pg.evaluate(async () => {
+    const n0 = BANK.lineups.length, keepN = $("bankN").value; $("bankN").value = "10"; $("sweepLev").value = "0, 0.1"; $("sweepLow").value = "0, 1";
+    $("sweepLev").dispatchEvent(new Event("change")); $("levW").value = "0.05"; $("lowN").value = "0";
+    $("levW").value = 0; const idea = tagNow(); $("levW").value = "0.05";
+    const label = $("bankDraw9").textContent;
+    await drawSweep();
+    const tags = ["L0 U0", "L0 U1", "L0.1 U0", "L0.1 U1"].map(x => idea + " " + x), have = tags.filter(t => BANK.tagRules[t]);
+    const out = { label, idea, have: have.length, grouped: have.every(t => BANK.groups[t] === idea), rules: have.map(t => [BANK.tagRules[t].levW, BANK.tagRules[t].lowN]),
+      restored: $("levW").value === "0.05" && $("lowN").value === "0", grew: BANK.lineups.length > n0, msg: $("buildStatus").textContent,
+      remembered: JSON.parse(localStorage.getItem("dkcbb:sweep") || "{}").lev === "0, 0.1" };
+    $("bankN").value = keepN; $("sweepLev").value = "0, 0.1, 0.2"; $("sweepLow").value = "0, 1, 2"; $("sweepLev").dispatchEvent(new Event("change")); $("levW").value = "0";
+    return out;
+  });
+  check("Draw the 9: one batch per leverage x under (here 2 x 2), each tagged '<idea> L.. U..' and grouped under the idea, its rules recording its own levW / lowN; the panel put back; remembered sweep; the status line",
+        sw.label === "Draw the 4" && sw.have === 4 && sw.grouped && JSON.stringify(sw.rules) === JSON.stringify([[0, 0], [0, 1], [0.1, 0], [0.1, 1]]) && sw.restored && sw.grew && sw.remembered &&
+        /^Draw the 4: 4 batches banked under .+, \d+ new, \d+ repeats\.?/.test(sw.msg), JSON.stringify(sw));
   // template 5, at least N from these players: +set on a player row adds a chip; the rule saves as {type: "min", ids, n}
   // and every lineup drawn under it holds N of them
   const top3 = await pg.evaluate(() => rows.filter(r => r.status !== "Out" && !r.deepOut).sort((a, b) => proj(b) - proj(a)).slice(0, 3).map(r => r.id));

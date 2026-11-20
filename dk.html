@@ -341,6 +341,10 @@
     <label class="field" title="A safety net, off when blank: no unlocked player in more than this share of the whole bank (the lineups already banked and this draw); a draw that would pass it drops his extra lineups and draws replacements without him"><span class="field-label">Max share in bank %</span><input class="num" id="bankMax" type="number" min="10" max="100" step="5" placeholder="off"></label>
     <label class="field" title="Each simulated night a lineup is drawn for, pulled toward the projection: a player's night = projection + this x (his simulated night - projection). 1 is the full noise (until 2026-11-19); 0.35, the backtest's choice on 11-16 to 11-18 (versions.csv). The bank's draw only: the cut, the pick and the field keep the full noise"><span class="field-label">Bank noise</span><input class="num" id="bankS" type="number" min="0.1" max="1" step="0.05" value="0.35"></label>
     <button type="button" class="primary" id="bankDraw">Draw &amp; bank</button>
+    <button type="button" id="bankDraw9" title="One Draw &amp; bank per combination of the Leverage and Under values below (Lineups to draw each), every other setting as the panel has it; each batch tagged '<idea> L0.1 U1', all grouped under the idea">Draw the 9</button>
+    <button type="button" id="draw9Stop" hidden title="Stops after the batch running now; what's banked stays">Stop after this batch</button>
+    <label class="field" title="Draw the 9's Leverage weights, comma separated (remembered in this browser)"><span class="field-label">Sweep: leverage</span><input id="sweepLev" type="text" value="0, 0.1, 0.2" style="width:92px"></label>
+    <label class="field" title="Draw the 9's Min players under (at the panel's owned %), comma separated (remembered in this browser)"><span class="field-label">Sweep: under</span><input id="sweepLow" type="text" value="0, 1, 2" style="width:70px"></label>
     <span class="note" id="tagNow" style="align-self:center;margin:0"></span>
   </div>
   <div class="status" id="buildStatus"></div>
@@ -2891,6 +2895,51 @@ $("bankDraw").addEventListener("click", function () {
       (more ? ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">rules</summary> ' + esc(more) + "</details>" : "");
   }, function (e) { $("buildStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; });
 });
+/* Draw the 9 (2026-11-20, the operator): one Draw & bank per combination of the sweep's Leverage weights and Min players
+   under (default 0 / 0.1 / 0.2 by 0 / 1 / 2: 9 batches of Lineups to draw), every other setting as the panel has it. Each
+   batch is tagged "<idea> L<lev> U<under>" and grouped under the idea (the panel's tag with both at 0), so the scoreboard
+   shows one row per idea and the per-batch tags stay for grading; each tag's saved rules record its own levW / lowN (as
+   bankAdd does for any draw; a repeat lineup gets the tag appended, as always). A combination that draws nothing is
+   skipped and named. The panel's two fields are put back afterwards. Stop ends after the batch running. */
+var draw9 = { on: false, stop: false };
+function sweepVals(id, def) { var v = String($(id).value).split(/[,\s]+/).filter(Boolean).map(Number).filter(function (x) { return isFinite(x) && x >= 0; }); return v.length ? v : def; }
+(function () { try { var sv = JSON.parse(localStorage.getItem("dkcbb:sweep") || "null"); if (sv) { if (sv.lev) $("sweepLev").value = sv.lev; if (sv.low) $("sweepLow").value = sv.low; } } catch (e) {}
+  var keep = function () { try { localStorage.setItem("dkcbb:sweep", JSON.stringify({ lev: $("sweepLev").value, low: $("sweepLow").value })); } catch (e) {}
+    $("bankDraw9").textContent = "Draw the " + sweepVals("sweepLev", [0]).length * sweepVals("sweepLow", [0]).length; };
+  $("sweepLev").addEventListener("change", keep); $("sweepLow").addEventListener("change", keep); keep(); })();
+async function drawSweep() {
+  var levs = sweepVals("sweepLev", [0, 0.1, 0.2]), lows = sweepVals("sweepLow", [0, 1, 2]), n = +$("bankN").value || 100;
+  var was = { lev: $("levW").value, low: $("lowN").value }, combos = [];
+  levs.forEach(function (l) { lows.forEach(function (u) { combos.push([l, u]); }); });
+  $("levW").value = 0; $("lowN").value = 0;
+  var idea = tagNow(), added = 0, rep = 0, skipped = [], done = 0;
+  draw9 = { on: true, stop: false }; $("draw9Stop").hidden = false; $("bankDraw9").disabled = true; $("bankDraw").disabled = true;
+  try {
+    for (var k = 0; k < combos.length && !draw9.stop; k++) {
+      var lw = combos[k][0], u = combos[k][1], tag = idea + " L" + lw + " U" + u;
+      $("levW").value = lw; $("lowN").value = u;
+      $("buildStatus").textContent = "Draw the " + combos.length + ": batch " + (k + 1) + " of " + combos.length + " (leverage " + lw + ", " + u + " under " + $("lowPct").value + "%)…";
+      var cx = ctx(); cx.progress = function (msg) { $("buildStatus").textContent = "Batch " + (k + 1) + " of " + combos.length + ": " + msg; return tick(); };
+      var dr = drawRules(), res;
+      try { res = await drawBank(cx, dr, n); } catch (e) { res = { lineups: [], why: e.message }; }
+      if (!res.lineups.length) { skipped.push("L" + lw + " U" + u + (res.why ? " (" + res.why + ")" : "")); continue; }
+      takeCounts(res);
+      BANK.groups = BANK.groups || {}; BANK.groups[tag] = idea;
+      var a = bankAdd(res.lineups, tag); added += a; rep += res.lineups.length - a; done++;
+      logPlatoon(dr, res, tag);
+      await tick();
+    }
+  } finally {
+    $("levW").value = was.lev; $("lowN").value = was.low;
+    var stopped = draw9.stop;
+    draw9 = { on: false, stop: false }; $("draw9Stop").hidden = true; $("draw9Stop").textContent = "Stop after this batch"; $("bankDraw9").disabled = false; $("bankDraw").disabled = false;
+    bankSaveState(); renderBank(); renderRules();
+    $("buildStatus").innerHTML = esc("Draw the " + combos.length + (stopped ? " (stopped)" : "") + ": " + done + " batch" + (done === 1 ? "" : "es") + " banked under \u201c" + idea + "\u201d, " + added + " new, " + rep + " repeats" +
+      (skipped.length ? "; skipped (nothing fit): " + skipped.join(", ") : "") + ".") + (bankSaveFailed ? ' <span class="bad">Not saved in this browser: Save build to checkpoint.</span>' : "");
+  }
+}
+$("bankDraw9").addEventListener("click", function () { if (!draw9.on) drawSweep(); });
+$("draw9Stop").addEventListener("click", function () { draw9.stop = true; $("draw9Stop").textContent = "Stopping after this batch…"; });
 $("bankClear").addEventListener("click", function () {
   if (!confirm("Clear the bank (" + BANK.lineups.length + " lineups)?")) return;
   BANK = { lineups: [], tags: [], tagRules: {}, groups: {} }; CUT = null; cutSave(); PF = {}; pfSave(); bankSaveState(); renderBank(); renderEntries(); $("pfExport").disabled = true;
