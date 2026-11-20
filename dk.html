@@ -833,7 +833,8 @@ var scanMap = {}, scanMapOf = null, bankShareMemo = null;
 // his share of the bank. Leverage under-banked below 1.5 f (only when f >= 2%: a leverage play pays only if we hold him
 // more than the field); core below 0.75 f; even below 0.5 f; a fade over-banked at f or more AND 10%+ of the bank.
 // Lean reads (2026-11-20) like their strong versions: lean leverage below 1.5 f (f >= 2%), lean core below 0.75 f.
-var BANK_GAP = { leverage: 1.5, core: 0.75, "lean leverage": 1.5, "lean core": 0.75, even: 0.5, levFloor: 0.02, fadeMin: 0.10 };
+// A skip (weak, field light; 2026-11-20) is over-banked at 2 f or more AND 8%+ of the bank.
+var BANK_GAP = { leverage: 1.5, core: 0.75, "lean leverage": 1.5, "lean core": 0.75, even: 0.5, levFloor: 0.02, fadeMin: 0.10, skipX: 2, skipMin: 0.08 };
 function readCls(read) { return "read-" + String(read).replace(/ /g, "-"); }
 function bankGap(read, bs, f) {
   var pc = function (x) { return Math.round(100 * x) + "%"; }, k = BANK_GAP[read];
@@ -841,6 +842,8 @@ function bankGap(read, bs, f) {
     return { cls: "bankgap-in", tip: read.charAt(0).toUpperCase() + read.slice(1) + ": " + pc(bs) + " of bank vs " + pc(f) + " field (want " + Math.ceil(100 * k * f - 1e-9) + "%+)" };
   if (read === "fade" && bs >= f && bs >= BANK_GAP.fadeMin)
     return { cls: "bankgap-out", tip: "Fade: " + pc(bs) + " of bank vs " + pc(f) + " field (want under " + pc(Math.max(f, BANK_GAP.fadeMin)) + ")" };
+  if (read === "skip" && bs >= BANK_GAP.skipX * f && bs >= BANK_GAP.skipMin)
+    return { cls: "bankgap-out", tip: "Skip: " + pc(bs) + " of bank vs " + pc(f) + " field (want under " + pc(Math.max(BANK_GAP.skipX * f, BANK_GAP.skipMin)) + ")" };
   return null;
 }
 // a gain in points (x 100), signed

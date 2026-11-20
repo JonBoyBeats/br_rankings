@@ -110,6 +110,9 @@ function judge(list, R) {          // a list's players: real top-10% / top-1% ra
   const dm = gains.reduce((t, x) => t + x.d, 0) / gains.length, bar = 2 * Math.SQRT2 * Math.sqrt(gains.reduce((t, x) => t + (x.d - dm) ** 2, 0) / Math.max(1, gains.length - 1)) / 2;
   const read = x => x.g > bar ? (own(x.id) >= medOwn ? "core" : "leverage") : x.g < -bar ? (own(x.id) >= medOwn ? "fade" : "skip") : x.g > 0 ? (own(x.id) >= medOwn ? "lean core" : "lean leverage") : "even";
   gains.forEach(x => { x.read = read(x); });
+  // centred reads (2026-11-20 test): each gain against the scanned players' median gain instead of 0
+  const gmed = gains.map(x => x.g).sort((a, b) => a - b)[Math.floor(gains.length / 2)];
+  gains.forEach(x => { const c = x.g - gmed; x.cread = c > bar ? (own(x.id) >= medOwn ? "core" : "leverage") : c < -bar ? (own(x.id) >= medOwn ? "fade" : "skip") : c > 0 ? (own(x.id) >= medOwn ? "lean core" : "lean leverage") : "even"; });
   // the redesign: ridge on the neutral batch
   const nPool = neutral.map(i => pool[i]), players = [...new Set(nPool.flatMap(L => L.ids))].filter(id => byId[id]);
   const yR = neutral.map(i => val.roi[i]), yT = neutral.map(i => val.t1[i]);
@@ -156,6 +159,11 @@ function judge(list, R) {          // a list's players: real top-10% / top-1% ra
     ridge: { focus: focus.map(x => ({ name: x.name, read: x.read, roi: +(100 * x.roi).toFixed(1), band: +(100 * x.band).toFixed(1), top1: +(100 * x.top1).toFixed(2), own: +x.own.toFixed(1), held: x.held })),
              focus_real: judge(focus.map(x => x.id), R), bottom_real: judge(ranked.slice(-FOCUS).map(x => x.id), R),
              chalk_held: ranked.filter(x => x.own >= 25).length, chalk_in_focus: focus.filter(x => x.own >= 25).length },
+    centred: { gain_median: +(100 * gmed).toFixed(3), by_read: Object.fromEntries(["core", "leverage", "lean core", "lean leverage", "even", "fade", "skip"].map(k =>
+                 [k, { today: judge(gains.filter(x => x.read === k).map(x => x.id), R), centred: judge(gains.filter(x => x.cread === k).map(x => x.id), R) }])),
+               strong_today: judge(gains.filter(x => x.read === "core" || x.read === "leverage").map(x => x.id), R), strong_centred: judge(gains.filter(x => x.cread === "core" || x.cread === "leverage").map(x => x.id), R),
+               up_today: judge(gains.filter(x => /core|leverage/.test(x.read)).map(x => x.id), R), up_centred: judge(gains.filter(x => /core|leverage/.test(x.cread)).map(x => x.id), R),
+               weak_today: judge(gains.filter(x => /fade|skip/.test(x.read)).map(x => x.id), R), weak_centred: judge(gains.filter(x => /fade|skip/.test(x.cread)).map(x => x.id), R) },
     v2: { current_halves: curHalf, net_beta: beta.map(b => +b.toFixed(5)), net: half(v2a), second_pass: half(v2b) },
     all_real: all, field_rates: R ? { top10: +(100 * R.all10).toFixed(1), top1: +(100 * R.all1).toFixed(2) } : null, seconds: Math.round((Date.now() - t0) / 1000) };
   console.log(JSON.stringify(out, null, 1));
