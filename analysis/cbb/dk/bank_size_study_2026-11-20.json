@@ -1,0 +1,302 @@
+{
+ "0.25_0": {
+  "night": "2026-11-19",
+  "draft_group": "157139",
+  "bank": 3284,
+  "keep": 2000,
+  "pct": 0.15,
+  "nights": 2000,
+  "contests": [
+   "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+   "CBB $1.25K And-One x20",
+   "CBB $150 And-One x5",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 Dime Time [Just $0.10!] x20"
+  ],
+  "runs": {
+   "merit": {
+    "kept": 2000,
+    "rounds": 3,
+    "ideas_kept": 8,
+    "tierA": 32,
+    "tierA_ideas": 6,
+    "tierA_by": {
+     "RU-UNLV": 17,
+     "ORE-ORST": 3,
+     "TCU-TXAM": 9,
+     "Top 1%": 1,
+     "ROI": 1,
+     "CASH": 1
+    },
+    "best_value": 1.843,
+    "fill_net": 10.23,
+    "fill_short": 13,
+    "real_random_fills": {
+     "mean": -58.84,
+     "positive": 2
+    },
+    "seconds": 26,
+    "cut_seconds": 5
+   }
+  },
+  "frac": 0.25,
+  "rep": 0
+ },
+ "0.25_1": {
+  "night": "2026-11-19",
+  "draft_group": "157139",
+  "bank": 3284,
+  "keep": 2000,
+  "pct": 0.15,
+  "nights": 2000,
+  "contests": [
+   "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+   "CBB $1.25K And-One x20",
+   "CBB $150 And-One x5",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 Dime Time [Just $0.10!] x20"
+  ],
+  "runs": {
+   "merit": {
+    "kept": 2000,
+    "rounds": 3,
+    "ideas_kept": 8,
+    "tierA": 22,
+    "tierA_ideas": 4,
+    "tierA_by": {
+     "RU-UNLV": 11,
+     "TCU-TXAM": 9,
+     "Top 1%": 1,
+     "Variants of the top": 1
+    },
+    "best_value": 1.892,
+    "fill_net": 10.27,
+    "fill_short": 15,
+    "real_random_fills": {
+     "mean": -60.78,
+     "positive": 0.5
+    },
+    "seconds": 25,
+    "cut_seconds": 5
+   }
+  },
+  "frac": 0.25,
+  "rep": 1
+ },
+ "0.25_2": {
+  "night": "2026-11-19",
+  "draft_group": "157139",
+  "bank": 3284,
+  "keep": 2000,
+  "pct": 0.15,
+  "nights": 2000,
+  "contests": [
+   "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+   "CBB $1.25K And-One x20",
+   "CBB $150 And-One x5",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 Dime Time [Just $0.10!] x20"
+  ],
+  "runs": {
+   "merit": {
+    "kept": 2000,
+    "rounds": 3,
+    "ideas_kept": 8,
+    "tierA": 29,
+    "tierA_ideas": 5,
+    "tierA_by": {
+     "RU-UNLV": 11,
+     "TCU-TXAM": 12,
+     "ORE-ORST": 2,
+     "ROI": 2,
+     "Variants of the top": 2
+    },
+    "best_value": 1.892,
+    "fill_net": 11.82,
+    "fill_short": 15,
+    "real_random_fills": {
+     "mean": -57.55,
+     "positive": 1.5
+    },
+    "seconds": 26,
+    "cut_seconds": 5
+   }
+  },
+  "frac": 0.25,
+  "rep": 2
+ },
+ "0.5_0": {
+  "night": "2026-11-19",
+  "draft_group": "157139",
+  "bank": 6568,
+  "keep": 2000,
+  "pct": 0.15,
+  "nights": 2000,
+  "contests": [
+   "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+   "CBB $1.25K And-One x20",
+   "CBB $150 And-One x5",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 Dime Time [Just $0.10!] x20"
+  ],
+  "runs": {
+   "merit": {
+    "kept": 2000,
+    "rounds": 6,
+    "ideas_kept": 8,
+    "tierA": 42,
+    "tierA_ideas": 6,
+    "tierA_by": {
+     "RU-UNLV": 23,
+     "TCU-TXAM": 14,
+     "ORE-ORST": 2,
+     "ROI": 1,
+     "Top 1%": 1,
+     "Variants of the top": 1
+    },
+    "best_value": 1.892,
+    "fill_net": 16.09,
+    "fill_short": 14,
+    "real_random_fills": {
+     "mean": -56.75,
+     "positive": 2
+    },
+    "seconds": 35,
+    "cut_seconds": 14
+   }
+  },
+  "frac": 0.5,
+  "rep": 0
+ },
+ "0.5_1": {
+  "night": "2026-11-19",
+  "draft_group": "157139",
+  "bank": 6568,
+  "keep": 2000,
+  "pct": 0.15,
+  "nights": 2000,
+  "contests": [
+   "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+   "CBB $1.25K And-One x20",
+   "CBB $150 And-One x5",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 Dime Time [Just $0.10!] x20"
+  ],
+  "runs": {
+   "merit": {
+    "kept": 2000,
+    "rounds": 6,
+    "ideas_kept": 8,
+    "tierA": 52,
+    "tierA_ideas": 6,
+    "tierA_by": {
+     "TCU-TXAM": 20,
+     "RU-UNLV": 26,
+     "ORE-ORST": 2,
+     "ROI": 2,
+     "CASH": 1,
+     "Variants of the top": 1
+    },
+    "best_value": 1.873,
+    "fill_net": 12.33,
+    "fill_short": 14,
+    "real_random_fills": {
+     "mean": -57.3,
+     "positive": 1
+    },
+    "seconds": 35,
+    "cut_seconds": 15
+   }
+  },
+  "frac": 0.5,
+  "rep": 1
+ },
+ "0.5_2": {
+  "night": "2026-11-19",
+  "draft_group": "157139",
+  "bank": 6568,
+  "keep": 2000,
+  "pct": 0.15,
+  "nights": 2000,
+  "contests": [
+   "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+   "CBB $1.25K And-One x20",
+   "CBB $150 And-One x5",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 Dime Time [Just $0.10!] x20"
+  ],
+  "runs": {
+   "merit": {
+    "kept": 2000,
+    "rounds": 6,
+    "ideas_kept": 8,
+    "tierA": 48,
+    "tierA_ideas": 7,
+    "tierA_by": {
+     "TCU-TXAM": 22,
+     "RU-UNLV": 18,
+     "ROI": 2,
+     "Variants of the top": 2,
+     "ORE-ORST": 2,
+     "Top 1%": 1,
+     "CASH": 1
+    },
+    "best_value": 1.886,
+    "fill_net": 20.4,
+    "fill_short": 12,
+    "real_random_fills": {
+     "mean": -54.19,
+     "positive": 0
+    },
+    "seconds": 35,
+    "cut_seconds": 15
+   }
+  },
+  "frac": 0.5,
+  "rep": 2
+ },
+ "1_0": {
+  "night": "2026-11-19",
+  "draft_group": "157139",
+  "bank": 13132,
+  "keep": 2000,
+  "pct": 0.15,
+  "nights": 2000,
+  "contests": [
+   "CBB $6K Pull Up Jumper [$2K to 1st] x3",
+   "CBB $1.25K And-One x20",
+   "CBB $150 And-One x5",
+   "CBB $200 Quarter Jukebox x20",
+   "CBB $100 Dime Time [Just $0.10!] x20"
+  ],
+  "runs": {
+   "merit": {
+    "kept": 2000,
+    "rounds": 9,
+    "ideas_kept": 8,
+    "tierA": 88,
+    "tierA_ideas": 7,
+    "tierA_by": {
+     "RU-UNLV": 38,
+     "TCU-TXAM": 35,
+     "ORE-ORST": 6,
+     "ROI": 4,
+     "Variants of the top": 3,
+     "Top 1%": 1,
+     "CASH": 1
+    },
+    "best_value": 1.892,
+    "fill_net": 19.76,
+    "fill_short": 15,
+    "real_random_fills": {
+     "mean": -56.08,
+     "positive": 2
+    },
+    "seconds": 53,
+    "cut_seconds": 34
+   }
+  },
+  "frac": 1,
+  "rep": 0
+ }
+}
