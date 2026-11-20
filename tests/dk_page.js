@@ -1416,7 +1416,7 @@ function audit(name, L, o) {
     const g = gameOf(t.team), gr = [...document.querySelectorAll("#teamPanel table.gstk tr")].length - 1, wantG = SCAN.rows.filter(r => r.kind === "game" && r.game === g).length;
     const blk = document.querySelector('#teamPanel .teamside .scanblk'), sr = blk.querySelectorAll(".sr").length, wantT = SCAN.rows.filter(r => r.kind === "team" && r.team === t.team).length;
     const names = [...blk.querySelectorAll(".read-core, .read-leverage")].map(x => x.textContent.replace(/ \((core|leverage)\)$/, "")).sort();
-    const wantN = SCAN.players.filter(r => r.team === t.team && !r.thin && /core|leverage/.test(r.read)).map(r => r.key).sort();
+    const wantN = SCAN.players.filter(r => r.team === t.team && !r.thin && (r.read === "core" || r.read === "leverage")).map(r => r.key).sort();
     const n0 = state.rules.length; blk.querySelector(".scanBank").click(); const added = state.rules.length === n0 + 1 && /\d\+/.test(state.rules[n0].label);
     state.rules = state.rules.slice(0, n0); save(); renderRules();
     view.panel = null; renderTiles(); renderPlayers();
@@ -1435,7 +1435,7 @@ function audit(name, L, o) {
     const first = document.querySelector("#scanTable table").id === "scanPlayers" && !document.querySelector('#scanTable th[data-skind="player"]');
     const roll = SCAN.teamRoll.every(t => t.core.every(r => r.read === "core" && r.team === t.team) && t.lev.every(r => r.read === "leverage" && r.team === t.team) && t.n >= 1 &&
       (!t.st || (t.st.kind === "team" && t.st.team === t.team)));
-    const rollAll = P.filter(r => !r.thin && /core|leverage/.test(r.read)).every(r => SCAN.teamRoll.some(t => t.ids.includes(r.id)));
+    const rollAll = P.filter(r => !r.thin && (r.read === "core" || r.read === "leverage")).every(r => SCAN.teamRoll.some(t => t.ids.includes(r.id)));
     return { n: P.length, same: JSON.stringify(ids) === JSON.stringify(want), reads, gains, noOut, first, roll, rollAll, sum: SCAN.players.reduce((o, r) => (o[r.read] = (o[r.read] || 0) + 1, o), {}) };
   });
   check("player scan: a row for every player in the pool at 15+ projected minutes (none Out, Doubtful or deep bench), gains over the plain batch, Read core/leverage/fade/skip/even from its own noise and the median field own; no Players table of its own in the scan (the Players list carries it), the team rollup first",
@@ -1452,7 +1452,7 @@ function audit(name, L, o) {
     const ok = SCAN.players.every(x => { const el = document.querySelector(`#players .row[data-id="${x.id}"]`); if (!el) return true;
       const c = el.querySelectorAll(".col-scan"); return c[0].querySelector(".sg").textContent === (x.g_t1 > 0 ? "+" : "") + (100 * x.g_t1).toFixed(2) && c[0].querySelector(".nb2").textContent === "\u00b1" + (100 * x.noise).toFixed(2) &&
         c[1].textContent === (x.g_roi > 0 ? "+" : "") + (100 * x.g_roi).toFixed(0) && c[2].textContent === (x.g_cash > 0 ? "+" : "") + (100 * x.g_cash).toFixed(1) &&
-        c[3].textContent === x.read && c[3].querySelector(".read-" + x.read) && !!c[5].querySelector(".pbank"); });
+        c[3].textContent === x.read && c[3].querySelector(".read-" + x.read.replace(/ /g, "-")) && !!c[5].querySelector(".pbank"); });
     view.sort = "scan"; view.dir = -1; renderPlayers();
     const ids = [...document.querySelectorAll("#players .row")].map(e => e.dataset.id).filter(id => byId(id).status !== "Out"), g = ids.map(id => scanRowOf(id) ? scanRowOf(id).g_t1 : -Infinity);
     const sorted = g.every((x, i) => i === 0 || g[i - 1] >= x);
