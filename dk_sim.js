@@ -590,6 +590,14 @@
       var cap = Math.min(o.maxExpo, st.cap[r.id] != null && st.cap[r.id] !== "" ? +st.cap[r.id] / 100 : 1);
       limit[r.id] = st.lock[r.id] ? N : expoLimit(cap, N);
     });
+    // o.preset: lineups already picked (indexes into cand), kept first (2026-11-20, C4: Fill tops a short set up after
+    // relaxing a cap, keeping what it had)
+    (o.preset || []).forEach(function (k) {
+      if (b.picked.indexOf(k) >= 0) return;
+      b.add(k); cand[k].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
+      if (coreOf) coreN[coreOf[k]] = (coreN[coreOf[k]] || 0) + 1;
+      if (pairsOf) pairsOf[k].forEach(function (pk) { o.pairCount[pk] = (o.pairCount[pk] || 0) + 1; });
+    });
     // the at-least share rules first, the one with the fewest qualifying candidates first (each lineup the best
     // addition among those that meet it), so the rarest requirement isn't left to lineups the caps have shut out;
     // then the rest of the set, by added value

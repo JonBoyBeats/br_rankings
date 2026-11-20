@@ -16,6 +16,7 @@ const slate = morning.slates[0];
 const P = slate.players;
 const OWN = field.slates[String(slate.draft_group_id)].own;
 const fails = [], passes = [];
+const DKSimLimit = (cap, N) => N <= 5 ? Math.max(0, Math.ceil(cap * N - 1e-4)) : Math.floor(cap * N + 1e-9);
 function DKSimPairs(ids) { const s = ids.slice().sort(), o = []; for (let i = 0; i < s.length; i++) for (let j = i + 1; j < s.length; j++) o.push(s[i] + "|" + s[j]); return o; }
 function check(name, ok, detail) { (ok ? passes : fails).push(name + (ok || !detail ? "" : ": " + detail)); }
 const isG = r => /(^|\/)G(\/|$)/.test(r.roster), isF = r => /(^|\/)F(\/|$)/.test(r.roster);
@@ -922,11 +923,13 @@ function audit(name, L, o) {
   check("portfolios: each lineup in one contest only, the largest stake first", new Set(pfAll).size === pfAll.length &&
         /the largest stake first: CBB \$6K Pull Up Jumper/.test(pmsg), pmsg);
   check("portfolios: each fills its entries, or says what stops it", Object.keys(size).every(c => pf[c].length === size[c]) || /short: .* stops it|runs out/.test(pmsg), pmsg);
-  Object.keys(size).forEach(c => audit("portfolio " + c + " within Max exposure 60% and Min unique 3", pf[c].map(i => bank.lineups[i]),
-    Object.assign(rulesOf(base), { n: size[c], expo: Math.max(0.6, 1 / size[c]), minUnique: 3 })));
+  // a short set completes itself by relaxing one cap a step (C4) and says so: the audit holds it to what it reports
+  const rxExpo = /Max exposure relaxed to 70%/.test(pmsg) ? 0.7 : 0.6, rxCore = /Max core relaxed to 25%/.test(pmsg) ? 0.25 : /Max core relaxed to 20%/.test(pmsg) ? 0.2 : 0.15;
+  Object.keys(size).forEach(c => audit("portfolio " + c + " within Max exposure " + Math.round(100 * rxExpo) + "% and Min unique 3", pf[c].map(i => bank.lineups[i]),
+    Object.assign(rulesOf(base), { n: size[c], expo: Math.max(rxExpo, 1 / size[c]), minUnique: 3 })));
   const coreOf = ids => ids.slice().sort((a, b) => P[b].salary - P[a].salary || (a < b ? -1 : 1)).slice(0, 3).sort().join(",");
   const coreMax = a => { const c = {}; a.forEach(i => { const k = coreOf(bank.lineups[i].ids); c[k] = (c[k] || 0) + 1; }); return Math.max(0, ...Object.values(c)); };
-  check("portfolios: no core in more than 15% of a contest's lineups (at least one each)", Object.keys(size).every(c => coreMax(pf[c]) <= Math.max(1, Math.floor(0.15 * size[c] + 1e-9))),
+  check("portfolios: no core in more than 15% of a contest's lineups (at least one each), or the relaxed cap it reports", Object.keys(size).every(c => coreMax(pf[c]) <= Math.max(1, Math.floor(rxCore * size[c] + 1e-9))),
         JSON.stringify(Object.keys(size).map(c => [c, coreMax(pf[c])])));
   check("portfolios: the largest core is shown, each contest and the night", /Largest core across the night's \d+ entries: .+ in \d+ \(\d+%\)/.test(pmsg) && (pmsg.match(/largest core /g) || []).length === 3, pmsg);
 
@@ -972,7 +975,8 @@ function audit(name, L, o) {
   await pg.click("#bpAuto");
   await pg.waitForFunction(() => BP.b.picked.length >= 5 || /stopped/.test(document.getElementById("bpStatus").textContent), null, { timeout: 300000 });
   const auto = await pg.evaluate(() => BP.b.picked.map(k => ({ ids: BP.pool[k].ids, slots: BP.pool[k].slots })));
-  audit("review: Auto-fill within Max exposure and Min unique", auto, Object.assign(rulesOf(base), { n: 5, expo: 0.6, minUnique: 3 }));
+  const autoMsg = await pg.evaluate(() => document.getElementById("bpStatus").textContent);
+  audit("review: Auto-fill within Max exposure and Min unique (or the relaxed cap it reports)", auto, Object.assign(rulesOf(base), { n: 5, expo: /Max exposure relaxed to 70%/.test(autoMsg) ? 0.7 : 0.6, minUnique: 3 }));
   check("review: Auto-fill keeps each core to one lineup of 5 (Max core 15%)", (() => { const c = {}; auto.forEach(l => { const k = coreOf(l.ids); c[k] = (c[k] || 0) + 1; }); return Math.max(...Object.values(c)) <= 1; })());
   check("review: the summary shows the largest core", /Largest core: .+ in \d+ of \d+/.test(await pg.textContent("#bpSummary")));
   check("review: summary shows coverage and diversity", /of nights one reaches the top 1%/.test(await pg.textContent("#bpSummary")) && /distinct cores/.test(await pg.textContent("#bpSummary")));
@@ -1096,6 +1100,21 @@ function audit(name, L, o) {
         /1 locked player is exempt from the caps \(Locks apply to: draws and fill\)/.test(lk2.note) && lk2.kept === "fill", JSON.stringify(lk2));
   await pg.selectOption("#lockFill", "draws");
   await pg.evaluate(() => { state.lock = {}; save(); renderPlayers(); });
+  // C4: a short set completes itself: at 20% exposure a 5-entry contest allows each player once (disjoint); Fill relaxes
+  // ONE cap a step at a time (core, then exposure to 70%; never the night cap) and says so; the one-line status names it
+  await pg.fill("#maxNight", "100"); await pg.fill("#maxExpo", "20");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const c4 = await pg.evaluate(() => { const st = document.getElementById("cutStatus").textContent, five = PF["197791874"] || [], cnt = {};
+    five.forEach(bi => BANK.lineups[bi].ids.forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }));
+    return { n: five.length, relaxed: /relaxed to \d+% to fill \d+ slot/.test(st), oneLine: /^Filled \d+ of \d+ entries[^]*relaxed to/.test(st), maxUse: Math.max(...Object.values(cnt)), st: st.slice(0, 300) }; });
+  check("fill completes itself: short at 20% exposure, it relaxes one cap a step at a time (to 70% at most), fills the 5-entry contest and says so in the one-line status",
+        c4.relaxed && c4.oneLine && c4.n === 5 && c4.maxUse <= DKSimLimit(0.7, 5), JSON.stringify(c4));
+  const und = await pg.evaluate(() => { renderUnder(); const u = underExposed(), t = document.getElementById("fillUnder").textContent;
+    const ok = !u || ["p", "st", "pr"].every(k => u[k].every(x => x.want >= 0.2 && x.want - x.have >= 0.15 - 1e-9));
+    return { has: !!u, ok, t: t.slice(0, 200), shown: !u || (["p", "st", "pr"].some(k => u[k].length) ? /^Under-exposed against tier A/.test(t) : t === "") }; });
+  check("fill: the Under-exposed list (players, team stacks, pairs held 15+ points under their tier-A share)", und.has && und.ok && und.shown, JSON.stringify(und));
+  await pg.fill("#maxExpo", "60"); await pg.fill("#maxNight", "40");
   await pg.fill("#maxNight", "60");
   await pg.fill("#maxUse", "1");
 

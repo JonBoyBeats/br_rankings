@@ -390,6 +390,7 @@
     <button type="button" class="linkbtn" id="nbOff" title="The old layout, the same bank, cut and portfolios">Classic view</button>
     <button type="button" class="linkbtn" id="nbOn" title="The one-screen builder">New builder view</button>
   </div>
+  <div class="note" id="fillUnder"></div>
   <div id="s2out">
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
@@ -673,7 +674,7 @@ function pick(keepMem) {
   ruleCounts = {}; editing = -1;
   $("lockFill").value = state.lockFill === "fill" ? "fill" : "draws"; fillSetText();
   if (!keepMem) bankLoadState();
-  renderBank(); renderEntries(); renderNight(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
+  renderBank(); renderEntries(); renderNight(); renderUnder(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
   if (NB.on) { BP = null; nbOpen(); }
   SCAN = store(scanKey()); renderScan();
   renderTiles(); renderRules(); fillEditor(); renderNews(); renderPlayers();
@@ -1321,7 +1322,7 @@ function bankLoadState() {
 function cutKey() { return "dkcbb-cut:" + slate.draft_group_id; }
 function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else localStorage.removeItem(cutKey()); } catch (e) {} }
 function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) === null; }
-function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); renderSteps(); }   // the Live page reads it for your exposures
+function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); renderNight(); renderSteps(); renderUnder(); }   // the Live page reads it for your exposures
 function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
   var o = drawRules(), t = [], name = function (id) { return shortName((byId(id) || {}).name || id); };
   if (o.stackN) t.push(o.stackN + "-stack" + (o.stackBoth ? " + bring-back" : ""));
@@ -1790,6 +1791,24 @@ async function pickPortfolios(into, objective) {
     }
     cxN.state = Object.assign({}, cxN.state || state, { lock: fillLock() });
     var po = Object.assign(pickRules(n), { objective: objective || "roi" }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(cxN, po, pool, sim, c, n);
+    /* C4 (2026-11-20, the operator's plan): a short set completes itself. Keeping what it picked, relax ONE cap a step at
+       a time (Max core 15 -> 20 -> 25%, then Max exposure up to 70%; never the night cap, never Min unique) and top the
+       rest up by coverage (the rise in nights one of the set reaches the top 1%), still under every other cap; say so. */
+    var relaxed = [];
+    if (r.chosen.length < n) {
+      var steps = [];
+      if (po.maxCore != null && po.maxCore < 0.2) steps.push(["core", { maxCore: 0.2 }, "Max core relaxed to 20%"]);
+      if (po.maxCore != null && po.maxCore < 0.25) steps.push(["core", { maxCore: 0.25 }, "Max core relaxed to 25%"]);
+      if (po.maxExpo < 0.7) steps.push(["expo", { maxCore: po.maxCore != null ? Math.max(po.maxCore, 0.25) : null, maxExpo: 0.7 }, "Max exposure relaxed to 70%"]);
+      for (var si = 0; si < steps.length && r.chosen.length < n; si++) {
+        var pc2 = pairLimit ? Object.assign({}, pairsBefore) : null, had = r.chosen.length;
+        var r2 = DKSim.pick(cxN, Object.assign({}, po, steps[si][1], { objective: "cover", preset: r.chosen }, pairLimit ? { pairCount: pc2 } : {}), pool, sim, c, n);
+        if (r2.chosen.length > had) {
+          r = r2; relaxed.push(steps[si][2] + " to fill " + (r2.chosen.length - had) + " slot" + (r2.chosen.length - had === 1 ? "" : "s"));
+          if (pairLimit) { Object.keys(pairCount).forEach(function (k) { delete pairCount[k]; }); Object.assign(pairCount, pc2); }
+        }
+      }
+    }
     into[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
     into[String(c.id)].forEach(function (bi) { taken[bi] = (taken[bi] || 0) + 1; BANK.lineups[bi].ids.forEach(function (id) { nightCount[id] = (nightCount[id] || 0) + 1; }); });
     var why = "";
@@ -1802,7 +1821,7 @@ async function pickPortfolios(into, objective) {
             "the final pool runs out under the caps together") + "; raise Keep, or loosen it";
     }
     var tc = DKSim.topCore(ctx(), r.chosen.map(function (k) { return pool[k]; }));
-    msgs.push(c.name + ": " + r.chosen.length + " of " + n + why + (tc ? ", largest core " + coreName(tc.key) + " in " + tc.n + " (" + Math.round(100 * tc.share) + "%)" : "") + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
+    msgs.push(c.name + ": " + r.chosen.length + " of " + n + (relaxed.length ? " (" + relaxed.join("; ") + ")" : "") + why + (tc ? ", largest core " + coreName(tc.key) + " in " + tc.n + " (" + Math.round(100 * tc.share) + "%)" : "") + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
       ", one cashes in " + Math.round(100 * r.builder.coverage().cash) + "% of nights)");
   }
   if (into === PF) { pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES; }
@@ -1982,24 +2001,40 @@ async function bpAuto() {
   }
   limit = bpLimits();
   b.picked.forEach(function (k) { BP.pool[k].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
-  while (b.picked.length < o.n) {
-    var best = -1, bestV = -Infinity;
-    for (var k = 0; k < BP.pool.length; k++) {
-      var sc = BP.scores[k];
-      if (!sc || bpHidden(k) || !DKSim.fits(BP.pool, b.picked, k, count, limit, o.minUnique) || !DKSim.shareFits(o.conds || [], BP.pool, b.picked, k, o.n) ||
-          (coreOf && (coreN[coreOf[k]] || 0) + 1 > coreLim) ||
-          (pairLim && DKSim.pairs(BP.pool[k].ids).some(function (pk) { return (pairN[pk] || 0) + 1 > pairLim; }))) continue;
-      if (sc.value > bestV) { bestV = sc.value; best = k; }
+  // C4 (2026-11-20): short at today's caps, relax ONE cap a step at a time (Max core 15 -> 20 -> 25%, then Max exposure up
+  // to 70%; never the night cap or Min unique), topping up by coverage, and say so
+  var relaxed = [], stages = [[null, null, false]];
+  if (o.maxCore != null && o.maxCore < 0.2) stages.push([{ maxCore: 0.2 }, "Max core relaxed to 20%", true]);
+  if (o.maxCore != null && o.maxCore < 0.25) stages.push([{ maxCore: 0.25 }, "Max core relaxed to 25%", true]);
+  if (o.maxExpo < 0.7) stages.push([{ maxExpo: 0.7 }, "Max exposure relaxed to 70%", true]);
+  for (var stg = 0; stg < stages.length && b.picked.length < o.n; stg++) {
+    var cover = stages[stg][2], had = b.picked.length;
+    if (stages[stg][0]) {
+      var keepExpo = BP.o.maxExpo;
+      if (stages[stg][0].maxCore != null) coreLim = DKSim.coreLimit(Object.assign({}, o, stages[stg][0]), o.n);
+      if (stages[stg][0].maxExpo != null) { BP.o.maxExpo = stages[stg][0].maxExpo; limit = bpLimits(); BP.o.maxExpo = keepExpo; }
     }
-    if (best < 0) break;
-    b.add(best); BP.pool[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
-    if (coreOf) coreN[coreOf[best]] = (coreN[coreOf[best]] || 0) + 1;
-    if (pairLim) DKSim.pairs(BP.pool[best].ids).forEach(function (pk) { pairN[pk] = (pairN[pk] || 0) + 1; });
-    $("bpStatus").textContent = "Auto-filling… " + b.picked.length + " of " + o.n; await tick();
-    bpRescore();
+    while (b.picked.length < o.n) {
+      var best = -1, bestV = -Infinity;
+      for (var k = 0; k < BP.pool.length; k++) {
+        var sc = BP.scores[k];
+        if (!sc || bpHidden(k) || !DKSim.fits(BP.pool, b.picked, k, count, limit, o.minUnique) || !DKSim.shareFits(o.conds || [], BP.pool, b.picked, k, o.n) ||
+            (coreOf && (coreN[coreOf[k]] || 0) + 1 > coreLim) ||
+            (pairLim && DKSim.pairs(BP.pool[k].ids).some(function (pk) { return (pairN[pk] || 0) + 1 > pairLim; }))) continue;
+        var sv = cover ? sc.top1 * 1e6 + sc.value : sc.value;
+        if (sv > bestV) { bestV = sv; best = k; }
+      }
+      if (best < 0) break;
+      b.add(best); BP.pool[best].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; });
+      if (coreOf) coreN[coreOf[best]] = (coreN[coreOf[best]] || 0) + 1;
+      if (pairLim) DKSim.pairs(BP.pool[best].ids).forEach(function (pk) { pairN[pk] = (pairN[pk] || 0) + 1; });
+      $("bpStatus").textContent = "Auto-filling… " + b.picked.length + " of " + o.n; await tick();
+      bpRescore();
+    }
+    if (stages[stg][1] && b.picked.length > had) relaxed.push(stages[stg][1] + " to fill " + (b.picked.length - had) + " slot" + (b.picked.length - had === 1 ? "" : "s"));
   }
   bpCommit();
-  bpRender((b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure, Min unique, Max core and Max pair (a bigger Keep helps)." : "") + lockNote());
+  bpRender((relaxed.length ? relaxed.join("; ") + ". " : "") + (b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure, Min unique, Max core and Max pair (a bigger Keep helps)." : "") + lockNote());
 }
 
 /* The builder's filters: players, combos (two players) and cores (a lineup's three highest salaries, as Max core counts
@@ -2722,10 +2757,48 @@ $("pfRun").addEventListener("click", function () {
   PF = {};
   pickPortfolios(null, obj).then(function (m) { fillMsg(m); if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
 });
+/* Under-exposed (2026-11-20, C4c): the players, team stacks (3+ from a team) and pairs tonight's entries hold well
+   below the sim's preference, read as their share of tier A (the kept lineups within the sim's noise of the best, at
+   least the top 10): 15+ points under it and preferred in 20%+ of tier A. A guide for hand edits; nothing changes. */
+var UNDER_GAP = 0.15, UNDER_MIN = 0.2;
+function underExposed() {
+  var B = CUT && CUT.board;
+  if (!B || !B.values || !B.tierA || !CUT.keep) return null;
+  var ent = Object.keys(PF).reduce(function (a, k) { return a.concat(PF[k]); }, []);
+  if (!ent.length) return null;
+  var top = CUT.keep.map(function (bi, k) { return [B.values[k], bi]; }).sort(function (a, b) { return b[0] - a[0]; }).slice(0, Math.max(10, B.tierA.n)).map(function (x) { return x[1]; });
+  var shares = function (list) {
+    var p = {}, st = {}, pr = {};
+    list.forEach(function (bi) {
+      var ids = BANK.lineups[bi].ids, tm = {};
+      ids.forEach(function (id) { p[id] = (p[id] || 0) + 1; var r = byId(id); if (r) tm[r.team] = (tm[r.team] || 0) + 1; });
+      Object.keys(tm).forEach(function (t) { if (tm[t] >= 3) st[t] = (st[t] || 0) + 1; });
+      DKSim.pairs(ids).forEach(function (k) { pr[k] = (pr[k] || 0) + 1; });
+    });
+    [p, st, pr].forEach(function (m) { Object.keys(m).forEach(function (k) { m[k] /= list.length; }); });
+    return { p: p, st: st, pr: pr };
+  };
+  var a = shares(top), h = shares(ent), out = {};
+  ["p", "st", "pr"].forEach(function (kd) {
+    out[kd] = Object.keys(a[kd]).map(function (k) { return { k: k, want: a[kd][k], have: h[kd][k] || 0 }; })
+      .filter(function (x) { return x.want >= UNDER_MIN && x.want - x.have >= UNDER_GAP; }).sort(function (x, y) { return (y.want - y.have) - (x.want - x.have); }).slice(0, 5);
+  });
+  return out;
+}
+function renderUnder() {
+  var u = underExposed(), el = $("fillUnder"); if (!el) return;
+  if (!u) { el.innerHTML = ""; return; }
+  var pc = function (x) { return Math.round(100 * x) + "%"; }, nm = function (id) { return shortName((byId(id) || {}).name || id); };
+  var part = function (label, list, name) { return list.length ? "<b>" + label + ":</b> " + list.map(function (x) { return esc(name(x.k)) + " " + pc(x.have) + " vs " + pc(x.want); }).join(", ") : ""; };
+  var bits = [part("players", u.p, nm), part("team stacks 3+", u.st, function (t) { return t; }), part("pairs", u.pr, function (k) { return k.split("|").map(nm).join(" + "); })].filter(Boolean);
+  el.innerHTML = bits.length ? "Under-exposed against tier A (held vs tier A): " + bits.join(" · ") : "";
+}
 function fillMsg(m) {            // after Fill all contests: one line (filled of entries, short contests), the detail in a fold
   var ns = entriesN(), have = 0, want = 0, short = [];
   nbContests().forEach(function (x) { var k = String(x.c.id), h = Math.min(x.n, (PF[k] || []).length); have += h; want += x.n; if (h < x.n) short.push(nbShort(x.c.name) + " " + h + "/" + x.n); });
-  $("cutStatus").innerHTML = esc("Filled " + have + " of " + want + " entries in " + nbContests().length + " contests" + (short.length ? "; short: " + short.join(", ") : "") + "." + lockNote()) +
+  var rx = (String(m).match(/[^;(]*relaxed to \d+% to fill \d+ slots?/g) || []).map(function (x) { return x.trim(); });
+  $("cutStatus").innerHTML = esc("Filled " + have + " of " + want + " entries in " + nbContests().length + " contests" + (short.length ? "; short: " + short.join(", ") : "") + "." +
+    (rx.length ? " " + rx.join("; ") + "." : "") + lockNote()) +
     ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">details</summary> ' + esc(m) + "</details>";
 }
 function undoKey() { return "dkcbb-pf-prev:" + slate.draft_group_id; }
