@@ -6,7 +6,10 @@
 // Fill all contests: largest stake first, a lineup in at most 3 contests, the night cap 60%) and how many entries it
 // left short; and on real points where the standings exist: random fills from each kept pool.
 //
-//   node scripts/dk_cut_study.js <night.json> <build.json> <standings dir> <slate csv> [--sims 2000] [--fills 200]
+// --frac F --rep R (the bank-size test, 2026-11-20): cut only a random F of the bank, each idea (group) sliced in
+// proportion (at least one lineup an idea), slice R of a seeded series, merit mode only; the cut's seconds reported.
+//
+//   node scripts/dk_cut_study.js <night.json> <build.json> <standings dir> <slate csv> [--sims 2000] [--fills 200] [--frac 0.5 --rep 1]
 const fs = require("fs"), path = require("path");
 const ROOT = path.join(__dirname, ".."), S = require(path.join(ROOT, "dk_sim.js"));
 const [nf, bf, sdir, actf] = process.argv.slice(2);
@@ -17,9 +20,21 @@ const gate = JSON.parse(fs.readFileSync(path.join(ROOT, "analysis/cbb/dk/gate.js
 const rows = Object.entries(N.slate.players).map(([id, r]) => Object.assign({ id }, r));
 const seed = B.nights_seed || 1405393094;
 const ctxOf = (r, cap) => ({ rows, proj: x => S.gatedProj(x, gate), own: x => N.field.own[x.id] || 0, state: { lock: {}, excl: {}, cap: cap || {}, floor: {} }, random: r });
-const bank = B.pool.map(ids => ({ ids: ids.map(String) }));
-const tag = i => { const t = B.tags[i]; return Array.isArray(t) ? t[0] : t; };
-const group = i => (B.groups || {})[tag(i)] || tag(i);
+const FRAC = opt("frac", 1), REP = opt("rep", 0);
+const tag0 = i => { const t = B.tags[i]; return Array.isArray(t) ? t[0] : t; };
+const group0 = i => (B.groups || {})[tag0(i)] || tag0(i);
+let sliceIx = B.pool.map((_, i) => i);
+if (FRAC < 1) {                     // each idea in proportion, a seeded shuffle per (frac, rep)
+  const r = S.seeded(1000003 * (REP + 1) + Math.round(FRAC * 1000)), by = {};
+  sliceIx.forEach(i => { (by[group0(i)] = by[group0(i)] || []).push(i); });
+  sliceIx = [];
+  Object.values(by).forEach(ix => { for (let k = ix.length - 1; k > 0; k--) { const j = (r() * (k + 1)) | 0; [ix[k], ix[j]] = [ix[j], ix[k]]; }
+    sliceIx = sliceIx.concat(ix.slice(0, Math.max(1, Math.round(FRAC * ix.length)))); });
+  sliceIx.sort((a, b) => a - b);
+}
+const bank = sliceIx.map(i => ({ ids: B.pool[i].map(String) }));
+const tag = i => tag0(sliceIx[i]);
+const group = i => group0(sliceIx[i]);
 const supF = path.join(ROOT, "analysis/cbb/dk/contests_supplement.json"), sup = fs.existsSync(supF) ? JSON.parse(fs.readFileSync(supF)).contests || {} : {};
 Object.keys(B.portfolios || {}).forEach(id => {
   if (sup[id] && !N.slate.contests.some(c => String(c.id) === id && c.payouts)) N.slate.contests = N.slate.contests.filter(c => String(c.id) !== id).concat([sup[id]]);
@@ -96,9 +111,12 @@ function randomFills(pool) {        // real net of random fills from the kept po
 
 (async () => {
   const out = { night: N.date, draft_group: N.g, bank: bank.length, keep: KEEP, pct: PCT, nights: CN, contests: cs.map(c => c.name + " x" + c.n), runs: {} };
-  for (const mode of ["equal", "merit"]) {
+  out.frac = FRAC; out.rep = REP;
+  for (const mode of FRAC < 1 || process.argv.includes("--merit-only") ? ["merit"] : ["equal", "merit"]) {
     const t0 = Date.now();
+    const tc = Date.now();
     const res = await S.cutPool(ctxOf(S.seeded(seed + 1)), bank, cs.map(c => ({ contest: c, n: c.n })), N.field.field, N.z, KEEP, PCT, CN, null, bank.map((_, i) => group(i)), { mode });
+    res.seconds = Math.round((Date.now() - tc) / 1000);
     const pool = res.keep.map(i => bank[i]), val = value(pool, true), tr = S.tiers(val.v, val.odd, val.even);
     const aIx = tr.tier.map((t, k) => t === "A" ? k : -1).filter(k => k >= 0), ideas = {};
     aIx.forEach(k => { const g = group(res.keep[k]); ideas[g] = (ideas[g] || 0) + 1; });
@@ -106,7 +124,7 @@ function randomFills(pool) {        // real net of random fills from the kept po
     const F = fill(pool), fn = fillNet(pool, F);
     out.runs[mode] = { kept: pool.length, rounds: res.rounds.length, ideas_kept: Object.keys(kept).length, tierA: aIx.length, tierA_ideas: Object.keys(ideas).length,
                        tierA_by: ideas, best_value: +Math.max(...val.v).toFixed(3), fill_net: +fn.net.toFixed(2), fill_short: total - fn.filled, real_random_fills: randomFills(pool),
-                       seconds: Math.round((Date.now() - t0) / 1000) };
+                       seconds: Math.round((Date.now() - t0) / 1000), cut_seconds: res.seconds };
   }
   console.log(JSON.stringify(out, null, 1));
 })();
