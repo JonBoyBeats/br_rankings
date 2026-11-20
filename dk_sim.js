@@ -95,6 +95,30 @@
 
   function usable(ctx, r) { return r.status !== "Out" && !ctx.state.excl[r.id] && !r.deepOut; }   // deepOut: the DK page's deep bench
 
+  // The slots with the latest tips in UTIL (2026-11-20, C6; for the late-swap tool to come): of the 28 ways to put two of
+  // the eight in UTIL, the legal ones (the other six fill 3 G and 3 F, G/F either way) with the latest tips there (the
+  // earlier of the two first, then their sum), the higher salary breaking ties; G and F slots as assign() orders them.
+  // A reorder only: the same eight players.
+  function lateSlots(ctx, ids) {
+    var by = {}; ctx.rows.forEach(function (r) { by[r.id] = r; });
+    var tip = function (id) { return Date.parse((by[id] || {}).game_start || "") || 0; }, best = null, bestKey = null;
+    for (var a = 0; a < ids.length; a++) for (var b = a + 1; b < ids.length; b++) {
+      var rest = ids.filter(function (_, i) { return i !== a && i !== b; }).map(function (id) { return by[id]; });
+      if (rest.some(function (r) { return !r || (!isG(r) && !isF(r)); })) continue;
+      var gOnly = rest.filter(function (r) { return isG(r) && !isF(r); }).length, fOnly = rest.filter(function (r) { return isF(r) && !isG(r); }).length;
+      if (gOnly > 3 || fOnly > 3) continue;
+      var u = [ids[a], ids[b]], key = [Math.min(tip(u[0]), tip(u[1])), tip(u[0]) + tip(u[1]), ((by[u[0]] || {}).salary || 0) + ((by[u[1]] || {}).salary || 0)];
+      if (!bestKey || key[0] > bestKey[0] || (key[0] === bestKey[0] && (key[1] > bestKey[1] || (key[1] === bestKey[1] && key[2] > bestKey[2])))) { bestKey = key; best = u; }
+    }
+    if (!best) return assign(ctx, ids);
+    var six = ids.filter(function (id) { return best.indexOf(id) < 0; }).map(function (id) { return by[id]; }).sort(function (a, b) { return b.salary - a.salary; });
+    var G = six.filter(function (r) { return isG(r) && !isF(r); }), F = six.filter(function (r) { return isF(r) && !isG(r); }), flex = six.filter(function (r) { return isG(r) && isF(r); });
+    while (G.length < 3) G.push(flex.shift());
+    while (F.length < 3) F.push(flex.shift());
+    G.sort(function (a, b) { return b.salary - a.salary; }); F.sort(function (a, b) { return b.salary - a.salary; });
+    return G.concat(F).map(function (r) { return r.id; }).concat(best.slice().sort(function (x, y) { return tip(y) - tip(x) || ((by[y] || {}).salary || 0) - ((by[x] || {}).salary || 0); }));
+  }
+
   // G slots from guards first, F slots from forwards first, G/F players where needed, the rest to UTIL
   function assign(ctx, ids) {
     var by = {}; ctx.rows.forEach(function (r) { by[r.id] = r; });
@@ -912,7 +936,7 @@
 
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
            gatedProj: gatedProj, seeded: seeded, fitMinutes: fitMinutes, usable: usable, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
-           simulate: simulate, builder: builder, pick: pick, expoLimit: expoLimit, variants: variants, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
+           simulate: simulate, builder: builder, pick: pick, expoLimit: expoLimit, lateSlots: lateSlots, variants: variants, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, poolDraw: poolDraw, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
            CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
            CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };

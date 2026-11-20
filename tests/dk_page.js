@@ -236,11 +236,23 @@ function audit(name, L, o) {
     const r = rows.find(x => x.status !== "Out" && x.spread != null && x.ou), el = document.querySelector(`#players .row[data-id="${r.id}"]`), cells = [...el.children].map(c => c.textContent);
     const f = rows.find(x => x.fragile), fel = f && document.querySelector(`#players .row[data-id="${f.id}"]`);
     return { heads, sub: document.querySelectorAll("#players .sub").length, cells: cells.slice(2, 5), want: [r.position, r.team, (r.home ? "v " : "@ ") + r.opp],
-             tip: el.querySelector(".nm").title, line: (r.spread > 0 ? "+" : "") + r.spread, ou: r.ou, frag: f ? { badge: !!fel.querySelector(".frag"), tip: /Fragile: expected miss/.test(fel.querySelector(".nm").title) } : null };
+             tip: el.querySelector(".nm").title, line: (r.spread > 0 ? "+" : "") + r.spread, ou: r.ou, frag: f ? { badge: !!fel.querySelector(".frag") === !!fragileMap()[f.id], tip: /Swingy: expected miss/.test(fel.querySelector(".nm").title) } : null };
   });
   check("Players list: Pos / Team / Opp columns, matchup and line in the name's tooltip, fragile in the tooltip, no ± column or grey line",
         JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Min", "DK avg", "Top 1%", "ROI", "Cash", "Read", "Bank"]) && pl.sub === 0 &&
-        JSON.stringify(pl.cells) === JSON.stringify(pl.want) && pl.tip.includes(pl.line) && pl.tip.includes("o/u " + pl.ou) && (!pl.frag || (!pl.frag.badge && pl.frag.tip)), JSON.stringify(pl));
+        JSON.stringify(pl.cells) === JSON.stringify(pl.want) && pl.tip.includes(pl.line) && pl.tip.includes("o/u " + pl.ou) && (!pl.frag || (pl.frag.badge && pl.frag.tip)), JSON.stringify(pl));
+  // A4: fragile from the lenses: the badge only when 2+ lenses disagree with our number, the reasons in its hover
+  const fragA4 = await pg.evaluate(() => { const m = fragileMap(), ids = Object.keys(m);
+    const r = rows.find(x => x.status !== "Out" && x.status !== "Questionable" && proj(x) > 0 && !m[x.id]);
+    const keep = r && { min_avg: r.min_avg, cv: r.min_cv, sal: r.salary };
+    let made = null;
+    if (r) { r.min_avg = (r.min || 0) + 10; r.min_cv = 0.5; r.salary = 3000; renderPlayers(); made = fragileMap()[r.id] || null;
+      const el = document.querySelector('#players .row[data-id="' + r.id + '"] .tag.frag'); made = { reasons: made, badge: !!el, tip: el && el.title };
+      Object.assign(r, { min_avg: keep.min_avg, min_cv: keep.cv, salary: keep.sal }); renderPlayers(); }
+    return { n: ids.length, badges: document.querySelectorAll("#players .tag.frag").length, made, after: r ? !fragileMap()[r.id] : true };
+  });
+  check("fragile (A4): a badge only where 2+ lenses disagree (few a slate), its reasons in the hover; information only",
+        fragA4.n <= 6 && fragA4.badges === fragA4.n && fragA4.made && fragA4.made.badge && fragA4.made.reasons.length >= 2 && /Fragile: /.test(fragA4.made.tip) && fragA4.after, JSON.stringify(fragA4));
   check("match warning: none when every game matched", !(await pg.$("#matchWarn")));
   const mw = await pg.evaluate(() => {
     const g = rows[0].game, kept = rows.map(r => r.event);
@@ -993,8 +1005,10 @@ function audit(name, L, o) {
         rowsOut.length === pf["197791872"].length + pf["197791877"].length + pf2.length && !byId["9000000008"] && !byId["9000000007"], rowsOut.map(r => r[0]).join(" "));
   const finalPf = Object.assign({}, pf, { "197791874": pf2 });
   const want = {};
-  ["197791872", "197791877", "197791874"].forEach(cid => fake.filter(r => String(r[2]) === cid).slice(0, finalPf[cid].length).forEach((r, k) => want[r[0]] = bank.lineups[finalPf[cid][k]].slots));
-  check("export: each entry ID keeps its contest and gets its portfolio's lineup, slot for slot",
+  ["197791872", "197791877", "197791874"].forEach(cid => fake.filter(r => String(r[2]) === cid).slice(0, finalPf[cid].length).forEach((r, k) => want[r[0]] = bank.lineups[finalPf[cid][k]].ids));
+  const lateWant = await pg.evaluate(w => Object.fromEntries(Object.entries(w).map(([k, ids]) => [k, DKSim.lateSlots(ctx(), ids)])), want);   // the slots with the latest tips in UTIL (C6)
+  Object.assign(want, lateWant);
+  check("export: each entry ID keeps its contest and gets its portfolio's lineup, slot for slot (latest tips in UTIL)",
         Object.keys(want).every(id => byId[id] && byId[id].slice(4).join(",") === want[id].join(",") && fake.some(f => String(f[0]) === id && String(f[2]) === byId[id][2])));
   ["197791872", "197791874", "197791877"].forEach(cid => {
     const L = rowsOut.filter(r => r[2] === cid).map(r => ({ ids: r.slice(4), slots: r.slice(4) }));
@@ -1234,10 +1248,15 @@ function audit(name, L, o) {
     const sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, 3, 400);
     return [0.4, 0.6].map(p => { const r = DKSim.pick(ctx(), { n: 3, maxExpo: p, minUnique: 3, conds: [], maxCore: null }, pool, sim, c, 3), cnt = {};
       r.chosen.forEach(k => pool[k].ids.forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }));
-      return { p, n: r.chosen.length, max: Math.max(...Object.values(cnt)), lim: DKSim.expoLimit(p, 3), big: DKSim.expoLimit(p, 20) }; });
+      // pick fills greedily and never backtracks: on a chalk-heavy random bank the first two can leave no third that
+      // fits, so a short set passes only when no lineup in the pool fits beside them (each player in 2 at most, Min unique 3)
+      const lim = DKSim.expoLimit(p, 3), stuck = r.chosen.length < 3 && !pool.some((L, k) => !r.chosen.includes(k) &&
+        L.ids.every(id => (cnt[id] || 0) + 1 <= lim) && r.chosen.every(j => L.ids.filter(id => pool[j].ids.includes(id)).length <= 5));
+      return { p, n: r.chosen.length, stuck, max: Math.max(...Object.values(cnt)), lim, big: DKSim.expoLimit(p, 20) }; });
   });
-  check("Max exposure in a small contest: 3 entries at 40% and at 60% fill 3 of 3, each player in 2 at most (rounded up at 5 entries or fewer; 20 entries still floor)",
-        small.every(x => x.n === 3 && x.lim === 2 && x.max <= 2) && small[0].big === 8 && small[1].big === 12, JSON.stringify(small));
+  const clean = await pg.evaluate(() => !Object.keys(state.cap).length && !Object.keys(state.lock).length);
+  check("Max exposure in a small contest: 3 entries at 40% and at 60% fill 3 of 3 where 3 fit, each player in 2 at most (rounded up at 5 entries or fewer; 20 entries still floor)",
+        clean && small.every(x => (x.n === 3 || x.stuck) && x.lim === 2 && x.max <= 2) && small[0].big === 8 && small[1].big === 12, JSON.stringify(small));
   // Max exposure binds hand adds: in this contest's set a player goes in at most its limit (DKSim.expoLimit)
   await pg.click("#bpClear").catch(() => {});
   const cap = await pg.evaluate(() => {
@@ -1417,6 +1436,16 @@ function audit(name, L, o) {
     return { ok, sorted };
   });
   check("player scan: its top-1% gain (noise bar under it), ROI and cash gains, Read (coloured) and Bank this in the Players list, sortable", pList.ok && pList.sorted, JSON.stringify(pList));
+  const c1 = await pg.evaluate(() => {
+    renderPlayers(); const bs = bankShare(), rowsIn = [...document.querySelectorAll("#players .row.bankgap-in")].map(e => e.dataset.id), rowsOut = [...document.querySelectorAll("#players .row.bankgap-out")].map(e => e.dataset.id);
+    const inOk = rowsIn.every(id => /core|leverage|even/.test(scanRowOf(id).read) && (bs[id] || 0) < 0.02), outOk = rowsOut.every(id => scanRowOf(id).read === "fade" && (bs[id] || 0) > 0.4);
+    const want = SCAN.players.filter(x => byId(x.id).status !== "Out" && ((/core|leverage|even/.test(x.read) && (bs[x.id] || 0) < 0.02) || (x.read === "fade" && (bs[x.id] || 0) > 0.4)) && document.querySelector('#players .row[data-id="' + x.id + '"]')).length;
+    const n0 = state.rules.length, b = document.getElementById("focusBank");
+    let rule = null; if (b) { b.click(); rule = state.rules[n0]; state.rules = state.rules.slice(0, n0); save(); renderRules(); }
+    return { inOk, outOk, shown: rowsIn.length + rowsOut.length, want, rule: rule && { type: rule.type, n: rule.n, k: rule.ids.length, same: JSON.stringify(rule.ids) === JSON.stringify(SCAN.focus) }, hasBtn: !!b, focus: (SCAN.focus || []).length };
+  });
+  check("bank helpers (C1): the Players list marks a scan core / leverage / even at ~0% of the bank and a fade heavy in it; Bank: at least 3 of the focus set adds one min-N rule (not locks)",
+        c1.inOk && c1.outOk && c1.shown === c1.want && (c1.focus < 2 || (c1.hasBtn && c1.rule.type === "min" && c1.rule.n === Math.min(3, c1.focus) && c1.rule.same)), JSON.stringify(c1));
   const pso = await pg.evaluate(() => {
     document.querySelector('#players .head [data-sort="sroi"]').click();
     const g = [...document.querySelectorAll("#players .row")].map(e => scanRowOf(e.dataset.id)).filter(x => x && byId(x.id).status !== "Out").map(x => x.g_roi);
@@ -1540,6 +1569,11 @@ function audit(name, L, o) {
   const nb_out9 = fs.readFileSync(await nb_dl9.path(), "utf8").trim().split(/\r?\n/).map(l => l.split(","));
   const nb_per = {}; let nb_twice = 0;
   nb_out9.slice(1).forEach(r => { const k = r[2] + ":" + r.slice(4, 12).slice().sort().join("|"); if (nb_per[k]) nb_twice++; nb_per[k] = 1; });
+  // C6: the latest tips in UTIL: no G / F-slot player tips later than a UTIL player he could legally swap with
+  const tipOfId = id => Date.parse(P[id].game_start || "") || 0, canG = id => isG(P[id]), canF = id => isF(P[id]);
+  const lateBad = nb_out9.slice(1).filter(r => r[4]).filter(r => { const sl = r.slice(4, 12), util = sl.slice(6, 8);
+    return sl.slice(0, 6).some((p, j) => util.some(u => tipOfId(p) > tipOfId(u) && (j < 3 ? canG(u) : canF(u)))); });
+  check("export: the latest-tipping players in the UTIL slots wherever positions allow (a reorder only)", nb_out9.length > 1 && lateBad.length === 0, JSON.stringify(lateBad.slice(0, 2)));
   check("one screen: Export from the top bar, DraftKings' header, no lineup twice in one contest", nb_out9[0].slice(0, 4).join(",") === "Entry ID,Contest Name,Contest ID,Entry Fee" && nb_out9.length > 1 && nb_twice === 0, nb_out9.length + " rows, " + nb_twice + " nb_twice");
   // Classic view: the same portfolios, the outputs back in place
   const nb_pfNB = await pg.evaluate(() => JSON.stringify(PF));

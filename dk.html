@@ -78,6 +78,7 @@
   .tag.q { background: var(--warn); color: #1a1400; }
   .tag.o { background: var(--bad); color: #1a0500; }
   .tag.new { border: 1px solid var(--line-strong); color: var(--muted); }
+  .tag.frag { border: 1px solid var(--warn); color: var(--warn); font-weight: 600; }
   .tag.lk { background: var(--live); color: #04140c; }
   .read-leverage { color: #3fbf7f; font-weight: 600; } .read-core { color: #5b9cf0; font-weight: 600; } .read-fade { color: var(--bad); font-weight: 600; } .read-skip, .read-even { color: var(--muted); }
   .row .nb2 { font-size: 9.5px; display: block; line-height: 1; }
@@ -162,6 +163,7 @@
   #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
   #players.fillcols .head, #players.fillcols .row { grid-template-columns: 52px minmax(96px, 1fr) 44px 46px 54px 38px 36px 28px 50px 38px 38px 54px 36px 36px 40px 34px 26px 42px 42px; }
   #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
+  #players .row.bankgap-in { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out { box-shadow: inset 3px 0 var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
   #players.fillcols .nm { cursor: pointer; } height: 22px; width: 22px; padding: 0; border-radius: 50%; font-size: 12px; font-style: italic; font-weight: 700; align-self: center; }
   #cutIdeas th[data-ck] { cursor: pointer; }
@@ -710,6 +712,7 @@ function isQ(r) {
   return r.status !== "Out" && (r.status === "Questionable" || notOut(r.status_dk) || notOut(r.status_file));
 }
 function renderPlayers() {
+  fragileMemo = null;          // outs, Proj edits and the scan all move it: recomputed each render
   var list = rows.filter(function (r) {
     if (view.pos === "G" && !isG(r)) return false;
     if (view.pos === "F" && !isF(r)) return false;
@@ -763,12 +766,41 @@ function emText(r) {
     (r.poss != null ? " · " + Math.round(r.poss) + " poss" : "") + (r.min_poss != null ? " (his possessions imply " + r.min_poss + " minutes a game)" : "") +
     "\n  (1-5 scales: 1 a point guard / the primary creator, 5 a center / a finisher)";
 }
+/* Fragile, redefined (2026-11-20, A4; information only): a player is fragile when two or more lenses still disagree with
+   our number: (1) an unexplained big salary gap (2 sd off the slate's projection-on-salary line, with no Q tag, no
+   teammate out, no minutes change, no injury return and not a newcomer); (2) value against projected ownership (our
+   points per $1K in the top 15 but the field under 2%, or the field 30%+ and our value outside the top 40); (3) an
+   unsettled minutes picture (Questionable, his minutes moving 6+ from his average, or swingy minutes). Usually 0-5 a slate. */
+var fragileMemo = null;
+function fragileMap() {
+  if (fragileMemo && fragileMemo.rows === rows && fragileMemo.dg === (slate && slate.draft_group_id)) return fragileMemo.v;
+  var live = rows.filter(function (r) { return r.status !== "Out" && proj(r) > 0; }), v = {};
+  if (live.length >= 10) {
+    var xs = live.map(function (r) { return r.salary; }), ys = live.map(proj), mx = xs.reduce(function (a, b) { return a + b; }, 0) / xs.length, my = ys.reduce(function (a, b) { return a + b; }, 0) / ys.length;
+    var sxx = xs.reduce(function (a, x) { return a + (x - mx) * (x - mx); }, 0), b = xs.reduce(function (a, x, i) { return a + (x - mx) * (ys[i] - my); }, 0) / sxx, a0 = my - b * mx;
+    var res = live.map(function (r) { return proj(r) - (a0 + b * r.salary); }), sd = Math.sqrt(res.reduce(function (t, e) { return t + e * e; }, 0) / res.length);
+    var outT = {}; rows.forEach(function (r) { if (r.status === "Out" && (r.min_avg || 0) >= 20) outT[r.team] = 1; });
+    var val = live.slice().sort(function (p, q) { return proj(q) / q.salary - proj(p) / p.salary; }), vr = {}; val.forEach(function (r, i) { vr[r.id] = i + 1; });
+    live.forEach(function (r, i) {
+      var f = [], mn = (r.min || 0) * (minScale[r.id] || 1), moved = r.min_avg != null && Math.abs(mn - r.min_avg) >= 6;
+      var why = r.status || outT[r.team] || (r.min_avg != null && Math.abs(mn - r.min_avg) >= 5) || r.missed || r.src !== "box" || r.dk_last5 == null;
+      if (Math.abs(res[i]) >= 2 * sd && !why) f.push("projection " + (res[i] > 0 ? "+" : "") + res[i].toFixed(0) + " off the salary line, no reason on file");
+      var o = own(r);
+      if (vr[r.id] <= 15 && o < 2) f.push("value #" + vr[r.id] + " but the field " + o.toFixed(0) + "% owned");
+      else if (o >= 30 && vr[r.id] > 40) f.push("the field " + o.toFixed(0) + "% owned but value #" + vr[r.id]);
+      if (r.status === "Questionable" || moved || (r.min_cv || 0) >= 0.35) f.push("minutes unsettled" + (r.status === "Questionable" ? " (Q)" : moved ? " (" + mn.toFixed(0) + " vs " + r.min_avg.toFixed(0) + " avg)" : " (swingy)"));
+      if (f.length >= 2) v[r.id] = f;
+    });
+  }
+  fragileMemo = { rows: rows, dg: slate && slate.draft_group_id, v: v };
+  return v;
+}
 // the name's tooltip (2026-11-19, in place of the grey line under it): matchup, line, double-double, EvanMiya, fragile
 function whoTip(r) {
   var line = r.spread != null ? (r.spread > 0 ? "+" : "") + r.spread : "";
   return [r.position + " · " + r.team + (r.home ? " v " : " @ ") + (r.opp || "?") + (line ? " " + line : "") + (r.ou ? " · o/u " + r.ou : ""),
           r.p_dd >= 0.1 ? "Double-double " + Math.round(100 * r.p_dd) + "%" : "", emText(r),
-          r.fragile ? "Fragile: expected miss \u00b1" + (r.miss_dk != null ? r.miss_dk : "") : ""].filter(Boolean).join("\n");
+          r.fragile ? "Swingy: expected miss \u00b1" + (r.miss_dk != null ? r.miss_dk : "") : "", fragileMap()[r.id] ? "Fragile: " + fragileMap()[r.id].join("; ") : ""].filter(Boolean).join("\n");
 }
 // the player scan's row for a player (this slate's scan), for the Players list
 function scanRowOf(id) {
@@ -776,7 +808,7 @@ function scanRowOf(id) {
   if (scanMapOf !== SCAN.players) { scanMap = {}; SCAN.players.forEach(function (x) { scanMap[String(x.id)] = x; }); scanMapOf = SCAN.players; }
   return scanMap[String(id)] || null;
 }
-var scanMap = {}, scanMapOf = null, bankShareMemo = null;
+var scanMap = {}, scanMapOf = null, bankShareMemo = null, BANK_GAP_LOW = 0.02, BANK_GAP_HIGH = 0.4;
 // a gain in points (x 100), signed
 function sgn(x, d) { return (x > 0 ? "+" : "") + (100 * x).toFixed(d); }
 // each player's share of the bank's lineups (the Players list's Bank column), cached per bank size
@@ -803,6 +835,7 @@ function playerTable(list, sortable, fs) {
     var nw = newsOf(r.id);
     var tags = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
       (isDoubtful(r) ? '<span class="tag d" title="Doubtful: out by default">D</span>' : "") +
+      (fragileMap()[r.id] ? '<span class="tag frag" title="' + esc("Fragile: " + fragileMap()[r.id].join("; ")) + '">fragile</span>' : "") +
       (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
         ' title="Projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : "") + '>Q</span>' : "") +
       (isDoubtful(r) ? '<button type="button" class="qout" title="' + (state.ins[r.id] ? "Back to out (Doubtful)" : "Play him: back as Questionable, his teammates refit to 200") +
@@ -819,7 +852,14 @@ function playerTable(list, sortable, fs) {
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
     var edited = state.proj[r.id] != null, sc = scanRowOf(r.id);
     var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] || r.deepOut ? " excluded" : "") + (r.status === "Out" ? " out" : "");
-    return '<div class="' + cls + '" data-id="' + esc(r.id) + '">' +
+    // C1 (2026-11-20): the scan likes him but the bank hardly holds him, or fades him and the bank is heavy on him
+    var gapTip = "";
+    if (sc && BANK && BANK.lineups && BANK.lineups.length && r.status !== "Out") {
+      var bs = bshare[r.id] || 0;
+      if (/core|leverage|even/.test(sc.read) && bs < BANK_GAP_LOW) { cls += " bankgap-in"; gapTip = "The scan reads him " + sc.read + "; " + Math.round(100 * bs) + "% of the bank holds him"; }
+      else if (sc.read === "fade" && bs > BANK_GAP_HIGH) { cls += " bankgap-out"; gapTip = "The scan reads him fade; " + Math.round(100 * bs) + "% of the bank holds him"; }
+    }
+    return '<div class="' + cls + '" data-id="' + esc(r.id) + '"' + (gapTip ? ' title="' + esc(gapTip) + '"' : "") + ">" +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
       '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button></span>' +
       '<span class="who"><div class="name"><span class="nm' + (fs && bpFilt.p[r.id] ? (bpFilt.p[r.id] === "with" ? " w" : " wo") : "") + '" title="' + esc(whoTip(r)) + (fs ? "\nTap: with, again without, again off (filters the lineups)" : "") + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
@@ -1869,7 +1909,7 @@ function exportEntries() {
     var k = used[r[2]] = (used[r[2]] || 0);
     if (k >= pf.length) { short.push(r[1]); return; }
     used[r[2]]++;
-    lines.push(r.slice(0, 4).concat(BANK.lineups[pf[k]].slots).map(csvCell).join(","));
+    lines.push(r.slice(0, 4).concat(DKSim.lateSlots(ctx(), BANK.lineups[pf[k]].ids)).map(csvCell).join(","));   // the latest tips in UTIL (C6)
   });
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([lines.join("\r\n") + "\r\n"], { type: "text/csv" }));
@@ -2136,7 +2176,7 @@ function bpRender(note) {
     var inG = BP.group && grp(k) === BP.group, over = isPicked ? [] : bpBlocks(k);
     return '<tr class="' + (isPicked ? "picked" : "") + (inG ? " ingroup" : "") + (over.length ? " over" : "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' +
       (isPicked ? "bpRm" : over.length ? "bpForce" : "bpAdd") + '"' + (over.length ? ' title="Over a cap: ' + esc(over.join("; ")) + '. Click to add it anyway."' : "") + ">" +
-      (isPicked ? "Remove" : over.length ? "Add anyway" : "Add") + '</button></td><td class="l nm">' + BP.pool[k].slots.map(function (id) {
+      (isPicked ? "Remove" : over.length ? "Add anyway" : "Add") + '</button></td><td class="l nm">' + DKSim.lateSlots(ctx(), BP.pool[k].ids).map(function (id) {
         return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") + '</td><td class="l mut" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(grp(k)) + '">' + esc(grp(k)) + "</td><td><b>" + BP.tier[k] + "</b></td><td>" + roiTxt(BP.roi[k]) + "</td><td>" + pct1(BP.t10[k]) + "</td><td>" + pct1(BP.t1[k]) + "</td><td>" + pct1(BP.cashR[k]) +
       "</td><td>" + (100 * BP.core[k]).toFixed(1) + "%</td><td>" + (BP.dupe[k] ? BP.dupe[k].toFixed(1) : "0") + "</td><td>" + (sc && BP.fee ? roiTxt((sc.value - BP.fee) / BP.fee) : "–") +
       "</td><td>" + (sc ? (100 * sc[cov]).toFixed(1) + "%" : "–") + "</td><td>" + (picked.length ? BP.shared[k] : "–") + "</td><td>" + Math.round(BP.own[k]) + "%</td></tr>";
@@ -2265,7 +2305,7 @@ function nbListRender() {
     var over = isPicked ? [] : bpBlocks(k), ks = kids[k] || [], best = ks.length ? Math.max.apply(null, ks.map(function (j) { return BP.roi[j]; })) : null;
     return '<tr class="' + (isPicked ? "picked " : "") + (cls || "") + '" data-k="' + k + '"><td class="l"><button type="button" class="' + (isPicked ? "bpRm" : over.length ? "bpForce" : "bpAdd") + '"' +
       (over.length ? ' title="Over a cap: ' + esc(over.join("; ")) + '. Click to add it anyway."' : "") + ">" + (isPicked ? "Remove" : over.length ? "Add anyway" : "Add") + "</button></td>" +
-      '<td class="l nm">' + BP.pool[k].slots.map(function (id) { return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") +
+      '<td class="l nm">' + DKSim.lateSlots(ctx(), BP.pool[k].ids).map(function (id) { return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") +
       (ks.length && !cls ? ' <button type="button" class="nbKids" data-k="' + k + '">' + (NB.open[k] ? "▾" : "▸") + " " + ks.length + " variant" + (ks.length === 1 ? "" : "s") + ", best " + roiTxt(best) + "</button>" : "") +
       "</td><td><b>" + BP.tier[k] + "</b></td><td>" + roiTxt(BP.roi[k]) + "</td><td>" + pct1(BP.t10[k]) + "</td><td>" + pct1(BP.t1[k]) + "</td><td>" + pct1(BP.cashR[k]) +
       "</td><td>" + Math.round(BP.own[k]) + "%</td><td>" + (BP.dupe[k] ? BP.dupe[k].toFixed(1) : "0") + '</td><td class="l mut" style="max-width:140px;overflow:hidden;text-overflow:ellipsis" title="' +
@@ -2527,11 +2567,16 @@ function renderScan() {
   var thick = S.rows.filter(function (r) { return !r.thin; });          // thin rows only when every row is thin
   var tops = (thick.length ? thick : S.rows.slice()).sort(function (a, b) { return b.g_t1 - a.g_t1; }).slice(0, 5);
   var levs = pl.filter(function (r) { return !r.thin && r.read === "leverage"; });
+  // the focus set (C1): the core and leverage players by top-1% gain, topped up from the evens, six at most
+  var foc = pl.filter(function (r) { return !r.thin && /core|leverage/.test(r.read); }).sort(function (a, b) { return b.g_t1 - a.g_t1; });
+  foc = foc.concat(pl.filter(function (r) { return !r.thin && r.read === "even"; }).sort(function (a, b) { return b.g_t1 - a.g_t1; })).slice(0, 6);
+  S.focus = foc.map(function (r) { return r.id; });
   var strip = '<div class="topreads"><b>Top reads</b>' + tops.map(function (r) {
       return '<button type="button" class="topread" data-team="' + esc(r.team || r.game.split("@")[0]) + '" title="Open its game">' + esc(r.key) + " " + sgn(r.g_t1, 2) + " · " + esc(r.read) + "</button>";
     }).join("") + (levs.length ? '<span class="mut">Leverage:</span>' + levs.map(function (r) {
       return '<button type="button" class="topread read-leverage" data-team="' + esc(r.team) + '" title="Open its game">' + esc(r.key) + " " + sgn(r.g_t1, 2) + "</button>";
-    }).join("") : "") + "</div>";
+    }).join("") : "") + (foc.length >= 2 ? '<button type="button" id="focusBank" title="Adds a draw rule: at least ' + Math.min(3, foc.length) + " of " + esc(foc.map(function (r) { return r.key; }).join(", ")) +
+      ' (one rule, not locks)">Bank: at least ' + Math.min(3, foc.length) + " of these " + foc.length + "</button>" : "") + "</div>";
   $("scanTable").innerHTML = strip + '<details id="scanAll"' + (scanAllOpen ? " open" : "") + '><summary>All scan rows</summary><div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each, in the Players list's Top 1% / ROI / Cash / Read columns (Read on their own noise, \u00b1" + (100 * S.pbar).toFixed(2) +
     "; core: strong and field own at or over the players' median " + Math.round(S.pownMedian || 0) + "%, leverage: strong and under it, fade: weak and over, skip: weak and under; a team's Bank this adds at least 2 of its core and leverage players), " : "") + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
     " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
@@ -2552,6 +2597,12 @@ $("scanTable").addEventListener("click", function (e) {
     var kd = h.dataset.skind, cur = (SCAN.sort = SCAN.sort || {})[kd] || (kd === "teamroll" ? { k: "n", dir: -1 } : { k: "g_t1", dir: -1 });
     SCAN.sort[kd] = { k: h.dataset.sk, dir: cur.k === h.dataset.sk ? -cur.dir : (/^(key|read|team)$/.test(h.dataset.sk) ? 1 : -1) };
     store(scanKey(), SCAN); renderScan(); return;
+  }
+  if (e.target.id === "focusBank") {
+    var ids = SCAN.focus || [], k = Math.min(3, ids.length);
+    addRules([{ type: "min", ids: ids.slice(), n: k, label: "at least " + k + " of " + ids.map(function (id) { return shortName((byId(id) || {}).name || id); }).join(", ") }]);
+    $("scanStatus").textContent = "Added at least " + k + " of the scan's " + ids.length + " focus players to the rules: Draw & bank draws under it.";
+    showStep("bank"); return;
   }
   var tr0 = e.target.closest(".topread");
   if (tr0) { view.panel = tr0.dataset.team; renderTiles(); renderPlayers(); $("teamBar").scrollIntoView({ block: "start" }); return; }
