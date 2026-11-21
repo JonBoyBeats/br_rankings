@@ -1899,6 +1899,26 @@ function audit(name, L, o) {
   check("Quick lineup follows the draw panel: a never rule and a Min salary hold, and the note lists them", ql.ruled, JSON.stringify(ql));
   check("Quick sim: 200 drawn and cut in waves to 20 distinct lineups under the locks and excludes, best ROI first with the top in tier A, ROI over every round's nights; a tap shows that lineup's card",
         ql.sim.opts > 0 && ql.sim.simRows === 20 && ql.sim.simRows === ql.sim.distinct && ql.sim.drawn > 100 && ql.sim.rounds >= 2 && ql.sim.allN === ql.sim.rounds * ql.sim.RN + ql.sim.S && ql.sim.roiOrder && ql.sim.allLocked && ql.sim.topA && ql.sim.tapped, JSON.stringify(ql.sim));
+  // sit risk (2026-11-21): the card's p_play under 0.70 on an in-pool player with no Q / D / Out gets the tag, its hover
+  // the chance and the why; Q / Out / X'd players don't; Show: sit risk lists exactly the flagged
+  const sr = await pg.evaluate(() => {
+    const live = rows.filter(r => usable(r) && !r.status && !isDoubtful(r)).sort((a, b) => proj(b) - proj(a));
+    const a = live[0], b = live[1], c = live[2], q = rows.find(r => r.status === "Questionable"), X0 = state.excl, P0 = view.pool;
+    const saved = rows.map(r => [r, r.p_play, r.p_play_why]);
+    a.p_play = 0.42; a.p_play_why = "missed 2 of last 5 · last game 9 days ago"; b.p_play = 0.69; c.p_play = 0.70;
+    if (q) q.p_play = 0.2;
+    renderPlayers();
+    const tagOf = r => { const el = document.querySelector('#players .row[data-id="' + r.id + '"] .tag.sit'); return el ? el.getAttribute("title") : null; };
+    const out = { a: tagOf(a), b: !!tagOf(b), c: !!tagOf(c), q: q ? !!tagOf(q) : false };
+    view.pool = "sit"; renderPlayers();
+    out.listed = [...document.querySelectorAll("#players .row")].map(x => x.dataset.id).sort().join() === [a.id, b.id].sort().join();
+    out.option = !!document.querySelector('#poolShow option[value="sit"]');
+    state.excl = Object.assign({}, X0, { [a.id]: true }); view.pool = "all"; renderPlayers(); out.xGone = !tagOf(a);
+    state.excl = X0; view.pool = P0; saved.forEach(([r, p, w]) => { if (p == null) delete r.p_play; else r.p_play = p; if (w == null) delete r.p_play_why; else r.p_play_why = w; }); renderPlayers();
+    return out;
+  });
+  check("sit risk: the tag on an in-pool, no-status player under 0.70 with the chance and why on hover; none at 0.70, on a Q or an X'd player; Show: sit risk lists only them",
+        sr.a === "Sit risk: 42% to play \u2014 missed 2 of last 5 · last game 9 days ago. Check news before lock." && sr.b && !sr.c && !sr.q && sr.listed && sr.option && sr.xGone, JSON.stringify(sr));
   // the player list on a phone: scrolls sideways under a fixed L / X and name; Sal straight after the name
   await pg.setViewportSize({ width: 390, height: 844 });
   const mob = await pg.evaluate(async () => {

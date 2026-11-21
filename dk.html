@@ -84,6 +84,7 @@
   .tag.q { background: var(--warn); color: #1a1400; }
   .tag.o { background: var(--bad); color: #1a0500; }
   .tag.new { border: 1px solid var(--line-strong); color: var(--muted); }
+  .tag.sit { border: 1px solid var(--warn); color: var(--warn); white-space: nowrap; }
   .tag.frag { border: 1px solid var(--warn); color: var(--warn); font-weight: 600; }
   .tag.lk { background: var(--live); color: #04140c; }
   .read-leverage { color: #3fbf7f; font-weight: 600; } .read-core { color: #5b9cf0; font-weight: 600; }
@@ -523,7 +524,7 @@
     <button type="button" data-pos="G" aria-pressed="false">G</button>
     <button type="button" data-pos="F" aria-pressed="false">F</button>
     <button type="button" id="qOnly" aria-pressed="false" title="Only the players tagged Questionable (by DraftKings or the outs file), to mark X on the ones not worth the risk">Q</button>
-    <label class="field" style="flex-direction:row;align-items:center;gap:4px" title="In pool: the players the draws can use. Left out: punts, the deep bench, your X and Doubtfuls, to bring one back fast (use / play in the L / X group)"><span class="field-label" style="margin:0">Show</span><select id="poolShow" style="width:auto;height:28px"><option value="all">all</option><option value="in">in pool</option><option value="out">left out</option></select></label>
+    <label class="field" style="flex-direction:row;align-items:center;gap:4px" title="In pool: the players the draws can use. Left out: punts, the deep bench, your X and Doubtfuls, to bring one back fast (use / play in the L / X group)"><span class="field-label" style="margin:0">Show</span><select id="poolShow" style="width:auto;height:28px"><option value="all">all</option><option value="in">in pool</option><option value="out">left out</option><option value="sit">sit risk</option></select></label>
     <select id="team" style="width:auto;height:28px;font-size:13px;padding:3px 8px"><option value="">All teams</option></select>
     <input type="search" id="search" placeholder="Search players">
     <button type="button" id="resetProj" title="Put every Proj back to ours">Reset Proj</button>
@@ -711,6 +712,12 @@ function adjustField() {
 }
 function value(r) { return proj(r) / (r.salary / 1000); }
 function usable(r) { return r.status !== "Out" && !state.excl[r.id] && !r.deepOut; }
+/* Sit risk (2026-11-21, the operator's approval of step B, analysis/cbb/dk/dnp_2026-11-21.md): the card's p_play, his
+   chance to play from what's known before lock (scripts/dk_sit.py, refit nightly), with p_play_why. Display only: a tag
+   on a player in the draw's pool with no Q / D / Out status and p_play under SIT_P (dk_sit.FLAG_P); nothing moves. Each
+   flag at lock is logged nightly (analysis/cbb/dk/sit_log.csv) with whether he played. */
+var SIT_P = 0.70;
+function sitRisk(r) { return r.p_play != null && r.p_play < SIT_P && !r.status && !isDoubtful(r) && usable(r); }
 
 /* The slate the page opens on (2026-11-20): today's main slate, by the operator's day in Pacific time: among today's
    slates the one with the most games, locked or not, so after lock it still opens on tonight's main; on a tie, the
@@ -857,6 +864,7 @@ function renderPlayers() {
     if (view.qOnly && !isQ(r)) return false;
     if (view.pool === "in" && !(usable(r))) return false;
     if (view.pool === "out" && !(r.status !== "Out" ? (r.deepOut || state.excl[r.id]) : isDoubtful(r))) return false;
+    if (view.pool === "sit" && !sitRisk(r)) return false;
     return true;
   });
   $("qOnly").textContent = "Q (" + rows.filter(isQ).length + ")";
@@ -1000,7 +1008,8 @@ function playerTable(list, sortable, fs) {
     var keep = (isDoubtful(r) ? '<span class="tag d" title="Doubtful: out by default">D</span>' : "") +
       (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
         ' title="Questionable: projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : ' title="Questionable"') + '>Q</span>' : "") +
-      (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "");
+      (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "") +
+      (sitRisk(r) ? '<span class="tag sit" title="' + esc("Sit risk: " + Math.round(100 * r.p_play) + "% to play" + (r.p_play_why ? " \u2014 " + r.p_play_why : "") + ". Check news before lock.") + '">sit risk</span>' : "");
     var moreTxt = [], more = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
       (fragileMap()[r.id] ? '<span class="tag frag" title="' + esc("Fragile: " + fragileMap()[r.id].join("; ")) + '">fragile</span>' : "") +
       (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005 ? '<span class="tag" title="A teammate you ruled out: his minutes ' + (r.min || 0).toFixed(1) +

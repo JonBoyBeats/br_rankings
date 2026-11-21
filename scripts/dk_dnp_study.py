@@ -48,31 +48,15 @@ def lock_players(date, g):
 
 
 def features(rows):
-    """[(row, x vector, played)] for every player not Out, his chance's inputs at lock."""
+    """[(row, x vector, played)] for every player not Out, his chance's inputs at lock (dk_sit.features: the one
+    definition, shared with the nightly card's p_play since 2026-11-21)."""
+    import dk_sit
     d, g = rows[0]["date"], rows[0]["draft_group"]
     P, _ = lock_players(d, g)
-    team = {}
-    for r in rows:
-        team.setdefault(r["team"], []).append(r)
-    out = []
-    for t, rs in team.items():
-        live = sorted([r for r in rs if r.get("status") != "Out"], key=lambda r: -(num(r.get("min_proj")) or 0))
-        tg = max([(P.get(r["dk_id"]) or {}).get("gp") or 0 for r in rs] + [0])
-        touts = sum(1 for r in rs if r.get("status") == "Out" and (num(r.get("min_proj")) or num(r.get("min_avg")) or 0) >= 15)
-        dates = sorted({x[0] for r in rs for x in ((P.get(r["dk_id"]) or {}).get("last5") or []) if isinstance(x, list)})[-5:]
-        for k, r in enumerate(live):
-            p = P.get(r["dk_id"]) or {}
-            gp = p.get("gp") or 0
-            l5 = [x[0] for x in (p.get("last5") or []) if isinstance(x, list)]
-            known = 1.0 if dates else 0.0
-            miss5 = sum(1 for x in dates if x not in l5) if dates else 0
-            misslast = 1.0 if dates and dates[-1] not in l5 else 0.0
-            days = min(21, (dt.date.fromisoformat(d) - dt.date.fromisoformat(l5[-1])).days) if l5 else (21 if dates else 0)
-            x = {"const": 1.0, "logmin": math.log1p(num(r.get("min_proj")) or 0), "depth": min(k + 1, 12) / 12, "part": gp / tg if tg else 0.0,
-                 "gmiss": min(5, tg - gp) if tg else 0.0, "known": known, "miss5": miss5 / 5, "misslast": misslast, "days": days / 21,
-                 "q": 1.0 if r.get("status") == "Questionable" else 0.0, "thin": 1.0 if (r.get("src") != "box" or gp < 3) else 0.0, "touts": min(touts, 3) / 3}
-            out.append((r, [x[f] for f in FEATS], 1 if (num(r.get("min")) or 0) > 0 else 0))
-    return out
+    players = [{"id": r["dk_id"], "team": r["team"], "status": r.get("status") or "", "min_proj": num(r.get("min_proj")), "min_avg": num(r.get("min_avg")),
+                "gp": (P.get(r["dk_id"]) or {}).get("gp") or 0, "last5": (P.get(r["dk_id"]) or {}).get("last5") or [], "src": r.get("src")} for r in rows]
+    F, by = dk_sit.features(players, d), {r["dk_id"]: r for r in rows}
+    return [(by[i], x, 1 if (num(by[i].get("min")) or 0) > 0 else 0) for i, (x, _) in F.items()]
 
 
 def fit(X, y, lam=1.0):

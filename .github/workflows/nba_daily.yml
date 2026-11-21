@@ -94,6 +94,9 @@ jobs:
           # B3, the ownership watchlist: patterns in real vs projected ownership, status by rule (own_watch.json; the page notes confirmed ones)
           python3 scripts/dk_eval.py ownwatch --mirror ../br-adp-mirror || true
           python3 scripts/dk_eval.py misses || true
+          # sit risk: last night's graded slates into the training rows, the refit the pipeline's p_play reads, and the
+          # log of every flag at lock with whether he played (scripts/dk_sit.py)
+          python3 scripts/dk_sit.py nightly --mirror ../br-adp-mirror || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
       # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
