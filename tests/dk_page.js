@@ -1813,8 +1813,10 @@ function audit(name, L, o) {
         document.getElementById("entriesBox").parentNode.id === "s2out" && document.getElementById("cutStatus").nextElementSibling.id === "stepBank" && JSON.stringify(PF) === p &&
         document.getElementById("playersSec").parentNode.id === "playersHome", nb_pfNB));
   await pg.fill("#maxUse", "1");
-  // Quick lineup: one top-Proj lineup under the locks and excludes, in DK slot order; Another: the next best
+  // Quick lineup: one top-Proj lineup under the draw panel (rules, locks, excludes), in DK slot order; Another: the next best
   const ql = await pg.evaluate(async () => {
+    const PANEL = ["levW", "minSal", "maxTeam", "stackN", "maxOwn", "lowN"], pv = PANEL.map(id => document.getElementById(id).value), sb = document.getElementById("stackBoth").checked, R0 = state.rules;
+    PANEL.forEach(id => { document.getElementById(id).value = ""; }); document.getElementById("stackBoth").checked = false; state.rules = [];
     const L0 = state.lock, X0 = state.excl, wait = async () => { for (let t = 0; t < 200 && document.getElementById("quickRun").disabled; t++) await new Promise(r => setTimeout(r, 30)); };
     const live = rows.filter(r => usable(r) && proj(r) >= DKSim.MIN_PROJ).sort((a, b) => a.salary - b.salary);
     const lk = [live[Math.floor(live.length / 2)].id, live[Math.floor(live.length / 3)].id];
@@ -1829,11 +1831,29 @@ function audit(name, L, o) {
     const drop = a.ids.find(id => lk.indexOf(id) < 0); state.excl = { [drop]: true };
     document.getElementById("quickRun").click(); await wait();
     const c = QUICK[0], gone = QUICK.length === 1 && c.ids.indexOf(drop) < 0 && lk.every(id => c.ids.indexOf(id) >= 0);
-    state.lock = L0; state.excl = X0; QUICK = []; renderQuick();
-    return { n: a.ids.length, locked: lk.every(id => a.ids.indexOf(id) >= 0), rowsShown, slotsOk, sal, differs, notBetter, gone, hidden: document.getElementById("quickMore").hidden };
+    // the panel's rules apply: never these two unlocked players of the last lineup together; a Min salary
+    const pair = c.ids.filter(id => lk.indexOf(id) < 0).slice(0, 2);
+    state.rules = [{ type: "never", ids: pair, label: "never" }]; document.getElementById("minSal").value = "49500";
+    document.getElementById("quickRun").click(); await wait();
+    const d = QUICK[0], ruled = !!d && !pair.every(id => d.ids.indexOf(id) >= 0) && d.ids.reduce((t, id) => t + byId(id).salary, 0) >= 49500 && /1 rule, min \$49,500/.test(document.getElementById("quickBox").textContent);
+    // Quick sim: Lineups sim-night draws under the panel, each alone in the contest picked, best ROI first; tap a row for its lineup
+    state.rules = []; document.getElementById("minSal").value = ""; document.getElementById("quickN").value = "20";
+    const opts = document.getElementById("quickContest").options.length;
+    document.getElementById("quickSim").click(); await wait();
+    const q = QSIM, roiOrder = q && q.order.every((k, i) => i === 0 || q.v[q.order[i - 1]] >= q.v[k]);
+    const simRows = document.querySelectorAll("#quickBox table.qsim tbody tr").length, allLocked = q && q.L.every(L => lk.every(id => L.ids.indexOf(id) >= 0) && L.ids.indexOf(drop) < 0);
+    const second = document.querySelectorAll("#quickBox table.qsim tbody tr")[1]; if (second) second.click();
+    const tapped = q && QSIM.sel === q.order[1] && /Lineup #2/.test(document.getElementById("quickBox").textContent) && document.querySelectorAll("#quickBox table.quick:not(.qsim) tbody tr").length === 8;
+    const sim = { opts, simRows, roiOrder, allLocked, tapped, topA: q && q.tier[q.order[0]] === "A", distinct: q && new Set(q.L.map(L => L.ids.slice().sort().join())).size, contest: q && q.c.id };
+    state.lock = L0; state.excl = X0; state.rules = R0; PANEL.forEach((id, i) => { document.getElementById(id).value = pv[i]; }); document.getElementById("stackBoth").checked = sb;
+    QUICK = []; QSIM = null; renderQuick();
+    return { ruled, sim, n: a.ids.length, locked: lk.every(id => a.ids.indexOf(id) >= 0), rowsShown, slotsOk, sal, differs, notBetter, gone, hidden: document.getElementById("quickMore").hidden };
   });
   check("Quick lineup: 8 players with both locks, legal slots and salary, shown in a table; Another differs and is no better; an exclude takes effect; nothing kept after",
         ql.n === 8 && ql.locked && ql.rowsShown === 8 && ql.slotsOk && ql.sal <= 50000 && ql.differs && ql.notBetter && ql.gone && ql.hidden, JSON.stringify(ql));
+  check("Quick lineup follows the draw panel: a never rule and a Min salary hold, and the note lists them", ql.ruled, JSON.stringify(ql));
+  check("Quick sim: 20 distinct lineups under the locks and excludes, simmed in a contest, best ROI first with the top in tier A; a tap shows that lineup's card",
+        ql.sim.opts > 0 && ql.sim.simRows >= 10 && ql.sim.simRows === ql.sim.distinct && ql.sim.roiOrder && ql.sim.allLocked && ql.sim.topA && ql.sim.tapped, JSON.stringify(ql.sim));
   // the player list on a phone: scrolls sideways under a fixed L / X and name; Sal straight after the name
   await pg.setViewportSize({ width: 390, height: 844 });
   const mob = await pg.evaluate(async () => {
