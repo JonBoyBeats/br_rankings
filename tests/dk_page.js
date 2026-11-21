@@ -1817,7 +1817,7 @@ function audit(name, L, o) {
   const ql = await pg.evaluate(async () => {
     const PANEL = ["levW", "minSal", "maxTeam", "stackN", "maxOwn", "lowN"], pv = PANEL.map(id => document.getElementById(id).value), sb = document.getElementById("stackBoth").checked, R0 = state.rules;
     PANEL.forEach(id => { document.getElementById(id).value = ""; }); document.getElementById("stackBoth").checked = false; state.rules = [];
-    const L0 = state.lock, X0 = state.excl, wait = async () => { for (let t = 0; t < 200 && document.getElementById("quickRun").disabled; t++) await new Promise(r => setTimeout(r, 30)); };
+    const L0 = state.lock, X0 = state.excl, wait = async () => { for (let t = 0; t < 6000 && document.getElementById("quickRun").disabled; t++) await new Promise(r => setTimeout(r, 30)); };
     const live = rows.filter(r => usable(r) && proj(r) >= DKSim.MIN_PROJ).sort((a, b) => a.salary - b.salary);
     const lk = [live[Math.floor(live.length / 2)].id, live[Math.floor(live.length / 3)].id];
     state.lock = { [lk[0]]: true, [lk[1]]: true }; state.excl = {};
@@ -1844,7 +1844,7 @@ function audit(name, L, o) {
     const simRows = document.querySelectorAll("#quickBox table.qsim tbody tr").length, allLocked = q && q.L.every(L => lk.every(id => L.ids.indexOf(id) >= 0) && L.ids.indexOf(drop) < 0);
     const second = document.querySelectorAll("#quickBox table.qsim tbody tr")[1]; if (second) second.click();
     const tapped = q && QSIM.sel === q.order[1] && /Lineup #2/.test(document.getElementById("quickBox").textContent) && document.querySelectorAll("#quickBox table.quick:not(.qsim) tbody tr").length === 8;
-    const sim = { opts, simRows, roiOrder, allLocked, tapped, topA: q && q.tier[q.order[0]] === "A", distinct: q && new Set(q.L.map(L => L.ids.slice().sort().join())).size, contest: q && q.c.id };
+    const sim = { opts, simRows, roiOrder, allLocked, tapped, topA: q && q.tier[q.order[0]] === "A", distinct: q && new Set(q.L.map(L => L.ids.slice().sort().join())).size, contest: q && q.c.id, drawn: q && q.drawn, rounds: q && q.rounds, allN: q && q.allN, RN: q && q.RN, S: q && q.S };
     state.lock = L0; state.excl = X0; state.rules = R0; PANEL.forEach((id, i) => { document.getElementById(id).value = pv[i]; }); document.getElementById("stackBoth").checked = sb;
     QUICK = []; QSIM = null; renderQuick();
     return { ruled, sim, n: a.ids.length, locked: lk.every(id => a.ids.indexOf(id) >= 0), rowsShown, slotsOk, sal, differs, notBetter, gone, hidden: document.getElementById("quickMore").hidden };
@@ -1852,8 +1852,8 @@ function audit(name, L, o) {
   check("Quick lineup: 8 players with both locks, legal slots and salary, shown in a table; Another differs and is no better; an exclude takes effect; nothing kept after",
         ql.n === 8 && ql.locked && ql.rowsShown === 8 && ql.slotsOk && ql.sal <= 50000 && ql.differs && ql.notBetter && ql.gone && ql.hidden, JSON.stringify(ql));
   check("Quick lineup follows the draw panel: a never rule and a Min salary hold, and the note lists them", ql.ruled, JSON.stringify(ql));
-  check("Quick sim: 20 distinct lineups under the locks and excludes, simmed in a contest, best ROI first with the top in tier A; a tap shows that lineup's card",
-        ql.sim.opts > 0 && ql.sim.simRows >= 10 && ql.sim.simRows === ql.sim.distinct && ql.sim.roiOrder && ql.sim.allLocked && ql.sim.topA && ql.sim.tapped, JSON.stringify(ql.sim));
+  check("Quick sim: 200 drawn and cut in waves to 20 distinct lineups under the locks and excludes, best ROI first with the top in tier A, ROI over every round's nights; a tap shows that lineup's card",
+        ql.sim.opts > 0 && ql.sim.simRows === 20 && ql.sim.simRows === ql.sim.distinct && ql.sim.drawn > 100 && ql.sim.rounds >= 2 && ql.sim.allN === ql.sim.rounds * ql.sim.RN + ql.sim.S && ql.sim.roiOrder && ql.sim.allLocked && ql.sim.topA && ql.sim.tapped, JSON.stringify(ql.sim));
   // the player list on a phone: scrolls sideways under a fixed L / X and name; Sal straight after the name
   await pg.setViewportSize({ width: 390, height: 844 });
   const mob = await pg.evaluate(async () => {

@@ -312,8 +312,8 @@
   </div>
   <div class="opts" id="quickBar" style="padding:2px 0"><button type="button" id="quickRun" title="One lineup, the highest total Proj under the draw panel as it stands: your rules, stack, Min salary, Leverage, ownership limits, locks (L) and excludes (X); Outs, the deep bench and punts left out, as in a draw. No bank or sim">Quick lineup</button>
       <button type="button" id="quickMore" hidden title="The next best lineup: differs from each one shown by at least one player">Another</button>
-      <button type="button" id="quickSim" title="Draws this many lineups under the same panel (each the best for its own simulated night, as Draw &amp; bank does), sims each alone in the contest picked and ranks them by ROI. Nothing is banked">Quick sim</button>
-      <input class="num" id="quickN" type="number" min="2" max="200" step="10" value="20" aria-label="Lineups to sim" title="Lineups to draw and sim" style="width:56px">
+      <button type="button" id="quickSim" title="Draws 10x this many lineups under the same panel (each the best for its own simulated night, as Draw &amp; bank does), cuts them in waves on fresh nights as the cut does (25% a round) down to this many, and ranks those by ROI over every night they went through. Nothing is banked">Quick sim</button>
+      <input class="num" id="quickN" type="number" min="2" max="200" step="10" value="20" aria-label="Lineups to keep" title="Lineups to keep (10x as many are drawn and cut down to this)" style="width:56px">
       <select id="quickContest" aria-label="Contest to sim" style="width:auto;max-width:220px"></select></div>
   <div id="quickBox"></div>
 
@@ -2905,10 +2905,14 @@ $("reload").addEventListener("click", load);
    optimizer with no noise under the draw panel as it stands (rules, stack, Min salary, Leverage, ownership limits,
    locks and excludes; share rules, caps and Min% / Max% are portfolio settings, left out), the pool a draw uses.
    Another: the next best, differing from each shown by at least one player.
-   Quick sim (2026-11-21, the operator's pick): Lineups sim-night draws under the same panel (each the best for its
-   own simulated night, as Draw & bank draws), each simmed alone in the contest picked, on the slate's nights against
-   the simulated field: ROI, top 1% and cash rates, best ROI first, tiered by the sim's own noise (A: within the noise
-   of the best). Tap a row for its lineup. Nothing is banked or saved; a slate change clears both. */
+   Quick sim (2026-11-21, the operator's pick): QSIM_X x Lineups sim-night draws under the same panel (each the best
+   for its own simulated night, as Draw & bank draws), cut in waves as the cut does (DKSim.cutPool, by merit): each round
+   sims the survivors alone in the contest picked over fresh nights (the cut panel's Nights a round) and drops the
+   bottom QSIM_CUT, skipping 7-of-8 near-copies, down to Lineups. Then one more sim on the slate's own nights for the
+   top 1% and cash rates and the noise. ROI: each survivor's mean over every night it went through (the waves and the
+   last sim); tiers A / B / C by that mean's noise (the last sim's odd-even spread, scaled to all its nights). Tap a row
+   for its lineup. Nothing is banked or saved; a slate change clears both. */
+var QSIM_X = 10, QSIM_CUT = 0.25;
 var QUICK = [], QSIM = null;
 function quickOpts() { return Object.assign(drawRules(), { maxExpo: 1, minUnique: 1, noCaps: true }); }
 function quickRulesText() {
@@ -2946,13 +2950,24 @@ async function quickSim() {
   quickBusy(true);
   try {
     var cx = ctx(); cx.progress = function (msg) { $("quickBox").innerHTML = '<div class="note">' + esc(msg) + "</div>"; return tick(); };
-    var res = await DKSim.pool(cx, quickOpts(), n);
+    var res = await DKSim.pool(cx, quickOpts(), QSIM_X * n);
     if (!res.lineups.length) { $("quickBox").innerHTML = '<div class="note bad">No lineup: ' + esc(res.why || "none fit the rules") + ".</div>"; return; }
-    $("quickBox").innerHTML = '<div class="note">Simming ' + res.lineups.length + " lineups over " + S.toLocaleString() + " nights…</div>"; await tick();
-    var L = res.lineups, sim = DKSim.simulate(nightsCtx(c), L, F.field, fieldDoc.z, c, 1, S), st = DKSim.aloneStats(sim, c), fee = c.entry_fee || 0;
-    var v = L.map(function (_, k) { return (st.odd[k] + st.even[k]) / 2; }), tr = DKSim.tiers(v, Array.from(st.odd), Array.from(st.even));
-    var order = L.map(function (_, k) { return k; }).sort(function (a, b) { return v[b] - v[a]; });
-    QSIM = { c: c, S: S, L: L, v: v, fee: fee, st: st, tier: tr.tier, order: order, sel: order[0], why: res.lineups.length < n ? res.why : "" };
+    var drawn = res.lineups, RN = +$("cutNights").value || 2000;
+    var cut = await DKSim.cutPool(ctx(), drawn, [{ contest: c, n: 1 }], F.field, fieldDoc.z, Math.min(n, drawn.length), QSIM_CUT, RN, function (r) {
+      $("quickBox").innerHTML = '<div class="note">Cutting ' + drawn.length + " lineups in waves: round " + r.round + ", " + r.survivors + " left…</div>"; return tick();
+    }, null, { mode: "merit" });
+    $("quickBox").innerHTML = '<div class="note">Last sim of ' + cut.keep.length + " over " + S.toLocaleString() + " nights…</div>"; await tick();
+    var L = cut.keep.map(function (i) { return drawn[i]; }), sim = DKSim.simulate(nightsCtx(c), L, F.field, fieldDoc.z, c, 1, S), st = DKSim.aloneStats(sim, c), fee = c.entry_fee || 0;
+    // each survivor's mean over every night it went through; the noise of that mean from the last sim's halves
+    var seen = cut.keep.map(function (i) { return cut.nights[i]; });
+    var v = L.map(function (_, k) { return (cut.est(cut.keep[k])[0] * seen[k] + S * (st.odd[k] + st.even[k]) / 2) / (seen[k] + S); });
+    var d = L.map(function (_, k) { return st.odd[k] - st.even[k]; }), dm = d.reduce(function (t, x) { return t + x; }, 0) / d.length;
+    var sd = Math.sqrt(d.reduce(function (t, x) { return t + (x - dm) * (x - dm); }, 0) / Math.max(1, d.length - 1)), allN = Math.min.apply(null, seen) + S;
+    var sigma = sd / 2 * Math.sqrt(S / allN), gap = 2 * Math.SQRT2 * sigma;
+    var order = L.map(function (_, k) { return k; }).sort(function (a, b) { return v[b] - v[a]; }), tier = [], t = 0, top = v[order[0]];
+    order.forEach(function (k) { if (t < 2 && v[k] < top - gap) { t++; top = v[k]; } tier[k] = "ABC"[t]; });
+    QSIM = { c: c, S: S, L: L, v: v, fee: fee, st: st, tier: tier, order: order, sel: order[0], drawn: drawn.length, rounds: cut.rounds.length, RN: RN, allN: allN,
+             why: drawn.length < QSIM_X * n ? res.why : "" };
     QUICK = [];
   } finally { quickBusy(false); }
   renderQuick();
@@ -2987,8 +3002,9 @@ function renderQuick() {
         '</td><td class="r">' + pct1(q.st.cash[k]) + '</td><td class="r">' + p.toFixed(1) + '</td><td class="r">' + Math.round(o) + "%</td></tr>";
     }).join("");
     var nA = q.tier.filter(function (t) { return t === "A"; }).length;
-    $("quickBox").innerHTML = '<div class="note" style="margin:0">' + q.L.length + " lineups (" + quickRulesText() + "), each alone in " + esc(q.c.name || q.c.id) + " over " + q.S.toLocaleString() +
-      " nights. Tier A: within the sim's noise of the best (" + nA + " here), so treat those as level. Tap a row for its lineup." + (q.why ? " " + esc(q.why) + "." : "") + "</div>" +
+    $("quickBox").innerHTML = '<div class="note" style="margin:0">' + q.drawn + " drawn (" + quickRulesText() + "), cut in " + q.rounds + " round" + (q.rounds === 1 ? "" : "s") + " of " + q.RN.toLocaleString() +
+      " fresh nights to these " + q.L.length + ", each alone in " + esc(q.c.name || q.c.id) + ". ROI: its mean over all " + q.allN.toLocaleString() + "+ nights it went through; top 1% and cash: the last " +
+      q.S.toLocaleString() + ". Tier A: within the noise of the best (" + nA + " here), so treat those as level. Tap a row for its lineup." + (q.why ? " " + esc(q.why) + "." : "") + "</div>" +
       '<table class="quick qsim"><thead><tr><th>#</th><th>Tier</th><th class="r">ROI</th><th class="r">Top 1%</th><th class="r">Cash</th><th class="r">Proj</th><th class="r">Own</th></tr></thead><tbody>' + rowsH + "</tbody></table>" +
       quickCard(q.L[q.sel], "Lineup #" + (q.order.indexOf(q.sel) + 1) + ": ROI " + roi(q.sel) + ", tier " + q.tier[q.sel]);
     return;
