@@ -1951,7 +1951,12 @@ async function runCut() {
     },
     BANK.lineups.map(function (L, i) { return lineupGroup(i); }), { mode: mode });
   CUT = { keep: res.keep, rounds: res.rounds, contests: cs.map(function (c) { return String(c.id); }),
-          settings: { keep: keep, pct: Math.round(pct * 100), nights: S, within: "idea", mode: mode }, bankN: BANK.lineups.length };
+          settings: { keep: keep, pct: Math.round(pct * 100), nights: S, within: "idea", mode: mode }, bankN: BANK.lineups.length,
+          // each kept lineup's cut value (its mean payout alone in each contest, CUT.contests' order) and the nights behind
+          // it, aligned with keep's first est.length (variants join keep's end later, with none; 2026-11-21: grades score
+          // what the cut saw, not a rebuild)
+          est: res.keep.map(function (i) { return res.est(i).map(function (x) { return Math.round(100 * x) / 100; }); }),
+          estNights: res.keep.map(function (i) { return res.nights[i]; }) };
   $("cutStatus").textContent = "Scoring the kept lineups for the idea scoreboard…"; await tick();
   CUT.board = ideaBoard(cs, ns, +$("nSims").value || 3000);
   $("cutProgress").hidden = true;
@@ -2001,7 +2006,8 @@ function ideaBoard(cs, ns, S) {
   var topIdea = Object.keys(aBy).sort(function (a, b) { return aBy[b] - aBy[a]; })[0];
   var tierA = { n: aIx.length, ideas: Object.keys(aBy).length, top: topIdea || null, topShare: aIx.length ? aBy[topIdea] / aIx.length : 0, sigma: tr.sigma, by: aBy };
   tierA.flag = tierA.n <= 2 || tierA.ideas === 1;
-  return { rows: rows, nights: S, contests: cs.map(function (c) { return c.name; }), tierA: tierA,
+  // tiers: each kept lineup's tier letter, aligned with the cut's keep (2026-11-21, saved with the build for grading)
+  return { rows: rows, nights: S, contests: cs.map(function (c) { return c.name; }), tierA: tierA, tiers: tr.tier.join(""),
            values: Array.from(ret, function (x) { return Math.round(100 * x / Math.max(1, w)) / 100; }) };
 }
 /* The Cut step (2026-11-20, the operator's layout part 2): the entries file's summary, one bank line (its red idea
@@ -2195,6 +2201,10 @@ async function saveBank() {
               pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, nights_seed: nightsSeed(), rule_log: BANK.ruleLog || [], idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate,
               scan: SCAN && String(SCAN.draft_group) === String(slate.draft_group_id) ? SCAN : null,
               outs: Object.assign({}, state.outs), ins: Object.assign({}, state.ins),   // Mark out / Play him: the night's news tag (dk_eval night_tag)
+              // the operator's state at save (2026-11-21): what the page used, so a grade scores exactly that
+              operator: { proj: Object.assign({}, state.proj), lock: Object.assign({}, state.lock), excl: Object.assign({}, state.excl),
+                          floor: Object.assign({}, state.floor), cap: Object.assign({}, state.cap), deep_in: Object.assign({}, state.deepIn),
+                          rules: state.rules || [], spread: spreadOf(state.rules), lock_fill: state.lockFill || "draws" },
               // for Load build (2026-11-20): each lineup's slots, the whole cut (rounds, values, variants) and the entry
               // counts per contest (never the entries file: its entry IDs stay out of a build)
               slots: BANK.lineups.map(function (L) { return L.slots; }), cut_state: CUT && CUT.keep ? CUT : null, entries_n: entriesN() };

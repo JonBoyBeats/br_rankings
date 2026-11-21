@@ -1185,6 +1185,13 @@ function audit(name, L, o) {
         JSON.stringify(bs.final) === JSON.stringify(cut.keep) && bs.portfolios["197791874"].length === pf2.length && /^dk_bank_/.test(dl6.suggestedFilename()) &&
         bs.rule_set.length === 0 && bs.tag_settings["3-stack + bring-back"].stackN === 3 && bs.cut && bs.cut.within === "idea" && bs.cut.mode === "merit" && bs.cut.keep === 100 && bs.pick && bs.pick.maxExpo === 60 && bs.pick.maxCore === 15,
         dl6.suggestedFilename() + " " + JSON.stringify(bs.cut));
+  // 2026-11-21: each kept lineup's tier and cut value with the board's sigma, and the operator's state at save
+  const est = bs.cut_state && bs.cut_state.est, estN = bs.cut_state && bs.cut_state.estNights, opSt = bs.operator || {};
+  check("Save build: each kept lineup's tier (aligned with final) and cut value per contest with its nights; the board's sigma; the operator's state (proj, locks, excludes, Min% / Max%, rules, spread, lock mode) and the gate",
+        bs.idea_board && typeof bs.idea_board.tiers === "string" && bs.idea_board.tiers.length === bs.final.length && /^[ABC]+$/.test(bs.idea_board.tiers) && bs.idea_board.tierA && bs.idea_board.tierA.sigma != null &&
+        Array.isArray(est) && est.length === bs.final.length && est.every(e => Array.isArray(e) && e.length === bs.cut_state.contests.length) && estN.length === est.length && estN.every(x => x > 0) &&
+        ["proj", "lock", "excl", "floor", "cap", "deep_in", "rules", "spread", "lock_fill"].every(k => k in opSt) && "outs" in bs && "ins" in bs && "gate" in bs,
+        JSON.stringify({ tiers: bs.idea_board && bs.idea_board.tiers && bs.idea_board.tiers.length, final: bs.final.length, est: est && est.length, op: Object.keys(opSt) }));
   // Load build: Save build carries what it needs (slots, the whole cut, entry counts; no entries file); save -> clear ->
   // load gives the same bank, cut and picks; another draft group is refused
   check("Save build: slots, the whole cut and the entry counts for Load build, no entry IDs",
