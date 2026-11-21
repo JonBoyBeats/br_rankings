@@ -1834,6 +1834,20 @@ function audit(name, L, o) {
   });
   check("Quick lineup: 8 players with both locks, legal slots and salary, shown in a table; Another differs and is no better; an exclude takes effect; nothing kept after",
         ql.n === 8 && ql.locked && ql.rowsShown === 8 && ql.slotsOk && ql.sal <= 50000 && ql.differs && ql.notBetter && ql.gone && ql.hidden, JSON.stringify(ql));
+  // the player list on a phone: scrolls sideways under a fixed L / X and name; Sal straight after the name
+  await pg.setViewportSize({ width: 390, height: 844 });
+  const mob = await pg.evaluate(async () => {
+    renderPlayers(); const p = document.getElementById("players"), row = p.querySelector(".row");
+    const at = sel => row.querySelector(sel).getBoundingClientRect().left;
+    const who0 = at(".who"), lx0 = at(".lx"), third = [...row.children].sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left)[2].textContent;
+    p.scrollLeft = 300; await new Promise(r => requestAnimationFrame(r));
+    const r = { scrolls: p.scrollWidth > p.clientWidth + 100, page: document.documentElement.scrollWidth <= 390, nameW: row.querySelector(".who").getBoundingClientRect().width,
+                whoMoved: Math.abs(at(".who") - who0), lxMoved: Math.abs(at(".lx") - lx0), third, moved: p.scrollLeft };
+    p.scrollLeft = 0; return r;
+  });
+  await pg.setViewportSize({ width: 1100, height: 900 });
+  check("phone: the player list scrolls sideways, L / X and the name stay put, the name 150px, Sal next, the page itself no wider",
+        mob.scrolls && mob.page && mob.nameW >= 149 && mob.whoMoved <= 10 && mob.lxMoved <= 5 && /k$/.test(mob.third.trim()) && mob.moved > 0, JSON.stringify(mob));
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
   passes.forEach(p => console.log("PASS " + p));

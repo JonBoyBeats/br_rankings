@@ -262,9 +262,22 @@
   table.quick .qg { font-size: 11px; white-space: nowrap; } table.quick td { vertical-align: top; }
   table.quick th { font-size: 11px; color: var(--muted); font-weight: 500; } table.quick tfoot td { font-weight: 600; border-top: 1px solid var(--line, #2a3140); }
   @media (max-width: 620px) {
-    .head, .row, #players.noscan .head, #players.noscan .row { grid-template-columns: 90px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
+    /* the player list on a phone (2026-11-21, the operator): every column, scrolling left and right under a fixed
+       L / X and a 150px name; Sal, Proj, Val and Own straight after the name, Pos / Team / Opp moved to the end */
+    #players { overflow-x: auto; }
+    #players .head, #players .row { width: max-content; min-width: 100%; }
+    #players .col-pos, #players .col-team, #players .col-opp { order: 1; }
+    #players .head, #players .row { grid-template-columns: 56px 150px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
+    #players.noscan .head, #players.noscan .row { grid-template-columns: 56px 150px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px 30px 44px 48px; }
+    #players.fillcols .head, #players.fillcols .row { grid-template-columns: 56px 150px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px 44px; }
+    #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 56px 150px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px 44px; }
+    #players .row > .lx, #players .row > .who, #players .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
+    #players .row > .lx, #players .head > :nth-child(1) { left: 0; }
+    #players .row > .who, #players .head > :nth-child(2) { left: 56px; }
+    #players .row.locked > .lx, #players .row.locked > .who { background: linear-gradient(rgba(77, 196, 141, .12), rgba(77, 196, 141, .12)), var(--bg); }
+    #players .row.bankgap-in > .lx { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out > .lx { box-shadow: inset 3px 0 var(--bad); }
+    .lx { flex-wrap: wrap; }
     .lx button.setadd { display: none; }
-    .col-min, .col-mpg, .col-obpr, .col-bank, .col-avg, .col-max, .col-pos, .col-team, .col-opp, .col-scan { display: none; }
     table.bp td.nm { min-width: 140px; font-size: 11px; }
     table.bp td, table.bp th { padding: 3px 3px; }
     .name { font-size: 13px; }
