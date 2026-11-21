@@ -1813,6 +1813,27 @@ function audit(name, L, o) {
         document.getElementById("entriesBox").parentNode.id === "s2out" && document.getElementById("cutStatus").nextElementSibling.id === "stepBank" && JSON.stringify(PF) === p &&
         document.getElementById("playersSec").parentNode.id === "playersHome", nb_pfNB));
   await pg.fill("#maxUse", "1");
+  // Quick lineup: one top-Proj lineup under the locks and excludes, in DK slot order; Another: the next best
+  const ql = await pg.evaluate(async () => {
+    const L0 = state.lock, X0 = state.excl, wait = async () => { for (let t = 0; t < 200 && document.getElementById("quickRun").disabled; t++) await new Promise(r => setTimeout(r, 30)); };
+    const live = rows.filter(r => usable(r) && proj(r) >= DKSim.MIN_PROJ).sort((a, b) => a.salary - b.salary);
+    const lk = [live[Math.floor(live.length / 2)].id, live[Math.floor(live.length / 3)].id];
+    state.lock = { [lk[0]]: true, [lk[1]]: true }; state.excl = {};
+    document.getElementById("quickRun").click(); await wait();
+    const a = QUICK[0], sum = L => L.ids.reduce((t, id) => t + proj(byId(id)), 0);
+    const rowsShown = document.querySelectorAll("#quickBox table.quick tbody tr").length;
+    const slotsOk = a.slots.every((id, i) => i < 3 ? DKSim.isG(byId(id)) : i < 6 ? DKSim.isF(byId(id)) : true);
+    const sal = a.ids.reduce((t, id) => t + byId(id).salary, 0);
+    document.getElementById("quickMore").click(); await wait();
+    const b2 = QUICK[1], differs = b2 && b2.ids.some(id => a.ids.indexOf(id) < 0), notBetter = b2 && sum(b2) <= sum(a) + 1e-6;
+    const drop = a.ids.find(id => lk.indexOf(id) < 0); state.excl = { [drop]: true };
+    document.getElementById("quickRun").click(); await wait();
+    const c = QUICK[0], gone = QUICK.length === 1 && c.ids.indexOf(drop) < 0 && lk.every(id => c.ids.indexOf(id) >= 0);
+    state.lock = L0; state.excl = X0; QUICK = []; renderQuick();
+    return { n: a.ids.length, locked: lk.every(id => a.ids.indexOf(id) >= 0), rowsShown, slotsOk, sal, differs, notBetter, gone, hidden: document.getElementById("quickMore").hidden };
+  });
+  check("Quick lineup: 8 players with both locks, legal slots and salary, shown in a table; Another differs and is no better; an exclude takes effect; nothing kept after",
+        ql.n === 8 && ql.locked && ql.rowsShown === 8 && ql.slotsOk && ql.sal <= 50000 && ql.differs && ql.notBetter && ql.gone && ql.hidden, JSON.stringify(ql));
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
   passes.forEach(p => console.log("PASS " + p));

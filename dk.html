@@ -257,6 +257,10 @@
   table.bp button { height: 24px; padding: 0 8px; font-size: 12px; }
   table.contests td.m, table.contests th.r { text-align: right; }
   .empty { color: var(--muted); padding: 24px 4px; }
+  table.quick { border-collapse: collapse; font-size: 13px; margin: 2px 0 6px; }
+  table.quick td, table.quick th { padding: 3px 8px; text-align: left; } table.quick .r { text-align: right; }
+  table.quick .qg { font-size: 11px; white-space: nowrap; } table.quick td { vertical-align: top; }
+  table.quick th { font-size: 11px; color: var(--muted); font-weight: 500; } table.quick tfoot td { font-weight: 600; border-top: 1px solid var(--line, #2a3140); }
   @media (max-width: 620px) {
     .head, .row, #players.noscan .head, #players.noscan .row { grid-template-columns: 90px minmax(0, 1fr) 46px 56px 42px 40px; gap: 6px; }
     .lx button.setadd { display: none; }
@@ -292,6 +296,9 @@
     <div class="status" id="status">Loading…</div>
     <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="true">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button></div>
   </div>
+  <div class="opts" id="quickBar" style="padding:2px 0"><button type="button" id="quickRun" title="One lineup, the highest total Proj under your locks (L) and excludes (X); Outs, the deep bench and punts left out, as in a draw. No bank, rules or sim">Quick lineup</button>
+      <button type="button" id="quickMore" hidden title="The next best lineup: differs from each one shown by at least one player">Another</button></div>
+  <div id="quickBox"></div>
 
   <div class="status" id="cutStatus"></div>
   <section class="step" id="stepBank" data-step="bank">
@@ -778,7 +785,7 @@ function pick(keepMem) {
   $("statusInfo").innerHTML = esc(rows.length + " players · projections " + gen.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
     (slate.locked ? " · locked: the rows as they stood before the first game" : " · first game " + new Date(slate.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }))) +
     '<br>' + gateText() + qText();
-  BP = null; $("bpTableWrap").hidden = true; $("bpSide").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpGroups").innerHTML = "";
+  QUICK = []; renderQuick(); BP = null; $("bpTableWrap").hidden = true; $("bpSide").hidden = true; $("bpSummary").innerHTML = ""; $("bpStatus").textContent = ""; $("bpGroups").innerHTML = "";
   ["bpAuto", "bpClear"].forEach(function (id) { $(id).disabled = true; });
   ruleCounts = {}; editing = -1;
   $("lockFill").value = state.lockFill === "fill" ? "fill" : "draws"; fillSetText();
@@ -2877,6 +2884,40 @@ $("slate").addEventListener("change", function (e) {       // a hand pick holds 
   pick(e);
 });
 $("reload").addEventListener("click", load);
+/* Quick lineup (2026-11-21, the operator: a short day, lock a couple and take one lineup to enter by hand). The plain
+   optimizer: the highest total Proj under the locks and excludes (DKSim.solve with no noise, caps, rules, leverage or
+   sim), the pool as a draw has it. Another: the next best, differing from each shown by at least one player. Nothing
+   is banked or saved. */
+var QUICK = [];
+async function quickRun(more) {
+  if (!slate) return;
+  var o = { n: (more ? QUICK.length : 0) + 1, maxExpo: 1, minUnique: 1, rand: 0, minSal: 0, maxTeam: 8, conds: [], noCaps: true, label: "Optimizing" };
+  $("quickRun").disabled = $("quickMore").disabled = true;
+  try {
+    var res = await DKSim.solve(ctx(), o);
+    if (res.lineups.length < o.n) { $("quickBox").innerHTML = '<div class="note bad">No lineup: ' + esc(res.why || "the solver found none") + ".</div>"; return; }
+    QUICK = res.lineups;
+  } finally { $("quickRun").disabled = $("quickMore").disabled = false; }
+  renderQuick();
+}
+function renderQuick() {
+  $("quickMore").hidden = !QUICK.length;
+  if (!QUICK.length) { $("quickBox").innerHTML = ""; return; }
+  var L = QUICK[QUICK.length - 1], ps = L.slots.map(byId), sal = 0, pts = 0, ow = 0;
+  var nl = Object.keys(state.lock || {}).length, nx = Object.keys(state.excl || {}).length;
+  var body = ps.map(function (r, i) {
+    sal += r.salary; pts += proj(r); ow += own(r);
+    return "<tr><td>" + DKSim.SLOTS[i] + "</td><td>" + (state.lock[r.id] ? "<b>" + esc(r.name) + "</b> (L)" : esc(r.name)) + '<div class="mut qg">' + esc(r.team) + (r.home ? " v " : " @ ") + esc(r.opp || "?") +
+      (r.game_start ? " " + new Date(r.game_start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "") +
+      '</div></td><td class="r">$' + r.salary.toLocaleString() + '</td><td class="r">' + proj(r).toFixed(1) + '</td><td class="r">' + Math.round(own(r)) + "%</td></tr>";
+  }).join("");
+  $("quickBox").innerHTML = '<div class="note" style="margin:0">' + (QUICK.length > 1 ? "Lineup " + QUICK.length + " (next best)" : "Top projection") +
+    " · " + nl + " lock" + (nl === 1 ? "" : "s") + ", " + nx + " exclude" + (nx === 1 ? "" : "s") + "</div>" +
+    '<table class="quick"><thead><tr><th>Slot</th><th>Player</th><th class="r">Sal</th><th class="r">Proj</th><th class="r">Own</th></tr></thead><tbody>' + body +
+    '</tbody><tfoot><tr><td></td><td>Total</td><td class="r">$' + sal.toLocaleString() + '</td><td class="r">' + pts.toFixed(1) + '</td><td class="r">' + Math.round(ow) + "%</td></tr></tfoot></table>";
+}
+$("quickRun").addEventListener("click", function () { quickRun(false); });
+$("quickMore").addEventListener("click", function () { quickRun(true); });
 /* Each player's Min% / Max% (the player table; listed in the Baseline block) over the draw's own lineups. After the
    draw: lineups over a Max are dropped (those carrying no Min player that needs them first); a Min player short gets
    lineups drawn under the same rules with him in, in place of lineups no Min player needs; dropped places are drawn
