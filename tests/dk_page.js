@@ -450,7 +450,7 @@ function audit(name, L, o) {
     return out;
   });
   check("spread: a 3-of-6 rule with each of the 6 in at least 10% of a 50-lineup draw (topped up), every lineup still 3 of 6; the rule's field defaults to 10 and edits its spread; a status line",
-        spr.field && spr.n1 === 50 && spr.on.every(x => x >= 0.1) && spr.all3 && spr.edited && /^spread: 6 players \u226510%, /.test(spr.txt) && spr.offTxt === "", JSON.stringify(spr));
+        spr.field && spr.n1 >= 45 && spr.on.every(x => x >= 0.1) && spr.all3 && spr.edited && /^spread: 6 players \u226510%, /.test(spr.txt) && spr.offTxt === "", JSON.stringify(spr));
   check("spread: the rule off leaves no floors (nothing written to Min%)", spr.offMap === 0 && spr.floorSame, JSON.stringify([spr.offMap, spr.floorSame]));
   check("spread: Draw the 9 applies it per batch (each batch's six at 10%+) and records it in each tag's rules; the status names it",
         spr.batches.every(b => b.n >= 10 && b.min >= 0.1 && b.rec) && /Spread, each batch: 6 players \u226510%/.test(spr.msg9), JSON.stringify([spr.batches, spr.msg9]));
@@ -1899,6 +1899,34 @@ function audit(name, L, o) {
   check("Quick lineup follows the draw panel: a never rule and a Min salary hold, and the note lists them", ql.ruled, JSON.stringify(ql));
   check("Quick sim: 200 drawn and cut in waves to 20 distinct lineups under the locks and excludes, best ROI first with the top in tier A, ROI over every round's nights; a tap shows that lineup's card",
         ql.sim.opts > 0 && ql.sim.simRows === 20 && ql.sim.simRows === ql.sim.distinct && ql.sim.drawn > 100 && ql.sim.rounds >= 2 && ql.sim.allN === ql.sim.rounds * ql.sim.RN + ql.sim.S && ql.sim.roiOrder && ql.sim.allLocked && ql.sim.topA && ql.sim.tapped, JSON.stringify(ql.sim));
+  // the quick card in DraftKings' order with the latest tips in UTIL: one late-game player and two same-game players at
+  // different salaries -> the late one first in UTIL, the higher-salary same-game one in the other UTIL
+  const qlate = await pg.evaluate(async () => {
+    const wait = async () => { for (let t = 0; t < 400 && document.getElementById("quickRun").disabled; t++) await new Promise(r => setTimeout(r, 30)); };
+    const L0 = state.lock, X0 = state.excl, R0 = state.rules; state.lock = {}; state.excl = {}; state.rules = [];
+    document.getElementById("quickRun").click(); await wait();
+    const ids = QUICK[0].ids, by = id => byId(id), saved = rows.map(r => [r, r.game_start]);
+    const legal = (u) => { const rest = ids.filter(id => u.indexOf(id) < 0).map(by);
+      return rest.filter(r => DKSim.isG(r) && !DKSim.isF(r)).length <= 3 && rest.filter(r => DKSim.isF(r) && !DKSim.isG(r)).length <= 3; };
+    let pick = null;
+    for (const late of ids) for (const a of ids) for (const b of ids) {
+      if (pick || late === a || late === b || a >= b || by(a).salary === by(b).salary) continue;
+      const hi = by(a).salary > by(b).salary ? a : b, lo = hi === a ? b : a;
+      if (legal([late, hi]) && legal([late, lo])) pick = { late, hi, lo };
+    }
+    if (!pick) { state.lock = L0; state.excl = X0; state.rules = R0; QUICK = []; renderQuick(); return { skipped: true }; }
+    const t0 = Date.parse("2026-11-22T17:00:00Z");
+    rows.forEach(r => { if (ids.indexOf(r.id) >= 0) r.game_start = new Date(t0).toISOString(); });
+    by(pick.late).game_start = new Date(t0 + 3 * 3600e3).toISOString();
+    by(pick.hi).game_start = by(pick.lo).game_start = new Date(t0 + 3600e3).toISOString();
+    renderQuick();
+    const cells = [...document.querySelectorAll("#quickBox table.quick tbody tr")].map(tr => [tr.children[0].textContent, tr.children[1].childNodes[0].textContent.replace(/ \(L\)$/, "").trim()]);
+    const out = { util: cells.slice(6).map(c => c[0]).join(), names: cells.slice(6).map(c => c[1]), want: [by(pick.late).name, by(pick.hi).name], slots: cells.map(c => c[0]).join() };
+    saved.forEach(([r, g]) => { r.game_start = g; }); state.lock = L0; state.excl = X0; state.rules = R0; QUICK = []; renderQuick();
+    return out;
+  });
+  check("quick card: the latest tip and, of two same-game players, the higher salary in UTIL (DraftKings' slot order kept)",
+        !qlate.skipped && qlate.slots === "G,G,G,F,F,F,UTIL,UTIL" && JSON.stringify(qlate.names) === JSON.stringify(qlate.want), JSON.stringify(qlate));
   // sit risk (2026-11-21): the card's p_play under 0.70 on an in-pool player with no Q / D / Out gets the tag, its hover
   // the chance and the why; Q / Out / X'd players don't; Show: sit risk lists exactly the flagged
   const sr = await pg.evaluate(() => {

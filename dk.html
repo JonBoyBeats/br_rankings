@@ -3031,7 +3031,9 @@ async function quickSim() {
 }
 function quickBusy(on) { ["quickRun", "quickMore", "quickSim"].forEach(function (id) { $(id).disabled = on; }); }
 function quickCard(L, label) {
-  var ps = L.slots.map(byId), sal = 0, pts = 0, ow = 0;
+  // DraftKings' slot order with the latest tips in UTIL (DKSim.lateSlots, as the export and the builder show it; 2026-11-21:
+  // the operator enters these by hand, so an early player in UTIL would cost the late swap)
+  var ps = DKSim.lateSlots(ctx(), L.ids).map(byId), sal = 0, pts = 0, ow = 0;
   var body = ps.map(function (r, i) {
     sal += r.salary; pts += proj(r); ow += own(r);
     return "<tr><td>" + DKSim.SLOTS[i] + "</td><td>" + (state.lock[r.id] ? "<b>" + esc(r.name) + "</b> (L)" : esc(r.name)) + '<div class="mut qg">' + esc(r.team) + (r.home ? " v " : " @ ") + esc(r.opp || "?") +
