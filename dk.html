@@ -268,17 +268,21 @@
     #players { overflow-x: auto; }
     #players .head, #players .row { width: max-content; min-width: 100%; }
     #players .col-pos, #players .col-team, #players .col-opp { order: 1; }
-    #players .head, #players .row { grid-template-columns: 56px 150px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
-    #players.noscan .head, #players.noscan .row { grid-template-columns: 56px 150px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px 30px 44px 48px; }
-    #players.fillcols .head, #players.fillcols .row { grid-template-columns: 56px 150px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px 44px; }
-    #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 56px 150px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px 44px; }
+    #players .head, #players .row { grid-template-columns: 88px 150px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
+    #players.noscan .head, #players.noscan .row { grid-template-columns: 88px 150px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px 30px 44px 48px; }
+    #players.fillcols .head, #players.fillcols .row { grid-template-columns: 88px 150px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px 44px; }
+    #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 88px 150px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px 44px; }
     #players .row > .lx, #players .row > .who, #players .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
     #players .row > .lx, #players .head > :nth-child(1) { left: 0; }
-    #players .row > .who, #players .head > :nth-child(2) { left: 56px; }
+    #players .row > .who, #players .head > :nth-child(2) { left: 88px; }
     #players .row.locked > .lx, #players .row.locked > .who { background: linear-gradient(rgba(77, 196, 141, .12), rgba(77, 196, 141, .12)), var(--bg); }
     #players .row.bankgap-in > .lx { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out > .lx { box-shadow: inset 3px 0 var(--bad); }
-    .lx { flex-wrap: wrap; }
-    .lx button.setadd { display: none; }
+    .lx { flex-wrap: wrap; gap: 2px; }
+    /* +set on a phone (2026-11-21, the operator): in the pinned L / X group, always shown; the scan's + hidden */
+    .lx button { width: 24px; }
+    .row button.pbank { display: none; }
+    #setToast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 60; background: var(--surface, #151a23); color: var(--ink, #e8ecf2);
+                border: 1px solid var(--live); border-radius: 8px; padding: 8px 12px; font-size: 13px; max-width: calc(100vw - 32px); box-shadow: 0 4px 16px rgba(0,0,0,.4); }
     table.bp td.nm { min-width: 140px; font-size: 11px; }
     table.bp td, table.bp th { padding: 3px 3px; }
     .name { font-size: 13px; }
@@ -1499,6 +1503,14 @@ function loadEditor(rule) {
   Array.from($("rtList").options).forEach(function (o) { o.selected = listIds.indexOf(o.value) >= 0; });
   rtChips();
   showEditor();
+}
+// +set on a phone: the rule editor is off-screen, so a short note that it took and the set's size
+function setToast(id) {
+  if (!window.matchMedia || !window.matchMedia("(max-width: 620px)").matches) return;
+  var t = $("setToast"), r = byId(id), n = $("rtList").selectedOptions.length;
+  if (!t) { t = document.createElement("div"); t.id = "setToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = "Added " + (r ? r.name : id) + " to the set: " + n + " player" + (n === 1 ? "" : "s") + " (Rules, template 5)";
+  t.hidden = false; clearTimeout(setToast.timer); setToast.timer = setTimeout(function () { t.hidden = true; }, 2500);
 }
 // a player set into template 5 (the scan's focus set, the Players list's +set): keeps the chips already there
 function rtSet(ids, n) {
@@ -3552,7 +3564,7 @@ function rowClick(e) {
     bpRender(); return;
   }
   var sa = e.target.closest(".setadd");
-  if (sa) { rtSet([sa.closest(".row").dataset.id]); return; }
+  if (sa) { var sid = sa.closest(".row").dataset.id; rtSet([sid]); setToast(sid); return; }
   var pb = e.target.closest(".pbank");
   if (pb) {
     var pr = byId(pb.closest(".row").dataset.id);

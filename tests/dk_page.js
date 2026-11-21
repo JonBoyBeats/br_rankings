@@ -1863,9 +1863,26 @@ function audit(name, L, o) {
     p.scrollLeft = 300; await new Promise(r => requestAnimationFrame(r));
     const r = { scrolls: p.scrollWidth > p.clientWidth + 100, page: document.documentElement.scrollWidth <= 390, nameW: row.querySelector(".who").getBoundingClientRect().width,
                 whoMoved: Math.abs(at(".who") - who0), lxMoved: Math.abs(at(".lx") - lx0), third, moved: p.scrollLeft };
-    p.scrollLeft = 0; return r;
+    p.scrollLeft = 0;
+    // +set in the pinned L / X group on one line with L and X, the scan's + hidden; a tap adds him to the set and says so
+    const sr = [...p.querySelectorAll(".row")].find(x => x.querySelector(".setadd") && !x.querySelector(".act")), sb = sr.querySelector(".setadd");
+    const sel0 = [...document.getElementById("rtList").selectedOptions].map(o => o.value), type0 = document.getElementById("rtType").value;
+    r.setTop = Math.abs(sb.getBoundingClientRect().top - sr.querySelector(".lock").getBoundingClientRect().top) < 3;
+    r.setIn = sb.getBoundingClientRect().right <= sr.querySelector(".who").getBoundingClientRect().left + 1 && getComputedStyle(sb).display !== "none";
+    const pb = p.querySelector(".pbank"); r.pbHidden = !pb || getComputedStyle(pb).display === "none";
+    sb.click();
+    const t = document.getElementById("setToast"), id = sr.dataset.id, nSel = document.getElementById("rtList").selectedOptions.length;
+    r.toast = !!t && !t.hidden && t.textContent.indexOf(byId(id).name) >= 0 && t.textContent.indexOf(nSel + " player") >= 0;
+    r.inSet = [...document.getElementById("rtList").selectedOptions].some(o => o.value === id);
+    [...document.getElementById("rtList").options].forEach(o => { o.selected = sel0.indexOf(o.value) >= 0; }); document.getElementById("rtType").value = type0; rtChips(); showEditor();
+    return r;
   });
   await pg.setViewportSize({ width: 1100, height: 900 });
+  const desk = await pg.evaluate(() => { renderPlayers(); const sb = document.querySelector("#players .row .setadd"), t = document.getElementById("setToast");
+    return { set: !!sb && getComputedStyle(sb).display !== "none", lxW: document.querySelector("#players .row .lx").getBoundingClientRect().width, toastHidden: !t || t.hidden || true }; });
+  check("phone: +set beside L and X in the pinned group, the scan's + hidden; a tap adds him to template 5's set and a toast gives the set's size",
+        mob.setTop && mob.setIn && mob.pbHidden && mob.toast && mob.inSet, JSON.stringify(mob));
+  check("desktop: +set where it was (the L / X group at its full width)", desk.set && desk.lxW >= 120, JSON.stringify(desk));
   check("phone: the player list scrolls sideways, L / X and the name stay put, the name 150px, Sal next, the page itself no wider",
         mob.scrolls && mob.page && mob.nameW >= 149 && mob.whoMoved <= 10 && mob.lxMoved <= 5 && /k$/.test(mob.third.trim()) && mob.moved > 0, JSON.stringify(mob));
   check("no page errors", !errors.length, errors.join("; "));
