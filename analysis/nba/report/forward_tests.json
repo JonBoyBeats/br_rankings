@@ -14540,5 +14540,1007 @@
     }
    ]
   }
+ },
+ "2026-11-20": {
+  "boom": [
+   [
+    0.4234,
+    0.4234,
+    false
+   ],
+   [
+    0.3399,
+    0.3399,
+    false
+   ],
+   [
+    0.1535,
+    0.1535,
+    false
+   ],
+   [
+    0.2275,
+    0.2118,
+    false
+   ],
+   [
+    0.1465,
+    0.1448,
+    false
+   ],
+   [
+    0.1729,
+    0.1862,
+    false
+   ],
+   [
+    0.1952,
+    0.1874,
+    false
+   ],
+   [
+    0.1902,
+    0.1836,
+    false
+   ],
+   [
+    0.1632,
+    0.1614,
+    false
+   ],
+   [
+    0.1285,
+    0.1304,
+    false
+   ],
+   [
+    0.1713,
+    0.1515,
+    false
+   ],
+   [
+    0.1762,
+    0.1787,
+    false
+   ],
+   [
+    0.3235,
+    0.3074,
+    true
+   ],
+   [
+    0.1782,
+    0.1763,
+    false
+   ],
+   [
+    0.165,
+    0.1631,
+    false
+   ],
+   [
+    0.15,
+    0.1551,
+    false
+   ],
+   [
+    0.2098,
+    0.1978,
+    false
+   ],
+   [
+    0.2301,
+    0.2224,
+    false
+   ],
+   [
+    0.154,
+    0.1563,
+    false
+   ],
+   [
+    0.1484,
+    0.1429,
+    false
+   ],
+   [
+    0.1931,
+    0.2032,
+    false
+   ],
+   [
+    0.2187,
+    0.2294,
+    false
+   ],
+   [
+    0.1751,
+    0.1821,
+    true
+   ],
+   [
+    0.1506,
+    0.1528,
+    false
+   ],
+   [
+    0.1486,
+    0.1628,
+    true
+   ],
+   [
+    0.2128,
+    0.1958,
+    false
+   ],
+   [
+    0.1628,
+    0.1569,
+    true
+   ],
+   [
+    0.2133,
+    0.2162,
+    false
+   ],
+   [
+    0.1977,
+    0.2005,
+    true
+   ],
+   [
+    0.1402,
+    0.146,
+    false
+   ],
+   [
+    0.1609,
+    0.1674,
+    false
+   ],
+   [
+    0.1718,
+    0.1615,
+    false
+   ],
+   [
+    0.1838,
+    0.173,
+    false
+   ],
+   [
+    0.1734,
+    0.1583,
+    true
+   ],
+   [
+    0.2064,
+    0.2042,
+    false
+   ],
+   [
+    0.1849,
+    0.1922,
+    false
+   ],
+   [
+    0.198,
+    0.1865,
+    false
+   ],
+   [
+    0.1944,
+    0.1845,
+    true
+   ],
+   [
+    0.1311,
+    0.1197,
+    false
+   ],
+   [
+    0.176,
+    0.183,
+    false
+   ],
+   [
+    0.2068,
+    0.2147,
+    false
+   ],
+   [
+    0.1927,
+    0.1683,
+    false
+   ],
+   [
+    0.1645,
+    0.1627,
+    false
+   ],
+   [
+    0.1682,
+    0.1663,
+    true
+   ],
+   [
+    0.1666,
+    0.1733,
+    false
+   ],
+   [
+    0.1657,
+    0.1681,
+    false
+   ],
+   [
+    0.1411,
+    0.1469,
+    false
+   ],
+   [
+    0.1488,
+    0.1371,
+    false
+   ],
+   [
+    0.186,
+    0.1885,
+    true
+   ],
+   [
+    0.1501,
+    0.154,
+    false
+   ],
+   [
+    0.1746,
+    0.1727,
+    true
+   ],
+   [
+    0.2081,
+    0.2059,
+    false
+   ],
+   [
+    0.1382,
+    0.133,
+    false
+   ],
+   [
+    0.1336,
+    0.1411,
+    true
+   ],
+   [
+    0.1618,
+    0.1559,
+    false
+   ],
+   [
+    0.1978,
+    0.2005,
+    false
+   ],
+   [
+    0.2183,
+    0.2059,
+    false
+   ],
+   [
+    0.1984,
+    0.2111,
+    true
+   ],
+   [
+    0.1824,
+    0.1716,
+    false
+   ],
+   [
+    0.1286,
+    0.1306,
+    false
+   ],
+   [
+    0.1643,
+    0.1625,
+    true
+   ],
+   [
+    0.1703,
+    0.1684,
+    false
+   ],
+   [
+    0.1836,
+    0.1728,
+    false
+   ],
+   [
+    0.1895,
+    0.174,
+    false
+   ],
+   [
+    0.1311,
+    0.1439,
+    false
+   ],
+   [
+    0.1806,
+    0.1733,
+    false
+   ],
+   [
+    0.1711,
+    0.1692,
+    false
+   ],
+   [
+    0.1231,
+    0.1249,
+    false
+   ],
+   [
+    0.1908,
+    0.1888,
+    true
+   ],
+   [
+    0.2141,
+    0.2068,
+    false
+   ],
+   [
+    0.1728,
+    0.1709,
+    false
+   ],
+   [
+    0.1491,
+    0.1491,
+    false
+   ],
+   [
+    0.2112,
+    0.204,
+    false
+   ],
+   [
+    0.1743,
+    0.1768,
+    false
+   ],
+   [
+    0.1551,
+    0.1656,
+    false
+   ],
+   [
+    0.2029,
+    0.2056,
+    false
+   ],
+   [
+    0.1704,
+    0.1682,
+    true
+   ],
+   [
+    0.1333,
+    0.1412,
+    false
+   ],
+   [
+    0.1302,
+    0.1221,
+    false
+   ],
+   [
+    0.1515,
+    0.1537,
+    true
+   ],
+   [
+    0.1251,
+    0.127,
+    false
+   ],
+   [
+    0.1883,
+    0.1817,
+    false
+   ],
+   [
+    0.1419,
+    0.1367,
+    false
+   ],
+   [
+    0.034,
+    0.036,
+    false
+   ]
+  ],
+  "mine": {
+   "breakers": {
+    "field": [
+     13182,
+     24297
+    ],
+    "mine": [
+     30,
+     59
+    ],
+    "top1": [
+     136,
+     537
+    ]
+   },
+   "low_drafted": {
+    "field": [
+     13182,
+     6577
+    ],
+    "mine": [
+     30,
+     11
+    ]
+   },
+   "turn23": {
+    "most-owned": 2,
+    "other": 17,
+    "rarer": 2
+   }
+  },
+  "pod": 6,
+  "q": [
+   {
+    "early": [
+     722,
+     35
+    ],
+    "late": [
+     1475,
+     73
+    ],
+    "name": "Alperen Sengun",
+    "played": true,
+    "tag": "Questionable",
+    "value": 26.7
+   },
+   {
+    "early": [
+     2,
+     0
+    ],
+    "late": [
+     27,
+     0
+    ],
+    "name": "Andrew Nembhard",
+    "played": true,
+    "tag": "Questionable",
+    "value": 4.8
+   }
+  ],
+  "teams": 13182,
+  "ties": [
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 2141,
+    "hi_t1": 8,
+    "lo_brk": false,
+    "lo_n": 1616,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 2139,
+    "hi_t1": 67,
+    "lo_brk": true,
+    "lo_n": 1844,
+    "lo_t1": 23,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1987,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 1616,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1987,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 1493,
+    "lo_t1": 18,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1987,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 982,
+    "lo_t1": 8,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1987,
+    "hi_t1": 3,
+    "lo_brk": false,
+    "lo_n": 850,
+    "lo_t1": 6,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1987,
+    "hi_t1": 3,
+    "lo_brk": true,
+    "lo_n": 835,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 2005,
+    "hi_t1": 18,
+    "lo_brk": false,
+    "lo_n": 982,
+    "lo_t1": 8,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 2005,
+    "hi_t1": 18,
+    "lo_brk": true,
+    "lo_n": 835,
+    "lo_t1": 5,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 2005,
+    "hi_t1": 18,
+    "lo_brk": true,
+    "lo_n": 653,
+    "lo_t1": 36,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 2005,
+    "hi_t1": 18,
+    "lo_brk": false,
+    "lo_n": 777,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1616,
+    "hi_t1": 5,
+    "lo_brk": false,
+    "lo_n": 850,
+    "lo_t1": 6,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1616,
+    "hi_t1": 5,
+    "lo_brk": true,
+    "lo_n": 458,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1616,
+    "hi_t1": 5,
+    "lo_brk": false,
+    "lo_n": 255,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1616,
+    "hi_t1": 5,
+    "lo_brk": false,
+    "lo_n": 232,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1616,
+    "hi_t1": 5,
+    "lo_brk": true,
+    "lo_n": 205,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 1616,
+    "hi_t1": 5,
+    "lo_brk": false,
+    "lo_n": 251,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1844,
+    "hi_t1": 23,
+    "lo_brk": false,
+    "lo_n": 982,
+    "lo_t1": 8,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1844,
+    "hi_t1": 23,
+    "lo_brk": false,
+    "lo_n": 850,
+    "lo_t1": 6,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1844,
+    "hi_t1": 23,
+    "lo_brk": true,
+    "lo_n": 835,
+    "lo_t1": 5,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1844,
+    "hi_t1": 23,
+    "lo_brk": true,
+    "lo_n": 653,
+    "lo_t1": 36,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1844,
+    "hi_t1": 23,
+    "lo_brk": false,
+    "lo_n": 777,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1844,
+    "hi_t1": 23,
+    "lo_brk": true,
+    "lo_n": 458,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1844,
+    "hi_t1": 23,
+    "lo_brk": true,
+    "lo_n": 205,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1493,
+    "hi_t1": 18,
+    "lo_brk": false,
+    "lo_n": 850,
+    "lo_t1": 6,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1493,
+    "hi_t1": 18,
+    "lo_brk": true,
+    "lo_n": 458,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1493,
+    "hi_t1": 18,
+    "lo_brk": false,
+    "lo_n": 255,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1493,
+    "hi_t1": 18,
+    "lo_brk": false,
+    "lo_n": 232,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1493,
+    "hi_t1": 18,
+    "lo_brk": true,
+    "lo_n": 205,
+    "lo_t1": 3,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 1493,
+    "hi_t1": 18,
+    "lo_brk": false,
+    "lo_n": 251,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 982,
+    "hi_t1": 8,
+    "lo_brk": true,
+    "lo_n": 653,
+    "lo_t1": 36,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 982,
+    "hi_t1": 8,
+    "lo_brk": true,
+    "lo_n": 458,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 982,
+    "hi_t1": 8,
+    "lo_brk": true,
+    "lo_n": 205,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 850,
+    "hi_t1": 6,
+    "lo_brk": true,
+    "lo_n": 458,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 850,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 255,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 850,
+    "hi_t1": 6,
+    "lo_brk": true,
+    "lo_n": 205,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 835,
+    "hi_t1": 5,
+    "lo_brk": true,
+    "lo_n": 458,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 835,
+    "hi_t1": 5,
+    "lo_brk": true,
+    "lo_n": 205,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 609,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 232,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 609,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 169,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 609,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 251,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 777,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 458,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": false,
+    "hi_n": 777,
+    "hi_t1": 0,
+    "lo_brk": true,
+    "lo_n": 205,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-20",
+    "hi_brk": true,
+    "hi_n": 458,
+    "hi_t1": 2,
+    "lo_brk": true,
+    "lo_n": 205,
+    "lo_t1": 3,
+    "lo_wins": true
+   }
+  ],
+  "turns": {
+   "1/2": [
+    {
+     "combo": [
+      "Anthony Davis",
+      "Jalen Johnson"
+     ],
+     "pop": [
+      966,
+      15,
+      228452.6000000001
+     ],
+     "rest": [
+      2283,
+      23,
+      530599.9000000005
+     ]
+    }
+   ],
+   "2/3": [
+    {
+     "anchor": "Luka Doncic",
+     "combo": [
+      "Keyonte George",
+      "Devin Booker"
+     ],
+     "pop": [
+      277,
+      0,
+      57118.60000000003
+     ],
+     "rest": [
+      1851,
+      18,
+      409106.10000000003
+     ]
+    },
+    {
+     "anchor": "Nikola Jokic",
+     "combo": [
+      "Alperen Sengun",
+      "Darius Acuff Jr."
+     ],
+     "pop": [
+      176,
+      8,
+      44490.7
+     ],
+     "rest": [
+      1934,
+      12,
+      430685.4000000003
+     ]
+    },
+    {
+     "anchor": "Shai Gilgeous-Alexander",
+     "combo": [
+      "Jamal Murray",
+      "Pascal Siakam"
+     ],
+     "pop": [
+      226,
+      0,
+      49875.49999999998
+     ],
+     "rest": [
+      1876,
+      45,
+      430611.4000000008
+     ]
+    }
+   ]
+  }
  }
 }
