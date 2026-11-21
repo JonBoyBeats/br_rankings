@@ -84,7 +84,8 @@
     var b = gate && (gate.bands || []).find(function (x) { return x.open && r.salary >= x.lo && r.salary <= x.hi; });
     var p = !b || !r.dk_avg ? r.fp_dk : b.w * r.fp_dk + (1 - b.w) * r.dk_avg;
     var q = gate && gate.questionable && gate.questionable.factor;
-    return r.status === "Questionable" && q != null && p != null ? p * q : p;
+    // a zero-games player's card is already scaled by its own factor (cbb_nightly zero_gp), which replaces the Q factor
+    return r.status === "Questionable" && q != null && p != null && !r.zero_gp ? p * q : p;
   }
 
   // The field's lineup ownership at a percentile (for the ownership-cap rule set)

@@ -26,6 +26,8 @@ TRAIN, MODEL, LOG, REPORT = (os.path.join(DK, f) for f in ("sit_train.csv", "sit
 FEATS = ["const", "logmin", "depth", "part", "gmiss", "known", "miss5", "misslast", "days", "q", "thin", "touts"]
 FLAG_P = 0.70          # the page's tag: in-pool, no Q / D / Out status, p_play under this
 PUNT_MIN = 15          # the page's punt line (dk.html PUNT_MIN): projected under it, out of the pool without news
+ZERO_GP_TEAM = 3       # cbb_nightly's zero-games group: 0 games this season, his team 3+; its factor is refit here (zero_gp_f)
+ZERO_GP_MIN_N = 20     # player-slates before the refit replaces cbb_nightly's ZERO_GP_F
 num = lambda v: float(v) if v not in ("", None) else None
 
 
@@ -192,15 +194,18 @@ def train(mirror):
                     "gp": (P.get(r["dk_id"]) or {}).get("gp") or 0, "last5": (P.get(r["dk_id"]) or {}).get("last5") or [], "src": r.get("src")} for r in rows]
         F = features(players, date); by = {r["dk_id"]: r for r in rows}
         for i, (x, raw) in F.items():
-            r = by[i]
+            r = by[i]; z = (P.get(i) or {}).get("zero_gp") or {}
+            # the zero-games group (cbb_nightly ZERO_GP_TEAM) and his projection before that fix (its orig once it is live)
             new.append(dict({"date": date, "draft_group": g, "dk_id": i, "name": r["name"], "team": r["team"], "salary": r["salary"], "status": r.get("status") or "",
-                             "min_proj": r.get("min_proj"), "played": 1 if (num(r.get("min")) or 0) > 0 else 0, "min": r.get("min") or ""},
+                             "min_proj": r.get("min_proj"), "played": 1 if (num(r.get("min")) or 0) > 0 else 0, "min": r.get("min") or "",
+                             "zero_gp": 1 if (raw["gp"] == 0 and raw["tg"] >= ZERO_GP_TEAM) else 0,
+                             "fp_raw": (z.get("orig") or {}).get("fp_dk", r.get("fp_dk")), "actual_dk": r.get("actual_dk")},
                             **{f: round(v, 6) for f, v in zip(FEATS, x)}))
         print("sit: trained %s %s (%d players)" % (date, g, len(F)))
     if new:
         rows = old + new
         with open(TRAIN, "w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(new[0].keys())); w.writeheader(); w.writerows(rows)
+            w = csv.DictWriter(fh, fieldnames=list(new[0].keys()), restval=""); w.writeheader(); w.writerows(rows)
     return old + new
 
 
@@ -229,8 +234,15 @@ def refit(rows):
     model = {"feats": FEATS, "w": [round(v, 6) for v in w], "mean": [round(S.mean(x[j] for x in X), 6) for j in range(len(FEATS))],
              "flag_p": FLAG_P, "n": len(rows), "slates": ["%s_%s" % s for s in sl], "fitted_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
              "heldout_brier": {"model": round(bm / n, 4) if n else None, "current": round(bc / n, 4) if n else None, "n": n}}
+    # the zero-games factor: their real DK points over their projection before the fix (actual / projected, the mean-
+    # correct scale, as the Questionable factor); cbb_nightly reads it, ZERO_GP_F until ZERO_GP_MIN_N player-slates
+    z = [r for r in rows if str(r.get("zero_gp")) == "1" and num(r.get("fp_raw")) and r.get("actual_dk") not in ("", None)]
+    if len(z) >= ZERO_GP_MIN_N:
+        model["zero_gp_f"] = round(sum(num(r["actual_dk"]) for r in z) / sum(num(r["fp_raw"]) for r in z), 4)
+    model["zero_gp_n"] = len(z)
     json.dump(model, open(MODEL, "w"), indent=1)
-    print("sit: model fitted on %d players, %d slates; held-out Brier %s vs current %s" % (len(rows), len(sl), model["heldout_brier"]["model"], model["heldout_brier"]["current"]))
+    print("sit: model fitted on %d players, %d slates; held-out Brier %s vs current %s; zero-games factor %s on %d" % (
+        len(rows), len(sl), model["heldout_brier"]["model"], model["heldout_brier"]["current"], model.get("zero_gp_f"), model["zero_gp_n"]))
     return model
 
 

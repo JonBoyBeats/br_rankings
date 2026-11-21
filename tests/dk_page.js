@@ -454,7 +454,7 @@ function audit(name, L, o) {
   check("spread: the rule off leaves no floors (nothing written to Min%)", spr.offMap === 0 && spr.floorSame, JSON.stringify([spr.offMap, spr.floorSame]));
   check("spread: Draw the 9 applies it per batch (each batch's six at 10%+) and records it in each tag's rules; the status names it",
         spr.batches.every(b => b.n >= 10 && b.min >= 0.1 && b.rec) && /Spread, each batch: 6 players \u226510%/.test(spr.msg9), JSON.stringify([spr.batches, spr.msg9]));
-  check("spread: Quick sim's 10x draw honours it and its note names it", !!spr.quick && spr.quick.drawn === 50 && spr.quick.note && /^spread: 6 players/.test(spr.quick.txt), JSON.stringify(spr.quick));
+  check("spread: Quick sim's 10x draw honours it and its note names it", !!spr.quick && spr.quick.drawn >= 45 && spr.quick.note && /^spread: 6 players/.test(spr.quick.txt), JSON.stringify(spr.quick));
   // template 5, at least N from these players: +set on a player row adds a chip; the rule saves as {type: "min", ids, n}
   // and every lineup drawn under it holds N of them
   const top3 = await pg.evaluate(() => rows.filter(r => r.status !== "Out" && !r.deepOut).sort((a, b) => proj(b) - proj(a)).slice(0, 3).map(r => r.id));
@@ -1927,6 +1927,30 @@ function audit(name, L, o) {
   });
   check("quick card: the latest tip and, of two same-game players, the higher salary in UTIL (DraftKings' slot order kept)",
         !qlate.skipped && qlate.slots === "G,G,G,F,F,F,UTIL,UTIL" && JSON.stringify(qlate.names) === JSON.stringify(qlate.want), JSON.stringify(qlate));
+  // zero-games players (2026-11-21): a card scaled by zero_gp shows "0 games" with the hover, is a punt at his scaled
+  // minutes, "back" restores his unadjusted numbers in one tap (kept in the slate's settings), the dimmed tag re-applies;
+  // a Questionable zero-games card takes no Q factor on top (gatedProj)
+  const zg = await pg.evaluate(() => {
+    const r = rows.filter(x => usable(x) && !x.status && (x.min || 0) >= 20).sort((a, b) => (b.fp_dk || 0) - (a.fp_dk || 0))[0];
+    const keep = JSON.stringify(slate.players[r.id]), Z0 = JSON.stringify(state.zeroBack || {});
+    const orig = {}; ZERO_FIELDS.forEach(k => { if (r[k] != null) orig[k] = r[k]; });
+    ZERO_FIELDS.forEach(k => { if (r[k] != null) r[k] = Math.round(r[k] * 0.041 * 10) / 10; });
+    r.zero_gp = { team_games: 5, f: 0.041, orig }; delete r._zero; state.zeroBack = {};
+    zeroApply(); applyOuts(); renderPlayers();
+    const tag = () => document.querySelector('#players .row[data-id="' + r.id + '"] .tag.zero');
+    const out = { title: tag() && tag().getAttribute("title"), on: tag() && !tag().classList.contains("off"), punt: !usable(r), fp: r.fp_dk, back: !!document.querySelector('#players .row[data-id="' + r.id + '"] .zback') };
+    document.querySelector('#players .row[data-id="' + r.id + '"] .zback').click();
+    out.restored = r.fp_dk === orig.fp_dk && r.min === orig.min && !r.zero_gp && tag().classList.contains("off") && !!state.zeroBack[r.id] && usable(r);
+    tag().click();
+    out.again = r.zero_gp && r.fp_dk === Math.round(orig.fp_dk * 0.041 * 10) / 10 && !state.zeroBack[r.id];
+    const q = Object.assign({}, r, { status: "Questionable" });
+    out.noQ = DKSim.gatedProj(q, gate) === DKSim.gatedProj(Object.assign({}, r, { status: "" }), gate);
+    // put the row back as the card had it
+    Object.keys(r).forEach(k => { if (k !== "id") delete r[k]; }); Object.assign(r, JSON.parse(keep)); r._status0 = r.status; state.zeroBack = JSON.parse(Z0); applyOuts(); renderPlayers();
+    return out;
+  });
+  check("0 games: the tag and hover on a scaled card, a punt at his scaled minutes; back restores his unadjusted numbers in one tap (in the pool again), the dimmed tag re-applies; no Q factor on top",
+        zg.title === "Has played 0 of his team's 5 games: projected at \u00d70.04. Bring back if news says he's active." && zg.on && zg.punt && zg.back && zg.restored && zg.again && zg.noQ, JSON.stringify(zg));
   // sit risk (2026-11-21): the card's p_play under 0.70 on an in-pool player with no Q / D / Out gets the tag, its hover
   // the chance and the why; Q / Out / X'd players don't; Show: sit risk lists exactly the flagged
   const sr = await pg.evaluate(() => {

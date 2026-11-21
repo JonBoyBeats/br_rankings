@@ -85,6 +85,7 @@
   .tag.o { background: var(--bad); color: #1a0500; }
   .tag.new { border: 1px solid var(--line-strong); color: var(--muted); }
   .tag.sit { border: 1px solid var(--warn); color: var(--warn); white-space: nowrap; }
+  .tag.zero { background: var(--bad); color: #1a0500; white-space: nowrap; opacity: .85; } .tag.zero.off { background: none; border: 1px dashed var(--line-strong); color: var(--muted); cursor: pointer; }
   .tag.frag { border: 1px solid var(--warn); color: var(--warn); font-weight: 600; }
   .tag.lk { background: var(--live); color: #04140c; }
   .read-leverage { color: #3fbf7f; font-weight: 600; } .read-core { color: #5b9cf0; font-weight: 600; }
@@ -712,6 +713,28 @@ function adjustField() {
 }
 function value(r) { return proj(r) / (r.salary / 1000); }
 function usable(r) { return r.status !== "Out" && !state.excl[r.id] && !r.deepOut; }
+/* Zero-games players (2026-11-21, adopted from scripts/dk_zero_gp_study.py, A2 pass): the card scales a player with 0
+   games this season on a team that has played 3+ by zero_gp.f (his minutes and projection; zero_gp.orig the numbers
+   before it). The "0 games" tag says so; "back" (one tap) puts his unadjusted numbers back, kept with the slate's
+   settings (state.zeroBack), and a tap on the dimmed tag scales him again. Before applyOuts, so the punts, the deep
+   bench and the minutes refits see the minutes in use. */
+var ZERO_FIELDS = ["min", "fp", "fp_base", "fp_dk", "fp_base_dk", "fp_blend", "fp_gate", "value", "miss", "miss_dk", "p_dd"];
+function zeroApply() {
+  state.zeroBack = state.zeroBack || {};
+  rows.forEach(function (r) {
+    if (!r._zero && r.zero_gp) {
+      var adj = {}; ZERO_FIELDS.forEach(function (k) { if (r[k] != null) adj[k] = r[k]; });
+      r._zero = { meta: r.zero_gp, adj: adj };
+    }
+    if (!r._zero) return;
+    if (state.zeroBack[r.id]) { Object.assign(r, r._zero.meta.orig || {}); delete r.zero_gp; }
+    else { Object.assign(r, r._zero.adj); r.zero_gp = r._zero.meta; }
+  });
+}
+function zeroToggle(id) {
+  if (state.zeroBack[id]) delete state.zeroBack[id]; else state.zeroBack[id] = 1;
+  save(); zeroApply(); applyOuts(); renderPlayers(); if (view.panel) renderTeamPanel();
+}
 /* Sit risk (2026-11-21, the operator's approval of step B, analysis/cbb/dk/dnp_2026-11-21.md): the card's p_play, his
    chance to play from what's known before lock (scripts/dk_sit.py, refit nightly), with p_play_why. Display only: a tag
    on a player in the draw's pool with no Q / D / Out status and p_play under SIT_P (dk_sit.FLAG_P); nothing moves. Each
@@ -799,6 +822,7 @@ function pick(keepMem) {
   rows = Object.keys(slate.players).map(function (id) { var r = Object.assign({ id: id }, slate.players[id]); r._status0 = r.status; return r; });
   state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, floor: {}, outs: {}, ins: {}, deepIn: {}, rules: [] }, store(key()) || {});
   state.outs = state.outs || {}; state.ins = state.ins || {}; state.deepIn = state.deepIn || {};
+  zeroApply();
   applyOuts();
   // rules saved before the draw-only change: an "in X% of lineups" rule becomes its plain rule; an "at most X%" one goes
   state.rules = (state.rules || []).filter(function (r) { return r.maxShare == null; }).map(function (r) {
@@ -1009,6 +1033,9 @@ function playerTable(list, sortable, fs) {
       (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
         ' title="Questionable: projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : ' title="Questionable"') + '>Q</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "") +
+      (r._zero ? '<span class="tag zero' + (r.zero_gp ? "" : " off") + '" data-id="' + esc(r.id) + '" title="' + esc(r.zero_gp ?
+        "Has played 0 of his team's " + r._zero.meta.team_games + " games: projected at \u00d7" + (+r._zero.meta.f).toFixed(2) + ". Bring back if news says he's active." :
+        "0 games: back to his unadjusted projection. Tap to scale him again (\u00d7" + (+r._zero.meta.f).toFixed(2) + ").") + '">0 games</span>' : "") +
       (sitRisk(r) ? '<span class="tag sit" title="' + esc("Sit risk: " + Math.round(100 * r.p_play) + "% to play" + (r.p_play_why ? " \u2014 " + r.p_play_why : "") + ". Check news before lock.") + '">sit risk</span>' : "");
     var moreTxt = [], more = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
       (fragileMap()[r.id] ? '<span class="tag frag" title="' + esc("Fragile: " + fragileMap()[r.id].join("; ")) + '">fragile</span>' : "") +
@@ -1019,7 +1046,8 @@ function playerTable(list, sortable, fs) {
     if (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005) moreTxt.push((minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min from a teammate you ruled out");
     var tags = (keep ? '<span class="tkeep">' + keep + "</span>" : "") + (more ? '<span class="tmore" title="' + esc(moreTxt.join("\n") || "") + '">' + more + "</span>" : "");
     // the actions (Mark out / Play him, use / drop the deep bench or a punt) in the fixed L / X group, never clipped
-    var act = isDoubtful(r) ? '<button type="button" class="qout act" title="' + (state.ins[r.id] ? "Back to out (Doubtful)" : "Play him: back as Questionable, his teammates refit to 200") +
+    var act = r.zero_gp ? '<button type="button" class="zback act" data-id="' + esc(r.id) + '" title="Undo 0 games: his projection back to the unadjusted number">back</button>' :
+      isDoubtful(r) ? '<button type="button" class="qout act" title="' + (state.ins[r.id] ? "Back to out (Doubtful)" : "Play him: back as Questionable, his teammates refit to 200") +
         '">' + (state.ins[r.id] ? "undo" : "play") + "</button>" :
       r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout act" title="' +
         (state.outs[r.id] ? "Undo out: put him back as Questionable" : "Mark out: rule him out, his teammates share his minutes (200 for the team)") + '">' +
@@ -3631,6 +3659,8 @@ function rowClick(e) {
     if (!f[x]) f[x] = "with"; else if (f[x] === "with") f[x] = "without"; else delete f[x];
     bpRender(); return;
   }
+  var zb = e.target.closest(".zback, .tag.zero.off");
+  if (zb) { zeroToggle(zb.dataset.id); return; }
   var sa = e.target.closest(".setadd");
   if (sa) { var sid = sa.closest(".row").dataset.id; rtSet([sid]); setToast(sid); return; }
   var pb = e.target.closest(".pbank");
