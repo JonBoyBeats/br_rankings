@@ -155,7 +155,7 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 **Your Q moves.** None last night.
 
-**Today's Questionable players.** Jayson Tatum (T2 on the ladders, 65% to play): if he sits, Derrick White, Neemias Queta; Deni Avdija (T2 on the ladders, 55% to play): if he sits, Toumani Camara; OG Anunoby (T5 on the ladders, 49% to play): if he sits, Mikal Bridges, Josh Hart; Derrick White (T5 on the ladders, 50% to play): if he sits, Neemias Queta; PJ Washington (T5 on the ladders, 48% to play): if he sits, Daniel Gafford.
+**Today's Questionable players.** Karl-Anthony Towns (T1 on the ladders, 55% to play): if he sits, Mikal Bridges, Josh Hart, Landry Shamet; Jayson Tatum (T2 on the ladders, 65% to play): if he sits, Derrick White, Neemias Queta; Deni Avdija (T2 on the ladders, 57% to play): if he sits, Toumani Camara, Scoot Henderson; Derrick White (T5 on the ladders, 50% to play); PJ Washington (T5 on the ladders, 48% to play).
 
 ## Back page
 

@@ -203,14 +203,14 @@
      "drafted": 38.7
     },
     {
-     "player": "Darryn Peterson",
-     "adp": 34.9,
-     "drafted": 29.7
-    },
-    {
      "player": "Kyshawn George",
      "adp": 34.9,
      "drafted": 38.0
+    },
+    {
+     "player": "Darryn Peterson",
+     "adp": 34.9,
+     "drafted": 29.7
     },
     {
      "player": "Jalen Smith",
@@ -363,12 +363,12 @@
      "drafted": 0.3
     },
     {
-     "player": "Malachi Smith",
+     "player": "Collin Gillespie",
      "adp": 36.0,
      "drafted": 0.0
     },
     {
-     "player": "Collin Gillespie",
+     "player": "Malachi Smith",
      "adp": 36.0,
      "drafted": 0.0
     },
@@ -1756,7 +1756,7 @@
      "drafted": 0.3
     },
     {
-     "player": "Aaron Gordon",
+     "player": "Jared McCain",
      "adp": 36.0,
      "drafted": 0.3
     },
@@ -1766,7 +1766,7 @@
      "drafted": 0.2
     },
     {
-     "player": "Jared McCain",
+     "player": "Aaron Gordon",
      "adp": 36.0,
      "drafted": 0.3
     },
@@ -2924,14 +2924,14 @@
      "drafted": 38.4
     },
     {
-     "player": "Darryn Peterson",
-     "adp": 34.9,
-     "drafted": 37.7
-    },
-    {
      "player": "Kyshawn George",
      "adp": 34.9,
      "drafted": 49.7
+    },
+    {
+     "player": "Darryn Peterson",
+     "adp": 34.9,
+     "drafted": 37.7
     },
     {
      "player": "Quentin Grimes",

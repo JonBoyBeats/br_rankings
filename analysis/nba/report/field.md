@@ -67,8 +67,8 @@ Drafted% leaves 100% at ADP 26.1. Tag: at Lock AM / at lock. Tiers: yours at Loc
 | AJ Dybantsa | 33.6 | 68.0% | 60-99.5 | - / - | 5/5 | 47.0 |
 | Michael Porter Jr. | 34.7 | 44.7% | 10-60 | - / - | 5/5 | 31.3 |
 | Jarrett Allen | 34.8 | 38.7% | 10-60 | - / - | 5/5 | 26.6 |
-| Kyshawn George | 34.9 | 38.0% | 10-60 | - / - | 5/5 | 32.9 |
 | Darryn Peterson | 34.9 | 29.7% | 10-60 | - / - | -/5 | 52.0 |
+| Kyshawn George | 34.9 | 38.0% | 10-60 | - / - | 5/5 | 32.9 |
 | Jalen Smith | 34.9 | 0.0% | under 10 (news?) | - / Out | -/- | 0.0 |
 | Quentin Grimes | 35.0 | 27.7% | 10-60 | - / - | -/- | 26.5 |
 | Norman Powell | 35.1 | 35.4% | 10-60 | - / - | 5/5 | 24.6 |
