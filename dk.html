@@ -260,6 +260,7 @@
   table.quick { border-collapse: collapse; font-size: 13px; margin: 2px 0 6px; }
   table.quick td, table.quick th { padding: 3px 8px; text-align: left; } table.quick .r { text-align: right; }
   table.quick .qg { font-size: 11px; white-space: nowrap; } table.quick td { vertical-align: top; }
+  .rule .spr { font-size: 11.5px; color: var(--muted); white-space: nowrap; } .rule .spr input { width: 46px; height: 24px; padding: 0 4px; font-size: 12px; }
   table.qsim tbody tr { cursor: pointer; } table.qsim tbody tr.on td { background: rgba(77, 196, 141, .14); }
   table.quick th { font-size: 11px; color: var(--muted); font-weight: 500; } table.quick tfoot td { font-weight: 600; border-top: 1px solid var(--line, #2a3140); }
   @media (max-width: 620px) {
@@ -1114,10 +1115,31 @@ function nightsCtx(c) { return Object.assign(ctx(), { random: DKSim.seeded((nigh
 // the draw's settings (section 1): every lineup drawn obeys them
 function drawRules() {
   var v = function (id) { return $(id).value === "" ? null : +$(id).value; };
-  return { n: 1, maxExpo: 1, minUnique: 1, z: fieldDoc && fieldDoc.z, levW: v("levW") || 0, minSal: v("minSal") || 0, maxTeam: v("maxTeam") || 8,
+  var o = { n: 1, maxExpo: 1, minUnique: 1, z: fieldDoc && fieldDoc.z, levW: v("levW") || 0, minSal: v("minSal") || 0, maxTeam: v("maxTeam") || 8,
            stackN: v("stackN") || 0, stackBoth: $("stackBoth").checked, maxOwn: v("maxOwn"),
            lowN: v("lowN") || 0, lowPct: v("lowPct") || 10, conds: (state.rules || []).filter(function (r) { return !r.off; }),
            nightS: v("bankS") != null ? v("bankS") : 0.35 };
+  o.spread = spreadOf(o.conds);
+  return o;
+}
+/* Template-5 spread (2026-11-21, the operator): a rule "at least N of these players" (2+ players) carries "each in at
+   least X%" (rule.spread, default SPREAD_DEF, 0 off). While the rule is on, each of its players gets that floor in every
+   draw (drawBank's Min% top-up, per batch, so each of Draw the 9's batches), the larger of it and his table Min%; two
+   rules sharing a player, the larger spread. Locks, excludes and Max% win as for Min%. Nothing is written to the Min%
+   boxes: the floors come from the rules on at each draw, so a rule turned off leaves none. Each draw's map is recorded in
+   its tag's saved rules (spread: {id: %}). */
+var SPREAD_DEF = 10;
+function isT5(rule) { return rule.type === "min" && !DKSim.isShare(rule) && !!rule.ids && rule.ids.length > 1 && /^at least \d+ of /.test(rule.label || ""); }
+function ruleSpread(rule) { return rule.spread == null ? SPREAD_DEF : Math.max(0, +rule.spread || 0); }
+function spreadOf(conds) {
+  var m = {};
+  (conds || []).forEach(function (r) { if (r.off || !isT5(r)) return; var p = ruleSpread(r); if (p > 0) r.ids.forEach(function (id) { m[id] = Math.max(m[id] || 0, p); }); });
+  return m;
+}
+function spreadText(m) {
+  var ids = Object.keys(m || {}); if (!ids.length) return "";
+  var ps = ids.map(function (id) { return m[id]; }), lo = Math.min.apply(null, ps), hi = Math.max.apply(null, ps);
+  return "spread " + ids.length + " player" + (ids.length === 1 ? "" : "s") + " \u2265" + (lo === hi ? lo : lo + "\u2013" + hi) + "%";
 }
 // the pick's settings (section 2), for a contest taking n entries: Max exposure rounds down, so a 1-entry contest gets its one
 /* Locks apply to (2026-11-19): a lock is a draw rule; in the fill (Fill all contests, Auto-fill, hand adds and their
@@ -1392,6 +1414,8 @@ function renderRules() {
     var c = ruleCounts[rule.label];
     return '<div class="rule' + (rule.off ? " off" : "") + '" data-i="' + i + '"><input type="checkbox" class="ruleOn" title="On for the next draw (off keeps it here for later)"' +
       (rule.off ? "" : " checked") + '><span class="lab">' + esc(rule.label) + "</span>" + (c ? '<span class="pc">' + c.pass + " of " + c.of + " pass</span>" : "") +
+      (isT5(rule) ? '<label class="spr" title="Spread: while this rule is on, each of its players in at least this % of every draw\'s lineups (topped up like Min%; the larger of this and his own Min%). 0: off">each \u2265 <input type="number" class="spreadIn num" min="0" max="100" step="5" value="' +
+        ruleSpread(rule) + '" aria-label="Each player in at least this percent">%</label>' : "") +
       (rule.type === "never" ? '<button data-act="base">' + (rule.base ? "To ideas" : "To baseline") + "</button>" : "") +
       (["if", "ifnot", "ifteam", "never"].indexOf(rule.type) >= 0 || (rule.type === "min" && rule.ids && rule.ids.length > 1) ? '<button data-act="edit">Edit</button>' : "") + '<button data-act="rm">Remove</button></div>';
   };
@@ -2927,7 +2951,7 @@ $("reload").addEventListener("click", load);
 var QSIM_X = 10, QSIM_CUT = 0.25;
 var QUICK = [], QSIM = null;
 function quickOpts() { return Object.assign(drawRules(), { maxExpo: 1, minUnique: 1, noCaps: true }); }
-function quickRulesText() {
+function quickRulesText(withSpread) {       // withSpread: Quick sim's draw (Quick lineup has no spread)
   var o = drawRules(), nl = Object.keys(state.lock || {}).length, nx = Object.keys(state.excl || {}).length, t = [];
   t.push(nl + " lock" + (nl === 1 ? "" : "s"), nx + " exclude" + (nx === 1 ? "" : "s"));
   var hard = o.conds.filter(function (r) { return !DKSim.isShare(r); }).length;
@@ -2937,6 +2961,7 @@ function quickRulesText() {
   if (o.levW) t.push("leverage " + o.levW);
   if (o.maxOwn != null) t.push("own at most " + o.maxOwn + "%");
   if (o.lowN) t.push(o.lowN + "+ under " + o.lowPct + "%");
+  if (withSpread && spreadText(o.spread)) t.push(spreadText(o.spread));
   return t.join(", ");
 }
 function quickContests() {
@@ -2962,7 +2987,8 @@ async function quickSim() {
   quickBusy(true);
   try {
     var cx = ctx(); cx.progress = function (msg) { $("quickBox").innerHTML = '<div class="note">' + esc(msg) + "</div>"; return tick(); };
-    var res = await DKSim.pool(cx, quickOpts(), QSIM_X * n);
+    // the draw tops up the floors as a bank draw does (template-5 spread, table Min%; Max% caps), nothing banked
+    var res = await drawBank(cx, quickOpts(), QSIM_X * n, { noBank: true });
     if (!res.lineups.length) { $("quickBox").innerHTML = '<div class="note bad">No lineup: ' + esc(res.why || "none fit the rules") + ".</div>"; return; }
     var drawn = res.lineups, RN = +$("cutNights").value || 2000;
     var cut = await DKSim.cutPool(ctx(), drawn, [{ contest: c, n: 1 }], F.field, fieldDoc.z, Math.min(n, drawn.length), QSIM_CUT, RN, function (r) {
@@ -2979,7 +3005,7 @@ async function quickSim() {
     var order = L.map(function (_, k) { return k; }).sort(function (a, b) { return v[b] - v[a]; }), tier = [], t = 0, top = v[order[0]];
     order.forEach(function (k) { if (t < 2 && v[k] < top - gap) { t++; top = v[k]; } tier[k] = "ABC"[t]; });
     QSIM = { c: c, S: S, L: L, v: v, fee: fee, st: st, tier: tier, order: order, sel: order[0], drawn: drawn.length, rounds: cut.rounds.length, RN: RN, allN: allN,
-             why: drawn.length < QSIM_X * n ? res.why : "" };
+             why: drawn.length < QSIM_X * n ? res.why : "", spreadTxt: res.spreadTxt || "" };
     QUICK = [];
   } finally { quickBusy(false); }
   renderQuick();
@@ -3014,7 +3040,7 @@ function renderQuick() {
         '</td><td class="r">' + pct1(q.st.cash[k]) + '</td><td class="r">' + p.toFixed(1) + '</td><td class="r">' + Math.round(o) + "%</td></tr>";
     }).join("");
     var nA = q.tier.filter(function (t) { return t === "A"; }).length;
-    $("quickBox").innerHTML = '<div class="note" style="margin:0">' + q.drawn + " drawn (" + quickRulesText() + "), cut in " + q.rounds + " round" + (q.rounds === 1 ? "" : "s") + " of " + q.RN.toLocaleString() +
+    $("quickBox").innerHTML = '<div class="note" style="margin:0">' + q.drawn + " drawn (" + quickRulesText(true) + ")" + (q.spreadTxt ? "; " + esc(q.spreadTxt.replace(/\.$/, "")) + " of the " + q.drawn : "") + "; cut in " + q.rounds + " round" + (q.rounds === 1 ? "" : "s") + " of " + q.RN.toLocaleString() +
       " fresh nights to these " + q.L.length + ", each alone in " + esc(q.c.name || q.c.id) + ". ROI: its mean over all " + q.allN.toLocaleString() + "+ nights it went through; top 1% and cash: the last " +
       q.S.toLocaleString() + ". Tier A: within the noise of the best (" + nA + " here), so treat those as level. Tap a row for its lineup." + (q.why ? " " + esc(q.why) + "." : "") + "</div>" +
       '<table class="quick qsim"><thead><tr><th>#</th><th>Tier</th><th class="r">ROI</th><th class="r">Top 1%</th><th class="r">Cash</th><th class="r">Proj</th><th class="r">Own</th></tr></thead><tbody>' + rowsH + "</tbody></table>" +
@@ -3036,12 +3062,16 @@ $("quickBox").addEventListener("click", function (e) {
    lineups drawn under the same rules with him in, in place of lineups no Min player needs; dropped places are drawn
    again with the players at their Max left out; up to 4 rounds. A locked player stays in every lineup whatever his Max;
    a Min above his Max gives way to the Max. */
-async function drawBank(cx, o, n) {
+async function drawBank(cx, o, n, opt) {      // opt.noBank: Quick sim's draw, nothing banked (no Max share in bank)
   var res = await DKSim.pool(cx, o, n), L = res.lineups.slice(), N = L.length;
   var live = function (m) { return Object.keys(m || {}).filter(function (id) { var r = byId(id); return r && usable(r); }); };
-  var mins = live(state.floor), maxs = live(state.cap).filter(function (id) { return !state.lock[id]; });
+  // the floors: each player's table Min% and his template-5 spread (o.spread), the larger
+  var fl = {}, sp = o.spread || {};
+  Object.keys(state.floor || {}).forEach(function (id) { if (state.floor[id] != null && state.floor[id] !== "") fl[id] = +state.floor[id]; });
+  Object.keys(sp).forEach(function (id) { fl[id] = Math.max(fl[id] || 0, sp[id]); });
+  var mins = live(fl), maxs = live(state.cap).filter(function (id) { return !state.lock[id]; });
   // Max share in bank: every unlocked player in at most that share of the bank once this draw joins it
-  var gb = +$("bankMax").value || 0, inBank = {}, B = BANK.lineups.length, global = [];
+  var gb = opt && opt.noBank ? 0 : +$("bankMax").value || 0, inBank = {}, B = gb ? BANK.lineups.length : 0, global = [];
   if (gb) {
     BANK.lineups.forEach(function (x) { x.ids.forEach(function (id) { inBank[id] = (inBank[id] || 0) + 1; }); });
     global = rows.filter(function (r) { return usable(r) && !state.lock[r.id] && maxs.indexOf(r.id) < 0; }).map(function (r) { return r.id; });
@@ -3051,7 +3081,7 @@ async function drawBank(cx, o, n) {
   var key = function (x) { return x.ids.slice().sort().join(","); }, has = function (x, id) { return x.ids.indexOf(id) >= 0; };
   var cnt = function (id) { return L.filter(function (x) { return has(x, id); }).length; };
   var need = {}, cap = {};
-  mins.forEach(function (id) { need[id] = Math.ceil(+state.floor[id] / 100 * N - 1e-9); });
+  mins.forEach(function (id) { need[id] = Math.ceil(fl[id] / 100 * N - 1e-9); });
   maxs.forEach(function (id) {
     var c = state.cap[id] != null && state.cap[id] !== "" ? Math.floor(+state.cap[id] / 100 * N + 1e-9) : Infinity;
     if (gb) c = Math.min(c, Math.max(0, Math.floor(gb / 100 * (B + N) + 1e-9) - (inBank[id] || 0)));
@@ -3059,6 +3089,8 @@ async function drawBank(cx, o, n) {
   });
   mins.forEach(function (id) { if (cap[id] != null) need[id] = Math.min(need[id], cap[id]); });
   var needed = function (x) { return mins.some(function (id) { return has(x, id) && cnt(id) <= need[id]; }); };
+  var spIds = mins.filter(function (id) { return sp[id]; }), c0 = {};
+  spIds.forEach(function (id) { c0[id] = cnt(id); });
   var drop = function (ok) {        // the last lineup passing ok that no Min player needs, else the last passing ok
     for (var pass = 0; pass < 2; pass++)
       for (var j = L.length - 1; j >= 0; j--) if (ok(L[j]) && (pass || !needed(L[j]))) { L.splice(j, 1); return true; }
@@ -3095,7 +3127,16 @@ async function drawBank(cx, o, n) {
   if (L.length < N) res.why = res.why || "the Max% caps left " + L.length;
   var listed = maxs.filter(function (id) { return global.indexOf(id) < 0; });
   var atBank = global.filter(function (id) { return cnt(id) >= cap[id]; });
-  res.expo = (mins.length || listed.length ? " Min/Max %: " + mins.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at least " + need[id] + ")"; })
+  var tbl = mins.filter(function (id) { return state.floor && state.floor[id] != null && state.floor[id] !== ""; });
+  if (spIds.length) {     // "spread: 6 players ≥10%, 2 topped up (Smith 6%→10%)"; a floor the other rules can't meet, named
+    var pc = function (k) { return Math.round(100 * k / Math.max(1, L.length)); }, nm = function (id) { return shortName(byId(id).name); };
+    var up = spIds.filter(function (id) { return c0[id] < need[id] && cnt(id) >= need[id]; }), sh = spIds.filter(function (id) { return cnt(id) < need[id] || need[id] < Math.ceil(fl[id] / 100 * N - 1e-9); });
+    var spLive = {}; spIds.forEach(function (id) { spLive[id] = sp[id]; });
+    res.spreadTxt = spreadText(spLive).replace(/^spread /, "spread: ") + ", " +
+      (up.length ? up.length + " topped up (" + up.map(function (id) { return nm(id) + " " + Math.round(100 * c0[id] / N) + "%\u2192" + pc(cnt(id)) + "%"; }).join(", ") + ")" : "none needed topping up") +
+      (sh.length ? "; short: " + sh.map(function (id) { return nm(id) + " " + pc(cnt(id)) + "%" + (need[id] < Math.ceil(fl[id] / 100 * N - 1e-9) ? " (his Max%)" : " (the other rules)"); }).join(", ") : "") + ".";
+  }
+  res.expo = (tbl.length || listed.length ? " Min/Max %: " + tbl.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at least " + need[id] + ")"; })
     .concat(listed.map(function (id) { return byId(id).name + " " + cnt(id) + " of " + L.length + " (at most " + cap[id] + ")"; })).join("; ") + "." : "") +
     (gb ? " Max share in bank " + gb + "%: " + (atBank.length ? atBank.map(function (id) { return byId(id).name; }).join(", ") + " at it" : "no one at it") + "." : "");
   return res;
@@ -3115,6 +3156,7 @@ $("bankDraw").addEventListener("click", function () {
     $("buildStatus").innerHTML = esc("Banked " + added + " new · " + (res.lineups.length - added) + " repeats · " + near + " near-copies (7 of 8 shared with a banked lineup), tagged \"" + tag + "\"." +
       (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "")) +
       ' <span class="sat sat-' + sat.level + '" title="Fresh: new less near-copies, of the ' + n + ' asked for">' + esc(sat.text) + "</span>" +
+      (res.spreadTxt ? " " + esc(res.spreadTxt) : "") +
       (bankSaveFailed ? ' <span class="bad">Not saved in this browser: Save build to checkpoint.</span>' : "") +
       (more ? ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">rules</summary> ' + esc(more) + "</details>" : "");
   }, function (e) { $("buildStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; });
@@ -3136,7 +3178,7 @@ async function drawSweep() {
   var was = { lev: $("levW").value, low: $("lowN").value }, combos = [];
   levs.forEach(function (l) { lows.forEach(function (u) { combos.push([l, u]); }); });
   $("levW").value = 0; $("lowN").value = 0;
-  var idea = tagNow(), added = 0, rep = 0, skipped = [], done = 0;
+  var idea = tagNow(), added = 0, rep = 0, skipped = [], done = 0, spUp = 0, spShort = [], sp9 = spreadText(drawRules().spread);
   draw9 = { on: true, stop: false }; $("draw9Stop").hidden = false; $("bankDraw9").disabled = true; $("bankDraw").disabled = true;
   try {
     for (var k = 0; k < combos.length && !draw9.stop; k++) {
@@ -3147,6 +3189,7 @@ async function drawSweep() {
       var dr = drawRules(), res;
       try { res = await drawBank(cx, dr, n); } catch (e) { res = { lineups: [], why: e.message }; }
       if (!res.lineups.length) { skipped.push("L" + lw + " U" + u + (res.why ? " (" + res.why + ")" : "")); continue; }
+      if (res.spreadTxt) { var mu = res.spreadTxt.match(/, (\d+) topped up/); spUp += mu ? +mu[1] : 0; if (/; short: /.test(res.spreadTxt)) spShort.push("L" + lw + " U" + u + ": " + res.spreadTxt.split("; short: ")[1].replace(/\.$/, "")); }
       takeCounts(res);
       BANK.groups = BANK.groups || {}; BANK.groups[tag] = idea;
       var a = bankAdd(res.lineups, tag); added += a; rep += res.lineups.length - a; done++;
@@ -3159,7 +3202,8 @@ async function drawSweep() {
     draw9 = { on: false, stop: false }; $("draw9Stop").hidden = true; $("draw9Stop").textContent = "Stop after this batch"; $("bankDraw9").disabled = false; $("bankDraw").disabled = false;
     bankSaveState(); renderBank(); renderRules();
     $("buildStatus").innerHTML = esc("Draw the " + combos.length + (stopped ? " (stopped)" : "") + ": " + done + " batch" + (done === 1 ? "" : "es") + " banked under \u201c" + idea + "\u201d, " + added + " new, " + rep + " repeats" +
-      (skipped.length ? "; skipped (nothing fit): " + skipped.join(", ") : "") + ".") + (bankSaveFailed ? ' <span class="bad">Not saved in this browser: Save build to checkpoint.</span>' : "");
+      (skipped.length ? "; skipped (nothing fit): " + skipped.join(", ") : "") + "." +
+      (sp9 ? " " + sp9.replace(/^spread /, "Spread, each batch: ") + ", " + spUp + " top-up" + (spUp === 1 ? "" : "s") + " in all" + (spShort.length ? "; short: " + spShort.join("; ") : "") + "." : "")) + (bankSaveFailed ? ' <span class="bad">Not saved in this browser: Save build to checkpoint.</span>' : "");
   }
 }
 $("bankDraw9").addEventListener("click", function () { if (!draw9.on) drawSweep(); });
@@ -3449,6 +3493,9 @@ $("ruleList").addEventListener("click", function (e) {
   editing = i; loadEditor(state.rules[i]); $("rtSave").textContent = "Save changes"; $("rtCancel").hidden = false;
 });
 $("ruleList").addEventListener("change", function (e) {   // a rule's on/off box: off rules stay listed, the draw skips them
+  if (e.target.classList.contains("spreadIn")) {          // a template-5 rule's spread (0 off)
+    state.rules[+e.target.closest(".rule").dataset.i].spread = Math.max(0, Math.min(100, +e.target.value || 0)); save(); return;
+  }
   if (!e.target.classList.contains("ruleOn")) return;
   var r = state.rules[+e.target.closest(".rule").dataset.i];
   if (e.target.checked) delete r.off; else r.off = true;

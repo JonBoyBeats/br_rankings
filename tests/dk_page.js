@@ -417,6 +417,44 @@ function audit(name, L, o) {
   check("Draw the 9: one batch per leverage x under (here 2 x 2), each tagged '<idea> L.. U..' and grouped under the idea, its rules recording its own levW / lowN; the panel put back; remembered sweep; the status line",
         sw.label === "Draw the 4" && sw.have === 4 && sw.grouped && JSON.stringify(sw.rules) === JSON.stringify([[0, 0], [0, 1], [0.1, 0], [0.1, 1]]) && sw.restored && sw.grew && sw.remembered &&
         /^Draw the 4: 4 batches banked under .+, \d+ new, \d+ repeats\.?/.test(sw.msg), JSON.stringify(sw));
+  // template-5 spread (2026-11-21): "3 of these 6" with each of the 6 in at least 10% of the draw, topped up like Min%;
+  // off leaves no floors; Draw the 9 applies it per batch and records it in each tag's rules; Quick sim's draw honours it
+  const spr = await pg.evaluate(async () => {
+    const R0 = state.rules, F0 = JSON.stringify(state.floor || {}), keepN = $("bankN").value, out = {};
+    const pool = rows.filter(r => usable(r) && proj(r) >= DKSim.MIN_PROJ).sort((a, b) => proj(b) - proj(a));
+    const six = pool.slice(0, 3).concat(pool.slice(25, 28)).map(r => r.id);
+    const rule = { type: "min", ids: six, n: 3, label: "at least 3 of " + six.map(id => shortName(byId(id).name)).join(", ") };
+    state.rules = [rule]; renderRules();
+    const shares = L => six.map(id => L.filter(x => x.ids.indexOf(id) >= 0).length / L.length);
+    out.field = !!document.querySelector("#ruleList .rule .spreadIn") && document.querySelector("#ruleList .rule .spreadIn").value === "10";
+    rule.spread = 0; let r0 = await drawBank(ctx(), drawRules(), 50); out.off = shares(r0.lineups).map(x => +x.toFixed(2)); out.offTxt = r0.spreadTxt || "";
+    delete rule.spread; const dr = drawRules(); out.map = dr.spread;
+    let r1 = await drawBank(ctx(), dr, 50); out.on = shares(r1.lineups).map(x => +x.toFixed(2)); out.n1 = r1.lineups.length; out.txt = r1.spreadTxt || "";
+    out.all3 = r1.lineups.every(L => six.filter(id => L.ids.indexOf(id) >= 0).length >= 3);
+    // a rule's field changes its spread; off: no floors, none written to the Min% boxes
+    const inp = document.querySelector("#ruleList .rule .spreadIn"); inp.value = "20"; inp.dispatchEvent(new Event("change", { bubbles: true }));
+    out.edited = rule.spread === 20 && Object.values(drawRules().spread).every(v => v === 20);
+    rule.spread = 10; rule.off = true; out.offMap = Object.keys(drawRules().spread).length; out.floorSame = JSON.stringify(state.floor || {}) === F0; delete rule.off;
+    // Draw the 9 (2 x 1 here): each batch's own lineups hold the floor; each tag's rules record the spread
+    $("bankN").value = "20"; $("sweepLev").value = "0, 0.1"; $("sweepLow").value = "0"; $("levW").value = "0"; $("lowN").value = "0";
+    const idea = tagNow(); await drawSweep();
+    out.batches = ["L0 U0", "L0.1 U0"].map(x => { const t = idea + " " + x, L = BANK.lineups.filter((_, i) => BANK.tags[i][0] === t);
+      return { n: L.length, min: L.length ? Math.min.apply(null, shares(L)) : 0, rec: !!(BANK.tagRules[t] && BANK.tagRules[t].spread && BANK.tagRules[t].spread[six[5]] === 10) }; });
+    out.msg9 = $("buildStatus").textContent;
+    $("bankN").value = keepN; $("sweepLev").value = "0, 0.1, 0.2"; $("sweepLow").value = "0, 1, 2"; $("sweepLev").dispatchEvent(new Event("change"));
+    // Quick sim: its 10x draw honours the floors (5 kept: 50 drawn), and its note names the spread
+    $("quickN").value = "5"; await quickSim(); const q = QSIM;
+    out.quick = q ? { drawn: q.drawn, note: /spread 6 players \u226510%/.test($("quickBox").textContent), txt: q.spreadTxt } : null;
+    $("quickN").value = "20"; QSIM = null; renderQuick();
+    state.rules = R0; renderRules();
+    return out;
+  });
+  check("spread: a 3-of-6 rule with each of the 6 in at least 10% of a 50-lineup draw (topped up), every lineup still 3 of 6; the rule's field defaults to 10 and edits its spread; a status line",
+        spr.field && spr.n1 === 50 && spr.on.every(x => x >= 0.1) && spr.all3 && spr.edited && /^spread: 6 players \u226510%, /.test(spr.txt) && spr.offTxt === "", JSON.stringify(spr));
+  check("spread: the rule off leaves no floors (nothing written to Min%)", spr.offMap === 0 && spr.floorSame, JSON.stringify([spr.offMap, spr.floorSame]));
+  check("spread: Draw the 9 applies it per batch (each batch's six at 10%+) and records it in each tag's rules; the status names it",
+        spr.batches.every(b => b.n >= 10 && b.min >= 0.1 && b.rec) && /Spread, each batch: 6 players \u226510%/.test(spr.msg9), JSON.stringify([spr.batches, spr.msg9]));
+  check("spread: Quick sim's 10x draw honours it and its note names it", !!spr.quick && spr.quick.drawn === 50 && spr.quick.note && /^spread: 6 players/.test(spr.quick.txt), JSON.stringify(spr.quick));
   // template 5, at least N from these players: +set on a player row adds a chip; the rule saves as {type: "min", ids, n}
   // and every lineup drawn under it holds N of them
   const top3 = await pg.evaluate(() => rows.filter(r => r.status !== "Out" && !r.deepOut).sort((a, b) => proj(b) - proj(a)).slice(0, 3).map(r => r.id));
