@@ -218,14 +218,14 @@
      "drafted": 11.7
     },
     {
-     "player": "Jordan Poole",
-     "adp": 35.9,
-     "drafted": 3.7
-    },
-    {
      "player": "Max Strus",
      "adp": 35.9,
      "drafted": 26.8
+    },
+    {
+     "player": "Jordan Poole",
+     "adp": 35.9,
+     "drafted": 3.7
     },
     {
      "player": "De'Andre Hunter",
@@ -238,14 +238,14 @@
      "drafted": 2.4
     },
     {
-     "player": "Jordan Walsh",
-     "adp": 36.0,
-     "drafted": 0.6
-    },
-    {
      "player": "Landry Shamet",
      "adp": 36.0,
      "drafted": 3.2
+    },
+    {
+     "player": "Jordan Walsh",
+     "adp": 36.0,
+     "drafted": 0.6
     },
     {
      "player": "Daniel Gafford",
@@ -303,17 +303,7 @@
      "drafted": 0.3
     },
     {
-     "player": "Harrison Barnes",
-     "adp": 36.0,
-     "drafted": 0.1
-    },
-    {
      "player": "Luke Kornet",
-     "adp": 36.0,
-     "drafted": 0.1
-    },
-    {
-     "player": "Chris Cenac",
      "adp": 36.0,
      "drafted": 0.1
     },
@@ -323,7 +313,17 @@
      "drafted": 0.2
     },
     {
+     "player": "Chris Cenac",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
      "player": "Keaton Wagler",
+     "adp": 36.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Harrison Barnes",
      "adp": 36.0,
      "drafted": 0.1
     },

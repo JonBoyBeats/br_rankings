@@ -107,7 +107,7 @@ No moves against the button here last night.
 
 **Your Q moves.** None last night.
 
-**Today's Questionable players.** Karl-Anthony Towns (T2 on the ladders, 57% to play): if he sits, OG Anunoby, Andre Drummond, Josh Hart; Pascal Siakam (T3 on the ladders, 63% to play): if he sits, Aaron Nesmith; Norman Powell (T4 on the ladders, 51% to play): if he sits, Jalen Smith, Nic Claxton, Tre Jones; OG Anunoby (T5 on the ladders, 45% to play); Jalen Smith (T5 on the ladders, 63% to play); Derrick White (T5 on the ladders, 27% to play); PJ Washington (T5 on the ladders, 48% to play).
+**Today's Questionable players.** Karl-Anthony Towns (T2 on the ladders, 57% to play): if he sits, Andre Drummond, Josh Hart, Mikal Bridges; Pascal Siakam (T3 on the ladders, 64% to play): if he sits, Aaron Nesmith, Quenton Jackson; OG Anunoby (T5 on the ladders, 46% to play): if he sits, Andre Drummond, Josh Hart, Mikal Bridges; Jalen Smith (T5 on the ladders, 62% to play); Derrick White (T5 on the ladders, 28% to play); PJ Washington (T5 on the ladders, 48% to play).
 
 ## Back page
 
