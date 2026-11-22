@@ -15542,5 +15542,887 @@
     }
    ]
   }
+ },
+ "2026-11-21": {
+  "boom": [
+   [
+    0.6801,
+    0.6741,
+    true
+   ],
+   [
+    0.3369,
+    0.2884,
+    false
+   ],
+   [
+    0.1617,
+    0.1641,
+    false
+   ],
+   [
+    0.1292,
+    0.1277,
+    false
+   ],
+   [
+    0.2022,
+    0.1953,
+    false
+   ],
+   [
+    0.2085,
+    0.1871,
+    false
+   ],
+   [
+    0.2037,
+    0.2115,
+    false
+   ],
+   [
+    0.1916,
+    0.1718,
+    false
+   ],
+   [
+    0.2128,
+    0.1823,
+    false
+   ],
+   [
+    0.2091,
+    0.1957,
+    false
+   ],
+   [
+    0.18,
+    0.1918,
+    false
+   ],
+   [
+    0.1568,
+    0.1551,
+    false
+   ],
+   [
+    0.1618,
+    0.16,
+    false
+   ],
+   [
+    0.2246,
+    0.2358,
+    false
+   ],
+   [
+    0.1854,
+    0.1851,
+    false
+   ],
+   [
+    0.217,
+    0.2047,
+    true
+   ],
+   [
+    0.1948,
+    0.1834,
+    false
+   ],
+   [
+    0.1719,
+    0.1616,
+    false
+   ],
+   [
+    0.1669,
+    0.165,
+    false
+   ],
+   [
+    0.1705,
+    0.1686,
+    false
+   ],
+   [
+    0.1129,
+    0.1116,
+    false
+   ],
+   [
+    0.119,
+    0.1145,
+    true
+   ],
+   [
+    0.1363,
+    0.1313,
+    false
+   ],
+   [
+    0.1738,
+    0.1718,
+    false
+   ],
+   [
+    0.196,
+    0.1987,
+    false
+   ],
+   [
+    0.1217,
+    0.1268,
+    false
+   ],
+   [
+    0.2048,
+    0.2126,
+    false
+   ],
+   [
+    0.1491,
+    0.1474,
+    false
+   ],
+   [
+    0.2121,
+    0.2,
+    false
+   ],
+   [
+    0.1292,
+    0.1311,
+    false
+   ],
+   [
+    0.1971,
+    0.2047,
+    false
+   ],
+   [
+    0.2241,
+    0.227,
+    false
+   ],
+   [
+    0.1342,
+    0.1292,
+    false
+   ],
+   [
+    0.1469,
+    0.153,
+    false
+   ],
+   [
+    0.185,
+    0.1785,
+    false
+   ],
+   [
+    0.1456,
+    0.1556,
+    false
+   ],
+   [
+    0.2154,
+    0.2081,
+    false
+   ],
+   [
+    0.1231,
+    0.1217,
+    false
+   ],
+   [
+    0.149,
+    0.1512,
+    false
+   ],
+   [
+    0.1505,
+    0.1488,
+    false
+   ],
+   [
+    0.1828,
+    0.176,
+    false
+   ],
+   [
+    0.1522,
+    0.1544,
+    false
+   ],
+   [
+    0.152,
+    0.1572,
+    false
+   ],
+   [
+    0.1902,
+    0.1928,
+    true
+   ],
+   [
+    0.1318,
+    0.1337,
+    false
+   ],
+   [
+    0.172,
+    0.1659,
+    false
+   ],
+   [
+    0.1438,
+    0.1428,
+    false
+   ],
+   [
+    0.1705,
+    0.1603,
+    false
+   ],
+   [
+    0.1732,
+    0.1597,
+    false
+   ],
+   [
+    0.183,
+    0.1949,
+    true
+   ],
+   [
+    0.1382,
+    0.1439,
+    false
+   ],
+   [
+    0.1401,
+    0.1498,
+    false
+   ],
+   [
+    0.102,
+    0.1117,
+    false
+   ],
+   [
+    0.1611,
+    0.1676,
+    false
+   ],
+   [
+    0.1385,
+    0.1481,
+    false
+   ],
+   [
+    0.1699,
+    0.1809,
+    false
+   ],
+   [
+    0.1981,
+    0.1913,
+    false
+   ],
+   [
+    0.1571,
+    0.1527,
+    false
+   ],
+   [
+    0.1161,
+    0.121,
+    false
+   ],
+   [
+    0.1289,
+    0.1379,
+    false
+   ],
+   [
+    0.156,
+    0.1651,
+    false
+   ],
+   [
+    0.147,
+    0.1492,
+    false
+   ],
+   [
+    0.1265,
+    0.1334,
+    false
+   ],
+   [
+    0.1515,
+    0.1389,
+    false
+   ],
+   [
+    0.1103,
+    0.1103,
+    false
+   ],
+   [
+    0.1468,
+    0.1568,
+    false
+   ],
+   [
+    0.1158,
+    0.1176,
+    false
+   ],
+   [
+    0.0725,
+    0.0779,
+    false
+   ]
+  ],
+  "mine": {
+   "breakers": {
+    "field": [
+     11712,
+     23040
+    ],
+    "mine": [
+     0,
+     0
+    ],
+    "top1": [
+     118,
+     420
+    ]
+   },
+   "low_drafted": {
+    "field": [
+     11712,
+     2233
+    ],
+    "mine": [
+     0,
+     0
+    ]
+   },
+   "turn23": {
+    "most-owned": 0,
+    "other": 0,
+    "rarer": 0
+   }
+  },
+  "pod": 6,
+  "q": [
+   {
+    "early": [
+     539,
+     3
+    ],
+    "late": [
+     1387,
+     3
+    ],
+    "name": "Deni Avdija",
+    "played": true,
+    "tag": "Questionable",
+    "value": 2.7
+   },
+   {
+    "early": [
+     0,
+     0
+    ],
+    "late": [
+     0,
+     0
+    ],
+    "name": "PJ Washington",
+    "played": false,
+    "tag": "Questionable",
+    "value": null
+   }
+  ],
+  "teams": 11712,
+  "ties": [
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1947,
+    "hi_t1": 7,
+    "lo_brk": true,
+    "lo_n": 1123,
+    "lo_t1": 29,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1947,
+    "hi_t1": 7,
+    "lo_brk": false,
+    "lo_n": 1099,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1947,
+    "hi_t1": 7,
+    "lo_brk": false,
+    "lo_n": 516,
+    "lo_t1": 5,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1947,
+    "hi_t1": 7,
+    "lo_brk": true,
+    "lo_n": 229,
+    "lo_t1": 8,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1947,
+    "hi_t1": 7,
+    "lo_brk": false,
+    "lo_n": 523,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1947,
+    "hi_t1": 7,
+    "lo_brk": true,
+    "lo_n": 263,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1897,
+    "hi_t1": 17,
+    "lo_brk": false,
+    "lo_n": 1099,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1897,
+    "hi_t1": 17,
+    "lo_brk": false,
+    "lo_n": 516,
+    "lo_t1": 5,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1897,
+    "hi_t1": 17,
+    "lo_brk": true,
+    "lo_n": 229,
+    "lo_t1": 8,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1897,
+    "hi_t1": 17,
+    "lo_brk": false,
+    "lo_n": 523,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1897,
+    "hi_t1": 17,
+    "lo_brk": true,
+    "lo_n": 263,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1581,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 1123,
+    "lo_t1": 29,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1581,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 206,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1581,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 47,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1581,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 72,
+    "lo_t1": 3,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1581,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 90,
+    "lo_t1": 9,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1845,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 1099,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1845,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 516,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1845,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 523,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1845,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 263,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": true,
+    "hi_n": 1123,
+    "hi_t1": 29,
+    "lo_brk": false,
+    "lo_n": 516,
+    "lo_t1": 5,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": true,
+    "hi_n": 1123,
+    "hi_t1": 29,
+    "lo_brk": true,
+    "lo_n": 206,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": true,
+    "hi_n": 1123,
+    "hi_t1": 29,
+    "lo_brk": false,
+    "lo_n": 47,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": true,
+    "hi_n": 1123,
+    "hi_t1": 29,
+    "lo_brk": true,
+    "lo_n": 72,
+    "lo_t1": 3,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": true,
+    "hi_n": 1123,
+    "hi_t1": 29,
+    "lo_brk": true,
+    "lo_n": 229,
+    "lo_t1": 8,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": true,
+    "hi_n": 1123,
+    "hi_t1": 29,
+    "lo_brk": true,
+    "lo_n": 90,
+    "lo_t1": 9,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": true,
+    "hi_n": 1123,
+    "hi_t1": 29,
+    "lo_brk": true,
+    "lo_n": 263,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1099,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 516,
+    "lo_t1": 5,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1099,
+    "hi_t1": 2,
+    "lo_brk": true,
+    "lo_n": 206,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1099,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 47,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1099,
+    "hi_t1": 2,
+    "lo_brk": true,
+    "lo_n": 229,
+    "lo_t1": 8,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1099,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 523,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 1099,
+    "hi_t1": 2,
+    "lo_brk": true,
+    "lo_n": 263,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 516,
+    "hi_t1": 5,
+    "lo_brk": true,
+    "lo_n": 206,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 516,
+    "hi_t1": 5,
+    "lo_brk": false,
+    "lo_n": 47,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 516,
+    "hi_t1": 5,
+    "lo_brk": true,
+    "lo_n": 229,
+    "lo_t1": 8,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 516,
+    "hi_t1": 5,
+    "lo_brk": true,
+    "lo_n": 263,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": true,
+    "hi_n": 263,
+    "hi_t1": 10,
+    "lo_brk": false,
+    "lo_n": 47,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 523,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 229,
+    "lo_t1": 8,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-21",
+    "hi_brk": false,
+    "hi_n": 523,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 263,
+    "lo_t1": 10,
+    "lo_wins": true
+   }
+  ],
+  "turns": {
+   "1/2": [
+    {
+     "combo": [
+      "Paul George",
+      "LaMelo Ball"
+     ],
+     "pop": [
+      309,
+      1,
+      61456.80000000001
+     ],
+     "rest": [
+      1055,
+      2,
+      210572.99999999997
+     ]
+    }
+   ],
+   "2/3": [
+    {
+     "anchor": "Victor Wembanyama",
+     "combo": [
+      "Kyrie Irving",
+      "Darius Garland"
+     ],
+     "pop": [
+      128,
+      1,
+      29818.400000000016
+     ],
+     "rest": [
+      915,
+      97,
+      218314.90000000023
+     ]
+    },
+    {
+     "anchor": "Cooper Flagg",
+     "combo": [
+      "Cedric Coward",
+      "Ty Jerome"
+     ],
+     "pop": [
+      90,
+      0,
+      16800.600000000013
+     ],
+     "rest": [
+      1056,
+      0,
+      193816.20000000016
+     ]
+    },
+    {
+     "anchor": "Jalen Brunson",
+     "combo": [
+      "Jaden McDaniels",
+      "Ty Jerome"
+     ],
+     "pop": [
+      90,
+      0,
+      16827.600000000002
+     ],
+     "rest": [
+      1256,
+      0,
+      242978.49999999997
+     ]
+    }
+   ]
+  }
  }
 }
