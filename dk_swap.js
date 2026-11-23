@@ -10,7 +10,11 @@
  *   3. live points soFar (a started game's DraftKings points from ESPN's play-by-play before a moment, and the share of
  *                  regulation left: scripts/dk_lateswap_study.py so_far, ported line for line), liveState (every
  *                  started player's points so far and his game's share left)
- * Later pieces: hidden ownership and the feasible field draws, the proposer, the export.
+ *   4. the hidden field hiddenMass / hiddenOwn (the players still to play: our projected ownership scaled to the mass the
+ *                  standings leave hidden, the study's best piece), fieldDraw (one real entry's hidden slots drawn
+ *                  from that ownership: slot-eligible, no player twice, within the salary it has left; after
+ *                  DRAW_TRIES failures, without the salary limit, counted)
+ * Later pieces: the proposer, the export.
  */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory();
@@ -229,7 +233,56 @@
     return out;
   }
 
-  return { CAP: CAP, SLOTS: SLOTS, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
+  // --- 4. the hidden field ------------------------------------------------------------------------------------------
+  // The study's draw (scripts/dk_lateswap_study.py impute_one): G and F slots first, UTIL last, each pick weighted by
+  // ownership among the players who fit the slot, aren't in the entry yet and leave MIN_SAL for every slot still to
+  // fill; a draw leaving over LEFT_OK unspent is kept LEFT_KEEP of the time (real entries: 98.7% leave $1,000 or less).
+  var LEFT_OK = 1000, LEFT_KEEP = 0.1, MIN_SAL = 3000, DRAW_TRIES = 25;
+  function hiddenMass(entries) {     // the ownership still hidden: 100 x hidden slots / entries (800 at lock, 0 at the end)
+    var h = 0; entries.forEach(function (e) { e.slots.forEach(function (x) { if (x.name === null) h++; }); });
+    return entries.length ? 100 * h / entries.length : 0;
+  }
+  function hiddenOwn(pre, hidden, mass) {    // {id: %}: our projected ownership of the hidden players, scaled to the mass
+    var sp = hidden.reduce(function (t, id) { return t + (pre[id] || 0); }, 0) || 1, out = {};
+    hidden.forEach(function (id) { out[id] = (pre[id] || 0) * mass / sp; });
+    return out;
+  }
+  /* One real entry's hidden slots: ids in open-slot order, or null when even the fallback can't fill them. open: slot
+     labels; left: 50k less the revealed salaries; pool: the hidden players' cards; w: {id: weight} (hiddenOwn);
+     stats: {draws, fallback} counted. */
+  function fieldDraw(random, open, left, pool, w, stats) {
+    var order = open.map(function (s, k) { return { s: s, k: k }; }).sort(function (a, b) { return (a.s === "UTIL") - (b.s === "UTIL"); });
+    var pick = function (cands) {
+      var tot = 0; cands.forEach(function (r) { tot += Math.max(w[r.id] || 0, 1e-6); });
+      var x = random() * tot;
+      for (var i = 0; i < cands.length; i++) { x -= Math.max(w[cands[i].id] || 0, 1e-6); if (x <= 0) return cands[i]; }
+      return cands[cands.length - 1];
+    };
+    var once = function (capped) {
+      var used = {}, sal = 0, out = new Array(open.length);
+      for (var n = 0; n < order.length; n++) {
+        var reserve = MIN_SAL * (order.length - n - 1);
+        var c = pool.filter(function (r) { return !used[r.id] && fits(order[n].s, r) && (!capped || r.salary + sal + reserve <= left); });
+        if (!c.length) return null;
+        var r = pick(c); used[r.id] = 1; sal += r.salary; out[order[n].k] = r.id;
+      }
+      return { ids: out, sal: sal };
+    };
+    if (stats) stats.draws = (stats.draws || 0) + 1;
+    var got = null;
+    for (var t = 0; t < DRAW_TRIES; t++) {
+      var d = once(true);
+      if (!d) continue;
+      got = d.ids;
+      if (left - d.sal <= LEFT_OK || random() < LEFT_KEEP) return d.ids;
+    }
+    if (got) return got;
+    if (stats) stats.fallback = (stats.fallback || 0) + 1;    // no fill within the salary left: drawn without the limit
+    var f = once(false);
+    return f ? f.ids : null;
+  }
+
+  return { CAP: CAP, SLOTS: SLOTS, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
            parseEntries: parseEntries, cellId: cellId, norm: norm, matchNames: matchNames, fits: fits, validate: validate,
            arrangeOpen: arrangeOpen };
 });

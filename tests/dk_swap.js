@@ -104,6 +104,38 @@ check("live state at the 02:00Z tip: the in-progress game's players carry points
       ku.every(r => ls.pts[r.id] != null && Math.abs(ls.left[r.id] - mid.left) < 1e-9) && wich.every(r => ls.pts[r.id] === null && ls.left[r.id] === 1) &&
       ls.unknown.join() === "401911232" && late.every(r => !(r.id in ls.pts)), JSON.stringify(ls.unknown));
 
+// --- 4. the hidden field ---
+const pre = C.own, hiddenIds = rows.filter(r => !started(r.id) && r.status !== "Out").map(r => r.id);
+const mass = W.hiddenMass(st.entries), nulls = st.entries.reduce((t, e) => t + e.slots.filter(x => x.name === null).length, 0);
+const ho = W.hiddenOwn(pre, hiddenIds, mass), hsum = Object.values(ho).reduce((a, b) => a + b, 0);
+check("hidden ownership: the mass is 100 x hidden slots / entries, and the hidden players' scaled ownership sums to it in proportion to ours",
+      Math.abs(mass - 100 * nulls / st.entries.length) < 1e-9 && mass > 100 && mass < 700 && Math.abs(hsum - mass) < 1e-6 &&
+      hiddenIds.filter(id => pre[id] > 0).every(id => Math.abs(ho[id] / pre[id] - mass / hiddenIds.reduce((t, i) => t + (pre[i] || 0), 0)) < 1e-9), mass.toFixed(1));
+// the real entries' hidden slots, drawn: eligible, no duplicates, within the salary left
+let rs = 7; const rnd = () => { rs = (rs * 16807) % 2147483647; return rs / 2147483647; };
+const pool = hiddenIds.map(id => by[id]), stats = {}, nameId = mt.ids;
+let bad = [], over = 0, n = 0;
+const freq = {};
+st.entries.slice(0, 200).forEach(e => {
+  const open = e.slots.filter(x => x.name === null).map(x => x.slot), have = e.slots.filter(x => x.name).map(x => nameId[x.name]);
+  const left = W.CAP - have.reduce((t, id) => t + by[id].salary, 0);
+  for (let k = 0; k < 5; k++) {
+    const f0 = stats.fallback || 0, d = W.fieldDraw(rnd, open, left, pool, ho, stats); n++;
+    if (!d) { bad.push("null"); continue; }
+    if (new Set(d.concat(have)).size !== d.length + have.length) bad.push("dup");
+    if (!d.every((id, j) => W.fits(open[j], by[id]) && !started(id))) bad.push("slot");
+    if ((stats.fallback || 0) === f0 && d.reduce((t, id) => t + by[id].salary, 0) > left) over++;
+    d.forEach(id => { freq[id] = (freq[id] || 0) + 1; });
+  }
+});
+check("field draws: every hidden slot filled with an eligible, unstarted player, none twice, within the salary left (fallbacks aside), the fallbacks counted",
+      !bad.length && over === 0 && stats.draws === n && (stats.fallback || 0) / n < 0.05, JSON.stringify({ bad: bad.slice(0, 3), over, n, fallback: stats.fallback || 0 }));
+const top = Object.keys(ho).sort((a, b) => ho[b] - ho[a])[0], low = Object.keys(ho).filter(id => ho[id] > 0).sort((a, b) => ho[a] - ho[b])[0];
+check("field draws: ownership-weighted (the most-owned hidden player drawn far more than the least)", (freq[top] || 0) > 5 * (freq[low] || 0) + 5, JSON.stringify([freq[top], freq[low]]));
+const fb = {}; const tight = W.fieldDraw(rnd, ["G", "F", "UTIL"], 7000, pool, ho, fb);
+check("field draws: with too little salary for any fill, the fallback fills the slots anyway (eligible, no duplicates) and is counted",
+      fb.fallback === 1 && tight && new Set(tight).size === 3 && tight.every((id, j) => W.fits(["G", "F", "UTIL"][j], by[id])), JSON.stringify([fb, tight]));
+
 passes.forEach(p => console.log("PASS " + p));
 fails.forEach(f => console.log("FAIL " + f));
 console.log(`${passes.length} passed, ${fails.length} failed`);

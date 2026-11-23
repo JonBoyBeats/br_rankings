@@ -1,6 +1,7 @@
 """The late-swap tool's test fixtures (tests/swap_fixture/), from the 11-18 main slate (157033) at the study's break 2
 (analysis/cbb/dk/lateswap_2026-11-21.md: the 00:30Z and 01:00Z games started, the decision at the 02:00Z tip):
-  cards_157033.json            the lock card's players (the fields the swap tool reads)
+  cards_157033.json            the lock card's players (the fields the swap tool reads) and the field's projected
+                               ownership at lock (own)
   standings_157033_break2.csv  the contest's real standings (analysis/cbb/dk/standings) as at the tip: the players
                                still to play hidden (LOCKED in the Lineup cell, their ownership rows dropped), points blank
   DKEntries_fake.csv           three entries in DraftKings' entries-file format with made-up entry ids (never a real
@@ -24,9 +25,11 @@ SLOTS = ["G", "G", "G", "F", "F", "F", "UTIL", "UTIL"]
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--mirror", default=os.path.join(HERE, "..", "..", "br-adp-mirror")); a = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
-    sl, _ = K.lock_doc(a.mirror, "dk_cbb_morning.json", DATE, G)
+    sl, start = K.lock_doc(a.mirror, "dk_cbb_morning.json", DATE, G)
     cards = {i: {k: c.get(k) for k in KEEP} for i, c in sl["players"].items()}
-    json.dump({"draft_group": G, "date": DATE, "tip": TIP, "players": cards}, open(os.path.join(OUT, "cards_%s.json" % G), "w"), indent=0, sort_keys=True)
+    fl, _ = K.lock_doc(a.mirror, "dk_cbb_field.json", DATE, G, start)      # our projected ownership at lock (the field's)
+    own = {i: round(v, 3) for i, v in ((fl or {}).get("own") or {}).items()}
+    json.dump({"draft_group": G, "date": DATE, "tip": TIP, "players": cards, "own": own}, open(os.path.join(OUT, "cards_%s.json" % G), "w"), indent=0, sort_keys=True)
     started = lambda nm: any(c["name"] == nm and (c.get("game_start") or "9") < TIP for c in cards.values())
     src = os.path.join(HERE, "..", "analysis", "cbb", "dk", "standings", "contest-standings-%s.csv" % CONTEST)
     rows = list(csv.reader(open(src, encoding="utf-8-sig")))
