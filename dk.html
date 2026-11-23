@@ -30,7 +30,7 @@
   [hidden] { display: none !important; }
   html, body { margin: 0; }
   body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
-  .shell { max-width: 980px; margin: 0 auto; padding: 0 16px 64px; }
+  .shell { max-width: 1240px; margin: 0 auto; padding: 0 16px 64px; }
   .masthead { position: sticky; top: 0; z-index: 30; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: 14px; }
   .mast-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
   h1 { font-size: 19px; font-weight: 700; letter-spacing: -.015em; margin: 0; white-space: nowrap; }
@@ -59,7 +59,7 @@
   .filters button { height: 28px; padding: 3px 10px; font-size: 12.5px; }
   .filters input { height: 28px; font-size: 13px; flex: 1 1 140px; min-width: 120px; }
 
-  .head, .row { display: grid; grid-template-columns: 128px minmax(96px, 1fr) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px; gap: 4px; align-items: center; padding: 3px 4px; line-height: 1.25; }
+  .head, .row { display: grid; grid-template-columns: 128px minmax(170px, 230px) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px; gap: 3px; align-items: center; padding: 2px 4px; line-height: 1.25; }
   .head { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 8px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
   #players { max-height: 68vh; overflow-y: auto; border-bottom: 1px solid var(--line-strong); }
   .head span[data-sort] { cursor: pointer; user-select: none; }
@@ -74,7 +74,7 @@
   .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   /* the name truncates first; Q / D / OUT / new stay (.tkeep); the other tags truncate, all of them in the hover (.tmore) */
   #players .name { display: flex; align-items: center; gap: 3px; }
-  #players .name .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; }
+  #players .name .nm { flex: none; }
   #players .name .tkeep { flex: none; display: inline-flex; gap: 3px; }
   #players .name .tmore { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 3 auto; }
   .lx button.act { width: auto; padding: 0 4px; font-size: 10px; font-weight: 600; }
@@ -178,11 +178,11 @@
   #fillSet > summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
   #nbList.nbscroll { max-height: 440px; }
   #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
-  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(96px, 1fr) 44px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px; }
+  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px; }
   /* no player scan for the slate yet (2026-11-20): its six columns hidden, their width to the name */
   #players.noscan .col-scan { display: none; }
-  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(140px, 1fr) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px; }
-  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(140px, 1fr) 44px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px; }
+  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(170px, 230px) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px; }
+  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px; }
   #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
   #players .row.bankgap-in { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out { box-shadow: inset 3px 0 var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
@@ -275,16 +275,26 @@
   .swapcard label { display: flex; align-items: center; gap: 6px; margin-top: 4px; } .swapcard.keep { opacity: .7; }
   table.qsim tbody tr { cursor: pointer; } table.qsim tbody tr.on td { background: rgba(77, 196, 141, .14); }
   table.quick th { font-size: 11px; color: var(--muted); font-weight: 500; } table.quick tfoot td { font-weight: 600; border-top: 1px solid var(--line, #2a3140); }
+  /* tablet / narrow desktop (2026-11-23, the operator: every name readable): the list scrolls sideways under a fixed
+     L / X and name rather than squeezing the name */
+  @media (min-width: 621px) {
+    #players { overflow-x: auto; }
+    #players .head, #players .row { width: max-content; min-width: 100%; justify-content: space-between; }
+    #players .row > .lx, #players .row > .who, #players .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
+    #players .row > .lx, #players .head > :nth-child(1) { left: 0; }
+    #players .row > .who, #players .head > :nth-child(2) { left: 131px; }
+    #players .row.locked > .lx, #players .row.locked > .who { background: linear-gradient(rgba(77, 196, 141, .12), rgba(77, 196, 141, .12)), var(--bg); }
+  }
   @media (max-width: 620px) {
     /* the player list on a phone (2026-11-21, the operator): every column, scrolling left and right under a fixed
        L / X and a 150px name; Sal, Proj, Val and Own straight after the name, Pos / Team / Opp moved to the end */
     #players { overflow-x: auto; }
     #players .head, #players .row { width: max-content; min-width: 100%; }
     #players .col-pos, #players .col-team, #players .col-opp { order: 1; }
-    #players .head, #players .row { grid-template-columns: 88px 150px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
-    #players.noscan .head, #players.noscan .row { grid-template-columns: 88px 150px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px 30px 44px 48px; }
-    #players.fillcols .head, #players.fillcols .row { grid-template-columns: 88px 150px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px 44px; }
-    #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 88px 150px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px 44px; }
+    #players .head, #players .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
+    #players.noscan .head, #players.noscan .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px 30px 44px 48px; }
+    #players.fillcols .head, #players.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px 44px; }
+    #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px 44px; }
     #players .row > .lx, #players .row > .who, #players .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
     #players .row > .lx, #players .head > :nth-child(1) { left: 0; }
     #players .row > .who, #players .head > :nth-child(2) { left: 88px; }
