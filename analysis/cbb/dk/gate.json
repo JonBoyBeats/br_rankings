@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-23T15:11:43Z",
+ "generated_at": "2026-11-23T17:56:33Z",
  "nights": 7,
  "bands": [
   {
@@ -45,7 +45,7 @@
   "rule": "a Questionable player's projection x factor: actual / projected over the graded Questionable player-nights, once there are 5",
   "factor_refit": 0.333,
   "pinned": "lock-2026-11-23",
-  "field_factor": 0.333
+  "field_factor": 1.0
  },
  "rule": "open where DraftKings' average beat ours: 5+ nights, 100+ player-nights, lower mean error, better on 60%+ of nights",
  "override": "the owner's choice at the 2026-11-23 lock: the 50/50 blend at $6,000+, ours alone below",

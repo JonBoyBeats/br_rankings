@@ -224,8 +224,10 @@ PROJ_CHOICE = "blend6k"
 # until the next Friday review changes this line. None: the refits apply nightly, as before.
 # questionable: the projection's Questionable factor; questionable_field: the simulated field's (2026-11-23, the owner's
 # call before the lock: a Questionable player keeps his full projection and his Q tag, the owner rules him in or out
-# on the news; the field keeps fading the tag at the measured 0.333, as real fields do).
-LOCK = {"version": "lock-2026-11-23", "questionable": 1.0, "questionable_field": 0.333}
+# on the news; the field fades him at 1.0, i.e. not at all, from the owner's call at 17:56Z: at 0.333 the field
+# never drafted a Q player, 0% owned; Mark out rebuilds the field without him. A measured field factor from real
+# standings may replace it after review).
+LOCK = {"version": "lock-2026-11-23", "questionable": 1.0, "questionable_field": 1.0}
 CAL_WEEK = ("2026-11-16", "2026-11-23")      # the calibration week's slates, for calweek
 BLEND_W = 0.5            # the audit's blend: ours x BLEND_W + DraftKings' average x (1 - BLEND_W) (cal-1's)
 AUDIT_DISAGREE = 5        # ownership points: a disagreement big enough to list where the field was right
