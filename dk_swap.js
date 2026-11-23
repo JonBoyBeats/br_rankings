@@ -20,7 +20,9 @@
  *                  scoring more, top 1%, cash, expected payout), swaps (one unstarted player out, one unstarted,
  *                  affordable player in who keeps the open slots fillable), propose (per entry, the best expected
  *                  payout, then a second swap on top while it adds)
- * Later pieces: the export.
+ *   6. the export    applySwaps (an entry's 8 ids with its swaps made and the open part re-seated), exportEntries (the
+ *                  entries file back with the accepted edits: every row and column as read, a started player's cell
+ *                  byte for byte, each edited row validated first; any row DraftKings would refuse refuses the file)
  */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory();
@@ -90,7 +92,7 @@
     t.slice(1).forEach(function (r, k) {
       if (!/^\d+$/.test((r[0] || "").trim())) { extra.push({ at: k + 1, row: r }); return; }
       var cells = r.slice(4, 12).map(function (x) { return (x || "").trim(); });
-      rows.push({ entryId: r[0].trim(), contestName: (r[1] || "").trim(), contestId: (r[2] || "").trim(), fee: (r[3] || "").trim(),
+      rows.push({ at: k + 1, entryId: r[0].trim(), contestName: (r[1] || "").trim(), contestId: (r[2] || "").trim(), fee: (r[3] || "").trim(),
                   cells: cells, ids: cells.map(cellId), locked: cells.map(function (c) { return /\(LOCKED\)\s*$/i.test(c); }), rest: r.slice(12) });
     });
     return { header: header, rows: rows, extra: extra };
@@ -371,7 +373,40 @@
     return { cur: cur, steps: steps };
   }
 
-  return { CAP: CAP, SLOTS: SLOTS, board: board, canFill: canFill, swaps: swaps, propose: propose, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
+  // --- 6. the export ------------------------------------------------------------------------------------------------
+  /* ids: an entry's 8 ids (SLOTS order); steps: [[out, in], ...]. Each out replaced in place by its in, then the open
+     part re-seated (arrangeOpen: the started players where they are, the latest tips in UTIL). null if no legal seating. */
+  function applySwaps(ids, steps, by, started) {
+    var x = ids.slice();
+    (steps || []).forEach(function (sw) { var k = x.indexOf(sw[0]); if (k >= 0) x[k] = sw[1]; });
+    return arrangeOpen(x, by, started);
+  }
+  /* The entries file with edits ({entryId: 8 ids, SLOTS order}): {csv, n, errors}. Rows without an edit, the header,
+     the columns after the lineup and the file's other rows go back as read; an edited row keeps a started player's
+     cell exactly as DraftKings wrote it and writes "Name (id)" for the rest. Any edited row failing validate (against
+     the row as read) refuses the whole file: csv null and errors naming the entry. */
+  function exportEntries(parsed, edits, by, started) {
+    var errors = [], out = [parsed.header.map(csvCell).join(",")], n = 0, rowsAt = {};
+    parsed.rows.forEach(function (r) {
+      var next = edits[r.entryId], cells = r.cells.slice();
+      if (next) {
+        var v = validate(r.ids, next, by, started);
+        if (!v.ok) { errors.push("Entry " + r.entryId + ": " + v.errors.join("; ")); return; }
+        cells = next.map(function (id, k) { return id === r.ids[k] ? r.cells[k] : (by[id].name + " (" + id + ")"); });
+        if (next.some(function (id, k) { return id !== r.ids[k]; })) n++;
+      }
+      rowsAt[r.entryId] = [r.entryId, r.contestName, r.contestId, r.fee].concat(cells, r.rest || []).map(csvCell).join(",");
+    });
+    if (errors.length) return { csv: null, n: 0, errors: errors };
+    // back in the file's own order: the entries where they were, the other rows (instructions, the player list) too
+    var all = [];
+    parsed.rows.forEach(function (r) { all.push({ at: r.at, line: rowsAt[r.entryId] }); });
+    (parsed.extra || []).forEach(function (x) { all.push({ at: x.at, line: x.row.map(csvCell).join(",") }); });
+    all.sort(function (a, b) { return a.at - b.at; }).forEach(function (x) { out.push(x.line); });
+    return { csv: out.join("\r\n") + "\r\n", n: n, errors: [] };
+  }
+
+  return { CAP: CAP, SLOTS: SLOTS, applySwaps: applySwaps, exportEntries: exportEntries, board: board, canFill: canFill, swaps: swaps, propose: propose, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
            parseEntries: parseEntries, cellId: cellId, norm: norm, matchNames: matchNames, fits: fits, validate: validate,
            arrangeOpen: arrangeOpen };
 });

@@ -165,6 +165,29 @@ check("proposer: a second swap only on top of the first and only when it adds ex
         const A = W.arrangeOpen(after, byR, isSt); return !!A && W.validate(before, A, byR, isSt).ok; }),
       JSON.stringify(pr2.steps.map(x => [x.swap, x.score.ev.toFixed(2)])));
 
+// --- 6. the export ---
+const raw = fs.readFileSync(path.join(FIX, "DKEntries_fake.csv"), "utf8"), ENT = W.parseEntries(raw);
+const r0 = ENT.rows[0], open0 = r0.ids.map((id, k) => started(id) ? -1 : k).filter(k => k >= 0);
+const ko = open0[0], roomE = W.CAP - sal(r0.ids) + by[r0.ids[ko]].salary;
+const inE = rows.find(r => !started(r.id) && r0.ids.indexOf(r.id) < 0 && r.status !== "Out" && W.fits(W.SLOTS[ko], r) && r.salary <= roomE);
+const next0 = W.applySwaps(r0.ids, [[r0.ids[ko], inE.id]], by, started);
+const ex = W.exportEntries(ENT, { [r0.entryId]: next0 }, by, started);
+const back = ex.csv && W.parseEntries(ex.csv);
+const b0 = back && back.rows.find(r => r.entryId === r0.entryId);
+check("export: the edited entry's swap made and re-seated, its started cells byte for byte, the other entries and the header as read, and the file parses back",
+      !!ex.csv && ex.n === 1 && !!b0 && JSON.stringify(b0.ids) === JSON.stringify(next0) && b0.ids.indexOf(inE.id) >= 0 &&
+      r0.cells.every((c, k) => !started(r0.ids[k]) || b0.cells[k] === c) && back.rows.slice(1).every((r, j) => JSON.stringify(r.cells) === JSON.stringify(ENT.rows[j + 1].cells)) &&
+      ex.csv.split("\r\n")[0] === raw.split(/\r?\n/)[0], JSON.stringify(ex.errors));
+const exSame = W.exportEntries(ENT, {}, by, started);
+check("export: with no edits the file comes back line for line", exSame.csv.trim().split("\r\n").join("\n") === raw.trim().split(/\r?\n/).join("\n"));
+const badMove = r0.ids.slice(), ksE = r0.ids.findIndex(started), koE = open0[0]; badMove[ksE] = inE.id;
+const exBad = W.exportEntries(ENT, { [r0.entryId]: badMove, [ENT.rows[1].entryId]: ENT.rows[1].ids }, by, started);
+check("export: an edit taking out a started player refuses the whole file and names the entry", exBad.csv === null && exBad.errors.length === 1 && exBad.errors[0].indexOf(r0.entryId) >= 0 && /must stay/.test(exBad.errors[0]), JSON.stringify(exBad.errors));
+const dearE = rows.filter(r => !started(r.id) && r0.ids.indexOf(r.id) < 0 && W.fits(W.SLOTS[ko], r)).sort((a, b) => b.salary - a.salary)[0], over0 = r0.ids.slice(); over0[ko] = dearE.id;
+const exOver = W.exportEntries(ENT, { [r0.entryId]: over0 }, by, started);
+check("export: an edit over the cap is refused", sal(over0) <= W.CAP || (exOver.csv === null && /over \$50,000/.test(exOver.errors.join())), sal(over0) + " " + JSON.stringify(exOver.errors));
+check("export: applySwaps keeps every started player in his slot", next0.every((id, k) => !started(r0.ids[k]) || id === r0.ids[k]));
+
 passes.forEach(p => console.log("PASS " + p));
 fails.forEach(f => console.log("FAIL " + f));
 console.log(`${passes.length} passed, ${fails.length} failed`);
