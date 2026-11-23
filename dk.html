@@ -129,6 +129,12 @@
   details.card td, details.card th { padding: 1px 8px 1px 0; text-align: right; }
   details.card td:first-child, details.card th:first-child { text-align: left; }
   details.card button { height: 20px; padding: 0 6px; font-size: 11px; margin: 0 4px 2px 0; }
+  .wu p { margin: 4px 0 6px 10px; line-height: 1.45; }
+  .wu .wt { overflow-x: auto; margin: 2px 0 4px 10px; -webkit-overflow-scrolling: touch; }
+  .wu .wt table { margin: 0; font-family: var(--mono); font-size: 11px; white-space: nowrap; }
+  .wu .wt td.l, .wu .wt th.l { text-align: left; position: sticky; left: 0; background: var(--surface); }
+  .wu .wchips { margin: 2px 0 6px 10px; }
+  .wu .wchips button.wuchip[aria-pressed="true"] { border-color: var(--bad); color: var(--bad); }
   .tag.k-starting, .tag.k-back { background: var(--live); color: #04140c; }
   .tag.k-news { border: 1px solid var(--line-strong); color: var(--muted); }
   details.news { margin: 4px 0 10px; }
@@ -565,7 +571,7 @@
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var SLOTS = DKSim.SLOTS;
-var doc = null, slate = null, rows = [], state = null, news = [], newsUnsourced = [], analyst = [], fieldDoc = null, gate = null, BP = null;
+var doc = null, slate = null, rows = [], state = null, news = [], newsUnsourced = [], analyst = [], fieldDoc = null, gate = null, BP = null, wuDoc = null;
 var teamsDoc = null, ruleCounts = {}, editing = -1;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var OWN_WATCH = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/own_watch.json";   // B3 (dk_eval.py ownwatch)
@@ -812,6 +818,10 @@ async function load() {
     var nj = nr.ok ? await nr.json() : {};
     news = nj.items || []; newsUnsourced = nj.unsourced || []; analyst = nj.analyst || [];
   } catch (e) { news = []; newsUnsourced = []; analyst = []; }
+  try {      // the team write-ups (scripts/dk_team_cards.py, nightly; display only)
+    var wr0 = await fetch(MIRROR + "dk_cbb_writeups.json?t=" + Date.now(), { cache: "no-store" });
+    wuDoc = wr0.ok ? await wr0.json() : null;
+  } catch (e) { wuDoc = null; }
   try {      // team tiles (battle-royale-research scripts/dk_cbb_teams.py)
     var tr = await fetch(MIRROR + "dk_cbb_teams.json?t=" + Date.now(), { cache: "no-store" });
     teamsDoc = tr.ok ? await tr.json() : null;
@@ -1284,8 +1294,7 @@ function renderTiles() {
   if (!T) { $("slateLine").textContent = "No team tiles for this slate yet."; $("teamBar").innerHTML = ""; $("teamPanel").innerHTML = ""; return; }
   var sl = T.slate;
   $("slateLine").textContent = sl.games + " games · " + sl.spreads_15 + " spread" + (sl.spreads_15 === 1 ? "" : "s") + " of 15+ · highest team totals: " +
-    sl.top_totals.map(function (t) { return t.team + " " + t.total; }).join(", ") + ". Lines: " + T.line_source + "." +
-    (sl.ranked_against ? " Quality and Leverage are 0-100 ranks against " + sl.ranked_against + "; quadrants at 50. Untested until the monthly readout grades them." : "");
+    sl.top_totals.map(function (t) { return t.team + " " + t.total; }).join(", ") + ". Lines: " + T.line_source + ".";
   var open = view.panel ? gameOf(view.panel) : null;
   var chip = function (t) {
     return '<button type="button" class="' + t.verdict + '" data-team="' + esc(t.team) + '" aria-pressed="' + (!!open && gameOf(t.team) === open) + '" title="' + esc(t.verdict + (t.driver ? " (" + t.driver + ")" : "") + ": " + t.reason) + '">' +
@@ -1374,10 +1383,33 @@ function postHtml(a) {
 }
 /* The team card (2026-11-20, rewritten to read beside the player list): (a) each player out tonight who sat before,
    with his teammates' minutes with and without him beside tonight's (unchanged, first); (b) one rotation table, the
-   players projected ROTATION_MIN+ minutes tonight (at most ROTATION_MAX), in projection order: Proj, minutes tonight,
+   players projected ROTATION_MIN+ minutes tonight, in projection order (2026-11-23: the write-up replaced it), Proj, minutes tonight,
    season and last-3 minutes from the box scores, and the card's notes as short tags (swingy, ramping, up / down last 3,
    missed k of n, Q, news); (c) the deep bench as its Use / Drop chips only; then the analysts' posts. */
-var ROTATION_MIN = 10, ROTATION_MAX = 9;
+var ROTATION_MIN = 10;
+/* The team write-up (2026-11-23, the operator: replaces the old rotation table and its tags): scripts/dk_team_cards.py's
+   prose (bottom line first), its numbers table, and a Use / Drop chip per rotation player (the X "Leave out" action:
+   state.excl, the same as the player row's X). */
+function wuOf(team) { var s = wuDoc && slate && wuDoc.slates && wuDoc.slates[String(slate.draft_group_id)]; return s ? s[team] : null; }
+function wuBold(s) { return esc(s).split("**").map(function (x, i) { return i % 2 ? "<b>" + x + "</b>" : x; }).join(""); }
+function wuHtml(t) {
+  var w = wuOf(t.team);
+  if (!w) return '<div class="cl">No write-up for this team yet.</div>';
+  var f = function (x, d) { return x == null ? "–" : (+x).toFixed(d); };
+  var prose = (w.paras || []).map(function (p) { return "<p>" + (p[0] ? "<b>" + esc(p[0]) + "</b> " : "") + wuBold(p[1]) + "</p>"; }).join("");
+  var tb = (w.table || []).length ? '<div class="wt"><table><tr><th class="l">Player</th><th>Starts</th><th>MPG</th><th>L3</th><th>Proj min</th><th>DK/g</th><th>DK/min</th><th>4x/5x/&lt;2x</th><th>OBPR</th><th class="l">Form</th></tr>' +
+    w.table.map(function (L) {
+      return '<tr data-id="' + esc(L.id) + '"><td class="l">' + esc(shortName(L.name)) + (L.pool_out ? ' <span class="tag q">pool: out</span>' : "") + "</td><td>" + L.starts + "/" + L.gp + "</td><td>" + f(L.season_mpg, 1) +
+        "</td><td>" + f(L.last3, 1) + "</td><td>" + f(L.proj_min, 1) + "</td><td>" + f(L.dk_pg, 1) + "</td><td>" + f(L.dk_pm, 2) + "</td><td>" + L.hits + "/" + L.ceil + "/" + L.floor +
+        "</td><td>" + (L.obpr != null ? f(L.obpr, 2) + (L.obpr_rank ? " (" + L.obpr_rank + ")" : "") : "–") + '</td><td class="l">' + esc(L.form || "–") + "</td></tr>";
+    }).join("") + "</table></div>" : "";
+  var chips = (w.table || []).filter(function (L) { return byId(L.id); }).map(function (L) {
+    var x = !!state.excl[L.id];
+    return '<button type="button" class="wuchip" data-id="' + esc(L.id) + '" aria-pressed="' + x + '" title="' + (x ? "Left out (X): tap to use" : "Tap to leave out (X)") + (L.pool_out ? "; the write-up says leave out" : "") + '">' +
+      (x ? "Use " : "Drop ") + esc(shortName(L.name)) + "</button>";
+  }).join("");
+  return '<div class="wu">' + prose + tb + (chips ? '<div class="wchips">' + chips + "</div>" : "") + "</div>";
+}
 function cardHtml(t) {
   var c = t.card, mine = rows.filter(function (r) { return r.team === t.team; });
   var tonight = function (id) { var r = byId(id); return r && r.min != null ? (r.status === "Out" ? "out" : (r.min * (minScale[id] || 1)).toFixed(0)) : "–"; };
@@ -1390,26 +1422,7 @@ function cardHtml(t) {
   var outs = mine.filter(function (r) { return r.status === "Out" && !shown[r.id] && (r.min || 0) >= ROTATION_MIN; }).map(function (r) {
     return esc(r.name) + (isDoubtful(r) ? " (Doubtful)" : r.status_dk ? " (DK " + esc(r.status_dk) + ")" : state.outs[r.id] ? " (you)" : "");
   });
-  // the rotation table
-  var tags = {};
-  ((c && c.lines) || []).forEach(function (l) { if (l.dk_id && l.tag) (tags[l.dk_id] = tags[l.dk_id] || []).push(l.tag); });
-  var mins = (c && c.mins) || {};
-  var rot = mine.filter(function (r) { return r.status !== "Out" && (r.min || 0) * (minScale[r.id] || 1) >= ROTATION_MIN; })
-    .sort(function (a, b) { return proj(b) - proj(a); }).slice(0, ROTATION_MAX);
-  var thin = function (m) { return m && m.played < 4 ? ' <span class="mut">(' + m.played + " g)</span>" : ""; };
-  var table = rot.length ? '<table class="rot"><tr><th class="l">Player</th><th>Proj</th><th>Min</th><th>Season</th><th>Last 3</th><th class="l">Notes</th></tr>' + rot.map(function (r) {
-      var m = mins[r.id], l5 = r.min_last5 && r.min_last5.length ? r.min_last5.slice(-3) : null, nw = newsOf(r.id);
-      var season = m ? m.season : r.min_avg, last3 = m ? m.last3 : l5 ? l5.reduce(function (x, y) { return x + y; }, 0) / l5.length : null;
-      var tg = (tags[r.id] || []).filter(function (x) { return !/^missed /.test(x); });
-      if (m && m.played < m.of) tg.unshift("missed " + (m.of - m.played) + " of " + m.of);
-      if (r.status === "Questionable") tg.push("Q");
-      if (nw && nw.kind !== "questionable") tg.push("news: " + nw.kind);
-      if (minScale[r.id] && Math.abs(minScale[r.id] - 1) > 0.005) tg.push((minScale[r.id] > 1 ? "+" : "") + Math.round((r.min || 0) * (minScale[r.id] - 1)) + " min (outs)");
-      // an Out the pipeline already has (2026-11-20, display only): his teammates' minutes against the fit with him in
-      if (r.out_gain != null && Math.round(r.out_gain) >= 1) tg.push("+" + Math.round(r.out_gain) + " min (outs: " + r.out_from.split(", ").map(shortName).join(", ") + ")");
-      return '<tr data-id="' + esc(r.id) + '"><td class="l">' + esc(shortName(r.name)) + "</td><td>" + proj(r).toFixed(0) + "</td><td>" + tonight(r.id) + "</td><td>" +
-        (season != null ? season.toFixed(0) + thin(m) : "–") + "</td><td>" + (last3 != null ? last3.toFixed(0) : "–") + '</td><td class="l">' + esc(tg.join(" · ")) + "</td></tr>";
-    }).join("") + "</table>" : '<div class="cl">No player projected ' + ROTATION_MIN + "+ minutes.</div>";
+  var table = wuHtml(t);
   var deep = ((c && c.deep) || []).map(function (id) { var r = byId(id); return r ? '<button type="button" class="deepin" data-id="' + esc(id) + '">' + (r.deepOut ? "Use " : "Drop ") + esc(r.name) + "</button>" : ""; }).join("");
   var wu = writeups(t), notes = analystNotes(t).filter(function (a) { return wu.indexOf(a) < 0; });
   return '<details class="card"' + (FOLD.cards[t.team] ? " open" : "") + ' data-card="' + esc(t.team) + '"><summary>Team card' + (c ? " · " + c.games + " game" + (c.games === 1 ? "" : "s") : "") + "</summary>" +
@@ -1424,21 +1437,15 @@ function tileHtml(t, wide) {
       pct(t.blowout) + " of their minutes" + (t.blowout_games < 3 ? " (thin: " + t.blowout_games + " game" + (t.blowout_games === 1 ? "" : "s") + ")" : " in " + t.blowout_games + " games") +
       (t.blowout_source && t.blowout_source !== "this season" ? ", " + t.blowout_source : "");
     return '<div class="tile' + (wide ? " wide" : "") + '" data-team="' + esc(t.team) + '"><div class="th"><span class="tn">' + esc(t.team) + "<span>" + (t.home ? "v " : "@ ") + esc(oppOf(t.team) || "") +
-      '</span></span><span class="verdict ' + t.verdict + '">' + t.verdict + (t.driver ? " (" + esc(t.driver) + ")" : t.borderline ? " · borderline" : "") + '</span></div>' +
-      (t.quality != null ? '<div class="scores">Quality <b>' + Math.round(t.quality) + "</b> · Leverage <b>" + Math.round(t.leverage) + "</b></div>" : "") +
+      '</span></span></div>' +
       writeups(t).map(function (a) { return '<a class="tag k-starting" style="margin:2px 6px 2px 0;display:inline-block" href="' + esc(a.url) + '" target="_blank" rel="noopener" title="' +
         esc(String(a.text || "").slice(0, 300)) + '">' + esc(a.author) + " writeup</a>"; }).join("") +
-      '<div class="why">' + esc(t.reason) + '</div><div class="nums">' +
+      '<div class="nums">' +
       '<span class="k">Total</span><span><b>' + (t.total != null ? t.total.toFixed(1) : "–") + "</b> (spread " + (t.spread > 0 ? "+" : "") + t.spread + ")</span>" +
       '<span class="k">Top 3</span><span><b>' + pct(t.conc) + "</b> of the team's projection</span>" +
       '<span class="k">Blowouts</span><span>' + (t.favorite ? "starters kept <b>" + esc(blow) + "</b>" : esc(blow)) + "</span>" +
       '<span class="k">Value</span><span>top 3 at <b>' + t.value.toFixed(2) + "x</b> the slate's</span>" +
       '<span class="k">Owned</span><span><b>' + pct(t.own_share) + "</b> of the field vs <b>" + pct(t.pts_share) + "</b> of the points</span></div>" +
-      '<div class="flags"><div class="flag"><span class="tag k-starting">BEST BET</span>' + esc(t.best_bet.name) + " (" + money(t.best_bet.salary) + ", " +
-      (t.best_bet.value != null ? t.best_bet.value.toFixed(2) : "–") + " a $1K)</div>" +
-      (t.fragile.length ? '<div class="flag"><span class="tag q">FRAGILE</span>' + esc(t.fragile.join("; ")) + "</div>" : "") +
-      (t.heavy_fav ? '<div class="flag"><span class="tag">BENCH</span>Favored by ' + Math.abs(t.spread) + ": two of its bench players together is a small " +
-        "positive pairing here (garbage time), so no blanket bench rule on this team</div>" : "") + "</div>" +
       ((t.platoon || []).length ? '<div class="acts platoon"><span class="sub" style="align-self:center" title="A usual starter and a bench player at the same ' +
         'position whose minutes this season moved against each other (minutes correlation, games both played). Teammates like these are the most ' +
         'negatively correlated pair in DraftKings points.">Platoon:</span>' + t.platoon.map(function (p, k) {
@@ -3704,6 +3711,8 @@ $("teamPanel").addEventListener("click", function (e) {
   var hs = e.target.closest("[data-sort]");
   if (hs) { var sk = hs.dataset.sort; view.dir = view.sort === sk ? -view.dir : (sk === "name" ? 1 : -1); view.sort = sk; renderPlayers(); return; }
   var sb2 = e.target.closest(".scanBank"); if (sb2) { scanBankApply(sb2); return; }
+  var wc = e.target.closest(".wuchip");
+  if (wc) { var wid = wc.dataset.id; if (state.excl[wid]) delete state.excl[wid]; else { state.excl[wid] = 1; delete state.lock[wid]; } save(); renderPlayers(); renderTeamPanel(); return; }
   if (e.target.closest(".scanlink")) { e.preventDefault(); $("scanBox").open = true; $("scanBox").scrollIntoView({ block: "start" }); return; }
   var b = e.target.closest(".tile button[data-act]");
   if (b) {

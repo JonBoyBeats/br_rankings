@@ -92,6 +92,7 @@ function audit(name, L, o) {
   await pg.route(/dk_cbb_field/, r => r.fulfill({ path: path.join(FIX, "dk_cbb_field.json"), contentType: "application/json" }));
   await pg.route(/cbb_news/, r => r.fulfill({ path: path.join(FIX, "cbb_news.json"), contentType: "application/json" }));
   await pg.route(/dk_cbb_teams/, r => r.fulfill({ path: path.join(FIX, "dk_cbb_teams.json"), contentType: "application/json" }));
+  await pg.route(/dk_cbb_writeups/, r => r.fulfill({ status: 404, body: "" }));      // the write-up test injects its own
   let gate = null;
   await pg.route(/gate\.json/, r => gate ? r.fulfill({ body: JSON.stringify(gate), contentType: "application/json" }) : r.fulfill({ status: 404, body: "" }));
   await pg.route(/own_watch\.json/, r => r.fulfill({ contentType: "application/json", body: JSON.stringify({ patterns: [
@@ -571,28 +572,31 @@ function audit(name, L, o) {
                        { kind: "deep", text: "Deep bench, out of the pool by default: someone (1 a game)", dk_id: null, tag: null }],
                mins: { [mates[2].id]: { season: 24.4, last3: 30.2, played: 4, of: 5 }, [mates[1].id]: { season: 20, last3: 18, played: 2, of: 5 } },
                absorb: [{ name: sit.name, dk_id: sit.id, sat: 1, games: 5, rows: [{ name: mates[1].name, dk_id: mates[1].id, with: 20, without: 30, n_with: 4, n_without: 1 }] }] };
+    // the write-up (2026-11-23: replaced the rotation table and its tags): prose with bold, its table, Use / Drop chips (the X action)
+    const keepWu = wuDoc;
+    wuDoc = { slates: { [String(slate.draft_group_id)]: { [t.team]: { games: 5, paras: [["Bottom line.", "Core: " + mates[0].name + ". Fade: **" + mates[1].name + "**."], ["", "A player line."]],
+      table: [{ id: mates[0].id, name: mates[0].name, starts: 5, gp: 5, season_mpg: 31.6, last3: 32, proj_min: 32.9, dk_pg: 30.6, dk_pm: 0.97, hits: 3, ceil: 1, floor: 0, obpr: 3.59, obpr_rank: 1, form: "in line", pool_out: false },
+              { id: mates[1].id, name: mates[1].name, starts: 4, gp: 5, season_mpg: 15.6, last3: 15.3, proj_min: 14.4, dk_pg: 14.4, dk_pm: 0.92, hits: 0, ceil: 0, floor: 2, obpr: 1.85, obpr_rank: 5, form: null, pool_out: true }] } } } };
     renderTeamPanel();
     const el = () => document.querySelector('#teamPanel details.card[data-card="' + t.team + '"]');
-    const a = el().textContent, rot = [...el().querySelectorAll("table.rot tr[data-id]")].map(tr => tr.dataset.id);
-    const want = rows.filter(r => r.team === t.team && r.status !== "Out" && (r.min || 0) * (minScale[r.id] || 1) >= 10).sort((x, y) => proj(y) - proj(x)).slice(0, 9).map(r => r.id);
-    const rowOf = id => { const tr = el().querySelector('table.rot tr[data-id="' + id + '"]'); return tr ? [...tr.children].map(td => td.textContent) : null; };
-    const projOk = rot.every(id => +rowOf(id)[1] === +proj(byId(id)).toFixed(0));
-    const r1 = rowOf(mates[1].id), r2 = rowOf(mates[2].id);
-    // an Out the pipeline already has: its out_gain / out_from show as "+N min (outs: X)" (display only)
-    const m3 = byId(mates[2].id); m3.out_gain = 2.4; m3.out_from = "Kai Shinholster"; renderTeamPanel();
-    const r3 = rowOf(mates[2].id); delete m3.out_gain; delete m3.out_from; renderTeamPanel();
+    const a = el().textContent, html = el().innerHTML, rot = el().querySelectorAll("table.rot").length;
+    const wrows = [...el().querySelectorAll(".wu .wt tr[data-id]")].map(tr => tr.dataset.id);
+    const poolTag = !!el().querySelector('.wu .wt tr[data-id="' + mates[1].id + '"] .tag');
+    const chip = () => el().querySelector('.wuchip[data-id="' + mates[1].id + '"]');
+    const c0 = chip().textContent; chip().click();
+    const dropped = !!state.excl[mates[1].id], c1 = chip().textContent; chip().click();
+    const used = !state.excl[mates[1].id];
     state.outs[sit.id] = 1; applyOuts(); renderTeamPanel();
     const b = el().textContent, firstOut = el().querySelector("summary").nextElementSibling, tbl = !!el().querySelector("table:not(.rot)");
-    delete state.outs[sit.id]; t.card = keep; applyOuts(); renderTeamPanel();
-    return { a, b, rot, want, projOk, r1, r2, r3, first: firstOut && firstOut.textContent, tbl };
+    delete state.outs[sit.id]; t.card = keep; wuDoc = null; renderTeamPanel();
+    const none = el().textContent; wuDoc = keepWu; applyOuts(); renderTeamPanel();
+    return { a, html, rot, wrows, poolTag, c0, c1, dropped, used, none, first: firstOut && firstOut.textContent, tbl };
   });
-  check("team card: a pipeline Out shows on his teammates as \"+N min (outs: X)\"", card.r3 && /\+2 min \(outs: Shinholster\)/.test(card.r3[5]), JSON.stringify(card.r3));
-  check("team card: the game count; one rotation table in projection order (the Players list's Proj, whole points), season / last-3 minutes and tags (swingy, missed k of n, thin game counts); no per-player paragraphs or deep-bench sentence; an Out player's with / without table first",
-        /Team card · 5 games/.test(card.a) && JSON.stringify(card.rot) === JSON.stringify(card.want) && card.rot.length >= 3 && card.projOk &&
-        card.r1 && /swingy 10\u201330/.test(card.r1[5]) && /missed 3 of 5/.test(card.r1[5]) && /\(2 g\)/.test(card.r1[3]) &&
-        card.r2 && card.r2[3] === "24" && card.r2[4] === "30" && /missed 1 of 5/.test(card.r2[5]) &&
-        !/is swingy/.test(card.a) && !/Deep bench, out of the pool/.test(card.a) && !/is out tonight/.test(card.a) &&
-        card.tbl && /is out tonight; when he sat before \(1 of 5 games\)/.test(card.first || ""), JSON.stringify(card));
+  check("team card: the write-up replaces the rotation table: its prose (bold kept), its numbers table, a pool tag, no rotation table or tag lines; an Out player's with / without table first",
+        /Team card · 5 games/.test(card.a) && /<b>Bottom line\.<\/b>/.test(card.html) && /Fade: <b>/.test(card.html) && card.rot === 0 && card.wrows.length === 2 && card.poolTag &&
+        !/swingy/.test(card.a) && card.tbl && /is out tonight; when he sat before \(1 of 5 games\)/.test(card.first || "") && /No write-up for this team yet/.test(card.none), JSON.stringify(card));
+  check("team card: the write-up's Drop / Use chips are the X action (state.excl) and stay reachable",
+        /^Drop /.test(card.c0) && card.dropped && /^Use /.test(card.c1) && card.used, JSON.stringify([card.c0, card.c1, card.dropped, card.used]));
   const an = await pg.evaluate(() => {
     const t = teamsOf().teams[0], keep = analyst;
     analyst = [{ id: "a1", author: "BuriedTreys", at: new Date().toISOString(), url: "https://x.com/BuriedTreys/status/1", text: "Game writeup text",
@@ -797,10 +801,10 @@ function audit(name, L, o) {
   await openTeam(thin.team);
   check("platoon: a thin pair is marked thin", /games, thin\)/.test(await pg.textContent(`.tile[data-team="${thin.team}"]`)));
   const heavy = TEAMS.teams.find(t => t.heavy_fav), notHeavy = TEAMS.teams.find(t => !t.heavy_fav);
+  // 2026-11-23: the tile's BENCH flag went with the other tile flags (the write-up replaced them)
   await openTeam(heavy.team);
-  check("platoon: a heavy favorite's tile notes the bench pairing", /garbage time/.test(await pg.textContent(`.tile[data-team="${heavy.team}"]`)));
+  check("platoon: no BENCH flag on the tile now (the tile flags are gone)", !/garbage time/.test(await pg.textContent(`.tile[data-team="${heavy.team}"]`)));
   await openTeam(notHeavy.team);
-  check("platoon: other tiles don't", !/garbage time/.test(await pg.textContent(`.tile[data-team="${notHeavy.team}"]`)));
   // player Min% / Max%: set in the player table, listed in the Baseline block, held over each draw's own lineups
   await clearRules(); await emptyBank(); await set(base);
   const free = (await draw(20)).L, freq = {};
@@ -913,8 +917,10 @@ function audit(name, L, o) {
 
   // the quadrant: scores on every tile, and each quadrant's button is a rule for the draw
   await openTeam(tile.team);
-  check("tiles: Quality and Leverage on the tile, and what they're ranked against",
-        (await pg.$$eval("#teamPanel .tile .scores", x => x.length)) >= 1 && /ranks against tonight's \d+ teams/.test(await pg.textContent("#slateLine")));
+  // 2026-11-23: the tiles' headings and flags are gone (verdict, Quality / Leverage, reason, BEST BET / FRAGILE / BENCH); the actions stay
+  check("tiles: no verdict heading, scores, reason or flags; the slate line without the quadrant note; the actions kept",
+        (await pg.$$eval("#teamPanel .tile .scores, #teamPanel .tile .verdict, #teamPanel .tile .why, #teamPanel .tile .flags", x => x.length)) === 0 &&
+        !/Quality and Leverage/.test(await pg.textContent("#slateLine")) && (await pg.$$eval("#teamPanel .tile button[data-act]", x => x.length)) >= 4);
   for (const q of ["FOCUS", "CHALK", "LEVERAGE"]) {
     const t = TEAMS.teams.find(x => x.verdict === q);
     if (!t) continue;
@@ -938,12 +944,6 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("statusInfo").textContent));
   R = await rulesNow();
   check("old share rules load as draw rules", R.length === 1 && R[0].share == null && R[0].n === 2 && R[0].label === "2+ from " + lev.team, JSON.stringify(R));
-  const chips = await pg.$$eval("#teamPanel .tile .verdict", v => v.map(x => x.textContent));
-  const shownT = await pg.$$eval("#teamPanel .tile", v => v.map(x => x.dataset.team));
-  check("tile verdict says which score drove it", chips.length > 0 && chips.every((c, i) => {
-    const t = TEAMS.teams.find(x => x.team === shownT[i]);
-    return c === t.verdict + " (" + t.driver + ")" && /^(quality|leverage)-driven(, (quality|leverage) borderline)?$|^both borderline$/.test(t.driver);
-  }), JSON.stringify(chips));
   check("team bar marks borderline quadrants", (await pg.$$eval("#teamBar button", v => v.filter(x => /\*$/.test(x.textContent)).length)) ===
         TEAMS.teams.filter(t => t.borderline).length);
   await clearRules();
