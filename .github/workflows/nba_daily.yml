@@ -97,6 +97,9 @@ jobs:
           # sit risk: last night's graded slates into the training rows, the refit the pipeline's p_play reads, and the
           # log of every flag at lock with whether he played (scripts/dk_sit.py)
           python3 scripts/dk_sit.py nightly --mirror ../br-adp-mirror || true
+          # the field fit: each graded contest's real field against the simulated one at lock, by contest-size band, and
+          # the last 14 nights' summary the DK page shows (scripts/dk_field_fit.py)
+          python3 scripts/dk_field_fit.py --mirror ../br-adp-mirror || true
       # College contests: every settled tournament on last night's CBB main slate, then its field measures
       # (scripts/nba_contests.py --sport cbb), from the CBB record above for names, closing ADP and points.
       - if: github.event.schedule != '17 3 * * *' && !inputs.notes_for && !inputs.evening
