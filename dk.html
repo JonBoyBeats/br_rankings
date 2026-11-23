@@ -67,6 +67,12 @@
   .row { border-bottom: 1px solid var(--line); }
   .row.locked { background: rgba(77, 196, 141, .12); }
   .muted { color: var(--muted); }
+  #bankCheck { display: none; }        /* 2026-11-23, the owner: not read; the cut and fill handle the bank's position */
+  #players:not(.fillcols):not(.noscan) .col-cash { display: none; }
+  #players:not(.fillcols):not(.noscan) .head, #players:not(.fillcols):not(.noscan) .row { grid-template-columns: 128px minmax(170px, 230px) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 70px 26px 42px 42px; }
+  @media (max-width: 620px) { #players:not(.fillcols):not(.noscan) .head, #players:not(.fillcols):not(.noscan) .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 70px 26px 42px 42px 30px 44px 48px; } }
+  .row .col-bank { font-weight: 700; color: var(--ink); } .row .rdc > span { font-weight: 700; }
+  .head span[data-sort="bank"], .head span[data-sort="read"] { color: var(--ink); font-weight: 700; }
   .tvgrid { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 14px; align-items: start; margin-top: 6px; }
   .tvgrid > .tvl { position: sticky; top: 60px; max-height: calc(100vh - 68px); overflow-y: auto; }   /* under the sticky step bar */
   @media (max-width: 1100px) { .tvgrid { grid-template-columns: minmax(0, 1fr); } .tvgrid > .tvl { position: static; max-height: none; } }
@@ -333,6 +339,9 @@
   table.bp button.bpForce { color: var(--bad); border-color: var(--bad); font-size: 11px; padding: 0 6px; }
   .row .has5 { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
   .row button.qout { height: 20px; padding: 0 6px; font-size: 10.5px; margin-left: 4px; }
+  /* the freshness light after a draw, easier to see (2026-11-23) */
+  .sat { font-weight: 700; padding: 2px 9px; border-radius: 10px; } .sat-green { background: rgba(63, 191, 127, .18); }
+  .sat-amber { background: rgba(224, 166, 58, .18); } .sat-red { background: rgba(240, 100, 80, .18); }
 </style>
 </head>
 <body>
@@ -362,11 +371,6 @@
   <div class="status" id="cutStatus"></div>
   <section class="step" id="stepBank" data-step="bank" hidden>
   <h2>1. Draw lineups into the bank</h2>
-  <div class="note">Set up an idea, then <b>Draw &amp; bank</b>: each lineup is the best one for a simulated night under
-    everything here, tagged with its idea. <b>Leverage weight</b> (0 = off) fades the chalk inside the idea: each player
-    loses weight × his projected ownership in points (0.1: a 30%-owned player loses 3). Use it when you like a team or
-    stack but want the less-owned way into it, e.g. "2+ from KU" at 0.1 leans toward KU's 6%-owned guards over its
-    30%-owned star.</div>
   <div class="opts">
     <label class="field" title="Each player's night less this x his projected ownership in % points (0: off; 0.1 takes 3 points off a 30%-owned player)"><span class="field-label">Leverage weight</span><input class="num" id="levW" type="number" min="0" max="2" step="0.05" value="0"></label>
     <label class="field"><span class="field-label">Min salary</span><input class="num" id="minSal" type="number" min="0" max="50000" step="100" value="48500"></label>
@@ -397,7 +401,8 @@
       <div class="field rt rt-list" style="min-width:260px"><span class="field-label">These players</span>
         <input id="rtSearch" type="search" placeholder="Type a name or team, Enter adds the first" autocomplete="off">
         <div id="rtMatches" class="pickrow"></div><div id="rtChips" class="pickrow"></div>
-        <select id="rtList" multiple hidden></select></div>
+        <select id="rtList" multiple hidden></select>
+        <button type="button" id="rtClear" style="height:24px;padding:0 8px;font-size:11.5px;margin-top:4px">Clear players</button></div>
       <button type="button" id="rtSave">Add rule</button>
       <button type="button" id="rtCancel" hidden>Cancel edit</button>
     </div>
@@ -411,6 +416,7 @@
     <button type="button" id="draw9Stop" hidden title="Stops after the batch running now; what's banked stays">Stop after this batch</button>
     <label class="field" title="Draw the 9's Leverage weights, comma separated (remembered in this browser)"><span class="field-label">Sweep: leverage</span><input id="sweepLev" type="text" value="0, 0.1, 0.2" style="width:92px"></label>
     <label class="field" title="Draw the 9's Min players under (at the panel's owned %), comma separated (remembered in this browser)"><span class="field-label">Sweep: under</span><input id="sweepLow" type="text" value="0, 1, 2" style="width:70px"></label>
+    <label class="field" title="The idea these draws bank under (the bank groups them by it); blank: the rules' own tag. Kept until you rename it."><span class="field-label">Idea name</span><input id="ideaName" type="text" placeholder="e.g. BYU guards" style="width:150px"></label>
     <span class="note" id="tagNow" style="align-self:center;margin:0"></span>
   </div>
   <div class="status" id="buildStatus"></div>
@@ -953,6 +959,7 @@ function pick(keepMem) {
   zeroApply();
   applyOuts();
   if (typeof swapRestore === "function") swapRestore();
+  if ($("ideaName")) $("ideaName").value = state.idea || "";
   // rules saved before the draw-only change: an "in X% of lineups" rule becomes its plain rule; an "at most X%" one goes
   state.rules = (state.rules || []).filter(function (r) { return r.maxShare == null; }).map(function (r) {
     if (r.share == null) return r;
@@ -1642,7 +1649,7 @@ function renderRules() {
       base.length + " rule" + (base.length === 1 ? "" : "s") + ", " + baseOn + " on" + (worst ? " · lowest pass " + worst.pass + " of " + worst.of : "") +
       "</summary>" + base.join("") + "</details>" + '<div class="sub" style="margin-top:6px">Idea rules</div>' : "") + (idea.join("") || '<div class="note" style="margin:4px 0">None.</div>')
     : '<div class="note" style="margin:4px 0">No rules: add one below, or from a team tile.</div>';
-  if (slate) $("tagNow").textContent = "Next draw is tagged: " + tagNow();
+  if (slate) $("tagNow").textContent = "Banking as: " + (ideaName() || tagNow());
 }
 
 function playerOpts() {
@@ -1674,6 +1681,7 @@ function rtChips() {
     return '<button type="button" data-drop="' + esc(o.value) + '" title="Remove">' + esc(o.textContent) + " &times;</button>"; }).join("");
   rtMatches();
 }
+$("rtClear").addEventListener("click", function () { Array.from($("rtList").options).forEach(function (o) { o.selected = false; }); $("rtSearch").value = ""; rtChips(); });
 function rtSelect(id, on) {
   var o = Array.from($("rtList").options).find(function (x) { return x.value === id; });
   if (o) o.selected = on;
@@ -1787,6 +1795,11 @@ function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) ===
 function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF);
   // the Live page's copy of your entered lineups as player ids (the bank itself is in IndexedDB, out of its reach)
   try { var lu = {}; Object.keys(PF).forEach(function (cid) { lu[cid] = PF[cid].map(function (bi) { return BANK.lineups[bi] ? BANK.lineups[bi].ids : null; }).filter(Boolean); }); store("dkcbb-pflu:" + slate.draft_group_id, lu); } catch (e) {} renderNight(); renderSteps(); renderUnder(); renderStrand(); }   // the Live page reads it for your exposures
+/* The idea name (2026-11-23, the owner: name the idea before drawing instead of grouping tags after): typed above the
+   draw buttons, kept per slate (state.idea); each Draw & bank / Draw the 9 batch is grouped under it (BANK.groups), the
+   rules' own tag kept underneath for grading. Blank: grouped as before. */
+function ideaName() { var el = $("ideaName"); return el ? el.value.trim() : ""; }
+$("ideaName").addEventListener("input", function () { if (state) { state.idea = ideaName(); save(); } if (slate) $("tagNow").textContent = "Banking as: " + (ideaName() || tagNow()); });
 function tagNow() {         // the draw's idea: the settings off their defaults, locks and excludes, the rules list
   var o = drawRules(), t = [], name = function (id) { return shortName((byId(id) || {}).name || id); };
   if (o.stackN) t.push(o.stackN + "-stack" + (o.stackBoth ? " + bring-back" : ""));
@@ -3605,15 +3618,19 @@ $("bankDraw").addEventListener("click", function () {
   drawBank(cx, dr, n).then(function (res) {
     takeCounts(res);
     var near = nearCopies(res.lineups);      // before they join the bank
+    var nm = ideaName(); if (nm && res.lineups.length) { BANK.groups = BANK.groups || {}; BANK.groups[tag] = nm; }
     var added = bankAdd(res.lineups, tag);
     logPlatoon(dr, res, tag);
     var more = (rulesMsg(res) + (res.expo || "")).trim(), sat = saturation(n, added, near, res.lineups.length < n);
-    $("buildStatus").innerHTML = esc("Banked " + added + " new · " + (res.lineups.length - added) + " repeats · " + near + " near-copies (7 of 8 shared with a banked lineup), tagged \"" + tag + "\"." +
-      (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "")) +
-      ' <span class="sat sat-' + sat.level + '" title="Fresh: new less near-copies, of the ' + n + ' asked for">' + esc(sat.text) + "</span>" +
-      (res.spreadTxt ? " " + esc(res.spreadTxt) : "") +
+    // one short line (2026-11-23, the owner: the rest went unread): what banked, under which idea, and the freshness light
+    var shortSp = res.spreadTxt && /; short: /.test(res.spreadTxt) ? res.spreadTxt.split("; short: ")[1].replace(/ \([^)]*\)/g, "").replace(/\.$/, "") : "";
+    $("buildStatus").innerHTML = esc("Banked " + added + " new, " + (res.lineups.length - added) + " repeats as \u201c" + (nm || tag) + "\u201d" +
+      (res.lineups.length < n ? " (only " + res.lineups.length + " of " + n + ")" : "") + ". ") +
+      '<span class="sat sat-' + sat.level + '" title="Fresh: new less near-copies, of the ' + n + ' asked for; ' + near + ' near-copies (7 of 8 shared)' + (more ? "\n" + esc(more) : "") + '">' + esc(sat.text) + "</span>" +
+      (shortSp ? ' <span class="mut" title="' + esc(res.spreadTxt) + '">spread short: ' + esc(shortSp) + "</span>" : "") +
       (bankSaveFailed ? ' <span class="bad">Not saved in this browser: Save build to checkpoint.</span>' : "") +
-      (more ? ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">rules</summary> ' + esc(more) + "</details>" : "");
+      '<details class="bcmore"><summary>Details</summary> ' + esc("Banked " + added + " new · " + (res.lineups.length - added) + " repeats · " + near + " near-copies (7 of 8 shared with a banked lineup), tagged \"" + tag + "\"." +
+        (res.lineups.length < n ? " Only " + res.lineups.length + " of " + n + (res.why ? ": " + res.why : "") + "." : "") + (res.spreadTxt ? " " + res.spreadTxt : "") + (more ? " " + more : "")) + "</details>";
   }, function (e) { $("buildStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; });
 });
 /* Draw the 9 (2026-11-20, the operator): one Draw & bank per combination of the sweep's Leverage weights and Min players
@@ -3646,7 +3663,7 @@ async function drawSweep() {
       if (!res.lineups.length) { skipped.push("L" + lw + " U" + u + (res.why ? " (" + res.why + ")" : "")); continue; }
       if (res.spreadTxt) { var mu = res.spreadTxt.match(/, (\d+) topped up/); spUp += mu ? +mu[1] : 0; if (/; short: /.test(res.spreadTxt)) spShort.push("L" + lw + " U" + u + ": " + res.spreadTxt.split("; short: ")[1].replace(/\.$/, "")); }
       takeCounts(res);
-      BANK.groups = BANK.groups || {}; BANK.groups[tag] = idea;
+      BANK.groups = BANK.groups || {}; BANK.groups[tag] = ideaName() || idea;
       var a = bankAdd(res.lineups, tag); added += a; rep += res.lineups.length - a; done++;
       logPlatoon(dr, res, tag);
       await tick();
@@ -3656,9 +3673,12 @@ async function drawSweep() {
     var stopped = draw9.stop;
     draw9 = { on: false, stop: false }; $("draw9Stop").hidden = true; $("draw9Stop").textContent = "Stop after this batch"; $("bankDraw9").disabled = false; $("bankDraw").disabled = false;
     bankSaveState(); renderBank(); renderRules();
-    $("buildStatus").innerHTML = esc("Draw the " + combos.length + (stopped ? " (stopped)" : "") + ": " + done + " batch" + (done === 1 ? "" : "es") + " banked under \u201c" + idea + "\u201d, " + added + " new, " + rep + " repeats" +
-      (skipped.length ? "; skipped (nothing fit): " + skipped.join(", ") : "") + "." +
-      (sp9 ? " " + sp9.replace(/^spread /, "Spread, each batch: ") + ", " + spUp + " top-up" + (spUp === 1 ? "" : "s") + " in all" + (spShort.length ? "; short: " + spShort.join("; ") : "") + "." : "")) + (bankSaveFailed ? ' <span class="bad">Not saved in this browser: Save build to checkpoint.</span>' : "");
+    $("buildStatus").innerHTML = esc("Draw the " + combos.length + (stopped ? " (stopped)" : "") + ": " + added + " new, " + rep + " repeats as \u201c" + (ideaName() || idea) + "\u201d" +
+      (skipped.length ? " (" + skipped.length + " batch" + (skipped.length === 1 ? "" : "es") + " drew nothing)" : "") + ".") +
+      (spShort.length ? ' <span class="mut" title="' + esc(spShort.join("; ")) + '">spread short in ' + spShort.length + " batch" + (spShort.length === 1 ? "" : "es") + "</span>" : "") +
+      (bankSaveFailed ? ' <span class="bad">Not saved in this browser: Save build to checkpoint.</span>' : "") +
+      '<details class="bcmore"><summary>Details</summary> ' + esc(done + " batch" + (done === 1 ? "" : "es") + " banked under \u201c" + (ideaName() || idea) + "\u201d" + (skipped.length ? "; skipped (nothing fit): " + skipped.join(", ") : "") + "." +
+        (sp9 ? " " + sp9.replace(/^spread /, "Spread, each batch: ") + ", " + spUp + " top-up" + (spUp === 1 ? "" : "s") + " in all" + (spShort.length ? "; short: " + spShort.join("; ") : "") + "." : "")) + "</details>";
   }
 }
 $("bankDraw9").addEventListener("click", function () { if (!draw9.on) drawSweep(); });

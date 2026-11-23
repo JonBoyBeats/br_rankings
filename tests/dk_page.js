@@ -379,12 +379,24 @@ function audit(name, L, o) {
                                     ["all three", { stackN: 3, stackBoth: true, maxOwn: 150, lowN: 2 }, "3-stack + bring-back + own ≤ 150% + 2 under 10%"]]) {
     const v = Object.assign({}, base, extra);
     await set(v);
-    check("tag line shows the next draw's idea, " + name, (await pg.textContent("#tagNow")) === "Next draw is tagged: " + tag, await pg.textContent("#tagNow"));
+    check("tag line shows the next draw's idea, " + name, (await pg.textContent("#tagNow")) === "Banking as: " + tag, await pg.textContent("#tagNow"));
     const { L, msg } = await draw(20);
     audit("Draw & bank, " + name, L, rulesOf(v));
     if (L.length < 15) check("Draw & bank, " + name + ": drew 15+ new", false, msg);
     check("Draw & bank, " + name + ": tagged with its idea", new RegExp('tagged "' + tag.replace(/[+]/g, "\\+") + '"').test(msg), msg);
   }
+  // the idea name (2026-11-23): typed before drawing, the draw banks under it (grouped), the rules' tag kept underneath;
+  // the tag line says what it banks as; Clear players empties template 5's set
+  await pg.fill("#ideaName", "My idea");
+  const tagShown = await pg.textContent("#tagNow");
+  const { L: Lidea, msg: mIdea } = await draw(5);
+  const idg = await pg.evaluate(() => { const tags = Object.keys(BANK.groups || {}).filter(t => BANK.groups[t] === "My idea");
+    const o = Array.from($("rtList").options).slice(0, 3); o.forEach(x => { x.selected = true; }); rtChips(); const before = $("rtList").selectedOptions.length;
+    $("rtClear").click(); return { tags: tags.length, kept: state.idea, before, after: $("rtList").selectedOptions.length, chips: $("rtChips").children.length }; });
+  check("idea name: the draw banks under it (grouped, its rules' tag underneath), the tag line and status say so, kept for the slate; Clear players empties the set",
+        tagShown === "Banking as: My idea" && Lidea.length > 0 && idg.tags >= 1 && /as \u201cMy idea\u201d/.test(mIdea) && idg.kept === "My idea" && idg.before === 3 && idg.after === 0 && idg.chips === 0,
+        JSON.stringify([tagShown, mIdea.slice(0, 80), idg]));
+  await pg.fill("#ideaName", ""); await pg.evaluate(() => { state.idea = ""; save(); });
   // the bank check before Re-sim & cut: the bank's and the field's projection and ownership, ideas well under the field flagged
   const bc = await pg.evaluate(() => {
     renderBank(); const t = document.getElementById("bankCheck").textContent, F = fieldOf();
@@ -441,7 +453,7 @@ function audit(name, L, o) {
   const sat = await pg.evaluate(() => ({ el: (document.querySelector("#buildStatus .sat") || {}).className, text: (document.querySelector("#buildStatus .sat") || {}).textContent,
     rules: [saturation(100, 90, 5, false), saturation(100, 70, 5, false), saturation(100, 60, 20, false), saturation(100, 90, 0, true)].map(x => x.level),
     near: (() => { const L = BANK.lineups[0], copy = { ids: L.ids.slice(0, 7).concat(["x"]), slots: [] }, same = { ids: L.ids.slice(), slots: [] }; return [nearCopies([copy]), nearCopies([same])]; })() }));
-  const satM = /^Banked (\d+) new · (\d+) repeats · (\d+) near-copies \(7 of 8 shared with a banked lineup\)/.exec(m0);
+  const satM = /Banked (\d+) new · (\d+) repeats · (\d+) near-copies \(7 of 8 shared with a banked lineup\)/.exec(m0);
   const satFr = satM ? Math.max(0, +satM[1] - +satM[3]) / 15 : -1, wantLvl = L0.length < 15 ? "red" : satFr >= 0.75 ? "green" : satFr >= 0.5 ? "amber" : "red";
   check("saturation light: new · repeats · near-copies after each Draw & bank, coloured by the fresh share (green 75%+, amber 50-75, red under 50 or tapped out)",
         !!satM && sat.el === "sat sat-" + wantLvl && new RegExp("^" + Math.round(100 * satFr) + "% fresh").test(sat.text) && JSON.stringify(sat.rules) === JSON.stringify(["green", "amber", "red", "red"]) &&
@@ -463,7 +475,7 @@ function audit(name, L, o) {
   });
   check("Draw the 9: one batch per leverage x under (here 2 x 2), each tagged '<idea> L.. U..' and grouped under the idea, its rules recording its own levW / lowN; the panel put back; remembered sweep; the status line",
         sw.label === "Draw the 4" && sw.have === 4 && sw.grouped && JSON.stringify(sw.rules) === JSON.stringify([[0, 0], [0, 1], [0.1, 0], [0.1, 1]]) && sw.restored && sw.grew && sw.remembered &&
-        /^Draw the 4: 4 batches banked under .+, \d+ new, \d+ repeats\.?/.test(sw.msg), JSON.stringify(sw));
+        /^Draw the 4: \d+ new, \d+ repeats as .+/.test(sw.msg) && /4 batches banked under/.test(sw.msg), JSON.stringify(sw));
   // template-5 spread (2026-11-21): "3 of these 6" with each of the 6 in at least 10% of the draw, topped up like Min%;
   // off leaves no floors; Draw the 9 applies it per batch and records it in each tag's rules; Quick sim's draw honours it
   const spr = await pg.evaluate(async () => {
@@ -1758,7 +1770,7 @@ function audit(name, L, o) {
   check("Players list: MPG (season minutes a game) right after Min, last 5 in the hover, sortable; no Top 1% / ROI / Bank columns, Cash kept",
         mpg.after && mpg.gone && mpg.cash && mpg.text === mpg.want && mpg.tip === "Season 27.4 min a game played; last 5: 30, 22, 28, 31, 26; minutes CV 0.12" &&
         mpg.obAfter && mpg.obText === "3.2" && mpg.obTip === "EvanMiya OBPR 3.21; BPR 4.26; DBPR 1.05; #2 on " + "" + mpg.obTip.split(" on ")[1].split(" by")[0] + " by OBPR" && mpg.dash === "–" && mpg.down, JSON.stringify(mpg));
-  check("player table: with a scan the scan columns show (no-scan layout off)", await pg.evaluate(() => { renderPlayers(); const c = document.querySelector("#players .row .col-scan");
+  check("player table: with a scan the scan columns show (no-scan layout off)", await pg.evaluate(() => { renderPlayers(); const c = document.querySelector("#players .row .rdc");
     return !$("players").classList.contains("noscan") && !!c && getComputedStyle(c).display !== "none"; }));
   const c1 = await pg.evaluate(() => {
     renderPlayers(); const bs = bankShare(), rowsIn = [...document.querySelectorAll("#players .row.bankgap-in")].map(e => e.dataset.id), rowsOut = [...document.querySelectorAll("#players .row.bankgap-out")].map(e => e.dataset.id);
@@ -2058,7 +2070,7 @@ function audit(name, L, o) {
   const mob = await pg.evaluate(async () => {
     renderPlayers(); const p = document.getElementById("players"), row = p.querySelector(".row");
     const at = sel => row.querySelector(sel).getBoundingClientRect().left;
-    const who0 = at(".who"), lx0 = at(".lx"), third = [...row.children].sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left)[2].textContent;
+    const who0 = at(".who"), lx0 = at(".lx"), third = [...row.children].filter(c => getComputedStyle(c).display !== "none").sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left)[2].textContent;
     p.scrollLeft = 300; await new Promise(r => requestAnimationFrame(r));
     const r = { scrolls: p.scrollWidth > p.clientWidth + 100, page: document.documentElement.scrollWidth <= 390, nameW: row.querySelector(".who").getBoundingClientRect().width,
                 whoMoved: Math.abs(at(".who") - who0), lxMoved: Math.abs(at(".lx") - lx0), third, moved: p.scrollLeft };
