@@ -20,6 +20,9 @@
  *                  scoring more, top 1%, cash, expected payout), swaps (one unstarted player out, one unstarted,
  *                  affordable player in who keeps the open slots fillable), propose (per entry, the best expected
  *                  payout, then a second swap on top while it adds)
+ *   7. run           a contest at a tip, end to end: the live state, the standings' entries matched to cards (an
+ *                  entry with an unknown name left out of the field, counted), our entries from the entries file, the
+ *                  hidden ownership and M field draws per other entry, the board, a proposal per entry of ours
  *   6. the export    applySwaps (an entry's 8 ids with its swaps made and the open part re-seated), exportEntries (the
  *                  entries file back with the accepted edits: every row and column as read, a started player's cell
  *                  byte for byte, each edited row validated first; any row DraftKings would refuse refuses the file)
@@ -406,7 +409,52 @@
     return { csv: out.join("\r\n") + "\r\n", n: n, errors: [] };
   }
 
-  return { CAP: CAP, SLOTS: SLOTS, applySwaps: applySwaps, exportEntries: exportEntries, board: board, canFill: canFill, swaps: swaps, propose: propose, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
+  // --- 7. run --------------------------------------------------------------------------------------------------------
+  /* o: {by: {id: card (name, team, roster, salary, game_start, event, espn, status)}, own: {id: our projected %},
+     standings (parseStandings), ours: [entries-file rows of this contest], plays: {event: plays}, at (ms: the decision),
+     nights: S rows aligned with ids (the full-game simulated points), ids, table: {place: payout}, M, random, maxSwaps}.
+     -> {proposals: [{entryId, ids, cur, steps, next}], stats: {entries, field, unmatched, unknownGames, draws, fallback,
+     hiddenMass}} */
+  function run(o) {
+    var by = o.by, at = o.at, started = function (id) { return !!by[id] && Date.parse(by[id].game_start || "") < at; };
+    var live = liveState(by, o.plays || {}, at), stMap = {}, base = {}, left = {};
+    Object.keys(by).forEach(function (id) { if (started(id)) stMap[id] = 1; });
+    Object.keys(live.pts).forEach(function (id) { base[id] = live.pts[id] || 0; left[id] = live.left[id]; });
+    var rows = Object.keys(by).map(function (id) { return Object.assign({ id: id }, by[id]); });
+    var names = [], seen = {};
+    o.standings.entries.forEach(function (e) { e.slots.forEach(function (x) { if (x.name && !seen[x.name]) { seen[x.name] = 1; names.push(x.name); } }); });
+    var mt = matchNames(names, rows), oursById = {};
+    (o.ours || []).forEach(function (r) { oursById[r.entryId] = r; });
+    var lineups = [], mine = [], open = [], lefts = [], unmatched = 0, rowOf = {};
+    o.standings.entries.forEach(function (e) {
+      var our = oursById[e.entryId];
+      if (our) { rowOf[lineups.length] = our; mine.push(lineups.length); lineups.push(our.ids.map(function (id, k) { return [SLOTS[k], id]; })); open.push(null); lefts.push(null); return; }
+      if (e.slots.some(function (x) { return x.name && !mt.ids[x.name]; })) { unmatched++; return; }
+      var lu = e.slots.map(function (x) { return [x.slot, x.name ? mt.ids[x.name] : null]; });
+      lineups.push(lu);
+      open.push(e.slots.filter(function (x) { return !x.name; }).map(function (x) { return x.slot; }));
+      lefts.push(CAP - lu.reduce(function (t, x) { return t + (x[1] ? by[x[1]].salary || 0 : 0); }, 0));
+    });
+    var hidden = rows.filter(function (r) { return !started(r.id) && r.status !== "Out"; }), mass = hiddenMass(o.standings.entries);
+    var w = hiddenOwn(o.own || {}, hidden.map(function (r) { return r.id; }), mass), stats = { draws: 0, fallback: 0 }, draws = {};
+    lineups.forEach(function (lu, e) {
+      if (open[e] === null || !open[e].length) return;
+      var d = [];
+      for (var m = 0; m < (o.M || 6); m++) { var x = fieldDraw(o.random, open[e], lefts[e], hidden, w, stats); if (x) d.push(x); }
+      draws[e] = d;
+    });
+    var B = board({ ids: o.ids, nights: o.nights, started: stMap, base: base, left: left, lineups: lineups, mine: mine, draws: draws, table: o.table });
+    var pool = hidden.map(function (r) { return r.id; });
+    var proposals = mine.map(function (e) {
+      var r = rowOf[e], p = propose(B, e, lineups[e], stMap, pool, by, o.maxSwaps || 2);
+      var next = p.steps.length ? applySwaps(r.ids, p.steps.map(function (x) { return x.swap; }), by, started) : r.ids.slice();
+      return { entryId: r.entryId, ids: r.ids, cur: p.cur, steps: p.steps, next: next };
+    });
+    return { proposals: proposals, stats: { entries: o.standings.entries.length, field: lineups.length, unmatched: unmatched, unknownGames: live.unknown,
+             draws: stats.draws, fallback: stats.fallback, hiddenMass: mass } };
+  }
+
+  return { CAP: CAP, SLOTS: SLOTS, run: run, applySwaps: applySwaps, exportEntries: exportEntries, board: board, canFill: canFill, swaps: swaps, propose: propose, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
            parseEntries: parseEntries, cellId: cellId, norm: norm, matchNames: matchNames, fits: fits, validate: validate,
            arrangeOpen: arrangeOpen };
 });

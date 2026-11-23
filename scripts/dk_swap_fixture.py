@@ -1,7 +1,8 @@
 """The late-swap tool's test fixtures (tests/swap_fixture/), from the 11-18 main slate (157033) at the study's break 2
 (analysis/cbb/dk/lateswap_2026-11-21.md: the 00:30Z and 01:00Z games started, the decision at the 02:00Z tip):
-  cards_157033.json            the lock card's players (the fields the swap tool reads) and the field's projected
-                               ownership at lock (own)
+  cards_157033.json            the lock card's players (the fields the swap tool reads), the field's projected
+                               ownership at lock (own) and its outcome shape (z)
+  plays_<event>.json           ESPN's play-by-play (trimmed) for the two games started by 02:00Z
   standings_157033_break2.csv  the contest's real standings (analysis/cbb/dk/standings) as at the tip: the players
                                still to play hidden (LOCKED in the Lineup cell, their ownership rows dropped), points blank
   DKEntries_fake.csv           three entries in DraftKings' entries-file format with made-up entry ids (never a real
@@ -24,7 +25,7 @@ import dk_sit as K       # noqa: E402  (lock_doc)
 
 DATE, G, CONTEST, TIP = "2026-11-18", "157033", "197938363", "2026-11-19T02:00Z"
 OUT = os.path.join(HERE, "..", "tests", "swap_fixture")
-KEEP = ["name", "team", "game", "roster", "position", "salary", "game_start", "event", "espn", "fp_dk", "miss_dk", "status", "min", "dk_avg"]
+KEEP = ["name", "team", "game", "roster", "position", "salary", "game_start", "event", "espn", "fp_dk", "fp_gate", "miss_dk", "status", "min", "dk_avg"]
 SLOTS = ["G", "G", "G", "F", "F", "F", "UTIL", "UTIL"]
 
 
@@ -38,8 +39,14 @@ def main():
     sl, start = K.lock_doc(a.mirror, "dk_cbb_morning.json", DATE, G)
     cards = {i: {k: c.get(k) for k in KEEP} for i, c in sl["players"].items()}
     fl, _ = K.lock_doc(a.mirror, "dk_cbb_field.json", DATE, G, start)      # our projected ownership at lock (the field's)
+    if not (fl or {}).get("z"):                                             # the outcome shape z sits on the field doc's top level
+        from nba_daily import Mirror, iso
+        Mi = Mirror(a.mirror); import datetime as dt
+        v = [sha for t, sha in Mi.versions("dk_cbb_field.json", iso(DATE + "T00:00:00Z") - dt.timedelta(days=1), start) if t < start]
+        _ = Mi.show(v[-1], "dk_cbb_field.json") if v else {}
     own = {i: round(v, 3) for i, v in ((fl or {}).get("own") or {}).items()}
-    json.dump({"draft_group": G, "date": DATE, "tip": TIP, "players": cards, "own": own}, open(os.path.join(OUT, "cards_%s.json" % G), "w"), indent=0, sort_keys=True)
+    con = [{k: c.get(k) for k in ("id", "name", "size", "entry_fee", "max_per_user", "payouts")} for c in sl.get("contests", []) if str(c.get("id")) == CONTEST]
+    json.dump({"draft_group": G, "date": DATE, "tip": TIP, "players": cards, "own": own, "z": (fl or {}).get("z") or (_ or {}).get("z"), "contests": con}, open(os.path.join(OUT, "cards_%s.json" % G), "w"), indent=0, sort_keys=True)
     started = lambda nm: any(c["name"] == nm and (c.get("game_start") or "9") < TIP for c in cards.values())
     src = os.path.join(HERE, "..", "analysis", "cbb", "dk", "standings", "contest-standings-%s.csv" % CONTEST)
     rows = list(csv.reader(open(src, encoding="utf-8-sig")))

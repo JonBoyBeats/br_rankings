@@ -188,6 +188,43 @@ const exOver = W.exportEntries(ENT, { [r0.entryId]: over0 }, by, started);
 check("export: an edit over the cap is refused", sal(over0) <= W.CAP || (exOver.csv === null && /over \$50,000/.test(exOver.errors.join())), sal(over0) + " " + JSON.stringify(exOver.errors));
 check("export: applySwaps keeps every started player in his slot", next0.every((id, k) => !started(r0.ids[k]) || id === r0.ids[k]));
 
+// --- 7. the replay: 11-18 break 2 end to end from the raw inputs (masked standings, the cards, ESPN's play-by-play as at
+// 02:00Z, fresh seeded nights, the module's own field draws) through run and the export; it must land on the study's swap
+const DKSim = require(path.join(__dirname, "..", "dk_sim.js"));
+const AT = Date.parse(RP.decision);
+const full = W.parseStandings(fs.readFileSync(path.join(__dirname, "..", "analysis", "cbb", "dk", "standings", "contest-standings-197938363.csv"), "utf8"));
+const fullIds = e => e.slots.map(x => W.matchNames([x.name], rows).ids[x.name]).sort().join();
+const ourIds = RP.lineups[RP.mine[0]].map(x => x[1]).sort().join(), ourE = full.entries.find(e => fullIds(e) === ourIds);
+const con = C.contests[0], tableE = {};
+con.payouts.forEach(([a, b, d]) => { for (let p = a; p <= b; p++) tableE[p] = d; });
+check("replay: the operator's entry found in the standings by its lineup, and the contest's payout table as the study's",
+      !!ourE && Object.keys(RP.table).every(p => Math.abs(RP.table[p] - tableE[p]) < 1e-9) && Object.keys(tableE).length === Object.keys(RP.table).length, ourE ? "" : "entry not found");
+const isSt = id => (by[id].game_start || "9") < RP.decision;
+const ourSlots = ["G", "F", "UTIL"].flatMap(sl_ => RP.lineups[RP.mine[0]].filter(x => x[0] === sl_).map(x => x[1]));
+const entCsv = "Entry ID,Contest Name,Contest ID,Entry Fee,G,G,G,F,F,F,UTIL,UTIL\r\n" + [ourE.entryId, con.name, con.id, "$" + con.entry_fee]
+  .concat(ourSlots.map(id => by[id].name + " (" + id + ")" + (isSt(id) ? " (LOCKED)" : ""))).map(W.csvCell).join(",") + "\r\n";
+const OURS = W.parseEntries(entCsv);
+const plays = { "401920515": PL, "401911232": JSON.parse(fs.readFileSync(path.join(FIX, "plays_401911232.json"), "utf8")).plays };
+const simRows = rows.map(r => ({ id: r.id, team: r.team, game: r.game, status: r.status || "", miss_dk: r.miss_dk, proj: r.status === "Out" ? 0 : (r.fp_gate != null ? r.fp_gate : r.fp_dk || 0) }));
+const ids7 = simRows.map(r => r.id), cx = { rows: simRows, proj: r => r.proj, random: DKSim.seeded(157033) }, nights7 = [];
+for (let s_ = 0; s_ < 300; s_++) { const pp = DKSim.nightPoints(cx, C.z, 1); nights7.push(ids7.map(id => Math.round(100 * (pp[id] || 0)) / 100)); }
+let rs7 = 20261121; const rnd7 = () => { rs7 = (rs7 * 16807) % 2147483647; return rs7 / 2147483647; };
+const t7 = Date.now();
+const R7 = W.run({ by, own: C.own, standings: st, ours: OURS.rows, plays, at: AT, nights: nights7, ids: ids7, table: tableE, M: 6, random: rnd7, maxSwaps: 2 });
+const ms7 = Date.now() - t7, P7 = R7.proposals[0];
+console.log("  replay: " + R7.stats.field + " field entries (" + R7.stats.unmatched + " unmatched), " + R7.stats.draws + " field draws, " + R7.stats.fallback +
+            " fallbacks, unknown games " + JSON.stringify(R7.stats.unknownGames) + ", " + ms7 + " ms; EV $" + P7.cur.ev.toFixed(2) + " -> " +
+            P7.steps.map(x => x.swap.join(">") + " $" + x.score.ev.toFixed(2)).join(", then "));
+check("replay: from the raw inputs, the first swap is the study's (" + RP.picks.ev[String(RP.mine[0])].swap.join(" > ") + ") and it adds expected payout",
+      R7.proposals.length === 1 && P7.steps.length >= 1 && P7.steps[0].swap.join() === RP.picks.ev[String(RP.mine[0])].swap.join() && P7.steps[0].score.ev > P7.cur.ev,
+      JSON.stringify(P7.steps.map(x => x.swap)));
+check("replay: every started game had play-by-play, the field matched, and the field draws rarely fell back",
+      R7.stats.unknownGames.length === 0 && R7.stats.unmatched === 0 && R7.stats.fallback / R7.stats.draws < 0.01, JSON.stringify(R7.stats));
+const ex7 = W.exportEntries(OURS, { [ourE.entryId]: P7.next }, by, isSt), back7 = ex7.csv && W.parseEntries(ex7.csv);
+check("replay: the proposal exports: valid, its started cells byte for byte, the swaps in, the latest tips in the open UTIL slots",
+      !!ex7.csv && back7.rows[0].ids.join() === P7.next.join() && OURS.rows[0].cells.every((c, k) => !isSt(OURS.rows[0].ids[k]) || back7.rows[0].cells[k] === c) &&
+      P7.steps.every(x => P7.next.indexOf(x.swap[1]) >= 0 && P7.next.indexOf(x.swap[0]) < 0), JSON.stringify(ex7.errors));
+
 passes.forEach(p => console.log("PASS " + p));
 fails.forEach(f => console.log("FAIL " + f));
 console.log(`${passes.length} passed, ${fails.length} failed`);
