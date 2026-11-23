@@ -8,7 +8,7 @@ and pooled with counts:
 - projections: `review_projections_2026-11-23.md` (commit 37fc5ad)
 - ownership: `review_ownership_2026-11-23.md` (15fca8c)
 - the sim: `review_sim_2026-11-23.md` (e0a5765)
-- the sim field: `field_study_2026-11-23.md` (pending at the time of writing; see section 4)
+- the sim field: `field_study_2026-11-23.md` (13b3168)
 
 **Sample.** 11 graded slates (11-16 to 11-22). Standings cover 9 of them, 45 contests in all. 7 nights have both a
 build and standings. That is thin: a slate is the unit, so per-night direction counts for more than pooled p-values.
@@ -18,10 +18,10 @@ build and standings. That is thin: a slate is the unit, so per-night direction c
 | # | Proposal | Area | Evidence (A2) | Default if not approved |
 |---|---|---|---|---|
 | 1 | **Close the projection gate under $6k** (ours alone under $6k; the 50/50 blend stays at $6k+) | Projections | Points MAE 5.630 -> 5.421, better on 10 of 11 slates; Vegas slope 1.50 -> 2.09; banks: top 10% better 7 / worse 2 nights, cash 6 / 3, pooled top 10% 9.2 -> 11.4%, cash 18.4 -> 22.0%. **Strict A2 flags it**: the shape lens (0.007 -> 0.020) and unexplained salary gaps (+10) get worse, and both favour the blend by construction | gate as is (w 0.50 every band) |
-| 2 | **Ownership: mix toward even b = 0.04, plus "coming off a big game" x1.22** | Ownership | Held out by slate: log error 0.476 -> 0.428, MAE 4.50 -> 4.37, better on 9 of 9 slates. The under-5% band 2.08x -> 1.56x; the middle and top bands hold. Order is unchanged, and 0.9 players a contest cross the page's 10% / 20% lines. The big-game pattern is now **confirmed** on the watchlist (49 player-nights, 7 nights, x1.25, same direction 6 of 7) | as is; apply only if the field study's recalibrated field doesn't already bring the under-5% band to ~1.2x (see 4) |
+| 2 | **Ownership: mix toward even b = 0.04, plus "coming off a big game" x1.22** | Ownership | Held out by slate: log error 0.476 -> 0.428, MAE 4.50 -> 4.37, better on 9 of 9 slates. The under-5% band 2.08x -> 1.56x; the middle and top bands hold. Order is unchanged, and 0.9 players a contest cross the page's 10% / 20% lines. The big-game pattern is now **confirmed** on the watchlist (49 player-nights, 7 nights, x1.25, same direction 6 of 7). The field study changes no field (4), so this is the only fix on the table for the under-5% floor (the field study measures it at 1.90x Large, 1.75x Medium) | as is |
 | 3 | **De-emphasize the tiers** on the page | Sim | Tiers: A > B > C on 3 of 7 nights, sign test p 1.00. The continuous sim value: positive with the real percentile on 6 of 7 nights, and the top tenth by value 6.8 points ahead | as is |
 | 4 | **Pin the nightly refits for the week** (Q factor, zero-games factor, sit model: computed nightly, applied only at the Friday review) | The lock | Makes the locked version actually fixed: the zero-games factor moved 0.041 -> 0.057 this week on its own | refits keep applying nightly |
-| 5 | The field builder settings from the field study | Sim field | pending | current FIELD_STYLES |
+| 5 | **No field change this week**; start the nightly field-fit measure and its page line (display only), and test the no-punt field pool next | Sim field | No candidate passes A2 held out by night (the chosen Large setting beats the current on 2 of 9 nights; banks top 10% better 4 / worse 5, cash 4 / 4) | current FIELD_STYLES |
 
 Not proposed (tested and rejected): B.3 shared-lineup credit (pooled percentile 48.5 -> 48.3; worse on the one night
 with real sharing); a flattening exponent on ownership (fails A2: MAE 4.50 -> 4.53).
@@ -98,10 +98,51 @@ The tier de-emphasis (decision 3), concretely:
 
 ## 4. The sim field
 
-Pending: the field study (B2 re-run plus the per-band calibration) is still running. When it lands, this section
-gets the B2 result, the per-band gaps and fitted settings, the held-out validation and its proposal (decision 5). It
-also settles decision 2: if the recalibrated field brings our displayed under-5% ownership to about 1.2x, the
-ownership mix is dropped as redundant. If the field study isn't ready by lock, the current field stays for the week.
+**LOCK** the current FIELD_STYLES, [0.2 w0 noise .10 / 0.8 w.5 .25]. No candidate passes A2.
+
+**The B2 re-run** (9 nights, 45 contests; lower score is better):
+
+| Setting | Score | Sim duplication (real 12.5%) | Owner's entries duplicated |
+|---|---|---|---|
+| Current | 1.630 (10th of 22) | 6.6% | 17 |
+| Best [0.3 w.5 .08] | 1.329 | 13.2% | 35 |
+| 4th [0.3 w0 .08] | 1.571 | 15.1% | 17 |
+
+The best setting drifts outside the real range on 11-16 (duplication 15.7 vs 6.8%) and 11-18 (15.8 vs 10.8%).
+
+**By contest-size band:**
+- Large: 31 contests, 9 nights.
+- Medium: 12 contests, 7 nights.
+- Small: 2 contests, 2 nights (one under 10). Too thin to fit: read as "looks like Small" only.
+
+**The gaps, real / current sim:**
+
+| Measure | Large | Medium |
+|---|---|---|
+| Duplication | 13.4 / 8.0% | 12.3 / 3.8% |
+| Entries playing a sub-$3.5k punt | 7.3 / 16.8% | 6.1 / 11.4% |
+| Top-20 trio lift | 1.40 / 1.08 | 1.24 / 1.09 |
+| Most common trio | 28.7 / 23.4% | 38.5 / 23.6% |
+
+Medium fields are chalkier: real ownership-sum median 330, against 265 in Large.
+
+**The fitted settings, scored on band means:**
+- Large: 20% chalk on the DK average, noise .08, no punts. Score 2.874 vs 3.524 current.
+- Medium: the same with 30% chalk. Score 3.122 vs 3.824.
+- Only the chalk share differs by band. Weight, noise and the no-punt pool can be shared. The shared-core step didn't earn its place.
+
+**Held out:**
+- The chosen setting beats the current on 2 of 9 Large nights (mean 3.95 vs 3.77) and 4 of 7 Medium nights. The night-to-night noise is larger than the pooled gain.
+- Banks: all 9 main contests are Large, so only the Large setting could be tested. Rule-free 2,000 cut to 200.
+  - Top 10%: 11.1 -> 11.3%, better on 4 nights, worse on 5.
+  - Cash: 23.8 -> 23.8%, better on 4, worse on 4.
+  - Percentile: 51.5 -> 52.9, better on 8 of 9.
+- The cut keeps the same lineups 70% of the time. There are no fewer chalky "falsely unique" lineups: 5.6% vs 5.8% of kept lineups appear in the real field.
+
+**Proposed instead** (display and measurement only; decision 5):
+- Measure the field fit nightly over the last 14 nights (field_fit.json), with a page line for the band you're entering, e.g. "Field fit: duplication 8% sim vs 13% real; punts 17% vs 7%".
+- Refit weekly at the Friday review. A change is proposed only when it passes held out and the banks don't get worse.
+- Test the no-punt field pool next. The punt gap (17% sim vs 7% real in Large) is the clearest single miss.
 
 ## 5. The lock and the Friday review
 
