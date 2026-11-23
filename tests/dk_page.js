@@ -2095,7 +2095,7 @@ function audit(name, L, o) {
     const d = new Date(at), pad = x => String(x).padStart(2, "0");
     return { stand: lines.join("\r\n") + "\r\n", ent, cid: String(c.id), local: d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()), ours, started: ours.filter(started) };
   });
-  await pg.evaluate(() => showStep("swap"));
+  await pg.evaluate(() => { SWAP_EXPORT = false; showStep("swap"); });      // the read-only checks first; Export on below
   await pg.setInputFiles("#swapStand", { name: "contest-standings-" + swIn.cid + ".csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
   await pg.setInputFiles("#swapEnt", { name: "DKEntries.csv", mimeType: "text/csv", buffer: Buffer.from(swIn.ent) });
   await pg.fill("#swapAt", swIn.local); await pg.fill("#swapNights", "300");
@@ -2134,7 +2134,23 @@ function audit(name, L, o) {
   check("Swap: with Export on, the edited entries file is the proposal, its started players' cells exactly as read (or nothing to export when it keeps)",
         swEx && (!sw1.res[0].steps || (swOut && swOut.ids.join() === sw1.res[0].next.join() && swIn.started.every(id => swOut.cells[swIn.ours.indexOf(id)].indexOf("(LOCKED)") > 0))),
         JSON.stringify(swOut));
-  await pg.evaluate(() => { SWAP_EXPORT = false; showStep("bank"); });
+  // the standings add up, one pick at a time; the same contest picked again replaces its file; the list names them
+  const swList = await pg.evaluate(() => ({ n: SWAP.stand.length, txt: document.getElementById("swapList").textContent }));
+  await pg.setInputFiles("#swapStand", { name: "contest-standings-999999991.csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
+  await pg.setInputFiles("#swapStand", { name: "contest-standings-" + swIn.cid + ".csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
+  await pg.waitForFunction(() => SWAP.stand.length === 2, null, { timeout: 10000 });
+  const swList2 = await pg.evaluate(() => ({ n: SWAP.stand.length, txt: document.getElementById("swapList").textContent }));
+  check("Swap: standings add up one pick at a time (a contest picked again replaced), the list names each with your entries in it",
+        swList.n === 1 && /Standings loaded \(1\)/.test(swList.txt) && /1 of your entries/.test(swList.txt) && swList2.n === 2 && /Standings loaded \(2\)/.test(swList2.txt) && /not on this slate/.test(swList2.txt),
+        JSON.stringify([swList, swList2]));
+  // a big contest's standings come as a .zip: its CSV is read from inside, named as in the zip
+  const zipBuf = require("child_process").execSync("python3 -c \"import io,sys,zipfile; b=io.BytesIO(); z=zipfile.ZipFile(b,'w',zipfile.ZIP_DEFLATED); z.writestr('contest-standings-999999992.csv', sys.stdin.read()); z.close(); sys.stdout.buffer.write(b.getvalue())\"", { input: swIn.stand });
+  await pg.setInputFiles("#swapStand", { name: "contest-standings-999999992.zip", mimeType: "application/zip", buffer: zipBuf });
+  await pg.waitForFunction(() => SWAP.stand.length === 3, null, { timeout: 10000 });
+  const swZip = await pg.evaluate(() => { const f = SWAP.stand.find(x => /999999992/.test(x.name)); return { name: f && f.name, same: f && f.text.length };} );
+  check("Swap: a zipped standings file (DraftKings' big contests) is read from inside the zip and added",
+        swZip.name === "contest-standings-999999992.csv" && swZip.same === swIn.stand.length, JSON.stringify(swZip));
+  await pg.evaluate(() => { SWAP_EXPORT = true; SWAP.stand = []; renderSwapList(); showStep("bank"); });
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
   passes.forEach(p => console.log("PASS " + p));
