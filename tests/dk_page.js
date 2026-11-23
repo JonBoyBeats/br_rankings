@@ -2134,6 +2134,19 @@ function audit(name, L, o) {
   check("Swap: with Export on, the edited entries file is the proposal, its started players' cells exactly as read (or nothing to export when it keeps)",
         swEx && (!sw1.res[0].steps || (swOut && swOut.ids.join() === sw1.res[0].next.join() && swIn.started.every(id => swOut.cells[swIn.ours.indexOf(id)].indexOf("(LOCKED)") > 0))),
         JSON.stringify(swOut));
+  // the chalk assumption fitted per contest: revealed slots that pile onto the top-owned players fit power 2, slots
+  // spread as projected fit power 1; under SWAP_FIT_MIN revealed players, as projected
+  const swFit = await pg.evaluate(() => {
+    const own = {}, ps = rows.filter(r => r.status !== "Out").slice(0, 8);
+    ps.forEach((r, i) => { own[r.id] = 40 - 4 * i; });
+    const mk = pw => { const tot = ps.reduce((t, r) => t + Math.pow(own[r.id], pw), 0), entries = [];
+      ps.forEach(r => { const n = Math.round(400 * Math.pow(own[r.id], pw) / tot); for (let k = 0; k < n; k++) entries.push({ slots: [{ slot: "UTIL", name: r.name }] }); });
+      return { entries }; };
+    const few = { entries: ps.slice(0, 3).map(r => ({ slots: [{ slot: "G", name: r.name }] })) };
+    return { chalk: swapChalkFit(mk(2), own).p, flat: swapChalkFit(mk(1), own).p, few: swapChalkFit(few, own), auto: document.getElementById("swapChalk").value };
+  });
+  check("Swap: the chalk assumption is fitted per contest from its revealed slots (chalk-heavy -> 2, as projected -> 1, too few -> 1), Auto by default",
+        swFit.chalk === 2 && swFit.flat === 1 && swFit.few.p === 1 && swFit.few.n === 0 && swFit.auto === "auto", JSON.stringify(swFit));
   // the standings add up, one pick at a time; the same contest picked again replaces its file; the list names them
   const swList = await pg.evaluate(() => ({ n: SWAP.stand.length, txt: document.getElementById("swapList").textContent }));
   await pg.setInputFiles("#swapStand", { name: "contest-standings-999999991.csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
