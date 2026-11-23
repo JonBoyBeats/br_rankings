@@ -790,8 +790,11 @@ function usable(r) { return r.status !== "Out" && !state.excl[r.id] && !r.deepOu
 function poolOut(r) { return !!(r && (state.excl[r.id] || r.deepOut)); }
 function togglePool(id) {
   var r = byId(id); if (!r) return;
-  if (poolOut(r)) { delete state.excl[id]; if (r.deepOut) state.deepIn[id] = 1; }
-  else if (state.deepIn[id]) delete state.deepIn[id];
+  // state.deepIn flips a player's default (applyOuts: deepOut = default out XOR deepIn), so flip it, never just set it:
+  // a flip saved under an older default (Friedrichsen, in by default now) otherwise keeps him out
+  var flip = function () { if (state.deepIn[id]) delete state.deepIn[id]; else state.deepIn[id] = 1; applyOuts(); };
+  if (poolOut(r)) { delete state.excl[id]; applyOuts(); if (r.deepOut) flip(); }
+  else if (state.deepIn[id]) flip();
   else { state.excl[id] = 1; delete state.lock[id]; }
   save(); applyOuts(); renderPlayers(); if (view.panel) renderTeamPanel();
 }
@@ -3920,7 +3923,7 @@ function rowClick(e) {
   var id = b.closest(".row").dataset.id, which = b.classList.contains("lock") ? "lock" : "excl", other = which === "lock" ? "excl" : "lock";
   if (which === "excl") { togglePool(id); return; }
   if (state.lock[id]) delete state.lock[id];
-  else { state.lock[id] = 1; delete state.excl[id]; var lr = byId(id); if (lr && lr.deepOut) { state.deepIn[id] = 1; applyOuts(); } }   // a lock brings him into the pool
+  else { state.lock[id] = 1; delete state.excl[id]; var lr = byId(id); if (lr && lr.deepOut) { if (state.deepIn[id]) delete state.deepIn[id]; else state.deepIn[id] = 1; applyOuts(); } }   // a lock brings him into the pool
   save(); renderPlayers(); if (view.panel) renderTeamPanel();
 }
 $("players").addEventListener("change", rowChange);

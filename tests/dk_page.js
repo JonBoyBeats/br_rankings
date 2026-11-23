@@ -240,11 +240,17 @@ function audit(name, L, o) {
     const deep = deepIds(); deep[r.id] = 1; const was = deepIds; deepIds = function () { return deep; };
     applyOuts(); view.panel = null; renderTiles(); renderPlayers();
     const x = () => document.querySelector(`#players .row[data-id="${r.id}"] .excl`);
+    const x2 = (y) => document.querySelector(`#players .row[data-id="${y.id}"] .excl`);
     const o = { def: r.deepOut && x().getAttribute("aria-pressed") === "true", noUse: !document.querySelector(`#players .row[data-id="${r.id}"] .deepin`) };
     x().click(); o.in = usable(r) && x().getAttribute("aria-pressed") === "false";
     x().click(); o.out = !usable(r) && x().getAttribute("aria-pressed") === "true" && !state.excl[r.id];
     x().click(); x().click(); o.mine = !usable(r) && !!state.excl[r.id] === false;
     deepIds = was; state.deepIn = {}; state.excl = {}; applyOuts(); renderPlayers();
+    // a flip saved under an older default: a player in by default with a stale state.deepIn is out; X brings him in
+    const q = rows.find(y => y.status !== "Out" && !y.deepOut && usable(y) && y.id !== r.id);
+    state.deepIn[q.id] = 1; applyOuts(); renderPlayers(); const stale = !usable(q) && x2(q).getAttribute("aria-pressed") === "true";
+    x2(q).click(); o.stale = stale && usable(q) && !state.deepIn[q.id];
+    state.deepIn = {}; applyOuts(); renderPlayers();
     return o;
   });
   check("X is the one pool toggle: on for a player out by default (a Q player too), one tap in, one tap back out; no use / drop button",
