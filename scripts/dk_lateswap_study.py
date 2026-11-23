@@ -465,7 +465,10 @@ def test2(sl, c, k, imps, started, hidden, ids, NIGHT, rng, base, left):
             pcash = prop[e]["cands"][0][1][1]
             dis.append({"near_cash": 0.2 <= pcash <= 0.8, "pay_top1": out["top1"][j]["pay"], "pay_ev": out["ev"][j]["pay"],
                         "pts_top1": out["top1"][j]["pts"], "pts_ev": out["ev"][j]["pts"]})
-    return {"n": n, "fee": fee, "has_pay": bool(table), "out": out, "swapped": swapped, "same": same, "dis": dis}
+    # each policy's pick per entry of ours, (lineup ids, (out, in) or None): the late-swap tool's replay fixture reads them
+    picks = {pol: {int(e): (list(pick[pol][e][0]), pick[pol][e][2]) for e in mine} for pol in ("top1", "ev")}
+    picks["cands"] = {int(e): [(x[2], [float(v) for v in x[1]]) for x in prop[e]["cands"]] for e in mine}   # (swap, (top-1%, cash, EV))
+    return {"n": n, "fee": fee, "has_pay": bool(table), "out": out, "swapped": swapped, "same": same, "dis": dis, "picks": picks}
 
 
 def main():

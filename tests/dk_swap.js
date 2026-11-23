@@ -136,6 +136,35 @@ const fb = {}; const tight = W.fieldDraw(rnd, ["G", "F", "UTIL"], 7000, pool, ho
 check("field draws: with too little salary for any fill, the fallback fills the slots anyway (eligible, no duplicates) and is counted",
       fb.fallback === 1 && tight && new Set(tight).size === 3 && tight.every((id, j) => W.fits(["G", "F", "UTIL"][j], by[id])), JSON.stringify([fb, tight]));
 
+// --- 5. the proposer: the study's own inputs (11-18, contest 197938363, break 2), its scores and its pick reproduced ---
+const RP = JSON.parse(fs.readFileSync(path.join(FIX, "replay_157033_break2.json"), "utf8"));
+const stR = {}; RP.started.forEach(id => { stR[id] = 1; });
+const drawsR = {}; Object.entries(RP.imps).forEach(([e, v]) => { drawsR[+e] = v; });
+const BR = W.board({ ids: RP.ids, nights: RP.nights, started: stR, base: RP.base, left: RP.left, lineups: RP.lineups, mine: RP.mine, draws: drawsR, table: RP.table });
+const byR = {}; Object.entries(RP.cards).forEach(([id, r]) => { byR[id] = Object.assign({ id }, r); });
+const poolR = RP.hidden.filter(id => byR[id].status !== "Out");
+const eR = RP.mine[0], luR = RP.lineups[eR], cands = RP.cands[String(eR)];
+// a standings lineup (F F F G G G UTIL UTIL, as the export lists it) in DraftKings' entries-file order (G G G F F F UTIL UTIL)
+const toSlots = lu => ["G", "F", "UTIL"].flatMap(s_ => lu.filter(x => x[0] === s_).map(x => x[1]));
+const sw = W.swaps(luR, stR, poolR, byR);
+const key = x => x ? x.join(">") : "keep";
+const studyKeys = cands.slice(1).map(c => key(c.swap)).sort(), jsKeys = sw.map(c => key(c.swap)).sort();
+check("proposer: the same single-swap candidates as the study (" + cands.length + " with keep)", JSON.stringify(studyKeys) === JSON.stringify(jsKeys),
+      studyKeys.length + " vs " + jsKeys.length);
+let worst = 0;
+cands.forEach(c => { const ids = c.swap ? luR.map(x => x[1] === c.swap[0] ? c.swap[1] : x[1]) : luR.map(x => x[1]); const sc = BR.score(eR, ids);
+  worst = Math.max(worst, Math.abs(sc.ev - c.ev), 100 * Math.abs(sc.top1 - c.top1), 100 * Math.abs(sc.cash - c.cash)); });
+check("proposer: every candidate's expected payout, top-1% and cash rates as the study scored them (within $0.50 / 0.5 point)", worst <= 0.5, "worst " + worst.toFixed(3));
+console.log("  (largest gap to the study over the " + cands.length + " candidates: " + worst.toFixed(4) + ")");
+const pr = W.propose(BR, eR, luR, stR, poolR, byR, 1), want = RP.picks.ev[String(eR)].swap;
+check("proposer: one swap per entry picks the study's expected-payout swap", key(pr.steps[0] && pr.steps[0].swap) === key(want), key(pr.steps[0] && pr.steps[0].swap) + " vs " + key(want));
+const pr2 = W.propose(BR, eR, luR, stR, poolR, byR, 2);
+check("proposer: a second swap only on top of the first and only when it adds expected payout; every step's lineup valid",
+      key(pr2.steps[0].swap) === key(want) && (pr2.steps.length === 1 || pr2.steps[1].score.ev > pr2.steps[0].score.ev) &&
+      pr2.steps.every(st_ => { const isSt = id => !!stR[id], before = toSlots(luR), after = toSlots(luR.map(x => [x[0], st_.ids[luR.indexOf(x)]]));
+        const A = W.arrangeOpen(after, byR, isSt); return !!A && W.validate(before, A, byR, isSt).ok; }),
+      JSON.stringify(pr2.steps.map(x => [x.swap, x.score.ev.toFixed(2)])));
+
 passes.forEach(p => console.log("PASS " + p));
 fails.forEach(f => console.log("FAIL " + f));
 console.log(`${passes.length} passed, ${fails.length} failed`);

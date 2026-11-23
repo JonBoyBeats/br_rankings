@@ -8,7 +8,13 @@
                                entries file: those carry the owner's entry ids), lineups taken from the standings, the
                                started players' cells marked (LOCKED) as DraftKings writes them
 
-  python3 scripts/dk_swap_fixture.py --mirror ../br-adp-mirror
+  replay_157033_break2.json    the study's own inputs and picks for that contest at break 2 (scripts/dk_lateswap_study.py
+                               load / nights / knowledge / test1 / test2, S nights, M imputations): the simulated nights,
+                               each other entry's hidden imputations, our started players' points so far and share left,
+                               every entry's lineup, ours marked, the payout table and the study's top-1% / EV picks. The
+                               late-swap proposer must reproduce the picks from these inputs
+
+  python3 scripts/dk_swap_fixture.py --mirror ../br-adp-mirror [--replay]
 """
 import argparse, csv, io, json, os, re, sys
 
@@ -23,7 +29,11 @@ SLOTS = ["G", "G", "G", "F", "F", "F", "UTIL", "UTIL"]
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--mirror", default=os.path.join(HERE, "..", "..", "br-adp-mirror")); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--mirror", default=os.path.join(HERE, "..", "..", "br-adp-mirror"))
+    ap.add_argument("--replay", action="store_true"); ap.add_argument("--S", type=int, default=300); ap.add_argument("--M", type=int, default=6)
+    a = ap.parse_args()
+    if a.replay:
+        return replay(a)
     os.makedirs(OUT, exist_ok=True)
     sl, start = K.lock_doc(a.mirror, "dk_cbb_morning.json", DATE, G)
     cards = {i: {k: c.get(k) for k in KEEP} for i, c in sl["players"].items()}
@@ -58,6 +68,38 @@ def main():
     with open(os.path.join(OUT, "DKEntries_fake.csv"), "w", newline="") as f:
         csv.writer(f, lineterminator="\r\n").writerows(ent)
     print("fixtures: %d cards, %d standings entries, %d fake entries" % (len(cards), len(lineups), len(ent) - 1))
+
+
+def replay(a):
+    import tempfile
+    import numpy as np
+    import dk_lateswap_study as L
+    rng = np.random.default_rng(20261121)
+    sl = next(x for x in L.load(a.mirror) if x["g"] == G)
+    c = next(x for x in sl["contests"] if x["id"] == CONTEST)
+    k = 1                                                     # break 2: the decision at tips[2], 02:00Z
+    ids, NIGHT = L.nights(sl, a.S, int(G))
+    cache = os.path.join(tempfile.gettempdir(), "dk_lateswap_pbp"); os.makedirs(cache, exist_ok=True)
+    base, left, _ = L.knowledge(sl, k, cache)
+    _, imps, started, hidden = L.test1(sl, c, k, a.M, rng, None)
+    t2 = L.test2(sl, c, k, imps, started, hidden, ids, NIGHT, rng, base, left)
+    mine = sorted(int(e) for e in t2["picks"]["ev"])
+    byent = {}
+    for e, m, got in imps:
+        byent.setdefault(int(e), []).append(list(got))
+    table, fee = L.pay_of(c)
+    doc = {"date": DATE, "g": G, "contest": CONTEST, "decision": sl["tips"][k + 1], "S": a.S, "M": a.M, "ids": ids,
+           "nights": [[round(float(v), 2) for v in row] for row in NIGHT], "started": sorted(started), "hidden": sorted(hidden),
+           "base": {i: round(float(v), 2) for i, v in base.items()}, "left": {i: round(float(v), 4) for i, v in left.items()},
+           "lineups": [[[s_, i] for s_, i in lu] for lu in c["L"]], "mine": mine, "imps": {str(e): v for e, v in byent.items()},
+           "table": {str(p): v for p, v in (table or {}).items()}, "fee": fee,
+           "cards": {i: {"salary": r["salary"], "roster": r["roster"], "status": r["status"]} for i, r in sl["R"].items()},
+           "picks": {pol: {str(e): {"ids": v[0], "swap": list(v[1]) if v[1] else None} for e, v in t2["picks"][pol].items()} for pol in ("top1", "ev")},
+           "cands": {str(e): [{"swap": list(w) if w else None, "top1": sc[0], "cash": sc[1], "ev": sc[2]} for w, sc in v] for e, v in t2["picks"]["cands"].items()}}
+    json.dump(doc, open(os.path.join(OUT, "replay_%s_break2.json" % G), "w"), separators=(",", ":"))
+    sw = sum(1 for v in doc["picks"]["ev"].values() if v["swap"])
+    print("replay fixture: %d entries (%d ours, %d swapped under EV), %d nights x %d players, %d imputed entries" % (
+        len(doc["lineups"]), len(mine), sw, len(doc["nights"]), len(ids), len(doc["imps"])))
 
 
 if __name__ == "__main__":

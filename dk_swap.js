@@ -14,7 +14,13 @@
  *                  standings leave hidden, the study's best piece), fieldDraw (one real entry's hidden slots drawn
  *                  from that ownership: slot-eligible, no player twice, within the salary it has left; after
  *                  DRAW_TRIES failures, without the salary limit, counted)
- * Later pieces: the proposer, the export.
+ *   5. the proposer  board (a contest's field over S simulated nights: every entry's started players at points so far
+ *                  plus the simulated rest of their games x the share left, its hidden part ours exactly and the
+ *                  others' from their field draws, cycled by night; scored as the study scores: place = 1 + entries
+ *                  scoring more, top 1%, cash, expected payout), swaps (one unstarted player out, one unstarted,
+ *                  affordable player in who keeps the open slots fillable), propose (per entry, the best expected
+ *                  payout, then a second swap on top while it adds)
+ * Later pieces: the export.
  */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory();
@@ -282,7 +288,90 @@
     return f ? f.ids : null;
   }
 
-  return { CAP: CAP, SLOTS: SLOTS, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
+  // --- 5. the proposer ----------------------------------------------------------------------------------------------
+  /* A contest's board. o: {ids (the players' column order), nights (S rows of points per id, full games), started:
+     {id: 1}, base: {id: points so far}, left: {id: share of his game left}, lineups: [[ [slot, id] x 8 ] per entry, ours
+     included as entered], mine: [entry index], draws: {entry: [[hidden ids], ...]} (the other entries' hidden parts),
+     table: {place: payout}}. score(e, ids): {top1, cash, ev} for entry e as these 8 ids, the field holding every other
+     entry (e's own entered score taken out), as scripts/dk_lateswap_study.py test2. */
+  function board(o) {
+    var S = o.nights.length, N = o.lineups.length, col = {}, mineSet = {};
+    o.ids.forEach(function (id, j) { col[id] = j; });
+    (o.mine || []).forEach(function (e) { mineSet[e] = 1; });
+    var NT = o.nights, at = function (s, id) { var j = col[id]; return j == null ? 0 : NT[s][j]; };
+    var START = [], F = [];
+    for (var s = 0; s < S; s++) { START.push(new Float64Array(N)); F.push(new Float64Array(N)); }
+    o.lineups.forEach(function (lu, e) {
+      var st = lu.filter(function (x) { return o.started[x[1]]; }).map(function (x) { return x[1]; });
+      var hid = lu.filter(function (x) { return !o.started[x[1]]; }).map(function (x) { return x[1]; });
+      var b = st.reduce(function (t, id) { return t + (o.base[id] || 0); }, 0);
+      var opts = mineSet[e] || !(o.draws[e] && o.draws[e].length) ? [hid] : o.draws[e];
+      for (var s = 0; s < S; s++) {
+        var v = b; st.forEach(function (id) { v += at(s, id) * (o.left[id] != null ? o.left[id] : 1); });
+        START[s][e] = v;
+        var h = opts[s % opts.length], hv = 0; h.forEach(function (id) { hv += at(s, id); });
+        F[s][e] = v + hv;
+      }
+    });
+    var sorted = F.map(function (row) { return Float64Array.from(row).sort(); });   // ascending
+    var T1 = Math.max(1, Math.ceil(0.01 * N)), places = Object.keys(o.table || {}).map(Number);
+    var paid = places.length ? Math.max.apply(null, places) : Math.max(1, Math.floor(0.2 * N));
+    function score(e, lineupIds) {
+      var hid = lineupIds.filter(function (id) { return !o.started[id]; }), a = 0, c = 0, pay = 0;
+      for (var s = 0; s < S; s++) {
+        var x = START[s][e]; hid.forEach(function (id) { x += at(s, id); });
+        var row = sorted[s], lo = 0, hi = N;                 // entries scoring at most x
+        while (lo < hi) { var mid = (lo + hi) >> 1; if (row[mid] <= x) lo = mid + 1; else hi = mid; }
+        var place = 1 + (N - lo) - (F[s][e] > x ? 1 : 0);
+        if (place <= T1) a++;
+        if (place <= paid) c++;
+        pay += (o.table && o.table[place]) || 0;
+      }
+      return { top1: a / S, cash: c / S, ev: pay / S };
+    }
+    return { S: S, N: N, score: score };
+  }
+  function canFill(ids, slots, by) {   // can these players fill these slot labels, one each?
+    if (ids.length !== slots.length) return false;
+    var ok = false;
+    permute(ids, function (p) { if (!ok && p.every(function (id, i) { return fits(slots[i], by[id] || {}); })) ok = true; });
+    return ok;
+  }
+  /* The single swaps for a lineup ([[slot, id] x 8]): one unstarted player out, one unstarted player of pool in, the
+     salary within the cap and the open slots still fillable (the study's candidates). [{swap: [out, in], ids}] */
+  function swaps(lu, started, pool, by) {
+    var ids = lu.map(function (x) { return x[1]; }), open = lu.filter(function (x) { return !started[x[1]]; });
+    var hid = open.map(function (x) { return x[1]; }), slots = open.map(function (x) { return x[0]; });
+    var sal = ids.reduce(function (t, id) { return t + ((by[id] || {}).salary || 0); }, 0), out = [];
+    hid.forEach(function (o_) {
+      pool.forEach(function (i_) {
+        if (ids.indexOf(i_) >= 0 || started[i_] || sal - by[o_].salary + by[i_].salary > CAP) return;
+        var nh = hid.filter(function (x) { return x !== o_; }).concat([i_]);
+        if (!canFill(nh, slots, by)) return;
+        out.push({ swap: [o_, i_], ids: ids.map(function (x) { return x === o_ ? i_ : x; }) });
+      });
+    });
+    return out;
+  }
+  /* Entry e's proposal: its score as entered, then the best single swap by expected payout (top-1% breaking ties, as
+     the study's EV policy), then while maxSwaps allows, the best further swap on top of it that adds expected payout.
+     {cur, steps: [{swap, ids, score}]} (no steps: keep it as entered). */
+  function propose(B, e, lu, started, pool, by, maxSwaps) {
+    var cur = B.score(e, lu.map(function (x) { return x[1]; })), best = cur, steps = [], L = lu;
+    for (var k = 0; k < (maxSwaps || 2); k++) {
+      var top = null;
+      swaps(L, started, pool, by).forEach(function (c) {
+        var sc = B.score(e, c.ids);
+        if (!top || sc.ev > top.score.ev || (sc.ev === top.score.ev && sc.top1 > top.score.top1)) top = { swap: c.swap, ids: c.ids, score: sc };
+      });
+      if (!top || top.score.ev <= best.ev + 1e-9) break;
+      steps.push(top); best = top.score;
+      L = L.map(function (x) { return [x[0], x[1] === top.swap[0] ? top.swap[1] : x[1]]; });
+    }
+    return { cur: cur, steps: steps };
+  }
+
+  return { CAP: CAP, SLOTS: SLOTS, board: board, canFill: canFill, swaps: swaps, propose: propose, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
            parseEntries: parseEntries, cellId: cellId, norm: norm, matchNames: matchNames, fits: fits, validate: validate,
            arrangeOpen: arrangeOpen };
 });
