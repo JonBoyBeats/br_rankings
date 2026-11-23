@@ -731,7 +731,19 @@ function applyOuts() {
   rows.forEach(function (r) { if (r.status !== r._status0) teams[r.team] = 1; });
   Object.keys(teams).forEach(function (t) {
     var v = rows.filter(function (r) { return r.team === t && r.status !== "Out" && r.min != null && r.min > 0; });
-    var fit = DKSim.fitMinutes(v.map(function (r) { return r.min; }), 200);
+    /* the pipeline's Out rule first (cbb_nightly team_minutes, OUT_REG_MIN / OUT_SHARE / OUT_POS_OTHER; 2026-11-23,
+       Wright: the plain fit spread a starting guard's minutes evenly, forwards included): a regular you rule out
+       (projected OUT_REG_MIN+) hands OUT_SHARE of his minutes to his teammates by m x (40 - m), at full weight to his
+       position group (guards / forwards) and OUT_POS_OTHER to the rest, each held to 40; then the fit to 200 */
+    var add = {};
+    rows.forEach(function (o) {
+      if (o.team !== t || o.status !== "Out" || o._status0 === "Out" || (o.min || 0) < OUT_REG_MIN) return;
+      var og = isG(o), of = isF(o), w = {}, tot = 0;
+      v.forEach(function (r) { var m = r.min + (add[r.id] || 0), same = (og && isG(r)) || (of && isF(r));
+        w[r.id] = Math.max(0, m * (40 - m)) * (same ? 1 : OUT_POS_OTHER); tot += w[r.id]; });
+      if (tot > 0) v.forEach(function (r) { var m = r.min + (add[r.id] || 0); add[r.id] = (add[r.id] || 0) + Math.min(40 - m, OUT_SHARE * o.min * w[r.id] / tot); });
+    });
+    var fit = DKSim.fitMinutes(v.map(function (r) { return r.min + (add[r.id] || 0); }), 200);
     v.forEach(function (r, i) { minScale[r.id] = fit[i] / r.min; });
   });
   var P = wuPoolIndex();
@@ -1879,6 +1891,7 @@ function tagCounts(idx, byTag) {     // lineups by group (or by tag): the tag ea
 /* The bank check (before Re-sim & cut, information only): the bank's and each idea's average projection and summed
    projected ownership against the simulated field's; an idea projecting more than BANK_UNDER points under the field
    is flagged (2026-11-16 to 11-18: the bank projected 10 to 20 under the real field's average lineup). */
+var OUT_REG_MIN = 15, OUT_SHARE = 0.5, OUT_POS_OTHER = 0.5;     // the pipeline's Out rule (cbb_nightly), for your Mark out
 var BANK_UNDER = 5, PUNT_MIN = 15;     // a punt: a player projected under PUNT_MIN minutes (tracking, 2026-11-19)
 /* Ownership position (tracking, 2026-11-19, from the ETR show: sit a little under the field's clump of summed
    ownership, not far under): the simulated field's lineups' summed projected ownership at its 10th / 25th / 50th /
