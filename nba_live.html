@@ -127,7 +127,7 @@
     <div class="mast-row">
       <h1>Live</h1>
       <div class="sportbtns" id="sportBtns"></div>
-      <nav id="sitenav" data-sport="" data-page="live"></nav><script src="sitenav.js"></script>
+      <nav id="sitenav" data-sport="" data-page="live"></nav><script src="sitenav.js"></script><script src="dk_swap.js"></script>
     </div>
     <div class="controls">
       <label class="field grow">
@@ -400,6 +400,12 @@ function dkExpo(sl) {
     var L = bank.lineups[k];
     return typeof L === "string" ? L.split("|")[0].split(",") : L && L.ids;
   };
+  // your lineups as entered (2026-11-23): the DK page's entries file, late swaps included once exported
+  var my = load("dkcbb-mylu:" + sl.dg, null);
+  if (my && my.lineups && my.lineups.length) {
+    var cm = {}; my.lineups.forEach(function (ids) { ids.forEach(function (id) { cm[id] = (cm[id] || 0) + 1; }); });
+    return { n: my.lineups.length, counts: cm, src: "your entries as entered, late swaps included" };
+  }
   // since 2026-11-20 the DK page keeps its bank in IndexedDB and writes your entered lineups' player ids here
   var lu = load("dkcbb-pflu:" + sl.dg, null);
   if (lu && Object.keys(lu).length) {
@@ -417,6 +423,33 @@ function dkExpo(sl) {
     pf[cid].forEach(function (k) { var ids = lineups(k); if (!ids) return; n++; ids.forEach(function (id) { counts[id] = (counts[id] || 0) + 1; }); });
   });
   return n ? { n: n, counts: counts, src: src } : null;
+}
+/** The field's real ownership on a DraftKings slate (2026-11-23, the owner): a contest's standings as loaded on this
+    device's DK page for late swap (IndexedDB dkswap), its %Drafted by player name; the contest whose name has "Pull Up
+    Jumper", else the one with the most entries. Read once per slate, then the board redraws. */
+function dkActual(sl) {
+  state.dkActual = state.dkActual || {};
+  if (sl.dg in state.dkActual) return state.dkActual[sl.dg];
+  state.dkActual[sl.dg] = null;
+  if (!window.indexedDB || typeof DKSwap === "undefined") return null;
+  var q = indexedDB.open("dkswap", 1);
+  q.onupgradeneeded = function () { q.result.createObjectStore("files", { keyPath: "slate" }); };
+  q.onsuccess = function () {
+    try {
+      var g = q.result.transaction("files").objectStore("files").get(String(sl.dg));
+      g.onsuccess = function () {
+        var rec = g.result, best = null;
+        ((rec && rec.stand) || []).forEach(function (f) {
+          var st = DKSwap.parseStandings(f.text); if (st.error) return;
+          var c = { title: f.contest || f.name, n: st.entries.length, own: {}, pull: /pull up jumper/i.test(f.contest || "") };
+          Object.keys(st.own).forEach(function (nm) { c.own[DKSwap.norm(nm)] = st.own[nm]; });
+          if (!best || (c.pull && !best.pull) || (c.pull === best.pull && c.n > best.n)) best = c;
+        });
+        if (best) { state.dkActual[sl.dg] = best; render(); }
+      };
+    } catch (e) {}
+  };
+  return null;
 }
 /** DraftKings' points for a box line: its scoring, +1.5 a double-double, +3 more a triple-double (cbb_daily.py dk_points). */
 function dkPoints(b) {
@@ -1034,6 +1067,11 @@ function render() {
     var tm = document.createElement("span"); tm.className = "tm"; tm.textContent = p.team || "";
     nm.appendChild(tm);
     if (sl.dk && p.salary) { var sal = document.createElement("span"); sal.className = "tm"; sal.textContent = (p.salary / 1000).toFixed(1) + "k"; nm.appendChild(sal); }
+    if (sl.dk) {           // the field's real ownership beside yours (2026-11-23)
+      var act = dkActual(sl), ao = act && act.own[DKSwap.norm(p.first_name + " " + p.last_name)];
+      if (act) { var fo = document.createElement("span"); fo.className = "tm"; fo.textContent = "field " + (ao != null ? Math.round(ao) : 0) + "%";
+        fo.title = (ao != null ? ao.toFixed(1) : "0") + "% drafted in " + act.title + " (" + act.n.toLocaleString() + " entries, standings as loaded for late swap)"; nm.appendChild(fo); }
+    }
     if (r.own != null && r.own < 0.995) {
       var dr = document.createElement("span"); dr.className = "tm";
       dr.textContent = Math.round(r.own * 100) + "%";

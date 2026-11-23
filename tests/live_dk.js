@@ -82,6 +82,20 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
   await pg.evaluate(d => { state.dkBuilds["156660"] = d; render(); }, bank);
   await pg.click("#mine");
   ok.push(["Mine only: the players in your lineups", (await pg.$$eval("#list .row", r => r.length)) === Object.keys(cnt).length]);
+  // 2026-11-23: your entries as entered (the DK page's late-swap entries file) win over the build; the field's real
+  // ownership from a contest's standings loaded for late swap shows beside each name
+  const live2 = await pg.evaluate(async ([dg, top, name]) => {
+    localStorage.setItem("dkcbb-mylu:" + dg, JSON.stringify({ at: Date.now(), lineups: [[top], [top], ["zz"]] }));
+    const stand = "Rank,EntryId,EntryName,TimeRemaining,Points,Lineup,,Player,Roster Position,%Drafted,FPTS\r\n1,111,someone,0,10,G " + name + ",," + name + ",G,37.5%,10\r\n";
+    await new Promise(ok => { const q = indexedDB.open("dkswap", 1); q.onupgradeneeded = () => q.result.createObjectStore("files", { keyPath: "slate" });
+      q.onsuccess = () => { const tx = q.result.transaction("files", "readwrite"); tx.objectStore("files").put({ slate: String(dg), stand: [{ name: "contest-standings-1.csv", text: stand, contest: "CBB $5 Pull Up Jumper" }], saved: Date.now() }); tx.oncomplete = ok; }; });
+    state.dkActual = {}; render();
+    await new Promise(r => setTimeout(r, 400));
+    const row = [...document.querySelectorAll("#list .row")].find(x => x.innerText.includes(name));
+    return { status: document.getElementById("status").textContent, row: row && row.innerText.replace(/\s+/g, " "), title: row && (row.querySelector(".name .tm:last-child") || {}).title };
+  }, [String(sl.draft_group_id), top, P.name]);
+  ok.push(["exposure from your entries as entered (late swaps included) over the build", /3 DraftKings entries \(your entries as entered, late swaps included\)/.test(live2.status) && /^67%/.test(live2.row || "")]);
+  ok.push(["the field's real ownership beside the name, from the Pull Up Jumper standings", /field 38%/.test(live2.row || "") && /Pull Up Jumper/.test(live2.title || "")]);
   ok.push(["no page errors", !errs.length]);
   if (process.argv[2]) await pg.screenshot({ path: process.argv[2] });
   ok.forEach(([name, pass]) => console.log((pass ? "PASS " : "FAIL ") + name));

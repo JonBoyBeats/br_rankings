@@ -558,7 +558,8 @@
     <label class="field"><span class="field-label">Order</span><select id="swapSort" style="width:auto"><option value="ev">Most equity first</option><option value="gain">Biggest gain first</option><option value="run">As run</option></select></label>
     <button type="button" class="primary" id="swapRun">Propose swaps</button>
   </div>
-  <div class="opts" style="padding:0"><button type="button" id="swapPackSave" title="One file with the standings and entries file loaded here, to open this on your phone (AirDrop, email, Drive); it carries your entry IDs, keep it private">Save swap pack</button>
+  <div class="opts" style="padding:0"><button type="button" id="swapLogSave" title="This slate's swap log (what was proposed and what you accepted, no entry IDs), for the morning grading">Save swap log</button>
+    <button type="button" id="swapPackSave" title="One file with the standings and entries file loaded here, to open this on your phone (AirDrop, email, Drive); it carries your entry IDs, keep it private">Save swap pack</button>
     <label class="field" style="flex-direction:row;align-items:center;gap:6px"><span class="field-label">Load swap pack</span><input type="file" id="swapPackLoad" accept=".json" style="height:auto"></label></div>
   <div class="note" id="swapList"></div>
   <div class="status" id="swapStatus"></div>
@@ -3454,7 +3455,28 @@ function swapExport() {
   a.href = URL.createObjectURL(new Blob([x.csv], { type: "text/csv" }));
   a.download = "DKEntries_lateswap_" + slate.day + "_" + slate.draft_group_id + ".csv";
   document.body.appendChild(a); a.click(); a.remove();
+  swapLog(edits);
+  // what's entered now (once uploaded): the next run, the swap pack and the Live page start from the swapped lineups
+  var pe = DKSwap.parseEntries(x.csv); if (pe && !pe.error) { SWAP.ent = pe; SWAP.entText = x.csv; swapSave(); swapMine(); renderSwapList(); }
   return "Exported " + x.n + " edited entr" + (x.n === 1 ? "y" : "ies") + ". Upload it at Lineups → Edit Entries.";
+}
+/* Your lineups as entered (2026-11-23, the owner: the Live page showed the build's exposure after late swaps): the entries
+   file's lineups (swapped ones once exported), for the Live page (dkcbb-mylu:<group>, player ids only, no entry IDs). */
+function swapMine() {
+  if (!slate || !SWAP.ent) return;
+  try { localStorage.setItem("dkcbb-mylu:" + slate.draft_group_id, JSON.stringify({ at: Date.now(), lineups: SWAP.ent.rows.map(function (r) { return r.ids; }) })); } catch (e) {}
+}
+/* The swap log, for grading late swap (2026-11-23, the owner): each export's proposals per entry (no entry IDs: the
+   contest, the lineup before, the steps with their expected payout, accepted or not, the field assumption), kept in this
+   browser (dkcbb-swaplog:<group>) and saved with Save swap log for the morning (br_rankings scripts/dk_eval.py swaps). */
+function swapLog(edits) {
+  if (!slate || !SWAP.res) return;
+  var key = "dkcbb-swaplog:" + slate.draft_group_id, log = [];
+  try { log = JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) {}
+  log.push({ at: new Date(SWAP.at).toISOString(), exported: new Date().toISOString(), entries: SWAP.res.map(function (p0) { var p = swapPick(p0);
+    return { contest: (SWAP.ent.rows.find(function (r) { return r.entryId === p0.entryId; }) || {}).contestId || null, before: p0.ids, after: p.next, accepted: !!edits[p0.entryId],
+             cur: p.cur, steps: p.steps.map(function (x) { return { out: x.swap[0], in: x.swap[1], ev: x.score.ev, cash: x.score.cash, top1: x.score.top1 }; }), chalk: p.chalk || 1 }; }) });
+  try { localStorage.setItem(key, JSON.stringify(log)); } catch (e) {}
 }
 /* the standings add up (2026-11-23, the owner: a phone picks one file at a time): each pick is added, a contest picked
    again replaced by its newer file; the list shows every contest loaded, with how many of your entries the entries file
@@ -3473,7 +3495,7 @@ function swapDB() {
 }
 function swapSave() {
   if (!slate) return;
-  var rec = { slate: String(slate.draft_group_id), stand: SWAP.stand.map(function (f) { return { name: f.name, text: f.text, at: f.at }; }), ent: SWAP.entText || null, saved: Date.now() };
+  var rec = { slate: String(slate.draft_group_id), stand: SWAP.stand.map(function (f) { return { name: f.name, text: f.text, at: f.at, contest: f.contest }; }), ent: SWAP.entText || null, saved: Date.now() };
   swapDB().then(function (db) {
     var tx = db.transaction("files", "readwrite"), os = tx.objectStore("files");
     os.put(rec);
@@ -3489,7 +3511,7 @@ function swapRestore() {
   }).then(function (rec) {
     if (!rec || !slate || String(slate.draft_group_id) !== dg) return;
     SWAP.stand = rec.stand || [];
-    if (rec.ent) { var p = DKSwap.parseEntries(rec.ent); if (p && !p.error) { SWAP.ent = p; SWAP.entText = rec.ent; } }
+    if (rec.ent) { var p = DKSwap.parseEntries(rec.ent); if (p && !p.error) { SWAP.ent = p; SWAP.entText = rec.ent; swapMine(); } }
     renderSwapList();
     if (SWAP.stand.length || SWAP.ent) $("swapStatus").textContent = "Restored from this browser: " + SWAP.stand.length + " contest standings" + (SWAP.ent ? " and your entries file (" + SWAP.ent.rows.length + " entries)" : "") + ".";
   }).catch(function () {});
@@ -3515,7 +3537,8 @@ function renderSwapList() {
     (SWAP.ent ? "" : ' <span class="muted">Add your entries file to check every contest has your entries.</span>');
 }
 $("swapStand").addEventListener("change", function (e) { var inp = e.target; swapFiles(inp).then(function (f) {
-  f.forEach(function (x) { x.at = Date.now(); var cid = swapCid(x.name), i = SWAP.stand.findIndex(function (y) { return swapCid(y.name) === cid; });
+  f.forEach(function (x) { x.at = Date.now(); var c0 = slate && (slate.contests || []).find(function (c) { return String(c.id) === swapCid(x.name); }); if (c0) x.contest = c0.name;
+    var cid = swapCid(x.name), i = SWAP.stand.findIndex(function (y) { return swapCid(y.name) === cid; });
     if (i >= 0) SWAP.stand[i] = x; else SWAP.stand.push(x); });
   inp.value = ""; renderSwapList(); swapSave();
   $("swapStatus").textContent = SWAP.stand.length + " contest standings loaded."; }, function (err) { inp.value = ""; $("swapStatus").innerHTML = '<span class="bad">' + esc(err.message) + "</span>"; }); });
@@ -3524,14 +3547,22 @@ document.addEventListener("click", function (e) {
   if (e.target && e.target.id === "swapForget") { SWAP.stand = []; SWAP.ent = null; SWAP.entText = null; renderSwapList(); swapSave(); $("swapStatus").textContent = "Standings and entries file forgotten in this browser."; }
 });
 $("swapEnt").addEventListener("change", function (e) { swapFiles(e.target).then(function (f) {
-  var p = f.length ? DKSwap.parseEntries(f[0].text) : null; SWAP.ent = p && !p.error ? p : null; SWAP.entText = SWAP.ent ? f[0].text : null; swapSave();
+  var p = f.length ? DKSwap.parseEntries(f[0].text) : null; SWAP.ent = p && !p.error ? p : null; SWAP.entText = SWAP.ent ? f[0].text : null; swapSave(); swapMine();
   $("swapStatus").textContent = !p ? "" : p.error ? p.error : p.rows.length + " entries read (kept in this browser for this slate)."; renderSwapList(); }); });
 $("swapSort").addEventListener("change", function () { if (SWAP.res) renderSwap(); });
+$("swapLogSave").addEventListener("click", function () {
+  var t = slate && localStorage.getItem("dkcbb-swaplog:" + slate.draft_group_id);
+  if (!t || t === "[]") { $("swapStatus").textContent = "No swaps exported on this slate yet."; return; }
+  var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ kind: "dk-swap-log", slate: String(slate.draft_group_id), day: slate.day, log: JSON.parse(t) })], { type: "application/json" }));
+  a.download = "dk_swaplog_" + slate.day + "_" + slate.draft_group_id + ".json"; document.body.appendChild(a); a.click(); a.remove();
+  $("swapStatus").textContent = "Swap log saved: upload it with the morning files.";
+});
 /* The swap pack (2026-11-23, the owner: late swap from a phone after the computer's done): the standings and entries
    file loaded here in one file to open on the phone; nothing leaves the device but the file you send yourself. */
 $("swapPackSave").addEventListener("click", function () {
   if (!SWAP.stand.length && !SWAP.entText) { $("swapStatus").textContent = "Nothing loaded to pack."; return; }
-  var blob = new Blob([JSON.stringify({ kind: "dk-swap-pack", slate: slate && String(slate.draft_group_id), saved: new Date().toISOString(), stand: SWAP.stand, ent: SWAP.entText || null })], { type: "application/json" });
+  var blob = new Blob([JSON.stringify({ kind: "dk-swap-pack", slate: slate && String(slate.draft_group_id), saved: new Date().toISOString(), stand: SWAP.stand, ent: SWAP.entText || null,
+    marks: state ? { outs: state.outs || {}, ins: state.ins || {}, proj: state.proj || {} } : null })], { type: "application/json" });
   var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "swap-pack-" + (slate ? slate.draft_group_id : "slate") + ".json";
   document.body.appendChild(a); a.click(); a.remove();
   $("swapStatus").textContent = "Swap pack saved: " + SWAP.stand.length + " contest standings" + (SWAP.entText ? " and your entries file" : "") + ". It carries your entry IDs: send it only to yourself.";
@@ -3542,7 +3573,8 @@ $("swapPackLoad").addEventListener("change", function (e) { var inp = e.target, 
     if (slate && d.slate && d.slate !== String(slate.draft_group_id)) throw new Error("That pack is for slate " + d.slate + ", not this one.");
     SWAP.stand = d.stand || [];
     if (d.ent) { var p = DKSwap.parseEntries(d.ent); if (p && !p.error) { SWAP.ent = p; SWAP.entText = d.ent; } }
-    inp.value = ""; renderSwapList(); swapSave();
+    if (d.marks && state) { Object.assign(state.outs, d.marks.outs || {}); Object.assign(state.ins, d.marks.ins || {}); Object.assign(state.proj, d.marks.proj || {}); save(); applyOuts(); renderPlayers(); }
+    inp.value = ""; renderSwapList(); swapSave(); swapMine();
     $("swapStatus").textContent = "Swap pack loaded: " + SWAP.stand.length + " contest standings" + (SWAP.ent ? " and your entries file (" + SWAP.ent.rows.length + " entries)" : "") + ".";
   }).catch(function (err) { inp.value = ""; $("swapStatus").innerHTML = '<span class="bad">' + esc(err.message) + "</span>"; });
 });
@@ -3729,7 +3761,7 @@ $("bankClear").addEventListener("click", function () {
    the last fill), entries file and scan by draft group. This removes those of every slate except today's (Pacific),
    any not yet locked and the one open, after asking with the count and the space it frees. Settings (dkcbb:<group>),
    dkcbb:nb and dkcbb:slatePick stay. Today's portfolios must survive the games: the Live page reads dkcbb-pf: for exposures. */
-var OLD_KEYS = ["dkcbb-bank:", "dkcbb-cut:", "dkcbb-pf:", "dkcbb-pf-prev:", "dkcbb-pflu:", "dkcbb-entries:", "dkcbb-scan:"];
+var OLD_KEYS = ["dkcbb-bank:", "dkcbb-cut:", "dkcbb-pf:", "dkcbb-pf-prev:", "dkcbb-pflu:", "dkcbb-entries:", "dkcbb-scan:", "dkcbb-mylu:", "dkcbb-swaplog:"];
 async function oldSlateKeys(now) {     // localStorage and IndexedDB (the banks, cuts and scans live there since 2026-11-20)
   var pday = function (t) { return new Date(t).toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }); }, today = pday(now || Date.now()), keep = {};
   ((doc && doc.slates) || []).forEach(function (s) { if (pday(s.start) === today || !s.locked || new Date(s.start).getTime() > (now || Date.now())) keep[String(s.draft_group_id)] = 1; });
