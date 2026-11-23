@@ -66,6 +66,8 @@
   .head span.on { color: var(--ink); }
   .row { border-bottom: 1px solid var(--line); }
   .row.locked { background: rgba(77, 196, 141, .12); }
+  details.bcmore { display: inline; } details.bcmore > summary { display: inline; cursor: pointer; color: var(--muted); margin-left: 6px; font-size: 12px; }
+  details.bcmore[open] { display: block; margin-top: 4px; }
   .row.excluded > :not(.lx), .row.out > :not(.lx) { opacity: .42; }   /* L / X stay bright: the red X shows how to bring him back */
   .r { text-align: right; }
   .m { font-family: var(--mono); font-size: 13px; }
@@ -1888,8 +1890,15 @@ function bankCheck() {
   BANKSTATS = { n: bank.length, bp: bp, fp: fp, bo: bo, fo: fo, pct: bpct, far: far, kpct: kpct,
                 kn: kept.length, kp: kept.length ? avg(kept, pts) : null, ko: kept.length ? avg(kept, ow) : null,
                 under: under.map(function (x) { return "Idea \u201c" + x.k + "\u201d projects " + (fp - x.p).toFixed(0) + " points under the field (" + x.p.toFixed(0) + " vs " + fp.toFixed(0) + ", " + x.n + " lineups)"; }) };
+  /* compact (2026-11-23, the owner: the page was messy): one line up top, the warning, and the rest (the punt share by
+     idea, the ownership position, every idea under the field) in a fold; the text is unchanged inside it */
+  var worst = under.length ? Math.max.apply(null, under.map(function (x) { return fp - x.p; })) : 0;
   el.innerHTML = "<b>Bank check:</b> bank " + bp.toFixed(0) + " pts, " + bo.toFixed(0) + "% own; field " + fp.toFixed(0) + " pts, " + fo.toFixed(0) +
     "% own: the bank projects " + Math.abs(d).toFixed(0) + (d < 0 ? " below" : " above") + " the field." +
+    (far ? ' <span class="bad"><b>Your ' + (kept.length ? "kept pool" : "bank") + ' is far below the field: check the leverage weight / exclusions.</b></span>' : "") +
+    (under.length ? ' <span class="bad">' + under.length + " idea" + (under.length === 1 ? "" : "s") + " project" + (under.length === 1 ? "s" : "") + " " + BANK_UNDER +
+      "+ points under the field (worst " + worst.toFixed(0) + ").</span>" : "") +
+    '<details class="bcmore"><summary>Details</summary>' +
     " Holding a player projected under " + PUNT_MIN + " minutes: bank " + Math.round(100 * avg(bank, punt)) + "%, field " + Math.round(100 * avg(F.field, punt)) + "%" +
     (all.length > 1 ? " (by idea: " + all.sort(function (a, b) { return b.u - a.u; }).map(function (x) { return esc(x.k) + " " + Math.round(100 * x.u) + "%"; }).join(", ") + ")" : "") + "." +
     (function () {
@@ -1898,9 +1907,8 @@ function bankCheck() {
       return " <b>Ownership position:</b> " + clumpText(C) + "; bank at the field's " + ordinal(b.pct) + " percentile (" + Math.round(b.mean) + "%)" +
         (c ? ", cut at the " + ordinal(c.pct) + " (" + Math.round(c.mean) + "%)" : "") + ".";
     })() +
-    (far ? ' <span class="bad"><b>Your ' + (kept.length ? "kept pool" : "bank") + ' is far below the field: check the leverage weight / exclusions.</b></span>' : "") +
     (under.length ? ' <span class="bad">' + under.map(function (x) { return "Idea \u201c" + esc(x.k) + "\u201d projects " + (fp - x.p).toFixed(0) + " points under the field (" +
-      x.p.toFixed(0) + " vs " + fp.toFixed(0) + ", " + x.n + " lineups)"; }).join("; ") + ".</span>" : "");
+      x.p.toFixed(0) + " vs " + fp.toFixed(0) + ", " + x.n + " lineups)"; }).join("; ") + ".</span>" : "") + "</details>";
 }
 /* The step bar (2026-11-20, the operator's layout): Bank · Cut · Fill, one panel open at a time, the choice kept per
    slate (state.step); with none chosen, Bank until the bank has lineups, then Cut, then Fill once a cut exists. Each
