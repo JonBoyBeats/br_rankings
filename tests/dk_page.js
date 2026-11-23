@@ -2030,6 +2030,20 @@ function audit(name, L, o) {
   check("Swap: standings + entries file -> one card for the entry with its proposal (or keep), the status naming the contest, field and draws; Export off; the step label counts",
         sw1.cards === 1 && sw1.res.length === 1 && /60 entries \(0 unmatched\)/.test(sw1.status) && sw1.exportOff && /Swap/.test(sw1.label) &&
         sw1.res[0].next.length === 8 && swIn.started.every(id => sw1.res[0].next[swIn.ours.indexOf(id)] === id), JSON.stringify(sw1));
+  // the two field assumptions differing: both answers on the card, a radio picks which one is used (and accepted)
+  const swAlt = await pg.evaluate(() => {
+    const p = SWAP.res[0], keep = p.alt;
+    p.alt = { entryId: p.entryId, ids: p.ids, cur: p.cur, steps: [], next: p.ids.slice(), chalk: 2 }; p.chalk = 1; SWAP.use = {}; renderSwap();
+    const radios = document.querySelectorAll("#swapBox .swapUse").length, hasBoth = /field as projected/.test(document.getElementById("swapBox").textContent) && /field on the chalk/.test(document.getElementById("swapBox").textContent);
+    const alt = document.querySelector('#swapBox .swapUse[value="alt"]'); alt.checked = true; alt.dispatchEvent(new Event("change", { bubbles: true }));
+    const used = SWAP.use[p.entryId] === "alt" && swapPick(p) === p.alt && !SWAP.acc[p.entryId];
+    const main = document.querySelector('#swapBox .swapUse[value="main"]'); main.checked = true; main.dispatchEvent(new Event("change", { bubbles: true }));
+    const back = swapPick(p) === p && (!p.steps.length || !!SWAP.acc[p.entryId]);
+    p.alt = keep; SWAP.use = {}; renderSwap();
+    return { radios, hasBoth, used, back };
+  });
+  check("Swap: when the field assumptions differ the card shows both answers, and the radio picks the one used (its keep unaccepts, back again re-accepts)",
+        swAlt.radios === 2 && swAlt.hasBoth && swAlt.used && swAlt.back, JSON.stringify(swAlt));
   // Export on (the switch after the read-only night): the file is valid, started cells as read
   const swEx = await pg.evaluate(() => { SWAP_EXPORT = true; SWAP.acc = {}; SWAP.res.forEach(p => { SWAP.acc[p.entryId] = 1; }); renderSwap(); return !document.getElementById("swapExport").disabled; });
   let swOut = null;

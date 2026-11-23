@@ -247,8 +247,9 @@
   // --- 4. the hidden field ------------------------------------------------------------------------------------------
   // The study's draw (scripts/dk_lateswap_study.py impute_one): G and F slots first, UTIL last, each pick weighted by
   // ownership among the players who fit the slot, aren't in the entry yet and leave MIN_SAL for every slot still to
-  // fill; a draw leaving over LEFT_OK unspent is kept LEFT_KEEP of the time (real entries: 98.7% leave $1,000 or less).
-  var LEFT_OK = 1000, LEFT_KEEP = 0.1, MIN_SAL = 3000, DRAW_TRIES = 25;
+  // fill; a draw leaving over LEFT_OK unspent is kept LEFT_KEEP of the time. Real entries leave $1,000 or less 98.7% of
+  // the time; on the 11-18 break-2 entries the draws do 90.1% at 0.1 (the study's), 98.4% at 0.01, 98.9% at 0.005: 0.007.
+  var LEFT_OK = 1000, LEFT_KEEP = 0.007, MIN_SAL = 3000, DRAW_TRIES = 25;
   function hiddenMass(entries) {     // the ownership still hidden: 100 x hidden slots / entries (800 at lock, 0 at the end)
     var h = 0; entries.forEach(function (e) { e.slots.forEach(function (x) { if (x.name === null) h++; }); });
     return entries.length ? 100 * h / entries.length : 0;
@@ -261,7 +262,8 @@
   /* One real entry's hidden slots: ids in open-slot order, or null when even the fallback can't fill them. open: slot
      labels; left: 50k less the revealed salaries; pool: the hidden players' cards; w: {id: weight} (hiddenOwn);
      stats: {draws, fallback} counted. */
-  function fieldDraw(random, open, left, pool, w, stats) {
+  function fieldDraw(random, open, left, pool, w, stats, keep) {
+    keep = keep == null ? LEFT_KEEP : keep;
     var order = open.map(function (s, k) { return { s: s, k: k }; }).sort(function (a, b) { return (a.s === "UTIL") - (b.s === "UTIL"); });
     var pick = function (cands) {
       var tot = 0; cands.forEach(function (r) { tot += Math.max(w[r.id] || 0, 1e-6); });
@@ -285,7 +287,7 @@
       var d = once(true);
       if (!d) continue;
       got = d.ids;
-      if (left - d.sal <= LEFT_OK || random() < LEFT_KEEP) return d.ids;
+      if (left - d.sal <= LEFT_OK || random() < keep) return d.ids;
     }
     if (got) return got;
     if (stats) stats.fallback = (stats.fallback || 0) + 1;    // no fill within the salary left: drawn without the limit
@@ -412,7 +414,9 @@
   // --- 7. run --------------------------------------------------------------------------------------------------------
   /* o: {by: {id: card (name, team, roster, salary, game_start, event, espn, status)}, own: {id: our projected %},
      standings (parseStandings), ours: [entries-file rows of this contest], plays: {event: plays}, at (ms: the decision),
-     nights: S rows aligned with ids (the full-game simulated points), ids, table: {place: payout}, M, random, maxSwaps}.
+     nights: S rows aligned with ids (the full-game simulated points), ids, table: {place: payout}, M, random, maxSwaps,
+     chalk: the field's lean to the chalk in its hidden slots, the ownership weights raised to it (1 as projected, 2
+     chalk-heavy: small top-heavy contests turn on it, 2026-11-21's winner-take-all flipped between the two)}.
      -> {proposals: [{entryId, ids, cur, steps, next}], stats: {entries, field, unmatched, unknownGames, draws, fallback,
      hiddenMass}} */
   function run(o) {
@@ -437,6 +441,7 @@
     });
     var hidden = rows.filter(function (r) { return !started(r.id) && r.status !== "Out"; }), mass = hiddenMass(o.standings.entries);
     var w = hiddenOwn(o.own || {}, hidden.map(function (r) { return r.id; }), mass), stats = { draws: 0, fallback: 0 }, draws = {};
+    if (o.chalk && o.chalk !== 1) Object.keys(w).forEach(function (id) { w[id] = Math.pow(w[id], o.chalk); });
     lineups.forEach(function (lu, e) {
       if (open[e] === null || !open[e].length) return;
       var d = [];
@@ -451,7 +456,7 @@
       return { entryId: r.entryId, ids: r.ids, cur: p.cur, steps: p.steps, next: next };
     });
     return { proposals: proposals, stats: { entries: o.standings.entries.length, field: lineups.length, unmatched: unmatched, unknownGames: live.unknown,
-             draws: stats.draws, fallback: stats.fallback, hiddenMass: mass } };
+             draws: stats.draws, fallback: stats.fallback, hiddenMass: mass, chalk: o.chalk || 1 } };
   }
 
   return { CAP: CAP, SLOTS: SLOTS, run: run, applySwaps: applySwaps, exportEntries: exportEntries, board: board, canFill: canFill, swaps: swaps, propose: propose, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,

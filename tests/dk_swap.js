@@ -225,6 +225,19 @@ check("replay: the proposal exports: valid, its started cells byte for byte, the
       !!ex7.csv && back7.rows[0].ids.join() === P7.next.join() && OURS.rows[0].cells.every((c, k) => !isSt(OURS.rows[0].ids[k]) || back7.rows[0].cells[k] === c) &&
       P7.steps.every(x => P7.next.indexOf(x.swap[1]) >= 0 && P7.next.indexOf(x.swap[0]) < 0), JSON.stringify(ex7.errors));
 
+// the coordinator's piece-4 additions: the salary-left share of the draws near the real 98.7%; the chalk power
+{ let x = 11; const rnd = () => { x = (x * 16807) % 2147483647; return x / 2147483647; }; const L = [];
+  st.entries.forEach(e => { const open = e.slots.filter(y => y.name === null).map(y => y.slot), have = e.slots.filter(y => y.name).map(y => mt.ids[y.name]);
+    const lf = W.CAP - have.reduce((t, id) => t + by[id].salary, 0);
+    for (let k = 0; k < 10; k++) { const d = W.fieldDraw(rnd, open, lf, pool, ho, {}); if (d) L.push(lf - d.reduce((t, id) => t + by[id].salary, 0)); } });
+  const sh = L.filter(v => v <= 1000).length / L.length;
+  check("field draws: the share leaving $1,000 or less within a point of real entries' 98.7%", Math.abs(sh - 0.987) <= 0.01, sh.toFixed(3)); }
+{ const base7 = { by, own: C.own, standings: st, ours: OURS.rows, plays, at: AT, nights: nights7, ids: ids7, table: tableE, M: 6, maxSwaps: 1 };
+  const seedR = () => { let x = 5; return () => { x = (x * 16807) % 2147483647; return x / 2147483647; }; };
+  const a = W.run(Object.assign({ random: seedR(), chalk: 1 }, base7)), b = W.run(Object.assign({ random: seedR(), chalk: 2 }, base7));
+  check("chalk: run takes the field's lean to the chalk (the weights to a power), records it, and moves the hidden field (the entry's scores differ)",
+        a.stats.chalk === 1 && b.stats.chalk === 2 && Math.abs(a.proposals[0].cur.ev - b.proposals[0].cur.ev) > 1e-6, JSON.stringify([a.proposals[0].cur, b.proposals[0].cur])); }
+
 passes.forEach(p => console.log("PASS " + p));
 fails.forEach(f => console.log("FAIL " + f));
 console.log(`${passes.length} passed, ${fails.length} failed`);

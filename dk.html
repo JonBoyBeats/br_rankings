@@ -516,6 +516,7 @@
     <label class="field"><span class="field-label">Entries file</span><input type="file" id="swapEnt" accept=".csv" style="height:auto"></label>
     <label class="field" title="Simulated nights (1,000: the replay's choice; fewer is quicker and noisier)"><span class="field-label">Nights</span><input class="num" id="swapNights" type="number" min="200" max="5000" step="100" value="1000"></label>
     <label class="field" title="The decision moment: blank for now, or a time to replay a past tip"><span class="field-label">As of</span><input id="swapAt" type="datetime-local"></label>
+    <label class="field" title="How hard the field leans to the chalk in the slots still hidden: the ownership weights raised to this (1: as projected; 2: chalk-heavy). The other one is run too, and a card shows both answers when they differ (small, top-heavy contests turn on it)"><span class="field-label">Field leans chalk</span><input class="num" id="swapChalk" type="number" min="0.5" max="3" step="0.5" value="1"></label>
     <button type="button" class="primary" id="swapRun">Propose swaps</button>
   </div>
   <div class="status" id="swapStatus"></div>
@@ -3130,7 +3131,9 @@ function renderQuick() {
    (Nights, 1,000 by default: the replay's choice); per entry, DKSwap.run's proposal (up to 2 swaps by expected payout in
    its own contest, ours in the field). Export is off (SWAP_EXPORT) until the first read-only live night checks out; the
    entries file is kept in memory only. */
-var SWAP = { stand: [], ent: null, res: null, acc: {}, by: null, at: 0 }, SWAP_EXPORT = false;
+var SWAP = { stand: [], ent: null, res: null, acc: {}, use: {}, by: null, at: 0 }, SWAP_EXPORT = false;
+// an entry's proposal in use: the main run's, or the other chalk assumption's where the operator picked it
+function swapPick(p) { return SWAP.use[p.entryId] === "alt" && p.alt ? p.alt : p; }
 var ESPN_SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary?event=";
 function swapFiles(input) { return Promise.all(Array.from(input.files || []).map(function (f) { return f.text().then(function (t) { return { name: f.name, text: t }; }); })); }
 async function swapRun() {
@@ -3160,34 +3163,46 @@ async function swapRun() {
     if (!ours.length) { notes.push((c.name || cid) + ": none of your entries"); continue; }
     var table = {}; (c.payouts || []).forEach(function (p) { for (var q = p[0]; q <= p[1]; q++) table[q] = p[2]; });
     $("swapStatus").textContent = "Contest " + (i + 1) + " of " + SWAP.stand.length + ": " + (c.name || cid) + "…"; await tick();
-    var res = DKSwap.run({ by: by, own: own, standings: st, ours: ours, plays: plays, at: at, nights: nights, ids: ids, table: table, M: 6, random: rnd, maxSwaps: 2 });
+    var chalk = +$("swapChalk").value || 1, alt = chalk === 1 ? 2 : 1;
+    var res = DKSwap.run({ by: by, own: own, standings: st, ours: ours, plays: plays, at: at, nights: nights, ids: ids, table: table, M: 6, random: rnd, maxSwaps: 2, chalk: chalk });
+    var resAlt = DKSwap.run({ by: by, own: own, standings: st, ours: ours, plays: plays, at: at, nights: nights, ids: ids, table: table, M: 6, random: DKSim.seeded(20261121), maxSwaps: 2, chalk: alt });
+    var altBy = {}; resAlt.proposals.forEach(function (p) { altBy[p.entryId] = p; });
+    res.proposals.forEach(function (p) { var a = altBy[p.entryId], k = function (x) { return x.steps.map(function (y) { return y.swap.join(">"); }).join(","); };
+      p.chalk = chalk; if (a && k(a) !== k(p)) { p.alt = a; p.alt.chalk = alt; } });
     var rank = {}; st.entries.forEach(function (e) { rank[e.entryId] = e; });
     res.proposals.forEach(function (p) { p.contest = c.name || cid; p.rank = (rank[p.entryId] || {}).rank; p.points = (rank[p.entryId] || {}).points; p.N = st.entries.length; out.push(p); });
     notes.push((c.name || cid) + ": " + res.stats.field + " entries (" + res.stats.unmatched + " unmatched), field draws " + res.stats.draws + " (" + res.stats.fallback + " without the salary limit)" +
       (res.stats.unknownGames.length ? ", " + res.stats.unknownGames.length + " started game(s) without play-by-play, simulated in full" : ""));
   }
-  SWAP.res = out; SWAP.by = by; SWAP.at = at; SWAP.acc = {};
-  out.forEach(function (p) { if (p.steps.length) SWAP.acc[p.entryId] = 1; });
+  SWAP.res = out; SWAP.by = by; SWAP.at = at; SWAP.acc = {}; SWAP.use = {};
+  out.forEach(function (p) { if (p.steps.length) SWAP.acc[p.entryId] = 1; });     // the main run's pick accepted by default
   renderSwap(); renderSteps();
   return out.length + " entr" + (out.length === 1 ? "y" : "ies") + ", " + out.filter(function (p) { return p.steps.length; }).length + " with a swap · " + notes.join(" · ");
 }
 function renderSwap() {
   var R = SWAP.res || [], nm = function (id) { return SWAP.by[id] ? SWAP.by[id].name : id; };
   $("swapActs").hidden = !R.length; $("swapExport").disabled = !SWAP_EXPORT || !R.some(function (p) { return SWAP.acc[p.entryId]; });
-  $("swapBox").innerHTML = R.map(function (p) {
-    var last = p.steps.length ? p.steps[p.steps.length - 1].score : p.cur, prev = p.cur;
+  var lines = function (q) { var prev = q.cur; return q.steps.length ? q.steps.map(function (x) { var g = x.score.ev - prev.ev; prev = x.score;
+    return '<div class="sw">' + esc(nm(x.swap[0])) + " \u2192 <b>" + esc(nm(x.swap[1])) + "</b> (+$" + g.toFixed(2) + ")</div>"; }).join("") : '<div class="sw">Keep it: no swap adds expected payout</div>'; };
+  var chalkTxt = function (c) { return c === 1 ? "field as projected" : "field on the chalk (\u00d7" + c + ")"; };
+  $("swapBox").innerHTML = R.map(function (p0) {
+    var p = swapPick(p0), last = p.steps.length ? p.steps[p.steps.length - 1].score : p.cur, prev = p.cur;
     return '<div class="swapcard' + (p.steps.length ? "" : " keep") + '"><div class="hd"><span>Entry \u2026' + esc(p.entryId.slice(-4)) + " \u00b7 " + esc(p.contest) + "</span><span>" +
       (p.points != null ? p.points + " pts" : "") + (p.rank ? " \u00b7 #" + p.rank + " of " + p.N : "") + "</span></div>" +
       (p.steps.length ? p.steps.map(function (x) { var g = x.score.ev - prev.ev; prev = x.score;
         return '<div class="sw">' + esc(nm(x.swap[0])) + " \u2192 <b>" + esc(nm(x.swap[1])) + "</b> (+$" + g.toFixed(2) + ")</div>"; }).join("") : '<div class="sw">Keep it: no swap adds expected payout</div>') +
       '<div class="mut">EV $' + p.cur.ev.toFixed(2) + " \u2192 $" + last.ev.toFixed(2) + " \u00b7 cash " + Math.round(100 * p.cur.cash) + "% \u2192 " + Math.round(100 * last.cash) + "% \u00b7 top 1% " +
       (100 * p.cur.top1).toFixed(1) + "% \u2192 " + (100 * last.top1).toFixed(1) + "%</div>" +
+      (p0.alt ? '<div class="note" style="margin:4px 0 0">The two field assumptions differ. <label><input type="radio" name="swapUse' + esc(p.entryId) + '" class="swapUse" data-id="' + esc(p.entryId) + '" value="main"' +
+        (SWAP.use[p.entryId] !== "alt" ? " checked" : "") + "> " + chalkTxt(p0.chalk) + "</label> <label><input type=\"radio\" name=\"swapUse" + esc(p.entryId) + '" class="swapUse" data-id="' + esc(p.entryId) + '" value="alt"' +
+        (SWAP.use[p.entryId] === "alt" ? " checked" : "") + "> " + chalkTxt(p0.alt.chalk) + "</label></div>" +
+        '<div class="mut" style="font-size:12px">' + (SWAP.use[p.entryId] === "alt" ? chalkTxt(p0.chalk) : chalkTxt(p0.alt.chalk)) + ":</div>" + lines(SWAP.use[p.entryId] === "alt" ? p0 : p0.alt) : "") +
       (p.steps.length ? '<label><input type="checkbox" class="swapAcc" data-id="' + esc(p.entryId) + '"' + (SWAP.acc[p.entryId] ? " checked" : "") + "> Accept</label>" : "") + "</div>";
   }).join("");
 }
 function swapExport() {
   if (!SWAP_EXPORT) return "Export is off until the first read-only live night checks out.";
-  var edits = {}; (SWAP.res || []).forEach(function (p) { if (SWAP.acc[p.entryId] && p.steps.length) edits[p.entryId] = p.next; });
+  var edits = {}; (SWAP.res || []).forEach(function (p0) { var p = swapPick(p0); if (SWAP.acc[p.entryId] && p.steps.length) edits[p.entryId] = p.next; });
   var x = DKSwap.exportEntries(SWAP.ent, edits, SWAP.by, function (id) { return !!SWAP.by[id] && Date.parse(SWAP.by[id].game_start || "") < SWAP.at; });
   if (!x.csv) return "Not exported: " + x.errors.join(" · ");
   var a = document.createElement("a");
@@ -3203,8 +3218,11 @@ $("swapEnt").addEventListener("change", function (e) { swapFiles(e.target).then(
 $("swapRun").addEventListener("click", function () { $("swapRun").disabled = true;
   swapRun().then(function (m) { $("swapStatus").textContent = m; }, function (e) { $("swapStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; })
     .then(function () { $("swapRun").disabled = false; }); });
-$("swapBox").addEventListener("change", function (e) { var c = e.target.closest(".swapAcc"); if (!c) return; if (c.checked) SWAP.acc[c.dataset.id] = 1; else delete SWAP.acc[c.dataset.id]; renderSwap(); });
-$("swapAll").addEventListener("click", function () { (SWAP.res || []).forEach(function (p) { if (p.steps.length) SWAP.acc[p.entryId] = 1; }); renderSwap(); });
+$("swapBox").addEventListener("change", function (e) {
+  var u = e.target.closest(".swapUse"); if (u) { SWAP.use[u.dataset.id] = u.value; var p = (SWAP.res || []).find(function (x) { return x.entryId === u.dataset.id; });
+    if (p && swapPick(p).steps.length) SWAP.acc[u.dataset.id] = 1; else delete SWAP.acc[u.dataset.id]; renderSwap(); return; }
+  var c = e.target.closest(".swapAcc"); if (!c) return; if (c.checked) SWAP.acc[c.dataset.id] = 1; else delete SWAP.acc[c.dataset.id]; renderSwap(); });
+$("swapAll").addEventListener("click", function () { (SWAP.res || []).forEach(function (p) { if (swapPick(p).steps.length) SWAP.acc[p.entryId] = 1; }); renderSwap(); });
 $("swapNone").addEventListener("click", function () { SWAP.acc = {}; renderSwap(); });
 $("swapExport").addEventListener("click", function () { $("swapStatus").textContent = swapExport(); });
 $("quickRun").addEventListener("click", function () { quickRun(false); });
