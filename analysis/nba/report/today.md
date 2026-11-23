@@ -142,7 +142,7 @@ No moves against the button here last night.
 
 **Your Q moves.** None last night.
 
-**Today's Questionable players.** Victor Wembanyama (T1 on the ladders, 60% to play): if he sits, De'Aaron Fox, Keldon Johnson; Shai Gilgeous-Alexander (T1 on the ladders, 62% to play): if he sits, Ajay Mitchell, Isaiah Hartenstein, Aday Mara.
+**Today's Questionable players.** Victor Wembanyama (T1 on the ladders, 68% to play): if he sits, De'Aaron Fox, Devin Vassell, Keldon Johnson; Joel Embiid (T2 on the ladders, 52% to play): if he sits, VJ Edgecombe; Pascal Siakam (T3 on the ladders, 81% to play): if he sits, Ivica Zubac, Andrew Nembhard; De'Aaron Fox (T5 on the ladders, 60% to play): if he sits, Devin Vassell, Keldon Johnson.
 
 ## Back page
 

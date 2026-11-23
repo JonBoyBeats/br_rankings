@@ -133,12 +133,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Payton Pritchard",
+     "player": "Christian Braun",
      "adp": 24.5,
      "drafted": 100.0
     },
     {
-     "player": "Christian Braun",
+     "player": "Payton Pritchard",
      "adp": 24.5,
      "drafted": 100.0
     },
@@ -188,14 +188,14 @@
      "drafted": 82.9
     },
     {
-     "player": "Ace Bailey",
-     "adp": 34.6,
-     "drafted": 76.4
-    },
-    {
      "player": "Josh Hart",
      "adp": 34.6,
      "drafted": 83.7
+    },
+    {
+     "player": "Ace Bailey",
+     "adp": 34.6,
+     "drafted": 76.4
     },
     {
      "player": "Tre Jones",
@@ -248,14 +248,14 @@
      "drafted": 2.1
     },
     {
-     "player": "DeMar DeRozan",
-     "adp": 35.9,
-     "drafted": 1.2
-    },
-    {
      "player": "Brice Sensabaugh",
      "adp": 35.9,
      "drafted": 2.6
+    },
+    {
+     "player": "DeMar DeRozan",
+     "adp": 35.9,
+     "drafted": 1.2
     },
     {
      "player": "Aaron Nesmith",
@@ -343,14 +343,14 @@
      "drafted": 0.1
     },
     {
-     "player": "Bilal Coulibaly",
-     "adp": 36.0,
-     "drafted": 0.2
-    },
-    {
      "player": "Morez Johnson Jr.",
      "adp": 36.0,
      "drafted": 0.1
+    },
+    {
+     "player": "Bilal Coulibaly",
+     "adp": 36.0,
+     "drafted": 0.2
     },
     {
      "player": "Nikola Vucevic",
@@ -403,12 +403,12 @@
      "drafted": 0.1
     },
     {
-     "player": "179c35c2",
+     "player": "138178c1",
      "adp": null,
      "drafted": 0.1
     },
     {
-     "player": "138178c1",
+     "player": "179c35c2",
      "adp": null,
      "drafted": 0.1
     },
@@ -1422,12 +1422,12 @@
      "drafted": 100.0
     },
     {
-     "player": "Payton Pritchard",
+     "player": "Christian Braun",
      "adp": 24.5,
      "drafted": 100.0
     },
     {
-     "player": "Christian Braun",
+     "player": "Payton Pritchard",
      "adp": 24.5,
      "drafted": 100.0
     },
@@ -1477,14 +1477,14 @@
      "drafted": 80.7
     },
     {
-     "player": "Ace Bailey",
-     "adp": 34.6,
-     "drafted": 67.3
-    },
-    {
      "player": "Josh Hart",
      "adp": 34.6,
      "drafted": 70.0
+    },
+    {
+     "player": "Ace Bailey",
+     "adp": 34.6,
+     "drafted": 67.3
     },
     {
      "player": "Tre Jones",
@@ -1507,14 +1507,14 @@
      "drafted": 20.7
     },
     {
-     "player": "Cam Johnson",
-     "adp": 35.8,
-     "drafted": 13.3
-    },
-    {
      "player": "Charles Bassey",
      "adp": 35.8,
      "drafted": 12.0
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 35.8,
+     "drafted": 13.3
     },
     {
      "player": "Mo Bamba",
