@@ -2778,6 +2778,55 @@ def misses(a):
         print("%s %s %-9s %-24s %+7.1f  %s  [%s]%s" % (r["date"], r["draft_group"], r["lens"], r["subject"], r["miss"], r["detail"], r["tags"], "  driver: " + r["driver"] if r["driver"] else ""))
 
 
+SWAP_GRADES = os.path.join(DK, "swap_grades.csv")
+SWAP_COLS = ["date", "draft_group", "exported", "contest", "accepted", "step", "out_id", "out_name", "in_id", "in_name", "ev_before", "ev_after",
+             "out_actual", "in_actual", "gain_actual"]
+
+
+def swaps(a):
+    """Late swap graded (2026-11-23, the owner: with late swap the entered lineups are no longer the build's): a swap log
+    from the DK page's Swap step (Save swap log: each export's proposals per entry, accepted or not, no entry IDs), each
+    proposed swap scored on the night's box scores: DraftKings points of the player in less the player out, beside the
+    expected payout the tool gave it. Accepted swaps are the decisions made; the rest are the tool's advice not taken.
+    Appends to swap_grades.csv (a log's rows replace any earlier ones for its slate and export time)."""
+    d = json.load(open(a.log))
+    if d.get("kind") != "dk-swap-log":
+        sys.exit("not a DK swap log")
+    dg, day = str(d["slate"]), d.get("day")
+    rec = {r["dk_id"]: r for r in records() if str(r.get("draft_group")) == dg}
+    if not rec:
+        sys.exit("no graded box scores for draft group %s yet (run the nightly grading first)" % dg)
+    act = lambda i: num((rec.get(i) or {}).get("actual_dk"))
+    nm = lambda i: (rec.get(i) or {}).get("name") or i
+    rows = []
+    for ex in d["log"]:
+        for e in ex["entries"]:
+            prev = (e.get("cur") or {}).get("ev")
+            for k, st in enumerate(e.get("steps") or []):
+                o, i = act(st["out"]), act(st["in"])
+                rows.append({"date": day, "draft_group": dg, "exported": ex["exported"], "contest": e.get("contest"), "accepted": int(bool(e.get("accepted"))),
+                             "step": k + 1, "out_id": st["out"], "out_name": nm(st["out"]), "in_id": st["in"], "in_name": nm(st["in"]),
+                             "ev_before": prev, "ev_after": st.get("ev"), "out_actual": o, "in_actual": i,
+                             "gain_actual": None if o is None or i is None else round(i - o, 2)})
+                prev = st.get("ev")
+    old = []
+    if os.path.exists(SWAP_GRADES):
+        keep = {(r["draft_group"], r["exported"]) for r in rows}
+        old = [r for r in csv.DictReader(open(SWAP_GRADES)) if (r["draft_group"], r["exported"]) not in keep]
+    with open(SWAP_GRADES, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=SWAP_COLS); w.writeheader(); w.writerows(old + rows)
+    for lab, sel in (("accepted", 1), ("not taken", 0)):
+        v = [r for r in rows if r["accepted"] == sel and r["gain_actual"] is not None]
+        if v:
+            ev = [r["ev_after"] - r["ev_before"] for r in v if r["ev_after"] is not None and r["ev_before"] is not None]
+            print("%-10s %3d swaps: the player in outscored the player out on %d (%.0f%%), %+.1f DK points a swap; expected payout %+.2f a swap" % (
+                lab, len(v), sum(1 for r in v if r["gain_actual"] > 0), 100.0 * sum(1 for r in v if r["gain_actual"] > 0) / len(v),
+                sum(r["gain_actual"] for r in v) / len(v), sum(ev) / len(ev) if ev else 0))
+        else:
+            print("%-10s no graded swaps" % lab)
+    print("%d rows to %s" % (len(rows), SWAP_GRADES))
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -2798,6 +2847,7 @@ def main():
     pa_ = sub.add_parser("projaudit")
     pa_.add_argument("--mirror", help="the mirror checkout: the shape lens on today's open slates too")
     sub.add_parser("ownaudit")
+    sw = sub.add_parser("swaps"); sw.add_argument("--log", required=True)
     ow = sub.add_parser("ownwatch")
     ow.add_argument("--mirror", required=True)
     ms = sub.add_parser("misses")
@@ -2814,7 +2864,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps}[a.cmd](a)
 
 
 if __name__ == "__main__":
