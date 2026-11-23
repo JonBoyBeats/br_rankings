@@ -63,5 +63,6 @@
   "n": 1417
  },
  "zero_gp_f": 0.0571,
- "zero_gp_n": 59
+ "zero_gp_n": 59,
+ "pinned": "lock-2026-11-23"
 }

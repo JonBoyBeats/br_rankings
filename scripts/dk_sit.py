@@ -240,6 +240,14 @@ def refit(rows):
     if len(z) >= ZERO_GP_MIN_N:
         model["zero_gp_f"] = round(sum(num(r["actual_dk"]) for r in z) / sum(num(r["fp_raw"]) for r in z), 4)
     model["zero_gp_n"] = len(z)
+    # the week's lock (dk_eval.LOCK, 2026-11-23): the live model (the pipeline's p_play and zero_gp_f) stays as pinned;
+    # the refit goes beside it, sit_model_refit.json, for the Friday review
+    pinned = (load_model() or {}).get("pinned")
+    if pinned:
+        model["pinned_live"] = pinned
+        json.dump(model, open(MODEL.replace(".json", "_refit.json"), "w"), indent=1)
+        print("sit: the live model is pinned (%s); the refit is in sit_model_refit.json" % pinned)
+        return load_model()
     json.dump(model, open(MODEL, "w"), indent=1)
     print("sit: model fitted on %d players, %d slates; held-out Brier %s vs current %s; zero-games factor %s on %d" % (
         len(rows), len(sl), model["heldout_brier"]["model"], model["heldout_brier"]["current"], model.get("zero_gp_f"), model["zero_gp_n"]))

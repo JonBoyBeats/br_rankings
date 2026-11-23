@@ -214,9 +214,15 @@ VERSIONS = os.path.join(DK, "versions.csv")   # every change, with the slate dat
 # Calibration week: ours blended with DraftKings' average at w in every salary band, the gate's rule bypassed, from
 # "from" (versions.csv cal-1), with no end date: it stays on until the owner chooses at the freeze which projection
 # freezes (calweek reports ours, DraftKings' average and the blend over the week). PROJ_CHOICE records that choice:
-# None (not chosen yet: the blend), "ours" (the gate back to its own rule), "dk" (DraftKings' average) or "blend".
+# None (not chosen yet: the blend), "ours" (the gate back to its own rule), "dk" (DraftKings' average), "blend", or
+# "blend6k" (the 2026-11-23 lock: ours alone under $6,000, the blend at $6,000+; analysis/cbb/dk/lock_review_2026-11-23.md:
+# points MAE 5.630 -> 5.421, better on 10 of 11 slates; banks top 10% better on 7 of 9 nights, worse on 2).
 CALIBRATION_BLEND = {"w": 0.5, "from": "2026-11-17", "version": "cal-1"}
-PROJ_CHOICE = None
+PROJ_CHOICE = "blend6k"
+# The week's lock (2026-11-23, approved by the operator): while set, the nightly refits are computed and written beside
+# the live value (gate.json questionable.factor_refit; sit_model_refit.json), but the live values stay as pinned here
+# until the next Friday review changes this line. None: the refits apply nightly, as before.
+LOCK = {"version": "lock-2026-11-23", "questionable": 0.333}
 CAL_WEEK = ("2026-11-16", "2026-11-23")      # the calibration week's slates, for calweek
 BLEND_W = 0.5            # the audit's blend: ours x BLEND_W + DraftKings' average x (1 - BLEND_W) (cal-1's)
 AUDIT_DISAGREE = 5        # ownership points: a disagreement big enough to list where the field was right
@@ -684,6 +690,13 @@ def gate(a):
            "rule": "open where DraftKings' average beat ours: %d+ nights, %d+ player-nights, lower mean error, better on %d%%+ of nights"
                    % (GATE_NIGHTS, GATE_N, 100 * GATE_SHARE)}
     cb, today = CALIBRATION_BLEND, dt.datetime.now(PT).date().isoformat()
+    if today >= cb["from"] and PROJ_CHOICE == "blend6k":    # the lock's choice: the blend at $6,000+, ours alone below
+        for b in bands:
+            b.update(open=b["lo"] >= 6000, w=cb["w"] if b["lo"] >= 6000 else 1.0)
+        doc.update(override="the owner's choice at the 2026-11-23 lock: the %d/%d blend at $6,000+, ours alone below" % (
+            round(100 * cb["w"]), round(100 * (1 - cb["w"]))), version=LOCK["version"] if LOCK else "blend6k")
+    if LOCK and LOCK.get("questionable") is not None:        # pinned for the week; the refit kept beside it
+        quest.update(factor_refit=quest["factor"], factor=LOCK["questionable"], pinned=LOCK["version"])
     if today >= cb["from"] and PROJ_CHOICE in (None, "blend", "dk"):    # every band at w, whatever the rule says
         w = 0.0 if PROJ_CHOICE == "dk" else cb["w"]
         for b in bands:
