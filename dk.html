@@ -67,6 +67,15 @@
   .row { border-bottom: 1px solid var(--line); }
   .row.locked { background: rgba(77, 196, 141, .12); }
   .muted { color: var(--muted); }
+  .tvgrid { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 14px; align-items: start; margin-top: 6px; }
+  .tvgrid > .tvl { position: sticky; top: 60px; max-height: calc(100vh - 68px); overflow-y: auto; }   /* under the sticky step bar */
+  @media (max-width: 1100px) { .tvgrid { grid-template-columns: minmax(0, 1fr); } .tvgrid > .tvl { position: static; max-height: none; } }
+  .tvtabs { display: flex; gap: 6px; margin-bottom: 6px; } .tvtabs button { flex: 1; height: 30px; font-weight: 700; }
+  .tvtabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .tvteam { margin: 8px 0 2px; font-size: 13px; }
+  #teamPanel .plist.tv .col-opp, #teamPanel .plist.tv .col-min, #teamPanel .plist.tv .col-cash, #teamPanel .plist.tv .col-pb { display: none; }
+  #teamPanel .plist.tv .head, #teamPanel .plist.tv .row { grid-template-columns: 128px 165px 30px 40px 44px 44px 36px 36px 32px 34px 34px 34px 56px 36px 36px; }
+  @media (max-width: 620px) { #teamPanel .plist.tv .head, #teamPanel .plist.tv .row { grid-template-columns: 88px 160px 44px 52px 38px 36px 36px 34px 38px 36px 64px 40px 40px 30px 44px; } }
   /* off the page (2026-11-23, the owner: not referenced): the news line, Slate details, the ownership watch and field fit
      lines; their data still loads (the news still tags rows, Doubtful still defaults out) */
   #newsBox, #slateInfo, #ownWatch, #fieldFit { display: none !important; }
@@ -1123,10 +1132,10 @@ function bankShare() {
 function playerTable(list, sortable, fs) {
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"], ["bank", "Bank", "r col-bank"],
-     ["min", "Min", "r col-min"], ["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan"], ["read", "Read", "col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
+     ["min", "Min", "r col-min"], ["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
-    '<span class="col-scan" title="Bank this: a rule, at least 1 of him, for your next draw"></span>' +
+    '<span class="col-scan col-pb" title="Bank this: a rule, at least 1 of him, for your next draw"></span>' +
     '<span class="r col-max" title="In at least this % of each draw\'s lineups (a baseline: listed in the rules\' Baseline block)">Min%</span>' +
     '<span class="r col-max" title="In at most this % of each draw\'s lineups, and of a contest\'s set when the builder auto-fills (a baseline: listed in the rules\' Baseline block)">Max%</span></div>';
   var bshare = bankShare();
@@ -1193,12 +1202,12 @@ function playerTable(list, sortable, fs) {
       '<span class="m r mut col-obpr"' + (r.obpr != null ? ' title="' + esc("EvanMiya OBPR " + r.obpr.toFixed(2) + (r.bpr != null ? "; BPR " + r.bpr.toFixed(2) : "") + (r.dbpr != null ? "; DBPR " + r.dbpr.toFixed(2) : "") +
         (r.bpr_rank != null ? "; #" + r.bpr_rank + " on " + (r.team || "his team") + " by OBPR" : "")) + '"' : "") + ">" + (r.obpr != null ? r.obpr.toFixed(1) : "–") + "</span>" +
       '<span class="m r mut col-avg' + (r.last5 && r.last5.length ? ' has5" title="' + esc(last5Text(r)) + '"' : '"') + ">" + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
-      '<span class="m r col-scan">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
+      '<span class="m r col-scan col-cash">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
       // Read (2026-11-20: Top 1%, ROI and Bank folded into its hover; the bank-gap stripe stays on the row)
       '<span class="col-scan rdc"' + (sc ? ' title="' + esc(readTip(r, sc, bshare)) + '"' : "") + ">" + (sc ? '<span class="' + readCls(sc.read) + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
       (fs ? (function (x) { x = x || {}; return '<span class="m r">' + Math.round(100 * (x.here || 0)) + '%</span><span class="m r">' + Math.round(100 * (x.tonight || 0)) + '%</span><span class="m r"' +
         (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</span>"; })(fs[r.id]) : "") +
-      '<span class="col-scan"><button type="button" class="pbank" title="Bank this: at least 1 of ' + esc(r.name) + ' in your next draw"' + (r.status === "Out" ? " disabled" : "") + ">+</button></span>" +
+      '<span class="col-scan col-pb"><button type="button" class="pbank" title="Bank this: at least 1 of ' + esc(r.name) + ' in your next draw"' + (r.status === "Out" ? " disabled" : "") + ">+</button></span>" +
       '<span class="col-max"><input class="floor" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + '"></span>' +
       '<span class="col-max"><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
       "</div>";
@@ -1391,34 +1400,49 @@ function scanBlock(team) {
     '<div class="sr">' + (S.players ? (pl.length ? pl.map(function (r) { return '<span class="read-' + r.read + '">' + esc(r.key) + " (" + r.read + ")</span>"; }).join("") : '<span class="mut">No core or leverage players.</span>') :
       '<span class="mut">No player scan (Lineups a player was 0).</span>') + "</div></div>";
 }
-function gameHead(game, T) {
+function gameHead(game, T, bare) {
   var two = game.split("@"), S = scanNow(), tip = tipOf(game), r0 = rows.find(function (r) { return r.game === game && r.ou; });
   var fav = T.teams.filter(function (t) { return gameOf(t.team) === game && t.spread < 0; })[0];
   var st = S ? S.rows.map(function (r, i) { return [r, i]; }).filter(function (x) { return x[0].kind === "game" && x[0].game === game; }).sort(function (a, b) { return a[0].n - b[0].n; }) : [];
   return '<div class="gamehead"><b>' + esc(two[0] + " @ " + (two[1] || "")) + "</b>" + (tip ? " · " + new Date(tip).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "") +
-      (fav ? " · " + esc(fav.team) + " " + fav.spread : "") + (r0 ? " · o/u " + r0.ou : "") + "</div>" +
+      (fav ? " · " + esc(fav.team) + " " + fav.spread : "") + (r0 ? " · o/u " + r0.ou : "") + "</div>" + (bare ? "" :
     (S ? (st.length ? '<table class="contests gstk"><tr><th>Game stack</th><th class="r">Top 1% gain</th><th class="r">ROI gain</th><th class="r">Field holds</th><th>Read</th><th></th></tr>' + st.map(function (x) {
         var r = x[0];
         return "<tr" + (r.thin ? ' style="opacity:.5"' : "") + "><td>" + r.n + '+</td><td class="m">' + scanGain(r) + '</td><td class="m">' + (r.g_roi == null ? "–" : sgn(r.g_roi, 1)) + '</td><td class="m">' + Math.round(100 * r.field) + "%</td><td>" +
           esc(r.read) + "</td><td>" + scanBtn(x[1]) + "</td></tr>";
       }).join("") + "</table>" : '<div class="note">No game stack rows for this game in the scan.</div>') :
-      '<div class="note">Game stacks: – <a href="#scanBox" class="scanlink">Scan the slate</a></div>');
+      '<div class="note">Game stacks: – <a href="#scanBox" class="scanlink">Scan the slate</a></div>'));
 }
 var PANEL_MIN_VALUE = 2;     // a clicked team shows its players at this value (points per $1K) or better, unless Show all
+/* The game view (2026-11-23, the owner): read one team's write-up while looking at the game's players. Left: a toggle
+   between the two teams, the team's Min 1 / 2 / 3 and Stack buttons, its write-up and scan line; right: each team's
+   players in its own list (sorted by the game view's own column, salary by default, the two teams kept apart),
+   without Opp, Min, Cash and the bank button. Below 1100px wide the write-up sits above the players. */
+function tileMini(t) {
+  return '<div class="tile" data-team="' + esc(t.team) + '"><div class="acts"><button data-act="min1">Min 1</button><button data-act="min2">Min 2</button>' +
+    '<button data-act="min3">Min 3</button><button data-act="stack">Stack with ' + esc(oppOf(t.team) || "opp") + "</button></div></div>";
+}
+function withPanelSort(fn) { var s0 = view.sort, d0 = view.dir; view.sort = view.psort || "salary"; view.dir = view.pdir || -1; try { return fn(); } finally { view.sort = s0; view.dir = d0; } }
 function renderTeamPanel() {
   var T = teamsOf();
   if (!fillMode()) $("playersSec").hidden = !!(T && view.panel);       // the full list only when no team is clicked (the Fill step's list always shows)
   if (!T || !view.panel) { $("teamPanel").innerHTML = ""; return; }
   var t = T.teams.find(function (x) { return x.team === view.panel; });
   if (!t) { $("teamPanel").innerHTML = ""; return; }
-  var o = T.teams.find(function (x) { return x.team === oppOf(t.team); }), game = gameOf(t.team), mine = o ? [t.team, o.team] : [t.team];
-  var side = function (tt) { return '<div class="teamside">' + tileHtml(tt, false) + cardHtml(tt) + scanBlock(tt.team) + "</div>"; };
-  // one list for both teams, the Players list's table and sort (Val by default)
-  var all = sortList(rows.filter(function (r) { return mine.indexOf(r.team) >= 0; }));
-  var list = view.showAll ? all : all.filter(function (r) { return r.status !== "Out" && value(r) >= PANEL_MIN_VALUE || state.lock[r.id] || state.excl[r.id]; });
-  $("teamPanel").innerHTML = gameHead(game, T) + '<div class="gameteams">' + side(t) + (o ? side(o) : "") + "</div>" +
-    '<div class="plist">' + playerTable(list, true) + '<button type="button" class="showall" style="height:24px;padding:0 8px;font-size:11.5px;margin:4px 0">' +
-    (view.showAll ? "Only " + PANEL_MIN_VALUE + "x value and up" : "Show all " + all.length + " (" + (all.length - list.length) + " under " + PANEL_MIN_VALUE + "x or out)") + "</button></div>";
+  var o = T.teams.find(function (x) { return x.team === oppOf(t.team); }), game = gameOf(t.team), mine = o ? [t, o] : [t];
+  var sideT = mine.find(function (x) { return x.team === view.pside; }) || t;
+  var tabs = '<div class="tvtabs">' + mine.map(function (x) {
+    return '<button type="button" class="ptab" data-team="' + esc(x.team) + '" aria-pressed="' + (x === sideT) + '">' + esc(x.team) + "</button>"; }).join("") + "</div>";
+  var all = 0, shown = 0;
+  var lists = mine.map(function (x) {
+    var tr = rows.filter(function (r) { return r.team === x.team; }); all += tr.length;
+    var list = view.showAll ? tr : tr.filter(function (r) { return r.status !== "Out" && value(r) >= PANEL_MIN_VALUE || state.lock[r.id] || state.excl[r.id]; });
+    shown += list.length;
+    return '<div class="tvteam"><b>' + esc(x.team) + "</b></div>" + withPanelSort(function () { return playerTable(sortList(list), true); });
+  }).join("");
+  $("teamPanel").innerHTML = gameHead(game, T, true) + '<div class="tvgrid"><div class="tvl">' + tabs + tileMini(sideT) + cardHtml(sideT).replace("<details", "<details open") + scanBlock(sideT.team) + "</div>" +
+    '<div class="plist tv">' + lists + '<button type="button" class="showall" style="height:24px;padding:0 8px;font-size:11.5px;margin:4px 0">' +
+    (view.showAll ? "Only " + PANEL_MIN_VALUE + "x value and up" : "Show all " + all + " (" + (all - shown) + " under " + PANEL_MIN_VALUE + "x or out)") + "</button></div></div>";
 }
 
 /* The team card (battle-royale-research dk_cbb_teams.py team_card): facts from this season's box scores, each with its
@@ -1534,7 +1558,7 @@ var QUAD = {
 function tileRules(act, t, k) {
   if (act === "quad") return QUAD[t.verdict] ? QUAD[t.verdict].rules(t) : [];
   var opp = oppOf(t.team), top = t.top || [];
-  if (act === "min2" || act === "min3") { var n = act === "min2" ? 2 : 3; return [{ type: "min", ids: teamIds(t.team), n: n, label: "At least " + n + " from " + t.team }]; }
+  if (act === "min1" || act === "min2" || act === "min3") { var n = +act.slice(3); return [{ type: "min", ids: teamIds(t.team), n: n, label: "At least " + n + " from " + t.team }]; }
   if (act === "stack") return [{ type: "min", ids: teamIds(t.team), n: 2, label: "Stack " + t.team + "-" + opp + ": 2+ from " + t.team },
                               { type: "min", ids: teamIds(opp), n: 1, label: "Stack " + t.team + "-" + opp + ": 1+ from " + opp }];
   if (act === "excl") return [{ type: "none", ids: teamIds(t.team), label: "No " + t.team + " players" }];
@@ -3087,7 +3111,7 @@ $("scanTable").addEventListener("click", function (e) {
     showStep("bank"); $("ruleEditor").scrollIntoView({ block: "center" }); return;
   }
   var tr0 = e.target.closest(".topread");
-  if (tr0) { view.panel = tr0.dataset.team; renderTiles(); renderPlayers(); $("teamBar").scrollIntoView({ block: "start" }); return; }
+  if (tr0) { view.panel = tr0.dataset.team; view.pside = view.panel; renderTiles(); renderPlayers(); $("teamBar").scrollIntoView({ block: "start" }); return; }
   var b = e.target.closest(".scanBank"); if (b) scanBankApply(b);
 });
 $("scanTable").addEventListener("toggle", function (e) { if (e.target.id === "scanAll") scanAllOpen = e.target.open; }, true);
@@ -3877,10 +3901,14 @@ $("entriesBox").addEventListener("click", function (e) { var b = e.target.closes
 $("teamBar").addEventListener("click", function (e) {
   var b = e.target.closest("button[data-team]"); if (!b) return;
   view.panel = view.panel && gameOf(view.panel) === gameOf(b.dataset.team) && view.panel === b.dataset.team ? null : b.dataset.team;
+  view.pside = view.panel;
   renderTiles();
 });
 $("teamPanel").addEventListener("click", function (e) {
   if (e.target.closest(".showall")) { view.showAll = !view.showAll; renderTeamPanel(); return; }
+  var pt = e.target.closest(".ptab"); if (pt) { view.pside = pt.dataset.team; renderTeamPanel(); return; }
+  var hp = e.target.closest("#teamPanel [data-sort]");
+  if (hp) { var pk = hp.dataset.sort; view.pdir = (view.psort || "salary") === pk ? -(view.pdir || -1) : (pk === "name" ? 1 : -1); view.psort = pk; renderTeamPanel(); return; }
   var hs = e.target.closest("[data-sort]");
   if (hs) { var sk = hs.dataset.sort; view.dir = view.sort === sk ? -view.dir : (sk === "name" ? 1 : -1); view.sort = sk; renderPlayers(); return; }
   var sb2 = e.target.closest(".scanBank"); if (sb2) { scanBankApply(sb2); return; }

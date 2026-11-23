@@ -575,6 +575,9 @@ function audit(name, L, o) {
     if (!(await pg.$(`#teamPanel .tile[data-team="${team}"]`))) await pg.click(`#teamBar button[data-team="${team}"]`);
     await pg.waitForSelector(`#teamPanel .tile[data-team="${team}"]`);
   };
+  // the game view (2026-11-23) keeps only Min 1 / 2 / 3 and Stack on the tile; the other shortcuts' rules (exclude,
+  // pivot, bring-back, platoon, quadrant) stay in tileRules and are tested through it
+  const tileAct = (team, act, k) => pg.evaluate(([tm, a, kk]) => addRules(tileRules(a, teamsOf().teams.find(t => t.team === tm), kk)), [team, act, k]);
   check("team bar: one button per team, slate line shown", (await pg.$$eval("#teamBar button", t => t.length)) === TEAMS.teams.length &&
         /games · \d+ spreads? of 15\+/.test(await pg.textContent("#slateLine")), await pg.textContent("#slateLine"));
   const chipsG = await pg.evaluate(() => {
@@ -659,30 +662,34 @@ function audit(name, L, o) {
     return out;
   });
   check("analyst: a writeup of tonight's game is a chip on the tile, linked, and in the card with the analysts' posts at the bottom; the week's notes in their own section; never a player's news tag",
-        an.chip === "BuriedTreys writeup" && /writeup: Game writeup text/.test(an.first || "") && an.notes && an.noNews, JSON.stringify(an));
-  check("team panel: the team's tile, then its opponent's", JSON.stringify(panel) === JSON.stringify([TEAMS.teams[0].team, opp0 && opp0.team]), JSON.stringify(panel));
+        an.chip === null && /writeup: Game writeup text/.test(an.first || "") && an.notes && an.noNews, JSON.stringify(an));    // 2026-11-23: no chip on the tile (Min / Stack only)
+  check("game view: the clicked team's tile only (a toggle for the other)", JSON.stringify(panel) === JSON.stringify([TEAMS.teams[0].team]), JSON.stringify(panel));
   const gv = await pg.evaluate(() => {
     const ids = [...document.querySelectorAll("#teamPanel .plist .row")].map(r => r.dataset.id), teams = new Set(ids.map(id => byId(id).team));
-    const v = ids.map(id => byId(id)).filter(r => r.status !== "Out").map(value), t = teamsOf().teams.find(x => x.team === view.panel);
-    return { teams: [...teams].sort(), want: [t.team, oppOf(t.team)].sort(), sorted: v.every((x, i) => i === 0 || v[i - 1] >= x), lists: document.querySelectorAll("#teamPanel .plist").length,
+    const t = teamsOf().teams.find(x => x.team === view.panel), grp = {};
+    ids.map(id => byId(id)).filter(r => r.status !== "Out").forEach(r => { (grp[r.team] = grp[r.team] || []).push(r.salary); });
+    const order = ids.map(id => byId(id).team).filter((x, i, a) => i === 0 || a[i - 1] !== x);
+    return { teams: [...teams].sort(), want: [t.team, oppOf(t.team)].sort(), sorted: Object.values(grp).every(v => v.every((x, i) => i === 0 || v[i - 1] >= x)), split: order.length === 2,
+             tabs: [...document.querySelectorAll("#teamPanel .ptab")].map(b => b.dataset.team).sort(), lists: document.querySelectorAll("#teamPanel .plist").length,
              pressed: [...document.querySelectorAll("#teamBar button[aria-pressed=true]")].map(b => b.dataset.team).sort(), head: !!document.querySelector("#teamPanel .gamehead"),
              heads: [...document.querySelectorAll("#teamPanel .plist .head span[data-sort]")].length,
-             blank: !scanNow() && [...document.querySelectorAll("#teamPanel .scanblk")].length === 2 && [...document.querySelectorAll("#teamPanel .scanblk")].every(b => /–/.test(b.textContent) && b.querySelector("a.scanlink")) };
+             blank: !scanNow() && [...document.querySelectorAll("#teamPanel .scanblk")].length === 1 && [...document.querySelectorAll("#teamPanel .scanblk")].every(b => /–/.test(b.textContent) && b.querySelector("a.scanlink")) };
   });
-  check("game view: the game header, both team cards with a Scan block (– and a Scan the slate link before a scan), then one player list for both teams, sorted by Val, with the Players list's columns; both chips pressed",
-        gv.head && gv.blank && gv.lists === 1 && JSON.stringify(gv.teams) === JSON.stringify(gv.want) && gv.sorted && gv.heads >= 13 && JSON.stringify(gv.pressed) === JSON.stringify(gv.want), JSON.stringify(gv));
+  check("game view: the header, a toggle for the two teams and one team's card with its Scan block (– and a Scan the slate link before a scan); each team's players in its own list, by salary by default; both chips pressed",
+        gv.head && gv.blank && gv.lists === 1 && gv.split && JSON.stringify(gv.tabs) === JSON.stringify(gv.want) && JSON.stringify(gv.teams) === JSON.stringify(gv.want) && gv.sorted && gv.heads >= 13 && JSON.stringify(gv.pressed) === JSON.stringify(gv.want), JSON.stringify(gv));
   const gs2 = await pg.evaluate(() => {
     const t = view.panel, o = oppOf(t);
     document.querySelector('#teamBar button[data-team="' + o + '"]').click();
     const a = [...document.querySelectorAll("#teamPanel .tile")].map(x => x.dataset.team);
     document.querySelector('#teamPanel .plist .head [data-sort="proj"]').click();
-    const p = [...document.querySelectorAll("#teamPanel .plist .row")].map(r => byId(r.dataset.id)).filter(r => r.status !== "Out").map(proj);
-    view.sort = "value"; view.dir = -1;
+    const grp = {}; [...document.querySelectorAll("#teamPanel .plist .row")].map(r => byId(r.dataset.id)).filter(r => r.status !== "Out").forEach(r => { (grp[r.team] = grp[r.team] || []).push(proj(r)); });
+    const p = Object.values(grp), mainSort = view.sort;
+    view.psort = null; view.pdir = null;
     document.querySelector('#teamBar button[data-team="' + t + '"]').click();
-    return { a, want: [o, t], sortedProj: p.every((x, i) => i === 0 || p[i - 1] >= x), back: view.panel === t };
+    return { a, want: [o], sortedProj: p.length === 2 && p.every(v => v.every((x, i) => i === 0 || v[i - 1] >= x)), mainKept: mainSort === "value", back: view.panel === t };
   });
-  check("game view: the other team's chip opens the same game with it first; the list sorts by a header click",
-        JSON.stringify(gs2.a) === JSON.stringify(gs2.want) && gs2.sortedProj && gs2.back, JSON.stringify(gs2));
+  check("game view: the other team's chip opens the game on that team; a header click sorts each team's list on its own (the main list's sort untouched)",
+        JSON.stringify(gs2.a) === JSON.stringify(gs2.want) && gs2.sortedProj && gs2.mainKept && gs2.back, JSON.stringify(gs2));
   const pv = await pg.evaluate(() => [...document.querySelectorAll("#teamPanel .plist .row")].map(r => { const x = rows.find(y => y.id === r.dataset.id); return value(x); }));
   check("team panel: only players at 2x value or better", pv.length > 0 && pv.every(v => v >= 2), JSON.stringify(pv));
   check("team panel: the full player list hides while a team is open", await pg.$eval("#playersSec", x => x.hidden));
@@ -709,9 +716,9 @@ function audit(name, L, o) {
   const tsel = `.tile[data-team="${tile.team}"]`;
 
   // the tile buttons
-  for (const act of ["min2", "min3", "stack", "excl"]) {
+  for (const act of ["min1", "min2", "min3", "stack", "excl"]) {
     await clearRules();
-    await openTeam(tile.team); await pg.click(`${tsel} button[data-act="${act}"]`);
+    await openTeam(tile.team); if (act === "excl") await tileAct(tile.team, act); else await pg.click(`${tsel} button[data-act="${act}"]`);
     const R = await rulesNow();
     check(`tile button ${act} writes its rule${R.length > 1 ? "s" : ""}`, R.length === (act === "stack" ? 2 : 1), JSON.stringify(R.map(r => r.label)));
     await drawAudit("tile " + act);
@@ -720,8 +727,7 @@ function audit(name, L, o) {
   check("rules list shows the pass counts after a draw", (await pg.$$eval(".rule .pc", x => x.length)) === 1);
   // the #1 player's shortcuts, and editing one after
   await clearRules();
-  await openTeam(tile.team); await pg.click(`${tsel} button[data-act="pivot"]`);
-  await openTeam(tile.team); await pg.click(`${tsel} button[data-act="bring"]`);
+  await tileAct(tile.team, "pivot"); await tileAct(tile.team, "bring");
   let R = await rulesNow();
   check("tile shortcuts: pivot and bring-back", R.length === 2 && R[0].type === "ifnot" && R[1].type === "if" && R[0].ids[0] === tile.top[0].id &&
         JSON.stringify(R[0].set) === JSON.stringify([tile.top[1].id, tile.top[2].id]), JSON.stringify(R.map(r => r.label)));
@@ -796,10 +802,8 @@ function audit(name, L, o) {
   await clearRules();
   await openTeam(plat.team);
   const pb = `.tile[data-team="${plat.team}"] button[data-act="platoon"]`;
-  check("platoon: the tile lists its pairs", await pg.$$eval(pb, b => b.length) === plat.platoon.length);
-  check("platoon: the button shows the minutes correlation and games",
-    (await pg.textContent(pb)).includes(plat.platoon[0].corr.toFixed(2) + " over " + plat.platoon[0].games + " games"));
-  await pg.click(pb);
+  check("platoon: off the game view's tile (2026-11-23: Min 1 / 2 / 3 and Stack only)", await pg.$$eval(pb, b => b.length) === 0);
+  await tileAct(plat.team, "platoon", 0);
   R = await rulesNow();
   const pp = plat.platoon[0];
   check("platoon: one click adds Never together, marked for grading", R.length === 1 && R[0].type === "never" && R[0].src === "platoon" &&
@@ -842,11 +846,9 @@ function audit(name, L, o) {
   const noPlat = TEAMS.teams.find(t => t.platoon && !t.platoon.length);
   if (noPlat) {
     await openTeam(noPlat.team);
-    check("platoon: a tile without a pair says none yet", /Platoon: none yet/.test(await pg.textContent(`.tile[data-team="${noPlat.team}"]`)));
+    check("tile: Min 1 / 2 / 3 and Stack only (no platoon line)", !/Platoon/.test(await pg.textContent(`.tile[data-team="${noPlat.team}"]`)) &&
+      JSON.stringify(await pg.$$eval(`.tile[data-team="${noPlat.team}"] button`, b => b.map(x => x.dataset.act))) === JSON.stringify(["min1", "min2", "min3", "stack"]));
   }
-  const thin = TEAMS.teams.find(t => (t.platoon || []).some(p => p.thin));
-  await openTeam(thin.team);
-  check("platoon: a thin pair is marked thin", /games, thin\)/.test(await pg.textContent(`.tile[data-team="${thin.team}"]`)));
   const heavy = TEAMS.teams.find(t => t.heavy_fav), notHeavy = TEAMS.teams.find(t => !t.heavy_fav);
   // 2026-11-23: the tile's BENCH flag went with the other tile flags (the write-up replaced them)
   await openTeam(heavy.team);
@@ -950,7 +952,7 @@ function audit(name, L, o) {
   await openTeam(t2.team); await pg.click(`.tile[data-team="${t2.team}"] button[data-act="min2"]`);
   L2 = await drawAudit("template 3, condition met (a Min 2 from the team)");
   await pg.evaluate(() => { state.rules.pop(); save(); renderRules(); });
-  await openTeam(t2.team); await pg.click(`.tile[data-team="${t2.team}"] button[data-act="excl"]`);
+  await tileAct(t2.team, "excl");
   L2 = await drawAudit("template 3, condition not met (the team excluded)");
   // 4. never P with Q
   await clearRules();
@@ -972,7 +974,7 @@ function audit(name, L, o) {
     const t = TEAMS.teams.find(x => x.verdict === q);
     if (!t) continue;
     await clearRules();
-    await openTeam(t.team); await pg.click(`.tile[data-team="${t.team}"] button[data-act="quad"]`);
+    await tileAct(t.team, "quad");
     const RQ = await rulesNow();
     const want = { FOCUS: r => r.length === 1 && r[0].type === "min" && r[0].n === 2 && r[0].share == null,
                    CHALK: r => r.length === 1 && r[0].type === "none" && JSON.stringify(r[0].ids) === JSON.stringify([t.top[0].id]),
@@ -1689,9 +1691,9 @@ function audit(name, L, o) {
         trd.n === trd.want.length && JSON.stringify(trd.keys) === JSON.stringify(trd.want) && trd.lev === trd.wantLev && trd.closed && trd.inFold && trd.opened, JSON.stringify(trd));
   // the game view's scan: game stacks under the header, each team card's 3+ / 4+ rows and its core and leverage players
   const gsc = await pg.evaluate(() => {
-    const t = teamsOf().teams[0]; view.panel = t.team; renderTiles();
+    const t = teamsOf().teams[0]; view.panel = t.team; view.pside = t.team; renderTiles();
     const g = gameOf(t.team), gr = [...document.querySelectorAll("#teamPanel table.gstk tr")].length - 1, wantG = SCAN.rows.filter(r => r.kind === "game" && r.game === g).length;
-    const blk = document.querySelector('#teamPanel .teamside .scanblk'), sr = blk.querySelectorAll(".sr").length, wantT = SCAN.rows.filter(r => r.kind === "team" && r.team === t.team).length;
+    const blk = document.querySelector('#teamPanel .tvl .scanblk'), sr = blk.querySelectorAll(".sr").length, wantT = SCAN.rows.filter(r => r.kind === "team" && r.team === t.team).length;
     const names = [...blk.querySelectorAll(".read-core, .read-leverage")].map(x => x.textContent.replace(/ \((core|leverage)\)$/, "")).sort();
     const wantN = SCAN.players.filter(r => r.team === t.team && !r.thin && (r.read === "core" || r.read === "leverage")).map(r => r.key).sort();
     const n0 = state.rules.length; blk.querySelector(".scanBank").click(); const added = state.rules.length === n0 + 1 && /\d\+/.test(state.rules[n0].label);
@@ -1699,8 +1701,8 @@ function audit(name, L, o) {
     view.panel = null; renderTiles(); renderPlayers();
     return { gr, wantG, sr, wantT, names, wantN, added };
   });
-  check("game view: the game's stack rows from the scan; each team card's Scan block with its 3+ / 4+ rows and core / leverage players, Bank this working",
-        gsc.gr === gsc.wantG && gsc.wantG >= 1 && gsc.sr === gsc.wantT + 1 && JSON.stringify(gsc.names) === JSON.stringify(gsc.wantN) && gsc.added, JSON.stringify(gsc));
+  check("game view: no game stack table (2026-11-23); the team's Scan block with its 3+ / 4+ rows and core / leverage players, Bank this working",
+        gsc.gr <= 0 && gsc.wantG >= 1 && gsc.sr === gsc.wantT + 1 && JSON.stringify(gsc.names) === JSON.stringify(gsc.wantN) && gsc.added, JSON.stringify(gsc));
   // the player scan, at the top: a row for every player in the pool, gains over the same plain
   // batch, Read on the players' own noise and their median field ownership, the team rollup from those reads
   const ps = await pg.evaluate(() => {
