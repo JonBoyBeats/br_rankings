@@ -78,5 +78,9 @@
  "f8954075-91a4-42ee-8431-1ce89d1f3f94": {
   "reason": "leaderboard not public (HTTP 401)",
   "slate": "nba_wed_main"
+ },
+ "f94d28bc-673e-4566-88bc-f3ace1cf7636": {
+  "reason": "leaderboard not public (HTTP 401)",
+  "slate": "nba_sun_main"
  }
 }

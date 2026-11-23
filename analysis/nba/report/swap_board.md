@@ -7,12 +7,12 @@ Written by scripts/nba_swap_board.py. Credited swaps only (swaps.csv). Excluded 
 | Swaps | Group | Swaps | Points left per swap | Share where the swap was already the best option or better |
 |---|---|---|---|---|
 | Field and you | T1 | 1239 | +1.5 | 76% |
-| Field and you | T2 | 22799 | +2.6 | 55% |
+| Field and you | T2 | 23386 | +2.5 | 55% |
 | Field and you | T3 | 13123 | +3.0 | 66% |
-| Field and you | T4 | 6319 | -0.6 | 67% |
+| Field and you | T4 | 6692 | -0.6 | 67% |
 | Field and you | T5 | 2486 | -4.6 | 82% |
-| Field and you | T6 | 13291 | +1.2 | 63% |
-| Field and you | all | 59257 | +1.7 | 62% |
+| Field and you | T6 | 13498 | +1.2 | 63% |
+| Field and you | all | 60424 | +1.7 | 62% |
 | Your teams | AM | 109 | +1.7 | 69% |
 | Your teams | OVERNIGHT | 36 | -3.0 | 92% |
 | Your teams | PM | 119 | +3.2 | 70% |
@@ -67,3 +67,4 @@ Reading section a: points left on the table are the best option's score minus th
 | 2026-11-19 | 42 | 0 | 0 |
 | 2026-11-20 | 29 | 0 | 0 |
 | 2026-11-21 | 20 | 0 | 0 |
+| 2026-11-22 | 7 | 0 | 0 |

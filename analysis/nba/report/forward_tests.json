@@ -16424,5 +16424,795 @@
     }
    ]
   }
+ },
+ "2026-11-22": {
+  "boom": [
+   [
+    0.4964,
+    0.4964,
+    true
+   ],
+   [
+    0.1505,
+    0.1488,
+    false
+   ],
+   [
+    0.2276,
+    0.1903,
+    false
+   ],
+   [
+    0.1656,
+    0.1784,
+    false
+   ],
+   [
+    0.2554,
+    0.2278,
+    false
+   ],
+   [
+    0.1433,
+    0.1454,
+    false
+   ],
+   [
+    0.1405,
+    0.1426,
+    true
+   ],
+   [
+    0.2517,
+    0.2491,
+    true
+   ],
+   [
+    0.2046,
+    0.2074,
+    false
+   ],
+   [
+    0.1732,
+    0.1654,
+    false
+   ],
+   [
+    0.1448,
+    0.1395,
+    false
+   ],
+   [
+    0.2081,
+    0.1806,
+    false
+   ],
+   [
+    0.1904,
+    0.1723,
+    false
+   ],
+   [
+    0.2239,
+    0.2113,
+    true
+   ],
+   [
+    0.1692,
+    0.1562,
+    false
+   ],
+   [
+    0.1753,
+    0.1849,
+    false
+   ],
+   [
+    0.1617,
+    0.1558,
+    false
+   ],
+   [
+    0.2063,
+    0.2041,
+    false
+   ],
+   [
+    0.1857,
+    0.1747,
+    false
+   ],
+   [
+    0.1448,
+    0.1508,
+    false
+   ],
+   [
+    0.153,
+    0.1513,
+    false
+   ],
+   [
+    0.1724,
+    0.1748,
+    false
+   ],
+   [
+    0.1248,
+    0.1234,
+    false
+   ],
+   [
+    0.1149,
+    0.1166,
+    false
+   ],
+   [
+    0.1829,
+    0.1901,
+    false
+   ],
+   [
+    0.2626,
+    0.2485,
+    true
+   ],
+   [
+    0.1742,
+    0.1811,
+    false
+   ],
+   [
+    0.1993,
+    0.1877,
+    false
+   ],
+   [
+    0.1824,
+    0.1943,
+    false
+   ],
+   [
+    0.1698,
+    0.1679,
+    false
+   ],
+   [
+    0.1874,
+    0.1854,
+    false
+   ],
+   [
+    0.126,
+    0.1348,
+    true
+   ],
+   [
+    0.143,
+    0.1414,
+    false
+   ],
+   [
+    0.198,
+    0.1865,
+    false
+   ],
+   [
+    0.1716,
+    0.1785,
+    true
+   ],
+   [
+    0.1435,
+    0.1419,
+    false
+   ],
+   [
+    0.126,
+    0.1279,
+    false
+   ],
+   [
+    0.1841,
+    0.1913,
+    false
+   ],
+   [
+    0.1249,
+    0.1202,
+    false
+   ],
+   [
+    0.1805,
+    0.1805,
+    true
+   ],
+   [
+    0.2146,
+    0.2008,
+    false
+   ],
+   [
+    0.1717,
+    0.1698,
+    false
+   ],
+   [
+    0.1561,
+    0.1625,
+    false
+   ],
+   [
+    0.1502,
+    0.1604,
+    false
+   ],
+   [
+    0.1989,
+    0.192,
+    false
+   ],
+   [
+    0.126,
+    0.1279,
+    false
+   ],
+   [
+    0.1707,
+    0.1646,
+    false
+   ],
+   [
+    0.1619,
+    0.1573,
+    false
+   ],
+   [
+    0.117,
+    0.117,
+    false
+   ],
+   [
+    0.1811,
+    0.1882,
+    false
+   ],
+   [
+    0.167,
+    0.1651,
+    false
+   ],
+   [
+    0.1345,
+    0.1401,
+    false
+   ],
+   [
+    0.1102,
+    0.1167,
+    false
+   ],
+   [
+    0.1358,
+    0.1378,
+    false
+   ],
+   [
+    0.1322,
+    0.1414,
+    false
+   ],
+   [
+    0.0325,
+    0.0351,
+    false
+   ],
+   [
+    0.1732,
+    0.1713,
+    false
+   ],
+   [
+    0.1446,
+    0.1467,
+    false
+   ],
+   [
+    0.1311,
+    0.1366,
+    false
+   ],
+   [
+    0.1665,
+    0.1665,
+    false
+   ],
+   [
+    0.1303,
+    0.1388,
+    true
+   ],
+   [
+    0.139,
+    0.1498,
+    true
+   ],
+   [
+    0.1339,
+    0.1359,
+    false
+   ],
+   [
+    0.1714,
+    0.1711,
+    false
+   ],
+   [
+    0.1759,
+    0.1859,
+    false
+   ],
+   [
+    0.1644,
+    0.1644,
+    false
+   ]
+  ],
+  "mine": {
+   "breakers": {
+    "field": [
+     9636,
+     18961
+    ],
+    "mine": [
+     20,
+     34
+    ],
+    "top1": [
+     98,
+     402
+    ]
+   },
+   "low_drafted": {
+    "field": [
+     9636,
+     2053
+    ],
+    "mine": [
+     20,
+     3
+    ]
+   },
+   "turn23": {
+    "most-owned": 1,
+    "other": 2,
+    "rarer": 2
+   }
+  },
+  "pod": 6,
+  "q": [
+   {
+    "early": [
+     465,
+     13
+    ],
+    "late": [
+     1140,
+     27
+    ],
+    "name": "Karl-Anthony Towns",
+    "played": true,
+    "tag": "Questionable",
+    "value": 27.4
+   },
+   {
+    "early": [
+     477,
+     8
+    ],
+    "late": [
+     1127,
+     15
+    ],
+    "name": "Pascal Siakam",
+    "played": true,
+    "tag": "Questionable",
+    "value": 13.4
+   },
+   {
+    "early": [
+     462,
+     11
+    ],
+    "late": [
+     1143,
+     22
+    ],
+    "name": "Jalen Smith",
+    "played": true,
+    "tag": "Questionable",
+    "value": 12.2
+   },
+   {
+    "early": [
+     466,
+     6
+    ],
+    "late": [
+     1138,
+     13
+    ],
+    "name": "Derrick White",
+    "played": true,
+    "tag": "Questionable",
+    "value": 3.6
+   }
+  ],
+  "teams": 9636,
+  "ties": [
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1601,
+    "hi_t1": 14,
+    "lo_brk": false,
+    "lo_n": 1227,
+    "lo_t1": 10,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1601,
+    "hi_t1": 14,
+    "lo_brk": true,
+    "lo_n": 1344,
+    "lo_t1": 16,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1476,
+    "hi_t1": 14,
+    "lo_brk": false,
+    "lo_n": 810,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1476,
+    "hi_t1": 14,
+    "lo_brk": false,
+    "lo_n": 564,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1476,
+    "hi_t1": 14,
+    "lo_brk": true,
+    "lo_n": 182,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1476,
+    "hi_t1": 14,
+    "lo_brk": false,
+    "lo_n": 149,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1476,
+    "hi_t1": 14,
+    "lo_brk": true,
+    "lo_n": 65,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": true,
+    "hi_n": 1386,
+    "hi_t1": 41,
+    "lo_brk": false,
+    "lo_n": 810,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": true,
+    "hi_n": 1386,
+    "hi_t1": 41,
+    "lo_brk": true,
+    "lo_n": 182,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": true,
+    "hi_n": 1386,
+    "hi_t1": 41,
+    "lo_brk": false,
+    "lo_n": 149,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": true,
+    "hi_n": 1386,
+    "hi_t1": 41,
+    "lo_brk": true,
+    "lo_n": 65,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1331,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 810,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1331,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 564,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1331,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 182,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1331,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 149,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1227,
+    "hi_t1": 10,
+    "lo_brk": false,
+    "lo_n": 810,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1227,
+    "hi_t1": 10,
+    "lo_brk": false,
+    "lo_n": 564,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 1227,
+    "hi_t1": 10,
+    "lo_brk": false,
+    "lo_n": 149,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": true,
+    "hi_n": 1344,
+    "hi_t1": 16,
+    "lo_brk": false,
+    "lo_n": 810,
+    "lo_t1": 2,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": true,
+    "hi_n": 1344,
+    "hi_t1": 16,
+    "lo_brk": false,
+    "lo_n": 564,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": true,
+    "hi_n": 1344,
+    "hi_t1": 16,
+    "lo_brk": false,
+    "lo_n": 149,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 810,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 564,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 810,
+    "hi_t1": 2,
+    "lo_brk": true,
+    "lo_n": 182,
+    "lo_t1": 2,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 810,
+    "hi_t1": 2,
+    "lo_brk": false,
+    "lo_n": 149,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 564,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 149,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 279,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 34,
+    "lo_t1": 0,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 279,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 48,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 279,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 41,
+    "lo_t1": 0,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-22",
+    "hi_brk": false,
+    "hi_n": 279,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 44,
+    "lo_t1": 2,
+    "lo_wins": true
+   }
+  ],
+  "turns": {
+   "1/2": [
+    {
+     "combo": [
+      "Jamal Murray",
+      "Jalen Brunson"
+     ],
+     "pop": [
+      870,
+      6,
+      200340.1999999998
+     ],
+     "rest": [
+      1229,
+      41,
+      289366.49999999994
+     ]
+    }
+   ],
+   "2/3": [
+    {
+     "anchor": "Nikola Jokic",
+     "combo": [
+      "Anthony Black",
+      "Darryn Peterson"
+     ],
+     "pop": [
+      261,
+      0,
+      52418.19999999999
+     ],
+     "rest": [
+      1084,
+      33,
+      244560.89999999997
+     ]
+    },
+    {
+     "anchor": "Franz Wagner",
+     "combo": [
+      "Anthony Black",
+      "AJ Dybantsa"
+     ],
+     "pop": [
+      121,
+      0,
+      22331.200000000004
+     ],
+     "rest": [
+      1293,
+      3,
+      247741.49999999953
+     ]
+    },
+    {
+     "anchor": "Cooper Flagg",
+     "combo": [
+      "Josh Giddey",
+      "Yaxel Lendeborg"
+     ],
+     "pop": [
+      148,
+      0,
+      31609.599999999988
+     ],
+     "rest": [
+      1305,
+      7,
+      251703.10000000018
+     ]
+    }
+   ]
+  }
  }
 }

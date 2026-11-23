@@ -1620,3 +1620,63 @@ date,out_id,out,out_team,out_adp,out_tier_am,out_tier_pm,tag_am,tag_pm,tag_lock,
 2026-11-21,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,33.8,5,-,Questionable,,Questionable,cfd5197e-05c6-465e-966e-fc1c7d218ddd,Jordan Poole,NO,0,35.9,29.6,2,
 2026-11-21,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,33.8,5,-,Questionable,,Questionable,179c35c2-9d43-4b92-ba67-e023398d33de,Baylor Scheierman,BOS,1,36.0,8.1,2,0
 2026-11-21,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,33.8,5,-,Questionable,,Questionable,f57e23b4-cbd9-43dd-ac00-7e2847a5bb35,Taylor Hendricks,MEM,0,36.0,15.4,1,-120
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,956e588d-8b63-4c12-8202-d952a1f1cb8a,Tre Jones,CHI,0,35.1,17.4,53,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,b999fa17-fd5a-42e1-aea2-2d1a5229f88f,Jaxson Hayes,UTA,0,34.0,11.1,106,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,3049edb3-278c-494d-a03d-bb1e9e7ebe4f,Alex Sarr,WAS,0,32.6,32.8,44,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,1,,0.0,1,0
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,1,30.5,27.1,48,0
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,06df3427-6b4f-4ca0-9a29-59a0ee3957f6,Josh Hart,NY,0,34.6,38.2,135,
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,f120a4ab-5e6e-42ce-8d6a-905ab0778fc6,Neemias Queta,BOS,1,29.4,21.0,12,0
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,a6d2ff8d-3be2-4a6a-966d-930efc2e10d6,Ace Bailey,UTA,0,34.6,31.0,72,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,48851f98-0d68-4b55-8709-f0c942959642,Wendell Carter Jr.,ORL,0,30.8,24.7,9,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e,Aaron Gordon,DEN,0,33.5,43.1,56,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,1dc5f283-636c-4460-b9a2-c96298249439,Jalen Smith,CHI,0,27.2,43.3,7,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,4f04550c-7e21-4e92-9488-ba5e853650d4,Andre Drummond,NY,0,35.2,15.5,6,
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,d2af4c28-4c1d-42b3-ae03-953e8ee540a9,Daniel Gafford,DAL,0,35.3,26.8,15,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,9edfb9d5-186c-4222-b6f4-3b476ad7a4b8,Cam Johnson,DEN,0,35.8,28.9,4,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,5a6d9324-cc0e-432b-8b40-44457bbc818c,Kelly Oubre,IND,0,35.6,21.0,7,-30
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,775b0842-8e84-47fb-a5b9-653c7e7ee3d0,Walter Clayton Jr.,DAL,0,,12.5,3,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,fd0b6a4a-7052-49b3-8fae-aa34856eae74,Caleb Martin,DAL,0,36.0,38.2,1,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,e6d28d3a-142b-498a-bf36-27aeaa840270,LJ Cryer,GS,0,36.0,6.0,1,
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,7938f8ac-780c-4be9-b85f-8bbe5562a165,Naji Marshall,DAL,0,35.9,27.0,1,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,fc154c93-c140-469e-be8e-06930c2f261f,DeMar DeRozan,DEN,0,35.9,4.5,1,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,b02022e9-b702-422a-8d44-4a059d3d4b64,Tristan da Silva,ORL,0,36.0,20.6,1,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,d2f6e849-cd72-4120-8c2e-a10a9c2fdea6,Buddy Hield,CHI,0,36.0,50.4,2,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,7cd41880-f239-4b05-b929-520f2624dc15,Nikola Vucevic,ORL,0,36.0,19.1,1,-90
+2026-11-22,24e6e69c-b95e-4a87-92d0-7dd3f3d93926,Paul George,BOS,12.0,2,-,,,,786dceee-a0eb-4bf4-b2cd-29d95dc29990,Sam Hauser,BOS,1,36.0,7.2,1,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,06df3427-6b4f-4ca0-9a29-59a0ee3957f6,Josh Hart,NY,0,34.6,38.2,93,
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,1dc5f283-636c-4460-b9a2-c96298249439,Jalen Smith,CHI,1,27.2,43.3,13,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,3049edb3-278c-494d-a03d-bb1e9e7ebe4f,Alex Sarr,WAS,0,32.6,32.8,22,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,956e588d-8b63-4c12-8202-d952a1f1cb8a,Tre Jones,CHI,1,35.1,17.4,41,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,48851f98-0d68-4b55-8709-f0c942959642,Wendell Carter Jr.,ORL,0,30.8,24.7,15,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,a6d2ff8d-3be2-4a6a-966d-930efc2e10d6,Ace Bailey,UTA,0,34.6,31.0,22,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,b999fa17-fd5a-42e1-aea2-2d1a5229f88f,Jaxson Hayes,UTA,0,34.0,11.1,45,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,0,30.5,27.1,48,90
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e,Aaron Gordon,DEN,0,33.5,43.1,34,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,f120a4ab-5e6e-42ce-8d6a-905ab0778fc6,Neemias Queta,BOS,0,29.4,21.0,8,90
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,d2af4c28-4c1d-42b3-ae03-953e8ee540a9,Daniel Gafford,DAL,0,35.3,26.8,12,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,5a6d9324-cc0e-432b-8b40-44457bbc818c,Kelly Oubre,IND,0,35.6,21.0,1,60
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,d2f6e849-cd72-4120-8c2e-a10a9c2fdea6,Buddy Hield,CHI,1,36.0,50.4,4,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,46de5e24-3c33-4ed8-bf93-13cf4ed77705,Mikal Bridges,NY,0,35.9,14.1,2,
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,4f04550c-7e21-4e92-9488-ba5e853650d4,Andre Drummond,NY,0,35.2,15.5,6,
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,7e61640c-d3cb-4a20-9e91-849ca68d6b26,Obi Toppin,IND,0,36.0,14.5,1,60
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,5588118a-e1d4-4f19-a15a-dd3350aaeb62,Quenton Jackson,IND,0,36.0,13.7,1,60
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,915b100e-95f3-4a75-bac8-f3d33e5f117f,Zach Collins,CHI,1,36.0,7.2,1,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,b8220299-ab5f-4eae-85ac-5ea41a032a29,Zaccharie Risacher,DAL,0,36.0,26.6,2,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,9edfb9d5-186c-4222-b6f4-3b476ad7a4b8,Cam Johnson,DEN,0,35.8,28.9,1,0
+2026-11-22,f6b77929-8ddc-480e-b4e7-4840f98e9633,Norman Powell,CHI,28.6,4,-,Questionable,,Questionable,ab3355b2-78bd-48cc-aa40-ab8c27805235,Mo Bamba,UTA,0,35.8,17.5,1,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,ba4fd9b8-c122-4109-982c-366f8f7ecef7,Derrick White,BOS,0,30.5,27.1,61,90
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,a6d2ff8d-3be2-4a6a-966d-930efc2e10d6,Ace Bailey,UTA,0,34.6,31.0,15,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,48851f98-0d68-4b55-8709-f0c942959642,Wendell Carter Jr.,ORL,0,30.8,24.7,12,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,1dc5f283-636c-4460-b9a2-c96298249439,Jalen Smith,CHI,1,27.2,43.3,11,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,06df3427-6b4f-4ca0-9a29-59a0ee3957f6,Josh Hart,NY,0,34.6,38.2,18,
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,b999fa17-fd5a-42e1-aea2-2d1a5229f88f,Jaxson Hayes,UTA,0,34.0,11.1,28,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,956e588d-8b63-4c12-8202-d952a1f1cb8a,Tre Jones,CHI,1,35.1,17.4,15,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,9edfb9d5-186c-4222-b6f4-3b476ad7a4b8,Cam Johnson,DEN,0,35.8,28.9,4,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,d2af4c28-4c1d-42b3-ae03-953e8ee540a9,Daniel Gafford,DAL,0,35.3,26.8,8,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e,Aaron Gordon,DEN,0,33.5,43.1,17,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,f120a4ab-5e6e-42ce-8d6a-905ab0778fc6,Neemias Queta,BOS,0,29.4,21.0,9,90
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,3049edb3-278c-494d-a03d-bb1e9e7ebe4f,Alex Sarr,WAS,0,32.6,32.8,6,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,b8220299-ab5f-4eae-85ac-5ea41a032a29,Zaccharie Risacher,DAL,0,36.0,26.6,1,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,ab3355b2-78bd-48cc-aa40-ab8c27805235,Mo Bamba,UTA,0,35.8,17.5,1,0
+2026-11-22,b0bbc4b0-3d52-4e0a-b318-4937782f1fac,Nic Claxton,CHI,32.8,6,-,,,,4f04550c-7e21-4e92-9488-ba5e853650d4,Andre Drummond,NY,0,35.2,15.5,1,

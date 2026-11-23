@@ -1920,5 +1920,55 @@
   "swap": null,
   "on": null,
   "orders": 20
+ },
+ "2026-11-22_sun_main.csv": {
+  "lock": "2026-11-22T23:52:00+00:00",
+  "adp_am_at": "2026-11-22T12:23:10+00:00",
+  "adp_etr_at": "2026-11-22T22:22:40+00:00",
+  "adp_close_at": "2026-11-22T23:22:43+00:00",
+  "morning_through": "2026-11-21",
+  "etr_first": {
+   "at": "2026-11-22T22:31:51.094Z",
+   "file": "pasted text"
+  },
+  "etr_last": {
+   "at": "2026-11-22T22:31:51.094Z",
+   "file": "pasted text"
+  },
+  "etr_pm": {
+   "at": "2026-11-22T22:31:51.094Z",
+   "file": "pasted text"
+  },
+  "adp_pm_at": "2026-11-22T22:22:40+00:00",
+  "am": null,
+  "pm": {
+   "at": "2026-11-22T22:32:24.995Z",
+   "from": "Lock PM",
+   "ours": true,
+   "tiers": [
+    6,
+    16,
+    23,
+    31
+   ]
+  },
+  "gist": true,
+  "cuts": {
+   "am_by": "2026-11-22T12:00:00-08:00",
+   "am_by_from": "noon (no AM draft found)",
+   "close": "2026-11-22T23:52:00+00:00",
+   "swaps_at": "2026-11-23T00:00:00+00:00",
+   "seen": {
+    "am": [],
+    "pm": [
+     "2026-11-22T22:32:24.995Z"
+    ],
+    "exp": [],
+    "swap": []
+   }
+  },
+  "swap": null,
+  "on": null,
+  "orders": 7
  }
 }
