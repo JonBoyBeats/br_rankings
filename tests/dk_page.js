@@ -2137,6 +2137,17 @@ function audit(name, L, o) {
   });
   check("Swap: the standings and the entries file are kept in this browser for the slate (a reload restores them); the card shows the live points now",
         swKeep.stand && swKeep.ent && /Restored from this browser/.test(swKeep.msg) && swKeep.now, JSON.stringify(swKeep));
+  // the phone (2026-11-23): a swap pack saved here loads elsewhere (standings and entries file back); the Contest
+  // picker lists the loaded contests; the order control re-sorts the cards
+  const [dlP] = await Promise.all([pg.waitForEvent("download"), pg.click("#swapPackSave")]);
+  const packTxt = fs.readFileSync(await dlP.path(), "utf8");
+  const pk0 = await pg.evaluate(() => { const n = [SWAP.stand.length, SWAP.ent.rows.length]; SWAP.stand = []; SWAP.ent = null; SWAP.entText = null; renderSwapList(); return n; });
+  await pg.setInputFiles("#swapPackLoad", { name: "swap-pack.json", mimeType: "application/json", buffer: Buffer.from(packTxt) });
+  await pg.waitForFunction(() => SWAP.stand.length > 0 && SWAP.ent, null, { timeout: 10000 });
+  const pk = await pg.evaluate(() => ({ stand: SWAP.stand.length, ent: SWAP.ent.rows.length, opts: [...document.querySelectorAll("#swapOnly option")].map(o => o.value),
+    msg: document.getElementById("swapStatus").textContent }));
+  check("Swap: a swap pack carries the standings and entries file to another device; the Contest picker lists the loaded contests",
+        JSON.parse(packTxt).kind === "dk-swap-pack" && pk.stand === pk0[0] && pk.ent === pk0[1] && pk.opts.length === pk0[0] + 1 && pk.opts[0] === "" && /Swap pack loaded/.test(pk.msg), JSON.stringify([pk0, pk]));
   // the two field assumptions differing: both answers on the card, a radio picks which one is used (and accepted)
   const swAlt = await pg.evaluate(() => {
     const p = SWAP.res[0], keep = p.alt;
