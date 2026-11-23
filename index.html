@@ -1115,7 +1115,7 @@ var FP_CFB_ALIASES = { "cedric baxter": "cj baxter", "daylan smothers": "hollywo
 var ETR_FD_ALIASES = { "alexandre sarr": "alex sarr" };
 
 /* Team codes as the board writes them (the nightly job's map, plus a few other spellings). */
-var NBA_TEAM_CODES = { SA: "SAS", NY: "NYK", GS: "GSW", NO: "NOP", UTAH: "UTA", WSH: "WAS", PHO: "PHX", BRK: "BKN", CHO: "CHA" };
+var NBA_TEAM_CODES = { SA: "SAS", NY: "NYK", GS: "GSW", NO: "NOP", LA: "LAC", UTAH: "UTA", WSH: "WAS", PHO: "PHX", BRK: "BKN", CHO: "CHA" };
 function nbaTeamCode(t) { t = String(t || "").trim().toUpperCase(); return t ? NBA_TEAM_CODES[t] || t : null; }
 
 function parseProjections(text) {
@@ -2747,6 +2747,12 @@ async function loadMirror() {
   var file = NBA_LIKE ? SPORT_MODE + "_latest.json" : "latest.json";
   var data = await fetchJson(file);
   if (!data || !Array.isArray(data.slates)) throw new Error(file + " has no slates array");
+  // Underdog writes some NBA teams short (SA, NO, NY, GS, and LA for the Clippers); the odds, the games and ETR use the long
+  // codes, so a player on those teams found no opponent or spread (his row lost its matchup and slid out of line; 2026-11-23)
+  var nbaCodes = function (slates) {
+    if (SPORT_MODE === "nba") (slates || []).forEach(function (s) { (s.players || []).forEach(function (p) { if (p.team) p.team = nbaTeamCode(p.team); }); });
+  };
+  nbaCodes(data.slates);
   if (NBA_LIKE) {
     // A slate drops out of <sport>_latest.json the minute its contest locks, but Underdog takes ranking changes (the swaps
     // list) until the games start, so tonight's locked slates stay on the board, marked, from <sport>_tonight.json (the
@@ -2754,6 +2760,7 @@ async function loadMirror() {
     var tonight = await fetchJson(SPORT_MODE + "_tonight.json").catch(function () { return null; });
     var have = {};
     data.slates.forEach(function (s) { have[s.slate_id] = 1; });
+    nbaCodes(tonight && tonight.slates);
     ((tonight && tonight.slates) || []).forEach(function (s) {
       if (have[s.slate_id] || !nightOpen(s.cutoff)) return;
       s.locked = true;
@@ -2904,6 +2911,7 @@ function loadPool(slate) {
   return fetch(MIRROR + slate.pool, { cache: "no-store" })
     .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
     .then(function (doc) {
+      if (SPORT_MODE === "nba") (doc.players || []).forEach(function (p) { if (p.team) p.team = nbaTeamCode(p.team); });   // as loadMirror
       state.pool = { slate_id: slate.slate_id, players: doc.players || [] };
       return state.pool;
     })
@@ -8141,7 +8149,7 @@ function brrSelfTest() {
   var tv0 = nbaValues(etrSlate.players, etrSlate, ts, tIdx, [], {}), tv1 = nbaValues(etrSlate.players, etrSlate, ts, tIdx, ["kawhi leonard"], {});
   ok("marking out a player ETR's file already leaves off adds nothing to his teammates",
      tv1.outPids.K === "you" && tv0.values.C != null && Math.abs(tv1.values.C - tv0.values.C) < 1e-9);
-  ok("team codes read the same from any spelling", nbaTeamCode(" sa ") === "SAS" && nbaTeamCode("GSW") === "GSW" && nbaTeamCode("") === null);
+  ok("team codes read the same from any spelling", nbaTeamCode(" sa ") === "SAS" && nbaTeamCode("GSW") === "GSW" && nbaTeamCode("LA") === "LAC" && nbaTeamCode("") === null);
   ns = addNbaUpload(ns, nbaUp("next.csv", "2026-10-21T17:00:00Z", [["a", 14, 24]]));
   ok("a new day rotates and keeps both days on file",
      ns.current.file === "next.csv" && ns.previous.entries.length === 3 &&
