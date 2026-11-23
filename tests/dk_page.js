@@ -97,8 +97,13 @@ function audit(name, L, o) {
   await pg.route(/own_watch\.json/, r => r.fulfill({ contentType: "application/json", body: JSON.stringify({ patterns: [
     { pattern: "coming off a big game", status: "confirmed", ratio: 1.4, player_nights: 40, nights: 6, same_direction: "5 of 6" },
     { pattern: "blue bloods", status: "emerging", ratio: 1.2, player_nights: 90, nights: 4, same_direction: "3 of 4" }] }) }));
+  await pg.route(/field_fit\.json/, r => r.fulfill({ contentType: "application/json", body: JSON.stringify({ nights: ["a", "b"], bands: {
+    Large: { contests: 3, dup: { real: 13.4, sim: 7.03 }, punt: { real: 7.32, sim: 21.29 } }, Small: { contests: 0 } } }) }));
   await pg.goto("file://" + path.join(ROOT, "dk.html"));
   await pg.waitForSelector(".row");
+  const ff = await pg.evaluate(() => ({ hidden: $("fieldFit").hidden, text: $("fieldFit").textContent }));
+  check("field fit line: real vs simulated dupes and punts by band, bands with no contests left out",
+        !ff.hidden && /Large \(3 contests\) dupes 13\.4% vs 7\.0%, sub-\$3\.5k punts 7\.3% vs 21\.3%/.test(ff.text) && !/Small/.test(ff.text), JSON.stringify(ff));
   const ow = await pg.evaluate(() => ({ hidden: $("ownWatch").hidden, text: $("ownWatch").textContent }));
   check("ownership watch (B3): the note shows confirmed patterns only", !ow.hidden && /coming off a big game/.test(ow.text) && !/blue bloods/.test(ow.text), JSON.stringify(ow));
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
@@ -243,6 +248,24 @@ function audit(name, L, o) {
   });
   check("mark out moves the field: he's in no field lineup, every lineup legal, ownership recounted (8 a lineup), his teammates owned more; undo restores",
         fa.own === 0 && fa.legal && fa.n >= fa.n0 * 0.95 && Math.abs(fa.sum - 800) < 1e-6 && fa.mates > fa.before && fa.restored, JSON.stringify(fa));
+  // size bands (2026-11-23 lock): a contest is simmed against its band's field (300+ large, 30-299 medium, under 30 small),
+  // else the one field; a Mark out rebuilds each band's field too
+  const fband = await pg.evaluate(() => {
+    const F0 = fieldOf(), had = F0.bands, med = F0.field.slice(0, 300), sm = F0.field.slice(300, 500);
+    F0.bands = { medium: { field: med }, small: { field: sm } };
+    const out = { large: fieldFor({ size: 500 }) === F0.field, medium: fieldFor({ size: 100 }) === med, small: fieldFor({ size: 10 }) === sm,
+                  edge: fieldFor({ size: 300 }) === F0.field && fieldFor({ size: 30 }) === med && fieldFor({ size: 29 }) === sm };
+    const q = rows.filter(r => r.status !== "Out").sort((a, b) => (F0.own[b.id] || 0) - (F0.own[a.id] || 0))[0];
+    state.outs[q.id] = 1; applyOuts();
+    const m = fieldFor({ size: 100 }), s = fieldFor({ size: 10 });
+    out.outGone = m !== med && s !== sm && m.every(L => L.indexOf(q.id) < 0) && s.every(L => L.indexOf(q.id) < 0) && m.length > 250;
+    delete state.outs[q.id]; applyOuts(); out.restored = fieldFor({ size: 100 }) === med;
+    if (had) F0.bands = had; else delete F0.bands;
+    out.none = fieldFor({ size: 10 }) === fieldOf().field;
+    return out;
+  });
+  check("size bands: each contest simmed against its band's field (300+ / 30-299 / under 30), the one field without bands; a Mark out rebuilds the bands",
+        Object.values(fband).every(Boolean), JSON.stringify(fband));
   check("fitMinutes: down to 200 and up to 200, none over 40", (() => true)() && await pg.evaluate(() => {
     const a = DKSim.fitMinutes([35, 35, 35, 35, 30, 25, 20, 10]), b = DKSim.fitMinutes([30, 28, 25, 20, 18, 15, 10]);
     const s = x => x.reduce((t, y) => t + y, 0);

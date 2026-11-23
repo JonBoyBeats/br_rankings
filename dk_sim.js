@@ -877,9 +877,15 @@
     var floor = {}; Object.keys(size).forEach(function (t) { floor[t] = Math.min(size[t], Math.max(5, Math.ceil(0.01 * size[t]))); });
     for (var round = 1; over() || round === 1; round++) {
       var lineups = idx.map(function (i) { return bank[i]; });
-      var sim = simulate(ctx, lineups, field, z, raw, 1, nights);
+      // one sim per distinct field: a contest may carry its own (c.field, the page's field for its size band, 2026-11-23);
+      // with one field for all, as before, this is the one sim
+      var sims = [], simOf = function (fld) {
+        for (var q = 0; q < sims.length; q++) if (sims[q].f === fld) return sims[q].s;
+        var sm = simulate(ctx, lineups, fld, z, { size: fld.length + 1, payouts: [] }, 1, nights); sims.push({ f: fld, s: sm }); return sm;
+      };
       contests.forEach(function (c, ci) {
-        var pay = payTable(c.contest), w = Math.max(0, (c.contest.size || 0) - c.n) / F;
+        var fld = c.field && c.field.length ? c.field : field, sim = simOf(fld);
+        var pay = payTable(c.contest), w = Math.max(0, (c.contest.size || 0) - c.n) / fld.length;
         for (var k = 0; k < lineups.length; k++) {
           var t = 0, base = k * nights, ties = sim.tieSplit ? sim.dup[k] * w : 0;
           for (var s = 0; s < nights; s++) t += placePay(pay, 1 + sim.fa[base + s] * w, ties);

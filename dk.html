@@ -543,6 +543,7 @@
   <div class="note">Click a team above for its players at 2x value or better. <b>L</b> lock, <b>X</b> leave out (both for the
     draw); type over a Proj to use your own; <b>Max%</b> caps him in each contest's portfolio. Green: higher value, higher ownership.</div>
   <div class="note" id="ownWatch" hidden></div>
+  <div class="note" id="fieldFit" hidden></div>
   <div class="filters">
     <button type="button" data-pos="all" aria-pressed="true">All</button>
     <button type="button" data-pos="G" aria-pressed="false">G</button>
@@ -568,6 +569,7 @@ var doc = null, slate = null, rows = [], state = null, news = [], newsUnsourced 
 var teamsDoc = null, ruleCounts = {}, editing = -1;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var OWN_WATCH = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/own_watch.json";   // B3 (dk_eval.py ownwatch)
+var FIELD_FIT = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/field_fit.json";     // scripts/dk_field_fit.py, nightly
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1, panel: null };
 
 function $(id) { return document.getElementById(id); }
@@ -714,8 +716,8 @@ function adjustField() {
     ids.forEach(function (id) { var r = by[id], G = isG(r), Fw = isF(r); g += G; f += Fw; b += G && Fw; });
     return g >= 3 && f >= 3 && g + f - b >= 6;
   };
-  var field = [];
-  F.field.forEach(function (L) {
+  var refill = function (src) { var field = [];
+  src.forEach(function (L) {
     var out = L.filter(function (id) { return gone[id]; });
     if (!out.length) { field.push(L); return; }
     var keep = L.filter(function (id) { return !gone[id]; });
@@ -731,9 +733,13 @@ function adjustField() {
     });
     if (keep.length === 8) field.push(keep);
   });
+  return field; };
+  var field = refill(F.field), bands = null;
+  // each size band's field (fieldFor) gets the same Out rebuild; the ownership shown stays the main field's
+  if (F.bands) { bands = {}; Object.keys(F.bands).forEach(function (k) { bands[k] = Object.assign({}, F.bands[k], { field: refill(F.bands[k].field || []) }); }); }
   var cnt = {}; field.forEach(function (L) { L.forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; }); });
   var own = {}; Object.keys(cnt).forEach(function (id) { own[id] = 100 * cnt[id] / field.length; });
-  fieldAdj = Object.assign({}, F, { field: field, own: own, adjusted: n });
+  fieldAdj = Object.assign({}, F, { field: field, own: own, adjusted: n }, bands ? { bands: bands } : {});
 }
 function value(r) { return proj(r) / (r.salary / 1000); }
 function usable(r) { return r.status !== "Out" && !state.excl[r.id] && !r.deepOut; }
@@ -822,6 +828,10 @@ async function load() {
     $("ownWatch").textContent = conf.length ? "Ownership watch, confirmed (information only; acting on one is a Friday-review call): " + conf.map(function (p) {
       return p.pattern + " real/projected x" + p.ratio + " (" + p.player_nights + " player-nights, " + p.nights + " nights, same way on " + p.same_direction + ")"; }).join("; ") : "";
   } catch (e) { $("ownWatch").hidden = true; }
+  try {      // the field fit (2026-11-23 lock): real fields vs the simulated one at lock, by contest size; display only
+    var ff = await fetch(FIELD_FIT + "?t=" + Date.now(), { cache: "no-store" }), fd = ff.ok ? await ff.json() : null;
+    $("fieldFit").textContent = fieldFitText(fd); $("fieldFit").hidden = !$("fieldFit").textContent;
+  } catch (e) { $("fieldFit").hidden = true; }
   var sel = $("slate"), keep = sel.value;
   sel.innerHTML = "";
   (doc.slates || []).forEach(function (s) {
@@ -1159,6 +1169,25 @@ function renderNews() {
 // --- optimizer and sim: dk_sim.js (shared with the nightly shadow portfolios) ------------------------
 function own(r) { return (fieldOf() && fieldOf().own[r.id]) || 0; }
 function fieldOf() { return fieldAdj || (fieldDoc && slate && fieldDoc.slates[String(slate.draft_group_id)]); }
+/* A contest's field, by its size (the 2026-11-23 lock, operator-approved: field_bands_2026-11-23.md): Large 300+
+   entries, Medium 30-299, Small under 30, each simulated with its own build styles (smaller contests play chalkier);
+   the field file's bands, else the one field. The ownership shown, the field's own, stays the Large field's. */
+function fieldFitText(fd) {
+  var B = fd && fd.bands, ks = ["Large", "Medium", "Small"].filter(function (k) { return B && B[k] && B[k].contests; });
+  if (!ks.length) return "";
+  var f = function (x) { return x == null ? "-" : (+x).toFixed(1); };
+  return "Field fit, last " + (fd.nights || []).length + " graded nights (real vs simulated; information only): " + ks.map(function (k) {
+    var b = B[k];
+    return k + " (" + b.contests + " contests) dupes " + f(b.dup && b.dup.real) + "% vs " + f(b.dup && b.dup.sim) + "%, sub-$3.5k punts " +
+      f(b.punt && b.punt.real) + "% vs " + f(b.punt && b.punt.sim) + "%";
+  }).join("; ");
+}
+function fieldBand(c) { var sz = (c && c.size) || 0; return sz >= 300 ? "large" : sz >= 30 ? "medium" : "small"; }
+function fieldFor(c) {
+  var F = fieldOf(); if (!F) return null;
+  var b = F.bands && F.bands[fieldBand(c)];
+  return b && b.field && b.field.length ? b.field : F.field;
+}
 function ctx() {
   return { rows: rows, proj: proj, own: own, state: state, solver: solver, random: Math.random,
            progress: function (msg) { $("buildStatus").textContent = msg; return new Promise(function (r) { setTimeout(r, 0); }); } };
@@ -2003,7 +2032,7 @@ async function runCut() {
   var keep = +$("cutKeep").value || 500, pct = (+$("cutPct").value || 10) / 100, S = +$("cutNights").value || 2000, mode = $("cutMode").value === "equal" ? "equal" : "merit";
   var cx = ctx(), live = [];
   CUT = { keep: null, rounds: live }; PF = {}; strandOn = false; pfSave(); renderEntries(); $("pfExport").disabled = true;
-  var res = await DKSim.cutPool(cx, BANK.lineups, cs.map(function (c) { return { contest: c, n: ns[String(c.id)] }; }), F.field, fieldDoc.z, keep, pct, S,
+  var res = await DKSim.cutPool(cx, BANK.lineups, cs.map(function (c) { return { contest: c, n: ns[String(c.id)], field: fieldFor(c) }; }), F.field, fieldDoc.z, keep, pct, S,
     function (r) {
       live.push(r); renderBank();
       var N0 = BANK.lineups.length, est = Math.max(r.round, Math.ceil(Math.log(Math.min(1, keep / N0)) / Math.log(1 - pct) - 1e-9));
@@ -2042,7 +2071,7 @@ function ideaBoard(cs, ns, S) {
   var odd = new Float64Array(K), even = new Float64Array(K);
   cs.forEach(function (c) {
     var n = Math.min(ns[String(c.id)], c.max_per_user || 1), fee = c.entry_fee || 0;
-    var sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, n, S), st = DKSim.aloneStats(sim, c);
+    var sim = DKSim.simulate(nightsCtx(c), pool, fieldFor(c), fieldDoc.z, c, n, S), st = DKSim.aloneStats(sim, c);
     for (var k = 0; k < K; k++) {
       ret[k] += n * (st.odd[k] + st.even[k]) / 2; t1[k] += n * st.top1[k]; t10[k] += n * st.top10[k]; cash[k] += n * st.cash[k];
       odd[k] += n * st.odd[k]; even[k] += n * st.even[k];
@@ -2143,7 +2172,7 @@ async function pickPortfolios(into, objective) {
     var c = cs[i], n = nOf(c);
     var idx = all.filter(function (bi) { return (taken[bi] || 0) < maxUse; }), pool = idx.map(function (bi) { return BANK.lineups[bi]; });
     $("cutStatus").textContent = "Picking " + n + " for " + c.name + " from " + pool.length + " left…"; await tick();
-    var sim = DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, n, S);
+    var sim = DKSim.simulate(nightsCtx(c), pool, fieldFor(c), fieldDoc.z, c, n, S);
     var pairsBefore = Object.assign({}, pairCount);       // the night's pair counts before this contest (for the trials below)
     var cxN = ctx(), nl = nightLimit();     // the night cap, as each player's Max% in this contest: his room left tonight
     if (nl < Infinity) {
@@ -2317,7 +2346,7 @@ function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
 function shortName(name) { var p = String(name).split(" ").filter(function (x) { return !/^(Jr\.?|Sr\.?|II|III|IV|V)$/.test(x); }); return p[p.length - 1] || name; }
 // the builder on a given pool and contest (picks: indices to start from; review: the contest being reviewed)
 function bpLoad(lineups, c, o, S, extra) {
-  var sim = DKSim.simulate(nightsCtx(c), lineups, fieldOf().field, fieldDoc.z, c, o.n, S);
+  var sim = DKSim.simulate(nightsCtx(c), lineups, fieldFor(c), fieldDoc.z, c, o.n, S);
   var b = DKSim.builder(sim, c), by = {};
   rows.forEach(function (r) { by[r.id] = r; });
   BP = Object.assign({ pool: lineups, sim: sim, b: b, contest: c, o: o, nights: S, sort: "value", dir: -1,
@@ -2613,7 +2642,7 @@ function nbSetStats(cid) {
   var key = cid + ":" + ids.join(",");
   if (NB.cache[key]) return NB.cache[key];
   var c = x.c, L = ids.map(function (bi) { return BANK.lineups[bi]; }), S = +$("nSims").value || 3000;
-  var sim = DKSim.simulate(nightsCtx(c), L, fieldOf().field, fieldDoc.z, c, L.length, S), b = DKSim.builder(sim, c), st = DKSim.aloneStats(sim, c);
+  var sim = DKSim.simulate(nightsCtx(c), L, fieldFor(c), fieldDoc.z, c, L.length, S), b = DKSim.builder(sim, c), st = DKSim.aloneStats(sim, c);
   b.set(L.map(function (_, k) { return k; }));
   var m = function (a) { return Array.from(a).reduce(function (t, v) { return t + v; }, 0) / L.length; };
   return (NB.cache[key] = { exp: b.total(), fee: (c.entry_fee || 0) * L.length, n: L.length, t10: m(st.top10), t1: m(st.top1), cash: m(st.cash) });
@@ -2816,7 +2845,7 @@ async function runScan() {
       $("scanStatus").textContent = "Simming " + pool.length + " lineups on the slate's nights (" + x.c.name + ", " + Math.min(pool.length, c0 + SCAN_CHUNK) + ")…"; await tick();
       var part = pool.slice(c0, c0 + SCAN_CHUNK);
       var cxs = Object.assign(ctx(), { random: DKSim.seeded(((nightsSeed() ^ SCAN_SALT) ^ Math.imul(+x.c.id || 0, 2654435761)) >>> 0) });
-      var sim = DKSim.simulate(cxs, part, F.field, fieldDoc.z, x.c, x.n, S), st = DKSim.aloneStats(sim, x.c);
+      var sim = DKSim.simulate(cxs, part, fieldFor(x.c), fieldDoc.z, x.c, x.n, S), st = DKSim.aloneStats(sim, x.c);
       for (var j = 0; j < part.length; j++) {
         var k = c0 + j;
         v[k] += x.n * (st.odd[j] + st.even[j]) / 2; t10[k] += x.n * st.top10[j]; t1[k] += x.n * st.top1[j]; cash[k] += x.n * st.cash[j];
@@ -3064,11 +3093,11 @@ async function quickSim() {
     var res = await drawBank(cx, quickOpts(), QSIM_X * n, { noBank: true });
     if (!res.lineups.length) { $("quickBox").innerHTML = '<div class="note bad">No lineup: ' + esc(res.why || "none fit the rules") + ".</div>"; return; }
     var drawn = res.lineups, RN = +$("cutNights").value || 2000;
-    var cut = await DKSim.cutPool(ctx(), drawn, [{ contest: c, n: 1 }], F.field, fieldDoc.z, Math.min(n, drawn.length), QSIM_CUT, RN, function (r) {
+    var cut = await DKSim.cutPool(ctx(), drawn, [{ contest: c, n: 1, field: fieldFor(c) }], F.field, fieldDoc.z, Math.min(n, drawn.length), QSIM_CUT, RN, function (r) {
       $("quickBox").innerHTML = '<div class="note">Cutting ' + drawn.length + " lineups in waves: round " + r.round + ", " + r.survivors + " left…</div>"; return tick();
     }, null, { mode: "merit" });
     $("quickBox").innerHTML = '<div class="note">Last sim of ' + cut.keep.length + " over " + S.toLocaleString() + " nights…</div>"; await tick();
-    var L = cut.keep.map(function (i) { return drawn[i]; }), sim = DKSim.simulate(nightsCtx(c), L, F.field, fieldDoc.z, c, 1, S), st = DKSim.aloneStats(sim, c), fee = c.entry_fee || 0;
+    var L = cut.keep.map(function (i) { return drawn[i]; }), sim = DKSim.simulate(nightsCtx(c), L, fieldFor(c), fieldDoc.z, c, 1, S), st = DKSim.aloneStats(sim, c), fee = c.entry_fee || 0;
     // each survivor's mean over every night it went through; the noise of that mean from the last sim's halves
     var seen = cut.keep.map(function (i) { return cut.nights[i]; });
     var v = L.map(function (_, k) { return (cut.est(cut.keep[k])[0] * seen[k] + S * (st.odd[k] + st.even[k]) / 2) / (seen[k] + S); });
@@ -3476,7 +3505,7 @@ async function runVariants() {
   $("cutStatus").textContent = "Simming " + keep.length + " kept and " + vars.length + " variants on the slate's nights…"; await tick();
   var S = +$("nSims").value || 3000, pool = keep.map(function (k) { return BANK.lineups[k]; }).concat(vars), v = new Float64Array(pool.length), w = 0;
   cs.forEach(function (c) {
-    var n = Math.min(ns[String(c.id)], c.max_per_user || 1), st = DKSim.aloneStats(DKSim.simulate(nightsCtx(c), pool, fieldOf().field, fieldDoc.z, c, n, S), c);
+    var n = Math.min(ns[String(c.id)], c.max_per_user || 1), st = DKSim.aloneStats(DKSim.simulate(nightsCtx(c), pool, fieldFor(c), fieldDoc.z, c, n, S), c);
     for (var k = 0; k < pool.length; k++) v[k] += n * (st.odd[k] + st.even[k]) / 2;
     w += n;
   });
