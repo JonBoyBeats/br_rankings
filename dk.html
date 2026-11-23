@@ -709,7 +709,10 @@ function adjustField() {
   if (!n) return;
   var by = {}; rows.forEach(function (r) { by[r.id] = r; });
   var live = rows.filter(function (r) { return r.status !== "Out" && r.salary; });
-  var fv = function (r) { var m = minScale[r.id] || 1; return (DKSim.gatedProj(r, gate) * m + (r.dk_avg || DKSim.gatedProj(r, gate)) * m) / 2; };
+  // the field's own Questionable fade (gate questionable.field_factor, 2026-11-23), over whatever the projection applied
+  var q = gate && gate.questionable, qf = q && q.field_factor != null ? q.field_factor / (q.factor || 1) : 1;
+  var fv = function (r) { var m = minScale[r.id] || 1, f = r.status === "Questionable" && !r.zero_gp ? qf : 1;
+    return f * (DKSim.gatedProj(r, gate) * m + (r.dk_avg || DKSim.gatedProj(r, gate)) * m) / 2; };
   var rnd = DKSim.seeded(7), gauss = function () { return Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd()); };
   var slotsOk = function (ids) {
     var g = 0, f = 0, b = 0;
@@ -896,7 +899,9 @@ function matchText() {
 function qText() {
   var q = gate && gate.questionable;
   return q && q.factor != null && q.factor !== 1 ? " Questionable players are projected at x" + q.factor.toFixed(2) + " (measured on " + q.n +
-    " graded Questionable player-nights: " + q.actual + " DraftKings points against " + q.projected + " projected); edit a Proj once his status is known." : "";
+    " graded Questionable player-nights: " + q.actual + " DraftKings points against " + q.projected + " projected); edit a Proj once his status is known." :
+    q && q.field_factor != null && q.field_factor !== 1 ? " Questionable players keep their full projection (Q tag only: Mark out or Play him on the news); the simulated field fades them at x" +
+    q.field_factor.toFixed(2) + ", as real fields do." : "";
 }
 function gateText() {
   var open = gate && (gate.bands || []).filter(function (b) { return b.open; });

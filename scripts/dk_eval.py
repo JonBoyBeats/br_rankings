@@ -222,7 +222,10 @@ PROJ_CHOICE = "blend6k"
 # The week's lock (2026-11-23, approved by the operator): while set, the nightly refits are computed and written beside
 # the live value (gate.json questionable.factor_refit; sit_model_refit.json), but the live values stay as pinned here
 # until the next Friday review changes this line. None: the refits apply nightly, as before.
-LOCK = {"version": "lock-2026-11-23", "questionable": 0.333}
+# questionable: the projection's Questionable factor; questionable_field: the simulated field's (2026-11-23, the owner's
+# call before the lock: a Questionable player keeps his full projection and his Q tag, the owner rules him in or out
+# on the news; the field keeps fading the tag at the measured 0.333, as real fields do).
+LOCK = {"version": "lock-2026-11-23", "questionable": 1.0, "questionable_field": 0.333}
 CAL_WEEK = ("2026-11-16", "2026-11-23")      # the calibration week's slates, for calweek
 BLEND_W = 0.5            # the audit's blend: ours x BLEND_W + DraftKings' average x (1 - BLEND_W) (cal-1's)
 AUDIT_DISAGREE = 5        # ownership points: a disagreement big enough to list where the field was right
@@ -697,6 +700,8 @@ def gate(a):
             round(100 * cb["w"]), round(100 * (1 - cb["w"]))), version=LOCK["version"] if LOCK else "blend6k")
     if LOCK and LOCK.get("questionable") is not None:        # pinned for the week; the refit kept beside it
         quest.update(factor_refit=quest["factor"], factor=LOCK["questionable"], pinned=LOCK["version"])
+        if LOCK.get("questionable_field") is not None:     # the field's own fade (dk_cbb_field.q_factor reads it first)
+            quest["field_factor"] = LOCK["questionable_field"]
     if today >= cb["from"] and PROJ_CHOICE in (None, "blend", "dk"):    # every band at w, whatever the rule says
         w = 0.0 if PROJ_CHOICE == "dk" else cb["w"]
         for b in bands:

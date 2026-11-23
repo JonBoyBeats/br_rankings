@@ -534,6 +534,13 @@ function audit(name, L, o) {
   const qBase = P[qid].salary >= 6000 && P[qid].dk_avg ? 0.6 * P[qid].fp_dk + 0.4 * P[qid].dk_avg : P[qid].fp_dk;
   check("questionable: projected at his projection x the factor", Math.abs(qs[0] - 0.2 * qBase) < 1e-9, JSON.stringify([qs[0], qBase]));
   check("questionable: others unchanged", P[pick].status === "Questionable" || Math.abs(qs[1] - shown[0]) < 1e-9);
+  // 2026-11-23: the projection keeps a Q player whole (factor 1), the field fades him (field_factor); the note says so
+  gate = { nights: 9, bands: [{ lo: 6000, hi: 99999, open: true, w: 0.6 }, { lo: 0, hi: 5999, open: false, w: 1 }],
+           questionable: { factor: 1.0, field_factor: 0.333, n: 10, actual: 30, projected: 150 } };
+  await pg.click("#reload");
+  await pg.waitForFunction(() => /Questionable players keep their full projection.*fades them at x0\.33/.test(document.getElementById("statusInfo").textContent));
+  const qw = await pg.evaluate(q => proj(rows.find(r => r.id === q)), qid);
+  check("questionable kept whole: his full projection, the Q tag only; the field's fade noted", Math.abs(qw - qBase) < 1e-9, JSON.stringify([qw, qBase]));
 
   // --- team tiles and rules -----------------------------------------------------------------------------
   const TEAMS = JSON.parse(fs.readFileSync(path.join(FIX, "dk_cbb_teams.json"))).slates[String(slate.draft_group_id)];
