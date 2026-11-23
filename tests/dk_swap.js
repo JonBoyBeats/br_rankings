@@ -79,6 +79,31 @@ check("rules: arrangeOpen gives null when the open players can't fill the open s
       W.arrangeOpen(Lg.map((id, k) => started(id) ? id : null).map((id, k) => id || (W.SLOTS[k] === "G" && nonG[k] ? nonG[k].id : Lg[k])), by, started) === null ||
       !openK.some(k => W.SLOTS[k] === "G"), "");
 
+// --- 3. live points ---
+const PL = JSON.parse(fs.readFileSync(path.join(FIX, "plays_401920515.json"), "utf8")).plays;
+const EXP = JSON.parse(fs.readFileSync(path.join(FIX, "sofar_expected.json"), "utf8"));
+const e2d = {}; rows.forEach(r => { if (r.espn) e2d[String(r.espn)] = r.id; });
+const same = Object.keys(EXP).every(t => { const g = W.soFar(PL, Date.parse(t), e2d), x = EXP[t];
+  return g.done === x.done && Math.abs(g.left - x.left) < 1e-9 && Object.keys(x.pts).length === Object.keys(g.pts).length &&
+         Object.keys(x.pts).every(id => Math.abs(g.pts[id] - x.pts[id]) < 1e-9); });
+check("live points: soFar gives the study's so_far exactly (points, share left, done) at 01:00Z, 02:00Z and after the final", same,
+      JSON.stringify(Object.keys(EXP).map(t => [t, W.soFar(PL, Date.parse(t), e2d).left, EXP[t].left])));
+const fin = W.soFar(PL, Date.parse("2026-11-19T04:00Z"), e2d);
+const box = {}; fs.readFileSync(path.join(__dirname, "..", "analysis", "cbb", "dk", "2026-11-18_157033.csv"), "utf8").trim().split(/\r?\n/).slice(1).forEach(l => {
+  const c = W.parseCsv(l)[0], h = W.parseCsv(fs.readFileSync(path.join(__dirname, "..", "analysis", "cbb", "dk", "2026-11-18_157033.csv"), "utf8").split(/\r?\n/)[0])[0];
+  box[c[h.indexOf("dk_id")]] = +c[h.indexOf("actual_dk")]; });
+const ids = Object.keys(fin.pts), close = ids.filter(id => Math.abs(fin.pts[id] - box[id]) <= 0.5).length;
+check("live points: at the final whistle the play-by-play matches the box score (within 0.5 for at least 90% of the game's players)",
+      ids.length >= 15 && close / ids.length >= 0.9, close + " of " + ids.length);
+const mid = W.soFar(PL, Date.parse("2026-11-19T02:00Z"), e2d);
+check("live points: mid-game, points so far below the final and a share of regulation left", !mid.done && mid.left > 0.2 && mid.left < 0.8 &&
+      ids.every(id => (mid.pts[id] || 0) <= fin.pts[id] + 2), JSON.stringify([mid.left]));
+const ls = W.liveState(by, { "401920515": PL }, Date.parse(TIP));
+const ku = rows.filter(r => r.event === "401920515"), wich = rows.filter(r => r.event === "401911232"), late = rows.filter(r => r.game_start > TIP);
+check("live state at the 02:00Z tip: the in-progress game's players carry points and its share left; a started game without play-by-play counts as unknown (points null, the whole game simulated); unstarted games are absent",
+      ku.every(r => ls.pts[r.id] != null && Math.abs(ls.left[r.id] - mid.left) < 1e-9) && wich.every(r => ls.pts[r.id] === null && ls.left[r.id] === 1) &&
+      ls.unknown.join() === "401911232" && late.every(r => !(r.id in ls.pts)), JSON.stringify(ls.unknown));
+
 passes.forEach(p => console.log("PASS " + p));
 fails.forEach(f => console.log("FAIL " + f));
 console.log(`${passes.length} passed, ${fails.length} failed`);

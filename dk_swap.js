@@ -7,8 +7,10 @@
  *   2. the rules   validate (DraftKings' late-swap rules: a started player stays in the exact slot he started in;
  *                  unstarted slots change only to unstarted, slot-eligible players; salary; no duplicates), arrangeOpen
  *                  (the unstarted part re-seated with the latest tips in UTIL where the positions allow)
- * Later pieces: live points (soFar, from ESPN's play-by-play), hidden ownership and the feasible field draws, the
- * proposer, the export.
+ *   3. live points soFar (a started game's DraftKings points from ESPN's play-by-play before a moment, and the share of
+ *                  regulation left: scripts/dk_lateswap_study.py so_far, ported line for line), liveState (every
+ *                  started player's points so far and his game's share left)
+ * Later pieces: hidden ownership and the feasible field draws, the proposer, the export.
  */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory();
@@ -169,7 +171,65 @@
     }
   }
 
-  return { CAP: CAP, SLOTS: SLOTS, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
+  // --- 3. live points ----------------------------------------------------------------------------------------------
+  // ESPN's summary for a game (sports/basketball/mens-college-basketball/summary?event=<card event>) carries its plays,
+  // each with wallclock, period, clock, type, scoringPlay / scoreValue and participants (the page fetches it).
+  function elapsed(p) {             // game minutes gone at a play: two 20-minute halves, then 5-minute overtimes
+    var per = (p.period && p.period.number) || 1, c = ((p.clock && p.clock.displayValue) || "0:00").split(":");
+    var left = (+c[0] || 0) + (+(c[1] || 0) / 60);
+    return per <= 2 ? (per - 1) * 20 + (20 - left) : 40 + (per - 3) * 5 + (5 - left);
+  }
+  /* {pts: {dk id: DraftKings points from the plays before untilMs}, left: the game's share of regulation left, done}.
+     Points 1, a made three +0.5, rebound 1.25, assist 1.5, steal 2, block 2, turnover -0.5, a double-double +1.5 once
+     reached (DraftKings' college scoring, as the study). espn2dk: {ESPN athlete id: DK id}. */
+  function soFar(plays, untilMs, espn2dk) {
+    var st = {}, last = null, done = false;
+    var add = function (a, k, v) { (st[a] = st[a] || { pts: 0, tpm: 0, reb: 0, ast: 0, stl: 0, blk: 0, tov: 0 })[k] += v; };
+    (plays || []).forEach(function (p) {
+      if (!p.wallclock || Date.parse(p.wallclock) >= untilMs) return;
+      last = p;
+      var t = (p.type && p.type.text) || "";
+      if (t === "End Game") done = true;
+      var who = (p.participants || []).map(function (x) { return String((x.athlete || {}).id); });
+      if (p.scoringPlay && who.length) {
+        add(who[0], "pts", p.scoreValue || 0);
+        if (p.scoreValue === 3) add(who[0], "tpm", 1);
+        if (who.length > 1 && t !== "MadeFreeThrow") add(who[1], "ast", 1);
+      } else if (who.length && t.indexOf("Rebound") >= 0) add(who[0], "reb", 1);
+      else if (who.length && t === "Steal") add(who[0], "stl", 1);
+      else if (who.length && t === "Block Shot") add(who[0], "blk", 1);
+      else if (who.length && t.indexOf("Turnover") >= 0) add(who[0], "tov", 1);
+    });
+    var pts = {};
+    Object.keys(st).forEach(function (a) {
+      if (!(a in espn2dk)) return;
+      var x = st[a], dd = ["pts", "reb", "ast", "stl", "blk"].filter(function (k) { return x[k] >= 10; }).length >= 2;
+      pts[espn2dk[a]] = x.pts + 0.5 * x.tpm + 1.25 * x.reb + 1.5 * x.ast + 2 * x.stl + 2 * x.blk - 0.5 * x.tov + (dd ? 1.5 : 0);
+    });
+    var left = done ? 0 : last === null ? 1 : elapsed(last) < 40 ? Math.max(0, (40 - elapsed(last)) / 40) : 0.03;
+    return { pts: pts, left: left, done: done };
+  }
+  /* Every started player's points so far and his game's share left, at untilMs: by {dk id: card (espn, event,
+     game_start)}; plays {event: plays or null}. A started game without play-by-play: its players' points unknown (null)
+     and its share left 1, so the sim plays their whole game (the study's rule). {pts, left, unknown: [events]}. */
+  function liveState(by, plays, untilMs) {
+    var e2d = {}, ev = {}, out = { pts: {}, left: {}, unknown: [] };
+    Object.keys(by).forEach(function (id) {
+      var r = by[id];
+      if (r.espn) e2d[String(r.espn)] = id;
+      // started strictly before the moment: a game tipping at it is the decision's own swap deadline, still open
+      if (r.event && Date.parse(r.game_start || "") < untilMs) (ev[r.event] = ev[r.event] || []).push(id);
+    });
+    Object.keys(ev).forEach(function (e) {
+      var pl = plays[e];
+      if (!pl || !pl.length) { out.unknown.push(e); ev[e].forEach(function (id) { out.pts[id] = null; out.left[id] = 1; }); return; }
+      var g = soFar(pl, untilMs, e2d);
+      ev[e].forEach(function (id) { out.pts[id] = g.pts[id] || 0; out.left[id] = g.left; });
+    });
+    return out;
+  }
+
+  return { CAP: CAP, SLOTS: SLOTS, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
            parseEntries: parseEntries, cellId: cellId, norm: norm, matchNames: matchNames, fits: fits, validate: validate,
            arrangeOpen: arrangeOpen };
 });
