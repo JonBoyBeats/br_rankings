@@ -1465,21 +1465,23 @@ function audit(name, L, o) {
   // the step bar: Bank / Cut / Fill, one panel at a time, kept per slate; switching shows panels and touches nothing else
   const sb = await pg.evaluate(() => {
     const before = JSON.stringify([BANK.lineups.length, CUT && CUT.keep && CUT.keep.length, PF]), seen = {};
+    showStep(null);
     ["bank", "cut", "fill"].forEach(st => { document.querySelector('#stepBar button[data-step="' + st + '"]').click();
       seen[st] = [...document.querySelectorAll("section.step")].filter(x => !x.hidden).map(x => x.dataset.step).join(",") + "|" + document.querySelector("#stepBar button[aria-pressed=true]").dataset.step; });
-    const kept = JSON.parse(localStorage.getItem(key())).step, labels = [...document.querySelectorAll("#stepBar button")].map(b => b.textContent);
+    const kept = JSON.parse(localStorage.getItem(key())).step === undefined, labels = [...document.querySelectorAll("#stepBar button")].map(b => b.textContent);
     const bankHas = ["bankDraw", "bankN", "ruleList", "bankCheck", "bankBox", "levW"].every(id => document.getElementById(id) && document.getElementById(id).closest("#stepBank"));
     const cutHas = ["cutRun", "cutKeep", "varRun", "entriesFile"].every(id => document.getElementById(id).closest("#stepCut"));
     const fillHas = ["pfRun", "maxExpo", "entriesBox", "nb", "classic3"].every(id => document.getElementById(id).closest("#stepFill"));
     const order = [...document.querySelectorAll("#stepFill, #newsBox, #scanBox, #teamBar, #playersSec")].map(x => x.id);
     const last = document.getElementById("playersSec").compareDocumentPosition(document.getElementById("stepFill")) & Node.DOCUMENT_POSITION_PRECEDING;
     const after = JSON.stringify([BANK.lineups.length, CUT && CUT.keep && CUT.keep.length, PF]);
-    delete state.step; save(); renderSteps();
-    return { seen, kept, labels, bankHas, cutHas, fillHas, order, last: !!last, same: before === after, dflt: stepNow() };
+    document.querySelector('#stepBar button[data-step="fill"]').click();      // a second tap closes it
+    const closed = stepNow() === null && [...document.querySelectorAll("section.step")].every(x => x.hidden) && !document.querySelector("#stepBar button[aria-pressed=true]");
+    return { seen, kept, labels, bankHas, cutHas, fillHas, order, last: !!last, same: before === after, dflt: stepNow(), closed };
   });
-  check("step bar: Bank / Cut / Fill show one panel each (kept with the slate), with live counts; switching leaves the bank, cut and picks alone; the default follows the work (Fill once a cut exists)",
-        sb.seen.bank === "bank|bank" && sb.seen.cut === "cut|cut" && sb.seen.fill === "fill|fill" && sb.kept === "fill" && /^Bank [\d,]+$/.test(sb.labels[0]) && /^Cut [\d,]+ kept$/.test(sb.labels[1]) && /^Fill \d+\/\d+$/.test(sb.labels[2]) &&
-        sb.same && sb.dflt === "fill", JSON.stringify(sb));
+  check("step bar: Bank / Cut / Fill show one panel each (kept with the slate), with live counts; switching leaves the bank, cut and picks alone; none open by default and a second tap closes (2026-11-23)",
+        sb.seen.bank === "bank|bank" && sb.seen.cut === "cut|cut" && sb.seen.fill === "fill|fill" && sb.kept && sb.closed && /^Bank [\d,]+$/.test(sb.labels[0]) && /^Cut [\d,]+ kept$/.test(sb.labels[1]) && /^Fill \d+\/\d+$/.test(sb.labels[2]) &&
+        sb.same && sb.dflt === null, JSON.stringify(sb));
   check("layout: the Bank step holds the draw controls and the bank table, Cut the cut, Fill the fill and the builders; then the reading folds; Teams and Players last",
         sb.bankHas && sb.cutHas && sb.fillHas && JSON.stringify(sb.order) === JSON.stringify(["stepFill", "newsBox", "scanBox", "teamBar", "playersSec"]) && sb.last, JSON.stringify(sb));
   // Without: click a name in a lineup to hide every unpicked lineup with him; the chip brings them back; Auto-fill skips them

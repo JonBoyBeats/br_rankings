@@ -338,7 +338,7 @@
       <button type="button" id="reload">Reload</button>
     </div>
     <div class="status" id="status">Loading…</div>
-    <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="true">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button><button type="button" data-step="swap" aria-pressed="false">Swap</button></div>
+    <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="false">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button><button type="button" data-step="swap" aria-pressed="false">Swap</button></div>
   </div>
   <div class="opts" id="quickBar" style="padding:2px 0"><button type="button" id="quickRun" title="One lineup, the highest total Proj under the draw panel as it stands: your rules, stack, Min salary, Leverage, ownership limits, locks (L) and excludes (X); Outs, the deep bench and punts left out, as in a draw. No bank or sim">Quick lineup</button>
       <button type="button" id="quickMore" hidden title="The next best lineup: differs from each one shown by at least one player">Another</button>
@@ -348,7 +348,7 @@
   <div id="quickBox"></div>
 
   <div class="status" id="cutStatus"></div>
-  <section class="step" id="stepBank" data-step="bank">
+  <section class="step" id="stepBank" data-step="bank" hidden>
   <h2>1. Draw lineups into the bank</h2>
   <div class="note">Set up an idea, then <b>Draw &amp; bank</b>: each lineup is the best one for a simulated night under
     everything here, tagged with its idea. <b>Leverage weight</b> (0 = off) fades the chalk inside the idea: each player
@@ -1915,10 +1915,10 @@ function bankCheck() {
 /* The step bar (2026-11-20, the operator's layout): Bank · Cut · Fill, one panel open at a time, the choice kept per
    slate (state.step); with none chosen, Bank until the bank has lineups, then Cut, then Fill once a cut exists. Each
    button shows a short live status. Switching steps only shows and hides panels. */
-function stepNow() {
-  if (state && state.step) return state.step;
-  return !BANK || !BANK.lineups.length ? "bank" : !(CUT && CUT.keep) ? "cut" : "fill";
-}
+/* None open by default (2026-11-23, the owner: Bank opened itself on every visit): a step opens when you tap it and
+   closes on a second tap; the open one is this visit's only (not saved), so the page always opens with all four closed. */
+var OPEN_STEP = null;
+function stepNow() { return OPEN_STEP; }
 /* The Fill step's players (2026-11-20, the operator's layout part 3): in the one-screen view the page's own Players
    list moves under the lineups, with the builder's Here / Tonight / Room columns, and a tap on a name filters the
    lineups (with, without, off); Pairs and Cores are tabs above it. In the other steps it is back at the page's bottom. */
@@ -1935,7 +1935,7 @@ function fillStats() {          // this contest's and tonight's exposure and the
   rows.forEach(function (r) { var c = here[r.id] || 0; out[r.id] = { here: n ? c / n : 0, tonight: N ? ((night[r.id] || 0) + c) / N : 0, room: lim[r.id] != null ? lim[r.id] - c : null }; });
   return out;
 }
-function showStep(st) { if (state) { state.step = st; save(); } renderSteps(); }
+function showStep(st) { OPEN_STEP = st || null; if (state && state.step) { delete state.step; save(); } renderSteps(); }
 function renderSteps() {
   if (!$("stepBar")) return;
   var st = stepNow(), nb = BANK ? BANK.lineups.length : 0, ent = 0, picked = 0, ns = typeof entriesN === "function" ? entriesN() : {};
@@ -3108,7 +3108,7 @@ $("cutIdeas").addEventListener("click", function (e) {
   cutSort = { k: h.dataset.ck, dir: cutSort.k === h.dataset.ck ? -cutSort.dir : (h.dataset.ck === "idea" ? 1 : -1) }; renderCut();
 });
 $("cutHow").addEventListener("click", function () { var t = $("cutHowText"); t.hidden = !t.hidden; $("cutHow").setAttribute("aria-expanded", String(!t.hidden)); });
-$("stepBar").addEventListener("click", function (e) { var b = e.target.closest("button[data-step]"); if (b) showStep(b.dataset.step); });
+$("stepBar").addEventListener("click", function (e) { var b = e.target.closest("button[data-step]"); if (b) showStep(OPEN_STEP === b.dataset.step ? null : b.dataset.step); });
 $("slate").addEventListener("change", function (e) {       // a hand pick holds for the rest of the Pacific day
   try { localStorage.setItem("dkcbb:slatePick", JSON.stringify({ day: ptDay(Date.now()), dg: $("slate").value })); } catch (x) {}
   pick(e);
