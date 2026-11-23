@@ -1,47 +1,47 @@
 {
- "generated_at": "2026-11-20T12:09:39Z",
- "nights": 4,
+ "generated_at": "2026-11-23T04:34:15Z",
+ "nights": 7,
  "bands": [
   {
    "lo": 6000,
    "hi": 99999,
-   "n": 183,
-   "nights": 4,
+   "n": 297,
+   "nights": 7,
    "open": true,
    "w": 0.5,
-   "mae_ours": 8.561,
-   "mae_avg": 8.965,
-   "nights_avg_won": 2
+   "mae_ours": 8.47,
+   "mae_avg": 8.878,
+   "nights_avg_won": 3
   },
   {
    "lo": 4000,
    "hi": 5999,
-   "n": 248,
-   "nights": 4,
+   "n": 422,
+   "nights": 7,
    "open": true,
    "w": 0.5,
-   "mae_ours": 7.184,
-   "mae_avg": 8.018,
+   "mae_ours": 7.025,
+   "mae_avg": 7.894,
    "nights_avg_won": 0
   },
   {
    "lo": 0,
    "hi": 3999,
-   "n": 345,
-   "nights": 4,
+   "n": 576,
+   "nights": 7,
    "open": true,
    "w": 0.5,
-   "mae_ours": 3.438,
-   "mae_avg": 4.029,
+   "mae_ours": 3.415,
+   "mae_avg": 4.367,
    "nights_avg_won": 0
   }
  ],
  "questionable": {
-  "n": 21,
-  "nights": 4,
-  "actual": 108.5,
-  "projected": 307.0,
-  "factor": 0.353,
+  "n": 34,
+  "nights": 7,
+  "actual": 123.75,
+  "projected": 371.8,
+  "factor": 0.333,
   "rule": "a Questionable player's projection x factor: actual / projected over the graded Questionable player-nights, once there are 5"
  },
  "rule": "open where DraftKings' average beat ours: 5+ nights, 100+ player-nights, lower mean error, better on 60%+ of nights",

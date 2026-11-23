@@ -120,3 +120,214 @@ date,draft_group,contest_id,contest,stack,kind,n,rank,of,read,scan_g_t1,scan_fie
 2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Brandon Jennings,player,,77,79,skip,-0.0073,0.0,,0,,,14.25,23.25
 2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Tyran Stokes,player,,78,79,skip,-0.01109,0.0,,1,0.0,0.0,5.74,38.75
 2026-11-19,157139,197974030,CBB $6K Pull Up Jumper [$2K to 1st],Tyler Harris,player,,79,79,skip,-0.01109,0.0,,0,,,4.02,0.0
+2026-11-20,157013,197996182,CBB $750 And-One (Early),DAY@UTAH 3+,game,3,1,21,"strong, field heavy",0.00215,0.381,,354,0.0226,0.0028,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),DAY 3+,team,3,2,21,"strong, field heavy",0.00166,0.162,FADE,89,0.0562,0.0112,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),DAY 4+,team,4,3,21,even,0.00122,0.036,FADE,12,0.0,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),DAY@UTAH 5+,game,5,4,21,even,0.00063,0.024,,27,0.0,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),NW@VT 4+,game,4,5,21,even,0.0006,0.382,,286,0.1224,0.0175,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),NW@VT 3+,game,3,6,21,even,0.0004,0.696,,583,0.1389,0.0154,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),DAY@UTAH 4+,game,4,7,21,even,0.00036,0.137,,143,0.007,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),NW 3+,team,3,8,21,even,-0.00052,0.212,CHALK,166,0.1084,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),MINN 3+,team,3,9,21,weak,-0.00177,0.24,CHALK,240,0.2333,0.0167,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),VT 3+,team,3,10,21,weak,-0.0019,0.053,FOCUS,37,0.1351,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),NW@VT 5+,game,5,11,21,weak,-0.00197,0.089,,57,0.193,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),UTAH 3+,team,3,12,21,weak,-0.00231,0.013,FOCUS,47,0.0,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),OKST@MINN 3+,game,3,13,21,weak,-0.00275,0.271,,301,0.0764,0.0133,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),MINN 4+,team,4,14,21,weak,-0.00421,0.054,CHALK,58,0.1207,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),OKST@MINN 4+,game,4,15,21,weak,-0.00424,0.086,,108,0.1204,0.0278,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),NW 4+,team,4,16,21,weak,-0.00452,0.015,CHALK,11,0.0,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),UTAH 4+,team,4,17,21,weak,-0.00495,0,FOCUS,6,0.0,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),OKST@MINN 5+,game,5,18,21,weak,-0.00646,0.015,,46,0.0435,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),VT 4+,team,4,19,21,weak,-0.00672,0.002,FOCUS,6,0.0,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),OKST 3+,team,3,20,21,weak,-0.00804,0.004,LEVERAGE,18,0.0,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),OKST 4+,team,4,21,21,weak,-0.00991,0,LEVERAGE,7,0.0,0.0,,
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Jackson Holcombe,player,,1,35,core,0.00275,0.149,,173,0.0578,0.0,29.38,20.0
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Landen Joseph,player,,2,35,leverage,0.00253,0.141,,169,0.1775,0.0,20.91,15.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Amani Hansberry,player,,3,35,core,0.00189,0.514,,529,0.1342,0.0132,33.9,31.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Kyan Evans,player,,4,35,core,0.00176,0.689,,648,0.1358,0.0154,30.8,41.0
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Jake West,player,,5,35,core,0.00169,0.71,,577,0.1542,0.0156,29.4,37.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),LA Pratt,player,,6,35,core,0.00153,0.567,,493,0.1176,0.0142,23.65,18.25
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Aiden Derkack,player,,7,35,core,0.00134,0.232,,108,0.0833,0.0278,35.26,33.25
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Grant Randall,player,,8,35,core,0.00121,0.346,,210,0.1714,0.0381,18.34,24.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Tristian Ford,player,,9,35,core,0.00114,0.344,,255,0.0627,0.0235,24.38,21.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Amael L'Etang,player,,10,35,lean core,0.00093,0.571,,539,0.0353,0.0,30.43,7.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Alec Anigbata,player,,11,35,lean core,0.00079,0.253,,297,0.0943,0.0034,24.53,6.25
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Angelo Ciaravino,player,,12,35,lean core,0.00061,0.543,,398,0.0628,0.0025,25.75,14.25
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Jaylen Crocker-Johnson,player,,13,35,lean core,0.00057,0.468,,518,0.166,0.0174,25.5,28.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Isaac Asuma,player,,14,35,lean core,0.00036,0.418,,334,0.1796,0.012,33.45,37.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Trey Campbell,player,,15,35,lean core,3e-05,0.333,,238,0.0294,0.0,32.6,17.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Jaylen Curry,player,,16,35,even,-0.00015,0.162,,101,0.1287,0.0198,22.2,31.0
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Ben Hammond,player,,17,35,even,-0.00052,0.336,,247,0.1134,0.0243,36.9,28.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Tyler Johnson,player,,18,35,even,-0.00069,0.2,,158,0.0633,0.0,24.45,16.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Malek Gomma,player,,19,35,skip,-0.00116,0.084,,59,0.0,0.0,14.21,10.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Okku Federiko,player,,20,35,skip,-0.00143,0.099,,86,0.1628,0.0233,13.15,13.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Jordan Burks,player,,21,35,fade,-0.00157,0.258,,210,0.0619,0.0095,19.55,10.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Grayson Grove,player,,22,35,skip,-0.00177,0.056,,31,0.0,0.0,21.25,15.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Julius Halaifonua,player,,23,35,skip,-0.00199,0.039,,19,0.0,0.0,15.05,9.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Isaiah Elohim,player,,24,35,skip,-0.00258,0.008,,13,0.0,0.0,16.1,7.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Andrija Grbovic,player,,25,35,skip,-0.00272,0.046,,61,0.0328,0.0,14.2,15.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Nolan Groves,player,,26,35,skip,-0.00286,0.059,,74,0.0135,0.0,14.6,4.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Kashie Natt,player,,27,35,skip,-0.0029,0.033,,24,0.3333,0.0833,22.75,45.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Bobby Durkin,player,,28,35,skip,-0.00319,0.012,,25,0.0,0.0,22.75,16.5
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Anthony Felesi,player,,29,35,skip,-0.00354,0.038,,115,0.0087,0.0,20.75,9.0
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Obomate Abbey,player,,30,35,skip,-0.00455,0.004,,0,,,9.68,0.0
+2026-11-20,157013,197996182,CBB $750 And-One (Early),TJ Burch,player,,31,35,skip,-0.00565,0.002,,15,0.0,0.0,18.71,18.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Jack Karasinski,player,,32,35,skip,-0.00565,0.008,,35,0.0,0.0,18.55,11.75
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Jacob Walker,player,,33,35,skip,-0.00604,0.01,,41,0.0,0.0,20.25,14.25
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Taison Chatman,player,,34,35,skip,-0.00655,0.0,,37,0.0,0.0,12.48,17.25
+2026-11-20,157013,197996182,CBB $750 And-One (Early),Butta Johnson,player,,35,35,skip,-0.00889,0.0,,0,,,8,23.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],STMRY 4+,team,4,1,56,"strong, field heavy",0.00241,0.006,CHALK,4,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],STMRY 3+,team,3,2,56,"strong, field heavy",0.0015,0.08,CHALK,33,0.0909,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],TLSA@MSST 3+,game,3,3,56,even,0.00049,0.076,,23,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],MURR@WISC 3+,game,3,4,56,even,-0.00035,0.056,,18,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],MSST 3+,team,3,5,56,even,-0.0004,0.009,FOCUS,2,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],STL@STMRY 4+,game,4,6,56,even,-0.00041,0.022,,14,0.0714,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],STL@STMRY 5+,game,5,7,56,even,-0.00058,0,,4,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],TLSA@MSST 4+,game,4,8,56,even,-0.00085,0.013,,3,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],STL@STMRY 3+,game,3,9,56,even,-0.00099,0.088,,51,0.1373,0.0196,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],MURR 3+,team,3,10,56,weak,-0.00118,0.014,CHALK,2,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],IU 3+,team,3,11,56,weak,-0.00124,0.007,FADE,2,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UK@IU 3+,game,3,12,56,weak,-0.00138,0.015,,2,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],MURR@WISC 4+,game,4,13,56,weak,-0.00161,0.014,,6,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UGA@GT 3+,game,3,14,56,weak,-0.00183,0.077,,101,0.0495,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UCF@VAND 3+,game,3,15,56,weak,-0.00225,0.048,,24,0.125,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],VAND 3+,team,3,16,56,weak,-0.0023,0.015,CHALK,9,0.1111,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UK@IU 4+,game,4,17,56,weak,-0.00231,0.003,,2,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UGA@GT 4+,game,4,18,56,weak,-0.00234,0.011,,9,0.2222,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],MSST 4+,team,4,19,56,weak,-0.00269,0,FOCUS,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UGA 3+,team,3,20,56,weak,-0.00283,0.006,CHALK,5,0.2,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],MURR@WISC 5+,game,5,21,56,weak,-0.00285,0,,1,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],IU 4+,team,4,22,56,weak,-0.00293,0,FADE,1,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],WISC 3+,team,3,23,56,weak,-0.00302,0.002,FOCUS,6,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],MURR 4+,team,4,24,56,weak,-0.00314,0,CHALK,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],TLSA@MSST 5+,game,5,25,56,weak,-0.00328,0,,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],VAND 4+,team,4,26,56,weak,-0.00331,0.001,CHALK,2,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],STL 3+,team,3,27,56,weak,-0.00356,0.002,LEVERAGE,2,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],IOWA@XAV 3+,game,3,28,56,weak,-0.00361,0.003,,3,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UCF@VAND 4+,game,4,29,56,weak,-0.00394,0.008,,5,0.2,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UK@IU 5+,game,5,30,56,weak,-0.0041,0,,1,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],WISC 4+,team,4,31,56,weak,-0.0042,0,FOCUS,1,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UGA 4+,team,4,32,56,weak,-0.00422,0,CHALK,1,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UCF@VAND 5+,game,5,33,56,weak,-0.00427,0,,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],TLSA 3+,team,3,34,56,weak,-0.00456,0.007,FADE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UGA@GT 5+,game,5,35,56,weak,-0.00462,0,,1,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UCF 3+,team,3,36,56,weak,-0.00493,0.001,FADE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],GT 3+,team,3,37,56,weak,-0.00499,0.001,CHALK,4,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],STL 4+,team,4,38,56,weak,-0.005,0,LEVERAGE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],IOWA 3+,team,3,39,56,weak,-0.00503,0,LEVERAGE,4,0.75,0.25,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],NCST@SHU 3+,game,3,40,56,weak,-0.00543,0.003,,1,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],IOWA@XAV 4+,game,4,41,56,weak,-0.00545,0,,1,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],SHU 3+,team,3,42,56,weak,-0.006,0,LEVERAGE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],XAV 3+,team,3,43,56,weak,-0.00646,0,LEVERAGE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UK 3+,team,3,44,56,weak,-0.0071,0,FOCUS,1,0.0,0.0,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],IOWA@XAV 5+,game,5,45,56,weak,-0.00724,0,,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],NCST@SHU 4+,game,4,46,56,weak,-0.0073,0,,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],NCST 3+,team,3,47,56,weak,-0.00748,0,FOCUS,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UCF 4+,team,4,48,56,weak,-0.00758,0,FADE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],GT 4+,team,4,49,56,weak,-0.00766,0,CHALK,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],IOWA 4+,team,4,50,56,weak,-0.00774,0,LEVERAGE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],SHU 4+,team,4,51,56,weak,-0.00778,0,LEVERAGE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],TLSA 4+,team,4,52,56,weak,-0.00784,0,FADE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],NCST@SHU 5+,game,5,53,56,weak,-0.00859,0,,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],XAV 4+,team,4,54,56,weak,-0.00889,0,LEVERAGE,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],NCST 4+,team,4,55,56,weak,-0.00913,0,FOCUS,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],UK 4+,team,4,56,56,weak,-0.00924,0,FOCUS,0,,,,
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Joshua Dent,player,,1,99,core,0.00225,0.237,,56,0.0357,0.0179,30.65,20.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Isaia Howard,player,,2,99,core,0.00178,0.147,,51,0.451,0.0784,22.85,50.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],RJ Johnson,player,,3,99,core,0.00158,0.146,,210,0.0667,0.0048,21.95,20.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Roman Domon,player,,4,99,core,0.00156,0.235,,83,0.0602,0.0,38,38.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Jaylen Lawal,player,,5,99,lean core,0.00088,0.573,,321,0.0841,0.0062,26.85,7.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Darren Harris,player,,6,99,lean core,0.00078,0.208,,119,0.1261,0.0,21.95,21.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Kimani Hamilton,player,,7,99,lean core,0.00071,0.074,,6,0.3333,0.0,18.7,29.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Darius Bivins,player,,8,99,lean core,0.00068,0.242,,90,0.1111,0.0111,23.95,27.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Jeremy Dent-Smith,player,,9,99,lean core,0.00066,0.117,,23,0.2174,0.0435,16.7,24.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Zoom Diallo,player,,10,99,lean core,0.00038,0.054,,18,0.0,0.0,26.05,24.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Bangot Dak,player,,11,99,lean core,0.00034,0.079,,19,0.1053,0.0,14.8,22.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Dior Johnson,player,,12,99,lean core,0.0003,0.377,,50,0.26,0.02,38.15,44.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Aiden Sherrell,player,,13,99,lean core,0.0003,0.067,,5,0.2,0.0,23.95,33.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Austin Rapp,player,,14,99,lean core,0.00027,0.054,,32,0.0,0.0,20.75,8.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],T.O. Barrett,player,,15,99,lean leverage,0.00026,0.041,,32,0.0,0.0,16.6,6.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Marcus Millender,player,,16,99,lean core,0.00022,0.139,,100,0.07,0.0,25.85,22.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Christian Jones,player,,17,99,lean core,0.00019,0.067,,3,0.0,0.0,17.15,12.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Kellen Thames,player,,18,99,even,-2e-05,0.091,,59,0.1864,0.0339,24.05,32.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Owen Foxwell,player,,19,99,even,-5e-05,0.06,,46,0.0435,0.0,30.75,21.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Kanon Catchings,player,,20,99,even,-0.00024,0.162,,196,0.1378,0.0204,26.15,38.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Vangelis Zougris,player,,21,99,even,-0.00025,0.168,,101,0.1485,0.0,24.6,39.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Berke Buyuktuncel,player,,22,99,even,-0.00043,0.099,,40,0.225,0.025,20.9,30.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Tru Washington,player,,23,99,even,-0.0005,0.102,,16,0.0625,0.0,28.65,24.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Ace Glass,player,,24,99,even,-0.00056,0.164,,85,0.1176,0.0118,24.75,22.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Brayden Shorter,player,,25,99,even,-0.00058,0.243,,33,0.2121,0.0,18.6,24.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],King Grace,player,,26,99,even,-0.00064,0.129,,15,0.1333,0.0667,19.6,9.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Mantas Juzenas,player,,27,99,even,-0.00066,0.471,,314,0.1274,0.0159,39.1,48.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Tylis Jordan,player,,28,99,even,-0.00067,0.822,,376,0.1144,0.0133,32.1,29.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Myles Rigsby,player,,29,99,even,-0.00069,0.162,,30,0.2333,0.0,20.65,27.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Bryce Lindsay,player,,30,99,even,-0.00074,0.171,,25,0.32,0.08,19.55,26.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Nolan Winter,player,,31,99,even,-0.00077,0.081,,66,0.0606,0.0,25.25,16.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Tyler Tanner,player,,32,99,even,-0.0008,0.072,,72,0.1389,0.0139,35.55,47.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Brigham Rogers,player,,33,99,even,-0.00082,0.074,,13,0.1538,0.0,20.75,26.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Paul McNeil Jr.,player,,34,99,even,-0.0009,0.105,,15,0.0667,0.0,31.75,13.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Markus Burton,player,,35,99,even,-0.00091,0.052,,24,0.2917,0.0,24.95,25.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Braeden Carrington,player,,36,99,even,-0.00097,0.19,,77,0.026,0.0,25.05,11.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Amari McCottry,player,,37,99,even,-0.00099,0.114,,75,0.0933,0.0133,30,33.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Ishan Sharma,player,,38,99,even,-0.00103,0.045,,29,0.0,0.0,19.2,0.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Malachi Moreno,player,,39,99,even,-0.00108,0.132,,42,0.0,0.0,33.55,28.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Elijah Fisher,player,,40,99,even,-0.00108,0.068,,12,0.4167,0.0,22.05,31.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Kam Craft,player,,41,99,even,-0.0011,0.106,,19,0.0,0.0,23.3,4.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Samet Yigitoglu,player,,42,99,skip,-0.00114,0.028,,20,0.0,0.0,22,16.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Roddie Anderson,player,,43,99,fade,-0.00121,0.049,,5,0.0,0.0,20.6,17.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],James Scott,player,,44,99,fade,-0.00122,0.046,,15,0.1333,0.0667,17.5,11.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Cooper Koch,player,,45,99,fade,-0.00135,0.052,,20,0.1,0.05,25.7,23.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Josh Hubbard,player,,46,99,fade,-0.0014,0.066,,45,0.1111,0.0,26.95,39.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Jaeden Mustaf,player,,47,99,skip,-0.00151,0.033,,4,0.0,0.0,21.6,11.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Freddie Dilione V,player,,48,99,skip,-0.00153,0.008,,3,0.0,0.0,14.2,12.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Sebastian Williams-Adams,player,,49,99,fade,-0.00172,0.053,,15,0.0,0.0,17.9,21.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Trey Parker,player,,50,99,skip,-0.0019,0.011,,7,0.0,0.0,16.8,15.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Arturo Dean,player,,51,99,skip,-0.00192,0.04,,4,0.0,0.0,21.85,38.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Blue Cain,player,,52,99,fade,-0.00202,0.071,,45,0.0889,0.0,28.55,20.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Trey Green,player,,53,99,skip,-0.00223,0.013,,4,0.0,0.0,19.5,25.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Kareem Stagg,player,,54,99,fade,-0.00236,0.044,,8,0.125,0.0,17.8,29.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Talis Soulhac,player,,55,99,skip,-0.00246,0.025,,3,0.3333,0.0,18.1,15.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Eian Elmer,player,,56,99,skip,-0.00265,0.008,,5,0.0,0.0,18.35,7.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Preston Edmead,player,,57,99,skip,-0.00267,0.032,,6,0.0,0.0,25.3,20.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],ND Okafor,player,,58,99,skip,-0.00268,0.006,,2,0.0,0.0,14.1,13.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Christian Hammond,player,,59,99,skip,-0.0027,0.034,,11,0.0,0.0,21.95,21.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Jovan Milicevic,player,,60,99,skip,-0.00274,0.042,,10,0.1,0.0,21.85,21.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Victor Valdes,player,,61,99,skip,-0.00284,0.01,,8,0.0,0.0,23.05,20.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Sam Alexis,player,,62,99,skip,-0.00286,0.016,,2,0.0,0.0,13.75,15.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Chandler Bing,player,,63,99,fade,-0.00294,0.077,,33,0.1212,0.0,20.75,28.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Thomas Bassong,player,,64,99,fade,-0.003,0.055,,4,0.0,0.0,17.4,16.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Riley Kugel,player,,65,99,skip,-0.00303,0.016,,106,0.0377,0.0,15.45,2.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Ant Brown Jr.,player,,66,99,skip,-0.00313,0.005,,0,,,13.35,0.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Mike Nwoko,player,,67,99,skip,-0.00323,0.018,,2,0.0,0.0,24.75,30.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Ty'Reek Coleman,player,,68,99,skip,-0.00338,0.003,,5,0.4,0.0,16.45,16.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Simeon Wilcher,player,,69,99,skip,-0.00342,0.0,,2,0.0,0.0,14.7,-0.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Mihailo Petrovic,player,,70,99,skip,-0.00342,0.001,,0,,,13.15,12.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Devin Williams,player,,71,99,skip,-0.00362,0.013,,1,0.0,0.0,17.95,13.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Macon Emory,player,,72,99,skip,-0.00388,0.02,,5,0.0,0.0,15.7,4.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Quentin Jones,player,,73,99,skip,-0.00402,0.021,,6,0.0,0.0,26.3,19.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Isaiah Malone,player,,74,99,skip,-0.00415,0.011,,1,0.0,0.0,17.4,15.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Brady Dunlap,player,,75,99,skip,-0.00436,0.002,,1,0.0,0.0,10.7,7.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],John Bol,player,,76,99,skip,-0.00437,0.001,,2,0.0,0.0,13.7,10.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Filip Borovicanin,player,,77,99,skip,-0.00444,0.01,,1,0.0,0.0,21.2,12.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Ven-Allen Lubin,player,,78,99,fade,-0.00458,0.045,,11,0.0909,0.0909,27.6,40.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Chris Loofe,player,,79,99,skip,-0.00461,0.039,,5,0.0,0.0,27.75,12.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Lewis Walker,player,,80,99,skip,-0.00467,0.001,,0,,,11.4,5.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Kael Combs,player,,81,99,skip,-0.00473,0.0,,3,0.0,0.0,13.8,23.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Alex Wilkins,player,,82,99,skip,-0.00474,0.007,,0,,,20.45,21.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Ruben Dominguez,player,,83,99,skip,-0.0051,0.0,,0,,,12.75,0.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Jack Janicki,player,,84,99,skip,-0.00515,0.001,,1,0.0,0.0,10.7,7.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Tate Sage,player,,85,99,skip,-0.00519,0.0,,2,0.0,0.0,11.25,20.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Mason Williams,player,,86,99,skip,-0.00572,0.001,,2,0.0,0.0,16.3,1.25
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Nasir Whitlock,player,,87,99,skip,-0.00601,0.0,,1,0.0,0.0,15.75,11.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Jackson Fields,player,,88,99,skip,-0.00621,0.001,,1,0.0,0.0,22.55,23.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Darius Adams,player,,89,99,skip,-0.00638,0.0,,1,0.0,0.0,16.35,13.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Ousmane N'Diaye,player,,90,99,skip,-0.00648,0.0,,1,0.0,0.0,12.45,11.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Kyle Evans,player,,91,99,skip,-0.00648,0.0,,1,0.0,0.0,15.65,8.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Lachlan Crate,player,,92,99,skip,-0.00671,0.0,,0,,,11.1,14.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Peyton McCollum,player,,93,99,skip,-0.00681,0.0,,0,,,9.8,3.5
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Carmelo Pacheco,player,,94,99,skip,-0.00712,0.0,,0,,,7.1,4.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Milan Momcilovic,player,,95,99,skip,-0.00714,0.001,,4,0.0,0.0,22.35,41.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Eemeli Yalaho,player,,96,99,skip,-0.00728,0.0,,0,,,10.35,16.0
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Rory Hawke,player,,97,99,skip,-0.00743,0.0,,0,,,8.05,4.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Colby Garland,player,,98,99,skip,-0.008,0.0,,1,0.0,0.0,16.1,28.75
+2026-11-20,157015,197996197,CBB $6K Pull Up Jumper [$2K to 1st],Kobi Williams,player,,99,99,skip,-0.00906,0.0,,0,,,14.05,26.25
