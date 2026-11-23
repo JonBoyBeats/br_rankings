@@ -46,8 +46,8 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
   const want = Math.round(100 * cnt[top] / n) + "%";
   const ok = [
     ["a DK Classic slate in the list", /DK Classic/.test(await pg.$eval("#slate", s => s.selectedOptions[0].textContent))],
-    ["the first column is Exp, not ADP", /^EXP PLAYER/.test(head)],
-    ["the most-used player first, at his exposure", first.startsWith(want + " " + P.name)],
+    ["the first column is Exp, not ADP (then Field)", /^EXP FIELD PLAYER/.test(head)],
+    ["the most-used player first, at his exposure (no standings loaded: Field –)", first.startsWith(want + " – " + P.name)],
     ["DraftKings points with the double-double bonus", / 44\.8 /.test(first + " ")],
     ["his value so far after the points: points per $1,000", first.endsWith("44.8 " + (44.75 / (P.salary / 1000)).toFixed(1) + "x")],
     ["the value cell shaded green", await pg.$eval("#list .row .val", e => /rgba\(46, 170, 96/.test(getComputedStyle(e).backgroundColor))],
@@ -92,10 +92,10 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
     state.dkActual = {}; render();
     await new Promise(r => setTimeout(r, 400));
     const row = [...document.querySelectorAll("#list .row")].find(x => x.innerText.includes(name));
-    return { status: document.getElementById("status").textContent, row: row && row.innerText.replace(/\s+/g, " "), title: row && (row.querySelector(".name .tm:last-child") || {}).title };
+    return { status: document.getElementById("status").textContent, row: row && row.innerText.replace(/\s+/g, " "), title: row && (row.querySelector(".fld") || {}).title, head: document.querySelector("#list .head").innerText.replace(/\s+/g, " ") };
   }, [String(sl.draft_group_id), top, P.name]);
   ok.push(["exposure from your entries as entered (late swaps included) over the build", /3 DraftKings entries \(your entries as entered, late swaps included\)/.test(live2.status) && /^67%/.test(live2.row || "")]);
-  ok.push(["the field's real ownership beside the name, from the Pull Up Jumper standings", /field 38%/.test(live2.row || "") && /Pull Up Jumper/.test(live2.title || "")]);
+  ok.push(["the field's real ownership beside the name, from the Pull Up Jumper standings", /^67% 38% /.test(live2.row || "") && /Pull Up Jumper/.test(live2.title || "") && /^EXP FIELD PLAYER/.test(live2.head)]);
   ok.push(["no page errors", !errs.length]);
   if (process.argv[2]) await pg.screenshot({ path: process.argv[2] });
   ok.forEach(([name, pass]) => console.log((pass ? "PASS " : "FAIL ") + name));

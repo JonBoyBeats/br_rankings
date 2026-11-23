@@ -109,13 +109,14 @@
   .list.no-expo .head, .list.no-expo .row { grid-template-columns: 44px minmax(0, 1fr) 74px 64px; }
   .list.no-expo .expo, .list.no-expo .exph { display: none; }
   /* DraftKings: a value column after the points (points per $1,000 of salary so far, green deeper as it climbs) */
-  .list.dkv .head, .list.dkv .row { grid-template-columns: 44px minmax(0, 1fr) 74px 56px 50px; }
+  .list.dkv .head, .list.dkv .row { grid-template-columns: 44px 44px minmax(0, 1fr) 74px 56px 50px; }
+  .list.dkv .fld { font-family: var(--mono); font-size: 13px; color: var(--muted); text-align: right; }
   .val { font-family: var(--mono); font-size: 13px; text-align: right; border-radius: 4px; padding: 1px 4px; }
   .val.none { color: var(--muted); }
   @media (max-width: 520px) {
     .head, .row { grid-template-columns: 32px 28px minmax(0, 1fr) 52px 42px; gap: 6px; }
     .list.no-expo .head, .list.no-expo .row { grid-template-columns: 32px minmax(0, 1fr) 52px 42px; }
-    .list.dkv .head, .list.dkv .row { grid-template-columns: 32px minmax(0, 1fr) 48px 40px 40px; }
+    .list.dkv .head, .list.dkv .row { grid-template-columns: 34px 34px minmax(0, 1fr) 48px 40px 40px; }
     .name { font-size: 13px; }
     .fp { font-size: 14px; }
   }
@@ -1019,7 +1020,7 @@ function render() {
   } else {
   var head = document.createElement("div");
   head.className = "head";
-  head.innerHTML = sl.dk ? '<span class="r" title="Your exposure: the share of your DraftKings entries with him">Exp</span><span>Player</span><span class="r">Game</span><span class="r" title="DraftKings fantasy points">Pts</span><span class="r" title="Value so far: DraftKings points per $1,000 of salary (green deepens from 1x to 6x)">Val</span>'
+  head.innerHTML = sl.dk ? '<span class="r" title="Your exposure: the share of your DraftKings entries with him">Exp</span><span class="r" title="The field\'s real ownership: % drafted in a contest whose standings are loaded on this device for late swap">Field</span><span>Player</span><span class="r">Game</span><span class="r" title="DraftKings fantasy points">Pts</span><span class="r" title="Value so far: DraftKings points per $1,000 of salary (green deepens from 1x to 6x)">Val</span>'
     : '<span class="r">ADP</span><span class="exph">Exp</span><span>Player</span><span class="r">Game</span><span class="r" title="Underdog fantasy points">Pts</span>';
   host.appendChild(head);
   var prevRound = null;
@@ -1053,6 +1054,12 @@ function render() {
       if (r.f) { adp.style.color = "var(--ink)"; adp.style.fontWeight = "600"; adp.title = Math.round(r.f * 100) + "% of your " + of; }
     } else adp.textContent = p.adp.toFixed(1);
     el.appendChild(adp);
+    if (sl.dk) {           // the field's real ownership beside yours (2026-11-23)
+      var act = dkActual(sl), ao = act && act.own[DKSwap.norm(p.first_name + " " + p.last_name)], fc = document.createElement("span"); fc.className = "fld";
+      fc.textContent = act ? (ao != null ? Math.round(ao) : 0) + "%" : "–";
+      if (act) fc.title = (ao != null ? ao.toFixed(1) : "0") + "% drafted in " + act.title + " (" + act.n.toLocaleString() + " entries, standings as loaded for late swap)";
+      el.appendChild(fc);
+    }
     var chip = document.createElement("span"); chip.className = "expo";
     if (ex) {
       var c = expoColor(r.f);
@@ -1067,11 +1074,6 @@ function render() {
     var tm = document.createElement("span"); tm.className = "tm"; tm.textContent = p.team || "";
     nm.appendChild(tm);
     if (sl.dk && p.salary) { var sal = document.createElement("span"); sal.className = "tm"; sal.textContent = (p.salary / 1000).toFixed(1) + "k"; nm.appendChild(sal); }
-    if (sl.dk) {           // the field's real ownership beside yours (2026-11-23)
-      var act = dkActual(sl), ao = act && act.own[DKSwap.norm(p.first_name + " " + p.last_name)];
-      if (act) { var fo = document.createElement("span"); fo.className = "tm"; fo.textContent = "field " + (ao != null ? Math.round(ao) : 0) + "%";
-        fo.title = (ao != null ? ao.toFixed(1) : "0") + "% drafted in " + act.title + " (" + act.n.toLocaleString() + " entries, standings as loaded for late swap)"; nm.appendChild(fo); }
-    }
     if (r.own != null && r.own < 0.995) {
       var dr = document.createElement("span"); dr.className = "tm";
       dr.textContent = Math.round(r.own * 100) + "%";
