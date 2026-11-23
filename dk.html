@@ -3286,6 +3286,22 @@ function swapChalkFit(st, own) {
   var e1 = err(1), e2 = err(2);
   return { p: e2 < e1 ? 2 : 1, n: pairs.length, e1: e1, e2: e2 };
 }
+/* The field's ownership for late swap (2026-11-23, Wright out after lock): the field file's (as projected before lock);
+   a player Out now whose game hasn't started had his ownership in the field too, and the field swaps him off onto his
+   teammates whose projections his minutes raised: his ownership moves to them, in proportion to the points they gain
+   (the pipeline's out_gain minutes, or your Mark out's refit, times their points a minute). */
+function swapOwn(at) {
+  var base = (fieldDoc && slate && fieldDoc.slates[String(slate.draft_group_id)] || {}).own || {}, o = Object.assign({}, (fieldOf() && fieldOf().own) || base);
+  rows.forEach(function (r) {
+    if (r.status !== "Out" || !(base[r.id] > 0) || Date.parse(r.game_start || "") < at) return;
+    var mates = rows.filter(function (x) { return x.team === r.team && x.id !== r.id && x.status !== "Out"; }), tot = 0, g = {};
+    mates.forEach(function (x) { var m = x.min || 0, ppm = m ? proj(x) / (m * (minScale[x.id] || 1)) : 0;
+      var gain = ((x.out_gain || 0) + m * ((minScale[x.id] || 1) - 1)) * ppm; if (gain > 0) { g[x.id] = gain; tot += gain; } });
+    o[r.id] = 0;
+    if (tot > 0) Object.keys(g).forEach(function (id) { o[id] = (o[id] || 0) + base[r.id] * g[id] / tot; });
+  });
+  return o;
+}
 // an entry's proposal in use: the main run's, or the other chalk assumption's where the operator picked it
 function swapPick(p) { return SWAP.use[p.entryId] === "alt" && p.alt ? p.alt : p; }
 var ESPN_SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary?event=";
@@ -3335,7 +3351,7 @@ async function swapRun() {
   var sr = rows.map(function (r) { return { id: r.id, team: r.team, game: r.game, status: r.status || "", miss_dk: r.miss_dk, proj: r.status === "Out" ? 0 : proj(r) }; });
   var ids = sr.map(function (r) { return r.id; }), cx = { rows: sr, proj: function (r) { return r.proj; }, random: DKSim.seeded((+slate.draft_group_id || 1) ^ (at / 60000 | 0)) }, nights = [];
   for (var k = 0; k < S; k++) { var pp = DKSim.nightPoints(cx, fieldDoc.z, 1); nights.push(ids.map(function (id) { return pp[id] || 0; })); }
-  var own = (fieldOf() && fieldOf().own) || {}, out = [], notes = [], rnd = DKSim.seeded(20261121);
+  var own = swapOwn(at), out = [], notes = [], rnd = DKSim.seeded(20261121);
   for (var i = 0; i < SWAP.stand.length; i++) {
     var f = SWAP.stand[i], m = /(\d{6,})/.exec(f.name), cid = m ? m[1] : null, st = DKSwap.parseStandings(f.text);
     if (st.error) { notes.push(f.name + ": " + st.error); continue; }
@@ -3362,6 +3378,9 @@ async function swapRun() {
   SWAP.res = out; SWAP.by = by; SWAP.at = at; SWAP.acc = {}; SWAP.use = {};
   out.forEach(function (p) { if (p.steps.length) SWAP.acc[p.entryId] = 1; });     // the main run's pick accepted by default
   renderSwap(); renderSteps();
+  var inc = {}; out.forEach(function (p) { p.steps.forEach(function (x) { inc[x.swap[1]] = (inc[x.swap[1]] || 0) + 1; }); });
+  var incTxt = Object.keys(inc).sort(function (a, b) { return inc[b] - inc[a]; }).map(function (id) { var r = byId(id); return (r ? shortName(r.name) : id) + " \u00d7" + inc[id]; }).join(", ");
+  if (incTxt) notes.unshift("Swaps bring in: " + incTxt);
   return out.length + " entr" + (out.length === 1 ? "y" : "ies") + ", " + out.filter(function (p) { return p.steps.length; }).length + " with a swap · " + notes.join(" · ");
 }
 function renderSwap() {
