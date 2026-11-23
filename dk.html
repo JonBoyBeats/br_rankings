@@ -67,6 +67,9 @@
   .row { border-bottom: 1px solid var(--line); }
   .row.locked { background: rgba(77, 196, 141, .12); }
   .muted { color: var(--muted); }
+  /* off the page (2026-11-23, the owner: not referenced): the news line, Slate details, the ownership watch and field fit
+     lines; their data still loads (the news still tags rows, Doubtful still defaults out) */
+  #newsBox, #slateInfo, #ownWatch, #fieldFit { display: none !important; }
   details.bcmore { display: inline; } details.bcmore > summary { display: inline; cursor: pointer; color: var(--muted); margin-left: 6px; font-size: 12px; }
   details.bcmore[open] { display: block; margin-top: 4px; }
   .row.excluded > :not(.lx), .row.out > :not(.lx) { opacity: .42; }   /* L / X stay bright: the red X shows how to bring him back */
@@ -560,8 +563,6 @@
 
   <div id="playersHome"><div id="playersSec">
   <h2>Players</h2>
-  <div class="note">Click a team above for its players at 2x value or better. <b>L</b> lock, <b>X</b> leave out (both for the
-    draw); type over a Proj to use your own; <b>Max%</b> caps him in each contest's portfolio. Green: higher value, higher ownership.</div>
   <div class="note" id="ownWatch" hidden></div>
   <div class="note" id="fieldFit" hidden></div>
   <div class="filters">
