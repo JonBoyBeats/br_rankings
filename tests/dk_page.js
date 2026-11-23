@@ -208,7 +208,7 @@ function audit(name, L, o) {
     const keep = t.card; t.card = { games: 5, lines: [{ kind: "deep", text: "Deep bench" }], absorb: [], deep: [r.id], rule: "card-1" };
     applyOuts(); view.panel = null; renderTiles(); renderPlayers();
     const out = { deep: r.deepOut, page: usable(r), sim: DKSim.usable ? DKSim.usable(ctx(), r) : null, cls: document.querySelector(`#players .row[data-id="${r.id}"]`).classList.contains("excluded") };
-    document.querySelector(`#players .row[data-id="${r.id}"] .deepin`).click();
+    document.querySelector(`#players .row[data-id="${r.id}"] .excl`).click();      // X is the one pool toggle (2026-11-23)
     Object.assign(out, { back: !r.deepOut && usable(r) && !!state.deepIn[r.id] });
     t.card = keep; state.deepIn = {}; applyOuts(); renderPlayers();
     return out;
@@ -226,12 +226,29 @@ function audit(name, L, o) {
     state.outs[mate.id] = 1; applyOuts(); const news = { punt: r.punt, min: r.min * (minScale[r.id] || 1), avg: r.min_avg };
     delete state.outs[mate.id]; applyOuts();
     view.panel = null; renderTiles(); renderPlayers();
-    document.querySelector(`#players .row[data-id="${r.id}"] .deepin`).click(); const back = !r.deepOut && usable(r);
+    document.querySelector(`#players .row[data-id="${r.id}"] .excl`).click(); const back = !r.deepOut && usable(r);
     state.deepIn = {}; r.min_avg = was.min_avg; applyOuts(); renderPlayers();
     return { def, news, back };
   });
   check("no punts without news: under 15 projected minutes out by default (page and sim); a teammate out raising him past his average lets him in; Use brings him back",
         pu.def.punt && pu.def.out && !pu.def.usable && pu.def.sim === false && (pu.news.min > pu.news.avg ? !pu.news.punt : true) && pu.back, JSON.stringify(pu));
+  // X is the one pool toggle (2026-11-23): on when he's out of the pool for any reason (a Questionable player out by
+  // default too); one tap in, one tap out; the row has no separate use / drop button
+  const xt = await pg.evaluate(() => {
+    const r = rows.find(x => x.status !== "Out" && x._status0 === "Questionable") || rows.find(x => x.status !== "Out");
+    state.excl = {}; state.deepIn = {}; const keep = state.deepIn;
+    const deep = deepIds(); deep[r.id] = 1; const was = deepIds; deepIds = function () { return deep; };
+    applyOuts(); view.panel = null; renderTiles(); renderPlayers();
+    const x = () => document.querySelector(`#players .row[data-id="${r.id}"] .excl`);
+    const o = { def: r.deepOut && x().getAttribute("aria-pressed") === "true", noUse: !document.querySelector(`#players .row[data-id="${r.id}"] .deepin`) };
+    x().click(); o.in = usable(r) && x().getAttribute("aria-pressed") === "false";
+    x().click(); o.out = !usable(r) && x().getAttribute("aria-pressed") === "true" && !state.excl[r.id];
+    x().click(); x().click(); o.mine = !usable(r) && !!state.excl[r.id] === false;
+    deepIds = was; state.deepIn = {}; state.excl = {}; applyOuts(); renderPlayers();
+    return o;
+  });
+  check("X is the one pool toggle: on for a player out by default (a Q player too), one tap in, one tap back out; no use / drop button",
+        Object.values(xt).every(Boolean), JSON.stringify(xt));
   // the field after a Mark out: his field lineups swap him for a player who fits, ownership recounted; undo restores the field
   const fa = await pg.evaluate(() => {
     const F0 = fieldOf(), q = rows.filter(r => r.status !== "Out" && (F0.own[r.id] || 0) > 5 && rows.filter(x => x.team === r.team && x.min > 0 && x.status !== "Out").length >= 6)

@@ -73,10 +73,10 @@
   .who { min-width: 0; }
   .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   /* the name truncates first; Q / D / OUT / new stay (.tkeep); the other tags truncate, all of them in the hover (.tmore) */
-  #players .name { display: flex; align-items: center; gap: 3px; }
-  #players .name .nm { flex: none; }
-  #players .name .tkeep { flex: none; display: inline-flex; gap: 3px; }
-  #players .name .tmore { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 3 auto; }
+  :is(#players, .plist) .name { display: flex; align-items: center; gap: 3px; }
+  :is(#players, .plist) .name .nm { flex: none; }
+  :is(#players, .plist) .name .tkeep { flex: none; display: inline-flex; gap: 3px; }
+  :is(#players, .plist) .name .tmore { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 3 auto; }
   .lx button.act { width: auto; padding: 0 4px; font-size: 10px; font-weight: 600; }
   .name .nm[title] { cursor: help; }
   .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -278,28 +278,28 @@
   /* tablet / narrow desktop (2026-11-23, the operator: every name readable): the list scrolls sideways under a fixed
      L / X and name rather than squeezing the name */
   @media (min-width: 621px) {
-    #players { overflow-x: auto; }
-    #players .head, #players .row { width: max-content; min-width: 100%; justify-content: space-between; }
-    #players .row > .lx, #players .row > .who, #players .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
-    #players .row > .lx, #players .head > :nth-child(1) { left: 0; }
-    #players .row > .who, #players .head > :nth-child(2) { left: 131px; }
-    #players .row.locked > .lx, #players .row.locked > .who { background: linear-gradient(rgba(77, 196, 141, .12), rgba(77, 196, 141, .12)), var(--bg); }
+    :is(#players, .plist) { overflow-x: auto; }
+    :is(#players, .plist) .head, :is(#players, .plist) .row { width: max-content; min-width: 100%; justify-content: space-between; }
+    :is(#players, .plist) .row > .lx, :is(#players, .plist) .row > .who, :is(#players, .plist) .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
+    :is(#players, .plist) .row > .lx, :is(#players, .plist) .head > :nth-child(1) { left: 0; }
+    :is(#players, .plist) .row > .who, :is(#players, .plist) .head > :nth-child(2) { left: 131px; }
+    :is(#players, .plist) .row.locked > .lx, :is(#players, .plist) .row.locked > .who { background: linear-gradient(rgba(77, 196, 141, .12), rgba(77, 196, 141, .12)), var(--bg); }
   }
   @media (max-width: 620px) {
     /* the player list on a phone (2026-11-21, the operator): every column, scrolling left and right under a fixed
        L / X and a 150px name; Sal, Proj, Val and Own straight after the name, Pos / Team / Opp moved to the end */
-    #players { overflow-x: auto; }
-    #players .head, #players .row { width: max-content; min-width: 100%; }
-    #players .col-pos, #players .col-team, #players .col-opp { order: 1; }
-    #players .head, #players .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
+    :is(#players, .plist) { overflow-x: auto; }
+    :is(#players, .plist) .head, :is(#players, .plist) .row { width: max-content; min-width: 100%; }
+    :is(#players, .plist) .col-pos, :is(#players, .plist) .col-team, :is(#players, .plist) .col-opp { order: 1; }
+    :is(#players, .plist) .head, :is(#players, .plist) .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
     #players.noscan .head, #players.noscan .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px 30px 44px 48px; }
     #players.fillcols .head, #players.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px 44px; }
     #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px 44px; }
-    #players .row > .lx, #players .row > .who, #players .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
-    #players .row > .lx, #players .head > :nth-child(1) { left: 0; }
-    #players .row > .who, #players .head > :nth-child(2) { left: 88px; }
-    #players .row.locked > .lx, #players .row.locked > .who { background: linear-gradient(rgba(77, 196, 141, .12), rgba(77, 196, 141, .12)), var(--bg); }
-    #players .row.bankgap-in > .lx { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out > .lx { box-shadow: inset 3px 0 var(--bad); }
+    :is(#players, .plist) .row > .lx, :is(#players, .plist) .row > .who, :is(#players, .plist) .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
+    :is(#players, .plist) .row > .lx, :is(#players, .plist) .head > :nth-child(1) { left: 0; }
+    :is(#players, .plist) .row > .who, :is(#players, .plist) .head > :nth-child(2) { left: 88px; }
+    :is(#players, .plist) .row.locked > .lx, :is(#players, .plist) .row.locked > .who { background: linear-gradient(rgba(77, 196, 141, .12), rgba(77, 196, 141, .12)), var(--bg); }
+    :is(#players, .plist) .row.bankgap-in > .lx { box-shadow: inset 3px 0 #3fbf7f; } :is(#players, .plist) .row.bankgap-out > .lx { box-shadow: inset 3px 0 var(--bad); }
     .lx { flex-wrap: wrap; gap: 2px; }
     /* +set on a phone (2026-11-21, the operator): in the pinned L / X group, always shown; the scan's + hidden */
     .lx button { width: 24px; }
@@ -783,6 +783,18 @@ function adjustField() {
 }
 function value(r) { return proj(r) / (r.salary / 1000); }
 function usable(r) { return r.status !== "Out" && !state.excl[r.id] && !r.deepOut; }
+/* One in / out of your pool control for every player (2026-11-23, the owner: "all should work the same"): X is on
+   (red) when he's out of your pool for any reason, left out by you (state.excl) or out by default (the pool rule,
+   the deep bench: deepOut); one tap flips him. The row's X, the write-up's Use / Drop chips and the card's deep
+   bench chips all use it. Mark out / Play him (a Questionable or Doubtful player's status) stays its own button. */
+function poolOut(r) { return !!(r && (state.excl[r.id] || r.deepOut)); }
+function togglePool(id) {
+  var r = byId(id); if (!r) return;
+  if (poolOut(r)) { delete state.excl[id]; if (r.deepOut) state.deepIn[id] = 1; }
+  else if (state.deepIn[id]) delete state.deepIn[id];
+  else { state.excl[id] = 1; delete state.lock[id]; }
+  save(); applyOuts(); renderPlayers(); if (view.panel) renderTeamPanel();
+}
 /* Zero-games players (2026-11-21, adopted from scripts/dk_zero_gp_study.py, A2 pass): the card scales a player with 0
    games this season on a team that has played 3+ by zero_gp.f (his minutes and projection; zero_gp.orig the numbers
    before it). The "0 games" tag says so; "back" (one tap) puts his unadjusted numbers back, kept with the slate's
@@ -1132,7 +1144,7 @@ function playerTable(list, sortable, fs) {
       r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout act" title="' +
         (state.outs[r.id] ? "Undo out: put him back as Questionable" : "Mark out: rule him out, his teammates share his minutes (200 for the team)") + '">' +
         (state.outs[r.id] ? "undo" : "out") + "</button>" :
-      deepIds()[r.id] || r.punt ? '<button type="button" class="deepin act" data-id="' + esc(r.id) + '" title="' + (r.poolWhy ?
+      false ? '<button type="button" class="deepin act" data-id="' + esc(r.id) + '" title="' + (r.poolWhy ?
         (r.deepOut ? "Out of the pool by default (the write-up's pool rule: " + esc(r.poolWhy) + "). Use him" : "In the pool (" + esc(r.poolWhy) + "): leave him out") : r.punt ?
         (r.deepOut ? "Projected under " + PUNT_MIN + " minutes with no news raising them: out of the pool by default. Use him" : "Brought back (under " + PUNT_MIN + " minutes): leave him out again") :
         (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" : "Deep bench, brought back: leave him out again")) + '">' + (r.deepOut ? "use" : "drop") + "</button>" : "";
@@ -1146,7 +1158,8 @@ function playerTable(list, sortable, fs) {
     }
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '"' + (gapTip ? ' title="' + esc(gapTip) + '"' : "") + ">" +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
-      '<button type="button" class="excl" aria-pressed="' + !!state.excl[r.id] + '" title="Leave out">X</button>' +
+      '<button type="button" class="excl" aria-pressed="' + poolOut(r) + '" title="' + esc(poolOut(r) ? (state.excl[r.id] ? "Left out by you" : "Out of your pool by default" +
+        (r.poolWhy ? " (" + r.poolWhy + ")" : r.punt ? " (projected under " + PUNT_MIN + " minutes)" : " (deep bench)")) + ": tap to use him" : "In your pool: tap to leave him out") + '">X</button>' +
       (r.status !== "Out" ? '<button type="button" class="setadd" title="Add him to the rule editor\'s players (template 5: at least N from these players)">+set</button>' : "") + act + "</span>" +
       '<span class="who"><div class="name"><span class="nm' + (fs && bpFilt.p[r.id] ? (bpFilt.p[r.id] === "with" ? " w" : " wo") : "") + '" title="' + esc(whoTip(r)) + (fs ? "\nTap: with, again without, again off (filters the lineups)" : "") + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
       '<span class="m mut col-pos">' + esc(r.position || "") + "</span>" +
@@ -1436,8 +1449,8 @@ function wuHtml(t) {
         "</td><td>" + (L.obpr != null ? f(L.obpr, 2) + (L.obpr_rank ? " (" + L.obpr_rank + ")" : "") : "–") + '</td><td class="l">' + esc(L.form || "–") + "</td></tr>";
     }).join("") + "</table></div>" : "";
   var chips = (w.table || []).filter(function (L) { return byId(L.id); }).map(function (L) {
-    var rr = byId(L.id), x = !!state.excl[L.id] || !!(rr && rr.deepOut);
-    return '<button type="button" class="wuchip" data-id="' + esc(L.id) + '" aria-pressed="' + x + '" title="' + (x ? "Left out (X): tap to use" : "Tap to leave out (X)") + (L.pool_out ? "; the write-up says leave out" : "") + '">' +
+    var rr = byId(L.id), x = poolOut(rr);
+    return '<button type="button" class="wuchip" data-id="' + esc(L.id) + '" aria-pressed="' + x + '" title="' + (x ? "Out of your pool (X): tap to use" : "In your pool: tap to leave out (X)") + (L.pool_out ? "; the write-up says leave out" : "") + '">' +
       (x ? "Use " : "Drop ") + esc(shortName(L.name)) + "</button>";
   }).join("");
   return '<div class="wu">' + prose + tb + (chips ? '<div class="wchips">' + chips + "</div>" : "") + "</div>";
@@ -3745,11 +3758,7 @@ $("teamPanel").addEventListener("click", function (e) {
   var sb2 = e.target.closest(".scanBank"); if (sb2) { scanBankApply(sb2); return; }
   var wc = e.target.closest(".wuchip");
   if (wc) {      // the real state: left out by you (X) or out by default (the pool rule: flip it, state.deepIn)
-    var wid = wc.dataset.id, wr = byId(wid);
-    if (state.excl[wid]) delete state.excl[wid];
-    else if (wr && wr.deepOut) { if (state.deepIn[wid]) delete state.deepIn[wid]; else state.deepIn[wid] = 1; applyOuts(); }
-    else { state.excl[wid] = 1; delete state.lock[wid]; }
-    save(); renderPlayers(); renderTeamPanel(); return;
+    togglePool(wc.dataset.id); return;
   }
   if (e.target.closest(".scanlink")) { e.preventDefault(); $("scanBox").open = true; $("scanBox").scrollIntoView({ block: "start" }); return; }
   var b = e.target.closest(".tile button[data-act]");
@@ -3899,6 +3908,7 @@ function rowClick(e) {
     return;
   }
   var q = e.target.closest(".qout"), dp = e.target.closest(".deepin");
+  if (dp) { togglePool(dp.dataset.id); return; }
   if (q || dp) {
     var qid = q ? (q.dataset.id || q.closest(".row").dataset.id) : dp.dataset.id, qr = byId(qid);
     var m = dp ? state.deepIn : qr && isDoubtful(qr) ? state.ins : state.outs;
@@ -3908,8 +3918,10 @@ function rowClick(e) {
   }
   var b = e.target.closest(".lx button"); if (!b) return;
   var id = b.closest(".row").dataset.id, which = b.classList.contains("lock") ? "lock" : "excl", other = which === "lock" ? "excl" : "lock";
-  if (state[which][id]) delete state[which][id]; else { state[which][id] = 1; delete state[other][id]; }
-  save(); renderPlayers();
+  if (which === "excl") { togglePool(id); return; }
+  if (state.lock[id]) delete state.lock[id];
+  else { state.lock[id] = 1; delete state.excl[id]; var lr = byId(id); if (lr && lr.deepOut) { state.deepIn[id] = 1; applyOuts(); } }   // a lock brings him into the pool
+  save(); renderPlayers(); if (view.panel) renderTeamPanel();
 }
 $("players").addEventListener("change", rowChange);
 function rowChange(e) {
