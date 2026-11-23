@@ -45,5 +45,29 @@ check("environment: slate's lowest O/U by 5+ is a grind", C.environment(150, 150
 check("environment: fast teams, not lowest, pace-up", C.environment(60, 100, 150.0, [140.0, 150.0]) == "pace-up")
 check("environment: middling", C.environment(200, 150, 150.0, [140.0, 150.0]) == "middling")
 check("variant is deterministic", C.variant("Ace", ["a", "b", "c"]) == C.variant("Ace", ["a", "b", "c"]))
+# the 4x count, hand-checked (Ace Buckner, $7,000, Clemson's 5 box scores to 11-17: 31.0, 38.0, 27.25, 33.5, 23.5;
+# 4x = 28.0: 31.0, 38.0, 33.5 = 3; 5x = 35.0: 38.0 = 1; under 2x = 14.0: none)
+bk = [31.0, 38.0, 27.25, 33.5, 23.5]
+check("count_games: Buckner 4x = 3, 5x = 1, under 2x = 0",
+      C.count_games(bk, 7000, 4) == 3 and C.count_games(bk, 7000, 5) == 1 and len(bk) - C.count_games(bk, 7000, 2) == 0)
+check("count_games: exactly at the bar counts", C.count_games([28.0], 7000, 4) == 1)
+# outs
+check("new out: played this season", C.new_out(3) and not C.new_out(0))
+# bottom line
+L = lambda **k: dict({"name": "A B", "salary": 4500, "proj_min": 29, "gp": 5, "starts": 5, "mins": [30, 31, 29, 32, 30],
+                      "ceil": 2, "season_mpg": 30.4, "dk_pm": 0.8}, **k)
+check("core: 30+ projected, steady, every start", C.is_core(L(proj_min=33)))
+check("core: not with a missed start", not C.is_core(L(proj_min=33, starts=4)))
+check("core: not with swingy minutes", not C.is_core(L(proj_min=33, mins=[20, 36, 25, 38, 30])))
+check("value: cheap, 25+ projected, 2+ ceilings", C.is_value(L()))
+check("value: not over $5,000", not C.is_value(L(salary=5900)))
+check("value: not with 1 ceiling", not C.is_value(L(ceil=1)))
+# the moving group read
+check("group: the starting job, best rate named", C.group_read(L(name="Dylan Faulkner", starts=4, mins=[33, 33, 30, 27, 20], dk_pm=1.09), "Dylan Faulkner")
+      == "Faulkner has the starting job (4 of 5) and the team's best per-minute rate (1.09)")
+check("group: steady bench minutes", C.group_read(L(name="Chase Thompson", starts=2, mins=[26, 30, 29, 31, 29], season_mpg=29.0), None)
+      .startswith("Thompson's 29 minutes off the bench (2 of 5 starts) are as steady as a starter's (26-31)"))
+check("group: starts but plays little, most nights = lowest 60%", C.group_read(L(name="David Fuchs", starts=4, mins=[18, 14, 12, 13, 21], season_mpg=15.6), None)
+      == "Fuchs starts (4 of 5) but plays 12-14 most nights (median 14)")
 print("%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)

@@ -14,7 +14,7 @@ Sources (nothing typed by hand):
   python3 scripts/dk_team_cards.py sample --team CLEM --slate 157021 --out analysis/cbb/dk/team_card_sample
   python3 scripts/dk_team_cards.py backtest          (the pool-advice rule on the graded slates)
 """
-import argparse, csv, glob, html, json, os, statistics as S, sys, time, urllib.request
+import argparse, csv, glob, html, json, math, os, statistics as S, sys, time, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MIRROR = os.path.join(HERE, "..", "..", "br-adp-mirror")
@@ -59,6 +59,23 @@ at most half the others' pooled AND lower on 3 of 4 slates or more; otherwise it
 GRIND_TEMPO, PACE_TEMPO, OU_GAP = 240, 120, 5.0
 """Game environment: both teams' EvanMiya tempo ranks averaging 240+ (slow) or the slate's lowest O/U by 5+ points:
 a grind; averaging 120 or better and not the slate's lowest O/U: a pace-up spot; otherwise middling."""
+NEW_OUT_MIN_GP = 1
+"""An Out player who has played this many games this season or more is a NEW out: his minutes' redistribution (out_gain)
+is listed. A season-long out (0 games) is already missing from everyone's averages, so no list (it reads as double
+counting)."""
+CORE_MIN_PROJ, CORE_MAX_CV, CORE_MAX = 30.0, 0.15, 3
+"""Bottom line, Core: projected 30+ minutes, his minutes' coefficient of variation at most 0.15 (a stable role), started
+every game he played; the top 3 by projected minutes at most."""
+VALUE_MAX_SALARY, VALUE_MIN_PROJ, VALUE_MIN_CEIL = 5000, 25.0, 2
+"""Bottom line, Value: salary $5,000 or less, projected 25+ minutes, 2+ ceiling games (CEILING_X) this season; the
+running-hot verdict (HOT_ABOVE) is named as a caveat when it fires."""
+JOB_START_RATE, STEADY_MIN_MPG, LOW_START_MPG = 0.75, 25.0, 20.0
+"""A moving position group, read player by player: started 75%+ of his games: 'has the starting job'; 25+ mpg with
+minutes CV at most CORE_MAX_CV while starting under half: 'minutes as steady as a starter's'; started half or more but
+a median under 20 minutes: 'starts but plays little'. The team's best DraftKings rate per minute among the rotation is
+named where its holder is in the group."""
+MOST_NIGHTS = 0.6
+"""'Plays a-b most nights': the range of his lowest 60% of games by minutes."""
 DD_STATS = ("PTS", "REB", "AST", "STL", "BLK")
 
 
@@ -85,6 +102,54 @@ def minutes_note(proj, season, last3, out_gain=None):
     if abs(proj - season) <= MIN_SAFE_BAND and abs(proj - last3) <= MIN_SAFE_BAND:
         return "minutes safe as projected"
     return None
+
+
+def count_games(dks, salary, x):
+    """Games with DraftKings points at or over x times the salary in thousands (HIT_X, CEILING_X)."""
+    return sum(d >= x * salary / 1000 for d in dks)
+
+
+def cv(xs):
+    """Coefficient of variation of a list (population sd / mean); 0 for an empty or zero list."""
+    return S.pstdev(xs) / S.mean(xs) if xs and S.mean(xs) else 0.0
+
+
+def new_out(played):
+    """NEW_OUT_MIN_GP: True for an out who has played this season."""
+    return played >= NEW_OUT_MIN_GP
+
+
+def is_core(L):
+    """CORE_MIN_PROJ, CORE_MAX_CV: a stable 30-minute starter."""
+    return (L["proj_min"] or 0) >= CORE_MIN_PROJ and L["gp"] >= 3 and L["starts"] == L["gp"] and cv(L["mins"]) <= CORE_MAX_CV
+
+
+def is_value(L):
+    """VALUE_MAX_SALARY, VALUE_MIN_PROJ, VALUE_MIN_CEIL."""
+    return L["salary"] <= VALUE_MAX_SALARY and (L["proj_min"] or 0) >= VALUE_MIN_PROJ and L["ceil"] >= VALUE_MIN_CEIL
+
+
+def group_read(L, best_ppm_name):
+    """One sentence on a moving group's player (JOB_START_RATE, STEADY_MIN_MPG, LOW_START_MPG), or None."""
+    rate = L["starts"] / L["gp"] if L["gp"] else 0
+    med = S.median(L["mins"]) if L["mins"] else 0
+    best = " and the team's best per-minute rate (%.2f)" % L["dk_pm"] if L["name"] == best_ppm_name else ""
+    if rate >= JOB_START_RATE and med >= LOW_START_MPG:
+        return "%s has the starting job (%d of %d)%s" % (last(L["name"]), L["starts"], L["gp"], best)
+    if rate < 0.5 and (L["season_mpg"] or 0) >= STEADY_MIN_MPG and cv(L["mins"]) <= CORE_MAX_CV:
+        return "%s's %.0f minutes off the bench (%d of %d starts) are as steady as a starter's (%.0f-%.0f)%s" % (
+            last(L["name"]), L["season_mpg"], L["starts"], L["gp"], min(L["mins"]), max(L["mins"]), best)
+    if rate >= 0.5 and med < LOW_START_MPG:
+        lo = sorted(L["mins"])[:max(1, math.ceil(MOST_NIGHTS * len(L["mins"])))]
+        return "%s starts (%d of %d) but plays %.0f-%.0f most nights (median %.0f)%s" % (
+            last(L["name"]), L["starts"], L["gp"], min(lo), max(lo), med, best)
+    return None
+
+
+def last(name):
+    """A last name for the prose (suffixes kept off)."""
+    parts = [x for x in name.split() if x.rstrip(".").upper() not in ("JR", "SR", "II", "III", "IV")]
+    return parts[-1] if parts else name
 
 
 def form_note(dks, mins, miya_ppm):
@@ -271,8 +336,8 @@ def build(team, slate_id, cache):
             "min_note": minutes_note(r.get("min") or 0, season, last3, r.get("out_gain")), "out_gain": r.get("out_gain"),
             "obpr": obpr.get(norm(r["name"]), r.get("obpr")), "obpr_rank": obpr_rank.get(norm(r["name"])), "obpr_of": len(team_m),
             "dk_pg": S.mean(dks) if dks else None, "dk_pm": (sum(dks) / sum(mins)) if mins else None, "dks": dks,
-            "hits": sum(x >= HIT_X * sal / 1000 for x in dks), "ceil": sum(x >= CEILING_X * sal / 1000 for x in dks),
-            "floor": sum(x < FLOOR_X * sal / 1000 for x in dks), "form": verdict, "ppm_recent": ppm_recent, "miya_ppm": r.get("miya_ppm"),
+            "hits": count_games(dks, sal, HIT_X), "ceil": count_games(dks, sal, CEILING_X), "mins": mins,
+            "floor": len(dks) - count_games(dks, sal, FLOOR_X), "form": verdict, "ppm_recent": ppm_recent, "miya_ppm": r.get("miya_ppm"),
             "form_ratio": ratio, "shy": shy_away(mins), "pool_out": pool_flag(dks, sal, r.get("min") or 0),
             "status": r.get("status"),
         })
@@ -295,76 +360,110 @@ def ordinal(k):
 
 
 def prose(c, holds):
-    """The card's paragraphs, from the numbers and the rules; varied phrasing by name (variant)."""
-    e, out = c["env"], []
+    """The card's paragraphs, from the numbers and the rules; varied phrasing by name (variant). Bottom line first;
+    verdict tags in bold; 'minutes safe' and 'in line' gathered into one sentence instead of repeated per player."""
+    e, out, Ls = c["env"], [], c["lines"]
+    money = lambda x: "$%.1fk" % (x / 1000)
+    # -- bottom line (is_core, is_value, pool_flag)
+    core = [L for L in Ls if is_core(L)][:CORE_MAX]
+    value = [L for L in Ls if is_value(L) and L not in core]
+    fade = [L for L in Ls if L["pool_out"]]
+    bl = []
+    if core:
+        bl.append("Core: %s, locked-in %.0f-minute roles." % (" and ".join(last(L["name"]) for L in core), S.mean(L["proj_min"] for L in core)))
+    if value:
+        sal = sorted(L["salary"] for L in value)
+        rng = money(sal[0]) if sal[0] == sal[-1] else "%s-%s" % (money(sal[0]), money(sal[-1])[1:])
+        hot = [last(L["name"]) for L in value if L["form"] and L["form"].startswith("running hot")]
+        bl.append("Value: %s (%s, %.0f min, multiple %gx games)%s." % (
+            " and ".join(last(L["name"]) for L in value), rng, S.mean(L["proj_min"] for L in value), CEILING_X,
+            ", but %s %s **running hot** vs Miya" % (" and ".join(hot), "is" if len(hot) == 1 else "are") if hot else ""))
+    if fade:
+        bl.append(("Fade: %s." if holds else "Light on ceiling: %s.") % ", ".join(last(L["name"]) for L in fade))
+    if bl:
+        out.append(("Bottom line.", " ".join(bl)))
+    # -- game environment
     pos = "the lowest" if e["ou_rank"] == 1 else "the highest" if e["ou_rank"] == e["ou_n"] else "%s of %d" % (ordinal(e["ou_rank"]), e["ou_n"])
     gap = ""
     if e["ou_rank"] == 1 and len(e["ous"]) > 1:
         gap = ", %.1f under the next" % (e["ous"][1] - e["ous"][0])
     elif e["ou_rank"] == e["ou_n"] and len(e["ous"]) > 1:
         gap = ", %.1f over the next" % (e["ous"][-1] - e["ous"][-2])
-    kind = {"grind": "a grind: fewer possessions to go around, so lean on the minutes leaders",
-            "pace-up": "a pace-up spot: extra possessions lift everyone with minutes",
+    kind = {"grind": "**a grind**: fewer possessions to go around, so lean on the minutes leaders",
+            "pace-up": "**a pace-up spot**: extra possessions lift everyone with minutes",
             "middling": "no pace edge either way"}[e["kind"]]
     out.append(("%s today." % e["team"],
                 "Per EvanMiya (%s), %s's offense ranks %s and its true tempo %s (%.1f). %s's defense ranks %s, its pace %s. "
-                "The over/under is %.1f, %s on the slate%s; %s %s%.1f, an implied %.1f points. Read: %s." % (
+                "The over/under is %.1f, %s on the slate%s; the spread has %s %s%.1f, an implied %.1f points. Read: %s." % (
                     e["miya_day"], e["team"], ordinal(e["off_rank"]), ordinal(e["tempo_rank"]), e["tempo"], e["opp"], ordinal(e["opp_def_rank"]),
-                    ordinal(e["opp_tempo_rank"]), e["ou"], pos, gap, "the spread has " + e["team"], "-" if e["spread"] < 0 else "+",
+                    ordinal(e["opp_tempo_rank"]), e["ou"], pos, gap, e["team"], "-" if e["spread"] < 0 else "+",
                     abs(e["spread"]), e["implied"], kind)))
+    # -- outs (NEW_OUT_MIN_GP: the redistribution only for new outs)
     if c["outs"]:
+        old = [o for o in c["outs"] if not new_out(o["played"])]
+        new = [o for o in c["outs"] if new_out(o["played"])]
         bits = []
-        for o in c["outs"]:
-            if o["played"] == 0:
-                bits.append("%s (hasn't played this season, 0 of %d games)" % (o["name"], o["of"]))
-            else:
-                bits.append("%s (played %d of %d; out the last %d)" % (o["name"], o["played"], o["of"], o["missed_last"]))
+        if old:
+            bits.append("%s (out all season so far, 0 of %d games; already missing from everyone's averages)" % (
+                " and ".join(o["name"] for o in old), old[0]["of"]))
+        for o in new:
+            bits.append("%s (**new**: played %d of %d, out the last %d)" % (o["name"], o["played"], o["of"], o["missed_last"]))
         txt = "; ".join(bits) + "."
-        if c["out_from"]:
-            gains = [(L["name"], L["out_gain"]) for L in c["lines"] if (L["out_gain"] or 0) >= 1]
+        if new:
+            gains = [(last(L["name"]), L["out_gain"]) for L in Ls if (L["out_gain"] or 0) >= 1]
             if gains:
-                txt += " Their minutes are already spread in the projections: " + ", ".join("%s +%.0f" % g for g in gains) + "."
+                txt += " Their minutes go to: " + ", ".join("%s +%.0f" % g for g in gains) + "."
         out.append(("OUT:", txt))
     if c["flags"]:
         out.append(("Flags:", "; ".join(c["flags"]) + "."))
+    # -- rotation shape
     lab, t5, t7, regs = c["shape"]
-    out.append(("Rotation.", "%s plays a %s rotation: %d players at %d+ minutes a game; the top 5 take %.0f%% of the minutes and the top 7 %.0f%% (%d games). "
+    out.append(("Rotation.", "%s plays a **%s** rotation: %d players at %d+ minutes a game; the top 5 take %.0f%% of the minutes and the top 7 %.0f%% (%d games). "
                 "The top 3 fantasy scorers have produced %.0f%% of the team's DraftKings points." % (
                     e["team"], lab, regs, MPG_BAR, 100 * t5, 100 * t7, c["games"], 100 * c["top3_dk"])))
-    for L in c["lines"]:
+    # -- the steady ones, once (minutes safe and output in line)
+    steady = [L for L in Ls if L["min_note"] == "minutes safe as projected" and L["form"] in ("in line", None) and not L["pool_out"]]
+    if steady:
+        out.append(("", "Minutes safe as projected and output in line with EvanMiya: %s." % ", ".join(last(L["name"]) for L in steady)))
+    # -- player lines
+    for L in Ls:
         role = "%d of %d starts" % (L["starts"], L["gp"])
         if L["starts"] == L["gp"] and L["gp"]:
             role = variant(L["name"], ["started every game", "a starter in all %d" % L["gp"], "%d-for-%d starter" % (L["starts"], L["gp"])])
         elif L["starts"] == 0:
             role = variant(L["name"], ["off the bench every game", "a reserve in all %d" % L["gp"], "no starts in %d" % L["gp"]])
         mins = ", ".join("%.0f" % m for m in L["last5_mins"])
-        lead = variant(L["name"] + "x", ["**%s** (%s) is at %.1f mpg", "**%s** (%s) averages %.1f minutes", "**%s** (%s): %.1f mpg"]) % (
-            L["name"], role, L["season_mpg"] or 0)
-        s = lead + " (last games: %s), projected %.1f tonight" % (mins, L["proj_min"])
-        s += " — %s." % L["min_note"] if L["min_note"] else "."
+        lead = variant(L["name"] + "x", ["**%s** (%s, %s) is at %.1f mpg", "**%s** (%s, %s) averages %.1f minutes", "**%s** (%s, %s): %.1f mpg"]) % (
+            L["name"], "${:,}".format(L["salary"]), role, L["season_mpg"] or 0)
+        s = lead + " (%s), %.1f projected" % (mins, L["proj_min"])
+        s += " — **%s**." % L["min_note"] if L["min_note"] and L["min_note"] != "minutes safe as projected" else "."
         if L["obpr"] is not None and L["obpr_rank"]:
-            s += " OBPR %.2f, %s on the team." % (L["obpr"], ordinal(L["obpr_rank"]))
-        s += " %.1f DK points a game (%.2f a minute); %d of %d games at %gx his $%s salary, %d ceiling (%gx), %d floor (under %gx)." % (
-            L["dk_pg"] or 0, L["dk_pm"] or 0, L["hits"], L["gp"], HIT_X, "{:,}".format(L["salary"]), L["ceil"], CEILING_X, L["floor"], FLOOR_X)
-        if L["form"]:
-            s += " Recent output %.2f a minute against EvanMiya's %.2f: %s." % (L["ppm_recent"], L["miya_ppm"], L["form"])
+            s += " OBPR %.2f (%s on the team)." % (L["obpr"], ordinal(L["obpr_rank"]))
+        s += " %.1f DK a game, %.2f a minute; %gx in %d of %d, %gx in %d, under %gx in %d." % (
+            L["dk_pg"] or 0, L["dk_pm"] or 0, HIT_X, L["hits"], L["gp"], CEILING_X, L["ceil"], FLOOR_X, L["floor"])
+        if L["form"] and L["form"] != "in line":
+            s += " Recent %.2f a minute vs EvanMiya's %.2f: **%s**." % (L["ppm_recent"], L["miya_ppm"], L["form"])
         if L["shy"]:
-            s += " Minutes too volatile and too low: shy away even if starting."
+            s += " **Shy away even if starting**: minutes too volatile and too low."
+        if L["pool_out"]:
+            s += " **%s**." % ("Fade" if holds else "Rarely hits a ceiling")
         out.append(("", s))
-    for k, Ls in c["moving"].items():
-        out.append(("The %s rotation has been moving." % ("guard" if k == "G" else "forward"),
-                    " ".join("%s: %d of %d starts, minutes %s%s." % (L["name"], L["starts"], L["gp"], ", ".join("%.0f" % m for m in L["last5_mins"]),
-                                                                    " (shy away even if starting)" if L["shy"] else "") for L in Ls)))
-    keep = [L["name"] for L in c["lines"] if not L["pool_out"]]
-    drop = [L for L in c["lines"] if L["pool_out"]]
-    if drop:
-        names = " and ".join(L["name"] for L in drop) if len(drop) <= 2 else ", ".join(L["name"] for L in drop)
-        why = "no %gx game in his last %d and projected under %d minutes" % (CEILING_X, POOL_LAST_N, POOL_MIN_PROJ)
-        if holds:
-            txt = "Keep %s. %s: %s, so **leave %s out of your pool today**." % (", ".join(keep), names, why, "them" if len(drop) > 1 else "him")
-        else:
-            txt = "Keep %s. %s: %s; players like that rarely hit a ceiling." % (", ".join(keep), names, why)
-        out.append(("Pool.", txt))
+    # -- moving groups, read (group_read)
+    best = max((L for L in Ls if L["dk_pm"] is not None and L["gp"] >= 3), key=lambda L: L["dk_pm"], default=None)
+    for k, G in c["moving"].items():
+        reads = [r for r in (group_read(L, best["name"] if best else None) for L in G) if r]
+        other = [L for L in G if not group_read(L, best["name"] if best else None)]
+        txt = "; ".join(reads) + "." if reads else ""
+        if other:
+            txt += " " + " ".join("%s: %d of %d starts, minutes %s." % (last(L["name"]), L["starts"], L["gp"], ", ".join("%.0f" % m for m in L["last5_mins"])) for L in other)
+        out.append(("The %s spots have been moving." % ("guard" if k == "G" else "forward"), txt.strip()))
+    # -- pool
+    keep = [last(L["name"]) for L in Ls if not L["pool_out"]]
+    if fade:
+        why = "no %gx game in the last %d and projected under %d minutes" % (CEILING_X, POOL_LAST_N, POOL_MIN_PROJ)
+        names = " and ".join(last(L["name"]) for L in fade)
+        out.append(("Pool.", ("Keep %s. %s: %s, so **leave %s out of your pool today**." % (", ".join(keep), names, why, "them" if len(fade) > 1 else "him"))
+                    if holds else "Keep %s. %s: %s; players like that rarely hit a ceiling." % (", ".join(keep), names, why)))
     else:
         out.append(("Pool.", "Every rotation player here has a ceiling game recently; keep %s." % ", ".join(keep)))
     return out
