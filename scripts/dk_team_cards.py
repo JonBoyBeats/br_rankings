@@ -69,6 +69,17 @@ every game he played; the top 3 by projected minutes at most."""
 VALUE_MAX_SALARY, VALUE_MIN_PROJ, VALUE_MIN_CEIL = 5000, 25.0, 2
 """Bottom line, Value: salary $5,000 or less, projected 25+ minutes, 2+ ceiling games (CEILING_X) this season; the
 running-hot verdict (HOT_ABOVE) is named as a caveat when it fires."""
+STRONG_MIN_PROJ = 27.0
+"""Bottom line, Strong: projected 27+ minutes (with STRONG_MAX_CV and STRONG_STARTS or STRONG_TOP_DK)."""
+STRONG_MAX_CV = 0.20
+"""Bottom line, Strong: his minutes' coefficient of variation at most 0.20 over the games he played."""
+STRONG_STARTS = 4
+"""Bottom line, Strong: started 4+ of his last STRONG_LAST games played ..."""
+STRONG_LAST = 5
+"""... the window for STRONG_STARTS."""
+STRONG_TOP_DK = 2
+"""... or top 2 on the team in DraftKings points a game (among tonight's rotation lines). Core and Value players are
+not repeated as Strong."""
 JOB_START_RATE, STEADY_MIN_MPG, LOW_START_MPG = 0.75, 25.0, 20.0
 """A moving position group, read player by player: started 75%+ of his games: 'has the starting job'; 25+ mpg with
 minutes CV at most CORE_MAX_CV while starting under half: 'minutes as steady as a starter's'; started half or more but
@@ -122,6 +133,13 @@ def new_out(played):
 def is_core(L):
     """CORE_MIN_PROJ, CORE_MAX_CV: a stable 30-minute starter."""
     return (L["proj_min"] or 0) >= CORE_MIN_PROJ and L["gp"] >= 3 and L["starts"] == L["gp"] and cv(L["mins"]) <= CORE_MAX_CV
+
+
+def is_strong(L, top_dk_names):
+    """STRONG_MIN_PROJ, STRONG_MAX_CV, STRONG_STARTS / STRONG_LAST or STRONG_TOP_DK (top_dk_names: the team's top
+    STRONG_TOP_DK by DK points a game)."""
+    return ((L["proj_min"] or 0) >= STRONG_MIN_PROJ and L["gp"] >= 3 and cv(L["mins"]) <= STRONG_MAX_CV
+            and (sum(L.get("start_flags", [])[-STRONG_LAST:]) >= STRONG_STARTS or L["name"] in top_dk_names))
 
 
 def is_value(L):
@@ -336,6 +354,7 @@ def build(team, slate_id, cache):
             "min_note": minutes_note(r.get("min") or 0, season, last3, r.get("out_gain")), "out_gain": r.get("out_gain"),
             "obpr": obpr.get(norm(r["name"]), r.get("obpr")), "obpr_rank": obpr_rank.get(norm(r["name"])), "obpr_of": len(team_m),
             "dk_pg": S.mean(dks) if dks else None, "dk_pm": (sum(dks) / sum(mins)) if mins else None, "dks": dks,
+            "start_flags": [int(x["starter"]) for x in games_in],
             "hits": count_games(dks, sal, HIT_X), "ceil": count_games(dks, sal, CEILING_X), "mins": mins,
             "floor": len(dks) - count_games(dks, sal, FLOOR_X), "form": verdict, "ppm_recent": ppm_recent, "miya_ppm": r.get("miya_ppm"),
             "form_ratio": ratio, "shy": shy_away(mins), "pool_out": pool_flag(dks, sal, r.get("min") or 0),
@@ -367,10 +386,15 @@ def prose(c, holds):
     # -- bottom line (is_core, is_value, pool_flag)
     core = [L for L in Ls if is_core(L)][:CORE_MAX]
     value = [L for L in Ls if is_value(L) and L not in core]
+    top_dk = [L["name"] for L in sorted((L for L in Ls if L["dk_pg"] is not None), key=lambda L: -L["dk_pg"])[:STRONG_TOP_DK]]
+    strong = [L for L in Ls if is_strong(L, top_dk) and L not in core and L not in value]
     fade = [L for L in Ls if L["pool_out"]]
     bl = []
     if core:
         bl.append("Core: %s, locked-in %.0f-minute roles." % (" and ".join(last(L["name"]) for L in core), S.mean(L["proj_min"] for L in core)))
+    if strong:
+        bl.append("Strong: %s." % "; ".join("%s (%s, %.0f min, %d of last %d started, %.1f DK a game)" % (
+            last(L["name"]), money(L["salary"]), L["proj_min"], sum(L["start_flags"][-STRONG_LAST:]), min(STRONG_LAST, L["gp"]), L["dk_pg"]) for L in strong))
     if value:
         sal = sorted(L["salary"] for L in value)
         rng = money(sal[0]) if sal[0] == sal[-1] else "%s-%s" % (money(sal[0]), money(sal[-1])[1:])
@@ -559,18 +583,66 @@ td.nm,th.nm{text-align:left;position:sticky;left:0;background:var(--surface)}
 </div></div></body></html>""" % (html.escape(c["team"]), html.escape(c["env"]["game"]), c["slate"], c["generated"], "\n".join(body), rows, chips, notes, html.escape(rule))
 
 
+BACKTEST = os.path.join(HERE, "..", "analysis", "cbb", "dk", "team_card_backtest.json")
+"""The pool rule's backtest, kept (the nightly run reads it: it has no mirror history to rerun it); `backtest` rewrites it."""
+
+
+def cached_backtest():
+    try:
+        return json.load(open(BACKTEST))
+    except (OSError, ValueError):
+        return {"rule": [0, 0], "other": [0, 0], "per_slate": {}, "lower_on": 0, "slates": 0, "holds": False}
+
+
+TABLE_KEYS = ("id", "name", "salary", "starts", "gp", "season_mpg", "last3", "proj_min", "dk_pg", "dk_pm", "hits", "ceil", "floor",
+              "obpr", "obpr_rank", "form", "min_note", "pool_out", "shy")
+
+
+def writeups(holds):
+    """Every team on every open slate in the mirror: {slates: {draft group: {team: {paras, table, pool}}}}."""
+    doc = json.load(open(os.path.join(MIRROR, "dk_cbb_morning.json")))
+    out, cache = {}, {}
+    for sl in doc.get("slates", []):
+        teams = sorted({v["team"] for v in (sl.get("players") or {}).values() if v.get("team")})
+        out[str(sl["draft_group_id"])] = got = {}
+        for t in teams:
+            try:
+                c = build(t, sl["draft_group_id"], cache)
+            except Exception as e:                     # one team's missing data never stops the rest
+                print("dk_team_cards: %s %s skipped (%s)" % (sl["draft_group_id"], t, e))
+                continue
+            rnd = lambda v: round(v, 2) if isinstance(v, float) else v
+            got[t] = {"paras": prose(c, holds), "games": c["games"],
+                      "table": [{k: rnd(L.get(k)) for k in TABLE_KEYS} for L in c["lines"]]}
+    return out
+
+
 def main():
+    global MIRROR, BRR
     ap = argparse.ArgumentParser()
+    ap.add_argument("--mirror")
+    ap.add_argument("--brr", help="battle-royale-research's root (EvanMiya files)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("sample")
     s.add_argument("--team", required=True)
     s.add_argument("--slate", required=True)
     s.add_argument("--out", required=True)
     sub.add_parser("backtest")
+    w = sub.add_parser("all")
+    w.add_argument("--out", required=True, help="the JSON the page reads, e.g. mirror/dk_cbb_writeups.json")
     a = ap.parse_args()
-    bt = backtest()
+    MIRROR, BRR = a.mirror or MIRROR, a.brr or BRR
     if a.cmd == "backtest":
+        bt = backtest()
+        json.dump(bt, open(BACKTEST, "w"), indent=1)
         print(json.dumps(bt, indent=1))
+        return
+    bt = cached_backtest()
+    if a.cmd == "all":
+        doc = {"generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "backtest": bt,
+               "rule": "scripts/dk_team_cards.py (br_rankings); display only", "slates": writeups(bt["holds"])}
+        json.dump(doc, open(a.out, "w"), indent=1)
+        print("dk_team_cards: %s" % ", ".join("%s %d teams" % (k, len(v)) for k, v in doc["slates"].items()))
         return
     cache = {}
     c = build(a.team, a.slate, cache)
