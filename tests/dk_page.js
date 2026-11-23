@@ -1699,10 +1699,10 @@ function audit(name, L, o) {
   });
   check("game view: the game's stack rows from the scan; each team card's Scan block with its 3+ / 4+ rows and core / leverage players, Bank this working",
         gsc.gr === gsc.wantG && gsc.wantG >= 1 && gsc.sr === gsc.wantT + 1 && JSON.stringify(gsc.names) === JSON.stringify(gsc.wantN) && gsc.added, JSON.stringify(gsc));
-  // the player scan, at the top: a row for every player in the pool projected 15+ minutes, gains over the same plain
+  // the player scan, at the top: a row for every player in the pool, gains over the same plain
   // batch, Read on the players' own noise and their median field ownership, the team rollup from those reads
   const ps = await pg.evaluate(() => {
-    const want = rows.filter(r => usable(r) && (r.min || 0) * (minScale[r.id] || 1) >= PUNT_MIN).map(r => r.id).sort(), P = SCAN.players, m = SCAN.pownMedian;
+    const want = rows.filter(r => usable(r)).map(r => r.id).sort(), P = SCAN.players, m = SCAN.pownMedian;
     const ids = P.map(r => r.id).sort(), bar = SCAN.pbar;
     const reads = bar > 0 && P.every(r => r.read === (r.g_t1 > bar ? (r.fown >= m ? "core" : "leverage") : r.g_t1 < -bar ? (r.fown >= m ? "fade" : "skip") : r.g_t1 > 0 ? (r.fown >= m ? "lean core" : "lean leverage") : "even"));
     const gains = P.every(r => Math.abs(r.g_t1 - (r.t1 - SCAN.plain.t1)) < 1e-12 && Math.abs(r.g_cash - (r.cash - SCAN.plain.cash)) < 1e-12);
@@ -1713,7 +1713,7 @@ function audit(name, L, o) {
     const rollAll = P.filter(r => !r.thin && (r.read === "core" || r.read === "leverage")).every(r => SCAN.teamRoll.some(t => t.ids.includes(r.id)));
     return { n: P.length, same: JSON.stringify(ids) === JSON.stringify(want), reads, gains, noOut, first, roll, rollAll, sum: SCAN.players.reduce((o, r) => (o[r.read] = (o[r.read] || 0) + 1, o), {}) };
   });
-  check("player scan: a row for every player in the pool at 15+ projected minutes (none Out, Doubtful or deep bench), gains over the plain batch, Read core/leverage/fade/skip/even from its own noise and the median field own; no Players table of its own in the scan (the Players list carries it), the team rollup first",
+  check("player scan: a row for every player in the pool (none Out, Doubtful or deep bench), gains over the plain batch, Read core/leverage/fade/skip/even from its own noise and the median field own; no Players table of its own in the scan (the Players list carries it), the team rollup first",
         ps.n > 20 && ps.same && ps.reads && ps.gains && ps.noOut && ps.first, JSON.stringify(ps));
   check("player scan: the team rollup lists each team's core and leverage players and its best team stack", ps.roll && ps.rollAll, JSON.stringify(ps));
   const pHold = await pg.evaluate(async () => {        // a player's batch holds him
