@@ -2858,7 +2858,9 @@ function scanStacks() {
 // the player scan (2026-11-19): every player projected PUNT_MIN+ minutes who is in the pool (not Out, not Doubtful
 // unless played, not excluded), forced in at least once
 function scanPlayers() {
-  return rows.filter(function (r) { return usable(r) && (r.min || 0) * (minScale[r.id] || 1) >= PUNT_MIN; }).sort(function (a, b) { return proj(b) - proj(a); }).map(function (r) {
+  // every player in your pool (2026-11-23: the default pool follows the write-up's rule, so the cheap rotation players
+  // it keeps get a Read too; was 15+ projected minutes only)
+  return rows.filter(function (r) { return usable(r); }).sort(function (a, b) { return proj(b) - proj(a); }).map(function (r) {
     return { key: r.name, kind: "player", id: r.id, team: r.team, conds: [{ type: "min", ids: [r.id], n: 1, label: "at least 1 of " + r.name }] };
   });
 }
