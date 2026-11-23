@@ -366,7 +366,10 @@ def build(team, slate_id, cache):
         if L["gp"] >= 3 and MIXED_ROLE[0] < L["starts"] / L["gp"] < MIXED_ROLE[1]:
             groups.setdefault("G" if (L["pos"] or "G")[0] == "G" else "F", []).append(L)
     moving = {k: v for k, v in groups.items() if len(v) >= 2}
-    news = json.load(open(os.path.join(MIRROR, "cbb_news.json")))
+    try:                           # the nightly run has no news file before the day's read (cbb_news.py); notes are optional
+        news = json.load(open(os.path.join(MIRROR, "cbb_news.json")))
+    except (OSError, ValueError):
+        news = {}
     ids = {r["id"] for r in rows}
     notes = [a for a in news.get("analyst", []) if team in (a.get("teams") or []) or ids & set(a.get("players") or [])][:2]
     out_from = r0.get("out_from")
