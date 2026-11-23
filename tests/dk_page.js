@@ -595,6 +595,30 @@ function audit(name, L, o) {
   check("team card: the write-up replaces the rotation table: its prose (bold kept), its numbers table, a pool tag, no rotation table or tag lines; an Out player's with / without table first",
         /Team card · 5 games/.test(card.a) && /<b>Bottom line\.<\/b>/.test(card.html) && /Fade: <b>/.test(card.html) && card.rot === 0 && card.wrows.length === 2 && card.poolTag &&
         !/swingy/.test(card.a) && card.tbl && /is out tonight; when he sat before \(1 of 5 games\)/.test(card.first || "") && /No write-up for this team yet/.test(card.none), JSON.stringify(card));
+  // the default pool follows the write-up's pool rule (2026-11-23): out / in per player, the deep bench in with a 5x, one tap flips it
+  const dpool = await pg.evaluate(() => {
+    const t = teamsOf().teams[0], mates = rows.filter(r => r.team === t.team && r.status !== "Out" && r.min > 0).sort((a, b) => b.min - a.min);
+    const hi = mates[0], lo = mates[mates.length - 1], dId = ((t.card && t.card.deep) || [])[0], keepWu = wuDoc, keepDeep = Object.assign({}, state.deepIn);
+    state.deepIn = {};
+    const pool = { [hi.id]: { pool: "out", why: "no 5x game in his last 5 and projected under 20 minutes", deep: false },
+                   [lo.id]: { pool: "in", why: "the pool rule doesn't fire", deep: false } };
+    if (dId) pool[dId] = { pool: "in", why: "deep bench, but a 5x game in his last 5", deep: true };
+    wuDoc = { slates: { [String(slate.draft_group_id)]: { [t.team]: { paras: [], table: [{ id: hi.id, name: hi.name, starts: 5, gp: 5, hits: 0, ceil: 0, floor: 0, pool_out: true }], pool } } } };
+    applyOuts(); renderTeamPanel();
+    const out = { hiOut: hi.deepOut, loIn: !lo.deepOut, deepIn: dId ? !byId(dId).deepOut : true, usable: !usable(hi) && usable(lo) };
+    const chip = () => document.querySelector('.wuchip[data-id="' + hi.id + '"]');
+    out.chip0 = chip() && chip().textContent; chip().click();
+    out.flipped = !byId(hi.id).deepOut && !!state.deepIn[hi.id] && /^Drop /.test(chip().textContent);
+    // the news exception: a teammate Out and his projection above his season average lets a pool-out player in
+    state.deepIn = {}; const avg = hi.min_avg; hi.min_avg = 0; state.outs[lo.id] = 1; applyOuts();
+    out.news = !byId(hi.id).deepOut; delete state.outs[lo.id]; hi.min_avg = avg;
+    // no write-ups file: the old rule (punts and the deep bench out)
+    wuDoc = null; applyOuts(); out.fallback = byId(lo.id).deepOut === ((lo.min || 0) < PUNT_MIN || !!deepIds()[lo.id]);
+    wuDoc = keepWu; state.deepIn = keepDeep; applyOuts(); renderTeamPanel();
+    return out;
+  });
+  check("default pool: the write-up's verdicts (out / in, the deep bench in with a 5x), the chip shows the real state and one tap flips it, the news exception, the old rule without the file",
+        dpool.hiOut && dpool.loIn && dpool.deepIn && dpool.usable && /^Use /.test(dpool.chip0 || "") && dpool.flipped && dpool.news && dpool.fallback, JSON.stringify(dpool));
   check("team card: the write-up's Drop / Use chips are the X action (state.excl) and stay reachable",
         /^Drop /.test(card.c0) && card.dropped && /^Use /.test(card.c1) && card.used, JSON.stringify([card.c0, card.c1, card.dropped, card.used]));
   const an = await pg.evaluate(() => {

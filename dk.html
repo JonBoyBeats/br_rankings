@@ -680,8 +680,22 @@ function deepIds() {
    nights, the field and the shadow sets are unchanged. */
 function isPunt(r) {
   if (r.status === "Out" || (r.min || 0) * (minScale[r.id] || 1) >= PUNT_MIN) return false;
+  return !newsUp(r);
+}
+// the news exception: a teammate is Out (by tag or by you) and his projection, after the refit, is above his season average
+function newsUp(r) {
   var news = rows.some(function (x) { return x.team === r.team && x.id !== r.id && x.status === "Out"; });
-  return !(news && r.min_avg != null && (r.min || 0) * (minScale[r.id] || 1) > r.min_avg);
+  return news && r.min_avg != null && (r.min || 0) * (minScale[r.id] || 1) > r.min_avg;
+}
+/* The default pool follows the write-up's pool rule (2026-11-23, the owner; scripts/dk_team_cards.py pool_verdict, in the
+   write-ups file per player): the pool rule fires (no 5x in his last 5 and projected under 20 minutes): out; else in;
+   the deep bench: out unless a 5x game in his last 5; under 3 games: the old punt rule. The news exception still lets a
+   non-deep player in. Without the write-ups file, the old rule (deep bench and punts out). One tap (state.deepIn) flips
+   his default either way. The bank only: the cut's nights, the field and the shadow sets are unchanged. */
+function wuPoolIndex() {
+  var s = wuDoc && slate && wuDoc.slates && wuDoc.slates[String(slate.draft_group_id)], o = null;
+  if (s) { o = {}; Object.keys(s).forEach(function (t) { var P = s[t].pool || {}; Object.keys(P).forEach(function (id) { o[id] = P[id]; }); }); }
+  return o;
 }
 function applyOuts() {
   minScale = {};
@@ -696,7 +710,14 @@ function applyOuts() {
     var fit = DKSim.fitMinutes(v.map(function (r) { return r.min; }), 200);
     v.forEach(function (r, i) { minScale[r.id] = fit[i] / r.min; });
   });
-  rows.forEach(function (r) { r.punt = !deep[r.id] && isPunt(r); r.deepOut = (!!deep[r.id] || r.punt) && !state.deepIn[r.id]; });
+  var P = wuPoolIndex();
+  rows.forEach(function (r) {
+    var p = P && r.status !== "Out" ? P[r.id] : null, defOut;
+    if (p) { defOut = p.pool === "out" && !(!p.deep && newsUp(r)); r.poolWhy = p.why; }
+    else { defOut = !!deep[r.id] || isPunt(r); r.poolWhy = null; }
+    r.punt = !deep[r.id] && (p ? p.pool === "out" : isPunt(r));
+    r.deepOut = defOut !== !!state.deepIn[r.id];
+  });
   adjustField();
 }
 /* The simulated field after a change of yours (Mark out, a Doubtful left out, or put back): each field lineup holding
@@ -1101,7 +1122,8 @@ function playerTable(list, sortable, fs) {
       r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout act" title="' +
         (state.outs[r.id] ? "Undo out: put him back as Questionable" : "Mark out: rule him out, his teammates share his minutes (200 for the team)") + '">' +
         (state.outs[r.id] ? "undo" : "out") + "</button>" :
-      deepIds()[r.id] || r.punt ? '<button type="button" class="deepin act" data-id="' + esc(r.id) + '" title="' + (r.punt ?
+      deepIds()[r.id] || r.punt ? '<button type="button" class="deepin act" data-id="' + esc(r.id) + '" title="' + (r.poolWhy ?
+        (r.deepOut ? "Out of the pool by default (the write-up's pool rule: " + esc(r.poolWhy) + "). Use him" : "In the pool (" + esc(r.poolWhy) + "): leave him out") : r.punt ?
         (r.deepOut ? "Projected under " + PUNT_MIN + " minutes with no news raising them: out of the pool by default. Use him" : "Brought back (under " + PUNT_MIN + " minutes): leave him out again") :
         (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" : "Deep bench, brought back: leave him out again")) + '">' + (r.deepOut ? "use" : "drop") + "</button>" : "";
     var edited = state.proj[r.id] != null, sc = scanRowOf(r.id);
@@ -1404,7 +1426,7 @@ function wuHtml(t) {
         "</td><td>" + (L.obpr != null ? f(L.obpr, 2) + (L.obpr_rank ? " (" + L.obpr_rank + ")" : "") : "–") + '</td><td class="l">' + esc(L.form || "–") + "</td></tr>";
     }).join("") + "</table></div>" : "";
   var chips = (w.table || []).filter(function (L) { return byId(L.id); }).map(function (L) {
-    var x = !!state.excl[L.id];
+    var rr = byId(L.id), x = !!state.excl[L.id] || !!(rr && rr.deepOut);
     return '<button type="button" class="wuchip" data-id="' + esc(L.id) + '" aria-pressed="' + x + '" title="' + (x ? "Left out (X): tap to use" : "Tap to leave out (X)") + (L.pool_out ? "; the write-up says leave out" : "") + '">' +
       (x ? "Use " : "Drop ") + esc(shortName(L.name)) + "</button>";
   }).join("");
@@ -3712,7 +3734,13 @@ $("teamPanel").addEventListener("click", function (e) {
   if (hs) { var sk = hs.dataset.sort; view.dir = view.sort === sk ? -view.dir : (sk === "name" ? 1 : -1); view.sort = sk; renderPlayers(); return; }
   var sb2 = e.target.closest(".scanBank"); if (sb2) { scanBankApply(sb2); return; }
   var wc = e.target.closest(".wuchip");
-  if (wc) { var wid = wc.dataset.id; if (state.excl[wid]) delete state.excl[wid]; else { state.excl[wid] = 1; delete state.lock[wid]; } save(); renderPlayers(); renderTeamPanel(); return; }
+  if (wc) {      // the real state: left out by you (X) or out by default (the pool rule: flip it, state.deepIn)
+    var wid = wc.dataset.id, wr = byId(wid);
+    if (state.excl[wid]) delete state.excl[wid];
+    else if (wr && wr.deepOut) { if (state.deepIn[wid]) delete state.deepIn[wid]; else state.deepIn[wid] = 1; applyOuts(); }
+    else { state.excl[wid] = 1; delete state.lock[wid]; }
+    save(); renderPlayers(); renderTeamPanel(); return;
+  }
   if (e.target.closest(".scanlink")) { e.preventDefault(); $("scanBox").open = true; $("scanBox").scrollIntoView({ block: "start" }); return; }
   var b = e.target.closest(".tile button[data-act]");
   if (b) {

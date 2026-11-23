@@ -91,5 +91,12 @@ thin = C.context(0.6, "top5", {"teams": {"a": {"top5": 0.5}, "b": {"top5": 0.7}}
 check("context: a thin reference says so", "(thin: 2 teams)" in thin, thin)
 st = C.team_stats([{"players": {"a": {"min": 30, "dk": 30}, "b": {"min": 10, "dk": 10}}}])
 check("team_stats: shares from the box (2 players: top 5 = all; top 3 DK = all)", st["top5"] == 1.0 and st["top3dk"] == 1.0 and st["regs"] == 1)
+# the page's default pool
+check("pool default: the pool rule fires -> out", C.pool_verdict(5, [10, 12, 9, 11, 8], 4000, 15, False)[0] == "out")
+check("pool default: a recent 5x -> in", C.pool_verdict(5, [10, 21, 9, 11, 8], 4000, 15, False)[0] == "in")
+check("pool default: 20+ projected -> in", C.pool_verdict(5, [10, 12, 9], 4000, 22, False)[0] == "in")
+check("pool default: deep bench out without a 5x", C.pool_verdict(5, [1, 2, 0, 3, 1], 3000, 5, True)[0] == "out")
+check("pool default: deep bench in with a 5x in his last 5", C.pool_verdict(5, [1, 16, 0, 3, 1], 3000, 5, True)[0] == "in")
+check("pool default: under 3 games, the old punt rule", C.pool_verdict(2, [10, 12], 4000, 14, False)[0] == "out" and C.pool_verdict(2, [], 4000, 16, False)[0] == "in")
 print("%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)

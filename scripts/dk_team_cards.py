@@ -31,6 +31,9 @@ TIGHT_PCT and DEEP_PCT percentiles of the top-7 share instead."""
 TIGHT_PCT, DEEP_PCT = 2 / 3, 1 / 3
 """Rotation shape from the reference: a top-7 minutes share at or above the reference's 67th percentile is tight, under
 its 33rd deep, between standard (the top third, the bottom third)."""
+POOL_MIN_GAMES, PUNT_MIN = 3, 15.0
+"""The page's default pool (pool_verdict): a player with fewer than 3 games this season falls back to the old punt rule
+(out when projected under 15 minutes; the page keeps its news exception)."""
 REF_THIN = 30
 """A reference of fewer teams than this is called thin in the wording."""
 MPG_BAR = 15.0
@@ -257,6 +260,21 @@ def context(x, key, ref, tonight, words):
     return " (" + "; ".join(bits) + ")" if bits else ""
 
 
+def pool_verdict(gp, dks, salary, proj_min, deep):
+    """The page's default pool for a slate player who isn't Out: (verdict 'in' / 'out', reason). One rule:
+    - deep bench (dk_cbb_teams card.deep): out, unless he has a 5x game (CEILING_X) in his last POOL_LAST_N; then in;
+    - fewer than POOL_MIN_GAMES games: the old punt rule, out when projected under PUNT_MIN minutes;
+    - else the pool rule (pool_flag): out when it fires, in otherwise."""
+    five = any(x >= CEILING_X * salary / 1000 for x in dks[-POOL_LAST_N:])
+    if deep:
+        return ("in", "deep bench, but a %gx game in his last %d" % (CEILING_X, POOL_LAST_N)) if five else ("out", "deep bench, no %gx game in his last %d" % (CEILING_X, POOL_LAST_N))
+    if gp < POOL_MIN_GAMES:
+        return ("out", "under %d games: projected under %d minutes" % (POOL_MIN_GAMES, PUNT_MIN)) if proj_min < PUNT_MIN else ("in", "under %d games: projected %d+ minutes" % (POOL_MIN_GAMES, PUNT_MIN))
+    if pool_flag(dks, salary, proj_min):
+        return ("out", "no %gx game in his last %d and projected under %d minutes" % (CEILING_X, POOL_LAST_N, POOL_MIN_PROJ))
+    return ("in", "the pool rule doesn't fire")
+
+
 def shape(mins_by_player, games):
     """(label, top-5 share, top-7 share, players at MPG_BAR+): from the season's box minutes."""
     tot = sum(sum(v) for v in mins_by_player.values())
@@ -379,7 +397,12 @@ def build(team, slate_id, cache):
     team_m = sorted([p for p in mplayers if p["Team"] == mt], key=lambda p: -float(p["OBPR"] or -99))
     obpr_rank = {norm(p["Name"]): i + 1 for i, p in enumerate(team_m)}
     obpr = {norm(p["Name"]): float(p["OBPR"]) for p in team_m}
-    lines, outs, flags = [], [], []
+    lines, outs, flags, pool = [], [], [], {}
+    try:
+        tdoc = json.load(open(os.path.join(MIRROR, "dk_cbb_teams.json")))
+        deep_ids = {i for t in tdoc["slates"][str(slate_id)]["teams"] for i in ((t.get("card") or {}).get("deep") or [])}
+    except (OSError, ValueError, KeyError):
+        deep_ids = set()
     for r in sorted(rows, key=lambda r: -(r.get("min") or 0)):
         pid = str(r.get("espn") or "")
         games_in = [g["players"][pid] for g in bx if pid in g["players"]]
@@ -393,6 +416,9 @@ def build(team, slate_id, cache):
             flags.append("%s hasn't played this season (projection scaled)" % r["name"])
         if (r.get("p_play") or 1) < 0.8 and (r.get("min") or 0) >= ROTATION_PROJ_MIN:
             flags.append("%s carries sit risk (%.0f%% to play: %s)" % (r["name"], 100 * r["p_play"], r.get("p_play_why") or ""))
+        dks_all = [x["dk"] for x in games_in]
+        v, why = pool_verdict(len(games_in), dks_all, r["salary"], r.get("min") or 0, r["id"] in deep_ids)
+        pool[r["id"]] = {"pool": v, "why": why, "deep": r["id"] in deep_ids}
         if (r.get("min") or 0) < ROTATION_PROJ_MIN:
             continue
         mins = [x["min"] for x in games_in]
@@ -429,7 +455,7 @@ def build(team, slate_id, cache):
     notes = [a for a in news.get("analyst", []) if team in (a.get("teams") or []) or ids & set(a.get("players") or [])][:2]
     out_from = r0.get("out_from")
     return {"team": team, "slate": slate_id, "env": env, "games": n, "stats": stats, "outs": outs, "out_from": out_from,
-            "flags": flags, "lines": lines, "moving": moving, "analyst": notes, "generated": time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime())}
+            "flags": flags, "lines": lines, "pool": pool, "moving": moving, "analyst": notes, "generated": time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime())}
 
 
 def ordinal(k):
@@ -717,7 +743,7 @@ def writeups(holds, ref=None):
     rnd = lambda v: round(v, 2) if isinstance(v, float) else v
     for sl in doc.get("slates", []):
         cards, tonight = slate_cards(sl["draft_group_id"], cache)
-        out[str(sl["draft_group_id"])] = {t: {"paras": prose(c, holds, ref, tonight), "games": c["games"],
+        out[str(sl["draft_group_id"])] = {t: {"paras": prose(c, holds, ref, tonight), "games": c["games"], "pool": c["pool"],
                                               "table": [{k: rnd(L.get(k)) for k in TABLE_KEYS} for L in c["lines"]]} for t, c in cards.items()}
     return out
 
