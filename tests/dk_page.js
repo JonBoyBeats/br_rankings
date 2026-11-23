@@ -2002,6 +2002,47 @@ function audit(name, L, o) {
   check("desktop: +set where it was (the L / X group at its full width)", desk.set && desk.lxW >= 120, JSON.stringify(desk));
   check("phone: the player list scrolls sideways, L / X and the name stay put, the name 150px, Sal next, the page itself no wider",
         mob.scrolls && mob.page && mob.nameW >= 149 && mob.whoMoved <= 10 && mob.lxMoved <= 5 && /k$/.test(mob.third.trim()) && mob.moved > 0, JSON.stringify(mob));
+  // the Swap step (late swap v1): standings at a tip + the entries file -> a card per entry with its proposal, accept boxes,
+  // Export off (SWAP_EXPORT) until the read-only night; turned on, the export is valid with the started cells as read
+  await pg.route(/site\.api\.espn\.com\/.*summary/, r => r.fulfill({ contentType: "application/json", body: JSON.stringify({ plays: [] }) }));
+  const swIn = await pg.evaluate(() => {
+    const at = Date.parse("2026-11-17T01:30Z"), started = id => Date.parse(byId(id).game_start || "") < at;
+    const F = fieldOf().field.slice(0, 60), c = slate.contests.find(x => x.payouts);
+    const lines = ["Rank,EntryId,EntryName,TimeRemaining,Points,Lineup,,Player,Roster Position,%Drafted,FPTS"];
+    F.forEach((ids, k) => { const sl = DKSim.assign(ctx(), ids), lab = DKSwap.SLOTS;
+      lines.push([k + 1, 9100000001 + k, "user" + k, 0, "", sl.map((id, j) => lab[j] + " " + (started(id) ? byId(id).name : "LOCKED")).join(" ")].join(",")); });
+    const ours = DKSim.assign(ctx(), F[0]);
+    const ent = "Entry ID,Contest Name,Contest ID,Entry Fee,G,G,G,F,F,F,UTIL,UTIL\r\n" + ["9100000001", '"' + c.name + '"', c.id, "$1"]
+      .concat(ours.map(id => '"' + byId(id).name + " (" + id + ")" + (started(id) ? " (LOCKED)" : "") + '"')).join(",") + "\r\n";
+    const d = new Date(at), pad = x => String(x).padStart(2, "0");
+    return { stand: lines.join("\r\n") + "\r\n", ent, cid: String(c.id), local: d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()), ours, started: ours.filter(started) };
+  });
+  await pg.evaluate(() => showStep("swap"));
+  await pg.setInputFiles("#swapStand", { name: "contest-standings-" + swIn.cid + ".csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
+  await pg.setInputFiles("#swapEnt", { name: "DKEntries.csv", mimeType: "text/csv", buffer: Buffer.from(swIn.ent) });
+  await pg.fill("#swapAt", swIn.local); await pg.fill("#swapNights", "300");
+  await pg.waitForFunction(() => DKSwap && SWAP.ent && SWAP.stand.length === 1, null, { timeout: 10000 });
+  await pg.click("#swapRun");
+  await pg.waitForFunction(() => !document.getElementById("swapRun").disabled && /entr/.test(document.getElementById("swapStatus").textContent), null, { timeout: 120000 });
+  const sw1 = await pg.evaluate(() => ({ status: document.getElementById("swapStatus").textContent, cards: document.querySelectorAll("#swapBox .swapcard").length,
+    res: SWAP.res.map(p => ({ steps: p.steps.length, next: p.next, entryId: p.entryId })), exportOff: document.getElementById("swapExport").disabled,
+    acc: document.querySelectorAll("#swapBox .swapAcc:checked").length, label: document.querySelector('#stepBar button[data-step="swap"]').textContent }));
+  check("Swap: standings + entries file -> one card for the entry with its proposal (or keep), the status naming the contest, field and draws; Export off; the step label counts",
+        sw1.cards === 1 && sw1.res.length === 1 && /60 entries \(0 unmatched\)/.test(sw1.status) && sw1.exportOff && /Swap/.test(sw1.label) &&
+        sw1.res[0].next.length === 8 && swIn.started.every(id => sw1.res[0].next[swIn.ours.indexOf(id)] === id), JSON.stringify(sw1));
+  // Export on (the switch after the read-only night): the file is valid, started cells as read
+  const swEx = await pg.evaluate(() => { SWAP_EXPORT = true; SWAP.acc = {}; SWAP.res.forEach(p => { SWAP.acc[p.entryId] = 1; }); renderSwap(); return !document.getElementById("swapExport").disabled; });
+  let swOut = null;
+  if (sw1.res[0].steps) {
+    const [dlS] = await Promise.all([pg.waitForEvent("download"), pg.click("#swapExport")]);
+    const txt = fs.readFileSync(await dlS.path(), "utf8");
+    swOut = await pg.evaluate(t => { const p = DKSwap.parseEntries(t); return { ids: p.rows[0].ids, cells: p.rows[0].cells }; }, txt);
+  }
+  const origCells = swIn.ent.split("\r\n")[1];
+  check("Swap: with Export on, the edited entries file is the proposal, its started players' cells exactly as read (or nothing to export when it keeps)",
+        swEx && (!sw1.res[0].steps || (swOut && swOut.ids.join() === sw1.res[0].next.join() && swIn.started.every(id => swOut.cells[swIn.ours.indexOf(id)].indexOf("(LOCKED)") > 0))),
+        JSON.stringify(swOut));
+  await pg.evaluate(() => { SWAP_EXPORT = false; showStep("bank"); });
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
   passes.forEach(p => console.log("PASS " + p));

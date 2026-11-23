@@ -263,6 +263,10 @@
   table.quick td, table.quick th { padding: 3px 8px; text-align: left; } table.quick .r { text-align: right; }
   table.quick .qg { font-size: 11px; white-space: nowrap; } table.quick td { vertical-align: top; }
   .rule .spr { font-size: 11.5px; color: var(--muted); white-space: nowrap; } .rule .spr input { width: 46px; height: 24px; padding: 0 4px; font-size: 12px; }
+  .swapcard { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 6px 0; font-size: 13px; }
+  .swapcard .hd { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-weight: 600; }
+  .swapcard .sw { font-family: var(--mono); font-size: 12.5px; margin: 3px 0; } .swapcard .sw b { color: var(--live); }
+  .swapcard label { display: flex; align-items: center; gap: 6px; margin-top: 4px; } .swapcard.keep { opacity: .7; }
   table.qsim tbody tr { cursor: pointer; } table.qsim tbody tr.on td { background: rgba(77, 196, 141, .14); }
   table.quick th { font-size: 11px; color: var(--muted); font-weight: 500; } table.quick tfoot td { font-weight: 600; border-top: 1px solid var(--line, #2a3140); }
   @media (max-width: 620px) {
@@ -315,7 +319,7 @@
       <button type="button" id="reload">Reload</button>
     </div>
     <div class="status" id="status">Loading…</div>
-    <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="true">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button></div>
+    <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="true">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button><button type="button" data-step="swap" aria-pressed="false">Swap</button></div>
   </div>
   <div class="opts" id="quickBar" style="padding:2px 0"><button type="button" id="quickRun" title="One lineup, the highest total Proj under the draw panel as it stands: your rules, stack, Min salary, Leverage, ownership limits, locks (L) and excludes (X); Outs, the deep bench and punts left out, as in a draw. No bank or sim">Quick lineup</button>
       <button type="button" id="quickMore" hidden title="The next best lineup: differs from each one shown by at least one player">Another</button>
@@ -501,6 +505,24 @@
   </div>
   </div>
   </section>
+  <section class="step" id="stepSwap" data-step="swap" hidden>
+  <h2>Late swap</h2>
+  <div class="note">At a tip: each contest's standings (DraftKings: the contest → Export standings; keep the file's name, it carries the
+    contest) and your entries file (Lineups → Edit Entries → download). Players whose games have started stay in their slots; each entry
+    gets the swap(s) that most raise its expected payout in its own contest, your other entries counted in the field. <b>Read-only for now</b>:
+    Export stays off until the first live night checks out. The entries file stays in this page only (never saved: it carries entry IDs).</div>
+  <div class="opts">
+    <label class="field"><span class="field-label">Contest standings</span><input type="file" id="swapStand" accept=".csv" multiple style="height:auto"></label>
+    <label class="field"><span class="field-label">Entries file</span><input type="file" id="swapEnt" accept=".csv" style="height:auto"></label>
+    <label class="field" title="Simulated nights (1,000: the replay's choice; fewer is quicker and noisier)"><span class="field-label">Nights</span><input class="num" id="swapNights" type="number" min="200" max="5000" step="100" value="1000"></label>
+    <label class="field" title="The decision moment: blank for now, or a time to replay a past tip"><span class="field-label">As of</span><input id="swapAt" type="datetime-local"></label>
+    <button type="button" class="primary" id="swapRun">Propose swaps</button>
+  </div>
+  <div class="status" id="swapStatus"></div>
+  <div id="swapBox"></div>
+  <div class="opts" id="swapActs" hidden><button type="button" id="swapAll">Accept all</button><button type="button" id="swapNone">Accept none</button>
+    <button type="button" id="swapExport" disabled title="Off until the first read-only live night checks out">Export DK entries</button></div>
+  </section>
 
   <details class="news" id="newsBox"><summary id="newsSum">News: loading…</summary><div id="news"></div></details>
   <details class="news" id="slateInfo"><summary>Slate details</summary><div class="status" id="statusInfo"></div><div class="note" id="slateLine">No team tiles yet.</div></details>
@@ -537,6 +559,7 @@
 
 <script src="vendor/lp_solver.js"></script>
 <script src="dk_sim.js"></script>
+<script src="dk_swap.js"></script>
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var SLOTS = DKSim.SLOTS;
@@ -1816,7 +1839,8 @@ function renderSteps() {
   Object.keys(ns).forEach(function (k) { ent += ns[k]; picked += Math.min(ns[k], (PF[k] || []).length); });
   var label = { bank: "Bank <span class=\"st\">" + nb.toLocaleString() + "</span>",
                 cut: "Cut <span class=\"st\">" + (CUT && CUT.keep ? CUT.keep.length.toLocaleString() + " kept" : "–") + "</span>",
-                fill: "Fill <span class=\"st\">" + (ent ? picked + "/" + ent : "–") + "</span>" };
+                fill: "Fill <span class=\"st\">" + (ent ? picked + "/" + ent : "–") + "</span>",
+                swap: "Swap <span class=\"st\">" + (typeof SWAP !== "undefined" && SWAP.res ? SWAP.res.filter(function (p) { return p.steps.length; }).length : "–") + "</span>" };
   document.querySelectorAll("#stepBar button[data-step]").forEach(function (b) { b.innerHTML = label[b.dataset.step]; b.setAttribute("aria-pressed", String(b.dataset.step === st)); });
   document.querySelectorAll("section.step").forEach(function (x) { x.hidden = x.dataset.step !== st; });
   if (typeof placePlayers === "function" && $("playersSec")) placePlayers();
@@ -3099,6 +3123,90 @@ function renderQuick() {
   if (!QUICK.length) { $("quickBox").innerHTML = ""; return; }
   $("quickBox").innerHTML = quickCard(QUICK[QUICK.length - 1], (QUICK.length > 1 ? "Lineup " + QUICK.length + " (next best)" : "Top projection") + " · " + quickRulesText());
 }
+/* Late swap (2026-11-21, the operator's approval of the late-swap study, analysis/cbb/dk/lateswap_2026-11-21.md; the
+   logic in dk_swap.js, tested by tests/dk_swap.js on the 11-18 break-2 replay). At a tip: each uploaded contest's
+   standings (the contest from the file's name) and the entries file; live points from ESPN's play-by-play for the
+   started games (a game without it is simulated in full); the page's own projections and outcome shape for the nights
+   (Nights, 1,000 by default: the replay's choice); per entry, DKSwap.run's proposal (up to 2 swaps by expected payout in
+   its own contest, ours in the field). Export is off (SWAP_EXPORT) until the first read-only live night checks out; the
+   entries file is kept in memory only. */
+var SWAP = { stand: [], ent: null, res: null, acc: {}, by: null, at: 0 }, SWAP_EXPORT = false;
+var ESPN_SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary?event=";
+function swapFiles(input) { return Promise.all(Array.from(input.files || []).map(function (f) { return f.text().then(function (t) { return { name: f.name, text: t }; }); })); }
+async function swapRun() {
+  if (!slate) return "No slate.";
+  if (!SWAP.stand.length) return "Add at least one contest's standings.";
+  if (!SWAP.ent) return "Add your entries file.";
+  var at = $("swapAt").value ? Date.parse($("swapAt").value) : Date.now(), S = Math.max(200, Math.min(5000, +$("swapNights").value || 1000));
+  var by = {}; rows.forEach(function (r) { by[r.id] = r; });
+  var startedEv = {}; rows.forEach(function (r) { if (r.event && Date.parse(r.game_start || "") < at) startedEv[r.event] = 1; });
+  $("swapStatus").textContent = "Live points: " + Object.keys(startedEv).length + " started game(s) from ESPN…"; await tick();
+  var plays = {};
+  await Promise.all(Object.keys(startedEv).map(function (ev) {
+    return fetch(ESPN_SUMMARY + ev, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { plays[ev] = d && d.plays && d.plays.length ? d.plays : null; }, function () { plays[ev] = null; });
+  }));
+  $("swapStatus").textContent = "Simulating " + S.toLocaleString() + " nights…"; await tick();
+  var sr = rows.map(function (r) { return { id: r.id, team: r.team, game: r.game, status: r.status || "", miss_dk: r.miss_dk, proj: r.status === "Out" ? 0 : proj(r) }; });
+  var ids = sr.map(function (r) { return r.id; }), cx = { rows: sr, proj: function (r) { return r.proj; }, random: DKSim.seeded((+slate.draft_group_id || 1) ^ (at / 60000 | 0)) }, nights = [];
+  for (var k = 0; k < S; k++) { var pp = DKSim.nightPoints(cx, fieldDoc.z, 1); nights.push(ids.map(function (id) { return pp[id] || 0; })); }
+  var own = (fieldOf() && fieldOf().own) || {}, out = [], notes = [], rnd = DKSim.seeded(20261121);
+  for (var i = 0; i < SWAP.stand.length; i++) {
+    var f = SWAP.stand[i], m = /(\d{6,})/.exec(f.name), cid = m ? m[1] : null, st = DKSwap.parseStandings(f.text);
+    if (st.error) { notes.push(f.name + ": " + st.error); continue; }
+    var c = (slate.contests || []).find(function (x) { return String(x.id) === cid; });
+    if (!c) { notes.push(f.name + ": no contest " + (cid || "id in the file's name") + " on this slate"); continue; }
+    var ours = SWAP.ent.rows.filter(function (r) { return r.contestId === cid; });
+    if (!ours.length) { notes.push((c.name || cid) + ": none of your entries"); continue; }
+    var table = {}; (c.payouts || []).forEach(function (p) { for (var q = p[0]; q <= p[1]; q++) table[q] = p[2]; });
+    $("swapStatus").textContent = "Contest " + (i + 1) + " of " + SWAP.stand.length + ": " + (c.name || cid) + "…"; await tick();
+    var res = DKSwap.run({ by: by, own: own, standings: st, ours: ours, plays: plays, at: at, nights: nights, ids: ids, table: table, M: 6, random: rnd, maxSwaps: 2 });
+    var rank = {}; st.entries.forEach(function (e) { rank[e.entryId] = e; });
+    res.proposals.forEach(function (p) { p.contest = c.name || cid; p.rank = (rank[p.entryId] || {}).rank; p.points = (rank[p.entryId] || {}).points; p.N = st.entries.length; out.push(p); });
+    notes.push((c.name || cid) + ": " + res.stats.field + " entries (" + res.stats.unmatched + " unmatched), field draws " + res.stats.draws + " (" + res.stats.fallback + " without the salary limit)" +
+      (res.stats.unknownGames.length ? ", " + res.stats.unknownGames.length + " started game(s) without play-by-play, simulated in full" : ""));
+  }
+  SWAP.res = out; SWAP.by = by; SWAP.at = at; SWAP.acc = {};
+  out.forEach(function (p) { if (p.steps.length) SWAP.acc[p.entryId] = 1; });
+  renderSwap(); renderSteps();
+  return out.length + " entr" + (out.length === 1 ? "y" : "ies") + ", " + out.filter(function (p) { return p.steps.length; }).length + " with a swap · " + notes.join(" · ");
+}
+function renderSwap() {
+  var R = SWAP.res || [], nm = function (id) { return SWAP.by[id] ? SWAP.by[id].name : id; };
+  $("swapActs").hidden = !R.length; $("swapExport").disabled = !SWAP_EXPORT || !R.some(function (p) { return SWAP.acc[p.entryId]; });
+  $("swapBox").innerHTML = R.map(function (p) {
+    var last = p.steps.length ? p.steps[p.steps.length - 1].score : p.cur, prev = p.cur;
+    return '<div class="swapcard' + (p.steps.length ? "" : " keep") + '"><div class="hd"><span>Entry \u2026' + esc(p.entryId.slice(-4)) + " \u00b7 " + esc(p.contest) + "</span><span>" +
+      (p.points != null ? p.points + " pts" : "") + (p.rank ? " \u00b7 #" + p.rank + " of " + p.N : "") + "</span></div>" +
+      (p.steps.length ? p.steps.map(function (x) { var g = x.score.ev - prev.ev; prev = x.score;
+        return '<div class="sw">' + esc(nm(x.swap[0])) + " \u2192 <b>" + esc(nm(x.swap[1])) + "</b> (+$" + g.toFixed(2) + ")</div>"; }).join("") : '<div class="sw">Keep it: no swap adds expected payout</div>') +
+      '<div class="mut">EV $' + p.cur.ev.toFixed(2) + " \u2192 $" + last.ev.toFixed(2) + " \u00b7 cash " + Math.round(100 * p.cur.cash) + "% \u2192 " + Math.round(100 * last.cash) + "% \u00b7 top 1% " +
+      (100 * p.cur.top1).toFixed(1) + "% \u2192 " + (100 * last.top1).toFixed(1) + "%</div>" +
+      (p.steps.length ? '<label><input type="checkbox" class="swapAcc" data-id="' + esc(p.entryId) + '"' + (SWAP.acc[p.entryId] ? " checked" : "") + "> Accept</label>" : "") + "</div>";
+  }).join("");
+}
+function swapExport() {
+  if (!SWAP_EXPORT) return "Export is off until the first read-only live night checks out.";
+  var edits = {}; (SWAP.res || []).forEach(function (p) { if (SWAP.acc[p.entryId] && p.steps.length) edits[p.entryId] = p.next; });
+  var x = DKSwap.exportEntries(SWAP.ent, edits, SWAP.by, function (id) { return !!SWAP.by[id] && Date.parse(SWAP.by[id].game_start || "") < SWAP.at; });
+  if (!x.csv) return "Not exported: " + x.errors.join(" · ");
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([x.csv], { type: "text/csv" }));
+  a.download = "DKEntries_lateswap_" + slate.day + "_" + slate.draft_group_id + ".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  return "Exported " + x.n + " edited entr" + (x.n === 1 ? "y" : "ies") + ". Upload it at Lineups → Edit Entries.";
+}
+$("swapStand").addEventListener("change", function (e) { swapFiles(e.target).then(function (f) { SWAP.stand = f; $("swapStatus").textContent = f.length + " standings file(s) ready."; }); });
+$("swapEnt").addEventListener("change", function (e) { swapFiles(e.target).then(function (f) {
+  var p = f.length ? DKSwap.parseEntries(f[0].text) : null; SWAP.ent = p && !p.error ? p : null;
+  $("swapStatus").textContent = !p ? "" : p.error ? p.error : p.rows.length + " entries read (kept in this page only)."; }); });
+$("swapRun").addEventListener("click", function () { $("swapRun").disabled = true;
+  swapRun().then(function (m) { $("swapStatus").textContent = m; }, function (e) { $("swapStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; })
+    .then(function () { $("swapRun").disabled = false; }); });
+$("swapBox").addEventListener("change", function (e) { var c = e.target.closest(".swapAcc"); if (!c) return; if (c.checked) SWAP.acc[c.dataset.id] = 1; else delete SWAP.acc[c.dataset.id]; renderSwap(); });
+$("swapAll").addEventListener("click", function () { (SWAP.res || []).forEach(function (p) { if (p.steps.length) SWAP.acc[p.entryId] = 1; }); renderSwap(); });
+$("swapNone").addEventListener("click", function () { SWAP.acc = {}; renderSwap(); });
+$("swapExport").addEventListener("click", function () { $("swapStatus").textContent = swapExport(); });
 $("quickRun").addEventListener("click", function () { quickRun(false); });
 $("quickMore").addEventListener("click", function () { quickRun(true); });
 $("quickSim").addEventListener("click", quickSim);
