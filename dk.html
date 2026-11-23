@@ -529,7 +529,7 @@
   <div class="note">At a tip: each contest's standings (DraftKings: the contest → Export standings; keep the file's name, it carries the
     contest) and your entries file (Lineups → Edit Entries → download). Players whose games have started stay in their slots; each entry
     gets the swap(s) that most raise its expected payout in its own contest, your other entries counted in the field. Add each contest's
-    standings (one at a time is fine: they add up). Export DK entries writes one file for every contest, with the swaps you accept. The entries file stays in this page only (never saved: it carries entry IDs).</div>
+    standings (one at a time is fine: they add up). Export DK entries writes one file for every contest, with the swaps you accept. The files are kept in this browser for this slate, so a reload keeps them (Forget files removes them). The live score is taken when you press Propose swaps (ESPN's play-by-play at that moment); the standings give the field's lineups and ownership.</div>
   <div class="opts">
     <label class="field"><span class="field-label">Contest standings</span><input type="file" id="swapStand" accept=".csv,.zip" multiple style="height:auto"></label>
     <label class="field"><span class="field-label">Entries file</span><input type="file" id="swapEnt" accept=".csv" style="height:auto"></label>
@@ -924,6 +924,7 @@ function pick(keepMem) {
   state.outs = state.outs || {}; state.ins = state.ins || {}; state.deepIn = state.deepIn || {};
   zeroApply();
   applyOuts();
+  if (typeof swapRestore === "function") swapRestore();
   // rules saved before the draw-only change: an "in X% of lineups" rule becomes its plain rule; an "at most X%" one goes
   state.rules = (state.rules || []).filter(function (r) { return r.maxShare == null; }).map(function (r) {
     if (r.share == null) return r;
@@ -3324,6 +3325,7 @@ async function swapRun() {
     notes.push((c.name || cid) + ": " + (fit.n ? "field so far fits " + (fit.p === 2 ? "on the chalk (x2)" : "as projected") + " (share error " + fit.e1.toFixed(2) +
       " as projected vs " + fit.e2.toFixed(2) + " on the chalk, " + fit.n + " players revealed)" + (mode === "auto" ? ", used" : ", you set " + mode) + "; " : "") +
       res.stats.field + " entries (" + res.stats.unmatched + " unmatched), field draws " + res.stats.draws + " (" + res.stats.fallback + " without the salary limit)" +
+      (res.stats.tippedSince ? ", " + res.stats.tippedSince + " game(s) tipped since the standings were downloaded (in the field's draws at their live points)" : "") +
       (res.stats.unknownGames.length ? ", " + res.stats.unknownGames.length + " started game(s) without play-by-play, simulated in full" : ""));
   }
   SWAP.res = out; SWAP.by = by; SWAP.at = at; SWAP.acc = {}; SWAP.use = {};
@@ -3339,8 +3341,8 @@ function renderSwap() {
   var chalkTxt = function (c) { return c === 1 ? "field as projected" : "field on the chalk (\u00d7" + c + ")"; };
   $("swapBox").innerHTML = R.map(function (p0) {
     var p = swapPick(p0), last = p.steps.length ? p.steps[p.steps.length - 1].score : p.cur, prev = p.cur;
-    return '<div class="swapcard' + (p.steps.length ? "" : " keep") + '"><div class="hd"><span>Entry \u2026' + esc(p.entryId.slice(-4)) + " \u00b7 " + esc(p.contest) + "</span><span>" +
-      (p.points != null ? p.points + " pts" : "") + (p.rank ? " \u00b7 #" + p.rank + " of " + p.N : "") + "</span></div>" +
+    return '<div class="swapcard' + (p.steps.length ? "" : " keep") + '"><div class="hd"><span>Entry \u2026' + esc(p.entryId.slice(-4)) + " \u00b7 " + esc(p0.contest) + "</span><span>" +
+      (p0.now != null ? p0.now + " pts now" : "") + (p0.rank ? ' <span class="muted" title="His place in the standings file, as downloaded">\u00b7 #' + p0.rank + " of " + p0.N + " in the file</span>" : "") + "</span></div>" +
       (p.steps.length ? p.steps.map(function (x) { var g = x.score.ev - prev.ev; prev = x.score;
         return '<div class="sw">' + esc(nm(x.swap[0])) + " \u2192 <b>" + esc(nm(x.swap[1])) + "</b> (+$" + g.toFixed(2) + ")</div>"; }).join("") : '<div class="sw">Keep it: no swap adds expected payout</div>') +
       '<div class="mut">EV $' + p.cur.ev.toFixed(2) + " \u2192 $" + last.ev.toFixed(2) + " \u00b7 cash " + Math.round(100 * p.cur.cash) + "% \u2192 " + Math.round(100 * last.cash) + "% \u00b7 top 1% " +
@@ -3367,6 +3369,41 @@ function swapExport() {
 /* the standings add up (2026-11-23, the owner: a phone picks one file at a time): each pick is added, a contest picked
    again replaced by its newer file; the list shows every contest loaded, with how many of your entries the entries file
    has in it */
+/* Kept in this browser (2026-11-23, the owner: re-adding the files after every reload; "not that big of a deal"): the
+   standings and the entries file per slate in IndexedDB (big contests' standings outgrow localStorage), restored when the
+   slate loads; Clear forgets the standings, Forget files both; a slate's files go after SWAP_KEEP_DAYS. */
+var SWAP_KEEP_DAYS = 3;
+function swapDB() {
+  return new Promise(function (ok, no) {
+    if (!window.indexedDB) return no(new Error("no IndexedDB"));
+    var q = indexedDB.open("dkswap", 1);
+    q.onupgradeneeded = function () { q.result.createObjectStore("files", { keyPath: "slate" }); };
+    q.onsuccess = function () { ok(q.result); }; q.onerror = function () { no(q.error); };
+  });
+}
+function swapSave() {
+  if (!slate) return;
+  var rec = { slate: String(slate.draft_group_id), stand: SWAP.stand.map(function (f) { return { name: f.name, text: f.text, at: f.at }; }), ent: SWAP.entText || null, saved: Date.now() };
+  swapDB().then(function (db) {
+    var tx = db.transaction("files", "readwrite"), os = tx.objectStore("files");
+    os.put(rec);
+    os.openCursor().onsuccess = function (e) { var c = e.target.result; if (!c) return; if (c.value.saved < Date.now() - SWAP_KEEP_DAYS * 864e5) c.delete(); c.continue(); };
+  }).catch(function () {});
+}
+function swapRestore() {
+  SWAP.stand = []; SWAP.ent = null; SWAP.entText = null; SWAP.res = null; renderSwapList();
+  if (!slate) return Promise.resolve();
+  var dg = String(slate.draft_group_id);
+  return swapDB().then(function (db) {
+    return new Promise(function (ok) { var q = db.transaction("files").objectStore("files").get(dg); q.onsuccess = function () { ok(q.result); }; q.onerror = function () { ok(null); }; });
+  }).then(function (rec) {
+    if (!rec || !slate || String(slate.draft_group_id) !== dg) return;
+    SWAP.stand = rec.stand || [];
+    if (rec.ent) { var p = DKSwap.parseEntries(rec.ent); if (p && !p.error) { SWAP.ent = p; SWAP.entText = rec.ent; } }
+    renderSwapList();
+    if (SWAP.stand.length || SWAP.ent) $("swapStatus").textContent = "Restored from this browser: " + SWAP.stand.length + " contest standings" + (SWAP.ent ? " and your entries file (" + SWAP.ent.rows.length + " entries)" : "") + ".";
+  }).catch(function () {});
+}
 function swapCid(name) { var m = /(\d{6,})/.exec(name || ""); return m ? m[1] : name; }
 function renderSwapList() {
   var el = $("swapList"); if (!el) return;
@@ -3377,17 +3414,21 @@ function renderSwapList() {
     return esc(c ? c.name : f.name) + " <span class=\"muted\">(" + esc(cid) + (c ? "" : ", not on this slate") + (n != null ? ", " + n + " of your entries" : "") +
       ", added " + new Date(f.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + ")</span>";
   }).join(" · ") + ' <button type="button" id="swapClear" style="height:22px;padding:0 8px;font-size:11px">Clear</button>' +
+    ' <button type="button" id="swapForget" style="height:22px;padding:0 8px;font-size:11px" title="Forget the standings and the entries file kept in this browser for this slate">Forget files</button>' +
     (SWAP.ent ? "" : ' <span class="muted">Add your entries file to check every contest has your entries.</span>');
 }
 $("swapStand").addEventListener("change", function (e) { var inp = e.target; swapFiles(inp).then(function (f) {
   f.forEach(function (x) { x.at = Date.now(); var cid = swapCid(x.name), i = SWAP.stand.findIndex(function (y) { return swapCid(y.name) === cid; });
     if (i >= 0) SWAP.stand[i] = x; else SWAP.stand.push(x); });
-  inp.value = ""; renderSwapList();
+  inp.value = ""; renderSwapList(); swapSave();
   $("swapStatus").textContent = SWAP.stand.length + " contest standings loaded."; }, function (err) { inp.value = ""; $("swapStatus").innerHTML = '<span class="bad">' + esc(err.message) + "</span>"; }); });
-document.addEventListener("click", function (e) { if (e.target && e.target.id === "swapClear") { SWAP.stand = []; renderSwapList(); $("swapStatus").textContent = "Standings cleared."; } });
+document.addEventListener("click", function (e) {
+  if (e.target && e.target.id === "swapClear") { SWAP.stand = []; renderSwapList(); swapSave(); $("swapStatus").textContent = "Standings cleared."; }
+  if (e.target && e.target.id === "swapForget") { SWAP.stand = []; SWAP.ent = null; SWAP.entText = null; renderSwapList(); swapSave(); $("swapStatus").textContent = "Standings and entries file forgotten in this browser."; }
+});
 $("swapEnt").addEventListener("change", function (e) { swapFiles(e.target).then(function (f) {
-  var p = f.length ? DKSwap.parseEntries(f[0].text) : null; SWAP.ent = p && !p.error ? p : null;
-  $("swapStatus").textContent = !p ? "" : p.error ? p.error : p.rows.length + " entries read (kept in this page only)."; renderSwapList(); }); });
+  var p = f.length ? DKSwap.parseEntries(f[0].text) : null; SWAP.ent = p && !p.error ? p : null; SWAP.entText = SWAP.ent ? f[0].text : null; swapSave();
+  $("swapStatus").textContent = !p ? "" : p.error ? p.error : p.rows.length + " entries read (kept in this browser for this slate)."; renderSwapList(); }); });
 $("swapRun").addEventListener("click", function () { $("swapRun").disabled = true;
   swapRun().then(function (m) { $("swapStatus").textContent = m; }, function (e) { $("swapStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; })
     .then(function () { $("swapRun").disabled = false; }); });

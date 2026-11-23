@@ -2110,6 +2110,19 @@ function audit(name, L, o) {
   check("Swap: standings + entries file -> one card for the entry with its proposal (or keep), the status naming the contest, field and draws; Export off; the step label counts",
         sw1.cards === 1 && sw1.res.length === 1 && /60 entries \(0 unmatched\)/.test(sw1.status) && sw1.exportOff && /Swap/.test(sw1.label) &&
         sw1.res[0].next.length === 8 && swIn.started.every(id => sw1.res[0].next[swIn.ours.indexOf(id)] === id), JSON.stringify(sw1));
+  // kept in the browser: a reload (the slate loaded again) restores the standings and the entries file; the card shows
+  // the live points at the button's moment
+  const swKeep = await pg.evaluate(async () => {
+    await new Promise(r => setTimeout(r, 300));
+    const nS = SWAP.stand.length, nE = SWAP.ent.rows.length, res = SWAP.res;
+    SWAP.stand = []; SWAP.ent = null; await swapRestore();
+    const out = { stand: SWAP.stand.length === nS, ent: !!SWAP.ent && SWAP.ent.rows.length === nE, msg: document.getElementById("swapStatus").textContent,
+                  now: typeof res[0].now === "number" && /pts now/.test(document.querySelector("#swapBox .swapcard .hd") ? document.querySelector("#swapBox .swapcard .hd").textContent : "") };
+    SWAP.res = res; renderSwap(); out.now = out.now || /pts now/.test(document.querySelector("#swapBox .swapcard .hd").textContent);
+    return out;
+  });
+  check("Swap: the standings and the entries file are kept in this browser for the slate (a reload restores them); the card shows the live points now",
+        swKeep.stand && swKeep.ent && /Restored from this browser/.test(swKeep.msg) && swKeep.now, JSON.stringify(swKeep));
   // the two field assumptions differing: both answers on the card, a radio picks which one is used (and accepted)
   const swAlt = await pg.evaluate(() => {
     const p = SWAP.res[0], keep = p.alt;

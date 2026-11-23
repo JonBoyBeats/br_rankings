@@ -225,6 +225,17 @@ check("replay: the proposal exports: valid, its started cells byte for byte, the
       !!ex7.csv && back7.rows[0].ids.join() === P7.next.join() && OURS.rows[0].cells.every((c, k) => !isSt(OURS.rows[0].ids[k]) || back7.rows[0].cells[k] === c) &&
       P7.steps.every(x => P7.next.indexOf(x.swap[1]) >= 0 && P7.next.indexOf(x.swap[0]) < 0), JSON.stringify(ex7.errors));
 
+// the standings file as ownership only (2026-11-23): run later than the file (a game tipped since its download), the
+// field's hidden slots still draw from that game, at its live points, and ours swap only among players not yet started
+{ const starts = Object.keys(by).map(id => Date.parse(by[id].game_start || "")).filter(t => t > AT).sort((a, b) => a - b);
+  if (starts.length) {
+    const later = starts[0] + 60000, stL = id => Date.parse(by[id].game_start || "") < later;
+    let x = 3; const rnd = () => { x = (x * 16807) % 2147483647; return x / 2147483647; };
+    const RL = W.run({ by, own: C.own, standings: st, ours: OURS.rows, plays, at: later, nights: nights7, ids: ids7, table: tableE, M: 6, random: rnd, maxSwaps: 2 });
+    const PL_ = RL.proposals[0];
+    check("standings as ownership: a game tipped since the download stays in the field's draws (counted), and our swaps take only players not yet started",
+          RL.stats.tippedSince >= 1 && RL.stats.draws > 0 && PL_.steps.every(y => !stL(y.swap[0]) && !stL(y.swap[1])) && typeof PL_.now === "number", JSON.stringify(RL.stats));
+  } }
 // the coordinator's piece-4 additions: the salary-left share of the draws near the real 98.7%; the chalk power
 { let x = 11; const rnd = () => { x = (x * 16807) % 2147483647; return x / 2147483647; }; const L = [];
   st.entries.forEach(e => { const open = e.slots.filter(y => y.name === null).map(y => y.slot), have = e.slots.filter(y => y.name).map(y => mt.ids[y.name]);

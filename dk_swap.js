@@ -316,7 +316,8 @@
       for (var s = 0; s < S; s++) {
         var v = b; st.forEach(function (id) { v += at(s, id) * (o.left[id] != null ? o.left[id] : 1); });
         START[s][e] = v;
-        var h = opts[s % opts.length], hv = 0; h.forEach(function (id) { hv += at(s, id); });
+        var h = opts[s % opts.length], hv = 0;
+        h.forEach(function (id) { hv += o.started[id] && !mineSet[e] ? (o.base[id] || 0) + at(s, id) * (o.left[id] != null ? o.left[id] : 1) : at(s, id); });
         F[s][e] = v + hv;
       }
     });
@@ -439,13 +440,19 @@
       open.push(e.slots.filter(function (x) { return !x.name; }).map(function (x) { return x.slot; }));
       lefts.push(CAP - lu.reduce(function (t, x) { return t + (x[1] ? by[x[1]].salary || 0 : 0); }, 0));
     });
+    /* the standings file is the field's ownership only (2026-11-23, the owner): the live score is the button's moment.
+       A field entry's hidden slots are drawn from the games the file hasn't revealed (no revealed player in them), so a
+       game that tipped after the download is still in the draw, at its live points; ours swap only among the players
+       not started at the moment (DraftKings' rule). */
+    var revGames = {}; Object.keys(mt.ids).forEach(function (nm) { var r = by[mt.ids[nm]]; if (r) revGames[r.event || r.game] = 1; });
     var hidden = rows.filter(function (r) { return !started(r.id) && r.status !== "Out"; }), mass = hiddenMass(o.standings.entries);
-    var w = hiddenOwn(o.own || {}, hidden.map(function (r) { return r.id; }), mass), stats = { draws: 0, fallback: 0 }, draws = {};
+    var fieldPool = rows.filter(function (r) { return !revGames[r.event || r.game] && r.status !== "Out"; });
+    var w = hiddenOwn(o.own || {}, fieldPool.map(function (r) { return r.id; }), mass), stats = { draws: 0, fallback: 0 }, draws = {};
     if (o.chalk && o.chalk !== 1) Object.keys(w).forEach(function (id) { w[id] = Math.pow(w[id], o.chalk); });
     lineups.forEach(function (lu, e) {
       if (open[e] === null || !open[e].length) return;
       var d = [];
-      for (var m = 0; m < (o.M || 6); m++) { var x = fieldDraw(o.random, open[e], lefts[e], hidden, w, stats); if (x) d.push(x); }
+      for (var m = 0; m < (o.M || 6); m++) { var x = fieldDraw(o.random, open[e], lefts[e], fieldPool, w, stats); if (x) d.push(x); }
       draws[e] = d;
     });
     var B = board({ ids: o.ids, nights: o.nights, started: stMap, base: base, left: left, lineups: lineups, mine: mine, draws: draws, table: o.table });
@@ -453,10 +460,12 @@
     var proposals = mine.map(function (e) {
       var r = rowOf[e], p = propose(B, e, lineups[e], stMap, pool, by, o.maxSwaps || 2);
       var next = p.steps.length ? applySwaps(r.ids, p.steps.map(function (x) { return x.swap; }), by, started) : r.ids.slice();
-      return { entryId: r.entryId, ids: r.ids, cur: p.cur, steps: p.steps, next: next };
+      var now = r.ids.reduce(function (t, id) { return t + (stMap[id] ? base[id] || 0 : 0); }, 0);
+      return { entryId: r.entryId, ids: r.ids, cur: p.cur, steps: p.steps, next: next, now: Math.round(now * 100) / 100 };
     });
     return { proposals: proposals, stats: { entries: o.standings.entries.length, field: lineups.length, unmatched: unmatched, unknownGames: live.unknown,
-             draws: stats.draws, fallback: stats.fallback, hiddenMass: mass, chalk: o.chalk || 1 } };
+             draws: stats.draws, fallback: stats.fallback, hiddenMass: mass, chalk: o.chalk || 1,
+             tippedSince: Object.keys(fieldPool.reduce(function (g, r) { if (started(r.id)) g[r.event || r.game] = 1; return g; }, {})).length } };
   }
 
   return { CAP: CAP, SLOTS: SLOTS, run: run, applySwaps: applySwaps, exportEntries: exportEntries, board: board, canFill: canFill, swaps: swaps, propose: propose, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
