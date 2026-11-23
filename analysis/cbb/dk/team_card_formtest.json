@@ -1,0 +1,26 @@
+{
+ "calib": 1.0745,
+ "groups": {
+  "above": {
+   "n": 95,
+   "under": 78,
+   "over": 17
+  },
+  "in line": {
+   "n": 304,
+   "under": 206,
+   "over": 98
+  },
+  "below": {
+   "n": 103,
+   "under": 48,
+   "over": 55
+  }
+ },
+ "hot_holds": true,
+ "bounce_holds": true,
+ "words": {
+  "above": "running hot, regression risk",
+  "below": "due to bounce back"
+ }
+}

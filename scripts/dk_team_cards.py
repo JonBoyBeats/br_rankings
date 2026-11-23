@@ -51,8 +51,21 @@ HIT_X, CEILING_X, FLOOR_X = 4.0, 5.0, 2.0
 FORM_GAMES = 5
 """Recent DraftKings output = points per minute over his last 5 games played."""
 BOUNCE_BELOW, HOT_ABOVE = 0.85, 1.15
-"""Recent output against EvanMiya's skills-based DraftKings rate (miya_ppm): under 0.85 of it 'due to bounce back',
-over 1.15 'running hot, regression risk', between 'in line'. Needs 3+ games and a Miya rate."""
+"""Recent output (DK per minute, his last FORM_GAMES) against EvanMiya's skills-based DraftKings rate (miya_ppm) times
+the calibration factor (FORM_CALIB): under 0.85 of it below, over 1.15 above, between 'in line'. Needs 3+ games and a
+Miya rate. Worded as a prediction only where the form backtest holds (FORM_EDGE); otherwise descriptively."""
+FORM_CALIB = 1.0
+"""EvanMiya's rate runs low against what players score: the median, over the reference's rotation players (CALIB_MIN_MPG
+and 3+ games), of season DK per minute / miya_ppm. Set from the reference file (form_calib.factor); 1.0 without it."""
+CALIB_MIN_MPG = 10.0
+"""A reference player counts toward FORM_CALIB at 10+ minutes a game over 3+ games."""
+FORM_EDGE, FORM_MIN_N, FORM_TEST_MIN = 0.10, 20, 10.0
+"""The form backtest (formtest): on the graded slates, 'above' players' next-game DK per minute comes in under their
+recent rate at least 10 points more often than in-line players' (and 'below' players' over it), with 20+ players in the
+group, judged on next games of 10+ minutes; then the wording is predictive ('running hot, regression risk' / 'due to
+bounce back'), else descriptive ('above EvanMiya's rate' / 'below EvanMiya's rate')."""
+FORM_WORDS = {"above": "above EvanMiya's rate", "below": "below EvanMiya's rate"}
+"""The form verdicts' wording, set from the form backtest file (team_card_formtest.json) per side."""
 SHY_CV, SHY_MPG = 0.25, 20.0
 """'Shy away even if starting': his minutes' coefficient of variation 0.25+ and his average under 20."""
 MIXED_ROLE = (0.0, 1.0)
@@ -72,26 +85,9 @@ NEW_OUT_MIN_GP = 1
 """An Out player who has played this many games this season or more is a NEW out: his minutes' redistribution (out_gain)
 is listed. A season-long out (0 games) is already missing from everyone's averages, so no list (it reads as double
 counting)."""
-CORE_MIN_PROJ, CORE_MAX_CV, CORE_MAX = 30.0, 0.15, 3
-"""Bottom line, Core: projected 30+ minutes, his minutes' coefficient of variation at most 0.15 (a stable role), started
-every game he played; the top 3 by projected minutes at most."""
-VALUE_MAX_SALARY, VALUE_MIN_PROJ, VALUE_MIN_CEIL = 5000, 25.0, 2
-"""Bottom line, Value: salary $5,000 or less, projected 25+ minutes, 2+ ceiling games (CEILING_X) this season; the
-running-hot verdict (HOT_ABOVE) is named as a caveat when it fires."""
-STRONG_MIN_PROJ = 27.0
-"""Bottom line, Strong: projected 27+ minutes (with STRONG_MAX_CV and STRONG_STARTS or STRONG_TOP_DK)."""
-STRONG_MAX_CV = 0.20
-"""Bottom line, Strong: his minutes' coefficient of variation at most 0.20 over the games he played."""
-STRONG_STARTS = 4
-"""Bottom line, Strong: started 4+ of his last STRONG_LAST games played ..."""
-STRONG_LAST = 5
-"""... the window for STRONG_STARTS."""
-STRONG_TOP_DK = 2
-"""... or top 2 on the team in DraftKings points a game (among tonight's rotation lines). Core and Value players are
-not repeated as Strong."""
-JOB_START_RATE, STEADY_MIN_MPG, LOW_START_MPG = 0.75, 25.0, 20.0
+JOB_START_RATE, STEADY_MIN_MPG, LOW_START_MPG, STEADY_MAX_CV = 0.75, 25.0, 20.0, 0.15
 """A moving position group, read player by player: started 75%+ of his games: 'has the starting job'; 25+ mpg with
-minutes CV at most CORE_MAX_CV while starting under half: 'minutes as steady as a starter's'; started half or more but
+minutes CV at most STEADY_MAX_CV (0.15) while starting under half: 'minutes as steady as a starter's'; started half or more but
 a median under 20 minutes: 'starts but plays little'. The team's best DraftKings rate per minute among the rotation is
 named where its holder is in the group."""
 MOST_NIGHTS = 0.6
@@ -121,7 +117,9 @@ def minutes_note(proj, season, last3, out_gain=None):
         return "shrinking role"
     if abs(proj - season) <= MIN_SAFE_BAND and abs(proj - last3) <= MIN_SAFE_BAND:
         return "minutes safe as projected"
-    return None
+    if proj <= min(season, last3) - PROJ_ABOVE_MIN:
+        return "projection below recent role"
+    return "minutes roughly as projected"
 
 
 def count_games(dks, salary, x):
@@ -139,23 +137,6 @@ def new_out(played):
     return played >= NEW_OUT_MIN_GP
 
 
-def is_core(L):
-    """CORE_MIN_PROJ, CORE_MAX_CV: a stable 30-minute starter."""
-    return (L["proj_min"] or 0) >= CORE_MIN_PROJ and L["gp"] >= 3 and L["starts"] == L["gp"] and cv(L["mins"]) <= CORE_MAX_CV
-
-
-def is_strong(L, top_dk_names):
-    """STRONG_MIN_PROJ, STRONG_MAX_CV, STRONG_STARTS / STRONG_LAST or STRONG_TOP_DK (top_dk_names: the team's top
-    STRONG_TOP_DK by DK points a game)."""
-    return ((L["proj_min"] or 0) >= STRONG_MIN_PROJ and L["gp"] >= 3 and cv(L["mins"]) <= STRONG_MAX_CV
-            and (sum(L.get("start_flags", [])[-STRONG_LAST:]) >= STRONG_STARTS or L["name"] in top_dk_names))
-
-
-def is_value(L):
-    """VALUE_MAX_SALARY, VALUE_MIN_PROJ, VALUE_MIN_CEIL."""
-    return L["salary"] <= VALUE_MAX_SALARY and (L["proj_min"] or 0) >= VALUE_MIN_PROJ and L["ceil"] >= VALUE_MIN_CEIL
-
-
 def group_read(L, best_ppm_name):
     """One sentence on a moving group's player (JOB_START_RATE, STEADY_MIN_MPG, LOW_START_MPG), or None."""
     rate = L["starts"] / L["gp"] if L["gp"] else 0
@@ -163,7 +144,7 @@ def group_read(L, best_ppm_name):
     best = " and the team's best per-minute rate (%.2f)" % L["dk_pm"] if L["name"] == best_ppm_name else ""
     if rate >= JOB_START_RATE and med >= LOW_START_MPG:
         return "%s has the starting job (%d of %d)%s" % (last(L["name"]), L["starts"], L["gp"], best)
-    if rate < 0.5 and (L["season_mpg"] or 0) >= STEADY_MIN_MPG and cv(L["mins"]) <= CORE_MAX_CV:
+    if rate < 0.5 and (L["season_mpg"] or 0) >= STEADY_MIN_MPG and cv(L["mins"]) <= STEADY_MAX_CV:
         return "%s's %.0f minutes off the bench (%d of %d starts) are as steady as a starter's (%.0f-%.0f)%s" % (
             last(L["name"]), L["season_mpg"], L["starts"], L["gp"], min(L["mins"]), max(L["mins"]), best)
     if rate >= 0.5 and med < LOW_START_MPG:
@@ -185,8 +166,8 @@ def form_note(dks, mins, miya_ppm):
     if len(d) < 3 or not miya_ppm or not sum(m):
         return None, (sum(d) / sum(m) if sum(m) else None), None
     ppm = sum(d) / sum(m)
-    r = ppm / miya_ppm
-    return ("due to bounce back" if r < BOUNCE_BELOW else "running hot, regression risk" if r > HOT_ABOVE else "in line"), ppm, r
+    r = ppm / (miya_ppm * FORM_CALIB)
+    return (FORM_WORDS["below"] if r < BOUNCE_BELOW else FORM_WORDS["above"] if r > HOT_ABOVE else "in line"), ppm, r
 
 
 def shy_away(mins):
@@ -383,11 +364,16 @@ def build(team, slate_id, cache):
     for v in P.values():
         games.setdefault(v["game"], v.get("ou"))
     ous = [x for x in games.values() if x]
+    imp = {}
+    for v in P.values():
+        if v.get("team") and v.get("ou") and v.get("spread") is not None:
+            imp.setdefault(v["team"], v["ou"] / 2 - v["spread"] / 2)
     ou, spread = r0.get("ou"), r0.get("spread")
     implied = ou / 2 - spread / 2 if ou and spread is not None else None
     env = {"team": mt, "opp": mo, "off_rank": int(T["Off Rank"]), "tempo_rank": int(T["Tempo Rank"]), "tempo": float(T["True Tempo"]),
            "opp_def_rank": int(O["Def Rank"]), "opp_tempo_rank": int(O["Tempo Rank"]), "ou": ou, "spread": spread, "implied": implied,
-           "ou_rank": sorted(ous).index(ou) + 1, "ou_n": len(ous), "ous": sorted(ous), "miya_day": day, "game": r0["game"]}
+           "ou_rank": sorted(ous).index(ou) + 1, "ou_n": len(ous), "ous": sorted(ous),
+           "implied_rank": sorted(imp.values(), reverse=True).index(implied) + 1 if implied in imp.values() else None, "implied_n": len(imp), "miya_day": day, "game": r0["game"]}
     env["kind"] = environment(env["tempo_rank"], env["opp_tempo_rank"], ou, ous)
     bx = boxes(r0["espn_team"], cache)
     n = len(bx)
@@ -463,34 +449,9 @@ def ordinal(k):
 
 
 def prose(c, holds, ref=None, tonight=None):
-    """The card's paragraphs, from the numbers and the rules; varied phrasing by name (variant). Bottom line first;
-    verdict tags in bold; 'minutes safe' and 'in line' gathered into one sentence instead of repeated per player."""
+    """The card's paragraphs, from the numbers and the rules; varied phrasing by name (variant); verdicts in bold."""
     e, out, Ls = c["env"], [], c["lines"]
-    money = lambda x: "$%.1fk" % (x / 1000)
-    # -- bottom line (is_core, is_value, pool_flag)
-    core = [L for L in Ls if is_core(L)][:CORE_MAX]
-    value = [L for L in Ls if is_value(L) and L not in core]
-    top_dk = [L["name"] for L in sorted((L for L in Ls if L["dk_pg"] is not None), key=lambda L: -L["dk_pg"])[:STRONG_TOP_DK]]
-    strong = [L for L in Ls if is_strong(L, top_dk) and L not in core and L not in value]
-    fade = [L for L in Ls if L["pool_out"]]
-    bl = []
-    if core:
-        bl.append("Core: %s, locked-in %.0f-minute roles." % (" and ".join(last(L["name"]) for L in core), S.mean(L["proj_min"] for L in core)))
-    if strong:
-        bl.append("Strong: %s." % "; ".join("%s (%s, %.0f min, %d of last %d started, %.1f DK a game)" % (
-            last(L["name"]), money(L["salary"]), L["proj_min"], sum(L["start_flags"][-STRONG_LAST:]), min(STRONG_LAST, L["gp"]), L["dk_pg"]) for L in strong))
-    if value:
-        sal = sorted(L["salary"] for L in value)
-        rng = money(sal[0]) if sal[0] == sal[-1] else "%s-%s" % (money(sal[0]), money(sal[-1])[1:])
-        hot = [last(L["name"]) for L in value if L["form"] and L["form"].startswith("running hot")]
-        bl.append("Value: %s (%s, %.0f min, multiple %gx games)%s." % (
-            " and ".join(last(L["name"]) for L in value), rng, S.mean(L["proj_min"] for L in value), CEILING_X,
-            ", but %s %s **running hot** vs Miya" % (" and ".join(hot), "is" if len(hot) == 1 else "are") if hot else ""))
-    if fade:
-        bl.append(("Fade: %s." if holds else "Light on ceiling: %s.") % ", ".join(last(L["name"]) for L in fade))
-    if bl:
-        out.append(("Bottom line.", " ".join(bl)))
-    # -- game environment
+    # -- game environment (the implied total's rank on tonight's slate)
     pos = "the lowest" if e["ou_rank"] == 1 else "the highest" if e["ou_rank"] == e["ou_n"] else "%s of %d" % (ordinal(e["ou_rank"]), e["ou_n"])
     gap = ""
     if e["ou_rank"] == 1 and len(e["ous"]) > 1:
@@ -502,10 +463,10 @@ def prose(c, holds, ref=None, tonight=None):
             "middling": "no pace edge either way"}[e["kind"]]
     out.append(("%s today." % e["team"],
                 "Per EvanMiya (%s), %s's offense ranks %s and its true tempo %s (%.1f). %s's defense ranks %s, its pace %s. "
-                "The over/under is %.1f, %s on the slate%s; the spread has %s %s%.1f, an implied %.1f points. Read: %s." % (
+                "The over/under is %.1f, %s on the slate%s; the spread has %s %s%.1f, an implied %.1f points (%s of %d tonight). Read: %s." % (
                     e["miya_day"], e["team"], ordinal(e["off_rank"]), ordinal(e["tempo_rank"]), e["tempo"], e["opp"], ordinal(e["opp_def_rank"]),
                     ordinal(e["opp_tempo_rank"]), e["ou"], pos, gap, e["team"], "-" if e["spread"] < 0 else "+",
-                    abs(e["spread"]), e["implied"], kind)))
+                    abs(e["spread"]), e["implied"], ordinal(e["implied_rank"]), e["implied_n"], kind)))
     # -- outs (NEW_OUT_MIN_GP: the redistribution only for new outs)
     if c["outs"]:
         old = [o for o in c["outs"] if not new_out(o["played"])]
@@ -524,20 +485,15 @@ def prose(c, holds, ref=None, tonight=None):
         out.append(("OUT:", txt))
     if c["flags"]:
         out.append(("Flags:", "; ".join(c["flags"]) + "."))
-    # -- rotation shape
+    # -- rotation shape: the label from the reference's cuts; tonight's ranks only (slate_rank)
     st, tn = c["stats"], tonight or {}
     tight, deep = cuts(ref)
     lab = "tight" if st["top7"] >= tight else "deep" if st["top7"] < deep else "standard"
-    cx = lambda k, w: context(st[k], k, ref, tn.get(k, []), w)
-    out.append(("Rotation.", "%s plays a **%s** rotation: %d players at %d+ minutes a game; the top 5 take %.0f%%%s and the top 7 %.0f%%%s (%d games). "
-                "The top 3 fantasy scorers have produced %.0f%% of the team's DraftKings points%s." % (
-                    e["team"], lab, st["regs"], MPG_BAR, 100 * st["top5"], cx("top5", ("tighter", "looser")), 100 * st["top7"], cx("top7", ("tighter", "looser")),
-                    c["games"], 100 * st["top3dk"], cx("top3dk", ("more concentrated", "less concentrated")))))
-    # -- the steady ones, once (minutes safe and output in line)
-    steady = [L for L in Ls if L["min_note"] == "minutes safe as projected" and L["form"] in ("in line", None) and not L["pool_out"]]
-    if steady:
-        out.append(("", "Minutes safe as projected and output in line with EvanMiya: %s." % ", ".join(last(L["name"]) for L in steady)))
-    # -- player lines
+    rk = lambda k: slate_rank(st[k], tn.get(k, []))
+    out.append(("Rotation.", "%s plays a **%s** rotation: the top 5 take %.0f%% of the minutes%s, and the top 3 fantasy scorers produce %.0f%% of its DK points%s." % (
+        e["team"], lab, 100 * st["top5"], (" (%s tightest)" % rk("top5")) if rk("top5") else "",
+        100 * st["top3dk"], (" (%s)" % rk("top3dk")) if rk("top3dk") else "")))
+    # -- player lines: both verdicts on every line
     for L in Ls:
         role = "%d of %d starts" % (L["starts"], L["gp"])
         if L["starts"] == L["gp"] and L["gp"]:
@@ -547,14 +503,15 @@ def prose(c, holds, ref=None, tonight=None):
         mins = ", ".join("%.0f" % m for m in L["last5_mins"])
         lead = variant(L["name"] + "x", ["**%s** (%s, %s) is at %.1f mpg", "**%s** (%s, %s) averages %.1f minutes", "**%s** (%s, %s): %.1f mpg"]) % (
             L["name"], "${:,}".format(L["salary"]), role, L["season_mpg"] or 0)
-        s = lead + " (%s), %.1f projected" % (mins, L["proj_min"])
-        s += " — **%s**." % L["min_note"] if L["min_note"] and L["min_note"] != "minutes safe as projected" else "."
+        s = lead + " (%s), %.1f projected: **%s**." % (mins, L["proj_min"], L["min_note"] or "no minutes history")
         if L["obpr"] is not None and L["obpr_rank"]:
             s += " OBPR %.2f (%s on the team)." % (L["obpr"], ordinal(L["obpr_rank"]))
-        s += " %.1f DK a game, %.2f a minute; %gx in %d of %d, %gx in %d, under %gx in %d." % (
-            L["dk_pg"] or 0, L["dk_pm"] or 0, HIT_X, L["hits"], L["gp"], CEILING_X, L["ceil"], FLOOR_X, L["floor"])
-        if L["form"] and L["form"] != "in line":
-            s += " Recent %.2f a minute vs EvanMiya's %.2f: **%s**." % (L["ppm_recent"], L["miya_ppm"], L["form"])
+        g = max(1, L["gp"])
+        s += " %.1f DK a game; %gx+ in %.0f%%, under %gx in %.0f%%." % (L["dk_pg"] or 0, CEILING_X, 100 * L["ceil"] / g, FLOOR_X, 100 * L["floor"] / g)
+        if L["miya_ppm"] and L["ppm_recent"] is not None and L["form"]:
+            s += " %.2f a minute vs EvanMiya's %.2f (calibrated): **%s**." % (L["ppm_recent"], L["miya_ppm"] * FORM_CALIB, L["form"])
+        elif L["ppm_recent"] is not None:
+            s += " %.2f a minute%s." % (L["ppm_recent"], "; no EvanMiya rate" if not L["miya_ppm"] else "; too few games to compare")
         if L["shy"]:
             s += " **Shy away even if starting**: minutes too volatile and too low."
         if L["pool_out"]:
@@ -570,6 +527,7 @@ def prose(c, holds, ref=None, tonight=None):
             txt += " " + " ".join("%s: %d of %d starts, minutes %s." % (last(L["name"]), L["starts"], L["gp"], ", ".join("%.0f" % m for m in L["last5_mins"])) for L in other)
         out.append(("The %s spots have been moving." % ("guard" if k == "G" else "forward"), txt.strip()))
     # -- pool
+    fade = [L for L in Ls if L["pool_out"]]
     keep = [last(L["name"]) for L in Ls if not L["pool_out"]]
     if fade:
         why = "no %gx game in the last %d and projected under %d minutes" % (CEILING_X, POOL_LAST_N, POOL_MIN_PROJ)
@@ -579,6 +537,12 @@ def prose(c, holds, ref=None, tonight=None):
     else:
         out.append(("Pool.", "Every rotation player here has a ceiling game recently; keep %s." % ", ".join(keep)))
     return out
+
+
+def slate_rank(x, vals):
+    """'6th/8': x's rank, highest first, among tonight's values; '' with fewer than 2."""
+    v = sorted(vals, reverse=True)
+    return "%s/%d" % (ordinal(v.index(x) + 1), len(v)) if len(v) > 1 and x in v else ""
 
 
 # ---- the backtest -----------------------------------------------------------------------------------------------
@@ -675,6 +639,45 @@ BACKTEST = os.path.join(HERE, "..", "analysis", "cbb", "dk", "team_card_backtest
 """The pool rule's backtest, kept (the nightly run reads it: it has no mirror history to rerun it); `backtest` rewrites it."""
 
 
+FORMTEST = os.path.join(HERE, "..", "analysis", "cbb", "dk", "team_card_formtest.json")
+"""The form verdicts' backtest (formtest), kept for the nightly run: it sets the wording (FORM_WORDS)."""
+
+
+def formtest(calib):
+    """On the graded slates (dk_eval records, the lock card's last games and miya_ppm): players 'above' / 'in line' /
+    'below' EvanMiya's calibrated rate at lock; how often the next game's DK per minute (FORM_TEST_MIN+ minutes) came in
+    under / over his recent rate. Predictive wording per side where it beats in-line by FORM_EDGE with FORM_MIN_N+."""
+    sys.path.insert(0, HERE)
+    import dk_eval as E
+    from dk_dnp_study import lock_players
+    num = E.num
+    by = {}
+    for r in E.records():
+        if r["status"] != "Out" and num(r["actual_dk"]) is not None:
+            by.setdefault((r["date"], r["draft_group"]), []).append(r)
+    g = {k: {"n": 0, "under": 0, "over": 0} for k in ("above", "in line", "below")}
+    for (d, gid), rs in sorted(by.items()):
+        P, _ = lock_players(d, gid)
+        for r in rs:
+            row = P.get(r["dk_id"]) or {}
+            l5, mp, mn = row.get("last5") or [], row.get("miya_ppm"), num(r.get("min")) or 0
+            if len(l5) < 3 or not mp or mn < FORM_TEST_MIN or not sum(x[1] for x in l5[-FORM_GAMES:]):
+                continue
+            rec = sum(x[2] for x in l5[-FORM_GAMES:]) / sum(x[1] for x in l5[-FORM_GAMES:])
+            ratio = rec / (mp * calib)
+            k = "below" if ratio < BOUNCE_BELOW else "above" if ratio > HOT_ABOVE else "in line"
+            nxt = num(r["actual_dk"]) / mn
+            g[k]["n"] += 1
+            g[k]["under"] += nxt < rec
+            g[k]["over"] += nxt > rec
+    rate = lambda k, w: g[k][w] / g[k]["n"] if g[k]["n"] else 0.0
+    hot = g["above"]["n"] >= FORM_MIN_N and rate("above", "under") - rate("in line", "under") >= FORM_EDGE
+    cold = g["below"]["n"] >= FORM_MIN_N and rate("below", "over") - rate("in line", "over") >= FORM_EDGE
+    return {"calib": calib, "groups": g, "hot_holds": hot, "bounce_holds": cold,
+            "words": {"above": "running hot, regression risk" if hot else "above EvanMiya's rate",
+                      "below": "due to bounce back" if cold else "below EvanMiya's rate"}}
+
+
 def cached_backtest():
     try:
         return json.load(open(BACKTEST))
@@ -693,21 +696,34 @@ the graded slates and tonight's), team_stats on its box scores to date; `referen
 
 def reference():
     """{generated_at, n, slates, teams: {espn team: {team, top5, top7, top3dk, games}}, cuts}."""
-    cache, teams, files = {}, {}, sorted(glob.glob(os.path.join(BRR, "data", "dk", "cbb", "*_proj.json")))
+    cache, teams, files, miya = {}, {}, sorted(glob.glob(os.path.join(BRR, "data", "dk", "cbb", "*_proj.json"))), {}
     for f in files:
         for v in json.load(open(f)).values():
             if v.get("espn_team") and v.get("team"):
                 teams.setdefault(str(v["espn_team"]), v["team"])
-    out = {}
+            if v.get("espn") and v.get("miya_ppm"):
+                miya[str(v["espn"])] = v["miya_ppm"]          # the newest slate's rate wins (files in date order)
+    out, ratios = {}, []
     for et, ab in sorted(teams.items()):
         try:
-            st = team_stats(boxes(et, cache))
+            bx = boxes(et, cache)
+            st = team_stats(bx)
+            per = {}
+            for g in bx:
+                for pid, x in g["players"].items():
+                    per.setdefault(pid, []).append(x)
+            for pid, xs in per.items():                       # FORM_CALIB: season DK per minute / Miya, rotation players
+                m = sum(x["min"] for x in xs)
+                if len(xs) >= 3 and m / len(xs) >= CALIB_MIN_MPG and miya.get(pid):
+                    ratios.append(sum(x["dk"] for x in xs) / m / miya[pid])
         except Exception as e:
             print("dk_team_cards reference: %s skipped (%s)" % (ab, e))
             continue
         if st and st["games"] >= 1:
             out[et] = dict({k: round(v, 4) if isinstance(v, float) else v for k, v in st.items()}, team=ab)
-    doc = {"generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "n": len(out), "slates": len(files), "teams": out}
+    doc = {"generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "n": len(out), "slates": len(files), "teams": out,
+           "form_calib": {"factor": round(S.median(ratios), 4) if ratios else 1.0, "n": len(ratios),
+                          "rule": "median of season DK per minute / miya_ppm, players at %g+ mpg over 3+ games" % CALIB_MIN_MPG}}
     t, d = cuts(doc)
     doc["cuts"] = {"tight_top7": round(t, 4), "deep_top7": round(d, 4), "tight_pct": TIGHT_PCT, "deep_pct": DEEP_PCT,
                    "fallback": {"tight_top7": TIGHT_TOP7, "deep_top7": DEEP_TOP7}}
@@ -760,6 +776,7 @@ def main():
     s.add_argument("--out", required=True)
     sub.add_parser("backtest")
     sub.add_parser("reference")
+    sub.add_parser("formtest")
     w = sub.add_parser("all")
     w.add_argument("--out", required=True, help="the JSON the page reads, e.g. mirror/dk_cbb_writeups.json")
     a = ap.parse_args()
@@ -774,7 +791,19 @@ def main():
         json.dump(doc, open(REFERENCE, "w"), indent=1)
         print("dk_team_cards reference: %d teams from %d slates; top-7 cuts tight %.3f, deep %.3f" % (doc["n"], doc["slates"], doc["cuts"]["tight_top7"], doc["cuts"]["deep_top7"]))
         return
+    global FORM_CALIB, FORM_WORDS
+    if a.cmd == "formtest":
+        ref0 = cached_reference()
+        ft = formtest(((ref0 or {}).get("form_calib") or {}).get("factor", 1.0))
+        json.dump(ft, open(FORMTEST, "w"), indent=1)
+        print(json.dumps(ft, indent=1))
+        return
     bt, ref = cached_backtest(), cached_reference()
+    FORM_CALIB = ((ref or {}).get("form_calib") or {}).get("factor", 1.0)
+    try:
+        FORM_WORDS = json.load(open(FORMTEST))["words"]
+    except (OSError, ValueError, KeyError):
+        pass
     if a.cmd == "all":
         doc = {"generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "backtest": bt,
                "rule": "scripts/dk_team_cards.py (br_rankings); display only", "slates": writeups(bt["holds"], ref),

@@ -21,6 +21,8 @@
     158.5,
     164.5
    ],
+   "implied_rank": 7,
+   "implied_n": 8,
    "miya_day": "2026-11-23",
    "game": "MISS@CLEM",
    "kind": "grind"
@@ -103,7 +105,7 @@
     "form": "in line",
     "ppm_recent": 0.9699367088607594,
     "miya_ppm": 0.897,
-    "form_ratio": 1.0813118270465545,
+    "form_ratio": 1.0063395319186175,
     "shy": false,
     "pool_out": false,
     "status": null
@@ -161,7 +163,7 @@
     "form": "in line",
     "ppm_recent": 0.7659235668789809,
     "miya_ppm": 0.699,
-    "form_ratio": 1.0957418696408883,
+    "form_ratio": 1.0197690736536884,
     "shy": false,
     "pool_out": false,
     "status": null
@@ -219,7 +221,7 @@
     "form": "in line",
     "ppm_recent": 0.7068965517241379,
     "miya_ppm": 0.664,
-    "form_ratio": 1.0646032405484005,
+    "form_ratio": 0.9907894281511405,
     "shy": false,
     "pool_out": false,
     "status": null
@@ -277,7 +279,7 @@
     "form": "running hot, regression risk",
     "ppm_recent": 0.863013698630137,
     "miya_ppm": 0.685,
-    "form_ratio": 1.25987401259874,
+    "form_ratio": 1.1725211843636483,
     "shy": false,
     "pool_out": false,
     "status": null
@@ -332,10 +334,10 @@
      20.0
     ],
     "floor": 0,
-    "form": "in line",
+    "form": "due to bounce back",
     "ppm_recent": 1.0909090909090908,
     "miya_ppm": 1.199,
-    "form_ratio": 0.909849116688149,
+    "form_ratio": 0.8467651155776167,
     "shy": false,
     "pool_out": false,
     "status": null
@@ -393,7 +395,7 @@
     "form": "in line",
     "ppm_recent": 0.6285714285714286,
     "miya_ppm": 0.655,
-    "form_ratio": 0.9596510359869138,
+    "form_ratio": 0.8931140400064344,
     "shy": false,
     "pool_out": false,
     "status": null
@@ -451,7 +453,7 @@
     "form": "in line",
     "ppm_recent": 0.9230769230769231,
     "miya_ppm": 1.007,
-    "form_ratio": 0.9166603009701323,
+    "form_ratio": 0.8531040492974706,
     "shy": false,
     "pool_out": true,
     "status": null
@@ -505,12 +507,69 @@
     "form": "in line",
     "ppm_recent": 0.5863636363636363,
     "miya_ppm": 0.618,
-    "form_ratio": 0.9488084730803177,
+    "form_ratio": 0.8830232415824268,
     "shy": false,
     "pool_out": false,
     "status": null
    }
   ],
+  "pool": {
+   "45058782": {
+    "pool": "in",
+    "why": "the pool rule doesn't fire",
+    "deep": false
+   },
+   "45058806": {
+    "pool": "in",
+    "why": "the pool rule doesn't fire",
+    "deep": false
+   },
+   "45058846": {
+    "pool": "in",
+    "why": "the pool rule doesn't fire",
+    "deep": false
+   },
+   "45058836": {
+    "pool": "in",
+    "why": "the pool rule doesn't fire",
+    "deep": false
+   },
+   "45058794": {
+    "pool": "in",
+    "why": "the pool rule doesn't fire",
+    "deep": false
+   },
+   "45058870": {
+    "pool": "in",
+    "why": "the pool rule doesn't fire",
+    "deep": false
+   },
+   "45058792": {
+    "pool": "out",
+    "why": "no 5x game in his last 5 and projected under 20 minutes",
+    "deep": false
+   },
+   "45058886": {
+    "pool": "in",
+    "why": "the pool rule doesn't fire",
+    "deep": false
+   },
+   "45058944": {
+    "pool": "out",
+    "why": "deep bench, no 5x game in his last 5",
+    "deep": true
+   },
+   "45058940": {
+    "pool": "out",
+    "why": "deep bench, no 5x game in his last 5",
+    "deep": true
+   },
+   "45058946": {
+    "pool": "out",
+    "why": "deep bench, no 5x game in his last 5",
+    "deep": true
+   }
+  },
   "moving": {
    "F": [
     {
@@ -566,7 +625,7 @@
      "form": "in line",
      "ppm_recent": 0.7068965517241379,
      "miya_ppm": 0.664,
-     "form_ratio": 1.0646032405484005,
+     "form_ratio": 0.9907894281511405,
      "shy": false,
      "pool_out": false,
      "status": null
@@ -621,10 +680,10 @@
       20.0
      ],
      "floor": 0,
-     "form": "in line",
+     "form": "due to bounce back",
      "ppm_recent": 1.0909090909090908,
      "miya_ppm": 1.199,
-     "form_ratio": 0.909849116688149,
+     "form_ratio": 0.8467651155776167,
      "shy": false,
      "pool_out": false,
      "status": null
@@ -682,7 +741,7 @@
      "form": "in line",
      "ppm_recent": 0.9230769230769231,
      "miya_ppm": 1.007,
-     "form_ratio": 0.9166603009701323,
+     "form_ratio": 0.8531040492974706,
      "shy": false,
      "pool_out": true,
      "status": null
@@ -690,7 +749,7 @@
    ]
   },
   "analyst": [],
-  "generated": "2026-11-23T18:11Z"
+  "generated": "2026-11-23T21:09Z"
  },
  "backtest": {
   "rule": [

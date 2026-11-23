@@ -23,10 +23,16 @@ check("minutes safe: within 3 of season and last 3", C.minutes_note(30, 29, 31) 
 check("projection above recent role, outs named", C.minutes_note(30, 24, 25, out_gain=6) == "projection above recent role (+6 from the outs)")
 check("rising role: last 3 +3 over season", C.minutes_note(28, 24, 28) == "rising role")
 check("shrinking role", C.minutes_note(22, 28, 24) == "shrinking role")
-check("no note when nothing applies", C.minutes_note(25, 28, 29) is None)
+check("projection below recent role", C.minutes_note(24, 28, 29) == "projection below recent role")
+check("every player gets a minutes verdict (fallback)", C.minutes_note(26, 30, 28) == "minutes roughly as projected")
 # form against EvanMiya
-check("bounce back under 0.85", C.form_note([10, 10, 10], [20, 20, 20], 0.7)[0] == "due to bounce back")
-check("running hot over 1.15", C.form_note([20, 20, 20], [20, 20, 20], 0.8)[0] == "running hot, regression risk")
+check("below the rate under 0.85 (the wording from FORM_WORDS)", C.form_note([10, 10, 10], [20, 20, 20], 0.7)[0] == C.FORM_WORDS["below"])
+check("above the rate over 1.15", C.form_note([20, 20, 20], [20, 20, 20], 0.8)[0] == C.FORM_WORDS["above"])
+keep_cal = C.FORM_CALIB; C.FORM_CALIB = 1.09
+check("calibrated: 0.86 against Miya 0.80 x 1.09 is in line (1.25 hot uncalibrated? no: 0.86/0.80 = 1.075)",
+      C.form_note([17.2, 17.2, 17.2], [20, 20, 20], 0.80)[0] == "in line" and C.form_note([20, 20, 20], [20, 20, 20], 0.70)[0] == C.FORM_WORDS["above"])
+check("calibrated: the ratio divides by the factor", abs(C.form_note([20, 20, 20], [20, 20, 20], 1.0)[2] - 1 / 1.09) < 1e-9)
+C.FORM_CALIB = keep_cal
 check("in line between", C.form_note([15, 15, 15], [20, 20, 20], 0.75)[0] == "in line")
 check("no verdict under 3 games", C.form_note([15, 15], [20, 20], 0.75)[0] is None)
 # shy away
@@ -53,15 +59,8 @@ check("count_games: Buckner 4x = 3, 5x = 1, under 2x = 0",
 check("count_games: exactly at the bar counts", C.count_games([28.0], 7000, 4) == 1)
 # outs
 check("new out: played this season", C.new_out(3) and not C.new_out(0))
-# bottom line
 L = lambda **k: dict({"name": "A B", "salary": 4500, "proj_min": 29, "gp": 5, "starts": 5, "mins": [30, 31, 29, 32, 30],
                       "ceil": 2, "season_mpg": 30.4, "dk_pm": 0.8}, **k)
-check("core: 30+ projected, steady, every start", C.is_core(L(proj_min=33)))
-check("core: not with a missed start", not C.is_core(L(proj_min=33, starts=4)))
-check("core: not with swingy minutes", not C.is_core(L(proj_min=33, mins=[20, 36, 25, 38, 30])))
-check("value: cheap, 25+ projected, 2+ ceilings", C.is_value(L()))
-check("value: not over $5,000", not C.is_value(L(salary=5900)))
-check("value: not with 1 ceiling", not C.is_value(L(ceil=1)))
 # the moving group read
 check("group: the starting job, best rate named", C.group_read(L(name="Dylan Faulkner", starts=4, mins=[33, 33, 30, 27, 20], dk_pm=1.09), "Dylan Faulkner")
       == "Faulkner has the starting job (4 of 5) and the team's best per-minute rate (1.09)")
@@ -69,13 +68,6 @@ check("group: steady bench minutes", C.group_read(L(name="Chase Thompson", start
       .startswith("Thompson's 29 minutes off the bench (2 of 5 starts) are as steady as a starter's (26-31)"))
 check("group: starts but plays little, most nights = lowest 60%", C.group_read(L(name="David Fuchs", starts=4, mins=[18, 14, 12, 13, 21], season_mpg=15.6), None)
       == "Fuchs starts (4 of 5) but plays 12-14 most nights (median 14)")
-# the Strong tier: 27+ projected, minutes CV <= 0.20, 4+ of the last 5 started or top-2 DK a game (Faulkner, Clemson)
-fk = L(name="Dylan Faulkner", salary=6400, proj_min=27.3, starts=4, mins=[33, 33, 30, 27, 20], start_flags=[1, 1, 1, 1, 0], ceil=2, dk_pg=31.2)
-check("strong: Faulkner (27.3 projected, CV 0.17, 4 of last 5 started)", C.is_strong(fk, []))
-check("strong: top-2 DK a game stands in for the starts", C.is_strong(dict(fk, start_flags=[0, 0, 1, 0, 0]), ["Dylan Faulkner"]))
-check("strong: not under 27 projected", not C.is_strong(dict(fk, proj_min=26.0), ["Dylan Faulkner"]))
-check("strong: not with swingy minutes", not C.is_strong(dict(fk, mins=[36, 14, 33, 18, 30]), ["Dylan Faulkner"]))
-check("strong: not without the starts or the top-2", not C.is_strong(dict(fk, start_flags=[0, 0, 1, 0, 0]), []))
 # the rotation shares' context (the reference: team_stats on the banked slates' teams)
 check("quantile: linear between order statistics", C.quantile([1, 2, 3, 4], 0.5) == 2.5 and C.quantile([5], 0.9) == 5)
 check("pct_below: strictly under", C.pct_below([1, 2, 3, 4], 3) == 0.5)
@@ -91,6 +83,8 @@ thin = C.context(0.6, "top5", {"teams": {"a": {"top5": 0.5}, "b": {"top5": 0.7}}
 check("context: a thin reference says so", "(thin: 2 teams)" in thin, thin)
 st = C.team_stats([{"players": {"a": {"min": 30, "dk": 30}, "b": {"min": 10, "dk": 10}}}])
 check("team_stats: shares from the box (2 players: top 5 = all; top 3 DK = all)", st["top5"] == 1.0 and st["top3dk"] == 1.0 and st["regs"] == 1)
+# tonight's compact rank
+check("slate_rank: highest first", C.slate_rank(0.62, [0.75, 0.70, 0.62, 0.50]) == "3rd/4" and C.slate_rank(0.5, [0.5]) == "")
 # the page's default pool
 check("pool default: the pool rule fires -> out", C.pool_verdict(5, [10, 12, 9, 11, 8], 4000, 15, False)[0] == "out")
 check("pool default: a recent 5x -> in", C.pool_verdict(5, [10, 21, 9, 11, 8], 4000, 15, False)[0] == "in")
