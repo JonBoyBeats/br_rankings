@@ -25,8 +25,14 @@ ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-ba
 ROTATION_PROJ_MIN = 10.0
 """A player gets a line in the card when he is not Out and projected for this many minutes or more tonight."""
 TIGHT_TOP7, DEEP_TOP7 = 0.90, 0.80
-"""Rotation shape from the season's box scores: the top 7 by minutes take this share of the team's minutes or more:
-tight; under DEEP_TOP7: deep; between: standard."""
+"""Rotation shape, the fallback cuts when there is no reference file: the top 7 by minutes take this share of the team's
+minutes or more: tight; under DEEP_TOP7: deep; between: standard. With the reference (REFERENCE), the cuts are its
+TIGHT_PCT and DEEP_PCT percentiles of the top-7 share instead."""
+TIGHT_PCT, DEEP_PCT = 2 / 3, 1 / 3
+"""Rotation shape from the reference: a top-7 minutes share at or above the reference's 67th percentile is tight, under
+its 33rd deep, between standard (the top third, the bottom third)."""
+REF_THIN = 30
+"""A reference of fewer teams than this is called thin in the wording."""
 MPG_BAR = 15.0
 """'Rotation regular': 15+ minutes a game over the games he played."""
 MIN_SAFE_BAND = 3.0
@@ -195,6 +201,62 @@ def pool_flag(dks_last, salary, proj_min):
     return len(dks_last) >= 3 and not any(x >= bar for x in dks_last[-POOL_LAST_N:]) and proj_min < POOL_MIN_PROJ
 
 
+def team_stats(bx):
+    """The card's one definition of a team's shares from its box scores (boxes()): {top5, top7, top3dk, regs, games}."""
+    mins_by, dks_by = {}, {}
+    for g in bx:
+        for pid, x in g["players"].items():
+            mins_by.setdefault(pid, []).append(x["min"])
+            dks_by.setdefault(pid, []).append(x["dk"])
+    if not mins_by:
+        return None
+    _, t5, t7, regs = shape(mins_by, len(bx))
+    tot = sum(sum(v) for v in dks_by.values())
+    top3 = sum(sorted((sum(v) for v in dks_by.values()), reverse=True)[:3]) / tot if tot else 0.0
+    return {"top5": t5, "top7": t7, "top3dk": top3, "regs": regs, "games": len(bx)}
+
+
+def pct_below(vals, x):
+    """The share of vals strictly under x."""
+    return sum(v < x for v in vals) / len(vals) if vals else 0.0
+
+
+def quantile(vals, q):
+    """The q quantile of vals (linear between order statistics)."""
+    v = sorted(vals)
+    if not v:
+        return None
+    k = (len(v) - 1) * q
+    lo, hi = int(math.floor(k)), int(math.ceil(k))
+    return v[lo] + (v[hi] - v[lo]) * (k - lo)
+
+
+def cuts(ref):
+    """(tight, deep) top-7 cut points: the reference's TIGHT_PCT and DEEP_PCT quantiles, else TIGHT_TOP7 / DEEP_TOP7."""
+    vals = [t["top7"] for t in (ref or {}).get("teams", {}).values()]
+    return (quantile(vals, TIGHT_PCT), quantile(vals, DEEP_PCT)) if vals else (TIGHT_TOP7, DEEP_TOP7)
+
+
+def context(x, key, ref, tonight, words):
+    """The parenthetical for one share: where x sits in the reference (in tenths) and its rank among tonight's teams.
+    words: (more, less) by direction, e.g. ("tighter", "looser")."""
+    vals = [t[key] for t in (ref or {}).get("teams", {}).values()]
+    bits = []
+    if vals:
+        below = pct_below(vals, x)
+        more = below >= 0.5
+        k = round(10 * (below if more else 1 - below - (sum(v == x for v in vals) / len(vals))))
+        thin = " (thin: %d teams)" % len(vals) if len(vals) < REF_THIN else ""
+        w = words[0] if more else words[1]
+        bits.append(("%s than nearly every team on our slates%s" % (w, thin)) if k >= 10 else ("%s than %d of 10 teams on our slates%s" % (w, k, thin)))
+    tn = sorted(tonight, reverse=True)
+    if len(tn) > 1:
+        sup = {"tighter": "tightest", "more concentrated": "most concentrated"}[words[0]]
+        i = tn.index(x) + 1
+        bits.append(("the %s of %d tonight" % (sup, len(tn))) if i == 1 else ("%s %s of %d tonight" % (ordinal(i), sup, len(tn))))
+    return " (" + "; ".join(bits) + ")" if bits else ""
+
+
 def shape(mins_by_player, games):
     """(label, top-5 share, top-7 share, players at MPG_BAR+): from the season's box minutes."""
     tot = sum(sum(v) for v in mins_by_player.values())
@@ -311,15 +373,8 @@ def build(team, slate_id, cache):
     env["kind"] = environment(env["tempo_rank"], env["opp_tempo_rank"], ou, ous)
     bx = boxes(r0["espn_team"], cache)
     n = len(bx)
-    # team-wide from the box scores
-    mins_by, dks_by = {}, {}
-    for g in bx:
-        for pid, x in g["players"].items():
-            mins_by.setdefault(pid, []).append(x["min"])
-            dks_by.setdefault(pid, []).append(x["dk"])
-    shp = shape(mins_by, n)
-    tot_dk = sum(sum(v) for v in dks_by.values())
-    top3_dk = sum(sorted((sum(v) for v in dks_by.values()), reverse=True)[:3]) / tot_dk if tot_dk else 0
+    # team-wide from the box scores (team_stats: the one definition, shared with the reference)
+    stats = team_stats(bx) or {"top5": 0.0, "top7": 0.0, "top3dk": 0.0, "regs": 0, "games": n}
     # OBPR team rank (EvanMiya players on the team)
     team_m = sorted([p for p in mplayers if p["Team"] == mt], key=lambda p: -float(p["OBPR"] or -99))
     obpr_rank = {norm(p["Name"]): i + 1 for i, p in enumerate(team_m)}
@@ -373,7 +428,7 @@ def build(team, slate_id, cache):
     ids = {r["id"] for r in rows}
     notes = [a for a in news.get("analyst", []) if team in (a.get("teams") or []) or ids & set(a.get("players") or [])][:2]
     out_from = r0.get("out_from")
-    return {"team": team, "slate": slate_id, "env": env, "games": n, "shape": shp, "top3_dk": top3_dk, "outs": outs, "out_from": out_from,
+    return {"team": team, "slate": slate_id, "env": env, "games": n, "stats": stats, "outs": outs, "out_from": out_from,
             "flags": flags, "lines": lines, "moving": moving, "analyst": notes, "generated": time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime())}
 
 
@@ -381,7 +436,7 @@ def ordinal(k):
     return "%d%s" % (k, "th" if 10 <= k % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(k % 10, "th"))
 
 
-def prose(c, holds):
+def prose(c, holds, ref=None, tonight=None):
     """The card's paragraphs, from the numbers and the rules; varied phrasing by name (variant). Bottom line first;
     verdict tags in bold; 'minutes safe' and 'in line' gathered into one sentence instead of repeated per player."""
     e, out, Ls = c["env"], [], c["lines"]
@@ -444,10 +499,14 @@ def prose(c, holds):
     if c["flags"]:
         out.append(("Flags:", "; ".join(c["flags"]) + "."))
     # -- rotation shape
-    lab, t5, t7, regs = c["shape"]
-    out.append(("Rotation.", "%s plays a **%s** rotation: %d players at %d+ minutes a game; the top 5 take %.0f%% of the minutes and the top 7 %.0f%% (%d games). "
-                "The top 3 fantasy scorers have produced %.0f%% of the team's DraftKings points." % (
-                    e["team"], lab, regs, MPG_BAR, 100 * t5, 100 * t7, c["games"], 100 * c["top3_dk"])))
+    st, tn = c["stats"], tonight or {}
+    tight, deep = cuts(ref)
+    lab = "tight" if st["top7"] >= tight else "deep" if st["top7"] < deep else "standard"
+    cx = lambda k, w: context(st[k], k, ref, tn.get(k, []), w)
+    out.append(("Rotation.", "%s plays a **%s** rotation: %d players at %d+ minutes a game; the top 5 take %.0f%%%s and the top 7 %.0f%%%s (%d games). "
+                "The top 3 fantasy scorers have produced %.0f%% of the team's DraftKings points%s." % (
+                    e["team"], lab, st["regs"], MPG_BAR, 100 * st["top5"], cx("top5", ("tighter", "looser")), 100 * st["top7"], cx("top7", ("tighter", "looser")),
+                    c["games"], 100 * st["top3dk"], cx("top3dk", ("more concentrated", "less concentrated")))))
     # -- the steady ones, once (minutes safe and output in line)
     steady = [L for L in Ls if L["min_note"] == "minutes safe as projected" and L["form"] in ("in line", None) and not L["pool_out"]]
     if steady:
@@ -601,22 +660,65 @@ TABLE_KEYS = ("id", "name", "salary", "starts", "gp", "season_mpg", "last3", "pr
               "obpr", "obpr_rank", "form", "min_note", "pool_out", "shy")
 
 
-def writeups(holds):
-    """Every team on every open slate in the mirror: {slates: {draft group: {team: {paras, table, pool}}}}."""
+REFERENCE = os.path.join(HERE, "..", "analysis", "cbb", "dk", "team_card_reference.json")
+"""The rotation shares' reference: every team on the banked slates (battle-royale-research data/dk/cbb/*_proj.json:
+the graded slates and tonight's), team_stats on its box scores to date; `reference` rewrites it (nightly)."""
+
+
+def reference():
+    """{generated_at, n, slates, teams: {espn team: {team, top5, top7, top3dk, games}}, cuts}."""
+    cache, teams, files = {}, {}, sorted(glob.glob(os.path.join(BRR, "data", "dk", "cbb", "*_proj.json")))
+    for f in files:
+        for v in json.load(open(f)).values():
+            if v.get("espn_team") and v.get("team"):
+                teams.setdefault(str(v["espn_team"]), v["team"])
+    out = {}
+    for et, ab in sorted(teams.items()):
+        try:
+            st = team_stats(boxes(et, cache))
+        except Exception as e:
+            print("dk_team_cards reference: %s skipped (%s)" % (ab, e))
+            continue
+        if st and st["games"] >= 1:
+            out[et] = dict({k: round(v, 4) if isinstance(v, float) else v for k, v in st.items()}, team=ab)
+    doc = {"generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "n": len(out), "slates": len(files), "teams": out}
+    t, d = cuts(doc)
+    doc["cuts"] = {"tight_top7": round(t, 4), "deep_top7": round(d, 4), "tight_pct": TIGHT_PCT, "deep_pct": DEEP_PCT,
+                   "fallback": {"tight_top7": TIGHT_TOP7, "deep_top7": DEEP_TOP7}}
+    doc["quantiles"] = {k: {q: round(quantile([x[k] for x in out.values()], q), 4) for q in (0.1, 0.25, 0.5, 0.75, 0.9)} for k in ("top5", "top7", "top3dk")}
+    return doc
+
+
+def cached_reference():
+    try:
+        return json.load(open(REFERENCE))
+    except (OSError, ValueError):
+        return None
+
+
+def slate_cards(slate_id, cache):
+    """Every team's card on a slate, and tonight's shares by key for the rank."""
+    doc = json.load(open(os.path.join(MIRROR, "dk_cbb_morning.json")))
+    sl = next(s for s in doc["slates"] if str(s["draft_group_id"]) == str(slate_id))
+    cards = {}
+    for t in sorted({v["team"] for v in (sl.get("players") or {}).values() if v.get("team")}):
+        try:
+            cards[t] = build(t, slate_id, cache)
+        except Exception as e:                     # one team's missing data never stops the rest
+            print("dk_team_cards: %s %s skipped (%s)" % (slate_id, t, e))
+    tonight = {k: [c["stats"][k] for c in cards.values()] for k in ("top5", "top7", "top3dk")}
+    return cards, tonight
+
+
+def writeups(holds, ref=None):
+    """Every team on every open slate in the mirror: {slates: {draft group: {team: {paras, table}}}}."""
     doc = json.load(open(os.path.join(MIRROR, "dk_cbb_morning.json")))
     out, cache = {}, {}
+    rnd = lambda v: round(v, 2) if isinstance(v, float) else v
     for sl in doc.get("slates", []):
-        teams = sorted({v["team"] for v in (sl.get("players") or {}).values() if v.get("team")})
-        out[str(sl["draft_group_id"])] = got = {}
-        for t in teams:
-            try:
-                c = build(t, sl["draft_group_id"], cache)
-            except Exception as e:                     # one team's missing data never stops the rest
-                print("dk_team_cards: %s %s skipped (%s)" % (sl["draft_group_id"], t, e))
-                continue
-            rnd = lambda v: round(v, 2) if isinstance(v, float) else v
-            got[t] = {"paras": prose(c, holds), "games": c["games"],
-                      "table": [{k: rnd(L.get(k)) for k in TABLE_KEYS} for L in c["lines"]]}
+        cards, tonight = slate_cards(sl["draft_group_id"], cache)
+        out[str(sl["draft_group_id"])] = {t: {"paras": prose(c, holds, ref, tonight), "games": c["games"],
+                                              "table": [{k: rnd(L.get(k)) for k in TABLE_KEYS} for L in c["lines"]]} for t, c in cards.items()}
     return out
 
 
@@ -631,6 +733,7 @@ def main():
     s.add_argument("--slate", required=True)
     s.add_argument("--out", required=True)
     sub.add_parser("backtest")
+    sub.add_parser("reference")
     w = sub.add_parser("all")
     w.add_argument("--out", required=True, help="the JSON the page reads, e.g. mirror/dk_cbb_writeups.json")
     a = ap.parse_args()
@@ -640,16 +743,23 @@ def main():
         json.dump(bt, open(BACKTEST, "w"), indent=1)
         print(json.dumps(bt, indent=1))
         return
-    bt = cached_backtest()
+    if a.cmd == "reference":
+        doc = reference()
+        json.dump(doc, open(REFERENCE, "w"), indent=1)
+        print("dk_team_cards reference: %d teams from %d slates; top-7 cuts tight %.3f, deep %.3f" % (doc["n"], doc["slates"], doc["cuts"]["tight_top7"], doc["cuts"]["deep_top7"]))
+        return
+    bt, ref = cached_backtest(), cached_reference()
     if a.cmd == "all":
         doc = {"generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "backtest": bt,
-               "rule": "scripts/dk_team_cards.py (br_rankings); display only", "slates": writeups(bt["holds"])}
+               "rule": "scripts/dk_team_cards.py (br_rankings); display only", "slates": writeups(bt["holds"], ref),
+               "reference": {"n": ref["n"], "generated_at": ref["generated_at"], "cuts": ref["cuts"]} if ref else None}
         json.dump(doc, open(a.out, "w"), indent=1)
         print("dk_team_cards: %s" % ", ".join("%s %d teams" % (k, len(v)) for k, v in doc["slates"].items()))
         return
     cache = {}
-    c = build(a.team, a.slate, cache)
-    paras = prose(c, bt["holds"])
+    cards, tonight = slate_cards(a.slate, cache)
+    c = cards[a.team]
+    paras = prose(c, bt["holds"], ref, tonight)
     os.makedirs(a.out, exist_ok=True)
     stem = os.path.join(a.out, "%s_%s" % (a.slate, a.team))
     open(stem + ".html", "w").write(render(c, paras, bt))

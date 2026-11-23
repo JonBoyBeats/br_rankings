@@ -26,13 +26,13 @@
    "kind": "grind"
   },
   "games": 5,
-  "shape": [
-   "tight",
-   0.749,
-   0.932,
-   7
-  ],
-  "top3_dk": 0.519236504622726,
+  "stats": {
+   "top5": 0.749,
+   "top7": 0.932,
+   "top3dk": 0.519236504622726,
+   "regs": 7,
+   "games": 5
+  },
   "outs": [
    {
     "name": "Carter Welling",
@@ -690,7 +690,7 @@
    ]
   },
   "analyst": [],
-  "generated": "2026-11-23T17:44Z"
+  "generated": "2026-11-23T18:11Z"
  },
  "backtest": {
   "rule": [

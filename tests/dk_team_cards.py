@@ -7,9 +7,9 @@ import dk_team_cards as C  # noqa: E402
 ok = bad = 0
 
 
-def check(name, cond):
+def check(name, cond, info=""):
     global ok, bad
-    print(("PASS " if cond else "FAIL ") + name)
+    print(("PASS " if cond else "FAIL ") + name + ("" if cond or not info else "  " + str(info)))
     ok += bool(cond)
     bad += not cond
 
@@ -76,5 +76,20 @@ check("strong: top-2 DK a game stands in for the starts", C.is_strong(dict(fk, s
 check("strong: not under 27 projected", not C.is_strong(dict(fk, proj_min=26.0), ["Dylan Faulkner"]))
 check("strong: not with swingy minutes", not C.is_strong(dict(fk, mins=[36, 14, 33, 18, 30]), ["Dylan Faulkner"]))
 check("strong: not without the starts or the top-2", not C.is_strong(dict(fk, start_flags=[0, 0, 1, 0, 0]), []))
+# the rotation shares' context (the reference: team_stats on the banked slates' teams)
+check("quantile: linear between order statistics", C.quantile([1, 2, 3, 4], 0.5) == 2.5 and C.quantile([5], 0.9) == 5)
+check("pct_below: strictly under", C.pct_below([1, 2, 3, 4], 3) == 0.5)
+ref = {"teams": {str(i): {"top5": v, "top7": v + 0.2, "top3dk": v - 0.2} for i, v in enumerate([0.50 + 0.005 * i for i in range(40)])}}
+t, d = C.cuts(ref)
+check("cuts: the reference's 67th / 33rd top-7 percentiles", abs(t - C.quantile([x["top7"] for x in ref["teams"].values()], 2 / 3)) < 1e-12 and d < t)
+check("cuts: the fixed fallback without a reference", C.cuts(None) == (C.TIGHT_TOP7, C.DEEP_TOP7))
+hi = C.context(0.69, "top5", ref, [0.69, 0.60, 0.55], ("tighter", "looser"))
+check("context: above the median reads tighter, with tonight's rank", hi == " (tighter than nearly every team on our slates; the tightest of 3 tonight)", hi)
+lo = C.context(0.52, "top5", ref, [0.69, 0.60, 0.52], ("tighter", "looser"))
+check("context: below the median reads looser, in tenths", lo == " (looser than 9 of 10 teams on our slates; 3rd tightest of 3 tonight)", lo)
+thin = C.context(0.6, "top5", {"teams": {"a": {"top5": 0.5}, "b": {"top5": 0.7}}}, [], ("tighter", "looser"))
+check("context: a thin reference says so", "(thin: 2 teams)" in thin, thin)
+st = C.team_stats([{"players": {"a": {"min": 30, "dk": 30}, "b": {"min": 10, "dk": 10}}}])
+check("team_stats: shares from the box (2 players: top 5 = all; top 3 DK = all)", st["top5"] == 1.0 and st["top3dk"] == 1.0 and st["regs"] == 1)
 print("%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)
