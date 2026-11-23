@@ -3366,6 +3366,8 @@ function renderSwap() {
   var chalkTxt = function (c) { return c === 1 ? "field as projected" : "field on the chalk (\u00d7" + c + ")"; };
   $("swapBox").innerHTML = R.map(function (p0) {
     var p = swapPick(p0), last = p.steps.length ? p.steps[p.steps.length - 1].score : p.cur, prev = p.cur;
+    // an Out player still in the lineup after the swaps (2026-11-23, Wright): never silently kept
+    var outLeft = (p.next || []).filter(function (id) { var r = byId(id); return r && r.status === "Out" && !(Date.parse(r.game_start || "") < SWAP.at); });
     return '<div class="swapcard' + (p.steps.length ? "" : " keep") + '"><div class="hd"><span>Entry \u2026' + esc(p.entryId.slice(-4)) + " \u00b7 " + esc(p0.contest) + "</span><span>" +
       (p0.now != null ? p0.now + " pts now" : "") + (p0.rank ? ' <span class="muted" title="His place in the standings file, as downloaded">\u00b7 #' + p0.rank + " of " + p0.N + " in the file</span>" : "") + "</span></div>" +
       (p.steps.length ? p.steps.map(function (x) { var g = x.score.ev - prev.ev; prev = x.score;
@@ -3377,6 +3379,7 @@ function renderSwap() {
           "(picked: fits this contest's field, " + p0.fit.n + " players revealed)" : "(default: too few players revealed to fit yet)") + "</b>" : "") + "</label> <label><input type=\"radio\" name=\"swapUse" + esc(p.entryId) + '" class="swapUse" data-id="' + esc(p.entryId) + '" value="alt"' +
         (SWAP.use[p.entryId] === "alt" ? " checked" : "") + "> " + chalkTxt(p0.alt.chalk) + "</label></div>" +
         '<div class="mut" style="font-size:12px">' + (SWAP.use[p.entryId] === "alt" ? chalkTxt(p0.chalk) : chalkTxt(p0.alt.chalk)) + ":</div>" + lines(SWAP.use[p.entryId] === "alt" ? p0 : p0.alt) : "") +
+      (outLeft.length ? '<div class="bad"><b>Still holds ' + outLeft.map(function (id) { return esc(byId(id).name); }).join(", ") + " (Out)</b>: no legal swap found here; swap him by hand on DraftKings.</div>" : "") +
       (p.steps.length ? '<label><input type="checkbox" class="swapAcc" data-id="' + esc(p.entryId) + '"' + (SWAP.acc[p.entryId] ? " checked" : "") + "> Accept</label>" : "") + "</div>";
   }).join("");
 }
