@@ -726,7 +726,10 @@ function applyOuts() {
     if (p) { defOut = p.pool === "out" && !(!p.deep && newsUp(r)); r.poolWhy = p.why; }
     else { defOut = !!deep[r.id] || isPunt(r); r.poolWhy = null; }
     r.punt = !deep[r.id] && (p ? p.pool === "out" : isPunt(r));
-    r.deepOut = defOut !== !!state.deepIn[r.id];
+    // state.deepIn only ever brings a default-out player in: a flip saved under an older default (he's in by default
+    // now) is dropped rather than turning him out (2026-11-23, Friedrichsen)
+    if (!defOut && state.deepIn[r.id]) delete state.deepIn[r.id];
+    r.deepOut = defOut && !state.deepIn[r.id];
   });
   adjustField();
 }

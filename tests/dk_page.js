@@ -248,8 +248,8 @@ function audit(name, L, o) {
     deepIds = was; state.deepIn = {}; state.excl = {}; applyOuts(); renderPlayers();
     // a flip saved under an older default: a player in by default with a stale state.deepIn is out; X brings him in
     const q = rows.find(y => y.status !== "Out" && !y.deepOut && usable(y) && y.id !== r.id);
-    state.deepIn[q.id] = 1; applyOuts(); renderPlayers(); const stale = !usable(q) && x2(q).getAttribute("aria-pressed") === "true";
-    x2(q).click(); o.stale = stale && usable(q) && !state.deepIn[q.id];
+    state.deepIn[q.id] = 1; applyOuts(); renderPlayers();
+    o.stale = usable(q) && !state.deepIn[q.id] && x2(q).getAttribute("aria-pressed") === "false";   // the stale flip is dropped: he stays in
     state.deepIn = {}; applyOuts(); renderPlayers();
     return o;
   });
