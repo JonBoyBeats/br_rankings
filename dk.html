@@ -761,6 +761,12 @@ function adjustField() {
   var gone = {}, n = 0;
   rows.forEach(function (r) { if (r.status === "Out" && r._status0 !== "Out") { gone[r.id] = 1; n++; } });
   if (!n) return;
+  // a locked slate's field file can carry its ownership without the lineups (2026-11-23: 157021 after lock, Wright
+  // marked out turned everyone to 0%): then the ownership stands as it was, the ruled-out players at 0
+  if (!F.field.length) {
+    var own0 = {}; Object.keys(F.own || {}).forEach(function (id) { own0[id] = gone[id] ? 0 : F.own[id]; });
+    fieldAdj = Object.assign({}, F, { own: own0, adjusted: n }); return;
+  }
   var by = {}; rows.forEach(function (r) { by[r.id] = r; });
   var live = rows.filter(function (r) { return r.status !== "Out" && r.salary; });
   // the field's own Questionable fade (gate questionable.field_factor, 2026-11-23), over whatever the projection applied
