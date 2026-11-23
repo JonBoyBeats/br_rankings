@@ -3318,7 +3318,7 @@ async function swapRun() {
     var resAlt = DKSwap.run({ by: by, own: own, standings: st, ours: ours, plays: plays, at: at, nights: nights, ids: ids, table: table, M: 6, random: DKSim.seeded(20261121), maxSwaps: 2, chalk: alt });
     var altBy = {}; resAlt.proposals.forEach(function (p) { altBy[p.entryId] = p; });
     res.proposals.forEach(function (p) { var a = altBy[p.entryId], k = function (x) { return x.steps.map(function (y) { return y.swap.join(">"); }).join(","); };
-      p.chalk = chalk; if (a && k(a) !== k(p)) { p.alt = a; p.alt.chalk = alt; } });
+      p.chalk = chalk; p.fit = { mode: mode, n: fit.n }; if (a && k(a) !== k(p)) { p.alt = a; p.alt.chalk = alt; } });
     var rank = {}; st.entries.forEach(function (e) { rank[e.entryId] = e; });
     res.proposals.forEach(function (p) { p.contest = c.name || cid; p.rank = (rank[p.entryId] || {}).rank; p.points = (rank[p.entryId] || {}).points; p.N = st.entries.length; out.push(p); });
     notes.push((c.name || cid) + ": " + (fit.n ? "field so far fits " + (fit.p === 2 ? "on the chalk (x2)" : "as projected") + " (share error " + fit.e1.toFixed(2) +
@@ -3346,7 +3346,8 @@ function renderSwap() {
       '<div class="mut">EV $' + p.cur.ev.toFixed(2) + " \u2192 $" + last.ev.toFixed(2) + " \u00b7 cash " + Math.round(100 * p.cur.cash) + "% \u2192 " + Math.round(100 * last.cash) + "% \u00b7 top 1% " +
       (100 * p.cur.top1).toFixed(1) + "% \u2192 " + (100 * last.top1).toFixed(1) + "%</div>" +
       (p0.alt ? '<div class="note" style="margin:4px 0 0">The two field assumptions differ. <label><input type="radio" name="swapUse' + esc(p.entryId) + '" class="swapUse" data-id="' + esc(p.entryId) + '" value="main"' +
-        (SWAP.use[p.entryId] !== "alt" ? " checked" : "") + "> " + chalkTxt(p0.chalk) + "</label> <label><input type=\"radio\" name=\"swapUse" + esc(p.entryId) + '" class="swapUse" data-id="' + esc(p.entryId) + '" value="alt"' +
+        (SWAP.use[p.entryId] !== "alt" ? " checked" : "") + "> " + chalkTxt(p0.chalk) + (p0.fit ? " <b>" + (p0.fit.mode !== "auto" ? "(your setting)" : p0.fit.n ?
+          "(picked: fits this contest's field, " + p0.fit.n + " players revealed)" : "(default: too few players revealed to fit yet)") + "</b>" : "") + "</label> <label><input type=\"radio\" name=\"swapUse" + esc(p.entryId) + '" class="swapUse" data-id="' + esc(p.entryId) + '" value="alt"' +
         (SWAP.use[p.entryId] === "alt" ? " checked" : "") + "> " + chalkTxt(p0.alt.chalk) + "</label></div>" +
         '<div class="mut" style="font-size:12px">' + (SWAP.use[p.entryId] === "alt" ? chalkTxt(p0.chalk) : chalkTxt(p0.alt.chalk)) + ":</div>" + lines(SWAP.use[p.entryId] === "alt" ? p0 : p0.alt) : "") +
       (p.steps.length ? '<label><input type="checkbox" class="swapAcc" data-id="' + esc(p.entryId) + '"' + (SWAP.acc[p.entryId] ? " checked" : "") + "> Accept</label>" : "") + "</div>";
