@@ -1004,7 +1004,7 @@ function audit(name, L, o) {
   const it = await pg.evaluate(() => {
     const cells = [...document.querySelectorAll("#ideaTable tr[data-idea]")].map(tr => [tr.dataset.idea, ...[...tr.cells].slice(1).map(c => c.textContent)]);
     const heads = [...document.querySelectorAll("#ideaTable th")].map(t => t.textContent.replace(/ \(i\)| [↓↑]/g, ""));
-    const taSum = cells.reduce((t, c) => t + (+c[5] || 0), 0), T = CUT.board.tierA;
+    const taSum = cells.reduce((t, c) => t + (+c[5] || 0), 0), T = topTenth();
     const keptOk = cells.every(c => +c[3] === CUT.keep.filter(i => lineupGroups(i).includes(c[0])).length) &&
       cells.every(c => c[2] === "–" || +c[2] === BANK.lineups.map((L, i) => i).filter(i => lineupGroups(i).length > 1 && lineupGroups(i).includes(c[0])).length);
     const roiOrder = cells.map(c => CUT.board.rows.find(r => r.idea === c[0])).filter(Boolean).every((r, i, a) => i === 0 || a[i - 1].roi >= r.roi);
@@ -1015,15 +1015,16 @@ function audit(name, L, o) {
              check: document.getElementById("bankCheck").textContent, far: BANKSTATS.far, pct: BANKSTATS.pct, fp: BANKSTATS.fp, bp: BANKSTATS.bp, kn: BANKSTATS.kn, kp: BANKSTATS.kp, kpct: BANKSTATS.kpct,
              tier: document.getElementById("tierA").textContent, sum: document.getElementById("entriesSum").textContent, info: !!document.querySelector('#ideaTable th[data-ck="idea"] span[title]') };
   });
-  check("cut step: one idea table (Idea, Banked, Kept, Share, Tier A, Sim ROI, Top 10%, Top 1%, Cash, Avg own, Cores), best Sim ROI first and sortable; tier A by idea sums to tier A tonight; the bank line and the entries summary",
-        JSON.stringify(it.heads) === JSON.stringify(["Idea", "Banked", "Shared", "Kept", "Share", "Tier A", "Sim ROI", "Top 10%", "Top 1%", "Cash", "Avg own", "Cores"]) && it.taSum >= it.T && it.keptOk && it.roiOrder && it.keptSorted &&
+  check("cut step: one idea table (Idea, Banked, Kept, Share, Top tenth, Sim ROI, Top 10%, Top 1%, Cash, Avg own, Cores), best Sim ROI first and sortable; the top tenth by idea sums to at least the top tenth; the bank line and the entries summary",
+        JSON.stringify(it.heads) === JSON.stringify(["Idea", "Banked", "Shared", "Kept", "Share", "Top tenth", "Sim ROI", "Top 10%", "Top 1%", "Cash", "Avg own", "Cores"]) && it.taSum >= it.T && it.keptOk && it.roiOrder && it.keptSorted &&
         /^Whole bank [\d,]+ · \d+ pts (under|over) the field · own \d+% vs \d+% · field's \d+(st|nd|rd|th) pct.* \| Kept [\d,]+ · \d+ pts (under|over) the field · own \d+% vs \d+%/.test(it.line) &&
-        it.far === (/far below the field/.test(it.line) && /far below the field/.test(it.check)) && it.far === (it.kn ? (it.kpct != null && it.kpct < 15) || it.fp - it.kp >= 5 : (it.pct != null && it.pct < 15) || it.fp - it.bp >= 5) && /^Tier A tonight: \d+ lineup/.test(it.tier) && /^8 entries · 4 contests$/.test(it.sum) && it.info, JSON.stringify(it));
-  const ta = await pg.evaluate(() => { const T = CUT.board.tierA, v = CUT.board.values, el = document.getElementById("tierA");
-    const tr = DKSim.tiers(v, v, v); return { T, n: v.length, keep: CUT.keep.length, txt: el ? el.textContent : "" }; });
-  check("tier A after the cut: its count, ideas and top idea's share shown, red-flagged at 1-2 lineups or one idea; each kept lineup's value saved",
-        ta.T && ta.T.n >= 1 && ta.T.n <= ta.keep && ta.T.ideas >= 1 && ta.n === ta.keep && new RegExp("^Tier A tonight: " + ta.T.n + " lineup").test(ta.txt) &&
-        ta.T.flag === (ta.T.n <= 2 || ta.T.ideas === 1) && /Red flag/.test(ta.txt) === ta.T.flag, JSON.stringify(ta));
+        it.far === (/far below the field/.test(it.line) && /far below the field/.test(it.check)) && it.far === (it.kn ? (it.kpct != null && it.kpct < 15) || it.fp - it.kp >= 5 : (it.pct != null && it.pct < 15) || it.fp - it.bp >= 5) && /^Top tenth by sim value: \d+ lineup/.test(it.tier) && /^8 entries · 4 contests$/.test(it.sum) && it.info, JSON.stringify(it));
+  const ta = await pg.evaluate(() => { const T = topTenth(), v = CUT.board.values, el = document.getElementById("tierA");
+    const best = T.ks.map(k => v[k]), rest = v.filter((x, k) => T.ks.indexOf(k) < 0);
+    return { n: T.n, ideas: T.ideas, want: Math.min(CUT.keep.length, Math.max(10, Math.ceil(0.1 * CUT.keep.length))), nv: v.length, keep: CUT.keep.length,
+             ordered: Math.min(...best) >= Math.max(...rest.concat([-1e9])), txt: el ? el.textContent : "" }; });
+  check("the top tenth by sim value after the cut (2026-11-23: the tiers de-emphasized): max(10, 10%) of the kept, the best by value, its ideas and top idea's share shown, no red flag; each kept lineup's value saved",
+        ta.n === ta.want && ta.ordered && ta.ideas >= 1 && ta.nv === ta.keep && new RegExp("^Top tenth by sim value: " + ta.n + " lineup").test(ta.txt) && !/Red flag/.test(ta.txt), JSON.stringify(ta));
   check("idea scoreboard: best ROI first; rates, ownership and cores in range", brd.rows.every((r, i) => i === 0 || brd.rows[i - 1].roi >= r.roi) &&
         brd.rows.every(r => Number.isFinite(r.roi) && r.top1 <= r.top10 + 1e-9 && r.top10 <= 1 && r.cash <= 1 && r.own > 0 && r.cores >= 1 && r.cores <= r.kept), JSON.stringify(brd.rows));
   // the cut survives a refresh (reloaded with the bank it was made on)
@@ -1342,8 +1343,8 @@ function audit(name, L, o) {
         c4.relaxed && c4.oneLine && (c4.n === 5 || (c4.n === 4 && c4.strand)) && c4.maxUse <= DKSimLimit(0.7, 5), JSON.stringify(c4));
   const und = await pg.evaluate(() => { renderUnder(); const u = underExposed(), t = document.getElementById("fillUnder").textContent;
     const ok = !u || ["p", "st", "pr"].every(k => u[k].every(x => x.want >= 0.2 && x.want - x.have >= 0.15 - 1e-9));
-    return { has: !!u, ok, t: t.slice(0, 200), shown: !u || (["p", "st", "pr"].some(k => u[k].length) ? /^Under-exposed against tier A/.test(t) : t === "") }; });
-  check("fill: the Under-exposed list (players, team stacks, pairs held 15+ points under their tier-A share)", und.has && und.ok && und.shown, JSON.stringify(und));
+    return { has: !!u, ok, t: t.slice(0, 200), shown: !u || (["p", "st", "pr"].some(k => u[k].length) ? /^Under-exposed against the top tenth by sim value/.test(t) : t === "") }; });
+  check("fill: the Under-exposed list (players, team stacks, pairs held 15+ points under their share of the top tenth by sim value)", und.has && und.ok && und.shown, JSON.stringify(und));
   await pg.fill("#maxExpo", "60"); await pg.fill("#maxNight", "40");
   await pg.fill("#maxNight", "60");
   await pg.fill("#maxUse", "1");
@@ -1541,10 +1542,10 @@ function audit(name, L, o) {
     return { def, six, each: CUT.variants.each, ks: CUT.variants.keepSets, msg, added: added.length, bankGrew: BANK.lineups.length - n0, legal, near, parent, grouped, bankN: CUT.bankN === BANK.lineups.length, tierA: !!CUT.board.tierA,
              res: document.getElementById("varResult").textContent, row: row ? [...row.cells].map(c => c.textContent) : null };
   });
-  check("variants: the result line under the row (new, joined, tier A before → after) and a Variants of the top row in the idea table, after the cut in Banked",
-        new RegExp("^\\d+ new, " + vr.added + " joined · Tier A \\d+ → \\d+$").test(vr.res || "") && vr.row && vr.row[1] === "after the cut" && +vr.row[3] === vr.added, JSON.stringify([vr.res, vr.row]));
+  check("variants: the result line under the row (new, joined) and a Variants of the top row in the idea table, after the cut in Banked",
+        new RegExp("^\\d+ new, " + vr.added + " joined$").test(vr.res || "") && vr.row && vr.row[1] === "after the cut" && +vr.row[3] === vr.added, JSON.stringify([vr.res, vr.row]));
   check("variants of the top: legal, near their parent (5+ of 8), none sharing 7+ with a kept lineup, in the kept pool, tagged and grouped; the scoreboard redone",
-        !vr.skipped && vr.added === vr.bankGrew && vr.legal && vr.near && vr.parent && vr.grouped && vr.bankN && vr.tierA && vr.added > 0 && /^Variants of tier A, the top 1 /.test(vr.msg), JSON.stringify(vr));
+        !vr.skipped && vr.added === vr.bankGrew && vr.legal && vr.near && vr.parent && vr.grouped && vr.bankN && vr.tierA && vr.added > 0 && /^Variants of the top 1 by sim value /.test(vr.msg), JSON.stringify(vr));
   check("variants (C3): every K-of-8 keep-set is the default, 56 each at K 5 (Variants each follows K), and the run used every set once",
         vr.def && vr.def.sets === "all" && vr.def.M === "56" && vr.def.Mdis && vr.def.note === "Variants: every 5-of-8 keep-set, 56 each" &&
         vr.six.M === "28" && /every 6-of-8 keep-set, 28 each/.test(vr.six.note) && vr.each === 28 && vr.ks === "all" && /every keep-set, 28 draws each/.test(vr.msg), JSON.stringify(vr));
@@ -1791,7 +1792,7 @@ function audit(name, L, o) {
   check("Clear bank asks first (dismissed: the bank stays)", dialogs.length === 1 && /Clear the bank/.test(dialogs[0]) && (await pg.evaluate(() => BANK.lineups.length)) === nBank, JSON.stringify(dialogs));
   pg.on("dialog", d => { dialogs.push(d.message()); d.accept(); });
   await pg.evaluate(() => showStep("fill"));
-  check("one screen: the live summary, this contest and tonight (ROI, top 10%, top 1%, cash), and tier A", /Tonight: \d+ entr/.test(nb_sum1) && /ROI/.test(nb_sum1) && /top 10%/.test(nb_sum1) && /top 1%/.test(nb_sum1) && /cash/.test(nb_sum1) && /Tier A tonight: \d+ lineup/.test(nb_sum1), nb_sum1);
+  check("one screen: the live summary, this contest and tonight (ROI, top 10%, top 1%, cash), and the top tenth by sim value", /Tonight: \d+ entr/.test(nb_sum1) && /ROI/.test(nb_sum1) && /top 10%/.test(nb_sum1) && /top 1%/.test(nb_sum1) && /cash/.test(nb_sum1) && /Top tenth by sim value: \d+ lineup/.test(nb_sum1), nb_sum1);
   // Add and Remove from the list: the pick, its contest's portfolio, the tab and the summary move together
   const nb_addRm = await pg.evaluate(async () => {
     const cid = BP.review, before = BP.b.picked.length, sumB = document.getElementById("nbSum").textContent;

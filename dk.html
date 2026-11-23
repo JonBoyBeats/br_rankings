@@ -418,12 +418,12 @@
   <div id="cutProgress" hidden><progress id="cutBar" max="1" value="0" style="width:220px;vertical-align:middle"></progress> <span class="note" id="cutProgText" style="margin:0"></span></div>
   <div id="cutIdeas"></div>
   <div class="opts" title="After the cut, before Fill: variants around the top kept lineups, each keeping some of its players and redrawing the rest under its idea's rules, the bank noise and the pool rules; those that reach the kept pool's top half on the same nights join it, tagged &quot;variant of #rank&quot; (grouped as Variants of the top). Backtest in versions.csv">
-    <label class="field" title="Blank: the tier-A size, at least 10 and at most 25"><span class="field-label">Top kept</span><input class="num" id="varN" type="number" min="1" max="100" placeholder="tier A"></label>
+    <label class="field" title="Blank: the top 15 by sim value"><span class="field-label">Top kept</span><input class="num" id="varN" type="number" min="1" max="100" placeholder="15"></label>
     <label class="field" title="Every keep-set (adopted 2026-11-20 from the C3 test): each variant keeps a different K of the parent's 8, every K-of-8 set once, so every player is dropped equally often. Random: a fresh random K each draw (the old way)"><span class="field-label">Keep-sets</span><select id="varSets"><option value="all" selected>every K-of-8 set</option><option value="random">random each draw</option></select></label>
     <label class="field"><span class="field-label">Variants each</span><input class="num" id="varM" type="number" min="1" max="100" value="56" disabled></label>
     <label class="field"><span class="field-label">Players kept</span><input class="num" id="varK" type="number" min="3" max="7" value="5"></label>
     <span class="note" id="varSetsNote" style="align-self:center;margin:0">Variants: every 5-of-8 keep-set, 56 each</span>
-    <button type="button" id="varRun">Variants of tier A</button>
+    <button type="button" id="varRun">Variants of the top by value</button>
   </div>
   <div class="note" id="varResult"></div>
   </section>
@@ -2090,7 +2090,7 @@ function renderCut() {
     "Whole bank " + (BANK.lineups.length || 0).toLocaleString();
   var idx = BANK.lineups.map(function (L, i) { return i; }), all = tagCounts(idx);
   if (!CUT || !CUT.keep) { $("cutIdeas").innerHTML = BANK.lineups.length ? '<div class="note">Re-sim &amp; cut to see each idea\'s kept lineups, sim ROI and tier A.</div>' : ""; $("cutSharesBox").innerHTML = ""; return; }
-  var after = tagCounts(CUT.keep), board = CUT.board || { rows: [] }, br = {}, T = board.tierA;
+  var after = tagCounts(CUT.keep), board = CUT.board || { rows: [] }, br = {}, T = topTenth(board);
   var allE = ideaCounts(idx), afterE = ideaCounts(CUT.keep), shr = ideaShared(idx);     // every idea that drew a lineup (shared credit)
   board.rows.forEach(function (r) { br[r.idea] = r; });
   var late = function (g) { return g === "Variants of the top"; };
@@ -2102,13 +2102,12 @@ function renderCut() {
   var k = cutSort.k, dir = cutSort.dir;
   rowsI.sort(function (a, b) { var x = a[k], y = b[k]; if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
     return (x < y ? -1 : x > y ? 1 : 0) * dir || (b.roi || -1e9) - (a.roi || -1e9); });
-  var cols = [["idea", "Idea"], ["banked", "Banked"], ["shared", "Shared"], ["kept", "Kept"], ["share", "Share"], ["ta", "Tier A"], ["roi", "Sim ROI"], ["top10", "Top 10%"], ["top1", "Top 1%"], ["cash", "Cash"], ["own", "Avg own"], ["cores", "Cores"]];
-  var info = (board.contests ? "Each kept lineup alone in " + board.contests.join(", ") + " (" + board.nights + " fresh nights), each contest weighted by your entries in it. Tier A: kept lineups within the sim's noise of the best. " : "") +
-    "A lineup two ideas drew counts for both (Shared: this idea's banked lineups another idea also drew), so the columns can sum past the bank, the kept pool and tier A.";
+  var cols = [["idea", "Idea"], ["banked", "Banked"], ["shared", "Shared"], ["kept", "Kept"], ["share", "Share"], ["ta", "Top tenth"], ["roi", "Sim ROI"], ["top10", "Top 10%"], ["top1", "Top 1%"], ["cash", "Cash"], ["own", "Avg own"], ["cores", "Cores"]];
+  var info = (board.contests ? "Each kept lineup alone in " + board.contests.join(", ") + " (" + board.nights + " fresh nights), each contest weighted by your entries in it. Top tenth: the idea's kept lineups among the best tenth by sim value (the tiers are shown no longer: no signal on real results). " : "") +
+    "A lineup two ideas drew counts for both (Shared: this idea's banked lineups another idea also drew), so the columns can sum past the bank, the kept pool and the top tenth.";
   var f = function (x, fn) { return x == null ? "–" : fn(x); };
   var rounds = CUT.rounds.map(function (r) { return tagCounts(r.ids); });
-  $("cutIdeas").innerHTML = (T ? '<div class="note' + (T.flag ? " bad" : "") + '" id="tierA"><b>Tier A tonight:</b> ' + T.n + " lineup" + (T.n === 1 ? "" : "s") + ", " + T.ideas + " idea" + (T.ideas === 1 ? "" : "s") +
-      (T.top ? " (top: " + esc(T.top) + " " + Math.round(100 * T.topShare) + "%)" : "") + (T.flag ? ". Red flag: " + (T.n <= 2 ? "one or two great lineups with no close cousins" : "all from one idea") : "") + "</div>" : "") +
+  $("cutIdeas").innerHTML = (T ? '<div class="note" id="tierA">' + topTenthText(T) + "</div>" : "") +
     '<table class="contests" id="ideaTable"><tr>' + cols.map(function (c) {
       return '<th data-ck="' + c[0] + '" class="' + (c[0] === "idea" ? "" : "r") + '">' + c[1] + (c[0] === "idea" && info ? ' <span class="mut" title="' + esc(info) + '">(i)</span>' : "") + (cutSort.k === c[0] ? (cutSort.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>" +
     rowsI.map(function (r) {
@@ -2645,11 +2644,10 @@ function nbRender() {
     night.exp += y.exp; night.fee += y.fee; night.t10 += y.t10 * y.n; night.t1 += y.t1 * y.n; night.cash += y.cash * y.n; night.n += y.n;
   });
   if (night.n) { night.t10 /= night.n; night.t1 /= night.n; night.cash /= night.n; }
-  var tA = CUT && CUT.board && CUT.board.tierA, C = ownClump();
+  var tA = topTenth(), C = ownClump();
   var picks = Object.keys(PF).reduce(function (a, k) { return a.concat(PF[k].map(function (bi) { return BANK.lineups[bi].ids; })); }, []), pa = C && C.at(picks);
   $("nbSum").innerHTML = (cur ? nbSumText(nbShort(BP.contest.name), here) + "<br>" : "") + nbSumText("Tonight", night) +
-    (tA ? '<br><span' + (tA.flag ? ' class="bad"' : "") + "><b>Tier A tonight:</b> " + tA.n + " lineup" + (tA.n === 1 ? "" : "s") + ", " + tA.ideas + " idea" + (tA.ideas === 1 ? "" : "s") +
-      (tA.top ? ", " + esc(tA.top) + " " + Math.round(100 * tA.topShare) + "%" : "") + (tA.flag ? " (red flag: one great lineup with no close cousins, or one idea)" : "") + "</span>" : "") +
+    (tA ? "<br><span>" + topTenthText(tA) + "</span>" : "") +
     (C ? '<br><span id="nbOwnPos"><b>Own position:</b> ' + clumpText(C) + (pa ? "; picks at the field's " + ordinal(pa.pct) + " percentile (" + Math.round(pa.mean) + "%)" : "; no picks yet") + "</span>" : "");
   nbListRender();
   if (NB.rt === "p") renderPlayers(); else bpSideRender();
@@ -2678,7 +2676,7 @@ function nbListRender() {
       (over.length ? ' title="Over a cap: ' + esc(over.join("; ")) + '. Click to add it anyway."' : "") + ">" + (isPicked ? "Remove" : over.length ? "Add anyway" : "Add") + "</button></td>" +
       '<td class="l nm">' + DKSim.lateSlots(ctx(), BP.pool[k].ids).map(function (id) { return '<span class="pn" data-pid="' + esc(id) + '" title="Hide lineups with ' + esc(by[id].name) + '">' + esc(shortName(by[id].name)) + "</span>"; }).join(" · ") +
       (ks.length && !cls ? ' <button type="button" class="nbKids" data-k="' + k + '">' + (NB.open[k] ? "▾" : "▸") + " " + ks.length + " variant" + (ks.length === 1 ? "" : "s") + ", best " + roiTxt(best) + "</button>" : "") +
-      "</td><td><b>" + BP.tier[k] + "</b></td><td>" + roiTxt(BP.roi[k]) + "</td><td>" + pct1(BP.t10[k]) + "</td><td>" + pct1(BP.t1[k]) + "</td><td>" + pct1(BP.cashR[k]) +
+      '</td><td class="mut">' + BP.tier[k] + "</td><td>" + roiTxt(BP.roi[k]) + "</td><td>" + pct1(BP.t10[k]) + "</td><td>" + pct1(BP.t1[k]) + "</td><td>" + pct1(BP.cashR[k]) +
       "</td><td>" + Math.round(BP.own[k]) + "%</td><td>" + (BP.dupe[k] ? BP.dupe[k].toFixed(1) : "0") + '</td><td class="l mut" style="max-width:140px;overflow:hidden;text-overflow:ellipsis" title="' +
       esc(grp(k)) + '">' + esc(grp(k)) + "</td></tr>" +
       (ks.length && NB.open[k] && !cls ? ks.slice().sort(function (a, b) { return BP.alone[b] - BP.alone[a]; }).filter(function (j) { return picked.indexOf(j) < 0; })
@@ -2686,10 +2684,13 @@ function nbListRender() {
   };
   var head = '<tr><th class="l"></th><th class="l">Lineup</th><th>Tier</th><th>ROI</th><th>Top 10%</th><th>Top 1%</th><th>Cash</th><th>Own</th><th>Dupes</th><th class="l">Idea</th></tr>';
   var html = head + (picked.length ? '<tr class="tierh"><td colspan="10">Your picks · ' + picked.length + " of " + BP.o.n + "</td></tr>" + picked.map(function (k) { return row(k, true); }).join("") : "");
-  ["A", "B", "C"].forEach(function (t) {
-    var ks = rest.filter(function (k) { return BP.tier[k] === t; }).sort(function (a, b) { return BP.alone[b] - BP.alone[a]; }), show = NB.more[t] || 60;
+  // the contest's lineups by sim value: its top tenth, then the rest (2026-11-23 lock: no tiers; they showed no signal)
+  var byV = rest.slice().sort(function (a, b) { return BP.alone[b] - BP.alone[a]; }), cutAt = Math.max(10, Math.ceil(0.1 * BP.pool.length));
+  var inTop = {}; BP.pool.map(function (_, k) { return k; }).sort(function (a, b) { return BP.alone[b] - BP.alone[a]; }).slice(0, cutAt).forEach(function (k) { inTop[k] = 1; });
+  [["T", "Top tenth by sim value"], ["R", "The rest, by sim value"]].forEach(function (gr) {
+    var t = gr[0], ks = byV.filter(function (k) { return t === "T" ? inTop[k] : !inTop[k]; }), show = NB.more[t] || 60;
     if (!ks.length) return;
-    html += '<tr class="tierh"><td colspan="10">Tier ' + t + " in this contest · " + ks.length + "</td></tr>" + ks.slice(0, show).map(function (k) { return row(k, false); }).join("") +
+    html += '<tr class="tierh"><td colspan="10">' + gr[1] + " in this contest · " + ks.length + "</td></tr>" + ks.slice(0, show).map(function (k) { return row(k, false); }).join("") +
       (ks.length > show ? '<tr><td colspan="10" class="l"><button type="button" class="nbMore" data-t="' + t + '">Show ' + Math.min(60, ks.length - show) + " more of " + (ks.length - show) + "</button></td></tr>" : "");
   });
   $("nbList").innerHTML = "<table>" + html + "</table>";
@@ -3443,13 +3444,16 @@ function varSetsSync() {
 }
 $("varSets").addEventListener("change", varSetsSync);
 $("varK").addEventListener("input", varSetsSync);
+var VAR_TOP = 15;
 async function runVariants() {
   if (!CUT || !CUT.keep) return "Re-sim & cut first: variants grow around the kept lineups.";
   var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
-  var tA = CUT.board && CUT.board.tierA ? CUT.board.tierA.n : 15;
-  var N = +$("varN").value ? Math.max(1, +$("varN").value) : Math.min(25, Math.max(10, tA)), M = Math.max(1, +$("varM").value || 25), K = Math.min(7, Math.max(3, +$("varK").value || 5));
-  var keep = CUT.keep.slice(), top = keep.slice(0, N), shared = function (a, b) { return a.filter(function (id) { return b.indexOf(id) >= 0; }).length; };
+  // the top N by sim value (2026-11-23 lock: was tier A's size in the cut's rank order); the cut's rank order without a board
+  var N = +$("varN").value ? Math.max(1, +$("varN").value) : VAR_TOP, M = Math.max(1, +$("varM").value || 25), K = Math.min(7, Math.max(3, +$("varK").value || 5));
+  var B0 = CUT.board, keep = CUT.keep.slice(), shared = function (a, b) { return a.filter(function (id) { return b.indexOf(id) >= 0; }).length; };
+  var order = B0 && B0.values ? keep.map(function (bi, k) { return k; }).filter(function (k) { return B0.values[k] != null; }).sort(function (a, b) { return B0.values[b] - B0.values[a]; }).map(function (k) { return keep[k]; }) : keep;
+  var top = order.slice(0, N);
   var vars = [], from = [];
   for (var p = 0; p < top.length; p++) {
     $("cutStatus").textContent = "Variants around #" + (p + 1) + " of " + top.length + "…"; await tick();
@@ -3465,7 +3469,7 @@ async function runVariants() {
     var got = await DKSim.variants(cx, o, BANK.lineups[bi].ids, K, M);
     got.forEach(function (L) {
       if (keep.some(function (k) { return shared(BANK.lineups[k].ids, L.ids) >= 7; }) || vars.some(function (x) { return shared(x.ids, L.ids) >= 7; })) return;
-      vars.push(L); from.push(p + 1);
+      vars.push(L); from.push(keep.indexOf(bi) + 1);      // the parent's place in the cut's keep (the builder folds by it)
     });
   }
   if (!vars.length) return "No new variants: every draw repeated a kept lineup or one sharing 7+ of its players.";
@@ -3477,7 +3481,7 @@ async function runVariants() {
     w += n;
   });
   var kv = Array.prototype.slice.call(v, 0, keep.length).sort(function (a, b) { return a - b; }), med = kv[Math.floor(kv.length / 2)];
-  var before = CUT.board && CUT.board.tierA ? CUT.board.tierA.n : null, added = 0, seen = {};
+  var added = 0, seen = {};
   BANK.lineups.forEach(function (L) { seen[L.ids.slice().sort().join(",")] = 1; });
   BANK.groups = BANK.groups || {};
   vars.forEach(function (L, j) {           // straight into the bank and the kept pool (bankAdd would drop the cut)
@@ -3495,10 +3499,9 @@ async function runVariants() {
   $("cutStatus").textContent = "Scoring the kept lineups for the idea scoreboard…"; await tick();
   CUT.board = ideaBoard(cs, ns, S);
   bankSaveState(); cutSave(); PF = {}; pfSave(); renderBank(); renderEntries();
-  $("varResult").textContent = vars.length + " new, " + added + " joined · Tier A " + (before != null ? before + " → " : "") + CUT.board.tierA.n;
-  return "Variants of tier A, the top " + top.length + " (" + K + " of 8 players kept, " + ($("varSets").value === "all" ? "every keep-set, " : "") + M + " draws each): " + vars.length + " new after near-duplicates, " + added +
-    " reached the kept pool's top half and joined it (tagged \"variant of #rank\", grouped as Variants of the top). Tier A: " +
-    (before != null ? before + " → " : "") + CUT.board.tierA.n + ". Fill all contests again to use them.";
+  $("varResult").textContent = vars.length + " new, " + added + " joined";
+  return "Variants of the top " + top.length + " by sim value" + " (" + K + " of 8 players kept, " + ($("varSets").value === "all" ? "every keep-set, " : "") + M + " draws each): " + vars.length + " new after near-duplicates, " + added +
+    " reached the kept pool's top half and joined it (tagged \"variant of #rank\", grouped as Variants of the top). Fill all contests again to use them.";
 }
 $("varRun").addEventListener("click", function () {
   runVariants().then(function (m) { $("cutStatus").textContent = m; if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Variants failed: ' + esc(e.message) + "</span>"; });
@@ -3526,12 +3529,30 @@ $("pfRun").addEventListener("click", function () {
    below the sim's preference, read as their share of tier A (the kept lineups within the sim's noise of the best, at
    least the top 10): 15+ points under it and preferred in 20%+ of tier A. A guide for hand edits; nothing changes. */
 var UNDER_GAP = 0.15, UNDER_MIN = 0.2;
+/* The top tenth by sim value (2026-11-23 lock, the operator's approval of the tier de-emphasis: the tiers showed no
+   signal on real results, 3 of 7 nights in A > B > C order, while the continuous value did: positive on 6 of 7 nights,
+   the top tenth 6.8 percentile points ahead; analysis/cbb/dk/review_sim_2026-11-23.md). The kept lineups ranked by the
+   board's value, the best max(10, 10% of them): {ks (keep positions, best first), n, ideas, top, topShare, by}. */
+function topTenth(B) {
+  B = B || (CUT && CUT.board);
+  if (!B || !B.values || !CUT || !CUT.keep) return null;
+  var n = Math.min(CUT.keep.length, Math.max(10, Math.ceil(0.1 * CUT.keep.length)));
+  var ks = CUT.keep.map(function (bi, k) { return k; }).filter(function (k) { return B.values[k] != null; })
+    .sort(function (a, b) { return B.values[b] - B.values[a]; }).slice(0, n);
+  var by = {}; ks.forEach(function (k) { lineupGroups(CUT.keep[k]).forEach(function (g) { by[g] = (by[g] || 0) + 1; }); });
+  var top = Object.keys(by).sort(function (a, b) { return by[b] - by[a]; })[0];
+  return { ks: ks, n: ks.length, ideas: Object.keys(by).length, top: top || null, topShare: ks.length && top ? by[top] / ks.length : 0, by: by };
+}
+function topTenthText(T) {
+  return "<b>Top tenth by sim value:</b> " + T.n + " lineup" + (T.n === 1 ? "" : "s") + ", " + T.ideas + " idea" + (T.ideas === 1 ? "" : "s") +
+    (T.top ? " (most: " + esc(T.top) + " " + Math.round(100 * T.topShare) + "%)" : "") + (T.ideas === 1 ? " · all from one idea" : "");
+}
 function underExposed() {
   var B = CUT && CUT.board;
-  if (!B || !B.values || !B.tierA || !CUT.keep) return null;
+  var TT = topTenth(B); if (!TT) return null;
   var ent = Object.keys(PF).reduce(function (a, k) { return a.concat(PF[k]); }, []);
   if (!ent.length) return null;
-  var top = CUT.keep.map(function (bi, k) { return [B.values[k], bi]; }).sort(function (a, b) { return b[0] - a[0]; }).slice(0, Math.max(10, B.tierA.n)).map(function (x) { return x[1]; });
+  var top = TT.ks.map(function (k) { return CUT.keep[k]; });
   var shares = function (list) {
     var p = {}, st = {}, pr = {};
     list.forEach(function (bi) {
@@ -3556,7 +3577,7 @@ function renderUnder() {
   var pc = function (x) { return Math.round(100 * x) + "%"; }, nm = function (id) { return shortName((byId(id) || {}).name || id); };
   var part = function (label, list, name) { return list.length ? "<b>" + label + ":</b> " + list.map(function (x) { return esc(name(x.k)) + " " + pc(x.have) + " vs " + pc(x.want); }).join(", ") : ""; };
   var bits = [part("players", u.p, nm), part("team stacks 3+", u.st, function (t) { return t; }), part("pairs", u.pr, function (k) { return k.split("|").map(nm).join(" + "); })].filter(Boolean);
-  el.innerHTML = bits.length ? "Under-exposed against tier A (held vs tier A): " + bits.join(" · ") : "";
+  el.innerHTML = bits.length ? "Under-exposed against the top tenth by sim value (held vs there): " + bits.join(" · ") : "";
 }
 function fillMsg(m) {            // after Fill all contests: one line (filled of entries, short contests), the detail in a fold
   var ns = entriesN(), have = 0, want = 0, short = [];
