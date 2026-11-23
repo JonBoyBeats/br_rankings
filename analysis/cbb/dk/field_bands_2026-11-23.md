@@ -436,3 +436,20 @@ Bar (7 nights, need 4 toward real on each targeted measure, and neither ownershi
 
 Bar (2 nights, need 2 toward real on each targeted measure, and neither ownership band worse on 2+): targeted FAIL (dup, u5, lift, cap, 3tm); others PASS.
 
+
+## Friday review: the field test plan (operator, via the coordinator, 2026-11-23)
+
+The candidates, each against the current field:
+
+1. **The casual floor alone**, at shares 0.20, 0.25, 0.30, 0.35 and 0.40. The 0.20 result sat on the edge of the grid.
+2. **The casual floor plus size-band chalk**: Large 0.2, Medium 0.3, Small 0.4.
+3. **A salary-use rule** for the punt and at-the-cap gaps.
+
+Big-game x1.22 is dropped as a field rule. It hurt every lens in the clean retest above.
+
+For each candidate, report:
+
+- the realism measures against current: ownership by band (under 5%, 5-20%, 20%+), duplication, trio lift, punts and salary at the cap;
+- the bank test on real results.
+
+Decision framing: if no candidate improves the banks, still say whether the casual floor alone, at its best share, is strictly more realistic than current with the banks neutral. The operator may adopt it on that basis as the better foundation.
