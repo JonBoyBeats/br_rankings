@@ -603,17 +603,17 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
   <div class="opts">
     <label class="field"><span class="field-label">Contest standings</span><input type="file" id="swapStand" accept=".csv,.zip" multiple style="height:auto"></label>
     <label class="field"><span class="field-label">Entries file</span><input type="file" id="swapEnt" accept=".csv" style="height:auto"></label>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;flex-basis:100%">
     <label class="field" title="Run one contest only (quicker on a phone), or all"><span class="field-label">Contest</span><select id="swapOnly" style="width:auto"><option value="">All contests</option></select></label>
     <label class="field"><span class="field-label">Order</span><select id="swapSort" style="width:auto"><option value="ev">Most equity first</option><option value="gain">Biggest gain first</option><option value="run">As run</option></select></label>
-    <button type="button" class="primary" id="swapRun">Propose swaps</button>
+    <button type="button" class="primary" id="swapRun">Propose swaps</button></div>
     <details id="swapAdv" style="flex-basis:100%"><summary class="mut" style="cursor:pointer;font-size:12px">Advanced</summary><div class="opts" style="padding:4px 0">
     <label class="field" title="Simulated nights (1,000: the replay's choice; fewer is quicker and noisier)"><span class="field-label">Nights</span><input class="num" id="swapNights" type="number" min="200" max="5000" step="100" value="1000"></label>
     <label class="field" title="The decision moment: blank for now, or a time to replay a past tip"><span class="field-label">As of</span><input id="swapAt" type="datetime-local"></label>
     <label class="field" title="How hard the field leans to the chalk in the slots still hidden: the ownership weights raised to this (1: as projected; 2: chalk-heavy). The other one is run too, and a card shows both answers when they differ (small, top-heavy contests turn on it)"><span class="field-label">Field leans chalk</span><select id="swapChalk"><option value="auto" selected>Auto: fit each contest</option><option value="1">1: as projected</option><option value="2">2: on the chalk</option></select></label>
     </div></details>
   </div>
-  <div class="opts" style="padding:0"><button type="button" id="swapLogSave" title="This slate's swap log (what was proposed and what you accepted, no entry IDs), for the morning grading">Save swap log</button>
-    <button type="button" id="swapPackSave" title="One file with the standings and entries file loaded here, to open this on your phone (AirDrop, email, Drive); it carries your entry IDs, keep it private">Save swap pack</button>
+  <div class="opts" style="padding:0"><button type="button" id="swapPackSave" title="One file with the standings and entries file loaded here, to open this on your phone (AirDrop, email, Drive); it carries your entry IDs, keep it private">Save swap pack</button>
     <label class="field" style="flex-direction:row;align-items:center;gap:6px"><span class="field-label">Load swap pack</span><input type="file" id="swapPackLoad" accept=".json" style="height:auto"></label></div>
   <div class="note" id="swapList"></div>
   <div class="status" id="swapStatus"></div>
@@ -1124,7 +1124,7 @@ function renderPlayers() {
   $("players").classList.toggle("noscan", !rows.some(function (r) { return !!scanRowOf(r.id); }));   // no player scan yet: its columns hidden
   var sv = !cv && swapView();
   $("players").classList.toggle("swapcols", sv);
-  if (sv) { PT_SWAP = true; try { $("players").innerHTML = playerTable(sortList(list), true, null); } finally { PT_SWAP = false; } cutGrid(); }
+  if (sv) { MINE = swapMineShare(); PT_SWAP = true; try { $("players").innerHTML = playerTable(sortList(list), true, null); } finally { PT_SWAP = false; } cutGrid(); }
   else if (cv) {        // the Cut tab (2026-11-24): its own sort (Cut, high to low, by default), the Bank tab's left alone
     var s0 = view.sort, d0 = view.dir; view.sort = view.cutSort || "cut"; view.dir = view.cutDir || -1; PT_CUT = true;
     try { $("players").innerHTML = playerTable(sortList(list), true, null); } finally { view.sort = s0; view.dir = d0; PT_CUT = false; }
@@ -1143,6 +1143,7 @@ function sortList(list) {
               scash: function (r) { var x = scanRowOf(r.id); return x ? x.g_cash : -Infinity; },
               bank: function (r) { var bb = view.bankBase ? baseBank() : null; return (bb ? bb.share : bankShare())[r.id] || 0; },
               cut: function (r) { return cutKeptShare()[r.id] || 0; },
+              mine: function (r) { return MINE && MINE.M ? (MINE.n[r.id] || 0) / MINE.M : -1; },
               act: function (r) { var a = swapActual(), v = a && a.act[r.id]; return v != null ? v : -1; },
               dact: function (r) { var a = swapActual(), v = a && a.act[r.id]; return v != null ? v - own(r) : -999; },
               down: function (r) { return 100 * (cutKeptShare()[r.id] || 0) - own(r); },
@@ -1261,9 +1262,9 @@ function bankShare() {
 }
 function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's checks (checksMap)
   var head = '<div class="head"><span>L / X</span>' +
-    [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"], ["bank", view.bankBase ? "Base" : "Bank", "r col-bank"],
-].concat(PT_CUT ? [["cut", "Cut", "r col-cut"], ["down", "\u0394 own", "r col-down"]] : PT_SWAP ? [["act", "Actual", "r col-cut col-act"], ["dact", "\u0394", "r col-down"]] : [["min", "Min", "r col-min"]]).concat([["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]]).concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
-      .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '"' + (PT_SWAP && (c[0] === "act" || c[0] === "dact") ? ' title="' + esc(swapActTitle()) + '"' : "") + '>' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") +
+    [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"],
+].concat(PT_SWAP ? [] : [["bank", view.bankBase ? "Base" : "Bank", "r col-bank"]]).concat(PT_CUT ? [["cut", "Cut", "r col-cut"], ["down", "\u0394 own", "r col-down"]] : PT_SWAP ? [["act", "Actual", "r col-cut col-act"], ["dact", "\u0394", "r col-down"], ["mine", "Mine", "r col-bank col-mine"]] : [["min", "Min", "r col-min"]]).concat([["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]]).concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
+      .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '"' + (PT_SWAP && (c[0] === "act" || c[0] === "dact") ? ' title="' + esc(swapActTitle()) + '"' : PT_SWAP && c[0] === "mine" ? ' title="Your share of your lineups as they stand now: the entries file with the swaps you accept (what Export writes), every contest or the one picked in Contest"' : "") + '>' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") +
                                           (c[0] === "bank" ? '<button type="button" class="bbtog" aria-pressed="' + !!view.bankBase + '" title="Bank % from the whole bank or the base bank only (the checks\' base)">' + (view.bankBase ? "base" : "all") + "</button>" : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
     '<span class="col-scan col-pb" title="Bank this: a rule, at least 1 of him, for your next draw"></span>' +
@@ -1324,11 +1325,11 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
       '<span class="m r val"' + greenBg(value(r), 2, 4.5) + ">" + value(r).toFixed(2) + "</span>" +
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       // Bank (back 2026-11-20, beside Own, whenever a bank exists): his share of the bank; the hover against the field, with the flag
-      (function () { var hasB = BANK && BANK.lineups && BANK.lineups.length, bs = hasB ? bshare[r.id] || 0 : 0, gp2 = hasB && sc ? bankGap(r, bs, sc) : null;
+      (PT_SWAP ? "" : (function () { var hasB = BANK && BANK.lineups && BANK.lineups.length, bs = hasB ? bshare[r.id] || 0 : 0, gp2 = hasB && sc ? bankGap(r, bs, sc) : null;
         var bb = view.bankBase && hasB ? baseBank() : null, shown = bb ? bb.share[r.id] || 0 : bs;        // the column's base option (2026-11-24): display only
         return '<span class="m r col-bank"' + (hasB ? ' title="' + esc((bb ? "In " + Math.round(100 * shown) + "% of the base bank (" + bb.n + " lineups)" : view.bankBase ? "No base yet: in " + Math.round(100 * bs) + "% of the whole bank" : "In " + Math.round(100 * bs) + "% of the bank") +
-          " vs " + Math.round(own(r)) + "% field" + (gp2 ? " · " + gp2.tip : "")) + '"' : "") + ">" + (hasB ? Math.round(100 * shown) + "%" : "–") + "</span>"; })() +
-      (PT_CUT ? cutCells(r, bs0(r)) : PT_SWAP ? swapActCells(r) : '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>") +
+          " vs " + Math.round(own(r)) + "% field" + (gp2 ? " · " + gp2.tip : "")) + '"' : "") + ">" + (hasB ? Math.round(100 * shown) + "%" : "–") + "</span>"; })()) +
+      (PT_CUT ? cutCells(r, bs0(r)) : PT_SWAP ? swapActCells(r) + swapMineCell(r) : '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>") +
       // MPG (2026-11-20): his season minutes a game played, beside our minutes projection; the hover his last 5 and their spread
       '<span class="m r mut col-mpg"' + (r.min_avg != null ? ' title="' + esc("Season " + r.min_avg.toFixed(1) + " min a game played" + (r.min_last5 && r.min_last5.length ? "; last " + r.min_last5.length + ": " +
         r.min_last5.map(function (m) { return Math.round(m); }).join(", ") : "") + (r.min_cv != null ? "; minutes CV " + r.min_cv.toFixed(2) : "")) + '"' : "") + ">" + (r.min_avg != null ? r.min_avg.toFixed(0) : "–") + "</span>" +
@@ -4055,6 +4056,7 @@ function cutGrid() {         // the grid from the columns the Cut tab shows (the
   var w = phone ? ["88px", "160px", "44px", "52px", "36px", "34px", "44px", "42px", "38px", "32px", "36px", "34px"] :
                   ["120px", "minmax(150px, 200px)", "28px", "40px", "44px", "42px", "50px", "36px", "34px", "44px", "42px", "38px", "32px", "36px", "34px"];
   // desktop: L/X, name, pos, team, opp, sal, proj, val, own, bank, cut, Δ own, mpg, obpr, dk avg; phone: pos / team / opp go last
+  if ($("players").classList.contains("swapcols")) { w = w.slice(); w.splice(phone ? 6 : 9, 3, "42px", "38px", "44px"); }      // Swap: own, actual, Δ, mine
   var cols = w.concat(scan ? ["66px", "24px"] : []).concat(["40px", "40px"]).concat(phone ? ["28px", "40px", "44px"] : []);
   var t = cols.join(" ");
   $("players").querySelectorAll(".head, .row").forEach(function (e) { e.style.gridTemplateColumns = t; });
@@ -4391,6 +4393,7 @@ async function swapRun() {
   return out.length + " entr" + (out.length === 1 ? "y" : "ies") + ", " + out.filter(function (p) { return p.steps.length; }).length + " with a swap · " + notes.join(" · ");
 }
 function renderSwap() {
+  if (stepNow() === "swap" && rows && rows.length) renderPlayers();      // Mine follows the accepted swaps
   var R = SWAP.res || [], nm = function (id) { return SWAP.by[id] ? SWAP.by[id].name : id; };
   $("swapActs").hidden = !R.length; $("swapExport").disabled = !SWAP_EXPORT || !R.some(function (p) { return SWAP.acc[p.entryId]; });
   var lines = function (q) { var prev = q.cur; return q.steps.length ? q.steps.map(function (x) { var g = x.score.ev - prev.ev; prev = x.score;
@@ -4450,7 +4453,7 @@ function renderSwap() {
 }
 function swapExport() {
   if (!SWAP_EXPORT) return "Export is off until the first read-only live night checks out.";
-  var edits = {}; (SWAP.res || []).forEach(function (p0) { var p = swapPick(p0); if (SWAP.acc[p.entryId] && p.steps.length) edits[p.entryId] = p.next; });
+  var edits = swapEdits();
   var x = DKSwap.exportEntries(SWAP.ent, edits, SWAP.by, function (id) { return !!SWAP.by[id] && Date.parse(SWAP.by[id].game_start || "") < SWAP.at; });
   if (!x.csv) return "Not exported: " + x.errors.join(" · ");
   var a = document.createElement("a");
@@ -4459,7 +4462,7 @@ function swapExport() {
   document.body.appendChild(a); a.click(); a.remove();
   swapLog(edits);
   // what's entered now (once uploaded): the next run, the swap pack and the Live page start from the swapped lineups
-  var pe = DKSwap.parseEntries(x.csv); if (pe && !pe.error) { SWAP.ent = pe; SWAP.entText = x.csv; swapSave(); swapMine(); renderSwapList(); }
+  var pe = DKSwap.parseEntries(x.csv); if (pe && !pe.error) { SWAP.ent0 = SWAP.ent0 || SWAP.ent; SWAP.ent = pe; SWAP.entText = x.csv; swapSave(); swapMine(); renderSwapList(); }
   return "Exported " + x.n + " edited entr" + (x.n === 1 ? "y" : "ies") + ". Upload it at Lineups → Edit Entries.";
 }
 /* Your lineups as entered (2026-11-23, the owner: the Live page showed the build's exposure after late swaps): the entries
@@ -4472,7 +4475,8 @@ function swapMine(fromSync) {
 }
 /* The swap log, for grading late swap (2026-11-23, the owner): each export's proposals per entry (no entry IDs: the
    contest, the lineup before, the steps with their expected payout, accepted or not, the field assumption), kept in this
-   browser (dkcbb-swaplog:<group>) and saved with Save swap log for the morning (br_rankings scripts/dk_eval.py swaps). */
+   browser (dkcbb-swaplog:<group>) and, with sync on, in the sync repo on export (syncLog), which the morning reads
+   (scripts/dk_eval.py swaps --group; 2026-11-24: the Save swap log button retired). */
 function swapLog(edits) {
   if (!slate || !SWAP.res) return;
   var key = "dkcbb-swaplog:" + slate.draft_group_id, log = [];
@@ -4603,7 +4607,6 @@ function swapRestore() {
     SWAP.stand = rec.stand || []; SWAP.syncAt = rec.syncAt || 0;
     if (rec.ent) { var p = DKSwap.parseEntries(rec.ent); if (p && !p.error) { SWAP.ent = p; SWAP.entText = rec.ent; swapMine(true); } }
     renderSwapList();
-    if (SWAP.stand.length || SWAP.ent) $("swapStatus").textContent = "Restored from this browser: " + SWAP.stand.length + " contest standings" + (SWAP.ent ? " and your entries file (" + SWAP.ent.rows.length + " entries)" : "") + ".";
   }).catch(function () {});
 }
 function swapCid(name) { var m = /(\d{6,})/.exec(name || ""); return m ? m[1] : name; }
@@ -4623,10 +4626,10 @@ function renderSwapList() {
   var el = $("swapList"); if (!el) return;
   swapOwnRefresh();
   if (!SWAP.stand.length) { el.innerHTML = ""; return; }
-  el.innerHTML = "<b>" + SWAP.stand.length + " contest" + (SWAP.stand.length === 1 ? "" : "s") + " loaded</b>" +
+  el.innerHTML = '<details class="swl"><summary style="cursor:pointer"><b>' + SWAP.stand.length + " contest" + (SWAP.stand.length === 1 ? "" : "s") + " loaded</b>" +
     ' · <button type="button" id="swapClear" style="height:22px;padding:0 8px;font-size:11px">Clear</button>' +
     ' · <button type="button" id="swapForget" style="height:22px;padding:0 8px;font-size:11px" title="Forget the standings and the entries file kept in this browser for this slate">Forget files</button>' +
-    (SWAP.ent ? "" : ' <span class="muted">· add your entries file</span>') + '<details class="swl"><summary class="mut" style="cursor:pointer;font-size:12px">which</summary>' + SWAP.stand.map(function (f) {
+    (SWAP.ent ? "" : ' <span class="muted">· add your entries file</span>') + "</summary>" + SWAP.stand.map(function (f) {
     var cid = swapCid(f.name), c = slate && (slate.contests || []).find(function (x) { return String(x.id) === cid; });
     var n = SWAP.ent ? SWAP.ent.rows.filter(function (r) { return r.contestId === cid; }).length : null;
     return esc(c ? c.name : f.name) + " <span class=\"muted\">(" + esc(cid) + (c ? "" : ", not on this slate") + (n != null ? ", " + n + " of your entries" : "") +
@@ -4675,7 +4678,25 @@ function swapActual() {
   swapActMemo = { key: key, rows: rows, v: v };
   return v;
 }
-function swapView() { return !!(stepNow() === "swap" && !fillMode() && swapActual()); }
+function swapView() { return !!(stepNow() === "swap" && !fillMode() && (SWAP.ent || swapActual())); }
+/* Mine (2026-11-24, the operator): on the Swap tab, in Bank's place, each player's share of your lineups as they stand
+   now: the entries file with the swaps you accept, as Export writes them (swapEdits), across every contest or the one
+   picked in Contest; the hover gives the count and his share before swaps (the entries file as loaded, kept through an
+   export in SWAP.ent0). Refreshed on every accept / untick / pick of the other chalk answer. */
+var MINE = null;
+function swapEdits() { var edits = {}; (SWAP.res || []).forEach(function (p0) { var p = swapPick(p0); if (SWAP.acc[p.entryId] && p.steps.length) edits[p.entryId] = p.next; }); return edits; }
+function swapMineShare() {
+  if (!SWAP.ent) return null;
+  var cid = $("swapOnly") ? $("swapOnly").value : "", E = swapEdits(), mine = function (r) { return !cid || r.contestId === cid; };
+  var tally = function (R, ed) { var n = {}; R.forEach(function (r) { var ids = (ed && ed[r.entryId]) || r.ids; ids.forEach(function (id) { if (id) n[id] = (n[id] || 0) + 1; }); }); return n; };
+  var R = SWAP.ent.rows.filter(mine), R0 = (SWAP.ent0 || SWAP.ent).rows.filter(mine);
+  return { n: tally(R, E), M: R.length, n0: tally(R0, null), M0: R0.length };
+}
+function swapMineCell(r) {
+  var m = MINE; if (!m || !m.M) return '<span class="m r mut col-bank col-mine">–</span>';
+  var k = m.n[r.id] || 0, was = m.M0 ? (m.n0[r.id] || 0) / m.M0 : 0;
+  return '<span class="m r col-bank col-mine" title="' + esc("in " + k + " of " + m.M + " of your lineups now (was " + Math.round(100 * was) + "% before swaps)") + '">' + Math.round(100 * k / m.M) + "%</span>";
+}
 function swapActTitle() { var a = swapActual(); return a ? "Actual ownership from " + a.src.name + " (" + a.src.n.toLocaleString() + " entries), the started games its standings reveal; – not revealed yet. \u0394: actual less our Own" : ""; }
 function swapActCells(r) {
   var a = swapActual(), v = a && a.act[r.id], sw = a && a.swing[r.id];
@@ -4735,6 +4756,7 @@ setInterval(function () {          // a game tipping while the page is open: its
   if (sg !== tipSig) { tipSig = sg; renderTiles(); renderPlayers(); renderSwapOwn(); }
 }, 60000);
 $("swapAt").addEventListener("change", function () { renderTiles(); swapOwnRefresh(); });
+$("swapOnly").addEventListener("change", function () { if (stepNow() === "swap" && rows && rows.length) renderPlayers(); });
 $("swapStand").addEventListener("change", function (e) { var inp = e.target, seen = (swapActual() || { games: {} }).games; swapFiles(inp).then(function (f) {
   f.forEach(function (x) { x.at = Date.now(); var c0 = slate && (slate.contests || []).find(function (c) { return String(c.id) === swapCid(x.name); }); if (c0) x.contest = c0.name;
     var cid = swapCid(x.name), i = SWAP.stand.findIndex(function (y) { return swapCid(y.name) === cid; });
@@ -4748,16 +4770,9 @@ document.addEventListener("click", function (e) {
   if (e.target && e.target.id === "swapForget") { SWAP.stand = []; SWAP.ent = null; SWAP.entText = null; renderSwapList(); swapSave(); $("swapStatus").textContent = "Standings and entries file forgotten in this browser."; }
 });
 $("swapEnt").addEventListener("change", function (e) { swapFiles(e.target).then(function (f) {
-  var p = f.length ? DKSwap.parseEntries(f[0].text) : null; SWAP.ent = p && !p.error ? p : null; SWAP.entText = SWAP.ent ? f[0].text : null; swapSave(); swapMine();
+  var p = f.length ? DKSwap.parseEntries(f[0].text) : null; SWAP.ent0 = null; SWAP.ent = p && !p.error ? p : null; SWAP.entText = SWAP.ent ? f[0].text : null; swapSave(); swapMine();
   $("swapStatus").textContent = !p ? "" : p.error ? p.error : p.rows.length + " entries read (kept in this browser for this slate)."; renderSwapList(); }); });
 $("swapSort").addEventListener("change", function () { if (SWAP.res) renderSwap(); });
-$("swapLogSave").addEventListener("click", function () {
-  var t = slate && localStorage.getItem("dkcbb-swaplog:" + slate.draft_group_id);
-  if (!t || t === "[]") { $("swapStatus").textContent = "No swaps exported on this slate yet."; return; }
-  var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ kind: "dk-swap-log", slate: String(slate.draft_group_id), day: slate.day, log: JSON.parse(t) })], { type: "application/json" }));
-  a.download = "dk_swaplog_" + slate.day + "_" + slate.draft_group_id + ".json"; document.body.appendChild(a); a.click(); a.remove();
-  $("swapStatus").textContent = "Swap log saved: upload it with the morning files.";
-});
 /* The swap pack (2026-11-23, the owner: late swap from a phone after the computer's done): the standings and entries
    file loaded here in one file to open on the phone; nothing leaves the device but the file you send yourself. */
 $("swapPackSave").addEventListener("click", function () {
@@ -4773,7 +4788,7 @@ $("swapPackLoad").addEventListener("change", function (e) { var inp = e.target, 
     var d = JSON.parse(t); if (!d || d.kind !== "dk-swap-pack") throw new Error("That isn't a swap pack.");
     if (slate && d.slate && d.slate !== String(slate.draft_group_id)) throw new Error("That pack is for slate " + d.slate + ", not this one.");
     SWAP.stand = d.stand || [];
-    if (d.ent) { var p = DKSwap.parseEntries(d.ent); if (p && !p.error) { SWAP.ent = p; SWAP.entText = d.ent; } }
+    if (d.ent) { var p = DKSwap.parseEntries(d.ent); if (p && !p.error) { SWAP.ent0 = null; SWAP.ent = p; SWAP.entText = d.ent; } }
     if (d.marks && state) { Object.assign(state.outs, d.marks.outs || {}); Object.assign(state.ins, d.marks.ins || {}); Object.assign(state.proj, d.marks.proj || {}); Object.assign(state.qplay, d.marks.qplay || {}); save(); applyOuts(); renderPlayers(); }
     inp.value = ""; renderSwapList(); swapSave(); swapMine();
     $("swapStatus").textContent = "Swap pack loaded: " + SWAP.stand.length + " contest standings" + (SWAP.ent ? " and your entries file (" + SWAP.ent.rows.length + " entries)" : "") + ".";

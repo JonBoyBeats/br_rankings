@@ -2810,7 +2810,8 @@ SWAP_COLS = ["date", "draft_group", "exported", "contest", "accepted", "step", "
 
 def swaps(a):
     """Late swap graded (2026-11-23, the owner: with late swap the entered lineups are no longer the build's): a swap log
-    from the DK page's Swap step (Save swap log: each export's proposals per entry, accepted or not, no entry IDs), each
+    from the DK page's Swap step (each export's proposals per entry, accepted or not, no entry IDs; written to the sync
+    repo on export and read with --group, or an older saved file with --log), each
     proposed swap scored on the night's box scores: DraftKings points of the player in less the player out, beside the
     expected payout the tool gave it. Accepted swaps are the decisions made; the rest are the tool's advice not taken.
     Appends to swap_grades.csv (a log's rows replace any earlier ones for its slate and export time)."""

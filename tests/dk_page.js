@@ -2728,9 +2728,13 @@ function audit(name, L, o) {
     showStep("swap");
     return { advClosed: adv && !adv.open, inAdv, nights: document.getElementById("swapNights").value, at: document.getElementById("swapAt").value, chalk: document.getElementById("swapChalk").value,
              noteLen: note.textContent.length, tip: /export/i.test(sec.querySelector("h2 [title]") ? sec.querySelector("h2 [title]").title : ""), noLong: !/At a tip:/.test(note.textContent),
-             scanSwap, scanBank, scanFill, keep: ["swapStand", "swapEnt", "swapOnly", "swapSort", "swapRun", "swapLogSave", "swapPackSave", "swapPackLoad"].every(id => !!document.getElementById(id)) }; });
+             scanSwap, scanBank, scanFill, keep: ["swapStand", "swapEnt", "swapOnly", "swapSort", "swapRun", "swapPackSave", "swapPackLoad"].every(id => !!document.getElementById(id)),
+             noLogBtn: !document.getElementById("swapLogSave") && ![...sec.querySelectorAll("button")].some(b => /Save swap log/.test(b.textContent)),
+             row: (() => { const y = id => Math.round(document.getElementById(id).getBoundingClientRect().bottom); return y("swapRun") === y("swapSort") && y("swapSort") === y("swapOnly") &&
+               document.getElementById("swapSort").closest("label").nextElementSibling === document.getElementById("swapRun"); })() }; });
   check("Swap tab (#7): one short line under Late swap, the how-to in the heading's (i); Nights / As of / Field leans chalk in a closed Advanced fold at their defaults; the slate scan shows on Bank only; the other controls kept",
         sw7.advClosed && sw7.inAdv && sw7.nights === "1000" && sw7.at === "" && sw7.chalk === "auto" && sw7.noteLen < 140 && sw7.tip && sw7.noLong && sw7.scanSwap && !sw7.scanBank && sw7.scanFill && sw7.keep, JSON.stringify(sw7));
+  check("Swap follow-up: Propose swaps on the Contest / Order row, right after Order; no Save swap log button (the log still written on export)", sw7.row && sw7.noLogBtn, JSON.stringify(sw7));
   await pg.setInputFiles("#swapStand", { name: "contest-standings-" + swIn.cid + ".csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
   await pg.setInputFiles("#swapEnt", { name: "DKEntries.csv", mimeType: "text/csv", buffer: Buffer.from(swIn.ent) });
   await pg.fill("#swapAt", swIn.local); await pg.fill("#swapNights", "300");
@@ -2754,8 +2758,8 @@ function audit(name, L, o) {
     SWAP.res = res; renderSwap(); out.now = out.now || /pts now/.test(document.querySelector("#swapBox .swapcard .hd").textContent);
     return out;
   });
-  check("Swap: the standings and the entries file are kept in this browser for the slate (a reload restores them); the card shows the live points now",
-        swKeep.stand && swKeep.ent && /Restored from this browser/.test(swKeep.msg) && swKeep.now, JSON.stringify(swKeep));
+  check("Swap: the standings and the entries file are kept in this browser for the slate (a reload restores them, no 'Restored from this browser' line); the card shows the live points now",
+        swKeep.stand && swKeep.ent && !/Restored from this browser/.test(swKeep.msg) && swKeep.now, JSON.stringify(swKeep));
   // the night so far (2026-11-24): the entries' expected payout now, the fees, the accepted swaps' gain
   const swEV = await pg.evaluate(() => ({ hidden: document.getElementById("swapEV").hidden, txt: document.getElementById("swapEV").textContent,
     want: SWAP.res.reduce((t, p) => t + p.cur.ev, 0) }));
@@ -2786,6 +2790,31 @@ function audit(name, L, o) {
   });
   check("Swap: when the field assumptions differ the card shows both answers, and the radio picks the one used (its keep unaccepts, back again re-accepts)",
         swAlt.radios === 2 && swAlt.hasBoth && swAlt.used && swAlt.back, JSON.stringify(swAlt));
+  // Swap follow-up (2026-11-24): on the Swap tab Own, Actual, Δ sit together and Mine replaces Bank; Mine is the share
+  // of your lineups as they stand now, following an accepted swap (and back on unticking it)
+  const mine = await pg.evaluate(() => {
+    showStep("swap"); renderPlayers();
+    const heads = () => [...document.querySelectorAll("#players .head [data-sort]")].map(x => x.dataset.sort);
+    const hs = heads(), p = SWAP.res[0], keep = { steps: p.steps, next: p.next, acc: Object.assign({}, SWAP.acc), use: Object.assign({}, SWAP.use) };
+    const at = SWAP.at, inDom = id => !!document.querySelector('#players .row[data-id="' + id + '"]'), notStarted = id => !(Date.parse(byId(id).game_start || "") < at);
+    const out = p.ids.find(id => id && notStarted(id) && inDom(id)), inn = [...document.querySelectorAll("#players .row")].map(r => r.dataset.id).find(id => notStarted(id) && p.ids.indexOf(id) < 0 && byId(id).status !== "Out");
+    p.steps = [{ swap: [out, inn], score: p.cur }]; p.next = p.ids.map(id => id === out ? inn : id); SWAP.use = {}; SWAP.acc = {}; renderSwap();
+    const cell = id => { const c = document.querySelector('#players .row[data-id="' + id + '"] .col-mine'); return c ? [c.textContent, c.title] : null; };
+    const before = [cell(out), cell(inn)];
+    const box = document.querySelector('#swapBox .swapAcc[data-id="' + p.entryId + '"]'); box.checked = true; box.dispatchEvent(new Event("change", { bubbles: true }));
+    const after = [cell(out), cell(inn)];
+    const box2 = document.querySelector('#swapBox .swapAcc[data-id="' + p.entryId + '"]'); box2.checked = false; box2.dispatchEvent(new Event("change", { bubbles: true }));     // the card re-rendered: its box again
+    const undone = [cell(out), cell(inn)];
+    p.steps = keep.steps; p.next = keep.next; SWAP.acc = keep.acc; SWAP.use = keep.use; renderSwap();
+    showStep("bank"); renderPlayers(); const hb = heads(); showStep("swap");
+    return { hs, hb, before, after, undone };
+  });
+  const ix = k => mine.hs.indexOf(k);
+  check("Swap follow-up: on the Swap tab the list reads Own, Actual, Δ, Mine side by side (no Bank, Mine sortable); other tabs keep Bank",
+        ix("own") >= 0 && ix("act") === ix("own") + 1 && ix("dact") === ix("own") + 2 && ix("mine") === ix("own") + 3 && ix("bank") < 0 && mine.hb.indexOf("bank") === mine.hb.indexOf("own") + 1 && mine.hb.indexOf("mine") < 0, JSON.stringify([mine.hs, mine.hb]));
+  check("Swap follow-up: Mine follows an accepted swap (the player out 100% → 0%, the player in 0% → 100%, 'in 1 of 1 of your lineups now (was 0% before swaps)'), and back when unticked",
+        mine.before[0][0] === "100%" && mine.before[1][0] === "0%" && mine.after[0][0] === "0%" && mine.after[1][0] === "100%" && mine.after[1][1] === "in 1 of 1 of your lineups now (was 0% before swaps)" &&
+        mine.after[0][1] === "in 0 of 1 of your lineups now (was 100% before swaps)" && mine.undone[0][0] === "100%" && mine.undone[1][0] === "0%", JSON.stringify(mine));
   // Export on (the switch after the read-only night): the file is valid, started cells as read
   const swEx = await pg.evaluate(() => { SWAP_EXPORT = true; SWAP.acc = {}; SWAP.res.forEach(p => { SWAP.acc[p.entryId] = 1; }); renderSwap(); return !document.getElementById("swapExport").disabled; });
   let swOut = null;
@@ -2812,13 +2841,14 @@ function audit(name, L, o) {
   check("Swap: the chalk assumption is fitted per contest from its revealed slots (chalk-heavy -> 2, as projected -> 1, too few -> 1), Auto by default",
         swFit.chalk === 2 && swFit.flat === 1 && swFit.few.p === 1 && swFit.few.n === 0 && swFit.auto === "auto", JSON.stringify(swFit));
   // the standings add up, one pick at a time; the same contest picked again replaces its file; the list names them
-  const swList = await pg.evaluate(() => ({ n: SWAP.stand.length, txt: document.getElementById("swapList").textContent, fold: !!document.querySelector("#swapList details.swl:not([open])"), st: document.getElementById("swapStatus").textContent }));
+  const swList = await pg.evaluate(() => ({ n: SWAP.stand.length, txt: document.getElementById("swapList").textContent, fold: !!document.querySelector("#swapList details.swl:not([open])"), st: document.getElementById("swapStatus").textContent,
+    sum: (document.querySelector("#swapList details.swl > summary") || {}).textContent || "", top: document.querySelectorAll("#swapList > details").length }));
   await pg.setInputFiles("#swapStand", { name: "contest-standings-999999991.csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
   await pg.setInputFiles("#swapStand", { name: "contest-standings-" + swIn.cid + ".csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
   await pg.waitForFunction(() => SWAP.stand.length === 2, null, { timeout: 10000 });
   const swList2 = await pg.evaluate(() => ({ n: SWAP.stand.length, txt: document.getElementById("swapList").textContent }));
   check("Swap: standings add up one pick at a time (a contest picked again replaced), the list names each with your entries in it",
-        swList.n === 1 && /^1 contest loaded · Clear · Forget files/.test(swList.txt) && swList.fold && !/standings loaded/.test(swList.st) && /1 of your entries/.test(swList.txt) && swList2.n === 2 && /^2 contests loaded/.test(swList2.txt) && /not on this slate/.test(swList2.txt),
+        swList.n === 1 && /^1 contest loaded · Clear · Forget files/.test(swList.txt) && swList.fold && !/standings loaded/.test(swList.st) && /^1 contest loaded · Clear · Forget files/.test(swList.sum) && swList.top === 1 && !/which/.test(swList.sum) && /1 of your entries/.test(swList.txt) && swList2.n === 2 && /^2 contests loaded/.test(swList2.txt) && /not on this slate/.test(swList2.txt),
         JSON.stringify([swList, swList2]));
   // a big contest's standings come as a .zip: its CSV is read from inside, named as in the zip
   const zipBuf = require("child_process").execSync("python3 -c \"import io,sys,zipfile; b=io.BytesIO(); z=zipfile.ZipFile(b,'w',zipfile.ZIP_DEFLATED); z.writestr('contest-standings-999999992.csv', sys.stdin.read()); z.close(); sys.stdout.buffer.write(b.getvalue())\"", { input: swIn.stand });
