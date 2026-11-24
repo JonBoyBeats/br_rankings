@@ -250,7 +250,7 @@ tr.fc-light { cursor: pointer; } tr.fc-heavy { cursor: pointer; } .fcf-light { c
 #fillMore { display: inline-block; vertical-align: middle; } #fillMore > summary { cursor: pointer; font-size: 12.5px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; display: inline-block; }
 #fillMore[open] { display: block; width: 100%; } .fmore > div { margin: 4px 0; font-size: 12px; } .fmore button { margin-right: 6px; }
 .ck { display: inline-block; min-width: 26px; margin-right: 5px; padding: 0 4px; border-radius: 4px; font: 600 11px var(--mono); text-align: center; border: 1px solid var(--line); color: var(--muted); vertical-align: 1px; }
-.ck.ck-g { background: rgba(46,170,96,.85); border-color: rgba(46,170,96,.9); color: #fff; } .ck.ck-l { background: rgba(46,170,96,.28); border-color: rgba(46,170,96,.5); color: var(--ink); }
+.ck.ck-g { background: rgba(46,170,96,.85); border-color: rgba(46,170,96,.9); color: #fff; } .ck .ck7 { font-size: 9px; font-weight: 400; opacity: .8; } .ck .ckmk { font-style: normal; font-size: 9.5px; margin-left: 3px; opacity: .45; } .ck .ckmk.on { opacity: 1; font-weight: 700; } .ck.ck-l { background: rgba(46,170,96,.28); border-color: rgba(46,170,96,.5); color: var(--ink); }
 .ck.ck-x { opacity: .55; text-decoration: line-through; }
 .row.ckg .who { background: rgba(46,170,96,.16); } .row.ckl .who { background: rgba(46,170,96,.07); }
 .checksq { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 2px 0 6px; font-size: 11.5px; }
@@ -1149,7 +1149,7 @@ function sortList(list) {
               down: function (r) { return 100 * (cutKeptShare()[r.id] || 0) - own(r); },
               minp: function (r) { return state.floor[r.id] != null && state.floor[r.id] !== "" ? +state.floor[r.id] : -1; },
               maxp: function (r) { return state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] : 101; },
-              checks: function (r) { var c = ckSort[r.id]; return (c ? c.hit : 0) * 1000 + proj(r); },
+              checks: function (r) { var c = ckSort[r.id]; return (c ? c.score : 0) * 1000 + proj(r); },
               here: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].here : 0; },
               tonight: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].tonight : 0; },
               room: function (r) { var f = fillStats(); if (fillCutOn()) return (f && f[r.id] ? f[r.id].tonight : 0) - (cutKeptShare()[r.id] || 0);
@@ -3729,71 +3729,101 @@ function renderLab(L) {
     "Slates before registration are a look-back only. Graded nightly from saved builds and standings (dk_eval.py lab).</div>";
 }
 
-/* Checks (2026-11-24, the operator): per player in a game, which of up to 7 boxes he meets, each against tonight's
-   slate so it adapts. Rotation players: season minutes a game (min_avg) at least CK.rotMpg and CK.rotGp+ games played
-   (gp), whatever tonight's status; the percentile pools are the slate's rotation players (nearest rank).
-   1 OBPR: in the top CK.obprTop% of the pool by EvanMiya OBPR, or top CK.obprTeam on his team (bpr_rank).
-   2 MPG: min_avg at or over the pool's CK.mpgPct th percentile, or CK.mpgAbs+.
-   3 DK per minute: season DK average / min_avg at or over the CK.ppmPct th percentile.
-   4 5x rate: his last 5 games (dk_last5's games, r.last5) at 5x+ tonight's salary, at or over the CK.x5Pct th
-     percentile of pool players with 3+ such games, and above 0; under 3 games: not met.
-   5 under-2x rate: the share of those games under 2x tonight's salary, at or under the CK.x2Pct th percentile.
-   6 bank share / field ownership at least CK.bankRatio: only once a bank exists (else not counted: out of 6).
-   7 scan read core, lean core or leverage: only once the slate is scanned (else not counted).
-   Green: 5+ met or 70%+ of those counted; light green: 4. Never green (badge greyed, the reason in its hover): Out,
-   Questionable with no Play decision (state.ins), sit risk (sitRisk), 0 games played. Display and the GREENS tag only:
-   nothing here moves a projection, the cut or the fill. The thresholds are editable under the game's Boxes fold
-   (localStorage dkcbb:checks). */
-var CK_DEF = { rotMpg: 15, rotGp: 3, obprTop: 30, obprTeam: 2, mpgPct: 70, mpgAbs: 28, ppmPct: 60, x5Pct: 60, x2Pct: 40, bankRatio: 1.2 };
+/* Checks, weighted (2026-11-24, the operator's approval of analysis/cbb/dk/checks_weights_2026-11-24.md): per player
+   in a game, a score out of 7 from five boxes, each his percentile (0-1, mid-rank) among the slate's rotation players
+   (season mpg >= CK.rotMpg and CK.rotGp+ games, whatever tonight's status), weighted by the held-out fit (CK_W):
+   1 OBPR 0.42      75% slate-wide percentile + 25% within his salary band (< $5k, $5-7k, $7k+); top CK.obprTeam on
+                    his team (bpr_rank) floors it at 0.7
+   2 MPG 1.63       season mpg (min_avg), the same 75/25 slate / band mix
+   3 DK/min 0       season DK avg per minute: carried by the others in the fit, shown, not weighted
+   4 5x rate 4.45   the share of his games at 5x+ tonight's salary: half his last 5, half his season (season_dk from
+                    the nightly's game log); no season log: the last 5 only, and the hover says so
+   5 under-2x 0.50  the share under 2x tonight's salary, the same blend, reversed (fewer is better)
+   Green: score >= CK_GREEN AND season mpg >= CK_GUARD AND tonight's projected minutes >= CK_GUARD (no bench or fringe
+   player propped up). No light green. Boxes 6 (bank share / field own >= CK.bankRatio, once a bank exists: the base
+   bank when there is one) and 7 (scan read core, lean core or leverage, once scanned) are marks on the badge, outside
+   the score, until enough graded builds fit them. Never green (badge greyed, the reason in its hover): Out,
+   Questionable with no Play decision, sit risk, 0 games played. Display and the GREENS tag only: nothing here moves
+   a projection, the cut or the fill. */
+var CK_DEF = { rotMpg: 15, rotGp: 3, obprTeam: 2, bankRatio: 1.2 };
+var CK_W = { obpr: 0.42, mpg: 1.63, ppm: 0, x5: 4.45, x2: 0.50 }, CK_GREEN = 5.2, CK_GUARD = 20, CK_BANDS = [5000, 7000], CK_PRICE = 0.75, CK_BLEND = 0.5;
 function ckOpts() {
   var o = Object.assign({}, CK_DEF);
-  try { var v = JSON.parse(localStorage.getItem("dkcbb:checks") || "null"); if (v) Object.keys(CK_DEF).forEach(function (k) { if (v[k] != null && isFinite(+v[k])) o[k] = +v[k]; }); } catch (e) {}
+  try { var v = JSON.parse(localStorage.getItem("dkcbb:checks") || "null"); if (v && v.bankRatio != null && isFinite(+v.bankRatio)) o.bankRatio = +v.bankRatio; } catch (e) {}
   return o;
 }
 function ckQ(a, p) { if (!a.length) return null; var v = a.slice().sort(function (x, y) { return x - y; }); return v[Math.max(0, Math.min(v.length - 1, Math.ceil(p / 100 * v.length) - 1))]; }
-function ckGames(r, x) { var g = r.last5 || [], sal = r.salary / 1000; return g.length ? g.filter(function (q) { return x > 0 ? q[2] >= x * sal : q[2] < -x * sal; }).length / g.length : null; }
 function ckPpm(r) { return r.min_avg > 0 && r.dk_avg != null ? r.dk_avg / r.min_avg : null; }
+function ckBand(r) { return r.salary < CK_BANDS[0] ? 0 : r.salary < CK_BANDS[1] ? 1 : 2; }
+function ckPct(sorted, v) {          // mid-rank percentile of v in a sorted pool; no value: 0.5
+  if (v == null || !sorted.length) return 0.5;
+  var lo = 0, hi = 0;
+  sorted.forEach(function (x) { if (x < v) lo++; if (x <= v) hi++; });
+  return (lo + hi) / 2 / sorted.length;
+}
+// his share of games at x times tonight's salary (x < 0: under -x times), last 5 and season blended half and half
+function ckRate(r, x) {
+  var sal = r.salary / 1000, f = function (pts) { return x > 0 ? pts >= x * sal : pts < -x * sal; };
+  var l5 = (r.last5 || []).map(function (q) { return q[2]; }), sea = r.season_dk || [];
+  var rl = l5.length ? l5.filter(f).length / l5.length : null, rs = sea.length ? sea.filter(f).length / sea.length : null;
+  if (rl == null && rs == null) return { v: null, how: "no games" };
+  if (rs == null) return { v: rl, how: "last " + l5.length + " only (no season log)", rl: rl };
+  if (rl == null) return { v: rs, how: "season " + sea.length + " games", rs: rs };
+  return { v: CK_BLEND * rl + (1 - CK_BLEND) * rs, how: "last " + l5.length + " " + Math.round(100 * rl) + "%, season " + sea.length + " " + Math.round(100 * rs) + "%", rl: rl, rs: rs };
+}
 function checksMap() {
   if (!rows || !rows.length) return {};
   var o = ckOpts(), rot = rows.filter(function (r) { return (r.min_avg || 0) >= o.rotMpg && (r.gp || 0) >= o.rotGp; });
-  var three = rot.filter(function (r) { return (r.last5 || []).length >= 3; });
-  var nn = function (a) { return a.filter(function (x) { return x != null; }); };
-  var cut = { obpr: ckQ(nn(rot.map(function (r) { return r.obpr; })), 100 - o.obprTop), mpg: ckQ(nn(rot.map(function (r) { return r.min_avg; })), o.mpgPct),
-              ppm: ckQ(nn(rot.map(ckPpm)), o.ppmPct), x5: ckQ(three.map(function (r) { return ckGames(r, 5); }), o.x5Pct), x2: ckQ(three.map(function (r) { return ckGames(r, -2); }), o.x2Pct) };
+  var srt = function (a) { return a.filter(function (x) { return x != null; }).sort(function (x, y) { return x - y; }); };
+  var get = { obpr: function (r) { return r.obpr; }, mpg: function (r) { return r.min_avg; }, ppm: ckPpm,
+              x5: function (r) { return ckRate(r, 5).v; }, x2: function (r) { return ckRate(r, -2).v; } };
+  var pool = {}, band = {};
+  Object.keys(get).forEach(function (k) {
+    pool[k] = srt(rot.map(get[k]));
+    band[k] = [0, 1, 2].map(function (b) { return srt(rot.filter(function (r) { return ckBand(r) === b; }).map(get[k])); });
+  });
+  var priced = function (k, r) { var v = get[k](r); return v == null ? 0.5 : CK_PRICE * ckPct(pool[k], v) + (1 - CK_PRICE) * ckPct(band[k][ckBand(r)], v); };
   var hasBank = !!(BANK && BANK.lineups && BANK.lineups.length), bs = hasBank ? bankShare() : {}, bb = hasBank ? baseBank() : null, hasScan = rows.some(function (r) { return !!scanRowOf(r.id); });
   var pc = function (x) { return Math.round(100 * x) + "%"; }, out = {};
   rows.forEach(function (r) {
-    var b = [], n3 = (r.last5 || []).length >= 3, ppm = ckPpm(r), x5 = ckGames(r, 5), x2 = ckGames(r, -2);
-    b.push({ k: "OBPR", ok: r.obpr != null && ((cut.obpr != null && r.obpr >= cut.obpr) || (r.bpr_rank != null && r.bpr_rank <= o.obprTeam)),
-             v: r.obpr != null ? r.obpr.toFixed(2) + (r.bpr_rank ? " (#" + r.bpr_rank + " on team)" : "") + ", top " + o.obprTop + "% from " + (cut.obpr != null ? cut.obpr.toFixed(2) : "–") : "no EvanMiya match" });
-    b.push({ k: "MPG", ok: r.min_avg != null && ((cut.mpg != null && r.min_avg >= cut.mpg) || r.min_avg >= o.mpgAbs),
-             v: r.min_avg != null ? r.min_avg.toFixed(1) + " (cut " + (cut.mpg != null ? cut.mpg.toFixed(1) : "–") + " or " + o.mpgAbs + ")" : "no minutes" });
-    b.push({ k: "DK/min", ok: ppm != null && cut.ppm != null && ppm >= cut.ppm, v: ppm != null ? ppm.toFixed(2) + " (cut " + (cut.ppm != null ? cut.ppm.toFixed(2) : "–") + ")" : "no minutes" });
-    b.push({ k: "5x rate", ok: n3 && x5 != null && cut.x5 != null && x5 >= cut.x5 && x5 > 0,
-             v: n3 ? pc(x5) + " of last " + r.last5.length + " at 5x $" + (r.salary / 1000).toFixed(1) + "k (cut " + pc(cut.x5 || 0) + ", above 0)" : "under 3 recent games" });
-    b.push({ k: "under-2x rate", ok: n3 && x2 != null && cut.x2 != null && x2 <= cut.x2,
-             v: n3 ? pc(x2) + " of last " + r.last5.length + " under 2x (cut " + pc(cut.x2 || 0) + " or less)" : "under 3 recent games" });
+    var x5 = ckRate(r, 5), x2 = ckRate(r, -2), ppm = ckPpm(r);
+    var s1 = r.obpr == null ? 0.5 : priced("obpr", r);
+    if (r.bpr_rank != null && r.bpr_rank <= o.obprTeam) s1 = Math.max(s1, 0.7);
+    var sc = { obpr: s1, mpg: r.min_avg == null ? 0.5 : priced("mpg", r), ppm: ppm == null ? 0.5 : priced("ppm", r),
+               x5: ckPct(pool.x5, x5.v), x2: 1 - ckPct(pool.x2, x2.v) };
+    var b = [
+      { k: "OBPR", w: CK_W.obpr, s: sc.obpr, v: r.obpr != null ? r.obpr.toFixed(2) + (r.bpr_rank ? " (#" + r.bpr_rank + " on team)" : "") : "no EvanMiya match" },
+      { k: "MPG", w: CK_W.mpg, s: sc.mpg, v: r.min_avg != null ? r.min_avg.toFixed(1) + " season mpg" : "no minutes" },
+      { k: "DK/min", w: CK_W.ppm, s: sc.ppm, v: ppm != null ? ppm.toFixed(2) + " (not weighted: carried by the others)" : "no minutes" },
+      { k: "5x rate", w: CK_W.x5, s: sc.x5, v: x5.v != null ? pc(x5.v) + " at 5x $" + (r.salary / 1000).toFixed(1) + "k (" + x5.how + ")" : "no games" },
+      { k: "under-2x", w: CK_W.x2, s: sc.x2, v: x2.v != null ? pc(x2.v) + " under 2x (" + x2.how + ")" : "no games" }];
+    var score = b.reduce(function (t, x) { return t + x.w * x.s; }, 0), marks = [];
     if (hasBank) { var f = own(r) / 100, sh = (bb ? bb.share : bs)[r.id] || 0, ratio = f > 0 ? sh / f : (sh > 0 ? Infinity : 0);
-      b.push({ k: "bank/field", ok: ratio >= o.bankRatio, v: (bb ? "base bank share " : "(whole bank: no base yet) bank share ") + pc(sh) + " vs field " + pc(f) + " (x" + (isFinite(ratio) ? ratio.toFixed(2) : "∞") + ", need x" + o.bankRatio + ")" }); }
-    if (hasScan) { var sc = scanRowOf(r.id);
-      b.push({ k: "scan read", ok: !!sc && ["core", "lean core", "leverage"].indexOf(sc.read) >= 0, v: sc ? sc.read : "not scanned" }); }
-    var hit = b.filter(function (x) { return x.ok; }).length, avail = b.length;
+      marks.push({ k: "bank/field", t: "b", ok: ratio >= o.bankRatio, v: (bb ? "base bank share " : "(whole bank: no base yet) bank share ") + pc(sh) + " vs field " + pc(f) + " (x" + (isFinite(ratio) ? ratio.toFixed(2) : "∞") + ", need x" + o.bankRatio + ")" }); }
+    if (hasScan) { var sr = scanRowOf(r.id);
+      marks.push({ k: "scan read", t: "s", ok: !!sr && ["core", "lean core", "leverage"].indexOf(sr.read) >= 0, v: sr ? sr.read : "not scanned" }); }
     var grey = r.status === "Out" ? "Out" : isQ(r) && !state.ins[r.id] && !qPlaying(r) ? "Questionable: no Play decision" : sitRisk(r) ? "sit risk" : !r.gp ? "0 games played" : "";
-    var lvl = grey ? "" : (hit >= 5 || hit / avail >= 0.7) ? "g" : hit >= 4 ? "l" : "";
-    out[r.id] = { hit: hit, avail: avail, boxes: b, grey: grey, level: lvl };
+    var guard = (r.min_avg || 0) >= CK_GUARD && (r.min || 0) >= CK_GUARD;
+    var lvl = !grey && score >= CK_GREEN && guard ? "g" : "";
+    out[r.id] = { score: score, hit: score, boxes: b, marks: marks, grey: grey, level: lvl, guard: guard,
+                  noLog: !(r.season_dk && r.season_dk.length) && !!(r.last5 && r.last5.length) };
   });
   return out;
 }
 function ckBadge(c) {
-  var tip = (c.grey ? "Never green: " + c.grey + "\n" : "") + c.hit + " of " + c.avail + " boxes\n" + c.boxes.map(function (x) { return (x.ok ? "✓ " : "– ") + x.k + ": " + x.v; }).join("\n");
-  return '<span class="ck' + (c.grey ? " ck-x" : c.level ? " ck-" + c.level : "") + '" title="' + esc(tip) + '">' + c.hit + "/" + c.avail + "</span>";
+  var tip = (c.grey ? "Never green: " + c.grey + "\n" : "") + c.score.toFixed(1) + " of 7 (green at " + CK_GREEN + "+ with " + CK_GUARD + "+ season and projected minutes" +
+    (c.guard ? "" : "; under " + CK_GUARD + " minutes: never green") + ")\n" +
+    c.boxes.map(function (x) { return x.k + " " + x.s.toFixed(2) + " × " + x.w.toFixed(2) + " = " + (x.s * x.w).toFixed(2) + " · " + x.v; }).join("\n") +
+    (c.marks.length ? "\nOutside the score: " + c.marks.map(function (x) { return (x.ok ? "✓ " : "– ") + x.k + ": " + x.v; }).join("; ") : "");
+  return '<span class="ck' + (c.grey ? " ck-x" : c.level ? " ck-" + c.level : "") + '" title="' + esc(tip) + '">' + c.score.toFixed(1) + '<small class="ck7"> of 7</small>' +
+    c.marks.map(function (x) { return '<i class="ckmk' + (x.ok ? " on" : "") + '">' + x.t + "</i>"; }).join("") + "</span>";
 }
 var ckMsgText = "", ckFoldOpen = false;
 $("teamPanel").addEventListener("toggle", function (e) { if (e.target.classList && e.target.classList.contains("ckopts")) ckFoldOpen = e.target.open; }, true);
 function greensOf(game) {
   var m = checksMap();
   return gameIds(game).filter(function (id) { var r = byId(id); return r && usable(r) && m[id] && m[id].level === "g"; })
-    .sort(function (a, b) { return m[b].hit - m[a].hit || proj(byId(b)) - proj(byId(a)); });
+    .sort(function (a, b) { return m[b].score - m[a].score || proj(byId(b)) - proj(byId(a)); });
 }
 function greensApply(game) {
   var had = (state.rules || []).filter(function (r) { return r.greens && r.greens.game === game; });
@@ -3812,12 +3842,11 @@ function checksRow(game) {
     '<button type="button" id="ckSet" data-game="' + esc(game) + '" aria-pressed="' + on + '" title="' + (on ? "Clear this game's GREENS set" : "Adds a rule: at least N of the green players (template 5, 10% spread)") + '">' + (on ? "Clear greens" : "Set greens") + "</button>" +
     '<button type="button" id="ckDraw9" title="Draw the 9 under the rules as they stand (the bank tags each batch with the rules, GREENS ' + esc(game) + ' among them)">Draw the 9</button>' +
     '<span class="mut" id="ckMsg">' + (ckMsgText.indexOf(game + "|") === 0 ? esc(ckMsgText.slice(game.length + 1)) : "") + "</span>" +
-    '<details class="ckopts"' + (ckFoldOpen ? " open" : "") + '><summary class="mut">Boxes</summary><div class="ckgrid">' +
-    inp("rotMpg", "rotation: mpg ≥") + inp("rotGp", "and games ≥") + inp("obprTop", "1 OBPR top %") + inp("obprTeam", "or team top") + inp("mpgPct", "2 MPG pctile") + inp("mpgAbs", "or mpg ≥") +
-    "</div>" + baseFoldHtml() + '<div class="ckgrid">' + inp("ppmPct", "3 DK/min pctile") + inp("x5Pct", "4 5x-rate pctile") + inp("x2Pct", "5 under-2x pctile ≤") + inp("bankRatio", "6 bank/field ≥") + '</div><div class="mut">' +
-    "Rotation players: season mpg ≥ " + o.rotMpg + " and " + o.rotGp + "+ games, the slate's percentile pool. 1 OBPR in its top " + o.obprTop + "% or top " + o.obprTeam + " on his team; 2 season mpg ≥ the " + o.mpgPct + "th percentile or " + o.mpgAbs + "+; " +
-    "3 season DK avg per minute ≥ the " + o.ppmPct + "th; 4 share of his last 5 at 5x+ tonight's salary ≥ the " + o.x5Pct + "th (of players with 3+ games) and above 0; 5 share under 2x ≤ the " + o.x2Pct + "th; " +
-    "6 bank share / field own ≥ " + o.bankRatio + " (once a bank exists); 7 scan read core, lean core or leverage (once scanned). Green: 5+ or 70%+ of those counted; light: 4. Out, unresolved Q, sit risk and 0 games are never green.</div></details></div>";
+    '<details class="ckopts"' + (ckFoldOpen ? " open" : "") + '><summary class="mut">Boxes</summary>' + baseFoldHtml() + '<div class="ckgrid">' + inp("bankRatio", "6 bank/field ≥") + '</div><div class="mut">' +
+    "A score out of 7: each box is his percentile among the slate's rotation players (season mpg ≥ " + o.rotMpg + ", " + o.rotGp + "+ games), weighted by the held-out fit: " +
+    "1 OBPR " + CK_W.obpr + ", 2 season mpg " + CK_W.mpg + " (both 75% slate-wide, 25% within his salary band), 3 DK/min " + CK_W.ppm + ", 4 5x rate at tonight's salary " + CK_W.x5 +
+    ", 5 under-2x rate " + CK_W.x2 + " (4 and 5: half his last 5, half his season). Green: " + CK_GREEN + "+ with " + CK_GUARD + "+ season mpg and " + CK_GUARD + "+ projected minutes. " +
+    "6 bank / field ≥ " + o.bankRatio + " (b) and 7 scan read (s) are marks outside the score. Out, unresolved Q, sit risk and 0 games are never green.</div></details></div>";
 }
 $("teamPanel").addEventListener("change", function (e) {
   var t = e.target.closest(".ckm"); if (!t) return;

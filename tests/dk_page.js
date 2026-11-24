@@ -2060,82 +2060,77 @@ function audit(name, L, o) {
   });
   check("per-game floors: Clear this game empties and holds the game's Min% and Max% (scan and typed; other games stay); Restore puts them back, the scan mark too, leaving boxes typed in since",
         /Clear this game \(3\)/.test(gfl.label) && gfl.cleared && gfl.held && /Restore floors \(3\)/.test(gfl.rlabel) && gfl.noClear && gfl.back && /Restored 1 Min% and 1 Max%.*1 box typed/.test(gfl.msg), JSON.stringify(gfl));
-  // checks (2026-11-24): boxes met per player in a game, badge + shading, sort, Set greens (GREENS <game>) beside Draw the 9
+  // checks, weighted (2026-11-24, checks_weights_2026-11-24.md): a score out of 7, green at 5.2+ with 20+ season and
+  // projected minutes, the 5x / under-2x rates half last 5, half season; badge, shading, sort, Set greens beside Draw the 9
   const ckt = await pg.evaluate(() => {
-    const keys = ["min_avg", "gp", "obpr", "bpr_rank", "dk_avg", "last5", "p_play", "status"], was = rows.map(r => keys.map(k => r[k]));
+    const keys = ["min_avg", "gp", "obpr", "bpr_rank", "dk_avg", "last5", "season_dk", "min", "p_play", "status"], was = rows.map(r => keys.map(k => r[k]));
     const n0 = state.rules.length, rules0 = JSON.stringify(state.rules), wu0 = wuDoc;
     try { localStorage.removeItem("dkcbb:checks"); } catch (e) {}
     // a spread of made-up season lines so every box has a pool
-    rows.forEach((r, i) => { r.min_avg = 16 + (i % 12); r.gp = 5; r.obpr = (i % 10) / 2; r.bpr_rank = 3 + (i % 5); r.dk_avg = r.min_avg * (0.5 + (i % 7) / 20);
-      const sal = r.salary / 1000; r.last5 = [0, 1, 2, 3, 4].map(k => ["d" + k, r.min_avg, sal * (2 + ((i + k) % 4))]); r.p_play = 1; });
+    rows.forEach((r, i) => { r.min_avg = 16 + (i % 12); r.gp = 6; r.obpr = (i % 10) / 2; r.bpr_rank = 3 + (i % 5); r.dk_avg = r.min_avg * (0.5 + (i % 7) / 20); r.min = r.min_avg;
+      const sal = r.salary / 1000; r.last5 = [0, 1, 2, 3, 4].map(k => ["d" + k, r.min_avg, sal * (2 + ((i + k) % 4))]); r.season_dk = [0, 1, 2, 3, 4, 5].map(k => sal * (1.5 + ((i + 2 * k) % 4))); r.p_play = 1; });
     const G = rows.find(r => r.game && r.game.indexOf("@") > 0 && usable(r) && r.status !== "Out").game, ids = gameIds(G).map(byId).filter(r => usable(r) && !isQ(r) && r.status !== "Out" && !sitRisk(r));
-    const P = ids[0], W = ids[1], Q = ids[2], S = ids[3];
-    const top = r => { r.obpr = 9; r.bpr_rank = 1; r.min_avg = 36; r.dk_avg = 36 * 2; r.last5 = [0, 1, 2, 3, 4].map(k => ["d" + k, 36, r.salary / 1000 * 6]); };
-    top(P); top(Q); top(S);
-    W.obpr = 0; W.bpr_rank = 9; W.min_avg = 16; W.dk_avg = 16 * 0.3; W.last5 = [0, 1, 2, 3, 4].map(k => ["d" + k, 16, W.salary / 1000 * 1.5]);
+    const P = ids[0], W = ids[1], Q = ids[2], S = ids[3], F = ids[4], N = ids[5];
+    const top = r => { r.obpr = 9; r.bpr_rank = 1; r.min_avg = 36; r.min = 34; r.dk_avg = 36 * 2; const sal = r.salary / 1000;
+      r.last5 = [0, 1, 2, 3, 4].map(k => ["d" + k, 36, sal * 6]); r.season_dk = [0, 1, 2, 3, 4, 5].map(() => sal * 6); };
+    top(P); top(Q); top(S); top(F);
+    F.min = 15;                                         // a top line but 15 projected minutes: never green (the guard)
+    W.obpr = 0; W.bpr_rank = 9; W.min_avg = 16; W.min = 16; W.dk_avg = 16 * 0.3; W.last5 = [0, 1, 2, 3, 4].map(k => ["d" + k, 16, W.salary / 1000 * 1.5]); W.season_dk = W.last5.map(q => q[2]);
+    // N: no season log (the fallback: the last 5 only); last 5 at 5x on 2 of 5
+    const ns = N.salary / 1000; N.last5 = [0, 1, 2, 3, 4].map(k => ["d" + k, 30, ns * (k < 2 ? 5.5 : 3)]); delete N.season_dk;
     Q.status = "Questionable"; S.p_play = 0.4;
-    const m = checksMap(), five = c => c.boxes.slice(0, 5).filter(x => x.ok).length;
+    const m = checksMap();
+    // the blend by hand: 2 of 5 last at 5x, 1 of 6 season -> 0.5 x 0.4 + 0.5 x 1/6
+    const B = { salary: 5000, last5: [0, 1, 2, 3, 4].map(k => ["d", 30, k < 2 ? 26 : 10]), season_dk: [26, 10, 10, 10, 10, 10] }, blend = Math.abs(ckRate(B, 5).v - (0.5 * 0.4 + 0.5 / 6)) < 1e-12;
+    const sumOk = Object.values(m).every(c => Math.abs(c.score - c.boxes.reduce((t, x) => t + x.s * x.w, 0)) < 1e-9 && c.boxes.every(x => x.s >= 0 && x.s <= 1)) &&
+      JSON.stringify(m[P.id].boxes.map(x => x.w)) === JSON.stringify([0.42, 1.63, 0, 4.45, 0.5]);
+    const greenRule = Object.keys(m).every(id => { const r = byId(id), c = m[id]; return (c.level === "g") === (!c.grey && c.score >= 5.2 && (r.min_avg || 0) >= 20 && (r.min || 0) >= 20); }) &&
+      !Object.values(m).some(c => c.level === "l");
     const hasBank = !!(BANK && BANK.lineups && BANK.lineups.length), hasScan = rows.some(r => !!scanRowOf(r.id));
-    const boxes = { P: five(m[P.id]), W: five(m[W.id]), avail: m[P.id].avail, want: 5 + hasBank + hasScan, Plevel: m[P.id].level, Qgrey: m[Q.id].grey, Qlevel: m[Q.id].level, Sgrey: m[S.id].grey, Slevel: m[S.id].level };
-    // the game view: a badge on every row, the shade, the sort (most boxes first), the hover
+    const boxes = { P: m[P.id].score, W: m[W.id].score, Plevel: m[P.id].level, Wlevel: m[W.id].level, F: m[F.id].score, Flevel: m[F.id].level, Qgrey: m[Q.id].grey, Qlevel: m[Q.id].level,
+                    Sgrey: m[S.id].grey, Slevel: m[S.id].level, marks: m[P.id].marks.length, wantMarks: hasBank + hasScan,
+                    Nlog: m[N.id].noLog, Nhow: m[N.id].boxes[3].v, Nx5: ckRate(N, 5).v };
+    // the game view: a badge on every row, the shade, the sort (highest score first), the hover
     view.panel = P.team; view.pside = P.team; view._ckGame = null; renderTiles(); renderPlayers(); renderTeamPanel();
-    const rowsV = [...document.querySelectorAll("#teamPanel .plist .row")], badges = rowsV.every(e => { const b = e.querySelector(".ck"), c = m[e.dataset.id]; return b && b.textContent === c.hit + "/" + c.avail; });
-    const shade = rowsV.every(e => { const c = m[e.dataset.id]; return e.classList.contains("ckg") === (c.level === "g") && e.classList.contains("ckl") === (c.level === "l"); });
+    const rowsV = [...document.querySelectorAll("#teamPanel .plist .row")], badges = rowsV.every(e => { const b = e.querySelector(".ck"), c = m[e.dataset.id]; return b && b.textContent.indexOf(c.score.toFixed(1) + " of 7") === 0; });
+    const shade = rowsV.every(e => { const c = m[e.dataset.id]; return e.classList.contains("ckg") === (c.level === "g") && !e.classList.contains("ckl"); });
     const firstOfP = rowsV.map(e => byId(e.dataset.id)).filter(r => r.team === P.team && r.status !== "Out")[0];
-    const sortOk = view.psort === "checks" && firstOfP && m[firstOfP.id].hit === Math.max(...rowsV.map(e => byId(e.dataset.id)).filter(r => r.team === P.team && r.status !== "Out").map(r => m[r.id].hit));
+    const sortOk = view.psort === "checks" && firstOfP && m[firstOfP.id].score === Math.max(...rowsV.map(e => byId(e.dataset.id)).filter(r => r.team === P.team && r.status !== "Out").map(r => m[r.id].score));
     const pb = document.querySelector(`#teamPanel .row[data-id="${P.id}"] .ck`), tip = pb && pb.title, qb = document.querySelector(`#teamPanel .row[data-id="${Q.id}"] .ck`);
-    const hover = /boxes/.test(tip) && /✓ OBPR: 9\.00/.test(tip) && /✓ MPG: 36\.0/.test(tip) && /✓ 5x rate: 100%/.test(tip), greyed = !qb || (qb.classList.contains("ck-x") && /Never green: Questionable/.test(qb.title));
+    const hover = /of 7 \(green at 5\.2\+/.test(tip) && /OBPR [01]\.\d\d × 0\.42 = /.test(tip) && /5x rate [01]\.\d\d × 4\.45 = /.test(tip) && /DK\/min [01]\.\d\d × 0\.00 = 0\.00 · .*not weighted/.test(tip) &&
+      /last 5 100%, season 6 100%/.test(tip), greyed = !qb || (qb.classList.contains("ck-x") && /Never green: Questionable/.test(qb.title));
+    const nb = document.querySelector(`#teamPanel .row[data-id="${N.id}"] .ck`), fallbackTip = !nb || /last 5 only \(no season log\)/.test(nb.title);
     // Set greens: one template-5 rule over the game's greens, N 3 for 5+ else 2, the spread on, the batch named GREENS <game>
     const greens = greensOf(G), setB = document.getElementById("ckSet"), d9 = document.getElementById("ckDraw9");
     setB.click();
     const r1 = state.rules.slice(n0), rule = r1[0];
     const setOk = r1.length === 1 && rule.type === "min" && JSON.stringify(rule.ids) === JSON.stringify(greens) && rule.n === Math.min(greens.length, greens.length >= 5 ? 3 : 2) &&
-      rule.greens.tag === "GREENS " + G && (greens.length < 2 || (isT5(rule) && greens.every(id => drawRules().spread[id] === 10)));
+      rule.greens.tag === "GREENS " + G && (greens.length < 2 || (isT5(rule) && greens.every(id => drawRules().spread[id] === 10))) && !greens.includes(F.id);
     const tag = tagNow(), tagOk = tag.indexOf("GREENS " + G) >= 0 && tag.indexOf(rule.label) < 0, pressed = document.getElementById("ckSet").getAttribute("aria-pressed") === "true",
           beside = !!d9 && d9.previousElementSibling && d9.previousElementSibling.id === "ckSet", msg = document.getElementById("ckMsg").textContent;
     document.getElementById("ckSet").click();
     const cleared = state.rules.length === n0 && !/GREENS/.test(tagNow());
-    // the Boxes fold: a threshold edited is remembered and re-reads the boxes
-    const inp = document.querySelector('#teamPanel .ckm[data-k="mpgAbs"]'); inp.value = "40"; inp.dispatchEvent(new Event("change", { bubbles: true }));
-    const remembered = ckOpts().mpgAbs === 40 && document.querySelector('#teamPanel .ckm[data-k="mpgAbs"]').value === "40";
+    // the Boxes fold: the bank/field ratio is remembered; the old pass/fail cutoffs are gone
+    const inp = document.querySelector('#teamPanel .ckm[data-k="bankRatio"]'); inp.value = "1.5"; inp.dispatchEvent(new Event("change", { bubbles: true }));
+    const remembered = ckOpts().bankRatio === 1.5 && document.querySelector('#teamPanel .ckm[data-k="bankRatio"]').value === "1.5" && !document.querySelector('#teamPanel .ckm[data-k="mpgAbs"]');
     try { localStorage.removeItem("dkcbb:checks"); } catch (e) {}
     // the write-up's player line carries his badge
     wuDoc = { slates: { [String(slate.draft_group_id)]: { [P.team]: { paras: [["", "**" + P.name + "** ($9,000) averages 36 minutes."]], table: [{ id: P.id, name: P.name, starts: 5, gp: 5 }] } } } };
     renderTeamPanel();
-    const wuB = document.querySelector("#teamPanel .wu p .ck"), wuOk = !!wuB && wuB.textContent === m[P.id].hit + "/" + m[P.id].avail;
+    const wuB = document.querySelector("#teamPanel .wu p .ck"), wuOk = !!wuB && wuB.textContent.indexOf(m[P.id].score.toFixed(1) + " of 7") === 0;
     wuDoc = wu0; rows.forEach((r, i) => keys.forEach((k, j) => { r[k] = was[i][j]; })); state.rules = JSON.parse(rules0); save(); renderRules(); view.panel = null; renderTiles(); renderPlayers(); renderTeamPanel();
-    return { G, boxes, badges, shade, sortOk, hover, greyed, nGreens: greens.length, setOk, tagOk, pressed, beside, msg, cleared, remembered, wuOk };
+    return { G, boxes, blend, sumOk, greenRule, badges, shade, sortOk, hover, greyed, fallbackTip, nGreens: greens.length, setOk, tagOk, pressed, beside, msg, cleared, remembered, wuOk };
   });
-  check("checks: five boxes from the slate's own pools (a top player meets all five, a weak one none); bank and scan boxes counted only once they exist; Questionable and sit risk never green",
-        ckt.boxes.P === 5 && ckt.boxes.W === 0 && ckt.boxes.avail === ckt.boxes.want && ckt.boxes.Plevel === "g" && /Questionable/.test(ckt.boxes.Qgrey) && ckt.boxes.Qlevel === "" && ckt.boxes.Sgrey === "sit risk" && ckt.boxes.Slevel === "", JSON.stringify(ckt));
-  check("checks: the game view shows a hit/available badge on every row (hover: each box with its value; greyed with the reason), green rows shaded, most boxes first by default; the write-up's player line carries it too",
+  check("checks (weighted): score = sum of box percentile x weight (0.42 / 1.63 / 0 / 4.45 / 0.50), out of 7; the 5x rate blends last 5 and season half and half; a top player scores high and is green, a weak one low",
+        ckt.blend && ckt.sumOk && ckt.boxes.P >= 5.2 && ckt.boxes.Plevel === "g" && ckt.boxes.W < 2 && ckt.boxes.Wlevel === "" && ckt.boxes.marks === ckt.boxes.wantMarks, JSON.stringify(ckt));
+  check("checks green rule: score 5.2+ AND season mpg 20+ AND projected minutes 20+ (a top line at 15 projected minutes is not green), no light green; Questionable and sit risk never green",
+        ckt.greenRule && ckt.boxes.F >= 5.2 && ckt.boxes.Flevel === "" && /Questionable/.test(ckt.boxes.Qgrey) && ckt.boxes.Qlevel === "" && ckt.boxes.Sgrey === "sit risk" && ckt.boxes.Slevel === "", JSON.stringify(ckt));
+  check("checks fallback: no season log, the 5x and under-2x rates are the last 5 only, and the hover says so",
+        ckt.boxes.Nlog && /last 5 only \(no season log\)/.test(ckt.boxes.Nhow) && Math.abs(ckt.boxes.Nx5 - 0.4) < 1e-12 && ckt.fallbackTip, JSON.stringify(ckt));
+  check("checks: the game view shows 'x.x of 7' on every row (hover: each box's score x weight; greyed with the reason), green rows shaded, highest score first by default; the write-up's player line carries it too",
         ckt.badges && ckt.shade && ckt.sortOk && ckt.hover && ckt.greyed && ckt.wuOk, JSON.stringify(ckt));
-  check("checks: Set greens adds at least N of the game's greens (N 3 for 5+, else 2; 10% spread), names the batch GREENS <game>, sits beside Draw the 9; again clears it; the Boxes thresholds are remembered",
+  check("checks: Set greens adds at least N of the game's greens (N 3 for 5+, else 2; 10% spread), names the batch GREENS <game>, sits beside Draw the 9; again clears it; the bank/field ratio is remembered",
         ckt.nGreens >= 1 && ckt.setOk && ckt.tagOk && ckt.pressed && ckt.beside && /GREENS/.test(ckt.msg) && ckt.cleared && ckt.remembered, JSON.stringify(ckt));
-  // Play for a Questionable player (2026-11-24): confirmed playing, "Q · playing", counted in the checks; projection and ownership untouched
-  const qp = await pg.evaluate(() => {
-    const r = rows.find(x => x.status === "Questionable" && !isDoubtful(x) && !state.outs[x.id]);
-    if (!r) return { none: true };
-    view.pool = "all"; view.q = ""; view.team = null; view.pos = null; renderPlayers();
-    const rowEl = () => document.querySelector(`#players .row[data-id="${r.id}"]`);
-    const btns0 = [...rowEl().querySelectorAll(".lx button.act")].map(b => b.textContent), grey0 = checksMap()[r.id].grey, p0 = proj(r), o0 = own(r);
-    rowEl().querySelector(".qplay").click();
-    const tag = rowEl().querySelector(".tag.qp"), btns1 = [...rowEl().querySelectorAll(".lx button.act")].map(b => b.textContent), c1 = checksMap()[r.id];
-    const saved = !!(store(key()).qplay || {})[r.id], built = !!(buildDoc().q_play || {})[r.id], same = proj(r) === p0 && own(r) === o0 && r.status === "Questionable";
-    view.panel = r.team; view.pside = r.team; view.showAll = true; renderTiles(); renderTeamPanel();
-    const inGame = !!document.querySelector(`#teamPanel .row[data-id="${r.id}"] .tag.qp`);
-    view.showAll = false; view.panel = null; renderTiles(); renderPlayers();
-    rowEl().querySelector(".qplay").click();          // undo
-    const back = !state.qplay[r.id] && !rowEl().querySelector(".tag.qp") && !!rowEl().querySelector(".tag.q") && /Questionable/.test(checksMap()[r.id].grey);
-    rowEl().querySelector(".qout").click();           // Mark out as before
-    const out = r.status === "Out" && !!state.outs[r.id] && [...rowEl().querySelectorAll(".lx button.act")].map(b => b.textContent).join(",") === "undo";
-    rowEl().querySelector(".qout").click();
-    const restored = r.status === "Questionable" && !state.outs[r.id];
-    return { name: r.name, btns0, grey0, tag: tag && tag.textContent, btns1, grey1: c1.grey, saved, built, same, inGame, back, out, restored };
-  });
-  check("Q Play: an unresolved Q shows play and out; play tags him 'Q · playing' (list and game view), ungreys him in the checks, saves with the slate and Save build, and leaves his projection and ownership; undo returns plain Q; Mark out works as before",
-        qp.none || (JSON.stringify(qp.btns0) === JSON.stringify(["play", "out"]) && /Questionable/.test(qp.grey0) && qp.tag === "Q · playing" && JSON.stringify(qp.btns1) === JSON.stringify(["undo"]) &&
-        !/Questionable/.test(qp.grey1) && qp.saved && qp.built && qp.same && qp.inGame && qp.back && qp.out && qp.restored), JSON.stringify(qp));
   // checks box 6 on the BASE bank (2026-11-24): base tags matched, frozen, hand pick, no-base fallback, the Bank column's base option
   const cb6 = await pg.evaluate(() => {
     const B0 = BANK, cb0 = state.ckBase, ids = rows.filter(r => usable(r)).map(r => r.id), mk = k => ({ ids: ids.slice(k, k + 8), slots: ids.slice(k, k + 8) });
@@ -2145,7 +2140,7 @@ function audit(name, L, o) {
     const auto = autoBaseTags(), bb = baseBank(), want = {};
     [0, 1, 4].forEach(i => BANK.lineups[i].ids.forEach(id => { want[id] = (want[id] || 0) + 1 / 3; }));
     const shareOk = bb && bb.n === 3 && Object.keys(want).every(id => Math.abs(bb.share[id] - want[id]) < 1e-12) && Object.keys(bb.share).length === Object.keys(want).length;
-    const pid = BANK.lineups[0].ids[0], c6 = checksMap()[pid].boxes.find(x => x.k === "bank/field"), hover = /^base bank share \d+% vs field \d+%/.test(c6.v);
+    const pid = BANK.lineups[0].ids[0], c6 = checksMap()[pid].marks.find(x => x.k === "bank/field"), hover = /^base bank share \d+% vs field \d+%/.test(c6.v);
     // a later base batch doesn't move the frozen numbers
     BANK.lineups.push(mk(20)); BANK.tags.push(["Y L0 U0"]); BANK.groups["Y L0 U0"] = "BASE"; bankShareMemo = null;
     const frozen = baseBank().n === 3 && baseBank().at === bb.at;
@@ -2167,7 +2162,7 @@ function audit(name, L, o) {
     const colBack = !view.bankBase && /^Bank/.test(hdr0) && document.querySelector(`#players .row[data-id="${pid}"] .col-bank`).textContent === Math.round(100 * bankShare()[pid]) + "%";
     // no base: the whole bank, labelled
     BANK = { lineups: [mk(0), mk(1)], tags: [["salary ≥ 49000"], ["UK group"]], tagRules: {}, groups: { "UK group": "Kentucky" } }; bankShareMemo = null; delete state.ckBase;
-    const nb = baseBank() === null && /^\(whole bank: no base yet\) bank share/.test(checksMap()[pid].boxes.find(x => x.k === "bank/field").v);
+    const nb = baseBank() === null && /^\(whole bank: no base yet\) bank share/.test(checksMap()[pid].marks.find(x => x.k === "bank/field").v);
     const words = [isBaseTag("x"), (BANK.groups["baseline idea"] = "baseline", isBaseTag("baseline idea")), (BANK.groups["Q L0 U0"] = "Base", isBaseTag("Q L0 U0")), (BANK.groups["Q L0.2 U0"] = "Base", isBaseTag("Q L0.2 U0")), isBaseTag("BASE + no McIver")];
     BANK = B0; bankShareMemo = null; if (cb0) state.ckBase = cb0; else delete state.ckBase; save(); renderPlayers();
     return { auto, shareOk, hover, c6: c6.v, frozen, foldOk, fold, picked, refrozen, colOk, colBack, nb, words };
