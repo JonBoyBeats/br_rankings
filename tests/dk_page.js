@@ -1386,7 +1386,7 @@ function audit(name, L, o) {
         st0.open > 0 && st0.shown && /Open seats: .*\d+ open\. .*Night cap blocked: .+ at 15%/.test(st0.text) && st0.btn && st1.n === st0.n + 1, JSON.stringify([st0, st1]));
   check("auto top-up off: the seats stay open (no top-up note), the setting kept and shown in the settings line",
         st0.open > 0 && !/auto top-up/.test(await pg.textContent("#cutStatus")) && (await pg.evaluate(() => localStorage.getItem("dkcbb:autoTopUp"))) === "false" &&
-        /auto top-up off$/.test(await pg.textContent("#fillSetSum")));
+        /fill short off$/.test(await pg.textContent("#fillSetSum")));
   // Auto top-up on (the default, caps_backtest_2026-11-24 (e)): the same tight night cap, every seat filled with the
   // lineup that breaks the caps least, one at a time, and the note names each over-cap add
   await pg.check("#autoTopUp");
@@ -2214,9 +2214,30 @@ function audit(name, L, o) {
     sum: document.getElementById("fillSetSum").textContent, folded: ["maxExpo", "maxNight", "minUnique", "maxCore", "maxPair", "maxUse", "lockFill", "pfObj", "nSims"].every(id => document.getElementById(id).closest("#fillSet")) && document.getElementById("fillSet").tagName === "DETAILS", varIn: document.getElementById("varRun").closest("section.step").id,
     heads: [...document.querySelectorAll("#fillPlayersSlot #players .head span[data-sort]")].map(x => x.textContent.replace(/ [↓↑]$/, "")) }));
   check("fill step: one set of buttons (Fill all contests, Auto-fill the rest, Undo fill, Swap one in, New nights, Export DK entries, Save build, Load build), Variants only in Cut, Clear bank only in Bank, the settings one line, no side pane",
-        fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Auto-fill the rest", "Undo fill", "Swap one in", "New nights", "Export DK entries", "Save build", "Load build"]) && fb.clear === "stepBank" &&
-        fb.varIn === "stepCut" && fb.folded && /^Fill: contest 60% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights( · auto top-up off)?$/.test(fb.sum) &&
+        fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Export DK entries", "Save build", "Auto-fill the rest", "Undo fill", "Swap one in", "New nights", "Load build"]) && fb.clear === "stepBank" &&
+        fb.varIn === "stepCut" && fb.folded && /^Fill: contest 60% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights( · fill short off)?$/.test(fb.sum) &&
         ["Here", "Tonight", "Room"].every(h => fb.heads.includes(h)), JSON.stringify(fb));
+  // the Fill tab cleanup (2026-11-24): settings and profiles behind red / green buttons (Confirm inside, a change turns them red), the top-up renamed, three buttons and a More fold
+  const fc4 = await pg.evaluate(() => {
+    const st0 = { f: state.cfgFill, p: state.cfgProf }, mx0 = $("maxExpo").value; delete state.cfgFill; delete state.cfgProf; cfgRender();
+    const red0 = !$("fillSetChip").classList.contains("ok") && !$("profChip").classList.contains("ok") && getComputedStyle($("fillSetChip")).backgroundColor !== getComputedStyle($("fillSetChip").parentElement).backgroundColor;
+    $("fillSetOk").click(); const fOk = $("fillSetChip").classList.contains("ok") && store(key()).cfgFill === fillSig() && !$("fillSet").open;
+    $("maxExpo").value = "55"; $("maxExpo").dispatchEvent(new Event("input", { bubbles: true })); const fRed = !$("fillSetChip").classList.contains("ok");
+    $("maxExpo").value = mx0; $("maxExpo").dispatchEvent(new Event("input", { bubbles: true })); const fBack = $("fillSetChip").classList.contains("ok");
+    $("profOk").click(); const pOk = $("profChip").classList.contains("ok") && store(key()).cfgProf === profSig();
+    const sel = document.querySelector("#profList select[data-cid]"); let pRed = null;
+    if (sel) { const v0 = sel.value; sel.value = [...sel.options].map(o => o.value).find(v => v && v !== profileOf(nbContests().find(x => String(x.c.id) === sel.dataset.cid).c)); sel.dispatchEvent(new Event("change", { bubbles: true }));
+      pRed = !$("profChip").classList.contains("ok"); const s2 = document.querySelector('#profList select[data-cid="' + sel.dataset.cid + '"]'); s2.value = v0; s2.dispatchEvent(new Event("change", { bubbles: true })); }
+    const label = document.getElementById("autoTopUp").closest("label").textContent.trim(), hint = /Fill short contests: when a fill still leaves seats open/.test($("fillSet").textContent);
+    const vis = [...document.querySelectorAll("#fillButtons > button")].map(b => b.textContent), more = [...document.querySelectorAll("#fillMore .fmore > div")].map(d => d.querySelector("button").textContent + "|" + !!d.querySelector(".mut"));
+    state.cfgFill = st0.f; state.cfgProf = st0.p; if (st0.f == null) delete state.cfgFill; if (st0.p == null) delete state.cfgProf; save(); cfgRender();
+    return { red0, fOk, fRed, fBack, pOk, pRed, label, hint, vis, more, profOpen: $("profBox").open };
+  });
+  check("fill tab: Fill settings and Contest profiles behind one button each, red until confirmed for the slate, green after; a change turns them red again (and back on undoing it)",
+        fc4.red0 && fc4.fOk && fc4.fRed && fc4.fBack && fc4.pOk && fc4.pRed !== false, JSON.stringify(fc4));
+  check("fill tab: Auto top-up reads 'Fill short contests (break caps least)' with a one-line hint; Fill all contests, Export DK entries and Save build visible, the rest in More with a line each",
+        fc4.label === "Fill short contests (break caps least)" && fc4.hint && JSON.stringify(fc4.vis) === JSON.stringify(["Fill all contests", "Export DK entries", "Save build"]) &&
+        fc4.more.length === 6 && fc4.more.every(x => /\|true$/.test(x)), JSON.stringify(fc4));
   // the operator's case (2026-11-20, a Fill-step row's "use" clipped off the name): at 1280px in the Fill step every
   // action button is in the L / X group and is what a click at its centre lands on
   await pg.setViewportSize({ width: 1280, height: 900 });

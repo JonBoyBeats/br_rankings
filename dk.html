@@ -230,6 +230,10 @@ tr.fc-light { cursor: pointer; } tr.fc-heavy { cursor: pointer; } .fcf-light { c
 .fcscope { font-size: 11.5px; margin: 4px 0; } .fcscope button { height: 22px; padding: 0 8px; font-size: 11.5px; }
 .row .col-cut .ar { font-size: 9px; margin-left: 1px; } .row .col-down.up { color: var(--live); } .row .col-down.dn { color: var(--bad); }
 #players.cutcols .head span[data-sort="cut"] { color: var(--ink); font-weight: 700; }
+.cfgchip { display: inline-block; padding: 2px 10px; border-radius: 6px; background: var(--bad); color: #fff; font-family: var(--sans); font-size: 12.5px; font-weight: 600; }
+.cfgchip.ok { background: rgba(46,170,96,.9); } #profSum { font-size: 12px; color: var(--muted); } #fillSet > summary, #profBox > summary { cursor: pointer; }
+#fillMore { display: inline-block; vertical-align: middle; } #fillMore > summary { cursor: pointer; font-size: 12.5px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; display: inline-block; }
+#fillMore[open] { display: block; width: 100%; } .fmore > div { margin: 4px 0; font-size: 12px; } .fmore button { margin-right: 6px; }
 .ck { display: inline-block; min-width: 26px; margin-right: 5px; padding: 0 4px; border-radius: 4px; font: 600 11px var(--mono); text-align: center; border: 1px solid var(--line); color: var(--muted); vertical-align: 1px; }
 .ck.ck-g { background: rgba(46,170,96,.85); border-color: rgba(46,170,96,.9); color: #fff; } .ck.ck-l { background: rgba(46,170,96,.28); border-color: rgba(46,170,96,.5); color: var(--ink); }
 .ck.ck-x { opacity: .55; text-decoration: line-through; }
@@ -494,7 +498,7 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
   </section>
 
   <section class="step" id="stepFill" data-step="fill" hidden>
-  <details id="fillSet"><summary id="fillSetSum">Fill settings</summary>
+  <details id="fillSet"><summary><span class="cfgchip" id="fillSetChip" title="Red: not confirmed for this slate (or changed since). Open, check, Confirm">Fill settings</span> <span id="fillSetSum">Fill settings</span></summary>
   <div class="opts">
     <label class="field"><span class="field-label">Max exposure %</span><input class="num" id="maxExpo" type="number" min="1" max="100" value="60"></label>
     <label class="field"><span class="field-label">Min unique</span><input class="num" id="minUnique" type="number" min="1" max="8" value="3"></label>
@@ -507,21 +511,26 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
     <label class="field" title="Unique within a contest; across contests one lineup can go in this many (1: each lineup in one contest only, the rule until 2026-11-19). Each contest has its own prizes, so a copy in another contest splits nothing; it adds swing. Fill all contests and the builder both keep to it"><span class="field-label">Max contests per lineup</span><input class="num" id="maxUse" type="number" min="1" max="10" step="1" value="3"></label>
     <label class="field" title="Locks are a draw-time rule: with Draws only (the default), a locked player is in every lineup you draw but Fill all contests, Auto-fill and hand adds cap him like anyone else (Max exposure, his Max%, the night cap). Draws and fill: a locked player is also exempt from those caps in the fill"><span class="field-label">Locks apply to</span><select id="lockFill" style="width:auto">
       <option value="draws">Draws only</option><option value="fill">Draws and fill</option></select></label>
-    <label class="field" title="When Fill all contests or Finish for me leaves seats open after its relax steps, add the lineup that breaks the caps least (Add best) to each open seat, one at a time, until every contest is full; the note lists each over-cap add (the operator, 2026-11-24: caps_backtest_2026-11-24 setting (e)). Off: seats stay open with the stranded-seat line"><span class="field-label">Auto top-up</span><input type="checkbox" id="autoTopUp" checked></label>
-  </div></details>
-  <details id="profBox" open><summary id="profSum">Contest profiles</summary><div id="profList"></div></details>
+    <label class="field" title="When Fill all contests or Finish for me leaves seats open after its relax steps, add the lineup that breaks the caps least (Add best) to each open seat, one at a time, until every contest is full; the note lists each over-cap add (the operator, 2026-11-24: caps_backtest_2026-11-24 setting (e)). Off: seats stay open with the stranded-seat line"><span class="field-label">Fill short contests (break caps least)</span><input type="checkbox" id="autoTopUp" checked></label>
+  </div>
+  <div class="note" style="margin:0 0 4px">Fill short contests: when a fill still leaves seats open after relaxing the caps, it adds the lineup that breaks the caps least to each open seat, and says which cap each one broke.</div>
+  <div class="opts" style="padding:0 0 6px"><button type="button" id="fillSetOk">Confirm fill settings</button></div></details>
+  <details id="profBox"><summary><span class="cfgchip" id="profChip" title="Red: not confirmed for this slate (or edited since). Open, check, Confirm">Contest profiles</span> <span id="profSum">Contest profiles</span></summary><div id="profList"></div>
+    <div class="opts" style="padding:4px 0 6px"><button type="button" id="profOk">Confirm contest profiles</button></div></details>
   <div class="opts" id="fillButtons">
     <button type="button" class="primary" id="pfRun">Fill all contests</button>
-    <button type="button" id="bpAuto" disabled>Auto-fill the rest</button>
-    <button type="button" id="pfUndo" disabled title="Put back the portfolios the last fill replaced">Undo fill</button>
-    <button type="button" id="swinOpen" title="Before lock: the best few swaps across the night that bring in lineups meeting the rule editor's rule (or your +set players), each within the caps">Swap one in</button>
-    <button type="button" id="pfNights" title="Draw new simulated nights for this slate (the fills, the builder and the scoreboard all use the slate's nights)">New nights</button>
     <button type="button" id="pfExport" disabled>Export DK entries</button>
     <button type="button" id="bankSave">Save build</button>
-    <button type="button" id="bankLoad" title="Restore a saved build of this slate: the bank, the cut, the variants, the portfolios and the slate's nights">Load build</button>
-    <input type="file" id="bankLoadFile" accept=".json,application/json" hidden>
-    <button type="button" class="linkbtn" id="nbOff" title="The old layout, the same bank, cut and portfolios">Classic view</button>
-    <button type="button" class="linkbtn" id="nbOn" title="The one-screen builder">New builder view</button>
+    <details id="fillMore"><summary>More</summary><div class="fmore">
+    <div><button type="button" id="bpAuto" disabled>Auto-fill the rest</button> <span class="mut">fills the open contest's empty seats, best first, within the caps</span></div>
+    <div><button type="button" id="pfUndo" disabled title="Put back the portfolios the last fill replaced">Undo fill</button> <span class="mut">puts back the portfolios the last fill replaced</span></div>
+    <div><button type="button" id="swinOpen" title="Before lock: the best few swaps across the night that bring in lineups meeting the rule editor's rule (or your +set players), each within the caps">Swap one in</button> <span class="mut">the best few swaps that bring in lineups meeting the rule editor's rule, within the caps</span></div>
+    <div><button type="button" id="pfNights" title="Draw new simulated nights for this slate (the fills, the builder and the scoreboard all use the slate's nights)">New nights</button> <span class="mut">draws new simulated nights for this slate</span></div>
+    <div><button type="button" id="bankLoad" title="Restore a saved build of this slate: the bank, the cut, the variants, the portfolios and the slate's nights">Load build</button>
+ <span class="mut">restores a saved build of this slate</span><input type="file" id="bankLoadFile" accept=".json,application/json" hidden></div>
+    <div><button type="button" class="linkbtn" id="nbOff" title="The old layout, the same bank, cut and portfolios">Classic view</button>
+    <button type="button" class="linkbtn" id="nbOn" title="The one-screen builder">New builder view</button> <span class="mut">switch layout</span></div>
+    </div></details>
   </div>
   <div class="note" id="fillUnder"></div>
   <div class="note" id="strandBox" hidden></div>
@@ -2665,6 +2674,7 @@ function qualField(base) {
 }
 function renderProfiles() {
   var el = $("profList"); if (!el || !slate) return;
+  if (typeof cfgRender === "function") setTimeout(cfgRender, 0);
   var cs = nbContests(), ov = store(profKey()) || {}, rank = { flagship: 0, main: 1, lab: 1, qualifier: 2, standard: 2 };
   if (!cs.length) { el.innerHTML = '<div class="note">Set your entries (or load the entries file) to see each contest\'s profile.</div>'; $("profSum").textContent = "Contest profiles"; return; }
   cs.sort(function (a, b) { return rank[profileOf(a.c)] - rank[profileOf(b.c)] || (b.c.entry_fee || 0) * b.n - (a.c.entry_fee || 0) * a.n; });
@@ -2692,7 +2702,7 @@ $("profList").addEventListener("change", function (e) {
   var sel = e.target.closest("select[data-cid]"); if (!sel) return;
   var ov = store(profKey()) || {};
   if (sel.value) ov[sel.dataset.cid] = sel.value; else delete ov[sel.dataset.cid];
-  store(profKey(), ov); renderProfiles();
+  store(profKey(), ov); renderProfiles(); cfgRender();
 });
 
 function maxUses() { return Math.max(1, Math.round(+$("maxUse").value || 3)); }
@@ -4063,6 +4073,18 @@ function cutGrid() {         // the grid from the columns the Cut tab shows (the
   $("players").querySelectorAll(".head, .row").forEach(function (e) { e.style.gridTemplateColumns = t; });
 }
 
+/* Fill settings and Contest profiles behind one button each (2026-11-24, the operator): red until confirmed for this
+   slate, green after; changing a setting (or a profile) after confirming turns it red again. Confirmed: the settings'
+   values (or the contests' profiles) at Confirm, kept with the slate (state.cfgFill / state.cfgProf). */
+function fillSig() { var o = {}; document.querySelectorAll("#fillSet input, #fillSet select").forEach(function (x) { o[x.id] = x.type === "checkbox" ? x.checked : x.value; }); return JSON.stringify(o); }
+function profSig() { var o = {}; (typeof nbContests === "function" ? nbContests() : []).forEach(function (x) { o[String(x.c.id)] = profileOf(x.c); }); return JSON.stringify(o); }
+function cfgRender() {
+  if (!state || !$("fillSetChip")) return;
+  var f = state.cfgFill === fillSig(), p = state.cfgProf && state.cfgProf === profSig();
+  $("fillSetChip").classList.toggle("ok", f); $("fillSetChip").textContent = "Fill settings" + (f ? " ✓" : "");
+  $("profChip").classList.toggle("ok", !!p); $("profChip").textContent = "Contest profiles" + (p ? " ✓" : "");
+}
+
 nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
@@ -4906,9 +4928,12 @@ function fillSetText() {
   var v = function (id) { return $(id).value; };
   $("fillSetSum").textContent = "Fill: contest " + (v("maxExpo") || "–") + "% · night " + (v("maxNight") || "off") + (v("maxNight") ? "%" : "") + " · unique " + v("minUnique") + " · core " +
     (v("maxCore") ? v("maxCore") + "%" : "off") + (v("maxPair") ? " · pair " + v("maxPair") + "%" : "") + " · max " + v("maxUse") + " contest" + (+v("maxUse") === 1 ? "" : "s") +
-    " · locks: " + (v("lockFill") === "fill" ? "draws and fill" : "draws only") + " · " + $("pfObj").selectedOptions[0].textContent + " · " + v("nSims") + " nights" + (topUpOn() ? "" : " · auto top-up off");
+    " · locks: " + (v("lockFill") === "fill" ? "draws and fill" : "draws only") + " · " + $("pfObj").selectedOptions[0].textContent + " · " + v("nSims") + " nights" + (topUpOn() ? "" : " · fill short off");
 }
 $("fillSet").addEventListener("input", fillSetText);
+$("fillSet").addEventListener("input", cfgRender); $("fillSet").addEventListener("change", cfgRender);
+$("fillSetOk").addEventListener("click", function () { state.cfgFill = fillSig(); save(); cfgRender(); $("fillSet").open = false; });
+$("profOk").addEventListener("click", function () { state.cfgProf = profSig(); save(); cfgRender(); $("profBox").open = false; });
 $("fillSet").addEventListener("change", fillSetText);
 $("lockFill").addEventListener("change", function () { state.lockFill = $("lockFill").value; save(); if (BP && BP.review) bpRender(); if (NB.on) nbRender(); });
 $("pfRun").addEventListener("click", function () {
