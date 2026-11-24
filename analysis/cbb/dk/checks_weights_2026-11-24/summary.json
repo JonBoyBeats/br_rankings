@@ -1,0 +1,324 @@
+{
+ "slates": 12,
+ "players": 712,
+ "hits": 119,
+ "final_variant": {
+  "w_last5": 1.0,
+  "minutes": "season",
+  "price": "mix75"
+ },
+ "weights7": {
+  "OBPR": 0.42,
+  "MPG": 1.63,
+  "DK/min": 0.0,
+  "5x rate": 4.44,
+  "under-2x": 0.51
+ },
+ "raw_weights": [
+  0.149,
+  0.575,
+  0.0,
+  1.563,
+  0.178
+ ],
+ "green_cut": 5.2,
+ "picks": [
+  [
+   "1.0/season/mix75",
+   8
+  ],
+  [
+   "1.0/recent/mix75",
+   3
+  ],
+  [
+   "0.25/season/mix75",
+   1
+  ]
+ ],
+ "fringe_new_green": [
+  {
+   "slate": "2026-11-16_156660",
+   "name": "Joe Philon III",
+   "team": "UCLA",
+   "salary": 4500,
+   "min_proj": 19.9,
+   "mpg": 18.7,
+   "score7": 5.44,
+   "hit5x": 0
+  },
+  {
+   "slate": "2026-11-16_156660",
+   "name": "Jeremy Dent-Smith",
+   "team": "STMRY",
+   "salary": 4000,
+   "min_proj": 17.8,
+   "mpg": 21.5,
+   "score7": 5.54,
+   "hit5x": 0
+  },
+  {
+   "slate": "2026-11-18_157032",
+   "name": "Jamichael Davis",
+   "team": "RU",
+   "salary": 4500,
+   "min_proj": 17.8,
+   "mpg": 19.5,
+   "score7": 5.28,
+   "hit5x": 0
+  },
+  {
+   "slate": "2026-11-18_157033",
+   "name": "Jordan Frison",
+   "team": "WICH",
+   "salary": 5100,
+   "min_proj": 17.1,
+   "mpg": 22.2,
+   "score7": 5.7,
+   "hit5x": 0
+  },
+  {
+   "slate": "2026-11-19_157139",
+   "name": "Wei Lin",
+   "team": "ORE",
+   "salary": 4900,
+   "min_proj": 17.6,
+   "mpg": 19.0,
+   "score7": 5.46,
+   "hit5x": 0
+  },
+  {
+   "slate": "2026-11-19_157139",
+   "name": "Fedor Zugic",
+   "team": "STC",
+   "salary": 4200,
+   "min_proj": 19.7,
+   "mpg": 20.6,
+   "score7": 5.55,
+   "hit5x": 0
+  },
+  {
+   "slate": "2026-11-20_157015",
+   "name": "Thomas Bassong",
+   "team": "MSST",
+   "salary": 4700,
+   "min_proj": 16.7,
+   "mpg": 18.6,
+   "score7": 5.27,
+   "hit5x": 0
+  },
+  {
+   "slate": "2026-11-21_157017",
+   "name": "Jordan Frison",
+   "team": "WICH",
+   "salary": 4900,
+   "min_proj": 19.4,
+   "mpg": 22.6,
+   "score7": 5.38,
+   "hit5x": 1
+  },
+  {
+   "slate": "2026-11-22_157019",
+   "name": "Jaylon Dean-Vines",
+   "team": "MCNE",
+   "salary": 4900,
+   "min_proj": 19.4,
+   "mpg": 22.7,
+   "score7": 5.77,
+   "hit5x": 0
+  },
+  {
+   "slate": "2026-11-22_157019",
+   "name": "Christian Nitu",
+   "team": "MCNE",
+   "salary": 4400,
+   "min_proj": 18.3,
+   "mpg": 21.7,
+   "score7": 5.52,
+   "hit5x": 0
+  }
+ ],
+ "threshold_rows": [
+  {
+   "slate": "2026-11-16_156660",
+   "cut": 5.18,
+   "green_new": 12,
+   "hit_new": 4,
+   "green_guard": 10,
+   "hit_guard": 4,
+   "green_now": 7,
+   "hit_now": 2,
+   "hits": 13,
+   "fringe_new": 2,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 5
+  },
+  {
+   "slate": "2026-11-17_156662",
+   "cut": 5.19,
+   "green_new": 5,
+   "hit_new": 2,
+   "green_guard": 5,
+   "hit_guard": 2,
+   "green_now": 4,
+   "hit_now": 0,
+   "hits": 4,
+   "fringe_new": 0,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 0
+  },
+  {
+   "slate": "2026-11-17_156663",
+   "cut": 5.11,
+   "green_new": 17,
+   "hit_new": 5,
+   "green_guard": 17,
+   "hit_guard": 5,
+   "green_now": 9,
+   "hit_now": 1,
+   "hits": 16,
+   "fringe_new": 0,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 6
+  },
+  {
+   "slate": "2026-11-18_157032",
+   "cut": 5.21,
+   "green_new": 4,
+   "hit_new": 3,
+   "green_guard": 3,
+   "hit_guard": 3,
+   "green_now": 5,
+   "hit_now": 2,
+   "hits": 6,
+   "fringe_new": 1,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 1
+  },
+  {
+   "slate": "2026-11-18_157033",
+   "cut": 5.2,
+   "green_new": 8,
+   "hit_new": 1,
+   "green_guard": 7,
+   "hit_guard": 1,
+   "green_now": 5,
+   "hit_now": 1,
+   "hits": 10,
+   "fringe_new": 1,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 2
+  },
+  {
+   "slate": "2026-11-19_157138",
+   "cut": 5.25,
+   "green_new": 6,
+   "hit_new": 2,
+   "green_guard": 6,
+   "hit_guard": 2,
+   "green_now": 8,
+   "hit_now": 2,
+   "hits": 4,
+   "fringe_new": 0,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 1
+  },
+  {
+   "slate": "2026-11-19_157139",
+   "cut": 5.13,
+   "green_new": 9,
+   "hit_new": 2,
+   "green_guard": 7,
+   "hit_guard": 2,
+   "green_now": 4,
+   "hit_now": 1,
+   "hits": 16,
+   "fringe_new": 2,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 2
+  },
+  {
+   "slate": "2026-11-20_157013",
+   "cut": 5.2,
+   "green_new": 7,
+   "hit_new": 2,
+   "green_guard": 7,
+   "hit_guard": 2,
+   "green_now": 6,
+   "hit_now": 2,
+   "hits": 6,
+   "fringe_new": 0,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 2
+  },
+  {
+   "slate": "2026-11-20_157015",
+   "cut": 5.31,
+   "green_new": 8,
+   "hit_new": 4,
+   "green_guard": 7,
+   "hit_guard": 4,
+   "green_now": 17,
+   "hit_now": 4,
+   "hits": 18,
+   "fringe_new": 1,
+   "fringe_now": 1,
+   "hit_p5x_same_n": 5
+  },
+  {
+   "slate": "2026-11-21_157017",
+   "cut": 5.16,
+   "green_new": 8,
+   "hit_new": 5,
+   "green_guard": 7,
+   "hit_guard": 4,
+   "green_now": 11,
+   "hit_now": 2,
+   "hits": 7,
+   "fringe_new": 1,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 1
+  },
+  {
+   "slate": "2026-11-22_157019",
+   "cut": 5.36,
+   "green_new": 12,
+   "hit_new": 4,
+   "green_guard": 10,
+   "hit_guard": 4,
+   "green_now": 17,
+   "hit_now": 6,
+   "hits": 12,
+   "fringe_new": 2,
+   "fringe_now": 1,
+   "hit_p5x_same_n": 3
+  },
+  {
+   "slate": "2026-11-23_157021",
+   "cut": 5.22,
+   "green_new": 9,
+   "hit_new": 2,
+   "green_guard": 8,
+   "hit_guard": 2,
+   "green_now": 11,
+   "hit_now": 2,
+   "hits": 7,
+   "fringe_new": 1,
+   "fringe_now": 0,
+   "hit_p5x_same_n": 2
+  }
+ ],
+ "green_totals": {
+  "green_new": 105,
+  "hit_new": 36,
+  "green_guard": 94,
+  "hit_guard": 35,
+  "green_now": 104,
+  "hit_now": 25,
+  "hits": 119,
+  "fringe_new": 11,
+  "fringe_now": 2,
+  "hit_p5x_same_n": 30
+ },
+ "guard_min": 20
+}
