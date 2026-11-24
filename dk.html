@@ -143,7 +143,7 @@
   #nbList button, #nbFilters button { height: 22px; padding: 0 7px; font-size: 11.5px; }
   #nbGuide { padding: 6px 8px; font-size: 12px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--live) 7%, transparent); }
   #nbGuide > div { margin: 2px 0; overflow-wrap: anywhere; }
-  #swapBox .swr { margin: 4px 0; overflow-wrap: anywhere; }
+  #swinBox .swr { margin: 4px 0; overflow-wrap: anywhere; }
   #nbFilters { font-size: 12px; margin: 0 0 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
   details.card { margin: 6px 0 4px; font-size: 12.5px; }
   details.card summary { cursor: pointer; color: var(--muted); }
@@ -493,7 +493,7 @@
     <button type="button" class="primary" id="pfRun">Fill all contests</button>
     <button type="button" id="bpAuto" disabled>Auto-fill the rest</button>
     <button type="button" id="pfUndo" disabled title="Put back the portfolios the last fill replaced">Undo fill</button>
-    <button type="button" id="swapOpen" title="Before lock: the best few swaps across the night that bring in lineups meeting the rule editor's rule (or your +set players), each within the caps">Swap one in</button>
+    <button type="button" id="swinOpen" title="Before lock: the best few swaps across the night that bring in lineups meeting the rule editor's rule (or your +set players), each within the caps">Swap one in</button>
     <button type="button" id="pfNights" title="Draw new simulated nights for this slate (the fills, the builder and the scoreboard all use the slate's nights)">New nights</button>
     <button type="button" id="pfExport" disabled>Export DK entries</button>
     <button type="button" id="bankSave">Save build</button>
@@ -504,7 +504,7 @@
   </div>
   <div class="note" id="fillUnder"></div>
   <div class="note" id="strandBox" hidden></div>
-  <div class="note" id="swapBox" hidden></div>
+  <div class="note" id="swinBox" hidden></div>
   <div id="s2out">
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
@@ -4256,31 +4256,31 @@ function autoTopUp(only) {
    night cap as it now stands, Min unique, Max contests per lineup, Max core): a swap breaks a cap only where it takes a
    player, a core or a lineup past its limit and further than before. Break cap lets those through and names the cap.
    The best 5 across the night (one per contest and lineup in), one tap to apply, Undo puts the portfolios back exactly. */
-var SWAP = { list: null, undo: null, brk: false, N: 40 };
-function swapMeets(r, ids) {
+var SWIN = { list: null, undo: null, brk: false, N: 40 };
+function swinMeets(r, ids) {
   if (!DKSim.passes(r, ids)) return false;
   var cnt = function (set) { return (set || []).filter(function (id) { return ids.indexOf(id) >= 0; }).length; };
   if (r.type === "if") return ids.indexOf(r.ids[0]) >= 0;
   if (r.type === "ifteam") return cnt(r.set) >= r.n;
   return true;
 }
-async function swapFind() {
-  SWAP.list = null;
-  if (!slate || !BANK || !BANK.lineups.length) return swapRender("Bank and cut first.");
-  if (slate.locked) return swapRender("The slate has locked: swaps after lock go through Late swap.");
+async function swinFind() {
+  SWIN.list = null;
+  if (!slate || !BANK || !BANK.lineups.length) return swinRender("Bank and cut first.");
+  if (slate.locked) return swinRender("The slate has locked: swaps after lock go through Late swap.");
   var r = editorRule();
-  if (!r) return swapRender("Set the rule first: +set players (template 5) or a rule in the rule editor.");
-  var cs = nbContests(); if (!cs.length) return swapRender("Set your entries for at least one contest.");
+  if (!r) return swinRender("Set the rule first: +set players (template 5) or a rule in the rule editor.");
+  var cs = nbContests(); if (!cs.length) return swinRender("Set your entries for at least one contest.");
   var mu = maxUses(), nl = nightLimit(), used = nightUsed(null), uses = {}, S = +$("nSims").value || 3000, lk = fillLock(), out = [];
   Object.keys(PF).forEach(function (k) { PF[k].forEach(function (bi) { uses[bi] = (uses[bi] || 0) + 1; }); });
   var val = {}; if (CUT && CUT.keep && CUT.board && CUT.board.values) CUT.keep.forEach(function (bi, k) { val[bi] = CUT.board.values[k] || 0; });
-  var ins = finalIdx().filter(function (bi) { return swapMeets(r, BANK.lineups[bi].ids); }).sort(function (a, b) { return (val[b] || 0) - (val[a] || 0); }).slice(0, SWAP.N);
-  if (!ins.length) return swapRender("No kept lineup meets " + r.label + ".");
+  var ins = finalIdx().filter(function (bi) { return swinMeets(r, BANK.lineups[bi].ids); }).sort(function (a, b) { return (val[b] || 0) - (val[a] || 0); }).slice(0, SWIN.N);
+  if (!ins.length) return swinRender("No kept lineup meets " + r.label + ".");
   for (var ci = 0; ci < cs.length; ci++) {
     var x = cs[ci], c = x.c, cid = String(c.id), n = x.n, have = (PF[cid] || []).slice(), H = have.length, o = pickRules(n);
     var inC = ins.filter(function (bi) { return have.indexOf(bi) < 0; });
     if (!inC.length) continue;
-    swapRender("Scoring " + nbShort(c.name) + " (" + (ci + 1) + " of " + cs.length + ")…"); await tick();
+    swinRender("Scoring " + nbShort(c.name) + " (" + (ci + 1) + " of " + cs.length + ")…"); await tick();
     var L = have.concat(inC).map(function (bi) { return BANK.lineups[bi]; }), fee = c.entry_fee || 0;
     var sim = DKSim.simulate(nightsCtx(c), L, fieldFor(c), fieldDoc.z, c, n, S), b = DKSim.builder(sim, c);
     b.set(have.map(function (_, i) { return i; }));
@@ -4307,7 +4307,7 @@ async function swapFind() {
           var cn = cw - (j >= 0 && coreK[j] === coreK[k] ? 1 : 0) + 1;
           if (cn > coreLim && cn > cw) brk.push("Max core " + Math.round(100 * o.maxCore) + "%");
         }
-        if (brk.length && !SWAP.brk) continue;
+        if (brk.length && !SWIN.brk) continue;
         var d = T1 - F1 - (T0 - F0);
         if (!best[bi] || d > best[bi].d) best[bi] = { cid: cid, name: nbShort(c.name), out: j >= 0 ? have[j] : null, inn: bi, d: d,
           roi0: F0 ? (T0 - F0) / F0 : null, roi1: F1 ? (T1 - F1) / F1 : null, brk: brk };
@@ -4318,52 +4318,52 @@ async function swapFind() {
   }
   out.sort(function (a, b) { return b.d - a.d; });
   var pos = out.filter(function (s) { return s.d > 0; });
-  SWAP.list = pos.slice(0, 5); SWAP.rule = r;
-  swapRender(pos.length ? "" : out.length ? "No swap raises the night's expected value (best: " + (out[0].d >= 0 ? "+" : "-") + cents(Math.abs(out[0].d)) + ")." :
-             "No swap passes the caps" + (SWAP.brk ? "." : ": Break cap shows the ones that break one."));
+  SWIN.list = pos.slice(0, 5); SWIN.rule = r;
+  swinRender(pos.length ? "" : out.length ? "No swap raises the night's expected value (best: " + (out[0].d >= 0 ? "+" : "-") + cents(Math.abs(out[0].d)) + ")." :
+             "No swap passes the caps" + (SWIN.brk ? "." : ": Break cap shows the ones that break one."));
 }
-function swapRender(msg) {
-  var box = $("swapBox"), r = editorRule(), hot = r ? swapRuleIds(r) : [];
+function swinRender(msg) {
+  var box = $("swinBox"), r = editorRule(), hot = r ? swinRuleIds(r) : [];
   var nm = function (bi) { return DKSim.lateSlots(ctx(), BANK.lineups[bi].ids).map(function (id) { var t = esc(shortName((byId(id) || {}).name || id)); return hot.indexOf(id) >= 0 ? "<b>" + t + "</b>" : t; }).join(" · "); };
   var roi = function (s) { return s.roi1 == null ? "" : " · ROI " + roiTxt(s.roi0) + " → " + roiTxt(s.roi1); };
   box.hidden = false;
-  box.innerHTML = '<div><b>Swap one in</b> · rule: ' + (r ? esc(r.label) : "none") + ' · <label><input type="checkbox" id="swapBreak"' + (SWAP.brk ? " checked" : "") + "> break cap</label> " +
-    '<button type="button" id="swapFind">Find swaps</button> <button type="button" id="swapUndo"' + (SWAP.undo ? "" : " disabled") + '>Undo swap</button> <button type="button" class="linkbtn" id="swapClose">Close</button></div>' +
+  box.innerHTML = '<div><b>Swap one in</b> · rule: ' + (r ? esc(r.label) : "none") + ' · <label><input type="checkbox" id="swinBreak"' + (SWIN.brk ? " checked" : "") + "> break cap</label> " +
+    '<button type="button" id="swinFind">Find swaps</button> <button type="button" id="swinUndo"' + (SWIN.undo ? "" : " disabled") + '>Undo swap</button> <button type="button" class="linkbtn" id="swinClose">Close</button></div>' +
     (msg ? '<div class="mut">' + esc(msg) + "</div>" : "") +
-    (SWAP.list || []).map(function (s, i) {
-      return '<div class="swr"><button type="button" class="swapApply" data-i="' + i + '">Apply</button> <b>' + esc(s.name) + "</b>: " + (s.out == null ? "open seat" : nm(s.out)) + " → " + nm(s.inn) +
+    (SWIN.list || []).map(function (s, i) {
+      return '<div class="swr"><button type="button" class="swinApply" data-i="' + i + '">Apply</button> <b>' + esc(s.name) + "</b>: " + (s.out == null ? "open seat" : nm(s.out)) + " → " + nm(s.inn) +
         " · EV " + (s.d >= 0 ? "+" : "-") + cents(Math.abs(s.d)) + roi(s) + (s.brk.length ? ' · <span class="bad">breaks ' + esc(s.brk.join(", ")) + "</span>" : "") + "</div>";
     }).join("");
 }
-function swapRuleIds(r) { return [].concat(r.ids || [], r.set || [], r.set2 || []); }
-function swapApply(i) {
-  var s = SWAP.list && SWAP.list[i]; if (!s) return;
-  SWAP.undo = JSON.parse(JSON.stringify(PF));
+function swinRuleIds(r) { return [].concat(r.ids || [], r.set || [], r.set2 || []); }
+function swinApply(i) {
+  var s = SWIN.list && SWIN.list[i]; if (!s) return;
+  SWIN.undo = JSON.parse(JSON.stringify(PF));
   PF[s.cid] = s.out == null ? (PF[s.cid] || []).concat([s.inn]) : PF[s.cid].map(function (bi) { return bi === s.out ? s.inn : bi; });
-  SWAP.list = null;
-  swapDone("Applied in " + s.name + ": EV " + (s.d >= 0 ? "+" : "-") + cents(Math.abs(s.d)) + (s.brk.length ? ", breaks " + s.brk.join(", ") : "") + ". Find swaps again for the next one.");
+  SWIN.list = null;
+  swinDone("Applied in " + s.name + ": EV " + (s.d >= 0 ? "+" : "-") + cents(Math.abs(s.d)) + (s.brk.length ? ", breaks " + s.brk.join(", ") : "") + ". Find swaps again for the next one.");
 }
-function swapUndo() {
-  if (!SWAP.undo) return;
-  PF = SWAP.undo; SWAP.undo = null; SWAP.list = null;
-  swapDone("Undone: the portfolios before the swap are back.");
+function swinUndo() {
+  if (!SWIN.undo) return;
+  PF = SWIN.undo; SWIN.undo = null; SWIN.list = null;
+  swinDone("Undone: the portfolios before the swap are back.");
 }
-function swapDone(msg) {
+function swinDone(msg) {
   pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
   if (BP && BP.review) review(BP.review); else if (NB.on) nbRender();
-  swapRender(msg); $("swapBox").scrollIntoView({ block: "nearest" });
+  swinRender(msg); $("swinBox").scrollIntoView({ block: "nearest" });
 }
-$("swapOpen").addEventListener("click", function () { swapFind().catch(function (e) { swapRender("Swap failed: " + e.message); }); });
-$("swapBox").addEventListener("click", function (e) {
+$("swinOpen").addEventListener("click", function () { swinFind().catch(function (e) { swinRender("Swap failed: " + e.message); }); });
+$("swinBox").addEventListener("click", function (e) {
   var b = e.target.closest("button"); if (!b) return;
-  if (b.id === "swapFind") swapFind().catch(function (x) { swapRender("Swap failed: " + x.message); });
-  else if (b.id === "swapUndo") swapUndo();
-  else if (b.id === "swapClose") { $("swapBox").hidden = true; }
-  else if (b.classList.contains("swapApply")) swapApply(+b.dataset.i);
+  if (b.id === "swinFind") swinFind().catch(function (x) { swinRender("Swap failed: " + x.message); });
+  else if (b.id === "swinUndo") swinUndo();
+  else if (b.id === "swinClose") { $("swinBox").hidden = true; }
+  else if (b.classList.contains("swinApply")) swinApply(+b.dataset.i);
 });
-$("swapBox").addEventListener("change", function (e) {
-  if (e.target.id !== "swapBreak") return;
-  SWAP.brk = e.target.checked; swapFind().catch(function (x) { swapRender("Swap failed: " + x.message); });
+$("swinBox").addEventListener("change", function (e) {
+  if (e.target.id !== "swinBreak") return;
+  SWIN.brk = e.target.checked; swinFind().catch(function (x) { swinRender("Swap failed: " + x.message); });
 });
 function undoKey() { return "dkcbb-pf-prev:" + slate.draft_group_id; }
 $("pfUndo").addEventListener("click", function () {
