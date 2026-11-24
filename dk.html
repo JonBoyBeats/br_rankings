@@ -359,7 +359,8 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
   table.bp tr.over td { opacity: .5; } table.bp tr.over td:first-child { opacity: 1; }
   table.bp button.bpForce { color: var(--bad); border-color: var(--bad); font-size: 11px; padding: 0 6px; }
   .row .has5 { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
-  .row button.qout { height: 20px; padding: 0 6px; font-size: 10.5px; margin-left: 4px; }
+  .row button.qout, .row button.qplay { height: 20px; padding: 0 6px; font-size: 10.5px; margin-left: 4px; }
+  .tag.qp { background: rgba(46,170,96,.85); color: #fff; white-space: nowrap; margin-left: 4px; }
   /* the freshness light after a draw, easier to see (2026-11-23) */
   .sat { font-weight: 700; padding: 2px 9px; border-radius: 10px; } .sat-green { background: rgba(63, 191, 127, .18); }
   .sat-amber { background: rgba(224, 166, 58, .18); } .sat-red { background: rgba(240, 100, 80, .18); }
@@ -722,7 +723,7 @@ function store(k, v) {
 }
 function key() { return "dkcbb:" + slate.draft_group_id; }
 function save() {
-  var mk = JSON.stringify([state.outs, state.ins, state.proj, state.idea]);
+  var mk = JSON.stringify([state.outs, state.ins, state.proj, state.idea, state.qplay]);
   if (mk !== state._mk) { state.syncAt = Date.now(); state._mk = mk; }      // the marks' own time: they changed now
   store(key(), state); if (typeof syncMarks === "function") syncMarks();
 }
@@ -1003,7 +1004,7 @@ function pick(keepMem) {
   rows = Object.keys(slate.players).map(function (id) { var r = Object.assign({ id: id }, slate.players[id]); r._status0 = r.status; return r; });
   state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, floor: {}, outs: {}, ins: {}, deepIn: {}, rules: [] }, store(key()) || {});
   state.scanSet = state.scanSet || { floor: {}, cap: {} }; state.scanSet.floor = state.scanSet.floor || {}; state.scanSet.cap = state.scanSet.cap || {};
-  state.outs = state.outs || {}; state.ins = state.ins || {}; state.deepIn = state.deepIn || {};
+  state.outs = state.outs || {}; state.ins = state.ins || {}; state.deepIn = state.deepIn || {}; state.qplay = state.qplay || {};
   zeroApply();
   applyOuts();
   if (typeof swapRestore === "function") swapRestore().then(function () { return syncPull(); });
@@ -1222,7 +1223,8 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
     var nw = newsOf(r.id);
     // the tags (2026-11-20 layout): Q / D / OUT / new kept beside the name; the rest may truncate, each still in the hover
     var keep = (isDoubtful(r) ? '<span class="tag d" title="Doubtful: out by default">D</span>' : "") +
-      (r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
+      (r.status !== "Out" && qPlaying(r) ? "" :        // a played Q's tag sits by his undo, in the L / X group (never clipped on a phone)
+       r.status === "Out" ? '<span class="tag o">OUT</span>' : r.status === "Questionable" ? '<span class="tag q"' + (gate && gate.questionable && gate.questionable.factor !== 1 ?
         ' title="Questionable: projected at x' + gate.questionable.factor.toFixed(2) + ' while Questionable (Slate details)"' : ' title="Questionable"') + '>Q</span>' : "") +
       (r.src === "miya" || r.src === "dk" ? '<span class="tag new" title="' + (r.src === "dk" ? "No ESPN match: his DraftKings average" : "Newcomer: built from EvanMiya") + '">new</span>' : "") +
       (r._zero ? '<span class="tag zero' + (r.zero_gp ? "" : " off") + '" data-id="' + esc(r.id) + '" title="' + esc(r.zero_gp ?
@@ -1241,7 +1243,10 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
     var act = r.zero_gp ? '<button type="button" class="zback act" data-id="' + esc(r.id) + '" title="Undo 0 games: his projection back to the unadjusted number">back</button>' :
       isDoubtful(r) ? '<button type="button" class="qout act" title="' + (state.ins[r.id] ? "Back to out (Doubtful)" : "Play him: back as Questionable, his teammates refit to 200") +
         '">' + (state.ins[r.id] ? "undo" : "play") + "</button>" :
-      r._status0 === "Questionable" || (state.outs && state.outs[r.id]) ? '<button type="button" class="qout act" title="' +
+      qPlaying(r) && !state.outs[r.id] ? '<span class="tag qp" title="Questionable, confirmed playing by you (Play): full projection and field ownership, counted in the checks">Q \u00b7 playing</span>' +
+        '<button type="button" class="qplay act" title="Undo playing: back to plain Questionable (greyed in the checks)">undo</button>' :
+      r._status0 === "Questionable" || (state.outs && state.outs[r.id]) || (isQ(r) && r.status !== "Out") ? (state.outs[r.id] ? "" : '<button type="button" class="qplay act" title="Play: he is confirmed playing tonight (Questionable resolved): counted in the checks; his projection and field ownership stay full">play</button>') +
+        '<button type="button" class="qout act" title="' +
         (state.outs[r.id] ? "Undo out: put him back as Questionable" : "Mark out: rule him out, his teammates share his minutes (200 for the team)") + '">' +
         (state.outs[r.id] ? "undo" : "out") + "</button>" :
       false ? '<button type="button" class="deepin act" data-id="' + esc(r.id) + '" title="' + (r.poolWhy ?
@@ -2722,7 +2727,7 @@ function buildDoc() {
               pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, groups: BANK.groups || {}, test_ideas: BANK.test || {}, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null,
               pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, nights_seed: nightsSeed(), rule_log: BANK.ruleLog || [], idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate,
               scan: SCAN && String(SCAN.draft_group) === String(slate.draft_group_id) ? SCAN : null,
-              outs: Object.assign({}, state.outs), ins: Object.assign({}, state.ins),   // Mark out / Play him: the night's news tag (dk_eval night_tag)
+              outs: Object.assign({}, state.outs), ins: Object.assign({}, state.ins), q_play: Object.assign({}, state.qplay || {}),   // Mark out / Play him: the night's news tag (dk_eval night_tag)
               // the operator's state at save (2026-11-21): what the page used, so a grade scores exactly that
               operator: { proj: Object.assign({}, state.proj), lock: Object.assign({}, state.lock), excl: Object.assign({}, state.excl),
                           floor: Object.assign({}, state.floor), cap: Object.assign({}, state.cap), deep_in: Object.assign({}, state.deepIn),
@@ -3716,7 +3721,7 @@ function checksMap() {
     if (hasScan) { var sc = scanRowOf(r.id);
       b.push({ k: "scan read", ok: !!sc && ["core", "lean core", "leverage"].indexOf(sc.read) >= 0, v: sc ? sc.read : "not scanned" }); }
     var hit = b.filter(function (x) { return x.ok; }).length, avail = b.length;
-    var grey = r.status === "Out" ? "Out" : isQ(r) && !state.ins[r.id] ? "Questionable: no Play decision" : sitRisk(r) ? "sit risk" : !r.gp ? "0 games played" : "";
+    var grey = r.status === "Out" ? "Out" : isQ(r) && !state.ins[r.id] && !qPlaying(r) ? "Questionable: no Play decision" : sitRisk(r) ? "sit risk" : !r.gp ? "0 games played" : "";
     var lvl = grey ? "" : (hit >= 5 || hit / avail >= 0.7) ? "g" : hit >= 4 ? "l" : "";
     out[r.id] = { hit: hit, avail: avail, boxes: b, grey: grey, level: lvl };
   });
@@ -3763,6 +3768,12 @@ $("teamPanel").addEventListener("change", function (e) {
   try { localStorage.setItem("dkcbb:checks", JSON.stringify(o)); } catch (x) {}
   renderTeamPanel();
 });
+
+/* Play for a Questionable player (2026-11-24, the operator): state.qplay marks him confirmed playing for this slate. Only
+   the checks read it (no longer greyed, counted toward greens) and his row says "Q · playing"; his projection (gate
+   Questionable factor 1.0) and field ownership (field factor 1.0) stay full as for any Q. Undo: plain Q again. Mark
+   out clears it. Saved with the slate (state), the sync marks, the swap pack and Save build (q_play). */
+function qPlaying(r) { return !!(r && state && state.qplay && state.qplay[r.id] && isQ(r)); }
 
 nbSet(nbStored());
 
@@ -4161,9 +4172,9 @@ function syncLater(name, fn, ms) {      // debounced: the latest state goes once
 }
 function syncDir() { return "cbb/" + slate.draft_group_id + "/"; }
 function syncMarks() { syncLater("marks", function () {
-  var body = JSON.stringify({ outs: state.outs || {}, ins: state.ins || {}, proj: state.proj || {}, idea: state.idea || "" });
+  var body = JSON.stringify({ outs: state.outs || {}, ins: state.ins || {}, proj: state.proj || {}, idea: state.idea || "", qplay: state.qplay || {} });
   if (SYNC.marks === body) return; SYNC.marks = body;
-  syncPut(syncDir() + "marks.json", JSON.stringify({ at: state.syncAt || Date.now(), outs: state.outs || {}, ins: state.ins || {}, proj: state.proj || {}, idea: state.idea || "" })); }); }
+  syncPut(syncDir() + "marks.json", JSON.stringify({ at: state.syncAt || Date.now(), outs: state.outs || {}, ins: state.ins || {}, proj: state.proj || {}, idea: state.idea || "", qplay: state.qplay || {} })); }); }
 function syncSwap() { syncLater("swap", function () {
   syncPut(syncDir() + "swap.json", JSON.stringify({ at: SWAP.syncAt = Date.now(), stand: SWAP.stand.map(function (f) { return { name: f.name, text: f.text, at: f.at, contest: f.contest }; }), ent: SWAP.entText || null })); }); }
 function syncMine(lu) { syncLater("mylu", function () { syncPut(syncDir() + "mylu.json", JSON.stringify(lu)); }, 1500); }
@@ -4182,7 +4193,7 @@ async function syncPull() {             // when a slate opens: the newer of each
   var dg = String(slate.draft_group_id), dir = syncDir(), got = [];
   var m = await syncGet(dir + "marks.json");
   if (m && String(slate.draft_group_id) === dg) { try { var mk = JSON.parse(m.text); SYNC.last[dir + "marks.json"] = m.text;
-    if (mk.at > (state.syncAt || 0)) { state.outs = mk.outs || {}; state.ins = mk.ins || {}; state.proj = mk.proj || {}; if (mk.idea != null) state.idea = mk.idea; state.syncAt = mk.at;
+    if (mk.at > (state.syncAt || 0)) { state.outs = mk.outs || {}; state.ins = mk.ins || {}; state.proj = mk.proj || {}; if (mk.idea != null) state.idea = mk.idea; if (mk.qplay) state.qplay = mk.qplay; state.syncAt = mk.at;
       store(key(), state); applyOuts(); if ($("ideaName")) $("ideaName").value = state.idea || ""; got.push("outs and Proj edits"); } } catch (e) {} }
   var w = await syncGet(dir + "swap.json");
   if (w && String(slate.draft_group_id) === dg) { try { var sw = JSON.parse(w.text); SYNC.last[dir + "swap.json"] = w.text;
@@ -4285,7 +4296,7 @@ $("swapLogSave").addEventListener("click", function () {
 $("swapPackSave").addEventListener("click", function () {
   if (!SWAP.stand.length && !SWAP.entText) { $("swapStatus").textContent = "Nothing loaded to pack."; return; }
   var blob = new Blob([JSON.stringify({ kind: "dk-swap-pack", slate: slate && String(slate.draft_group_id), saved: new Date().toISOString(), stand: SWAP.stand, ent: SWAP.entText || null,
-    marks: state ? { outs: state.outs || {}, ins: state.ins || {}, proj: state.proj || {} } : null })], { type: "application/json" });
+    marks: state ? { outs: state.outs || {}, ins: state.ins || {}, proj: state.proj || {}, qplay: state.qplay || {} } : null })], { type: "application/json" });
   var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "swap-pack-" + (slate ? slate.draft_group_id : "slate") + ".json";
   document.body.appendChild(a); a.click(); a.remove();
   $("swapStatus").textContent = "Swap pack saved: " + SWAP.stand.length + " contest standings" + (SWAP.entText ? " and your entries file" : "") + ". It carries your entry IDs: send it only to yourself.";
@@ -4296,7 +4307,7 @@ $("swapPackLoad").addEventListener("change", function (e) { var inp = e.target, 
     if (slate && d.slate && d.slate !== String(slate.draft_group_id)) throw new Error("That pack is for slate " + d.slate + ", not this one.");
     SWAP.stand = d.stand || [];
     if (d.ent) { var p = DKSwap.parseEntries(d.ent); if (p && !p.error) { SWAP.ent = p; SWAP.entText = d.ent; } }
-    if (d.marks && state) { Object.assign(state.outs, d.marks.outs || {}); Object.assign(state.ins, d.marks.ins || {}); Object.assign(state.proj, d.marks.proj || {}); save(); applyOuts(); renderPlayers(); }
+    if (d.marks && state) { Object.assign(state.outs, d.marks.outs || {}); Object.assign(state.ins, d.marks.ins || {}); Object.assign(state.proj, d.marks.proj || {}); Object.assign(state.qplay, d.marks.qplay || {}); save(); applyOuts(); renderPlayers(); }
     inp.value = ""; renderSwapList(); swapSave(); swapMine();
     $("swapStatus").textContent = "Swap pack loaded: " + SWAP.stand.length + " contest standings" + (SWAP.ent ? " and your entries file (" + SWAP.ent.rows.length + " entries)" : "") + ".";
   }).catch(function (err) { inp.value = ""; $("swapStatus").innerHTML = '<span class="bad">' + esc(err.message) + "</span>"; });
@@ -5092,12 +5103,14 @@ function rowClick(e) {
     $("scanStatus").textContent = "Added at least 1 of " + pr.name + " to the rules: Draw & bank draws under it.";
     return;
   }
+  var qp = e.target.closest(".qplay");
+  if (qp) { var qpid = qp.closest(".row").dataset.id; if (state.qplay[qpid]) delete state.qplay[qpid]; else state.qplay[qpid] = 1; save(); renderPlayers(); if (view.panel) renderTeamPanel(); return; }
   var q = e.target.closest(".qout"), dp = e.target.closest(".deepin");
   if (dp) { togglePool(dp.dataset.id); return; }
   if (q || dp) {
     var qid = q ? (q.dataset.id || q.closest(".row").dataset.id) : dp.dataset.id, qr = byId(qid);
     var m = dp ? state.deepIn : qr && isDoubtful(qr) ? state.ins : state.outs;
-    if (m[qid]) delete m[qid]; else m[qid] = 1;
+    if (m[qid]) delete m[qid]; else { m[qid] = 1; if (m === state.outs) delete state.qplay[qid]; }      // marked out: no longer playing
     save(); applyOuts(); renderPlayers(); if (view.panel) renderTeamPanel();
     return;
   }

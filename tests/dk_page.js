@@ -2097,6 +2097,30 @@ function audit(name, L, o) {
         ckt.badges && ckt.shade && ckt.sortOk && ckt.hover && ckt.greyed && ckt.wuOk, JSON.stringify(ckt));
   check("checks: Set greens adds at least N of the game's greens (N 3 for 5+, else 2; 10% spread), names the batch GREENS <game>, sits beside Draw the 9; again clears it; the Boxes thresholds are remembered",
         ckt.nGreens >= 1 && ckt.setOk && ckt.tagOk && ckt.pressed && ckt.beside && /GREENS/.test(ckt.msg) && ckt.cleared && ckt.remembered, JSON.stringify(ckt));
+  // Play for a Questionable player (2026-11-24): confirmed playing, "Q · playing", counted in the checks; projection and ownership untouched
+  const qp = await pg.evaluate(() => {
+    const r = rows.find(x => x.status === "Questionable" && !isDoubtful(x) && !state.outs[x.id]);
+    if (!r) return { none: true };
+    view.pool = "all"; view.q = ""; view.team = null; view.pos = null; renderPlayers();
+    const rowEl = () => document.querySelector(`#players .row[data-id="${r.id}"]`);
+    const btns0 = [...rowEl().querySelectorAll(".lx button.act")].map(b => b.textContent), grey0 = checksMap()[r.id].grey, p0 = proj(r), o0 = own(r);
+    rowEl().querySelector(".qplay").click();
+    const tag = rowEl().querySelector(".tag.qp"), btns1 = [...rowEl().querySelectorAll(".lx button.act")].map(b => b.textContent), c1 = checksMap()[r.id];
+    const saved = !!(store(key()).qplay || {})[r.id], built = !!(buildDoc().q_play || {})[r.id], same = proj(r) === p0 && own(r) === o0 && r.status === "Questionable";
+    view.panel = r.team; view.pside = r.team; view.showAll = true; renderTiles(); renderTeamPanel();
+    const inGame = !!document.querySelector(`#teamPanel .row[data-id="${r.id}"] .tag.qp`);
+    view.showAll = false; view.panel = null; renderTiles(); renderPlayers();
+    rowEl().querySelector(".qplay").click();          // undo
+    const back = !state.qplay[r.id] && !rowEl().querySelector(".tag.qp") && !!rowEl().querySelector(".tag.q") && /Questionable/.test(checksMap()[r.id].grey);
+    rowEl().querySelector(".qout").click();           // Mark out as before
+    const out = r.status === "Out" && !!state.outs[r.id] && [...rowEl().querySelectorAll(".lx button.act")].map(b => b.textContent).join(",") === "undo";
+    rowEl().querySelector(".qout").click();
+    const restored = r.status === "Questionable" && !state.outs[r.id];
+    return { name: r.name, btns0, grey0, tag: tag && tag.textContent, btns1, grey1: c1.grey, saved, built, same, inGame, back, out, restored };
+  });
+  check("Q Play: an unresolved Q shows play and out; play tags him 'Q · playing' (list and game view), ungreys him in the checks, saves with the slate and Save build, and leaves his projection and ownership; undo returns plain Q; Mark out works as before",
+        qp.none || (JSON.stringify(qp.btns0) === JSON.stringify(["play", "out"]) && /Questionable/.test(qp.grey0) && qp.tag === "Q · playing" && JSON.stringify(qp.btns1) === JSON.stringify(["undo"]) &&
+        !/Questionable/.test(qp.grey1) && qp.saved && qp.built && qp.same && qp.inGame && qp.back && qp.out && qp.restored), JSON.stringify(qp));
   // --- the builder on one screen ---------------------------------------------------------------------
   dialogs = [];
   await pg.fill("#maxUse", "3"); await pg.fill("#maxNight", "60");
