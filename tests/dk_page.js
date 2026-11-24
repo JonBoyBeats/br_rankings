@@ -612,7 +612,7 @@ function audit(name, L, o) {
   check("team bar: one button per team, slate line shown", (await pg.$$eval("#teamBar button", t => t.length)) === TEAMS.teams.length &&
         /games · \d+ spreads? of 15\+/.test(await pg.textContent("#slateLine")), await pg.textContent("#slateLine"));
   const chipsG = await pg.evaluate(() => {
-    const gs = [...document.querySelectorAll("#teamBar .gchip")].map(c => ({ game: c.dataset.game, teams: [...c.querySelectorAll("button")].map(b => b.dataset.team), cls: [...c.querySelectorAll("button")].map(b => b.className) }));
+    const gs = [...document.querySelectorAll("#teamBar .gchip")].map(c => ({ game: c.dataset.game, teams: [...c.querySelectorAll("button")].map(b => b.dataset.team), cls: [...c.querySelectorAll("button")].map(b => b.className.replace(/ tipped$/, "")) }));     // a started game's chips also carry "tipped" (greyed, #8)
     const T = teamsOf(), ou = g => { const r = rows.find(x => x.game === g && x.ou); return r ? +r.ou : -1; }, key = gs.map(g => [ou(g.game), tipOf(g.game) || "~"]);
     return { gs, key, ordered: key.every((x, i) => i === 0 || key[i - 1][0] > x[0] || (key[i - 1][0] === x[0] && key[i - 1][1] <= x[1])), sameGame: gs.every(g => g.teams.every(t => gameOf(t) === g.game) && g.teams.join("@") === g.game || g.teams.length === 1),
              colours: gs.every(g => g.teams.every((t, i) => g.cls[i] === T.teams.find(x => x.team === t).verdict)) };
@@ -2827,6 +2827,46 @@ function audit(name, L, o) {
   const swZip = await pg.evaluate(() => { const f = SWAP.stand.find(x => /999999992/.test(x.name)); return { name: f && f.name, same: f && f.text.length };} );
   check("Swap: a zipped standings file (DraftKings' big contests) is read from inside the zip and added",
         swZip.name === "contest-standings-999999992.csv" && swZip.same === swIn.stand.length, JSON.stringify(swZip));
+  // #8 late-swap ownership grading (2026-11-24): started games greyed; Actual / Δ from the flagship's standings (the
+  // largest loaded contest here), "–" for games not revealed; the tally's numbers by hand; swings between two contests
+  await pg.evaluate(() => { SWAP.stand = []; SWAP.just = {}; renderSwapList(); });
+  const og = await pg.evaluate(() => {
+    const at = Date.parse(document.getElementById("swapAt").value), tp = r => Date.parse(r.game_start || "") < at;
+    const games = [...new Set(rows.filter(r => r.game && r.game_start).map(r => r.game))], G = games.find(g => rows.some(r => r.game === g && tp(r))), G2 = games.find(g => !rows.some(r => r.game === g && tp(r)));
+    const [t1, t2] = G.split("@"), live = r => r.status !== "Out", bySal = (a, b) => b.salary - a.salary;
+    const T1 = rows.filter(r => r.team === t1 && live(r)).sort(bySal), T2 = rows.filter(r => r.team === t2 && live(r)).sort(bySal);
+    const A = T1[0], B = T1[1], C = T2[0], D = T2[1], o = fieldOf().own; window.__own0 = Object.assign({}, o);
+    rows.filter(r => r.game === G).forEach(r => { o[r.id] = 0; }); o[A.id] = 20; o[B.id] = 10; o[C.id] = 5;
+    const cs = slate.contests.filter(c => !/pull up jumper/i.test(c.name)), mk = (n, list) => { const L = ["Rank,EntryId,EntryName,TimeRemaining,Points,Lineup,,Player,Roster Position,%Drafted,FPTS"];
+      for (let k = 0; k < n; k++) L.push([k + 1, 9300000001 + k, "u" + k, 0, "", "G LOCKED G LOCKED G LOCKED F LOCKED F LOCKED F LOCKED UTIL LOCKED UTIL LOCKED"].join(",") + (list[k] ? ',,"' + list[k][0].name + '",' + list[k][0].position + "," + list[k][1] + "%,0" : ""));
+      return L.join("\r\n") + "\r\n"; };
+    const g2r = rows.filter(r => r.game === G2 && live(r)).sort(bySal)[0];
+    return { G, G2, t1, t2, A: A.id, B: B.id, C: C.id, D: D.id, g2: g2r.id, last: [A, B, D].map(r => r.name.split(" ").slice(-1)[0]),
+             c1: String(cs[0].id), c2: String(cs[1].id), s1: mk(150, [[A, 38], [B, 4], [C, 5], [D, 2]]), s2: mk(120, [[A, 60], [B, 14], [C, 5], [D, 2]]) };
+  });
+  await pg.setInputFiles("#swapStand", { name: "contest-standings-" + og.c1 + ".csv", mimeType: "text/csv", buffer: Buffer.from(og.s1) });
+  await pg.waitForFunction(() => SWAP.stand.length === 1 && document.querySelector("#swapOwn .ogc"), null, { timeout: 10000 });
+  const og1 = await pg.evaluate(og => { showStep("swap"); renderTiles(); renderPlayers();
+    const card = document.querySelector('#swapOwn .ogc[data-game="' + og.G + '"]'), cell = id => { const r = document.querySelector('#players .row[data-id="' + id + '"]'); return r ? [r.querySelector(".col-act").textContent, r.querySelector(".col-down").textContent, r.querySelector(".col-team").classList.contains("tipped")] : null; };
+    const chip = t => document.querySelector('#teamBar button[data-team="' + t + '"]').classList.contains("tipped");
+    return { cards: document.querySelectorAll("#swapOwn .ogc").length, card: card && card.textContent, just: !!(card && card.classList.contains("justtip")), sum: document.querySelector("#swapOwn .ogsum").textContent,
+             A: cell(og.A), D: cell(og.D), g2: cell(og.g2), chips: [chip(og.t1), chip(og.t2), chip(og.G2.split("@")[0])], head: (document.querySelector('#players .head [data-sort="act"]') || {}).title || "" }; }, og);
+  const exp = og.t1 + " 30% → 42% · " + og.t2 + " 5% → 7%", miss = og.last[0] + " 20% → 38%, " + og.last[1] + " 10% → 4%, " + og.last[2] + " 0% → 2%";
+  check("Swap #8: started games grey their team chips and the player rows' team; a game not started stays as it was",
+        og1.chips[0] && og1.chips[1] && !og1.chips[2] && og1.A && og1.A[2] && og1.g2 && !og1.g2[2], JSON.stringify([og1.chips, og1.A, og1.g2]));
+  check("Swap #8: Actual and Δ in the Swap list from the standings (38% → +18; nobody-drafted 2%), '–' for a game not revealed; the source named in the hover",
+        og1.A && og1.A[0] === "38%" && og1.A[1] === "+18" && og1.D && og1.D[0] === "2%" && og1.D[1] === "+2" && og1.g2[0] === "–" && og1.g2[1] === "–" && /from .+\(150 entries\)/.test(og1.head), JSON.stringify([og1.A, og1.D, og1.g2, og1.head]));
+  check("Swap #8: the tally by hand: one card, MAE (18+6+0+2)/4 = 6.5, chalk under-projected by (18-6+0)/3 = 4.0, team totals, the 3 biggest misses, 'just tipped' on a fresh upload; the summary line",
+        og1.cards === 1 && og1.card.includes(og.G + " tipped · our own vs actual") && og1.card.includes("MAE 6.5 pts over 4") && og1.card.includes("chalk under-projected by 4.0 pts") && og1.card.includes(exp) && og1.card.includes("Misses: " + miss) && og1.just &&
+        og1.sum.includes("1 game revealed · MAE 6.5 pts over 4 players · biggest misses: " + miss) && og1.sum.includes("most off: " + og.G + " (MAE 6.5), " + og.t1 + " (30% → 42%)"), JSON.stringify([og1.card, og1.sum, exp, miss]));
+  await pg.setInputFiles("#swapStand", { name: "contest-standings-" + og.c2 + ".csv", mimeType: "text/csv", buffer: Buffer.from(og.s2) });
+  await pg.waitForFunction(() => SWAP.stand.length === 2, null, { timeout: 10000 });
+  const og2 = await pg.evaluate(og => { const sw = document.querySelector("#swapOwn .ogsw"), r = document.querySelector('#players .row[data-id="' + og.A + '"] .col-act'), rb = document.querySelector('#players .row[data-id="' + og.B + '"] .col-act');
+    return { sw: sw && sw.textContent, swTip: sw && sw.querySelector("span[title]") ? sw.querySelector("span[title]").title : "", A: r.textContent, Atip: r.title, B: rb.textContent, pts: SWAP_SWING_PTS, minN: SWAP_SWING_MIN_N, mae: document.querySelector("#swapOwn .ogmae").textContent }; }, og);
+  check("Swap #8: two contests: a 22-point swing (38% vs 60%, both 100+ entries) is noted with each contest's size in the hover and a ↕ on his Actual; a 10-point one is not; the flagship's numbers unchanged",
+        og2.pts === 15 && og2.minN === 100 && og2.sw && /Swings between contests/.test(og2.sw) && og2.sw.includes(og.last[0] + " 38% ") && og2.sw.includes(" vs 60% ") && /150 entries/.test(og2.swTip) && /120 entries/.test(og2.swTip) &&
+        og2.A === "38%\u2195" && /60%/.test(og2.Atip) && og2.B === "4%" && og2.mae === "6.5", JSON.stringify(og2));
+  await pg.evaluate(() => { Object.assign(fieldOf().own, window.__own0); });
   await pg.evaluate(() => { SWAP_EXPORT = true; SWAP.stand = []; renderSwapList(); showStep("bank"); });
   // the sync (2026-11-24): with a token, the page writes the slate's marks, late swap files and lineups to the sync repo
   // (a fake GitHub here) and, on a slate open, takes the repo's newer marks; without a token it writes nothing
