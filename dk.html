@@ -225,7 +225,11 @@
   .gamehead { font-family: var(--mono); font-size: 12px; margin: 6px 0 4px; }
   .gamehead b { font-size: 14px; font-family: inherit; }
 /* checks (2026-11-24): boxes met per player in a game; green 5+ (or 70%+ of those available), light green 4 */
-#ideaTable tr > :first-child, #cutSharesTable tr > :first-child { position: sticky; left: 0; background: var(--bg); z-index: 1; }     /* the name stays put as the wide tables scroll */
+#fcIdeaTable tr > :first-child, #fcPlayerTable tr > :first-child { position: sticky; left: 0; background: var(--bg); z-index: 1; }     /* the name stays put as the wide tables scroll */
+#fillTable .ft tr[data-ftc] { cursor: pointer; } #fillTable .ft tr[data-ftc].on td { background: rgba(77, 196, 141, .10); } #fillTable .ftx > td { padding: 6px 4px 10px; }
+#fillTable .ftl { font-family: var(--mono); font-size: 11.5px; margin: 2px 0; overflow-wrap: anywhere; } #fillTable .ftf span[data-flag] { cursor: pointer; display: inline-block; margin: 2px 6px 2px 0; }
+#fillTable .ftscope { font-size: 12px; margin: 6px 0 2px; }
+@media (max-width: 620px) { #fillContests tr > :nth-child(3), #fillContests tr > :nth-child(4), #fillContests tr > :nth-child(7) { display: none; } #fillContests .ftx > td { display: table-cell; } } #fillTable details > summary { cursor: pointer; font-size: 12.5px; }
 tr.fc-light { cursor: pointer; } tr.fc-heavy { cursor: pointer; } .fcf-light { color: var(--bad); font-weight: 600; } .fcf-heavy { color: #4c8dff; font-weight: 600; }
 .fcscope { font-size: 11.5px; margin: 4px 0; } .fcscope button { height: 22px; padding: 0 8px; font-size: 11.5px; }
 .row .col-cut .ar { font-size: 9px; margin-left: 1px; } .row .col-down.up { color: var(--live); } .row .col-down.dn { color: var(--bad); }
@@ -532,6 +536,7 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
     <button type="button" class="linkbtn" id="nbOn" title="The one-screen builder">New builder view</button> <span class="mut">switch layout</span></div>
     </div></details>
   </div>
+  <div id="fillTable"></div>
   <div class="note" id="fillUnder"></div>
   <div class="note" id="strandBox" hidden></div>
   <div class="note" id="swinBox" hidden></div>
@@ -2139,25 +2144,18 @@ function cutShares() {
     return c;
   };
   var bk = share(BANK.lineups.map(function (L, i) { return i; })), kp = share(CUT.keep);
-  // fill against the cut (2026-11-24): with entries, each player's share of the entries in scope against his kept share
-  var on = fcOn(), ents = on ? fcEntries() : [], E = ents.length, en = on && E ? share(ents) : {};
-  var list = Object.keys(Object.assign({}, bk, kp, en)).filter(function (id) { return byId(id) && Math.max(bk[id] || 0, kp[id] || 0, en[id] || 0) >= 0.03; })
-    .map(function (id) { var e = en[id] || 0, k0 = kp[id] || 0, cnt = Math.round(e * E), fl = on ? fcFlag(cnt, k0, E) : "";
-      return { r: byId(id), b: bk[id] || 0, k: k0, e: e, ent: cnt, vs: e - k0, flag: fl, why: fl === "light" ? fcPlayerWhy(id) : fl === "heavy" ? (state.floor[id] != null && state.floor[id] !== "" ? "floor" : "\u2014") : "" }; });
-  var abs = on && (view.csSort || "abs") === "abs";
-  list.sort(abs ? function (x, y) { return Math.abs(y.vs) - Math.abs(x.vs); } : function (x, y) { return (y.k - y.b) - (x.k - x.b); });
+  var list = Object.keys(Object.assign({}, bk, kp)).filter(function (id) { return byId(id) && Math.max(bk[id] || 0, kp[id] || 0) >= 0.03; })
+    .map(function (id) { return { r: byId(id), b: bk[id] || 0, k: kp[id] || 0 }; }).sort(function (x, y) { return (y.k - y.b) - (x.k - x.b); });
   var p = function (x) { return Math.round(100 * x) + "%"; };
-  return '<details class="fold" id="cutShares" open><summary>Players: bank against the cut (' + list.length + ' in 3%+ of ' + (on ? "bank, kept or entered" : "either") + ')</summary>' +
-    '<div class="note">The cut\'s lean, from the same projections and simulated field: not separate evidence that a riser is underrated.' + (on ? " Entered: your entries' share (" + fcScopeName() + ", " + E + " entries); vs cut: entered minus kept, points. Tap a flagged row for Swap one in." : "") + "</div>" +
-    (on ? fcScopeHtml() : "") +
-    '<div style="overflow:auto"><table class="contests" id="cutSharesTable"><tr><th>Player</th><th class="r">Sal</th><th class="r">Field own</th><th class="r">Bank</th><th class="r">Kept</th><th class="r"' + (on ? ' data-cs="change" style="cursor:pointer"' : "") + '>Change' + (on && !abs ? " \u2193" : "") + "</th>" +
-    (on ? '<th class="r">Entered</th><th class="r" data-cs="abs" style="cursor:pointer">vs cut' + (abs ? " \u2193" : "") + '</th><th class="r">Flag</th><th>Why</th>' : "") + "</tr>" +
+  return '<details class="fold" id="cutShares" open><summary>Players: bank against the cut (' + list.length + ' in 3%+ of either)</summary>' +
+    '<div class="note">The cut\'s lean, from the same projections and simulated field: not separate evidence that a riser is underrated.</div>' +
+    '<table class="contests"><tr><th>Player</th><th class="r">Sal</th><th class="r">Field own</th><th class="r">Bank</th><th class="r">Kept</th><th class="r">Change</th></tr>' +
     list.map(function (x) {
       var d = x.k - x.b;
-      return "<tr data-id=\"" + esc(x.r.id) + "\"" + (x.flag ? ' data-flag="' + x.flag + '" class="fc-' + x.flag + '"' : "") + "><td>" + esc(x.r.name) + ' <span class="sub">' + esc(x.r.team) + '</span></td><td class="m">' + (x.r.salary / 1000).toFixed(1) + "k</td>" +
+      return "<tr data-id=\"" + esc(x.r.id) + "\"><td>" + esc(x.r.name) + ' <span class="sub">' + esc(x.r.team) + '</span></td><td class="m">' + (x.r.salary / 1000).toFixed(1) + "k</td>" +
         '<td class="m">' + (fieldOf() ? own(x.r).toFixed(0) + "%" : "–") + '</td><td class="m">' + p(x.b) + '</td><td class="m">' + p(x.k) + "</td>" +
-        '<td class="m"' + (d > 0 ? greenBg(d, 0, 0.2) : "") + ">" + (d >= 0 ? "+" : "") + Math.round(100 * d) + "</td>" + (on ? fcCells(x.ent, x.e, x.vs, x.flag, x.why) : "") + "</tr>";
-    }).join("") + "</table></div></details>";
+        '<td class="m"' + (d > 0 ? greenBg(d, 0, 0.2) : "") + ">" + (d >= 0 ? "+" : "") + Math.round(100 * d) + "</td></tr>";
+    }).join("") + "</table></details>";
 }
 function ungroupedTags() {
   var seen = {};
@@ -2224,6 +2222,7 @@ function renderEntries(fromFileNow) {     // fromFileNow: the entries file just 
   renderSteps();
   renderProfiles();
   if (typeof NB !== "undefined" && NB.on) nbRender();
+  if (typeof renderFillTable === "function") renderFillTable();
 }
 function parseCsv(text) {       // RFC 4180-ish: quoted fields, doubled quotes
   var out = [], row = [], f = "", q = false;
@@ -2355,26 +2354,23 @@ function renderCut() {
     return { idea: g, banked: late(g) ? null : allE[g] || 0, shared: late(g) ? null : shr[g] || 0, kept: afterE[g] || 0, share: late(g) || !allE[g] ? null : (afterE[g] || 0) / allE[g], ta: T && T.by ? T.by[g] || 0 : null,
              roi: b.roi != null ? b.roi : null, top10: b.top10, top1: b.top1, cash: b.cash, own: b.own, cores: b.cores };
   });
-  // fill against the cut (2026-11-24): with entries, each idea's entered count and share (the same shared credit as Kept)
-  var FC = fcOn() ? fcIdeaStats() : null;
-  if (FC) rowsI.forEach(function (r) { var x = FC.by[r.idea] || { ent: 0, es: 0, vs: -r.kept / CUT.keep.length, flag: "" }; r.ent = x.ent; r.es = x.es; r.vs = x.vs; r.flag = x.flag; r.why = x.why; });
   var k = cutSort.k, dir = cutSort.dir;
   rowsI.sort(function (a, b) { var x = a[k], y = b[k]; if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
     return (x < y ? -1 : x > y ? 1 : 0) * dir || (b.roi || -1e9) - (a.roi || -1e9); });
-  var cols = [["idea", "Idea"], ["banked", "Banked"], ["shared", "Shared"], ["kept", "Kept"], ["share", "Share"], ["ta", "Top tenth"], ["roi", "Sim ROI"], ["top10", "Top 10%"], ["top1", "Top 1%"], ["cash", "Cash"], ["own", "Avg own"], ["cores", "Cores"]].concat(FC ? [["ent", "Entered"], ["vs", "vs cut"], ["flag", "Flag"], ["why", "Why"]] : []);
+  var cols = [["idea", "Idea"], ["banked", "Banked"], ["shared", "Shared"], ["kept", "Kept"], ["share", "Share"], ["ta", "Top tenth"], ["roi", "Sim ROI"], ["top10", "Top 10%"], ["top1", "Top 1%"], ["cash", "Cash"], ["own", "Avg own"], ["cores", "Cores"]];
   var info = (board.contests ? "Each kept lineup alone in " + board.contests.join(", ") + " (" + board.nights + " fresh nights), each contest weighted by your entries in it. Top tenth: the idea's kept lineups among the best tenth by sim value (the tiers are shown no longer: no signal on real results). " : "") +
     "A lineup two ideas drew counts for both (Shared: this idea's banked lineups another idea also drew), so the columns can sum past the bank, the kept pool and the top tenth.";
   var f = function (x, fn) { return x == null ? "–" : fn(x); };
   var rounds = CUT.rounds.map(function (r) { return tagCounts(r.ids); });
   $("cutIdeas").innerHTML = (CUT.stale ? '<div class="note bad" id="cutStale"><b>The bank changed since this cut</b> (' + esc(CUT.stale) + "): Re-sim &amp; cut again for a current kept pool.</div>" : "") +
-    (T ? '<div class="note" id="tierA">' + topTenthText(T) + "</div>" : "") + (FC ? fcScopeHtml(FC) : "") +
-    '<div style="overflow:auto"><table class="contests" id="ideaTable"><tr>' + cols.map(function (c) {
+    (T ? '<div class="note" id="tierA">' + topTenthText(T) + "</div>" : "") +
+    '<table class="contests" id="ideaTable"><tr>' + cols.map(function (c) {
       return '<th data-ck="' + c[0] + '" class="' + (c[0] === "idea" ? "" : "r") + '">' + c[1] + (c[0] === "idea" && info ? ' <span class="mut" title="' + esc(info) + '">(i)</span>' : "") + (cutSort.k === c[0] ? (cutSort.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>" +
     rowsI.map(function (r) {
-      return '<tr data-idea="' + esc(r.idea) + '"' + (r.flag ? ' data-flag="' + r.flag + '" class="fc-' + r.flag + '" title="' + esc(r.flag === "light" ? "Light against the cut: tap for Swap one in with this idea's kept lineups" : "Heavy against the cut: tap to swap its weakest entry for the lightest idea's best") + '"' : "") + '><td>' + esc(r.idea) + '</td><td class="m">' + (late(r.idea) ? '<span class="mut">after the cut</span>' : r.banked) + '</td><td class="m">' + f(r.shared, String) + '</td><td class="m">' + r.kept + '</td><td class="m">' +
+      return '<tr data-idea="' + esc(r.idea) + '"><td>' + esc(r.idea) + '</td><td class="m">' + (late(r.idea) ? '<span class="mut">after the cut</span>' : r.banked) + '</td><td class="m">' + f(r.shared, String) + '</td><td class="m">' + r.kept + '</td><td class="m">' +
         f(r.share, function (x) { return Math.round(100 * x) + "%"; }) + '</td><td class="m">' + f(r.ta, String) + '</td><td class="m" style="color:' + (r.roi == null ? "inherit" : r.roi > 0 ? "var(--live)" : "var(--bad)") + '">' + roiTxt(r.roi) +
-        '</td><td class="m">' + f(r.top10, pct1) + '</td><td class="m">' + f(r.top1, pct1) + '</td><td class="m">' + f(r.cash, pct1) + '</td><td class="m">' + f(r.own, function (x) { return Math.round(x) + "%"; }) + '</td><td class="m">' + f(r.cores, String) + "</td>" + (FC ? fcCells(r.ent, r.es, r.vs, r.flag, r.why) : "") + "</tr>";
-    }).join("") + "</table></div>" +
+        '</td><td class="m">' + f(r.top10, pct1) + '</td><td class="m">' + f(r.top1, pct1) + '</td><td class="m">' + f(r.cash, pct1) + '</td><td class="m">' + f(r.own, function (x) { return Math.round(x) + "%"; }) + '</td><td class="m">' + f(r.cores, String) + "</td></tr>";
+    }).join("") + "</table>" +
     (rounds.length ? '<details class="fold" id="cutRounds"><summary>Round by round</summary><table class="contests"><tr><th>Idea</th><th class="r">Banked</th>' +
       rounds.map(function (r, i) { return '<th class="r">Round ' + (i + 1) + "</th>"; }).join("") + '<th class="r">Kept</th></tr>' +
       Object.keys(all).sort(function (a, b) { return all[b] - all[a]; }).map(function (g) {
@@ -3904,9 +3900,9 @@ function fcOn() {               // entries exist, all of them lineups of this ba
   var ks = Object.keys(PF);
   return ks.some(function (k) { return (PF[k] || []).length; }) && ks.every(function (k) { return (PF[k] || []).every(function (bi) { return BANK.lineups[bi]; }); });
 }
-function fcContest() { return BP && BP.review ? String(BP.review) : null; }
-function fcScope() { return state && state.fcScope === "contest" && fcContest() && (PF[fcContest()] || []).length ? "contest" : "night"; }
-function fcScopeName() { var c = fcScope() === "contest" && (slate.contests || []).find(function (x) { return String(x.id) === fcContest(); }); return c ? nbShort(c.name) : "whole night"; }
+function fcContest() { var c = view.ftOpen; return c && (PF[c] || []).length ? String(c) : null; }      // the expanded contest row (the scorecard's scope)
+function fcScope() { return fcContest() ? "contest" : "night"; }
+function fcScopeName() { var c = fcContest() && (slate.contests || []).find(function (x) { return String(x.id) === fcContest(); }); return c ? nbShort(c.name) : "Whole night"; }
 function fcEntries() {          // the entries in scope, a lineup once per contest it's in (portfolios left from an older bank skipped)
   var e = fcScope() === "contest" ? (PF[fcContest()] || []).slice() : Object.keys(PF).reduce(function (a, k) { return a.concat(PF[k] || []); }, []);
   return e.filter(function (bi) { return BANK && BANK.lineups[bi]; });
@@ -3951,13 +3947,7 @@ function fcIdeaStats() {
 function fcCells(ent, es, vs, flag, why) {
   return '<td class="m">' + ent + " (" + Math.round(100 * es) + '%)</td><td class="m">' + (Math.round(100 * vs) > 0 ? "+" : "") + Math.round(100 * vs) + '</td><td class="m' + (flag ? " fcf-" + flag : "") + '">' + (flag || "") + "</td><td>" + esc(why || "") + "</td>";
 }
-function fcScopeHtml() {
-  var c = fcContest(), on = fcScope();
-  return '<div class="fcscope">Entered against the cut: <button type="button" class="fcs" data-s="night" aria-pressed="' + (on === "night") + '">Whole night</button>' +
-    '<button type="button" class="fcs" data-s="contest" aria-pressed="' + (on === "contest") + '"' + (c && (PF[c] || []).length ? "" : ' disabled title="Open a contest in the builder first"') + ">This contest</button> " +
-    '<span class="mut">' + esc(fcScopeName()) + ", " + fcEntries().length + " entries; light / heavy: " + Math.round(100 * FC_PTS) + "+ points off the kept share and " + FC_N + "+ entries off expected. Tap a flagged row to fix it with Swap one in.</span></div>";
-}
-function fcRefresh() { if (CUT && CUT.keep && $("cutIdeas")) renderCut(); }
+function fcRefresh() { if ($("fillTable")) renderFillTable(); }
 function fcFix(kind, key, flag) {
   var st = fcIdeaStats(), val = fcVal(), ents = fcEntries(), uniq = ents.filter(function (bi, i) { return ents.indexOf(bi) === i; });
   var has = function (bi) { return kind === "idea" ? lineupGroups(bi).indexOf(key) >= 0 : BANK.lineups[bi].ids.indexOf(key) >= 0; };
@@ -3967,26 +3957,22 @@ function fcFix(kind, key, flag) {
     var heavy = st.list.filter(function (x) { return x.flag === "heavy"; }).sort(function (a, b) { return b.vs - a.vs; })[0];
     var out = weakest(function (bi) { return !has(bi) && (!heavy || lineupGroups(bi).indexOf(heavy.idea) >= 0); });
     if (out == null && heavy) out = weakest(function (bi) { return !has(bi); });
-    opt = { label: (kind === "idea" ? "idea " : "") + nm + " in" + (out != null ? ", out the weakest of " + (heavy ? heavy.idea : "your entries") : ""), meets: has, out: out != null ? out : null, hot: kind === "player" ? [key] : [] };
+    opt = { label: (kind === "idea" ? "idea " : "") + nm + " in" + (out != null ? ", out the weakest of " + (heavy ? heavy.idea : "your entries") : "") + (fcContest() ? " (" + fcScopeName() + ")" : ""), meets: has, out: out != null ? out : null, hot: kind === "player" ? [key] : [], cid: fcContest() };
   } else {
     var light = st.list.filter(function (x) { return kind !== "idea" || x.idea !== key; }).sort(function (a, b) { return a.vs - b.vs; })[0];
     var out2 = weakest(has);
-    opt = { label: "the weakest " + nm + " entry out, " + (light ? light.idea : "any kept lineup") + " in", hot: [], out: out2 != null ? out2 : null,
+    opt = { label: "the weakest " + nm + " entry out, " + (light ? light.idea : "any kept lineup") + " in" + (fcContest() ? " (" + fcScopeName() + ")" : ""), hot: [], out: out2 != null ? out2 : null, cid: fcContest(),
             meets: function (bi) { return !has(bi) && (!light || lineupGroups(bi).indexOf(light.idea) >= 0); } };
   }
   var sec = $("swinBox").closest("section.step"); if (sec && sec.hidden) showStep(sec.dataset.step);
   return swinFind(opt).then(function () { $("swinBox").scrollIntoView({ block: "nearest" }); }, function (e) { swinRender("Swap failed: " + e.message); });
 }
 function fcClick(e) {
-  var sb = e.target.closest(".fcs");
-  if (sb) { if (!sb.disabled) { state.fcScope = sb.dataset.s; save(); renderCut(); } return true; }
-  var hs = e.target.closest("th[data-cs]");
-  if (hs) { view.csSort = hs.dataset.cs; renderCut(); return true; }
-  var tr = e.target.closest("tr[data-flag]"); if (!tr) return false;
+  var tr = e.target.closest("[data-flag]"); if (!tr || !tr.closest("#fillTable")) return false;
   if (tr.dataset.idea != null) fcFix("idea", tr.dataset.idea, tr.dataset.flag); else if (tr.dataset.id) fcFix("player", tr.dataset.id, tr.dataset.flag);
   return true;
 }
-$("cutSharesBox").addEventListener("click", fcClick);
+
 
 /* Remove part of the bank (2026-11-24, the operator: a wrong rule kept adding to UMD-TENN). An idea's Remove, or Remove
    ticked inside its tags fold, takes the tags away: a lineup goes only when every tag it was drawn under is removed (one
@@ -4085,11 +4071,74 @@ function cfgRender() {
   $("profChip").classList.toggle("ok", !!p); $("profChip").textContent = "Contest profiles" + (p ? " ✓" : "");
 }
 
+/* The Fill tab's contest table (2026-11-24, the operator: clicking through contests one by one was sloppy and slow): one
+   compact row a contest (ours / its entries, fee, profile, the entered set's sim ROI and top-1% rate, P(1st) where the
+   profile keeps one, and the fill status). A tap expands the row in place: its entered lineups, its light / heavy ideas
+   and players against the cut (tap one to fix it with Swap one in in that contest), and Open in builder (the builder,
+   review(), as before). The scorecard below (ideas and players against the cut, the rules of fill against the cut)
+   follows the table: the whole night with no row expanded, that contest with one. Nothing changes how the fill picks. */
+function ftRowStats(x) { try { return nbSetStats(String(x.c.id)); } catch (e) { return null; } }
+function renderFillTable() {
+  var el = $("fillTable"); if (!el || !slate) return;
+  var cs = typeof nbContests === "function" ? nbContests() : [];
+  if (!cs.length || !BANK || !BANK.lineups.length) { el.innerHTML = ""; return; }
+  if (view.ftOpen && !cs.some(function (x) { return String(x.c.id) === String(view.ftOpen); })) view.ftOpen = null;
+  var pc1 = function (x) { return x == null ? "–" : pct1(x); };
+  var rowsH = cs.map(function (x) {
+    var c = x.c, cid = String(c.id), have = (PF[cid] || []).filter(function (bi) { return BANK.lineups[bi]; }).length, st = have ? ftRowStats(x) : null, ps = PROF_STATS[cid], p = profileOf(c);
+    var p1 = ps ? (ps.set != null ? ps.set : ps.p1 != null ? ps.p1 : null) : null, over = have && nbOverCap(cid, x.n);
+    var status = have >= x.n ? (over ? '<span class="bad">full · over cap</span>' : "full") : '<span class="bad">short ' + (x.n - have) + "</span>";
+    var open = String(view.ftOpen) === cid;
+    return '<tr data-ftc="' + esc(cid) + '"' + (open ? ' class="on"' : "") + '><td><span class="mut">' + (open ? "▾" : "▸") + "</span> " + esc(nbShort(c.name)) + '</td><td class="m">' + have + "/" + x.n + '</td><td class="m">' + money(c.entry_fee) +
+      "</td><td>" + esc((PROF_NAMES[p] || p).replace(/ \(.*$/, "")) + '</td><td class="m">' + (st && st.fee ? roiTxt((st.exp - st.fee) / st.fee) : "–") + '</td><td class="m">' + (st ? pc1(st.t1) : "–") +
+      '</td><td class="m">' + (p1 != null ? pc1(p1) : "–") + "</td><td>" + (have ? status : '<span class="mut">empty</span>') + "</td></tr>" + (open ? '<tr class="ftx"><td colspan="8">' + ftExpand(x) + "</td></tr>" : "");
+  }).join("");
+  var on = fcOn(), card = on ? fcCardHtml() : "";
+  el.innerHTML = '<div style="overflow:auto"><table class="contests ft" id="fillContests"><tr><th>Contest</th><th class="r">Ours</th><th class="r">Fee</th><th>Profile</th><th class="r">Sim ROI</th><th class="r">Top 1%</th><th class="r">P(1st)</th><th>Fill</th></tr>' +
+    rowsH + "</table></div>" + card;
+}
+function ftExpand(x) {
+  var cid = String(x.c.id), L = (PF[cid] || []).filter(function (bi) { return BANK.lineups[bi]; }), val = fcVal();
+  var nm = function (bi) { return DKSim.lateSlots(ctx(), BANK.lineups[bi].ids).map(function (id) { return esc(shortName((byId(id) || {}).name || id)); }).join(" · "); };
+  var pj = function (bi) { return BANK.lineups[bi].ids.reduce(function (t, id) { var r = byId(id); return t + (r ? proj(r) : 0); }, 0); };
+  var st = L.length && fcOn() ? fcIdeaStats() : null;
+  var flagged = st ? st.list.filter(function (r) { return r.flag; }).sort(function (a, b) { return Math.abs(b.vs) - Math.abs(a.vs); }) : [];
+  var pl = L.length && fcOn() ? fcPlayerRows().filter(function (r) { return r.flag; }).slice(0, 8) : [];
+  var chip = function (attr, label, r) { return '<span ' + attr + ' data-flag="' + r.flag + '" class="fcf-' + r.flag + '" title="' + esc(r.flag === "light" ? "Light: tap for Swap one in here" : "Heavy: tap to swap its weakest entry here") + '">' + esc(label) + " " + (r.vs >= 0 ? "+" : "") + Math.round(100 * r.vs) + (r.why && r.why !== "—" ? " (" + esc(r.why) + ")" : "") + "</span>"; };
+  return '<div class="ftf">' + (flagged.length || pl.length ? "<b>Against the cut here:</b> " + flagged.map(function (r) { return chip('data-idea="' + esc(r.idea) + '"', r.idea, r); }).join("") +
+      pl.map(function (r) { return chip('data-id="' + esc(r.r.id) + '"', shortName(r.r.name), r); }).join("") : '<span class="mut">' + (L.length ? "Nothing light or heavy against the cut here." : "No entries yet.") + "</span>") + "</div>" +
+    L.map(function (bi, i) { return '<div class="ftl">' + (i + 1) + ". " + nm(bi) + ' <span class="mut">· ' + Math.round(pj(bi)) + " pts" + (val[bi] != null ? " · sim " + cents(val[bi]) : "") + "</span></div>"; }).join("") +
+    '<div class="opts" style="padding:4px 0 0"><button type="button" class="ftBuild" data-cid="' + esc(cid) + '">Open in builder</button></div>';
+}
+function fcPlayerRows() {
+  var share = function (idx) { var c = {}; idx.forEach(function (k) { BANK.lineups[k].ids.forEach(function (id) { c[id] = (c[id] || 0) + 1; }); }); Object.keys(c).forEach(function (id) { c[id] /= Math.max(1, idx.length); }); return c; };
+  var kp = share(CUT.keep), ents = fcEntries(), E = ents.length, en = share(ents);
+  return Object.keys(Object.assign({}, kp, en)).filter(function (id) { return byId(id) && Math.max(kp[id] || 0, en[id] || 0) >= 0.03; }).map(function (id) {
+    var e = en[id] || 0, k0 = kp[id] || 0, cnt = Math.round(e * E), fl = fcFlag(cnt, k0, E);
+    return { r: byId(id), k: k0, e: e, ent: cnt, vs: e - k0, flag: fl, why: fl === "light" ? fcPlayerWhy(id) : fl === "heavy" ? (state.floor[id] != null && state.floor[id] !== "" ? "floor" : "—") : "" };
+  }).sort(function (a, b) { return Math.abs(b.vs) - Math.abs(a.vs); });
+}
+function fcCardHtml() {
+  var st = fcIdeaStats(), pl = fcPlayerRows(), p = function (x) { return Math.round(100 * x) + "%"; }, open = function (k) { return view["ftCard" + k] ? " open" : ""; };
+  var ideas = st.list.slice().sort(function (a, b) { return Math.abs(b.vs) - Math.abs(a.vs); });
+  return '<div class="ftscope"><b>Against the cut:</b> ' + esc(fcScopeName()) + " · " + st.E + " entries <span class=\"mut\">(expand a contest above to scope to it; light / heavy: " + Math.round(100 * FC_PTS) + "+ points off the kept share and " + FC_N + "+ entries off expected; tap one for Swap one in)</span></div>" +
+    '<details class="fcard" data-card="I"' + open("I") + '><summary>Ideas vs cut (' + ideas.filter(function (r) { return r.flag; }).length + ' flagged)</summary><div style="overflow:auto"><table class="contests" id="fcIdeaTable"><tr><th>Idea</th><th class="r">Kept</th><th class="r">Entered</th><th class="r">vs cut</th><th class="r">Flag</th><th>Why</th></tr>' +
+    ideas.map(function (r) { return '<tr data-idea="' + esc(r.idea) + '"' + (r.flag ? ' data-flag="' + r.flag + '" class="fc-' + r.flag + '"' : "") + "><td>" + esc(r.idea) + '</td><td class="m">' + p(r.ks) + "</td>" + fcCells(r.ent, r.es, r.vs, r.flag, r.why) + "</tr>"; }).join("") + "</table></div></details>" +
+    '<details class="fcard" data-card="P"' + open("P") + '><summary>Players vs cut (' + pl.filter(function (r) { return r.flag; }).length + ' flagged)</summary><div style="overflow:auto"><table class="contests" id="fcPlayerTable"><tr><th>Player</th><th class="r">Kept</th><th class="r">Entered</th><th class="r">vs cut</th><th class="r">Flag</th><th>Why</th></tr>' +
+    pl.map(function (r) { return '<tr data-id="' + esc(r.r.id) + '"' + (r.flag ? ' data-flag="' + r.flag + '" class="fc-' + r.flag + '"' : "") + "><td>" + esc(r.r.name) + ' <span class="sub">' + esc(r.r.team) + '</span></td><td class="m">' + p(r.k) + "</td>" + fcCells(r.ent, r.e, r.vs, r.flag, r.why) + "</tr>"; }).join("") + "</table></div></details>";
+}
+$("fillTable").addEventListener("click", function (e) {
+  if (fcClick(e)) return;
+  var b = e.target.closest(".ftBuild"); if (b) { review(b.dataset.cid); return; }
+  var tr = e.target.closest("tr[data-ftc]"); if (!tr) return;
+  view.ftOpen = String(view.ftOpen) === tr.dataset.ftc ? null : tr.dataset.ftc; renderFillTable();
+});
+$("fillTable").addEventListener("toggle", function (e) { var d = e.target.closest && e.target.closest("details[data-card]"); if (d) view["ftCard" + d.dataset.card] = d.open; }, true);
+
 nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
 $("cutIdeas").addEventListener("click", function (e) {
-  if (typeof fcClick === "function" && fcClick(e)) return;      // fill against the cut: the scope toggle, a flagged row
   var h = e.target.closest("th[data-ck]"); if (!h) return;
   cutSort = { k: h.dataset.ck, dir: cutSort.k === h.dataset.ck ? -cutSort.dir : (h.dataset.ck === "idea" ? 1 : -1) }; renderCut();
 });
@@ -5137,7 +5186,7 @@ async function swinFind(opt) {        // opt (fill against the cut): {label, mee
   for (var ci = 0; ci < cs.length; ci++) {
     var x = cs[ci], c = x.c, cid = String(c.id), n = x.n, have = (PF[cid] || []).slice(), H = have.length, o = pickRules(n);
     var inC = ins.filter(function (bi) { return have.indexOf(bi) < 0; });
-    if (!inC.length || (opt && opt.out != null && have.indexOf(opt.out) < 0)) continue;
+    if (!inC.length || (opt && opt.out != null && have.indexOf(opt.out) < 0) || (opt && opt.cid && cid !== opt.cid)) continue;
     swinRender("Scoring " + nbShort(c.name) + " (" + (ci + 1) + " of " + cs.length + ")…"); await tick();
     var L = have.concat(inC).map(function (bi) { return BANK.lineups[bi]; }), fee = c.entry_fee || 0;
     var sim = DKSim.simulate(nightsCtx(c), L, fieldFor(c), fieldDoc.z, c, n, S), b = DKSim.builder(sim, c);

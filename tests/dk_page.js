@@ -2359,78 +2359,6 @@ function audit(name, L, o) {
         await pg.evaluate(() => document.querySelectorAll("#swapBox").length === 1 && !!document.getElementById("swapBox").closest("#stepSwap") &&
           Array.isArray(SWAP.stand) && "use" in SWAP && !("brk" in SWAP) && !!document.getElementById("swinBox").closest("#stepFill")));
   await pg.evaluate(p => { PF = JSON.parse(p); pfSave(); renderEntries(); review(BP.review); }, pf0);
-  // fill against the cut (2026-11-24): entered / vs cut / flag / why on the cut's tables, the scope toggle, a flagged row into Swap one in
-  const fc = await pg.evaluate(async () => {
-    const pfSnap = JSON.stringify(PF), mn0 = $("maxNight").value, sc0 = state.fcScope, cs = nbContests(), cid = String(BP.review);
-    const heads = () => ({ idea: [...document.querySelectorAll("#ideaTable th")].map(t => t.textContent.replace(/ [↓↑]$/, "")), pl: [...document.querySelectorAll("#cutSharesTable th")].map(t => t.textContent.replace(/ [↓↑]$/, "")) });
-    // no entries: the tables as before
-    PF = {}; renderCut(); const none = heads(), noToggle = !document.querySelector(".fcscope");
-    // a hand-built set: this contest takes the biggest idea's kept lineups only (8), another contest 4 of the rest
-    const kc = ideaCounts(CUT.keep), big = Object.keys(kc).sort((a, b) => kc[b] - kc[a])[0];
-    const mine = CUT.keep.filter(bi => lineupGroups(bi).includes(big)).slice(0, 8), rest = CUT.keep.filter(bi => !lineupGroups(bi).includes(big)).slice(0, 4);
-    const other = cs.map(x => String(x.c.id)).find(c => c !== cid);
-    PF = { [cid]: mine }; if (other) PF[other] = rest; pfSave(); renderCut();
-    const ents = mine.concat(other ? rest : []), E = ents.length, ec = ideaCounts(ents), st = fcIdeaStats();
-    const row = [...document.querySelectorAll("#ideaTable tr[data-idea]")].find(tr => tr.dataset.idea === big), cells = [...row.cells].map(c => c.textContent), n = cells.length;
-    const ks = kc[big] / CUT.keep.length, want = { ent: ec[big] + " (" + Math.round(100 * ec[big] / E) + "%)", vs: (Math.round(100 * (ec[big] / E - ks)) > 0 ? "+" : "") + Math.round(100 * (ec[big] / E - ks)) };
-    const entOk = st.E === E && st.by[big].ent === ec[big] && cells[n - 4] === want.ent && cells[n - 3] === want.vs && cells[n - 2] === (fcFlag(ec[big], ks, E) || "");
-    const withCols = heads();
-    // the flag rule: 5+ points AND 2+ entries off expected (both edges inclusive)
-    const flags = [fcFlag(3, 0.5, 10), fcFlag(4, 0.5, 10), fcFlag(18, 0.1, 20), fcFlag(2, 0.06, 100), fcFlag(3, 0.125, 40), fcFlag(7, 0.125, 40), fcFlag(6, 0.125, 40)];
-    // a player at the night cap: Why "night cap" on his light row
-    const pk = {}; CUT.keep.forEach(bi => BANK.lineups[bi].ids.forEach(id => { pk[id] = (pk[id] || 0) + 1; }));
-    const P = Object.keys(pk).sort((a, b) => pk[b] - pk[a])[0], withP = CUT.keep.filter(bi => BANK.lineups[bi].ids.includes(P)), noP = CUT.keep.filter(bi => !BANK.lineups[bi].ids.includes(P));
-    PF = { [cid]: [withP[0]].concat(noP.slice(0, 9)) }; $("maxNight").value = "1"; pfSave(); renderCut();
-    const prow = document.querySelector(`#cutSharesTable tr[data-id="${P}"]`), pc = prow ? [...prow.cells].map(c => c.textContent) : [];
-    const capWhy = fcPlayerWhy(P), capOk = capWhy === "night cap" && prow && prow.dataset.flag === "light" && pc[pc.length - 1] === "night cap";
-    const absSorted = (() => { const v = [...document.querySelectorAll("#cutSharesTable tr[data-id]")].map(tr => Math.abs(parseFloat(tr.cells[7].textContent))); return v.every((x, i) => i === 0 || v[i - 1] >= x); })();
-    $("maxNight").value = mn0;
-    // the scope toggle: whole night by default, this contest on a tap (kept per slate)
-    PF = { [cid]: mine }; if (other) PF[other] = rest; state.fcScope = "night"; pfSave(); renderCut();
-    const nightE = fcIdeaStats().E;
-    document.querySelector('#cutIdeas .fcs[data-s="contest"]').click();
-    const scope = { night: nightE, contest: fcIdeaStats().E, saved: store(key()).fcScope, name: fcScopeName(), want: [E, mine.length] };
-    document.querySelector('#cutIdeas .fcs[data-s="night"]').click();
-    // a light idea row: Swap one in on that idea's kept lineups, the swap-out the weakest entry of the heaviest idea, within the caps
-    // the idea with the largest kept share that has lineups without it: entries from those only, so it reads light
-    const tgt = Object.keys(kc).sort((a, b) => kc[b] - kc[a]).find(g => CUT.keep.filter(bi => !lineupGroups(bi).includes(g)).length >= 8);
-    PF = { [cid]: CUT.keep.filter(bi => !lineupGroups(bi).includes(tgt)).slice(0, Math.max(8, cs.find(x => String(x.c.id) === cid).n)) }; pfSave(); renderCut();
-    const lightRow = document.querySelector('#ideaTable tr[data-flag="light"]');
-    let swap = null;
-    if (lightRow) {
-      const g = lightRow.dataset.idea, val = fcVal(), heavyIdea = fcIdeaStats().list.filter(x => x.flag === "heavy").sort((a, b) => b.vs - a.vs)[0];
-      lightRow.click();
-      for (let t = 0; t < 600 && SWIN.list == null && !/Nothing|failed/.test($("swinBox").textContent); t++) await new Promise(r => setTimeout(r, 100));
-      const nu = {}; Object.keys(PF).forEach(c => PF[c].forEach(bi => BANK.lineups[bi].ids.forEach(id => { nu[id] = (nu[id] || 0) + 1; })));
-      const L = SWIN.list || [], out = SWIN.ctx && SWIN.ctx.out;
-      const uniqE = Object.keys(PF).reduce((a, c) => a.concat(PF[c]), []).filter((b, i, a) => a.indexOf(b) === i);
-      const weakOk = out == null || (heavyIdea ? lineupGroups(out).includes(heavyIdea.idea) : true) && uniqE.filter(bi => !lineupGroups(bi).includes(g) && (!heavyIdea || lineupGroups(bi).includes(heavyIdea.idea))).every(bi => (val[bi] || 0) >= (val[out] || 0));
-      const inOk = L.every(s => lineupGroups(s.inn).includes(g) && s.out === out && s.brk.length === 0);
-      const capsOk = L.every(s => { const pf = JSON.parse(JSON.stringify(PF)); pf[s.cid] = pf[s.cid].map(bi => bi === s.out ? s.inn : bi); const o = pickRules(cs.find(x => String(x.c.id) === s.cid).n), c = {};
-        pf[s.cid].forEach(bi => BANK.lineups[bi].ids.forEach(id => { c[id] = (c[id] || 0) + 1; }));
-        const nb = {}; Object.keys(pf).forEach(k => pf[k].forEach(bi => BANK.lineups[bi].ids.forEach(id => { nb[id] = (nb[id] || 0) + 1; })));
-        return Object.keys(c).every(id => c[id] <= DKSim.expoLimit(Math.min(o.maxExpo, state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1), o.n) || c[id] <= (PF[s.cid].filter(bi => BANK.lineups[bi].ids.includes(id)).length)) &&
-          Object.keys(nb).every(id => nightLimit() === Infinity || nb[id] <= nightLimit() || nb[id] <= (nu[id] || 0)); });
-      const box = $("swinBox").textContent;
-      let applied = null;
-      if (L.length) { const before = fcIdeaStats().by[g].ent; document.querySelector("#swinBox .swinApply").click(); applied = fcIdeaStats().by[g].ent > before && [...document.querySelectorAll("#ideaTable tr[data-idea]")].some(tr => tr.dataset.idea === g); document.getElementById("swinUndo").click(); }
-      swap = { g, n: L.length, weakOk, inOk, capsOk, applied, msg: L.length ? "" : box.slice(0, 160), label: SWIN.ctx && SWIN.ctx.label };
-    }
-    PF = JSON.parse(pfSnap); state.fcScope = sc0; save(); pfSave(); renderEntries(); review(BP.review); renderCut(); $("swinBox").hidden = true; SWIN.ctx = null;
-    return { none, noToggle, withCols, entOk, want, flags, capWhy, capOk, absSorted, scope, swap, big, kc };
-  });
-  check("fill against the cut: with no entries the idea and player tables are as before (no Entered / vs cut / Flag / Why, no toggle)",
-        !fc.none.idea.includes("Entered") && !fc.none.pl.includes("Entered") && fc.noToggle && fc.withCols.idea.slice(-4).join("|") === "Entered|vs cut|Flag|Why" && fc.withCols.pl.slice(-4).join("|") === "Entered|vs cut|Flag|Why", JSON.stringify(fc));
-  check("fill against the cut: Entered (count, share of the entries, shared credit as Kept) and vs cut (entered less kept share, points) match a hand-built set",
-        fc.entOk, JSON.stringify(fc));
-  check("fill against the cut: the flag needs 5+ points AND 2+ entries off expected (light under, heavy over, both edges inclusive)",
-        JSON.stringify(fc.flags) === JSON.stringify(["light", "", "heavy", "", "light", "heavy", ""]), JSON.stringify(fc.flags));
-  check("fill against the cut: a light player held by the night cap says so (Why: night cap); the player table sorts by |vs cut| once there are entries",
-        fc.capOk && fc.absSorted, JSON.stringify(fc));
-  check("fill against the cut: Whole night by default, This contest on a tap (the builder's contest), the choice kept with the slate",
-        fc.scope.night === fc.scope.want[0] && fc.scope.contest === fc.scope.want[1] && fc.scope.saved === "contest", JSON.stringify(fc.scope));
-  check("fill against the cut: a light idea row opens Swap one in on that idea's kept lineups, the swap-out the weakest entry of the heaviest idea, every swap within the caps (or one line saying what blocks); Apply moves the table",
-        !!fc.swap && (fc.swap.n > 0 ? fc.swap.weakOk && fc.swap.inOk && fc.swap.capsOk && fc.swap.applied : /^.*(Nothing fits: |Nothing to swap)/.test(fc.swap.msg)), JSON.stringify(fc.swap));
   // the Cut tab's Players list (2026-11-24): Own / Bank / Cut (▲▼ at 5+ points off Bank) / Δ own, no Min, every column sorts, Cut high to low by default; the Bank tab's list untouched
   const ctl = await pg.evaluate(() => {
     const step0 = stepNow(), cs0 = view.cutSort, cd0 = view.cutDir; delete view.cutSort; delete view.cutDir;
@@ -2456,6 +2384,83 @@ function audit(name, L, o) {
   check("Cut tab Players list: Own, Bank, Cut (▲/▼ at 5+ points off Bank), Δ own (green / red), no Min; Cut high to low by default; Δ own and Min% / Max% sort; the Bank tab's list unchanged",
         ctl.heads.join("|") === "Player|Pos|Team|Opp|Sal|Proj|Val|Own|Bank|Cut|Δ own|MPG|OBPR|DK avg|Cash|Read|Min%|Max%" && ctl.sorted && ctl.cellsOk && ctl.dsorted && ctl.maxSorts &&
         ctl.bankHeads.includes("Min") && !ctl.bankHeads.includes("Cut") && JSON.stringify(ctl.bankHeads) === JSON.stringify(ctl.bankAfter) && ctl.fits, JSON.stringify(ctl));
+  // fill against the cut, on the Fill tab (2026-11-24, moved from the Cut tables): the contest table, its expanded row's lineups and flags, the scorecard scoped to it, a flagged row into Swap one in; the Cut tables as before
+  const fc = await pg.evaluate(async () => {
+    const pfSnap = JSON.stringify(PF), mn0 = $("maxNight").value, cs = nbContests(), cid = String(BP.review), open0 = view.ftOpen, step0 = stepNow();
+    showStep("fill"); view.ftOpen = null;
+    const cutHeads = () => ({ idea: [...document.querySelectorAll("#ideaTable th")].map(t => t.textContent.replace(/ [↓↑]$/, "").replace(/ \(i\)$/, "")), pl: [...document.querySelectorAll("#cutShares table th")].map(t => t.textContent), toggle: !!document.querySelector(".fcscope") });
+    // no entries: no scorecard; the Cut tables as before
+    PF = {}; pfSave(); renderCut(); const none = { card: !!document.getElementById("fcIdeaTable"), cut: cutHeads() };
+    // a hand-built set: this contest takes the biggest idea's kept lineups only (8), another contest 4 of the rest
+    const kc = ideaCounts(CUT.keep), big = Object.keys(kc).sort((a, b) => kc[b] - kc[a])[0];
+    const mine = CUT.keep.filter(bi => lineupGroups(bi).includes(big)).slice(0, 8), rest = CUT.keep.filter(bi => !lineupGroups(bi).includes(big)).slice(0, 4);
+    const other = cs.map(x => String(x.c.id)).find(c => c !== cid);
+    PF = { [cid]: mine }; if (other) PF[other] = rest; pfSave(); renderCut();
+    const cutWith = cutHeads();
+    // the contest table: a row a contest, ours / entries and the fill status
+    const ct = [...document.querySelectorAll("#fillContests tr[data-ftc]")].map(tr => ({ cid: tr.dataset.ftc, ours: tr.cells[1].textContent, fill: tr.cells[7].textContent }));
+    const ctOk = ct.length === cs.length && cs.every(x => { const r = ct.find(y => y.cid === String(x.c.id)), h = (PF[String(x.c.id)] || []).length; return r && r.ours === h + "/" + x.n && (h ? (h >= x.n ? /^full/.test(r.fill) : r.fill === "short " + (x.n - h)) : r.fill === "empty"); });
+    const ents = mine.concat(other ? rest : []), E = ents.length, ec = ideaCounts(ents), st = fcIdeaStats();
+    const row = [...document.querySelectorAll("#fcIdeaTable tr[data-idea]")].find(tr => tr.dataset.idea === big), cells = row ? [...row.cells].map(c => c.textContent) : [];
+    const ks = kc[big] / CUT.keep.length, want = { ent: ec[big] + " (" + Math.round(100 * ec[big] / E) + "%)", vs: (Math.round(100 * (ec[big] / E - ks)) > 0 ? "+" : "") + Math.round(100 * (ec[big] / E - ks)) };
+    const entOk = st.E === E && st.by[big].ent === ec[big] && cells[1] === Math.round(100 * ks) + "%" && cells[2] === want.ent && cells[3] === want.vs && cells[4] === (fcFlag(ec[big], ks, E) || "") &&
+      /Whole night · \d+ entries/.test(document.querySelector("#fillTable .ftscope").textContent);
+    // the flag rule: 5+ points AND 2+ entries off expected (both edges inclusive)
+    const flags = [fcFlag(3, 0.5, 10), fcFlag(4, 0.5, 10), fcFlag(18, 0.1, 20), fcFlag(2, 0.06, 100), fcFlag(3, 0.125, 40), fcFlag(7, 0.125, 40), fcFlag(6, 0.125, 40)];
+    // expanding a contest row: its lineups inline, the scorecard scoped to it (the label says so), collapsing goes back to the night
+    document.querySelector(`#fillContests tr[data-ftc="${cid}"]`).click();
+    const exp = { lineups: document.querySelectorAll("#fillTable .ftx .ftl").length, E: fcIdeaStats().E, scope: document.querySelector("#fillTable .ftscope").textContent, builder: !!document.querySelector("#fillTable .ftx .ftBuild") };
+    document.querySelector(`#fillContests tr[data-ftc="${cid}"]`).click();
+    const back = fcIdeaStats().E === E && /Whole night/.test(document.querySelector("#fillTable .ftscope").textContent);
+    // a player at the night cap: Why "night cap" on his light row
+    const pk = {}; CUT.keep.forEach(bi => BANK.lineups[bi].ids.forEach(id => { pk[id] = (pk[id] || 0) + 1; }));
+    const P = Object.keys(pk).sort((a, b) => pk[b] - pk[a])[0], withP = CUT.keep.filter(bi => BANK.lineups[bi].ids.includes(P)), noP = CUT.keep.filter(bi => !BANK.lineups[bi].ids.includes(P));
+    PF = { [cid]: [withP[0]].concat(noP.slice(0, 9)) }; $("maxNight").value = "1"; pfSave();
+    const prow = document.querySelector(`#fcPlayerTable tr[data-id="${P}"]`), pc = prow ? [...prow.cells].map(c => c.textContent) : [];
+    const capWhy = fcPlayerWhy(P), capOk = capWhy === "night cap" && prow && prow.dataset.flag === "light" && pc[pc.length - 1] === "night cap";
+    const absSorted = (() => { const v = [...document.querySelectorAll("#fcPlayerTable tr[data-id]")].map(tr => Math.abs(parseFloat(tr.cells[3].textContent))); return v.every((x, i) => i === 0 || v[i - 1] >= x); })();
+    $("maxNight").value = mn0;
+    // a light idea row: Swap one in on that idea's kept lineups, the swap-out the weakest entry of the heaviest idea, within the caps
+    const tgt = Object.keys(kc).sort((a, b) => kc[b] - kc[a]).find(g => CUT.keep.filter(bi => !lineupGroups(bi).includes(g)).length >= 8);
+    PF = { [cid]: CUT.keep.filter(bi => !lineupGroups(bi).includes(tgt)).slice(0, Math.max(8, cs.find(x => String(x.c.id) === cid).n)) }; pfSave();
+    const lightRow = document.querySelector('#fcIdeaTable tr[data-flag="light"]');
+    let swap = null;
+    if (lightRow) {
+      const g = lightRow.dataset.idea, val = fcVal(), heavyIdea = fcIdeaStats().list.filter(x => x.flag === "heavy").sort((a, b) => b.vs - a.vs)[0];
+      lightRow.click();
+      for (let t = 0; t < 600 && SWIN.list == null && !/Nothing|failed/.test($("swinBox").textContent); t++) await new Promise(r => setTimeout(r, 100));
+      const nu = {}; Object.keys(PF).forEach(c => PF[c].forEach(bi => BANK.lineups[bi].ids.forEach(id => { nu[id] = (nu[id] || 0) + 1; })));
+      const L = SWIN.list || [], out = SWIN.ctx && SWIN.ctx.out;
+      const uniqE = Object.keys(PF).reduce((a, c) => a.concat(PF[c]), []).filter((b, i, a) => a.indexOf(b) === i);
+      const weakOk = out == null || (heavyIdea ? lineupGroups(out).includes(heavyIdea.idea) : true) && uniqE.filter(bi => !lineupGroups(bi).includes(g) && (!heavyIdea || lineupGroups(bi).includes(heavyIdea.idea))).every(bi => (val[bi] || 0) >= (val[out] || 0));
+      const inOk = L.every(s => lineupGroups(s.inn).includes(g) && s.out === out && s.brk.length === 0);
+      const capsOk = L.every(s => { const pf = JSON.parse(JSON.stringify(PF)); pf[s.cid] = pf[s.cid].map(bi => bi === s.out ? s.inn : bi); const o = pickRules(cs.find(x => String(x.c.id) === s.cid).n), c = {};
+        pf[s.cid].forEach(bi => BANK.lineups[bi].ids.forEach(id => { c[id] = (c[id] || 0) + 1; }));
+        const nb = {}; Object.keys(pf).forEach(k => pf[k].forEach(bi => BANK.lineups[bi].ids.forEach(id => { nb[id] = (nb[id] || 0) + 1; })));
+        return Object.keys(c).every(id => c[id] <= DKSim.expoLimit(Math.min(o.maxExpo, state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1), o.n) || c[id] <= (PF[s.cid].filter(bi => BANK.lineups[bi].ids.includes(id)).length)) &&
+          Object.keys(nb).every(id => nightLimit() === Infinity || nb[id] <= nightLimit() || nb[id] <= (nu[id] || 0)); });
+      const box = $("swinBox").textContent;
+      let applied = null;
+      if (L.length) { const before = fcIdeaStats().by[g].ent; document.querySelector("#swinBox .swinApply").click(); applied = fcIdeaStats().by[g].ent > before && [...document.querySelectorAll("#fcIdeaTable tr[data-idea]")].some(tr => tr.dataset.idea === g) &&
+        document.querySelector(`#fillContests tr[data-ftc="${L[0].cid}"]`) != null; document.getElementById("swinUndo").click(); }
+      swap = { g, n: L.length, weakOk, inOk, capsOk, applied, msg: L.length ? "" : box.slice(0, 160), label: SWIN.ctx && SWIN.ctx.label };
+    }
+    PF = JSON.parse(pfSnap); view.ftOpen = open0; save(); pfSave(); renderEntries(); review(BP.review); renderCut(); $("swinBox").hidden = true; SWIN.ctx = null; showStep(step0);
+    return { none, cutWith, ct, ctOk, entOk, want, flags, exp, back, capWhy, capOk, absSorted, swap, big, mineN: mine.length };
+  });
+  const cutWas = "Idea|Banked|Shared|Kept|Share|Top tenth|Sim ROI|Top 10%|Top 1%|Cash|Avg own|Cores", plWas = "Player|Sal|Field own|Bank|Kept|Change";
+  check("fill against the cut moved to the Fill tab: the Cut step's idea table and Players: bank against the cut are exactly as before, with or without entries (no Entered / vs cut / Flag / Why, no scope toggle)",
+        fc.none.cut.idea.join("|") === cutWas && fc.cutWith.idea.join("|") === cutWas && fc.none.cut.pl.join("|") === plWas && fc.cutWith.pl.join("|") === plWas && !fc.cutWith.toggle && !fc.none.card, JSON.stringify(fc));
+  check("fill tab contest table: a row a contest with ours / entries and the fill status (full / short N / empty)", fc.ctOk, JSON.stringify(fc.ct));
+  check("fill tab scorecard: ideas against the cut (Kept, Entered with its share, vs cut, Flag) match a hand-built set, whole night with no contest expanded",
+        fc.entOk, JSON.stringify(fc));
+  check("fill against the cut: the flag needs 5+ points AND 2+ entries off expected (light under, heavy over, both edges inclusive)",
+        JSON.stringify(fc.flags) === JSON.stringify(["light", "", "heavy", "", "light", "heavy", ""]), JSON.stringify(fc.flags));
+  check("fill tab: expanding a contest row shows its entered lineups inline (and Open in builder), scopes the scorecard to it with its name; collapsing goes back to the whole night",
+        fc.exp.lineups === fc.mineN && fc.exp.E === fc.mineN && !/Whole night/.test(fc.exp.scope) && fc.exp.builder && fc.back, JSON.stringify(fc.exp));
+  check("fill tab scorecard: a light player held by the night cap says so (Why: night cap); players sorted by |vs cut|", fc.capOk && fc.absSorted, JSON.stringify(fc));
+  check("fill tab scorecard: a light idea row opens Swap one in on that idea's kept lineups, the swap-out the weakest entry of the heaviest idea, every swap within the caps (or one line saying what blocks); Apply moves the scorecard and the contest table",
+        !!fc.swap && (fc.swap.n > 0 ? fc.swap.weakOk && fc.swap.inOk && fc.swap.capsOk && fc.swap.applied : /^.*(Nothing fits: |Nothing to swap)/.test(fc.swap.msg)), JSON.stringify(fc.swap));
   // remove part of the bank (2026-11-24): an idea's Remove / a fold's Remove ticked; a lineup goes only when all its tags go; entries and the cut remapped, the cut stale
   dialogs = [];
   const rmv = await pg.evaluate(() => {
