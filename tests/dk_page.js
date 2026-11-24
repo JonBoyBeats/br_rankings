@@ -2220,7 +2220,7 @@ function audit(name, L, o) {
   check("fill step: one set of buttons (Fill all contests, Auto-fill the rest, Undo fill, Swap one in, New nights, Export DK entries, Save build, Load build), Variants only in Cut, Clear bank only in Bank, the settings one line, no side pane",
         fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Export DK entries", "Save build", "Auto-fill the rest", "Undo fill", "Swap one in", "New nights", "Load build"]) && fb.clear === "stepBank" &&
         fb.varIn === "stepCut" && fb.folded && /^Fill: contest 60% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights( · fill short off)?$/.test(fb.sum) &&
-        ["Here", "Tonight", "Room"].every(h => fb.heads.includes(h)), JSON.stringify(fb));
+        ["Here", "Tonight", "\u0394 cut", "Cut"].every(h => fb.heads.includes(h)) && !fb.heads.includes("Bank") && !fb.heads.includes("Room"), JSON.stringify(fb));
   // the Fill tab cleanup (2026-11-24): settings and profiles behind red / green buttons (Confirm inside, a change turns them red), the top-up renamed, three buttons and a More fold
   const fc4 = await pg.evaluate(() => {
     const st0 = { f: state.cfgFill, p: state.cfgProf }, mx0 = $("maxExpo").value; delete state.cfgFill; delete state.cfgProf; cfgRender();
@@ -2499,9 +2499,13 @@ function audit(name, L, o) {
     const heads = [...document.querySelectorAll("#fillPlayersSlot #players .head > span")].map(x => x.textContent.replace(/ [↓↑]$/, "")), cells = [...r.children].map(x => x.textContent);
     const at = h => cells[heads.indexOf(h)];
     const here = BP.b.picked.filter(k => BP.pool[k].ids.includes(id)).length, night = (nightUsed(BP.review)[id] || 0) + here, lim = bpLimits()[id];
-    return { here: at("Here"), night: at("Tonight"), room: at("Room"), wantHere: Math.round(100 * here / BP.o.n) + "%", wantNight: Math.round(100 * night / nightEntries()) + "%", wantRoom: String(lim - here) };
+    const dc = Math.round(100 * (night / nightEntries() - (cutKeptShare()[id] || 0))), cutTxt = Math.round(100 * (cutKeptShare()[id] || 0)) + "%";
+    const cashShown = [...document.querySelectorAll("#fillPlayersSlot #players .head .col-cash")].some(x => getComputedStyle(x).display !== "none");
+    return { here: at("Here"), night: at("Tonight"), dcut: at("\u0394 cut"), cut: at("Cut"), cashShown, wantHere: Math.round(100 * here / BP.o.n) + "%", wantNight: Math.round(100 * night / nightEntries()) + "%",
+             wantD: (dc > 0 ? "+" : "") + dc, wantCut: cutTxt };
   });
-  check("one screen: the Players list under the lineups shows his exposure here and tonight, and the room left", nb_pp.here === nb_pp.wantHere && nb_pp.night === nb_pp.wantNight && nb_pp.room === nb_pp.wantRoom, JSON.stringify(nb_pp));
+  check("one screen: the Players list under the lineups shows his exposure here and tonight, his share of the cut, and Tonight minus Cut (no Cash column)",
+        nb_pp.here === nb_pp.wantHere && nb_pp.night === nb_pp.wantNight && nb_pp.dcut === nb_pp.wantD && nb_pp.cut === nb_pp.wantCut && !nb_pp.cashShown, JSON.stringify(nb_pp));
   const nb_tap = await pg.evaluate(() => { const id = BP.pool[0].ids[0], nm = () => document.querySelector('#fillPlayersSlot #players .row[data-id="' + id + '"] .nm');
     nm().click(); const a = bpFilt.p[id], shownA = [...document.querySelectorAll("#nbList tr[data-k]:not(.picked)")].every(tr => BP.pool[+tr.dataset.k].ids.includes(id));
     nm().click(); const b = bpFilt.p[id], shownB = [...document.querySelectorAll("#nbList tr[data-k]:not(.picked)")].every(tr => !BP.pool[+tr.dataset.k].ids.includes(id));

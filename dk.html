@@ -206,12 +206,12 @@
   #fillSet > summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
   #nbList.nbscroll { max-height: 440px; }
   #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
-  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px; }
+  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 40px 70px 36px 40px 40px 26px 42px 42px; }
   /* no player scan for the slate yet (2026-11-20): its six columns hidden, their width to the name */
   #players.noscan .col-scan { display: none; }
   #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(170px, 230px) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px; }
   #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px; }
-  #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
+  #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg, #players.fillcols .col-cash { display: none; }
   .gapm { margin-left: 4px; font-size: 11px; } .gapm.in { color: #3fbf7f; } .gapm.out { color: var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
   #players.fillcols .nm { cursor: pointer; } height: 22px; width: 22px; padding: 0; border-radius: 50%; font-size: 12px; font-style: italic; font-weight: 700; align-self: center; }
@@ -358,7 +358,7 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
     :is(#players, .plist) .col-pos, :is(#players, .plist) .col-team, :is(#players, .plist) .col-opp { order: 1; }
     :is(#players, .plist) .head, :is(#players, .plist) .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
     #players.noscan .head, #players.noscan .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px 30px 44px 48px; }
-    #players.fillcols .head, #players.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 40px 38px 70px 36px 40px 34px 26px 42px 42px 44px; }
+    #players.fillcols .head, #players.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 40px 70px 36px 40px 40px 26px 42px 42px 44px; }
     #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px 44px; }
     :is(#players, .plist) .row > .lx, :is(#players, .plist) .row > .who, :is(#players, .plist) .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
     :is(#players, .plist) .row > .lx, :is(#players, .plist) .head > :nth-child(1) { left: 0; }
@@ -1152,7 +1152,9 @@ function sortList(list) {
               checks: function (r) { var c = ckSort[r.id]; return (c ? c.hit : 0) * 1000 + proj(r); },
               here: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].here : 0; },
               tonight: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].tonight : 0; },
-              room: function (r) { var f = fillStats(); return f && f[r.id] && f[r.id].room != null ? f[r.id].room : 1e9; },
+              room: function (r) { var f = fillStats(); if (fillCutOn()) return (f && f[r.id] ? f[r.id].tonight : 0) - (cutKeptShare()[r.id] || 0);
+                return f && f[r.id] && f[r.id].room != null ? f[r.id].room : 1e9; },
+              fcut: function (r) { return cutKeptShare()[r.id] || 0; },
               read: function (r) { var x = scanRowOf(r.id); return x ? ["core", "leverage", "lean core", "lean leverage", "even", "fade", "skip"].indexOf(x.read) : 9; } }[view.sort] || value;
   return list.sort(function (a, b) {
     var x = get(a), y = get(b);
@@ -1263,7 +1265,7 @@ function bankShare() {
 function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's checks (checksMap)
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"],
-].concat(PT_SWAP ? [] : [["bank", view.bankBase ? "Base" : "Bank", "r col-bank"]]).concat(PT_CUT ? [["cut", "Cut", "r col-cut"], ["down", "\u0394 own", "r col-down"]] : PT_SWAP ? [["act", "Actual", "r col-cut col-act"], ["dact", "\u0394", "r col-down"], ["mine", "Mine", "r col-bank col-mine"]] : [["min", "Min", "r col-min"]]).concat([["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]]).concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
+].concat(PT_SWAP ? [] : fs && fillCutOn() ? [["fcut", "Cut", "r col-bank"]] : [["bank", view.bankBase ? "Base" : "Bank", "r col-bank"]]).concat(PT_CUT ? [["cut", "Cut", "r col-cut"], ["down", "\u0394 own", "r col-down"]] : PT_SWAP ? [["act", "Actual", "r col-cut col-act"], ["dact", "\u0394", "r col-down"], ["mine", "Mine", "r col-bank col-mine"]] : [["min", "Min", "r col-min"]]).concat([["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]]).concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", fillCutOn() ? "\u0394 cut" : "Room", "r"]] : [])
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '"' + (PT_SWAP && (c[0] === "act" || c[0] === "dact") ? ' title="' + esc(swapActTitle()) + '"' : PT_SWAP && c[0] === "mine" ? ' title="Your share of your lineups as they stand now: the entries file with the swaps you accept (what Export writes), every contest or the one picked in Contest"' : "") + '>' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") +
                                           (c[0] === "bank" ? '<button type="button" class="bbtog" aria-pressed="' + !!view.bankBase + '" title="Bank % from the whole bank or the base bank only (the checks\' base)">' + (view.bankBase ? "base" : "all") + "</button>" : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
@@ -1325,7 +1327,9 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
       '<span class="m r val"' + greenBg(value(r), 2, 4.5) + ">" + value(r).toFixed(2) + "</span>" +
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       // Bank (back 2026-11-20, beside Own, whenever a bank exists): his share of the bank; the hover against the field, with the flag
-      (PT_SWAP ? "" : (function () { var hasB = BANK && BANK.lineups && BANK.lineups.length, bs = hasB ? bshare[r.id] || 0 : 0, gp2 = hasB && sc ? bankGap(r, bs, sc) : null;
+      (PT_SWAP ? "" : fs && fillCutOn() ? (function () { var c = cutKeptShare()[r.id] || 0;      // the Fill list (2026-11-24): Cut in place of Bank
+        return '<span class="m r col-bank" title="' + esc("In " + Math.round(100 * c) + "% of the kept lineups (the cut) vs " + Math.round(own(r)) + "% field") + '">' + Math.round(100 * c) + "%</span>"; })() :
+       (function () { var hasB = BANK && BANK.lineups && BANK.lineups.length, bs = hasB ? bshare[r.id] || 0 : 0, gp2 = hasB && sc ? bankGap(r, bs, sc) : null;
         var bb = view.bankBase && hasB ? baseBank() : null, shown = bb ? bb.share[r.id] || 0 : bs;        // the column's base option (2026-11-24): display only
         return '<span class="m r col-bank"' + (hasB ? ' title="' + esc((bb ? "In " + Math.round(100 * shown) + "% of the base bank (" + bb.n + " lineups)" : view.bankBase ? "No base yet: in " + Math.round(100 * bs) + "% of the whole bank" : "In " + Math.round(100 * bs) + "% of the bank") +
           " vs " + Math.round(own(r)) + "% field" + (gp2 ? " · " + gp2.tip : "")) + '"' : "") + ">" + (hasB ? Math.round(100 * shown) + "%" : "–") + "</span>"; })()) +
@@ -1340,8 +1344,10 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
       '<span class="m r col-scan col-cash">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
       // Read (2026-11-20: Top 1%, ROI and Bank folded into its hover; the bank-gap stripe stays on the row)
       '<span class="col-scan rdc"' + (sc ? ' title="' + esc(readTip(r, sc, bshare)) + '"' : "") + ">" + (sc ? '<span class="' + readCls(sc.read) + '">' + sc.read + "</span>" + (gap ? '<span class="gapm ' + (gap.cls === "bankgap-in" ? "in" : "out") + '" title="' + esc(gap.tip) + '">\u25ae</span>' : "") : '<span class="mut">–</span>') + "</span>" +
-      (fs ? (function (x) { x = x || {}; return '<span class="m r">' + Math.round(100 * (x.here || 0)) + '%</span><span class="m r">' + Math.round(100 * (x.tonight || 0)) + '%</span><span class="m r"' +
-        (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</span>"; })(fs[r.id]) : "") +
+      (fs ? (function (x) { x = x || {}; var hd = '<span class="m r">' + Math.round(100 * (x.here || 0)) + '%</span><span class="m r">' + Math.round(100 * (x.tonight || 0)) + "%</span>";
+        if (fillCutOn()) { var dc = Math.round(100 * ((x.tonight || 0) - (cutKeptShare()[r.id] || 0)));      // Tonight - Cut, in points (2026-11-24, in place of Room)
+          return hd + '<span class="m r" title="Tonight minus his share of the kept lineups, in points"' + (dc ? ' style="color:var(' + (dc > 0 ? "--live" : "--bad") + ')"' : "") + ">" + (dc > 0 ? "+" : "") + dc + "</span>"; }
+        return hd + '<span class="m r"' + (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</span>"; })(fs[r.id]) : "") +
       '<span class="col-scan col-pb"><button type="button" class="pbank" title="Bank this: at least 1 of ' + esc(r.name) + ' in your next draw"' + (r.status === "Out" ? " disabled" : "") + ">+</button></span>" +
       '<span class="col-max"><input class="floor' + (byScan("floor", r.id) ? ' byscan" title="Set by scan: ' + esc(byScan("floor", r.id)) : "") + '" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + (byScan("floor", r.id) ? " (set by scan)" : "") + '"></span>' +
       '<span class="col-max"><input class="cap' + (byScan("cap", r.id) ? ' byscan" title="Set by scan: ' + esc(byScan("cap", r.id)) : "") + '" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + (byScan("cap", r.id) ? " (set by scan)" : "") + '"></span>' +
@@ -4035,6 +4041,7 @@ function bankRemove(P) {
    Min% and Max% sort too, and the list sorts by Cut, high to low, by default (its own sort: the Bank tab's is kept).
    The grid is set from the columns shown, so everything fits; on a phone the name stays put as it scrolls. */
 var PT_CUT = false, cutShareMemo = null;
+function fillCutOn() { return !!(CUT && CUT.keep && CUT.keep.length && BANK && BANK.lineups); }   // the Fill list shows Cut / \u0394 cut once a cut exists
 function cutView() { return !!(stepNow() === "cut" && !fillMode() && CUT && CUT.keep && CUT.keep.length); }
 function cutKeptShare() {
   if (!CUT || !CUT.keep) return {};
