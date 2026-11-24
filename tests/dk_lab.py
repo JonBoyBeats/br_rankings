@@ -39,10 +39,12 @@ try:
             B[:8],                  # 3 at least 3 of (group)       9..16 = 100
             A[:4] + Cc[4:8],        # 4 I L0 U0                    1..4 + 21..24 = 100
             B[4:8] + Cc[:4],        # 5 I L0.1 U0                  13..16 + 17..20 = 132
-            A[4:8] + B[:4]]         # 6 both I L0 U0 and I L0.1 U0 5..8 + 9..12 = 68
-    tags = [["STACK A@B 2+1 (2 A)"], ["At least 2 from A"], ["SCANFLOOR"], ["at least 3 of X, Y, Z"], ["I L0 U0"], ["I L0.1 U0"], ["I L0 U0", "I L0.1 U0"]]
+            A[4:8] + B[:4],         # 6 both I L0 U0 and I L0.1 U0 5..8 + 9..12 = 68
+            B[2:6] + Cc[2:6]]       # 7 GREENS A@B (its rule is a template-5 'at least N of')  11..14 + 19..22 = 130
+    tags = [["STACK A@B 2+1 (2 A)"], ["At least 2 from A"], ["SCANFLOOR"], ["at least 3 of X, Y, Z"], ["I L0 U0"], ["I L0.1 U0"], ["I L0 U0", "I L0.1 U0"], ["salary >= 49000 + GREENS A@B"]]
     settings = {"At least 2 from A": {"conds": [{"type": "min", "ids": A, "n": 2, "label": "At least 2 from A"}]},
                 "at least 3 of X, Y, Z": {"conds": [{"type": "min", "ids": B[:3], "n": 3, "label": "at least 3 of X, Y, Z"}]},
+                "salary >= 49000 + GREENS A@B": {"conds": [{"type": "min", "ids": B[2:6], "n": 2, "label": "at least 2 of P11, P12, P13, P14", "greens": {"game": "A@B", "tag": "GREENS A@B"}}]},
                 "STACK A@B 2+1 (2 A)": {"conds": [{"type": "min", "ids": A, "n": 2, "stackq": {"shape": "2+1"}}, {"type": "min", "ids": B, "n": 1, "stackq": {"shape": "2+1"}}]}}
     score = [sum(pts[i] for i in L) for L in pool]
     n, field = 150, list(range(150))                        # the field scores 0..149
@@ -68,20 +70,22 @@ try:
     E.lab()
     out = json.load(open(E.LAB))
     ex = {e["id"]: e["results"]["arms"] for e in out["experiments"]}
-    want_a = pct(score[0]) - (pct(score[1]) + pct(score[3])) / 2       # 3 is a game group too: 3 of team B's players
-    want_b = pct(score[2]) - pct(score[3])
+    want_a = pct(score[0]) - (pct(score[1]) + pct(score[3]) + pct(score[7])) / 3    # 3 and 7 are game groups too (B's players), as registered
+    want_b = pct(score[2]) - (pct(score[3]) + pct(score[7])) / 2       # b as registered: any 'at least N of' rule, GREENS' too
+    want_d = pct(score[7]) - pct(score[3])                              # d: the hand-picked group rule only
     want_c = (pct(score[5]) + pct(score[6])) / 2 - (pct(score[4]) + pct(score[6])) / 2      # lineup 6 in both: shared credit
-    a, b, c = ex["a"]["all"], ex["b"]["all"], ex["c"]["L0.1 U0"]
+    a, b, c, d = ex["a"]["all"], ex["b"]["all"], ex["c"]["L0.1 U0"], ex["d"]["all"]
     check("a: STACK lineups against the same game's game-group lineups (2+ from A; 3 of B's players), paired by slate", a["slates"] and abs(a["slates"][0]["diff"] - round(want_a, 2)) < 1e-9, (a, want_a))
     check("b: SCANFLOOR lineups against group-rule ('at least N of') lineups", b["slates"] and abs(b["slates"][0]["diff"] - round(want_b, 2)) < 1e-9, (b, want_b))
     check("c: each cell against the same idea's L0 U0; a lineup under both counts for both (shared credit)",
           c["slates"] and abs(c["slates"][0]["diff"] - round(want_c, 2)) < 1e-9 and c["slates"][0]["t_n"] == 2 and c["slates"][0]["c_n"] == 2, (c, want_c))
+    check("d: GREENS lineups against the operator's own group rules (no GREENS / STACK / SCANFLOOR in the tag)", d["slates"] and abs(d["slates"][0]["diff"] - round(want_d, 2)) < 1e-9 and d["slates"][0]["c_n"] == 1, (d, want_d))
     check("slates before registration are a look-back, not counted: 2 counted (11-24, 11-25), 1 look-back (11-20)",
-          all(x["nights"] == 2 and len(x["lookback"]) == 1 and x["lookback"][0]["date"] == "2026-11-20" for x in (a, b, c)), [(x["nights"], len(x["lookback"])) for x in (a, b, c)])
+          all(x["nights"] == 2 and len(x["lookback"]) == 1 and x["lookback"][0]["date"] == "2026-11-20" for x in (a, b, c, d)), [(x["nights"], len(x["lookback"])) for x in (a, b, c, d)])
     check("the registry's definitions are kept as written; only results and updated_at change",
           [{k: v for k, v in e.items() if k != "results"} for e in out["experiments"]] == reg["experiments"] and out["method"] == reg["method"])
     rows = list(csv.DictReader(open(E.LAB_EVAL)))
-    check("lab_eval.csv: a row per slate, experiment arm and contest (3 slates x 3 arms)", len(rows) == 9 and sum(r["counted"] == "1" for r in rows) == 6, len(rows))
+    check("lab_eval.csv: a row per slate, experiment arm and contest (3 slates x 4 arms)", len(rows) == 12 and sum(r["counted"] == "1" for r in rows) == 8, len(rows))
     # the verdict
     bar = {"ahead_nights": 7, "of": 10, "pooled_over_noise": 2}
     mk = lambda ds: [{"diff": d, "top10_diff": 0.0} for d in ds]

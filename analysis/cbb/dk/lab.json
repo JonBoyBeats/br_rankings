@@ -299,7 +299,38 @@
           }
         }
       }
+    },
+    {
+      "id": "d",
+      "name": "GREENS game groups vs hand-picked game groups",
+      "treatment": "kept lineups with a tag containing GREENS <AWAY@HOME> (drawn under the DK page's Set greens: at least N of a game's green players by the checks)",
+      "control": "kept lineups with no GREENS tag whose tag (itself free of GREENS, STACK and SCANFLOOR) holds the operator's own group rule: 'at least N of <players>' (template 5, the focus button, a scan team's Bank this, +set)",
+      "primary_metric": "mean real finish percentile difference (treatment - control), paired by slate and contest; top-10% rate shown",
+      "planned_nights": 10,
+      "pass": {
+        "ahead_nights": 7,
+        "of": 10,
+        "pooled_over_noise": 2
+      },
+      "registered": "2026-11-24",
+      "results": {
+        "arms": {
+          "all": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": []
+          }
+        }
+      }
     }
   ],
-  "updated_at": "2026-11-24T13:38:25Z"
+  "updated_at": "2026-11-24T17:07:41Z"
 }
