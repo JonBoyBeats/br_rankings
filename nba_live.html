@@ -395,6 +395,24 @@ function cbbRow(p) { return state.dkRows[p.player_id] || state.cbbRows[p.player_
 /** Your exposure on a DraftKings slate: the share of your entered lineups (every contest's portfolio, as the DK
     page picked and kept them) with each player. This device's DK page first, else the saved build in the repo
     (analysis/cbb/dk/builds). */
+/* The sync repo (2026-11-24): what the DK page writes there (cbb/<group>/mylu.json, swap.json), read when this device
+   has none of its own; at most every SYNC_EVERY ms per file (GitHub's API limits), with the page's token when set. */
+var SYNC_EVERY = 5 * 60e3;
+function syncCfgLive() { var c = null; try { c = JSON.parse(localStorage.getItem("dkcbb:sync") || "null"); } catch (e) {} return c || { repo: "JonBoyBeats/dk-sync", token: "" }; }
+function syncFile(path) {
+  state.syncFiles = state.syncFiles || {};
+  var have = state.syncFiles[path];
+  if (have && Date.now() - have.t < SYNC_EVERY) return have.v;
+  state.syncFiles[path] = { t: Date.now(), v: have ? have.v : null };
+  var c = syncCfgLive(), h = { Accept: "application/vnd.github+json" }; if (c.token) h.Authorization = "Bearer " + c.token;
+  fetch("https://api.github.com/repos/" + c.repo + "/contents/" + path, { cache: "no-store", headers: h }).then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (j) { if (!j) return null; if (j.content) return decodeURIComponent(escape(atob(j.content.replace(/\n/g, ""))));
+      return j.download_url ? fetch(j.download_url, { cache: "no-store" }).then(function (r) { return r.ok ? r.text() : null; }) : null; })
+    .then(function (t) { if (t == null) return; var v = null; try { v = JSON.parse(t); } catch (e) {} if (!v) return;
+      var old = state.syncFiles[path].v; state.syncFiles[path] = { t: Date.now(), v: v }; if (JSON.stringify(old) !== JSON.stringify(v)) { if (/swap\.json$/.test(path)) state.dkActual = {}; render(); } })
+    .catch(function () {});
+  return have ? have.v : null;
+}
 function dkExpo(sl) {
   var bank = load("dkcbb-bank:" + sl.dg, null), pf = load("dkcbb-pf:" + sl.dg, null), src = "this device's DK page";
   var lineups = function (k) {          // the DK page's bank, packed ("slot ids|order|tags") or as it was
@@ -402,7 +420,8 @@ function dkExpo(sl) {
     return typeof L === "string" ? L.split("|")[0].split(",") : L && L.ids;
   };
   // your lineups as entered (2026-11-23): the DK page's entries file, late swaps included once exported
-  var my = load("dkcbb-mylu:" + sl.dg, null);
+  var my = load("dkcbb-mylu:" + sl.dg, null), sy = syncFile("cbb/" + sl.dg + "/mylu.json");
+  if (sy && sy.lineups && sy.lineups.length && (!my || (sy.at || 0) > (my.at || 0))) my = sy;      // the synced copy when newer
   if (my && my.lineups && my.lineups.length) {
     var cm = {}; my.lineups.forEach(function (ids) { ids.forEach(function (id) { cm[id] = (cm[id] || 0) + 1; }); });
     return { n: my.lineups.length, counts: cm, src: "your entries as entered, late swaps included" };
@@ -432,21 +451,28 @@ function dkActual(sl) {
   state.dkActual = state.dkActual || {};
   if (sl.dg in state.dkActual) return state.dkActual[sl.dg];
   state.dkActual[sl.dg] = null;
-  if (!window.indexedDB || typeof DKSwap === "undefined") return null;
+  if (typeof DKSwap === "undefined") return null;
+  var pickBest = function (stand) {
+    var best = null;
+    (stand || []).forEach(function (f) {
+      var st = DKSwap.parseStandings(f.text); if (st.error) return;
+      var c = { title: f.contest || f.name, n: st.entries.length, own: {}, pull: /pull up jumper/i.test(f.contest || "") };
+      Object.keys(st.own).forEach(function (nm) { c.own[DKSwap.norm(nm)] = st.own[nm]; });
+      if (!best || (c.pull && !best.pull) || (c.pull === best.pull && c.n > best.n)) best = c;
+    });
+    return best;
+  };
+  var fromSync = function () { var sw = syncFile("cbb/" + sl.dg + "/swap.json"), b = sw && pickBest(sw.stand); if (b) { state.dkActual[sl.dg] = b; } return b; };
+  if (!window.indexedDB) return fromSync();
   var q = indexedDB.open("dkswap", 1);
   q.onupgradeneeded = function () { q.result.createObjectStore("files", { keyPath: "slate" }); };
   q.onsuccess = function () {
     try {
       var g = q.result.transaction("files").objectStore("files").get(String(sl.dg));
       g.onsuccess = function () {
-        var rec = g.result, best = null;
-        ((rec && rec.stand) || []).forEach(function (f) {
-          var st = DKSwap.parseStandings(f.text); if (st.error) return;
-          var c = { title: f.contest || f.name, n: st.entries.length, own: {}, pull: /pull up jumper/i.test(f.contest || "") };
-          Object.keys(st.own).forEach(function (nm) { c.own[DKSwap.norm(nm)] = st.own[nm]; });
-          if (!best || (c.pull && !best.pull) || (c.pull === best.pull && c.n > best.n)) best = c;
-        });
+        var rec = g.result, best = pickBest(rec && rec.stand);
         if (best) { state.dkActual[sl.dg] = best; render(); }
+        else if (fromSync()) render();
       };
     } catch (e) {}
   };

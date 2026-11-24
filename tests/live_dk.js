@@ -28,6 +28,10 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
     return r.fulfill({ body: JSON.stringify({ slates: [], players: {} }), contentType: "application/json" });
   });
   await pg.route(/expo\.json/, r => r.fulfill({ body: "{}", contentType: "application/json" }));
+  let syncMy = null;      // the sync repo (2026-11-24): nothing until the test puts your lineups there
+  await pg.route(/api\.github\.com/, r => /mylu\.json/.test(r.request().url()) && syncMy
+    ? r.fulfill({ contentType: "application/json", body: JSON.stringify({ content: Buffer.from(JSON.stringify(syncMy)).toString("base64"), sha: "a" }) })
+    : r.fulfill({ status: 404, body: "{}" }));
   await pg.route(/dk_bank_/, r => r.fulfill({ path: R + "/analysis/cbb/dk/builds/dk_bank_2026-11-16_156660.json", contentType: "application/json" }));
   await pg.route(/espn\.com/, r => r.fulfill({ body: JSON.stringify(/summary/.test(r.request().url()) ? box : board), contentType: "application/json" }));
   await pg.clock.setFixedTime(new Date(new Date(sl.start).getTime() + 2 * 3600e3));   // the fixture slate's night: the page lists slates within hours of now
@@ -96,6 +100,11 @@ const board = { events: [{ id: P.event, date: "2026-11-17T00:00Z", status: { per
   }, [String(sl.draft_group_id), top, P.name]);
   ok.push(["exposure from your entries as entered (late swaps included) over the build", /3 DraftKings entries \(your entries as entered, late swaps included\)/.test(live2.status) && /^67%/.test(live2.row || "")]);
   ok.push(["the field's real ownership beside the name, from the Pull Up Jumper standings", /^67% 38% /.test(live2.row || "") && /Pull Up Jumper/.test(live2.title || "") && /^EXP FIELD PLAYER/.test(live2.head)]);
+  // another device's lineups from the sync repo when this one has none
+  syncMy = { at: Date.now(), lineups: [[top], ["zz"]] };
+  const live3 = await pg.evaluate(async dg => { localStorage.removeItem("dkcbb-mylu:" + dg); state.syncFiles = {}; render(); await new Promise(r => setTimeout(r, 500)); render();
+    return document.getElementById("status").textContent; }, String(sl.draft_group_id));
+  ok.push(["exposure from the sync repo's lineups when this device has none", /2 DraftKings entries \(your entries as entered, late swaps included\)/.test(live3)]);
   ok.push(["no page errors", !errs.length]);
   if (process.argv[2]) await pg.screenshot({ path: process.argv[2] });
   ok.forEach(([name, pass]) => console.log((pass ? "PASS " : "FAIL ") + name));

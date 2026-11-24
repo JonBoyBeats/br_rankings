@@ -359,6 +359,11 @@
       <button type="button" id="reload">Reload</button>
     </div>
     <div class="status" id="status">Loading…</div>
+    <details id="syncBox" class="news" style="margin:2px 0 6px"><summary id="syncSum">Sync: off</summary>
+      <div class="opts" style="padding:4px 0">
+        <label class="field"><span class="field-label">Sync repo</span><input id="syncRepo" type="text" value="JonBoyBeats/dk-sync" style="width:190px"></label>
+        <label class="field"><span class="field-label">GitHub token (this device only)</span><input id="syncToken" type="password" autocomplete="off" placeholder="github_pat_…" style="width:220px"></label>
+        <button type="button" id="syncSaveCfg">Save</button><button type="button" id="syncNow">Sync now</button></div></details>
     <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="false">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button><button type="button" data-step="swap" aria-pressed="false">Swap</button></div>
   </div>
   <div class="opts" id="quickBar" style="padding:2px 0"><button type="button" id="quickRun" title="One lineup, the highest total Proj under the draw panel as it stands: your rules, stack, Min salary, Leverage, ownership limits, locks (L) and excludes (X); Outs, the deep bench and punts left out, as in a draw. No bank or sim">Quick lineup</button>
@@ -688,7 +693,11 @@ function store(k, v) {
   } catch (e) { return null; }
 }
 function key() { return "dkcbb:" + slate.draft_group_id; }
-function save() { store(key(), state); }
+function save() {
+  var mk = JSON.stringify([state.outs, state.ins, state.proj, state.idea]);
+  if (mk !== state._mk) { state.syncAt = Date.now(); state._mk = mk; }      // the marks' own time: they changed now
+  store(key(), state); if (typeof syncMarks === "function") syncMarks();
+}
 var isG = DKSim.isG, isF = DKSim.isF;
 // Proj: the owner's override, else ours through the projection gate (DraftKings' average blended in where it has
 // beaten ours on the graded nights: analysis/cbb/dk/gate.json, scripts/cbb_daily.py)
@@ -963,7 +972,7 @@ function pick(keepMem) {
   state.outs = state.outs || {}; state.ins = state.ins || {}; state.deepIn = state.deepIn || {};
   zeroApply();
   applyOuts();
-  if (typeof swapRestore === "function") swapRestore();
+  if (typeof swapRestore === "function") swapRestore().then(function () { return syncPull(); });
   if ($("ideaName")) $("ideaName").value = state.idea || "";
   // rules saved before the draw-only change: an "in X% of lineups" rule becomes its plain rule; an "at most X%" one goes
   state.rules = (state.rules || []).filter(function (r) { return r.maxShare == null; }).map(function (r) {
@@ -1797,7 +1806,7 @@ function bankLoadState() {
 function cutKey() { return "dkcbb-cut:" + slate.draft_group_id; }
 function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else bigDel(cutKey()); } catch (e) {} }
 function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) === null; }
-function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF);
+function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); if (typeof syncBuild === "function" && Object.keys(PF).length) syncBuild();
   // the Live page's copy of your entered lineups as player ids (the bank itself is in IndexedDB, out of its reach)
   try { var lu = {}; Object.keys(PF).forEach(function (cid) { lu[cid] = PF[cid].map(function (bi) { return BANK.lineups[bi] ? BANK.lineups[bi].ids : null; }).filter(Boolean); }); store("dkcbb-pflu:" + slate.draft_group_id, lu); } catch (e) {} renderNight(); renderSteps(); renderUnder(); renderStrand(); }   // the Live page reads it for your exposures
 /* The idea name (2026-11-23, the owner: name the idea before drawing instead of grouping tags after): typed above the
@@ -2420,6 +2429,15 @@ async function saveBank() {
     var m = await pickPortfolios(auto);
     if (typeof m === "string" && Object.keys(auto).length) { CUT.auto = auto; CUT.autoSig = sig; cutSave(); }
   }
+  var doc = buildDoc();
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
+  a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  syncBuild(0);
+  $("cutStatus").textContent = "Saved the build" + (CUT && CUT.auto ? ", with the Auto-fill benchmark (graded beside your entries)" : "") + ".";
+}
+function buildDoc() {
   var rs = [];
   Object.keys(BANK.tagRules).forEach(function (t) { (BANK.tagRules[t].conds || []).forEach(function (r) { if (!rs.some(function (x) { return x.label === r.label; })) rs.push(r); }); });
   var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(), rule_set: rs,
@@ -2434,11 +2452,7 @@ async function saveBank() {
               // for Load build (2026-11-20): each lineup's slots, the whole cut (rounds, values, variants) and the entry
               // counts per contest (never the entries file: its entry IDs stay out of a build)
               slots: BANK.lineups.map(function (L) { return L.slots; }), cut_state: CUT && CUT.keep ? CUT : null, entries_n: entriesN() };
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
-  a.download = "dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
-  $("cutStatus").textContent = "Saved the build" + (CUT && CUT.auto ? ", with the Auto-fill benchmark (graded beside your entries)" : "") + ".";
+  return doc;
 }
 
 /* Load build (2026-11-20, the operator): a saved build file of this slate restores the bank (lineups, tags, groups, tag
@@ -3462,9 +3476,11 @@ function swapExport() {
 }
 /* Your lineups as entered (2026-11-23, the owner: the Live page showed the build's exposure after late swaps): the entries
    file's lineups (swapped ones once exported), for the Live page (dkcbb-mylu:<group>, player ids only, no entry IDs). */
-function swapMine() {
+function swapMine(fromSync) {
   if (!slate || !SWAP.ent) return;
-  try { localStorage.setItem("dkcbb-mylu:" + slate.draft_group_id, JSON.stringify({ at: Date.now(), lineups: SWAP.ent.rows.map(function (r) { return r.ids; }) })); } catch (e) {}
+  var lu = { at: SWAP.syncAt || Date.now(), lineups: SWAP.ent.rows.map(function (r) { return r.ids; }) };
+  try { localStorage.setItem("dkcbb-mylu:" + slate.draft_group_id, JSON.stringify(lu)); } catch (e) {}
+  if (!fromSync) syncMine(lu);
 }
 /* The swap log, for grading late swap (2026-11-23, the owner): each export's proposals per entry (no entry IDs: the
    contest, the lineup before, the steps with their expected payout, accepted or not, the field assumption), kept in this
@@ -3473,14 +3489,99 @@ function swapLog(edits) {
   if (!slate || !SWAP.res) return;
   var key = "dkcbb-swaplog:" + slate.draft_group_id, log = [];
   try { log = JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) {}
-  log.push({ at: new Date(SWAP.at).toISOString(), exported: new Date().toISOString(), entries: SWAP.res.map(function (p0) { var p = swapPick(p0);
+  var entry = { at: new Date(SWAP.at).toISOString(), exported: new Date().toISOString(), entries: SWAP.res.map(function (p0) { var p = swapPick(p0);
     return { contest: (SWAP.ent.rows.find(function (r) { return r.entryId === p0.entryId; }) || {}).contestId || null, before: p0.ids, after: p.next, accepted: !!edits[p0.entryId],
-             cur: p.cur, steps: p.steps.map(function (x) { return { out: x.swap[0], in: x.swap[1], ev: x.score.ev, cash: x.score.cash, top1: x.score.top1 }; }), chalk: p.chalk || 1 }; }) });
+             cur: p.cur, steps: p.steps.map(function (x) { return { out: x.swap[0], in: x.swap[1], ev: x.score.ev, cash: x.score.cash, top1: x.score.top1 }; }), chalk: p.chalk || 1 }; }) };
+  log.push(entry);
   try { localStorage.setItem(key, JSON.stringify(log)); } catch (e) {}
+  syncLog(entry);
 }
 /* the standings add up (2026-11-23, the owner: a phone picks one file at a time): each pick is added, a contest picked
    again replaced by its newer file; the list shows every contest loaded, with how many of your entries the entries file
    has in it */
+/* Sync (2026-11-24, the owner: seamless between the work computer and the phone, saved to a repo without buttons; the
+   owner chose a public repo, entry IDs included): with a GitHub token for the sync repo kept in this browser (never in
+   a repo), the page writes each slate's state to <repo>/cbb/<draft group>/ as it changes and reads it when the slate
+   opens: marks.json (your outs, plays, Proj edits), swap.json (the standings and entries file), swaplog.json (every
+   device's exports, merged), mylu.json (your lineups as entered, for the Live page), and the build
+   (builds/dk_bank_<day>_<group>.json, after a fill or Save build). Reading needs no token (a public repo); writing does.
+   Newer wins (each file carries its time); a device's own unsynced change is never overwritten by an older copy. */
+var SYNC = { sha: {}, last: {}, timers: {}, at: 0, err: "" };
+function syncCfg() { var c = null; try { c = JSON.parse(localStorage.getItem("dkcbb:sync") || "null"); } catch (e) {} return c || { repo: "JonBoyBeats/dk-sync", token: "" }; }
+function syncOn() { return !!syncCfg().token; }
+function syncSumText() {
+  var c = syncCfg(); $("syncSum").textContent = c.token ? "Sync: on (" + c.repo + ")" + (SYNC.err ? " · " + SYNC.err : SYNC.at ? " · last " + new Date(SYNC.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "")
+    : "Sync: off (reading " + c.repo + "; add a token to save)";
+}
+function syncApi(path, opt) {
+  var c = syncCfg(), h = { Accept: "application/vnd.github+json" };
+  if (c.token) h.Authorization = "Bearer " + c.token;
+  return fetch("https://api.github.com/repos/" + c.repo + "/contents/" + path, Object.assign({ cache: "no-store", headers: h }, opt || {}));
+}
+async function syncGet(path) {          // {text, sha} or null
+  try {
+    var r = await syncApi(path); if (!r.ok) return null;
+    var j = await r.json(); SYNC.sha[path] = j.sha;
+    var text = j.content ? decodeURIComponent(escape(atob(j.content.replace(/\n/g, "")))) : null;
+    if (text == null && j.download_url) { var rr = await fetch(j.download_url + "?t=" + Date.now(), { cache: "no-store" }); text = rr.ok ? await rr.text() : null; }
+    return text == null ? null : { text: text, sha: j.sha };
+  } catch (e) { return null; }
+}
+async function syncPut(path, text) {
+  if (!syncOn() || SYNC.last[path] === text) return true;
+  var body = function () { return JSON.stringify({ message: "dk page: " + path, content: btoa(unescape(encodeURIComponent(text))), sha: SYNC.sha[path] || undefined }); };
+  try {
+    if (!SYNC.sha[path]) await syncGet(path);
+    var r = await syncApi(path, { method: "PUT", body: body() });
+    if (r.status === 409 || r.status === 422) { await syncGet(path); r = await syncApi(path, { method: "PUT", body: body() }); }
+    if (!r.ok) { SYNC.err = "save failed (" + r.status + ")"; syncSumText(); return false; }
+    var j = await r.json(); SYNC.sha[path] = j.content && j.content.sha; SYNC.last[path] = text; SYNC.at = Date.now(); SYNC.err = ""; syncSumText(); return true;
+  } catch (e) { SYNC.err = "offline"; syncSumText(); return false; }
+}
+function syncLater(name, fn, ms) {      // debounced: the latest state goes once things settle
+  if (!syncOn() || !slate) return;
+  clearTimeout(SYNC.timers[name]); var dg = String(slate.draft_group_id);
+  SYNC.timers[name] = setTimeout(function () { if (slate && String(slate.draft_group_id) === dg) fn(); }, ms == null ? 3000 : ms);
+}
+function syncDir() { return "cbb/" + slate.draft_group_id + "/"; }
+function syncMarks() { syncLater("marks", function () {
+  var body = JSON.stringify({ outs: state.outs || {}, ins: state.ins || {}, proj: state.proj || {}, idea: state.idea || "" });
+  if (SYNC.marks === body) return; SYNC.marks = body;
+  syncPut(syncDir() + "marks.json", JSON.stringify({ at: state.syncAt || Date.now(), outs: state.outs || {}, ins: state.ins || {}, proj: state.proj || {}, idea: state.idea || "" })); }); }
+function syncSwap() { syncLater("swap", function () {
+  syncPut(syncDir() + "swap.json", JSON.stringify({ at: SWAP.syncAt = Date.now(), stand: SWAP.stand.map(function (f) { return { name: f.name, text: f.text, at: f.at, contest: f.contest }; }), ent: SWAP.entText || null })); }); }
+function syncMine(lu) { syncLater("mylu", function () { syncPut(syncDir() + "mylu.json", JSON.stringify(lu)); }, 1500); }
+function syncBuild(ms) { syncLater("build", function () {
+  if (!BANK || !BANK.lineups || !BANK.lineups.length) return;
+  syncPut("builds/dk_bank_" + slate.day + "_" + slate.draft_group_id + ".json", JSON.stringify(buildDoc())); }, ms == null ? 60000 : ms); }
+async function syncLog(entry) {         // the swap log, merged across devices (by export time)
+  if (!syncOn() || !slate) return;
+  var path = syncDir() + "swaplog.json", cur = await syncGet(path), log = [];
+  try { log = cur ? JSON.parse(cur.text).log || [] : []; } catch (e) {}
+  if (!log.some(function (x) { return x.exported === entry.exported; })) log.push(entry);
+  syncPut(path, JSON.stringify({ kind: "dk-swap-log", slate: String(slate.draft_group_id), day: slate.day, log: log }));
+}
+async function syncPull() {             // when a slate opens: the newer of each file, this device's or the repo's
+  if (!slate) return;
+  var dg = String(slate.draft_group_id), dir = syncDir(), got = [];
+  var m = await syncGet(dir + "marks.json");
+  if (m && String(slate.draft_group_id) === dg) { try { var mk = JSON.parse(m.text); SYNC.last[dir + "marks.json"] = m.text;
+    if (mk.at > (state.syncAt || 0)) { state.outs = mk.outs || {}; state.ins = mk.ins || {}; state.proj = mk.proj || {}; if (mk.idea != null) state.idea = mk.idea; state.syncAt = mk.at;
+      store(key(), state); applyOuts(); if ($("ideaName")) $("ideaName").value = state.idea || ""; got.push("outs and Proj edits"); } } catch (e) {} }
+  var w = await syncGet(dir + "swap.json");
+  if (w && String(slate.draft_group_id) === dg) { try { var sw = JSON.parse(w.text); SYNC.last[dir + "swap.json"] = w.text;
+    if (sw.at > (SWAP.syncAt || 0) && (sw.stand && sw.stand.length || sw.ent)) { SWAP.stand = sw.stand || []; SWAP.syncAt = sw.at;
+      if (sw.ent) { var pe = DKSwap.parseEntries(sw.ent); if (pe && !pe.error) { SWAP.ent = pe; SWAP.entText = sw.ent; } }
+      renderSwapList(); swapSave(true); swapMine(true); got.push("late swap files"); } } catch (e) {} }
+  SYNC.at = Date.now(); syncSumText();
+  if (got.length) { renderPlayers(); if (view.panel) renderTeamPanel(); $("status").textContent += " · synced: " + got.join(", "); }
+}
+$("syncSaveCfg").addEventListener("click", function () {
+  try { localStorage.setItem("dkcbb:sync", JSON.stringify({ repo: $("syncRepo").value.trim() || "JonBoyBeats/dk-sync", token: $("syncToken").value.trim() })); } catch (e) {}
+  $("syncToken").value = ""; syncSumText(); syncPull();
+});
+(function () { var c = syncCfg(); $("syncRepo").value = c.repo; syncSumText(); })();
+$("syncNow").addEventListener("click", function () { if (!slate) return; syncMarks(); syncSwap(); if (SWAP.ent) swapMine(); syncPull(); });
 /* Kept in this browser (2026-11-23, the owner: re-adding the files after every reload; "not that big of a deal"): the
    standings and the entries file per slate in IndexedDB (big contests' standings outgrow localStorage), restored when the
    slate loads; Clear forgets the standings, Forget files both; a slate's files go after SWAP_KEEP_DAYS. */
@@ -3493,9 +3594,10 @@ function swapDB() {
     q.onsuccess = function () { ok(q.result); }; q.onerror = function () { no(q.error); };
   });
 }
-function swapSave() {
+function swapSave(fromSync) {
   if (!slate) return;
-  var rec = { slate: String(slate.draft_group_id), stand: SWAP.stand.map(function (f) { return { name: f.name, text: f.text, at: f.at, contest: f.contest }; }), ent: SWAP.entText || null, saved: Date.now() };
+  if (!fromSync) { SWAP.syncAt = Date.now(); syncSwap(); }
+  var rec = { slate: String(slate.draft_group_id), stand: SWAP.stand.map(function (f) { return { name: f.name, text: f.text, at: f.at, contest: f.contest }; }), ent: SWAP.entText || null, saved: Date.now(), syncAt: SWAP.syncAt || 0 };
   swapDB().then(function (db) {
     var tx = db.transaction("files", "readwrite"), os = tx.objectStore("files");
     os.put(rec);
@@ -3503,15 +3605,15 @@ function swapSave() {
   }).catch(function () {});
 }
 function swapRestore() {
-  SWAP.stand = []; SWAP.ent = null; SWAP.entText = null; SWAP.res = null; renderSwapList();
+  SWAP.stand = []; SWAP.ent = null; SWAP.entText = null; SWAP.res = null; SWAP.syncAt = 0; renderSwapList();
   if (!slate) return Promise.resolve();
   var dg = String(slate.draft_group_id);
   return swapDB().then(function (db) {
     return new Promise(function (ok) { var q = db.transaction("files").objectStore("files").get(dg); q.onsuccess = function () { ok(q.result); }; q.onerror = function () { ok(null); }; });
   }).then(function (rec) {
     if (!rec || !slate || String(slate.draft_group_id) !== dg) return;
-    SWAP.stand = rec.stand || [];
-    if (rec.ent) { var p = DKSwap.parseEntries(rec.ent); if (p && !p.error) { SWAP.ent = p; SWAP.entText = rec.ent; swapMine(); } }
+    SWAP.stand = rec.stand || []; SWAP.syncAt = rec.syncAt || 0;
+    if (rec.ent) { var p = DKSwap.parseEntries(rec.ent); if (p && !p.error) { SWAP.ent = p; SWAP.entText = rec.ent; swapMine(true); } }
     renderSwapList();
     if (SWAP.stand.length || SWAP.ent) $("swapStatus").textContent = "Restored from this browser: " + SWAP.stand.length + " contest standings" + (SWAP.ent ? " and your entries file (" + SWAP.ent.rows.length + " entries)" : "") + ".";
   }).catch(function () {});

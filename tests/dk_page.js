@@ -2204,6 +2204,35 @@ function audit(name, L, o) {
   check("Swap: a zipped standings file (DraftKings' big contests) is read from inside the zip and added",
         swZip.name === "contest-standings-999999992.csv" && swZip.same === swIn.stand.length, JSON.stringify(swZip));
   await pg.evaluate(() => { SWAP_EXPORT = true; SWAP.stand = []; renderSwapList(); showStep("bank"); });
+  // the sync (2026-11-24): with a token, the page writes the slate's marks, late swap files and lineups to the sync repo
+  // (a fake GitHub here) and, on a slate open, takes the repo's newer marks; without a token it writes nothing
+  const gh = {}, puts = [];
+  await pg.route(/api\.github\.com\/repos\/[^/]+\/[^/]+\/contents\//, r => {
+    const path = decodeURIComponent(r.request().url().split("/contents/")[1].split("?")[0]);
+    if (r.request().method() === "PUT") { const b = JSON.parse(r.request().postData()); gh[path] = { content: b.content, sha: "s" + (puts.length + 1) }; puts.push(path);
+      return r.fulfill({ contentType: "application/json", body: JSON.stringify({ content: { sha: gh[path].sha } }) }); }
+    return gh[path] ? r.fulfill({ contentType: "application/json", body: JSON.stringify({ content: gh[path].content, sha: gh[path].sha }) }) : r.fulfill({ status: 404, body: "{}" });
+  });
+  const sy = await pg.evaluate(async () => {
+    const dg = String(slate.draft_group_id), wait = ms => new Promise(r => setTimeout(r, ms));
+    localStorage.removeItem("dkcbb:sync"); const id0 = rows.find(r => r.status !== "Out").id;
+    state.proj[id0] = 33.3; save(); await wait(3500);
+    const offWrote = Object.keys(SYNC.last).length;
+    localStorage.setItem("dkcbb:sync", JSON.stringify({ repo: "me/dk-sync", token: "t" })); syncSumText();
+    state.proj[id0] = 44.4; save(); swapSave(); await wait(3800);
+    const sum = document.getElementById("syncSum").textContent;
+    return { dg, id0, offWrote, sum };
+  });
+  await pg.waitForTimeout(500);
+  const decode = b64 => Buffer.from(b64, "base64").toString("utf8");
+  const mk = gh["cbb/" + sy.dg + "/marks.json"], swf = gh["cbb/" + sy.dg + "/swap.json"];
+  check("sync: with a token the slate's marks (Proj edits, outs) and late swap files go to the sync repo; without one nothing is written; the box says so",
+        sy.offWrote === 0 && !!mk && JSON.parse(decode(mk.content)).proj[sy.id0] === 44.4 && !!swf && /Sync: on \(me\/dk-sync\)/.test(sy.sum), JSON.stringify([sy, Object.keys(gh)]));
+  // another device's newer marks: a slate open takes them
+  gh["cbb/" + sy.dg + "/marks.json"] = { content: Buffer.from(JSON.stringify({ at: Date.now() + 60000, outs: { [sy.id0]: 1 }, ins: {}, proj: {}, idea: "from phone" })).toString("base64"), sha: "x9" };
+  const pulled = await pg.evaluate(async id0 => { await syncPull(); return { out: !!state.outs[id0], idea: document.getElementById("ideaName").value, status: rows.find(r => r.id === id0).status }; }, sy.id0);
+  check("sync: a newer copy from another device is taken when the slate opens (outs, Proj edits, idea name)", pulled.out && pulled.idea === "from phone" && pulled.status === "Out", JSON.stringify(pulled));
+  await pg.evaluate(id0 => { localStorage.removeItem("dkcbb:sync"); delete state.outs[id0]; state.proj = {}; state.idea = ""; save(); applyOuts(); syncSumText(); }, sy.id0);
   check("no page errors", !errors.length, errors.join("; "));
   await b.close();
   passes.forEach(p => console.log("PASS " + p));
