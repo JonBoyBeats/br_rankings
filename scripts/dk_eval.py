@@ -2789,7 +2789,12 @@ def swaps(a):
     proposed swap scored on the night's box scores: DraftKings points of the player in less the player out, beside the
     expected payout the tool gave it. Accepted swaps are the decisions made; the rest are the tool's advice not taken.
     Appends to swap_grades.csv (a log's rows replace any earlier ones for its slate and export time)."""
-    d = json.load(open(a.log))
+    if a.group:       # the sync repo's merged log (2026-11-24: the DK page writes it; no file to send)
+        import urllib.request
+        url = "https://raw.githubusercontent.com/%s/main/cbb/%s/swaplog.json" % (a.sync_repo, a.group)
+        d = json.loads(urllib.request.urlopen(url, timeout=30).read().decode("utf-8"))
+    else:
+        d = json.load(open(a.log))
     if d.get("kind") != "dk-swap-log":
         sys.exit("not a DK swap log")
     dg, day = str(d["slate"]), d.get("day")
@@ -2847,7 +2852,8 @@ def main():
     pa_ = sub.add_parser("projaudit")
     pa_.add_argument("--mirror", help="the mirror checkout: the shape lens on today's open slates too")
     sub.add_parser("ownaudit")
-    sw = sub.add_parser("swaps"); sw.add_argument("--log", required=True)
+    sw = sub.add_parser("swaps"); sw.add_argument("--log", help="a saved swap log file"); sw.add_argument("--group", help="a draft group: its log from the sync repo")
+    sw.add_argument("--sync-repo", default="JonBoyBeats/dk-sync")
     ow = sub.add_parser("ownwatch")
     ow.add_argument("--mirror", required=True)
     ms = sub.add_parser("misses")
