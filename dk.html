@@ -229,6 +229,10 @@
   .scanblk { border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; margin: 6px 0; font-size: 12px; }
   .scanblk .sr { font-family: var(--mono); font-size: 11.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 2px 0; }
   .scanblk button, table.gstk button, .topreads button { height: 22px; padding: 0 7px; font-size: 11.5px; }
+/* scan floors (2026-11-24): a Min% / Max% the scan set, dashed and tinted; hand entries look as before */
+input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8dff) !important; font-style: italic; }
+.sfwrap { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; } .sfopts { font-size: 11.5px; } .sfopts summary { cursor: pointer; line-height: 22px; } .sfopts input.num { width: 62px; height: 22px; font-size: 11.5px; }
+.sfopts .sfgrid { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 4px; }
   .topreads { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0; align-items: center; }
   .tile.wide { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2px 20px; }
   .tile.wide .th, .tile.wide .scores, .tile.wide .why { grid-column: 1 / -1; }
@@ -982,6 +986,7 @@ function pick(keepMem) {
   ticketTables(slate);
   rows = Object.keys(slate.players).map(function (id) { var r = Object.assign({ id: id }, slate.players[id]); r._status0 = r.status; return r; });
   state = Object.assign({ proj: {}, lock: {}, excl: {}, cap: {}, floor: {}, outs: {}, ins: {}, deepIn: {}, rules: [] }, store(key()) || {});
+  state.scanSet = state.scanSet || { floor: {}, cap: {} }; state.scanSet.floor = state.scanSet.floor || {}; state.scanSet.cap = state.scanSet.cap || {};
   state.outs = state.outs || {}; state.ins = state.ins || {}; state.deepIn = state.deepIn || {};
   zeroApply();
   applyOuts();
@@ -1260,8 +1265,8 @@ function playerTable(list, sortable, fs) {
       (fs ? (function (x) { x = x || {}; return '<span class="m r">' + Math.round(100 * (x.here || 0)) + '%</span><span class="m r">' + Math.round(100 * (x.tonight || 0)) + '%</span><span class="m r"' +
         (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</span>"; })(fs[r.id]) : "") +
       '<span class="col-scan col-pb"><button type="button" class="pbank" title="Bank this: at least 1 of ' + esc(r.name) + ' in your next draw"' + (r.status === "Out" ? " disabled" : "") + ">+</button></span>" +
-      '<span class="col-max"><input class="floor" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + '"></span>' +
-      '<span class="col-max"><input class="cap" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + '"></span>' +
+      '<span class="col-max"><input class="floor' + (byScan("floor", r.id) ? ' byscan" title="Set by scan: ' + esc(byScan("floor", r.id)) : "") + '" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.floor[r.id] != null ? state.floor[r.id] : "") + '" aria-label="Min exposure for ' + esc(r.name) + (byScan("floor", r.id) ? " (set by scan)" : "") + '"></span>' +
+      '<span class="col-max"><input class="cap' + (byScan("cap", r.id) ? ' byscan" title="Set by scan: ' + esc(byScan("cap", r.id)) : "") + '" type="number" min="0" max="100" step="5" placeholder="–" value="' + (state.cap[r.id] != null ? state.cap[r.id] : "") + '" aria-label="Max exposure for ' + esc(r.name) + (byScan("cap", r.id) ? " (set by scan)" : "") + '"></span>' +
       "</div>";
   }).join("");
   return head + (body || '<div class="empty">No players match.</div>');
@@ -1668,7 +1673,7 @@ function renderRules() {
       var r = byId(id);
       if (r) baseOn++;
       if (r) base.push('<div class="rule xrule" data-id="' + esc(id) + '" data-kind="' + k[0] + '"><span class="lab">' + esc(r.name) + ": in " + k[1] + " " +
-        state[k[0]][id] + "% of each draw" + (k[0] === "cap" ? " (and of an auto-filled set)" : "") + '</span><button data-act="rmx">Remove</button></div>');
+        state[k[0]][id] + "% of each draw" + (k[0] === "cap" ? " (and of an auto-filled set)" : "") + (byScan(k[0], id) ? " · set by scan" : "") + '</span><button data-act="rmx">Remove</button></div>');
     });
   });
   $("ruleList").innerHTML = list.length || base.length ?
@@ -1838,6 +1843,7 @@ function tagNow() {         // the draw's idea: the settings off their defaults,
   Object.keys(state.lock).forEach(function (id) { t.push("lock " + name(id)); });
   Object.keys(state.excl).forEach(function (id) { t.push("no " + name(id)); });
   (state.rules || []).forEach(function (x) { if (!x.off && !x.base) t.push(x.label); });
+  if (scanFloorsOn()) t.push("SCANFLOOR");       // drawn under the scan's floors (the shadow lab's experiment b)
   return t.length ? t.join(" + ") : "no rules";
 }
 /* The platoon rules' log, each draw: of the draw's rule-free lineups (the base the rules' pass counts come from), how
@@ -1884,6 +1890,7 @@ function bankAdd(lineups, tag) {
   });
   if (lineups.length) BANK.tagRules[tag] = Object.assign(drawRules(), { z: undefined, lock: Object.keys(state.lock), excl: Object.keys(state.excl),
                                                          floor: Object.assign({}, state.floor), cap: Object.assign({}, state.cap),
+                                                         scan_set: scanFloorsOn() ? JSON.parse(JSON.stringify(state.scanSet)) : undefined,
                                                          bankMax: +$("bankMax").value || null });
   CUT = null; cutSave(); PF = {}; pfSave(); bankSaveState(); renderBank();
   return added;
@@ -3440,7 +3447,7 @@ function renderScan() {
     }).join("") + (levs.length ? '<span class="mut">Leverage:</span>' + levs.map(function (r) {
       return '<button type="button" class="topread read-leverage" data-team="' + esc(r.team) + '" title="Open its game">' + esc(r.key) + " " + sgn(r.g_t1, 2) + "</button>";
     }).join("") : "") + (foc.length >= 2 ? '<button type="button" id="focusBank" title="Adds a draw rule: at least ' + Math.min(3, foc.length) + " of " + esc(foc.map(function (r) { return r.key; }).join(", ")) +
-      ' (one rule, not locks)">Bank: at least ' + Math.min(3, foc.length) + " of these " + foc.length + "</button>" : "") + "</div>";
+      ' (one rule, not locks)">Bank: at least ' + Math.min(3, foc.length) + " of these " + foc.length + "</button>" : "") + scanFloorStrip() + "</div>";
   $("scanTable").innerHTML = strip + '<details id="scanAll"' + (scanAllOpen ? " open" : "") + '><summary>All scan rows</summary><div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each, in the Players list's Top 1% / ROI / Cash / Read columns (Read on their own noise, \u00b1" + (100 * S.pbar).toFixed(2) +
     "; core: strong and field own at or over the players' median " + Math.round(S.pownMedian || 0) + "%, leverage: strong and under it, fade: weak and over, skip: weak and under; a team's Bank this adds at least 2 of its core and leverage players), " : "") + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
     " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
@@ -3470,6 +3477,8 @@ $("scanTable").addEventListener("click", function (e) {
     $("scanStatus").textContent = "The rule editor has at least " + k + " of the scan's " + ids.length + " focus players: change the players or N, then Add rule.";
     showStep("bank"); $("ruleEditor").scrollIntoView({ block: "center" }); return;
   }
+  if (e.target.id === "sfSet") { $("scanStatus").textContent = applyScanFloors(); return; }
+  if (e.target.id === "sfClear") { $("scanStatus").textContent = clearScanFloors(); return; }
   var tr0 = e.target.closest(".topread");
   if (tr0) { view.panel = tr0.dataset.team; view.pside = view.panel; renderTiles(); renderPlayers(); $("teamBar").scrollIntoView({ block: "start" }); return; }
   var b = e.target.closest(".scanBank"); if (b) scanBankApply(b);
@@ -3485,6 +3494,81 @@ function scanBankApply(b) {
   $("scanStatus").textContent = "Added " + r.key + " to the rules: Draw & bank draws under it.";
   showStep("bank"); $("bankDraw").scrollIntoView({ block: "center" });
 }
+
+/* Scan floors (2026-11-24, the operator): one tap sets each scanned player's Min% / Max% from his Read times his field
+   ownership f: core floor SF.core x f, leverage SF.leverage x f, lean core / lean leverage SF.lean x f, fade cap SF.fade
+   x f, skip cap SF.skip x f (even: nothing). Floors at most SF_FLOOR_MAX %, caps at least SF_CAP_MIN %; players under
+   SF_LOW_OWN % owned are skipped unless "include under 2%" is ticked; thin scan rows (too few lineups to read) skipped.
+   The multipliers are editable and remembered (localStorage dkcbb:scanfloor). They are the same Min% / Max% as a hand
+   entry (drawBank's draw-time floors and caps, on every batch until cleared), marked as set by scan (state.scanSet,
+   the value set): a hand entry is never overwritten, a box typed into becomes a hand entry, and Clear floors removes
+   only the marked ones still holding the value the scan set. A draw while any are on is tagged SCANFLOOR. */
+var SF_DEF = { core: 1.1, leverage: 1.75, lean: 1.0, fade: 0.6, skip: 0.4, low: false }, SF_FLOOR_MAX = 60, SF_CAP_MIN = 1, SF_LOW_OWN = 2;
+function sfOpts() {
+  var o = Object.assign({}, SF_DEF);
+  try { var v = JSON.parse(localStorage.getItem("dkcbb:scanfloor") || "null"); if (v) Object.keys(SF_DEF).forEach(function (k) { if (v[k] != null && (k === "low" || isFinite(+v[k]))) o[k] = k === "low" ? !!v[k] : +v[k]; }); } catch (e) {}
+  return o;
+}
+function sfSave(o) { try { localStorage.setItem("dkcbb:scanfloor", JSON.stringify(o)); } catch (e) {} }
+function byScan(kind, id) {           // the note when this box holds the value the scan set, else ""
+  var m = state && state.scanSet && state.scanSet[kind] && state.scanSet[kind][id];
+  return m && state[kind] && state[kind][id] != null && +state[kind][id] === +m.v ? m.note : "";
+}
+function scanFloorsOn() {
+  return !!(state && state.scanSet && ["floor", "cap"].some(function (k) { return Object.keys(state.scanSet[k] || {}).some(function (id) { return byScan(k, id); }); }));
+}
+function scanFloorPlan(o) {           // [{id, kind, v, note}] for every scanned player the rule reaches
+  o = o || sfOpts();
+  var out = [];
+  ((SCAN && SCAN.players) || []).forEach(function (x) {
+    var r = byId(String(x.id)); if (!r || x.thin || !usable(r)) return;
+    var f = own(r); if (!(f > 0) || (f < SF_LOW_OWN && !o.low)) return;
+    var rd = x.read, m = rd === "core" ? o.core : rd === "leverage" ? o.leverage : /^lean /.test(rd) ? o.lean : rd === "fade" ? o.fade : rd === "skip" ? o.skip : null;
+    if (m == null) return;
+    var kind = rd === "fade" || rd === "skip" ? "cap" : "floor", raw = m * f;
+    var v = kind === "floor" ? Math.min(SF_FLOOR_MAX, Math.round(raw)) : Math.max(SF_CAP_MIN, Math.round(raw));
+    if (kind === "floor" && v <= 0) return;
+    out.push({ id: r.id, kind: kind, v: v, note: rd + " " + m + "× field " + f.toFixed(1) + "% = " + raw.toFixed(1) + "%" +
+               (v !== Math.round(raw) ? " (held to " + v + "%)" : "") });
+  });
+  return out;
+}
+function applyScanFloors() {
+  if (!SCAN || !SCAN.players || !SCAN.players.length) return "Scan the slate first: the floors come from its player reads.";
+  if (!fieldOf()) return "No field ownership for this slate yet: the floors are a multiple of it.";
+  clearScanFloors(true);
+  state.scanSet = { floor: {}, cap: {} };
+  var set = { floor: 0, cap: 0 }, kept = 0;
+  scanFloorPlan().forEach(function (p) {
+    if (state[p.kind][p.id] != null && state[p.kind][p.id] !== "") { kept++; return; }      // a hand entry stays
+    state[p.kind][p.id] = p.v; state.scanSet[p.kind][p.id] = { v: p.v, note: p.note }; set[p.kind]++;
+  });
+  save(); renderRules(); renderPlayers(); renderScan();
+  return "Scan floors: " + set.floor + " Min% floor" + (set.floor === 1 ? "" : "s") + " and " + set.cap + " Max% cap" + (set.cap === 1 ? "" : "s") + " set (dashed boxes)" +
+    (kept ? ", " + kept + " hand entr" + (kept === 1 ? "y" : "ies") + " left as typed" : "") + ". Every draw obeys them until Clear floors; draws are tagged SCANFLOOR.";
+}
+function clearScanFloors(quiet) {
+  var n = 0;
+  if (state && state.scanSet) ["floor", "cap"].forEach(function (k) {
+    Object.keys(state.scanSet[k] || {}).forEach(function (id) { if (byScan(k, id)) { delete state[k][id]; n++; } });
+    state.scanSet[k] = {};
+  });
+  if (quiet === true) return "";
+  save(); renderRules(); renderPlayers(); renderScan();
+  return n ? "Cleared " + n + " scan floor" + (n === 1 ? "" : "s") + " and cap" + (n === 1 ? "" : "s") + "; hand entries kept." : "No scan floors to clear.";
+}
+function scanFloorStrip() {
+  var o = sfOpts(), on = scanFloorsOn(), inp = function (k, lab) { return '<label>' + lab + ' <input class="num sfm" data-k="' + k + '" type="number" min="0" step="0.05" value="' + o[k] + '">×</label>'; };
+  return '<span class="sfwrap"><button type="button" id="sfSet" title="Each scanned player\'s Min% / Max% from his Read times his field ownership (the multipliers under Floors); hand entries are left alone">Set floors from scan</button>' +
+    (on ? '<button type="button" id="sfClear" title="Removes only the Min% / Max% the scan set; hand entries stay">Clear floors</button>' : "") +
+    '<details class="sfopts"><summary class="mut">Floors</summary><div class="sfgrid">' + inp("core", "core floor") + inp("leverage", "leverage floor") + inp("lean", "lean floor") +
+    inp("fade", "fade cap") + inp("skip", "skip cap") + '<label><input type="checkbox" class="sfm" data-k="low"' + (o.low ? " checked" : "") + "> include under " + SF_LOW_OWN + "% owned</label>" +
+    '<span class="mut">floors ≤ ' + SF_FLOOR_MAX + "%, caps ≥ " + SF_CAP_MIN + "%, × his field own</span></div></details></span>";
+}
+$("scanTable").addEventListener("change", function (e) {
+  var t = e.target.closest(".sfm"); if (!t) return;
+  var o = sfOpts(); o[t.dataset.k] = t.type === "checkbox" ? t.checked : (t.value === "" ? SF_DEF[t.dataset.k] : Math.max(0, +t.value)); sfSave(o);
+});
 
 nbSet(nbStored());
 
@@ -4784,7 +4868,7 @@ document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
   });
 });
 $("resetProj").addEventListener("click", function () { state.proj = {}; save(); renderPlayers(); });
-$("clearLx").addEventListener("click", function () { state.lock = {}; state.excl = {}; state.cap = {}; state.floor = {}; save(); renderRules(); renderPlayers(); });
+$("clearLx").addEventListener("click", function () { state.lock = {}; state.excl = {}; state.cap = {}; state.floor = {}; state.scanSet = { floor: {}, cap: {} }; save(); renderRules(); renderPlayers(); });
 $("players").addEventListener("click", function (e) {
   var h = e.target.closest("[data-sort]");
   if (h) { var s = h.dataset.sort; view.dir = view.sort === s ? -view.dir : (s === "name" ? 1 : -1); view.sort = s; renderPlayers(); return; }
@@ -4833,6 +4917,7 @@ function rowChange(e) {
     if (isNaN(v) || Math.abs(v - r.fp_dk) < 0.05) delete state.proj[id]; else state.proj[id] = v;
   } else if (e.target.classList.contains("cap") || e.target.classList.contains("floor")) {
     var m = e.target.classList.contains("cap") ? state.cap : state.floor;
+    if (state.scanSet) delete state.scanSet[e.target.classList.contains("cap") ? "cap" : "floor"][id];     // a hand entry now
     var c = e.target.value === "" ? null : Math.max(0, Math.min(100, +e.target.value));
     if (c == null) delete m[id]; else m[id] = c;
     renderRules();
