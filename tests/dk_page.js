@@ -83,6 +83,7 @@ function audit(name, L, o) {
   for (const m of ["click", "fill", "selectOption"]) {       // the page's steps (Bank / Cut / Fill): open the one holding the target first
     const orig = pg[m].bind(pg);
     pg[m] = async (sel, ...a) => { await pg.evaluate(q => { try { const el = document.querySelector(q), sec = el && el.closest("section.step"); if (sec && sec.hidden) showStep(sec.dataset.step);
+      if (el && el.closest("#scanBox") && el.closest("#scanBox").hidden) showStep("bank");          // the slate scan shows on the Bank tab (2026-11-24)
       for (let d = el && el.closest("details"); d; d = d.parentElement && d.parentElement.closest("details")) d.open = true; } catch (e) {} }, sel).catch(() => {}); return orig(sel, ...a); };
   }
   const errors = [];
@@ -2721,6 +2722,15 @@ function audit(name, L, o) {
     return { stand: lines.join("\r\n") + "\r\n", ent, cid: String(c.id), local: d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()), ours, started: ours.filter(started) };
   });
   await pg.evaluate(() => { SWAP_EXPORT = false; showStep("swap"); });      // the read-only checks first; Export on below
+  const sw7 = await pg.evaluate(() => { const sec = document.getElementById("stepSwap"), adv = document.getElementById("swapAdv"), note = sec.querySelector(".note");
+    const inAdv = ["swapNights", "swapAt", "swapChalk"].every(id => adv && adv.contains(document.getElementById(id)));
+    const scanSwap = document.getElementById("scanBox").hidden; showStep("bank"); const scanBank = document.getElementById("scanBox").hidden; showStep("fill"); const scanFill = document.getElementById("scanBox").hidden;
+    showStep("swap");
+    return { advClosed: adv && !adv.open, inAdv, nights: document.getElementById("swapNights").value, at: document.getElementById("swapAt").value, chalk: document.getElementById("swapChalk").value,
+             noteLen: note.textContent.length, tip: /export/i.test(sec.querySelector("h2 [title]") ? sec.querySelector("h2 [title]").title : ""), noLong: !/At a tip:/.test(note.textContent),
+             scanSwap, scanBank, scanFill, keep: ["swapStand", "swapEnt", "swapOnly", "swapSort", "swapRun", "swapLogSave", "swapPackSave", "swapPackLoad"].every(id => !!document.getElementById(id)) }; });
+  check("Swap tab (#7): one short line under Late swap, the how-to in the heading's (i); Nights / As of / Field leans chalk in a closed Advanced fold at their defaults; the slate scan shows on Bank only; the other controls kept",
+        sw7.advClosed && sw7.inAdv && sw7.nights === "1000" && sw7.at === "" && sw7.chalk === "auto" && sw7.noteLen < 140 && sw7.tip && sw7.noLong && sw7.scanSwap && !sw7.scanBank && sw7.scanFill && sw7.keep, JSON.stringify(sw7));
   await pg.setInputFiles("#swapStand", { name: "contest-standings-" + swIn.cid + ".csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
   await pg.setInputFiles("#swapEnt", { name: "DKEntries.csv", mimeType: "text/csv", buffer: Buffer.from(swIn.ent) });
   await pg.fill("#swapAt", swIn.local); await pg.fill("#swapNights", "300");
@@ -2802,13 +2812,13 @@ function audit(name, L, o) {
   check("Swap: the chalk assumption is fitted per contest from its revealed slots (chalk-heavy -> 2, as projected -> 1, too few -> 1), Auto by default",
         swFit.chalk === 2 && swFit.flat === 1 && swFit.few.p === 1 && swFit.few.n === 0 && swFit.auto === "auto", JSON.stringify(swFit));
   // the standings add up, one pick at a time; the same contest picked again replaces its file; the list names them
-  const swList = await pg.evaluate(() => ({ n: SWAP.stand.length, txt: document.getElementById("swapList").textContent }));
+  const swList = await pg.evaluate(() => ({ n: SWAP.stand.length, txt: document.getElementById("swapList").textContent, fold: !!document.querySelector("#swapList details.swl:not([open])"), st: document.getElementById("swapStatus").textContent }));
   await pg.setInputFiles("#swapStand", { name: "contest-standings-999999991.csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
   await pg.setInputFiles("#swapStand", { name: "contest-standings-" + swIn.cid + ".csv", mimeType: "text/csv", buffer: Buffer.from(swIn.stand) });
   await pg.waitForFunction(() => SWAP.stand.length === 2, null, { timeout: 10000 });
   const swList2 = await pg.evaluate(() => ({ n: SWAP.stand.length, txt: document.getElementById("swapList").textContent }));
   check("Swap: standings add up one pick at a time (a contest picked again replaced), the list names each with your entries in it",
-        swList.n === 1 && /Standings loaded \(1\)/.test(swList.txt) && /1 of your entries/.test(swList.txt) && swList2.n === 2 && /Standings loaded \(2\)/.test(swList2.txt) && /not on this slate/.test(swList2.txt),
+        swList.n === 1 && /^1 contest loaded · Clear · Forget files/.test(swList.txt) && swList.fold && !/standings loaded/.test(swList.st) && /1 of your entries/.test(swList.txt) && swList2.n === 2 && /^2 contests loaded/.test(swList2.txt) && /not on this slate/.test(swList2.txt),
         JSON.stringify([swList, swList2]));
   // a big contest's standings come as a .zip: its CSV is read from inside, named as in the zip
   const zipBuf = require("child_process").execSync("python3 -c \"import io,sys,zipfile; b=io.BytesIO(); z=zipfile.ZipFile(b,'w',zipfile.ZIP_DEFLATED); z.writestr('contest-standings-999999992.csv', sys.stdin.read()); z.close(); sys.stdout.buffer.write(b.getvalue())\"", { input: swIn.stand });

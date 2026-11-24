@@ -587,20 +587,19 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
   </div>
   </section>
   <section class="step" id="stepSwap" data-step="swap" hidden>
-  <h2>Late swap</h2>
-  <div class="note">At a tip: each contest's standings (DraftKings: the contest → Export standings; keep the file's name, it carries the
-    contest) and your entries file (Lineups → Edit Entries → download). Players whose games have started stay in their slots; each entry
-    gets the swap(s) that most raise its expected payout in its own contest, your other entries counted in the field. Add each contest's
-    standings (one at a time is fine: they add up). Export DK entries writes one file for every contest, with the swaps you accept. The files are kept in this browser for this slate, so a reload keeps them (Forget files removes them). The live score is taken when you press Propose swaps (ESPN's play-by-play at that moment); the standings give the field's lineups and ownership.</div>
+  <h2>Late swap <span class="mut" style="font-size:12px;font-weight:400;cursor:help" title="At a tip: export each contest's standings from DraftKings (the contest → Export standings; keep the file's name, it carries the contest) and download your entries file (Lineups → Edit Entries). Add them here (one at a time adds up; a zip is read too). The live score is taken when you press Propose swaps. Each entry gets the swaps that most raise its expected payout in its own contest; players already started stay. Export DK entries writes one file with the swaps you accept. The files stay in this browser for the slate (Forget files removes them).">(i)</span></h2>
+  <div class="note">Add each contest's standings and your entries file, then Propose swaps: the live score is taken when you press it.</div>
   <div class="opts">
     <label class="field"><span class="field-label">Contest standings</span><input type="file" id="swapStand" accept=".csv,.zip" multiple style="height:auto"></label>
     <label class="field"><span class="field-label">Entries file</span><input type="file" id="swapEnt" accept=".csv" style="height:auto"></label>
-    <label class="field" title="Simulated nights (1,000: the replay's choice; fewer is quicker and noisier)"><span class="field-label">Nights</span><input class="num" id="swapNights" type="number" min="200" max="5000" step="100" value="1000"></label>
-    <label class="field" title="The decision moment: blank for now, or a time to replay a past tip"><span class="field-label">As of</span><input id="swapAt" type="datetime-local"></label>
-    <label class="field" title="How hard the field leans to the chalk in the slots still hidden: the ownership weights raised to this (1: as projected; 2: chalk-heavy). The other one is run too, and a card shows both answers when they differ (small, top-heavy contests turn on it)"><span class="field-label">Field leans chalk</span><select id="swapChalk"><option value="auto" selected>Auto: fit each contest</option><option value="1">1: as projected</option><option value="2">2: on the chalk</option></select></label>
     <label class="field" title="Run one contest only (quicker on a phone), or all"><span class="field-label">Contest</span><select id="swapOnly" style="width:auto"><option value="">All contests</option></select></label>
     <label class="field"><span class="field-label">Order</span><select id="swapSort" style="width:auto"><option value="ev">Most equity first</option><option value="gain">Biggest gain first</option><option value="run">As run</option></select></label>
     <button type="button" class="primary" id="swapRun">Propose swaps</button>
+    <details id="swapAdv" style="flex-basis:100%"><summary class="mut" style="cursor:pointer;font-size:12px">Advanced</summary><div class="opts" style="padding:4px 0">
+    <label class="field" title="Simulated nights (1,000: the replay's choice; fewer is quicker and noisier)"><span class="field-label">Nights</span><input class="num" id="swapNights" type="number" min="200" max="5000" step="100" value="1000"></label>
+    <label class="field" title="The decision moment: blank for now, or a time to replay a past tip"><span class="field-label">As of</span><input id="swapAt" type="datetime-local"></label>
+    <label class="field" title="How hard the field leans to the chalk in the slots still hidden: the ownership weights raised to this (1: as projected; 2: chalk-heavy). The other one is run too, and a card shows both answers when they differ (small, top-heavy contests turn on it)"><span class="field-label">Field leans chalk</span><select id="swapChalk"><option value="auto" selected>Auto: fit each contest</option><option value="1">1: as projected</option><option value="2">2: on the chalk</option></select></label>
+    </div></details>
   </div>
   <div class="opts" style="padding:0"><button type="button" id="swapLogSave" title="This slate's swap log (what was proposed and what you accepted, no entry IDs), for the morning grading">Save swap log</button>
     <button type="button" id="swapPackSave" title="One file with the standings and entries file loaded here, to open this on your phone (AirDrop, email, Drive); it carries your entry IDs, keep it private">Save swap pack</button>
@@ -2095,6 +2094,7 @@ function renderSteps() {
   document.querySelectorAll("#stepBar button[data-step]").forEach(function (b) { b.innerHTML = label[b.dataset.step]; b.setAttribute("aria-pressed", String(b.dataset.step === st)); });
   document.querySelectorAll("section.step").forEach(function (x) { x.hidden = x.dataset.step !== st; });
   if (typeof placePlayers === "function" && $("playersSec")) placePlayers();
+  if ($("scanBox")) $("scanBox").hidden = !(st === "bank" || st == null);      // the slate scan: for drawing, so not on Cut / Fill / Swap / Quick sim
   if (typeof cutView === "function" && rows && rows.length && $("players") && $("players").classList.contains("cutcols") !== cutView()) renderPlayers();
   if (st === "fill" && typeof nbFit === "function") nbFit();
 }
@@ -4604,21 +4604,22 @@ function renderSwapList() {
   if ($("swapOnly")) swapOnlyFill();
   var el = $("swapList"); if (!el) return;
   if (!SWAP.stand.length) { el.innerHTML = ""; return; }
-  el.innerHTML = "<b>Standings loaded (" + SWAP.stand.length + "):</b> " + SWAP.stand.map(function (f) {
+  el.innerHTML = "<b>" + SWAP.stand.length + " contest" + (SWAP.stand.length === 1 ? "" : "s") + " loaded</b>" +
+    ' · <button type="button" id="swapClear" style="height:22px;padding:0 8px;font-size:11px">Clear</button>' +
+    ' · <button type="button" id="swapForget" style="height:22px;padding:0 8px;font-size:11px" title="Forget the standings and the entries file kept in this browser for this slate">Forget files</button>' +
+    (SWAP.ent ? "" : ' <span class="muted">· add your entries file</span>') + '<details class="swl"><summary class="mut" style="cursor:pointer;font-size:12px">which</summary>' + SWAP.stand.map(function (f) {
     var cid = swapCid(f.name), c = slate && (slate.contests || []).find(function (x) { return String(x.id) === cid; });
     var n = SWAP.ent ? SWAP.ent.rows.filter(function (r) { return r.contestId === cid; }).length : null;
     return esc(c ? c.name : f.name) + " <span class=\"muted\">(" + esc(cid) + (c ? "" : ", not on this slate") + (n != null ? ", " + n + " of your entries" : "") +
       ", added " + new Date(f.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + ")</span>";
-  }).join(" · ") + ' <button type="button" id="swapClear" style="height:22px;padding:0 8px;font-size:11px">Clear</button>' +
-    ' <button type="button" id="swapForget" style="height:22px;padding:0 8px;font-size:11px" title="Forget the standings and the entries file kept in this browser for this slate">Forget files</button>' +
-    (SWAP.ent ? "" : ' <span class="muted">Add your entries file to check every contest has your entries.</span>');
+  }).map(function (x) { return "<div>" + x + "</div>"; }).join("") + "</details>";
 }
 $("swapStand").addEventListener("change", function (e) { var inp = e.target; swapFiles(inp).then(function (f) {
   f.forEach(function (x) { x.at = Date.now(); var c0 = slate && (slate.contests || []).find(function (c) { return String(c.id) === swapCid(x.name); }); if (c0) x.contest = c0.name;
     var cid = swapCid(x.name), i = SWAP.stand.findIndex(function (y) { return swapCid(y.name) === cid; });
     if (i >= 0) SWAP.stand[i] = x; else SWAP.stand.push(x); });
   inp.value = ""; renderSwapList(); swapSave();
-  $("swapStatus").textContent = SWAP.stand.length + " contest standings loaded."; }, function (err) { inp.value = ""; $("swapStatus").innerHTML = '<span class="bad">' + esc(err.message) + "</span>"; }); });
+  $("swapStatus").textContent = ""; }, function (err) { inp.value = ""; $("swapStatus").innerHTML = '<span class="bad">' + esc(err.message) + "</span>"; }); });
 document.addEventListener("click", function (e) {
   if (e.target && e.target.id === "swapClear") { SWAP.stand = []; renderSwapList(); swapSave(); $("swapStatus").textContent = "Standings cleared."; }
   if (e.target && e.target.id === "swapForget") { SWAP.stand = []; SWAP.ent = null; SWAP.entText = null; renderSwapList(); swapSave(); $("swapStatus").textContent = "Standings and entries file forgotten in this browser."; }
