@@ -228,6 +228,8 @@
 #ideaTable tr > :first-child, #cutSharesTable tr > :first-child { position: sticky; left: 0; background: var(--bg); z-index: 1; }     /* the name stays put as the wide tables scroll */
 tr.fc-light { cursor: pointer; } tr.fc-heavy { cursor: pointer; } .fcf-light { color: var(--bad); font-weight: 600; } .fcf-heavy { color: #4c8dff; font-weight: 600; }
 .fcscope { font-size: 11.5px; margin: 4px 0; } .fcscope button { height: 22px; padding: 0 8px; font-size: 11.5px; }
+.row .col-cut .ar { font-size: 9px; margin-left: 1px; } .row .col-down.up { color: var(--live); } .row .col-down.dn { color: var(--bad); }
+#players.cutcols .head span[data-sort="cut"] { color: var(--ink); font-weight: 700; }
 .ck { display: inline-block; min-width: 26px; margin-right: 5px; padding: 0 4px; border-radius: 4px; font: 600 11px var(--mono); text-align: center; border: 1px solid var(--line); color: var(--muted); vertical-align: 1px; }
 .ck.ck-g { background: rgba(46,170,96,.85); border-color: rgba(46,170,96,.9); color: #fff; } .ck.ck-l { background: rgba(46,170,96,.28); border-color: rgba(46,170,96,.5); color: var(--ink); }
 .ck.ck-x { opacity: .55; text-decoration: line-through; }
@@ -390,7 +392,7 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
         <label class="field"><span class="field-label">Sync repo</span><input id="syncRepo" type="text" value="JonBoyBeats/dk-sync" style="width:190px"></label>
         <label class="field"><span class="field-label">GitHub token (this device only)</span><input id="syncToken" type="password" autocomplete="off" placeholder="github_pat_…" style="width:220px"></label>
         <button type="button" id="syncSaveCfg">Save</button><button type="button" id="syncNow">Sync now</button></div></details>
-    <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="false">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button><button type="button" data-step="swap" aria-pressed="false">Swap</button><button type="button" data-step="quick" aria-pressed="false">Quick sim</button></div>
+    <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="false">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button><button type="button" data-step="swap" aria-pressed="false">Swap</button><button type="button" data-step="quick" aria-pressed="false">Quick <span class="st">sim</span></button></div>
   </div>
 
   <div class="status" id="cutStatus"></div>
@@ -1090,10 +1092,15 @@ function renderPlayers() {
     return true;
   });
   $("qOnly").textContent = "Q (" + rows.filter(isQ).length + ")";
-  var fs = fillStats();
+  var fs = fillStats(), cv = cutView();
   $("players").classList.toggle("fillcols", !!fs);
+  $("players").classList.toggle("cutcols", cv);
   $("players").classList.toggle("noscan", !rows.some(function (r) { return !!scanRowOf(r.id); }));   // no player scan yet: its columns hidden
-  $("players").innerHTML = playerTable(sortList(list), true, fs);
+  if (cv) {        // the Cut tab (2026-11-24): its own sort (Cut, high to low, by default), the Bank tab's left alone
+    var s0 = view.sort, d0 = view.dir; view.sort = view.cutSort || "cut"; view.dir = view.cutDir || -1; PT_CUT = true;
+    try { $("players").innerHTML = playerTable(sortList(list), true, null); } finally { view.sort = s0; view.dir = d0; PT_CUT = false; }
+    cutGrid();
+  } else $("players").innerHTML = playerTable(sortList(list), true, fs);
   renderTeamPanel();
 }
 var ckSort = {};
@@ -1106,6 +1113,10 @@ function sortList(list) {
               sroi: function (r) { var x = scanRowOf(r.id); return x && x.g_roi != null ? x.g_roi : -Infinity; },
               scash: function (r) { var x = scanRowOf(r.id); return x ? x.g_cash : -Infinity; },
               bank: function (r) { var bb = view.bankBase ? baseBank() : null; return (bb ? bb.share : bankShare())[r.id] || 0; },
+              cut: function (r) { return cutKeptShare()[r.id] || 0; },
+              down: function (r) { return 100 * (cutKeptShare()[r.id] || 0) - own(r); },
+              minp: function (r) { return state.floor[r.id] != null && state.floor[r.id] !== "" ? +state.floor[r.id] : -1; },
+              maxp: function (r) { return state.cap[r.id] != null && state.cap[r.id] !== "" ? +state.cap[r.id] : 101; },
               checks: function (r) { var c = ckSort[r.id]; return (c ? c.hit : 0) * 1000 + proj(r); },
               here: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].here : 0; },
               tonight: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].tonight : 0; },
@@ -1220,13 +1231,14 @@ function bankShare() {
 function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's checks (checksMap)
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"], ["bank", view.bankBase ? "Base" : "Bank", "r col-bank"],
-     ["min", "Min", "r col-min"], ["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
+].concat(PT_CUT ? [["cut", "Cut", "r col-cut"], ["down", "\u0394 own", "r col-down"]] : [["min", "Min", "r col-min"]]).concat([["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]]).concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") +
                                           (c[0] === "bank" ? '<button type="button" class="bbtog" aria-pressed="' + !!view.bankBase + '" title="Bank % from the whole bank or the base bank only (the checks\' base)">' + (view.bankBase ? "base" : "all") + "</button>" : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
     '<span class="col-scan col-pb" title="Bank this: a rule, at least 1 of him, for your next draw"></span>' +
+    (PT_CUT ? '<span class="r col-max" data-sort="minp">Min%' + (view.sort === "minp" ? (view.dir < 0 ? " ↓" : " ↑") : "") + '</span><span class="r col-max" data-sort="maxp">Max%' + (view.sort === "maxp" ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span></div>" :
     '<span class="r col-max" title="In at least this % of each draw\'s lineups (a baseline: listed in the rules\' Baseline block)">Min%</span>' +
-    '<span class="r col-max" title="In at most this % of each draw\'s lineups, and of a contest\'s set when the builder auto-fills (a baseline: listed in the rules\' Baseline block)">Max%</span></div>';
+    '<span class="r col-max" title="In at most this % of each draw\'s lineups, and of a contest\'s set when the builder auto-fills (a baseline: listed in the rules\' Baseline block)">Max%</span></div>');
   var bshare = bankShare();
   var body = list.map(function (r) {
     var nw = newsOf(r.id);
@@ -1289,7 +1301,7 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
         var bb = view.bankBase && hasB ? baseBank() : null, shown = bb ? bb.share[r.id] || 0 : bs;        // the column's base option (2026-11-24): display only
         return '<span class="m r col-bank"' + (hasB ? ' title="' + esc((bb ? "In " + Math.round(100 * shown) + "% of the base bank (" + bb.n + " lineups)" : view.bankBase ? "No base yet: in " + Math.round(100 * bs) + "% of the whole bank" : "In " + Math.round(100 * bs) + "% of the bank") +
           " vs " + Math.round(own(r)) + "% field" + (gp2 ? " · " + gp2.tip : "")) + '"' : "") + ">" + (hasB ? Math.round(100 * shown) + "%" : "–") + "</span>"; })() +
-      '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
+      (PT_CUT ? cutCells(r, bs0(r)) : '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>") +
       // MPG (2026-11-20): his season minutes a game played, beside our minutes projection; the hover his last 5 and their spread
       '<span class="m r mut col-mpg"' + (r.min_avg != null ? ' title="' + esc("Season " + r.min_avg.toFixed(1) + " min a game played" + (r.min_last5 && r.min_last5.length ? "; last " + r.min_last5.length + ": " +
         r.min_last5.map(function (m) { return Math.round(m); }).join(", ") : "") + (r.min_cv != null ? "; minutes CV " + r.min_cv.toFixed(2) : "")) + '"' : "") + ">" + (r.min_avg != null ? r.min_avg.toFixed(0) : "–") + "</span>" +
@@ -2067,11 +2079,12 @@ function renderSteps() {
   var label = { bank: "Bank <span class=\"st\">" + nb.toLocaleString() + "</span>",
                 cut: "Cut <span class=\"st\">" + (CUT && CUT.keep ? CUT.keep.length.toLocaleString() + " kept" : "–") + "</span>",
                 fill: "Fill <span class=\"st\">" + (ent ? picked + "/" + ent : "–") + "</span>",
-                quick: "Quick sim",
+                quick: "Quick <span class=\"st\">sim</span>",
                 swap: "Swap <span class=\"st\">" + (typeof SWAP !== "undefined" && SWAP.res ? SWAP.res.filter(function (p) { return p.steps.length; }).length : "–") + "</span>" };
   document.querySelectorAll("#stepBar button[data-step]").forEach(function (b) { b.innerHTML = label[b.dataset.step]; b.setAttribute("aria-pressed", String(b.dataset.step === st)); });
   document.querySelectorAll("section.step").forEach(function (x) { x.hidden = x.dataset.step !== st; });
   if (typeof placePlayers === "function" && $("playersSec")) placePlayers();
+  if (typeof cutView === "function" && rows && rows.length && $("players") && $("players").classList.contains("cutcols") !== cutView()) renderPlayers();
   if (st === "fill" && typeof nbFit === "function") nbFit();
 }
 function renderBank() {
@@ -4018,6 +4031,38 @@ function bankRemove(P) {
     (CUT && CUT.keep ? ". The cut is stale: Re-sim & cut again." : ".");
 }
 
+/* The Cut tab's Players list (2026-11-24, the operator): while the Cut step is open the full list shows Own (field),
+   Bank (the whole bank) and Cut (each player's share of the kept lineups, with a small ▲ / ▼ when it differs from his
+   Bank share by 5+ points), and Δ own = Cut - Own in points (green above, red below); the projected Min column goes,
+   Min% and Max% sort too, and the list sorts by Cut, high to low, by default (its own sort: the Bank tab's is kept).
+   The grid is set from the columns shown, so everything fits; on a phone the name stays put as it scrolls. */
+var PT_CUT = false, cutShareMemo = null;
+function cutView() { return !!(stepNow() === "cut" && !fillMode() && CUT && CUT.keep && CUT.keep.length); }
+function cutKeptShare() {
+  if (!CUT || !CUT.keep) return {};
+  if (cutShareMemo && cutShareMemo.keep === CUT.keep && cutShareMemo.n === CUT.keep.length && cutShareMemo.bank === BANK) return cutShareMemo.v;
+  var v = {}, n = CUT.keep.length;
+  CUT.keep.forEach(function (bi) { var L = BANK.lineups[bi]; if (L) L.ids.forEach(function (id) { v[id] = (v[id] || 0) + 1 / n; }); });
+  cutShareMemo = { keep: CUT.keep, n: n, bank: BANK, v: v };
+  return v;
+}
+function bs0(r) { return BANK && BANK.lineups && BANK.lineups.length ? bankShare()[r.id] || 0 : 0; }
+function cutCells(r, bs) {
+  var c = cutKeptShare()[r.id] || 0, d = Math.round(100 * c - own(r)), gap = c - bs;
+  return '<span class="m r col-cut" title="' + esc("In " + Math.round(100 * c) + "% of the kept lineups vs " + Math.round(100 * bs) + "% of the bank") + '">' + Math.round(100 * c) + "%" +
+    (Math.abs(gap) >= 0.05 ? '<span class="ar">' + (gap > 0 ? "▲" : "▼") + "</span>" : "") + "</span>" +
+    '<span class="m r col-down ' + (d > 0 ? "up" : d < 0 ? "dn" : "") + '" title="Cut ' + Math.round(100 * c) + "% less field own " + Math.round(own(r)) + '%">' + (d > 0 ? "+" : "") + d + "</span>";
+}
+function cutGrid() {         // the grid from the columns the Cut tab shows (the CSS templates are for the Bank / Fill lists)
+  var phone = window.matchMedia && window.matchMedia("(max-width: 620px)").matches, scan = !$("players").classList.contains("noscan");
+  var w = phone ? ["88px", "160px", "44px", "52px", "36px", "34px", "44px", "42px", "38px", "32px", "36px", "34px"] :
+                  ["120px", "minmax(150px, 200px)", "28px", "40px", "44px", "42px", "50px", "36px", "34px", "44px", "42px", "38px", "32px", "36px", "34px"];
+  // desktop: L/X, name, pos, team, opp, sal, proj, val, own, bank, cut, Δ own, mpg, obpr, dk avg; phone: pos / team / opp go last
+  var cols = w.concat(scan ? ["66px", "24px"] : []).concat(["40px", "40px"]).concat(phone ? ["28px", "40px", "44px"] : []);
+  var t = cols.join(" ");
+  $("players").querySelectorAll(".head, .row").forEach(function (e) { e.style.gridTemplateColumns = t; });
+}
+
 nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
@@ -5340,6 +5385,7 @@ $("clearLx").addEventListener("click", function () { state.lock = {}; state.excl
 $("players").addEventListener("click", function (e) {
   if (e.target.closest(".bbtog")) { view.bankBase = !view.bankBase; renderPlayers(); return; }
   var h = e.target.closest("[data-sort]");
+  if (h && cutView()) { var cs0 = h.dataset.sort; view.cutDir = (view.cutSort || "cut") === cs0 ? -(view.cutDir || -1) : (cs0 === "name" ? 1 : -1); view.cutSort = cs0; renderPlayers(); return; }
   if (h) { var s = h.dataset.sort; view.dir = view.sort === s ? -view.dir : (s === "name" ? 1 : -1); view.sort = s; renderPlayers(); return; }
   rowClick(e);
 });

@@ -2406,6 +2406,31 @@ function audit(name, L, o) {
         fc.scope.night === fc.scope.want[0] && fc.scope.contest === fc.scope.want[1] && fc.scope.saved === "contest", JSON.stringify(fc.scope));
   check("fill against the cut: a light idea row opens Swap one in on that idea's kept lineups, the swap-out the weakest entry of the heaviest idea, every swap within the caps (or one line saying what blocks); Apply moves the table",
         !!fc.swap && (fc.swap.n > 0 ? fc.swap.weakOk && fc.swap.inOk && fc.swap.capsOk && fc.swap.applied : /^.*(Nothing fits: |Nothing to swap)/.test(fc.swap.msg)), JSON.stringify(fc.swap));
+  // the Cut tab's Players list (2026-11-24): Own / Bank / Cut (▲▼ at 5+ points off Bank) / Δ own, no Min, every column sorts, Cut high to low by default; the Bank tab's list untouched
+  const ctl = await pg.evaluate(() => {
+    const step0 = stepNow(), cs0 = view.cutSort, cd0 = view.cutDir; delete view.cutSort; delete view.cutDir;
+    showStep("bank"); renderPlayers(); const bankHeads = [...document.querySelectorAll("#players .head span[data-sort]")].map(x => x.firstChild.textContent.replace(/ [↓↑]$/, ""));
+    showStep("cut"); const p = document.getElementById("players");
+    const heads = [...p.querySelectorAll(".head span[data-sort]")].map(x => x.firstChild.textContent.replace(/ [↓↑]$/, "")), kc = cutKeptShare(), bk = bankShare();
+    const rowsC = [...p.querySelectorAll(".row")].map(e => byId(e.dataset.id)).filter(r => r.status !== "Out");
+    const sorted = rowsC.every((r, i) => i === 0 || (kc[rowsC[i - 1].id] || 0) >= (kc[r.id] || 0) - 1e-12);
+    const cellsOk = [...p.querySelectorAll(".row")].slice(0, 40).every(e => { const r = byId(e.dataset.id), c = kc[r.id] || 0, d = Math.round(100 * c - own(r)), cut = e.querySelector(".col-cut"), dn = e.querySelector(".col-down");
+      const arrow = Math.abs(c - (bk[r.id] || 0)) >= 0.05 ? (c > (bk[r.id] || 0) ? "▲" : "▼") : "";
+      return cut.textContent === Math.round(100 * c) + "%" + arrow && dn.textContent === (d > 0 ? "+" : "") + d && dn.classList.contains("up") === (d > 0) && dn.classList.contains("dn") === (d < 0) && !e.querySelector(".col-min"); });
+    const arrows = [...p.querySelectorAll(".row .col-cut .ar")].length;
+    p.querySelector('.head [data-sort="down"]').click();
+    const dsorted = (() => { const r2 = [...p.querySelectorAll(".row")].map(e => byId(e.dataset.id)).filter(r => r.status !== "Out"); return r2.every((r, i) => i === 0 || 100 * (kc[r2[i - 1].id] || 0) - own(r2[i - 1]) >= 100 * (kc[r.id] || 0) - own(r) - 1e-9); })();
+    p.querySelector('.head [data-sort="maxp"]').click(); const maxSorts = view.cutSort === "maxp";
+    const bankSort = view.sort;
+    const fits = [...p.querySelectorAll(".row")][0].getBoundingClientRect().width <= p.getBoundingClientRect().width + 1 || getComputedStyle(p).overflowX === "auto";
+    view.cutSort = cs0; view.cutDir = cd0; if (cs0 == null) delete view.cutSort; if (cd0 == null) delete view.cutDir;
+    showStep("bank"); const bankAfter = [...document.querySelectorAll("#players .head span[data-sort]")].map(x => x.firstChild.textContent.replace(/ [↓↑]$/, ""));
+    showStep(step0); renderPlayers();
+    return { bankHeads, heads, sorted, cellsOk, arrows, dsorted, maxSorts, bankSort, bankAfter, fits };
+  });
+  check("Cut tab Players list: Own, Bank, Cut (▲/▼ at 5+ points off Bank), Δ own (green / red), no Min; Cut high to low by default; Δ own and Min% / Max% sort; the Bank tab's list unchanged",
+        ctl.heads.join("|") === "Player|Pos|Team|Opp|Sal|Proj|Val|Own|Bank|Cut|Δ own|MPG|OBPR|DK avg|Cash|Read|Min%|Max%" && ctl.sorted && ctl.cellsOk && ctl.dsorted && ctl.maxSorts &&
+        ctl.bankHeads.includes("Min") && !ctl.bankHeads.includes("Cut") && JSON.stringify(ctl.bankHeads) === JSON.stringify(ctl.bankAfter) && ctl.fits, JSON.stringify(ctl));
   // remove part of the bank (2026-11-24): an idea's Remove / a fold's Remove ticked; a lineup goes only when all its tags go; entries and the cut remapped, the cut stale
   dialogs = [];
   const rmv = await pg.evaluate(() => {
