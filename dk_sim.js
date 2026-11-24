@@ -495,9 +495,11 @@
       }
       total /= M;
     }
-    // what lineup k adds: expected payout with it minus without, and the coverage it adds
-    function score(k) {
-      var v = 0, g1 = 0, gc = 0, base = k * S;
+    // what lineup k adds: expected payout with it minus without, and the coverage it adds; with ext (a mask by night,
+    // the same nights across contests: the flagships' joint top 1%, 2026-11-24) also the nights it reaches this
+    // contest's top 1% that ext doesn't cover
+    function score(k, ext) {
+      var v = 0, g1 = 0, gc = 0, gj = 0, base = k * S;
       for (var a = 0; a < M; a++) {
         var s = nights[a], me = cs[base + s], mine = 0, delta = 0, off = a * P;
         for (var i = 0; i < P; i++) { if (ps[off + i] > me) mine++; else delta += dp[off + i]; }
@@ -505,8 +507,9 @@
         v += payAt(pl, tie[k]) + delta;
         if (!cov1[a] && q <= T1) g1++;
         if (!covC[a] && q <= paid) gc++;
+        if (ext && !ext[a] && q <= T1) gj++;
       }
-      return { value: v / M, top1: g1 / M, cash: gc / M };
+      return { value: v / M, top1: g1 / M, cash: gc / M, joint: gj / M };
     }
     function alone(k) {             // its expected payout by itself (no other lineup of ours in the contest)
       var v = 0, base = k * S;
@@ -533,7 +536,8 @@
              add: function (k) { if (picked.indexOf(k) < 0) { picked.push(k); refresh(); } },
              remove: function (k) { var i = picked.indexOf(k); if (i >= 0) { picked.splice(i, 1); refresh(); } },
              set: function (ks) { picked.length = 0; ks.forEach(function (k) { picked.push(k); }); refresh(); },
-             score: score, alone: alone, lineupStats: lineupStats, coverage: coverage, total: function () { return total; } };
+             score: score, alone: alone, lineupStats: lineupStats, coverage: coverage, total: function () { return total; },
+             cover1: function () { return cov1; } };
   }
 
   // The 20-pick: N times, add the lineup that raises the set's expected payout most given those already picked
@@ -657,6 +661,52 @@
       }
     });
     return { chosen: b.picked.slice(), builder: b };
+  }
+
+  /* The flagships' joint coverage (2026-11-24, contest profiles): the flagship contests' lineups chosen together,
+     greedily by the added share of nights on which at least one of them reaches the top 1% of its own contest, added
+     expected payout breaking ties. sims[c]: contest c's sim over the same candidates on the SAME nights (one seed: a
+     night is the same slate everywhere; simulate draws every player in a fixed order). Caps per contest as pick's
+     (Max exposure and his Max%, Min unique, Max core); o.room: each player's night room in entries (absent: no night
+     cap); o.uses / o.maxUse: a lineup's contests so far and the most it may go in; o.pairLimit / o.pairCount: the
+     night's pair cap. {into: [[cand index]] per contest, builders, covered: the joint mask by night}. */
+  function pickJoint(ctx, o, cand, sims, contests, ns) {
+    var st = ctx.state, C = contests.length, bs = sims.map(function (sm, c) { return builder(sm, contests[c]); }), M = sims[0].S;
+    var coreOf = o.maxCore ? cores(ctx, cand) : null, into = [], count = [], coreN = [], limit = [], coreLim = [];
+    var room = o.room ? Object.assign({}, o.room) : null, uses = Object.assign({}, o.uses || {}), covered = new Uint8Array(M);
+    var pairsOf = o.pairLimit ? cand.map(function (L) { return pairs(L.ids); }) : null;
+    for (var c0 = 0; c0 < C; c0++) {
+      into.push([]); count.push({}); coreN.push({}); coreLim.push(coreLimit(o, ns[c0]));
+      var lim = {};
+      ctx.rows.forEach(function (r) {
+        var cap = Math.min(Math.max(o.maxExpo, 1 / ns[c0]), st.cap[r.id] != null && st.cap[r.id] !== "" ? +st.cap[r.id] / 100 : 1);
+        lim[r.id] = st.lock[r.id] ? ns[c0] : expoLimit(cap, ns[c0]);
+      });
+      limit.push(lim);
+    }
+    for (;;) {
+      var best = null, bestV = -Infinity;
+      for (var c = 0; c < C; c++) {
+        if (into[c].length >= ns[c]) continue;
+        for (var k = 0; k < cand.length; k++) {
+          if (into[c].indexOf(k) >= 0 || (o.maxUse && (uses[k] || 0) >= o.maxUse) || !fits(cand, into[c], k, count[c], limit[c], o.minUnique) ||
+              (coreOf && (coreN[c][coreOf[k]] || 0) + 1 > coreLim[c]) ||
+              (room && cand[k].ids.some(function (id) { return room[id] != null && !st.lock[id] && room[id] < 1; })) ||
+              (pairsOf && pairsOf[k].some(function (pk) { return (o.pairCount[pk] || 0) + 1 > o.pairLimit; }))) continue;
+          var sc = bs[c].score(k, covered), v = sc.joint * 1e9 + sc.value;
+          if (v > bestV) { bestV = v; best = [c, k]; }
+        }
+      }
+      if (!best) break;
+      var bc = best[0], bk = best[1];
+      into[bc].push(bk); bs[bc].add(bk); uses[bk] = (uses[bk] || 0) + 1;
+      cand[bk].ids.forEach(function (id) { count[bc][id] = (count[bc][id] || 0) + 1; if (room && room[id] != null) room[id]--; });
+      if (coreOf) coreN[bc][coreOf[bk]] = (coreN[bc][coreOf[bk]] || 0) + 1;
+      if (pairsOf) pairsOf[bk].forEach(function (pk) { o.pairCount[pk] = (o.pairCount[pk] || 0) + 1; });
+      var cv = bs[bc].cover1();
+      for (var a = 0; a < M; a++) if (cv[a]) covered[a] = 1;
+    }
+    return { into: into, builders: bs, covered: covered };
   }
 
   // whether lineup k can join the picks: no player past his cap, and Min unique against each picked lineup
@@ -944,7 +994,7 @@
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
            gatedProj: gatedProj, seeded: seeded, fitMinutes: fitMinutes, usable: usable, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, expoLimit: expoLimit, lateSlots: lateSlots, variants: variants, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
-           pool: pool, poolDraw: poolDraw, simPick: simPick, rulesFor: rulesFor, passes: passes, underRules: underRules,
+           pool: pool, poolDraw: poolDraw, simPick: simPick, pickJoint: pickJoint, rulesFor: rulesFor, passes: passes, underRules: underRules,
            CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
            CAND_UNIQUE: CAND_UNIQUE, CAND_RAND: CAND_RAND };
 });

@@ -1188,8 +1188,8 @@ function audit(name, L, o) {
   check("portfolios: one per contest, from the final pool", Object.keys(size).every(c => pf[c] && pf[c].length >= 1 && pf[c].length <= size[c] && pf[c].every(i => cut.keep.includes(i)) &&
         new Set(pf[c]).size === pf[c].length), JSON.stringify(pf));
   const pfAll = Object.values(pf).flat();
-  check("portfolios: each lineup in one contest only, the largest stake first", new Set(pfAll).size === pfAll.length &&
-        /the largest stake first: CBB \$6K Pull Up Jumper/.test(pmsg), pmsg);
+  check("portfolios: each lineup in one contest only, the flagship first (its profile named)", new Set(pfAll).size === pfAll.length &&
+        /the flagships first \(together\), then the main contests, then the rest by stake: CBB \$6K Pull Up Jumper \[\$2K to 1st\] \[Flagship \(top-1% coverage\)\]: 1 of 1, top 1% \d+\.\d%, P\(1st\) \d+\.\d% \(at 2 \/ 3 \/ 4: .+; the flagships together: one of them in its top 1% on \d+\.\d% of nights/.test(pmsg), pmsg);
   check("portfolios: each fills its entries, or says what stops it", Object.keys(size).every(c => pf[c].length === size[c]) || /short: .* stops it|runs out/.test(pmsg), pmsg);
   // a short set completes itself by relaxing one cap a step (C4) and says so: the audit holds it to what it reports
   const rxExpo = /Max exposure relaxed to 70%/.test(pmsg) ? 0.7 : 0.6, rxCore = /Max core relaxed to 25%/.test(pmsg) ? 0.25 : /Max core relaxed to 20%/.test(pmsg) ? 0.2 : 0.15;
@@ -1460,6 +1460,100 @@ function audit(name, L, o) {
   check("fill: the Under-exposed list (players, team stacks, pairs held 15+ points under their share of the top tenth by sim value)", und.has && und.ok && und.shown, JSON.stringify(und));
   await pg.fill("#maxExpo", "60"); await pg.fill("#maxNight", "40");
   await pg.fill("#maxNight", "60");
+  // contest profiles (2026-11-24): each contest recognised by name and size, overridable per slate, filled for its job
+  const pr0 = await pg.evaluate(() => {
+    const by = id => slate.contests.find(c => String(c.id) === id), late = (size, name) => profileAuto({ name: name || "CBB Late Add", size });
+    const kotb = slate.contests.find(c => /King of the Bracket Qualifier/.test(c.name) && c.size >= 10);
+    return { puj: profileOf(by("197791872")), and1: profileOf(by("197791874")), qj: profileOf(by("197791875")), dime: profileOf(by("197873654")),
+             q: profileOf(kotb), ticket: !!kotb.ticket && JSON.stringify(kotb.payouts) === JSON.stringify([[1, 1, kotb.prizes]]),
+             late: [late(50), late(300), late(1000)], du: profileOf(slate.contests.find(c => c.name === "CBB $5 Double Up" && c.size === 46)) };
+  });
+  check("profiles: recognised by name (Pull Up Jumper flagship, And-One and Quarter Jukebox the main block, Dime Time the lab, qualifiers / satellites max ROI on a ticket table) and a late add by size (<100 qualifier, 100-800 flagship, 800+ main)",
+        pr0.puj === "flagship" && pr0.and1 === "main" && pr0.qj === "main" && pr0.dime === "lab" && pr0.q === "qualifier" && pr0.ticket &&
+        JSON.stringify(pr0.late) === JSON.stringify(["qualifier", "flagship", "main"]) && pr0.du === "qualifier", JSON.stringify(pr0));
+  const pr1 = await pg.evaluate(() => {
+    renderProfiles();
+    const rowsP = [...document.querySelectorAll("#profList .prow")].map(r => r.dataset.cid), sel = document.querySelector('#profList select[data-cid="197791874"]');
+    const first = rowsP[0], sum = $("profSum").textContent, stat = (document.querySelector('#profList .prow[data-cid="197791872"] .pstat') || {}).textContent || "", joint = ($("profJoint") || {}).textContent || "";
+    sel.value = "qualifier"; sel.dispatchEvent(new Event("change", { bubbles: true }));
+    const over = profileOf(slate.contests.find(c => String(c.id) === "197791874")), kept = (store(profKey()) || {})["197791874"];
+    const sel2 = document.querySelector('#profList select[data-cid="197791874"]'); sel2.value = ""; sel2.dispatchEvent(new Event("change", { bubbles: true }));
+    return { rowsP, first, sum, stat, joint, over, kept, back: profileOf(slate.contests.find(c => String(c.id) === "197791874")), keptAfter: (store(profKey()) || {})["197791874"] || null };
+  });
+  check("profiles screen: each entered contest with its recognised profile (the flagship first) and a dropdown; an override is kept for the slate and Auto puts it back; after a fill each flagship shows its top-1% coverage and P(1st) (at 2 / 3 / 4 lineups) on fresh nights, and the flagships' joint coverage",
+        pr1.rowsP.length === 3 && pr1.first === "197791872" && /^Contest profiles: Flagship \(top-1% coverage\) 2 · Main \(max ROI\) 1$/.test(pr1.sum) && /^Top 1%: \d+\.\d% of nights · P\(1st\) \d+\.\d% with your 1 · P\(1st\) at 2 \/ 3 \/ 4 lineups: (\d+\.\d%|–) \/ (\d+\.\d%|–) \/ (\d+\.\d%|–) \(fresh nights, in-sim\)$/.test(pr1.stat) &&
+        /^The flagships together: one of their lineups in its top 1% on \d+\.\d% of nights/.test(pr1.joint) &&
+        pr1.over === "qualifier" && pr1.kept === "qualifier" && pr1.back === "main" && pr1.keptAfter === null, JSON.stringify(pr1));
+  // the flagships' joint coverage: the PUJ and the High Five picked together on the same nights; the first pick is the
+  // (contest, lineup) reaching its top 1% on the most nights; the joint mask is the union of each set's own top-1% nights
+  const jt = await pg.evaluate(() => {
+    const cs2 = ["197791872", "197791877"].map(id => slate.contests.find(x => String(x.id) === id)), pool = finalIdx().map(bi => BANK.lineups[bi]), seed = 12345;
+    const sims = cs2.map(c => DKSim.simulate(Object.assign(ctx(), { random: DKSim.seeded(seed) }), pool, fieldFor(c), fieldDoc.z, c, 2, 1000));
+    const ns = [2, 1], o = Object.assign(pickRules(2), { minUnique: 1 }), r = DKSim.pickJoint(ctx(), o, pool, sims, cs2, ns);
+    let want = null, wv = -Infinity;
+    cs2.forEach((c, ci) => { const b = DKSim.builder(sims[ci], c), z = new Uint8Array(1000); for (let k = 0; k < pool.length; k++) { const sc = b.score(k, z), v = sc.joint * 1e9 + sc.value; if (v > wv) { wv = v; want = ci + ":" + k; } } });
+    const firstPick = (() => { for (let ci = 0; ci < 2; ci++) if (r.into[ci].length && (ci + ":" + r.into[ci][0]) === want) return want; return "none"; })();
+    const masks = r.builders.map(b => b.cover1()), uni = masks[0].map((v, a) => v || masks[1][a] ? 1 : 0), same = uni.every((v, a) => v === r.covered[a]);
+    const jc = r.covered.reduce((t, v) => t + v, 0) / 1000, own = r.builders.map(b => b.coverage().top1);
+    return { sizes: r.into.map(x => x.length), want, firstPick, same, jc, own };
+  });
+  check("flagships: joint top-1% coverage picks the PUJ and the High Five together (the first pick the most top-1% nights alone); the joint nights are the union of each set's (" + (100 * jt.jc).toFixed(1) + "% of nights, each alone " + jt.own.map(x => (100 * x).toFixed(1) + "%").join(" / ") + ")",
+        JSON.stringify(jt.sizes) === "[2,1]" && jt.firstPick === jt.want && jt.same && jt.jc >= Math.max(...jt.own) - 1e-12, JSON.stringify(jt));
+  // the main contests: And-One, Quarter Jukebox and Dime Time each filled by its own Max ROI (no shared block); a lineup
+  // in up to 3 contests (the flagships' included) under the night cap; a test idea only in Dime Time. A qualifier
+  // (winner-take-all) against the chalk field, its lineups' own sum shown against that field's median.
+  const blk0 = await pg.evaluate(() => {
+    const keep = {}; document.querySelectorAll("#entriesBox input[data-cid]").forEach(i => { keep[i.dataset.cid] = i.value; });
+    const set = (cid, v) => { const i = document.querySelector('#entriesBox input[data-cid="' + cid + '"]'); i.value = String(v); };
+    set("197791874", 4); set("197791875", 4); set("197873654", 3); set("197873655", 2);
+    const g = Object.entries(ideaCounts(finalIdx())).sort((a, b) => a[1] - b[1]).map(x => x[0]).find(x => !/Variants of the top/.test(x));   // the smallest idea
+    BANK.test = { [g]: true }; bankSaveState(); renderBank(); renderEntries();
+    return { keep, g, pf: JSON.stringify(PF), maxUse: $("maxUse").value };
+  });
+  await pg.fill("#maxUse", "3");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const blk = await pg.evaluate(g => {
+    const A = PF["197791874"] || [], Q = PF["197791875"] || [], D = PF["197873654"] || [], st = document.getElementById("cutStatus").textContent;
+    const uses = {}; Object.values(PF).forEach(v => v.forEach(bi => { uses[bi] = (uses[bi] || 0) + 1; }));
+    const testIn = bi => lineupGroups(bi).includes(g), used = nightUsed(null), lk = fillLock();
+    const flag = (PF["197791872"] || []).concat(PF["197791877"] || []);
+    return { A: A.length, Q: Q.length, D: D.length, testOut: !A.concat(Q, flag).some(testIn), maxUses: Math.max(...Object.values(uses)),
+             nightMax: Math.max(...Object.keys(used).filter(id => !lk[id]).map(id => used[id])), nightLim: nightLimit(),
+             own: /\$1\.25K And-One \[Main \(max ROI\)\]: \d of 4/.test(st) && /Quarter Jukebox \[Main \(max ROI\)\]: \d of 4/.test(st) && /Dime Time \[Just \$0\.10!\] \[Main · lab\]: \d of 3/.test(st),
+             lab: (document.querySelector('#profList .prow[data-cid="197873654"] .pstat') || {}).textContent || "" };
+  }, blk0.g);
+  check("main contests: And-One, Quarter Jukebox and Dime Time each by its own Max ROI; a lineup in up to 3 contests; a test idea never outside Dime Time; no player past the night cap",
+        blk.A >= 3 && blk.Q >= 3 && blk.D >= 1 && blk.own && blk.testOut && blk.maxUses <= 3 && blk.nightMax <= blk.nightLim && /^Test ideas: /.test(blk.lab), JSON.stringify(blk));
+  const mnQ = await pg.evaluate(() => { const v = $("maxNight").value; $("maxNight").value = ""; return v; });   // the fixture's 15-entry night: the cap can shut the qualifier out
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  await pg.evaluate(v => { $("maxNight").value = v; }, mnQ);
+  const qf = await pg.evaluate(() => {
+    const q = slate.contests.find(c => String(c.id) === "197873655"), m = slate.contests.find(c => String(c.id) === "197791874"), F = fieldOf();
+    const stat = (document.querySelector('#profList .prow[data-cid="197873655"] .pstat') || {}).textContent || "", nm = (document.querySelector('#profList .prow[data-cid="197873655"] .pname') || {}).textContent || "";
+    const fq = fieldFor(q), fm = fieldFor(m), dup = fq.length - new Set(fq.map(L => L.slice().sort().join())).size;
+    return { prof: profileOf(q), wta: JSON.stringify(q.payouts) === JSON.stringify([[1, 1, q.prizes]]), n: (PF["197873655"] || []).length, size: fq.length === fm.length,
+             medQ: fieldOwnMedian(fq), medM: fieldOwnMedian(fm), dup, stat, nm, pstats: PROF_STATS["197873655"],
+             msg: (document.getElementById("cutStatus").textContent.match(/Qualifier Satellite \[[^;]*/) || [""])[0], ns: entriesN()["197873655"] };
+  });
+  check("qualifier: winner-take-all (one ticket to 1st, no 'assumed'), simulated against the chalk field (the slate's field reweighted to its top fifth by DraftKings average: a higher own-sum median, repeated lineups), its lineups' own sum shown against that median",
+        qf.prof === "qualifier" && qf.wta && qf.n === 2 && qf.size && qf.medQ > qf.medM && qf.dup > 0 && /winner-take-all \(1 ticket\)/.test(qf.nm) && !/assumed/.test(qf.nm) &&
+        /^Own sum \d+% \/ \d+% vs the chalk field's median \d+%$/.test(qf.stat), JSON.stringify(qf));
+  // the bank's test toggle on an idea row: one tap marks it (kept with the bank), another clears it
+  const tt = await pg.evaluate(g => {
+    showStep("bank"); renderBank();
+    const btn = () => document.querySelector('#bankBox button[data-test="' + CSS.escape(g) + '"]');
+    const on0 = btn().getAttribute("aria-pressed"); btn().click(); const off = !BANK.test[g] && btn().getAttribute("aria-pressed") === "false";
+    btn().click(); const on = !!BANK.test[g] && bankUnpack(bankPack(BANK)).test[g] === true; showStep("fill");
+    return { on0, off, on };
+  }, blk0.g);
+  check("bank: a test toggle on each idea row, kept with the bank", tt.on0 === "true" && tt.off && tt.on, JSON.stringify(tt));
+  // the Swap step: the flagship's contest first
+  const soP = await pg.evaluate(() => swapFlagFirst([{ name: "contest-standings-197791874.csv" }, { name: "contest-standings-197791877.csv" }, { name: "contest-standings-197791872.csv" }], f => swapCid(f.name)).map(f => swapCid(f.name)));
+  check("swap step: the flagship profile's contests first in the order (the rest as they were)", JSON.stringify(soP) === JSON.stringify(["197791877", "197791872", "197791874"]), JSON.stringify(soP));
+  await pg.evaluate(b => { BANK.test = {}; bankSaveState(); Object.keys(b.keep).forEach(cid => { const i = document.querySelector('#entriesBox input[data-cid="' + cid + '"]'); if (i) i.value = b.keep[cid]; }); PF = JSON.parse(b.pf); pfSave(); renderEntries(); }, blk0);
+  await pg.fill("#maxUse", blk0.maxUse);
   await pg.fill("#maxUse", "1");
 
   await pg.evaluate(() => { document.querySelectorAll("#bankBox input[data-tag]").forEach(x => { x.checked = true; }); });
@@ -2202,13 +2296,15 @@ function audit(name, L, o) {
     let rm = null; if (NB.on && BP && BP.review) { if (BP.b.picked.length >= BP.o.n) { rm = BP.b.picked[0]; BP.b.remove(rm); bpRescore(); } nbRender(); }
     swinRender("phone check"); await new Promise(r => requestAnimationFrame(r));
     const right = id => { const e = document.getElementById(id); return e && !e.hidden ? Math.round(e.getBoundingClientRect().right) : null; };
-    const r = { page: document.documentElement.scrollWidth, guide: right("nbGuide"), swap: right("swinBox"), top: document.getElementById("autoTopUp").getBoundingClientRect().right };
+    renderProfiles(); document.getElementById("profBox").open = true;
+    const r = { page: document.documentElement.scrollWidth, guide: right("nbGuide"), swap: right("swinBox"), top: document.getElementById("autoTopUp").getBoundingClientRect().right,
+                prof: right("profList"), profSel: Math.max(0, ...[...document.querySelectorAll("#profList select")].map(x => Math.round(x.getBoundingClientRect().right))), profRows: document.querySelectorAll("#profList .prow").length };
     if (rm != null) { BP.b.add(rm); bpRescore(); nbRender(); }
     $("swinBox").hidden = true; document.getElementById("fillSet").open = false; if (!nb0) nbSet(false); showStep(st0);
     return r;
   });
-  check("phone (390px): the guide, the swap box and the Auto top-up setting fit without sideways page scroll",
-        mobFill.page <= 390 && mobFill.guide > 0 && mobFill.guide <= 390 && mobFill.swap != null && mobFill.swap <= 390 && mobFill.top <= 390, JSON.stringify(mobFill));
+  check("phone (390px): the guide, the swap box, the Auto top-up setting and the Contest profiles fit without sideways page scroll",
+        mobFill.page <= 390 && mobFill.guide > 0 && mobFill.guide <= 390 && mobFill.prof > 0 && mobFill.prof <= 390 && mobFill.profSel <= 390 && mobFill.profRows > 0 && mobFill.swap != null && mobFill.swap <= 390 && mobFill.top <= 390, JSON.stringify(mobFill));
   await pg.setViewportSize({ width: 1100, height: 900 });
   const desk = await pg.evaluate(() => { renderPlayers(); const sb = document.querySelector("#players .row .setadd"), t = document.getElementById("setToast");
     return { set: !!sb && getComputedStyle(sb).display !== "none", lxW: document.querySelector("#players .row .lx").getBoundingClientRect().width, toastHidden: !t || t.hidden || true }; });
