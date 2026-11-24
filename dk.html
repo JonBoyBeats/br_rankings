@@ -3518,7 +3518,7 @@ function scanBankApply(b) {
    entry (drawBank's draw-time floors and caps, on every batch until cleared), marked as set by scan (state.scanSet,
    the value set): a hand entry is never overwritten, a box typed into becomes a hand entry, and Clear floors removes
    only the marked ones still holding the value the scan set. A draw while any are on is tagged SCANFLOOR. */
-var SF_DEF = { core: 1.1, leverage: 1.75, lean: 1.0, fade: 0.6, skip: 0.4, low: false }, SF_FLOOR_MAX = 60, SF_CAP_MIN = 1, SF_LOW_OWN = 2;
+var SF_DEF = { core: 1.1, leverage: 1.75, lean: 1.0, fade: 0.6, skipPct: 10, low: false }, SF_FLOOR_MAX = 60, SF_CAP_MIN = 1, SF_LOW_OWN = 2;
 function sfOpts() {
   var o = Object.assign({}, SF_DEF);
   try { var v = JSON.parse(localStorage.getItem("dkcbb:scanfloor") || "null"); if (v) Object.keys(SF_DEF).forEach(function (k) { if (v[k] != null && (k === "low" || isFinite(+v[k]))) o[k] = k === "low" ? !!v[k] : +v[k]; }); } catch (e) {}
@@ -3538,12 +3538,13 @@ function scanFloorPlan(o) {           // [{id, kind, v, note}] for every scanned
   ((SCAN && SCAN.players) || []).forEach(function (x) {
     var r = byId(String(x.id)); if (!r || x.thin || !usable(r)) return;
     var f = own(r); if (!(f > 0) || (f < SF_LOW_OWN && !o.low)) return;
-    var rd = x.read, m = rd === "core" ? o.core : rd === "leverage" ? o.leverage : /^lean /.test(rd) ? o.lean : rd === "fade" ? o.fade : rd === "skip" ? o.skip : null;
+    // a skip gets a flat Max% (skipPct, 10 by default: the operator, 2026-11-24), not a multiple of his field own
+    var rd = x.read, m = rd === "core" ? o.core : rd === "leverage" ? o.leverage : /^lean /.test(rd) ? o.lean : rd === "fade" ? o.fade : rd === "skip" ? 1 : null;
     if (m == null) return;
-    var kind = rd === "fade" || rd === "skip" ? "cap" : "floor", raw = m * f;
+    var kind = rd === "fade" || rd === "skip" ? "cap" : "floor", raw = rd === "skip" ? +o.skipPct : m * f;
     var v = kind === "floor" ? Math.min(SF_FLOOR_MAX, Math.round(raw)) : Math.max(SF_CAP_MIN, Math.round(raw));
     if (kind === "floor" && v <= 0) return;
-    out.push({ id: r.id, kind: kind, v: v, note: rd + " " + m + "× field " + f.toFixed(1) + "% = " + raw.toFixed(1) + "%" +
+    out.push({ id: r.id, kind: kind, v: v, note: (rd === "skip" ? "skip: flat " + raw + "% cap (field " + f.toFixed(1) + "%)" : rd + " " + m + "× field " + f.toFixed(1) + "% = " + raw.toFixed(1) + "%") +
                (v !== Math.round(raw) ? " (held to " + v + "%)" : "") });
   });
   return out;
@@ -3577,7 +3578,7 @@ function scanFloorStrip() {
   return '<span class="sfwrap"><button type="button" id="sfSet" title="Each scanned player\'s Min% / Max% from his Read times his field ownership (the multipliers under Floors); hand entries are left alone">Set floors from scan</button>' +
     (on ? '<button type="button" id="sfClear" title="Removes only the Min% / Max% the scan set; hand entries stay">Clear floors</button>' : "") +
     '<details class="sfopts"><summary class="mut">Floors</summary><div class="sfgrid">' + inp("core", "core floor") + inp("leverage", "leverage floor") + inp("lean", "lean floor") +
-    inp("fade", "fade cap") + inp("skip", "skip cap") + '<label><input type="checkbox" class="sfm" data-k="low"' + (o.low ? " checked" : "") + "> include under " + SF_LOW_OWN + "% owned</label>" +
+    inp("fade", "fade cap") + '<label>skip cap <input class="num sfm" data-k="skipPct" type="number" min="0" step="1" value="' + o.skipPct + '">% flat</label>' + '<label><input type="checkbox" class="sfm" data-k="low"' + (o.low ? " checked" : "") + "> include under " + SF_LOW_OWN + "% owned</label>" +
     '<span class="mut">floors ≤ ' + SF_FLOOR_MAX + "%, caps ≥ " + SF_CAP_MIN + "%, × his field own</span></div></details></span>";
 }
 $("scanTable").addEventListener("change", function (e) {

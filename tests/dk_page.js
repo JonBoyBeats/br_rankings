@@ -1976,7 +1976,7 @@ function audit(name, L, o) {
     try { localStorage.removeItem("dkcbb:scanfloor"); } catch (e) {}
     renderScan();
     const was = { floor: Object.assign({}, state.floor), cap: Object.assign({}, state.cap) };
-    const M = { core: 1.1, leverage: 1.75, "lean core": 1, "lean leverage": 1, fade: 0.6, skip: 0.4 };
+    const M = { core: 1.1, leverage: 1.75, "lean core": 1, "lean leverage": 1, fade: 0.6, skip: "flat" };
     const elig = SCAN.players.filter(x => !x.thin && M[x.read] != null && usable(byId(String(x.id))) && own(byId(String(x.id))) >= 2);
     const low = SCAN.players.filter(x => !x.thin && M[x.read] != null && usable(byId(String(x.id))) && own(byId(String(x.id))) > 0 && own(byId(String(x.id))) < 2).map(x => String(x.id));
     const fl = elig.filter(x => !/fade|skip/.test(x.read)), cp = elig.filter(x => /fade|skip/.test(x.read));
@@ -1984,7 +1984,7 @@ function audit(name, L, o) {
     if (handF) state.floor[handF] = 7; if (handC) state.cap[handC] = 33;
     save(); renderPlayers();
     document.getElementById("sfSet").click();
-    const exp = id => { const x = SCAN.players.find(p => String(p.id) === id), f = own(byId(id)), raw = M[x.read] * f;
+    const exp = id => { const x = SCAN.players.find(p => String(p.id) === id), f = own(byId(id)), raw = x.read === "skip" ? 10 : M[x.read] * f;
       return /fade|skip/.test(x.read) ? ["cap", Math.max(1, Math.round(raw))] : ["floor", Math.min(60, Math.round(raw))]; };
     const right = elig.map(x => String(x.id)).filter(id => id !== handF && id !== handC).every(id => { const [k, v] = exp(id); return v <= 0 && k === "floor" || state[k][id] === v && !!byScan(k, id); });
     const handKept = (!handF || (state.floor[handF] === 7 && !byScan("floor", handF))) && (!handC || (state.cap[handC] === 33 && !byScan("cap", handC)));
@@ -1994,7 +1994,7 @@ function audit(name, L, o) {
     const handBox = handF ? !document.querySelector(`#players .row[data-id="${handF}"] input.floor`).classList.contains("byscan") : true;
     const tagged = /SCANFLOOR/.test(tagNow()), tagRules = (() => { const t0 = BANK.tagRules; return true; })();
     // clamps: an extreme core multiplier holds floors at 60%; a 0 skip cap holds caps at 1%
-    const ext = scanFloorPlan({ core: 100, leverage: 100, lean: 100, fade: 0, skip: 0, low: false });
+    const ext = scanFloorPlan({ core: 100, leverage: 100, lean: 100, fade: 0, skipPct: 0, low: false });
     const clamp = ext.every(p => p.kind === "floor" ? p.v <= 60 : p.v >= 1) && ext.some(p => p.kind === "floor" && p.v === 60);
     // a hand edit on a scan box makes it a hand entry; Clear floors removes only the scan's
     const ids = Object.keys(state.scanSet.floor), edited = ids[0];
@@ -2013,7 +2013,7 @@ function audit(name, L, o) {
     state.floor = was.floor; state.cap = was.cap; state.scanSet = { floor: {}, cap: {} }; save(); renderRules(); renderPlayers(); renderScan();
     return { n: elig.length, floors: fl.length, caps: cp.length, right, handKept, lowNone, low: low.length, marked, wantMarked, handBox, tagged, clamp, editOk, nScan, clearBtn, cleared, kept };
   });
-  check("scan floors: Set floors from scan puts Read x field own in Min% (core 1.1, leverage 1.75, lean 1.0) / Max% (fade 0.6, skip 0.4), under-2% owned skipped, dashed 'set by scan' boxes, hand entries untouched, draws tagged SCANFLOOR",
+  check("scan floors: Set floors from scan puts Read x field own in Min% (core 1.1, leverage 1.75, lean 1.0) / Max% (fade 0.6x, skip a flat 10%), under-2% owned skipped, dashed 'set by scan' boxes, hand entries untouched, draws tagged SCANFLOOR",
         sf.n > 5 && sf.right && sf.handKept && sf.lowNone && sf.marked === sf.wantMarked && sf.marked > 0 && sf.handBox && sf.tagged, JSON.stringify(sf));
   check("scan floors: floors held to 60% and caps to 1%; typing in a scan box makes it a hand entry; Clear floors removes only the scan's; the multipliers are remembered",
         sf.clamp && sf.editOk && sf.clearBtn && sf.cleared && sf.kept, JSON.stringify(sf));
