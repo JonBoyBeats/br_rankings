@@ -66,6 +66,9 @@ jobs:
           # DraftKings: shadow portfolios and the owner's entries against the standings files dropped in
           # analysis/cbb/dk/standings, then the projection gate the DK page and the shadow portfolios read
           python3 scripts/dk_eval.py nightly --mirror ../br-adp-mirror || true
+          # the late-swap standings the DK page synced (JonBoyBeats/dk-sync) into own_eval.csv, each contest once every
+          # game is revealed and not already logged, so every slate feeds the chalk-band ownership grade
+          python3 scripts/dk_eval.py ownsync || true
           python3 scripts/dk_eval.py tiles --mirror ../br-adp-mirror || true
           python3 scripts/dk_eval.py gate || true
           # the cut check: each saved bank's cut / kept / entered lineups, by rule tag, on the real points

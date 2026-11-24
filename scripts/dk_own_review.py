@@ -12,8 +12,15 @@ Candidates:
   flat+big  the flattening, then the watchlist's confirmed pattern "coming off a big game" (last game's DK points 10+ over his
             season average, dk_eval.ownwatch's flag) x f, f fitted on the other slates (real/projected of the flagged
             against the rest), renormalized again
-Lenses: mean |log error|, MAE in points, the band ratios real/projected (under 5, 5-20, 20+), and how many players
-cross the page's thresholds (10%: the draw's "under X%"; 20%: chalk) between ours and the candidate.
+Lenses, the headline first (2026-11-24, the operator): the CHALK BAND, players with max(ours, actual) at or over
+dk_eval.CHALK_OWN (15%): its MAE in points, the share off by CHALK_OFF+ (10) points and its signed bias, by contest
+size and by slate. The sims, the cut and the fill turn on the high-owned players; 3 vs 1% doesn't matter, 20 vs 40%
+does, either way. The band is fixed by OUR projection and the actual (max of the two) so every candidate is scored on
+the same players. Secondary: mean |log error|, MAE in points over everyone, the band ratios real/projected (under 5,
+5-20, 20+), and how many players cross the page's thresholds (10%: the draw's "under X%"; 20%: chalk).
+
+The decision rule: an ownership-model change counts as an improvement only if it lowers the chalk band's MAE AND its
+off-by-10+ share, held out by slate (fit on the other slates, scored on the slate).
 
   python3 scripts/dk_own_review.py --mirror ../br-adp-mirror
 """
@@ -28,7 +35,11 @@ BANDS = [("Large", 300, 10 ** 9), ("Medium", 30, 300), ("Small", 0, 30)]
 OWNB = [(0, 5), (5, 20), (20, 101)]
 
 
-def entries(cid):
+def entries(cid, ent={}):
+    if not ent:
+        ent.update({r["contest_id"]: E.num(r["entries"]) for r in csv.DictReader(open(os.path.join(DK, "eval.csv")))})
+    if ent.get(cid):
+        return int(ent[cid])
     f = os.path.join(DK, "standings", "contest-standings-%s.csv" % cid)
     if not os.path.exists(f):
         return None
@@ -88,15 +99,18 @@ def calib(rs, a, big=None, f=1.0, mix=0.0):
 
 
 def lens(cons, a=1.0, big=None, f=1.0, mix=0.0):
-    le, ae, bands = [], [], {b: [0.0, 0.0] for b in OWNB}
+    le, ae, bands, ce = [], [], {b: [0.0, 0.0] for b in OWNB}, []
     for c in cons:
         q = calib(c["rows"], a, (big or {}).get(c["g"]), f, mix)
         for r, x in zip(c["rows"], q):
             le.append(abs(math.log((r["a"] + 1) / (x + 1)))); ae.append(abs(r["a"] - x))
+            if max(r["p"], r["a"]) >= E.CHALK_OWN:      # the chalk band, fixed by ours and the actual
+                ce.append(abs(r["a"] - x))
             for lo, hi in OWNB:
                 if lo <= r["p"] < hi:       # banded by OUR projection, as the audit
                     bands[(lo, hi)][0] += r["a"]; bands[(lo, hi)][1] += x
     return {"log": S.mean(le) if le else None, "mae": S.mean(ae) if ae else None,
+            "cmae": S.mean(ce) if ce else None, "coff": sum(x >= E.CHALK_OFF for x in ce) / len(ce) if ce else None,
             "bands": [round(v[0] / v[1], 2) if v[1] else None for v in bands.values()], "n": len(le)}
 
 
@@ -129,6 +143,9 @@ def main():
     cons = load()
     slates = sorted({c["g"] for c in cons}, key=lambda g: min(c["date"] for c in cons if c["g"] == g))
     big = big_game_flags(a_.mirror)
+    print("\n== Headline: the chalk band (dk_eval.own_grade_lines) ==")
+    print("\n".join(E.own_grade_lines()))
+    print("\n== Secondary lenses ==")
     print("Contests: %d on %d slates. By band: %s" % (len(cons), len(slates), "; ".join(
         "%s %d contests on %d slates (%s entries)" % (b, sum(c["band"] == b for c in cons), len({c["g"] for c in cons if c["band"] == b}),
                                                      ", ".join(str(c["n"]) for c in cons if c["band"] == b) if b == "Small" else "%d-%d" % (
@@ -170,6 +187,10 @@ def main():
     for k, nm in ((5, "flat"), (6, "flat+big"), (7, "big"), (8, "mix"), (11, "mix+big")):
         better = sum(1 for r in rows if r[k]["log"] < r[4]["log"] - 1e-9); mbet = sum(1 for r in rows if r[k]["mae"] < r[4]["mae"] - 1e-9)
         bb = [S.mean(r[k]["bands"][j] for r in rows) for j in range(3)]
+        cb = sum(1 for r in rows if r[k]["cmae"] < r[4]["cmae"] - 1e-9 and r[k]["coff"] <= r[4]["coff"] + 1e-9)
+        print("  %-8s held-out CHALK BAND MAE %.2f vs ours %.2f, off by %d+ %.1f%% vs %.1f%%, better on both on %d of %d slates" % (
+            nm, S.mean(r[k]["cmae"] for r in rows), S.mean(r[4]["cmae"] for r in rows), E.CHALK_OFF,
+            100 * S.mean(r[k]["coff"] for r in rows), 100 * S.mean(r[4]["coff"] for r in rows), cb, len(rows)))
         print("  %-8s held-out |log| %.3f vs ours %.3f, better on %d of %d slates; MAE %.2f vs %.2f (better on %d); bands %s vs ours %s" % (
             nm, S.mean(r[k]["log"] for r in rows), S.mean(r[4]["log"] for r in rows), better, len(rows), S.mean(r[k]["mae"] for r in rows), S.mean(r[4]["mae"] for r in rows), mbet,
             [round(x, 2) for x in bb], [round(S.mean(r[4]["bands"][j] for r in rows), 2) for j in range(3)]))

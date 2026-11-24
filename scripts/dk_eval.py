@@ -134,6 +134,7 @@ import argparse
 import csv
 import datetime as dt
 import glob
+import io
 import json
 import math
 import os
@@ -168,7 +169,17 @@ QUADS = ("FOCUS", "CHALK", "LEVERAGE", "FADE")
 RULE_NAMES = {"min": "Min N from a team / stack", "none": "Exclude team", "if": "1. if player then N+", "ifnot": "2. if NOT player then N+",
               "ifteam": "3. if N+ from team then M+ from opponent", "never": "4. never player with player"}
 BUILDS = os.path.join(DK, "builds")       # the DK page's saved builds (Save build: its pool, the hand-built 20, the auto-pick)
-OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own_proj", "own_actual"]
+OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own_proj", "own_actual", "entries"]
+# The ownership grade's headline (the operator, 2026-11-24): the CHALK BAND, players with max(projected, actual) at or
+# over CHALK_OWN%. The sims, the cut and the fill turn on the high-owned players (20 vs 40% matters either way; 3 vs 1%
+# doesn't), and a grade over everyone is dominated by the many low-owned players. The band takes max(projected, actual),
+# not actual alone: selecting on actual alone biases toward under-projection. Its MAE in points, the share off by
+# CHALK_OFF+ points and the signed bias (actual minus projected) lead; |log| error, overall MAE and the band ratios are
+# secondary. The rule: an ownership-model change counts as an improvement only if it lowers the chalk band's MAE AND
+# its off-by-CHALK_OFF+ share, held out by slate.
+CHALK_OWN, CHALK_OFF = 15, 10
+SIZE_BANDS = [("Large", 300, 10 ** 9), ("Medium", 30, 300), ("Small", 0, 30)]      # the field bands (2026-11-23)
+SYNC_REPO = "JonBoyBeats/dk-sync"
 BANDS = [(6000, 99999), (4000, 5999), (0, 3999)]
 GATE_NIGHTS, GATE_N, GATE_SHARE = 5, 100, 0.6
 # The Questionable discount (2026-11-18, the owner's call): a player tagged Questionable is projected at his projection
@@ -275,16 +286,21 @@ def standings(path):
     """(entries [{rank, name, points}], {player name: (%drafted, fpts)}) from a DraftKings standings CSV. Its player
     list has a row for each roster slot a player was drafted in, each with that slot's %Drafted (verified on the first
     files, 2026-11-16: Phillips G 53.44% + UTIL 11.01% = the 64.45% DraftKings shows)."""
-    entries, players = [], {}
     with open(path, encoding="utf-8-sig") as f:
-        for r in csv.DictReader(f):
-            if r.get("EntryId") and num(r.get("Points")) is not None:
-                entries.append({"rank": int(num(r["Rank"])), "name": r.get("EntryName") or "", "points": num(r["Points"]),
-                                "lineup": r.get("Lineup") or ""})
-            if r.get("Player"):     # one row per roster slot he was drafted in (G, F, UTIL): his ownership is their sum
-                nm, pct = r["Player"].strip(), num(str(r.get("%Drafted", "")).rstrip("%"))
-                prev = players.get(nm, (None, None))[0]
-                players[nm] = (pct if prev is None else prev + (pct or 0), num(r.get("FPTS")))
+        return standings_rows(f)
+
+
+def standings_rows(f):
+    """standings() on an open file or a list of lines (a standings file's text from the sync repo, ownsync)."""
+    entries, players = [], {}
+    for r in csv.DictReader(f):
+        if r.get("EntryId") and num(r.get("Points")) is not None:
+            entries.append({"rank": int(num(r["Rank"])), "name": r.get("EntryName") or "", "points": num(r["Points"]),
+                            "lineup": r.get("Lineup") or ""})
+        if r.get("Player"):     # one row per roster slot he was drafted in (G, F, UTIL): his ownership is their sum
+            nm, pct = r["Player"].strip(), num(str(r.get("%Drafted", "")).rstrip("%"))
+            prev = players.get(nm, (None, None))[0]
+            players[nm] = (pct if prev is None else prev + (pct or 0), num(r.get("FPTS")))
     return entries, players
 
 
@@ -355,6 +371,7 @@ def night_points(rec, players):
 def nightly(a):
     mirror = Mirror(a.mirror)
     done = {(r["contest_id"]) for r in read(EVAL)}
+    own_done = {r["contest_id"] for r in read(OWN_EVAL)}
     out, own_out, team_out = [], [], []
     for path in sorted(glob.glob(os.path.join(STANDINGS, "*.csv"))):
         m = re.search(r"(\d{6,})", os.path.basename(path))
@@ -452,11 +469,12 @@ def nightly(a):
                              "field_rate": round(sum(ts.count(team) >= 2 for _, ts in lineups) / len(lineups), 4) if lineups else ""})
         if not lineups:
             print("  %s: no lineups read from the standings' Lineup column; the top-1%% target is skipped" % os.path.basename(path))
-        for name, (pct, _) in players.items():
-            r = by_name.get(name)
-            if r and pct is not None:
-                own_out.append({"date": r["date"], "draft_group": r["draft_group"], "contest_id": cid, "dk_id": r["dk_id"], "name": name,
-                                "salary": r["salary"], "own_proj": r["own"], "own_actual": pct})
+        if cid not in own_done:           # ownsync may have logged it from the late-swap standings already
+            for name, (pct, _) in players.items():
+                r = by_name.get(name)
+                if r and pct is not None:
+                    own_out.append({"date": r["date"], "draft_group": r["draft_group"], "contest_id": cid, "dk_id": r["dk_id"], "name": name,
+                                    "salary": r["salary"], "own_proj": r["own"], "own_actual": pct, "entries": n})
         print("  graded %s (%s, %d entries): shadow %s, your entries %d" % (contest["name"], rec[0]["date"], n, "yes" if sh else "none saved", len(mine)))
     for path, cols, rows in ((EVAL, EVAL_COLS, out), (OWN_EVAL, OWN_COLS, own_out), (TEAM_EVAL, TEAM_COLS, team_out)):
         if rows:
@@ -892,6 +910,12 @@ def print_audit(full):
         print("  b, c. Ownership: no graded standings yet")
         return
     lastg = {str(r["draft_group"]) for r in rows if r["date"] == last}
+    og = own_grade_rows()
+    for name, rs in (("last night", [r for r in og if str(r["draft_group"]) in lastg]), ("season", og)):
+        if rs:
+            print("  b. Ownership, chalk band (max(ours, actual) %d%%+), %s, every graded contest: %s" % (CHALK_OWN, name, chalk_text(chalk_stats([(r["p"], r["a"]) for r in rs]))))
+    if full:
+        print("\n".join("     " + x for x in own_grade_lines(og)[1:]))
     for name, ns in (("last night", {g: v for g, v in nights.items() if g in lastg}), ("season", nights)):
         if not ns:
             continue
@@ -2037,6 +2061,149 @@ def band_line(rows, bands, proj, act, label):
     return out
 
 
+def size_band(n):
+    return next(b for b, lo, hi in SIZE_BANDS if lo <= n < hi)
+
+
+def chalk_stats(pairs):
+    """The chalk band's grade from [(projected, actual)] over every graded player: n, MAE in points, the share off by
+    CHALK_OFF+ and by 20+, the signed bias (actual minus projected), and the band's share of all absolute error. The
+    band is max(projected, actual) >= CHALK_OWN."""
+    tot = sum(abs(a - p) for p, a in pairs)
+    ch = [(p, a) for p, a in pairs if max(p, a) >= CHALK_OWN]
+    if not ch:
+        return None
+    e = [abs(a - p) for p, a in ch]
+    return {"n": len(ch), "all": len(pairs), "mae": S.mean(e), "off": sum(x >= CHALK_OFF for x in e) / len(e),
+            "off20": sum(x >= 20 for x in e) / len(e), "bias": S.mean(a - p for p, a in ch), "err_share": sum(e) / tot if tot else None}
+
+
+def chalk_text(c):
+    return "-" if not c else "MAE %.1f pts, off by %d+ %.0f%%, bias %+.1f (actual minus ours; %d of %d players)" % (
+        c["mae"], CHALK_OFF, 100 * c["off"], c["bias"], c["n"], c["all"])
+
+
+def own_grade_rows():
+    """own_eval.csv's player-contests with p (projected), a (actual) and n (the contest's entries: its column, else
+    eval.csv's count)."""
+    ent = {r["contest_id"]: num(r["entries"]) for r in read(EVAL)}
+    out = []
+    for r in read(OWN_EVAL):
+        p, a = num(r["own_proj"]), num(r["own_actual"])
+        n = num(r.get("entries")) or ent.get(r["contest_id"])
+        if p is not None and a is not None and n:
+            out.append(dict(r, p=p, a=a, n=n))
+    return out
+
+
+def own_grade_lines(rows=None):
+    """The ownership grade, the chalk band first (all, by contest size, by slate), then the secondary lines: overall MAE,
+    mean |log error| and real / projected in our <5 / 5-20 / 20+ bands."""
+    rows = own_grade_rows() if rows is None else rows
+    if not rows:
+        return ["Ownership grade: no graded contests yet"]
+    pairs = lambda rs: [(r["p"], r["a"]) for r in rs]
+    slates = sorted({(r["date"], str(r["draft_group"])) for r in rows})
+    out = ["Ownership grade, the chalk band (max(ours, actual) %d%%+; %d contests on %d slates): %s" % (
+        CHALK_OWN, len({r["contest_id"] for r in rows}), len(slates), chalk_text(chalk_stats(pairs(rows))))]
+    c = chalk_stats(pairs(rows))
+    if c:
+        out.append("  off by 20+ %.0f%%; the band holds %.0f%% of all absolute error" % (100 * c["off20"], 100 * (c["err_share"] or 0)))
+    for b, _, _ in SIZE_BANDS:
+        rs = [r for r in rows if size_band(r["n"]) == b]
+        if rs:
+            out.append("  %-6s %2d contests: %s" % (b, len({r["contest_id"] for r in rs}), chalk_text(chalk_stats(pairs(rs)))))
+    out.append("  by slate:")
+    for d, g in slates:
+        rs = [r for r in rows if r["date"] == d and str(r["draft_group"]) == g]
+        out.append("    %s %s %2d contests: %s" % (d, g, len({r["contest_id"] for r in rs}), chalk_text(chalk_stats(pairs(rs)))))
+    e = [abs(r["a"] - r["p"]) for r in rows]
+    lg = [abs(math.log((r["a"] + 1) / (r["p"] + 1))) for r in rows]
+    ratio = []
+    for lo, hi in ((0, 5), (5, 20), (20, 101)):
+        rs = [r for r in rows if lo <= r["p"] < hi]
+        sp = sum(r["p"] for r in rs)
+        ratio.append("%s %.2f" % (band_label(lo, hi), sum(r["a"] for r in rs) / sp) if sp else "%s -" % band_label(lo, hi))
+    out.append("  secondary: everyone MAE %.2f pts, |log| %.3f (%d players); real / ours by our projection: %s" % (
+        S.mean(e), S.mean(lg), len(rows), ", ".join(ratio)))
+    out.append("  (an ownership-model change counts as better only if it lowers the chalk band's MAE and its off-by-%d+ share, held out by slate)" % CHALK_OFF)
+    return out
+
+
+def owngrade(a):
+    print("\n".join(own_grade_lines()))
+
+
+def ownsync_rows(doc, rec, have):
+    """own_eval rows from one draft group's sync-repo swap.json (the DK page's late-swap standings, 2026-11-24) for
+    contests not yet logged (have). A standings file before every game started shows only the started games' players,
+    so a contest is logged only when its file, or another file added at the same moment, has a player from every game
+    that was played that night (rec: the night record; a game counts if anyone logged minutes); %Drafted is final from
+    then on. Returns (rows, notes)."""
+    played = {r["game"] for r in rec if (num(r.get("min")) or 0) > 0}
+    by_name = {r["name"]: r for r in rec}
+    files = []
+    for st in doc.get("stand") or []:
+        m = re.search(r"(\d{6,})", st.get("name") or "")
+        if not m:
+            continue
+        entries, players = standings_rows(io.StringIO(st.get("text") or ""))
+        seen = {by_name[nm]["game"] for nm in players if nm in by_name}
+        files.append((m.group(1), st.get("at") or 0, entries, players, bool(played) and played <= seen))
+    whole_at = [at for _, at, _, _, whole in files if whole]
+    rows, notes = [], []
+    for cid, at, entries, players, whole in files:
+        if cid in have:
+            continue
+        if not (whole or any(abs(at - t) <= 60000 for t in whole_at)):
+            notes.append("%s: not every game revealed yet (%d of %d); left for the final standings" % (
+                cid, len({by_name[nm]["game"] for nm in players if nm in by_name} & played), len(played)))
+            continue
+        for name, (pct, _) in players.items():
+            r = by_name.get(name)
+            if r and pct is not None:
+                rows.append({"date": r["date"], "draft_group": r["draft_group"], "contest_id": cid, "dk_id": r["dk_id"], "name": name,
+                             "salary": r["salary"], "own_proj": r["own"], "own_actual": round(pct, 2), "entries": len(entries)})
+        have.add(cid)
+        notes.append("%s: logged %d players (%d entries)" % (cid, sum(1 for x in rows if x["contest_id"] == cid), len(entries)))
+    return rows, notes
+
+
+def ownsync(a):
+    """The late-swap standings into own_eval.csv (2026-11-24, the operator: every slate feeds the chalk-band grade with
+    no manual step): for each recent night record, the sync repo's cbb/<draft group>/swap.json, each contest not yet
+    in own_eval.csv once every game is revealed (ownsync_rows). A contest's final standings dropped in standings/ later
+    don't add it again (nightly skips contests already in own_eval.csv)."""
+    import urllib.error
+    import urllib.request
+    have = {r["contest_id"] for r in read(OWN_EVAL)}
+    new = []
+    for f in sorted(glob.glob(os.path.join(DK, "????-??-??_*.csv")))[-a.days:]:
+        rec = read(f)
+        if not rec:
+            continue
+        g = rec[0]["draft_group"]
+        url = "https://raw.githubusercontent.com/%s/main/cbb/%s/swap.json" % (a.sync_repo, g)
+        try:
+            doc = json.loads(urllib.request.urlopen(url, timeout=30).read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                continue
+            raise
+        rows, notes = ownsync_rows(doc, rec, have)
+        new += rows
+        for n in notes:
+            print("  ownsync %s %s" % (g, n))
+    if new:
+        exists = os.path.exists(OWN_EVAL)
+        with open(OWN_EVAL, "a", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=OWN_COLS)
+            if not exists:
+                w.writeheader()
+            w.writerows(new)
+    print("  ownsync: %d player-contests added from the sync repo's late-swap standings" % len(new))
+
+
 def owncard(a):
     """The short ownership card: calibration against the baseline contest, the other contests against it, projection
     misses by ownership, last night's leverage list and construction."""
@@ -2046,6 +2213,7 @@ def owncard(a):
         print("Ownership card: no graded night with a baseline contest yet")
         return
     last = max(r["date"] for r in rows)
+    print("\n".join(own_grade_lines()))
     print("Ownership card (baseline: %s)" % "; ".join("%s %s" % (d, c) for g, (_, c, d) in sorted(base.items(), key=lambda x: x[1][2])))
     u5 = [r for r in rows if r["own_proj"] < 5]
     per = defaultdict(list)
@@ -3192,6 +3360,10 @@ def main():
     fu = sub.add_parser("fieldusers")
     fu.add_argument("--mirror", required=True)
     sub.add_parser("qualcheck")
+    sub.add_parser("owngrade")
+    os_ = sub.add_parser("ownsync")
+    os_.add_argument("--sync-repo", default=SYNC_REPO)
+    os_.add_argument("--days", type=int, default=4, help="the most recent night records to look for")
     sub.add_parser("lab")
     fj = sub.add_parser("flagjoint")
     fj.add_argument("--mirror", required=True)
@@ -3199,7 +3371,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "flagjoint": flagjoint, "lab": lab}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "owngrade": owngrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab}[a.cmd](a)
 
 
 if __name__ == "__main__":

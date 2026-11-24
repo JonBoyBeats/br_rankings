@@ -1,5 +1,15 @@
 # Monday lock review: ownership (2026-11-23)
 
+> **Headline lens from 2026-11-24 (the operator): the chalk band.** Players with max(ours, actual) at or over 15%,
+> graded on MAE in points, the share off by 10+ points and the signed bias, by contest size and by slate
+> (`dk_eval.py owngrade`, first in `dk_own_review.py`). The |log| error, overall MAE and the band ratios below are
+> secondary. On the 9 graded slates (45 contests) the band is 26% of player-contests and 69% of all absolute error:
+> MAE 11.3 points, 47% off by 10+, 14% off by 20+, bias +0.7. **The rule: an ownership-model change counts as an
+> improvement only if it lowers the chalk band's MAE and its off-by-10+ share, held out by slate.** Held out that way,
+> the candidates below move the chalk band little: mix+big 11.13 vs ours 11.42 MAE and 46.1% vs 47.9% off by 10+,
+> better on both on 7 of 9 slates; flat+big 11.20 / 45.7%, 7 of 9.
+
+
 Our projected ownership (the field doc's own, what the DK page shows) against real ownership on every graded contest,
 and the watchlist. Analysis only: nothing here changes what the pipeline or the page reads until the operator approves.
 Computed by `scripts/dk_own_review.py` and `dk_eval.py ownaudit` / `ownwatch`; every number below is from those runs.
