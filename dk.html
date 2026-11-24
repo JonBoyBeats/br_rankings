@@ -568,6 +568,7 @@
     <label class="field" style="flex-direction:row;align-items:center;gap:6px"><span class="field-label">Load swap pack</span><input type="file" id="swapPackLoad" accept=".json" style="height:auto"></label></div>
   <div class="note" id="swapList"></div>
   <div class="status" id="swapStatus"></div>
+  <div class="note" id="swapEV" hidden></div>
   <div id="swapBox"></div>
   <div class="opts" id="swapActs" hidden><button type="button" id="swapAll">Accept all</button><button type="button" id="swapNone">Accept none</button>
     <button type="button" id="swapExport" disabled title="One entries file for every contest, with the swaps you accept: upload it at Lineups → Edit Entries">Export DK entries</button></div>
@@ -3441,6 +3442,33 @@ function renderSwap() {
   var evOf = function (p0) { var q = swapPick(p0); return q.steps.length ? q.steps[q.steps.length - 1].score.ev : q.cur.ev; };
   var key = $("swapSort").value;
   if (key !== "run") R = R.slice().sort(function (a, b) { return key === "gain" ? (evOf(b) - swapPick(b).cur.ev) - (evOf(a) - swapPick(a).cur.ev) : evOf(b) - evOf(a); });
+  /* Your night so far (2026-11-24, the owner): every entry run, its expected payout at the button's moment (live points
+     for the started games, the sims for the rest), summed against the fees, with the accepted swaps' gain; each run is
+     kept (this slate, this browser) so the line shows how the night has moved. */
+  (function () {
+    if (!R.length) { $("swapEV").hidden = true; return; }
+    var fee = function (p0) { var e = SWAP.ent && SWAP.ent.rows.find(function (r) { return r.entryId === p0.entryId; }), c = e && slate && (slate.contests || []).find(function (x) { return String(x.id) === String(e.contestId); });
+      return c ? c.entry_fee || 0 : 0; };
+    var now = 0, after = 0, fees = 0, cash = 0, S = 0, night = null;
+    R.forEach(function (p0) { var q = swapPick(p0), acc = SWAP.acc[p0.entryId] && q.steps.length; now += p0.cur.ev; after += acc ? q.steps[q.steps.length - 1].score.ev : p0.cur.ev; fees += fee(p0); cash += p0.cur.cash;
+      // the night's total, simulated night by night (every contest shares the nights), the accepted swaps in
+      var pays = acc ? q.paysAfter : p0.paysNow;
+      if (pays) { if (!night) { S = pays.length; night = new Float64Array(S); } for (var s2 = 0; s2 < S; s2++) night[s2] += pays[s2]; } });
+    var pnl = null;
+    if (night) { var srt = Array.from(night).sort(function (a, b) { return a - b; }), q2 = function (f) { return srt[Math.min(S - 1, Math.floor(f * S))] - fees; };
+      pnl = { lo: q2(0.1), mid: q2(0.5), hi: q2(0.9), up: srt.filter(function (v) { return v > fees; }).length / S }; }
+    var key = "dkcbb-swapev:" + slate.draft_group_id, hist = [];
+    try { hist = JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) {}
+    if (!hist.length || hist[hist.length - 1].at !== SWAP.at) { hist.push({ at: SWAP.at, ev: now, n: R.length }); try { localStorage.setItem(key, JSON.stringify(hist.slice(-20))); } catch (e) {} }
+    var t = function (ms) { return new Date(ms).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); };
+    $("swapEV").hidden = false;
+    var money = function (v) { return (v < 0 ? "−$" : "+$") + Math.abs(v).toFixed(2); };
+    $("swapEV").innerHTML = (pnl ? '<div style="font-size:15px;margin-bottom:2px"><b>P&amp;L ' + money(after - fees) + "</b> expected · range " + money(pnl.lo) + " to " + money(pnl.hi) +
+        " (10th–90th) · profit " + Math.round(100 * pnl.up) + "% of nights</div>" : "") +
+      "<b>Your " + R.length + " entr" + (R.length === 1 ? "y" : "ies") + " now:</b> expected payout $" + now.toFixed(2) + (fees ? " on $" + fees.toFixed(2) + " in fees" : "") +
+      " · in the money " + Math.round(100 * cash / R.length) + "% of the time on average" + (after - now > 0.005 ? " · <b>+$" + (after - now).toFixed(2) + "</b> with the accepted swaps" : "") +
+      (hist.length > 1 ? ' <span class="mut">· earlier: ' + hist.slice(-5, -1).map(function (h) { return t(h.at) + " $" + h.ev.toFixed(2) + (h.n !== R.length ? " (" + h.n + ")" : ""); }).join(", ") + "</span>" : "");
+  })();
   $("swapBox").innerHTML = R.map(function (p0) {
     var p = swapPick(p0), last = p.steps.length ? p.steps[p.steps.length - 1].score : p.cur, prev = p.cur;
     // an Out player still in the lineup after the swaps (2026-11-23, Wright): never silently kept
@@ -3863,7 +3891,7 @@ $("bankClear").addEventListener("click", function () {
    the last fill), entries file and scan by draft group. This removes those of every slate except today's (Pacific),
    any not yet locked and the one open, after asking with the count and the space it frees. Settings (dkcbb:<group>),
    dkcbb:nb and dkcbb:slatePick stay. Today's portfolios must survive the games: the Live page reads dkcbb-pf: for exposures. */
-var OLD_KEYS = ["dkcbb-bank:", "dkcbb-cut:", "dkcbb-pf:", "dkcbb-pf-prev:", "dkcbb-pflu:", "dkcbb-entries:", "dkcbb-scan:", "dkcbb-mylu:", "dkcbb-swaplog:"];
+var OLD_KEYS = ["dkcbb-bank:", "dkcbb-cut:", "dkcbb-pf:", "dkcbb-pf-prev:", "dkcbb-pflu:", "dkcbb-entries:", "dkcbb-scan:", "dkcbb-mylu:", "dkcbb-swaplog:", "dkcbb-swapev:"];
 async function oldSlateKeys(now) {     // localStorage and IndexedDB (the banks, cuts and scans live there since 2026-11-20)
   var pday = function (t) { return new Date(t).toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }); }, today = pday(now || Date.now()), keep = {};
   ((doc && doc.slates) || []).forEach(function (s) { if (pday(s.start) === today || !s.locked || new Date(s.start).getTime() > (now || Date.now())) keep[String(s.draft_group_id)] = 1; });

@@ -324,8 +324,8 @@
     var sorted = F.map(function (row) { return Float64Array.from(row).sort(); });   // ascending
     var T1 = Math.max(1, Math.ceil(0.01 * N)), places = Object.keys(o.table || {}).map(Number);
     var paid = places.length ? Math.max.apply(null, places) : Math.max(1, Math.floor(0.2 * N));
-    function score(e, lineupIds) {
-      var hid = lineupIds.filter(function (id) { return !o.started[id]; }), a = 0, c = 0, pay = 0;
+    function score(e, lineupIds, keep) {   // keep: also each night's payout (the night's P&L range, 2026-11-24)
+      var hid = lineupIds.filter(function (id) { return !o.started[id]; }), a = 0, c = 0, pay = 0, pays = keep ? new Float32Array(S) : null;
       for (var s = 0; s < S; s++) {
         var x = START[s][e]; hid.forEach(function (id) { x += at(s, id); });
         var row = sorted[s], lo = 0, hi = N;                 // entries scoring at most x
@@ -333,9 +333,9 @@
         var place = 1 + (N - lo) - (F[s][e] > x ? 1 : 0);
         if (place <= T1) a++;
         if (place <= paid) c++;
-        pay += (o.table && o.table[place]) || 0;
+        var w = (o.table && o.table[place]) || 0; pay += w; if (pays) pays[s] = w;
       }
-      return { top1: a / S, cash: c / S, ev: pay / S };
+      return pays ? { top1: a / S, cash: c / S, ev: pay / S, pays: pays } : { top1: a / S, cash: c / S, ev: pay / S };
     }
     return { S: S, N: N, score: score };
   }
@@ -365,7 +365,7 @@
      the study's EV policy), then while maxSwaps allows, the best further swap on top of it that adds expected payout.
      {cur, steps: [{swap, ids, score}]} (no steps: keep it as entered). */
   function propose(B, e, lu, started, pool, by, maxSwaps) {
-    var cur = B.score(e, lu.map(function (x) { return x[1]; })), best = cur, steps = [], L = lu;
+    var full = B.score(e, lu.map(function (x) { return x[1]; }), true), cur = { top1: full.top1, cash: full.cash, ev: full.ev }, best = cur, steps = [], L = lu;
     for (var k = 0; k < (maxSwaps || 2); k++) {
       var top = null;
       swaps(L, started, pool, by).forEach(function (c) {
@@ -376,7 +376,8 @@
       steps.push(top); best = top.score;
       L = L.map(function (x) { return [x[0], x[1] === top.swap[0] ? top.swap[1] : x[1]]; });
     }
-    return { cur: cur, steps: steps };
+    var after = steps.length ? B.score(e, L.map(function (x) { return x[1]; }), true) : full;
+    return { cur: cur, steps: steps, paysNow: full.pays, paysAfter: after.pays };
   }
 
   // --- 6. the export ------------------------------------------------------------------------------------------------
@@ -461,7 +462,7 @@
       var r = rowOf[e], p = propose(B, e, lineups[e], stMap, pool, by, o.maxSwaps || 2);
       var next = p.steps.length ? applySwaps(r.ids, p.steps.map(function (x) { return x.swap; }), by, started) : r.ids.slice();
       var now = r.ids.reduce(function (t, id) { return t + (stMap[id] ? base[id] || 0 : 0); }, 0);
-      return { entryId: r.entryId, ids: r.ids, cur: p.cur, steps: p.steps, next: next, now: Math.round(now * 100) / 100 };
+      return { entryId: r.entryId, ids: r.ids, cur: p.cur, steps: p.steps, next: next, now: Math.round(now * 100) / 100, paysNow: p.paysNow, paysAfter: p.paysAfter };
     });
     return { proposals: proposals, stats: { entries: o.standings.entries.length, field: lineups.length, unmatched: unmatched, unknownGames: live.unknown,
              draws: stats.draws, fallback: stats.fallback, hiddenMass: mass, chalk: o.chalk || 1,

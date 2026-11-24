@@ -2137,6 +2137,11 @@ function audit(name, L, o) {
   });
   check("Swap: the standings and the entries file are kept in this browser for the slate (a reload restores them); the card shows the live points now",
         swKeep.stand && swKeep.ent && /Restored from this browser/.test(swKeep.msg) && swKeep.now, JSON.stringify(swKeep));
+  // the night so far (2026-11-24): the entries' expected payout now, the fees, the accepted swaps' gain
+  const swEV = await pg.evaluate(() => ({ hidden: document.getElementById("swapEV").hidden, txt: document.getElementById("swapEV").textContent,
+    want: SWAP.res.reduce((t, p) => t + p.cur.ev, 0) }));
+  check("Swap: P&L expected with its 10th-90th range and chance of profit, night by night; the entries' expected payout now, the fees, the accepted swaps' gain",
+        !swEV.hidden && /^P&L [+−]\$[\d.]+ expected · range [+−]\$[\d.]+ to [+−]\$[\d.]+ \(10th–90th\) · profit \d+% of nights/.test(swEV.txt) && new RegExp("Your 1 entry now: expected payout \\$" + swEV.want.toFixed(2).replace(".", "\\.")).test(swEV.txt) && /in the money \d+%/.test(swEV.txt), JSON.stringify(swEV));
   // the phone (2026-11-23): a swap pack saved here loads elsewhere (standings and entries file back); the Contest
   // picker lists the loaded contests; the order control re-sorts the cards
   const [dlP] = await Promise.all([pg.waitForEvent("download"), pg.click("#swapPackSave")]);
