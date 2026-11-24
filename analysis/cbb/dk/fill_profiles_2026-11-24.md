@@ -1,143 +1,128 @@
 # Contest profiles in the Fill (2026-11-24)
 
-The operator approved contest profiles for the Fill, relayed by the coordinator. This note covers what was built (branch `fill-profiles`, not yet on main) and the in-sim check of the flagship's win objective.
+The operator approved contest profiles for the Fill and decided the details after the first preview (relayed by the coordinator). This note covers what the `fill-profiles` branch does, what the in-sim checks say, and what they can't say. Nothing is on main until the operator's OK.
 
-## Bottom line
-
-**The win objective as specified does not hold up out of sample.**
-
-- **On the nights it picks from** (in-sample), it beats the current Max ROI fill on P(1st) on 6 or 7 of the 7 flagship contests.
-- **On a fresh draw of nights** (out of sample), it never beats Max ROI on P(1st). It is level or lower on most contests and gives up expected payout:
-  - **at the entered count:** level or lower on 5 of 7 contests, −$35.38 expected payout across the 7;
-  - **at 3 lineups:** lower on 7 of 7, −$57.96.
-
-The greedy is chasing the few nights (about 1–3% of 3,000) on which a lineup happened to win.
-
-**Top-1% coverage does better.** That is the existing "Max coverage" objective. Out of sample, it raises P(1st) over Max ROI on 4 to 6 of the 7 contests at every set size, with equal or higher expected payout.
-
-**P(1st) cannot be proven on real results.** At 1–4% a night, about a dozen graded nights give well under one expected 1st for any set, so every number here is in-sim.
-
-**Recommendation for the operator:** keep the flagship profile and its fill order, but run it on top-1% coverage rather than the win objective, until more nights say otherwise. The change is one line: the flagship's objective in `pickPortfolios`. It is not made here because the operator approved "win".
-
-## What was built
-
-### Contest profiles
+## What the profiles do
 
 Each contest you enter is recognised once, by its name and size. An override on the Fill step's Profiles screen is kept for that slate. It is never a nightly dial.
 
 | Profile | Recognised by | Filled |
 |---|---|---|
-| **Flagship (win)** | "Pull Up Jumper"; a late add of 100–800 entries | First, from the whole kept pool. `DKSim.pick` objective `win`: the added nights one of the set places 1st, weighted by the share of 1st's prize it takes; added expected payout breaks ties. Min unique is off; the 60/60 caps stay. P(1st) is shown at 2, 3 and 4 lineups. Its standings come first in the Swap step. |
-| **Main block** | "And-One", "Quarter Jukebox"; a late add of 800+ | One shared block, entered in every block contest. Each contest takes the block in order while it has entries. Picked greedily by the added expected payout summed over the contests it goes into (`DKSim.pickBlock`). A block lineup counts once per contest against the night cap and Max pair. Max contests per lineup allows the block's contests. |
-| **Main block · lab** | "Dime Time" | In the block, and the only contest a test idea's lineups can enter. |
-| **Qualifier (max ROI)** | "Qualifier" / "Satellite"; a late add under 100 entries | Max ROI, with no structural rule. |
+| **Flagship (top-1% coverage)** | "Pull Up Jumper"; by size 100–800 (the High Five, a late add) | First, **all flagships together** (`DKSim.pickJoint`): greedily by the added share of nights on which at least one flagship lineup reaches the top 1% of its own contest, with added expected payout as the tiebreak. Every flagship is simulated on the same nights. Min unique is off. P(1st) is shown at 2, 3 and 4 lineups. First in the Swap step's order. |
+| **Main (max ROI)** | "And-One", "Quarter Jukebox"; by size 800+ | Each contest by its own Max ROI, so each keeps its own diminishing returns. |
+| **Main · lab** | "Dime Time" | Max ROI, and the only contest a test idea's lineups can enter. |
+| **Qualifier (max ROI, chalk field)** | "Qualifier" / "Satellite"; by size under 100 | Max ROI, simulated against a chalk-leaning field. Qualifiers and satellites are winner-take-all: one ticket to 1st. |
 | **Standard** | override only | The fill as before (Start from). |
 
-How the block handles a short contest and a lone main contest:
+Rules that apply across profiles:
 
-- A block contest left short gets the fill's usual relax steps on its own: Max core 20%, then 25%, then Max exposure 70%.
-- A night with only one main contest fills it with that contest's own Max ROI.
+- **Lineup reuse.** A lineup can go into up to Max contests per lineup (3), flagship lineups included, within the 60% night cap.
+- **Caps and top-up.** The 60/60 caps and Auto top-up apply to every profile.
+- **Short sets.** A flagship left short gets the fill's usual relax steps on its own, by its top-1% coverage: Max core 20%, then 25%, then Max exposure 70%.
+- **Test ideas.** Each idea row in the Bank step has a **test** toggle. A marked idea's lineups go only into Dime Time: never the flagships, the And-One or the Quarter Jukebox.
 
-The 60/60 caps and Auto top-up apply to every profile.
+**Why coverage and not "win".** The first preview's "win" objective counted the nights a set places 1st. On fresh nights it did not beat Max ROI on P(1st) and it cost expected payout. Top-1% coverage did better on both. That comparison is in `fill_profiles_2026-11-24/flagship_compare*.jsonl`, from the script's version at commit 577892c. The operator chose coverage.
 
-**Test ideas.** Each idea row in the Bank step has a **test** toggle. A marked idea's lineups go only into the lab contest. The mark is kept with the bank and in Save build (`test_ideas`).
+**Fresh nights.** All flagship numbers on the page are scored on a fresh draw of nights, not the nights the set was picked on, because those flatter it.
 
-**Ticket contests.** DraftKings' lobby gives qualifiers and satellites no payout table. Their prize is taken as one ticket worth the prize pool, paid to 1st. This is an assumption; the screen marks it ("ticket: 1 to 1st (assumed)").
+### The qualifiers' chalk field
 
-**P(1st) on the page** is scored on a fresh draw of nights, not the ones the set was picked on, and is labelled "(fresh nights, in-sim)". The reason is the in-sample flattery shown below.
+Small winner-take-all fields lean to the chalk. The field builder (battle-royale-research `scripts/dk_cbb_field.py`) has a chalk style: projection on DraftKings' average alone, noise 0.10, fitted as a fifth of the field.
 
-**Field users (capture only).** `python3 scripts/dk_eval.py fieldusers --mirror ../br-adp-mirror` writes `analysis/cbb/dk/field_users.csv`. It takes each graded small contest (10–30 entries, or a qualifier / satellite under 100) and writes one row per user with:
+Rebuilding a field of that style in the page would need the optimizer, so the slate's own field is **reweighted** instead:
 
-- entries and distinct lineups;
-- the mean summed projected ownership of their lineups (own_sum, chalk-follow), and per player (own_avg);
-- the mean number of players projected under 5% (sub5, leverage).
+- its lineups are ranked by summed DraftKings average, which is what that style maximises;
+- the top fifth (the chalk-style lineups) makes up `QUAL_CHALK` = 80% of the qualifiers' field, each repeated, since chalk players land on the same lineup;
+- the other 20% is the remaining lineups, spread evenly.
 
-Projected ownership is the night record's `own`. The owner's own entries are left out. Today it has 13 rows from 2 contests; only two graded standings files are that small. Nothing reads it yet.
+On the 11-23 slate this moves the field's median summed projected ownership from 248% to 309%.
 
-### On the 11-23 build (157021)
+`QUAL_CHALK` is a first setting. It is to be refit from the real qualifier fields as `dk_eval.py fieldusers` captures them into `analysis/cbb/dk/field_users.csv`. That file has one row per user per graded small contest: entries, lineups, own_sum, own_avg, and sub5 (players under 5% projected). It has 13 rows so far.
 
-The build was loaded with the slate and simulated field as they stood at lock; the mirror's current file has dropped that slate's field. Fill all contests then:
+**What it shows.** The Profiles screen shows each qualifier's lineups' summed ownership against that field's median.
 
-- recognised 7 contests: 2 flagship (the $4K Pull Up Jumper, and the $750 High Five by its size of 178), 4 main block and Dime Time as the lab;
-- filled 79 of 79 entries;
-- shared 17 lineups across the main block, with the relax steps and Auto top-up filling the rest.
+**A finding.** On the 11-23 build (illustration below), Max ROI against the chalk field chose lineups at 202% and 209% against a 309% median. That is contrarian, not "chalk with a pivot or two". The pool is the reason:
 
-The flagship's P(1st) on fresh nights was 2.7% with 4 lineups (1.2% / 2.2% / 2.7% at 2 / 3 / 4). The full fill note is in `fill_profiles_2026-11-24/fill_note.txt`. The screenshots are `fill_profiles_2026-11-24/profiles_desktop.png` and `profiles_phone.png` (390px).
+- the build's 2,221 kept lineups have a median own sum of 207% and a 90th percentile of 245%;
+- only 1 of them reaches 309%.
 
-## The in-sim comparison
+The fill can only pick from what was banked. To land near chalk, the qualifiers need chalk lineups in their candidates. Two ways to add them, not done here (each is a new source of lineups for the fill):
 
-**Script.** `scripts/dk_flagship_compare.py` (driver) and `scripts/dk_flagship_compare.js`. It covers every saved build with a Pull Up Jumper entry: 7 contests on 6 nights, 11-16 to 11-23.
+- a chalk batch drawn for them;
+- the chalk field's own top lineups.
 
-**Data.** Each build's final pool, the slate and simulated field at lock, and the contest's seeded nights (seeded as the caps backtest seeds them).
+## Flagships together or apart: in-sim, fresh nights
 
-**Sets compared.** Under contest exposure 60% and Max core 15%, with a short set relaxed as the page relaxes it:
+**Script.** `scripts/dk_flagship_compare.py` (driver) and `scripts/dk_flagship_compare.js` → `fill_profiles_2026-11-24/flagship_joint.jsonl`.
 
-- **Max ROI:** the fill before profiles; Min unique 3.
-- **Win:** the flagship profile; Min unique off.
-- **Top-1% coverage:** Min unique 3.
-- **Entered:** the set actually entered.
+**Data.** Each saved build's final pool, plus the lineups it entered, with the slate and simulated field at lock and 3,000 nights.
 
-**Scoring.** Each set is scored on the nights it was picked on (in-sample) and on a second, independent draw (out of sample).
+**Sets compared.** Under contest exposure 60%, Max core 15% and Min unique off, with a short set relaxed as the page relaxes it:
 
-### 3,000 nights (the page's default)
+- **separate:** each flagship by its own Max coverage, the largest stake first;
+- **joint:** the flagship profile.
 
-P(1st) is the mean over the 7 contests. EV is expected payout, summed over the 7.
+Every flagship is simulated on the same nights. Each set is scored on a fresh, independent draw. **Joint coverage** is the share of nights on which at least one flagship lineup reaches the top 1% of its contest.
 
-| Set size | Score on | P(1st) Max ROI | P(1st) win | P(1st) top-1% | EV Max ROI | EV win | EV top-1% | Win vs Max ROI on P(1st) (higher / lower) |
-|---|---|---|---|---|---|---|---|---|
-| entered count | in-sample | 1.41% | 1.74% | 1.35% | $386.61 | $377.20 | $382.61 | 6 / 0 |
-| entered count | **fresh nights** | 1.14% | 1.10% | **1.29%** | $343.71 | $308.33 | **$348.77** | 2 / 4 |
-| 2 | **fresh nights** | 1.05% | 0.96% | **1.20%** | $322.81 | $284.80 | **$335.31** | 0 / 5 |
-| 3 | in-sample | 1.84% | 2.23% | 1.77% | $512.40 | $489.26 | $511.81 | 7 / 0 |
-| 3 | **fresh nights** | 1.49% | 1.30% | **1.63%** | $450.68 | $392.72 | **$469.64** | 0 / 7 |
-| 4 | in-sample | 2.39% | 2.95% | 2.32% | $655.89 | $640.86 | $655.44 | 7 / 0 |
-| 4 | **fresh nights** | 1.84% | 1.80% | **2.09%** | $571.05 | $519.94 | **$593.34** | 2 / 5 |
+Two of the eight builds entered two flagships. Five entered one, where joint and separate are the same set by construction. 11-17 entered none.
 
-**Top-1% coverage against Max ROI**, on fresh nights, by set size:
+| Night | Flagships (ours) | Set | Joint coverage | Pull Up Jumper top 1% | High Five top 1% | Expected payout, both |
+|---|---|---|---|---|---|---|
+| 11-20 main | $6K PUJ (3), $500 High Five (1) | separate | 7.10% | 6.47% | 3.30% | $83.36 |
+| | | **joint** | **8.30%** | 5.30% | 3.30% | **$69.41** |
+| | | entered | 7.43% | 5.40% | 3.10% | $70.94 |
+| 11-23 | $4K PUJ (4), $750 High Five (1) | separate | 10.77% | 10.77% | 2.47% | $103.95 |
+| | | **joint** | **13.70%** | 11.47% | 2.80% | **$105.13** |
+| | | entered | 10.93% | 10.93% | 3.10% | $106.20 |
 
-| Set size | Coverage higher on P(1st) | Coverage lower on P(1st) |
+**Difference, joint minus separate, on fresh nights:**
+
+| Night | Joint coverage | Expected payout |
 |---|---|---|
-| entered count | 5 | 1 |
-| 2 | 4 | 0 |
-| 3 | 4 | 1 |
-| 4 | 6 | 1 |
+| 11-20 | +1.20 points | −$13.95 |
+| 11-23 | +2.93 points | +$1.18 |
+| Both nights | | −$12.77 |
 
-At 10,000 nights (`flagship_compare_10000.jsonl`), the win objective's in-sample lead shrinks, and on fresh nights it is still no better than Max ROI:
+**Why joint helps.** Filled apart on 11-23, the High Five's lineup added no nights the Pull Up Jumper set didn't already cover: joint coverage equals the PUJ's own 10.77%. Picked together, the High Five lineup goes where the PUJ set misses.
 
-- **P(1st):** 1.05% against 1.16% at the entered count; 1.75% against 1.73% at 4.
-- **Expected payout:** $31–60 lower across the 7 at every set size.
+**Why it can cost.** On 11-20 the joint pick gave up $13.95 of expected payout in the PUJ for that coverage.
 
-Top-1% coverage is level with Max ROI or ahead on P(1st) (1.23% against 1.16% at the entered count; 1.90% against 1.73% at 4).
+In-sample, on the nights picked from, joint led on coverage on both nights:
 
-### By contest
+| Night | Joint coverage, joint | Joint coverage, separate | Expected payout, joint | Expected payout, separate |
+|---|---|---|---|---|
+| 11-20 | 9.73% | 8.57% | $78.23 | $92.84 |
+| 11-23 | 16.17% | 13.73% | $111.26 | $114.76 |
 
-3,000 nights, scored on fresh nights. Each cell is P(1st) / expected payout.
+**On the page (11-23 build, fresh nights):**
 
-| Night | Contest | Size | Ours | Entered | Max ROI | Win | Top-1% coverage |
-|---|---|---|---|---|---|---|---|
-| 11-16 | $6K Pull Up Jumper | 470 | 1 | 0.9% / $39.92 | 0.9% / $39.92 | 0.9% / $39.92 | 0.9% / $39.92 |
-| 11-18 | $7K Pull Up Jumper | 549 | 1 | 0.3% / $17.92 | 0.2% / $15.40 | 0.1% / $11.09 | 0.3% / $17.92 |
-| 11-19 | $3K Pull Up Jumper | 235 | 1 | 0.4% / $15.66 | 0.4% / $18.07 | 0.4% / $10.74 | 0.5% / $15.81 |
-| 11-19 | $6K Pull Up Jumper | 470 | 3 | 0.9% / $51.40 | 1.3% / $67.79 | 1.1% / $59.45 | 1.2% / $61.03 |
-| 11-20 | $3K Pull Up Jumper | 235 | 2 | 0.9% / $31.72 | 1.4% / $40.77 | 1.1% / $34.07 | 1.5% / $41.97 |
-| 11-20 | $6K Pull Up Jumper | 470 | 3 | 1.2% / $63.81 | 1.4% / $63.81 | 1.4% / $61.19 | 1.8% / $76.78 |
-| 11-23 | $4K Pull Up Jumper | 313 | 4 | 2.4% / $95.94 | 2.3% / $97.95 | 2.7% / $91.88 | 2.9% / $95.33 |
-
-### Why the win objective overfits
-
-A lineup places 1st on roughly 1 night in 100 or fewer, which is about 10–40 of the 3,000 nights. Picking to maximise the nights the set wins rewards lineups that happened to win on those particular nights, which is mostly noise. Expected payout and top-1% coverage use many more nights per lineup (every paid place, or the top 1%), so what they pick holds up on new nights.
+| Contest | Top-1% coverage | P(1st) |
+|---|---|---|
+| $4K Pull Up Jumper (4 lineups) | 11.5% | 2.9% |
+| $750 High Five (1 lineup) | 2.8% | 0.9% |
+| Together | 13.7% | |
 
 ### What this can and cannot say
 
-- **It is all in-sim.** The sim's field, projections and correlations are the same model the fill uses. A model error would hit every objective alike, and nothing here checks it.
-- **Real results cannot settle P(1st) yet.** About a dozen graded nights at 1–4% per night give under one expected 1st for any set. Telling a 1.3% set from a 1.6% one on real results would take hundreds of flagship nights.
-- **It is 7 contests on 6 nights,** one pool each.
-- **The fresh-night check is the honest in-sim test.** It is what the page now shows.
+- **Two nights.** The joint-vs-separate difference rests on 2 nights with two flagships. Both moved coverage the same way, and expected payout went opposite ways.
+- **All in-sim.** The field, projections and correlations are the model the fill uses; a model error hits both ways alike.
+- **Real results can't confirm it yet.** At a few percent a night, a dozen graded nights cannot confirm top-1% coverage or P(1st).
+
+## On the 11-23 build
+
+The build was loaded with the slate and simulated field as they stood at lock; the mirror's current file has dropped that slate's field. Fill all contests filled 79 of 79 entries (`fill_profiles_2026-11-24/fill_note.txt`):
+
+- **flagships:** together, as above;
+- **main contests and Dime Time:** each by its own Max ROI;
+- **$50 Quarter Jukebox:** left 2 short by the caps, then topped up by Auto top-up.
 
 ## Files
 
-- `dk.html`, `dk_sim.js` (`builder` win credit, `pick` objective `win`, `pickBlock`).
-- `tests/dk_page.js`: profiles, the win pick, the block and its night cap, the test toggle, the Swap order, the phone layout.
+- `dk.html`, `dk_sim.js`: `builder.score(k, ext)` joint coverage, `builder.cover1`, `pickJoint`.
+- `tests/dk_page.js`: profiles, joint coverage, per-contest main fills, the qualifier's WTA and chalk field, the test toggle, the Swap order, the phone layout.
 - `scripts/dk_eval.py fieldusers` → `analysis/cbb/dk/field_users.csv`.
-- `scripts/dk_flagship_compare.py` and `.js` → `fill_profiles_2026-11-24/flagship_compare.jsonl` (3,000 nights) and `flagship_compare_10000.jsonl`.
-- `fill_profiles_2026-11-24/profiles_desktop.png`, `profiles_phone.png`, `fill_note.txt` (11-23 build).
+- `scripts/dk_flagship_compare.py` and `.js` → `fill_profiles_2026-11-24/flagship_joint.jsonl`.
+- `fill_profiles_2026-11-24/`:
+  - `profiles_desktop.png` and `profiles_phone.png` (390px): the 11-23 build as entered;
+  - `profiles_with_qualifier_illustration.png`: the same build with 2 entries placed in the night's $150 King of the Bracket qualifier, for illustration only; the build entered no qualifier;
+  - `fill_note.txt`.

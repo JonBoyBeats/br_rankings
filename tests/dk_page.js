@@ -1189,7 +1189,7 @@ function audit(name, L, o) {
         new Set(pf[c]).size === pf[c].length), JSON.stringify(pf));
   const pfAll = Object.values(pf).flat();
   check("portfolios: each lineup in one contest only, the flagship first (its profile named)", new Set(pfAll).size === pfAll.length &&
-        /the flagship first, then the main block, then the rest by stake: CBB \$6K Pull Up Jumper \[\$2K to 1st\] \[Flagship \(win\)\]: 1 of 1, P\(1st\) \d+\.\d% \(at 2 \/ 3 \/ 4: /.test(pmsg), pmsg);
+        /the flagships first \(together\), then the main contests, then the rest by stake: CBB \$6K Pull Up Jumper \[\$2K to 1st\] \[Flagship \(top-1% coverage\)\]: 1 of 1, top 1% \d+\.\d%, P\(1st\) \d+\.\d% \(at 2 \/ 3 \/ 4: .+; the flagships together: one of them in its top 1% on \d+\.\d% of nights/.test(pmsg), pmsg);
   check("portfolios: each fills its entries, or says what stops it", Object.keys(size).every(c => pf[c].length === size[c]) || /short: .* stops it|runs out/.test(pmsg), pmsg);
   // a short set completes itself by relaxing one cap a step (C4) and says so: the audit holds it to what it reports
   const rxExpo = /Max exposure relaxed to 70%/.test(pmsg) ? 0.7 : 0.6, rxCore = /Max core relaxed to 25%/.test(pmsg) ? 0.25 : /Max core relaxed to 20%/.test(pmsg) ? 0.2 : 0.15;
@@ -1474,31 +1474,38 @@ function audit(name, L, o) {
   const pr1 = await pg.evaluate(() => {
     renderProfiles();
     const rowsP = [...document.querySelectorAll("#profList .prow")].map(r => r.dataset.cid), sel = document.querySelector('#profList select[data-cid="197791874"]');
-    const first = rowsP[0], sum = $("profSum").textContent, stat = (document.querySelector('#profList .prow[data-cid="197791872"] .pstat') || {}).textContent || "";
+    const first = rowsP[0], sum = $("profSum").textContent, stat = (document.querySelector('#profList .prow[data-cid="197791872"] .pstat') || {}).textContent || "", joint = ($("profJoint") || {}).textContent || "";
     sel.value = "qualifier"; sel.dispatchEvent(new Event("change", { bubbles: true }));
     const over = profileOf(slate.contests.find(c => String(c.id) === "197791874")), kept = (store(profKey()) || {})["197791874"];
     const sel2 = document.querySelector('#profList select[data-cid="197791874"]'); sel2.value = ""; sel2.dispatchEvent(new Event("change", { bubbles: true }));
-    return { rowsP, first, sum, stat, over, kept, back: profileOf(slate.contests.find(c => String(c.id) === "197791874")), keptAfter: (store(profKey()) || {})["197791874"] || null };
+    return { rowsP, first, sum, stat, joint, over, kept, back: profileOf(slate.contests.find(c => String(c.id) === "197791874")), keptAfter: (store(profKey()) || {})["197791874"] || null };
   });
-  check("profiles screen: each entered contest with its recognised profile (the flagship first) and a dropdown; an override is kept for the slate and Auto puts it back; after a fill the flagship shows P(1st) at 2 / 3 / 4 lineups",
-        pr1.rowsP.length === 3 && pr1.first === "197791872" && /^Contest profiles: Flagship \(win\) 2 · Main block 1$/.test(pr1.sum) && /^P\(1st\): \d+\.\d% with your 1 · at 2 \/ 3 \/ 4 lineups: \d+\.\d% \/ \d+\.\d% \/ \d+\.\d% \(fresh nights, in-sim\)$/.test(pr1.stat) &&
+  check("profiles screen: each entered contest with its recognised profile (the flagship first) and a dropdown; an override is kept for the slate and Auto puts it back; after a fill each flagship shows its top-1% coverage and P(1st) (at 2 / 3 / 4 lineups) on fresh nights, and the flagships' joint coverage",
+        pr1.rowsP.length === 3 && pr1.first === "197791872" && /^Contest profiles: Flagship \(top-1% coverage\) 2 · Main \(max ROI\) 1$/.test(pr1.sum) && /^Top 1%: \d+\.\d% of nights · P\(1st\) \d+\.\d% with your 1 · P\(1st\) at 2 \/ 3 \/ 4 lineups: (\d+\.\d%|–) \/ (\d+\.\d%|–) \/ (\d+\.\d%|–) \(fresh nights, in-sim\)$/.test(pr1.stat) &&
+        /^The flagships together: one of their lineups in its top 1% on \d+\.\d% of nights/.test(pr1.joint) &&
         pr1.over === "qualifier" && pr1.kept === "qualifier" && pr1.back === "main" && pr1.keptAfter === null, JSON.stringify(pr1));
-  // the win objective: the first pick is the lineup with the most win credit alone (value breaking ties); P(1st) rises with lineups
-  const win = await pg.evaluate(() => {
-    const c = slate.contests.find(x => String(x.id) === "197791872"), pool = finalIdx().map(bi => BANK.lineups[bi]), sim = DKSim.simulate(nightsCtx(c), pool, fieldFor(c), fieldDoc.z, c, 4, 1000);
-    const b = DKSim.builder(sim, c); let want = -1, wv = -Infinity;
-    for (let k = 0; k < pool.length; k++) { const sc = b.score(k), v = sc.win * 1e9 + sc.value; if (v > wv) { wv = v; want = k; } }
-    const o = Object.assign(pickRules(4), { objective: "win", minUnique: 1 }), r = DKSim.pick(ctx(), o, pool, sim, c, 4), roi = DKSim.pick(ctx(), Object.assign(pickRules(4), { objective: "roi" }), pool, sim, c, 4);
-    const at = [1, 2, 3, 4].map(j => { const bj = DKSim.builder(sim, c); bj.set(r.chosen.slice(0, j)); return bj.coverage().first; });
-    return { want, first: r.chosen[0], at, rising: at.every((x, i) => i === 0 || x >= at[i - 1] - 1e-12), winP: r.builder.coverage().first, roiP: roi.builder.coverage().first, winEV: r.builder.total(), roiEV: roi.builder.total() };
+  // the flagships' joint coverage: the PUJ and the High Five picked together on the same nights; the first pick is the
+  // (contest, lineup) reaching its top 1% on the most nights; the joint mask is the union of each set's own top-1% nights
+  const jt = await pg.evaluate(() => {
+    const cs2 = ["197791872", "197791877"].map(id => slate.contests.find(x => String(x.id) === id)), pool = finalIdx().map(bi => BANK.lineups[bi]), seed = 12345;
+    const sims = cs2.map(c => DKSim.simulate(Object.assign(ctx(), { random: DKSim.seeded(seed) }), pool, fieldFor(c), fieldDoc.z, c, 2, 1000));
+    const ns = [2, 1], o = Object.assign(pickRules(2), { minUnique: 1 }), r = DKSim.pickJoint(ctx(), o, pool, sims, cs2, ns);
+    let want = null, wv = -Infinity;
+    cs2.forEach((c, ci) => { const b = DKSim.builder(sims[ci], c), z = new Uint8Array(1000); for (let k = 0; k < pool.length; k++) { const sc = b.score(k, z), v = sc.joint * 1e9 + sc.value; if (v > wv) { wv = v; want = ci + ":" + k; } } });
+    const firstPick = (() => { for (let ci = 0; ci < 2; ci++) if (r.into[ci].length && (ci + ":" + r.into[ci][0]) === want) return want; return "none"; })();
+    const masks = r.builders.map(b => b.cover1()), uni = masks[0].map((v, a) => v || masks[1][a] ? 1 : 0), same = uni.every((v, a) => v === r.covered[a]);
+    const jc = r.covered.reduce((t, v) => t + v, 0) / 1000, own = r.builders.map(b => b.coverage().top1);
+    return { sizes: r.into.map(x => x.length), want, firstPick, same, jc, own };
   });
-  check("flagship win objective: first pick = the most win credit alone; P(1st) never falls as lineups are added (in-sim, " + win.at.map(x => (100 * x).toFixed(1) + "%").join(" / ") + "; Max ROI's 4: " + (100 * win.roiP).toFixed(1) + "%)",
-        win.first === win.want && win.rising && win.at[3] > 0, JSON.stringify(win));
-  // the main block: And-One, Quarter Jukebox and Dime Time share one set; a test idea goes only into Dime Time
+  check("flagships: joint top-1% coverage picks the PUJ and the High Five together (the first pick the most top-1% nights alone); the joint nights are the union of each set's (" + (100 * jt.jc).toFixed(1) + "% of nights, each alone " + jt.own.map(x => (100 * x).toFixed(1) + "%").join(" / ") + ")",
+        JSON.stringify(jt.sizes) === "[2,1]" && jt.firstPick === jt.want && jt.same && jt.jc >= Math.max(...jt.own) - 1e-12, JSON.stringify(jt));
+  // the main contests: And-One, Quarter Jukebox and Dime Time each filled by its own Max ROI (no shared block); a lineup
+  // in up to 3 contests (the flagships' included) under the night cap; a test idea only in Dime Time. A qualifier
+  // (winner-take-all) against the chalk field, its lineups' own sum shown against that field's median.
   const blk0 = await pg.evaluate(() => {
     const keep = {}; document.querySelectorAll("#entriesBox input[data-cid]").forEach(i => { keep[i.dataset.cid] = i.value; });
     const set = (cid, v) => { const i = document.querySelector('#entriesBox input[data-cid="' + cid + '"]'); i.value = String(v); };
-    set("197791874", 4); set("197791875", 4); set("197873654", 3);
+    set("197791874", 4); set("197791875", 4); set("197873654", 3); set("197873655", 2);
     const g = Object.entries(ideaCounts(finalIdx())).sort((a, b) => a[1] - b[1]).map(x => x[0]).find(x => !/Variants of the top/.test(x));   // the smallest idea
     BANK.test = { [g]: true }; bankSaveState(); renderBank(); renderEntries();
     return { keep, g, pf: JSON.stringify(PF), maxUse: $("maxUse").value };
@@ -1506,24 +1513,33 @@ function audit(name, L, o) {
   await pg.fill("#maxUse", "3");
   await pg.click("#pfRun");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
-  const blkN = await pg.evaluate(() => { const used = nightUsed(null), lk = fillLock(); return { max: Math.max(...Object.keys(used).filter(id => !lk[id]).map(id => used[id])), lim: nightLimit(),
-    pair: true, msg: (document.getElementById("cutStatus").textContent.match(/Main block: [^;]+/) || [""])[0] }; });
-  check("main block: a block lineup counts once per contest it goes into against the night cap (60%: no player past it)", blkN.max <= blkN.lim && /^Main block: /.test(blkN.msg), JSON.stringify(blkN));
-  const mnB = await pg.evaluate(() => { const v = $("maxNight").value; $("maxNight").value = ""; return v; });    // the fixture's 13-entry night: the cap splits the block
-  await pg.click("#pfRun");
-  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
-  await pg.evaluate(v => { $("maxNight").value = v; }, mnB);
   const blk = await pg.evaluate(g => {
     const A = PF["197791874"] || [], Q = PF["197791875"] || [], D = PF["197873654"] || [], st = document.getElementById("cutStatus").textContent;
     const uses = {}; Object.values(PF).forEach(v => v.forEach(bi => { uses[bi] = (uses[bi] || 0) + 1; }));
-    const testIn = bi => lineupGroups(bi).includes(g);
-    return { A: A.length, Q: Q.length, D: D.length, sharedAQ: A.filter(bi => Q.includes(bi)).length, aqSame: JSON.stringify(A.slice().sort()) === JSON.stringify(Q.slice().sort()),
-             dInBlock: D.filter(bi => !testIn(bi) && !A.includes(bi)).length <= (+((st.match(/Dime Time[^:]*: [^)]*?to fill (\d+) slot/) || [0, 0])[1])), testOut: !A.concat(Q).some(testIn), testInD: D.filter(testIn).length,
-             maxUses: Math.max(...Object.values(uses)), msg: (st.match(/Main block: [^;]+/) || [""])[0], lab: (document.querySelector('#profList .prow[data-cid="197873654"] .pstat') || {}).textContent || "" };
+    const testIn = bi => lineupGroups(bi).includes(g), used = nightUsed(null), lk = fillLock();
+    const flag = (PF["197791872"] || []).concat(PF["197791877"] || []);
+    return { A: A.length, Q: Q.length, D: D.length, testOut: !A.concat(Q, flag).some(testIn), maxUses: Math.max(...Object.values(uses)),
+             nightMax: Math.max(...Object.keys(used).filter(id => !lk[id]).map(id => used[id])), nightLim: nightLimit(),
+             own: /\$1\.25K And-One \[Main \(max ROI\)\]: \d of 4/.test(st) && /Quarter Jukebox \[Main \(max ROI\)\]: \d of 4/.test(st) && /Dime Time \[Just \$0\.10!\] \[Main · lab\]: \d of 3/.test(st),
+             lab: (document.querySelector('#profList .prow[data-cid="197873654"] .pstat') || {}).textContent || "" };
   }, blk0.g);
-  check("main block: And-One and Quarter Jukebox hold the same shared lineups; Dime Time takes the block's (plus test-idea ones and any relax top-up the note names); a test idea is never in the And-One or Quarter; a block lineup in up to 3 contests; the fill says so",
-        blk.A >= 3 && blk.aqSame && blk.D >= 2 && blk.dInBlock && blk.testOut && blk.maxUses <= 3 && /^Main block: \d+ lineups shared, \$1\.25K And-One \d of 4, \$200 Quarter Jukebox \d of 4, \$100 Dime Time \d of 3/.test(blk.msg) &&
-        /^Test ideas: /.test(blk.lab), JSON.stringify(blk));
+  check("main contests: And-One, Quarter Jukebox and Dime Time each by its own Max ROI; a lineup in up to 3 contests; a test idea never outside Dime Time; no player past the night cap",
+        blk.A >= 3 && blk.Q >= 3 && blk.D >= 1 && blk.own && blk.testOut && blk.maxUses <= 3 && blk.nightMax <= blk.nightLim && /^Test ideas: /.test(blk.lab), JSON.stringify(blk));
+  const mnQ = await pg.evaluate(() => { const v = $("maxNight").value; $("maxNight").value = ""; return v; });   // the fixture's 15-entry night: the cap can shut the qualifier out
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  await pg.evaluate(v => { $("maxNight").value = v; }, mnQ);
+  const qf = await pg.evaluate(() => {
+    const q = slate.contests.find(c => String(c.id) === "197873655"), m = slate.contests.find(c => String(c.id) === "197791874"), F = fieldOf();
+    const stat = (document.querySelector('#profList .prow[data-cid="197873655"] .pstat') || {}).textContent || "", nm = (document.querySelector('#profList .prow[data-cid="197873655"] .pname') || {}).textContent || "";
+    const fq = fieldFor(q), fm = fieldFor(m), dup = fq.length - new Set(fq.map(L => L.slice().sort().join())).size;
+    return { prof: profileOf(q), wta: JSON.stringify(q.payouts) === JSON.stringify([[1, 1, q.prizes]]), n: (PF["197873655"] || []).length, size: fq.length === fm.length,
+             medQ: fieldOwnMedian(fq), medM: fieldOwnMedian(fm), dup, stat, nm, pstats: PROF_STATS["197873655"],
+             msg: (document.getElementById("cutStatus").textContent.match(/Qualifier Satellite \[[^;]*/) || [""])[0], ns: entriesN()["197873655"] };
+  });
+  check("qualifier: winner-take-all (one ticket to 1st, no 'assumed'), simulated against the chalk field (the slate's field reweighted to its top fifth by DraftKings average: a higher own-sum median, repeated lineups), its lineups' own sum shown against that median",
+        qf.prof === "qualifier" && qf.wta && qf.n === 2 && qf.size && qf.medQ > qf.medM && qf.dup > 0 && /winner-take-all \(1 ticket\)/.test(qf.nm) && !/assumed/.test(qf.nm) &&
+        /^Own sum \d+% \/ \d+% vs the chalk field's median \d+%$/.test(qf.stat), JSON.stringify(qf));
   // the bank's test toggle on an idea row: one tap marks it (kept with the bank), another clears it
   const tt = await pg.evaluate(g => {
     showStep("bank"); renderBank();

@@ -1,6 +1,8 @@
 """Flagship comparison driver (2026-11-24, contest profiles; in-sim only): for each saved build (analysis/cbb/dk/builds),
 the slate and the simulated field as they stood at lock (the mirror's dk_cbb_morning.json and dk_cbb_field.json), then
-scripts/dk_flagship_compare.js on them. Writes analysis/cbb/dk/fill_profiles_2026-11-24/flagship_compare.jsonl.
+scripts/dk_flagship_compare.js on them (the flagships filled together against each apart). Writes
+analysis/cbb/dk/fill_profiles_2026-11-24/flagship_joint.jsonl. (flagship_compare*.jsonl there: the earlier "win"
+objective comparison, from this script's version at commit 577892c.)
 
   python3 scripts/dk_flagship_compare.py --mirror ../br-adp-mirror [--sims 3000]
 """
@@ -15,7 +17,7 @@ import tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 from dk_eval import DK, Mirror, at_lock, iso, slate_for  # noqa: E402
 
-OUT = os.path.join(DK, "fill_profiles_2026-11-24", "flagship_compare.jsonl")
+OUT = os.path.join(DK, "fill_profiles_2026-11-24", "flagship_joint.jsonl")
 
 
 def main():

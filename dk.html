@@ -1318,8 +1318,8 @@ function fieldFitText(fd) {
 function fieldBand(c) { var sz = (c && c.size) || 0; return sz >= 300 ? "large" : sz >= 30 ? "medium" : "small"; }
 function fieldFor(c) {
   var F = fieldOf(); if (!F) return null;
-  var b = F.bands && F.bands[fieldBand(c)];
-  return b && b.field && b.field.length ? b.field : F.field;
+  var b = F.bands && F.bands[fieldBand(c)], fd = b && b.field && b.field.length ? b.field : F.field;
+  return typeof profileOf === "function" && c && c.id != null && slate && profileOf(c) === "qualifier" ? qualField(fd) : fd;     // contest profiles: the qualifiers' chalk field
 }
 function ctx() {
   return { rows: rows, proj: proj, own: own, state: state, solver: solver, random: Math.random,
@@ -2057,7 +2057,7 @@ function renderBank() {
         var grouped = members[g].length > 1 || members[g][0] !== g;
         var tst = !!(BANK.test || {})[g];
         return "<tr><td><b>" + esc(g) + "</b>" + (grouped ? ' <button type="button" data-ungroup="' + esc(g) + '" style="height:20px;padding:0 6px;font-size:11px">Ungroup</button>' : "") +
-          ' <button type="button" class="ideaTest" data-test="' + esc(g) + '" aria-pressed="' + tst + '" title="A test idea: its lineups go only into the lab contest (Dime Time), never the And-One or Quarter Jukebox" style="height:20px;padding:0 6px;font-size:11px">' + (tst ? "test ✓" : "test") + "</button>" +
+          ' <button type="button" class="ideaTest" data-test="' + esc(g) + '" aria-pressed="' + tst + '" title="A test idea: its lineups go only into the lab contest (Dime Time), never the flagships, the And-One or the Quarter Jukebox" style="height:20px;padding:0 6px;font-size:11px">' + (tst ? "test ✓" : "test") + "</button>" +
           (function () {      // a group's tags fold away once it's grouped; a lone tag shows as it is
             var list = members[g].map(function (t) { return '<label style="display:block"><input type="checkbox" data-tag="' + esc(t) + '"> ' + esc(t) + " (" + tags[t] + ")</label>"; }).join("");
             return grouped ? '<details class="fold" data-fold-group="' + esc(g) + '"' + (FOLD.groups[g] ? " open" : "") + '><summary>' + members[g].length + " tag" +
@@ -2324,86 +2324,105 @@ async function pickPortfolios(into, objective) {
   // the rule until then): each contest has its own prizes, so a copy in another contest splits nothing. The largest
   // stake (fee x our entries) picks first; each later contest picks from the lineups not yet at the max
   var nOf = function (c) { return Math.min(ns[String(c.id)], c.max_per_user || 1); };
-  // contest profiles (2026-11-24): the flagship first, then the main block, then the rest, each by stake
+  // contest profiles (2026-11-24): the flagships first (together), then the main contests, then the rest, each by stake
   var prof = {}; cs.forEach(function (c) { prof[c.id] = profileOf(c); });
   var rankP = { flagship: 0, main: 1, lab: 1, qualifier: 2, standard: 2 };
   cs = cs.slice().sort(function (a, b) { return rankP[prof[a.id]] - rankP[prof[b.id]] || (b.entry_fee || 0) * nOf(b) - (a.entry_fee || 0) * nOf(a) || (b.entry_fee || 0) - (a.entry_fee || 0); });
-  var blockCs = cs.filter(function (c) { return prof[c.id] === "main" || prof[c.id] === "lab"; });
-  if (blockCs.length < 2) blockCs = [];      // a block of one is that contest's own Max ROI fill
+  var flagCs = cs.filter(function (c) { return prof[c.id] === "flagship"; });
   var all = finalIdx(), taken = {}, S = +$("nSims").value || 3000, size = all.length, maxUse = maxUses(), nightCount = {};
   var nightN = cs.reduce(function (a, c) { return a + nOf(c); }, 0), mp = +$("maxPair").value || 0, pairCount = {};
   var pairLimit = mp ? Math.max(1, Math.floor(mp / 100 * nightN + 1e-9)) : 0;
-  var msgs = [], blockDone = false;
-  /* the main block (DKSim.pickBlock): one shared set entered in each block contest (each takes it while it has entries
-     left), by the added expected payout summed over them; a lineup in m contests counts m against the night cap, Max
-     pair and Max contests per lineup (which allows the block's contests: 3 for And-One, Quarter and Dime Time) */
-  async function fillBlock(bc) {
-    var nB = bc.length, lim = Math.max(maxUse, nB), val = {};
+  var msgs = [];
+  if (into === PF) PROF_STATS = {};
+  /* the flagships together (DKSim.pickJoint): their lineups chosen at once, by the added share of nights on which one
+     of them reaches the top 1% of its own contest (added expected payout breaking ties), every flagship simulated on
+     the same nights (one seed); Min unique off (no overlap rule), the 60/60 caps on; a short flagship then gets the
+     fill's relax steps (Max core 20, 25%, Max exposure 70%) by its own top-1% coverage */
+  async function fillFlagships(fc) {
+    var nF = fc.length, val = {}, nl = nightLimit(), lk = fillLock();
     if (CUT && CUT.keep && CUT.board && CUT.board.values) CUT.keep.forEach(function (bi, k) { val[bi] = CUT.board.values[k] || 0; });
-    var byV = function (a, b) { return (val[b] || 0) - (val[a] || 0); };
-    var idx = all.filter(function (bi) { return (taken[bi] || 0) + nB <= lim; });
-    if (idx.length > 600) idx = idx.filter(function (bi) { return !isTest(bi); }).sort(byV).slice(0, 500).concat(idx.filter(isTest).sort(byV).slice(0, 100));
-    var pool = idx.map(function (bi) { return BANK.lineups[bi]; }), sims = [];
-    for (var q = 0; q < nB; q++) {
-      $("cutStatus").textContent = "Main block: simulating " + bc[q].name + " (" + (q + 1) + " of " + nB + ")…"; await tick();
-      sims.push(DKSim.simulate(nightsCtx(bc[q]), pool, fieldFor(bc[q]), fieldDoc.z, bc[q], nOf(bc[q]), S));
+    var idx = all.filter(function (bi) { return (taken[bi] || 0) < maxUse && !isTest(bi); });
+    if (nF > 1 && idx.length > 1500) idx = idx.sort(function (a, b) { return (val[b] || 0) - (val[a] || 0); }).slice(0, 1500);   // memory: one sim a flagship
+    var pool = idx.map(function (bi) { return BANK.lineups[bi]; }), seedJ = (nightsSeed() ^ Math.imul(+fc[0].id || 0, 2654435761)) >>> 0;
+    var shared = function (seed) { return Object.assign(ctx(), { random: DKSim.seeded(seed) }); }, sims = [];
+    for (var q = 0; q < nF; q++) {
+      $("cutStatus").textContent = "Flagships: simulating " + fc[q].name + " (" + (q + 1) + " of " + nF + ")…"; await tick();
+      sims.push(DKSim.simulate(shared(seedJ), pool, fieldFor(fc[q]), fieldDoc.z, fc[q], nOf(fc[q]), S));
     }
-    $("cutStatus").textContent = "Main block: picking up to " + Math.max.apply(null, bc.map(nOf)) + " shared lineups…"; await tick();
-    var cxB = ctx(), nl = nightLimit(), room = null;
-    cxB.state = Object.assign({}, state, { lock: fillLock() });
+    $("cutStatus").textContent = "Flagships: picking for top-1% coverage together…"; await tick();
+    var cxF = ctx(), room = null;
+    cxF.state = Object.assign({}, state, { lock: lk });
     if (nl < Infinity) { room = {}; rows.forEach(function (r0) { room[r0.id] = Math.max(0, nl - (nightCount[r0.id] || 0)); }); }
-    var o = Object.assign(pickRules(Math.max.apply(null, bc.map(nOf))), { room: room }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {});
-    var rb = DKSim.pickBlock(cxB, o, pool, sims, bc, bc.map(nOf), function (k, ci) { return !isTest(idx[k]) || prof[bc[ci].id] === "lab"; });
-    var shared = {}, tests = 0, got = [], relaxedB = [];
-    rb.into.forEach(function (ks, ci) {
-      var cid = String(bc[ci].id);
-      into[cid] = ks.map(function (k) { return idx[k]; });
-      into[cid].forEach(function (bi) { shared[bi] = 1; taken[bi] = (taken[bi] || 0) + 1; if (isTest(bi)) tests++; BANK.lineups[bi].ids.forEach(function (id) { nightCount[id] = (nightCount[id] || 0) + 1; }); });
+    var o = Object.assign(pickRules(Math.max.apply(null, fc.map(nOf))), { minUnique: 1, room: room, uses: {}, maxUse: maxUse }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {});
+    idx.forEach(function (bi, k) { if (taken[bi]) o.uses[k] = taken[bi]; });
+    var rj = DKSim.pickJoint(cxF, o, pool, sims, fc, fc.map(nOf)), relaxedF = [];
+    fc.forEach(function (c2, ci) {
+      var cid = String(c2.id);
+      into[cid] = rj.into[ci].map(function (k) { return idx[k]; });
+      into[cid].forEach(function (bi) { taken[bi] = (taken[bi] || 0) + 1; BANK.lineups[bi].ids.forEach(function (id) { nightCount[id] = (nightCount[id] || 0) + 1; }); });
     });
-    /* a block contest left short: the fill's C4 steps on that contest alone (Max core 20, then 25%, then Max exposure
-       70%; never the night cap or Min unique), topping up by coverage from the lineups it may still take */
-    for (var ci = 0; ci < nB; ci++) {
-      var c2 = bc[ci], cid2 = String(c2.id), n2 = nOf(c2), have = into[cid2];
+    for (var ci = 0; ci < nF; ci++) {          // a short flagship: the relax steps on its own, by its top-1% coverage
+      var c2 = fc[ci], cid2 = String(c2.id), n2 = nOf(c2), have = into[cid2];
       if (have.length >= n2) continue;
-      var lab = prof[c2.id] === "lab", idx2 = have.concat(all.filter(function (bi) { return have.indexOf(bi) < 0 && (taken[bi] || 0) < lim && (lab || !isTest(bi)); }));
-      var pool2 = idx2.map(function (bi) { return BANK.lineups[bi]; }), sim2 = DKSim.simulate(nightsCtx(c2), pool2, fieldFor(c2), fieldDoc.z, c2, n2, S), cxR = ctx(), mine = {};
+      var idx2 = have.concat(all.filter(function (bi) { return have.indexOf(bi) < 0 && (taken[bi] || 0) < maxUse && !isTest(bi); }));
+      var pool2 = idx2.map(function (bi) { return BANK.lineups[bi]; }), sim2 = DKSim.simulate(shared(seedJ), pool2, fieldFor(c2), fieldDoc.z, c2, n2, S), cxR = ctx(), mine = {};
       have.forEach(function (bi) { BANK.lineups[bi].ids.forEach(function (id) { mine[id] = (mine[id] || 0) + 1; }); });
       if (nl < Infinity) {          // the night cap as his Max% here: his room tonight plus his entries already here
         var capR = Object.assign({}, state.cap);
-        rows.forEach(function (r0) { if (fillLock()[r0.id]) return; var rm = Math.max(0, nl - (nightCount[r0.id] || 0)) + (mine[r0.id] || 0);
+        rows.forEach(function (r0) { if (lk[r0.id]) return; var rm = Math.max(0, nl - (nightCount[r0.id] || 0)) + (mine[r0.id] || 0);
           if (rm < n2) capR[r0.id] = Math.min(capR[r0.id] != null && capR[r0.id] !== "" ? +capR[r0.id] : 100, 100 * (rm + 1e-6) / n2); });
         cxR.state = Object.assign({}, state, { cap: capR });
       }
-      cxR.state = Object.assign({}, cxR.state || state, { lock: fillLock() });
-      var po2 = Object.assign(pickRules(n2), pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), pre = have.map(function (_, q) { return q; }), r2 = null, steps = [];
+      cxR.state = Object.assign({}, cxR.state || state, { lock: lk });
+      var po2 = Object.assign(pickRules(n2), { minUnique: 1 }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), pre = have.map(function (_, q2) { return q2; }), steps = [];
       if (po2.maxCore != null && po2.maxCore < 0.2) steps.push([{ maxCore: 0.2 }, "Max core relaxed to 20%"]);
       if (po2.maxCore != null && po2.maxCore < 0.25) steps.push([{ maxCore: 0.25 }, "Max core relaxed to 25%"]);
       if (po2.maxExpo < 0.7) steps.push([{ maxCore: po2.maxCore != null ? Math.max(po2.maxCore, 0.25) : null, maxExpo: 0.7 }, "Max exposure relaxed to 70%"]);
       for (var si = 0; si < steps.length && pre.length < n2; si++) {
         var pc0 = pairLimit ? Object.assign({}, pairCount) : null;
-        r2 = DKSim.pick(cxR, Object.assign({}, po2, steps[si][0], { objective: "cover", preset: pre }, pairLimit ? { pairCount: pc0 } : {}), pool2, sim2, c2, n2);
+        var r2 = DKSim.pick(cxR, Object.assign({}, po2, steps[si][0], { objective: "cover", preset: pre }, pairLimit ? { pairCount: pc0 } : {}), pool2, sim2, c2, n2);
         if (r2.chosen.length > pre.length) {
-          relaxedB.push(nbShort(c2.name) + ": " + steps[si][1] + " to fill " + (r2.chosen.length - pre.length) + " slot" + (r2.chosen.length - pre.length === 1 ? "" : "s"));
+          relaxedF.push(nbShort(c2.name) + ": " + steps[si][1] + " to fill " + (r2.chosen.length - pre.length) + " slot" + (r2.chosen.length - pre.length === 1 ? "" : "s"));
           r2.chosen.slice(pre.length).forEach(function (k) { var bi = idx2[k]; into[cid2].push(bi); taken[bi] = (taken[bi] || 0) + 1; BANK.lineups[bi].ids.forEach(function (id) { nightCount[id] = (nightCount[id] || 0) + 1; }); });
           pre = r2.chosen.slice();
           if (pairLimit) { Object.keys(pairCount).forEach(function (k) { delete pairCount[k]; }); Object.assign(pairCount, pc0); }
         }
       }
     }
-    var ev = 0, fee = 0;
-    bc.forEach(function (c2) { var L = into[String(c2.id)], bb = DKSim.builder(DKSim.simulate(nightsCtx(c2), L.map(function (bi) { return BANK.lineups[bi]; }), fieldFor(c2), fieldDoc.z, c2, L.length, S), c2);
-      bb.set(L.map(function (_, q) { return q; })); ev += bb.total(); fee += (c2.entry_fee || 0) * L.length; });
-    return "Main block: " + Object.keys(shared).length + " lineups shared, " + bc.map(function (c2) { return nbShort(c2.name) + " " + into[String(c2.id)].length + " of " + nOf(c2); }).join(", ") +
-      (tests ? ", " + tests + " test-idea lineup" + (tests === 1 ? "" : "s") + " in the lab only" : "") + (relaxedB.length ? " (" + relaxedB.join("; ") + ")" : "") +
-      " (expected back " + cents(ev) + " on " + cents(fee) + ")";
+    /* scored on a FRESH draw of nights (shared by the flagships): on the nights a set was picked on it flatters itself
+       (fill_profiles_2026-11-24.md). Each flagship's top-1% coverage and P(1st), its P(1st) at 2, 3 and 4 lineups
+       (its own coverage pick run to 4), and the flagships' joint coverage: nights one of them reaches its top 1% */
+    var seedF = (seedJ ^ 0x5eed0b5) >>> 0, joint = null, lines = [];
+    for (var cj = 0; cj < nF; cj++) {
+      var c3 = fc[cj], cid3 = String(c3.id), L = into[cid3], fpos = {}, list = L.slice();
+      var o4 = Object.assign(pickRules(4), { minUnique: 1, objective: "cover" }), r4 = DKSim.pick(cxF, o4, pool, sims[cj], c3, 4);
+      [{ maxCore: 0.2 }, { maxCore: 0.25 }, { maxCore: 0.25, maxExpo: Math.max(o4.maxExpo, 0.7) }].forEach(function (x) {      // as the fill relaxes a short set
+        if (r4.chosen.length < 4) r4 = DKSim.pick(cxF, Object.assign({}, o4, x, { preset: r4.chosen }), pool, sims[cj], c3, 4); });
+      r4.chosen.forEach(function (k) { if (list.indexOf(idx[k]) < 0) list.push(idx[k]); });
+      list.forEach(function (bi, q3) { fpos[bi] = q3; });
+      var fresh = DKSim.simulate(shared(seedF), list.map(function (bi) { return BANK.lineups[bi]; }), fieldFor(c3), fieldDoc.z, c3, Math.max(nOf(c3), 4), S);
+      var onF = function (bis) { var bf = DKSim.builder(fresh, c3); bf.set(bis.map(function (bi) { return fpos[bi]; })); return bf; };
+      var at = [], bset = onF(L), cov = bset.coverage();
+      for (var j = 1; j <= r4.chosen.length; j++) at.push(onF(r4.chosen.slice(0, j).map(function (k) { return idx[k]; })).coverage().first);
+      var m1 = bset.cover1();
+      if (!joint) joint = new Uint8Array(m1.length);
+      for (var a2 = 0; a2 < m1.length; a2++) if (m1[a2]) joint[a2] = 1;
+      var st1 = { at: at, set: cov.first, top1: cov.top1, n: L.length, ev: bset.total(), fee: (c3.entry_fee || 0) * L.length };
+      if (into === PF) PROF_STATS[cid3] = st1;
+      var tcF = DKSim.topCore(ctx(), L.map(function (bi) { return BANK.lineups[bi]; }));
+      lines.push(c3.name + " [" + PROF_NAMES.flagship + "]: " + L.length + " of " + nOf(c3) + ", top 1% " + pct1(st1.top1) + ", P(1st) " + pct1(st1.set) +
+        " (at 2 / 3 / 4: " + [1, 2, 3].map(function (q4) { return at[q4] != null ? pct1(at[q4]) : "–"; }).join(" / ") + ")" +
+        (tcF ? ", largest core " + coreName(tcF.key) + " in " + tcF.n + " (" + Math.round(100 * tcF.share) + "%)" : "") + " (expected back " + cents(st1.ev) + " on " + cents(st1.fee) + ")");
+    }
+    var jt = joint ? joint.reduce(function (t, v) { return t + v; }, 0) / joint.length : 0;
+    if (into === PF) PROF_STATS._joint = { joint: jt, n: nF };
+    return lines.join("; ") + (nF > 1 ? "; the flagships together: one of them in its top 1% on " + pct1(jt) + " of nights" : "") +
+      (relaxedF.length ? " (" + relaxedF.join("; ") + ")" : "") + " (fresh nights, in-sim)";
   }
-  if (into === PF) PROF_STATS = {};
+  if (flagCs.length) msgs.push(await fillFlagships(flagCs));
   for (var i = 0; i < cs.length; i++) {
     var c = cs[i], n = nOf(c), pr = prof[c.id];
-    if (blockCs.indexOf(c) >= 0) {
-      if (!blockDone) { blockDone = true; msgs.push(await fillBlock(blockCs)); }
-      continue;
-    }
+    if (pr === "flagship") continue;
     // a "test" idea's lineups go only into the lab (Dime Time)
     var idx = all.filter(function (bi) { return (taken[bi] || 0) < maxUse && (pr === "lab" || !isTest(bi)); }), pool = idx.map(function (bi) { return BANK.lineups[bi]; });
     $("cutStatus").textContent = "Picking " + n + " for " + c.name + " from " + pool.length + " left…"; await tick();
@@ -2420,10 +2439,11 @@ async function pickPortfolios(into, objective) {
       cxN.state = Object.assign({}, state, { cap: capN });
     }
     cxN.state = Object.assign({}, cxN.state || state, { lock: fillLock() });
-    // the profile's objective: the flagship for the win (no overlap rule: Min unique off), the qualifiers and a lone
-    // main-block contest Max ROI, a standard contest the Start from choice
-    var obj = pr === "flagship" ? "win" : pr === "standard" ? objective || "roi" : "roi";
-    var po = Object.assign(pickRules(n), { objective: obj }, pr === "flagship" ? { minUnique: 1 } : {}, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(cxN, po, pool, sim, c, n);
+    // the profile's objective: main, lab and qualifier contests Max ROI (each its own set, so its returns diminish;
+    // a lineup in up to Max contests per lineup, the flagships' included, under the night cap), a standard contest the
+    // Start from choice
+    var obj = pr === "standard" ? objective || "roi" : "roi";
+    var po = Object.assign(pickRules(n), { objective: obj }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(cxN, po, pool, sim, c, n);
     /* C4 (2026-11-20, the operator's plan): a short set completes itself. Keeping what it picked, relax ONE cap a step at
        a time (Max core 15 -> 20 -> 25%, then Max exposure up to 70%; never the night cap, never Min unique) and top the
        rest up by coverage (the rise in nights one of the set reaches the top 1%), still under every other cap; say so. */
@@ -2435,7 +2455,7 @@ async function pickPortfolios(into, objective) {
       if (po.maxExpo < 0.7) steps.push(["expo", { maxCore: po.maxCore != null ? Math.max(po.maxCore, 0.25) : null, maxExpo: 0.7 }, "Max exposure relaxed to 70%"]);
       for (var si = 0; si < steps.length && r.chosen.length < n; si++) {
         var pc2 = pairLimit ? Object.assign({}, pairsBefore) : null, had = r.chosen.length;
-        var r2 = DKSim.pick(cxN, Object.assign({}, po, steps[si][1], { objective: pr === "flagship" ? "win" : "cover", preset: r.chosen }, pairLimit ? { pairCount: pc2 } : {}), pool, sim, c, n);
+        var r2 = DKSim.pick(cxN, Object.assign({}, po, steps[si][1], { objective: "cover", preset: r.chosen }, pairLimit ? { pairCount: pc2 } : {}), pool, sim, c, n);
         if (r2.chosen.length > had) {
           r = r2; relaxed.push(steps[si][2] + " to fill " + (r2.chosen.length - had) + " slot" + (r2.chosen.length - had === 1 ? "" : "s"));
           if (pairLimit) { Object.keys(pairCount).forEach(function (k) { delete pairCount[k]; }); Object.assign(pairCount, pc2); }
@@ -2454,20 +2474,10 @@ async function pickPortfolios(into, objective) {
             "the final pool runs out under the caps together") + "; raise Keep, or loosen it";
     }
     var tc = DKSim.topCore(ctx(), r.chosen.map(function (k) { return pool[k]; })), p1 = "";
-    if (pr === "flagship") {
-      /* the set's P(1st), and at 2, 3 and 4 lineups (the win pick run to 4 on the same caps), scored on a FRESH draw of
-         nights: on the nights a set was picked from, the win pick flatters itself (fill_profiles_2026-11-24.md: in-sample
-         it led Max ROI on P(1st) on 6-7 of 7 nights, on fresh nights it didn't) */
-      var r4 = DKSim.pick(cxN, Object.assign({}, po, pairLimit ? { pairCount: Object.assign({}, pairsBefore) } : {}), pool, sim, c, 4), at = [];
-      var ks = r.chosen.concat(r4.chosen.filter(function (k) { return r.chosen.indexOf(k) < 0; })), posK = {};
-      ks.forEach(function (k, q) { posK[k] = q; });
-      var fresh = DKSim.simulate(Object.assign(ctx(), { random: DKSim.seeded((nightsSeed() ^ Math.imul(+c.id || 0, 2654435761) ^ 0x5eed0b5) >>> 0) }),
-                                 ks.map(function (k) { return pool[k]; }), fieldFor(c), fieldDoc.z, c, Math.max(n, 4), S);
-      var onF = function (list) { var bf = DKSim.builder(fresh, c); bf.set(list.map(function (k) { return posK[k]; })); return bf; };
-      for (var j = 1; j <= r4.chosen.length; j++) at.push(onF(r4.chosen.slice(0, j)).coverage().first);
-      var bset = onF(r.chosen), st1 = { at: at, set: bset.coverage().first, n: r.chosen.length, ev: bset.total(), fee: (c.entry_fee || 0) * r.chosen.length };
-      if (into === PF) PROF_STATS[String(c.id)] = st1;
-      p1 = ", P(1st) " + pct1(st1.set) + " (at 2 / 3 / 4: " + [1, 2, 3].map(function (q) { return at[q] != null ? pct1(at[q]) : "–"; }).join(" / ") + ")";
+    if (pr === "qualifier") {      // its lineups' summed projected ownership against its (chalk-leaning) field's median
+      var ownS = r.chosen.map(function (k) { return ownSum(pool[k].ids); }), fmed = fieldOwnMedian(fieldFor(c));
+      if (into === PF) PROF_STATS[String(c.id)] = { own: ownS, fieldMed: fmed };
+      p1 = ", own sum " + ownS.map(function (x) { return Math.round(x) + "%"; }).join(" / ") + " vs the field's median " + Math.round(fmed) + "%";
     }
     msgs.push(c.name + " [" + PROF_NAMES[pr] + "]: " + r.chosen.length + " of " + n + p1 + (relaxed.length ? " (" + relaxed.join("; ") + ")" : "") + why + (tc ? ", largest core " + coreName(tc.key) + " in " + tc.n + " (" + Math.round(100 * tc.share) + "%)" : "") + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
       ", one cashes in " + Math.round(100 * r.builder.coverage().cash) + "% of nights)");
@@ -2475,28 +2485,28 @@ async function pickPortfolios(into, objective) {
   if (into === PF) { pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES; }
   var night = DKSim.topCore(ctx(), Object.keys(into).reduce(function (a, k) { return a.concat(into[k].map(function (bi) { return BANK.lineups[bi]; })); }, []));
   return (night ? "Largest core across the night's " + night.of + " entries: " + coreName(night.key) + " in " + night.n + " (" + Math.round(100 * night.share) + "%). " : "") +
-    "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + " on the slate's nights (#" + nightsSeed() + "), each lineup in " + (maxUse === 1 ? "one contest only" : "at most " + maxUse + " contests") + ", the flagship first, then the main block, then the rest by stake: " +
+    "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + " on the slate's nights (#" + nightsSeed() + "), each lineup in " + (maxUse === 1 ? "one contest only" : "at most " + maxUse + " contests") + ", the flagships first (together), then the main contests, then the rest by stake: " +
     msgs.join("; ") + ". Review any one below." +
     (ENTRIES ? "" : " Load the entries file to export them.");
 }
 
 /* Contest profiles (2026-11-24, the operator): each contest you enter is recognised once, by its name and size, and
    filled for its job; an override is kept with the slate (Profiles, in the Fill step), never a nightly dial.
-     flagship   the $15 Pull Up Jumper (a late add of 100-800 entries): filled first, from the whole kept pool, for the
-                win: DKSim.pick's "win" (the added nights one of the set places 1st, weighted by the share of 1st's
-                prize it takes; added expected payout breaking ties), no overlap rule (Min unique off); its P(1st) at 2,
-                3 and 4 lineups shown; first in the Swap step's order
-     main       And-One, Quarter Jukebox (a late add of 800+): one shared block of up to 20 lineups entered in each,
-                picked by the added expected payout summed over the block's contests (DKSim.pickBlock); Max contests
-                per lineup allows the block's contests
-     lab        Dime Time: in the block, and the only contest a "test" idea's lineups go into (the bank's test toggle)
-     qualifier  ticket contests and the small ones (10-30 entries; a late add under 100): Max ROI, no structural rule
+     flagship   the $15 Pull Up Jumper, and by size (100-800 entries) the High Five or a late add: filled first, all
+                flagships together (DKSim.pickJoint): the added share of nights on which one of their lineups reaches
+                the top 1% of its own contest, added expected payout breaking ties; Min unique off; first in the Swap
+                step's order. (Decided 2026-11-24 over a "win" objective, which overfit: fill_profiles_2026-11-24.md.)
+     main       And-One, Quarter Jukebox (a late add of 800+): Max ROI, each contest its own set
+     lab        Dime Time: Max ROI, and the only contest a "test" idea's lineups go into (the bank's test toggle)
+     qualifier  qualifiers / satellites (winner-take-all: one ticket to 1st) and the small ones (a late add under 100):
+                Max ROI against a chalk-leaning field (qualField)
      standard   the fill as before (Start from)
-   The 60/60 caps and Auto top-up apply to every profile. */
-var PROF_NAMES = { flagship: "Flagship (win)", main: "Main block", lab: "Main block · lab", qualifier: "Qualifier (max ROI)", standard: "Standard" };
-var PROF_STATS = {};      // after a fill, each flagship's {at: P(1st) at 1-4 lineups, set, n, ev, fee}
-/* A ticket contest (a qualifier or satellite) has no payout table in DraftKings' lobby: its prize is taken as one
-   ticket worth the prize pool to 1st (assumed: the lobby lists the pool, not the ticket count), marked ticket. */
+   A lineup goes in up to Max contests per lineup (the flagships' included) under the 60% night cap; the 60/60 caps and
+   Auto top-up apply to every profile. */
+var PROF_NAMES = { flagship: "Flagship (top-1% coverage)", main: "Main (max ROI)", lab: "Main · lab", qualifier: "Qualifier (max ROI, chalk field)", standard: "Standard" };
+var PROF_STATS = {};      // after a fill: each flagship's {at, set, top1, n, ev, fee}, _joint, each qualifier's {own, fieldMed}
+/* A qualifier or satellite pays one ticket to 1st (winner-take-all, the operator 2026-11-24); DraftKings' lobby lists
+   no payout table for them, so the prize pool is the ticket. */
 function ticketTables(s) {
   ((s && s.contests) || []).forEach(function (c) {
     if (!c.payouts && c.prizes > 0 && /qualifier|satellite/i.test(c.name || "")) { c.payouts = [[1, 1, c.prizes]]; c.ticket = true; }
@@ -2508,12 +2518,39 @@ function profileAuto(c) {
   if (/dime time/i.test(nm)) return "lab";
   if (/and-one|quarter jukebox/i.test(nm)) return "main";
   if (c.ticket || /qualifier|satellite/i.test(nm)) return "qualifier";
-  return n < 100 ? "qualifier" : n < 800 ? "flagship" : "main";        // a late add, by its size
+  return n < 100 ? "qualifier" : n < 800 ? "flagship" : "main";        // by size: the High Five, a late add
 }
 function profKey() { return "dkcbb-prof:" + slate.draft_group_id; }
 function profileOf(c) { var o = (store(profKey()) || {})[String(c.id)]; return PROF_NAMES[o] ? o : profileAuto(c); }
 // a lineup of an idea (group) marked "test" in the bank: into the lab only
 function isTest(bi) { var T = (BANK && BANK.test) || {}; return Object.keys(T).length > 0 && lineupGroups(bi).some(function (g) { return T[g]; }); }
+function ownSum(ids) { return ids.reduce(function (t, id) { var r = byId(id); return t + (r ? own(r) : 0); }, 0); }
+function fieldOwnMedian(F) {
+  if (!F || !F.length) return 0;
+  var v = F.map(ownSum).sort(function (a, b) { return a - b; });
+  return v[Math.floor(v.length / 2)];
+}
+/* The qualifiers' field (2026-11-24): small winner-take-all fields lean to the chalk. The field builder's chalk style
+   (battle-royale-research dk_cbb_field.py FIELD_STYLES: projection on DraftKings' average alone, noise 0.10) is a fifth
+   of the slate's field; rebuilding a field of it here would need the optimizer, so the slate's field is reweighted
+   instead. Its lineups ranked by their summed DraftKings average (what that style maximises): the top fifth, the
+   chalk-style lineups, make up QUAL_CHALK of the qualifiers' field (each repeated, as chalk players land on the same
+   lineup), the rest the remaining lineups in order. QUAL_CHALK is a first setting, to be refit from the qualifier
+   fields dk_eval fieldusers captures (field_users.csv) as they accrue. */
+var QUAL_CHALK = 0.8, QF = { key: null, base: null, field: null };
+function qualField(base) {
+  if (!base || !base.length) return base;
+  var key = String(slate && slate.draft_group_id) + ":" + base.length + ":" + Object.keys(state.outs || {}).join(",");
+  if (QF.base === base && QF.key === key) return QF.field;
+  var dkAvg = function (ids) { return ids.reduce(function (t, id) { var r = byId(id); return t + (r ? (r.status === "Out" ? 0 : +r.dk_avg || proj(r)) : 0); }, 0); };
+  var ranked = base.map(function (L, i) { return [dkAvg(L), i]; }).sort(function (x, y) { return y[0] - x[0] || x[1] - y[1]; }).map(function (x) { return base[x[1]]; });
+  var top = ranked.slice(0, Math.max(1, Math.round(0.2 * ranked.length))), rest = ranked.slice(top.length), N = base.length, out = [];
+  var nTop = Math.round(QUAL_CHALK * N);
+  for (var i = 0; i < nTop; i++) out.push(top[i % top.length]);
+  for (var j = 0; out.length < N && rest.length; j++) out.push(rest[Math.floor(j * rest.length / (N - nTop))] || rest[rest.length - 1]);
+  QF = { key: key, base: base, field: out };
+  return out;
+}
 function renderProfiles() {
   var el = $("profList"); if (!el || !slate) return;
   var cs = nbContests(), ov = store(profKey()) || {}, rank = { flagship: 0, main: 1, lab: 1, qualifier: 2, standard: 2 };
@@ -2524,14 +2561,17 @@ function renderProfiles() {
     var c = x.c, cid = String(c.id), p = profileOf(c), auto = profileAuto(c), st = PROF_STATS[cid];
     count[p] = (count[p] || 0) + 1;
     return '<div class="prow" data-cid="' + esc(cid) + '"><div class="pname"><b>' + esc(nbShort(c.name)) + "</b> <span class=\"mut\">" + (c.size || 0).toLocaleString() + " entries · " + money(c.entry_fee) +
-      " · ours " + x.n + (c.ticket ? " · ticket: 1 to 1st (assumed)" : "") + "</span></div>" +
+      " · ours " + x.n + (c.ticket ? " · winner-take-all (1 ticket)" : "") + "</span></div>" +
       '<select data-cid="' + esc(cid) + '" aria-label="Profile for ' + esc(c.name) + '">' + '<option value="">Auto: ' + esc(PROF_NAMES[auto]) + "</option>" +
       Object.keys(PROF_NAMES).map(function (k) { return '<option value="' + k + '"' + (ov[cid] === k ? " selected" : "") + ">" + esc(PROF_NAMES[k]) + "</option>"; }).join("") + "</select>" +
-      (p === "flagship" && st ? '<div class="pstat">P(1st): ' + pct1(st.set) + " with your " + st.n + " · at 2 / 3 / 4 lineups: " + [1, 2, 3].map(function (q) { return st.at[q] != null ? pct1(st.at[q]) : "–"; }).join(" / ") +
+      (p === "flagship" && st && st.at ? '<div class="pstat">Top 1%: ' + pct1(st.top1) + " of nights · P(1st) " + pct1(st.set) + " with your " + st.n + " · P(1st) at 2 / 3 / 4 lineups: " +
+        [1, 2, 3].map(function (q) { return st.at[q] != null ? pct1(st.at[q]) : "–"; }).join(" / ") +
         ' <span title="On a fresh draw of nights, not the ones the set was picked from (those flatter it). In-sim only: at 1-4% a night, a dozen graded nights cannot confirm it.">(fresh nights, in-sim)</span></div>' : "") +
+      (p === "qualifier" && st && st.own ? '<div class="pstat">Own sum ' + st.own.map(function (v) { return Math.round(v) + "%"; }).join(" / ") + " vs the chalk field's median " + Math.round(st.fieldMed) + "%</div>" : "") +
       (p === "lab" ? '<div class="pstat">Test ideas: ' + (tests.length ? esc(tests.join(", ")) : "none marked (Bank step: test on an idea's row)") + "</div>" : "") + "</div>";
-  }).join("") + '<div class="note">Fill order: the flagship first (the whole kept pool), then the main block (one shared set' +
-    ((count.main || 0) + (count.lab || 0) > 1 ? "" : "; with one main contest it is that contest's Max ROI fill") + "), then the rest by stake. The 60/60 caps and Auto top-up apply to all.</div>";
+  }).join("") + (PROF_STATS._joint && PROF_STATS._joint.n > 1 ? '<div class="note" id="profJoint">The flagships together: one of their lineups in its top 1% on ' + pct1(PROF_STATS._joint.joint) + " of nights (fresh nights, in-sim).</div>" : "") +
+    '<div class="note">Fill order: the flagships first, together (the whole kept pool), then each main contest by its own Max ROI, then the rest by stake; a lineup in up to ' +
+    maxUses() + " contests under the 60% night cap. The 60/60 caps and Auto top-up apply to all.</div>";
   $("profSum").textContent = "Contest profiles: " + Object.keys(PROF_NAMES).filter(function (k) { return count[k]; }).map(function (k) { return PROF_NAMES[k] + " " + count[k]; }).join(" · ");
 }
 $("profList").addEventListener("change", function (e) {
