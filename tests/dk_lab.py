@@ -70,13 +70,15 @@ try:
     E.lab()
     out = json.load(open(E.LAB))
     ex = {e["id"]: e["results"]["arms"] for e in out["experiments"]}
-    want_a = pct(score[0]) - (pct(score[1]) + pct(score[3]) + pct(score[7])) / 3    # 3 and 7 are game groups too (B's players), as registered
-    want_b = pct(score[2]) - (pct(score[3]) + pct(score[7])) / 2       # b as registered: any 'at least N of' rule, GREENS' too
+    want_a = pct(score[0]) - (pct(score[1]) + pct(score[3])) / 2       # 3 is a game group too (B's players); 7, GREENS, is out of the control
+    want_b = pct(score[2]) - pct(score[3])                              # b: 'at least N of' rules, GREENS lineups out
     want_d = pct(score[7]) - pct(score[3])                              # d: the hand-picked group rule only
     want_c = (pct(score[5]) + pct(score[6])) / 2 - (pct(score[4]) + pct(score[6])) / 2      # lineup 6 in both: shared credit
     a, b, c, d = ex["a"]["all"], ex["b"]["all"], ex["c"]["L0.1 U0"], ex["d"]["all"]
     check("a: STACK lineups against the same game's game-group lineups (2+ from A; 3 of B's players), paired by slate", a["slates"] and abs(a["slates"][0]["diff"] - round(want_a, 2)) < 1e-9, (a, want_a))
     check("b: SCANFLOOR lineups against group-rule ('at least N of') lineups", b["slates"] and abs(b["slates"][0]["diff"] - round(want_b, 2)) < 1e-9, (b, want_b))
+    check("a and b: a GREENS lineup (its rule an 'at least N of' over one game's players) is in neither control", a["slates"][0]["c_n"] == 2 and b["slates"][0]["c_n"] == 1,
+          (a["slates"][0]["c_n"], b["slates"][0]["c_n"]))
     check("c: each cell against the same idea's L0 U0; a lineup under both counts for both (shared credit)",
           c["slates"] and abs(c["slates"][0]["diff"] - round(want_c, 2)) < 1e-9 and c["slates"][0]["t_n"] == 2 and c["slates"][0]["c_n"] == 2, (c, want_c))
     check("d: GREENS lineups against the operator's own group rules (no GREENS / STACK / SCANFLOOR in the tag)", d["slates"] and abs(d["slates"][0]["diff"] - round(want_d, 2)) < 1e-9 and d["slates"][0]["c_n"] == 1, (d, want_d))

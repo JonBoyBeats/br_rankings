@@ -16,7 +16,7 @@
       "id": "a",
       "name": "STACK vs the plain game-group tags",
       "treatment": "kept lineups with a tag naming a quick stack: STACK <AWAY@HOME> <shape> (the DK page's stack quick buttons)",
-      "control": "kept lineups with no STACK tag whose tag's saved rules require 2+ players from one game's teams that a STACK lineup that slate stacked (a min rule with n >= 2 over players of that game only: the team tiles' Min 2/3 and Stack with buttons, a scan team or game stack, a hand rule)",
+      "control": "kept lineups with no STACK or GREENS tag whose tag's saved rules require 2+ players from one game's teams that a STACK lineup that slate stacked (a min rule with n >= 2 over players of that game only: the team tiles' Min 2/3 and Stack with buttons, a scan team or game stack, a hand rule)",
       "primary_metric": "mean real finish percentile difference (treatment - control), paired by slate and contest; top-10% rate shown",
       "planned_nights": 10,
       "pass": {
@@ -41,13 +41,14 @@
             "lookback": []
           }
         }
-      }
+      },
+      "amended": "2026-11-24, before any counted slate: GREENS lineups (the game view's Set greens, from 2026-11-24) are out of the control"
     },
     {
       "id": "b",
       "name": "Scan floors vs group rules",
       "treatment": "kept lineups with a tag containing SCANFLOOR (drawn while Set floors from scan was on)",
-      "control": "kept lineups with no SCANFLOOR tag whose tag's saved rules hold a group rule: 'at least N of <players>' (template 5, the focus button, a scan team's Bank this)",
+      "control": "kept lineups with no SCANFLOOR or GREENS tag whose tag's saved rules hold a group rule: 'at least N of <players>' (template 5, the focus button, a scan team's Bank this)",
       "primary_metric": "mean real finish percentile difference (treatment - control), paired by slate and contest; top-10% rate shown",
       "planned_nights": 10,
       "pass": {
@@ -72,7 +73,8 @@
             "lookback": []
           }
         }
-      }
+      },
+      "amended": "2026-11-24, before any counted slate: GREENS lineups (the game view's Set greens, from 2026-11-24) are out of the control"
     },
     {
       "id": "c",
@@ -332,5 +334,5 @@
       }
     }
   ],
-  "updated_at": "2026-11-24T17:07:41Z"
+  "updated_at": "2026-11-24T17:21:15Z"
 }

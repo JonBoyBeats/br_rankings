@@ -2953,7 +2953,7 @@ def lab_arms(b, team):
     kept = sorted(set(b["final"])) if b.get("final") else list(range(len(b["pool"])))
     st = b.get("tag_settings") or {}
     out = {}
-    # a: STACK vs the plain game-group tags of the same games
+    # a: STACK vs the plain game-group tags of the same games (GREENS lineups out of the control, 2026-11-24)
     games = {m.group(1) for k in kept for t in tags[k] for m in [STACK_RE.search(t)] if m}
     if games:
         teams_of = {g: set(g.split("@")) for g in games}
@@ -2966,13 +2966,13 @@ def lab_arms(b, team):
                     return True
             return False
         T = [k for k in kept if any(STACK_RE.search(t) for t in tags[k])]
-        C = [k for k in kept if not any(STACK_RE.search(t) for t in tags[k]) and any(game_group(t) for t in tags[k])]
+        C = [k for k in kept if not any(STACK_RE.search(t) or "GREENS " in t for t in tags[k]) and any(game_group(t) for t in tags[k])]
         out[("a", "")] = (T, C)
-    # b: SCANFLOOR vs group rules
+    # b: SCANFLOOR vs group rules (GREENS lineups out of the control, 2026-11-24)
     T = [k for k in kept if any("SCANFLOOR" in t for t in tags[k])]
     if T:
         grp = lambda tag: any(GROUP_RE.search(r.get("label") or "") for r in (st.get(tag) or {}).get("conds") or [] if r.get("type") == "min")
-        C = [k for k in kept if not any("SCANFLOOR" in t for t in tags[k]) and any(grp(t) for t in tags[k])]
+        C = [k for k in kept if not any("SCANFLOOR" in t or "GREENS " in t for t in tags[k]) and any(grp(t) for t in tags[k])]
         out[("b", "")] = (T, C)
     # d: GREENS game groups (the DK page's Set greens) vs the operator's own group rules ("at least N of", in a tag with
     # no GREENS / STACK / SCANFLOOR)
