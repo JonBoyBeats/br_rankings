@@ -2097,11 +2097,12 @@ function renderBank() {
         var grouped = members[g].length > 1 || members[g][0] !== g;
         var tst = !!(BANK.test || {})[g];
         return "<tr><td><b>" + esc(g) + "</b>" + (grouped ? ' <button type="button" data-ungroup="' + esc(g) + '" style="height:20px;padding:0 6px;font-size:11px">Ungroup</button>' : "") +
+          ' <button type="button" data-rmgroup="' + esc(g) + '" title="Remove this idea\'s lineups from the bank (a lineup another idea also drew stays)" style="height:20px;padding:0 6px;font-size:11px">Remove</button>' +
           ' <button type="button" class="ideaTest" data-test="' + esc(g) + '" aria-pressed="' + tst + '" title="A test idea: its lineups go only into the lab contest (Dime Time), never the flagships, the And-One or the Quarter Jukebox" style="height:20px;padding:0 6px;font-size:11px">' + (tst ? "test ✓" : "test") + "</button>" +
           (function () {      // a group's tags fold away once it's grouped; a lone tag shows as it is
             var list = members[g].map(function (t) { return '<label style="display:block"><input type="checkbox" data-tag="' + esc(t) + '"> ' + esc(t) + " (" + tags[t] + ")</label>"; }).join("");
             return grouped ? '<details class="fold" data-fold-group="' + esc(g) + '"' + (FOLD.groups[g] ? " open" : "") + '><summary>' + members[g].length + " tag" +
-              (members[g].length === 1 ? "" : "s") + '</summary><div class="sub">' + list + "</div></details>" : '<div class="sub">' + list + "</div>";
+              (members[g].length === 1 ? "" : "s") + '</summary><div class="sub">' + list + '<button type="button" class="rmTicked" data-group="' + esc(g) + '" style="height:20px;padding:0 6px;font-size:11px;margin-top:3px" title="Remove the ticked tags\' lineups (a lineup another kept tag also drew stays)">Remove ticked</button></div></details>' : '<div class="sub">' + list + "</div>";
           })() +
           '</td><td class="m">' + all[g] + "</td>" + rounds.map(function (r) { return late(g) ? '<td class="m mut">after the cut</td>' : '<td class="m">' + (r[g] || 0) + "</td>"; }).join("") +
           (after ? '<td class="m">' + (after[g] || 0) + '</td><td class="m">' + Math.round(100 * (after[g] || 0) / all[g]) + "%</td>" : "") + "</tr>";
@@ -2347,7 +2348,8 @@ function renderCut() {
     "A lineup two ideas drew counts for both (Shared: this idea's banked lineups another idea also drew), so the columns can sum past the bank, the kept pool and the top tenth.";
   var f = function (x, fn) { return x == null ? "–" : fn(x); };
   var rounds = CUT.rounds.map(function (r) { return tagCounts(r.ids); });
-  $("cutIdeas").innerHTML = (T ? '<div class="note" id="tierA">' + topTenthText(T) + "</div>" : "") + (FC ? fcScopeHtml(FC) : "") +
+  $("cutIdeas").innerHTML = (CUT.stale ? '<div class="note bad" id="cutStale"><b>The bank changed since this cut</b> (' + esc(CUT.stale) + "): Re-sim &amp; cut again for a current kept pool.</div>" : "") +
+    (T ? '<div class="note" id="tierA">' + topTenthText(T) + "</div>" : "") + (FC ? fcScopeHtml(FC) : "") +
     '<div style="overflow:auto"><table class="contests" id="ideaTable"><tr>' + cols.map(function (c) {
       return '<th data-ck="' + c[0] + '" class="' + (c[0] === "idea" ? "" : "r") + '">' + c[1] + (c[0] === "idea" && info ? ' <span class="mut" title="' + esc(info) + '">(i)</span>' : "") + (cutSort.k === c[0] ? (cutSort.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>" +
     rowsI.map(function (r) {
@@ -3963,6 +3965,59 @@ function fcClick(e) {
 }
 $("cutSharesBox").addEventListener("click", fcClick);
 
+/* Remove part of the bank (2026-11-24, the operator: a wrong rule kept adding to UMD-TENN). An idea's Remove, or Remove
+   ticked inside its tags fold, takes the tags away: a lineup goes only when every tag it was drawn under is removed (one
+   another kept tag also drew stays, losing the removed tags). One confirm with the counts first, the contest entries
+   among them named; those come out of the portfolios too, so nothing points at a missing lineup. Every index is
+   remapped (the cut's kept order, its values and tiers, its rounds and auto portfolios, the variants' parents); a cut
+   that has run is marked stale with a prompt to re-run it. Clear bank stays as it was. */
+function bankRemovePlan(tags) {
+  var rm = {}; tags.forEach(function (t) { rm[t] = 1; });
+  var gone = {}, n = 0, ents = 0;
+  BANK.tags.forEach(function (ts, i) { ts = Array.isArray(ts) ? ts : [ts]; if (ts.length && ts.every(function (t) { return rm[t]; })) { gone[i] = 1; n++; } });
+  Object.keys(PF).forEach(function (k) { (PF[k] || []).forEach(function (bi) { if (gone[bi]) ents++; }); });
+  return { rm: rm, gone: gone, n: n, ents: ents, tags: tags.length };
+}
+function bankRemoveAsk(tags) {
+  if (!tags.length) return;
+  var P = bankRemovePlan(tags);
+  var msg = "Remove " + P.tags + " tag" + (P.tags === 1 ? "" : "s") + ", " + P.n.toLocaleString() + " lineup" + (P.n === 1 ? "" : "s") + "?" +
+    (P.ents ? " " + P.ents + " of your contest entries are among them and come out of the portfolios." : "") + (CUT && CUT.keep ? " The cut will need re-running." : "");
+  if (!confirm(msg)) return;
+  $("cutStatus").textContent = bankRemove(P);
+}
+function bankRemove(P) {
+  var n0 = BANK.lineups.length, map = [], L = [], T = [];
+  BANK.lineups.forEach(function (x, i) {
+    if (P.gone[i]) { map.push(-1); return; }
+    map.push(L.length); L.push(x);
+    var ts = Array.isArray(BANK.tags[i]) ? BANK.tags[i] : [BANK.tags[i]]; T.push(ts.filter(function (t) { return !P.rm[t]; }));
+  });
+  L.forEach(function (x) { if (x.parent != null) { var np = map[x.parent]; if (np == null || np < 0) delete x.parent; else x.parent = np; } });
+  BANK.lineups = L; BANK.tags = T;
+  Object.keys(P.rm).forEach(function (t) { delete (BANK.groups || {})[t]; delete (BANK.tagRules || {})[t]; });
+  BANK.ruleLog = (BANK.ruleLog || []).filter(function (r) { return !P.rm[r.tag]; });
+  var mapList = function (a) { return (a || []).map(function (bi) { return map[bi]; }).filter(function (bi) { return bi != null && bi >= 0; }); };
+  if (CUT && CUT.keep) {
+    var B = CUT.board, keepPos = [];
+    CUT.keep.forEach(function (bi, k) { if (map[bi] >= 0) keepPos.push(k); });
+    if (B && B.values) B.values = keepPos.map(function (k) { return B.values[k]; });
+    if (B && typeof B.tiers === "string") B.tiers = keepPos.map(function (k) { return B.tiers.charAt(k); }).join("");
+    CUT.keep = mapList(CUT.keep);
+    (CUT.rounds || []).forEach(function (r) { r.ids = mapList(r.ids); });
+    if (CUT.auto) Object.keys(CUT.auto).forEach(function (k) { CUT.auto[k] = mapList(CUT.auto[k]); });
+    CUT.bankN = L.length; CUT.stale = "removed " + P.n + " lineup" + (P.n === 1 ? "" : "s");
+  }
+  Object.keys(PF).forEach(function (k) { PF[k] = mapList(PF[k]); });
+  if (typeof SWIN !== "undefined") { SWIN.undo = null; SWIN.list = null; }
+  try { store(undoKey(), null); $("pfUndo").disabled = true; } catch (e) {}
+  var cid = BP && BP.review; BP = null;
+  bankSaveState(); cutSave(); pfSave(); renderBank(); renderEntries();
+  if (cid && (PF[cid] || CUT && CUT.keep)) { try { review(cid); } catch (e) {} }
+  return "Removed " + P.n.toLocaleString() + " of " + n0.toLocaleString() + " lineups (" + P.tags + " tag" + (P.tags === 1 ? "" : "s") + ")" + (P.ents ? ", " + P.ents + " entr" + (P.ents === 1 ? "y" : "ies") + " out of the portfolios" : "") +
+    (CUT && CUT.keep ? ". The cut is stale: Re-sim & cut again." : ".");
+}
+
 nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
@@ -5229,6 +5284,11 @@ $("bankBox").addEventListener("click", function (e) {
     if (t.length && name) groupTags(t, name);
     return;
   }
+  var rg = e.target.closest("button[data-rmgroup]");
+  if (rg) { var all0 = tagCounts(BANK.lineups.map(function (L, i) { return i; }), true); bankRemoveAsk(Object.keys(all0).filter(function (t) { return groupOf(t) === rg.dataset.rmgroup; })); return; }
+  var rt = e.target.closest("button.rmTicked");
+  if (rt) { var tk = [].map.call(rt.closest("details, .sub").querySelectorAll("input[data-tag]:checked"), function (x) { return x.dataset.tag; });
+    if (!tk.length) { $("cutStatus").textContent = "Tick the tags to remove first."; return; } bankRemoveAsk(tk); return; }
   var u = e.target.closest("button[data-ungroup]");
   if (u) groupTags(Object.keys(BANK.groups || {}).filter(function (t) { return BANK.groups[t] === u.dataset.ungroup; }), null);
 });

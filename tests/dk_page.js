@@ -2406,6 +2406,38 @@ function audit(name, L, o) {
         fc.scope.night === fc.scope.want[0] && fc.scope.contest === fc.scope.want[1] && fc.scope.saved === "contest", JSON.stringify(fc.scope));
   check("fill against the cut: a light idea row opens Swap one in on that idea's kept lineups, the swap-out the weakest entry of the heaviest idea, every swap within the caps (or one line saying what blocks); Apply moves the table",
         !!fc.swap && (fc.swap.n > 0 ? fc.swap.weakOk && fc.swap.inOk && fc.swap.capsOk && fc.swap.applied : /^.*(Nothing fits: |Nothing to swap)/.test(fc.swap.msg)), JSON.stringify(fc.swap));
+  // remove part of the bank (2026-11-24): an idea's Remove / a fold's Remove ticked; a lineup goes only when all its tags go; entries and the cut remapped, the cut stale
+  dialogs = [];
+  const rmv = await pg.evaluate(() => {
+    const snap = JSON.stringify({ B: BANK, C: CUT, P: PF }), n0 = BANK.lineups.length, step0 = stepNow();
+    showStep("bank");
+    const ui = { rm: document.querySelectorAll("#bankBox button[data-rmgroup]").length, rows: document.querySelectorAll("#bankBox button[data-test]").length,
+                 ticked: [...document.querySelectorAll("#bankBox details[data-fold-group] .rmTicked")].length, folds: document.querySelectorAll("#bankBox details[data-fold-group]").length };
+    const cnt = {}; BANK.tags.forEach(ts => ts.forEach(t => { cnt[t] = (cnt[t] || 0) + 1; }));
+    const T1 = Object.keys(cnt).filter(t => cnt[t] >= 3).sort((a, b) => cnt[a] - cnt[b])[0];
+    const mine = BANK.tags.map((ts, i) => ts.includes(T1) ? i : -1).filter(i => i >= 0), other = Object.keys(cnt).find(t => t !== T1);
+    const shared = mine[0]; BANK.tags[shared] = BANK.tags[shared].concat([other]);          // drawn under T1 and another: stays
+    const goneIdx = mine.filter(i => BANK.tags[i].every(t => t === T1)), sharedIds = BANK.lineups[shared].ids.join(",");
+    const cid = Object.keys(PF).find(k => PF[k].length) || String(nbContests()[0].c.id);
+    PF[cid] = [goneIdx[0]].concat((PF[cid] || []).filter(bi => !goneIdx.includes(bi)).slice(0, 3));
+    const keptIds = CUT && CUT.keep ? CUT.keep.filter(bi => !goneIdx.includes(bi)).map(bi => BANK.lineups[bi].ids.join(",")) : [];
+    const entIds = Object.keys(PF).reduce((a, k) => a.concat(PF[k].filter(bi => !goneIdx.includes(bi)).map(bi => k + ":" + BANK.lineups[bi].ids.join(","))), []).sort();
+    const entGone = Object.keys(PF).reduce((t, k) => t + PF[k].filter(bi => goneIdx.includes(bi)).length, 0);
+    bankRemoveAsk([T1]);
+    const after = { n: BANK.lineups.length, sharedKept: BANK.lineups.some((L, i) => L.ids.join(",") === sharedIds && !BANK.tags[i].includes(T1) && BANK.tags[i].includes(other)),
+      noT1: !BANK.tags.some(ts => ts.includes(T1)), pfValid: Object.keys(PF).every(k => PF[k].every(bi => BANK.lineups[bi])),
+      ents: Object.keys(PF).reduce((a, k) => a.concat(PF[k].map(bi => k + ":" + BANK.lineups[bi].ids.join(","))), []).sort(),
+      keep: CUT && CUT.keep ? CUT.keep.map(bi => BANK.lineups[bi].ids.join(",")) : [], vals: CUT && CUT.board && CUT.board.values ? CUT.board.values.length : null,
+      stale: !!(CUT && CUT.stale), note: !!document.getElementById("cutStale") || (showStep("cut"), !!document.getElementById("cutStale")), msg: $("cutStatus").textContent };
+    BANK = JSON.parse(snap).B; CUT = JSON.parse(snap).C; PF = JSON.parse(snap).P; bankSaveState(); cutSave(); pfSave(); renderBank(); renderEntries(); review(BP && BP.review || cid); showStep(step0);
+    return { ui, T1, gone: goneIdx.length, n0, entGone, after, keptSame: JSON.stringify(after.keep) === JSON.stringify(keptIds), entSame: JSON.stringify(after.ents) === JSON.stringify(entIds) };
+  });
+  check("remove part of the bank: each idea row has Remove, each tags fold Remove ticked; one confirm with the counts and the entries among them",
+        rmv.ui.rm === rmv.ui.rows && rmv.ui.rm > 0 && rmv.ui.ticked === rmv.ui.folds && dialogs.length === 1 &&
+        new RegExp("^Remove 1 tag, " + rmv.gone + " lineups\\? " + rmv.entGone + " of your contest entr").test(dialogs[0]) && /The cut will need re-running/.test(dialogs[0]), JSON.stringify([rmv, dialogs]));
+  check("remove part of the bank: a lineup goes only when every tag it carries is removed (one also drawn under a kept tag stays, without the removed tag); entries out of the portfolios, the rest and the kept pool remapped exactly; the cut marked stale",
+        rmv.after.n === rmv.n0 - rmv.gone && rmv.after.sharedKept && rmv.after.noT1 && rmv.after.pfValid && rmv.entSame && rmv.keptSame && rmv.after.vals === rmv.after.keep.length &&
+        rmv.after.stale && rmv.after.note && /Removed \d+ of [\d,]+ lineups \(1 tag\), \d+ entr(y|ies) out of the portfolios\. The cut is stale/.test(rmv.after.msg), JSON.stringify(rmv));
   // the Players list under the lineups: this contest's and tonight's exposure, the room under the binding cap
   const nb_pp = await pg.evaluate(() => {
     const id = BP.pool[BP.b.picked[0]].ids[0], r = document.querySelector('#fillPlayersSlot #players .row[data-id="' + id + '"]');
