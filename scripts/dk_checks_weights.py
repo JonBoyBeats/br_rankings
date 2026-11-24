@@ -383,3 +383,73 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ---- boxes 6-7, a directional look (2026-11-24, after shipping) ------------------------------------------------------
+# On the graded slates that have a saved build: box 6 = his share of the base bank (tags or ideas named base, a whole
+# word; of Draw the 9 only L0 U0; no base: the whole bank) over his field ownership, as a percentile in the pool; box 7
+# = the scan read core / lean core / leverage (0/1). Each is added to the shipped score (its weights fit held out) in a
+# two-term logistic fit on the other build nights and scored on the held-out one. DIRECTIONAL: 8 and 4 nights.
+import re as _re
+
+_CELL = _re.compile(r" L[\d.]+ U[\d.]+$")
+
+
+def build_feats(tag):
+    f = os.path.join(DK, "builds", "dk_bank_%s.json" % tag)
+    if not os.path.exists(f):
+        return None
+    d = json.load(open(f))
+    groups = d.get("groups") or {}
+    isbase = lambda t: bool(_re.search(r"\bbase\b", t, _re.I) or _re.search(r"\bbase\b", str(groups.get(t, "")), _re.I))
+    cell0 = lambda t: not _CELL.search(t) or _re.search(r" L0(\.0)? U0(\.0)?$", t)
+    pool, tags = d.get("pool") or [], d.get("tags") or []
+    base = [L for L, T in zip(pool, tags) if any(isbase(t) and cell0(t) for t in (T if isinstance(T, list) else [T]))]
+    lineups = base or pool
+    share = {}
+    for L in lineups:
+        for i in L:
+            share[str(i)] = share.get(str(i), 0) + 1 / len(lineups)
+    scan = {str(p.get("id")): p.get("read") for p in ((d.get("scan") or {}).get("players") or [])}
+    return {"share": share, "base": bool(base), "n": len(lineups), "scan": scan}
+
+
+def boxes67(brr, logs):
+    slates = load(brr, logs)
+    tags = [t for t, _ in slates]
+    v = (CK_BLEND, "season", "mix75")
+    F = {t: features(rows, *v) for t, rows in slates}
+    Y = {t: np.array([r["y"] for r in rows]) for t, rows in slates}
+    S = {}
+    for h in tags:                                 # the shipped score, its weights fit without the slate
+        tr = [t for t in tags if t != h]
+        _, w = fit(np.vstack([F[t] for t in tr]), np.concatenate([Y[t] for t in tr]))
+        S[h] = F[h] @ (7 * w / w.sum())
+    extra = {}
+    for t, rows in slates:
+        b = build_feats(t)
+        if not b:
+            continue
+        own = json.load(open(os.path.join(brr, "data", "dk", "cbb", t + "_own.json")))
+        ratio = [b["share"].get(r["dk_id"], 0) / max(0.5, float(own.get(r["dk_id"], 0) or 0) / 100 * 100) for r in rows]
+        x6 = np.array(pct(ratio))
+        x7 = np.array([1.0 if b["scan"].get(r["dk_id"]) in ("core", "lean core", "leverage") else 0.0 for r in rows]) if b["scan"] else None
+        extra[t] = {"x6": x6, "x7": x7, "base": b["base"], "n": b["n"]}
+    out = []
+    for key in ("x6", "x7"):
+        nights = [t for t in extra if extra[t][key] is not None]
+        for h in nights:
+            tr = [t for t in nights if t != h]
+            X = np.vstack([np.column_stack([S[t] / 7, extra[t][key]]) for t in tr])
+            _, w = fit(X, np.concatenate([Y[t] for t in tr]))
+            comb = np.column_stack([S[h] / 7, extra[h][key]]) @ w
+            y = Y[h]
+            out.append({"box": "6 bank/field" if key == "x6" else "7 scan read", "slate": h, "base": extra[h]["base"],
+                        "auc_score": auc(S[h], y), "auc_plus": auc(comb if w.sum() > 0 else S[h], y), "auc_box_alone": auc(extra[h][key], y),
+                        "top10_score": topk(S[h], y, 10), "top10_plus": topk(comb, y, 10), "top20_score": topk(S[h], y, 20), "top20_plus": topk(comb, y, 20),
+                        "w_box": round(float(w[1]), 3), "w_score": round(float(w[0]), 3)})
+    return out
+
+
+if __name__ == "__main__" and "--boxes67" in sys.argv:
+    pass

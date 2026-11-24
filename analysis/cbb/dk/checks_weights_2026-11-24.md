@@ -149,3 +149,51 @@ In `dk.html` `checksMap()` and `ckBadge()`:
 5. **Weights:** in one constant (`CK_W`), refit monthly with this script. The Boxes fold's percentile cutoffs go away.
 
 **A cheaper alternative with the same information:** the evidence says the weighted checks and our P(5x) agree. Showing our P(5x) as the badge, and greening the top ~15% with the same minutes guard, would be equally good and needs no new weights. The weighted checks keep the "which boxes" explanation the operator likes. That's the operator's call.
+
+
+## Shipped (2026-11-24)
+
+The operator approved the proposal and it is live: br_rankings `6cc9249`, with the pipeline side in BRR `caced42c`.
+- `cbb_nightly` now writes `season_dk` on every DK row: each game's DraftKings points this season, oldest first.
+- The page blends it with the last 5. A player with no season log falls back to the last 5 only, and his hover says so.
+- Light green is gone.
+
+## Boxes 6-7: a DIRECTIONAL look (not in the score)
+
+**Method:**
+- Box 6 is a continuous score: his share of the base bank (tags or ideas named base; of Draw the 9 only L0 U0; the whole bank where a build has no base) over his field ownership, as a percentile in the pool.
+- Box 7 is the scan read: core, lean core or leverage = 1, else 0.
+- Each is added to the shipped score (its weights fit without the night) in a two-term logistic. The fit uses the other nights that have the box and is scored on the held-out night.
+- **Coverage:** box 6 has 8 nights with a saved build (only 11-20 ×2 and 11-23 had base-named batches). Box 7 has 4 nights with a scan.
+- Code: `boxes67()` in `scripts/dk_checks_weights.py`. Output: `checks_weights_2026-11-24/boxes67.csv`.
+
+| Box | Slate | Base bank | AUC score | AUC score + box | AUC box alone | Top-10 5x (score / +box) | Top-20 5x (score / +box) |
+|---|---|---|---|---|---|---|---|
+| 6 bank/field | 11-16 156660 | no (whole bank) | 0.677 | 0.690 | 0.700 | 3 / 3 | 6 / 6 |
+| 6 bank/field | 11-17 156663 | no (whole bank) | 0.672 | 0.654 | 0.400 | 2 / 3 | 6 / 6 |
+| 6 bank/field | 11-18 157033 | no (whole bank) | 0.548 | 0.536 | 0.449 | 1 / 1 | 6 / 6 |
+| 6 bank/field | 11-19 157138 | no (whole bank) | 0.713 | 0.768 | 0.488 | 2 / 2 | 2 / 3 |
+| 6 bank/field | 11-19 157139 | no (whole bank) | 0.597 | 0.611 | 0.598 | 3 / 2 | 5 / 5 |
+| 6 bank/field | 11-20 157013 | yes | 0.589 | 0.594 | 0.385 | 3 / 3 | 4 / 4 |
+| 6 bank/field | 11-20 157015 | yes | 0.675 | 0.665 | 0.508 | 5 / 3 | 7 / 8 |
+| 6 bank/field | 11-23 157021 | yes | 0.726 | 0.729 | 0.542 | 2 / 2 | 5 / 4 |
+| 7 scan read | 11-19 157139 | no (whole bank) | 0.597 | 0.619 | 0.523 | 3 / 3 | 5 / 6 |
+| 7 scan read | 11-20 157013 | yes | 0.589 | 0.568 | 0.562 | 3 / 2 | 4 / 4 |
+| 7 scan read | 11-20 157015 | yes | 0.675 | 0.698 | 0.598 | 5 / 5 | 7 / 8 |
+| 7 scan read | 11-23 157021 | yes | 0.726 | 0.667 | 0.509 | 2 / 2 | 5 / 5 |
+
+**Read (DIRECTIONAL, too few nights to decide):**
+
+| Box | Nights | AUC change (SE) | Nights better | AUC on its own | Top-10 / top-20 5x hits |
+|---|---|---|---|---|---|
+| 6 bank/field | 8 | +0.006 (0.008) | 5 | 0.51 | 21 → 19 / 41 → 42 |
+| 7 scan read | 4 | −0.009 (0.020) | 2 | 0.55 | 13 → 12 / 21 → 23 |
+
+- **Box 6 adds nothing visible.** On its own it doesn't separate 5x players at all.
+- **Box 7 shows a faint signal on its own** but nothing over the score.
+
+**When there are about 10 builds and 10 scanned slates:**
+- Re-run `boxes67()` with the same held-out set-up and the Lab bar (better on 7 of 10 and a gain above 2 SE).
+- A box that passes joins the score with its fitted weight, and the other weights get refit together.
+- A box that fails stays a mark, or is dropped from the badge if it still shows no signal alone (box 6 looks headed that way).
+- Box 6 should only be judged on nights with a real base bank: whole-bank shares mix in every game group the operator banked after the base.
