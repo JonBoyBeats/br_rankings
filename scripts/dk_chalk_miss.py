@@ -20,7 +20,8 @@ against ours. Two versions:
 Pass bar (the Lab's): better MAE on 7+ of the slates AND a mean improvement over 2 x its standard error across slates;
 anything short of that is directional only.
 
-  python3 scripts/dk_chalk_miss.py --mirror ../br-adp-mirror
+  python3 scripts/dk_chalk_miss.py --mirror ../br-adp-mirror              (the study)
+  python3 scripts/dk_chalk_miss.py --compare --mirror ../br-adp-mirror    (the shipped candidates, 2026-11-24)
 """
 import argparse, csv, glob, itertools, math, os, statistics as S, sys
 from collections import defaultdict
@@ -192,5 +193,91 @@ def main():
         print("  fit on every slate, players %d%%+ (%s): c0 %+.2f, %s" % (DEPLOY_OWN, "+".join(terms), c[0], ", ".join("%s %+.3f" % (t, b) for t, b in zip(terms, c[1:]))))
 
 
+
+
+# ---- 2026-11-24 (the operator: ship a correction now): the candidates compared on one harness, each contest
+# renormalized to its projected total after the correction (as it would ship), held out by slate.
+def contests(rows):
+    out = defaultdict(list)
+    for r in rows:
+        out[(r["g"], r["cid"])].append(r)
+    return out
+
+
+def renorm(rs, q):
+    tot, s = sum(r["p"] for r in rs), sum(q) or 1.0
+    return [x * tot / s for x in q]
+
+
+def team_fix(rs, q, c, src=None):
+    """The teammates + big-game term on players at DEPLOY_OWN%+ (by src, default q), then renormalized."""
+    src = src or q
+    out = [x + c[0] + c[1] * r["chalk_team"] + c[2] * r["big"] if s >= DEPLOY_OWN else x for r, x, s in zip(rs, q, src)]
+    return renorm(rs, [max(0.0, x) for x in out])
+
+
+def compare(rows):
+    cons = contests(rows)
+    for rs in cons.values():
+        for r in rs:
+            r["id"] = r["dk_id"] if "dk_id" in r else r["name"]
+    slates = sorted({g for g, _ in cons})
+    bigset = {g: {r["id"] for (gg, _), rs in cons.items() if gg == g for r in rs if r["big"]} for g in slates}
+    def rcons(gs):
+        return [{"g": g, "rows": rs} for (g, _), rs in cons.items() if g in gs]
+    names = ["ours", "teammates+big", "mix+big", "flat+big", "mix+big+teammates", "flat+big+teammates"]
+    per = {k: [] for k in names}
+    for g in slates:
+        tr = [x for x in slates if x != g]
+        trr = [r for r in rows if r["g"] in tr]
+        # teammates + big on the raw
+        X = [[r["chalk_team"], r["big"]] for r in trr if r["p"] >= DEPLOY_OWN]
+        c = ols(X, [r["a"] - r["p"] for r in trr if r["p"] >= DEPLOY_OWN])
+        rc = rcons(tr)
+        a = R.fit_a(rc, bigset); f = R.fit_f(rc, a, bigset)
+        f1 = R.fit_f(rc, 1.0, bigset)
+        mb = min([x / 100 for x in range(0, 31, 2)], key=lambda m: R.lens(rc, 1.0, mix=m)["log"])
+        # the stacked term fitted on the residual after mix+big / flat+big
+        def resid_c(fn):
+            Xs, ys = [], []
+            for (gg, _), rs in cons.items():
+                if gg not in tr:
+                    continue
+                q = fn(rs, gg)
+                for r, x in zip(rs, q):
+                    if x >= DEPLOY_OWN:
+                        Xs.append([r["chalk_team"], r["big"]]); ys.append(r["a"] - x)
+            return ols(Xs, ys)
+        mixf = lambda rs, gg: R.calib(rs, 1.0, bigset.get(gg), f1, mb)
+        flatf = lambda rs, gg: R.calib(rs, a, bigset.get(gg), f)
+        cm, cf = resid_c(mixf), resid_c(flatf)
+        preds = {k: {} for k in names}
+        for (gg, cid), rs in cons.items():
+            if gg != g:
+                continue
+            q0 = [r["p"] for r in rs]
+            qm, qf = mixf(rs, gg), flatf(rs, gg)
+            for k, q in (("ours", q0), ("teammates+big", team_fix(rs, q0, c)), ("mix+big", qm), ("flat+big", qf),
+                         ("mix+big+teammates", team_fix(rs, qm, cm)), ("flat+big+teammates", team_fix(rs, qf, cf))):
+                for r, x in zip(rs, q):
+                    preds[k][(cid, r["id"])] = x
+        te = [r for r in rows if r["g"] == g]
+        for k in names:
+            per[k].append(grade(te, lambda r: preds[k][(r["cid"], r["id"])]))
+    print("\n== The candidates on one harness (renormalized per contest, held out by slate; chalk band) ==")
+    base = per["ours"]
+    for k in names:
+        m = [x[0] for x in per[k]]; o = [x[1] for x in per[k]]
+        d = [b[0] - x[0] for b, x in zip(base, per[k])]
+        se = S.stdev(d) / math.sqrt(len(d)) if k != "ours" else 0
+        print("  %-20s MAE %.2f, off by 10+ %.1f%%; gain %+.2f (SE %.2f), better on %d of %d, off lower on %d" % (
+            k, S.mean(m), 100 * S.mean(o), S.mean(d), se, sum(x > 1e-9 for x in d), len(d), sum(x[1] < b[1] - 1e-9 for b, x in zip(base, per[k]))))
+    return per
+
+
+
 if __name__ == "__main__":
-    main()
+    if "--compare" in sys.argv:
+        compare(load(sys.argv[sys.argv.index("--mirror") + 1] if "--mirror" in sys.argv else os.path.join(HERE, "..", "..", "br-adp-mirror")))
+    else:
+        main()

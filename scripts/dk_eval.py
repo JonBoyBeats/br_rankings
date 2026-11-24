@@ -169,7 +169,11 @@ QUADS = ("FOCUS", "CHALK", "LEVERAGE", "FADE")
 RULE_NAMES = {"min": "Min N from a team / stack", "none": "Exclude team", "if": "1. if player then N+", "ifnot": "2. if NOT player then N+",
               "ifteam": "3. if N+ from team then M+ from opponent", "never": "4. never player with player"}
 BUILDS = os.path.join(DK, "builds")       # the DK page's saved builds (Save build: its pool, the hand-built 20, the auto-pick)
-OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own_proj", "own_actual", "entries"]
+OWN_COLS = ["date", "draft_group", "contest_id", "dk_id", "name", "salary", "own_proj", "own_actual", "entries", "own_raw"]
+# own_proj is the ownership the page showed (from 2026-11-24 the corrected value, battle-royale-research
+# dk_cbb_field.py OWN_FIX); own_raw the simulated field's before the correction (own_proj on earlier rows). owngrade
+# grades both on the chalk band each night and warns when the live one trails the raw over OWN_FIX_WINDOW slates.
+OWN_FIX_WINDOW = 7
 # The ownership grade's headline (the operator, 2026-11-24): the CHALK BAND, players with max(projected, actual) at or
 # over CHALK_OWN%. The sims, the cut and the fill turn on the high-owned players (20 vs 40% matters either way; 3 vs 1%
 # doesn't), and a grade over everyone is dominated by the many low-owned players. The band takes max(projected, actual),
@@ -474,7 +478,8 @@ def nightly(a):
                 r = by_name.get(name)
                 if r and pct is not None:
                     own_out.append({"date": r["date"], "draft_group": r["draft_group"], "contest_id": cid, "dk_id": r["dk_id"], "name": name,
-                                    "salary": r["salary"], "own_proj": r["own"], "own_actual": pct, "entries": n})
+                                    "salary": r["salary"], "own_proj": r["own"], "own_actual": pct, "entries": n,
+                                    "own_raw": r.get("own_raw") or r["own"]})
         print("  graded %s (%s, %d entries): shadow %s, your entries %d" % (contest["name"], rec[0]["date"], n, "yes" if sh else "none saved", len(mine)))
     for path, cols, rows in ((EVAL, EVAL_COLS, out), (OWN_EVAL, OWN_COLS, own_out), (TEAM_EVAL, TEAM_COLS, team_out)):
         if rows:
@@ -2091,8 +2096,9 @@ def own_grade_rows():
     for r in read(OWN_EVAL):
         p, a = num(r["own_proj"]), num(r["own_actual"])
         n = num(r.get("entries")) or ent.get(r["contest_id"])
+        raw = num(r.get("own_raw"))
         if p is not None and a is not None and n:
-            out.append(dict(r, p=p, a=a, n=n))
+            out.append(dict(r, p=p, a=a, n=n, raw=p if raw is None else raw))
     return out
 
 
@@ -2127,6 +2133,31 @@ def own_grade_lines(rows=None):
     out.append("  secondary: everyone MAE %.2f pts, |log| %.3f (%d players); real / ours by our projection: %s" % (
         S.mean(e), S.mean(lg), len(rows), ", ".join(ratio)))
     out.append("  (an ownership-model change counts as better only if it lowers the chalk band's MAE and its off-by-%d+ share, held out by slate)" % CHALK_OFF)
+    out += own_fix_lines(rows)
+    return out
+
+
+def own_fix_lines(rows):
+    """The live (corrected) projection against the raw, per night, on the chalk band (fixed by max(raw, actual) so both
+    are scored on the same players); a warning when the live one trails over the last OWN_FIX_WINDOW corrected slates."""
+    nights = sorted({(r["date"], str(r["draft_group"])) for r in rows if abs(r["p"] - r.get("raw", r["p"])) > 1e-9})
+    if not nights:
+        return ["  live vs raw: the ownership correction isn't on any graded slate yet (live = raw before 2026-11-24)"]
+    out, gaps = ["  live (corrected) vs raw ownership, chalk band MAE per night:"], []
+    for d, g in nights:
+        rs = [r for r in rows if r["date"] == d and str(r["draft_group"]) == g and max(r.get("raw", r["p"]), r["a"]) >= CHALK_OWN]
+        if not rs:
+            continue
+        lv, rw = S.mean(abs(r["a"] - r["p"]) for r in rs), S.mean(abs(r["a"] - r.get("raw", r["p"])) for r in rs)
+        gaps.append(lv - rw)
+        out.append("    %s %s: live %.1f vs raw %.1f (%+.1f)" % (d, g, lv, rw, lv - rw))
+    last = gaps[-OWN_FIX_WINDOW:]
+    if len(last) >= OWN_FIX_WINDOW and S.mean(last) > 0:
+        out.append("  WARNING: the live ownership correction trails the raw over the last %d slates (live MAE %+.2f a slate); "
+                   "nothing reverts on its own: battle-royale-research scripts/dk_cbb_field.py OWN_FIX" % (len(last), S.mean(last)))
+    else:
+        out.append("  last %d corrected slate%s: live %s raw by %.2f a slate (warning after %d trailing)" % (
+            len(last), "" if len(last) == 1 else "s", "beats" if S.mean(last) <= 0 else "trails", abs(S.mean(last)), OWN_FIX_WINDOW))
     return out
 
 
@@ -2163,7 +2194,8 @@ def ownsync_rows(doc, rec, have):
             r = by_name.get(name)
             if r and pct is not None:
                 rows.append({"date": r["date"], "draft_group": r["draft_group"], "contest_id": cid, "dk_id": r["dk_id"], "name": name,
-                             "salary": r["salary"], "own_proj": r["own"], "own_actual": round(pct, 2), "entries": len(entries)})
+                             "salary": r["salary"], "own_proj": r["own"], "own_actual": round(pct, 2), "entries": len(entries),
+                             "own_raw": r.get("own_raw") or r["own"]})
         have.add(cid)
         notes.append("%s: logged %d players (%d entries)" % (cid, sum(1 for x in rows if x["contest_id"] == cid), len(entries)))
     return rows, notes

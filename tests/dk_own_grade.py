@@ -33,10 +33,23 @@ lines = E.own_grade_lines(rows)
 check("the grade's lines lead with the chalk band, then by size (Large, Small here), by slate, the secondary lens and the rule",
       lines[0].startswith("Ownership grade, the chalk band") and any(x.strip().startswith("Large") for x in lines) and
       any(x.strip().startswith("Small") for x in lines) and not any(x.strip().startswith("Medium") for x in lines) and
-      any("secondary:" in x for x in lines) and "held out by slate" in lines[-1], "\n".join(lines))
+      any("secondary:" in x for x in lines) and any("held out by slate" in x for x in lines), "\n".join(lines))
+
+# 1b. live (corrected) vs raw: a line per corrected night, a warning only once 7 corrected slates trail
+def night(i, live_better):
+    # one corrected night: raw 30 -> actual 20; live 25 (better) or 35 (worse)
+    return [dict(date="2026-12-%02d" % (i + 1), draft_group=str(100 + i), contest_id=str(900 + i), p=25 if live_better else 35, raw=30, a=20, n=500)]
+mixed = [r for i in range(7) for r in night(i, i % 2 == 0)]
+lf = E.own_fix_lines(mixed)
+check("live vs raw: one line per corrected night, no warning while the live one beats the raw on average", sum(": live " in x and " vs raw " in x for x in lf) == 7 and not any("WARNING" in x for x in lf), lf)
+worse = [r for i in range(7) for r in night(i, False)]
+check("live vs raw: a plain warning once the live one trails over 7 corrected slates", any("WARNING" in x for x in E.own_fix_lines(worse)))
+check("live vs raw: no warning with fewer than 7 corrected slates, however they ran", not any("WARNING" in x for x in E.own_fix_lines(worse[:6])))
+check("live vs raw: rows where live equals raw (before the correction) are not counted as corrected nights",
+      "isn't on any graded slate" in E.own_fix_lines([dict(r, p=30) for r in worse])[0])
 
 # 2. ownsync: three games played; a file revealing two is left, one revealing all three is logged
-rec = [{"date": "2026-11-30", "draft_group": "1", "dk_id": str(k), "name": nm, "game": g, "salary": "5000", "own": str(o), "min": m}
+rec = [{"date": "2026-11-30", "draft_group": "1", "dk_id": str(k), "name": nm, "game": g, "salary": "5000", "own": str(o), "own_raw": str(o + 2), "min": m}
        for k, (nm, g, o, m) in enumerate([("A One", "X@Y", 30, "30"), ("B Two", "X@Y", 10, "25"), ("C Three", "Z@W", 20, "28"),
                                           ("D Four", "Q@R", 15, "31"), ("E Five", "Q@R", 5, "0")])]
 
@@ -65,6 +78,7 @@ r1, n1 = E.ownsync_rows(whole, rec, have)
 by = {(r["contest_id"], r["name"]): r for r in r1}
 check("ownsync: once every game is revealed, each player's G + UTIL ownership is logged with the contest's entries and our projection",
       by.get(("198000111", "A One"), {}).get("own_actual") == 40 and by[("198000111", "A One")]["entries"] == 7 and by[("198000111", "D Four")]["own_proj"] == "15"
+      and by[("198000111", "D Four")]["own_raw"] == "17"
       and len([r for r in r1 if r["contest_id"] == "198000111"]) == 4, r1)
 check("ownsync: a file added at the same moment as a whole one is logged too (its own players only)",
       [r["name"] for r in r1 if r["contest_id"] == "198000222"] == ["A One"] and by[("198000222", "A One")]["entries"] == 4, r1)
@@ -80,8 +94,8 @@ try:
         w.writeheader()
         w.writerows(r1)
     back = E.read(E.OWN_EVAL)
-    check("own_eval.csv carries the entries column and the contests ownsync logged",
-          {r["contest_id"] for r in back} == {"198000111", "198000222"} and all(r["entries"] for r in back) and E.OWN_COLS[-1] == "entries")
+    check("own_eval.csv carries the entries and own_raw columns and the contests ownsync logged",
+          {r["contest_id"] for r in back} == {"198000111", "198000222"} and all(r["entries"] and r["own_raw"] for r in back) and E.OWN_COLS[-2:] == ["entries", "own_raw"])
 finally:
     shutil.rmtree(tmp)
 

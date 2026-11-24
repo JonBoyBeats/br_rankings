@@ -17,7 +17,7 @@ DraftKings (analysis/cbb/dk/<date>_<draft group>.csv): every player we projected
 that started, from the mirror's dk_cbb_morning.json as it stood just before the first game (the rows the DK page
 used): salary, fp_dk (ours in DraftKings points, with the double-double bonus at p_dd), fp_base_dk (without
 EvanMiya), dk_avg (DraftKings' season average, the number the field sees), min_proj (after the 200-minute cap) and
-min_raw (before), miss_dk and fragile (fragility), bpr_rank, status, own (projected ownership, dk_cbb_field.json);
+min_raw (before), miss_dk and fragile (fragility), bpr_rank, status, own (projected ownership, dk_cbb_field.json: the live, corrected value; own_raw before the 2026-11-24 correction);
 then the box score and actual_dk: DraftKings' scoring, +1.5 a double-double (two of points, rebounds, assists,
 steals, blocks at 10+), +3 a triple-double on top (DraftKings lists both bonuses; whether they stack is
 unconfirmed, and triple-doubles were 7 in 37,405 college player-games of 2025-26). Then, for the projection audit
@@ -59,7 +59,7 @@ COLS = ["date", "slate", "player_id", "name", "team", "adp_close", "src", "fp", 
 DK_COLS = ["date", "draft_group", "dk_id", "espn", "name", "team", "game", "position", "salary", "src", "status", "fp_dk", "fp_base_dk",
            "dk_avg", "value", "own", "fp", "min_proj", "min_raw", "ppm_proj", "miss_dk", "fragile", "p_dd", "bpr_rank", "missed",
            "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "tpm", "dd", "actual", "actual_dk",
-           "dk_last5", "min_last5", "min_avg"]
+           "dk_last5", "min_last5", "min_avg", "own_raw"]
 
 
 def dk_points(a):
@@ -193,16 +193,18 @@ def dk_slates(mirror, since, until):
                 found[s["draft_group_id"]] = (start, s, t)
     out = {}
     for g, (start, s, t) in found.items():
-        own = {}
+        own, raw = {}, {}
         for ft, fsha in mirror.versions("dk_cbb_field.json", t - dt.timedelta(days=1), start):
-            own = (mirror.show(fsha, "dk_cbb_field.json").get("slates", {}).get(str(g)) or {}).get("own", own)
-        out[g] = (start, s, own)
+            f = mirror.show(fsha, "dk_cbb_field.json").get("slates", {}).get(str(g)) or {}
+            own = f.get("own", own)
+            raw = f.get("own_raw", f.get("own", raw))      # before the ownership correction (2026-11-24); the same before it
+        out[g] = (start, s, own, raw)
     return out
 
 
 def record_dk(a, mirror, since, now):
     os.makedirs(DK_OUT, exist_ok=True)
-    for g, (start, s, own) in sorted(dk_slates(mirror, since, now - dt.timedelta(hours=3)).items()):
+    for g, (start, s, own, own_raw) in sorted(dk_slates(mirror, since, now - dt.timedelta(hours=3)).items()):
         path = os.path.join(DK_OUT, "%s_%s.csv" % (pacific_day(start), g))
         if os.path.exists(path) and not a.rebuild:
             continue
@@ -222,7 +224,7 @@ def record_dk(a, mirror, since, now):
             out.append({"date": pacific_day(start), "draft_group": g, "dk_id": pid, "espn": r["espn"], "name": r.get("name"),
                         "team": r.get("team"), "game": r.get("game"), "position": r.get("position"), "salary": r.get("salary"), "src": r.get("src"),
                         "status": r.get("status", ""), "fp_dk": r.get("fp_dk"), "fp_base_dk": r.get("fp_base_dk", ""),
-                        "dk_avg": r.get("dk_avg"), "value": r.get("value"), "own": own.get(pid, ""), "fp": r.get("fp", ""),
+                        "dk_avg": r.get("dk_avg"), "value": r.get("value"), "own": own.get(pid, ""), "own_raw": own_raw.get(pid, own.get(pid, "")), "fp": r.get("fp", ""),
                         "min_proj": r.get("min", ""), "min_raw": r.get("min_raw", r.get("min", "")), "ppm_proj": r.get("ppm", ""),
                         "miss_dk": r.get("miss_dk", ""), "fragile": int(bool(r.get("fragile"))), "p_dd": r.get("p_dd", ""),
                         "bpr_rank": r.get("bpr_rank", ""), "missed": r.get("missed", ""), "spread": r.get("spread", ""),
