@@ -1570,7 +1570,7 @@ function audit(name, L, o) {
   check("qualifier: winner-take-all (one ticket to 1st), simulated against the chalk field (the slate's field reweighted to its top fifth by DraftKings average: a higher own-sum median, repeated lineups); Max ROI from the chalk batch and the kept pool; its lineups' own sum against that median, P(1st), and where they came from; a chosen chalk lineup joins the bank, not the kept pool, the cut kept; the assumed-style note",
         qf.prof === "qualifier" && qf.wta && qf.n === 2 && qf.size && qf.medQ > qf.medM && qf.dup > 0 && /winner-take-all \(1 ticket\)/.test(qf.nm) && !/assumed/.test(qf.nm) &&
         /^Own sum \d+% \/ \d+% vs the chalk field's median \d+% · P\(1st\) \d+\.\d% \(fresh nights, in-sim\) · \d from the chalk batch, \d from the kept pool$/.test(qf.stat) &&
-        qf.pstats.chalk + qf.pstats.kept === 2 && qf.inBank === qf.pstats.chalk && qf.chalkKept === 0 && qf.cut && qf.keepN === bankN0.keep && qf.bankN === bankN0.n + qf.pstats.chalk &&
+        qf.pstats.chalk + qf.pstats.kept === 2 && qf.inBank === qf.pstats.chalk && qf.chalkKept === 0 && qf.cut && qf.keepN === bankN0.keep && qf.bankN >= bankN0.n && qf.bankN <= bankN0.n + qf.pstats.chalk &&
         /^The qualifier field is an assumed chalk style until field_users\.csv has enough real qualifier fields to refit it/.test(qf.note), JSON.stringify(qf));
   // the bank's test toggle on an idea row: one tap marks it (kept with the bank), another clears it
   const tt = await pg.evaluate(g => {
@@ -1639,8 +1639,14 @@ function audit(name, L, o) {
     const after = JSON.stringify([BANK.lineups.length, CUT && CUT.keep && CUT.keep.length, PF]);
     document.querySelector('#stepBar button[data-step="fill"]').click();      // a second tap closes it
     const closed = stepNow() === null && [...document.querySelectorAll("section.step")].every(x => x.hidden) && !document.querySelector("#stepBar button[aria-pressed=true]");
-    return { seen, kept, labels, bankHas, cutHas, fillHas, order, last: !!last, same: before === after, dflt: stepNow(), closed };
+    // Quick sim (2026-11-24): a 5th tab holding Quick lineup / Quick sim / the count / the contest; nothing else between the tabs and step 1 but the page's status line
+    const quickHas = ["quickRun", "quickSim", "quickN", "quickContest", "quickBox"].every(id => document.getElementById(id).closest("#stepQuick")), quickClosed = document.getElementById("stepQuick").hidden;
+    const between = []; for (let e = document.getElementById("stepBar").parentElement.nextElementSibling; e && e.id !== "stepBank"; e = e.nextElementSibling) between.push(e.id);
+    document.querySelector('#stepBar button[data-step="quick"]').click(); const qOpen = !document.getElementById("stepQuick").hidden && document.getElementById("stepBank").hidden; showStep(null);
+    return { seen, kept, labels, bankHas, cutHas, fillHas, order, last: !!last, same: before === after, dflt: stepNow(), closed, quickHas, quickClosed, between, qOpen };
   });
+  check("step bar: a 5th tab, Quick sim (after Swap), holds Quick lineup, Quick sim, the count and the contest; closed by default; nothing between the tabs and step 1 but the page's status",
+        sb.labels[4] === "Quick sim" && sb.labels.length === 5 && sb.quickHas && sb.quickClosed && JSON.stringify(sb.between) === JSON.stringify(["cutStatus"]) && sb.qOpen, JSON.stringify(sb));
   check("step bar: Bank / Cut / Fill show one panel each (kept with the slate), with live counts; switching leaves the bank, cut and picks alone; none open by default and a second tap closes (2026-11-23)",
         sb.seen.bank === "bank|bank" && sb.seen.cut === "cut|cut" && sb.seen.fill === "fill|fill" && sb.kept && sb.closed && /^Bank [\d,]+$/.test(sb.labels[0]) && /^Cut [\d,]+ kept$/.test(sb.labels[1]) && /^Fill \d+\/\d+$/.test(sb.labels[2]) &&
         sb.same && sb.dflt === null, JSON.stringify(sb));

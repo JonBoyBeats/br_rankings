@@ -390,14 +390,8 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
         <label class="field"><span class="field-label">Sync repo</span><input id="syncRepo" type="text" value="JonBoyBeats/dk-sync" style="width:190px"></label>
         <label class="field"><span class="field-label">GitHub token (this device only)</span><input id="syncToken" type="password" autocomplete="off" placeholder="github_pat_…" style="width:220px"></label>
         <button type="button" id="syncSaveCfg">Save</button><button type="button" id="syncNow">Sync now</button></div></details>
-    <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="false">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button><button type="button" data-step="swap" aria-pressed="false">Swap</button></div>
+    <div class="stepbar" id="stepBar"><button type="button" data-step="bank" aria-pressed="false">Bank</button><button type="button" data-step="cut" aria-pressed="false">Cut</button><button type="button" data-step="fill" aria-pressed="false">Fill</button><button type="button" data-step="swap" aria-pressed="false">Swap</button><button type="button" data-step="quick" aria-pressed="false">Quick sim</button></div>
   </div>
-  <div class="opts" id="quickBar" style="padding:2px 0"><button type="button" id="quickRun" title="One lineup, the highest total Proj under the draw panel as it stands: your rules, stack, Min salary, Leverage, ownership limits, locks (L) and excludes (X); Outs, the deep bench and punts left out, as in a draw. No bank or sim">Quick lineup</button>
-      <button type="button" id="quickMore" hidden title="The next best lineup: differs from each one shown by at least one player">Another</button>
-      <button type="button" id="quickSim" title="Draws 10x this many lineups under the same panel (each the best for its own simulated night, as Draw &amp; bank does), cuts them in waves on fresh nights as the cut does (25% a round) down to this many, and ranks those by ROI over every night they went through. Nothing is banked">Quick sim</button>
-      <input class="num" id="quickN" type="number" min="2" max="200" step="10" value="20" aria-label="Lineups to keep" title="Lineups to keep (10x as many are drawn and cut down to this)" style="width:56px">
-      <select id="quickContest" aria-label="Contest to sim" style="width:auto;max-width:220px"></select></div>
-  <div id="quickBox"></div>
 
   <div class="status" id="cutStatus"></div>
   <section class="step" id="stepBank" data-step="bank" hidden>
@@ -603,6 +597,16 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
   <div id="swapBox"></div>
   <div class="opts" id="swapActs" hidden><button type="button" id="swapAll">Accept all</button><button type="button" id="swapNone">Accept none</button>
     <button type="button" id="swapExport" disabled title="One entries file for every contest, with the swaps you accept: upload it at Lineups → Edit Entries">Export DK entries</button></div>
+  </section>
+
+  <section class="step" id="stepQuick" data-step="quick" hidden>
+  <h2>Quick sim</h2>
+  <div class="opts" id="quickBar" style="padding:2px 0"><button type="button" id="quickRun" title="One lineup, the highest total Proj under the draw panel as it stands: your rules, stack, Min salary, Leverage, ownership limits, locks (L) and excludes (X); Outs, the deep bench and punts left out, as in a draw. No bank or sim">Quick lineup</button>
+      <button type="button" id="quickMore" hidden title="The next best lineup: differs from each one shown by at least one player">Another</button>
+      <button type="button" id="quickSim" title="Draws 10x this many lineups under the same panel (each the best for its own simulated night, as Draw &amp; bank does), cuts them in waves on fresh nights as the cut does (25% a round) down to this many, and ranks those by ROI over every night they went through. Nothing is banked">Quick sim</button>
+      <input class="num" id="quickN" type="number" min="2" max="200" step="10" value="20" aria-label="Lineups to keep" title="Lineups to keep (10x as many are drawn and cut down to this)" style="width:56px">
+      <select id="quickContest" aria-label="Contest to sim" style="width:auto;max-width:220px"></select></div>
+  <div id="quickBox"></div>
   </section>
 
   <details class="news" id="newsBox"><summary id="newsSum">News: loading…</summary><div id="news"></div></details>
@@ -2063,6 +2067,7 @@ function renderSteps() {
   var label = { bank: "Bank <span class=\"st\">" + nb.toLocaleString() + "</span>",
                 cut: "Cut <span class=\"st\">" + (CUT && CUT.keep ? CUT.keep.length.toLocaleString() + " kept" : "–") + "</span>",
                 fill: "Fill <span class=\"st\">" + (ent ? picked + "/" + ent : "–") + "</span>",
+                quick: "Quick sim",
                 swap: "Swap <span class=\"st\">" + (typeof SWAP !== "undefined" && SWAP.res ? SWAP.res.filter(function (p) { return p.steps.length; }).length : "–") + "</span>" };
   document.querySelectorAll("#stepBar button[data-step]").forEach(function (b) { b.innerHTML = label[b.dataset.step]; b.setAttribute("aria-pressed", String(b.dataset.step === st)); });
   document.querySelectorAll("section.step").forEach(function (x) { x.hidden = x.dataset.step !== st; });
@@ -2619,8 +2624,12 @@ async function qualChalk() {
 // a chosen chalk lineup into the bank (not the kept pool), keeping the cut: its bank index
 function chalkToBank(L) {
   var key = L.ids.slice().sort().join(",");
-  for (var i = 0; i < BANK.lineups.length; i++) if (BANK.lineups[i].ids.slice().sort().join(",") === key) return i;
   var tag = "Qualifier chalk";
+  for (var i = 0; i < BANK.lineups.length; i++) if (BANK.lineups[i].ids.slice().sort().join(",") === key) {      // banked already (cut out): tagged too
+    if (BANK.tags[i].indexOf(tag) < 0) BANK.tags[i].push(tag);
+    BANK.tagRules[tag] = BANK.tagRules[tag] || { chalk: { n: QUAL_CHALK_N, nightS: QUAL_NOISE, levW: 0 } };
+    return i;
+  }
   BANK.tagRules[tag] = BANK.tagRules[tag] || { chalk: { n: QUAL_CHALK_N, nightS: QUAL_NOISE, levW: 0 } };
   BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice() }); BANK.tags.push([tag]);
   if (CUT) CUT.bankN = BANK.lineups.length;
