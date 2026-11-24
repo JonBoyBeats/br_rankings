@@ -231,6 +231,7 @@
 .row.ckg .who { background: rgba(46,170,96,.16); } .row.ckl .who { background: rgba(46,170,96,.07); }
 .checksq { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 2px 0 6px; font-size: 11.5px; }
 .checksq button { height: 24px; padding: 0 8px; font-size: 11.5px; } .checksq button[aria-pressed="true"], .stackq button[aria-pressed="true"] { background: rgba(46,170,96,.85); border-color: rgba(46,170,96,.9); color: #fff; }
+.bbtog { height: 16px; padding: 0 3px; margin-left: 2px; font-size: 9.5px; line-height: 14px; vertical-align: 1px; } .ckbase { margin: 4px 0; } .ckpt { display: block; font-size: 11.5px; } .ckpick summary { cursor: pointer; }
 .ckopts { flex-basis: 100%; font-size: 11.5px; } .ckopts summary { cursor: pointer; } .ckopts input.num { width: 56px; height: 22px; font-size: 11.5px; } .ckopts .ckgrid { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 4px 0; }
 .stackq { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 2px 0 8px; font-size: 11.5px; }
 .stackq button { height: 24px; padding: 0 8px; font-size: 11.5px; }
@@ -1097,7 +1098,7 @@ function sortList(list) {
               scan: function (r) { var x = scanRowOf(r.id); return x ? x.g_t1 : -Infinity; },
               sroi: function (r) { var x = scanRowOf(r.id); return x && x.g_roi != null ? x.g_roi : -Infinity; },
               scash: function (r) { var x = scanRowOf(r.id); return x ? x.g_cash : -Infinity; },
-              bank: function (r) { return bankShare()[r.id] || 0; },
+              bank: function (r) { var bb = view.bankBase ? baseBank() : null; return (bb ? bb.share : bankShare())[r.id] || 0; },
               checks: function (r) { var c = ckSort[r.id]; return (c ? c.hit : 0) * 1000 + proj(r); },
               here: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].here : 0; },
               tonight: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].tonight : 0; },
@@ -1211,9 +1212,10 @@ function bankShare() {
 }
 function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's checks (checksMap)
   var head = '<div class="head"><span>L / X</span>' +
-    [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"], ["bank", "Bank", "r col-bank"],
+    [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"], ["bank", view.bankBase ? "Base" : "Bank", "r col-bank"],
      ["min", "Min", "r col-min"], ["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
-      .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") + "</span>"
+      .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '">' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") +
+                                          (c[0] === "bank" ? '<button type="button" class="bbtog" aria-pressed="' + !!view.bankBase + '" title="Bank % from the whole bank or the base bank only (the checks\' base)">' + (view.bankBase ? "base" : "all") + "</button>" : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
     '<span class="col-scan col-pb" title="Bank this: a rule, at least 1 of him, for your next draw"></span>' +
     '<span class="r col-max" title="In at least this % of each draw\'s lineups (a baseline: listed in the rules\' Baseline block)">Min%</span>' +
@@ -1277,8 +1279,9 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       // Bank (back 2026-11-20, beside Own, whenever a bank exists): his share of the bank; the hover against the field, with the flag
       (function () { var hasB = BANK && BANK.lineups && BANK.lineups.length, bs = hasB ? bshare[r.id] || 0 : 0, gp2 = hasB && sc ? bankGap(sc.read, bs, own(r) / 100) : null;
-        return '<span class="m r col-bank"' + (hasB ? ' title="' + esc("In " + Math.round(100 * bs) + "% of the bank vs " + Math.round(own(r)) + "% field" + (gp2 ? " · " + gp2.tip : "")) + '"' : "") + ">" +
-          (hasB ? Math.round(100 * bs) + "%" : "–") + "</span>"; })() +
+        var bb = view.bankBase && hasB ? baseBank() : null, shown = bb ? bb.share[r.id] || 0 : bs;        // the column's base option (2026-11-24): display only
+        return '<span class="m r col-bank"' + (hasB ? ' title="' + esc((bb ? "In " + Math.round(100 * shown) + "% of the base bank (" + bb.n + " lineups)" : view.bankBase ? "No base yet: in " + Math.round(100 * bs) + "% of the whole bank" : "In " + Math.round(100 * bs) + "% of the bank") +
+          " vs " + Math.round(own(r)) + "% field" + (gp2 ? " · " + gp2.tip : "")) + '"' : "") + ">" + (hasB ? Math.round(100 * shown) + "%" : "–") + "</span>"; })() +
       '<span class="m r mut col-min">' + (r.min != null ? r.min.toFixed(0) : "–") + "</span>" +
       // MPG (2026-11-20): his season minutes a game played, beside our minutes projection; the hover his last 5 and their spread
       '<span class="m r mut col-mpg"' + (r.min_avg != null ? ' title="' + esc("Season " + r.min_avg.toFixed(1) + " min a game played" + (r.min_last5 && r.min_last5.length ? "; last " + r.min_last5.length + ": " +
@@ -3703,7 +3706,7 @@ function checksMap() {
   var nn = function (a) { return a.filter(function (x) { return x != null; }); };
   var cut = { obpr: ckQ(nn(rot.map(function (r) { return r.obpr; })), 100 - o.obprTop), mpg: ckQ(nn(rot.map(function (r) { return r.min_avg; })), o.mpgPct),
               ppm: ckQ(nn(rot.map(ckPpm)), o.ppmPct), x5: ckQ(three.map(function (r) { return ckGames(r, 5); }), o.x5Pct), x2: ckQ(three.map(function (r) { return ckGames(r, -2); }), o.x2Pct) };
-  var hasBank = !!(BANK && BANK.lineups && BANK.lineups.length), bs = hasBank ? bankShare() : {}, hasScan = rows.some(function (r) { return !!scanRowOf(r.id); });
+  var hasBank = !!(BANK && BANK.lineups && BANK.lineups.length), bs = hasBank ? bankShare() : {}, bb = hasBank ? baseBank() : null, hasScan = rows.some(function (r) { return !!scanRowOf(r.id); });
   var pc = function (x) { return Math.round(100 * x) + "%"; }, out = {};
   rows.forEach(function (r) {
     var b = [], n3 = (r.last5 || []).length >= 3, ppm = ckPpm(r), x5 = ckGames(r, 5), x2 = ckGames(r, -2);
@@ -3716,8 +3719,8 @@ function checksMap() {
              v: n3 ? pc(x5) + " of last " + r.last5.length + " at 5x $" + (r.salary / 1000).toFixed(1) + "k (cut " + pc(cut.x5 || 0) + ", above 0)" : "under 3 recent games" });
     b.push({ k: "under-2x rate", ok: n3 && x2 != null && cut.x2 != null && x2 <= cut.x2,
              v: n3 ? pc(x2) + " of last " + r.last5.length + " under 2x (cut " + pc(cut.x2 || 0) + " or less)" : "under 3 recent games" });
-    if (hasBank) { var f = own(r) / 100, sh = bs[r.id] || 0, ratio = f > 0 ? sh / f : (sh > 0 ? Infinity : 0);
-      b.push({ k: "bank/field", ok: ratio >= o.bankRatio, v: pc(sh) + " of the bank vs " + pc(f) + " field (x" + (isFinite(ratio) ? ratio.toFixed(2) : "∞") + ", need x" + o.bankRatio + ")" }); }
+    if (hasBank) { var f = own(r) / 100, sh = (bb ? bb.share : bs)[r.id] || 0, ratio = f > 0 ? sh / f : (sh > 0 ? Infinity : 0);
+      b.push({ k: "bank/field", ok: ratio >= o.bankRatio, v: (bb ? "base bank share " : "(whole bank: no base yet) bank share ") + pc(sh) + " vs field " + pc(f) + " (x" + (isFinite(ratio) ? ratio.toFixed(2) : "∞") + ", need x" + o.bankRatio + ")" }); }
     if (hasScan) { var sc = scanRowOf(r.id);
       b.push({ k: "scan read", ok: !!sc && ["core", "lean core", "leverage"].indexOf(sc.read) >= 0, v: sc ? sc.read : "not scanned" }); }
     var hit = b.filter(function (x) { return x.ok; }).length, avail = b.length;
@@ -3757,7 +3760,7 @@ function checksRow(game) {
     '<span class="mut" id="ckMsg">' + (ckMsgText.indexOf(game + "|") === 0 ? esc(ckMsgText.slice(game.length + 1)) : "") + "</span>" +
     '<details class="ckopts"' + (ckFoldOpen ? " open" : "") + '><summary class="mut">Boxes</summary><div class="ckgrid">' +
     inp("rotMpg", "rotation: mpg ≥") + inp("rotGp", "and games ≥") + inp("obprTop", "1 OBPR top %") + inp("obprTeam", "or team top") + inp("mpgPct", "2 MPG pctile") + inp("mpgAbs", "or mpg ≥") +
-    inp("ppmPct", "3 DK/min pctile") + inp("x5Pct", "4 5x-rate pctile") + inp("x2Pct", "5 under-2x pctile ≤") + inp("bankRatio", "6 bank/field ≥") + '</div><div class="mut">' +
+    "</div>" + baseFoldHtml() + '<div class="ckgrid">' + inp("ppmPct", "3 DK/min pctile") + inp("x5Pct", "4 5x-rate pctile") + inp("x2Pct", "5 under-2x pctile ≤") + inp("bankRatio", "6 bank/field ≥") + '</div><div class="mut">' +
     "Rotation players: season mpg ≥ " + o.rotMpg + " and " + o.rotGp + "+ games, the slate's percentile pool. 1 OBPR in its top " + o.obprTop + "% or top " + o.obprTeam + " on his team; 2 season mpg ≥ the " + o.mpgPct + "th percentile or " + o.mpgAbs + "+; " +
     "3 season DK avg per minute ≥ the " + o.ppmPct + "th; 4 share of his last 5 at 5x+ tonight's salary ≥ the " + o.x5Pct + "th (of players with 3+ games) and above 0; 5 share under 2x ≤ the " + o.x2Pct + "th; " +
     "6 bank share / field own ≥ " + o.bankRatio + " (once a bank exists); 7 scan read core, lean core or leverage (once scanned). Green: 5+ or 70%+ of those counted; light: 4. Out, unresolved Q, sit risk and 0 games are never green.</div></details></div>";
@@ -3774,6 +3777,67 @@ $("teamPanel").addEventListener("change", function (e) {
    Questionable factor 1.0) and field ownership (field factor 1.0) stay full as for any Q. Undo: plain Q again. Mark
    out clears it. Saved with the slate (state), the sync marks, the swap pack and Save build (q_play). */
 function qPlaying(r) { return !!(r && state && state.qplay && state.qplay[r.id] && isQ(r)); }
+
+/* The checks' base bank (2026-11-24, the operator): box 6 (bank share / field own) reads the BASE bank only, not the whole
+   bank, which drifts as game groups are banked. Base tags: a bank tag whose own text or idea name (BANK.groups, the Idea
+   name it was drawn under) holds the word "base" (any case, a whole word: not "baseline"); of a Draw the 9 batch
+   ("<idea> L<lev> U<under>") only the rule-free cell, L0 U0 (lev and under both 0). Or the tags picked by hand in the
+   Boxes fold (state.ckBase.pick, per slate). Freeze: the first time a base is found, its lineups' shares (each player's
+   share of the base lineups, a lineup counted once however many base tags it carries) are stored with the tags and the
+   count (state.ckBase.frozen); every later read uses that snapshot, so later batches, base-named ones included, don't
+   move it. It is recomputed only when the hand pick changes, on Refreeze, or when none of its tags is in the bank any
+   more (the bank cleared). No base: box 6 falls back to the whole bank, labelled. Display only. */
+var D9_CELL = / L(\d+(?:\.\d+)?) U(\d+)$/;
+function isBaseTag(t) {
+  var g = (BANK && BANK.groups && BANK.groups[t]) || "";
+  if (!/\bbase\b/i.test(t) && !/\bbase\b/i.test(g)) return false;
+  var m = D9_CELL.exec(t);
+  return !m || (+m[1] === 0 && +m[2] === 0);
+}
+function bankTags() { var seen = {}; ((BANK && BANK.tags) || []).forEach(function (ts) { (Array.isArray(ts) ? ts : [ts]).forEach(function (t) { seen[t] = (seen[t] || 0) + 1; }); }); return seen; }
+function autoBaseTags() { return Object.keys(bankTags()).filter(isBaseTag).sort(); }
+function baseBank() {
+  if (!state || !BANK || !BANK.lineups || !BANK.lineups.length) return null;
+  var cb = state.ckBase = state.ckBase || {}, have = bankTags(), pick = (cb.pick || []).filter(function (t) { return have[t]; });
+  var src = pick.length ? "pick" : "auto", tags = pick.length ? pick : autoBaseTags(), key = src + ":" + tags.join("\u0001");
+  var fz = cb.frozen;
+  if (fz && fz.src === src && (src === "auto" || fz.key === key) && fz.tags.some(function (t) { return have[t]; })) return fz;
+  if (!tags.length) return null;
+  var want = {}, n = 0, sh = {};
+  tags.forEach(function (t) { want[t] = 1; });
+  BANK.lineups.forEach(function (L, i) {
+    var ts = BANK.tags[i]; ts = Array.isArray(ts) ? ts : [ts];
+    if (!ts.some(function (t) { return want[t]; })) return;
+    n++; L.ids.forEach(function (id) { sh[id] = (sh[id] || 0) + 1; });
+  });
+  if (!n) return null;
+  Object.keys(sh).forEach(function (id) { sh[id] /= n; });
+  cb.frozen = { src: src, key: key, tags: tags, n: n, share: sh, at: new Date().toISOString() };
+  save();
+  return cb.frozen;
+}
+function baseFoldHtml() {
+  var have = bankTags(), tags = Object.keys(have).sort(), bb = baseBank(), cb = (state && state.ckBase) || {}, pick = cb.pick || [];
+  if (!tags.length) return '<div class="mut ckbase">6 bank/field: no bank yet.</div>';
+  return '<div class="ckbase"><div class="mut">6 bank/field reads the base bank: ' + (bb ? bb.n + " lineups from " + bb.tags.map(function (t) { return "“" + esc(t) + "”"; }).join(", ") +
+      " (" + (bb.src === "pick" ? "picked" : "auto: tags or ideas named base; of Draw the 9 only L0 U0") + "), frozen " + new Date(bb.at).toLocaleTimeString() : "(whole bank: no base yet)") + ".</div>" +
+    '<details class="ckpick"' + (ckPickOpen ? " open" : "") + '><summary class="mut">Pick base tags</summary>' + tags.map(function (t) {
+      return '<label class="ckpt"><input type="checkbox" class="ckbt" data-tag="' + esc(t) + '"' + (pick.indexOf(t) >= 0 ? " checked" : "") + "> " + esc(t) + (BANK.groups && BANK.groups[t] ? ' <span class="mut">(' + esc(BANK.groups[t]) + ")</span>" : "") +
+        (isBaseTag(t) ? ' <span class="mut">auto</span>' : "") + " <span class=\"mut\">" + have[t] + "</span></label>"; }).join("") +
+    '<div><button type="button" id="ckRefreeze" title="Recompute the base bank from the tags as they are now">Refreeze</button> <span class="mut">None ticked: the auto match.</span></div></details></div>';
+}
+$("teamPanel").addEventListener("change", function (e) {
+  var t = e.target.closest(".ckbt"); if (!t) return;
+  var cb = state.ckBase = state.ckBase || {}, p = (cb.pick || []).filter(function (x) { return x !== t.dataset.tag; });
+  if (t.checked) p.push(t.dataset.tag);
+  cb.pick = p.sort(); save(); ckPickOpen = true; renderTeamPanel(); if (view.bankBase) renderPlayers();
+});
+$("teamPanel").addEventListener("click", function (e) {
+  if (!e.target.closest("#ckRefreeze")) return;
+  if (state.ckBase) delete state.ckBase.frozen; baseBank(); ckPickOpen = true; renderTeamPanel(); if (view.bankBase) renderPlayers();
+});
+var ckPickOpen = false;
+$("teamPanel").addEventListener("toggle", function (e) { if (e.target.classList && e.target.classList.contains("ckpick")) ckPickOpen = e.target.open; }, true);
 
 nbSet(nbStored());
 
@@ -4935,6 +4999,7 @@ $("teamBar").addEventListener("click", function (e) {
 $("teamPanel").addEventListener("click", function (e) {
   if (e.target.closest(".showall")) { view.showAll = !view.showAll; renderTeamPanel(); return; }
   var pt = e.target.closest(".ptab"); if (pt) { view.pside = pt.dataset.team; renderTeamPanel(); return; }
+  if (e.target.closest(".bbtog")) { view.bankBase = !view.bankBase; renderPlayers(); return; }
   var hp = e.target.closest("#teamPanel [data-sort]");
   if (hp) { var pk = hp.dataset.sort; view.pdir = (view.psort || "checks") === pk ? -(view.pdir || -1) : (pk === "name" ? 1 : -1); view.psort = pk; renderTeamPanel(); return; }
   var hs = e.target.closest("[data-sort]");
@@ -5081,6 +5146,7 @@ document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
 $("resetProj").addEventListener("click", function () { state.proj = {}; save(); renderPlayers(); });
 $("clearLx").addEventListener("click", function () { state.lock = {}; state.excl = {}; state.cap = {}; state.floor = {}; state.scanSet = { floor: {}, cap: {} }; save(); renderRules(); renderPlayers(); });
 $("players").addEventListener("click", function (e) {
+  if (e.target.closest(".bbtog")) { view.bankBase = !view.bankBase; renderPlayers(); return; }
   var h = e.target.closest("[data-sort]");
   if (h) { var s = h.dataset.sort; view.dir = view.sort === s ? -view.dir : (s === "name" ? 1 : -1); view.sort = s; renderPlayers(); return; }
   rowClick(e);

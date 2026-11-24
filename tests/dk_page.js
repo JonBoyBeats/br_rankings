@@ -325,7 +325,7 @@ function audit(name, L, o) {
   // the Players list (2026-11-19): Pos / Team / Opp columns, the matchup, line, double-double and fragile in the name's
   // tooltip (no grey line, no fragile badge), no ± column
   const pl = await pg.evaluate(() => {
-    const heads = [...document.querySelectorAll("#players .head span[data-sort]")].map(x => x.textContent.replace(/ [↓↑]$/, ""));
+    const heads = [...document.querySelectorAll("#players .head span[data-sort]")].map(x => x.firstChild.textContent.replace(/ [↓↑]$/, ""));     // the label, not Bank's all / base toggle
     const r = rows.find(x => x.status !== "Out" && x.spread != null && x.ou), el = document.querySelector(`#players .row[data-id="${r.id}"]`), cells = [...el.children].map(c => c.textContent);
     const f = rows.find(x => x.fragile), fel = f && document.querySelector(`#players .row[data-id="${f.id}"]`);
     return { heads, sub: document.querySelectorAll("#players .sub").length, cells: cells.slice(2, 5), want: [r.position, r.team, (r.home ? "v " : "@ ") + r.opp],
@@ -2121,6 +2121,48 @@ function audit(name, L, o) {
   check("Q Play: an unresolved Q shows play and out; play tags him 'Q · playing' (list and game view), ungreys him in the checks, saves with the slate and Save build, and leaves his projection and ownership; undo returns plain Q; Mark out works as before",
         qp.none || (JSON.stringify(qp.btns0) === JSON.stringify(["play", "out"]) && /Questionable/.test(qp.grey0) && qp.tag === "Q · playing" && JSON.stringify(qp.btns1) === JSON.stringify(["undo"]) &&
         !/Questionable/.test(qp.grey1) && qp.saved && qp.built && qp.same && qp.inGame && qp.back && qp.out && qp.restored), JSON.stringify(qp));
+  // checks box 6 on the BASE bank (2026-11-24): base tags matched, frozen, hand pick, no-base fallback, the Bank column's base option
+  const cb6 = await pg.evaluate(() => {
+    const B0 = BANK, cb0 = state.ckBase, ids = rows.filter(r => usable(r)).map(r => r.id), mk = k => ({ ids: ids.slice(k, k + 8), slots: ids.slice(k, k + 8) });
+    BANK = { lineups: [mk(0), mk(1), mk(2), mk(3), mk(10), mk(11)], tags: [["no rules"], ["X L0 U0"], ["X L0.1 U1"], ["salary ≥ 49000 + STACK A@B 2+1 (2 A)"], ["X L0 U0", "UK group"], ["UK group"]],
+             tagRules: {}, groups: { "no rules": "BASE", "X L0 U0": "base", "X L0.1 U1": "base", "salary ≥ 49000 + STACK A@B 2+1 (2 A)": "UK", "UK group": "Kentucky" } };
+    bankShareMemo = null; delete state.ckBase;
+    const auto = autoBaseTags(), bb = baseBank(), want = {};
+    [0, 1, 4].forEach(i => BANK.lineups[i].ids.forEach(id => { want[id] = (want[id] || 0) + 1 / 3; }));
+    const shareOk = bb && bb.n === 3 && Object.keys(want).every(id => Math.abs(bb.share[id] - want[id]) < 1e-12) && Object.keys(bb.share).length === Object.keys(want).length;
+    const pid = BANK.lineups[0].ids[0], c6 = checksMap()[pid].boxes.find(x => x.k === "bank/field"), hover = /^base bank share \d+% vs field \d+%/.test(c6.v);
+    // a later base batch doesn't move the frozen numbers
+    BANK.lineups.push(mk(20)); BANK.tags.push(["Y L0 U0"]); BANK.groups["Y L0 U0"] = "BASE"; bankShareMemo = null;
+    const frozen = baseBank().n === 3 && baseBank().at === bb.at;
+    // the Boxes fold: which tags, a hand pick recomputes, Refreeze takes the auto match as it is now
+    const g = rows.find(r => r.game && r.game.indexOf("@") > 0).game; view.panel = g.split("@")[0]; view.pside = view.panel; renderTiles(); renderTeamPanel();
+    const fold = document.querySelector("#teamPanel .ckbase").textContent, foldOk = /3 lineups from .*no rules.*X L0 U0/.test(fold) && /frozen/.test(fold);
+    const box = document.querySelector('#teamPanel .ckbt[data-tag="UK group"]'); box.checked = true; box.dispatchEvent(new Event("change", { bubbles: true }));
+    const picked = baseBank().src === "pick" && baseBank().n === 2 && JSON.stringify(state.ckBase.pick) === JSON.stringify(["UK group"]);
+    const box2 = document.querySelector('#teamPanel .ckbt[data-tag="UK group"]'); box2.checked = false; box2.dispatchEvent(new Event("change", { bubbles: true }));
+    document.getElementById("ckRefreeze").click();
+    const refrozen = baseBank().src === "auto" && baseBank().n === 4 && JSON.stringify(baseBank().tags) === JSON.stringify(["X L0 U0", "Y L0 U0", "no rules"]);
+    // the Bank column: whole bank by default, base on the toggle
+    view.panel = null; renderTiles(); view.bankBase = false; renderPlayers();
+    const hdr0 = document.querySelector('#players .head [data-sort="bank"]').textContent;
+    document.querySelector("#players .head .bbtog").click();
+    const cell = document.querySelector(`#players .row[data-id="${pid}"] .col-bank`), colOk = view.bankBase && /^Base/.test(document.querySelector('#players .head [data-sort="bank"]').textContent) &&
+      cell.textContent === Math.round(100 * baseBank().share[pid]) + "%" && /of the base bank \(4 lineups\)/.test(cell.title) && view.sort !== "bank";
+    document.querySelector("#players .head .bbtog").click();
+    const colBack = !view.bankBase && /^Bank/.test(hdr0) && document.querySelector(`#players .row[data-id="${pid}"] .col-bank`).textContent === Math.round(100 * bankShare()[pid]) + "%";
+    // no base: the whole bank, labelled
+    BANK = { lineups: [mk(0), mk(1)], tags: [["salary ≥ 49000"], ["UK group"]], tagRules: {}, groups: { "UK group": "Kentucky" } }; bankShareMemo = null; delete state.ckBase;
+    const nb = baseBank() === null && /^\(whole bank: no base yet\) bank share/.test(checksMap()[pid].boxes.find(x => x.k === "bank/field").v);
+    const words = [isBaseTag("x"), (BANK.groups["baseline idea"] = "baseline", isBaseTag("baseline idea")), (BANK.groups["Q L0 U0"] = "Base", isBaseTag("Q L0 U0")), (BANK.groups["Q L0.2 U0"] = "Base", isBaseTag("Q L0.2 U0")), isBaseTag("BASE + no McIver")];
+    BANK = B0; bankShareMemo = null; if (cb0) state.ckBase = cb0; else delete state.ckBase; save(); renderPlayers();
+    return { auto, shareOk, hover, c6: c6.v, frozen, foldOk, fold, picked, refrozen, colOk, colBack, nb, words };
+  });
+  check("checks box 6 reads the base bank: tags or ideas named base (a whole word, any case), of Draw the 9 only L0 U0; each player's share of those lineups; hover 'base bank share x% vs field y%'",
+        JSON.stringify(cb6.auto) === JSON.stringify(["X L0 U0", "no rules"]) && cb6.shareOk && cb6.hover && JSON.stringify(cb6.words) === JSON.stringify([false, false, true, false, true]), JSON.stringify(cb6));
+  check("checks base: frozen once found (a later base batch doesn't move it); the Boxes fold names its tags; a hand pick recomputes; Refreeze takes the match as it is; no base: the whole bank, labelled",
+        cb6.frozen && cb6.foldOk && cb6.picked && cb6.refrozen && cb6.nb, JSON.stringify(cb6));
+  check("Bank column: whole bank by default, a base toggle beside its header shows the base bank's share (hover says so) without sorting",
+        cb6.colOk && cb6.colBack, JSON.stringify(cb6));
   // --- the builder on one screen ---------------------------------------------------------------------
   dialogs = [];
   await pg.fill("#maxUse", "3"); await pg.fill("#maxNight", "60");
