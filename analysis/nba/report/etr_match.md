@@ -1,33 +1,33 @@
 # Our morning Proj vs ETR's final upload, against ADP
 
-Written nightly by scripts/nba_etr_match.py (its docstring has the definitions). Value = projection minus the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's last upload before lock (its first carries a random multiplier); the top 60 by ADP graded (40 on a 4-drafter slate), in four groups: the elite (ETR's top 2-4, cut at the biggest drop), then next / middle / 6th round on by morning ADP: under 19, 19-31 and 32 on with 6 drafters; under 13, 13-20 and 21 on with 4. 21 slates, 2026-10-28 to 2026-11-20. Rookie gap: ETR's value minus ours for players with no last season (+: we're lower); the board averages their last 3 ETR nights from 2026-11-07.
+Written nightly by scripts/nba_etr_match.py (its docstring has the definitions). Value = projection minus the average of the 6 players nearest by morning ADP, for ours at Lock AM and for ETR's last upload before lock (its first carries a random multiplier); the top 60 by ADP graded (40 on a 4-drafter slate), in four groups: the elite (ETR's top 2-4, cut at the biggest drop), then next / middle / 6th round on by morning ADP: under 19, 19-31 and 32 on with 6 drafters; under 13, 13-20 and 21 on with 4. 22 slates, 2026-10-28 to 2026-11-23. Rookie gap: ETR's value minus ours for players with no last season (+: we're lower); the board averages their last 3 ETR nights from 2026-11-07.
 
 ## Season
 
 | | players | corr | direction (ETR 2+ off ADP) | ETR's top 5 we had above | ETR's bottom 5 we had below | big misses (3+) | CLV ours / ETR | rookie gap (n) |
 |---|---|---|---|---|---|---|---|---|
-| elite | 56 | 0.85 | 41/42 (98%) | 27/27 (100%) | - | 17 (30%) | 0.12 / 0.06 | - (0) |
-| next | 291 | 0.63 | 113/138 (82%) | 13/13 (100%) | 19/22 (86%) | 69 (24%) | 0.18 / 0.52 | +1.2 (20) |
-| middle | 250 | 0.61 | 84/96 (88%) | 5/6 (83%) | 11/11 (100%) | 59 (24%) | 0.17 / 0.52 | +2.3 (22) |
-| 6th round on | 600 | 0.78 | 289/338 (86%) | 53/59 (90%) | 72/72 (100%) | 168 (28%) | 0.09 / 0.27 | +1.1 (29) |
-| **all** | 1197 | 0.76 | 527/614 (86%) | 98/105 (93%) | 102/105 (97%) | 313 (26%) | 0.11 / 0.30 | +1.5 (71) |
+| elite | 58 | 0.85 | 43/44 (98%) | 29/29 (100%) | - | 17 (29%) | 0.10 / 0.05 | - (0) |
+| next | 305 | 0.62 | 121/147 (82%) | 13/13 (100%) | 19/22 (86%) | 71 (23%) | 0.18 / 0.52 | +1.1 (21) |
+| middle | 264 | 0.60 | 90/102 (88%) | 6/7 (86%) | 11/11 (100%) | 61 (23%) | 0.18 / 0.53 | +2.3 (22) |
+| 6th round on | 630 | 0.79 | 309/358 (86%) | 55/61 (90%) | 77/77 (100%) | 175 (28%) | 0.09 / 0.26 | +1.0 (32) |
+| **all** | 1257 | 0.77 | 563/651 (86%) | 103/110 (94%) | 107/110 (97%) | 324 (26%) | 0.11 / 0.30 | +1.4 (75) |
 
 ## Last 7 slates
 
 | | players | corr | direction (ETR 2+ off ADP) | ETR's top 5 we had above | ETR's bottom 5 we had below | big misses (3+) | CLV ours / ETR | rookie gap (n) |
 |---|---|---|---|---|---|---|---|---|
-| elite | 15 | 0.89 | 14/14 (100%) | 8/8 (100%) | - | 7 (47%) | 0.36 / 0.18 | - (0) |
-| next | 106 | 0.65 | 39/49 (80%) | 5/5 (100%) | 7/8 (88%) | 24 (23%) | 0.15 / 0.53 | +1.2 (10) |
-| middle | 85 | 0.47 | 28/35 (80%) | - | 4/4 (100%) | 21 (25%) | -0.07 / 0.37 | +1.5 (4) |
-| 6th round on | 214 | 0.69 | 98/117 (84%) | 20/22 (91%) | 23/23 (100%) | 75 (35%) | 0.06 / 0.30 | +0.3 (10) |
-| **all** | 420 | 0.71 | 179/215 (83%) | 33/35 (94%) | 34/35 (97%) | 127 (30%) | 0.04 / 0.28 | +0.9 (24) |
+| elite | 15 | 0.91 | 14/14 (100%) | 10/10 (100%) | - | 6 (40%) | 0.30 / 0.16 | - (0) |
+| next | 106 | 0.66 | 43/51 (84%) | 4/4 (100%) | 7/7 (100%) | 20 (19%) | 0.13 / 0.44 | +1.2 (11) |
+| middle | 85 | 0.52 | 29/35 (83%) | 1/1 (100%) | 3/3 (100%) | 21 (25%) | 0.04 / 0.43 | +2.2 (3) |
+| 6th round on | 214 | 0.76 | 105/123 (85%) | 18/20 (90%) | 25/25 (100%) | 73 (34%) | 0.04 / 0.27 | +0.3 (12) |
+| **all** | 420 | 0.76 | 191/223 (86%) | 33/35 (94%) | 35/35 (100%) | 120 (29%) | 0.04 / 0.26 | +0.9 (26) |
 
 ## Rookies (no last season), before and after the last-3 average
 
 | | n | ETR minus ours | big misses |
 |---|---|---|---|
 | before 2026-11-07 | 25 | +2.78 | 9 |
-| from 2026-11-07 | 46 | +0.77 | 11 |
+| from 2026-11-07 | 50 | +0.72 | 12 |
 
 ## By slate
 
@@ -54,32 +54,37 @@ Written nightly by scripts/nba_etr_match.py (its docstring has the definitions).
 | 2026-11-18 (6 drafters) | 60 | 0.56 | 23/30 (77%) | 5/5 (100%) | 5/5 (100%) | 22 (37%) | -0.08 / 0.19 | +1.7 (5) |
 | 2026-11-19 (6 drafters) | 60 | 0.72 | 31/39 (79%) | 4/5 (80%) | 5/5 (100%) | 23 (38%) | 0.01 / 0.29 | +0.3 (4) |
 | 2026-11-20 (6 drafters) | 60 | 0.65 | 25/27 (93%) | 5/5 (100%) | 5/5 (100%) | 19 (32%) | 0.12 / 0.35 | -0.0 (3) |
+| 2026-11-23 (6 drafters) | 60 | 0.92 | 36/37 (97%) | 5/5 (100%) | 5/5 (100%) | 11 (18%) | 0.12 / 0.26 | +0.1 (4) |
 
-## Biggest misses, 2026-11-20
+## Biggest misses, 2026-11-23
 
 | player | ADP | ours vs ADP | ETR vs ADP | usual min | min | tag |
 |---|---|---|---|---|---|---|
-| Daniss Jenkins DET | 35.3 | -8.8 | -0.8 | 31.1 | 39.0 |  |
-| Kevin Huerter DET | 36.0 | -7.3 | -0.4 | 28.5 | 36.0 |  |
-| Paul Reed DET | 36.0 | +8.6 | +2.1 | 27.4 | 28.0 |  |
-| Quentin Grimes LAL | 34.8 | -10.5 | -4.2 | 30.4 | 35.0 |  |
-| Ajay Mitchell OKC | 35.6 | +4.7 | -1.3 | 28.7 | 31.0 |  |
-| Mo Bamba UTA | 36.0 | -8.1 | -2.6 | 19.5 | 20.0 |  |
-| Shai Gilgeous-Alexander OKC | 3.2 | +1.8 | -3.5 | 33.4 | 37.0 |  |
-| Cade Cunningham DET | 4.4 | -5.8 | -1.1 | 35.7 | 36.0 | Probable / Probable |
-| Darryn Peterson UTA (rookie) | 35.9 | +3.6 | +7.9 | 31.0 | 32.0 |  |
-| James Harden CLE | 24.4 | -2.1 | +2.0 | 32.1 | 40.0 |  |
+| Quentin Grimes LAL | 35.6 | -6.9 | -1.4 | 30.1 | 30.0 |  |
+| LeBron James PHI | 26.4 | +1.7 | +7.1 | 32.4 | 30.0 |  |
+| Kris Dunn LA | 35.9 | -1.6 | -6.7 | 23.8 | 23.0 |  |
+| Scottie Barnes TOR | 4.0 | +0.0 | -4.1 | 34.8 | 38.0 |  |
+| VJ Edgecombe PHI | 35.7 | -2.7 | +1.2 | 34.8 | 35.0 |  |
+| Isaiah Collier UTA | 35.9 | -10.9 | -14.6 | 10.4 | 18.0 |  |
+| Jalen Smith CHI | 33.6 | -0.2 | -3.6 | 26.7 | 25.0 |  |
+| Brayden Burries MIL (rookie) | 35.6 | -7.7 | -11.0 | 26.5 | 29.0 |  |
+| Amen Thompson HOU | 29.6 | -2.5 | -5.7 | 31.5 | 28.0 |  |
+| Darius Garland LA | 35.7 | +3.7 | +0.5 | 33.4 | 34.0 |  |
 
 ## Missed the same way on 3+ of the last 10 slates
 
-- Paul Reed: ETR below ours by 5.6, 8.4, 10.2, 10.2, 6.5
-- Jamal Shead: ETR above ours by 11.5, 6.3, 4.6
+- Paul Reed: ETR below ours by 8.4, 10.2, 10.2, 6.5
+- Quentin Grimes: ETR above ours by 7.9, 6.3, 5.5
 - Mo Bamba: ETR above ours by 5.0, 8.4, 5.5
-- Jeremiah Fears: ETR above ours by 6.7, 4.6, 8.3, 3.9
+- Jeremiah Fears: ETR above ours by 4.6, 8.3, 3.9
+- VJ Edgecombe: ETR above ours by 5.8, 4.3, 3.9
+- Darius Garland: ETR below ours by 5.2, 5.5, 3.2
 - Rudy Gobert: ETR below ours by 5.8, 3.2, 4.2
 - Desmond Bane: ETR below ours by 3.5, 3.6, 5.6
 - Darryn Peterson: ETR above ours by 4.1, 4.1, 4.4
-- Trae Young: ETR below ours by 3.2, 4.1, 3.1, 5.0
+- Trae Young: ETR below ours by 4.1, 3.1, 5.0
+- Amen Thompson: ETR below ours by 5.4, 3.0, 3.2
+- Jaylen Brown: ETR above ours by 4.4, 4.0, 3.0
 - Stephon Castle: ETR below ours by 4.1, 3.9, 3.4
 - Domantas Sabonis: ETR below ours by 4.1, 3.2, 3.4
 - Isaiah Hartenstein: ETR below ours by 3.6, 3.8, 3.0
