@@ -225,6 +225,9 @@
   .gamehead { font-family: var(--mono); font-size: 12px; margin: 6px 0 4px; }
   .gamehead b { font-size: 14px; font-family: inherit; }
 /* checks (2026-11-24): boxes met per player in a game; green 5+ (or 70%+ of those available), light green 4 */
+#ideaTable tr > :first-child, #cutSharesTable tr > :first-child { position: sticky; left: 0; background: var(--bg); z-index: 1; }     /* the name stays put as the wide tables scroll */
+tr.fc-light { cursor: pointer; } tr.fc-heavy { cursor: pointer; } .fcf-light { color: var(--bad); font-weight: 600; } .fcf-heavy { color: #4c8dff; font-weight: 600; }
+.fcscope { font-size: 11.5px; margin: 4px 0; } .fcscope button { height: 22px; padding: 0 8px; font-size: 11.5px; }
 .ck { display: inline-block; min-width: 26px; margin-right: 5px; padding: 0 4px; border-radius: 4px; font: 600 11px var(--mono); text-align: center; border: 1px solid var(--line); color: var(--muted); vertical-align: 1px; }
 .ck.ck-g { background: rgba(46,170,96,.85); border-color: rgba(46,170,96,.9); color: #fff; } .ck.ck-l { background: rgba(46,170,96,.28); border-color: rgba(46,170,96,.5); color: var(--ink); }
 .ck.ck-x { opacity: .55; text-decoration: line-through; }
@@ -1846,7 +1849,7 @@ function bankLoadState() {
 function cutKey() { return "dkcbb-cut:" + slate.draft_group_id; }
 function cutSave() { try { if (CUT && CUT.keep) store(cutKey(), CUT); else bigDel(cutKey()); } catch (e) {} }
 function bankSaveState() { bankSaveFailed = store(bankKey(), bankPack(BANK)) === null; }
-function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); if (typeof syncBuild === "function" && Object.keys(PF).length) syncBuild();
+function pfSave() { store("dkcbb-pf:" + slate.draft_group_id, PF); if (typeof fcRefresh === "function") fcRefresh(); if (typeof syncBuild === "function" && Object.keys(PF).length) syncBuild();
   // the Live page's copy of your entered lineups as player ids (the bank itself is in IndexedDB, out of its reach)
   try { var lu = {}; Object.keys(PF).forEach(function (cid) { lu[cid] = PF[cid].map(function (bi) { return BANK.lineups[bi] ? BANK.lineups[bi].ids : null; }).filter(Boolean); }); store("dkcbb-pflu:" + slate.draft_group_id, lu); } catch (e) {} renderNight(); renderSteps(); renderUnder(); renderStrand(); renderProfiles(); }   // the Live page reads it for your exposures
 /* The idea name (2026-11-23, the owner: name the idea before drawing instead of grouping tags after): typed above the
@@ -2112,18 +2115,25 @@ function cutShares() {
     return c;
   };
   var bk = share(BANK.lineups.map(function (L, i) { return i; })), kp = share(CUT.keep);
-  var list = Object.keys(Object.assign({}, bk, kp)).filter(function (id) { return byId(id) && Math.max(bk[id] || 0, kp[id] || 0) >= 0.03; })
-    .map(function (id) { return { r: byId(id), b: bk[id] || 0, k: kp[id] || 0 }; }).sort(function (x, y) { return (y.k - y.b) - (x.k - x.b); });
+  // fill against the cut (2026-11-24): with entries, each player's share of the entries in scope against his kept share
+  var on = fcOn(), ents = on ? fcEntries() : [], E = ents.length, en = on && E ? share(ents) : {};
+  var list = Object.keys(Object.assign({}, bk, kp, en)).filter(function (id) { return byId(id) && Math.max(bk[id] || 0, kp[id] || 0, en[id] || 0) >= 0.03; })
+    .map(function (id) { var e = en[id] || 0, k0 = kp[id] || 0, cnt = Math.round(e * E), fl = on ? fcFlag(cnt, k0, E) : "";
+      return { r: byId(id), b: bk[id] || 0, k: k0, e: e, ent: cnt, vs: e - k0, flag: fl, why: fl === "light" ? fcPlayerWhy(id) : fl === "heavy" ? (state.floor[id] != null && state.floor[id] !== "" ? "floor" : "\u2014") : "" }; });
+  var abs = on && (view.csSort || "abs") === "abs";
+  list.sort(abs ? function (x, y) { return Math.abs(y.vs) - Math.abs(x.vs); } : function (x, y) { return (y.k - y.b) - (x.k - x.b); });
   var p = function (x) { return Math.round(100 * x) + "%"; };
-  return '<details class="fold" id="cutShares" open><summary>Players: bank against the cut (' + list.length + ' in 3%+ of either)</summary>' +
-    '<div class="note">The cut\'s lean, from the same projections and simulated field: not separate evidence that a riser is underrated.</div>' +
-    '<table class="contests"><tr><th>Player</th><th class="r">Sal</th><th class="r">Field own</th><th class="r">Bank</th><th class="r">Kept</th><th class="r">Change</th></tr>' +
+  return '<details class="fold" id="cutShares" open><summary>Players: bank against the cut (' + list.length + ' in 3%+ of ' + (on ? "bank, kept or entered" : "either") + ')</summary>' +
+    '<div class="note">The cut\'s lean, from the same projections and simulated field: not separate evidence that a riser is underrated.' + (on ? " Entered: your entries' share (" + fcScopeName() + ", " + E + " entries); vs cut: entered minus kept, points. Tap a flagged row for Swap one in." : "") + "</div>" +
+    (on ? fcScopeHtml() : "") +
+    '<div style="overflow:auto"><table class="contests" id="cutSharesTable"><tr><th>Player</th><th class="r">Sal</th><th class="r">Field own</th><th class="r">Bank</th><th class="r">Kept</th><th class="r"' + (on ? ' data-cs="change" style="cursor:pointer"' : "") + '>Change' + (on && !abs ? " \u2193" : "") + "</th>" +
+    (on ? '<th class="r">Entered</th><th class="r" data-cs="abs" style="cursor:pointer">vs cut' + (abs ? " \u2193" : "") + '</th><th class="r">Flag</th><th>Why</th>' : "") + "</tr>" +
     list.map(function (x) {
       var d = x.k - x.b;
-      return "<tr data-id=\"" + esc(x.r.id) + "\"><td>" + esc(x.r.name) + ' <span class="sub">' + esc(x.r.team) + '</span></td><td class="m">' + (x.r.salary / 1000).toFixed(1) + "k</td>" +
+      return "<tr data-id=\"" + esc(x.r.id) + "\"" + (x.flag ? ' data-flag="' + x.flag + '" class="fc-' + x.flag + '"' : "") + "><td>" + esc(x.r.name) + ' <span class="sub">' + esc(x.r.team) + '</span></td><td class="m">' + (x.r.salary / 1000).toFixed(1) + "k</td>" +
         '<td class="m">' + (fieldOf() ? own(x.r).toFixed(0) + "%" : "–") + '</td><td class="m">' + p(x.b) + '</td><td class="m">' + p(x.k) + "</td>" +
-        '<td class="m"' + (d > 0 ? greenBg(d, 0, 0.2) : "") + ">" + (d >= 0 ? "+" : "") + Math.round(100 * d) + "</td></tr>";
-    }).join("") + "</table></details>";
+        '<td class="m"' + (d > 0 ? greenBg(d, 0, 0.2) : "") + ">" + (d >= 0 ? "+" : "") + Math.round(100 * d) + "</td>" + (on ? fcCells(x.ent, x.e, x.vs, x.flag, x.why) : "") + "</tr>";
+    }).join("") + "</table></div></details>";
 }
 function ungroupedTags() {
   var seen = {};
@@ -2321,22 +2331,25 @@ function renderCut() {
     return { idea: g, banked: late(g) ? null : allE[g] || 0, shared: late(g) ? null : shr[g] || 0, kept: afterE[g] || 0, share: late(g) || !allE[g] ? null : (afterE[g] || 0) / allE[g], ta: T && T.by ? T.by[g] || 0 : null,
              roi: b.roi != null ? b.roi : null, top10: b.top10, top1: b.top1, cash: b.cash, own: b.own, cores: b.cores };
   });
+  // fill against the cut (2026-11-24): with entries, each idea's entered count and share (the same shared credit as Kept)
+  var FC = fcOn() ? fcIdeaStats() : null;
+  if (FC) rowsI.forEach(function (r) { var x = FC.by[r.idea] || { ent: 0, es: 0, vs: -r.kept / CUT.keep.length, flag: "" }; r.ent = x.ent; r.es = x.es; r.vs = x.vs; r.flag = x.flag; r.why = x.why; });
   var k = cutSort.k, dir = cutSort.dir;
   rowsI.sort(function (a, b) { var x = a[k], y = b[k]; if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
     return (x < y ? -1 : x > y ? 1 : 0) * dir || (b.roi || -1e9) - (a.roi || -1e9); });
-  var cols = [["idea", "Idea"], ["banked", "Banked"], ["shared", "Shared"], ["kept", "Kept"], ["share", "Share"], ["ta", "Top tenth"], ["roi", "Sim ROI"], ["top10", "Top 10%"], ["top1", "Top 1%"], ["cash", "Cash"], ["own", "Avg own"], ["cores", "Cores"]];
+  var cols = [["idea", "Idea"], ["banked", "Banked"], ["shared", "Shared"], ["kept", "Kept"], ["share", "Share"], ["ta", "Top tenth"], ["roi", "Sim ROI"], ["top10", "Top 10%"], ["top1", "Top 1%"], ["cash", "Cash"], ["own", "Avg own"], ["cores", "Cores"]].concat(FC ? [["ent", "Entered"], ["vs", "vs cut"], ["flag", "Flag"], ["why", "Why"]] : []);
   var info = (board.contests ? "Each kept lineup alone in " + board.contests.join(", ") + " (" + board.nights + " fresh nights), each contest weighted by your entries in it. Top tenth: the idea's kept lineups among the best tenth by sim value (the tiers are shown no longer: no signal on real results). " : "") +
     "A lineup two ideas drew counts for both (Shared: this idea's banked lineups another idea also drew), so the columns can sum past the bank, the kept pool and the top tenth.";
   var f = function (x, fn) { return x == null ? "–" : fn(x); };
   var rounds = CUT.rounds.map(function (r) { return tagCounts(r.ids); });
-  $("cutIdeas").innerHTML = (T ? '<div class="note" id="tierA">' + topTenthText(T) + "</div>" : "") +
-    '<table class="contests" id="ideaTable"><tr>' + cols.map(function (c) {
+  $("cutIdeas").innerHTML = (T ? '<div class="note" id="tierA">' + topTenthText(T) + "</div>" : "") + (FC ? fcScopeHtml(FC) : "") +
+    '<div style="overflow:auto"><table class="contests" id="ideaTable"><tr>' + cols.map(function (c) {
       return '<th data-ck="' + c[0] + '" class="' + (c[0] === "idea" ? "" : "r") + '">' + c[1] + (c[0] === "idea" && info ? ' <span class="mut" title="' + esc(info) + '">(i)</span>' : "") + (cutSort.k === c[0] ? (cutSort.dir < 0 ? " ↓" : " ↑") : "") + "</th>"; }).join("") + "</tr>" +
     rowsI.map(function (r) {
-      return '<tr data-idea="' + esc(r.idea) + '"><td>' + esc(r.idea) + '</td><td class="m">' + (late(r.idea) ? '<span class="mut">after the cut</span>' : r.banked) + '</td><td class="m">' + f(r.shared, String) + '</td><td class="m">' + r.kept + '</td><td class="m">' +
+      return '<tr data-idea="' + esc(r.idea) + '"' + (r.flag ? ' data-flag="' + r.flag + '" class="fc-' + r.flag + '" title="' + esc(r.flag === "light" ? "Light against the cut: tap for Swap one in with this idea's kept lineups" : "Heavy against the cut: tap to swap its weakest entry for the lightest idea's best") + '"' : "") + '><td>' + esc(r.idea) + '</td><td class="m">' + (late(r.idea) ? '<span class="mut">after the cut</span>' : r.banked) + '</td><td class="m">' + f(r.shared, String) + '</td><td class="m">' + r.kept + '</td><td class="m">' +
         f(r.share, function (x) { return Math.round(100 * x) + "%"; }) + '</td><td class="m">' + f(r.ta, String) + '</td><td class="m" style="color:' + (r.roi == null ? "inherit" : r.roi > 0 ? "var(--live)" : "var(--bad)") + '">' + roiTxt(r.roi) +
-        '</td><td class="m">' + f(r.top10, pct1) + '</td><td class="m">' + f(r.top1, pct1) + '</td><td class="m">' + f(r.cash, pct1) + '</td><td class="m">' + f(r.own, function (x) { return Math.round(x) + "%"; }) + '</td><td class="m">' + f(r.cores, String) + "</td></tr>";
-    }).join("") + "</table>" +
+        '</td><td class="m">' + f(r.top10, pct1) + '</td><td class="m">' + f(r.top1, pct1) + '</td><td class="m">' + f(r.cash, pct1) + '</td><td class="m">' + f(r.own, function (x) { return Math.round(x) + "%"; }) + '</td><td class="m">' + f(r.cores, String) + "</td>" + (FC ? fcCells(r.ent, r.es, r.vs, r.flag, r.why) : "") + "</tr>";
+    }).join("") + "</table></div>" +
     (rounds.length ? '<details class="fold" id="cutRounds"><summary>Round by round</summary><table class="contests"><tr><th>Idea</th><th class="r">Banked</th>' +
       rounds.map(function (r, i) { return '<th class="r">Round ' + (i + 1) + "</th>"; }).join("") + '<th class="r">Kept</th></tr>' +
       Object.keys(all).sort(function (a, b) { return all[b] - all[a]; }).map(function (g) {
@@ -3842,10 +3855,110 @@ $("teamPanel").addEventListener("click", function (e) {
 var ckPickOpen = false;
 $("teamPanel").addEventListener("toggle", function (e) { if (e.target.classList && e.target.classList.contains("ckpick")) ckPickOpen = e.target.open; }, true);
 
+/* Fill against the cut (2026-11-24, the operator): once a contest has entries, the cut's idea table and the players
+   table show where the entries sit against the kept pool: Entered (count, share of the entries in scope), vs cut
+   (entered share less kept share, points), a flag (light / heavy when |vs cut| >= FC_PTS points AND the entered count is
+   FC_N+ from expected, expected = kept share x entries) and, for a light row, why: the night cap or a Max% (underCapped,
+   the hand-add / auto-fill reasons) on a player its lineups carry, Min unique / Max core in every contest, else the fill
+   preferred others. Scope: the whole night (every contest's entries, as the night cap counts) or the builder's contest,
+   kept per slate (state.fcScope). A flagged row opens Swap one in (its caps, its scoring) on that idea's or player's
+   kept lineups, the swap-out the weakest entered lineup of the heaviest flagged idea (any, if none is heavy); a heavy
+   row swaps its own weakest entry for the lightest idea's best fit. Nothing changes how the fill picks. */
+var FC_PTS = 0.05, FC_N = 2;
+function fcOn() {               // entries exist, all of them lineups of this bank (portfolios left from an older bank: off, as before)
+  if (!CUT || !CUT.keep || !PF || !BANK) return false;
+  var ks = Object.keys(PF);
+  return ks.some(function (k) { return (PF[k] || []).length; }) && ks.every(function (k) { return (PF[k] || []).every(function (bi) { return BANK.lineups[bi]; }); });
+}
+function fcContest() { return BP && BP.review ? String(BP.review) : null; }
+function fcScope() { return state && state.fcScope === "contest" && fcContest() && (PF[fcContest()] || []).length ? "contest" : "night"; }
+function fcScopeName() { var c = fcScope() === "contest" && (slate.contests || []).find(function (x) { return String(x.id) === fcContest(); }); return c ? nbShort(c.name) : "whole night"; }
+function fcEntries() {          // the entries in scope, a lineup once per contest it's in (portfolios left from an older bank skipped)
+  var e = fcScope() === "contest" ? (PF[fcContest()] || []).slice() : Object.keys(PF).reduce(function (a, k) { return a.concat(PF[k] || []); }, []);
+  return e.filter(function (bi) { return BANK && BANK.lineups[bi]; });
+}
+function fcFlag(ent, kshare, E) {
+  if (!E) return "";
+  var vs = ent / E - kshare, gap = ent - kshare * E;
+  return Math.abs(vs) >= FC_PTS - 1e-9 && Math.abs(gap) >= FC_N - 1e-9 ? (vs < 0 ? "light" : "heavy") : "";
+}
+function fcVal() { var v = {}; if (CUT && CUT.keep && CUT.board && CUT.board.values) CUT.keep.forEach(function (bi, k) { v[bi] = CUT.board.values[k] || 0; }); return v; }
+function fcAtNight(id) { var nl = nightLimit(); return !fillLock()[id] && nl < Infinity && (nightUsed(null)[id] || 0) >= nl; }
+function fcPlayerWhy(id) { return fcAtNight(id) ? "night cap" : underCapped(id) ? "Max%" : "not capped"; }
+function fcIdeaWhy(g, inPF) {
+  var val = fcVal(), cand = CUT.keep.filter(function (bi) { return !inPF[bi] && lineupGroups(bi).indexOf(g) >= 0; }).sort(function (a, b) { return (val[b] || 0) - (val[a] || 0); }).slice(0, 20);
+  if (!cand.length) return "not capped: fill preferred others";
+  var tally = function (test) { var t = {}; cand.forEach(function (bi) { BANK.lineups[bi].ids.forEach(function (id) { if (test(id)) t[id] = (t[id] || 0) + 1; }); });
+    return Object.keys(t).sort(function (a, b) { return t[b] - t[a]; })[0]; };
+  var nc = tally(fcAtNight); if (nc) return "night cap: " + shortName(byId(nc).name);
+  var mx = tally(function (id) { return state.cap[id] != null && state.cap[id] !== "" && underCapped(id); }); if (mx) return "Max%: " + shortName(byId(mx).name);
+  var cs = nbContests().filter(function (x) { return fcScope() === "night" || String(x.c.id) === fcContest(); });
+  var held = cs.length && cand.every(function (bi) {
+    var ids = BANK.lineups[bi].ids;
+    return cs.every(function (x) {
+      var have = PF[String(x.c.id)] || [], o = pickRules(x.n);
+      if (have.some(function (bj) { return BANK.lineups[bj].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length > 8 - o.minUnique; })) return true;
+      var lim = DKSim.coreLimit(o, x.n); if (!lim) return false;
+      var keys = DKSim.cores(ctx(), have.concat([bi]).map(function (b) { return BANK.lineups[b]; })), kk = keys[keys.length - 1];
+      return keys.slice(0, -1).filter(function (q) { return q === kk; }).length + 1 > lim;
+    });
+  });
+  return held ? "Min unique / Max core" : "not capped: fill preferred others";
+}
+function fcIdeaStats() {
+  var ents = fcEntries(), E = ents.length, inPF = {}, ec = ideaCounts(ents), kc = ideaCounts(CUT.keep), K = CUT.keep.length, by = {};
+  ents.forEach(function (bi) { inPF[bi] = 1; });
+  Object.keys(Object.assign({}, kc, ec)).forEach(function (g) {
+    var ent = ec[g] || 0, ks = (kc[g] || 0) / K, fl = fcFlag(ent, ks, E);
+    by[g] = { idea: g, ent: ent, es: E ? ent / E : 0, ks: ks, vs: (E ? ent / E : 0) - ks, flag: fl, why: fl === "light" ? fcIdeaWhy(g, inPF) : fl === "heavy" ? "—" : "" };
+  });
+  return { E: E, by: by, list: Object.keys(by).map(function (g) { return by[g]; }) };
+}
+function fcCells(ent, es, vs, flag, why) {
+  return '<td class="m">' + ent + " (" + Math.round(100 * es) + '%)</td><td class="m">' + (Math.round(100 * vs) > 0 ? "+" : "") + Math.round(100 * vs) + '</td><td class="m' + (flag ? " fcf-" + flag : "") + '">' + (flag || "") + "</td><td>" + esc(why || "") + "</td>";
+}
+function fcScopeHtml() {
+  var c = fcContest(), on = fcScope();
+  return '<div class="fcscope">Entered against the cut: <button type="button" class="fcs" data-s="night" aria-pressed="' + (on === "night") + '">Whole night</button>' +
+    '<button type="button" class="fcs" data-s="contest" aria-pressed="' + (on === "contest") + '"' + (c && (PF[c] || []).length ? "" : ' disabled title="Open a contest in the builder first"') + ">This contest</button> " +
+    '<span class="mut">' + esc(fcScopeName()) + ", " + fcEntries().length + " entries; light / heavy: " + Math.round(100 * FC_PTS) + "+ points off the kept share and " + FC_N + "+ entries off expected. Tap a flagged row to fix it with Swap one in.</span></div>";
+}
+function fcRefresh() { if (CUT && CUT.keep && $("cutIdeas")) renderCut(); }
+function fcFix(kind, key, flag) {
+  var st = fcIdeaStats(), val = fcVal(), ents = fcEntries(), uniq = ents.filter(function (bi, i) { return ents.indexOf(bi) === i; });
+  var has = function (bi) { return kind === "idea" ? lineupGroups(bi).indexOf(key) >= 0 : BANK.lineups[bi].ids.indexOf(key) >= 0; };
+  var weakest = function (pred) { return uniq.filter(pred).sort(function (a, b) { return (val[a] || 0) - (val[b] || 0); })[0]; };
+  var nm = kind === "idea" ? key : shortName(byId(key).name), opt;
+  if (flag === "light") {
+    var heavy = st.list.filter(function (x) { return x.flag === "heavy"; }).sort(function (a, b) { return b.vs - a.vs; })[0];
+    var out = weakest(function (bi) { return !has(bi) && (!heavy || lineupGroups(bi).indexOf(heavy.idea) >= 0); });
+    if (out == null && heavy) out = weakest(function (bi) { return !has(bi); });
+    opt = { label: (kind === "idea" ? "idea " : "") + nm + " in" + (out != null ? ", out the weakest of " + (heavy ? heavy.idea : "your entries") : ""), meets: has, out: out != null ? out : null, hot: kind === "player" ? [key] : [] };
+  } else {
+    var light = st.list.filter(function (x) { return kind !== "idea" || x.idea !== key; }).sort(function (a, b) { return a.vs - b.vs; })[0];
+    var out2 = weakest(has);
+    opt = { label: "the weakest " + nm + " entry out, " + (light ? light.idea : "any kept lineup") + " in", hot: [], out: out2 != null ? out2 : null,
+            meets: function (bi) { return !has(bi) && (!light || lineupGroups(bi).indexOf(light.idea) >= 0); } };
+  }
+  var sec = $("swinBox").closest("section.step"); if (sec && sec.hidden) showStep(sec.dataset.step);
+  return swinFind(opt).then(function () { $("swinBox").scrollIntoView({ block: "nearest" }); }, function (e) { swinRender("Swap failed: " + e.message); });
+}
+function fcClick(e) {
+  var sb = e.target.closest(".fcs");
+  if (sb) { if (!sb.disabled) { state.fcScope = sb.dataset.s; save(); renderCut(); } return true; }
+  var hs = e.target.closest("th[data-cs]");
+  if (hs) { view.csSort = hs.dataset.cs; renderCut(); return true; }
+  var tr = e.target.closest("tr[data-flag]"); if (!tr) return false;
+  if (tr.dataset.idea != null) fcFix("idea", tr.dataset.idea, tr.dataset.flag); else if (tr.dataset.id) fcFix("player", tr.dataset.id, tr.dataset.flag);
+  return true;
+}
+$("cutSharesBox").addEventListener("click", fcClick);
+
 nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
 $("cutIdeas").addEventListener("click", function (e) {
+  if (typeof fcClick === "function" && fcClick(e)) return;      // fill against the cut: the scope toggle, a flagged row
   var h = e.target.closest("th[data-ck]"); if (!h) return;
   cutSort = { k: h.dataset.ck, dir: cutSort.k === h.dataset.ck ? -cutSort.dir : (h.dataset.ck === "idea" ? 1 : -1) }; renderCut();
 });
@@ -4875,22 +4988,22 @@ function swinMeets(r, ids) {
   if (r.type === "ifteam") return cnt(r.set) >= r.n;
   return true;
 }
-async function swinFind() {
-  SWIN.list = null;
+async function swinFind(opt) {        // opt (fill against the cut): {label, meets(bi), out (bank index or null), hot: [ids]}
+  SWIN.list = null; SWIN.ctx = opt || null;
   if (!slate || !BANK || !BANK.lineups.length) return swinRender("Bank and cut first.");
   if (slate.locked) return swinRender("The slate has locked: swaps after lock go through Late swap.");
-  var r = editorRule();
+  var r = opt ? { label: opt.label } : editorRule();
   if (!r) return swinRender("Set the rule first: +set players (template 5) or a rule in the rule editor.");
   var cs = nbContests(); if (!cs.length) return swinRender("Set your entries for at least one contest.");
-  var mu = maxUses(), nl = nightLimit(), used = nightUsed(null), uses = {}, S = +$("nSims").value || 3000, lk = fillLock(), out = [];
+  var mu = maxUses(), nl = nightLimit(), used = nightUsed(null), uses = {}, S = +$("nSims").value || 3000, lk = fillLock(), out = [], held = {};
   Object.keys(PF).forEach(function (k) { PF[k].forEach(function (bi) { uses[bi] = (uses[bi] || 0) + 1; }); });
   var val = {}; if (CUT && CUT.keep && CUT.board && CUT.board.values) CUT.keep.forEach(function (bi, k) { val[bi] = CUT.board.values[k] || 0; });
-  var ins = finalIdx().filter(function (bi) { return swinMeets(r, BANK.lineups[bi].ids); }).sort(function (a, b) { return (val[b] || 0) - (val[a] || 0); }).slice(0, SWIN.N);
+  var ins = finalIdx().filter(function (bi) { return opt ? opt.meets(bi) : swinMeets(r, BANK.lineups[bi].ids); }).sort(function (a, b) { return (val[b] || 0) - (val[a] || 0); }).slice(0, SWIN.N);
   if (!ins.length) return swinRender("No kept lineup meets " + r.label + ".");
   for (var ci = 0; ci < cs.length; ci++) {
     var x = cs[ci], c = x.c, cid = String(c.id), n = x.n, have = (PF[cid] || []).slice(), H = have.length, o = pickRules(n);
     var inC = ins.filter(function (bi) { return have.indexOf(bi) < 0; });
-    if (!inC.length) continue;
+    if (!inC.length || (opt && opt.out != null && have.indexOf(opt.out) < 0)) continue;
     swinRender("Scoring " + nbShort(c.name) + " (" + (ci + 1) + " of " + cs.length + ")…"); await tick();
     var L = have.concat(inC).map(function (bi) { return BANK.lineups[bi]; }), fee = c.entry_fee || 0;
     var sim = DKSim.simulate(nightsCtx(c), L, fieldFor(c), fieldDoc.z, c, n, S), b = DKSim.builder(sim, c);
@@ -4901,6 +5014,7 @@ async function swinFind() {
     var lim = function (id) { return lk[id] ? n : DKSim.expoLimit(capOf(id), n); };
     var best = {};
     for (var j = H < n ? -1 : 0; j < H; j++) {         // -1: a pure add into an open seat
+      if (opt && opt.out != null && have[j] !== opt.out) continue;     // fill against the cut: that one lineup out
       var jIds = j >= 0 ? L[j].ids : [], Tm = T0;
       if (j >= 0) { b.remove(j); Tm = b.total(); }
       for (var k = H; k < L.length; k++) {
@@ -4918,7 +5032,7 @@ async function swinFind() {
           var cn = cw - (j >= 0 && coreK[j] === coreK[k] ? 1 : 0) + 1;
           if (cn > coreLim && cn > cw) brk.push("Max core " + Math.round(100 * o.maxCore) + "%");
         }
-        if (brk.length && !SWIN.brk) continue;
+        if (brk.length && !SWIN.brk) { brk.forEach(function (x) { held[x] = (held[x] || 0) + 1; }); continue; }
         var d = T1 - F1 - (T0 - F0);
         if (!best[bi] || d > best[bi].d) best[bi] = { cid: cid, name: nbShort(c.name), out: j >= 0 ? have[j] : null, inn: bi, d: d,
           roi0: F0 ? (T0 - F0) / F0 : null, roi1: F1 ? (T1 - F1) / F1 : null, brk: brk };
@@ -4928,17 +5042,22 @@ async function swinFind() {
     Object.keys(best).forEach(function (bi) { out.push(best[bi]); });
   }
   out.sort(function (a, b) { return b.d - a.d; });
-  var pos = out.filter(function (s) { return s.d > 0; });
+  var pos = opt ? out : out.filter(function (s) { return s.d > 0; });       // fill against the cut: the best fitting, the EV shown either way
   SWIN.list = pos.slice(0, 5); SWIN.rule = r;
+  if (opt && !pos.length) {                // nothing fits: the cap that blocks most
+    var hk = Object.keys(held).sort(function (a, b) { return held[b] - held[a]; })[0];
+    return swinRender(hk ? "Nothing fits: " + hk.replace(/^(.+) night (\d+%)$/, "night cap: $1 ($2)").replace(/^(.+) contest (\d+%)$/, "Max%: $1 ($2)") + "." :
+                      "Nothing to swap: no kept lineup of " + opt.label + " outside the contests holding the lineup out.");
+  }
   swinRender(pos.length ? "" : out.length ? "No swap raises the night's expected value (best: " + (out[0].d >= 0 ? "+" : "-") + cents(Math.abs(out[0].d)) + ")." :
              "No swap passes the caps" + (SWIN.brk ? "." : ": Break cap shows the ones that break one."));
 }
 function swinRender(msg) {
-  var box = $("swinBox"), r = editorRule(), hot = r ? swinRuleIds(r) : [];
+  var box = $("swinBox"), r = SWIN.ctx ? { label: SWIN.ctx.label } : editorRule(), hot = SWIN.ctx ? SWIN.ctx.hot || [] : r ? swinRuleIds(r) : [];
   var nm = function (bi) { return DKSim.lateSlots(ctx(), BANK.lineups[bi].ids).map(function (id) { var t = esc(shortName((byId(id) || {}).name || id)); return hot.indexOf(id) >= 0 ? "<b>" + t + "</b>" : t; }).join(" · "); };
   var roi = function (s) { return s.roi1 == null ? "" : " · ROI " + roiTxt(s.roi0) + " → " + roiTxt(s.roi1); };
   box.hidden = false;
-  box.innerHTML = '<div><b>Swap one in</b> · rule: ' + (r ? esc(r.label) : "none") + ' · <label><input type="checkbox" id="swinBreak"' + (SWIN.brk ? " checked" : "") + "> break cap</label> " +
+  box.innerHTML = '<div><b>Swap one in</b> · ' + (SWIN.ctx ? "" : "rule: ") + (r ? esc(r.label) : "none") + ' · <label><input type="checkbox" id="swinBreak"' + (SWIN.brk ? " checked" : "") + "> break cap</label> " +
     '<button type="button" id="swinFind">Find swaps</button> <button type="button" id="swinUndo"' + (SWIN.undo ? "" : " disabled") + '>Undo swap</button> <button type="button" class="linkbtn" id="swinClose">Close</button></div>' +
     (msg ? '<div class="mut">' + esc(msg) + "</div>" : "") +
     (SWIN.list || []).map(function (s, i) {
@@ -4960,21 +5079,21 @@ function swinUndo() {
   swinDone("Undone: the portfolios before the swap are back.");
 }
 function swinDone(msg) {
-  pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
+  pfSave(); renderEntries(); renderCut(); $("pfExport").disabled = !ENTRIES;
   if (BP && BP.review) review(BP.review); else if (NB.on) nbRender();
   swinRender(msg); $("swinBox").scrollIntoView({ block: "nearest" });
 }
 $("swinOpen").addEventListener("click", function () { swinFind().catch(function (e) { swinRender("Swap failed: " + e.message); }); });
 $("swinBox").addEventListener("click", function (e) {
   var b = e.target.closest("button"); if (!b) return;
-  if (b.id === "swinFind") swinFind().catch(function (x) { swinRender("Swap failed: " + x.message); });
+  if (b.id === "swinFind") swinFind(SWIN.ctx || undefined).catch(function (x) { swinRender("Swap failed: " + x.message); });
   else if (b.id === "swinUndo") swinUndo();
   else if (b.id === "swinClose") { $("swinBox").hidden = true; }
   else if (b.classList.contains("swinApply")) swinApply(+b.dataset.i);
 });
 $("swinBox").addEventListener("change", function (e) {
   if (e.target.id !== "swinBreak") return;
-  SWIN.brk = e.target.checked; swinFind().catch(function (x) { swinRender("Swap failed: " + x.message); });
+  SWIN.brk = e.target.checked; swinFind(SWIN.ctx || undefined).catch(function (x) { swinRender("Swap failed: " + x.message); });
 });
 function undoKey() { return "dkcbb-pf-prev:" + slate.draft_group_id; }
 $("pfUndo").addEventListener("click", function () {
