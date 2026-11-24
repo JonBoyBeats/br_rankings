@@ -1273,6 +1273,9 @@ def idea_kind(t):
         if r.get("base"):           # baseline rules (every draw on the slate) aren't part of an idea; recorded, not kinded
             continue
         ty = r.get("type")
+        if r.get("stackq"):          # the DK page's stack quick buttons (2026-11-24): one kind per shape
+            parts.append("quick stack %s" % r["stackq"].get("shape"))
+            continue
         parts.append("platoon never-together" if r.get("src") == "platoon" else
                      "stack with opponent" if str(r.get("label", "")).startswith("Stack ") else
                      "%d+ from a team" % r.get("n", 1) if ty == "min" else "exclude a team" if ty == "none" and len(r.get("ids") or []) > 1 else
@@ -1289,6 +1292,8 @@ def idea_kind(t):
         parts.append("locks")
     if t.get("excl"):
         parts.append("excludes")
+    if t.get("scan_set"):
+        parts.append("scan floors")
     return " + ".join(sorted(set(parts))) or "no rules"
 
 

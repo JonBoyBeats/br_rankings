@@ -224,6 +224,8 @@
   .teambar .gchip button { height: 26px; }
   .gamehead { font-family: var(--mono); font-size: 12px; margin: 6px 0 4px; }
   .gamehead b { font-size: 14px; font-family: inherit; }
+.stackq { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 2px 0 8px; font-size: 11.5px; }
+.stackq button { height: 24px; padding: 0 8px; font-size: 11.5px; } .stackq button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
   .gameteams { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
   @media (max-width: 760px) { .gameteams { grid-template-columns: minmax(0, 1fr); } }
   .scanblk { border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; margin: 6px 0; font-size: 12px; }
@@ -1497,7 +1499,7 @@ function renderTeamPanel() {
     shown += list.length;
     return '<div class="tvteam"><b>' + esc(x.team) + "</b></div>" + withPanelSort(function () { return playerTable(sortList(list), true); });
   }).join("");
-  $("teamPanel").innerHTML = gameHead(game, T, true) + '<div class="tvgrid"><div class="tvl">' + tabs + tileMini(sideT) + cardHtml(sideT).replace("<details", "<details open") + scanBlock(sideT.team) + "</div>" +
+  $("teamPanel").innerHTML = gameHead(game, T, true) + stackQuick(game) + '<div class="tvgrid"><div class="tvl">' + tabs + tileMini(sideT) + cardHtml(sideT).replace("<details", "<details open") + scanBlock(sideT.team) + "</div>" +
     '<div class="plist tv">' + lists + '<button type="button" class="showall" style="height:24px;padding:0 8px;font-size:11.5px;margin:4px 0">' +
     (view.showAll ? "Only " + PANEL_MIN_VALUE + "x value and up" : "Show all " + all + " (" + (all - shown) + " under " + PANEL_MIN_VALUE + "x or out)") + "</button></div></div>";
 }
@@ -1842,7 +1844,10 @@ function tagNow() {         // the draw's idea: the settings off their defaults,
   if (o.levW) t.push("leverage " + o.levW);
   Object.keys(state.lock).forEach(function (id) { t.push("lock " + name(id)); });
   Object.keys(state.excl).forEach(function (id) { t.push("no " + name(id)); });
-  (state.rules || []).forEach(function (x) { if (!x.off && !x.base) t.push(x.label); });
+  (state.rules || []).forEach(function (x) {     // a quick stack's two rules name the batch once: STACK <game> <shape>
+    if (x.off || x.base) return;
+    if (x.stackq) { if (t.indexOf(x.stackq.tag) < 0) t.push(x.stackq.tag); } else t.push(x.label);
+  });
   if (scanFloorsOn()) t.push("SCANFLOOR");       // drawn under the scan's floors (the shadow lab's experiment b)
   return t.length ? t.join(" + ") : "no rules";
 }
@@ -3570,6 +3575,42 @@ $("scanTable").addEventListener("change", function (e) {
   var o = sfOpts(); o[t.dataset.k] = t.type === "checkbox" ? t.checked : (t.value === "" ? SF_DEF[t.dataset.k] : Math.max(0, +t.value)); sfSave(o);
 });
 
+/* Stack quick buttons (2026-11-24, the operator): per game, 2+1 (the 2 from either team), 2+2, and 3+2 (the 3 from
+   either team). Each is two min rules for the draws (n from one team, m from the other), in the rules list like any
+   idea rule (the main pool, not the lab), and names the batch "STACK <AWAY@HOME> <shape>" (tagNow), the heavy team in
+   brackets when the two sides differ, e.g. "STACK VT@RICH 3+2 (3 VT)", so the shadow lab can grade it. A new shape
+   for the same game replaces that game's earlier one; another game's stays (both apply). */
+var stackMsgText = "";
+function stackTag(game, a, x, y) { return "STACK " + game + " " + x + "+" + y + (x !== y ? " (" + x + " " + a + ")" : ""); }
+function stackShapes(game) {
+  var g = game.split("@"), A = g[0], H = g[1];
+  return [[A, 2, 1], [H, 2, 1], [A, 2, 2], [A, 3, 2], [H, 3, 2]];
+}
+function stackRulesOf(game, a, x, y) {
+  var g = game.split("@"), b = g[0] === a ? g[1] : g[0], tag = stackTag(game, a, x, y), q = { game: game, tag: tag, shape: x + "+" + y, heavy: a };
+  return [{ type: "min", ids: teamIds(a), n: x, label: tag + ": " + x + "+ from " + a, stackq: q },
+          { type: "min", ids: teamIds(b), n: y, label: tag + ": " + y + "+ from " + b, stackq: q }];
+}
+function stackQuick(game) {
+  if (!game || game.indexOf("@") < 0) return "";
+  var cur = (state.rules || []).find(function (r) { return r.stackq && r.stackq.game === game && !r.off; });
+  return '<div class="stackq"><b>Stack</b>' + stackShapes(game).map(function (s) {
+      var tag = stackTag(game, s[0], s[1], s[2]);
+      return '<button type="button" data-shape="' + s[1] + "+" + s[2] + '" data-game="' + esc(game) + '" data-a="' + esc(s[0]) + '" data-x="' + s[1] + '" data-y="' + s[2] + '" aria-pressed="' + !!(cur && cur.stackq.tag === tag) +
+        '" title="Adds two draw rules: ' + s[1] + "+ from " + esc(s[0]) + ", " + s[2] + "+ from the other side; draws are tagged " + esc(tag) + '">' + (s[1] === s[2] ? s[1] + "+" + s[2] : esc(s[0]) + " " + s[1] + "+" + s[2]) + "</button>";
+    }).join("") + '<span class="mut" id="stackMsg">' + (stackMsgText.indexOf(game + "|") === 0 ? esc(stackMsgText.slice(game.length + 1)) : "") + "</span></div>";
+}
+function stackApply(game, a, x, y) {
+  var tag = stackTag(game, a, x, y), had = (state.rules || []).filter(function (r) { return r.stackq && r.stackq.game === game; });
+  if (had.length && had[0].stackq.tag === tag) {           // the same button again: take it off
+    state.rules = state.rules.filter(function (r) { return !(r.stackq && r.stackq.game === game); }); save(); renderRules(); renderTeamPanel();
+    return "Removed " + tag + ".";
+  }
+  state.rules = (state.rules || []).filter(function (r) { return !(r.stackq && r.stackq.game === game); });
+  addRules(stackRulesOf(game, a, x, y)); renderTeamPanel();
+  return "Added " + tag + (had.length ? " (in place of " + had[0].stackq.tag + ")" : "") + ": the next Draw & bank or Draw the 9 draws under it.";
+}
+
 nbSet(nbStored());
 
 // --- events ------------------------------------------------------------------------------------
@@ -4740,6 +4781,8 @@ $("teamPanel").addEventListener("click", function (e) {
     togglePool(wc.dataset.id); return;
   }
   if (e.target.closest(".scanlink")) { e.preventDefault(); $("scanBox").open = true; $("scanBox").scrollIntoView({ block: "start" }); return; }
+  var sq = e.target.closest(".stackq button[data-shape]");
+  if (sq) { stackMsgText = sq.dataset.game + "|" + stackApply(sq.dataset.game, sq.dataset.a, +sq.dataset.x, +sq.dataset.y); renderTeamPanel(); return; }
   var b = e.target.closest(".tile button[data-act]");
   if (b) {
     var t = teamsOf().teams.find(function (x) { return x.team === b.closest(".tile").dataset.team; });
@@ -4754,7 +4797,7 @@ $("ruleList").addEventListener("click", function (e) {
   if (b.dataset.act === "rmx") { var x = b.closest(".xrule"); delete state[x.dataset.kind][x.dataset.id]; save(); renderRules(); renderPlayers(); return; }
   var i = +b.closest(".rule").dataset.i;
   if (b.dataset.act === "base") { var x = state.rules[i]; if (x.base) delete x.base; else x.base = true; save(); renderRules(); return; }
-  if (b.dataset.act === "rm") { state.rules.splice(i, 1); save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
+  if (b.dataset.act === "rm") { var sqt = state.rules[i] && state.rules[i].stackq; if (sqt) state.rules = state.rules.filter(function (r) { return !(r.stackq && r.stackq.tag === sqt.tag); }); else state.rules.splice(i, 1); save(); editing = -1; $("rtSave").textContent = "Add rule"; $("rtCancel").hidden = true; renderRules(); return; }
   editing = i; loadEditor(state.rules[i]); $("rtSave").textContent = "Save changes"; $("rtCancel").hidden = false;
 });
 $("ruleList").addEventListener("change", function (e) {   // a rule's on/off box: off rules stay listed, the draw skips them

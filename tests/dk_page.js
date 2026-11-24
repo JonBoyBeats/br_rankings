@@ -2002,6 +2002,36 @@ function audit(name, L, o) {
         sf.n > 5 && sf.right && sf.handKept && sf.lowNone && sf.marked === sf.wantMarked && sf.marked > 0 && sf.handBox && sf.tagged, JSON.stringify(sf));
   check("scan floors: floors held to 60% and caps to 1%; typing in a scan box makes it a hand entry; Clear floors removes only the scan's; the multipliers are remembered",
         sf.clamp && sf.editOk && sf.clearBtn && sf.cleared && sf.kept, JSON.stringify(sf));
+  // stack quick buttons (2026-11-24): per game 2+1 either side, 2+2, 3+2 either side; two min rules, the batch tagged STACK <game> <shape>
+  const sq = await pg.evaluate(async () => {
+    const n0 = state.rules.length, rules0 = JSON.stringify(state.rules);
+    const g = rows.find(r => r.game && r.game.indexOf("@") > 0 && usable(r)).game, [A, H] = g.split("@");
+    view.panel = A; view.pside = A; renderTiles(); renderPlayers(); renderTeamPanel();
+    const btns = [...document.querySelectorAll("#teamPanel .stackq button[data-shape]")].map(b => b.dataset.a + " " + b.dataset.x + "+" + b.dataset.y);
+    const click = (a, x, y) => document.querySelector(`#teamPanel .stackq button[data-a="${a}"][data-x="${x}"][data-y="${y}"]`).click();
+    click(H, 2, 1);
+    const r1 = state.rules.slice(n0), ids = t => rows.filter(r => r.team === t).map(r => r.id).sort().join(",");
+    const one = r1.length === 2 && r1[0].type === "min" && r1[0].n === 2 && r1[0].ids.slice().sort().join(",") === ids(H) && r1[1].n === 1 && r1[1].ids.slice().sort().join(",") === ids(A);
+    const tag1 = tagNow(), tagOk = tag1.indexOf("STACK " + g + " 2+1 (2 " + H + ")") >= 0 && tag1.indexOf(": 2+ from") < 0;
+    const pressed = document.querySelector(`#teamPanel .stackq button[data-a="${H}"][data-x="2"]`).getAttribute("aria-pressed") === "true";
+    click(A, 3, 2);
+    const r2 = state.rules.slice(n0), msg2 = document.getElementById("stackMsg").textContent, repl = r2.length === 2 && r2[0].n === 3 && r2[0].ids.slice().sort().join(",") === ids(A) && r2[1].n === 2 && /in place of/.test(msg2);
+    // a draw under it: every lineup 3+ from the away side and 2+ from the home side (nothing banked)
+    const res = await drawBank(ctx(), drawRules(), 20, { noBank: true });
+    const cnt = (L, t) => L.ids.filter(id => byId(id).team === t).length;
+    const drawn = res.lineups.length > 0 && res.lineups.every(L => cnt(L, A) >= 3 && cnt(L, H) >= 2);
+    // the batch's saved rules carry the shape (dk_eval idea_kind: "quick stack 3+2"); Remove on either row takes both
+    const conds = drawRules().conds.filter(r => r.stackq), saved = conds.length === 2 && conds.every(r => r.stackq.shape === "3+2" && r.stackq.tag === "STACK " + g + " 3+2 (3 " + A + ")");
+    renderRules();
+    const rm = document.querySelector(`#ruleList .rule[data-i="${n0}"] button[data-act="rm"]`); rm.click();
+    const gone = state.rules.length === n0 && !/STACK/.test(tagNow());
+    click(A, 2, 2); click(A, 2, 2);            // the same button again takes it off
+    const toggled = state.rules.length === n0;
+    state.rules = JSON.parse(rules0); save(); renderRules(); view.panel = null; renderTiles(); renderPlayers(); renderTeamPanel();
+    return { g, btns, one, tagOk, tag1, pressed, repl, msg2, drawn, n: res.lineups.length, saved, gone, toggled };
+  });
+  check("stack quick buttons: each game offers 2+1 either side, 2+2, 3+2 either side; a click adds n from one team and m from the other, names the batch STACK <game> <shape>, replaces that game's earlier shape, and the draw obeys it",
+        sq.btns.length === 5 && sq.one && sq.tagOk && sq.pressed && sq.repl && sq.drawn && sq.saved && sq.gone && sq.toggled, JSON.stringify(sq));
   // --- the builder on one screen ---------------------------------------------------------------------
   dialogs = [];
   await pg.fill("#maxUse", "3"); await pg.fill("#maxNight", "60");
