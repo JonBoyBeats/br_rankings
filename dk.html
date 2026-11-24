@@ -255,8 +255,6 @@ tr.fc-light { cursor: pointer; } tr.fc-heavy { cursor: pointer; } .fcf-light { c
   .scanblk button, table.gstk button, .topreads button { height: 22px; padding: 0 7px; font-size: 11.5px; }
 /* scan floors (2026-11-24): a Min% / Max% the scan set, dashed and tinted; hand entries look as before */
 input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8dff) !important; font-style: italic; }
-.sfwrap { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; } .sfopts { font-size: 11.5px; } .sfopts summary { cursor: pointer; line-height: 22px; } .sfopts input.num { width: 62px; height: 22px; font-size: 11.5px; }
-.sfopts .sfgrid { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 4px; }
   .topreads { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0; align-items: center; }
   .tile.wide { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2px 20px; }
   .tile.wide .th, .tile.wide .scores, .tile.wide .why { grid-column: 1 / -1; }
@@ -652,6 +650,8 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
     <input type="search" id="search" placeholder="Search players">
     <button type="button" id="resetProj" title="Put every Proj back to ours">Reset Proj</button>
     <button type="button" id="clearLx" title="Clear every lock, exclude and Max%">Clear L / X</button>
+    <button type="button" id="sfSet" title="Each scanned player's Min% / Max% from his Read times his field ownership (core 1.1, leverage 1.75, lean 1.0 x own; fade 0.6 x own, skip a flat 10%); hand entries are left alone">Set floors from scan</button>
+    <button type="button" id="sfClear" hidden title="Removes only the Min% / Max% the scan set; hand entries stay">Clear floors</button>
   </div>
   <div id="players"></div>
   </div></div>
@@ -1106,6 +1106,7 @@ function renderPlayers() {
     return true;
   });
   $("qOnly").textContent = "Q (" + rows.filter(isQ).length + ")";
+  if ($("sfClear") && typeof scanFloorsOn === "function") $("sfClear").hidden = !scanFloorsOn();
   var fs = fillStats(), cv = cutView();
   $("players").classList.toggle("fillcols", !!fs);
   $("players").classList.toggle("cutcols", cv);
@@ -3471,10 +3472,10 @@ function renderScan() {
   var foc = pl.filter(function (r) { return !r.thin && (r.read === "core" || r.read === "leverage"); }).sort(byG);
   foc = foc.concat(pl.filter(function (r) { return !r.thin && /^lean /.test(r.read); }).sort(byG)).slice(0, 6);
   S.focus = foc.map(function (r) { return r.id; });
-  var strip = '<div class="topreads"><b>Reads</b>' + (levs.length ? '<span class="mut">Leverage:</span>' + levs.map(function (r) {
+  // the Reads strip (2026-11-24): the leverage players only (the focus button and the Floors fold went; Set floors / Clear floors are in the Players toolbar); none: no strip
+  var strip = levs.length ? '<div class="topreads"><b>Reads</b><span class="mut">Leverage:</span>' + levs.map(function (r) {
       return '<button type="button" class="topread read-leverage" data-team="' + esc(r.team) + '" title="Open its game">' + esc(r.key) + " " + sgn(r.g_t1, 2) + "</button>";
-    }).join("") : "") + (foc.length >= 2 ? '<button type="button" id="focusBank" title="Adds a draw rule: at least ' + Math.min(3, foc.length) + " of " + esc(foc.map(function (r) { return r.key; }).join(", ")) +
-      ' (one rule, not locks)">Bank: at least ' + Math.min(3, foc.length) + " of these " + foc.length + "</button>" : "") + scanFloorStrip() + "</div>";
+    }).join("") + "</div>" : "";
   $("scanTable").innerHTML = strip + '<details id="scanAll"' + (scanAllOpen ? " open" : "") + '><summary>All scan rows</summary><div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each, in the Players list's Top 1% / ROI / Cash / Read columns (Read on their own noise, ±" + (100 * S.pbar).toFixed(2) +
     " (2√2 × sigma, sigma from each player's gain on odd nights against even nights, the tiers' test); core: strong and field own at or over the players' median " + Math.round(S.pownMedian || 0) + "%, leverage: strong and under it, lean core / lean leverage: a gain inside the noise, fade: weak, over it and " + SCAN_FADE_OWN + "%+ owned, skip: every other weak player; a team's Bank this adds at least 2 of its core and leverage players), " : "") +
     (S.plainN || 5 * (S.per || 0)) + " plain lineups, bank noise " + S.nightS + ", " + S.nights + " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
@@ -3501,8 +3502,6 @@ $("scanTable").addEventListener("click", function (e) {
     $("scanStatus").textContent = "The rule editor has at least " + k + " of the scan's " + ids.length + " focus players: change the players or N, then Add rule.";
     showStep("bank"); $("ruleEditor").scrollIntoView({ block: "center" }); return;
   }
-  if (e.target.id === "sfSet") { $("scanStatus").textContent = applyScanFloors(); return; }
-  if (e.target.id === "sfClear") { $("scanStatus").textContent = clearScanFloors(); return; }
   var tr0 = e.target.closest(".topread");
   if (tr0) { view.panel = tr0.dataset.team; view.pside = view.panel; renderTiles(); renderPlayers(); $("teamBar").scrollIntoView({ block: "start" }); return; }
   var b = e.target.closest(".scanBank"); if (b) scanBankApply(b);
@@ -3524,17 +3523,13 @@ function scanBankApply(b) {
    ownership f: core floor SF.core x f, leverage SF.leverage x f, lean core / lean leverage SF.lean x f, fade cap SF.fade
    x f, skip cap SF.skip x f (even: nothing). Floors at most SF_FLOOR_MAX %, caps at least SF_CAP_MIN %; players under
    SF_LOW_OWN % owned are skipped unless "include under 2%" is ticked; thin scan rows (too few lineups to read) skipped.
-   The multipliers are editable and remembered (localStorage dkcbb:scanfloor). They are the same Min% / Max% as a hand
+   The multipliers are fixed at SF_DEF (2026-11-24: the Floors fold went; Set floors from scan / Clear floors sit in the
+   Players toolbar). They are the same Min% / Max% as a hand
    entry (drawBank's draw-time floors and caps, on every batch until cleared), marked as set by scan (state.scanSet,
    the value set): a hand entry is never overwritten, a box typed into becomes a hand entry, and Clear floors removes
    only the marked ones still holding the value the scan set. A draw while any are on is tagged SCANFLOOR. */
 var SF_DEF = { core: 1.1, leverage: 1.75, lean: 1.0, fade: 0.6, skipPct: 10, low: false }, SF_FLOOR_MAX = 60, SF_CAP_MIN = 1, SF_LOW_OWN = 2;
-function sfOpts() {
-  var o = Object.assign({}, SF_DEF);
-  try { var v = JSON.parse(localStorage.getItem("dkcbb:scanfloor") || "null"); if (v) Object.keys(SF_DEF).forEach(function (k) { if (v[k] != null && (k === "low" || isFinite(+v[k]))) o[k] = k === "low" ? !!v[k] : +v[k]; }); } catch (e) {}
-  return o;
-}
-function sfSave(o) { try { localStorage.setItem("dkcbb:scanfloor", JSON.stringify(o)); } catch (e) {} }
+function sfOpts() { return Object.assign({}, SF_DEF); }        // fixed (2026-11-24: the Floors fold went; a value saved in dkcbb:scanfloor is ignored)
 function byScan(kind, id) {           // the note when this box holds the value the scan set, else ""
   var m = state && state.scanSet && state.scanSet[kind] && state.scanSet[kind][id];
   return m && state[kind] && state[kind][id] != null && +state[kind][id] === +m.v ? m.note : "";
@@ -3587,18 +3582,6 @@ function clearScanFloors(quiet) {
   save(); renderRules(); renderPlayers(); renderScan();
   return n ? "Cleared " + n + " scan floor" + (n === 1 ? "" : "s") + " and cap" + (n === 1 ? "" : "s") + "; hand entries kept." : "No scan floors to clear.";
 }
-function scanFloorStrip() {
-  var o = sfOpts(), on = scanFloorsOn(), inp = function (k, lab) { return '<label>' + lab + ' <input class="num sfm" data-k="' + k + '" type="number" min="0" step="0.05" value="' + o[k] + '">×</label>'; };
-  return '<span class="sfwrap"><button type="button" id="sfSet" title="Each scanned player\'s Min% / Max% from his Read times his field ownership (the multipliers under Floors); hand entries are left alone">Set floors from scan</button>' +
-    (on ? '<button type="button" id="sfClear" title="Removes only the Min% / Max% the scan set; hand entries stay">Clear floors</button>' : "") +
-    '<details class="sfopts"><summary class="mut">Floors</summary><div class="sfgrid">' + inp("core", "core floor") + inp("leverage", "leverage floor") + inp("lean", "lean floor") +
-    inp("fade", "fade cap") + '<label>skip cap <input class="num sfm" data-k="skipPct" type="number" min="0" step="1" value="' + o.skipPct + '">% flat</label>' + '<label><input type="checkbox" class="sfm" data-k="low"' + (o.low ? " checked" : "") + "> include under " + SF_LOW_OWN + "% owned</label>" +
-    '<span class="mut">floors ≤ ' + SF_FLOOR_MAX + "%, caps ≥ " + SF_CAP_MIN + "%, × his field own</span></div></details></span>";
-}
-$("scanTable").addEventListener("change", function (e) {
-  var t = e.target.closest(".sfm"); if (!t) return;
-  var o = sfOpts(); o[t.dataset.k] = t.type === "checkbox" ? t.checked : (t.value === "" ? SF_DEF[t.dataset.k] : Math.max(0, +t.value)); sfSave(o);
-});
 
 /* Stack quick buttons (2026-11-24, the operator): per game, 2+1 (the 2 from either team), 2+2, and 3+2 (the 3 from
    either team). Each is two min rules for the draws (n from one team, m from the other), in the rules list like any
@@ -5456,6 +5439,8 @@ document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
 });
 $("resetProj").addEventListener("click", function () { state.proj = {}; save(); renderPlayers(); });
 $("clearLx").addEventListener("click", function () { state.lock = {}; state.excl = {}; state.cap = {}; state.floor = {}; state.scanSet = { floor: {}, cap: {} }; save(); renderRules(); renderPlayers(); });
+$("sfSet").addEventListener("click", function () { var m = applyScanFloors(); $("scanStatus").textContent = m; $("sfClear").hidden = !scanFloorsOn(); });
+$("sfClear").addEventListener("click", function () { var m = clearScanFloors(); $("scanStatus").textContent = m; $("sfClear").hidden = !scanFloorsOn(); });
 $("players").addEventListener("click", function (e) {
   if (e.target.closest(".bbtog")) { view.bankBase = !view.bankBase; renderPlayers(); return; }
   var h = e.target.closest("[data-sort]");

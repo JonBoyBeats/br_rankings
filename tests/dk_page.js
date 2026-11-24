@@ -1825,10 +1825,10 @@ function audit(name, L, o) {
     let opened = true;
     if (b[0]) { b[0].click(); opened = view.panel === b[0].dataset.team && !!document.querySelector('#teamPanel .tile[data-team="' + b[0].dataset.team + '"]'); }
     view.panel = null; renderTiles(); renderPlayers();
-    return { n: b.length, lev, wantLev, closed: fold && !fold.open, roll: !!fold.querySelector("#scanPlayers"), opened, label: document.querySelector("#scanTable .topreads b").textContent };
+    return { n: b.length, lev, wantLev, closed: fold && !fold.open, roll: !!fold.querySelector("#scanPlayers"), opened, label: (document.querySelector("#scanTable .topreads b") || {}).textContent || "", focusGone: !document.getElementById("focusBank") && !document.querySelector("#scanTable .sfopts") };
   });
   check("slate scan: a Reads strip of the leverage players only (no stack buttons), each opening its game; the team rollup in a closed All scan rows fold",
-        trd.n === trd.lev && trd.lev === trd.wantLev && trd.closed && trd.roll && trd.opened && trd.label === "Reads", JSON.stringify(trd));
+        trd.n === trd.lev && trd.lev === trd.wantLev && trd.closed && trd.roll && trd.opened && (trd.wantLev ? trd.label === "Reads" : trd.label === "") && trd.focusGone, JSON.stringify(trd));
   // the game view's scan block: the team's core and leverage players, no stack rows; an old saved scan's stack rows are ignored
   const gsc = await pg.evaluate(() => {
     const t = teamsOf().teams[0]; view.panel = t.team; view.pside = t.team; renderTiles();
@@ -1937,9 +1937,8 @@ function audit(name, L, o) {
   check("bank helpers (C1, on the scan floors' rule): under the floor the scan would set (core 1.1x, leverage 1.75x, lean 1.0x own) or over its cap (fade 0.6x own, skip flat); even none; the tooltip names the rule and a hand Min%",
         JSON.stringify(c1.tips) === JSON.stringify(c1.wantTips) && /^core: bank 0% vs floor .* \(your Min%: 25%\)$/.test(c1.handTip), JSON.stringify(c1));
   check("lean reads: the focus set takes strong core / leverage first, then lean by gain; lean reads in their own colour class", c1.focusOk && c1.leanCls, JSON.stringify([c1.focusOk, c1.leanCls]));
-  check("bank helpers (C1): the Players list marks, right after the Read word (not the row's edge), a player banked under his scan floor (green) or over his cap (red); Bank: at least 3 of the focus set adds one min-N rule (not locks)",
-        c1.inOk && c1.outOk && c1.onRow && c1.shown === c1.want && (c1.focus < 2 || (c1.hasBtn && c1.pre.type === "min" && c1.pre.n === Math.min(3, c1.focus) && c1.pre.added === 0 &&
-         JSON.stringify(c1.pre.chips.slice().sort()) === JSON.stringify(c1.focusIds.slice().sort()) && c1.rule.type === "min" && c1.rule.n === Math.min(3, c1.focus) && c1.rule.same)), JSON.stringify(c1));
+  check("bank helpers (C1): the Players list marks, right after the Read word (not the row's edge), a player banked under his scan floor (green) or over his cap (red); the strip's focus button is gone (2026-11-24)",
+        c1.inOk && c1.outOk && c1.onRow && c1.shown === c1.want && !c1.hasBtn, JSON.stringify(c1));
   const pso = await pg.evaluate(() => {
     view.sort = "sroi"; view.dir = -1; renderPlayers();      // the ROI gain still sorts (its column is in Read's hover now)
     const g = [...document.querySelectorAll("#players .row")].map(e => scanRowOf(e.dataset.id)).filter(x => x && byId(x.id).status !== "Out").map(x => x.g_roi);
@@ -1990,20 +1989,20 @@ function audit(name, L, o) {
     if (edited) { const inp = document.querySelector(`#players .row[data-id="${edited}"] input.floor`);
       if (inp) { inp.value = "12"; inp.dispatchEvent(new Event("change", { bubbles: true })); editOk = state.floor[edited] === 12 && !byScan("floor", edited); } }
     const nScan = Object.keys(state.scanSet.floor).filter(id => byScan("floor", id)).length + Object.keys(state.scanSet.cap).filter(id => byScan("cap", id)).length;
-    const clearBtn = !!document.getElementById("sfClear");
+    const clearBtn = !document.getElementById("sfClear").hidden && !!document.getElementById("sfClear").closest(".filters, .opts, div") && !document.getElementById("sfSet").closest("#scanTable");
     document.getElementById("sfClear").click();
     const cleared = !scanFloorsOn() && !/SCANFLOOR/.test(tagNow()) && (!handF || state.floor[handF] === 7) && (!handC || state.cap[handC] === 33) && (!edited || state.floor[edited] === 12) &&
       elig.map(x => String(x.id)).filter(id => id !== handF && id !== handC && id !== edited).every(id => state.floor[id] == null && state.cap[id] == null);
-    // the multipliers are remembered
-    const core = document.querySelector('#scanTable .sfm[data-k="core"]'); core.value = "1.3"; core.dispatchEvent(new Event("change", { bubbles: true })); renderScan();
-    const kept = sfOpts().core === 1.3 && document.querySelector('#scanTable .sfm[data-k="core"]').value === "1.3";
+    // the multipliers are fixed (2026-11-24): a value left in dkcbb:scanfloor is ignored; no Floors fold; Clear floors hidden once none are set
+    try { localStorage.setItem("dkcbb:scanfloor", JSON.stringify({ core: 1.3 })); } catch (e) {}
+    const kept = sfOpts().core === 1.1 && sfOpts().skipPct === 10 && !document.querySelector("#scanTable .sfopts, #scanTable .sfm") && document.getElementById("sfClear").hidden;
     try { localStorage.removeItem("dkcbb:scanfloor"); } catch (e) {}
     state.floor = was.floor; state.cap = was.cap; state.scanSet = { floor: {}, cap: {} }; save(); renderRules(); renderPlayers(); renderScan();
     return { n: elig.length, floors: fl.length, caps: cp.length, right, handKept, lowNone, low: low.length, marked, wantMarked, handBox, tagged, clamp, editOk, nScan, clearBtn, cleared, kept };
   });
   check("scan floors: Set floors from scan puts Read x field own in Min% (core 1.1, leverage 1.75, lean 1.0) / Max% (fade 0.6x, skip a flat 10%), under-2% owned skipped, dashed 'set by scan' boxes, hand entries untouched, draws tagged SCANFLOOR",
         sf.n > 5 && sf.right && sf.handKept && sf.lowNone && sf.marked === sf.wantMarked && sf.marked > 0 && sf.handBox && sf.tagged, JSON.stringify(sf));
-  check("scan floors: floors held to 60% and caps to 1%; typing in a scan box makes it a hand entry; Clear floors removes only the scan's; the multipliers are remembered",
+  check("scan floors: floors held to 60% and caps to 1%; typing in a scan box makes it a hand entry; Clear floors (Players toolbar, shown only while scan floors are set) removes only the scan's; the multipliers fixed",
         sf.clamp && sf.editOk && sf.clearBtn && sf.cleared && sf.kept, JSON.stringify(sf));
   // stack quick buttons (2026-11-24): per game 2+1 either side, 2+2, 3+2 either side; two min rules, the batch tagged STACK <game> <shape>
   const sq = await pg.evaluate(async () => {
