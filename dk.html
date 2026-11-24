@@ -2420,11 +2420,18 @@ async function pickPortfolios(into, objective) {
       (relaxedF.length ? " (" + relaxedF.join("; ") + ")" : "") + " (fresh nights, in-sim)";
   }
   if (flagCs.length) msgs.push(await fillFlagships(flagCs));
+  var chalkB = null, addedChalk = false;
   for (var i = 0; i < cs.length; i++) {
     var c = cs[i], n = nOf(c), pr = prof[c.id];
     if (pr === "flagship") continue;
     // a "test" idea's lineups go only into the lab (Dime Time)
     var idx = all.filter(function (bi) { return (taken[bi] || 0) < maxUse && (pr === "lab" || !isTest(bi)); }), pool = idx.map(function (bi) { return BANK.lineups[bi]; });
+    var nKept = pool.length;
+    if (pr === "qualifier") {      // the chalk batch beside the kept pool (drawn once a fill); its lineups the pool lacks
+      if (!chalkB) { $("cutStatus").textContent = "Qualifiers: drawing " + QUAL_CHALK_N + " chalk lineups…"; await tick(); chalkB = await qualChalk(); }
+      var inPool = {}; pool.forEach(function (L) { inPool[L.ids.slice().sort().join(",")] = 1; });
+      chalkB.forEach(function (L) { if (!inPool[L.ids.slice().sort().join(",")]) pool.push(L); });
+    }
     $("cutStatus").textContent = "Picking " + n + " for " + c.name + " from " + pool.length + " left…"; await tick();
     var sim = DKSim.simulate(nightsCtx(c), pool, fieldFor(c), fieldDoc.z, c, n, S);
     var pairsBefore = Object.assign({}, pairCount);       // the night's pair counts before this contest (for the trials below)
@@ -2462,6 +2469,7 @@ async function pickPortfolios(into, objective) {
         }
       }
     }
+    r.chosen.forEach(function (k) { if (k >= nKept) { idx[k] = chalkToBank(pool[k]); addedChalk = true; } });     // a chosen chalk lineup joins the bank
     into[String(c.id)] = r.chosen.map(function (k) { return idx[k]; });
     into[String(c.id)].forEach(function (bi) { taken[bi] = (taken[bi] || 0) + 1; BANK.lineups[bi].ids.forEach(function (id) { nightCount[id] = (nightCount[id] || 0) + 1; }); });
     var why = "";
@@ -2474,14 +2482,24 @@ async function pickPortfolios(into, objective) {
             "the final pool runs out under the caps together") + "; raise Keep, or loosen it";
     }
     var tc = DKSim.topCore(ctx(), r.chosen.map(function (k) { return pool[k]; })), p1 = "";
-    if (pr === "qualifier") {      // its lineups' summed projected ownership against its (chalk-leaning) field's median
-      var ownS = r.chosen.map(function (k) { return ownSum(pool[k].ids); }), fmed = fieldOwnMedian(fieldFor(c));
-      if (into === PF) PROF_STATS[String(c.id)] = { own: ownS, fieldMed: fmed };
-      p1 = ", own sum " + ownS.map(function (x) { return Math.round(x) + "%"; }).join(" / ") + " vs the field's median " + Math.round(fmed) + "%";
+    if (pr === "qualifier") {      // its lineups' own sums against its chalk field's median, where they came from, and P(1st)
+      var ownS = r.chosen.map(function (k) { return ownSum(pool[k].ids); }), fmed = fieldOwnMedian(fieldFor(c)), fromChalk = r.chosen.filter(function (k) { return k >= nKept; }).length;
+      var freshQ = r.chosen.length ? DKSim.simulate(Object.assign(ctx(), { random: DKSim.seeded((nightsSeed() ^ Math.imul(+c.id || 0, 2654435761) ^ 0x5eed0b5) >>> 0) }),
+                     r.chosen.map(function (k) { return pool[k]; }), fieldFor(c), fieldDoc.z, c, n, S) : null, bq = freshQ ? DKSim.builder(freshQ, c) : null;
+      if (bq) bq.set(r.chosen.map(function (_, q) { return q; }));
+      var bA = DKSim.builder(sim, c), bestC = 0, bestK = 0;       // the best lineup alone from each source, on the pick's nights
+      for (var kq = 0; kq < pool.length; kq++) { var va = bA.alone(kq); if (kq < nKept) bestK = Math.max(bestK, va); else bestC = Math.max(bestC, va); }
+      var qs = { own: ownS, fieldMed: fmed, chalk: fromChalk, kept: r.chosen.length - fromChalk, p1: bq ? bq.coverage().first : 0, ev: bq ? bq.total() : 0,
+                 batch: pool.length - nKept, bestChalk: bestC, bestKept: bestK };
+      if (into === PF) PROF_STATS[String(c.id)] = qs;
+      p1 = ", own sum " + ownS.map(function (x) { return Math.round(x) + "%"; }).join(" / ") + " vs the field's median " + Math.round(fmed) + "%, P(1st) " + pct1(qs.p1) +
+        " (fresh nights), " + fromChalk + " from the chalk batch and " + qs.kept + " from the kept pool (the batch: " + qs.batch + " lineups the pool lacked, the best alone " +
+        cents(bestC) + " against the kept pool's best " + cents(bestK) + ")";
     }
     msgs.push(c.name + " [" + PROF_NAMES[pr] + "]: " + r.chosen.length + " of " + n + p1 + (relaxed.length ? " (" + relaxed.join("; ") + ")" : "") + why + (tc ? ", largest core " + coreName(tc.key) + " in " + tc.n + " (" + Math.round(100 * tc.share) + "%)" : "") + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
       ", one cashes in " + Math.round(100 * r.builder.coverage().cash) + "% of nights)");
   }
+  if (addedChalk) { bankSaveState(); cutSave(); renderBank(); }
   if (into === PF) { pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES; }
   var night = DKSim.topCore(ctx(), Object.keys(into).reduce(function (a, k) { return a.concat(into[k].map(function (bi) { return BANK.lineups[bi]; })); }, []));
   return (night ? "Largest core across the night's " + night.of + " entries: " + coreName(night.key) + " in " + night.n + " (" + Math.round(100 * night.share) + "%). " : "") +
@@ -2538,6 +2556,31 @@ function fieldOwnMedian(F) {
    lineup), the rest the remaining lineups in order. QUAL_CHALK is a first setting, to be refit from the qualifier
    fields dk_eval fieldusers captures (field_users.csv) as they accrue. */
 var QUAL_CHALK = 0.8, QF = { key: null, base: null, field: null };
+/* The qualifiers' chalk batch (2026-11-24, the operator): the kept pool barely reaches a chalk field (11-23: 1 of
+   2,221 kept lineups at its median own sum), so each fill with a qualifier draws QUAL_CHALK_N lineups near the top
+   projections: the bank's draw (DKSim.pool) at low noise (QUAL_NOISE, the bank's default 0.35) with no leverage and no
+   rules beyond the locks, excludes and outs. The qualifier's Max ROI picks from it and the kept pool together, so a
+   pivot or a leverage lineup still wins where the sim says so. A chosen chalk lineup joins the bank (tag "Qualifier
+   chalk"), not the kept pool. */
+var QUAL_CHALK_N = 200, QUAL_NOISE = 0.15, QUAL_REFIT_AT = 10;
+async function qualChalk() {
+  var cx = ctx();
+  cx.progress = function (m) { $("cutStatus").textContent = "Qualifiers' chalk batch: " + m; return tick(); };
+  var o = { n: 1, maxExpo: 1, minUnique: 1, z: fieldDoc && fieldDoc.z, levW: 0, minSal: 0, maxTeam: 8, stackN: 0, stackBoth: false, maxOwn: null,
+            lowN: 0, lowPct: 10, conds: [], nightS: QUAL_NOISE };
+  var res = await DKSim.pool(cx, o, QUAL_CHALK_N);
+  return res.lineups;
+}
+// a chosen chalk lineup into the bank (not the kept pool), keeping the cut: its bank index
+function chalkToBank(L) {
+  var key = L.ids.slice().sort().join(",");
+  for (var i = 0; i < BANK.lineups.length; i++) if (BANK.lineups[i].ids.slice().sort().join(",") === key) return i;
+  var tag = "Qualifier chalk";
+  BANK.tagRules[tag] = BANK.tagRules[tag] || { chalk: { n: QUAL_CHALK_N, nightS: QUAL_NOISE, levW: 0 } };
+  BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice() }); BANK.tags.push([tag]);
+  if (CUT) CUT.bankN = BANK.lineups.length;
+  return BANK.lineups.length - 1;
+}
 function qualField(base) {
   if (!base || !base.length) return base;
   var key = String(slate && slate.draft_group_id) + ":" + base.length + ":" + Object.keys(state.outs || {}).join(",");
@@ -2567,9 +2610,11 @@ function renderProfiles() {
       (p === "flagship" && st && st.at ? '<div class="pstat">Top 1%: ' + pct1(st.top1) + " of nights · P(1st) " + pct1(st.set) + " with your " + st.n + " · P(1st) at 2 / 3 / 4 lineups: " +
         [1, 2, 3].map(function (q) { return st.at[q] != null ? pct1(st.at[q]) : "–"; }).join(" / ") +
         ' <span title="On a fresh draw of nights, not the ones the set was picked from (those flatter it). In-sim only: at 1-4% a night, a dozen graded nights cannot confirm it.">(fresh nights, in-sim)</span></div>' : "") +
-      (p === "qualifier" && st && st.own ? '<div class="pstat">Own sum ' + st.own.map(function (v) { return Math.round(v) + "%"; }).join(" / ") + " vs the chalk field's median " + Math.round(st.fieldMed) + "%</div>" : "") +
+      (p === "qualifier" && st && st.own ? '<div class="pstat">Own sum ' + st.own.map(function (v) { return Math.round(v) + "%"; }).join(" / ") + " vs the chalk field's median " + Math.round(st.fieldMed) + "% · P(1st) " +
+        pct1(st.p1) + " (fresh nights, in-sim) · " + st.chalk + " from the chalk batch, " + st.kept + " from the kept pool</div>" : "") +
       (p === "lab" ? '<div class="pstat">Test ideas: ' + (tests.length ? esc(tests.join(", ")) : "none marked (Bank step: test on an idea's row)") + "</div>" : "") + "</div>";
-  }).join("") + (PROF_STATS._joint && PROF_STATS._joint.n > 1 ? '<div class="note" id="profJoint">The flagships together: one of their lineups in its top 1% on ' + pct1(PROF_STATS._joint.joint) + " of nights (fresh nights, in-sim).</div>" : "") +
+  }).join("") + (count.qualifier ? '<div class="note" id="profQual">The qualifier field is an assumed chalk style until field_users.csv has enough real qualifier fields to refit it (' +
+    QUAL_REFIT_AT + "; <code>dk_eval.py qualcheck</code> counts them).</div>" : "") + (PROF_STATS._joint && PROF_STATS._joint.n > 1 ? '<div class="note" id="profJoint">The flagships together: one of their lineups in its top 1% on ' + pct1(PROF_STATS._joint.joint) + " of nights (fresh nights, in-sim).</div>" : "") +
     '<div class="note">Fill order: the flagships first, together (the whole kept pool), then each main contest by its own Max ROI, then the rest by stake; a lineup in up to ' +
     maxUses() + " contests under the 60% night cap. The 60/60 caps and Auto top-up apply to all.</div>";
   $("profSum").textContent = "Contest profiles: " + Object.keys(PROF_NAMES).filter(function (k) { return count[k]; }).map(function (k) { return PROF_NAMES[k] + " " + count[k]; }).join(" · ");

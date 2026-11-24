@@ -46,14 +46,71 @@ On the 11-23 slate this moves the field's median summed projected ownership from
 - the build's 2,221 kept lineups have a median own sum of 207% and a 90th percentile of 245%;
 - only 1 of them reaches 309%.
 
-The fill can only pick from what was banked. To land near chalk, the qualifiers need chalk lineups in their candidates. Two ways to add them, not done here (each is a new source of lineups for the fill):
+The fill can only pick from what was banked. To land near chalk, the qualifiers need chalk lineups in their candidates. Two ways to add them (round 2 adds the first, below):
 
 - a chalk batch drawn for them;
 - the chalk field's own top lineups.
 
+### The qualifiers' chalk batch (round 2, approved)
+
+The pool shortfall above gets its fix in round 2. With a qualifier entered, each fill draws `QUAL_CHALK_N` = 200 lineups near the top projections:
+
+- **Draw:** the bank's own draw (`DKSim.pool`) at low noise (`QUAL_NOISE` 0.15; the bank's default is 0.35).
+- **No extras:** no leverage, and no rules beyond the locks, excludes and outs.
+- **Scored:** against that qualifier's chalk-heavy winner-take-all field, at the contest's real size.
+- **Picked:** the qualifier's Max ROI chooses from the chalk batch and the kept pool together, so a pivot or leverage lineup still wins where the sim says so.
+- **Kept:** a chosen chalk lineup joins the bank (tag "Qualifier chalk") but not the kept pool, so other contests don't draw on it and the cut stays.
+
+For each qualifier, the Profiles screen shows:
+
+- the chosen lineups' own sum against the chalk field's median;
+- their P(1st) on fresh nights;
+- how many came from the chalk batch and how many from the kept pool;
+- the note: "The qualifier field is an assumed chalk style until field_users.csv has enough real qualifier fields to refit it."
+
+**The 11-23 illustration, rerun with the batch.** The same build, with 2 entries placed in the night's $150 King of the Bracket qualifier (16 entries, $11) for illustration only. Source: `fill_profiles_2026-11-24/qualifier_illustration.json`.
+
+| What | Result |
+|---|---|
+| Chalk batch | 200 drawn; 171 the kept pool didn't already hold |
+| Best single lineup's expected payout alone | chalk batch $23.00, kept pool $23.25 |
+| Chosen | 2 from the kept pool, 0 from the chalk batch |
+| Chosen lineups' own sum | 202% and 209%, against the chalk field's median of 309% |
+| P(1st), the two together, fresh nights | 18.1% (two random entries of 16 would win 12.5%) |
+| Expected payout | $27.15 on fresh nights, on $22 of fees |
+
+**So the sim still prefers the contrarian lineups once chalk is on offer, by a small margin.** Against a field this chalky, the duplicated chalk lineups split a 1st place that a different lineup keeps whole. The margin is thin ($23.00 against $23.25 for the best single lineup), and the field it rests on is assumed.
+
+### The qualifier-field refit plan
+
+**What is assumed now.** The qualifier field's style is assumed: `QUAL_CHALK` = 80% from the top fifth by summed DraftKings average.
+
+**When to refit.** Once `QUAL_REFIT_AT` = 10 real qualifier fields (contests named qualifier or satellite) are in `analysis/cbb/dk/field_users.csv`, refit the style from them. `python3 scripts/dk_eval.py qualcheck` prints the count; nightly prints it after `fieldusers`, which nightly now runs. Today: 2 of 10.
+
+**What to fit.** Using the captured users' entries:
+
+- the distribution of their lineups' summed projected ownership (own_sum);
+- their under-5% players (sub5);
+- lineups shared between users.
+
+**How.** Choose `QUAL_CHALK` (and, if needed, the top-share cut and `QUAL_NOISE`) so the reweighted field reproduces:
+
+- the real fields' own_sum median and spread;
+- their duplicate rate.
+
+Fit on the earlier two-thirds of the contests, check on the rest (as `dk_field_calibrate.py` does for the big fields), then version the change.
+
 ## Flagships together or apart: in-sim, fresh nights
 
 **Script.** `scripts/dk_flagship_compare.py` (driver) and `scripts/dk_flagship_compare.js` → `fill_profiles_2026-11-24/flagship_joint.jsonl`.
+
+**Kept per night.** Each saved build now gets one row in `analysis/cbb/dk/flagship_joint.csv`, appended as builds come in:
+
+- joint against separate top-1% coverage and expected payout on fresh nights, with the differences;
+- the in-sample figures;
+- the entered set.
+
+Nightly runs it (`dk_eval.py nightly`, or on its own `dk_eval.py flagjoint`), so the record accrues.
 
 **Data.** Each saved build's final pool, plus the lineups it entered, with the slate and simulated field at lock and 3,000 nights.
 
@@ -120,9 +177,9 @@ The build was loaded with the slate and simulated field as they stood at lock; t
 
 - `dk.html`, `dk_sim.js`: `builder.score(k, ext)` joint coverage, `builder.cover1`, `pickJoint`.
 - `tests/dk_page.js`: profiles, joint coverage, per-contest main fills, the qualifier's WTA and chalk field, the test toggle, the Swap order, the phone layout.
-- `scripts/dk_eval.py fieldusers` → `analysis/cbb/dk/field_users.csv`.
+- `scripts/dk_eval.py fieldusers` → `analysis/cbb/dk/field_users.csv`; `qualcheck` (qualifier fields captured); `flagjoint` → `analysis/cbb/dk/flagship_joint.csv`. Nightly runs all three.
 - `scripts/dk_flagship_compare.py` and `.js` → `fill_profiles_2026-11-24/flagship_joint.jsonl`.
 - `fill_profiles_2026-11-24/`:
   - `profiles_desktop.png` and `profiles_phone.png` (390px): the 11-23 build as entered;
-  - `profiles_with_qualifier_illustration.png`: the same build with 2 entries placed in the night's $150 King of the Bracket qualifier, for illustration only; the build entered no qualifier;
+  - `profiles_with_qualifier_illustration.png` and `qualifier_illustration.json`: the same build with 2 entries placed in the night's $150 King of the Bracket qualifier, for illustration only (the build entered no qualifier), with the chalk batch;
   - `fill_note.txt`.

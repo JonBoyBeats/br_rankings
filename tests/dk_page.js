@@ -1507,13 +1507,14 @@ function audit(name, L, o) {
     const set = (cid, v) => { const i = document.querySelector('#entriesBox input[data-cid="' + cid + '"]'); i.value = String(v); };
     set("197791874", 4); set("197791875", 4); set("197873654", 3); set("197873655", 2);
     const g = Object.entries(ideaCounts(finalIdx())).sort((a, b) => a[1] - b[1]).map(x => x[0]).find(x => !/Variants of the top/.test(x));   // the smallest idea
-    BANK.test = { [g]: true }; bankSaveState(); renderBank(); renderEntries();
-    return { keep, g, pf: JSON.stringify(PF), maxUse: $("maxUse").value };
+    BANK.test = { [g]: true }; bankSaveState(); renderBank(); renderEntries(); QUAL_CHALK_N = 60;     // the qualifier's chalk batch: 60 here, for time
+    return { keep, g, pf: JSON.stringify(PF), maxUse: $("maxUse").value, bankN: BANK.lineups.length };
   });
   await pg.fill("#maxUse", "3");
   await pg.click("#pfRun");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
   const blk = await pg.evaluate(g => {
+    QUAL_CHALK_N = 200;
     const A = PF["197791874"] || [], Q = PF["197791875"] || [], D = PF["197873654"] || [], st = document.getElementById("cutStatus").textContent;
     const uses = {}; Object.values(PF).forEach(v => v.forEach(bi => { uses[bi] = (uses[bi] || 0) + 1; }));
     const testIn = bi => lineupGroups(bi).includes(g), used = nightUsed(null), lk = fillLock();
@@ -1525,21 +1526,36 @@ function audit(name, L, o) {
   }, blk0.g);
   check("main contests: And-One, Quarter Jukebox and Dime Time each by its own Max ROI; a lineup in up to 3 contests; a test idea never outside Dime Time; no player past the night cap",
         blk.A >= 3 && blk.Q >= 3 && blk.D >= 1 && blk.own && blk.testOut && blk.maxUses <= 3 && blk.nightMax <= blk.nightLim && /^Test ideas: /.test(blk.lab), JSON.stringify(blk));
-  const mnQ = await pg.evaluate(() => { const v = $("maxNight").value; $("maxNight").value = ""; return v; });   // the fixture's 15-entry night: the cap can shut the qualifier out
+  const chk = await pg.evaluate(async () => {      // the chalk batch: near the top projections (above the kept pool on projection and ownership)
+    const n0 = QUAL_CHALK_N, noise = QUAL_NOISE; QUAL_CHALK_N = 60;
+    const L = await qualChalk(), med = a => { const v = a.slice().sort((x, y) => x - y); return v[Math.floor(v.length / 2)]; };
+    const pj = ids => ids.reduce((t, id) => t + proj(byId(id)), 0), kept = finalIdx().map(bi => BANK.lineups[bi].ids);
+    return { def: n0, noise, n: L.length, projC: med(L.map(x => pj(x.ids))), projK: med(kept.map(pj)), ownC: med(L.map(x => ownSum(x.ids))), ownK: med(kept.map(ownSum)),
+             legal: L.every(x => x.ids.length === 8 && x.ids.every(id => usable(byId(id)))) };
+  });
+  check("qualifier chalk batch: 200 by default at low noise (0.15), no leverage or rules; its lineups project above the kept pool's and own more (" + Math.round(chk.ownC) + "% vs " + Math.round(chk.ownK) + "%)",
+        chk.def === 200 && chk.noise === 0.15 && chk.n >= 30 && chk.legal && chk.projC > chk.projK && chk.ownC > chk.ownK, JSON.stringify(chk));
+  const bankN0 = await pg.evaluate(() => ({ n: BANK.lineups.length, keep: CUT && CUT.keep ? CUT.keep.length : null }));
+  const mnQ = await pg.evaluate(() => { const v = $("maxNight").value; $("maxNight").value = ""; QUAL_CHALK_N = 60; return v; });   // the fixture's 15-entry night: the cap can shut the qualifier out
   await pg.click("#pfRun");
   await pg.waitForFunction(() => /Portfolios from|failed/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
-  await pg.evaluate(v => { $("maxNight").value = v; }, mnQ);
+  await pg.evaluate(v => { $("maxNight").value = v; QUAL_CHALK_N = 200; }, mnQ);
   const qf = await pg.evaluate(() => {
     const q = slate.contests.find(c => String(c.id) === "197873655"), m = slate.contests.find(c => String(c.id) === "197791874"), F = fieldOf();
     const stat = (document.querySelector('#profList .prow[data-cid="197873655"] .pstat') || {}).textContent || "", nm = (document.querySelector('#profList .prow[data-cid="197873655"] .pname') || {}).textContent || "";
     const fq = fieldFor(q), fm = fieldFor(m), dup = fq.length - new Set(fq.map(L => L.slice().sort().join())).size;
     return { prof: profileOf(q), wta: JSON.stringify(q.payouts) === JSON.stringify([[1, 1, q.prizes]]), n: (PF["197873655"] || []).length, size: fq.length === fm.length,
              medQ: fieldOwnMedian(fq), medM: fieldOwnMedian(fm), dup, stat, nm, pstats: PROF_STATS["197873655"],
-             msg: (document.getElementById("cutStatus").textContent.match(/Qualifier Satellite \[[^;]*/) || [""])[0], ns: entriesN()["197873655"] };
+             msg: (document.getElementById("cutStatus").textContent.match(/Qualifier Satellite \[[^;]*/) || [""])[0], ns: entriesN()["197873655"],
+             note: ($("profQual") || {}).textContent || "", inBank: (PF["197873655"] || []).filter(bi => (BANK.tags[bi] || []).includes("Qualifier chalk")).length,
+             chalkKept: (PF["197873655"] || []).filter(bi => (BANK.tags[bi] || []).includes("Qualifier chalk") && CUT && CUT.keep.includes(bi)).length,
+             cut: !!(CUT && CUT.keep), bankN: BANK.lineups.length, keepN: CUT && CUT.keep ? CUT.keep.length : null };
   });
-  check("qualifier: winner-take-all (one ticket to 1st, no 'assumed'), simulated against the chalk field (the slate's field reweighted to its top fifth by DraftKings average: a higher own-sum median, repeated lineups), its lineups' own sum shown against that median",
+  check("qualifier: winner-take-all (one ticket to 1st), simulated against the chalk field (the slate's field reweighted to its top fifth by DraftKings average: a higher own-sum median, repeated lineups); Max ROI from the chalk batch and the kept pool; its lineups' own sum against that median, P(1st), and where they came from; a chosen chalk lineup joins the bank, not the kept pool, the cut kept; the assumed-style note",
         qf.prof === "qualifier" && qf.wta && qf.n === 2 && qf.size && qf.medQ > qf.medM && qf.dup > 0 && /winner-take-all \(1 ticket\)/.test(qf.nm) && !/assumed/.test(qf.nm) &&
-        /^Own sum \d+% \/ \d+% vs the chalk field's median \d+%$/.test(qf.stat), JSON.stringify(qf));
+        /^Own sum \d+% \/ \d+% vs the chalk field's median \d+% · P\(1st\) \d+\.\d% \(fresh nights, in-sim\) · \d from the chalk batch, \d from the kept pool$/.test(qf.stat) &&
+        qf.pstats.chalk + qf.pstats.kept === 2 && qf.inBank === qf.pstats.chalk && qf.chalkKept === 0 && qf.cut && qf.keepN === bankN0.keep && qf.bankN === bankN0.n + qf.pstats.chalk &&
+        /^The qualifier field is an assumed chalk style until field_users\.csv has enough real qualifier fields to refit it/.test(qf.note), JSON.stringify(qf));
   // the bank's test toggle on an idea row: one tap marks it (kept with the bank), another clears it
   const tt = await pg.evaluate(g => {
     showStep("bank"); renderBank();
@@ -1552,7 +1568,7 @@ function audit(name, L, o) {
   // the Swap step: the flagship's contest first
   const soP = await pg.evaluate(() => swapFlagFirst([{ name: "contest-standings-197791874.csv" }, { name: "contest-standings-197791877.csv" }, { name: "contest-standings-197791872.csv" }], f => swapCid(f.name)).map(f => swapCid(f.name)));
   check("swap step: the flagship profile's contests first in the order (the rest as they were)", JSON.stringify(soP) === JSON.stringify(["197791877", "197791872", "197791874"]), JSON.stringify(soP));
-  await pg.evaluate(b => { BANK.test = {}; bankSaveState(); Object.keys(b.keep).forEach(cid => { const i = document.querySelector('#entriesBox input[data-cid="' + cid + '"]'); if (i) i.value = b.keep[cid]; }); PF = JSON.parse(b.pf); pfSave(); renderEntries(); }, blk0);
+  await pg.evaluate(b => { BANK.test = {}; BANK.lineups.length = b.bankN; BANK.tags.length = b.bankN; delete BANK.tagRules["Qualifier chalk"]; if (CUT) { CUT.bankN = b.bankN; cutSave(); } bankSaveState(); renderBank(); Object.keys(b.keep).forEach(cid => { const i = document.querySelector('#entriesBox input[data-cid="' + cid + '"]'); if (i) i.value = b.keep[cid]; }); PF = JSON.parse(b.pf); pfSave(); renderEntries(); }, blk0);
   await pg.fill("#maxUse", blk0.maxUse);
   await pg.fill("#maxUse", "1");
 

@@ -1,0 +1,47 @@
+{
+ "stats": {
+  "own": [
+   201.79999999999998,
+   208.50000000000003
+  ],
+  "fieldMed": 308.8,
+  "chalk": 0,
+  "kept": 2,
+  "p1": 0.181,
+  "ev": 27.15,
+  "batch": 171,
+  "bestChalk": 23,
+  "bestKept": 23.25
+ },
+ "tags": [
+  [
+   "salary ≥ 49000 + no McIver + at least 2 of Krivas, Booth, Watts, Harper + at least 3 of Byrd, Hightower, Harper, Lewis, Alston, Jennings L0 U0"
+  ],
+  [
+   "salary ≥ 49000 + no McIver L0 U0"
+  ]
+ ],
+ "note": "King of the Bracket Qualifier Satellite [Qualifier (max ROI, chalk field)]: 2 of 2, own sum 202% / 209% vs the field's median 309%, P(1st) 18.1% (fresh nights), 0 from the chalk batch and 2 from the kept pool (the batch: 171 lineups the pool lacked, the best alone $23.00 against the kept pool's best $23.25), largest core Krivas / Harper / Buckner in 1 (50%) (expected back $28.10 on $22.00, one cashes in 19% of nights). Review any one below. Load the entries file to export them.",
+ "lineups": [
+  [
+   "Motiejus Krivas 23%",
+   "Blake Harper 26%",
+   "Ace Buckner 34%",
+   "Nyk Lewis 13%",
+   "Torey Alston 37%",
+   "Carey Booth 39%",
+   "Josh Pascarelli 19%",
+   "Gavin Hightower 11%"
+  ],
+  [
+   "Ivan Kharchenkov 41%",
+   "Caleb Holt 18%",
+   "Blake Harper 26%",
+   "Torey Alston 37%",
+   "Derek Dixon 14%",
+   "Liutauras Lelevicius 46%",
+   "Tyler Betsey 15%",
+   "Gavin Hightower 11%"
+  ]
+ ]
+}

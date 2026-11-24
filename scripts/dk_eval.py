@@ -104,7 +104,11 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             scan's top third against its bottom third, and team stacks by their tile verdict
   fieldusers analysis/cbb/dk/field_users.csv (capture only, 2026-11-24): each graded small contest's (the qualifier profile:
             10-30 entries, or a qualifier / satellite under 100) users: entries, distinct lineups, mean summed and per-player
-            projected ownership, mean players under 5% projected. Nothing reads it yet.
+            projected ownership, mean players under 5% projected. Nothing reads it yet. Nightly runs it.
+  qualcheck the count of real qualifier fields in field_users.csv against QUAL_REFIT_AT (10): the DK page's qualifier field
+            is an assumed chalk style until then (fill_profiles_2026-11-24.md, the refit plan)
+  flagjoint analysis/cbb/dk/flagship_joint.csv, nightly: each saved build's flagships filled together (joint top-1%
+            coverage, the DK page's flagship profile) against each alone, in-sim on fresh nights; a row per new build
   calweek   for the owner's choice at the freeze: ours, DraftKings' average and the 50/50 blend over the calibration
             week's graded nights (CAL_WEEK), by salary band, and the nights each had the lowest average miss
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
@@ -460,6 +464,11 @@ def nightly(a):
                 w.writerows(rows)
     if not out:
         print("  DraftKings standings: nothing new to grade")
+    for step in (fieldusers, flagjoint):        # contest profiles (2026-11-24): the qualifier fields and the flagships' record
+        try:
+            step(a)
+        except Exception as e:      # noqa: BLE001 (a side record; the grading above stands)
+            print("  %s: skipped (%s)" % (step.__name__, e))
 
 
 def tiles_at_lock(mirror, date, g):
@@ -2886,6 +2895,29 @@ def fieldusers(a):
         w.writeheader()
         w.writerows(out)
     print("%d user rows from %d small contests to %s" % (len(out), len({r["contest_id"] for r in out}), FIELD_USERS))
+    qualcheck(a)
+
+
+QUAL_REFIT_AT = 10      # real qualifier fields captured before the DK page's assumed chalk field (QUAL_CHALK) is refit
+
+
+def qualcheck(a=None):
+    """How many real qualifier fields field_users.csv holds (contests named qualifier / satellite): the DK page's
+    qualifier field is an assumed chalk style (QUAL_CHALK 0.8) until QUAL_REFIT_AT of them are in; then refit it
+    (fill_profiles_2026-11-24.md, the refit plan)."""
+    rows = read(FIELD_USERS)
+    q = sorted({r["contest_id"] for r in rows if re.search(r"qualifier|satellite", r.get("contest") or "", re.I)})
+    users = sum(1 for r in rows if r["contest_id"] in q)
+    print("  qualifier fields captured: %d of %d for the chalk-field refit (%d user rows)%s"
+          % (len(q), QUAL_REFIT_AT, users, "; REFIT DUE: fill_profiles_2026-11-24.md has the plan" if len(q) >= QUAL_REFIT_AT else ""))
+
+
+def flagjoint(a):
+    """The flagships filled together (the DK page's flagship profile, joint top-1% coverage) against each alone, for
+    every saved build not yet logged: a row each in analysis/cbb/dk/flagship_joint.csv (scripts/dk_flagship_compare.py;
+    in-sim, scored on fresh nights). Run by nightly, so it accrues."""
+    import dk_flagship_compare as fcmp
+    fcmp.run(Mirror(a.mirror))
 
 
 def main():
@@ -2924,11 +2956,14 @@ def main():
     fc.add_argument("--mirror", required=True)
     fu = sub.add_parser("fieldusers")
     fu.add_argument("--mirror", required=True)
+    sub.add_parser("qualcheck")
+    fj = sub.add_parser("flagjoint")
+    fj.add_argument("--mirror", required=True)
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "flagjoint": flagjoint}[a.cmd](a)
 
 
 if __name__ == "__main__":
