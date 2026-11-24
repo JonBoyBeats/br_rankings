@@ -76,7 +76,7 @@ a.contests.forEach(c => {
         const B = DKSwap.board({ ids, nights: NT, started: st, base: b.base, left: b.left, lineups, mine, draws, table: c.table });
         // the simulated cash line per night: a second pass over the board's totals is not exposed, so rebuilt here the
         // same way (started at base + rest x share left, hidden full; a field entry's hidden part cycled by night)
-        const lines = [];
+        const lines = [], TOT = [], SRT = [];
         if (kind === "ours") {
           for (let s = 0; s < a.S; s++) {
             const tot = new Float64Array(N);
@@ -88,7 +88,32 @@ a.contests.forEach(c => {
               tot[e] = x;
             });
             const srt = Array.from(tot).sort((x, y) => y - x); lines.push(srt[Math.min(paid, N) - 1]);
+            if (v.name === "page" && a.haircuts) { TOT.push(tot); SRT.push(srt); }
           }
+        }
+        // the selection haircut (2026-11-24, analysis only): our entries' simulated totals lowered by flat points, or by
+        // a share of how far their simulated mean sits above the contest's, then placed among the same nights' totals
+        if (v.name === "page" && a.haircuts && TOT.length) {
+          const mE = new Float64Array(N);
+          TOT.forEach(t => { for (let e = 0; e < N; e++) mE[e] += t[e] / TOT.length; });
+          const mAll = mE.reduce((t, x) => t + x, 0) / N, T1 = Math.max(1, Math.ceil(0.01 * N));
+          want.forEach(e => {
+            const ex = mE[e] - mAll;
+            a.haircuts.forEach(h => {
+              const cut = (h.flat || 0) + (h.scale || 0) * Math.max(0, ex);
+              let c1 = 0, t1 = 0, pay = 0;
+              for (let s = 0; s < TOT.length; s++) {
+                const x = TOT[s][e] - cut, row = SRT[s];        // descending
+                let lo = 0, hi = N; while (lo < hi) { const mid = (lo + hi) >> 1; if (row[mid] > x) lo = mid + 1; else hi = mid; }
+                const place = 1 + lo - (TOT[s][e] > x ? 1 : 0);
+                if (place <= T1) t1++;
+                if (place <= paid) c1++;
+                pay += c.table[place] || 0;
+              }
+              out.push({ variant: "hc", hc: h.name, cid: c.id, k: b.k, e, kind: "hc", top1: t1 / TOT.length, cash: c1 / TOT.length, ev: pay / TOT.length,
+                         excess: ex, rank: c.entries[e].rank, points: c.entries[e].points });
+            });
+          });
         }
         const lm = lines.length ? lines.reduce((t, x) => t + x, 0) / lines.length : null;
         const lsd = lines.length ? Math.sqrt(lines.reduce((t, x) => t + (x - lm) * (x - lm), 0) / lines.length) : null;

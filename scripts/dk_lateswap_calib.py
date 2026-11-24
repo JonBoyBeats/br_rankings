@@ -29,6 +29,7 @@ NIGHTS = [("2026-11-16", "156660"), ("2026-11-17", "156663"), ("2026-11-18", "15
 BACKTEST = {"156660", "156663", "157033", "157138", "157139"}          # the 2026-11-21 backtest's five
 VARIANTS = [{"name": "page", "s": 1.0}, {"name": "x1.25", "s": 1.25}, {"name": "x1.5", "s": 1.5}, {"name": "x2", "s": 2.0},
             {"name": "corr", "s": 1.0, "corr": {"team": 0.2, "game": 0.1}}]
+HAIRCUTS = [{"name": "flat %g" % f, "flat": f} for f in (0, 1, 2, 3, 4, 6, 8)] + [{"name": "scaled %g" % k, "scale": k} for k in (0.25, 0.5, 0.75, 1.0)]
 CASH_B = [(0, 20), (20, 50), (50, 80), (80, 95), (95, 100.01)]
 TOP_B = [(0, 5), (5, 20), (20, 50), (50, 100.01)]
 
@@ -73,7 +74,7 @@ def run_slate(sl, cs, S_, sample, cache):
         breaks.append({"k": k + 1, "at": sl["tips"][k + 1], "started": started, "base": base, "left": left})
     with tempfile.TemporaryDirectory() as d:
         a, b = os.path.join(d, "in.json"), os.path.join(d, "out.json")
-        json.dump({"rows": rows, "cards": cards, "own": sl["own"], "z": sl["z"], "S": S_, "seed": int(sl["g"]), "variants": VARIANTS,
+        json.dump({"rows": rows, "cards": cards, "own": sl["own"], "z": sl["z"], "S": S_, "seed": int(sl["g"]), "variants": VARIANTS, "haircuts": HAIRCUTS,
                    "contests": cs, "breaks": breaks}, open(a, "w"))
         subprocess.run(["node", os.path.join(HERE, "dk_lateswap_calib.js"), a, b], check=True)
         res = json.load(open(b))
@@ -199,9 +200,10 @@ def write(path, res, add):
            "figures are fine. A variance multiplier is not worth putting on the page on this evidence. The fix that would address the cause is a haircut on our own "
            "entries (their lineups' simulated points shrunk toward the field's view, e.g. by the ~%.1f-point mean miss), to be tested held out before any page change." %
            (eo[0] / eo[1] if eo[1] else 0, round(100 * (S.mean(r["cash"] for r in mid) - S.mean(r["real_cash"] for r in mid))), -miss(ours)),
-           "- **A data gap the page shares:** the widest misses are late breaks where a started player has no ESPN id on his card (2026-11-19 main: Malique Ewin, 44.5 "
-           "DraftKings points, counted 0 so far with almost no game left). The page's live points (dk_swap.js liveState) map players the same way, so such a player reads "
-           "0 there too.",
+           "- **A data gap, now fixed:** the widest misses in the first run were late breaks where a started player had no ESPN id on his card (2026-11-19 main: "
+           "Malique Ewin, 44.5 DraftKings points, counted 0 so far with almost no game left). The page's live points and this study now find such a player by "
+           "name in the game's box score (dk_swap.js liveState, 8886226), and the Swap tab names any started player still unmatched. These tables are after the fix; "
+           "it changed only 2026-11-19 main, and took the share of final totals outside the 5–95% band from 16.9% to 14.2%.",
            "- **2026-11-24 is not in yet:** the sync repo holds its late-swap standings from mid-slate only (time remaining and hidden slots). Once the final standings "
            "are saved to analysis/cbb/dk/standings/, add it with `python3 scripts/dk_lateswap_calib.py --add 2026-11-24:157024`.",
            "- **Thin sample:** %d nights; three of them (11-16, 11-21, 11-22) hold 1–4 of our entries, and a few big cashes decide the payout totals." % len(slates), ""]
