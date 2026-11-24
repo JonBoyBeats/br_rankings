@@ -1973,28 +1973,28 @@ function audit(name, L, o) {
     };
     const after = s => { const pf = JSON.parse(JSON.stringify(PF)); pf[s.cid] = s.out == null ? (pf[s.cid] || []).concat([s.inn]) : pf[s.cid].map(bi => bi === s.out ? s.inn : bi); return pf; };
     const worse = s => { const v0 = viol(PF), v1 = viol(after(s)); return Object.keys(v1).filter(k => v1[k] > (v0[k] || 0)); };
-    document.getElementById("swapOpen").click();
-    for (let t = 0; t < 600 && SWAP.list == null && !/Set the rule|No kept|No swap|failed/.test($("swapBox").textContent); t++) await new Promise(r => setTimeout(r, 100));
-    const off = (SWAP.list || []).map(s => ({ brk: s.brk.length, worse: worse(s), hasHot: BANK.lineups[s.inn].ids.includes(hot), outHot: s.out != null && BANK.lineups[s.out].ids.includes(hot) }));
-    const rowsOff = document.querySelectorAll("#swapBox .swr").length, boldHot = [...document.querySelectorAll("#swapBox .swr b")].some(b => b.textContent === shortName(byId(roomy).name));
+    document.getElementById("swinOpen").click();
+    for (let t = 0; t < 600 && SWIN.list == null && !/Set the rule|No kept|No swap|failed/.test($("swinBox").textContent); t++) await new Promise(r => setTimeout(r, 100));
+    const off = (SWIN.list || []).map(s => ({ brk: s.brk.length, worse: worse(s), hasHot: BANK.lineups[s.inn].ids.includes(hot), outHot: s.out != null && BANK.lineups[s.out].ids.includes(hot) }));
+    const rowsOff = document.querySelectorAll("#swinBox .swr").length, boldHot = [...document.querySelectorAll("#swinBox .swr b")].some(b => b.textContent === shortName(byId(roomy).name));
     $("maxNight").value = String(Math.max(1, Math.floor(100 * used[hot] / nightEntries())));     // second pass: tonight's most-held player at the night cap
-    const offHot = (await (async () => { [...$("rtList").options].forEach(o => { o.selected = false; }); rtSet([hot], 1); await swapFind();     // the at-cap player, Break cap off
-      return (SWAP.list || []).map(s => ({ brk: s.brk.length, worse: worse(s), hasHot: BANK.lineups[s.inn].ids.includes(hot), outHot: s.out != null && BANK.lineups[s.out].ids.includes(hot) })); })());
-    document.getElementById("swapBreak").click();       // Break cap on: re-runs
-    for (let t = 0; t < 600 && !(SWAP.brk && SWAP.list != null) && !/No swap|failed/.test($("swapBox").textContent); t++) await new Promise(r => setTimeout(r, 100));
-    const on = (SWAP.list || []).map(s => ({ brk: s.brk, worse: worse(s).length, outHot: s.out != null && BANK.lineups[s.out].ids.includes(hot) }));
+    const offHot = (await (async () => { [...$("rtList").options].forEach(o => { o.selected = false; }); rtSet([hot], 1); await swinFind();     // the at-cap player, Break cap off
+      return (SWIN.list || []).map(s => ({ brk: s.brk.length, worse: worse(s), hasHot: BANK.lineups[s.inn].ids.includes(hot), outHot: s.out != null && BANK.lineups[s.out].ids.includes(hot) })); })());
+    document.getElementById("swinBreak").click();       // Break cap on: re-runs
+    for (let t = 0; t < 600 && !(SWIN.brk && SWIN.list != null) && !/No swap|failed/.test($("swinBox").textContent); t++) await new Promise(r => setTimeout(r, 100));
+    const on = (SWIN.list || []).map(s => ({ brk: s.brk, worse: worse(s).length, outHot: s.out != null && BANK.lineups[s.out].ids.includes(hot) }));
     const named = on.filter(s => !s.outHot).every(s => s.brk.some(b => b === shortName(byId(hot).name) + " night " + $("maxNight").value + "%"));
-    const shown = [...document.querySelectorAll("#swapBox .swr")].map(x => x.textContent);
+    const shown = [...document.querySelectorAll("#swinBox .swr")].map(x => x.textContent);
     // apply the first, then undo
-    const snap = JSON.stringify(PF), s0 = SWAP.list && SWAP.list[0];
-    document.querySelector("#swapBox .swapApply") && document.querySelector("#swapBox .swapApply").click();
-    const applied = !!s0 && PF[s0.cid].includes(s0.inn) && (s0.out == null || !PF[s0.cid].includes(s0.out)) && JSON.stringify(PF) !== snap && !document.getElementById("swapUndo").disabled;
+    const snap = JSON.stringify(PF), s0 = SWIN.list && SWIN.list[0];
+    document.querySelector("#swinBox .swinApply") && document.querySelector("#swinBox .swinApply").click();
+    const applied = !!s0 && PF[s0.cid].includes(s0.inn) && (s0.out == null || !PF[s0.cid].includes(s0.out)) && JSON.stringify(PF) !== snap && !document.getElementById("swinUndo").disabled;
     const stored = !!s0 && JSON.stringify(store("dkcbb-pf:" + slate.draft_group_id)) === JSON.stringify(PF);
-    document.getElementById("swapUndo").click();
-    const back = JSON.stringify(PF) === snap && JSON.stringify(store("dkcbb-pf:" + slate.draft_group_id)) === snap && document.getElementById("swapUndo").disabled;
-    SWAP.brk = false; $("maxNight").value = mn0;
+    document.getElementById("swinUndo").click();
+    const back = JSON.stringify(PF) === snap && JSON.stringify(store("dkcbb-pf:" + slate.draft_group_id)) === snap && document.getElementById("swinUndo").disabled;
+    SWIN.brk = false; $("maxNight").value = mn0;
     [...$("rtList").options].forEach(o => { o.selected = sel0.includes(o.value); }); $("rtType").value = type0; rtChips();
-    return { box: $("swapBox").textContent.slice(0, 300), hot: shortName(byId(hot).name), roomy: shortName(byId(roomy).name), off, offHot, rowsOff, boldHot, on: on.length, named, shown: shown.slice(0, 2), applied, stored, back, rule: SWAP.rule && SWAP.rule.label };
+    return { box: $("swinBox").textContent.slice(0, 300), hot: shortName(byId(hot).name), roomy: shortName(byId(roomy).name), off, offHot, rowsOff, boldHot, on: on.length, named, shown: shown.slice(0, 2), applied, stored, back, rule: SWIN.rule && SWIN.rule.label };
   });
   check("swap one in: with Break cap off, the best (up to 5) swaps across the night, none leaving a contest over a cap it wasn't over (contest, night, Min unique, Max contests per lineup); the at-cap player comes in only by taking him out; the rule's players in bold",
         swp.off.length > 0 && swp.off.concat(swp.offHot).every(x => x.brk === 0 && x.worse.length === 0) && swp.offHot.every(x => !x.hasHot || x.outHot) &&
@@ -2002,6 +2002,9 @@ function audit(name, L, o) {
   check("swap one in: Break cap lists the swaps that break one, each naming the cap (\"<player> night <n>%\"), with EV and ROI change",
         swp.on > 0 && swp.named && swp.shown.every(t => /→ .+ · EV [+-]\$[\d,]+\.\d\d/.test(t)), JSON.stringify(swp));
   check("swap one in: Apply puts the lineup in (saved), Undo restores the exact portfolios", swp.applied && swp.stored && swp.back, JSON.stringify(swp));
+  check("swap one in keeps clear of Late swap: one #swapBox (in the Swap step), Late swap's SWAP state intact",
+        await pg.evaluate(() => document.querySelectorAll("#swapBox").length === 1 && !!document.getElementById("swapBox").closest("#stepSwap") &&
+          Array.isArray(SWAP.stand) && "use" in SWAP && !("brk" in SWAP) && !!document.getElementById("swinBox").closest("#stepFill")));
   await pg.evaluate(p => { PF = JSON.parse(p); pfSave(); renderEntries(); review(BP.review); }, pf0);
   // the Players list under the lineups: this contest's and tonight's exposure, the room under the binding cap
   const nb_pp = await pg.evaluate(() => {
@@ -2197,11 +2200,11 @@ function audit(name, L, o) {
   const mobFill = await pg.evaluate(async () => {
     const st0 = OPEN_STEP, nb0 = NB.on; showStep("fill"); document.getElementById("fillSet").open = true; if (!nb0) nbSet(true);
     let rm = null; if (NB.on && BP && BP.review) { if (BP.b.picked.length >= BP.o.n) { rm = BP.b.picked[0]; BP.b.remove(rm); bpRescore(); } nbRender(); }
-    swapRender("phone check"); await new Promise(r => requestAnimationFrame(r));
+    swinRender("phone check"); await new Promise(r => requestAnimationFrame(r));
     const right = id => { const e = document.getElementById(id); return e && !e.hidden ? Math.round(e.getBoundingClientRect().right) : null; };
-    const r = { page: document.documentElement.scrollWidth, guide: right("nbGuide"), swap: right("swapBox"), top: document.getElementById("autoTopUp").getBoundingClientRect().right };
+    const r = { page: document.documentElement.scrollWidth, guide: right("nbGuide"), swap: right("swinBox"), top: document.getElementById("autoTopUp").getBoundingClientRect().right };
     if (rm != null) { BP.b.add(rm); bpRescore(); nbRender(); }
-    $("swapBox").hidden = true; document.getElementById("fillSet").open = false; if (!nb0) nbSet(false); showStep(st0);
+    $("swinBox").hidden = true; document.getElementById("fillSet").open = false; if (!nb0) nbSet(false); showStep(st0);
     return r;
   });
   check("phone (390px): the guide, the swap box and the Auto top-up setting fit without sideways page scroll",
