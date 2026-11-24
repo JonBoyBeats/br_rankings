@@ -3608,7 +3608,42 @@ function stackQuick(game) {
       var tag = stackTag(game, s[0], s[1], s[2]);
       return '<button type="button" data-shape="' + s[1] + "+" + s[2] + '" data-game="' + esc(game) + '" data-a="' + esc(s[0]) + '" data-x="' + s[1] + '" data-y="' + s[2] + '" aria-pressed="' + !!(cur && cur.stackq.tag === tag) +
         '" title="Adds two draw rules: ' + s[1] + "+ from " + esc(s[0]) + ", " + s[2] + "+ from the other side; draws are tagged " + esc(tag) + '">' + (s[1] === s[2] ? s[1] + "+" + s[2] : esc(s[0]) + " " + s[1] + "+" + s[2]) + "</button>";
-    }).join("") + '<span class="mut" id="stackMsg">' + (stackMsgText.indexOf(game + "|") === 0 ? esc(stackMsgText.slice(game.length + 1)) : "") + "</span></div>";
+    }).join("") + '<span class="mut" id="stackMsg">' + (stackMsgText.indexOf(game + "|") === 0 ? esc(stackMsgText.slice(game.length + 1)) : "") + "</span></div>" + gameFloorRow(game);
+}
+/* Per-game floors (2026-11-24, the operator): Clear floors takes this game's Min% off (scan-set and typed alike) and
+   holds them, so a bank of this game draws free of them; Restore floors puts the held values back into boxes still
+   empty (anything typed since stays). Max% caps are not touched. Held per game in state.gameFloors. */
+function gameIds(game) { var g = String(game || "").split("@"); return g.length === 2 ? teamIds(g[0]).concat(teamIds(g[1])) : []; }
+function gameFloorRow(game) {
+  var held = state.gameFloors && state.gameFloors[game], nh = held ? Object.keys(held.floor).length : 0;
+  var n = gameIds(game).filter(function (id) { return state.floor[id] != null && state.floor[id] !== ""; }).length;
+  if (!n && !nh) return "";
+  return '<div class="stackq gfloor"><b>Floors</b>' +
+    (n ? '<button type="button" class="gfClear" data-game="' + esc(game) + '" title="Takes this game\'s ' + n + " Min% floor" + (n === 1 ? "" : "s") + ' off (scan-set and typed) and holds them for Restore; Max% caps stay">Clear this game (' + n + ")</button>" : "") +
+    (nh ? '<button type="button" class="gfRestore" data-game="' + esc(game) + '" title="Puts the ' + nh + ' held Min% floor' + (nh === 1 ? "" : "s") + ' back (boxes you have typed in since are left alone)">Restore floors (' + nh + ")</button>" : "") + "</div>";
+}
+function gameFloorsClear(game) {
+  state.gameFloors = state.gameFloors || {};
+  var held = state.gameFloors[game] || { floor: {}, scan: {} }, n = 0;
+  gameIds(game).forEach(function (id) {
+    if (state.floor[id] == null || state.floor[id] === "") return;
+    held.floor[id] = state.floor[id];
+    if (byScan("floor", id)) held.scan[id] = state.scanSet.floor[id];
+    delete state.floor[id]; if (state.scanSet && state.scanSet.floor) delete state.scanSet.floor[id]; n++;
+  });
+  state.gameFloors[game] = held; save(); renderRules(); renderPlayers();
+  return n ? "Cleared " + n + " Min% floor" + (n === 1 ? "" : "s") + " in " + game + "; Restore floors puts them back." : "No Min% floors in " + game + ".";
+}
+function gameFloorsRestore(game) {
+  var held = state.gameFloors && state.gameFloors[game]; if (!held) return "Nothing held for " + game + ".";
+  var n = 0, kept = 0;
+  Object.keys(held.floor).forEach(function (id) {
+    if (state.floor[id] != null && state.floor[id] !== "") { kept++; return; }
+    state.floor[id] = held.floor[id]; n++;
+    if (held.scan[id]) { state.scanSet = state.scanSet || { floor: {}, cap: {} }; state.scanSet.floor[id] = held.scan[id]; }
+  });
+  delete state.gameFloors[game]; save(); renderRules(); renderPlayers();
+  return "Restored " + n + " Min% floor" + (n === 1 ? "" : "s") + " in " + game + (kept ? "; " + kept + " box" + (kept === 1 ? "" : "es") + " typed in since left as is" : "") + ".";
 }
 function stackApply(game, a, x, y) {
   var tag = stackTag(game, a, x, y), had = (state.rules || []).filter(function (r) { return r.stackq && r.stackq.game === game; });
@@ -4823,6 +4858,8 @@ $("teamPanel").addEventListener("click", function (e) {
     togglePool(wc.dataset.id); return;
   }
   if (e.target.closest(".scanlink")) { e.preventDefault(); $("scanBox").open = true; $("scanBox").scrollIntoView({ block: "start" }); return; }
+  var gf = e.target.closest(".gfClear, .gfRestore");
+  if (gf) { stackMsgText = gf.dataset.game + "|" + (gf.classList.contains("gfClear") ? gameFloorsClear : gameFloorsRestore)(gf.dataset.game); renderTeamPanel(); return; }
   var sq = e.target.closest(".stackq button[data-shape]");
   if (sq) { stackMsgText = sq.dataset.game + "|" + stackApply(sq.dataset.game, sq.dataset.a, +sq.dataset.x, +sq.dataset.y); renderTeamPanel(); return; }
   var b = e.target.closest(".tile button[data-act]");

@@ -2047,6 +2047,31 @@ function audit(name, L, o) {
   });
   check("stack quick buttons: each game offers 2+1 either side, 2+2, 3+2 either side; a click adds n from one team and m from the other, names the batch STACK <game> <shape>, replaces that game's earlier shape, and the draw obeys it",
         sq.btns.length === 5 && sq.one && sq.tagOk && sq.pressed && sq.repl && sq.drawn && sq.saved && sq.gone && sq.toggled, JSON.stringify(sq));
+  // per-game floors (2026-11-24): Clear this game holds the game's Min% (scan-set and typed) and empties them;
+  // Restore floors puts them back (the scan marker too) where the box is still empty; other games and Max% untouched
+  const gfl = await pg.evaluate(() => {
+    const fl0 = JSON.stringify(state.floor), cap0 = JSON.stringify(state.cap), ss0 = JSON.stringify(state.scanSet);
+    const g = rows.find(r => r.game && r.game.indexOf("@") > 0 && usable(r)).game, [A, H] = g.split("@");
+    const inG = rows.filter(r => r.game === g && usable(r)), other = rows.find(r => r.game && r.game !== g && usable(r));
+    const a = inG[0].id, b = inG[1].id, c = inG[2].id;
+    state.floor = { [a]: 20, [b]: 15, [other.id]: 10 }; state.cap = { [c]: 5 };
+    state.scanSet = { floor: { [a]: { v: 20, note: "core 1.1x" } }, cap: {} };
+    save(); view.panel = A; view.pside = A; renderTiles(); renderPlayers(); renderTeamPanel();
+    const btn = document.querySelector("#teamPanel .gfClear"), label = btn && btn.textContent;
+    btn.click();
+    const cleared = state.floor[a] == null && state.floor[b] == null && state.floor[other.id] === 10 && state.cap[c] === 5 && !byScan("floor", a);
+    const held = state.gameFloors[g] && state.gameFloors[g].floor[a] === 20 && state.gameFloors[g].floor[b] === 15;
+    const rb = document.querySelector("#teamPanel .gfRestore"), rlabel = rb && rb.textContent, noClear = !document.querySelector("#teamPanel .gfClear");
+    state.floor[b] = 30; save();                // typed in since: Restore leaves it
+    rb.click();
+    const back = state.floor[a] === 20 && state.floor[b] === 30 && !!byScan("floor", a) && !state.gameFloors[g] && !document.querySelector("#teamPanel .gfRestore");
+    const msg = document.getElementById("stackMsg").textContent;
+    state.floor = JSON.parse(fl0); state.cap = JSON.parse(cap0); state.scanSet = JSON.parse(ss0); delete state.gameFloors;
+    save(); view.panel = null; renderTiles(); renderPlayers(); renderTeamPanel();
+    return { g, label, cleared, held, rlabel, noClear, back, msg };
+  });
+  check("per-game floors: Clear this game empties and holds the game's Min% (scan and typed; caps and other games stay); Restore puts them back, the scan mark too, leaving boxes typed in since",
+        /Clear this game \(2\)/.test(gfl.label) && gfl.cleared && gfl.held && /Restore floors \(2\)/.test(gfl.rlabel) && gfl.noClear && gfl.back && /Restored 1 .*1 box typed/.test(gfl.msg), JSON.stringify(gfl));
   // --- the builder on one screen ---------------------------------------------------------------------
   dialogs = [];
   await pg.fill("#maxUse", "3"); await pg.fill("#maxNight", "60");
