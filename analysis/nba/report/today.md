@@ -146,7 +146,7 @@ Verdict: you were on the right side of 2 of these 5 (over the field where his ho
 
 **Your Q moves.** Afternoon: Harden ahead of Embiid, hurt by 1; Afternoon: Castle ahead of Embiid, helped by 22; Afternoon: Booker ahead of Embiid, helped by 19; Afternoon: Randle ahead of Siakam, hurt by 1.
 
-**Today's Questionable players.** PJ Washington (T5 on the ladders, 49% to play): if he sits, Daniel Gafford, Naji Marshall, Zaccharie Risacher.
+**Today's Questionable players.** PJ Washington (T5 on the ladders, 47% to play): if he sits, Daniel Gafford, Naji Marshall, Caleb Martin.
 
 ## Back page
 
