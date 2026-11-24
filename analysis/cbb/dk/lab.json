@@ -1,0 +1,305 @@
+{
+  "registered": "2026-11-24",
+  "about": "The shadow lab (2026-11-24, the operator's approval): pre-registered experiments graded on real results, with no entries needed. Every kept lineup of a saved bank (entered or not) gets its real finish percentile in each of the slate's graded contests; an experiment's treatment lineups are compared to its control lineups from the SAME slate and contest (paired). Written by scripts/dk_eval.py lab (run by ideas, nightly); the definitions below are fixed before the first counted slate and only 'results' is rewritten.",
+  "method": {
+    "unit": "a slate (draft group) with a saved bank, a record and at least one graded contest of LAB_MIN_ENTRIES (100) entries or more; a slate on or after the experiment's registration date counts toward its planned nights, earlier slates are a look-back only",
+    "lineups": "the bank's kept lineups (final), entered or not; a lineup drawn under several tags counts for each of them (the ideas grade's shared-lineup credit)",
+    "finish_percentile": "100 x (contest entries - real entries scoring more than the lineup) / contest entries: the share of the real field the lineup beats or ties, on the night's real points (the standings' FPTS, else the record's)",
+    "top10": "the lineup's place (1 + real entries scoring more) within the contest's top 10% (ceil(0.1 x entries))",
+    "paired_difference": "per contest: mean finish percentile of the treatment lineups minus that of the control lineups; per slate: the equal-weight mean over its contests (the primary metric). Top-10% rates are reported the same way, as a secondary",
+    "noise": "SE of the nightly paired differences: their sample standard deviation / sqrt(nights)",
+    "pass_bar": "after the planned nights: treatment ahead (slate difference > 0) on at least 7 of the 10 AND the pooled difference (the mean of the 10 slate differences) above 2 x noise. Verdict on the first 10 counted slates; later slates are shown but do not change it",
+    "ahead": "slate paired difference > 0"
+  },
+  "experiments": [
+    {
+      "id": "a",
+      "name": "STACK vs the plain game-group tags",
+      "treatment": "kept lineups with a tag naming a quick stack: STACK <AWAY@HOME> <shape> (the DK page's stack quick buttons)",
+      "control": "kept lineups with no STACK tag whose tag's saved rules require 2+ players from one game's teams that a STACK lineup that slate stacked (a min rule with n >= 2 over players of that game only: the team tiles' Min 2/3 and Stack with buttons, a scan team or game stack, a hand rule)",
+      "primary_metric": "mean real finish percentile difference (treatment - control), paired by slate and contest; top-10% rate shown",
+      "planned_nights": 10,
+      "pass": {
+        "ahead_nights": 7,
+        "of": 10,
+        "pooled_over_noise": 2
+      },
+      "registered": "2026-11-24",
+      "results": {
+        "arms": {
+          "all": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": []
+          }
+        }
+      }
+    },
+    {
+      "id": "b",
+      "name": "Scan floors vs group rules",
+      "treatment": "kept lineups with a tag containing SCANFLOOR (drawn while Set floors from scan was on)",
+      "control": "kept lineups with no SCANFLOOR tag whose tag's saved rules hold a group rule: 'at least N of <players>' (template 5, the focus button, a scan team's Bank this)",
+      "primary_metric": "mean real finish percentile difference (treatment - control), paired by slate and contest; top-10% rate shown",
+      "planned_nights": 10,
+      "pass": {
+        "ahead_nights": 7,
+        "of": 10,
+        "pooled_over_noise": 2
+      },
+      "registered": "2026-11-24",
+      "results": {
+        "arms": {
+          "all": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": []
+          }
+        }
+      }
+    },
+    {
+      "id": "c",
+      "name": "Draw the 9 cells vs L0 U0",
+      "treatment": "each L x U cell other than L0 U0, separately: kept lineups tagged '<idea> L<lev> U<under>'",
+      "control": "kept lineups tagged '<idea> L0 U0' for the same idea (only ideas that have both the cell and L0 U0 that slate)",
+      "primary_metric": "mean real finish percentile difference (cell - L0 U0), paired by slate and contest; top-10% rate shown; one scoreboard row per cell",
+      "planned_nights": 10,
+      "pass": {
+        "ahead_nights": 7,
+        "of": 10,
+        "pooled_over_noise": 2
+      },
+      "registered": "2026-11-24",
+      "results": {
+        "arms": {
+          "L0 U1": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 580,
+                "c_n": 543,
+                "diff": -3.63,
+                "top10_diff": -0.0139,
+                "t_pct": 56.06,
+                "c_pct": 59.69
+              }
+            ]
+          },
+          "L0 U2": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 454,
+                "c_n": 543,
+                "diff": -3.26,
+                "top10_diff": 0.0029,
+                "t_pct": 56.43,
+                "c_pct": 59.69
+              }
+            ]
+          },
+          "L0.1 U0": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 184,
+                "c_n": 539,
+                "diff": -0.37,
+                "top10_diff": -0.0164,
+                "t_pct": 59.63,
+                "c_pct": 60.0
+              }
+            ]
+          },
+          "L0.1 U1": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 170,
+                "c_n": 535,
+                "diff": -2.28,
+                "top10_diff": 0.0083,
+                "t_pct": 57.78,
+                "c_pct": 60.06
+              }
+            ]
+          },
+          "L0.1 U2": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 144,
+                "c_n": 539,
+                "diff": -2.38,
+                "top10_diff": 0.0054,
+                "t_pct": 57.62,
+                "c_pct": 60.0
+              }
+            ]
+          },
+          "L0.2 U0": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 34,
+                "c_n": 294,
+                "diff": -6.54,
+                "top10_diff": -0.0332,
+                "t_pct": 58.1,
+                "c_pct": 64.64
+              }
+            ]
+          },
+          "L0.2 U1": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 23,
+                "c_n": 232,
+                "diff": -6.49,
+                "top10_diff": -0.0308,
+                "t_pct": 52.6,
+                "c_pct": 59.1
+              }
+            ]
+          },
+          "L0.2 U2": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 20,
+                "c_n": 202,
+                "diff": -1.85,
+                "top10_diff": 0.0517,
+                "t_pct": 59.63,
+                "c_pct": 61.47
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "updated_at": "2026-11-24T13:38:25Z"
+}

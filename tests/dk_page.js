@@ -100,8 +100,23 @@ function audit(name, L, o) {
     { pattern: "blue bloods", status: "emerging", ratio: 1.2, player_nights: 90, nights: 4, same_direction: "3 of 4" }] }) }));
   await pg.route(/field_fit\.json/, r => r.fulfill({ contentType: "application/json", body: JSON.stringify({ nights: ["a", "b"], bands: {
     Large: { contests: 3, dup: { real: 13.4, sim: 7.03 }, punt: { real: 7.32, sim: 21.29 } }, Small: { contests: 0 } } }) }));
+  // the shadow lab's scoreboard (2026-11-24): one decided experiment, one running with a look-back, one Draw the 9 cell
+  const labDoc = { registered: "2026-11-24", updated_at: "2026-12-06T12:00:00Z", experiments: [
+    { id: "a", name: "STACK vs the plain game-group tags", planned_nights: 10, results: { arms: { all: { nights: 10, planned: 10, diff: 4.21, noise: 1.3, ahead: 8, behind: 2, top10_diff: 0.031, verdict: "pass", lookback: [] } } } },
+    { id: "b", name: "Scan floors vs group rules", planned_nights: 10, results: { arms: { all: { nights: 3, planned: 10, diff: -1.5, noise: 2.2, ahead: 1, behind: 2, top10_diff: -0.01, verdict: "running", lookback: [] } } } },
+    { id: "c", name: "Draw the 9 cells vs L0 U0", planned_nights: 10, results: { arms: { "L0.1 U1": { nights: 0, planned: 10, diff: null, noise: null, ahead: 0, behind: 0, top10_diff: null, verdict: "running",
+      lookback: [{ date: "2026-11-20", diff: -2.28, t_n: 170, c_n: 535 }] } } } }] };
+  await pg.route(/lab\.json/, r => r.fulfill({ contentType: "application/json", body: JSON.stringify(labDoc) }));
   await pg.goto("file://" + path.join(ROOT, "dk.html"));
   await pg.waitForSelector(".row");
+  await pg.waitForFunction(() => /experiments/.test(document.getElementById("labSum").textContent), null, { timeout: 20000 });
+  const lab = await pg.evaluate(() => ({ sum: $("labSum").textContent, rows: [...document.querySelectorAll("#labTable tr")].slice(1).map(tr => [...tr.cells].map(td => td.textContent.replace(/[\s\u00a0]+/g, " ").trim()).join(" | ")),
+    inBank: !!document.getElementById("labBox").closest("#stepBank"), none: (renderLab(null), $("labSum").textContent) }));
+  await pg.evaluate(d => renderLab(d), labDoc);
+  check("shadow lab scoreboard: one row per experiment (a cell per Draw the 9 cell under its heading), slates of planned, the paired difference with its noise, ahead / behind, top-10% difference, verdict, the look-back marked; in the Bank step",
+        lab.inBank && /3 experiments, 3 scoreboard rows, 1 decided · graded 2026-12-06/.test(lab.sum) && lab.rows.length === 4 &&
+        lab.rows[0] === "a. STACK vs the plain game-group tags | 10/10 | +4.2 ±1.3 | 8 / 2 | +3.1 | pass" && lab.rows[1] === "b. Scan floors vs group rules | 3/10 | -1.5 ±2.2 | 1 / 2 | -1.0 | running" &&
+        lab.rows[2] === "c. Draw the 9 cells vs L0 U0" && lab.rows[3] === "L0.1 U1look-back 11-20 -2.3 (170 vs 535) | 0/10 | – | – | – | running" && /no scoreboard yet/.test(lab.none), JSON.stringify(lab));
   // Auto top-up (on by default) breaks caps on purpose; the fill tests below check the fill's own caps, so it is off
   // for them and on only where its own tests (and Finish for me) run
   const tuDefaultOn = await pg.evaluate(() => { const x = document.getElementById("autoTopUp"), on = x.defaultChecked && x.checked; x.checked = false; x.dispatchEvent(new Event("change")); return on; });

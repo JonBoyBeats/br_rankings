@@ -80,6 +80,10 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             the idea's banked lineups and of its entered ones, and where the entered set falls among RANDOM_SETS random
             sets of its size from the idea's own banked lineups. The readout groups ideas by kind (idea_kind: "2+ from
             a team", "game stack 3", "locks", ...) across nights, since a night's tags name its own teams.
+  lab       the shadow lab (2026-11-24), run by ideas: the experiments registered in analysis/cbb/dk/lab.json graded on
+            each saved bank's kept lineups (entered or not): real finish percentile per graded contest of 100+ entries,
+            treatment against control on the same slate and contest, slate by slate; lab.json's results (the DK page's
+            Lab scoreboard) and lab_eval.csv rewritten whole. Slates before registration are a look-back only.
   fieldcheck analysis/cbb/dk/field_eval.csv, nightly: the simulated field (the mirror's dk_cbb_field.json before lock)
             against each graded contest's real field, size-matched (both sampled to the smaller of the two, 1,000 at
             most, 20 draws): the share of entries holding a lineup another user also entered (the simulated field's
@@ -1344,6 +1348,10 @@ def ideas(a):
             w = csv.DictWriter(f, fieldnames=IDEA_COLS)
             w.writeheader()
             w.writerows(out)
+    try:            # the shadow lab (2026-11-24): its experiments on the same banks, paired against their controls
+        lab(a)
+    except Exception as e:      # noqa: BLE001 (a side record; the ideas grade above stands)
+        print("  lab: skipped (%s)" % e)
 
 
 def print_ideas():
@@ -2925,6 +2933,160 @@ def flagjoint(a):
     fcmp.run(Mirror(a.mirror))
 
 
+# The shadow lab (2026-11-24, the operator): pre-registered experiments graded on real results, no entries needed.
+# analysis/cbb/dk/lab.json holds the registry (fixed before the first counted slate) and the results this rewrites;
+# lab_eval.csv the per-slate, per-contest rows. Run by ideas (nightly) and on its own (lab).
+LAB = os.path.join(DK, "lab.json")
+LAB_EVAL = os.path.join(DK, "lab_eval.csv")
+LAB_COLS = ["date", "draft_group", "experiment", "arm", "counted", "contest_id", "contest", "entries", "t_n", "c_n", "t_pct", "c_pct", "diff",
+            "t_top10", "c_top10", "top10_diff"]
+LAB_MIN_ENTRIES = 100
+STACK_RE = re.compile(r"STACK (\S+@\S+) (\d\+\d)")
+DRAW9_RE = re.compile(r"^(.*) (L[\d.]+ U\d+)$")
+GROUP_RE = re.compile(r"(^|: )at least \d+ of ", re.I)
+
+
+def lab_arms(b, team):
+    """{(experiment, arm): (treatment indices, control indices)} among the bank's kept lineups. arm is "" for a and b,
+    the cell ("L0.1 U1") for c."""
+    tags = [set(t) if isinstance(t, list) else {t} for t in b["tags"]]
+    kept = sorted(set(b["final"])) if b.get("final") else list(range(len(b["pool"])))
+    st = b.get("tag_settings") or {}
+    out = {}
+    # a: STACK vs the plain game-group tags of the same games
+    games = {m.group(1) for k in kept for t in tags[k] for m in [STACK_RE.search(t)] if m}
+    if games:
+        teams_of = {g: set(g.split("@")) for g in games}
+
+        def game_group(tag):
+            for r in (st.get(tag) or {}).get("conds") or []:
+                ids = r.get("ids") or []
+                ts = {team.get(str(i)) for i in ids}
+                if r.get("type") == "min" and (r.get("n") or 0) >= 2 and not r.get("stackq") and ids and any(ts <= teams_of[g] for g in games):
+                    return True
+            return False
+        T = [k for k in kept if any(STACK_RE.search(t) for t in tags[k])]
+        C = [k for k in kept if not any(STACK_RE.search(t) for t in tags[k]) and any(game_group(t) for t in tags[k])]
+        out[("a", "")] = (T, C)
+    # b: SCANFLOOR vs group rules
+    T = [k for k in kept if any("SCANFLOOR" in t for t in tags[k])]
+    if T:
+        grp = lambda tag: any(GROUP_RE.search(r.get("label") or "") for r in (st.get(tag) or {}).get("conds") or [] if r.get("type") == "min")
+        C = [k for k in kept if not any("SCANFLOOR" in t for t in tags[k]) and any(grp(t) for t in tags[k])]
+        out[("b", "")] = (T, C)
+    # c: each Draw the 9 cell vs the same idea's L0 U0
+    cells = defaultdict(lambda: defaultdict(set))         # cell -> idea -> kept indices
+    for k in kept:
+        for t in tags[k]:
+            m = DRAW9_RE.match(t)
+            if m:
+                cells[m.group(2)][m.group(1)].add(k)
+    base = cells.get("L0 U0") or {}
+    for cell, by in cells.items():
+        if cell == "L0 U0":
+            continue
+        ideas = [i for i in by if i in base]
+        if ideas:
+            out[("c", cell)] = (sorted(set().union(*(by[i] for i in ideas))), sorted(set().union(*(base[i] for i in ideas))))
+    return out
+
+
+def lab_summary(nights, planned, bar):
+    """The scoreboard numbers for a list of slate differences (oldest first): verdict on the first `planned`."""
+    d = [n["diff"] for n in nights]
+    first = d[:planned]
+    mean = S.mean(first) if first else None
+    se = S.stdev(first) / math.sqrt(len(first)) if len(first) >= 2 else None
+    ahead = sum(x > 0 for x in first)
+    res = {"nights": len(d), "counted_for_verdict": len(first), "planned": planned, "diff": round(mean, 2) if mean is not None else None,
+           "noise": round(se, 2) if se is not None else None, "ahead": ahead, "behind": sum(x < 0 for x in first),
+           "top10_diff": round(S.mean(n["top10_diff"] for n in nights[:planned]), 4) if nights else None, "verdict": "running"}
+    if len(first) >= planned:
+        ok = ahead >= bar["ahead_nights"] and se is not None and mean > bar["pooled_over_noise"] * se
+        res["verdict"] = "pass" if ok else "fail"
+    return res
+
+
+def lab(a=None):
+    """Grade the registered experiments (lab.json) on every saved bank with real results; rewrite lab.json's results
+    and lab_eval.csv. Slates before an experiment's registration are a look-back, shown but not counted."""
+    reg = json.load(open(LAB))
+    banks = {}
+    for f in sorted(glob.glob(os.path.join(BUILDS, "dk_bank_*.json"))):
+        b = json.load(open(f))
+        g = str(b.get("draft_group"))
+        if b.get("pool") and b.get("tags") and (g not in banks or (b.get("saved_at") or "") >= (banks[g].get("saved_at") or "")):
+            banks[g] = b
+    contests = defaultdict(dict)
+    for r in read(EVAL):
+        contests[str(r["draft_group"])][r["contest_id"]] = r["contest"]
+    rows, nights = [], defaultdict(list)          # (experiment, arm) -> [{date, draft_group, counted, diff, top10_diff, ...}]
+    for g, b in sorted(banks.items(), key=lambda kv: (kv[1].get("day") or "", kv[0])):
+        rec = read(os.path.join(DK, "%s_%s.csv" % (b["day"], g)))
+        if not rec:
+            continue
+        team = {r["dk_id"]: r["team"] for r in rec}
+        arms = {k: v for k, v in lab_arms(b, team).items() if v[0] and v[1]}
+        if not arms:
+            continue
+        per = defaultdict(list)
+        for cid, cname in sorted(contests.get(g, {}).items()):
+            path = os.path.join(STANDINGS, "contest-standings-%s.csv" % cid)
+            if not os.path.exists(path):
+                continue
+            entries, players = standings(path)
+            n = len(entries)
+            if n < LAB_MIN_ENTRIES:
+                continue
+            pts = night_points(rec, players)
+            field = sorted((e["points"] for e in entries), reverse=True)
+            top10 = math.ceil(0.1 * n)
+            score = {}
+
+            def fin(k):
+                if k not in score:
+                    p = placed(sum(pts.get(str(i)) or 0 for i in b["pool"][k]), field)
+                    score[k] = (100.0 * (n - (p - 1)) / n, p <= top10)
+                return score[k]
+            for (ex, arm), (T, C) in arms.items():
+                tp, cp = [fin(k)[0] for k in T], [fin(k)[0] for k in C]
+                tt, ct = sum(fin(k)[1] for k in T) / len(T), sum(fin(k)[1] for k in C) / len(C)
+                row = {"date": b["day"], "draft_group": g, "experiment": ex, "arm": arm, "contest_id": cid, "contest": cname, "entries": n,
+                       "t_n": len(T), "c_n": len(C), "t_pct": round(S.mean(tp), 3), "c_pct": round(S.mean(cp), 3),
+                       "diff": round(S.mean(tp) - S.mean(cp), 3), "t_top10": round(tt, 4), "c_top10": round(ct, 4), "top10_diff": round(tt - ct, 4)}
+                per[(ex, arm)].append(row)
+        regd = {e["id"]: e for e in reg["experiments"]}
+        for key, rs in per.items():
+            counted = b["day"] >= regd[key[0]]["registered"]
+            for r in rs:
+                r["counted"] = int(counted)
+            rows.extend(rs)
+            nights[key].append({"date": b["day"], "draft_group": g, "counted": counted, "contests": len(rs), "t_n": rs[0]["t_n"], "c_n": rs[0]["c_n"],
+                                "diff": round(S.mean(r["diff"] for r in rs), 2), "top10_diff": round(S.mean(r["top10_diff"] for r in rs), 4),
+                                "t_pct": round(S.mean(r["t_pct"] for r in rs), 2), "c_pct": round(S.mean(r["c_pct"] for r in rs), 2)})
+    for e in reg["experiments"]:
+        keys = sorted(k for k in nights if k[0] == e["id"])
+        arms = {}
+        for k in keys or ([(e["id"], "")] if e["id"] != "c" else []):
+            ns = nights.get(k, [])
+            cnt = [x for x in ns if x["counted"]]
+            arms[k[1] or "all"] = dict(lab_summary(cnt, e["planned_nights"], e["pass"]), slates=cnt, lookback=[x for x in ns if not x["counted"]])
+        e["results"] = {"arms": arms}
+    reg["updated_at"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    with open(LAB, "w") as f:
+        json.dump(reg, f, indent=2)
+        f.write("\n")
+    with open(LAB_EVAL, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=LAB_COLS, lineterminator="\n")
+        w.writeheader()
+        w.writerows(rows)
+    for e in reg["experiments"]:
+        for arm, r in e["results"]["arms"].items():
+            print("  lab %s%s: %d of %d slates, diff %s ± %s, ahead %d / behind %d, %s; look-back %d slate%s" % (
+                e["id"], "" if arm == "all" else " " + arm, r["nights"], r["planned"], r["diff"], r["noise"], r["ahead"], r["behind"], r["verdict"],
+                len(r["lookback"]), "" if len(r["lookback"]) == 1 else "s"))
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -2962,13 +3124,14 @@ def main():
     fu = sub.add_parser("fieldusers")
     fu.add_argument("--mirror", required=True)
     sub.add_parser("qualcheck")
+    sub.add_parser("lab")
     fj = sub.add_parser("flagjoint")
     fj.add_argument("--mirror", required=True)
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "flagjoint": flagjoint}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "flagjoint": flagjoint, "lab": lab}[a.cmd](a)
 
 
 if __name__ == "__main__":

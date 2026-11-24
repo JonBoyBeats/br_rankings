@@ -441,6 +441,7 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
 
   <div class="note" id="bankCheck" style="margin:2px 0 6px"></div>
   <div id="bankBox"></div>
+  <details class="news" id="labBox"><summary id="labSum"><b>Lab</b>: loading…</summary><div id="labBody"></div></details>
   <div class="opts" style="padding:2px 0"><button type="button" id="bankClear" title="Empties this slate's bank (asks first)">Clear bank</button>
     <button type="button" id="clearOld" title="Removes other slates' saved banks, cuts, portfolios, entries and scans from this browser (asks first; today's slates, unlocked ones and this one stay)">Clear old slates</button></div>
   <div class="note" style="margin:0 0 4px">Closing the tab after a slate is what frees the page's memory; Save build is the durable copy (Load build restores it).</div>
@@ -633,6 +634,7 @@ var doc = null, slate = null, rows = [], state = null, news = [], newsUnsourced 
 var teamsDoc = null, ruleCounts = {}, editing = -1;
 var GATE = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/gate.json";
 var OWN_WATCH = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/own_watch.json";   // B3 (dk_eval.py ownwatch)
+var LAB_URL = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/lab.json";        // dk_eval.py lab, nightly (the shadow lab)
 var FIELD_FIT = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/field_fit.json";     // scripts/dk_field_fit.py, nightly
 var view = { pos: "all", team: "", q: "", sort: "value", dir: -1, panel: null };
 
@@ -960,6 +962,9 @@ async function load() {
     $("ownWatch").textContent = conf.length ? "Ownership watch, confirmed (information only; acting on one is a Friday-review call): " + conf.map(function (p) {
       return p.pattern + " real/projected x" + p.ratio + " (" + p.player_nights + " player-nights, " + p.nights + " nights, same way on " + p.same_direction + ")"; }).join("; ") : "";
   } catch (e) { $("ownWatch").hidden = true; }
+  try {      // the shadow lab's scoreboard (2026-11-24): display only
+    var lr = await fetch(LAB_URL + "?t=" + Date.now(), { cache: "no-store" }); renderLab(lr.ok ? await lr.json() : null);
+  } catch (e) { renderLab(null); }
   try {      // the field fit (2026-11-23 lock): real fields vs the simulated one at lock, by contest size; display only
     var ff = await fetch(FIELD_FIT + "?t=" + Date.now(), { cache: "no-store" }), fd = ff.ok ? await ff.json() : null;
     $("fieldFit").textContent = fieldFitText(fd); $("fieldFit").hidden = !$("fieldFit").textContent;
@@ -3609,6 +3614,38 @@ function stackApply(game, a, x, y) {
   state.rules = (state.rules || []).filter(function (r) { return !(r.stackq && r.stackq.game === game); });
   addRules(stackRulesOf(game, a, x, y)); renderTeamPanel();
   return "Added " + tag + (had.length ? " (in place of " + had[0].stackq.tag + ")" : "") + ": the next Draw & bank or Draw the 9 draws under it.";
+}
+
+/* The shadow lab's scoreboard (2026-11-24, the operator): analysis/cbb/dk/lab.json (dk_eval.py lab, nightly). Each
+   pre-registered experiment (one row per Draw the 9 cell): slates run of planned, the running paired difference in
+   real finish percentile (treatment - control, same slate and contest) +- its noise (SE of the slate differences),
+   slates ahead / behind, the top-10% rate difference, and the verdict once the planned slates are in (pass: ahead on
+   7 of 10 and the difference above 2 x noise). Slates before registration show as a look-back, not counted. */
+function renderLab(L) {
+  if (!L || !L.experiments) { $("labSum").innerHTML = "<b>Lab</b>: no scoreboard yet"; $("labBody").innerHTML = ""; return; }
+  var f = function (x, d) { return x == null ? "–" : (x > 0 ? "+" : "") + x.toFixed(d == null ? 1 : d); }, rowsL = [], run = 0, done = 0, lb = 0;
+  L.experiments.forEach(function (e) {
+    var arms = (e.results && e.results.arms) || {}, ks = Object.keys(arms).sort();
+    if (!ks.length) ks = [""];
+    ks.forEach(function (k) {
+      var r = arms[k] || { nights: 0, planned: e.planned_nights, verdict: "running", ahead: 0, behind: 0, lookback: [] }, back = r.lookback || [];
+      run++; if (r.verdict !== "running") done++; lb = Math.max(lb, back.length);
+      var lbTxt = back.length ? "look-back " + back.map(function (x) { return x.date.slice(5) + " " + f(x.diff) + " (" + x.t_n + " vs " + x.c_n + ")"; }).join("; ") : "";
+      var cell = k && k !== "all";
+      if (cell && k === ks[0]) rowsL.push('<tr><td colspan="6"><b>' + esc(e.id + ". " + e.name) + "</b></td></tr>");
+      rowsL.push("<tr><td>" + (cell ? "&nbsp;&nbsp;" + esc(k) : "<b>" + esc(e.id + ". " + e.name) + "</b>") + (lbTxt ? '<div class="mut" style="font-size:11px">' + esc(lbTxt) + "</div>" : "") +
+        '</td><td class="m">' + r.nights + "/" + (r.planned || e.planned_nights) + '</td><td class="m">' +
+        (r.diff == null ? "–" : f(r.diff) + (r.noise != null ? ' <span class="mut">±' + r.noise.toFixed(1) + "</span>" : "")) + '</td><td class="m">' + (r.nights ? r.ahead + " / " + r.behind : "–") +
+        '</td><td class="m">' + (r.top10_diff == null ? "–" : f(100 * r.top10_diff)) + "</td><td>" + (r.verdict === "pass" ? '<b style="color:var(--live)">pass</b>' : r.verdict === "fail" ? '<b class="bad">fail</b>' : "running") +
+        "</td></tr>");
+    });
+  });
+  $("labSum").innerHTML = "<b>Lab</b>: " + L.experiments.length + " experiments, " + run + " scoreboard row" + (run === 1 ? "" : "s") + (done ? ", " + done + " decided" : ", none decided yet") +
+    (L.updated_at ? ' <span class="mut">· graded ' + esc(L.updated_at.slice(0, 10)) + "</span>" : "");
+  $("labBody").innerHTML = '<div style="overflow:auto"><table class="contests" id="labTable"><tr><th>Experiment</th><th class="r">Slates</th><th class="r">Pct diff ± noise</th><th class="r">Ahead / behind</th><th class="r">Top 10% diff</th><th>Verdict</th></tr>' +
+    rowsL.join("") + "</table></div>" + '<div class="note">Treatment minus control, paired by slate and contest: each kept lineup’s real finish percentile (the share of the field it beat or tied), entered or not; a lineup drawn under several tags counts for each. ' +
+    "Pct diff: the mean of the slate differences, ± their SE; top 10% diff in points of rate. Pass bar, set at registration (" + esc(L.registered || "") + "): ahead on 7 of the 10 planned slates and the difference above 2 × noise. " +
+    "Slates before registration are a look-back only. Graded nightly from saved builds and standings (dk_eval.py lab).</div>";
 }
 
 nbSet(nbStored());
