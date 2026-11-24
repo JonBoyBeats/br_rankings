@@ -2982,6 +2982,14 @@ def lab_arms(b, team):
         hand = lambda tag: plain(tag) and any(GROUP_RE.search(r.get("label") or "") and not r.get("greens") for r in (st.get(tag) or {}).get("conds") or [] if r.get("type") == "min")
         C = [k for k in kept if not any("GREENS " in t for t in tags[k]) and any(hand(t) for t in tags[k])]
         out[("d", "")] = (T, C)
+    # e: the Variants step's lineups against their own parents (one to one) and against the rest of the top tenth
+    vm = lab_variants(b)
+    if vm and vm["variants"]:
+        pairs = [(v, p) for v, p in vm["parent"].items() if p is not None]
+        if pairs:
+            out[("e", "vs parents")] = ([v for v, _ in pairs], [p for _, p in pairs])
+        rest = [k for k in vm["top"] if k not in vm["variants"]]
+        out[("e", "vs rest of top tenth")] = (sorted(vm["variants"]), rest)
     # c: each Draw the 9 cell vs the same idea's L0 U0
     cells = defaultdict(lambda: defaultdict(set))         # cell -> idea -> kept indices
     for k in kept:
@@ -2997,6 +3005,51 @@ def lab_arms(b, team):
         if ideas:
             out[("c", cell)] = (sorted(set().union(*(by[i] for i in ideas))), sorted(set().union(*(base[i] for i in ideas))))
     return out
+
+
+VARIANT_RE = re.compile(r"^variant of #(\d+)$")
+
+
+def lab_top_tenth(b):
+    """The DK page's top tenth (topTenth): the cut's kept lineups (cut_state.keep, in keep order) ranked by the idea
+    board's sim value (cut_state.board.values, one per keep position), the best min(kept, max(10, ceil(10% of kept)));
+    bank indices. None without a saved board."""
+    cs = b.get("cut_state") or {}
+    keep, vals = cs.get("keep") or [], (cs.get("board") or {}).get("values") or []
+    if not keep or not vals:
+        return None
+    n = min(len(keep), max(10, math.ceil(0.1 * len(keep))))
+    ks = sorted((k for k in range(len(keep)) if k < len(vals) and vals[k] is not None), key=lambda k: -vals[k])[:n]
+    return [keep[k] for k in ks]
+
+
+def lab_variants(b):
+    """The Variants step's kept lineups and each one's parent (bank indices). The parent: the build's variant_of (stored
+    at creation from 2026-11-24), else the tag "variant of #N" read as the cut's keep position N (1-based; the keep only
+    grows by appending while variants are added), accepted only when that lineup shares at least the variant's kept
+    players (its tag settings' keptPlayers, default 5) and isn't itself; else None. Also the variant rounds run
+    (cut_state.variantRounds, None before it was recorded) and the top tenth."""
+    tags = [t if isinstance(t, list) else [t] for t in b["tags"]]
+    cs = b.get("cut_state") or {}
+    keep = cs.get("keep") or b.get("final") or []
+    kept = set(keep)
+    stored = {int(k): v for k, v in (b.get("variant_of") or {}).items()}
+    st = b.get("tag_settings") or {}
+    variants, parent = set(), {}
+    for i in kept:
+        m = next((VARIANT_RE.match(t) for t in tags[i] if VARIANT_RE.match(t)), None)
+        if not m:
+            continue
+        variants.add(i)
+        if i in stored:
+            parent[i] = stored[i]
+            continue
+        N, kp = int(m.group(1)), ((st.get(m.group(0)) or {}).get("variant") or {}).get("keptPlayers") or 5
+        p = keep[N - 1] if 0 < N <= len(keep) else None
+        parent[i] = p if p is not None and p != i and len(set(b["pool"][p]) & set(b["pool"][i])) >= kp else None
+    top = lab_top_tenth(b)
+    return {"variants": variants, "parent": parent, "top": top or [], "rounds": cs.get("variantRounds"), "stored": bool(stored),
+            "top_n": len(top or []), "top_variants": sum(1 for k in (top or []) if k in variants)}
 
 
 def lab_summary(nights, planned, bar):
@@ -3069,13 +3122,19 @@ def lab(a=None):
             for r in rs:
                 r["counted"] = int(counted)
             rows.extend(rs)
-            nights[key].append({"date": b["day"], "draft_group": g, "counted": counted, "contests": len(rs), "t_n": rs[0]["t_n"], "c_n": rs[0]["c_n"],
-                                "diff": round(S.mean(r["diff"] for r in rs), 2), "top10_diff": round(S.mean(r["top10_diff"] for r in rs), 4),
-                                "t_pct": round(S.mean(r["t_pct"] for r in rs), 2), "c_pct": round(S.mean(r["c_pct"] for r in rs), 2)})
+            night = {"date": b["day"], "draft_group": g, "counted": counted, "contests": len(rs), "t_n": rs[0]["t_n"], "c_n": rs[0]["c_n"],
+                     "diff": round(S.mean(r["diff"] for r in rs), 2), "top10_diff": round(S.mean(r["top10_diff"] for r in rs), 4),
+                     "t_pct": round(S.mean(r["t_pct"] for r in rs), 2), "c_pct": round(S.mean(r["c_pct"] for r in rs), 2)}
+            if key[0] == "e":           # the operator's working rule: one round a night, stop past about a quarter of the top tenth
+                vm = lab_variants(b)
+                night.update(rounds=vm["rounds"], variants_kept=len(vm["variants"]), top_tenth=vm["top_n"], top_tenth_variants=vm["top_variants"],
+                             top_tenth_share=round(vm["top_variants"] / vm["top_n"], 4) if vm["top_n"] else None,
+                             parent_link="stored" if vm["stored"] else "from the tag")
+            nights[key].append(night)
     for e in reg["experiments"]:
         keys = sorted(k for k in nights if k[0] == e["id"])
         arms = {}
-        for k in keys or ([(e["id"], "")] if e["id"] != "c" else []):
+        for k in keys or ([(e["id"], a) for a in e["arms"]] if e.get("arms") else [(e["id"], "")] if e["id"] != "c" else []):
             ns = nights.get(k, [])
             cnt = [x for x in ns if x["counted"]]
             arms[k[1] or "all"] = dict(lab_summary(cnt, e["planned_nights"], e["pass"]), slates=cnt, lookback=[x for x in ns if not x["counted"]])

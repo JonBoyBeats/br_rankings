@@ -332,7 +332,167 @@
           }
         }
       }
+    },
+    {
+      "id": "e",
+      "name": "Variants vs parents",
+      "treatment": "every kept lineup the cut's Variants of the top step made (tagged 'variant of #N', grouped Variants of the top)",
+      "control": "arm 'vs parents': each variant's own parent lineup, one to one (a parent with three variants counts three times); the parent from the build's variant_of (stored at creation from 2026-11-24), else the tag's #N read as the cut's keep position N, accepted only when it shares the variant's kept players (5 of 8 by default). Arm 'vs rest of top tenth': the top-tenth lineups that are not variants.",
+      "top_tenth": "as the DK page's topTenth: the cut's kept lineups ranked by the idea board's sim value (cut_state.board.values, recomputed after variants join), the best min(kept, max(10, ceil(10% of kept)))",
+      "arms": [
+        "vs parents",
+        "vs rest of top tenth"
+      ],
+      "per_night": "variant rounds run (cut_state.variantRounds; null before 2026-11-24), variants kept, top tenth size, variants in it and their share; the operator's working rule is one round a night, stopping past about a quarter of the top tenth",
+      "primary_metric": "mean real finish percentile difference (treatment - control), paired by slate and contest (100+ entries); top-10% rate shown; each arm judged on its own",
+      "planned_nights": 10,
+      "pass": {
+        "ahead_nights": 7,
+        "of": 10,
+        "pooled_over_noise": 2
+      },
+      "registered": "2026-11-24",
+      "results": {
+        "arms": {
+          "vs parents": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-19",
+                "draft_group": "157138",
+                "counted": false,
+                "contests": 4,
+                "t_n": 21,
+                "c_n": 21,
+                "diff": -6.66,
+                "top10_diff": 0.0476,
+                "t_pct": 59.53,
+                "c_pct": 66.19,
+                "rounds": null,
+                "variants_kept": 21,
+                "top_tenth": 0,
+                "top_tenth_variants": 0,
+                "top_tenth_share": null,
+                "parent_link": "from the tag"
+              },
+              {
+                "date": "2026-11-19",
+                "draft_group": "157139",
+                "counted": false,
+                "contests": 5,
+                "t_n": 97,
+                "c_n": 97,
+                "diff": 7.91,
+                "top10_diff": 0.0124,
+                "t_pct": 28.88,
+                "c_pct": 20.97,
+                "rounds": null,
+                "variants_kept": 97,
+                "top_tenth": 0,
+                "top_tenth_variants": 0,
+                "top_tenth_share": null,
+                "parent_link": "from the tag"
+              },
+              {
+                "date": "2026-11-20",
+                "draft_group": "157013",
+                "counted": false,
+                "contests": 5,
+                "t_n": 2,
+                "c_n": 2,
+                "diff": -17.86,
+                "top10_diff": 0.0,
+                "t_pct": 24.28,
+                "c_pct": 42.14,
+                "rounds": null,
+                "variants_kept": 4,
+                "top_tenth": 201,
+                "top_tenth_variants": 0,
+                "top_tenth_share": 0.0,
+                "parent_link": "from the tag"
+              },
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 278,
+                "c_n": 278,
+                "diff": -3.1,
+                "top10_diff": -0.0209,
+                "t_pct": 64.7,
+                "c_pct": 67.8,
+                "rounds": null,
+                "variants_kept": 278,
+                "top_tenth": 228,
+                "top_tenth_variants": 58,
+                "top_tenth_share": 0.2544,
+                "parent_link": "from the tag"
+              }
+            ]
+          },
+          "vs rest of top tenth": {
+            "nights": 0,
+            "counted_for_verdict": 0,
+            "planned": 10,
+            "diff": null,
+            "noise": null,
+            "ahead": 0,
+            "behind": 0,
+            "top10_diff": null,
+            "verdict": "running",
+            "slates": [],
+            "lookback": [
+              {
+                "date": "2026-11-20",
+                "draft_group": "157013",
+                "counted": false,
+                "contests": 5,
+                "t_n": 4,
+                "c_n": 201,
+                "diff": -11.34,
+                "top10_diff": 0.1306,
+                "t_pct": 40.1,
+                "c_pct": 51.45,
+                "rounds": null,
+                "variants_kept": 4,
+                "top_tenth": 201,
+                "top_tenth_variants": 0,
+                "top_tenth_share": 0.0,
+                "parent_link": "from the tag"
+              },
+              {
+                "date": "2026-11-20",
+                "draft_group": "157015",
+                "counted": false,
+                "contests": 5,
+                "t_n": 278,
+                "c_n": 170,
+                "diff": -1.58,
+                "top10_diff": 0.0129,
+                "t_pct": 64.7,
+                "c_pct": 66.28,
+                "rounds": null,
+                "variants_kept": 278,
+                "top_tenth": 228,
+                "top_tenth_variants": 58,
+                "top_tenth_share": 0.2544,
+                "parent_link": "from the tag"
+              }
+            ]
+          }
+        }
+      }
     }
   ],
-  "updated_at": "2026-11-24T17:21:15Z"
+  "updated_at": "2026-11-24T17:56:29Z"
 }

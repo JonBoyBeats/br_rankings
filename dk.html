@@ -2737,6 +2737,8 @@ function buildDoc() {
                           rules: state.rules || [], spread: spreadOf(state.rules), lock_fill: state.lockFill || "draws" },
               // for Load build (2026-11-20): each lineup's slots, the whole cut (rounds, values, variants) and the entry
               // counts per contest (never the entries file: its entry IDs stay out of a build)
+              // Lab e (2026-11-24): each variant's parent, bank index to bank index, stored when the Variants step made it
+              variant_of: BANK.lineups.reduce(function (o, L, i) { if (L.parent != null) o[i] = L.parent; return o; }, {}),
               slots: BANK.lineups.map(function (L) { return L.slots; }), cut_state: CUT && CUT.keep ? CUT : null, entries_n: entriesN() };
   return doc;
 }
@@ -2754,6 +2756,7 @@ function loadBuild(doc) {
   BANK = { lineups: doc.pool.map(function (ids, i) { ids = ids.map(String); return { ids: ids, slots: doc.slots && doc.slots[i] ? doc.slots[i].map(String) : DKSim.lateSlots(cx, ids) }; }),
            tags: (doc.tags || []).map(function (t) { return Array.isArray(t) ? t : [t]; }), tagRules: doc.tag_settings || {}, groups: doc.groups || {}, ruleLog: doc.rule_log || [], test: doc.test_ideas || {} };
   while (BANK.tags.length < BANK.lineups.length) BANK.tags.push([]);
+  Object.keys(doc.variant_of || {}).forEach(function (i) { if (BANK.lineups[+i]) BANK.lineups[+i].parent = +doc.variant_of[i]; });
   CUT = doc.cut_state ? doc.cut_state : doc.final ? { keep: doc.final, rounds: [], settings: doc.cut, board: doc.idea_board || null, auto: doc.auto_portfolios || null,
         contests: Object.keys(doc.entries_n || doc.portfolios || {}) } : null;
   if (CUT) CUT.bankN = BANK.lineups.length;
@@ -4659,10 +4662,11 @@ async function runVariants() {
     BANK.groups[tag] = "Variants of the top";
     BANK.tagRules[tag] = BANK.tagRules[tag] || { variant: { of: from[j], keptPlayers: K, each: M }, nightS: drawRules().nightS };
     CUT.keep.push(BANK.lineups.length);
-    BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice() }); BANK.tags.push([tag]); added++;
+    BANK.lineups.push({ ids: L.ids.slice(), slots: L.slots.slice(), parent: keep[from[j] - 1] }); BANK.tags.push([tag]); added++;      // parent: its bank index (Lab e)
   });
   CUT.bankN = BANK.lineups.length;
   CUT.variants = { top: N, each: M, keptPlayers: K, keepSets: $("varSets").value, drawn: vars.length, added: added };
+  CUT.variantRounds = (CUT.variantRounds || 0) + 1;         // rounds run on this cut (Lab e records them per night)
   $("cutStatus").textContent = "Scoring the kept lineups for the idea scoreboard…"; await tick();
   CUT.board = ideaBoard(cs, ns, S);
   bankSaveState(); cutSave(); PF = {}; pfSave(); renderBank(); renderEntries();

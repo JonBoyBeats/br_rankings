@@ -1768,7 +1768,7 @@ function audit(name, L, o) {
   // and fewer than 7 with any lineup kept before; those that join are in the kept pool, tagged and grouped
   const vr = await pg.evaluate(async () => {
     if (!CUT || !CUT.keep) return { skipped: true };
-    const keep0 = CUT.keep.slice(), n0 = BANK.lineups.length;
+    const keep0 = CUT.keep.slice(), n0 = BANK.lineups.length, r0 = CUT.variantRounds || 0;
     const def = { sets: $("varSets").value, M: $("varM").value, Mdis: $("varM").disabled, note: $("varSetsNote").textContent };
     document.getElementById("varN").value = "1"; document.getElementById("varK").value = "6"; varSetsSync();   // every 6-of-8 keep-set: 28 draws
     const six = { M: $("varM").value, note: $("varSetsNote").textContent };
@@ -1779,14 +1779,19 @@ function audit(name, L, o) {
     const near = added.every(i => keep0.every(k => sh(BANK.lineups[k].ids, BANK.lineups[i].ids) < 7));
     const parent = added.every(i => { const m = /variant of #(\d+)/.exec(BANK.tags[i][0]); return m && sh(BANK.lineups[keep0[+m[1] - 1]].ids, BANK.lineups[i].ids) >= 5; });
     const grouped = added.every(i => lineupGroup(i) === "Variants of the top");
+    // Lab e (2026-11-24): each variant's parent stored at creation (bank index, the tag's #N resolved) and in Save build; the round counted
+    const vo = buildDoc().variant_of, link = added.every(i => { const m = /variant of #(\d+)/.exec(BANK.tags[i][0]); return BANK.lineups[i].parent === keep0[+m[1] - 1] && vo[i] === keep0[+m[1] - 1]; }),
+          rounds = CUT.variantRounds === r0 + 1 && buildDoc().cut_state.variantRounds === r0 + 1;
     const row = document.querySelector('#ideaTable tr[data-idea="Variants of the top"]');
-    return { def, six, each: CUT.variants.each, ks: CUT.variants.keepSets, msg, added: added.length, bankGrew: BANK.lineups.length - n0, legal, near, parent, grouped, bankN: CUT.bankN === BANK.lineups.length, tierA: !!CUT.board.tierA,
+    return { def, six, each: CUT.variants.each, ks: CUT.variants.keepSets, msg, added: added.length, bankGrew: BANK.lineups.length - n0, legal, near, parent, grouped, link, rounds, bankN: CUT.bankN === BANK.lineups.length, tierA: !!CUT.board.tierA,
              res: document.getElementById("varResult").textContent, row: row ? [...row.cells].map(c => c.textContent) : null };
   });
   check("variants: the result line under the row (new, joined) and a Variants of the top row in the idea table, after the cut in Banked",
         new RegExp("^\\d+ new, " + vr.added + " joined$").test(vr.res || "") && vr.row && vr.row[1] === "after the cut" && +vr.row[3] === vr.added, JSON.stringify([vr.res, vr.row]));
   check("variants of the top: legal, near their parent (5+ of 8), none sharing 7+ with a kept lineup, in the kept pool, tagged and grouped; the scoreboard redone",
         !vr.skipped && vr.added === vr.bankGrew && vr.legal && vr.near && vr.parent && vr.grouped && vr.bankN && vr.tierA && vr.added > 0 && /^Variants of the top 1 by sim value /.test(vr.msg), JSON.stringify(vr));
+  check("variants (Lab e): each variant stores its parent's bank index at creation (the tag's #N), carried in Save build's variant_of; the cut counts the rounds run",
+        !vr.skipped && vr.added > 0 && vr.link && vr.rounds, JSON.stringify({ link: vr.link, rounds: vr.rounds, added: vr.added }));
   check("variants (C3): every K-of-8 keep-set is the default, 56 each at K 5 (Variants each follows K), and the run used every set once",
         vr.def && vr.def.sets === "all" && vr.def.M === "56" && vr.def.Mdis && vr.def.note === "Variants: every 5-of-8 keep-set, 56 each" &&
         vr.six.M === "28" && /every 6-of-8 keep-set, 28 each/.test(vr.six.note) && vr.each === 28 && vr.ks === "all" && /every keep-set, 28 draws each/.test(vr.msg), JSON.stringify(vr));
