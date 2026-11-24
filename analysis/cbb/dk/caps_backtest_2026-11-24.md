@@ -11,7 +11,7 @@ The operator's question, through the coordinator, was whether the caps help or j
 
 It then scores every set on real points against each contest's real entries. The owner's own entries are left out and ties are split.
 
-There are **7 nights**: 11-16, 11-17, 11-18, 11-19 early and main, 11-20 early and main. That is 33 contests and 381 seats. Every filled entry had standings.
+There are **7 nights**: 11-16, 11-17, 11-18, 11-19 early and main, 11-20 early and main. That is 32 contests and 381 seats. Every filled entry had standings.
 
 Each run used the current gate.json, or the build's gate where the build saved one. Per-night output is in `caps_backtest_2026-11-24/`.
 
