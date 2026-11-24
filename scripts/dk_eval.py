@@ -102,6 +102,9 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
   scan      analysis/cbb/dk/scan_eval.csv, nightly (log only): each saved slate scan's stacks against the night's real field
             (the baseline contest): the share of real entries holding each stack that reached the top 10% / top 1%, the
             scan's top third against its bottom third, and team stacks by their tile verdict
+  fieldusers analysis/cbb/dk/field_users.csv (capture only, 2026-11-24): each graded small contest's (the qualifier profile:
+            10-30 entries, or a qualifier / satellite under 100) users: entries, distinct lineups, mean summed and per-player
+            projected ownership, mean players under 5% projected. Nothing reads it yet.
   calweek   for the owner's choice at the freeze: ours, DraftKings' average and the 50/50 blend over the calibration
             week's graded nights (CAL_WEEK), by salary band, and the nights each had the lowest average miss
   readout   the monthly readout, not nightly: each rule set against "No extra rules" slate by slate (slates won
@@ -2832,6 +2835,59 @@ def swaps(a):
     print("%d rows to %s" % (len(rows), SWAP_GRADES))
 
 
+FIELD_USERS = os.path.join(DK, "field_users.csv")
+FIELD_USERS_COLS = ["date", "draft_group", "contest_id", "contest", "size", "user", "entries", "lineups",
+                    "own_sum", "own_avg", "sub5"]
+SUB5 = 5.0          # a player under this projected ownership (%) counts as leverage
+
+
+def small_contest(c):
+    """The qualifier profile's contests (2026-11-24, the contest profiles): 10-30 entries, or a qualifier / satellite
+    (ticket prizes) under 100 entries."""
+    size = int(num((c or {}).get("size")) or 0)
+    return 10 <= size <= 30 or (size < 100 and bool(re.search(r"qualifier|satellite", (c or {}).get("name") or "", re.I)))
+
+
+def fieldusers(a):
+    """Capture only (2026-11-24, the operator; nothing reads it yet): from each graded small contest's standings
+    (small_contest: the qualifiers), one row per user: entries, distinct lineups, the mean summed projected ownership
+    of their lineups (own_sum, chalk-follow) and per player (own_avg), and the mean count of players projected under
+    SUB5% (sub5, leverage). Projected ownership is the night record's own (the pipeline's, before lock). The owner's own
+    entries (USER) are left out. Rebuilt whole."""
+    mirror, out = Mirror(a.mirror), []
+    for path in sorted(glob.glob(os.path.join(STANDINGS, "contest-standings-*.csv"))):
+        cid = re.search(r"(\d+)\.csv$", path).group(1)
+        entries, _ = standings(path)
+        if not entries or len(entries) > 100:
+            continue
+        rows, slate, _ = slate_for(mirror, cid)
+        c = next((x for x in (slate or {}).get("contests") or [] if str(x.get("id")) == cid), None)
+        if not rows or not c or not small_contest(c):
+            continue
+        own = {}
+        for r in rows:
+            v = num(r.get("own"))
+            if v is not None:
+                own.setdefault(r["name"], v)
+        users = defaultdict(list)
+        for e in entries:
+            users[re.sub(r"\s*\(\d+/\d+\)$", "", e["name"]).strip()].append(lineup_names(e["lineup"]))
+        for u, lus in sorted(users.items()):
+            if u.lower() == USER:          # the field only: the owner's own entries are graded elsewhere
+                continue
+            sums = [sum(own.get(nm, 0.0) for nm in L) for L in lus if L]
+            subs = [sum(1 for nm in L if nm in own and own[nm] < SUB5) for L in lus if L]
+            n = max(1, len(sums))
+            out.append({"date": rows[0]["date"], "draft_group": rows[0]["draft_group"], "contest_id": cid, "contest": c.get("name"),
+                        "size": c.get("size"), "user": u, "entries": len(lus), "lineups": len({tuple(sorted(L)) for L in lus if L}),
+                        "own_sum": round(sum(sums) / n, 1), "own_avg": round(sum(sums) / n / 8, 2), "sub5": round(sum(subs) / n, 2)})
+    with open(FIELD_USERS, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=FIELD_USERS_COLS, lineterminator="\n")
+        w.writeheader()
+        w.writerows(out)
+    print("%d user rows from %d small contests to %s" % (len(out), len({r["contest_id"] for r in out}), FIELD_USERS))
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -2866,11 +2922,13 @@ def main():
     fl.add_argument("--mirror", required=True)
     fc = sub.add_parser("fieldcheck")
     fc.add_argument("--mirror", required=True)
+    fu = sub.add_parser("fieldusers")
+    fu.add_argument("--mirror", required=True)
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers}[a.cmd](a)
 
 
 if __name__ == "__main__":
