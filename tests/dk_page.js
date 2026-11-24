@@ -2032,19 +2032,19 @@ function audit(name, L, o) {
     save(); view.panel = A; view.pside = A; renderTiles(); renderPlayers(); renderTeamPanel();
     const btn = document.querySelector("#teamPanel .gfClear"), label = btn && btn.textContent;
     btn.click();
-    const cleared = state.floor[a] == null && state.floor[b] == null && state.floor[other.id] === 10 && state.cap[c] === 5 && !byScan("floor", a);
-    const held = state.gameFloors[g] && state.gameFloors[g].floor[a] === 20 && state.gameFloors[g].floor[b] === 15;
+    const cleared = state.floor[a] == null && state.floor[b] == null && state.floor[other.id] === 10 && state.cap[c] == null && !byScan("floor", a);
+    const held = state.gameFloors[g] && state.gameFloors[g].floor[a] === 20 && state.gameFloors[g].floor[b] === 15 && state.gameFloors[g].cap[c] === 5;
     const rb = document.querySelector("#teamPanel .gfRestore"), rlabel = rb && rb.textContent, noClear = !document.querySelector("#teamPanel .gfClear");
     state.floor[b] = 30; save();                // typed in since: Restore leaves it
     rb.click();
-    const back = state.floor[a] === 20 && state.floor[b] === 30 && !!byScan("floor", a) && !state.gameFloors[g] && !document.querySelector("#teamPanel .gfRestore");
+    const back = state.floor[a] === 20 && state.floor[b] === 30 && state.cap[c] === 5 && !!byScan("floor", a) && !state.gameFloors[g] && !document.querySelector("#teamPanel .gfRestore");
     const msg = document.getElementById("stackMsg").textContent;
     state.floor = JSON.parse(fl0); state.cap = JSON.parse(cap0); state.scanSet = JSON.parse(ss0); delete state.gameFloors;
     save(); view.panel = null; renderTiles(); renderPlayers(); renderTeamPanel();
     return { g, label, cleared, held, rlabel, noClear, back, msg };
   });
-  check("per-game floors: Clear this game empties and holds the game's Min% (scan and typed; caps and other games stay); Restore puts them back, the scan mark too, leaving boxes typed in since",
-        /Clear this game \(2\)/.test(gfl.label) && gfl.cleared && gfl.held && /Restore floors \(2\)/.test(gfl.rlabel) && gfl.noClear && gfl.back && /Restored 1 .*1 box typed/.test(gfl.msg), JSON.stringify(gfl));
+  check("per-game floors: Clear this game empties and holds the game's Min% and Max% (scan and typed; other games stay); Restore puts them back, the scan mark too, leaving boxes typed in since",
+        /Clear this game \(3\)/.test(gfl.label) && gfl.cleared && gfl.held && /Restore floors \(3\)/.test(gfl.rlabel) && gfl.noClear && gfl.back && /Restored 1 Min% and 1 Max%.*1 box typed/.test(gfl.msg), JSON.stringify(gfl));
   // checks (2026-11-24): boxes met per player in a game, badge + shading, sort, Set greens (GREENS <game>) beside Draw the 9
   const ckt = await pg.evaluate(() => {
     const keys = ["min_avg", "gp", "obpr", "bpr_rank", "dk_avg", "last5", "p_play", "status"], was = rows.map(r => keys.map(k => r[k]));

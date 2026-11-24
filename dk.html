@@ -3571,41 +3571,59 @@ function stackQuick(game) {
         '" title="Adds two draw rules: ' + s[1] + "+ from " + esc(s[0]) + ", " + s[2] + "+ from the other side; draws are tagged " + esc(tag) + '">' + (s[1] === s[2] ? s[1] + "+" + s[2] : esc(s[0]) + " " + s[1] + "+" + s[2]) + "</button>";
     }).join("") + '<span class="mut" id="stackMsg">' + (stackMsgText.indexOf(game + "|") === 0 ? esc(stackMsgText.slice(game.length + 1)) : "") + "</span></div>" + gameFloorRow(game) + checksRow(game);
 }
-/* Per-game floors (2026-11-24, the operator): Clear floors takes this game's Min% off (scan-set and typed alike) and
-   holds them, so a bank of this game draws free of them; Restore floors puts the held values back into boxes still
-   empty (anything typed since stays). Max% caps are not touched. Held per game in state.gameFloors. */
+/* Per-game floors (2026-11-24, the operator): Clear this game takes this game's Min% AND Max% off (scan-set and
+   typed alike: fade / skip caps included) and holds them, so a bank of this game draws free of them; Restore floors
+   puts the held values back into boxes still empty (anything typed since stays). Held per game in state.gameFloors
+   as { floor: {id: v}, cap: {id: v}, scan: { floor: {id: mark}, cap: {id: mark} } }. */
+var GF_KINDS = ["floor", "cap"];
 function gameIds(game) { var g = String(game || "").split("@"); return g.length === 2 ? teamIds(g[0]).concat(teamIds(g[1])) : []; }
+function gfHeld(game) {                // the held set, an earlier Min%-only one (scan marks by id) read as floors
+  var h = state.gameFloors && state.gameFloors[game]; if (!h) return null;
+  h.floor = h.floor || {}; h.cap = h.cap || {}; h.scan = h.scan || {};
+  if (!h.scan.floor && !h.scan.cap) h.scan = { floor: h.scan, cap: {} };
+  h.scan.floor = h.scan.floor || {}; h.scan.cap = h.scan.cap || {};
+  return h;
+}
+function gfCount(o) { return Object.keys(o.floor).length + Object.keys(o.cap).length; }
 function gameFloorRow(game) {
-  var held = state.gameFloors && state.gameFloors[game], nh = held ? Object.keys(held.floor).length : 0;
-  var n = gameIds(game).filter(function (id) { return state.floor[id] != null && state.floor[id] !== ""; }).length;
+  var held = gfHeld(game), nh = held ? gfCount(held) : 0, ids = gameIds(game);
+  var n = GF_KINDS.reduce(function (t, k) { return t + ids.filter(function (id) { return state[k][id] != null && state[k][id] !== ""; }).length; }, 0);
   if (!n && !nh) return "";
   return '<div class="stackq gfloor"><b>Floors</b>' +
-    (n ? '<button type="button" class="gfClear" data-game="' + esc(game) + '" title="Takes this game\'s ' + n + " Min% floor" + (n === 1 ? "" : "s") + ' off (scan-set and typed) and holds them for Restore; Max% caps stay">Clear this game (' + n + ")</button>" : "") +
-    (nh ? '<button type="button" class="gfRestore" data-game="' + esc(game) + '" title="Puts the ' + nh + ' held Min% floor' + (nh === 1 ? "" : "s") + ' back (boxes you have typed in since are left alone)">Restore floors (' + nh + ")</button>" : "") + "</div>";
+    (n ? '<button type="button" class="gfClear" data-game="' + esc(game) + '" title="Takes this game\'s ' + n + " Min% / Max% value" + (n === 1 ? "" : "s") + ' off (scan-set and typed, caps included) and holds them for Restore">Clear this game (' + n + ")</button>" : "") +
+    (nh ? '<button type="button" class="gfRestore" data-game="' + esc(game) + '" title="Puts the ' + nh + ' held Min% / Max% value' + (nh === 1 ? "" : "s") + ' back (boxes you have typed in since are left alone)">Restore floors (' + nh + ")</button>" : "") + "</div>";
 }
 function gameFloorsClear(game) {
   state.gameFloors = state.gameFloors || {};
-  var held = state.gameFloors[game] || { floor: {}, scan: {} }, n = 0;
+  var held = gfHeld(game) || { floor: {}, cap: {}, scan: { floor: {}, cap: {} } }, n = { floor: 0, cap: 0 };
+  state.scanSet = state.scanSet || { floor: {}, cap: {} };
   gameIds(game).forEach(function (id) {
-    if (state.floor[id] == null || state.floor[id] === "") return;
-    held.floor[id] = state.floor[id];
-    if (byScan("floor", id)) held.scan[id] = state.scanSet.floor[id];
-    delete state.floor[id]; if (state.scanSet && state.scanSet.floor) delete state.scanSet.floor[id]; n++;
+    GF_KINDS.forEach(function (k) {
+      if (state[k][id] == null || state[k][id] === "") return;
+      held[k][id] = state[k][id];
+      if (byScan(k, id)) held.scan[k][id] = state.scanSet[k][id];
+      delete state[k][id]; if (state.scanSet[k]) delete state.scanSet[k][id]; n[k]++;
+    });
   });
   state.gameFloors[game] = held; save(); renderRules(); renderPlayers();
-  return n ? "Cleared " + n + " Min% floor" + (n === 1 ? "" : "s") + " in " + game + "; Restore floors puts them back." : "No Min% floors in " + game + ".";
+  return n.floor + n.cap ? "Cleared " + n.floor + " Min% and " + n.cap + " Max% in " + game + "; Restore floors puts them back." : "No Min% or Max% in " + game + ".";
 }
 function gameFloorsRestore(game) {
-  var held = state.gameFloors && state.gameFloors[game]; if (!held) return "Nothing held for " + game + ".";
-  var n = 0, kept = 0;
-  Object.keys(held.floor).forEach(function (id) {
-    if (state.floor[id] != null && state.floor[id] !== "") { kept++; return; }
-    state.floor[id] = held.floor[id]; n++;
-    if (held.scan[id]) { state.scanSet = state.scanSet || { floor: {}, cap: {} }; state.scanSet.floor[id] = held.scan[id]; }
+  var held = gfHeld(game); if (!held) return "Nothing held for " + game + ".";
+  var n = { floor: 0, cap: 0 }, kept = 0;
+  state.scanSet = state.scanSet || { floor: {}, cap: {} };
+  GF_KINDS.forEach(function (k) {
+    state.scanSet[k] = state.scanSet[k] || {};
+    Object.keys(held[k]).forEach(function (id) {
+      if (state[k][id] != null && state[k][id] !== "") { kept++; return; }
+      state[k][id] = held[k][id]; n[k]++;
+      if (held.scan[k][id]) state.scanSet[k][id] = held.scan[k][id];
+    });
   });
   delete state.gameFloors[game]; save(); renderRules(); renderPlayers();
-  return "Restored " + n + " Min% floor" + (n === 1 ? "" : "s") + " in " + game + (kept ? "; " + kept + " box" + (kept === 1 ? "" : "es") + " typed in since left as is" : "") + ".";
+  return "Restored " + n.floor + " Min% and " + n.cap + " Max% in " + game + (kept ? "; " + kept + " box" + (kept === 1 ? "" : "es") + " typed in since left as is" : "") + ".";
 }
+
 function stackApply(game, a, x, y) {
   var tag = stackTag(game, a, x, y), had = (state.rules || []).filter(function (r) { return r.stackq && r.stackq.game === game; });
   if (had.length && had[0].stackq.tag === tag) {           // the same button again: take it off
