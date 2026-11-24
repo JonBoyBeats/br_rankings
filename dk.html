@@ -224,8 +224,16 @@
   .teambar .gchip button { height: 26px; }
   .gamehead { font-family: var(--mono); font-size: 12px; margin: 6px 0 4px; }
   .gamehead b { font-size: 14px; font-family: inherit; }
+/* checks (2026-11-24): boxes met per player in a game; green 5+ (or 70%+ of those available), light green 4 */
+.ck { display: inline-block; min-width: 26px; margin-right: 5px; padding: 0 4px; border-radius: 4px; font: 600 11px var(--mono); text-align: center; border: 1px solid var(--line); color: var(--muted); vertical-align: 1px; }
+.ck.ck-g { background: rgba(46,170,96,.85); border-color: rgba(46,170,96,.9); color: #fff; } .ck.ck-l { background: rgba(46,170,96,.28); border-color: rgba(46,170,96,.5); color: var(--ink); }
+.ck.ck-x { opacity: .55; text-decoration: line-through; }
+.row.ckg .who { background: rgba(46,170,96,.16); } .row.ckl .who { background: rgba(46,170,96,.07); }
+.checksq { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 2px 0 6px; font-size: 11.5px; }
+.checksq button { height: 24px; padding: 0 8px; font-size: 11.5px; } .checksq button[aria-pressed="true"], .stackq button[aria-pressed="true"] { background: rgba(46,170,96,.85); border-color: rgba(46,170,96,.9); color: #fff; }
+.ckopts { flex-basis: 100%; font-size: 11.5px; } .ckopts summary { cursor: pointer; } .ckopts input.num { width: 56px; height: 22px; font-size: 11.5px; } .ckopts .ckgrid { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 4px 0; }
 .stackq { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 2px 0 8px; font-size: 11.5px; }
-.stackq button { height: 24px; padding: 0 8px; font-size: 11.5px; } .stackq button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.stackq button { height: 24px; padding: 0 8px; font-size: 11.5px; }
   .gameteams { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
   @media (max-width: 760px) { .gameteams { grid-template-columns: minmax(0, 1fr); } }
   .scanblk { border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; margin: 6px 0; font-size: 12px; }
@@ -1079,7 +1087,9 @@ function renderPlayers() {
   $("players").innerHTML = playerTable(sortList(list), true, fs);
   renderTeamPanel();
 }
+var ckSort = {};
 function sortList(list) {
+  if (view.sort === "checks") ckSort = checksMap();
   var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
               avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; }, mpg: function (r) { return r.min_avg != null ? r.min_avg : -1; }, obpr: function (r) { return r.obpr != null ? r.obpr : -99; },
               own: own, pos: function (r) { return r.position || ""; }, team: function (r) { return r.team || ""; }, opp: function (r) { return r.opp || ""; },
@@ -1087,6 +1097,7 @@ function sortList(list) {
               sroi: function (r) { var x = scanRowOf(r.id); return x && x.g_roi != null ? x.g_roi : -Infinity; },
               scash: function (r) { var x = scanRowOf(r.id); return x ? x.g_cash : -Infinity; },
               bank: function (r) { return bankShare()[r.id] || 0; },
+              checks: function (r) { var c = ckSort[r.id]; return (c ? c.hit : 0) * 1000 + proj(r); },
               here: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].here : 0; },
               tonight: function (r) { var f = fillStats(); return f && f[r.id] ? f[r.id].tonight : 0; },
               room: function (r) { var f = fillStats(); return f && f[r.id] && f[r.id].room != null ? f[r.id].room : 1e9; },
@@ -1197,7 +1208,7 @@ function bankShare() {
   bankShareMemo = { bank: BANK, n: n, v: v };
   return v;
 }
-function playerTable(list, sortable, fs) {
+function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's checks (checksMap)
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"], ["bank", "Bank", "r col-bank"],
      ["min", "Min", "r col-min"], ["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]].concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", "Room", "r"]] : [])
@@ -1238,7 +1249,8 @@ function playerTable(list, sortable, fs) {
         (r.deepOut ? "Projected under " + PUNT_MIN + " minutes with no news raising them: out of the pool by default. Use him" : "Brought back (under " + PUNT_MIN + " minutes): leave him out again") :
         (r.deepOut ? "Deep bench (team card): out of the pool by default. Use him" : "Deep bench, brought back: leave him out again")) + '">' + (r.deepOut ? "use" : "drop") + "</button>" : "";
     var edited = state.proj[r.id] != null, sc = scanRowOf(r.id);
-    var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] || r.deepOut ? " excluded" : "") + (r.status === "Out" ? " out" : "");
+    var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] || r.deepOut ? " excluded" : "") + (r.status === "Out" ? " out" : ""), ck = ckm && ckm[r.id];
+    if (ck && ck.level) cls += " ck" + ck.level;
     // C1: the bank against the scan's read and his field ownership (bankGap)
     var gapTip = "";
     if (sc && BANK && BANK.lineups && BANK.lineups.length && r.status !== "Out") {
@@ -1250,7 +1262,7 @@ function playerTable(list, sortable, fs) {
       '<button type="button" class="excl" aria-pressed="' + poolOut(r) + '" title="' + esc(poolOut(r) ? (state.excl[r.id] ? "Left out by you" : "Out of your pool by default" +
         (r.poolWhy ? " (" + r.poolWhy + ")" : r.punt ? " (projected under " + PUNT_MIN + " minutes)" : " (deep bench)")) + ": tap to use him" : "In your pool: tap to leave him out") + '">X</button>' +
       (r.status !== "Out" ? '<button type="button" class="setadd" title="Add him to the rule editor\'s players (template 5: at least N from these players)">+set</button>' : "") + act + "</span>" +
-      '<span class="who"><div class="name"><span class="nm' + (fs && bpFilt.p[r.id] ? (bpFilt.p[r.id] === "with" ? " w" : " wo") : "") + '" title="' + esc(whoTip(r)) + (fs ? "\nTap: with, again without, again off (filters the lineups)" : "") + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
+      '<span class="who"><div class="name">' + (ck ? ckBadge(ck) : "") + '<span class="nm' + (fs && bpFilt.p[r.id] ? (bpFilt.p[r.id] === "with" ? " w" : " wo") : "") + '" title="' + esc(whoTip(r)) + (fs ? "\nTap: with, again without, again off (filters the lineups)" : "") + '">' + esc(r.name) + "</span>" + tags + "</div></span>" +
       '<span class="m mut col-pos">' + esc(r.position || "") + "</span>" +
       '<span class="m col-team">' + esc(r.team || "") + "</span>" +
       '<span class="m mut col-opp">' + (r.home ? "v " : "@ ") + esc(r.opp || "?") + "</span>" +
@@ -1490,7 +1502,7 @@ function tileMini(t) {
   return '<div class="tile" data-team="' + esc(t.team) + '"><div class="acts"><button data-act="min1">Min 1</button><button data-act="min2">Min 2</button>' +
     '<button data-act="min3">Min 3</button><button data-act="stack">Stack with ' + esc(oppOf(t.team) || "opp") + "</button></div></div>";
 }
-function withPanelSort(fn) { var s0 = view.sort, d0 = view.dir; view.sort = view.psort || "salary"; view.dir = view.pdir || -1; try { return fn(); } finally { view.sort = s0; view.dir = d0; } }
+function withPanelSort(fn) { var s0 = view.sort, d0 = view.dir; view.sort = view.psort || "checks"; view.dir = view.pdir || -1; try { return fn(); } finally { view.sort = s0; view.dir = d0; } }
 function renderTeamPanel() {
   var T = teamsOf();
   if (!fillMode()) $("playersSec").hidden = !!(T && view.panel);       // the full list only when no team is clicked (the Fill step's list always shows)
@@ -1501,12 +1513,13 @@ function renderTeamPanel() {
   var sideT = mine.find(function (x) { return x.team === view.pside; }) || t;
   var tabs = '<div class="tvtabs">' + mine.map(function (x) {
     return '<button type="button" class="ptab" data-team="' + esc(x.team) + '" aria-pressed="' + (x === sideT) + '">' + esc(x.team) + "</button>"; }).join("") + "</div>";
-  var all = 0, shown = 0;
+  var all = 0, shown = 0, ckm = checksMap();
+  if (view._ckGame !== game) { view._ckGame = game; view.psort = "checks"; view.pdir = -1; }     // a game just opened: most boxes first
   var lists = mine.map(function (x) {
     var tr = rows.filter(function (r) { return r.team === x.team; }); all += tr.length;
     var list = view.showAll ? tr : tr.filter(function (r) { return r.status !== "Out" && value(r) >= PANEL_MIN_VALUE || state.lock[r.id] || state.excl[r.id]; });
     shown += list.length;
-    return '<div class="tvteam"><b>' + esc(x.team) + "</b></div>" + withPanelSort(function () { return playerTable(sortList(list), true); });
+    return '<div class="tvteam"><b>' + esc(x.team) + "</b></div>" + withPanelSort(function () { return playerTable(sortList(list), true, null, ckm); });
   }).join("");
   $("teamPanel").innerHTML = gameHead(game, T, true) + stackQuick(game) + '<div class="tvgrid"><div class="tvl">' + tabs + tileMini(sideT) + cardHtml(sideT).replace("<details", "<details open") + scanBlock(sideT.team) + "</div>" +
     '<div class="plist tv">' + lists + '<button type="button" class="showall" style="height:24px;padding:0 8px;font-size:11.5px;margin:4px 0">' +
@@ -1545,7 +1558,10 @@ function wuHtml(t) {
   var w = wuOf(t.team);
   if (!w) return '<div class="cl">No write-up for this team yet.</div>';
   var f = function (x, d) { return x == null ? "–" : (+x).toFixed(d); };
-  var prose = (w.paras || []).map(function (p) { return "<p>" + (p[0] ? "<b>" + esc(p[0]) + "</b> " : "") + wuBold(p[1]) + "</p>"; }).join("");
+  var ckm = checksMap();
+  var prose = (w.paras || []).map(function (p) {
+    var L = !p[0] && (w.table || []).find(function (x) { return String(p[1]).indexOf("**" + x.name + "**") === 0; }), ck = L && ckm[L.id];
+    return "<p>" + (ck ? ckBadge(ck) : "") + (p[0] ? "<b>" + esc(p[0]) + "</b> " : "") + wuBold(p[1]) + "</p>"; }).join("");
   var tb = (w.table || []).length ? '<div class="wt"><table><tr><th class="l">Player</th><th>Starts</th><th>MPG</th><th>L3</th><th>Proj min</th><th>DK/g</th><th>DK/min</th><th>4x/5x/&lt;2x</th><th>OBPR</th><th class="l">Form</th></tr>' +
     w.table.map(function (L) {
       return '<tr data-id="' + esc(L.id) + '"><td class="l">' + esc(shortName(L.name)) + (L.pool_out ? ' <span class="tag q">pool: out</span>' : "") + "</td><td>" + L.starts + "/" + L.gp + "</td><td>" + f(L.season_mpg, 1) +
@@ -1855,7 +1871,7 @@ function tagNow() {         // the draw's idea: the settings off their defaults,
   Object.keys(state.excl).forEach(function (id) { t.push("no " + name(id)); });
   (state.rules || []).forEach(function (x) {     // a quick stack's two rules name the batch once: STACK <game> <shape>
     if (x.off || x.base) return;
-    if (x.stackq) { if (t.indexOf(x.stackq.tag) < 0) t.push(x.stackq.tag); } else t.push(x.label);
+    if (x.stackq) { if (t.indexOf(x.stackq.tag) < 0) t.push(x.stackq.tag); } else if (x.greens) t.push(x.greens.tag); else t.push(x.label);
   });
   if (scanFloorsOn()) t.push("SCANFLOOR");       // drawn under the scan's floors (the shadow lab's experiment b)
   return t.length ? t.join(" + ") : "no rules";
@@ -3609,7 +3625,7 @@ function stackQuick(game) {
       var tag = stackTag(game, s[0], s[1], s[2]);
       return '<button type="button" data-shape="' + s[1] + "+" + s[2] + '" data-game="' + esc(game) + '" data-a="' + esc(s[0]) + '" data-x="' + s[1] + '" data-y="' + s[2] + '" aria-pressed="' + !!(cur && cur.stackq.tag === tag) +
         '" title="Adds two draw rules: ' + s[1] + "+ from " + esc(s[0]) + ", " + s[2] + "+ from the other side; draws are tagged " + esc(tag) + '">' + (s[1] === s[2] ? s[1] + "+" + s[2] : esc(s[0]) + " " + s[1] + "+" + s[2]) + "</button>";
-    }).join("") + '<span class="mut" id="stackMsg">' + (stackMsgText.indexOf(game + "|") === 0 ? esc(stackMsgText.slice(game.length + 1)) : "") + "</span></div>" + gameFloorRow(game);
+    }).join("") + '<span class="mut" id="stackMsg">' + (stackMsgText.indexOf(game + "|") === 0 ? esc(stackMsgText.slice(game.length + 1)) : "") + "</span></div>" + gameFloorRow(game) + checksRow(game);
 }
 /* Per-game floors (2026-11-24, the operator): Clear floors takes this game's Min% off (scan-set and typed alike) and
    holds them, so a bank of this game draws free of them; Restore floors puts the held values back into boxes still
@@ -3688,6 +3704,103 @@ function renderLab(L) {
     "Pct diff: the mean of the slate differences, ± their SE; top 10% diff in points of rate. Pass bar, set at registration (" + esc(L.registered || "") + "): ahead on 7 of the 10 planned slates and the difference above 2 × noise. " +
     "Slates before registration are a look-back only. Graded nightly from saved builds and standings (dk_eval.py lab).</div>";
 }
+
+/* Checks (2026-11-24, the operator): per player in a game, which of up to 7 boxes he meets, each against tonight's
+   slate so it adapts. Rotation players: season minutes a game (min_avg) at least CK.rotMpg and CK.rotGp+ games played
+   (gp), whatever tonight's status; the percentile pools are the slate's rotation players (nearest rank).
+   1 OBPR: in the top CK.obprTop% of the pool by EvanMiya OBPR, or top CK.obprTeam on his team (bpr_rank).
+   2 MPG: min_avg at or over the pool's CK.mpgPct th percentile, or CK.mpgAbs+.
+   3 DK per minute: season DK average / min_avg at or over the CK.ppmPct th percentile.
+   4 5x rate: his last 5 games (dk_last5's games, r.last5) at 5x+ tonight's salary, at or over the CK.x5Pct th
+     percentile of pool players with 3+ such games, and above 0; under 3 games: not met.
+   5 under-2x rate: the share of those games under 2x tonight's salary, at or under the CK.x2Pct th percentile.
+   6 bank share / field ownership at least CK.bankRatio: only once a bank exists (else not counted: out of 6).
+   7 scan read core, lean core or leverage: only once the slate is scanned (else not counted).
+   Green: 5+ met or 70%+ of those counted; light green: 4. Never green (badge greyed, the reason in its hover): Out,
+   Questionable with no Play decision (state.ins), sit risk (sitRisk), 0 games played. Display and the GREENS tag only:
+   nothing here moves a projection, the cut or the fill. The thresholds are editable under the game's Boxes fold
+   (localStorage dkcbb:checks). */
+var CK_DEF = { rotMpg: 15, rotGp: 3, obprTop: 30, obprTeam: 2, mpgPct: 70, mpgAbs: 28, ppmPct: 60, x5Pct: 60, x2Pct: 40, bankRatio: 1.2 };
+function ckOpts() {
+  var o = Object.assign({}, CK_DEF);
+  try { var v = JSON.parse(localStorage.getItem("dkcbb:checks") || "null"); if (v) Object.keys(CK_DEF).forEach(function (k) { if (v[k] != null && isFinite(+v[k])) o[k] = +v[k]; }); } catch (e) {}
+  return o;
+}
+function ckQ(a, p) { if (!a.length) return null; var v = a.slice().sort(function (x, y) { return x - y; }); return v[Math.max(0, Math.min(v.length - 1, Math.ceil(p / 100 * v.length) - 1))]; }
+function ckGames(r, x) { var g = r.last5 || [], sal = r.salary / 1000; return g.length ? g.filter(function (q) { return x > 0 ? q[2] >= x * sal : q[2] < -x * sal; }).length / g.length : null; }
+function ckPpm(r) { return r.min_avg > 0 && r.dk_avg != null ? r.dk_avg / r.min_avg : null; }
+function checksMap() {
+  if (!rows || !rows.length) return {};
+  var o = ckOpts(), rot = rows.filter(function (r) { return (r.min_avg || 0) >= o.rotMpg && (r.gp || 0) >= o.rotGp; });
+  var three = rot.filter(function (r) { return (r.last5 || []).length >= 3; });
+  var nn = function (a) { return a.filter(function (x) { return x != null; }); };
+  var cut = { obpr: ckQ(nn(rot.map(function (r) { return r.obpr; })), 100 - o.obprTop), mpg: ckQ(nn(rot.map(function (r) { return r.min_avg; })), o.mpgPct),
+              ppm: ckQ(nn(rot.map(ckPpm)), o.ppmPct), x5: ckQ(three.map(function (r) { return ckGames(r, 5); }), o.x5Pct), x2: ckQ(three.map(function (r) { return ckGames(r, -2); }), o.x2Pct) };
+  var hasBank = !!(BANK && BANK.lineups && BANK.lineups.length), bs = hasBank ? bankShare() : {}, hasScan = rows.some(function (r) { return !!scanRowOf(r.id); });
+  var pc = function (x) { return Math.round(100 * x) + "%"; }, out = {};
+  rows.forEach(function (r) {
+    var b = [], n3 = (r.last5 || []).length >= 3, ppm = ckPpm(r), x5 = ckGames(r, 5), x2 = ckGames(r, -2);
+    b.push({ k: "OBPR", ok: r.obpr != null && ((cut.obpr != null && r.obpr >= cut.obpr) || (r.bpr_rank != null && r.bpr_rank <= o.obprTeam)),
+             v: r.obpr != null ? r.obpr.toFixed(2) + (r.bpr_rank ? " (#" + r.bpr_rank + " on team)" : "") + ", top " + o.obprTop + "% from " + (cut.obpr != null ? cut.obpr.toFixed(2) : "–") : "no EvanMiya match" });
+    b.push({ k: "MPG", ok: r.min_avg != null && ((cut.mpg != null && r.min_avg >= cut.mpg) || r.min_avg >= o.mpgAbs),
+             v: r.min_avg != null ? r.min_avg.toFixed(1) + " (cut " + (cut.mpg != null ? cut.mpg.toFixed(1) : "–") + " or " + o.mpgAbs + ")" : "no minutes" });
+    b.push({ k: "DK/min", ok: ppm != null && cut.ppm != null && ppm >= cut.ppm, v: ppm != null ? ppm.toFixed(2) + " (cut " + (cut.ppm != null ? cut.ppm.toFixed(2) : "–") + ")" : "no minutes" });
+    b.push({ k: "5x rate", ok: n3 && x5 != null && cut.x5 != null && x5 >= cut.x5 && x5 > 0,
+             v: n3 ? pc(x5) + " of last " + r.last5.length + " at 5x $" + (r.salary / 1000).toFixed(1) + "k (cut " + pc(cut.x5 || 0) + ", above 0)" : "under 3 recent games" });
+    b.push({ k: "under-2x rate", ok: n3 && x2 != null && cut.x2 != null && x2 <= cut.x2,
+             v: n3 ? pc(x2) + " of last " + r.last5.length + " under 2x (cut " + pc(cut.x2 || 0) + " or less)" : "under 3 recent games" });
+    if (hasBank) { var f = own(r) / 100, sh = bs[r.id] || 0, ratio = f > 0 ? sh / f : (sh > 0 ? Infinity : 0);
+      b.push({ k: "bank/field", ok: ratio >= o.bankRatio, v: pc(sh) + " of the bank vs " + pc(f) + " field (x" + (isFinite(ratio) ? ratio.toFixed(2) : "∞") + ", need x" + o.bankRatio + ")" }); }
+    if (hasScan) { var sc = scanRowOf(r.id);
+      b.push({ k: "scan read", ok: !!sc && ["core", "lean core", "leverage"].indexOf(sc.read) >= 0, v: sc ? sc.read : "not scanned" }); }
+    var hit = b.filter(function (x) { return x.ok; }).length, avail = b.length;
+    var grey = r.status === "Out" ? "Out" : isQ(r) && !state.ins[r.id] ? "Questionable: no Play decision" : sitRisk(r) ? "sit risk" : !r.gp ? "0 games played" : "";
+    var lvl = grey ? "" : (hit >= 5 || hit / avail >= 0.7) ? "g" : hit >= 4 ? "l" : "";
+    out[r.id] = { hit: hit, avail: avail, boxes: b, grey: grey, level: lvl };
+  });
+  return out;
+}
+function ckBadge(c) {
+  var tip = (c.grey ? "Never green: " + c.grey + "\n" : "") + c.hit + " of " + c.avail + " boxes\n" + c.boxes.map(function (x) { return (x.ok ? "✓ " : "– ") + x.k + ": " + x.v; }).join("\n");
+  return '<span class="ck' + (c.grey ? " ck-x" : c.level ? " ck-" + c.level : "") + '" title="' + esc(tip) + '">' + c.hit + "/" + c.avail + "</span>";
+}
+var ckMsgText = "", ckFoldOpen = false;
+$("teamPanel").addEventListener("toggle", function (e) { if (e.target.classList && e.target.classList.contains("ckopts")) ckFoldOpen = e.target.open; }, true);
+function greensOf(game) {
+  var m = checksMap();
+  return gameIds(game).filter(function (id) { var r = byId(id); return r && usable(r) && m[id] && m[id].level === "g"; })
+    .sort(function (a, b) { return m[b].hit - m[a].hit || proj(byId(b)) - proj(byId(a)); });
+}
+function greensApply(game) {
+  var had = (state.rules || []).filter(function (r) { return r.greens && r.greens.game === game; });
+  if (had.length) { state.rules = state.rules.filter(function (r) { return !(r.greens && r.greens.game === game); }); save(); renderRules(); return "Cleared GREENS " + game + "."; }
+  var ids = greensOf(game);
+  if (!ids.length) return "No green players in " + game + ".";
+  var n = Math.min(ids.length, ids.length >= 5 ? 3 : 2);
+  addRules([{ type: "min", ids: ids, n: n, label: "at least " + n + " of " + ids.map(function (id) { return shortName(byId(id).name); }).join(", "), greens: { game: game, tag: "GREENS " + game } }]);
+  return "GREENS " + game + ": at least " + n + " of " + ids.length + (ids.length > 1 ? ", each in " + SPREAD_DEF + "%+ of a draw" : "") + ". Draw the 9 banks it as GREENS " + game + ".";
+}
+function checksRow(game) {
+  if (!game || game.indexOf("@") < 0) return "";
+  var on = (state.rules || []).some(function (r) { return r.greens && r.greens.game === game; }), g = greensOf(game).length, o = ckOpts();
+  var inp = function (k, lab) { return "<label>" + lab + ' <input class="num ckm" data-k="' + k + '" type="number" min="0" step="any" value="' + o[k] + '"></label>'; };
+  return '<div class="checksq"><b>Checks</b><span class="mut">' + g + " green</span>" +
+    '<button type="button" id="ckSet" data-game="' + esc(game) + '" aria-pressed="' + on + '" title="' + (on ? "Clear this game's GREENS set" : "Adds a rule: at least N of the green players (template 5, 10% spread)") + '">' + (on ? "Clear greens" : "Set greens") + "</button>" +
+    '<button type="button" id="ckDraw9" title="Draw the 9 under the rules as they stand (the bank tags each batch with the rules, GREENS ' + esc(game) + ' among them)">Draw the 9</button>' +
+    '<span class="mut" id="ckMsg">' + (ckMsgText.indexOf(game + "|") === 0 ? esc(ckMsgText.slice(game.length + 1)) : "") + "</span>" +
+    '<details class="ckopts"' + (ckFoldOpen ? " open" : "") + '><summary class="mut">Boxes</summary><div class="ckgrid">' +
+    inp("rotMpg", "rotation: mpg ≥") + inp("rotGp", "and games ≥") + inp("obprTop", "1 OBPR top %") + inp("obprTeam", "or team top") + inp("mpgPct", "2 MPG pctile") + inp("mpgAbs", "or mpg ≥") +
+    inp("ppmPct", "3 DK/min pctile") + inp("x5Pct", "4 5x-rate pctile") + inp("x2Pct", "5 under-2x pctile ≤") + inp("bankRatio", "6 bank/field ≥") + '</div><div class="mut">' +
+    "Rotation players: season mpg ≥ " + o.rotMpg + " and " + o.rotGp + "+ games, the slate's percentile pool. 1 OBPR in its top " + o.obprTop + "% or top " + o.obprTeam + " on his team; 2 season mpg ≥ the " + o.mpgPct + "th percentile or " + o.mpgAbs + "+; " +
+    "3 season DK avg per minute ≥ the " + o.ppmPct + "th; 4 share of his last 5 at 5x+ tonight's salary ≥ the " + o.x5Pct + "th (of players with 3+ games) and above 0; 5 share under 2x ≤ the " + o.x2Pct + "th; " +
+    "6 bank share / field own ≥ " + o.bankRatio + " (once a bank exists); 7 scan read core, lean core or leverage (once scanned). Green: 5+ or 70%+ of those counted; light: 4. Out, unresolved Q, sit risk and 0 games are never green.</div></details></div>";
+}
+$("teamPanel").addEventListener("change", function (e) {
+  var t = e.target.closest(".ckm"); if (!t) return;
+  var o = ckOpts(); o[t.dataset.k] = t.value === "" ? CK_DEF[t.dataset.k] : Math.max(0, +t.value);
+  try { localStorage.setItem("dkcbb:checks", JSON.stringify(o)); } catch (x) {}
+  renderTeamPanel();
+});
 
 nbSet(nbStored());
 
@@ -4850,7 +4963,7 @@ $("teamPanel").addEventListener("click", function (e) {
   if (e.target.closest(".showall")) { view.showAll = !view.showAll; renderTeamPanel(); return; }
   var pt = e.target.closest(".ptab"); if (pt) { view.pside = pt.dataset.team; renderTeamPanel(); return; }
   var hp = e.target.closest("#teamPanel [data-sort]");
-  if (hp) { var pk = hp.dataset.sort; view.pdir = (view.psort || "salary") === pk ? -(view.pdir || -1) : (pk === "name" ? 1 : -1); view.psort = pk; renderTeamPanel(); return; }
+  if (hp) { var pk = hp.dataset.sort; view.pdir = (view.psort || "checks") === pk ? -(view.pdir || -1) : (pk === "name" ? 1 : -1); view.psort = pk; renderTeamPanel(); return; }
   var hs = e.target.closest("[data-sort]");
   if (hs) { var sk = hs.dataset.sort; view.dir = view.sort === sk ? -view.dir : (sk === "name" ? 1 : -1); view.sort = sk; renderPlayers(); return; }
   var sb2 = e.target.closest(".scanBank"); if (sb2) { scanBankApply(sb2); return; }
@@ -4861,6 +4974,8 @@ $("teamPanel").addEventListener("click", function (e) {
   if (e.target.closest(".scanlink")) { e.preventDefault(); $("scanBox").open = true; $("scanBox").scrollIntoView({ block: "start" }); return; }
   var gf = e.target.closest(".gfClear, .gfRestore");
   if (gf) { stackMsgText = gf.dataset.game + "|" + (gf.classList.contains("gfClear") ? gameFloorsClear : gameFloorsRestore)(gf.dataset.game); renderTeamPanel(); return; }
+  if (e.target.closest("#ckSet")) { ckMsgText = e.target.closest("#ckSet").dataset.game + "|" + greensApply(e.target.closest("#ckSet").dataset.game); renderTeamPanel(); return; }
+  if (e.target.closest("#ckDraw9")) { if (!draw9.on) { showStep("bank"); drawSweep(); } return; }
   var sq = e.target.closest(".stackq button[data-shape]");
   if (sq) { stackMsgText = sq.dataset.game + "|" + stackApply(sq.dataset.game, sq.dataset.a, +sq.dataset.x, +sq.dataset.y); renderTeamPanel(); return; }
   var b = e.target.closest(".tile button[data-act]");
