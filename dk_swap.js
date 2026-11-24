@@ -224,21 +224,54 @@
     var left = done ? 0 : last === null ? 1 : elapsed(last) < 40 ? Math.max(0, (40 - elapsed(last)) / 40) : 0.03;
     return { pts: pts, left: left, done: done };
   }
+  /* ESPN's box score athletes for a game, from its summary: [{id, name, jersey, team}] (the name fallback's list). */
+  function athletes(summary) {
+    var out = [];
+    (((summary || {}).boxscore || {}).players || []).forEach(function (t) {
+      var team = (t.team || {}).abbreviation || "";
+      (t.statistics || []).forEach(function (st) { (st.athletes || []).forEach(function (a) {
+        var x = a.athlete || {}; if (x.id) out.push({ id: String(x.id), name: x.displayName || "", jersey: x.jersey || "", team: team }); }); });
+    });
+    return out;
+  }
+  /* A card without an ESPN id (2026-11-24, the late-swap calibration: a started player with none counted 0 so far, e.g.
+     2026-11-19's Malique Ewin, 44.5 points): his ESPN athlete in that game's box score by name (norm), then by first
+     initial + last name, the team (either side's abbreviation) or the jersey breaking a tie; null when still not one. */
+  function nameMatch(r, list) {
+    if (!list || !list.length) return null;
+    var nm = norm(r.name), c = list.filter(function (a) { return norm(a.name) === nm; });
+    if (c.length !== 1) {
+      var w = nm.split(" "), last = w[w.length - 1], fi = (w[0] || "").charAt(0);
+      if (!c.length) c = list.filter(function (a) { var v = norm(a.name).split(" "); return v[v.length - 1] === last && (v[0] || "").charAt(0) === fi; });
+      if (c.length > 1 && r.team) { var t = c.filter(function (a) { return a.team && String(a.team).toUpperCase() === String(r.team).toUpperCase(); }); if (t.length) c = t; }
+      if (c.length > 1 && r.jersey != null) { var j = c.filter(function (a) { return String(a.jersey) === String(r.jersey); }); if (j.length) c = j; }
+    }
+    return c.length === 1 ? c[0].id : null;
+  }
   /* Every started player's points so far and his game's share left, at untilMs: by {dk id: card (espn, event,
-     game_start)}; plays {event: plays or null}. A started game without play-by-play: its players' points unknown (null)
-     and its share left 1, so the sim plays their whole game (the study's rule). {pts, left, unknown: [events]}. */
-  function liveState(by, plays, untilMs) {
-    var e2d = {}, ev = {}, out = { pts: {}, left: {}, unknown: [] };
+     game_start, name, team)}; plays {event: plays or null}; roster (optional) {event: athletes(summary)}, the name
+     fallback for a card without an ESPN id. A started game without play-by-play: its players' points unknown (null)
+     and its share left 1, so the sim plays their whole game (the study's rule). A started player in a game with plays
+     whom neither his id nor his name finds is listed in nolive (the page shows him) and counts 0 so far.
+     {pts, left, unknown: [events], nolive: [dk ids]}. */
+  function liveState(by, plays, untilMs, roster) {
+    var e2d = {}, ev = {}, out = { pts: {}, left: {}, unknown: [], nolive: [] }, ided = {};
     Object.keys(by).forEach(function (id) {
       var r = by[id];
-      if (r.espn) e2d[String(r.espn)] = id;
+      if (r.espn) { e2d[String(r.espn)] = id; ided[id] = 1; }
       // started strictly before the moment: a game tipping at it is the decision's own swap deadline, still open
       if (r.event && Date.parse(r.game_start || "") < untilMs) (ev[r.event] = ev[r.event] || []).push(id);
     });
     Object.keys(ev).forEach(function (e) {
       var pl = plays[e];
       if (!pl || !pl.length) { out.unknown.push(e); ev[e].forEach(function (id) { out.pts[id] = null; out.left[id] = 1; }); return; }
-      var g = soFar(pl, untilMs, e2d);
+      var map = Object.assign({}, e2d), list = roster && roster[e];
+      ev[e].forEach(function (id) {
+        if (ided[id]) return;
+        var a = nameMatch(by[id], list);
+        if (a && !(a in map)) map[a] = id; else out.nolive.push(id);
+      });
+      var g = soFar(pl, untilMs, map);
       ev[e].forEach(function (id) { out.pts[id] = g.pts[id] || 0; out.left[id] = g.left; });
     });
     return out;
@@ -415,15 +448,16 @@
 
   // --- 7. run --------------------------------------------------------------------------------------------------------
   /* o: {by: {id: card (name, team, roster, salary, game_start, event, espn, status)}, own: {id: our projected %},
-     standings (parseStandings), ours: [entries-file rows of this contest], plays: {event: plays}, at (ms: the decision),
+     standings (parseStandings), ours: [entries-file rows of this contest], plays: {event: plays}, roster: {event: athletes()}
+     (optional: the name fallback for a card without an ESPN id), at (ms: the decision),
      nights: S rows aligned with ids (the full-game simulated points), ids, table: {place: payout}, M, random, maxSwaps,
      chalk: the field's lean to the chalk in its hidden slots, the ownership weights raised to it (1 as projected, 2
      chalk-heavy: small top-heavy contests turn on it, 2026-11-21's winner-take-all flipped between the two)}.
-     -> {proposals: [{entryId, ids, cur, steps, next}], stats: {entries, field, unmatched, unknownGames, draws, fallback,
-     hiddenMass}} */
+     -> {proposals: [{entryId, ids, cur, steps, next}], stats: {entries, field, unmatched, unknownGames, nolive (started
+     players with no live score), draws, fallback, hiddenMass}} */
   function run(o) {
     var by = o.by, at = o.at, started = function (id) { return !!by[id] && Date.parse(by[id].game_start || "") < at; };
-    var live = liveState(by, o.plays || {}, at), stMap = {}, base = {}, left = {};
+    var live = liveState(by, o.plays || {}, at, o.roster), stMap = {}, base = {}, left = {};
     Object.keys(by).forEach(function (id) { if (started(id)) stMap[id] = 1; });
     Object.keys(live.pts).forEach(function (id) { base[id] = live.pts[id] || 0; left[id] = live.left[id]; });
     var rows = Object.keys(by).map(function (id) { return Object.assign({ id: id }, by[id]); });
@@ -464,12 +498,12 @@
       var now = r.ids.reduce(function (t, id) { return t + (stMap[id] ? base[id] || 0 : 0); }, 0);
       return { entryId: r.entryId, ids: r.ids, cur: p.cur, steps: p.steps, next: next, now: Math.round(now * 100) / 100, paysNow: p.paysNow, paysAfter: p.paysAfter };
     });
-    return { proposals: proposals, stats: { entries: o.standings.entries.length, field: lineups.length, unmatched: unmatched, unknownGames: live.unknown,
+    return { proposals: proposals, stats: { entries: o.standings.entries.length, field: lineups.length, unmatched: unmatched, unknownGames: live.unknown, nolive: live.nolive,
              draws: stats.draws, fallback: stats.fallback, hiddenMass: mass, chalk: o.chalk || 1,
              tippedSince: Object.keys(fieldPool.reduce(function (g, r) { if (started(r.id)) g[r.event || r.game] = 1; return g; }, {})).length } };
   }
 
-  return { CAP: CAP, SLOTS: SLOTS, run: run, applySwaps: applySwaps, exportEntries: exportEntries, board: board, canFill: canFill, swaps: swaps, propose: propose, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
+  return { CAP: CAP, SLOTS: SLOTS, run: run, applySwaps: applySwaps, exportEntries: exportEntries, board: board, canFill: canFill, swaps: swaps, propose: propose, LEFT_OK: LEFT_OK, MIN_SAL: MIN_SAL, hiddenMass: hiddenMass, hiddenOwn: hiddenOwn, fieldDraw: fieldDraw, elapsed: elapsed, soFar: soFar, liveState: liveState, athletes: athletes, nameMatch: nameMatch, parseCsv: parseCsv, csvCell: csvCell, parseStandings: parseStandings, lineupSlots: lineupSlots,
            parseEntries: parseEntries, cellId: cellId, norm: norm, matchNames: matchNames, fits: fits, validate: validate,
            arrangeOpen: arrangeOpen };
 });

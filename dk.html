@@ -4347,6 +4347,11 @@ function swapFiles(input) {
                                   : f.text().then(function (t) { return [{ name: f.name, text: t }]; });
   })).then(function (a) { return [].concat.apply([], a); });
 }
+function swapNoLiveHtml() {     // the started players no live score found, in red above the run's line
+  var nl = SWAP.nolive || [];
+  return nl.length ? '<div class="bad" id="swapNoLive">no live score: ' + esc(nl.map(function (id) { return SWAP.by && SWAP.by[id] ? SWAP.by[id].name : id; }).join(", ")) +
+    " (counted 0 so far; check his box score)</div>" : "";
+}
 async function swapRun() {
   if (!slate) return "No slate.";
   if (!SWAP.stand.length) return "Add at least one contest's standings.";
@@ -4355,10 +4360,10 @@ async function swapRun() {
   var by = {}; rows.forEach(function (r) { by[r.id] = r; });
   var startedEv = {}; rows.forEach(function (r) { if (r.event && Date.parse(r.game_start || "") < at) startedEv[r.event] = 1; });
   $("swapStatus").textContent = "Live points: " + Object.keys(startedEv).length + " started game(s) from ESPN…"; await tick();
-  var plays = {};
+  var plays = {}, roster = {};     // roster: the box score's athletes, the name fallback for a card with no ESPN id
   await Promise.all(Object.keys(startedEv).map(function (ev) {
     return fetch(ESPN_SUMMARY + ev, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) { plays[ev] = d && d.plays && d.plays.length ? d.plays : null; }, function () { plays[ev] = null; });
+      .then(function (d) { plays[ev] = d && d.plays && d.plays.length ? d.plays : null; roster[ev] = DKSwap.athletes(d); }, function () { plays[ev] = null; });
   }));
   $("swapStatus").textContent = "Simulating " + S.toLocaleString() + " nights…"; await tick();
   var sr = rows.map(function (r) { return { id: r.id, team: r.team, game: r.game, status: r.status || "", miss_dk: r.miss_dk, proj: r.status === "Out" ? 0 : proj(r) }; });
@@ -4378,8 +4383,8 @@ async function swapRun() {
     var table = {}; (c.payouts || []).forEach(function (p) { for (var q = p[0]; q <= p[1]; q++) table[q] = p[2]; });
     $("swapStatus").textContent = "Contest " + (i + 1) + " of " + SWAP.stand.length + ": " + (c.name || cid) + "…"; await tick();
     var mode = $("swapChalk").value, fit = swapChalkFit(st, own), chalk = mode === "auto" ? fit.p : +mode || 1, alt = chalk === 1 ? 2 : 1;
-    var res = DKSwap.run({ by: by, own: own, standings: st, ours: ours, plays: plays, at: at, nights: nights, ids: ids, table: table, M: 6, random: rnd, maxSwaps: 2, chalk: chalk });
-    var resAlt = DKSwap.run({ by: by, own: own, standings: st, ours: ours, plays: plays, at: at, nights: nights, ids: ids, table: table, M: 6, random: DKSim.seeded(20261121), maxSwaps: 2, chalk: alt });
+    var res = DKSwap.run({ by: by, own: own, standings: st, ours: ours, plays: plays, roster: roster, at: at, nights: nights, ids: ids, table: table, M: 6, random: rnd, maxSwaps: 2, chalk: chalk });
+    var resAlt = DKSwap.run({ by: by, own: own, standings: st, ours: ours, plays: plays, roster: roster, at: at, nights: nights, ids: ids, table: table, M: 6, random: DKSim.seeded(20261121), maxSwaps: 2, chalk: alt });
     var altBy = {}; resAlt.proposals.forEach(function (p) { altBy[p.entryId] = p; });
     res.proposals.forEach(function (p) { var a = altBy[p.entryId], k = function (x) { return x.steps.map(function (y) { return y.swap.join(">"); }).join(","); };
       p.chalk = chalk; p.fit = { mode: mode, n: fit.n }; if (a && k(a) !== k(p)) { p.alt = a; p.alt.chalk = alt; } });
@@ -4391,6 +4396,10 @@ async function swapRun() {
       (res.stats.tippedSince ? ", " + res.stats.tippedSince + " game(s) tipped since the standings were downloaded (in the field's draws at their live points)" : "") +
       (res.stats.unknownGames.length ? ", " + res.stats.unknownGames.length + " started game(s) without play-by-play, simulated in full" : ""));
   }
+  /* a started player no live score finds (no ESPN id, and no single box-score name matches him: 2026-11-24, the late-swap
+     calibration) counts 0 so far: named here, not silently */
+  var nl = DKSwap.liveState(by, plays, at, roster).nolive;
+  SWAP.nolive = nl;
   SWAP.res = out; SWAP.by = by; SWAP.at = at; SWAP.acc = {}; SWAP.use = {};
   out.forEach(function (p) { if (p.steps.length) SWAP.acc[p.entryId] = 1; });     // the main run's pick accepted by default
   renderSwap(); renderSteps();
@@ -4802,7 +4811,7 @@ $("swapPackLoad").addEventListener("change", function (e) { var inp = e.target, 
   }).catch(function (err) { inp.value = ""; $("swapStatus").innerHTML = '<span class="bad">' + esc(err.message) + "</span>"; });
 });
 $("swapRun").addEventListener("click", function () { $("swapRun").disabled = true;
-  swapRun().then(function (m) { $("swapStatus").textContent = m; }, function (e) { $("swapStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; })
+  swapRun().then(function (m) { $("swapStatus").innerHTML = swapNoLiveHtml() + esc(m); }, function (e) { $("swapStatus").innerHTML = '<span class="bad">' + esc(e.message) + "</span>"; })
     .then(function () { $("swapRun").disabled = false; }); });
 $("swapBox").addEventListener("change", function (e) {
   var u = e.target.closest(".swapUse"); if (u) { SWAP.use[u.dataset.id] = u.value; var p = (SWAP.res || []).find(function (x) { return x.entryId === u.dataset.id; });

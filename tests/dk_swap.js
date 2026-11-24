@@ -104,6 +104,21 @@ check("live state at the 02:00Z tip: the in-progress game's players carry points
       ku.every(r => ls.pts[r.id] != null && Math.abs(ls.left[r.id] - mid.left) < 1e-9) && wich.every(r => ls.pts[r.id] === null && ls.left[r.id] === 1) &&
       ls.unknown.join() === "401911232" && late.every(r => !(r.id in ls.pts)), JSON.stringify(ls.unknown));
 
+// a started player with no ESPN id (2026-11-24, the late-swap calibration: he counted 0 so far): found by name in the
+// game's box score athletes; with no single name match, listed in nolive (the page names him) and still 0
+const kuTop = ku.filter(r => r.espn).sort((x, y) => (ls.pts[y.id] || 0) - (ls.pts[x.id] || 0))[0];
+const by2 = Object.assign({}, by); by2[kuTop.id] = Object.assign({}, by[kuTop.id], { espn: "" });
+const ros = { "401920515": ku.filter(r => r.espn).map(r => ({ id: String(r.espn), name: r.name, jersey: "", team: "" })) };
+const lsNo = W.liveState(by2, { "401920515": PL }, Date.parse(TIP));
+const lsName = W.liveState(by2, { "401920515": PL }, Date.parse(TIP), ros);
+const dup = { "401920515": ros["401920515"].concat([{ id: "999999", name: kuTop.name, jersey: "", team: "" }]) };
+const lsDup = W.liveState(by2, { "401920515": PL }, Date.parse(TIP), dup);
+const ath = W.athletes({ boxscore: { players: [{ team: { abbreviation: "KU" }, statistics: [{ athletes: [{ athlete: { id: 7, displayName: "A B", jersey: "3" } }] }] }] } });
+check("live points: a started player with no ESPN id gets his real points from the box score's names (same as by id); with no single match he is listed in nolive at 0",
+      ls.pts[kuTop.id] > 0 && lsName.pts[kuTop.id] === ls.pts[kuTop.id] && lsName.nolive.length === 0 &&
+      lsNo.nolive.indexOf(kuTop.id) >= 0 && lsNo.pts[kuTop.id] === 0 && lsDup.nolive.indexOf(kuTop.id) >= 0 &&
+      ath.length === 1 && ath[0].id === "7" && ath[0].team === "KU" && ath[0].jersey === "3", JSON.stringify([kuTop.name, ls.pts[kuTop.id], lsName.pts[kuTop.id], lsNo.nolive]));
+
 // --- 4. the hidden field ---
 const pre = C.own, hiddenIds = rows.filter(r => !started(r.id) && r.status !== "Out").map(r => r.id);
 const mass = W.hiddenMass(st.entries), nulls = st.entries.reduce((t, e) => t + e.slots.filter(x => x.name === null).length, 0);

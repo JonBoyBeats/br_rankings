@@ -53,21 +53,62 @@ def iso(t):
     return dt.datetime.fromisoformat(t.replace("Z", "+00:00"))
 
 
-def pbp(event, cache):
-    """ESPN's summary for a game (its plays carry wallclock, period and clock), cached; None when it has no plays."""
+def summary(event, cache):
+    """ESPN's summary for a game, cached as {plays, athletes}: its plays (wallclock, period, clock) and its box score's
+    athletes [{id, name, jersey, team}] (the name fallback for a card without an ESPN id, 2026-11-24). A cache file from
+    before the athletes were kept is fetched again once."""
     f = os.path.join(cache, "%s.json" % event)
-    if not os.path.exists(f):
+    c = json.load(open(f)) if os.path.exists(f) else None
+    if c is None or "athletes" not in c:
         import urllib.request
+        d = None
         for t in range(3):
             try:
                 d = json.load(urllib.request.urlopen(ESPN.format(event), timeout=30)); break
             except Exception:
                 d = None
         if d is None:
-            return None
-        json.dump({"plays": d.get("plays") or []}, open(f, "w"))
-    pl = json.load(open(f)).get("plays") or []
-    return pl or None
+            return c or {"plays": [], "athletes": []}
+        ath = []
+        for tm in (d.get("boxscore") or {}).get("players") or []:
+            ab = (tm.get("team") or {}).get("abbreviation") or ""
+            for st in tm.get("statistics") or []:
+                for a in st.get("athletes") or []:
+                    x = a.get("athlete") or {}
+                    if x.get("id"):
+                        ath.append({"id": str(x["id"]), "name": x.get("displayName") or "", "jersey": x.get("jersey") or "", "team": ab})
+        c = {"plays": d.get("plays") or [], "athletes": ath}
+        json.dump(c, open(f, "w"))
+    return c
+
+
+def pbp(event, cache):
+    """A game's plays (summary()), None when it has none."""
+    return summary(event, cache).get("plays") or None
+
+
+def norm(s):
+    """dk_swap.js norm: accents folded, lowercase, suffixes and punctuation dropped."""
+    import re, unicodedata
+    s = unicodedata.normalize("NFD", str(s or ""))
+    s = "".join(ch for ch in s if not unicodedata.combining(ch)).lower()
+    s = re.sub(r"\b(jr|sr|ii|iii|iv|v)\b\.?", "", s)
+    return re.sub(r"[^a-z0-9]+", " ", s).strip()
+
+
+def name_match(r, ath):
+    """dk_swap.js nameMatch: a card's ESPN athlete in the game's box score by name, then first initial + last name, the
+    team breaking a tie; None unless exactly one."""
+    nm = norm(r.get("name"))
+    c = [a for a in ath if norm(a["name"]) == nm]
+    if len(c) != 1:
+        w = nm.split(" ")
+        if not c:
+            c = [a for a in ath if norm(a["name"]).split(" ")[-1:] == w[-1:] and norm(a["name"])[:1] == nm[:1]]
+        if len(c) > 1 and r.get("team"):
+            t = [a for a in c if a["team"] and a["team"].upper() == str(r["team"]).upper()]
+            c = t or c
+    return c[0]["id"] if len(c) == 1 else None
 
 
 def elapsed(p):
@@ -299,7 +340,14 @@ def knowledge(sl, k, cache):
         if pl is None:
             games[ev] = None
             continue
-        pts, f, done = so_far(pl, until, espn2dk)
+        e2d = dict(espn2dk)
+        ath = summary(ev, cache).get("athletes") or []
+        for i, r in R.items():       # a card without an ESPN id: by name in the box score (2026-11-24)
+            if r["event"] == ev and not r["espn"]:
+                a = name_match(r, ath)
+                if a and a not in e2d:
+                    e2d[a] = i
+        pts, f, done = so_far(pl, until, e2d)
         games[ev] = (f, done)
         for i, r in R.items():
             if r["event"] == ev:
