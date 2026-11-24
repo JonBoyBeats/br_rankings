@@ -212,7 +212,7 @@
   #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(170px, 230px) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px; }
   #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px; }
   #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg { display: none; }
-  #players .row.bankgap-in { box-shadow: inset 3px 0 #3fbf7f; } #players .row.bankgap-out { box-shadow: inset 3px 0 var(--bad); }
+  .gapm { margin-left: 4px; font-size: 11px; } .gapm.in { color: #3fbf7f; } .gapm.out { color: var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
   #players.fillcols .nm { cursor: pointer; } height: 22px; width: 22px; padding: 0; border-radius: 50%; font-size: 12px; font-style: italic; font-weight: 700; align-self: center; }
   #cutIdeas th[data-ck] { cursor: pointer; }
@@ -1206,24 +1206,24 @@ var scanMap = {}, scanMapOf = null, bankShareMemo = null;
 // more than the field); core below 0.75 f; even below 0.5 f; a fade over-banked at f or more AND 10%+ of the bank.
 // Lean reads (2026-11-20) like their strong versions: lean leverage below 1.5 f (f >= 2%), lean core below 0.75 f.
 // A skip (weak, field light; 2026-11-20) is over-banked at 2 f or more AND 8%+ of the bank.
-var BANK_GAP = { leverage: 1.5, core: 0.75, "lean leverage": 1.5, "lean core": 0.75, even: 0.5, levFloor: 0.02, fadeMin: 0.10, skipX: 2, skipMin: 0.08 };
+/* C1 (2026-11-24, the operator): the bank-gap marker reads the scan floors' rule (scanFloorFor, the Floors fold's multipliers):
+   under-banked when his bank share is under the floor the scan would set, over-banked when over the cap; even: neither. */
 function readTip(r, sc, bshare) {     // Read's hover: the scan's numbers and the bank against the field
   var t = ["Player scan: top-1% gain " + sgn(sc.g_t1, 2) + " (noise \u00b1" + (100 * sc.noise).toFixed(2) + ")", "ROI gain " + (sc.g_roi != null ? sgn(sc.g_roi, 0) : "–"), "Cash gain " + sgn(sc.g_cash, 1)];
   if (BANK && BANK.lineups && BANK.lineups.length) {
-    var bs = (bshare || bankShare())[r.id] || 0, g = bankGap(sc.read, bs, own(r) / 100);
+    var bs = (bshare || bankShare())[r.id] || 0, g = bankGap(r, bs, sc);
     t.push("Bank " + Math.round(100 * bs) + "% vs field " + Math.round(own(r)) + "%" + (g ? " · " + g.tip : ""));
   }
   return t.join("\n");
 }
 function readCls(read) { return "read-" + String(read).replace(/ /g, "-"); }
-function bankGap(read, bs, f) {
-  var pc = function (x) { return Math.round(100 * x) + "%"; }, k = BANK_GAP[read];
-  if (k != null && (!/leverage/.test(read) || f >= BANK_GAP.levFloor) && bs < k * f)
-    return { cls: "bankgap-in", tip: read.charAt(0).toUpperCase() + read.slice(1) + ": " + pc(bs) + " of bank vs " + pc(f) + " field (want " + Math.ceil(100 * k * f - 1e-9) + "%+)" };
-  if (read === "fade" && bs >= f && bs >= BANK_GAP.fadeMin)
-    return { cls: "bankgap-out", tip: "Fade: " + pc(bs) + " of bank vs " + pc(f) + " field (want under " + pc(Math.max(f, BANK_GAP.fadeMin)) + ")" };
-  if (read === "skip" && bs >= BANK_GAP.skipX * f && bs >= BANK_GAP.skipMin)
-    return { cls: "bankgap-out", tip: "Skip: " + pc(bs) + " of bank vs " + pc(f) + " field (want under " + pc(Math.max(BANK_GAP.skipX * f, BANK_GAP.skipMin)) + ")" };
+function bankGap(r, bs, sc) {
+  var p = sc && scanFloorFor(sc, r); if (!p) return null;
+  var b = Math.round(100 * bs), hand = p.kind === "floor" ? state.floor[r.id] : state.cap[r.id];
+  var mine = hand != null && hand !== "" && !byScan(p.kind, r.id) ? " (your " + (p.kind === "floor" ? "Min%" : "Max%") + ": " + hand + "%)" : "";
+  var rule = p.read === "skip" ? "cap " + p.v + "%" : (p.kind === "floor" ? "floor " : "cap ") + p.m + "\u00d7 field " + Math.round(p.f) + "% = " + p.v + "%";
+  if (p.kind === "floor" && 100 * bs < p.v) return { cls: "bankgap-in", tip: p.read + ": bank " + b + "% vs " + rule + mine };
+  if (p.kind === "cap" && 100 * bs > p.v) return { cls: "bankgap-out", tip: p.read + ": bank " + b + "% vs " + rule + mine };
   return null;
 }
 // a gain in points (x 100), signed
@@ -1286,12 +1286,8 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
     var edited = state.proj[r.id] != null, sc = scanRowOf(r.id);
     var cls = "row" + (state.lock[r.id] ? " locked" : "") + (state.excl[r.id] || r.deepOut ? " excluded" : "") + (r.status === "Out" ? " out" : ""), ck = ckm && ckm[r.id];
     if (ck && ck.level) cls += " ck" + ck.level;
-    // C1: the bank against the scan's read and his field ownership (bankGap)
-    var gapTip = "";
-    if (sc && BANK && BANK.lineups && BANK.lineups.length && r.status !== "Out") {
-      var gp = bankGap(sc.read, bshare[r.id] || 0, own(r) / 100);
-      if (gp) { cls += " " + gp.cls; gapTip = gp.tip; }
-    }
+    // C1: the bank against the scan's floor / cap for him (bankGap): a marker after his Read
+    var gap = sc && BANK && BANK.lineups && BANK.lineups.length && r.status !== "Out" ? bankGap(r, bshare[r.id] || 0, sc) : null, gapTip = "";
     return '<div class="' + cls + '" data-id="' + esc(r.id) + '"' + (gapTip ? ' title="' + esc(gapTip) + '"' : "") + ">" +
       '<span class="lx"><button type="button" class="lock" aria-pressed="' + !!state.lock[r.id] + '" title="Lock into every lineup"' + (r.status === "Out" ? " disabled" : "") + '>L</button>' +
       '<button type="button" class="excl" aria-pressed="' + poolOut(r) + '" title="' + esc(poolOut(r) ? (state.excl[r.id] ? "Left out by you" : "Out of your pool by default" +
@@ -1306,7 +1302,7 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
       '<span class="m r val"' + greenBg(value(r), 2, 4.5) + ">" + value(r).toFixed(2) + "</span>" +
       '<span class="m r own"' + (fieldOf() ? greenBg(own(r), 0, 35) : "") + ">" + (fieldOf() ? own(r).toFixed(0) + "%" : "–") + "</span>" +
       // Bank (back 2026-11-20, beside Own, whenever a bank exists): his share of the bank; the hover against the field, with the flag
-      (function () { var hasB = BANK && BANK.lineups && BANK.lineups.length, bs = hasB ? bshare[r.id] || 0 : 0, gp2 = hasB && sc ? bankGap(sc.read, bs, own(r) / 100) : null;
+      (function () { var hasB = BANK && BANK.lineups && BANK.lineups.length, bs = hasB ? bshare[r.id] || 0 : 0, gp2 = hasB && sc ? bankGap(r, bs, sc) : null;
         var bb = view.bankBase && hasB ? baseBank() : null, shown = bb ? bb.share[r.id] || 0 : bs;        // the column's base option (2026-11-24): display only
         return '<span class="m r col-bank"' + (hasB ? ' title="' + esc((bb ? "In " + Math.round(100 * shown) + "% of the base bank (" + bb.n + " lineups)" : view.bankBase ? "No base yet: in " + Math.round(100 * bs) + "% of the whole bank" : "In " + Math.round(100 * bs) + "% of the bank") +
           " vs " + Math.round(own(r)) + "% field" + (gp2 ? " · " + gp2.tip : "")) + '"' : "") + ">" + (hasB ? Math.round(100 * shown) + "%" : "–") + "</span>"; })() +
@@ -1320,7 +1316,7 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
       '<span class="m r mut col-avg' + (r.last5 && r.last5.length ? ' has5" title="' + esc(last5Text(r)) + '"' : '"') + ">" + (r.dk_avg ? r.dk_avg.toFixed(1) : "–") + "</span>" +
       '<span class="m r col-scan col-cash">' + (sc ? sgn(sc.g_cash, 1) : "–") + "</span>" +
       // Read (2026-11-20: Top 1%, ROI and Bank folded into its hover; the bank-gap stripe stays on the row)
-      '<span class="col-scan rdc"' + (sc ? ' title="' + esc(readTip(r, sc, bshare)) + '"' : "") + ">" + (sc ? '<span class="' + readCls(sc.read) + '">' + sc.read + "</span>" : '<span class="mut">–</span>') + "</span>" +
+      '<span class="col-scan rdc"' + (sc ? ' title="' + esc(readTip(r, sc, bshare)) + '"' : "") + ">" + (sc ? '<span class="' + readCls(sc.read) + '">' + sc.read + "</span>" + (gap ? '<span class="gapm ' + (gap.cls === "bankgap-in" ? "in" : "out") + '" title="' + esc(gap.tip) + '">\u25ae</span>' : "") : '<span class="mut">–</span>') + "</span>" +
       (fs ? (function (x) { x = x || {}; return '<span class="m r">' + Math.round(100 * (x.here || 0)) + '%</span><span class="m r">' + Math.round(100 * (x.tonight || 0)) + '%</span><span class="m r"' +
         (x.room != null && x.room <= 0 ? ' style="color:var(--bad)"' : "") + ">" + (x.room == null ? "–" : x.room) + "</span>"; })(fs[r.id]) : "") +
       '<span class="col-scan col-pb"><button type="button" class="pbank" title="Bank this: at least 1 of ' + esc(r.name) + ' in your next draw"' + (r.status === "Out" ? " disabled" : "") + ">+</button></span>" +
@@ -3553,19 +3549,23 @@ function scanFloorsOn() {
 function scanFloorPlan(o) {           // [{id, kind, v, note}] for every scanned player the rule reaches
   o = o || sfOpts();
   var out = [];
-  ((SCAN && SCAN.players) || []).forEach(function (x) {
-    var r = byId(String(x.id)); if (!r || x.thin || !usable(r)) return;
-    var f = own(r); if (!(f > 0) || (f < SF_LOW_OWN && !o.low)) return;
-    // a skip gets a flat Max% (skipPct, 10 by default: the operator, 2026-11-24), not a multiple of his field own
-    var rd = x.read, m = rd === "core" ? o.core : rd === "leverage" ? o.leverage : /^lean /.test(rd) ? o.lean : rd === "fade" ? o.fade : rd === "skip" ? 1 : null;
-    if (m == null) return;
-    var kind = rd === "fade" || rd === "skip" ? "cap" : "floor", raw = rd === "skip" ? +o.skipPct : m * f;
-    var v = kind === "floor" ? Math.min(SF_FLOOR_MAX, Math.round(raw)) : Math.max(SF_CAP_MIN, Math.round(raw));
-    if (kind === "floor" && v <= 0) return;
-    out.push({ id: r.id, kind: kind, v: v, note: (rd === "skip" ? "skip: flat " + raw + "% cap (field " + f.toFixed(1) + "%)" : rd + " " + m + "× field " + f.toFixed(1) + "% = " + raw.toFixed(1) + "%") +
-               (v !== Math.round(raw) ? " (held to " + v + "%)" : "") });
-  });
+  ((SCAN && SCAN.players) || []).forEach(function (x) { var p = scanFloorFor(x, byId(String(x.id)), o); if (p) out.push(p); });
   return out;
+}
+// one player's floor or cap by the scan rule (scanFloorPlan's, and the Players list's bank-gap marker reads it): null where none
+function scanFloorFor(x, r, o) {
+  o = o || sfOpts();
+  if (!x || !r || x.thin || !usable(r)) return null;
+  var f = own(r); if (!(f > 0) || (f < SF_LOW_OWN && !o.low)) return null;
+  // a skip gets a flat Max% (skipPct, 10 by default: the operator, 2026-11-24), not a multiple of his field own
+  var rd = x.read, m = rd === "core" ? o.core : rd === "leverage" ? o.leverage : /^lean /.test(rd) ? o.lean : rd === "fade" ? o.fade : rd === "skip" ? 1 : null;
+  if (m == null) return null;
+  var kind = rd === "fade" || rd === "skip" ? "cap" : "floor", raw = rd === "skip" ? +o.skipPct : m * f;
+  var v = kind === "floor" ? Math.min(SF_FLOOR_MAX, Math.round(raw)) : Math.max(SF_CAP_MIN, Math.round(raw));
+  if (kind === "floor" && v <= 0) return null;
+  return { id: r.id, kind: kind, v: v, read: rd, m: m, f: f, raw: raw,
+           note: (rd === "skip" ? "skip: flat " + raw + "% cap (field " + f.toFixed(1) + "%)" : rd + " " + m + "× field " + f.toFixed(1) + "% = " + raw.toFixed(1) + "%") +
+                 (v !== Math.round(raw) ? " (held to " + v + "%)" : "") };
 }
 function applyScanFloors() {
   if (!SCAN || !SCAN.players || !SCAN.players.length) return "Scan the slate first: the floors come from its player reads.";
