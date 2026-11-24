@@ -102,6 +102,9 @@ function audit(name, L, o) {
     Large: { contests: 3, dup: { real: 13.4, sim: 7.03 }, punt: { real: 7.32, sim: 21.29 } }, Small: { contests: 0 } } }) }));
   await pg.goto("file://" + path.join(ROOT, "dk.html"));
   await pg.waitForSelector(".row");
+  // Auto top-up (on by default) breaks caps on purpose; the fill tests below check the fill's own caps, so it is off
+  // for them and on only where its own tests (and Finish for me) run
+  const tuDefaultOn = await pg.evaluate(() => { const x = document.getElementById("autoTopUp"), on = x.defaultChecked && x.checked; x.checked = false; x.dispatchEvent(new Event("change")); return on; });
   const ff = await pg.evaluate(() => ({ hidden: $("fieldFit").hidden, text: $("fieldFit").textContent }));
   check("field fit line: real vs simulated dupes and punts by band, bands with no contests left out",
         !ff.hidden && /Large \(3 contests\) dupes 13\.4% vs 7\.0%, sub-\$3\.5k punts 7\.3% vs 21\.3%/.test(ff.text) && !/Small/.test(ff.text), JSON.stringify(ff));
@@ -1355,6 +1358,7 @@ function audit(name, L, o) {
   // stranded seats: with a tight night cap the fill leaves seats open; the panel names the cap that blocked and offers
   // the lineup that breaks the caps least as a one-tap add; nothing is added by itself
   const night0 = await pg.evaluate(() => $("maxNight").value);
+  // Auto top-up off (as set at load): the seats stay open with the stranded-seat line
   await pg.fill("#maxNight", "15");
   await pg.click("#pfRun");
   await pg.waitForFunction(() => /Portfolios from|failed|^Filled/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
@@ -1364,6 +1368,24 @@ function audit(name, L, o) {
   const st1 = await pg.evaluate(c => ({ n: c ? (PF[c] || []).length : null }), st0.cid);
   check("stranded seats: a fill left short names the cap that blocked (Night cap blocked: players at 15%) and offers a one-tap add of the lineup that breaks the caps least; nothing added by itself",
         st0.open > 0 && st0.shown && /Open seats: .*\d+ open\. .*Night cap blocked: .+ at 15%/.test(st0.text) && st0.btn && st1.n === st0.n + 1, JSON.stringify([st0, st1]));
+  check("auto top-up off: the seats stay open (no top-up note), the setting kept and shown in the settings line",
+        st0.open > 0 && !/auto top-up/.test(await pg.textContent("#cutStatus")) && (await pg.evaluate(() => localStorage.getItem("dkcbb:autoTopUp"))) === "false" &&
+        /auto top-up off$/.test(await pg.textContent("#fillSetSum")));
+  // Auto top-up on (the default, caps_backtest_2026-11-24 (e)): the same tight night cap, every seat filled with the
+  // lineup that breaks the caps least, one at a time, and the note names each over-cap add
+  await pg.check("#autoTopUp");
+  await pg.click("#pfRun");
+  await pg.waitForFunction(() => /Portfolios from|failed|^Filled/.test(document.getElementById("cutStatus").textContent), null, { timeout: 300000 });
+  const tu = await pg.evaluate(() => {
+    const st = document.getElementById("cutStatus").textContent, open = nbContests().reduce((t, x) => t + Math.max(0, x.n - (PF[String(x.c.id)] || []).length), 0);
+    const named = [...st.matchAll(/(?:breaks |, )(?!breaks )([^,;.]+?) \+(\d+) (night|contest)/g)].map(m => [m[1], +m[2], m[3]]), used = nightUsed(null), nl = nightLimit();
+    const overNight = named.filter(x => x[2] === "night").every(x => Object.keys(used).some(id => shortName(byId(id).name) === x[0] && used[id] > nl));
+    const seats = [...st.matchAll(/ (\d+) seats?(?=, | \(|,|;|\.)/g)].reduce((t, m) => t + +m[1], 0), unique = Object.keys(PF).every(k => new Set(PF[k]).size === PF[k].length);
+    return { open, note: (st.match(/auto top-up: [^]*?\.(?= |$)/) || [""])[0], named: named.length, overNight, seats, unique, strandHidden: $("strandBox").hidden };
+  });
+  check("auto top-up: on by default; a fill left short at a 15% night cap fills every seat with the lineup that breaks the caps least, and the note lists each over-cap add (\"auto top-up: <contest> N seats, breaks <player> +n night\")",
+        tuDefaultOn && tu.open === 0 && /^auto top-up: .+ \d+ seats?, breaks .+ \+\d+ (night|contest)/.test(tu.note) && tu.named > 0 && tu.overNight && tu.seats > 0 && tu.unique && tu.strandHidden, JSON.stringify(tu));
+  await pg.uncheck("#autoTopUp");
   await pg.fill("#maxNight", night0);
   // Clear old slates: other slates' banks / cuts / portfolios / entries / scans go after asking; this slate's stay, and settings
   const co = await pg.evaluate(async () => {
@@ -1863,9 +1885,9 @@ function audit(name, L, o) {
     buttons: [...document.querySelectorAll("#fillButtons button:not(.linkbtn)")].map(b => b.textContent), clear: document.getElementById("bankClear").closest("section.step").id,
     sum: document.getElementById("fillSetSum").textContent, folded: ["maxExpo", "maxNight", "minUnique", "maxCore", "maxPair", "maxUse", "lockFill", "pfObj", "nSims"].every(id => document.getElementById(id).closest("#fillSet")) && document.getElementById("fillSet").tagName === "DETAILS", varIn: document.getElementById("varRun").closest("section.step").id,
     heads: [...document.querySelectorAll("#fillPlayersSlot #players .head span[data-sort]")].map(x => x.textContent.replace(/ [↓↑]$/, "")) }));
-  check("fill step: one set of buttons (Fill all contests, Auto-fill the rest, Undo fill, New nights, Export DK entries, Save build, Load build), Variants only in Cut, Clear bank only in Bank, the settings one line, no side pane",
-        fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Auto-fill the rest", "Undo fill", "New nights", "Export DK entries", "Save build", "Load build"]) && fb.clear === "stepBank" &&
-        fb.varIn === "stepCut" && fb.folded && /^Fill: contest 60% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights$/.test(fb.sum) &&
+  check("fill step: one set of buttons (Fill all contests, Auto-fill the rest, Undo fill, Swap one in, New nights, Export DK entries, Save build, Load build), Variants only in Cut, Clear bank only in Bank, the settings one line, no side pane",
+        fb.ids.length === 0 && JSON.stringify(fb.buttons) === JSON.stringify(["Fill all contests", "Auto-fill the rest", "Undo fill", "Swap one in", "New nights", "Export DK entries", "Save build", "Load build"]) && fb.clear === "stepBank" &&
+        fb.varIn === "stepCut" && fb.folded && /^Fill: contest 60% · night 60% · unique 3 · core 15% · max 3 contests · locks: draws only · Max ROI · \d+ nights( · auto top-up off)?$/.test(fb.sum) &&
         ["Here", "Tonight", "Room"].every(h => fb.heads.includes(h)), JSON.stringify(fb));
   // the operator's case (2026-11-20, a Fill-step row's "use" clipped off the name): at 1280px in the Fill step every
   // action button is in the L / X group and is what a click at its centre lands on
@@ -1898,6 +1920,89 @@ function audit(name, L, o) {
     return { mid, after, inPF, tabOk: new RegExp(" " + after + "/").test(tab), back: BP.b.picked.length === mid && !PF[cid].includes(BP.idx[k]), sumMoved: document.getElementById("nbSum").textContent !== "" };
   });
   check("one screen: Add from the list picks it into the contest's portfolio and its tab; Remove takes it out", !nb_addRm.skipped && nb_addRm.after === nb_addRm.mid + 1 && nb_addRm.inPF && nb_addRm.tabOk && nb_addRm.back, JSON.stringify(nb_addRm));
+  // guided fill: Next best pinned on top (the unpicked, unfiltered lineup adding the most under every cap) with its computed
+  // reason; one tap adds it, the list re-scores and the next appears; the header: filled / total, ROI, top 1%, cash and the
+  // core players against their caps here and tonight; Finish for me fills the rest
+  const pf0 = await pg.evaluate(() => JSON.stringify(PF));      // put back after the guided fill and swap tests
+  const mn1 = await pg.evaluate(() => { const v = [$("maxNight").value, $("maxExpo").value]; $("maxNight").value = ""; $("maxExpo").value = "100"; review(BP.review); return v; });   // the fixture's 7 entries leave little under the caps
+  const gd = await pg.evaluate(() => {
+    while (BP.b.picked.length >= BP.o.n - 1 && BP.b.picked.length) { BP.b.remove(BP.b.picked[BP.b.picked.length - 1]); bpRescore(); bpCommit(); }
+    bpRender();
+    const want = (() => { let best = -1; for (let k = 0; k < BP.pool.length; k++) { if (BP.b.picked.includes(k) || bpHidden(k) || !BP.scores[k] || bpBlocks(k).length) continue; if (best < 0 || BP.scores[k].value > BP.scores[best].value) best = k; } return best; })();
+    const g = document.getElementById("nbGuide"), btn = g && g.querySelector(".nbNext .bpAdd"), why = g && g.querySelector(".nbWhy"), top = document.getElementById("nbList").firstElementChild === g;
+    const k = btn ? +btn.dataset.k : null, before = BP.b.picked.length, sum = document.getElementById("nbSum").textContent, core = document.getElementById("nbCore");
+    const capRow = g && g.querySelector(".nbCapped"), capOk = !capRow || /capped: .+ at (the night cap )?\d+%|capped: (Min unique \d|Max core \d+%)/.test(capRow.textContent);
+    btn && btn.click();
+    const g2 = document.getElementById("nbGuide"), k2 = g2.querySelector(".nbNext .bpAdd") ? +g2.querySelector(".nbNext .bpAdd").dataset.k : null;
+    return { want, k, top, why: why && why.textContent, before, after: BP.b.picked.length, inPF: PF[BP.review].includes(BP.idx[k]), k2, sum, n: BP.o.n,
+             core: core && core.textContent, nightOn: nightLimit() < Infinity, capOk };
+  });
+  check("guided fill: Next best pinned atop the list is the lineup adding the most under every cap, with its reason (+$ added: top 1% on nights your set misses (no <most-held player>)); one tap adds it and the next appears",
+        gd.top && gd.k === gd.want && /^\+\$[\d,]+\.\d\d added(: (top 1% on|cashes on) \d+\.\d% of nights your set (misses|doesn't))?( \(no [^)]+\))?$/.test(gd.why) &&
+        gd.after === gd.before + 1 && gd.inPF && gd.k2 != null && gd.k2 !== gd.k && gd.capOk, JSON.stringify(gd));
+  check("guided fill: the header shows filled / total, ROI, top 1% and cash, and the core players' exposure against their caps (contest and night)",
+        new RegExp(gd.before + "/" + gd.n + " filled · ROI .+ top 1% .+ cash").test(gd.sum) && /^core: [^,]+ \d+\/\d+( \(night \d+\/\d+\))?(, [^,]+ \d+\/\d+( \(night \d+\/\d+\))?)*$/.test(gd.core) && (!gd.nightOn || /\(night \d+\/\d+\)/.test(gd.core)), JSON.stringify(gd));
+  await pg.evaluate(() => { document.getElementById("autoTopUp").checked = true; });
+  await pg.click("#nbGuide .nbFinish");
+  await pg.waitForFunction(() => BP.b.picked.length >= BP.o.n || /stopped at/.test(document.getElementById("bpStatus").textContent), null, { timeout: 120000 });
+  const fin = await pg.evaluate(() => { const r = { n: BP.b.picked.length, of: BP.o.n, pf: PF[BP.review].length, full: /Set full/.test(document.getElementById("nbGuide").textContent) };
+    document.getElementById("autoTopUp").checked = false; return r; });
+  await pg.evaluate(([v, p]) => { $("maxNight").value = v[0]; $("maxExpo").value = v[1]; PF = JSON.parse(p); pfSave(); renderEntries(); review(BP.review); }, [mn1, pf0]);
+  check("guided fill: Finish for me fills the rest (Auto-fill, then Auto top-up), and the guide says the set is full", fin.n === fin.of && fin.pf === fin.of && fin.full, JSON.stringify(fin));
+  // Swap one in: the rule (template 5, +set) on tonight's most-held player, put at the night cap, so bringing him in
+  // breaks it. Off: no swap leaves a contest over a cap it wasn't over (contest, night, Min unique, Max contests per
+  // lineup); Break cap: the swaps that break one name it. Apply puts the lineup in; Undo restores the exact portfolios.
+  const swp = await pg.evaluate(async () => {
+    const used = nightUsed(null), hot = Object.keys(used).sort((a, b) => used[b] - used[a])[0], mn0 = $("maxNight").value;
+    $("maxNight").value = "";            // first pass: the night cap off (the fixture's 7 entries leave it binding everywhere); contest, Min unique, uses, core on
+    const type0 = $("rtType").value, sel0 = [...$("rtList").selectedOptions].map(o => o.value), inKept = {};
+    finalIdx().forEach(bi => BANK.lineups[bi].ids.forEach(id => { inKept[id] = (inKept[id] || 0) + 1; }));
+    const roomy = Object.keys(inKept).filter(id => id !== hot).sort((a, b) => inKept[b] - inKept[a])[0];   // in the most kept lineups
+    [...$("rtList").options].forEach(o => { o.selected = false; }); rtSet([roomy], 1);
+    const viol = (pf) => {         // every player / lineup past a cap in a set of portfolios: "kind:cid:key" -> how far
+      const v = {}, nu = {}, uses = {}, nl = nightLimit(), mu = maxUses(), minU = Math.max(1, +$("minUnique").value || 1);
+      Object.keys(pf).forEach(cid => pf[cid].forEach(bi => { uses[bi] = (uses[bi] || 0) + 1; BANK.lineups[bi].ids.forEach(id => { nu[id] = (nu[id] || 0) + 1; }); }));
+      Object.keys(nu).forEach(id => { if (nu[id] > nl) v["night::" + id] = nu[id] - nl; });
+      Object.keys(uses).forEach(bi => { if (uses[bi] > mu) v["uses::" + bi] = uses[bi] - mu; });
+      nbContests().forEach(x => { const cid = String(x.c.id), c = {}, L = pf[cid] || [], o = pickRules(x.n);
+        L.forEach(bi => BANK.lineups[bi].ids.forEach(id => { c[id] = (c[id] || 0) + 1; }));
+        Object.keys(c).forEach(id => { const lim = DKSim.expoLimit(Math.min(o.maxExpo, state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1), x.n); if (c[id] > lim) v["contest:" + cid + ":" + id] = c[id] - lim; });
+        L.forEach((a, i) => L.forEach((b, j) => { if (j > i && BANK.lineups[a].ids.filter(id => BANK.lineups[b].ids.includes(id)).length > 8 - minU) v["unique:" + cid + ":" + a + "|" + b] = 1; }));
+      });
+      return v;
+    };
+    const after = s => { const pf = JSON.parse(JSON.stringify(PF)); pf[s.cid] = s.out == null ? (pf[s.cid] || []).concat([s.inn]) : pf[s.cid].map(bi => bi === s.out ? s.inn : bi); return pf; };
+    const worse = s => { const v0 = viol(PF), v1 = viol(after(s)); return Object.keys(v1).filter(k => v1[k] > (v0[k] || 0)); };
+    document.getElementById("swapOpen").click();
+    for (let t = 0; t < 600 && SWAP.list == null && !/Set the rule|No kept|No swap|failed/.test($("swapBox").textContent); t++) await new Promise(r => setTimeout(r, 100));
+    const off = (SWAP.list || []).map(s => ({ brk: s.brk.length, worse: worse(s), hasHot: BANK.lineups[s.inn].ids.includes(hot), outHot: s.out != null && BANK.lineups[s.out].ids.includes(hot) }));
+    const rowsOff = document.querySelectorAll("#swapBox .swr").length, boldHot = [...document.querySelectorAll("#swapBox .swr b")].some(b => b.textContent === shortName(byId(roomy).name));
+    $("maxNight").value = String(Math.max(1, Math.floor(100 * used[hot] / nightEntries())));     // second pass: tonight's most-held player at the night cap
+    const offHot = (await (async () => { [...$("rtList").options].forEach(o => { o.selected = false; }); rtSet([hot], 1); await swapFind();     // the at-cap player, Break cap off
+      return (SWAP.list || []).map(s => ({ brk: s.brk.length, worse: worse(s), hasHot: BANK.lineups[s.inn].ids.includes(hot), outHot: s.out != null && BANK.lineups[s.out].ids.includes(hot) })); })());
+    document.getElementById("swapBreak").click();       // Break cap on: re-runs
+    for (let t = 0; t < 600 && !(SWAP.brk && SWAP.list != null) && !/No swap|failed/.test($("swapBox").textContent); t++) await new Promise(r => setTimeout(r, 100));
+    const on = (SWAP.list || []).map(s => ({ brk: s.brk, worse: worse(s).length, outHot: s.out != null && BANK.lineups[s.out].ids.includes(hot) }));
+    const named = on.filter(s => !s.outHot).every(s => s.brk.some(b => b === shortName(byId(hot).name) + " night " + $("maxNight").value + "%"));
+    const shown = [...document.querySelectorAll("#swapBox .swr")].map(x => x.textContent);
+    // apply the first, then undo
+    const snap = JSON.stringify(PF), s0 = SWAP.list && SWAP.list[0];
+    document.querySelector("#swapBox .swapApply") && document.querySelector("#swapBox .swapApply").click();
+    const applied = !!s0 && PF[s0.cid].includes(s0.inn) && (s0.out == null || !PF[s0.cid].includes(s0.out)) && JSON.stringify(PF) !== snap && !document.getElementById("swapUndo").disabled;
+    const stored = !!s0 && JSON.stringify(store("dkcbb-pf:" + slate.draft_group_id)) === JSON.stringify(PF);
+    document.getElementById("swapUndo").click();
+    const back = JSON.stringify(PF) === snap && JSON.stringify(store("dkcbb-pf:" + slate.draft_group_id)) === snap && document.getElementById("swapUndo").disabled;
+    SWAP.brk = false; $("maxNight").value = mn0;
+    [...$("rtList").options].forEach(o => { o.selected = sel0.includes(o.value); }); $("rtType").value = type0; rtChips();
+    return { box: $("swapBox").textContent.slice(0, 300), hot: shortName(byId(hot).name), roomy: shortName(byId(roomy).name), off, offHot, rowsOff, boldHot, on: on.length, named, shown: shown.slice(0, 2), applied, stored, back, rule: SWAP.rule && SWAP.rule.label };
+  });
+  check("swap one in: with Break cap off, the best (up to 5) swaps across the night, none leaving a contest over a cap it wasn't over (contest, night, Min unique, Max contests per lineup); the at-cap player comes in only by taking him out; the rule's players in bold",
+        swp.off.length > 0 && swp.off.concat(swp.offHot).every(x => x.brk === 0 && x.worse.length === 0) && swp.offHot.every(x => !x.hasHot || x.outHot) &&
+        swp.rowsOff === swp.off.length && swp.rowsOff <= 5 && swp.boldHot, JSON.stringify(swp));
+  check("swap one in: Break cap lists the swaps that break one, each naming the cap (\"<player> night <n>%\"), with EV and ROI change",
+        swp.on > 0 && swp.named && swp.shown.every(t => /→ .+ · EV [+-]\$[\d,]+\.\d\d/.test(t)), JSON.stringify(swp));
+  check("swap one in: Apply puts the lineup in (saved), Undo restores the exact portfolios", swp.applied && swp.stored && swp.back, JSON.stringify(swp));
+  await pg.evaluate(p => { PF = JSON.parse(p); pfSave(); renderEntries(); review(BP.review); }, pf0);
   // the Players list under the lineups: this contest's and tonight's exposure, the room under the binding cap
   const nb_pp = await pg.evaluate(() => {
     const id = BP.pool[BP.b.picked[0]].ids[0], r = document.querySelector('#fillPlayersSlot #players .row[data-id="' + id + '"]');
@@ -2088,6 +2193,19 @@ function audit(name, L, o) {
     [...document.getElementById("rtList").options].forEach(o => { o.selected = sel0.indexOf(o.value) >= 0; }); document.getElementById("rtType").value = type0; rtChips(); showEditor();
     return r;
   });
+  // the Fill step's new pieces on a phone: the guide atop the list, the swap box and the top-up setting inside 390px
+  const mobFill = await pg.evaluate(async () => {
+    const st0 = OPEN_STEP, nb0 = NB.on; showStep("fill"); document.getElementById("fillSet").open = true; if (!nb0) nbSet(true);
+    let rm = null; if (NB.on && BP && BP.review) { if (BP.b.picked.length >= BP.o.n) { rm = BP.b.picked[0]; BP.b.remove(rm); bpRescore(); } nbRender(); }
+    swapRender("phone check"); await new Promise(r => requestAnimationFrame(r));
+    const right = id => { const e = document.getElementById(id); return e && !e.hidden ? Math.round(e.getBoundingClientRect().right) : null; };
+    const r = { page: document.documentElement.scrollWidth, guide: right("nbGuide"), swap: right("swapBox"), top: document.getElementById("autoTopUp").getBoundingClientRect().right };
+    if (rm != null) { BP.b.add(rm); bpRescore(); nbRender(); }
+    $("swapBox").hidden = true; document.getElementById("fillSet").open = false; if (!nb0) nbSet(false); showStep(st0);
+    return r;
+  });
+  check("phone (390px): the guide, the swap box and the Auto top-up setting fit without sideways page scroll",
+        mobFill.page <= 390 && mobFill.guide > 0 && mobFill.guide <= 390 && mobFill.swap != null && mobFill.swap <= 390 && mobFill.top <= 390, JSON.stringify(mobFill));
   await pg.setViewportSize({ width: 1100, height: 900 });
   const desk = await pg.evaluate(() => { renderPlayers(); const sb = document.querySelector("#players .row .setadd"), t = document.getElementById("setToast");
     return { set: !!sb && getComputedStyle(sb).display !== "none", lxW: document.querySelector("#players .row .lx").getBoundingClientRect().width, toastHidden: !t || t.hidden || true }; });

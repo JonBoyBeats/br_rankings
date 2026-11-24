@@ -141,6 +141,9 @@
   #nbList tr.kid { opacity: .92; }
   #nbList .nm { white-space: normal; min-width: 200px; }
   #nbList button, #nbFilters button { height: 22px; padding: 0 7px; font-size: 11.5px; }
+  #nbGuide { padding: 6px 8px; font-size: 12px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--live) 7%, transparent); }
+  #nbGuide > div { margin: 2px 0; overflow-wrap: anywhere; }
+  #swapBox .swr { margin: 4px 0; overflow-wrap: anywhere; }
   #nbFilters { font-size: 12px; margin: 0 0 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
   details.card { margin: 6px 0 4px; font-size: 12.5px; }
   details.card summary { cursor: pointer; color: var(--muted); }
@@ -484,11 +487,13 @@
     <label class="field" title="Unique within a contest; across contests one lineup can go in this many (1: each lineup in one contest only, the rule until 2026-11-19). Each contest has its own prizes, so a copy in another contest splits nothing; it adds swing. Fill all contests and the builder both keep to it"><span class="field-label">Max contests per lineup</span><input class="num" id="maxUse" type="number" min="1" max="10" step="1" value="3"></label>
     <label class="field" title="Locks are a draw-time rule: with Draws only (the default), a locked player is in every lineup you draw but Fill all contests, Auto-fill and hand adds cap him like anyone else (Max exposure, his Max%, the night cap). Draws and fill: a locked player is also exempt from those caps in the fill"><span class="field-label">Locks apply to</span><select id="lockFill" style="width:auto">
       <option value="draws">Draws only</option><option value="fill">Draws and fill</option></select></label>
+    <label class="field" title="When Fill all contests or Finish for me leaves seats open after its relax steps, add the lineup that breaks the caps least (Add best) to each open seat, one at a time, until every contest is full; the note lists each over-cap add (the operator, 2026-11-24: caps_backtest_2026-11-24 setting (e)). Off: seats stay open with the stranded-seat line"><span class="field-label">Auto top-up</span><input type="checkbox" id="autoTopUp" checked></label>
   </div></details>
   <div class="opts" id="fillButtons">
     <button type="button" class="primary" id="pfRun">Fill all contests</button>
     <button type="button" id="bpAuto" disabled>Auto-fill the rest</button>
     <button type="button" id="pfUndo" disabled title="Put back the portfolios the last fill replaced">Undo fill</button>
+    <button type="button" id="swapOpen" title="Before lock: the best few swaps across the night that bring in lineups meeting the rule editor's rule (or your +set players), each within the caps">Swap one in</button>
     <button type="button" id="pfNights" title="Draw new simulated nights for this slate (the fills, the builder and the scoreboard all use the slate's nights)">New nights</button>
     <button type="button" id="pfExport" disabled>Export DK entries</button>
     <button type="button" id="bankSave">Save build</button>
@@ -499,6 +504,7 @@
   </div>
   <div class="note" id="fillUnder"></div>
   <div class="note" id="strandBox" hidden></div>
+  <div class="note" id="swapBox" hidden></div>
   <div id="s2out">
   <div id="entriesBox"></div>
   <div id="pfBox"></div>
@@ -2551,7 +2557,7 @@ function bpOver(k) {          // the players lineup k would take past their limi
   var count = {}, why = {}, limit = bpLimits(why);
   BP.b.picked.forEach(function (j) { BP.pool[j].ids.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
   return BP.pool[k].ids.filter(function (id) { return limit[id] != null && (count[id] || 0) + 1 > limit[id]; })
-    .map(function (id) { return { name: byId(id).name, n: count[id] || 0, limit: limit[id], night: why[id] === "night" }; });
+    .map(function (id) { return { id: id, name: byId(id).name, n: count[id] || 0, limit: limit[id], night: why[id] === "night" }; });
 }
 /* What lineup k would break as a hand add, as reasons: a player past his limit (Max exposure / Max%), too few players
    different from a pick (Min unique), or its core (three highest salaries) past Max core. "Add anyway" overrides. */
@@ -2624,7 +2630,14 @@ async function bpAuto() {
     if (stages[stg][1] && b.picked.length > had) relaxed.push(stages[stg][1] + " to fill " + (b.picked.length - had) + " slot" + (b.picked.length - had === 1 ? "" : "s"));
   }
   bpCommit();
-  bpRender((relaxed.length ? relaxed.join("; ") + ". " : "") + (b.picked.length < o.n ? "Auto-fill stopped at " + b.picked.length + ": no lineup left fits Max exposure, Min unique, Max core and Max pair (a bigger Keep helps)." : "") + lockNote());
+  var stopped = b.picked.length, tu = "";
+  if (BP.review && stopped < o.n && (tu = autoTopUp(BP.review))) {     // Auto top-up: the open seats, Add best one at a time
+    var pos = {}; BP.idx.forEach(function (bi, k) { pos[bi] = k; });
+    b.set(PF[BP.review].map(function (bi) { return pos[bi]; }).filter(function (k) { return k != null; })); bpRescore(); bpCommit();
+  }
+  renderStrand();
+  bpRender((relaxed.length ? relaxed.join("; ") + ". " : "") + (stopped < o.n ? "Auto-fill stopped at " + stopped + ": no lineup left fits Max exposure, Min unique, Max core and Max pair (a bigger Keep helps)." : "") +
+    (tu ? " " + tu + "." : "") + lockNote());
 }
 
 /* The builder's filters: players, combos (two players) and cores (a lineup's three highest salaries, as Max core counts
@@ -2799,9 +2812,20 @@ function nbSetStats(cid) {
   return (NB.cache[key] = { exp: b.total(), fee: (c.entry_fee || 0) * L.length, n: L.length, t10: m(st.top10), t1: m(st.top1), cash: m(st.cash) });
 }
 function nbSumText(label, x) {
-  if (!x || !x.n) return "<b>" + label + ":</b> nothing picked";
-  return "<b>" + label + ":</b> " + x.n + " entr" + (x.n === 1 ? "y" : "ies") + " · ROI " + (x.fee ? roiTxt((x.exp - x.fee) / x.fee) : "–") + " · top 10% " + pct1(x.t10) +
+  if (!x || !x.n) return "<b>" + label + ":</b> " + (x && x.of ? "0/" + x.of + " filled" : "nothing picked");
+  return "<b>" + label + ":</b> " + (x.of ? x.n + "/" + x.of + " filled" : x.n + " entr" + (x.n === 1 ? "y" : "ies")) + " · ROI " + (x.fee ? roiTxt((x.exp - x.fee) / x.fee) : "–") + " · top 10% " + pct1(x.t10) +
     " · top 1% " + pct1(x.t1) + " · cash " + pct1(x.cash) + " <span class=\"mut\">(each entry alone; ROI on the set)</span>";
+}
+// guided fill's header: this contest's three most-held players, each against his cap here and the night cap
+function nbCoreText() {
+  if (!BP || !BP.review || !BP.b.picked.length) return "";
+  var cnt = {}, o = BP.o, nl = nightLimit(), used = nightUsed(null);
+  BP.b.picked.forEach(function (k) { BP.pool[k].ids.forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; }); });
+  return ' · <span id="nbCore">core: ' + Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; }).slice(0, 3).map(function (id) {
+    var cp = state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1, lim = fillLock()[id] ? o.n : DKSim.expoLimit(Math.min(o.maxExpo, cp), o.n);
+    var at = cnt[id] >= lim || (nl < Infinity && !fillLock()[id] && (used[id] || 0) >= nl);
+    return "<span" + (at ? ' class="bad"' : "") + ">" + esc(shortName(byId(id).name)) + " " + cnt[id] + "/" + lim + (nl < Infinity ? " (night " + (used[id] || 0) + "/" + nl + ")" : "") + "</span>";
+  }).join(", ") + "</span>";
 }
 function nbRender() {
   if (!NB.on || !slate) return;
@@ -2817,6 +2841,7 @@ function nbRender() {
     var p = BP.b.picked, mean = function (a) { return p.reduce(function (t, k) { return t + a[k]; }, 0) / Math.max(1, p.length); };
     here = { exp: BP.b.total(), fee: (BP.contest.entry_fee || 0) * p.length, n: p.length, t10: mean(BP.t10), t1: mean(BP.t1), cash: mean(BP.cashR) };
   }
+  var hereSum = here ? Object.assign({}, here, { of: BP.o.n }) : null;
   var night = { exp: 0, fee: 0, n: 0, t10: 0, t1: 0, cash: 0 };
   cs.forEach(function (x) {
     var cid = String(x.c.id), y = cid === cur ? here : nbSetStats(cid);
@@ -2826,7 +2851,7 @@ function nbRender() {
   if (night.n) { night.t10 /= night.n; night.t1 /= night.n; night.cash /= night.n; }
   var tA = topTenth(), C = ownClump();
   var picks = Object.keys(PF).reduce(function (a, k) { return a.concat(PF[k].map(function (bi) { return BANK.lineups[bi].ids; })); }, []), pa = C && C.at(picks);
-  $("nbSum").innerHTML = (cur ? nbSumText(nbShort(BP.contest.name), here) + "<br>" : "") + nbSumText("Tonight", night) +
+  $("nbSum").innerHTML = (cur ? nbSumText(nbShort(BP.contest.name), hereSum) + nbCoreText() + "<br>" : "") + nbSumText("Tonight", night) +
     (tA ? "<br><span>" + topTenthText(tA) + "</span>" : "") +
     (C ? '<br><span id="nbOwnPos"><b>Own position:</b> ' + clumpText(C) + (pa ? "; picks at the field's " + ordinal(pa.pct) + " percentile (" + Math.round(pa.mean) + "%)" : "; no picks yet") + "</span>" : "");
   nbListRender();
@@ -2843,7 +2868,8 @@ function nbListRender() {
     if (pbi != null && pos[pbi] != null && pos[pbi] !== k && !bpHidden(pos[pbi])) { parentOf[k] = pos[pbi]; (kids[pos[pbi]] = kids[pos[pbi]] || []).push(k); }
   });
   var rest = [], hidden = 0;
-  for (var k = 0; k < BP.pool.length; k++) if (picked.indexOf(k) < 0) { if (bpHidden(k)) hidden++; else if (parentOf[k] == null) rest.push(k); }
+  var cand = [];
+  for (var k = 0; k < BP.pool.length; k++) if (picked.indexOf(k) < 0) { if (bpHidden(k)) hidden++; else { cand.push(k); if (parentOf[k] == null) rest.push(k); } }
   var active = [];
   ["p", "pair", "core"].forEach(function (kind) { Object.keys(bpFilt[kind]).forEach(function (x) { active.push([kind, x, bpFilt[kind][x]]); }); });
   $("nbFilters").innerHTML = '<span class="mut">' + rest.length + " in view" + (hidden ? ", " + hidden + " hidden by filters" : "") + "</span>" + active.map(function (f) {
@@ -2873,7 +2899,41 @@ function nbListRender() {
     html += '<tr class="tierh"><td colspan="10">' + gr[1] + " in this contest · " + ks.length + "</td></tr>" + ks.slice(0, show).map(function (k) { return row(k, false); }).join("") +
       (ks.length > show ? '<tr><td colspan="10" class="l"><button type="button" class="nbMore" data-t="' + t + '">Show ' + Math.min(60, ks.length - show) + " more of " + (ks.length - show) + "</button></td></tr>" : "");
   });
-  $("nbList").innerHTML = "<table>" + html + "</table>";
+  $("nbList").innerHTML = nbGuide(cand, by) + "<table>" + html + "</table>";
+}
+/* Guided fill (2026-11-24, the operator): the contest's next best lineup pinned above its list, the one that adds the
+   most to the set's expected payout under every cap, with a computed reason; one tap adds it, the list re-scores and the
+   next one appears. The best capped lineup shows too when it would beat it, with the cap that holds it. Finish for me
+   runs Auto-fill the rest (with Auto top-up, then the stranded-seat line). */
+function nbGuide(cand, by) {
+  var picked = BP.b.picked, n = BP.o.n, nm = function (k) { return DKSim.lateSlots(ctx(), BP.pool[k].ids).map(function (id) { return esc(shortName(by[id].name)); }).join(" · "); };
+  if (picked.length >= n) return '<div id="nbGuide"><div><b>Set full</b> · ' + picked.length + " of " + n + ' filled. <span class="mut">Swap one in (Fill buttons) looks for a better one under the caps.</span></div></div>';
+  var ks = cand.filter(function (k) { return BP.scores[k]; }).sort(function (a, b) { return BP.scores[b].value - BP.scores[a].value; }), best = -1, cap = -1, capWhy = null;
+  for (var i = 0; i < ks.length; i++) { var bl = bpBlocks(ks[i]); if (!bl.length) { best = ks[i]; break; } if (cap < 0) { cap = ks[i]; capWhy = bl; } }
+  var fin = '<button type="button" class="nbFinish" title="Auto-fill the rest of this contest (then Auto top-up if it is on)">Finish for me</button>';
+  return '<div id="nbGuide"><div><b>Next best</b> · ' + picked.length + " of " + n + " filled " + fin + "</div>" +
+    (best >= 0 ? '<div class="nbNext"><button type="button" class="bpAdd" data-k="' + best + '">Add</button> ' + nm(best) + '<br><span class="mut nbWhy">' + esc(nbWhy(best)) + "</span></div>"
+               : '<div class="mut">No lineup left fits every cap: Finish for me relaxes them a step at a time' + (topUpOn() ? ", then Auto top-up adds the one that breaks them least" : "") + ".</div>") +
+    (cap >= 0 ? '<div class="nbCapped mut"><button type="button" class="bpForce" data-k="' + cap + '" title="' + esc(capWhy.join("; ")) + '">Add anyway</button> ' + nm(cap) +
+       " · +" + cents(BP.scores[cap].value) + " · <b>capped: " + esc(capShort(cap)) + "</b></div>" : "") + "</div>";
+}
+// the reason, computed: what it adds to the set's expected payout, the nights it reaches the top 1% (else cashes) when
+// none of the set does, and the set's most-held player it goes without
+function nbWhy(k) {
+  var sc = BP.scores[k], cnt = {}, ids = BP.pool[k].ids;
+  BP.b.picked.forEach(function (j) { BP.pool[j].ids.forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; }); });
+  var top = Object.keys(cnt).filter(function (id) { return ids.indexOf(id) < 0; }).sort(function (a, b) { return cnt[b] - cnt[a]; })[0];
+  return "+" + cents(sc.value) + " added" + (sc.top1 > 0 ? ": top 1% on " + pct1(sc.top1) + " of nights your set misses" : sc.cash > 0 ? ": cashes on " + pct1(sc.cash) + " of nights your set doesn't" : "") +
+    (top ? " (no " + shortName(byId(top).name) + ")" : "");
+}
+// the cap that holds lineup k, short: "Evans at 60%", "Evans at the night cap 60%", "Min unique 3", "Max core 15%"
+function capShort(k) {
+  var o = BP.o, out = bpOver(k).map(function (x) {
+    var cp = state.cap[x.id] != null && state.cap[x.id] !== "" ? +state.cap[x.id] / 100 : 1;
+    return shortName(x.name) + (x.night ? " at the night cap " + $("maxNight").value + "%" : " at " + Math.round(100 * Math.min(o.maxExpo, cp)) + "%");
+  });
+  bpBlocks(k).forEach(function (t) { var m = /\((Min unique \d+)\)|\((Max core \d+%)/.exec(t); if (m) out.push(m[1] || m[2]); });
+  return out.join(", ");
 }
 // the condensed player list: this contest's and tonight's exposure, the room left under the binding cap
 // Pairs and Cores: the classic side panel, moved into the right pane while one of them is open
@@ -2912,7 +2972,8 @@ $("nbList").addEventListener("click", function (e) {
   var b = e.target.closest("button"); if (!b) return;
   if (b.classList.contains("nbKids")) { NB.open[+b.dataset.k] = !NB.open[+b.dataset.k]; nbListRender(); return; }
   if (b.classList.contains("nbMore")) { NB.more[b.dataset.t] = (NB.more[b.dataset.t] || 60) + 60; nbListRender(); return; }
-  var k = +b.closest("tr").dataset.k;
+  if (b.classList.contains("nbFinish")) { $("bpAuto").click(); return; }
+  var k = b.dataset.k != null ? +b.dataset.k : +b.closest("tr").dataset.k;
   if (b.classList.contains("bpAdd")) bpAdd(k); else if (b.classList.contains("bpForce")) bpAdd(k, true); else if (b.classList.contains("bpRm")) bpRemove(k);
 });
 
@@ -4012,7 +4073,7 @@ function fillSetText() {
   var v = function (id) { return $(id).value; };
   $("fillSetSum").textContent = "Fill: contest " + (v("maxExpo") || "–") + "% · night " + (v("maxNight") || "off") + (v("maxNight") ? "%" : "") + " · unique " + v("minUnique") + " · core " +
     (v("maxCore") ? v("maxCore") + "%" : "off") + (v("maxPair") ? " · pair " + v("maxPair") + "%" : "") + " · max " + v("maxUse") + " contest" + (+v("maxUse") === 1 ? "" : "s") +
-    " · locks: " + (v("lockFill") === "fill" ? "draws and fill" : "draws only") + " · " + $("pfObj").selectedOptions[0].textContent + " · " + v("nSims") + " nights";
+    " · locks: " + (v("lockFill") === "fill" ? "draws and fill" : "draws only") + " · " + $("pfObj").selectedOptions[0].textContent + " · " + v("nSims") + " nights" + (topUpOn() ? "" : " · auto top-up off");
 }
 $("fillSet").addEventListener("input", fillSetText);
 $("fillSet").addEventListener("change", fillSetText);
@@ -4022,7 +4083,7 @@ $("pfRun").addEventListener("click", function () {
   if (started && !confirm("Replace your portfolios in " + started + " contest" + (started === 1 ? "" : "s") + " with the " + $("pfObj").selectedOptions[0].textContent + " start? (Undo fill puts them back.)")) return;
   if (started) { store(undoKey(), PF); $("pfUndo").disabled = false; }   // the replaced set, for Undo fill
   PF = {}; strandOn = true;
-  pickPortfolios(null, obj).then(function (m) { fillMsg(m); renderStrand(); if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
+  pickPortfolios(null, obj).then(function (m) { var tu = autoTopUp(); fillMsg(m, tu); renderStrand(); if (NB.on) { if (BP && BP.review) review(BP.review); else nbOpen(); } }, function (e) { $("cutStatus").innerHTML = '<span class="bad">Pick failed: ' + esc(e.message) + "</span>"; });
 });
 /* Under-exposed (2026-11-20, C4c): the players, team stacks (3+ from a team) and pairs tonight's entries hold well
    below the sim's preference, read as their share of tier A (the kept lineups within the sim's noise of the best, at
@@ -4070,20 +4131,32 @@ function underExposed() {
   });
   return out;
 }
+// an under-exposed player the caps hold (2026-11-24): at the night cap, or at his limit in every contest you're entering;
+// otherwise the fill took less of him because the lineups with him added less than others did
+function underCapped(id) {
+  if (fillLock()[id]) return false;
+  var nl = nightLimit(), mx = (+$("maxExpo").value || 100) / 100, cp = state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1, cs = nbContests();
+  if (nl < Infinity && (nightUsed(null)[id] || 0) >= nl) return true;
+  return cs.length > 0 && cs.every(function (x) {
+    var c = (PF[String(x.c.id)] || []).filter(function (bi) { return BANK.lineups[bi].ids.indexOf(id) >= 0; }).length;
+    return c >= DKSim.expoLimit(Math.min(mx, cp), x.n);
+  });
+}
 function renderUnder() {
   var u = underExposed(), el = $("fillUnder"); if (!el) return;
   if (!u) { el.innerHTML = ""; return; }
   var pc = function (x) { return Math.round(100 * x) + "%"; }, nm = function (id) { return shortName((byId(id) || {}).name || id); };
   var part = function (label, list, name) { return list.length ? "<b>" + label + ":</b> " + list.map(function (x) { return esc(name(x.k)) + " " + pc(x.have) + " vs " + pc(x.want); }).join(", ") : ""; };
-  var bits = [part("players", u.p, nm), part("team stacks 3+", u.st, function (t) { return t; }), part("pairs", u.pr, function (k) { return k.split("|").map(nm).join(" + "); })].filter(Boolean);
+  var bits = [part("players", u.p, function (id) { return nm(id) + (underCapped(id) ? " (capped)" : " (fill chose less: added value fell off)"); }),
+              part("team stacks 3+", u.st, function (t) { return t; }), part("pairs", u.pr, function (k) { return k.split("|").map(nm).join(" + "); })].filter(Boolean);
   el.innerHTML = bits.length ? "Under-exposed against the top tenth by sim value (held vs there): " + bits.join(" · ") : "";
 }
-function fillMsg(m) {            // after Fill all contests: one line (filled of entries, short contests), the detail in a fold
+function fillMsg(m, tu) {        // after Fill all contests: one line (filled of entries, short contests, the auto top-up), the detail in a fold
   var ns = entriesN(), have = 0, want = 0, short = [];
   nbContests().forEach(function (x) { var k = String(x.c.id), h = Math.min(x.n, (PF[k] || []).length); have += h; want += x.n; if (h < x.n) short.push(nbShort(x.c.name) + " " + h + "/" + x.n); });
   var rx = (String(m).match(/[^;(]*relaxed to \d+% to fill \d+ slots?/g) || []).map(function (x) { return x.trim(); });
   $("cutStatus").innerHTML = esc("Filled " + have + " of " + want + " entries in " + nbContests().length + " contests" + (short.length ? "; short: " + short.join(", ") : "") + "." +
-    (rx.length ? " " + rx.join("; ") + "." : "") + lockNote()) +
+    (rx.length ? " " + rx.join("; ") + "." : "") + (tu ? " " + tu + "." : "") + lockNote()) +
     ' <details style="display:inline"><summary style="display:inline;cursor:pointer" class="mut">details</summary> ' + esc(m) + "</details>";
 }
 /* Stranded seats (2026-11-20, the operator): after Fill all contests or Auto-fill the rest leaves seats open, each short
@@ -4140,6 +4213,157 @@ $("strandBox").addEventListener("click", function (e) {
   var cid = b.dataset.cid; PF[cid] = (PF[cid] || []).concat([+b.dataset.bi]);
   pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
   if (typeof NB !== "undefined" && NB.on && BP && BP.review === cid) review(cid);
+});
+/* Auto top-up (2026-11-24, the operator's decision from caps_backtest_2026-11-24, setting (e)): the 60/60 caps stay;
+   when Fill all contests or Finish for me leaves seats open after its relax steps, each open seat takes the lineup that
+   breaks the caps least (strandFor's Add best), one seat at a time, until every contest is full or the final pool runs
+   out under Max contests per lineup. Returns the note naming each over-cap add ("" when nothing was added). On by
+   default; off, the seats stay open with the stranded-seat line. only: one contest's id (Finish for me). */
+function topUpOn() { var x = $("autoTopUp"); return !x || x.checked; }
+function autoTopUp(only) {
+  if (!topUpOn() || !BANK || !slate) return "";
+  var notes = [];
+  nbContests().forEach(function (x) {
+    var cid = String(x.c.id); if (only && cid !== only) return;
+    var seats = 0, br = {}, order = [];
+    while ((PF[cid] || []).length < x.n) {
+      var b = strandFor(cid, x.n).best; if (!b) break;
+      PF[cid] = (PF[cid] || []).concat([b.bi]); seats++;
+      b.over.forEach(function (o) {
+        var key = o[1] === "unique" ? "Min unique" : shortName((byId(o[0]) || {}).name || o[0]) + "|" + o[1];
+        if (br[key] == null) { br[key] = 0; order.push(key); }
+        br[key]++;
+      });
+    }
+    if (!seats) return;
+    var brk = order.map(function (k) { var p = k.split("|"); return p.length === 1 ? "Min unique" + (br[k] > 1 ? " x" + br[k] : "") : p[0] + " +" + br[k] + " " + p[1]; });
+    notes.push(nbShort(x.c.name) + " " + seats + " seat" + (seats === 1 ? "" : "s") + (brk.length ? ", breaks " + brk.join(", ") : ", no cap broken"));
+  });
+  if (!notes.length) return "";
+  pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
+  return "auto top-up: " + notes.join("; ");
+}
+(function () {
+  var x = $("autoTopUp"); if (!x) return;
+  try { if (localStorage.getItem("dkcbb:autoTopUp") === "false") x.checked = false; } catch (e) {}
+  x.addEventListener("change", function () { try { localStorage.setItem("dkcbb:autoTopUp", String(x.checked)); } catch (e) {} fillSetText(); });
+})();
+/* Swap one in (2026-11-24, the operator): before lock, across the whole night. The rule is the rule editor's (or the
+   players +set put there: template 5). In: the kept lineups meeting it (an If rule's player in, an If-team's count met),
+   the top N by solo value (the cut's board), not already in that contest. Out: every lineup in every contest's portfolio;
+   a contest with an open seat also offers a pure add. Each pair is scored by the builder's set value on that contest's
+   nights with the one lineup replaced; a swap must keep the contest within its caps (Max exposure and his Max%, the
+   night cap as it now stands, Min unique, Max contests per lineup, Max core): a swap breaks a cap only where it takes a
+   player, a core or a lineup past its limit and further than before. Break cap lets those through and names the cap.
+   The best 5 across the night (one per contest and lineup in), one tap to apply, Undo puts the portfolios back exactly. */
+var SWAP = { list: null, undo: null, brk: false, N: 40 };
+function swapMeets(r, ids) {
+  if (!DKSim.passes(r, ids)) return false;
+  var cnt = function (set) { return (set || []).filter(function (id) { return ids.indexOf(id) >= 0; }).length; };
+  if (r.type === "if") return ids.indexOf(r.ids[0]) >= 0;
+  if (r.type === "ifteam") return cnt(r.set) >= r.n;
+  return true;
+}
+async function swapFind() {
+  SWAP.list = null;
+  if (!slate || !BANK || !BANK.lineups.length) return swapRender("Bank and cut first.");
+  if (slate.locked) return swapRender("The slate has locked: swaps after lock go through Late swap.");
+  var r = editorRule();
+  if (!r) return swapRender("Set the rule first: +set players (template 5) or a rule in the rule editor.");
+  var cs = nbContests(); if (!cs.length) return swapRender("Set your entries for at least one contest.");
+  var mu = maxUses(), nl = nightLimit(), used = nightUsed(null), uses = {}, S = +$("nSims").value || 3000, lk = fillLock(), out = [];
+  Object.keys(PF).forEach(function (k) { PF[k].forEach(function (bi) { uses[bi] = (uses[bi] || 0) + 1; }); });
+  var val = {}; if (CUT && CUT.keep && CUT.board && CUT.board.values) CUT.keep.forEach(function (bi, k) { val[bi] = CUT.board.values[k] || 0; });
+  var ins = finalIdx().filter(function (bi) { return swapMeets(r, BANK.lineups[bi].ids); }).sort(function (a, b) { return (val[b] || 0) - (val[a] || 0); }).slice(0, SWAP.N);
+  if (!ins.length) return swapRender("No kept lineup meets " + r.label + ".");
+  for (var ci = 0; ci < cs.length; ci++) {
+    var x = cs[ci], c = x.c, cid = String(c.id), n = x.n, have = (PF[cid] || []).slice(), H = have.length, o = pickRules(n);
+    var inC = ins.filter(function (bi) { return have.indexOf(bi) < 0; });
+    if (!inC.length) continue;
+    swapRender("Scoring " + nbShort(c.name) + " (" + (ci + 1) + " of " + cs.length + ")…"); await tick();
+    var L = have.concat(inC).map(function (bi) { return BANK.lineups[bi]; }), fee = c.entry_fee || 0;
+    var sim = DKSim.simulate(nightsCtx(c), L, fieldFor(c), fieldDoc.z, c, n, S), b = DKSim.builder(sim, c);
+    b.set(have.map(function (_, i) { return i; }));
+    var T0 = b.total(), F0 = fee * H, coreK = o.maxCore ? DKSim.cores(ctx(), L) : null, coreLim = DKSim.coreLimit(o, n);
+    var cnt0 = {}; have.forEach(function (bi) { BANK.lineups[bi].ids.forEach(function (id) { cnt0[id] = (cnt0[id] || 0) + 1; }); });
+    var capOf = function (id) { return Math.min(o.maxExpo, state.cap[id] != null && state.cap[id] !== "" ? +state.cap[id] / 100 : 1); };
+    var lim = function (id) { return lk[id] ? n : DKSim.expoLimit(capOf(id), n); };
+    var best = {};
+    for (var j = H < n ? -1 : 0; j < H; j++) {         // -1: a pure add into an open seat
+      var jIds = j >= 0 ? L[j].ids : [], Tm = T0;
+      if (j >= 0) { b.remove(j); Tm = b.total(); }
+      for (var k = H; k < L.length; k++) {
+        var ids = L[k].ids, bi = inC[k - H], gain = b.score(k).value, T1 = Tm + gain, F1 = j >= 0 ? F0 : F0 + fee, brk = [];
+        ids.forEach(function (id) {
+          var was = cnt0[id] || 0, now = was - (jIds.indexOf(id) >= 0 ? 1 : 0) + 1;
+          if (now > lim(id) && now > was) brk.push(shortName(byId(id).name) + " contest " + Math.round(100 * capOf(id)) + "%");
+          var nw = used[id] || 0, nn = nw - (jIds.indexOf(id) >= 0 ? 1 : 0) + 1;
+          if (!lk[id] && nl < Infinity && nn > nl && nn > nw) brk.push(shortName(byId(id).name) + " night " + $("maxNight").value + "%");
+        });
+        if (have.some(function (bj, i) { return i !== j && BANK.lineups[bj].ids.filter(function (id) { return ids.indexOf(id) >= 0; }).length > 8 - o.minUnique; })) brk.push("Min unique " + o.minUnique);
+        if ((uses[bi] || 0) + 1 > mu) brk.push("Max contests per lineup " + mu);
+        if (coreLim) {
+          var cw = 0; for (var q = 0; q < H; q++) if (coreK[q] === coreK[k]) cw++;
+          var cn = cw - (j >= 0 && coreK[j] === coreK[k] ? 1 : 0) + 1;
+          if (cn > coreLim && cn > cw) brk.push("Max core " + Math.round(100 * o.maxCore) + "%");
+        }
+        if (brk.length && !SWAP.brk) continue;
+        var d = T1 - F1 - (T0 - F0);
+        if (!best[bi] || d > best[bi].d) best[bi] = { cid: cid, name: nbShort(c.name), out: j >= 0 ? have[j] : null, inn: bi, d: d,
+          roi0: F0 ? (T0 - F0) / F0 : null, roi1: F1 ? (T1 - F1) / F1 : null, brk: brk };
+      }
+      if (j >= 0) b.add(j);
+    }
+    Object.keys(best).forEach(function (bi) { out.push(best[bi]); });
+  }
+  out.sort(function (a, b) { return b.d - a.d; });
+  var pos = out.filter(function (s) { return s.d > 0; });
+  SWAP.list = pos.slice(0, 5); SWAP.rule = r;
+  swapRender(pos.length ? "" : out.length ? "No swap raises the night's expected value (best: " + (out[0].d >= 0 ? "+" : "-") + cents(Math.abs(out[0].d)) + ")." :
+             "No swap passes the caps" + (SWAP.brk ? "." : ": Break cap shows the ones that break one."));
+}
+function swapRender(msg) {
+  var box = $("swapBox"), r = editorRule(), hot = r ? swapRuleIds(r) : [];
+  var nm = function (bi) { return DKSim.lateSlots(ctx(), BANK.lineups[bi].ids).map(function (id) { var t = esc(shortName((byId(id) || {}).name || id)); return hot.indexOf(id) >= 0 ? "<b>" + t + "</b>" : t; }).join(" · "); };
+  var roi = function (s) { return s.roi1 == null ? "" : " · ROI " + roiTxt(s.roi0) + " → " + roiTxt(s.roi1); };
+  box.hidden = false;
+  box.innerHTML = '<div><b>Swap one in</b> · rule: ' + (r ? esc(r.label) : "none") + ' · <label><input type="checkbox" id="swapBreak"' + (SWAP.brk ? " checked" : "") + "> break cap</label> " +
+    '<button type="button" id="swapFind">Find swaps</button> <button type="button" id="swapUndo"' + (SWAP.undo ? "" : " disabled") + '>Undo swap</button> <button type="button" class="linkbtn" id="swapClose">Close</button></div>' +
+    (msg ? '<div class="mut">' + esc(msg) + "</div>" : "") +
+    (SWAP.list || []).map(function (s, i) {
+      return '<div class="swr"><button type="button" class="swapApply" data-i="' + i + '">Apply</button> <b>' + esc(s.name) + "</b>: " + (s.out == null ? "open seat" : nm(s.out)) + " → " + nm(s.inn) +
+        " · EV " + (s.d >= 0 ? "+" : "-") + cents(Math.abs(s.d)) + roi(s) + (s.brk.length ? ' · <span class="bad">breaks ' + esc(s.brk.join(", ")) + "</span>" : "") + "</div>";
+    }).join("");
+}
+function swapRuleIds(r) { return [].concat(r.ids || [], r.set || [], r.set2 || []); }
+function swapApply(i) {
+  var s = SWAP.list && SWAP.list[i]; if (!s) return;
+  SWAP.undo = JSON.parse(JSON.stringify(PF));
+  PF[s.cid] = s.out == null ? (PF[s.cid] || []).concat([s.inn]) : PF[s.cid].map(function (bi) { return bi === s.out ? s.inn : bi; });
+  SWAP.list = null;
+  swapDone("Applied in " + s.name + ": EV " + (s.d >= 0 ? "+" : "-") + cents(Math.abs(s.d)) + (s.brk.length ? ", breaks " + s.brk.join(", ") : "") + ". Find swaps again for the next one.");
+}
+function swapUndo() {
+  if (!SWAP.undo) return;
+  PF = SWAP.undo; SWAP.undo = null; SWAP.list = null;
+  swapDone("Undone: the portfolios before the swap are back.");
+}
+function swapDone(msg) {
+  pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES;
+  if (BP && BP.review) review(BP.review); else if (NB.on) nbRender();
+  swapRender(msg); $("swapBox").scrollIntoView({ block: "nearest" });
+}
+$("swapOpen").addEventListener("click", function () { swapFind().catch(function (e) { swapRender("Swap failed: " + e.message); }); });
+$("swapBox").addEventListener("click", function (e) {
+  var b = e.target.closest("button"); if (!b) return;
+  if (b.id === "swapFind") swapFind().catch(function (x) { swapRender("Swap failed: " + x.message); });
+  else if (b.id === "swapUndo") swapUndo();
+  else if (b.id === "swapClose") { $("swapBox").hidden = true; }
+  else if (b.classList.contains("swapApply")) swapApply(+b.dataset.i);
+});
+$("swapBox").addEventListener("change", function (e) {
+  if (e.target.id !== "swapBreak") return;
+  SWAP.brk = e.target.checked; swapFind().catch(function (x) { swapRender("Swap failed: " + x.message); });
 });
 function undoKey() { return "dkcbb-pf-prev:" + slate.draft_group_id; }
 $("pfUndo").addEventListener("click", function () {
