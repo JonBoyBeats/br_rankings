@@ -1794,75 +1794,48 @@ function audit(name, L, o) {
   await pg.fill("#scanN", "20"); await pg.fill("#scanP", "20");
   await pg.click("#scanRun");
   await pg.waitForFunction(() => /^Scanned|failed/.test(document.getElementById("scanStatus").textContent), null, { timeout: 600000 });
-  const sc = await pg.evaluate(() => {
-    const st = scanStacks(), teams = new Set(rows.filter(usable).map(r => r.team)).size, rowsS = SCAN.rows;
-    const sorted = rowsS.every((r, i) => i === 0 || (rowsS[i - 1].thin - r.thin) < 0 || ((rowsS[i - 1].thin === r.thin) && rowsS[i - 1].g_t1 >= r.g_t1 - 1e-12));
-    const gains = rowsS.every(r => Math.abs(r.g_t1 - (r.t1 - SCAN.plain.t1)) < 1e-12 && Math.abs(r.g_t10 - (r.t10 - SCAN.plain.t10)) < 1e-12);
-    const reads = SCAN.bar > 0 && rowsS.every(r => r.read === (r.g_t1 > SCAN.bar ? (r.field < SCAN.fieldMedian[r.kind + r.n] ? "strong, field light" : "strong, field heavy") : r.g_t1 < -SCAN.bar ? "weak" : "even"));
-    const fieldOk = rowsS.every(r => r.field >= 0 && r.field <= 1), thin = rowsS.every(r => r.thin === (r.distinct < SCAN_THIN));
-    return { n: rowsS.length, want: st.length, teams, sorted, gains, reads, fieldOk, thin, table: document.querySelectorAll("#scanTable table:not(#scanPlayers) tr").length, msg: document.getElementById("scanStatus").textContent };
-  });
-  check("slate scan: a row a stack (each team 3+ and 4+, each game 3+ to 5+ with both teams), gains over the plain batch, Read derived, thin flagged, sorted by top-1% gain",
-        sc.n === sc.want && sc.n >= sc.teams * 2 && sc.sorted && sc.gains && sc.reads && sc.fieldOk && sc.thin && sc.table === sc.n + 4, JSON.stringify(sc));
+  // players only (2026-11-24): no team or game stack batches, rows or tables; the plain batch stays as the baseline
+  const sc = await pg.evaluate(() => ({ rows: SCAN.rows.length, plainN: SCAN.plainN, plainDrawn: SCAN.plain.drawn, players: SCAN.players.length,
+    stackSections: [...document.querySelectorAll("#scanTable th[colspan]")].map(t => t.textContent).filter(t => /stacks/i.test(t)), stackBtns: document.querySelectorAll('#scanTable .scanBank[data-i]').length,
+    msg: document.getElementById("scanStatus").textContent, note: document.querySelector("#scanAll .note").textContent }));
+  check("slate scan: players only, no team or game stack rows, tables or Bank this buttons; the plain batch (Plain lineups, at least 100) is the players' baseline",
+        sc.rows === 0 && sc.plainN === 100 && sc.plainDrawn === 100 && sc.players > 20 && !sc.stackSections.length && sc.stackBtns === 0 &&
+        /^Scanned \d+ players \(20 lineups each\) against 100 plain lineups in/.test(sc.msg) && /Players only: the scan has no team or game stacks/.test(sc.note), JSON.stringify(sc));
   // fixed nights: the same scan again gives the same numbers and order
-  const first = await pg.evaluate(() => SCAN.rows.map(r => r.key + ":" + r.g_t1.toFixed(8)).join("|"));
+  const first = await pg.evaluate(() => SCAN.players.map(r => r.key + ":" + r.g_t1.toFixed(8)).join("|"));
   await pg.click("#scanRun");
   await pg.waitForFunction(() => /^Scanned|failed/.test(document.getElementById("scanStatus").textContent) && !document.getElementById("scanRun").disabled, null, { timeout: 600000 });
-  check("slate scan: on the slate's own nights, a rerun repeats exactly (and shows the noise beside each top-1% gain)",
-        (await pg.evaluate(() => SCAN.rows.map(r => r.key + ":" + r.g_t1.toFixed(8)).join("|"))) === first && (await pg.evaluate(() => /\u00b1/.test(document.getElementById("scanTable").textContent))));
-  const scHold = await pg.evaluate(async () => {        // every lineup a stack's batch drew holds the stack
-    const st = scanStacks().find(x => x.kind === "game"), cx = ctx(); cx.state = Object.assign({}, state, { lock: {}, excl: {}, cap: {}, floor: {} }); cx.random = DKSim.seeded(5);
-    const res = await DKSim.pool(cx, Object.assign(drawRules(), { conds: st.conds, levW: 0, minSal: 0, maxTeam: 8, stackN: 0, lowN: 0, maxOwn: null }), 10);
-    return { n: res.lineups.length, all: res.lineups.every(L => scanHolds(st, L.ids)) };
-  });
-  check("slate scan: a game stack's lineups hold the stack (both teams)", scHold.n > 0 && scHold.all, JSON.stringify(scHold));
-  // two sections, each sortable on its own: a header click sorts (again reverses), kept with the slate's scan
-  const so = await pg.evaluate(() => {
-    const order = kind => { const out = [], trs = [...document.querySelectorAll("#scanTable tr")]; let on = false;
-      trs.forEach(tr => { const th = tr.querySelector("th[colspan]"); if (th) { on = th.textContent === (kind === "team" ? "Team stacks" : "Game stacks"); return; }
-        if (on && tr.querySelector(".scanBank")) out.push(SCAN.rows[+tr.querySelector(".scanBank").dataset.i]); }); return out; };
-    const sections = [...document.querySelectorAll("#scanTable table:not(#scanPlayers) th[colspan]")].map(t => t.textContent);
-    const teamOnly = order("team").every(r => r.kind === "team") && order("game").every(r => r.kind === "game");
-    document.querySelector('#scanTable th[data-sk="field"][data-skind="team"]').click();
-    const a = order("team").filter(r => !r.thin), down = a.every((r, i) => i === 0 || a[i - 1].field >= r.field);
-    document.querySelector('#scanTable th[data-sk="field"][data-skind="team"]').click();
-    const b = order("team").filter(r => !r.thin), up = b.every((r, i) => i === 0 || b[i - 1].field <= r.field);
-    const game = order("game").filter(r => !r.thin), gameDefault = game.every((r, i) => i === 0 || game[i - 1].g_t1 >= r.g_t1);
-    const kept = store(scanKey()).sort.team;
-    return { sections, teamOnly, down, up, gameDefault, kept, arrow: /Field holds ↑/.test(document.querySelector('#scanTable th[data-sk="field"][data-skind="team"]').textContent) };
-  });
-  check("slate scan: Team stacks and Game stacks, each sorted on its own by a header click (again reverses, arrow shown), the sort kept with the scan",
-        JSON.stringify(so.sections) === JSON.stringify(["Team stacks", "Game stacks"]) && so.teamOnly && so.down && so.up && so.gameDefault && so.arrow && so.kept && so.kept.k === "field" && so.kept.dir === 1, JSON.stringify(so));
-  const rules0 = await pg.evaluate(() => (state.rules || []).length);
-  await pg.evaluate(() => document.querySelector("#scanTable table:not(#scanPlayers) .scanBank").click());
-  check("slate scan: Bank this adds the stack's rule for the next draw", await pg.evaluate(n => state.rules.length > n && /\d\+/.test(state.rules[state.rules.length - 1].label), rules0));
-  await pg.evaluate(n => { state.rules = state.rules.slice(0, n); save(); renderRules(); }, rules0);
-  // the scan's top reads (up to 5 strongest stacks, the leverage players), each opening its game; the full tables folded
+  check("slate scan: on the slate's own nights, a rerun repeats exactly (and shows the players' noise)",
+        (await pg.evaluate(() => SCAN.players.map(r => r.key + ":" + r.g_t1.toFixed(8)).join("|"))) === first && (await pg.evaluate(() => /±/.test(document.getElementById("scanTable").textContent))));
+  // the reads strip: the leverage players, each opening its game; the team rollup in a closed All scan rows fold
   const trd = await pg.evaluate(() => {
-    const b = [...document.querySelectorAll("#scanTable .topread")], fold = document.getElementById("scanAll"), thick = SCAN.rows.filter(r => !r.thin), tops = (thick.length ? thick : SCAN.rows.slice()).sort((a, c) => c.g_t1 - a.g_t1).slice(0, 5);
-    const stackBtns = b.filter(x => !x.classList.contains("read-leverage")).map(x => x.textContent.split(" ")[0] + " " + x.textContent.split(" ")[1]);
+    const b = [...document.querySelectorAll("#scanTable .topread")], fold = document.getElementById("scanAll");
     const lev = b.filter(x => x.classList.contains("read-leverage")).length, wantLev = SCAN.players.filter(r => !r.thin && r.read === "leverage").length;
-    b[0].click();
-    const opened = view.panel === b[0].dataset.team && !!document.querySelector('#teamPanel .tile[data-team="' + b[0].dataset.team + '"]');
+    let opened = true;
+    if (b[0]) { b[0].click(); opened = view.panel === b[0].dataset.team && !!document.querySelector('#teamPanel .tile[data-team="' + b[0].dataset.team + '"]'); }
     view.panel = null; renderTiles(); renderPlayers();
-    return { n: stackBtns.length, keys: stackBtns, want: tops.map(r => r.key), lev, wantLev, closed: fold && !fold.open, inFold: !!fold.querySelector("th[colspan]"), opened };
+    return { n: b.length, lev, wantLev, closed: fold && !fold.open, roll: !!fold.querySelector("#scanPlayers"), opened, label: document.querySelector("#scanTable .topreads b").textContent };
   });
-  check("slate scan: a Top reads strip (the 5 strongest stacks, the leverage players) opening its game; the full tables and the team rollup in a closed All scan rows fold",
-        trd.n === trd.want.length && JSON.stringify(trd.keys) === JSON.stringify(trd.want) && trd.lev === trd.wantLev && trd.closed && trd.inFold && trd.opened, JSON.stringify(trd));
-  // the game view's scan: game stacks under the header, each team card's 3+ / 4+ rows and its core and leverage players
+  check("slate scan: a Reads strip of the leverage players only (no stack buttons), each opening its game; the team rollup in a closed All scan rows fold",
+        trd.n === trd.lev && trd.lev === trd.wantLev && trd.closed && trd.roll && trd.opened && trd.label === "Reads", JSON.stringify(trd));
+  // the game view's scan block: the team's core and leverage players, no stack rows; an old saved scan's stack rows are ignored
   const gsc = await pg.evaluate(() => {
     const t = teamsOf().teams[0]; view.panel = t.team; view.pside = t.team; renderTiles();
-    const g = gameOf(t.team), gr = [...document.querySelectorAll("#teamPanel table.gstk tr")].length - 1, wantG = SCAN.rows.filter(r => r.kind === "game" && r.game === g).length;
-    const blk = document.querySelector('#teamPanel .tvl .scanblk'), sr = blk.querySelectorAll(".sr").length, wantT = SCAN.rows.filter(r => r.kind === "team" && r.team === t.team).length;
+    const blk = document.querySelector('#teamPanel .tvl .scanblk'), sr = blk.querySelectorAll(".sr").length, bank = blk.querySelectorAll(".scanBank").length;
     const names = [...blk.querySelectorAll(".read-core, .read-leverage")].map(x => x.textContent.replace(/ \((core|leverage)\)$/, "")).sort();
     const wantN = SCAN.players.filter(r => r.team === t.team && !r.thin && (r.read === "core" || r.read === "leverage")).map(r => r.key).sort();
-    const n0 = state.rules.length; blk.querySelector(".scanBank").click(); const added = state.rules.length === n0 + 1 && /\d\+/.test(state.rules[n0].label);
-    state.rules = state.rules.slice(0, n0); save(); renderRules();
+    const keep = SCAN.rows, errs0 = 0;
+    SCAN.rows = [{ key: t.team + " 3+", kind: "team", team: t.team, n: 3, g_t1: 0.5, t1: 0.5, field: 0.1, read: "strong, field light", thin: false, distinct: 99 },
+                 { key: gameOf(t.team) + " 3+", kind: "game", game: gameOf(t.team), n: 3, g_t1: 0.4, t1: 0.4, field: 0.1, read: "weak", thin: false, distinct: 99 }];
+    renderScan(); renderTeamPanel();
+    const old = !/strong, field light|Team stacks|Game stacks/.test(document.getElementById("scanTable").textContent + document.getElementById("teamPanel").textContent) &&
+      !document.querySelector("#teamPanel table.gstk") && !document.querySelector('#scanTable .scanBank[data-i]');
+    SCAN.rows = keep; renderScan();
     view.panel = null; renderTiles(); renderPlayers();
-    return { gr, wantG, sr, wantT, names, wantN, added };
+    return { sr, bank, names, wantN, old };
   });
-  check("game view: no game stack table (2026-11-23); the team's Scan block with its 3+ / 4+ rows and core / leverage players, Bank this working",
-        gsc.gr <= 0 && gsc.wantG >= 1 && gsc.sr === gsc.wantT + 1 && JSON.stringify(gsc.names) === JSON.stringify(gsc.wantN) && gsc.added, JSON.stringify(gsc));
+  check("game view: the team's Scan block lists its core / leverage players with no stack rows; an old saved scan's stack rows load and are ignored",
+        gsc.sr === 1 && gsc.bank === 0 && JSON.stringify(gsc.names) === JSON.stringify(gsc.wantN) && gsc.old, JSON.stringify(gsc));
   // the player scan, at the top: a row for every player in the pool, gains over the same plain
   // batch, Read on the players' own noise and their median field ownership, the team rollup from those reads
   const ps = await pg.evaluate(() => {
@@ -1872,14 +1845,13 @@ function audit(name, L, o) {
     const gains = P.every(r => Math.abs(r.g_t1 - (r.t1 - SCAN.plain.t1)) < 1e-12 && Math.abs(r.g_cash - (r.cash - SCAN.plain.cash)) < 1e-12);
     const noOut = P.every(r => { const x = byId(r.id); return x.status !== "Out" && !x.deepOut; });
     const first = document.querySelector("#scanTable table").id === "scanPlayers" && !document.querySelector('#scanTable th[data-skind="player"]');
-    const roll = SCAN.teamRoll.every(t => t.core.every(r => r.read === "core" && r.team === t.team) && t.lev.every(r => r.read === "leverage" && r.team === t.team) && t.n >= 1 &&
-      (!t.st || (t.st.kind === "team" && t.st.team === t.team)));
+    const roll = SCAN.teamRoll.every(t => t.core.every(r => r.read === "core" && r.team === t.team) && t.lev.every(r => r.read === "leverage" && r.team === t.team) && t.n >= 1 && !("st" in t));
     const rollAll = P.filter(r => !r.thin && (r.read === "core" || r.read === "leverage")).every(r => SCAN.teamRoll.some(t => t.ids.includes(r.id)));
     return { n: P.length, same: JSON.stringify(ids) === JSON.stringify(want), reads, gains, noOut, first, roll, rollAll, sum: SCAN.players.reduce((o, r) => (o[r.read] = (o[r.read] || 0) + 1, o), {}) };
   });
   check("player scan: a row for every player in the pool (none Out, Doubtful or deep bench), gains over the plain batch, Read core/leverage/fade/skip/even from its own noise and the median field own (fade also 15%+ owned); no Players table of its own in the scan (the Players list carries it), the team rollup first",
         ps.n > 20 && ps.same && ps.reads && ps.gains && ps.noOut && ps.first, JSON.stringify(ps));
-  check("player scan: the team rollup lists each team's core and leverage players and its best team stack", ps.roll && ps.rollAll, JSON.stringify(ps));
+  check("player scan: the team rollup lists each team's core and leverage players (no best team stack)", ps.roll && ps.rollAll, JSON.stringify(ps));
   const pHold = await pg.evaluate(async () => {        // a player's batch holds him
     const b = scanPlayers()[3], cx = ctx(); cx.state = Object.assign({}, state, { lock: {}, excl: {}, cap: {}, floor: {} }); cx.random = DKSim.seeded(5);
     const res = await DKSim.pool(cx, Object.assign(drawRules(), { conds: b.conds, levW: 0, minSal: 0, maxTeam: 8, stackN: 0, lowN: 0, maxOwn: null }), 10);
