@@ -453,3 +453,45 @@ def boxes67(brr, logs):
 
 if __name__ == "__main__" and "--boxes67" in sys.argv:
     pass
+
+
+# ---- a 4x-rate box and a ceiling multiple (2026-11-24, the operator's follow-up) --------------------------------------
+# Against the shipped five boxes (variant: half last 5 / half season, season mpg, 75/25 price), all fit held out by
+# slate: (a) a 4x-rate box added beside the 5x rate; (b) the 4x rate in place of it; (c) his ceiling multiple (the mean
+# of his best two games' DK points over tonight's salary, this season) in place of it. Targets: 5x tonight (the
+# primary) and 4x tonight.
+def ceiling(r):
+    g = sorted([q[2] for q in r["games"]] or [q[2] for q in r["last5"]], reverse=True)[:2]
+    return sum(g) / len(g) / (r["sal"] / 1000) if g else None
+
+
+def four_x(brr, logs):
+    slates = load(brr, logs)
+    tags = [t for t, _ in slates]
+    base = {t: features(rows, CK_BLEND, "season", "mix75") for t, rows in slates}
+    x4 = {}
+    ce = {}
+    for t, rows in slates:
+        v = []
+        for r in rows:
+            s = r["sal"] / 1000
+            a, b = rate(r["last5"], s, 4), rate(r["games"], s, 4)
+            v.append(None if a is None and b is None else (a if b is None else b if a is None else CK_BLEND * a + (1 - CK_BLEND) * b))
+        x4[t] = np.array(pct(v))
+        ce[t] = np.array(pct([ceiling(r) for r in rows]))
+    models = {"shipped": lambda t: base[t],
+              "a: + 4x": lambda t: np.column_stack([base[t], x4[t]]),
+              "b: 4x for 5x": lambda t: np.column_stack([base[t][:, :3], x4[t], base[t][:, 4]]),
+              "c: ceiling for 5x": lambda t: np.column_stack([base[t][:, :3], ce[t], base[t][:, 4]])}
+    res = {}
+    for target in ("5x", "4x"):
+        Y = {t: np.array([1 if (r["act"] >= (5 if target == "5x" else 4) * r["sal"] / 1000) else 0 for r in rows]) for t, rows in slates}
+        for name, X in models.items():
+            for h in tags:
+                tr = [t for t in tags if t != h]
+                _, w = fit(np.vstack([X(t) for t in tr]), np.concatenate([Y[t] for t in tr]))
+                s = X(h) @ w
+                res[(target, name, h)] = (auc(s, Y[h]), topk(s, Y[h], 10), topk(s, Y[h], 20))
+    _, wa = fit(np.vstack([models["a: + 4x"](t) for t in tags]),
+                np.concatenate([[r["y"] for r in rows] for t, rows in slates]))
+    return tags, res, wa

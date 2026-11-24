@@ -197,3 +197,31 @@ The operator approved the proposal and it is live: br_rankings `6cc9249`, with t
 - A box that passes joins the score with its fitted weight, and the other weights get refit together.
 - A box that fails stays a mark, or is dropped from the badge if it still shows no signal alone (box 6 looks headed that way).
 - Box 6 should only be judged on nights with a real base bank: whole-bank shares mix in every game group the operator banked after the base.
+
+## A 4x-rate box and a ceiling multiple (the operator's follow-up, held out, the same 12 slates)
+
+**None passes. The shipped 5x-rate box stays as it is.**
+
+**What was tested** (all four columns fit held out by slate):
+- (a) a 4x-rate box beside the 5x rate;
+- (b) the 4x rate in place of the 5x rate;
+- (c) a ceiling multiple in place of the 5x rate: the mean of his best two games this season over tonight's salary.
+
+The 4x rate uses the same half-last-5, half-season blend at tonight's salary. Code: `four_x()` in `scripts/dk_checks_weights.py`; output: `checks_weights_2026-11-24/four_x.json`.
+
+| Target | Model | Mean AUC | Top-10 / top-20 hits | AUC vs shipped (SE) | Slates better |
+|---|---|---|---|---|---|
+| 5x tonight | shipped | 0.683 | 35 / 60 | – | – |
+| 5x tonight | (a) + 4x | 0.673 | 35 / 59 | −0.010 (0.005) | 2 of 12 |
+| 5x tonight | (b) 4x for 5x | 0.600 | 29 / 48 | −0.083 (0.021) | 1 of 12 |
+| 5x tonight | (c) ceiling for 5x | 0.630 | 33 / 52 | −0.053 (0.026) | 4 of 12 |
+| 4x tonight | shipped | 0.646 | 60 / 105 | – | – |
+| 4x tonight | (a) + 4x | 0.645 | 60 / 106 | −0.001 (0.001) | 0 of 12 |
+| 4x tonight | (b) 4x for 5x | 0.615 | 56 / 105 | −0.031 (0.017) | 4 of 12 |
+| 4x tonight | (c) ceiling for 5x | 0.632 | 53 / 106 | −0.014 (0.013) | 3 of 12 |
+
+- **(a)** gets a small weight in the joint fit (0.18 of 7) and slightly worsens the held-out ranking.
+- **(b) and (c)** are clearly worse at picking 5x players.
+- **Against a 4x-tonight target**, the shipped 5x-rate score still ranks best, so the 4x rate is not the steadier signal here.
+
+No new weights, green line or fringe check is proposed.
