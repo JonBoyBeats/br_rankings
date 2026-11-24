@@ -1867,7 +1867,7 @@ function audit(name, L, o) {
   const ps = await pg.evaluate(() => {
     const want = rows.filter(r => usable(r)).map(r => r.id).sort(), P = SCAN.players, m = SCAN.pownMedian;
     const ids = P.map(r => r.id).sort(), bar = SCAN.pbar;
-    const reads = bar > 0 && P.every(r => r.read === (r.g_t1 > bar ? (r.fown >= m ? "core" : "leverage") : r.g_t1 < -bar ? (r.fown >= m ? "fade" : "skip") : r.g_t1 > 0 ? (r.fown >= m ? "lean core" : "lean leverage") : "even"));
+    const reads = bar > 0 && P.every(r => r.read === (r.g_t1 > bar ? (r.fown >= m ? "core" : "leverage") : r.g_t1 < -bar ? (r.fown >= m && r.fown >= 15 ? "fade" : "skip") : r.g_t1 > 0 ? (r.fown >= m ? "lean core" : "lean leverage") : "even"));
     const gains = P.every(r => Math.abs(r.g_t1 - (r.t1 - SCAN.plain.t1)) < 1e-12 && Math.abs(r.g_cash - (r.cash - SCAN.plain.cash)) < 1e-12);
     const noOut = P.every(r => { const x = byId(r.id); return x.status !== "Out" && !x.deepOut; });
     const first = document.querySelector("#scanTable table").id === "scanPlayers" && !document.querySelector('#scanTable th[data-skind="player"]');
@@ -1876,7 +1876,7 @@ function audit(name, L, o) {
     const rollAll = P.filter(r => !r.thin && (r.read === "core" || r.read === "leverage")).every(r => SCAN.teamRoll.some(t => t.ids.includes(r.id)));
     return { n: P.length, same: JSON.stringify(ids) === JSON.stringify(want), reads, gains, noOut, first, roll, rollAll, sum: SCAN.players.reduce((o, r) => (o[r.read] = (o[r.read] || 0) + 1, o), {}) };
   });
-  check("player scan: a row for every player in the pool (none Out, Doubtful or deep bench), gains over the plain batch, Read core/leverage/fade/skip/even from its own noise and the median field own; no Players table of its own in the scan (the Players list carries it), the team rollup first",
+  check("player scan: a row for every player in the pool (none Out, Doubtful or deep bench), gains over the plain batch, Read core/leverage/fade/skip/even from its own noise and the median field own (fade also 15%+ owned); no Players table of its own in the scan (the Players list carries it), the team rollup first",
         ps.n > 20 && ps.same && ps.reads && ps.gains && ps.noOut && ps.first, JSON.stringify(ps));
   check("player scan: the team rollup lists each team's core and leverage players and its best team stack", ps.roll && ps.rollAll, JSON.stringify(ps));
   const pHold = await pg.evaluate(async () => {        // a player's batch holds him

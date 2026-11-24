@@ -987,6 +987,7 @@ async function load() {
   pick(!!(slate && BANK && sel.value === keep && String(slate.draft_group_id) === keep));
 }
 
+var SCAN_FADE_OWN = 15;   // a fade read needs 15%+ field ownership (the operator, 2026-11-24)
 function pick(keepMem) {
   keepMem = keepMem === true;       // the slate picker's change event passes an Event: a new slate loads its own bank
   slate = doc.slates.find(function (s) { return String(s.draft_group_id) === $("slate").value; });
@@ -1020,7 +1021,10 @@ function pick(keepMem) {
   if (!keepMem) bankLoadState();
   renderBank(); renderEntries(); renderNight(); renderUnder(); $("pfExport").disabled = !(ENTRIES && Object.keys(PF).length);
   if (NB.on) { BP = null; nbOpen(); }
-  SCAN = store(scanKey()); renderScan();
+  SCAN = store(scanKey());
+  // a scan saved before the 15% fade bar (2026-11-24) reads its under-15% fades as skips
+  if (SCAN && SCAN.players) SCAN.players.forEach(function (r) { if (r.read === "fade" && !(r.fown >= SCAN_FADE_OWN)) r.read = "skip"; });
+  renderScan();
   renderTiles(); renderRules(); fillEditor(); renderNews(); renderPlayers();
 }
 
@@ -3371,12 +3375,13 @@ async function runScan() {
   stk.forEach(function (r, i) { r.rank = i + 1; });
   // players: the same test on their own rows (their own noise bar); field heavy or light against the scanned players'
   // median field ownership. core: strong and field heavy; leverage: strong and field light; fade: weak and field
-  // heavy; skip: weak and field light; lean core / lean leverage (the operator, 2026-11-20): a positive gain inside the
+  // heavy and at least SCAN_FADE_OWN% owned (the operator, 2026-11-24: a fade is chalk the sim dislikes, not any
+  // weak player over the median, which put ~30 on an 8-game slate); skip: every other weak player; lean core / lean leverage (the operator, 2026-11-20): a positive gain inside the
   // noise bar, field heavy / light; even: inside the noise and 0 or less
   var psigma = noise(pls), pbar = 2 * Math.SQRT2 * psigma, po = pls.map(function (r) { return r.fown; }).sort(function (a, b) { return a - b; }), pmed = po.length ? po[Math.floor(po.length / 2)] : null;
   pls.forEach(function (r) {
     var heavy = r.fown >= pmed; r.noise = pbar;
-    r.read = r.g_t1 > pbar ? (heavy ? "core" : "leverage") : r.g_t1 < -pbar ? (heavy ? "fade" : "skip") : r.g_t1 > 0 ? (heavy ? "lean core" : "lean leverage") : "even";
+    r.read = r.g_t1 > pbar ? (heavy ? "core" : "leverage") : r.g_t1 < -pbar ? (heavy && r.fown >= SCAN_FADE_OWN ? "fade" : "skip") : r.g_t1 > 0 ? (heavy ? "lean core" : "lean leverage") : "even";
   });
   pls.sort(function (a, b) { return (a.thin - b.thin) || (b.g_t1 - a.g_t1); });
   SCAN = { at: new Date().toISOString(), draft_group: slate.draft_group_id, per: per, nights: S, contests: cs.map(function (x) { return { id: x.c.id, name: x.c.name, n: x.n }; }),
@@ -3459,7 +3464,7 @@ function renderScan() {
     }).join("") : "") + (foc.length >= 2 ? '<button type="button" id="focusBank" title="Adds a draw rule: at least ' + Math.min(3, foc.length) + " of " + esc(foc.map(function (r) { return r.key; }).join(", ")) +
       ' (one rule, not locks)">Bank: at least ' + Math.min(3, foc.length) + " of these " + foc.length + "</button>" : "") + scanFloorStrip() + "</div>";
   $("scanTable").innerHTML = strip + '<details id="scanAll"' + (scanAllOpen ? " open" : "") + '><summary>All scan rows</summary><div class="note">Scanned ' + new Date(S.at).toLocaleTimeString() + ": " + (pl.length ? pl.length + " players at " + S.perP + " lineups each, in the Players list's Top 1% / ROI / Cash / Read columns (Read on their own noise, \u00b1" + (100 * S.pbar).toFixed(2) +
-    "; core: strong and field own at or over the players' median " + Math.round(S.pownMedian || 0) + "%, leverage: strong and under it, fade: weak and over, skip: weak and under; a team's Bank this adds at least 2 of its core and leverage players), " : "") + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
+    "; core: strong and field own at or over the players' median " + Math.round(S.pownMedian || 0) + "%, leverage: strong and under it, fade: weak, over it and 15%+ owned, skip: every other weak player; a team's Bank this adds at least 2 of its core and leverage players), " : "") + S.per + " lineups a stack (" + 5 * S.per + " plain), bank noise " + S.nightS + ", " + S.nights +
     " nights, weighted by your entries in " + esc(S.contests.map(function (c) { return c.name + " x" + c.n; }).join(", ")) + ". Plain: ROI " + roiTxt(S.plain.roi) + ", top 10% " + p(S.plain.t10) + ", top 1% " +
     p(S.plain.t1, 2) + ", cash " + p(S.plain.cash) + ". Gains are in points over the plain batch. Read: <b>strong</b> when its top-1% gain clears the sim's own noise, more than " + (S.bar != null ? "\u00b1" + (100 * S.bar).toFixed(2) : "the noise") +
     " (2\u221a2 \u00d7 sigma, sigma from each stack's gain on odd nights against even nights, the tiers' test), <b>weak</b> below minus that, <b>even</b> between; <b>field light</b> when the field holds it less than the median of stacks of its kind (" +
