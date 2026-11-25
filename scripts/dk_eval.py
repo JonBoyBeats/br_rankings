@@ -891,6 +891,28 @@ def keeps_right(rs):
     return ("%s of %d, right on %d of %d slates" % ("%.0f%%" % (100 * fr) if fr is not None else "-", n, won, len(nights)), flag)
 
 
+def print_proj_bands(last=None):
+    """The projection grade's headline (scripts/dk_proj_grade.py; 2026-11-25): ROTATION 10-25 and STARS 25+ by our
+    projected DK points at lock, last night's slates and the season, the under-10 line secondary."""
+    import dk_proj_grade as PG
+    sl = PG.slates()
+    if not sl:
+        return
+    for name, part in (("last night", [x for x in sl if last and x[0].startswith(last)]), ("season", sl)):
+        if not part:
+            continue
+        rot, stars, low, allp = PG.headline(part)["pooled"]
+        print("  a. Projections by band, %s (bias = actual - ours): ROTATION 10-25 %s; STARS 25+ %s" % (name, PG.fmt(rot), PG.fmt(stars)))
+        print("     secondary: projected under 10 %s; all players %s" % (PG.fmt(low), PG.fmt(allp)))
+
+
+def projgrade(a=None):
+    """The projection grade by band in full: the two-band headline per slate, the ownership crossover, the missed
+    ceilings (scripts/dk_proj_grade.py). The rule for a projection change is in that script's docstring."""
+    import dk_proj_grade as PG
+    print("\n".join(PG.lines()))
+
+
 def print_audit(full):
     rows = audit_rows()
     if not rows:
@@ -900,6 +922,7 @@ def print_audit(full):
     print("Audit, projections and ownership first (%d DK slates recorded, %d player-nights; last night %s)" % (
         len({r["draft_group"] for r in rows}), len(rows), last))
     f = lambda st: "-" if not st else "%4.1f %+5.1f %s" % (st[1], st[2], "%.2f" % st[3] if st[3] is not None else "  - ")
+    print_proj_bands(last)                 # the headline (2026-11-25): ROTATION 10-25 and STARS 25+, then the lenses below
     for name, rs in (("last night", [r for r in rows if r["date"] == last]), ("season", rows)):
         a = proj_audit(rs)
         if full:
@@ -2984,6 +3007,12 @@ def misses(a):
     last = max(r["date"] for r in out)
     if getattr(a, "friday", False):
         d = dt.date.fromisoformat(last); mon = (d - dt.timedelta(days=d.weekday())).isoformat()
+        import dk_proj_grade as PG          # the weekly projection grade's headline (2026-11-25): ROTATION 10-25, STARS 25+
+        sl = PG.slates()
+        for label, part in (("week of %s" % mon, [x for x in sl if x[0][:10] >= mon]), ("all %d slates" % len(sl), sl)):
+            if part:
+                rot, stars, low, allp = PG.headline(part)["pooled"]
+                print("Projections by band, %s (bias = actual - ours): ROTATION 10-25 %s; STARS 25+ %s; under 10 %s" % (label, PG.fmt(rot), PG.fmt(stars), PG.fmt(low)))
         for label, rs in (("week of %s" % mon, [r for r in out if r["date"] >= mon]), ("all %d nights" % len({r["date"] for r in out}), out)):
             c, by = Counter(), defaultdict(Counter)
             for r in rs:
@@ -3393,6 +3422,7 @@ def main():
     fu.add_argument("--mirror", required=True)
     sub.add_parser("qualcheck")
     sub.add_parser("owngrade")
+    sub.add_parser("projgrade")
     os_ = sub.add_parser("ownsync")
     os_.add_argument("--sync-repo", default=SYNC_REPO)
     os_.add_argument("--days", type=int, default=4, help="the most recent night records to look for")
@@ -3403,7 +3433,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "owngrade": owngrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "owngrade": owngrade, "projgrade": projgrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab}[a.cmd](a)
 
 
 if __name__ == "__main__":
