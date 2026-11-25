@@ -12,6 +12,13 @@ Proxy lenses: `scripts/dk_qmin_lenses.py`.
 
 **(b) SIMPLE passes and ships. Full QMIN (c) and QMIN + lineup context (d) fail. QMIN is not more stable game to game.**
 
+**The clean rebuild passes but is not shipped yet** (the section below).
+- **What it is:** QMIN on spread-free win-probability states with lineup context, plus raw FORM minutes at 0.5 and steepen 0.18. Every other old minutes fix is out.
+- **Against today:** rotation minutes 6.918 → 6.519 (gain 0.398, SE 0.115, better on 12 of 14).
+- **Against shipped (b):** gain 0.241 (SE 0.091, better on 11 of 14).
+- **Banks:** better on 6-7 of 9 nights.
+- **Why not shipped:** it needs the play-by-play in the nightly, a separate build.
+
 - **(b) SIMPLE** counts an overtime game scaled to regulation and a blowout (final margin 20+) at half its FORM weight, then
   applies MIN_BY_SPREAD as today. Held out on 14 slates, rotation minutes MAE went from 6.918 to 6.761, better on 10 of 14,
   a gain of 0.157 against a 2×SE bar of 0.150. Star points MAE improved by 0.24, and top-5 and rank were flat. The same-seed
@@ -113,6 +120,63 @@ gap counts and unexplained gaps (the lens's tests) do not worsen beyond noise, a
 | Today | 10.0% | 19.7% | 43.9% |
 | (b) | 11.5% | 21.9% | 46.4% |
 | Nights (b) better | 7 of 9 | 7 of 9 | 9 of 9 |
+
+## The clean rebuild (the operator's method change: every fix re-earns its place)
+
+Script: `scripts/dk_qmin_rebuild.py`. Results: `quality_minutes_2026-11-25/rebuild.json` and `bank_rebuild.json`.
+
+**Clean base:** QMIN minutes only.
+- His on-court rates by game state, with win probability from margin and time left. The spread-based version contaminates decided-state rates (above).
+- Tonight's expected time in each state at tonight's spread.
+- Step 6 context: games matching tonight's top-5 availability, absence games carried at 0.39, Questionable teammates by p_play.
+- Each team scaled to 200 in proportion.
+- Today's points per minute held.
+
+On its own the base is not better than today: rotation minutes 6.809 against 6.918 (gain +0.109, SE 0.133, better on 7 of 14), and stars' points worse by +0.506 (SE 0.213).
+
+**Forward selection, held out by slate.** Each fix's parameter and the base's are chosen on the other 13. The Lab bar applies; the gain is on the base at the step where the fix was first tried.
+
+| Fix | In today's projection | Held-out gain on the clean base (SE) | Better | Stars points | Result |
+|---|---|---|---|---|---|
+| prior: prior season / CARRY / crowd_keep / MISSED_SEASON blended in at MIN_FILL (players with a prior season) | yes | -0.276 (0.082) | 2 of 14 | -0.012 | OUT |
+| newcomer: MIN_BY_BPR_RANK / Underdog start for players with no prior season (EvanMiya newcomers), at MIN_FILL | yes | -0.068 (0.029) | 3 of 14 | +0.036 | OUT |
+| form: raw FORM 0.8 minutes blended into the QMIN minutes at weight w | yes | +0.013 (0.048) | 9 of 14 | -0.089 | IN (0.5) |
+| spread: MIN_BY_SPREAD x his tier | yes | +0.025 (0.029) | 7 of 14 | -0.040 | OUT |
+| game_adj: GAME_ADJ as a minutes factor by the spread | yes | -0.000 (0.000) | 1 of 14 | +0.000 | OUT |
+| outhand: OUT_REG_MIN hand-off: OUT_SHARE of an Out regular's minutes to teammates by m(40-m), position-weighted | yes | -0.007 (0.004) | 1 of 14 | -0.002 | OUT |
+| fitw: fit_minutes (excess off by 40-m, shortfall on by m(40-m)) instead of proportional | yes | +0.146 (0.053) | 11 of 14 | -0.291 | OUT |
+| steep: steepen m^(1+g) after the fit | yes | +0.168 (0.071) | 11 of 14 | -0.306 | IN (0.18) |
+| zero_gp (availability): zero-games cut: x ZERO_GP_F for a player with no games while his team has 3+ | yes | +0.010 (0.007) on the final set | 3 of 14 | -0.009 | OUT |
+| q_play (availability): a Questionable player's minutes x p_play (today: x 1.0, the operator's call) | no | -0.008 (0.018) on the final set | 1 of 14 | -0.040 | OUT |
+
+**Selection order.**
+1. steepen (g 0.18) +0.168 (SE 0.071, 11 of 14). fit_minutes' weighting also passed (+0.146), with the smaller gain.
+2. FORM raw minutes at 0.5 +0.121 (SE 0.058, 11 of 14).
+3. fit_minutes' weighting then +0.126 (SE 0.065): under 2 x SE, so it stays out. Nothing else passed.
+
+**Backward check:** both kept fixes hold (steepen +0.241, FORM +0.121 when removed from the final set).
+
+**Notable OUTs:**
+- **Prior-season / CARRY / crowding blend:** -0.28; it hurts. Most of that is likely the players with no games this season, who carry a prior-season number but mostly don't play; the newcomer bundle hurts too (-0.07).
+- **MIN_BY_SPREAD:** +0.025 at step 1, then about 0. The states cover the spread.
+- **GAME_ADJ as a minutes factor:** exactly 0, since the 200 fit cancels it within a team. It stays in the per-minute half (above).
+- **OUT_REG_MIN hand-off:** -0.007, subsumed by context.
+- **Zero-games cut:** +0.010 (SE 0.007, only 3 slates touched).
+- **Questionable x p_play:** -0.008.
+
+**The final minutes half:** QMIN states + context, FORM raw minutes blended at 0.5, scaled to 200 in proportion, steepened at 0.18.
+
+| Against | Rotation minutes MAE | Gain (SE) | Better | Stars points | Top-5 | Rank |
+|---|---|---|---|---|---|---|
+| today's (a) | 6.519 | +0.398 (0.115) | 12 of 14 | +0.044 (SE 0.092) | +0.120 | +0.028 |
+| shipped (b) | | +0.241 (0.091) | 11 of 14 | | | |
+
+Same-seed banks against today: top 10% 11.7% vs 10.0% (better on 7 of 9); cash 22.8% vs 19.7% (7 of 9); percentile 48.8% vs 43.9% (6 of 9). The means gain more than (b)'s, but less consistently (b: percentile better on 9 of 9).
+
+**Status: it passes but is not shipped yet.**
+- **What it needs:** the play-by-play in the nightly. That means each run fetching and parsing tonight's teams' games, state-time and league role tables built from every D1 game (committed, refreshed), and the page's Out re-fit (dk_sim.js fitMinutes) matched to the proportional fit.
+- **What it removes from the code path:** MIN_FILL prior minutes, MIN_BY_SPREAD on minutes, the Out hand-off, fit_minutes' weighting and the zero-games cut.
+- **Until then:** (b) stays live, logged against the old minutes with the 7-slate warning.
 
 ## The minutes half, as shipped (projection = tonight's minutes x tonight's DK points per minute, nothing else)
 
