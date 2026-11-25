@@ -398,6 +398,14 @@ function cbbRow(p) { return state.dkRows[p.player_id] || state.cbbRows[p.player_
 /* The sync repo (2026-11-24): what the DK page writes there (cbb/<group>/mylu.json, swap.json), read when this device
    has none of its own; at most every SYNC_EVERY ms per file (GitHub's API limits), with the page's token when set. */
 var SYNC_EVERY = 5 * 60e3;
+/* A DK slate's saved build (2026-11-25): the repo's copy (analysis/cbb/dk/builds), else the one the DK page's Save build
+   wrote to the sync repo (builds/ there, public raw), so a build saved on any device reaches this page without a commit. */
+function dkBuildFetch(day, dg) {
+  var name = "dk_bank_" + day + "_" + dg + ".json", get = function (u) {
+    return fetch(u, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); };
+  return get("analysis/cbb/dk/builds/" + name + "?t=" + Date.now()).then(function (d) {
+    return d || get("https://raw.githubusercontent.com/" + syncCfgLive().repo + "/main/builds/" + name + "?t=" + Date.now()); });
+}
 function syncCfgLive() { var c = null; try { c = JSON.parse(localStorage.getItem("dkcbb:sync") || "null"); } catch (e) {} return c || { repo: "JonBoyBeats/dk-sync", token: "" }; }
 function syncFile(path) {
   state.syncFiles = state.syncFiles || {};
@@ -596,8 +604,7 @@ async function pull() {
   loadField(state.slate);                 // 15 minutes after each tip, once its swaps are in; a no-op between
   var sl0 = state.slate;                  // a saved build committed after this page opened: fetched on the next pull (2026-11-24)
   if (sl0.dk && !state.dkBuilds[sl0.dg]) {
-    await fetch("analysis/cbb/dk/builds/dk_bank_" + sl0.day + "_" + sl0.dg + ".json?t=" + Date.now(), { cache: "no-store" })
-      .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) state.dkBuilds[sl0.dg] = d; }).catch(function () {});
+    await dkBuildFetch(sl0.day, sl0.dg).then(function (d) { if (d) state.dkBuilds[sl0.dg] = d; }).catch(function () {});
   }
   state.busy = true;
   try {
@@ -1246,8 +1253,7 @@ function etrUsual() {
   state.posted = await fetch("analysis/nba/expo.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { return d.slates || {}; }).catch(function () { return {}; });
   await Promise.all(state.slates.filter(function (s) { return s.dk; }).map(function (s) {
-    return fetch("analysis/cbb/dk/builds/dk_bank_" + s.day + "_" + s.dg + ".json?t=" + Date.now(), { cache: "no-store" })
-      .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) state.dkBuilds[s.dg] = d; }).catch(function () {});
+    return dkBuildFetch(s.day, s.dg).then(function (d) { if (d) state.dkBuilds[s.dg] = d; }).catch(function () {});
   }));
   fillSlates();
   render();
