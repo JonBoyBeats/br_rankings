@@ -3090,6 +3090,9 @@ def misses(a):
             if part:
                 for l in proj_band_pooled(part, "Proxy lenses by band, %s" % label):
                     print(l)
+        print()                         # the scorecard (2026-11-25): each arm LIVE vs PREVIOUS vs the ruler, settling, pair check
+        scorecard(a)
+        print()
         for label, rs in (("week of %s" % mon, [r for r in out if r["date"] >= mon]), ("all %d nights" % len({r["date"] for r in out}), out)):
             c, by = Counter(), defaultdict(Counter)
             for r in rs:
@@ -3461,6 +3464,13 @@ def lab(a=None):
                 len(r["lookback"]), "" if len(r["lookback"]) == 1 else "s"))
 
 
+def scorecard(a=None):
+    """The per-arm scorecard: LIVE vs PREVIOUS vs the frozen ruler, last 7 slates and the season (scripts/dk_scorecard.py;
+    writes analysis/cbb/dk/scorecard.md)."""
+    import dk_scorecard
+    dk_scorecard.main(a)
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -3504,13 +3514,14 @@ def main():
     os_.add_argument("--sync-repo", default=SYNC_REPO)
     os_.add_argument("--days", type=int, default=4, help="the most recent night records to look for")
     sub.add_parser("lab")
+    sub.add_parser("scorecard")
     fj = sub.add_parser("flagjoint")
     fj.add_argument("--mirror", required=True)
     r = sub.add_parser("readout")
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "owngrade": owngrade, "projgrade": projgrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "owngrade": owngrade, "projgrade": projgrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab, "scorecard": scorecard}[a.cmd](a)
 
 
 if __name__ == "__main__":

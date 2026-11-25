@@ -22,7 +22,9 @@ then the box score and actual_dk: DraftKings' scoring, +1.5 a double-double (two
 steals, blocks at 10+), +3 a triple-double on top (DraftKings lists both bonuses; whether they stack is
 unconfirmed, and triple-doubles were 7 in 37,405 college player-games of 2025-26). Then, for the projection audit
 (dk_eval.py audit): dk_last5 (his last 5 games' DraftKings points before the slate, from 2026-11-17 on), min_last5 and
-min_avg (his minutes, last 5 and this season, for the minutes-change split).
+min_avg (his minutes, last 5 and this season, for the minutes-change split). From 2026-11-25: ruler_min, ruler_fp,
+ruler_fp_gate and own_ruler (the frozen ruler-2026-11-23, battle-royale-research cbb_ruler.py; empty before) and
+ver_<arm>, each arm's version that night (scripts/dk_arms.py), for the scorecard (dk_eval.py scorecard).
 
   python3 scripts/cbb_daily.py record --mirror ../br-adp-mirror [--since 2026-11-03] [--rebuild]   (both sites)
   python3 scripts/cbb_daily.py report [--since 2026-11-03] [--date 2026-11-03]
@@ -47,6 +49,7 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(__file__))
+import dk_arms  # noqa: E402
 from nba_daily import ET, Mirror, UTC, at_pt, fetch_json, iso, pacific_day  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "analysis", "cbb", "daily")
@@ -59,7 +62,10 @@ COLS = ["date", "slate", "player_id", "name", "team", "adp_close", "src", "fp", 
 DK_COLS = ["date", "draft_group", "dk_id", "espn", "name", "team", "game", "position", "salary", "src", "status", "fp_dk", "fp_base_dk",
            "dk_avg", "value", "own", "fp", "min_proj", "min_raw", "ppm_proj", "miss_dk", "fragile", "p_dd", "bpr_rank", "missed",
            "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "tpm", "dd", "actual", "actual_dk",
-           "dk_last5", "min_last5", "min_avg", "own_raw", "min_old", "old_fp", "old_ppm"]
+           "dk_last5", "min_last5", "min_avg", "own_raw", "min_old", "old_fp", "old_ppm",
+           # the frozen ruler (battle-royale-research cbb_ruler.py, ruler-2026-11-23; logged from 2026-11-25) and each arm's
+           # live version on the slate (scripts/dk_arms.py)
+           "ruler_min", "ruler_fp", "ruler_fp_gate", "own_ruler"] + ["ver_" + a for a in dk_arms.ARMS]
 
 
 def dk_points(a):
@@ -193,18 +199,19 @@ def dk_slates(mirror, since, until):
                 found[s["draft_group_id"]] = (start, s, t)
     out = {}
     for g, (start, s, t) in found.items():
-        own, raw = {}, {}
+        own, raw, ruler = {}, {}, {}
         for ft, fsha in mirror.versions("dk_cbb_field.json", t - dt.timedelta(days=1), start):
             f = mirror.show(fsha, "dk_cbb_field.json").get("slates", {}).get(str(g)) or {}
             own = f.get("own", own)
             raw = f.get("own_raw", f.get("own", raw))      # before the ownership correction (2026-11-24); the same before it
-        out[g] = (start, s, own, raw)
+            ruler = f.get("own_ruler", ruler)               # the frozen ruler's (from 2026-11-25, drawn near lock)
+        out[g] = (start, s, own, raw, ruler)
     return out
 
 
 def record_dk(a, mirror, since, now):
     os.makedirs(DK_OUT, exist_ok=True)
-    for g, (start, s, own, own_raw) in sorted(dk_slates(mirror, since, now - dt.timedelta(hours=3)).items()):
+    for g, (start, s, own, own_raw, own_ruler) in sorted(dk_slates(mirror, since, now - dt.timedelta(hours=3)).items()):
         path = os.path.join(DK_OUT, "%s_%s.csv" % (pacific_day(start), g))
         if os.path.exists(path) and not a.rebuild:
             continue
@@ -236,7 +243,9 @@ def record_dk(a, mirror, since, now):
                         "ou": r.get("ou", ""), **b,
                         # the projection audit's benchmark and the minutes-change split (dk_eval.py audit)
                         "dk_last5": r.get("dk_last5", ""), "min_avg": r.get("min_avg", ""),
-                        "min_last5": round(sum(r["min_last5"]) / len(r["min_last5"]), 1) if r.get("min_last5") else ""})
+                        "min_last5": round(sum(r["min_last5"]) / len(r["min_last5"]), 1) if r.get("min_last5") else "",
+                        "ruler_min": r.get("ruler_min", ""), "ruler_fp": r.get("ruler_fp", ""), "ruler_fp_gate": r.get("ruler_fp_gate", ""),
+                        "own_ruler": own_ruler.get(pid, ""), **dk_arms.tags(pacific_day(start), g)})
         if not ready or not out:
             print("  DK %s: not ready (a game not final, or no projection before the start)" % g)
             continue

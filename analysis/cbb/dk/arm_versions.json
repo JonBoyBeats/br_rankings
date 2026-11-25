@@ -1,0 +1,258 @@
+{
+ "about": "Each arm's version history for the scorecard (scripts/dk_arms.py; dk_eval.py scorecard). A version holds from its date (versions.csv's date: the slate date it takes effect) on every slate, or, with first_slate, from that draft group on its first day (DraftKings numbers a day's draft groups in start order). rows: the versions.csv rows it carries (date | component | the change's first 40 characters; tests/dk_scorecard.py checks each exists). A new live change to an arm adds a version here beside its versions.csv row (analysis/cbb/dk/process.md).",
+ "arms": {
+  "projection": [
+   {
+    "tag": "proj-2026-11-16",
+    "from": "2026-11-16",
+    "rows": [
+     "2026-11-16 | baseline | Projections ours (gate closed); cut Keep"
+    ]
+   },
+   {
+    "tag": "proj-2026-11-17",
+    "from": "2026-11-17",
+    "rows": [
+     "2026-11-17 | projection | Ours blended 50/50 with DraftKings' seas",
+     "2026-11-17 | projection | An Out regular's minutes go to his teamm"
+    ]
+   },
+   {
+    "tag": "proj-2026-11-18",
+    "from": "2026-11-18",
+    "rows": [
+     "2026-11-18 | projection | A Questionable player is projected at hi",
+     "2026-11-18 | projection | EvanMiya as an ongoing rate in the Draft"
+    ]
+   },
+   {
+    "tag": "proj-2026-11-19",
+    "from": "2026-11-19",
+    "rows": [
+     "2026-11-19 | projection | A team's projected minutes add up to exa",
+     "2026-11-19 | projection | When a team's projected minutes add up t",
+     "2026-11-19 | projection | Bug fix: EvanMiya names written with a c"
+    ]
+   },
+   {
+    "tag": "proj-2026-11-20",
+    "from": "2026-11-20",
+    "rows": [
+     "2026-11-20 | ADOPT A2a | Projected minutes steeper at the top of ",
+     "2026-11-20 | ADOPT A2e | An Out projected 15-20 minutes (2+ games"
+    ]
+   },
+   {
+    "tag": "proj-2026-11-21",
+    "from": "2026-11-21",
+    "rows": [
+     "2026-11-21 | PROJ zero-games players | Projection change (A2 pass, scripts/dk_z"
+    ]
+   },
+   {
+    "tag": "proj-2026-11-23",
+    "from": "2026-11-23",
+    "rows": [
+     "2026-11-23 | PROJ gate closed under $6k | The projection gate at the freeze (the o",
+     "2026-11-23 | LOCK the week's version | The version that runs 11-23 through the ",
+     "2026-11-23 | PROJ Questionable players kept whole; the field still fades them | A Questionable player keeps his full pro"
+    ],
+    "note": "the lock-2026-11-23 projection: ruler-2026-11-23"
+   },
+   {
+    "tag": "proj-2026-11-25",
+    "from": "2026-11-25",
+    "rows": [
+     "2026-11-25 | PROJ quality minutes (SIMPLE): overtime to regulation, blowouts at half weight | cbb_nightly's current-season minutes for",
+     "2026-11-25 | PROJ GAME_ADJ inside points per minute; min_parts | The projection is tonight's minutes x to",
+     "2026-11-25 | MINUTES rebuilt from play-by-play (battle-royale-research fa687278) | Tonight's minutes: QMIN state rates (cbb",
+     "2026-11-25 | PPM rebuilt points per minute live; DK-average gate out | fp_dk = minutes x the rebuilt points per"
+    ],
+    "note": "minutes rebuilt from play-by-play and points per minute rebuilt, the DK-average gate out"
+   }
+  ],
+  "ownership": [
+   {
+    "tag": "own-2026-11-16",
+    "from": "2026-11-16",
+    "rows": [
+     "2026-11-16 | baseline | Projections ours (gate closed); cut Keep"
+    ]
+   },
+   {
+    "tag": "own-2026-11-17",
+    "from": "2026-11-17",
+    "rows": [
+     "2026-11-17 | field | The simulated field calibrated: a fifth "
+    ]
+   },
+   {
+    "tag": "own-2026-11-18",
+    "from": "2026-11-18",
+    "rows": [
+     "2026-11-18 | projection | A Questionable player is projected at hi"
+    ]
+   },
+   {
+    "tag": "own-2026-11-23",
+    "from": "2026-11-23",
+    "rows": [
+     "2026-11-23 | FIELD Questionable players at full ownership | The simulated field drafts a Questionabl"
+    ],
+    "note": "the lock's field ownership: ruler-2026-11-23"
+   },
+   {
+    "tag": "own-2026-11-24",
+    "from": "2026-11-24",
+    "first_slate": "157026",
+    "rows": [
+     "2026-11-24 | OWN correction live: teammates + big game, renormalized | battle-royale-research dk_cbb_field.py O"
+    ],
+    "note": "the ownership correction"
+   }
+  ],
+  "field": [
+   {
+    "tag": "field-2026-11-16",
+    "from": "2026-11-16",
+    "rows": [
+     "2026-11-16 | baseline | Projections ours (gate closed); cut Keep"
+    ]
+   },
+   {
+    "tag": "field-2026-11-17",
+    "from": "2026-11-17",
+    "rows": [
+     "2026-11-17 | field | The simulated field calibrated: a fifth "
+    ]
+   },
+   {
+    "tag": "field-2026-11-19",
+    "from": "2026-11-19",
+    "rows": [
+     "2026-11-19 | field | A Mark out (or a Doubtful left out) move"
+    ]
+   },
+   {
+    "tag": "field-2026-11-23",
+    "from": "2026-11-23",
+    "rows": [
+     "2026-11-23 | BUILD contests simmed against their size band's field | Each contest is simulated against the fi",
+     "2026-11-23 | FIELD Questionable players at full ownership | The simulated field drafts a Questionabl"
+    ]
+   },
+   {
+    "tag": "field-2026-11-24",
+    "from": "2026-11-24",
+    "first_slate": "157026",
+    "rows": [
+     "2026-11-24 | OWN correction live: teammates + big game, renormalized | battle-royale-research dk_cbb_field.py O"
+    ],
+    "note": "raked to the corrected ownership"
+   }
+  ],
+  "cut": [
+   {
+    "tag": "cut-2026-11-16",
+    "from": "2026-11-16",
+    "rows": [
+     "2026-11-16 | baseline | Projections ours (gate closed); cut Keep"
+    ]
+   },
+   {
+    "tag": "cut-2026-11-17",
+    "from": "2026-11-17",
+    "rows": [
+     "2026-11-17 | cut | Keep 2,000 by default (was 500; the owne",
+     "2026-11-17 | cut | The cut works within each idea: each kee"
+    ]
+   },
+   {
+    "tag": "cut-2026-11-19",
+    "from": "2026-11-19",
+    "rows": [
+     "2026-11-19 | cut | Variants of the top: a button after the "
+    ]
+   },
+   {
+    "tag": "cut-2026-11-20",
+    "from": "2026-11-20",
+    "rows": [
+     "2026-11-20 | ADOPT C2 | The cut by merit with a floor is the DK ",
+     "2026-11-20 | ADOPT C3 | Variants: every K-of-8 keep-set is the d"
+    ]
+   }
+  ],
+  "fill": [
+   {
+    "tag": "fill-2026-11-16",
+    "from": "2026-11-16",
+    "rows": [
+     "2026-11-16 | baseline | Projections ours (gate closed); cut Keep"
+    ]
+   },
+   {
+    "tag": "fill-2026-11-17",
+    "from": "2026-11-17",
+    "rows": [
+     "2026-11-17 | pick | Max exposure 40% by default (was 60%); n"
+    ]
+   },
+   {
+    "tag": "fill-2026-11-18",
+    "from": "2026-11-18",
+    "rows": [
+     "2026-11-18 | pick | Hand adds in the builder keep to the sam",
+     "2026-11-18 | pick | Hand adds are blocked by all four caps: ",
+     "2026-11-18 | pick | Starting portfolios across tonight's con",
+     "2026-11-18 | pick | Same nights per slate: one seed per slat"
+    ]
+   },
+   {
+    "tag": "fill-2026-11-19",
+    "from": "2026-11-19",
+    "rows": [
+     "2026-11-19 | pick | Max contests per lineup, 3 by default (b",
+     "2026-11-19 | pick | Max exposure, night %, 60 by default (be"
+    ]
+   },
+   {
+    "tag": "fill-2026-11-24",
+    "from": "2026-11-24",
+    "rows": [
+     "2026-11-24 | FILL auto top-up of stranded seats (on by default) | The 60/60 caps (contest Max exposure, ni",
+     "2026-11-24 | FILL contest profiles live (merged to main from fill-profiles) | Contest profiles as revised and approved",
+     "2026-11-24 | FILL qualifiers' chalk batch; flagship joint record; qualifier-field count | Qualifier-profile contests: each fill dr"
+    ]
+   }
+  ],
+  "late_swap": [
+   {
+    "tag": "swap-none",
+    "from": "2026-11-16",
+    "rows": [
+     "2026-11-16 | baseline | Projections ours (gate closed); cut Keep"
+    ],
+    "note": "no late-swap tool"
+   },
+   {
+    "tag": "swap-2026-11-23",
+    "from": "2026-11-23",
+    "rows": [
+     "2026-11-23 | BUILD late swap v1 (read-only) | New Swap step (dk.html + dk_swap.js; tes",
+     "2026-11-23 | BUILD late swap: salary-left keep rate, field leans chalk | Late swap (read-only): the hidden-slot d",
+     "2026-11-23 | SWAP export on; standings add up; zipped standings read | Late swap's Export DK entries is on (SWA",
+     "2026-11-23 | SWAP chalk assumption fitted per contest | Late swap's 'Field leans chalk' defaults",
+     "2026-11-23 | SWAP standings as the field's ownership; files kept in the browser | The live score is the moment Propose swa"
+    ]
+   },
+   {
+    "tag": "swap-2026-11-24",
+    "from": "2026-11-24",
+    "rows": [
+     "2026-11-24 | SWAP live points: a started player with no ESPN id found by name | dk_swap.js liveState takes the box score"
+    ]
+   }
+  ]
+ }
+}

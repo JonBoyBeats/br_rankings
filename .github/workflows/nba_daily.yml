@@ -97,6 +97,8 @@ jobs:
           # B3, the ownership watchlist: patterns in real vs projected ownership, status by rule (own_watch.json; the page notes confirmed ones)
           python3 scripts/dk_eval.py ownwatch --mirror ../br-adp-mirror || true
           python3 scripts/dk_eval.py misses || true
+          # the scorecard: each arm LIVE vs PREVIOUS vs the frozen ruler, settling and the same-night-pair check (scorecard.md)
+          python3 scripts/dk_eval.py scorecard > /dev/null || true
           # sit risk: last night's graded slates into the training rows, the refit the pipeline's p_play reads, and the
           # log of every flag at lock with whether he played (scripts/dk_sit.py)
           python3 scripts/dk_sit.py nightly --mirror ../br-adp-mirror || true

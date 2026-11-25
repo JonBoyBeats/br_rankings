@@ -1,5 +1,7 @@
 # DraftKings CBB: parked ideas for the 30-slate review
 
+**How a change ships (from 2026-11-25): [process.md](process.md).** Each new idea names its arm, a test plan held out by slate, the pass bar and the PREVIOUS column it will log; changes ship in the Friday batch (bug fixes any day), one per arm per week, each graded on [scorecard.md](scorecard.md) against the frozen ruler.
+
 **Revised freeze (the owner's call, 2026-11-16):** week 1 (through 2026-11-23) is open for tweaks to anything.
 After that, freeze only what's graded: the sim model, the quadrant recipe and lines, the five shadow rule sets,
 and the portfolio pick. Layout, buttons, the bank/cut/review/export workflow, speed and bug fixes stay open any

@@ -1,0 +1,76 @@
+# DraftKings CBB: how a change ships (from 2026-11-25)
+
+The rules for changing the live model, and how each change is graded. The numbers come from
+`python3 scripts/dk_eval.py scorecard` (written to [scorecard.md](scorecard.md); also printed by
+`dk_eval.py misses --friday`). Ideas wait in [ideas.md](ideas.md).
+
+## The arms
+
+| Arm | Headline (scorecard) | Version tag (arm_versions.json) | PREVIOUS logged as |
+|---|---|---|---|
+| minutes | ROTATION band (ours 10-25) minutes MAE | projection | `min_old` |
+| per-minute | STARS band (ours 25+) points MAE | projection | `old_fp` |
+| ownership | chalk band MAE and share off by 10+ | ownership | `own_raw` |
+| field model | sim minus real cash line and top-10% line, 100+ contests | field | not logged yet |
+| pool | kept minus whole bank, mean real finish percentile | cut | not logged yet |
+| fill | entered minus random fills, dollars and percentile | fill | not logged yet |
+| late swap | swapped minus unswapped (player in minus player out) | late_swap | not logged yet |
+| results | net dollars and return on fees | none | read over 20+ nights only |
+
+Every night record (`analysis/cbb/dk/<date>_<draft group>.csv`) carries `ver_<arm>`, each arm's version that night
+(`scripts/dk_arms.py`), and the frozen ruler's columns.
+
+## The ruler
+
+`ruler-2026-11-23` is the 2026-11-23 lock's projection and field. It lives in battle-royale-research at
+`scripts/cbb_ruler.py`. It is computed every night beside the live model and logged as `ruler_min`, `ruler_fp`,
+`ruler_fp_gate` and `own_ruler`. It never changes. Every version is measured against it on the same nights. A new
+ruler would be a new file with a new id, and the old one would keep running.
+
+## The rules
+
+1. **Ideas queue.** Every proposed change goes into [ideas.md](ideas.md) first. Each entry needs:
+   - the arm;
+   - the hypothesis;
+   - the test plan: what is measured, held out by slate, on which slates;
+   - the pass bar (rule 5);
+   - the PREVIOUS column it will log (rule 3).
+2. **Friday batch.** Changes ship together at the Friday review. Bug fixes are the exception: they ship any day, with
+   a `versions.csv` row that says it is a bug fix.
+3. **Same-night pairs.** A change ships only with the arm's previous version logged beside it in the night record,
+   on the same nights. `min_old`, `old_fp` and `own_raw` are the pattern. The previous version keeps being logged
+   for at least 7 graded slates. The scorecard's pair check must read "PREVIOUS logged on k of k slates" for the
+   change's first 7 slates. A MISSING slate means that slate can't be paired. An arm with no PREVIOUS column
+   (field, pool, fill and late swap, today) needs one built before its next change.
+4. **One change per arm per week, then settle.** After a change, the arm is *settling* until 7 graded slates have
+   run under it. The scorecard shows "settling k of 7". No further change to that arm until it reads "settled".
+   Bug fixes are the exception.
+5. **The pass bar, held out by slate.** A change passes only if, held out by slate:
+   - its arm's headline is better on most slates;
+   - the mean per-slate gain is more than 2 × its SE;
+   - no other arm is worse beyond noise, meaning every other arm's paired difference is within 2 × SE.
+
+   The paired difference is LIVE − PREVIOUS on the same slates and rows. Projection changes also keep the
+   band rule in `scripts/dk_proj_grade.py`. Results (dollars, return) are never a pass bar: read them over 20+
+   nights only.
+6. **Bookkeeping.** Each live change needs two entries:
+   - a `versions.csv` row, written with `csv.writer(lineterminator="\r\n")`, with the slate date it takes effect;
+   - a new version in `arm_versions.json` with that date (plus `first_slate` if it lands between a day's slates),
+     listing its `versions.csv` rows.
+
+   `tests/dk_scorecard.py` checks that every listed row exists.
+
+## Reading the scorecard
+
+The scorecard has:
+- one block per arm, with the version live today, its last-changed date and its settling status;
+- for the last 7 graded slates and for the season, the columns LIVE, PREVIOUS and RULER, each a mean over slates ± SE
+  (slates).
+
+PREVIOUS and RULER are levels on the slates that logged them. The comparison to read is LIVE − X, which is paired per
+slate on the rows both logged.
+
+Columns that weren't logged are n/a. They are never filled in, with one marked exception: the ruler on 2026-11-23 and
+2026-11-24 (157021, 157024, 157026). On those slates the live model was the lock's, so the ruler is the live projection
+and the raw field ownership. Slates before 2026-11-23 have no ruler, because the lock model's inputs for them were
+never stored. The ruler is logged from 2026-11-25 on.
