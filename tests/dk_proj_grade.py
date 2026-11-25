@@ -55,5 +55,14 @@ check("fine bands tile [0, inf)", fs[0][0] == 0 and all(fs[i][1] == fs[i + 1][0]
 ce = G.ceilings(G.slates())
 hits = [h for x in ce for h in x[2]]
 check("missed ceilings: every hit is 5x salary", hits and all(h[3] >= 5 * h[2] / 1000 for h in hits))
+# quality minutes (2026-11-25): live vs old rotation minutes MAE per slate with min_old, and the 7-slate warning
+mk = lambda live, old, act: {"fp_dk": "15", "actual_dk": "20", "min": str(act), "min_proj": str(live), "min_old": str(old)}
+sl_ok = [("s%d" % i, [mk(30, 26, 31), mk(20, 22, 21)]) for i in range(7)]          # live 1.0 vs old 3.0: no warning
+per, warn = G.minutes_old(sl_ok)
+check("minutes_old: live vs old rotation minutes MAE per slate", len(per) == 7 and abs(per[0][1] - 1.0) < 1e-9 and abs(per[0][2] - 3.0) < 1e-9 and not warn, per[:1])
+sl_bad = [("s%d" % i, [mk(26, 30, 31), mk(22, 20, 21)]) for i in range(7)]         # live 3.0 vs old 1.0 over 7: warn
+check("minutes_old: warns when live trails old over the last 7 slates", G.minutes_old(sl_bad)[1])
+check("minutes_old: no warning before 7 slates", not G.minutes_old(sl_bad[:6])[1])
+check("minutes_old: a slate without min_old (or none changed) is skipped", G.minutes_old([("x", [dict(mk(20, 20, 20))])])[0] == [])
 print("%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)

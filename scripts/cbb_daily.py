@@ -59,7 +59,7 @@ COLS = ["date", "slate", "player_id", "name", "team", "adp_close", "src", "fp", 
 DK_COLS = ["date", "draft_group", "dk_id", "espn", "name", "team", "game", "position", "salary", "src", "status", "fp_dk", "fp_base_dk",
            "dk_avg", "value", "own", "fp", "min_proj", "min_raw", "ppm_proj", "miss_dk", "fragile", "p_dd", "bpr_rank", "missed",
            "spread", "ou", "min", "pts", "reb", "ast", "stl", "blk", "tov", "tpm", "dd", "actual", "actual_dk",
-           "dk_last5", "min_last5", "min_avg", "own_raw"]
+           "dk_last5", "min_last5", "min_avg", "own_raw", "min_old"]
 
 
 def dk_points(a):
@@ -226,6 +226,8 @@ def record_dk(a, mirror, since, now):
                         "status": r.get("status", ""), "fp_dk": r.get("fp_dk"), "fp_base_dk": r.get("fp_base_dk", ""),
                         "dk_avg": r.get("dk_avg"), "value": r.get("value"), "own": own.get(pid, ""), "own_raw": own_raw.get(pid, own.get(pid, "")), "fp": r.get("fp", ""),
                         "min_proj": r.get("min", ""), "min_raw": r.get("min_raw", r.get("min", "")), "ppm_proj": r.get("ppm", ""),
+                        # the minutes projection before quality minutes (2026-11-25, cbb_nightly min_old): the same as min_proj before
+                        "min_old": r.get("min_old", r.get("min", "")),
                         "miss_dk": r.get("miss_dk", ""), "fragile": int(bool(r.get("fragile"))), "p_dd": r.get("p_dd", ""),
                         "bpr_rank": r.get("bpr_rank", ""), "missed": r.get("missed", ""), "spread": r.get("spread", ""),
                         "ou": r.get("ou", ""), **b,

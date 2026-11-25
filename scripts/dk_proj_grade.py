@@ -173,11 +173,30 @@ def fine(sl):
     return [((lo, hi), stats(band(P, lo, hi))) for lo, hi in FINE]
 
 
+QMIN_WARN = 7       # slates: warn when the live minutes trail the old ones over the last QMIN_WARN slates with both
+
+
+def minutes_old(sl):
+    """Quality minutes (2026-11-25, cbb_nightly): per slate whose record has min_old (the projection without them), the
+    ROTATION band's minutes MAE live vs old; and the warning when live trails old over the last QMIN_WARN such slates
+    (the mean of the slates). No automatic revert."""
+    per = []
+    for n, rows in sl:
+        rot = [r for r in band(graded(rows), *ROTATION) if num(r.get("min")) is not None and num(r.get("min_proj")) is not None and num(r.get("min_old")) is not None]
+        if not rot or all(abs(num(r["min_old"]) - num(r["min_proj"])) < 1e-9 for r in rot):
+            continue
+        per.append((n, S.mean(abs(num(r["min"]) - num(r["min_proj"])) for r in rot), S.mean(abs(num(r["min"]) - num(r["min_old"])) for r in rot), len(rot)))
+    last = per[-QMIN_WARN:]
+    warn = len(last) >= QMIN_WARN and S.mean(x[1] for x in last) > S.mean(x[2] for x in last)
+    return per, warn
+
+
 def lines(sl=None, md=False):
     sl = sl if sl is not None else slates()
     if not sl:
         return ["Projection grade: no graded slates yet"]
     h, c, ce = headline(sl), crossover(sl), ceilings(sl)
+    qm, qwarn = minutes_old(sl)
     rot, stars, low, allp = h["pooled"]
     out = ["Projection grade by projection band, %d graded slates (%s to %s); bias = actual - ours." % (len(sl), sl[0][0], sl[-1][0]),
            "  ROTATION 10-25 (minutes is its lens): " + fmt(rot),
@@ -194,6 +213,11 @@ def lines(sl=None, md=False):
         for n, a, b, l in h["per"]:
             f = lambda st: "%4.1f %+5.1f %3.0f%% %4s" % (st["mae"], st["bias"], 100 * st["off"], "%.1f" % st["min_mae"] if st["min_mae"] is not None else "–") if st else "   –"
             out.append("    %-18s %s | %s" % (n, f(a), f(b)))
+    if qm:
+        out += ["", "Quality minutes (live) vs the old minutes, ROTATION band minutes MAE: " + "; ".join("%s %.2f vs %.2f (n %d)" % x for x in qm)]
+        if qwarn:
+            out.append("  WARNING: over the last %d slates the live minutes trail the old ones (%.2f vs %.2f). No automatic revert: the operator decides." % (
+                QMIN_WARN, S.mean(x[1] for x in qm[-QMIN_WARN:]), S.mean(x[2] for x in qm[-QMIN_WARN:])))
     out += ["", "Ownership crossover (projected field ownership at lock, %s):" % c["src"]]
     for nm, st in c["pooled"]:
         out.append("  %-9s %s" % (nm, fmt(st)))
