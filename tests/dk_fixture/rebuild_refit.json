@@ -1,0 +1,114 @@
+{
+ "steep": 0.18,
+ "rows": {
+  "dkstar": {
+   "min": 35.5,
+   "min_pre": 36.11,
+   "min_ctx": null,
+   "status": null,
+   "team": "T"
+  },
+  "dkt1": {
+   "min": 25.5,
+   "min_pre": 27.35,
+   "min_ctx": {
+    "dkstar": 30.18,
+    "dkt6": 25.81
+   },
+   "status": null,
+   "team": "T"
+  },
+  "dkt2": {
+   "min": 28.7,
+   "min_pre": 30.19,
+   "min_ctx": {
+    "dkstar": 30.12
+   },
+   "status": null,
+   "team": "T"
+  },
+  "dkt3": {
+   "min": 28.7,
+   "min_pre": 30.19,
+   "min_ctx": {
+    "dkstar": 30.12
+   },
+   "status": null,
+   "team": "T"
+  },
+  "dkt4": {
+   "min": 28.7,
+   "min_pre": 30.19,
+   "min_ctx": {
+    "dkstar": 30.12
+   },
+   "status": null,
+   "team": "T"
+  },
+  "dkt5": {
+   "min": 27.6,
+   "min_pre": 29.25,
+   "min_ctx": {
+    "dkstar": 29.53,
+    "dkt6": 29.09
+   },
+   "status": null,
+   "team": "T"
+  },
+  "dkt6": {
+   "min": 13.0,
+   "min_pre": 29.09,
+   "min_ctx": {
+    "dkstar": 29.49,
+    "dkt5": 29.25,
+    "dkt4": 29.25,
+    "dkt3": 29.25
+   },
+   "status": "Out",
+   "team": "T"
+  },
+  "dkb1": {
+   "min": 14.1,
+   "min_pre": 16.51,
+   "min_ctx": {
+    "dkstar": 15.95,
+    "dkt6": 16.81
+   },
+   "status": null,
+   "team": "T"
+  },
+  "dkb2": {
+   "min": 7.4,
+   "min_pre": 9.62,
+   "min_ctx": {
+    "dkstar": 9.76,
+    "dkt6": 9.55
+   },
+   "status": null,
+   "team": "T"
+  },
+  "dkb3": {
+   "min": 3.7,
+   "min_pre": 5.38,
+   "min_ctx": {
+    "dkstar": 5.24,
+    "dkt6": 5.45
+   },
+   "status": null,
+   "team": "T"
+  }
+ },
+ "out": [
+  "dkstar"
+ ],
+ "want": {
+  "dkt1": 34.3,
+  "dkt2": 34.2,
+  "dkt3": 34.2,
+  "dkt4": 34.2,
+  "dkt5": 33.4,
+  "dkb1": 16.2,
+  "dkb2": 9.1,
+  "dkb3": 4.3
+ }
+}

@@ -69,8 +69,8 @@
   .muted { color: var(--muted); }
   #bankCheck { display: none; }        /* 2026-11-23, the owner: not read; the cut and fill handle the bank's position */
   #players:not(.fillcols):not(.noscan) .col-cash { display: none; }
-  #players:not(.fillcols):not(.noscan) .head, #players:not(.fillcols):not(.noscan) .row { grid-template-columns: 128px minmax(170px, 230px) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 70px 26px 42px 42px; }
-  @media (max-width: 620px) { #players:not(.fillcols):not(.noscan) .head, #players:not(.fillcols):not(.noscan) .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 70px 26px 42px 42px 30px 44px 48px; } }
+  #players:not(.fillcols):not(.noscan) .head, #players:not(.fillcols):not(.noscan) .row { grid-template-columns: 128px minmax(170px, 230px) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 32px 40px 36px 70px 26px 42px 42px; }
+  @media (max-width: 620px) { #players:not(.fillcols):not(.noscan) .head, #players:not(.fillcols):not(.noscan) .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 32px 40px 36px 70px 26px 42px 42px 30px 44px 48px; } }
   .row .col-bank { font-weight: 700; color: var(--ink); } .row .rdc > span { font-weight: 700; }
   .head span[data-sort="bank"], .head span[data-sort="read"] { color: var(--ink); font-weight: 700; }
   .tvgrid { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 14px; align-items: start; margin-top: 6px; }
@@ -79,7 +79,7 @@
   .tvtabs { display: flex; gap: 6px; margin-bottom: 6px; } .tvtabs button { flex: 1; height: 30px; font-weight: 700; }
   .tvtabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
   .tvteam { margin: 8px 0 2px; font-size: 13px; }
-  #teamPanel .plist.tv .col-opp, #teamPanel .plist.tv .col-min, #teamPanel .plist.tv .col-cash, #teamPanel .plist.tv .col-pb { display: none; }
+  #teamPanel .plist.tv .col-opp, #teamPanel .plist.tv .col-min, #teamPanel .plist.tv .col-cash, #teamPanel .plist.tv .col-pb, #teamPanel .plist.tv .col-qmin { display: none; }
   #teamPanel .plist.tv .head, #teamPanel .plist.tv .row { grid-template-columns: 128px 165px 30px 40px 44px 44px 36px 36px 32px 34px 34px 34px 56px 36px 36px; }
   @media (max-width: 620px) { #teamPanel .plist.tv .head, #teamPanel .plist.tv .row { grid-template-columns: 88px 160px 44px 52px 38px 36px 36px 34px 38px 36px 64px 40px 40px 30px 44px; } }
   /* off the page (2026-11-23, the owner: not referenced): the news line, Slate details, the ownership watch and field fit
@@ -206,11 +206,11 @@
   #fillSet > summary { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; }
   #nbList.nbscroll { max-height: 440px; }
   #nbList td.nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 470px; }
-  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 40px 70px 36px 40px 40px 26px 42px 42px; }
+  #players.fillcols .head, #players.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 32px 40px 70px 36px 40px 40px 26px 42px 42px; }
   /* no player scan for the slate yet (2026-11-20): its six columns hidden, their width to the name */
   #players.noscan .col-scan { display: none; }
-  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(170px, 230px) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px; }
-  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px; }
+  #players.noscan .head, #players.noscan .row { grid-template-columns: 128px minmax(170px, 230px) 30px 44px 48px 44px 56px 38px 36px 38px 28px 34px 32px 40px 36px 42px 42px; }
+  #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 128px minmax(170px, 230px) 44px 46px 54px 38px 36px 38px 28px 34px 32px 40px 36px 40px 34px 42px 42px; }
   #players.fillcols .col-pos, #players.fillcols .col-opp, #players.fillcols .col-avg, #players.fillcols .col-cash { display: none; }
   .gapm { margin-left: 4px; font-size: 11px; } .gapm.in { color: #3fbf7f; } .gapm.out { color: var(--bad); }
   #players .row .nm.w { color: var(--live); } #players .row .nm.wo { color: var(--bad); text-decoration: line-through; }
@@ -356,10 +356,11 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
     :is(#players, .plist) { overflow-x: auto; }
     :is(#players, .plist) .head, :is(#players, .plist) .row { width: max-content; min-width: 100%; }
     :is(#players, .plist) .col-pos, :is(#players, .plist) .col-team, :is(#players, .plist) .col-opp { order: 1; }
-    :is(#players, .plist) .head, :is(#players, .plist) .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
-    #players.noscan .head, #players.noscan .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 42px 42px 30px 44px 48px; }
-    #players.fillcols .head, #players.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 40px 70px 36px 40px 40px 26px 42px 42px 44px; }
-    #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 40px 36px 40px 34px 42px 42px 44px; }
+    .plist .head, .plist .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
+    #players .head, #players .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 32px 40px 36px 38px 70px 26px 42px 42px 30px 44px 48px; }
+    #players.noscan .head, #players.noscan .row { grid-template-columns: 88px 168px 44px 56px 38px 36px 38px 28px 34px 32px 40px 36px 42px 42px 30px 44px 48px; }
+    #players.fillcols .head, #players.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 32px 40px 70px 36px 40px 40px 26px 42px 42px 44px; }
+    #players.noscan.fillcols .head, #players.noscan.fillcols .row { grid-template-columns: 88px 168px 46px 54px 38px 36px 38px 28px 34px 32px 40px 36px 40px 34px 42px 42px 44px; }
     :is(#players, .plist) .row > .lx, :is(#players, .plist) .row > .who, :is(#players, .plist) .head > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--bg); }
     :is(#players, .plist) .row > .lx, :is(#players, .plist) .head > :nth-child(1) { left: 0; }
     :is(#players, .plist) .row > .who, :is(#players, .plist) .head > :nth-child(2) { left: 88px; }
@@ -814,6 +815,17 @@ function applyOuts() {
   var teams = {};
   rows.forEach(function (r) { if (r.status !== r._status0) teams[r.team] = 1; });
   Object.keys(teams).forEach(function (t) {
+    /* the rebuilt minutes (2026-11-25, cbb_nightly.rebuilt_minutes): each card's pre-fit minutes (min_pre), with
+       min_ctx's value in place for a top-5 teammate whose availability you changed (lineup context), then the same
+       fit to 200 in proportion and steepen 0.18 (DKSim.refitTeam): the minutes the pipeline gives that availability */
+    var tc = rows.filter(function (r) { return r.team === t; });
+    if (tc.some(function (r) { return r.min_pre != null; })) {
+      var flipped = tc.filter(function (r) { return r.status !== r._status0 && ((r.status === "Out") !== (r._status0 === "Out")); }).map(function (r) { return r.id; });
+      var cards = tc.filter(function (r) { return r.status !== "Out" && r.min_pre != null; });
+      var mm = DKSim.refitTeam(cards, flipped);
+      cards.forEach(function (r) { if (r.min) minScale[r.id] = mm[r.id] / r.min; });
+      return;
+    }
     var v = rows.filter(function (r) { return r.team === t && r.status !== "Out" && r.min != null && r.min > 0; });
     /* the pipeline's Out rule first (cbb_nightly team_minutes, OUT_REG_MIN / OUT_SHARE / OUT_POS_OTHER; 2026-11-23,
        Wright: the plain fit spread a starting guard's minutes evenly, forwards included): a regular you rule out
@@ -1136,7 +1148,7 @@ var ckSort = {};
 function sortList(list) {
   if (view.sort === "checks") ckSort = checksMap();
   var get = { value: value, proj: proj, salary: function (r) { return r.salary; }, min: function (r) { return r.min || 0; },
-              avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; }, mpg: function (r) { return r.min_avg != null ? r.min_avg : -1; }, obpr: function (r) { return r.obpr != null ? r.obpr : -99; },
+              avg: function (r) { return r.dk_avg || 0; }, name: function (r) { return r.name; }, mpg: function (r) { return r.min_avg != null ? r.min_avg : -1; }, qmin: function (r) { return r.qmin != null ? r.qmin : -1; }, obpr: function (r) { return r.obpr != null ? r.obpr : -99; },
               own: own, pos: function (r) { return r.position || ""; }, team: function (r) { return r.team || ""; }, opp: function (r) { return r.opp || ""; },
               scan: function (r) { var x = scanRowOf(r.id); return x ? x.g_t1 : -Infinity; },
               sroi: function (r) { var x = scanRowOf(r.id); return x && x.g_roi != null ? x.g_roi : -Infinity; },
@@ -1265,7 +1277,7 @@ function bankShare() {
 function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's checks (checksMap)
   var head = '<div class="head"><span>L / X</span>' +
     [["name", "Player", ""], ["pos", "Pos", "col-pos"], ["team", "Team", "col-team"], ["opp", "Opp", "col-opp"], ["salary", "Sal", "r"], ["proj", "Proj", "r"], ["value", "Val", "r"], ["own", "Own", "r"],
-].concat(PT_SWAP ? [] : fs && fillCutOn() ? [["fcut", "Cut", "r col-bank"]] : [["bank", view.bankBase ? "Base" : "Bank", "r col-bank"]]).concat(PT_CUT ? [["cut", "Cut", "r col-cut"], ["down", "\u0394 own", "r col-down"]] : PT_SWAP ? [["act", "Actual", "r col-cut col-act"], ["dact", "\u0394", "r col-down"], ["mine", "Mine", "r col-bank col-mine"]] : [["min", "Min", "r col-min"]]).concat([["mpg", "MPG", "r col-mpg"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]]).concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", fillCutOn() ? "\u0394 cut" : "Room", "r"]] : [])
+].concat(PT_SWAP ? [] : fs && fillCutOn() ? [["fcut", "Cut", "r col-bank"]] : [["bank", view.bankBase ? "Base" : "Bank", "r col-bank"]]).concat(PT_CUT ? [["cut", "Cut", "r col-cut"], ["down", "\u0394 own", "r col-down"]] : PT_SWAP ? [["act", "Actual", "r col-cut col-act"], ["dact", "\u0394", "r col-down"], ["mine", "Mine", "r col-bank col-mine"]] : [["min", "Min", "r col-min"]]).concat([["mpg", "MPG", "r col-mpg"], ["qmin", "QMIN", "r col-qmin"], ["obpr", "OBPR", "r col-obpr"], ["avg", "DK avg", "r col-avg"], ["scash", "Cash", "r col-scan col-cash"], ["read", "Read", "col-scan"]]).concat(fs ? [["here", "Here", "r"], ["tonight", "Tonight", "r"], ["room", fillCutOn() ? "\u0394 cut" : "Room", "r"]] : [])
       .map(function (c) { return sortable ? '<span data-sort="' + c[0] + '" class="' + c[2] + (view.sort === c[0] ? " on" : "") + '"' + (PT_SWAP && (c[0] === "act" || c[0] === "dact") ? ' title="' + esc(swapActTitle()) + '"' : PT_SWAP && c[0] === "mine" ? ' title="Your share of your lineups as they stand now: the entries file with the swaps you accept (what Export writes), every contest or the one picked in Contest"' : "") + '>' + c[1] + (view.sort === c[0] ? (view.dir < 0 ? " ↓" : " ↑") : "") +
                                           (c[0] === "bank" ? '<button type="button" class="bbtog" aria-pressed="' + !!view.bankBase + '" title="Bank % from the whole bank or the base bank only (the checks\' base)">' + (view.bankBase ? "base" : "all") + "</button>" : "") + "</span>"
                                           : '<span class="' + c[2] + '">' + c[1] + (c[0] === "proj" ? " ↓" : "") + "</span>"; }).join("") +
@@ -1337,6 +1349,10 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
       // MPG (2026-11-20): his season minutes a game played, beside our minutes projection; the hover his last 5 and their spread
       '<span class="m r mut col-mpg"' + (r.min_avg != null ? ' title="' + esc("Season " + r.min_avg.toFixed(1) + " min a game played" + (r.min_last5 && r.min_last5.length ? "; last " + r.min_last5.length + ": " +
         r.min_last5.map(function (m) { return Math.round(m); }).join(", ") : "") + (r.min_cv != null ? "; minutes CV " + r.min_cv.toFixed(2) : "")) + '"' : "") + ">" + (r.min_avg != null ? r.min_avg.toFixed(0) : "–") + "</span>" +
+      // QMIN (2026-11-25, the minutes rebuild): his on-court rate in competitive time x 40 (cbb_pbp.qmin_rate, his clean games)
+      '<span class="m r mut col-qmin" title="' + esc(r.qmin != null ? "QMIN " + r.qmin.toFixed(1) + ": his minutes a 40 of competitive play (the win probability under 90%), his clean games, recent ones weighted up" +
+        (r.min_parts ? "; tonight: QMIN states " + r.min_parts.qmin + (r.min_parts.form != null ? ", FORM " + r.min_parts.form : "") + " -> " + r.min_parts.pre + " before the team fit, " + r.min_parts.final + " after" : "") : "No clean play-by-play games yet") + '">' +
+        (r.qmin != null ? r.qmin.toFixed(0) : "–") + "</span>" +
       // OBPR (2026-11-20): EvanMiya's offensive BPR; the hover BPR, DBPR and his OBPR rank on his team; "–" with no EvanMiya match
       '<span class="m r mut col-obpr"' + (r.obpr != null ? ' title="' + esc("EvanMiya OBPR " + r.obpr.toFixed(2) + (r.bpr != null ? "; BPR " + r.bpr.toFixed(2) : "") + (r.dbpr != null ? "; DBPR " + r.dbpr.toFixed(2) : "") +
         (r.bpr_rank != null ? "; #" + r.bpr_rank + " on " + (r.team || "his team") + " by OBPR" : "")) + '"' : "") + ">" + (r.obpr != null ? r.obpr.toFixed(1) : "–") + "</span>" +
@@ -4089,9 +4105,9 @@ function cutCells(r, bs) {
 }
 function cutGrid() {         // the grid from the columns the Cut tab shows (the CSS templates are for the Bank / Fill lists)
   var phone = window.matchMedia && window.matchMedia("(max-width: 620px)").matches, scan = !$("players").classList.contains("noscan");
-  var w = phone ? ["88px", "160px", "44px", "52px", "36px", "34px", "44px", "42px", "38px", "32px", "36px", "34px"] :
-                  ["120px", "minmax(150px, 200px)", "28px", "40px", "44px", "42px", "50px", "36px", "34px", "44px", "42px", "38px", "32px", "36px", "34px"];
-  // desktop: L/X, name, pos, team, opp, sal, proj, val, own, bank, cut, Δ own, mpg, obpr, dk avg; phone: pos / team / opp go last
+  var w = phone ? ["88px", "160px", "44px", "52px", "36px", "34px", "44px", "42px", "38px", "32px", "32px", "36px", "34px"] :
+                  ["120px", "minmax(150px, 200px)", "28px", "40px", "44px", "42px", "50px", "36px", "34px", "44px", "42px", "38px", "32px", "32px", "36px", "34px"];
+  // desktop: L/X, name, pos, team, opp, sal, proj, val, own, bank, cut, Δ own, mpg, qmin, obpr, dk avg; phone: pos / team / opp go last
   if ($("players").classList.contains("swapcols")) { w = w.slice(); w.splice(phone ? 6 : 9, 3, "42px", "38px", "44px"); }      // Swap: own, actual, Δ, mine
   var cols = w.concat(scan ? ["66px", "24px"] : []).concat(["40px", "40px"]).concat(phone ? ["28px", "40px", "44px"] : []);
   var t = cols.join(" ");

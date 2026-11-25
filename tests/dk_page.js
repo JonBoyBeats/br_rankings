@@ -202,6 +202,28 @@ function audit(name, L, o) {
   });
   check("mark out: he's Out, his teammates share exactly 200 minutes, projections moving with them; undo restores",
         qo && qo.status === "Out" && Math.abs(qo.sum - 200) < 1e-6 && qo.moved && qo.back, JSON.stringify(qo));
+  // the rebuilt minutes (2026-11-25): with the pipeline's min_pre / min_ctx on a team's cards, Mark out refits it with
+  // DKSim.refitTeam (lineup context for a top-5 teammate, the proportional fit, steepen 0.18), not the old hand-off
+  const rb = await pg.evaluate(() => {
+    const q = rows.find(r => r._status0 === "Questionable" && r.min > 0 && rows.filter(x => x.team === r.team && x.min > 0 && x.status !== "Out").length >= 6);
+    if (!q) return null;
+    const mates = rows.filter(r => r.team === q.team && r.id !== q.id && r.status !== "Out" && r.min > 0);
+    const saved = mates.concat([q]).map(r => [r, r.min_pre, r.min_ctx]);
+    mates.concat([q]).forEach((r, i) => { r.min_pre = r.min; });
+    mates.forEach((r, i) => { r.min_ctx = i < 2 ? { [q.id]: r.min + 4 } : {}; });      // two teammates gain with him out
+    view.panel = null; view.qOnly = false; renderTiles(); renderPlayers();
+    document.querySelector(`#players .row[data-id="${q.id}"] .qout`).click();
+    const want = DKSim.refitTeam(mates.map(r => ({ id: r.id, min_pre: r.min_pre, min_ctx: r.min_ctx })), [q.id]);
+    const same = mates.every(r => Math.abs(r.min * (minScale[r.id] || 1) - want[r.id]) < 1e-9);
+    const sum = mates.reduce((t, r) => t + r.min * (minScale[r.id] || 1), 0);
+    const gain = mates.slice(0, 2).every(r => minScale[r.id] > minScale[mates[2].id]);
+    document.querySelector(`#players .row[data-id="${q.id}"] .qout`).click();
+    saved.forEach(([r, p, c]) => { if (p == null) delete r.min_pre; else r.min_pre = p; if (c == null) delete r.min_ctx; else r.min_ctx = c; });
+    applyOuts(); renderPlayers();
+    return { same, sum, gain, back: q.status === "Questionable" };
+  });
+  check("mark out on the rebuilt minutes: the team refit the pipeline's way (min_pre, min_ctx for the ruled-out teammate, 200, steepen 0.18)",
+        rb && rb.same && Math.abs(rb.sum - 200) < 1e-6 && rb.gain && rb.back, JSON.stringify(rb));
   // Doubtful: out by default (the server's flag, or a doubtful news item); Play him puts him back as Questionable, his team refit to 200
   const db = await pg.evaluate(() => {
     const d = rows.find(r => r.status !== "Out" && r._status0 !== "Questionable" && r.min > 10 && rows.filter(x => x.team === r.team && x.min > 0 && x.status !== "Out").length >= 6);
@@ -333,7 +355,7 @@ function audit(name, L, o) {
              tip: el.querySelector(".nm").title, line: (r.spread > 0 ? "+" : "") + r.spread, ou: r.ou, frag: f ? { badge: !!fel.querySelector(".frag") === !!fragileMap()[f.id], tip: /Swingy: expected miss/.test(fel.querySelector(".nm").title) } : null };
   });
   check("Players list: Pos / Team / Opp columns, matchup and line in the name's tooltip, fragile in the tooltip, no ± column or grey line",
-        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Bank", "Min", "MPG", "OBPR", "DK avg", "Cash", "Read"]) && pl.sub === 0 &&
+        JSON.stringify(pl.heads) === JSON.stringify(["Player", "Pos", "Team", "Opp", "Sal", "Proj", "Val", "Own", "Bank", "Min", "MPG", "QMIN", "OBPR", "DK avg", "Cash", "Read"]) && pl.sub === 0 &&
         JSON.stringify(pl.cells) === JSON.stringify(pl.want) && pl.tip.includes(pl.line) && pl.tip.includes("o/u " + pl.ou) && (!pl.frag || (pl.frag.badge && pl.frag.tip)), JSON.stringify(pl));
   // A4: fragile from the lenses: the badge only when 2+ lenses disagree with our number, the reasons in its hover
   const fragA4 = await pg.evaluate(() => { const m = fragileMap(), ids = Object.keys(m);
@@ -1897,7 +1919,7 @@ function audit(name, L, o) {
     document.querySelector('#players .head [data-sort="mpg"]').click();
     const v = [...document.querySelectorAll("#players .row")].map(e => { const x = byId(e.dataset.id); return x.min_avg != null ? x.min_avg : -1; }), down = v.every((x, i) => i === 0 || v[i - 1] >= x);
     view.sort = "value"; view.dir = -1; renderPlayers();
-    return { after: heads.indexOf("mpg") === heads.indexOf("min") + 1, gone: !["scan", "sroi"].some(k => heads.includes(k)) && heads.indexOf("bank") === heads.indexOf("own") + 1, cash: heads.includes("scash"), text, want: "27", tip, down, obText, obTip, dash, obAfter: heads.indexOf("obpr") === heads.indexOf("mpg") + 1 };
+    return { after: heads.indexOf("mpg") === heads.indexOf("min") + 1, gone: !["scan", "sroi"].some(k => heads.includes(k)) && heads.indexOf("bank") === heads.indexOf("own") + 1, cash: heads.includes("scash"), text, want: "27", tip, down, obText, obTip, dash, obAfter: heads.indexOf("qmin") === heads.indexOf("mpg") + 1 && heads.indexOf("obpr") === heads.indexOf("qmin") + 1 };
   });
   check("Players list: MPG (season minutes a game) right after Min, last 5 in the hover, sortable; no Top 1% / ROI / Bank columns, Cash kept",
         mpg.after && mpg.gone && mpg.cash && mpg.text === mpg.want && mpg.tip === "Season 27.4 min a game played; last 5: 30, 22, 28, 31, 26; minutes CV 0.12" &&
@@ -2377,7 +2399,7 @@ function audit(name, L, o) {
     return { bankHeads, heads, sorted, cellsOk, arrows, dsorted, maxSorts, bankSort, bankAfter, fits };
   });
   check("Cut tab Players list: Own, Bank, Cut (▲/▼ at 5+ points off Bank), Δ own (green / red), no Min; Cut high to low by default; Δ own and Min% / Max% sort; the Bank tab's list unchanged",
-        ctl.heads.join("|") === "Player|Pos|Team|Opp|Sal|Proj|Val|Own|Bank|Cut|Δ own|MPG|OBPR|DK avg|Cash|Read|Min%|Max%" && ctl.sorted && ctl.cellsOk && ctl.dsorted && ctl.maxSorts &&
+        ctl.heads.join("|") === "Player|Pos|Team|Opp|Sal|Proj|Val|Own|Bank|Cut|Δ own|MPG|QMIN|OBPR|DK avg|Cash|Read|Min%|Max%" && ctl.sorted && ctl.cellsOk && ctl.dsorted && ctl.maxSorts &&
         ctl.bankHeads.includes("Min") && !ctl.bankHeads.includes("Cut") && JSON.stringify(ctl.bankHeads) === JSON.stringify(ctl.bankAfter) && ctl.fits, JSON.stringify(ctl));
   // fill against the cut, on the Fill tab (2026-11-24, moved from the Cut tables): the contest table, its expanded row's lineups and flags, the scorecard scoped to it, a flagged row into Swap one in; the Cut tables as before
   const fc = await pg.evaluate(async () => {

@@ -69,6 +69,48 @@
     }
     return m;
   }
+  // The rebuilt minutes' team fit (2026-11-25, battle-royale-research cbb_nightly.rebuilt_minutes / cbb_pbp.fit_share):
+  // scaled to total in proportion, none over 40; then steeper at the top (m^(1+g) scaled back, none over 40)
+  function fitShare(mins, total) {
+    total = total == null ? 200 : total;
+    var tot = mins.reduce(function (a, x) { return a + x; }, 0);
+    if (tot <= 0) return mins.slice();
+    var v = mins.map(function (x) { return Math.min(40, x * total / tot); });
+    for (var it = 0; it < 20; it++) {
+      var gap = total - v.reduce(function (a, x) { return a + x; }, 0), free = 0;
+      v.forEach(function (x) { if (x < 40 - 1e-9) free += x; });
+      if (Math.abs(gap) < 1e-6 || !free) break;
+      v = v.map(function (x) { return x < 40 - 1e-9 ? Math.min(40, x * (1 + gap / free)) : x; });
+    }
+    return v;
+  }
+  function steepen(mins, g) {
+    var total = mins.reduce(function (a, x) { return a + x; }, 0);
+    if (!g || !total) return mins.slice();
+    var m = mins.map(function (x) { return Math.pow(x, 1 + g); }), s0 = m.reduce(function (a, x) { return a + x; }, 0), k = total / s0;
+    m = m.map(function (x) { return Math.min(40, x * k); });
+    for (var it = 0; it < 20; it++) {
+      var gap = total - m.reduce(function (a, x) { return a + x; }, 0), free = 0;
+      m.forEach(function (x) { if (x < 40 - 1e-9) free += x; });
+      if (Math.abs(gap) < 1e-6 || !free) break;
+      m = m.map(function (x) { return x < 40 - 1e-9 ? Math.min(40, x * (1 + gap / free)) : x; });
+    }
+    return m;
+  }
+  var STEEP_REBUILD = 0.18;
+  // A team's minutes refit the pipeline's way after statuses change (the DK page's Mark out / Play): each card playing
+  // tonight starts from his pre-fit minutes (min_pre), with min_ctx's value in place for each top-5 teammate whose
+  // availability changed (flipped: their ids), then fitShare to 200 and steepen. cards: [{id, min_pre, min_ctx}] playing.
+  function refitTeam(cards, flipped) {
+    var pre = cards.map(function (r) {
+      var x = r.min_pre;
+      (flipped || []).forEach(function (o) { var c = r.min_ctx && r.min_ctx[o]; if (c != null) x += c - r.min_pre; });
+      return Math.max(0, Math.min(40, x));
+    });
+    var out = {}, v = steepen(fitShare(pre, 200), STEEP_REBUILD);
+    cards.forEach(function (r, i) { out[r.id] = v[i]; });
+    return out;
+  }
   // A seeded random generator (mulberry32): the same seed, the same draws
   function seeded(seed) {
     var a = seed >>> 0;
@@ -992,7 +1034,7 @@
   }
 
   return { CAP: CAP, SLOTS: SLOTS, MIN_PROJ: MIN_PROJ, BASE: BASE, RULESETS: RULESETS, isG: isG, isF: isF, seeded: seeded,
-           gatedProj: gatedProj, seeded: seeded, fitMinutes: fitMinutes, usable: usable, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
+           gatedProj: gatedProj, seeded: seeded, fitMinutes: fitMinutes, fitShare: fitShare, steepen: steepen, refitTeam: refitTeam, STEEP_REBUILD: STEEP_REBUILD, usable: usable, aloneStats: aloneStats, tiers: tiers, fieldOwnPctile: fieldOwnPctile, assign: assign, solve: solve, payTable: payTable,
            simulate: simulate, builder: builder, pick: pick, expoLimit: expoLimit, lateSlots: lateSlots, variants: variants, fits: fits, value: value, topAlone: topAlone, diversity: diversity,
            pool: pool, poolDraw: poolDraw, simPick: simPick, pickJoint: pickJoint, rulesFor: rulesFor, passes: passes, underRules: underRules,
            CORR: CORR, TIE_SPLIT: TIE_SPLIT, nightPoints: nightPoints, placePay: placePay, pairs: pairs, cores: cores, topCore: topCore, coreLimit: coreLimit, isShare: isShare, meets: meets, shareStatus: shareStatus, shareFits: shareFits, cutPool: cutPool,
