@@ -128,7 +128,7 @@ No moves against the button here last night.
 
 **Your Q moves.** Afternoon: Washington ahead of Carter, hurt by 5; Afternoon: Washington ahead of Pritchard, helped by 7.
 
-**Today's Questionable players.** Victor Wembanyama (T1 on the ladders, 67% to play): if he sits, De'Aaron Fox, Devin Vassell; Karl-Anthony Towns (T2 on the ladders, 61% to play): if he sits, Andre Drummond, Josh Hart, Landry Shamet; Yaxel Lendeborg (T3 on the ladders, 55% to play): if he sits, Brandin Podziemski, Charles Bassey, Al Horford; Jalen Smith (T5 on the ladders, 66% to play).
+**Today's Questionable players.** Victor Wembanyama (T1 on the ladders, 73% to play): if he sits, De'Aaron Fox, Devin Vassell, Julian Champagnie; Jalen Brunson (T2 on the ladders, 45% to play): if he sits, Josh Hart, Andre Drummond, Landry Shamet; Yaxel Lendeborg (T3 on the ladders, 59% to play): if he sits, Brandin Podziemski; Jalen Smith (T5 on the ladders, 68% to play); De'Aaron Fox (T5 on the ladders, 65% to play).
 
 ## Back page
 

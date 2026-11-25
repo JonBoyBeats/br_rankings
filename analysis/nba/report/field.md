@@ -205,7 +205,7 @@ FPOE: fantasy points over the average for his ADP round band, summed over a team
 | 2/3 | 6 | 0.00% / 1.81% | -6.4 | 2 | 0.00% / 0.02% | verdict when the window ends |
 | 1/2 | 2 | 0.03% / 3.59% | -14.3 | 0 | - / - | verdict when the window ends |
 
-Last night: 1/2 turn, Cooper Flagg + Franz Wagner: most-owned (1281 teams, 0 top 1%, 204.1 pts) vs the rest (3176, 130, 226.9); 2/3 turn, Nikola Jokic + Kyrie Irving + Paul George: most-owned (1417 teams, 0 top 1%, 203.5 pts) vs the rest (1582, 0, 198.3); 2/3 turn, Cade Cunningham + Anthony Black + Franz Wagner: most-owned (1 teams, 0 top 1%, 160.7 pts) vs the rest (4, 0, 165.3); 2/3 turn, Jayson Tatum + Anthony Black + Franz Wagner: most-owned (373 teams, 0 top 1%, 205.5 pts) vs the rest (2282, 116, 228.5).
+Last night: 1/2 turn, Cooper Flagg + Franz Wagner: most-owned (1281 teams, 0 top 1%, 204.1 pts) vs the rest (3176, 130, 226.9); 2/3 turn, Nikola Jokic + Kyrie Irving + Paul George: most-owned (1417 teams, 0 top 1%, 203.5 pts) vs the rest (1582, 0, 198.3); 2/3 turn, Cade Cunningham + Trae Young + Anthony Black: most-owned (1 teams, 0 top 1%, 160.7 pts) vs the rest (4, 0, 165.3); 2/3 turn, Jayson Tatum + Anthony Black + Franz Wagner: most-owned (373 teams, 0 top 1%, 205.5 pts) vs the rest (2282, 116, 228.5).
 
 **Boom peer bump: calibration**
 
