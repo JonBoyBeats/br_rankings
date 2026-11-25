@@ -116,13 +116,13 @@ gap counts and unexplained gaps (the lens's tests) do not worsen beyond noise, a
 
 ## The minutes half, as shipped (projection = tonight's minutes x tonight's DK points per minute, nothing else)
 
-Each DraftKings row carries \`min_parts\`, for example Ivan Kharchenkov on 157293:
+Each DraftKings row carries `min_parts`, for example Ivan Kharchenkov on 157293:
 form 33.2 → quality 33.6 → spread 35.0 → final 36.2.
 
 | Layer | What it is | Status |
 |---|---|---|
-| form | this season's raw minutes, FORM 0.8 recency weights, plus MIN_FILL of the prior season | kept only as the base of \`min_old\`; no longer used for the projection |
-| quality | the same blend with overtime scaled to regulation and 20+ blowouts at half weight (\`min_q\`) | new |
+| form | this season's raw minutes, FORM 0.8 recency weights, plus MIN_FILL of the prior season | kept only as the base of `min_old`; no longer used for the projection |
+| quality | the same blend with overtime scaled to regulation and 20+ blowouts at half weight (`min_q`) | new |
 | spread | x MIN_BY_SPREAD by his tier | kept: the state model meant to replace it failed held out |
 | final | the team fit: Out regulars' minutes, the 200 fit, steepen | unchanged |
 
@@ -134,7 +134,7 @@ What was removed or moved:
     worse.
   - Moved into minutes instead: rotation minutes +0.042 (SE 0.042) worse.
   - It is a points-per-minute effect of the spread, so its refit belongs to the per-minute build.
-- **Not shipped:** QMIN, state weighting and lineup context. The \`min_parts\` layers for them (\`qmin\`, \`states\`, \`context\`)
+- **Not shipped:** QMIN, state weighting and lineup context. The `min_parts` layers for them (`qmin`, `states`, `context`)
   get added if a later build passes.
 
 ## What shipped
