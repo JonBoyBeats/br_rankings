@@ -263,3 +263,84 @@ date,draft_group,lens,subject,team,miss,detail,tags,driver
 2026-11-22,157019,own team,NEB,NEB,39.35,"summed 77% projected, 117% real",unexplained,
 2026-11-22,157019,own team,NW,NW,-31.29,"summed 110% projected, 78% real",blowout; Q status,
 2026-11-22,157019,own team,DAY,DAY,-30.49,"summed 79% projected, 49% real",late news / scratch; blowout,
+2026-11-23,157021,minutes,Robert Wright III,BYU,-32.4,"32 projected, 0 played",late news / scratch; Q status,
+2026-11-23,157021,minutes,Devin Vanterpool,PROV,-21.9,"22 projected, 0 played",late news / scratch; Q status,
+2026-11-23,157021,minutes,Wesley Yates III,UW,-20.1,"20 projected, 0 played",late news / scratch,
+2026-11-23,157021,minutes,Ryan Mela,PROV,20.1,"18 projected, 38 played",teammate out; Q status,
+2026-11-23,157021,minutes,Kyle Jorgensen,CSU,-18.2,"27 projected, 9 played",unexplained,
+2026-11-23,157021,shape,PROV,PROV,-15.56,top-2 share ours 33% vs real 48%,late news / scratch; Q status,
+2026-11-23,157021,shape,UW,UW,-13.92,top-2 share ours 33% vs real 47%,late news / scratch,
+2026-11-23,157021,shape,CSU,CSU,-12.6,top-2 share ours 34% vs real 47%,unexplained,
+2026-11-23,157021,Vegas,CLEM,CLEM,-39.9,"implied 71.0, ours 155, real 115",blowout,
+2026-11-23,157021,Vegas,BYU,BYU,-23.0,"implied 88.5, ours 182, real 160",late news / scratch; Q status,
+2026-11-23,157021,Vegas,CSU,CSU,20.95,"implied 71.0, ours 135, real 156",unexplained,
+2026-11-23,157021,salary,Arrinten Page,PROV,9.4,"projection -13.2 off the salary line; 13.1 projected, 22.5 real; $7600; vs last 5 minutes -5.0, EvanMiya -0.4, rate -2.1",teammate out,minutes (below)
+2026-11-23,157021,salary,Dasear Haskins,MISS,-4.1,"projection -10.8 off the salary line; 4.1 projected, 0.0 real; $5300; vs last 5 minutes -1.2, EvanMiya -0.1, rate +1.0",blowout,price (DK avg) (below)
+2026-11-23,157021,salary,Dylan Faulkner,CLEM,-14.85,"projection +9.3 off the salary line; 29.6 projected, 14.8 real; $6400; vs last 5 minutes -1.4, EvanMiya -0.1, rate -0.1",blowout; salary-value spot; chalk concentration,price (DK avg) (above)
+2026-11-23,157021,salary,Stefan Cicic,MISS,-0.7,"projection -8.7 off the salary line; 0.7 projected, 0.0 real; $4200; vs last 5 minutes -2.2, EvanMiya -0.1, rate +0.1",blowout,price (DK avg) (below)
+2026-11-23,157021,ownership,Devin Vanterpool,PROV,-41.81,"47% projected, 5% real (CBB $4K Pull Up Jumper [$1K to 1st])",late news / scratch; Q status,
+2026-11-23,157021,ownership,Nikola Dzepina,UW,17.9,"30% projected, 48% real (CBB $4K Pull Up Jumper [$1K to 1st])",teammate out; chalk concentration,
+2026-11-23,157021,ownership,JJ Mandaquit,ARIZ,17.9,"5% projected, 23% real (CBB $4K Pull Up Jumper [$1K to 1st])",unexplained,
+2026-11-23,157021,ownership,Ilias Kamardine,MISS,15.21,"6% projected, 21% real (CBB $4K Pull Up Jumper [$1K to 1st])",blowout; salary-value spot,
+2026-11-23,157021,ownership,Liutauras Lelevicius,CLEM,-14.7,"46% projected, 31% real (CBB $4K Pull Up Jumper [$1K to 1st])",blowout; salary-value spot; chalk concentration,
+2026-11-23,157021,own team,BYU,BYU,44.05,"summed 45% projected, 89% real",late news / scratch; Q status,
+2026-11-23,157021,own team,CLEM,CLEM,-41.59,"summed 173% projected, 131% real",blowout,
+2026-11-23,157021,own team,PROV,PROV,-40.44,"summed 76% projected, 35% real",late news / scratch; Q status,
+2026-11-24,157024,minutes,Layden Blocker,DPU,13.8,"23 projected, 37 played",unexplained,
+2026-11-24,157024,minutes,Malik Reneau,MIA,13.7,"15 projected, 29 played",Q status,
+2026-11-24,157024,minutes,Quincy Wadley,OU,13.6,"4 projected, 18 played",minutes role change; newcomer / few games,
+2026-11-24,157024,minutes,Tanner Toolson,TCU,-13.4,"26 projected, 13 played",unexplained,
+2026-11-24,157024,minutes,Corey Stephenson,MISS,12.0,"22 projected, 34 played",unexplained,
+2026-11-24,157024,shape,BYU,BYU,-16.64,top-2 share ours 34% vs real 50%,teammate out,
+2026-11-24,157024,shape,SDSU,SDSU,-14.18,top-2 share ours 27% vs real 41%,unexplained,
+2026-11-24,157024,shape,UMD,UMD,-14.0,top-2 share ours 32% vs real 46%,Q status,
+2026-11-24,157024,Vegas,UMD,UMD,-48.7,"implied 72.5, ours 177, real 128",Q status,
+2026-11-24,157024,Vegas,MIA,MIA,-39.7,"implied 79.0, ours 173, real 133",Q status,
+2026-11-24,157024,Vegas,PITT,PITT,-24.8,"implied 75.0, ours 180, real 156",unexplained,
+2026-11-24,157024,salary,Robbie Avila,TCU,-6.5,"projection +16.0 off the salary line; 26.5 projected, 20.0 real; $4500; vs last 5 minutes -1.1, EvanMiya -0.8, rate +10.4",salary-value spot; chalk concentration,rate (above)
+2026-11-24,157024,salary,Malik Reneau,MIA,7.3,"projection -15.6 off the salary line; 15.7 projected, 23.0 real; $8600; vs last 5 minutes -2.7, EvanMiya -1.0, rate +1.3",Q status,price (DK avg) (below)
+2026-11-24,157024,salary,Tyler Hendricks,OU,-0.2,"projection -15.4 off the salary line; 0.2 projected, 0.0 real; $5500; vs last 5 minutes -3.6, EvanMiya +0.0, rate +0.1",minutes role change; Q status,price (DK avg) (below)
+2026-11-24,157024,salary,Tomislav Buljan,UMD,7.65,"projection +14.6 off the salary line; 24.6 projected, 32.2 real; $4400; vs last 5 minutes +0.9, EvanMiya -1.0, rate +4.8",salary-value spot,price (DK avg) (above)
+2026-11-24,157024,salary,Magoon Gwath,DPU,-4.05,"projection -10.8 off the salary line; 9.8 projected, 5.8 real; $6500; vs last 5 minutes -9.6, EvanMiya -0.5, rate -3.0",minutes role change,minutes (below)
+2026-11-24,157024,salary,Sinan Huan,PUR,-0.7,"projection -10.8 off the salary line; 0.7 projected, 0.0 real; $4700; vs last 5 minutes -6.4, EvanMiya -1.1, rate -0.3",newcomer / few games,minutes (below)
+2026-11-24,157024,salary,DJ Wagner,UMD,6.95,"projection +10.3 off the salary line; 19.3 projected, 26.2 real; $4200; vs last 5 minutes +0.9, EvanMiya -0.7, rate -1.4",salary-value spot,price (DK avg) (above)
+2026-11-24,157024,salary,Jasen Green,CRE,-5.2,"projection +10.2 off the salary line; 17.2 projected, 12.0 real; $3800; vs last 5 minutes +0.7, EvanMiya -0.3, rate +2.9",blowout; salary-value spot,price (DK avg) (above)
+2026-11-24,157024,salary,DeSean Goode,MIA,-2.95,"projection -9.9 off the salary line; 4.2 projected, 1.2 real; $5200; vs last 5 minutes -0.9, EvanMiya +0.1, rate +1.5",unexplained,price (DK avg) (below)
+2026-11-24,157024,salary,Jalen Washington,TENN,-0.9,"projection -9.6 off the salary line; 0.9 projected, 0.0 real; $4500; vs last 5 -",teammate out; newcomer / few games; Q status,no recent games (below)
+2026-11-24,157024,salary,Antione West Jr.,PUR,-1.85,"projection +9.6 off the salary line; 16.6 projected, 14.8 real; $3800; vs last 5 minutes -0.3, EvanMiya -1.5, rate -3.8",newcomer / few games; salary-value spot; chalk concentration,rate (above)
+2026-11-24,157024,salary,Ryan Prather Jr.,ISU,7.9,"projection +9.6 off the salary line; 19.6 projected, 27.5 real; $4400; vs last 5 minutes +1.0, EvanMiya +0.2, rate -1.8",salary-value spot,price (DK avg) (above)
+2026-11-24,157024,ownership,Micah Robinson,TCU,-21.7,"32% projected, 10% real (CBB $1K And-One (Early))",salary-value spot,
+2026-11-24,157024,ownership,Antione West Jr.,PUR,19.63,"19% projected, 39% real (CBB $1K And-One (Early))",newcomer / few games; salary-value spot; chalk concentration,
+2026-11-24,157024,ownership,Acaden Lewis,MIA,19.48,"9% projected, 29% real (CBB $1K And-One (Early))",salary-value spot,
+2026-11-24,157024,ownership,Brock Harding,TCU,-18.15,"43% projected, 25% real (CBB $1K And-One (Early))",salary-value spot,
+2026-11-24,157024,ownership,Robbie Avila,TCU,17.44,"21% projected, 38% real (CBB $1K And-One (Early))",salary-value spot; chalk concentration,
+2026-11-24,157024,own team,MIA,MIA,42.25,"summed 50% projected, 92% real",Q status,
+2026-11-24,157024,own team,UMD,UMD,-39.19,"summed 66% projected, 27% real",Q status,
+2026-11-24,157024,own team,PITT,PITT,-31.35,"summed 105% projected, 73% real",unexplained,
+2026-11-24,157026,minutes,Isaiah Abraham,KSU,-24.7,"29 projected, 4 played",blowout,
+2026-11-24,157026,minutes,LeJuan Watts,UW,-16.4,"29 projected, 13 played",teammate out,
+2026-11-24,157026,minutes,Sean Stewart,ORE,-15.8,"16 projected, 0 played",late news / scratch,
+2026-11-24,157026,minutes,Javon Bennett,GONZ,-14.7,"15 projected, 0 played",blowout,
+2026-11-24,157026,minutes,Matt Gilhool,KSU,-14.7,"15 projected, 0 played",newcomer / few games; blowout; Q status,
+2026-11-24,157026,shape,UL,UL,-16.05,top-2 share ours 33% vs real 49%,Q status,
+2026-11-24,157026,shape,CLEM,CLEM,-15.71,top-2 share ours 37% vs real 52%,unexplained,
+2026-11-24,157026,shape,BAY,BAY,-15.53,top-2 share ours 30% vs real 45%,unexplained,
+2026-11-24,157026,Vegas,GONZ,GONZ,49.05,"implied 86.5, ours 174, real 223",blowout,
+2026-11-24,157026,Vegas,TTU,TTU,-44.4,"implied 78.0, ours 165, real 120",unexplained,
+2026-11-24,157026,Vegas,BAMA,BAMA,-35.7,"implied 88.0, ours 169, real 133",Q status,
+2026-11-24,157026,salary,Dylan Faulkner,CLEM,7.65,"projection +10.9 off the salary line; 29.1 projected, 36.8 real; $5800; vs last 5 minutes -0.4, EvanMiya +0.1, rate +4.2",salary-value spot; chalk concentration,price (DK avg) (above)
+2026-11-24,157026,salary,Izan Almansa,GONZ,-11.15,"projection +10.3 off the salary line; 19.9 projected, 8.8 real; $4200; vs last 5 minutes -1.0, EvanMiya +0.3, rate +1.0",newcomer / few games; blowout; salary-value spot,price (DK avg) (above)
+2026-11-24,157026,salary,LJ Wells,UL,-5.4,"projection -10.1 off the salary line; 5.4 projected, 0.0 real; $5300; vs last 5 minutes -1.4, EvanMiya -0.1, rate +0.3",unexplained,price (DK avg) (below)
+2026-11-24,157026,salary,Brandon Rechsteiner,KSU,-9.3,"projection -10.0 off the salary line; 23.8 projected, 14.5 real; $8700; vs last 5 minutes +0.5, EvanMiya -0.7, rate -9.1",blowout,rate (below)
+2026-11-24,157026,salary,Flory Bidunga,UL,-3.75,"projection -9.6 off the salary line; 28.0 projected, 24.2 real; $9400; vs last 5 minutes +2.2, EvanMiya -0.5, rate -8.3",unexplained,rate (below)
+2026-11-24,157026,salary,Chase Thompson,CLEM,-1.5,"projection +9.0 off the salary line; 17.5 projected, 16.0 real; $4000; vs last 5 minutes -0.7, EvanMiya +1.5, rate -2.7",salary-value spot,price (DK avg) (above)
+2026-11-24,157026,salary,Jackson Shelstad,UL,2.05,"projection +8.4 off the salary line; 21.7 projected, 23.8 real; $4900; vs last 5 minutes +1.6, EvanMiya +0.4, rate -3.2",salary-value spot; chalk concentration,price (DK avg) (above)
+2026-11-24,157026,salary,Ruben Prey,STJN,3.3,"projection +7.9 off the salary line; 20.7 projected, 24.0 real; $4800; vs last 5 minutes -0.4, EvanMiya -1.8, rate +3.5",salary-value spot,price (DK avg) (above)
+2026-11-24,157026,ownership,Kayden Mingo,BAY,32.2,"18% projected, 50% real (CBB $7K Pull Up Jumper [$2K to 1st])",chalk concentration,
+2026-11-24,157026,ownership,Keyshawn Hall,STJN,28.95,"31% projected, 60% real (CBB $7K Pull Up Jumper [$2K to 1st])",salary-value spot; chalk concentration,
+2026-11-24,157026,ownership,Aden Holloway,BAMA,22.75,"11% projected, 33% real (CBB $7K Pull Up Jumper [$2K to 1st])",chalk concentration,
+2026-11-24,157026,ownership,Seth Trimble,UL,-19.15,"37% projected, 18% real (CBB $7K Pull Up Jumper [$2K to 1st])",salary-value spot; Q status,
+2026-11-24,157026,ownership,Amari Allen,BAMA,18.07,"29% projected, 47% real (CBB $7K Pull Up Jumper [$2K to 1st])",chalk concentration,
+2026-11-24,157026,own team,BAMA,BAMA,43.15,"summed 47% projected, 90% real",Q status,
+2026-11-24,157026,own team,CLEM,CLEM,-40.67,"summed 106% projected, 65% real",unexplained,
+2026-11-24,157026,own team,BAY,BAY,38.37,"summed 45% projected, 83% real",unexplained,

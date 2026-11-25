@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-23T12:05Z",
+ "generated_at": "2026-11-25T15:34Z",
  "window_nights": 14,
  "nights": [
   "2026-11-16_156660",
@@ -10,60 +10,63 @@
   "2026-11-20_157013",
   "2026-11-20_157015",
   "2026-11-21_157017",
-  "2026-11-22_157019"
+  "2026-11-22_157019",
+  "2026-11-23_157021",
+  "2026-11-24_157024",
+  "2026-11-24_157026"
  ],
  "bands": {
   "Large": {
-   "contests": 31,
-   "nights": 9,
+   "contests": 43,
+   "nights": 12,
    "dup": {
-    "real": 13.4,
-    "sim": 7.03
+    "real": 11.34,
+    "sim": 5.86
    },
    "punt": {
-    "real": 7.32,
-    "sim": 21.29
+    "real": 6.12,
+    "sim": 15.62
    },
-   "u5": 1.9,
+   "u5": 1.83,
    "trio_lift": {
     "real": 1.4,
-    "sim": 1.07
+    "sim": 1.1
    },
    "field": "one"
   },
   "Medium": {
-   "contests": 12,
-   "nights": 7,
+   "contests": 20,
+   "nights": 10,
    "dup": {
-    "real": 12.29,
-    "sim": 3.84
+    "real": 8.72,
+    "sim": 2.87
    },
    "punt": {
-    "real": 6.07,
-    "sim": 11.43
+    "real": 4.54,
+    "sim": 7.17
    },
-   "u5": 1.75,
+   "u5": 1.64,
    "trio_lift": {
-    "real": 1.24,
-    "sim": 1.09
+    "real": 1.35,
+    "sim": 1.13
    },
    "field": "one"
   },
   "Small": {
-   "contests": 2,
-   "nights": 2,
+   "contests": 5,
+   "nights": 4,
    "dup": {
     "real": 0.0,
-    "sim": 0.5
+    "sim": 0.49
    },
    "punt": {
     "real": 0.0,
-    "sim": 1.5
+    "sim": 0.7
    },
-   "u5": 1.11,
+   "u5": 1.12,
    "trio_lift": {
-    "real": 1.55,
-    "sim": 1.16
+    "real": 1.78,
+    "sim": 1.2
    },
    "field": "one"
   }

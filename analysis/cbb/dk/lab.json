@@ -92,16 +92,41 @@
       "results": {
         "arms": {
           "L0 U1": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
+            "diff": -1.21,
+            "noise": 0.81,
             "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "behind": 2,
+            "top10_diff": -0.0261,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 334,
+                "c_n": 317,
+                "diff": -0.4,
+                "top10_diff": -0.0062,
+                "t_pct": 69.52,
+                "c_pct": 69.91
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 218,
+                "c_n": 246,
+                "diff": -2.03,
+                "top10_diff": -0.0461,
+                "t_pct": 53.82,
+                "c_pct": 55.85
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-20",
@@ -114,20 +139,57 @@
                 "top10_diff": -0.0139,
                 "t_pct": 56.06,
                 "c_pct": 59.69
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 548,
+                "c_n": 683,
+                "diff": 0.17,
+                "top10_diff": 0.0061,
+                "t_pct": 28.13,
+                "c_pct": 27.96
               }
             ]
           },
           "L0 U2": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
-            "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "diff": -5.88,
+            "noise": 6.37,
+            "ahead": 1,
+            "behind": 1,
+            "top10_diff": -0.0274,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 324,
+                "c_n": 317,
+                "diff": 0.49,
+                "top10_diff": 0.0186,
+                "t_pct": 70.41,
+                "c_pct": 69.91
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 117,
+                "c_n": 246,
+                "diff": -12.25,
+                "top10_diff": -0.0735,
+                "t_pct": 43.6,
+                "c_pct": 55.85
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-20",
@@ -140,20 +202,57 @@
                 "top10_diff": 0.0029,
                 "t_pct": 56.43,
                 "c_pct": 59.69
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 275,
+                "c_n": 678,
+                "diff": 5.92,
+                "top10_diff": 0.0123,
+                "t_pct": 34.08,
+                "c_pct": 28.16
               }
             ]
           },
           "L0.1 U0": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
+            "diff": -0.76,
+            "noise": 0.08,
             "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "behind": 2,
+            "top10_diff": 0.0162,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 225,
+                "c_n": 314,
+                "diff": -0.84,
+                "top10_diff": 0.0328,
+                "t_pct": 68.89,
+                "c_pct": 69.73
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 114,
+                "c_n": 246,
+                "diff": -0.67,
+                "top10_diff": -0.0005,
+                "t_pct": 55.18,
+                "c_pct": 55.85
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-20",
@@ -166,20 +265,57 @@
                 "top10_diff": -0.0164,
                 "t_pct": 59.63,
                 "c_pct": 60.0
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 377,
+                "c_n": 683,
+                "diff": -6.87,
+                "top10_diff": -0.0018,
+                "t_pct": 21.09,
+                "c_pct": 27.96
               }
             ]
           },
           "L0.1 U1": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
-            "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "diff": -2.53,
+            "noise": 4.05,
+            "ahead": 1,
+            "behind": 1,
+            "top10_diff": 0.0037,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 216,
+                "c_n": 317,
+                "diff": 1.52,
+                "top10_diff": 0.0482,
+                "t_pct": 71.44,
+                "c_pct": 69.91
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 115,
+                "c_n": 246,
+                "diff": -6.58,
+                "top10_diff": -0.0407,
+                "t_pct": 49.27,
+                "c_pct": 55.85
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-20",
@@ -192,20 +328,57 @@
                 "top10_diff": 0.0083,
                 "t_pct": 57.78,
                 "c_pct": 60.06
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 299,
+                "c_n": 683,
+                "diff": -4.64,
+                "top10_diff": -0.0043,
+                "t_pct": 23.32,
+                "c_pct": 27.96
               }
             ]
           },
           "L0.1 U2": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
+            "diff": -7.83,
+            "noise": 7.76,
             "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "behind": 2,
+            "top10_diff": -0.014,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 234,
+                "c_n": 317,
+                "diff": -0.07,
+                "top10_diff": 0.043,
+                "t_pct": 69.85,
+                "c_pct": 69.91
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 76,
+                "c_n": 233,
+                "diff": -15.59,
+                "top10_diff": -0.071,
+                "t_pct": 41.28,
+                "c_pct": 56.87
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-20",
@@ -218,20 +391,57 @@
                 "top10_diff": 0.0054,
                 "t_pct": 57.62,
                 "c_pct": 60.0
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 141,
+                "c_n": 678,
+                "diff": -0.05,
+                "top10_diff": 0.0032,
+                "t_pct": 28.11,
+                "c_pct": 28.16
               }
             ]
           },
           "L0.2 U0": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
-            "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "diff": -5.81,
+            "noise": 7.67,
+            "ahead": 1,
+            "behind": 1,
+            "top10_diff": 0.038,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 120,
+                "c_n": 299,
+                "diff": 1.86,
+                "top10_diff": 0.0821,
+                "t_pct": 73.31,
+                "c_pct": 71.45
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 37,
+                "c_n": 246,
+                "diff": -13.47,
+                "top10_diff": -0.0062,
+                "t_pct": 42.38,
+                "c_pct": 55.85
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-20",
@@ -244,20 +454,57 @@
                 "top10_diff": -0.0332,
                 "t_pct": 58.1,
                 "c_pct": 64.64
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 108,
+                "c_n": 663,
+                "diff": -8.29,
+                "top10_diff": -0.0047,
+                "t_pct": 19.76,
+                "c_pct": 28.05
               }
             ]
           },
           "L0.2 U1": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
-            "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "diff": -4.03,
+            "noise": 6.55,
+            "ahead": 1,
+            "behind": 1,
+            "top10_diff": -0.0016,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 145,
+                "c_n": 317,
+                "diff": 2.53,
+                "top10_diff": 0.0916,
+                "t_pct": 72.45,
+                "c_pct": 69.91
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 43,
+                "c_n": 217,
+                "diff": -10.58,
+                "top10_diff": -0.0948,
+                "t_pct": 46.44,
+                "c_pct": 57.02
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-20",
@@ -270,20 +517,57 @@
                 "top10_diff": -0.0308,
                 "t_pct": 52.6,
                 "c_pct": 59.1
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 110,
+                "c_n": 643,
+                "diff": -8.54,
+                "top10_diff": -0.0051,
+                "t_pct": 19.78,
+                "c_pct": 28.31
               }
             ]
           },
           "L0.2 U2": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
+            "diff": -4.71,
+            "noise": 4.0,
             "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "behind": 2,
+            "top10_diff": -0.0288,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 123,
+                "c_n": 314,
+                "diff": -0.71,
+                "top10_diff": 0.0164,
+                "t_pct": 69.02,
+                "c_pct": 69.73
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 38,
+                "c_n": 194,
+                "diff": -8.71,
+                "top10_diff": -0.074,
+                "t_pct": 50.33,
+                "c_pct": 59.04
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-20",
@@ -296,6 +580,18 @@
                 "top10_diff": 0.0517,
                 "t_pct": 59.63,
                 "c_pct": 61.47
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 52,
+                "c_n": 538,
+                "diff": -8.12,
+                "top10_diff": -0.0051,
+                "t_pct": 19.06,
+                "c_pct": 27.18
               }
             ]
           }
@@ -355,16 +651,53 @@
       "results": {
         "arms": {
           "vs parents": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
+            "diff": -7.17,
+            "noise": 0.38,
             "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "behind": 2,
+            "top10_diff": -0.0188,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 424,
+                "c_n": 424,
+                "diff": -7.55,
+                "top10_diff": -0.0739,
+                "t_pct": 69.89,
+                "c_pct": 77.44,
+                "rounds": null,
+                "variants_kept": 424,
+                "top_tenth": 243,
+                "top_tenth_variants": 83,
+                "top_tenth_share": 0.3416,
+                "parent_link": "from the tag"
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 446,
+                "c_n": 446,
+                "diff": -6.79,
+                "top10_diff": 0.0362,
+                "t_pct": 56.65,
+                "c_pct": 63.44,
+                "rounds": 1,
+                "variants_kept": 446,
+                "top_tenth": 145,
+                "top_tenth_variants": 92,
+                "top_tenth_share": 0.6345,
+                "parent_link": "from the tag"
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-19",
@@ -437,20 +770,75 @@
                 "top_tenth_variants": 58,
                 "top_tenth_share": 0.2544,
                 "parent_link": "from the tag"
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 221,
+                "c_n": 221,
+                "diff": 1.28,
+                "top10_diff": 0.0065,
+                "t_pct": 25.01,
+                "c_pct": 23.74,
+                "rounds": null,
+                "variants_kept": 221,
+                "top_tenth": 223,
+                "top_tenth_variants": 30,
+                "top_tenth_share": 0.1345,
+                "parent_link": "from the tag"
               }
             ]
           },
           "vs rest of top tenth": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 2,
+            "counted_for_verdict": 2,
             "planned": 10,
-            "diff": null,
-            "noise": null,
+            "diff": -7.77,
+            "noise": 2.52,
             "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "behind": 2,
+            "top10_diff": -0.0145,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 424,
+                "c_n": 160,
+                "diff": -5.25,
+                "top10_diff": -0.014,
+                "t_pct": 69.89,
+                "c_pct": 75.14,
+                "rounds": null,
+                "variants_kept": 424,
+                "top_tenth": 243,
+                "top_tenth_variants": 83,
+                "top_tenth_share": 0.3416,
+                "parent_link": "from the tag"
+              },
+              {
+                "date": "2026-11-24",
+                "draft_group": "157026",
+                "counted": true,
+                "contests": 6,
+                "t_n": 446,
+                "c_n": 53,
+                "diff": -10.29,
+                "top10_diff": -0.0149,
+                "t_pct": 56.65,
+                "c_pct": 66.94,
+                "rounds": 1,
+                "variants_kept": 446,
+                "top_tenth": 145,
+                "top_tenth_variants": 92,
+                "top_tenth_share": 0.6345,
+                "parent_link": "from the tag"
+              }
+            ],
             "lookback": [
               {
                 "date": "2026-11-20",
@@ -487,6 +875,24 @@
                 "top_tenth_variants": 58,
                 "top_tenth_share": 0.2544,
                 "parent_link": "from the tag"
+              },
+              {
+                "date": "2026-11-23",
+                "draft_group": "157021",
+                "counted": false,
+                "contests": 7,
+                "t_n": 221,
+                "c_n": 193,
+                "diff": 1.19,
+                "top10_diff": 0.0065,
+                "t_pct": 25.01,
+                "c_pct": 23.82,
+                "rounds": null,
+                "variants_kept": 221,
+                "top_tenth": 223,
+                "top_tenth_variants": 30,
+                "top_tenth_share": 0.1345,
+                "parent_link": "from the tag"
               }
             ]
           }
@@ -494,5 +900,5 @@
       }
     }
   ],
-  "updated_at": "2026-11-24T17:56:29Z"
+  "updated_at": "2026-11-25T15:32:08Z"
 }

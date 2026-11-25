@@ -1,67 +1,67 @@
 {
- "updated": "2026-11-23T04:34Z",
+ "updated": "2026-11-25T15:32Z",
  "rule": "confirmed: 30+ player-nights on 5+ nights, the same direction on 75%+ of nights, real/projected 25%+ off 1; dead: 5+ nights and the direction under 60% or within 10%",
  "patterns": [
   {
    "pattern": "top-2 projected in the highest-total game",
    "status": "dead",
-   "player_nights": 18,
-   "nights": 9,
-   "ratio": 0.98,
-   "same_direction": "4 of 9",
+   "player_nights": 24,
+   "nights": 12,
+   "ratio": 1.05,
+   "same_direction": "7 of 12",
    "examples": [
     "11-16 Kashie Natt 5/2%",
     "11-16 Anthony Felesi 2/3%",
     "11-17 Patrick Ngongba II 42/22%",
     "11-17 Andrej Stojakovic 4/9%",
-    "11-18 Tahaad Pettiford 24/9%",
-    "11-18 Tyrin Jones 28/29%"
+    "11-18 Tyrin Jones 28/29%",
+    "11-18 Tahaad Pettiford 24/9%"
    ]
   },
   {
    "pattern": "blue bloods",
    "status": "dead",
-   "player_nights": 182,
-   "nights": 6,
-   "ratio": 1.03,
-   "same_direction": "3 of 6",
+   "player_nights": 208,
+   "nights": 8,
+   "ratio": 1.06,
+   "same_direction": "5 of 8",
    "examples": [
-    "11-16 Ousmane N'Diaye 3/0%",
-    "11-16 Justin McBride 1/1%",
-    "11-17 Sebastian Wilkins 5/5%",
-    "11-17 Ian Stephens 0/0%",
-    "11-18 Elmir Dzafic 0/0%",
-    "11-18 Leroy Blyden Jr. 46/24%"
+    "11-16 Alex Wilkins 1/0%",
+    "11-16 Franck Kepnang 0/0%",
+    "11-17 Darren Harris 12/13%",
+    "11-17 Aiden Sherrell 14/10%",
+    "11-18 Trent Perry 1/0%",
+    "11-18 Junior County 3/1%"
    ]
   },
   {
    "pattern": "coming off a big game",
    "status": "confirmed",
-   "player_nights": 49,
-   "nights": 7,
-   "ratio": 1.25,
-   "same_direction": "6 of 7",
+   "player_nights": 74,
+   "nights": 10,
+   "ratio": 1.26,
+   "same_direction": "8 of 10",
    "examples": [
-    "11-18 Dillon Battie 50/40%",
     "11-18 Leroy Blyden Jr. 46/24%",
-    "11-19 George Kimble III 44/13%",
-    "11-19 Denzel Aberdeen 32/4%",
-    "11-19 Xavier Edmonds 36/31%",
-    "11-19 Tariq Francis 32/12%"
+    "11-18 Caleb Holt 14/20%",
+    "11-19 Braeden Smith 16/37%",
+    "11-19 Brady Koehler 40/56%",
+    "11-19 DeShawn Gory 1/3%",
+    "11-19 Lino Mark 64/36%"
    ]
   },
   {
    "pattern": "top-2 projected on the biggest favourite",
    "status": "emerging",
-   "player_nights": 18,
-   "nights": 9,
-   "ratio": 1.17,
-   "same_direction": "6 of 9",
+   "player_nights": 24,
+   "nights": 12,
+   "ratio": 1.15,
+   "same_direction": "8 of 12",
    "examples": [
-    "11-16 Eric Dailey Jr. 9/22%",
     "11-16 Nikola Kusturica 43/45%",
-    "11-17 Tyran Stokes 20/8%",
+    "11-16 Eric Dailey Jr. 9/22%",
     "11-17 Tre White 15/13%",
+    "11-17 Tyran Stokes 20/8%",
     "11-18 Thomas Dowd 5/7%",
     "11-18 Tahaad Pettiford 24/9%"
    ]
@@ -69,80 +69,80 @@
   {
    "pattern": "the 5 highest salaries",
    "status": "watching",
-   "player_nights": 45,
-   "nights": 9,
-   "ratio": 0.88,
-   "same_direction": "6 of 9",
+   "player_nights": 60,
+   "nights": 12,
+   "ratio": 0.87,
+   "same_direction": "9 of 12",
    "examples": [
-    "11-16 Milan Momcilovic 1/0%",
-    "11-16 Amani Hansberry 31/29%",
+    "11-16 Ben Hammond 52/42%",
+    "11-16 Trent Perry 5/16%",
     "11-17 Jeremy Fears Jr. 20/17%",
-    "11-17 Andrej Stojakovic 4/9%",
-    "11-18 Ivan Kharchenkov 24/49%",
-    "11-18 Tahaad Pettiford 24/9%"
+    "11-17 Baye Ndongo 9/12%",
+    "11-18 Caleb Holt 14/20%",
+    "11-18 Ivan Kharchenkov 24/49%"
    ]
   },
   {
    "pattern": "round-number salaries",
    "status": "dead",
-   "player_nights": 391,
-   "nights": 9,
+   "player_nights": 533,
+   "nights": 12,
    "ratio": 0.95,
-   "same_direction": "6 of 9",
+   "same_direction": "9 of 12",
    "examples": [
-    "11-16 Harry Beauchamp 4/0%",
-    "11-16 Kuol Atak 0/0%",
-    "11-17 Landon Davis 0/0%",
-    "11-17 Ian Stephens 0/0%",
-    "11-18 Jayden Dawson 0/0%",
-    "11-18 Elmir Dzafic 0/0%"
+    "11-16 Simm-Marten Saadi 0/0%",
+    "11-16 Eric Freeny 0/5%",
+    "11-17 Wade Chiddick 0/0%",
+    "11-17 Blake Fagbemi 0/0%",
+    "11-18 Atticus Richmond 0/0%",
+    "11-18 Jalen Cunningham 0/0%"
    ]
   },
   {
    "pattern": "ranked teams (AP, else coaches)",
-   "status": "dead",
-   "player_nights": 239,
-   "nights": 8,
-   "ratio": 1.06,
-   "same_direction": "6 of 8",
+   "status": "watching",
+   "player_nights": 399,
+   "nights": 11,
+   "ratio": 1.11,
+   "same_direction": "9 of 11",
    "examples": [
-    "11-16 Jaylen Petty 5/18%",
-    "11-16 Jordan Houegban 0/0%",
-    "11-17 Landon Davis 0/0%",
-    "11-17 Deron Rippey Jr. 0/0%",
-    "11-18 Elmir Dzafic 0/0%",
-    "11-18 Leroy Blyden Jr. 46/24%"
+    "11-16 Sergej Macura 3/12%",
+    "11-16 Nikola Kusturica 43/45%",
+    "11-17 JJ Andrews 0/0%",
+    "11-17 Patrick Ngongba II 42/22%",
+    "11-18 Trent Perry 1/0%",
+    "11-18 Junior County 3/1%"
    ]
   },
   {
    "pattern": "the national TV games",
    "status": "dead",
-   "player_nights": 626,
-   "nights": 7,
-   "ratio": 1.02,
-   "same_direction": "4 of 7",
+   "player_nights": 988,
+   "nights": 10,
+   "ratio": 1.06,
+   "same_direction": "7 of 10",
    "examples": [
-    "11-17 Landon Davis 0/0%",
-    "11-17 Jeremy Foumena 0/0%",
-    "11-18 Brenen Lorient 4/4%",
-    "11-18 Elmir Dzafic 0/0%",
-    "11-19 Devin Brown 0/0%",
-    "11-19 CJ Ingram 0/0%"
+    "11-17 Aiden Sherrell 14/10%",
+    "11-17 Tahaad Pettiford 2/0%",
+    "11-18 Atticus Richmond 0/0%",
+    "11-18 Jalen Cunningham 0/0%",
+    "11-19 Gan-Erdene Solongo 0/0%",
+    "11-19 Braeden Smith 16/37%"
    ]
   },
   {
    "pattern": "salary down $300+ from his last slate",
    "status": "dead",
-   "player_nights": 111,
-   "nights": 7,
+   "player_nights": 168,
+   "nights": 10,
    "ratio": 0.91,
-   "same_direction": "6 of 7",
+   "same_direction": "8 of 10",
    "examples": [
-    "11-18 Joson Sanon 2/3%",
-    "11-18 Thomas Dowd 5/7%",
-    "11-19 Narcisse Ngoy 7/9%",
-    "11-19 Javan Buchanan 2/6%",
-    "11-19 Sebastian Mack 17/12%",
+    "11-18 Kevin Overton 1/0%",
+    "11-18 Martin Somerville 0/6%",
+    "11-19 Mouhamed Sylla 10/10%",
+    "11-19 Amadou Seini 3/9%",
+    "11-19 Darren Buchanan Jr. 1/8%",
     "11-19 Corey Hadnot II 0/0%"
    ]
   }
