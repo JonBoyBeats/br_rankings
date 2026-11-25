@@ -2,7 +2,7 @@
 
 Every number below is computed by the scripts named (sections 1-3: `scripts/dk_lock_review_proj.py`; section 4: `scripts/dk_minutes_steep_study.py`, `scripts/dk_outhand_study.py` at the old threshold, and `scripts/dk_gate_study.py` + `.js`). 11 graded slates, 11-16 to 11-22; banks on the 9 nights with standings. Thin: a slate is the unit.
 
-**Headline from 2026-11-25: the projection grade by band** (`scripts/dk_proj_grade.py`, `dk_eval.py projgrade`, full tables in `review_projections_bands_2026-11-25.md`). Two bands by our projected DK points at lock: ROTATION 10-25 (8.1 points MAE, -0.4 bias, 33% off by 10+, minutes MAE 6.9; 635 player-nights) and STARS 25+ (9.5, -0.6, 40%, 6.0; 142). Projected under 10 is a secondary line (3.3 MAE). **The rule:** a projection change counts as an improvement only if it lowers the ROTATION band's minutes MAE or the STARS band's points MAE, held out by slate, without worsening the other band beyond noise.
+**Headline from 2026-11-25: the projection grade by band** (`scripts/dk_proj_grade.py`, `dk_eval.py projgrade`, full tables in `review_projections_bands_2026-11-25.md`). Two bands by our projected DK points at lock: ROTATION 10-25 (8.1 points MAE, -0.4 bias, 33% off by 10+, minutes MAE 6.9; 635 player-nights) and STARS 25+ (9.5, -0.6, 40%, 6.0; 142). Projected under 10 is a secondary line (3.3 MAE). **The rule:** a projection change counts as an improvement only if it lowers the ROTATION band's minutes MAE or the STARS band's points MAE, held out by slate, without worsening the other band beyond noise, nor the banded proxy lenses (A1 `projaudit`: ownership agreement, salary gaps, minutes rank and top-5 hit for ROTATION and STARS) beyond theirs.
 
 ## Summary
 

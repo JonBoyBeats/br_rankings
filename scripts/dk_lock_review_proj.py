@@ -3,7 +3,8 @@
   0. the headline (2026-11-25, scripts/dk_proj_grade.py): ROTATION 10-25 and STARS 25+ by our projected DK points, per
      slate and pooled, the under-10 line secondary; the ownership crossover; the missed ceilings. The rule: a projection
      change counts only if it lowers ROTATION minutes MAE or STARS points MAE, held out by slate, without worsening the
-     other band beyond noise.
+     other band beyond noise, nor the banded proxy lenses (dk_eval.py projaudit: ownership agreement, salary gaps,
+     minutes rank, top-5 hit for ROTATION and STARS) beyond theirs.
   1. the A2 lenses (scripts/dk_minutes_steep_study.py lenses: minutes MAE, points MAE, shape top-2 ours vs recent, the
      Vegas slope, salary gaps unexplained) per slate as the projection stood at lock, then pooled; DraftKings points MAE
      and bias by salary band and position, ours (fp_dk) and the page's gated projection (the gate's blend with DK's

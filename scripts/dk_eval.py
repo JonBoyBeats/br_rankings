@@ -904,6 +904,11 @@ def print_proj_bands(last=None):
         rot, stars, low, allp = PG.headline(part)["pooled"]
         print("  a. Projections by band, %s (bias = actual - ours): ROTATION 10-25 %s; STARS 25+ %s" % (name, PG.fmt(rot), PG.fmt(stars)))
         print("     secondary: projected under 10 %s; all players %s" % (PG.fmt(low), PG.fmt(allp)))
+    pa = read(PROJ_AUDIT) if os.path.exists(PROJ_AUDIT) else []
+    for name, part in (("last night", [r for r in pa if last and r["date"] == last]), ("season", pa)):
+        if part:
+            for l in proj_band_pooled(part, "     proxy lenses by band, %s" % name):
+                print(l)
 
 
 def projgrade(a=None):
@@ -2479,6 +2484,15 @@ def scan_lines():
 PROJ_AUDIT = os.path.join(DK, "proj_audit.csv")
 PROJ_AUDIT_COLS = ["date", "draft_group", "teams", "blowouts", "min_rank", "min_top5", "slot_miss", "news_miss", "shape_top2_ours", "shape_top2_recent",
                    "shape_top5_ours", "shape_top5_recent", "vegas_slope", "vegas_slope_actual", "vegas_r", "sal_gaps", "sal_unexplained", "own_rank", "own_n"]
+# the proxy lenses by projection band (2026-11-25, the operator via the coordinator): ROTATION 10-25 and STARS 25+ by our
+# projected fp_dk at lock (scripts/dk_proj_grade.py's bands); per band: players, ownership agreement (points per $1K vs
+# the baseline contest's real ownership, Spearman), salary gaps (2 sd of A1's own per-slate fit, live players projected
+# above 0) with the unexplained ones and the mean |residual| of the band's players, minutes rank (projected vs real,
+# the band's players who played on teams not in a blowout, across the slate) and top-5 hit (of the band's players we
+# put in their team's top 5 by projected minutes, the share who were in its real top 5)
+PROJ_BANDS = [("rot", 10.0, 25.0), ("stars", 25.0, float("inf"))]
+PROJ_BAND_FIELDS = ["n", "own_rank", "sal_gaps", "sal_unexplained", "sal_abs", "min_rank", "top5_hit"]
+PROJ_AUDIT_COLS += ["%s_%s" % (b, f) for b, _, _ in PROJ_BANDS for f in PROJ_BAND_FIELDS]
 BLOWOUT = 20
 
 
@@ -2514,8 +2528,38 @@ def shape_rows(team_rows, proj, recent):
     return sum(o[:2]), sum(c[:2]), sum(o[:5]), sum(c[:5])
 
 
+def proj_band_text(row):
+    """One slate's banded proxy lenses (a proj_audit.csv row)."""
+    f = lambda v, fmt: fmt % float(v) if v not in ("", None) else "–"
+    return "; ".join("%s %s players: own rank %s, salary gaps %s (%s unexplained), mean |gap| %s, minutes rank %s, top-5 hit %s" % (
+        "ROTATION 10-25" if b == "rot" else "STARS 25+", row.get("%s_n" % b) or 0, f(row.get("%s_own_rank" % b), "%+.2f"), row.get("%s_sal_gaps" % b) or 0,
+        row.get("%s_sal_unexplained" % b) or 0, f(row.get("%s_sal_abs" % b), "%.1f"), f(row.get("%s_min_rank" % b), "%+.2f"),
+        f(row.get("%s_top5_hit" % b), "%.2f")) for b, _, _ in PROJ_BANDS)
+
+
+def proj_band_pooled(rows, label=None):
+    """The banded proxy lenses over proj_audit.csv rows: the slate mean (and range) of each rank lens, the gap counts
+    summed; then the all-player figures as one secondary line."""
+    out = []
+    v = lambda k: [num(r[k]) for r in rows if r.get(k) not in ("", None)]
+    rg = lambda xs: "%+.2f (%+.2f to %+.2f, %d slates)" % (S.mean(xs), min(xs), max(xs), len(xs)) if xs else "–"
+    for b, _, _ in PROJ_BANDS:
+        n, g, u = sum(v("%s_n" % b)), sum(v("%s_sal_gaps" % b)), sum(v("%s_sal_unexplained" % b))
+        sa, th = v("%s_sal_abs" % b), v("%s_top5_hit" % b)
+        out.append("%s%s: own rank %s; salary gaps %d of %d (%.0f%%; %d unexplained), mean |gap| %s; minutes rank %s; top-5 hit %s" % (
+            "%s, " % label if label else "", "ROTATION 10-25" if b == "rot" else "STARS 25+", rg(v("%s_own_rank" % b)), g, n, 100.0 * g / max(1, n), u,
+            "%.1f" % S.mean(sa) if sa else "–", rg(v("%s_min_rank" % b)), "%.2f" % S.mean(th) if th else "–"))
+    out.append("%ssecondary, all players: own rank %s; salary gaps %d (%d unexplained); minutes rank %s, top-5 match %s of 5" % (
+        "%s, " % label if label else "", rg(v("own_rank")), sum(v("sal_gaps")), sum(v("sal_unexplained")), rg(v("min_rank")),
+        "%.2f" % S.mean(v("min_top5")) if v("min_top5") else "–"))
+    return out
+
+
 def projaudit(a):
-    """A1 (see above): proj_audit.csv rebuilt whole, a row per graded slate, and the lines printed."""
+    """A1 (see above): proj_audit.csv rebuilt whole, a row per graded slate, and the lines printed. Since 2026-11-25 the
+    ownership, salary-gap and minutes lenses are also reported for ROTATION 10-25 and STARS 25+ by our projected points
+    (PROJ_BANDS), the all-player figures one secondary line. The rule (scripts/dk_proj_grade.py): a projection change
+    must also not worsen these banded proxy lenses, rotation and stars, beyond their noise, held out by slate."""
     own = defaultdict(dict)
     base = baselines()
     for r in read(os.path.join(DK, "own_eval.csv")):
@@ -2542,6 +2586,8 @@ def projaudit(a):
         blow = {t for t in teams if t in opp and opp[t] in score and abs(score[t] - score[opp[t]]) >= BLOWOUT}
         # 1. minutes
         ranks, top5, slot, news = [], [], defaultdict(list), []
+        bmin = {b: {"x": [], "y": [], "hit": 0, "put": 0} for b, _, _ in PROJ_BANDS}       # the banded minutes lens
+        pband = lambda r: next((b for b, lo, hi in PROJ_BANDS if lo <= (num(r.get("fp_dk")) or 0) < hi), None)
         for t, rs in teams.items():
             act = {r["dk_id"]: num(r.get("min")) or 0 for r in rs}
             lv = [r for r in rs if r.get("status") != "Out"]
@@ -2557,6 +2603,15 @@ def projaudit(a):
             byp = sorted(lv, key=lambda r: -(num(r.get("min_proj")) or 0))
             bya = sorted(rs, key=lambda r: -act[r["dk_id"]])
             top5.append(len({r["dk_id"] for r in byp[:5]} & {r["dk_id"] for r in bya[:5]}))
+            real5, ours5 = {r["dk_id"] for r in bya[:5]}, {r["dk_id"] for r in byp[:5]}
+            for r in lv:
+                b = pband(r)
+                if not b:
+                    continue
+                if act[r["dk_id"]] > 0:
+                    bmin[b]["x"].append(num(r.get("min_proj")) or 0); bmin[b]["y"].append(act[r["dk_id"]])
+                if r["dk_id"] in ours5:
+                    bmin[b]["put"] += 1; bmin[b]["hit"] += r["dk_id"] in real5
             for i, r in enumerate(byp[:8]):
                 slot[i + 1].append(act[r["dk_id"]] - (num(r.get("min_proj")) or 0))
         # 2. shape (no results needed): ours vs his last-5 average, tonight's outs left out
@@ -2582,12 +2637,13 @@ def projaudit(a):
                 vout = sorted(((y - (my + slope * (x - mx)), t, x, y) for x, y, t in zip(vx, vy, vt)), key=lambda z: -abs(z[0]))[:3]
         # 4. salary: projection on salary; the big gaps (2 sd) and their reasons
         sal = [r for r in live if (num(r.get("fp_dk")) or 0) > 0]
-        gaps, unexplained = [], 0
+        gaps, unexplained, resid = [], 0, {}
         if len(sal) >= 10:
             xs, ys = [num(r["salary"]) for r in sal], [num(r["fp_dk"]) for r in sal]
             mx, my = S.mean(xs), S.mean(ys)
             b_ = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sum((x - mx) ** 2 for x in xs); a_ = my - b_ * mx
             res = [y - (a_ + b_ * x) for x, y in zip(xs, ys)]; sd = S.pstdev(res)
+            resid = {r["dk_id"]: (e, r) for r, e in zip(sal, res)}
             outT = {t for t, rs in teams.items() if any(r.get("status") == "Out" and (num(r.get("min_avg")) or 0) >= 20 for r in rs)}
             for r, e in zip(sal, res):
                 if abs(e) >= 2 * sd:
@@ -2608,6 +2664,18 @@ def projaudit(a):
         og = own.get(g, {})
         ox = [r for r in live if r["dk_id"] in og or og]
         orank = spearman([(num(r.get("fp_dk")) or 0) / max(1, num(r["salary"])) for r in ox], [og.get(r["dk_id"], 0.0) for r in ox]) if og else None
+        brow = {}
+        for b, lo, hi in PROJ_BANDS:
+            inb = (lambda lo, hi: lambda r: lo <= (num(r.get("fp_dk")) or 0) < hi)(lo, hi)
+            bo = [r for r in ox if inb(r)] if og else []
+            ro = spearman([(num(r.get("fp_dk")) or 0) / max(1, num(r["salary"])) for r in bo], [og.get(r["dk_id"], 0.0) for r in bo]) if og else None
+            bg = [x for x in gaps if inb(x[1])]
+            ba = [abs(e) for e, r in resid.values() if inb(r)]
+            mr = spearman(bmin[b]["x"], bmin[b]["y"])
+            brow.update({"%s_n" % b: sum(1 for r in sal if inb(r)), "%s_own_rank" % b: round(ro, 3) if ro is not None else "",
+                         "%s_sal_gaps" % b: len(bg), "%s_sal_unexplained" % b: sum(1 for x in bg if not x[2]),
+                         "%s_sal_abs" % b: round(S.mean(ba), 2) if ba else "", "%s_min_rank" % b: round(mr, 3) if mr is not None else "",
+                         "%s_top5_hit" % b: round(bmin[b]["hit"] / bmin[b]["put"], 3) if bmin[b]["put"] else ""})
         row = {"date": date, "draft_group": g, "teams": len(teams), "blowouts": len(blow),
                "min_rank": round(S.mean(ranks), 3) if ranks else "", "min_top5": round(S.mean(top5), 2) if top5 else "",
                "slot_miss": " ".join("%d:%+.1f" % (k, S.mean(v)) for k, v in sorted(slot.items())), "news_miss": len(news),
@@ -2615,11 +2683,13 @@ def projaudit(a):
                "shape_top5_ours": round(S.mean(x[2] for x in sh), 3) if sh else "", "shape_top5_recent": round(S.mean(x[3] for x in sh), 3) if sh else "",
                "vegas_slope": round(slope, 2) if slope is not None else "", "vegas_slope_actual": round(slope_a, 2) if slope_a is not None else "", "vegas_r": round(r_, 3) if r_ is not None else "",
                "sal_gaps": len(gaps), "sal_unexplained": unexplained, "own_rank": round(orank, 3) if orank is not None else "", "own_n": len(og)}
+        row.update(brow)
         out.append(row)
         lines.append("%s %s (%d teams, %d blowouts out): minutes rank %s, top-5 match %s of 5, by slot %s; shape top-2 ours %s vs recent %s, top-5 %s vs %s; Vegas slope %s (real DK points %s; r %s); "
                      "salary gaps %d (%d unexplained); points per $1K vs real ownership rank %s" % (
                          date, g, row["teams"], row["blowouts"], row["min_rank"], row["min_top5"], row["slot_miss"], row["shape_top2_ours"], row["shape_top2_recent"],
                          row["shape_top5_ours"], row["shape_top5_recent"], row["vegas_slope"], row["vegas_slope_actual"], row["vegas_r"], row["sal_gaps"], unexplained, row["own_rank"]))
+        lines.append("    by band: " + proj_band_text(row))
         if vout:
             lines.append("    Vegas outliers (our team total against the line's): " + "; ".join("%s %+.0f (implied %.1f, ours %.0f)" % (t, e, x, y) for e, t, x, y in vout))
         if news:
@@ -2667,6 +2737,8 @@ def projaudit(a):
             len(out), S.mean(m("min_rank")), S.mean(m("min_top5")), S.mean(m("shape_top2_ours")), S.mean(m("shape_top2_recent")),
             "ours steeper" if S.mean(m("shape_top2_ours")) > S.mean(m("shape_top2_recent")) else "ours flatter", S.mean(m("shape_top5_ours")), S.mean(m("shape_top5_recent")),
             len(PX), pooled, pooled_a, sum(m("sal_gaps")), sum(m("sal_unexplained")), 100 * sum(m("sal_unexplained")) / max(1, sum(m("sal_gaps"))), S.mean(m("own_rank")) if m("own_rank") else float("nan")))
+        for l in proj_band_pooled(out):
+            print(l)
 
 
 OWN_AUDIT = os.path.join(DK, "own_audit.csv")
@@ -3013,6 +3085,11 @@ def misses(a):
             if part:
                 rot, stars, low, allp = PG.headline(part)["pooled"]
                 print("Projections by band, %s (bias = actual - ours): ROTATION 10-25 %s; STARS 25+ %s; under 10 %s" % (label, PG.fmt(rot), PG.fmt(stars), PG.fmt(low)))
+        pa = read(PROJ_AUDIT) if os.path.exists(PROJ_AUDIT) else []
+        for label, part in (("week of %s" % mon, [r for r in pa if r["date"] >= mon]), ("all %d slates" % len(pa), pa)):
+            if part:
+                for l in proj_band_pooled(part, "Proxy lenses by band, %s" % label):
+                    print(l)
         for label, rs in (("week of %s" % mon, [r for r in out if r["date"] >= mon]), ("all %d nights" % len({r["date"] for r in out}), out)):
             c, by = Counter(), defaultdict(Counter)
             for r in rs:

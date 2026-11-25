@@ -11,7 +11,9 @@ the all-player MAE, so nothing drops out of view.
 
 THE RULE (from now on): a projection change counts as an improvement only if it lowers the ROTATION band's minutes
 MAE or the STARS band's points MAE, held out by slate, without making the other band worse beyond noise (its
-per-slate mean change inside 2 x SE).
+per-slate mean change inside 2 x SE). It must also not worsen the banded proxy lenses (dk_eval.py projaudit, 2026-11-25:
+ownership agreement, salary gaps, minutes rank and top-5 hit, for ROTATION and STARS) beyond their noise, held out by
+slate.
 
 Beside it:
   ownership crossover  the same four numbers by projected field ownership at lock: 15%+, 5-15, 1-5, under 1 (own_raw
@@ -181,7 +183,7 @@ def lines(sl=None, md=False):
            "  ROTATION 10-25 (minutes is its lens): " + fmt(rot),
            "  STARS 25+ (points is its lens):       " + fmt(stars),
            "  secondary, projected under 10: %s; all players: %s" % (fmt(low), fmt(allp)),
-           "  Rule: a projection change counts only if it lowers ROTATION minutes MAE or STARS points MAE, held out by slate, without worsening the other band beyond noise (2 x SE)."]
+           "  Rule: a projection change counts only if it lowers ROTATION minutes MAE or STARS points MAE, held out by slate, without worsening the other band beyond noise (2 x SE), nor the banded proxy lenses (projaudit) beyond theirs."]
     if md:
         out += ["", "| Slate | Rotation n | MAE | bias | off 10+ | min MAE | Stars n | MAE | bias | off 10+ | min MAE | under 10: MAE |", "|---|" + "---|" * 11]
         for n, a, b, l in h["per"]:

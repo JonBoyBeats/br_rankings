@@ -56,3 +56,48 @@ Missed ceilings (5x salary), 147 hits: 16 projected under 10; 26 held under 2% o
 25-30   9.9 MAE, -0.6 bias, 39% off 10+, min MAE 6.3 (n 98)
 30-     8.6 MAE, -0.6 bias, 43% off 10+, min MAE 5.1 (n 44)
 ```
+
+## Banded proxy lenses (A1, `dk_eval.py projaudit`, added 2026-11-25)
+
+The A1 morning audit's ownership, salary-gap and minutes lenses for ROTATION 10-25 and STARS 25+ by our projected points at lock (`proj_audit.csv` columns `rot_*`, `stars_*`, backfilled for every graded slate). Ownership agreement: Spearman of our points per $1K against the baseline contest's real ownership, on the band's live players (slates with a graded baseline contest). Salary gaps: A1's own per-slate fit of projection on salary (live players projected above 0) at 2 sd, counted on the band's players; mean |gap| is the band's mean |residual|. Minutes rank: projected vs real minutes of the band's players who played, teams in a 20+ blowout left out, across the slate. Top-5 hit: of the band's players we put in their team's top 5 by projected minutes, the share in its real top 5. Shape and Vegas are unchanged.
+
+| Slate | Rot n | own rank | gaps (unexpl.) | mean \|gap\| | min rank | top-5 hit | Stars n | own rank | gaps (unexpl.) | mean \|gap\| | min rank | top-5 hit | All: own rank | gaps |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2026-11-16_156660 | 68 | +0.41 | 4 (0) | 4.0 | +0.54 | 0.88 | 11 | +0.43 | 1 (0) | 5.2 | – | 1.00 | +0.75 | 6 |
+| 2026-11-17_156662 | 23 | – | 3 (3) | 2.5 | +0.32 | 0.69 | 4 | – | 0 (0) | 2.9 | +0.80 | 1.00 | – | 3 |
+| 2026-11-17_156663 | 97 | +0.52 | 6 (3) | 3.8 | +0.54 | 0.66 | 15 | +0.62 | 2 (2) | 3.7 | +1.00 | 1.00 | +0.86 | 8 |
+| 2026-11-18_157032 | 23 | – | 2 (2) | 3.1 | +0.82 | 0.87 | 5 | – | 2 (2) | 5.7 | +0.90 | 1.00 | – | 4 |
+| 2026-11-18_157033 | 52 | +0.45 | 2 (0) | 3.0 | +0.60 | 0.75 | 8 | +0.48 | 0 (0) | 3.2 | +0.69 | 0.88 | +0.81 | 3 |
+| 2026-11-19_157138 | 35 | +0.42 | 2 (1) | 3.1 | +0.22 | 0.55 | 10 | +0.49 | 2 (2) | 3.5 | +0.68 | 1.00 | +0.88 | 4 |
+| 2026-11-19_157139 | 69 | +0.45 | 1 (0) | 3.5 | +0.68 | 0.69 | 15 | +0.90 | 3 (3) | 4.2 | +0.41 | 1.00 | +0.81 | 5 |
+| 2026-11-20_157013 | 26 | +0.66 | 4 (2) | 5.2 | +0.61 | 0.81 | 9 | +0.62 | 2 (1) | 5.5 | +0.55 | 0.89 | +0.88 | 6 |
+| 2026-11-20_157015 | 91 | +0.72 | 14 (8) | 4.0 | +0.60 | 0.75 | 18 | +0.61 | 1 (0) | 3.6 | +0.58 | 1.00 | +0.85 | 16 |
+| 2026-11-21_157017 | 39 | +0.64 | 3 (1) | 5.0 | +0.76 | 0.84 | 13 | +0.56 | 1 (1) | 4.2 | +0.76 | 0.70 | +0.79 | 4 |
+| 2026-11-22_157019 | 47 | +0.66 | 11 (9) | 3.9 | +0.53 | 0.69 | 13 | +0.55 | 1 (1) | 2.4 | -0.09 | 1.00 | +0.77 | 12 |
+| 2026-11-23_157021 | 39 | – | 1 (1) | 4.6 | +0.44 | 0.74 | 14 | – | 1 (1) | 3.8 | +0.49 | 0.73 | – | 4 |
+| 2026-11-24_157024 | 87 | – | 6 (4) | 4.3 | +0.61 | 0.82 | 23 | – | 1 (1) | 5.0 | +0.53 | 0.90 | – | 12 |
+| 2026-11-24_157026 | 75 | – | 5 (4) | 3.7 | +0.71 | 0.77 | 23 | – | 2 (2) | 4.0 | +0.54 | 0.95 | – | 8 |
+
+Pooled (slate means with their range for the rank lenses; gaps summed):
+
+- ROTATION 10-25: own rank +0.55 (+0.41 to +0.72, 9 slates); salary gaps 64 of 771 (8%; 38 unexplained), mean |gap| 3.8; minutes rank +0.57 (+0.22 to +0.82, 14 slates); top-5 hit 0.75
+- STARS 25+: own rank +0.58 (+0.43 to +0.90, 9 slates); salary gaps 19 of 181 (10%; 16 unexplained), mean |gap| 4.1; minutes rank +0.60 (-0.09 to +1.00, 13 slates); top-5 hit 0.93
+- secondary, all players: own rank +0.82 (+0.75 to +0.88, 9 slates); salary gaps 95 (60 unexplained); minutes rank +0.75 (+0.65 to +0.89, 14 slates), top-5 match 3.94 of 5
+
+**Rule, extended:** a projection change must also not worsen these banded proxy lenses (ROTATION and STARS) beyond their noise, held out by slate.
+
+### Reproduction check against the coordinator's numbers
+
+- **Ownership agreement, mean over the 9 slates with a graded baseline contest**:
+
+  | Band | A1 definition | Coordinator |
+  |---|---|---|
+  | All | +0.82 (+0.75 to +0.88) | +0.82 (0.70 to 0.90) |
+  | Under 10 | +0.46 (+0.29 to +0.68) | +0.42 |
+  | Rotation | +0.55 (+0.41 to +0.72) | +0.58 (0.40 to 0.70) |
+  | Stars | +0.58 (+0.43 to +0.90) | +0.62 (0.49 to 0.84) |
+
+  The order agrees: under 10 < rotation < stars < all. The means differ by up to 0.04. Restricting to players listed in the ownership file, or using the largest or averaged contest instead of the baseline contest, doesn't close the gap; the coordinator's exact player set wasn't reproduced. A1 uses the baseline contest's ownership and live players, with 0 for anyone not listed.
+- **2-sd salary gaps:**
+  - A plain per-slate OLS of fp_dk on salary over every player projected above 0, Out included, at 2 population sd over the 14 graded slates, reproduces the counts exactly: under 10 7/994, 10-25 49/810, 25+ 22/193. Mean |residual| comes out 2.6 / 3.9 / 4.9 against the coordinator's 2.5 / 3.9 / 4.7.
+  - **A1's own definition differs:** it drops Out-tagged players from the fit. That gives 12/980, 64/771, 19/181, with mean |gap| 2.3 / 3.8 / 4.1, and that is what proj_audit.csv records.
