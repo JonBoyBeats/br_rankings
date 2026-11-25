@@ -191,12 +191,34 @@ def minutes_old(sl):
     return per, warn
 
 
+def points_old(sl):
+    """The rebuilt points per minute (2026-11-25, cbb_nightly cbb_ppm): per slate whose record has old_fp (the old
+    points-per-minute half on the same minutes), the STARS band's points MAE live vs old and the ROTATION band's; the
+    warning when live trails old (stars and rotation together, n-weighted) over the last QMIN_WARN such slates. No
+    automatic revert."""
+    per = []
+    for n, rows in sl:
+        g = [r for r in graded(rows) if num(r.get("old_fp")) is not None and num(r.get("fp_dk")) is not None and num(r["fp_dk"]) >= ROTATION[0]]
+        if not g or all(abs(num(r["old_fp"]) - num(r["fp_dk"])) < 1e-9 for r in g):
+            continue
+        live = [abs(num(r["actual_dk"]) - num(r["fp_dk"])) for r in g]
+        old = [abs(num(r["actual_dk"]) - num(r["old_fp"])) for r in g]
+        st = [r for r in g if num(r["fp_dk"]) >= STARS[0]]
+        per.append((n, S.mean(live), S.mean(old), len(g),
+                    S.mean(abs(num(r["actual_dk"]) - num(r["fp_dk"])) for r in st) if st else None,
+                    S.mean(abs(num(r["actual_dk"]) - num(r["old_fp"])) for r in st) if st else None))
+    last = per[-QMIN_WARN:]
+    warn = len(last) >= QMIN_WARN and sum(x[1] * x[3] for x in last) > sum(x[2] * x[3] for x in last)
+    return per, warn
+
+
 def lines(sl=None, md=False):
     sl = sl if sl is not None else slates()
     if not sl:
         return ["Projection grade: no graded slates yet"]
     h, c, ce = headline(sl), crossover(sl), ceilings(sl)
     qm, qwarn = minutes_old(sl)
+    pm, pwarn = points_old(sl)
     rot, stars, low, allp = h["pooled"]
     out = ["Projection grade by projection band, %d graded slates (%s to %s); bias = actual - ours." % (len(sl), sl[0][0], sl[-1][0]),
            "  ROTATION 10-25 (minutes is its lens): " + fmt(rot),
@@ -218,6 +240,11 @@ def lines(sl=None, md=False):
         if qwarn:
             out.append("  WARNING: over the last %d slates the live minutes trail the old ones (%.2f vs %.2f). No automatic revert: the operator decides." % (
                 QMIN_WARN, S.mean(x[1] for x in qm[-QMIN_WARN:]), S.mean(x[2] for x in qm[-QMIN_WARN:])))
+    if pm:
+        out += ["", "Rebuilt points per minute (live) vs the old half on the same minutes, points MAE 10+ (stars): " +
+                "; ".join("%s %.2f vs %.2f (n %d%s)" % (x[0], x[1], x[2], x[3], ", stars %.2f vs %.2f" % (x[4], x[5]) if x[4] is not None else "") for x in pm)]
+        if pwarn:
+            out.append("  WARNING: over the last %d slates the rebuilt points per minute trail the old ones. No automatic revert: the operator decides." % QMIN_WARN)
     out += ["", "Ownership crossover (projected field ownership at lock, %s):" % c["src"]]
     for nm, st in c["pooled"]:
         out.append("  %-9s %s" % (nm, fmt(st)))

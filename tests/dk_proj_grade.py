@@ -64,5 +64,14 @@ sl_bad = [("s%d" % i, [mk(26, 30, 31), mk(22, 20, 21)]) for i in range(7)]      
 check("minutes_old: warns when live trails old over the last 7 slates", G.minutes_old(sl_bad)[1])
 check("minutes_old: no warning before 7 slates", not G.minutes_old(sl_bad[:6])[1])
 check("minutes_old: a slate without min_old (or none changed) is skipped", G.minutes_old([("x", [dict(mk(20, 20, 20))])])[0] == [])
+# the rebuilt points per minute (2026-11-25): live vs old_fp per slate, and the 7-slate warning
+mp = lambda live, old, act: {"fp_dk": str(live), "old_fp": str(old), "actual_dk": str(act), "min": "30", "min_proj": "30"}
+sp_ok = [("s%d" % i, [mp(20, 24, 21), mp(30, 26, 31)]) for i in range(7)]
+pp, pw = G.points_old(sp_ok)
+check("points_old: live vs old points MAE per slate (10+), stars apart", len(pp) == 7 and abs(pp[0][1] - 1.0) < 1e-9 and abs(pp[0][2] - 4.0) < 1e-9 and abs(pp[0][4] - 1.0) < 1e-9 and not pw, pp[:1])
+sp_bad = [("s%d" % i, [mp(24, 20, 21), mp(26, 30, 31)]) for i in range(7)]
+check("points_old: warns when live trails old over the last 7 slates", G.points_old(sp_bad)[1])
+check("points_old: no warning before 7 slates", not G.points_old(sp_bad[:6])[1])
+check("points_old: a slate without old_fp (or none changed) is skipped", G.points_old([("x", [{"fp_dk": "20", "old_fp": "20", "actual_dk": "20"}])])[0] == [])
 print("%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)

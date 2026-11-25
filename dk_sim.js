@@ -122,9 +122,10 @@
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
   }
+  // ours: the DraftKings-average band blend is out (2026-11-25, the per-minute rebuild re-tested it on the new
+  // projection: worse for stars), so only the Questionable factor remains
   function gatedProj(r, gate) {
-    var b = gate && (gate.bands || []).find(function (x) { return x.open && r.salary >= x.lo && r.salary <= x.hi; });
-    var p = !b || !r.dk_avg ? r.fp_dk : b.w * r.fp_dk + (1 - b.w) * r.dk_avg;
+    var p = r.fp_dk;
     var q = gate && gate.questionable && gate.questionable.factor;
     // a zero-games player's card is already scaled by its own factor (cbb_nightly zero_gp), which replaces the Q factor
     return r.status === "Questionable" && q != null && p != null && !r.zero_gp ? p * q : p;

@@ -764,8 +764,8 @@ function save() {
   store(key(), state); if (typeof syncMarks === "function") syncMarks();
 }
 var isG = DKSim.isG, isF = DKSim.isF;
-// Proj: the owner's override, else ours through the projection gate (DraftKings' average blended in where it has
-// beaten ours on the graded nights: analysis/cbb/dk/gate.json, scripts/cbb_daily.py)
+// Proj: the owner's override, else ours (with the Questionable factor: dk_sim.js gatedProj; the DraftKings-average
+// band blend is out since 2026-11-25)
 /* Display (2026-11-20, B4): projections as whole points and ownership as whole percentages on screen; the sim, the
    cut and every saved number keep full precision (a projection you type stays as typed, shown to one decimal). */
 function proj(r) { var o = state.proj[r.id]; return o != null ? o : DKSim.gatedProj(r, gate) * (minScale[r.id] || 1); }
@@ -1101,13 +1101,8 @@ function qText() {
     q && q.field_factor != null && q.field_factor !== 1 ? " Questionable players keep their full projection (Q tag only: Mark out or Play him on the news); the simulated field fades them at x" +
     q.field_factor.toFixed(2) + ", as real fields do." : "";
 }
-function gateText() {
-  var open = gate && (gate.bands || []).filter(function (b) { return b.open; });
-  if (!gate) return "Projection gate: closed (no graded DraftKings nights yet). Proj is ours.";
-  if (!open.length) return "Projection gate: closed. Ours has held up against DraftKings' average in every salary band (" + gate.nights + " graded nights).";
-  return "Projection gate: OPEN in " + open.map(function (b) { return "$" + b.lo.toLocaleString() + (b.hi < 99999 ? "-" + b.hi.toLocaleString() : "+") +
-    " (Proj = " + Math.round(100 * b.w) + "% ours, " + Math.round(100 * (1 - b.w)) + "% DK avg)"; }).join(", ") +
-    (gate.override ? " (" + gate.version + ", " + gate.override + ")." : ": DraftKings' average beat ours there over " + gate.nights + " graded nights.");
+function gateText() {        // the DraftKings-average blend is out (2026-11-25): Proj is ours in every salary band
+  return "Proj is ours (minutes x points a minute); no DraftKings-average blend.";
 }
 
 // Questionable by any source: our status, DraftKings' tag or the outs file (not Out)

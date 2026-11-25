@@ -127,7 +127,7 @@ function audit(name, L, o) {
   const ow = await pg.evaluate(() => ({ hidden: $("ownWatch").hidden, text: $("ownWatch").textContent }));
   check("ownership watch (B3): the note shows confirmed patterns only", !ow.hidden && /coming off a big game/.test(ow.text) && !/blue bloods/.test(ow.text), JSON.stringify(ow));
   check("page loads the slate", (await pg.$$eval(".row", r => r.length)) === Object.keys(P).length);
-  check("gate shows closed with no gate file", /Projection gate: closed/.test(await pg.textContent("#statusInfo")));
+  check("the status says Proj is ours (no DraftKings-average blend, 2026-11-25)", /Proj is ours/.test(await pg.textContent("#statusInfo")));
   // the player table layout (2026-11-20): actions (out / play / use / drop) in the fixed L / X group and clickable at a
   // laptop width; Q / D / OUT / new kept beside the name; the scan's columns hidden until a scan exists; Show: all / in pool / left out
   await pg.setViewportSize({ width: 1280, height: 900 });
@@ -592,15 +592,15 @@ function audit(name, L, o) {
   check("a lock and an exclude are in the tag", /lock .* \+ no /.test(ml), ml);
   await pg.click("#clearLx");
 
-  // the projection gate: an open band blends DraftKings' average into Proj
+  // the projection gate's DraftKings-average blend is out (2026-11-25): even a gate file with an open band leaves Proj ours
   gate = { nights: 9, bands: [{ lo: 6000, hi: 99999, open: true, w: 0.6 }, { lo: 0, hi: 5999, open: false, w: 1 }] };
   await pg.click("#reload");
-  await pg.waitForFunction(() => /Projection gate: OPEN/.test(document.getElementById("statusInfo").textContent));
+  await pg.waitForFunction(() => /Proj is ours/.test(document.getElementById("statusInfo").textContent));
   const pick = Object.keys(P).find(id => P[id].salary >= 6000 && P[id].dk_avg > 0 && P[id].status !== "Out");
   const cheap = Object.keys(P).find(id => P[id].salary < 6000 && P[id].dk_avg > 0 && P[id].status !== "Out");
   const shown = await pg.evaluate(([a, c]) => [proj(rows.find(r => r.id === a)), proj(rows.find(r => r.id === c))], [pick, cheap]);
-  check("gate blends where open", Math.abs(shown[0] - (0.6 * P[pick].fp_dk + 0.4 * P[pick].dk_avg)) < 1e-9, JSON.stringify(shown));
-  check("gate leaves closed bands alone", Math.abs(shown[1] - P[cheap].fp_dk) < 1e-9);
+  check("no DraftKings-average blend even where a gate band is open: Proj is ours", Math.abs(shown[0] - P[pick].fp_dk) < 1e-9, JSON.stringify(shown));
+  check("and in a closed band too", Math.abs(shown[1] - P[cheap].fp_dk) < 1e-9);
   // the Questionable discount: a Q player at his (gated) projection x the measured factor; everyone else as before
   gate = { nights: 9, bands: [{ lo: 6000, hi: 99999, open: true, w: 0.6 }, { lo: 0, hi: 5999, open: false, w: 1 }],
            questionable: { factor: 0.2, n: 10, actual: 30, projected: 150 } };
@@ -608,7 +608,7 @@ function audit(name, L, o) {
   await pg.waitForFunction(() => /Questionable players are projected at x0\.20/.test(document.getElementById("statusInfo").textContent));
   const qid = Object.keys(P).find(id => P[id].status === "Questionable" && P[id].fp_dk > 0);
   const qs = await pg.evaluate(([q, a]) => [proj(rows.find(r => r.id === q)), proj(rows.find(r => r.id === a))], [qid, pick]);
-  const qBase = P[qid].salary >= 6000 && P[qid].dk_avg ? 0.6 * P[qid].fp_dk + 0.4 * P[qid].dk_avg : P[qid].fp_dk;
+  const qBase = P[qid].fp_dk;
   check("questionable: projected at his projection x the factor", Math.abs(qs[0] - 0.2 * qBase) < 1e-9, JSON.stringify([qs[0], qBase]));
   check("questionable: others unchanged", P[pick].status === "Questionable" || Math.abs(qs[1] - shown[0]) < 1e-9);
   // 2026-11-23: the projection keeps a Q player whole (factor 1), the field fades him (field_factor); the note says so
@@ -623,7 +623,7 @@ function audit(name, L, o) {
   const TEAMS = JSON.parse(fs.readFileSync(path.join(FIX, "dk_cbb_teams.json"))).slates[String(slate.draft_group_id)];
   gate = null;
   await pg.click("#reload");
-  await pg.waitForFunction(() => /Projection gate: closed/.test(document.getElementById("statusInfo").textContent));
+  await pg.waitForFunction(() => /Proj is ours/.test(document.getElementById("statusInfo").textContent));
   const openTeam = async team => {
     if (!(await pg.$(`#teamPanel .tile[data-team="${team}"]`))) await pg.click(`#teamBar button[data-team="${team}"]`);
     await pg.waitForSelector(`#teamPanel .tile[data-team="${team}"]`);
@@ -1044,7 +1044,7 @@ function audit(name, L, o) {
   await pg.evaluate(t => { state.rules = [{ type: "min", ids: teamIds(t), n: 2, share: 0.25, label: "2+ from " + t + " in 25% of lineups" },
                                           { type: "min", ids: teamIds(t), n: 1, maxShare: 0.5, label: t + " in at most 50% of lineups" }]; save(); }, lev.team);
   await pg.click("#reload");
-  await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("statusInfo").textContent));
+  await pg.waitForFunction(() => /Proj is ours/.test(document.getElementById("statusInfo").textContent));
   R = await rulesNow();
   check("old share rules load as draw rules", R.length === 1 && R[0].share == null && R[0].n === 2 && R[0].label === "2+ from " + lev.team, JSON.stringify(R));
   check("team bar marks borderline quadrants", (await pg.$$eval("#teamBar button", v => v.filter(x => /\*$/.test(x.textContent)).length)) ===
@@ -1357,7 +1357,7 @@ function audit(name, L, o) {
   const rl0 = await pg.evaluate(() => { const n = BANK.lineups.length; BANK.lineups.push({ ids: BANK.lineups[0].ids.slice(), slots: BANK.lineups[0].slots.slice() }); BANK.tags.push(["in memory only"]);
     const c = slate.contests.pop(); return { n, cid: c.id }; });
   await pg.click("#reload");
-  await pg.waitForFunction(() => /Projection gate/.test(document.getElementById("statusInfo").textContent));
+  await pg.waitForFunction(() => /Proj is ours/.test(document.getElementById("statusInfo").textContent));
   const rl = await pg.evaluate(c => ({ n: BANK.lineups.length, tag: BANK.tags[BANK.tags.length - 1][0], back: slate.contests.some(x => x.id === c) }), rl0.cid);
   check("Reload keeps the page's bank on the same slate and takes the mirror's contests", rl.n === rl0.n + 1 && rl.tag === "in memory only" && rl.back, JSON.stringify([rl0, rl]));
   await pg.evaluate(() => { BANK.lineups.pop(); BANK.tags.pop(); renderBank(); });
