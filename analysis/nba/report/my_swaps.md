@@ -1,6 +1,6 @@
 # Your real swaps (from the contest rosters)
 
-Written by scripts/nba_my_swaps.py. Small sample: 266 credited swaps over 22 nights so far; read every number as directional. Points: the real incoming player's score minus the other's (positive: your real swap was better). Excluded from swap tests: 2026-11-01 (Obi Toppin (ADP 23.1) and Jakob Poeltl (23.4) both sat, 0.3 picks apart: ADP can't tell which one a swap replaced).
+Written by scripts/nba_my_swaps.py. Small sample: 268 credited swaps over 23 nights so far; read every number as directional. Points: the real incoming player's score minus the other's (positive: your real swap was better). Excluded from swap tests: 2026-11-01 (Obi Toppin (ADP 23.1) and Jakob Poeltl (23.4) both sat, 0.3 picks apart: ADP can't tell which one a swap replaced).
 
 | Night | Your swaps | Credited | Inferred order: constraints (incoming players) | Saved order would have picked the same | App shuffle vs your saved order's pick | vs best by ETR final | vs the swap board's pick | Players your saved order had above the app's choice (avg) |
 |---|---|---|---|---|---|---|---|---|
@@ -26,5 +26,6 @@ Written by scripts/nba_my_swaps.py. Small sample: 266 credited swaps over 22 nig
 | 2026-11-18 | 58 | 15 | 1062 (5) | 5 of 15 | -17.8 (15) | -17.8 (15) | +8.3 (15) | 2.1 |
 | 2026-11-19 | 7 | 7 | 107 (3) | 7 of 7 | +0.0 (7) | +0.0 (7) | +0.0 (7) | 0.0 |
 | 2026-11-23 | 3 | 2 | 104 (2) | 2 of 2 | +0.0 (2) | +9.0 (2) | +7.5 (2) | 0.0 |
+| 2026-11-24 | 2 | 2 | 48 (1) | 2 of 2 | +0.0 (2) | +7.4 (2) | +0.5 (2) | 0.0 |
 
-Season (small sample, 22 nights): 266 of your 494 swaps credited to the player they replaced. Your saved order would have made the same swap 132 of 266 times; the app shuffle's real swaps against the saved order's picks: -1.4 per swap over 266 swaps. Real swaps against the best by ETR's final: -1.6 per swap over 266 swaps; against the swap board's pick: +1.1 per swap over 266 swaps. On average your saved order had 2.7 eligible players ranked above the one your app order chose.
+Season (small sample, 23 nights): 268 of your 496 swaps credited to the player they replaced. Your saved order would have made the same swap 134 of 268 times; the app shuffle's real swaps against the saved order's picks: -1.4 per swap over 268 swaps. Real swaps against the best by ETR's final: -1.5 per swap over 268 swaps; against the swap board's pick: +1.1 per swap over 268 swaps. On average your saved order had 2.6 eligible players ranked above the one your app order chose.

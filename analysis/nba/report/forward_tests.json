@@ -18368,5 +18368,558 @@
     }
    ]
   }
+ },
+ "2026-11-24": {
+  "boom": [
+   [
+    0.4477,
+    0.4477,
+    false
+   ],
+   [
+    0.2603,
+    0.2342,
+    true
+   ],
+   [
+    0.2612,
+    0.2199,
+    false
+   ],
+   [
+    0.1625,
+    0.1607,
+    false
+   ],
+   [
+    0.1815,
+    0.1953,
+    true
+   ],
+   [
+    0.1935,
+    0.1915,
+    false
+   ],
+   [
+    0.1629,
+    0.1422,
+    false
+   ],
+   [
+    0.1845,
+    0.178,
+    true
+   ],
+   [
+    0.2188,
+    0.2015,
+    false
+   ],
+   [
+    0.1665,
+    0.1605,
+    false
+   ],
+   [
+    0.1773,
+    0.1872,
+    false
+   ],
+   [
+    0.1908,
+    0.1781,
+    true
+   ],
+   [
+    0.1526,
+    0.1471,
+    false
+   ],
+   [
+    0.1975,
+    0.186,
+    true
+   ],
+   [
+    0.2118,
+    0.1855,
+    false
+   ],
+   [
+    0.1133,
+    0.115,
+    false
+   ],
+   [
+    0.1759,
+    0.1696,
+    false
+   ],
+   [
+    0.1704,
+    0.1816,
+    false
+   ],
+   [
+    0.1369,
+    0.1464,
+    false
+   ],
+   [
+    0.2228,
+    0.2102,
+    false
+   ],
+   [
+    0.1767,
+    0.1748,
+    false
+   ],
+   [
+    0.1834,
+    0.1814,
+    false
+   ],
+   [
+    0.1981,
+    0.2058,
+    false
+   ],
+   [
+    0.1559,
+    0.1541,
+    false
+   ],
+   [
+    0.2017,
+    0.1996,
+    false
+   ],
+   [
+    0.1747,
+    0.1817,
+    false
+   ],
+   [
+    0.1775,
+    0.167,
+    false
+   ],
+   [
+    0.1829,
+    0.1764,
+    false
+   ],
+   [
+    0.1259,
+    0.1278,
+    false
+   ],
+   [
+    0.1337,
+    0.1356,
+    false
+   ],
+   [
+    0.143,
+    0.1528,
+    false
+   ],
+   [
+    0.1295,
+    0.1385,
+    false
+   ],
+   [
+    0.1482,
+    0.1394,
+    false
+   ],
+   [
+    0.1375,
+    0.1395,
+    false
+   ],
+   [
+    0.1508,
+    0.1453,
+    false
+   ],
+   [
+    0.1533,
+    0.1595,
+    false
+   ],
+   [
+    0.1478,
+    0.1499,
+    false
+   ],
+   [
+    0.1595,
+    0.1645,
+    true
+   ],
+   [
+    0.1306,
+    0.1361,
+    false
+   ],
+   [
+    0.1306,
+    0.1325,
+    false
+   ],
+   [
+    0.1349,
+    0.1369,
+    false
+   ],
+   [
+    0.0816,
+    0.0894,
+    false
+   ],
+   [
+    0.1726,
+    0.1726,
+    false
+   ]
+  ],
+  "mine": {
+   "breakers": {
+    "field": [
+     13228,
+     40033
+    ],
+    "mine": [
+     20,
+     59
+    ],
+    "top1": [
+     133,
+     672
+    ]
+   },
+   "low_drafted": {
+    "field": [
+     13228,
+     5381
+    ],
+    "mine": [
+     20,
+     6
+    ]
+   },
+   "turn23": {
+    "most-owned": 5,
+    "other": 4,
+    "rarer": 5
+   }
+  },
+  "pod": 4,
+  "q": [
+   {
+    "early": [
+     241,
+     2
+    ],
+    "late": [
+     316,
+     3
+    ],
+    "name": "PJ Washington",
+    "played": true,
+    "tag": "Questionable",
+    "value": 8.8
+   }
+  ],
+  "teams": 13228,
+  "ties": [
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 3293,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 2422,
+    "lo_t1": 7,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 3293,
+    "hi_t1": 0,
+    "lo_brk": false,
+    "lo_n": 1476,
+    "lo_t1": 8,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": true,
+    "hi_n": 3042,
+    "hi_t1": 64,
+    "lo_brk": false,
+    "lo_n": 2422,
+    "lo_t1": 7,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": true,
+    "hi_n": 3042,
+    "hi_t1": 64,
+    "lo_brk": false,
+    "lo_n": 1476,
+    "lo_t1": 8,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": true,
+    "hi_n": 3042,
+    "hi_t1": 64,
+    "lo_brk": true,
+    "lo_n": 557,
+    "lo_t1": 5,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": true,
+    "hi_n": 3042,
+    "hi_t1": 64,
+    "lo_brk": true,
+    "lo_n": 633,
+    "lo_t1": 11,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": true,
+    "hi_n": 3042,
+    "hi_t1": 64,
+    "lo_brk": true,
+    "lo_n": 1055,
+    "lo_t1": 5,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 2464,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 781,
+    "lo_t1": 6,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 2464,
+    "hi_t1": 1,
+    "lo_brk": false,
+    "lo_n": 427,
+    "lo_t1": 1,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 2464,
+    "hi_t1": 1,
+    "lo_brk": true,
+    "lo_n": 1055,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 2422,
+    "hi_t1": 7,
+    "lo_brk": false,
+    "lo_n": 1476,
+    "lo_t1": 8,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 2422,
+    "hi_t1": 7,
+    "lo_brk": true,
+    "lo_n": 557,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 2422,
+    "hi_t1": 7,
+    "lo_brk": true,
+    "lo_n": 633,
+    "lo_t1": 11,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 2422,
+    "hi_t1": 7,
+    "lo_brk": true,
+    "lo_n": 1055,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 1476,
+    "hi_t1": 8,
+    "lo_brk": false,
+    "lo_n": 781,
+    "lo_t1": 6,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 1476,
+    "hi_t1": 8,
+    "lo_brk": true,
+    "lo_n": 557,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 1476,
+    "hi_t1": 8,
+    "lo_brk": true,
+    "lo_n": 633,
+    "lo_t1": 11,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 1476,
+    "hi_t1": 8,
+    "lo_brk": true,
+    "lo_n": 1055,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": false,
+    "hi_n": 781,
+    "hi_t1": 6,
+    "lo_brk": false,
+    "lo_n": 427,
+    "lo_t1": 1,
+    "lo_wins": false
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": true,
+    "hi_n": 1055,
+    "hi_t1": 5,
+    "lo_brk": true,
+    "lo_n": 557,
+    "lo_t1": 5,
+    "lo_wins": true
+   },
+   {
+    "date": "2026-11-24",
+    "hi_brk": true,
+    "hi_n": 1055,
+    "hi_t1": 5,
+    "lo_brk": true,
+    "lo_n": 633,
+    "lo_t1": 11,
+    "lo_wins": true
+   }
+  ],
+  "turns": {
+   "1/2": [
+    {
+     "combo": [
+      "Cooper Flagg",
+      "Franz Wagner"
+     ],
+     "pop": [
+      1281,
+      0,
+      261451.10000000003
+     ],
+     "rest": [
+      3176,
+      130,
+      720774.699999999
+     ]
+    }
+   ],
+   "2/3": [
+    {
+     "anchor": "Nikola Jokic",
+     "combo": [
+      "Kyrie Irving",
+      "Paul George"
+     ],
+     "pop": [
+      1417,
+      0,
+      288402.8999999992
+     ],
+     "rest": [
+      1582,
+      0,
+      313738.70000000036
+     ]
+    },
+    {
+     "anchor": "Cade Cunningham",
+     "combo": [
+      "Anthony Black",
+      "Franz Wagner"
+     ],
+     "pop": [
+      1,
+      0,
+      160.7
+     ],
+     "rest": [
+      4,
+      0,
+      661.2
+     ]
+    },
+    {
+     "anchor": "Jayson Tatum",
+     "combo": [
+      "Anthony Black",
+      "Franz Wagner"
+     ],
+     "pop": [
+      373,
+      0,
+      76657.80000000003
+     ],
+     "rest": [
+      2282,
+      116,
+      521377.5999999996
+     ]
+    }
+   ]
+  }
  }
 }

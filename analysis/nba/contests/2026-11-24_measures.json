@@ -1,0 +1,3565 @@
+{
+ "date": "2026-11-24",
+ "slate": "nba_tue_main",
+ "contests": [
+  {
+   "contest": "Tuesday Tip-Off",
+   "contest_id": "47da58a3-37d9-4c19-be53-269b9d22395d",
+   "entries": 13228,
+   "pods": 3307,
+   "pod_size": 4,
+   "cut_lines": {
+    "entries": 13228,
+    "win": 284.6,
+    "median": 204.8,
+    "top1": 264.1,
+    "top1_over_median": 59.3,
+    "top5": 246.9,
+    "top5_over_median": 42.1,
+    "top10": 236.8,
+    "top10_over_median": 32.0,
+    "top20": 224.8,
+    "top20_over_median": 20.0
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cade Cunningham",
+     "adp": 2.6,
+     "drafted": 0.5
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 3.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Franz Wagner",
+     "adp": 4.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Davis",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 8.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 9.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 9.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Black",
+     "adp": 11.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 12.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 12.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Desmond Bane",
+     "adp": 14.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 15.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 15.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 17.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 18.8,
+     "drafted": 99.9
+    },
+    {
+     "player": "Derrick White",
+     "adp": 19.4,
+     "drafted": 99.7
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 19.7,
+     "drafted": 99.6
+    },
+    {
+     "player": "Neemias Queta",
+     "adp": 20.5,
+     "drafted": 98.3
+    },
+    {
+     "player": "Wendell Carter Jr.",
+     "adp": 22.5,
+     "drafted": 92.0
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 23.1,
+     "drafted": 74.5
+    },
+    {
+     "player": "Jalen Suggs",
+     "adp": 23.2,
+     "drafted": 73.2
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 23.5,
+     "drafted": 44.6
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 23.6,
+     "drafted": 23.6
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 23.8,
+     "drafted": 19.1
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 23.8,
+     "drafted": 16.8
+    },
+    {
+     "player": "Kevin Huerter",
+     "adp": 23.9,
+     "drafted": 31.9
+    },
+    {
+     "player": "John Collins",
+     "adp": 23.9,
+     "drafted": 12.9
+    },
+    {
+     "player": "Isaiah Joe",
+     "adp": 24.0,
+     "drafted": 7.6
+    },
+    {
+     "player": "Zaccharie Risacher",
+     "adp": 24.0,
+     "drafted": 0.5
+    },
+    {
+     "player": "Tristan da Silva",
+     "adp": 24.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "Naji Marshall",
+     "adp": 24.0,
+     "drafted": 1.9
+    },
+    {
+     "player": "Caleb Martin",
+     "adp": 24.0,
+     "drafted": 1.5
+    },
+    {
+     "player": "DeMar DeRozan",
+     "adp": 24.0,
+     "drafted": 0.6
+    },
+    {
+     "player": "Sam Hauser",
+     "adp": 24.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Morez Johnson Jr.",
+     "adp": 24.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Tre Johnson",
+     "adp": 24.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "Santi Aldama",
+     "adp": 24.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Bilal Coulibaly",
+     "adp": 24.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Javonte Green",
+     "adp": 24.0,
+     "drafted": 0.3
+    },
+    {
+     "player": "Khris Middleton",
+     "adp": 24.0,
+     "drafted": 0.0
+    },
+    {
+     "player": "7d02c0a6",
+     "adp": null,
+     "drafted": 0.1
+    }
+   ],
+   "first_below_100": {
+    "player": "Neemias Queta",
+    "adp": 20.5,
+    "drafted": 98.3
+   },
+   "drafted_bands": {
+    "99.5+": 19,
+    "60-99.5": 4,
+    "10-60": 6,
+    "<10": 15
+   },
+   "value": {
+    "field_fpoe": -5.4,
+    "top1_fpoe": 53.5,
+    "field_breakers": 3.03,
+    "top1_breakers": 5.05
+   },
+   "pairs": [
+    {
+     "pair": "Nikola Jokic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 16.8,
+     "lift": 3.1
+    },
+    {
+     "pair": "Nikola Jokic + Paul George",
+     "rounds": "1/3",
+     "share": 16.3,
+     "lift": 3.01
+    },
+    {
+     "pair": "Nikola Jokic + Daniss Jenkins",
+     "rounds": "1/4",
+     "share": 11.4,
+     "lift": 2.11
+    },
+    {
+     "pair": "Kyrie Irving + Paul George",
+     "rounds": "2/3",
+     "share": 11.4,
+     "lift": 2.1
+    },
+    {
+     "pair": "Franz Wagner + AJ Dybantsa",
+     "rounds": "2/4",
+     "share": 10.7,
+     "lift": 1.98
+    },
+    {
+     "pair": "Nikola Jokic + Christian Braun",
+     "rounds": "1/5",
+     "share": 10.6,
+     "lift": 1.94
+    },
+    {
+     "pair": "Franz Wagner + Trae Young",
+     "rounds": "2/3",
+     "share": 10.5,
+     "lift": 1.92
+    },
+    {
+     "pair": "Kyrie Irving + Daniss Jenkins",
+     "rounds": "2/4",
+     "share": 10.2,
+     "lift": 1.88
+    },
+    {
+     "pair": "Cooper Flagg + Trae Young",
+     "rounds": "1/3",
+     "share": 10.0,
+     "lift": 1.84
+    },
+    {
+     "pair": "Paul George + Daniss Jenkins",
+     "rounds": "3/4",
+     "share": 9.9,
+     "lift": 1.83
+    },
+    {
+     "pair": "Cooper Flagg + Franz Wagner",
+     "rounds": "1/2",
+     "share": 9.7,
+     "lift": 1.78
+    },
+    {
+     "pair": "Cooper Flagg + AJ Dybantsa",
+     "rounds": "1/4",
+     "share": 9.3,
+     "lift": 1.71
+    },
+    {
+     "pair": "Paul George + Christian Braun",
+     "rounds": "3/5",
+     "share": 9.2,
+     "lift": 1.68
+    },
+    {
+     "pair": "Nikola Jokic + Ausar Thompson",
+     "rounds": "1/3",
+     "share": 9.1,
+     "lift": 1.68
+    },
+    {
+     "pair": "Franz Wagner + Anthony Black",
+     "rounds": "2/3",
+     "share": 9.0,
+     "lift": 1.65
+    },
+    {
+     "pair": "Cooper Flagg + Aaron Gordon",
+     "rounds": "1/5",
+     "share": 9.0,
+     "lift": 1.66
+    },
+    {
+     "pair": "Cooper Flagg + Neemias Queta",
+     "rounds": "1/6",
+     "share": 9.0,
+     "lift": 1.68
+    },
+    {
+     "pair": "Kyrie Irving + Christian Braun",
+     "rounds": "2/5",
+     "share": 8.9,
+     "lift": 1.63
+    },
+    {
+     "pair": "Jayson Tatum + Anthony Black",
+     "rounds": "1/3",
+     "share": 8.8,
+     "lift": 1.62
+    },
+    {
+     "pair": "Trae Young + Aaron Gordon",
+     "rounds": "3/5",
+     "share": 8.7,
+     "lift": 1.61
+    },
+    {
+     "pair": "Franz Wagner + Neemias Queta",
+     "rounds": "2/6",
+     "share": 8.7,
+     "lift": 1.62
+    },
+    {
+     "pair": "Cooper Flagg + Anthony Black",
+     "rounds": "1/3",
+     "share": 8.7,
+     "lift": 1.59
+    },
+    {
+     "pair": "Franz Wagner + Aaron Gordon",
+     "rounds": "2/5",
+     "share": 8.6,
+     "lift": 1.58
+    },
+    {
+     "pair": "AJ Dybantsa + Aaron Gordon",
+     "rounds": "4/5",
+     "share": 8.5,
+     "lift": 1.58
+    },
+    {
+     "pair": "Kyrie Irving + Kyshawn George",
+     "rounds": "2/4",
+     "share": 8.4,
+     "lift": 1.54
+    }
+   ],
+   "cores": [
+    {
+     "core": "Kyrie Irving + Paul George + Nikola Jokic",
+     "share": 10.7
+    },
+    {
+     "core": "Trae Young + Cooper Flagg + Franz Wagner",
+     "share": 4.0
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Ausar Thompson",
+     "share": 3.6
+    },
+    {
+     "core": "Paul George + Nikola Jokic + Ausar Thompson",
+     "share": 3.6
+    },
+    {
+     "core": "Anthony Black + Cooper Flagg + Franz Wagner",
+     "share": 2.8
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Franz Wagner",
+     "share": 2.2
+    },
+    {
+     "core": "Jayson Tatum + Jamal Murray + Ausar Thompson",
+     "share": 2.0
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Anthony Davis",
+     "share": 2.0
+    },
+    {
+     "core": "Jayson Tatum + Trae Young + Franz Wagner",
+     "share": 1.9
+    },
+    {
+     "core": "Jayson Tatum + Anthony Davis + Ausar Thompson",
+     "share": 1.8
+    },
+    {
+     "core": "AJ Dybantsa + Cooper Flagg + Franz Wagner",
+     "share": 1.5
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Jamal Murray",
+     "share": 1.4
+    },
+    {
+     "core": "Trae Young + Cooper Flagg + Anthony Davis",
+     "share": 1.4
+    },
+    {
+     "core": "Anthony Black + Jamal Murray + Cooper Flagg",
+     "share": 1.3
+    },
+    {
+     "core": "Anthony Black + Cooper Flagg + Anthony Davis",
+     "share": 1.3
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     3,
+     6
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Cooper Flagg (4) + Franz Wagner (5)",
+      "share": 9.7,
+      "lift": 1.78,
+      "top1": 0,
+      "avg_points": 204.1
+     },
+     {
+      "pair": "Jayson Tatum (3) + Anthony Davis (6)",
+      "share": 7.1,
+      "lift": 1.3,
+      "top1": 121,
+      "avg_points": 241.5
+     },
+     {
+      "pair": "Jayson Tatum (3) + Franz Wagner (5)",
+      "share": 6.1,
+      "lift": 1.11,
+      "top1": 0,
+      "avg_points": 221.1
+     },
+     {
+      "pair": "Cooper Flagg (4) + Anthony Davis (6)",
+      "share": 5.1,
+      "lift": 0.94,
+      "top1": 2,
+      "avg_points": 221.2
+     },
+     {
+      "pair": "Franz Wagner (5) + Anthony Davis (6)",
+      "share": 3.2,
+      "lift": 0.58,
+      "top1": 0,
+      "avg_points": 214.0
+     },
+     {
+      "pair": "Jayson Tatum (3) + Cooper Flagg (4)",
+      "share": 2.6,
+      "lift": 0.48,
+      "top1": 7,
+      "avg_points": 228.3
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 3307,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Paul George (9)",
+        "of_anchor": 42.8,
+        "share": 10.7,
+        "top1": 0,
+        "avg_points": 203.5
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Ausar Thompson (10)",
+        "of_anchor": 14.5,
+        "share": 3.6,
+        "top1": 0,
+        "avg_points": 195.5
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Ausar Thompson (10)",
+        "of_anchor": 14.2,
+        "share": 3.6,
+        "top1": 0,
+        "avg_points": 209.8
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Trae Young (12)",
+        "of_anchor": 3.2,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 199.2
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Trae Young (12)",
+        "of_anchor": 2.8,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 211.2
+       },
+       {
+        "combo": "Nikola Jokic + Ausar Thompson (10) + Anthony Black (11)",
+        "of_anchor": 2.6,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 174.0
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Anthony Black (11)",
+        "of_anchor": 2.6,
+        "share": 0.7,
+        "top1": 0,
+        "avg_points": 166.4
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Anthony Black (11)",
+        "of_anchor": 2.2,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 185.5
+       }
+      ]
+     },
+     {
+      "anchor": "Cade Cunningham",
+      "adp_rank": 2,
+      "teams": 16,
+      "combos": [
+       {
+        "combo": "Cade Cunningham + Franz Wagner (5) + Anthony Black (11)",
+        "of_anchor": 6.2,
+        "share": 0.0,
+        "top1": 0,
+        "avg_points": 160.7
+       },
+       {
+        "combo": "Cade Cunningham + Franz Wagner (5) + Trae Young (12)",
+        "of_anchor": 6.2,
+        "share": 0.0,
+        "top1": 0,
+        "avg_points": 160.7
+       },
+       {
+        "combo": "Cade Cunningham + Anthony Black (11) + Trae Young (12)",
+        "of_anchor": 6.2,
+        "share": 0.0,
+        "top1": 0,
+        "avg_points": 160.7
+       },
+       {
+        "combo": "Cade Cunningham + Franz Wagner (5) + Ausar Thompson (10)",
+        "of_anchor": 6.2,
+        "share": 0.0,
+        "top1": 0,
+        "avg_points": 168.3
+       },
+       {
+        "combo": "Cade Cunningham + Ausar Thompson (10) + Anthony Black (11)",
+        "of_anchor": 6.2,
+        "share": 0.0,
+        "top1": 0,
+        "avg_points": 138.1
+       },
+       {
+        "combo": "Cade Cunningham + Anthony Davis (6) + Trae Young (12)",
+        "of_anchor": 6.2,
+        "share": 0.0,
+        "top1": 0,
+        "avg_points": 199.6
+       },
+       {
+        "combo": "Cade Cunningham + Anthony Davis (6) + Anthony Black (11)",
+        "of_anchor": 6.2,
+        "share": 0.0,
+        "top1": 0,
+        "avg_points": 155.2
+       }
+      ]
+     },
+     {
+      "anchor": "Jayson Tatum",
+      "adp_rank": 3,
+      "teams": 3307,
+      "combos": [
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Anthony Black (11)",
+        "of_anchor": 11.3,
+        "share": 2.8,
+        "top1": 0,
+        "avg_points": 205.5
+       },
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Trae Young (12)",
+        "of_anchor": 9.9,
+        "share": 2.5,
+        "top1": 0,
+        "avg_points": 226.0
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Black (11) + Trae Young (12)",
+        "of_anchor": 9.5,
+        "share": 2.4,
+        "top1": 0,
+        "avg_points": 211.6
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Anthony Black (11)",
+        "of_anchor": 9.0,
+        "share": 2.2,
+        "top1": 0,
+        "avg_points": 221.3
+       },
+       {
+        "combo": "Jayson Tatum + Jamal Murray (7) + Ausar Thompson (10)",
+        "of_anchor": 8.0,
+        "share": 2.0,
+        "top1": 0,
+        "avg_points": 225.3
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Trae Young (12)",
+        "of_anchor": 7.9,
+        "share": 2.0,
+        "top1": 25,
+        "avg_points": 240.6
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Ausar Thompson (10)",
+        "of_anchor": 7.2,
+        "share": 1.8,
+        "top1": 46,
+        "avg_points": 253.4
+       },
+       {
+        "combo": "Jayson Tatum + Jamal Murray (7) + Anthony Black (11)",
+        "of_anchor": 6.4,
+        "share": 1.6,
+        "top1": 0,
+        "avg_points": 195.2
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": {
+    "teams": 20,
+    "share4_median": 3.4,
+    "share4_max": 9.0,
+    "teams_with_dupes": 15,
+    "repeats_of_mine": 0,
+    "top_pairs": [
+     [
+      "Kyshawn George + Jalen Suggs",
+      6
+     ],
+     [
+      "Jayson Tatum + Jalen Suggs",
+      6
+     ],
+     [
+      "Kyrie Irving + Nikola Jokic",
+      6
+     ],
+     [
+      "Jayson Tatum + Jamal Murray",
+      6
+     ],
+     [
+      "Kyshawn George + Jayson Tatum",
+      5
+     ]
+    ],
+    "top_cores": [
+     [
+      "Kyrie Irving + Paul George + Nikola Jokic",
+      5
+     ],
+     [
+      "Paul George + Jayson Tatum + Jamal Murray",
+      3
+     ],
+     [
+      "Jayson Tatum + Jamal Murray + Ausar Thompson",
+      2
+     ],
+     [
+      "Trae Young + Cooper Flagg + Franz Wagner",
+      2
+     ],
+     [
+      "Jayson Tatum + Anthony Davis + Ausar Thompson",
+      1
+     ]
+    ]
+   },
+   "draft_time": {
+    "matched": 13228,
+    "am_share": 36.1,
+    "by_hour_pt": {
+     "00": 304,
+     "01": 119,
+     "02": 104,
+     "03": 173,
+     "04": 324,
+     "05": 340,
+     "06": 416,
+     "07": 234,
+     "08": 447,
+     "09": 451,
+     "10": 814,
+     "11": 1051,
+     "12": 982,
+     "13": 1006,
+     "14": 2055,
+     "15": 2870,
+     "19": 113,
+     "20": 339,
+     "21": 236,
+     "22": 476,
+     "23": 374
+    }
+   },
+   "mine": {
+    "teams": 20,
+    "median_pct": 37.0,
+    "tail1": 0.0,
+    "tail5": 2.0,
+    "tail10": 2.5,
+    "tail20": 1.5,
+    "payout": 89.0,
+    "am_teams": 0,
+    "am_tail10": null,
+    "pm_teams": 20,
+    "pm_tail10": 2.5
+   },
+   "my_teams": [
+    {
+     "place": 201,
+     "points": 260.0,
+     "payout": 25.0,
+     "draft_id": "117676d4-19e9-464d-b119-9082f1613570",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "b612acf0-6267-48a2-ac48-f52d45c27ece",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "4e362394-7dec-4301-907a-3cc7217768bf",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 7798,
+     "points": 199.5,
+     "payout": 0.0,
+     "draft_id": "2278481d-400e-4fec-9622-cf0016c81e4c",
+     "picks": [
+      "54a70cec-9c34-4113-bd3e-17b7531f06f5",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "4e362394-7dec-4301-907a-3cc7217768bf",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 3896,
+     "points": 217.1,
+     "payout": 0.0,
+     "draft_id": "29309260-dbc8-4c77-a951-67bc8f7e5778",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "89d805df-6a3e-40d1-bbf2-ed440e503310",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "7c7c4ed8-3b4e-4466-9107-11904a6c4b00",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 1026,
+     "points": 240.6,
+     "payout": 12.0,
+     "draft_id": "32b06d3e-2d91-4b11-a6fa-150279209b2b",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "89d805df-6a3e-40d1-bbf2-ed440e503310",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "4e362394-7dec-4301-907a-3cc7217768bf",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 3266,
+     "points": 220.8,
+     "payout": 0.0,
+     "draft_id": "33a19472-c242-4ba7-a1d2-1814266204f6",
+     "picks": [
+      "54a70cec-9c34-4113-bd3e-17b7531f06f5",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "6aca4dc0-4521-444c-9cf8-e1736c04562d",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 12370,
+     "points": 167.5,
+     "payout": 0.0,
+     "draft_id": "3a0c4150-6cc0-4812-9b6f-340ebc76c535",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "629e40dc-68c1-4e21-ab3c-92d15f4629b3",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "4ec23d89-288a-42e5-bfdf-5e024f243365"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 11453,
+     "points": 177.9,
+     "payout": 0.0,
+     "draft_id": "4228d5f4-1865-449e-a636-91a1581f0e7b",
+     "picks": [
+      "b612acf0-6267-48a2-ac48-f52d45c27ece",
+      "629e40dc-68c1-4e21-ab3c-92d15f4629b3",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606",
+      "4ec23d89-288a-42e5-bfdf-5e024f243365"
+     ],
+     "drafted_at": "2026-11-24T22:23:19+00:00"
+    },
+    {
+     "place": 7631,
+     "points": 200.3,
+     "payout": 0.0,
+     "draft_id": "49f08584-e1b6-43e7-93b1-685275ae8df7",
+     "picks": [
+      "54a70cec-9c34-4113-bd3e-17b7531f06f5",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 6555,
+     "points": 205.0,
+     "payout": 0.0,
+     "draft_id": "4a1349d3-b1e7-4ce0-8192-58926d7463ed",
+     "picks": [
+      "54a70cec-9c34-4113-bd3e-17b7531f06f5",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "8e9726e9-ed27-4e4b-8c4a-9b7971094472"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 951,
+     "points": 241.8,
+     "payout": 12.0,
+     "draft_id": "6d26c50a-f2fb-4534-98f3-f5f151b383ab",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "89d805df-6a3e-40d1-bbf2-ed440e503310",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 7980,
+     "points": 198.6,
+     "payout": 0.0,
+     "draft_id": "6f6dfe98-0f65-44ee-9aa3-d2f7300bb1d5",
+     "picks": [
+      "54a70cec-9c34-4113-bd3e-17b7531f06f5",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "7c7c4ed8-3b4e-4466-9107-11904a6c4b00",
+      "4e362394-7dec-4301-907a-3cc7217768bf",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606"
+     ],
+     "drafted_at": "2026-11-24T22:23:19+00:00"
+    },
+    {
+     "place": 4060,
+     "points": 216.2,
+     "payout": 0.0,
+     "draft_id": "7a920b57-5559-4e60-9645-c9db7d573668",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "89d805df-6a3e-40d1-bbf2-ed440e503310",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "7c7c4ed8-3b4e-4466-9107-11904a6c4b00",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606"
+     ],
+     "drafted_at": "2026-11-24T22:23:19+00:00"
+    },
+    {
+     "place": 6711,
+     "points": 204.3,
+     "payout": 0.0,
+     "draft_id": "82c14ed3-2e4b-48c3-8c88-140fef0ebb19",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "ffad7c30-f8a5-4125-bbd3-34b4226aa611",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "7c7c4ed8-3b4e-4466-9107-11904a6c4b00",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 6139,
+     "points": 206.8,
+     "payout": 0.0,
+     "draft_id": "861ee4ed-4414-487e-a584-ee1174d91281",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "ffad7c30-f8a5-4125-bbd3-34b4226aa611",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "7c7c4ed8-3b4e-4466-9107-11904a6c4b00",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 402,
+     "points": 252.7,
+     "payout": 15.0,
+     "draft_id": "92718bff-e35b-4b3c-bd6a-184ed7da9c97",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "b612acf0-6267-48a2-ac48-f52d45c27ece",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 8009,
+     "points": 198.5,
+     "payout": 0.0,
+     "draft_id": "b1cd2a18-418c-4756-b4c4-decff7083890",
+     "picks": [
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "ffad7c30-f8a5-4125-bbd3-34b4226aa611",
+      "629e40dc-68c1-4e21-ab3c-92d15f4629b3",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "55579bc3-8de8-420a-bd89-c23cd4a4edc0",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 1547,
+     "points": 234.5,
+     "payout": 10.0,
+     "draft_id": "d2648c87-a0a1-4ae5-8c76-a5263bc3df1b",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "89d805df-6a3e-40d1-bbf2-ed440e503310",
+      "24e6e69c-b95e-4a87-92d0-7dd3f3d93926",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "0fab5b5c-8cae-47b0-8a3d-e53ef4eb328e",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 3110,
+     "points": 221.6,
+     "payout": 0.0,
+     "draft_id": "d7b6b217-c5af-4fe5-9492-abd31fd7edbb",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "89d805df-6a3e-40d1-bbf2-ed440e503310",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 776,
+     "points": 245.0,
+     "payout": 15.0,
+     "draft_id": "da2e5762-2e25-4a25-b5a6-24d81f0250db",
+     "picks": [
+      "280a5afc-a318-428e-8d67-3f1e13232277",
+      "aa6e0b60-ecef-4c2c-bd18-aef879830742",
+      "4bc97202-8305-42e7-b615-c0b8db8fef2a",
+      "7c7c4ed8-3b4e-4466-9107-11904a6c4b00",
+      "ba4fd9b8-c122-4109-982c-366f8f7ecef7",
+      "f120a4ab-5e6e-42ce-8d6a-905ab0778fc6"
+     ],
+     "drafted_at": "2026-11-24T23:23:22+00:00"
+    },
+    {
+     "place": 4890,
+     "points": 212.4,
+     "payout": 0.0,
+     "draft_id": "dcf85780-a416-4a3c-88ae-41e151dbcdc9",
+     "picks": [
+      "54a70cec-9c34-4113-bd3e-17b7531f06f5",
+      "035ea519-23f8-4d07-80ab-75a3af09ef14",
+      "f6c11d2b-49dc-4311-940d-ebb700ba3c9e",
+      "2357ef8a-ae80-4698-9fb9-1a94525c56b1",
+      "6ba6c22c-9b99-4cc7-9a4a-e4d001a01606",
+      "fd0b6a4a-7052-49b3-8fae-aa34856eae74"
+     ],
+     "drafted_at": "2026-11-24T22:23:19+00:00"
+    }
+   ]
+  },
+  {
+   "contest": "Buzzer Beater",
+   "contest_id": "9cb69447-dda1-43c6-9150-5a49ac9fa20f",
+   "entries": 3756,
+   "pods": 939,
+   "pod_size": 4,
+   "cut_lines": {
+    "entries": 3756,
+    "win": 285.5,
+    "median": 204.4,
+    "top1": 264.2,
+    "top1_over_median": 59.8,
+    "top5": 247.9,
+    "top5_over_median": 43.5,
+    "top10": 237.6,
+    "top10_over_median": 33.2,
+    "top20": 225.3,
+    "top20_over_median": 20.9
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cade Cunningham",
+     "adp": 2.6,
+     "drafted": 0.5
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 3.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Franz Wagner",
+     "adp": 4.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Davis",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 8.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 9.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 9.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Black",
+     "adp": 11.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 12.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 12.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Desmond Bane",
+     "adp": 14.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 15.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 15.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 17.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 18.8,
+     "drafted": 99.9
+    },
+    {
+     "player": "Derrick White",
+     "adp": 19.4,
+     "drafted": 99.8
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 19.7,
+     "drafted": 99.8
+    },
+    {
+     "player": "Neemias Queta",
+     "adp": 20.5,
+     "drafted": 98.6
+    },
+    {
+     "player": "Wendell Carter Jr.",
+     "adp": 22.5,
+     "drafted": 93.8
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 23.1,
+     "drafted": 83.5
+    },
+    {
+     "player": "Jalen Suggs",
+     "adp": 23.2,
+     "drafted": 70.6
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 23.5,
+     "drafted": 46.4
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 23.6,
+     "drafted": 28.9
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 23.8,
+     "drafted": 14.6
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 23.8,
+     "drafted": 19.8
+    },
+    {
+     "player": "Kevin Huerter",
+     "adp": 23.9,
+     "drafted": 19.0
+    },
+    {
+     "player": "John Collins",
+     "adp": 23.9,
+     "drafted": 11.8
+    },
+    {
+     "player": "Tristan da Silva",
+     "adp": 24.0,
+     "drafted": 1.2
+    },
+    {
+     "player": "Naji Marshall",
+     "adp": 24.0,
+     "drafted": 1.4
+    },
+    {
+     "player": "Isaiah Joe",
+     "adp": 24.0,
+     "drafted": 6.7
+    },
+    {
+     "player": "Caleb Martin",
+     "adp": 24.0,
+     "drafted": 1.5
+    },
+    {
+     "player": "DeMar DeRozan",
+     "adp": 24.0,
+     "drafted": 1.0
+    },
+    {
+     "player": "Zaccharie Risacher",
+     "adp": 24.0,
+     "drafted": 0.7
+    },
+    {
+     "player": "Morez Johnson Jr.",
+     "adp": 24.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "Javonte Green",
+     "adp": 24.0,
+     "drafted": 0.2
+    },
+    {
+     "player": "Spencer Jones",
+     "adp": 24.0,
+     "drafted": 0.1
+    },
+    {
+     "player": "775b0842",
+     "adp": null,
+     "drafted": 0.1
+    }
+   ],
+   "first_below_100": {
+    "player": "Neemias Queta",
+    "adp": 20.5,
+    "drafted": 98.6
+   },
+   "drafted_bands": {
+    "99.5+": 19,
+    "60-99.5": 4,
+    "10-60": 6,
+    "<10": 11
+   },
+   "value": {
+    "field_fpoe": -5.8,
+    "top1_fpoe": 53.5,
+    "field_breakers": 3.03,
+    "top1_breakers": 5.11
+   },
+   "pairs": [
+    {
+     "pair": "Nikola Jokic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 17.7,
+     "lift": 3.26
+    },
+    {
+     "pair": "Nikola Jokic + Paul George",
+     "rounds": "1/3",
+     "share": 16.4,
+     "lift": 3.02
+    },
+    {
+     "pair": "Kyrie Irving + Paul George",
+     "rounds": "2/3",
+     "share": 12.2,
+     "lift": 2.25
+    },
+    {
+     "pair": "Nikola Jokic + Daniss Jenkins",
+     "rounds": "1/4",
+     "share": 11.9,
+     "lift": 2.19
+    },
+    {
+     "pair": "Kyrie Irving + Daniss Jenkins",
+     "rounds": "2/4",
+     "share": 11.1,
+     "lift": 2.04
+    },
+    {
+     "pair": "Nikola Jokic + Christian Braun",
+     "rounds": "1/5",
+     "share": 10.5,
+     "lift": 1.93
+    },
+    {
+     "pair": "Paul George + Daniss Jenkins",
+     "rounds": "3/4",
+     "share": 10.5,
+     "lift": 1.93
+    },
+    {
+     "pair": "Franz Wagner + AJ Dybantsa",
+     "rounds": "2/4",
+     "share": 10.3,
+     "lift": 1.89
+    },
+    {
+     "pair": "Franz Wagner + Anthony Black",
+     "rounds": "2/3",
+     "share": 9.8,
+     "lift": 1.81
+    },
+    {
+     "pair": "Cooper Flagg + Trae Young",
+     "rounds": "1/3",
+     "share": 9.8,
+     "lift": 1.81
+    },
+    {
+     "pair": "Franz Wagner + Trae Young",
+     "rounds": "2/3",
+     "share": 9.7,
+     "lift": 1.78
+    },
+    {
+     "pair": "Cooper Flagg + AJ Dybantsa",
+     "rounds": "1/4",
+     "share": 9.4,
+     "lift": 1.73
+    },
+    {
+     "pair": "Kyrie Irving + Christian Braun",
+     "rounds": "2/5",
+     "share": 9.3,
+     "lift": 1.71
+    },
+    {
+     "pair": "AJ Dybantsa + Aaron Gordon",
+     "rounds": "4/5",
+     "share": 9.0,
+     "lift": 1.66
+    },
+    {
+     "pair": "Franz Wagner + Neemias Queta",
+     "rounds": "2/6",
+     "share": 9.0,
+     "lift": 1.67
+    },
+    {
+     "pair": "Cooper Flagg + Aaron Gordon",
+     "rounds": "1/5",
+     "share": 8.8,
+     "lift": 1.63
+    },
+    {
+     "pair": "Franz Wagner + Aaron Gordon",
+     "rounds": "2/5",
+     "share": 8.8,
+     "lift": 1.62
+    },
+    {
+     "pair": "Paul George + Christian Braun",
+     "rounds": "3/5",
+     "share": 8.8,
+     "lift": 1.62
+    },
+    {
+     "pair": "Cooper Flagg + Franz Wagner",
+     "rounds": "1/2",
+     "share": 8.8,
+     "lift": 1.62
+    },
+    {
+     "pair": "Trae Young + Derrick White",
+     "rounds": "3/5",
+     "share": 8.8,
+     "lift": 1.62
+    },
+    {
+     "pair": "Ausar Thompson + Christian Braun",
+     "rounds": "3/5",
+     "share": 8.7,
+     "lift": 1.6
+    },
+    {
+     "pair": "Franz Wagner + Derrick White",
+     "rounds": "2/5",
+     "share": 8.6,
+     "lift": 1.59
+    },
+    {
+     "pair": "Cooper Flagg + Anthony Black",
+     "rounds": "1/3",
+     "share": 8.5,
+     "lift": 1.57
+    },
+    {
+     "pair": "Trae Young + Neemias Queta",
+     "rounds": "3/6",
+     "share": 8.5,
+     "lift": 1.59
+    },
+    {
+     "pair": "Trae Young + Aaron Gordon",
+     "rounds": "3/5",
+     "share": 8.5,
+     "lift": 1.56
+    }
+   ],
+   "cores": [
+    {
+     "core": "Kyrie Irving + Paul George + Nikola Jokic",
+     "share": 11.7
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Ausar Thompson",
+     "share": 3.6
+    },
+    {
+     "core": "Trae Young + Cooper Flagg + Franz Wagner",
+     "share": 3.4
+    },
+    {
+     "core": "Anthony Black + Cooper Flagg + Franz Wagner",
+     "share": 2.8
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Franz Wagner",
+     "share": 2.7
+    },
+    {
+     "core": "Paul George + Nikola Jokic + Ausar Thompson",
+     "share": 2.7
+    },
+    {
+     "core": "Jayson Tatum + Trae Young + Franz Wagner",
+     "share": 2.1
+    },
+    {
+     "core": "Jayson Tatum + Jamal Murray + Ausar Thompson",
+     "share": 2.0
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Anthony Davis",
+     "share": 1.8
+    },
+    {
+     "core": "Jayson Tatum + Anthony Davis + Ausar Thompson",
+     "share": 1.7
+    },
+    {
+     "core": "Trae Young + Cooper Flagg + Anthony Davis",
+     "share": 1.5
+    },
+    {
+     "core": "Anthony Black + Jamal Murray + Cooper Flagg",
+     "share": 1.4
+    },
+    {
+     "core": "Anthony Black + Cooper Flagg + Anthony Davis",
+     "share": 1.4
+    },
+    {
+     "core": "Jamal Murray + Cooper Flagg + Ausar Thompson",
+     "share": 1.2
+    },
+    {
+     "core": "AJ Dybantsa + Cooper Flagg + Franz Wagner",
+     "share": 1.2
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     3,
+     6
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Cooper Flagg (4) + Franz Wagner (5)",
+      "share": 8.8,
+      "lift": 1.62,
+      "top1": 0,
+      "avg_points": 203.6
+     },
+     {
+      "pair": "Jayson Tatum (3) + Anthony Davis (6)",
+      "share": 7.0,
+      "lift": 1.29,
+      "top1": 35,
+      "avg_points": 241.3
+     },
+     {
+      "pair": "Jayson Tatum (3) + Franz Wagner (5)",
+      "share": 6.8,
+      "lift": 1.26,
+      "top1": 2,
+      "avg_points": 222.6
+     },
+     {
+      "pair": "Cooper Flagg (4) + Anthony Davis (6)",
+      "share": 5.2,
+      "lift": 0.95,
+      "top1": 0,
+      "avg_points": 223.2
+     },
+     {
+      "pair": "Franz Wagner (5) + Anthony Davis (6)",
+      "share": 2.7,
+      "lift": 0.5,
+      "top1": 0,
+      "avg_points": 212.9
+     },
+     {
+      "pair": "Jayson Tatum (3) + Cooper Flagg (4)",
+      "share": 2.6,
+      "lift": 0.48,
+      "top1": 1,
+      "avg_points": 230.6
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 939,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Paul George (9)",
+        "of_anchor": 46.6,
+        "share": 11.7,
+        "top1": 0,
+        "avg_points": 202.9
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Ausar Thompson (10)",
+        "of_anchor": 14.3,
+        "share": 3.6,
+        "top1": 0,
+        "avg_points": 195.6
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Ausar Thompson (10)",
+        "of_anchor": 10.6,
+        "share": 2.7,
+        "top1": 0,
+        "avg_points": 210.3
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Anthony Black (11)",
+        "of_anchor": 3.5,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 162.4
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Trae Young (12)",
+        "of_anchor": 3.2,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 212.8
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Trae Young (12)",
+        "of_anchor": 3.2,
+        "share": 0.8,
+        "top1": 0,
+        "avg_points": 197.2
+       },
+       {
+        "combo": "Nikola Jokic + Jamal Murray (7) + Paul George (9)",
+        "of_anchor": 2.1,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 205.2
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Anthony Black (11)",
+        "of_anchor": 2.0,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 186.1
+       }
+      ]
+     },
+     {
+      "anchor": "Cade Cunningham",
+      "adp_rank": 2,
+      "teams": 5,
+      "combos": [
+       {
+        "combo": "Cade Cunningham + Kyrie Irving (8) + Trae Young (12)",
+        "of_anchor": 20.0,
+        "share": 0.0,
+        "top1": 0,
+        "avg_points": 199.1
+       }
+      ]
+     },
+     {
+      "anchor": "Jayson Tatum",
+      "adp_rank": 3,
+      "teams": 939,
+      "combos": [
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Anthony Black (11)",
+        "of_anchor": 13.0,
+        "share": 3.2,
+        "top1": 0,
+        "avg_points": 208.5
+       },
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Trae Young (12)",
+        "of_anchor": 10.6,
+        "share": 2.7,
+        "top1": 0,
+        "avg_points": 228.3
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Anthony Black (11)",
+        "of_anchor": 8.5,
+        "share": 2.1,
+        "top1": 0,
+        "avg_points": 220.4
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Black (11) + Trae Young (12)",
+        "of_anchor": 8.3,
+        "share": 2.1,
+        "top1": 0,
+        "avg_points": 208.7
+       },
+       {
+        "combo": "Jayson Tatum + Jamal Murray (7) + Ausar Thompson (10)",
+        "of_anchor": 8.0,
+        "share": 2.0,
+        "top1": 0,
+        "avg_points": 226.4
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Trae Young (12)",
+        "of_anchor": 7.2,
+        "share": 1.8,
+        "top1": 15,
+        "avg_points": 247.9
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Ausar Thompson (10)",
+        "of_anchor": 6.7,
+        "share": 1.7,
+        "top1": 12,
+        "avg_points": 248.2
+       },
+       {
+        "combo": "Jayson Tatum + Jamal Murray (7) + Trae Young (12)",
+        "of_anchor": 6.5,
+        "share": 1.6,
+        "top1": 0,
+        "avg_points": 219.0
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 3756,
+    "am_share": 38.8,
+    "by_hour_pt": {
+     "00": 166,
+     "01": 73,
+     "02": 45,
+     "03": 52,
+     "04": 58,
+     "05": 95,
+     "06": 146,
+     "07": 90,
+     "08": 151,
+     "09": 102,
+     "10": 238,
+     "11": 241,
+     "12": 268,
+     "13": 288,
+     "14": 555,
+     "15": 700,
+     "19": 50,
+     "20": 98,
+     "21": 52,
+     "22": 172,
+     "23": 116
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  },
+  {
+   "contest": "The Layup Line",
+   "contest_id": "f6f3268d-1a58-4daf-88c9-0a458eee6951",
+   "entries": 968,
+   "pods": 242,
+   "pod_size": 4,
+   "cut_lines": {
+    "entries": 968,
+    "win": 280.0,
+    "median": 205.1,
+    "top1": 265.3,
+    "top1_over_median": 60.2,
+    "top5": 244.1,
+    "top5_over_median": 39.0,
+    "top10": 233.2,
+    "top10_over_median": 28.1,
+    "top20": 223.1,
+    "top20_over_median": 18.0
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cade Cunningham",
+     "adp": 2.6,
+     "drafted": 0.8
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 3.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Franz Wagner",
+     "adp": 4.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Davis",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 8.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 9.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 9.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Black",
+     "adp": 11.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 12.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 12.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Desmond Bane",
+     "adp": 14.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 15.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 15.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 17.2,
+     "drafted": 99.6
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 18.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Derrick White",
+     "adp": 19.4,
+     "drafted": 99.6
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 19.7,
+     "drafted": 99.6
+    },
+    {
+     "player": "Neemias Queta",
+     "adp": 20.5,
+     "drafted": 99.2
+    },
+    {
+     "player": "Wendell Carter Jr.",
+     "adp": 22.5,
+     "drafted": 88.0
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 23.1,
+     "drafted": 66.5
+    },
+    {
+     "player": "Jalen Suggs",
+     "adp": 23.2,
+     "drafted": 76.4
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 23.5,
+     "drafted": 55.0
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 23.6,
+     "drafted": 26.0
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 23.8,
+     "drafted": 20.7
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 23.8,
+     "drafted": 19.0
+    },
+    {
+     "player": "Kevin Huerter",
+     "adp": 23.9,
+     "drafted": 27.7
+    },
+    {
+     "player": "John Collins",
+     "adp": 23.9,
+     "drafted": 12.4
+    },
+    {
+     "player": "Naji Marshall",
+     "adp": 24.0,
+     "drafted": 1.2
+    },
+    {
+     "player": "Isaiah Joe",
+     "adp": 24.0,
+     "drafted": 4.1
+    },
+    {
+     "player": "Sam Hauser",
+     "adp": 24.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "Zaccharie Risacher",
+     "adp": 24.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "Tristan da Silva",
+     "adp": 24.0,
+     "drafted": 0.8
+    },
+    {
+     "player": "Khris Middleton",
+     "adp": 24.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "Caleb Martin",
+     "adp": 24.0,
+     "drafted": 0.4
+    },
+    {
+     "player": "DeMar DeRozan",
+     "adp": 24.0,
+     "drafted": 0.8
+    },
+    {
+     "player": "Marvin Bagley",
+     "adp": 24.0,
+     "drafted": 0.8
+    }
+   ],
+   "first_below_100": {
+    "player": "Neemias Queta",
+    "adp": 20.5,
+    "drafted": 99.2
+   },
+   "drafted_bands": {
+    "99.5+": 19,
+    "60-99.5": 4,
+    "10-60": 6,
+    "<10": 10
+   },
+   "value": {
+    "field_fpoe": -5.5,
+    "top1_fpoe": 51.8,
+    "field_breakers": 3.01,
+    "top1_breakers": 4.8
+   },
+   "pairs": [
+    {
+     "pair": "Nikola Jokic + Paul George",
+     "rounds": "1/3",
+     "share": 17.6,
+     "lift": 3.23
+    },
+    {
+     "pair": "Nikola Jokic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 17.0,
+     "lift": 3.14
+    },
+    {
+     "pair": "Kyrie Irving + Paul George",
+     "rounds": "2/3",
+     "share": 12.9,
+     "lift": 2.38
+    },
+    {
+     "pair": "Cooper Flagg + Trae Young",
+     "rounds": "1/3",
+     "share": 11.2,
+     "lift": 2.05
+    },
+    {
+     "pair": "Cooper Flagg + Franz Wagner",
+     "rounds": "1/2",
+     "share": 11.2,
+     "lift": 2.05
+    },
+    {
+     "pair": "Nikola Jokic + Daniss Jenkins",
+     "rounds": "1/4",
+     "share": 10.8,
+     "lift": 2.0
+    },
+    {
+     "pair": "Nikola Jokic + Christian Braun",
+     "rounds": "1/5",
+     "share": 10.7,
+     "lift": 1.99
+    },
+    {
+     "pair": "Cooper Flagg + AJ Dybantsa",
+     "rounds": "1/4",
+     "share": 10.7,
+     "lift": 1.98
+    },
+    {
+     "pair": "Franz Wagner + Trae Young",
+     "rounds": "2/3",
+     "share": 10.5,
+     "lift": 1.94
+    },
+    {
+     "pair": "Franz Wagner + AJ Dybantsa",
+     "rounds": "2/4",
+     "share": 10.5,
+     "lift": 1.94
+    },
+    {
+     "pair": "Paul George + Daniss Jenkins",
+     "rounds": "3/4",
+     "share": 10.2,
+     "lift": 1.88
+    },
+    {
+     "pair": "Kyrie Irving + Daniss Jenkins",
+     "rounds": "2/4",
+     "share": 10.1,
+     "lift": 1.86
+    },
+    {
+     "pair": "Jayson Tatum + Anthony Black",
+     "rounds": "1/3",
+     "share": 9.6,
+     "lift": 1.77
+    },
+    {
+     "pair": "Franz Wagner + Neemias Queta",
+     "rounds": "2/6",
+     "share": 9.6,
+     "lift": 1.78
+    },
+    {
+     "pair": "Paul George + Christian Braun",
+     "rounds": "3/5",
+     "share": 9.4,
+     "lift": 1.74
+    },
+    {
+     "pair": "Cooper Flagg + Aaron Gordon",
+     "rounds": "1/5",
+     "share": 9.4,
+     "lift": 1.74
+    },
+    {
+     "pair": "Cooper Flagg + Neemias Queta",
+     "rounds": "1/6",
+     "share": 9.3,
+     "lift": 1.73
+    },
+    {
+     "pair": "Anthony Davis + Desmond Bane",
+     "rounds": "2/4",
+     "share": 9.0,
+     "lift": 1.65
+    },
+    {
+     "pair": "Franz Wagner + Aaron Gordon",
+     "rounds": "2/5",
+     "share": 9.0,
+     "lift": 1.66
+    },
+    {
+     "pair": "Ausar Thompson + Kyshawn George",
+     "rounds": "3/4",
+     "share": 8.7,
+     "lift": 1.6
+    },
+    {
+     "pair": "Nikola Jokic + Kyshawn George",
+     "rounds": "1/4",
+     "share": 8.7,
+     "lift": 1.6
+    },
+    {
+     "pair": "Trae Young + Neemias Queta",
+     "rounds": "3/6",
+     "share": 8.6,
+     "lift": 1.59
+    },
+    {
+     "pair": "AJ Dybantsa + Neemias Queta",
+     "rounds": "4/6",
+     "share": 8.6,
+     "lift": 1.59
+    },
+    {
+     "pair": "Jayson Tatum + Derrick White",
+     "rounds": "1/5",
+     "share": 8.6,
+     "lift": 1.58
+    },
+    {
+     "pair": "Kyrie Irving + Christian Braun",
+     "rounds": "2/5",
+     "share": 8.5,
+     "lift": 1.57
+    }
+   ],
+   "cores": [
+    {
+     "core": "Kyrie Irving + Paul George + Nikola Jokic",
+     "share": 12.1
+    },
+    {
+     "core": "Trae Young + Cooper Flagg + Franz Wagner",
+     "share": 5.0
+    },
+    {
+     "core": "Paul George + Nikola Jokic + Ausar Thompson",
+     "share": 3.4
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Ausar Thompson",
+     "share": 3.0
+    },
+    {
+     "core": "Anthony Black + Cooper Flagg + Franz Wagner",
+     "share": 2.7
+    },
+    {
+     "core": "Jayson Tatum + Jamal Murray + Ausar Thompson",
+     "share": 2.5
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Jamal Murray",
+     "share": 2.4
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Anthony Davis",
+     "share": 2.2
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Franz Wagner",
+     "share": 2.0
+    },
+    {
+     "core": "Jayson Tatum + Anthony Davis + Ausar Thompson",
+     "share": 2.0
+    },
+    {
+     "core": "AJ Dybantsa + Cooper Flagg + Franz Wagner",
+     "share": 1.7
+    },
+    {
+     "core": "Anthony Black + Cooper Flagg + Anthony Davis",
+     "share": 1.7
+    },
+    {
+     "core": "Anthony Black + Jamal Murray + Cooper Flagg",
+     "share": 1.7
+    },
+    {
+     "core": "Kyshawn George + Jamal Murray + Ausar Thompson",
+     "share": 1.5
+    },
+    {
+     "core": "Trae Young + Jamal Murray + Cooper Flagg",
+     "share": 1.5
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     3,
+     6
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Cooper Flagg (4) + Franz Wagner (5)",
+      "share": 11.2,
+      "lift": 2.05,
+      "top1": 0,
+      "avg_points": 207.2
+     },
+     {
+      "pair": "Jayson Tatum (3) + Anthony Davis (6)",
+      "share": 7.6,
+      "lift": 1.41,
+      "top1": 9,
+      "avg_points": 239.7
+     },
+     {
+      "pair": "Jayson Tatum (3) + Franz Wagner (5)",
+      "share": 5.2,
+      "lift": 0.95,
+      "top1": 0,
+      "avg_points": 218.2
+     },
+     {
+      "pair": "Cooper Flagg (4) + Anthony Davis (6)",
+      "share": 4.9,
+      "lift": 0.89,
+      "top1": 0,
+      "avg_points": 216.4
+     },
+     {
+      "pair": "Franz Wagner (5) + Anthony Davis (6)",
+      "share": 3.1,
+      "lift": 0.57,
+      "top1": 0,
+      "avg_points": 217.5
+     },
+     {
+      "pair": "Jayson Tatum (3) + Cooper Flagg (4)",
+      "share": 2.1,
+      "lift": 0.38,
+      "top1": 1,
+      "avg_points": 228.3
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 242,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Paul George (9)",
+        "of_anchor": 49.6,
+        "share": 12.4,
+        "top1": 0,
+        "avg_points": 202.5
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Ausar Thompson (10)",
+        "of_anchor": 14.5,
+        "share": 3.6,
+        "top1": 0,
+        "avg_points": 210.4
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Ausar Thompson (10)",
+        "of_anchor": 12.8,
+        "share": 3.2,
+        "top1": 0,
+        "avg_points": 192.9
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Trae Young (12)",
+        "of_anchor": 4.1,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 208.8
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Trae Young (12)",
+        "of_anchor": 4.1,
+        "share": 1.0,
+        "top1": 0,
+        "avg_points": 215.6
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Anthony Black (11)",
+        "of_anchor": 2.5,
+        "share": 0.6,
+        "top1": 0,
+        "avg_points": 184.2
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Anthony Black (11)",
+        "of_anchor": 2.1,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 162.8
+       },
+       {
+        "combo": "Nikola Jokic + Jamal Murray (7) + Paul George (9)",
+        "of_anchor": 1.2,
+        "share": 0.3,
+        "top1": 0,
+        "avg_points": 203.6
+       }
+      ]
+     },
+     {
+      "anchor": "Cade Cunningham",
+      "adp_rank": 2,
+      "teams": 2,
+      "combos": [
+       {
+        "combo": "Cade Cunningham + Paul George (9) + Ausar Thompson (10)",
+        "of_anchor": 50.0,
+        "share": 0.1,
+        "top1": 0,
+        "avg_points": 177.7
+       },
+       {
+        "combo": "Cade Cunningham + Franz Wagner (5) + Anthony Black (11)",
+        "of_anchor": 50.0,
+        "share": 0.1,
+        "top1": 0,
+        "avg_points": 153.5
+       },
+       {
+        "combo": "Cade Cunningham + Franz Wagner (5) + Trae Young (12)",
+        "of_anchor": 50.0,
+        "share": 0.1,
+        "top1": 0,
+        "avg_points": 153.5
+       },
+       {
+        "combo": "Cade Cunningham + Anthony Black (11) + Trae Young (12)",
+        "of_anchor": 50.0,
+        "share": 0.1,
+        "top1": 0,
+        "avg_points": 153.5
+       }
+      ]
+     },
+     {
+      "anchor": "Jayson Tatum",
+      "adp_rank": 3,
+      "teams": 242,
+      "combos": [
+       {
+        "combo": "Jayson Tatum + Jamal Murray (7) + Anthony Black (11)",
+        "of_anchor": 10.3,
+        "share": 2.6,
+        "top1": 0,
+        "avg_points": 199.3
+       },
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Anthony Black (11)",
+        "of_anchor": 9.9,
+        "share": 2.5,
+        "top1": 0,
+        "avg_points": 207.7
+       },
+       {
+        "combo": "Jayson Tatum + Jamal Murray (7) + Ausar Thompson (10)",
+        "of_anchor": 9.9,
+        "share": 2.5,
+        "top1": 0,
+        "avg_points": 225.7
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Anthony Black (11)",
+        "of_anchor": 9.5,
+        "share": 2.4,
+        "top1": 0,
+        "avg_points": 217.5
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Ausar Thompson (10)",
+        "of_anchor": 8.3,
+        "share": 2.1,
+        "top1": 3,
+        "avg_points": 251.7
+       },
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Trae Young (12)",
+        "of_anchor": 7.9,
+        "share": 2.0,
+        "top1": 0,
+        "avg_points": 222.6
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Black (11) + Trae Young (12)",
+        "of_anchor": 7.0,
+        "share": 1.8,
+        "top1": 0,
+        "avg_points": 206.9
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Trae Young (12)",
+        "of_anchor": 5.8,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 237.6
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 944,
+    "am_share": 37.2,
+    "by_hour_pt": {
+     "00": 10,
+     "01": 5,
+     "02": 5,
+     "03": 6,
+     "04": 22,
+     "05": 14,
+     "06": 21,
+     "07": 15,
+     "08": 53,
+     "09": 67,
+     "10": 70,
+     "11": 63,
+     "12": 98,
+     "13": 61,
+     "14": 93,
+     "15": 208,
+     "16": 41,
+     "17": 18,
+     "18": 20,
+     "19": 20,
+     "20": 7,
+     "21": 2,
+     "22": 13,
+     "23": 12
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  },
+  {
+   "contest": "The Crossover",
+   "contest_id": "ed3c0508-ad46-4113-bead-739462cef756",
+   "entries": 216,
+   "pods": 54,
+   "pod_size": 4,
+   "cut_lines": {
+    "entries": 216,
+    "win": 261.1,
+    "median": 203.1,
+    "top1": 259.9,
+    "top1_over_median": 56.8,
+    "top5": 248.9,
+    "top5_over_median": 45.8,
+    "top10": 238.5,
+    "top10_over_median": 35.4,
+    "top20": 224.7,
+    "top20_over_median": 21.6
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 3.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Franz Wagner",
+     "adp": 4.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Davis",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 8.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 9.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 9.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Black",
+     "adp": 11.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 12.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 12.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Desmond Bane",
+     "adp": 14.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 15.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 15.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 17.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 18.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Derrick White",
+     "adp": 19.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 19.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Neemias Queta",
+     "adp": 20.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Wendell Carter Jr.",
+     "adp": 22.5,
+     "drafted": 90.7
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 23.1,
+     "drafted": 83.3
+    },
+    {
+     "player": "Jalen Suggs",
+     "adp": 23.2,
+     "drafted": 85.2
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 23.5,
+     "drafted": 55.6
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 23.6,
+     "drafted": 18.5
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 23.8,
+     "drafted": 22.2
+    },
+    {
+     "player": "PJ Washington",
+     "adp": 23.8,
+     "drafted": 14.8
+    },
+    {
+     "player": "Kevin Huerter",
+     "adp": 23.9,
+     "drafted": 24.1
+    },
+    {
+     "player": "John Collins",
+     "adp": 23.9,
+     "drafted": 3.7
+    },
+    {
+     "player": "Isaiah Joe",
+     "adp": 24.0,
+     "drafted": 1.9
+    }
+   ],
+   "first_below_100": {
+    "player": "Wendell Carter Jr.",
+    "adp": 22.5,
+    "drafted": 90.7
+   },
+   "drafted_bands": {
+    "99.5+": 20,
+    "60-99.5": 3,
+    "10-60": 5,
+    "<10": 2
+   },
+   "value": {
+    "field_fpoe": -6.0,
+    "top1_fpoe": 49.8,
+    "field_breakers": 3.03,
+    "top1_breakers": 4.67
+   },
+   "pairs": [
+    {
+     "pair": "Nikola Jokic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 19.4,
+     "lift": 3.58
+    },
+    {
+     "pair": "Nikola Jokic + Paul George",
+     "rounds": "1/3",
+     "share": 19.0,
+     "lift": 3.49
+    },
+    {
+     "pair": "Kyrie Irving + Paul George",
+     "rounds": "2/3",
+     "share": 14.4,
+     "lift": 2.64
+    },
+    {
+     "pair": "Nikola Jokic + Daniss Jenkins",
+     "rounds": "1/4",
+     "share": 13.9,
+     "lift": 2.56
+    },
+    {
+     "pair": "Franz Wagner + AJ Dybantsa",
+     "rounds": "2/4",
+     "share": 13.4,
+     "lift": 2.47
+    },
+    {
+     "pair": "Kyrie Irving + Daniss Jenkins",
+     "rounds": "2/4",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Cooper Flagg + Trae Young",
+     "rounds": "1/3",
+     "share": 12.0,
+     "lift": 2.21
+    },
+    {
+     "pair": "Franz Wagner + Trae Young",
+     "rounds": "2/3",
+     "share": 11.1,
+     "lift": 2.04
+    },
+    {
+     "pair": "Franz Wagner + Neemias Queta",
+     "rounds": "2/6",
+     "share": 11.1,
+     "lift": 2.04
+    },
+    {
+     "pair": "Jayson Tatum + Derrick White",
+     "rounds": "1/5",
+     "share": 11.1,
+     "lift": 2.04
+    },
+    {
+     "pair": "Jayson Tatum + Anthony Davis",
+     "rounds": "1/2",
+     "share": 10.6,
+     "lift": 1.96
+    },
+    {
+     "pair": "Paul George + Daniss Jenkins",
+     "rounds": "3/4",
+     "share": 10.6,
+     "lift": 1.96
+    },
+    {
+     "pair": "Cooper Flagg + Franz Wagner",
+     "rounds": "1/2",
+     "share": 10.6,
+     "lift": 1.96
+    },
+    {
+     "pair": "Anthony Davis + Anthony Black",
+     "rounds": "2/3",
+     "share": 10.6,
+     "lift": 1.96
+    },
+    {
+     "pair": "Jayson Tatum + Anthony Black",
+     "rounds": "1/3",
+     "share": 10.2,
+     "lift": 1.87
+    },
+    {
+     "pair": "Trae Young + Derrick White",
+     "rounds": "3/5",
+     "share": 9.7,
+     "lift": 1.79
+    },
+    {
+     "pair": "Nikola Jokic + Christian Braun",
+     "rounds": "1/5",
+     "share": 9.7,
+     "lift": 1.79
+    },
+    {
+     "pair": "Kyrie Irving + Kyshawn George",
+     "rounds": "2/4",
+     "share": 9.7,
+     "lift": 1.79
+    },
+    {
+     "pair": "Cooper Flagg + Paul Reed",
+     "rounds": "1/5",
+     "share": 9.7,
+     "lift": 1.79
+    },
+    {
+     "pair": "Jayson Tatum + Neemias Queta",
+     "rounds": "1/6",
+     "share": 9.3,
+     "lift": 1.7
+    },
+    {
+     "pair": "Cooper Flagg + Desmond Bane",
+     "rounds": "1/4",
+     "share": 9.3,
+     "lift": 1.7
+    },
+    {
+     "pair": "Desmond Bane + Paul Reed",
+     "rounds": "4/5",
+     "share": 9.3,
+     "lift": 1.7
+    },
+    {
+     "pair": "Anthony Davis + Desmond Bane",
+     "rounds": "2/4",
+     "share": 8.8,
+     "lift": 1.62
+    },
+    {
+     "pair": "Franz Wagner + Anthony Black",
+     "rounds": "2/3",
+     "share": 8.8,
+     "lift": 1.62
+    },
+    {
+     "pair": "Cooper Flagg + AJ Dybantsa",
+     "rounds": "1/4",
+     "share": 8.8,
+     "lift": 1.62
+    }
+   ],
+   "cores": [
+    {
+     "core": "Kyrie Irving + Paul George + Nikola Jokic",
+     "share": 14.4
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Anthony Davis",
+     "share": 5.6
+    },
+    {
+     "core": "Trae Young + Cooper Flagg + Franz Wagner",
+     "share": 5.1
+    },
+    {
+     "core": "Jayson Tatum + Trae Young + Franz Wagner",
+     "share": 4.6
+    },
+    {
+     "core": "Trae Young + Jamal Murray + Cooper Flagg",
+     "share": 4.2
+    },
+    {
+     "core": "Kyrie Irving + Nikola Jokic + Ausar Thompson",
+     "share": 3.2
+    },
+    {
+     "core": "Jayson Tatum + Anthony Davis + Ausar Thompson",
+     "share": 2.8
+    },
+    {
+     "core": "Jayson Tatum + Jamal Murray + Ausar Thompson",
+     "share": 2.8
+    },
+    {
+     "core": "Paul George + Nikola Jokic + Ausar Thompson",
+     "share": 2.8
+    },
+    {
+     "core": "AJ Dybantsa + Cooper Flagg + Franz Wagner",
+     "share": 2.3
+    },
+    {
+     "core": "Kyshawn George + Jamal Murray + Ausar Thompson",
+     "share": 2.3
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Franz Wagner",
+     "share": 2.3
+    },
+    {
+     "core": "Desmond Bane + Anthony Davis + Ausar Thompson",
+     "share": 2.3
+    },
+    {
+     "core": "Anthony Black + Cooper Flagg + Franz Wagner",
+     "share": 1.9
+    },
+    {
+     "core": "Anthony Black + Cooper Flagg + Anthony Davis",
+     "share": 1.4
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     3,
+     6
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Jayson Tatum (3) + Anthony Davis (6)",
+      "share": 10.6,
+      "lift": 1.96,
+      "top1": 2,
+      "avg_points": 236.9
+     },
+     {
+      "pair": "Cooper Flagg (4) + Franz Wagner (5)",
+      "share": 10.6,
+      "lift": 1.96,
+      "top1": 0,
+      "avg_points": 202.5
+     },
+     {
+      "pair": "Jayson Tatum (3) + Franz Wagner (5)",
+      "share": 8.8,
+      "lift": 1.62,
+      "top1": 1,
+      "avg_points": 222.6
+     },
+     {
+      "pair": "Cooper Flagg (4) + Anthony Davis (6)",
+      "share": 3.2,
+      "lift": 0.6,
+      "top1": 0,
+      "avg_points": 215.9
+     },
+     {
+      "pair": "Franz Wagner (5) + Anthony Davis (6)",
+      "share": 1.4,
+      "lift": 0.26,
+      "top1": 0,
+      "avg_points": 221.1
+     },
+     {
+      "pair": "Jayson Tatum (3) + Cooper Flagg (4)",
+      "share": 0.9,
+      "lift": 0.17,
+      "top1": 0,
+      "avg_points": 235.4
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 54,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Paul George (9)",
+        "of_anchor": 57.4,
+        "share": 14.4,
+        "top1": 0,
+        "avg_points": 205.0
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Ausar Thompson (10)",
+        "of_anchor": 13.0,
+        "share": 3.2,
+        "top1": 0,
+        "avg_points": 200.8
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Ausar Thompson (10)",
+        "of_anchor": 11.1,
+        "share": 2.8,
+        "top1": 0,
+        "avg_points": 208.2
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Anthony Black (11)",
+        "of_anchor": 3.7,
+        "share": 0.9,
+        "top1": 0,
+        "avg_points": 176.5
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Anthony Black (11)",
+        "of_anchor": 1.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 177.9
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Trae Young (12)",
+        "of_anchor": 1.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 206.3
+       },
+       {
+        "combo": "Nikola Jokic + Jamal Murray (7) + Paul George (9)",
+        "of_anchor": 1.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 185.8
+       },
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Trae Young (12)",
+        "of_anchor": 1.9,
+        "share": 0.5,
+        "top1": 0,
+        "avg_points": 207.5
+       }
+      ]
+     },
+     {
+      "anchor": "Jayson Tatum",
+      "adp_rank": 3,
+      "teams": 54,
+      "combos": [
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Anthony Black (11)",
+        "of_anchor": 22.2,
+        "share": 5.6,
+        "top1": 0,
+        "avg_points": 226.5
+       },
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Trae Young (12)",
+        "of_anchor": 18.5,
+        "share": 4.6,
+        "top1": 1,
+        "avg_points": 231.0
+       },
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Anthony Black (11)",
+        "of_anchor": 16.7,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 201.0
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Black (11) + Trae Young (12)",
+        "of_anchor": 13.0,
+        "share": 3.2,
+        "top1": 0,
+        "avg_points": 212.5
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Ausar Thompson (10)",
+        "of_anchor": 11.1,
+        "share": 2.8,
+        "top1": 2,
+        "avg_points": 250.3
+       },
+       {
+        "combo": "Jayson Tatum + Jamal Murray (7) + Ausar Thompson (10)",
+        "of_anchor": 11.1,
+        "share": 2.8,
+        "top1": 0,
+        "avg_points": 230.7
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Trae Young (12)",
+        "of_anchor": 9.3,
+        "share": 2.3,
+        "top1": 1,
+        "avg_points": 233.9
+       },
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Ausar Thompson (10)",
+        "of_anchor": 5.6,
+        "share": 1.4,
+        "top1": 0,
+        "avg_points": 216.4
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 216,
+    "am_share": 48.6,
+    "by_hour_pt": {
+     "00": 2,
+     "01": 3,
+     "03": 1,
+     "04": 4,
+     "05": 5,
+     "06": 10,
+     "07": 7,
+     "08": 13,
+     "09": 12,
+     "10": 20,
+     "11": 28,
+     "12": 22,
+     "13": 49,
+     "14": 15,
+     "20": 20,
+     "23": 5
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  },
+  {
+   "contest": "Pick & Roll",
+   "contest_id": "58e0fedb-91d8-4818-8c19-7bb85f19d8d1",
+   "entries": 24,
+   "pods": 6,
+   "pod_size": 4,
+   "cut_lines": {
+    "entries": 24,
+    "win": 257.5,
+    "median": 205.4,
+    "top1": 257.5,
+    "top1_over_median": 52.1,
+    "top5": 248.3,
+    "top5_over_median": 42.9,
+    "top10": 240.2,
+    "top10_over_median": 34.8,
+    "top20": 233.4,
+    "top20_over_median": 28.0
+   },
+   "drafted_curve": [
+    {
+     "player": "Nikola Jokic",
+     "adp": 1.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jayson Tatum",
+     "adp": 3.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Cooper Flagg",
+     "adp": 3.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Franz Wagner",
+     "adp": 4.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Davis",
+     "adp": 6.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Jamal Murray",
+     "adp": 6.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyrie Irving",
+     "adp": 8.6,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul George",
+     "adp": 9.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Ausar Thompson",
+     "adp": 9.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Anthony Black",
+     "adp": 11.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Trae Young",
+     "adp": 12.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "AJ Dybantsa",
+     "adp": 12.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Desmond Bane",
+     "adp": 14.0,
+     "drafted": 100.0
+    },
+    {
+     "player": "Kyshawn George",
+     "adp": 15.1,
+     "drafted": 100.0
+    },
+    {
+     "player": "Daniss Jenkins",
+     "adp": 15.9,
+     "drafted": 100.0
+    },
+    {
+     "player": "Christian Braun",
+     "adp": 17.2,
+     "drafted": 100.0
+    },
+    {
+     "player": "Paul Reed",
+     "adp": 18.8,
+     "drafted": 100.0
+    },
+    {
+     "player": "Derrick White",
+     "adp": 19.4,
+     "drafted": 100.0
+    },
+    {
+     "player": "Aaron Gordon",
+     "adp": 19.7,
+     "drafted": 100.0
+    },
+    {
+     "player": "Neemias Queta",
+     "adp": 20.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Wendell Carter Jr.",
+     "adp": 22.5,
+     "drafted": 100.0
+    },
+    {
+     "player": "Alex Sarr",
+     "adp": 23.1,
+     "drafted": 66.7
+    },
+    {
+     "player": "Jalen Suggs",
+     "adp": 23.2,
+     "drafted": 66.7
+    },
+    {
+     "player": "Payton Pritchard",
+     "adp": 23.5,
+     "drafted": 66.7
+    },
+    {
+     "player": "Cam Johnson",
+     "adp": 23.6,
+     "drafted": 16.7
+    },
+    {
+     "player": "Daniel Gafford",
+     "adp": 23.8,
+     "drafted": 33.3
+    },
+    {
+     "player": "Kevin Huerter",
+     "adp": 23.9,
+     "drafted": 50.0
+    }
+   ],
+   "first_below_100": {
+    "player": "Alex Sarr",
+    "adp": 23.1,
+    "drafted": 66.7
+   },
+   "drafted_bands": {
+    "99.5+": 21,
+    "60-99.5": 3,
+    "10-60": 3,
+    "<10": 0
+   },
+   "value": {
+    "field_fpoe": -4.6,
+    "top1_fpoe": 38.0,
+    "field_breakers": 3.08,
+    "top1_breakers": 4.0
+   },
+   "pairs": [
+    {
+     "pair": "Nikola Jokic + Paul George",
+     "rounds": "1/3",
+     "share": 25.0,
+     "lift": 4.6
+    },
+    {
+     "pair": "Daniss Jenkins + Neemias Queta",
+     "rounds": "4/6",
+     "share": 20.8,
+     "lift": 3.83
+    },
+    {
+     "pair": "Cooper Flagg + Trae Young",
+     "rounds": "1/3",
+     "share": 20.8,
+     "lift": 3.83
+    },
+    {
+     "pair": "Kyrie Irving + Paul George",
+     "rounds": "2/3",
+     "share": 20.8,
+     "lift": 3.83
+    },
+    {
+     "pair": "Nikola Jokic + Kyrie Irving",
+     "rounds": "1/2",
+     "share": 20.8,
+     "lift": 3.83
+    },
+    {
+     "pair": "Desmond Bane + Derrick White",
+     "rounds": "4/5",
+     "share": 20.8,
+     "lift": 3.83
+    },
+    {
+     "pair": "Jayson Tatum + Anthony Davis",
+     "rounds": "1/2",
+     "share": 16.7,
+     "lift": 3.07
+    },
+    {
+     "pair": "Franz Wagner + Trae Young",
+     "rounds": "2/3",
+     "share": 16.7,
+     "lift": 3.07
+    },
+    {
+     "pair": "Cooper Flagg + Franz Wagner",
+     "rounds": "1/2",
+     "share": 16.7,
+     "lift": 3.07
+    },
+    {
+     "pair": "Jamal Murray + Aaron Gordon",
+     "rounds": "2/5",
+     "share": 16.7,
+     "lift": 3.07
+    },
+    {
+     "pair": "Jayson Tatum + Neemias Queta",
+     "rounds": "1/6",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Anthony Black + Daniss Jenkins",
+     "rounds": "3/4",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Anthony Black + Neemias Queta",
+     "rounds": "3/6",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "AJ Dybantsa + Aaron Gordon",
+     "rounds": "4/5",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Cooper Flagg + Aaron Gordon",
+     "rounds": "1/5",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Franz Wagner + Derrick White",
+     "rounds": "2/5",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Paul George + Christian Braun",
+     "rounds": "3/5",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Nikola Jokic + Christian Braun",
+     "rounds": "1/5",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Jamal Murray + Wendell Carter Jr.",
+     "rounds": "2/6",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Ausar Thompson + Paul Reed",
+     "rounds": "3/5",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "AJ Dybantsa + Christian Braun",
+     "rounds": "4/5",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Ausar Thompson + Christian Braun",
+     "rounds": "3/5",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "AJ Dybantsa + Payton Pritchard",
+     "rounds": "4/7",
+     "share": 12.5,
+     "lift": 3.45
+    },
+    {
+     "pair": "Anthony Davis + Ausar Thompson",
+     "rounds": "2/3",
+     "share": 12.5,
+     "lift": 2.3
+    },
+    {
+     "pair": "Kyrie Irving + Desmond Bane",
+     "rounds": "2/4",
+     "share": 12.5,
+     "lift": 2.3
+    }
+   ],
+   "cores": [
+    {
+     "core": "Kyrie Irving + Paul George + Nikola Jokic",
+     "share": 20.8
+    },
+    {
+     "core": "Trae Young + Cooper Flagg + Franz Wagner",
+     "share": 12.5
+    },
+    {
+     "core": "Jayson Tatum + Anthony Davis + Ausar Thompson",
+     "share": 8.3
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Anthony Davis",
+     "share": 4.2
+    },
+    {
+     "core": "Desmond Bane + Jamal Murray + Ausar Thompson",
+     "share": 4.2
+    },
+    {
+     "core": "Jayson Tatum + Desmond Bane + Franz Wagner",
+     "share": 4.2
+    },
+    {
+     "core": "Jamal Murray + Cooper Flagg + Ausar Thompson",
+     "share": 4.2
+    },
+    {
+     "core": "Trae Young + Anthony Black + Anthony Davis",
+     "share": 4.2
+    },
+    {
+     "core": "Trae Young + Jamal Murray + Cooper Flagg",
+     "share": 4.2
+    },
+    {
+     "core": "AJ Dybantsa + Anthony Davis + Ausar Thompson",
+     "share": 4.2
+    },
+    {
+     "core": "Jayson Tatum + Anthony Black + Franz Wagner",
+     "share": 4.2
+    },
+    {
+     "core": "Daniss Jenkins + Anthony Black + Jamal Murray",
+     "share": 4.2
+    },
+    {
+     "core": "Anthony Black + AJ Dybantsa + Jamal Murray",
+     "share": 4.2
+    },
+    {
+     "core": "Jayson Tatum + AJ Dybantsa + Anthony Davis",
+     "share": 4.2
+    },
+    {
+     "core": "Anthony Black + Cooper Flagg + Franz Wagner",
+     "share": 4.2
+    }
+   ],
+   "turns": {
+    "turn_1_2_ranks": [
+     3,
+     6
+    ],
+    "turn_1_2": [
+     {
+      "pair": "Jayson Tatum (3) + Anthony Davis (6)",
+      "share": 16.7,
+      "lift": 3.07,
+      "top1": 1,
+      "avg_points": 242.8
+     },
+     {
+      "pair": "Cooper Flagg (4) + Franz Wagner (5)",
+      "share": 16.7,
+      "lift": 3.07,
+      "top1": 0,
+      "avg_points": 217.6
+     },
+     {
+      "pair": "Jayson Tatum (3) + Franz Wagner (5)",
+      "share": 8.3,
+      "lift": 1.53,
+      "top1": 0,
+      "avg_points": 213.2
+     }
+    ],
+    "turn_2_3": [
+     {
+      "anchor": "Nikola Jokic",
+      "adp_rank": 1,
+      "teams": 6,
+      "combos": [
+       {
+        "combo": "Nikola Jokic + Kyrie Irving (8) + Paul George (9)",
+        "of_anchor": 83.3,
+        "share": 20.8,
+        "top1": 0,
+        "avg_points": 203.8
+       },
+       {
+        "combo": "Nikola Jokic + Paul George (9) + Ausar Thompson (10)",
+        "of_anchor": 16.7,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 208.3
+       }
+      ]
+     },
+     {
+      "anchor": "Jayson Tatum",
+      "adp_rank": 3,
+      "teams": 6,
+      "combos": [
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Ausar Thompson (10)",
+        "of_anchor": 33.3,
+        "share": 8.3,
+        "top1": 1,
+        "avg_points": 252.9
+       },
+       {
+        "combo": "Jayson Tatum + Anthony Davis (6) + Anthony Black (11)",
+        "of_anchor": 16.7,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 225.0
+       },
+       {
+        "combo": "Jayson Tatum + Franz Wagner (5) + Anthony Black (11)",
+        "of_anchor": 16.7,
+        "share": 4.2,
+        "top1": 0,
+        "avg_points": 193.1
+       }
+      ]
+     }
+    ]
+   },
+   "uniqueness": null,
+   "draft_time": {
+    "matched": 24,
+    "am_share": 50.0,
+    "by_hour_pt": {
+     "09": 4,
+     "10": 4,
+     "11": 4,
+     "12": 4,
+     "13": 4,
+     "14": 1,
+     "15": 3
+    }
+   },
+   "mine": null,
+   "my_teams": []
+  }
+ ]
+}
