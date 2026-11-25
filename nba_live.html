@@ -594,6 +594,11 @@ function slateEvents() {
 async function pull() {
   if (!state.slate || state.busy) return;
   loadField(state.slate);                 // 15 minutes after each tip, once its swaps are in; a no-op between
+  var sl0 = state.slate;                  // a saved build committed after this page opened: fetched on the next pull (2026-11-24)
+  if (sl0.dk && !state.dkBuilds[sl0.dg]) {
+    await fetch("analysis/cbb/dk/builds/dk_bank_" + sl0.day + "_" + sl0.dg + ".json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) state.dkBuilds[sl0.dg] = d; }).catch(function () {});
+  }
   state.busy = true;
   try {
     var day = espnDate(state.slate.cutoff), sport = sportOf(state.slate);
