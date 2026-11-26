@@ -6,7 +6,7 @@
 
 ## Front page
 
-Last night's main slate had 8 games, 3 of them blowouts (NY by 19 over CLE; GS by 19 over SAC; MEM by 18 over LAC). The biggest nights against ETR's number among drafted players: Jaden McDaniels 28 points over; Deni Avdija 24 points over; Josh Hart 23 points over. Something in the pipeline needs a look: Today's inputs: our Proj ready 11:23pm; chance to play NOT READY (due 4:30am); Q-tags polled 11:23pm. (The written front page comes with the morning report; this is the automatic summary.)
+Last night's main slate had 8 games, 3 of them blowouts (NY by 19 over CLE; GS by 19 over SAC; MEM by 18 over LAC). The biggest nights against ETR's number among drafted players: Jaden McDaniels 28 points over; Deni Avdija 24 points over; Josh Hart 23 points over. Something in the pipeline needs a look: Today's inputs: our Proj ready 11:23pm; chance to play NOT READY (due 4:30am); Q-tags polled 10:23am. (The written front page comes with the morning report; this is the automatic summary.)
 
 ## T1
 
@@ -116,7 +116,7 @@ No moves against the button here last night.
 
 **Gallagher's Bad-matchup arrows** (published before your lock). Season: 211 arrows, -1.4 against ETR's final on average, 54% under it.
 
-**Data.** Today's inputs: our Proj ready 11:23pm; chance to play NOT READY (due 4:30am); Q-tags polled 11:23pm.
+**Data.** Today's inputs: our Proj ready 11:23pm; chance to play NOT READY (due 4:30am); Q-tags polled 10:23am.
 
 ---
 
