@@ -2086,5 +2086,57 @@
   "swap": null,
   "on": null,
   "orders": 14
+ },
+ "2026-11-25_wed_main.csv": {
+  "lock": "2026-11-25T23:52:00+00:00",
+  "adp_am_at": "2026-11-25T11:23:35+00:00",
+  "adp_etr_at": "2026-11-25T19:23:43+00:00",
+  "adp_close_at": "2026-11-25T23:23:05+00:00",
+  "morning_through": "2026-11-24",
+  "etr_first": {
+   "at": "2026-11-25T20:14:38.494Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-25T121433.636.csv"
+  },
+  "etr_last": {
+   "at": "2026-11-25T20:14:38.494Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-25T121433.636.csv"
+  },
+  "etr_pm": {
+   "at": "2026-11-25T20:14:38.494Z",
+   "file": "Underdog NBA Daily Rankings - 2026-11-25T121433.636.csv"
+  },
+  "adp_pm_at": "2026-11-25T19:23:43+00:00",
+  "am": null,
+  "pm": {
+   "at": "2026-11-25T20:14:56.401Z",
+   "from": "Lock PM",
+   "ours": true,
+   "tiers": [
+    4,
+    16,
+    25,
+    31
+   ]
+  },
+  "gist": true,
+  "cuts": {
+   "am_by": "2026-11-25T12:00:00-08:00",
+   "am_by_from": "noon (no AM draft found)",
+   "close": "2026-11-25T23:52:00+00:00",
+   "swaps_at": "2026-11-26T00:00:00+00:00",
+   "seen": {
+    "am": [
+     "2026-11-25T20:14:22.642Z"
+    ],
+    "pm": [
+     "2026-11-25T20:14:56.401Z"
+    ],
+    "exp": [],
+    "swap": []
+   }
+  },
+  "swap": null,
+  "on": null,
+  "orders": 5
  }
 }
