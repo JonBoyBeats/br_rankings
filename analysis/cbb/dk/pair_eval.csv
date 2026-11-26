@@ -270,3 +270,58 @@ date,draft_group,set,team,starter,bench,pos,corr,games,thin,starter_beat,bench_b
 2026-11-24,157026,em,UL,Flory Bidunga,Obinna Ekezie Jr.,B,-0.71,4,1,-3.75,-8.75,both under
 2026-11-24,157026,espn,UL,Seth Trimble,Isaac Ellis,G,-1.0,3,1,9.5,-8.0,split
 2026-11-24,157026,espn,UL,Alvaro Folgueiras,Obinna Ekezie Jr.,F-C,-0.78,4,1,-10.9,-8.75,both under
+2026-11-25,157293,em,MISS,Patton Pinkins,Ben Henshall,G,-0.48,6,0,-4.6,3.15,split
+2026-11-25,157293,espn,MISS,Patton Pinkins,Ben Henshall,G,-0.48,6,0,-4.6,3.15,split
+2026-11-25,157293,em,TA&M,PJ Haggerty,Tyshawn Archie,G,-0.8,6,0,6.2,-7.3,split
+2026-11-25,157293,em,TA&M,Jordan Pope,Tyshawn Archie,G,-0.41,6,0,-10.1,-7.3,both under
+2026-11-25,157293,espn,TA&M,PJ Haggerty,Jalen Reece,G,-0.87,6,0,6.2,6.55,both over
+2026-11-25,157293,espn,TA&M,PJ Haggerty,Tyshawn Archie,G,-0.8,6,0,6.2,-7.3,split
+2026-11-25,157293,espn,ARIZ,JJ Mandaquit,Cameron Holmes,G,-0.9,7,0,8.6,-6.55,split
+2026-11-25,157293,espn,ARIZ,Derek Dixon,Cameron Holmes,G,-0.8,7,0,-11.8,-6.55,both under
+2026-11-25,157293,em,XAV,Filip Borovicanin,Kalek House,G,-0.41,6,0,9.7,10.35,both over
+2026-11-25,157293,espn,XAV,Ruben Dominguez,Kalek House,G,-0.85,6,0,-8.1,10.35,split
+2026-11-25,157293,espn,XAV,Mike Nwoko,Nikos Chitikoudis,F-C,-0.62,6,0,15.0,14.75,both over
+2026-11-25,157293,em,MEM,Rihards Vavers,Brandin Cummings,W,-0.79,5,0,-6.5,6.85,split
+2026-11-25,157293,espn,MEM,Jayden Reid,Brandin Cummings,G,-0.31,5,0,18.4,6.85,both over
+2026-11-25,157293,espn,UVA,Thijs De Ridder,Kalu Anya,F-C,-0.41,7,0,-9.55,-8.1,both under
+2026-11-25,157293,em,ASU,Ben Defty,Filip Malesevic,B,-0.78,5,0,-6.45,-6.5,both under
+2026-11-25,157293,espn,ASU,Joel Foxwell,Bryce Ford,G,-0.96,5,0,19.95,10.95,both over
+2026-11-25,157293,espn,ASU,Ben Defty,Filip Malesevic,F-C,-0.78,5,0,-6.45,-6.5,both under
+2026-11-25,157293,espn,LSU,Donovan Dent,Divine Ugochukwu,G,-0.96,6,0,16.35,1.85,both over
+2026-11-25,157293,espn,LSU,Saliou Niang,Michael Ruzic,F-C,-0.66,6,0,-4.85,12.95,split
+2026-11-25,157293,em,MARQ,Sananda Fru,Joshua Clark,B,-0.71,6,0,4.15,-0.95,split
+2026-11-25,157293,em,MARQ,Royce Parham,Alex Egbuonu,W,-0.47,6,0,-3.3,-3.75,both under
+2026-11-25,157293,espn,MARQ,Sananda Fru,Joshua Clark,F-C,-0.71,6,0,4.15,-0.95,split
+2026-11-25,157293,espn,MARQ,Royce Parham,Joshua Clark,F-C,-0.55,6,0,-3.3,-0.95,both under
+2026-11-25,157293,espn,BYU,Jaxon Kohler,Brooks Bahr,F-C,-0.82,7,0,-3.8,12.8,split
+2026-11-25,157293,espn,BYU,Jaxon Kohler,Khadim Mboup,F-C,-0.74,7,0,-3.8,-1.25,both under
+2026-11-25,157293,espn,PROV,Ryan Mela,Gavin Hightower,G,-0.59,5,0,-7.2,-4.4,both under
+2026-11-25,157293,espn,PROV,Malik Mack,Gavin Hightower,G,-0.54,7,0,11.8,-4.4,split
+2026-11-25,157293,em,SCAR,Juan Fernandez,Davion Hannah,B,-0.76,5,0,-1.05,-7.9,both under
+2026-11-25,157293,espn,SCAR,Kory Mincy,Shane Blakeney,G,-0.61,5,0,-2.35,-0.35,both under
+2026-11-25,157293,espn,SCAR,Kory Mincy,Davion Hannah,G,-0.41,5,0,-2.35,-7.9,both under
+2026-11-25,157293,espn,PSU,Ivan Juric,Francois Wibaut,F-C,-0.57,6,0,11.65,-11.15,split
+2026-11-25,157295,espn,UCONN,Na'jai Hines,Oskar Giltay,F-C,-0.84,5,0,-6.4,-6.9,both under
+2026-11-25,157295,espn,UCONN,Na'jai Hines,Colben Landrew,F-C,-0.79,5,0,-6.4,3.65,split
+2026-11-25,157295,espn,UTST,Karson Templin,Kingston Tosi,F-C,-0.73,5,0,12.4,-4.05,split
+2026-11-25,157295,espn,UTST,Dallin Hall,AJ Bates,G,-0.72,5,0,-5.45,-2.75,both under
+2026-11-25,157295,espn,CLEM,David Fuchs,Chase Thompson,F-C,-0.57,7,0,20.45,17.15,both over
+2026-11-25,157295,espn,CLEM,Ace Buckner,Harris Reynolds,G,-0.56,5,0,6.7,-7.6,split
+2026-11-25,157295,em,WAKE,Gavin Placide,Gallagher Placide,B,-0.6,6,0,8.55,1.65,both over
+2026-11-25,157295,espn,WAKE,Gavin Placide,Gallagher Placide,F-C,-0.6,6,0,8.55,1.65,both over
+2026-11-25,157295,em,CSU,Kyle Jorgensen,Rashaan Mbemba,B,-0.94,7,0,-7.75,0.6,split
+2026-11-25,157295,em,CSU,Kyle Jorgensen,Jaden Ghoreishi,B,-0.75,5,0,-7.75,-7.9,both under
+2026-11-25,157295,espn,CSU,Kyle Jorgensen,Rashaan Mbemba,F-C,-0.94,7,0,-7.75,0.6,split
+2026-11-25,157295,espn,CSU,Justin Menard,Jojo McIver,G,-0.9,7,0,-13.5,10.05,split
+2026-11-25,157295,espn,DUKE,Cayden Boozer,Caleb Foster,G,-0.89,6,0,7.95,-4.65,split
+2026-11-25,157295,espn,DUKE,John Blackwell,Deron Rippey Jr.,G,-0.84,6,0,22.25,-7.9,split
+2026-11-25,157295,em,SMU,Jaden Toombs,Billy White III,W,-0.43,6,0,-13.95,-1.95,both under
+2026-11-25,157295,espn,SMU,Jermaine O'Neal Jr.,Johan Munch,F-C,-0.83,6,0,-22.2,10.55,split
+2026-11-25,157295,espn,SMU,Jaden Toombs,Johan Munch,F-C,-0.64,6,0,-13.95,10.55,split
+2026-11-25,157295,em,MSST,RJ Johnson,Tajuan Simpkins,G,-0.55,6,0,-12.85,2.8,split
+2026-11-25,157295,espn,MSST,Thomas Bassong,Tristan Reed,F-C,-0.86,6,0,7.15,6.2,both over
+2026-11-25,157295,espn,MSST,RJ Johnson,Tajuan Simpkins,G,-0.55,6,0,-12.85,2.8,split
+2026-11-25,157295,espn,VCU,Nyk Lewis,Ahmad Nowell,G,-0.72,6,0,-5.8,5.15,split
+2026-11-25,157295,em,UW,Steele Venters,LeJuan Watts,W,-0.3,6,0,-3.95,19.25,split
+2026-11-25,157295,espn,UW,Tayshawn Comer,LeJuan Watts,G,-0.66,6,0,6.2,19.25,both over
+2026-11-25,157295,espn,UW,Steele Venters,Parker Friedrichsen,G,-0.42,6,0,-3.95,-8.8,both under
