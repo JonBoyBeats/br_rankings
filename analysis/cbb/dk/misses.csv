@@ -399,3 +399,62 @@ date,draft_group,lens,subject,team,miss,detail,tags,driver
 2026-11-25,157295,own team,DUKE,DUKE,16.76,"summed 24% projected, 41% real",unexplained,
 2026-11-25,157295,own team,CLEM,CLEM,15.74,"summed 109% projected, 125% real",late news / scratch; Q status,
 2026-11-25,157295,own team,UCONN,UCONN,-14.47,"summed 55% projected, 40% real",unexplained,
+2026-11-26,157380,minutes,Caleb Gaskins,MIA,-26.7,"27 projected, 0 played",late news / scratch; newcomer / few games; blowout,
+2026-11-26,157380,minutes,Kai Rogers,OU,22.6,"10 projected, 33 played",unexplained,
+2026-11-26,157380,minutes,Jayden Hastings,CINCY,16.9,"8 projected, 25 played",unexplained,
+2026-11-26,157380,minutes,Luke Ertel,PUR,16.5,"14 projected, 30 played",newcomer / few games,
+2026-11-26,157380,minutes,Jadis Jones,USC,15.9,"5 projected, 21 played",unexplained,
+2026-11-26,157380,shape,ARK,ARK,-27.09,top-2 share ours 33% vs real 60%,unexplained,
+2026-11-26,157380,shape,ASU,ASU,-18.27,top-2 share ours 40% vs real 58%,Q status,
+2026-11-26,157380,shape,SCAR,SCAR,-17.86,top-2 share ours 32% vs real 50%,unexplained,
+2026-11-26,157380,Vegas,UCLA,UCLA,-49.45,"implied 80.0, ours 186, real 136",Q status,
+2026-11-26,157380,Vegas,UTST,UTST,-34.95,"implied 79.5, ours 184, real 149",unexplained,
+2026-11-26,157380,Vegas,USC,USC,-26.4,"implied 82.0, ours 185, real 159",unexplained,
+2026-11-26,157380,salary,Mikey Lewis,TEX,-4.5,"projection -23.3 off the salary line; 4.5 projected, 0.0 real; $7800; vs last 5 -",newcomer / few games; Q status,no recent games (below)
+2026-11-26,157380,salary,Tyler Hendricks,OU,-3.2,"projection -12.3 off the salary line; 3.2 projected, 0.0 real; $5400; vs last 5 minutes -1.4, EvanMiya +0.0, rate +0.9",Q status,price (DK avg) (below)
+2026-11-26,157380,salary,Ben Defty,ASU,-6.6,"projection -11.1 off the salary line; 12.6 projected, 6.0 real; $7000; vs last 5 minutes -1.7, EvanMiya +0.0, rate -0.2",unexplained,price (DK avg) (below)
+2026-11-26,157380,salary,Christian Collins,USC,10.5,"projection -10.5 off the salary line; 6.0 projected, 16.5 real; $5600; vs last 5 minutes -1.9, EvanMiya +0.0, rate +0.2",newcomer / few games,price (DK avg) (below)
+2026-11-26,157380,salary,Antione West Jr.,PUR,12.95,"projection +9.0 off the salary line; 18.8 projected, 31.8 real; $4300; vs last 5 minutes -1.4, EvanMiya +0.0, rate -2.6",newcomer / few games; salary-value spot; chalk concentration,price (DK avg) (above)
+2026-11-26,157380,salary,Elmarko Jackson,GU,-1.4,"projection +8.9 off the salary line; 24.4 projected, 23.0 real; $5400; vs last 5 minutes +0.3, EvanMiya +0.0, rate -2.3",salary-value spot,price (DK avg) (above)
+2026-11-26,157380,salary,DJ Wagner,UMD,8.55,"projection +8.8 off the salary line; 22.2 projected, 30.8 real; $5000; vs last 5 minutes -0.2, EvanMiya +0.0, rate +1.4",salary-value spot,price (DK avg) (above)
+2026-11-26,157380,salary,Jeremy Dent-Smith,STMRY,16.2,"projection +8.5 off the salary line; 17.8 projected, 34.0 real; $4200; vs last 5 minutes -0.2, EvanMiya +0.0, rate -0.8",salary-value spot,price (DK avg) (above)
+2026-11-26,157380,salary,Jack Benter,PUR,-11.3,"projection +8.5 off the salary line; 19.3 projected, 8.0 real; $4500; vs last 5 minutes -1.5, EvanMiya +0.0, rate -1.7",salary-value spot,price (DK avg) (above)
+2026-11-26,157380,salary,Solomon Callaghan,UTST,-24.15,"projection +8.4 off the salary line; 26.9 projected, 2.8 real; $6000; vs last 5 minutes +1.4, EvanMiya +0.0, rate -1.5",salary-value spot,price (DK avg) (above)
+2026-11-26,157380,salary,Tylen Riley,CINCY,-15.65,"projection -8.0 off the salary line; 23.4 projected, 7.8 real; $8500; vs last 5 minutes +0.7, EvanMiya +0.0, rate -2.7",unexplained,price (DK avg) (below)
+2026-11-26,157380,salary,Tamin Lipsey,ISU,-0.75,"projection -7.9 off the salary line; 22.0 projected, 21.2 real; $8200; vs last 5 minutes +0.0, EvanMiya +0.0, rate +0.0",unexplained,price (DK avg) (below)
+2026-11-26,157380,salary,Davion Thompson,ARK,-7.3,"projection +7.8 off the salary line; 23.3 projected, 16.0 real; $5400; vs last 5 minutes +0.5, EvanMiya +0.0, rate -6.3",newcomer / few games; salary-value spot; chalk concentration,rate (above)
+2026-11-26,157380,ownership,Antione West Jr.,PUR,21.09,"16% projected, 37% real (CBB $3K Pull Up Jumper [$1K to 1st] (Early))",newcomer / few games; salary-value spot; chalk concentration,
+2026-11-26,157380,ownership,Latrell Davis,SDSU,19.11,"23% projected, 42% real (CBB $3K Pull Up Jumper [$1K to 1st] (Early))",newcomer / few games; salary-value spot; chalk concentration,
+2026-11-26,157380,ownership,Tre Singleton,ISU,-11.96,"26% projected, 14% real (CBB $3K Pull Up Jumper [$1K to 1st] (Early))",unexplained,
+2026-11-26,157380,ownership,Daniel Jacobsen,PUR,10.55,"39% projected, 49% real (CBB $3K Pull Up Jumper [$1K to 1st] (Early))",salary-value spot; chalk concentration,
+2026-11-26,157380,ownership,Nikola Kusturica,UCLA,9.84,"14% projected, 24% real (CBB $3K Pull Up Jumper [$1K to 1st] (Early))",newcomer / few games,
+2026-11-26,157380,own team,PUR,PUR,31.37,"summed 73% projected, 104% real",unexplained,
+2026-11-26,157380,own team,GU,GU,-23.71,"summed 59% projected, 35% real",unexplained,
+2026-11-26,157380,own team,UMD,UMD,-14.51,"summed 64% projected, 50% real",Q status,
+2026-11-26,157382,minutes,Jermaine O'Neal Jr.,SMU,-24.4,"24 projected, 0 played",late news / scratch,
+2026-11-26,157382,minutes,Jaylin Stewart,SMU,19.8,"13 projected, 33 played",teammate out,
+2026-11-26,157382,minutes,Rowan Brumbaugh,SMU,18.4,"20 projected, 38 played",teammate out,
+2026-11-26,157382,minutes,Matt Gilhool,KSU,-16.9,"17 projected, 0 played",late news / scratch; newcomer / few games; Q status,
+2026-11-26,157382,minutes,Sean Stewart,ORE,-15.4,"15 projected, 0 played",late news / scratch,
+2026-11-26,157382,shape,SMU,SMU,-24.33,top-2 share ours 27% vs real 52%,late news / scratch,
+2026-11-26,157382,shape,DPU,DPU,-16.57,top-2 share ours 26% vs real 43%,Q status,
+2026-11-26,157382,shape,PITT,PITT,-15.42,top-2 share ours 37% vs real 52%,Q status,
+2026-11-26,157382,Vegas,TTU,TTU,-34.1,"implied 79.5, ours 165, real 130",unexplained,
+2026-11-26,157382,Vegas,KSU,KSU,33.7,"implied 78.0, ours 156, real 190",late news / scratch; Q status,
+2026-11-26,157382,Vegas,BAY,BAY,-25.75,"implied 75.0, ours 172, real 146",unexplained,
+2026-11-26,157382,salary,Rowan Brumbaugh,SMU,25.15,"projection -13.6 off the salary line; 17.1 projected, 42.2 real; $8200; vs last 5 minutes -0.7, EvanMiya +0.0, rate +0.4",teammate out,price (DK avg) (below)
+2026-11-26,157382,salary,Jermaine O'Neal Jr.,SMU,-20.7,"projection +11.9 off the salary line; 20.7 projected, 0.0 real; $4000; vs last 5 minutes +1.9, EvanMiya +0.0, rate -4.6",late news / scratch; salary-value spot,price (DK avg) (above)
+2026-11-26,157382,salary,Seth Trimble,UL,22.7,"projection +9.2 off the salary line; 25.3 projected, 48.0 real; $5400; vs last 5 minutes +0.9, EvanMiya +0.0, rate -3.8",salary-value spot; chalk concentration,price (DK avg) (above)
+2026-11-26,157382,salary,Billy White III,SMU,-3.75,"projection +7.2 off the salary line; 15.0 projected, 11.2 real; $3800; vs last 5 minutes -0.6, EvanMiya +0.0, rate -4.0",teammate out; newcomer / few games; salary-value spot,rate (above)
+2026-11-26,157382,salary,LJ Wells,UL,-2.35,"projection -6.8 off the salary line; 3.6 projected, 1.2 real; $4300; vs last 5 minutes -1.8, EvanMiya +0.0, rate +0.1",unexplained,price (DK avg) (below)
+2026-11-26,157382,salary,Michael Ruzic,LSU,2.1,"projection +6.7 off the salary line; 24.4 projected, 26.5 real; $5700; vs last 5 minutes -2.0, EvanMiya +0.0, rate -5.2",newcomer / few games; salary-value spot; chalk concentration,rate (above)
+2026-11-26,157382,salary,Noah Meeusen,DPU,6.2,"projection +6.4 off the salary line; 18.8 projected, 25.0 real; $4700; vs last 5 minutes -2.5, EvanMiya +0.0, rate -1.4",salary-value spot,minutes (above)
+2026-11-26,157382,salary,Jackson Shelstad,UL,-9.0,"projection +5.9 off the salary line; 23.0 projected, 14.0 real; $5600; vs last 5 minutes +0.4, EvanMiya +0.0, rate -0.5",salary-value spot,price (DK avg) (above)
+2026-11-26,157382,ownership,Jermaine O'Neal Jr.,SMU,-52.59,"64% projected, 11% real (CBB $3K Pull Up Jumper [$1K to 1st])",late news / scratch; salary-value spot,
+2026-11-26,157382,ownership,Robbie Avila,TCU,33.43,"6% projected, 39% real (CBB $3K Pull Up Jumper [$1K to 1st])",minutes role change; chalk concentration,
+2026-11-26,157382,ownership,Keyshawn Hall,STJN,32.59,"15% projected, 47% real (CBB $3K Pull Up Jumper [$1K to 1st])",chalk concentration,
+2026-11-26,157382,ownership,Jamichael Stillwell,TTU,26.16,"21% projected, 47% real (CBB $3K Pull Up Jumper [$1K to 1st])",chalk concentration,
+2026-11-26,157382,ownership,Amari Allen,BAMA,25.7,"31% projected, 57% real (CBB $3K Pull Up Jumper [$1K to 1st])",salary-value spot; chalk concentration,
+2026-11-26,157382,own team,SMU,SMU,-58.06,"summed 97% projected, 39% real",late news / scratch,
+2026-11-26,157382,own team,STJN,STJN,41.99,"summed 63% projected, 105% real",unexplained,
+2026-11-26,157382,own team,BAMA,BAMA,38.46,"summed 50% projected, 89% real",unexplained,
