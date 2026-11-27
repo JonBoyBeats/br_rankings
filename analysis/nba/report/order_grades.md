@@ -1,6 +1,6 @@
 # Order grades: which order to lean toward in each tier
 
-Results only; grading, not the button. Generated 2026-11-27T02:35-08:00, 34 nights.
+Results only; grading, not the button. Generated 2026-11-27T11:12-08:00, 34 nights.
 
 - **Tiers:** ADP is the floor: T1 to the ADP ladder's natural top break, T2 to ADP rank 15, T3 to 22, T4 to 30, T5 the rest among the top 44 by ADP or by projection (4-drafter nights 10/15/20/30); the projection moves a player up one tier when it puts him two or more tiers higher, never down; scratched players left out.
 - **Score:** How fast swap value drops down the order: minus the slope of each player's swap value (the window's real lineups that drafted a tier player, with him swapped into that slot, re-ranked in the real standings) on his place in the order. Positive: the order puts the better swaps first; near zero: the tier was close to even. Units: rate points per place in the order (top-10% or top-1% rate of the swapped lineups, in percentage points).
