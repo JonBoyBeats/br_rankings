@@ -20,10 +20,6 @@ Nothing.
 - card-turn12-reach: the read has strengthened: the register says LEAN against, this run reads RULE against (top-10% lift 0.69, 80% range 0.56-0.84 on 34 slates, 50421 teams, after the price-split check)
 - card-fallers:1/2 turn: the read has weakened: the register says RULE for, this run reads LEAN for (top-10% lift 1.27, 80% range 0.99-1.65 on 34 slates, 72954 teams, after the price-split check)
 - card-fallers:2/3 turn: the read has weakened: the register says RULE for, this run reads LEAN for (top-10% lift 1.15, 80% range 1.02-1.31 on 34 slates, 29776 teams, after the price-split check)
-- takes:ETR:pm: tracked split moved (ETR | PM): no lean last time, LEAN against now (top-10% lift 0.80, 80% range 0.68-0.99 on 14 slates, after the price-split check)
-- takes:ETR:both: tracked split moved (ETR | both): no lean last time, LEAN against now (top-10% lift 0.80, 80% range 0.68-0.99 on 14 slates, after the price-split check)
-- takes:OTHER:pm: tracked split moved (OTHER | PM): no lean last time, LEAN against now (top-10% lift 0.58, 80% range 0.38-0.92 on 14 slates, after the price-split check)
-- takes:OTHER:both: tracked split moved (OTHER | both): no lean last time, LEAN against now (top-10% lift 0.72, 80% range 0.50-0.99 on 15 slates, after the price-split check)
 
 Nothing moves without your yes.
 
@@ -219,18 +215,18 @@ The order grades (order_grades.json): the score is how fast swap value drops dow
 - Since the Q rules went in: kept his tier 95, below the cut (ADP fell 6+) 5, T1 to T2 5.
 - **Q picks, their fall, their teammates, and crowd swaps** (contest results, top 10% against the field's rate):
   - no Q pick: season 0.96x (0.94-0.99; 476714 teams); since 2026-11-13: 0.92x (0.85-0.97; 172842 teams)
-  - T3 played: season 1.36x (1.03-1.72; 11563 teams); since 2026-11-13: 1.43x (1.05-1.85; 6239 teams)
-  - any Q pick: season 1.19x (1.05-1.32; 87515 teams); since 2026-11-13: 1.39x (1.14-1.64; 36670 teams)
   - played: season 1.38x (1.18-1.57; 59613 teams); since 2026-11-13: 1.60x (1.32-1.88; 28498 teams)
   - T3: season 1.07x (0.89-1.31; 23211 teams); since 2026-11-13: 1.40x (1.03-1.77; 6616 teams)
+  - T3 played: season 1.36x (1.03-1.72; 11563 teams); since 2026-11-13: 1.43x (1.05-1.85; 6239 teams)
+  - any Q pick: season 1.19x (1.05-1.32; 87515 teams); since 2026-11-13: 1.39x (1.14-1.64; 36670 teams)
   - T5 sat: season 1.12x (0.87-1.21; 3691 teams); since 2026-11-13: 0.89x (0.73-1.07; 899 teams)
-  - sat: season 0.77x (0.70-0.83; 32448 teams); since 2026-11-13: 0.68x (0.53-0.81; 10439 teams)
   - T5: season 1.27x (0.99-1.58; 14750 teams); since 2026-11-13: 1.82x (0.96-2.40; 4069 teams)
+  - sat: season 0.77x (0.70-0.83; 32448 teams); since 2026-11-13: 0.68x (0.53-0.81; 10439 teams)
   - T4: season 1.04x (0.82-1.32; 13225 teams); since 2026-11-13: 1.19x (0.95-1.38; 6591 teams)
   - T4 sat: season 0.73x (0.57-0.96; 2390 teams); since 2026-11-13: 0.77x (894 teams)
   - T5 played: season 1.32x (0.97-1.80; 11069 teams); since 2026-11-13: 2.08x (1.03-2.73; 3178 teams)
-  - T2 played: season 1.57x (1.10-1.98; 21617 teams); since 2026-11-13: 1.73x (0.86-2.39; 9110 teams)
   - T2: season 1.31x (0.96-1.62; 32107 teams); since 2026-11-13: 1.33x (0.69-1.87; 15101 teams)
+  - T2 played: season 1.57x (1.10-1.98; 21617 teams); since 2026-11-13: 1.73x (0.86-2.39; 9110 teams)
   - T?: season 1.21x (0.58-1.64; 6344 teams); since 2026-11-13: 1.46x (0.56-1.83; 4493 teams)
   - T? sat: season 0.66x (0.51-1.00; 3753 teams); since 2026-11-13: 0.71x (0.43-1.37; 1904 teams)
   - T? played: season 1.93x (2675 teams); since 2026-11-13: 1.93x (2673 teams)
@@ -271,6 +267,6 @@ The order grades (order_grades.json): the score is how fast swap value drops dow
 
 ## Data
 
-- Contests: none listed for 2026-11-26; Results: no daily record for 2026-11-26 (newest 2026-11-25): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-26 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play NOT READY (due 4:30am); Q-tags polled 11:24pm
+- Contests: none listed for 2026-11-26; Results: no daily record for 2026-11-26 (newest 2026-11-25): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-26 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play ready 3:32am; Q-tags polled 3:23am
 
 Contest-result reads from the contest side: money_friday.json (generated 2026-11-27, 35 nights).
