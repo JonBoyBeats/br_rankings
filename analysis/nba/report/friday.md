@@ -215,12 +215,12 @@ The order grades (order_grades.json): the score is how fast swap value drops dow
 - Since the Q rules went in: kept his tier 95, below the cut (ADP fell 6+) 5, T1 to T2 5.
 - **Q picks, their fall, their teammates, and crowd swaps** (contest results, top 10% against the field's rate):
   - no Q pick: season 0.96x (0.94-0.99; 476714 teams); since 2026-11-13: 0.92x (0.85-0.97; 172842 teams)
+  - any Q pick: season 1.19x (1.05-1.32; 87515 teams); since 2026-11-13: 1.39x (1.14-1.64; 36670 teams)
+  - T3 played: season 1.36x (1.03-1.72; 11563 teams); since 2026-11-13: 1.43x (1.05-1.85; 6239 teams)
   - played: season 1.38x (1.18-1.57; 59613 teams); since 2026-11-13: 1.60x (1.32-1.88; 28498 teams)
   - T3: season 1.07x (0.89-1.31; 23211 teams); since 2026-11-13: 1.40x (1.03-1.77; 6616 teams)
-  - T3 played: season 1.36x (1.03-1.72; 11563 teams); since 2026-11-13: 1.43x (1.05-1.85; 6239 teams)
-  - any Q pick: season 1.19x (1.05-1.32; 87515 teams); since 2026-11-13: 1.39x (1.14-1.64; 36670 teams)
-  - T5 sat: season 1.12x (0.87-1.21; 3691 teams); since 2026-11-13: 0.89x (0.73-1.07; 899 teams)
   - T5: season 1.27x (0.99-1.58; 14750 teams); since 2026-11-13: 1.82x (0.96-2.40; 4069 teams)
+  - T5 sat: season 1.12x (0.87-1.21; 3691 teams); since 2026-11-13: 0.89x (0.73-1.07; 899 teams)
   - sat: season 0.77x (0.70-0.83; 32448 teams); since 2026-11-13: 0.68x (0.53-0.81; 10439 teams)
   - T4: season 1.04x (0.82-1.32; 13225 teams); since 2026-11-13: 1.19x (0.95-1.38; 6591 teams)
   - T4 sat: season 0.73x (0.57-0.96; 2390 teams); since 2026-11-13: 0.77x (894 teams)
@@ -231,8 +231,8 @@ The order grades (order_grades.json): the score is how fast swap value drops dow
   - T? sat: season 0.66x (0.51-1.00; 3753 teams); since 2026-11-13: 0.71x (0.43-1.37; 1904 teams)
   - T? played: season 1.93x (2675 teams); since 2026-11-13: 1.93x (2673 teams)
   - T3 sat: season 0.77x (0.69-0.86; 11799 teams); since 2026-11-13: 0.70x (377 teams)
-  - T1 played: season 1.43x (0.96-1.86; 5317 teams); since 2026-11-13: 1.80x (3348 teams)
   - T1: season 1.43x (0.96-1.86; 5317 teams); since 2026-11-13: 1.80x (3348 teams)
+  - T1 played: season 1.43x (0.96-1.86; 5317 teams); since 2026-11-13: 1.80x (3348 teams)
   - T4 played: season 1.11x (0.86-1.47; 10866 teams); since 2026-11-13: 1.27x (1.06-1.47; 5728 teams)
   - T2 sat: season 0.68x (0.54-0.78; 10940 teams); since 2026-11-13: 0.63x (0.45-0.79; 6415 teams)
   - T2 teammate of a Q player who sat: season 0.93x (0.85-1.02; 117681 teams); since 2026-11-13: 0.95x (0.80-1.14; 38438 teams)
@@ -267,6 +267,6 @@ The order grades (order_grades.json): the score is how fast swap value drops dow
 
 ## Data
 
-- Contests: none listed for 2026-11-26; Results: no daily record for 2026-11-26 (newest 2026-11-25): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-26 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play ready 3:32am; Q-tags polled 3:23am
+- Contests: none listed for 2026-11-26; Results: no daily record for 2026-11-26 (newest 2026-11-25): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-26 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play ready 3:32am; Q-tags polled 10:24am
 
 Contest-result reads from the contest side: money_friday.json (generated 2026-11-27, 35 nights).
