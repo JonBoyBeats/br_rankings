@@ -3256,6 +3256,9 @@ DRAW9_RE = re.compile(r"^(.*) (L[\d.]+ U\d+)$")
 GROUP_RE = re.compile(r"(^|: )at least \d+ of ", re.I)
 
 
+GREEN_IDEA_RE = re.compile(r"green(\s*[345])?", re.I)
+
+
 def lab_arms(b, team):
     """{(experiment, arm): (treatment indices, control indices)} among the bank's kept lineups. arm is "" for a and b,
     the cell ("L0.1 U1") for c."""
@@ -3263,6 +3266,10 @@ def lab_arms(b, team):
     kept = sorted(set(b["final"])) if b.get("final") else list(range(len(b["pool"])))
     st = b.get("tag_settings") or {}
     out = {}
+    # a green batch: the page's Set greens ("GREENS <game>" in the tag) or the operator's shortcut ideas "green 3/4/5"
+    # (every green player, at least 3 / 4 / 5 of them; "GREEN" alone on 11-25: the idea name in the build's groups; 2026-11-27)
+    gname = b.get("groups") or {}
+    green = lambda tag: "GREENS " in tag or bool(GREEN_IDEA_RE.fullmatch(str(gname.get(tag, "")).strip()))
     # a: STACK vs the plain game-group tags of the same games (GREENS lineups out of the control, 2026-11-24)
     games = {m.group(1) for k in kept for t in tags[k] for m in [STACK_RE.search(t)] if m}
     if games:
@@ -3276,21 +3283,22 @@ def lab_arms(b, team):
                     return True
             return False
         T = [k for k in kept if any(STACK_RE.search(t) for t in tags[k])]
-        C = [k for k in kept if not any(STACK_RE.search(t) or "GREENS " in t for t in tags[k]) and any(game_group(t) for t in tags[k])]
+        C = [k for k in kept if not any(STACK_RE.search(t) or green(t) for t in tags[k]) and any(game_group(t) for t in tags[k])]
         out[("a", "")] = (T, C)
     # b: SCANFLOOR vs group rules (GREENS lineups out of the control, 2026-11-24)
     T = [k for k in kept if any("SCANFLOOR" in t for t in tags[k])]
     if T:
         grp = lambda tag: any(GROUP_RE.search(r.get("label") or "") for r in (st.get(tag) or {}).get("conds") or [] if r.get("type") == "min")
-        C = [k for k in kept if not any("SCANFLOOR" in t or "GREENS " in t for t in tags[k]) and any(grp(t) for t in tags[k])]
+        C = [k for k in kept if not any("SCANFLOOR" in t or green(t) for t in tags[k]) and any(grp(t) for t in tags[k])]
         out[("b", "")] = (T, C)
     # d: GREENS game groups (the DK page's Set greens) vs the operator's own group rules ("at least N of", in a tag with
     # no GREENS / STACK / SCANFLOOR)
-    T = [k for k in kept if any("GREENS " in t for t in tags[k])]
+    T = [k for k in kept if any(green(t) for t in tags[k])]
     if T:
-        plain = lambda tag: not ("GREENS " in tag or STACK_RE.search(tag) or "SCANFLOOR" in tag)
+        # SCANFLOOR allowed in the control (2026-11-27): the green batches carry scan floors too, so the two sides match
+        plain = lambda tag: not (green(tag) or STACK_RE.search(tag))
         hand = lambda tag: plain(tag) and any(GROUP_RE.search(r.get("label") or "") and not r.get("greens") for r in (st.get(tag) or {}).get("conds") or [] if r.get("type") == "min")
-        C = [k for k in kept if not any("GREENS " in t for t in tags[k]) and any(hand(t) for t in tags[k])]
+        C = [k for k in kept if not any(green(t) for t in tags[k]) and any(hand(t) for t in tags[k])]
         out[("d", "")] = (T, C)
     # e: the Variants step's lineups against their own parents (one to one) and against the rest of the top tenth
     vm = lab_variants(b)

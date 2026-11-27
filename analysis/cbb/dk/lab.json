@@ -985,8 +985,8 @@
     {
       "id": "d",
       "name": "GREENS game groups vs hand-picked game groups",
-      "treatment": "kept lineups with a tag containing GREENS <AWAY@HOME> (drawn under the DK page's Set greens: at least N of a game's green players by the checks)",
-      "control": "kept lineups with no GREENS tag whose tag (itself free of GREENS, STACK and SCANFLOOR) holds the operator's own group rule: 'at least N of <players>' (template 5, the focus button, a scan team's Bank this, +set)",
+      "treatment": "kept lineups drawn as a green batch: a tag containing GREENS <AWAY@HOME> (the DK page's Set greens) or a tag whose idea is named GREEN / green 3 / green 4 / green 5 (the operator's shortcut: every green player, at least 3 / 4 / 5 of them)",
+      "control": "kept lineups with no green tag whose tag (free of green and STACK; SCANFLOOR allowed, since the green batches carry it too) holds the operator's own group rule: 'at least N of <players>'",
       "primary_metric": "mean real finish percentile difference (treatment - control), paired by slate and contest; top-10% rate shown",
       "planned_nights": 10,
       "pass": {
@@ -998,20 +998,58 @@
       "results": {
         "arms": {
           "all": {
-            "nights": 0,
-            "counted_for_verdict": 0,
+            "nights": 3,
+            "counted_for_verdict": 3,
             "planned": 10,
-            "diff": null,
-            "noise": null,
-            "ahead": 0,
-            "behind": 0,
-            "top10_diff": null,
+            "diff": 4.73,
+            "noise": 5.95,
+            "ahead": 2,
+            "behind": 1,
+            "top10_diff": 0.0849,
             "verdict": "running",
-            "slates": [],
+            "slates": [
+              {
+                "date": "2026-11-24",
+                "draft_group": "157024",
+                "counted": true,
+                "contests": 6,
+                "t_n": 260,
+                "c_n": 1094,
+                "diff": 16.19,
+                "top10_diff": 0.2622,
+                "t_pct": 83.47,
+                "c_pct": 67.28
+              },
+              {
+                "date": "2026-11-25",
+                "draft_group": "157293",
+                "counted": true,
+                "contests": 5,
+                "t_n": 609,
+                "c_n": 1172,
+                "diff": 1.75,
+                "top10_diff": 0.0105,
+                "t_pct": 41.81,
+                "c_pct": 40.06
+              },
+              {
+                "date": "2026-11-25",
+                "draft_group": "157295",
+                "counted": true,
+                "contests": 5,
+                "t_n": 522,
+                "c_n": 1162,
+                "diff": -3.76,
+                "top10_diff": -0.0179,
+                "t_pct": 46.75,
+                "c_pct": 50.51
+              }
+            ],
             "lookback": []
           }
         }
-      }
+      },
+      "amended": "2026-11-27, before any counted slate: GREEN / green 3/4/5 ideas count as treatment, and SCANFLOOR is allowed in the control (the operator)"
     },
     {
       "id": "e",
@@ -1428,5 +1466,5 @@
       }
     }
   ],
-  "updated_at": "2026-11-27T23:07:05Z"
+  "updated_at": "2026-11-27T23:23:58Z"
 }
