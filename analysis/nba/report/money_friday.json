@@ -5822,108 +5822,6 @@
       ]
      }
     },
-    "T3 played": {
-     "rule": "q-keeps-tier",
-     "since_dates": {
-      "am": "2026-11-14",
-      "pm": "2026-11-13"
-     },
-     "season": {
-      "teams": 11563,
-      "top1": [
-       1.54,
-       196,
-       126.9
-      ],
-      "top10": [
-       1.36,
-       1647,
-       1213.6
-      ],
-      "cash": [
-       1.3,
-       3249,
-       2492.3
-      ],
-      "range80_top10": [
-       1.03,
-       1.72
-      ]
-     },
-     "since": {
-      "teams": 6239,
-      "top1": [
-       1.61,
-       103,
-       63.9
-      ],
-      "top10": [
-       1.43,
-       910,
-       636.4
-      ],
-      "cash": [
-       1.42,
-       1932,
-       1361.9
-      ],
-      "range80_top10": [
-       1.05,
-       1.85
-      ]
-     }
-    },
-    "any Q pick": {
-     "rule": "q-keeps-tier",
-     "since_dates": {
-      "am": "2026-11-14",
-      "pm": "2026-11-13"
-     },
-     "season": {
-      "teams": 87515,
-      "top1": [
-       1.31,
-       1225,
-       937.1
-      ],
-      "top10": [
-       1.19,
-       10709,
-       9032.2
-      ],
-      "cash": [
-       1.17,
-       20774,
-       17704.8
-      ],
-      "range80_top10": [
-       1.05,
-       1.32
-      ]
-     },
-     "since": {
-      "teams": 36670,
-      "top1": [
-       1.58,
-       614,
-       388.6
-      ],
-      "top10": [
-       1.39,
-       5200,
-       3748.7
-      ],
-      "cash": [
-       1.35,
-       10623,
-       7886.8
-      ],
-      "range80_top10": [
-       1.14,
-       1.64
-      ]
-     }
-    },
     "played": {
      "rule": "q-keeps-tier",
      "since_dates": {
@@ -6026,6 +5924,108 @@
       ]
      }
     },
+    "T3 played": {
+     "rule": "q-keeps-tier",
+     "since_dates": {
+      "am": "2026-11-14",
+      "pm": "2026-11-13"
+     },
+     "season": {
+      "teams": 11563,
+      "top1": [
+       1.54,
+       196,
+       126.9
+      ],
+      "top10": [
+       1.36,
+       1647,
+       1213.6
+      ],
+      "cash": [
+       1.3,
+       3249,
+       2492.3
+      ],
+      "range80_top10": [
+       1.03,
+       1.72
+      ]
+     },
+     "since": {
+      "teams": 6239,
+      "top1": [
+       1.61,
+       103,
+       63.9
+      ],
+      "top10": [
+       1.43,
+       910,
+       636.4
+      ],
+      "cash": [
+       1.42,
+       1932,
+       1361.9
+      ],
+      "range80_top10": [
+       1.05,
+       1.85
+      ]
+     }
+    },
+    "any Q pick": {
+     "rule": "q-keeps-tier",
+     "since_dates": {
+      "am": "2026-11-14",
+      "pm": "2026-11-13"
+     },
+     "season": {
+      "teams": 87515,
+      "top1": [
+       1.31,
+       1225,
+       937.1
+      ],
+      "top10": [
+       1.19,
+       10709,
+       9032.2
+      ],
+      "cash": [
+       1.17,
+       20774,
+       17704.8
+      ],
+      "range80_top10": [
+       1.05,
+       1.32
+      ]
+     },
+     "since": {
+      "teams": 36670,
+      "top1": [
+       1.58,
+       614,
+       388.6
+      ],
+      "top10": [
+       1.39,
+       5200,
+       3748.7
+      ],
+      "cash": [
+       1.35,
+       10623,
+       7886.8
+      ],
+      "range80_top10": [
+       1.14,
+       1.64
+      ]
+     }
+    },
     "T5 sat": {
      "rule": "q-keeps-tier",
      "since_dates": {
@@ -6077,57 +6077,6 @@
       ]
      }
     },
-    "sat": {
-     "rule": "q-keeps-tier",
-     "since_dates": {
-      "am": "2026-11-14",
-      "pm": "2026-11-13"
-     },
-     "season": {
-      "teams": 32448,
-      "top1": [
-       0.68,
-       225,
-       329.7
-      ],
-      "top10": [
-       0.77,
-       2480,
-       3237.1
-      ],
-      "cash": [
-       0.82,
-       5010,
-       6092.5
-      ],
-      "range80_top10": [
-       0.7,
-       0.83
-      ]
-     },
-     "since": {
-      "teams": 10439,
-      "top1": [
-       0.48,
-       49,
-       102.5
-      ],
-      "top10": [
-       0.68,
-       685,
-       1007.5
-      ],
-      "cash": [
-       0.76,
-       1562,
-       2047.2
-      ],
-      "range80_top10": [
-       0.53,
-       0.81
-      ]
-     }
-    },
     "T5": {
      "rule": "q-keeps-tier",
      "since_dates": {
@@ -6176,6 +6125,57 @@
       "range80_top10": [
        0.96,
        2.4
+      ]
+     }
+    },
+    "sat": {
+     "rule": "q-keeps-tier",
+     "since_dates": {
+      "am": "2026-11-14",
+      "pm": "2026-11-13"
+     },
+     "season": {
+      "teams": 32448,
+      "top1": [
+       0.68,
+       225,
+       329.7
+      ],
+      "top10": [
+       0.77,
+       2480,
+       3237.1
+      ],
+      "cash": [
+       0.82,
+       5010,
+       6092.5
+      ],
+      "range80_top10": [
+       0.7,
+       0.83
+      ]
+     },
+     "since": {
+      "teams": 10439,
+      "top1": [
+       0.48,
+       49,
+       102.5
+      ],
+      "top10": [
+       0.68,
+       685,
+       1007.5
+      ],
+      "cash": [
+       0.76,
+       1562,
+       2047.2
+      ],
+      "range80_top10": [
+       0.53,
+       0.81
       ]
      }
     },
@@ -6329,57 +6329,6 @@
       ]
      }
     },
-    "T2 played": {
-     "rule": "q-keeps-tier",
-     "since_dates": {
-      "am": "2026-11-14",
-      "pm": "2026-11-13"
-     },
-     "season": {
-      "teams": 21617,
-      "top1": [
-       1.87,
-       486,
-       259.4
-      ],
-      "top10": [
-       1.57,
-       3840,
-       2443.5
-      ],
-      "cash": [
-       1.44,
-       6979,
-       4837.8
-      ],
-      "range80_top10": [
-       1.1,
-       1.98
-      ]
-     },
-     "since": {
-      "teams": 9110,
-      "top1": [
-       2.04,
-       210,
-       102.9
-      ],
-      "top10": [
-       1.73,
-       1701,
-       983.0
-      ],
-      "cash": [
-       1.57,
-       3208,
-       2047.5
-      ],
-      "range80_top10": [
-       0.86,
-       2.39
-      ]
-     }
-    },
     "T2": {
      "rule": "q-keeps-tier",
      "since_dates": {
@@ -6428,6 +6377,57 @@
       "range80_top10": [
        0.69,
        1.87
+      ]
+     }
+    },
+    "T2 played": {
+     "rule": "q-keeps-tier",
+     "since_dates": {
+      "am": "2026-11-14",
+      "pm": "2026-11-13"
+     },
+     "season": {
+      "teams": 21617,
+      "top1": [
+       1.87,
+       486,
+       259.4
+      ],
+      "top10": [
+       1.57,
+       3840,
+       2443.5
+      ],
+      "cash": [
+       1.44,
+       6979,
+       4837.8
+      ],
+      "range80_top10": [
+       1.1,
+       1.98
+      ]
+     },
+     "since": {
+      "teams": 9110,
+      "top1": [
+       2.04,
+       210,
+       102.9
+      ],
+      "top10": [
+       1.73,
+       1701,
+       983.0
+      ],
+      "cash": [
+       1.57,
+       3208,
+       2047.5
+      ],
+      "range80_top10": [
+       0.86,
+       2.39
       ]
      }
     },
@@ -8005,102 +8005,6 @@
      }
     },
     "reason": "the read has weakened: the register says RULE for, this run reads LEAN for (top-10% lift 1.15, 80% range 1.02-1.31 on 34 slates, 29776 teams, after the price-split check)"
-   },
-   {
-    "id": "takes:ETR:pm",
-    "current_money": "none: a new split",
-    "proposed": "LEAN against",
-    "read": {
-     "lift": {
-      "lift10": 0.8,
-      "range80": [
-       0.68,
-       0.99
-      ],
-      "teams": 115515,
-      "slates": 14,
-      "after_price_check": true
-     },
-     "mine": {
-      "teams": 388,
-      "top10_ratio": 0.7,
-      "top1_ratio": 0.0,
-      "finish_pct": 49.3
-     }
-    },
-    "reason": "tracked split moved (ETR | PM): no lean last time, LEAN against now (top-10% lift 0.80, 80% range 0.68-0.99 on 14 slates, after the price-split check)"
-   },
-   {
-    "id": "takes:ETR:both",
-    "current_money": "none: a new split",
-    "proposed": "LEAN against",
-    "read": {
-     "lift": {
-      "lift10": 0.8,
-      "range80": [
-       0.68,
-       0.99
-      ],
-      "teams": 115515,
-      "slates": 14,
-      "after_price_check": true
-     },
-     "mine": {
-      "teams": 388,
-      "top10_ratio": 0.7,
-      "top1_ratio": 0.0,
-      "finish_pct": 49.3
-     }
-    },
-    "reason": "tracked split moved (ETR | both): no lean last time, LEAN against now (top-10% lift 0.80, 80% range 0.68-0.99 on 14 slates, after the price-split check)"
-   },
-   {
-    "id": "takes:OTHER:pm",
-    "current_money": "none: a new split",
-    "proposed": "LEAN against",
-    "read": {
-     "lift": {
-      "lift10": 0.58,
-      "range80": [
-       0.38,
-       0.92
-      ],
-      "teams": 48687,
-      "slates": 14,
-      "after_price_check": true
-     },
-     "mine": {
-      "teams": 140,
-      "top10_ratio": 1.07,
-      "top1_ratio": 2.14,
-      "finish_pct": 49.7
-     }
-    },
-    "reason": "tracked split moved (OTHER | PM): no lean last time, LEAN against now (top-10% lift 0.58, 80% range 0.38-0.92 on 14 slates, after the price-split check)"
-   },
-   {
-    "id": "takes:OTHER:both",
-    "current_money": "none: a new split",
-    "proposed": "LEAN against",
-    "read": {
-     "lift": {
-      "lift10": 0.72,
-      "range80": [
-       0.5,
-       0.99
-      ],
-      "teams": 68057,
-      "slates": 15,
-      "after_price_check": true
-     },
-     "mine": {
-      "teams": 208,
-      "top10_ratio": 1.15,
-      "top1_ratio": 2.4,
-      "finish_pct": 49.9
-     }
-    },
-    "reason": "tracked split moved (OTHER | both): no lean last time, LEAN against now (top-10% lift 0.72, 80% range 0.50-0.99 on 15 slates, after the price-split check)"
    }
   ],
   "held_not_proposed": [
