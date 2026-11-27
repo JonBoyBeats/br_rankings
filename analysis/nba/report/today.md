@@ -1,4 +1,4 @@
-# NBA morning report, Thursday 11/26
+# NBA morning report, Friday 11/27
 
 *Last night: Wednesday 11/25's main slate.*
 
@@ -6,7 +6,7 @@
 
 ## Front page
 
-Last night's main slate had 8 games, 3 of them blowouts (NY by 19 over CLE; GS by 19 over SAC; MEM by 18 over LAC). The biggest nights against ETR's number among drafted players: Jaden McDaniels 28 points over; Deni Avdija 24 points over; Josh Hart 23 points over. Something in the pipeline needs a look: Today's inputs: our Proj ready 11:23pm; chance to play NOT READY (due 4:30am); Q-tags polled 10:23am. (The written front page comes with the morning report; this is the automatic summary.)
+Last night's main slate had 8 games, 3 of them blowouts (NY by 19 over CLE; GS by 19 over SAC; MEM by 18 over LAC). The biggest nights against ETR's number among drafted players: Jaden McDaniels 28 points over; Deni Avdija 24 points over; Josh Hart 23 points over. Something in the pipeline needs a look: Contests: none listed for 2026-11-26; Results: no daily record for 2026-11-26 (newest 2026-11-25): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-26 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play NOT READY (due 4:30am); Q-tags polled 11:24pm. Today: Fri Main, lock 3:52 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
 
 ## T1
 
@@ -106,6 +106,8 @@ No moves against the button here last night.
 
 **Your Q moves.** None last night.
 
+**Today's Questionable players.** Joel Embiid (T4 on the ladders, 96% to play): if he sits, VJ Edgecombe; LaMelo Ball (T4 on the ladders, 96% to play): if he sits, Ayo Dosunmu, Rudy Gobert; Austin Reaves (T5 on the ladders, 96% to play): if he sits, Walker Kessler, Ziaire Williams.
+
 ## Back page
 
 
@@ -116,7 +118,7 @@ No moves against the button here last night.
 
 **Gallagher's Bad-matchup arrows** (published before your lock). Season: 211 arrows, -1.4 against ETR's final on average, 54% under it.
 
-**Data.** Today's inputs: our Proj ready 11:23pm; chance to play NOT READY (due 4:30am); Q-tags polled 10:23am.
+**Data.** Contests: none listed for 2026-11-26; Results: no daily record for 2026-11-26 (newest 2026-11-25): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-26 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play NOT READY (due 4:30am); Q-tags polled 11:24pm.
 
 ---
 
