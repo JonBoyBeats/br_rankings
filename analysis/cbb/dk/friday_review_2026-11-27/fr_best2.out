@@ -1,0 +1,4 @@
+since 11-21 top-value n 90 green 20 score mean 3.98
+top-value with min_proj < 20: 67/180; minutes +8 or more over proj: 91; actual min >= 30: 105
+top-value whose ppm beat proj by 0.3+: 86; both min +5 and ppm +0.2: 78
+base rates fp>=10: bank 0.088 kept 0.089 ours 0.093

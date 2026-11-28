@@ -1,0 +1,23 @@
+2026-11-21 157017 198024645 13 users 5 real own_sum median 315 sub5 0.70 | sim median at 0/0.5/0.8/1.0: 254 / 305 / 324 / 334
+2026-11-22 157019 198036494 13 users 8 real own_sum median 265 sub5 0.38 | sim median at 0/0.5/0.8/1.0: 224 / 270 / 294 / 300
+2026-11-23 157021 198086687 35 users 23 real own_sum median 233 sub5 0.43 | sim median at 0/0.5/0.8/1.0: 237 / 289 / 309 / 314
+2026-11-23 157021 198086688 7 users 6 real own_sum median 188 sub5 0.50 | sim median at 0/0.5/0.8/1.0: 237 / 289 / 309 / 314
+2026-11-23 157021 198086692 13 users 6 real own_sum median 247 sub5 0.33 | sim median at 0/0.5/0.8/1.0: 237 / 289 / 309 / 314
+2026-11-24 157024 198156979 13 users 8 real own_sum median 178 sub5 0.88 | sim median at 0/0.5/0.8/1.0: 173 / 223 / 240 / 249
+2026-11-25 157293 198181552 13 users 4 real own_sum median 238 sub5 0.38 | sim median at 0/0.5/0.8/1.0: 193 / 255 / 279 / 286
+2026-11-25 157295 198188320 13 users 5 real own_sum median 228 sub5 0.70 | sim median at 0/0.5/0.8/1.0: 188 / 232 / 252 / 259
+2026-11-26 157380 198230480 13 users 6 real own_sum median 167 sub5 1.00 | sim median at 0/0.5/0.8/1.0: 112 / 141 / 156 / 162
+2026-11-26 157382 198230492 13 users 6 real own_sum median 204 sub5 0.58 | sim median at 0/0.5/0.8/1.0: 175 / 226 / 245 / 254
+held out 198024645 c* = 0.3 err at 0.8 9.3, at c* 34.3
+held out 198036494 c* = 0.3 err at 0.8 28.8, at c* 19.6
+held out 198086687 c* = 0.4 err at 0.8 75.8, at c* 37.6
+held out 198086688 c* = 0.4 err at 0.8 120.6, at c* 82.4
+held out 198086692 c* = 0.4 err at 0.8 61.4, at c* 23.2
+held out 198156979 c* = 0.4 err at 0.8 62.3, at c* 28.4
+held out 198181552 c* = 0.3 err at 0.8 41.2, at c* 19.3
+held out 198188320 c* = 0.3 err at 0.8 23.6, at c* 20.8
+held out 198230480 c* = 0.3 err at 0.8 11.7, at c* 41.0
+held out 198230492 c* = 0.4 err at 0.8 41.4, at c* 6.5
+held-out gain (own_sum median abs err, 0.8 minus refit): +16.3 ± 8.3 (10), better on 8, worse on 2
+pooled best c: 0.4 {0.0: -23.7, 0.1: -18.4, 0.2: -11.7, 0.3: -2.5, 0.4: 10.0, 0.5: 25.4, 0.6: 34.1, 0.7: 42.3, 0.8: 45.3, 0.9: 51.1, 1.0: 52.2}
+signed mean (sim - real) own_sum median at 0.8: +45.3; sub5 sim-real at 0.8 -0.38

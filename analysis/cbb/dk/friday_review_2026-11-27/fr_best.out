@@ -1,0 +1,41 @@
+TOP-10 VALUE n=180 | salary $5362 | actual 34.0 vs ours 18.4 (act-ours +15.6) | min 29.9 vs proj 21.9 | ppm 1.15 vs proj 0.83 | own raw 16.4, field real 15.7 | checks score 3.82, green 32/180 | our proj value rank median 28 | bank share 0.128 kept 0.142 (n with build 140) | in our entries share 0.150 (slates with entries 160), held by >=1 of our lineups 77/160
+TOP-10 POINTS n=180 | salary $7248 | actual 39.2 vs ours 25.7 (act-ours +13.5) | min 33.6 vs proj 27.7 | ppm 1.18 vs proj 0.93 | own raw 21.8, field real 20.2 | checks score 4.13, green 41/180 | our proj value rank median 25 | bank share 0.170 kept 0.186 (n with build 140) | in our entries share 0.192 (slates with entries 160), held by >=1 of our lineups 94/160
+
+base rates, all players fp_dk>=10 with a score:
+greens: 151, mean actual value 4.15; non-greens 1270, mean 3.02
+5x hit rate greens 0.305, non-greens 0.150
+salary 0-5000: share of top-10 value 0.46; share of the fp>=10 pool 0.33
+salary 5000-7000: share of top-10 value 0.38; share of the fp>=10 pool 0.44
+salary 7000-99999: share of top-10 value 0.16; share of the fp>=10 pool 0.23
+
+per-slate top-value list (name, sal, act, value, ours fp, min proj/actual, own raw/real, score, green, bank, kept, ours):
+2026-11-16_156660 | Mantas Juzenas 6700 51.0 7.61 31.4 27.8/37 65.1/77.6 4.29 False 0.670 0.835 0.89
+2026-11-16_156660 | Kareem Stagg 3600 26.0 7.22 14.7 18.8/23 14.3/27.9 3.63 False 0.124 0.113 0.09
+2026-11-16_156660 | Isaiah Howard 3900 27.5 7.05 10.9 18.3/29 2.4/2.9 3.75 False 0.001 0.000 0.00
+2026-11-16_156660 | Isaiah Miranda 4900 34.2 6.99 14.4 15.4/27 1.8/14.8 3.74 False 0.012 0.001 0.00
+2026-11-16_156660 | Dennis Johnson III 4500 30.8 6.83 9.3 19.8/36 0.0/1.4 3.54 False 0.000 0.000 0.00
+2026-11-16_156660 | Vangelis Zougris 5600 37.5 6.70 19.4 19.5/32 12.6/24.1 3.58 False 0.074 0.033 0.00
+2026-11-16_156660 | Donovan Williams Jr. 3000 19.8 6.58 5.5 8.8/14 0.0/0.2 2.69 False 0.000 0.000 0.00
+2026-11-16_156660 | Malachi Moreno 8200 53.0 6.46 28.5 21.2/31 15.3/17.0 3.66 False 0.341 0.313 0.04
+2026-11-16_156660 | Zoom Diallo 6300 39.8 6.31 22.5 20.4/32 10.3/17.8 3.80 False 0.234 0.172 0.04
+2026-11-16_156660 | Freddie Dilione V 3500 21.5 6.14 13.4 17.3/19 2.5/3.7 3.38 False 0.065 0.090 0.07
+2026-11-17_156662 | Urban Klavzar 4800 29.2 6.09 12.5 18.3/31 4.0/- 3.30 False - - -
+2026-11-17_156662 | Lino Mark 5700 32.0 5.61 18.2 22.7/30 45.8/- 3.61 False - - -
+2026-11-17_156662 | Braeden Shrewsberry 5900 30.2 5.13 19.3 29.1/33 50.8/- 4.20 False - - -
+2026-11-17_156662 | Denzel Aberdeen 5300 26.8 5.05 13.4 22.4/30 1.2/- 3.75 False - - -
+2026-11-17_156662 | Christian Gurdak 6300 30.2 4.80 19.5 21.1/33 59.8/- 3.31 False - - -
+2026-11-17_156662 | Alex Condon 9000 43.0 4.78 27.0 24.9/33 23.7/- 3.98 False - - -
+2026-11-17_156662 | Chendall Weaver 4900 22.5 4.59 11.8 13.0/27 12.1/- 2.69 False - - -
+2026-11-17_156662 | Jonathan Sanderson 4500 19.5 4.33 9.9 14.4/21 0.5/- 2.69 False - - -
+2026-11-17_156662 | Brady Koehler 6200 26.2 4.23 23.2 23.9/32 76.3/- 3.68 False - - -
+2026-11-17_156662 | Darren Buchanan Jr. 5100 20.2 3.97 14.5 22.3/28 13.0/- 3.53 False - - -
+2026-11-17_156663 | Davion Thompson 3800 39.0 10.26 17.1 23.9/34 29.9/42.0 3.66 False 0.040 0.064 0.09
+2026-11-17_156663 | RJ Johnson 4700 36.2 7.71 18.0 22.7/35 1.5/4.4 3.58 False 0.100 0.082 0.04
+2026-11-17_156663 | Leroy Blyden Jr. 5000 37.8 7.55 21.9 25.0/24 6.7/13.6 3.87 False 0.143 0.171 0.18
+2026-11-17_156663 | Jalil Bethea 3600 26.2 7.29 10.3 13.7/34 0.2/0.2 3.31 False 0.030 0.009 0.00
+2026-11-17_156663 | Darren Harris 4300 30.2 7.03 17.1 24.6/34 13.3/11.4 3.96 False 0.039 0.052 0.06
+2026-11-17_156663 | Quentin Coleman 6900 48.0 6.96 26.1 24.2/35 39.1/27.3 3.77 False 0.156 0.221 0.30
+2026-11-17_156663 | Naithan George 6600 45.5 6.89 23.5 26.4/38 7.0/9.6 4.21 False 0.149 0.133 0.09
+2026-11-17_156663 | Andrej Stojakovic 8900 57.0 6.40 27.8 27.4/34 9.0/4.3 3.95 False 0.192 0.158 0.06
+2026-11-17_156663 | Riley Kugel 3900 24.5 6.28 14.2 17.8/31 0.4/7.3 3.15 False 0.024 0.020 0.01
+2026-11-17_156663 | King Grace 4300 27.0 6.28

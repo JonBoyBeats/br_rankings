@@ -1,0 +1,131 @@
+entries 48884, users 3558, slates 16, contests 84
+
+qualified users (>= 5 slates, >= 10 entries): 729
+
+== multi (20-150): 76 users; ranked by mean finish pct over slates (90% bootstrap band over slates)
+  1 mrrodgershood12      slates  8 entries  203 | pct 76.6 [66.0, 85.9] | top10 0.325 top1 0.261 | ROI +219% | {'main': 181, 'flagship': 22}
+  2 clarkb17             slates 12 entries   96 | pct 70.8 [61.1, 79.8] | top10 0.542 top1 0.000 | ROI -46% | {'flagship': 55, 'main': 40, 'qualifier/small': 1}
+  3 mattryan858          slates  5 entries  120 | pct 70.3 [53.9, 86.7] | top10 0.258 top1 0.042 | ROI +36% | {'flagship': 36, 'main': 84}
+  4 Johnny_Great         slates  9 entries  365 | pct 68.4 [59.6, 77.1] | top10 0.162 top1 0.003 | ROI +9% | {'main': 301, 'flagship': 63, 'qualifier/small': 1}
+  5 zachj7               slates 13 entries  522 | pct 68.1 [60.5, 76.0] | top10 0.272 top1 0.013 | ROI +41% | {'flagship': 208, 'main': 306, 'qualifier/small': 8}
+  6 bryan34k             slates  9 entries  386 | pct 68.0 [61.4, 75.0] | top10 0.249 top1 0.010 | ROI +13% | {'main': 282, 'flagship': 103, 'qualifier/small': 1}
+  7 kozy6813             slates  9 entries  147 | pct 66.6 [57.8, 74.3] | top10 0.204 top1 0.048 | ROI +187% | {'main': 140, 'flagship': 5, 'qualifier/small': 2}
+  8 7isaunit             slates 13 entries  356 | pct 65.9 [53.1, 77.5] | top10 0.275 top1 0.000 | ROI +8% | {'main': 261, 'flagship': 92, 'qualifier/small': 3}
+  9 Greenie4020          slates 11 entries   64 | pct 65.5 [55.5, 75.4] | top10 0.172 top1 0.000 | ROI -28% | {'main': 62, 'flagship': 2}
+ 10 WaveyJones18         slates 10 entries  281 | pct 65.3 [60.1, 70.7] | top10 0.203 top1 0.018 | ROI +25% | {'main': 240, 'flagship': 41}
+ 11 sboynton10           slates 13 entries  735 | pct 65.0 [54.5, 75.2] | top10 0.227 top1 0.001 | ROI -7% | {'flagship': 259, 'main': 460, 'qualifier/small': 16}
+ 12 i_just_guessed       slates 13 entries  263 | pct 63.8 [57.5, 69.7] | top10 0.171 top1 0.034 | ROI +47% | {'flagship': 23, 'main': 240}
+ 13 jrcooper07           slates  7 entries  134 | pct 63.0 [54.2, 71.4] | top10 0.231 top1 0.007 | ROI +25% | {'main': 100, 'flagship': 34}
+ 14 atfrost              slates 10 entries  351 | pct 62.7 [52.4, 73.8] | top10 0.074 top1 0.074 | ROI +233% | {'main': 314, 'flagship': 37}
+ 15 Jaycob87             slates 10 entries   76 | pct 61.1 [49.8, 73.1] | top10 0.184 top1 0.026 | ROI +85% | {'main': 69, 'flagship': 6, 'qualifier/small': 1}
+ 53 us                   slates 16 entries  711 | pct 51.3 [45.2, 57.4] | top10 0.115 top1 0.018 | ROI +0% | {'flagship': 150, 'main': 543, 'qualifier/small': 18}
+
+== few (2-19): 381 users; ranked by mean finish pct over slates (90% bootstrap band over slates)
+  1 sdgator4949          slates  9 entries   81 | pct 72.3 [61.6, 82.2] | top10 0.185 top1 0.000 | ROI -7% | {'main': 77, 'flagship': 4}
+  2 avg_gam_tre          slates  5 entries   63 | pct 70.9 [57.5, 84.3] | top10 0.206 top1 0.000 | ROI -33% | {'flagship': 13, 'main': 50}
+  3 dudju                slates  5 entries   22 | pct 69.5 [60.7, 77.3] | top10 0.000 top1 0.000 | ROI -71% | {'flagship': 9, 'main': 13}
+  4 brianbrandon71       slates 10 entries   13 | pct 69.4 [60.9, 77.8] | top10 0.231 top1 0.000 | ROI -27% | {'main': 13}
+  5 werner_1             slates 10 entries   67 | pct 69.1 [62.5, 75.8] | top10 0.075 top1 0.015 | ROI -70% | {'main': 43, 'flagship': 18, 'qualifier/small': 6}
+  6 tommykramer9         slates  9 entries   13 | pct 69.0 [61.6, 75.8] | top10 0.000 top1 0.000 | ROI -38% | {'main': 13}
+  7 Melted               slates  5 entries   13 | pct 68.4 [49.7, 87.1] | top10 0.231 top1 0.000 | ROI +30% | {'main': 7, 'flagship': 6}
+  8 ndudi                slates 14 entries   63 | pct 67.5 [56.9, 76.5] | top10 0.238 top1 0.048 | ROI +442% | {'flagship': 33, 'main': 29, 'qualifier/small': 1}
+  9 Milo_frontel         slates 15 entries  140 | pct 67.1 [60.1, 74.1] | top10 0.157 top1 0.021 | ROI -27% | {'flagship': 66, 'main': 68, 'qualifier/small': 6}
+ 10 jenner150            slates 15 entries   34 | pct 66.9 [59.1, 74.3] | top10 0.147 top1 0.029 | ROI -61% | {'flagship': 30, 'qualifier/small': 4}
+ 11 Br0wbeater           slates  8 entries   10 | pct 66.3 [48.8, 82.3] | top10 0.200 top1 0.100 | ROI +215% | {'main': 10}
+ 12 jobo513              slates  7 entries   34 | pct 66.2 [57.1, 77.5] | top10 0.088 top1 0.029 | ROI +137% | {'main': 34}
+ 13 jkoshuta             slates 11 entries   28 | pct 65.0 [56.2, 72.9] | top10 0.071 top1 0.000 | ROI +5% | {'main': 19, 'flagship': 9}
+ 14 jet0360              slates 13 entries   25 | pct 64.7 [53.7, 76.3] | top10 0.160 top1 0.040 | ROI +107% | {'main': 21, 'flagship': 4}
+ 15 coachkimp            slates 12 entries   43 | pct 64.6 [48.9, 79.3] | top10 0.233 top1 0.000 | ROI +36% | {'main': 40, 'flagship': 3}
+
+== single: 272 users; ranked by mean finish pct over slates (90% bootstrap band over slates)
+  1 WriteHook            slates 11 entries   12 | pct 76.3 [68.9, 83.8] | top10 0.333 top1 0.000 | ROI +1% | {'flagship': 11, 'qualifier/small': 1}
+  2 cedarpip             slates 11 entries   29 | pct 73.0 [66.3, 79.6] | top10 0.069 top1 0.000 | ROI -34% | {'flagship': 14, 'main': 14, 'qualifier/small': 1}
+  3 mm87505              slates 10 entries   10 | pct 70.7 [57.4, 82.8] | top10 0.200 top1 0.000 | ROI +40% | {'main': 6, 'flagship': 4}
+  4 49ers4l1f3           slates  9 entries   19 | pct 69.4 [58.2, 79.5] | top10 0.053 top1 0.000 | ROI -53% | {'flagship': 10, 'main': 9}
+  5 mgm11                slates  5 entries   14 | pct 68.9 [53.8, 82.4] | top10 0.071 top1 0.000 | ROI -24% | {'flagship': 9, 'main': 4, 'qualifier/small': 1}
+  6 jmehta17             slates 12 entries   25 | pct 68.7 [54.7, 81.6] | top10 0.320 top1 0.000 | ROI +24% | {'flagship': 13, 'main': 12}
+  7 AllyAngel44          slates 10 entries   10 | pct 68.2 [55.3, 80.2] | top10 0.300 top1 0.000 | ROI +10% | {'main': 9, 'flagship': 1}
+  8 Playonplayah         slates 14 entries   14 | pct 66.2 [55.5, 75.6] | top10 0.071 top1 0.000 | ROI -7% | {'main': 10, 'flagship': 4}
+  9 dreese123            slates 13 entries   15 | pct 64.6 [52.9, 75.9] | top10 0.200 top1 0.067 | ROI +271% | {'main': 10, 'flagship': 5}
+ 10 brandonbeene12       slates  5 entries   10 | pct 64.6 [46.7, 82.4] | top10 0.200 top1 0.200 | ROI +269% | {'main': 9, 'flagship': 1}
+ 11 gillyunc0542         slates 11 entries   11 | pct 64.3 [54.0, 74.3] | top10 0.091 top1 0.000 | ROI -18% | {'main': 9, 'flagship': 2}
+ 12 hollywood18327       slates 14 entries   14 | pct 64.2 [52.0, 75.0] | top10 0.214 top1 0.000 | ROI +14% | {'main': 10, 'flagship': 4}
+ 13 Gboyle22             slates  7 entries   10 | pct 64.1 [49.0, 78.7] | top10 0.100 top1 0.000 | ROI -24% | {'flagship': 8, 'main': 2}
+ 14 ravenjac80           slates 10 entries   10 | pct 63.6 [45.0, 80.6] | top10 0.400 top1 0.000 | ROI +70% | {'main': 9, 'flagship': 1}
+ 15 yeafool66            slates 10 entries   10 | pct 63.2 [48.4, 76.1] | top10 0.200 top1 0.000 | ROI +10% | {'main': 8, 'flagship': 2}
+
+field mean pct 50.2 (by construction about 50)
+qualified users whose 90% band contains 50: 516 of 729
+
+top 10 by pct: ['mrrodgershood12', 'WriteHook', 'cedarpip', 'sdgator4949', 'avg_gam_tre', 'clarkb17', 'mm87505', 'mattryan858', 'dudju', 'brianbrandon71'] 
+clear (band above 50): ['mrrodgershood12', 'WriteHook', 'cedarpip', 'sdgator4949', 'avg_gam_tre', 'clarkb17', 'mm87505', 'mattryan858', 'dudju', 'brianbrandon71', '49ers4l1f3', 'werner_1', 'tommykramer9', 'mgm11', 'jmehta17', 'Johnny_Great', 'AllyAngel44', 'zachj7', 'bryan34k', 'ndudi', 'Milo_frontel', 'jenner150', 'kozy6813', 'jobo513', 'Playonplayah', '7isaunit', 'Greenie4020', 'WaveyJones18', 'sboynton10', 'jkoshuta', 'jet0360', 'dreese123', 'gillyunc0542', 'hollywood18327', 'i_just_guessed', 'Bones1212', 'jmost43', 'Malamoki', 'Redskinned26', 'jrcooper07', 'mrstb', 'Gj001', 'ArmedRodgery21', 'atfrost', 'hoohalfbob', 'ariric864', 'liltuna54', 'brockhestdalen701', 'grifflietzau', 'LakeBum23', 'rynomite1', 'easternmh', 'JERKER19', 'trombley34', 'scrub69', 'beng4800', 'Thickology', 'dbaggot3', 'demonnat', 'jusnit', 'mconnolly88', 'jimmypop24', 'wsdp', 'DFS_HofbrauKing', 'Jeeez327', 'IceHoya', 'ed2tall', 'duvalx5959', 'gbadertscher', 'technique207', 'cjcarlto', 'bulldog0202']
+
+traits per lineup (mean over entries): group | own_sum | sub10 | sal_left | max_game | max_team | stack21 | stack32 | dup | punts | big | chalk | topval
+top 10   n=  649 | 286.55 | 0.67 | 145.15 | 2.88 | 2.02 | 0.67 | 0.01 | 10.93 | 0.16 | 0.94 | 6.77 | 2.10
+field    n=48884 | 232.56 | 1.69 | 158.88 | 3.19 | 2.32 | 0.68 | 0.07 | 2.01 | 0.21 | 0.81 | 5.52 | 1.50
+us       n=  711 | 222.29 | 1.77 | 88.05 | 3.34 | 2.50 | 0.70 | 0.06 | 0.09 | 0.08 | 0.63 | 5.38 | 1.49
+
+per slate, group minus field in the SAME contests (mean ± SE over slates, positive on k):
+own_sum   top10-field +62.65 ± 7.06 (16), +16 | us-field -5.08 ± 5.13 (16), +7
+sub10     top10-field -1.08 ± 0.09 (16), +0 | us-field +0.03 ± 0.10 (16), +7
+sal_left  top10-field -39.03 ± 22.91 (16), +6 | us-field -72.07 ± 13.68 (16), +2
+max_game  top10-field -0.26 ± 0.07 (16), +3 | us-field +0.22 ± 0.15 (16), +11
+max_team  top10-field -0.22 ± 0.08 (16), +3 | us-field +0.17 ± 0.10 (16), +11
+stack21   top10-field +0.03 ± 0.06 (16), +11 | us-field +0.06 ± 0.07 (16), +10
+stack32   top10-field -0.07 ± 0.01 (16), +0 | us-field +0.02 ± 0.03 (16), +5
+dup       top10-field +6.31 ± 1.96 (16), +13 | us-field -1.81 ± 0.24 (16), +0
+punts     top10-field -0.12 ± 0.04 (16), +1 | us-field -0.14 ± 0.05 (16), +2
+big       top10-field +0.12 ± 0.13 (16), +8 | us-field -0.03 ± 0.08 (16), +3
+chalk     top10-field +1.31 ± 0.12 (16), +16 | us-field -0.22 ± 0.12 (16), +5
+topval    top10-field +0.60 ± 0.14 (16), +13 | us-field -0.01 ± 0.12 (16), +8
+pct       top10-field +20.57 ± 3.38 (16), +15 | us-field +0.92 ± 3.73 (16), +9
+
+exposure spread per user-slate (users with 20+ entries that slate): max player exposure, distinct cores / entries
+top 10 multi     user-slates   7 | max exposure 1.00 | distinct cores share 0.04
+all other multi  user-slates 507 | max exposure 0.86 | distinct cores share 0.43
+us               user-slates  12 | max exposure 0.73 | distinct cores share 0.54
+
+consistency of each top user's style across slates (mean / SD over slates):
+  mrrodgershood12      own_sum 260.4/57.6 sub10 0.9/0.9 sal_left 288.7/172.6 stack32 0.0/0.0 max_game 2.6/0.7 dup 5.4/7.5
+  WriteHook            own_sum 333.7/67.9 sub10 0.4/0.9 sal_left 136.4/196.3 stack32 0.0/0.0 max_game 3.2/0.6 dup 0.5/0.7
+  cedarpip             own_sum 304.0/67.0 sub10 0.5/0.8 sal_left 74.5/123.0 stack32 0.1/0.3 max_game 3.3/0.9 dup 0.3/0.5
+  sdgator4949          own_sum 297.0/38.7 sub10 0.2/0.4 sal_left 133.3/229.1 stack32 0.0/0.0 max_game 3.0/0.9 dup 8.9/2.4
+  avg_gam_tre          own_sum 280.3/29.8 sub10 1.0/0.7 sal_left 60.0/54.8 stack32 0.0/0.0 max_game 2.4/0.5 dup 8.3/2.7
+  clarkb17             own_sum 337.8/47.1 sub10 0.1/0.2 sal_left 114.7/108.8 stack32 0.0/0.0 max_game 3.1/0.8 dup 5.9/11.1
+  mm87505              own_sum 217.7/83.2 sub10 2.4/1.8 sal_left 240.0/171.3 stack32 0.1/0.3 max_game 3.6/0.7 dup 0.0/0.0
+  mattryan858          own_sum 291.7/89.9 sub10 0.8/0.9 sal_left 96.8/100.3 stack32 0.0/0.0 max_game 3.3/0.8 dup 11.9/13.8
+  dudju                own_sum 239.3/66.5 sub10 1.6/1.5 sal_left 10.0/22.4 stack32 0.0/0.0 max_game 2.7/0.8 dup 0.7/1.6
+  brianbrandon71       own_sum 255.0/36.9 sub10 1.1/1.0 sal_left 205.0/132.2 stack32 0.1/0.2 max_game 3.1/0.8 dup 0.4/0.7
+top users' own_sum means: min 217.74 max 371.66 | field 232.56
+top users' sal_left means: min 4.55 max 253.20 | field 158.88
+top users' stack32 means: min 0.00 max 0.10 | field 0.07
+
+held out (slates alternated; top group = top 10 qualified non-us users by mean pct on the fit half, >= 3 slates and 5 entries there):
+ split 1: fit on 8 slates, test on 8; top group ['mrrodgershood12', 'whiscox', 'zachj7', 'SeeMickLoonTree', 'WriteHook', 'sdgator4949', 'dhrasky', 'avg_gam_tre', 'mbailey3412', 'Malamoki']
+   skill persists? pct top-field on the test half: +7.10 ± 7.11 (8), +5
+   own_sum   fit half +55.68 ± 3.93 (7), +7 | test half +56.56 ± 6.62 (8), +8
+   sub10     fit half -1.19 ± 0.15 (7), +0 | test half -0.97 ± 0.19 (8), +0
+   sal_left  fit half -26.55 ± 31.41 (7), +2 | test half -36.32 ± 28.82 (8), +4
+   max_game  fit half -0.21 ± 0.15 (7), +2 | test half -0.17 ± 0.14 (8), +3
+   max_team  fit half -0.33 ± 0.09 (7), +0 | test half -0.19 ± 0.07 (8), +1
+   stack21   fit half -0.05 ± 0.10 (7), +4 | test half +0.05 ± 0.07 (8), +7
+   stack32   fit half -0.05 ± 0.01 (7), +0 | test half -0.04 ± 0.03 (8), +1
+   dup       fit half +4.39 ± 1.58 (7), +6 | test half +3.41 ± 1.85 (8), +5
+   punts     fit half -0.15 ± 0.06 (7), +1 | test half -0.09 ± 0.07 (8), +1
+   big       fit half +0.16 ± 0.16 (7), +4 | test half -0.19 ± 0.11 (8), +2
+   chalk     fit half +1.39 ± 0.13 (7), +7 | test half +1.07 ± 0.20 (8), +8
+   topval    fit half +0.68 ± 0.23 (7), +6 | test half +0.10 ± 0.23 (8), +5
+ split 2: fit on 8 slates, test on 8; top group ['Foleyface', '49ers4l1f3', 'REDNECKDUCK', 'ItsGMP', 'mm87505', 'yeafool66', 'bobloblaw7648', 'coachkimp', 'mattryan858', 'Greenie4020']
+   skill persists? pct top-field on the test half: +3.21 ± 5.31 (7), +4
+   own_sum   fit half +44.56 ± 13.73 (7), +7 | test half +18.77 ± 6.86 (7), +6
+   sub10     fit half -0.64 ± 0.19 (7), +0 | test half -0.35 ± 0.14 (7), +1
+   sal_left  fit half -44.97 ± 18.28 (7), +1 | test half -1.45 ± 34.44 (7), +2
+   max_game  fit half -0.10 ± 0.07 (7), +1 | test half +0.28 ± 0.11 (7), +6
+   max_team  fit half -0.03 ± 0.15 (7), +3 | test half +0.17 ± 0.09 (7), +6
+   stack21   fit half -0.02 ± 0.07 (7), +5 | test half +0.16 ± 0.05 (7), +6
+   stack32   fit half -0.07 ± 0.03 (7), +1 | test half -0.04 ± 0.01 (7), +1
+   dup       fit half +4.75 ± 3.45 (7), +4 | test half +1.94 ± 1.72 (7), +3
+   punts     fit half -0.17 ± 0.04 (7), +0 | test half +0.08 ± 0.10 (7), +4
+   big       fit half +0.07 ± 0.24 (7), +2 | test half +0.07 ± 0.10 (7), +5
+   chalk     fit half +0.86 ± 0.23 (7), +7 | test half +0.31 ± 0.15 (7), +5
+   topval    fit half +0.79 ± 0.20 (7), +7 | test half +0.05 ± 0.18 (7), +4

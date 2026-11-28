@@ -1,0 +1,54 @@
+Rows: 6816 player-contests on 16 slates (84 contests); chalk band 1801
+
+== Each feature against the signed miss (actual - ours) on the chalk band: pooled correlation, positive on k of n slates ==
+  val_rank   r +0.082   positive on 11 of 16 slates
+  chalk_game r -0.143   positive on 4 of 16 slates
+  chalk_team r -0.263   positive on 3 of 16 slates
+  own_rank   r +0.184   positive on 14 of 16 slates
+  salary     r +0.021   positive on 8 of 16 slates
+  big        r +0.098   positive on 7 of 13 slates
+  q          r -0.245   positive on 0 of 5 slates
+  ou         r +0.187   positive on 12 of 16 slates
+  spread     r -0.163   positive on 3 of 16 slates
+  own        r -0.273   positive on 2 of 16 slates
+
+== Version A: fitted and applied on the chalk band (not runnable at lock) ==
+  bias only                MAE 11.53 vs ours 11.55 (gain +0.01, 2xSE 0.09), better on 8 of 16; off by 10+ 47.9% vs 47.1% (lower on 5)
+  chalk_team               MAE 10.86 vs ours 11.55 (gain +0.69, 2xSE 0.33), better on 15 of 16; off by 10+ 43.8% vs 47.1% (lower on 10)  PASS
+  own                      MAE 11.19 vs ours 11.55 (gain +0.36, 2xSE 0.47), better on 13 of 16; off by 10+ 48.0% vs 47.1% (lower on 6)
+  ou                       MAE 11.24 vs ours 11.55 (gain +0.31, 2xSE 0.31), better on 11 of 16; off by 10+ 46.1% vs 47.1% (lower on 10)
+  chalk_game               MAE 11.31 vs ours 11.55 (gain +0.24, 2xSE 0.21), better on 11 of 16; off by 10+ 46.7% vs 47.1% (lower on 7)
+  q                        MAE 11.31 vs ours 11.55 (gain +0.23, 2xSE 0.36), better on 9 of 16; off by 10+ 47.2% vs 47.1% (lower on 6)
+  own_rank                 MAE 11.37 vs ours 11.55 (gain +0.18, 2xSE 0.28), better on 11 of 16; off by 10+ 47.0% vs 47.1% (lower on 8)
+  val_rank                 MAE 11.42 vs ours 11.55 (gain +0.13, 2xSE 0.11), better on 12 of 16; off by 10+ 47.8% vs 47.1% (lower on 7)
+  big                      MAE 11.49 vs ours 11.55 (gain +0.05, 2xSE 0.14), better on 6 of 16; off by 10+ 47.7% vs 47.1% (lower on 5)
+  spread                   MAE 11.52 vs ours 11.55 (gain +0.03, 2xSE 0.64), better on 12 of 16; off by 10+ 47.4% vs 47.1% (lower on 9)
+  salary                   MAE 11.55 vs ours 11.55 (gain -0.00, 2xSE 0.09), better on 10 of 16; off by 10+ 47.8% vs 47.1% (lower on 4)
+  best pairs:
+  chalk_team+own_rank      MAE 10.50 vs ours 11.55 (gain +1.04, 2xSE 0.38), better on 15 of 16; off by 10+ 42.7% vs 47.1% (lower on 13)  PASS
+  chalk_team+q             MAE 10.62 vs ours 11.55 (gain +0.93, 2xSE 0.51), better on 13 of 16; off by 10+ 42.7% vs 47.1% (lower on 11)  PASS
+  chalk_team+ou            MAE 10.75 vs ours 11.55 (gain +0.80, 2xSE 0.35), better on 13 of 16; off by 10+ 43.8% vs 47.1% (lower on 10)  PASS
+  chalk_team+spread        MAE 10.78 vs ours 11.55 (gain +0.77, 2xSE 0.50), better on 15 of 16; off by 10+ 43.3% vs 47.1% (lower on 10)  PASS
+  chalk_team+big           MAE 10.84 vs ours 11.55 (gain +0.71, 2xSE 0.39), better on 13 of 16; off by 10+ 43.3% vs 47.1% (lower on 12)  PASS
+
+== Version B: fitted and applied on players we projected 10%+ (runnable at lock), scored on the chalk band ==
+  bias only                MAE 11.54 vs ours 11.55 (gain +0.01, 2xSE 0.09), better on 9 of 16; off by 10+ 46.3% vs 47.1% (lower on 10)
+  ou                       MAE 11.33 vs ours 11.55 (gain +0.22, 2xSE 0.18), better on 12 of 16; off by 10+ 45.5% vs 47.1% (lower on 9)  PASS
+  q                        MAE 11.35 vs ours 11.55 (gain +0.19, 2xSE 0.38), better on 11 of 16; off by 10+ 45.9% vs 47.1% (lower on 10)
+  chalk_team               MAE 11.36 vs ours 11.55 (gain +0.19, 2xSE 0.15), better on 11 of 16; off by 10+ 44.5% vs 47.1% (lower on 13)
+  big                      MAE 11.52 vs ours 11.55 (gain +0.03, 2xSE 0.19), better on 10 of 16; off by 10+ 46.3% vs 47.1% (lower on 11)
+  chalk_game               MAE 11.52 vs ours 11.55 (gain +0.03, 2xSE 0.10), better on 9 of 16; off by 10+ 46.0% vs 47.1% (lower on 11)
+  spread                   MAE 11.54 vs ours 11.55 (gain +0.01, 2xSE 0.31), better on 10 of 16; off by 10+ 46.8% vs 47.1% (lower on 10)
+  own_rank                 MAE 11.54 vs ours 11.55 (gain +0.00, 2xSE 0.10), better on 8 of 16; off by 10+ 46.0% vs 47.1% (lower on 10)
+  own                      MAE 11.54 vs ours 11.55 (gain +0.00, 2xSE 0.17), better on 8 of 16; off by 10+ 46.6% vs 47.1% (lower on 10)
+  salary                   MAE 11.55 vs ours 11.55 (gain -0.00, 2xSE 0.12), better on 8 of 16; off by 10+ 46.3% vs 47.1% (lower on 9)
+  val_rank                 MAE 11.56 vs ours 11.55 (gain -0.01, 2xSE 0.08), better on 9 of 16; off by 10+ 47.0% vs 47.1% (lower on 9)
+  best pairs:
+  chalk_team+q             MAE 11.11 vs ours 11.55 (gain +0.43, 2xSE 0.42), better on 13 of 16; off by 10+ 44.0% vs 47.1% (lower on 11)  PASS
+  q+ou                     MAE 11.13 vs ours 11.55 (gain +0.42, 2xSE 0.45), better on 12 of 16; off by 10+ 44.6% vs 47.1% (lower on 9)
+  chalk_team+ou            MAE 11.21 vs ours 11.55 (gain +0.33, 2xSE 0.20), better on 12 of 16; off by 10+ 44.6% vs 47.1% (lower on 10)  PASS
+  ou+spread                MAE 11.30 vs ours 11.55 (gain +0.24, 2xSE 0.36), better on 11 of 16; off by 10+ 45.7% vs 47.1% (lower on 10)
+  chalk_game+q             MAE 11.31 vs ours 11.55 (gain +0.23, 2xSE 0.37), better on 10 of 16; off by 10+ 45.3% vs 47.1% (lower on 10)
+  fit on every slate, players 10%+ (own): c0 +0.48, own -0.062
+  fit on every slate, players 10%+ (chalk_game): c0 +0.22, chalk_game -0.336
+  fit on every slate, players 10%+ (val_rank): c0 -0.44, val_rank -0.083

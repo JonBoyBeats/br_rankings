@@ -1,0 +1,41 @@
+rows 6816 slates 16
+chalk_team+big               raw MAE 11.61 -> 11.27 gain +0.34 (2xSE 0.19) better 13/16 off10 47.5%->43.8% PASS
+chalk_team                   raw MAE 11.61 -> 11.41 gain +0.20 (2xSE 0.16) better 11/16 off10 47.5%->44.2% 
+big                          raw MAE 11.61 -> 11.47 gain +0.15 (2xSE 0.16) better 11/16 off10 47.5%->44.6% 
+chalk_team+q                 raw MAE 11.61 -> 11.17 gain +0.44 (2xSE 0.42) better 13/16 off10 47.5%->43.7% PASS
+chalk_team+ou                raw MAE 11.61 -> 11.29 gain +0.32 (2xSE 0.21) better 11/16 off10 47.5%->45.5% 
+q                            raw MAE 11.61 -> 11.43 gain +0.18 (2xSE 0.41) better 10/16 off10 47.5%->45.8% 
+own_rank                     raw MAE 11.61 -> 11.61 gain +0.01 (2xSE 0.13) better 8/16 off10 47.5%->45.0% 
+chalk_team+big+q             raw MAE 11.61 -> 11.05 gain +0.57 (2xSE 0.39) better 13/16 off10 47.5%->43.1% PASS
+shipped coefs (no renorm)    raw MAE 11.61 -> 11.18 gain +0.43 (2xSE 0.30) better 13/16 off10 47.5%->43.2% PASS
+  since 157026 only          raw MAE 11.84 -> 11.80 gain +0.03 (2xSE 0.49) better 3/5 off10 44.5%->43.7% 
+refit all ['chalk_team', 'big'] [0.65, -1.03, 5.6]
+  fit since 157026 only [1.76, -0.8, 1.87] 574
+refit all ['chalk_team', 'big', 'q'] [1.61, -1.24, 5.1, -22.53]
+  fit since 157026 only [2.09, -0.75, 1.47, -21.54] 574
+big 157015 25 mean a-raw +9.9
+big 157017 24 mean a-raw +0.6
+big 157019 7 mean a-raw +7.0
+big 157021 18 mean a-raw +0.2
+big 157024 13 mean a-raw -1.6
+big 157033 15 mean a-raw +7.5
+big 157138 16 mean a-raw +2.1
+big 157139 20 mean a-raw +8.5
+big 157293 12 mean a-raw -1.9
+big 157295 12 mean a-raw +2.2
+big 157380 6 mean a-raw +12.7
+big 157382 2 mean a-raw +1.1
+
+11-26 main (157382) chalk misses: name, raw, live, actual(mean over contests), features
+Robbie Avila           raw   5.4 live   5.7 act  44.6 | sal 4.9 val_rank 14 chalk_team 2 chalk_game 2 own_rank 4 big 0 q 0 ou 152.5 spread 1.5
+Jamichael Stillwell    raw  21.9 live  21.1 act  54.9 | sal 5.9 val_rank 8 chalk_team 2 chalk_game 2 own_rank 1 big 0 q 0 ou 148.5 spread -10.5
+Michael Ruzic          raw  54.6 live  54.4 act  85.7 | sal 5.7 val_rank 3 chalk_team 3 chalk_game 5 own_rank 1 big 0 q 0 ou 155.5 spread -7.5
+Keyshawn Hall          raw  17.1 live  14.6 act  42.4 | sal 7.2 val_rank 11 chalk_team 3 chalk_game 5 own_rank 3 big 0 q 0 ou 160.5 spread -1.5
+Amari Allen            raw  29.9 live  30.9 act  53.3 | sal 8.3 val_rank 1 chalk_team 1 chalk_game 1 own_rank 1 big 0 q 0 ou 169.5 spread -13.5
+Seth Trimble           raw  49.5 live  50.3 act  69.4 | sal 5.4 val_rank 2 chalk_team 2 chalk_game 5 own_rank 1 big 0 q 0 ou 160.5 spread 1.5
+Brock Vice             raw  10.5 live  11.7 act  27.8 | sal 4.8 val_rank 10 chalk_team 0 chalk_game 1 own_rank 1 big 0 q 0 ou 169.5 spread 13.5
+Aden Holloway          raw   5.9 live   6.2 act  18.6 | sal 6.2 val_rank 16 chalk_team 1 chalk_game 1 own_rank 2 big 0 q 0 ou 169.5 spread -13.5
+Quinn Ellis            raw  18.9 live  16.6 act  27.9 | sal 8.5 val_rank 6 chalk_team 3 chalk_game 5 own_rank 2 big 0 q 0 ou 160.5 spread -1.5
+Billy White III        raw  18.5 live  17.5 act  28.3 | sal 3.8 val_rank 1 chalk_team 2 chalk_game 5 own_rank 2 big 0 q 0 ou 155.5 spread 7.5
+Jackson Shelstad       raw  14.0 live  12.7 act  21.9 | sal 5.6 val_rank 4 chalk_team 2 chalk_game 5 own_rank 3 big 0 q 0 ou 160.5 spread 1.5
+Ruben Prey             raw   6.5 live   6.9 act  15.9 | sal 5.3 val_rank 9 chalk_team 3 chalk_game 5 own_rank 5 big 0 q 0 ou 160.5 spread -1.5

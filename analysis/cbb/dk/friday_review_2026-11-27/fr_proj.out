@@ -1,0 +1,53 @@
+## S1 minutes: rotation band minutes MAE by subgroup (per-slate mean, then over slates)
+| group | rows | LIVE | LIVE-PREV | LIVE-RULER |
+| DNP (0 min) | 90 | 21.27 ± 0.68 (16) | -0.09 ± 0.23 (4) | +0.08 ± 0.16 (3) |
+| OT game | 85 | 8.76 ± 0.69 (6) | -0.14 ± 0.19 (2) | -0.01 ± nan (1) |
+| all | 1128 | 7.11 ± 0.22 (18) | +0.25 ± 0.13 (4) | +0.24 ± 0.06 (3) |
+| blowout (margin 20+) | 187 | 7.13 ± 0.70 (9) | -0.43 ± 0.60 (2) | -0.06 ± 0.51 (2) |
+| close (margin <10) | 558 | 7.38 ± 0.37 (15) | +0.22 ± 0.14 (4) | +0.29 ± 0.11 (3) |
+| gp 3+ | 1041 | 6.19 ± 0.28 (18) | +0.28 ± 0.14 (4) | +0.26 ± 0.08 (3) |
+| gp<=2 | 87 | 17.98 ± 0.75 (17) | -0.16 ± 0.14 (4) | -0.19 ± 0.30 (3) |
+| mid (10-19) | 383 | 6.65 ± 0.34 (18) | +0.48 ± 0.23 (4) | +0.24 ± 0.15 (3) |
+| newcomer (no 2025-26 prior) | 161 | 5.59 ± 0.47 (18) | +0.39 ± 0.20 (4) | +0.37 ± 0.09 (3) |
+| played | 1038 | 5.97 ± 0.24 (18) | +0.30 ± 0.12 (4) | +0.26 ± 0.05 (3) |
+| returner | 967 | 7.26 ± 0.26 (18) | +0.25 ± 0.17 (4) | +0.23 ± 0.08 (3) |
+signed minutes bias (actual - ours) rotation: +0.17 ± 0.43 (18)
+
+## S1b minute parts (slates with min_parts)
+final MAE 6.67 ± 0.69 (4) minus final +0.00 ± 0.00 (4)
+pre MAE 6.88 ± 0.64 (4) minus final +0.22 ± 0.06 (4)
+form MAE 6.83 ± 0.67 (4) minus final +0.16 ± 0.09 (4)
+qmin MAE 7.08 ± 0.63 (4) minus final +0.42 ± 0.11 (4)
+final bias (actual-part) +1.54 ± 0.42 (4)
+qmin bias (actual-part) -0.19 ± 0.47 (4)
+steepness rescale around slate mean, held out by slate (fit s on others):
+  held out 2026-11-25_157293 s= 1.0 gain 0.0
+  held out 2026-11-25_157295 s= 1.2 gain -0.105
+  held out 2026-11-26_157380 s= 1.14 gain -0.049
+  held out 2026-11-26_157382 s= 1.12 gain 0.027
+  mean gain -0.03 ± 0.03 (4)
+
+## S2 per-minute: stars band points MAE (fp_dk), by subgroup
+| group | rows | LIVE | bias (act-ours) | LIVE-PREV | LIVE-RULER |
+| OT game | 16 | 9.30 ± 2.21 (6) | +1.20 ± 4.44 (6) | -3.02 ± 0.37 (2) | +0.60 ± nan (1) |
+| all | 293 | 9.63 ± 0.39 (18) | -0.49 ± 0.80 (18) | -0.29 ± 0.30 (4) | +0.27 ± 0.27 (3) |
+| blowout (margin 20+) | 48 | 11.58 ± 0.91 (9) | -3.85 ± 1.47 (9) | +0.49 ± 0.61 (2) | -0.00 ± 1.20 (2) |
+| close (margin <10) | 141 | 9.65 ± 1.10 (15) | -1.98 ± 1.65 (15) | -0.36 ± 0.26 (4) | +0.19 ± 0.50 (3) |
+| mid (10-19) | 104 | 8.13 ± 0.66 (18) | +0.19 ± 1.40 (18) | -1.19 ± 1.13 (4) | -0.66 ± 1.35 (3) |
+| minutes off 4+ | 159 | 11.32 ± 0.55 (18) | -1.37 ± 1.58 (18) | -0.59 ± 0.34 (4) | +0.33 ± 0.52 (3) |
+| minutes within 4 | 134 | 8.07 ± 0.75 (18) | -0.83 ± 1.30 (18) | +0.19 ± 0.19 (4) | +0.54 ± 0.30 (3) |
+
+## S2b rotation band points MAE and per-minute MAE at actual minutes (min>=10)
+rotation points MAE 8.17 ± 0.16 (18) LIVE-PREV -0.14 ± 0.03 (4) LIVE-RULER -0.23 ± 0.09 (3)
+
+## S2c layers (ppm_parts), players fp_dk>=10 and actual min>=10; DK ppm error at actual minutes
+full ppm MAE 0.24 ± 0.01 (4)
+drop matchup -> MAE minus full (positive = layer helps): +0.01 ± 0.00 (4)
+drop vegas -> MAE minus full (positive = layer helps): +0.01 ± 0.00 (4)
+drop game_adj -> MAE minus full (positive = layer helps): +0.01 ± 0.00 (4)
+bias actual ppm - ours: -0.08 ± 0.02 (4)
+bias actual ppm - old_ppm: -0.04 ± 0.02 (4)
+matchup range 0.907 0.958 0.997
+vegas range 0.91 0.983 1.053
+game_adj range 0.947 0.979 0.99
+game_adj per slate: {'2026-11-25_157293': [0.947, 0.979, 0.99], '2026-11-25_157295': [0.979], '2026-11-26_157380': [0.979], '2026-11-26_157382': [0.947, 0.979, 0.99]}
