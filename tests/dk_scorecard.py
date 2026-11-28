@@ -140,7 +140,10 @@ _ev = [dict(date="2026-11-29", draft_group="999101", contest_id="1", contest="CB
        dict(date="2026-11-29", draft_group="999101", contest_id="2", contest="CBB $1 And-One", entries="2000", who="mine", dollars_back="5", fees="20"),
        dict(date="2026-11-29", draft_group="999101", contest_id="2", contest="CBB $1 And-One", entries="2000", who="fill_prev", dollars_back="8", fees="20"),
        dict(date="2026-11-20", draft_group="999100", contest_id="3", contest="CBB $1 And-One", entries="2000", who="fill_prev", dollars_back="8", fees="20")]
+_ev += [dict(date="2026-11-29", draft_group="999101", contest_id="4", contest="CBB $10 King of the Bracket Qualifier", entries="20", who="mine", dollars_back="0", fees="10"),
+        dict(date="2026-11-29", draft_group="999101", contest_id="4", contest="CBB $10 King of the Bracket Qualifier", entries="20", who="fill_prev", dollars_back="0", fees="10")]
 _fl = SC.fill_type_lines(_ev, gate=None, standings_in=False)
+check("fill by type: the qualifier tier (QUAL_CHALK 0.35 vs 0.8) with its 10-field review", any("qualifier (PROVISIONAL)" in x and "review at 10 qualifier fields (now 1)" in x for x in _fl), _fl)
 check("fill by type: flagship +20 ahead 1, main -3 ahead 0 with the 10-slate review count; gate pending without standings",
       any("flagship (PROVEN): +20.00 (1), ahead 1" in x for x in _fl) and any("main (PROVISIONAL): -3.00 (1), ahead 0" in x and "(now 1)" in x for x in _fl)
       and any("pending (11-27's flagship standings" in x for x in _fl), _fl)

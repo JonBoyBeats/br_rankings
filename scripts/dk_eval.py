@@ -3313,13 +3313,14 @@ QUAL_REFIT_AT = 10      # real qualifier fields captured before the DK page's as
 
 def qualcheck(a=None):
     """How many real qualifier fields field_users.csv holds (contests named qualifier / satellite): the DK page's
-    qualifier field is an assumed chalk style (QUAL_CHALK 0.8) until QUAL_REFIT_AT of them are in; then refit it
-    (fill_profiles_2026-11-24.md, the refit plan)."""
+    qualifier field was an assumed chalk style (QUAL_CHALK 0.8) until QUAL_REFIT_AT of them were in; refit 2026-11-28 to
+    0.35 (batch item 3, PROVISIONAL), reviewed at QUAL_REFIT_AT more qualifier fields from 2026-11-28 (counted here)."""
     rows = read(FIELD_USERS)
     q = sorted({r["contest_id"] for r in rows if re.search(r"qualifier|satellite", r.get("contest") or "", re.I)})
     users = sum(1 for r in rows if r["contest_id"] in q)
-    print("  qualifier fields captured: %d of %d for the chalk-field refit (%d user rows)%s"
-          % (len(q), QUAL_REFIT_AT, users, "; REFIT DUE: fill_profiles_2026-11-24.md has the plan" if len(q) >= QUAL_REFIT_AT else ""))
+    since = sorted({r["contest_id"] for r in rows if r["contest_id"] in q and (r.get("date") or "") >= "2026-11-28"})
+    print("  qualifier fields captured: %d (%d since the 2026-11-28 refit to QUAL_CHALK 0.35; review at %d)%s; %d user rows"
+          % (len(q), len(since), QUAL_REFIT_AT, " — REVIEW DUE" if len(since) >= QUAL_REFIT_AT else "", users))
 
 
 BANK_NOISE = os.path.join(DK, "bank_noise.json")

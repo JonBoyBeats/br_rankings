@@ -1629,7 +1629,7 @@ function audit(name, L, o) {
         qf.prof === "qualifier" && qf.wta && qf.n === 2 && qf.size && qf.medQ > qf.medM && qf.dup > 0 && /winner-take-all \(1 ticket\)/.test(qf.nm) && !/assumed/.test(qf.nm) &&
         /^Own sum \d+% \/ \d+% vs the chalk field's median \d+% · P\(1st\) \d+\.\d% \(fresh nights, in-sim\) · \d from the chalk batch, \d from the kept pool$/.test(qf.stat) &&
         qf.pstats.chalk + qf.pstats.kept === 2 && qf.inBank === qf.pstats.chalk && qf.chalkKept === 0 && qf.cut && qf.keepN === bankN0.keep && qf.bankN >= bankN0.n && qf.bankN <= bankN0.n + qf.pstats.chalk &&
-        /^The qualifier field is an assumed chalk style until field_users\.csv has enough real qualifier fields to refit it/.test(qf.note), JSON.stringify(qf));
+        /^The qualifier field is a chalk style at 35% chalk lineups, refit 2026-11-28 from the real qualifier fields \(was 80%; PROVISIONAL, reviewed at 10 more/.test(qf.note), JSON.stringify(qf));
   // the bank's test toggle on an idea row: one tap marks it (kept with the bank), another clears it
   const tt = await pg.evaluate(g => {
     showStep("bank"); renderBank();

@@ -2438,6 +2438,10 @@ function renderCut() {
 async function pickPortfolios(into, objective, opt) {
   into = into || PF;
   var prevFill = !!(opt && opt.prev);
+  if (prevFill && !opt.qualDone) {        // PREVIOUS: the qualifiers' field as it was too (QUAL_CHALK 0.8, batch item 3)
+    var qc = QUAL_CHALK; QUAL_CHALK = QUAL_CHALK_PREV;
+    try { return await pickPortfolios(into, objective, { prev: true, qualDone: true }); } finally { QUAL_CHALK = qc; }
+  }
   var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
   if (!BANK.lineups.length) return "The bank is empty.";
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
@@ -2695,8 +2699,11 @@ function fieldOwnMedian(F) {
    instead. Its lineups ranked by their summed DraftKings average (what that style maximises): the top fifth, the
    chalk-style lineups, make up QUAL_CHALK of the qualifiers' field (each repeated, as chalk players land on the same
    lineup), the rest the remaining lineups in order. QUAL_CHALK is a first setting, to be refit from the qualifier
-   fields dk_eval fieldusers captures (field_users.csv) as they accrue. */
-var QUAL_CHALK = 0.8, QF = { key: null, base: null, field: null };
+   fields dk_eval fieldusers captures (field_users.csv) as they accrue. Refit 2026-11-28 (batch item 3, PROVISIONAL): 0.8
+   -> 0.35, the real qualifier fields' chalk share (friday_review_2026-11-27.md section 4: +16.3 vs bar 16.6, 8 of 10
+   fields held out); PREVIOUS = the qualifier fill under the 0.8 field, saved as fill_prev (pickPortfolios opt.prev);
+   reviewed at 10 more qualifier fields. */
+var QUAL_CHALK = 0.35, QUAL_CHALK_PREV = 0.8, QF = { key: null, base: null, field: null };
 /* The qualifiers' chalk batch (2026-11-24, the operator): the kept pool barely reaches a chalk field (11-23: 1 of
    2,221 kept lineups at its median own sum), so each fill with a qualifier draws QUAL_CHALK_N lineups near the top
    projections: the bank's draw (DKSim.pool) at low noise (QUAL_NOISE, the bank's default 0.35) with no leverage and no
@@ -2728,7 +2735,7 @@ function chalkToBank(L) {
 }
 function qualField(base) {
   if (!base || !base.length) return base;
-  var key = String(slate && slate.draft_group_id) + ":" + base.length + ":" + Object.keys(state.outs || {}).join(",");
+  var key = String(slate && slate.draft_group_id) + ":" + base.length + ":" + Object.keys(state.outs || {}).join(",") + ":" + QUAL_CHALK;
   if (QF.base === base && QF.key === key) return QF.field;
   var dkAvg = function (ids) { return ids.reduce(function (t, id) { var r = byId(id); return t + (r ? (r.status === "Out" ? 0 : +r.dk_avg || proj(r)) : 0); }, 0); };
   var ranked = base.map(function (L, i) { return [dkAvg(L), i]; }).sort(function (x, y) { return y[0] - x[0] || x[1] - y[1]; }).map(function (x) { return base[x[1]]; });
@@ -2760,8 +2767,8 @@ function renderProfiles() {
       (p === "qualifier" && st && st.own ? '<div class="pstat">Own sum ' + st.own.map(function (v) { return Math.round(v) + "%"; }).join(" / ") + " vs the chalk field's median " + Math.round(st.fieldMed) + "% · P(1st) " +
         pct1(st.p1) + " (fresh nights, in-sim) · " + st.chalk + " from the chalk batch, " + st.kept + " from the kept pool</div>" : "") +
       (p === "lab" ? '<div class="pstat">Test ideas: ' + (tests.length ? esc(tests.join(", ")) : "none marked (Bank step: test on an idea's row)") + "</div>" : "") + "</div>";
-  }).join("") + (count.qualifier ? '<div class="note" id="profQual">The qualifier field is an assumed chalk style until field_users.csv has enough real qualifier fields to refit it (' +
-    QUAL_REFIT_AT + "; <code>dk_eval.py qualcheck</code> counts them).</div>" : "") + (PROF_STATS._joint && PROF_STATS._joint.n > 1 ? '<div class="note" id="profJoint">The flagships together: one of their lineups in its top 1% on ' + pct1(PROF_STATS._joint.joint) + " of nights (fresh nights, in-sim).</div>" : "") +
+  }).join("") + (count.qualifier ? '<div class="note" id="profQual">The qualifier field is a chalk style at ' + Math.round(100 * QUAL_CHALK) + "% chalk lineups, refit 2026-11-28 from the real qualifier fields (was " +
+    Math.round(100 * QUAL_CHALK_PREV) + "%; PROVISIONAL, reviewed at " + QUAL_REFIT_AT + " more; <code>dk_eval.py qualcheck</code> counts them).</div>" : "") + (PROF_STATS._joint && PROF_STATS._joint.n > 1 ? '<div class="note" id="profJoint">The flagships together: one of their lineups in its top 1% on ' + pct1(PROF_STATS._joint.joint) + " of nights (fresh nights, in-sim).</div>" : "") +
     '<div class="note">Fill order: the flagships first, then each main contest, each a random draw from the kept pool\'s top half by sim value (2026-11-28; before the cut: the flagships together by top-1% coverage, the mains by Max ROI), then the rest by stake; a lineup in up to ' +
     maxUses() + " contests under the 60% night cap. The 60/60 caps and Auto top-up apply to all.</div>";
   $("profSum").textContent = "Contest profiles: " + Object.keys(PROF_NAMES).filter(function (k) { return count[k]; }).map(function (k) { return PROF_NAMES[k] + " " + count[k]; }).join(" · ");

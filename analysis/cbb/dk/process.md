@@ -12,6 +12,7 @@ The rules for changing the live model, and how each change is graded. The number
 | per-minute | STARS band (ours 25+) points MAE | projection | `old_fp` |
 | ownership | chalk band MAE and share off by 10+ | ownership | `own_raw` |
 | field model | sim minus real cash line and top-10% line, 100+ contests | field | not logged yet |
+| qualifier field (from 2026-11-28) | entered minus `fill_prev` on qualifier contests (QUAL_CHALK 0.35 vs 0.8) | field | `fill_prev` (its qualifier picks made under the 0.8 field) |
 | pool | kept minus whole bank, mean real finish percentile | cut | not logged yet |
 | bank (from 2026-11-28) | live bank minus the night's Draw-the-9 replay at lock, mean real finish percentile | cut (bank draw) | `bank_prev/` (dk_eval.py bankprev) |
 | fill | entered minus random fills, dollars and percentile; entered minus `fill_prev` per contest type (from 2026-11-28) | fill | `fill_prev` (Save build, from 2026-11-28) |

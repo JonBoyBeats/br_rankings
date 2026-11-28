@@ -622,6 +622,7 @@ def core_shadow_lines(rows=None, evals=None):
 # it reverts. The verdict goes in P1_GATE ({"status": "passes" | "fails", "note": ...}) by hand after that run.
 P1_FROM = "2026-11-28"
 MAIN_REVIEW = 10
+QUAL_REVIEW = 10
 P1_GATE = os.path.join(E.DK, "fill_p1_gate.json")
 P1_GATE_CONTESTS = ("198269753", "198278517")
 
@@ -634,7 +635,7 @@ def fill_type_lines(evals=None, gate=None, standings_in=None):
         if r.get("who") not in ("mine", "fill_prev") or r["date"] < P1_FROM or num(r.get("fees")) is None:
             continue
         t = CT.contest_type(r.get("contest"), int(float(r.get("entries") or 0)))
-        if t not in ("flagship", "main"):
+        if t not in ("flagship", "main", "qualifier"):
             continue
         k = "%s_%s" % (r["date"], r["draft_group"])
         c = by[t][k].setdefault(r["contest_id"], {})
@@ -643,7 +644,7 @@ def fill_type_lines(evals=None, gate=None, standings_in=None):
            "Flagship and main contests fill by a random draw from the kept pool's top half by sim value (dk.html, 2026-11-28); "
            "PREVIOUS = the fill as it was (fill_prev: flagships' joint top-1%, mains' Max ROI) from the same pool, graded on the same contests. "
            "Cells: entered minus PREVIOUS, $ per slate (summed over the slate's contests of that type), mean ± SE (slates), ahead = slates entered beat PREVIOUS.", ""]
-    for t, tier in (("flagship", "PROVEN"), ("main", "PROVISIONAL")):
+    for t, tier in (("flagship", "PROVEN"), ("main", "PROVISIONAL"), ("qualifier", "PROVISIONAL")):
         d = []
         for k, cs in sorted(by[t].items()):
             both = [c for c in cs.values() if "mine" in c and "fill_prev" in c]
@@ -653,6 +654,9 @@ def fill_type_lines(evals=None, gate=None, standings_in=None):
         line = "- %s (%s): %s, ahead %d" % (t, tier, f_ms(m, se, n, fmt="%.2f", signed=True), sum(1 for x in d if x > 0))
         if t == "main":
             line += "; review on dollars at %d graded main slates (now %d)%s" % (MAIN_REVIEW, n, " — DUE NOW" if n >= MAIN_REVIEW else "")
+        if t == "qualifier":     # batch item 3 (2026-11-28): the qualifier field at QUAL_CHALK 0.35; PREVIOUS the fill under 0.8
+            nq = sum(1 for cs in by[t].values() for c in cs.values() if "mine" in c and "fill_prev" in c)
+            line += " (the field at QUAL_CHALK 0.35, PREVIOUS under 0.8); review at %d qualifier fields (now %d)%s" % (QUAL_REVIEW, nq, " — DUE NOW" if nq >= QUAL_REVIEW else "")
         out.append(line)
     if gate is None and os.path.exists(P1_GATE):
         gate = json.load(open(P1_GATE))

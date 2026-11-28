@@ -149,6 +149,14 @@
      "2026-11-24 | OWN correction live: teammates + big game, renormalized | battle-royale-research dk_cbb_field.py O"
     ],
     "note": "raked to the corrected ownership"
+   },
+   {
+    "tag": "field-2026-11-28",
+    "from": "2026-11-28",
+    "rows": [
+     "2026-11-28 | QUAL qualifier field chalk share 0.8 -> 0.35 | The DK page's qualifier field (dk.html q"
+    ],
+    "note": "qualifier field QUAL_CHALK 0.35"
    }
   ],
   "cut": [
