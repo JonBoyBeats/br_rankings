@@ -2580,9 +2580,10 @@ async function pickPortfolios(into, objective, opt) {
     var cxN = ctx(), nl = nightLimit();     // the night cap, as each player's Max% in this contest: his room left tonight
     if (nl < Infinity) {
       var capN = Object.assign({}, state.cap);
-      Object.keys(nightCount).forEach(function (id) {
+      rows.forEach(function (r0) {        // every player (bug fix 2026-11-28: one not yet used tonight is capped at the night's limit too)
+        var id = r0.id;
         if (fillLock()[id]) return;
-        var room = Math.max(0, nl - nightCount[id]);
+        var room = Math.max(0, nl - (nightCount[id] || 0));
         if (room < n) capN[id] = Math.min(capN[id] != null && capN[id] !== "" ? +capN[id] : 100, 100 * (room + 1e-6) / n);
       });
       cxN.state = Object.assign({}, state, { cap: capN });
