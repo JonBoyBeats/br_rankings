@@ -1,0 +1,39 @@
+2026-11-16_156660: no main contest with standings
+2026-11-17_156663: no board values
+2026-11-18_157033: no board values
+2026-11-19_157138: no board values
+2026-11-19_157139: no board values
+2026-11-20_157013: 4 main contests; greens 7, fragile A 5 (of 20 in band), fragile B n/a, tight-core lineups 60
+2026-11-20_157015: 3 main contests; greens 7, fragile A 21 (of 81 in band), fragile B n/a, tight-core lineups 200
+2026-11-23_157021: 5 main contests; greens 8, fragile A 9 (of 34 in band), fragile B n/a, tight-core lineups 29
+2026-11-24_157024: 4 main contests; greens 22, fragile A 20 (of 79 in band), fragile B n/a, tight-core lineups 199
+2026-11-24_157026: 3 main contests; greens 11, fragile A 18 (of 70 in band), fragile B n/a, tight-core lineups 82
+2026-11-25_157293: 3 main contests; greens 12, fragile A 14 (of 54 in band), fragile B n/a, tight-core lineups 168
+2026-11-25_157295: 3 main contests; greens 10, fragile A 12 (of 46 in band), fragile B n/a, tight-core lineups 104
+2026-11-26_157380: no main contest with standings
+2026-11-26_157382: no main contest with standings
+2026-11-27_157547: no main contest with standings
+
+slates with mains: 7 (2026-11-20_157013, 2026-11-20_157015, 2026-11-23_157021, 2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295)
+
+fill         finish pct vs today        $/lineup vs today          net%fees   seats    topped  max expo  cores 
+today        (base)                     (base)                        +95.2%   416/429 0           62%   14.5
+fragA         +1.82 ± 3.16, 3 of 7       -0.06 ± 0.30, 3 of 7         +90.4%   353/429 0           73%   12.0
+tight         +3.92 ± 2.02, 5 of 7       -0.19 ± 0.33, 3 of 7         +44.5%   393/429 136         65%    7.4
+tight_fragA   +4.88 ± 2.88, 6 of 7       -0.13 ± 0.35, 4 of 7         +52.8%   342/429 89          75%    5.9
+fragB        n = 0 slates
+tight_fragB  n = 0 slates
+
+per slate (finish pct / $ per lineup):
+  2026-11-20_157013  today 59.8/0.76  fragA 71.5/0.97  tight 64.4/0.59  tight_fragA 69.5/0.83
+  2026-11-20_157015  today 64.3/2.14  fragA 61.0/0.45  tight 79.0/2.26  tight_fragA 74.8/3.35
+  2026-11-23_157021  today 33.6/0.07  fragA 32.5/0.06  tight 37.2/0.00  tight_fragA 40.2/0.00
+  2026-11-24_157024  today 74.9/1.20  fragA 65.2/1.00  tight 80.2/2.08  tight_fragA 64.1/0.82
+  2026-11-24_157026  today 62.1/2.38  fragA 66.0/2.77  tight 62.9/0.40  tight_fragA 66.5/0.46
+  2026-11-25_157293  today 35.4/0.03  fragA 33.2/0.02  tight 34.0/0.03  tight_fragA 38.0/0.06
+  2026-11-25_157295  today 52.3/0.25  fragA 65.6/1.12  tight 52.1/0.14  tight_fragA 63.4/0.42
+
+Fragile A sanity (band: salary < $7k, fp_dk 10-25, not Out):
+  fragile    per night n 14.1; actual - proj -1.33 ± 0.70; beat-projection rate 0.360 ± 0.049 (7 nights)
+  other      per night n 40.7; actual - proj -0.75 ± 0.45; beat-projection rate 0.415 ± 0.034 (7 nights)
+  fragile - other, actual - proj: -0.59 ± 0.87, fragile worse on 4 of 7 nights

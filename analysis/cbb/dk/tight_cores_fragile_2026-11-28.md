@@ -82,3 +82,58 @@ other players in the same band (salary < $7k, fp_dk 10–25).
 If any fill tags DIRECTIONAL or better, a proposal to add it as a line in the green-core shadow log (counted on new
 main nights toward 7 of 10, both $ and finish pct ahead) is written below, marked *awaiting coordinator
 confirmation*, and not implemented.
+
+## Results (run after the pre-registration commit 877b1ee)
+
+`tight_cores_fragile_2026-11-28/tcf.py` (driver) and `tcf.js` (`scripts/dk_core_shadow.js` with per-variant caps and
+the top-up); output `tcf.out`, rows `tcf_rows.json`, summary `tcf_summary.json`. 500 simulated nights per contest.
+
+**Nights:** 7 slates with main contests and everything needed (11-20 157013 / 157015, 11-23, 11-24 157024 / 157026,
+11-25 157293 / 157295), 25 main contests, 429 seats. 11-26 and 11-27 have no main contest with standings on hand;
+builds before 11-20 have no board values. **Fragile B: n = 0 nights** (as expected at registration: the only source
+files are 11-27, which had no main contest).
+
+### Fills against TODAY (per slate, seat-weighted; mean ± SE over 7 slates)
+
+| Fill | Finish pct vs today | $ / lineup vs today | Net % of fees | Seats filled (topped up) | Max player expo | Distinct cores / contest | Tag |
+|---|---|---|---|---|---|---|---|
+| 1 TODAY (60 / 3 / 15) | (base) | (base) | +95.2% | 416 / 429 (0) | 62% | 14.5 | |
+| 2 FRAGILE CAP (A) | +1.82 ± 3.16, 3 of 7 | −0.06 ± 0.30, 3 of 7 | +90.4% | 353 / 429 (0) | 73% | 12.0 | **NOISE** |
+| 3 TIGHT CORES | +3.92 ± 2.02, 5 of 7 | −0.19 ± 0.33, 3 of 7 | +44.5% | 393 / 429 (136) | 65% | 7.4 | **NOISE** |
+| 4 TIGHT CORES + FRAGILE CAP (A) | +4.88 ± 2.88, 6 of 7 | −0.13 ± 0.35, 4 of 7 | +52.8% | 342 / 429 (89) | 75% | 5.9 | **NOISE** (finish alone would be directional; $ is not) |
+| 2 / 4 under Fragile B | n = 0 slates | | | | | | not run |
+
+Per slate (finish pct / $ per lineup) is in `tcf.out`.
+
+**Reading:**
+- **No fill clears the pre-registered rule on both measures.** Tight cores lift finish percentile (+3.9, 5 of 7;
+  with the fragile cap +4.9, 6 of 7), consistent with cc44bc8, but dollars per lineup are flat to slightly negative
+  (3–4 of 7) and net % of fees roughly halves (+95% → +45–53%), because the tighter sets missed the one or two cashes
+  that carry today's total.
+- **The fragile cap alone does nothing** (+1.8 ± 3.2, 3 of 7; $ 3 of 7).
+- **"Fill every seat" was not achieved, even with the top-up.** The caps bind on the whole pool too (60% exposure,
+  min unique, the 25% fragile cap), so seats go unfilled: today 416 of 429; fragile cap 353; tight 393 (136 of them
+  topped up from outside the 3 cores); tight + fragile 342 (89 topped up). Per-lineup comparisons are still like for
+  like, but net % of fees counts only filled seats, and a real version would need the caps relaxed to fill.
+- **Max exposure above 60%** comes from the page's small-contest round-up (≤ 5 entries round the limit up).
+
+### Fragile A sanity check (out of sample)
+
+| Group (salary < $7k, fp_dk 10–25, not Out) | Per night | Actual − projection | Beat-projection rate |
+|---|---|---|---|
+| Fragile A (top quartile of projected value) | 14.1 | −1.33 ± 0.70 | 0.360 ± 0.049 |
+| Other players in the band | 40.7 | −0.75 ± 0.45 | 0.415 ± 0.034 |
+| **Fragile − other** | | **−0.59 ± 0.87, fragile worse on 4 of 7 nights** | |
+
+Fragile A points the expected way (they fall further short of projection and beat it less often) but weakly, inside
+one SE and on 4 of 7 nights. That matches the source study (r ≈ −0.12): the signal is real on average but too weak
+to cap individual players with, which is why the fragile cap moves nothing.
+
+### Verdict and proposal
+
+- Fragile cap (A): **NOISE**. Tight cores: **NOISE** under the both-measures rule (finish-only directional, $ flat).
+  Tight cores + fragile cap: **NOISE** (finish 6 of 7, $ 4 of 7). Fragile B: not testable yet (n = 0).
+- **No proposal.** Nothing tags DIRECTIONAL or better on both $ and finish, so nothing is proposed for the green-core
+  shadow log. The existing shadow (top-5 cores, green top-5) already tracks the tight-core idea on new main nights;
+  the fragile cap adds nothing to it on this evidence.
+- Watch: Fragile B re-runs unchanged once source files exist on main nights (Gajewski / RotoWire on the mains-only week).
