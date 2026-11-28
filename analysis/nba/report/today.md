@@ -6,7 +6,7 @@
 
 ## Front page
 
-Last night's main slate had 11 games, 4 of them blowouts (TOR by 24 over BKN; PHI by 24 over IND; POR by 22 over GSW; DET by 15 over MIL). The biggest nights against ETR's number among drafted players: Cooper Flagg 37 points over; Immanuel Quickley 25 points over; Ayo Dosunmu 21 points over. Something in the pipeline needs a look: ETR: none on file for 2026-11-27; Today's inputs: our Proj ready 11:24pm; chance to play NOT READY (due 4:30am); Q-tags polled 11:23pm. Today: Sat Main, lock 1:52 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
+Last night's main slate had 11 games, 4 of them blowouts (TOR by 24 over BKN; PHI by 24 over IND; POR by 22 over GSW; DET by 15 over MIL). The biggest nights against ETR's number among drafted players: Cooper Flagg 37 points over; Immanuel Quickley 25 points over; Ayo Dosunmu 21 points over. Something in the pipeline needs a look: ETR: none on file for 2026-11-27. Today: Sat Main, lock 1:52 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
 
 ## T1
 
@@ -103,7 +103,7 @@ No moves against the button here last night.
 
 **Your Q moves.** None last night.
 
-**Today's Questionable players.** Anthony Black (T3 on the ladders, 56% to play): if he sits, Wendell Carter Jr., Jalen Suggs, Tristan da Silva; Steven Adams (T5 on the ladders, 52% to play): if he sits, Fred VanVleet, Jabari Smith Jr., Marcus Smart.
+**Today's Questionable players.** Anthony Black (T3 on the ladders, 63% to play): if he sits, Wendell Carter Jr., Jalen Suggs, Tristan da Silva.
 
 ## Back page
 
@@ -115,7 +115,7 @@ No moves against the button here last night.
 
 **Gallagher's Bad-matchup arrows** (published before your lock). Season: 211 arrows, -1.4 against ETR's final on average, 54% under it.
 
-**Data.** ETR: none on file for 2026-11-27; Today's inputs: our Proj ready 11:24pm; chance to play NOT READY (due 4:30am); Q-tags polled 11:23pm.
+**Data.** ETR: none on file for 2026-11-27.
 
 ---
 
