@@ -115,6 +115,16 @@ _vo = SC.value_own_lines({"source_nights": 6, "first_read_at": 5, "decision_at":
 check("source value vs ownership: count, status, Test 1 quintiles, Test 2 read",
       "source nights with real ownership: 6" in _vo[0] and "first read" in _vo[0] and any("-2.0 / -1.0 / +0.0 / +1.0 / +3.0" in x and "positive on 6 of 6" in x for x in _vo)
       and any("11.00 → 10.50" in x and "no tag before 10" in x for x in _vo), _vo)
+_vo2 = SC.value_own_lines({"source_nights": 6, "status": "first read", "test2": {},
+                           "per_source": {"all": {"alone": {"us": {"value": {"mean": 0.5, "se": 0.05, "n": 6, "leads": 0}, "proj": None, "value_in_tier": {"mean": 0.4, "se": 0.05, "n": 6, "leads": 0}},
+                                                            "gj": {"value": {"mean": 0.6, "se": 0.05, "n": 6, "leads": 0}, "proj": None, "value_in_tier": {"mean": 0.5, "se": 0.05, "n": 6, "leads": 0}}},
+                                                  "paired": {"gj_vs_us": {"value": None, "proj": None, "value_in_tier": {"mean": 0.1, "se": 0.02, "n": 6, "leads": 5}, "players": 400}}}},
+                           "variants": {"val_gj": {"n": 6, "gain": 0.3, "se": 0.1, "better": 5}, "val_us": {"n": 0, "note": "x"}},
+                           "triangulation": {"G1": {"miss": -1.0, "se": 0.5, "nights": 6}, "G5": {"miss": 4.0, "se": 1.0, "nights": 6}}})
+check("source value vs ownership amendment: per source, paired within tier, variants, triangulation groups",
+      any("GJ value 0.60" in x and "US value 0.50" in x for x in _vo2) and any("GJ − US on common players (400" in x and "GJ leads on 5 of 6" in x for x in _vo2)
+      and any("+ val_gj gain +0.30" in x for x in _vo2) and any("G5 +4.0" in x for x in _vo2), _vo2)
+check("source value vs ownership amendment: labels pending reads as such", any("pending labels" in x for x in SC.value_own_lines({"source_nights": 1, "status": "context", "test2": {}, "triangulation": "pending labels"})))
 check("source value vs ownership: nothing yet reads as context with no tests", SC.value_own_lines({"source_nights": 0, "status": "context", "test2": {}})[0].endswith("context."))
 # fill arm on a main-only night (2026-11-28): small fees, no flagship; the gap also reads as % of the night's fees
 import tempfile  # noqa: E402

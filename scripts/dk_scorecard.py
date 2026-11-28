@@ -520,6 +520,30 @@ def value_own_lines(v):
             f_ms(t2["off10_gain"], t2.get("off10_se"), t2["n"], fmt="%.3f", signed=True), t2["tag"]))
     elif n:
         out.append("- Test 2: %s." % (t2.get("note") or "not run"))
+    ps = (v.get("per_source") or {}).get("all") or {}
+    nm = {"us": "US", "gj": "GJ", "rw": "RW"}
+    if ps.get("alone"):
+        cell = lambda d: f_ms(d["mean"], d.get("se"), d["n"]) if d else "n/a"
+        out.append("- Per source, Spearman with real ownership (mean over nights): " + "; ".join(
+            "%s value %s, projection %s, value within tier %s" % (nm.get(s_, s_), cell(d.get("value")), cell(d.get("proj")), cell(d.get("value_in_tier")))
+            for s_, d in sorted(ps["alone"].items(), key=lambda x: ["us", "gj", "rw"].index(x[0]) if x[0] in nm else 9)) + ".")
+    for k, d in sorted((ps.get("paired") or {}).items()):
+        a_, b_ = k.split("_vs_")
+        w = d.get("value_in_tier")
+        if w:
+            out.append("- %s − %s on common players (%d player-contests), within-tier value Spearman %s; %s leads on %d of %d nights." % (
+                nm.get(a_, a_), nm.get(b_, b_), d.get("players", 0), f_ms(w["mean"], w.get("se"), w["n"], fmt="%.3f", signed=True), nm.get(a_, a_), w["leads"], w["n"]))
+    var = v.get("variants") or {}
+    if any((x or {}).get("gain") is not None for x in var.values()):
+        out.append("- Model variants, the live correction + one term, held out (context): " + "; ".join(
+            "+ %s gain %s, better on %d of %d" % (t, f_ms(x["gain"], x.get("se"), x["n"], signed=True), x["better"], x["n"])
+            for t, x in sorted(var.items()) if (x or {}).get("gain") is not None) + ".")
+    tri = v.get("triangulation")
+    if isinstance(tri, dict) and tri:
+        out.append("- Ownership miss (real − ours) by triangulation group: " + "; ".join(
+            "%s %s" % (g, f_ms(x["miss"], x.get("se"), x["nights"], fmt="%.1f", signed=True)) for g, x in sorted(tri.items())) + ".")
+    elif tri:
+        out.append("- Triangulation groups: %s." % tri)
     return out + [""]
 
 
