@@ -1,0 +1,38 @@
+rows (slate x player with a 100+ entry real ownership): 1808; analysis set (max(ours, real) >= 5%): 675 on 16 slates
+
+## 1a. Buckets of d = real - ours (per-slate means, then mean ± SE over slates [90% bootstrap], slates positive)
+field 10+ above us   n=  74 | act - proj +3.405 ± 1.259 (15) [+1.478, +5.451], +12 | value +4.539 ± 0.224 (15) [+4.205, +4.907], +15 | 5x +0.332 ± 0.069 (15) [+0.225, +0.439], +12 | mean d +17.6
+within 10            n= 537 | act - proj +0.186 ± 0.389 (16) [-0.470, +0.778], +11 | value +3.647 ± 0.085 (16) [+3.506, +3.782], +16 | 5x +0.207 ± 0.018 (16) [+0.177, +0.236], +16 | mean d -0.7
+field 10+ below us   n=  64 | act - proj -1.250 ± 1.262 (16) [-3.321, +0.686], +6 | value +3.602 ± 0.224 (16) [+3.227, +3.957], +16 | 5x +0.239 ± 0.056 (16) [+0.154, +0.328], +11 | mean d -17.2
+paired loved - within  act-proj +3.312 ± 1.321 (15) [+1.171, +5.387], +12 | value +0.902 ± 0.258 (15) [+0.500, +1.323], +12 | 5x +0.129 ± 0.072 (15) [+0.017, +0.253], +10
+paired faded - within  act-proj -1.436 ± 1.443 (16) [-3.723, +0.897], +5 | value -0.045 ± 0.232 (16) [-0.421, +0.324], +9 | 5x +0.032 ± 0.058 (16) [-0.057, +0.129], +9
+
+continuous (per-slate Pearson r, then over slates):
+  d vs act - proj    +0.126 ± 0.057 (16) [+0.037, +0.214], +11
+  d vs value         +0.128 ± 0.062 (16) [+0.029, +0.230], +11
+  d vs 5x            +0.081 ± 0.048 (16) [+0.010, +0.164], +11
+  slope of act - proj on d (DK pts per 10 points of d): +1.429 ± 0.691 (16) [+0.330, +2.515], +11
+  same with own_raw (d_raw = real - raw) vs act - proj: +0.128 ± 0.057 (16) [+0.037, +0.219], +11
+
+## 1b. Splits: per-slate r(d, act - proj); and loved / faded mean act - proj
+salary < $5k    n= 156 | r +0.185 ± 0.124 (16) [-0.027, +0.381], +11 | loved n= 24 act-proj +6.242 ± 2.648 (12) [+2.438, +10.387], +9 | faded n= 27 act-proj -4.988 ± 2.228 (14) [-8.457, -1.515], +3
+salary $5-7k    n= 307 | r +0.100 ± 0.066 (16) [-0.008, +0.203], +10 | loved n= 29 act-proj +3.239 ± 1.799 (14) [+0.431, +6.123], +9 | faded n= 20 act-proj -5.030 ± 2.446 (9) [-8.924, -1.556], +2
+salary $7k+     n= 212 | r +0.024 ± 0.082 (16) [-0.105, +0.154], +9 | loved n= 21 act-proj +2.840 ± 2.365 (11) [-0.945, +6.586], +7 | faded n= 17 act-proj +6.018 ± 2.520 (10) [+2.103, +10.281], +8
+proj < 10       n=   7 | r n/a | loved n=  1 act-proj -4.450 (1) | faded n=  0 act-proj n/a
+rotation 10-25  n= 430 | r +0.186 ± 0.080 (16) [+0.065, +0.304], +11 | loved n= 43 act-proj +6.045 ± 1.492 (14) [+3.636, +8.439], +12 | faded n= 41 act-proj -4.319 ± 1.893 (15) [-7.317, -1.186], +3
+stars 25+       n= 238 | r +0.015 ± 0.074 (16) [-0.102, +0.136], +8 | loved n= 30 act-proj +1.258 ± 2.200 (15) [-2.097, +4.883], +8 | faded n= 23 act-proj +5.513 ± 2.125 (12) [+2.351, +8.958], +10
+G               n= 398 | r +0.125 ± 0.054 (16) [+0.037, +0.213], +12 | loved n= 40 act-proj +4.440 ± 1.189 (14) [+2.573, +6.304], +11 | faded n= 43 act-proj +0.969 ± 2.373 (15) [-2.765, +4.628], +9
+F               n= 277 | r +0.098 ± 0.082 (16) [-0.036, +0.219], +11 | loved n= 34 act-proj +1.718 ± 2.388 (14) [-1.966, +5.575], +7 | faded n= 21 act-proj -5.210 ± 2.268 (13) [-8.865, -1.823], +4
+
+## 1c. Leave one slate out: does the d -> result relation carry to a new slate? (ex post: real own is known only after lock)
+fitted b (pts per point of d) range 0.127 to 0.165; held-out slate's own r has the fitted sign on 11 of 16
+held-out MAE gain (proj -> proj + b d), analysis set: +0.020 ± 0.058 (16) [-0.076, +0.107], +9
+
+## 1d. Per-slate Spearman with actual value (analysis set): ours = projected value fp/sal; field = real own; blend = mean of ranks (weight fit LOSO)
+ours     +0.185 ± 0.040 (16) [+0.123, +0.252], +14
+field    +0.187 ± 0.045 (16) [+0.116, +0.261], +12
+our own  +0.141 ± 0.040 (16) [+0.078, +0.206], +14
+blend    +0.199 ± 0.036 (16) [+0.143, +0.255], +14
+field - ours per slate: +0.002 ± 0.052 (16) [-0.084, +0.084], +7; blend - ours: +0.015 ± 0.027 (16) [-0.031, +0.059], +9; LOSO blend weight on ours: [(0.4, 3), (0.5, 10), (0.6, 3)]
+  fp >= 10: ours +0.174 ± 0.040 (16) [+0.116, +0.240], +14 | field +0.185 ± 0.045 (16) [+0.113, +0.256], +12 | field - ours +0.011 ± 0.052 (16) [-0.069, +0.095], +7
+  whole slate (every player with a real own, incl. < 5%): ours +0.505 ± 0.025 (16) [+0.463, +0.542], +16 | field +0.511 ± 0.026 (16) [+0.468, +0.550], +16 | field - ours +0.006 ± 0.014 (16) [-0.016, +0.028], +8
