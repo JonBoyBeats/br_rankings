@@ -326,6 +326,9 @@ def lines(slates=None, arms=None, today=None):
     out += ["", "## Minutes and per-minute by games played at lock", "",
             "The same headlines split by how many games the player had played this season at lock (season, every graded slate; "
             "gp from the night record or analysis/cbb/dk/gp_at_lock.csv). Cells: mean over slates ± SE (slates).", ""] + gp_lines()
+    sl_ = source_lines()
+    if sl_:
+        out += [""] + sl_
     pd = pair_due(len(slates))
     if pd:
         out += ["", pd]
@@ -394,6 +397,70 @@ def pair_due(n_graded):
     return ("Projection pair backtest (analysis/cbb/dk/projection_pair_backtest_2026-11-28/ppb.py, ppb_trend.py): last run %s at %d graded "
             "slates; next re-run due at %d graded slates (now %d)%s." % (last["date"], last["graded_slates"], due, n_graded,
                                                                          " — DUE NOW" if n_graded >= due else ""))
+
+
+# External projection sources in shadow (2026-11-28): battle-royale-research scripts/dk_source.py grades each source
+# against ours and the ruler and publishes AGGREGATES only (the sources are paid content) to the mirror's
+# dk_cbb_source_grades.json; read here from the mirror beside this checkout (MIRROR=<dir> overrides). Display only.
+SOURCE_NAMES = {"gajewski": "Gajewski (shadow)"}
+BLEND_AT = 10
+
+
+def source_grades():
+    root = os.path.abspath(os.path.join(E.DK, "..", "..", ".."))
+    for d in (os.environ.get("MIRROR"), os.path.join(os.path.dirname(root), "br-adp-mirror")):
+        if d and os.path.exists(os.path.join(d, "dk_cbb_source_grades.json")):
+            return json.load(open(os.path.join(d, "dk_cbb_source_grades.json")))
+    return None
+
+
+def source_lines(doc=None):
+    doc = doc if doc is not None else source_grades()
+    if not doc:
+        return []
+    out = ["## External projection sources (shadow)", "",
+           "Graded by battle-royale-research `scripts/dk_source.py` on the rows each source projects (aggregates only: the per-player "
+           "values stay in the private repo). Bands by OUR projection; ours = 0 for a player Out at lock. Cells: mean over graded slates "
+           "± SE (slates); source − ours is paired per slate (negative = the source better); 'better on' counts slates.", ""]
+    for src, d in sorted((doc.get("sources") or {}).items()):
+        name = SOURCE_NAMES.get(src, src + " (shadow)")
+        sl = d.get("slates") or []
+        g = [x for x in sl if x.get("status") == "graded"]
+        pend = [x["slate"] for x in sl if x.get("status") != "graded"]
+        out.append("### %s: %d graded slate%s%s" % (name, len(g), "" if len(g) == 1 else "s", ("; not final yet: " + ", ".join(pend)) if pend else ""))
+        if g:
+            out += ["", "| Headline | Ours | %s | Ruler | %s − ours | %s better on | rows |" % (name, name, name), "|---|---|---|---|---|---|---|"]
+            for k, lab in (("rot_min", HEAD["minutes"]), ("stars_pts", HEAD["per-minute"]), ("rot_pts", "ROTATION points MAE")):
+                xs = [x[k] for x in g if x.get(k) and x[k].get("ours") is not None and x[k].get("source") is not None]
+                d_ = [x["source"] - x["ours"] for x in xs]
+                out.append("| %s | %s | %s | %s | %s | %d of %d | %d |" % (lab, f_ms(*agg([x["ours"] for x in xs])), f_ms(*agg([x["source"] for x in xs])),
+                                                                     f_ms(*agg([x["ruler"] for x in xs])), f_ms(*agg(d_), signed=True),
+                                                                     sum(v < 0 for v in d_), len(d_), sum(x["n"] for x in xs)))
+            sp = [x["spearman"] for x in g if x.get("spearman") and x["spearman"].get("ours") is not None and x["spearman"].get("source") is not None]
+            out.append("| Spearman, projected 10+ (higher better) | %s | %s | n/a | %s | %d of %d | %d |" % (
+                f_ms(*agg([x["ours"] for x in sp])), f_ms(*agg([x["source"] for x in sp])), f_ms(*agg([x["source"] - x["ours"] for x in sp]), signed=True),
+                sum(x["source"] > x["ours"] for x in sp), len(sp), sum(x["n"] for x in sp)))
+            out += ["", "Disagreements (|source − ours| ≥ 4 points), pooled over graded slates:"]
+            for t in ("below $7k", "$7k+"):
+                ds = [x["disagree"][t] for x in g if x.get("disagree") and x["disagree"].get(t) and x["disagree"][t].get("n")]
+                n = sum(x["n"] for x in ds)
+                if n:
+                    closer = sum(x["source_closer"] * x["n"] for x in ds) / n
+                    gap = sum(x["mae_ours_minus_source"] * x["n"] for x in ds) / n
+                    out.append("- %s: %d players; the source closer on %.0f%%; |error| ours minus source %+.2f points" % (t, n, 100 * closer, gap))
+                else:
+                    out.append("- %s: none yet" % t)
+            ow = [x["own"] for x in g if isinstance(x.get("own"), dict)]
+            if ow:
+                out.append("")
+                out.append("Ownership (chalk band, real from 100+ entry contests): source MAE %s, ours %s; off 10+ source %s, ours %s; "
+                           "concentration miss (field top 8 − projected top 8) source %s, ours %s." % (
+                               f_ms(*agg([x["source"]["mae"] for x in ow])), f_ms(*agg([x["ours"]["mae"] for x in ow])),
+                               f_ms(*agg([x["source"]["off10"] for x in ow])), f_ms(*agg([x["ours"]["off10"] for x in ow])),
+                               f_ms(*agg([x["conc_source"] for x in ow]), fmt="%.1f", signed=True), f_ms(*agg([x["conc_ours"] for x in ow]), fmt="%.1f", signed=True)))
+        out += ["", "%s blend test (ours vs the source vs a held-out blend weight, projection and ownership by salary tier): due at %d graded slates "
+                "(now %d)%s." % (name, BLEND_AT, len(g), " — DUE NOW" if len(g) >= BLEND_AT else ""), ""]
+    return out
 
 
 def write(ls):

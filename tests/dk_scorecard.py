@@ -90,5 +90,15 @@ check("night record columns", all(c in cbb_daily.DK_COLS for c in ("ruler_min", 
 
 check("the night record logs gp (games played at lock) and the scorecard splits by it",
       "gp" in cbb_daily.DK_COLS and any("games played at lock" in x for x in SC.lines()))
+_doc = {"sources": {"gajewski": {"slates": [
+    {"slate": "2026-11-27_157547", "status": "graded", "rows": 200,
+     "rot_min": {"ours": 8.0, "source": 7.0, "ruler": 8.5, "n": 60}, "stars_pts": {"ours": 9.0, "source": 9.5, "ruler": 9.2, "n": 20},
+     "rot_pts": {"ours": 7.5, "source": 7.4, "ruler": 7.9, "n": 60}, "spearman": {"ours": 0.31, "source": 0.39, "n": 120},
+     "disagree": {"below $7k": {"n": 10, "source_closer": 0.6, "mae_ours_minus_source": 0.5}, "$7k+": {"n": 0}}},
+    {"slate": "2026-11-28_157555", "status": "not final"}]}}}
+_sl = SC.source_lines(_doc)
+check("the shadow source section: aggregates, the not-final slate, the blend trigger",
+      any("Gajewski (shadow): 1 graded slate; not final yet: 2026-11-28_157555" in x for x in _sl)
+      and any("-1.00" in x and "1 of 1" in x for x in _sl) and any("due at 10 graded slates (now 1)" in x for x in _sl))
 print("\n%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)
