@@ -1,0 +1,58 @@
+rows 2837 (rotation band 1128) on 18 slates; rebuild-era slates with PREVIOUS logged: ['2026-11-25_157293', '2026-11-25_157295', '2026-11-26_157380', '2026-11-26_157382']
+
+## 1. By projected-minutes tier (LIVE at lock), every graded player; LIVE - X: negative = LIVE better
+| tier | situation | rows | LIVE MAE | bias (act - live) | off 5+ | LIVE - PREV (rebuild era) | LIVE - RULER |
+| 30+ | all | 212 | 5.89 ± 0.58 (17) | -0.99 ± 0.88 (17), +6 | 0.40 ± 0.06 (17) | +1.37 ± 0.26 (4), +4 | +1.31 ± 0.40 (3), +3 |
+| 30+ | ordinary | 168 | 4.49 ± 0.37 (17) | +0.86 ± 0.81 (17), +9 | 0.39 ± 0.07 (17) | +1.74 ± 0.37 (4), +4 | +1.77 ± 0.62 (3), +3 |
+| 30+ | fringe | 44 | 9.97 ± 1.95 (12) | -7.77 ± 2.47 (12), +2 | 0.37 ± 0.07 (12) | -0.52 ± 0.64 (3), +1 | -0.25 ± 0.58 (3), +2 |
+| 20-30 | all | 764 | 7.10 ± 0.22 (18) | +0.18 ± 0.57 (18), +8 | 0.58 ± 0.02 (18) | +0.41 ± 0.20 (4), +3 | +0.33 ± 0.17 (3), +3 |
+| 20-30 | ordinary | 558 | 5.87 ± 0.31 (17) | +1.74 ± 0.48 (17), +15 | 0.55 ± 0.03 (17) | +0.48 ± 0.27 (4), +3 | +0.39 ± 0.23 (3), +3 |
+| 20-30 | fringe | 206 | 11.42 ± 0.98 (17) | -5.24 ± 1.57 (17), +5 | 0.73 ± 0.05 (17) | +0.15 ± 0.19 (4), +2 | +0.11 ± 0.30 (3), +2 |
+| 10-20 | all | 708 | 7.10 ± 0.21 (18) | -0.04 ± 0.43 (18), +8 | 0.59 ± 0.02 (18) | -0.02 ± 0.06 (4), +2 | +0.10 ± 0.03 (3), +3 |
+| 10-20 | ordinary | 453 | 6.18 ± 0.25 (17) | +1.49 ± 0.49 (17), +13 | 0.56 ± 0.02 (17) | +0.01 ± 0.04 (4), +2 | +0.12 ± 0.04 (3), +3 |
+| 10-20 | fringe | 255 | 9.54 ± 0.64 (17) | -4.37 ± 1.21 (17), +2 | 0.70 ± 0.03 (17) | -0.11 ± 0.20 (4), +2 | +0.04 ± 0.06 (3), +2 |
+| <10 | all | 1153 | 3.27 ± 0.12 (18) | -0.92 ± 0.29 (18), +4 | 0.22 ± 0.02 (18) | +0.55 ± 0.16 (4), +4 | +0.93 ± 0.12 (3), +3 |
+| <10 | ordinary | 218 | 4.83 ± 0.46 (17) | +0.69 ± 0.84 (17), +12 | 0.41 ± 0.07 (17) | -0.69 ± 0.67 (4), +1 | -0.56 ± 1.38 (3), +2 |
+| <10 | fringe | 935 | 2.93 ± 0.16 (18) | -1.36 ± 0.30 (18), +4 | 0.18 ± 0.02 (18) | +0.60 ± 0.15 (4), +4 | +0.96 ± 0.10 (3), +3 |
+
+rotation band (headline), ordinary vs fringe, rebuild era:
+  all       rows  318 | LIVE 7.77 ± 0.67 (4) | PREV 7.52 ± 0.74 (4) | LIVE - PREV +0.25 ± 0.13 (4), +4
+  ordinary  rows  259 | LIVE 6.59 ± 0.75 (4) | PREV 6.27 ± 0.82 (4) | LIVE - PREV +0.32 ± 0.15 (4), +4
+  fringe    rows   59 | LIVE 13.22 ± 1.15 (4) | PREV 13.24 ± 1.12 (4) | LIVE - PREV -0.02 ± 0.19 (4), +1
+  fringe flags among rotation rows (all slates): {'blowout-likely': 142, '<=2 games': 87, 'DNP risk': 44, 'teammate out': 121}; ordinary share 70%
+
+## 2. Teams: rotation-band minutes MAE (all 18 slates, LIVE), bias, rebuild - previous; volatility before lock
+teams with 6+ rotation rows: 81. Best and worst 8 by shrunk MAE (K=10 toward the pooled 7.02):
+  BAMA   rows 17 | MAE 2.75 (shrunk 4.33) | bias +0.65 | vol 5.64 | churn 0.55 | rebuild - prev -0.60 (9)
+  BAY    rows 12 | MAE 3.87 (shrunk 5.30) | bias +1.15 | vol 3.61 | churn 0.00 | rebuild - prev +0.40 (6)
+  JAC    rows  7 | MAE 2.94 (shrunk 5.34) | bias -2.00 | vol 4.25 | churn 0.50 | rebuild - prev n/a (0)
+  VT     rows 12 | MAE 3.95 (shrunk 5.34) | bias -1.55 | vol 5.50 | churn 0.40 | rebuild - prev n/a (0)
+  PUR    rows 11 | MAE 3.85 (shrunk 5.36) | bias +1.58 | vol 7.18 | churn 0.00 | rebuild - prev -1.02 (6)
+  UGA    rows 14 | MAE 4.49 (shrunk 5.54) | bias +0.27 | vol 5.12 | churn 0.07 | rebuild - prev +0.60 (5)
+  WVU    rows 27 | MAE 5.15 (shrunk 5.65) | bias +0.18 | vol 2.39 | churn 0.00 | rebuild - prev n/a (0)
+  OKST   rows 22 | MAE 5.34 (shrunk 5.86) | bias -1.04 | vol 4.27 | churn 1.00 | rebuild - prev n/a (0)
+  ...
+  UW     rows 18 | MAE 9.78 (shrunk 8.80) | bias +0.47 | vol 6.87 | churn 0.72 | rebuild - prev +0.96 (7)
+  UCONN  rows 13 | MAE 10.60 (shrunk 9.04) | bias -5.46 | vol 4.74 | churn 0.00 | rebuild - prev +0.40 (5)
+  UNLV   rows 18 | MAE 10.27 (shrunk 9.11) | bias -7.02 | vol 4.48 | churn 0.00 | rebuild - prev n/a (0)
+  MIA    rows 15 | MAE 10.75 (shrunk 9.25) | bias -6.04 | vol 5.03 | churn 0.00 | rebuild - prev +0.50 (7)
+  UF     rows 11 | MAE 11.29 (shrunk 9.26) | bias +0.02 | vol 7.03 | churn 0.00 | rebuild - prev n/a (0)
+  PROV   rows 18 | MAE 10.60 (shrunk 9.32) | bias -1.97 | vol 8.13 | churn 0.73 | rebuild - prev +0.88 (4)
+  CLEM   rows 19 | MAE 11.29 (shrunk 9.82) | bias -4.72 | vol 3.98 | churn 0.00 | rebuild - prev -0.64 (7)
+  SMU    rows 13 | MAE 12.35 (shrunk 10.03) | bias +0.42 | vol 5.33 | churn 0.00 | rebuild - prev +0.11 (13)
+
+is it the swingy teams? per slate, r(team volatility before lock, player |miss|) over rotation rows:
+  vol    +0.115 ± 0.043 (18), +14
+  churn  -0.007 ± 0.034 (16), +8
+  high-vol (above the slate's median) minus low-vol rotation MAE, per slate: +0.66 ± 0.35 (18), +10
+  team miss persistence, first-half slates vs second-half (teams with 3+ rows each, 25 teams): r 0.256
+  team volatility (mean before lock) vs its second-half miss: r 0.087 (25 teams)
+
+## 3. Candidate fixes, held out by slate on the rotation-minutes headline (rebuild era: 4 slates)
+ref: PREVIOUS outright (LIVE -> min_old)         all +0.25 ± 0.13 (4), +4 | ordinary +0.32 ± 0.15 (4), +4 | fringe -0.02 ± 0.19 (4), +1
+(b0) one blend weight, all rows                  all +0.24 ± 0.12 (4), +4 | ordinary +0.31 ± 0.15 (4), +4 | fringe -0.02 ± 0.17 (4), +1
+(a) situation switch: rebuild on fringe, blend on ordinary (w per tier) all +0.24 ± 0.11 (4), +4 | ordinary +0.30 ± 0.14 (4), +4 | fringe +0.00 ± 0.00 (4), +0
+(b) tier blend (w per projected-minutes tier, all rows) all +0.25 ± 0.12 (4), +4 | ordinary +0.32 ± 0.15 (4), +4 | fringe -0.02 ± 0.12 (4), +1
+(c) volatility shrinkage toward season mpg (high-vol teams) all +0.01 ± 0.07 (4), +2 | ordinary +0.05 ± 0.08 (4), +3 | fringe -0.17 ± 0.09 (4), +1
+fitted on all rebuild-era slates: one weight {'x': 0.0}; ordinary per tier {'10-20': 0.2, '30+': 0.1, '20-30': 0.0}; per tier {'10-20': 0.5, '30+': 0.1, '20-30': 0.0}; (c) {'med': 5.804304178957458, 's': 0.7}
+(c) on all 18 graded slates (each slate's own live minutes): all +0.09 ± 0.04 (18), +12 | ordinary +0.11 ± 0.05 (17), +12 | fringe +0.08 ± 0.11 (18), +7
