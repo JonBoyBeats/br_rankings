@@ -99,3 +99,22 @@ is in `med_report.out`. Selected flagship slates:
 On most flagship slates, max-entering doesn't move the expected ROI much; it narrows the range. The nights that pay
 (11-20 157015, 11-24 157024) pay at either count, and the nights that don't (11-23, 11-25 157293) lose at either
 count.
+
+## Update 2026-11-28 (evening): 11-27 added
+
+The 11-27 standings arrived, so `med.py` was re-run (`med_run.log`, `med_report.out` regenerated). 11-27 main
+(157547) adds one flagship (the $3K Pull Up Jumper, 4 entries entered, max 7) and one qualifier; it has no main
+contest. The early slate (157545) has no saved build and can't be replayed. Now 70 contests on 15 slates.
+
+| Type / draw | Before (13 flagship slates) | With 11-27 (14 flagship slates) |
+|---|---|---|
+| Flagship, entered re-scored | −60.0% ± 14.5, 2 of 13 | −62.8% ± 13.7, 2 of 14 (period −69.0% on $630) |
+| Flagship, plain, actual count | −26.7% ± 24.9 | −30.5% ± 23.4; period p50 −58.2%, P(neg) 0.80 |
+| Flagship, plain, max count | −25.4% ± 24.2, P(neg) 0.71 | −29.3% ± 22.8; period p5/p50/p95 −70.9 / −34.7 / +62.4%, P(neg) 0.72 |
+| Flagship, top half, max count | −6.3% ± 30.6, 3 of 9 | −14.3% ± 28.5, 3 of 10; P(neg) 0.65 |
+| Qualifier, plain, max count | +67.7% ± 74.5 (5) | +40.0% ± 66.9 (6) |
+
+Mains are unchanged (no main contest on 11-27). 11-27's flagship: real entries −100%; random at the actual count
+−80% [p5..p95 −100%, −33%]; random at the max count −81%; top half at the max count −87%. The flagship − main
+comparison is unchanged (11-27 has no main to pair). The verdict stands: flagships lose underneath even when
+max-entered, mains are about break-even on plain draws, and the flagship vs main gap is DIRECTIONAL.

@@ -1,24 +1,24 @@
-draws per contest: 1000 | contests: 68 | slates: 14
+draws per contest: 1000 | contests: 70 | slates: 15
 pool smaller than max entries (cap binds): none
-seats left unfilled under the caps, flagship  plain_act: 0.8 of 44 per draw (1.9%)
-seats left unfilled under the caps, flagship  plain_max: 3.8 of 162 per draw (2.4%)
-seats left unfilled under the caps, flagship  top50_act: 1.4 of 38 per draw (3.6%)
-seats left unfilled under the caps, flagship  top50_max: 5.4 of 111 per draw (4.9%)
+seats left unfilled under the caps, flagship  plain_act: 0.9 of 48 per draw (1.8%)
+seats left unfilled under the caps, flagship  plain_max: 3.9 of 169 per draw (2.3%)
+seats left unfilled under the caps, flagship  top50_act: 1.6 of 42 per draw (3.8%)
+seats left unfilled under the caps, flagship  top50_max: 6.0 of 118 per draw (5.1%)
 seats left unfilled under the caps, main      plain_act: 28.5 of 684 per draw (4.2%)
 seats left unfilled under the caps, main      plain_max: 31.0 of 745 per draw (4.2%)
 seats left unfilled under the caps, main      top50_act: 37.5 of 429 per draw (8.7%)
 seats left unfilled under the caps, main      top50_max: 38.6 of 436 per draw (8.8%)
-seats left unfilled under the caps, qualifier plain_act: 0.0 of 5 per draw (0.0%)
-seats left unfilled under the caps, qualifier plain_max: 0.0 of 10 per draw (0.0%)
-seats left unfilled under the caps, qualifier top50_act: 0.0 of 5 per draw (0.0%)
-seats left unfilled under the caps, qualifier top50_max: 0.0 of 10 per draw (0.0%)
+seats left unfilled under the caps, qualifier plain_act: 0.0 of 6 per draw (0.0%)
+seats left unfilled under the caps, qualifier plain_max: 0.0 of 12 per draw (0.0%)
+seats left unfilled under the caps, qualifier top50_act: 0.0 of 6 per draw (0.0%)
+seats left unfilled under the caps, qualifier top50_max: 0.0 of 12 per draw (0.0%)
 
-== FLAGSHIP | contests 20 on 13 slates | max entries per user: [1, 3, 7, 9, 14, 16] | actual entries: [1, 2, 3, 4]
-  ENTERED lineups, re-scored: slate ROI -60.0% ± 14.5, positive 2 of 13, median -84.6% | period ROI -65.8% on $570 fees
-  plain act count (  43 lineups, $   557 fees, 13 slates): slate ROI -26.7% ± 24.9, positive 3 of 13, median -62.9% | period ROI p5 -82.2% p50 -55.7% p95 +210.0%, P(negative) 0.78 | top-1% 0.014, cash 0.173 per lineup
-  plain max count ( 158 lineups, $  2283 fees, 13 slates): slate ROI -25.4% ± 24.2, positive 3 of 13, median -63.8% | period ROI p5 -70.0% p50 -32.7% p95 +68.9%, P(negative) 0.71 | top-1% 0.012, cash 0.168 per lineup
-  top50 act count (  36 lineups, $   460 fees,  9 slates): slate ROI -4.3% ± 34.6, positive 2 of 9, median -40.6% | period ROI p5 -79.3% p50 -48.5% p95 +153.7%, P(negative) 0.78 | top-1% 0.016, cash 0.195 per lineup
-  top50 max count ( 105 lineups, $  1494 fees,  9 slates): slate ROI -6.3% ± 30.6, positive 3 of 9, median -44.9% | period ROI p5 -62.2% p50 -15.7% p95 +126.1%, P(negative) 0.62 | top-1% 0.017, cash 0.208 per lineup
+== FLAGSHIP | contests 21 on 14 slates | max entries per user: [1, 3, 7, 9, 14, 16] | actual entries: [1, 2, 3, 4]
+  ENTERED lineups, re-scored: slate ROI -62.8% ± 13.7, positive 2 of 14, median -92.3% | period ROI -69.0% on $630 fees
+  plain act count (  47 lineups, $   617 fees, 14 slates): slate ROI -30.5% ± 23.4, positive 3 of 14, median -63.7% | period ROI p5 -82.5% p50 -58.2% p95 +180.0%, P(negative) 0.80 | top-1% 0.013, cash 0.167 per lineup
+  plain max count ( 165 lineups, $  2387 fees, 14 slates): slate ROI -29.3% ± 22.8, positive 3 of 14, median -63.9% | period ROI p5 -70.9% p50 -34.7% p95 +62.4%, P(negative) 0.72 | top-1% 0.012, cash 0.165 per lineup
+  top50 act count (  40 lineups, $   517 fees, 10 slates): slate ROI -12.5% ± 32.0, positive 2 of 10, median -48.0% | period ROI p5 -80.6% p50 -53.0% p95 +128.3%, P(negative) 0.80 | top-1% 0.014, cash 0.184 per lineup
+  top50 max count ( 112 lineups, $  1591 fees, 10 slates): slate ROI -14.3% ± 28.5, positive 3 of 10, median -47.6% | period ROI p5 -64.2% p50 -19.7% p95 +113.4%, P(negative) 0.65 | top-1% 0.016, cash 0.201 per lineup
 
 == MAIN | contests 43 on 12 slates | max entries per user: [3, 5, 7, 8, 14, 17, 20] | actual entries: [1, 3, 5, 7, 10, 14, 17, 20]
   ENTERED lineups, re-scored: slate ROI +40.6% ± 60.2, positive 3 of 12, median -52.4% | period ROI +35.7% on $299 fees
@@ -27,12 +27,12 @@ seats left unfilled under the caps, qualifier top50_max: 0.0 of 10 per draw (0.0
   top50 act count ( 391 lineups, $   183 fees,  7 slates): slate ROI +26.3% ± 46.9, positive 3 of 7, median -0.6% | period ROI p5 -41.7% p50 +7.9% p95 +85.7%, P(negative) 0.43 | top-1% 0.019, cash 0.221 per lineup
   top50 max count ( 397 lineups, $   189 fees,  7 slates): slate ROI +28.0% ± 48.9, positive 3 of 7, median -1.3% | period ROI p5 -32.0% p50 +16.4% p95 +97.4%, P(negative) 0.34 | top-1% 0.021, cash 0.225 per lineup
 
-== QUALIFIER | contests 5 on 5 slates | max entries per user: [2] | actual entries: [1]
-  ENTERED lineups, re-scored: slate ROI +344.0% ± 271.9, positive 2 of 5, median -100.0% | period ROI +344.0% on $100 fees
-  plain act count (   5 lineups, $   100 fees,  5 slates): slate ROI +109.0% ± 94.7, positive 3 of 5, median +53.7% | period ROI p5 -100.0% p50 +122.0% p95 +344.0%, P(negative) 0.30 | top-1% 0.189, cash 0.189 per lineup
-  plain max count (  10 lineups, $   200 fees,  5 slates): slate ROI +67.7% ± 74.5, positive 3 of 5, median +24.0% | period ROI p5 -100.0% p50 +122.0% p95 +233.0%, P(negative) 0.10 | top-1% 0.152, cash 0.152 per lineup
-  top50 act count (   5 lineups, $   100 fees,  5 slates): slate ROI +98.6% ± 93.7, positive 3 of 5, median +28.8% | period ROI p5 -100.0% p50 +122.0% p95 +344.0%, P(negative) 0.33 | top-1% 0.180, cash 0.180 per lineup
-  top50 max count (  10 lineups, $   200 fees,  5 slates): slate ROI +67.8% ± 74.0, positive 3 of 5, median +50.4% | period ROI p5 -100.0% p50 +122.0% p95 +233.0%, P(negative) 0.10 | top-1% 0.152, cash 0.152 per lineup
+== QUALIFIER | contests 6 on 6 slates | max entries per user: [2] | actual entries: [1]
+  ENTERED lineups, re-scored: slate ROI +270.0% ± 234.0, positive 2 of 6, median -100.0% | period ROI +270.0% on $120 fees
+  plain act count (   6 lineups, $   120 fees,  6 slates): slate ROI +74.7% ± 84.6, positive 3 of 6, median -8.1% | period ROI p5 -100.0% p50 +85.0% p95 +270.0%, P(negative) 0.31 | top-1% 0.158, cash 0.158 per lineup
+  plain max count (  12 lineups, $   240 fees,  6 slates): slate ROI +40.0% ± 66.9, positive 3 of 6, median -23.8% | period ROI p5 -100.0% p50 +85.0% p95 +177.5%, P(negative) 0.49 | top-1% 0.127, cash 0.127 per lineup
+  top50 act count (   6 lineups, $   120 fees,  6 slates): slate ROI +65.7% ± 83.3, positive 3 of 6, median -23.4% | period ROI p5 -100.0% p50 +85.0% p95 +270.0%, P(negative) 0.33 | top-1% 0.150, cash 0.150 per lineup
+  top50 max count (  12 lineups, $   240 fees,  6 slates): slate ROI +40.0% ± 66.5, positive 3 of 6, median -15.4% | period ROI p5 -100.0% p50 +85.0% p95 +177.5%, P(negative) 0.49 | top-1% 0.127, cash 0.127 per lineup
 
 == PER SLATE (flagship and main): real entries vs random at the actual count vs random at the max count (plain; ROI, and p5..p95 of the slate over draws)
   flagship 2026-11-16 156660: real -100% | plain_act -97% [-100%, -100%] (1 lineups) | plain_max -96% [-100%, -87%] (14 lineups)
@@ -48,6 +48,7 @@ seats left unfilled under the caps, qualifier top50_max: 0.0 of 10 per draw (0.0
   flagship 2026-11-25 157295: real -29% | plain_act +16% [-100%, +114%] (3 lineups) | plain_max +39% [-77%, +860%] (15 lineups) | top50_max -17% [-81%, +140%] (15 lineups)
   flagship 2026-11-26 157380: real -100% | plain_act -64% [-100%, +108%] (4 lineups) | plain_max -64% [-100%, +90%] (7 lineups) | top50_max -69% [-100%, +38%] (7 lineups)
   flagship 2026-11-26 157382: real -67% | plain_act -58% [-100%, +58%] (4 lineups) | plain_max -60% [-100%, +14%] (7 lineups) | top50_max -50% [-100%, +83%] (7 lineups)
+  flagship 2026-11-27 157547: real -100% | plain_act -80% [-100%, -33%] (4 lineups) | plain_max -81% [-100%, -42%] (7 lineups) | top50_max -87% [-100%, -54%] (7 lineups)
   main     2026-11-16 156660: real -98% | plain_act -82% [-96%, -61%] (45 lineups) | plain_max -85% [-97%, -70%] (60 lineups)
   main     2026-11-17 156663: real -57% | plain_act -30% [-82%, +83%] (67 lineups) | plain_max -36% [-81%, +66%] (77 lineups)
   main     2026-11-18 157033: real +557% | plain_act -60% [-98%, +17%] (53 lineups) | plain_max -67% [-98%, +2%] (63 lineups)
