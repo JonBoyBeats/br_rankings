@@ -1,0 +1,134 @@
+rows 2098 on 20 slate files; fit 14 (1266 rows), last 6 6 (832 rows)
+overall bias mean -0.28; fit -0.18; last6 -0.44
+
+== A. descriptive by bin: bias e / volatility v / minutes miss m, per-slate means, mean ± SE over slates (k positive) ==
+-- min_sd5  cuts [2.36, 3.44, 4.32, 5.44]
+   Q1       n= 324 | fit: e -0.91 ± 0.71 (5 of 14)  v +6.61 ± 0.27 (14 of 14)  m +0.30 ± 0.53 (9 of 14) | last6: e -0.87 ± 1.51 (2 of 6)  v +6.69 ± 0.62 (6 of 6)  m +0.94 ± 0.95 (5 of 6)
+   Q2       n= 409 | fit: e -0.31 ± 1.02 (6 of 14)  v +7.45 ± 0.41 (14 of 14)  m +0.97 ± 0.60 (9 of 14) | last6: e -0.79 ± 0.81 (2 of 6)  v +7.19 ± 0.90 (6 of 6)  m +0.58 ± 0.49 (4 of 6)
+   Q3       n= 413 | fit: e +0.95 ± 0.56 (9 of 14)  v +7.41 ± 0.48 (14 of 14)  m +1.72 ± 0.53 (13 of 14) | last6: e -0.18 ± 0.42 (3 of 6)  v +8.58 ± 0.56 (6 of 6)  m +1.00 ± 0.23 (5 of 6)
+   Q4       n= 431 | fit: e +0.89 ± 0.66 (9 of 14)  v +7.17 ± 0.27 (14 of 14)  m +1.06 ± 0.51 (9 of 14) | last6: e -0.03 ± 0.67 (3 of 6)  v +8.72 ± 0.73 (6 of 6)  m +1.09 ± 0.73 (5 of 6)
+   Q5       n= 474 | fit: e +0.27 ± 0.56 (8 of 14)  v +7.28 ± 0.45 (14 of 14)  m +0.92 ± 0.62 (9 of 14) | last6: e -0.71 ± 0.41 (0 of 6)  v +8.32 ± 0.56 (6 of 6)  m +0.28 ± 0.64 (3 of 6)
+   missing  n=  47 | fit: e -9.48 ± 1.10 (0 of 6)  v +3.23 ± 0.49 (6 of 6)  m -12.68 ± 1.49 (0 of 6) | last6: e -3.27 ± 3.30 (1 of 2)  v +5.57 ± 3.30 (2 of 2)  m -6.45 ± 2.45 (0 of 2)
+-- min_mean5  cuts [14.6, 19.2, 23.5, 27.0]
+   Q1       n= 394 | fit: e -0.72 ± 0.69 (4 of 14)  v +5.46 ± 0.35 (14 of 14)  m -0.67 ± 0.60 (4 of 14) | last6: e -0.48 ± 0.74 (3 of 6)  v +5.55 ± 0.39 (6 of 6)  m -0.28 ± 0.73 (2 of 6)
+   Q2       n= 415 | fit: e +0.16 ± 0.70 (9 of 14)  v +6.46 ± 0.35 (14 of 14)  m +1.90 ± 0.73 (10 of 14) | last6: e -0.34 ± 0.44 (2 of 6)  v +7.10 ± 0.33 (6 of 6)  m +0.64 ± 0.70 (3 of 6)
+   Q3       n= 393 | fit: e +0.63 ± 0.64 (10 of 14)  v +7.81 ± 0.28 (14 of 14)  m +2.22 ± 0.34 (14 of 14) | last6: e -0.64 ± 1.53 (3 of 6)  v +8.81 ± 0.67 (6 of 6)  m +0.19 ± 1.02 (3 of 6)
+   Q4       n= 382 | fit: e +0.24 ± 1.06 (9 of 14)  v +8.01 ± 0.37 (14 of 14)  m +1.24 ± 0.86 (10 of 14) | last6: e -0.12 ± 0.57 (3 of 6)  v +9.09 ± 0.63 (6 of 6)  m +1.80 ± 0.69 (6 of 6)
+   Q5       n= 488 | fit: e +0.59 ± 0.66 (7 of 14)  v +7.87 ± 0.37 (14 of 14)  m +0.73 ± 0.75 (7 of 14) | last6: e -0.97 ± 1.11 (3 of 6)  v +9.18 ± 0.90 (6 of 6)  m +0.90 ± 1.41 (5 of 6)
+   missing  n=  26 | fit: e -11.39 ± 1.65 (0 of 4)  v +2.99 ± 0.61 (4 of 4)  m -15.95 ± 1.68 (0 of 4) | last6: e n/a  v n/a  m n/a
+-- min_sd10  cuts [2.38, 3.5, 4.32, 5.48]
+   Q1       n= 303 | fit: e -0.78 ± 0.67 (5 of 14)  v +6.55 ± 0.30 (14 of 14)  m +0.36 ± 0.50 (9 of 14) | last6: e -1.19 ± 1.33 (2 of 6)  v +5.68 ± 0.76 (6 of 6)  m +0.73 ± 1.16 (3 of 6)
+   Q2       n= 410 | fit: e -0.35 ± 1.02 (6 of 14)  v +7.46 ± 0.41 (14 of 14)  m +0.94 ± 0.58 (9 of 14) | last6: e -0.44 ± 0.96 (2 of 6)  v +7.30 ± 0.55 (6 of 6)  m +0.62 ± 0.44 (4 of 6)
+   Q3       n= 396 | fit: e +0.89 ± 0.61 (9 of 14)  v +7.47 ± 0.48 (14 of 14)  m +1.70 ± 0.54 (11 of 14) | last6: e +0.39 ± 0.67 (4 of 6)  v +8.31 ± 0.35 (6 of 6)  m +1.32 ± 0.53 (5 of 6)
+   Q4       n= 451 | fit: e +0.90 ± 0.65 (9 of 14)  v +7.19 ± 0.30 (14 of 14)  m +1.11 ± 0.50 (10 of 14) | last6: e -1.12 ± 0.70 (1 of 6)  v +8.99 ± 0.95 (6 of 6)  m +0.23 ± 0.98 (4 of 6)
+   Q5       n= 491 | fit: e +0.29 ± 0.56 (8 of 14)  v +7.25 ± 0.45 (14 of 14)  m +0.91 ± 0.62 (9 of 14) | last6: e -0.44 ± 0.29 (2 of 6)  v +8.16 ± 0.46 (6 of 6)  m +0.75 ± 0.43 (5 of 6)
+   missing  n=  47 | fit: e -9.48 ± 1.10 (0 of 6)  v +3.23 ± 0.49 (6 of 6)  m -12.68 ± 1.49 (0 of 6) | last6: e -3.27 ± 3.30 (1 of 2)  v +5.57 ± 3.30 (2 of 2)  m -6.45 ± 2.45 (0 of 2)
+-- min_mean10  cuts [14.67, 19.2, 23.5, 27.0]
+   Q1       n= 391 | fit: e -0.70 ± 0.69 (4 of 14)  v +5.47 ± 0.35 (14 of 14)  m -0.47 ± 0.57 (4 of 14) | last6: e -0.70 ± 0.50 (2 of 6)  v +5.39 ± 0.33 (6 of 6)  m -0.27 ± 0.47 (1 of 6)
+   Q2       n= 429 | fit: e +0.23 ± 0.72 (9 of 14)  v +6.50 ± 0.37 (14 of 14)  m +1.88 ± 0.73 (10 of 14) | last6: e -0.12 ± 0.37 (3 of 6)  v +7.08 ± 0.35 (6 of 6)  m +0.66 ± 0.49 (4 of 6)
+   Q3       n= 388 | fit: e +0.56 ± 0.64 (10 of 14)  v +7.84 ± 0.29 (14 of 14)  m +2.17 ± 0.34 (14 of 14) | last6: e -0.71 ± 1.61 (3 of 6)  v +8.84 ± 0.65 (6 of 6)  m +0.24 ± 1.17 (3 of 6)
+   Q4       n= 387 | fit: e +0.30 ± 1.08 (9 of 14)  v +8.04 ± 0.39 (14 of 14)  m +1.25 ± 0.86 (10 of 14) | last6: e -0.64 ± 0.46 (2 of 6)  v +9.15 ± 0.60 (6 of 6)  m +1.35 ± 0.66 (5 of 6)
+   Q5       n= 477 | fit: e +0.62 ± 0.65 (7 of 14)  v +7.83 ± 0.37 (14 of 14)  m +0.77 ± 0.75 (7 of 14) | last6: e -0.51 ± 1.02 (4 of 6)  v +9.16 ± 0.62 (6 of 6)  m +1.36 ± 1.21 (5 of 6)
+   missing  n=  26 | fit: e -11.39 ± 1.65 (0 of 4)  v +2.99 ± 0.61 (4 of 4)  m -15.95 ± 1.68 (0 of 4) | last6: e n/a  v n/a  m n/a
+-- min_trend  cuts [-3.5, -1.0, 1.33, 3.83]
+   Q1       n= 246 | fit: e +0.03 ± 0.80 (3 of 9)  v +7.37 ± 0.48 (9 of 9)  m +0.41 ± 0.62 (5 of 9) | last6: e +1.13 ± 0.80 (4 of 6)  v +7.23 ± 0.53 (6 of 6)  m +2.08 ± 0.76 (5 of 6)
+   Q2       n= 250 | fit: e +0.30 ± 1.60 (5 of 10)  v +7.54 ± 0.45 (10 of 10)  m +0.53 ± 1.22 (5 of 10) | last6: e -0.35 ± 0.88 (3 of 6)  v +7.35 ± 0.43 (6 of 6)  m +0.80 ± 0.80 (4 of 6)
+   Q3       n= 276 | fit: e -0.97 ± 0.59 (3 of 10)  v +6.27 ± 0.62 (10 of 10)  m +0.54 ± 0.53 (4 of 10) | last6: e +0.45 ± 0.52 (3 of 6)  v +7.68 ± 0.24 (6 of 6)  m +2.37 ± 0.34 (6 of 6)
+   Q4       n= 280 | fit: e +1.24 ± 0.71 (8 of 9)  v +6.28 ± 0.54 (9 of 9)  m +1.98 ± 0.52 (9 of 9) | last6: e -0.94 ± 0.55 (1 of 6)  v +8.49 ± 0.48 (6 of 6)  m +0.59 ± 0.49 (5 of 6)
+   Q5       n= 317 | fit: e +1.00 ± 1.49 (4 of 10)  v +6.70 ± 0.82 (10 of 10)  m +1.77 ± 0.94 (7 of 10) | last6: e -1.67 ± 0.94 (2 of 6)  v +8.70 ± 0.76 (6 of 6)  m -0.68 ± 1.47 (3 of 6)
+   missing  n= 729 | fit: e -0.23 ± 0.40 (7 of 14)  v +7.81 ± 0.36 (14 of 14)  m +0.24 ± 0.29 (9 of 14) | last6: e -2.23 ± 1.77 (2 of 6)  v +9.33 ± 1.14 (6 of 6)  m -2.73 ± 1.91 (1 of 6)
+-- starter_share  cuts [0.0, 0.25, 1.0, 1.0]
+   Q2       n= 795 | fit: e -0.90 ± 0.36 (4 of 14)  v +6.06 ± 0.18 (14 of 14)  m +0.10 ± 0.42 (7 of 14) | last6: e -0.83 ± 0.23 (0 of 6)  v +6.10 ± 0.29 (6 of 6)  m +0.16 ± 0.20 (3 of 6)
+   Q3       n= 309 | fit: e +0.80 ± 0.69 (9 of 13)  v +7.44 ± 0.56 (13 of 13)  m +1.55 ± 0.57 (10 of 13) | last6: e +1.19 ± 0.65 (5 of 6)  v +8.73 ± 0.30 (6 of 6)  m +1.30 ± 0.57 (5 of 6)
+   Q5       n= 968 | fit: e +0.96 ± 0.53 (11 of 14)  v +7.94 ± 0.14 (14 of 14)  m +1.71 ± 0.58 (12 of 14) | last6: e -0.95 ± 0.58 (2 of 6)  v +9.36 ± 0.59 (6 of 6)  m +0.90 ± 0.88 (4 of 6)
+   missing  n=  26 | fit: e -11.39 ± 1.65 (0 of 4)  v +2.99 ± 0.61 (4 of 4)  m -15.95 ± 1.68 (0 of 4) | last6: e n/a  v n/a  m n/a
+-- gp  cuts [4, 4, 5, 5]
+   Q1       n= 280 | fit: e -2.70 ± 0.58 (2 of 13)  v +6.43 ± 0.54 (13 of 13)  m -3.02 ± 0.81 (1 of 13) | last6: e -4.51 ± 2.85 (1 of 5)  v +9.38 ± 1.19 (5 of 5)  m -6.01 ± 3.36 (1 of 5)
+   Q3       n= 449 | fit: e +0.72 ± 0.45 (9 of 14)  v +8.18 ± 0.43 (14 of 14)  m +1.45 ± 0.30 (12 of 14) | last6: e -0.07 ± 2.62 (3 of 5)  v +8.10 ± 0.87 (5 of 5)  m +0.16 ± 2.04 (3 of 5)
+   Q5       n=1369 | fit: e +0.42 ± 0.54 (6 of 10)  v +6.93 ± 0.18 (10 of 10)  m +1.18 ± 0.48 (9 of 10) | last6: e -0.43 ± 0.34 (2 of 6)  v +7.95 ± 0.37 (6 of 6)  m +0.90 ± 0.53 (5 of 6)
+-- role_change  cuts [0.0, 1.0]
+   0.0      n=1986 | fit: e +0.21 ± 0.29 (7 of 14)  v +7.18 ± 0.10 (14 of 14)  m +1.10 ± 0.24 (12 of 14) | last6: e -0.40 ± 0.34 (3 of 6)  v +8.06 ± 0.34 (6 of 6)  m +0.85 ± 0.46 (5 of 6)
+   1.0      n=  20 | fit: e n/a  v n/a  m n/a | last6: e -1.19 ± 3.50 (1 of 3)  v +9.39 ± 2.77 (3 of 3)  m -1.78 ± 3.95 (1 of 3)
+   missing  n=  92 | fit: e -4.32 ± 1.51 (3 of 10)  v +5.98 ± 0.97 (10 of 10)  m -5.61 ± 1.66 (2 of 10) | last6: e -3.44 ± 3.21 (1 of 3)  v +7.64 ± 2.57 (3 of 3)  m -2.53 ± 2.96 (1 of 3)
+-- abs_spread  cuts [1.5, 3.5, 5.5, 11.5]
+   Q2       n= 728 | fit: e -0.19 ± 0.45 (4 of 11)  v +7.49 ± 0.32 (11 of 11)  m +0.99 ± 0.35 (9 of 11) | last6: e +0.16 ± 0.38 (4 of 6)  v +8.08 ± 0.50 (6 of 6)  m +0.93 ± 0.28 (6 of 6)
+   Q3       n= 472 | fit: e -0.26 ± 0.64 (3 of 7)  v +7.08 ± 0.31 (7 of 7)  m +0.46 ± 0.22 (5 of 7) | last6: e -0.31 ± 0.64 (2 of 5)  v +7.33 ± 0.41 (5 of 5)  m +1.33 ± 0.45 (5 of 5)
+   Q4       n= 555 | fit: e -0.19 ± 0.44 (4 of 9)  v +6.85 ± 0.36 (9 of 9)  m +0.45 ± 0.34 (5 of 9) | last6: e -1.08 ± 0.50 (1 of 5)  v +8.61 ± 0.98 (5 of 5)  m +0.32 ± 1.03 (4 of 5)
+   Q5       n= 343 | fit: e +0.44 ± 0.32 (6 of 9)  v +7.80 ± 0.33 (9 of 9)  m +0.08 ± 0.49 (6 of 9) | last6: e +0.46 ± 2.46 (1 of 2)  v +7.07 ± 0.48 (2 of 2)  m +1.30 ± 0.66 (2 of 2)
+-- total  cuts [147.5, 150.5, 154.5, 158.5]
+   Q1       n= 403 | fit: e -0.14 ± 0.33 (4 of 9)  v +6.63 ± 0.26 (9 of 9)  m +0.71 ± 0.32 (7 of 9) | last6: e +0.40 ± 0.40 (3 of 5)  v +7.87 ± 0.68 (5 of 5)  m +2.13 ± 0.68 (5 of 5)
+   Q2       n= 322 | fit: e -0.73 ± 0.48 (1 of 8)  v +6.89 ± 0.36 (8 of 8)  m +0.29 ± 0.27 (5 of 8) | last6: e -0.59 ± 0.52 (1 of 5)  v +7.84 ± 0.85 (5 of 5)  m +0.52 ± 0.28 (4 of 5)
+   Q3       n= 455 | fit: e -0.09 ± 0.59 (5 of 10)  v +7.52 ± 0.28 (10 of 10)  m +0.85 ± 0.39 (7 of 10) | last6: e -0.71 ± 0.60 (1 of 4)  v +7.07 ± 0.45 (4 of 4)  m +1.33 ± 0.28 (4 of 4)
+   Q4       n= 363 | fit: e +0.09 ± 0.34 (5 of 9)  v +7.51 ± 0.41 (9 of 9)  m +0.82 ± 0.42 (6 of 9) | last6: e -1.08 ± 2.17 (4 of 5)  v +9.75 ± 1.01 (5 of 5)  m -0.92 ± 2.33 (4 of 5)
+   Q5       n= 555 | fit: e +0.18 ± 0.46 (6 of 10)  v +7.26 ± 0.32 (10 of 10)  m +0.38 ± 0.18 (7 of 10) | last6: e -0.65 ± 1.17 (3 of 6)  v +8.23 ± 0.43 (6 of 6)  m +0.61 ± 0.39 (5 of 6)
+-- questionable  cuts [0.0, 1.0]
+   0.0      n=2046 | fit: e +0.11 ± 0.25 (7 of 14)  v +7.10 ± 0.10 (14 of 14)  m +0.95 ± 0.24 (12 of 14) | last6: e -0.32 ± 0.36 (2 of 6)  v +7.94 ± 0.33 (6 of 6)  m +0.95 ± 0.52 (5 of 6)
+   1.0      n=  52 | fit: e -7.89 ± 2.35 (1 of 7)  v +9.25 ± 2.44 (7 of 7)  m -10.41 ± 2.19 (0 of 7) | last6: e -4.46 ± 6.93 (1 of 3)  v +11.08 ± 4.61 (3 of 3)  m -6.50 ± 7.96 (1 of 3)
+-- tier  cuts [0, 1, 2]
+   0        n= 997 | fit: e -0.87 ± 0.15 (0 of 14)  v +6.24 ± 0.18 (14 of 14)  m -0.35 ± 0.31 (5 of 14) | last6: e -0.57 ± 0.46 (1 of 6)  v +6.57 ± 0.29 (6 of 6)  m +0.03 ± 0.39 (2 of 6)
+   1        n= 721 | fit: e +0.54 ± 0.65 (7 of 14)  v +7.97 ± 0.24 (14 of 14)  m +1.70 ± 0.58 (10 of 14) | last6: e -0.36 ± 0.48 (2 of 6)  v +8.79 ± 0.51 (6 of 6)  m +1.10 ± 0.85 (5 of 6)
+   2        n= 380 | fit: e +0.84 ± 0.72 (9 of 14)  v +8.05 ± 0.38 (14 of 14)  m +1.72 ± 0.67 (12 of 14) | last6: e -0.81 ± 1.14 (3 of 6)  v +10.00 ± 0.83 (6 of 6)  m +1.42 ± 1.09 (5 of 6)
+-- proj  cuts [8.8, 13.5, 17.9, 23.1]
+   Q1       n= 396 | fit: e -0.95 ± 0.62 (3 of 14)  v +5.05 ± 0.26 (14 of 14)  m -0.92 ± 0.66 (4 of 14) | last6: e -0.70 ± 0.59 (2 of 6)  v +5.54 ± 0.20 (6 of 6)  m -0.67 ± 0.71 (2 of 6)
+   Q2       n= 413 | fit: e -0.34 ± 0.57 (3 of 14)  v +6.67 ± 0.31 (14 of 14)  m +0.82 ± 0.70 (10 of 14) | last6: e -0.64 ± 0.49 (2 of 6)  v +6.86 ± 0.46 (6 of 6)  m -0.03 ± 0.63 (4 of 6)
+   Q3       n= 393 | fit: e +0.15 ± 0.83 (7 of 14)  v +7.55 ± 0.37 (14 of 14)  m +0.78 ± 0.50 (10 of 14) | last6: e +1.48 ± 0.70 (5 of 6)  v +8.14 ± 0.64 (6 of 6)  m +1.90 ± 0.93 (5 of 6)
+   Q4       n= 429 | fit: e -0.59 ± 0.74 (6 of 14)  v +7.70 ± 0.30 (14 of 14)  m +1.26 ± 0.75 (10 of 14) | last6: e -0.58 ± 0.79 (3 of 6)  v +9.14 ± 0.61 (6 of 6)  m +1.22 ± 0.97 (4 of 6)
+   Q5       n= 467 | fit: e +1.38 ± 0.84 (8 of 14)  v +8.87 ± 0.37 (14 of 14)  m +1.53 ± 0.79 (10 of 14) | last6: e -1.80 ± 0.77 (2 of 6)  v +9.75 ± 0.95 (6 of 6)  m +0.59 ± 0.75 (4 of 6)
+-- ppm_sd10  cuts [0.18, 0.24, 0.3, 0.38]
+   Q1       n= 352 | fit: e +0.64 ± 0.57 (7 of 14)  v +7.87 ± 0.54 (14 of 14)  m +0.90 ± 0.61 (7 of 14) | last6: e +0.19 ± 0.71 (3 of 6)  v +7.66 ± 0.51 (6 of 6)  m +0.79 ± 0.95 (4 of 6)
+   Q2       n= 388 | fit: e -0.98 ± 0.60 (3 of 14)  v +6.78 ± 0.37 (14 of 14)  m +0.33 ± 0.44 (9 of 14) | last6: e -1.47 ± 1.36 (1 of 6)  v +8.55 ± 0.66 (6 of 6)  m -0.29 ± 1.08 (3 of 6)
+   Q3       n= 444 | fit: e +0.20 ± 0.74 (7 of 14)  v +7.64 ± 0.56 (14 of 14)  m +0.44 ± 0.49 (8 of 14) | last6: e -0.28 ± 1.19 (3 of 6)  v +8.89 ± 0.43 (6 of 6)  m +1.14 ± 0.78 (4 of 6)
+   Q4       n= 424 | fit: e +0.10 ± 0.68 (7 of 14)  v +6.79 ± 0.33 (14 of 14)  m +1.46 ± 0.55 (12 of 14) | last6: e +0.26 ± 0.40 (3 of 6)  v +7.46 ± 0.39 (6 of 6)  m +0.70 ± 0.38 (4 of 6)
+   Q5       n= 438 | fit: e +0.55 ± 0.54 (8 of 14)  v +7.52 ± 0.45 (14 of 14)  m +1.33 ± 0.56 (11 of 14) | last6: e -0.69 ± 0.40 (1 of 6)  v +7.69 ± 0.61 (6 of 6)  m +1.08 ± 0.61 (4 of 6)
+   missing  n=  52 | fit: e -8.79 ± 1.04 (0 of 6)  v +3.55 ± 0.74 (6 of 6)  m -11.59 ± 1.37 (0 of 6) | last6: e -1.17 ± 5.40 (1 of 2)  v +7.20 ± 5.31 (2 of 2)  m -3.84 ± 5.06 (1 of 2)
+
+-- A fragile check: top bin minus bottom bin bias (per slate), fit and last 6
+   min_sd5        Q5-Q1: fit +1.18 ± 0.84 (9 of 14 +) | last6 +0.16 ± 1.23 (4 of 6) | signal: no
+   min_mean5      Q5-Q1: fit +1.31 ± 0.93 (9 of 14 +) | last6 -0.49 ± 1.43 (3 of 6) | signal: no
+   min_sd10       Q5-Q1: fit +1.07 ± 0.84 (8 of 14 +) | last6 +0.75 ± 1.12 (4 of 6) | signal: no
+   min_mean10     Q5-Q1: fit +1.32 ± 0.95 (9 of 14 +) | last6 +0.20 ± 1.18 (3 of 6) | signal: no
+   min_trend      Q5-Q1: fit +0.52 ± 1.80 (4 of 9 +) | last6 -2.80 ± 1.38 (1 of 6) | signal: no
+   starter_share  Q5-Q2: fit +1.86 ± 0.74 (12 of 14 +) | last6 -0.12 ± 0.43 (3 of 6) | signal: no
+   gp             Q5-Q1: fit +3.56 ± 0.92 (8 of 9 +) | last6 +4.24 ± 2.71 (4 of 5) | signal: YES
+   role_change    1.0-0.0: fit +nan ± nan (0 of 0 +) | last6 -0.90 ± 3.09 (1 of 3) | signal: no
+   abs_spread     Q5-Q2: fit +0.77 ± 0.56 (6 of 7 +) | last6 +0.01 ± 2.40 (1 of 2) | signal: no
+   total          Q5-Q1: fit +0.49 ± 0.62 (4 of 6 +) | last6 -1.06 ± 1.41 (3 of 5) | signal: no
+   questionable   1.0-0.0: fit -8.04 ± 2.64 (1 of 7 +) | last6 -4.25 ± 6.95 (1 of 3) | signal: YES
+   tier           2-0: fit +1.71 ± 0.81 (10 of 14 +) | last6 -0.24 ± 1.21 (3 of 6) | signal: no
+   proj           Q5-Q1: fit +2.33 ± 1.01 (10 of 14 +) | last6 -1.10 ± 0.72 (2 of 6) | signal: no
+   ppm_sd10       Q5-Q1: fit -0.09 ± 0.74 (8 of 14 +) | last6 -0.88 ± 0.98 (1 of 6) | signal: no
+
+== C. bias model: held-out MAE of fp_dk alone minus MAE of fp_dk + predicted bias (positive = correction helps) ==
+   points, LOSO 20: +0.15 ± 0.06 (13 of 20)  2xSE 0.12
+   points, fit 14 -> last 6: +0.03 ± 0.03 (3 of 6)
+   minutes, LOSO 20: +0.28 ± 0.08 (16 of 20)  2xSE 0.16
+   minutes, fit 14 -> last 6: +0.15 ± 0.08 (5 of 6)
+   context (not pre-registered): the A signals with players who didn't play removed
+     gp <= 3  n=280 DNP 65 (23%); bias all -1.95, played only +0.39
+     gp = 4   n=449 DNP 19 (4%); bias all +0.76, played only +1.30
+     gp >= 5  n=1369 DNP 51 (4%); bias all -0.28, played only +0.24
+     Q        n=52 DNP 30 (58%); bias all -7.42, played only +2.58
+     not Q    n=2046 DNP 105 (5%); bias all -0.10, played only +0.47
+   all-slate standardized coefficients (bias, points): min_sd5 +1.77, min_sd10 -1.57, proj -1.36, min_mean10 +1.33, min_mean5 -0.98, starter_share +0.96, ppm_sd10_missing +0.86, questionable -0.82
+
+== B. volatility model: held-out Gaussian log-likelihood per player, per-player sigma minus comparator (positive = per-player better) ==
+   vs per-tier sigma, LOSO 20: +0.01 ± 0.01 (11 of 20)  2xSE 0.014
+   vs sim sigma (1.25 x miss_dk), LOSO 20: -0.00 ± 0.01 (11 of 20)
+   vs per-tier sigma, fit 14 -> last 6: -0.06 ± 0.07 (4 of 6)
+   10/90 coverage (target 0.80): per-player 0.812, per-tier 0.819, sim band 0.746
+   all-slate standardized coefficients (volatility): min_mean10 -1.26, proj +1.26, min_mean5 +1.01, gp +0.91, min_trend_missing +0.74, questionable +0.53, starter_share +0.38, min_sd5 +0.37
+
+== D. sim calibration by bucket: realised SD of e vs sim stated spread (1.25 x miss_dk); sim 10/90 band coverage ==
+   held-out sigma-hat B1 n= 419: realised SD  7.69 vs stated  6.67 (ratio 1.15; per-slate ratio +0.09 ± 0.04 (15 of 20) vs 1), 10/90 coverage 0.704 TOO TIGHT
+   held-out sigma-hat B2 n= 420: realised SD  8.06 vs stated  7.48 (ratio 1.08; per-slate ratio +0.05 ± 0.04 (13 of 20) vs 1), 10/90 coverage 0.740 
+   held-out sigma-hat B3 n= 419: realised SD  9.25 vs stated  8.56 (ratio 1.08; per-slate ratio -0.03 ± 0.05 (10 of 20) vs 1), 10/90 coverage 0.764 
+   held-out sigma-hat B4 n= 420: realised SD 10.16 vs stated  9.69 (ratio 1.05; per-slate ratio +0.01 ± 0.04 (11 of 20) vs 1), 10/90 coverage 0.760 
+   held-out sigma-hat B5 n= 420: realised SD 11.82 vs stated 11.12 (ratio 1.06; per-slate ratio -0.04 ± 0.06 (9 of 20) vs 1), 10/90 coverage 0.769 
+   sim miss_dk/fp B1 n= 419: realised SD 11.49 vs stated 10.86 (ratio 1.06; per-slate ratio -0.01 ± 0.04 (8 of 20) vs 1), 10/90 coverage 0.776 
+   sim miss_dk/fp B2 n= 419: realised SD 10.42 vs stated  9.71 (ratio 1.07; per-slate ratio +0.04 ± 0.04 (10 of 20) vs 1), 10/90 coverage 0.749 TOO TIGHT
+   sim miss_dk/fp B3 n= 420: realised SD  9.62 vs stated  8.84 (ratio 1.09; per-slate ratio +0.03 ± 0.05 (10 of 20) vs 1), 10/90 coverage 0.717 
+   sim miss_dk/fp B4 n= 420: realised SD  8.70 vs stated  7.88 (ratio 1.10; per-slate ratio +0.06 ± 0.05 (11 of 20) vs 1), 10/90 coverage 0.724 TOO TIGHT
+   sim miss_dk/fp B5 n= 420: realised SD  6.81 vs stated  6.25 (ratio 1.09; per-slate ratio +0.00 ± 0.04 (8 of 20) vs 1), 10/90 coverage 0.771 TOO TIGHT
+   bench (min_proj<20) n=999: realised SD 8.13 vs stated 7.30 (ratio 1.11), 10/90 coverage 0.741
+   not bench n=1099: realised SD 10.66 vs stated 9.98 (ratio 1.07), 10/90 coverage 0.753
+   overall ratio 1.10

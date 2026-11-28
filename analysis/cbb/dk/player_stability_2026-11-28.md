@@ -103,4 +103,104 @@ reported as their own bin in A and filled with the fit slates' median plus a mis
 
 ## Results
 
-(To be appended after the run; nothing below this line existed at the pre-registration commit.)
+(Appended after the run; nothing below this line existed at the pre-registration commit c3961c8.)
+
+### Plain summary
+
+- **Volatility (B): NOISE.** Our own history doesn't predict a player's outcome range better than one σ per
+  salary tier (+0.01 ± 0.01 log-likelihood per player, 11 of 20; out of sample −0.06 ± 0.07). It also doesn't beat
+  the sim's existing per-player spread (1.25 × miss_dk: −0.00 ± 0.01). Keep the bank's per-tier noise; per-player σ
+  isn't worth building.
+- **Bias (C): DIRECTIONAL, and it is sit-risk, not on-court over-projection.**
+  - The bias model's held-out gain is small but real on leave-one-slate-out: points +0.15 ± 0.06 MAE (13 of 20,
+    past 2×SE), minutes +0.28 ± 0.08 (16 of 20). Out of sample (fit on 14, last 6) it's +0.03 ± 0.03 on points (3 of
+    6) and +0.15 ± 0.08 on minutes (5 of 6).
+  - The only two single-feature signals that pass the pre-registered check are **few games played (≤3)** and
+    **Questionable at lock**. Both are carried by players who then didn't play: 23% of the ≤3-game players and 58% of
+    the Q players sat. When they did play, they beat our projection (≤3 games +0.39, Q +2.58).
+  - So the "true fragile" in our history is "may not play", which belongs to the sit-risk flag (task pending, the
+    2-week review), not to a points discount for players who take the floor.
+- **Sim calibration (D): the sim's spread is about 10% too tight overall**, and most so for the players we think are
+  steadiest. Realised SD / stated is 1.10 overall; 1.15 in the lowest predicted-σ fifth (15 of 20 slates above 1, 10/90
+  coverage 0.70 against 0.80). Bench players (1.11) aren't notably tighter than starters (1.07). The sim's 10/90 band
+  covers 0.746 overall.
+
+### Data
+
+2,098 player rows on 20 slate files (2026-11-16 to 11-27): fit set 14 files (1,266 rows), last 6 (832 rows). Mean
+bias −0.28 (fit −0.18, last 6 −0.44). Not reconstructable: fouls per 40 (not in the box cache), dropped as
+pre-registered. One mechanical note: on discrete features (starter share, games played, |spread|) tied quintile cut
+points collapse some bins, so the fragile check compares the lowest and highest bins present.
+
+### A. Descriptive (full tables in `player_stability_2026-11-28/ps.out`)
+
+Fragile check, top bin minus bottom bin bias, per slate:
+
+| Feature | Fit (14) | Last 6 | Passes |
+|---|---|---|---|
+| games played, 5+ vs ≤3 | +3.56 ± 0.92 (8 of 9) | +4.24 ± 2.71 (4 of 5) | yes |
+| Questionable vs not | −8.04 ± 2.64 (6 of 7 negative) | −4.25 ± 6.95 | yes |
+| starter share, high vs low | +1.86 ± 0.74 (12 of 14) | −0.12 ± 0.43 | no (flips) |
+| projection, top vs bottom fifth | +2.33 ± 1.01 (10 of 14) | −1.10 ± 0.72 | no (flips) |
+| salary tier, $7k+ vs <$5k | +1.71 ± 0.81 (10 of 14) | −0.24 ± 1.21 | no (flips) |
+| minutes SD (5 / 10), minutes mean (5 / 10), trend, spread, total, ppm SD | inside noise | — | no |
+| role change (3-game vs season ≥ 6 min) | only 20 rows, none in the fit set | — | can't test |
+
+Volatility per bin rises with minutes, projection and tier (bigger players have wider outcomes in points), which is
+what the per-tier σ already captures.
+
+Context (not pre-registered), the two signals with non-players removed:
+
+| Group | n | Didn't play | Bias, all | Bias, played only |
+|---|---|---|---|---|
+| ≤3 games | 280 | 23% | −1.95 | +0.39 |
+| 4 games | 449 | 4% | +0.76 | +1.30 |
+| 5+ games | 1,369 | 4% | −0.28 | +0.24 |
+| Questionable | 52 | 58% | −7.42 | +2.58 |
+| not Questionable | 2,046 | 5% | −0.10 | +0.47 |
+
+### B. Volatility model
+
+| Held-out log-likelihood gain per player | Mean ± SE | Slates ahead | Tag |
+|---|---|---|---|
+| per-player σ vs per-tier σ, LOSO 20 | +0.01 ± 0.01 (2×SE 0.014) | 11 of 20 | NOISE |
+| per-player σ vs per-tier σ, fit 14 → last 6 | −0.06 ± 0.07 | 4 of 6 | |
+| per-player σ vs sim σ (1.25 × miss_dk), LOSO 20 | −0.00 ± 0.01 | 11 of 20 | NOISE |
+
+10/90 coverage (target 0.80): per-player 0.812, per-tier 0.819, the sim's band 0.746.
+
+### C. Bias model
+
+| Held-out MAE gain (fp_dk alone − fp_dk + predicted bias) | Mean ± SE | Slates ahead | Tag |
+|---|---|---|---|
+| points, LOSO 20 | +0.15 ± 0.06 (2×SE 0.12) | 13 of 20 | |
+| points, fit 14 → last 6 | +0.03 ± 0.03 | 3 of 6 | DIRECTIONAL (past 2×SE on LOSO, but the out-of-sample gain is inside noise) |
+| minutes, LOSO 20 | +0.28 ± 0.08 (2×SE 0.16) | 16 of 20 | |
+| minutes, fit 14 → last 6 | +0.15 ± 0.08 | 5 of 6 | DIRECTIONAL |
+
+### D. Sim calibration by bucket
+
+Realised SD of (actual − proj) against the sim's stated spread (1.25 × miss_dk), and the sim's 10/90 band coverage:
+
+| Bucket | n | Realised / stated | Coverage |
+|---|---|---|---|
+| held-out σ̂ fifth 1 (steadiest) | 419 | 1.15 (above 1 on 15 of 20 slates; too tight beyond 2×SE) | 0.704 |
+| σ̂ fifths 2–5 | 420 each | 1.05–1.08 | 0.74–0.77 |
+| sim miss_dk/fp fifths 1–5 | 419–420 | 1.06–1.10 (fifths 2, 4, 5 flagged too tight) | 0.72–0.78 |
+| bench (min_proj < 20) | 999 | 1.11 | 0.741 |
+| not bench | 1,099 | 1.07 | 0.753 |
+| all | 2,098 | 1.10 | 0.746 |
+
+This differs from the late-swap calibration's 0.93x, which measured the spread of whole lineups at the first break;
+here it is single players at lock.
+
+### Proposals
+
+- **B (per-player σ in the bank): none.** It failed; the bank's per-tier noise stays.
+- **C: no projection correction for players who play.** The bias signal is sit-risk. Proposed instead, for the
+  operator's review alongside the pending sit-risk flag review: test a play-probability discount for (a) players with ≤3
+  games this season and (b) Questionable players, on the minutes/projection arm, with PREVIOUS = fp_dk without it, under
+  rule 5. This is a proposal only; nothing changes.
+- **D (context, not a rule-5 item):** the sim's per-player spread runs about 10% tight, most for the steadiest fifth.
+  A uniform widening of miss_dk would be the natural test, with the calibration and the over-trust gauge as its
+  measures; not proposed here.
