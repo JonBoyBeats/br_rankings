@@ -15,7 +15,9 @@ slates that logged both, +- its SE (the per-slate differences' sd / sqrt(slates)
   pool         the cut's kept lineups minus the whole bank: mean real finish percentile in each 100+ contest (as the lab)
   fill         the entered set minus random fills from the whole bank (fill_eval.csv): dollars back, and the entered
                set's percentile among the random fills
-  late swap    accepted swaps: DraftKings points of the player in minus the player out (swap_grades.csv); n/a if none
+  (late swap   removed from the scorecard 2026-11-28, batch item 5: the operator doesn't use late swap)
+  over-trust   our entries' real points minus their projected (the sim's mean at lock) points, against the field's
+               (field_lineups.csv), per night and rolling (batch item 5, 2026-11-28)
   results      the owner's entries: dollars back minus fees, and return on fees. Read over 20+ nights only.
 
 Columns that were not logged on a slate are n/a on it, never filled in, with three exceptions marked "backfilled":
@@ -41,7 +43,7 @@ SCORECARD = os.path.join(E.DK, "scorecard.md")
 RULER = "ruler-2026-11-23"
 RULER_BACKFILL = {"157021", "157024", "157026"}     # the live model was the ruler's: see the docstring
 ARM_OF = {"minutes": "projection", "per-minute": "projection", "ownership": "ownership", "field": "field", "pool": "cut",
-          "fill": "fill", "late swap": "late_swap", "results": None}
+          "fill": "fill", "results": None}       # late swap removed 2026-11-28 (batch item 5)
 num = PG.num
 
 
@@ -201,7 +203,7 @@ def collect():
     """[{slate, date, group, arms: {arm: per-slate dict or None}}] for every graded slate, oldest first."""
     evals = E.read(E.EVAL)
     own_rows = E.own_grade_rows()
-    fld, pool, fill, swap, res = field_arm(evals), pool_arm(evals), fill_arm(), swap_arm(), results_arm(evals)
+    fld, pool, fill, res = field_arm(evals), pool_arm(evals), fill_arm(), results_arm(evals)
     out = []
     for name, rows in PG.slates():
         d, g = name.split("_")
@@ -209,7 +211,7 @@ def collect():
         out.append({"slate": name, "date": d, "group": g, "arms": {
             "minutes": m if m["live"] is not None else None, "per-minute": p if p["live"] is not None else None,
             "ownership": ownership_arm(g, rows, own_rows), "field": fld.get(g), "pool": pool.get(g), "fill": fill.get(g),
-            "late swap": swap.get(g), "results": res.get(g)}})
+            "results": res.get(g)}})
     return out
 
 
@@ -333,6 +335,7 @@ def lines(slates=None, arms=None, today=None):
     sl_ = source_lines()
     if sl_:
         out += [""] + sl_
+    out += [""] + over_trust_lines()
     out += [""] + fill_type_lines()
     out += [""] + bank_lines()
     cs_ = core_shadow_lines()
@@ -342,7 +345,7 @@ def lines(slates=None, arms=None, today=None):
     if pd:
         out += ["", pd]
     out += ["", "Notes: the field arm's top-1% line is not logged (eval.csv keeps the winning score, top 10% and cash); "
-            "the field, pool, fill and late-swap arms log no PREVIOUS or RULER yet, so they read LIVE only. Results: read over 20+ nights only."]
+            "the field, pool and fill arms read LIVE only in the table (fill and bank PREVIOUS: their own sections below/above). Results: read over 20+ nights only."]
     return out
 
 
@@ -732,6 +735,57 @@ def bank_lines(evals=None):
                f_ms(m, se, n, fmt="%.2f", signed=True), sum(1 for x in d if x > 0), BANK_REVIEW, len(builds), " — DUE NOW" if len(builds) >= BANK_REVIEW else "")]
     if miss:
         out.append("- no Draw-the-9 replay yet for: " + ", ".join(miss) + " (dk_eval.py bankprev, nightly)")
+    return out + [""]
+
+
+# The over-trust gauge (2026-11-28, batch item 5): how far our entered lineups finish under what the sim expected of
+# them at lock, against the field's lineups on the same slate. The sim's mean of a lineup is its projected points
+# (fp_dk at lock, the night record), so the gauge is real minus projected, ours (the saved build's portfolios) and the
+# field's (field_lineups.csv: every real lineup in the slate's standings), per night and rolling. The late-swap
+# calibration (lateswap_calibration_2026-11-27.md) read -7.5 vs -1.4 at each night's first break.
+def over_trust_rows():
+    fl = defaultdict(list)
+    path = os.path.join(E.DK, "field_lineups.csv")
+    for r in (E.read(path) if os.path.exists(path) else []):
+        ids = (r.get("lineup") or "").split()
+        if len(ids) == 8 and "?" not in ids:
+            fl[str(r["draft_group"])].append(ids)
+    builds = {}
+    for f in sorted(glob.glob(os.path.join(E.BUILDS, "dk_bank_*.json"))):
+        b = json.load(open(f))
+        g = str(b.get("draft_group"))
+        if b.get("pool") and b.get("portfolios") and (g not in builds or (b.get("saved_at") or "") >= (builds[g].get("saved_at") or "")):
+            builds[g] = b
+    out = []
+    for g, b in sorted(builds.items(), key=lambda kv: kv[1]["day"]):
+        rec = E.read(os.path.join(E.DK, "%s_%s.csv" % (b["day"], g)))
+        if not rec or not fl.get(g):
+            continue
+        P = {r["dk_id"]: num(r.get("fp_dk")) or 0.0 for r in rec}
+        A = {r["dk_id"]: num(r.get("actual_dk")) for r in rec}
+        if not any(v is not None for v in A.values()):
+            continue
+        gap = lambda L: sum(A.get(str(i)) or 0.0 for i in L) - sum(P.get(str(i), 0.0) for i in L)
+        ours = [b["pool"][i] for ks in b["portfolios"].values() for i in ks]
+        if not ours:
+            continue
+        o, f = S.mean(gap(L) for L in ours), S.mean(gap(L) for L in fl[g])
+        out.append({"slate": "%s_%s" % (b["day"], g), "ours": o, "field": f, "d": o - f, "n": len(ours)})
+    return out
+
+
+def over_trust_lines(rows=None):
+    rows = over_trust_rows() if rows is None else rows
+    out = ["## Over-trust gauge (batch item 5, 2026-11-28)", "",
+           "Our entered lineups' real points minus their projected points (the sim's mean at lock), against the field's real lineups "
+           "on the same slate (field_lineups.csv). Negative = under what the sim expected. Cells: mean over nights ± SE (nights).", ""]
+    if not rows:
+        return out + ["No night with a saved build, a graded record and the field's lineups yet.", ""]
+    for lab, part in (("last %d" % min(LAST, len(rows)), rows[-LAST:]), ("season %d" % len(rows), rows)):
+        out.append("- %s: ours %s, field %s, ours − field %s" % (lab, f_ms(*agg([r["ours"] for r in part]), fmt="%.1f", signed=True),
+                   f_ms(*agg([r["field"] for r in part]), fmt="%.1f", signed=True), f_ms(*agg([r["d"] for r in part]), fmt="%.1f", signed=True)))
+    r = rows[-1]
+    out.append("- last night (%s, %d entries): ours %+.1f, field %+.1f" % (r["slate"], r["n"], r["ours"], r["field"]))
     return out + [""]
 
 

@@ -152,5 +152,11 @@ check("fill gate: a failed 11-27 gate says revert", any("FAILS – revert the fl
 # the bank (batch item 2, 2026-11-28): the line reads n/a with the 10-build review count before any graded build
 _bl = SC.bank_lines([])
 check("bank line: live bank minus the Draw-the-9 replay, PROVISIONAL with the 10-build review", any("live bank − Draw-the-9 replay" in x and "review at 10 builds" in x for x in _bl), _bl)
+# batch item 5 (2026-11-28): the late-swap arm is off the scorecard; the over-trust gauge reads ours vs the field
+check("scorecard: no late-swap arm row", "late swap" not in SC.ARM_OF and not any(l.startswith("| late swap") for l in SC.lines(sl, fake, today="2026-12-03")))
+_ot = SC.over_trust_lines([{"slate": "2026-12-01_1", "ours": -8.0, "field": -1.0, "d": -7.0, "n": 20},
+                           {"slate": "2026-12-02_2", "ours": -6.0, "field": -2.0, "d": -4.0, "n": 10}])
+check("over-trust gauge: ours, field and ours minus field, rolling and last night",
+      any("ours -7.0 ± 1.0 (2), field -1.5 ± 0.5 (2), ours − field -5.5 ± 1.5 (2)" in x for x in _ot) and any("last night (2026-12-02_2, 10 entries): ours -6.0, field -2.0" in x for x in _ot), _ot)
 print("\n%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)
