@@ -92,14 +92,14 @@
       "results": {
         "arms": {
           "L0 U1": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -0.54,
-            "noise": 0.82,
-            "ahead": 1,
+            "diff": -0.23,
+            "noise": 0.75,
+            "ahead": 2,
             "behind": 5,
-            "top10_diff": -0.0044,
+            "top10_diff": -0.0001,
             "verdict": "running",
             "slates": [
               {
@@ -173,6 +173,18 @@
                 "top10_diff": 0.044,
                 "t_pct": 57.7,
                 "c_pct": 54.97
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 154,
+                "c_n": 155,
+                "diff": 1.59,
+                "top10_diff": 0.0261,
+                "t_pct": 45.87,
+                "c_pct": 44.28
               }
             ],
             "lookback": [
@@ -203,14 +215,14 @@
             ]
           },
           "L0 U2": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -2.07,
-            "noise": 2.09,
+            "diff": -1.92,
+            "noise": 1.77,
             "ahead": 3,
-            "behind": 3,
-            "top10_diff": -0.0086,
+            "behind": 4,
+            "top10_diff": -0.0061,
             "verdict": "running",
             "slates": [
               {
@@ -284,6 +296,18 @@
                 "top10_diff": 0.0031,
                 "t_pct": 55.88,
                 "c_pct": 54.97
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 143,
+                "c_n": 155,
+                "diff": -1.0,
+                "top10_diff": 0.0092,
+                "t_pct": 43.27,
+                "c_pct": 44.28
               }
             ],
             "lookback": [
@@ -314,14 +338,14 @@
             ]
           },
           "L0.1 U0": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -0.04,
-            "noise": 1.54,
-            "ahead": 3,
+            "diff": 0.36,
+            "noise": 1.36,
+            "ahead": 4,
             "behind": 3,
-            "top10_diff": 0.0024,
+            "top10_diff": 0.0019,
             "verdict": "running",
             "slates": [
               {
@@ -395,6 +419,18 @@
                 "top10_diff": -0.0246,
                 "t_pct": 55.08,
                 "c_pct": 54.97
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 120,
+                "c_n": 155,
+                "diff": 2.76,
+                "top10_diff": -0.0008,
+                "t_pct": 47.04,
+                "c_pct": 44.28
               }
             ],
             "lookback": [
@@ -425,14 +461,14 @@
             ]
           },
           "L0.1 U1": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -1.47,
-            "noise": 1.61,
+            "diff": -1.57,
+            "noise": 1.36,
             "ahead": 2,
-            "behind": 4,
-            "top10_diff": -0.0026,
+            "behind": 5,
+            "top10_diff": -0.0034,
             "verdict": "running",
             "slates": [
               {
@@ -506,6 +542,18 @@
                 "top10_diff": -0.0491,
                 "t_pct": 53.26,
                 "c_pct": 54.97
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 117,
+                "c_n": 155,
+                "diff": -2.2,
+                "top10_diff": -0.0087,
+                "t_pct": 42.08,
+                "c_pct": 44.28
               }
             ],
             "lookback": [
@@ -536,14 +584,14 @@
             ]
           },
           "L0.1 U2": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -3.06,
-            "noise": 2.92,
+            "diff": -2.73,
+            "noise": 2.49,
             "ahead": 2,
-            "behind": 4,
-            "top10_diff": 0.0042,
+            "behind": 5,
+            "top10_diff": 0.0065,
             "verdict": "running",
             "slates": [
               {
@@ -617,6 +665,18 @@
                 "top10_diff": 0.0768,
                 "t_pct": 59.81,
                 "c_pct": 54.97
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 108,
+                "c_n": 155,
+                "diff": -0.71,
+                "top10_diff": 0.0205,
+                "t_pct": 43.56,
+                "c_pct": 44.28
               }
             ],
             "lookback": [
@@ -647,14 +707,14 @@
             ]
           },
           "L0.2 U0": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -1.16,
-            "noise": 3.3,
-            "ahead": 3,
+            "diff": -0.96,
+            "noise": 2.79,
+            "ahead": 4,
             "behind": 3,
-            "top10_diff": 0.0207,
+            "top10_diff": 0.0233,
             "verdict": "running",
             "slates": [
               {
@@ -728,6 +788,18 @@
                 "top10_diff": -0.0553,
                 "t_pct": 50.28,
                 "c_pct": 54.97
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 77,
+                "c_n": 155,
+                "diff": 0.22,
+                "top10_diff": 0.0391,
+                "t_pct": 44.5,
+                "c_pct": 44.28
               }
             ],
             "lookback": [
@@ -758,14 +830,14 @@
             ]
           },
           "L0.2 U1": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -2.22,
-            "noise": 2.98,
+            "diff": -2.35,
+            "noise": 2.52,
             "ahead": 2,
-            "behind": 4,
-            "top10_diff": -0.0066,
+            "behind": 5,
+            "top10_diff": -0.0019,
             "verdict": "running",
             "slates": [
               {
@@ -839,6 +911,18 @@
                 "top10_diff": -0.0559,
                 "t_pct": 51.69,
                 "c_pct": 54.97
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 77,
+                "c_n": 155,
+                "diff": -3.08,
+                "top10_diff": 0.0261,
+                "t_pct": 41.2,
+                "c_pct": 44.28
               }
             ],
             "lookback": [
@@ -869,14 +953,14 @@
             ]
           },
           "L0.2 U2": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -3.61,
-            "noise": 2.16,
+            "diff": -3.25,
+            "noise": 1.86,
             "ahead": 1,
-            "behind": 5,
-            "top10_diff": -0.0114,
+            "behind": 6,
+            "top10_diff": -0.0097,
             "verdict": "running",
             "slates": [
               {
@@ -950,6 +1034,18 @@
                 "top10_diff": -0.0066,
                 "t_pct": 51.0,
                 "c_pct": 54.97
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 75,
+                "c_n": 155,
+                "diff": -1.1,
+                "top10_diff": 0.0009,
+                "t_pct": 43.18,
+                "c_pct": 44.28
               }
             ],
             "lookback": [
@@ -1098,14 +1194,14 @@
       "results": {
         "arms": {
           "vs parents": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -4.22,
-            "noise": 1.15,
-            "ahead": 0,
+            "diff": -3.27,
+            "noise": 1.36,
+            "ahead": 1,
             "behind": 6,
-            "top10_diff": 0.0265,
+            "top10_diff": 0.025,
             "verdict": "running",
             "slates": [
               {
@@ -1215,6 +1311,24 @@
                 "top_tenth_variants": 65,
                 "top_tenth_share": 0.5159,
                 "parent_link": "stored"
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 190,
+                "c_n": 190,
+                "diff": 2.43,
+                "top10_diff": 0.0158,
+                "t_pct": 38.0,
+                "c_pct": 35.57,
+                "rounds": 1,
+                "variants_kept": 190,
+                "top_tenth": 119,
+                "top_tenth_variants": 38,
+                "top_tenth_share": 0.3193,
+                "parent_link": "stored"
               }
             ],
             "lookback": [
@@ -1311,14 +1425,14 @@
             ]
           },
           "vs rest of top tenth": {
-            "nights": 6,
-            "counted_for_verdict": 6,
+            "nights": 7,
+            "counted_for_verdict": 7,
             "planned": 10,
-            "diff": -3.17,
-            "noise": 2.75,
-            "ahead": 2,
+            "diff": -2.51,
+            "noise": 2.42,
+            "ahead": 3,
             "behind": 4,
-            "top10_diff": 0.0003,
+            "top10_diff": 0.0025,
             "verdict": "running",
             "slates": [
               {
@@ -1428,6 +1542,24 @@
                 "top_tenth_variants": 65,
                 "top_tenth_share": 0.5159,
                 "parent_link": "stored"
+              },
+              {
+                "date": "2026-11-27",
+                "draft_group": "157547",
+                "counted": true,
+                "contests": 1,
+                "t_n": 190,
+                "c_n": 81,
+                "diff": 1.44,
+                "top10_diff": 0.0158,
+                "t_pct": 38.0,
+                "c_pct": 36.55,
+                "rounds": 1,
+                "variants_kept": 190,
+                "top_tenth": 119,
+                "top_tenth_variants": 38,
+                "top_tenth_share": 0.3193,
+                "parent_link": "stored"
               }
             ],
             "lookback": [
@@ -1491,5 +1623,5 @@
       }
     }
   ],
-  "updated_at": "2026-11-28T06:50:51Z"
+  "updated_at": "2026-11-28T20:13:55Z"
 }
