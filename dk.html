@@ -456,11 +456,12 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
     <label class="field"><span class="field-label">Lineups to draw</span><input class="num" id="bankN" type="number" min="10" max="1000" step="10" value="100"></label>
     <label class="field" title="A safety net, off when blank: no unlocked player in more than this share of the whole bank (the lineups already banked and this draw); a draw that would pass it drops his extra lineups and draws replacements without him"><span class="field-label">Max share in bank %</span><input class="num" id="bankMax" type="number" min="10" max="100" step="5" placeholder="off"></label>
     <label class="field" title="Each simulated night a lineup is drawn for, pulled toward the projection: a player's night = projection + this x (his simulated night - projection). 1 is the full noise (until 2026-11-19); 0.35, the backtest's choice on 11-16 to 11-18 (versions.csv). The bank's draw only: the cut, the pick and the field keep the full noise"><span class="field-label">Bank noise</span><input class="num" id="bankS" type="number" min="0.1" max="1" step="0.05" value="0.35"></label>
+    <label class="field" title="Projection noise k (2026-11-28, batch item 2): each lineup drawn multiplies every projection by exp(sZ - s&#178;/2), s = k x his salary tier's measured miss / the tier's mean projection (refreshed nightly from graded slates, bank_noise.json): variety from the projection's honest uncertainty instead of leverage. 0.5 the default (analysis/cbb/dk/bank_recipe_2026-11-28.md, recipe d); 0 = plain draws (the fallback)"><span class="field-label">Projection noise</span><input class="num" id="projK" type="number" min="0" max="2" step="0.1" value="0.5"></label>
     <button type="button" class="primary" id="bankDraw">Draw &amp; bank</button>
-    <button type="button" id="bankDraw9" title="One Draw &amp; bank per combination of the Leverage and Under values below (Lineups to draw each), every other setting as the panel has it; each batch tagged '<idea> L0.1 U1', all grouped under the idea">Draw the 9</button>
+    <button type="button" id="bankDraw9" title="One Draw &amp; bank per combination of the Leverage and Under values below (Lineups to draw each), every other setting as the panel has it; each batch tagged '<idea> L0 U0', all grouped under the idea. From 2026-11-28 the sweep defaults to 0 / 0 (Draw the 1: the lean cells added the players we're overconfident on); the fields stay editable">Draw the 1</button>
     <button type="button" id="draw9Stop" hidden title="Stops after the batch running now; what's banked stays">Stop after this batch</button>
-    <label class="field" title="Draw the 9's Leverage weights, comma separated (remembered in this browser)"><span class="field-label">Sweep: leverage</span><input id="sweepLev" type="text" value="0, 0.1, 0.2" style="width:92px"></label>
-    <label class="field" title="Draw the 9's Min players under (at the panel's owned %), comma separated (remembered in this browser)"><span class="field-label">Sweep: under</span><input id="sweepLow" type="text" value="0, 1, 2" style="width:70px"></label>
+    <label class="field" title="Draw the 9's Leverage weights, comma separated (remembered in this browser)"><span class="field-label">Sweep: leverage</span><input id="sweepLev" type="text" value="0" style="width:92px"></label>
+    <label class="field" title="Draw the 9's Min players under (at the panel's owned %), comma separated (remembered in this browser)"><span class="field-label">Sweep: under</span><input id="sweepLow" type="text" value="0" style="width:70px"></label>
     <label class="field" title="The idea these draws bank under (the bank groups them by it); blank: the rules' own tag. Kept until you rename it."><span class="field-label">Idea name</span><input id="ideaName" type="text" placeholder="e.g. BYU guards" style="width:150px"></label>
     <span class="note" id="tagNow" style="align-self:center;margin:0"></span>
   </div>
@@ -1003,6 +1004,10 @@ async function load() {
     var tr = await fetch(MIRROR + "dk_cbb_teams.json?t=" + Date.now(), { cache: "no-store" });
     teamsDoc = tr.ok ? await tr.json() : null;
   } catch (e) { teamsDoc = null; }
+  try {      // the bank's Projection noise sizes (dk_eval.py banknoise); the study's sizes when absent
+    var bn = await fetch(BANK_NOISE_URL + "?t=" + Date.now(), { cache: "no-store" });
+    bankNoise = bn.ok ? await bn.json() : null;
+  } catch (e) { bankNoise = null; }
   try {      // the projection gate; none on file yet means closed
     var gr = await fetch(GATE + "?t=" + Date.now(), { cache: "no-store" });
     gate = gr.ok ? await gr.json() : null;
@@ -1433,6 +1438,15 @@ function nightsSeed() {
   if (state.nightsSeed == null) { state.nightsSeed = Math.floor(Math.random() * 2147483647); save(); }
   return state.nightsSeed;
 }
+/* Projection noise (2026-11-28, batch item 2; analysis/cbb/dk/bank_recipe_2026-11-28.md recipe (d)): sigma = k x the
+   salary tier's measured miss (MAE of fp_dk against actual, played, projected 5+) / the tier's mean projection, from
+   bank_noise.json (dk_eval.py banknoise, nightly from the graded slates); the study's sizes if it isn't there. */
+var BANK_NOISE_URL = "https://raw.githubusercontent.com/JonBoyBeats/br_rankings/main/analysis/cbb/dk/bank_noise.json";
+var BANK_NOISE_DEF = { lt5: [6.09, 10.6], "5to7": [7.92, 19.0], "7p": [8.33, 29.0] }, bankNoise = null;
+function projSigmaFn(k) {
+  var t = (bankNoise && bankNoise.tiers) || BANK_NOISE_DEF;
+  return function (r) { var s = r.salary || 0, x = s < 5000 ? t.lt5 : s < 7000 ? t["5to7"] : t["7p"]; return x && x[1] ? k * x[0] / x[1] : 0; };
+}
 function nightsCtx(c) { return Object.assign(ctx(), { random: DKSim.seeded((nightsSeed() ^ Math.imul(+c.id || 0, 2654435761)) >>> 0) }); }
 
 // the draw's settings (section 1): every lineup drawn obeys them
@@ -1441,7 +1455,8 @@ function drawRules() {
   var o = { n: 1, maxExpo: 1, minUnique: 1, z: fieldDoc && fieldDoc.z, levW: v("levW") || 0, minSal: v("minSal") || 0, maxTeam: v("maxTeam") || 8,
            stackN: v("stackN") || 0, stackBoth: $("stackBoth").checked, maxOwn: v("maxOwn"),
            lowN: v("lowN") || 0, lowPct: v("lowPct") || 10, conds: (state.rules || []).filter(function (r) { return !r.off; }),
-           nightS: v("bankS") != null ? v("bankS") : 0.35 };
+           nightS: v("bankS") != null ? v("bankS") : 0.35, projK: v("projK") != null ? v("projK") : 0.5 };
+  if (o.projK > 0) o.projSigma = projSigmaFn(o.projK);
   o.spread = spreadOf(o.conds);
   return o;
 }
@@ -5015,12 +5030,13 @@ $("bankDraw").addEventListener("click", function () {
    skipped and named. The panel's two fields are put back afterwards. Stop ends after the batch running. */
 var draw9 = { on: false, stop: false };
 function sweepVals(id, def) { var v = String($(id).value).split(/[,\s]+/).filter(Boolean).map(Number).filter(function (x) { return isFinite(x) && x >= 0; }); return v.length ? v : def; }
-(function () { try { var sv = JSON.parse(localStorage.getItem("dkcbb:sweep") || "null"); if (sv) { if (sv.lev) $("sweepLev").value = sv.lev; if (sv.low) $("sweepLow").value = sv.low; } } catch (e) {}
-  var keep = function () { try { localStorage.setItem("dkcbb:sweep", JSON.stringify({ lev: $("sweepLev").value, low: $("sweepLow").value })); } catch (e) {}
+// the sweep is remembered under a new key from 2026-11-28 (batch item 2), so Draw the 1 (0 / 0) is the default again
+(function () { try { var sv = JSON.parse(localStorage.getItem("dkcbb:sweep2") || "null"); if (sv) { if (sv.lev) $("sweepLev").value = sv.lev; if (sv.low) $("sweepLow").value = sv.low; } } catch (e) {}
+  var keep = function () { try { localStorage.setItem("dkcbb:sweep2", JSON.stringify({ lev: $("sweepLev").value, low: $("sweepLow").value })); } catch (e) {}
     $("bankDraw9").textContent = "Draw the " + sweepVals("sweepLev", [0]).length * sweepVals("sweepLow", [0]).length; };
   $("sweepLev").addEventListener("change", keep); $("sweepLow").addEventListener("change", keep); keep(); })();
 async function drawSweep() {
-  var levs = sweepVals("sweepLev", [0, 0.1, 0.2]), lows = sweepVals("sweepLow", [0, 1, 2]), n = +$("bankN").value || 100;
+  var levs = sweepVals("sweepLev", [0]), lows = sweepVals("sweepLow", [0]), n = +$("bankN").value || 100;
   var was = { lev: $("levW").value, low: $("lowN").value }, combos = [];
   levs.forEach(function (l) { lows.forEach(function (u) { combos.push([l, u]); }); });
   $("levW").value = 0; $("lowN").value = 0;

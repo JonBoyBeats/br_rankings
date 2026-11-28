@@ -146,5 +146,8 @@ check("fill by type: flagship +20 ahead 1, main -3 ahead 0 with the 10-slate rev
       and any("pending (11-27's flagship standings" in x for x in _fl), _fl)
 _fl2 = SC.fill_type_lines(_ev, gate={"status": "fails", "note": "+20 vs 2xSE 30"}, standings_in=True)
 check("fill gate: a failed 11-27 gate says revert", any("FAILS – revert the flagship tier (+20 vs 2xSE 30)" in x for x in _fl2), _fl2)
+# the bank (batch item 2, 2026-11-28): the line reads n/a with the 10-build review count before any graded build
+_bl = SC.bank_lines([])
+check("bank line: live bank minus the Draw-the-9 replay, PROVISIONAL with the 10-build review", any("live bank − Draw-the-9 replay" in x and "review at 10 builds" in x for x in _bl), _bl)
 print("\n%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)

@@ -181,6 +181,14 @@
      "2026-11-20 | ADOPT C2 | The cut by merit with a floor is the DK ",
      "2026-11-20 | ADOPT C3 | Variants: every K-of-8 keep-set is the d"
     ]
+   },
+   {
+    "tag": "cut-2026-11-28",
+    "from": "2026-11-28",
+    "rows": [
+     "2026-11-28 | BANK plain draws with Projection noise k 0.5; Draw the 1 | The bank's draw (dk.html drawRules / DKS"
+    ],
+    "note": "bank: plain + Projection noise k 0.5, Draw the 1"
    }
   ],
   "fill": [

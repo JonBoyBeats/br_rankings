@@ -1,0 +1,21 @@
+{
+ "tiers": {
+  "lt5": [
+   6.19,
+   10.96,
+   886
+  ],
+  "5to7": [
+   8.0,
+   19.52,
+   704
+  ],
+  "7p": [
+   8.46,
+   27.33,
+   372
+  ]
+ },
+ "slates": 20,
+ "how": "MAE of fp_dk vs actual_dk and mean fp_dk by salary tier (<$5k, $5-7k, $7k+), played, projected 5+, not Out; sigma = k x MAE / mean"
+}

@@ -459,7 +459,7 @@ function audit(name, L, o) {
   const nightCheck = await pg.evaluate(async () => {
     const out = [];
     for (const seed of [5, 6, 7]) {
-      const cx = ctx(), o = Object.assign(drawRules(), { conds: [] });
+      const cx = ctx(), o = Object.assign(drawRules(), { conds: [], projSigma: null });     // plain (Projection noise 0): the draw's night alone
       cx.random = DKSim.seeded(seed);
       const night = DKSim.nightPoints(cx, fieldDoc.z, o.nightS);
       const best = (await DKSim.solve(cx, Object.assign({}, o, { n: 1, minUnique: 1, noCaps: true, night }))).lineups[0];
@@ -501,6 +501,20 @@ function audit(name, L, o) {
         JSON.stringify(sat.near) === JSON.stringify([1, 0]), JSON.stringify([m0, sat, wantLvl]));
   // Draw the 9 (a 2 x 2 sweep here for speed): one batch per leverage x under combination, each tagged "<idea> L.. U..",
   // grouped under the idea, its saved rules carrying its own levW / lowN; the panel put back; the status says what happened
+  // batch item 2 (2026-11-28): the sweep defaults to 0 / 0 (Draw the 1) and Projection noise k 0.5 jitters each draw's
+  // projections by the salary tier's measured miss (the study's sizes when bank_noise.json isn't there)
+  const pn = await pg.evaluate(async () => {
+    const def = { lev: $("sweepLev").value, low: $("sweepLow").value, label: $("bankDraw9").textContent, k: $("projK").value };
+    const dr = drawRules(), cheap = rows.find(r => r.salary < 5000), star = rows.find(r => r.salary >= 7000);
+    const t = (bankNoise && bankNoise.tiers) || BANK_NOISE_DEF;
+    const sg = { cheap: dr.projSigma(cheap), star: dr.projSigma(star), wantCheap: 0.5 * t.lt5[0] / t.lt5[1], wantStar: 0.5 * t["7p"][0] / t["7p"][1] };
+    $("projK").value = "0"; const off = drawRules().projSigma == null; $("projK").value = "0.5";
+    const cx = ctx(), res = await DKSim.pool(cx, Object.assign({}, dr, { conds: [] }), 5);
+    return { def, sg, off, n: res.lineups.length };
+  });
+  check("bank: the sweep defaults to 0 / 0 (Draw the 1); Projection noise k 0.5 gives each salary tier sigma = k x miss / mean (wider for cheap players); k 0 is plain; a jittered draw banks lineups",
+        pn.def.lev === "0" && pn.def.low === "0" && pn.def.label === "Draw the 1" && pn.def.k === "0.5" && Math.abs(pn.sg.cheap - pn.sg.wantCheap) < 1e-12 &&
+        Math.abs(pn.sg.star - pn.sg.wantStar) < 1e-12 && pn.sg.cheap > pn.sg.star && pn.off && pn.n === 5, JSON.stringify(pn));
   const sw = await pg.evaluate(async () => {
     const n0 = BANK.lineups.length, keepN = $("bankN").value; $("bankN").value = "10"; $("sweepLev").value = "0, 0.1"; $("sweepLow").value = "0, 1";
     $("sweepLev").dispatchEvent(new Event("change")); $("levW").value = "0.05"; $("lowN").value = "0";
@@ -510,8 +524,8 @@ function audit(name, L, o) {
     const tags = ["L0 U0", "L0 U1", "L0.1 U0", "L0.1 U1"].map(x => idea + " " + x), have = tags.filter(t => BANK.tagRules[t]);
     const out = { label, idea, have: have.length, grouped: have.every(t => BANK.groups[t] === idea), rules: have.map(t => [BANK.tagRules[t].levW, BANK.tagRules[t].lowN]),
       restored: $("levW").value === "0.05" && $("lowN").value === "0", grew: BANK.lineups.length > n0, msg: $("buildStatus").textContent,
-      remembered: JSON.parse(localStorage.getItem("dkcbb:sweep") || "{}").lev === "0, 0.1" };
-    $("bankN").value = keepN; $("sweepLev").value = "0, 0.1, 0.2"; $("sweepLow").value = "0, 1, 2"; $("sweepLev").dispatchEvent(new Event("change")); $("levW").value = "0";
+      remembered: JSON.parse(localStorage.getItem("dkcbb:sweep2") || "{}").lev === "0, 0.1" };
+    $("bankN").value = keepN; $("sweepLev").value = "0"; $("sweepLow").value = "0"; $("sweepLev").dispatchEvent(new Event("change")); $("levW").value = "0";
     return out;
   });
   check("Draw the 9: one batch per leverage x under (here 2 x 2), each tagged '<idea> L.. U..' and grouped under the idea, its rules recording its own levW / lowN; the panel put back; remembered sweep; the status line",
@@ -541,7 +555,7 @@ function audit(name, L, o) {
     out.batches = ["L0 U0", "L0.1 U0"].map(x => { const t = idea + " " + x, L = BANK.lineups.filter((_, i) => BANK.tags[i][0] === t);
       return { n: L.length, min: L.length ? Math.min.apply(null, shares(L)) : 0, rec: !!(BANK.tagRules[t] && BANK.tagRules[t].spread && BANK.tagRules[t].spread[six[5]] === 10) }; });
     out.msg9 = $("buildStatus").textContent;
-    $("bankN").value = keepN; $("sweepLev").value = "0, 0.1, 0.2"; $("sweepLow").value = "0, 1, 2"; $("sweepLev").dispatchEvent(new Event("change"));
+    $("bankN").value = keepN; $("sweepLev").value = "0"; $("sweepLow").value = "0"; $("sweepLev").dispatchEvent(new Event("change"));
     // Quick sim: its 10x draw honours the floors (5 kept: 50 drawn), and its note names the spread
     $("quickN").value = "5"; await quickSim(); const q = QSIM;
     out.quick = q ? { drawn: q.drawn, note: /spread 6 players \u226510%/.test($("quickBox").textContent), txt: q.spreadTxt } : null;

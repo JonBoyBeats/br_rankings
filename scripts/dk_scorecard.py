@@ -334,6 +334,7 @@ def lines(slates=None, arms=None, today=None):
     if sl_:
         out += [""] + sl_
     out += [""] + fill_type_lines()
+    out += [""] + bank_lines()
     cs_ = core_shadow_lines()
     if cs_:
         out += [""] + cs_
@@ -640,7 +641,7 @@ def fill_type_lines(evals=None, gate=None, standings_in=None):
         c[r["who"]] = (num(r.get("dollars_back")) or 0.0, num(r["fees"]))
     out = ["## Fill by contest type (proposal 1, from %s)" % P1_FROM, "",
            "Flagship and main contests fill by a random draw from the kept pool's top half by sim value (dk.html, 2026-11-28); "
-           "PREVIOUS = the fill as it was (fill_prev: flagships' joint top-1%%, mains' Max ROI) from the same pool, graded on the same contests. "
+           "PREVIOUS = the fill as it was (fill_prev: flagships' joint top-1%, mains' Max ROI) from the same pool, graded on the same contests. "
            "Cells: entered minus PREVIOUS, $ per slate (summed over the slate's contests of that type), mean ± SE (slates), ahead = slates entered beat PREVIOUS.", ""]
     for t, tier in (("flagship", "PROVEN"), ("main", "PROVISIONAL")):
         d = []
@@ -667,6 +668,67 @@ def fill_type_lines(evals=None, gate=None, standings_in=None):
         st = "pending (11-27's flagship standings, contest %s, not uploaded)" % P1_GATE_CONTESTS[0]
     out += ["- 11-27 gate (flagship tier on 7 slates since 11-24, must clear 2 × SE): " + st, ""]
     return out
+
+
+# The bank (2026-11-28, batch item 2): the bank draws plain with Projection noise k 0.5 (Draw the 1). PREVIOUS = the
+# night's Draw-the-9 replay at lock (analysis/cbb/dk/bank_prev/, dk_eval.py bankprev). Per slate: the live bank's
+# lineups minus PREVIOUS's, mean real finish percentile over the slate's graded 100+ contests. PROVISIONAL, reviewed at
+# BANK_REVIEW builds; the fallback is all plain (k 0).
+BANK_FROM = "2026-11-28"
+BANK_REVIEW = 10
+BANK_PREV = os.path.join(E.DK, "bank_prev")
+
+
+def bank_slate_diff(b, prev_lineups, contests):
+    """Live bank minus PREVIOUS, mean real finish percentile over the slate's graded 100+ contests (None if none)."""
+    rec = E.read(os.path.join(E.DK, "%s_%s.csv" % (b["day"], b["draft_group"])))
+    if not rec:
+        return None
+    diffs = []
+    for cid in sorted(contests):
+        path = os.path.join(E.STANDINGS, "contest-standings-%s.csv" % cid)
+        if not os.path.exists(path):
+            continue
+        entries, players = E.standings(path)
+        n = len(entries)
+        if n < E.LAB_MIN_ENTRIES:
+            continue
+        pts = E.night_points(rec, players)
+        field = sorted((e["points"] for e in entries), reverse=True)
+        pc = lambda lu: 100.0 * (n - (E.placed(sum(pts.get(str(i)) or 0 for i in lu), field) - 1)) / n
+        diffs.append(S.mean(pc(lu) for lu in b["pool"]) - S.mean(pc(lu) for lu in prev_lineups))
+    return S.mean(diffs) if diffs else None
+
+
+def bank_lines(evals=None):
+    evals = E.read(E.EVAL) if evals is None else evals
+    contests = defaultdict(set)
+    for r in evals:
+        contests[str(r["draft_group"])].add(r["contest_id"])
+    builds = {}
+    for f in sorted(glob.glob(os.path.join(E.BUILDS, "dk_bank_*.json"))):
+        b = json.load(open(f))
+        g = str(b.get("draft_group"))
+        if (b.get("day") or "") >= BANK_FROM and b.get("pool") and (g not in builds or (b.get("saved_at") or "") >= (builds[g].get("saved_at") or "")):
+            builds[g] = b
+    d, miss = [], []
+    for g, b in sorted(builds.items(), key=lambda kv: kv[1]["day"]):
+        pf = os.path.join(BANK_PREV, "%s_%s.json" % (b["day"], g))
+        if not os.path.exists(pf):
+            miss.append("%s_%s" % (b["day"], g))
+            continue
+        x = bank_slate_diff(b, json.load(open(pf)).get("lineups") or [], contests.get(g, ()))
+        if x is not None:
+            d.append(x)
+    m, se, n = agg(d)
+    out = ["## Bank (batch item 2, from %s)" % BANK_FROM, "",
+           "The bank draws plain with Projection noise k 0.5 (Draw the 1); PREVIOUS = the night's Draw-the-9 replay at lock (bank_prev/). "
+           "Per slate: live bank minus PREVIOUS, mean real finish percentile over the slate's graded 100+ contests.", "",
+           "- live bank − Draw-the-9 replay: %s, ahead %d; PROVISIONAL, review at %d builds (now %d)%s; fallback all plain (k 0)" % (
+               f_ms(m, se, n, fmt="%.2f", signed=True), sum(1 for x in d if x > 0), BANK_REVIEW, len(builds), " — DUE NOW" if len(builds) >= BANK_REVIEW else "")]
+    if miss:
+        out.append("- no Draw-the-9 replay yet for: " + ", ".join(miss) + " (dk_eval.py bankprev, nightly)")
+    return out + [""]
 
 
 def write(ls):

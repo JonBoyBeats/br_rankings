@@ -114,6 +114,8 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             main / flagship); the owner's entries left out. For the qualifier refit's duplication and construction. Nightly.
   qualcheck the count of real qualifier fields in field_users.csv against QUAL_REFIT_AT (10): the DK page's qualifier field
             is an assumed chalk style until then (fill_profiles_2026-11-24.md, the refit plan)
+  banknoise analysis/cbb/dk/bank_noise.json, nightly (2026-11-28): the bank's Projection noise sizes by salary tier
+  bankprev  analysis/cbb/dk/bank_prev/<date>_<group>.json, nightly (2026-11-28): the night's Draw-the-9 replay at lock (the bank arm's PREVIOUS)
   coreshadow analysis/cbb/dk/core_shadow.csv, nightly (logging only, 2026-11-28): every main contest of each saved build,
             the top-5-cores and top-5 green-core picks beside the page's pick and the real entries, graded on the standings
             (scripts/dk_core_shadow.py); the scorecard's "Green-core shadow (mains)" keeps the 7-of-10 count
@@ -524,7 +526,7 @@ def nightly(a):
                 w.writerows(rows)
     if not out:
         print("  DraftKings standings: nothing new to grade")
-    for step in (fieldusers, fieldlineups, flagjoint, coreshadow):    # contest profiles (2026-11-24): the qualifier fields (users, 2026-11-28 their lineups) and the flagships' record
+    for step in (fieldusers, fieldlineups, flagjoint, coreshadow, banknoise, bankprev):    # contest profiles (2026-11-24): the qualifier fields (users, 2026-11-28 their lineups) and the flagships' record; the bank's noise sizes and PREVIOUS (2026-11-28)
         try:
             step(a)
         except Exception as e:      # noqa: BLE001 (a side record; the grading above stands)
@@ -3320,6 +3322,39 @@ def qualcheck(a=None):
           % (len(q), QUAL_REFIT_AT, users, "; REFIT DUE: fill_profiles_2026-11-24.md has the plan" if len(q) >= QUAL_REFIT_AT else ""))
 
 
+BANK_NOISE = os.path.join(DK, "bank_noise.json")
+
+
+def banknoise(a=None):
+    """The bank's Projection noise sizes (2026-11-28, batch item 2; the DK page reads them): by salary tier, the graded
+    slates' miss of fp_dk against actual (played, projected 5+, not Out at lock) and the tier's mean projection, as
+    analysis/cbb/dk/bank_recipe_2026-11-28.md recipe (d) measured them. {"tiers": {tier: [mae, mean, n]}, "slates": n}."""
+    import dk_proj_grade as PG
+    T, n = {"lt5": [], "5to7": [], "7p": []}, 0
+    for _, rows in PG.slates():
+        n += 1
+        for r in rows:
+            f, act, m, sal = num(r.get("fp_dk")), num(r.get("actual_dk")), num(r.get("min")), num(r.get("salary"))
+            if f is None or act is None or not m or m <= 0 or f < 5 or sal is None or r.get("status") == "Out":
+                continue
+            T["lt5" if sal < 5000 else "5to7" if sal < 7000 else "7p"].append((abs(f - act), f))
+    if not all(T.values()):
+        print("  banknoise: too few graded rows; bank_noise.json left as is")
+        return
+    doc = {"tiers": {k: [round(S.mean(x[0] for x in v), 2), round(S.mean(x[1] for x in v), 2), len(v)] for k, v in T.items()}, "slates": n,
+           "how": "MAE of fp_dk vs actual_dk and mean fp_dk by salary tier (<$5k, $5-7k, $7k+), played, projected 5+, not Out; sigma = k x MAE / mean"}
+    json.dump(doc, open(BANK_NOISE, "w"), indent=1)
+    print("  banknoise: %d slates; %s" % (n, ", ".join("%s %.2f / %.1f" % (k, v[0], v[1]) for k, v in doc["tiers"].items())))
+
+
+def bankprev(a):
+    """The bank arm's PREVIOUS (2026-11-28, batch item 2): for every saved build from 2026-11-28 without one, the night's
+    Draw-the-9 replay at lock (scripts/dk_lab_control.py --recipe d9; analysis/cbb/dk/bank_prev/), graded against the
+    live bank by the scorecard's bank line."""
+    import dk_lab_control
+    dk_lab_control.main(["--mirror", a.mirror, "--recipe", "d9", "--since", "2026-11-28"])
+
+
 def coreshadow(a):
     """The green-core shadow (2026-11-28, the operator; logging only): every main contest of every saved build not yet
     logged, the top-5-cores and top-5 green-core picks beside the page's pick and the real entries, graded on the real
@@ -3622,6 +3657,9 @@ def main():
     flu.add_argument("--mirror", required=True)
     csh = sub.add_parser("coreshadow")
     csh.add_argument("--mirror", required=True)
+    sub.add_parser("banknoise")
+    bp = sub.add_parser("bankprev")
+    bp.add_argument("--mirror", required=True)
     sub.add_parser("qualcheck")
     sub.add_parser("owngrade")
     sub.add_parser("projgrade")
@@ -3636,7 +3674,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "fieldlineups": fieldlineups, "coreshadow": coreshadow, "qualcheck": qualcheck, "owngrade": owngrade, "projgrade": projgrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab, "scorecard": scorecard}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "fieldlineups": fieldlineups, "coreshadow": coreshadow, "banknoise": banknoise, "bankprev": bankprev, "qualcheck": qualcheck, "owngrade": owngrade, "projgrade": projgrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab, "scorecard": scorecard}[a.cmd](a)
 
 
 if __name__ == "__main__":

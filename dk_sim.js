@@ -833,12 +833,21 @@
   // The pool's draw: with o.z (the sim's outcome shape), each lineup is the best one under the rules for one simulated
   // night (nightPoints), less the Leverage weight o.levW x projected ownership; without it, the projection jiggled by
   // o.poolRand / CAND_RAND. Duplicates dropped.
+  // o.projSigma (2026-11-28, the bank's Projection noise): a function row -> sigma; each lineup's draw multiplies every
+  // projection by exp(sigma Z - sigma^2 / 2) (mean-preserving), Z a fresh standard normal per player and draw
+  // (analysis/cbb/dk/bank_recipe_2026-11-28 recipe (d)): variety from the projection's own measured miss
   async function poolDraw(ctx, o, K) {
     var seen = {}, out = [], tries = 0;
     while (out.length < K && tries < 3 * K) {
       if (tries % 25 === 24 && ctx.progress) await ctx.progress("Building the pool… " + out.length + " of " + K);
-      var r = await solve(ctx, Object.assign({}, o, { n: 1, minUnique: 1, rand: o.poolRand != null ? o.poolRand : CAND_RAND, noCaps: true,
-                                                      night: o.z ? nightPoints(ctx, o.z, o.nightS) : null }));
+      var cx = ctx;
+      if (o.projSigma) {
+        var mJ = {};
+        ctx.rows.forEach(function (r) { var sg = +o.projSigma(r) || 0; mJ[r.id] = sg > 0 ? ctx.proj(r) * Math.exp(sg * gauss(ctx.random) - sg * sg / 2) : ctx.proj(r); });
+        cx = Object.assign({}, ctx, { proj: function (r) { return mJ[r.id] != null ? mJ[r.id] : ctx.proj(r); } });
+      }
+      var r = await solve(cx, Object.assign({}, o, { n: 1, minUnique: 1, rand: o.poolRand != null ? o.poolRand : CAND_RAND, noCaps: true,
+                                                      night: o.z ? nightPoints(cx, o.z, o.nightS) : null }));
       tries++;
       if (!r.lineups.length) return { lineups: out, why: r.why };
       var key = r.lineups[0].ids.slice().sort().join(",");
