@@ -114,6 +114,9 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
             main / flagship); the owner's entries left out. For the qualifier refit's duplication and construction. Nightly.
   qualcheck the count of real qualifier fields in field_users.csv against QUAL_REFIT_AT (10): the DK page's qualifier field
             is an assumed chalk style until then (fill_profiles_2026-11-24.md, the refit plan)
+  coreshadow analysis/cbb/dk/core_shadow.csv, nightly (logging only, 2026-11-28): every main contest of each saved build,
+            the top-5-cores and top-5 green-core picks beside the page's pick and the real entries, graded on the standings
+            (scripts/dk_core_shadow.py); the scorecard's "Green-core shadow (mains)" keeps the 7-of-10 count
   flagjoint analysis/cbb/dk/flagship_joint.csv, nightly: each saved build's flagships filled together (joint top-1%
             coverage, the DK page's flagship profile) against each alone, in-sim on fresh nights; a row per new build
   calweek   for the owner's choice at the freeze: ours, DraftKings' average and the 50/50 blend over the calibration
@@ -517,7 +520,7 @@ def nightly(a):
                 w.writerows(rows)
     if not out:
         print("  DraftKings standings: nothing new to grade")
-    for step in (fieldusers, fieldlineups, flagjoint):    # contest profiles (2026-11-24): the qualifier fields (users, 2026-11-28 their lineups) and the flagships' record
+    for step in (fieldusers, fieldlineups, flagjoint, coreshadow):    # contest profiles (2026-11-24): the qualifier fields (users, 2026-11-28 their lineups) and the flagships' record
         try:
             step(a)
         except Exception as e:      # noqa: BLE001 (a side record; the grading above stands)
@@ -3313,6 +3316,14 @@ def qualcheck(a=None):
           % (len(q), QUAL_REFIT_AT, users, "; REFIT DUE: fill_profiles_2026-11-24.md has the plan" if len(q) >= QUAL_REFIT_AT else ""))
 
 
+def coreshadow(a):
+    """The green-core shadow (2026-11-28, the operator; logging only): every main contest of every saved build not yet
+    logged, the top-5-cores and top-5 green-core picks beside the page's pick and the real entries, graded on the real
+    standings (scripts/dk_core_shadow.py; analysis/cbb/dk/core_shadow.csv; the scorecard's "Green-core shadow (mains)")."""
+    import dk_core_shadow
+    dk_core_shadow.run(Mirror(a.mirror))
+
+
 def flagjoint(a):
     """The flagships filled together (the DK page's flagship profile, joint top-1% coverage) against each alone, for
     every saved build not yet logged: a row each in analysis/cbb/dk/flagship_joint.csv (scripts/dk_flagship_compare.py;
@@ -3595,6 +3606,8 @@ def main():
     fu.add_argument("--mirror", required=True)
     flu = sub.add_parser("fieldlineups")
     flu.add_argument("--mirror", required=True)
+    csh = sub.add_parser("coreshadow")
+    csh.add_argument("--mirror", required=True)
     sub.add_parser("qualcheck")
     sub.add_parser("owngrade")
     sub.add_parser("projgrade")
@@ -3609,7 +3622,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "fieldlineups": fieldlineups, "qualcheck": qualcheck, "owngrade": owngrade, "projgrade": projgrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab, "scorecard": scorecard}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "fieldlineups": fieldlineups, "coreshadow": coreshadow, "qualcheck": qualcheck, "owngrade": owngrade, "projgrade": projgrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab, "scorecard": scorecard}[a.cmd](a)
 
 
 if __name__ == "__main__":

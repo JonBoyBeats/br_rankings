@@ -333,6 +333,9 @@ def lines(slates=None, arms=None, today=None):
     sl_ = source_lines()
     if sl_:
         out += [""] + sl_
+    cs_ = core_shadow_lines()
+    if cs_:
+        out += [""] + cs_
     pd = pair_due(len(slates))
     if pd:
         out += ["", pd]
@@ -487,6 +490,101 @@ def source_lines(doc=None):
         out += ["", "%s blend test (ours vs each source vs held-out blend weights of ours and the sources; a hybrid of the source's minutes x "
                 "our points per minute; a held-out minutes-only blend weight; projection and ownership by salary tier, on covered players): due at %d graded slates "
                 "(now %d)%s." % (name, BLEND_AT, len(g), " — DUE NOW" if len(g) >= BLEND_AT else ""), ""]
+    return out
+
+
+# The green-core shadow (2026-11-28, the operator): scripts/dk_core_shadow.py logs, for every main contest of every saved
+# build, what the top-5-cores and top-5 green-core picks would have entered beside the page's pick (base, replayed) and
+# the real entries, graded on the real standings (analysis/cbb/dk/core_shadow.csv). The decision (process.md rule 5):
+# PROVEN needs dollars AND finish pct ahead of the page's pick on 7 of 10 counted main slates. The nights graded in
+# cc44bc8 (pre-registration) are context, outside the count.
+CORE_SHADOW = os.path.join(E.DK, "core_shadow.csv")
+CORE_VARIANTS = (("green_top5", "Top-5 green cores (2+ greens at lock)"), ("top5cores", "Top-5 cores"))
+CORE_DECIDE = (7, 10)
+
+
+def core_shadow_lines(rows=None, evals=None):
+    rows = E.read(CORE_SHADOW) if rows is None else rows
+    evals = E.read(os.path.join(E.DK, "eval.csv")) if evals is None else evals
+    if not rows:
+        return []
+    import dk_contest_type as CT
+    from dk_core_shadow import PREREG_END
+    by = defaultdict(lambda: defaultdict(dict))          # slate -> contest -> variant -> row
+    phase = {}
+    for r in rows:
+        k = "%s_%s" % (r["date"], r["draft_group"])
+        by[k][r["contest_id"]][r["variant"]] = r
+        phase[k] = r["phase"]
+    def per_slate(v, ref, keys):
+        """{slate: (finish pct delta, $ delta per lineup)} over the slate's main contests where both graded."""
+        out = {}
+        for k in keys:
+            dp, dd = [], []
+            for c in by[k].values():
+                a, b = c.get(v), c.get(ref)
+                if not a or not b or a["finish_pct"] in ("", None) or b["finish_pct"] in ("", None):
+                    continue
+                dp.append(float(a["finish_pct"]) - float(b["finish_pct"]))
+                per = lambda x: float(x["dollars"]) / max(1, len(x["lineups"].split("|")) if x.get("lineups") else int(x["n"]))
+                dd.append(per(a) - per(b))     # per lineup picked (a restricted set can fill short), each contest weighted alike (as cc44bc8)
+            if dp:
+                out[k] = (sum(dp) / len(dp), sum(dd) / len(dd))
+        return out
+    def net(v, keys):
+        d = f = 0.0
+        for k in keys:
+            for c in by[k].values():
+                a = c.get(v)
+                if a and a["dollars"] not in ("", None):
+                    d += float(a["dollars"])
+                    f += float(a["fees"])
+        return "%+.1f%%" % (100 * (d - f) / f) if f else "n/a"
+    def filled(v, keys):
+        """Lineups the pick found / entries to fill: within 5 cores the build's max exposure and min-unique caps can't always fill a contest."""
+        got = want = 0
+        for k in keys:
+            for c in by[k].values():
+                a = c.get(v)
+                if a:
+                    got += len(a["lineups"].split("|")) if a.get("lineups") else 0
+                    want += int(a["n"])
+        return "%d of %d" % (got, want)
+    counted = sorted(k for k in by if phase[k] == "counted")
+    pre = sorted(k for k in by if phase[k] != "counted")
+    out = ["## Green-core shadow (mains)", "",
+           "What two picks would have entered in each main contest (`scripts/dk_core_shadow.py`, logging only; nothing played changes): "
+           "the page's pick from the top 5 cores (a core = the lineup's 3 highest salaries; cores ranked by their best board value), and from "
+           "the top 5 cores holding 2+ greens at lock (the checks green flag). Each is compared with the page's own pick on the whole kept pool "
+           "(replayed on the same machinery) and with the lineups really entered, on the real standings. Cells: per-slate deltas (the mean over the slate's "
+           "main contests; $ per lineup, each contest weighted alike), mean ± SE (slates), ahead = slates the variant beat the reference. Decision (process.md rule 5): PROVEN needs dollars "
+           "AND finish pct ahead of the page's pick on %d of %d counted main slates. Pre-registration: the %d nights graded in cc44bc8 (through %s), "
+           "context only, outside the count. A restricted pick can fill short (the build's max exposure and min-unique caps within 5 cores): "
+           "finish pct and $ are per lineup picked, net %% of fees on the fees those lineups would cost, and the last column shows the shortfall." % (
+               CORE_DECIDE[0], CORE_DECIDE[1], len(pre), PREREG_END), ""]
+    for lab, keys in (("Counted (from %s)" % (counted[0] if counted else "the first main night after %s" % PREREG_END), counted), ("Pre-registration", pre)):
+        out += ["### %s: %d main slate%s" % (lab, len(keys), "" if len(keys) == 1 else "s"), ""]
+        if not keys:
+            out += ["No main slate graded yet: the count starts with the first main night after %s whose build is saved." % PREREG_END, ""]
+            continue
+        out += ["| Variant | vs the page's pick: finish pct | vs page: $ a lineup | vs entered: finish pct | vs entered: $ a lineup | "
+                "Ahead of the page's pick on both | Net % of fees, pooled (variant / page / entered) | Entries filled (variant / page) |", "|---|---|---|---|---|---|---|---|"]
+        for v, name in CORE_VARIANTS:
+            pb, pe = per_slate(v, "base", keys), per_slate(v, "entered", keys)
+            both = sum(1 for x in pb.values() if x[0] > 0 and x[1] > 0)
+            cell = lambda d, i, fmt: f_ms(*agg([x[i] for x in d.values()]), fmt=fmt, signed=True) + ", ahead %d" % sum(1 for x in d.values() if x[i] > 0)
+            need = " (need %d of %d)" % CORE_DECIDE if lab.startswith("Counted") else ""
+            out.append("| %s | %s | %s | %s | %s | %d of %d%s | %s / %s / %s | %s / %s |" % (
+                name, cell(pb, 0, "%.2f"), cell(pb, 1, "%.2f"), cell(pe, 0, "%.2f"), cell(pe, 1, "%.2f"), both, len(pb), need,
+                net(v, keys), net("base", keys), net("entered", keys), filled(v, keys), filled("base", keys)))
+        out.append("")
+    # main nights played with no saved build (can't be graded): from eval.csv, after the pre-registration window
+    builds = {os.path.basename(f)[8:-5] for f in glob.glob(os.path.join(E.BUILDS, "dk_bank_*.json"))}
+    miss = sorted({"%s_%s" % (r["date"], r["draft_group"]) for r in evals if r.get("who") == "mine" and r["date"] > PREREG_END
+                   and CT.contest_type(r.get("contest"), int(float(r.get("entries") or 0))) == "main"
+                   and "%s_%s" % (r["date"], r["draft_group"]) not in builds})
+    if miss:
+        out += ["Main nights with no saved build (can't be graded): " + ", ".join("%s — no saved build, press Save build" % m for m in miss) + ".", ""]
     return out
 
 

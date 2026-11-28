@@ -116,3 +116,22 @@ None of the restrictions beats top-half random from the whole kept pool beyond n
 | Mains: the same from green cores (2+ greens at lock) | DIRECTIONAL | As above, beside it. Greens are the checks flag at lock, recomputed the same way. |
 | Ownership band | NOISE | Dropped. It costs flagship finishes. |
 | Qualifiers: fewer cores | NOISE (worse) | Leave qualifiers on today's fill. |
+
+**Note, 2026-11-28 (found while building the shadow log, `scripts/dk_core_shadow.py`): the restricted picks fill short.** Within 5 cores, the build's max exposure and min-unique caps leave the page's pick unable to fill every entry.
+
+| Pick | Main entries filled |
+|---|---|
+| Top-5 cores | 287 of 429 |
+| Top-5 green cores | 276 of 429 |
+| Page's pick (base) | 412 of 429 |
+
+The finish percentile and dollar figures above are per lineup picked, so they compare lineup quality, not a full portfolio. Net of fees on the lineups each pick would have entered, pooled over the 7 main slates:
+
+| Pick | Net, % of fees |
+|---|---|
+| Top-5 green cores | +130.0% |
+| Top-5 cores | +105.0% |
+| Page's pick (base) | +98.6% |
+| Entered | +27.6% |
+
+A real version would need a fill rule for the rest: more cores, or the caps relaxed within the cores. The shadow log shows the shortfall nightly.

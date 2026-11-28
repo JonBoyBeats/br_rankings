@@ -81,6 +81,13 @@ ruler would be a new file with a new id, and the old one would keep running.
 
 ## Standing re-runs
 
+**The green-core shadow logs every main night** (added 2026-11-28, the operator; logging only).
+- **What runs:** `scripts/dk_core_shadow.py`, in `dk_eval.py nightly`.
+- **What it logs:** for every main contest of a saved build, the top-5-cores and top-5 green-core picks beside the page's pick and the real entries, graded on the standings.
+- **Where:** analysis/cbb/dk/core_shadow.csv, read by the scorecard's "Green-core shadow (mains)".
+- **The decision:** PROVEN needs dollars and finish pct ahead of the page's pick on 7 of 10 counted main slates. The 7 cc44bc8 nights are pre-registration and don't count.
+- **A main night with no saved build can't be graded.** The scorecard names it.
+
 **The projection pair backtest re-runs every 10 graded slates** (added 2026-11-28).
 - **What runs:** `analysis/cbb/dk/projection_pair_backtest_2026-11-28/ppb.py`, `MIN_GP=5` and `MIN_GP=7` of it, and `ppb_trend.py`. Run them from that folder, with battle-royale-research beside br_rankings.
 - **What it covers:** the minutes switch, the per-minute level and the pair, replayed on every graded slate.
