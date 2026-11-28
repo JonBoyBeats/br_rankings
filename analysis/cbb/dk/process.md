@@ -53,6 +53,25 @@ ruler would be a new file with a new id, and the old one would keep running.
    The paired difference is LIVE − PREVIOUS on the same slates and rows. Projection changes also keep the
    band rule in `scripts/dk_proj_grade.py`. Results (dollars, return) are never a pass bar: read them over 20+
    nights only.
+
+   **The tiered bar (added 2026-11-28, approved by the operator, beside rule 5).** Every finding is tagged with one
+   of three tiers:
+   - **PROVEN**: today's bar. Held out by slate, ahead on most slates, gain > 2 × SE. It ships.
+   - **DIRECTIONAL**: all of these hold:
+     - it points the right way on clearly more slates than not (about 60–65%+);
+     - it has a sensible mechanism;
+     - it is small and cheap to undo;
+     - no other arm's headline is worse beyond noise.
+
+     It ships as **PROVISIONAL**, with its PREVIOUS logged nightly (rule 3). It gets an automatic review at a stated
+     slate count: by default 7 for the projection and ownership arms, and 10 for bank and fill. It is kept if it
+     holds and reverted if it flips.
+   - **NOISE**: the sign flips, or there is no mechanism. It goes to the watch list.
+
+   *Principle:* stack small, directionally accurate edges rather than waiting for one silver bullet.
+
+   From now on, every Friday-review finding carries a PROVEN / DIRECTIONAL / NOISE tag. Approval of this bar does
+   not lift the operator's hold (2026-11-28): shipping still waits for the operator's go.
 6. **Bookkeeping.** Each live change needs two entries:
    - a `versions.csv` row, written with `csv.writer(lineterminator="\r\n")`, with the slate date it takes effect;
    - a new version in `arm_versions.json` with that date (plus `first_slate` if it lands between a day's slates),

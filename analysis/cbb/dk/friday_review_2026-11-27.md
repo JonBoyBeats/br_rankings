@@ -589,3 +589,36 @@ At most one per arm, ranked by expected impact. None ships without the operator'
 | GREEN 5 group | bank | 2 nights: −0.9 and +15.9 vs all kept | every night; 157547 grades tomorrow |
 | Late-swap stated payout high | late swap | 2.1x high on 15 nights; our entries 7.5 pts under their sim mean | haircut fitted held out by night; re-run after any per-minute level fix |
 | PREVIOUS columns for field, pool, fill, late swap | process | none logged | before each arm's next change |
+
+---
+
+## Tier tags (added 2026-11-28)
+
+These tags apply the tiered bar now in [process.md](process.md) (rule 5) to this review's proposal and watch lists.
+The review above is unchanged. **The operator's hold stands:** nothing ships without the operator's go.
+
+**Proposals:**
+
+| Item | Tag | Why |
+|---|---|---|
+| 1. Fill (flagship): top-half random instead of the joint pick | **PROVEN** | +$35.76 ± 14.93, ahead 6 of 6 (8 of 9 over all slates with board values). It still waits for the fill arm to settle and for a PREVIOUS column. |
+| 2. Ownership: add the Questionable term | **PROVEN** | Held out on raw: +0.57 (2×SE 0.39), 13 of 16. It still waits for the ownership arm to settle (5 of 7) and rests on 8 players. |
+
+**Watch list:**
+
+| Item | Tag | Why |
+|---|---|---|
+| Rebuild trails on "played, full roster, 3+ games" rows | NOISE | The one candidate tested (steepen refit) gained −0.03 ± 0.03. No candidate has a direction yet. |
+| Per-minute level runs high | DIRECTIONAL (finding) | −0.07 / −0.09 a minute on 4 of 4 slates, and the mechanism is plausible (band prior or baseline level). The level factor itself isn't tested yet, and the arm is settling. |
+| Field concentrates harder, on players we don't rank as chalk | DIRECTIONAL (finding) | 12 of 16 slates. The concentration exponent isn't tested yet. |
+| Q term in the ownership correction | PROVEN | See proposal 2. |
+| Qualifier refit QUAL_CHALK 0.8 → ~0.35 | DIRECTIONAL | Better on 8 of 10 held out, +16.3 against a bar of 16.6. A one-number change, cheap to undo, with a clear mechanism (real qualifiers are less chalky than assumed). The field arm needs PREVIOUS first. |
+| Sim field construction gap | DIRECTIONAL | The shift fix was better on 9 of 13 (69%), +1.11 ± 0.89. Small and cheap. |
+| Keep size by board value (top 75% of kept) | DIRECTIONAL | Positive on 8 of 11 (73%), +0.59 ± 0.31. The mechanism is the board's own gradient. |
+| Retire variants | NOISE | On the pool headline, keeping variants is +0.22 ± 0.23 (7 of 11). Retiring them points the wrong way. |
+| Draw the 9 lean cells | DIRECTIONAL to drop L0 U1 and L0.2 U2 (each behind L0 U0 on 5 of 6); NOISE for the other six cells (3–4 of 6 behind) | |
+| Lab d (greens vs hand groups) | NOISE | Only 3 slates, ahead on 2. Too few. |
+| GREEN 5 group | NOISE | 2 nights, 1 ahead. |
+| Late-swap stated payout high | DIRECTIONAL (finding) | Our entries are 2.1x high on 15 nights. The haircut fix isn't tested yet. |
+| Our lineups low on ownership sum (users study) | NOISE | The own-sum bins fail on ROI held out. |
+| PREVIOUS columns for field, pool, fill and late swap | n/a | A process item, not a finding. |
