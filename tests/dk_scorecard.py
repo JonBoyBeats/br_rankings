@@ -106,6 +106,16 @@ check("the shadow source section: aggregates, the not-final slate, the blend tri
       and any("-1.00" in x and "1 of 1" in x for x in _sl) and any("due at 10 graded slates (now 1)" in x for x in _sl)
       and any("the source closer on 3, ours on 2" in x for x in _sl) and any("ours MAE 0.250" in x for x in _sl) and any("hybrid" in x for x in _sl)
       and any("RotoWire (shadow): 0 graded slates" in x for x in _sl) and any("ours with a source row 175 of 305, teams 19 of 20" in x for x in _sl))
+# source value vs ownership (pre-registered 2026-11-28): the nightly aggregates read into the sources section
+_vo = SC.value_own_lines({"source_nights": 6, "first_read_at": 5, "decision_at": 10, "previous_terms": ["chalk_team", "big"], "status": "first read",
+                          "test1": {"all": {"bins": [{"err_live": -2.0}, {"err_live": -1.0}, {"err_live": 0.0}, {"err_live": 1.0}, {"err_live": 3.0}],
+                                            "q5_minus_q1": 5.0, "se": 1.0, "positive": 6, "n": 6}},
+                          "test2": {"src_edge": {"n": 6, "gain": 0.5, "se": 0.2, "better": 5, "off10_gain": 0.01, "off10_se": 0.01,
+                                                 "mae_prev": 11.0, "mae_cand": 10.5, "tag": "(no tag before 10 nights; read: PROVEN)"}}})
+check("source value vs ownership: count, status, Test 1 quintiles, Test 2 read",
+      "source nights with real ownership: 6" in _vo[0] and "first read" in _vo[0] and any("-2.0 / -1.0 / +0.0 / +1.0 / +3.0" in x and "positive on 6 of 6" in x for x in _vo)
+      and any("11.00 → 10.50" in x and "no tag before 10" in x for x in _vo), _vo)
+check("source value vs ownership: nothing yet reads as context with no tests", SC.value_own_lines({"source_nights": 0, "status": "context", "test2": {}})[0].endswith("context."))
 # fill arm on a main-only night (2026-11-28): small fees, no flagship; the gap also reads as % of the night's fees
 import tempfile  # noqa: E402
 with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, newline="") as f:

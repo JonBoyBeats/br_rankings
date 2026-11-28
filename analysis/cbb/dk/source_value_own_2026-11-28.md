@@ -65,6 +65,30 @@ real) ≥ 15) by chalk MAE and the share off by 10+; leave one source night out.
   rule-5 tag above is the decision at 10; the 5-night read is reported with the same numbers, labelled a first read.
 - Nothing ships from this study without a separate proposal and the operator's approval.
 
-## Results
+## Results (run 2026-11-28, after the pre-registration ed9377e)
 
-(appended after the run)
+**No source night exists yet, so neither test can run: 0 nights, CONTEXT, no numbers.**
+
+- The banked source files cover one day, 2026-11-27: Gajewski for the main slate (157547), RotoWire for the early
+  (157545) and main slates.
+- Neither slate has real ownership in `own_eval.csv`. The main slate's standings (contests 198269753, 198278517)
+  aren't uploaded, and the early slate had no contest entered.
+- The run (battle-royale-research `scripts/dk_source.py`, `value_own`) reads `source_nights: 0`,
+  `status: context`, "no slate has both a source file and graded real ownership yet".
+- PREVIOUS's terms read from the live `OWN_FIX`: chalk_team + big. No Q term on origin at run time.
+
+**Nights needed:**
+- 11-27 main becomes night 1 once its standings are uploaded.
+- Test 2 needs 3 nights to fit leave-one-out.
+- The first read comes at 5 source nights, and the rule-5 decision at 10. Each night needs a source file banked
+  before lock and the night's standings.
+
+**Automatic re-run:**
+- `dk_source.py` now computes Test 1 and Test 2 on every nightly run, in the existing workflow step
+  (`--br br_rankings --mirror mirror`).
+- It writes aggregates only to `source_grades.json` / the mirror's `dk_cbb_source_grades.json` under `value_own`:
+  counts, per-quintile means, gains ± SE, the tag at 10.
+- The scorecard's external-sources section reads them: "Source value vs ownership (pre-registered; source nights
+  with real ownership: N …)".
+- Tests: battle-royale-research `tests/dk_source_value_own.py` (8 pass, on a made-up tree where real = raw + edge)
+  and br_rankings `tests/dk_scorecard.py` (27 pass).

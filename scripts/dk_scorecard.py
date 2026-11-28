@@ -490,7 +490,31 @@ def source_lines(doc=None):
         out += ["", "%s blend test (ours vs each source vs held-out blend weights of ours and the sources; a hybrid of the source's minutes x "
                 "our points per minute; a held-out minutes-only blend weight; projection and ownership by salary tier, on covered players): due at %d graded slates "
                 "(now %d)%s." % (name, BLEND_AT, len(g), " — DUE NOW" if len(g) >= BLEND_AT else ""), ""]
-    return out
+    return out + value_own_lines(doc.get("value_own"))
+
+
+def value_own_lines(v):
+    """Do source value scores predict ownership? (pre-registered analysis/cbb/dk/source_value_own_2026-11-28.md):
+    the nightly aggregates from battle-royale-research dk_source.py value_own. Display only."""
+    if not v:
+        return []
+    n = v.get("source_nights", 0)
+    out = ["Source value vs ownership (pre-registered; source nights with real ownership: %d; first read at %d, decision at %d; "
+           "PREVIOUS = the live correction %s): %s." % (n, v.get("first_read_at", 5), v.get("decision_at", 10),
+                                                        " + ".join(v.get("previous_terms") or []), v.get("status"))]
+    t1 = (v.get("test1") or {}).get("all")
+    if t1 and t1.get("q5_minus_q1") is not None:
+        out.append("- Test 1, our ownership miss (real − ours) by quintile of the sources' value minus ours, Q1 → Q5: %s; Q5 − Q1 %s, positive on %d of %d." % (
+            " / ".join("%+.1f" % b["err_live"] if b.get("err_live") is not None else "–" for b in t1["bins"]),
+            f_ms(t1["q5_minus_q1"], t1.get("se"), t1["n"], fmt="%.1f", signed=True), t1["positive"], t1["n"]))
+    t2 = (v.get("test2") or {}).get("src_edge") or {}
+    if t2.get("gain") is not None:
+        out.append("- Test 2, + source edge on the correction, held out: chalk MAE %.2f → %.2f, gain %s, better on %d of %d; off 10+ gain %s; %s." % (
+            t2["mae_prev"], t2["mae_cand"], f_ms(t2["gain"], t2.get("se"), t2["n"], signed=True), t2["better"], t2["n"],
+            f_ms(t2["off10_gain"], t2.get("off10_se"), t2["n"], fmt="%.3f", signed=True), t2["tag"]))
+    elif n:
+        out.append("- Test 2: %s." % (t2.get("note") or "not run"))
+    return out + [""]
 
 
 # The green-core shadow (2026-11-28, the operator): scripts/dk_core_shadow.py logs, for every main contest of every saved
