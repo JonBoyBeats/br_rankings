@@ -497,7 +497,7 @@ The field also needs a PREVIOUS column before any change.
   - From 20% to 95% it runs high. Our entries were stated at 49.7% and cashed 34.5% (1,599 entry-breaks), against the field sample's 40.7% stated and 36.9% cashed.
 - **The cause is bias, not width:**
   - Each entry's realized miss is 0.93x the simulated spread for ours and 1.02x for the field.
-  - Our entries finish **7.5 points under their simulated mean** (mean percentile 0.409), against −1.4 for the field. The 11-24 run read 5.7, and section 4's selection-haircut study read 2.5.
+  - Our entries finish **7.5 points under their simulated mean** (mean percentile 0.409), against −1.4 for the field. The 11-24 calibration read 5.7, and the 11-24 selection-haircut study read 2.5.
   - It's the same over-projection as section 2's per-minute level, concentrated on the players our lineups are built from.
 - **Variance fix (x1.25 on every draw):** better held out on only 9 of 15 nights, and first-break stated payout is still $1,913 against $1,064. Not worth it.
 - **Graded swaps:** none. The scorecard's late-swap arm still has no rows.
