@@ -69,6 +69,15 @@
      "2026-11-25 | PPM rebuilt points per minute live; DK-average gate out | fp_dk = minutes x the rebuilt points per"
     ],
     "note": "minutes rebuilt from play-by-play and points per minute rebuilt, the DK-average gate out"
+   },
+   {
+    "tag": "proj-2026-11-28-blend",
+    "from": "2026-11-28",
+    "first_slate": "157555",
+    "rows": [
+     "2026-11-28 | PROJ source blend (median of ours / Gajewski / RotoWire), PROVISIONAL | The DK page's Load source files reads th"
+    ],
+    "note": "the source blend (PROVISIONAL): median of ours and the operator's source files where loaded on the page; PREVIOUS fp_dk"
    }
   ],
   "ownership": [

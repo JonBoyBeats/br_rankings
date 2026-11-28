@@ -405,7 +405,7 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
       <button type="button" id="reload">Reload</button>
     </div>
     <div class="status" id="status">Loading…</div>
-    <div class="note" id="whatChanged" style="margin:2px 0 6px">What changed (2026-11-28): flagship and main contests now fill from a random draw of the kept pool's top half; the bank draws plain with Projection noise 0.5 (Draw the 1); the qualifier field is 35% chalk (was 80%).</div>
+    <div class="note" id="whatChanged" style="margin:2px 0 6px">What changed (2026-11-28): flagship and main contests now fill from a random draw of the kept pool's top half; the bank draws plain with Projection noise 0.5 (Draw the 1); the qualifier field is 35% chalk (was 80%); Load source files (beside Reset Proj) blends tonight's Gajewski / RotoWire files into Proj (median), in this browser only.</div>
     <details id="syncBox" class="news" style="margin:2px 0 6px"><summary id="syncSum">Sync: off</summary>
       <div class="opts" style="padding:4px 0">
         <label class="field"><span class="field-label">Sync repo</span><input id="syncRepo" type="text" value="JonBoyBeats/dk-sync" style="width:190px"></label>
@@ -663,10 +663,13 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
     <select id="team" style="width:auto;height:28px;font-size:13px;padding:3px 8px"><option value="">All teams</option></select>
     <input type="search" id="search" placeholder="Search players">
     <button type="button" id="resetProj" title="Put every Proj back to ours">Reset Proj</button>
+    <label class="act" id="srcPick" title="Tonight's Gajewski (.tsv) and/or RotoWire (.csv) files: read in this browser only, never uploaded. Each player's Proj becomes the median of ours and theirs (two: the mean); a player one has out and another playing keeps ours, tagged split" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;border:1px solid var(--line,#ccc);border-radius:6px;padding:2px 8px;font-size:13px">Load source files<input type="file" id="srcFiles" multiple accept=".tsv,.csv,.txt,text/csv,text/tab-separated-values" style="display:none"></label>
+    <button type="button" id="srcClear" hidden title="Back to our own projections (forget the source files in this browser)">Clear sources</button>
     <button type="button" id="clearLx" title="Clear every lock, exclude and Max%">Clear L / X</button>
     <button type="button" id="sfSet" title="Each scanned player's Min% / Max% from his Read times his field ownership (core 1.1, leverage 1.75, lean 1.0 x own; fade 0.6 x own, skip a flat 10%); hand entries are left alone">Set floors from scan</button>
     <button type="button" id="sfClear" hidden title="Removes only the Min% / Max% the scan set; hand entries stay">Clear floors</button>
   </div>
+  <div class="note" id="srcLine" hidden></div>
   <div id="players"></div>
   </div></div>
 </div>
@@ -674,6 +677,7 @@ input.byscan { border-style: dashed !important; border-color: var(--accent, #4c8
 <script src="vendor/lp_solver.js"></script>
 <script src="dk_sim.js"></script>
 <script src="dk_swap.js"></script>
+<script src="dk_blend.js"></script>
 <script>
 var MIRROR = "https://raw.githubusercontent.com/JonBoyBeats/br-adp-mirror/main/";
 var SLOTS = DKSim.SLOTS;
@@ -770,7 +774,41 @@ var isG = DKSim.isG, isF = DKSim.isF;
 // band blend is out since 2026-11-25)
 /* Display (2026-11-20, B4): projections as whole points and ownership as whole percentages on screen; the sim, the
    cut and every saved number keep full precision (a projection you type stays as typed, shown to one decimal). */
-function proj(r) { var o = state.proj[r.id]; return o != null ? o : DKSim.gatedProj(r, gate) * (minScale[r.id] || 1); }
+/* The source blend (2026-11-28, the operator; PROVISIONAL, ideas.md): with tonight's source files loaded (Load source
+   files; dk_blend.js), ours scaled by blend / fp_dk, so the Questionable gate and Mark-out minutes still apply. The
+   files and the blend stay in this browser (localStorage dkcbb-src:<group>): paid content, and this page is public.
+   The field's ownership reads ours (adjustField uses DKSim.gatedProj directly), as before. */
+var BLEND = null;
+function blendKey() { return "dkcbb-src:" + slate.draft_group_id; }
+function proj(r) {
+  var o = state.proj[r.id]; if (o != null) return o;
+  var p = DKSim.gatedProj(r, gate) * (minScale[r.id] || 1), b = BLEND && BLEND.blend && BLEND.blend[r.id];
+  return b != null && r.fp_dk > 0 ? p * b / r.fp_dk : p;
+}
+// the picked files (by source: a new Gajewski file replaces the old one, RotoWire kept) are kept in this browser and the
+// blend recomputed from them on every load, so a later projection run blends with the latest of ours
+function blendFiles() { try { return JSON.parse(localStorage.getItem(blendKey()) || "null") || []; } catch (e) { return []; } }
+function blendLoad() {
+  BLEND = null;
+  var files = blendFiles();
+  if (files.length && typeof DKBlend !== "undefined") {
+    var b = DKBlend.build(rows, files);
+    BLEND = { at: files.reduce(function (m, f) { return f.at > m ? f.at : m; }, ""), sources: b.sources, blend: b.blend, split: b.split, changed: b.changed, splits: b.splits };
+  }
+  blendLine();
+}
+function blendLine() {
+  var on = !!(BLEND && BLEND.sources && BLEND.sources.length);
+  $("srcClear").hidden = !on; $("srcLine").hidden = !on;
+  if (!on) { $("srcLine").textContent = ""; return; }
+  var nm = { gajewski: "Gajewski", rotowire: "RotoWire" };
+  $("srcLine").textContent = "Sources loaded (this browser only): " + BLEND.sources.map(function (x) { return (nm[x.source] || x.source) + " " + x.matched + " of " + x.rows + " matched"; }).join(", ") +
+    " · blend on: " + BLEND.changed + " Proj changed (median of ours and theirs), " + BLEND.splits + " split (keep ours, check news).";
+}
+function blendSummary() {
+  return BLEND && BLEND.sources && BLEND.sources.length ? { loaded: true, sources: BLEND.sources.map(function (x) { return { source: x.source, rows: x.rows, matched: x.matched }; }),
+    changed: BLEND.changed, splits: BLEND.splits, at: BLEND.at } : { loaded: false };
+}
 /* Your Out toggle (a Questionable player you rule out, e.g. 2026-11-18's Stokes): he's Out for the draw and the pick,
    and his team's other players share 200 minutes again (DKSim.fitMinutes, the projection's own rule), each one's
    projection moving with his minutes (points per minute held). minScale: player id -> new minutes / projected. */
@@ -1060,6 +1098,7 @@ function pick(keepMem) {
   state.outs = state.outs || {}; state.ins = state.ins || {}; state.deepIn = state.deepIn || {}; state.qplay = state.qplay || {};
   zeroApply();
   applyOuts();
+  blendLoad();
   if (typeof swapRestore === "function") swapRestore().then(function () { return syncPull(); });
   if ($("ideaName")) $("ideaName").value = state.idea || "";
   // rules saved before the draw-only change: an "in X% of lineups" rule becomes its plain rule; an "at most X%" one goes
@@ -1298,6 +1337,7 @@ function playerTable(list, sortable, fs, ckm) {        // ckm: the game view's c
       (r._zero ? '<span class="tag zero' + (r.zero_gp ? "" : " off") + '" data-id="' + esc(r.id) + '" title="' + esc(r.zero_gp ?
         "Has played 0 of his team's " + r._zero.meta.team_games + " games: projected at \u00d7" + (+r._zero.meta.f).toFixed(2) + ". Bring back if news says he's active." :
         "0 games: back to his unadjusted projection. Tap to scale him again (\u00d7" + (+r._zero.meta.f).toFixed(2) + ").") + '">0 games</span>' : "") +
+      (BLEND && BLEND.split && BLEND.split[r.id] ? '<span class="tag sit srcsplit" title="news: sources split on whether he plays (one has him out, another playing): Proj kept ours">split</span>' : "") +
       (sitRisk(r) ? '<span class="tag sit" title="' + esc("Sit risk: " + Math.round(100 * r.p_play) + "% to play" + (r.p_play_why ? " \u2014 " + r.p_play_why : "") + ". Check news before lock.") + '">sit risk</span>' : "");
     var moreTxt = [], more = (nw ? '<span class="tag k-' + nw.kind + '" title="' + esc("@" + nw.author + ", " + ago(nw.at) + ": " + nw.text) + '">' + (nw.late ? "late " : "") + (nw.kind === "questionable" ? "news: Q" : "news: " + nw.kind) + "</span>" : "") +
       (fragileMap()[r.id] ? '<span class="tag frag" title="' + esc("Fragile: " + fragileMap()[r.id].join("; ")) + '">fragile</span>' : "") +
@@ -2871,7 +2911,9 @@ function buildDoc() {
               // counts per contest (never the entries file: its entry IDs stay out of a build)
               // Lab e (2026-11-24): each variant's parent, bank index to bank index, stored when the Variants step made it
               variant_of: BANK.lineups.reduce(function (o, L, i) { if (L.parent != null) o[i] = L.parent; return o; }, {}),
-              slots: BANK.lineups.map(function (L) { return L.slots; }), cut_state: CUT && CUT.keep ? CUT : null, entries_n: entriesN() };
+              slots: BANK.lineups.map(function (L) { return L.slots; }), cut_state: CUT && CUT.keep ? CUT : null, entries_n: entriesN(),
+              // the source blend (2026-11-28): whether it was on and how many matched; never a per-player value (paid sources, public build)
+              blend: blendSummary() };
   return doc;
 }
 
@@ -5690,6 +5732,20 @@ document.querySelectorAll(".filters [data-pos]").forEach(function (b) {
   });
 });
 $("resetProj").addEventListener("click", function () { state.proj = {}; save(); renderPlayers(); });
+$("srcFiles").addEventListener("change", function (e) {
+  var fs = Array.from(e.target.files || []); if (!fs.length || !slate) return;
+  Promise.all(fs.map(function (f) { return f.text().then(function (t) { return { name: f.name, text: t }; }); })).then(function (files) {
+    var have = blendFiles(), at = new Date().toISOString();
+    files.forEach(function (f) {
+      var lab = DKBlend.labelOf(f.name, DKBlend.readSource(f.text));
+      have = have.filter(function (h) { return DKBlend.labelOf(h.name, DKBlend.readSource(h.text)) !== lab; });
+      have.push({ name: f.name, text: f.text, at: at });
+    });
+    try { localStorage.setItem(blendKey(), JSON.stringify(have)); } catch (x) {}
+    e.target.value = ""; blendLoad(); renderPlayers();
+  });
+});
+$("srcClear").addEventListener("click", function () { BLEND = null; try { localStorage.removeItem(blendKey()); } catch (x) {} blendLine(); renderPlayers(); });
 $("clearLx").addEventListener("click", function () { state.lock = {}; state.excl = {}; state.cap = {}; state.floor = {}; state.scanSet = { floor: {}, cap: {} }; save(); renderRules(); renderPlayers(); });
 $("sfSet").addEventListener("click", function () { var m = applyScanFloors(); $("scanStatus").textContent = m; $("sfClear").hidden = !scanFloorsOn(); });
 $("sfClear").addEventListener("click", function () { var m = clearScanFloors(); $("scanStatus").textContent = m; $("sfClear").hidden = !scanFloorsOn(); });

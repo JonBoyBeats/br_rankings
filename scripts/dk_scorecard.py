@@ -496,7 +496,7 @@ def source_lines(doc=None):
         out += ["", "%s blend test (ours vs each source vs held-out blend weights of ours and the sources; a hybrid of the source's minutes x "
                 "our points per minute; a held-out minutes-only blend weight; projection and ownership by salary tier, on covered players): due at %d graded slates "
                 "(now %d)%s." % (name, BLEND_AT, len(g), " — DUE NOW" if len(g) >= BLEND_AT else ""), ""]
-    return out + value_own_lines(doc.get("value_own")) + triangulation_lines(doc.get("triangulation"))
+    return out + value_own_lines(doc.get("value_own")) + triangulation_lines(doc.get("triangulation")) + blend_lines(doc.get("blend"))
 
 
 def value_own_lines(v):
@@ -567,6 +567,61 @@ def write_tri_labels(t):
         w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         w.writeheader()
         w.writerows(t["labels"])
+
+
+# The source blend (2026-11-28, the operator; PROVISIONAL on the projection arm, ideas.md): the DK page blends ours with
+# the operator's Gajewski / RotoWire files in the browser (dk_blend.js). Graded in battle-royale-research (dk_blend.py,
+# the same rule over the banked files; aggregates only) against PREVIOUS = fp_dk, counted on the nights whose saved
+# build says the blend was loaded (build "blend": {"loaded": true}); the others read "sources not loaded".
+BLEND_REVIEW = 7
+
+
+def blend_loaded():
+    """{"<date>_<group>": True / False} from the saved builds (the newest per group)."""
+    out = {}
+    for f in sorted(glob.glob(os.path.join(E.BUILDS, "dk_bank_*.json"))):
+        try:
+            b = json.load(open(f))
+        except Exception:
+            continue
+        k = "%s_%s" % (b.get("day"), b.get("draft_group"))
+        if b.get("kind") == "build" and b.get("day"):
+            out[k] = bool((b.get("blend") or {}).get("loaded"))
+    return out
+
+
+def blend_lines(t, loaded=None):
+    if not t or not t.get("slates"):
+        return []
+    loaded = blend_loaded() if loaded is None else loaded
+    rows, notes = [], []
+    for x in t["slates"]:
+        if not loaded.get(x["slate"]):
+            notes.append("%s %s" % (x["slate"], "sources not loaded" if x["slate"] in loaded else "no saved build (sources not loaded)"))
+        elif x.get("status") != "graded":
+            notes.append("%s %s" % (x["slate"], x.get("status")))
+        else:
+            rows.append(x)
+    gain = [x["all"]["mae_us"] - x["all"]["mae_blend"] for x in rows if x.get("all")]
+    ahead = sum(1 for d in gain if d > 0)
+    out = ["### Source blend (projection arm, PROVISIONAL from 2026-11-28): %d counted slate%s" % (len(rows), "" if len(rows) == 1 else "s"), "",
+           "Median of ours / Gajewski / RotoWire DK points (two: mean; ours alone: ours; an in/out split and Out keep ours), on the "
+           "players a source file covers; PREVIOUS = fp_dk. Counted only where the saved build says the blend was loaded.", ""]
+    if rows:
+        out.append("- MAE ours − blend (positive: the blend misses less): %s; blend ahead on %d of %d" % (f_ms(*agg(gain), signed=True), ahead, len(gain)))
+        out.append("- bias ours %s, blend %s" % (f_ms(*agg([x["all"]["bias_us"] for x in rows])), f_ms(*agg([x["all"]["bias_blend"] for x in rows]))))
+        gs = sorted({g for x in rows for g in (x.get("by_group") or {})})
+        cells = []
+        for g in gs:
+            d = [x["by_group"][g]["mae_us"] - x["by_group"][g]["mae_blend"] for x in rows if (x.get("by_group") or {}).get(g)]
+            cells.append("%s %s" % (g, f_ms(*agg(d), signed=True)))
+        if cells:
+            out.append("- by triangulation group (MAE ours − blend): " + "; ".join(cells))
+    out.append("- review at %d counted slates (now %d)%s; reverted if the blend is behind on most" % (
+        BLEND_REVIEW, len(rows), " — DUE NOW" + (" (behind on most: REVERT)" if ahead * 2 < len(gain) else "") if len(rows) >= BLEND_REVIEW else ""))
+    if notes:
+        out.append("- not counted: " + "; ".join(notes))
+    return out + [""]
 
 
 def triangulation_lines(t):

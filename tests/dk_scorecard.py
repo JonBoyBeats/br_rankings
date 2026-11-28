@@ -187,5 +187,15 @@ SC.write_tri_labels(_tri)
 _lab = list(csv.DictReader(open(SC.TRI_LABELS)))
 SC.TRI_LABELS = _old
 check("triangulation labels: the seven number-free columns", _lab and list(_lab[0]) == ["date", "dg", "dk_id", "name", "group", "minutes_outlier", "ppm_outlier"])
+# the source blend (2026-11-28): counted only where the build says it was loaded; the 7-slate review
+_bd = {"slates": [{"slate": "2026-11-28_1", "status": "graded", "all": {"n": 30, "mae_us": 8.0, "mae_blend": 7.5, "bias_us": 2.0, "bias_blend": 1.0},
+                   "by_group": {"G1": {"n": 9, "mae_us": 7.0, "mae_blend": 6.9, "bias_us": 1.0, "bias_blend": 1.0}}},
+                  {"slate": "2026-11-29_2", "status": "graded", "all": {"n": 30, "mae_us": 8.0, "mae_blend": 9.0, "bias_us": 2.0, "bias_blend": 1.0}},
+                  {"slate": "2026-11-30_3", "status": "not final"}]}
+_bdl = SC.blend_lines(_bd, {"2026-11-28_1": True, "2026-11-29_2": False})
+check("source blend: counts loaded nights only, flags the rest, 7-slate review",
+      any("1 counted slate" in x for x in _bdl) and any("+0.50 (1); blend ahead on 1 of 1" in x for x in _bdl) and any("G1 +0.10 (1)" in x for x in _bdl)
+      and any("2026-11-29_2 sources not loaded" in x for x in _bdl) and any("2026-11-30_3 no saved build (sources not loaded)" in x for x in _bdl)
+      and any("review at 7 counted slates (now 1)" in x for x in _bdl), _bdl)
 print("\n%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)
