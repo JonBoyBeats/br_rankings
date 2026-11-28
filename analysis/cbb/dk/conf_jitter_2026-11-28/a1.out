@@ -1,0 +1,30 @@
+2026-11-16_156660  matched greens   9 | |miss|  -0.76 | |miss|/proj -0.086
+2026-11-17_156662  matched greens   5 | |miss|  +1.46 | |miss|/proj +0.079
+2026-11-17_156663  matched greens  14 | |miss|  +0.50 | |miss|/proj -0.008
+2026-11-18_157032  matched greens   3 | |miss| +16.70 | |miss|/proj +0.592
+2026-11-18_157033  matched greens   7 | |miss|  -1.21 | |miss|/proj -0.106
+2026-11-19_157138  matched greens   5 | |miss|  +4.05 | |miss|/proj +0.146
+2026-11-19_157139  matched greens   7 | |miss|  +2.72 | |miss|/proj +0.022
+2026-11-20_157013  matched greens   8 | |miss|  +3.83 | |miss|/proj +0.078
+2026-11-20_157015  matched greens   7 | |miss|  +1.10 | |miss|/proj -0.056
+2026-11-21_157017  matched greens   9 | |miss|  -0.55 | |miss|/proj -0.043
+2026-11-22_157019  matched greens  12 | |miss|  +0.15 | |miss|/proj -0.097
+2026-11-23_157021  matched greens   8 | |miss|  +0.83 | |miss|/proj -0.110
+2026-11-24_157024  matched greens  22 | |miss|  +2.41 | |miss|/proj +0.065
+2026-11-24_157026  matched greens  10 | |miss|  -2.19 | |miss|/proj -0.096
+2026-11-25_157293  matched greens  11 | |miss|  -0.94 | |miss|/proj -0.089
+2026-11-25_157295  matched greens  10 | |miss|  -1.01 | |miss|/proj -0.077
+2026-11-26_157380  matched greens  18 | |miss|  -2.05 | |miss|/proj -0.127
+2026-11-26_157382  matched greens  13 | |miss|  +1.86 | |miss|/proj +0.022
+
+all 18 slates
+  |actual - proj|      green - matched non-green: +1.494 ± 0.997 over 18 slates, negative (greens miss less) on 7
+  |actual - proj|/proj green - matched non-green: +0.006 ± 0.039 over 18 slates, negative (greens miss less) on 11
+
+fit slates (to 11-23)
+  |actual - proj|      green - matched non-green: +2.400 ± 1.389 over 12 slates, negative (greens miss less) on 3
+  |actual - proj|/proj green - matched non-green: +0.034 ± 0.056 over 12 slates, negative (greens miss less) on 7
+
+after the fit (11-24 on)
+  |actual - proj|      green - matched non-green: -0.320 ± 0.808 over 6 slates, negative (greens miss less) on 4
+  |actual - proj|/proj green - matched non-green: -0.050 ± 0.031 over 6 slates, negative (greens miss less) on 4

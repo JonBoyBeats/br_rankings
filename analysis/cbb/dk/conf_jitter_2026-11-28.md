@@ -58,3 +58,40 @@ Everything in this section was written and pushed before any of the analysis bel
   - Uniform (d) stays the batch item.
   - A scaled version replaces it only if it beats (d) under rule 5. That means PROVEN, or DIRECTIONAL (positive on at least 60–65% of slates with no secondary worse beyond noise) to ship as PROVISIONAL.
   - (d-s) can't be tagged on fewer than 5 builds.
+
+## Results (run after the pre-registration commit ec8ebe0)
+
+The scripts and their printed output are in [conf_jitter_2026-11-28/](conf_jitter_2026-11-28/): `a1.py` → `a1.out`, and `a2.py` → `a2.out`. `a2.py` reads the private source tables and prints aggregates only.
+
+### Verdict
+
+| Step | Result | Tag |
+|---|---|---|
+| A1, greens | On all 18 slates, greens miss our projection by **more** than matched non-greens, not less: absolute miss +1.49 ± 1.00 (greens miss less on only 7 of 18), relative miss +0.006 ± 0.039 (11 of 18). On the 6 slates after the weights' fit, the direction is right but inside noise: −0.32 ± 0.81 and −0.050 ± 0.031, each 4 of 6. The sign flips between the fit slates and the later ones. | NOISE. Greens are not a reliable "trust this projection" signal. |
+| A2, source disagreement | 2 slates (11-27 early and main), 257 players. Strong − agree on the points miss: +1.80 ± 1.85, positive on 1 of 2. On the minutes miss: −0.02 ± 0.31. Where we disagree, the source is closer on points 55–57% of the time, but on minutes only 43–45%. | Context only (2 of the 5 slates the rule needs). At the observed spread it needs about 9 slates to reach 2×SE, so 7 more source nights. |
+| B, bank replay | **Not run.** A1 doesn't point the right way. A2 is context only, and (d-s) would have no graded build with a source file anyway: the only source nights are 11-27, whose standings aren't uploaded. | Uniform (d) at k = 0.5 stays the batch item. |
+
+### A1 detail (`a1.out`)
+
+| Greens − matched non-greens | All 18 slates | Fit slates (12) | After the fit (6) |
+|---|---|---|---|
+| \|actual − proj\| | +1.49 ± 1.00, less on 7 of 18 | +2.40 ± 1.39, less on 3 of 12 | −0.32 ± 0.81, less on 4 of 6 |
+| \|actual − proj\| / proj | +0.006 ± 0.039, less on 11 of 18 | +0.034 ± 0.056, less on 7 of 12 | −0.050 ± 0.031, less on 4 of 6 |
+
+One fit slate (2026-11-18 157032, 3 matched greens, +16.7) pulls the all-slate absolute figure up. The relative miss is the steadier measure, and it is flat overall.
+
+### A2 detail (`a2.out`)
+
+| Slate | Agree (n, \|miss\|, \|min miss\|) | Mild | Strong |
+|---|---|---|---|
+| 2026-11-27 early 157545 (RotoWire) | 33, 7.24, 5.47 | 48, 6.29, 4.52 | 47, 10.89, 5.76 |
+| 2026-11-27 main 157547 (both sources) | 36, 8.22, 7.81 | 48, 11.56, 9.16 | 45, 8.16, 7.48 |
+
+- The early slate fits the idea: the strong bin misses by 3.6 more points.
+- The main slate doesn't: the mild bin is worst, and strong is level with agree.
+- On minutes the sources were closer than us less than half the time. That is consistent with RotoWire's minutes running behind ours on the early slate.
+
+### What would change this
+
+- **Sources:** after about 7 more slates with a source file, ideally with graded mains, A2 can be tested properly, and (d-s) replayed on builds that have source files.
+- **Greens:** nothing here supports scaling their noise down.

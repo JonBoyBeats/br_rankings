@@ -1,0 +1,9 @@
+2026-11-27_157545  n=128 | agree  n= 33 |miss|  7.24 |min miss|  5.47 | mild   n= 48 |miss|  6.29 |min miss|  4.52 | strong n= 47 |miss| 10.89 |min miss|  5.76
+2026-11-27_157547  n=129 | agree  n= 36 |miss|  8.22 |min miss|  7.81 | mild   n= 48 |miss| 11.56 |min miss|  9.16 | strong n= 45 |miss|  8.16 |min miss|  7.48
+
+slates 2, players 257 (not Out, our min >= 10, a source with 10+ min, game final)
+|actual DK - our proj|   strong - agree: +1.80 ± 1.85 over 2 slates, positive on 1
+                         slates needed for gain > 2xSE at this spread: 9
+|actual min - our min|   strong - agree: -0.02 ± 0.31 over 2 slates, positive on 1
+who is right, mild   (n=96): the source closer than us on points 55%, on minutes 45%
+who is right, strong (n=92): the source closer than us on points 57%, on minutes 43%
