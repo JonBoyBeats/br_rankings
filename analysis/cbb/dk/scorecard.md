@@ -57,7 +57,7 @@ Flagship and main contests fill by a random draw from the kept pool's top half b
 - flagship (PROVEN): n/a, ahead 0
 - main (PROVISIONAL): n/a, ahead 0; review on dollars at 10 graded main slates (now 0)
 - qualifier (PROVISIONAL): n/a, ahead 0 (the field at QUAL_CHALK 0.35, PREVIOUS under 0.8); review at 10 qualifier fields (now 0)
-- 11-27 gate (flagship tier on 7 slates since 11-24, must clear 2 × SE): pending: 11-27's standings are in; run friday_review_2026-11-27/fr_fill.py then fr_p1_recut.py and record the verdict in fill_p1_gate.json
+- 11-27 gate (flagship tier on 7 slates since 11-24, must clear 2 × SE): passes (top-half random - entered +31.45 ± 12.91 $ per slate, ahead 7 of 7, 2xSE 25.81; 12 flagship contests on 7 slates 11-24..11-27 (fr_p1_recut.out))
 
 
 ## Bank (batch item 2, from 2026-11-28)

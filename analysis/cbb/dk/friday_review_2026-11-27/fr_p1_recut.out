@@ -1,15 +1,15 @@
-== flagship, since 11-24: 11 contests on 6 slates (2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382)
-  top-half random - entered (mean $) +35.22 ± 14.61, ahead 6 of 6, 2xSE 29.21 -> clears
-  top-25% random - entered (mean $)  +36.85 ± 20.23, ahead 5 of 6, 2xSE 40.47 -> does not clear
-  top-10% random - entered (mean $)  +29.76 ± 20.36, ahead 5 of 6, 2xSE 40.71 -> does not clear
-  top-half median $ - entered        -2.50 ± 6.92, ahead 1 of 6, 2xSE 13.84 -> does not clear
-  entered - plain random kept (mean $) -33.36 ± 10.24, ahead 0 of 6, 2xSE 20.48 -> does not clear
-== flagship, all slates: 16 contests on 9 slates (2026-11-20_157013, 2026-11-20_157015, 2026-11-23_157021, 2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382)
-  top-half random - entered (mean $) +35.38 ± 14.10, ahead 8 of 9, 2xSE 28.20 -> clears
-  top-25% random - entered (mean $)  +40.10 ± 17.94, ahead 8 of 9, 2xSE 35.88 -> clears
-  top-10% random - entered (mean $)  +35.54 ± 18.17, ahead 8 of 9, 2xSE 36.33 -> does not clear
-  top-half median $ - entered        -3.89 ± 4.91, ahead 1 of 9, 2xSE 9.83 -> does not clear
-  entered - plain random kept (mean $) -30.36 ± 10.28, ahead 1 of 9, 2xSE 20.55 -> does not clear
+== flagship, since 11-24: 12 contests on 7 slates (2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382, 2026-11-27_157547)
+  top-half random - entered (mean $) +31.45 ± 12.91, ahead 7 of 7, 2xSE 25.81 -> clears
+  top-25% random - entered (mean $)  +32.32 ± 17.69, ahead 6 of 7, 2xSE 35.38 -> does not clear
+  top-10% random - entered (mean $)  +26.08 ± 17.59, ahead 6 of 7, 2xSE 35.19 -> does not clear
+  top-half median $ - entered        -2.14 ± 5.86, ahead 1 of 7, 2xSE 11.72 -> does not clear
+  entered - plain random kept (mean $) -30.54 ± 9.10, ahead 0 of 7, 2xSE 18.20 -> does not clear
+== flagship, all slates: 17 contests on 10 slates (2026-11-20_157013, 2026-11-20_157015, 2026-11-23_157021, 2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382, 2026-11-27_157547)
+  top-half random - entered (mean $) +32.73 ± 12.89, ahead 9 of 10, 2xSE 25.77 -> clears
+  top-25% random - entered (mean $)  +36.60 ± 16.42, ahead 9 of 10, 2xSE 32.85 -> clears
+  top-10% random - entered (mean $)  +32.38 ± 16.55, ahead 9 of 10, 2xSE 33.11 -> does not clear
+  top-half median $ - entered        -3.50 ± 4.41, ahead 1 of 10, 2xSE 8.83 -> does not clear
+  entered - plain random kept (mean $) -28.69 ± 9.34, ahead 1 of 10, 2xSE 18.69 -> does not clear
 == main, since 11-24: 13 contests on 4 slates (2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295)
   top-half random - entered (mean $) +10.91 ± 7.67, ahead 3 of 4, 2xSE 15.34 -> does not clear
   top-25% random - entered (mean $)  +12.16 ± 11.57, ahead 3 of 4, 2xSE 23.15 -> does not clear
