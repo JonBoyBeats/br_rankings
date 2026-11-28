@@ -1,0 +1,41 @@
+excluded 2026-11-16_156660 - no board values aligned with the kept pool 0 1000
+excluded 2026-11-17_156663 - no board values aligned with the kept pool 0 2000
+excluded 2026-11-18_157033 - no board values aligned with the kept pool 0 1500
+excluded 2026-11-27_157547 - no night record (not graded yet)
+
+== ALL 100+ entry contests (reproduces fr_cut.py) | slates: 2026-11-19_157138, 2026-11-19_157139, 2026-11-20_157013, 2026-11-20_157015, 2026-11-23_157021, 2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382
+  top 10% - all kept: +2.63 ± 1.45 (11 slates), positive on 7 of 11, 2xSE 2.90 -> DIRECTIONAL
+  top 25% - all kept: +1.69 ± 0.99 (11 slates), positive on 8 of 11, 2xSE 1.99 -> DIRECTIONAL
+  top 50% - all kept: +1.08 ± 0.60 (11 slates), positive on 8 of 11, 2xSE 1.20 -> DIRECTIONAL
+  top 75% - all kept: +0.59 ± 0.31 (11 slates), positive on 8 of 11, 2xSE 0.62 -> DIRECTIONAL
+  variants' share of the top tenth: 29.8% (mean over slates; range 0.0-66.7) vs 13.6% of all kept
+
+== FLAGSHIP (unified contest type) | slates: 2026-11-19_157138, 2026-11-19_157139, 2026-11-20_157013, 2026-11-20_157015, 2026-11-23_157021, 2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382
+  top 10% - all kept: +2.64 ± 1.48 (11 slates), positive on 7 of 11, 2xSE 2.96 -> DIRECTIONAL
+  top 25% - all kept: +1.67 ± 1.01 (11 slates), positive on 8 of 11, 2xSE 2.01 -> DIRECTIONAL
+  top 50% - all kept: +1.08 ± 0.61 (11 slates), positive on 8 of 11, 2xSE 1.21 -> DIRECTIONAL
+  top 75% - all kept: +0.59 ± 0.31 (11 slates), positive on 8 of 11, 2xSE 0.62 -> DIRECTIONAL
+  variants' share of the top tenth: 29.8% (mean over slates; range 0.0-66.7) vs 13.6% of all kept
+
+== MAIN (unified contest type) | slates: 2026-11-19_157138, 2026-11-19_157139, 2026-11-20_157013, 2026-11-20_157015, 2026-11-23_157021, 2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295
+  top 10% - all kept: +3.43 ± 1.63 (9 slates), positive on 7 of 9, 2xSE 3.27 -> PROVEN
+  top 25% - all kept: +2.05 ± 1.18 (9 slates), positive on 7 of 9, 2xSE 2.35 -> DIRECTIONAL
+  top 50% - all kept: +1.31 ± 0.71 (9 slates), positive on 7 of 9, 2xSE 1.43 -> DIRECTIONAL
+  top 75% - all kept: +0.62 ± 0.38 (9 slates), positive on 6 of 9, 2xSE 0.75 -> DIRECTIONAL
+  variants' share of the top tenth: 23.3% (mean over slates; range 0.0-63.4) vs 11.6% of all kept
+
+== QUALIFIER (unified contest type) | slates: 2026-11-23_157021, 2026-11-24_157024, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382
+  top 10% - all kept: -0.79 ± 1.15 (6 slates), positive on 2 of 6, 2xSE 2.30 -> NOISE
+  top 25% - all kept: -0.44 ± 0.86 (6 slates), positive on 2 of 6, 2xSE 1.72 -> NOISE
+  top 50% - all kept: -0.27 ± 0.58 (6 slates), positive on 2 of 6, 2xSE 1.16 -> NOISE
+  top 75% - all kept: +0.04 ± 0.36 (6 slates), positive on 4 of 6, 2xSE 0.72 -> DIRECTIONAL
+  variants' share of the top tenth: 37.8% (mean over slates; range 13.5-66.7) vs 16.6% of all kept
+
+variants' share of the TOP HALF of the kept pool, flagship nights since 11-24:
+  2026-11-24_157024 top half 30.9%, top tenth 33.9%, all kept 17.5%
+  2026-11-24_157026 top half 50.9%, top tenth 63.4%, all kept 30.8%
+  2026-11-25_157293 top half 28.1%, top tenth 36.9%, all kept 15.3%
+  2026-11-25_157295 top half 23.1%, top tenth 24.9%, all kept 12.7%
+  2026-11-26_157380 top half 41.2%, top tenth 66.7%, all kept 24.2%
+  2026-11-26_157382 top half 35.9%, top tenth 51.2%, all kept 20.3%
+  mean: top half 35.0%, all kept 20.1%

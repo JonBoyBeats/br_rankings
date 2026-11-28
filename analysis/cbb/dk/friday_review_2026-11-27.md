@@ -677,3 +677,83 @@ True flagships are 55% of fees (was 58%) and still the whole loss. Our flagship 
 **Verdict:**
 - **Proposal 1 still clears its bar on true flagships.** It's +$35.22 ± 14.61 since 11-24 (2×SE = 29.22), ahead on 6 of 6, and +$35.38 ± 14.10 on all 9 slates with board values, ahead on 8 of 9. It stays PROVEN and HELD, as before.
 - **No rule-5 tag changes.** Entered vs random kept fills on flagships stays clearly negative since 11-24. The users' findings, the tiered test (NOISE) and the uncertainty study (overall NOISE, mains DIRECTIONAL, flagships NOISE) keep their tags. The changes are in the by-type sizes, all inside the existing intervals.
+
+## Addendum 2026-11-28: sections 7 and 8, operator decisions
+
+The operator agreed these conclusions on 2026-11-28. The HOLD stands: everything below is recorded for the
+end-of-walkthrough batch, and nothing ships until the operator gives the go. Numbers are quoted from the commits
+named; the S8 re-cut and proposal 1 check were run for this addendum
+([fr_cut_recut.py](friday_review_2026-11-27/fr_cut_recut.py) → `.out`,
+[fr_p1_recut.py](friday_review_2026-11-27/fr_p1_recut.py) → `.out`).
+
+### Section 7: bank and draw (decisions)
+
+| Decision | Tier | Evidence |
+|---|---|---|
+| Drop the Draw-the-9 lean cells | batch, near-PROVEN | f0c012b: the lean cells pull the bank 7.7 pts below plain draws; all-plain beats today's D9 mix on the kept pool +3.22 ± 0.84 (12 of 14 builds) and on the fill +2.93 ± 1.14 (10 of 14) |
+| Bank draw = plain + projection jitter at k 0.5 (half the measured miss, wider below $7k) | batch, PROVISIONAL; review at 10 builds; D9 logged as PREVIOUS | f0c012b: kept +1.05 ± 0.86 (12 of 14), fill +4.15 ± 1.91 (10 of 14), distinct cores +0.4, max exposure −2.8 pp; the only recipe with variety AND results. Size-sensitive: at the full measured miss it is −5.23 ± 1.84 on the kept pool (3 of 14) |
+| All-plain as the fallback | PROVEN on results | as above; it loses variety (distinct cores −19%, max exposure +10 pp) |
+| No greens rule | — | f0c012b: GREENS-rule draws vs plain flip out of sample (last 6 slates −0.29 ± 1.25, 3 of 6), NOISE. The green-core shadow (69e2358) decides instead, at 7 of 10 counted main slates with $ AND finish pct ahead; pre-registration (cc44bc8) green top-5 cores +11.18 ± 3.42 finish pct on mains (6 of 7), $ flat, and the restricted picks fill only 276 of 429 main entries |
+
+### Section 8: cut (decisions)
+
+| Decision | Tier | Evidence |
+|---|---|---|
+| No cut change | — | no cut setting passed held out |
+| Keep size ships through fill proposal 1, not as its own rule | — | same lever (draw from the board's top half); counting it twice would double-count one effect |
+| Cap variants at about 25% of the fill's candidate list | batch, DIRECTIONAL | variants trail their parents −4.22 ± 1.15 (0 of 6) but are neutral on the pool headline (fr_var.out: with minus without variants +0.22 ± 0.23, 11 slates, positive on 7); they are over-represented at the top of the board (below) |
+| Pool arm PREVIOUS column = "kept without variants" | decision recorded | fr_var.py already computes it. Not built into the scorecard here: it needs the build's tags and every contest's standings, so it is not a trivial logging-only column; it goes in with the variants cap |
+
+### S8 re-cut: keep-size gradient by unified contest type
+
+Kept lineups ranked by the board's sim value; top share minus all kept, real finish percentile, mean over each
+slate's contests of that type, then mean ± SE over slates. Contest types are `scripts/dk_contest_type.py`; every
+contest with standings on hand is used (the review's fr_cut.py used 100+ entry contests only, reproduced exactly in
+the first block of the .out). Builds: 11-19 to 11-26, 11 builds. Excluded: 11-16, 11-17, 11-18 (no board values),
+**11-27 157547 (not graded: no night record and no standings yet)**. Tags by rule 5 (PROVEN = gain > 2×SE and ahead
+on most slates; DIRECTIONAL = right direction on about 60%+).
+
+| Type | Band | Top − all kept (finish pct) | Positive | 2×SE | Tag |
+|---|---|---|---|---|---|
+| Flagship (11 slates) | top 10% | +2.64 ± 1.48 | 7 of 11 | 2.96 | DIRECTIONAL |
+| | top 25% | +1.67 ± 1.01 | 8 of 11 | 2.01 | DIRECTIONAL |
+| | top 50% | +1.08 ± 0.61 | 8 of 11 | 1.21 | DIRECTIONAL |
+| | top 75% | +0.59 ± 0.31 | 8 of 11 | 0.62 | DIRECTIONAL |
+| Main (9 slates) | top 10% | +3.43 ± 1.63 | 7 of 9 | 3.27 | PROVEN by the letter (margin 0.16, one of four bands looked at) → treated as DIRECTIONAL |
+| | top 25% | +2.05 ± 1.18 | 7 of 9 | 2.35 | DIRECTIONAL |
+| | top 50% | +1.31 ± 0.71 | 7 of 9 | 1.43 | DIRECTIONAL |
+| | top 75% | +0.62 ± 0.38 | 6 of 9 | 0.75 | DIRECTIONAL |
+| Qualifier (6 slates) | top 10% | −0.79 ± 1.15 | 2 of 6 | 2.30 | NOISE |
+| | top 25% | −0.44 ± 0.86 | 2 of 6 | 1.72 | NOISE |
+| | top 50% | −0.27 ± 0.58 | 2 of 6 | 1.16 | NOISE |
+| | top 75% | +0.04 ± 0.36 | 4 of 6 | 0.72 | NOISE (flat) |
+
+Variants' share of the board's top tenth (mean over slates): flagship 29.8% (all kept 13.6%), main 23.3% (11.6%),
+qualifier 37.8% (16.6%). Variants roughly double their share at the top of the board in every type.
+
+**Should proposal 1 cover mains?** On finish percentile the gradient is as strong on mains as on flagships (top 50%
++1.31 ± 0.71, 7 of 9, DIRECTIONAL), but on dollars it does not pass on mains: top-half random − entered +10.91 ±
+7.67 since 11-24 (3 of 4 slates), +1.19 ± 8.65 over all 7 main slates (5 of 7). So extending proposal 1 to mains is
+a DIRECTIONAL candidate (PROVISIONAL, review on the mains-only week), not part of the PROVEN flagship proposal. Do not
+extend it to qualifiers (NOISE, wrong sign at the top).
+
+### Proposal 1 gate: true flagships since 11-24
+
+The gate is "after 11-27 grades, only if the 7-slate number still clears 2×SE". **11-27 is pending**: the standings
+for its contests (198269753, 198278517) and its night record were not on hand at the time of this addendum, so this
+is the current 6 slates (11 contests). fr_p1_recut.py picks 11-27 up once fr_fill.py is re-run with those files.
+
+| Flagships since 11-24 (6 slates) | Mean $ per slate | Ahead | 2×SE | Clears? |
+|---|---|---|---|---|
+| Top-half random − entered | +35.22 ± 14.61 | 6 of 6 | 29.21 | yes |
+| Top-25% random − entered | +36.85 ± 20.23 | 5 of 6 | 40.47 | no |
+| Top-10% random − entered | +29.76 ± 20.36 | 5 of 6 | 40.71 | no |
+| Top-half random, median $ − entered | −2.50 ± 6.92 | 1 of 6 | 13.84 | no (the joint pick still wins the median) |
+| Entered − plain random kept | −33.36 ± 10.24 | 0 of 6 | 20.48 | entered trails |
+
+Top half remains the right band: narrower bands do not add and lose the 2×SE margin. Over all 9 flagship slates
+with board values, top-half random − entered is +35.38 ± 14.10 (8 of 9).
+
+Variants' share of the TOP HALF of the kept pool on flagship nights since 11-24: 30.9%, 50.9%, 28.1%, 23.1%, 41.2%,
+35.9% (mean 35.0%, against 20.1% of all kept). A 25% variants cap would bind on 5 of the 6 nights, so the cap does
+change what proposal 1 draws from; the two should be reviewed together.

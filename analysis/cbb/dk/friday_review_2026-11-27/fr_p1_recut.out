@@ -1,0 +1,24 @@
+== flagship, since 11-24: 11 contests on 6 slates (2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382)
+  top-half random - entered (mean $) +35.22 ± 14.61, ahead 6 of 6, 2xSE 29.21 -> clears
+  top-25% random - entered (mean $)  +36.85 ± 20.23, ahead 5 of 6, 2xSE 40.47 -> does not clear
+  top-10% random - entered (mean $)  +29.76 ± 20.36, ahead 5 of 6, 2xSE 40.71 -> does not clear
+  top-half median $ - entered        -2.50 ± 6.92, ahead 1 of 6, 2xSE 13.84 -> does not clear
+  entered - plain random kept (mean $) -33.36 ± 10.24, ahead 0 of 6, 2xSE 20.48 -> does not clear
+== flagship, all slates: 16 contests on 9 slates (2026-11-20_157013, 2026-11-20_157015, 2026-11-23_157021, 2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382)
+  top-half random - entered (mean $) +35.38 ± 14.10, ahead 8 of 9, 2xSE 28.20 -> clears
+  top-25% random - entered (mean $)  +40.10 ± 17.94, ahead 8 of 9, 2xSE 35.88 -> clears
+  top-10% random - entered (mean $)  +35.54 ± 18.17, ahead 8 of 9, 2xSE 36.33 -> does not clear
+  top-half median $ - entered        -3.89 ± 4.91, ahead 1 of 9, 2xSE 9.83 -> does not clear
+  entered - plain random kept (mean $) -30.36 ± 10.28, ahead 1 of 9, 2xSE 20.55 -> does not clear
+== main, since 11-24: 13 contests on 4 slates (2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295)
+  top-half random - entered (mean $) +10.91 ± 7.67, ahead 3 of 4, 2xSE 15.34 -> does not clear
+  top-25% random - entered (mean $)  +12.16 ± 11.57, ahead 3 of 4, 2xSE 23.15 -> does not clear
+  top-10% random - entered (mean $)  +4.72 ± 17.69, ahead 2 of 4, 2xSE 35.37 -> does not clear
+  top-half median $ - entered        -1.31 ± 4.93, ahead 2 of 4, 2xSE 9.87 -> does not clear
+  entered - plain random kept (mean $) -10.27 ± 4.24, ahead 0 of 4, 2xSE 8.48 -> does not clear
+== main, all slates: 25 contests on 7 slates (2026-11-20_157013, 2026-11-20_157015, 2026-11-23_157021, 2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295)
+  top-half random - entered (mean $) +1.19 ± 8.65, ahead 5 of 7, 2xSE 17.31 -> does not clear
+  top-25% random - entered (mean $)  +4.22 ± 8.36, ahead 5 of 7, 2xSE 16.73 -> does not clear
+  top-10% random - entered (mean $)  +5.32 ± 11.42, ahead 4 of 7, 2xSE 22.84 -> does not clear
+  top-half median $ - entered        -11.94 ± 10.20, ahead 2 of 7, 2xSE 20.40 -> does not clear
+  entered - plain random kept (mean $) +0.51 ± 9.01, ahead 1 of 7, 2xSE 18.02 -> does not clear
