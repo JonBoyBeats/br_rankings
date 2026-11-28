@@ -1,0 +1,43 @@
+1b. GREENS rule (at least n of the slate's retroactive greens; n 3 with 5+ greens, else 2) vs the plain L0 U0 draw, 600 each,
+    real finish percentile, GREENS - plain, paired by contest (100+ entries), slate = mean over its contests
+  all                                         (none)
+  flagship                                    (none)
+  main                                        (none)
+  qualifier                                   (none)
+  top-10%% rate (points of rate x 100)        (none)
+
+  per contest: date, draft group, contest, entries, greens, n, GREENS pct, plain pct, diff
+
+2. Bank recipes (1,500 drawn each, merit cut to 30%, the build's contests filled), each against (a) today's Draw-the-9 mix
+
+  The pool (all graded 100+ contests, every lineup): mean finish percentile
+  recipe       bank   kept     k-b  cores  /kept  maxexp slates
+  d9          35.38  42.51   +7.13    207   0.46   75.6%     14
+  jitter      31.77  37.27   +5.50    288   0.64   53.4%     14
+  kept pct, jitter - d9                        -5.23 ±  1.84  over 14 slates, ahead on  3
+  kept - bank, jitter - d9                     -1.62 ±  0.81  over 14 slates, ahead on  4
+  distinct kept cores, jitter - d9            +81.07 ±  8.88  over 14 slates, ahead on 14
+
+  The fill (entered contests with standings): finish pct and net $ per entry, entries-weighted within a slate
+  -- all
+  d9         pct  44.32  net/entry   -0.88  net  +441.68 on fees  784.55  (14 slates)
+  jitter     pct  42.11  net/entry   -1.89  net  +138.54 on fees  857.90  (14 slates)
+    pct, jitter - d9                           -2.21 ±  2.51  over 14 slates, ahead on  5
+    net $/entry, jitter - d9                   -1.02 ±  0.69  over 14 slates, ahead on  6
+  -- flagship
+  d9         pct  44.09  net/entry   +7.26  net  +350.33 on fees  540.00  (13 slates)
+  jitter     pct  35.48  net/entry   -1.34  net  +101.00 on fees  570.00  (13 slates)
+    pct, jitter - d9                           -8.61 ±  6.42  over 13 slates, ahead on  3
+    net $/entry, jitter - d9                   -8.60 ±  5.58  over 13 slates, ahead on  0
+  -- main
+  d9         pct  46.60  net/entry   +0.17  net   +91.35 on fees  244.55  (12 slates)
+  jitter     pct  45.82  net/entry   +0.07  net   +37.54 on fees  287.90  (12 slates)
+    pct, jitter - d9                           -0.78 ±  2.52  over 12 slates, ahead on  4
+    net $/entry, jitter - d9                   -0.10 ±  0.24  over 12 slates, ahead on  5
+  -- qualifier
+    pct, jitter - d9                          (none)
+    net $/entry, jitter - d9                  (none)
+
+  The entries' spread: max player exposure across the night's entries, distinct cores among them
+  d9         max exposure  74.3%  distinct entry cores  22.6 of  42.4 entries
+  jitter     max exposure  57.7%  distinct entry cores  28.9 of  50.4 entries

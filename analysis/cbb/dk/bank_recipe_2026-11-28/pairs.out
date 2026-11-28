@@ -1,0 +1,16 @@
+kept pct jitter - plain                   -2.17 ±  1.16  14 slates, ahead 5
+kept cores jitter - plain                +40.07 ±  6.16  14 slates, ahead 14
+kept max exposure jitter - plain         -12.81 ±  1.56  14 slates, ahead 0
+fill pct jitter - plain                   +1.22 ±  2.01  14 slates, ahead 7
+kept pct greencore - plain                +0.33 ±  0.60  14 slates, ahead 6
+kept cores greencore - plain              -9.00 ±  3.11  14 slates, ahead 3
+kept max exposure greencore - plain       +0.74 ±  0.51  14 slates, ahead 9
+fill pct greencore - plain                +0.04 ±  1.02  14 slates, ahead 6
+kept pct light - plain                    -1.95 ±  0.60  14 slates, ahead 3
+kept cores light - plain                 +19.86 ±  4.33  14 slates, ahead 13
+kept max exposure light - plain           -4.77 ±  0.88  14 slates, ahead 0
+fill pct light - plain                    -2.65 ±  1.45  14 slates, ahead 4
+kept max exposure plain - d9              +9.98 ±  2.07  14 slates, ahead 13
+kept max exposure greencore - d9         +10.72 ±  2.17  14 slates, ahead 13
+kept max exposure jitter - d9             -2.83 ±  1.13  14 slates, ahead 4
+kept max exposure light - d9              +5.21 ±  1.42  14 slates, ahead 12

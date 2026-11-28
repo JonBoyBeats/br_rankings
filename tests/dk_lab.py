@@ -24,6 +24,8 @@ try:
         os.makedirs(os.path.join(tmp, k))
     E.DK, E.BUILDS, E.STANDINGS = tmp, os.path.join(tmp, "builds"), os.path.join(tmp, "standings")
     E.EVAL, E.LAB, E.LAB_EVAL = os.path.join(tmp, "eval.csv"), os.path.join(tmp, "lab.json"), os.path.join(tmp, "lab_eval.csv")
+    E.LAB_CONTROLS = os.path.join(tmp, "lab_controls")
+    os.makedirs(E.LAB_CONTROLS)
     reg = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "analysis", "cbb", "dk", "lab.json")))
     for e in reg["experiments"]:
         e.pop("results", None)
@@ -58,6 +60,8 @@ try:
         w.writeheader()
         for day, g, cid in (("2026-11-20", "900", "11"), ("2026-11-24", "901", "12"), ("2026-11-25", "902", "13")):
             w.writerow({"date": day, "draft_group": g, "contest_id": cid, "contest": "Test contest", "who": "mine"})
+            # d's control (2026-11-28): the night's replayed plain L0 U0 draw, two lineups scoring 100 and 164
+            json.dump({"lineups": [B[:8], Cc[:8]]}, open(os.path.join(E.LAB_CONTROLS, "%s_%s.json" % (day, g)), "w"))
             keep = list(range(len(pool)))       # top tenth: the best 10 of 11 by board value, lineup 10 the worst
             json.dump({"day": day, "draft_group": g, "pool": pool, "tags": tags, "final": keep, "tag_settings": settings, "saved_at": day, "variant_of": {"9": 4},
                        "cut_state": {"keep": keep, "board": {"values": [100 - k for k in keep]}, "variantRounds": 1}},
@@ -77,7 +81,7 @@ try:
     ex = {e["id"]: e["results"]["arms"] for e in out["experiments"]}
     want_a = pct(score[0]) - (pct(score[1]) + pct(score[3])) / 2       # 3 is a game group too (B's players); 7, GREENS, is out of the control
     want_b = pct(score[2]) - pct(score[3])                              # b: 'at least N of' rules, GREENS lineups out
-    want_d = pct(score[7]) - pct(score[3])                              # d: the hand-picked group rule only
+    want_d = pct(score[7]) - (pct(100) + pct(164)) / 2                  # d: the night's replayed plain L0 U0 lineups (2026-11-28)
     want_ep = (pct(score[8]) + pct(score[9])) / 2 - (pct(score[0]) + pct(score[4])) / 2      # e: variant against its own parent (10 has none)
     want_er = (pct(score[8]) + pct(score[9]) + pct(score[10])) / 3 - sum(pct(score[k]) for k in range(8)) / 8      # e: every variant against the top tenth's others
     want_c = (pct(score[5]) + pct(score[6])) / 2 - (pct(score[4]) + pct(score[6])) / 2      # lineup 6 in both: shared credit
@@ -96,7 +100,7 @@ try:
           (a["slates"][0]["c_n"], b["slates"][0]["c_n"]))
     check("c: each cell against the same idea's L0 U0; a lineup under both counts for both (shared credit)",
           c["slates"] and abs(c["slates"][0]["diff"] - round(want_c, 2)) < 1e-9 and c["slates"][0]["t_n"] == 2 and c["slates"][0]["c_n"] == 2, (c, want_c))
-    check("d: GREENS lineups against the operator's own group rules (no GREENS / STACK / SCANFLOOR in the tag)", d["slates"] and abs(d["slates"][0]["diff"] - round(want_d, 2)) < 1e-9 and d["slates"][0]["c_n"] == 1, (d, want_d))
+    check("d: GREENS lineups against the night's replayed plain L0 U0 draw (lab_controls), not the bank's own lineups", d["slates"] and abs(d["slates"][0]["diff"] - round(want_d, 2)) < 1e-9 and d["slates"][0]["c_n"] == 2, (d, want_d))
     check("slates before registration are a look-back, not counted: 2 counted (11-24, 11-25), 1 look-back (11-20)",
           all(x["nights"] == 2 and len(x["lookback"]) == 1 and x["lookback"][0]["date"] == "2026-11-20" for x in (a, b, c, d, ep, er)), [(x["nights"], len(x["lookback"])) for x in (a, b, c, d, ep, er)])
     check("the registry's definitions are kept as written; only results and updated_at change",

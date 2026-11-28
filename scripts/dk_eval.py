@@ -3340,6 +3340,16 @@ LAB_EVAL = os.path.join(DK, "lab_eval.csv")
 LAB_COLS = ["date", "draft_group", "experiment", "arm", "counted", "contest_id", "contest", "entries", "t_n", "c_n", "t_pct", "c_pct", "diff",
             "t_top10", "c_top10", "top10_diff"]
 LAB_MIN_ENTRIES = 100
+# Lab d's control from 2026-11-28 (the operator, Section 7): the same night's plain L0 U0 draw, replayed at lock
+# (analysis/cbb/dk/bank_recipe_2026-11-28/recipe.js: DKSim.poolDraw, no rules, Bank noise 0.35, the deep bench out,
+# a fixed seed per draft group), saved per night as lab_controls/<date>_<draft group>.json {"lineups": [[ids]], ...}
+LAB_CONTROLS = os.path.join(DK, "lab_controls")
+
+
+def lab_control(day, g):
+    """The night's replayed plain L0 U0 lineups (lists of DK ids) for Lab d's control, [] when none is saved."""
+    f = os.path.join(LAB_CONTROLS, "%s_%s.json" % (day, g))
+    return [[str(i) for i in L] for L in json.load(open(f)).get("lineups", [])] if os.path.exists(f) else []
 STACK_RE = re.compile(r"STACK (\S+@\S+) (\d\+\d)")
 DRAW9_RE = re.compile(r"^(.*) (L[\d.]+ U\d+)$")
 GROUP_RE = re.compile(r"(^|: )at least \d+ of ", re.I)
@@ -3348,9 +3358,10 @@ GROUP_RE = re.compile(r"(^|: )at least \d+ of ", re.I)
 GREEN_IDEA_RE = re.compile(r"green(\s*[345])?", re.I)
 
 
-def lab_arms(b, team):
+def lab_arms(b, team, ctrl=None):
     """{(experiment, arm): (treatment indices, control indices)} among the bank's kept lineups. arm is "" for a and b,
-    the cell ("L0.1 U1") for c."""
+    the cell ("L0.1 U1") for c. ctrl: (first, count) of the night's replayed plain L0 U0 lineups appended after the
+    bank's pool (lab_control): Lab d's control from 2026-11-28."""
     tags = [set(t) if isinstance(t, list) else {t} for t in b["tags"]]
     kept = sorted(set(b["final"])) if b.get("final") else list(range(len(b["pool"])))
     st = b.get("tag_settings") or {}
@@ -3380,15 +3391,12 @@ def lab_arms(b, team):
         grp = lambda tag: any(GROUP_RE.search(r.get("label") or "") for r in (st.get(tag) or {}).get("conds") or [] if r.get("type") == "min")
         C = [k for k in kept if not any("SCANFLOOR" in t or green(t) for t in tags[k]) and any(grp(t) for t in tags[k])]
         out[("b", "")] = (T, C)
-    # d: GREENS game groups (the DK page's Set greens) vs the operator's own group rules ("at least N of", in a tag with
-    # no GREENS / STACK / SCANFLOOR)
+    # d: the green batches (the DK page's Set greens, or the GREEN / green 3/4/5 ideas), kept, against the same night's
+    # plain L0 U0 draw replayed at lock (2026-11-28, the operator: green-only nights count; before, the control was
+    # the operator's own "at least N of" group rules, which green-only nights did not have). No saved replay: no control.
     T = [k for k in kept if any(green(t) for t in tags[k])]
-    if T:
-        # SCANFLOOR allowed in the control (2026-11-27): the green batches carry scan floors too, so the two sides match
-        plain = lambda tag: not (green(tag) or STACK_RE.search(tag))
-        hand = lambda tag: plain(tag) and any(GROUP_RE.search(r.get("label") or "") and not r.get("greens") for r in (st.get(tag) or {}).get("conds") or [] if r.get("type") == "min")
-        C = [k for k in kept if not any(green(t) for t in tags[k]) and any(hand(t) for t in tags[k])]
-        out[("d", "")] = (T, C)
+    if T and ctrl and ctrl[1]:
+        out[("d", "")] = (T, list(range(ctrl[0], ctrl[0] + ctrl[1])))
     # e: the Variants step's lineups against their own parents (one to one) and against the rest of the top tenth
     vm = lab_variants(b)
     if vm and vm["variants"]:
@@ -3494,7 +3502,9 @@ def lab(a=None):
         if not rec:
             continue
         team = {r["dk_id"]: r["team"] for r in rec}
-        arms = {k: v for k, v in lab_arms(b, team).items() if v[0] and v[1]}
+        ctrl = lab_control(b["day"], g)
+        pool = list(b["pool"]) + ctrl
+        arms = {k: v for k, v in lab_arms(b, team, (len(b["pool"]), len(ctrl))).items() if v[0] and v[1]}
         if not arms:
             continue
         per = defaultdict(list)
@@ -3513,7 +3523,7 @@ def lab(a=None):
 
             def fin(k):
                 if k not in score:
-                    p = placed(sum(pts.get(str(i)) or 0 for i in b["pool"][k]), field)
+                    p = placed(sum(pts.get(str(i)) or 0 for i in pool[k]), field)
                     score[k] = (100.0 * (n - (p - 1)) / n, p <= top10)
                 return score[k]
             for (ex, arm), (T, C) in arms.items():

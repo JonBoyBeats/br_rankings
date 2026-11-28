@@ -984,9 +984,9 @@
     },
     {
       "id": "d",
-      "name": "GREENS game groups vs hand-picked game groups",
+      "name": "GREENS batches vs the same night's plain L0 U0 draw",
       "treatment": "kept lineups drawn as a green batch: a tag containing GREENS <AWAY@HOME> (the DK page's Set greens) or a tag whose idea is named GREEN / green 3 / green 4 / green 5 (the operator's shortcut: every green player, at least 3 / 4 / 5 of them)",
-      "control": "kept lineups with no green tag whose tag (free of green and STACK; SCANFLOOR allowed, since the green batches carry it too) holds the operator's own group rule: 'at least N of <players>'",
+      "control": "the same night's plain L0 U0 draw replayed at lock (no rules, Leverage 0, Under 0, Bank noise 0.35, the deep bench out, a fixed seed per draft group; 600 lineups, uncut), saved as analysis/cbb/dk/lab_controls/<date>_<draft group>.json by analysis/cbb/dk/bank_recipe_2026-11-28/recipe.js; a night without a saved replay has no control",
       "primary_metric": "mean real finish percentile difference (treatment - control), paired by slate and contest; top-10% rate shown",
       "planned_nights": 10,
       "pass": {
@@ -998,14 +998,14 @@
       "results": {
         "arms": {
           "all": {
-            "nights": 3,
-            "counted_for_verdict": 3,
+            "nights": 5,
+            "counted_for_verdict": 5,
             "planned": 10,
-            "diff": 4.73,
-            "noise": 5.95,
-            "ahead": 2,
-            "behind": 1,
-            "top10_diff": 0.0849,
+            "diff": 7.59,
+            "noise": 6.77,
+            "ahead": 3,
+            "behind": 2,
+            "top10_diff": 0.0541,
             "verdict": "running",
             "slates": [
               {
@@ -1014,11 +1014,11 @@
                 "counted": true,
                 "contests": 6,
                 "t_n": 260,
-                "c_n": 1094,
-                "diff": 16.19,
-                "top10_diff": 0.2622,
+                "c_n": 600,
+                "diff": 11.05,
+                "top10_diff": 0.1989,
                 "t_pct": 83.47,
-                "c_pct": 67.28
+                "c_pct": 72.42
               },
               {
                 "date": "2026-11-25",
@@ -1026,11 +1026,11 @@
                 "counted": true,
                 "contests": 5,
                 "t_n": 609,
-                "c_n": 1172,
-                "diff": 1.75,
-                "top10_diff": 0.0105,
+                "c_n": 600,
+                "diff": 3.82,
+                "top10_diff": 0.0068,
                 "t_pct": 41.81,
-                "c_pct": 40.06
+                "c_pct": 37.99
               },
               {
                 "date": "2026-11-25",
@@ -1038,18 +1038,43 @@
                 "counted": true,
                 "contests": 5,
                 "t_n": 522,
-                "c_n": 1162,
-                "diff": -3.76,
-                "top10_diff": -0.0179,
+                "c_n": 600,
+                "diff": -5.47,
+                "top10_diff": -0.0347,
                 "t_pct": 46.75,
-                "c_pct": 50.51
+                "c_pct": 52.22
+              },
+              {
+                "date": "2026-11-26",
+                "draft_group": "157380",
+                "counted": true,
+                "contests": 1,
+                "t_n": 764,
+                "c_n": 600,
+                "diff": -3.48,
+                "top10_diff": -0.0175,
+                "t_pct": 39.87,
+                "c_pct": 43.35
+              },
+              {
+                "date": "2026-11-26",
+                "draft_group": "157382",
+                "counted": true,
+                "contests": 1,
+                "t_n": 750,
+                "c_n": 600,
+                "diff": 32.03,
+                "top10_diff": 0.117,
+                "t_pct": 59.89,
+                "c_pct": 27.87
               }
             ],
             "lookback": []
           }
         }
       },
-      "amended": "2026-11-27, before any counted slate: GREEN / green 3/4/5 ideas count as treatment, and SCANFLOOR is allowed in the control (the operator)"
+      "amended": "2026-11-27, before any counted slate: GREEN / green 3/4/5 ideas count as treatment, and SCANFLOOR is allowed in the control (the operator); 2026-11-28 (the operator, Section 7): the control is the same night's plain L0 U0 draw replayed at lock instead of the operator's own group rules, so green-only nights count; the treatment is unchanged (kept green lineups). Pass bar and planned nights unchanged",
+      "control_before_2026_11_28": "kept lineups with no green tag whose tag (free of green and STACK; SCANFLOOR allowed, since the green batches carry it too) holds the operator's own group rule: 'at least N of <players>'"
     },
     {
       "id": "e",
@@ -1466,5 +1491,5 @@
       }
     }
   ],
-  "updated_at": "2026-11-27T23:23:58Z"
+  "updated_at": "2026-11-28T06:50:51Z"
 }
