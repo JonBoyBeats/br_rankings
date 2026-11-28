@@ -488,7 +488,24 @@ The field also needs a PREVIOUS column before any change.
 
 **Headline (in − out, DK points; swap-2026-11-24, settling 6 of 7):** n/a. No swap has been graded: the scorecard's swap arm has no rows.
 
-**Calibration running (night 12 of 15), appended when done.** The run is `python3 scripts/dk_lateswap_calib.py --mirror ../br-adp-mirror` with 11-24 to 11-26 added, written to `lateswap_calibration_2026-11-27.md`. The 2026-11-24 calibration, on 11 nights, read our stated expected payout and top-1% as about 1.5x too high and the 20–95% cash figures about 10 points high ([lateswap_calibration_2026-11-24.md](lateswap_calibration_2026-11-24.md)).
+**Calibration** (`python3 scripts/dk_lateswap_calib.py --mirror ../br-adp-mirror`, with all six of 11-24 to 11-26 added: 15 nights; full tables in [lateswap_calibration_2026-11-27.md](lateswap_calibration_2026-11-27.md)). The script's boilerplate line "2026-11-24 is not in yet" is stale: 157024 and 157026 are in.
+
+- **Expected payout:** at each night's first break, our entries' stated expected payout sums to **$2,228 against $1,064 paid (2.1x; fees $874).** The 11-24 calibration, on 11 nights, read about 1.5x. The field sample scored the same way states $11,511 against $10,435 (1.10x), so the board itself isn't inflating payouts.
+- **Top 1%:** our entries stated at 5–50% (458 entry-breaks, mean 10.7%) finished top 1% 4.8% of the time. The field sample's (mean 12.3%) did so 9.5% of the time.
+- **Cash:**
+  - Stated 95%+ holds: 132 entry-breaks at a mean 98.7% cashed 91.7%.
+  - From 20% to 95% it runs high. Our entries were stated at 49.7% and cashed 34.5% (1,599 entry-breaks), against the field sample's 40.7% stated and 36.9% cashed.
+- **The cause is bias, not width:**
+  - Each entry's realized miss is 0.93x the simulated spread for ours and 1.02x for the field.
+  - Our entries finish **7.5 points under their simulated mean** (mean percentile 0.409), against −1.4 for the field. The 11-24 run read 5.7, and section 4's selection-haircut study read 2.5.
+  - It's the same over-projection as section 2's per-minute level, concentrated on the players our lineups are built from.
+- **Variance fix (x1.25 on every draw):** better held out on only 9 of 15 nights, and first-break stated payout is still $1,913 against $1,064. Not worth it.
+- **Graded swaps:** none. The scorecard's late-swap arm still has no rows.
+
+**Verdict: no late-swap change.**
+- Read our stated payout and top 1% as about 2x too high, and the 20–95% cash figures as about 15 points high.
+- The candidate is a haircut on our own entries' simulated points, about the 7.5-point mean miss, fitted held out by night. It needs the arm's PREVIOUS column (today's stated numbers, logged beside it).
+- The per-minute level fix (section 2), if it passes at 7 slates, should shrink this gap on its own. Re-run the calibration after it.
 
 ---
 
@@ -552,7 +569,7 @@ At most one per arm, ranked by expected impact. None ships without the operator'
 - **Minutes and per-minute:** settling 4 of 7, and no bug. The per-minute level (−0.08/min) is on the watch list.
 - **Field and qualifier:** the refit misses by 0.3 against 2×SE, and the field has no PREVIOUS column.
 - **Pool / cut, variants, keep size:** nothing passes. Retiring variants would lower the pool headline.
-- **Late swap:** no graded swaps.
+- **Late swap:** no graded swaps. The 15-night calibration reads our stated payout 2.1x high, from our entries finishing 7.5 points under their simulated mean. A haircut on our entries is the candidate, held out by night, once a PREVIOUS column is logged (watch list).
 
 ## The watch list
 
@@ -570,5 +587,5 @@ At most one per arm, ranked by expected impact. None ships without the operator'
 | Draw the 9 lean cells | bank | all 8 behind L0U0; 5 can't pass | Lab c's 10th slate |
 | Lab d (greens) can't count green-only nights | bank | 3 slates, +4.73 ± 5.95 | needs a hand group drawn on green nights |
 | GREEN 5 group | bank | 2 nights: −0.9 and +15.9 vs all kept | every night; 157547 grades tomorrow |
-| Late-swap stated payout high | late swap | about 1.5x high on 11 nights (11-24 calibration); 15-night rerun pending | first graded swaps; a haircut test |
+| Late-swap stated payout high | late swap | 2.1x high on 15 nights; our entries 7.5 pts under their sim mean | haircut fitted held out by night; re-run after any per-minute level fix |
 | PREVIOUS columns for field, pool, fill, late swap | process | none logged | before each arm's next change |
