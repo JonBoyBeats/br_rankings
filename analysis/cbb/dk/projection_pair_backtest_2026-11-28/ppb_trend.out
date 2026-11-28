@@ -1,0 +1,54 @@
+rows 2772 on 18 slates ({'replay': 1932, 'logged': 840}); replayed slates 14, logged slates 4
+
+== rebuilt vs old minutes
+  rot_min   per-slate gain +0.018 ± 0.104 (18), ahead 8 | trend over slate order -0.251 ± 0.196 per 10 slates (18 slates)
+            first half of slates +0.179 ± 0.181 (9), ahead 6 | second half -0.143 ± 0.080 (9), ahead 2
+            games at lock <=3  +0.038 ± 0.131 (17), ahead 9 (rows 152)
+            games at lock 4-6  -0.119 ± 0.136 (18), ahead 5 (rows 837)
+            games at lock 7+   +0.027 ± 0.330 (4), ahead 2 (rows 51)
+            row-level slope on games played: -0.045 ± 0.034 per game played (rows 1040, 18 slate clusters)
+
+== switch
+  rot_min   per-slate gain +0.039 ± 0.094 (18), ahead 12 | trend over slate order +0.205 ± 0.180 per 10 slates (18 slates)
+            first half of slates -0.103 ± 0.161 (9), ahead 4 | second half +0.181 ± 0.083 (9), ahead 8
+            games at lock <=3  +0.052 ± 0.091 (17), ahead 5 (rows 152)
+            games at lock 4-6  +0.077 ± 0.102 (18), ahead 13 (rows 837)
+            games at lock 7+   -0.027 ± 0.330 (4), ahead 2 (rows 51)
+            row-level slope on games played: +0.018 ± 0.032 per game played (rows 1040, 18 slate clusters)
+  rot_pts   per-slate gain -0.085 ± 0.047 (18), ahead 7 | trend over slate order +0.003 ± 0.093 per 10 slates (18 slates)
+            first half of slates -0.101 ± 0.080 (9), ahead 4 | second half -0.069 ± 0.054 (9), ahead 3
+            games at lock <=3  +0.148 ± 0.142 (17), ahead 5 (rows 152)
+            games at lock 4-6  -0.107 ± 0.052 (18), ahead 5 (rows 837)
+            games at lock 7+   +0.138 ± 0.299 (4), ahead 3 (rows 51)
+            row-level slope on games played: +0.002 ± 0.020 per game played (rows 1040, 18 slate clusters)
+
+== level on ROTATION only
+  rot_pts   per-slate gain +0.090 ± 0.052 (18), ahead 13 | trend over slate order +0.112 ± 0.100 per 10 slates (18 slates)
+            first half of slates +0.083 ± 0.073 (9), ahead 6 | second half +0.097 ± 0.079 (9), ahead 7
+            games at lock <=3  +0.349 ± 0.229 (17), ahead 12 (rows 152)
+            games at lock 4-6  +0.042 ± 0.066 (18), ahead 12 (rows 837)
+            games at lock 7+   +0.012 ± 0.238 (4), ahead 2 (rows 51)
+            row-level slope on games played: -0.058 ± 0.042 per game played (rows 1040, 18 slate clusters)
+
+== pair (switch + level)
+  stars_pts per-slate gain +0.082 ± 0.141 (18), ahead 8 | trend over slate order +0.146 ± 0.278 per 10 slates (18 slates)
+            first half of slates -0.061 ± 0.242 (9), ahead 2 | second half +0.225 ± 0.144 (9), ahead 6
+            games at lock <=3  +0.889 ± 0.657 (8), ahead 5 (rows 28)
+            games at lock 4-6  +0.021 ± 0.120 (18), ahead 9 (rows 278)
+            games at lock 7+   +0.265 ± 0.366 (4), ahead 3 (rows 22)
+            row-level slope on games played: -0.154 ± 0.111 per game played (rows 328, 18 slate clusters)
+  rot_pts   per-slate gain +0.064 ± 0.046 (18), ahead 14 | trend over slate order +0.171 ± 0.082 per 10 slates (18 slates)
+            first half of slates +0.022 ± 0.068 (9), ahead 7 | second half +0.105 ± 0.064 (9), ahead 7
+            games at lock <=3  +0.547 ± 0.308 (17), ahead 13 (rows 152)
+            games at lock 4-6  -0.011 ± 0.064 (18), ahead 12 (rows 837)
+            games at lock 7+   +0.173 ± 0.077 (4), ahead 4 (rows 51)
+            row-level slope on games played: -0.068 ± 0.042 per game played (rows 1040, 18 slate clusters)
+  rot_min   per-slate gain +0.039 ± 0.094 (18), ahead 12 | trend over slate order +0.205 ± 0.180 per 10 slates (18 slates)
+            first half of slates -0.103 ± 0.161 (9), ahead 4 | second half +0.181 ± 0.083 (9), ahead 8
+            games at lock <=3  +0.052 ± 0.091 (17), ahead 5 (rows 152)
+            games at lock 4-6  +0.077 ± 0.102 (18), ahead 13 (rows 837)
+            games at lock 7+   -0.027 ± 0.330 (4), ahead 2 (rows 51)
+            row-level slope on games played: +0.018 ± 0.032 per game played (rows 1040, 18 slate clusters)
+
+share of rotation rows with 7+ games at lock, by slate:
+  11-16 0%, 11-17 0%, 11-17 0%, 11-18 0%, 11-18 0%, 11-19 0%, 11-19 0%, 11-20 0%, 11-20 0%, 11-21 0%, 11-22 0%, 11-23 0%, 11-24 0%, 11-24 0%, 11-25 14%, 11-25 17%, 11-26 16%, 11-26 17%

@@ -1,0 +1,3 @@
+{"about": "The projection pair backtest's runs (analysis/cbb/dk/projection_pair_backtest_2026-11-28/ppb.py and ppb_trend.py). It re-runs every EVERY graded slates (process.md); the scorecard prints when the next run is due. Append a run here when it is re-run.",
+ "every": 10,
+ "runs": [{"date": "2026-11-28", "graded_slates": 18, "last_slate": "2026-11-26_157382", "write_up": "projection_pair_backtest_2026-11-28.md"}]}

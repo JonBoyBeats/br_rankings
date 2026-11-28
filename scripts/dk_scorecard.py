@@ -323,9 +323,77 @@ def lines(slates=None, arms=None, today=None):
         if c:
             checks.append("- %s: %s" % (name, c))
     out += ["", "Same-night-pair check (process.md: after a change, PREVIOUS logged on each of the first %d slates):" % LAST, ""] + checks
+    out += ["", "## Minutes and per-minute by games played at lock", "",
+            "The same headlines split by how many games the player had played this season at lock (season, every graded slate; "
+            "gp from the night record or analysis/cbb/dk/gp_at_lock.csv). Cells: mean over slates ± SE (slates).", ""] + gp_lines()
+    pd = pair_due(len(slates))
+    if pd:
+        out += ["", pd]
     out += ["", "Notes: the field arm's top-1% line is not logged (eval.csv keeps the winning score, top 10% and cash); "
             "the field, pool, fill and late-swap arms log no PREVIOUS or RULER yet, so they read LIVE only. Results: read over 20+ nights only."]
     return out
+
+
+# The games-played split (2026-11-28, the operator: the in-season pieces were starved on the early slates, so read the
+# projection headlines by how many games a player had at lock). gp from the night record's gp column (cbb_daily.py from
+# 2026-11-28) or, before that, analysis/cbb/dk/gp_at_lock.csv (scripts/dk_gp_backfill.py).
+GP_BUCKETS = (("<=3 games", 0, 3), ("4-6 games", 4, 6), ("7+ games", 7, 10 ** 6))
+GP_SIDECAR = os.path.join(E.DK, "gp_at_lock.csv")
+PAIR_RUNS = os.path.join(E.DK, "pair_backtest_runs.json")
+
+
+def gp_map():
+    out = {}
+    if os.path.exists(GP_SIDECAR):
+        for r in E.read(GP_SIDECAR):
+            out[(r["slate"], r["dk_id"])] = int(float(r["gp"]))
+    return out
+
+
+def gp_lines(window=None):
+    """The minutes and per-minute headlines by games played at lock: per bucket, LIVE (mean over slates ± SE) and
+    LIVE - PREV, LIVE - RULER (paired per slate on the rows both logged)."""
+    side = gp_map()
+    per = []
+    for name, rows in PG.slates():
+        g = name.split("_")[1]
+        for r in rows:
+            v = num(r.get("gp"))
+            r["_gp"] = v if v is not None else side.get((name, r["dk_id"]))
+        G = PG.graded(rows)
+        mp, pp = logged(rows, "min_old", "min_proj"), logged(rows, "old_fp", "fp_dk")
+        cells = {}
+        for lab, lo, hi in GP_BUCKETS:
+            B = [r for r in G if r["_gp"] is not None and lo <= r["_gp"] <= hi]
+            rot = [r for r in PG.band(B, *PG.ROTATION) if num(r.get("min")) is not None and num(r.get("min_proj")) is not None]
+            stars = PG.band(B, *PG.STARS)
+            cells[lab] = (
+                three_way(rot, lambda r: num(r["min"]), lambda r: num(r["min_proj"]), (lambda r: num(r.get("min_old"))) if mp else (lambda r: None),
+                          ruler_col(rows, g, "ruler_min", "min_proj")) if rot else None,
+                three_way(stars, lambda r: num(r["actual_dk"]), lambda r: num(r["fp_dk"]), (lambda r: num(r.get("old_fp"))) if pp else (lambda r: None),
+                          ruler_col(rows, g, "ruler_fp", "fp_dk")) if stars else None)
+        per.append(cells)
+    if window:
+        per = per[-window:]
+    out = ["| Headline | Games at lock | LIVE | LIVE − PREV | LIVE − RULER | rows (season) |", "|---|---|---|---|---|---|"]
+    for i, head in ((0, HEAD["minutes"]), (1, HEAD["per-minute"])):
+        for lab, _, _ in GP_BUCKETS:
+            xs = [c[lab][i] for c in per if c[lab][i]]
+            out.append("| %s | %s | %s | %s | %s | %d |" % (head, lab, f_ms(*agg([x["live"] for x in xs])), f_ms(*agg([x["d_prev"] for x in xs]), signed=True),
+                                                         f_ms(*agg([x["d_ruler"] for x in xs]), signed=True), sum(x["n"] for x in xs)))
+    return out
+
+
+def pair_due(n_graded):
+    """The standing pair-backtest re-run: the last run's graded-slate count and when the next is due."""
+    if not os.path.exists(PAIR_RUNS):
+        return None
+    d = json.load(open(PAIR_RUNS))
+    last = d["runs"][-1]
+    due = last["graded_slates"] + d["every"]
+    return ("Projection pair backtest (analysis/cbb/dk/projection_pair_backtest_2026-11-28/ppb.py, ppb_trend.py): last run %s at %d graded "
+            "slates; next re-run due at %d graded slates (now %d)%s." % (last["date"], last["graded_slates"], due, n_graded,
+                                                                         " — DUE NOW" if n_graded >= due else ""))
 
 
 def write(ls):

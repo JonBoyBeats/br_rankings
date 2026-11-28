@@ -79,6 +79,15 @@ ruler would be a new file with a new id, and the old one would keep running.
 
    `tests/dk_scorecard.py` checks that every listed row exists.
 
+## Standing re-runs
+
+**The projection pair backtest re-runs every 10 graded slates** (added 2026-11-28).
+- **What runs:** `analysis/cbb/dk/projection_pair_backtest_2026-11-28/ppb.py`, `MIN_GP=5` and `MIN_GP=7` of it, and `ppb_trend.py`. Run them from that folder, with battle-royale-research beside br_rankings.
+- **What it covers:** the minutes switch, the per-minute level and the pair, replayed on every graded slate.
+- **When it's due:** the scorecard prints "next re-run due at N graded slates" from [pair_backtest_runs.json](pair_backtest_runs.json).
+- **After a run:** append the run there and add the results to the write-up.
+- **No CI job runs it;** it is run by hand when due.
+
 ## Reading the scorecard
 
 The scorecard has:

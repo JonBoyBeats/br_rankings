@@ -152,3 +152,82 @@ The minutes do fall away in real blowouts, but the per-minute shortfall doesn't 
 | Close-game stars: minutes +3.0 short, per-minute −0.07 high (pregame \|spread\| < 5) | DIRECTIONAL (finding) | 16 of 16 and 14 of 16 slates | a minutes-side fix for close-game stars refit with its per-minute together (a +3.5-minute bump alone didn't help STARS points) |
 | Old minutes better for ordinary 20+ minute players | DIRECTIONAL (finding) | 15 of 17 (20–30), 13 of 17 (30+) | only worth revisiting with the per-minute refit on the same minutes |
 | Minutes switch, the pair, the blowout adjustment | NOISE | see section 2 | none |
+
+---
+
+## Time trend (follow-up, 2026-11-28)
+
+**The operator's point.** The early slates had little in-season data, so the in-season pieces (QMIN states, context, form, per-category rates) were starved there. Maybe the 4 recent slates favoured the candidates because of a time trend, not noise.
+
+**Code:**
+- [ppb_trend.py / ppb_trend.out](projection_pair_backtest_2026-11-28/ppb_trend.out): each candidate's held-out gain per slate and per row;
+- `ppb.py` re-run with `MIN_GP=5` / `MIN_GP=7`: [ppb_gp5.out](projection_pair_backtest_2026-11-28/ppb_gp5.out), [ppb_gp7.out](projection_pair_backtest_2026-11-28/ppb_gp7.out).
+
+Games played at lock comes from each slate's lock file. Gains are positive when the candidate beats the live baseline; for "rebuilt vs old minutes", positive means the rebuild is better.
+
+**The data limit first.** **No early slate has a 7+ game player.** The rotation rows with 7+ games at lock are 0% on every slate through 11-24 and 14–17% on 11-25 and 11-26. So "games played" and "slate order" are almost the same variable for 7+, and 7+ exists on only 4 slates (101 rows).
+
+### 1. Trends
+
+**Against slate order** (OLS slope of the per-slate gain on slate order, per 10 slates ± SE over 18 slates; then the first and second 9 slates):
+
+| Candidate | Headline | Slope per 10 slates | First 9 | Second 9 |
+|---|---|---|---|---|
+| rebuilt vs old minutes | ROTATION minutes | −0.251 ± 0.196 | +0.179 ± 0.181 (rebuild ahead 6) | **−0.143 ± 0.080 (rebuild ahead 2)** |
+| switch | ROTATION minutes | +0.205 ± 0.180 | −0.103 ± 0.161 (4) | **+0.181 ± 0.083 (8 of 9)** |
+| switch | ROTATION points | +0.003 ± 0.093 | −0.101 ± 0.080 (4) | −0.069 ± 0.054 (3) |
+| level, ROTATION only | ROTATION points | +0.112 ± 0.100 | +0.083 ± 0.073 (6) | +0.097 ± 0.079 (7) |
+| pair | STARS points | +0.146 ± 0.278 | −0.061 ± 0.242 (2) | +0.225 ± 0.144 (6) |
+| pair | ROTATION points | **+0.171 ± 0.082** | +0.022 ± 0.068 (7) | +0.105 ± 0.064 (7) |
+| pair | ROTATION minutes | +0.205 ± 0.180 | as the switch | as the switch |
+
+**Against games played at lock** (per-slate bucket means, then over slates; the row-level slope per game played, capped at 10, has a cluster-robust SE by slate):
+
+| Candidate | Headline | ≤ 3 games | 4–6 games | 7+ games (4 slates) | Row slope per game |
+|---|---|---|---|---|---|
+| rebuilt vs old minutes | ROTATION minutes | +0.038 ± 0.131 (17) | −0.119 ± 0.136 (18) | +0.027 ± 0.330 | −0.045 ± 0.034 |
+| switch | ROTATION minutes | +0.052 ± 0.091 | +0.077 ± 0.102 (13 of 18) | −0.027 ± 0.330 | +0.018 ± 0.032 |
+| switch | ROTATION points | +0.148 ± 0.142 | −0.107 ± 0.052 | +0.138 ± 0.299 | +0.002 ± 0.020 |
+| level, ROTATION only | ROTATION points | **+0.349 ± 0.229 (12 of 17)** | +0.042 ± 0.066 | +0.012 ± 0.238 | −0.058 ± 0.042 |
+| pair | STARS points | +0.889 ± 0.657 (8 slates) | +0.021 ± 0.120 | +0.265 ± 0.366 | −0.154 ± 0.111 |
+| pair | ROTATION points | +0.547 ± 0.308 | −0.011 ± 0.064 | +0.173 ± 0.077 (4 of 4) | −0.068 ± 0.042 |
+
+**What it says:**
+- **There is a time trend, and it points the operator's way.** The switch's minutes gain went from −0.10 (first 9 slates) to **+0.18 ± 0.08, ahead on 8 of 9** (second 9). The rebuild's edge over the old minutes went from +0.18 to **−0.14 ± 0.08**: the rebuild was better on only 2 of the last 9. The pair's rotation-points slope is **+0.171 ± 0.082 per 10 slates** (2.1 SE).
+- **But it isn't explained by games played.** Within a slate, players with more games don't show bigger gains. Every row-level slope on games played is flat or *negative*: the switch +0.018 ± 0.032, the pair −0.068 ± 0.042 and −0.154 ± 0.111.
+  - The level factor's gain sits in the starved rows (≤ 3 games: +0.349), the opposite of "improves as data fills in".
+  - So the trend is in *time* (the slates, the schedule, the logged-vs-replayed source), not in the player's own sample size.
+- **The second half includes the 4 logged slates.** The time trend and the logged-vs-replayed difference can't yet be told apart.
+
+### 2. Restricted to experienced players, on all slates
+
+| Restricted to | Slates | Switch: ROTATION minutes | Level, ROTATION only: ROTATION points | Pair: STARS / ROTATION points | Rebuilt vs old minutes |
+|---|---|---|---|---|---|
+| 5+ games at lock | 14 (1,218 rows) | −0.075 ± 0.147 (8 of 14) | +0.061 ± 0.067 (10 of 14) | −0.181 ± 0.140 (6) / +0.020 ± 0.055 (10) | +0.140 ± 0.171 (7) |
+| 7+ games at lock | 4 (101 rows, logged only) | −0.028 ± 0.330 (2 of 4) | −0.236 ± 0.107 (0 of 4) | +0.249 ± 0.312 (2) / +0.110 ± 0.150 (3) | +0.027 ± 0.330 (2) |
+
+**Restricting to players with a full in-season sample doesn't make any candidate better.** With 5+ games the rebuild beats the old minutes (+0.14), and the switch loses. The starvation hypothesis predicts the opposite.
+
+On 7+ games the old minutes still win at 30+ projected minutes, by 1.72 ± 0.46 (0 of 4), and the rebuild wins at 10–20 (+0.77 ± 0.28, 4 of 4). That's 16 and 27 rows.
+
+### 3. Tags, and what would settle each
+
+| Finding | Tag | What settles it |
+|---|---|---|
+| A time trend favouring the switch and the pair (second 9 slates: switch +0.18 ± 0.08, 8 of 9; pair rotation-points slope +0.17 ± 0.08 per 10 slates) | **DIRECTIONAL** (the split was chosen after seeing it) | **The next 10 graded slates, scored prospectively** at the standing re-run (due at 28 graded slates). If the switch's rotation-minutes gain clears 2×SE and is ahead on 7+ of those 10, it is PROVEN; if it flips, NOISE. |
+| The trend is driven by games played (starved in-season pieces) | **NOISE** | Row slopes are flat or negative, and the 5+ game restriction doesn't help. It could only reverse once 7+ game players exist on 10+ slates: about 2 more weeks of slates (7+ games appears from 11-25). Re-test at the 28-slate re-run with `MIN_GP=7`. |
+| Old minutes better for 30+ minute ordinary players | DIRECTIONAL (finding) | It holds at 7+ games (1.72, 0 of 4). Recheck at 10 slates with 7+ game rows. |
+| The switch, the level, the pair on all rows | NOISE (unchanged) | The 28-slate re-run. |
+
+### 4. Scorecard addition (tooling and report only, allowed under the HOLD)
+
+- **`scorecard.md` gains "Minutes and per-minute by games played at lock".** The two headlines, ROTATION minutes MAE and STARS points MAE, are split into ≤ 3 / 4–6 / 7+ games, with LIVE, LIVE − PREV, LIVE − RULER and the season's rows.
+  - The code is `scripts/dk_scorecard.py` (`gp_lines`); `python3 scripts/dk_eval.py scorecard` writes it nightly as before.
+  - Games played comes from a new `gp` column in the night record (`scripts/cbb_daily.py`, from the next record on).
+  - Records written before the column read it from `analysis/cbb/dk/gp_at_lock.csv`, written by `scripts/dk_gp_backfill.py` from the lock files (2,843 rows, 18 slates).
+- **A standing re-run trigger.** The scorecard prints "Projection pair backtest …: last run 2026-11-28 at 18 graded slates; next re-run due at 28 graded slates (now N)", and adds DUE NOW when reached.
+  - The run log is [pair_backtest_runs.json](pair_backtest_runs.json).
+  - The rule is in [process.md](process.md) under "Standing re-runs".
+  - No CI job was added.
+- **`ppb.py` is rerunnable:** paths are relative to the checkout (override with `BRR=<path>`), and `MIN_GP` restricts by games played.
+- **Test:** `tests/dk_scorecard.py` checks the `gp` column and the split (22 passed).

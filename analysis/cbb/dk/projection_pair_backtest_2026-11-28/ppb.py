@@ -19,14 +19,24 @@ fixed for every candidate. Candidates (fitted pieces leave-one-slate-out):
   pair+blowout  all three
 Headlines per slate (gain = baseline MAE - candidate MAE, positive better): ROTATION minutes MAE, STARS points MAE,
 ROTATION points MAE; lenses: Spearman(projected points, actual) on players projected 10+, and top-10 value overlap
-(projected vs actual DK points per $1k, players projected 10+)."""
+(projected vs actual DK points per $1k, players projected 10+).
+
+Rerun (the standing re-run every 10 graded slates, analysis/cbb/dk/process.md): `python3 ppb.py > ppb.out` from this
+folder, with battle-royale-research checked out beside br_rankings (or BRR=<path>). Slates after 2026-11-24 come from the
+night records' logged min_old / min_proj and the lock files' ppm_parts; a slate whose record no longer logs min_old drops
+out (keep logging the PREVIOUS column for the re-run to cover it). MIN_GP=5 or MIN_GP=7 restricts to players with that
+many games at lock (the time-trend follow-up, ppb_trend.py)."""
 import ast, json, math, os, statistics as S, sys
 from collections import defaultdict
-sys.path.insert(0, "/home/user/br_rankings/scripts")
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))          # the br_rankings checkout
+sys.path.insert(0, os.path.join(ROOT, "scripts"))
 import dk_proj_grade as PG, dk_ppm_study as PS
 num = PG.num
 IN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "inputs")   # the 11-25 studies' replays and data, copied
-BRR = "/home/user/battle-royale-research"
+# battle-royale-research beside br_rankings (lock files data/dk/cbb/<slate>_proj.json, box cache); override with BRR=<path>
+BRR = os.environ.get("BRR") or os.path.join(os.path.dirname(ROOT), "battle-royale-research")
+MIN_GP = int(os.environ.get("MIN_GP", "0"))     # restrict to players with at least this many games at lock (the time-trend follow-up)
 OUT = []
 def P(*a): OUT.append(" ".join(str(x) for x in a))
 def ms(v, d=3):
@@ -63,15 +73,17 @@ for name, recs in PG.slates():
             mo, mr, pr = num(r.get("min_old")), num(r.get("min_proj")), pp.get("ppm")
             if mo is None or mr is None or pr is None: continue
             src = "logged"
-        src_note[src] += 1
         sp = num(r.get("spread")); gp = num(p.get("gp")) or 0
         fringe = (sp is not None and abs(sp) >= 15) or gp <= 2 or bool(outs.get(r["team"])) or (r.get("status") or p.get("status")) == "Questionable" \
             or (num(p.get("p_play")) is not None and num(p.get("p_play")) < 0.9)
         base = mr * pr
-        rows.append({"slate": name, "id": k, "sal": num(r["salary"]), "min": act_min, "act": act, "mo": mo, "mr": mr, "ppm": pr, "base": base,
+        if gp < MIN_GP: continue
+        src_note[src] += 1
+        rows.append({"gp": gp, "order": None, "slate": name, "id": k, "sal": num(r["salary"]), "min": act_min, "act": act, "mo": mo, "mr": mr, "ppm": pr, "base": base,
                      "fringe": fringe, "sp": sp, "ev": p.get("event"), "team": r["team"],
                      "band": "stars" if base >= 25 else "rot" if base >= 10 else None})
 SL = sorted({r["slate"] for r in rows})
+for r in rows: r["order"] = SL.index(r["slate"])
 P("rows %d on %d slates (%s); replayed slates %d, logged slates %d" % (len(rows), len(SL), dict(src_note), sum(1 for s in SL if s in rbm), sum(1 for s in SL if s not in rbm)))
 
 # ---------- candidates

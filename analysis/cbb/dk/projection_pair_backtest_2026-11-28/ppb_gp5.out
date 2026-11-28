@@ -1,0 +1,114 @@
+rows 1218 on 14 slates ({'replay': 677, 'logged': 541}); replayed slates 10, logged slates 4
+
+baseline (rebuilt minutes x rebuilt ppm), per-slate mean over 14 slates: rot_min 5.676, stars_pts 8.155, rot_pts 7.126, spearman 0.567, top10 0.350
+
+== switch (gain = baseline - candidate, held out by slate)
+  rot_min    all -0.075 ± 0.147 (14), ahead 8 | ordinary -0.089 ± 0.187 (14), ahead 8 | fringe +0.000 ± 0.000 (11), ahead 0
+  stars_pts  all -0.189 ± 0.178 (14), ahead 6 | ordinary -0.202 ± 0.225 (14), ahead 6 | fringe +0.000 ± 0.000 (11), ahead 0
+  rot_pts    all -0.095 ± 0.082 (14), ahead 6 | ordinary -0.115 ± 0.107 (14), ahead 6 | fringe +0.000 ± 0.000 (11), ahead 0
+  lens spear  -0.008 ± 0.006 (14), ahead 4
+  lens top10  -0.021 ± 0.024 (14), ahead 2
+  replayed 14: rot_min -0.223 ± 0.180 (10), ahead 4 | stars_pts -0.336 ± 0.224 (10), ahead 3 | rot_pts -0.108 ± 0.109 (10), ahead 4
+  logged 4: rot_min +0.294 ± 0.138 (4), ahead 4 | stars_pts +0.177 ± 0.202 (4), ahead 3 | rot_pts -0.062 ± 0.113 (4), ahead 2
+
+== level (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.000 ± 0.000 (14), ahead 0 | ordinary +0.000 ± 0.000 (14), ahead 0 | fringe +0.000 ± 0.000 (11), ahead 0
+  stars_pts  all -0.148 ± 0.079 (14), ahead 6 | ordinary -0.031 ± 0.112 (14), ahead 6 | fringe -0.254 ± 0.269 (11), ahead 4
+  rot_pts    all +0.059 ± 0.033 (14), ahead 11 | ordinary +0.046 ± 0.041 (14), ahead 9 | fringe +0.110 ± 0.108 (11), ahead 5
+  lens spear  +0.000 ± 0.000 (14), ahead 0
+  lens top10  +0.000 ± 0.000 (14), ahead 0
+  replayed 14: rot_min +0.000 ± 0.000 (10), ahead 0 | stars_pts -0.220 ± 0.099 (10), ahead 3 | rot_pts +0.049 ± 0.044 (10), ahead 7
+  logged 4: rot_min +0.000 ± 0.000 (4), ahead 0 | stars_pts +0.033 ± 0.074 (4), ahead 3 | rot_pts +0.086 ± 0.045 (4), ahead 4
+
+== pair (gain = baseline - candidate, held out by slate)
+  rot_min    all -0.075 ± 0.147 (14), ahead 8 | ordinary -0.089 ± 0.187 (14), ahead 8 | fringe +0.000 ± 0.000 (11), ahead 0
+  stars_pts  all -0.181 ± 0.140 (14), ahead 6 | ordinary +0.088 ± 0.150 (14), ahead 8 | fringe -0.537 ± 0.566 (11), ahead 4
+  rot_pts    all +0.020 ± 0.055 (14), ahead 10 | ordinary -0.012 ± 0.076 (14), ahead 8 | fringe +0.169 ± 0.211 (11), ahead 5
+  lens spear  -0.008 ± 0.006 (14), ahead 4
+  lens top10  -0.021 ± 0.024 (14), ahead 2
+  replayed 14: rot_min -0.223 ± 0.180 (10), ahead 4 | stars_pts -0.454 ± 0.101 (10), ahead 2 | rot_pts -0.006 ± 0.075 (10), ahead 6
+  logged 4: rot_min +0.294 ± 0.138 (4), ahead 4 | stars_pts +0.502 ± 0.052 (4), ahead 4 | rot_pts +0.086 ± 0.028 (4), ahead 4
+
+== blowout (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.000 ± 0.000 (14), ahead 0 | ordinary +0.000 ± 0.000 (14), ahead 0 | fringe +0.000 ± 0.000 (11), ahead 0
+  stars_pts  all +0.000 ± 0.000 (14), ahead 0 | ordinary +0.000 ± 0.000 (14), ahead 0 | fringe +0.000 ± 0.000 (11), ahead 0
+  rot_pts    all +0.000 ± 0.000 (14), ahead 0 | ordinary +0.000 ± 0.000 (14), ahead 0 | fringe +0.000 ± 0.000 (11), ahead 0
+  lens spear  +0.000 ± 0.000 (14), ahead 0
+  lens top10  +0.000 ± 0.000 (14), ahead 0
+  replayed 14: rot_min +0.000 ± 0.000 (10), ahead 0 | stars_pts +0.000 ± 0.000 (10), ahead 0 | rot_pts +0.000 ± 0.000 (10), ahead 0
+  logged 4: rot_min +0.000 ± 0.000 (4), ahead 0 | stars_pts +0.000 ± 0.000 (4), ahead 0 | rot_pts +0.000 ± 0.000 (4), ahead 0
+
+== pair+blowout (gain = baseline - candidate, held out by slate)
+  rot_min    all -0.075 ± 0.147 (14), ahead 8 | ordinary -0.089 ± 0.187 (14), ahead 8 | fringe +0.000 ± 0.000 (11), ahead 0
+  stars_pts  all -0.181 ± 0.140 (14), ahead 6 | ordinary +0.088 ± 0.150 (14), ahead 8 | fringe -0.537 ± 0.566 (11), ahead 4
+  rot_pts    all +0.020 ± 0.055 (14), ahead 10 | ordinary -0.012 ± 0.076 (14), ahead 8 | fringe +0.169 ± 0.211 (11), ahead 5
+  lens spear  -0.008 ± 0.006 (14), ahead 4
+  lens top10  -0.021 ± 0.024 (14), ahead 2
+  replayed 14: rot_min -0.223 ± 0.180 (10), ahead 4 | stars_pts -0.454 ± 0.101 (10), ahead 2 | rot_pts -0.006 ± 0.075 (10), ahead 6
+  logged 4: rot_min +0.294 ± 0.138 (4), ahead 4 | stars_pts +0.502 ± 0.052 (4), ahead 4 | rot_pts +0.086 ± 0.028 (4), ahead 4
+
+== EXPLORATORY level on ROTATION only (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.000 ± 0.000 (14), ahead 0 | ordinary +0.000 ± 0.000 (14), ahead 0 | fringe +0.000 ± 0.000 (11), ahead 0
+  stars_pts  all +0.000 ± 0.000 (14), ahead 0 | ordinary +0.000 ± 0.000 (14), ahead 0 | fringe +0.000 ± 0.000 (11), ahead 0
+  rot_pts    all +0.061 ± 0.067 (14), ahead 10 | ordinary +0.034 ± 0.075 (14), ahead 9 | fringe +0.162 ± 0.205 (11), ahead 5
+  lens spear  +0.000 ± 0.000 (14), ahead 0
+  lens top10  -0.007 ± 0.030 (14), ahead 2
+  replayed 14: rot_min +0.000 ± 0.000 (10), ahead 0 | stars_pts +0.000 ± 0.000 (10), ahead 0 | rot_pts +0.036 ± 0.089 (10), ahead 7
+  logged 4: rot_min +0.000 ± 0.000 (4), ahead 0 | stars_pts +0.000 ± 0.000 (4), ahead 0 | rot_pts +0.125 ± 0.086 (4), ahead 3
+
+== EXPLORATORY switch20 (threshold LOSO) (gain = baseline - candidate, held out by slate)
+  rot_min    all -0.108 ± 0.141 (14), ahead 7 | ordinary -0.129 ± 0.180 (14), ahead 7 | fringe +0.000 ± 0.000 (11), ahead 0
+  stars_pts  all -0.189 ± 0.178 (14), ahead 6 | ordinary -0.202 ± 0.225 (14), ahead 6 | fringe +0.000 ± 0.000 (11), ahead 0
+  rot_pts    all -0.121 ± 0.081 (14), ahead 5 | ordinary -0.145 ± 0.105 (14), ahead 5 | fringe +0.000 ± 0.000 (11), ahead 0
+  lens spear  -0.008 ± 0.006 (14), ahead 4
+  lens top10  -0.021 ± 0.024 (14), ahead 2
+  replayed 14: rot_min -0.251 ± 0.174 (10), ahead 3 | stars_pts -0.336 ± 0.224 (10), ahead 3 | rot_pts -0.128 ± 0.110 (10), ahead 4
+  logged 4: rot_min +0.249 ± 0.121 (4), ahead 4 | stars_pts +0.177 ± 0.202 (4), ahead 3 | rot_pts -0.102 ± 0.095 (4), ahead 1
+
+== EXPLORATORY pair20 (switch20 + level) (gain = baseline - candidate, held out by slate)
+  rot_min    all -0.108 ± 0.141 (14), ahead 7 | ordinary -0.129 ± 0.180 (14), ahead 7 | fringe +0.000 ± 0.000 (11), ahead 0
+  stars_pts  all -0.178 ± 0.141 (14), ahead 6 | ordinary +0.088 ± 0.150 (14), ahead 8 | fringe -0.510 ± 0.581 (11), ahead 4
+  rot_pts    all +0.001 ± 0.051 (14), ahead 10 | ordinary -0.035 ± 0.071 (14), ahead 7 | fringe +0.170 ± 0.212 (11), ahead 5
+  lens spear  -0.008 ± 0.006 (14), ahead 4
+  lens top10  -0.021 ± 0.024 (14), ahead 2
+  replayed 14: rot_min -0.251 ± 0.174 (10), ahead 3 | stars_pts -0.454 ± 0.101 (10), ahead 2 | rot_pts -0.021 ± 0.070 (10), ahead 6
+  logged 4: rot_min +0.249 ± 0.121 (4), ahead 4 | stars_pts +0.513 ± 0.061 (4), ahead 4 | rot_pts +0.057 ± 0.031 (4), ahead 4
+
+== EXPLORATORY close-game stars' minutes + level (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.000 ± 0.000 (14), ahead 0 | ordinary +0.000 ± 0.000 (14), ahead 0 | fringe +0.000 ± 0.000 (11), ahead 0
+  stars_pts  all -0.225 ± 0.115 (14), ahead 5 | ordinary -0.148 ± 0.113 (14), ahead 5 | fringe -0.351 ± 0.387 (11), ahead 4
+  rot_pts    all +0.066 ± 0.057 (14), ahead 10 | ordinary +0.046 ± 0.065 (14), ahead 9 | fringe +0.147 ± 0.169 (11), ahead 5
+  lens spear  -0.000 ± 0.001 (14), ahead 6
+  lens top10  -0.007 ± 0.030 (14), ahead 3
+  replayed 14: rot_min +0.000 ± 0.000 (10), ahead 0 | stars_pts -0.237 ± 0.138 (10), ahead 4 | rot_pts +0.045 ± 0.075 (10), ahead 7
+  logged 4: rot_min +0.000 ± 0.000 (4), ahead 0 | stars_pts -0.195 ± 0.234 (4), ahead 1 | rot_pts +0.121 ± 0.072 (4), ahead 3
+fitted level L across folds: min 0.95 median 0.96 max 0.96
+fitted pair L across folds: min 0.91 median 0.91 max 0.92
+fitted blowout c across folds: min 0.00 median 0.00 max 0.00
+fitted pair+blowout c across folds: min 0.00 median 0.00 max 0.00
+fitted pair+blowout L across folds: min 0.91 median 0.91 max 0.92
+fitted EXPLORATORY level on ROTATION only L across folds: min 0.91 median 0.92 max 0.93
+fitted EXPLORATORY switch20 (threshold LOSO) thr across folds: min 0.00 median 0.00 max 20.00
+fitted EXPLORATORY pair20 (switch20 + level) thr across folds: min 0.00 median 0.00 max 20.00
+fitted EXPLORATORY pair20 (switch20 + level) L across folds: min 0.91 median 0.91 max 0.92
+fitted EXPLORATORY close-game stars' minutes + level close across folds: min 3.00 median 3.50 max 3.50
+fitted EXPLORATORY close-game stars' minutes + level L across folds: min 0.92 median 0.93 max 0.94
+
+## rebuilt vs old minutes, every slate, ROTATION minutes MAE (positive = rebuilt better)
+all +0.140 ± 0.171 (14), ahead 7 | ordinary +0.089 ± 0.187 (14), ahead 6 | fringe +0.231 ± 0.234 (11), ahead 7
+  ordinary, rebuilt minutes 30-99: -0.518 ± 0.348 (14), ahead 6 (rows 111)
+  ordinary, rebuilt minutes 20-30: -0.089 ± 0.166 (14), ahead 5 (rows 413)
+  ordinary, rebuilt minutes 10-20: +0.027 ± 0.117 (14), ahead 7 (rows 300)
+  ordinary, rebuilt minutes 0-10: +0.199 ± 0.264 (14), ahead 8 (rows 80)
+
+## 3. Stars (baseline 25+): per-minute and minutes residuals by PREGAME |spread| (per-slate means, then over slates)
+  |spread|  0-5  n=136 | ppm act - proj -0.083 ± 0.024 (14), ahead 2 | minutes act - proj +2.552 ± 0.590 (14), ahead 13 | points act - proj +0.326 ± 1.039 (14), ahead 5
+  |spread|  5-10 n= 46 | ppm act - proj -0.087 ± 0.042 (9), ahead 2 | minutes act - proj +2.251 ± 0.851 (9), ahead 7 | points act - proj -0.196 ± 1.389 (9), ahead 6
+  |spread| 10-15 n= 22 | ppm act - proj -0.010 ± 0.079 (6), ahead 4 | minutes act - proj -0.249 ± 0.746 (6), ahead 3 | points act - proj -0.523 ± 1.827 (6), ahead 5
+  |spread| 15-20 n=  7 | ppm act - proj -0.063 ± 0.182 (3), ahead 2 | minutes act - proj +1.320 ± 1.435 (3), ahead 2 | points act - proj +0.333 ± 6.531 (3), ahead 2
+  |spread| 20-99 n=  2 | ppm act - proj n/a | minutes act - proj n/a | points act - proj n/a
+  per-slate slope of stars' ppm residual per 10 points of pregame |spread|: +0.229 ± 0.251 (14), ahead 11
+  DIAGNOSTIC ONLY (final margin, known after the game):
+    final margin  0-10 n=112 | ppm act - proj -0.084 ± 0.039 (12), ahead 4 | minutes act - proj +2.177 ± 0.716 (12), ahead 10
+    final margin 10-20 n= 79 | ppm act - proj -0.022 ± 0.042 (14), ahead 4 | minutes act - proj +1.900 ± 0.664 (14), ahead 12
+    final margin 20-99 n= 22 | ppm act - proj -0.172 ± 0.075 (6), ahead 1 | minutes act - proj -0.088 ± 0.513 (6), ahead 2

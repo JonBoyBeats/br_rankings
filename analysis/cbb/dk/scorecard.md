@@ -31,4 +31,19 @@ Same-night-pair check (process.md: after a change, PREVIOUS logged on each of th
 - fill: fill-2026-11-24: no PREVIOUS column is logged for this arm (a change here can't be paired on the same nights)
 - late swap: swap-2026-11-24: no PREVIOUS column is logged for this arm (a change here can't be paired on the same nights)
 
+## Minutes and per-minute by games played at lock
+
+The same headlines split by how many games the player had played this season at lock (season, every graded slate; gp from the night record or analysis/cbb/dk/gp_at_lock.csv). Cells: mean over slates ± SE (slates).
+
+| Headline | Games at lock | LIVE | LIVE − PREV | LIVE − RULER | rows (season) |
+|---|---|---|---|---|---|
+| ROTATION minutes MAE | <=3 games | 13.31 ± 1.35 (18) | -0.15 ± 0.13 (4) | +0.01 ± 0.07 (6) | 214 |
+| ROTATION minutes MAE | 4-6 games | 6.11 ± 0.26 (18) | +0.36 ± 0.11 (4) | +0.17 ± 0.08 (6) | 863 |
+| ROTATION minutes MAE | 7+ games | 7.63 ± 1.03 (4) | -0.03 ± 0.33 (4) | -0.10 ± 0.34 (3) | 51 |
+| STARS points MAE | <=3 games | 18.64 ± 2.71 (10) | -4.82 ± 4.32 (2) | -1.93 ± 1.81 (5) | 28 |
+| STARS points MAE | 4-6 games | 9.28 ± 0.48 (18) | +0.08 ± 0.20 (4) | +0.41 ± 0.18 (6) | 243 |
+| STARS points MAE | 7+ games | 8.30 ± 0.90 (4) | -0.83 ± 0.19 (4) | -0.54 ± 0.51 (3) | 22 |
+
+Projection pair backtest (analysis/cbb/dk/projection_pair_backtest_2026-11-28/ppb.py, ppb_trend.py): last run 2026-11-28 at 18 graded slates; next re-run due at 28 graded slates (now 18).
+
 Notes: the field arm's top-1% line is not logged (eval.csv keeps the winning score, top 10% and cash); the field, pool, fill and late-swap arms log no PREVIOUS or RULER yet, so they read LIVE only. Results: read over 20+ nights only.

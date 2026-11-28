@@ -88,5 +88,7 @@ check("results read over 20+ nights only", any("20+ nights only" in l for l in l
 # 5. the night record carries the ruler and the version tags
 check("night record columns", all(c in cbb_daily.DK_COLS for c in ("ruler_min", "ruler_fp", "ruler_fp_gate", "own_ruler", "ver_projection", "ver_late_swap")))
 
+check("the night record logs gp (games played at lock) and the scorecard splits by it",
+      "gp" in cbb_daily.DK_COLS and any("games played at lock" in x for x in SC.lines()))
 print("\n%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)

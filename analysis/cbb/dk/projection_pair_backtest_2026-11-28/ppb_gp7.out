@@ -1,0 +1,114 @@
+rows 101 on 4 slates ({'logged': 101}); replayed slates 0, logged slates 4
+
+baseline (rebuilt minutes x rebuilt ppm), per-slate mean over 4 slates: rot_min 7.626, stars_pts 8.292, rot_pts 9.189, spearman 0.502, top10 0.600
+
+== switch (gain = baseline - candidate, held out by slate)
+  rot_min    all -0.028 ± 0.330 (4), ahead 2 | ordinary -0.028 ± 0.330 (4), ahead 2 | fringe n/a
+  stars_pts  all +0.026 ± 0.374 (4), ahead 2 | ordinary +0.026 ± 0.374 (4), ahead 2 | fringe n/a
+  rot_pts    all +0.138 ± 0.299 (4), ahead 3 | ordinary +0.138 ± 0.299 (4), ahead 3 | fringe n/a
+  lens spear  -0.006 ± 0.024 (4), ahead 1
+  lens top10  +0.100 ± 0.071 (4), ahead 2
+  replayed 14: rot_min n/a | stars_pts n/a | rot_pts n/a
+  logged 4: rot_min -0.028 ± 0.330 (4), ahead 2 | stars_pts +0.026 ± 0.374 (4), ahead 2 | rot_pts +0.138 ± 0.299 (4), ahead 3
+
+== level (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.000 ± 0.000 (4), ahead 0 | ordinary +0.000 ± 0.000 (4), ahead 0 | fringe n/a
+  stars_pts  all -0.498 ± 0.250 (4), ahead 0 | ordinary -0.498 ± 0.250 (4), ahead 0 | fringe n/a
+  rot_pts    all -0.271 ± 0.073 (4), ahead 0 | ordinary -0.271 ± 0.073 (4), ahead 0 | fringe n/a
+  lens spear  +0.000 ± 0.000 (4), ahead 0
+  lens top10  +0.000 ± 0.000 (4), ahead 0
+  replayed 14: rot_min n/a | stars_pts n/a | rot_pts n/a
+  logged 4: rot_min +0.000 ± 0.000 (4), ahead 0 | stars_pts -0.498 ± 0.250 (4), ahead 0 | rot_pts -0.271 ± 0.073 (4), ahead 0
+
+== pair (gain = baseline - candidate, held out by slate)
+  rot_min    all -0.028 ± 0.330 (4), ahead 2 | ordinary -0.028 ± 0.330 (4), ahead 2 | fringe n/a
+  stars_pts  all +0.249 ± 0.312 (4), ahead 2 | ordinary +0.249 ± 0.312 (4), ahead 2 | fringe n/a
+  rot_pts    all +0.110 ± 0.150 (4), ahead 3 | ordinary +0.110 ± 0.150 (4), ahead 3 | fringe n/a
+  lens spear  -0.006 ± 0.024 (4), ahead 1
+  lens top10  +0.100 ± 0.071 (4), ahead 2
+  replayed 14: rot_min n/a | stars_pts n/a | rot_pts n/a
+  logged 4: rot_min -0.028 ± 0.330 (4), ahead 2 | stars_pts +0.249 ± 0.312 (4), ahead 2 | rot_pts +0.110 ± 0.150 (4), ahead 3
+
+== blowout (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.000 ± 0.000 (4), ahead 0 | ordinary +0.000 ± 0.000 (4), ahead 0 | fringe n/a
+  stars_pts  all +0.000 ± 0.000 (4), ahead 0 | ordinary +0.000 ± 0.000 (4), ahead 0 | fringe n/a
+  rot_pts    all +0.000 ± 0.000 (4), ahead 0 | ordinary +0.000 ± 0.000 (4), ahead 0 | fringe n/a
+  lens spear  +0.000 ± 0.000 (4), ahead 0
+  lens top10  +0.000 ± 0.000 (4), ahead 0
+  replayed 14: rot_min n/a | stars_pts n/a | rot_pts n/a
+  logged 4: rot_min +0.000 ± 0.000 (4), ahead 0 | stars_pts +0.000 ± 0.000 (4), ahead 0 | rot_pts +0.000 ± 0.000 (4), ahead 0
+
+== pair+blowout (gain = baseline - candidate, held out by slate)
+  rot_min    all -0.028 ± 0.330 (4), ahead 2 | ordinary -0.028 ± 0.330 (4), ahead 2 | fringe n/a
+  stars_pts  all +0.249 ± 0.312 (4), ahead 2 | ordinary +0.249 ± 0.312 (4), ahead 2 | fringe n/a
+  rot_pts    all +0.110 ± 0.150 (4), ahead 3 | ordinary +0.110 ± 0.150 (4), ahead 3 | fringe n/a
+  lens spear  -0.006 ± 0.024 (4), ahead 1
+  lens top10  +0.100 ± 0.071 (4), ahead 2
+  replayed 14: rot_min n/a | stars_pts n/a | rot_pts n/a
+  logged 4: rot_min -0.028 ± 0.330 (4), ahead 2 | stars_pts +0.249 ± 0.312 (4), ahead 2 | rot_pts +0.110 ± 0.150 (4), ahead 3
+
+== EXPLORATORY level on ROTATION only (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.000 ± 0.000 (4), ahead 0 | ordinary +0.000 ± 0.000 (4), ahead 0 | fringe n/a
+  stars_pts  all +0.000 ± 0.000 (4), ahead 0 | ordinary +0.000 ± 0.000 (4), ahead 0 | fringe n/a
+  rot_pts    all -0.236 ± 0.107 (4), ahead 0 | ordinary -0.236 ± 0.107 (4), ahead 0 | fringe n/a
+  lens spear  +0.000 ± 0.000 (4), ahead 0
+  lens top10  +0.025 ± 0.025 (4), ahead 1
+  replayed 14: rot_min n/a | stars_pts n/a | rot_pts n/a
+  logged 4: rot_min +0.000 ± 0.000 (4), ahead 0 | stars_pts +0.000 ± 0.000 (4), ahead 0 | rot_pts -0.236 ± 0.107 (4), ahead 0
+
+== EXPLORATORY switch20 (threshold LOSO) (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.293 ± 0.349 (4), ahead 3 | ordinary +0.293 ± 0.349 (4), ahead 3 | fringe n/a
+  stars_pts  all +0.026 ± 0.374 (4), ahead 2 | ordinary +0.026 ± 0.374 (4), ahead 2 | fringe n/a
+  rot_pts    all +0.126 ± 0.263 (4), ahead 2 | ordinary +0.126 ± 0.263 (4), ahead 2 | fringe n/a
+  lens spear  +0.003 ± 0.010 (4), ahead 2
+  lens top10  +0.100 ± 0.071 (4), ahead 2
+  replayed 14: rot_min n/a | stars_pts n/a | rot_pts n/a
+  logged 4: rot_min +0.293 ± 0.349 (4), ahead 3 | stars_pts +0.026 ± 0.374 (4), ahead 2 | rot_pts +0.126 ± 0.263 (4), ahead 2
+
+== EXPLORATORY pair20 (switch20 + level) (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.293 ± 0.349 (4), ahead 3 | ordinary +0.293 ± 0.349 (4), ahead 3 | fringe n/a
+  stars_pts  all +0.298 ± 0.290 (4), ahead 3 | ordinary +0.298 ± 0.290 (4), ahead 3 | fringe n/a
+  rot_pts    all +0.042 ± 0.115 (4), ahead 2 | ordinary +0.042 ± 0.115 (4), ahead 2 | fringe n/a
+  lens spear  +0.003 ± 0.010 (4), ahead 2
+  lens top10  +0.100 ± 0.071 (4), ahead 2
+  replayed 14: rot_min n/a | stars_pts n/a | rot_pts n/a
+  logged 4: rot_min +0.293 ± 0.349 (4), ahead 3 | stars_pts +0.298 ± 0.290 (4), ahead 3 | rot_pts +0.042 ± 0.115 (4), ahead 2
+
+== EXPLORATORY close-game stars' minutes + level (gain = baseline - candidate, held out by slate)
+  rot_min    all +0.000 ± 0.000 (4), ahead 0 | ordinary +0.000 ± 0.000 (4), ahead 0 | fringe n/a
+  stars_pts  all -0.943 ± 0.229 (4), ahead 0 | ordinary -0.943 ± 0.229 (4), ahead 0 | fringe n/a
+  rot_pts    all -0.301 ± 0.086 (4), ahead 0 | ordinary -0.301 ± 0.086 (4), ahead 0 | fringe n/a
+  lens spear  -0.001 ± 0.001 (4), ahead 1
+  lens top10  +0.025 ± 0.025 (4), ahead 1
+  replayed 14: rot_min n/a | stars_pts n/a | rot_pts n/a
+  logged 4: rot_min +0.000 ± 0.000 (4), ahead 0 | stars_pts -0.943 ± 0.229 (4), ahead 0 | rot_pts -0.301 ± 0.086 (4), ahead 0
+fitted level L across folds: min 0.91 median 0.97 max 1.03
+fitted pair L across folds: min 0.91 median 0.94 max 0.95
+fitted blowout c across folds: min 0.00 median 0.00 max 0.00
+fitted pair+blowout c across folds: min 0.00 median 0.00 max 0.00
+fitted pair+blowout L across folds: min 0.91 median 0.94 max 0.95
+fitted EXPLORATORY level on ROTATION only L across folds: min 0.90 median 0.96 max 1.01
+fitted EXPLORATORY switch20 (threshold LOSO) thr across folds: min 20.00 median 20.00 max 20.00
+fitted EXPLORATORY pair20 (switch20 + level) thr across folds: min 20.00 median 20.00 max 20.00
+fitted EXPLORATORY pair20 (switch20 + level) L across folds: min 0.90 median 0.95 max 0.96
+fitted EXPLORATORY close-game stars' minutes + level close across folds: min 3.00 median 3.00 max 3.00
+fitted EXPLORATORY close-game stars' minutes + level L across folds: min 0.89 median 0.97 max 1.03
+
+## rebuilt vs old minutes, every slate, ROTATION minutes MAE (positive = rebuilt better)
+all +0.027 ± 0.330 (4), ahead 2 | ordinary +0.027 ± 0.330 (4), ahead 2 | fringe n/a
+  ordinary, rebuilt minutes 30-99: -1.723 ± 0.457 (4), ahead 0 (rows 16)
+  ordinary, rebuilt minutes 20-30: -0.213 ± 0.485 (4), ahead 2 (rows 45)
+  ordinary, rebuilt minutes 10-20: +0.769 ± 0.276 (4), ahead 4 (rows 27)
+  ordinary, rebuilt minutes 0-10: -0.922 ± 0.742 (3), ahead 1 (rows 5)
+
+## 3. Stars (baseline 25+): per-minute and minutes residuals by PREGAME |spread| (per-slate means, then over slates)
+  |spread|  0-5  n= 13 | ppm act - proj -0.021 ± 0.078 (4), ahead 2 | minutes act - proj +2.154 ± 0.823 (4), ahead 4 | points act - proj +1.988 ± 2.584 (4), ahead 2
+  |spread|  5-10 n=  9 | ppm act - proj -0.124 ± 0.012 (3), ahead 0 | minutes act - proj +5.610 ± 0.746 (3), ahead 3 | points act - proj +1.327 ± 0.251 (3), ahead 3
+  |spread| 10-15 n=  0 | ppm act - proj n/a | minutes act - proj n/a | points act - proj n/a
+  |spread| 15-20 n=  0 | ppm act - proj n/a | minutes act - proj n/a | points act - proj n/a
+  |spread| 20-99 n=  0 | ppm act - proj n/a | minutes act - proj n/a | points act - proj n/a
+  per-slate slope of stars' ppm residual per 10 points of pregame |spread|: -0.560 ± 0.377 (2), ahead 0
+  DIAGNOSTIC ONLY (final margin, known after the game):
+    final margin  0-10 n= 16 | ppm act - proj -0.148 ± 0.066 (4), ahead 0 | minutes act - proj +2.733 ± 0.457 (4), ahead 4
+    final margin 10-20 n=  4 | ppm act - proj -0.039 ± 0.084 (2), ahead 1 | minutes act - proj +5.633 ± 0.867 (2), ahead 2
+    final margin 20-99 n=  2 | ppm act - proj n/a | minutes act - proj n/a

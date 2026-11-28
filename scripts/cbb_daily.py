@@ -65,7 +65,10 @@ DK_COLS = ["date", "draft_group", "dk_id", "espn", "name", "team", "game", "posi
            "dk_last5", "min_last5", "min_avg", "own_raw", "min_old", "old_fp", "old_ppm",
            # the frozen ruler (battle-royale-research cbb_ruler.py, ruler-2026-11-23; logged from 2026-11-25) and each arm's
            # live version on the slate (scripts/dk_arms.py)
-           "ruler_min", "ruler_fp", "ruler_fp_gate", "own_ruler"] + ["ver_" + a for a in dk_arms.ARMS]
+           "ruler_min", "ruler_fp", "ruler_fp_gate", "own_ruler"] + ["ver_" + a for a in dk_arms.ARMS] + [
+           # games played this season at lock (2026-11-28: the scorecard's games-played split; analysis/cbb/dk/gp_at_lock.csv
+           # holds it for the records written before this column)
+           "gp"]
 
 
 def dk_points(a):
@@ -245,7 +248,7 @@ def record_dk(a, mirror, since, now):
                         "dk_last5": r.get("dk_last5", ""), "min_avg": r.get("min_avg", ""),
                         "min_last5": round(sum(r["min_last5"]) / len(r["min_last5"]), 1) if r.get("min_last5") else "",
                         "ruler_min": r.get("ruler_min", ""), "ruler_fp": r.get("ruler_fp", ""), "ruler_fp_gate": r.get("ruler_fp_gate", ""),
-                        "own_ruler": own_ruler.get(pid, ""), **dk_arms.tags(pacific_day(start), g)})
+                        "own_ruler": own_ruler.get(pid, ""), "gp": r.get("gp", ""), **dk_arms.tags(pacific_day(start), g)})
         if not ready or not out:
             print("  DK %s: not ready (a game not final, or no projection before the start)" % g)
             continue
