@@ -158,5 +158,24 @@ _ot = SC.over_trust_lines([{"slate": "2026-12-01_1", "ours": -8.0, "field": -1.0
                            {"slate": "2026-12-02_2", "ours": -6.0, "field": -2.0, "d": -4.0, "n": 10}])
 check("over-trust gauge: ours, field and ours minus field, rolling and last night",
       any("ours -7.0 ± 1.0 (2), field -1.5 ± 0.5 (2), ours − field -5.5 ± 1.5 (2)" in x for x in _ot) and any("last night (2026-12-02_2, 10 entries): ours -6.0, field -2.0" in x for x in _ot), _ot)
+# source triangulation (shadow, 2026-11-28): per-group counts, recipe MAEs, closest source, the decision trigger; labels carry no numbers
+_rec = lambda pts: {"pts": pts, "min": 5.0, "ppm": 0.25, "n": 10, "n_ppm": 8}
+_tri = {"bank_sigma": {"lt5": 0.56}, "labels": [{"date": "2026-11-27", "dg": "1", "dk_id": "9", "name": "A", "group": "G2", "minutes_outlier": "RW", "ppm_outlier": ""}],
+        "slates": [{"slate": "2026-11-27_1", "status": "graded", "counts": {"G1": 3, "G2": 10},
+                    "groups": {"G2": {"n": 10, "recipes": {"US": _rec(7.5), "COMBO": _rec(7.0)}, "closest": {"minutes": {"n": 10, "closest": {"RW": 6, "US": 4},
+                               "outlier_closest": 5, "outlier_n": 8}}, "noise": {"rel_miss_us": 0.5, "n": 9}},
+                               "_combo_vs_us": {"us": 9.0, "combo": 8.5, "gain": 0.5, "n": 13}}},
+                   {"slate": "2026-11-28_2", "status": "not final", "counts": {"G1": 9}}]}
+_tl = SC.triangulation_lines(_tri)
+check("triangulation: counts, recipe table, closest, COMBO gain, 10-slate trigger",
+      any("2 slates, 1 graded" in x for x in _tl) and any("2026-11-27_1 G1 3 G2 10" in x for x in _tl) and any("| G2 minutes split, ppm agree | 10 | 7.50 (1)" in x for x in _tl)
+      and any("closest RW 6, US 4 of 10; the outlier was right 5 of 8" in x for x in _tl) and any("+0.50 (1), ahead on 1 of 1" in x for x in _tl)
+      and any("due at 10 graded source slates (now 1)" in x for x in _tl), _tl)
+_old = SC.TRI_LABELS
+SC.TRI_LABELS = tempfile.mktemp(suffix=".csv")
+SC.write_tri_labels(_tri)
+_lab = list(csv.DictReader(open(SC.TRI_LABELS)))
+SC.TRI_LABELS = _old
+check("triangulation labels: the seven number-free columns", _lab and list(_lab[0]) == ["date", "dg", "dk_id", "name", "group", "minutes_outlier", "ppm_outlier"])
 print("\n%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)

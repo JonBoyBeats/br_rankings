@@ -31,7 +31,7 @@ the first LAST slates (analysis/cbb/dk/process.md); where it is missing, the sco
 
   python3 scripts/dk_eval.py scorecard        (writes analysis/cbb/dk/scorecard.md; misses --friday prints it too)
 """
-import datetime as dt, glob, json, math, os, statistics as S
+import csv, datetime as dt, glob, json, math, os, statistics as S
 from collections import defaultdict
 
 import dk_arms
@@ -333,6 +333,7 @@ def lines(slates=None, arms=None, today=None):
             "The same headlines split by how many games the player had played this season at lock (season, every graded slate; "
             "gp from the night record or analysis/cbb/dk/gp_at_lock.csv). Cells: mean over slates ± SE (slates).", ""] + gp_lines()
     sl_ = source_lines()
+    write_tri_labels((source_grades() or {}).get("triangulation"))
     if sl_:
         out += [""] + sl_
     out += [""] + over_trust_lines()
@@ -495,7 +496,7 @@ def source_lines(doc=None):
         out += ["", "%s blend test (ours vs each source vs held-out blend weights of ours and the sources; a hybrid of the source's minutes x "
                 "our points per minute; a held-out minutes-only blend weight; projection and ownership by salary tier, on covered players): due at %d graded slates "
                 "(now %d)%s." % (name, BLEND_AT, len(g), " — DUE NOW" if len(g) >= BLEND_AT else ""), ""]
-    return out + value_own_lines(doc.get("value_own"))
+    return out + value_own_lines(doc.get("value_own")) + triangulation_lines(doc.get("triangulation"))
 
 
 def value_own_lines(v):
@@ -520,6 +521,104 @@ def value_own_lines(v):
     elif n:
         out.append("- Test 2: %s." % (t2.get("note") or "not run"))
     return out + [""]
+
+
+# Source triangulation (shadow; pre-registered analysis/cbb/dk/source_triangulation.md): battle-royale-research
+# scripts/dk_triangulate.py groups each player by whether ours / Gajewski / RotoWire agree on minutes and points per
+# minute and grades projection recipes per group. Aggregates from the mirror; the per-player group / outlier labels (no
+# numbers) are written to analysis/cbb/dk/triangulation_labels.csv. Display only.
+TRI_LABELS = os.path.join(E.DK, "triangulation_labels.csv")
+TRI_GROUPS = (("G1", "minutes + ppm agree"), ("G2", "minutes split, ppm agree"), ("G3", "minutes agree, ppm split"),
+              ("G4", "both split (toss-up)"), ("G5", "in/out split"), ("U", "ungrouped (one source)"))
+TRI_RECIPES = ("US", "GJ", "RW", "MEAN", "MEDIAN", "COMBO", "BEST")
+TRI_DECIDE = 10
+
+
+def write_tri_labels(t):
+    """The public per-player labels (date, dg, dk_id, name, group, minutes_outlier, ppm_outlier): no numbers."""
+    if not t or not t.get("labels"):
+        return
+    cols = ["date", "dg", "dk_id", "name", "group", "minutes_outlier", "ppm_outlier"]
+    with open(TRI_LABELS, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(t["labels"])
+
+
+def triangulation_lines(t):
+    if not t or not t.get("slates"):
+        return []
+    sl = t["slates"]
+    g = [x for x in sl if x.get("status") == "graded"]
+    out = ["### Source triangulation (shadow): %d slate%s, %d graded" % (len(sl), "" if len(sl) == 1 else "s", len(g)), "",
+           "Pre-registered (analysis/cbb/dk/source_triangulation.md): minutes agree within 15%, points per minute within 10% "
+           "(max − min over mean); G5 = one source has him out while another has him at 10+. COMBO = ours in G1 / G4 / G5, the "
+           "other sources' minutes x our ppm in G2, all sources' minutes x our ppm in G3; BEST = the per-group minutes and ppm "
+           "source with the lowest MAE on earlier days. Per-player labels: analysis/cbb/dk/triangulation_labels.csv.", ""]
+    out.append("Group counts per slate: " + "; ".join("%s %s" % (x["slate"], " ".join("%s %d" % (k, x["counts"].get(k, 0)) for k, _ in TRI_GROUPS if x["counts"].get(k)))
+                                                    for x in sl) + ".")
+    if g:
+        out += ["", "Points MAE by group and recipe (mean over graded slates ± SE (slates); each source only where it lists the player; "
+                "|actual − ours| is the US column):", "",
+                "| Group | rows | " + " | ".join(TRI_RECIPES) + " |", "|---|---|" + "---|" * len(TRI_RECIPES)]
+        for k, lab in TRI_GROUPS:
+            gs = [x["groups"][k] for x in g if (x.get("groups") or {}).get(k)]
+            if not gs:
+                continue
+            cells = [f_ms(*agg([(z["recipes"].get(r) or {}).get("pts") for z in gs])) for r in TRI_RECIPES]
+            out.append("| %s %s | %d | %s |" % (k, lab, sum(z["n"] for z in gs), " | ".join(cells)))
+        out += ["", "Minutes MAE / ppm MAE (10+ actual minutes), same layout:", "",
+                "| Group | " + " | ".join(TRI_RECIPES) + " |", "|---|" + "---|" * len(TRI_RECIPES)]
+        for k, lab in TRI_GROUPS:
+            gs = [x["groups"][k] for x in g if (x.get("groups") or {}).get(k)]
+            if not gs:
+                continue
+            cells = []
+            for r in TRI_RECIPES:
+                m = agg([(z["recipes"].get(r) or {}).get("min") for z in gs])
+                p = agg([(z["recipes"].get(r) or {}).get("ppm") for z in gs])
+                cells.append("%s / %s" % ("%.2f" % m[0] if m[2] else "n/a", "%.3f" % p[0] if p[2] else "n/a"))
+            out.append("| %s | %s |" % (k, " | ".join(cells)))
+        cl = []
+        for k, _ in TRI_GROUPS:
+            for dim in ("minutes", "ppm"):
+                ts = [x["groups"][k]["closest"][dim] for x in g if (x.get("groups") or {}).get(k) and dim in (x["groups"][k].get("closest") or {})]
+                n = sum(z["n"] for z in ts)
+                if n:
+                    tot = {}
+                    for z in ts:
+                        for s_, c in z["closest"].items():
+                            tot[s_] = tot.get(s_, 0) + c
+                    on = sum(z["outlier_n"] for z in ts)
+                    cl.append("- %s %s split: closest %s of %d%s" % (k, dim, ", ".join("%s %d" % kv for kv in sorted(tot.items(), key=lambda kv: -kv[1])), n,
+                                                                    ("; the outlier was right %d of %d" % (sum(z["outlier_closest"] for z in ts), on)) if on else ""))
+        if cl:
+            out += ["", "Who was closest on the split dimension (pooled):"] + cl
+        g5 = [x["groups"]["G5"] for x in g if (x.get("groups") or {}).get("G5")]
+        if g5:
+            calls = {}
+            for z in g5:
+                for s_, c in (z.get("g5_calls") or {}).items():
+                    a = calls.setdefault(s_, [0, 0])
+                    a[0] += c["right"]; a[1] += c["n"]
+            out += ["", "G5 in/out calls right (in = 10+ minutes, out = under 8; played = any minutes): " + ", ".join(
+                "%s %d of %d" % (s_, a[0], a[1]) for s_, a in sorted(calls.items())) + "; played %d of %d." % (sum(z.get("g5_played", 0) for z in g5), sum(z["n"] for z in g5))]
+        nz = []
+        for k, _ in TRI_GROUPS:
+            v = agg([(x["groups"].get(k) or {}).get("noise", {}).get("rel_miss_us") for x in g if (x.get("groups") or {}).get(k)])
+            if v[2]:
+                nz.append("%s %.2f" % (k, v[0]))
+        if nz:
+            bs = t.get("bank_sigma") or {}
+            out += ["", "Realised |actual − ours| / ours by group (projected 10+): " + ", ".join(nz) +
+                    ("; the bank's per-tier miss / mean: " + ", ".join("%s %.2f" % kv for kv in sorted(bs.items())) if bs else "") + "."]
+        cv = [x["groups"]["_combo_vs_us"] for x in g if (x.get("groups") or {}).get("_combo_vs_us")]
+        d_ = [z["gain"] for z in cv]
+        out += ["", "COMBO vs ours, points MAE gain (positive = COMBO better): %s, ahead on %d of %d slates." % (
+            f_ms(*agg(d_), signed=True), sum(v > 0 for v in d_), len(d_))]
+    out += ["", "Triangulation decision (the per-group recipe with the lowest held-out points MAE, against ours under rule 5): due at %d graded "
+            "source slates (now %d)%s." % (TRI_DECIDE, len(g), " — DUE NOW" if len(g) >= TRI_DECIDE else ""), ""]
+    return out
 
 
 # The green-core shadow (2026-11-28, the operator): scripts/dk_core_shadow.py logs, for every main contest of every saved
