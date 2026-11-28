@@ -9,9 +9,11 @@ D = "/home/user/br_rankings/analysis/cbb/dk"
 M = E.Mirror("/home/user/br-adp-mirror")
 SUP = json.load(open(os.path.join(D, "contests_supplement.json")))["contests"]
 def ctype(name, size):
-    if re.search("qualifier|satellite", name, re.I) or size < 100: return "qualifier/small"
-    if re.search("pull up jumper", name, re.I) or 100 <= size < 800: return "flagship"
-    return "main"
+    """The one definition (scripts/dk_contest_type.py, the DK page's profile; 2026-11-28). This script reported
+    "qualifier/small"; it passes its own size argument, which the page reads as the lobby size."""
+    import dk_contest_type
+    t = dk_contest_type.contest_type(name, size)
+    return "qualifier/small" if t == "qualifier" else t
 ev = {r["contest_id"]: r for r in csv.DictReader(open(os.path.join(D, "eval.csv"))) if r["who"] == "mine"}
 recs = {}
 def rec_for(date, g):

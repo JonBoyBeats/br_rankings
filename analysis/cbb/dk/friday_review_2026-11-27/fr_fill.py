@@ -5,9 +5,11 @@ sys.path.insert(0, "/home/user/br_rankings/scripts")
 import dk_eval as E
 M = E.Mirror("/home/user/br-adp-mirror")
 def ctype(name, size):
-    if re.search("qualifier|satellite", name, re.I) or size < 100: return "qualifier/small"
-    if re.search("pull up jumper", name, re.I) or 100 <= size < 800: return "flagship"
-    return "main"
+    """The one definition (scripts/dk_contest_type.py, the DK page's profile; 2026-11-28). This script reported
+    "qualifier/small"; it passes its own size argument, which the page reads as the lobby size."""
+    import dk_contest_type
+    t = dk_contest_type.contest_type(name, size)
+    return "qualifier/small" if t == "qualifier" else t
 banks = {}
 for f in sorted(glob.glob(os.path.join(E.BUILDS, "dk_bank_*.json"))):
     b = json.load(open(f)); g = str(b["draft_group"])

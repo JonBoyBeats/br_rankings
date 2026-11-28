@@ -4,6 +4,8 @@ The question: why do our main contests run +50% ROI while flagships run −63% (
 
 This is analysis only. The HOLD stands, and nothing on the page, in the projections, ownership, field, cut or fill changed. Tags follow process.md rule 5.
 
+**Contest types (note added 2026-11-28):** sections 1–4 use the by-size split. Section 5's page profile is now the one shared definition (`scripts/dk_contest_type.py`, mirroring dk.html `profileAuto`), and the scripts here import it. Under it, 18 of the 84 contests carry a different type than the by-size split. This write-up is not re-run.
+
 **Data:** our real entries in all 84 graded contests (16 slates, 11-16 to 11-26), replayed from the standings files. Fees ($1,081.35) and dollars back ($1,066.20) reconcile exactly with eval.csv.
 
 **Scripts and outputs:** in [mains_vs_flagships_2026-11-28/](mains_vs_flagships_2026-11-28/).

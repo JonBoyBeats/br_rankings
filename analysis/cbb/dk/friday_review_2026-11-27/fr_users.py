@@ -25,9 +25,11 @@ MIN_SLATES, MIN_ENTRIES, BOOT = 5, 10, 2000
 TRAITS = ["own_sum", "sub10", "sal_left", "max_game", "max_team", "stack21", "stack32", "dup", "punts", "big", "chalk", "topval"]
 
 def ctype(name, size):
-    if re.search("qualifier|satellite", name, re.I) or size < 100: return "qualifier/small"
-    if re.search("pull up jumper", name, re.I) or size < 800: return "flagship"
-    return "main"
+    """The one definition (scripts/dk_contest_type.py, the DK page's profile; 2026-11-28). This script reported
+    "qualifier/small"; it passes its own size argument, which the page reads as the lobby size."""
+    import dk_contest_type
+    t = dk_contest_type.contest_type(name, size)
+    return "qualifier/small" if t == "qualifier" else t
 
 bigs = R.big_game_flags("/home/user/br-adp-mirror")
 ev = defaultdict(set)

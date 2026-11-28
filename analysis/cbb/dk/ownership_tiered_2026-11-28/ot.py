@@ -200,9 +200,11 @@ P("per-slate r(field-side prediction, our raw ownership), sub-$7k: %s" % lv(cc))
 P("\n## B / C. Tiered exposure: keep half the kept pool by board value + lambda x (sub-$7k fade gap below predicted field ownership)")
 M = E.Mirror(MIRROR)
 def ctype(name, n):
-    if re.search("qualifier|satellite", name, re.I) or n < 100: return "qualifier/small"
-    if re.search("pull up jumper", name, re.I) or n < 800: return "flagship"
-    return "main"
+    """The one definition (scripts/dk_contest_type.py, the DK page's profile; 2026-11-28). This script reported
+    "qualifier/small"; it passes its own size argument, which the page reads as the lobby size."""
+    import dk_contest_type
+    t = dk_contest_type.contest_type(name, n)
+    return "qualifier/small" if t == "qualifier" else t
 LAMS = [0.0, 0.5, 1.0, 2.0, 4.0]
 build_res = {}
 for f in sorted(glob.glob(os.path.join(E.BUILDS, "dk_bank_*.json"))):

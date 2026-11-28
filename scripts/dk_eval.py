@@ -3244,12 +3244,13 @@ def fieldusers(a):
 
 FIELD_LINEUPS = os.path.join(DK, "field_lineups.csv")
 FIELD_LINEUPS_COLS = ["date", "draft_group", "contest_id", "contest", "contest_type", "size", "user", "rank", "points", "lineup"]
-FLAGSHIP_MIN = 1000     # field_lineups' contest_type: a contest this size or larger is a flagship
 
 
 def contest_type(c):
-    """qualifier (small_contest: the qualifier profile), flagship (FLAGSHIP_MIN+ entries) or main (the rest)."""
-    return "qualifier" if small_contest(c) else "flagship" if int(num((c or {}).get("size")) or 0) >= FLAGSHIP_MIN else "main"
+    """The contest's type, the DK page's profile (scripts/dk_contest_type.py, the one definition): flagship / main /
+    qualifier."""
+    import dk_contest_type
+    return dk_contest_type.contest_type((c or {}).get("name"), num((c or {}).get("size")) or 0, num((c or {}).get("prizes")) or 0)
 
 
 def lineup_ids(lineup, ids):
@@ -3261,7 +3262,7 @@ def lineup_ids(lineup, ids):
 def fieldlineups(a):
     """Capture only (2026-11-28, the operator: the qualifier refit measures duplication and construction, not just
     own_sum): every field entry's full lineup from each standings file whose Lineup cells are filled, in every contest
-    type (contest_type), one row per entry: user (as the public standings show it), rank, points, the 8 DraftKings ids
+    type (contest_type: the DK page's profile, scripts/dk_contest_type.py), one row per entry: user (as the public standings show it), rank, points, the 8 DraftKings ids
     in slot order. The owner's own entries (USER) are left out; no entry ids are written. Rebuilt whole from the
     standings on hand."""
     mirror, out = Mirror(a.mirror), []
