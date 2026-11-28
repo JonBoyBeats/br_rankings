@@ -1,6 +1,6 @@
 # NBA money report (draft)
 
-Written by scripts/nba_money.py (definitions in its docstring), 2026-11-27. Slates 2026-10-20 to 2026-11-25: 36 nights, 129 contests, 594076 teams. The contest side's read of whether decisions make money; POINTS verdicts are the rankings side's (decision_register.csv).
+Written by scripts/nba_money.py (definitions in its docstring), 2026-11-28. Slates 2026-10-20 to 2026-11-27: 37 nights, 134 contests, 610198 teams. The contest side's read of whether decisions make money; POINTS verdicts are the rankings side's (decision_register.csv).
 
 ## 0. Data checks
 
@@ -44,11 +44,12 @@ Every team in every contest pulled (scripts/nba_contests.py): picks, ADP at draf
 | 2026-11-23 | 6 | 5 | 15870 | 0 | 4799 | 1594 | 100% | 100% | 62 |
 | 2026-11-24 | 4 | 5 | 18192 | 0 | 4381 | 4099 | 100% | 100% | 20 |
 | 2026-11-25 | 6 | 5 | 14562 | 0 | 981 | 387 | 100% | 100% | 0 |
+| 2026-11-27 | 6 | 5 | 16122 | 0 | 3666 | 1838 | 100% | 100% | 0 |
 
 Found:
 
 - Before 10-30 only each night's flagship is on file (the backfill took flagships); every contest from 10-30 on.
-- 25 contests aren't public (HTTP 401, Underdog's admin promos): nba_fri_main, nba_fri_main, nba_fri_main, nba_mon_main, nba_mon_main, nba_mon_main, nba_mon_main, nba_sat_main, nba_sat_main, nba_sat_main, nba_sun_main, nba_sun_main, nba_sun_main, nba_thu_main, nba_thu_main, nba_thu_main, nba_tue_main, nba_tue_main, nba_tue_main, nba_tue_main, nba_wed_main, nba_wed_main, nba_wed_main, nba_wed_main, nba_wed_main.
+- 26 contests aren't public (HTTP 401, Underdog's admin promos): nba_fri_main, nba_fri_main, nba_fri_main, nba_fri_main, nba_mon_main, nba_mon_main, nba_mon_main, nba_mon_main, nba_sat_main, nba_sat_main, nba_sat_main, nba_sun_main, nba_sun_main, nba_sun_main, nba_thu_main, nba_thu_main, nba_thu_main, nba_tue_main, nba_tue_main, nba_tue_main, nba_tue_main, nba_wed_main, nba_wed_main, nba_wed_main, nba_wed_main, nba_wed_main.
 - Teams are all complete: every contest's team count equals its entries, no short teams.
 - Swaps: a swapped-in pick carries no draft ADP. nba_swaps.py credits it to the ruled-out player by the round the team is missing; where that fails the scratch can't be seen on the team, and the pick is priced at the middle of the missing round. Nights where most swaps went uncredited (for the rankings side: the round match misses when a player's ADP at draft and at lock sit in different rounds, as Dejounte and Jerome on 10-31):
   - 2026-10-24: 2885 swapped-in picks, 433 credited
@@ -59,7 +60,7 @@ Found:
 
 ## 1. The price baseline
 
-E[FP | ADP] per pick from earlier slates with the same pod size (average actual points at each closing ADP, smoothed over 5 picks); a swapped-in pick at the ADP the team paid (the ruled-out player it replaced, else the middle of its missing round). A team's price is the sum of its six. Teams are only ever compared within one contest and one price group (quintiles; deciles as the robustness check). 566570 of 594076 teams priced (each pod size's first night, 10-20 and 10-21, has no earlier slate).
+E[FP | ADP] per pick from earlier slates with the same pod size (average actual points at each closing ADP, smoothed over 5 picks); a swapped-in pick at the ADP the team paid (the ruled-out player it replaced, else the middle of its missing round). A team's price is the sum of its six. Teams are only ever compared within one contest and one price group (quintiles; deciles as the robustness check). 582692 of 610198 teams priced (each pod size's first night, 10-20 and 10-21, has no earlier slate).
 
 **Ten random teams**
 
@@ -80,24 +81,24 @@ E[FP | ADP] per pick from earlier slates with the same pod size (average actual 
 
 | Check | Group | Points over price | n |
 |---|---|---|---|
-| Contest (its mean against its night's) | Buzzer Beater | -0.2 | 21 |
+| Contest (its mean against its night's) | Buzzer Beater | -0.2 | 22 |
 | Contest (its mean against its night's) | Heat Check | -0.4 | 1 |
-| Contest (its mean against its night's) | Pick & Roll | +0.1 | 21 |
+| Contest (its mean against its night's) | Pick & Roll | +0.1 | 22 |
 | Contest (its mean against its night's) | The Alley-oop | +0.4 | 1 |
-| Contest (its mean against its night's) | The Crossover | +0.0 | 23 |
-| Contest (its mean against its night's) | The Layup Line | -0.2 | 26 |
-| Contest (its mean against its night's) | flagships | +0.0 | 34 |
+| Contest (its mean against its night's) | The Crossover | +0.1 | 24 |
+| Contest (its mean against its night's) | The Layup Line | -0.2 | 27 |
+| Contest (its mean against its night's) | flagships | +0.0 | 35 |
 | Pod size (contest mean) | 4 | -1.3 | 14 |
-| Pod size (contest mean) | 6 | +1.0 | 113 |
-| Price quintile (inside contest; 1 = cheapest) | 1 | +5.5 | 113130 |
-| Price quintile (inside contest; 1 = cheapest) | 2 | +1.9 | 113414 |
-| Price quintile (inside contest; 1 = cheapest) | 3 | +0.0 | 113337 |
-| Price quintile (inside contest; 1 = cheapest) | 4 | -2.1 | 112908 |
-| Price quintile (inside contest; 1 = cheapest) | 5 | -5.3 | 113781 |
-| Swap on the team (inside contest) | no | +1.4 | 450662 |
-| Swap on the team (inside contest) | yes | -5.6 | 115908 |
+| Pod size (contest mean) | 6 | +1.8 | 118 |
+| Price quintile (inside contest; 1 = cheapest) | 1 | +5.5 | 116351 |
+| Price quintile (inside contest; 1 = cheapest) | 2 | +1.8 | 116637 |
+| Price quintile (inside contest; 1 = cheapest) | 3 | +0.0 | 116564 |
+| Price quintile (inside contest; 1 = cheapest) | 4 | -2.1 | 116135 |
+| Price quintile (inside contest; 1 = cheapest) | 5 | -5.3 | 117005 |
+| Swap on the team (inside contest) | no | +1.4 | 463340 |
+| Swap on the team (inside contest) | yes | -5.2 | 119352 |
 | Window (inside contest) | AM | -0.5 | 154953 |
-| Window (inside contest) | PM | +0.3 | 409276 |
+| Window (inside contest) | PM | +0.3 | 425388 |
 
 Read: no bias by window or contest. The pod-size offset doesn't matter: no contest mixes pod sizes, so 4- and 6-drafter teams are never compared. A swap costs a team about 6 points against what it paid. Within a contest the cheapest teams beat their price and the priciest trail it (ADP lags news, so players taken past their displayed ADP carry what the price misses). That is why every test compares teams inside one price group, and runs again on ten groups.
 
@@ -171,26 +172,26 @@ Reference for the Mine column: all my teams against same-price field teams run 1
 
 | Decision | Field, all slates | Find | Check | Mine | Money (quintiles) | Deciles |
 |---|---|---|---|---|---|---|
-| **ownership-tiebreak-t5** T5: the less-drafted of two within 2 projected points | 0.93 (0.78-1.09) at 10%, 0.94 at 1%; finish +2.3; 214162 teams, 33 slates | 1.06 (0.95-1.17) at 10%, 1.25 at 1%; finish +0.6; 139377 teams, 28 slates | 0.73 (0.47-1.09) at 10%, 0.54 at 1%; finish +5.7; 74785 teams, 5 slates | 1.28 (0.85-1.80) at 10%, 0.72 at 1%; finish -3.8; 1294 teams, 30 slates | no lean | no lean |
-|   AM only | 1.01 (0.74-1.29) at 10%, 0.93 at 1%; finish +1.1; 38171 teams, 22 slates | 1.07 (0.79-1.37) at 10%, 1.00 at 1%; finish +0.3; 36487 teams, 21 slates | 0.21 at 10%, 0.10 at 1%; finish +19.7; 1684 teams, 1 slates | 0.69 (0.23-1.47) at 10%, 0.00 at 1%; finish +0.5; 107 teams, 12 slates | no lean | no lean |
-|   PM only | 0.91 (0.76-1.09) at 10%, 0.91 at 1%; finish +2.7; 175162 teams, 33 slates | 1.05 (0.94-1.17) at 10%, 1.31 at 1%; finish +0.7; 102061 teams, 28 slates | 0.74 (0.48-1.09) at 10%, 0.53 at 1%; finish +5.4; 73101 teams, 5 slates | 1.38 (0.90-1.91) at 10%, 0.78 at 1%; finish -4.3; 1176 teams, 29 slates | no lean | no lean |
-| **leverage-t2-t4** T2-T4: the less-drafted of two within 2 projected points | 2.11 (1.72-2.67) at 10%, 4.18 at 1%; finish -9.9; 26181 teams, 8 slates | 2.11 (1.72-2.67) at 10%, 4.18 at 1%; finish -9.9; 26181 teams, 8 slates | none | 4.35 (2.78-5.62) at 10%, 2.42 at 1%; finish -18.0; 125 teams, 7 slates | LEAN for | LEAN for |
-| **value-up-middle-t5** VALUE over an unflagged player (T3-T5) | 1.32 (1.17-1.47) at 10%, 1.40 at 1%; finish -3.7; 993089 teams, 33 slates | 1.35 (1.19-1.52) at 10%, 1.52 at 1%; finish -3.8; 747300 teams, 28 slates | 1.21 (1.00-1.45) at 10%, 1.06 at 1%; finish -3.4; 245789 teams, 5 slates | 1.46 (1.18-1.77) at 10%, 0.51 at 1%; finish -6.9; 6488 teams, 30 slates | RULE for | RULE for |
-|   T3 | 1.53 (1.17-1.95) at 10%, 1.75 at 1%; finish -5.8; 271958 teams, 25 slates | 1.45 (1.09-1.92) at 10%, 1.69 at 1%; finish -5.3; 239952 teams, 22 slates | 2.78 (2.18-4.77) at 10%, 2.44 at 1%; finish -9.4; 32006 teams, 3 slates | 1.28 (0.92-1.75) at 10%, 0.00 at 1%; finish -9.9; 1928 teams, 23 slates | RULE for | RULE for |
-|   T4 | 1.35 (1.18-1.54) at 10%, 1.59 at 1%; finish -3.8; 301747 teams, 29 slates | 1.36 (1.18-1.55) at 10%, 1.55 at 1%; finish -3.6; 259731 teams, 24 slates | 1.34 (0.80-2.16) at 10%, 1.92 at 1%; finish -5.3; 42016 teams, 5 slates | 1.70 (1.28-2.17) at 10%, 1.33 at 1%; finish -6.6; 1815 teams, 26 slates | RULE for | RULE for |
-|   T5 | 1.14 (0.96-1.35) at 10%, 1.04 at 1%; finish -2.6; 419209 teams, 26 slates | 1.26 (0.99-1.58) at 10%, 1.28 at 1%; finish -3.2; 247464 teams, 21 slates | 0.98 (0.72-1.25) at 10%, 0.72 at 1%; finish -1.8; 171745 teams, 5 slates | 1.38 (1.06-1.75) at 10%, 0.34 at 1%; finish -5.5; 2745 teams, 24 slates | LEAN for | LEAN for |
-| **pricey-flags** An unflagged player over a PRICEY one (T1-T5) | 1.20 (1.12-1.30) at 10%, 1.31 at 1%; finish -2.0; 1180858 teams, 33 slates | 1.26 (1.16-1.38) at 10%, 1.43 at 1%; finish -2.6; 977333 teams, 28 slates | 0.97 (0.84-1.10) at 10%, 0.87 at 1%; finish +0.6; 203525 teams, 5 slates | 1.61 (1.34-1.89) at 10%, 1.23 at 1%; finish -7.5; 5710 teams, 31 slates | LEAN for | LEAN for |
-|   T1 | 1.62 (1.25-2.10) at 10%, 2.22 at 1%; finish -3.4; 174970 teams, 20 slates | 1.50 (1.18-1.88) at 10%, 2.14 at 1%; finish -3.5; 154934 teams, 17 slates | 2.86 (0.52-13.34) at 10%, 2.89 at 1%; finish -2.4; 20036 teams, 3 slates | 1.80 (1.08-2.65) at 10%, 2.24 at 1%; finish -5.0; 754 teams, 17 slates | RULE for | RULE for |
-|   T2 | 1.19 (1.06-1.34) at 10%, 1.25 at 1%; finish -2.5; 531070 teams, 30 slates | 1.25 (1.10-1.43) at 10%, 1.36 at 1%; finish -2.9; 448362 teams, 26 slates | 0.91 (0.85-1.04) at 10%, 0.82 at 1%; finish -0.5; 82708 teams, 4 slates | 1.44 (1.15-1.77) at 10%, 1.00 at 1%; finish -7.6; 2764 teams, 28 slates | LEAN for | LEAN for |
-|   T3 | 1.25 (1.03-1.51) at 10%, 1.40 at 1%; finish -3.6; 325806 teams, 28 slates | 1.40 (1.16-1.71) at 10%, 1.57 at 1%; finish -4.9; 280914 teams, 23 slates | 0.62 (0.40-0.92) at 10%, 0.70 at 1%; finish +4.5; 44892 teams, 5 slates | 2.09 (1.73-2.50) at 10%, 1.50 at 1%; finish -11.0; 1781 teams, 26 slates | LEAN for | LEAN for |
-|   T4 | 1.00 (0.86-1.16) at 10%, 0.89 at 1%; finish +0.3; 124312 teams, 12 slates | 0.98 (0.80-1.28) at 10%, 0.99 at 1%; finish +0.6; 68482 teams, 7 slates | 1.03 (0.86-1.28) at 10%, 0.76 at 1%; finish -0.1; 55830 teams, 5 slates | 1.01 (0.55-1.50) at 10%, 0.00 at 1%; finish +0.5; 335 teams, 10 slates | no lean | no lean |
+| **ownership-tiebreak-t5** T5: the less-drafted of two within 2 projected points | 0.94 (0.80-1.10) at 10%, 0.95 at 1%; finish +2.1; 220814 teams, 33 slates | 1.07 (0.97-1.16) at 10%, 1.18 at 1%; finish +0.7; 155731 teams, 29 slates | 0.70 (0.40-1.14) at 10%, 0.58 at 1%; finish +5.4; 65083 teams, 4 slates | 1.31 (0.91-1.75) at 10%, 0.75 at 1%; finish -4.2; 1383 teams, 31 slates | no lean | no lean |
+|   AM only | 0.97 (0.70-1.23) at 10%, 0.86 at 1%; finish +1.5; 38201 teams, 23 slates | 1.03 (0.75-1.29) at 10%, 0.92 at 1%; finish +0.7; 36517 teams, 22 slates | 0.21 at 10%, 0.10 at 1%; finish +19.7; 1684 teams, 1 slates | 0.67 (0.24-1.32) at 10%, 0.00 at 1%; finish +0.6; 108 teams, 13 slates | no lean | no lean |
+|   PM only | 0.93 (0.79-1.10) at 10%, 0.95 at 1%; finish +2.2; 181890 teams, 33 slates | 1.07 (0.98-1.18) at 10%, 1.24 at 1%; finish +0.7; 118491 teams, 29 slates | 0.71 (0.41-1.14) at 10%, 0.58 at 1%; finish +5.1; 63399 teams, 4 slates | 1.41 (0.95-1.94) at 10%, 0.82 at 1%; finish -4.8; 1264 teams, 29 slates | no lean | no lean |
+| **leverage-t2-t4** T2-T4: the less-drafted of two within 2 projected points | 1.91 (1.50-2.51) at 10%, 3.23 at 1%; finish -8.8; 27500 teams, 8 slates | 1.91 (1.50-2.51) at 10%, 3.23 at 1%; finish -8.8; 27500 teams, 8 slates | none | 4.32 (2.81-5.56) at 10%, 2.26 at 1%; finish -18.2; 126 teams, 8 slates | LEAN for | LEAN for |
+| **value-up-middle-t5** VALUE over an unflagged player (T3-T5) | 1.32 (1.17-1.47) at 10%, 1.40 at 1%; finish -3.7; 993089 teams, 33 slates | 1.35 (1.19-1.51) at 10%, 1.50 at 1%; finish -3.6; 805852 teams, 29 slates | 1.19 (0.95-1.53) at 10%, 1.02 at 1%; finish -4.2; 187237 teams, 4 slates | 1.46 (1.18-1.77) at 10%, 0.51 at 1%; finish -6.9; 6488 teams, 30 slates | RULE for | RULE for |
+|   T3 | 1.53 (1.17-1.95) at 10%, 1.75 at 1%; finish -5.8; 271958 teams, 25 slates | 1.49 (1.12-1.97) at 10%, 1.71 at 1%; finish -5.1; 251688 teams, 23 slates | 2.40 at 10%, 2.39 at 1%; finish -14.3; 20270 teams, 2 slates | 1.28 (0.92-1.75) at 10%, 0.00 at 1%; finish -9.9; 1928 teams, 23 slates | RULE for | RULE for |
+|   T4 | 1.35 (1.18-1.54) at 10%, 1.59 at 1%; finish -3.8; 301747 teams, 29 slates | 1.37 (1.20-1.55) at 10%, 1.59 at 1%; finish -4.0; 271671 teams, 25 slates | 1.19 (0.54-2.37) at 10%, 1.61 at 1%; finish -1.8; 30076 teams, 4 slates | 1.70 (1.28-2.17) at 10%, 1.33 at 1%; finish -6.6; 1815 teams, 26 slates | RULE for | RULE for |
+|   T5 | 1.14 (0.96-1.35) at 10%, 1.04 at 1%; finish -2.6; 419209 teams, 26 slates | 1.19 (0.96-1.46) at 10%, 1.19 at 1%; finish -2.3; 282325 teams, 22 slates | 1.06 (0.71-1.35) at 10%, 0.76 at 1%; finish -3.4; 136884 teams, 4 slates | 1.38 (1.06-1.75) at 10%, 0.34 at 1%; finish -5.5; 2745 teams, 24 slates | LEAN for | LEAN for |
+| **pricey-flags** An unflagged player over a PRICEY one (T1-T5) | 1.20 (1.12-1.30) at 10%, 1.31 at 1%; finish -2.0; 1180858 teams, 33 slates | 1.26 (1.16-1.36) at 10%, 1.39 at 1%; finish -2.5; 1030455 teams, 29 slates | 0.88 (0.80-1.05) at 10%, 0.82 at 1%; finish +0.7; 150403 teams, 4 slates | 1.61 (1.34-1.89) at 10%, 1.23 at 1%; finish -7.5; 5710 teams, 31 slates | LEAN for | LEAN for |
+|   T1 | 1.62 (1.25-2.10) at 10%, 2.22 at 1%; finish -3.4; 174970 teams, 20 slates | 1.71 (1.30-2.22) at 10%, 2.43 at 1%; finish -4.2; 165438 teams, 18 slates | 0.54 at 10%, 0.36 at 1%; finish +11.1; 9532 teams, 2 slates | 1.80 (1.08-2.65) at 10%, 2.24 at 1%; finish -5.0; 754 teams, 17 slates | LEAN for | LEAN for |
+|   T2 | 1.19 (1.06-1.34) at 10%, 1.25 at 1%; finish -2.5; 531070 teams, 30 slates | 1.22 (1.07-1.38) at 10%, 1.30 at 1%; finish -2.6; 467448 teams, 27 slates | 0.97 (0.87-1.28) at 10%, 0.91 at 1%; finish -2.1; 63622 teams, 3 slates | 1.44 (1.15-1.77) at 10%, 1.00 at 1%; finish -7.6; 2764 teams, 28 slates | LEAN for | LEAN for |
+|   T3 | 1.25 (1.03-1.51) at 10%, 1.40 at 1%; finish -3.6; 325806 teams, 28 slates | 1.39 (1.16-1.71) at 10%, 1.56 at 1%; finish -5.1; 285863 teams, 24 slates | 0.63 (0.40-0.96) at 10%, 0.70 at 1%; finish +7.0; 39943 teams, 4 slates | 2.09 (1.73-2.50) at 10%, 1.50 at 1%; finish -11.0; 1781 teams, 26 slates | LEAN for | LEAN for |
+|   T4 | 1.00 (0.86-1.16) at 10%, 0.89 at 1%; finish +0.3; 124312 teams, 12 slates | 0.93 (0.80-1.14) at 10%, 0.83 at 1%; finish +1.9; 87049 teams, 8 slates | 1.20 (0.94-1.37) at 10%, 1.07 at 1%; finish -3.4; 37263 teams, 4 slates | 1.01 (0.55-1.50) at 10%, 0.00 at 1%; finish +0.5; 335 teams, 10 slates | no lean | no lean |
 |   T5 | 0.78 (0.65-1.04) at 10%, 0.70 at 1%; finish +6.5; 24456 teams, 6 slates | 0.78 (0.65-1.04) at 10%, 0.70 at 1%; finish +6.5; 24456 teams, 6 slates | none | 1.11 (0.69-1.45) at 10%, 1.22 at 1%; finish -5.8; 76 teams, 5 slates | LEAN against | LEAN against |
-| **pm-t4-pricey-last-off** PM T4: the candidate (PRICEY-last off, VALUE first kept) where it differs from the button | 1.07 (0.89-1.29) at 10%, 1.09 at 1%; finish -1.2; 101487 teams, 26 slates | 1.06 (0.84-1.34) at 10%, 0.99 at 1%; finish -1.2; 80711 teams, 22 slates | 1.08 (0.84-1.81) at 10%, 1.53 at 1%; finish -1.4; 20776 teams, 4 slates | 0.67 (0.46-0.91) at 10%, 0.00 at 1%; finish -1.7; 382 teams, 23 slates | no lean | no lean |
+| **pm-t4-pricey-last-off** PM T4: the candidate (PRICEY-last off, VALUE first kept) where it differs from the button | 1.07 (0.89-1.29) at 10%, 1.09 at 1%; finish -1.2; 101487 teams, 26 slates | 1.08 (0.87-1.35) at 10%, 1.06 at 1%; finish -1.5; 82811 teams, 23 slates | 0.98 (0.76-1.81) at 10%, 1.20 at 1%; finish -0.1; 18676 teams, 3 slates | 0.67 (0.46-0.91) at 10%, 0.00 at 1%; finish -1.7; 382 teams, 23 slates | no lean | no lean |
 | **am-t5-button-order** AM T5: the button's first of the pair | 1.37 (1.17-1.61) at 10%, 1.57 at 1%; finish -4.5; 287991 teams, 25 slates | 1.39 (1.18-1.64) at 10%, 1.60 at 1%; finish -4.6; 276652 teams, 24 slates | 1.14 at 10%, 1.16 at 1%; finish -2.7; 11339 teams, 1 slates | 1.56 (1.25-1.95) at 10%, 0.69 at 1%; finish -6.0; 1507 teams, 22 slates | RULE for | RULE for |
-| **pm-t2-adp-etr2** PM T2: the switch ADP (2: ETR) over the old ADP (1: ETR) | 0.86 (0.72-1.03) at 10%, 0.93 at 1%; finish +2.8; 237185 teams, 32 slates | 0.84 (0.69-1.04) at 10%, 0.91 at 1%; finish +2.8; 204264 teams, 27 slates | 0.98 (0.63-1.69) at 10%, 1.07 at 1%; finish +2.9; 32921 teams, 5 slates | 1.11 (0.80-1.49) at 10%, 1.55 at 1%; finish -2.2; 1084 teams, 30 slates | LEAN against | LEAN against |
-| **pm-t4-adp-etr2** PM T4: the switch ADP (2: ETR) over the old ETR rule | 1.07 (0.61-1.79) at 10%, 1.30 at 1%; finish +0.1; 28849 teams, 8 slates | 1.07 (0.57-1.80) at 10%, 1.32 at 1%; finish +0.6; 26572 teams, 7 slates | 1.15 at 10%, 0.90 at 1%; finish -6.1; 2277 teams, 1 slates | 2.78 (0.85-7.33) at 10%, 3.30 at 1%; finish -13.6; 80 teams, 7 slates | no lean | no lean |
-| **pm-t5-adp-value** PM T5: ADP with VALUE first over the old ETR (2: less drafted) | 1.22 (1.04-1.41) at 10%, 1.20 at 1%; finish -4.4; 272632 teams, 33 slates | 1.14 (1.04-1.24) at 10%, 1.00 at 1%; finish -3.1; 184507 teams, 28 slates | 1.36 (0.93-2.06) at 10%, 1.54 at 1%; finish -6.9; 88125 teams, 5 slates | 1.27 (0.92-1.70) at 10%, 0.57 at 1%; finish -7.6; 1052 teams, 28 slates | RULE for | RULE for |
-| **one-tier-cap** The combined tier's order over the projection tier's, where they differ | 0.75 (0.64-0.88) at 10%, 0.65 at 1%; finish +4.3; 434226 teams, 31 slates | 0.78 (0.66-0.95) at 10%, 0.70 at 1%; finish +3.1; 365036 teams, 26 slates | 0.60 (0.50-0.77) at 10%, 0.44 at 1%; finish +10.9; 69190 teams, 5 slates | 1.13 (0.91-1.42) at 10%, 0.71 at 1%; finish -2.0; 1593 teams, 28 slates | RULE against | RULE against |
+| **pm-t2-adp-etr2** PM T2: the switch ADP (2: ETR) over the old ADP (1: ETR) | 0.86 (0.72-1.03) at 10%, 0.93 at 1%; finish +2.8; 237185 teams, 32 slates | 0.86 (0.71-1.05) at 10%, 0.92 at 1%; finish +2.7; 208351 teams, 28 slates | 0.89 (0.52-1.81) at 10%, 1.02 at 1%; finish +3.7; 28834 teams, 4 slates | 1.11 (0.80-1.49) at 10%, 1.55 at 1%; finish -2.2; 1084 teams, 30 slates | LEAN against | LEAN against |
+| **pm-t4-adp-etr2** PM T4: the switch ADP (2: ETR) over the old ETR rule | 1.07 (0.61-1.79) at 10%, 1.30 at 1%; finish +0.1; 28849 teams, 8 slates | 1.07 (0.61-1.79) at 10%, 1.30 at 1%; finish +0.1; 28849 teams, 8 slates | none | 2.78 (0.85-7.33) at 10%, 3.30 at 1%; finish -13.6; 80 teams, 7 slates | no lean | no lean |
+| **pm-t5-adp-value** PM T5: ADP with VALUE first over the old ETR (2: less drafted) | 1.20 (1.03-1.39) at 10%, 1.20 at 1%; finish -4.1; 271330 teams, 33 slates | 1.07 (0.98-1.17) at 10%, 0.97 at 1%; finish -2.7; 193675 teams, 29 slates | 1.54 (0.98-2.54) at 10%, 1.68 at 1%; finish -7.5; 77655 teams, 4 slates | 1.25 (0.90-1.67) at 10%, 0.58 at 1%; finish -6.9; 1017 teams, 28 slates | LEAN for | RULE for **(changes)** |
+| **one-tier-cap** The combined tier's order over the projection tier's, where they differ | 0.75 (0.64-0.88) at 10%, 0.65 at 1%; finish +4.3; 434226 teams, 31 slates | 0.79 (0.66-0.96) at 10%, 0.71 at 1%; finish +3.0; 369130 teams, 27 slates | 0.55 (0.45-0.64) at 10%, 0.38 at 1%; finish +11.7; 65096 teams, 4 slates | 1.13 (0.91-1.42) at 10%, 0.71 at 1%; finish -2.0; 1593 teams, 28 slates | RULE against | RULE against |
 | **am-questionable-no-push** AM: holding a player Questionable at Lock AM | 1.30 (1.01-1.63) at 10%, 1.56 at 1%; finish -3.2; 27758 teams, 22 slates | 1.29 (1.00-1.62) at 10%, 1.55 at 1%; finish -2.9; 26952 teams, 21 slates | 1.42 at 10%, 1.91 at 1%; finish -11.4; 806 teams, 1 slates | 1.13 (0.74-1.47) at 10%, 1.07 at 1%; finish +0.4; 185 teams, 15 slates | LEAN for | LEAN for |
 | **pm-questionable-back-two** PM: holding a player Questionable at Lock PM | 1.29 (1.07-1.54) at 10%, 1.34 at 1%; finish -4.1; 57694 teams, 28 slates | 1.27 (1.01-1.54) at 10%, 1.42 at 1%; finish -3.2; 44877 teams, 24 slates | 1.37 (0.99-1.99) at 10%, 1.09 at 1%; finish -7.0; 12817 teams, 4 slates | 1.32 (0.83-1.90) at 10%, 0.47 at 1%; finish -9.2; 237 teams, 22 slates | RULE for | RULE for |
 | **q-tag-pushes** Passing a tagged player for the one the button ranked below him | 0.92 (0.78-1.08) at 10%, 0.89 at 1%; finish +2.2; 572344 teams, 27 slates | 0.93 (0.78-1.11) at 10%, 0.86 at 1%; finish +2.1; 518633 teams, 23 slates | 0.91 (0.40-1.27) at 10%, 1.19 at 1%; finish +3.6; 53711 teams, 4 slates | 1.20 (0.94-1.51) at 10%, 0.47 at 1%; finish -3.6; 1726 teams, 24 slates | no lean | no lean |
@@ -200,8 +201,8 @@ Reference for the Mine column: all my teams against same-price field teams run 1
 | **q-class-x:TRAP** Holding a TRAP-class tagged player | 1.01 (0.85-1.18) at 10%, 0.95 at 1%; finish +0.6; 48270 teams, 18 slates | 0.99 (0.85-1.13) at 10%, 0.98 at 1%; finish +1.1; 39625 teams, 15 slates | 1.09 (0.61-2.31) at 10%, 0.81 at 1%; finish -1.9; 8645 teams, 3 slates | 1.13 (0.75-1.48) at 10%, 0.00 at 1%; finish -1.0; 210 teams, 15 slates | no lean | no lean |
 | **beneficiary-round6:sat** AM: a round-6 pick whose teammate was tagged at Lock AM and sat | 1.08 (0.93-1.30) at 10%, 0.98 at 1%; finish -1.4; 23035 teams, 22 slates | 1.09 (0.92-1.29) at 10%, 0.98 at 1%; finish -1.5; 22906 teams, 21 slates | 0.23 at 10%, 0.00 at 1%; finish +20.9; 129 teams, 1 slates | 1.96 (1.31-2.63) at 10%, 2.49 at 1%; finish -6.0; 78 teams, 14 slates | no lean | no lean |
 | **beneficiary-round6:played** AM: a round-6 pick whose teammate was tagged at Lock AM and played | 1.03 (0.85-1.26) at 10%, 1.03 at 1%; finish +0.4; 18276 teams, 19 slates | 1.03 (0.84-1.28) at 10%, 1.04 at 1%; finish +0.3; 18143 teams, 18 slates | 0.22 at 10%, 0.00 at 1%; finish +20.2; 133 teams, 1 slates | 0.76 (0.34-1.35) at 10%, 0.00 at 1%; finish -2.0; 53 teams, 12 slates | no lean | no lean |
-| **pm-t5-beneficiary** PM: a T5 player whose teammate was tagged or out at Lock PM | 1.01 (0.91-1.14) at 10%, 0.97 at 1%; finish -0.8; 60671 teams, 26 slates | 1.03 (0.90-1.21) at 10%, 1.09 at 1%; finish -1.6; 48578 teams, 21 slates | 0.92 (0.85-1.05) at 10%, 0.55 at 1%; finish +2.4; 12093 teams, 5 slates | 1.98 (1.33-2.64) at 10%, 1.36 at 1%; finish -10.3; 255 teams, 19 slates | no lean | no lean |
-| **pm-middle-takes** PM T3/T4: your board's first where it differs from ETR's | 0.86 (0.76-0.99) at 10%, 0.78 at 1%; finish +1.5; 304638 teams, 31 slates | 0.81 (0.71-0.93) at 10%, 0.70 at 1%; finish +2.9; 259707 teams, 26 slates | 1.37 (1.22-1.65) at 10%, 1.51 at 1%; finish -6.6; 44931 teams, 5 slates | 0.90 (0.70-1.16) at 10%, 0.25 at 1%; finish -2.3; 1859 teams, 28 slates | LEAN against | LEAN against |
+| **pm-t5-beneficiary** PM: a T5 player whose teammate was tagged or out at Lock PM | 1.01 (0.91-1.14) at 10%, 0.97 at 1%; finish -0.8; 60671 teams, 26 slates | 1.01 (0.90-1.16) at 10%, 1.01 at 1%; finish -0.5; 54431 teams, 22 slates | 0.99 (0.83-1.15) at 10%, 0.69 at 1%; finish -3.7; 6240 teams, 4 slates | 1.98 (1.33-2.64) at 10%, 1.36 at 1%; finish -10.3; 255 teams, 19 slates | no lean | no lean |
+| **pm-middle-takes** PM T3/T4: your board's first where it differs from ETR's | 0.86 (0.76-0.99) at 10%, 0.78 at 1%; finish +1.5; 304638 teams, 31 slates | 0.82 (0.72-0.94) at 10%, 0.72 at 1%; finish +2.5; 270824 teams, 27 slates | 1.39 (1.22-1.82) at 10%, 1.58 at 1%; finish -6.3; 33814 teams, 4 slates | 0.90 (0.70-1.16) at 10%, 0.25 at 1%; finish -2.3; 1859 teams, 28 slates | LEAN against | LEAN against |
 | **pm-t2-other-reads** PM T2: your board's first against the button (no tag on either) | 1.27 (1.04-1.59) at 10%, 1.26 at 1%; finish -3.9; 186960 teams, 27 slates | 1.36 (1.12-1.70) at 10%, 1.41 at 1%; finish -4.8; 175813 teams, 25 slates | 0.45 at 10%, 0.26 at 1%; finish +9.0; 11147 teams, 2 slates | 1.39 (1.13-1.74) at 10%, 0.58 at 1%; finish -6.9; 1197 teams, 27 slates | LEAN for | LEAN for |
 | **am-t5-other-reads** AM T5: your board's first against the button (no tag on either) | 1.22 (0.82-1.60) at 10%, 1.71 at 1%; finish -1.4; 32009 teams, 17 slates | 1.23 (0.83-1.62) at 10%, 1.71 at 1%; finish -1.5; 31337 teams, 16 slates | 0.30 at 10%, - at 1%; finish +3.3; 672 teams, 1 slates | 0.96 (0.51-1.49) at 10%, 0.00 at 1%; finish +4.7; 87 teams, 12 slates | no lean | no lean |
 
@@ -211,34 +212,34 @@ Teams are matched on total price, so a team that took the cheaper player at the 
 
 | Decision | Verdict before | Gap, points over price (A-B) | From the decision pick | From the other picks | Decision pick's own points (A-B) | Lift matched on the other picks' price | Verdict that survives |
 |---|---|---|---|---|---|---|---|
-| leverage-t2-t4 | LEAN for | +8.6 | +8.3 (97%) | +0.3 (3%) | +1.4 | 2.18 (1.81-2.70) at 10%, 4.19 at 1%; finish -9.3; 26150 teams, 8 slates | LEAN for |
+| leverage-t2-t4 | LEAN for | +7.6 | +7.5 (99%) | +0.1 (1%) | +0.6 | 1.82 (1.38-2.50) at 10%, 2.48 at 1%; finish -7.9; 27443 teams, 8 slates | LEAN for |
 | value-up-middle-t5 | RULE for | +3.5 | +2.4 (70%) | +1.0 (30%) | +0.9 | 1.27 (1.13-1.42) at 10%, 1.34 at 1%; finish -3.3; 993084 teams, 33 slates | RULE for |
 | value-up-middle-t5 T3 | RULE for | +5.5 | +4.1 (74%) | +1.5 (26%) | +4.3 | 1.55 (1.18-1.98) at 10%, 1.76 at 1%; finish -6.0; 271975 teams, 25 slates | RULE for |
 | value-up-middle-t5 T4 | RULE for | +3.8 | +3.3 (86%) | +0.5 (14%) | +3.1 | 1.34 (1.16-1.53) at 10%, 1.58 at 1%; finish -3.7; 301754 teams, 29 slates | RULE for |
 | value-up-middle-t5 T5 | LEAN for | +2.1 | +0.1 (6%) | +2.0 (94%) | -0.4 | 1.10 (0.93-1.29) at 10%, 0.98 at 1%; finish -2.2; 418899 teams, 26 slates | no lean |
 | pricey-flags | LEAN for | +2.2 | +3.0 (136%) | -0.8 (-36%) | +3.8 | 1.21 (1.11-1.32) at 10%, 1.33 at 1%; finish -2.1; 1180918 teams, 33 slates | LEAN for |
-| pricey-flags T1 | RULE for | +2.6 | +5.1 (199%) | -2.6 (-99%) | +8.4 | 1.59 (1.17-2.16) at 10%, 2.17 at 1%; finish -3.5; 174987 teams, 20 slates | RULE for |
+| pricey-flags T1 | LEAN for | +2.6 | +5.1 (199%) | -2.6 (-99%) | +8.4 | 1.59 (1.17-2.16) at 10%, 2.17 at 1%; finish -3.5; 174987 teams, 20 slates | LEAN for |
 | pricey-flags T2 | LEAN for | +2.5 | +2.7 (106%) | -0.1 (-6%) | +3.4 | 1.19 (1.05-1.35) at 10%, 1.24 at 1%; finish -2.7; 531057 teams, 30 slates | LEAN for |
 | pricey-flags T3 | LEAN for | +3.9 | +4.5 (116%) | -0.6 (-16%) | +3.9 | 1.23 (1.02-1.49) at 10%, 1.38 at 1%; finish -3.4; 325830 teams, 28 slates | LEAN for |
 | pricey-flags T5 | LEAN against | -5.4 | +0.4 (-7%) | -5.8 (107%) | -7.7 | 0.89 (0.65-1.39) at 10%, 0.81 at 1%; finish +3.6; 24472 teams, 6 slates | no lean |
 | am-t5-button-order | RULE for | +4.4 | +3.0 (68%) | +1.4 (32%) | +1.0 | 1.38 (1.17-1.62) at 10%, 1.59 at 1%; finish -4.6; 287962 teams, 25 slates | RULE for |
 | pm-t2-adp-etr2 | LEAN against | -2.2 | -2.2 (99%) | -0.0 (1%) | -1.6 | 0.87 (0.72-1.04) at 10%, 0.95 at 1%; finish +2.6; 237195 teams, 32 slates | LEAN against |
-| pm-t5-adp-value | RULE for | +3.4 | +1.3 (39%) | +2.1 (61%) | +4.0 | 1.09 (0.93-1.28) at 10%, 1.01 at 1%; finish -3.2; 272665 teams, 33 slates | no lean |
+| pm-t5-adp-value | LEAN for | +3.2 | +1.2 (38%) | +2.0 (62%) | +3.9 | 1.07 (0.92-1.27) at 10%, 1.00 at 1%; finish -2.9; 271357 teams, 33 slates | no lean |
 | one-tier-cap | RULE against | -3.7 | -3.4 (93%) | -0.3 (7%) | -1.7 | 0.77 (0.65-0.90) at 10%, 0.67 at 1%; finish +3.9; 434239 teams, 31 slates | RULE against |
 | am-questionable-no-push | LEAN for | +2.8 | +1.9 (69%) | +0.9 (31%) | - (holding) | 1.14 (0.91-1.41) at 10%, 1.07 at 1%; finish -0.1; 27378 teams, 22 slates | no lean |
 | pm-questionable-back-two | RULE for | +3.3 | +2.1 (66%) | +1.1 (34%) | - (holding) | 1.26 (1.06-1.49) at 10%, 1.32 at 1%; finish -3.9; 57685 teams, 28 slates | RULE for |
 | q-class-x:FAIR | LEAN for | +6.9 | +6.6 (96%) | +0.3 (4%) | - (holding) | 1.41 (0.90-1.85) at 10%, 1.86 at 1%; finish -7.2; 8285 teams, 13 slates | LEAN for |
 | pm-middle-takes | LEAN against | -1.5 | -1.2 (80%) | -0.3 (20%) | -0.4 | 0.88 (0.77-1.01) at 10%, 0.81 at 1%; finish +1.3; 304636 teams, 31 slates | LEAN against |
 | pm-t2-other-reads | LEAN for | +3.6 | +3.1 (86%) | +0.5 (14%) | +2.6 | 1.24 (1.01-1.54) at 10%, 1.19 at 1%; finish -3.6; 186963 teams, 27 slates | LEAN for |
-| turn 1/2: a. reach vs trust | RULE against | -2.7 | -1.0 (37%) | -1.7 (63%) | -2.6 | 0.69 (0.56-0.84) at 10%, 0.54 at 1%; finish +4.2; 50421 teams, 34 slates | RULE against |
-| turn 1/2: fallers vs trust | LEAN for | +1.9 | -0.9 (-50%) | +2.8 (150%) | +2.2 | 1.27 (0.99-1.65) at 10%, 1.52 at 1%; finish -1.9; 72954 teams, 34 slates | LEAN for |
+| turn 1/2: a. reach vs trust | RULE against | -3.0 | -1.2 (41%) | -1.8 (59%) | -2.9 | 0.67 (0.55-0.82) at 10%, 0.51 at 1%; finish +4.5; 51552 teams, 35 slates | RULE against |
+| turn 1/2: fallers vs trust | LEAN for | +2.0 | -0.9 (-47%) | +2.9 (147%) | +2.3 | 1.28 (1.00-1.66) at 10%, 1.52 at 1%; finish -2.1; 74581 teams, 35 slates | LEAN for |
 | turn 1/2: b. reach toward higher projection vs trust | no lean | +1.8 | +2.7 (148%) | -0.9 (-48%) | +1.4 | 1.22 (0.80-1.89) at 10%, 1.05 at 1%; finish -1.0; 6666 teams, 24 slates | no lean |
-| turn 2/3: a. reach vs trust | no lean | -0.1 | +2.6 | -2.7 | +0.3 | 0.99 (0.86-1.14) at 10%, 1.21 at 1%; finish +1.3; 40941 teams, 34 slates | no lean |
-| turn 2/3: fallers vs trust | LEAN for | +1.5 | +0.7 (50%) | +0.7 (50%) | +2.2 | 1.15 (1.02-1.31) at 10%, 1.34 at 1%; finish -2.5; 29776 teams, 34 slates | LEAN for |
+| turn 2/3: a. reach vs trust | no lean | +0.1 | +2.7 | -2.7 | +0.4 | 0.99 (0.86-1.13) at 10%, 1.20 at 1%; finish +1.2; 42471 teams, 35 slates | no lean |
+| turn 2/3: fallers vs trust | LEAN for | +1.3 | +0.6 (51%) | +0.6 (49%) | +2.2 | 1.15 (1.03-1.30) at 10%, 1.35 at 1%; finish -2.4; 30925 teams, 35 slates | LEAN for |
 | turn 2/3: b. reach toward higher projection vs trust | RULE for | +7.6 | +8.3 (110%) | -0.7 (-10%) | +5.8 | 1.56 (1.32-1.81) at 10%, 2.21 at 1%; finish -6.7; 9114 teams, 31 slates | RULE for |
 | stack: Opposing stars (their team's top 2 by projection, same game) | RULE for | +1.5 | +2.0 (134%) | -0.5 (-34%) | - (holding) | 1.03 (0.93-1.14) at 10%, 1.15 at 1%; finish +0.4; 225685 teams, 33 slates | no lean |
-| stack: Same-position teammates | RULE against | -2.8 | -6.0 (216%) | +3.2 (-116%) | - (holding) | 0.76 (0.69-0.85) at 10%, 0.83 at 1%; finish +3.8; 125644 teams, 34 slates | RULE against |
-| stack: Same-position teammates, spread 5+ | no lean | +0.1 | -1.7 | +1.8 | - (holding) | 0.94 (0.82-1.09) at 10%, 0.86 at 1%; finish +0.6; 59051 teams, 31 slates | no lean |
+| stack: Same-position teammates | LEAN against | -2.9 | -6.1 (208%) | +3.1 (-108%) | - (holding) | 0.76 (0.68-0.84) at 10%, 0.82 at 1%; finish +3.9; 126708 teams, 35 slates | LEAN against |
+| stack: Same-position teammates, spread 5+ | no lean | -0.1 | -1.9 | +1.8 | - (holding) | 0.93 (0.81-1.06) at 10%, 0.85 at 1%; finish +0.8; 59721 teams, 32 slates | no lean |
 
 ### f. Swaps, replayed in money (my credited swaps)
 
@@ -274,9 +275,9 @@ A: teams with that teammate pair; B: teams with no two teammates at all (so same
 | Test | Lift at 10% (80% range), at 1%; finish; teams, slates | Gap over price (A-B) | From the pair | From the other picks | Lift matched on the other picks' price | Verdict that survives |
 |---|---|---|---|---|---|---|
 | Same position, both rounds 1-3 | 1.25 (0.87-1.66) at 10%, 1.68 at 1%; finish -3.7; 13603 teams, 22 slates | +3.0 | -1.7 (-57%) | +4.7 (157%) | 1.24 (0.87-1.65) at 10%, 1.75 at 1%; finish -3.5; 13601 teams, 22 slates | no lean |
-| Same position, one in rounds 1-3 and one in 4-6 | 0.91 (0.82-0.99) at 10%, 0.88 at 1%; finish +1.8; 68381 teams, 32 slates | -1.6 | -5.1 (321%) | +3.5 (-221%) | 0.77 (0.68-0.88) at 10%, 0.72 at 1%; finish +3.4; 68258 teams, 32 slates | RULE against |
-| Same position, both rounds 4-6 | 1.07 (0.97-1.19) at 10%, 1.04 at 1%; finish -2.3; 28915 teams, 32 slates | +2.0 | +0.2 (8%) | +1.8 (92%) | 1.06 (0.96-1.17) at 10%, 1.04 at 1%; finish -2.2; 28908 teams, 32 slates | no lean |
-| Different-position teammates (any rounds) | 1.11 (1.04-1.18) at 10%, 1.15 at 1%; finish -1.2; 265684 teams, 32 slates | +1.2 | -0.5 (-42%) | +1.7 (142%) | 1.01 (0.91-1.14) at 10%, 0.99 at 1%; finish -0.5; 213500 teams, 32 slates | no lean |
+| Same position, one in rounds 1-3 and one in 4-6 | 0.90 (0.82-0.98) at 10%, 0.87 at 1%; finish +2.1; 69378 teams, 33 slates | -1.9 | -5.3 (283%) | +3.4 (-183%) | 0.76 (0.68-0.87) at 10%, 0.71 at 1%; finish +3.7; 69255 teams, 33 slates | LEAN against |
+| Same position, both rounds 4-6 | 1.07 (0.97-1.19) at 10%, 1.03 at 1%; finish -2.3; 28985 teams, 33 slates | +1.9 | +0.2 (8%) | +1.8 (92%) | 1.06 (0.96-1.18) at 10%, 1.03 at 1%; finish -2.1; 28978 teams, 33 slates | no lean |
+| Different-position teammates (any rounds) | 1.11 (1.04-1.18) at 10%, 1.17 at 1%; finish -1.2; 271132 teams, 33 slates | +1.2 | -0.2 (-19%) | +1.4 (119%) | 1.01 (0.91-1.12) at 10%, 1.00 at 1%; finish -0.4; 218948 teams, 33 slates | no lean |
 
 ### Your takes by source (takes_history.csv)
 
@@ -315,21 +316,21 @@ Inside the same contest and price group, AM against PM: 1.22 (0.93-1.58) at 10%,
 
 ### 1. Same-position teammates: source, examples, and starter/backup instead
 
-Position: Underdog's own position on the slate (the record's `pos`), grouped G (PG, SG, G), F (SF, PF, F), C. Underdog scores everyone as flex, so position matters here only as a stand-in for sharing minutes and touches. Five early/late same-position pairs on 2026-11-25's rosters:
+Position: Underdog's own position on the slate (the record's `pos`), grouped G (PG, SG, G), F (SF, PF, F), C. Underdog scores everyone as flex, so position matters here only as a stand-in for sharing minutes and touches. Five early/late same-position pairs on 2026-11-27's rosters:
 
-- Ty Jerome (SG, round 2) + Cedric Coward (SG, round 4), MEM
-- Tyler Herro (SG, round 3) + Brayden Burries (SG, round 6), MIL
-- Donovan Mitchell (SG, round 2) + James Harden (PG, round 4), CLE
-- Kevin Durant (PF, round 3) + Amen Thompson (SF, round 4), HOU
-- Julius Randle (PF, round 3) + Michael Porter Jr. (SF, round 5), BKN
+- Jayson Tatum (PF, round 1) + Paul George (PF, round 4), BOS
+- Jalen Brunson (PG, round 2) + Josh Hart (SG, round 6), NY
+- Tyrese Maxey (PG, round 3) + VJ Edgecombe (SG, round 6), PHI
+- Luka Doncic (PG, round 1) + Austin Reaves (SG, round 6), LAL
+- Ty Jerome (SG, round 3) + Cedric Coward (SG, round 6), MEM
 
 Starter and direct backup instead of position: the starter averages 28+ minutes; his backup scores 4+ more points a game when the starter sits. Both from the morning file as it stood at that night's lock (the mirror's history: games through the night before, nothing later). The with/without splits start in the morning file around 10-29, so earlier nights have no pairs. Against teams with no two teammates:
 
 | Test | Lift at 10% (80% range), at 1%; finish; teams, slates | Gap over price (A-B) | From the decision pick(s) | From the other picks | Decision pick's own points (A-B) | Lift matched on the other picks' price | Verdict that survives |
 |---|---|---|---|---|---|---|---|
-| Same position, early + late (the approved card row) | 0.91 (0.82-0.99) at 10%, 0.88 at 1%; finish +1.8; 68381 teams, 32 slates | -1.6 | -5.1 (321%) | +3.5 (-221%) | - (holding) | 0.77 (0.68-0.88) at 10%, 0.72 at 1%; finish +3.4; 68258 teams, 32 slates | RULE against |
-| Starter + his backup, any rounds | 1.11 (0.87-1.32) at 10%, 1.17 at 1%; finish +0.0; 60847 teams, 24 slates | +0.0 | +0.5 | -0.5 | - (holding) | 0.95 (0.76-1.15) at 10%, 0.81 at 1%; finish +0.6; 56416 teams, 24 slates | no lean |
-| Starter early (rounds 1-3) + his backup late (rounds 4-6) | 1.40 (0.90-1.83) at 10%, 1.64 at 1%; finish -3.6; 28181 teams, 23 slates | +3.1 | +4.7 (152%) | -1.6 (-52%) | - (holding) | 1.39 (0.85-1.93) at 10%, 1.52 at 1%; finish -4.3; 28131 teams, 23 slates | no lean |
+| Same position, early + late (the approved card row) | 0.90 (0.82-0.98) at 10%, 0.87 at 1%; finish +2.1; 69378 teams, 33 slates | -1.9 | -5.3 (283%) | +3.4 (-183%) | - (holding) | 0.76 (0.68-0.87) at 10%, 0.71 at 1%; finish +3.7; 69255 teams, 33 slates | LEAN against |
+| Starter + his backup, any rounds | 1.08 (0.85-1.29) at 10%, 1.14 at 1%; finish +0.5; 63356 teams, 25 slates | -0.4 | +0.3 | -0.7 | - (holding) | 0.92 (0.74-1.11) at 10%, 0.78 at 1%; finish +1.1; 58925 teams, 25 slates | no lean |
+| Starter early (rounds 1-3) + his backup late (rounds 4-6) | 1.32 (0.85-1.77) at 10%, 1.55 at 1%; finish -2.5; 29829 teams, 24 slates | +2.1 | +3.9 (187%) | -1.8 (-87%) | - (holding) | 1.31 (0.80-1.84) at 10%, 1.40 at 1%; finish -3.0; 29779 teams, 24 slates | no lean |
 
 ### 2. Fallers: the definitions behind card-fallers
 
@@ -358,13 +359,13 @@ A team's k-th player by the ADP it paid stands for its round-k pick (pick order 
 | Round 1, explained | none | - | - | - |
 | Round 2, nothing explains it | 0.38 (0.00-1.05) at 10%, 3.84 at 1%; finish +7.7; 23 teams, 8 slates | -9.8 | +2.0 (-21%) | -11.8 (121%) | +7.5 | 0.42 (0.00-1.13) at 10%, 3.85 at 1%; finish +6.1; 23 teams, 8 slates | not enough |
 | Round 2, explained (tag or news) | 1.06 at 10%, 0.00 at 1%; finish +30.5; 5 teams, 2 slates | -37.9 | -34.3 (90%) | -3.6 (10%) | -24.1 | 1.20 at 10%, 0.00 at 1%; finish +27.1; 5 teams, 2 slates | not enough |
-| Round 3, nothing explains it | 1.24 (1.05-1.50) at 10%, 2.30 at 1%; finish -4.3; 653 teams, 28 slates | +1.2 | -1.0 (-85%) | +2.1 (185%) | +4.0 | 1.35 (1.09-1.72) at 10%, 2.55 at 1%; finish -4.5; 653 teams, 28 slates | RULE for |
+| Round 3, nothing explains it | 1.33 (1.12-1.62) at 10%, 2.54 at 1%; finish -5.3; 705 teams, 29 slates | +2.2 | -0.8 (-34%) | +3.0 (134%) | +4.3 | 1.45 (1.17-1.84) at 10%, 2.78 at 1%; finish -5.6; 705 teams, 29 slates | RULE for |
 | Round 3, explained (tag or news) | 1.89 (1.22-2.66) at 10%, 2.32 at 1%; finish -14.4; 148 teams, 9 slates | +15.1 | +13.2 (88%) | +1.8 (12%) | +18.2 | 2.62 (1.92-3.14) at 10%, 3.59 at 1%; finish -19.4; 148 teams, 9 slates | RULE for |
-| Round 4, nothing explains it | 1.43 (1.14-1.71) at 10%, 1.73 at 1%; finish -6.5; 2339 teams, 34 slates | +4.8 | +1.6 (33%) | +3.2 (67%) | +3.5 | 1.50 (1.21-1.76) at 10%, 1.86 at 1%; finish -7.2; 2339 teams, 34 slates | RULE for |
+| Round 4, nothing explains it | 1.40 (1.13-1.66) at 10%, 1.69 at 1%; finish -6.5; 2530 teams, 35 slates | +4.8 | +1.7 (35%) | +3.1 (65%) | +3.5 | 1.46 (1.21-1.70) at 10%, 1.80 at 1%; finish -7.2; 2530 teams, 35 slates | RULE for |
 | Round 4, explained (tag or news) | 2.01 (1.18-2.86) at 10%, 0.92 at 1%; finish -10.7; 83 teams, 9 slates | +7.7 | +5.5 (71%) | +2.2 (29%) | +7.4 | 2.06 (1.21-2.93) at 10%, 0.98 at 1%; finish -10.9; 83 teams, 9 slates | not enough |
-| Round 5, nothing explains it | 1.67 (1.43-1.94) at 10%, 2.70 at 1%; finish -7.6; 5007 teams, 33 slates | +6.5 | +2.0 (31%) | +4.5 (69%) | +2.3 | 1.72 (1.46-1.97) at 10%, 2.82 at 1%; finish -8.0; 5007 teams, 33 slates | RULE for |
+| Round 5, nothing explains it | 1.63 (1.38-1.90) at 10%, 2.61 at 1%; finish -6.8; 5290 teams, 34 slates | +5.8 | +1.8 (31%) | +4.0 (69%) | +2.2 | 1.66 (1.41-1.93) at 10%, 2.71 at 1%; finish -7.2; 5290 teams, 34 slates | RULE for |
 | Round 5, explained (tag or news) | 1.94 (0.99-2.70) at 10%, 3.18 at 1%; finish -12.6; 200 teams, 11 slates | +9.1 | +7.7 (84%) | +1.5 (16%) | +7.3 | 1.94 (1.08-2.59) at 10%, 3.13 at 1%; finish -12.3; 200 teams, 11 slates | LEAN for |
-| Round 6, nothing explains it | 1.04 (0.92-1.17) at 10%, 0.98 at 1%; finish -0.3; 7912 teams, 34 slates | -0.2 | -3.4 | +3.2 | -0.4 | 1.17 (1.04-1.30) at 10%, 1.14 at 1%; finish -2.1; 7912 teams, 34 slates | RULE for |
+| Round 6, nothing explains it | 1.04 (0.90-1.18) at 10%, 0.96 at 1%; finish -0.1; 8309 teams, 35 slates | -0.5 | -3.5 | +3.1 | -0.5 | 1.16 (1.03-1.28) at 10%, 1.12 at 1%; finish -1.8; 8309 teams, 35 slates | LEAN for |
 | Round 6, explained (tag or news) | 1.06 (0.59-1.72) at 10%, 0.54 at 1%; finish -6.6; 392 teams, 6 slates | +4.9 | -0.4 (-9%) | +5.4 (109%) | +2.7 | 1.16 (0.71-1.68) at 10%, 0.64 at 1%; finish -8.0; 392 teams, 6 slates | no lean |
 
 ### 5. The original rules (kept-*), asked 2026-11-11
@@ -387,48 +388,48 @@ Fallers (a top player who fell to the turn) are kept apart: always taken. For th
 
 | Turn | Test | Lift at 10% (80% range), at 1%; finish; teams, slates | Mine |
 |---|---|---|---|
-| 1/2 | a. reach vs trust | 0.68 (0.56-0.84) at 10%, 0.51 at 1%; finish +4.0; 50425 teams, 34 slates | 1.27 (0.70-2.00) at 10%, 0.00 at 1%; finish -2.9; 170 teams, 24 slates |
-| 1/2 | fallers vs trust | 1.23 (0.97-1.58) at 10%, 1.58 at 1%; finish -1.5; 72825 teams, 34 slates | 1.40 (0.93-1.99) at 10%, 1.69 at 1%; finish -7.2; 324 teams, 30 slates |
+| 1/2 | a. reach vs trust | 0.66 (0.54-0.81) at 10%, 0.48 at 1%; finish +4.4; 51556 teams, 35 slates | 1.27 (0.70-2.00) at 10%, 0.00 at 1%; finish -2.9; 170 teams, 24 slates |
+| 1/2 | fallers vs trust | 1.22 (0.97-1.57) at 10%, 1.57 at 1%; finish -1.5; 74450 teams, 35 slates | 1.40 (0.93-1.99) at 10%, 1.69 at 1%; finish -7.2; 324 teams, 30 slates |
 | 1/2 | b. reach toward higher projection vs trust | 1.22 (0.80-1.90) at 10%, 0.99 at 1%; finish -1.5; 6669 teams, 24 slates | 1.57 (0.65-3.22) at 10%, 0.00 at 1%; finish -5.6; 67 teams, 12 slates |
 | 1/2 | b. reach toward VALUE flag vs trust | none | none |
 | 1/2 | b. reach toward less drafted vs trust | none | none |
-| 1/2 | c. 6-drafter, ranks 6 + 7 | 1.11 (0.75-1.51) at 10%, 1.43 at 1%; finish -2.1; 25462 teams, 28 slates | 0.54 (0.00-1.25) at 10%, 0.00 at 1%; finish -5.3; 91 teams, 19 slates |
-| 1/2 | c. 6-drafter, ranks 5 + 7 | 1.34 (1.05-1.67) at 10%, 1.62 at 1%; finish -1.4; 20147 teams, 29 slates | 1.67 (1.05-2.33) at 10%, 1.64 at 1%; finish -7.4; 93 teams, 21 slates |
-| 1/2 | c. 6-drafter, ranks 5 + 8 | 0.90 (0.59-1.24) at 10%, 0.59 at 1%; finish -0.0; 19034 teams, 29 slates | 0.96 (0.21-1.95) at 10%, 0.00 at 1%; finish -4.8; 76 teams, 21 slates |
-| 1/2 | c. 6-drafter, ranks 6 + 8 | 0.98 (0.57-1.54) at 10%, 0.73 at 1%; finish -1.0; 14371 teams, 28 slates | 0.34 (0.00-0.69) at 10%, 0.00 at 1%; finish -5.6; 54 teams, 17 slates |
-| 1/2 | c. 6-drafter, ranks 5 + 6 | 0.93 (0.73-1.13) at 10%, 0.66 at 1%; finish -0.2; 12115 teams, 28 slates | 1.32 (0.57-2.08) at 10%, 0.00 at 1%; finish -4.8; 64 teams, 18 slates |
-| 1/2 | c. 6-drafter, ranks 5 + 9 | 1.00 (0.64-1.39) at 10%, 1.43 at 1%; finish +0.5; 11423 teams, 29 slates | 1.31 (0.47-2.40) at 10%, 0.00 at 1%; finish -5.4; 40 teams, 13 slates |
-| 1/2 | c. 6-drafter, ranks 6 + 9 | 1.03 (0.51-1.65) at 10%, 0.93 at 1%; finish +1.3; 7936 teams, 28 slates | 2.60 (1.09-3.95) at 10%, 0.00 at 1%; finish -7.2; 42 teams, 9 slates |
-| 1/2 | c. 6-drafter, ranks 7 + 8 | 0.83 (0.49-1.25) at 10%, 0.57 at 1%; finish +0.6; 7425 teams, 29 slates | 0.33 (0.00-1.21) at 10%, 0.00 at 1%; finish +3.4; 41 teams, 7 slates |
-| 1/2 | c. 6-drafter, ranks 5 + 10 | 0.81 (0.55-1.07) at 10%, 0.69 at 1%; finish +0.3; 5966 teams, 29 slates | 0.71 (0.00-1.42) at 10%, 0.00 at 1%; finish +1.3; 22 teams, 8 slates |
-| 1/2 | c. 6-drafter, ranks 6 + 10 | 0.63 (0.40-0.95) at 10%, 0.40 at 1%; finish +3.5; 3458 teams, 28 slates | 1.17 (0.00-3.49) at 10%, 0.00 at 1%; finish -10.8; 14 teams, 4 slates |
-| 1/2 | c. 6-drafter, ranks 5 + 11 | 1.09 (0.63-1.44) at 10%, 1.36 at 1%; finish +0.0; 3408 teams, 29 slates | 0.85 (0.00-1.97) at 10%, 0.00 at 1%; finish -2.0; 13 teams, 5 slates |
-| 1/2 | c. 6-drafter, ranks 7 + 9 | 1.02 (0.75-1.27) at 10%, 0.88 at 1%; finish +1.3; 3325 teams, 29 slates | 1.06 (0.00-3.52) at 10%, 0.00 at 1%; finish -0.4; 14 teams, 4 slates |
-| 1/2 | c. 6-drafter, ranks 7 + 10 | 0.56 (0.37-0.77) at 10%, 0.15 at 1%; finish +2.0; 2040 teams, 29 slates | none |
-| 1/2 | c. 6-drafter, ranks 8 + 9 | 1.23 (0.73-1.72) at 10%, 0.83 at 1%; finish -6.2; 1979 teams, 29 slates | 5.91 at 10%, 0.00 at 1%; finish -28.5; 6 teams, 2 slates |
-| 1/2 | c. 6-drafter, ranks 6 + 11 | 0.92 (0.60-1.30) at 10%, 1.16 at 1%; finish +0.9; 1906 teams, 28 slates | 0.00 at 10%, 0.00 at 1%; finish -3.1; 2 teams, 1 slates |
-| 1/2 | c. 6-drafter, ranks 5 + 12 | 0.41 (0.28-0.55) at 10%, 0.23 at 1%; finish +11.7; 1737 teams, 28 slates | none |
-| 2/3 | a. reach vs trust | 1.01 (0.89-1.15) at 10%, 1.24 at 1%; finish +1.1; 40866 teams, 34 slates | 1.47 (1.02-1.94) at 10%, 1.65 at 1%; finish -3.9; 172 teams, 26 slates |
-| 2/3 | fallers vs trust | 1.11 (0.98-1.27) at 10%, 1.27 at 1%; finish -2.1; 29784 teams, 34 slates | 1.67 (1.20-2.19) at 10%, 1.25 at 1%; finish -6.7; 129 teams, 29 slates |
+| 1/2 | c. 6-drafter, ranks 6 + 7 | 1.24 (0.85-1.65) at 10%, 1.70 at 1%; finish -3.2; 26360 teams, 29 slates | 0.54 (0.00-1.25) at 10%, 0.00 at 1%; finish -5.3; 91 teams, 19 slates |
+| 1/2 | c. 6-drafter, ranks 5 + 7 | 1.45 (1.14-1.80) at 10%, 1.78 at 1%; finish -2.8; 21024 teams, 30 slates | 1.67 (1.05-2.33) at 10%, 1.64 at 1%; finish -7.4; 93 teams, 21 slates |
+| 1/2 | c. 6-drafter, ranks 5 + 8 | 0.84 (0.57-1.17) at 10%, 0.53 at 1%; finish +0.6; 19833 teams, 30 slates | 0.96 (0.21-1.95) at 10%, 0.00 at 1%; finish -4.8; 76 teams, 21 slates |
+| 1/2 | c. 6-drafter, ranks 6 + 8 | 0.88 (0.50-1.41) at 10%, 0.60 at 1%; finish +0.1; 15124 teams, 29 slates | 0.34 (0.00-0.69) at 10%, 0.00 at 1%; finish -5.6; 54 teams, 17 slates |
+| 1/2 | c. 6-drafter, ranks 5 + 6 | 0.89 (0.70-1.08) at 10%, 0.64 at 1%; finish -0.0; 12457 teams, 29 slates | 1.32 (0.57-2.08) at 10%, 0.00 at 1%; finish -4.8; 64 teams, 18 slates |
+| 1/2 | c. 6-drafter, ranks 5 + 9 | 0.95 (0.56-1.34) at 10%, 1.34 at 1%; finish +1.4; 11822 teams, 30 slates | 1.31 (0.47-2.40) at 10%, 0.00 at 1%; finish -5.4; 40 teams, 13 slates |
+| 1/2 | c. 6-drafter, ranks 6 + 9 | 0.91 (0.45-1.48) at 10%, 0.80 at 1%; finish +2.8; 8445 teams, 29 slates | 2.60 (1.09-3.95) at 10%, 0.00 at 1%; finish -7.2; 42 teams, 9 slates |
+| 1/2 | c. 6-drafter, ranks 7 + 8 | 0.86 (0.54-1.28) at 10%, 0.57 at 1%; finish +0.2; 7564 teams, 30 slates | 0.33 (0.00-1.21) at 10%, 0.00 at 1%; finish +3.4; 41 teams, 7 slates |
+| 1/2 | c. 6-drafter, ranks 5 + 10 | 0.77 (0.53-1.01) at 10%, 0.62 at 1%; finish +0.6; 6098 teams, 30 slates | 0.71 (0.00-1.42) at 10%, 0.00 at 1%; finish +1.3; 22 teams, 8 slates |
+| 1/2 | c. 6-drafter, ranks 6 + 10 | 0.61 (0.39-0.92) at 10%, 0.36 at 1%; finish +3.7; 3518 teams, 29 slates | 1.17 (0.00-3.49) at 10%, 0.00 at 1%; finish -10.8; 14 teams, 4 slates |
+| 1/2 | c. 6-drafter, ranks 5 + 11 | 1.06 (0.62-1.42) at 10%, 1.29 at 1%; finish +0.3; 3447 teams, 30 slates | 0.85 (0.00-1.97) at 10%, 0.00 at 1%; finish -2.0; 13 teams, 5 slates |
+| 1/2 | c. 6-drafter, ranks 7 + 9 | 1.01 (0.73-1.27) at 10%, 0.86 at 1%; finish +1.0; 3382 teams, 30 slates | 1.06 (0.00-3.52) at 10%, 0.00 at 1%; finish -0.4; 14 teams, 4 slates |
+| 1/2 | c. 6-drafter, ranks 7 + 10 | 0.60 (0.41-0.82) at 10%, 0.15 at 1%; finish +1.7; 2058 teams, 30 slates | none |
+| 1/2 | c. 6-drafter, ranks 8 + 9 | 1.14 (0.68-1.60) at 10%, 0.71 at 1%; finish -5.0; 2038 teams, 30 slates | 5.91 at 10%, 0.00 at 1%; finish -28.5; 6 teams, 2 slates |
+| 1/2 | c. 6-drafter, ranks 6 + 11 | 0.90 (0.59-1.25) at 10%, 1.10 at 1%; finish +1.1; 1928 teams, 29 slates | 0.00 at 10%, 0.00 at 1%; finish -3.1; 2 teams, 1 slates |
+| 1/2 | c. 6-drafter, ranks 5 + 12 | 0.39 (0.26-0.52) at 10%, 0.21 at 1%; finish +12.5; 1776 teams, 29 slates | none |
+| 2/3 | a. reach vs trust | 1.02 (0.89-1.16) at 10%, 1.24 at 1%; finish +0.9; 42396 teams, 35 slates | 1.47 (1.02-1.94) at 10%, 1.65 at 1%; finish -3.9; 172 teams, 26 slates |
+| 2/3 | fallers vs trust | 1.11 (0.98-1.26) at 10%, 1.27 at 1%; finish -1.8; 30933 teams, 35 slates | 1.67 (1.20-2.19) at 10%, 1.25 at 1%; finish -6.7; 129 teams, 29 slates |
 | 2/3 | b. reach toward higher projection vs trust | 1.61 (1.36-1.88) at 10%, 2.16 at 1%; finish -7.1; 9088 teams, 31 slates | 1.60 (0.91-2.27) at 10%, 3.30 at 1%; finish -7.0; 97 teams, 18 slates |
 | 2/3 | b. reach toward VALUE flag vs trust | 1.28 (0.96-1.61) at 10%, 1.61 at 1%; finish -1.8; 5606 teams, 28 slates | 0.22 (0.00-0.40) at 10%, 0.00 at 1%; finish -5.7; 47 teams, 12 slates |
 | 2/3 | b. reach toward less drafted vs trust | 0.00 at 10%, 0.00 at 1%; finish +17.6; 12 teams, 1 slates | none |
-| 2/3 | c. 6-drafter, anchor 1, ranks 12 + 13 | 0.92 (0.69-1.16) at 10%, 0.68 at 1%; finish +0.0; 7816 teams, 27 slates | 0.97 (0.00-1.72) at 10%, 0.00 at 1%; finish -7.1; 27 teams, 13 slates |
-| 2/3 | c. 6-drafter, anchor 1, ranks 11 + 12 | 1.10 (0.81-1.40) at 10%, 0.94 at 1%; finish +2.0; 5818 teams, 29 slates | 0.00 (0.00-0.00) at 10%, 0.00 at 1%; finish +12.1; 21 teams, 11 slates |
-| 2/3 | c. 6-drafter, anchor 1, ranks 11 + 13 | 1.32 (1.00-1.68) at 10%, 1.53 at 1%; finish -6.4; 5578 teams, 29 slates | 0.57 (0.00-1.47) at 10%, 0.00 at 1%; finish -1.5; 22 teams, 11 slates |
-| 2/3 | c. 6-drafter, anchor 1, ranks 12 + 14 | 0.82 (0.50-1.21) at 10%, 0.55 at 1%; finish +7.4; 5235 teams, 27 slates | 0.89 (0.00-1.65) at 10%, 0.00 at 1%; finish +8.2; 28 teams, 10 slates |
-| 2/3 | c. 6-drafter, anchor 2, ranks 11 + 13 | 1.31 (1.02-1.62) at 10%, 1.23 at 1%; finish -6.9; 4432 teams, 28 slates | 0.54 (0.00-1.11) at 10%, 2.15 at 1%; finish -0.9; 25 teams, 12 slates |
-| 2/3 | c. 6-drafter, anchor 1, ranks 11 + 14 | 1.15 (0.80-1.53) at 10%, 1.24 at 1%; finish +2.4; 4134 teams, 28 slates | 0.00 (0.00-0.00) at 10%, 0.00 at 1%; finish +2.3; 19 teams, 8 slates |
-| 2/3 | c. 6-drafter, anchor 2, ranks 11 + 14 | 0.95 (0.69-1.22) at 10%, 0.44 at 1%; finish -2.1; 4075 teams, 28 slates | 1.83 (0.28-4.36) at 10%, 0.00 at 1%; finish -15.8; 18 teams, 9 slates |
-| 2/3 | c. 6-drafter, anchor 2, ranks 11 + 12 | 0.78 (0.53-1.12) at 10%, 0.69 at 1%; finish +0.4; 3982 teams, 28 slates | 0.00 (0.00-0.00) at 10%, 0.00 at 1%; finish +4.9; 8 teams, 5 slates |
-| 2/3 | c. 6-drafter, anchor 2, ranks 10 + 13 | 1.36 (0.98-1.80) at 10%, 1.55 at 1%; finish -4.8; 3613 teams, 28 slates | 1.55 (0.57-2.72) at 10%, 3.65 at 1%; finish -2.7; 22 teams, 10 slates |
-| 2/3 | c. 6-drafter, anchor 2, ranks 10 + 14 | 1.07 (0.66-1.54) at 10%, 1.13 at 1%; finish +1.6; 3478 teams, 27 slates | 0.93 (0.00-2.65) at 10%, 0.00 at 1%; finish -6.9; 17 teams, 7 slates |
-| 2/3 | c. 6-drafter, anchor 2, ranks 12 + 13 | 0.84 (0.59-1.13) at 10%, 0.53 at 1%; finish +1.2; 3362 teams, 28 slates | 0.71 (0.00-2.62) at 10%, 0.00 at 1%; finish +13.5; 9 teams, 6 slates |
-| 2/3 | c. 6-drafter, anchor 1, ranks 13 + 14 | 1.21 (0.86-1.59) at 10%, 1.16 at 1%; finish -2.4; 3202 teams, 29 slates | 3.34 (2.75-3.70) at 10%, 0.00 at 1%; finish -20.1; 19 teams, 6 slates |
-| 2/3 | c. 6-drafter, anchor 1, ranks 10 + 12 | 0.54 (0.38-0.73) at 10%, 0.48 at 1%; finish +3.9; 3111 teams, 29 slates | 0.56 (0.00-1.69) at 10%, 0.00 at 1%; finish +9.6; 15 teams, 9 slates |
-| 2/3 | c. 6-drafter, anchor 1, ranks 10 + 13 | 1.07 (0.82-1.33) at 10%, 1.04 at 1%; finish -3.5; 2973 teams, 29 slates | 2.00 (0.61-3.34) at 10%, 0.00 at 1%; finish -8.4; 17 teams, 10 slates |
-| 2/3 | c. 6-drafter, anchor 2, ranks 10 + 12 | 0.76 (0.54-1.04) at 10%, 0.39 at 1%; finish +0.4; 2882 teams, 28 slates | 1.68 (0.00-3.24) at 10%, 0.00 at 1%; finish -13.1; 14 teams, 11 slates |
-| 2/3 | c. 6-drafter, anchor 2, ranks 12 + 14 | 0.66 (0.41-0.95) at 10%, 0.45 at 1%; finish +4.9; 2869 teams, 27 slates | 0.87 (0.00-1.47) at 10%, 0.00 at 1%; finish +3.0; 12 teams, 6 slates |
+| 2/3 | c. 6-drafter, anchor 1, ranks 12 + 13 | 0.89 (0.67-1.12) at 10%, 0.67 at 1%; finish +0.3; 8195 teams, 28 slates | 0.97 (0.00-1.72) at 10%, 0.00 at 1%; finish -7.1; 27 teams, 13 slates |
+| 2/3 | c. 6-drafter, anchor 1, ranks 11 + 12 | 1.07 (0.79-1.35) at 10%, 0.93 at 1%; finish +2.4; 6061 teams, 30 slates | 0.00 (0.00-0.00) at 10%, 0.00 at 1%; finish +12.1; 21 teams, 11 slates |
+| 2/3 | c. 6-drafter, anchor 1, ranks 11 + 13 | 1.40 (1.06-1.75) at 10%, 1.59 at 1%; finish -7.3; 5851 teams, 30 slates | 0.57 (0.00-1.47) at 10%, 0.00 at 1%; finish -1.5; 22 teams, 11 slates |
+| 2/3 | c. 6-drafter, anchor 1, ranks 12 + 14 | 0.81 (0.49-1.20) at 10%, 0.55 at 1%; finish +7.8; 5346 teams, 28 slates | 0.89 (0.00-1.65) at 10%, 0.00 at 1%; finish +8.2; 28 teams, 10 slates |
+| 2/3 | c. 6-drafter, anchor 2, ranks 11 + 13 | 1.31 (1.01-1.62) at 10%, 1.23 at 1%; finish -7.1; 4518 teams, 29 slates | 0.54 (0.00-1.11) at 10%, 2.15 at 1%; finish -0.9; 25 teams, 12 slates |
+| 2/3 | c. 6-drafter, anchor 1, ranks 11 + 14 | 1.14 (0.80-1.52) at 10%, 1.23 at 1%; finish +2.2; 4215 teams, 29 slates | 0.00 (0.00-0.00) at 10%, 0.00 at 1%; finish +2.3; 19 teams, 8 slates |
+| 2/3 | c. 6-drafter, anchor 2, ranks 11 + 14 | 0.95 (0.69-1.23) at 10%, 0.44 at 1%; finish -1.9; 4149 teams, 29 slates | 1.83 (0.28-4.36) at 10%, 0.00 at 1%; finish -15.8; 18 teams, 9 slates |
+| 2/3 | c. 6-drafter, anchor 2, ranks 11 + 12 | 0.77 (0.53-1.06) at 10%, 0.68 at 1%; finish +0.8; 4092 teams, 29 slates | 0.00 (0.00-0.00) at 10%, 0.00 at 1%; finish +4.9; 8 teams, 5 slates |
+| 2/3 | c. 6-drafter, anchor 2, ranks 10 + 13 | 1.37 (1.00-1.80) at 10%, 1.56 at 1%; finish -5.1; 3686 teams, 29 slates | 1.55 (0.57-2.72) at 10%, 3.65 at 1%; finish -2.7; 22 teams, 10 slates |
+| 2/3 | c. 6-drafter, anchor 2, ranks 10 + 14 | 1.06 (0.67-1.51) at 10%, 1.12 at 1%; finish +1.6; 3577 teams, 28 slates | 0.93 (0.00-2.65) at 10%, 0.00 at 1%; finish -6.9; 17 teams, 7 slates |
+| 2/3 | c. 6-drafter, anchor 2, ranks 12 + 13 | 0.83 (0.58-1.11) at 10%, 0.53 at 1%; finish +1.5; 3454 teams, 29 slates | 0.71 (0.00-2.62) at 10%, 0.00 at 1%; finish +13.5; 9 teams, 6 slates |
+| 2/3 | c. 6-drafter, anchor 1, ranks 13 + 14 | 1.19 (0.84-1.56) at 10%, 1.15 at 1%; finish -2.9; 3374 teams, 30 slates | 3.34 (2.75-3.70) at 10%, 0.00 at 1%; finish -20.1; 19 teams, 6 slates |
+| 2/3 | c. 6-drafter, anchor 1, ranks 10 + 12 | 0.54 (0.37-0.72) at 10%, 0.48 at 1%; finish +4.1; 3176 teams, 30 slates | 0.56 (0.00-1.69) at 10%, 0.00 at 1%; finish +9.6; 15 teams, 9 slates |
+| 2/3 | c. 6-drafter, anchor 1, ranks 10 + 13 | 1.14 (0.87-1.40) at 10%, 1.09 at 1%; finish -4.3; 3077 teams, 30 slates | 2.00 (0.61-3.34) at 10%, 0.00 at 1%; finish -8.4; 17 teams, 10 slates |
+| 2/3 | c. 6-drafter, anchor 2, ranks 12 + 14 | 0.64 (0.39-0.92) at 10%, 0.45 at 1%; finish +5.6; 2950 teams, 28 slates | 0.87 (0.00-1.47) at 10%, 0.00 at 1%; finish +3.0; 12 teams, 6 slates |
+| 2/3 | c. 6-drafter, anchor 2, ranks 10 + 12 | 0.76 (0.54-1.02) at 10%, 0.38 at 1%; finish +0.7; 2939 teams, 29 slates | 1.68 (0.00-3.24) at 10%, 0.00 at 1%; finish -13.1; 14 teams, 11 slates |
 
 Rank pairs (c) are detail: most will be not enough yet. Each is against every other non-faller pair at that turn.
 
@@ -466,8 +467,8 @@ T5 breakers (PM tiers) drafted in under half the flagship's pods: VALUE 4, unfla
 | Structure | Lift at 10% (80% range), at 1%; finish; teams, slates | Mine |
 |---|---|---|
 | Opposing stars (their team's top 2 by projection, same game) | 1.16 (1.06-1.28) at 10%, 1.30 at 1%; finish -1.6; 226837 teams, 33 slates | 1.48 (1.27-1.70) at 10%, 1.06 at 1%; finish -7.6; 986 teams, 31 slates |
-| Same-position teammates | 0.85 (0.77-0.93) at 10%, 0.91 at 1%; finish +3.2; 129785 teams, 34 slates | 1.28 (1.06-1.56) at 10%, 1.52 at 1%; finish -4.1; 476 teams, 31 slates |
-| Same-position teammates, spread 5+ | 1.03 (0.91-1.18) at 10%, 1.02 at 1%; finish -0.4; 59051 teams, 31 slates | 1.55 (1.13-2.06) at 10%, 1.54 at 1%; finish -10.0; 240 teams, 24 slates |
+| Same-position teammates | 0.84 (0.77-0.93) at 10%, 0.90 at 1%; finish +3.3; 130849 teams, 35 slates | 1.28 (1.06-1.56) at 10%, 1.52 at 1%; finish -4.1; 476 teams, 31 slates |
+| Same-position teammates, spread 5+ | 1.02 (0.91-1.15) at 10%, 1.01 at 1%; finish -0.1; 59721 teams, 32 slates | 1.55 (1.13-2.06) at 10%, 1.54 at 1%; finish -10.0; 240 teams, 24 slates |
 
 ### What top-1% teams held (a description, not a rule)
 
@@ -475,22 +476,22 @@ Per team, at its draft window's tiers: picks by combined tier, VALUE and PRICEY 
 
 | | T1 | T2 | T3 | T4 | T5 | VALUE | PRICEY | FAIR | TRAP | SMASH | Breakers |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Top 1% | 0.70 | 1.68 | 1.11 | 0.93 | 0.72 | 1.12 | 1.02 | 0.03 | 0.12 | 0.01 | 2.89 |
-| Field | 0.58 | 1.68 | 1.14 | 0.98 | 0.64 | 0.98 | 1.12 | 0.02 | 0.11 | 0.01 | 1.07 |
+| Top 1% | 0.68 | 1.63 | 1.08 | 0.90 | 0.70 | 1.10 | 1.00 | 0.03 | 0.12 | 0.01 | 2.81 |
+| Field | 0.57 | 1.64 | 1.11 | 0.95 | 0.63 | 0.96 | 1.09 | 0.02 | 0.11 | 0.01 | 1.04 |
 
 ### Swaps in the field
 
-Teams with a swap against same-price teams without (each priced at what it paid): 0.68 (0.59-0.77) at 10%, 0.62 at 1%; finish +8.1; 112193 teams, 33 slates.
+Teams with a swap against same-price teams without (each priced at what it paid): 0.71 (0.62-0.82) at 10%, 0.67 at 1%; finish +7.6; 115627 teams, 34 slates.
 
 ### High-volume users (100+ teams on 8+ nights; studied, never ranked)
 
-991 users. Per team, against the field and me:
+1013 users. Per team, against the field and me:
 
 | | Teams | T1 | T2 | T3 | T4 | T5 | VALUE | PRICEY | Tagged | Average drafted% of picks |
 |---|---|---|---|---|---|---|---|---|---|---|
-| High-volume | 423864 | 0.59 | 1.69 | 1.15 | 0.99 | 0.63 | 1.04 | 1.08 | 0.27 | 93% |
+| High-volume | 437494 | 0.58 | 1.65 | 1.12 | 0.96 | 0.62 | 1.01 | 1.05 | 0.26 | 93% |
 | Me | 2319 | 0.62 | 1.74 | 1.33 | 1.09 | 0.60 | 1.56 | 0.67 | 0.33 | 91% |
-| Everyone | 591735 | 0.58 | 1.68 | 1.14 | 0.98 | 0.64 | 0.98 | 1.12 | 0.26 | 93% |
+| Everyone | 607847 | 0.57 | 1.64 | 1.11 | 0.95 | 0.63 | 0.96 | 1.09 | 0.25 | 93% |
 
 ### Swaps by the ruled-out player's tier (at the team's draft window)
 
@@ -504,13 +505,13 @@ Teams with such a swap against same-price teams with no swap. A swapped team is 
 | T3-T5 | both | 0.91 (0.81-1.03) at 10%, 1.04 at 1%; finish +1.7; 27969 teams, 22 slates |
 | T3-T5 | AM | 0.89 (0.77-1.00) at 10%, 1.06 at 1%; finish +2.2; 15155 teams, 19 slates |
 | T3-T5 | PM | 0.95 (0.78-1.15) at 10%, 1.02 at 1%; finish +1.2; 12814 teams, 15 slates |
-| not credited | both | 0.70 (0.63-0.80) at 10%, 0.66 at 1%; finish +8.4; 46165 teams, 33 slates |
+| not credited | both | 0.73 (0.65-0.83) at 10%, 0.69 at 1%; finish +7.8; 47819 teams, 34 slates |
 | not credited | AM | 0.77 (0.67-0.90) at 10%, 0.73 at 1%; finish +6.4; 18887 teams, 24 slates |
-| not credited | PM | 0.66 (0.57-0.76) at 10%, 0.62 at 1%; finish +9.7; 27278 teams, 33 slates |
+| not credited | PM | 0.71 (0.61-0.83) at 10%, 0.67 at 1%; finish +8.7; 28932 teams, 34 slates |
 
 ## 5. Draft verdicts (not yet written to decision_register.csv)
 
-MONEY rests on the top-10% lift (the faster reader); the top-1% lift and finish are beside it in section 3 as the long-run and steadier checks. 33 cells tested; 19 show a lean or rule and 8 a rule. By chance alone about 13 would show a lean (40% of cells: 80%+ of resamples one side happens 40% of the time with nothing there) and about 2 a rule (90% range clear of 1.0 and the check slates agreeing, about 5%). So a lone lean is weak; a rule, or a lean that agrees with the points verdict, counts.
+MONEY rests on the top-10% lift (the faster reader); the top-1% lift and finish are beside it in section 3 as the long-run and steadier checks. 33 cells tested; 19 show a lean or rule and 6 a rule. By chance alone about 13 would show a lean (40% of cells: 80%+ of resamples one side happens 40% of the time with nothing there) and about 2 a rule (90% range clear of 1.0 and the check slates agreeing, about 5%). So a lone lean is weak; a rule, or a lean that agrees with the points verdict, counts.
 A lean or rule counts only if it survives the price-split check (section 3b); MONEY below is the verdict that survives.
 
 | Decision | Status | POINTS | MONEY before the check | MONEY (survives the check) | Top-10% lift (80% range), all slates | Recommendation |
@@ -529,11 +530,11 @@ A lean or rule counts only if it survives the price-split check (section 3b); MO
 | beneficiary-round6:sat | candidate | Round-6 AM picks over their ADP round band: teammate tagged and played +2.5 (31, not enough yet), sat +1.7 (36, not enough yet), no tagged teammate -0.5 (299) | no lean | no lean | 1.08 (0.93-1.30) | not enough on either side yet |
 | beneficiary-round6:played | candidate | Round-6 AM picks over their ADP round band: teammate tagged and played +2.5 (31, not enough yet), sat +1.7 (36, not enough yet), no tagged teammate -0.5 (299) | no lean | no lean | 1.03 (0.85-1.26) | not enough on either side yet |
 | pm-t5-beneficiary | adopted | LEAN (listed) | no lean | no lean | 1.01 (0.91-1.14) | keep on points; money not settled |
-| ownership-tiebreak-t5 | adopted (provisional, 2026-11-09; money RULE; the shadow decides) | On money's definition (within 2 projected points, drafted% 10+ apart): AM primary -3.7/pair (195, LEAN against, RULE numbers, check pending); PM -0.3 (577, no lean); every slate -0.5 (1084, no lean). The -4 to -7 was your board's ownership moves (takes), not this definition (money_points.md). Known price, not a reason to drop it: AM -3.7 (check pending); the button's realized order in sample AM +5.0 (105, RULE +), PM -2.8 (91, LEAN against) | no lean | no lean | 0.93 (0.78-1.09) | drop on points unless money clears its bar |
-| leverage-t2-t4 | candidate | On money's definition: not enough yet (AM 13 pairs, PM 6: T2-T3 are near 100% drafted, so 10-point drafted gaps are rare); in the shadow from 2026-11-10 | LEAN for | LEAN for | 2.11 (1.72-2.67) | watch: money leans for |
+| ownership-tiebreak-t5 | adopted (provisional, 2026-11-09; money RULE; the shadow decides) | On money's definition (within 2 projected points, drafted% 10+ apart): AM primary -3.7/pair (195, LEAN against, RULE numbers, check pending); PM -0.3 (577, no lean); every slate -0.5 (1084, no lean). The -4 to -7 was your board's ownership moves (takes), not this definition (money_points.md). Known price, not a reason to drop it: AM -3.7 (check pending); the button's realized order in sample AM +5.0 (105, RULE +), PM -2.8 (91, LEAN against) | no lean | no lean | 0.94 (0.80-1.10) | drop on points unless money clears its bar |
+| leverage-t2-t4 | candidate | On money's definition: not enough yet (AM 13 pairs, PM 6: T2-T3 are near 100% drafted, so 10-point drafted gaps are rare); in the shadow from 2026-11-10 | LEAN for | LEAN for | 1.91 (1.50-2.51) | watch: money leans for |
 | pm-t2-adp-etr2 | adopted (provisional; best of 8) | LEAN (listed) | LEAN against | LEAN against | 0.86 (0.72-1.03) | keep on points; money leans against (watch) |
 | pm-t4-adp-etr2 | adopted (provisional; best of 8) | LEAN (listed) | no lean | no lean | 1.07 (0.61-1.79) | keep on points; money not settled |
-| pm-t5-adp-value | adopted | RULE | RULE for | no lean | 1.22 (1.04-1.41) | keep on points; money not settled |
+| pm-t5-adp-value | adopted | RULE | LEAN for (deciles: RULE for) | no lean | 1.20 (1.03-1.39) | keep on points; money not settled |
 | one-tier-cap | adopted | LEAN (both windows) | RULE against | RULE against | 0.75 (0.64-0.88) | rethink: money RULE against it |
 | pm-middle-takes | candidate | LEAN (single window) | LEAN against | LEAN against | 0.86 (0.76-0.99) | keep on points; money leans against (watch) |
 | pm-t2-other-reads | candidate | LEAN (single window) | LEAN for | LEAN for | 1.27 (1.04-1.59) | keep: points and money agree |
@@ -541,4 +542,6 @@ A lean or rule counts only if it survives the price-split check (section 3b); MO
 | live-moves | candidate | not enough yet (3 nights) | not enough (saves after lock on 3 nights) | not enough | - | not enough on either side yet |
 | swap-shuffle | candidate | not enough yet (155 credited swaps of 268; 12 nights) | not enough (about 100 swaps; section 3f has the dollars) | not enough | - | not enough on either side yet |
 | swap-ownership-order | adopted as the swap board default (leverage); under contest test against spread | not enough yet: lowest first -0.8/swap against projection only, highest first +0.4 (155 swaps, 10 nights) | not enough (about 100 swaps; section 3f has the dollars) | not enough | - | not enough on either side yet |
+
+Verdicts that change on ten price groups: pm-t5-adp-value (LEAN for on five, RULE for on ten).
 

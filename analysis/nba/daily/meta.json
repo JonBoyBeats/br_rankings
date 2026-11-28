@@ -2138,5 +2138,34 @@
   "swap": null,
   "on": null,
   "orders": 5
+ },
+ "2026-11-27_fri_main.csv": {
+  "lock": "2026-11-27T23:52:00+00:00",
+  "adp_am_at": "2026-11-27T11:23:09+00:00",
+  "adp_etr_at": null,
+  "adp_close_at": "2026-11-27T23:23:08+00:00",
+  "morning_through": "2026-11-25",
+  "etr_first": null,
+  "etr_last": null,
+  "etr_pm": null,
+  "adp_pm_at": "2026-11-27T23:23:08+00:00",
+  "am": null,
+  "pm": null,
+  "gist": true,
+  "cuts": {
+   "am_by": "2026-11-27T12:00:00-08:00",
+   "am_by_from": "noon (no AM draft found)",
+   "close": "2026-11-27T23:52:00+00:00",
+   "swaps_at": "2026-11-28T00:00:00+00:00",
+   "seen": {
+    "am": [],
+    "pm": [],
+    "exp": [],
+    "swap": []
+   }
+  },
+  "swap": null,
+  "on": null,
+  "orders": 0
  }
 }

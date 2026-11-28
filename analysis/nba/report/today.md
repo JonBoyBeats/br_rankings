@@ -1,22 +1,22 @@
-# NBA morning report, Friday 11/27
+# NBA morning report, Saturday 11/28
 
-*Last night: Wednesday 11/25's main slate.*
+*Last night: Friday 11/27's main slate.*
 
 *The standing rules and the words this report uses: [the rulebook](rulebook.md). Results over time: the Results page (nba_results.html).*
 
 ## Front page
 
-Last night's main slate had 8 games, 3 of them blowouts (NY by 19 over CLE; GS by 19 over SAC; MEM by 18 over LAC). The biggest nights against ETR's number among drafted players: Jaden McDaniels 28 points over; Deni Avdija 24 points over; Josh Hart 23 points over. Something in the pipeline needs a look: Contests: none listed for 2026-11-26; Results: no daily record for 2026-11-26 (newest 2026-11-25): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-26 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play ready 3:32am; Q-tags polled 10:24am. Today: Fri Main, lock 3:52 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
+Last night's main slate had 11 games, 4 of them blowouts (TOR by 24 over BKN; PHI by 24 over IND; POR by 22 over GSW; DET by 15 over MIL). The biggest nights against ETR's number among drafted players: Cooper Flagg 37 points over; Immanuel Quickley 25 points over; Ayo Dosunmu 21 points over. Something in the pipeline needs a look: ETR: none on file for 2026-11-27; Today's inputs: our Proj ready 11:24pm; chance to play NOT READY (due 4:30am); Q-tags polled 11:23pm. Today: Sat Main, lock 1:52 PM PT, 6-drafter pods. (The written front page comes with the morning report; this is the automatic summary.)
 
 ## T1
 
 **T1, the elite.** To the ADP ladder's first natural break. Morning: our projection; afternoon: ETR (rounded to whole points, ADP breaking ties). A Questionable player here drops to the top of T2.
 
-**How the night went.** ADP and the projection agreed on every pair here last night.
+**How the night went.** Morning: ADP and our projection split 3 pairs; the night sided with our projection on 2, and you sided with our projection on 0.
 
 **Player recap**, in the button's order.
 
-- **Sengun**: Over by 8 (49.7 vs ETR 41.5): 11 ast (about 7 usual for his minutes), no steals or blocks.
+- **Wembanyama**: Over by 7 (63.2 vs our usual 56.3): 35 min (usual 29), 25 pts on 10-25 FG, 2-5 3s.
 
 **Contest view.** No contest data for this tier last night.
 
@@ -24,7 +24,7 @@ Last night's main slate had 8 games, 3 of them blowouts (NY by 19 over CLE; GS b
 
 **T2, the stars.** ADP to pick 15 (one tier up when the projection puts a player two or more tiers higher). Straight ADP in both windows. The turns are where your share differs from the field's.
 
-**How the night went.** Morning: ADP and our projection split 15 pairs; the night sided with our projection on 9, and you sided with our projection on 0. Afternoon: ADP and ETR split 12 pairs; the night sided with ETR on 9, and you sided with ETR on 0.
+**How the night went.** Morning: ADP and our projection split 10 pairs; the night sided with our projection on 5, and you sided with our projection on 0.
 
 **Your moves.**
 
@@ -32,13 +32,12 @@ No moves against the button here last night.
 
 **Player recap**, in the button's order.
 
-- **Wembanyama**: Over by 15 (73.7 vs ETR 59.0): 44 pts on 17-30 FG, 3-9 3s, 35 min (usual 29), 1 stl + 2 blk.
-- **Brunson**: Under by 7 (28.1 vs ETR 34.8): 19 pts on 6-22 FG, 2-8 3s, ETR had him below his usual (35 vs 39).
-- **Avdija**: Over by 24 (61.9 vs ETR 37.4): 33 pts on 11-21 FG, 5-8 3s, 12 reb (about 7 usual for his minutes), ETR had him below his usual (37 vs 42).
-- **Mitchell**: Over by 20 (56.8 vs ETR 36.6): 4 stl + 2 blk, 30 pts on 12-24 FG, 1-7 3s.
-- **Jerome**: Over by 13 (48.5 vs ETR 35.7): 4 stl + 1 blk, 25 min (usual 29) in a 18-point blowout.
-- **Sabonis**: Over by 16 (50.0 vs ETR 34.5): 27 pts on 8-9 FG, 1-1 3s, 37 min (usual 30), 10 reb (about 15 usual for his minutes).
-- **Herro**: Over by 8 (41.9 vs ETR 34.1): 37 min (usual 31), 3 stl + 0 blk, 5 turnovers.
+- **Towns**: Under by 8 (37.0 vs our usual 44.7): 10 reb (about 14 usual for his minutes).
+- **Flagg**: Over by 37 (79.4 vs our usual 42.1): 5 stl + 4 blk, 42 min (usual 32), 34 pts on 13-27 FG, 1-4 3s.
+- **Johnson**: Over by 7 (50.9 vs our usual 43.7): 3 ast (about 8 usual for his minutes).
+- **Brunson**: Over by 7 (46.6 vs our usual 39.6): 40 min (usual 34), 3 stl + 0 blk.
+- **Maxey**: Under by 19 (21.2 vs our usual 40.1): 29 min (usual 35) in a 24-point blowout, 14 pts on 3-13 FG, 0-5 3s, no steals or blocks.
+- **Murray**: Over by 9 (50.5 vs our usual 41.8): 36 pts on 12-20 FG, 3-6 3s, 1 ast (about 6 usual for his minutes).
 
 **Contest view.** No contest data for this tier last night.
 
@@ -46,7 +45,7 @@ No moves against the button here last night.
 
 **T3, the middle.** ADP to pick 22. Morning: straight ADP; afternoon: ETR (rounded, ADP breaking ties).
 
-**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 10 times out of 18 in the morning; ETR's pick scored more 3 times out of 12 in the afternoon.
+**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 1 times out of 5 in the morning.
 
 **Your moves.**
 
@@ -54,9 +53,9 @@ No moves against the button here last night.
 
 **Player recap**, in the button's order.
 
-- **Miller**: Over by 11 (45.1 vs ETR 34.2): 35 pts on 13-25 FG, 4-9 3s.
-- **Clingan**: Under by 12 (20.6 vs ETR 32.5): 21 min (usual 27) with 6 fouls.
-- **McDaniels**: Over by 28 (57.5 vs ETR 30.0): 32 pts on 11-15 FG, 4-5 3s, 10 reb (about 6 usual for his minutes), ETR had him below his usual (30 vs 34).
+- **Thompson**: Under by 8 (27.2 vs our usual 35.6): 26 min (usual 31) in a 15-point blowout, 0 stl + 1 blk.
+- **Jerome**: Under by 18 (20.7 vs our usual 39.1): no steals or blocks.
+- **Paul George**: Under by 23 (13.1 vs our usual 36.4): 8 pts on 3-8 FG, 2-6 3s, 6 turnovers, 1 ast (about 4 usual for his minutes).
 
 **Contest view.** No contest data for this tier last night.
 
@@ -64,7 +63,7 @@ No moves against the button here last night.
 
 **T4, to pick 30.** ADP to pick 30. Morning: straight ADP; afternoon: ETR (rounded, ADP breaking ties).
 
-**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 4 times out of 6 in the morning; ETR's pick lost all 3 in the afternoon.
+**How the night went.** Last night, when our projection or ETR disagreed with ADP about two close players here, our projection's pick scored more 4 times out of 7 in the morning.
 
 **Your moves.**
 
@@ -72,12 +71,12 @@ No moves against the button here last night.
 
 **Player recap**, in the button's order.
 
-- **Ball**: Over by 8 (39.4 vs ETR 31.3): ETR had him below his usual (31 vs 37).
-- **Garland**: Under by 11 (19.6 vs ETR 30.8): 12 pts on 5-12 FG, 2-6 3s, 29 min (usual 33) in a 18-point blowout.
-- **Hartenstein**: Over by 11 (41.2 vs ETR 30.1): 31 min (usual 25), 16 reb (about 13 usual for his minutes).
-- **Thompson**: Over by 12 (41.0 vs ETR 29.1): 36 min (usual 31).
-- **Bridges**: Under by 8 (17.6 vs ETR 25.4): 2 pts on 1-8 FG, 0-6 3s.
-- **Burries**: Under by 16 (9.1 vs ETR 25.1): 3 pts on 1-6 FG, 0-2 3s, 22 min (usual 27).
+- **Castle**: Over by 12 (47.3 vs our usual 34.8): 36 min (usual 30), 26 pts on 10-15 FG, 4-7 3s, 2 stl + 1 blk.
+- **Siakam**: Under by 19 (18.4 vs our usual 37.6): 25 min (usual 32) in a 24-point blowout, 11 pts on 3-14 FG, 0-4 3s.
+- **Herro**: Under by 9 (26.6 vs our usual 35.8): no steals or blocks.
+- **Fears**: Under by 10 (23.2 vs our usual 33.5): 11 pts on 4-14 FG, 0-4 3s, 28 min (usual 32), 3 stl + 0 blk.
+- **Irving**: scratched; swaps went to Dosunmu (265 teams, 53 points) and Williamson (131 teams, 44 points).
+- **Williamson**: Over by 7 (43.9 vs our usual 37.1): 25 pts on 11-15 FG, 0-2 3s.
 
 **Contest view.** No contest data for this tier last night.
 
@@ -87,8 +86,9 @@ No moves against the button here last night.
 
 **Player recap**, in the button's order.
 
-- **Lillard**: Over by 16 (47.1 vs ETR 31.0): 29 pts on 7-20 FG, 5-12 3s, 34 min (usual 29).
-- **Sharpe**: Over by 22 (50.3 vs ETR 28.0): 3 stl + 2 blk, 31 min (usual 24), 14 reb (about 10 usual for his minutes).
+- **Ball**: scratched; swaps went to Dosunmu (163 teams, 53 points) and Williamson (111 teams, 44 points).
+- **Okongwu**: Under by 16 (17.8 vs our usual 34.3): 4 pts on 2-10 FG, 0-7 3s.
+- **Quickley**: Over by 25 (59.0 vs our usual 33.8): 14 ast (about 7 usual for his minutes), 10 reb (about 4 usual for his minutes), 38 min (usual 33).
 
 **Contest view.** No contest data for this tier last night.
 
@@ -96,17 +96,14 @@ No moves against the button here last night.
 
 **Last night's Questionable players at the lock.**
 
-- **Victor Wembanyama** (Questionable): morning T2, #3 on the button; afternoon T2, #3 on the button; played: 74 points against a projection of 66.
-- **Karl-Anthony Towns** (Questionable): morning T2, #4 on the button; played: 44 points against a projection of 46.
-- **Yaxel Lendeborg** (Questionable): morning T3, #16 on the button; afternoon T3, #17 on the button; played: 36 points against a projection of 42.
-- **Josh Hart** (Questionable): morning below the cut, #49 on the button; played: 49 points against a projection of 27.
-- **Jalen Smith** (Questionable): morning T5, #35 on the button; afternoon below the cut, #49 on the button; sat; swaps went to Podziemski (30) and Mitchell (34).
-- **Grayson Allen** (Questionable): morning below the cut, #60 on the button; sat; swaps went to no credited swaps.
-- **Jalen Brunson** (Questionable): afternoon T2, #5 on the button; played: 28 points against a projection of 41.
+- **Joel Embiid** (Questionable): morning T3, #19 on the button; played: 40 points against a projection of 35.
+- **Austin Reaves** (Questionable): morning below the cut, #46 on the button; played: 25 points against a projection of 32.
+- **Jusuf Nurkic** (Questionable): morning T5, #40 on the button; played: 30 points against a projection of 34.
+- **LaMelo Ball** (Questionable): morning T5, #33 on the button; sat; swaps went to Dosunmu (53) and Williamson (44).
 
 **Your Q moves.** None last night.
 
-**Today's Questionable players.** Karl-Anthony Towns (T2 on the ladders, 48% to play): if he sits, Josh Hart, Mikal Bridges; Joel Embiid (T4 on the ladders, 76% to play): if he sits, VJ Edgecombe, Anfernee Simons; LaMelo Ball (T4 on the ladders, 63% to play): if he sits, Ayo Dosunmu, Rudy Gobert; Austin Reaves (T5 on the ladders, 62% to play): if he sits, Walker Kessler.
+**Today's Questionable players.** Anthony Black (T3 on the ladders, 56% to play): if he sits, Wendell Carter Jr., Jalen Suggs, Tristan da Silva; Steven Adams (T5 on the ladders, 52% to play): if he sits, Fred VanVleet, Jabari Smith Jr., Marcus Smart.
 
 ## Back page
 
@@ -114,11 +111,11 @@ No moves against the button here last night.
 
 **Our morning projection against ETR's final.** Last night isn't graded (no Lock AM before ETR's first file). Season: 2.18 points apart on average (against ADP), correlation 0.77, 26% 3+ apart (22 slates).
 
-**ETR's final against the box score.** Last night: +2.52 on average, off by 7.4 a player. Season: +0.35 on average, off by 7.7 (4314 player-nights).
+**ETR's final against the box score.** Season: +0.35 on average, off by 7.7 (4314 player-nights).
 
 **Gallagher's Bad-matchup arrows** (published before your lock). Season: 211 arrows, -1.4 against ETR's final on average, 54% under it.
 
-**Data.** Contests: none listed for 2026-11-26; Results: no daily record for 2026-11-26 (newest 2026-11-25): check the NBA daily record workflow; Swaps credited: no contests or record for 2026-11-26 yet; Today's inputs: our Proj NOT READY (due 4:30am); chance to play ready 3:32am; Q-tags polled 10:24am.
+**Data.** ETR: none on file for 2026-11-27; Today's inputs: our Proj ready 11:24pm; chance to play NOT READY (due 4:30am); Q-tags polled 11:23pm.
 
 ---
 
