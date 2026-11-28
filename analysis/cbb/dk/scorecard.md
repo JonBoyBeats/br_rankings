@@ -14,8 +14,8 @@
 | field | sim - real: cash line (top 10%) | field-2026-11-24 (2026-11-24 from 157026) | settling 5 of 7 | season 18 | +7.0 ± 6.0 (13) (+8.6 ± 5.9 (13)) | n/a | n/a | n/a | n/a |
 | pool | kept - bank, finish pct | cut-2026-11-20 (2026-11-20) | settled | last 7 | +4.4 ± 2.8 (7) | n/a | n/a | n/a | n/a |
 | pool | kept - bank, finish pct | cut-2026-11-20 (2026-11-20) | settled | season 18 | +5.7 ± 1.7 (14) | n/a | n/a | n/a | n/a |
-| fill | entered - random fills: $ (pct) | fill-2026-11-24 (2026-11-24) | settling 6 of 7 | last 7 | +21.77 ± 30.60 (7) (54 pct) | n/a | n/a | n/a | n/a |
-| fill | entered - random fills: $ (pct) | fill-2026-11-24 (2026-11-24) | settling 6 of 7 | season 18 | +24.93 ± 17.18 (14) (60 pct) | n/a | n/a | n/a | n/a |
+| fill | entered - random fills: $ (pct); % of fees | fill-2026-11-24 (2026-11-24) | settling 6 of 7 | last 7 | +21.77 ± 30.60 (7) (54 pct); +25 ± 36 (7) % of fees | n/a | n/a | n/a | n/a |
+| fill | entered - random fills: $ (pct); % of fees | fill-2026-11-24 (2026-11-24) | settling 6 of 7 | season 18 | +24.93 ± 17.18 (14) (60 pct); +47 ± 30 (14) % of fees | n/a | n/a | n/a | n/a |
 | late swap | in - out, DK pts | swap-2026-11-24 (2026-11-24) | settling 6 of 7 | last 7 | n/a | n/a | n/a | n/a | n/a |
 | late swap | in - out, DK pts | swap-2026-11-24 (2026-11-24) | settling 6 of 7 | season 18 | n/a | n/a | n/a | n/a | n/a |
 | results | net $ (ROI); 20+ nights only | - | - | last 7 | +2.62 ± 60.62 (7) (+9%) | n/a | n/a | n/a | n/a |

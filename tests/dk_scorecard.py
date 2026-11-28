@@ -106,5 +106,23 @@ check("the shadow source section: aggregates, the not-final slate, the blend tri
       and any("-1.00" in x and "1 of 1" in x for x in _sl) and any("due at 10 graded slates (now 1)" in x for x in _sl)
       and any("the source closer on 3, ours on 2" in x for x in _sl) and any("ours MAE 0.250" in x for x in _sl) and any("hybrid" in x for x in _sl)
       and any("RotoWire (shadow): 0 graded slates" in x for x in _sl) and any("ours with a source row 175 of 305, teams 19 of 20" in x for x in _sl))
+# fill arm on a main-only night (2026-11-28): small fees, no flagship; the gap also reads as % of the night's fees
+import tempfile  # noqa: E402
+with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, newline="") as f:
+    w = csv.DictWriter(f, fieldnames=["date", "draft_group", "subset", "fees", "avg_dollars", "entered_dollars", "beat_entered"])
+    w.writeheader()
+    w.writerow({"date": "2026-12-01", "draft_group": "999001", "subset": "bank", "fees": "20.0", "avg_dollars": "15.0",
+                "entered_dollars": "18.0", "beat_entered": "0.3"})
+    w.writerow({"date": "2026-12-02", "draft_group": "999002", "subset": "bank", "fees": "0", "avg_dollars": "0",
+                "entered_dollars": "0", "beat_entered": "0.5"})
+_fe, SC.E.FILL_EVAL = SC.E.FILL_EVAL, f.name
+fa = SC.fill_arm()
+SC.E.FILL_EVAL = _fe
+os.unlink(f.name)
+check("fill arm: gap as % of fees on a main-only night, none (no division) on a zero-fee night",
+      abs(fa["999001"]["fee"] - 15.0) < 1e-9 and fa["999002"]["fee"] is None and abs(fa["999001"]["dollars"] - 3.0) < 1e-9, fa)
+cell = SC.window_cells("fill", [{"arms": {"fill": fa["999001"]}}, {"arms": {"fill": fa["999002"]}}])[0]
+check("fill cell reads with the % of fees", "% of fees" in cell and "+15 (1)" in cell, cell)
+
 print("\n%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)

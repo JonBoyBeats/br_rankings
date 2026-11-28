@@ -172,8 +172,11 @@ def fill_arm():
     out = {}
     for r in E.read(E.FILL_EVAL) if os.path.exists(E.FILL_EVAL) else []:
         if r["subset"] == "bank" and num(r.get("entered_dollars")) is not None:
-            out[str(r["draft_group"])] = {"dollars": num(r["entered_dollars"]) - num(r["avg_dollars"]),
-                                          "pct": 100.0 * (1 - num(r["beat_entered"]))}
+            gap, fees = num(r["entered_dollars"]) - num(r["avg_dollars"]), num(r.get("fees"))
+            # "fee": the gap as a share of the night's fees (2026-11-28): $0.10-$1 main-only nights read on the same
+            # scale as nights carrying $15 flagships, whose dollars otherwise swamp the mean
+            out[str(r["draft_group"])] = {"dollars": gap, "pct": 100.0 * (1 - num(r["beat_entered"])),
+                                          "fee": 100.0 * gap / fees if fees else None}
     return out
 
 
@@ -260,7 +263,7 @@ def pair_check(name, arm, slates, arms, today):
 
 
 HEAD = {"minutes": "ROTATION minutes MAE", "per-minute": "STARS points MAE", "ownership": "chalk-band MAE (off 10+)",
-        "field": "sim - real: cash line (top 10%)", "pool": "kept - bank, finish pct", "fill": "entered - random fills: $ (pct)",
+        "field": "sim - real: cash line (top 10%)", "pool": "kept - bank, finish pct", "fill": "entered - random fills: $ (pct); % of fees",
         "late swap": "in - out, DK pts", "results": "net $ (ROI); 20+ nights only"}
 
 
@@ -286,8 +289,9 @@ def window_cells(name, part):
     if name == "pool":
         return [f_ms(*agg([x["diff"] for x in xs]), fmt="%.1f", signed=True), "n/a", "n/a", "n/a", "n/a"]
     if name == "fill":
-        d, p = agg([x["dollars"] for x in xs]), agg([x["pct"] for x in xs])
-        return [f_ms(*d, fmt="%.2f", signed=True) + (" (%.0f pct)" % p[0] if p[2] else ""), "n/a", "n/a", "n/a", "n/a"]
+        d, p, fe = agg([x["dollars"] for x in xs]), agg([x["pct"] for x in xs]), agg([x.get("fee") for x in xs])
+        return [f_ms(*d, fmt="%.2f", signed=True) + (" (%.0f pct)" % p[0] if p[2] else "")
+                + ("; %s %% of fees" % f_ms(*fe, fmt="%.0f", signed=True) if fe[2] else ""), "n/a", "n/a", "n/a", "n/a"]
     if name == "late swap":
         return [f_ms(*agg([x["gain"] for x in xs]), fmt="%.1f", signed=True), "n/a", "n/a", "n/a", "n/a"]
     if name == "results":

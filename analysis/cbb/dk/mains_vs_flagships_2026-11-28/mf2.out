@@ -1,0 +1,55 @@
+== Results and variance (our real entries, standings-replayed; reconciles to eval.csv) ==
+flagship         contests 37 slates 16 entries  156 fees $ 622.35 back $ 230.55 ROI -63.0% | cash rate 28.2% | top cash $30, 2nd $30 | ROI w/o top1 -67.8% w/o top2 -72.6% | bootstrap 90% [-82%, -39%] P(ROI>0) 0.00
+                 slates in profit 4 of 16; median slate ROI -76%; mean finish pct 49.8; fee range $0.1–$15.0; entries/contest 4.2
+main             contests 32 slates 13 entries  576 fees $ 261.00 back $ 391.65 ROI +50.1% | cash rate 24.8% | top cash $125, 2nd $80 | ROI w/o top1 +2.2% w/o top2 -28.5% | bootstrap 90% [-39%, +153%] P(ROI>0) 0.80
+                 slates in profit 4 of 13; median slate ROI -52%; mean finish pct 52.5; fee range $0.1–$1.0; entries/contest 18.0
+qualifier/small  contests 15 slates  9 entries   18 fees $ 198.00 back $ 444.00 ROI +124.2% | cash rate 11.1% | top cash $222, 2nd $222 | ROI w/o top1 +12.1% w/o top2 -100.0% | bootstrap 90% [-100%, +407%] P(ROI>0) 0.83
+                 slates in profit 2 of 9; median slate ROI -100%; mean finish pct 28.9; fee range $1.0–$20.0; entries/contest 1.2
+
+== Contest structure (per contest, mean) ==
+flagship         field size median 313 (range 114–713) | paid share 22.8% | 1st prize / pool 20.4% | pool/fees 0.88 | names: ['CBB $1.5K Pull Up Jumper', 'CBB $100 And-One (Early)', 'CBB $100 Quarter Jukebox [Just $0.25!]', 'CBB $100 Quarter Jukebox [Just $0.25!] (Early)']
+main             field size median 1189 (range 831–1646) | paid share 23.8% | 1st prize / pool 10.3% | pool/fees 0.86 | names: ['CBB $1.25K And-One', 'CBB $1.5K And-One', 'CBB $100 Dime Time [Just $0.10!]', 'CBB $100 Dime Time [Just $0.10!] (Early)']
+qualifier/small  field size median 10 (range 7–95) | paid share 5.7% | 1st prize / pool 85.3% | pool/fees 1.24 | names: ['CBB $100 And-One', 'CBB $100 Buzzer Beater', 'CBB $1K Pull Up Jumper [$200 to 1st]', 'CBB $250 High Five [Single Entry]']
+
+== Construction: us vs the field (per lineup; field = 400 sampled other entries per contest) ==
+flagship (us n=150, field n=10419)
+   own_sum    us   261.18 field   261.92 | us-field per slate -11.48 ± 7.73 (5/16 +)
+   sub10      us     1.30 field     1.40 | us-field per slate +0.16 ± 0.16 (9/16 +)
+   chalk15    us     5.69 field     5.86 | us-field per slate -0.36 ± 0.20 (5/16 +)
+   sal_left   us    76.00 field   167.12 | us-field per slate -91.77 ± 17.54 (2/16 +)
+   team_max   us     2.59 field     2.36 | us-field per slate +0.32 ± 0.13 (11/16 +)
+   game_max   us     3.51 field     3.35 | us-field per slate +0.26 ± 0.16 (11/16 +)
+   stack_2_1  us     1.00 field     1.00 | us-field per slate +0.00 ± 0.00 (3/16 +)
+   stack_3_2  us     0.87 field     0.76 | us-field per slate +0.18 ± 0.04 (15/16 +)
+   proj       us   202.51 field   191.51 | us-field per slate +12.84 ± 1.57 (15/16 +)
+   our lineups duplicated by another entry 3.0% | pairwise shared players among our entries 3.64/8 | max player exposure 86% | distinct/entries 152/156
+main (us n=543, field n=12439)
+   own_sum    us   210.76 field   223.78 | us-field per slate -8.61 ± 4.80 (4/13 +)
+   sub10      us     1.92 field     1.79 | us-field per slate +0.18 ± 0.16 (7/13 +)
+   chalk15    us     5.31 field     5.41 | us-field per slate -0.10 ± 0.13 (5/13 +)
+   sal_left   us    89.87 field   159.10 | us-field per slate -82.67 ± 16.03 (1/13 +)
+   team_max   us     2.50 field     2.29 | us-field per slate +0.21 ± 0.09 (10/13 +)
+   game_max   us     3.30 field     3.14 | us-field per slate +0.23 ± 0.15 (9/13 +)
+   stack_2_1  us     1.00 field     1.00 | us-field per slate +0.00 ± 0.00 (2/13 +)
+   stack_3_2  us     0.79 field     0.68 | us-field per slate +0.11 ± 0.02 (13/13 +)
+   proj       us   205.49 field   191.19 | us-field per slate +12.98 ± 1.64 (13/13 +)
+   our lineups duplicated by another entry 1.4% | pairwise shared players among our entries 3.29/8 | max player exposure 73% | distinct/entries 573/576
+qualifier/small (us n=18, field n=424)
+   own_sum    us   251.54 field   305.87 | us-field per slate -89.96 ± 22.65 (1/9 +)
+   sub10      us     1.22 field     0.85 | us-field per slate +0.68 ± 0.43 (4/9 +)
+   chalk15    us     5.33 field     6.45 | us-field per slate -1.32 ± 0.41 (2/9 +)
+   sal_left   us   133.33 field   183.73 | us-field per slate -34.51 ± 44.17 (4/9 +)
+   team_max   us     2.00 field     2.44 | us-field per slate -0.06 ± 0.24 (4/9 +)
+   game_max   us     3.06 field     3.54 | us-field per slate +0.05 ± 0.41 (4/9 +)
+   stack_2_1  us     1.00 field     1.00 | us-field per slate +0.00 ± 0.00 (0/9 +)
+   stack_3_2  us     0.78 field     0.87 | us-field per slate +0.17 ± 0.16 (6/9 +)
+   proj       us   195.59 field   184.43 | us-field per slate +6.09 ± 2.65 (7/9 +)
+   our lineups duplicated by another entry 0.0% | pairwise shared players among our entries 1.50/8 | max player exposure 67% | distinct/entries 18/18
+
+== Pick method era: before vs from 11-24 (joint fill for flagships from 11-24) ==
+flagship         pre 11-24 contests 25 slates 10 entries 128 ROI -65% w/o top1 -74% finish pct 49.5
+flagship         11-24 on  contests 12 slates  6 entries  28 ROI -61% w/o top1 -70% finish pct 51.1
+main             pre 11-24 contests 20 slates  9 entries 336 ROI +82% w/o top1 +1% finish pct 48.0
+main             11-24 on  contests 12 slates  4 entries 240 ROI +4% w/o top1 -19% finish pct 58.9
+qualifier/small  pre 11-24 contests 10 slates  4 entries  13 ROI -100% w/o top1 -100% finish pct 22.4
+qualifier/small  11-24 on  contests  5 slates  5 entries   5 ROI +344% w/o top1 +122% finish pct 45.7
