@@ -1,0 +1,10 @@
+rows 13199 graded slates 16 ; last 7: 2026-11-23_157021, 2026-11-24_157024, 2026-11-24_157026, 2026-11-25_157293, 2026-11-25_157295, 2026-11-26_157380, 2026-11-26_157382
+team+big (live form)     all    raw MAE 11.79 -> 11.49 gain +0.30 (2xSE 0.20) better 13/16 off10 47.7%->44.5% PASS
+team+big (live form)     last 7 raw MAE 12.37 -> 12.31 gain +0.06 (2xSE 0.23) better 5/7 off10 48.0%->47.5% fails
+team+big+Q (candidate)   all    raw MAE 11.79 -> 11.21 gain +0.58 (2xSE 0.40) better 13/16 off10 47.7%->43.0% PASS
+team+big+Q (candidate)   last 7 raw MAE 12.37 -> 12.02 gain +0.35 (2xSE 0.55) better 5/7 off10 48.0%->45.1% fails
+candidate vs team+big, last 7 (held out, chalk MAE): +0.29 ± 0.30, better 5/7
+refit on all slates (raw, players 10%+): c0 +0.95, team -1.09, big +5.35, q -22.53
+Q rows at 10%+: 46 player-contests, 8 players, 5 slates
+graded slates under the live ownership version (own-2026-11-24, from 157026): 5 of 7 (settling)
+VERDICT: FAILS (do not ship)
