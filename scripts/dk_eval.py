@@ -109,6 +109,9 @@ mirror's dk_cbb_shadow.json, scripts/dk_shadow.js):
   fieldusers analysis/cbb/dk/field_users.csv (capture only, 2026-11-24): each graded small contest's (the qualifier profile:
             10-30 entries, or a qualifier / satellite under 100) users: entries, distinct lineups, mean summed and per-player
             projected ownership, mean players under 5% projected. Nothing reads it yet. Nightly runs it.
+  fieldlineups analysis/cbb/dk/field_lineups.csv (capture only, 2026-11-28): every field entry's lineup (8 DraftKings ids,
+            slot order), rank, points and user, from each standings file with lineups, every contest type (qualifier /
+            main / flagship); the owner's entries left out. For the qualifier refit's duplication and construction. Nightly.
   qualcheck the count of real qualifier fields in field_users.csv against QUAL_REFIT_AT (10): the DK page's qualifier field
             is an assumed chalk style until then (fill_profiles_2026-11-24.md, the refit plan)
   flagjoint analysis/cbb/dk/flagship_joint.csv, nightly: each saved build's flagships filled together (joint top-1%
@@ -514,7 +517,7 @@ def nightly(a):
                 w.writerows(rows)
     if not out:
         print("  DraftKings standings: nothing new to grade")
-    for step in (fieldusers, flagjoint):        # contest profiles (2026-11-24): the qualifier fields and the flagships' record
+    for step in (fieldusers, fieldlineups, flagjoint):    # contest profiles (2026-11-24): the qualifier fields (users, 2026-11-28 their lineups) and the flagships' record
         try:
             step(a)
         except Exception as e:      # noqa: BLE001 (a side record; the grading above stands)
@@ -3239,6 +3242,62 @@ def fieldusers(a):
     qualcheck(a)
 
 
+FIELD_LINEUPS = os.path.join(DK, "field_lineups.csv")
+FIELD_LINEUPS_COLS = ["date", "draft_group", "contest_id", "contest", "contest_type", "size", "user", "rank", "points", "lineup"]
+FLAGSHIP_MIN = 1000     # field_lineups' contest_type: a contest this size or larger is a flagship
+
+
+def contest_type(c):
+    """qualifier (small_contest: the qualifier profile), flagship (FLAGSHIP_MIN+ entries) or main (the rest)."""
+    return "qualifier" if small_contest(c) else "flagship" if int(num((c or {}).get("size")) or 0) >= FLAGSHIP_MIN else "main"
+
+
+def lineup_ids(lineup, ids):
+    """A standings Lineup cell as DraftKings player ids in slot order, space-separated; a name the night record can't
+    place (or that two players share) is written as ?; an empty entry is ''."""
+    return " ".join(ids.get(nm, "?") for nm in lineup_names(lineup))
+
+
+def fieldlineups(a):
+    """Capture only (2026-11-28, the operator: the qualifier refit measures duplication and construction, not just
+    own_sum): every field entry's full lineup from each standings file whose Lineup cells are filled, in every contest
+    type (contest_type), one row per entry: user (as the public standings show it), rank, points, the 8 DraftKings ids
+    in slot order. The owner's own entries (USER) are left out; no entry ids are written. Rebuilt whole from the
+    standings on hand."""
+    mirror, out = Mirror(a.mirror), []
+    for path in sorted(glob.glob(os.path.join(STANDINGS, "contest-standings-*.csv"))):
+        cid = re.search(r"(\d+)\.csv$", path).group(1)
+        entries, _ = standings(path)
+        if not entries or not any(e["lineup"] for e in entries):
+            continue
+        rows, slate, _ = slate_for(mirror, cid)
+        c = next((x for x in (slate or {}).get("contests") or [] if str(x.get("id")) == cid), None)
+        if not rows or not c:
+            continue
+        ids, seen = {}, defaultdict(int)
+        for r in rows:
+            seen[r["name"]] += 1
+            ids[r["name"]] = r["dk_id"]
+        ids = {nm: i for nm, i in ids.items() if seen[nm] == 1}
+        kind = contest_type(c)
+        for e in entries:
+            u = re.sub(r"\s*\(\d+/\d+\)$", "", e["name"]).strip()
+            if u.lower() == USER:          # the field only: the owner's own entries are graded elsewhere
+                continue
+            out.append({"date": rows[0]["date"], "draft_group": rows[0]["draft_group"], "contest_id": cid, "contest": c.get("name"),
+                        "contest_type": kind, "size": c.get("size"), "user": u, "rank": e["rank"], "points": e["points"],
+                        "lineup": lineup_ids(e["lineup"], ids)})
+    with open(FIELD_LINEUPS, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=FIELD_LINEUPS_COLS, lineterminator="\n")
+        w.writeheader()
+        w.writerows(out)
+    kinds = defaultdict(set)
+    for r in out:
+        kinds[r["contest_type"]].add(r["contest_id"])
+    print("%d field lineups from %d contests (%s) to %s" % (len(out), len({r["contest_id"] for r in out}),
+          ", ".join("%s %d" % (k, len(v)) for k, v in sorted(kinds.items())), FIELD_LINEUPS))
+
+
 QUAL_REFIT_AT = 10      # real qualifier fields captured before the DK page's assumed chalk field (QUAL_CHALK) is refit
 
 
@@ -3533,6 +3592,8 @@ def main():
     fc.add_argument("--mirror", required=True)
     fu = sub.add_parser("fieldusers")
     fu.add_argument("--mirror", required=True)
+    flu = sub.add_parser("fieldlineups")
+    flu.add_argument("--mirror", required=True)
     sub.add_parser("qualcheck")
     sub.add_parser("owngrade")
     sub.add_parser("projgrade")
@@ -3547,7 +3608,7 @@ def main():
     r.add_argument("--sim-z", dest="sim_z", help="a dk_cbb_field.json, for the sim's draw shape (default: none)")
     a = ap.parse_args()
     os.makedirs(STANDINGS, exist_ok=True)
-    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "qualcheck": qualcheck, "owngrade": owngrade, "projgrade": projgrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab, "scorecard": scorecard}[a.cmd](a)
+    return {"nightly": nightly, "gate": gate, "tiles": tiles, "weights": weights, "readout": readout, "cutcheck": cutcheck, "audit": audit, "calnote": calnote, "calweek": calweek, "ideas": ideas, "risers": risers, "fills": fills, "platoon": platoon, "pairs": pairs, "fieldcheck": fieldcheck, "owncard": owncard, "scan": scan_grade, "projaudit": projaudit, "misses": misses, "ownaudit": ownaudit, "ownwatch": ownwatch, "swaps": swaps, "fieldusers": fieldusers, "fieldlineups": fieldlineups, "qualcheck": qualcheck, "owngrade": owngrade, "projgrade": projgrade, "ownsync": ownsync, "flagjoint": flagjoint, "lab": lab, "scorecard": scorecard}[a.cmd](a)
 
 
 if __name__ == "__main__":
