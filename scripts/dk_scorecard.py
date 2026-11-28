@@ -402,7 +402,7 @@ def pair_due(n_graded):
 # External projection sources in shadow (2026-11-28): battle-royale-research scripts/dk_source.py grades each source
 # against ours and the ruler and publishes AGGREGATES only (the sources are paid content) to the mirror's
 # dk_cbb_source_grades.json; read here from the mirror beside this checkout (MIRROR=<dir> overrides). Display only.
-SOURCE_NAMES = {"gajewski": "Gajewski (shadow)"}
+SOURCE_NAMES = {"gajewski": "Gajewski (shadow)", "rotowire": "RotoWire (shadow)"}
 BLEND_AT = 10
 
 
@@ -428,9 +428,15 @@ def source_lines(doc=None):
         g = [x for x in sl if x.get("status") == "graded"]
         pend = [x["slate"] for x in sl if x.get("status") != "graded"]
         out.append("### %s: %d graded slate%s%s" % (name, len(g), "" if len(g) == 1 else "s", ("; not final yet: " + ", ".join(pend)) if pend else ""))
+        cov = [x["coverage"] for x in sl if isinstance(x.get("coverage"), dict)]
+        if cov:
+            out += ["", "Coverage (only covered players are graded; a player the source leaves out is not a zero): " + "; ".join(
+                "%s ours with a source row %d of %d, teams %d of %d" % (x["slate"], c["ours_matched"], c["lock_players"], c["teams_covered"], c["teams"])
+                for x, c in ((x, x["coverage"]) for x in sl if isinstance(x.get("coverage"), dict))) + "."]
         if g:
             out += ["", "| Headline | Ours | %s | Ruler | %s − ours | %s better on | rows |" % (name, name, name), "|---|---|---|---|---|---|---|"]
-            for k, lab in (("rot_min", HEAD["minutes"]), ("stars_pts", HEAD["per-minute"]), ("rot_pts", "ROTATION points MAE")):
+            for k, lab in (("rot_min", HEAD["minutes"]), ("stars_pts", HEAD["per-minute"]), ("rot_pts", "ROTATION points MAE"),
+                           ("all_pts", "points MAE, every covered player"), ("all_min", "minutes MAE, every covered player")):
                 xs = [x[k] for x in g if x.get(k) and x[k].get("ours") is not None and x[k].get("source") is not None]
                 d_ = [x["source"] - x["ours"] for x in xs]
                 out.append("| %s | %s | %s | %s | %s | %d of %d | %d |" % (lab, f_ms(*agg([x["ours"] for x in xs])), f_ms(*agg([x["source"] for x in xs])),
@@ -474,8 +480,8 @@ def source_lines(doc=None):
                                f_ms(*agg([x["source"]["mae"] for x in ow])), f_ms(*agg([x["ours"]["mae"] for x in ow])),
                                f_ms(*agg([x["source"]["off10"] for x in ow])), f_ms(*agg([x["ours"]["off10"] for x in ow])),
                                f_ms(*agg([x["conc_source"] for x in ow]), fmt="%.1f", signed=True), f_ms(*agg([x["conc_ours"] for x in ow]), fmt="%.1f", signed=True)))
-        out += ["", "%s blend test (ours vs the source vs a held-out blend weight; a hybrid of the source's minutes x our points per minute; a "
-                "held-out minutes-only blend weight; projection and ownership by salary tier): due at %d graded slates "
+        out += ["", "%s blend test (ours vs each source vs held-out blend weights of ours and the sources; a hybrid of the source's minutes x "
+                "our points per minute; a held-out minutes-only blend weight; projection and ownership by salary tier, on covered players): due at %d graded slates "
                 "(now %d)%s." % (name, BLEND_AT, len(g), " — DUE NOW" if len(g) >= BLEND_AT else ""), ""]
     return out
 

@@ -97,11 +97,14 @@ _doc = {"sources": {"gajewski": {"slates": [
      "disagree": {"below $7k": {"n": 10, "source_closer": 0.6, "mae_ours_minus_source": 0.5}, "$7k+": {"n": 0}},
      "min_disagree": {"below $7k": {"n": 5, "source_closer": 3, "ours_closer": 2, "mae_ours_minus_source": 1.0}, "$7k+": {"n": 0}},
      "ppm": {"below $7k": {"n": 40, "mae_ours": 0.25, "mae_source": 0.27, "bias_ours": -0.05, "bias_source": -0.02}, "$7k+": {"n": 0}}},
-    {"slate": "2026-11-28_157555", "status": "not final"}]}}}
+    {"slate": "2026-11-28_157555", "status": "not final"}]},
+    "rotowire": {"slates": [{"slate": "2026-11-27_157545", "status": "not final",
+                 "coverage": {"ours_matched": 175, "lock_players": 305, "teams_covered": 19, "teams": 20, "teams_missing": ["STMRY"]}}]}}}
 _sl = SC.source_lines(_doc)
 check("the shadow source section: aggregates, the not-final slate, the blend trigger",
       any("Gajewski (shadow): 1 graded slate; not final yet: 2026-11-28_157555" in x for x in _sl)
       and any("-1.00" in x and "1 of 1" in x for x in _sl) and any("due at 10 graded slates (now 1)" in x for x in _sl)
-      and any("the source closer on 3, ours on 2" in x for x in _sl) and any("ours MAE 0.250" in x for x in _sl) and any("hybrid" in x for x in _sl))
+      and any("the source closer on 3, ours on 2" in x for x in _sl) and any("ours MAE 0.250" in x for x in _sl) and any("hybrid" in x for x in _sl)
+      and any("RotoWire (shadow): 0 graded slates" in x for x in _sl) and any("ours with a source row 175 of 305, teams 19 of 20" in x for x in _sl))
 print("\n%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)
