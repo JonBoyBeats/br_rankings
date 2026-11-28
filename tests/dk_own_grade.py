@@ -79,9 +79,23 @@ by = {(r["contest_id"], r["name"]): r for r in r1}
 check("ownsync: once every game is revealed, each player's G + UTIL ownership is logged with the contest's entries and our projection",
       by.get(("198000111", "A One"), {}).get("own_actual") == 40 and by[("198000111", "A One")]["entries"] == 7 and by[("198000111", "D Four")]["own_proj"] == "15"
       and by[("198000111", "D Four")]["own_raw"] == "17"
-      and len([r for r in r1 if r["contest_id"] == "198000111"]) == 4, r1)
-check("ownsync: a file added at the same moment as a whole one is logged too (its own players only)",
-      [r["name"] for r in r1 if r["contest_id"] == "198000222"] == ["A One"] and by[("198000222", "A One")]["entries"] == 4, r1)
+      and len([r for r in r1 if r["contest_id"] == "198000111"]) == 5 and by[("198000111", "B Two")]["own_actual"] == 0.0, r1)
+check("ownsync: a file added at the same moment as a whole one is logged too (every projected player; undrafted at 0, 2026-11-28)",
+      [r["name"] for r in r1 if r["contest_id"] == "198000222"] == ["A One", "B Two", "C Three", "D Four", "E Five"]
+      and by[("198000222", "A One")]["entries"] == 4 and by[("198000222", "A One")]["own_actual"] == 50
+      and all(by[("198000222", nm)]["own_actual"] == 0.0 for nm in ("B Two", "C Three", "D Four", "E Five")), r1)
+
+# 2b. complete lineups: ownership is the lineup count / entries, not the Player section (which can list a two-slot
+#     player once, 2026-11-28)
+_o = io.StringIO()
+_w = csv.writer(_o)
+_w.writerow(["Rank", "EntryId", "EntryName", "TimeRemaining", "Points", "Lineup", "", "Player", "Roster Position", "%Drafted", "FPTS"])
+_lu = ["F P1 F P2 F P3 G P4 G P5 G P6 UTIL P7 UTIL P8", "F P1 F P2 F P3 G P4 G P5 G P6 UTIL P9 UTIL P1X"]
+for _i, _l in enumerate(_lu):
+    _w.writerow([str(_i + 1), str(2000 + _i), "u%d" % _i, "0", str(90 - _i), _l, "", "P1", "F", "50.00%", "10"])
+_e, _p = E.standings_rows(io.StringIO(_o.getvalue()))
+check("standings: complete lineups give ownership by lineup count (P1 100%, P9 50%), not the Player section's 50%",
+      _p["P1"][0] == 100.0 and _p["P9"][0] == 50.0 and abs(sum(v[0] for v in _p.values()) - 800) < 1e-9, _p)
 r2, _ = E.ownsync_rows(whole, rec, have)
 check("ownsync: a contest already logged is not appended again", not r2)
 

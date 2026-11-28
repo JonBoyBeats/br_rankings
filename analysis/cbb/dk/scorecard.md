@@ -8,8 +8,8 @@
 | minutes | ROTATION minutes MAE | proj-2026-11-25 (2026-11-25) | settling 4 of 7 | season 18 | 7.11 ± 0.22 (18) | 7.52 ± 0.74 (4) | 7.41 ± 0.56 (6)* | +0.25 ± 0.13 (4) | +0.12 ± 0.06 (6) |
 | per-minute | STARS points MAE | proj-2026-11-25 (2026-11-25) | settling 4 of 7 | last 7 | 9.96 ± 0.27 (7) | 10.16 ± 0.44 (4) | 9.86 ± 0.34 (6)* | -0.29 ± 0.30 (4) | +0.14 ± 0.13 (6) |
 | per-minute | STARS points MAE | proj-2026-11-25 (2026-11-25) | settling 4 of 7 | season 18 | 9.63 ± 0.39 (18) | 10.16 ± 0.44 (4) | 9.86 ± 0.34 (6)* | -0.29 ± 0.30 (4) | +0.14 ± 0.13 (6) |
-| ownership | chalk-band MAE (off 10+) | own-2026-11-24 (2026-11-24 from 157026) | settling 5 of 7 | last 7 | 11.82 ± 0.88 (7) (46%) | 11.25 ± 1.19 (5) (42%) | 11.93 ± 1.06 (6) (49%)* | +0.17 ± 0.22 (5) | -0.35 ± 0.27 (6) |
-| ownership | chalk-band MAE (off 10+) | own-2026-11-24 (2026-11-24 from 157026) | settling 5 of 7 | season 18 | 11.59 ± 0.60 (16) (47%) | 11.25 ± 1.19 (5) (42%) | 11.93 ± 1.06 (6) (49%)* | +0.17 ± 0.22 (5) | -0.35 ± 0.27 (6) |
+| ownership | chalk-band MAE (off 10+) | own-2026-11-24 (2026-11-24 from 157026) | settling 5 of 7 | last 7 | 12.15 ± 0.91 (7) (47%) | 11.75 ± 1.27 (5) (43%) | 12.28 ± 1.11 (6) (51%)* | +0.14 ± 0.21 (5) | -0.37 ± 0.35 (6) |
+| ownership | chalk-band MAE (off 10+) | own-2026-11-24 (2026-11-24 from 157026) | settling 5 of 7 | season 18 | 11.74 ± 0.61 (16) (47%) | 11.75 ± 1.27 (5) (43%) | 12.28 ± 1.11 (6) (51%)* | +0.14 ± 0.21 (5) | -0.37 ± 0.35 (6) |
 | field | sim - real: cash line (top 10%) | field-2026-11-24 (2026-11-24 from 157026) | settling 5 of 7 | last 7 | +11.4 ± 8.1 (5) (+13.4 ± 7.2 (5)) | n/a | n/a | n/a | n/a |
 | field | sim - real: cash line (top 10%) | field-2026-11-24 (2026-11-24 from 157026) | settling 5 of 7 | season 18 | +7.0 ± 6.0 (13) (+8.6 ± 5.9 (13)) | n/a | n/a | n/a | n/a |
 | pool | kept - bank, finish pct | cut-2026-11-20 (2026-11-20) | settled | last 7 | +4.4 ± 2.8 (7) | n/a | n/a | n/a | n/a |

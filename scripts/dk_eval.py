@@ -295,7 +295,13 @@ def standings(path):
 
 
 def standings_rows(f):
-    """standings() on an open file or a list of lines (a standings file's text from the sync repo, ownsync)."""
+    """standings() on an open file or a list of lines (a standings file's text from the sync repo, ownsync).
+
+    Ownership (2026-11-28 fix): when every entry's Lineup cell is complete (8 names; an empty, unfilled entry counts as
+    owning nobody), each player's ownership is his count in the lineups / the entries. The Player section's %Drafted is
+    kept only as the fallback (a mid-slate file with hidden slots): it lists some players drafted at two roster slots
+    once, at one slot's share (measured 2026-11-28 on the 45 standings files with complete lineups: 140 of 2,970
+    player-contests short, in 37 of the 45 contests, e.g. 0.85% for a player in 1.7% of lineups)."""
     entries, players = [], {}
     for r in csv.DictReader(f):
         if r.get("EntryId") and num(r.get("Points")) is not None:
@@ -305,7 +311,29 @@ def standings_rows(f):
             nm, pct = r["Player"].strip(), num(str(r.get("%Drafted", "")).rstrip("%"))
             prev = players.get(nm, (None, None))[0]
             players[nm] = (pct if prev is None else prev + (pct or 0), num(r.get("FPTS")))
+    lus = [lineup_names(e["lineup"]) for e in entries]
+    if entries and all(len(l) in (0, 8) for l in lus) and any(lus):
+        cnt = defaultdict(int)
+        for l in lus:
+            for nm in l:
+                cnt[nm] += 1
+        players = {nm: (100.0 * cnt.get(nm, 0) / len(entries), (players.get(nm) or (None, None))[1]) for nm in set(players) | set(cnt)}
     return entries, players
+
+
+def own_log_rows(rec, cid, players, n):
+    """own_eval rows for one contest (2026-11-28 fix): EVERY player in the night record, his real ownership from the
+    standings, 0 where the standings don't list him (nobody drafted him: a complete standings file makes that a real
+    0). Before the fix only drafted players were logged, so projected-but-undrafted players never counted as misses."""
+    rows = []
+    for r in rec:
+        if num(r.get("own")) is None:
+            continue
+        pct = (players.get(r["name"]) or (None,))[0]
+        rows.append({"date": r["date"], "draft_group": r["draft_group"], "contest_id": cid, "dk_id": r["dk_id"], "name": r["name"],
+                     "salary": r["salary"], "own_proj": r["own"], "own_actual": round(pct, 2) if pct is not None else 0.0, "entries": n,
+                     "own_raw": r.get("own_raw") or r["own"]})
+    return rows
 
 
 def lineup_names(s):
@@ -474,12 +502,7 @@ def nightly(a):
         if not lineups:
             print("  %s: no lineups read from the standings' Lineup column; the top-1%% target is skipped" % os.path.basename(path))
         if cid not in own_done:           # ownsync may have logged it from the late-swap standings already
-            for name, (pct, _) in players.items():
-                r = by_name.get(name)
-                if r and pct is not None:
-                    own_out.append({"date": r["date"], "draft_group": r["draft_group"], "contest_id": cid, "dk_id": r["dk_id"], "name": name,
-                                    "salary": r["salary"], "own_proj": r["own"], "own_actual": pct, "entries": n,
-                                    "own_raw": r.get("own_raw") or r["own"]})
+            own_out += own_log_rows(rec, cid, players, n)
         print("  graded %s (%s, %d entries): shadow %s, your entries %d" % (contest["name"], rec[0]["date"], n, "yes" if sh else "none saved", len(mine)))
     for path, cols, rows in ((EVAL, EVAL_COLS, out), (OWN_EVAL, OWN_COLS, own_out), (TEAM_EVAL, TEAM_COLS, team_out)):
         if rows:
@@ -2218,12 +2241,7 @@ def ownsync_rows(doc, rec, have):
             notes.append("%s: not every game revealed yet (%d of %d); left for the final standings" % (
                 cid, len({by_name[nm]["game"] for nm in players if nm in by_name} & played), len(played)))
             continue
-        for name, (pct, _) in players.items():
-            r = by_name.get(name)
-            if r and pct is not None:
-                rows.append({"date": r["date"], "draft_group": r["draft_group"], "contest_id": cid, "dk_id": r["dk_id"], "name": name,
-                             "salary": r["salary"], "own_proj": r["own"], "own_actual": round(pct, 2), "entries": len(entries),
-                             "own_raw": r.get("own_raw") or r["own"]})
+        rows += own_log_rows(rec, cid, players, len(entries))
         have.add(cid)
         notes.append("%s: logged %d players (%d entries)" % (cid, sum(1 for x in rows if x["contest_id"] == cid), len(entries)))
     return rows, notes
