@@ -65,6 +65,41 @@ real) ≥ 15) by chalk MAE and the share off by 10+; leave one source night out.
   rule-5 tag above is the decision at 10; the 5-night read is reported with the same numbers, labelled a first read.
 - Nothing ships from this study without a separate proposal and the operator's approval.
 
+## Amendment 2026-11-28, before any grading (0 source nights so far)
+
+Operator addition, analysis only. It's committed before any night has been graded: the run so far found 0 source
+nights (28b4485). Per-player values stay in battle-royale-research; br_rankings carries aggregates only.
+
+**Per-source comparison: which source's implied value tracks real ownership best?**
+- Sources, each taken separately: US (our lock-time `fp_dk`), GJ (Gajewski), RW (RotoWire). Value = projected DK
+  points / (salary / 1000), on the players that source covers. A source's explicit 0 counts as 0; a player it doesn't
+  list is missing, not zero.
+- Per source night and per contest (real ownership from `own_eval.csv`): the Spearman correlation with real
+  ownership of three measures:
+  - (a) the value;
+  - (b) the projection;
+  - (c) the value WITHIN salary tier. This is the real test, since ownership is mostly price-driven. Tiers are
+    dk_eval.BANDS ($6k+, $4–6k, under $4k). The Spearman is computed inside each tier and averaged, weighted by the
+    tier's player count.
+- **Fairness:** each source is compared with US on the players both cover, so coverage doesn't decide the winner.
+  The common-player n is reported.
+- **Summary:** contest Spearmans are averaged within a night, then mean ± SE over nights, all contest types together
+  and per type where a type has 3+ nights. For each measure, "leads" counts the nights where a source beats US on
+  their common players (k of n); GJ vs RW is likewise compared on their common players.
+- **Model variants:** held out exactly as Test 2 (S3 grading, leave one source night out, fit on raw). The live
+  correction plus one extra term per source (`val_us`, `val_gj`, `val_rw`), against the live correction plus the
+  mean source value (`src_val_mean`). Each variant is fit on the rows where its term exists. The gain is per night
+  against PREVIOUS (the live correction alone) on the same rows. These are context until the decision count: the
+  rule-5 tag is given to Test 2's `src_edge` only, as registered. A per-source variant can become a proposal only
+  through a separate pre-registration.
+- **Context, triangulation groups:** the ownership miss (real − our live projection, weighted by entries) by
+  triangulation group G1–G5 (and ungrouped), mean ± SE over nights. Labels are read from br_rankings
+  `analysis/cbb/dk/triangulation_labels.csv` or BRR `data/dk/cbb/sources/triangulation_*.csv` if present;
+  otherwise the run logs "pending labels".
+- **Nights rule:** unchanged. A night needs a source file and real ownership. The first read comes at 5 source
+  nights, the decision at 10. The nightly run computes it into `source_grades.json` → `value_own`; the scorecard's
+  value_own lines show it.
+
 ## Results (run 2026-11-28, after the pre-registration ed9377e)
 
 **No source night exists yet, so neither test can run: 0 nights, CONTEXT, no numbers.**
