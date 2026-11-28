@@ -450,6 +450,22 @@ def source_lines(doc=None):
                     out.append("- %s: %d players; the source closer on %.0f%%; |error| ours minus source %+.2f points" % (t, n, 100 * closer, gap))
                 else:
                     out.append("- %s: none yet" % t)
+            out += ["", "Minutes disagreements (|source − ours| ≥ 6 minutes), pooled over graded slates, who was closer on actual minutes:"]
+            for t in ("below $7k", "$7k+"):
+                ds = [x["min_disagree"][t] for x in g if x.get("min_disagree") and x["min_disagree"].get(t) and x["min_disagree"][t].get("n")]
+                n = sum(x["n"] for x in ds)
+                out.append("- %s: %d players; the source closer on %d, ours on %d; |minutes error| ours minus source %+.2f" % (
+                    t, n, sum(x["source_closer"] for x in ds), sum(x["ours_closer"] for x in ds),
+                    sum(x["mae_ours_minus_source"] * x["n"] for x in ds) / n) if n else "- %s: none yet" % t)
+            out += ["", "DK points per minute, players with 10+ actual minutes (MAE; bias = actual − projected), by tier:"]
+            for t in ("below $7k", "$7k+"):
+                ps = [x["ppm"][t] for x in g if x.get("ppm") and x["ppm"].get(t) and x["ppm"][t].get("n")]
+                if ps:
+                    out.append("- %s: ours MAE %s, bias %s | source MAE %s, bias %s | rows %d" % (
+                        t, f_ms(*agg([x["mae_ours"] for x in ps]), fmt="%.3f"), f_ms(*agg([x["bias_ours"] for x in ps]), fmt="%.3f", signed=True),
+                        f_ms(*agg([x["mae_source"] for x in ps]), fmt="%.3f"), f_ms(*agg([x["bias_source"] for x in ps]), fmt="%.3f", signed=True), sum(x["n"] for x in ps)))
+                else:
+                    out.append("- %s: none yet" % t)
             ow = [x["own"] for x in g if isinstance(x.get("own"), dict)]
             if ow:
                 out.append("")
@@ -458,7 +474,8 @@ def source_lines(doc=None):
                                f_ms(*agg([x["source"]["mae"] for x in ow])), f_ms(*agg([x["ours"]["mae"] for x in ow])),
                                f_ms(*agg([x["source"]["off10"] for x in ow])), f_ms(*agg([x["ours"]["off10"] for x in ow])),
                                f_ms(*agg([x["conc_source"] for x in ow]), fmt="%.1f", signed=True), f_ms(*agg([x["conc_ours"] for x in ow]), fmt="%.1f", signed=True)))
-        out += ["", "%s blend test (ours vs the source vs a held-out blend weight, projection and ownership by salary tier): due at %d graded slates "
+        out += ["", "%s blend test (ours vs the source vs a held-out blend weight; a hybrid of the source's minutes x our points per minute; a "
+                "held-out minutes-only blend weight; projection and ownership by salary tier): due at %d graded slates "
                 "(now %d)%s." % (name, BLEND_AT, len(g), " — DUE NOW" if len(g) >= BLEND_AT else ""), ""]
     return out
 

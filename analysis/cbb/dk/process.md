@@ -91,7 +91,15 @@ ruler would be a new file with a new id, and the old one would keep running.
 **External projection sources in shadow** (added 2026-11-28).
 - **Where they come from:** battle-royale-research `scripts/dk_source.py` grades each banked source (first: Gajewski) against ours and the ruler, and publishes aggregates to the mirror. The scorecard shows them as "External projection sources (shadow)".
 - **The source files stay private:** they are paid content, so no per-player source value is written in this public repo.
-- **The blend test** (ours vs the source vs a held-out blend weight, for projection and ownership by salary tier) is due at 10 graded slates per source. The scorecard prints "due at 10 graded slates (now N)".
+- **The blend test** is due at 10 graded slates per source. The scorecard prints "due at 10 graded slates (now N)". It compares, held out by slate, for projection and ownership by salary tier:
+  - ours;
+  - the source;
+  - a blend of the two, with a held-out weight;
+  - a hybrid: the source's minutes × our points per minute;
+  - a minutes-only blend, with a held-out weight.
+- **The shadow grades also log:**
+  - minutes disagreements of 6+ minutes (who was closer on actual minutes, by the $7k tier);
+  - points-per-minute MAE and bias for ours and the source, by tier, on players with 10+ actual minutes.
 - **Nothing feeds the live model** until the operator approves.
 
 ## Reading the scorecard
