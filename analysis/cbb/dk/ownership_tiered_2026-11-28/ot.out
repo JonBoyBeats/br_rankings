@@ -1,0 +1,75 @@
+rows 2632 (players not Out, with our ownership) on 16 slates; real ownership from 69 contests of 100+ entries
+
+## A. Tiered field-ownership model, leave one slate out (16 slates)
+chosen (crossover, blend, rescale, exponent) per fold: {(5000, 1.0, False, 1.5): 12, (5000, 1.0, True, 1.5): 1, (5000, 1.0, True, 1.0): 3}
+crossover chosen: {5000: 16}
+
+-- < $5k
+  chalk  new 16.74 ± 2.27 (16) | live 15.57 ± 2.80 (16) | raw 15.49 ± 2.80 (16) | gain vs live -1.17 ± 1.54 (16), ahead 6 | gain vs raw -1.25 ± 1.55 (16), ahead 6
+  off10  new 0.62 ± 0.06 (16) | live 0.64 ± 0.07 (16) | raw 0.64 ± 0.07 (16) | gain vs live +0.01 ± 0.06 (16), ahead 7 | gain vs raw +0.01 ± 0.06 (16), ahead 7
+  all    new 1.29 ± 0.14 (16) | live 1.12 ± 0.14 (16) | raw 1.12 ± 0.14 (16) | gain vs live -0.17 ± 0.11 (16), ahead 5 | gain vs raw -0.17 ± 0.11 (16), ahead 5
+
+-- $5-6k
+  chalk  new 9.51 ± 0.99 (16) | live 9.51 ± 0.99 (16) | raw 9.66 ± 0.96 (16) | gain vs live +0.00 ± 0.00 (16), ahead 0 | gain vs raw +0.15 ± 0.20 (16), ahead 2
+  off10  new 0.29 ± 0.06 (16) | live 0.29 ± 0.06 (16) | raw 0.29 ± 0.05 (16) | gain vs live +0.00 ± 0.00 (16), ahead 0 | gain vs raw +0.00 ± 0.02 (16), ahead 1
+  all    new 3.83 ± 0.45 (16) | live 3.83 ± 0.45 (16) | raw 3.81 ± 0.44 (16) | gain vs live +0.00 ± 0.00 (16), ahead 0 | gain vs raw -0.02 ± 0.04 (16), ahead 2
+
+-- $6-7k
+  chalk  new 8.32 ± 0.76 (16) | live 8.32 ± 0.76 (16) | raw 8.47 ± 0.75 (16) | gain vs live +0.00 ± 0.00 (16), ahead 0 | gain vs raw +0.15 ± 0.13 (16), ahead 3
+  off10  new 0.31 ± 0.06 (16) | live 0.31 ± 0.06 (16) | raw 0.32 ± 0.06 (16) | gain vs live +0.00 ± 0.00 (16), ahead 0 | gain vs raw +0.01 ± 0.02 (16), ahead 2
+  all    new 4.20 ± 0.25 (16) | live 4.20 ± 0.25 (16) | raw 4.20 ± 0.26 (16) | gain vs live +0.00 ± 0.00 (16), ahead 0 | gain vs raw +0.01 ± 0.05 (16), ahead 2
+
+-- $7k+
+  chalk  new 8.54 ± 0.81 (16) | live 8.54 ± 0.81 (16) | raw 8.51 ± 0.85 (16) | gain vs live +0.00 ± 0.00 (16), ahead 0 | gain vs raw -0.03 ± 0.10 (16), ahead 3
+  off10  new 0.34 ± 0.06 (16) | live 0.34 ± 0.06 (16) | raw 0.34 ± 0.06 (16) | gain vs live +0.00 ± 0.00 (16), ahead 0 | gain vs raw +0.00 ± 0.02 (16), ahead 2
+  all    new 5.01 ± 0.50 (16) | live 5.01 ± 0.50 (16) | raw 4.96 ± 0.51 (16) | gain vs live +0.00 ± 0.00 (16), ahead 0 | gain vs raw -0.06 ± 0.05 (16), ahead 1
+
+-- all
+  chalk  new 10.13 ± 0.68 (16) | live 9.91 ± 0.66 (16) | raw 9.97 ± 0.66 (16) | gain vs live -0.22 ± 0.30 (16), ahead 6 | gain vs raw -0.15 ± 0.33 (16), ahead 6
+  off10  new 0.38 ± 0.04 (16) | live 0.39 ± 0.04 (16) | raw 0.39 ± 0.04 (16) | gain vs live +0.01 ± 0.01 (16), ahead 9 | gain vs raw +0.01 ± 0.02 (16), ahead 10
+  all    new 2.32 ± 0.18 (16) | live 2.21 ± 0.18 (16) | raw 2.21 ± 0.18 (16) | gain vs live -0.12 ± 0.07 (16), ahead 5 | gain vs raw -0.12 ± 0.07 (16), ahead 5
+  conc   new 34.80 ± 8.70 (16) | live 18.60 ± 7.63 (16) | raw 17.80 ± 7.60 (16) | gain vs live -11.28 ± 4.75 (16), ahead 5 | gain vs raw -12.08 ± 4.89 (16), ahead 5
+
+coefficients on all slates (log(real + 0.5), ridge 1): const -3.229, sal +0.476, dkv -0.229, l1v +0.285, l3v -0.206, lmin +0.033, mavg +0.032, miya -0.284, imp +0.012, tconc +0.051, gp -0.069, p_dkv +3.459, p_l1v -1.563, p_l3v +1.228, p_lmin -0.866, p_mavg -0.791, p_miya +2.110, p_imp +0.188, p_sal -1.743
+per-slate r(field-side prediction, our raw ownership), sub-$7k: 0.94 ± 0.01 (16)
+
+## B / C. Tiered exposure: keep half the kept pool by board value + lambda x (sub-$7k fade gap below predicted field ownership)
+builds with board values and graded 100+ contests: 9
+
+-- B (today's ownership)
+  lambda chosen per fold: {1.0: 6, 2.0: 3}
+  pay  all       vs all kept        +0.174 ± 0.348 (9), ahead 6
+  pay  all       vs board top half  +0.079 ± 0.231 (9), ahead 4
+  pay  flagship  vs all kept        +0.395 ± 0.720 (9), ahead 6
+  pay  flagship  vs board top half  +0.227 ± 0.443 (9), ahead 4
+  pay  main      vs all kept        +0.067 ± 0.039 (7), ahead 5
+  pay  main      vs board top half  +0.022 ± 0.043 (7), ahead 4
+  pct  all       vs all kept        +1.01 ± 0.51 (9), ahead 7
+  pct  all       vs board top half  +0.11 ± 0.40 (9), ahead 5
+  pct  flagship  vs all kept        +1.02 ± 0.52 (9), ahead 7
+  pct  flagship  vs board top half  +0.10 ± 0.40 (9), ahead 5
+  pct  main      vs all kept        +1.36 ± 0.59 (7), ahead 6
+  pct  main      vs board top half  +0.21 ± 0.51 (7), ahead 4
+  fixed lambda 0.5 vs board top half: pct +0.18 ± 0.13 (9), ahead 6
+  fixed lambda 1.0 vs board top half: pct +0.40 ± 0.33 (9), ahead 7
+  fixed lambda 2.0 vs board top half: pct +0.33 ± 0.58 (9), ahead 4
+  fixed lambda 4.0 vs board top half: pct -0.00 ± 0.81 (9), ahead 4
+
+-- C (tiered model, A+B)
+  lambda chosen per fold: {1.0: 2, 2.0: 6, 0.5: 1}
+  pay  all       vs all kept        +0.288 ± 0.333 (9), ahead 5
+  pay  all       vs board top half  +0.193 ± 0.232 (9), ahead 6
+  pay  flagship  vs all kept        +0.617 ± 0.672 (9), ahead 5
+  pay  flagship  vs board top half  +0.450 ± 0.424 (9), ahead 6
+  pay  main      vs all kept        +0.083 ± 0.040 (7), ahead 4
+  pay  main      vs board top half  +0.038 ± 0.048 (7), ahead 5
+  pct  all       vs all kept        +0.69 ± 0.55 (9), ahead 5
+  pct  all       vs board top half  -0.22 ± 0.20 (9), ahead 2
+  pct  flagship  vs all kept        +0.69 ± 0.56 (9), ahead 5
+  pct  flagship  vs board top half  -0.23 ± 0.20 (9), ahead 2
+  pct  main      vs all kept        +0.97 ± 0.67 (7), ahead 5
+  pct  main      vs board top half  -0.18 ± 0.25 (7), ahead 2
+  fixed lambda 0.5 vs board top half: pct +0.16 ± 0.11 (9), ahead 6
+  fixed lambda 1.0 vs board top half: pct +0.23 ± 0.26 (9), ahead 4
+  fixed lambda 2.0 vs board top half: pct +0.24 ± 0.53 (9), ahead 4
+  fixed lambda 4.0 vs board top half: pct -0.23 ± 0.68 (9), ahead 2
