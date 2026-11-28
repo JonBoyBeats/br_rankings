@@ -48,3 +48,24 @@ ahead on clearly more slates than not (about 60–65%+) with a sensible mechanis
 context. Exposure ideas for G4 come later and are not part of this test.
 
 The 15% / 10% / 8 / 10 minute thresholds are fixed here and are not tuned on results.
+
+## Amendment 2026-11-28, before any grading (the coordinator, consistent with the operator's direction)
+
+Committed before the builder was run or any slate graded. Still logging only.
+
+1. **Projection recipes per group.** Minutes and ppm are graded separately (minutes MAE; ppm MAE on players with 10+
+   actual minutes), then their product (points MAE), for: US, GJ, RW; MEAN of the available sources (US included);
+   MEDIAN of the available sources (with 2 sources, the mean); the operator's COMBO; and BEST-BY-COMPONENT: per group,
+   the source whose minutes and the source whose ppm had the lowest MAE in that group on **prior** graded slates only
+   (walk-forward, never the same slate; US until a group has a prior slate), its projection = that minutes × that ppm.
+   **Selection rule:** at 10 graded source slates, the live candidate per group is the recipe with the lowest
+   held-out points MAE in that group (mean over slates ± SE, k of n), and it must clear rule 5 against US (as above).
+2. **Noise per group:** each night logs the realised |actual − proj| / proj by group (players with proj ≥ 10), beside
+   the bank's per-tier σ (`bank_noise.json`, miss / mean by salary tier), for a later per-group σ bank candidate.
+3. **G5 as play probability:** for every G5 player, each source's in/out call (in = 10+ minutes, out = under 8 or 0)
+   and whether he played (any actual minutes) are logged, so a P(plays) × full projection treatment can be fitted
+   later.
+4. **Cutoffs:** 15% / 10% stay frozen for the count. Each player's raw minutes spread and ppm spread ((max − min) / mean)
+   are logged privately so other cutoffs can be checked at 10 slates without recomputing.
+
+Per-player numbers stay in the private repo; aggregates and labels here.
