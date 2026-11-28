@@ -1,0 +1,15 @@
+{
+ "sigma_lt5": 0.891,
+ "mean_lt5": -0.016,
+ "n_lt5": 1436,
+ "sigma_5to7": 0.661,
+ "mean_5to7": -0.012,
+ "n_5to7": 1932,
+ "sigma_7plus": 0.633,
+ "mean_7plus": -0.035,
+ "n_7plus": 1222,
+ "conc_mean": 22.6,
+ "conc_sd": 28.4,
+ "conc_slates": 16,
+ "chalk_mae": 10.54
+}
