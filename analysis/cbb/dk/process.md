@@ -13,7 +13,7 @@ The rules for changing the live model, and how each change is graded. The number
 | ownership | chalk band MAE and share off by 10+ | ownership | `own_raw` |
 | field model | sim minus real cash line and top-10% line, 100+ contests | field | not logged yet |
 | pool | kept minus whole bank, mean real finish percentile | cut | not logged yet |
-| fill | entered minus random fills, dollars and percentile | fill | not logged yet |
+| fill | entered minus random fills, dollars and percentile; entered minus `fill_prev` per contest type (from 2026-11-28) | fill | `fill_prev` (Save build, from 2026-11-28) |
 | late swap | swapped minus unswapped (player in minus player out) | late_swap | not logged yet |
 | results | net dollars and return on fees | none | read over 20+ nights only |
 

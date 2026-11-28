@@ -134,5 +134,17 @@ check("fill arm: gap as % of fees on a main-only night, none (no division) on a 
 cell = SC.window_cells("fill", [{"arms": {"fill": fa["999001"]}}, {"arms": {"fill": fa["999002"]}}])[0]
 check("fill cell reads with the % of fees", "% of fees" in cell and "+15 (1)" in cell, cell)
 
+# fill proposal 1 (2026-11-28): entered minus fill_prev per contest type; the main review trigger; the 11-27 gate
+_ev = [dict(date="2026-11-29", draft_group="999101", contest_id="1", contest="CBB $15 Pull Up Jumper", entries="300", who="mine", dollars_back="30", fees="30"),
+       dict(date="2026-11-29", draft_group="999101", contest_id="1", contest="CBB $15 Pull Up Jumper", entries="300", who="fill_prev", dollars_back="10", fees="30"),
+       dict(date="2026-11-29", draft_group="999101", contest_id="2", contest="CBB $1 And-One", entries="2000", who="mine", dollars_back="5", fees="20"),
+       dict(date="2026-11-29", draft_group="999101", contest_id="2", contest="CBB $1 And-One", entries="2000", who="fill_prev", dollars_back="8", fees="20"),
+       dict(date="2026-11-20", draft_group="999100", contest_id="3", contest="CBB $1 And-One", entries="2000", who="fill_prev", dollars_back="8", fees="20")]
+_fl = SC.fill_type_lines(_ev, gate=None, standings_in=False)
+check("fill by type: flagship +20 ahead 1, main -3 ahead 0 with the 10-slate review count; gate pending without standings",
+      any("flagship (PROVEN): +20.00 (1), ahead 1" in x for x in _fl) and any("main (PROVISIONAL): -3.00 (1), ahead 0" in x and "(now 1)" in x for x in _fl)
+      and any("pending (11-27's flagship standings" in x for x in _fl), _fl)
+_fl2 = SC.fill_type_lines(_ev, gate={"status": "fails", "note": "+20 vs 2xSE 30"}, standings_in=True)
+check("fill gate: a failed 11-27 gate says revert", any("FAILS – revert the flagship tier (+20 vs 2xSE 30)" in x for x in _fl2), _fl2)
 print("\n%d passed, %d failed" % (ok, bad))
 sys.exit(1 if bad else 0)

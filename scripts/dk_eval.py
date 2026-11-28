@@ -486,6 +486,10 @@ def nightly(a):
         # the Auto-fill benchmark: what Pick portfolios would have entered from the same final pool (Save build, 2026-11-18)
         for b in [b for b in banks if (b.get("auto_portfolios") or {}).get(cid)][-1:]:
             grade("auto_kept", [lineup(b["pool"][i]) for i in b["auto_portfolios"][cid]], b["pool"], "the bank's")
+        # fill proposal 1's PREVIOUS (2026-11-28): the fill as it was (the flagships' joint top-1% pick, the mains' Max ROI)
+        # from the same final pool, saved by Save build as fill_prev; the entries are the new fill
+        for b in [b for b in banks if (b.get("fill_prev") or {}).get(cid)][-1:]:
+            grade("fill_prev", [lineup(b["pool"][i]) for i in b["fill_prev"][cid]], b["pool"], "the bank's")
         mine = [e for e in entries if e["name"].lower().startswith(USER)]
         if mine:
             grade("mine", [(e["rank"] <= top10, e["rank"] <= paid, pay.get(e["rank"], 0), e["points"]) for e in mine],

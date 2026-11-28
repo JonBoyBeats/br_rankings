@@ -2417,9 +2417,12 @@ function renderCut() {
   $("cutSharesBox").innerHTML = cutShares();
 }
 
-// into: where the portfolios go (the page's PF by default; Save build's Auto-fill benchmark passes its own object)
-async function pickPortfolios(into, objective) {
+// into: where the portfolios go (the page's PF by default; Save build's Auto-fill benchmark passes its own object).
+// opt.prev: the fill as it was before 2026-11-28 (the flagships' joint top-1% pick, the mains' Max ROI), Save build's
+// PREVIOUS (fill_prev, graded beside the entries on the same nights; analysis/cbb/dk/process.md rule 3)
+async function pickPortfolios(into, objective, opt) {
   into = into || PF;
+  var prevFill = !!(opt && opt.prev);
   var ns = entriesN(), cs = (slate.contests || []).filter(function (c) { return ns[String(c.id)] && c.payouts; });
   if (!BANK.lineups.length) return "The bank is empty.";
   if (!cs.length) return "Set your entries for at least one contest (or load the entries file).";
@@ -2431,8 +2434,20 @@ async function pickPortfolios(into, objective) {
   var prof = {}; cs.forEach(function (c) { prof[c.id] = profileOf(c); });
   var rankP = { flagship: 0, main: 1, lab: 1, qualifier: 2, standard: 2 };
   cs = cs.slice().sort(function (a, b) { return rankP[prof[a.id]] - rankP[prof[b.id]] || (b.entry_fee || 0) * nOf(b) - (a.entry_fee || 0) * nOf(a) || (b.entry_fee || 0) - (a.entry_fee || 0); });
-  var flagCs = cs.filter(function (c) { return prof[c.id] === "flagship"; });
   var all = finalIdx(), taken = {}, S = +$("nSims").value || 3000, size = all.length, maxUse = maxUses(), nightCount = {};
+  /* Fill proposal 1 (2026-11-28, the operator's batch): a flagship or main contest draws its entries uniformly at random
+     from the top half of the kept pool by the cut's sim value (cut_state.board.values), under the same caps and relax
+     steps; qualifiers, lab and standard contests as before. No board values (no cut yet): the fill as before. Flagship
+     tier PROVEN (top-half random - entered +$35.22 +- 14.61 a slate since 11-24, ahead 6 of 6); main tier PROVISIONAL,
+     reviewed at 10 main slates on dollars (analysis/cbb/dk/ideas.md). */
+  var topHalf = null;
+  if (!prevFill && CUT && CUT.keep && CUT.board && CUT.board.values) {
+    var tv = {}; CUT.keep.forEach(function (bi, k) { tv[bi] = CUT.board.values[k] || 0; });
+    var srt = all.slice().sort(function (a, b) { return (tv[b] || 0) - (tv[a] || 0) || a - b; });
+    topHalf = {}; srt.slice(0, Math.ceil(srt.length / 2)).forEach(function (bi) { topHalf[bi] = 1; });
+  }
+  var randFill = function (p) { return !!topHalf && (p === "flagship" || p === "main"); };
+  var flagCs = cs.filter(function (c) { return prof[c.id] === "flagship" && !randFill("flagship"); });
   var nightN = cs.reduce(function (a, c) { return a + nOf(c); }, 0), mp = +$("maxPair").value || 0, pairCount = {};
   var pairLimit = mp ? Math.max(1, Math.floor(mp / 100 * nightN + 1e-9)) : 0;
   var msgs = [];
@@ -2513,7 +2528,7 @@ async function pickPortfolios(into, objective) {
       var st1 = { at: at, set: cov.first, top1: cov.top1, n: L.length, ev: bset.total(), fee: (c3.entry_fee || 0) * L.length };
       if (into === PF) PROF_STATS[cid3] = st1;
       var tcF = DKSim.topCore(ctx(), L.map(function (bi) { return BANK.lineups[bi]; }));
-      lines.push(c3.name + " [" + PROF_NAMES.flagship + "]: " + L.length + " of " + nOf(c3) + ", top 1% " + pct1(st1.top1) + ", P(1st) " + pct1(st1.set) +
+      lines.push(c3.name + " [Flagship (top-1% coverage)]: " + L.length + " of " + nOf(c3) + ", top 1% " + pct1(st1.top1) + ", P(1st) " + pct1(st1.set) +
         " (at 2 / 3 / 4: " + [1, 2, 3].map(function (q4) { return at[q4] != null ? pct1(at[q4]) : "–"; }).join(" / ") + ")" +
         (tcF ? ", largest core " + coreName(tcF.key) + " in " + tcF.n + " (" + Math.round(100 * tcF.share) + "%)" : "") + " (expected back " + cents(st1.ev) + " on " + cents(st1.fee) + ")");
     }
@@ -2526,9 +2541,13 @@ async function pickPortfolios(into, objective) {
   var chalkB = null, addedChalk = false;
   for (var i = 0; i < cs.length; i++) {
     var c = cs[i], n = nOf(c), pr = prof[c.id];
-    if (pr === "flagship") continue;
-    // a "test" idea's lineups go only into the lab (Dime Time)
-    var idx = all.filter(function (bi) { return (taken[bi] || 0) < maxUse && (pr === "lab" || !isTest(bi)); }), pool = idx.map(function (bi) { return BANK.lineups[bi]; });
+    if (pr === "flagship" && !randFill(pr)) continue;
+    // a "test" idea's lineups go only into the lab (Dime Time); a random-fill contest only from the top half
+    var idx = all.filter(function (bi) { return (taken[bi] || 0) < maxUse && (pr === "lab" || !isTest(bi)); });
+    // a random-fill contest: the top half first; the rest of the kept pool behind it (lower keys), used only where the
+    // caps leave the top half short
+    if (randFill(pr)) idx = idx.filter(function (bi) { return topHalf[bi]; }).concat(idx.filter(function (bi) { return !topHalf[bi]; }));
+    var pool = idx.map(function (bi) { return BANK.lineups[bi]; });
     var nKept = pool.length;
     if (pr === "qualifier") {      // the chalk batch beside the kept pool (drawn once a fill); its lineups the pool lacks
       if (!chalkB) { $("cutStatus").textContent = "Qualifiers: drawing " + QUAL_CHALK_N + " chalk lineups…"; await tick(); chalkB = await qualChalk(); }
@@ -2552,8 +2571,10 @@ async function pickPortfolios(into, objective) {
     // the profile's objective: main, lab and qualifier contests Max ROI (each its own set, so its returns diminish;
     // a lineup in up to Max contests per lineup, the flagships' included, under the night cap), a standard contest the
     // Start from choice
-    var obj = pr === "standard" ? objective || "roi" : "roi";
-    var po = Object.assign(pickRules(n), { objective: obj }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(cxN, po, pool, sim, c, n);
+    var obj = randFill(pr) ? "random" : pr === "standard" ? objective || "roi" : "roi";
+    var rnd = null;
+    if (obj === "random") { var rg = DKSim.seeded((nightsSeed() ^ Math.imul(+c.id || 0, 2654435761) ^ 0x7a11f11) >>> 0); rnd = idx.map(function (bi) { return (topHalf[bi] ? 1 : 0) + rg(); }); }
+    var po = Object.assign(pickRules(n), { objective: obj, rand: rnd }, pairLimit ? { pairLimit: pairLimit, pairCount: pairCount } : {}), r = DKSim.pick(cxN, po, pool, sim, c, n);
     /* C4 (2026-11-20, the operator's plan): a short set completes itself. Keeping what it picked, relax ONE cap a step at
        a time (Max core 15 -> 20 -> 25%, then Max exposure up to 70%; never the night cap, never Min unique) and top the
        rest up by coverage (the rise in nights one of the set reaches the top 1%), still under every other cap; say so. */
@@ -2565,7 +2586,7 @@ async function pickPortfolios(into, objective) {
       if (po.maxExpo < 0.7) steps.push(["expo", { maxCore: po.maxCore != null ? Math.max(po.maxCore, 0.25) : null, maxExpo: 0.7 }, "Max exposure relaxed to 70%"]);
       for (var si = 0; si < steps.length && r.chosen.length < n; si++) {
         var pc2 = pairLimit ? Object.assign({}, pairsBefore) : null, had = r.chosen.length;
-        var r2 = DKSim.pick(cxN, Object.assign({}, po, steps[si][1], { objective: "cover", preset: r.chosen }, pairLimit ? { pairCount: pc2 } : {}), pool, sim, c, n);
+        var r2 = DKSim.pick(cxN, Object.assign({}, po, steps[si][1], { objective: obj === "random" ? "random" : "cover", preset: r.chosen }, pairLimit ? { pairCount: pc2 } : {}), pool, sim, c, n);
         if (r2.chosen.length > had) {
           r = r2; relaxed.push(steps[si][2] + " to fill " + (r2.chosen.length - had) + " slot" + (r2.chosen.length - had === 1 ? "" : "s"));
           if (pairLimit) { Object.keys(pairCount).forEach(function (k) { delete pairCount[k]; }); Object.assign(pairCount, pc2); }
@@ -2584,6 +2605,7 @@ async function pickPortfolios(into, objective) {
       why = ", short: " + (stops.length ? stops.join(" or ") + " stops it (relaxing " + (stops.length > 1 ? "any one" : "it") + " fills it)" :
             "the final pool runs out under the caps together") + "; raise Keep, or loosen it";
     }
+    if (pr === "flagship" && into === PF) { var cvF = r.builder.coverage(); PROF_STATS[String(c.id)] = { at: [], set: cvF.first, top1: cvF.top1, n: r.chosen.length, ev: r.builder.total(), fee: (c.entry_fee || 0) * r.chosen.length, pickNights: true }; }
     var tc = DKSim.topCore(ctx(), r.chosen.map(function (k) { return pool[k]; })), p1 = "";
     if (pr === "qualifier") {      // its lineups' own sums against its chalk field's median, where they came from, and P(1st)
       var ownS = r.chosen.map(function (k) { return ownSum(pool[k].ids); }), fmed = fieldOwnMedian(fieldFor(c)), fromChalk = r.chosen.filter(function (k) { return k >= nKept; }).length;
@@ -2599,14 +2621,15 @@ async function pickPortfolios(into, objective) {
         " (fresh nights), " + fromChalk + " from the chalk batch and " + qs.kept + " from the kept pool (the batch: " + qs.batch + " lineups the pool lacked, the best alone " +
         cents(bestC) + " against the kept pool's best " + cents(bestK) + ")";
     }
-    msgs.push(c.name + " [" + PROF_NAMES[pr] + "]: " + r.chosen.length + " of " + n + p1 + (relaxed.length ? " (" + relaxed.join("; ") + ")" : "") + why + (tc ? ", largest core " + coreName(tc.key) + " in " + tc.n + " (" + Math.round(100 * tc.share) + "%)" : "") + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
+    msgs.push(c.name + " [" + (randFill(pr) || (pr !== "flagship" && pr !== "main") ? PROF_NAMES[pr] : pr === "flagship" ? "Flagship (top-1% coverage)" : "Main (max ROI)") + "]: " + r.chosen.length + " of " + n + p1 + (relaxed.length ? " (" + relaxed.join("; ") + ")" : "") + why + (tc ? ", largest core " + coreName(tc.key) + " in " + tc.n + " (" + Math.round(100 * tc.share) + "%)" : "") + " (expected back " + cents(r.builder.total()) + " on " + cents((c.entry_fee || 0) * r.chosen.length) +
       ", one cashes in " + Math.round(100 * r.builder.coverage().cash) + "% of nights)");
   }
   if (addedChalk) { bankSaveState(); cutSave(); renderBank(); }
   if (into === PF) { pfSave(); renderEntries(); $("pfExport").disabled = !ENTRIES; }
   var night = DKSim.topCore(ctx(), Object.keys(into).reduce(function (a, k) { return a.concat(into[k].map(function (bi) { return BANK.lineups[bi]; })); }, []));
   return (night ? "Largest core across the night's " + night.of + " entries: " + coreName(night.key) + " in " + night.n + " (" + Math.round(100 * night.share) + "%). " : "") +
-    "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + " on the slate's nights (#" + nightsSeed() + "), each lineup in " + (maxUse === 1 ? "one contest only" : "at most " + maxUse + " contests") + ", the flagships first (together), then the main contests, then the rest by stake: " +
+    "Portfolios from " + (CUT && CUT.keep ? "the final " + size : "the whole bank of " + size) + " on the slate's nights (#" + nightsSeed() + "), each lineup in " + (maxUse === 1 ? "one contest only" : "at most " + maxUse + " contests") +
+    (topHalf ? ", the flagships first, then the main contests (each a random draw from the kept pool's top half by sim value), then the rest by stake: " : ", the flagships first (together), then the main contests, then the rest by stake: ") +
     msgs.join("; ") + ". Review any one below." +
     (ENTRIES ? "" : " Load the entries file to export them.");
 }
@@ -2624,7 +2647,7 @@ async function pickPortfolios(into, objective) {
      standard   the fill as before (Start from)
    A lineup goes in up to Max contests per lineup (the flagships' included) under the 60% night cap; the 60/60 caps and
    Auto top-up apply to every profile. */
-var PROF_NAMES = { flagship: "Flagship (top-1% coverage)", main: "Main (max ROI)", lab: "Main · lab", qualifier: "Qualifier (max ROI, chalk field)", standard: "Standard" };
+var PROF_NAMES = { flagship: "Flagship (top-half random)", main: "Main (top-half random)", lab: "Main · lab", qualifier: "Qualifier (max ROI, chalk field)", standard: "Standard" };
 var PROF_STATS = {};      // after a fill: each flagship's {at, set, top1, n, ev, fee}, _joint, each qualifier's {own, fieldMed}
 /* A qualifier or satellite pays one ticket to 1st (winner-take-all, the operator 2026-11-24); DraftKings' lobby lists
    no payout table for them, so the prize pool is the ticket. */
@@ -2715,7 +2738,8 @@ function renderProfiles() {
       " · ours " + x.n + (c.ticket ? " · winner-take-all (1 ticket)" : "") + "</span></div>" +
       '<select data-cid="' + esc(cid) + '" aria-label="Profile for ' + esc(c.name) + '">' + '<option value="">Auto: ' + esc(PROF_NAMES[auto]) + "</option>" +
       Object.keys(PROF_NAMES).map(function (k) { return '<option value="' + k + '"' + (ov[cid] === k ? " selected" : "") + ">" + esc(PROF_NAMES[k]) + "</option>"; }).join("") + "</select>" +
-      (p === "flagship" && st && st.at ? '<div class="pstat">Top 1%: ' + pct1(st.top1) + " of nights · P(1st) " + pct1(st.set) + " with your " + st.n + " · P(1st) at 2 / 3 / 4 lineups: " +
+      (p === "flagship" && st && st.pickNights ? '<div class="pstat">Top 1%: ' + pct1(st.top1) + " of nights · P(1st) " + pct1(st.set) + " with your " + st.n + " (a random draw from the top half; the pick's nights, in-sim)</div>" : "") +
+      (p === "flagship" && st && st.at && !st.pickNights ? '<div class="pstat">Top 1%: ' + pct1(st.top1) + " of nights · P(1st) " + pct1(st.set) + " with your " + st.n + " · P(1st) at 2 / 3 / 4 lineups: " +
         [1, 2, 3].map(function (q) { return st.at[q] != null ? pct1(st.at[q]) : "–"; }).join(" / ") +
         ' <span title="On a fresh draw of nights, not the ones the set was picked from (those flatter it). In-sim only: at 1-4% a night, a dozen graded nights cannot confirm it.">(fresh nights, in-sim)</span></div>' : "") +
       (p === "qualifier" && st && st.own ? '<div class="pstat">Own sum ' + st.own.map(function (v) { return Math.round(v) + "%"; }).join(" / ") + " vs the chalk field's median " + Math.round(st.fieldMed) + "% · P(1st) " +
@@ -2723,7 +2747,7 @@ function renderProfiles() {
       (p === "lab" ? '<div class="pstat">Test ideas: ' + (tests.length ? esc(tests.join(", ")) : "none marked (Bank step: test on an idea's row)") + "</div>" : "") + "</div>";
   }).join("") + (count.qualifier ? '<div class="note" id="profQual">The qualifier field is an assumed chalk style until field_users.csv has enough real qualifier fields to refit it (' +
     QUAL_REFIT_AT + "; <code>dk_eval.py qualcheck</code> counts them).</div>" : "") + (PROF_STATS._joint && PROF_STATS._joint.n > 1 ? '<div class="note" id="profJoint">The flagships together: one of their lineups in its top 1% on ' + pct1(PROF_STATS._joint.joint) + " of nights (fresh nights, in-sim).</div>" : "") +
-    '<div class="note">Fill order: the flagships first, together (the whole kept pool), then each main contest by its own Max ROI, then the rest by stake; a lineup in up to ' +
+    '<div class="note">Fill order: the flagships first, then each main contest, each a random draw from the kept pool\'s top half by sim value (2026-11-28; before the cut: the flagships together by top-1% coverage, the mains by Max ROI), then the rest by stake; a lineup in up to ' +
     maxUses() + " contests under the 60% night cap. The 60/60 caps and Auto top-up apply to all.</div>";
   $("profSum").textContent = "Contest profiles: " + Object.keys(PROF_NAMES).filter(function (k) { return count[k]; }).map(function (k) { return PROF_NAMES[k] + " " + count[k]; }).join(" · ");
 }
@@ -2791,6 +2815,14 @@ async function saveBank() {
     var m = await pickPortfolios(auto);
     if (typeof m === "string" && Object.keys(auto).length) { CUT.auto = auto; CUT.autoSig = sig; cutSave(); }
   }
+  // fill proposal 1's PREVIOUS (2026-11-28): the fill as it was (flagships' joint top-1%, mains' Max ROI) from the same
+  // pool, saved as fill_prev and graded beside the entries on the same nights (dk_eval.py nightly: who = fill_prev)
+  if (CUT && CUT.keep && CUT.board && CUT.board.values && Object.keys(ns).length && (!CUT.prev || CUT.prevSig !== sig)) {
+    $("cutStatus").textContent = "Saving: picking the previous fill (PREVIOUS, graded beside your entries)…"; await tick();
+    var prev = {};
+    var mp = await pickPortfolios(prev, undefined, { prev: true });
+    if (typeof mp === "string" && Object.keys(prev).length) { CUT.prev = prev; CUT.prevSig = sig; cutSave(); }
+  }
   var doc = buildDoc();
   var a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(doc)], { type: "application/json" }));
@@ -2804,7 +2836,7 @@ function buildDoc() {
   Object.keys(BANK.tagRules).forEach(function (t) { (BANK.tagRules[t].conds || []).forEach(function (r) { if (!rs.some(function (x) { return x.label === r.label; })) rs.push(r); }); });
   var doc = { kind: "build", draft_group: slate.draft_group_id, day: slate.day, saved_at: new Date().toISOString(), rule_set: rs,
               pool: BANK.lineups.map(function (L) { return L.ids; }), tags: BANK.tags, groups: BANK.groups || {}, test_ideas: BANK.test || {}, tag_settings: BANK.tagRules, final: CUT && CUT.keep ? CUT.keep : null, cut: CUT && CUT.settings ? CUT.settings : null,
-              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, nights_seed: nightsSeed(), rule_log: BANK.ruleLog || [], idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, gate: gate,
+              pick: { maxExpo: +$("maxExpo").value || null, minUnique: +$("minUnique").value || null, maxCore: +$("maxCore").value || null }, portfolios: PF, start: $("pfObj").value, nights_seed: nightsSeed(), rule_log: BANK.ruleLog || [], idea_board: CUT && CUT.board ? CUT.board : null, auto_portfolios: CUT && CUT.auto ? CUT.auto : null, fill_prev: CUT && CUT.prev ? CUT.prev : null, gate: gate,
               scan: SCAN && String(SCAN.draft_group) === String(slate.draft_group_id) ? SCAN : null,
               outs: Object.assign({}, state.outs), ins: Object.assign({}, state.ins), q_play: Object.assign({}, state.qplay || {}),   // Mark out / Play him: the night's news tag (dk_eval night_tag)
               // the operator's state at save (2026-11-21): what the page used, so a grade scores exactly that

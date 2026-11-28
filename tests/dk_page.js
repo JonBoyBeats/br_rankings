@@ -1194,6 +1194,27 @@ function audit(name, L, o) {
   });
   check("start from: each start fills what the caps allow; first picks are the best lineup by value (Max ROI) and by coverage (Max coverage)",
         ["roi", "balanced", "cover"].every(o => objs.out[o].n >= 1 && objs.out[o].n <= 5) && objs.out.roi.first === objs.roiBest && objs.out.cover.first === objs.coverBest, JSON.stringify(objs));
+  // fill proposal 1 (2026-11-28): "random" picks by each candidate's fixed key under the caps; the flagship and main
+  // contests draw only from the kept pool's top half by sim value; the previous fill (opt.prev) still runs
+  const rnd = await pg.evaluate(async () => {
+    const c = slate.contests.find(x => String(x.id) === "197791874"), pool = finalIdx().map(i => BANK.lineups[i]), n = 5;
+    const sim = DKSim.simulate(ctx(), pool, fieldOf().field, fieldDoc.z, c, n, 300), rk = pool.map((L, k) => (k * 7919) % 1000 / 1000);
+    const r = DKSim.pick(ctx(), Object.assign(pickRules(n), { objective: "random", rand: rk }), pool, sim, c, n);
+    const top = rk.indexOf(Math.max.apply(null, rk));
+    const out = { n: r.chosen.length, first: r.chosen[0], top: top, half: null, prev: null };
+    if (CUT && CUT.keep && CUT.board && CUT.board.values) {
+      const tv = {}; CUT.keep.forEach((bi, k) => { tv[bi] = CUT.board.values[k] || 0; });
+      const srt = finalIdx().slice().sort((a, b) => (tv[b] || 0) - (tv[a] || 0) || a - b), th = {}; srt.slice(0, Math.ceil(srt.length / 2)).forEach(bi => { th[bi] = 1; });
+      const into = {}; await pickPortfolios(into);
+      // the top half first: a contest's picks reach beyond it only once it holds no top-half lineup the caps still allow
+      out.half = Object.keys(into).filter(cid => ["flagship", "main"].indexOf(profileOf(slate.contests.find(x => String(x.id) === cid))) >= 0)
+        .every(cid => into[cid].length && th[into[cid][0]]);
+      const pv = {}; const m = await pickPortfolios(pv, undefined, { prev: true }); out.prev = typeof m === "string" && Object.keys(pv).length > 0;
+    }
+    return out;
+  });
+  check("fill proposal 1: the random objective takes the highest key first under the caps; flagship/main fill from the top half; the previous fill still picks",
+        rnd.n >= 1 && rnd.first === rnd.top && rnd.half !== false && rnd.prev !== false, JSON.stringify(rnd));
   dialogs = [];
   await pg.selectOption("#pfObj", "cover");
   await pg.evaluate(() => { document.getElementById("cutStatus").textContent = ""; });
@@ -1228,7 +1249,7 @@ function audit(name, L, o) {
         new Set(pf[c]).size === pf[c].length), JSON.stringify(pf));
   const pfAll = Object.values(pf).flat();
   check("portfolios: each lineup in one contest only, the flagship first (its profile named)", new Set(pfAll).size === pfAll.length &&
-        /the flagships first \(together\), then the main contests, then the rest by stake: CBB \$6K Pull Up Jumper \[\$2K to 1st\] \[Flagship \(top-1% coverage\)\]: 1 of 1, top 1% \d+\.\d%, P\(1st\) \d+\.\d% \(at 2 \/ 3 \/ 4: .+; the flagships together: one of them in its top 1% on \d+\.\d% of nights/.test(pmsg), pmsg);
+        /the flagships first, then the main contests \(each a random draw from the kept pool's top half by sim value\), then the rest by stake: CBB \$6K Pull Up Jumper \[\$2K to 1st\] \[Flagship \(top-half random\)\]: 1 of 1/.test(pmsg), pmsg);
   check("portfolios: each fills its entries, or says what stops it", Object.keys(size).every(c => pf[c].length === size[c]) || /short: .* stops it|runs out/.test(pmsg), pmsg);
   // a short set completes itself by relaxing one cap a step (C4) and says so: the audit holds it to what it reports
   const rxExpo = /Max exposure relaxed to 70%/.test(pmsg) ? 0.7 : 0.6, rxCore = /Max core relaxed to 25%/.test(pmsg) ? 0.25 : /Max core relaxed to 20%/.test(pmsg) ? 0.2 : 0.15;
@@ -1519,9 +1540,9 @@ function audit(name, L, o) {
     const sel2 = document.querySelector('#profList select[data-cid="197791874"]'); sel2.value = ""; sel2.dispatchEvent(new Event("change", { bubbles: true }));
     return { rowsP, first, sum, stat, joint, over, kept, back: profileOf(slate.contests.find(c => String(c.id) === "197791874")), keptAfter: (store(profKey()) || {})["197791874"] || null };
   });
-  check("profiles screen: each entered contest with its recognised profile (the flagship first) and a dropdown; an override is kept for the slate and Auto puts it back; after a fill each flagship shows its top-1% coverage and P(1st) (at 2 / 3 / 4 lineups) on fresh nights, and the flagships' joint coverage",
-        pr1.rowsP.length === 3 && pr1.first === "197791872" && /^Contest profiles: Flagship \(top-1% coverage\) 2 · Main \(max ROI\) 1$/.test(pr1.sum) && /^Top 1%: \d+\.\d% of nights · P\(1st\) \d+\.\d% with your 1 · P\(1st\) at 2 \/ 3 \/ 4 lineups: (\d+\.\d%|–) \/ (\d+\.\d%|–) \/ (\d+\.\d%|–) \(fresh nights, in-sim\)$/.test(pr1.stat) &&
-        /^The flagships together: one of their lineups in its top 1% on \d+\.\d% of nights/.test(pr1.joint) &&
+  check("profiles screen: each entered contest with its recognised profile (the flagship first) and a dropdown; an override is kept for the slate and Auto puts it back; after a fill each flagship shows its top-1% coverage and P(1st) (a top-half random draw since 2026-11-28; no joint pick)",
+        pr1.rowsP.length === 3 && pr1.first === "197791872" && /^Contest profiles: Flagship \(top-half random\) 2 · Main \(top-half random\) 1$/.test(pr1.sum) && /^Top 1%: \d+\.\d% of nights · P\(1st\) \d+\.\d% with your 1 \(a random draw from the top half; the pick's nights, in-sim\)$/.test(pr1.stat) &&
+        pr1.joint === "" &&
         pr1.over === "qualifier" && pr1.kept === "qualifier" && pr1.back === "main" && pr1.keptAfter === null, JSON.stringify(pr1));
   // the flagships' joint coverage: the PUJ and the High Five picked together on the same nights; the first pick is the
   // (contest, lineup) reaching its top 1% on the most nights; the joint mask is the union of each set's own top-1% nights
@@ -1560,10 +1581,10 @@ function audit(name, L, o) {
     const flag = (PF["197791872"] || []).concat(PF["197791877"] || []);
     return { A: A.length, Q: Q.length, D: D.length, testOut: !A.concat(Q, flag).some(testIn), maxUses: Math.max(...Object.values(uses)),
              nightMax: Math.max(...Object.keys(used).filter(id => !lk[id]).map(id => used[id])), nightLim: nightLimit(),
-             own: /\$1\.25K And-One \[Main \(max ROI\)\]: \d of 4/.test(st) && /Quarter Jukebox \[Main \(max ROI\)\]: \d of 4/.test(st) && /Dime Time \[Just \$0\.10!\] \[Main · lab\]: \d of 3/.test(st),
+             own: /\$1\.25K And-One \[Main \(top-half random\)\]: \d of 4/.test(st) && /Quarter Jukebox \[Main \(top-half random\)\]: \d of 4/.test(st) && /Dime Time \[Just \$0\.10!\] \[Main · lab\]: \d of 3/.test(st),
              lab: (document.querySelector('#profList .prow[data-cid="197873654"] .pstat') || {}).textContent || "" };
   }, blk0.g);
-  check("main contests: And-One, Quarter Jukebox and Dime Time each by its own Max ROI; a lineup in up to 3 contests; a test idea never outside Dime Time; no player past the night cap",
+  check("main contests: And-One and Quarter Jukebox each a top-half random draw, Dime Time by its own Max ROI; a lineup in up to 3 contests; a test idea never outside Dime Time; no player past the night cap",
         blk.A >= 3 && blk.Q >= 3 && blk.D >= 1 && blk.own && blk.testOut && blk.maxUses <= 3 && blk.nightMax <= blk.nightLim && /^Test ideas: /.test(blk.lab), JSON.stringify(blk));
   const chk = await pg.evaluate(async () => {      // the chalk batch: near the top projections (above the kept pool on projection and ownership)
     const n0 = QUAL_CHALK_N, noise = QUAL_NOISE; QUAL_CHALK_N = 60;

@@ -690,10 +690,12 @@
         }
         // o.objective: "roi" (the default: added value), "cover" (the rise in nights one of the set reaches the top
         // 1%, added value breaking ties), "balanced" (each, over the best of it among the candidates, weighted equally)
+        // "random" (2026-11-28, fill proposal 1): a uniform random pick among the lineups the caps allow, o.rand[k]
+        // the candidate's fixed random key (a seeded shuffle), so the caps and the at-least rules still bind
         var obj = o.objective || "roi", mv = 1e-12, mc = 1e-12;
         if (obj === "balanced") ok.forEach(function (x) { mv = Math.max(mv, x[1].value); mc = Math.max(mc, x[1].top1); });
         ok.forEach(function (x) {
-          var sc = x[1], v = obj === "cover" ? sc.top1 * 1e6 + sc.value : obj === "balanced" ? 0.5 * Math.max(0, sc.value) / mv + 0.5 * sc.top1 / mc : sc.value;
+          var sc = x[1], v = obj === "random" ? (o.rand ? o.rand[x[0]] : Math.random()) : obj === "cover" ? sc.top1 * 1e6 + sc.value : obj === "balanced" ? 0.5 * Math.max(0, sc.value) / mv + 0.5 * sc.top1 / mc : sc.value;
           if (v > bestV) { bestV = v; best = x[0]; }
         });
         if (best < 0) break;

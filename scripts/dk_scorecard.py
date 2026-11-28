@@ -333,6 +333,7 @@ def lines(slates=None, arms=None, today=None):
     sl_ = source_lines()
     if sl_:
         out += [""] + sl_
+    out += [""] + fill_type_lines()
     cs_ = core_shadow_lines()
     if cs_:
         out += [""] + cs_
@@ -609,6 +610,62 @@ def core_shadow_lines(rows=None, evals=None):
                    and "%s_%s" % (r["date"], r["draft_group"]) not in builds})
     if miss:
         out += ["Main nights with no saved build (can't be graded): " + ", ".join("%s — no saved build, press Save build" % m for m in miss) + ".", ""]
+    return out
+
+
+# Fill proposal 1 (2026-11-28, the operator's batch): flagship and main contests fill by a random draw from the kept
+# pool's top half by sim value. Graded per contest type (dk_contest_type) against PREVIOUS, the fill as it was
+# (fill_prev: the flagships' joint top-1%, the mains' Max ROI), on the same contests. Flagship tier PROVEN; main tier
+# PROVISIONAL, reviewed at MAIN_REVIEW graded main slates on dollars (mains alone revert if they fail). The 11-27 gate:
+# when 11-27's standings land, fr_fill.py then fr_p1_recut.py; if the flagship tier no longer clears 2 x SE on 7 slates,
+# it reverts. The verdict goes in P1_GATE ({"status": "passes" | "fails", "note": ...}) by hand after that run.
+P1_FROM = "2026-11-28"
+MAIN_REVIEW = 10
+P1_GATE = os.path.join(E.DK, "fill_p1_gate.json")
+P1_GATE_CONTESTS = ("198269753", "198278517")
+
+
+def fill_type_lines(evals=None, gate=None, standings_in=None):
+    import dk_contest_type as CT
+    evals = E.read(E.EVAL) if evals is None else evals
+    by = defaultdict(lambda: defaultdict(dict))            # type -> slate -> who -> [dollars, fees]
+    for r in evals:
+        if r.get("who") not in ("mine", "fill_prev") or r["date"] < P1_FROM or num(r.get("fees")) is None:
+            continue
+        t = CT.contest_type(r.get("contest"), int(float(r.get("entries") or 0)))
+        if t not in ("flagship", "main"):
+            continue
+        k = "%s_%s" % (r["date"], r["draft_group"])
+        c = by[t][k].setdefault(r["contest_id"], {})
+        c[r["who"]] = (num(r.get("dollars_back")) or 0.0, num(r["fees"]))
+    out = ["## Fill by contest type (proposal 1, from %s)" % P1_FROM, "",
+           "Flagship and main contests fill by a random draw from the kept pool's top half by sim value (dk.html, 2026-11-28); "
+           "PREVIOUS = the fill as it was (fill_prev: flagships' joint top-1%%, mains' Max ROI) from the same pool, graded on the same contests. "
+           "Cells: entered minus PREVIOUS, $ per slate (summed over the slate's contests of that type), mean ± SE (slates), ahead = slates entered beat PREVIOUS.", ""]
+    for t, tier in (("flagship", "PROVEN"), ("main", "PROVISIONAL")):
+        d = []
+        for k, cs in sorted(by[t].items()):
+            both = [c for c in cs.values() if "mine" in c and "fill_prev" in c]
+            if both:
+                d.append(sum(c["mine"][0] - c["fill_prev"][0] for c in both))
+        m, se, n = agg(d)
+        line = "- %s (%s): %s, ahead %d" % (t, tier, f_ms(m, se, n, fmt="%.2f", signed=True), sum(1 for x in d if x > 0))
+        if t == "main":
+            line += "; review on dollars at %d graded main slates (now %d)%s" % (MAIN_REVIEW, n, " — DUE NOW" if n >= MAIN_REVIEW else "")
+        out.append(line)
+    if gate is None and os.path.exists(P1_GATE):
+        gate = json.load(open(P1_GATE))
+    if standings_in is None:
+        standings_in = all(os.path.exists(os.path.join(E.STANDINGS, "contest-standings-%s.csv" % c)) for c in P1_GATE_CONTESTS[:1])
+    if gate and gate.get("status") == "fails":
+        st = "FAILS – revert the flagship tier" + (" (%s)" % gate["note"] if gate.get("note") else "")
+    elif gate and gate.get("status") == "passes":
+        st = "passes" + (" (%s)" % gate["note"] if gate.get("note") else "")
+    elif standings_in:
+        st = "pending: 11-27's standings are in; run friday_review_2026-11-27/fr_fill.py then fr_p1_recut.py and record the verdict in fill_p1_gate.json"
+    else:
+        st = "pending (11-27's flagship standings, contest %s, not uploaded)" % P1_GATE_CONTESTS[0]
+    out += ["- 11-27 gate (flagship tier on 7 slates since 11-24, must clear 2 × SE): " + st, ""]
     return out
 
 
