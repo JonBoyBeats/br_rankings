@@ -136,3 +136,14 @@ Fees were $969.
 |---|---|---|
 | Main contests filled under an uncertain (concentrated) field | DIRECTIONAL | Re-run with the page's actual fill (cross-contest caps) once the fill replay can run it; 10+ more slates |
 | The sim's top-1% overconfidence (about 2×) | finding (agrees with the late-swap calibration) | It lives in the projection, our lineups' own points, not the field. Test the selection haircut and the per-minute level there. |
+
+**Note, 2026-11-28 (unified contest types):** the by-type tables above came from `ous.py`, which used a by-size rule (under 800 entries = flagship). The pick itself (`ous.js`) already used the page's flagship rule.
+
+Re-graded on the DK page's profile (`scripts/dk_contest_type.py`; `ous.py --grade-only`, output `ous_recut.out`). The types now split into 20 flagship, 43 main and 5 qualifier contests (were 31 / 31 / 6). At × 1:
+
+| Type | B − A finish pct, before | After |
+|---|---|---|
+| Main | +1.78 ± 0.81, 9 of 12 | +1.73 ± 0.74, 9 of 12 |
+| Flagship | −2.82 ± 3.28, 8 of 14 | −4.07 ± 3.61, 6 of 13 |
+
+Main stays positive at every size, ahead on 6 to 12 of 12 (was 8–10). Tags are unchanged: overall NOISE, mains DIRECTIONAL, flagships NOISE.

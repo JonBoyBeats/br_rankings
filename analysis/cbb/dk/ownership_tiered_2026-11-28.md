@@ -118,3 +118,5 @@ These are the likeliest sources of the field's concentration. None of them can b
 | The concentration miss is not fixed by field-visible inputs | finding | the field-side model is flatter (34.8 vs 18.6); the source is outside the data we log |
 
 **Watch:** the concentration miss stays on the Friday watch list. It needs an input we don't have, such as a public ownership projection captured at lock, before it can be tested.
+
+**Note, 2026-11-28 (unified contest types):** the flagship/main split in B/C used a by-size rule (under 800 entries = flagship). It's re-cut on the DK page's profile (`scripts/dk_contest_type.py`) in `ownership_tiered_2026-11-28/ot_recut.out`. Every row moves by at most ±0.12 $ per lineup and ±0.01 finish percentile. On true flagships, B against the board's top half is +$0.26 ± $0.56 (4 of 9), and the finish percentile is +0.10 ± 0.40 (4 of 9). All of it is still NOISE.

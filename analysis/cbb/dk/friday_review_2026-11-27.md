@@ -622,3 +622,58 @@ The review above is unchanged. **The operator's hold stands:** nothing ships wit
 | Late-swap stated payout high | DIRECTIONAL (finding) | Our entries are 2.1x high on 15 nights. The haircut fix isn't tested yet. |
 | Our lineups low on ownership sum (users study) | NOISE | The own-sum bins fail on ROI held out. |
 | PREVIOUS columns for field, pool, fill and late swap | n/a | A process item, not a finding. |
+
+---
+
+## Correction 2026-11-28: unified contest types
+
+The review's by-type figures used a by-size split. It sometimes counted as a flagship any contest under 800 entries, and sometimes any contest with 100–799 entries, wherever the contest name didn't say otherwise. That split called 17 of the 84 contests flagships that the DK page treats as mains: 20-max And-One, Quarter Jukebox and Dime Time with 118–713 entries. It also called one Pull Up Jumper (78 entries) a qualifier.
+
+Every type is now the page's own profile, defined once in `scripts/dk_contest_type.py` (a copy of dk.html `profileAuto`):
+- flagship: Pull Up Jumper, or 100–799 entries;
+- main: And-One, Quarter Jukebox or Dime Time, or 800+ entries;
+- qualifier: qualifier or satellite, or under 100 entries.
+
+Re-cut by `fr_fill_recut.py`, `fr_results_recut.py`, `fr_users.py` (output `fr_users_recut.out`), `ownership_tiered_2026-11-28/ot_recut.out` and `own_uncertainty_sim_2026-11-28/ous_recut.out`. Under the old labels each script reproduces the figures above exactly, so the changes below are the re-label alone. The earlier text is left as written.
+
+**Section 9, fill by contest type** (entered − random kept fills, mean $ per slate):
+
+| | Before (by size) | After (page profile) |
+|---|---|---|
+| Flagship, all slates | −$18.70 ± 8.17 (14), 31 contests | −$20.64 ± 8.28 (13), 20 contests |
+| **Flagship since 11-24: entered − random** | **−$33.85 ± 10.61 (6), ahead 0 of 6** | **−$33.36 ± 10.24 (6), ahead 0 of 6** |
+| Flagship since 11-24: median $ | +$10.25 ± 5.15 | +$10.00 ± 5.00 |
+| **Proposal 1: top-half random − entered, flagship since 11-24** | **+$35.76 ± 14.93 (6), ahead 6 of 6** | **+$35.22 ± 14.61 (6), ahead 6 of 6** |
+| **Proposal 1: same, all slates with board values** | **+$34.84 ± 14.59 (9), ahead 8 of 9** | **+$35.38 ± 14.10 (9), ahead 8 of 9** |
+| Main, all slates | +$9.50 ± 11.73 (12), 31 contests | +$9.98 ± 11.60 (12), 43 contests |
+| Main since 11-24 | −$9.52 ± 3.88 (4) | −$10.27 ± 4.24 (4) |
+| Main, top-half random − entered | +$1.89 ± 8.82 (7) | +$1.19 ± 8.65 (7) |
+| Qualifier / small | +$53.82 ± 40.49 (6), 6 contests | +$64.74 ± 47.76 (5), 5 contests |
+
+**Section 11, our results by contest type** (slate types are unchanged):
+
+| | Before: fees / net / ROI / entries / slates | After |
+|---|---|---|
+| flagship | $622.35 / −$391.80 / −63.0% / 156 / 16 | $600.00 / −$405.00 / **−67.5%** / 46 / 15 |
+| main | $261.00 / +$130.65 / +50.1% / 576 / 13 | $301.35 / +$125.85 / **+41.8%** / 690 / 14 |
+| qualifier / small | $198.00 / +$246.00 / +124.2% / 18 / 9 | $180.00 / +$264.00 / **+146.7%** / 14 / 8 |
+
+True flagships are 55% of fees (was 58%) and still the whole loss. Our flagship play is 46 entries at $5–15, so one big cash would still flip it.
+
+**Section 5, the users' contest mix:**
+- The re-label moves only the mix columns. Every ranking, band and construction statistic is unchanged.
+- The users' tables also moved by 0.1–0.3 on own-sum, because the night records were updated after the review. That isn't from the re-label.
+- The top 15 multi-entry users' main share is now **57–100% of entries, median 94%** (was 42–97%, median 82%).
+- Our own mix is now 45 flagship, 652 main and 14 qualifier entries (was 150 / 543 / 18).
+
+**Tiered-ownership test (B and C, by contest type):** the moves are within ±0.12 $ per lineup and ±0.01 finish percentile on every row. On true flagships, B (today's ownership) against the board's top half is +$0.26 ± $0.56 (4 of 9), and the finish percentile is +0.10 ± 0.40 (4 of 9). Still NOISE.
+
+**Ownership-uncertainty study (f0c040c):**
+- Its grade (`ous.py`) used the by-size split. `ous.js` already picked with the page's flagship rule.
+- At the measured size (×1), main B − A is +1.73 ± 0.74 finish pct, ahead on 9 of 12 (was +1.78 ± 0.81, 9 of 12).
+- Flagship B − A is −4.07 ± 3.61, 6 of 13 (was −2.82 ± 3.28, 8 of 14).
+- The main result is still positive at every size: 6–12 of 12 slates ahead (was 8–10).
+
+**Verdict:**
+- **Proposal 1 still clears its bar on true flagships.** It's +$35.22 ± 14.61 since 11-24 (2×SE = 29.22), ahead on 6 of 6, and +$35.38 ± 14.10 on all 9 slates with board values, ahead on 8 of 9. It stays PROVEN and HELD, as before.
+- **No rule-5 tag changes.** Entered vs random kept fills on flagships stays clearly negative since 11-24. The users' findings, the tiered test (NOISE) and the uncertainty study (overall NOISE, mains DIRECTIONAL, flagships NOISE) keep their tags. The changes are in the by-type sizes, all inside the existing intervals.

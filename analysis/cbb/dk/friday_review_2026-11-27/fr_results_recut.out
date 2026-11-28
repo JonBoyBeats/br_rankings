@@ -1,0 +1,28 @@
+== by contest type, OLD (by size)
+  flagship           fees $  622.35  back $  230.55  net   -391.80  ROI  -63.0%  entries  156  slates 16
+  main               fees $  261.00  back $  391.65  net   +130.65  ROI  +50.1%  entries  576  slates 13
+  qualifier / small  fees $  198.00  back $  444.00  net   +246.00  ROI +124.2%  entries   18  slates  9
+== by contest type, NEW (page profile)
+  flagship           fees $  600.00  back $  195.00  net   -405.00  ROI  -67.5%  entries   46  slates 15
+  main               fees $  301.35  back $  427.20  net   +125.85  ROI  +41.8%  entries  690  slates 14
+  qualifier / small  fees $  180.00  back $  444.00  net   +264.00  ROI +146.7%  entries   14  slates  8
+== by slate type (unchanged by the re-label)
+  early              fees $  379.20  back $  455.65  net    +76.45  ROI  +20.2%  entries  219  slates  5
+  main               fees $  408.00  back $  463.55  net    +55.55  ROI  +13.6%  entries  268  slates  5
+  single-slate day   fees $  294.15  back $  147.00  net   -147.15  ROI  -50.0%  entries  263  slates  6
+our contests that change type: 15
+    ('CBB $100 And-One', 95, 'qualifier / small', 'main')
+    ('CBB $100 And-One (Early)', 118, 'flagship', 'main')
+    ('CBB $100 Quarter Jukebox [Just $0.25!]', 475, 'flagship', 'main')
+    ('CBB $100 Quarter Jukebox [Just $0.25!] (Early)', 475, 'flagship', 'main')
+    ('CBB $150 And-One', 114, 'flagship', 'main')
+    ('CBB $150 Quarter Jukebox [Just $0.25!] ', 713, 'flagship', 'main')
+    ('CBB $1K Pull Up Jumper [$200 to 1st]', 78, 'qualifier / small', 'flagship')
+    ('CBB $200 And-One', 237, 'flagship', 'main')
+    ('CBB $200 And-One (Early)', 199, 'flagship', 'main')
+    ('CBB $250 And-One (Early)', 297, 'flagship', 'main')
+    ('CBB $50 Dime Time [Just $0.10!]', 517, 'flagship', 'main')
+    ('CBB $50 Dime Time [Just $0.10!]', 594, 'flagship', 'main')
+    ('CBB $50 Dime Time [Just $0.10!] (Early)', 594, 'flagship', 'main')
+    ('CBB $50 Quarter Jukebox [Just $0.25!]', 228, 'flagship', 'main')
+    ('CBB $500 And-One', 594, 'flagship', 'main')

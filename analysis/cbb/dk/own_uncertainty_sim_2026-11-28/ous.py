@@ -41,9 +41,12 @@ def nights(mirror):
 
 
 def ctype(name, n):
-    if re.search("qualifier|satellite", name or "", re.I) or n < 100: return "qualifier/small"
-    if re.search("pull up jumper", name or "", re.I) or n < 800: return "flagship"
-    return "main"
+    """The one definition (scripts/dk_contest_type.py, the DK page's profile; switched 2026-11-28, after the first
+    write-up: it used qualifier/satellite or under 100, then Pull Up Jumper or under 800 = flagship, else main).
+    This script reported "qualifier/small"; it passes the real entries as the size."""
+    import dk_contest_type
+    t = dk_contest_type.contest_type(name, n)
+    return "qualifier/small" if t == "qualifier" else t
 
 
 def main():

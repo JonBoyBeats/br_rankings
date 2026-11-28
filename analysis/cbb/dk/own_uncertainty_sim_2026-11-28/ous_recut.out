@@ -1,0 +1,72 @@
+
+## uncertainty sizes x0.5
+   achieved: ESS 509 of 1000 lineups; top-8 ownership +4.5 ± 26.5 (SD over nights) over the field's own; per-player log SD 0.29 (tau 1.00)
+-- all (68 contests, 14 slates)
+   finish pct  B - A -3.83 ± 2.04 (14), ahead 3 | C - A -4.21 ± 2.18 (14), ahead 5 | A - random +4.07 ± 2.57 (14), ahead 9 | B - random +0.24 ± 3.43 (14), ahead 7
+   $ per lineup  B - A -8.520 ± 7.846 (14), ahead 5 | C - A -5.818 ± 8.527 (14), ahead 5
+-- flagship (20 contests, 13 slates)
+   finish pct  B - A -8.31 ± 3.59 (13), ahead 3 | C - A -8.38 ± 4.01 (13), ahead 4 | A - random +5.42 ± 4.48 (13), ahead 8 | B - random -2.89 ± 5.62 (13), ahead 4
+   $ per lineup  B - A -18.975 ± 16.961 (13), ahead 1 | C - A -11.668 ± 19.146 (13), ahead 2
+-- main (43 contests, 12 slates)
+   finish pct  B - A +1.07 ± 0.69 (12), ahead 6 | C - A +0.10 ± 1.28 (12), ahead 6 | A - random +3.00 ± 2.37 (12), ahead 8 | B - random +4.06 ± 2.37 (12), ahead 8
+   $ per lineup  B - A +0.143 ± 0.108 (12), ahead 8 | C - A +0.055 ± 0.125 (12), ahead 5
+-- qualifier/small (5 contests, 5 slates)
+   finish pct  B - A -12.50 ± 12.50 (5), ahead 0 | C - A -12.50 ± 12.50 (5), ahead 0 | A - random +14.40 ± 8.35 (5), ahead 3 | B - random +1.90 ± 15.55 (5), ahead 2
+   $ per lineup  B - A +0.000 ± 0.000 (5), ahead 0 | C - A +0.000 ± 0.000 (5), ahead 0
+   calibration A, fixed sim               stated payout $2186 vs real $2971 (x0.74; fees $969) | stated top-1% coverage 0.246 vs real 0.132 (contests 68)
+   calibration B, uncertain sim           stated payout $2359 vs real $955 (x2.47; fees $969) | stated top-1% coverage 0.267 vs real 0.103 (contests 68)
+   calibration A's lineups, uncertain sim stated payout $2363 vs real $2971 (x0.80; fees $969) | stated top-1% coverage 0.259 vs real 0.132 (contests 68)
+
+## uncertainty sizes x1
+   achieved: ESS 470 of 1000 lineups; top-8 ownership +14.9 ± 36.2 (SD over nights) over the field's own; per-player log SD 0.31 (tau 0.52)
+-- all (68 contests, 14 slates)
+   finish pct  B - A -1.92 ± 2.08 (14), ahead 7 | C - A -2.22 ± 2.12 (14), ahead 7 | A - random +3.96 ± 2.69 (14), ahead 8 | B - random +2.04 ± 3.30 (14), ahead 7
+   $ per lineup  B - A +0.376 ± 12.229 (14), ahead 4 | C - A +3.024 ± 12.510 (14), ahead 6
+-- flagship (20 contests, 13 slates)
+   finish pct  B - A -4.07 ± 3.61 (13), ahead 6 | C - A -3.96 ± 3.67 (13), ahead 7 | A - random +5.32 ± 4.72 (13), ahead 8 | B - random +1.25 ± 5.46 (13), ahead 7
+   $ per lineup  B - A +0.101 ± 26.498 (13), ahead 1 | C - A +7.409 ± 27.503 (13), ahead 2
+-- main (43 contests, 12 slates)
+   finish pct  B - A +1.73 ± 0.74 (12), ahead 9 | C - A +0.93 ± 1.12 (12), ahead 7 | A - random +2.96 ± 2.39 (12), ahead 8 | B - random +4.69 ± 2.34 (12), ahead 9
+   $ per lineup  B - A +0.145 ± 0.109 (12), ahead 6 | C - A -0.048 ± 0.186 (12), ahead 6
+-- qualifier/small (5 contests, 5 slates)
+   finish pct  B - A -12.50 ± 12.50 (5), ahead 0 | C - A -12.50 ± 12.50 (5), ahead 0 | A - random +14.49 ± 9.04 (5), ahead 3 | B - random +1.99 ± 16.09 (5), ahead 2
+   $ per lineup  B - A +0.000 ± 0.000 (5), ahead 0 | C - A +0.000 ± 0.000 (5), ahead 0
+   calibration A, fixed sim               stated payout $2186 vs real $2971 (x0.74; fees $969) | stated top-1% coverage 0.246 vs real 0.132 (contests 68)
+   calibration B, uncertain sim           stated payout $2428 vs real $1955 (x1.24; fees $969) | stated top-1% coverage 0.272 vs real 0.118 (contests 68)
+   calibration A's lineups, uncertain sim stated payout $2408 vs real $2971 (x0.81; fees $969) | stated top-1% coverage 0.263 vs real 0.132 (contests 68)
+
+## uncertainty sizes x2
+   achieved: ESS 420 of 1000 lineups; top-8 ownership +36.6 ± 58.9 (SD over nights) over the field's own; per-player log SD 0.35 (tau 0.26)
+-- all (68 contests, 14 slates)
+   finish pct  B - A -2.78 ± 1.95 (14), ahead 6 | C - A -3.12 ± 1.94 (14), ahead 5 | A - random +3.81 ± 2.76 (14), ahead 9 | B - random +1.03 ± 3.60 (14), ahead 8
+   $ per lineup  B - A -8.423 ± 7.872 (14), ahead 3 | C - A -5.756 ± 8.514 (14), ahead 4
+-- flagship (20 contests, 13 slates)
+   finish pct  B - A -3.17 ± 3.28 (13), ahead 5 | C - A -4.12 ± 3.08 (13), ahead 5 | A - random +5.37 ± 4.77 (13), ahead 7 | B - random +2.21 ± 5.68 (13), ahead 7
+   $ per lineup  B - A -18.595 ± 17.027 (13), ahead 0 | C - A -11.287 ± 19.145 (13), ahead 1
+-- main (43 contests, 12 slates)
+   finish pct  B - A +0.63 ± 0.58 (12), ahead 7 | C - A +0.24 ± 0.91 (12), ahead 7 | A - random +2.95 ± 2.37 (12), ahead 7 | B - random +3.59 ± 2.44 (12), ahead 8
+   $ per lineup  B - A +0.141 ± 0.113 (12), ahead 6 | C - A -0.022 ± 0.180 (12), ahead 5
+-- qualifier/small (5 contests, 5 slates)
+   finish pct  B - A -12.50 ± 12.50 (5), ahead 0 | C - A -12.50 ± 12.50 (5), ahead 0 | A - random +12.65 ± 8.98 (5), ahead 3 | B - random +0.15 ± 15.48 (5), ahead 2
+   $ per lineup  B - A +0.000 ± 0.000 (5), ahead 0 | C - A +0.000 ± 0.000 (5), ahead 0
+   calibration A, fixed sim               stated payout $2186 vs real $2971 (x0.74; fees $969) | stated top-1% coverage 0.246 vs real 0.132 (contests 68)
+   calibration B, uncertain sim           stated payout $2514 vs real $961 (x2.62; fees $969) | stated top-1% coverage 0.280 vs real 0.118 (contests 68)
+   calibration A's lineups, uncertain sim stated payout $2490 vs real $2971 (x0.84; fees $969) | stated top-1% coverage 0.269 vs real 0.132 (contests 68)
+
+## concentration only x1
+   achieved: ESS 926 of 1000 lineups; top-8 ownership +22.6 ± 28.6 (SD over nights) over the field's own; per-player log SD 0.09 (tau 0.00)
+-- all (68 contests, 14 slates)
+   finish pct  B - A -0.21 ± 0.76 (14), ahead 8 | C - A -1.14 ± 1.01 (14), ahead 6 | A - random +3.89 ± 2.65 (14), ahead 10 | B - random +3.68 ± 2.92 (14), ahead 11
+   $ per lineup  B - A -0.392 ± 0.216 (14), ahead 4 | C - A -0.522 ± 0.230 (14), ahead 4
+-- flagship (20 contests, 13 slates)
+   finish pct  B - A -1.99 ± 2.27 (13), ahead 4 | C - A -2.79 ± 2.36 (13), ahead 4 | A - random +4.82 ± 4.52 (13), ahead 7 | B - random +2.83 ± 5.13 (13), ahead 8
+   $ per lineup  B - A -0.978 ± 0.527 (13), ahead 0 | C - A -1.362 ± 0.603 (13), ahead 0
+-- main (43 contests, 12 slates)
+   finish pct  B - A +1.22 ± 0.21 (12), ahead 12 | C - A -0.03 ± 0.91 (12), ahead 8 | A - random +3.04 ± 2.40 (12), ahead 8 | B - random +4.26 ± 2.51 (12), ahead 8
+   $ per lineup  B - A -0.009 ± 0.024 (12), ahead 5 | C - A -0.058 ± 0.052 (12), ahead 5
+-- qualifier/small (5 contests, 5 slates)
+   finish pct  B - A +0.00 ± 0.00 (5), ahead 0 | C - A +0.00 ± 0.00 (5), ahead 0 | A - random +13.97 ± 8.69 (5), ahead 3 | B - random +13.97 ± 8.69 (5), ahead 3
+   $ per lineup  B - A +0.000 ± 0.000 (5), ahead 0 | C - A +0.000 ± 0.000 (5), ahead 0
+   calibration A, fixed sim               stated payout $2186 vs real $2971 (x0.74; fees $969) | stated top-1% coverage 0.246 vs real 0.132 (contests 68)
+   calibration B, uncertain sim           stated payout $2275 vs real $2935 (x0.78; fees $969) | stated top-1% coverage 0.255 vs real 0.132 (contests 68)
+   calibration A's lineups, uncertain sim stated payout $2200 vs real $2971 (x0.74; fees $969) | stated top-1% coverage 0.251 vs real 0.132 (contests 68)
