@@ -1,0 +1,53 @@
+contests 100+ entries with a real cash line: 69 on 16 slates
+reproduction: PREVIOUS cash line recomputed - logged sim_cash: mean -1.54, max |21.44| (13 contests); top-10% -1.54, max |21.32|
+
+== all: 69 contests, 16 slates
+  mean gap, sim - real: cash PREVIOUS +5.0  candidate +5.7 | top-10% PREVIOUS +6.6  candidate +7.0
+PRIMARY |cash gap| gain (prev - cand)            +0.22 ±  0.29  better on  7 of 16  (2xSE 0.58)
+secondary |top-10% gap| gain                     +0.19 ±  0.22  better on  7 of 16  (2xSE 0.43)
+secondary |own total gap| gain                  +11.07 ±  2.06  better on 15 of 16  (2xSE 4.13)
+secondary |duplication % gap| gain               +7.46 ±  0.75  better on 16 of 16  (2xSE 1.51)
+secondary |top pair % gap| gain                  +2.37 ±  1.67  better on 11 of 16  (2xSE 3.34)
+secondary |our projected pts / lineup gap| gain   -1.07 ±  0.38  better on  5 of 16  (2xSE 0.76)
+context: S6 level (real field proj - actual mean)   +2.83 ±  5.02  better on  9 of 16  (2xSE 10.04)
+context: cash gap PREVIOUS (sim - real)          +1.68 ±  5.37  better on  9 of 16  (2xSE 10.75)
+context: cash gap candidate (sim - real)         +2.52 ±  5.31  better on  8 of 16  (2xSE 10.63)
+
+== flagship: 21 contests, 14 slates
+  mean gap, sim - real: cash PREVIOUS +2.6  candidate +5.3 | top-10% PREVIOUS +5.0  candidate +6.9
+PRIMARY |cash gap| gain (prev - cand)            -0.27 ±  0.72  better on  7 of 14  (2xSE 1.44)
+secondary |top-10% gap| gain                     -0.25 ±  0.51  better on  6 of 14  (2xSE 1.01)
+secondary |own total gap| gain                  +28.47 ±  2.43  better on 14 of 14  (2xSE 4.85)
+secondary |duplication % gap| gain               +4.73 ±  1.64  better on 11 of 14  (2xSE 3.27)
+secondary |top pair % gap| gain                  +5.38 ±  2.48  better on 10 of 14  (2xSE 4.95)
+secondary |our projected pts / lineup gap| gain   -2.89 ±  0.65  better on  1 of 14  (2xSE 1.30)
+context: S6 level (real field proj - actual mean)   +1.76 ±  6.31  better on  7 of 14  (2xSE 12.62)
+context: cash gap PREVIOUS (sim - real)          -0.16 ±  6.41  better on  7 of 14  (2xSE 12.83)
+context: cash gap candidate (sim - real)         +2.51 ±  6.52  better on  8 of 14  (2xSE 13.03)
+
+== main: 48 contests, 14 slates
+  mean gap, sim - real: cash PREVIOUS +6.1  candidate +5.8 | top-10% PREVIOUS +7.3  candidate +7.0
+PRIMARY |cash gap| gain (prev - cand)            +0.20 ±  0.17  better on  9 of 14  (2xSE 0.33)
+secondary |top-10% gap| gain                     +0.19 ±  0.15  better on  9 of 14  (2xSE 0.30)
+secondary |own total gap| gain                   +1.14 ±  1.29  better on  7 of 14  (2xSE 2.59)
+secondary |duplication % gap| gain               +8.98 ±  1.00  better on 14 of 14  (2xSE 2.00)
+secondary |top pair % gap| gain                  -0.05 ±  1.59  better on  9 of 14  (2xSE 3.18)
+secondary |our projected pts / lineup gap| gain   +0.16 ±  0.30  better on 11 of 14  (2xSE 0.60)
+context: S6 level (real field proj - actual mean)   +5.63 ±  5.04  better on  9 of 14  (2xSE 10.07)
+context: cash gap PREVIOUS (sim - real)          +5.70 ±  5.40  better on  9 of 14  (2xSE 10.79)
+context: cash gap candidate (sim - real)         +5.54 ±  5.35  better on  8 of 14  (2xSE 10.70)
+
+== qualifier : no contests
+
+construction, all held-out contests (any size), mean real / PREVIOUS / candidate:
+  flagship  22: own 264.2 / 212.9 / 243.4 | top8 386.3 / 330.9 / 403.1 | dup 12.1 / 2.4 / 11.6 | pair 46.9 / 33.8 / 53.2 | proj 201.8 / 202.2 / 206.4
+  main      49: own 241.6 / 217.8 / 221.1 | top8 363.0 / 352.6 / 362.4 | dup 28.0 / 5.9 / 15.5 | pair 40.8 / 36.0 / 41.2 | proj 198.6 / 201.9 / 201.7
+  qualifier  4: own 281.5 / 236.7 / 256.2 | top8 401.4 / 370.8 / 406.6 | dup 11.2 / 3.3 / 3.3 | pair 44.0 / 35.7 / 44.0 | proj 200.1 / 202.8 / 205.3
+
+CONTEXT (outside the tag): our entered lineups 11-20 to 11-26, flagship and main contests
+  flagship 17 contests, 39 entries, fees $495.00 | sim expected payout: today's field $913.67 (5.22x real), rebuilt $877.74 (5.02x real) | real won $175.00
+           top-1% per lineup: today's field 0.028, rebuilt 0.028, real 0.000 | field copies of each entry (of 1,000): today's 0.08, rebuilt 0.13
+  main     31 contests, 435 entries, fees $202.65 | sim expected payout: today's field $338.42 (1.29x real), rebuilt $357.93 (1.36x real) | real won $262.50
+           top-1% per lineup: today's field 0.026, rebuilt 0.028, real 0.021 | field copies of each entry (of 1,000): today's 0.11, rebuilt 0.14
+  both     48 contests, 474 entries, fees $697.65 | sim expected payout: today's field $1252.09 (2.86x real), rebuilt $1235.67 (2.82x real) | real won $437.50
+           top-1% per lineup: today's field 0.026, rebuilt 0.028, real 0.019 | field copies of each entry (of 1,000): today's 0.11, rebuilt 0.14

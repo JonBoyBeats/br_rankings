@@ -1,0 +1,48 @@
+loaded 2026-11-16_156660 1500
+loaded 2026-11-17_156663 1500
+loaded 2026-11-18_157033 1500
+loaded 2026-11-19_157138 1500
+loaded 2026-11-19_157139 1500
+loaded 2026-11-20_157013 1500
+loaded 2026-11-20_157015 1500
+loaded 2026-11-21_157017 1500
+loaded 2026-11-22_157019 1500
+loaded 2026-11-23_157021 1500
+loaded 2026-11-24_157024 1500
+loaded 2026-11-24_157026 1500
+loaded 2026-11-25_157293 1500
+loaded 2026-11-25_157295 1500
+loaded 2026-11-26_157380 1500
+loaded 2026-11-26_157382 1500
+grid 2026-11-16_156660
+grid 2026-11-17_156663
+grid 2026-11-18_157033
+grid 2026-11-19_157138
+grid 2026-11-19_157139
+grid 2026-11-20_157013
+grid 2026-11-20_157015
+grid 2026-11-21_157017
+grid 2026-11-22_157019
+grid 2026-11-23_157021
+grid 2026-11-24_157024
+grid 2026-11-24_157026
+grid 2026-11-25_157293
+grid 2026-11-25_157295
+grid 2026-11-26_157380
+grid 2026-11-26_157382
+held out 2026-11-16_156660 {'flagship': {'gamma': 1.5, 'beta': 0.5, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.25, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-17_156663 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 15, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-18_157033 {'flagship': {'gamma': 1.5, 'beta': 0.5, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-19_157138 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-19_157139 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-20_157013 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-20_157015 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-21_157017 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 0.5, 'train_slates': 2, 'pooled': True}}
+held out 2026-11-22_157019 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 0.5, 'train_slates': 2, 'pooled': True}}
+held out 2026-11-23_157021 {'flagship': {'gamma': 1.5, 'beta': 0.5, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 0.5, 'train_slates': 2, 'pooled': True}}
+held out 2026-11-24_157024 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-24_157026 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-25_157293 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-25_157295 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 13, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-26_157380 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 14, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
+held out 2026-11-26_157382 {'flagship': {'gamma': 1.25, 'beta': 0.75, 'train_slates': 14, 'pooled': False}, 'main': {'gamma': 1.0, 'beta': 0.5, 'train_slates': 14, 'pooled': False}, 'qualifier': {'gamma': 1.25, 'beta': 1.0, 'train_slates': 3, 'pooled': False}}
